@@ -97,7 +97,7 @@
                 <td width="253" valign="middle">&nbsp;</td>
                 <td width="58" valign="middle">&nbsp;</td>
                 <td width="57" valign="middle"> 
-                  <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
+                  <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
                     Off</a>&nbsp;</span></div>
                 </td>
               </tr>
@@ -137,7 +137,7 @@
           <td width="609" valign="top" bgcolor="#FFFFFF"> 
             <p><br>
             <center>
-              <p align="center" class="Main"><b>INDIVIDUAL SWITCH COMMANDS</b></p>
+              <p align="center" class="TitleHeader">INDIVIDUAL SWITCH COMMANDS</p>
             </center>
             <table width="345" border="0" cellspacing="0" cellpadding="0" align="center">
               <tr>
@@ -146,7 +146,7 @@
 	         <table border="0" width="100%" cellspacing="0" cellpadding="0">
                <tr>
                         <td width="100%" align="center"> 
-                          <p class="Main" align="center">Enter or select a switch 
+                          <p class="MainText" align="center">Enter or select a switch 
                             serial number:<br>
                             <input name="serialNumberField" size="9" maxlength="9" type="text" <% if( prevSerialNumber != null ) { %><%= "value=\"" + prevSerialNumber + "\""%><% } %> >                            
                             &nbsp;&nbsp; 
@@ -213,7 +213,7 @@ document.switchform.serialNumberField.value=availablesn[document.switchform.sele
 </script>
 <p>
             <div align="center"> 
-              <span class="Main">Select one of the following functions:</span> 
+              <span class="MainText">Select one of the following functions:</span> 
               <div align="center"> 
                 <table width="345" border="1" cellspacing="0"
         cellpadding="0">

@@ -32,11 +32,10 @@ function confirm_form(f) {
                 <td width="310" height = "28" class="PageHeader">&nbsp;&nbsp;&nbsp;Load Response</td>
                 <td width="235" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle"> 
-                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
+                    <div align="center"><span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
-                      Off</a>&nbsp;</span></div>
+                    <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
                   </td>
               </tr>
             </table>
@@ -89,10 +88,8 @@ function confirm_form(f) {
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
 <table width="657" border="0" cellspacing="0" cellpadding="0" align="left">
     <tr>       
-    <td width="650" class="Main" valign="top"> 
-      <div align="center"><b><br>
-                    <%= checker.getError("duplicate_error") %> NOTIFICATION - 
-                    NEW </b></div>
+    <td width="650" class="TitleHeader" valign="top"> 
+      <div align="center"><br><%= checker.getError("duplicate_error") %> NOTIFICATION - NEW</div>
         <struts:form name="checker" type="com.cannontech.validate.PageBean" action="oper_mand.jsp?tab=new" onSubmit="return confirm_form(this)"> 
         <input type=hidden name="submitted" value="true">
         <input type=hidden name="programname">     
@@ -163,18 +160,17 @@ function confirm_form(f) {
           </tr> 
         </table>
         <br>
-        <table width="600" border="0" cellspacing="0" cellpadding="0" align="center" class="Main">
+        <table width="600" border="0" cellspacing="0" cellpadding="0" align="center" class="MainText">
           <tr> 
-            <td width="83" height="29"  class="MainHeader"> 
+            <td width="83" height="29"> 
               <div align="right">Comments:&nbsp; </div>
             </td>
-            <td class="Main" width="511" height="29"><struts:text property="comments" size="80"/> 
+            <td width="511" height="29"><struts:text property="comments" size="80"/> 
             </td>
           </tr>
         </table>
         <br>
-        <table
-    width="300" border="0" cellspacing="0" cellpadding="6" align="center">
+        <table width="300" border="0" cellspacing="0" cellpadding="6" align="center">
           <tr> 
             <td width="150" valign="TOP"> 
               <p align=RIGHT> 

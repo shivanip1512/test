@@ -61,11 +61,10 @@
                 <td width="253" height="28" class="PageHeader">&nbsp;&nbsp;&nbsp;Load Response</td>
 				<td width="235" valign="middle">&nbsp;</td>
                 <td width="58" valign="middle"> 
-                  <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
+                  <div align="center"><span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                 </td>
                 <td width="57" valign="middle"> 
-                  <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
-                    Off</a>&nbsp;</span></div>
+                  <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
                 </td>
                 
                 </form>
@@ -123,7 +122,7 @@
             <table width="640" border="0" cellspacing="0" cellpadding="0" align="left">
               <tr>
                 <td width="640">
-                  <p align="center" class="Main"><br><b><cti:getProperty propertyid="<%=DirectCurtailmentRole.CURTAILMENT_LABEL%>"/> - CUSTOMER PROFILE</b></p>
+                  <p align="center" class="TitleHeader"><br><cti:getProperty propertyid="<%=DirectCurtailmentRole.CURTAILMENT_LABEL%>"/> - CUSTOMER PROFILE</p>
                 </td>
               </tr>
               <%@include file="cust_profile.jsp"%>
@@ -132,7 +131,7 @@
               <tr>
                 <td>
                   <br><br>
-                  <p align="center" class="MainHeader"><a href="javascript:history.back()" class="Link1"><b>Back to Program Summary</b></a> 
+                  <p align="center" class="SubtitleHeader"><a href="javascript:history.back()" class="Link1">Back to Program Summary</a> 
                   <br><br>
                 </td>
               </tr>

@@ -24,7 +24,7 @@
 				  <td width="253" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle">&nbsp;</td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
+                    <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
                   </td>
               </tr>
             </table>
@@ -58,9 +58,9 @@
                   <td width="429" valign="top" align="center"> 
                     <table width="400" border="0" cellspacing="3" cellpadding="0">
                       <tr> 
-                        <td valign="bottom" class="Main">
-                          <div align="center"><strong><br>
-                            <cti:getProperty propertyid="<%=ResidentialCustomerRole.WEB_TITLE_GENERAL %>"/></strong> <br>
+                        <td valign="bottom" class="TitleHeader">
+                          <div align="center"><br>
+                            <cti:getProperty propertyid="<%=ResidentialCustomerRole.WEB_TITLE_GENERAL %>"/><br>
                             <br>
                             <br>
                           </div>
@@ -72,10 +72,9 @@
                           <table width="400" border="0" cellspacing="0" cellpadding="5">
                             <tr> 
                               <td valign="top">
-								<p class="Main"><cti:getProperty propertyid="<%=ResidentialCustomerRole.WEB_DESC_GENERAL %>"/></p></td>
+								<p class="MainText"><cti:getProperty propertyid="<%=ResidentialCustomerRole.WEB_DESC_GENERAL %>"/></p></td>
                               <td valign="top"> 
-                                <div align="center" class="MainHeader"><b>Your 
-                                  Enrolled Programs</b> </div>
+                                <div align="center" class="SubtitleHeader">Your Enrolled Programs</div>
                                 <table width="200" border="0" cellspacing="0" cellpadding="3" align="center">
                                   <tr> 
                                     <td colspan="3" background="../../../Images/Icons/dot.gif" height="8"></td>
@@ -112,7 +111,7 @@
                                       </div>
                                     </td>
                                     <td width="8" background="../../../Images/Icons/dot.gif"> </td>
-                                    <td width="128" class="Main"> 
+                                    <td width="128" class="MainText"> 
                                       <table width="128" border="0" cellspacing="0" cellpadding="0" class="TableCell" height="80">
                                         <tr height="50"> 
                                           <td> <div align="center"><b>
@@ -212,7 +211,7 @@
 	}
 %>
                   </td>
-                  <td width="171" valign="top"><span class="Main"><b>Acct #<%= account.getAccountNumber() %></b></span><br> 
+                  <td width="171" valign="top"><span class="TitleHeader">Acct #<%= account.getAccountNumber() %></span><br> 
                     <span class="NavText"><%= primContact.getFirstName() %> <%= primContact.getLastName() %><br>
                     <!--<%= account.getCompany() %><br> -->
 					<%= ServletUtils.getFormattedAddress(propAddr) %><br>

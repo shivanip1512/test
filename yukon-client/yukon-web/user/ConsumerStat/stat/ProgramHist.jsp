@@ -33,7 +33,7 @@ function setRedirect(form) {
 				  <td width="253" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle">&nbsp;</td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
+                    <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
                   </td>
               </tr>
             </table>

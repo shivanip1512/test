@@ -110,11 +110,10 @@ function init() {
                   
                 <td width="253" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle"> 
-                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
+                    <div align="center"><span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
-                      Off</a>&nbsp;</span></div>
+                    <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
                   </td>
               </tr>
             </table>
@@ -154,7 +153,7 @@ function init() {
                   <td width="300" valign="top" bgcolor="#FFFFFF"> 
                     <table width="300" border="0" cellspacing="0" cellpadding="0">
                       <tr> 
-                          <td valign="top"><span class="MainHeader"><b>DEVICE</b></span> 
+                          <td valign="top"><span class="SubtitleHeader">DEVICE</span> 
                             <hr>
                             <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
                               <tr> 
@@ -254,7 +253,7 @@ function init() {
                     <div align="center"> 
                       <table width="300" border="0" cellspacing="0" cellpadding="0">
                         <tr> 
-                            <td valign="top"><span class="MainHeader"><b>INSTALL</b></span> 
+                            <td valign="top"><span class="SubtitleHeader">INSTALL</span> 
                               <hr>
                               <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
                                 <tr> 
@@ -271,13 +270,13 @@ function init() {
                                   </td>
                                   <td width="200"> 
                                     <select name="ServiceCompany">
-                                      <%
+<%
 	for (int i = 0; i < companies.getStarsServiceCompanyCount(); i++) {
 		StarsServiceCompany servCompany = companies.getStarsServiceCompany(i);
 		String selectedStr = (servCompany.equals(company)) ? "selected" : "";
 %>
-                                      <option value="<%= servCompany.getCompanyID() %>" <%= selectedStr %>><%= servCompany.getCompanyName() %></option>
-                                      <%
+                              		  <option value="<%= servCompany.getCompanyID() %>" <%= selectedStr %>><%= servCompany.getCompanyName() %></option>
+<%
 	}
 %>
                                     </select>
@@ -485,7 +484,7 @@ function init() {
                         <table width="305" border="0" cellspacing="0" cellpadding="0">
                           <tr> 
                             <td valign="top" align = "center" class = "TableCell"> 
-                              <span class="MainHeader"><b>Hardware History</b></span> 
+                              <span class="SubtitleHedaer">Hardware History</span> 
                               <br>
                               <table width="250" border="1" cellspacing="0" cellpadding="3" align="center">
                                 <tr> 
@@ -531,7 +530,7 @@ function init() {
             </div>
             <hr>
             <div align="center">
-              <span class="Main"><b>Appliance Summary</b></span><br>
+              <span class="TitleHeader">Appliance Summary</span><br>
               <table width="350" border="1" cellspacing="0" cellpadding="3">
                 <tr bgcolor="#FFFFFF"> 
                   <td width="104" class="HeaderCell"> Appliance Type</td>

@@ -10,7 +10,7 @@
 	  <td width="202"> 
 		<table width="200" border="0" cellspacing="0" cellpadding="3">
 		  <tr> 
-			<td><span class="Main"><b>Acct #<%= account.getAccountNumber() %></b></span><br>
+			<td><span class="TitleHeader"><b>Acct #<%= account.getAccountNumber() %></b></span><br>
 			  <span class="NavText"><%= primContact.getFirstName() %> <%= primContact.getLastName() %><br>
 			  <!--<%= account.getCompany() %><br> -->
 			  <%= ServletUtils.getFormattedAddress(propAddr) %><br>
@@ -19,7 +19,7 @@
 		</table>
 	  </td>
 	  <td width="187" valign="top"> 
-		<div align="center"><b><span class="Main"><%= header %></span></b></div>
+		<div align="center"><span class="TitleHeader"><%= header %></span></div>
 	  </td>
 	  
     <td valign="top" width="205" align = "right">&nbsp;</td>

@@ -22,15 +22,13 @@
               </tr>
               <tr> 
 				  
-                <td width="265" height="28" valign="middle" class="Header3">&nbsp;&nbsp;&nbsp;Customer 
-                  Account Information&nbsp;&nbsp;</td>
+                <td width="265" height="28" valign="middle" class="PageHeader">&nbsp;&nbsp;&nbsp;Customer Account Information&nbsp;&nbsp;</td>
                   <td width="253" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle">
-				  	<div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
+				  	<div align="center"><span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
 				  </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
-                      Off</a>&nbsp;</span></div>
+                    <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
                   </td>
               </tr>
             </table>
@@ -123,10 +121,10 @@
               </table>
               <br>
 			  <input type="button" name="Back" value="Back" onclick="history.back()">
-              <p align="center" class="Main"><font face="Arial, Helvetica, sans-serif" size="1">Copyright 
+              <p align="center" class="MainText"><font face="Arial, Helvetica, sans-serif" size="1">Copyright 
                 &copy; 2003, Cannon Technologies, Inc. All rights reserved.</font> 
               </p>
-              <p align="center" class="Main">&nbsp; </p>
+              <p align="center" class="MainText">&nbsp; </p>
             </div>
 			
           </td>

@@ -155,11 +155,10 @@
                 <td width="235" valign="middle">&nbsp;</td>
                 
                   <td width="58" valign="middle"> 
-                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
+                    <div align="center"><span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
-                      Off</a>&nbsp;</span></div>
+                    <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
                   </td>
               </tr>
             </table>
@@ -198,12 +197,12 @@
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
 <table width="657" border="0" cellspacing="0" cellpadding="0">
   <tr> 
-    <td width="650" class="Main">
+    <td width="650" class="TitleHeader">
       <center>
-                    <p align="center"><b><br>
-                      DIRECT CONTROL - PROGRAM SUMMARY</b><b><br>
+                    <p align="center"><br>
+                      DIRECT CONTROL - PROGRAM SUMMARY<br>
                       <br>
-                      </b>To start/stop a program or change the start/stop time, 
+                    <p align="center" class="MainText">To start/stop a program or change the start/stop time, 
                       select the program name. </p>
                     </center>
       <p> 

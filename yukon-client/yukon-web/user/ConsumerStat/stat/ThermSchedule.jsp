@@ -211,7 +211,7 @@ MM_reloadPage(true);
                   <td width="253" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle">&nbsp;</td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
+                    <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
                   </td>
               </tr>
             </table>
@@ -461,17 +461,13 @@ MM_reloadPage(true);
                       <table width="100%" border="0" height="27">
                         <tr>
 					  	  <td width="10%">&nbsp;</td> 
-                          <td class = "TableCell" align = "left" width="15%"><span class = "Main"><b>Wake 
-                            (W)</b> </span></td>
+                          <td class = "TableCell" align = "left" width="15%"><span class = "TitleHeader">Wake (W)</span></td>
                           <td width="10%">&nbsp;</td>
-						  <td class = "TableCell" align = "left" width="15%"><span class = "Main"><b>Leave 
-                            (L)</b></span> </td>
+						  <td class = "TableCell" align = "left" width="15%"><span class = "TitleHeader">Leave (L)</span></td>
                           <td width="10%">&nbsp;</td>
-						  <td class = "TableCell" align = "left" width="15%"><span class = "Main"><b>Return 
-                            (R)</b> </span></td>
+						  <td class = "TableCell" align = "left" width="15%"><span class = "TitleHeader">Return (R)</span></td>
                           <td width="10%">&nbsp;</td>
-						  <td class = "TableCell" align = "left" width="15%"><span class = "Main"><b>Sleep 
-                            (S)</b></span></td>
+						  <td class = "TableCell" align = "left" width="15%"><span class = "TitleHeader">Sleep (S)</span></td>
                       </tr>
                       <tr> 
                         <td class = "TableCell">
@@ -554,10 +550,10 @@ MM_reloadPage(true);
                 </tr>
               </table>
               </form>
-              <p align="center" class="Main"><font face="Arial, Helvetica, sans-serif" size="1">Copyright 
+              <p align="center" class="MainText"><font face="Arial, Helvetica, sans-serif" size="1">Copyright 
                 &copy; 2003, Cannon Technologies, Inc. All rights reserved.</font> 
               </p>
-              <p align="center" class="Main">&nbsp; </p>
+              <p align="center" class="MainText">&nbsp; </p>
             </div>
 			
           </td>

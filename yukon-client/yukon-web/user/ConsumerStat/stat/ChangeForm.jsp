@@ -30,7 +30,7 @@ function MM_popupMsg(msg) { //v1.0
 				  <td width="253" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle">&nbsp;</td>
                   <td width="57" valign="middle"> 
-                  <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
+                  <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
                   </td>
               </tr>
             </table>
@@ -66,7 +66,7 @@ function MM_popupMsg(msg) { //v1.0
                     <td width="202"> 
                       <table width="200" border="0" cellspacing="0" cellpadding="3">
                         <tr> 
-                        <td><span class="Main"><b>Acct #<%= account.getAccountNumber() %></b></span><br>
+                        <td><span class="TitleHeader">Acct #<%= account.getAccountNumber() %></span><br>
                           <span class="NavText"><%= primContact.getFirstName() %> <%= primContact.getLastName() %><br>
                           <!--<%= account.getCompany() %><br> -->
                           <%= propAddr.getStreetAddr1() %>, <%= propAddr.getStreetAddr2() %><br>
@@ -76,7 +76,7 @@ function MM_popupMsg(msg) { //v1.0
                       </table>
                     </td>
                     <td width="187" valign="top"> 
-                      <div align="center"><b><span class="Main"> CHANGE PROGRAM </span></b></div>
+                      <div align="center"><span class="TitleHeader"> CHANGE PROGRAM </span></div>
                     </td>
                     <td valign="top" width="205" align = "right">
                       <%@ include file="Notice.jsp" %>
@@ -90,7 +90,7 @@ function MM_popupMsg(msg) { //v1.0
                     </td>
                   </tr>
                 </table>
-                <p class="Main">Please complete the following form to change your program:</p>
+                <p class="MainText">Please complete the following form to change your program:</p>
                 <form method="post" action="Enrollment.jsp">
                   <table width="500" border="0" cellspacing="0" cellpadding="3" valign="top">
                     <tr> 

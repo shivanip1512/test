@@ -34,11 +34,10 @@
                 <td width="235" valign="middle">&nbsp;</td>
                 
                   <td width="58" valign="middle"> 
-                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
+                    <div align="center"><span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
-                      Off</a>&nbsp;</span></div>
+                    <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
                   </td>
                 
               </tr>
@@ -93,11 +92,9 @@
             <div align="center">
 <table width="657" border="0" cellspacing="0" cellpadding="0">
   <tr> 
-    <td width="650"valign="top" class="Main">
-      <p align="center"><br><b>NOTIFICATION - PROGRAM DETAILS FOR:</b><br>
-<b><%= program.getYukonName() %></b></p>
-      <p align="center">Click on a company name to view the customer profile. 
-      </p>
+    <td width="650"valign="top" class="TitleHeader">
+      <p align="center"><br>NOTIFICATION - PROGRAM DETAILS FOR:<br><%= program.getYukonName() %></p>
+      <p align="center">Click on a company name to view the customer profile.</p>
       <table width="600" border="1" cellspacing="0" cellpadding="2" align="center">
         <tr> 
           <td width="25%" class="HeaderCell">Company</td>
@@ -164,7 +161,7 @@
                         }
                   %>
       </table>
-                    <p align="center" class="Main"> 
+                    <p align="center" class="SubtitleHeader"> 
                       <%
                     if( showAck )
                     {
@@ -182,8 +179,7 @@
                     }
                  %>
                     </p>
-                    <p align="center" class="MainHeader"> <a href="oper_mand.jsp?tab=Current" class="Link1">Back 
-                      to Current Summary</a> <br>
+                    <p align="center" class="SubtitleHeader"> <a href="oper_mand.jsp?tab=Current" class="Link1">Back to Current Summary</a> <br>
               <br>
     </td>
   </tr>

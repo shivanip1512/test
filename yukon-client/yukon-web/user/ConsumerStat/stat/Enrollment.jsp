@@ -75,7 +75,7 @@ function confirmSubmit(form) {
 				  <td width="253" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle">&nbsp;</td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
+                    <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
                       Off</a>&nbsp;</span></div>
                   </td>
               </tr>
@@ -118,9 +118,9 @@ function confirmSubmit(form) {
               </div>
             <table width="90%" border="0" align = "center">
               <tr>
-                <td align = "center"><span class="Main"> </span><span class="TableCell"> 
+                <td align = "center"><span class="MainText"> </span><span class="TableCell"> 
                   Select the check boxes and corresponding radio button of the 
-                  programs you would like to be enrolled in.<br> <br></span><b><span class="Main"></span></b>
+                  programs you would like to be enrolled in.<br> <br></span><span class="TitleHeader"></span>
                   <input type="button" value="Program Details" onclick="location='ProgramDetails.jsp'">
                 
 				<form method="post" action="<%=request.getContextPath()%>/servlet/SOAPClient">

@@ -28,11 +28,10 @@
                 <td width="310" height = "28" class="PageHeader">&nbsp;&nbsp;&nbsp;Load Response</td>
                 <td width="235" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle"> 
-                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
+                    <div align="center"><span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
-                      Off</a>&nbsp;</span></div>
+                    <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
                   </td>
               </tr>
             </table>
@@ -82,11 +81,8 @@
             </table>
           </td>
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
-          <td width="657" valign="top" bgcolor="#FFFFFF" class="Main"> 
-            <div align="center"><br>
-              <b>NOTIFICATION - PROGRAMS<br>
-              </b><br>
-            </div>
+          <td width="657" valign="top" bgcolor="#FFFFFF" class="TitleHeader"> 
+            <div align="center"><br>NOTIFICATION - PROGRAMS<br><br></div>
             <table width="600" border="0" cellspacing="0" cellpadding="0" align="center">
 		
           <%

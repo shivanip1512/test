@@ -44,11 +44,10 @@
                   
                 <td width="253" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle"> 
-                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
+                    <div align="center"><span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
-                      Off</a>&nbsp;</span></div>
+                    <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
                   </td>
               </tr>
             </table>
@@ -81,7 +80,7 @@
             <table width="610" border="0" cellspacing="0" cellpadding="10" align="center" height="66">
               <tr> 
                  <td valign="top" bgcolor="#FFFFFF" height="65"> 
-                    <div align="center"> <span class="MainHeader">Hardware History</span> 
+                    <div align="center"> <span class="Subtext">Hardware History</span> 
                       <br>
                       <table width="250" border="1" cellspacing="0" cellpadding="3" align="center">
                         <tr> 

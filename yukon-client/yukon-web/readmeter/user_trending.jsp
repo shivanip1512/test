@@ -33,7 +33,7 @@
                 <form name="logoutForm"  action="/servlet/LoginController">
                     <input type="hidden" name="ACTION" value="LOGOUT">
                 </form>
-                <div align="left"><span class="Main"><a href="javascript:document.logoutForm.submit()" class="Link3">Log Off</a>&nbsp;</span></div>
+                <div align="left"><span class="MainText"><a href="javascript:document.logoutForm.submit()" class="Link3">Log Off</a>&nbsp;</span></div>
                 </td>
               </tr>
             </table>
@@ -60,7 +60,7 @@
           <td width="608" valign="top" bgcolor="#FFFFFF" > 
           
 			<%@include file="../trending_options.jsp"%>
-            <table width="575" border="0" cellspacing="0" cellpadding="0" align="center" height="46" class="Main">
+            <table width="575" border="0" cellspacing="0" cellpadding="0" align="center" height="46" class="Subtext">
               <tr>
                 <td>
                   <hr>

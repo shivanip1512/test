@@ -40,7 +40,7 @@
       </div>
     </td>
     <td width="200" valign = "top" align= "center"> 
-      <table width="200" border="0" class = "Main" cellspacing = "4" height="16">
+      <table width="200" border="0" class = "MainText" cellspacing = "4" height="16">
         <tr>
           <td width = "40%"> 
             <div name = "trend" align = "center" style = "border:solid 1px #666999; cursor:default;" onMouseOver = "menuAppear(event, 'trendMenu')" >Trend</div>
@@ -49,7 +49,7 @@
             <div align = "center" style = "border:solid 1px #666999; cursor:default;" onMouseOver = "menuAppear(event, 'viewMenu')">View</div>
           </td>
           <td width="12%">
-            <div align="right">
+            <div align="right" class="Subtext">
 			  <a href="JavaScript:" class="Link4" name="optionPopup" onClick="window.open('<%=request.getContextPath()%>/options_popup.jsp','optionPopup','width=200,height=160,top=250,left=520');">Options</a>            	                            
             </div>
           </td>
@@ -75,6 +75,11 @@
       <form name="exportForm">
 	    <div id="trendMenu" class = "bgmenu" style = "width:75px" align = "left"> 
           <%if (graphBean.getViewType() == TrendModelType.TABULAR_VIEW || graphBean.getViewType() == TrendModelType.SUMMARY_VIEW )
+          {%>
+            <div id = "LINEID" name = "format"  style = "width:75px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "exportData('csv')">&nbsp;&nbsp;&nbsp;Export .csv</div>
+            <div id = "LINEID" name = "format"  style = "width:75px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "exportData('html')">&nbsp;&nbsp;&nbsp;Export .html</div>
+          <%}
+          else if (graphBean.getViewType() == TrendModelType.SUMMARY_VIEW )
           {%>
             <div id = "LINEID" name = "format"  style = "width:75px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "exportData('html')">&nbsp;&nbsp;&nbsp;Export .html</div>
           <%}

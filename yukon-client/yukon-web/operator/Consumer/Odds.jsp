@@ -28,11 +28,10 @@
                   
                 <td width="253" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle"> 
-                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
+                    <div align="center"><span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
-                      Off</a>&nbsp;</span></div>
+                    <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
                   </td>
               </tr>
             </table>
@@ -60,7 +59,7 @@
               <%@ include file="InfoSearchBar2.jsp" %>
 			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
              
-              <div align="center"><span class="Main">Check the appropriate 
+              <div align="center"><span class="MainText">Check the appropriate 
                 <cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_ODDS_FOR_CONTROL %>"/> 
 				for each program.</span><br>
               </div>
@@ -148,7 +147,7 @@
               </form>
 			  
                 
-              <p align="center" class="MainHeader"><br>
+              <p align="center" class="Subtext"><br>
             </div>
             </td>
         <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>

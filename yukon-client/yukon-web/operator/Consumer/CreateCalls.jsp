@@ -87,11 +87,10 @@ function enableCallNo(txt, enabled) {
                   
                 <td width="253" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle"> 
-                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
+                    <div align="center"><span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
-                      Off</a>&nbsp;</span></div>
+                    <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
                   </td>
               </tr>
             </table>
@@ -114,18 +113,18 @@ function enableCallNo(txt, enabled) {
           <td  valign="top" width="101"><% String pageName = "CreateCalls.jsp"; %><%@ include file="Nav.jsp" %></td>
           <td width="1" bgcolor="#000000"><img src=""../Images/Icons/VerticalRule.gif"" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
-            <div class = "Main" align="center"><% String header = "ACCOUNT - CREATE NEW CALL"; %><%@ include file="InfoSearchBar.jsp" %>
+            <div class = "MainText" align="center"><% String header = "ACCOUNT - CREATE NEW CALL"; %><%@ include file="InfoSearchBar.jsp" %>
 			<% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
               
               <form name = "MForm" method="POST" action="<%= request.getContextPath() %>/servlet/SOAPClient">
 			    <input type="hidden" name="action" value="CreateCall">
-                <span class="MainHeader"><b>&nbsp;</b></span> 
+                <span class="SubtitleHeader">&nbsp;</span> 
                 <table width="350" border="0" height="179" cellspacing = "0">
                   <tr>
                     <td>
                       <table class = "TableCell" width="100%" border="0" cellspacing = "0" cellpadding = "1" height="174">
                         <tr>
-                          <td colspan = "2"><span class="MainHeader"><b>CALL INFORMATION</b></span> 
+                          <td colspan = "2"><span class="SubtitleHeader">CALL INFORMATION</span> 
                             <hr>
                           </td>
                           </tr>

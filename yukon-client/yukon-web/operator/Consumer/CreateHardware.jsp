@@ -40,11 +40,10 @@ function validate(form) {
                   
                 <td width="253" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle"> 
-                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
+                    <div align="center"><span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
-                      Off</a>&nbsp;</span></div>
+                    <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
                   </td>
               </tr>
             </table>
@@ -71,7 +70,7 @@ function validate(form) {
 		  </td>
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
-            <div class = "Main" align="center">
+            <div class = "MainText" align="center">
               <% String header = "CREATE NEW HARDWARE"; %>
               <%@ include file="InfoSearchBar.jsp" %>
 			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
@@ -87,7 +86,7 @@ function validate(form) {
                     <td width="300" valign="top" bgcolor="#FFFFFF"> 
                       <table width="300" border="0" cellspacing="0" cellpadding="0">
                         <tr> 
-                          <td valign="top"><span class="MainHeader"><b>DEVICE</b></span> 
+                          <td valign="top"><span class="SubtitleHeader">DEVICE</span> 
                             <hr>
                             <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
                               <tr> 
@@ -96,13 +95,13 @@ function validate(form) {
                                 </td>
                                 <td width="200"> 
                                   <select name="DeviceType">
-                                    <%
+                              <%
 	StarsCustSelectionList deviceTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE );
 	for (int i = 0; i < deviceTypeList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = deviceTypeList.getStarsSelectionListEntry(i);
 %>
-                                    <option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
-                                    <%
+                              		<option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
+                              <%
 	}
 %>
                                   </select>
@@ -160,17 +159,17 @@ function validate(form) {
                                   <div align="right">Voltage: </div>
                                 </td>
                                 <td width="200"> 
-                                  <select name="Voltage">
-                                    <%
+								  <select name="Voltage">
+                              <%
 	StarsCustSelectionList voltageList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_VOLTAGE );
 	for (int i = 0; i < voltageList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = voltageList.getStarsSelectionListEntry(i);
 %>
-                                    <option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
-                                    <%
+                              		<option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
+                              <%
 	}
 %>
-                                  </select>
+								  </select>
                                 </td>
                               </tr>
                               <tr> 
@@ -179,13 +178,13 @@ function validate(form) {
                                 </td>
                                 <td width="200"> 
                                   <select name="Status">
-                                    <%
+                              <%
 	StarsCustSelectionList statusList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_STATUS );
 	for (int i = 0; i < statusList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = statusList.getStarsSelectionListEntry(i);
 %>
-                                    <option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
-                                    <%
+                              		<option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
+                              <%
 	}
 %>
                                   </select>
@@ -207,7 +206,7 @@ function validate(form) {
                     <td width="300" valign="top" bgcolor="#FFFFFF"> 
                       <table width="300" border="0" cellspacing="0" cellpadding="0">
                         <tr> 
-                          <td valign="top"><span class="MainHeader"><b>INSTALL</b></span> 
+                          <td valign="top"><span class="SubtitleHeader">INSTALL</span> 
                             <hr>
                             <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
                               <tr> 
@@ -224,12 +223,12 @@ function validate(form) {
                                 </td>
                                 <td width="200"> 
                                   <select name="ServiceCompany">
-                                    <%
+<%
 	for (int i = 0; i < companies.getStarsServiceCompanyCount(); i++) {
 		StarsServiceCompany company = companies.getStarsServiceCompany(i);
 %>
-                                    <option value="<%= company.getCompanyID() %>"><%= company.getCompanyName() %></option>
-                                    <%
+                              		<option value="<%= company.getCompanyID() %>"><%= company.getCompanyName() %></option>
+<%
 	}
 %>
                                   </select>
@@ -248,7 +247,7 @@ function validate(form) {
                         </tr>
                       </table>
                       <br>
-                      <span class="MainHeader">Select all programs controlled by this 
+                      <span class="Subtext">Select all programs controlled by this 
                       hardware, and assign groups to them:</span><br>
                       <table width="300" border="1" cellspacing="0" cellpadding="3">
                         <tr> 

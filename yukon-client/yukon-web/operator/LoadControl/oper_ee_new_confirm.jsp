@@ -33,10 +33,10 @@
                 <td width="235" height = "28" valign="middle">&nbsp;</td>
                 
                   <td width="58" valign="middle"> 
-                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
+                    <div align="center"><span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
+                    <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
                       Off</a>&nbsp;</span></div>
                   </td>
               </tr>
@@ -91,8 +91,8 @@
 <table width="657" border="0" cellspacing="0" cellpadding="0" align="left">
     <tr> 
       <td width="650" valign="top"><br>
-        <p align="center" class="Main"><b><cti:getProperty propertyid="<%=EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>"/> - OFFER CONFIRMATION</b></p>
-                  <p align="center" class="Main">The total target amount is <%= totAmountStr %> 
+        <p align="center" class="TitleHeader"><cti:getProperty propertyid="<%=EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>"/> - OFFER CONFIRMATION</p>
+                  <p align="center" class="MainText">The total target amount is <%= totAmountStr %> 
                     kW. Please confirm the offer information below.</p>
         <div align="center">
 		
@@ -114,34 +114,22 @@
 %>
           <table width="600" border="0" cellspacing="0" cellpadding="5">
             <tr> 
-              <td width="100" valign="TOP" class="MainHeader"> 
-                          <p align=RIGHT><b>Program: </b>
-                        </td>
-              <td width="100" valign="TOP" class="MainHeader"><%= programStr %></td>
-              <td width="100" valign="TOP" class="MainHeader"> 
-                          <p align=RIGHT><b>Notify Date: </b> 
-                        </td>
-              <td width="80" valign="TOP" class="MainHeader"><%= notifyDateStr %></td>
-              <td width="100" valign="TOP" class="MainHeader"> 
-                          <p align=RIGHT><b>Notify Time: </b> 
-                        </td>
-              <td width="80" valign="TOP" class="MainHeader"><%= notifyTimeStr %></td>
+              <td width="100" valign="TOP" class="SubtitleHeader"><p align=RIGHT>Program:</td>
+              <td width="100" valign="TOP" class="Subtext"><%= programStr %></td>
+              <td width="100" valign="TOP" class="SubtitleHeader"><p align=RIGHT>Notify Date:</td>
+              <td width="80" valign="TOP" class="Subtext"><%= notifyDateStr %></td>
+              <td width="100" valign="TOP" class="SubtitleHeader"><p align=RIGHT>Notify Time:</td>
+              <td width="80" valign="TOP" class="Subtext"><%= notifyTimeStr %></td>
               <td align="left" width="40" class="TableCell"><%= tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) %>
               </td>
             </tr> 
             <tr> 
-              <td width="100" valign="TOP" class="MainHeader"> 
-                          <p align=RIGHT><b>Control Date: </b> 
-                        </td>
-              <td width="100" valign="TOP" class="MainHeader"><%= dateStr %></td>
-              <td width="100" valign="TOP" class="MainHeader"> 
-                          <p align=RIGHT><b>Expire Date: </b> 
-                        </td>
-              <td width="80" valign="TOP" class="MainHeader"><%= expireDateStr %></td>
-              <td width="100" valign="TOP" class="MainHeader"> 
-                          <p align=RIGHT><b>Expire Time: </b> 
-                        </td>
-              <td width="80" valign="TOP" class="MainHeader"><%= expireTimeStr %></td>
+              <td width="100" valign="TOP" class="SubtitleHeader"><p align=RIGHT>Control Date:</td>
+              <td width="100" valign="TOP" class="Subtext"><%= dateStr %></td>
+              <td width="100" valign="TOP" class="SubtitleHeader"><p align=RIGHT>Expire Date:</td>
+              <td width="80" valign="TOP" class="Subtext"><%= expireDateStr %></td>
+              <td width="100" valign="TOP" class="SubtitleHeader"><p align=RIGHT>Expire Time:</td>
+              <td width="80" valign="TOP" class="Subtext"><%= expireTimeStr %></td>
               <td align="left" width="40" class="TableCell"><%= tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) %>
               </td>
             </tr>

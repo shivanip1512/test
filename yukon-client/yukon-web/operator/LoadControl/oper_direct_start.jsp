@@ -219,11 +219,10 @@
                 <td width="235" valign="middle">&nbsp;</td>
                 
                   <td width="58" valign="middle"> 
-                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
+                    <div align="center"><span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
-                      Off</a>&nbsp;</span></div>
+                    <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
                   </td>
               </tr>
             </table>
@@ -259,10 +258,8 @@
 		   <table width="600" border="0" cellspacing="0" cellpadding="0">
 <struts:form name="checker" type="com.cannontech.validate.PageBean" action="oper_direct_start.jsp" onSubmit="return validForm(this)"> 
   <tr> 
-                <td width="650" class="Main"> 
-                  <div align="center"><b><br>
-                    DIRECT CONTROL - START PROGRAM</b><br>
-                    <br>
+                <td width="650" class="TitleHeader"> 
+                  <div align="center"><br>DIRECT CONTROL - START PROGRAM<br><br>
                   </div>
                   <table width="225" border="1" cellspacing="0" cellpadding="5" align="center" bgcolor="#FFFFFF">
         <tr> 

@@ -54,11 +54,10 @@ function saveChanges() {
                   
                 <td width="253" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle"> 
-                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
+                    <div align="center"><span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
-                      Off</a>&nbsp;</span></div>
+                    <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
                   </td>
               </tr>
             </table>
@@ -98,8 +97,7 @@ function saveChanges() {
 %>
               <table width="610" border="0" cellspacing="0" cellpadding="0" align="center">
                 <tr> 
-                    <td width="300" valign="top" bgcolor="#FFFFFF"><span class="MainHeader"><b>CONTACT 
-                      (Primary) </b></span> 
+                    <td width="300" valign="top" bgcolor="#FFFFFF"><span class="SubtitleHeader">CONTACT (Primary)</span> 
                       <hr>
                       <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
                         <tr> 
@@ -146,7 +144,7 @@ function saveChanges() {
                       <table width="300" border="0" cellspacing="0" cellpadding="0" align="center">
                         <tr> 
                           <td><br>
-                            <span class="MainHeader"><b>CONTACT 2</b></span> 
+                            <span class="SubtitleHeader">CONTACT 2</span> 
                             <hr>
                             <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
                               <tr> 
@@ -194,7 +192,8 @@ function saveChanges() {
                         </tr>
                       </table>
                     </td>
-                    <td width="300" valign="top" bgcolor="#FFFFFF"> <span class="MainHeader"><b>CONTACT 2 </b></span><hr>
+                    <td width="300" valign="top" bgcolor="#FFFFFF"> <span class="SubtitleHeader">CONTACT 3</span>
+                      -<hr>
                       <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
                         <tr> 
                           <td width="90" class="TableCell"> 
@@ -240,7 +239,7 @@ function saveChanges() {
                       <table width="300" border="0" cellspacing="0" cellpadding="0" align="center">
                         <tr> 
                           <td><br>
-                            <span class="MainHeader"><b>CONTACT 4</b></span> 
+                            <span class="SubtitleHeader">CONTACT 4</span> 
                             <hr>
                             <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
 							<tr> 

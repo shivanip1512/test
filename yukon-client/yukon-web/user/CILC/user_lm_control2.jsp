@@ -227,7 +227,7 @@ function MM_popupMsg(msg) { //v1.0
                 <td width="253" valign="middle">&nbsp;</td>
                 <td width="58" valign="middle">&nbsp;</td>
                 <td width="57" valign="middle"> 
-                  <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
+                  <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
                     Off</a>&nbsp;</span></div>
                 </td>
               </tr>
@@ -256,9 +256,8 @@ function MM_popupMsg(msg) { //v1.0
           <td width="600" valign="top" bgcolor="#FFFFFF"> 
             <div align="center"> 
               <p><br>
-                <b class="Main">AUTO CONTROL</b></p>
-              <p align="center" class="Main">Please select one of the following 
-                Trigger Sets:</p>
+                <span class="TitleHeader">AUTO CONTROL</span><br>
+                <span class="MainText">Please select one of the following Trigger Sets:</span></p>
               <table width="100%" border="0" cellpadding="1">
                 <tr> 
                   <form method="post" action="user_lm_control.jsp">
@@ -428,8 +427,7 @@ function MM_popupMsg(msg) { //v1.0
                 <td width="58" class="HeaderCell">Approx. Reduction</td>
               </tr>
               <tr> 
-                <td height="23" class="TableCell" width="104"><a href="user_lm_programs.jsp">Rooftop 
-                  Air </a></td>
+                <td height="23" class="TableCell" width="104"><a href="user_lm_programs.jsp">Rooftop Air </a></td>
                 <td height="23" class="TableCell" width="100"><font color="#FF0000">Inactive</font></td>
                 <td height="23" class="TableCell" width="95">25% Off Cycle</td>
                 <td height="23" class="TableCell" width="101">06/23/01 12:00</td>
@@ -445,8 +443,7 @@ function MM_popupMsg(msg) { //v1.0
                 <td height="23" class="TableCell" width="58">425.0</td>
               </tr>
               <tr> 
-                <td height="23" class="TableCell" width="104">Irrigation Site 
-                  1</td>
+                <td height="23" class="TableCell" width="104">Irrigation Site 1</td>
                 <td height="23" class="TableCell" width="100"><font color="#00CC00">Running</font></td>
                 <td height="23" class="TableCell" width="95">4 Hours</td>
                 <td height="23" class="TableCell" width="101">07/23/01 12:03</td>

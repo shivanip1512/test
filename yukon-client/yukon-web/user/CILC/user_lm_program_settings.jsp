@@ -23,8 +23,7 @@
                 <td width="253" valign="middle">&nbsp;</td>
                 <td width="58" valign="middle">&nbsp;</td>
                 <td width="57" valign="middle"> 
-                  <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
-                    Off</a>&nbsp;</span></div>
+                  <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
                 </td>
               </tr>
             </table>
@@ -52,8 +51,7 @@
 		    <td width="600" valign="top" bgcolor="#FFFFFF"> 
               <div align="center">
                 <div align="center"> 
-                  <p align="center" class="Main"><br>
-                    <b>TIME BASED - PROGRAM SETTINGS</b></p>
+                  <p align="center" class="TitleHeader"><br>TIME BASED - PROGRAM SETTINGS</p>
 				  <form method="post" action="user_lm_program_settings.jsp">
                   <table width="400" border="1" cellspacing="0" cellpadding="5" align="center">
                     <tr> 

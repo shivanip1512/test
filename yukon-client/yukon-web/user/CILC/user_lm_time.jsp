@@ -24,8 +24,7 @@
                 <td width="253" valign="middle">&nbsp;</td>
                 <td width="58" valign="middle">&nbsp;</td>
                 <td width="57" valign="middle"> 
-                  <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
-                    Off</a>&nbsp;</span></div>
+                  <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
                 </td>
               </tr>
             </table>
@@ -52,8 +51,8 @@
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
 		  <td width="609" valign="top" bgcolor="#FFFFFF"> 
               <div align="center"><br>
-                <span class="Main"> <b>TIME-BASED CONTROL</b></span> 
-                <p class="Main">Please select a schedule from the following list.</p>
+                <span class="TitleHeader">TIME-BASED CONTROL</span> 
+                <p class="MainText">Please select a schedule from the following list.</p>
                 <table width="600" border="1" cellspacing="0" bgcolor="white" cellpadding="2" align="center">
                   <tr valign="top"> 
                     <td width="104" class="HeaderCell">Schedule Name</td>
@@ -64,8 +63,7 @@
                     <td width="58" class="HeaderCell">Approx. Reduction</td>
                   </tr>
                   <tr> 
-                    <td height="23" class="TableCell" width="104"><a href="user_lm_schedule.jsp">Rooftop 
-                      Air </a></td>
+                    <td height="23" class="TableCell" width="104"><a href="user_lm_schedule.jsp">Rooftop Air </a></td>
                     <td height="23" class="TableCell" width="100"><font color="#FF0000">Inactive</font></td>
                     <td height="23" class="TableCell" width="95">25% Off Cycle</td>
                     <td height="23" class="TableCell" width="101">06/23/01 12:00</td>
@@ -81,8 +79,7 @@
                     <td height="23" class="TableCell" width="58">425.0</td>
                   </tr>
                   <tr> 
-                    <td height="23" class="TableCell" width="104">Irrigation Site 
-                      1</td>
+                    <td height="23" class="TableCell" width="104">Irrigation Site 1</td>
                     <td height="23" class="TableCell" width="100"><font color="#00CC00">Running</font></td>
                     <td height="23" class="TableCell" width="95">4 Hours</td>
                     <td height="23" class="TableCell" width="101">07/23/01 12:03</td>
@@ -100,7 +97,7 @@
                   </tr>
                 </table>
                 <p align="center">&nbsp;</p>
-                <p align="center" class="Main">&nbsp;</p>
+                <p align="center" class="MainText">&nbsp;</p>
               <p>&nbsp;</p></div>
           </td>
         <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>

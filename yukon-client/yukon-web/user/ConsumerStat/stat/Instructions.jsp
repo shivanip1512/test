@@ -24,7 +24,7 @@
                   <td width="253" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle">&nbsp;</td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
+                    <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
                       Off</a>&nbsp;</span></div>
                   </td>
               </tr>
@@ -125,10 +125,10 @@
               </table>
               <br>
 			  <input type="button" name="Back" value="Back" onclick="history.back()">
-              <p align="center" class="Main"><font face="Arial, Helvetica, sans-serif" size="1">Copyright 
+              <p align="center" class="MainText"><font face="Arial, Helvetica, sans-serif" size="1">Copyright 
                 &copy; 2003, Cannon Technologies, Inc. All rights reserved.</font> 
               </p>
-              <p align="center" class="Main">&nbsp; </p>
+              <p align="center" class="MainText">&nbsp; </p>
             </div>
           </td>
           <td width="1" bgcolor="#000000"><img src="../../../Images/Icons/VerticalRule.gif" width="1"></td>

@@ -44,11 +44,10 @@ function checkPassword(form) {
                   
                 <td width="253" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle"> 
-                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
+                    <div align="center"><span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
-                      Off</a>&nbsp;</span></div>
+                    <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
                   </td>
               </tr>
             </table>
@@ -75,7 +74,7 @@ function checkPassword(form) {
             <div align="center"> 
               <table width="100%" border="0" cellspacing="0" cellpadding="5" height="69">
                 <tr>
-                  <td valign="bottom" align="center" class="Main"><b>ADMINISTRATION - CREATE ENERGY COMPANY</b></td>
+                  <td valign="bottom" align="center" class="TitleHeader">ADMINISTRATION - CREATE ENERGY COMPANY</td>
                 </tr>
               </table>
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>

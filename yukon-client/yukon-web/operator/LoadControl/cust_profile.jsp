@@ -3,7 +3,7 @@
                 <td>
                   <br>
                   <!--<CLIP>-->
-                  <p align="center" class="Main"><%= cust.getCiCustomerBase().getCompanyName() %><br clear="ALL">
+                  <p align="center" class="MainText"><%= cust.getCiCustomerBase().getCompanyName() %><br clear="ALL">
                     <%= cust.getAddress().getLocationAddress1() %><br clear="ALL">
 <!--                    <%= cust.getAddress().getLocationAddress2() %><br clear="ALL">-->
                     <%= cust.getAddress().getCityName() %>, <%=cust.getAddress().getStateCode()%><br clear="ALL">
@@ -20,7 +20,8 @@
               <tr>
                 <td width="640">
                   <br>
-                  <p align="center" class="Main"><b>Primary Contact</b><br clear="ALL">
+                  <p align="center" class="TitleHeader">Primary Contact<br clear="ALL">
+                  <div align="center" class="MainText">
                   <%= liteContact.getContFirstName() + " " + liteContact.getContLastName() %><br clear="ALL">
                   <%
                     java.util.Vector notifications = liteContact.getLiteContactNotifications();
@@ -29,6 +30,7 @@
                   %>
                   <%=com.cannontech.common.constants.YukonListFuncs.getYukonListEntry(liteNot.getNotificationCategoryID()) + ": " + liteNot.getNotification() %><br>
                   <%}%>
+                  </div>
                   </p>
                 </td>
               </tr>
@@ -39,7 +41,8 @@
               <tr>
                 <td width="640">
                   <br>
-                  <p align="center" class="Main"><b>Additional Contacts</b><br clear="ALL">
+                  <p align="center" class="TitleHeader">Additional Contacts<br clear="ALL">
+                  <div align="center" class="MainText">
                     <%
                       for (int i = 0; i < contactids.length; i++){
                         liteContact = com.cannontech.database.cache.functions.ContactFuncs.getContact(contactids[i]);
@@ -55,6 +58,8 @@
 		    	  <br>
 		            <%}
 		          }%>
+		          </div>
+		          </p>
 		        </td>
 		      </tr>
               <%}%>

@@ -97,7 +97,7 @@
                   <td width="253" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle">&nbsp;</td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
+                    <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
                       Off</a>&nbsp;</span></div>
                   </td>
               </tr>
@@ -126,15 +126,15 @@
 		  <td width="609" valign="top" bgcolor="#FFFFFF"> 
             <table width="609" border="0" cellspacing="0" cellpadding="0">
               <tr> 
-                <td width="609"> 
+                <td width="600"> 
        <% if( foundCurtailment )
        {
        %>
-                  <div align="center" class="Main"><br><b>CURRENT NOTIFICATION</b></div>
+                  <div align="center" class="TitleHeader"><br>CURRENT NOTIFICATION</div>
        <%
        }
        %>
-                  <table width="500" border="0" cellspacing="0" cellpadding="0" align="center">
+                  <table width="590" border="0" cellspacing="0" cellpadding="0" align="center">
         
         <%
           if( foundCurtailment )
@@ -143,7 +143,7 @@
                     <tr> 
                       <td>
                         <center>
-                        <span class="Main"> <br>
+                        <span class="Subtext"> <br>
                           Per your contract with <cti:getProperty propertyid="<%=DirectCurtailmentRole.CURTAILMENT_PROVIDER%>"/>, 
                           a notification event is scheduled<br>
                           from <%= startDateTimeStr %> to <%= stopDateTimeStr %>.</span> 
@@ -157,16 +157,16 @@
                           <input type="hidden" name="CURTAILID" value="<%= curtailID %>">
                           <input type="hidden" name="ACKTIME" value="<%= System.currentTimeMillis() %>">
                           <input type="hidden" name="redirect" value="<%=request.getContextPath()%>/user/CILC/user_curtail.jsp">
-                          <span class="Main"> Initials:</span> 
+                          <span class="MainText"> Initials:</span> 
                             <input type="text" name="initials" size="8">
                             <p>
                             <input type="submit" value="Acknowledge" name="image">
-                            <p class="Main">(Click Acknowledge to indicate that you have received and understand this message)
+                            <p class="MainText">(Click Acknowledge to indicate that you have received and understand this message)
                             <p> 
                   <%
 			}
 %>
-                            <p class="MainHeader"><b>Curtailable Amount: </b> 
+                            <p class="SubtitleHeader">Curtailable Amount:
                         </form>
                         <p> 
                         </center>
@@ -178,15 +178,15 @@
 		{        
 %>
                     <tr>
-                      <td width="100%" class="MainHeader">
-                          <center><p><br><b>NO NOTIFICATION SCHEDULED AT THIS TIME</b></p></center>
+                      <td width="100%" class="TitleHeader">
+                          <center><p><br>NO NOTIFICATION SCHEDULED AT THIS TIME</p></center>
                       </td>
                     </tr>
         <%
         }
 %>
                   </table>
-                  <p align="center" class="MainHeader"><b>NOTIFICATION HISTORY</b></p>
+                  <p align="center" class="SubtitleHeader">NOTIFICATION HISTORY</p>
                   <table width="590" border="1" cellspacing="0" cellpadding="2" height="20" align="center">
                     <tr> 
                       <td width="20%" class="HeaderCell"><center>Start Date/Time</center></td>

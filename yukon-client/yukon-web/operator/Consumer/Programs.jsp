@@ -172,11 +172,10 @@ function resendNotEnrolled(form) {
                   
                 <td width="253" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle"> 
-                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
+                    <div align="center"><span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
-                      Off</a>&nbsp;</span></div>
+                    <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
                   </td>
               </tr>
             </table>
@@ -359,7 +358,7 @@ function resendNotEnrolled(form) {
                 </table>
               </form>
 <% if (request.getParameter("Wizard") == null) { %>
-              <p align="center" class="MainHeader"><b>Program History </b> 
+              <p align="center" class="SubtitleHeader">Program History
               <table width="366" border="1" cellspacing="0" align="center" cellpadding="3">
                 <tr> 
                   <td class="HeaderCell" width="100" >Date</td>

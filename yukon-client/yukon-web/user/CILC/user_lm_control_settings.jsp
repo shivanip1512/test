@@ -23,7 +23,7 @@
                 <td width="253" valign="middle">&nbsp;</td>
                 <td width="58" valign="middle">&nbsp;</td>
                 <td width="57" valign="middle"> 
-                  <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
+                  <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
                     Off</a>&nbsp;</span></div>
                 </td>
               </tr>
@@ -52,8 +52,7 @@
 		    <td width="609" valign="top" bgcolor="#FFFFFF"> 
               <div align="center">
                 <div align="center">
-                  <p class="Main"><br>
-                    <b>AUTO CONTROL - CONTROL AREA 1 SETTINGS</b><br>
+                  <p class="TitleHeader">AUTO CONTROL - CONTROL AREA 1 SETTINGS<br>
                   </p>
                 </div>
                 <table width="600" border="0" cellspacing="0" cellpadding="0" align="center">

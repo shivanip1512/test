@@ -60,7 +60,7 @@
                 <td width="253" valign="middle">&nbsp;</td>
                 <td width="58" valign="middle">&nbsp;</td>
                 <td width="57" valign="middle"> 
-                  <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
+                  <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
                     Off</a>&nbsp;</span></div>
                 </td>
               </tr>
@@ -92,18 +92,15 @@
                   <tr> 
                     <td width="600" > 
                       <center>
-                        <p class="Main"><br>
-                          <b>DIRECT CONTROL</b></p>
-                        <p class="Main">To start/stop a program or change the 
-                          start/stop time, select the program name.</p>
+                        <p class="TitleHeader"><br>DIRECT CONTROL</p>
+                        <p class="MainText">To start/stop a program or change the start/stop time, select the program name.</p>
                       </center>
                       <%
          if( pending != null )
          {
       %>
                       <center>
-                        <p class="Main"><font color="red">Request sent, please 
-                          wait...</font> </p>
+                        <p class="MainText"><font color="red">Request sent, please wait...</font> </p>
                       </center>
                       <%
          }
@@ -113,9 +110,7 @@
                         <tr> 
                           <td width="25%" class="HeaderCell"> 
                             <p> 
-                              <center>
-                                Program Name 
-                              </center>
+                              <center>Program Name</center>
                           </td>
                           <td width="25%" class="HeaderCell"> 
                             <p> 

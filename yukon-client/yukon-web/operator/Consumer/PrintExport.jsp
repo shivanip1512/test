@@ -43,11 +43,10 @@ document.location = "Update.jsp";
                   
                 <td width="253" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle"> 
-                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
+                    <div align="center"><span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
-                      Off</a>&nbsp;</span></div>
+                    <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
                   </td>
               </tr>
             </table>
@@ -76,7 +75,7 @@ document.location = "Update.jsp";
                 <table width="53%" border="1" height="189" cellspacing = "0">
                   <tr bgcolor="#CCCCCC"> 
                     <td width="50%" colspan = "2" align = "center"> 
-                      <table width="55%" border="0" class = "Main">
+                      <table width="55%" border="0" class = "MainText">
                         <tr> 
                           <td width="25%" align = "right">PRINT</td>
                           <td width="25%" > 

@@ -49,11 +49,10 @@ System.out.println("revisionNumber: " + revisionNumber);
                 <td width="235"  height = "28" valign="middle">&nbsp;</td>
                 
                   <td width="58" valign="middle"> 
-                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
+                    <div align="center"><span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
-                      Off</a>&nbsp;</span></div>
+                    <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
                   </td>
                 
               </tr>
@@ -106,11 +105,11 @@ System.out.println("revisionNumber: " + revisionNumber);
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center"> 
-              <p class="Main"><b><br>
+              <p class="TitleHeader"><br>
                 <cti:getProperty propertyid="<%=EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>"/> - HISTORY DETAIL <BR>
-                OFFER <%= offerId %> - <%= revisionNumber %> </b></p>
+                OFFER <%= offerId %> - <%= revisionNumber %></p>
             </div>
-            <p align="center" class="Main">Click on a customer name to view the 
+            <p align="center" class="MainText">Click on a customer name to view the 
               customer's offer summary.</p>
         <table width="600" border="1" cellspacing="0" cellpadding="2" align="center">
           <tr valign="top"> 
@@ -158,10 +157,8 @@ System.out.println("revisionNumber: " + revisionNumber);
 	}
 %>
         </table>
-            <p align="center" class="MainHeader"><b>TOTAL: <%= numberFormat.format(totalCommitted) %> 
-              kWh</b></p>
-             <p align="center" class="MainHeader"> <a href="oper_ee.jsp?tab=history" class="Link1"><b>Back 
-             to History Summary</b></a><br>
+            <p align="center" class="SubtitleHeader">TOTAL: <%= numberFormat.format(totalCommitted) %> kWh</p>
+             <p align="center" class="SubtitleHeader"> <a href="oper_ee.jsp?tab=history" class="Link1">Back to History Summary</a><br>
             <p align="center">&nbsp;
           </td>
         <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>

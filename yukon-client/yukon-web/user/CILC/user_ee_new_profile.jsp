@@ -45,8 +45,7 @@
                 <td width="253" valign="middle">&nbsp;</td>
                 <td width="58" valign="middle">&nbsp;</td>
                 <td width="57" valign="middle"> 
-                  <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
-                    Off</a>&nbsp;</span></div>
+                  <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
                 </td>
               </tr>
             </table>
@@ -74,25 +73,23 @@
 		  <td width="609" valign="top" bgcolor="#FFFFFF">
             <table width="609" border="0" cellspacing="0" cellpadding="0">
               <tr> 
-                <td width="600" class="Main" valign="top">
+                <td width="600" class="MainText" valign="top">
                 <form method="GET" action="<%=pageName%>" name="MForm">
                 <center>
-                  <table width="590" border="0" cellspacing="0" cellpadding="0">
+                  <table width="590" height="70" border="0" cellspacing="0" cellpadding="0">
                     <tr>
-                      <td class="Main" > 
-                        <p align="center"><b><br>
-                            ADMINISTRATION - CUSTOMER PROFILE</b><br>
-                            Enter the contact information and click Submit to add this contact to your profile.<br>
+                      <td class="TitleHeader" align="center">ADMINISTRATION - CUSTOMER PROFILE</td>
+                    </tr>
+                    <tr>
+                      <td class="MainText" align="center">Enter the contact information and click Submit to add this contact to your profile.<br>
                             A contact may have up to four distinct notification types.
                       </td>
                     </tr>
                   </table>
-                  <br>
                   <table width="590" border="0" cellspacing="0" cellpadding="0">
                     <tr>
-                      <td height="40">
-                        <hr>
-                        <span class="Main"><b>NEW CONTACT</b></span></td>
+                      <td height="40" class="TitleHeader">
+                        <hr>NEW CONTACT</td>
                     </tr>
                   </table>
                   <table width="590" border="0" cellspacing="0" cellpadding="0">
@@ -101,19 +98,19 @@
                         <table width="295" border="0" cellspacing="0" cellpadding="2">
                           <tr> 
                             <td class="TableCell" width="130" align="right">First Name:</td>
-                            <td class="TableCell" width="170" align="left"> 
+                            <td class="TableCell" width="165" align="left"> 
                               <input type="text" name="textfield">
                             </td>
                           </tr>
                           <tr>
                             <td class="TableCell" width="130" align="right">Last Name:</td>
-                            <td class="TableCell" width="170" align="left"> 
+                            <td class="TableCell" width="165" align="left"> 
                              <input type="text" name="textfield2">
                             </td>
                           </tr>
                           <tr>
                             <td class="TableCell" width="130" align="right">User Name:</td>
-                            <td class="TableCell" width="170" align="left">
+                            <td class="TableCell" width="165" align="left">
                               <input type="text" name="textfield4">
                             </td>
                           </tr>
@@ -121,7 +118,7 @@
                             <td class="TableCell" width="130">
                               <div align="right">Password:</div>
                             </td>
-                            <td class="TableCell" width="170">
+                            <td class="TableCell" width="165">
                               <input type="password" name="textfield5">
                             </td>
                           </tr>
@@ -129,14 +126,14 @@
                             <td class="TableCell" width="130">
                               <div align="right">Confirm Password:</div>
                             </td>
-                            <td class="TableCell" width="170">
+                            <td class="TableCell" width="165">
                               <input type="password" name="textfield5">
                             </td>
                           </tr>
                         </table>
                       </td>
                       <td valign="top">
-                        <table width="50%" border="0" cellspacing="0" cellpadding="2">
+                        <table width="295" border="0" cellspacing="0" cellpadding="2">
                         <%
                           for (int j = 0; j < 5; j++)
                           { %>

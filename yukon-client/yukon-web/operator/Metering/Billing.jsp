@@ -46,10 +46,10 @@ function updateDemandDate()
 							
                 <td width="253" valign="middle">&nbsp;</td>
 							<td width="58" valign="middle"> 
-								<div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
+								<div align="center"><span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
 							</td>
 							<td width="57" valign="middle"> 
-								<div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
+								<div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
 							</td>
 						</tr>
 					</table>
@@ -72,7 +72,7 @@ function updateDemandDate()
 				<td  valign="top" width="101"></td>
 				<td width="1" bgcolor="#000000"></td>
 				<td width="657" valign="top" bgcolor="#FFFFFF"> 
-					<div align="center"><br><span class="Main"><b>BILLING</b></span></div>
+					<div align="center"><br><span class="TitleHeader">BILLING</span></div>
 
 					<form name = "MForm">
 <jsp:setProperty name="billingBean" property="fileFormat" param="format"/>

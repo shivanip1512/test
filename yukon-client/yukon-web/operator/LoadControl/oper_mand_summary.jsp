@@ -23,11 +23,10 @@
                   Response </td>
                 <td width="235" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle"> 
-                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
+                    <div align="center"><span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
-                      Off</a>&nbsp;</span></div>
+                    <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
                   </td>
               </tr>
             </table>
@@ -81,12 +80,10 @@
 <table width="657" border="0" cellspacing="0" cellpadding="0">
   <tr> 
     <td width="650" valign="top"> 
-      <p align="center" class="Main"><br>
-<b>NOTIFICATION - CURRENT</b></p>
-<p align="center" class="Main">Click on a program name to view the program details.</p>
-                  <p align="center"><b class="MainHeader">Today's Notification 
-                    Summary - <%= datePart.format(today) %></b> 
-                  <center>
+      <p align="center" class="TitleHeader"><br>NOTIFICATION - CURRENT</p>
+      <p align="center" class="MainText">Click on a program name to view the program details.</p>
+      <p align="center" class="SubtitleHeader">Today's Notification Summary - <%= datePart.format(today) %>
+      <center>
         <table width="600" border="1" cellspacing="0" cellpadding="2" align="center">
           <tr> 
             <td width="25%" class="HeaderCell">Program</td>
@@ -127,8 +124,8 @@
         </table>
       </center>
       <p>&nbsp; 
-                  <p align="center"><b class="MainHeader">Tomorrow's Notification 
-                    Summary - <%= datePart.format(tomorrow) %></b> 
+                  <p align="center" class="SubtitleHeader">Tomorrow's Notification 
+                    Summary - <%= datePart.format(tomorrow) %> 
                   <table width="600" border="1" cellspacing="0" cellpadding="2" align="center">
         <tr> 
           <td width="25%" class="HeaderCell">Program</td>

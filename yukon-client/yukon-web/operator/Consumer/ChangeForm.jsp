@@ -41,11 +41,10 @@ function MM_popupMsg(msg) { //v1.0
                   
                 <td width="253" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle"> 
-                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
+                    <div align="center"><span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
-                      Off</a>&nbsp;</span></div>
+                    <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
                   </td>
               </tr>
             </table>
@@ -74,8 +73,7 @@ function MM_popupMsg(msg) { //v1.0
       		  <% String header = "CHANGE PROGRAM"; %>
               <%@ include file="InfoSearchBar.jsp" %> 
           
-            <p><span class="Main">Please complete the following form to change 
-              the program:</span> </p>
+            <p><span class="MainText">Please complete the following form to change the program:</span> </p>
             <hr width = "90%">
           
                 <table width="500" border="0" cellspacing="0" cellpadding="3" valign="top">

@@ -261,11 +261,10 @@ function prepareSubmit() {
                   Account Information&nbsp;&nbsp;</td>
                   <td width="253" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle">
-				  	<div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
+				  	<div align="center"><span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
 				  </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
-                      Off</a>&nbsp;</span></div>
+                    <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
                   </td>
               </tr>
             </table>
@@ -462,10 +461,10 @@ function prepareSubmit() {
                 </tr>
               </table>
             </form>
-            <p align="center" class="Main"><font face="Arial, Helvetica, sans-serif" size="1">Copyright 
+            <p align="center" class="MainText"><font face="Arial, Helvetica, sans-serif" size="1">Copyright 
               &copy; 2003, Cannon Technologies, Inc. All rights reserved.</font> 
             </p>
-            <p align="center" class="Main"></p>
+            <p align="center" class="MainText"></p>
           </td>
         <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
     </tr>

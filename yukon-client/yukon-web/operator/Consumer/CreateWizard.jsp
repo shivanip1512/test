@@ -41,11 +41,10 @@ document.location = "Update.jsp";
                   
                 <td width="253" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle"> 
-                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="blueLink">Home</a></span></div>
+                    <div align="center"><span class="MainText"><a href="../Operations.jsp" class="blueLink">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="blueLink">Log 
-                      Off</a>&nbsp;</span></div>
+                    <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="blueLink">Log Off</a>&nbsp;</span></div>
                   </td>
               </tr>
             </table>
@@ -75,10 +74,8 @@ document.location = "Update.jsp";
 			    
                 <table width="45%" border="0" height="187">
                   <tr> 
-                    <td colspan = "2"> <span class="Main"><b>Acct 
-                      #<%= account.getAccountNumber() %></b></span><br>
-                      <span class="NavText"><%= primContact.getFirstName() %> 
-                      <%= primContact.getLastName() %><br>
+                    <td colspan = "2"> <span class="TitleHeader">Acct #<%= account.getAccountNumber() %></span><br>
+                      <span class="NavText"><%= primContact.getFirstName() %>&nbsp;<%= primContact.getLastName() %><br>
                       <!--<%= account.getCompany() %><br> -->
                       <%= primContact.getHomePhone() %></span><br>
                       <span class="NavText"><%= primContact.getWorkPhone() %></span> 

@@ -37,7 +37,7 @@ self.name = "mainWin";
     </td>
   </tr>
   <tr> 
-    <td valign = "top" class = "Main"> <br> 
+    <td valign = "top" class = "MainText"> <br> 
 <%
 	String errorMsg = "";
 	if(request.getParameter("failed") != null) 
@@ -45,26 +45,22 @@ self.name = "mainWin";
 %>
 	  <div align="center"><% if (errorMsg != null) out.write("<span class=\"ErrorMsg\"> " + errorMsg + "</span><br>"); %></div>
 	
-      <table width="367"  height="186" border="0" align="center" cellpadding="0" cellspacing="0" class = "Main">
+      <table width="367"  height="186" border="0" align="center" cellpadding="0" cellspacing="0">
         <tr> 
-          <td rowspan = "3" width="555" bgcolor="#FFFFFF" height="102" valign="top" ><br> 
-            <div align="center"><b>SIGN IN</b><br>
-              Please enter your username and password below.</div>
+          <td rowspan = "3" width="555" height="102" valign="top" ><br> 
+            <div align="center" class="TitleHeader">SIGN IN<br></div>
+            <div align="center" class="MainText">Please enter your username and password below.</div>
             <form name="form1" method="post" action="/servlet/LoginController">
               <input type="hidden" name="ACTION" value="LOGIN">
               <table width="250" border="0" cellspacing="0" cellpadding="3" align="center">
                 <tr> 
-                  <td width="83" class = "Main"> 
-                    <div align="right"> User Name</div>
-                  </td>
-                  <td width="117" valign="bottom"> 
+                  <td width="83" class = "MainText" align="right">User Name:</td>
+                  <td width="117" valign="bottom" class="MainText"> 
                     <input type="text" name="USERNAME">
                   </td>
                 </tr>
                 <tr> 
-                  <td width="83" class = "Main"> 
-                    <div align="right">Password:</div>
-                  </td>
+                  <td width="83" class = "MainText" align="right">Password:</td>
                   <td width="117"> 
                     <input type="password" name="PASSWORD">
                   </td>
@@ -78,7 +74,7 @@ self.name = "mainWin";
                   </td>
                 </tr>
               </table>
-              <div align="center"><br>
+              <div align="center" class="MainText"><br>
                 If you need help or have forgotten your password, click <a href="mailto:<%= email %>">here</a>. 
                 <br>
                 <br>

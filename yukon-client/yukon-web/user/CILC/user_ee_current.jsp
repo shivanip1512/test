@@ -24,7 +24,7 @@
                 <td width="253" valign="middle">&nbsp;</td>
                 <td width="58" valign="middle">&nbsp;</td>
                 <td width="57" valign="middle"> 
-                  <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
+                  <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
                     Off</a>&nbsp;</span></div>
                 </td>
               </tr>
@@ -51,7 +51,7 @@
           </td>
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
 		  <td width="609" valign="top" bgcolor="#FFFFFF"> 
-              <div align="center"><div align="center"><center>
+              <div align="center"><center>
                     <p><br>
  
                     <%
@@ -65,15 +65,13 @@
 		if (numNewOffers > 0)
 		{
 %>
-                    <p class="Main"><b>YOU HAVE A NEW OFFER</b>
+                    <p class="TitleHeader">YOU HAVE A NEW OFFER</p>
                     <table width="590" border="1" cellspacing="0" cellpadding="2">
                       <tr> 
                         <td width="20%" height="26" class="HeaderCell">Offer ID</td>
                         <td width="20%" height="26" class="HeaderCell">Offer Date</td>
-                        <td width="30%" height="26" class="HeaderCell">Notify 
-                          Date/Time</td>
-                        <td width="30%" height="26" class="HeaderCell">Expire 
-                          Date/Time</td>
+                        <td width="30%" height="26" class="HeaderCell">Notify Date/Time</td>
+                        <td width="30%" height="26" class="HeaderCell">Expire Date/Time</td>
                       </tr>
                       <%
 			for (int i = 0; i < offerList.size(); i++)
@@ -101,15 +99,13 @@
 		if (numAcceptedOffers > 0)
 		{
 %>
-                    <p class="Main"><b>RECENTLY RESPONDED OFFERS</b>
+                    <p class="TitleHeader">RECENTLY RESPONDED OFFERS</p>
                     <table width="590" border="1" cellspacing="0" cellpadding="2">
                       <tr> 
-                        <td width="15%" height="26" class="HeaderCell"> Offer 
-                          ID</td>
+                        <td width="15%" height="26" class="HeaderCell">Offer ID</td>
                         <td width="20%" height="26" class="HeaderCell">Offer Date</td>
                         <td width="20%" height="26" class="HeaderCell">Accept</td>
-                        <td width="30%" height="26" class="HeaderCell">Accept 
-                          Date/Time</td> 
+                        <td width="30%" height="26" class="HeaderCell">Accept Date/Time</td> 
                         <td width="15%" height="26" class="HeaderCell">User</td>
                       </tr>
                       <%		
@@ -144,8 +140,7 @@
 		if (numNewOffers == 0 && numAcceptedOffers == 0)
 		{
 %>
-                    <p> 
-                    <p class="Main"><b>NO OFFERS AT THIS TIME</b>
+                    <p class="TitleHeader">NO OFFERS AT THIS TIME</p>
                     <%
 		}
 
@@ -183,14 +178,13 @@
 		if (!foundReplies)
 			replies = new com.cannontech.web.history.HEnergyExchangeCustomerReply[0];
 %>
-                    <p class="Main"><b>CURTAILMENT HISTORY</b>
+                    <p class="TitleHeader">CURTAILMENT HISTORY</p>
                     <table width="590" border="1" cellspacing="0" cellpadding="2">
                       <tr> 
                         <td width="15%" height="26" class="HeaderCell">Offer ID</td>
                         <td width="20%" height="26" class="HeaderCell">Offer Date</td>
                         <td width="20%" height="26" class="HeaderCell">Accept</td>
-                        <td width="30%" height="26" class="HeaderCell">Accept 
-                          Date/Time</td>
+                        <td width="30%" height="26" class="HeaderCell">Accept Date/Time</td>
                         <td width="15%" height="26" class="HeaderCell">User</td>
                       </tr>
                       <%
@@ -237,7 +231,6 @@
 %>
                     <br>
                   </center>
-                </div>
                 </div>
           </td>
         <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>

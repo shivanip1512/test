@@ -22,7 +22,7 @@
 <head>
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link rel="stylesheet" href="../WebConfig/CannonStyle.css" type="text/css">
+<link rel="stylesheet" href="../../WebConfig/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
 <script language="JavaScript">
 function confirmDelete() {
@@ -43,8 +43,7 @@ function confirmDelete() {
         </tr>
         <tr>
          	<td>
-               <div align="right"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
-                Off</a>&nbsp;</span></div>
+               <div align="right"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
             </td>
         </tr>
       </table>
@@ -74,14 +73,13 @@ function confirmDelete() {
         <tr> 
           <form name = "custSearchForm" method="POST" action="/servlet/SOAPClient">
             <input type="hidden" name="action" value="SearchCustAccount">
-            <td width="97" class="Main">
+            <td width="97" class="MainText">
               <div align = "center" style = "border:solid 1px #666999;">
-                <a href = 'Consumer/New.jsp<cti:checkProperty propertyid="<%= ConsumerInfoRole.NEW_ACCOUNT_WIZARD %>">?Wizard=true</cti:checkProperty>' class = "Link1" style = "text-decoration:none;">New 
-                Account</a>
+                <a href = 'Consumer/New.jsp<cti:checkProperty propertyid="<%= ConsumerInfoRole.NEW_ACCOUNT_WIZARD %>">?Wizard=true</cti:checkProperty>' class = "Link1" style = "text-decoration:none;">New Account</a>
               </div>
             </td>
-            <td  class = "Main" width="109" >&nbsp;</td>
-            <td  class = "Main" width="250" align = "right"> 
+            <td  class = "MainText" width="109" >&nbsp;</td>
+            <td  class = "MainText" width="250" align = "right"> 
               <select name="SearchBy">
 <%
 	Integer lastOption = (Integer) user.getAttribute(ServletUtils.ATT_LAST_SEARCH_OPTION);
@@ -98,7 +96,7 @@ function confirmDelete() {
               &nbsp; 
               <input type="text" name="SearchValue">
               &nbsp; </td>
-            <td class = "Main" width="45" valign = "top"><img class="Clickable" src="GoButton.gif" width="23" height="20" onClick = "Javascript:document.custSearchForm.submit();"> 
+            <td class = "MainText" width="45" valign = "top"><img class="Clickable" src="GoButton.gif" width="23" height="20" onClick = "Javascript:document.custSearchForm.submit();"> 
             </td>
           </form>
           <form method="get" action="Consumer/New.jsp"> 
@@ -127,17 +125,15 @@ function confirmDelete() {
         </tr>
         <tr> 
           <form method="post" action="Metering/Billing.jsp">
-            <td width="110" class = "Main"> 
-              <div align = "center" style = "border:solid 1px #666999;"><a href = "Metering/Billing.jsp" class = "Link1" style = "text-decoration:none;">Billing 
-                </a></div>
+            <td width="110" class = "MainText"> 
+              <div align = "center" style = "border:solid 1px #666999;"><a href = "Metering/Billing.jsp" class = "Link1" style = "text-decoration:none;">Billing</a></div>
             </td>
-            <td width="110" class = "Main"> 
-              <div align = "center" style = "border:solid 1px #666999;"><a href = "Metering/Metering.jsp" class = "Link1" style = "text-decoration:none;">All 
-                Trends </a></div>
+            <td width="110" class = "MainText"> 
+              <div align = "center" style = "border:solid 1px #666999;"><a href = "Metering/Metering.jsp" class = "Link1" style = "text-decoration:none;">All Trends</a></div>
             </td>
           </form>
           <form method="post" action="Metering/Metering.jsp">
-            <td class = "Main"> </td>
+            <td class = "MainText"> </td>
           </form>
           <form method="get" action="Metering/Metering.jsp">
           </form>
@@ -169,28 +165,28 @@ function confirmDelete() {
           </tr>
         <tr> 
           <form method="post" action="LoadControl/oper_direct.jsp">
-            <td width="110" class = "Main">
+            <td width="110" class = "MainText">
 <cti:checkRole roleid="<%= DirectLoadcontrolRole.ROLEID %>"> 
               <div align = "center" style = "border:solid 1px #666999;"> <a href = "LoadControl/oper_direct.jsp" class = "Link1" style = "text-decoration:none;">Direct</a></div>
 </cti:checkRole>
             </td>
           </form>
           <form method="post" action="LoadControl/oper_mand.jsp">
-            <td width="110" class = "Main"> 
+            <td width="110" class = "MainText"> 
 <cti:checkRole roleid="<%= DirectCurtailmentRole.ROLEID %>"> 
               <div align = "center" style = "border:solid 1px #666999;"> <a href = "LoadControl/oper_mand.jsp" class = "Link1" style = "text-decoration:none;"><cti:getProperty propertyid="<%= DirectCurtailmentRole.CURTAILMENT_LABEL%>"/></a></div>
 </cti:checkRole>
 			</td>
           </form>
           <form method="post" action="LoadControl/oper_ee.jsp">
-            <td width = "110" class = "Main"> 
+            <td width = "110" class = "MainText"> 
 <cti:checkRole roleid="<%= EnergyBuybackRole.ROLEID %>"> 
               <div align = "center" style = "border:solid 1px #666999;"> <a href = "LoadControl/oper_ee.jsp" class = "Link1" style = "text-decoration:none;"><cti:getProperty propertyid="<%= EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>"/></a></div>
 </cti:checkRole>
 			</td>
 		  </form>
           <form method="post" action="Consumer/Odds.jsp">
-            <td width = "110" class = "Main">
+            <td width = "110" class = "MainText">
 <cti:checkRole roleid="<%= OddsForControlRole.ROLEID %>">
               <div align = "center" style = "border:solid 1px #666999;"> <a href = "Consumer/Odds.jsp" class = "Link1" style = "text-decoration:none;">Odds 
                 for Control</a></div>
@@ -199,9 +195,9 @@ function confirmDelete() {
 		  </form>
           </tr>
         <tr> 
-          <td width="110" class = "Main">&nbsp;</td>
-          <td width="110" class = "Main">&nbsp;</td>
-          <td width = "110" class = "Main">&nbsp;</td>
+          <td width="110" class = "MainText">&nbsp;</td>
+          <td width="110" class = "MainText">&nbsp;</td>
+          <td width = "110" class = "MainText">&nbsp;</td>
           <td>&nbsp;</td>
         </tr>
       </table>
@@ -228,15 +224,15 @@ function confirmDelete() {
           <td height="30" valign="bottom" width="45">&nbsp;</td>
         </tr>
         <tr> 
-          <td width="97" class="Main"> <cti:checkProperty propertyid="<%= InventoryRole.INVENTORY_SHOW_ALL %>"> 
+          <td width="97" class="MainText"> <cti:checkProperty propertyid="<%= InventoryRole.INVENTORY_SHOW_ALL %>"> 
             <div align = "center" style = "border:solid 1px #666999;"><a href = "Hardware/Inventory.jsp" class = "Link1" style = "text-decoration:none;">Inventory</a></div>
             </cti:checkProperty></td>
-          <td width="109" class="Main">&nbsp;</td>
+          <td width="109" class="MainText">&nbsp;</td>
           <form name = "serialSearchForm" method="post" action="Hardware/InventoryDetail.jsp">
-            <td width="250" class="Main"> 
+            <td width="250" class="MainText"> 
               <input type="text" name="textfield22">
               &nbsp; </td>
-            <td valign = "top" class="Main" width="45"> <img src="GoButton.gif" width="23" height="20" onclick = "Javascript:document.serialSearchForm.submit();" > 
+            <td valign = "top" class="MainText" width="45"> <img src="GoButton.gif" width="23" height="20" onclick = "Javascript:document.serialSearchForm.submit();" > 
             </td>
           </form>
         </tr>
@@ -263,13 +259,10 @@ function confirmDelete() {
         </tr>
         <tr> 
           <form method="post" action="WorkOrder/SOList.jsp">
-            <td width="110" class = "Main"> 
-              <div align = "center" style = "border:solid 1px #666999;"><a href = "WorkOrder/SOList.jsp" class = "Link1" style = "text-decoration:none;">Service 
-                Order List </a></div>
+            <td width="110" class = "MainText"> 
+              <div align = "center" style = "border:solid 1px #666999;"><a href = "WorkOrder/SOList.jsp" class = "Link1" style = "text-decoration:none;">Service Order List</a></div>
             </td>
-            <td width="110" class = "Main" > <div align = "center" style = "border:solid 1px #666999;"><a href = "WorkOrder/InstallList.jsp" class = "Link1" style = "text-decoration:none;">New Installs 
-                List </a></div>
-            
+            <td width="110" class = "MainText" > <div align = "center" style = "border:solid 1px #666999;"><a href = "WorkOrder/InstallList.jsp" class = "Link1" style = "text-decoration:none;">New Installs List</a></div>
             </td>
           </form>
           <form method="post" action="WorkOrder/InstallList.jsp">
@@ -300,23 +293,23 @@ function confirmDelete() {
         </tr>
         <tr> 
           <form method="post" action="Admin/Privileges.jsp">
-            <td align = "center" class = "Main" width = "110"> 
+            <td align = "center" class = "MainText" width = "110"> 
               <div align = "center" style = "border:solid 1px #666999;"><a href = "Admin/Privileges.jsp" class = "Link1" style = "text-decoration:none;">Privileges 
                 </a></div>
             </td>
           </form>
-          <td align = "center" class = "Main" width="110"> <cti:checkProperty propertyid="<%= AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY %>"> 
+          <td align = "center" class = "MainText" width="110"> <cti:checkProperty propertyid="<%= AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY %>"> 
             <div align = "center" style = "border:solid 1px #666999;"><a href = "Consumer/AdminTest.jsp" class = "Link1" style = "text-decoration:none;">Config 
               Energy Company</a></div>
             </cti:checkProperty> </td>
 		  <form name="DeleteForm" method="post" action="<%= request.getContextPath() %>/servlet/StarsAdmin">
 		    <input type="hidden" name="action" value="DeleteEnergyCompany">
-            <td align = "center" class="Main" width="110"> <cti:checkProperty propertyid="<%= AdministratorRole.ADMIN_DELETE_ENERGY_COMPANY %>"> 
+            <td align = "center" class="MainText" width="110"> <cti:checkProperty propertyid="<%= AdministratorRole.ADMIN_DELETE_ENERGY_COMPANY %>"> 
               <div align = "center" style = "border:solid 1px #666999;"><span class="Clickable" style="text-decoration:none;" onclick="confirmDelete()">Delete 
                 Energy Company</span></div>
               </cti:checkProperty> </td>
 		  </form>
-          <td align = "center" class = "Main" width="110"> <cti:checkProperty propertyid="<%= AdministratorRole.ADMIN_CREATE_ENERGY_COMPANY %>"> 
+          <td align = "center" class = "MainText" width="110"> <cti:checkProperty propertyid="<%= AdministratorRole.ADMIN_CREATE_ENERGY_COMPANY %>"> 
             <div align = "center" style = "border:solid 1px #666999;"><a href = "Consumer/Admin_NewEnergyCompany.jsp" class = "Link1" style = "text-decoration:none;">New 
               Energy Company</a></div>
             </cti:checkProperty> </td>

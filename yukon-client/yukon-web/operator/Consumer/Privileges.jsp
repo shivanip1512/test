@@ -25,11 +25,10 @@
                     Account Information&nbsp;&nbsp;</td>
                   <td width="253" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle"> 
-                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
+                    <div align="center"><span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
-                      Off</a>&nbsp;</span></div>
+                    <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
                   </td>
               </tr>
             </table>
@@ -57,7 +56,7 @@
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center"><% String header = "ADMINISTRATION - CUSTOMER PRIVILEGES"; %><%@ include file="InfoSearchBar.jsp" %> 
             
-              <p align="center" class="MainHeader">Select which of the following functionality this 
+              <p align="center" class="Subtext">Select which of the following functionality this 
                 customer will have access to:</p>
               <table width="500" border="0" cellspacing="0" cellpadding="3" align="center">
                 <tr> 

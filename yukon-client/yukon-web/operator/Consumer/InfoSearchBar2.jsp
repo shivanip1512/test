@@ -10,8 +10,8 @@
   <table width="100%" border="0" cellpadding = "5" height="69">
     <tr> 
       <td width="33%" valign = "top" align = "left">&nbsp;</td>
-      <td valign = "bottom" align = "center" width="33%" rowspan = "3" class = "Main"><b><%=header%></b></td>
-      <td align = "right" width="33%"><span class="Main"><b> 
+      <td valign = "bottom" align = "center" width="33%" rowspan = "3" class = "TitleHeader"><%=header%></td>
+      <td align = "right" width="33%"><span class="TitleHeader"> 
         <select name="SearchBy">
 <%
 	Integer lastOption = (Integer) user.getAttribute(ServletUtils.ATT_LAST_SEARCH_OPTION);
@@ -27,7 +27,7 @@
         </select>
         <input type="text" name="SearchValue" size="14">
         <input type="submit" name="Submit2" value="Search">
-        </b></span></td>
+        </span></td>
     </tr>
   </table>
 </form>

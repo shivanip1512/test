@@ -163,11 +163,10 @@ dropDownRouteIDArray[<%=ii%>] = <%=nameSerial[i][3]%>;
                 <td width="235" valign="middle">&nbsp;</td>
                 
                   <td width="58" valign="middle"> 
-                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
+                    <div align="center"><span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
-                      Off</a>&nbsp;</span></div>
+                    <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
                   </td>
               </tr>
             </table>
@@ -210,9 +209,8 @@ dropDownRouteIDArray[<%=ii%>] = <%=nameSerial[i][3]%>;
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <p><br>
             <center>
-                <p align="center" class="Main"><b>INDIVIDUAL SWITCH COMMANDS</b></p>
-                <span align="center" class="Main">Enter or select a switch serial 
-                  number:</span>
+                <p align="center" class="TitleHeader">INDIVIDUAL SWITCH COMMANDS</p>
+                <span align="center" class="MainText">Enter or select a switch serial number:</span>
                 <table width="345" border="1" cellspacing = "0" cellpadding = "3" height="66" >
 <%  if( showSerialNumberTextField ) {       %>
                   <tr> 
@@ -251,11 +249,9 @@ dropDownRouteIDArray[<%=ii%>] = <%=nameSerial[i][3]%>;
   </tr>
 </table><br>
 
-              <div align="center"> <span class="Main">Then, select one of the 
-                following functions:</span> 
+              <div align="center"> <span class="MainText">Then, select one of the following functions:</span> 
                 <div align="center"> 
-                <table width="345" border="0" cellspacing="0"
-        cellpadding="0">
+                <table width="345" border="0" cellspacing="0" cellpadding="0">
                   <tr>
 				  
                     <td width="100%"> 

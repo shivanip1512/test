@@ -51,11 +51,10 @@ function checkOrderNo(form) {
                   
                 <td width="253" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle"> 
-                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
+                    <div align="center"><span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
-                      Off</a>&nbsp;</span></div>
+                    <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
                   </td>
               </tr>
             </table>
@@ -86,8 +85,7 @@ function checkOrderNo(form) {
               <% String header = "WORK ORDERS - SERVICE HISTORY"; %>
               <%@ include file="InfoSearchBar.jsp" %>
 			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
-              <span class="Main">Click on an Order # to view the complete order 
-              history.</span>
+              <span class="MainText">Click on an Order # to view the complete order history.</span>
               </div>
               
 			<form method="post" action="<%= request.getContextPath() %>/servlet/SOAPClient">

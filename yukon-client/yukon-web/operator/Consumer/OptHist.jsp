@@ -42,11 +42,10 @@ function confirmSubmit(form) { //v1.0
                   
                 <td width="253" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle"> 
-                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
+                    <div align="center"><span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
-                      Off</a>&nbsp;</span></div>
+                    <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
                   </td>
               </tr>
             </table>
@@ -108,7 +107,7 @@ function confirmSubmit(form) { //v1.0
 	}
 %>
                 </table>
-              <p align="center" class="MainHeader"><br>
+              <p align="center" class="Subtext"><br>
               <table width="150" border="0" cellspacing="0" cellpadding="3" align="center">
                 <tr> 
                   <td align="center">

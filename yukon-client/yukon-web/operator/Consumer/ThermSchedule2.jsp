@@ -258,11 +258,10 @@ MM_reloadPage(true);
                   Account Information&nbsp;&nbsp;</td>
                   <td width="253" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle">
-				  	<div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
+				  	<div align="center"><span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
 				  </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
-                      Off</a>&nbsp;</span></div>
+                    <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
                   </td>
               </tr>
             </table>
@@ -502,20 +501,20 @@ MM_reloadPage(true);
                       </table>
                       <table width="100%" border="0" height="27">
                         <tr> 
-                          <td width="10%" class="Main">&nbsp;</td>
-                          <td class = "Main" align = "left" width="15%">
+                          <td width="10%" class="MainText">&nbsp;</td>
+                          <td class = "MainText" align = "left" width="15%">
 						    <span class="Clickable" onclick="toggleThermostat(1);setChanged();"><b>Wake (W)</b></span>
 						  </td>
-                          <td width="10%" class="Main">&nbsp;</td>
-                          <td class = "Main" align = "left" width="15%">
+                          <td width="10%" class="MainText">&nbsp;</td>
+                          <td class = "MainText" align = "left" width="15%">
 						    <span class="Clickable" onclick="toggleThermostat(2);setChanged();"><b>Leave (L)</b></span>
 						  </td>
-                          <td width="10%" class="Main">&nbsp;</td>
-                          <td class = "Main" align = "left" width="15%">
+                          <td width="10%" class="MainText">&nbsp;</td>
+                          <td class = "MainText" align = "left" width="15%">
 						    <span class="Clickable" onclick="toggleThermostat(3);setChanged();"><b>Return (R)</b></span>
 						  </td>
-                          <td width="10%" class="Main">&nbsp;</td>
-                          <td class = "Main" align = "left" width="15%">
+                          <td width="10%" class="MainText">&nbsp;</td>
+                          <td class = "MainText" align = "left" width="15%">
 						    <span class="Clickable" onclick="toggleThermostat(4);setChanged();"><b>Sleep (S)</b></span>
 						  </td>
                         </tr>
@@ -600,10 +599,10 @@ MM_reloadPage(true);
                 </tr>
               </table>
               </form>
-              <p align="center" class="Main"><font face="Arial, Helvetica, sans-serif" size="1">Copyright 
+              <p align="center" class="MainText"><font face="Arial, Helvetica, sans-serif" size="1">Copyright 
                 &copy; 2003, Cannon Technologies, Inc. All rights reserved.</font> 
               </p>
-              <p align="center" class="Main">&nbsp; </p>
+              <p align="center" class="MainText">&nbsp; </p>
             </div>
 			
           </td>

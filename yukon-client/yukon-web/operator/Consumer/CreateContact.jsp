@@ -36,11 +36,10 @@
                   
                 <td width="253" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle"> 
-                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="blueLink">Home</a></span></div>
+                    <div align="center"><span class="MainText"><a href="../Operations.jsp" class="blueLink">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="blueLink">Log 
-                      Off</a>&nbsp;</span></div>
+                    <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="blueLink">Log Off</a>&nbsp;</span></div>
                   </td>
               </tr>
             </table>
@@ -68,8 +67,7 @@
 			  <form>
                 <table width="610" border="0" cellspacing="0" cellpadding="10" align="center">
                   <tr> 
-                    <td width="300" valign="top" bgcolor="#FFFFFF"><span class="MainHeader"><b>CONTACT 
-                      (Primary)</b></span> 
+                    <td width="300" valign="top" bgcolor="#FFFFFF"><span class="SubtitleHeader">CONTACT (Primary)</span> 
                       <hr>
                       <table width="300" border="0" cellspacing="0" cellpadding="1" align="center" height="135">
                         <tr> 
@@ -108,7 +106,7 @@
                       <table width="300" border="0" cellspacing="0" cellpadding="0" align="center" height="177">
                         <tr> 
                           <td><br>
-                            <span class="MainHeader"><b>CONTACT 2</b></span> 
+                            <span class="SubtitleHeader">CONTACT 2</span> 
                             <hr>
                             <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
                               <tr> 
@@ -148,8 +146,7 @@
                         </tr>
                       </table>
                     </td>
-                    <td width="300" valign="top" bgcolor="#FFFFFF"> <span class="MainHeader"><b>CONTACT 
-                      3&nbsp;</b></span> 
+                    <td width="300" valign="top" bgcolor="#FFFFFF"> <span class="SubtitleHeader">CONTACT 3</span> 
                       <hr>
                       <table width="300" border="0" cellspacing="0" cellpadding="1" align="center" height="135">
                         <tr> 
@@ -188,7 +185,7 @@
                       <table width="300" border="0" cellspacing="0" cellpadding="0" align="center" height="177">
                         <tr> 
                           <td><br>
-                            <span class="MainHeader"><b>CONTACT 4</b></span> 
+                            <span class="SubtitleHeader">CONTACT 4</span> 
                             <hr>
                             <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
                               <tr> 

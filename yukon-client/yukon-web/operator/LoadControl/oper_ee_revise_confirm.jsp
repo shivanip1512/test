@@ -32,11 +32,10 @@
                <td width="310" height = "28" class="PageHeader">&nbsp;&nbsp;&nbsp;<cti:getProperty propertyid="<%=EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>"/></td>
                 <td width="235" valign="middle">&nbsp;</td>
 				<td width="58" valign="middle"> 
-                  <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
+                  <div align="center"><span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                 </td>
                 <td width="57" valign="middle"> 
-                  <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
-                    Off</a>&nbsp;</span></div>
+                  <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
                 </td>
               </tr>
             </table>
@@ -90,12 +89,10 @@
 <table width="657" border="0" cellspacing="0" cellpadding="0" align="left">
     <tr> 
                 <td width="650" valign="top"> 
-                  <p align="center" class="Main"><b><br>
+                  <p align="center" class="TitleHeader"><br>
                     <cti:getProperty propertyid="<%=EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>"/> - REVISE OFFER 
-                    <%= offerIdStr %> - <%= revNumStr %> <br>
-                    </b></p>
-                    
-                  <p align="center" class="Main">The total target amount is <%= totAmountStr %> 
+                    <%= offerIdStr %> - <%= revNumStr %> <br></p>
+                  <p align="center" class="MainText">The total target amount is <%= totAmountStr %> 
                     kW. Please confirm the offer information below.</p>
                   <form action="oper_ee.jsp?tab=reviseconfirm" method="post">
           <input type=hidden name="confirmed" value="true">
@@ -117,32 +114,20 @@
 %>
                   <table width="600" border="0" cellspacing="0" cellpadding="5" align="center">
           <tr> 
-            <td width="100" valign="TOP" class="MainHeader"> 
-                        <p align=RIGHT><b>Program: </b>
-                      </td>
-            <td width="100" valign="TOP" class="MainHeader"><%= programStr %></td>
-            <td width="100" valign="TOP" class="MainHeader"> 
-                        <p align=RIGHT><b>Notify Date: </b>
-                      </td>
-            <td width="80" valign="TOP" class="MainHeader"><%= notifyDateStr %></td>
-            <td width="100" valign="TOP" class="MainHeader"> 
-                        <p align=RIGHT><b>Notify Time: </b> 
-                      </td>
-            <td width="120" valign="TOP" class="MainHeader"><%= notifyTimeStr %></td>
+            <td width="100" valign="TOP" class="SubtitleHeader"><p align=RIGHT>Program:</td>
+            <td width="100" valign="TOP" class="Subtext"><%= programStr %></td>
+            <td width="100" valign="TOP" class="SubtitleHeader"><p align=RIGHT>Notify Date:</td>
+            <td width="80" valign="TOP" class="Subtext"><%= notifyDateStr %></td>
+            <td width="100" valign="TOP" class="SubtitleHeader"><p align=RIGHT>Notify Time:</td>
+            <td width="120" valign="TOP" class="Subtext"><%= notifyTimeStr %></td>
           </tr>
           <tr> 
-            <td width="100" valign="TOP" class="MainHeader"> 
-                        <p align=RIGHT><b>Control Date: </b>
-                      </td>
-            <td width="100" valign="TOP" class="MainHeader"><%= dateStr %></td>
-            <td width="100" valign="TOP" class="MainHeader"> 
-                        <p align=RIGHT><b>Expire Date: </b>
-                      </td>
-            <td width="80" valign="TOP" class="MainHeader"><%= expireDateStr %></td>
-            <td width="100" valign="TOP" class="MainHeader"> 
-                        <p align=RIGHT><b>Expire Time: </b>
-                      </td>
-            <td width="80" valign="TOP" class="MainHeader"><%= expireTimeStr %></td>
+            <td width="100" valign="TOP" class="SubtitleHeader"><p align=RIGHT>Control Date:</td>
+            <td width="100" valign="TOP" class="Subtext"><%= dateStr %></td>
+            <td width="100" valign="TOP" class="SubtitleHeader"><p align=RIGHT>Expire Date:</td>
+            <td width="80" valign="TOP" class="Subtext"><%= expireDateStr %></td>
+            <td width="100" valign="TOP" class="SubtitleHeader"><p align=RIGHT>Expire Time:</td>
+            <td width="80" valign="TOP" class="Subtext"><%= expireTimeStr %></td>
           </tr>
         </table>
         <table width="600" border="0" cellspacing="0" cellpadding="5" align="center">

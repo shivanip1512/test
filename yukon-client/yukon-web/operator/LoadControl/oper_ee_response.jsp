@@ -121,11 +121,10 @@
                 <td width="235" height = "28" valign="middle">&nbsp;</td>
                 
                   <td width="58" valign="middle"> 
-                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
+                    <div align="center"><span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
-                      Off</a>&nbsp;</span></div>
+                    <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
                   </td>
               </tr>
             </table>
@@ -177,30 +176,21 @@
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF">
             <div align="center"> 
-              <p class="Main"><br>
-                <b> <cti:getProperty propertyid="<%=EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>"/> - CUSTOMER SUMMARY<br>
-                <%= customer.getCompanyName() %></b><br>
+              <p class="TitleHeader"><br>
+                <cti:getProperty propertyid="<%=EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>"/> - CUSTOMER SUMMARY<br>
+                <%= customer.getCompanyName() %><br>
               </p>
             </div> 
             <table width="600" border="0" cellspacing="0" cellpadding="5" align="center">
           <tr> 
-            <td width="75" class="MainHeader"> 
-                  <p align=RIGHT>&nbsp;<b>Offer ID: </b>
-                </td> 
-            <td width="35" class="MainHeader"><%= offerID + "-" + revisionNumber %></td>
-            <td width="75" class="MainHeader"> 
-                  <p align=RIGHT><b>Control Date: </b>
-                </td>
-            <td width="75" class="MainHeader"><%= responseDateFormat.format( offer.getOfferDate() ) %>
-            </td>
-            <td width="75" class="MainHeader"> 
-                  <p align=RIGHT><b>Expires: </b>
-                </td>
-            <td width="115" class="MainHeader"><%= eeTimeFormat.format( revision.getOfferExpirationDateTime() ) + " " + tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) + "  " + eeDateFormat.format( revision.getOfferExpirationDateTime() ) %>
-            <td width="75" class="MainHeader"> 
-                  <p align=RIGHT><b>User: </b>
-                </td>
-            <td width="75" class="MainHeader">
+            <td width="75" class="SubtitleHeader"><p align=RIGHT>&nbsp;Offer ID:</td> 
+            <td width="35" class="Subtext"><%= offerID + "-" + revisionNumber %></td>
+            <td width="75" class="SubtitleHeader"><p align=RIGHT>Control Date:</td>
+            <td width="75" class="Subtext"><%= responseDateFormat.format( offer.getOfferDate() ) %></td>
+            <td width="75" class="SubtitleHeader"><p align=RIGHT>Expires:</td>
+            <td width="115" class="Subtext"><%= eeTimeFormat.format( revision.getOfferExpirationDateTime() ) + " " + tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) + "  " + eeDateFormat.format( revision.getOfferExpirationDateTime() ) %>
+            <td width="75" class="SubtitleHeader"><p align=RIGHT>User:</td>
+            <td width="75" class="Subtext">
               <% if( reply != null ) { %>
               <%= reply.getNameOfAcceptPerson() %> 
               <% } else {%>
@@ -217,10 +207,8 @@
                 <table width="310" border="1" cellspacing="0" cellpadding="2">
                   <tr> 
                     <td width="90" valign="TOP" class="HeaderCell">Hour Ending</td>
-                        <td width="110" valign="TOP" class="HeaderCell">Offer Price 
-                          in $ per kWh</td>
-                        <td width="110" valign="TOP" class="HeaderCell">CLR in 
-                          kW</td>
+                        <td width="110" valign="TOP" class="HeaderCell">Offer Price in $ per kWh</td>
+                        <td width="110" valign="TOP" class="HeaderCell">CLR in kW</td>
                   </tr>
                   <%
               for( int h = 0; h < 12; h++ )
@@ -308,22 +296,22 @@
           </tr>
         </table>
 	<br>
-        <table width="600" border="0" cellspacing="0" cellpadding="0" align="center" class="Main">
+        <table width="600" border="0" cellspacing="0" cellpadding="0" align="center">
           <tr> 
-                <td width="83" height="29"  class="MainHeader"> 
-                  <div align="right"><b>Comments:&nbsp; </b> </div>
+            <td width="83" height="29"  class="SubtitleHeader"> 
+              <div align="right">Comments:&nbsp;</div>
             </td>
-            <td class="MainHeader" width="511" height="29"><%= reply.getEnergyExchangeNotes() %>
+            <td class="Subtext" width="511" height="29"><%= reply.getEnergyExchangeNotes() %>
             </td>
           </tr>
         </table>
         <br>
         <p> 
           <center>
-                <b><span class="MainHeader">TOTAL: <%= totalCommitted %> kWh</span></b> 
+                <span class="SubtitleHeader">TOTAL: <%= totalCommitted %> kWh</span> 
               </center>
         </p>
-            <p align="center" class="MainHeader"> <a href="<%= referrer %>" class="Link1"><b>Back to Customer List</b></a> 
+            <p align="center" class="SubtitleHeader"> <a href="<%= referrer %>" class="Link1">Back to Customer List</a> 
               <br>
               <br>
           </td>

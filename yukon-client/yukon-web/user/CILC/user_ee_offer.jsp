@@ -109,8 +109,7 @@
                 <td width="253" valign="middle">&nbsp;</td>
                 <td width="58" valign="middle">&nbsp;</td>
                 <td width="57" valign="middle"> 
-                  <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
-                    Off</a>&nbsp;</span></div>
+                  <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
                 </td>
               </tr>
             </table>
@@ -135,129 +134,110 @@
             <%@ include file="nav.jsp" %>
           </td>
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
-		    <td width="609" valign="top" bgcolor="#FFFFFF"> 
-              <table width="609" border="0" cellspacing="0" cellpadding="0">
-                <tr> 
-                <td width="600" class="Main"> 
-                  <p align="center"><b><br>
-                    OFFER TO CUSTOMER</b><br>
-                    <br>
-                  
+		  <td width="609" valign="top" bgcolor="#FFFFFF"> 
+            <center>
+            <p><br>
+            <p class="TitleHeader">OFFER TO CUSTOMER</p>
+            <table width="590" border="0" cellspacing="0" cellpadding="5">
+              <tr> 
+                <td width="18%" class="SubtitleHeader"><p align=RIGHT>Offer History ID:</td>
+                <td width="11%" class="Subtext"><%= revisionHistory.getOfferId() + " - " + revisionHistory.getRevisionNumber()%></td>
+                <td width="19%" class="SubtitleHeader"><p align=RIGHT>Offer History Date:</td>
+                <td width="14%" class="Subtext"><%= datePart.format( offerHistory.getOfferDate()) %></td>
+                <td width="18%" class="SubtitleHeader"><p align=RIGHT>Expire Date/Time:</td>
+                <td width="20%" class="Subtext"><%= timePart.format( revisionHistory.getExpirationDateTime()) + " " + tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) + "  " + datePart.format( revisionHistory.getExpirationDateTime()) %></td>
+              </tr>
+            </table>
+            <table width="590" border="0" cellspacing="0" cellpadding="5">
+              <tr> 
+                <td width="295"> 
+                  <p>
                   <center>
-                  <table width="590" border="0" cellspacing="0" cellpadding="5">
+                  <table width="295" border="1" cellspacing="0" cellpadding="2">
                     <tr> 
-                      <td width="18%" class="MainHeader"> 
-                          <p align=RIGHT><b>Offer History ID:</b> 
-                      </td>
-                      <td width="12%" class="MainHeader"><%= revisionHistory.getOfferId() + " - " + revisionHistory.getRevisionNumber()%></td>
-                      <td width="18%" class="MainHeader"> 
-                          <p align=RIGHT><b>Offer History Date: </b> 
-                      </td>
-                      <td width="15%" class="MainHeader"><%= datePart.format( offerHistory.getOfferDate()) %></td>
-                      <td width="17%" class="MainHeader"> 
-                          <p align=RIGHT><b>Expire Date/Time: </b> 
-                      </td>
-                      <td width="20%" class="MainHeader"><%= timePart.format( revisionHistory.getExpirationDateTime()) + " " + tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) + "  " + datePart.format( revisionHistory.getExpirationDateTime()) %></td>
-                    </tr>
-                  </table>
-                  <table width="600" border="0" cellspacing="0" cellpadding="5">
-          <tr> 
-            <td width="50%"> 
-              <p>
-              <center>
-                <table width="300" border="1" cellspacing="0" cellpadding="2">
-                  <tr> 
-                    <td width="75" height="10" valign="TOP" class="HeaderCell">Hour 
-                      Ending </td>
-                    <td width="75" height="10" valign="TOP" class="HeaderCell">Offer 
-                      in $ per kWh</td>
-                      <% if (replyHistory.getAcceptStatus().equalsIgnoreCase("accepted")) { %>                      
-                    <td width="75" height="10" valign="TOP" class="HeaderCell">CLR in kW</td>
+                      <td width="25%" height="10" valign="TOP" class="HeaderCell">Hour Ending </td>
+                      <td width="25%" height="10" valign="TOP" class="HeaderCell">Offer in $ per kWh</td>
+                   <% if (replyHistory.getAcceptStatus().equalsIgnoreCase("accepted")) { %>                      
+                      <td width="25%" height="10" valign="TOP" class="HeaderCell">CLR in kW</td>
                     <% } else { %>
-<!--                    <td width="75" height="10" valign="TOP" class="HeaderCell">kW Requested</td>-->
+<!--                  <td width="25%" height="10" valign="TOP" class="HeaderCell">kW Requested</td>-->
                       <% } %>
-<!--                    <td width="75" height="10" valign="TOP" class="HeaderCell">Baseline</td>-->
-                  </tr>
+<!--                  <td width="25%" height="10" valign="TOP" class="HeaderCell">Baseline</td>-->
+                    </tr>
                   <%
                for( int i = 0; i < 12; i++ ) {
                    String hourStr = hourFormat.format(i+1) + ":00";
           %>
-                  <tr> 
-                    <td width="75" height="10" class="TableCell"><%= hourStr %></td>
-                    <td width="75" height="10" class="TableCell"><%= priceStrs[i] %></td>
+                    <tr> 
+                      <td width="25%" height="10" class="TableCell"><%= hourStr %></td>
+                      <td width="25%" height="10" class="TableCell"><%= priceStrs[i] %></td>
                     <% if (replyHistory.getAcceptStatus().equalsIgnoreCase("accepted")) {
                       		if( amountStrs[i] == "----"){
                       			 %>
-                    <td width="75" height="10" valign="TOP" class="TableCell"><%= amountStrs[i] %></td>
+                      <td width="25%" height="10" valign="TOP" class="TableCell"><%= amountStrs[i] %></td>
                     <%}
                     else{ 
                     %>
-                    <td width="75" height="10" valign="TOP" class="TableCell"><%=numberFormat.format(numberFormat.parse(amountStrs[i]))%></td>
+                      <td width="25%" height="10" valign="TOP" class="TableCell"><%=numberFormat.format(numberFormat.parse(amountStrs[i]))%></td>
                     <%}
                     }%>
-<!--                    <td width="75" height="10" class="TableCell"><% if(baseLineValues != null) { %><%= numberFormat.format(baseLineValues[i]) %><% } else { %>----<% } %></td>-->
-                  </tr>
+<!--                  <td width="25%" height="10" class="TableCell"><% if(baseLineValues != null) { %><%= numberFormat.format(baseLineValues[i]) %><% } else { %>----<% } %></td>-->
+                    </tr>
                   <%
                }
           %>
-                </table>
-              </center>
-            </td>
-            <td width="50%"> 
-              <p>
-              <center>
-                <table width="300" border="1" cellspacing="0" cellpadding="2">
-                  <tr> 
-                    <td width="75" height="10" valign="TOP" class="HeaderCell">Hour 
-                      Ending </td>
-                    <td width="75" height="10" valign="TOP" class="HeaderCell">Offer 
-                      in $ per kWh</td>
+                  </table>
+                  </center>
+                </td>
+                <td width="295"> 
+                  <p>
+                  <center>
+                  <table width="295" border="1" cellspacing="0" cellpadding="2">
+                    <tr> 
+                      <td width="25%" height="10" valign="TOP" class="HeaderCell">Hour Ending</td>
+                      <td width="25%" height="10" valign="TOP" class="HeaderCell">Offer in $ per kWh</td>
                       <% if (replyHistory.getAcceptStatus().equalsIgnoreCase("accepted")) { %>
-                    <td width="75" height="10" valign="TOP" class="HeaderCell">CLR in kW</td>
+                      <td width="25%" height="10" valign="TOP" class="HeaderCell">CLR in kW</td>
                       <% } else { %>
-<!--                    <td width="75" height="10" valign="TOP" class="HeaderCell">kW Requested</td>-->
+<!--                  <td width="25%" height="10" valign="TOP" class="HeaderCell">kW Requested</td>-->
                       <% } %>
-<!--                    <td width="75" height="10" valign="TOP" class="HeaderCell">Baseline</td>-->
-                  </tr>
+<!--                  <td width="25%" height="10" valign="TOP" class="HeaderCell">Baseline</td>-->
+                    </tr>
                   <%
                for( int i = 12; i < 24; i++ ) {
                    String hourStr = hourFormat.format(i+1) + ":00";
           %>
-                  <tr> 
-                    <td width="75" height="10" valign="TOP" class="TableCell"><%= hourStr %></td>
-                    <td width="75" height="10" valign="TOP" class="TableCell"><%= priceStrs[i] %></td>
+                    <tr> 
+                      <td width="25%" height="10" valign="TOP" class="TableCell"><%= hourStr %></td>
+                      <td width="25%" height="10" valign="TOP" class="TableCell"><%= priceStrs[i] %></td>
                       <% if (replyHistory.getAcceptStatus().equalsIgnoreCase("accepted")) {
                       		if( amountStrs[i] == "----"){
                       			 %>
-                    <td width="75" height="10" valign="TOP" class="TableCell"><%= amountStrs[i] %></td>
+                      <td width="25%" height="10" valign="TOP" class="TableCell"><%= amountStrs[i] %></td>
                     <%}
                     else{ 
                     %>
-                    <td width="75" height="10" valign="TOP" class="TableCell"><%=numberFormat.format(numberFormat.parse(amountStrs[i]))%></td>
+                      <td width="25%" height="10" valign="TOP" class="TableCell"><%=numberFormat.format(numberFormat.parse(amountStrs[i]))%></td>
                     <%}
                     }%>
-<!--                    <td width="75" height="10" valign="TOP" class="TableCell"><% if(baseLineValues != null) { %><%= numberFormat.format(baseLineValues[i]) %><% } else { %>----<% } %></td>-->
-                  </tr>
+<!--                  <td width="25%" height="10" valign="TOP" class="TableCell"><% if(baseLineValues != null) { %><%= numberFormat.format(baseLineValues[i]) %><% } else { %>----<% } %></td>-->
+                    </tr>
                   <%
                }
           %>
-                </table>
-              </center>
-            </td>
-          </tr>
-        </table>
-        <p><a href="user_ee.jsp" class="Link1">Back</a></p>
-                    <p>&nbsp;</p>
-      </center>
-  </td>
-  </tr>
-</table>
-              </td>
-        <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
-    </tr>
+                  </table>
+                  </center>
+                </td>
+              </tr>
+            </table>
+            <p class="SubtitleHeader"><a href="user_ee.jsp" class="Link1">Back</a></p><p>&nbsp;</p>
+            </center>
+          </td>
+          <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
+        </tr>
       </table>
     </td>
-	</tr>
+  </tr>
 </table>
 </body>
 </html>

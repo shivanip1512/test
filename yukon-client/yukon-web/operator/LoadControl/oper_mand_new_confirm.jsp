@@ -32,11 +32,10 @@
                 <td width="310" height = "28"class="PageHeader">&nbsp;&nbsp;&nbsp;Load Response</td>
                 <td width="235" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle"> 
-                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
+                    <div align="center"><span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
-                      Off</a>&nbsp;</span></div>
+                    <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
                   </td>
               </tr>
             </table>
@@ -89,8 +88,8 @@
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <table width="657" border="0" cellspacing="0" cellpadding="0" align="left">
               <tr>      
-                <td width="650" class="Main"> 
-                  <div align="center"><br>
+                <td width="650"> 
+                  <div align="center" class="TitleHeader"><br>
                   <form action="oper_mand.jsp?tab=newconfirm" method="post">
                     <input type=hidden name="confirmed" value="true">
                     <input type=hidden name="program" value="<%= programStr %>">
@@ -100,7 +99,7 @@
                     <input type=hidden name="starttime" value="<%= curtailTimeStr %>">
                     <input type=hidden name="duration" value='<%= checker.get("duration") %>'>
                     <input type=hidden name="comments" value='<%= checker.get("comments") %>'>
-                    <b> NOTIFICATION - NEW</b><br><br>
+                    NOTIFICATION - NEW<br><br>
 
                     <table width="250" border="1" cellspacing="0" cellpadding="4" align="center">
                       <tr> 
@@ -157,8 +156,8 @@
                     <br>
                     <table width="600" border="1" cellspacing="0" cellpadding="0" align="center">
                       <tr> 
-                        <td  class="MainHeader" width="83" height="29"> 
-                          <div align="right"><b>Comments:</b>&nbsp;</div>
+                        <td  class="TableCell" width="83" height="29"> 
+                          <div align="right">Comments:&nbsp;</div>
                         </td>
                         <td class="TableCell" width="511" height="29"><%= checker.get("comments") %> </td>
                       </tr>

@@ -33,11 +33,10 @@ function confirm_form(f) {
                 <td width="235" height = "28" valign="middle">&nbsp;</td>
                 
                   <td width="58" valign="middle"> 
-                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
+                    <div align="center"><span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
-                      Off</a>&nbsp;</span></div>
+                    <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
                   </td>
               </tr>
             </table>
@@ -91,48 +90,36 @@ function confirm_form(f) {
             <table width="657" border="0" cellspacing="0" cellpadding="0" align="left">
               <struts:form name="checker" type="com.cannontech.validate.PageBean" action="oper_ee.jsp?tab=new" onSubmit="return confirm_form(this)">
                 <tr> 
-                  <td width="650" class="Main" valign="top"> 
+                  <td width="650" class="TitleHeader" valign="top"> 
                     <p align="center"><br>
                     <input type=hidden name="submitted" value="true">
                     <input type=hidden name="programname">
-                    <b><cti:getProperty propertyid="<%=EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>"/> - NEW OFFER</b></p>
+                    <cti:getProperty propertyid="<%=EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>"/> - NEW OFFER</p>
                     <table width="600" border="0" cellspacing="0" cellpadding="5" align="center">
                       <tr> 
-                        <td width="21%" class="MainHeader" valign = "top"> 
-                          <p align=RIGHT><b>Program:</b> 
-                        </td>
-                        <td width="12%" class="MainHeader" valign = "top"><cti:select name="program" selectValues="<%= programIds %>" selectNames="<%= programNames %>" selectedValue='<%= checker.get("program") %>'/></td>
-                        <td width="21%" class="MainHeader" valign = "top"> 
-                          <p align=RIGHT><b>Notify Date:</b> 
-                        </td>
-                        <td width="12%" class="MainHeader" valign = "top"><struts:text property="notifydate" size="10" pattern="@date"/>
+                        <td width="21%" class="SubtitleHeader" valign = "top"><p align=RIGHT>Program:</td>
+                        <td width="12%" class="Subtext" valign = "top"><cti:select name="program" selectValues="<%= programIds %>" selectNames="<%= programNames %>" selectedValue='<%= checker.get("program") %>'/></td>
+                        <td width="21%" class="SubtitleHeader" valign = "top"><p align=RIGHT>Notify Date:</td>
+                        <td width="12%" class="Subtext" valign = "top"><struts:text property="notifydate" size="10" pattern="@date"/>
                           <span class = "TableCell"><%= checker.getError("notifydate")%></span>
                         </td>
-                        <td width="21%" class="MainHeader" valign = "top"> 
-                          <p align=RIGHT><b>Notify Time:</b>&nbsp; 
-                        </td>
-                        <td width="12%" class="MainHeader" valign = "top"><struts:text property="notifytime" size="10" pattern="@time"/>
+                        <td width="21%" class="SubtitleHeader" valign = "top"><p align=RIGHT>Notify Time:&nbsp;</td>
+                        <td width="12%" class="Subtext" valign = "top"><struts:text property="notifytime" size="10" pattern="@time"/>
                           <span class = "TableCell"><%= checker.getError("notifytime") %></span>
                         </td>
                         <td class="TableCell"><%= tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) %></td>
                       </tr> 
                       <tr> 
-                        <td width="21%" class="MainHeader" valign = "top"> 
-                          <p align=RIGHT><b>Control Date:</b> 
-                        </td>
-                        <td width="12%" class="MainHeader" valign = "top"><struts:text property="date" size="10" pattern="@date"/>
+                        <td width="21%" class="SubtitleHeader" valign = "top"><p align=RIGHT>Control Date:</td>
+                        <td width="12%" class="Subtext" valign = "top"><struts:text property="date" size="10" pattern="@date"/>
                           <span class = "TableCell"><%= checker.getError("date") %></span>
                         </td>
-                        <td width="21%" class="MainHeader" valign = "top"> 
-                          <p align=RIGHT><b>Expire Date:</b> 
-                        </td>
-                        <td width="12%" class="MainHeader" valign = "top"><struts:text property="expiredate" size="10" pattern="@date"/>
+                        <td width="21%" class="SubtitleHeader" valign = "top"><p align=RIGHT>Expire Date:</td>
+                        <td width="12%" class="Subtext" valign = "top"><struts:text property="expiredate" size="10" pattern="@date"/>
                           <span class = "TableCell"><%= checker.getError("expiredate") %></span>
                         </td>
-                        <td width="21%" class="MainHeader" valign = "top"> 
-                          <p align=RIGHT><b>Expire Time:</b>&nbsp; 
-                        </td>
-                        <td width="12%" class="MainHeader" valign = "top"><struts:text property="expiretime" size="10" pattern="@time"/>
+                        <td width="21%" class="SubtitleHeader" valign = "top"><p align=RIGHT>Expire Time:&nbsp;</td>
+                        <td width="12%" class="Subtext" valign = "top"><struts:text property="expiretime" size="10" pattern="@time"/>
                           <span class = "TableCell"><%= checker.getError("expiretime") %></span>
                         </td>
                         <td class="TableCell"><%= tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) %></td>

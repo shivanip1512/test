@@ -188,7 +188,7 @@
                 <td width="253" valign="middle">&nbsp;</td>
                 <td width="58" valign="middle">&nbsp;</td>
                 <td width="57" valign="middle"> 
-                  <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
+                  <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
                     Off</a>&nbsp;</span></div>
                 </td>
               </tr>
@@ -221,11 +221,11 @@
 <table width="609" border="0" cellspacing="0" cellpadding="0">
 <struts:form name="checker" type="com.cannontech.validate.PageBean" action="user_direct_start.jsp" onSubmit="return validForm(this)"> 
   <tr> 
-                    <td width="600" class="Main"> 
+                    <td width="600" class="SubText"> 
                       <table width="200" border="1" cellpadding="5" align="center" cellspacing="0">
                         <tr>
                           <td>
-						    <span class="TableCell"><b>Start:</b></span>
+						    <span class="TableCellHeader">Start:</span>
                             <table width="95%" border="0" cellpadding="0">
                               <tr>
                                 <td width="15%"><struts:radio property="STARTRADIO" value="now"/></td>
@@ -244,7 +244,7 @@
                       <p>&nbsp;</p><table width="200" border="1" cellpadding="5" align="center" cellspacing="0">
                         <tr> 
                           <td> 
-                            <span class="TableCell"><b>Stop:</b></span>
+                            <span class="TableCellHeader">Stop:</span>
                             <table width="95%" border="0" cellpadding="0">
                               <tr> 
                                 <td width="15%"><struts:radio property="STOPRADIO" value="now"/></td>

@@ -46,7 +46,7 @@
         <p align="center"><a href="oper_ee.jsp?tab=history"><img src="HistoryButton.gif" border="0"></a></p>
         <p align="center"><a href="oper_ee.jsp?tab=programs"><img src="ProgramsButton.gif" border="0"></a></p>
             </td>
-      <td width="650" class="Main">
+      <td width="650" class="MainText">
         <p>
           <center>
             &nbsp;<b><font size="-1" face="Arial">Customer Profile</font></b>

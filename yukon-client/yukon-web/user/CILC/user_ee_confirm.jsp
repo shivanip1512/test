@@ -32,7 +32,7 @@
                 <td width="253" valign="middle">&nbsp;</td>
                 <td width="58" valign="middle">&nbsp;</td>
                 <td width="57" valign="middle"> 
-                  <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
+                  <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
                     Off</a>&nbsp;</span></div>
                 </td>
               </tr>
@@ -61,19 +61,16 @@
 		  <td width="609" valign="top" bgcolor="#FFFFFF">
             <table width="609" border="0" cellspacing="0" cellpadding="0">
               <tr> 
-                <td width="600" class="Main"> 
-                  <div align="center"><b><br>
-                    CURTAILMENT TO CUSTOMER</b><br>
-                    <br>
-                  </div>
-                  <table width="480" border="0" cellspacing="0" cellpadding="5" align="center" class="Main">
+                <td width="600" class="TitleHeader"> 
+                  <div align="center"><br>CURTAILMENT TO CUSTOMER<br><br></div>
+                  <table width="600" border="0" cellspacing="0" cellpadding="5" align="center">
                     <tr> 
-                      <td><p align=RIGHT>&nbsp;Offer ID:</td>
-                      <td> <%= checker.get("offer") + " - " + checker.get("rev") %></td>
-                      <td><p align=RIGHT>Control Date:</td>
-                      <td><%= checker.get("offerdate") %></td>
-                      <td><p align=RIGHT>Expires:</td>
-                      <td><%= java.net.URLDecoder.decode( checker.get("expiredatetime") ) %><%= " " + tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) %></td>
+                      <td><p align=RIGHT class="SubtitleHeader">&nbsp;Offer ID:</td>
+                      <td class="Subtext"> <%= checker.get("offer") + " - " + checker.get("rev") %></td>
+                      <td><p align=RIGHT class="SubtitleHeader">Control Date:</td>
+                      <td class="Subtext"><%= checker.get("offerdate") %></td>
+                      <td><p align=RIGHT class="SubtitleHeader">Expires:</td>
+                      <td class="Subtext"><%= java.net.URLDecoder.decode( checker.get("expiredatetime") ) %><%= " " + tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) %></td>
                     </tr>
                   </table>
                   <form action="user_ee.jsp?tab=confirm" method="post">
@@ -87,11 +84,11 @@
                     %>
                     <input type=hidden name="amount" value=<%= newAmountStrs[i] %>>
                     <% } %>
-                    <table width="600" border="0" cellspacing="0" cellpadding="5" align="center">
+                    <table width="590" border="0" cellspacing="0" cellpadding="5" align="center">
                       <tr>
-                        <td width="50%">
+                        <td width="295">
                           <center>
-                            <table width="300" border="1" cellspacing="0" cellpadding="2">
+                            <table width="295" border="1" cellspacing="0" cellpadding="2">
                               <tr>
                                 <td width="75" height="23" valign="TOP" class="HeaderCell">Hour</td>
                                 <td width="75" height="23" valign="TOP" class="HeaderCell">Offer in $ per kWh</td>
@@ -112,8 +109,8 @@
                             </table>
                           </center>
                         </td>
-                        <td width="50%" valign="top">
-                          <table width="300" border="1" cellspacing="0" cellpadding="2" align="center">
+                        <td width="295" valign="top">
+                          <table width="295" border="1" cellspacing="0" cellpadding="2" align="center">
                             <tr>
                               <td width="75" height="23" valign="TOP" class="HeaderCell"> Hour</td>
                               <td width="75" height="23" valign="TOP" class="HeaderCell">Offer in $ per kWh</td>
@@ -136,15 +133,15 @@
                       </tr>
                     </table>
                     <br clear="ALL">
-                    <table width="600" border="0" cellspacing="0" cellpadding="0" align="center" class="Main">
+                    <table width="600" border="0" cellspacing="0" cellpadding="0" align="center" class="MainText">
                       <tr>
-                        <td width="83" height="29"  class="Main">
+                        <td width="83" height="29">
                           <div align="right">Comments:&nbsp; </div>
                         </td>
-                        <td class="Main" width="511" height="29"><%= checker.get("comments") %></td>
+                        <td width="511" height="29"><%= checker.get("comments") %></td>
                       </tr>
                     </table>
-                    <table width="580" border="0" cellspacing="0" cellpadding="4" height="10" align="center" class="Main">
+                    <table width="580" border="0" cellspacing="0" cellpadding="4" height="10" align="center" class="MainText">
                       <tr>
                         <td width="36%" valign="TOP" height="10">
                           <p align=RIGHT>Initials:</td>
@@ -161,15 +158,15 @@
                     </table>
                   </FORM>
 <!--                  <form method="get" action="">
-                  <div align="center"><span class="Main">If you would like to review the terms of your energy contract, click</span> <br>
+                  <div align="center"><span class="MainText">If you would like to review the terms of your energy contract, click</span> <br>
                     <input type="submit" name="" value="Here">-->
                     <br>
                   <div align="center">
-                    <span class="Main">If you have questions or problems, call <cti:getProperty propertyid="<%=EnergyBuybackRole.SUPPORT_PHONE_NUMBER%>"/>
+                    <span class="MainText">If you have questions or problems, call <cti:getProperty propertyid="<%=EnergyBuybackRole.SUPPORT_PHONE_NUMBER%>"/>
                     </span>
                   </div>
 <!--                  </form>-->
-                <p class="Main" align="center"></p>
+                <p class="MainText" align="center"></p>
                 <p>&nbsp;</p>
                 </td>
               </tr>

@@ -45,8 +45,7 @@
                 <td width="253" valign="middle">&nbsp;</td>
                 <td width="58" valign="middle">&nbsp;</td>
                 <td width="57" valign="middle"> 
-                  <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
-                    Off</a>&nbsp;</span></div>
+                  <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
                 </td>
               </tr>
             </table>
@@ -73,17 +72,15 @@
 		  <td width="609" valign="top" bgcolor="#FFFFFF">
             <table width="609" border="0" cellspacing="0" cellpadding="0">
               <tr> 
-                <td width="600" class="Main" valign="top">
+                <td width="600" valign="top">
                 <form method="GET" action="<%=pageName%>" name="MForm">
                 <center>
-                  <table width="590" border="0" cellspacing="0" cellpadding="0">
+                  <table width="590" height="70" border="0" cellspacing="0" cellpadding="0">
+                    <tr><br>
+                      <td class="TitleHeader" align="center">ADMINISTRATION - CUSTOMER PROFILE</td>
+                    </tr>
                     <tr>
-                      <td class="Main" > 
-                        <p align="center"><b><br>
-                            ADMINISTRATION - CUSTOMER PROFILE</b><br>
-                            There must be a Primary Contact. Any number of additional 
-                            contacts may also be included. 
-                      </td>
+                      <td class="Subtext" align="center">* There must be a Primary Contact. Any number of additional contacts may also be included.</td>
                     </tr>
                     <tr align="right">
                       <td> 	 
@@ -93,50 +90,49 @@
                   </table>
                   <table width="590" border="0" cellspacing="0" cellpadding="0">
                     <tr>
-                      <td height="40">
-                        <hr>
-                        <span class="Main"><b>CONTACT (PRIMARY)</b></span></td>
+                      <td height="40" class="TitleHeader">
+                        <hr>CONTACT (PRIMARY)</td>
                     </tr>
                   </table>
                   <table width="590" border="0" cellspacing="0" cellpadding="0">
                     <tr>
                       <td valign="top">
-                        <table width="300" border="0" cellspacing="0" cellpadding="2">
+                        <table width="295" border="0" cellspacing="0" cellpadding="2">
                           <tr> 
-                            <td class="TableCell" width="110" align="right">First Name:</td>
-                            <td class="TableCell" width="190" align="left"> 
+                            <td class="TableCell" width="130" align="right">First Name:</td>
+                            <td class="TableCell" width="165" align="left"> 
                               <input type="text" name="textfield" value="<%=liteContact.getContFirstName()%>">
                             </td>
                           </tr>
                           <tr>
-                            <td class="TableCell" width="110" align="right">Last Name:</td>
-                            <td class="TableCell" width="190" align="left"> 
+                            <td class="TableCell" width="130" align="right">Last Name:</td>
+                            <td class="TableCell" width="165" align="left"> 
                              <input type="text" name="textfield2" value="<%=liteContact.getContLastName()%>">
                             </td>
                           </tr>
                           <tr>
-                            <td class="TableCell" width="110" align="right">User Name:</td>
-                            <td class="TableCell" width="190" align="left">
+                            <td class="TableCell" width="130" align="right">User Name:</td>
+                            <td class="TableCell" width="165" align="left">
                               <input type="text" name="textfield4" value ="<%=liteYukonUser.getUsername()%>">
                             </td>
                           </tr>
                           <tr>
-                            <td class="TableCell" width="110" align="right">Old Password:</td>
-                            <td class="TableCell" width="190" align="left">
+                            <td class="TableCell" width="130" align="right">Old Password:</td>
+                            <td class="TableCell" width="165" align="left">
                               <input type="password" name="textfield5" value ="<%=liteYukonUser.getPassword()%>">
                             </td>
                           </tr>
 
                           <tr>
-                            <td class="TableCell" width="110" align="right">New Password:</td>
-                            <td class="TableCell" width="190" align="left">
+                            <td class="TableCell" width="130" align="right">New Password:</td>
+                            <td class="TableCell" width="165" align="left">
                               <input type="password" name="textfield5" value ="<%=liteYukonUser.getPassword()%>">
                             </td>
                           </tr>
                         </table>
                       </td>
                       <td valign="top">
-                        <table width="300" border="0" cellspacing="0" cellpadding="2">
+                        <table width="295" border="0" cellspacing="0" cellpadding="2">
                         <%
                           java.util.Vector notifications = liteContact.getLiteContactNotifications();
                           for (int j = 0; j < notifications.size(); j++) {
@@ -155,9 +151,9 @@
                           for (int j = notifications.size(); j < 5; j++)
                           { %>
                           <tr>
-                            <td width="150" class="TableCell" align = "right">
+                            <td width="50%" class="TableCell" align = "right">
                               <cti:select name="program" selectValues="<%= entryIDs %>" selectNames="<%= entryTexts %>" selectedValue="<%="-1"%>"/></td>
-	                            <td width="150" align="left" class="TableCell">
+	                            <td width="50%" align="left" class="TableCell">
                               <input type="text" name="textfield3">
                             </td>
                           </tr>
@@ -188,10 +184,8 @@
                   %>
                   <table width="590" border="0" cellspacing="0" cellpadding="0">	              
                     <tr>
-                      <td height="40">
-                        <hr>
-                        <span class="Main"><b>CONTACT</b></span>
-                      </td>
+                      <td height="40" class="TitleHeader">
+                        <hr>CONTACT</td>
                     </tr>
                   </table>
                   <%@include file="user_ee_contacts.jsp"%>
@@ -200,7 +194,7 @@
                   <table width="590" border="0" cellspacing="0" cellpadding="3">
                     <tr>
                       <td align="left">
-                        <p align="center" class="MainHeader"> <a href="javascript:history.back()" class="Link1"><b>Back to Previous Page</b></a><br>
+                        <p align="center" class="SubtitleHeader"><a href="javascript:history.back()" class="Link1">Back to Previous Page</a><br>
                       </td>
                     </tr>
                   </table>

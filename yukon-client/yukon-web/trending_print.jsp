@@ -4,7 +4,7 @@
 	if( graphBean.getGdefid() <= 0 )
 	{
 	%>
-		<p class="Main"> No Data Set Selected 
+		<p class="MainText"> No Data Set Selected 
 	<%
 	}
 	else if( graphBean.getViewType() == TrendModelType.SUMMARY_VIEW)

@@ -92,11 +92,10 @@ function deleteAppliance(form) {
                   
                 <td width="253" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle"> 
-                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
+                    <div align="center"><span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
-                      Off</a>&nbsp;</span></div>
+                    <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
                   </td>
               </tr>
             </table>
@@ -812,8 +811,7 @@ function deleteAppliance(form) {
 	}
 	else {
 %>
-					<p align="center" class="Main">There is no program for 
-                      this appliance</p>
+					<p align="center" class="MainText">There is no program for this appliance</p>
 <%
 	}
 %>
@@ -838,8 +836,7 @@ function deleteAppliance(form) {
                 </tr>
               </table>
               <hr>
-              <div align="center" class="MainHeader"><br>
-                <b>Hardware Summary</b></div>
+              <div align="center" class="SubtitleHeader"><br>Hardware Summary</div>
 <%
 	if (hardware != null) {
 %>
@@ -859,7 +856,7 @@ function deleteAppliance(form) {
 	}
 	else {
 %>
-			  <p class="Main">There is no hardware attached to this appliance</p>
+			  <p class="MainText">There is no hardware attached to this appliance</p>
 <%
 	}
 %>

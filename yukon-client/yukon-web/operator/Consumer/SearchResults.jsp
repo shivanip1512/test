@@ -42,11 +42,10 @@ function selectAccount(accountID) {
                   
                 <td width="253" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle"> 
-                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
+                    <div align="center"><span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
-                      Off</a>&nbsp;</span></div>
+                    <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
                   </td>
               </tr>
             </table>
@@ -78,14 +77,14 @@ function selectAccount(accountID) {
 		if (resp.getStarsFailure() != null) {
 %>
             <div align="center">
-              <span class="Main">No customer accounts matching the search criteria.</span> 
+              <span class="MainText">No customer accounts matching the search criteria.</span> 
             </div>
 <%
 		}
 		else {
 %>
             <div align="center">
-              <span class="Main">The following search results were found:</span> 
+              <span class="MainText">The following search results were found:</span> 
             </div>
 			<form name="resultForm" method="POST" action="<%= request.getContextPath() %>/servlet/SOAPClient">
 		      <input type="hidden" name="action" value="GetCustAccount">

@@ -169,8 +169,7 @@ function MM_findObj(n, d) { //v4.0
                 <td width="253" valign="middle">&nbsp;</td>
                 <td width="58" valign="middle">&nbsp;</td>
                 <td width="57" valign="middle"> 
-                  <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
-                    Off</a>&nbsp;</span></div>
+                  <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
                 </td>
               </tr>
             </table>
@@ -198,11 +197,8 @@ function MM_findObj(n, d) { //v4.0
           
 		    <td width="600" valign="top" bgcolor="#FFFFFF"> 
               <div align="center"><br>
-              <b><span class="Main">TIME BASED CONTROL - ROOFTOP 
-              AIR</span></b><br>
+              <span class="TitleHeader">TIME BASED CONTROL - ROOFTOP AIR</span><br>
                 <div align="center"><br>
-				  
-                  
                 <table width="600" border="0" cellspacing="5" cellpadding="0">
                   <tr>
 					  <form method="submit" action="">
@@ -442,8 +438,7 @@ function MM_findObj(n, d) { //v4.0
                     </tr>
                   </table>
                   <hr>
-                  <p class="Main">Click on a Load Group Name to view the Load 
-                    Group details.</p>
+                  <p class="MainText">Click on a Load Group Name to view the Load Group details.</p>
                 </div>
                 <table width="600" border="1" cellspacing="0" bgcolor="white" cellpadding="2" align="center">
                   <tr valign="top"> 
@@ -454,42 +449,36 @@ function MM_findObj(n, d) { //v4.0
                     <td width="78" class="HeaderCell">Approx. Reduction</td>
                   </tr>
                   <tr> 
-                    <td height="23" class="TableCell" width="112"><a href="user_lm_time_groups.jsp">Building 
-                      1</a></td>
+                    <td height="23" class="TableCell" width="112"><a href="user_lm_time_groups.jsp">Building 1</a></td>
                     <td height="23" class="TableCell" width="85">Active</td>
-                    <td height="23" class="TableCell" width="197">07/14/01 14:13 
-                      - current</td>
+                    <td height="23" class="TableCell" width="197">07/14/01 14:13 - current</td>
                     <td height="23" class="TableCell" width="96">8 Hours</td>
                     <td height="23" class="TableCell" width="78">100.0</td>
                   </tr>
                   <tr> 
                     <td height="23" class="TableCell" width="112">Building 2</td>
                     <td height="23" class="TableCell" width="85">Disabled</td>
-                    <td height="23" class="TableCell" width="197">07/10/01 14:13 
-                      - 07/10/01 16:13 </td>
+                    <td height="23" class="TableCell" width="197">07/10/01 14:13 - 07/10/01 16:13 </td>
                     <td height="23" class="TableCell" width="96">0 Hours</td>
                     <td height="23" class="TableCell" width="78">0.0</td>
                   </tr>
                   <tr> 
                     <td height="23" class="TableCell" width="112">Building 3</td>
                     <td height="23" class="TableCell" width="85">Active</td>
-                    <td height="23" class="TableCell" width="197">07/14/01 16:30 
-                      - current</td>
+                    <td height="23" class="TableCell" width="197">07/14/01 16:30 - current</td>
                     <td height="23" class="TableCell" width="96">2 Hours</td>
                     <td height="23" class="TableCell" width="78">250.0</td>
                   </tr>
                   <tr> 
                     <td height="23" class="TableCell" width="112">Building 4</td>
                     <td height="23" class="TableCell" width="85">Not Active</td>
-                    <td height="23" class="TableCell" width="197">07/01/01 14:00 
-                      - 07/01/01 16:00 </td>
+                    <td height="23" class="TableCell" width="197">07/01/01 14:00 - 07/01/01 16:00 </td>
                     <td height="23" class="TableCell" width="96">2 Hours</td>
                     <td height="23" class="TableCell" width="78">200.0</td>
                   </tr>
                 </table>
                 
-              <p align="center" class="TableCell"><a href="user_lm_time.jsp" class="Link1">Back 
-                to schedule list</a><br>
+              <p align="center" class="SubtitleHeader"><a href="user_lm_time.jsp" class="Link1">Back to schedule list</a><br>
                 <br>
               </p>
                </div>

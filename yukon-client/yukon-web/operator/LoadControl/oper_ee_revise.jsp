@@ -114,11 +114,10 @@
                <td width="310" height = "28" class="PageHeader">&nbsp;&nbsp;&nbsp;<cti:getProperty propertyid="<%=EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>"/></td>
                 <td width="235" height = "28" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle"> 
-                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
+                    <div align="center"><span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
-                      Off</a>&nbsp;</span></div>
+                    <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
                   </td>
               </tr>
             </table>
@@ -172,7 +171,7 @@
 <table width="657" border="0" cellspacing="0" cellpadding="0" align="left">
 <struts:form name="checker" type="com.cannontech.validate.PageBean" action="oper_ee.jsp?tab=revise">
     <tr>      
-    <td width="650" class="Main" valign="top"> 
+    <td width="650" class="MainText" valign="top"> 
       <div align="center"><br>
         <input type=hidden name="submitted" value="true">
         <input type=hidden name="progname" value="<%= program.getYukonName() %>">
@@ -183,43 +182,28 @@
                     <b> <cti:getProperty propertyid="<%=EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>"/> - REVISE OFFER </b><br>
                     <br>
                   </div>
-      <table
-    width="600" border="0" cellspacing="0" cellpadding="5" align="center">
+      <table width="600" border="0" cellspacing="0" cellpadding="5" align="center">
           <tr> 
-            <td width="100" class="MainHeader" valign = "top"> 
-                        <p align=RIGHT><b>Program: </b>
-                      </td>
-            <td width="100" class="MainHeader" valign = "top"><%= program.getYukonName() %></td>
-            <td width="100" class="MainHeader" valign = "top"> 
-                        <p align=RIGHT><b>Notify Date: </b> 
-                      </td>
-            <td width="80" class="MainHeader" valign = "top"><struts:text property="notifydate" size="10" pattern="@date"/> 
+            <td width="100" class="SubtitleHeader" valign = "top"><p align=RIGHT>Program:</td>
+            <td width="100" class="Subtext" valign = "top"><%= program.getYukonName() %></td>
+            <td width="100" class="SubtitleHeader" valign = "top"><p align=RIGHT>Notify Date:</td>
+            <td width="80" class="Subtext" valign = "top"><struts:text property="notifydate" size="10" pattern="@date"/> 
               <span class = "TableCell"><%= checker.getError("notifydate") %></span></td>
-            <td width="100" class="MainHeader" valign = "top"> 
-                        <p align=RIGHT><b>Notify Time: </b> 
-                      </td>
-            <td width="80" class="MainHeader" valign = "top"><struts:text property="notifytime" size="10" pattern="@time"/> 
+            <td width="100" class="SubtitleHeader" valign = "top"><p align=RIGHT>Notify Time:</td>
+            <td width="80" class="Subtext" valign = "top"><struts:text property="notifytime" size="10" pattern="@time"/> 
               <span class = "TableCell"><%= checker.getError("notifytime") %></span></td>
-              <td class="TableCell"><%= tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) %>
-              </td>
+            <td class="TableCell"><%= tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) %></td>
           </tr>
           <tr> 
-            <td width="100" class="MainHeader" valign = "top"> 
-                        <p align=RIGHT><b>Control Date: </b> 
-                      </td>
-            <td width="100" class="MainHeader" valign = "top"><span class = "TableCell"><%= datePart.format(offer.getOfferDate()) %></span></td>
-            <td width="100" class="MainHeader" valign = "top"> 
-                        <p align=RIGHT><b>Expire Date: </b> 
-                      </td>
-            <td width="80" class="MainHeader"><struts:text property="expiredate" size="10" pattern="@date"/> 
+            <td width="100" class="SubtitleHeader" valign = "top"><p align=RIGHT>Control Date:</td>
+            <td width="100" class="Subtext" valign = "top"><span class = "TableCell"><%= datePart.format(offer.getOfferDate()) %></span></td>
+            <td width="100" class="SubtitleHeader" valign = "top"><p align=RIGHT>Expire Date:</td>
+            <td width="80" class="Subtext"><struts:text property="expiredate" size="10" pattern="@date"/> 
               <span class = "TableCell"><%= checker.getError("expiredate") %></span></td>
-            <td width="100" class="MainHeader" valign = "top"> 
-                        <p align=RIGHT><b>Expire Time: </b> 
-                      </td>
-            <td width="80" class="MainHeader" valign = "top"><struts:text property="expiretime" size="10" pattern="@time"/> 
+            <td width="100" class="SubtitleHeader" valign = "top"><p align=RIGHT>Expire Time:</td>
+            <td width="80" class="Subtext" valign = "top"><struts:text property="expiretime" size="10" pattern="@time"/> 
               <span class = "TableCell"><%= checker.getError("expiretime") %></span></td>
-            <td class="TableCell"><%= tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) %>
-            </td>
+            <td class="TableCell"><%= tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) %></td>
           </tr>
         </table>
         <table width="600" border="0" cellspacing="0" cellpadding="5" align="center">
@@ -238,11 +222,9 @@
                     <table width="315" border="1" cellspacing="0" cellpadding="2">
                       <tr> 
                         <td width="61" valign="TOP" class="HeaderCell">Hour Ending</td>
-                            <td width="61" valign="TOP" class="HeaderCell">Offer 
-                              in $/kWh</td>
+                        <td width="61" valign="TOP" class="HeaderCell">Offer in $/kWh</td>
                         <td width="61" valign="TOP" class="HeaderCell">New Amount</td>
-                            <td width="61" valign="TOP" class="HeaderCell">Target 
-                              in kW</td>
+                        <td width="61" valign="TOP" class="HeaderCell">Target in kW</td>
                         <td width="61" valign="TOP" class="HeaderCell">New Target</td>
                       </tr>
                       <%
@@ -252,8 +234,7 @@
                       <tr> 
                         <td width="61" class="TableCell"><%= endingHourStr %></td>
                         <td width="61" class="TableCell"><%= priceStrs[i] %></td>
-                        <td width="61" class="TableCell"><struts:text property="prices" size="6" pattern="@real" value="<%= newPriceStrs[i] %>"/> 
-                        </td>
+                        <td width="61" class="TableCell"><struts:text property="prices" size="6" pattern="@real" value="<%= newPriceStrs[i] %>"/></td>
                         <td width="61" class="TableCell"><%= amountStrs[i] %></td>
                         <td width="61" class="TableCell"><struts:text property="amount" size="6" pattern="@real" value="<%= newAmountStrs[i] %>"/><span class="TableCell"><%=checker.getError("amounterror"+String.valueOf(i))%></span></td>
                         </td>
@@ -267,11 +248,9 @@
                     <table width="315" border="1" cellspacing="0" cellpadding="2">
                       <tr> 
                         <td width="61" valign="TOP" class="HeaderCell">Hour Ending</td>
-                            <td width="61" valign="TOP" class="HeaderCell">Offer 
-                              in $/kWh</td>
+                        <td width="61" valign="TOP" class="HeaderCell">Offer in $/kWh</td>
                         <td width="61" valign="TOP" class="HeaderCell">New Amount</td>
-                            <td width="61" valign="TOP" class="HeaderCell">Target 
-                              in kW</td>
+                        <td width="61" valign="TOP" class="HeaderCell">Target in kW</td>
                         <td width="61" valign="TOP" class="HeaderCell">New Target</td>
                       </tr>
                       <%
@@ -281,8 +260,7 @@
                       <tr> 
                         <td width="61" class="TableCell"><%= endingHourStr %></td>
                         <td width="61" class="TableCell"><%= priceStrs[i] %></td>
-                        <td width="61" class="TableCell"><struts:text property="prices" size="6" pattern="@real" value="<%= newPriceStrs[i] %>"/> 
-                        </td>
+                        <td width="61" class="TableCell"><struts:text property="prices" size="6" pattern="@real" value="<%= newPriceStrs[i] %>"/></td>
                         <td width="61" class="TableCell"><%= amountStrs[i] %></td>
                         <td width="61" class="TableCell"><struts:text property="amount" size="6" pattern="@real" value="<%= newAmountStrs[i] %>"/><span class="TableCell"><%=checker.getError("amounterror"+String.valueOf(i))%></span></td>
                         </td>
@@ -294,8 +272,7 @@
                   </td>
                 </tr>
               </table>
-        <table
-    width="600" border="0" cellspacing="0" cellpadding="4" height="10" align="center">
+        <table width="600" border="0" cellspacing="0" cellpadding="4" height="10" align="center">
           <tr> 
             <td width="385" height="10"> 
               <p align=RIGHT> 

@@ -174,8 +174,7 @@ MM_reloadPage(true);
                 <td width="253" valign="middle">&nbsp;</td>
                 <td width="58" valign="middle">&nbsp;</td>
                 <td width="57" valign="middle"> 
-                  <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
-                    Off</a>&nbsp;</span></div>
+                  <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
                 </td>
               </tr>
             </table>
@@ -203,16 +202,13 @@ MM_reloadPage(true);
 		    <td width="600" valign="top" bgcolor="#FFFFFF"> 
               
             <div align="center"> 
-              <p align="center" class="Main"><b><br>
-                AUTO CONTROL - ROOFTOP AIR</b></p>
+              <p align="center" class="TitleHeader"><br>AUTO CONTROL - ROOFTOP AIR</p>
                 <div align="center"> 
-                  
                 <table width="600" border="1" cellspacing="0" cellpadding="5" bgcolor="#FFFFFF">
                   <tr> 
                       
                     <td width="200" valign="top" height="299"> 
-                      <p align="center" class="MainHeader"><b>Valid on the following 
-                        days: </b></p>
+                      <p align="center" class="SubtitleHeader">Valid on the following days:</p>
                       <form method="post" action="">
                       <table width="200" border="0" cellspacing="0" cellpadding="5">
                           <tr> 
@@ -304,9 +300,7 @@ MM_reloadPage(true);
                       </td>
                       
                     <td width="399" valign="top" height="299"> 
-                      <div align="center"><span class="MainHeader"><b>Valid for 
-                        the following daily times:
-                        </b></span> </div>
+                      <div align="center"><span class="SubtitleHeader">Valid for the following daily times:</span></div>
 					   <form method="post" action="">	
 					  <table width="400" border="0" cellspacing="0" cellpadding="0">
                           <tr valign="top"> 
@@ -413,8 +407,7 @@ MM_reloadPage(true);
                   </form>
                 </tr>
               </table>
-              <p align="center" class="Main">Click on a Load Group Name to view 
-                the Load Group details.</p>
+              <p align="center" class="MainText">Click on a Load Group Name to view the Load Group details.</p>
               <table width="600" border="1" cellspacing="0" bgcolor="white" cellpadding="2" align="center">
                   <tr valign="top"> 
                     <td width="112" class="HeaderCell">Load Group Name</td>
@@ -424,42 +417,36 @@ MM_reloadPage(true);
                     <td width="78" class="HeaderCell">Approx. Reduction</td>
                   </tr>
                   <tr> 
-                    <td height="23" class="TableCell" width="112"><a href="user_lm_groups.jsp">Building 
-                      1</a></td>
+                    <td height="23" class="TableCell" width="112"><a href="user_lm_groups.jsp">Building 1</a></td>
                     <td height="23" class="TableCell" width="85">Active</td>
-                    <td height="23" class="TableCell" width="197">07/14/01 14:13 
-                      - current</td>
+                    <td height="23" class="TableCell" width="197">07/14/01 14:13 - current</td>
                     <td height="23" class="TableCell" width="96">8 Hours</td>
                     <td height="23" class="TableCell" width="78">100.0</td>
                   </tr>
                   <tr> 
                     <td height="23" class="TableCell" width="112">Building 2</td>
                     <td height="23" class="TableCell" width="85">Disabled</td>
-                    <td height="23" class="TableCell" width="197">07/10/01 14:13 
-                      - 07/10/01 16:13 </td>
+                    <td height="23" class="TableCell" width="197">07/10/01 14:13 - 07/10/01 16:13 </td>
                     <td height="23" class="TableCell" width="96">0 Hours</td>
                     <td height="23" class="TableCell" width="78">0.0</td>
                   </tr>
                   <tr> 
                     <td height="23" class="TableCell" width="112">Building 3</td>
                     <td height="23" class="TableCell" width="85">Active</td>
-                    <td height="23" class="TableCell" width="197">07/14/01 16:30 
-                      - current</td>
+                    <td height="23" class="TableCell" width="197">07/14/01 16:30 - current</td>
                     <td height="23" class="TableCell" width="96">2 Hours</td>
                     <td height="23" class="TableCell" width="78">250.0</td>
                   </tr>
                   <tr> 
                     <td height="23" class="TableCell" width="112">Building 4</td>
                     <td height="23" class="TableCell" width="85">Not Active</td>
-                    <td height="23" class="TableCell" width="197">07/01/01 14:00 
-                      - 07/01/01 16:00 </td>
+                    <td height="23" class="TableCell" width="197">07/01/01 14:00 - 07/01/01 16:00 </td>
                     <td height="23" class="TableCell" width="96">2 Hours</td>
                     <td height="23" class="TableCell" width="78">200.0</td>
                   </tr>
                 </table>
                 
-              <p align="center" class="TableCell"><a href="user_lm_control.jsp" class="Link1">Back 
-                to Control Area</a></p>
+              <p align="center" class="SubtitleHeader"><a href="user_lm_control.jsp" class="Link1">Back to Control Area</a></p>
             </div><br>
               </td>
 		  

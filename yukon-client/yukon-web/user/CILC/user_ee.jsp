@@ -22,6 +22,7 @@
 //        out.println(" --" + enum1.nextElement());
 //    }
 
+
     LCConnectionServlet cs = (LCConnectionServlet) application.getAttribute(LCConnectionServlet.SERVLET_CONTEXT_ID);
     LoadcontrolCache cache = cs.getCache();
     

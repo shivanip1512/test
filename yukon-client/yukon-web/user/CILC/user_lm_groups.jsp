@@ -23,8 +23,7 @@
                 <td width="253" valign="middle">&nbsp;</td>
                 <td width="58" valign="middle">&nbsp;</td>
                 <td width="57" valign="middle"> 
-                  <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
-                    Off</a>&nbsp;</span></div>
+                  <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
                 </td>
               </tr>
             </table>
@@ -52,9 +51,8 @@
 		    <td width="600" valign="top" bgcolor="#FFFFFF"> 
               <div align="center">
                 <div align="center"> 
-                  <p class="Main"><br>
-                    <b>AUTO CONTROL GROUPS</b> </p>
-                  <p align="center" class="Main">BUILDING 1 TOTALS</p>
+                  <p class="TitleHeader"><br>AUTO CONTROL GROUPS</p>
+                  <p align="center" class="MainText">BUILDING 1 TOTALS</p>
                   <table width="400" border="1" cellspacing="0" bgcolor="white" cellpadding="2" align="center">
                     <tr valign="top"> 
                       <td width="117" class="HeaderCell">Time Frame</td>
@@ -77,7 +75,7 @@
                       <td height="23" class="TableCell" width="95">47 Hr, 42 Min</td>
                     </tr>
                   </table>
-                  <p align="center" class="Main">Complete History</p>
+                  <p align="center" class="MainText">Complete History</p>
 				  <form method="post" action"user_lm_groups.jsp">
                   <table width="150" border="0" cellspacing="0" cellpadding="0" align="center">
                     <tr> 
@@ -134,8 +132,7 @@
                       <td height="23" class="TableCell" width="75">42 Hr</td>
                     </tr>
                   </table>
-                  <p align="center" class="TableCell"><a href="user_lm_programs.jsp" class="Link1">Back to Rooftop 
-                    Air</a> </p><br>
+                  <p align="center" class="TableCell"><a href="user_lm_programs.jsp" class="Link1">Back to Rooftop Air</a> </p><br>
                 </div>
                 </div>
               </td>

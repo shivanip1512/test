@@ -132,7 +132,7 @@
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
 			<table width="657" border="0" cellspacing="0" cellpadding="0">
 			  <tr> 
-                <td width="650" valign="top" class="Main" align="center"> 
+                <td width="650" valign="top" class="MainText" align="center"> 
                   <p>&nbsp;</p>
 
 		<% if( CapControlWebAnnex.CMD_SUB.equals(controlType) )

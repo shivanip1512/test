@@ -24,8 +24,7 @@
                 <td width="253" valign="middle">&nbsp;</td>
                 <td width="58" valign="middle">&nbsp;</td>
                 <td width="57" valign="middle"> 
-                  <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
-                    Off</a>&nbsp;</span></div>
+                  <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
                 </td>
               </tr>
             </table>
@@ -53,10 +52,10 @@
 		  <td width="609" valign="top" bgcolor="#FFFFFF"> 
               <div align="center"> 
                 <p align="center"><br>
-                  <span class="Main"><b>TIME-BASED CONTROL</b></span></p>
+                  <span class="TitleHeader">TIME-BASED CONTROL</span></p>
                 <table width="350" border="0" cellspacing="0" cellpadding="0" align="center">
                   <tr> 
-                    <td class="Main"><b>Start Program</b></td>
+                    <td class="TitleHeader">Start Program</td>
                   </tr>
                 </table>
 				<form method="submit" action="">
@@ -108,7 +107,7 @@
                 <form method="submit" action="">
                 <table width="350" border="0" cellspacing="0" cellpadding="0" align="center">
                   <tr> 
-                    <td class="Main"><b>Stop Program</b></td>
+                    <td class="TitleHeader">Stop Program</td>
                   </tr>
                 </table>
                 <table width="350" border="1" cellspacing="0" cellpadding="3" align="center" class="TableCell">

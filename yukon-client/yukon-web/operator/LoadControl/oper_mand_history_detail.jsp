@@ -47,11 +47,10 @@
                 <td width="310" height = "28" class="PageHeader">&nbsp;&nbsp;&nbsp;Load Response</td>
                 <td width="235" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle"> 
-                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
+                    <div align="center"><span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
-                      Off</a>&nbsp;</span></div>
+                    <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
                   </td>
               </tr>
             </table>
@@ -103,8 +102,7 @@
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center">
-              <p class="Main"><br>
-                <b>NOTIFICATION - PROGRAM HISTORY FOR:<br> <%= programs[i].getProgramName() %> </b><br>
+              <p class="TitleHeader"><br>NOTIFICATION - PROGRAM HISTORY FOR:<br> <%= programs[i].getProgramName() %><br>
               </p>
             </div>
             <div align="center">
@@ -167,8 +165,7 @@
               </table>
               <br>
             </div>
-            <p align="center" class="MainHeader"> <a href="<%= referrer %>" class="Link1"><b>Back 
-              to History</b></a> <br>
+            <p align="center" class="SubtitleHeader"> <a href="<%= referrer %>" class="Link1">Back to History</a><br>
               <br> 
           </td>
         <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>

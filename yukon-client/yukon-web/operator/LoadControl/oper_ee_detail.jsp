@@ -70,11 +70,10 @@
                 <td width="235" height = "28" valign="middle">&nbsp;</td>
                 
                   <td width="58" valign="middle"> 
-                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
+                    <div align="center"><span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
-                      Off</a>&nbsp;</span></div>
+                    <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
                   </td>
                 
               </tr>
@@ -129,10 +128,9 @@
             <div align="center">
               <table width="657" border="0" cellspacing="0" cellpadding="0" align="left">
                 <tr> 
-                  <td width="650" class="Main"> 
+                  <td width="650" class="TitleHeader"> 
                     <br>
-                    <p align="center"><b><cti:getProperty propertyid="<%=EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>"/> - OFFER <%= offer.getOfferID().toString() %> 
-                      - <%= revisionNumber %> DETAILS</b></p>
+                    <p align="center"><cti:getProperty propertyid="<%=EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>"/> - OFFER <%= offer.getOfferID().toString() %>  - <%= revisionNumber %> DETAILS</p>
                     <% 
            java.util.Date notificationDate = ((LMEnergyExchangeOfferRevision) offerRevisions.get(revisionNumber.intValue())).getNotificationDateTime();          
                       
@@ -140,12 +138,12 @@
                offer.getRunStatus().trim().equalsIgnoreCase("scheduled") )
            {
         %>
-                    <p align="center">Customers will be notified at <%= notificationDate %></p>
+                    <p align="center" class="MainText">Customers will be notified at <%= notificationDate %></p>
                     <% }
            else
            {           
         %>
-                    <p align="center">Click on a customer name to view the customer's 
+                    <p align="center" class="MainText">Click on a customer name to view the customer's 
                       offer summary.</p>
                     <%
            }
@@ -224,12 +222,10 @@
                     <p></p>
                     <p> 
                       <center>
-                        <p><span class="MainHeader"><b>TOTAL: <%= numberFormat.format(totalCommitted) %> 
-                          kWh</b></span> </p>
+                        <p><span class="SubtitleHeader">TOTAL: <%= numberFormat.format(totalCommitted) %> kWh</span> </p>
                         </center>
-                    <p align="center" class="MainHeader"> <a href="oper_ee.jsp?tab=Current" class="Link1"><b>Back 
-                      to Current Summary</b></a><br>
-              <br>
+                    <p align="center" class="SubtitleHeader"> <a href="oper_ee.jsp?tab=Current" class="Link1">Back to Current Summary</a><br>
+                    <br>
                     <p> 
                       <%
     }

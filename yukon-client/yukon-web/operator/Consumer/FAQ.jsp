@@ -36,11 +36,10 @@
                   
                 <td width="253" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle"> 
-                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
+                    <div align="center"><span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
-                      Off</a>&nbsp;</span></div>
+                    <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
                   </td>
               </tr>
             </table>
@@ -73,13 +72,13 @@
             <table width="600" border="0" align="center" cellpadding="0" cellspacing="0">
               <tr> 
                 <form>
-                  <td valign="top" class="Main">
+                  <td valign="top" class="MainText">
                     <a name="Top"></a>
 <%
 	for (int i = 0; i < customerFAQs.getStarsCustomerFAQGroupCount(); i++) {
 		StarsCustomerFAQGroup group = customerFAQs.getStarsCustomerFAQGroup(i);
 %>
-                      <p class="Main" align="left"><b><%= group.getSubject() %></b></p>
+                      <p class="TitleHeader" align="left"><%= group.getSubject() %></p>
                       <ul>
 <%
 		for (int j = 0; j < group.getStarsCustomerFAQCount(); j++) {
@@ -100,14 +99,14 @@
 		StarsCustomerFAQGroup group = customerFAQs.getStarsCustomerFAQGroup(i);
 %>
                       <hr>
-                      <p class="Main" align="left"><b><%= group.getSubject() %></b></p>
+                      <p class="TitleHeader" align="left"><%= group.getSubject() %></p>
 <%
 		for (int j = 0; j < group.getStarsCustomerFAQCount(); j++) {
 			StarsCustomerFAQ faq = group.getStarsCustomerFAQ(j);
 %>
-                      <p class="Main" align="left"><b><i><a name="#GROUP<%= i+1 %>_FAQ<%= j+1 %>"></a>
-                        <%= faq.getQuestion() %></i></b></p>
-                      <p class="Main" align="left"><%= faq.getAnswer() %><br>
+                      <p class="TitleHeader" align="left"><i><a name="#GROUP<%= i+1 %>_FAQ<%= j+1 %>"></a>
+                        <%= faq.getQuestion() %></i></p>
+                      <p class="MainText" align="left"><%= faq.getAnswer() %><br>
                         <a href="#Top">[back to top]</a></p>
 <%
 		}

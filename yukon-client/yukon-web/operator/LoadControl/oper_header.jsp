@@ -30,7 +30,6 @@
   	// YUKON_USER is an ugly name, give it an alias
 	LiteYukonUser user = YUKON_USER;	
     int energyCompanyID =EnergyCompanyFuncs.getEnergyCompany(user).getEnergyCompanyID();
-
     LCConnectionServlet cs = (LCConnectionServlet) application.getAttribute(LCConnectionServlet.SERVLET_CONTEXT_ID);
     LoadcontrolCache cache = cs.getCache();
         

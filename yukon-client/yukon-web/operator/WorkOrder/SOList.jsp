@@ -23,11 +23,10 @@
                 <td width="235" height = "28" valign="middle">&nbsp;</td>
                 <form method="post" action="../Operations.jsp">
                   <td width="58" valign="middle"> 
-                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
+                    <div align="center"><span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
-                      Off</a>&nbsp;</span></div>
+                    <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
                   </td>
                 </form>
               </tr>
@@ -55,7 +54,7 @@
               <% String header = "SERVICE ORDER LIST"; %>
               <%@ include file="SearchBar.jsp" %>
               </b> 
-              <p><span class="Main">Display</span>:&nbsp; 
+              <p><span class="MainText">Display</span>:&nbsp; 
                 <select name="select">
                   <option>All</option>
                   <option>Open</option>
@@ -65,7 +64,7 @@
                 <input type="submit" name="" value="Submit">
                 <br>
                 <br>
-                <span class="Main">Click on a Service Order # to view the service 
+                <span class="MainText">Click on a Service Order # to view the service 
                 order details.</span></p>
               <form method="post" action="WorkOrder.jsp">
                 

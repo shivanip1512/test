@@ -65,11 +65,10 @@ function deleteAccount(form) {
                   
                 <td width="253" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle"> 
-                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
+                    <div align="center"><span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
-                      Off</a>&nbsp;</span></div>
+                    <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
                   </td>
               </tr>
             </table>
@@ -106,8 +105,7 @@ function deleteAccount(form) {
 			<input type="hidden" name="action" value="UpdateCustAccount">
             <table width="610" border="0" cellspacing="0" cellpadding="0" align="center">
               <tr> 
-                  <td width="300" valign="top" bgcolor="#FFFFFF"> <span class="MainHeader"><b>CUSTOMER 
-                    CONTACT</b></span> 
+                  <td width="300" valign="top" bgcolor="#FFFFFF"> <span class="SubtitleHeader">CUSTOMER CONTACT</span> 
                     <hr>
                     <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
                       <tr> 
@@ -198,7 +196,7 @@ function deleteAccount(form) {
                     <table width="300" border="0" cellspacing="0" cellpadding="0" align="center">
                       <tr> 
                         <td><br>
-                          <span class="MainHeader"><b>SERVICE INFORMATION</b></span> 
+                          <span class="SubtitleHeader">SERVICE INFORMATION</span> 
                           <hr>
                           <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
                             <tr> 
@@ -257,8 +255,7 @@ function deleteAccount(form) {
                       </tr>
                     </table>
                   </td>
-                  <td width="300" valign="top" bgcolor="#FFFFFF"><span class="MainHeader"><b>SERVICE 
-                    ADDRESS</b></span> 
+                  <td width="300" valign="top" bgcolor="#FFFFFF"><span class="SubtitleHeader">SERVICE ADDRESS</span> 
                     <hr>
                     <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
                       <tr> 
@@ -327,8 +324,8 @@ function deleteAccount(form) {
                         </td>
                       </tr>
                     </table>
-                    <b><br>
-                    <span class="MainHeader">BILLING ADDRESS</span></b> 
+                    <br>
+                    <span class="SubtitleHeader">BILLING ADDRESS</span>
                     <hr>
                     <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
                       <tr> 

@@ -22,11 +22,10 @@
                 <td width="310" class="PageHeader">&nbsp;&nbsp;&nbsp;Administration</td>
                 <td width="235" height = "28" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle"> 
-                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
+                    <div align="center"><span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
-                      Off</a>&nbsp;</span></div>
+                    <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
                   </td>
               </tr>
             </table>
@@ -50,14 +49,12 @@
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center"> <br>
-            <span class="Main"><b>CUSTOMER PRIVILEGES</b></span>
+            <span class="TitleHeader">CUSTOMER PRIVILEGES</span>
             </div>
               
-            <p align="center" class="Main">Select which of the following 
-              functionality customers will have access to:</p>
+            <p align="center" class="MainText">Select which of the following functionality customers will have access to:</p>
               <p>
               </p>
-              
             <table width="500" border="0" cellspacing="0" cellpadding="3" align="center">
               <tr> 
                 <td width="150" class="TableCell"> 

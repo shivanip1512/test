@@ -1,17 +1,17 @@
+//NOT USED ANYMORE??? SN 8/26/2003
 <%@ page language="java" %>
 <%@ page import="java.util.*" %>
+<%@ page import="com.cannontech.roles.application.WebClientRole"%>
+<%@ page import="com.cannontech.roles.operator.CommercialMeteringRole"%>
+<%@ page import="com.cannontech.database.cache.functions.EnergyCompanyFuncs" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
 <%@ page import="com.cannontech.graph.model.TrendModelType" %>
 <%@ page import="com.cannontech.util.ServletUtil" %>
-<%@ taglib uri="/WEB-INF/jruntags.jar" prefix="jrun" %>
 <%@ taglib uri="/WEB-INF/cti.tld" prefix="cti" %>
 
 <cti:checklogin/>
 
 <%
-    java.text.SimpleDateFormat calFormat = new java.text.SimpleDateFormat("MM/dd/yyyy");	  
-    String dbAlias = com.cannontech.common.util.CtiUtilities.getDatabaseAlias();
-
 	LiteYukonUser liteYukonUser = null;
 	int liteYukonUserID = -1;
 	try
@@ -22,16 +22,21 @@
 	catch (IllegalStateException ise)
 	{
 	}
+	int energyCompanyID = EnergyCompanyFuncs.getEnergyCompany(liteYukonUser).getEnergyCompanyID();
 	if (liteYukonUser == null)
 	{
 		response.sendRedirect(request.getContextPath() + "/login.jsp"); return;
 	}
 
-
     Class[] types = { Integer.class,String.class };    
-	Object[][] gData = com.cannontech.util.ServletUtil.executeSQL( dbAlias, "SELECT GDEF.GRAPHDEFINITIONID, GDEF.NAME FROM GRAPHDEFINITION GDEF, OPERATORLOGINGRAPHLIST OLGL WHERE GDEF.GRAPHDEFINITIONID = OLGL.GRAPHDEFINITIONID  AND OLGL.OPERATORLOGINID = " + liteYukonUserID + " ORDER BY GDEF.NAME", types );    
+    java.lang.String sqlString =  "SELECT DISTINCT GDEF.GRAPHDEFINITIONID, GDEF.NAME " +
+                                  " FROM GRAPHDEFINITION GDEF, GRAPHCUSTOMERLIST GCL, ENERGYCOMPANYCUSTOMERLIST ECCL "+
+                                  " WHERE ECCL.ENERGYCOMPANYID = " + energyCompanyID + 
+                                  " AND GDEF.GRAPHDEFINITIONID = GCL.GRAPHDEFINITIONID " +
+                                  " AND GCL.CUSTOMERID = ECCL.CUSTOMERID";
+//	MOVED DEFINITION TO STARS HEADER FOR COMPILING //
+	Object[][] gData = com.cannontech.util.ServletUtil.executeSQL( dbAlias, sqlString);
 %>
-
 	<jsp:useBean id="graphBean" class="com.cannontech.graph.GraphBean" scope="session">
 		<%-- this body is executed only if the bean is created --%>
 	<jsp:setProperty name="graphBean" property="viewType" value="<%=TrendModelType.LINE_VIEW%>"/>

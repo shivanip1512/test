@@ -95,8 +95,7 @@
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
 <table width="657" border="0" cellspacing="0" cellpadding="0">
   <tr> 
-                <td width="650" valign="top" class="Main"> 
-                  
+                <td width="650" valign="top" class="MainText"> 
                   <p>&nbsp;</p>
                   <form name="MForm"> 
                   <table width="600" border="1" align="center" cellpadding="0" cellspacing="0">

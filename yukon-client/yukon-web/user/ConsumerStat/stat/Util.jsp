@@ -24,7 +24,7 @@
 				  <td width="253" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle">&nbsp;</td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
+                    <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
                   </td>
               </tr>
             </table>
@@ -53,7 +53,7 @@
 		  <td width="657" valign="top" bgcolor="#FFFFFF"> 
               <br>
               
-            <div align="center" class="Main">
+            <div align="center" class="MainText">
               <% String header = AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_TITLE_UTILITY, "QUESTIONS - UTILITY"); %>
               <%@ include file="InfoBar.jsp" %>
               <table width="600" border="0" cellpadding="0" cellspacing="0">

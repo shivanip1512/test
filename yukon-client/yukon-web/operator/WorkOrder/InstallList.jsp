@@ -23,11 +23,10 @@
                 <td width="235" height = "28" valign="middle">&nbsp;</td>
                 <form method="post" action="../Operations.jsp">
                   <td width="58" valign="middle"> 
-                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
+                    <div align="center"><span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
-                      Off</a>&nbsp;</span></div>
+                    <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
                   </td>
                 </form>
               </tr>
@@ -56,7 +55,7 @@
             <div align="center"> 
               <% String header = "INSTALLATION LIST"; %>
               <%@ include file="SearchBar.jsp" %>
-              <p><span class="Main">Display</span>:&nbsp; 
+              <p><span class="MainText">Display</span>:&nbsp; 
                 <select name="select">
                   <option>All</option>
                   <option>Open</option>
@@ -66,7 +65,7 @@
                 <input type="submit" name="Submit" value="Submit">
                 <br>
                 <br>
-                <span class="Main">Click on an Install Order # to view the install 
+                <span class="MainText">Click on an Install Order # to view the install 
                 order details.</span> 
               <form method="post" action="InstallDetail.jsp">
                 <table border="1" cellspacing="0" cellpadding="3" width="626" height="186" >

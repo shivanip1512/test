@@ -22,11 +22,10 @@
                <td width="310" height = "28" class="PageHeader">&nbsp;&nbsp;&nbsp;<cti:getProperty propertyid="<%=EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>"/></td>
                 <td width="235" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle"> 
-                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
+                    <div align="center"><span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
-                      Off</a>&nbsp;</span></div>
+                    <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
                   </td>
               </tr>
             </table>
@@ -78,13 +77,13 @@
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
           <table width="657 border="0" cellspacing="0" cellpadding="0">
-  <tr> 
-                <td width="650" class="Main"valign="top"> 
-                  <p align="center"><b><br>
-                    <cti:getProperty propertyid="<%=EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>"/> - CURRENT SUMMARY</b> <br>
+            <tr> 
+                <td width="650" class="TitleHeader"valign="top"> 
+                  <p align="center"><br>
+                    <cti:getProperty propertyid="<%=EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>"/> - CURRENT SUMMARY<br>
                     <br>
                   <p align="center">Click on an Offer ID to view the offer summary.</p>
-      <p align="center"><span class="MainHeader"><b>Today's <cti:getProperty propertyid="<%=EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>"/> Summary - <%= datePart.format(com.cannontech.util.ServletUtil.getToday(tz)) %></b></span> 
+      <p align="center"><span class="SubtitleHeader">Today's <cti:getProperty propertyid="<%=EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>"/> Summary - <%= datePart.format(com.cannontech.util.ServletUtil.getToday(tz)) %></span> 
       <center>
         <table width="620" border="1" cellspacing="0" cellpadding="2">
           <tr valign="top"> 
@@ -178,8 +177,8 @@
         </table>
         <br>
       </center> 
-      <p align="center"><span class="MainHeader"><b>Tomorrow's 
-        <cti:getProperty propertyid="<%=EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>"/> Summary - <%= datePart.format(com.cannontech.util.ServletUtil.getTomorrow(tz)) %></b></span>
+      <p align="center"><span class="SubtitleHeader">Tomorrow's 
+        <cti:getProperty propertyid="<%=EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>"/> Summary - <%= datePart.format(com.cannontech.util.ServletUtil.getTomorrow(tz)) %></span>
       <table width="620" border="1" cellspacing="0" cellpadding="2" align="center">
         <tr valign="top"> 
           <td class="HeaderCell">Offer ID</td>
@@ -274,8 +273,8 @@
                           %>
       </table>
       </center>
-      <p align="center"><span class="MainHeader"><b>Future
-        <cti:getProperty propertyid="<%=EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>"/> Summary</b></span>
+      <p align="center"><span class="SubtitleHeader">Future
+        <cti:getProperty propertyid="<%=EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>"/> Summary</span>
       <table width="620" border="1" cellspacing="0" cellpadding="2" align="center">
         <tr valign="top"> 
           <td class="HeaderCell">Offer ID</td>
