@@ -9,6 +9,7 @@
 <%@ page import="com.cannontech.database.data.pao.YukonPAObject"%>
 <%@ page import="com.cannontech.database.data.pao.PAOGroups"%>
 <%@ page import="com.cannontech.database.data.pao.RouteTypes"%>
+<%@ page import="com.cannontech.device.range.*"%>
 
 <%
 	java.util.Enumeration enum1 = request.getParameterNames();
@@ -46,25 +47,45 @@
 	LiteYukonPAObject[] validRoutes = PAOFuncs.getRoutesByType(validRouteTypes);
 %>
 
+<script language="JavaScript">
+var valueChanged = false;
+function setValueChanged() {
+	valueChanged = true;
+}
+
+function hasChanged(form) {
+	return valueChanged;
+}
+</script>
+
 <%
+
 //Update the Device when submit button was pressed.
 if (request.getParameter("Submit") != null)
 {
 	//Error message when db value changed during page display!!
-	
+
 	//Meter Number Updated
 	boolean updateYukonPAO = false;
 	String updateMeterNumber = (String)request.getParameter("MeterNumber");
 	String prevMeterNumber = (String)request.getParameter("PrevMeterNumber");
-	if( prevMeterNumber.equalsIgnoreCase(devMeterGroup.getMeterNumber()))
+	if( prevMeterNumber == null || prevMeterNumber.equalsIgnoreCase(devMeterGroup.getMeterNumber()))
 	{
 		if(!updateMeterNumber.equalsIgnoreCase(devMeterGroup.getMeterNumber().toString()))
 		{
-			devMeterGroup.setMeterNumber(updateMeterNumber.toString());
-			updateYukonPAO = true;
+			if( updateMeterNumber.length() > 0)
+			{
+				devMeterGroup.setMeterNumber(updateMeterNumber.toString());
+				updateYukonPAO = true;
+			}
+			else
+			{					
+				errorMsg = "Meter Number may not be empty.";
+			}
 		}
 	}
 	else {
+		//Error message when db value changed during page display!!
 		errorMsg = "Changes have been made to data by another user.  Please try again";
 	}
 	
@@ -77,18 +98,31 @@ if (request.getParameter("Submit") != null)
 	}
 
 	//Physical Address Updated
-	int updateAddress = Integer.valueOf((String)request.getParameter("Address")).intValue();
-	int prevAddress = Integer.valueOf((String)request.getParameter("PrevAddress")).intValue();
-	if( prevAddress == address)
+	String updateAddress = (String)request.getParameter("Address");
+	String prevAddressStr = (String)request.getParameter("PrevAddress");
+	if( prevAddressStr == null || Integer.valueOf(prevAddressStr).intValue() == address)
 	{
-		if( updateAddress != address)
-		{
-			((CarrierBase)yukonPao).getDeviceCarrierSettings().setAddress(new Integer(updateAddress));
-			address = updateAddress;
-			updateYukonPAO = true;
+		try{
+			if( Integer.valueOf(updateAddress).intValue() != address)
+			{
+				if( !DeviceAddressRange.isValidRange(PAOGroups.getDeviceType(((CarrierBase)yukonPao).getPAOType()), Integer.valueOf(updateAddress).intValue() ) )
+				{
+					errorMsg = DeviceAddressRange.getRangeMessage(PAOGroups.getDeviceType(((CarrierBase)yukonPao).getPAOType()));
+				}
+				else
+				{
+					((CarrierBase)yukonPao).getDeviceCarrierSettings().setAddress(Integer.valueOf(updateAddress));
+					address = Integer.valueOf(updateAddress).intValue();
+					updateYukonPAO = true;
+				}
+			}
+		}
+		catch(NumberFormatException nfe){
+			errorMsg = "Physical Address must be integer values only.";
 		}
 	}
 	else {
+		//Error message when db value changed during page display!!
 		errorMsg = "Changes have been made to data by another user.  Please try again";
 	}
 
@@ -105,6 +139,7 @@ if (request.getParameter("Submit") != null)
 		}
 	}
 	else {
+		//Error message when db value changed during page display!!
 		errorMsg = "Changes have been made to data by another user.  Please try again";
 	}
 
@@ -176,8 +211,10 @@ if (request.getParameter("Submit") != null)
   
 			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>              
 
-			  <form name="invForm" method="POST" action="ConfigMeter.jsp">
+			  <form name="invForm" method="POST" onsubmit="return hasChanged(this)" action="ConfigMeter.jsp">
+<%--  			  <form name="invForm" method="POST" onsubmit="return hasChanged(this)" action="<%= request.getContextPath() %>/servlet/DBChangeServlet">--%>
                 <input type="hidden" name="action" value="UpdateMeterConfig">
+                <input type="hidden" name="DeviceID" value="<%=deviceID%>">
                 <input type="hidden" name="InvNo" value="<%=invNo%>">
 				<input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/operator/Consumer/ConfigMeter.jsp?InvNo=<%=invNo%>">
 				<input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/operator/Consumer/ConfigMeter.jsp?InvNo=<%= invNo%>">
@@ -193,21 +230,21 @@ if (request.getParameter("Submit") != null)
                   <tr> 
                     <td width="30%" class="SubtitleHeader" height="2" align="right">Meter Number:</td>
                     <td width="70%" height="2"> 
-                      <input type="text" name="MeterNumber" maxlength="70" size="20" value="<%=devMeterGroup.getMeterNumber()%>">
+                      <input type="text" name="MeterNumber" maxlength="70" size="20" onchange="setValueChanged()" value="<%=devMeterGroup.getMeterNumber()%>">
                       <input type="hidden" name="PrevMeterNumber" value="<%=devMeterGroup.getMeterNumber()%>">
                     </td>
                   </tr>
                   <tr> 
                     <td width="30%" class="SubtitleHeader" height="2" align="right">Physical Address:</td>
                     <td width="70%" height="2"> 
-                      <input type="text" name="Address" size="20" value="<%= address%>" maxlength="70">
-                      <input type="hidden" name="PrevAddress" value="<%=address%>">
+                      <input type="text" name="Address" size="20" onchange="setValueChanged()" value="<%= address%>" maxlength="70">
+                      <input type="hidden" name="PrevAddress" value="<%=((CarrierBase)yukonPao).getDeviceCarrierSettings().getAddress().intValue()%>">
                     </td>
                   </tr>
                   <tr> 
                     <td width="30%" class="SubtitleHeader" height="2" align="right">Route:</td>
                     <td width="70%" height="2"> 
-                      <select id="RouteID" name="RouteID">
+                      <select id="RouteID" name="RouteID" onchange="setValueChanged()">
                         <%
                       for (int i = 0; i < validRoutes.length; i++)
                       {
@@ -219,13 +256,13 @@ if (request.getParameter("Submit") != null)
                       
                       %>
                       </select>
-                      <input type="hidden" name="PrevRouteID" value="<%=routeID%>">
+                      <input type="hidden" name="PrevRouteID" value="<%=((CarrierBase)yukonPao).getDeviceRoutes().getRouteID().intValue()%>">
                     </td>
                   </tr>
                   <tr> 
                     <td width="30%" class="SubtitleHeader" height="2" align="right">Collection Group:</td>
                     <td width="70%" height="2"> 
-                      <select id="collgroup" name="CollGroup">
+                      <select id="collgroup" onchange="setValueChanged()" name="CollGroup">
                         <% /* Fill in the period drop down and attempt to match the current period with one of the options */
 					  String [] collGroups = DeviceMeterGroup.getDeviceCollectionGroups();
                       for( int i = 0; i < collGroups.length; i++ )
