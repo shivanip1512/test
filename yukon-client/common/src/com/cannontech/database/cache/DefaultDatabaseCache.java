@@ -73,7 +73,7 @@ public void addDBChangeListener(DBChangeListener listener)
  * Creation date: (3/29/2001 12:27:17 PM)
  * @param newItem com.cannontech.database.db.DBPersistent
  */
-public static DBChangeMsg[] createDBChangeMessages( com.cannontech.database.db.CTIDbChange newItem, int changeType )
+public synchronized DBChangeMsg[] createDBChangeMessages( com.cannontech.database.db.CTIDbChange newItem, int changeType )
 {
 	return newItem.getDBChangeMsgs( changeType );
 }
