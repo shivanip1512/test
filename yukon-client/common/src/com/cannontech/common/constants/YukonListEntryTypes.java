@@ -44,6 +44,8 @@ public interface YukonListEntryTypes
 	public static final int YUK_DEF_ID_DEV_TYPE_LCR_3000			= 1306;
 	public static final int YUK_DEF_ID_DEV_TYPE_LCR_2000			= 1307;
 	public static final int YUK_DEF_ID_DEV_TYPE_LCR_1000			= 1308;
+	public static final int YUK_DEF_ID_DEV_TYPE_SA205				= 1309;
+	public static final int YUK_DEF_ID_DEV_TYPE_SA305				= 1310;
 	public static final int YUK_DEF_ID_APP_CAT_DEFAULT				= 1400;
 	public static final int YUK_DEF_ID_APP_CAT_AIR_CONDITIONER		= 1401;
 	public static final int YUK_DEF_ID_APP_CAT_WATER_HEATER			= 1402;
