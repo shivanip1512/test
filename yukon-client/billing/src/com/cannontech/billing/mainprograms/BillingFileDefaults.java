@@ -32,11 +32,27 @@ public class BillingFileDefaults
 	public static final int ALTERNATE_GROUP = 1;
 	public static final int BILLING_GROUP = 2;
 
-	private static String COLLECTION_GROUP_COLUMN_STRING = "COLLECTIONGROUP";
-	private static String ALTERNATE_GROUP_COLUMN_STRING = "TESTCOLLECTIONGROUP";
-	private static String BILLING_GROUP_COLUMN_STRING = "BILLINGGROUP";
+	// The index values are relied upon greatly.  THey CANNOT be changed without being in sync
+	// with the above id's.
+	public static String[] validBillGroupTypeStrings = 
+	{
+		"Collection Group", "Alternate Group", "Billing Group"
+	};
+	public static int[] validBillGroupTypeIDs = 
+	{
+		COLLECTION_GROUP, ALTERNATE_GROUP, BILLING_GROUP
+	};
+	private static String[] validBillGroupSQLStrings = 
+	{
+		"COLLECTIONGROUP", "TESTCOLLECTIONGROUP", "BILLINGGROUP"
+	};
+	
+//
+//	private static String COLLECTION_GROUP_SQL_STRING = "COLLECTIONGROUP";
+//	private static String ALTERNATE_GROUP_SQL_STRING = "TESTCOLLECTIONGROUP";
+//	private static String BILLING_GROUP_SQL_STRING = "BILLINGGROUP";
 
-	private String billGroupColumn = COLLECTION_GROUP_COLUMN_STRING;
+	private String billGroupSQLString = validBillGroupSQLStrings[COLLECTION_GROUP];
 /**
  * DynamicBilling constructor comment.
  */
@@ -57,7 +73,7 @@ public BillingFileDefaults(int newFormatID, int newDemandDays, int newEnergyDays
 	setDemandDaysPrev( newDemandDays );
 	setEnergyDaysPrev( newEnergyDays );
 	setBillGroup( newSingleBillGrp );
-	setBillGroupColumn( billingGroupIndex );
+	setBillGroupSQLString( billingGroupIndex );
 	setOutputFile( newOutFile );
 	setRemoveMultiplier( newRemoveMultiplier );
 	
@@ -76,13 +92,29 @@ public BillingFileDefaults(int newFormatID, int newDemandDays, int newEnergyDays
 	setDemandDaysPrev( newDemandDays );
 	setEnergyDaysPrev( newEnergyDays );
 	setBillGroup( newBillGrp );
-	setBillGroupColumn( billingGroupIndex);
+	setBillGroupSQLString( billingGroupIndex);
 	setOutputFile( newOutFile );
 	setRemoveMultiplier( newRemoveMultiplier );
 	
 	setInputFile( newInFile );
 	setEndDate( newEndDate );
 }
+
+public static String getBillGroupTypeString(int billGroupTypeId)
+{
+	return validBillGroupTypeStrings[billGroupTypeId];
+}
+public static int getBillGroupTypeID(String billGroupTypeString)
+{
+	for(int i = 0; i < validBillGroupTypeStrings.length; i++)
+	{
+		if( validBillGroupTypeStrings[i].equalsIgnoreCase(billGroupTypeString))
+			return i;
+	}
+	return -1;
+}
+
+
 public java.util.Vector getBillGroup()
 {
 	return billGroup;
@@ -90,34 +122,30 @@ public java.util.Vector getBillGroup()
 
 public static String getBillGroupComboBoxString(int index)
 {
-	switch(index)
-	{
-		case COLLECTION_GROUP:
-			return "Collection Group";
-		case ALTERNATE_GROUP:
-			return "Alternate Group";
-		case BILLING_GROUP:
-			return "Billing Group";
-		default: //this is bad
-			return "Collection Group";
-	}
+	return validBillGroupTypeStrings[index];
 }
 
 public static String getBillGroupComboBoxString(String groupString)
 {
-	if( groupString.equalsIgnoreCase(COLLECTION_GROUP_COLUMN_STRING))
-		return "Collection Group";
-	else if( groupString.equalsIgnoreCase(ALTERNATE_GROUP_COLUMN_STRING))
-		return "Alternate Group";
-	else if( groupString.equalsIgnoreCase(BILLING_GROUP_COLUMN_STRING))
-		return "Billing Group";
-	else 
-		return "Collection Group";
+	for (int i =0; i < validBillGroupSQLStrings.length; i++)
+	{
+		if ( validBillGroupSQLStrings[i].equalsIgnoreCase(groupString))
+			return validBillGroupTypeStrings[i];
+	}
+	return validBillGroupTypeStrings[COLLECTION_GROUP];
 }
 
-public String getBillGroupColumn()
+public String[] getValidBillGroupTypeStrings()
 {
-	return billGroupColumn;
+	return validBillGroupTypeStrings;
+}
+public static int[] getValidBillGroupTypeIDs()
+{
+	return validBillGroupTypeIDs;
+}
+public String getBillGroupSQLString()
+{
+	return billGroupSQLString;
 }
 public java.util.Date getBillingEndDate()
 {
@@ -355,27 +383,14 @@ private void setBillGroup(java.util.Vector newBillGroup)
 {
 	billGroup = newBillGroup;
 }
-public void setBillGroupColumn(int newbillGroupColumnIndex)
+public void setBillGroupSQLString(int newbillGroupIndex)
 {
-	switch(newbillGroupColumnIndex)
-	{
-		case COLLECTION_GROUP:
-			billGroupColumn = COLLECTION_GROUP_COLUMN_STRING;
-			break;
-		case ALTERNATE_GROUP:
-			billGroupColumn = ALTERNATE_GROUP_COLUMN_STRING;
-			break;
-		case BILLING_GROUP:
-			billGroupColumn = BILLING_GROUP_COLUMN_STRING;
-			break;
-		default: //this is bad
-			billGroupColumn = COLLECTION_GROUP_COLUMN_STRING;
-	}
+	billGroupSQLString = validBillGroupSQLStrings[newbillGroupIndex];
 }
 
-public void setBillGroupColumn(String newBillGroupColumn)
+public void setBillGroupSQLString(String newBillGroupSQLString)
 {
-	billGroupColumn = newBillGroupColumn;
+	billGroupSQLString = newBillGroupSQLString;
 }
 public void setDemandDaysPrev(int newDemandDaysPrev)
 {
@@ -456,7 +471,7 @@ public void updateFileDefaults(java.util.Vector infileDefaultsVector)
 	setOutputFile((String)infileDefaultsVector.get(index++));
 	
 //	if( index < infileDefaultsVector.size())
-		setBillGroupColumn((String)infileDefaultsVector.get(index++));
+		setBillGroupSQLString((String)infileDefaultsVector.get(index++));
 		setRemoveMultiplier(new Boolean((String)infileDefaultsVector.get(index++)).booleanValue());
 	//setInputFile((String)infileDefaultsVector.get(index++));
 }
@@ -498,7 +513,7 @@ public void writeDefaultsFile()
 		writer.write( getOutputFileDir() + "\r\n" );
 
 		// write the type of bill Group being used (MUST BE A DB COLUMN FROM DEVICEMETERGROUP table)
-		writer.write( getBillGroupColumn() + "\r\n" );
+		writer.write( getBillGroupSQLString() + "\r\n" );
 		
 		writer.write( String.valueOf(getRemoveMultiplier()));
 
