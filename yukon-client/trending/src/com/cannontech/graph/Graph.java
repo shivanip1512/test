@@ -147,7 +147,7 @@ private void connect()
 	reg.setAppName(CtiUtilities.getAppRegistration());
 	reg.setAppIsUnique(0);
 	reg.setAppKnownPort(0);
-	reg.setAppExpirationDelay( 1000000 );
+	reg.setAppExpirationDelay( 300 );
 	
 	connToDispatch.setHost(host);
 	connToDispatch.setPort(port);
@@ -160,7 +160,7 @@ private void connect()
 	}
 	catch ( Exception e )
 	{
-		e.printStackTrace();
+		CTILogger.error(e.getMessage(), e);
 	}
 
 	//dbChangeListener = new DBChangeMessageListener();
