@@ -15,7 +15,6 @@ function changeView(viewType)
 	submitMForm();
 }
 
-
 function submitMForm()
 {
 	document.MForm.submit();

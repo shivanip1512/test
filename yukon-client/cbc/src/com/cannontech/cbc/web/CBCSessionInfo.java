@@ -19,14 +19,10 @@ public class CBCSessionInfo
 	private String lastArea = SubBusTableModel.ALL_FILTER;
 	private int lastSubRowNum = 0;
 	
-	private String refreshRate = CapControlWebAnnex.REF_SECONDS_DEF;
-
-
 	public CBCSessionInfo()
 	{
 		super();
 	}
-
 
 
 	/**
@@ -46,22 +42,6 @@ public class CBCSessionInfo
 			lastArea = SubBusTableModel.ALL_FILTER;
 		else
 			lastArea = area_;
-	}
-
-	/**
-	 * @return
-	 */
-	public String getRefreshRate()
-	{
-		return refreshRate;
-	}
-
-	/**
-	 * @param string
-	 */
-	public void setRefreshRate(String string)
-	{
-		refreshRate = string;
 	}
 
 	/**

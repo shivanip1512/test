@@ -39,7 +39,7 @@
 <head>
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<meta http-equiv="refresh" content= <%= cbcSession.getRefreshRate() %> >
+<meta http-equiv="refresh" content= <%= cbcAnnex.getRefreshRate() %> >
 <link rel="stylesheet" href="../../WebConfig/CannonStyle.css" type="text/css">
 <!--<link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">-->
 </head>
@@ -60,9 +60,11 @@
               <tr bgcolor="#666699"> 
                 <td width="353" height = "28" class="Header3">&nbsp;&nbsp;<font color="#99FFFF" size="2" face="Arial, Helvetica, sans-serif"><em>&nbsp;
                 	Capacitor Control 
-            		<% if( !cbcServlet.isConnected() ) {%><font color="#FFFF00"> (Not connected) </font><%}%>
-            		<% if( cbcSession.getRefreshRate().equals(CapControlWebAnnex.REF_SECONDS_PEND) ) {%><font color="#FFFF00"> 
-            			(Auto-refresh in <%= CapControlWebAnnex.REF_SECONDS_PEND %> seconds) </font><%}%>
+            		<% if( !cbcAnnex.isConnected() ) {%><font color="#FFFF00"> (Not connected) </font><%}%>
+            		<% if( cbcAnnex.getRefreshRate().equals(CapControlWebAnnex.REF_SECONDS_PEND) ) {%><font color="#FFFF00"> 
+            			(Auto-refresh in <%= CapControlWebAnnex.REF_SECONDS_PEND %> seconds) </font><%
+            			cbcAnnex.setRefreshRate( CapControlWebAnnex.REF_SECONDS_DEF);
+            			}%>
             		</em></font></td>
                 <td width="235" valign="middle">&nbsp;</td>
                 
@@ -100,9 +102,9 @@
 						<form name="AreaForm" action='AllSubs.jsp' method="POST" >
                     <select name="area" onchange="this.form.submit();" >
 	                  <%
-	                  	for( int i = 0; i < CapControlWebAnnex.getAreaNames().size(); i++ )
+	                  	for( int i = 0; i < connServlet.getAreaNames().size(); i++ )
 	                  	{
-	                  		String area = CapControlWebAnnex.getAreaNames().get(i).toString();
+	                  		String area = connServlet.getAreaNames().get(i).toString();
 	                  		
 	                  		String s = ( area.equalsIgnoreCase(cbcSession.getLastArea()) 
 	                  						? " selected" : "" ) ;
@@ -187,7 +189,7 @@
                         <td width="100" class="TableCell"><%= feederMdl.getValueAt(feederRowID.intValue(), FeederTableModel.NAME_COLUMN) %></td>
 
                         <td width="44" class="TableCell">
-                        	<a href= "capcontrols.jsp?rowID=<%= feederRowID.intValue() %>&controlType=<%= CapControlWebAnnex.CMD_FEEDER %>" >
+                        	<a href= "capcontrols.jsp?rowID=<%= feederRowID %>&controlType=<%= CapControlWebAnnex.CMD_FEEDER %>" >
                         	<font color="<%= CapControlWebAnnex.convertColor(feederMdl.getCellForegroundColor( feederRowID.intValue(), FeederTableModel.CURRENT_STATE_COLUMN ) ) %>">
                         	<%= feederMdl.getValueAt(feederRowID.intValue(), FeederTableModel.CURRENT_STATE_COLUMN) %>
                         </font></a></td>

@@ -21,7 +21,7 @@ import com.cannontech.message.dispatch.message.PointData;
  * To change the template for this generated type comment go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-class CBCCommandExec
+public class CBCCommandExec
 {
 	private CapControlWebAnnex cbcCache = null;
 
@@ -29,46 +29,46 @@ class CBCCommandExec
 	/**
 	 * 
 	 */
-	CBCCommandExec( CapControlWebAnnex cbcCache_ )
+	public CBCCommandExec( CapControlWebAnnex cbcCache_ )
 	{
 		super();
 		
 		cbcCache = cbcCache_;
 	}
 
-	public boolean execute_SubCmd( int cmdID_, int rowID_ )
+	public boolean execute_SubCmd( int cmdID_, int paoID_ )
 	{
 		if( cmdID_ == CBCCommand.CONFIRM_CLOSE 
 			 || cmdID_ == CBCCommand.CONFIRM_OPEN )
 		{
-			executeConfirmSub( rowID_ );
+			executeConfirmSub( paoID_ );
 		} 
 		else 
 		{
 			executeCommand( 
-				cbcCache.getSubTableModel().getRowAt(rowID_).getCcId().intValue(),
+				paoID_,
 				cmdID_ );			
 		}
 	  
 		return true;
 	}
 
-	public boolean execute_FeederCmd( int cmdID_, int rowID_ )
+	public boolean execute_FeederCmd( int cmdID_, int paoID_ )
 	{
 		executeCommand( 
-			cbcCache.getFeederTableModel().getRowAt(rowID_).getCcId().intValue(),
+			paoID_,
 			cmdID_ );			
 
 		return true;
 	}
 
 
-	public boolean execute_CapBankCmd( int cmdID_, int rowID_, Integer manChange_ )
+	public boolean execute_CapBankCmd( int cmdID_, int paoID_, Integer manChange_ )
 	{
 		if( cmdID_ == CBCCommand.CONFIRM_CLOSE 
 			 || cmdID_ == CBCCommand.CONFIRM_OPEN )
 		{
-			CapBankDevice bank = (CapBankDevice)cbcCache.getCapBankTableModel().getRowAt( rowID_ );
+			CapBankDevice bank = (CapBankDevice)cbcCache.getCapBankTableModel().getCapbank( paoID_ );
 			
 			if( CapBankDevice.isInAnyOpenState(bank) )
 			{
@@ -81,7 +81,7 @@ class CBCCommandExec
 		}
 		else if( cmdID_ == CBCCommand.CMD_MANUAL_ENTRY )
 		{
-			CapBankDevice bank = (CapBankDevice)cbcCache.getCapBankTableModel().getRowAt( rowID_ );
+			CapBankDevice bank = (CapBankDevice)cbcCache.getCapBankTableModel().getCapbank( paoID_ );
 			
 			// Send new point Here
 			PointData pt = new PointData();
@@ -101,17 +101,17 @@ class CBCCommandExec
 		}
 		else
 			executeCommand( 
-				cbcCache.getCapBankTableModel().getRowAt(rowID_).getCcId().intValue(),
+				paoID_,
 				cmdID_ );			
 
 		return true;
 	}
 
-	private void executeConfirmSub( int subRowID_ )
+	private void executeConfirmSub( int paoID_ )
 	{
 		Multi multi = new Multi();
       
-		SubBus sub = cbcCache.getSubTableModel().getRowAt( subRowID_ );
+		SubBus sub = cbcCache.getSubTableModel().getSubBus( paoID_ );
       
 		for( int i = 0; i < sub.getCcFeeders().size(); i++ )
 		{

@@ -8,22 +8,17 @@ package com.cannontech.cbc.web;
  * @author: Ryan
  */
 import java.awt.Color;
-import java.util.Vector;
 
 import com.cannontech.cbc.data.CBCClientConnection;
 import com.cannontech.cbc.gui.CapBankTableModel;
 import com.cannontech.cbc.gui.FeederTableModel;
 import com.cannontech.cbc.gui.SubBusTableModel;
 import com.cannontech.cbc.messages.CBCCommand;
-import com.cannontech.cbc.messages.CBCSubAreaNames;
 import com.cannontech.cbc.messages.CBCSubstationBuses;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.commonutils.ModifiedDate;
-import com.cannontech.common.gui.util.Colors;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.WeakObserver;
 import com.cannontech.database.db.state.State;
-import com.cannontech.message.dispatch.message.Registration;
 import com.cannontech.util.ServletUtil;
 
 public class CapControlWebAnnex implements java.util.Observer 
@@ -37,23 +32,16 @@ public class CapControlWebAnnex implements java.util.Observer
 	public static final String CMD_CAPBANK		= "CAPBANK_CNTRL";
 
 
-	//insures only 1 connection for the servlet
-	private static CBCClientConnection conn = null;
-
-	//insures only 1 set of these Strings for the servlet
-	private static final Vector areaNames = new Vector(32);
-
 	//the user this object was created for
 	private String userName = null;
-
-
-	//used to send commands to the connection
-	private CBCCommandExec cbcExecutor = null;
-
 
 	private SubBusTableModel subBusTableModel = null;
 	private FeederTableModel feederTableModel = null;
 	private CapBankTableModel capBankTableModel = null;
+
+
+	//what our current refresh rate is
+	private String refreshRate = CapControlWebAnnex.REF_SECONDS_DEF;
 
 
 	//allows us to manage memory a little better 
@@ -61,52 +49,50 @@ public class CapControlWebAnnex implements java.util.Observer
 	private final WeakObserver thisWeakObsrvr = new WeakObserver(this);
 	
 
+	//just a ref to a real connection
+	private CBCClientConnection conn = null;
+	
 	/**
 	 * CapControlWebAnnex constructor comment.
 	 */
 	public CapControlWebAnnex() 
 	{
 		super();
-
-		//force the connection to connect
-		getConnection();
-
-		initialize();
 	}
 
-
-	public synchronized boolean isConnected()
+	public boolean isConnected()
 	{
 		return getConnection().isConnValid();
 	}
 
+	public CBCClientConnection getConnection()
+	{
+		if( conn == null )
+			throw new IllegalStateException("The CBC Connection should NEVER be (null)");
 
+		return conn;
+	}
+
+	public synchronized boolean hasValidConn()
+	{
+		return conn != null;
+	}
+
+	public void setConnection( CBCClientConnection conn_ )
+	{
+		//only init the conn the annex after we set the conn
+		if( conn == null )
+		{
+			conn = conn_;
+			initialize();
+		}
+		else			
+			conn = conn_;
+	}
+	
 	public static String convertColor( Color c )
 	{
 		return "#" + ServletUtil.getHTMLColor(c);
-	}
-	
-	
-	protected synchronized CBCClientConnection getConnection()
-	{
-		if( conn == null )  
-		{
-			//first time this app has been hit		
-			Registration reg = new Registration();
-			reg.setAppName("CBC_WEB_CACHE@" + CtiUtilities.getUserName() );
-			reg.setAppIsUnique(0);
-			reg.setAppKnownPort(0);
-			reg.setAppExpirationDelay( 300 );  // 5 minutes
-
-			//The CBC server does not take this registration for now, dont use it
-			//conn = new CBCClientConnection( reg );
-			conn = new CBCClientConnection();
-
-
-			CTILogger.info("Will attempt to connect to CBC Server @" + conn.getHost() + ":" + conn.getPort());
-		}
-				
-		return conn;
 	}
 
 	public synchronized SubBusTableModel getSubTableModel()
@@ -146,7 +132,9 @@ public class CapControlWebAnnex implements java.util.Observer
 
 		super.finalize();
 		
-		CTILogger.debug("      finalized " + getClass().getName() ); 
+		//remember, 2 observers per web client
+		CTILogger.debug("  Finalized - CapControlAnnex (Total: " + 
+				(getConnection().countObservers()/2) + ")" );
 	}
 
 
@@ -158,15 +146,15 @@ public class CapControlWebAnnex implements java.util.Observer
 	{
 		//dont show the year on timestamp strings
 		ModifiedDate.setFormatPattern("MM-dd HH:mm:ss");
-		
-
-		//let us observe the connection
-		getConnection().addObserver( thisWeakObsrvr );
 
 
 		//add the table listener to the connection		
 		getSubTableModel().setConnection( getConnection() );
 		
+		//let us observe the connection
+		getConnection().addObserver( thisWeakObsrvr );
+
+		//let us observe the SubTableModel
 		getConnection().addObserver( getSubTableModel() );		
 
 
@@ -182,47 +170,6 @@ public class CapControlWebAnnex implements java.util.Observer
 		}
 		catch( Exception e ) {}
 
-	}
-
-
-	/**
-	 * 
-	 * Allows the execution of commands to the cbc server.
-	 * @param cmdID_ int : the id of the command from CBCCommand to be executed
-	 * @param cmdType_ String : type of command to execute ( CMD_SUB,CMD_FEEDER,CMD_CAPBANK ) 
-	 * @param rowID_ int : the row from a types data model to execute 
-	 * @param manChange_ Integer : the state index field for a capbank, null if not present
-	 */
-	public void executeCommand( int cmdID_, String cmdType_, int rowID_, Integer manChange_ )
-	{
-		if( cbcExecutor == null )		
-			cbcExecutor = new CBCCommandExec( this );
-			
-		if( CMD_SUB.equals(cmdType_) )
-			cbcExecutor.execute_SubCmd( cmdID_, rowID_ );
-		
-		if( CMD_FEEDER.equals(cmdType_) )
-			cbcExecutor.execute_FeederCmd( cmdID_, rowID_ );
-
-		if( CMD_CAPBANK.equals(cmdType_) )
-			cbcExecutor.execute_CapBankCmd( cmdID_, rowID_, manChange_ );
-	}
-
-
-	/**
-	 * Insert the method's description here.
-	 * Creation date: (4/12/2002 1:53:27 PM)
-	 * @param areaNames com.cannontech.cbc.messages.CBCSubAreaNames
-	 */
-	private synchronized void updateAreaList(CBCSubAreaNames areaNames_) 
-	{
-		// remove all the values in the JComboBox except the first one
-		getAreaNames().removeAllElements();
-		getAreaNames().add( SubBusTableModel.ALL_FILTER );
-
-		// add all area names to the JComboBox	
-		for( int i = 0; i < areaNames_.getNumberOfAreas(); i++ )
-			getAreaNames().add( areaNames_.getAreaName(i) );
 	}
 
 	/**
@@ -244,24 +191,9 @@ public class CapControlWebAnnex implements java.util.Observer
 		{
 			//nothing for now, the models will handle this stuff
 		}
-		else if( arg instanceof CBCSubAreaNames )
-		{
-			updateAreaList( (CBCSubAreaNames)arg );
-		}
 		else if( arg instanceof State[] )
 		{
-			State[] states = (State[])arg;
-			Color[][] colors = new Color[states.length][2];
-			String[] stateNames = new String[states.length];
-			
-			for( int i = 0; i < states.length; i++ )
-			{
-				stateNames[i] = states[i].getText();
-				colors[i][0] = Colors.getColor( states[i].getForegroundColor().intValue() );
-				colors[i][1] = Colors.getColor( states[i].getBackgroundColor().intValue() );
-			}
-
-			CapBankTableModel.setStates( colors, stateNames );			
+			//nothing for now, a singleton (servlet) will handle this stuff
 		}
 
 
@@ -271,18 +203,8 @@ public class CapControlWebAnnex implements java.util.Observer
 			getSubTableModel().clear();
 			getFeederTableModel().clear();
 			getCapBankTableModel().clear();
-			
-			getAreaNames().clear();
 		}
 
-	}
-
-	/**
-	 * @return
-	 */
-	public static Vector getAreaNames()
-	{
-		return areaNames;
 	}
 
 	/**
@@ -301,4 +223,21 @@ public class CapControlWebAnnex implements java.util.Observer
 		userName = string;
 	}
 
+
+
+	/**
+	 * @return
+	 */
+	public String getRefreshRate()
+	{
+		return refreshRate;
+	}
+
+	/**
+	 * @param string
+	 */
+	public void setRefreshRate(String string)
+	{
+		refreshRate = string;
+	}
 }

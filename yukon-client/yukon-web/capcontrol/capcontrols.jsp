@@ -2,21 +2,21 @@
 <%@ include file="Functions.js" %>
 <%@ include file="cbc_header.jsp" %>
 
-<!-- JavaScript needed for jump menu--->
-
 <%
 	//-------- PARAMS ----------- 
-	// rowID: The row number of the selected item as it appears in the table
+	// rowID: The row ID of the selected item in the table
 	// controlType: The type of control we are to do (SUB_CNTRL, FEEDER_CNTRL, CAPBANK_CNTRL) 
 		
 	//get the page we came from, we will return here (null if not found)
 	String refererURL = request.getHeader("referer");
 	String label = new String();
+	Integer hiddenPAOid = null;
 	
 	Integer rowID = null;
 	String strID = request.getParameter("rowID");
 	String controlType = request.getParameter("controlType");
 	int enableID = -1, disableID = -1;
+	
 	
 	try
 	{
@@ -31,7 +31,7 @@
 		
 		if( controlType == null )
 			throw new IllegalArgumentException("The controlType attribute should not be (null)");
-			
+		
 		enableID = (controlType.equals(CapControlWebAnnex.CMD_SUB) ? CBCCommand.ENABLE_SUBBUS
 						: (controlType.equals(CapControlWebAnnex.CMD_FEEDER) ? CBCCommand.ENABLE_FEEDER
 						: CBCCommand.ENABLE_CAPBANK ));
@@ -82,9 +82,11 @@
               </tr>
               <tr bgcolor="#666699"> 
                 <td width="353" height = "28" class="PageHeader">&nbsp;&nbsp;&nbsp;Capacitor Control 
-                		<% if( !cbcServlet.isConnected() ) {%><font color="#FFFF00"> (Not connected) </font><%}%>
-                		<% if( cbcSession.getRefreshRate().equals(CapControlWebAnnex.REF_SECONDS_PEND) ) {%><font color="#FFFF00"> 
-                			(Auto-refresh in <%= CapControlWebAnnex.REF_SECONDS_PEND %>seconds) </font><%}%>
+                		<% if( !cbcAnnex.isConnected() ) {%><font color="#FFFF00"> (Not connected) </font><%}%>
+                		<% if( cbcAnnex.getRefreshRate().equals(CapControlWebAnnex.REF_SECONDS_PEND) ) {%><font color="#FFFF00"> 
+                			(Auto-refresh in <%= CapControlWebAnnex.REF_SECONDS_PEND %>seconds) </font><%
+                			cbcAnnex.setRefreshRate( CapControlWebAnnex.REF_SECONDS_DEF);
+                			}%>
                 		</td>
                 <td width="235" valign="middle">&nbsp;</td>
                 
@@ -135,6 +137,7 @@
 		<% if( CapControlWebAnnex.CMD_SUB.equals(controlType) )
 			{
 						label = subBusMdl.getRowAt(rowID.intValue()).getCcName();
+						hiddenPAOid = subBusMdl.getRowAt(rowID.intValue()).getCcId();
 %>                    
                   <table width="600" border="1" align="center" cellpadding="0" cellspacing="0">
                     <tr> 
@@ -205,6 +208,7 @@
 			else if( CapControlWebAnnex.CMD_FEEDER.equals(controlType) )
 			{
 						label = feederMdl.getRowAt(rowID.intValue()).getCcName();
+						hiddenPAOid = feederMdl.getRowAt(rowID.intValue()).getCcId();
 %>                    
                   <table width="600" border="1" align="center" cellpadding="0" cellspacing="0">
                     <tr>
@@ -269,6 +273,7 @@
 			else if( CapControlWebAnnex.CMD_CAPBANK.equals(controlType) )
 			{
 						label = capBankMdl.getRowAt(rowID.intValue()).getCcName();
+						hiddenPAOid = capBankMdl.getRowAt(rowID.intValue()).getCcId();
 %>                    
                   <table width="600" border="1" align="center" cellpadding="0" cellspacing="0">
                     <tr> 
@@ -317,7 +322,7 @@
                   <p>&nbsp;</p>
 
 
-	<form name="controlform" action="<%= refererURL %>" method="POST" >
+	<form name="form1" method="POST" action="<%=request.getContextPath()%>/servlet/CBCConnServlet" >
 				  <table width="600" border="1" align="center" cellpadding="0" cellspacing="0">
                     <tr> 
                       <td> 
@@ -382,10 +387,10 @@
                   <p>
                     <input name="cmdExecute" type="submit" value="Submit">
                     <input name="cmdExecute" type="submit" value="Cancel">
-                    
+                                        
+                    <input name="redirectURL" type="hidden" value="<%= refererURL %>">
                     <input name="controlType" type="hidden" value="<%= controlType %>">
-                    <input name="cmdRowID" type="hidden" value="<%= rowID %>">
-                    
+                    <input name="paoID" type="hidden" value="<%= hiddenPAOid %>">
                   </p>
 
                   <p>&nbsp; </p>
