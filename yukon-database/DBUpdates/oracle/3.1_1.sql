@@ -1465,6 +1465,8 @@ insert into YukonRoleProperty values(-70002,-700,'Hide Reports','false','Sets th
 insert into YukonRoleProperty values(-70003,-700,'Hide Graphs','false','Sets the visibility of graphs.');
 insert into YukonRoleProperty values(-70004,-700,'Hide One-Lines','false','Sets the visibility of one-line displays.');
 
+insert into YukonRoleProperty values(-1109,-2,'z_optional_product_dev','00000000','This feature is for development purposes only');
+
 
 
 

@@ -25,6 +25,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.LiteWebConfiguration;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
+import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.serialize.types.StarsLoginStatus;
 import com.cannontech.stars.xml.serialize.types.StarsThermoDaySettings;
@@ -50,6 +51,8 @@ public class ECUtils {
 	public static final int HW_CONFIG_TYPE_VERSACOM = 2;
 	public static final int HW_CONFIG_TYPE_SA205 = 3;
 	public static final int HW_CONFIG_TYPE_SA305 = 4;
+	
+	public static final int RIGHT_SHOW_ADDTL_PROTOCOLS = 0x20000000;
 	
 	public static StarsThermoModeSettings getThermSeasonMode(int configID) {
 		if (configID == YUK_WEB_CONFIG_ID_COOL)
@@ -271,6 +274,11 @@ public class ECUtils {
 		return 0;
 	}
 	
+	public static boolean isAdditionalProtocol(int devTypeDefID) {
+		return (devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_SA205
+			|| devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_SA305);
+	}
+	
 	/**
 	 * Check to see if the thermostat schedule is vaild
 	 */
@@ -391,6 +399,19 @@ public class ECUtils {
 		}
 		
 		return hwList;
+	}
+	
+	public static boolean hasRight(LiteStarsEnergyCompany energyCompany, int rightCode) {
+		String value = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.OPTIONAL_PRODUCT_DEV );
+		if (value == null) return false;
+		
+		try {
+			int bitMask = Integer.parseInt(value, 16);
+			return (bitMask & rightCode) != 0;
+		}
+		catch (NumberFormatException e) {
+			return false;
+		}
 	}
 
 }

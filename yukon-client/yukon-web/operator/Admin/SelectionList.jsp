@@ -19,14 +19,18 @@
 var dftEntryTexts = new Array();
 var dftEntryYukDefIDs = new Array();
 <%
+	boolean showAddtlProtocols = ECUtils.hasRight(liteEC, ECUtils.RIGHT_SHOW_ADDTL_PROTOCOLS);
 	for (int i = 0; i < dftList.getYukonListEntries().size(); i++) {
 		YukonListEntry entry = (YukonListEntry) dftList.getYukonListEntries().get(i);
+		// Show SA switches only when allowed
+		if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE)
+			&& ECUtils.isAdditionalProtocol(entry.getYukonDefID())
+			&& !showAddtlProtocols)
+			continue;
 %>
 	dftEntryTexts[<%= i %>] = "<%= entry.getEntryText().replaceAll("\"", "&quot;") %>";
 	dftEntryYukDefIDs[<%= i %>] = <%= entry.getYukonDefID() %>;
 <%	} %>
-	dftEntryTexts[<%= dftList.getYukonListEntries().size() %>] = "";
-	dftEntryYukDefIDs[<%= dftList.getYukonListEntries().size() %>] = 0;
 
 var entryIDs = new Array();
 var entryTexts = new Array();
@@ -231,6 +235,15 @@ function changeOrdering(form) {
 <% } %>
 }
 
+function populateDefaultList(form) {
+	var entries = form.DefaultListEntries;
+	for (i = 0; i < dftEntryTexts.length; i++) {
+		var oOption = document.createElement("OPTION");
+		entries.options.add(oOption, i);
+		oOption.innerText = dftEntryTexts[i];
+	}
+}
+
 function setInherited(inherited) {
 	document.form1.MoveUp.disabled = inherited;
 	document.form1.MoveDown.disabled = inherited;
@@ -244,6 +257,7 @@ function init() {
 <%	if (list.getListID() != LiteStarsEnergyCompany.FAKE_LIST_ID) { %>
 	changeOrdering(document.form1);
 <%	} %>
+	populateDefaultList(document.form1);
 	setInherited(<%= inherited %>);
 }
 </script>
@@ -316,9 +330,9 @@ function init() {
                         <td width="15%" align="right" class="TableCell" height="7">Ordering:</td>
                         <td width="85%" class="TableCell" valign="middle" height="7"> 
                           <select name="Ordering" onchange="changeOrdering(this.form);setContentChanged(true);">
-                            <option value="A" <% if (list.getOrdering().equalsIgnoreCase("A")) out.print("selected"); %>>Alphabetical</option>
                             <option value="O" <% if (list.getOrdering().equalsIgnoreCase("O")) out.print("selected"); %>>List 
                             Order</option>
+                            <option value="A" <% if (list.getOrdering().equalsIgnoreCase("A")) out.print("selected"); %>>Alphabetical</option>
                           </select>
                         </td>
                       </tr>
@@ -383,15 +397,6 @@ function init() {
                             <tr class="TableCell" valign="top"> 
                               <td width="50%"> 
                                 <select name="DefaultListEntries" size="7" style="width:200" onclick="showDefaultEntry(this.form)">
-                                  <%
-	for (int i = 0; i < dftList.getYukonListEntries().size(); i++) {
-		YukonListEntry entry = (YukonListEntry) dftList.getYukonListEntries().get(i);
-%>
-                                  <option><%= entry.getEntryText() %></option>
-                                  <%
-	}
-%>
-                                  <option>&lt;New Entry&gt;</option>
                                 </select>
                                 <br>
                                 <%	if (list.getListID() != LiteStarsEnergyCompany.FAKE_LIST_ID) { %>
