@@ -85,9 +85,9 @@
     <td>
       <table width="760" border="0" cellspacing="0" cellpadding="0" align="center">
         <tr> 
-          <td width="102" height="102" background="../Mom.jpg">&nbsp;</td>
+          <td width="150" height="102" background="../../WebConfig/MomWide.jpg">&nbsp;</td>
           <td valign="top" height="102"> 
-            <table width="657" cellspacing="0"  cellpadding="0" border="0">
+            <table width="609" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
                 <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>"/>">&nbsp;</td>
               </tr>
@@ -116,14 +116,14 @@
 %>  
       <table width="760" border="0" cellspacing="0" cellpadding="0" align="center" bordercolor="0">
         <tr> 
-          <td width="101" bgcolor="#000000" height="1"></td>
+          <td width="150" bgcolor="#000000" height="1"></td>
           <td width="1" bgcolor="#000000" height="1"></td>
-          <td width="657" bgcolor="#000000" height="1"></td>
+          <td width="609" bgcolor="#000000" height="1"></td>
 		  <td width="1" bgcolor="#000000" height="1"></td>
         </tr>
         <tr> 
-          <td  valign="top" width="101"> 
-            <table width="101" border="0" cellspacing="0" cellpadding="0" height="200">
+          <td  valign="top" width="150"> 
+            <table width="150" border="0" cellspacing="0" cellpadding="0" height="200">
               <tr> 
                 <td valign="top"> 
                   <% String pageName = "switch_commands.jsp"; %>
@@ -134,7 +134,7 @@
           </td>
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
 		  <FORM name="switchform" METHOD="POST" ACTION="/servlet/SwitchCommand" onSubmit="return validForm(this)">
-          <td width="657" valign="top" bgcolor="#FFFFFF"> 
+          <td width="609" valign="top" bgcolor="#FFFFFF"> 
             <p><br>
             <center>
               <p align="center" class="Main"><b>INDIVIDUAL SWITCH COMMANDS</b></p>
@@ -512,9 +512,9 @@ document.switchform.serialNumberField.value=availablesn[document.switchform.sele
 %>
       <table width="760" border="0" cellspacing="0" cellpadding="0" align="center" bordercolor="0">
         <tr> 
-          <td width="101" bgcolor="#000000" height="1"></td>
+          <td width="150" bgcolor="#000000" height="1"></td>
           <td width="1" bgcolor="#000000" height="1"></td>
-          <td width="657" bgcolor="#000000" height="1"></td>
+          <td width="609" bgcolor="#000000" height="1"></td>
 		  <td width="1" bgcolor="#000000" height="1"></td>
         </tr>        
     </table>

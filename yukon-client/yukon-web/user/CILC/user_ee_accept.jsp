@@ -39,9 +39,9 @@ function decline_form()
     <td>
       <table width="760" border="0" cellspacing="0" cellpadding="0" align="center">
         <tr> 
-          <td width="102" height="102" background="../Mom.jpg">&nbsp;</td>
+          <td width="150" height="102" background="../../WebConfigMomWide.jpg">&nbsp;</td>
           <td valign="top" height="102"> 
-            <table width="657" cellspacing="0"  cellpadding="0" border="0">
+            <table width="609" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
                 <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>"/>">&nbsp;</td>
               </tr>
@@ -65,26 +65,26 @@ function decline_form()
     <td>
       <table width="760" border="0" cellspacing="0" cellpadding="0" align="center" bordercolor="0">
         <tr> 
-          <td width="101" bgcolor="#000000" height="1"></td>
+          <td width="150" bgcolor="#000000" height="1"></td>
           <td width="1" bgcolor="#000000" height="1"></td>
-          <td width="657" bgcolor="#000000" height="1"></td>
+          <td width="609" bgcolor="#000000" height="1"></td>
 		  <td width="1" bgcolor="#000000" height="1"></td>
         </tr>
         <tr> 
-          <td  valign="top" width="101">
+          <td  valign="top" width="150">
           <% String pageName = "user_ee.jsp"; %>
           <%@ include file="nav.jsp" %> </td>
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
-		    <td width="657" valign="top" bgcolor="#FFFFFF">
-              <table width="657" border="0" cellspacing="0" cellpadding="0">
+		    <td width="609" valign="top" bgcolor="#FFFFFF">
+              <table width="609" border="0" cellspacing="0" cellpadding="0">
                 <tr> 
-                <td width="650" class="Main" valign="top"> 
+                <td width="600" class="Main" valign="top"> 
                   <p align="center"><b><br>
                     OFFER TO CUSTOMER</b><br>
                     <br>
                   
                   <center>
-                    <table width="600" border="0" cellspacing="0" cellpadding="5">
+                    <table width="590" border="0" cellspacing="0" cellpadding="5">
           <tr valign="top"> 
             <td class="Main"> 
               <p align=RIGHT><b>Offer ID:</b> 
@@ -109,7 +109,7 @@ function decline_form()
         <input type=hidden name="offerdate" value="<%= datePart.format(offer.getOfferDate()) %>">
         <input type=hidden name="expiredatetime" value="<%= java.net.URLEncoder.encode( timePart.format(revision.getOfferExpirationDateTime()) + " " + datePart.format(revision.getOfferExpirationDateTime()) ) %>">
         <font size = "1"><%= checker.getError("formaterror") %></font>
-        <table width="650" border="0" cellspacing="0" cellpadding="5" valign="top">
+        <table width="600" border="0" cellspacing="0" cellpadding="5" valign="top">
           <tr> 
             <td width="50%" valign="top"> 
               <p> 

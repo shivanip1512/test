@@ -34,9 +34,9 @@
     <td>
       <table width="760" border="0" cellspacing="0" cellpadding="0" align="center">
         <tr> 
-          <td width="102" height="102" background="../Mom.jpg">&nbsp;</td>
+          <td width="150" height="102" background="../../WebConfig/MomWide.jpg">&nbsp;</td>
           <td valign="top" height="102"> 
-            <table width="657" cellspacing="0"  cellpadding="0" border="0">
+            <table width="609" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
                 <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>"/>">&nbsp;</td>
               </tr>
@@ -60,44 +60,45 @@
     <td>
       <table width="760" border="0" cellspacing="0" cellpadding="0" align="center" bordercolor="0">
         <tr> 
-          <td width="101" bgcolor="#000000" height="1"></td>
+          <td width="150" bgcolor="#000000" height="1"></td>
           <td width="1" bgcolor="#000000" height="1"></td>
-          <td width="657" bgcolor="#000000" height="1"></td>
+          <td width="609" bgcolor="#000000" height="1"></td>
 		  <td width="1" bgcolor="#000000" height="1"></td>
         </tr>
         <tr> 
-          <td  valign="top" width="101">
+          <td  valign="top" width="150">
           <% String pageName = "user_ee_profile.jsp"; %>
           <%@ include file="nav.jsp" %> </td>
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
-		  <td width="657" valign="top" bgcolor="#FFFFFF">
-            <table width="657" border="0" cellspacing="0" cellpadding="0">
+		  <td width="609" valign="top" bgcolor="#FFFFFF">
+            <table width="609" border="0" cellspacing="0" cellpadding="0">
               <tr> 
-                <td width="650" class="Main" valign="top">
+                <td width="600" class="Main" valign="top">
                 <form method="GET" action="<%=pageName%>" name="MForm">
                 <center>
-                  <table width="650" border="0" cellspacing="0" cellpadding="0">
+                  <table width="590" border="0" cellspacing="0" cellpadding="0">
                     <tr>
-                      <td width="605" class="Main" > 
+                      <td class="Main" > 
                         <p align="center"><b><br>
                             ADMINISTRATION - CUSTOMER PROFILE</b><br>
                             There must be a Primary Contact. Any number of additional 
                             contacts may also be included. 
                       </td>
-                      <td width="45"> 
+                    </tr>
+                    <tr align="right">
+                      <td> 	 
                         <input type="button" name="Add" value="New Contact" onclick="location.href='<%=request.getContextPath()%>/user/CILC/user_ee_new_profile.jsp'">
                       </td>
                     </tr>
                   </table>
-                  <br>
-                  <table width="600" border="0" cellspacing="0" cellpadding="0">
+                  <table width="590" border="0" cellspacing="0" cellpadding="0">
                     <tr>
                       <td height="40">
                         <hr>
                         <span class="Main"><b>CONTACT (PRIMARY)</b></span></td>
                     </tr>
                   </table>
-                  <table width="600" border="0" cellspacing="0" cellpadding="0">
+                  <table width="590" border="0" cellspacing="0" cellpadding="0">
                     <tr>
                       <td valign="top">
                         <table width="300" border="0" cellspacing="0" cellpadding="2">
@@ -165,7 +166,7 @@
                       </td>
                     </tr>
                   </table>
-                        <table width="600" border="0" cellspacing="0" cellpadding="2">
+                        <table width="590" border="0" cellspacing="0" cellpadding="2">
                           <tr>
                             <td class="TableCell" align="right" height="40"> 
                               <input type="submit" name="Delete" value="Delete">
@@ -185,7 +186,7 @@
                       com.cannontech.database.data.lite.LiteContact liteAddtlCont = (com.cannontech.database.data.lite.LiteContact)addtlConts.get(i);
                       LiteYukonUser addtlLiteYukonUser = YukonUserFuncs.getLiteYukonUser(liteAddtlCont.getLoginID());                      
                   %>
-                  <table width="600" border="0" cellspacing="0" cellpadding="0">	              
+                  <table width="590" border="0" cellspacing="0" cellpadding="0">	              
                     <tr>
                       <td height="40">
                         <hr>
@@ -196,7 +197,7 @@
                   <%@include file="user_ee_contacts.jsp"%>
                   <!-- <CLIP> -->
                   <%}%>                                          
-                  <table width="600" border="0" cellspacing="0" cellpadding="3">
+                  <table width="590" border="0" cellspacing="0" cellpadding="3">
                     <tr>
                       <td align="left">
                         <p align="center" class="MainHeader"> <a href="javascript:history.back()" class="Link1"><b>Back to Previous Page</b></a><br>

@@ -86,9 +86,9 @@
     <td>
       <table width="760" border="0" cellspacing="0" cellpadding="0" align="center">
         <tr> 
-          <td width="102" height="102" background="../Mom.jpg">&nbsp;</td>
+          <td width="150" height="102" background="../../WebConfig/MomWide.jpg">&nbsp;</td>
           <td valign="top" height="102"> 
-            <table width="657" cellspacing="0"  cellpadding="0" border="0">
+            <table width="609" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
                 <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>"/>">&nbsp;</td>
               </tr>
@@ -112,120 +112,90 @@
     <td>
       <table width="760" border="0" cellspacing="0" cellpadding="0" align="center" bordercolor="0">
         <tr> 
-          <td width="101" bgcolor="#000000" height="1"></td>
+          <td width="150" bgcolor="#000000" height="1"></td>
           <td width="1" bgcolor="#000000" height="1"></td>
-          <td width="657" bgcolor="#000000" height="1"></td>
+          <td width="609" bgcolor="#000000" height="1"></td>
 		  <td width="1" bgcolor="#000000" height="1"></td>
         </tr>
         <tr> 
-          <td  valign="top" width="101"> 
+          <td  valign="top" width="150"> 
 		  <% String pageName = "user_curtail.jsp"; %>
           <%@ include file="nav.jsp" %>
           </td>
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
-          
-		  <td width="657" valign="top" bgcolor="#FFFFFF"> 
-<table width="657" border="0" cellspacing="0" cellpadding="0">
-  <tr> 
-    <td width="650"> 
+		  <td width="609" valign="top" bgcolor="#FFFFFF"> 
+            <table width="609" border="0" cellspacing="0" cellpadding="0">
+              <tr> 
+                <td width="609"> 
        <% if( foundCurtailment )
        {
        %>
-                  <div align="center" class="Main"><br>
-                    <b>CURRENT NOTIFICATION</b></div>
+                  <div align="center" class="Main"><br><b>CURRENT NOTIFICATION</b></div>
        <%
        }
        %>
-      <table width="500" border="0" cellspacing="0" cellpadding="0" align="center">
+                  <table width="500" border="0" cellspacing="0" cellpadding="0" align="center">
         
         <%
           if( foundCurtailment )
           {
         %>
-        <tr> 
-          <td>
-            <center>
-                          <span class="Main"> <br>
+                    <tr> 
+                      <td>
+                        <center>
+                        <span class="Main"> <br>
                           Per your contract with <cti:getProperty propertyid="<%=DirectCurtailmentRole.CURTAILMENT_PROVIDER%>"/>, 
                           a notification event is scheduled<br>
                           from <%= startDateTimeStr %> to <%= stopDateTimeStr %>.</span> 
-                          <p> 
+                        <p> 
                 <%			
           if( !ackStatus )
 			{
 %>
-              <form method="post" action="/servlet/CurtailmentServlet">
-                <input type="hidden" name="CUSTOMERID" value="<%= customerID %>">
-                <input type="hidden" name="CURTAILID" value="<%= curtailID %>">
-                <input type="hidden" name="ACKTIME" value="<%= System.currentTimeMillis() %>">
-                <input type="hidden" name="redirect" value="<%=request.getContextPath()%>/user/CILC/user_curtail.jsp">
-                <span class="Main"> Initials:</span> 
-                <input type="text" name="initials" size="8">
-                <p> 
-                  <input type="submit" value="Acknowledge" name="image">
-                            <p class="Main">(Click Acknowledge to indicate that you 
-                              have received and understand this message) 
+                        <form method="post" action="/servlet/CurtailmentServlet">
+                          <input type="hidden" name="CUSTOMERID" value="<%= customerID %>">
+                          <input type="hidden" name="CURTAILID" value="<%= curtailID %>">
+                          <input type="hidden" name="ACKTIME" value="<%= System.currentTimeMillis() %>">
+                          <input type="hidden" name="redirect" value="<%=request.getContextPath()%>/user/CILC/user_curtail.jsp">
+                          <span class="Main"> Initials:</span> 
+                            <input type="text" name="initials" size="8">
+                            <p>
+                            <input type="submit" value="Acknowledge" name="image">
+                            <p class="Main">(Click Acknowledge to indicate that you have received and understand this message)
                             <p> 
                   <%
 			}
 %>
                             <p class="MainHeader"><b>Curtailable Amount: </b> 
-                          </form>
-              <p> 
-            </center>
-          </td>
-        </tr>
+                        </form>
+                        <p> 
+                        </center>
+                      </td>
+                    </tr>
         <%
 		}
 		else
 		{        
 %>
-        <tr> 
+                    <tr>
                       <td width="100%" class="MainHeader">
-<center>
-                          <p><br>
-                            <b>NO NOTIFICATION SCHEDULED AT THIS TIME</b></p>
-                        </center>
+                          <center><p><br><b>NO NOTIFICATION SCHEDULED AT THIS TIME</b></p></center>
                       </td>
-        </tr>
+                    </tr>
         <%
         }
 %>
-      </table>
-      <p align="center" class="MainHeader"><b>NOTIFICATION HISTORY</b></p>
-      <table width="600" border="1" cellspacing="0" cellpadding="2" height="20" align="center">
-        <tr> 
-          <td width="20%" class="HeaderCell">
-            <center>
-              Start Date/Time
-            </center>
-          </td>
-          <td width="20%" class="HeaderCell">
-            <center>
-              Stop Date/Time
-            </center>
-          </td>
-          <td width="20%" class="HeaderCell">
-            <center>
-              Acknowledged
-            </center>
-          </td>
-          <td width="20%" class="HeaderCell">
-            <center>
-              Ack Date/Time
-            </center>
-          </td>
-          <td width="10%" class="HeaderCell">
-            <center>
-              Ack Late
-            </center>
-          </td>
-          <td width="10%" class="HeaderCell">
-            <center>
-              Ack User
-            </center>
-          </td>
-        </tr>
+                  </table>
+                  <p align="center" class="MainHeader"><b>NOTIFICATION HISTORY</b></p>
+                  <table width="590" border="1" cellspacing="0" cellpadding="2" height="20" align="center">
+                    <tr> 
+                      <td width="20%" class="HeaderCell"><center>Start Date/Time</center></td>
+                      <td width="20%" class="HeaderCell"><center>Stop Date/Time</center></td>
+                      <td width="20%" class="HeaderCell"><center>Acknowledged</center></td>
+                      <td width="20%" class="HeaderCell"><center>Ack Date/Time</center></td>
+                      <td width="10%" class="HeaderCell"><center>Ack Late</center></td>
+                      <td width="10%" class="HeaderCell"><center>Ack User</center></td>
+                    </tr>
         <% 
 
             if( curtailHistory != null )
@@ -265,31 +235,29 @@
                  
 
         %>
-        <tr> 
-          <td width="20%" class="TableCell"><center><%= curtailStartStr %></center></td>
-          <td width="20%" class="TableCell"><center><%= curtailStopStr %></center></td>
-          <td width="20%" class="TableCell"><center><%= ackd %></center></td>
-          <td width="20%" class="TableCell"><center><%= respDateTimeStr %></center></td>
-          <td width="10%" class="TableCell"><center><%= onTime %></center></td>
-          <td width="10%" class="TableCell"><center><%= userStr %></center></td>
-        </tr>
+                    <tr> 
+                      <td width="20%" class="TableCell"><center><%= curtailStartStr %></center></td>
+                      <td width="20%" class="TableCell"><center><%= curtailStopStr %></center></td>
+                      <td width="20%" class="TableCell"><center><%= ackd %></center></td>
+                      <td width="20%" class="TableCell"><center><%= respDateTimeStr %></center></td>
+                      <td width="10%" class="TableCell"><center><%= onTime %></center></td>
+                      <td width="10%" class="TableCell"><center><%= userStr %></center></td>
+                    </tr>
         <%
                 }
             }
         %>
-      </table>
+                  </table>
                   <p align="center"></p>
-        </td>
-  </tr>
-</table>
-
+                </td>
+              </tr>
+            </table>
           </td>
-		  
-        <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
-    </tr>
+          <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
+        </tr>
       </table>
     </td>
-	</tr>
+  </tr>
 </table>
 <br>
 </body>

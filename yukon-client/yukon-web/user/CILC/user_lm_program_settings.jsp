@@ -12,9 +12,9 @@
     <td>
       <table width="760" border="0" cellspacing="0" cellpadding="0" align="center">
         <tr> 
-          <td width="102" height="102" background="../Mom.jpg">&nbsp;</td>
+          <td width="150" height="102" background="../../WebConfig/MomWide.jpg">&nbsp;</td>
           <td valign="top" height="102"> 
-            <table width="657" cellspacing="0"  cellpadding="0" border="0">
+            <table width="609" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
                 <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>"/>">&nbsp;</td>
               </tr>
@@ -38,18 +38,18 @@
     <td>
       <table width="760" border="0" cellspacing="0" cellpadding="0" align="center" bordercolor="0">
         <tr> 
-          <td width="101" bgcolor="#000000" height="1"></td>
+          <td width="150" bgcolor="#000000" height="1"></td>
           <td width="1" bgcolor="#000000" height="1"></td>
-          <td width="657" bgcolor="#000000" height="1"></td>
+          <td width="609" bgcolor="#000000" height="1"></td>
 		  <td width="1" bgcolor="#000000" height="1"></td>
         </tr>
         <tr> 
-          <td  valign="top" width="101"> 
+          <td  valign="top" width="150"> 
 		  <% String pageName = "user_lm_time.jsp"; %>
           <%@ include file="nav.jsp" %>
           </td>
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
-		    <td width="657" valign="top" bgcolor="#FFFFFF"> 
+		    <td width="600" valign="top" bgcolor="#FFFFFF"> 
               <div align="center">
                 <div align="center"> 
                   <p align="center" class="Main"><br>

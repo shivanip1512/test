@@ -13,9 +13,9 @@
     <td>
       <table width="760" border="0" cellspacing="0" cellpadding="0" align="center">
         <tr> 
-          <td width="102" height="102" background="../Mom.jpg">&nbsp;</td>
+          <td width="150" height="102" background="../../WebConfig/MomWide.jpg">&nbsp;</td>
           <td valign="top" height="102"> 
-            <table width="657" cellspacing="0"  cellpadding="0" border="0">
+            <table width="609" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
                 <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>"/>">&nbsp;</td>
               </tr>
@@ -39,18 +39,18 @@
     <td>
       <table width="760" border="0" cellspacing="0" cellpadding="0" align="center" bordercolor="0">
         <tr> 
-          <td width="101" bgcolor="#000000" height="1"></td>
+          <td width="150" bgcolor="#000000" height="1"></td>
           <td width="1" bgcolor="#000000" height="1"></td>
-          <td width="657" bgcolor="#000000" height="1"></td>
+          <td width="609" bgcolor="#000000" height="1"></td>
 		  <td width="1" bgcolor="#000000" height="1"></td>
         </tr>
         <tr> 
-          <td  valign="top" width="101"> 
+          <td  valign="top" width="150"> 
 		  <% String pageName = "user_ee.jsp"; %>
           <%@ include file="nav.jsp" %>
           </td>
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
-		  <td width="657" valign="top" bgcolor="#FFFFFF"> 
+		  <td width="609" valign="top" bgcolor="#FFFFFF"> 
               <div align="center"><div align="center"><center>
                     <p><br>
  
@@ -66,7 +66,7 @@
 		{
 %>
                     <p class="Main"><b>YOU HAVE A NEW OFFER</b>
-                    <table width="600" border="1" cellspacing="0" cellpadding="2">
+                    <table width="590" border="1" cellspacing="0" cellpadding="2">
                       <tr> 
                         <td width="20%" height="26" class="HeaderCell">Offer ID</td>
                         <td width="20%" height="26" class="HeaderCell">Offer Date</td>
@@ -102,7 +102,7 @@
 		{
 %>
                     <p class="Main"><b>RECENTLY RESPONDED OFFERS</b>
-                    <table width="600" border="1" cellspacing="0" cellpadding="2">
+                    <table width="590" border="1" cellspacing="0" cellpadding="2">
                       <tr> 
                         <td width="15%" height="26" class="HeaderCell"> Offer 
                           ID</td>
@@ -184,7 +184,7 @@
 			replies = new com.cannontech.web.history.HEnergyExchangeCustomerReply[0];
 %>
                     <p class="Main"><b>CURTAILMENT HISTORY</b>
-                    <table width="600" border="1" cellspacing="0" cellpadding="2">
+                    <table width="590" border="1" cellspacing="0" cellpadding="2">
                       <tr> 
                         <td width="15%" height="26" class="HeaderCell">Offer ID</td>
                         <td width="20%" height="26" class="HeaderCell">Offer Date</td>

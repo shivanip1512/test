@@ -23,7 +23,7 @@
 	}
 %>
 
-<table width="101" border="0" cellspacing="0" cellpadding="6">
+<table width="150" border="0" cellspacing="0" cellpadding="6">
   <cti:checkMultiRole roleid="<%=Integer.toString(EnergyBuybackRole.ROLEID) + ',' + Integer.toString(DirectCurtailmentRole.ROLEID)%>">
   <tr> 
     <td bgcolor="#FFFFFF"> 
