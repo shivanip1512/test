@@ -224,6 +224,8 @@ public class StarsAdmin extends HttpServlet {
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
         
 		try {
+			ServletUtils.removeTransientAttributes( session );
+			
 			String acctNo = req.getParameter( "AcctNo" );
 			int[] accountIDs = CustomerAccount.searchByAccountNumber(
 					energyCompany.getEnergyCompanyID(), acctNo.replace('*', '%') );
