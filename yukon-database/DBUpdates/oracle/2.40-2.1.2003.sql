@@ -225,7 +225,7 @@ drop table NotificationRecipient;
 
 /******************* START FINAL MISC CHANGES *******************/
 insert into DeviceMeterGroup 
-select paobjectid, 'Default', 'Default', paoname, 'Default' from YukonPAObject
+select paobjectid, 'Default', 'Default', 'Default', 'Default' from YukonPAObject
 where type like '%ION%';
 
 insert into YukonWebConfiguration values(0,'(none)','(none)','(none)','(none)');
