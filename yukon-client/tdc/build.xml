@@ -20,6 +20,13 @@
        <jar jarfile="${yukon.lib}/tdc.jar"
             basedir="build/" 
             manifest="resource/manifest.mf" />       
+
+	<copy todir="${yukon.lib}">
+ 	    <fileset dir="resource">
+		<include name="**/*.gif"/>
+ 		<include name="**/*.ico"/>
+	    </fileset>
+       </copy>
    </target>
 
    <target name="clean">
