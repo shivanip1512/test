@@ -1510,7 +1510,13 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(CtiMultiMsg* multiPilMsg, Cti
                         }
                         else
                         {
+        CtiLMProgramDirectGear* prevGearObject = 0;
                             requestMsg = currentLMGroup->createSmartCycleRequestMsg(percent, period, cycleCount, defaultLMStartPriority);
+        if(_currentgearnumber > 0)
+        {
+            prevGearObject = (CtiLMProgramDirectGear*)_lmprogramdirectgears[_currentgearnumber-1];
+        }
+         
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
                                 dout << RWTime() << " - Program: " << getPAOName() << ", can not True Cycle a non-Expresscom group: " << currentLMGroup->getPAOName() << " : " << __FILE__ << " at:" << __LINE__ << endl;
@@ -1886,6 +1892,12 @@ BOOL CtiLMProgramDirect::hasGearChanged(LONG currentPriority, RWOrdered controlA
     if( _currentgearnumber < (_lmprogramdirectgears.entries()-1) )
     {
         CtiLMProgramDirectGear* currentGearObject = getCurrentGearObject();
+        CtiLMProgramDirectGear* prevGearObject = 0;
+
+        if(_currentgearnumber > 0)
+        {
+            prevGearObject = (CtiLMProgramDirectGear*)_lmprogramdirectgears[_currentgearnumber-1];
+        }
 
         if( !currentGearObject->getChangeCondition().compareTo(CtiLMProgramDirectGear::NoneChangeCondition,RWCString::ignoreCase) )
         {
@@ -1948,8 +1960,10 @@ BOOL CtiLMProgramDirect::hasGearChanged(LONG currentPriority, RWOrdered controlA
                 currentGearObject->getChangeTriggerNumber() <= controlAreaTriggers.entries() )
             {
                 CtiLMControlAreaTrigger* trigger = (CtiLMControlAreaTrigger*)controlAreaTriggers[currentGearObject->getChangeTriggerNumber()-1];
-                if( isTriggerCheckNeeded &&
-                    ( trigger->getPointValue() >= (trigger->getThreshold() + currentGearObject->getChangeTriggerOffset()) ||
+
+                if( isTriggerCheckNeeded )
+
+                    if((trigger->getPointValue() >= (trigger->getThreshold() + currentGearObject->getChangeTriggerOffset()) ||
                       trigger->getProjectedPointValue() >= (trigger->getThreshold() + currentGearObject->getChangeTriggerOffset()) ) &&
                     _currentgearnumber+1 < _lmprogramdirectgears.entries() )
                 {
@@ -1972,6 +1986,30 @@ BOOL CtiLMProgramDirect::hasGearChanged(LONG currentPriority, RWOrdered controlA
                     hasGearChanged(currentPriority, controlAreaTriggers, secondsFrom1901, multiDispatchMsg, isTriggerCheckNeeded);
                     returnBoolean = TRUE;
                 }
+                    else if( !currentGearObject->getControlMethod().compareTo(CtiLMProgramDirectGear::MasterCycleMethod,RWCString::ignoreCase) &&
+                             prevGearObject != 0 &&
+                             (trigger->getPointValue() < (trigger->getThreshold() + prevGearObject->getChangeTriggerOffset()) ||
+                              (trigger->getProjectedPointValue() < (trigger->getThreshold() + prevGearObject->getChangeTriggerOffset()) && trigger->getProjectedPointValue() > 0)))
+                    {
+                        _currentgearnumber--;
+
+                        RWCString text = RWCString("Trigger Offset Gear Change Down Program: ");
+                        text += getPAOName();
+                        RWCString additional = RWCString("Previous Gear: ");
+                        additional += currentGearObject->getGearName();
+                        additional += " New Gear: ";
+                        additional += prevGearObject->getGearName();
+                        CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
+
+                        multiDispatchMsg->insert(signal);
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << RWTime() << " - " << text << ", " << additional << endl;
+                        }
+
+                        hasGearChanged(currentPriority, controlAreaTriggers, secondsFrom1901, multiDispatchMsg, isTriggerCheckNeeded);
+                        returnBoolean = TRUE;
+                   }
             }
             else
             {
@@ -4588,7 +4626,7 @@ BOOL CtiLMProgramDirect::handleTimedControl(ULONG secondsFrom1901, LONG secondsF
         {
             if(!is_ramping_out && was_ramping_out)  //we just finished ramping out!
             {
-                string text = "Finished ramping out, LM Program: ";
+                string text = "Finished ramping out, LM Program: "; 
                 text += getPAOName();
                 CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text.data(),"",GeneralLogType,SignalEvent);
                 multiDispatchMsg->insert(signal);
