@@ -49,115 +49,91 @@
           </td>
           <td width="1" bgcolor="#000000"><img src="../VerticalRule.gif" width="1"></td>
 		  <td width="657" valign="top" bgcolor="#FFFFFF"> 
-              <div align="center">
-                <p class="Main"><br>
-                  <b>SUMMARY</b><br>
-                </p>
-                <table width="450" border="0" cellspacing="0" cellpadding="0">
-                  <tr> 
-                    <td width="107" height="92"> 
-                      <div align="center"><img src="../AC.gif" width="60" height="59"><br>
-                        <br>
-                      </div>
-                    </td>
-                    <td width="343" valign="top" height="92"> 
-                      <table width="300" border="0" cellspacing="0" bgcolor="white" cellpadding="2" align="center">
-                        <tr valign="top" bgcolor="#CCCCCC"> 
-                          <td width="117" class="HeaderCell">Time Frame</td>
-                          <td width="95" class="HeaderCell">Total</td>
-                        </tr>
-                        <tr> 
-                          <td height="23" class="TableCell" width="117">Today</td>
-                          <td height="23" class="TableCell" width="95">4 Hr</td>
-                        </tr>
-                        <tr> 
-                          <td height="23" class="TableCell" width="117">Past Month</td>
-                          <td height="23" class="TableCell" width="95">7 Hr</td>
-                        </tr>
-                        <tr> 
-                          <td height="23" class="TableCell" width="117">Seasonal</td>
-                          <td height="23" class="TableCell" width="95">9 Hr</td>
-                        </tr>
-                        <tr> 
-                          <td height="23" class="TableCell" width="117">Annual</td>
-                          <td height="23" class="TableCell" width="95">9 Hr </td>
-                        </tr>
-                      </table>
-                    </td>
-                  </tr>
-                </table>
-                <hr>
-                <table width="450" border="0" cellspacing="0" cellpadding="0">
-                  <tr> 
-                    <td width="107" height="92"> 
-                      <div align="center"><img src="../WaterHeater.gif" width="60" height="59"><br>
-                        <br>
-                      </div>
-                    </td>
-                    <td width="343" valign="top" height="92"> 
-                      <table width="300" border="0" cellspacing="0" bgcolor="white" cellpadding="2" align="center">
-                        <tr valign="top" bgcolor="#CCCCCC"> 
-                          <td width="117" class="HeaderCell">Time Frame</td>
-                          <td width="95" class="HeaderCell">Total</td>
-                        </tr>
-                        <tr> 
-                          <td height="23" class="TableCell" width="117">Today</td>
-                          <td height="23" class="TableCell" width="95">0 Hr</td>
-                        </tr>
-                        <tr> 
-                          <td height="23" class="TableCell" width="117">Past Month</td>
-                          <td height="23" class="TableCell" width="95">4 Hr</td>
-                        </tr>
-                        <tr> 
-                          <td height="23" class="TableCell" width="117">Seasonal</td>
-                          <td height="23" class="TableCell" width="95">20 Hr </td>
-                        </tr>
-                        <tr> 
-                          <td height="23" class="TableCell" width="117">Annual</td>
-                          <td height="23" class="TableCell" width="95">32 Hr </td>
-                        </tr>
-                      </table>
-                    </td>
-                  </tr>
-                </table>
-                <hr>
-                <table width="450" border="0" cellspacing="0" cellpadding="0">
-                  <tr> 
-                    <td width="107"> 
-                      <div align="center"><img src="../Pool.gif" width="60" height="59"><br>
-                        <br>
-                      </div>
-                    </td>
-                    <td width="343" valign="top"> 
-                      <table width="300" border="0" cellspacing="0" bgcolor="white" cellpadding="2" align="center">
-                        <tr valign="top" bgcolor="#CCCCCC"> 
-                          <td width="117" class="HeaderCell">Time Frame</td>
-                          <td width="95" class="HeaderCell">Total</td>
-                        </tr>
-                        <tr> 
-                          <td height="23" class="TableCell" width="117">Today</td>
-                          <td height="23" class="TableCell" width="95">0 Hr</td>
-                        </tr>
-                        <tr> 
-                          <td height="23" class="TableCell" width="117">Past Month</td>
-                          <td height="23" class="TableCell" width="95">0 Hr</td>
-                        </tr>
-                        <tr> 
-                          <td height="23" class="TableCell" width="117">Seasonal</td>
-                          <td height="23" class="TableCell" width="95">0 Hr</td>
-                        </tr>
-                        <tr> 
-                          <td height="23" class="TableCell" width="117">Annual</td>
-                          <td height="23" class="TableCell" width="95">20 Hr, 
-                            45 Min</td>
-                        </tr>
-                      </table>
-                    </td>
-                  </tr>
-                </table>
-                
-                <br>
-              </div>
+              
+            <div align="center"><br> 
+              
+              <table width="600" border="0" cellspacing="0">
+                <tr> 
+                  <td width="202"> 
+                    <table width="200" border="0" cellspacing="0" cellpadding="3">
+                      <tr> 
+                        <td><span class="Main"><b>Acct #<%= account.getAccountNumber() %></b></span><br>
+                          <span class="NavText"><%= primContact.getFirstName() %> 
+                          <%= primContact.getLastName() %><br>
+                          <!--<%= account.getCompany() %><br> -->
+                          <%= propAddr.getStreetAddr1() %>, <%= propAddr.getStreetAddr2() %><br>
+                          <%= propAddr.getCity() %>, <%= propAddr.getState() %> 
+                          <%= propAddr.getZip() %><br>
+                          <%= primContact.getHomePhone() %></span></td>
+                      </tr>
+                    </table>
+                  </td>
+                  <td width="187" valign="top"> 
+                    <div align="center"><b><span class="Main">PROGRAMS - CONTROL 
+                      SUMMARY </span></b></div>
+                  </td>
+                  <td valign="top" width="205" align = "right"> 
+                    <%@ include file="Notice.jsp" %>
+                  </td>
+                </tr>
+              </table>
+              <table width="600" border="0" cellpadding="0" cellspacing="0">
+                <tr> 
+                  <td> 
+                    <hr>
+                  </td>
+                </tr>
+              </table>
+              <table width="450" border="0" cellspacing="0" cellpadding="0">
+                <tr> 
+                  <td width="107" height="92"> 
+                    <div align="center"><img src="../<%= category.getStarsWebConfig().getLogoLocation() %>" width="60" height="59"><br>
+                      <br>
+                    </div>
+                  </td>
+                  <td width="343" valign="top" height="92"> 
+                    <table width="300" border="0" cellspacing="0" bgcolor="white" cellpadding="2" align="center">
+                      <tr valign="top" bgcolor="#CCCCCC"> 
+                        <td width="117" class="HeaderCell">Time Frame</td>
+                        <td width="95" class="HeaderCell">Total</td>
+                      </tr>
+                      <tr> 
+                        <td height="23" class="TableCell" width="117">Today</td>
+                        <td height="23" class="TableCell" width="95"><%= ServletUtils.getDurationString(summary.getDailyTime()) %></td>
+                      </tr>
+                      <tr> 
+                        <td height="23" class="TableCell" width="117">Past Month</td>
+                        <td height="23" class="TableCell" width="95"><%= ServletUtils.getDurationString(summary.getMonthlyTime()) %></td>
+                      </tr>
+                      <tr> 
+                        <td height="23" class="TableCell" width="117">Seasonal</td>
+                        <td height="23" class="TableCell" width="95"><%= ServletUtils.getDurationString(summary.getSeasonalTime()) %></td>
+                      </tr>
+                      <tr> 
+                        <td height="23" class="TableCell" width="117">Annual</td>
+                        <td height="23" class="TableCell" width="95"><%= ServletUtils.getDurationString(summary.getAnnualTime()) %></td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+              <%
+	if (referrer == null) {
+%>
+              <form name="form1" method="get" action="ProgramHist.jsp">
+                <input type="submit" name="Back" value="Back">
+              </form>
+              <%
+	}
+	else {
+%>
+              <input type="button" name="Back2" value="Back" onClick="document.URL='<%= referrer %>'">
+              <%
+	}
+%>
+              <p class="Main"><br>
+              </p>
+                </div>
 			
           </td>
 		  

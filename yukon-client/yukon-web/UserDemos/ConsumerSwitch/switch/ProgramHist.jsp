@@ -81,26 +81,6 @@
                   </td>
                 </tr>
               </table>
-              <table width="215" border="1" cellspacing="0" cellpadding="3" align="center">
-                <tr> 
-                  <td height="58" bgcolor="#CCCCCC"> 
-                    <p align="center" class="TableCell3">Today's odds for control?<br>
-                      <b>Unlikely<br>
-                      </b>
-                      <script language="JAVASCRIPT" type="TEXT/JAVASCRIPT">
-	<!-- Hide script from old browsers
-
-	var now = new Date();
-	monName = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-	document.write("Last Updated: "  + monName[now.getMonth()]+ " " + now.getDate()+ ", "  + now.getYear())
-
-	// End hiding script from old browsers -->
-</script>
-                      08:00 AM</p>
-                    
-                  </td>
-                </tr>
-              </table>
               <br>
               <table width="600" border="1" cellspacing="0" cellpadding="0" align="center">
                 <tr bgcolor="#FFFFFF"> 
@@ -112,13 +92,10 @@
                       (since midnight yesterday)</div>
                   </td>
                   <td width="332" class="HeaderCell"> 
-                    <div align="center">Control History Summary</div>
-                  </td>
-                  <td width="332" class="HeaderCell"> 
                     <div align="center">Complete Control History</div>
                   </td>
                 </tr>
-<%
+                <%
 	for (int i = 0; i < programs.getStarsLMProgramCount(); i++) {
 		StarsLMProgram program = programs.getStarsLMProgram(i);
 		
@@ -145,109 +122,86 @@
 %>
                 <tr bgcolor="#FFFFFF"> 
                   <td width="162"> 
-                    <div align="center">
-					  <img src="../<%= category.getStarsWebConfig().getLogoLocation() %>" width="60" height="59"><br>
-					  <span class="TableCell"><%= program.getProgramName() %></span>
-					</div>
+                    <div align="center"> <img src="../<%= category.getStarsWebConfig().getLogoLocation() %>" width="60" height="59"><br>
+                      <span class="TableCell"><%= program.getProgramName() %></span> 
+                    </div>
                   </td>
                   <td width="332" valign="top"> 
                     <table width="200" border="0" cellspacing="0" cellpadding="3" align="center">
-                      <tr> 
-                        <td width="220" class="TableCell"> Begin Date/Time </td>
-                        <td width="93" class="TableCell"> Duration </td>
-                      </tr>
-<%
-		StarsLMControlHistory ctrlHist = program.getStarsLMControlHistory();
-		if (ctrlHist.getControlHistoryCount() == 0) {
+                      <%
+		StarsLMControlHistory ctrlHistToday = ServletUtils.getTodaysControlHistory( program.getStarsLMControlHistory() );
+		if (ctrlHistToday.getControlHistoryCount() == 0) {
 %>
                       <tr> 
-                        <td width="219" class="TableCell">No Control </td>
-                        <td width="94" class="TableCell">---- </td>
-                      </tr>
-                      <tr> 
-                        <td width="219" class="TableCell"> 
-                          <div align="right">Total: </div>
+                        <td width="61" class="TableCell"> 
+                          <div align="left">Start</div>
                         </td>
-                        <td width="94" class="TableCell">---- </td>
+                        <td width="61" class="TableCell">Stop</td>
+                        <td width="10" class="TableCell">Duration</td>
                       </tr>
-<%
+                      <%
 		}
 		else {
 			int totalSec = 0;
-			for (int j = 0; j < ctrlHist.getControlHistoryCount(); j++) {
-				ControlHistory hist = ctrlHist.getControlHistory(j);
+			for (int j = 0; j < ctrlHistToday.getControlHistoryCount(); j++) {
+				ControlHistory hist = ctrlHistToday.getControlHistory(j);
 				
 				int durationSec = hist.getControlDuration();
 				totalSec += durationSec;
 %>
                       <tr> 
-                        <td width="220" class="TableCell"><%= histDateFormat.format(hist.getStartDateTime()) %></td>
-                        <td width="93" class="TableCell"><%= ServletUtils.getDurationString(durationSec) %></td>
+                        <td width="61" class="TableCell"><%= histDateFormat.format(hist.getStartDateTime()) %></td>
+                        <td width="61" class="TableCell">&nbsp;</td>
+                        <td width="60" class="TableCell"><%= ServletUtils.getDurationString(durationSec) %></td>
                       </tr>
-<%
+                      <%
 			}
 %>
                       <tr> 
-                        <td width="220" class="TableCell"> 
+                        <td width="61" class="TableCell"> 
+                          <div align="right"></div>
+                        </td>
+                        <td width="61" class="TableCell"> 
                           <div align="right">Total:</div>
                         </td>
-                        <td width="93" class="TableCell"><%= ServletUtils.getDurationString(totalSec) %></td>
+                        <td width="60" class="TableCell"><%= ServletUtils.getDurationString(totalSec) %></td>
                       </tr>
-<%
+                      <%
 		}
 %>
                     </table>
                   </td>
-<%
+                  <%
 		ControlSummary summary = ctrlHist.getControlSummary();
 %>
-                  <td width="332" valign="top"> 
-                    <table width="150" border="0" cellspacing="0" bgcolor="white" cellpadding="2" align="center">
-                      <tr> 
-                        <td height="23" class="TableCell" width="117">Today</td>
-                        <td height="23" class="TableCell" width="95"><%= ServletUtils.getDurationString(summary.getDailyTime()) %></td>
-                      </tr>
-                      <tr> 
-                        <td height="23" class="TableCell" width="117">Past Month</td>
-                        <td height="23" class="TableCell" width="95"><%= ServletUtils.getDurationString(summary.getMonthlyTime()) %></td>
-                      </tr>
-                      <tr> 
-                        <td height="23" class="TableCell" width="117">Seasonal</td>
-                        <td height="23" class="TableCell" width="95"><%= ServletUtils.getDurationString(summary.getSeasonalTime()) %></td>
-                      </tr>
-                      <tr> 
-                        <td height="23" class="TableCell" width="117">Annual</td>
-                        <td height="23" class="TableCell" width="95"><%= ServletUtils.getDurationString(summary.getAnnualTime()) %></td>
-                      </tr>
-                    </table>
-                  </td>
                   <td width="332"> 
-					<form method="POST" action="/servlet/SOAPClient">
-					<input type="hidden" name="action" value="GetLMCtrlHist">
-					<input type="hidden" name="Group" value="<%= program.getGroupID() %>">
-					<input type="hidden" name="AppNo" value="<%= appNo %>">
-					<input type="hidden" name="REDIRECT" value="/UserDemos/ConsumerSwitch/switch/ContHist.jsp">
-					<input type="hidden" name="REFERRER" value="ProgramHist.jsp">
-                    <table width="100" border="0" cellspacing="0" cellpadding="3" align="center">
-                      <tr> 
-					    <td width="180" valign="top" align="center"> 
-						  <select name="Period">
-							<option value="PastWeek">Past Week</option>
-							<option value="PastMonth">Past Month </option>
-							<option value="All">All</option>
-						  </select>
-						</td>
-                      </tr>
-                      <tr> 
+                    <form method="POST" action="/servlet/SOAPClient">
+                      <input type="hidden" name="action" value="GetLMCtrlHist">
+                      <input type="hidden" name="Group" value="<%= program.getGroupID() %>">
+                      <input type="hidden" name="AppNo" value="<%= appNo %>">
+                      <input type="hidden" name="REDIRECT" value="/UserDemos/ConsumerSwitch/switch/ContHist.jsp">
+                      <input type="hidden" name="REFERRER" value="ProgramHist.jsp">
+                      <table width="100" border="0" cellspacing="0" cellpadding="3" align="center">
+                        <tr> 
+                          <td width="180" valign="top" align="center"> 
+                            <select name="Period">
+                              <option value="PastWeek">Past Week</option>
+                              <option value="PastMonth">Past Month </option>
+                              <option value="All">Summary</option>
+							  <option value="All">All</option>
+                            </select>
+                          </td>
+                        </tr>
+                        <tr> 
                           <td width="180" valign="top" align="center"> 
                             <input type="submit" name="Input2" value="View">
                           </td>
-                      </tr>
-                    </table>
-					</form>
+                        </tr>
+                      </table>
+                    </form>
                   </td>
                 </tr>
-<%
+                <%
 	}
 %>
               </table>
