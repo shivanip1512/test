@@ -1,5 +1,9 @@
 package com.cannontech.database.cache.functions;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
+import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LitePoint;
 /**
  * Insert the type's description here.
@@ -99,5 +103,26 @@ public static LitePoint[] getLitePointsByUOMID(int[] uomIDs)
    
    return retVal;
 }
+
+	/**
+	 * Returns the name of the point with a given id.
+	 * @param id
+	 * @return String
+	 */
+	public static String getPointName(int id) {
+		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+		
+		synchronized(cache) {
+			Iterator iter = cache.getAllPoints().iterator();
+			while(iter.hasNext()) {
+				LitePoint lp = (LitePoint) iter.next();
+				if( lp.getLiteID() == id ) {
+					return lp.getPointName();
+				}							
+			}
+		}
+		
+		return null;
+	}
 
 }
