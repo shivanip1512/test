@@ -357,7 +357,6 @@ insert into YukonUserRole values (734,-1,-201,-20114,'(none)');
 insert into YukonUserRole values (735,-1,-201,-20115,'(none)');
 insert into YukonUserRole values (736,-1,-201,-20116,'(none)');
 insert into YukonUserRole values (737,-1,-201,-20117,'(none)');
-insert into YukonUserRole values (738,-1,-201,-20118,'(none)');
 insert into YukonUserRole values (750,-1,-201,-20150,'(none)');
 insert into YukonUserRole values (751,-1,-201,-20151,'(none)');
 insert into YukonUserRole values (752,-1,-201,-20152,'(none)');
@@ -881,7 +880,6 @@ insert into YukonGroupRole values (-1201,-2,-201,-20114,'(none)');
 insert into YukonGroupRole values (-1202,-2,-201,-20115,'(none)');
 insert into YukonGroupRole values (-1203,-2,-201,-20116,'(none)');
 insert into YukonGroupRole values (-1204,-2,-201,-20117,'(none)');
-insert into YukonGroupRole values (-1205,-2,-201,-20118,'(none)');
 
 insert into YukonGroupRole values (-1250,-2,-201,-20150,'(none)');
 insert into YukonGroupRole values (-1251,-2,-201,-20151,'(none)');
@@ -942,6 +940,12 @@ insert into YukonGroupRole values(-1008,-2,-100,-10008,'(none)');
 insert into YukonGroupRole values(-1009,-2,-100,-10009,'(none)');
 insert into YukonUserRole values(-108,-1,-100,-10008,'(none)');
 insert into YukonUserRole values(-109,-1,-100,-10009,'true');
+
+
+insert into YukonRoleProperty values(-20118,-201,'Create Trend','false','Controls whether to allow new trends to assigned to the customer');
+insert into YukonUserRole values (-738,-1,-201,-20118,'(none)');
+insert into YukonGroupRole values (-738,-301,-201,-20118,'(none)');
+insert into YukonGroupRole values (-1205,-2,-201,-20118,'(none)');
 
 
 /******************************************************************************/
