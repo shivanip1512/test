@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_cbc.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/03/10 19:24:50 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2005/03/16 23:08:18 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -27,9 +27,28 @@ using namespace Cti;  //  in preparation for moving devices to their own namespa
 
 class IM_EX_DEVDB CtiDeviceCBC6510 : public Device::DNP
 {
+private:
+
+    typedef Device::DNP Inherited;
+
+    enum
+    {
+        PointOffset_Close = 1,
+        PointOffset_Trip  = 2,
+
+        PointOffset_TripClosePaired = 1
+    };
+
+    struct tripclose_info_t
+    {
+        double state;
+        RWTime time;
+        short  millis;
+    } _trip_info, _close_info;
+
 protected:
 
-private:
+    virtual void processPoints( Protocol::Interface::pointlist_t &points );
 
 public:
 
