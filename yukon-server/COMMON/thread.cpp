@@ -9,8 +9,8 @@
 
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/thread.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/03/13 19:35:25 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2004/09/27 17:11:36 $
 *
 
     COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2000
@@ -20,6 +20,7 @@
 #include <iostream>
 using namespace std;
 
+#include "dllbase.h"
 #include "thread.h"
 
 CtiThread::CtiThread() :
@@ -190,6 +191,5 @@ DWORD WINAPI CtiThread::ThreadProc(LPVOID lpData )
 
    return 0;
 }
-
 
 #endif
