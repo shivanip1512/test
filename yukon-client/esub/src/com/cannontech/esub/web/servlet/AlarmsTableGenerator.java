@@ -60,7 +60,7 @@ public class AlarmsTableGenerator extends HttpServlet {
 			int y = Integer.parseInt(yStr);
 			int width = Integer.parseInt(widthStr);
 			int height = Integer.parseInt(heightStr);
-			int ackX = width - 80;
+			int ackX = width - 120;
 			int ackY = 18;
 		
 			CurrentAlarmsTable cat = new CurrentAlarmsTable();
@@ -100,7 +100,7 @@ public class AlarmsTableGenerator extends HttpServlet {
 				text.setAttributeNS(null, "devicename", PAOFuncs.getYukonPAOName(deviceID));
  				text.setAttributeNS(null, "deviceid", Integer.toString(deviceID)); 
 				text.setAttributeNS(null, "onclick", "acknowledgeAlarm(evt)");
-				Text theText = document.createTextNode("Clear Alarms");
+				Text theText = document.createTextNode("Acknowledge Alarms");
 				text.insertBefore(theText,null);
 				retElement.appendChild(text);
 
