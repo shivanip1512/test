@@ -103,46 +103,10 @@ IM_EX_CTIBASE INT LogEvent(SYSTEMLOGMESS *LogMessage)
 
     ULONG i, WriteLength;
 
-    #if 0
-    /*  pipe is not opened yet */
-    if(ElogPipeHandle == (HPIPE) NULL)
-    {
-        if((i = InitELog()) != NORMAL)
-            return(i);     // error opening pipe
-    }
-
-    /* write log message to the elogger pipe */
-    if(CTIWrite (ElogPipeHandle, LogMessage, sizeof (*LogMessage), &WriteLength) || WriteLength != sizeof (*LogMessage))
-    {
-        /* this handle is bad so take care of it */
-        if(ElogPipeHandle != (HPIPE) NULL)
-        {
-            CTIClose (ElogPipeHandle);
-            ElogPipeHandle = (HPIPE) NULL;
-        }
-        if(!(i = InitELog()))
-        {
-            /* reconected pipe so try again to send log */
-            if(CTIWrite (ElogPipeHandle, LogMessage,  sizeof (*LogMessage), &WriteLength) || WriteLength != sizeof (*LogMessage))
-            {
-                /* this handle is bad so take care of it */
-                if(ElogPipeHandle != (HPIPE) NULL)
-                {
-                    CTIClose (ElogPipeHandle);
-                    ElogPipeHandle = (HPIPE) NULL;
-                }
-                return(PIPEWRITE);     // pipe broke again ???
-            }
-        }
-        else
-            return(i);     // error reopening pipe
-    }
-    #else
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " " << *LogMessage << endl;              // Stupid trick.
     }
-    #endif
 
     return(NORMAL);
 
@@ -242,7 +206,7 @@ IM_EX_CTIBASE VOID SendProcessStop (ULONG Reason)
 
 
 /* Routine to format and send a general text message to the logger */
-IM_EX_CTIBASE INT SendTextToLogger (PCHAR Source, PCHAR Message = NULL, RWCString majorName, RWCString minorName)
+IM_EX_CTIBASE INT SendTextToLogger (PCHAR Source, PCHAR Message, RWCString majorName, RWCString minorName)
 {
     SYSTEMLOGMESS LogMessage;
     ULONG i;
@@ -269,7 +233,7 @@ IM_EX_CTIBASE INT SendTextToLogger (PCHAR Source, PCHAR Message = NULL, RWCStrin
     LogMessage.Originator = LOGSYSTEM;
 
     /* Thats it so send it to elogger */
-    return(LogEvent (&LogMessage));
+    return(LogEvent(&LogMessage));
 }
 
 

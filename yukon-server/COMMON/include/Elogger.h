@@ -124,7 +124,7 @@ int IM_EX_CTIBASE SendProcessStart (PCHAR ProcessName);
 // VOID APIENTRY SendProcessStop (ULONG);    // CGP
 VOID IM_EX_CTIBASE SendProcessStop (ULONG);
 IM_EX_CTIBASE int SendTextToLogger (PCHAR Source,
-                                    PCHAR Message,
+                                    PCHAR Message = NULL,
                                     RWCString majorName = RWCString(""),
                                     RWCString minorName = RWCString(""));
 
