@@ -7,6 +7,10 @@ insert into CTIDatabase values('2.33', 'Ryan', '22-AUG-2002', 'Added StateImage,
 /* Add a new BillingFile format */
 insert into billingfileformats values( 11, 'MV_90 DATA Import');
 
+/* Some Billingfileformats tables were found to not have their PK, so add it here. */
+/* This may fail on tables that already have their PK */
+alter table billingfileformats add constraint Key_FormatID primary key (FORMATID);
+go
 
 /* Change the StateImage table to the YukonImage table */
 alter table state drop constraint FK_StIm_St;
@@ -61,3 +65,9 @@ go
 /* Add a couple columns to the DynamicCCSubstationBus table */
 alter TABLE DynamicCCSubstationBus add PowerFactorValue FLOAT not null DEFAULT 0.0;
 alter TABLE DynamicCCSubstationBus add KvarSolution FLOAT not null DEFAULT 0.0;
+go
+
+/* Add 2 columns to the DynamicCCFeeder table */
+alter table DynamicCCFeeder ADD PowerFactorValue FLOAT not null DEFAULT 0.0;
+alter table DynamicCCFeeder ADD KvarSolution FLOAT not null DEFAULT 0.0;
+go
