@@ -237,6 +237,7 @@ dbErrorHandler (const RWDBStatus& aStatus, DBInfo* dbInfo)
 {
     switch(aStatus.vendorError1())
     {
+    case 547:           // This is a foreign key violation for sqlserver.
     case 2627:          // This is a primary key violation for sqlserver.
     case 5701:          // This is a changed database context for sqlserver.
         return;
