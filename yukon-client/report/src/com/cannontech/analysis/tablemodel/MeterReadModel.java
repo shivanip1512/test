@@ -199,7 +199,7 @@ public class MeterReadModel extends ReportModelBase
 	 {
 		 java.text.SimpleDateFormat format = new java.text.SimpleDateFormat("MMM dd, yyyy");		
 		 return (format.format(new java.util.Date(getStartTime())) + " through " +
-					(format.format(new java.util.Date())));
+					(format.format(new java.util.Date(getStopTime()))));
 	 }
 	 
 	 private String getInclusiveSQLString()
