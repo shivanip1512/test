@@ -38,8 +38,8 @@ public final class PointTypes implements IPointOffsets
 	public static final int CONTROLTYPE_NORMAL = 22;
 	public static final int CONTROLTYPE_PSEUDO = 23;
 
-	public static final int CONTROLTYPE_SBO_LATCH = 35;
-	public static final int CONTROLTYPE_SBO_PULSE = 36;
+	public static final int CONTROLTYPE_SBO_LATCH = 41;
+	public static final int CONTROLTYPE_SBO_PULSE = 42;
 	
 	//Accumulator point reading types
 	public static final int ACCUMULATOR_DIALREAD = 24;
@@ -102,7 +102,7 @@ public final class PointTypes implements IPointOffsets
 		"Outage 5",
 		"Outage 6", //40		
 		"SBO Latch",
-		"SBO Pulse",
+		"SBO Pulse"
 	};	
 /**
  * This method was created in VisualAge.
