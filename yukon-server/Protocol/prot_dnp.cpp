@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2003/04/25 22:40:45 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2003/06/02 18:20:08 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -205,6 +205,35 @@ void CtiProtocolDNP::setCommand( DNPCommand command, dnp_output_point *points, i
 }
 
 
+CtiProtocolDNP::DNPCommand CtiProtocolDNP::getCommand( void )
+{
+    return _currentCommand;
+}
+
+
+bool CtiProtocolDNP::commandRequiresRequeueOnFail( void )
+{
+    bool retVal = false;
+
+    switch( _currentCommand )
+    {
+        case DNP_SetDigitalOut:
+        {
+            retVal = true;
+
+            break;
+        }
+
+        default:
+        {
+            break;
+        }
+    }
+
+    return retVal;
+}
+
+
 int CtiProtocolDNP::generate( CtiXfer &xfer )
 {
     return _appLayer.generate(xfer);
@@ -219,15 +248,19 @@ int CtiProtocolDNP::decode( CtiXfer &xfer, int status )
 
 int CtiProtocolDNP::sendCommRequest( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > &outList )
 {
-    int retVal;
+    int retVal = NoError;
 
+    //  FIX:  move this to Porter-side...  there's little need to have this step.
+    //          do like the ION and just send a command structure...  decode the points on Porter-side, then populate
+    //          a little array.  no biggie.
     if( _appLayer.getLengthReq() < sizeof( OutMessage->Buffer ) )
     {
         _appLayer.serializeReq(OutMessage->Buffer.OutMessage);
-        OutMessage->OutLength   = _appLayer.getLengthReq() + 2 * sizeof(short);
-        OutMessage->Source      = _masterAddress;
-        OutMessage->Destination = _slaveAddress;
-        OutMessage->EventCode   = RESULT;
+        OutMessage->OutLength    = _appLayer.getLengthReq();
+        OutMessage->Source       = _masterAddress;
+        OutMessage->Destination  = _slaveAddress;
+        OutMessage->EventCode    = RESULT;
+        OutMessage->MessageFlags = commandRequiresRequeueOnFail() ? MSGFLG_REQUEUE_CMD_ONCE_ON_FAIL : 0;
     }
     else
     {
@@ -256,21 +289,28 @@ int CtiProtocolDNP::sendCommRequest( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS 
 
 int CtiProtocolDNP::recvCommResult( INMESS *InMessage, RWTPtrSlist< OUTMESS > &outList )
 {
-    int retVal;
+    int retVal = NoError;
 
-    _appLayer.restoreRsp(InMessage->Buffer.InMessage, InMessage->InLength);
-
-    if( _appLayer.hasOutput() )
+    if( InMessage != NULL )
     {
-        OUTMESS *OutMessage = CTIDBG_new CtiOutMessage();
+        _appLayer.restoreRsp(InMessage->Buffer.InMessage, InMessage->InLength);
 
-        InEchoToOut(InMessage, OutMessage);
-        //  copy over the other stuff we need
-        OutMessage->DeviceID = InMessage->DeviceID;
-        OutMessage->TargetID = InMessage->TargetID;
-        OutMessage->Port     = InMessage->Port;
+        if( _appLayer.hasOutput() )
+        {
+            OUTMESS *OutMessage = CTIDBG_new CtiOutMessage();
 
-        retVal = sendCommRequest(OutMessage, outList);
+            InEchoToOut(InMessage, OutMessage);
+            //  copy over the other stuff we need
+            OutMessage->DeviceID = InMessage->DeviceID;
+            OutMessage->TargetID = InMessage->TargetID;
+            OutMessage->Port     = InMessage->Port;
+
+            retVal = sendCommRequest(OutMessage, outList);
+        }
+    }
+    else
+    {
+        retVal = MemoryError;
     }
 
     return retVal;

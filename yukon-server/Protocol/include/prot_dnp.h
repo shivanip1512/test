@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2003/04/25 22:40:29 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2003/06/02 18:20:08 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -57,6 +57,9 @@ public:
     void setOptions( int options );
 
     void setCommand( DNPCommand command, dnp_output_point *points = NULL, int numPoints = 0 );
+    DNPCommand getCommand( void );
+
+    bool commandRequiresRequeueOnFail( void );
 
     int generate( CtiXfer &xfer );
     int decode  ( CtiXfer &xfer, int status );
