@@ -390,7 +390,7 @@ private com.cannontech.common.gui.util.DateComboBox getDateJComboBox() {
 			ivjDateJComboBox.setName("DateJComboBox");
 			ivjDateJComboBox.setPreferredSize(new java.awt.Dimension(208, 23));
 			ivjDateJComboBox.setBackground(java.awt.Color.white);
-			ivjDateJComboBox.setMinimumSize(new java.awt.Dimension(208, 23));
+			ivjDateJComboBox.setMinimumSize(new java.awt.Dimension(50, 23));
 			ivjDateJComboBox.setMaximumSize(new java.awt.Dimension(208, 23));
 			// user code begin {1}
 
@@ -476,7 +476,7 @@ private javax.swing.JButton getJToolBarButtonAckAll() {
 			ivjJToolBarButtonAckAll.setMnemonic('A');
 			ivjJToolBarButtonAckAll.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 			ivjJToolBarButtonAckAll.setMargin(new java.awt.Insets(0, 0, 0, 0));
-			ivjJToolBarButtonAckAll.setMinimumSize(new java.awt.Dimension(100, 23));
+			ivjJToolBarButtonAckAll.setMinimumSize(new java.awt.Dimension(50, 23));
 			ivjJToolBarButtonAckAll.setText("Ack Viewable");
 			ivjJToolBarButtonAckAll.setMaximumSize(new java.awt.Dimension(100, 23));
 			ivjJToolBarButtonAckAll.setVerticalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -511,7 +511,7 @@ private javax.swing.JButton getJToolBarButtonClear() {
 			ivjJToolBarButtonClear.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 			ivjJToolBarButtonClear.setDisabledSelectedIcon(null);
 			ivjJToolBarButtonClear.setMargin(new java.awt.Insets(0, 0, 0, 0));
-			ivjJToolBarButtonClear.setMinimumSize(new java.awt.Dimension(81, 23));
+			ivjJToolBarButtonClear.setMinimumSize(new java.awt.Dimension(50, 23));
 			ivjJToolBarButtonClear.setText("Clear Display");
 			ivjJToolBarButtonClear.setMaximumSize(new java.awt.Dimension(81, 23));
 			ivjJToolBarButtonClear.setDisabledIcon(null);
@@ -545,7 +545,7 @@ private javax.swing.JButton getJToolBarButtonClearViewableAlarms() {
 			ivjJToolBarButtonClearViewableAlarms.setMnemonic('l');
 			ivjJToolBarButtonClearViewableAlarms.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 			ivjJToolBarButtonClearViewableAlarms.setMargin(new java.awt.Insets(0, 0, 0, 0));
-			ivjJToolBarButtonClearViewableAlarms.setMinimumSize(new java.awt.Dimension(100, 23));
+			ivjJToolBarButtonClearViewableAlarms.setMinimumSize(new java.awt.Dimension(50, 23));
 			ivjJToolBarButtonClearViewableAlarms.setText("Clear Viewable");
 			ivjJToolBarButtonClearViewableAlarms.setMaximumSize(new java.awt.Dimension(100, 23));
 			ivjJToolBarButtonClearViewableAlarms.setVerticalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -585,7 +585,7 @@ private javax.swing.JButton getJToolBarButtonRefresh() {
 			ivjJToolBarButtonRefresh.setIcon(null);
 			ivjJToolBarButtonRefresh.setPreferredSize(new java.awt.Dimension(61, 23));
 			ivjJToolBarButtonRefresh.setMargin(new java.awt.Insets(0, 0, 0, 0));
-			ivjJToolBarButtonRefresh.setMinimumSize(new java.awt.Dimension(61, 23));
+			ivjJToolBarButtonRefresh.setMinimumSize(new java.awt.Dimension(50, 23));
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -612,7 +612,7 @@ public javax.swing.JButton getJToolBarButtonSilenceAlarms() {
 			ivjJToolBarButtonSilenceAlarms.setMnemonic('S');
 			ivjJToolBarButtonSilenceAlarms.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 			ivjJToolBarButtonSilenceAlarms.setMargin(new java.awt.Insets(0, 0, 0, 0));
-			ivjJToolBarButtonSilenceAlarms.setMinimumSize(new java.awt.Dimension(91, 23));
+			ivjJToolBarButtonSilenceAlarms.setMinimumSize(new java.awt.Dimension(50, 23));
 			ivjJToolBarButtonSilenceAlarms.setAutoscrolls(false);
 			ivjJToolBarButtonSilenceAlarms.setText("Silence");
 			ivjJToolBarButtonSilenceAlarms.setMaximumSize(new java.awt.Dimension(91, 23));
