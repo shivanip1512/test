@@ -9,7 +9,7 @@ import javax.management.MBeanParameterInfo;
 
 import com.cannontech.clientutils.commonutils.ModifiedDate;
 import com.cannontech.jmx.CTIBaseDynMBean;
-import com.cannontech.services.WebGraph;
+import com.cannontech.graph.WebGraph;
 
 /**
  * @author rneuharth

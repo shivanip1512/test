@@ -79,7 +79,6 @@
         <ant dir="${macs}" target="${dotarget}" />
 		<ant dir="${commander}" target="${dotarget}" />
         <ant dir="${commands}" target="${dotarget}" />
-        <ant dir="${webgraph}" target="${dotarget}" />
         <ant dir="${logger}" target="${dotarget}"/>
         <ant dir="${custom}" target="${dotarget}" />
         <ant dir="${palm}" target="${dotarget}" />

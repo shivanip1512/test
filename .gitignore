@@ -42,6 +42,7 @@ yukon-client/palm/bin
 yukon-client/palm/build
 yukon-client/report/bin
 yukon-client/report/build
+yukon-client/services/bin
 yukon-client/servlet/.cvsignore
 yukon-client/servlet/bin
 yukon-client/servlet/build
