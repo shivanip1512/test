@@ -33,7 +33,7 @@
           <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" height="400" valign="top" bgcolor="#FFFFFF">
             <div align="center"> 
-              <% String header = "IMPORT ACCOUNTS - EDIT SELECTION LISTS"; %>
+              <% String header = "IMPORT STARS - EDIT SELECTION LISTS"; %>
               <%@ include file="include/InfoSearchBar2.jsp" %>
               <table width="500" border="0" cellspacing="0" cellpadding="0">
                 <tr> 
