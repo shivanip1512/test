@@ -11,7 +11,7 @@ import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
-import com.cannontech.database.model.CheckBoxDBTreeModel;
+import com.cannontech.database.model.Checkable;
 
 /**
  * @author rneuharth
@@ -110,8 +110,8 @@ public class CheckNodeSelectionListener extends MouseAdapter
 	 */
 	private void selectNode(CheckNode node, boolean selected)
 	{
-		if(isStoreCheckedNodes() && tree.getModel() instanceof CheckBoxDBTreeModel)
-			node.setSelected(selected, ((CheckBoxDBTreeModel)tree.getModel()).getCheckedNodes());
+		if(isStoreCheckedNodes() && tree.getModel() instanceof Checkable)
+			node.setSelected(selected, ((Checkable)tree.getModel()).getCheckedNodes());
 		else
 			node.setSelected(selected);
 			
