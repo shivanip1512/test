@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2002/07/01 17:54:56 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2002/07/18 16:15:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -460,8 +460,6 @@ void CtiPILServer::resultThread()
 
     /* Define the various records */
     CtiDeviceBase   *DeviceRecord;
-    CtiDeviceBase   *RemoteRecord;
-    // CtiPoint        *PointRecord;
 
     /* Define the various time variable */
     RWTime      TimeNow;
@@ -661,8 +659,7 @@ void CtiPILServer::resultThread()
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << TimeNow << " ResThread : " << rwThreadId() <<
-        " terminating " << endl;
+        dout << TimeNow << " ResThread : " << rwThreadId() << " terminating " << endl;
     }
 
 }
@@ -759,7 +756,7 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
             {
                 CtiReturnMsg *pcRet = new CtiReturnMsg(pExecReq->DeviceId(),
                                                        pExecReq->CommandString(),
-                                                       "Device unknown, unselected, or DB corrupt",
+                                                       "Device unknown, unselected, or DB corrupt. ID = " + CtiNumStr(pExecReq->DeviceId()),
                                                        IDNF,
                                                        pExecReq->RouteId(),
                                                        pExecReq->MacroOffset(),
@@ -1001,10 +998,9 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
     CtiRequestMsg *pReq = (CtiRequestMsg*)Req.replicateMessage();
     pReq->setConnectionHandle( Req.getConnectionHandle() );
 
-
     CtiDevice *Dev = DeviceManager->RemoteGetEqual(pReq->DeviceId());
 
-    if( (Dev->getType() == TYPE_REPEATER800 || Dev->getType() == TYPE_REPEATER900) && parse.isKeyValid("install"))
+    if( Dev && parse.isKeyValid("install") && (Dev->getType() == TYPE_REPEATER800 || Dev->getType() == TYPE_REPEATER900) )
     {
         analyzeAutoRole(*pReq,parse,execList,retList);
     }
@@ -1193,10 +1189,10 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
             char newparse[128];
 
             CtiDeviceGroupVersacom *GrpDev = (CtiDeviceGroupVersacom *)Dev;
-            Dev = DeviceManager->RemoteGetEqual(SYS_DID_SYSTEM);     // This is the guy who does ALL configs.
+            // Dev = DeviceManager->RemoteGetEqual(SYS_DID_SYSTEM);     // This is the guy who does ALL configs.
             if(GrpDev != NULL)
             {
-                sprintf(newparse, "%s %s", pReq->CommandString(), GrpDev->getPutConfigAssignment());
+                _snprintf(newparse, 127, "%s %s", pReq->CommandString(), GrpDev->getPutConfigAssignment());
 
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
