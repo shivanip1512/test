@@ -2,7 +2,7 @@
 <project name="Yukon Clients" default="targets" basedir=".">
 
      <!-- Define new tasks -->
-	 <taskdef name="XSDCompiler" classname="org.exolab.castor.tools.XSDCompiler"/>
+<!--	 <taskdef name="XSDCompiler" classname="org.exolab.castor.tools.XSDCompiler"/>-->
 	 	 	 
      <property file="build.properties"/>
 	 	      	     	     
