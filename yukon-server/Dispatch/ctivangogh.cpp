@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.66 $
-* DATE         :  $Date: 2004/05/20 22:45:48 $
+* REVISION     :  $Revision: 1.67 $
+* DATE         :  $Date: 2004/06/01 18:14:31 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -4036,6 +4036,29 @@ void CtiVanGogh::doPendingOperations()
                                 }
                             }
                         }
+                        else if( ppo.getControlState() == CtiPendingPointOperations::controlCompleteCommanded   ||
+                                 ppo.getControlState() == CtiPendingPointOperations::controlCompleteTimedIn     ||
+                                 ppo.getControlState() == CtiPendingPointOperations::controlCompleteManual      )
+                        {
+                            try
+                            {
+                                it = _pendingPointInfo.erase(it);
+                                continue;   // iterator has been repositioned!
+                            }
+                            catch(...)
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << "**** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            }
+                        }
+                        else
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << " Unexpected pending operation control state " << ppo.getControlState() << endl;
+                            }
+                        }
                     }
                     else if(ppo.getType() == CtiPendingPointOperations::pendingPointData)
                     {
@@ -5652,6 +5675,7 @@ void CtiVanGogh::updateControlHistory( long pendid, int cause, const RWTime &the
 
                         insertControlHistoryRow(ppc, now);
                         postControlHistoryPoints(ppc,now);
+                        postControlStopPoint(ppc,now);
                     }
                     else
                     {
