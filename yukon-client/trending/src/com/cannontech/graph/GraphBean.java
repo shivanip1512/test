@@ -349,7 +349,7 @@ public class GraphBean implements GraphDefines
 
 	public void getDataNow()
 	{
-		com.cannontech.clientutils.CTILogger.info("GET DATA NOW!!!");
-		getGraph().getDataNow();
+		com.cannontech.clientutils.CTILogger.info("GET DATA NOW - for all meters!!!");
+		getGraph().getDataNow(null);
 	}
 }
