@@ -70,14 +70,7 @@ public class StatisticModel extends ReportModelBase
 	public static String LASTMONTH_STAT_TYPE_STRING = "LastMonth";
 	private String statType = null;	
 
-	//Statistic model types.  These are how we narrow down the paobjects and such~!
-	public static final int CARRIER_COMM_DATA = 0;
-	public static final int COMM_CHANNEL_DATA = 1;
-	public static final int DEVICE_COMM_DATA = 2;
-	public static final int TRANS_COMM_DATA = 3;
-	//value for storing the type of stat model we want.
-	//Valid values are: CARRIER_COMM_DATA, COMM_CHANNEL_DATA, DEVICE_COMM_DATA, TRANS_COMM_DATA
-	private int statModelType = CARRIER_COMM_DATA;	
+	//Valid REPORTTYPE values are: CARRIER_COMM_DATA, COMM_CHANNEL_DATA, DEVICE_COMM_DATA, TRANS_COMM_DATA
 	
 	/**
 	 * Constructor class
@@ -86,12 +79,12 @@ public class StatisticModel extends ReportModelBase
 	
 	public StatisticModel()
 	{
-		this(DAILY_STAT_TYPE_STRING, ReportTypes.STATISTIC_DATA);//default type		
+		this(DAILY_STAT_TYPE_STRING, ReportTypes.STAT_CARRIER_COMM_DATA);//default type		
 	}
 
 	public StatisticModel(String statType_)
 	{
-		this(statType_, ReportTypes.STATISTIC_DATA);//default type		
+		this(statType_, ReportTypes.STAT_CARRIER_COMM_DATA);//default type		
 	}
 	
 	public StatisticModel(int reportType_)
@@ -239,16 +232,16 @@ public class StatisticModel extends ReportModelBase
 		{
 			switch (getReportType())
 			{
-				case CARRIER_COMM_DATA:
+				case ReportTypes.STAT_CARRIER_COMM_DATA:
 					category = PAOGroups.STRING_CAT_DEVICE;
 					break;
-				case COMM_CHANNEL_DATA:
+				case ReportTypes.STAT_COMM_CHANNEL_DATA:
 					category = PAOGroups.STRING_CAT_PORT;
 					break;
-				case DEVICE_COMM_DATA:
+				case ReportTypes.STAT_DEVICE_COMM_DATA:
 					category = PAOGroups.STRING_CAT_DEVICE;
 					break;
-				case TRANS_COMM_DATA:
+				case ReportTypes.STAT_TRANS_COMM_DATA:
 					category = PAOGroups.STRING_CAT_DEVICE;
 					break;
 				default:
@@ -268,16 +261,16 @@ public class StatisticModel extends ReportModelBase
 		{
 			switch (getReportType())
 			{
-				case CARRIER_COMM_DATA:
+				case ReportTypes.STAT_CARRIER_COMM_DATA:
 					paoClass = DeviceClasses.STRING_CLASS_CARRIER;
 					break;
-				case COMM_CHANNEL_DATA:
+				case ReportTypes.STAT_COMM_CHANNEL_DATA:
 					paoClass = PAOGroups.STRING_CAT_PORT;
 					break;
-				case DEVICE_COMM_DATA:
+				case ReportTypes.STAT_DEVICE_COMM_DATA:
 					paoClass = null;
 					break;					
-				case TRANS_COMM_DATA:
+				case ReportTypes.STAT_TRANS_COMM_DATA:
 					paoClass = DeviceClasses.STRING_CLASS_TRANSMITTER;
 					break;
 				default:
@@ -402,21 +395,7 @@ public class StatisticModel extends ReportModelBase
 		}				
 		return String.valueOf(getStartTime());
 	}
-	/**
-	 * @return
-	 */
-	public int getStatModelType()
-	{
-		return statModelType;
-	}
 
-	/**
-	 * @param i
-	 */
-	public void setStatModelType(int i)
-	{
-		statModelType = i;
-	}
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getAttribute(int, java.lang.Object)
 	 */
@@ -434,23 +413,23 @@ public class StatisticModel extends ReportModelBase
 					return statData.getAttempts();
 
 				case DLC_ATTEMPTS_OR_ERRORS_COLUMN:
-					if( getStatModelType() == CARRIER_COMM_DATA)
+					if( getReportType() == ReportTypes.STAT_CARRIER_COMM_DATA)
 						return statData.getDlcAttempts();
 						
-					else if( getStatModelType() == COMM_CHANNEL_DATA ||  getStatModelType() == TRANS_COMM_DATA)
+					else if( getReportType() == ReportTypes.STAT_COMM_CHANNEL_DATA ||  getReportType() == ReportTypes.STAT_TRANS_COMM_DATA)
 						return statData.getCommErrors();
 						
-					else if( getStatModelType() == DEVICE_COMM_DATA)
+					else if( getReportType() == ReportTypes.STAT_DEVICE_COMM_DATA)
 						return statData.getTotalErrs();
 					break;
 				case DLC_OR_PORT_OR_COMMERR_PERCENT_COLUMN:
-					if( getStatModelType() == CARRIER_COMM_DATA)
+					if( getReportType() == ReportTypes.STAT_CARRIER_COMM_DATA)
 						return statData.getDlcPercent();
 		
-					else if( getStatModelType() == COMM_CHANNEL_DATA ||  getStatModelType() == TRANS_COMM_DATA)
+					else if( getReportType() == ReportTypes.STAT_COMM_CHANNEL_DATA ||  getReportType() == ReportTypes.STAT_TRANS_COMM_DATA)
 						return statData.getPortPercent();
 		
-					else if( getStatModelType() == DEVICE_COMM_DATA)
+					else if( getReportType() == ReportTypes.STAT_DEVICE_COMM_DATA)
 						return statData.getCommErrPercent();
 					break;
 				case SUCC_COMM_PERC_COLUMN:
@@ -467,9 +446,9 @@ public class StatisticModel extends ReportModelBase
 	{
 		if( columnNames == null)
 		{
-			switch (getStatModelType())
+			switch (getReportType())
 			{
-				case CARRIER_COMM_DATA:
+				case ReportTypes.STAT_CARRIER_COMM_DATA:
 					columnNames = new String[]{
 						MCT_NAME_STRING,
 						TOTAL_ATTEMPTS_STRING,
@@ -478,7 +457,7 @@ public class StatisticModel extends ReportModelBase
 						SUCC_COMM_PERC_STRING
 					};				
 					break;
-				case COMM_CHANNEL_DATA:
+				case ReportTypes.STAT_COMM_CHANNEL_DATA:
 					columnNames = new String[]{
 					   PORT_NAME_STRING,
 					   TOTAL_ATTEMPTS_STRING,
@@ -487,7 +466,7 @@ public class StatisticModel extends ReportModelBase
 					   SUCC_COMM_PERC_STRING
 					};
 					break;
-				case DEVICE_COMM_DATA:
+				case ReportTypes.STAT_DEVICE_COMM_DATA:
 					columnNames = new String[]{
 						DEVICE_NAME_STRING,
 						TOTAL_ATTEMPTS_STRING,
@@ -496,7 +475,7 @@ public class StatisticModel extends ReportModelBase
 						SUCC_COMM_PERC_STRING
 					};
 					break;
-				case TRANS_COMM_DATA:
+				case ReportTypes.STAT_TRANS_COMM_DATA:
 					columnNames = new String[]{
 						TRANSMITTER_NAME_STRING,
 						TOTAL_ATTEMPTS_STRING,
@@ -517,12 +496,12 @@ public class StatisticModel extends ReportModelBase
 	{
 		if( columnTypes == null)
 		{
-			switch (getStatModelType())
+			switch (getReportType())
 			{
-				case CARRIER_COMM_DATA:
-				case DEVICE_COMM_DATA:
-				case COMM_CHANNEL_DATA:
-				case TRANS_COMM_DATA:			
+				case ReportTypes.STAT_CARRIER_COMM_DATA:
+				case ReportTypes.STAT_DEVICE_COMM_DATA:
+				case ReportTypes.STAT_COMM_CHANNEL_DATA:
+				case ReportTypes.STAT_TRANS_COMM_DATA:			
 					columnTypes = new Class[]{
 						String.class,
 						Integer.class,
@@ -543,10 +522,10 @@ public class StatisticModel extends ReportModelBase
 	{
 		if( columnProperties == null)
 		{
-			switch (getStatModelType())
+			switch (getReportType())
 			{
-				case CARRIER_COMM_DATA:
-				case DEVICE_COMM_DATA:
+				case ReportTypes.STAT_CARRIER_COMM_DATA:
+				case ReportTypes.STAT_DEVICE_COMM_DATA:
 					columnProperties = new ColumnProperties[]{
 						//posX, posY, width, height, numberFormatString
 						new ColumnProperties(0, 1, 210, 20, null),
@@ -556,8 +535,8 @@ public class StatisticModel extends ReportModelBase
 						new ColumnProperties(390, 1, 110, 20, "##0.00%")
 					};
 					break;
-				case COMM_CHANNEL_DATA:
-				case TRANS_COMM_DATA:
+				case ReportTypes.STAT_COMM_CHANNEL_DATA:
+				case ReportTypes.STAT_TRANS_COMM_DATA:
 					columnProperties = new ColumnProperties[]{
 						new ColumnProperties(0, 1, 175, 20, null),
 						new ColumnProperties(175, 1, 75, 20, "#,##0"),
@@ -576,18 +555,18 @@ public class StatisticModel extends ReportModelBase
 	 */
 	public String getTitleString()
 	{
-		switch (getStatModelType())
+		switch (getReportType())
 		{
-			case CARRIER_COMM_DATA :
+			case ReportTypes.STAT_CARRIER_COMM_DATA :
 				title = "CARRIER COMMUNICATION STATISTICS";
 				break;
-			case COMM_CHANNEL_DATA:
+			case ReportTypes.STAT_COMM_CHANNEL_DATA:
 				title = "COMMUNICATION CHANNEL STATISTICS";
 				break;
-			case DEVICE_COMM_DATA:
+			case ReportTypes.STAT_DEVICE_COMM_DATA:
 				title = "DEVICE COMMUNICATION STATISTICS";
 				break;
-			case TRANS_COMM_DATA:
+			case ReportTypes.STAT_TRANS_COMM_DATA:
 				title = "TRANSMITTER COMMUNICATION STATISTICS";
 				break;
 			default :

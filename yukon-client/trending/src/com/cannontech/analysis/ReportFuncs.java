@@ -41,16 +41,20 @@ public class ReportFuncs
 			switch (reportType)
 			{
 /* 0 */			case ReportTypes.STATISTIC_DATA:
+				case ReportTypes.STAT_CARRIER_COMM_DATA:
+				case ReportTypes.STAT_COMM_CHANNEL_DATA:
+				case ReportTypes.STAT_DEVICE_COMM_DATA:
+				case ReportTypes.STAT_TRANS_COMM_DATA:
 					return new StatisticReport((StatisticModel)model);
 				
-				case ReportTypes.SYSTEM_LOG_DATA:
+/* 5 */			case ReportTypes.SYSTEM_LOG_DATA:
 				case ReportTypes.LM_CONTROL_LOG_DATA:
 					return new SystemLogReport((SystemLogModel)model);
 					
 				case ReportTypes.LG_ACCOUNTING_DATA:
 					return new LGAccountingReport((LoadGroupModel)model);
 					
-/* 4 */			case ReportTypes.MISSED_METER_DATA:
+/* 8 */			case ReportTypes.MISSED_METER_DATA:
 					return new MissedMeterReport();
 					
 				case ReportTypes.CARRIER_DATA:
@@ -63,7 +67,7 @@ public class ReportFuncs
 				case ReportTypes.DISCONNECT_DATA:
 					return new DisconnectReport();
 					
-/* 8 */			case ReportTypes.EC_ACTIVITY_LOG_DATA:
+/* 12 */			case ReportTypes.EC_ACTIVITY_LOG_DATA:
 					return new ECActivityLogReport();
 
 				case ReportTypes.CARRIER_ROUTE_MACRO_DATA:
@@ -72,7 +76,7 @@ public class ReportFuncs
 				case ReportTypes.SUCCESS_METER_DATA:	//TODO verify this is the right report for successful reads
 					return new MissedMeterReport();
 
-/* 11*/			case ReportTypes.LOAD_PROFILE_DATA:	//TODO This is not the correct report to create!
+/* 15*/			case ReportTypes.LOAD_PROFILE_DATA:	//TODO This is not the correct report to create!
 					return new MissedMeterReport();
 
 				case ReportTypes.EC_ACTIVITY_DETAIL_DATA:

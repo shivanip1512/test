@@ -330,17 +330,18 @@ private com.cannontech.common.gui.util.CheckBoxTreeViewPanel ivjCheckBoxTreeView
 								
 				getCheckBoxTreeViewPanel().getSortByComboBox().getSelectedItem();
 				Object selected = getCheckBoxTreeViewPanel().getSortByComboBox().getSelectedItem();
-				int statModelType = StatisticModel.CARRIER_COMM_DATA;	//default
+				int rptType = ReportTypes.STAT_CARRIER_COMM_DATA;	//default
+				
 				if( selected instanceof MCTCheckBoxTreeModel)
-					statModelType = StatisticModel.CARRIER_COMM_DATA;
-				else if (selected instanceof DeviceCheckBoxTreeModel)
-					statModelType = StatisticModel.DEVICE_COMM_DATA;
+					rptType = ReportTypes.STAT_CARRIER_COMM_DATA;
 				else if (selected instanceof TransmitterCheckBoxTreeModel)
-					statModelType = StatisticModel.DEVICE_COMM_DATA;
+					rptType = ReportTypes.STAT_TRANS_COMM_DATA;
 				else if (selected instanceof CommChannelCheckBoxTreeModel)
-					statModelType = StatisticModel.COMM_CHANNEL_DATA;
+					rptType = ReportTypes.STAT_COMM_CHANNEL_DATA;
+				else if (selected instanceof DeviceCheckBoxTreeModel)
+					rptType = ReportTypes.STAT_DEVICE_COMM_DATA;
 
-				((StatisticModel)model).setStatModelType(statModelType);
+				((StatisticModel)model).setReportType(rptType);
 				report = new StatisticReport();
 			}
 			else if (model instanceof SystemLogModel)

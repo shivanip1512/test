@@ -64,15 +64,15 @@ public class StatisticReport extends YukonReportBase
 	public StatisticReport(String modelTypeString, String statType_)
 	{
 		super();
-		StatisticModel model = (StatisticModel)ReportTypes.create(ReportTypes.STATISTIC_DATA);
+		StatisticModel model = null;
 		if( modelTypeString.startsWith("carr"))
-			model.setStatModelType(StatisticModel.CARRIER_COMM_DATA);
+			model = (StatisticModel)ReportTypes.create(ReportTypes.STAT_CARRIER_COMM_DATA);
 		else if( modelTypeString.startsWith("trans"))
-			model.setStatModelType(StatisticModel.TRANS_COMM_DATA);
+			model = (StatisticModel)ReportTypes.create(ReportTypes.STAT_TRANS_COMM_DATA);
 		else if( modelTypeString.startsWith("dev"))
-			model.setStatModelType(StatisticModel.DEVICE_COMM_DATA);
+			model = (StatisticModel)ReportTypes.create(ReportTypes.STAT_DEVICE_COMM_DATA);
 		else if( modelTypeString.startsWith("comm"))
-			model.setStatModelType(StatisticModel.COMM_CHANNEL_DATA);
+			model = (StatisticModel)ReportTypes.create(ReportTypes.STAT_COMM_CHANNEL_DATA);
 
 		model.setStatType(statType_);
 		setModel(model);
