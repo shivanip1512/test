@@ -9,8 +9,6 @@ import java.sql.SQLException;
 import java.util.Date;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.PoolManager;
 import com.cannontech.database.db.DBPersistent;
 
 /**
@@ -37,7 +35,7 @@ public class ActivityLog extends DBPersistent {
         
 	public void add() throws SQLException {
 		if(getActivityLogID() == UNUSED_ID) {
-			setActivityLogID(getNextUserID(PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias())));
+			setActivityLogID(getNextUserID(getDbConnection()));
 		}
 		Object addValues[] = { 
 			getActivityLogID(), getTimestamp(), getUserID(), getAccountID(),
