@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.65 $
-* DATE         :  $Date: 2004/05/19 14:59:51 $
+* REVISION     :  $Revision: 1.66 $
+* DATE         :  $Date: 2004/05/20 22:45:48 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -748,7 +748,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
 
                                     if(pFailSig->getSignalCategory() > SignalEvent)
                                     {
-                                        pFailSig->setTags((pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) | TAG_UNACKNOWLEDGED_ALARM);
+                                        pFailSig->setTags((pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) | (pPoint->getAlarming().isAutoAcked(pFailSig->getSignalCategory()) ? 0 : TAG_UNACKNOWLEDGED_ALARM));
                                         pFailSig->setLogType(AlarmCategoryLogType);
                                     }
                                     pFailSig->setCondition(CtiTablePointAlarming::commandFailure);
@@ -2096,7 +2096,7 @@ int CtiVanGogh::processControlMessage(CtiLMControlHistoryMsg *pMsg)
 
                 if(pFailSig->getSignalCategory() > SignalEvent)
                 {
-                    pFailSig->setTags((pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) | TAG_UNACKNOWLEDGED_ALARM);
+                    pFailSig->setTags((pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) | (pPoint->getAlarming().isAutoAcked(pFailSig->getSignalCategory()) ? 0 : TAG_UNACKNOWLEDGED_ALARM));
                     pFailSig->setLogType(AlarmCategoryLogType);
                 }
                 pFailSig->setCondition(CtiTablePointAlarming::commandFailure);
@@ -2904,15 +2904,6 @@ INT CtiVanGogh::checkSignalStateQuality(CtiSignalMsg  *pSig, CtiMultiWrapper &aW
 
     }
 
-#if 0       // 092503 CGP.
-    // This is an alarm if the alarm state indicates anything other than SignalEvent.
-    if(pSig->getSignalCategory() > SignalEvent && !(pSig->getTags() & MASK_ANY_ALARM))
-    {
-        pSig->setTags(TAG_ACTIVE_ALARM | TAG_UNACKNOWLEDGED_ALARM);
-        pSig->setLogType(AlarmCategoryLogType);
-    }
-#endif
-
     return status;
 }
 
@@ -3510,7 +3501,7 @@ INT CtiVanGogh::sendMail(const CtiSignalMsg &sig, const CtiTableNotificationGrou
         {
             pointname = point->getName();
             devicetext = resolveDeviceName( *point );
-            excluded = point->getAlarming().isExcluded(sig.getSignalCategory());
+            excluded = point->getAlarming().isNotifyExcluded(sig.getSignalCategory());
             paodescription = resolveDeviceDescription( point->getDeviceID() );
         }
 
@@ -6601,7 +6592,7 @@ void CtiVanGogh::tagSignalAsAlarm( CtiPointBase &point, CtiSignalMsg *&pSig, int
             CtiDynamicPointDispatch *pDyn = (CtiDynamicPointDispatch*)point.getDynamic();
 
             if(pDyn)
-                pDyn->getDispatch().setTags(TAG_ACTIVE_ALARM | TAG_UNACKNOWLEDGED_ALARM);
+                pDyn->getDispatch().setTags(TAG_ACTIVE_ALARM | (point.getAlarming().isAutoAcked(pSig->getSignalCategory()) ? 0 : TAG_UNACKNOWLEDGED_ALARM));
 
             pSig->setTags(pDyn->getDispatch().getTags());   // They are equal here!
             pSig->setLogType(AlarmCategoryLogType);
