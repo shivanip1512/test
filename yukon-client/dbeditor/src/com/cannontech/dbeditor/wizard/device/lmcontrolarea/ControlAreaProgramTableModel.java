@@ -60,30 +60,8 @@ public boolean addRow(com.cannontech.database.db.device.lm.LMControlAreaProgram 
 			return false; //row already exists, did not insert the new one
 	
 	ProgramRow row = new ProgramRow( list, device );
-
-	if( getRowCount() == 0 )
-	{
-		getRows().add( row );
-	}
-	else
-		//insert the element in order, or just append it to the end of our list
-		for( int i = 0; i < getRowCount(); i++ )
-		{
-			if( row.getProgramList().getUserOrder().intValue() 
-				 < getRowAt(i).getProgramList().getUserOrder().intValue() )
-			{
-				getRows().insertElementAt( row, i );
-				break;
-			}
-			else if( i == (getRowCount() - 1) ) //we are at the end, just append the row
-			{
-				getRows().add( row );
-				break;
-			}
-
-		}
-
-		
+	getRows().add(row);
+	
 	fireTableDataChanged();
 	return true;
 }
@@ -103,10 +81,10 @@ public Class getColumnClass(int col)
 			return row.getLiteDevice().getPaoName().getClass();
 
 			case COLUMN_STOP:
-			return row.getProgramList().getStopOrder().getClass();
+			return row.getProgramList().getStopPriority().getClass();
 
 			case COLUMN_START:
-			return row.getProgramList().getDefaultPriority().getClass();
+			return row.getProgramList().getStartPriority().getClass();
 		}
 	}
 
@@ -173,10 +151,10 @@ public Object getValueAt(int row, int col)
 		return getRowAt(row).getLiteDevice().getPaoName();
 
 		case COLUMN_STOP:
-		return getRowAt(row).getProgramList().getStopOrder();
+		return getRowAt(row).getProgramList().getStopPriority();
 
 		case COLUMN_START:
-		return getRowAt(row).getProgramList().getDefaultPriority();
+		return getRowAt(row).getProgramList().getStartPriority();
 	
 	}
 	
@@ -223,11 +201,11 @@ public void setValueAt(Object aValue, int row, int col)
 	switch( col )
 	{
 		case COLUMN_STOP:
-			getRowAt(row).getProgramList().setStopOrder( val );
+			getRowAt(row).getProgramList().setStopPriority( val );
 			break;
 
 		case COLUMN_START:
-			getRowAt(row).getProgramList().setDefaultPriority( val );
+			getRowAt(row).getProgramList().setStartPriority( val );
 			break;
 	}
 

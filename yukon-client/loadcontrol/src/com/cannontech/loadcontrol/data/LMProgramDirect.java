@@ -48,7 +48,7 @@ public LMManualControlRequest createScheduledStartMsg( java.util.Date start, jav
 		msg.setAddditionalInfo(additionalInfo)	;
 
 	msg.setYukonID( getYukonID().intValue() );
-	msg.setStartPriority( getDefaultPriority().intValue() );
+	msg.setStartPriority( getStartPriority().intValue() );
 	
 	msg.setCommand( LMManualControlRequest.SCHEDULED_START );		
 		
@@ -76,7 +76,7 @@ public LMManualControlRequest createScheduledStopMsg( java.util.Date start, java
 
 	
 	msg.setYukonID( getYukonID().intValue() );
-	msg.setStartPriority( getDefaultPriority().intValue() );
+	msg.setStartPriority( getStartPriority().intValue() );
 	
 	msg.setCommand( LMManualControlRequest.SCHEDULED_STOP );
 		
@@ -103,7 +103,7 @@ public LMManualControlRequest createStartStopNowMsg( java.util.Date stopTime, in
 		msg.setAddditionalInfo(additionalInfo)	;
 
 	msg.setYukonID( getYukonID().intValue() );
-	msg.setStartPriority( getDefaultPriority().intValue() );
+	msg.setStartPriority( getStartPriority().intValue() );
 
 	if( isStart )
 		msg.setCommand( LMManualControlRequest.START_NOW );

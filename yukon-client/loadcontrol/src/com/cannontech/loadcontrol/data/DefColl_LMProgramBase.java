@@ -78,9 +78,8 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	Integer yukonType = new Integer( (int)vstr.extractUnsignedInt() );
 	String yukonDescription = (String) vstr.restoreObject( SimpleMappings.CString );
 	int disableFlag = (int)vstr.extractUnsignedInt();
-	Integer userOrder = new Integer( (int)vstr.extractUnsignedInt() );
-	Integer stopOrder = new Integer( (int)vstr.extractUnsignedInt() );
-	Integer defaultPriority = new Integer( (int)vstr.extractUnsignedInt() );
+	Integer startPriority = new Integer( (int) vstr.extractUnsignedInt());
+	Integer stopPriority = new Integer( (int) vstr.extractUnsignedInt());
 	String controlType = (String) vstr.restoreObject( SimpleMappings.CString );
 	String availableWeekDays = (String) vstr.restoreObject( SimpleMappings.CString );
 	Integer maxHoursDaily = new Integer( (int)vstr.extractUnsignedInt() );
@@ -107,9 +106,8 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	lmProgramBase.setYukonType(yukonType);
 	lmProgramBase.setYukonDescription(yukonDescription);
 	lmProgramBase.setDisableFlag(new Boolean(disableFlag>0));
-	lmProgramBase.setUserOrder(userOrder);
-	lmProgramBase.setStopOrder(stopOrder);
-	lmProgramBase.setDefaultPriority(defaultPriority);
+	lmProgramBase.setStartPriority(startPriority);
+	lmProgramBase.setStopPriority(stopPriority);
 	lmProgramBase.setControlType(controlType);
 	lmProgramBase.setAvailableWeekDays(availableWeekDays);
 	lmProgramBase.setMaxHoursDaily(maxHoursDaily);

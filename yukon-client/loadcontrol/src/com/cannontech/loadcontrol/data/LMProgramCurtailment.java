@@ -67,7 +67,7 @@ public LMManualControlRequest createScheduledStartMsg( java.util.Date start,
 		msg.setAddditionalInfo(additionalInfo)	;
 	
 	msg.setCommand( com.cannontech.loadcontrol.messages.LMManualControlRequest.SCHEDULED_START );
-	msg.setStartPriority( getDefaultPriority().intValue() );
+	msg.setStartPriority( getStartPriority().intValue() );
 	
 	msg.setYukonID( getYukonID().intValue() );
 
@@ -93,7 +93,7 @@ public com.cannontech.loadcontrol.messages.LMManualControlRequest createSchedule
 		msg.setAddditionalInfo(additionalInfo)	;
 
 	msg.setCommand( com.cannontech.loadcontrol.messages.LMManualControlRequest.SCHEDULED_STOP );
-	msg.setStartPriority( getDefaultPriority().intValue() );
+	msg.setStartPriority( getStartPriority().intValue() );
 	
 	msg.setYukonID( getYukonID().intValue() );
 
@@ -119,7 +119,7 @@ public com.cannontech.loadcontrol.messages.LMManualControlRequest createStartSto
 		msg.setAddditionalInfo(additionalInfo)	;
 
 	msg.setYukonID( getYukonID().intValue() );
-	msg.setStartPriority( getDefaultPriority().intValue() );
+	msg.setStartPriority( getStartPriority().intValue() );
 
 	if( isStart )
 		msg.setCommand( com.cannontech.loadcontrol.messages.LMManualControlRequest.START_NOW );

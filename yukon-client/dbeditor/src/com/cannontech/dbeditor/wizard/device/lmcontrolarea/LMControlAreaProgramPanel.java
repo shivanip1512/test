@@ -524,7 +524,7 @@ private Integer getNextStopOrder()
 	for( int i = 0; i < getJTableModel().getRowCount(); i++ )
 	{
 
-		if( j == getJTableModel().getRowAt(i).getProgramList().getStopOrder().intValue() )
+		if( j == getJTableModel().getRowAt(i).getProgramList().getStopPriority().intValue() )
 		{
 			j++;
 			i = -1; //we must start i to -1 because we will increment to zero
@@ -668,10 +668,8 @@ public void jButtonAdd_ActionPerformed(java.awt.event.ActionEvent actionEvent)
 		getJTableProgram().getDefaultEditor(Integer.class).stopCellEditing();
 
 	com.cannontech.database.db.device.lm.LMControlAreaProgram programList = new com.cannontech.database.db.device.lm.LMControlAreaProgram();
-	programList.setDefaultPriority( new Integer( ((Number)getJCSpinFieldPriority().getValue()).intValue() ) );
-	programList.setStopOrder( new Integer( ((Number)getJCSpinFieldStopOrder().getValue()).intValue() ) );
-	
-	programList.setUserOrder( new Integer(0) ); //is not used as of 2-4-2002
+	programList.setStartPriority( new Integer( ((Number)getJCSpinFieldPriority().getValue()).intValue() ) );
+	programList.setStopPriority( new Integer( ((Number)getJCSpinFieldStopOrder().getValue()).intValue() ) );
 
 	// this is set to the LMPrograms deviceID
 	programList.setLmProgramDeviceID( new Integer( ((com.cannontech.database.data.lite.LiteYukonPAObject)getJComboBoxLMProgram().getSelectedItem()).getYukonID() ) );

@@ -306,9 +306,9 @@ public class LCUtils
 			
 			case ProgramTableModel.PRIORITY:
 				return 
-					( prg.getDefaultPriority().intValue() <= 0
+					( prg.getStartPriority().intValue() <= 0
 					? new Integer(1)
-					: prg.getDefaultPriority() );
+					: prg.getStartPriority() );
 
 			case ProgramTableModel.REDUCTION:
 				return prg.getReductionTotal();

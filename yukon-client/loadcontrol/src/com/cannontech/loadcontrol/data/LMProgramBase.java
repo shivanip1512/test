@@ -32,9 +32,32 @@ public abstract class LMProgramBase implements ILMProgramMessageCreation, ILMDat
 	private Integer yukonType = null;
 	private String yukonDescription = null;
 	private Boolean disableFlag = null;
-	private Integer userOrder = null;
-	private Integer stopOrder = null;
-	private Integer defaultPriority = null;
+	private Integer startPriority = null;
+	private Integer stopPriority = null;
+	/**
+	 * @return Returns the startPriority.
+	 */
+	public Integer getStartPriority() {
+		return startPriority;
+	}
+	/**
+	 * @param startPriority The startPriority to set.
+	 */
+	public void setStartPriority(Integer startPriority) {
+		this.startPriority = startPriority;
+	}
+	/**
+	 * @return Returns the stopPriority.
+	 */
+	public Integer getStopPriority() {
+		return stopPriority;
+	}
+	/**
+	 * @param stopPriority The stopPriority to set.
+	 */
+	public void setStopPriority(Integer stopPriority) {
+		this.stopPriority = stopPriority;
+	}
 	private String controlType = null;
 	private String availableWeekDays = null;
 	private Integer maxHoursDaily = null;
@@ -93,14 +116,7 @@ public java.lang.String getControlType() {
 public java.util.Vector getControlWindowVector() {
 	return controlWindowVector;
 }
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:58:13 AM)
- * @return java.lang.Integer
- */
-public java.lang.Integer getDefaultPriority() {
-	return defaultPriority;
-}
+
 /**
  * Insert the method's description here.
  * Creation date: (4/3/2001 10:58:13 AM)
@@ -274,14 +290,7 @@ public java.util.GregorianCalendar getStartedControlling() {
  * @return java.util.GregorianCalendar
  */
 public abstract java.util.GregorianCalendar getStartTime();
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:58:13 AM)
- * @return java.lang.Integer
- */
-public java.lang.Integer getStopOrder() {
-	return stopOrder;
-}
+
 /**
  * Insert the method's description here.
  * Creation date: (4/23/2001 1:29:50 PM)
@@ -296,14 +305,7 @@ public java.util.GregorianCalendar getStoppedControlling() {
  * @return java.util.GregorianCalendar
  */
 public abstract java.util.GregorianCalendar getStopTime();
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:58:13 AM)
- * @return java.lang.Integer
- */
-public java.lang.Integer getUserOrder() {
-	return userOrder;
-}
+
 /**
  * Insert the method's description here.
  * Creation date: (10/24/2001 10:44:53 AM)
@@ -383,14 +385,7 @@ public void setControlType(java.lang.String newControlType) {
 public void setControlWindowVector(java.util.Vector newControlWindowVector) {
 	controlWindowVector = newControlWindowVector;
 }
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:58:13 AM)
- * @param newDefaultPriority java.lang.Integer
- */
-public void setDefaultPriority(java.lang.Integer newDefaultPriority) {
-	defaultPriority = newDefaultPriority;
-}
+
 /**
  * Insert the method's description here.
  * Creation date: (4/3/2001 10:58:13 AM)
@@ -511,14 +506,7 @@ public void setReductionTotal(java.lang.Double newReductionTotal) {
 public void setStartedControlling(java.util.GregorianCalendar newStartedControlling) {
 	startedControlling = newStartedControlling;
 }
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:58:13 AM)
- * @param newStopOrder java.lang.Integer
- */
-public void setStopOrder(java.lang.Integer newStopOrder) {
-	stopOrder = newStopOrder;
-}
+
 /**
  * Insert the method's description here.
  * Creation date: (4/23/2001 1:29:50 PM)
@@ -527,14 +515,7 @@ public void setStopOrder(java.lang.Integer newStopOrder) {
 public void setStoppedControlling(java.util.GregorianCalendar newStoppedControlling) {
 	stoppedControlling = newStoppedControlling;
 }
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:58:13 AM)
- * @param newUserOrder java.lang.Integer
- */
-public void setUserOrder(java.lang.Integer newUserOrder) {
-	userOrder = newUserOrder;
-}
+
 /**
  * Insert the method's description here.
  * Creation date: (10/24/2001 10:44:53 AM)

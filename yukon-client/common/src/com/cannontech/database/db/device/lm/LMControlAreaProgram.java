@@ -10,14 +10,36 @@ public class LMControlAreaProgram extends com.cannontech.database.db.DBPersisten
 {
 	private Integer deviceID = null;
 	private Integer lmProgramDeviceID = new Integer(0);
-	private Integer userOrder = new Integer(0);
-	private Integer stopOrder = new Integer(0);
-	private Integer defaultPriority = new Integer(0);
-
-
+	private Integer startPriority = new Integer(0);
+	private Integer stopPriority = new Integer(0);
+	
+	/**
+	 * @return Returns the startPriority.
+	 */
+	public Integer getStartPriority() {
+		return startPriority;
+	}
+	/**
+	 * @param startPriority The startPriority to set.
+	 */
+	public void setStartPriority(Integer startPriority) {
+		this.startPriority = startPriority;
+	}
+	/**
+	 * @return Returns the stopPriority.
+	 */
+	public Integer getStopPriority() {
+		return stopPriority;
+	}
+	/**
+	 * @param stopPriority The stopPriority to set.
+	 */
+	public void setStopPriority(Integer stopPriority) {
+		this.stopPriority = stopPriority;
+	}
 	public static final String SETTER_COLUMNS[] = 
 	{ 
-		"UserOrder", "StopOrder", "DefaultPriority"
+		"StartPriority", "StopPriority"
 	};
 
 	public static final String CONSTRAINT_COLUMNS[] = { "DeviceID", "LMProgramDeviceID" };
@@ -35,8 +57,8 @@ public LMControlAreaProgram() {
  */
 public void add() throws java.sql.SQLException 
 {
-	Object addValues[] = { getDeviceID(), getLmProgramDeviceID(), 
-					getUserOrder(), getStopOrder(), getDefaultPriority() };
+	Object addValues[] = { getDeviceID(), getLmProgramDeviceID(),
+							getStartPriority(), getStopPriority() };
 
 	add( TABLE_NAME, addValues );
 }
@@ -101,8 +123,7 @@ public static final LMControlAreaProgram[] getAllControlAreaList(Integer ctrlAre
 	java.sql.PreparedStatement pstmt = null;
 	java.sql.ResultSet rset = null;
 
-	String sql = "SELECT DEVICEID,LMPROGRAMDEVICEID,USERORDER," +
-					 "STOPORDER,DEFAULTPRIORITY " +
+	String sql = "SELECT DEVICEID,LMPROGRAMDEVICEID,StartPriority,StopPriority " +
 					 "FROM " + TABLE_NAME + " WHERE DEVICEID= ?";
 
 	try
@@ -125,9 +146,8 @@ public static final LMControlAreaProgram[] getAllControlAreaList(Integer ctrlAre
 				item.setDbConnection(conn);
 				item.setDeviceID( new Integer(rset.getInt("DeviceID")) );
 				item.setLmProgramDeviceID( new Integer(rset.getInt("LMProgramDeviceID")) );
-				item.setUserOrder( new Integer(rset.getInt("UserOrder")) );
-				item.setStopOrder( new Integer(rset.getInt("StopOrder")) );
-				item.setDefaultPriority( new Integer(rset.getInt("DefaultPriority")) );
+				item.setStartPriority( new Integer(rset.getInt("StartPriority")));
+				item.setStopPriority( new Integer(rset.getInt("StopPriority")));
 
 				tmpList.add( item );
 			}
@@ -182,14 +202,7 @@ public static final Vector getAllProgramsInControlAreas()
     	
 	return null;
 }
-/**
- * Insert the method's description here.
- * Creation date: (3/16/2001 11:59:51 AM)
- * @return java.lang.Integer
- */
-public java.lang.Integer getDefaultPriority() {
-	return defaultPriority;
-}
+
 /**
  * This method was created in VisualAge.
  * @return java.lang.Integer
@@ -205,22 +218,7 @@ public Integer getDeviceID() {
 public java.lang.Integer getLmProgramDeviceID() {
 	return lmProgramDeviceID;
 }
-/**
- * Insert the method's description here.
- * Creation date: (3/16/2001 11:59:51 AM)
- * @return java.lang.Integer
- */
-public java.lang.Integer getStopOrder() {
-	return stopOrder;
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/16/2001 11:59:51 AM)
- * @return java.lang.Integer
- */
-public java.lang.Integer getUserOrder() {
-	return userOrder;
-}
+
 /**
  * retrieve method comment.
  */
@@ -231,22 +229,14 @@ public void retrieve() throws java.sql.SQLException
 
 	if( results.length == SETTER_COLUMNS.length )
 	{
-		setUserOrder( (Integer) results[0] );
-		setStopOrder( (Integer) results[1] );
-		setDefaultPriority( (Integer) results[2] );
+		setStartPriority( (Integer) results[0] );
+		setStopPriority( (Integer) results[1] );
 	}
 	else
 		throw new Error(getClass() + " - Incorrect Number of results retrieved");
 
 }
-/**
- * Insert the method's description here.
- * Creation date: (3/16/2001 11:59:51 AM)
- * @param newDefaultPriority java.lang.Integer
- */
-public void setDefaultPriority(java.lang.Integer newDefaultPriority) {
-	defaultPriority = newDefaultPriority;
-}
+
 /**
  * This method was created in VisualAge.
  * @param newValue java.lang.Integer
@@ -262,30 +252,15 @@ public void setDeviceID(Integer newValue) {
 public void setLmProgramDeviceID(java.lang.Integer newLmProgramDeviceID) {
 	lmProgramDeviceID = newLmProgramDeviceID;
 }
-/**
- * Insert the method's description here.
- * Creation date: (3/16/2001 11:59:51 AM)
- * @param newStopOrder java.lang.Integer
- */
-public void setStopOrder(java.lang.Integer newStopOrder) {
-	stopOrder = newStopOrder;
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/16/2001 11:59:51 AM)
- * @param newUserOrder java.lang.Integer
- */
-public void setUserOrder(java.lang.Integer newUserOrder) {
-	userOrder = newUserOrder;
-}
+
+
 /**
  * update method comment.
  */
 public void update() throws java.sql.SQLException 
 {
-	Object setValues[] = { getUserOrder(), 
-								  getStopOrder(), getDefaultPriority() };
-
+	Object setValues[] = { getStartPriority(), getStopPriority() }; 
+			
 	Object constraintValues[] = { getDeviceID(), getLmProgramDeviceID() };
 
 	update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
