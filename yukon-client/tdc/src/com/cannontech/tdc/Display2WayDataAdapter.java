@@ -2174,7 +2174,7 @@ private void setCorrectRowValue( PointData point, java.util.Date timeStamp, int 
 		if ( columnTypeName.contains(CustomDisplay.COLUMN_TYPE_POINTTIMESTAMP) )
 		{					
 			dataRow.setElementAt( 
-					new ModifiedDate( timeStamp.toString() ), 
+					new ModifiedDate( timeStamp.getTime() ), 
 					columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_POINTTIMESTAMP), 
 					ObservedPointDataChange.POINT_TIMESTAMP_TYPE, point.getId(), 
 					isRowInAalarmVector( location ),
@@ -2327,7 +2327,7 @@ private void setRowForEventViewer( Vector aRow, Signal signal, String deviceName
 
 	// set TimeStamp
 	if( columnTypeName.contains(CustomDisplay.COLUMN_TYPE_POINTTIMESTAMP) )
-		aRow.setElementAt( new ModifiedDate( signal.getTimeStamp().toString() ), columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_POINTTIMESTAMP) );
+		aRow.setElementAt( new ModifiedDate( signal.getTimeStamp().getTime() ), columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_POINTTIMESTAMP) );
 
 	// set User Name
 	if( columnTypeName.contains(CustomDisplay.COLUMN_TYPE_DEVICEID) )
