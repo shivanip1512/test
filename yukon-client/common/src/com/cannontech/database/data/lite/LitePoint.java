@@ -1,5 +1,8 @@
 package com.cannontech.database.data.lite;
 
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.data.point.PointTypes;
+
 /*
  */
 public class LitePoint extends LiteBase
@@ -11,7 +14,14 @@ public class LitePoint extends LiteBase
 	private int stateGroupID = 0;
 	
 	boolean showPointOffsets = true;
-	
+
+	//used to represent a NON filler location for lite points
+	public final static LitePoint NONE_LITE_PT = new LitePoint(
+			PointTypes.SYS_PID_SYSTEM, 
+			CtiUtilities.STRING_NONE,
+			PointTypes.CALCULATED_POINT,
+			0,0,0 );
+		
 	// tags is used as a bit represention of data about this point
 	long tags = 0x00000000;			// not used
 
@@ -175,7 +185,7 @@ private void executeNonSQL92Retrieve( String databaseAlias )
    {
  		stmt.execute();
 		setPointName( ((String) stmt.getRow(0)[0]) );
-		setPointType( com.cannontech.database.data.point.PointTypes.getType(((String) stmt.getRow(0)[1])) );
+		setPointType( PointTypes.getType(((String) stmt.getRow(0)[1])) );
 		setPaobjectID( ((java.math.BigDecimal) stmt.getRow(0)[2]).intValue() );
 		setPointOffset( ((java.math.BigDecimal) stmt.getRow(0)[3]).intValue() );
 		setStateGroupID( ((java.math.BigDecimal) stmt.getRow(0)[4]).intValue() );
@@ -210,7 +220,7 @@ public void retrieve(String databaseAlias)
  	{
  		stmt.execute();
 		setPointName( ((String) stmt.getRow(0)[0]) );
-		setPointType( com.cannontech.database.data.point.PointTypes.getType(((String) stmt.getRow(0)[1])) );
+		setPointType( PointTypes.getType(((String) stmt.getRow(0)[1])) );
 		setPaobjectID( ((java.math.BigDecimal) stmt.getRow(0)[2]).intValue() );
 		setPointOffset( ((java.math.BigDecimal) stmt.getRow(0)[3]).intValue() );
 		setStateGroupID( ((java.math.BigDecimal) stmt.getRow(0)[4]).intValue() );
@@ -296,7 +306,7 @@ public String toString()
 {
 	if (showPointOffsets)
 	{
-		if (!(getPointType() == com.cannontech.database.data.point.PointTypes.CALCULATED_POINT))
+		if (!(getPointType() == PointTypes.CALCULATED_POINT))
 		{
 			if (getPointOffset() == 0)
 			{
