@@ -389,7 +389,7 @@ public LMProgramBase getProgram( Integer progID )
 }
 
 /**
- * 
+ * Only returns LMGroupBase clases, this excludes customers
  * @return LMGroupBase
  */
 public LMGroupBase getGroup( Integer grpID )
@@ -529,8 +529,9 @@ private void handleGroups( LMProgramBase prog )
 {
 	for( int j = 0; j < prog.getLoadControlGroupVector().size(); j++ )
 	{
-		LMGroupBase grp = (LMGroupBase)prog.getLoadControlGroupVector().get(j);
-		groupMap.put( grp.getYukonID(), grp );
+		Object grp = prog.getLoadControlGroupVector().get(j);
+		if( grp instanceof LMGroupBase )
+			groupMap.put( ((LMGroupBase)grp).getYukonID(), grp );
 	}
 
 }
@@ -753,8 +754,9 @@ public synchronized void update(java.util.Observable o, java.lang.Object arg)
 				
 				for( int j = 0; j < prog.getLoadControlGroupVector().size(); j++ )
 				{
-					LMGroupBase grp = (LMGroupBase)prog.getLoadControlGroupVector().get(j);
-					groupMap.remove( grp.getYukonID() );
+					Object grp = prog.getLoadControlGroupVector().get(j);
+					if( grp instanceof LMGroupBase )
+						groupMap.remove( ((LMGroupBase)grp).getYukonID() );
 				}
 			}
 		}
