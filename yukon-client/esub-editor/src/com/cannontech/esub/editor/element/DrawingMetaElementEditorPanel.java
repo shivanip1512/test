@@ -403,7 +403,7 @@ private javax.swing.JComboBox getYukonRoleComboBox() {
 			ivjYukonRoleComboBox = new javax.swing.JComboBox();
 			ivjYukonRoleComboBox.setName("YukonRoleComboBox");
 			// user code begin {1}
-			Iterator i = AuthFuncs.getRoles("EsubGroup").iterator();
+			Iterator i = AuthFuncs.getRoles("Esubstation").iterator();
 			while(i.hasNext()) {
 				LiteYukonRole r = (LiteYukonRole) i.next();
 				ivjYukonRoleComboBox.addItem(r);

@@ -57,17 +57,19 @@ public class SVGGenerator extends HttpServlet {
 			DrawingMetaElement metaElem = d.getMetaElement();
 			
 			// User requires the role specific to access this drawing
-			// and also the Esub VIEW role to see it
+			// and also the Esub VIEW role to see it, which should we be using?
 			if( AuthFuncs.checkRole(user, metaElem.getRoleID()) != null &&	
-				AuthFuncs.checkRoleProperty(user, EsubDrawingsRole.VIEW) ) {				
+				(AuthFuncs.checkRoleProperty(user, com.cannontech.roles.operator.EsubDrawingsRole.VIEW) ||
+				 AuthFuncs.checkRoleProperty(user, EsubDrawingsRole.VIEW))) {				
 				
 				// Update the drawing before sending it out to init all the values
 				DrawingUpdater updater = new DrawingUpdater(d);
 				updater.updateDrawing();
 				
 				// enable edit functions?
-				boolean canEdit = AuthFuncs.checkRoleProperty(user, EsubDrawingsRole.EDIT);
-
+				
+				boolean canEdit = AuthFuncs.checkRoleProperty(user, com.cannontech.roles.operator.EsubDrawingsRole.EDIT);
+				
 				com.cannontech.esub.util.SVGGenerator gen = new com.cannontech.esub.util.SVGGenerator();				
 				gen.generate(w, d, canEdit, false);	
 			}
