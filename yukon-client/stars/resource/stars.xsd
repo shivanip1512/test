@@ -116,8 +116,13 @@
 			<xs:element name="AltTrackingNumber" type="xs:string" minOccurs="0"/>
 			<xs:element name="Voltage" type="stars-CustListEntry" minOccurs="0"/>
 			<xs:element name="Notes" type="xs:string" minOccurs="0"/>
+			
+			<xs:element name="DeviceStatus" type="stars-CustListEntry" minOccurs="0"/>
+			<xs:element name="InstallationNotes" type="xs:string" minOccurs="0"/>
+			<xs:element ref="stars-LMHardwareHistory" minOccurs="0"/>
 		</xs:sequence>
 		<xs:attribute name="inventoryID" type="xs:int"/>
+		<xs:attribute name="deviceID" type="xs:int"/>
 	</xs:complexType>
 	<xs:complexType name="stars-App">
 		<xs:sequence>
@@ -218,13 +223,19 @@
 		<xs:complexContent>
 			<xs:extension base="stars-Inventory">
 				<xs:sequence>
-					<xs:element name="ManufactureSerialNumber" type="xs:string" minOccurs="0"/>
 					<xs:element name="LMDeviceType" type="stars-CustListEntry" minOccurs="0"/>
-					<xs:element name="DeviceStatus" minOccurs="0" type="stars-CustListEntry"/>
-					<xs:element name="InstallationNotes" minOccurs="0" type="xs:string"/>
-					<xs:element ref="stars-LMHardwareHistory" minOccurs="0"/>
+					<xs:element name="ManufactureSerialNumber" type="xs:string" minOccurs="0"/>
 					<xs:element ref="stars-LMHardwareConfig" minOccurs="0" maxOccurs="unbounded"/>
 					<xs:element ref="stars-ThermostatSettings" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="stars-Device">
+		<xs:complexContent>
+			<xs:extension base="stars-Inventory">
+				<xs:sequence>
+					<xs:element name="DeviceName" type="xs:string"/>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
@@ -357,17 +368,11 @@
 				<xs:element ref="stars-CreateCallReport" minOccurs="0"/>
 				<xs:element ref="stars-CreateCallReportResponse" minOccurs="0"/>
 				<xs:element ref="stars-UpdateCallReport" minOccurs="0"/>
-				<xs:element ref="stars-GetCallReportHistory" minOccurs="0"/>
-				<xs:element ref="stars-GetCallReportHistoryResponse" minOccurs="0"/>
-				<xs:element ref="stars-GetNextOrderNumber" minOccurs="0"/>
-				<xs:element ref="stars-GetNextOrderNumberResponse" minOccurs="0"/>
 				<xs:element ref="stars-CreateServiceRequest" minOccurs="0"/>
 				<xs:element ref="stars-CreateServiceRequestResponse" minOccurs="0"/>
 				<xs:element ref="stars-UpdateServiceRequest" minOccurs="0"/>
 				<xs:element ref="stars-UpdateServiceRequestResponse" minOccurs="0"/>
 				<xs:element ref="stars-DeleteServiceRequest" minOccurs="0"/>
-				<xs:element ref="stars-GetServiceRequestHistory" minOccurs="0"/>
-				<xs:element ref="stars-GetServiceRequestHistoryResponse" minOccurs="0"/>
 				<xs:element ref="stars-CreateAppliance" minOccurs="0"/>
 				<xs:element ref="stars-CreateApplianceResponse" minOccurs="0"/>
 				<xs:element ref="stars-UpdateAppliance" minOccurs="0"/>
@@ -599,10 +604,11 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="stars-LMHardware" minOccurs="0" maxOccurs="unbounded"/>
-			</xs:sequence>
+			<xs:element ref="stars-MCT" minOccurs="0" maxOccurs="unbounded"/></xs:sequence>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="stars-LMHardware" type="stars-LMHw"/>
+	<xs:element name="stars-MCT" type="stars-Device"/>
 	<xs:element name="stars-EnableService">
 		<xs:annotation>
 			<xs:documentation>Enable programs of a customer account</xs:documentation>
@@ -705,34 +711,6 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="stars-GetCallReportHistory">
-		<xs:complexType>
-			<xs:simpleContent>
-				<xs:extension base="xs:string"/>
-			</xs:simpleContent>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="stars-GetCallReportHistoryResponse">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="stars-CallReportHistory"/>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="stars-GetNextOrderNumber">
-		<xs:complexType>
-			<xs:simpleContent>
-				<xs:extension base="xs:string"/>
-			</xs:simpleContent>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="stars-GetNextOrderNumberResponse">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element name="OrderNumber" type="xs:string"/>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
 	<xs:element name="stars-CreateServiceRequest" type="stars-SrvReq"/>
 	<xs:element name="stars-ServiceRequest" type="stars-SrvReq"/>
 	<xs:element name="stars-CreateServiceRequestResponse">
@@ -759,20 +737,6 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="stars-ServiceRequest" minOccurs="0" maxOccurs="unbounded"/>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="stars-GetServiceRequestHistory">
-		<xs:complexType>
-			<xs:simpleContent>
-				<xs:extension base="xs:string"/>
-			</xs:simpleContent>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="stars-GetServiceRequestHistoryResponse">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="stars-ServiceRequestHistory"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -886,17 +850,17 @@
 	<xs:element name="stars-CreateLMHardware" type="stars-LMHw"/>
 	<xs:element name="stars-CreateLMHardwareResponse">
 		<xs:complexType>
-			<xs:sequence>
+			<xs:choice>
 				<xs:element ref="stars-LMHardware"/>
-			</xs:sequence>
+			<xs:element ref="stars-MCT"/></xs:choice>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="stars-UpdateLMHardware" type="stars-LMHw"/>
 	<xs:element name="stars-UpdateLMHardwareResponse">
 		<xs:complexType>
-			<xs:sequence>
+			<xs:choice>
 				<xs:element ref="stars-LMHardware"/>
-			</xs:sequence>
+			<xs:element ref="stars-MCT"/></xs:choice>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="stars-DeleteLMHardware">
