@@ -605,7 +605,7 @@ INT CtiDeviceWctpTerminal::generateCommand(CtiXfer  &xfer, RWTPtrSlist< CtiMessa
             _snprintf(timeStamp, 19, "%04d-%02d-%02dT%02d:%02d:%02d",
                       nowDate.year(), nowDate.month(), nowDate.dayOfMonth(),
                       nowTime.hour(), nowTime.minute(), nowTime.second());
-            
+
             INT   sendCnt = 0;
             CHAR  msgPayload[256];
             CHAR  temp[8];
@@ -720,7 +720,7 @@ INT CtiDeviceWctpTerminal::decodeResponse(CtiXfer  &xfer, INT commReturnValue, R
 
                 statusParsed = FALSE;
                 headerParsed = FALSE;
-                
+
                 setCurrentState( StateScanDecode2 );
 
                 /* FALL THROUGH! */
@@ -880,6 +880,24 @@ INT CtiDeviceWctpTerminal::decodeResponse(CtiXfer  &xfer, INT commReturnValue, R
                                   handler->getResponseText(),
                                   trimMessage( handler ->getResponseMessage() ));
                         traceIn(buf, strlen(buf), traceList, TRUE);
+
+
+                        if(299 < handler->getResponseCode() && handler->getResponseCode() < 400)
+                        {
+                            status = ErrorWctp300Series;
+                        }
+                        else if(399 < handler->getResponseCode() && handler->getResponseCode() < 500)
+                        {
+                            status = ErrorWctp400Series;
+                        }
+                        else if(499 < handler->getResponseCode() && handler->getResponseCode() < 600)
+                        {
+                            status = ErrorWctp500Series;
+                        }
+                        else if(599 < handler->getResponseCode() && handler->getResponseCode() < 700)
+                        {
+                            status = ErrorWctp600Series;
+                        }
                     }
 
                     // And call the termination method
