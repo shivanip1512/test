@@ -1,35 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-    <classpathentry kind="src" path="src"/>
-    <classpathentry kind="var" path="JRE_LIB" sourcepath="JRE_SRC"/>
-    <classpathentry kind="src" path="/common"/>
-    <classpathentry kind="src" path="/loadcontrol"/>
-    <classpathentry kind="lib" path="/third-party/acme.jar"/>
-    <classpathentry kind="lib" path="/third-party/j2ee.jar"/>
-    <classpathentry kind="lib" path="/third-party/jaxm-api.jar"/>
-    <classpathentry kind="lib" path="/third-party/jcchart401K.jar"/>
-    <classpathentry kind="lib" path="/third-party/jcfield401K.jar"/>
-    <classpathentry kind="lib" path="/third-party/jcpagelayout450K.jar"/>
-    <classpathentry kind="lib" path="/third-party/led.jar"/>
-    <classpathentry kind="lib" path="/third-party/rwav.jar" sourcepath="D:/rwav-src.jar"/>
-    <classpathentry kind="lib" path="/third-party/xerces.jar"/>
-    <classpathentry kind="src" path="/macs"/>
-    <classpathentry kind="src" path="/trending"/>
-    <classpathentry kind="lib" path="/third-party/castor-xml.jar"/>
-    <classpathentry kind="lib" path="/third-party/log4j-1.2.4.jar" sourcepath="/third-party/log4j-1.2.4.jar"/>
-    <classpathentry kind="lib" path="/third-party/jfreechart.jar"/>
-    <classpathentry kind="lib" path="/third-party/junit.jar"/>
-    <classpathentry kind="lib" path="/third-party/jcommon.jar"/>
-    <classpathentry kind="src" path="/billing"/>
-    <classpathentry kind="src" path="/tdc"/>
-    <classpathentry kind="src" path="/cbc"/>
-    <classpathentry kind="lib" path="/third-party/jloox30.jar"/>
-    <classpathentry kind="src" path="/commander"/>
-    <classpathentry kind="lib" path="/third-party/classes12.jar"/>
-    <classpathentry kind="lib" path="/third-party/jtds.jar"/>
-    <classpathentry kind="lib" path="/third-party/SqlServer.jar"/>
-    <classpathentry kind="lib" path="/third-party/jfreereport.jar"/>
-    <classpathentry kind="lib" path="/third-party/jradius-client.jar"/>
-    <classpathentry kind="lib" path="/third-party/jfreereport-ext-servletonly.jar"/>
-    <classpathentry kind="output" path="bin"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry sourcepath="JRE_SRC" kind="var" path="JRE_LIB"/>
+	<classpathentry kind="src" path="/common"/>
+	<classpathentry kind="src" path="/loadcontrol"/>
+	<classpathentry kind="lib" path="/third-party/acme.jar"/>
+	<classpathentry kind="lib" path="/third-party/j2ee.jar"/>
+	<classpathentry kind="lib" path="/third-party/jaxm-api.jar"/>
+	<classpathentry kind="lib" path="/third-party/jcchart401K.jar"/>
+	<classpathentry kind="lib" path="/third-party/jcfield401K.jar"/>
+	<classpathentry kind="lib" path="/third-party/jcpagelayout450K.jar"/>
+	<classpathentry kind="lib" path="/third-party/led.jar"/>
+	<classpathentry sourcepath="D:/rwav-src.jar" kind="lib" path="/third-party/rwav.jar"/>
+	<classpathentry kind="lib" path="/third-party/xerces.jar"/>
+	<classpathentry kind="src" path="/macs"/>
+	<classpathentry kind="src" path="/trending"/>
+	<classpathentry kind="lib" path="/third-party/castor-xml.jar"/>
+	<classpathentry sourcepath="/third-party/log4j-1.2.4.jar" kind="lib" path="/third-party/log4j-1.2.4.jar"/>
+	<classpathentry kind="lib" path="/third-party/jfreechart.jar"/>
+	<classpathentry kind="lib" path="/third-party/junit.jar"/>
+	<classpathentry kind="lib" path="/third-party/jcommon.jar"/>
+	<classpathentry kind="src" path="/billing"/>
+	<classpathentry kind="src" path="/tdc"/>
+	<classpathentry kind="src" path="/cbc"/>
+	<classpathentry kind="lib" path="/third-party/jloox30.jar"/>
+	<classpathentry kind="src" path="/commander"/>
+	<classpathentry kind="lib" path="/third-party/classes12.jar"/>
+	<classpathentry kind="lib" path="/third-party/jtds.jar"/>
+	<classpathentry kind="lib" path="/third-party/SqlServer.jar"/>
+	<classpathentry kind="lib" path="/third-party/jfreereport.jar"/>
+	<classpathentry kind="lib" path="/third-party/jradius-client.jar"/>
+	<classpathentry kind="output" path="bin"/>
 </classpath>
