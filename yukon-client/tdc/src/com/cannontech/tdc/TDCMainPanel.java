@@ -8,9 +8,9 @@ package com.cannontech.tdc;
 import java.awt.Cursor;
 import java.util.Vector;
 
-import javax.sound.midi.SysexMessage;
 import javax.swing.JPanel;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.CommonUtils;
 import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.common.gui.util.Colors;
@@ -94,6 +94,7 @@ public class TDCMainPanel extends javax.swing.JPanel implements com.cannontech.t
 	private javax.swing.JRadioButtonMenuItem ivjJRadioButtonMenuItemAllowPt = null;
 	private javax.swing.JRadioButtonMenuItem ivjJRadioButtonMenuItemInhibitDev = null;
 	private javax.swing.JRadioButtonMenuItem ivjJRadioButtonMenuItemInhibitPt = null;
+	private TDCDBChangeHandler dbChangeHandler = new TDCDBChangeHandler();
 /**
  * TDC constructor comment.
  */
@@ -2295,7 +2296,7 @@ public void initializeTable()
  * Insert the method's description here.
  * Creation date: (3/23/00 5:33:39 PM)
  */
-private void initSystemDisplays() 
+protected void initSystemDisplays() 
 {
 	if( getTableDataModel().isHistoricalDisplay() )
 	{		
@@ -3037,83 +3038,75 @@ public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent e) {
 	// user code begin {2}
 	// user code end
 }
+
+public void executeRefresh_Pressed()
+{
+	// set refresh to true so it doesnt ask for a date on certain displays
+	refreshPressed( true );
+
+	try
+	{
+		TDCMainFrame.messageLog.addMessage("Refresh pressed for the display named " + 
+						getCurrentDisplay().getName(), MessageBoxFrame.INFORMATION_MSG);
+		
+		if( getCurrentSpecailChild() != null )
+		{
+			getCurrentSpecailChild().executeRefreshButton();
+		}		
+		else if( getTableDataModel().isAlarmDisplay() )
+				 // || getMainPanel().isUserDefinedDisplay() )
+		{
+			// do not relayout alarm models
+			//This will only reRegister the client, no screen setup is involved
+			getTdcClient().reRegister( getTableDataModel().getAllPointIDs() );			
+		}
+		else //This will setup the screen AND reRegister the client
+		{
+			//be sure we capture any changes made to the table by the user
+			updateDisplayColumnData();
+			
+			//setUpMainFrame( getJComboCurrentDisplay().getSelectedItem() );
+			Object previousItem = getJComboCurrentDisplay().getSelectedItem();
+			initComboCurrentDisplay();
+		
+			if( previousItem != null )
+				getJComboCurrentDisplay().setSelectedItem( previousItem );
+		
+			// doesnt fire the getMainPanel().jComboCurrentDisplay_ActionPerformed() if
+			// the new previousItem is at index 0, so I do it manually
+			if( getJComboCurrentDisplay().getSelectedIndex() == 0 )
+				fireJComboCurrentDisplayAction_actionPerformed( 
+					new java.util.EventObject(this) );
+			
+		}
+		
+			
+	}
+	finally
+	{
+		// must do this no matter what
+		refreshPressed( false );
+	}
+	
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (1/21/00 11:46:00 AM)
  */
-public void processDBChangeMsg( DBChangeMsg msg )
-{	
-	if( (msg.getDatabase() == DBChangeMsg.CHANGE_ALARM_CATEGORY_DB ||
-		 msg.getDatabase() == DBChangeMsg.CHANGE_POINT_DB ||
-		 msg.getDatabase() == DBChangeMsg.CHANGE_PAO_DB ||
-		 msg.getDatabase() == DBChangeMsg.CHANGE_STATE_GROUP_DB) && 
-		(msg.getTypeOfChange() == DBChangeMsg.CHANGE_TYPE_DELETE ||
-		 msg.getTypeOfChange() == DBChangeMsg.CHANGE_TYPE_UPDATE) )
+protected void processDBChangeMsg( DBChangeMsg msg )
+{		
+	try
 	{
-
-		//search for specific IDs here
-		if( msg.getDatabase() == DBChangeMsg.CHANGE_PAO_DB 
-          || msg.getDatabase() == DBChangeMsg.CHANGE_POINT_DB )
-		{
-			boolean found = false;
-			for( int i = 0; i < getTableDataModel().getRowCount(); i++ )
-			{
-				if( msg.getDatabase() == DBChangeMsg.CHANGE_POINT_DB )
-					found |= (getTableDataModel().getPointValue(i).getPointData().getId() == msg.getId());
-
-				if( msg.getDatabase() == DBChangeMsg.CHANGE_PAO_DB )
-					found |= (getTableDataModel().getPointValue(i).getDeviceID() == msg.getId());
-			}
-
-			if( !found )
-				return;
-		}
-	
+		dbChangeHandler.processDBChangeMsg( msg, this );
 	}
-
-
-	TDCMainFrame.messageLog.addMessage("Received a Database Change Message from : " + msg.getUserName() + " at " + msg.getSource(), MessageBoxFrame.INFORMATION_MSG );
-	
-	if( !isClientDisplay() && !getTableDataModel().isHistoricalDisplay() )
+	catch( Exception e )
 	{
-      if( isCoreDisplay() )
-      {
-         if( msg.getDatabase() == DBChangeMsg.CHANGE_ALARM_CATEGORY_DB )
-         {
-            synchronized( getTableDataModel() )
-            {
-               //just a try, work in nearly all cases!
-               int i = getJComboCurrentDisplay().getSelectedIndex();
-               initComboCurrentDisplay();
-               getJComboCurrentDisplay().setSelectedIndex( i );
-            }   
-         }
-         else if( getCurrentDisplayNumber() == Display.EVENT_VIEWER_DISPLAY_NUMBER )
-         {
-            // set refresh to true so it doesnt ask for a date on certain displays
-            refreshPressed( true );
-   
-            try
-            {
-               //getTableDataModel().removeAllRows();
-               initSystemDisplays();
-            }
-            finally
-            {
-               refreshPressed( false );
-            }
-            
-         }
-         
-         
-      }		
-		else
-			fireJComboCurrentDisplayAction_actionPerformed( new java.util.EventObject( this ) );
-         
-
-
+		CTILogger.error( "Problem with handling a DBChange message, refreshing entire display", e );
+		fireJComboCurrentDisplayAction_actionPerformed( 
+					new java.util.EventObject( this ) );		
 	}
-
+	
 }
 /**
  * Insert the method's description here.

@@ -9,6 +9,7 @@ import java.awt.Component;
 
 import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.gui.util.SortTableModelWrapper;
+import com.cannontech.tdc.custom.CustomDisplay;
 
 public class DisplayTableCellRenderer extends javax.swing.JLabel implements javax.swing.table.TableCellRenderer
 {
@@ -88,7 +89,7 @@ public Component getTableCellRendererComponent(javax.swing.JTable table, Object 
 	// column is the PointValue, because the user could have moved it.
 	try
 	{
-		if( model.getColumnTypeName( table.convertColumnIndexToModel(column) ).equalsIgnoreCase(Display2WayDataAdapter.COLUMN_TYPE_POINTVALUE) )
+		if( model.getColumnTypeName( table.convertColumnIndexToModel(column) ).equalsIgnoreCase(CustomDisplay.COLUMN_TYPE_POINTVALUE) )
 			renderPointValueColumn();
 		else
 			this.setHorizontalAlignment( javax.swing.SwingConstants.LEFT );

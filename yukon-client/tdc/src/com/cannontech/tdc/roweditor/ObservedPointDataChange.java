@@ -17,6 +17,8 @@ public class ObservedPointDataChange
 	public final static int POINT_QUALITY_TYPE = 2;
 	public final static int POINT_TIMESTAMP_TYPE = 3;
 	public final static int POINT_TAG_TYPE = 4;
+	public final static int POINT_STATE = 5;
+	
 /**
  * ObservedChange constructor comment.
  */

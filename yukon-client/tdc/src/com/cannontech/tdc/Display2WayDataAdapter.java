@@ -20,6 +20,7 @@ import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.dispatch.message.Signal;
 import com.cannontech.tdc.alarms.gui.AlarmingRow;
 import com.cannontech.tdc.alarms.gui.AlarmingRowVector;
+import com.cannontech.tdc.custom.CustomDisplay;
 import com.cannontech.tdc.data.Display;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
 import com.cannontech.tdc.roweditor.ObservedPointDataChange;
@@ -38,16 +39,6 @@ public class Display2WayDataAdapter extends AbstractTableModel implements com.ca
 	public static final int DEFAULT_BACKGROUNDCOLOR = Colors.BLACK_ID;  // black as of 3-23-2000
 	public static final int DEFAULT_DISABLEDCOLOR = Colors.GRAY_ID;  // gray as of 8-31-2000
 	public static final int DEFAULT_ALARMCOLOR = Colors.RED_ID;  // red as of 1-12-2001
-
-	// Column type names
-	public static final String COLUMN_TYPE_POINTVALUE = "PointValue";
-	public static final String COLUMN_TYPE_POINTQUALITY = "PointQuality";
-	public static final String COLUMN_TYPE_POINTTIMESTAMP = "PointTimeStamp";
-	public static final String COLUMN_TYPE_DEVICENAME = "DeviceName";	
-	public static final String COLUMN_TYPE_POINTNAME = "PointName";
-	public static final String COLUMN_TYPE_UOFM = "UofM";
-	public static final String COLUMN_TYPE_DEVICEID = "DeviceID";
-	public static final String COLUMN_TYPE_TAGS = "Tags";
 	
 	private ObservableRow dataRow = null;
 		
@@ -120,9 +111,6 @@ public void addBlankRow( int location )
 	for( int i = 0; i < getColumnCount(); i++ )
 		newRow.addElement("");
 
-//	if( getAlarmingRowVector().areRowsAboveAlarming( location ) )
-//		incrementAlarmedRowsPosition( )
-		
 	if( location >= getRowCount() )
 		rows.addElement( newRow );
 	else
@@ -176,7 +164,6 @@ private int addColumnDefinedRow( Signal signal )
 			if( addBlankRowIfNeeded() )
 				rowsAdded++;
 
-			//fireTableRowsInserted( 0, rowsAdded-1 );
 		}
 
 		return rowsAdded;
@@ -186,8 +173,9 @@ private int addColumnDefinedRow( Signal signal )
 /**
  * This method was created in VisualAge.
  */
-private String buildRowQuery() 
+private boolean buildRowQuery() 
 {
+
 	// Init our Rows in their correct order
 	String query = new String
 		("select d.pointid, d.pointtype, d.pointname, d.devicename, d.pointstate, d.devicetype, " +
@@ -216,19 +204,6 @@ private String buildRowQuery()
 	query = new String
 		("select pointid, decimalplaces from pointunit order by pointid");
 	Object[][] decimalPlaces = DataBaseInteraction.queryResults( query, null );
-
-	
-	StringBuffer colString = new StringBuffer();
-	
-	int cnt;
-	for( cnt = 0; cnt < getColumnCount(); cnt++ )
-	{
-		if ( cnt > 0 )
-			colString.append(",");
-							
-		colString.append( "v." + getColumnTypeName( cnt ).toString() );
-	}
-
 
 	if ( pointData != null && pointData.length > 0 ) // is there any points?
 	{		
@@ -283,11 +258,11 @@ private String buildRowQuery()
 		
 		createPointValues( realPoints );
 			
-		return createSqlString( colString.toString() );
+		return true;//createSqlString( colString.toString() );
 
 	}
 	
-	return "";
+	return false;
 }
 /**
  * Insert the method's description here.
@@ -653,28 +628,30 @@ public int createRowsForHistoricalView(java.util.Date date, int page)
 			newRow.addElement( "" );  // put these into the vector just as place holder values
 
 		// set TimeStamp
-		if( columnTypeName.contains(COLUMN_TYPE_POINTTIMESTAMP) ) // format of ORACLE: "2000-06-09 16:34:34.0"
-			newRow.setElementAt( new ModifiedDate( ((Timestamp)rowData[i][0]).getTime() ), columnTypeName.indexOf(COLUMN_TYPE_POINTTIMESTAMP) );
+		if( columnTypeName.contains(CustomDisplay.COLUMN_TYPE_POINTTIMESTAMP) ) // format of ORACLE: "2000-06-09 16:34:34.0"
+			newRow.setElementAt( new ModifiedDate( 
+						((Timestamp)rowData[i][0]).getTime() ), 
+						columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_POINTTIMESTAMP) );
 			
 		// set DeviceName
-		if( columnTypeName.contains(COLUMN_TYPE_DEVICENAME) )
-			newRow.setElementAt( CommonUtils.createString( rowData[i][1] ), columnTypeName.indexOf(COLUMN_TYPE_DEVICENAME) );
+		if( columnTypeName.contains(CustomDisplay.COLUMN_TYPE_DEVICENAME) )
+			newRow.setElementAt( CommonUtils.createString( rowData[i][1] ), columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_DEVICENAME) );
 			
 		// set PointName
-		if( columnTypeName.contains(COLUMN_TYPE_POINTNAME) )
-			newRow.setElementAt( CommonUtils.createString( rowData[i][2] ), columnTypeName.indexOf(COLUMN_TYPE_POINTNAME) );
+		if( columnTypeName.contains(CustomDisplay.COLUMN_TYPE_POINTNAME) )
+			newRow.setElementAt( CommonUtils.createString( rowData[i][2] ), columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_POINTNAME) );
 			
 		// set Description
-		if( columnTypeName.contains(COLUMN_TYPE_UOFM) )
-			newRow.setElementAt( CommonUtils.createString( rowData[i][3] ), columnTypeName.indexOf(COLUMN_TYPE_UOFM));
+		if( columnTypeName.contains(CustomDisplay.COLUMN_TYPE_UOFM) )
+			newRow.setElementAt( CommonUtils.createString( rowData[i][3] ), columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_UOFM));
 
 		// set Action
-		if( columnTypeName.contains(COLUMN_TYPE_POINTQUALITY) )
-			newRow.setElementAt( CommonUtils.createString( rowData[i][4] ), columnTypeName.indexOf(COLUMN_TYPE_POINTQUALITY));
+		if( columnTypeName.contains(CustomDisplay.COLUMN_TYPE_POINTQUALITY) )
+			newRow.setElementAt( CommonUtils.createString( rowData[i][4] ), columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_POINTQUALITY));
 	
 		// set User Name
-		if( columnTypeName.contains(COLUMN_TYPE_DEVICEID) )
-			newRow.setElementAt( CommonUtils.createString( rowData[i][5] ), columnTypeName.indexOf(COLUMN_TYPE_DEVICEID) );
+		if( columnTypeName.contains(CustomDisplay.COLUMN_TYPE_DEVICEID) )
+			newRow.setElementAt( CommonUtils.createString( rowData[i][5] ), columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_DEVICEID) );
 
 		checkRowExceedance();
 
@@ -761,29 +738,29 @@ public int createRowsForRawPointHistoryView(java.util.Date date, int page)
 			newRow.addElement( "" );  // put these into the vector just as place holder values
 
 		// set TimeStamp
-		if( columnTypeName.contains(COLUMN_TYPE_POINTTIMESTAMP) ) // format of ORACLE: "2000-06-09 16:34:34.0"
+		if( columnTypeName.contains(CustomDisplay.COLUMN_TYPE_POINTTIMESTAMP) ) // format of ORACLE: "2000-06-09 16:34:34.0"
 		{
-			newRow.setElementAt( new ModifiedDate( ((Timestamp)rowData[i][0]).getTime() ), columnTypeName.indexOf(COLUMN_TYPE_POINTTIMESTAMP) );
+			newRow.setElementAt( new ModifiedDate( ((Timestamp)rowData[i][0]).getTime() ), columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_POINTTIMESTAMP) );
 		}
 			
 		// set DeviceName
-		if( columnTypeName.contains(COLUMN_TYPE_DEVICENAME) )
-			newRow.setElementAt( CommonUtils.createString( rowData[i][1] ), columnTypeName.indexOf(COLUMN_TYPE_DEVICENAME) );
+		if( columnTypeName.contains(CustomDisplay.COLUMN_TYPE_DEVICENAME) )
+			newRow.setElementAt( CommonUtils.createString( rowData[i][1] ), columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_DEVICENAME) );
 			
 		// set PointName
-		if( columnTypeName.contains(COLUMN_TYPE_POINTNAME) )
-			newRow.setElementAt( CommonUtils.createString( rowData[i][2] ), columnTypeName.indexOf(COLUMN_TYPE_POINTNAME) );
+		if( columnTypeName.contains(CustomDisplay.COLUMN_TYPE_POINTNAME) )
+			newRow.setElementAt( CommonUtils.createString( rowData[i][2] ), columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_POINTNAME) );
 			
 		// set Value
-		if( columnTypeName.contains(COLUMN_TYPE_POINTVALUE) )
-			newRow.setElementAt( CommonUtils.createString( rowData[i][3] ), columnTypeName.indexOf(COLUMN_TYPE_POINTVALUE));
+		if( columnTypeName.contains(CustomDisplay.COLUMN_TYPE_POINTVALUE) )
+			newRow.setElementAt( CommonUtils.createString( rowData[i][3] ), columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_POINTVALUE));
 
 		// set Quality
-		if( columnTypeName.contains(COLUMN_TYPE_POINTQUALITY) )
+		if( columnTypeName.contains(CustomDisplay.COLUMN_TYPE_POINTQUALITY) )
 			newRow.setElementAt( 
 						com.cannontech.database.data.point.PointQualities.getQuality(
 						Integer.parseInt(CommonUtils.createString(rowData[i][4]))), 
-						columnTypeName.indexOf(COLUMN_TYPE_POINTQUALITY));
+						columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_POINTQUALITY));
 	
 
 		checkRowExceedance();
@@ -814,34 +791,7 @@ public int createRowsForRawPointHistoryView(java.util.Date date, int page)
 	
 	return pageCount;
 }
-/**
- * This method was created in VisualAge.
- */
-private String createSqlString( String colString ) 
-{	
-	if ( pointValues.size() > 0 )
-	{
-		StringBuffer pString = new StringBuffer("select " + colString + 
-			 " from display2waydata_view v, display2waydata t " + 
-			 " where t.displaynum = " + currentDisplayNumber +
-			 " and ((v.pointid = ");
-	
-		for ( int i = (pointValues.size() - 1); i >= 0; i--)
-		{
-			String id = String.valueOf( ((PointValues)pointValues.elementAt(i)).getPointData().getId() );
-			
-			pString.append( id + " and t.pointid = " + id +")" );
 
-			if ( i > 0 )
-				pString.append(" or (v.pointid = ");
-		}
-	
-		return pString.toString() + ") order by t.ordering" ;
-	}
-	else
-		return "";
-	
-}
 /**
  * Insert the method's description here.
  * Creation date: (4/13/00 12:15:31 PM)
@@ -1225,11 +1175,11 @@ public ObservableRow getObservedRow()
  */
 public Object getPointDynamicValue(int location) 
 {
-	if ( columnTypeName.contains(COLUMN_TYPE_POINTVALUE) )
+	if ( columnTypeName.contains(CustomDisplay.COLUMN_TYPE_POINTVALUE) )
 	{
 		Vector rowData = (Vector)rows.elementAt( location );
 			
-		return rowData.elementAt( columnTypeName.indexOf(COLUMN_TYPE_POINTVALUE) );
+		return rowData.elementAt( columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_POINTVALUE) );
 	}
 	else
 		return null;
@@ -1683,7 +1633,7 @@ private void insertBlankLines()
 }
 private void insertRowByTimeStamp( Vector newRow, int soe_Tag )
 {
-	if( !(columnTypeName.contains(COLUMN_TYPE_POINTTIMESTAMP)) )
+	if( !(columnTypeName.contains(CustomDisplay.COLUMN_TYPE_POINTTIMESTAMP)) )
 		return;  // no TimeStamp row found, get outa here!
 
 	checkRowExceedance();
@@ -1697,14 +1647,14 @@ private void insertRowByTimeStamp( Vector newRow, int soe_Tag )
 		try
 		{
 // CHECK TO SEE IF THE TIMES ARE ACCURATE OUT TO THE MILLI!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-			long newRowTime = ((ModifiedDate) newRow.elementAt(columnTypeName.indexOf(COLUMN_TYPE_POINTTIMESTAMP))).getTime();
-			long oldRowTime = ((ModifiedDate) ((Vector)rows.elementAt(0)).elementAt( columnTypeName.indexOf(COLUMN_TYPE_POINTTIMESTAMP) )).getTime();
+			long newRowTime = ((ModifiedDate) newRow.elementAt(columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_POINTTIMESTAMP))).getTime();
+			long oldRowTime = ((ModifiedDate) ((Vector)rows.elementAt(0)).elementAt( columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_POINTTIMESTAMP) )).getTime();
 			
 			for( int i = 0; i < getRowCount(); i++ )
 			{
 				if( newRowTime < oldRowTime )
 				{
-					oldRowTime = ((ModifiedDate) ((Vector)rows.elementAt(i)).elementAt( columnTypeName.indexOf(COLUMN_TYPE_POINTTIMESTAMP) )).getTime();
+					oldRowTime = ((ModifiedDate) ((Vector)rows.elementAt(i)).elementAt( columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_POINTTIMESTAMP) )).getTime();
 				}
 				else
 				{
@@ -1873,11 +1823,6 @@ private java.util.GregorianCalendar makeCalendar(java.util.Date date)
 	java.util.GregorianCalendar calendar = new java.util.GregorianCalendar();
 	calendar.setTime( date );
 
-/*	int day = calendar.get( calendar.DAY_OF_MONTH );	
-	String month = CommonUtils.format3CharMonth( calendar.get( calendar.MONTH ) );
-	int year = calendar.get( calendar.YEAR );
-	int hour = calendar.get( calendar.HOUR );
-*/
 	return calendar;
 }
 /**
@@ -1891,26 +1836,34 @@ public synchronized void makeTable ( )
 
 	String query = new String();
 
-	if ( !(query = buildRowQuery()).equals("") )
+	if ( buildRowQuery() )
 	{
-		Object[][] values = DataBaseInteraction.queryResults( query, null );
+		String[] columns = new String[getColumnCount()];
+		for( int j = 0; j < columns.length; j++ )
+			columns[j] = getColumnTypeName(j).toString();
 
-		for( int i = 0; i < values.length; i++ ) 
+
+		for( int i = 0; i < pointValues.size(); i++ ) 
 		{
 			Vector newRow = new Vector();
-	
+
+			String[] row = CustomDisplay.getValue( 
+						columns, 
+						(int)((PointValues)pointValues.get(i)).getPointData().getId() );
+
 			for (int j = 0; j < getColumnCount(); j++) 
 			{
-				if ( values[i][j] == null )
+				if ( row[j] == null )
 					newRow.addElement("");
-				else if ( values[i][j].toString().equals("**DYNAMIC**") )
+				else if ( row[j].toString().equals(CustomDisplay.DYNAMIC_ROW) )
 					newRow.addElement("   -----");					
 				else
-  					newRow.addElement( values[i][j] );   					
+  					newRow.addElement( row[j] );   					
 			}
 				
 			rows.addElement(newRow);
 		}
+	
 	}
 		
 	// insert blanklines here
@@ -2218,48 +2171,57 @@ private void setCorrectRowValue( PointData point, java.util.Date timeStamp, int 
 		else
 			dataRow.setRow( (Vector)rows.elementAt( location ) );
 			
-		if ( columnTypeName.contains(COLUMN_TYPE_POINTVALUE) )
+		if ( columnTypeName.contains(CustomDisplay.COLUMN_TYPE_POINTVALUE) )
 		{
 			Object message = getCellValueObject( point, location );
 			dataRow.setElementAt( message, 
-					columnTypeName.indexOf(COLUMN_TYPE_POINTVALUE), 
+					columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_POINTVALUE), 
 					ObservedPointDataChange.POINT_VALUE_TYPE, point.getId(), 
 					isRowInAalarmVector( location ),
 					(int)point.getTags() );
 		}
 
-		if ( columnTypeName.contains(COLUMN_TYPE_POINTQUALITY) )
+		if ( columnTypeName.contains(CustomDisplay.COLUMN_TYPE_POINTQUALITY) )
 		{
  			dataRow.setElementAt(
 		 			com.cannontech.database.data.point.PointQualities.getQualityAbreviation( (int)point.getQuality() )
 		 				+ (TagUtils.isAnyAlarm((int)point.getTags()) ? "-(ALM)" : ""),
-		 			columnTypeName.indexOf(COLUMN_TYPE_POINTQUALITY), 
+		 			columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_POINTQUALITY), 
 		 			ObservedPointDataChange.POINT_QUALITY_TYPE, point.getId(), 
 		 			isRowInAalarmVector( location ),
 					(int)point.getTags() );
 		}
 	
-		if ( columnTypeName.contains(COLUMN_TYPE_TAGS) )
+		if ( columnTypeName.contains(CustomDisplay.COLUMN_TYPE_TAGS) )
 		{
  			dataRow.setElementAt(
-		 			 TagUtils.getTagString( (int)point.getTags() ),
-//		 				+ (AlarmUtils.isAnyAlarm((int)point.getTags()) ? "-(ALM)" : ""),
-		 			columnTypeName.indexOf(COLUMN_TYPE_TAGS), 
+		 			TagUtils.getTagString( (int)point.getTags() ),
+		 			columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_TAGS), 
 		 			ObservedPointDataChange.POINT_TAG_TYPE, point.getId(),
 		 			isRowInAalarmVector( location ),
 					(int)point.getTags() );
 		}
 
-		if ( columnTypeName.contains(COLUMN_TYPE_POINTTIMESTAMP) )
+		if ( columnTypeName.contains(CustomDisplay.COLUMN_TYPE_POINTTIMESTAMP) )
 		{					
 			dataRow.setElementAt( 
 					new ModifiedDate( timeStamp.toString() ), 
-					columnTypeName.indexOf(COLUMN_TYPE_POINTTIMESTAMP), 
+					columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_POINTTIMESTAMP), 
 					ObservedPointDataChange.POINT_TIMESTAMP_TYPE, point.getId(), 
 					isRowInAalarmVector( location ),
 					(int)point.getTags() );
 		}
 
+
+		if ( columnTypeName.contains(CustomDisplay.COLUMN_TYPE_POINTSTATE) )
+		{					
+ 			dataRow.setElementAt(
+		 			TagUtils.isPointOutOfService((int)point.getTags()) ? "Disabled" : "Enabled",
+		 			columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_POINTSTATE), 
+		 			ObservedPointDataChange.POINT_STATE, point.getId(),
+		 			isRowInAalarmVector( location ),
+					(int)point.getTags() );
+		}
 		
 		// More Dyanmic cell changes should follow
 
@@ -2379,28 +2341,28 @@ private void setRowForEventViewer( Vector aRow, Signal signal, String deviceName
 
 
 	// set DeviceName
-	if( deviceName != null && columnTypeName.contains(COLUMN_TYPE_DEVICENAME) )
-		aRow.setElementAt( CommonUtils.createString( deviceName ), columnTypeName.indexOf(COLUMN_TYPE_DEVICENAME) );
+	if( deviceName != null && columnTypeName.contains(CustomDisplay.COLUMN_TYPE_DEVICENAME) )
+		aRow.setElementAt( CommonUtils.createString( deviceName ), columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_DEVICENAME) );
 
 	// set PointName		
-	if( pointName != null && columnTypeName.contains(COLUMN_TYPE_POINTNAME) )
-		aRow.setElementAt( CommonUtils.createString( pointName ), columnTypeName.indexOf(COLUMN_TYPE_POINTNAME) );
+	if( pointName != null && columnTypeName.contains(CustomDisplay.COLUMN_TYPE_POINTNAME) )
+		aRow.setElementAt( CommonUtils.createString( pointName ), columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_POINTNAME) );
 
 	// set Message/Description
-	if( columnTypeName.contains(COLUMN_TYPE_UOFM) )
-		aRow.setElementAt( CommonUtils.createString( signal.getDescription() ), columnTypeName.indexOf(COLUMN_TYPE_UOFM) );
+	if( columnTypeName.contains(CustomDisplay.COLUMN_TYPE_UOFM) )
+		aRow.setElementAt( CommonUtils.createString( signal.getDescription() ), columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_UOFM) );
 
 	// set Action
-	if( columnTypeName.contains(COLUMN_TYPE_POINTQUALITY) )
-		aRow.setElementAt( CommonUtils.createString( signal.getAction() ), columnTypeName.indexOf(COLUMN_TYPE_POINTQUALITY));
+	if( columnTypeName.contains(CustomDisplay.COLUMN_TYPE_POINTQUALITY) )
+		aRow.setElementAt( CommonUtils.createString( signal.getAction() ), columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_POINTQUALITY));
 
 	// set TimeStamp
-	if( columnTypeName.contains(COLUMN_TYPE_POINTTIMESTAMP) )
-		aRow.setElementAt( new ModifiedDate( signal.getTimeStamp().toString() ), columnTypeName.indexOf(COLUMN_TYPE_POINTTIMESTAMP) );
+	if( columnTypeName.contains(CustomDisplay.COLUMN_TYPE_POINTTIMESTAMP) )
+		aRow.setElementAt( new ModifiedDate( signal.getTimeStamp().toString() ), columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_POINTTIMESTAMP) );
 
 	// set User Name
-	if( columnTypeName.contains(COLUMN_TYPE_DEVICEID) )
-		aRow.setElementAt( CommonUtils.createString( signal.getUserName() ), columnTypeName.indexOf(COLUMN_TYPE_DEVICEID) );
+	if( columnTypeName.contains(CustomDisplay.COLUMN_TYPE_DEVICEID) )
+		aRow.setElementAt( CommonUtils.createString( signal.getUserName() ), columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_DEVICEID) );
 
 }
 /**

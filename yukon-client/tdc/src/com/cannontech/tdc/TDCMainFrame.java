@@ -339,40 +339,8 @@ public void alarmToolBar_JToolBarButtonClearViewableAlarmsAction_actionPerformed
  */
 public void alarmToolBar_JToolBarButtonRefreshAction_actionPerformed(java.util.EventObject newEvent) 
 {
-	// set refresh to true so it doesnt ask for a date on certain displays
-	getMainPanel().refreshPressed( true );
+	getMainPanel().executeRefresh_Pressed();
 
-	try
-	{
-		messageLog.addMessage("Refresh pressed for the display names " + getMainPanel().getCurrentDisplay().getName(), MessageBoxFrame.INFORMATION_MSG);
-		
-		if( getMainPanel().getCurrentSpecailChild() != null )
-		{
-			getMainPanel().getCurrentSpecailChild().executeRefreshButton();
-		}		
-		else if( getMainPanel().getTableDataModel().isAlarmDisplay() )
-				 // || getMainPanel().isUserDefinedDisplay() )
-		{
-			// do not relayout alarm models
-			//This will only reRegister the client, no screen setup is involved
-			refreshTDCClient();			
-		}
-		else //This will setup the screen AND reRegister the client
-		{
-			//be sure we capture any changes made to the table by the user
-			getMainPanel().updateDisplayColumnData();
-			
-			setUpMainFrame( getMainPanel().getJComboCurrentDisplay().getSelectedItem() );
-		}
-		
-			
-	}
-	finally
-	{
-		// must do this no matter what
-		getMainPanel().refreshPressed( false );
-	}
-	
 	return;
 }
 

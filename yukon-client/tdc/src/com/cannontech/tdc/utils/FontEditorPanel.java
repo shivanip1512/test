@@ -259,6 +259,8 @@ private javax.swing.JComboBox getJComboBoxSize() {
 			ivjJComboBoxSize.setBackground(java.awt.Color.white);
 			// user code begin {1}
 
+			ivjJComboBoxSize.addItem("6");
+			ivjJComboBoxSize.addItem("8");
 			ivjJComboBoxSize.addItem("10");
 			ivjJComboBoxSize.addItem("12");
 			ivjJComboBoxSize.addItem("14");
@@ -266,6 +268,9 @@ private javax.swing.JComboBox getJComboBoxSize() {
 			ivjJComboBoxSize.addItem("21");
 			ivjJComboBoxSize.addItem("23");
 			ivjJComboBoxSize.addItem("26");
+			ivjJComboBoxSize.addItem("28");
+			ivjJComboBoxSize.addItem("32");
+			ivjJComboBoxSize.addItem("36");
 				
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
