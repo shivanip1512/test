@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2004/07/28 18:58:05 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2004/09/20 16:04:03 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -37,7 +37,8 @@ protected:
 
 public:
 
-    bool hasProtocol() const    {  return true;  };
+    CtiDeviceLMI();
+    virtual ~CtiDeviceLMI();
 
     void getSQL(RWDBDatabase &db, RWDBTable &keyTable, RWDBSelector &selector);
 
@@ -58,6 +59,7 @@ public:
     void processInboundData(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, RWTPtrSlist<CtiPointDataMsg> &points, RWCString &info );
 
     bool hasQueuedWork() const;
+    bool readEchoed() const;
     INT queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt);
     bool getOutMessage(CtiOutMessage *&OutMessage);
     LONG deviceQueueCommunicationTime() const;

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2004/07/28 18:58:05 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2004/09/20 16:04:03 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -21,6 +21,16 @@
 #include "numstr.h"
 #include "dllyukon.h"
 #include "cparms.h"
+
+
+CtiDeviceLMI::CtiDeviceLMI()
+{
+}
+
+
+CtiDeviceLMI::~CtiDeviceLMI()
+{
+}
 
 
 CtiProtocolBase *CtiDeviceLMI::getProtocol() const
@@ -386,7 +396,7 @@ void CtiDeviceLMI::DecodeDatabaseReader(RWDBReader &rdr)
 
 bool CtiDeviceLMI::hasQueuedWork() const
 {
-    return _lmi.hasCodes(); //|| _retrievalScheduled;
+    return _lmi.hasQueuedCodes() || _lmi.codeVerificationPending();
 }
 
 
@@ -395,7 +405,7 @@ INT CtiDeviceLMI::queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt)
     int retval = NORMAL;
 
     //  make sure we don't requeue our "go" OM
-    if( getExclusion().hasExclusions() && OutMessage->Sequence != CtiProtocolLMI::QueuedWorkToken && OutMessage->MessageFlags & MSGFLG_APPLY_EXCLUSION_LOGIC )
+    if( getExclusion().hasExclusions() && OutMessage->Sequence != CtiProtocolLMI::Sequence_QueuedWork && OutMessage->MessageFlags & MSGFLG_APPLY_EXCLUSION_LOGIC )
     {
         if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
         {
@@ -420,10 +430,9 @@ bool CtiDeviceLMI::getOutMessage(CtiOutMessage *&OutMessage)
 {
     bool retval = false;
 
-    if( _lmi.hasCodes() && RWTime::now() > _lmi.getTransmittingUntil() )
+    if( RWTime::now() > (_lmi.getTransmittingUntil()) )
     {
-        //  can we do anything in the time we're given?
-        if( _lmi.canTransmit(getExclusion().getExecutionGrantExpires().seconds()) )
+        if( _lmi.codeVerificationPending() )
         {
             if( !OutMessage )
             {
@@ -431,18 +440,27 @@ bool CtiDeviceLMI::getOutMessage(CtiOutMessage *&OutMessage)
             }
 
             OutMessage->DeviceID = getID();
-            OutMessage->Sequence = CtiProtocolLMI::QueuedWorkToken;
-
-            OutMessage->ExpirationTime = getExclusion().getExecutionGrantExpires().seconds();  //  i'm hijacking this over
-
-            retval = true;
+            OutMessage->Sequence = CtiProtocolLMI::Sequence_RetrieveEchoedCodes;
         }
-        else
+        else if( _lmi.hasQueuedCodes() )
         {
-            getExclusion().setEvaluateNextAt(_lmi.getTransmittingUntil());
+            //  can we do anything in the time we're given?
+            if( _lmi.canTransmit(getExclusion().getExecutionGrantExpires().seconds()) )
+            {
+                if( !OutMessage )
+                {
+                    OutMessage = new CtiOutMessage();
+                }
+
+                OutMessage->DeviceID = getID();
+                OutMessage->Sequence = CtiProtocolLMI::Sequence_QueuedWork;
+
+                OutMessage->ExpirationTime = getExclusion().getExecutionGrantExpires().seconds();  //  i'm hijacking this over
+
+                retval = true;
+            }
         }
     }
-    //else if( _lmi
     else
     {
         if( OutMessage )
