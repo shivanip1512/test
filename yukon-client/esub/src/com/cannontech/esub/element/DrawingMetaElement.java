@@ -22,6 +22,8 @@ import com.loox.jloox.LxAbstractText;
  */
 public class DrawingMetaElement extends LxAbstractText implements DrawingElement {
 
+	private static final String ELEMENT_ID = "metaElement";
+	
 	private static final int CURRENT_VERSION = 1;
 	private static final int DEFAULT_ROLE_ID = Integer.MIN_VALUE;
 	
@@ -169,5 +171,8 @@ public class DrawingMetaElement extends LxAbstractText implements DrawingElement
 	public boolean isCopyable() {
 		return false;
 	}
-
+	
+	public String getElementID() {
+		return ELEMENT_ID;
+	}
 }

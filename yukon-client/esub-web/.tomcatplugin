@@ -8,17 +8,45 @@
     <warLocation></warLocation>
     <webPath></webPath>
     <webClassPathEntries>
+        <webClassPathEntry>C:\j2sdk1.4.1_02\jre\lib\charsets.jar</webClassPathEntry>
+        <webClassPathEntry>C:\j2sdk1.4.1_02\jre\lib\ext\dnsns.jar</webClassPathEntry>
+        <webClassPathEntry>C:\j2sdk1.4.1_02\jre\lib\ext\ldapsec.jar</webClassPathEntry>
+        <webClassPathEntry>C:\j2sdk1.4.1_02\jre\lib\ext\localedata.jar</webClassPathEntry>
+        <webClassPathEntry>C:\j2sdk1.4.1_02\jre\lib\ext\sunjce_provider.jar</webClassPathEntry>
+        <webClassPathEntry>C:\j2sdk1.4.1_02\jre\lib\jce.jar</webClassPathEntry>
+        <webClassPathEntry>C:\j2sdk1.4.1_02\jre\lib\jsse.jar</webClassPathEntry>
+        <webClassPathEntry>C:\j2sdk1.4.1_02\jre\lib\rt.jar</webClassPathEntry>
+        <webClassPathEntry>C:\j2sdk1.4.1_02\jre\lib\sunrsasign.jar</webClassPathEntry>
+        <webClassPathEntry>C:\j2sdk1.4.1_02\lib\tools.jar</webClassPathEntry>
+        <webClassPathEntry>C:\tom41\common\lib\jasper-runtime.jar</webClassPathEntry>
+        <webClassPathEntry>C:\tom41\common\lib\servlet.jar</webClassPathEntry>
         <webClassPathEntry>c:\dev\head\yukon-client\billing\bin</webClassPathEntry>
         <webClassPathEntry>c:\dev\head\yukon-client\common\bin</webClassPathEntry>
         <webClassPathEntry>c:\dev\head\yukon-client\dbeditor\bin</webClassPathEntry>
         <webClassPathEntry>c:\dev\head\yukon-client\esub-editor\bin</webClassPathEntry>
         <webClassPathEntry>c:\dev\head\yukon-client\esub-web\WEB-INF\classes</webClassPathEntry>
+        <webClassPathEntry>c:\dev\head\yukon-client\loadcontrol\bin</webClassPathEntry>
+        <webClassPathEntry>c:\dev\head\yukon-client\macs\bin</webClassPathEntry>
+        <webClassPathEntry>c:\dev\head\yukon-client\resource</webClassPathEntry>
+        <webClassPathEntry>c:\dev\head\yukon-client\servlet\bin</webClassPathEntry>
         <webClassPathEntry>c:\dev\head\yukon-client\tdc\bin</webClassPathEntry>
+        <webClassPathEntry>c:\dev\head\yukon-client\third-party</webClassPathEntry>
         <webClassPathEntry>c:\dev\head\yukon-client\third-party\SqlServer.jar</webClassPathEntry>
         <webClassPathEntry>c:\dev\head\yukon-client\third-party\acme.jar</webClassPathEntry>
         <webClassPathEntry>c:\dev\head\yukon-client\third-party\batik111.jar</webClassPathEntry>
+        <webClassPathEntry>c:\dev\head\yukon-client\third-party\castor-xml.jar</webClassPathEntry>
         <webClassPathEntry>c:\dev\head\yukon-client\third-party\classes12.jar</webClassPathEntry>
+        <webClassPathEntry>c:\dev\head\yukon-client\third-party\classes12.zip</webClassPathEntry>
         <webClassPathEntry>c:\dev\head\yukon-client\third-party\commons-logging.jar</webClassPathEntry>
+        <webClassPathEntry>c:\dev\head\yukon-client\third-party\ejbonly.jar</webClassPathEntry>
+        <webClassPathEntry>c:\dev\head\yukon-client\third-party\j2ee.jar</webClassPathEntry>
+        <webClassPathEntry>c:\dev\head\yukon-client\third-party\jaxm-api.jar</webClassPathEntry>
+        <webClassPathEntry>c:\dev\head\yukon-client\third-party\jaxm-client.jar</webClassPathEntry>
+        <webClassPathEntry>c:\dev\head\yukon-client\third-party\jboss-client.jar</webClassPathEntry>
+        <webClassPathEntry>c:\dev\head\yukon-client\third-party\jboss-common-client.jar</webClassPathEntry>
+        <webClassPathEntry>c:\dev\head\yukon-client\third-party\jboss-jmx-core.jar</webClassPathEntry>
+        <webClassPathEntry>c:\dev\head\yukon-client\third-party\jboss.jar</webClassPathEntry>
+        <webClassPathEntry>c:\dev\head\yukon-client\third-party\jbosssx-client.jar</webClassPathEntry>
         <webClassPathEntry>c:\dev\head\yukon-client\third-party\jcchart401K.jar</webClassPathEntry>
         <webClassPathEntry>c:\dev\head\yukon-client\third-party\jcfield401K.jar</webClassPathEntry>
         <webClassPathEntry>c:\dev\head\yukon-client\third-party\jcommon.jar</webClassPathEntry>
@@ -32,12 +60,9 @@
         <webClassPathEntry>c:\dev\head\yukon-client\third-party\log4j-1.2.4.jar</webClassPathEntry>
         <webClassPathEntry>c:\dev\head\yukon-client\third-party\rwav.jar</webClassPathEntry>
         <webClassPathEntry>c:\dev\head\yukon-client\third-party\struts.jar</webClassPathEntry>
+        <webClassPathEntry>c:\dev\head\yukon-client\third-party\xerces.jar</webClassPathEntry>
         <webClassPathEntry>c:\dev\head\yukon-client\trending\bin</webClassPathEntry>
         <webClassPathEntry>c:\dev\head\yukon-client\yukonappclient\bin</webClassPathEntry>
         <webClassPathEntry>c:\dev\head\yukon-client\yukonappserver\bin</webClassPathEntry>
-        <webClassPathEntry>c:\dev\head\yukon-client\third-party\ejbonly.jar</webClassPathEntry>
-        <webClassPathEntry>c:\dev\head\yukon-client\resource</webClassPathEntry>
-        <webClassPathEntry>c:\dev\head\yukon-client\third-party\xerces.jar</webClassPathEntry>
-        <webClassPathEntry>c:\dev\head\yukon-client\servlet\bin</webClassPathEntry>
     </webClassPathEntries>
 </tomcatProjectProperties>

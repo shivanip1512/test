@@ -89,6 +89,7 @@ public class AlarmsTableGenerator extends HttpServlet {
 				retElement.setAttributeNS(null, "width", Integer.toString(width));
 				retElement.setAttributeNS(null, "height", Integer.toString(height));			
 				retElement.setAttributeNS(null, "object", "table");
+				retElement.setAttributeNS(null, "elementID", "alarmsTable");
 				retElement.setAttributeNS(null, "devicename", PAOFuncs.getYukonPAOName(deviceID));
  				retElement.setAttributeNS(null, "deviceid", Integer.toString(deviceID)); 
 		

@@ -24,6 +24,8 @@ import com.loox.jloox.LxContainer;
  * @author: 
  */
 public class DynamicText extends LxAbstractText implements DrawingElement, Serializable {
+	
+	private static final String ELEMENT_ID = "dynamicText";
 	public static final int INVALID_POINT = -1;	
 	
 	private static final int CURRENT_VERSION = 1;
@@ -262,4 +264,7 @@ public void saveAsJLX(OutputStream out) throws IOException
 		this.version = newVer;
 	}
 
+	public String getElementID() {
+		return ELEMENT_ID;
+	}
 }

@@ -33,6 +33,9 @@ public class DynamicGraphElement extends LxAbstractRectangle implements DrawingE
 	public static final int PREV3DAYS = 3;
 	public static final int PREV7DAYS = 4;
 	*/
+	
+	private static final String ELEMENT_ID = "dynamicGraph";
+		
 	private static final int CURRENT_VERSION = 1;
 	private static final int INVALID_GRAPH_DEFINITION = -1;
 	private static final Dimension DEFAULT_SIZE = new Dimension(640,480);
@@ -431,5 +434,8 @@ public class DynamicGraphElement extends LxAbstractRectangle implements DrawingE
 		this.version = newVer;
 	}
 
+	public String getElementID() {
+		return ELEMENT_ID;
+	}
 }
  

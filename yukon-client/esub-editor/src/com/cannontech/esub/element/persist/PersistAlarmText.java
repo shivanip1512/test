@@ -4,7 +4,6 @@
 package com.cannontech.esub.element.persist;
 
 import java.awt.Color;
-import java.awt.Font;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -43,19 +42,9 @@ public class PersistAlarmText extends BasePersistElement {
 			switch(version) {
 		
 			case 1: {
-				// Break up font and color into components to save
-				elem.setDefaultTextFont(	new Font( 
-											LxSaveUtils.readString(in),
-											LxSaveUtils.readInt(in),
-											LxSaveUtils.readInt(in) ));
-				
+								
 				elem.setDefaultTextColor(   new Color(
 											LxSaveUtils.readInt(in),
-											LxSaveUtils.readInt(in),
-											LxSaveUtils.readInt(in) ));
-
-				elem.setAlarmTextFont(		new Font(
-											LxSaveUtils.readString(in),
 											LxSaveUtils.readInt(in),
 											LxSaveUtils.readInt(in) ));
 											
@@ -63,7 +52,6 @@ public class PersistAlarmText extends BasePersistElement {
 											LxSaveUtils.readInt(in),
 											LxSaveUtils.readInt(in),
 											LxSaveUtils.readInt(in) ));
-				
 				
 				//TODO This could become very inefficient when a lot of points exist, be smarter
 				int[] pointIDs = LxSaveUtils.readIntArray(in,0);
@@ -94,20 +82,10 @@ public class PersistAlarmText extends BasePersistElement {
 		throws IOException {
 			AlarmTextElement elem = (AlarmTextElement) drawingElem;
 			
-			Font defaultTextFont = elem.getDefaultTextFont();
-			LxSaveUtils.writeString(out, defaultTextFont.getFontName());
-			LxSaveUtils.writeInt(out, defaultTextFont.getStyle());
-			LxSaveUtils.writeInt(out, defaultTextFont.getSize());
-			
 			Color defaultTextColor = elem.getDefaultTextColor();
 			LxSaveUtils.writeInt(out, defaultTextColor.getRed());
 			LxSaveUtils.writeInt(out, defaultTextColor.getGreen());
 			LxSaveUtils.writeInt(out, defaultTextColor.getBlue());
-			
-			Font alarmTextFont = elem.getAlarmTextFont();
-			LxSaveUtils.writeString(out, alarmTextFont.getFontName());
-			LxSaveUtils.writeInt(out, alarmTextFont.getStyle());
-			LxSaveUtils.writeInt(out, alarmTextFont.getSize());
 			
 			Color alarmTextColor = elem.getAlarmTextColor();
 			LxSaveUtils.writeInt(out, alarmTextColor.getRed());
@@ -119,7 +97,8 @@ public class PersistAlarmText extends BasePersistElement {
 			for(int i = 0; i < points.length; i++) {
 				pointIDs[i] = points[i].getPointID();
 			}
-
+			
+			LxSaveUtils.writeIntArray(out, pointIDs, pointIDs.length);
 			LxSaveUtils.writeString(out, elem.getLinkTo());
 	}
 

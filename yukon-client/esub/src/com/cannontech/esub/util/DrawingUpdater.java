@@ -118,13 +118,9 @@ public class DrawingUpdater extends TimerTask {
 							}
 							
 							if(inAlarm) {
-								te.setText(te.getAlarmText());
-								te.setFont(te.getAlarmTextFont());
 								te.setPaint(te.getAlarmTextColor());
 							}
 							else {
-								te.setText(te.getDefaultText());
-								te.setFont(te.getDefaultTextFont());
 								te.setPaint(te.getDefaultTextColor());
 							}
 							change = true;

@@ -19,7 +19,9 @@ import com.loox.jloox.LxAbstractImage;
  */
 public class StaticImage extends LxAbstractImage implements DrawingElement {
 	
+	private static final String ELEMENT_ID = "staticImage";	
 	private static final int CURRENT_VERSION = 1;
+	
 	private LiteYukonImage yukonImage = LiteYukonImage.NONE_IMAGE;
 	
 	private Drawing drawing;
@@ -157,4 +159,7 @@ public synchronized void saveAsJLX(OutputStream out) throws IOException
 		this.version = newVer;
 	}
 
+	public String getElementID() {
+		return ELEMENT_ID;
+	}
 }

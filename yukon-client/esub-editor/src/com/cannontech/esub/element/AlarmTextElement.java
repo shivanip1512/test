@@ -1,6 +1,3 @@
-/*
- * Created on May 14, 2003
-*/
 package com.cannontech.esub.element;
 
 import java.awt.Color;
@@ -21,20 +18,15 @@ import com.loox.jloox.LxAbstractText;
 public class AlarmTextElement
 	extends LxAbstractText
 	implements DrawingElement, Serializable {
-
+	
+	private static final String ELEMENT_ID = "alarmText";
+	
 	private static final int CURRENT_VERSION = 1;
-	static final Font DEFAULT_FONT = new java.awt.Font("arial", java.awt.Font.BOLD, 12);
-    static final Color DEFAULT_COLOR = java.awt.Color.white;
-    
-    static final Font DEFAULT_ALARM_FONT = new java.awt.Font("arial", java.awt.Font.BOLD, 12);
-    static final Color DEFAULT_ALARM_COLOR = java.awt.Color.red;
-	
-	private String defaultText = "-";
-	private Font defaultTextFont = DEFAULT_FONT;
+	static final Font DEFAULT_FONT = new Font("arial", java.awt.Font.BOLD, 12);
+    static final Color DEFAULT_COLOR = Color.white;
+    static final Color DEFAULT_ALARM_COLOR = Color.red;
+
 	private Color defaultTextColor = DEFAULT_COLOR;
-	
-	private String alarmText = "-";
-	private Font alarmTextFont = DEFAULT_ALARM_FONT;
 	private Color alarmTextColor = DEFAULT_ALARM_COLOR;
 		
    	private LitePoint[] points = new LitePoint[0];
@@ -44,6 +36,10 @@ public class AlarmTextElement
 	
 	private Drawing drawing = null;
 	
+	public AlarmTextElement() {
+		setFont(DEFAULT_FONT);
+		setPaint(DEFAULT_COLOR);
+	}
 	/* 
 	 * @see com.cannontech.esub.element.DrawingElement#getVersion()
 	 */
@@ -126,63 +122,6 @@ public class AlarmTextElement
 	/**
 	 * @return
 	 */
-	public String getDefaultText() {
-		return defaultText;
-	}
-
-	/**
-	 * @param string
-	 */
-	public void setDefaultText(String string) {
-		defaultText = string;
-	}
-
-	/**
-	 * @return
-	 */
-	public String getAlarmText() {
-		return alarmText;
-	}
-
-	/**
-	 * @param string
-	 */
-	public void setAlarmText(String string) {
-		alarmText = string;
-	}
-
-	
-	/**
-	 * @return
-	 */
-	public Font getAlarmTextFont() {
-		return alarmTextFont;
-	}
-
-	/**
-	 * @return
-	 */
-	public Font getDefaultTextFont() {
-		return defaultTextFont;
-	}
-
-	/**
-	 * @param font
-	 */
-	public void setAlarmTextFont(Font font) {
-		alarmTextFont = font;
-	}
-
-	/**
-	 * @param font
-	 */
-	public void setDefaultTextFont(Font font) {
-		defaultTextFont = font;
-	}
-
-	/**
-	 * @return
-	 */
 	public Color getAlarmTextColor() {
 		return alarmTextColor;
 	}
@@ -208,4 +147,7 @@ public class AlarmTextElement
 		defaultTextColor = color;
 	}
 
+	public String getElementID() {
+		return ELEMENT_ID;
+	}
 }

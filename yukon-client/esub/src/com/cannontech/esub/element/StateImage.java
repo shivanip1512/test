@@ -23,6 +23,7 @@ import com.loox.jloox.LxAbstractImage;
  */
 public class StateImage extends LxAbstractImage implements DrawingElement {
 		
+	private static final String ELEMENT_ID = "stateImage";
 	private static final int CURRENT_VERSION = 1;
 	
 	private LitePoint point;
@@ -211,4 +212,7 @@ public synchronized void saveAsJLX(OutputStream out) throws IOException
 		this.version = newVer;
 	}
 
+	public String getElementID() {
+		return ELEMENT_ID;
+	}
 }

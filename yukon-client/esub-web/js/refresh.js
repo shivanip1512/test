@@ -1,7 +1,23 @@
+var svgNS    = "http://www.w3.org/2000/svg";
+var xlinkNS  = "http://www.w3.org/1999/xlink";
+
+var dynamicTextID = 'dynamicText';
+var stateImageID = 'stateImage';
+var dynamicGraphID = 'dynamicGraph';
+var alarmsTableID = 'alarmsTable';
+var alarmTextID = 'alarmText';
+
+/* refresh rates of various elements in milliseconds */
+var graphRefreshRate = 120 * 1000;
+var pointRefreshRate  = 15 * 1000;
+var tableRefreshRate  = 30 * 1000;
+
 /* refresh needs to be called once and it will set up
    periodic updates */   
 function refresh(evt) {	
 	SVGDoc = evt.getTarget().getOwnerDocument();
+	
+	/* TODO: is this needed? */
 	dynText = SVGDoc.getElementsByTagName('text');
 	dynImages = SVGDoc.getElementsByTagName('image');
 	dynSVG = SVGDoc.documentElement.getElementsByTagName('svg');
@@ -9,7 +25,9 @@ function refresh(evt) {
 		
 	updateAll();
 	
-	setInterval('updateAll()',120000); //5 minutes
+	setInterval('updateAllGraphs()', graphRefreshRate); 
+	setInterval('updateAllPoints()', pointRefreshRate, pointRefreshRate);
+	setInterval('updateAllTables()', tableRefreshRate, tableRefreshRate);
 } //end refresh
 
 /* update everything! */
@@ -22,24 +40,35 @@ function updateAll() {
 function updateAllPoints() {
 	dynText = SVGDoc.getElementsByTagName('text');
 	for (var i=0; i<dynText.getLength(); i++) 
-	{
-		updateNode(dynText.item(i));
+	{		
+		var elemID = dynText.item(i).getAttribute('elementID');
+    	if(elemID == dynamicTextID) {    
+			updateNode(dynText.item(i));
+		}
+		
+		if(elemID == alarmTextID) {
+			updateAlarmText(dynText.item(i))
+		}
 	}
 	
 	dynImages = SVGDoc.getElementsByTagName('image');	
 	for(var j=0; j<dynImages.getLength(); j++)
 	{
-		updateImage(dynImages.item(j));
+		var elemID = dynImages.item(j).getAttribute('elementID');
+		if(elemID == stateImageID) {
+			updateImage(dynImages.item(j));
+		}
 	}
+	
 	
 } //end updatePoints
 
 function updateAllGraphs() {
 	dynSVG = SVGDoc.documentElement.getElementsByTagName('svg');
-	
 	for (i=0; i < dynSVG.getLength(); i++) {
 		var svgElement = dynSVG.item(i);
-		if (svgElement.getAttribute('object') == 'graph') {
+
+		if (svgElement.getAttribute('elementID') == dynamicGraphID) {
 			updateGraph(svgElement);
 		}
 		else {
@@ -53,7 +82,7 @@ function updateAllTables() {
 	
 	for(i=0; i < dynSVG.getLength(); i++ ) {
 		var svgElement = dynSVG.item(i);
-		if(svgElement.getAttribute('object') == 'table') {
+		if(svgElement.getAttribute('elementID') == alarmsTableID) {
 			updateAlarmsTable(svgElement);
 		}
 		else {
@@ -78,7 +107,7 @@ function updateGraph(node) {
 			
 	getURL(url, fn2);
 	
-	function fn2(obj) {   
+	function fn2(obj) {   		
 		var Newnode = parseXML(obj.content, SVGDoc);
 		var gdefid = node.getAttribute('gdefid');
 		var view = node.getAttribute('view');
@@ -110,6 +139,7 @@ function updateGraph(node) {
 			 	svgElem.setAttributeNS(null, 'x', x);
 			 	svgElem.setAttributeNS(null, 'y', y);
 			 	svgElem.setAttributeNS(null, 'object', 'graph');     	
+			 	svgElem.setAttributeNS(null, 'elementID', dynamicGraphID);
 			 	svgElem.setAttributeNS(null, 'onclick', 'updateGraphChange(evt)');
      		}
 			else  {
@@ -163,11 +193,34 @@ function updateImage(node) {
 	function fn(obj) {
 		//confirm(obj.content);
 	    if (obj.content) {  
-	    	node.setAttribute('xlink\:href', obj.content);
+	    	node.setAttributeNS(xlinkNS, 'xlink\:href', obj.content);
 		}
 	} //end fn
 } //end updateImage
 
+/* update a single alarm text element */
+function updateAlarmText(node) {
+	var pointIDs = node.getAttribute('id');
+	var fill1 = node.getAttribute('fill1');
+	var fill2 = node.getAttribute('fill2');
+//alert('old style: ' + node.getAttribute('style'));	
+	if(pointIDs.length > 0) {
+		url = encodeURI('/servlet/AlarmTextStyleServlet' + '?' + 'id=' + pointIDs + '&fill1=' + fill1 + '&fill2=' + fill2);
+		getURL(url,fn);	
+	}
+	
+	/* Handle the getURL to the AlarmTextStyleServlet */
+	function fn(obj) {
+		if(obj.content) {
+//			alert(node.getStyle().getPropertyValue('fill'));
+//			alert(obj.content
+			node.getStyle().setProperty('fill', obj.content);
+/*			alert('new style: ' + obj.content);
+			node.setAttributeNS(xlinkNS, 'style', obj.content);
+			alert('now its: ' + node.getAttribute('style'));*/
+		}
+	}
+}
 
 function go() {
 alert("going!");

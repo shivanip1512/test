@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.PathIterator;
-import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.io.Writer;
@@ -23,7 +22,7 @@ import org.w3c.dom.svg.SVGDocument;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.functions.PAOFuncs;
-import com.cannontech.esub.PointAttributes;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.esub.editor.Drawing;
 import com.cannontech.esub.element.AlarmTextElement;
 import com.cannontech.esub.element.CurrentAlarmsTable;
@@ -149,20 +148,25 @@ public class SVGGenerator {
 			else
 			if( comp instanceof CurrentAlarmsTable ) {
 				elem = createAlarmsTable(doc, (CurrentAlarmsTable) comp);
-			}	
+			}
+			else
+			if( comp instanceof AlarmTextElement ) {
+				elem = createAlarmText(doc, (AlarmTextElement) comp);
+			}
 				
-			if( comp instanceof DrawingElement ) {
-				DrawingElement de = (DrawingElement) comp;
-				String link = de.getLinkTo();
-				if(link != null && link.length() > 0) {
-					elem.setAttributeNS(null,"onclick", "followLink(\"" + link + "\")");
+			if( elem != null ) {	
+				if( comp instanceof DrawingElement ) {
+					DrawingElement de = (DrawingElement) comp;
+					String link = de.getLinkTo();
+					if(link != null && link.length() > 0) {
+						elem.setAttributeNS(null,"onclick", "followLink(\"" + link + "\")");
+					}
+				 
+				elem.setAttributeNS(null,"elementID", de.getElementID());
+				elem.setAttributeNS(null,"classid",comp.getClass().getName());					
 				}
 			}
 			
-			if( elem != null ) {
-				elem.setAttributeNS(null,"classid",comp.getClass().getName());					
-			}
-		
 		return elem;
 	}
 	
@@ -394,7 +398,8 @@ public class SVGGenerator {
 		return retElement;		
 	}
 	
-/*	private Element createAlarmText(SVGDocument doc, AlarmTextElement alarmText) {
+	
+	private Element createAlarmText(SVGDocument doc, AlarmTextElement alarmText) {
 	  	//		Ignore stroke color for now, always use fill color
 	  	//could become a problem, pay attention
 		Rectangle2D r = alarmText.getBounds2D();
@@ -418,22 +423,34 @@ public class SVGGenerator {
 		
 		float opacity = alarmText.getStyle().getTransparency();
 	
+		Color defaultColor = alarmText.getDefaultTextColor();
+		Color alarmColor = alarmText.getAlarmTextColor();
+		
+		StringBuffer idBuf = new StringBuffer("");
+		LitePoint[] points = alarmText.getPoints();
+		
+		if(points.length > 0) {
+			idBuf.append(Integer.toString(points[0].getPointID()));
+		}
+		
+		for(int i = 1; i < points.length; i++) {
+			idBuf.append(',');
+			idBuf.append(Integer.toString(points[i].getPointID()));
+		}
+		
 		Element textElem = doc.createElementNS(svgNS, "text");
-		textElem.setAttributeNS(null, "id", Integer.toString(text.getPointID()));
-		textElem.setAttributeNS(null, "dattrib", Integer.toString(PointAttributes.ALARM_TEXT));
+		textElem.setAttributeNS(null, "id", idBuf.toString());
 		textElem.setAttributeNS(null, "x", Integer.toString(x));
 		textElem.setAttributeNS(null, "y", Integer.toString(y));
-		textElem.setAttributeNS(null, "style", "fill:rgb(" + fillColor.getRed() + "," + fillColor.getGreen() + "," + fillColor.getBlue() + ");font-family:'" + text.getFont().getFontName() + "';font-style:" + fontStyleStr + ";font-weight:" + fontWeightStr + ";font-size:" + text.getFont().getSize() + ";opacity:" + opacity + ";");
+		textElem.setAttributeNS(null, "style", "fill:rgb(" + fillColor.getRed() + "," + fillColor.getGreen() + "," + fillColor.getBlue() + ");font-family:'" + alarmText.getFont().getFontName() + "';font-style:" + fontStyleStr + ";font-weight:" + fontWeightStr + ";font-size:" + alarmText.getFont().getSize() + ";opacity:" + opacity + ";");
+		textElem.setAttributeNS(null, "fill1", "rgb(" + defaultColor.getRed() + "," + defaultColor.getGreen() + "," + defaultColor.getBlue() + ")");
+		textElem.setAttributeNS(null, "fill2", "rgb(" + alarmColor.getRed() + "," + alarmColor.getGreen() + "," + alarmColor.getBlue() + ")");
 		
-			  if(isEditEnabled() && text.isEditable()) {
-				  textElem.setAttributeNS(null, "onclick", "editValue(evt)");	
-			  }
-
-			  Text theText = doc.createTextNode(text.getText());
-			  textElem.insertBefore(theText, null);
+		Text theText = doc.createTextNode(alarmText.getText());
+		textElem.insertBefore(theText, null);
 		
-			  return textElem;					
-	}*/
+		return textElem;					
+	}
 			
 	/**
 	 * Builds up a svg path string given a shape and the center of the element.

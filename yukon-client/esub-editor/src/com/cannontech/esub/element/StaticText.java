@@ -16,7 +16,9 @@ import com.loox.jloox.LxAbstractText;
  * @author: 
  */
 public class StaticText extends LxAbstractText implements DrawingElement {
+	private static final String ELEMENT_ID = "staticText";
 	private static final int CURRENT_VERSION = 1;
+	
 	static final Font DEFAULT_FONT = new java.awt.Font("arial", java.awt.Font.BOLD, 12);
 	static final Color DEFAULT_COLOR = java.awt.Color.white;
 	
@@ -133,4 +135,7 @@ public synchronized void saveAsJLX(OutputStream out) throws IOException
 		this.version = newVer;
 	}
 
+	public String getElementID() {
+		return ELEMENT_ID;
+	}
 }
