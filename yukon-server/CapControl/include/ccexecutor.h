@@ -68,7 +68,7 @@ private:
     void ConfirmOpen();
     void ConfirmClose();
     void doConfirmImmediately(CtiCCSubstationBus* currentSubstationBus, RWOrdered& pointChanges);
-    void SendAllSubstationBuses();
+    void SendAllData();
     void ReturnCapToOriginalFeeder();
     void ResetDailyOperations();
     void WaiveSubstationBus();

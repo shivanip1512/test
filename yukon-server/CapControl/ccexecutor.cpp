@@ -76,8 +76,8 @@ void CtiCCCommandExecutor::Execute()
         ConfirmClose();
         break;
 
-    case CtiCCCommand::REQUEST_ALL_SUBSTATION_BUSES:
-        SendAllSubstationBuses();
+    case CtiCCCommand::REQUEST_ALL_DATA:
+        SendAllData();
         break;
 
     case CtiCCCommand::RETURN_CAP_TO_ORIGINAL_FEEDER:
@@ -1150,7 +1150,7 @@ void CtiCCCommandExecutor::doConfirmImmediately(CtiCCSubstationBus* currentSubst
 /*---------------------------------------------------------------------------
     SendAllSubstationBuses
 ---------------------------------------------------------------------------*/    
-void CtiCCCommandExecutor::SendAllSubstationBuses()
+void CtiCCCommandExecutor::SendAllData()
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
@@ -1160,6 +1160,9 @@ void CtiCCCommandExecutor::SendAllSubstationBuses()
     executor->Execute();
     delete executor;
     executor = f.createExecutor(new CtiCCGeoAreasMsg(*store->getCCGeoAreas(RWDBDateTime().seconds())));
+    executor->Execute();
+    delete executor;
+    executor = f.createExecutor(new CtiCCCapBankStatesMsg(*store->getCCCapBankStates(RWDBDateTime().seconds())));
     executor->Execute();
     delete executor;
 
