@@ -1,5 +1,6 @@
 package com.cannontech.stars.xml;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.Transaction;
@@ -35,6 +36,7 @@ import com.cannontech.stars.xml.serialize.StarsInv;
 import com.cannontech.stars.xml.serialize.StarsSiteInformation;
 import com.cannontech.stars.xml.serialize.StarsSrvReq;
 import com.cannontech.stars.xml.serialize.StarsThermostatSchedule;
+import com.cannontech.stars.xml.serialize.StarsUsr;
 import com.cannontech.stars.xml.serialize.StarsWebConfig;
 import com.cannontech.stars.xml.serialize.StreetAddress;
 import com.cannontech.stars.xml.serialize.Substation;
@@ -62,7 +64,7 @@ public class StarsFactory {
 			return newEntry;
 		}
 		catch (Exception e) {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 		}
 		
 		return null;
@@ -80,7 +82,7 @@ public class StarsFactory {
 			return newEntry;
 		}
 		catch (Exception e) {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 		}
 		
 		return null;
@@ -94,7 +96,7 @@ public class StarsFactory {
 			return newEntry;
 		}
 		catch (Exception e) {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 		}
 		
 		return null;
@@ -137,7 +139,7 @@ public class StarsFactory {
 			return starsApp;
 		}
 		catch (Exception e) {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 		}
 		
 		return null;
@@ -162,7 +164,7 @@ public class StarsFactory {
 			return starsCall;
 		}
 		catch (Exception e) {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 		}
 		
 		return null;
@@ -229,7 +231,7 @@ public class StarsFactory {
 			return newAccount;
 		}
 		catch (Exception e) {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 		}
 
 		return null;
@@ -306,7 +308,7 @@ public class StarsFactory {
 			return newAddr;
 		}
 		catch (Exception e) {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 		}
 
 		return null;
@@ -326,7 +328,7 @@ public class StarsFactory {
 			return newAddr;
 		}
 		catch (Exception e) {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 		}
 
 		return null;
@@ -352,7 +354,7 @@ public class StarsFactory {
 			return newContact;
 		}
 		catch (Exception e) {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 		}
 
 		return null;
@@ -376,7 +378,7 @@ public class StarsFactory {
 			return newContact;
 		}
 		catch (Exception e) {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 		}
 
 		return null;
@@ -443,7 +445,7 @@ public class StarsFactory {
 			return starsInv;
 		}
 		catch (Exception e) {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 		}
 		
 		return null;
@@ -475,7 +477,7 @@ public class StarsFactory {
 			return starsInv;
 		}
 		catch (Exception e) {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 		}
 		
 		return null;
@@ -589,7 +591,28 @@ public class StarsFactory {
 			return newRes;
 		}
 		catch (Exception e) {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
+		}
+		
+		return null;
+	}
+	
+	
+	/* StarsUsr factory methods */
+	
+	public static StarsUsr newStarsUser(StarsUsr user, Class type) {
+		try {
+			StarsUsr newUser = (StarsUsr) type.newInstance();
+			newUser.setUserID( user.getUserID() );
+			newUser.setUsername( user.getUsername() );
+			newUser.setPassword( user.getPassword() );
+			newUser.setStatus( user.getStatus() );
+			newUser.setGroupID( user.getGroupID() );
+			
+			return newUser;
+		}
+		catch (Exception e) {
+			CTILogger.error( e.getMessage(), e );
 		}
 		
 		return null;

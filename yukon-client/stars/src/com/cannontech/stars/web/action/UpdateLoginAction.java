@@ -5,6 +5,7 @@ import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.StarsDatabaseCache;
@@ -25,6 +26,7 @@ import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.util.StarsAdminUtil;
 import com.cannontech.stars.xml.StarsFactory;
+import com.cannontech.stars.xml.serialize.ContactNotification;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsOperation;
@@ -34,6 +36,7 @@ import com.cannontech.stars.xml.serialize.StarsUser;
 import com.cannontech.stars.xml.serialize.types.StarsLoginStatus;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
+import com.cannontech.tools.email.EmailMessage;
 
 /**
  * @author yao
@@ -84,13 +87,8 @@ public class UpdateLoginAction implements ActionBase {
 			StarsUpdateLogin updateLogin = reqOper.getStarsUpdateLogin();
             
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
-			if (user == null) {
-				respOper.setStarsFailure( StarsFactory.newStarsFailure(
-						StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
-				return SOAPUtil.buildSOAPMessage( respOper );
-			}
-            
 			LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
+			
 			LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation)
 					session.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
             
@@ -154,19 +152,8 @@ public class UpdateLoginAction implements ActionBase {
 				accountInfo.setStarsUser( null );
 			}
 			else {
-				StarsUser starsUser = accountInfo.getStarsUser();
-				if (starsUser == null) {
-					starsUser = new StarsUser();
-					accountInfo.setStarsUser( starsUser );
-				}
-				
-				starsUser.setUsername( updateLogin.getUsername() );
-				//starsUser.setPassword( updateLogin.getPassword() );
-				starsUser.setPassword( "" );
-				if (updateLogin.getStatus() != null)
-					starsUser.setStatus( updateLogin.getStatus() );
-				if (updateLogin.hasGroupID())
-					starsUser.setGroupID( updateLogin.getGroupID() );
+				StarsUser userLogin = (StarsUser) StarsFactory.newStarsUser(updateLogin, StarsUser.class);
+				accountInfo.setStarsUser( userLogin );
 			}
 			
 			if (reqOper.getStarsNewCustomerAccount() == null)	// If not from the new customer account page
@@ -282,6 +269,80 @@ public class UpdateLoginAction implements ActionBase {
 			
 			LiteYukonUser liteUser = YukonUserFuncs.getLiteYukonUser( userID );
 			StarsAdminUtil.updateLogin( liteUser, username, password, status, loginGroup, energyCompany );
+		}
+	}
+	
+	public static void sendNotificationEmail(String to, StarsUpdateLogin updateLogin, LiteStarsEnergyCompany energyCompany)
+		throws Exception
+	{
+		String NEW_LINE = System.getProperty( "line.separator" );
+		String msg = "Your login information has been changed, here is the new information:" + NEW_LINE
+				+ NEW_LINE
+				+ "User Name:\t" + updateLogin.getUsername() + NEW_LINE
+				+ "Password:\t" + updateLogin.getPassword() + NEW_LINE;
+		
+		EmailMessage emailMsg = new EmailMessage( to, "Login Change Notification", msg );
+		emailMsg.setFrom( energyCompany.getAdminEmailAddress() );
+		emailMsg.send();
+	}
+	
+	public static void generatePassword(HttpServletRequest req, HttpSession session) throws WebClientException {
+		try {
+			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
+			LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
+			
+			LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation)
+					session.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
+			StarsCustAccountInformation accountInfo = (StarsCustAccountInformation)
+					session.getAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
+			
+			if (accountInfo.getStarsUser() == null)
+				throw new WebClientException("Cannot generate new password. User login doesn't exist yet.");
+			
+			StarsUpdateLogin updateLogin = (StarsUpdateLogin) StarsFactory.newStarsUser( accountInfo.getStarsUser(), StarsUpdateLogin.class );
+            
+			// Generate a random password of length 6, consists of letters and digits
+			char[] password = new char[6];
+			for (int i = 0; i < 6; i++) {
+				int rand = (int)(Math.random() * 62);
+				if (rand < 10)
+					password[i] = (char)(48 + rand);		// 48 is ascii for '0'
+				else if (rand < 36)
+					password[i] = (char)(65 + rand - 10);	// 65 is ascii for 'A'
+				else
+					password[i] = (char)(97 + rand - 36);	// 36 is ascii for 'a'
+			}
+			updateLogin.setPassword( new String(password) );
+            
+			updateLogin( updateLogin, liteAcctInfo, energyCompany );
+			String confirmMsg = "User login has been updated successfully. The new password is \"" + updateLogin.getPassword() + "\".";
+			
+			// Try to send new password to customer by email
+//			ContactNotification email = ServletUtils.getContactNotification( accountInfo.getStarsCustomerAccount().getPrimaryContact(), YukonListEntryTypes.YUK_ENTRY_ID_EMAIL );
+//			if (email != null) {
+//				try {
+//					sendNotificationEmail( email.getNotification(), updateLogin, energyCompany );
+//					confirmMsg += "<br>A notification email has been sent to the customer successfully.";
+//				}
+//				catch (Exception e) {
+//					CTILogger.error( e.getMessage(), e );
+//					confirmMsg += "<br><font color='red'>Failed to send notification email to the customer, please contact the customer in other means.</font>";
+//				}
+//			}
+//			else {
+//				confirmMsg += "<br><font color='red'>The email address of the customer is not specified, please contact the customer in other means.</font>";
+//			}
+			
+			StarsUser userLogin = (StarsUser) StarsFactory.newStarsUser(updateLogin, StarsUser.class);
+			accountInfo.setStarsUser( userLogin );
+			
+			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, confirmMsg);
+		}
+		catch (Exception e) {
+			if (e instanceof WebClientException)
+				throw (WebClientException)e;
+			CTILogger.error( e.getMessage(), e );
+			throw new WebClientException( "Failed to generate new password for the customer" );
 		}
 	}
 

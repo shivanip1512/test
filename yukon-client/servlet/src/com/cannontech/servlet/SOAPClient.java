@@ -124,6 +124,13 @@ public class SOAPClient extends HttpServlet {
 			session.setAttribute( ServletUtils.ATT_MSG_PAGE_REFERRER, errorURL );
 			destURL = errorURL = req.getContextPath() +
 					(StarsUtils.isOperator(user)? "/operator/Admin/Message.jsp" : "/user/ConsumerStat/stat/Message.jsp");
+			
+			Integer delay = null;
+			try {
+				delay = Integer.valueOf( req.getParameter(ServletUtils.CONFIRM_ON_MESSAGE_PAGE) );
+				destURL += "?delay=" + delay;
+			}
+			catch (NumberFormatException e) {}
 		}
 		
 		if (action.equalsIgnoreCase("NewCustAccount")) {
@@ -372,6 +379,17 @@ public class SOAPClient extends HttpServlet {
 		}
 		else if (action.equalsIgnoreCase("UpdateLogin")) {
 			clientAction = new UpdateLoginAction();
+		}
+		else if (action.equalsIgnoreCase("GeneratePassword")) {
+			try {
+				UpdateLoginAction.generatePassword( req, session );
+				resp.sendRedirect( destURL );
+			}
+			catch (WebClientException e) {
+				session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, e.getMessage() );
+				resp.sendRedirect( errorURL );
+			}
+			return;
 		}
 		else if (action.equalsIgnoreCase("UpdateThermostatSchedule")) {
 			clientAction = new UpdateThermostatScheduleAction();

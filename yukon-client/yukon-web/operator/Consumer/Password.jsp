@@ -28,24 +28,9 @@ function validate(form) {
 	}
 }
 
-function generatePassword(form) {
-	// Generate a random password w/ the length of 6, consists of letters and digits
-	var pwChars = new Array(6);
-	for (i = 0; i < 6; i++) {
-		var rand = parseInt(Math.random() * 62, 10);
-		if (rand < 10)
-			pwChars[i] = 48 + rand;	// 48 is ascii for '0'
-		else if (rand < 36)
-			pwChars[i] = 65 + rand - 10;	// 65 is ascii for 'A'
-		else
-			pwChars[i] = 97 + rand - 36;	// 97 is ascii for 'a'
-	}
-	var passwd = String.fromCharCode(pwChars[0], pwChars[1], pwChars[2], pwChars[3], pwChars[4], pwChars[5]);
-	if (confirm('The new password is "' + passwd + '". Would you like to save it?')) {
-		form.Password.value = passwd;
-		form.Password2.value = passwd;
-		form.submit();
-	}
+function generatePassword() {
+	if (confirm("Are you sure you want to generate a random password for the customer?"))
+		document.passwdForm.submit();
 }
 
 function deleteLogin(form) {
@@ -154,7 +139,7 @@ function deleteLogin(form) {
                   <tr> 
                     <td width="128" class="TableCell">&nbsp;</td>
                     <td width="268"> 
-                      <input type="button" name="GenPasswd" value="Generate Password" onclick="generatePassword(this.form)">
+                      <input type="button" name="GenPasswd" value="Generate Password" onclick="generatePassword()" <% if (login.getUsername().equals("")) out.print("disabled"); %>>
                     </td>
                   </tr>
                 </table>
@@ -172,6 +157,12 @@ function deleteLogin(form) {
                     </td>
                   </tr>
                 </table>
+			</form>
+			<form name="passwdForm" method="POST" action="<%= request.getContextPath() %>/servlet/SOAPClient">
+			  <input type="hidden" name="action" value="GeneratePassword">
+			  <input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>">
+			  <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>">
+			  <input type="hidden" name="<%= ServletUtils.CONFIRM_ON_MESSAGE_PAGE %>" value="0">
 			</form>
               <p>&nbsp;</p>
               </div>
