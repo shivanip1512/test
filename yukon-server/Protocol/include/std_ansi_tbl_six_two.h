@@ -13,10 +13,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_ansi_tbl_six_two.h-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2004/10/01 17:54:27 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2005/01/03 23:07:15 $
 *    History: 
       $Log: std_ansi_tbl_six_two.h,v $
+      Revision 1.2  2005/01/03 23:07:15  jrichter
+      checking into 3.1, for use at columbia to test sentinel
+
       Revision 1.1  2004/10/01 17:54:27  jrichter
       Ansi protocol checkpoint.  Good point to check in as a base point.  New files!
 
@@ -110,6 +113,7 @@ public:
     void printLPSelSet(int set, int numChans);
     void printScalarsDivisorSet(int set, int numChans);
     UINT8 getIntervalFmtCde(int setNbr);
+    bool  getNoMultiplierFlag(int setNbr);
 
     UINT8* getLPDemandSelect(int setNbr);
 

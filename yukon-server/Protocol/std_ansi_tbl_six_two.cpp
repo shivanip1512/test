@@ -719,6 +719,38 @@ void CtiAnsiTableSixTwo::printScalarsDivisorSet(int set, int numChans)
 
 }
 
+bool  CtiAnsiTableSixTwo::getNoMultiplierFlag(int setNbr)
+{
+    bool retVal = false;
+    switch (setNbr)
+    {
+        case 1:
+            {
+                retVal = (bool)_lp_ctrl_tbl.lp_sel_set1->chnl_flag.no_multiplier_flag;
+                break;
+            }
+        case 2:
+            {
+                retVal = (bool)_lp_ctrl_tbl.lp_sel_set2->chnl_flag.no_multiplier_flag;
+                break;
+            }
+        case 3:
+            {
+                retVal = (bool)_lp_ctrl_tbl.lp_sel_set3->chnl_flag.no_multiplier_flag;
+                break;
+            }
+        case 4:
+            {
+                retVal = (bool)_lp_ctrl_tbl.lp_sel_set4->chnl_flag.no_multiplier_flag;
+                break;
+            }
+        default:
+            break;
+
+    }
+
+    return retVal;
+}
 UINT8 CtiAnsiTableSixTwo::getIntervalFmtCde(int setNbr)
 {
     UINT8 retVal = 0;

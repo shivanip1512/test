@@ -11,10 +11,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_base.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2004/12/10 21:58:41 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/01/03 23:07:14 $
 *    History: 
       $Log: std_ansi_tbl_base.cpp,v $
+      Revision 1.5  2005/01/03 23:07:14  jrichter
+      checking into 3.1, for use at columbia to test sentinel
+
       Revision 1.4  2004/12/10 21:58:41  jrichter
       Good point to check in for ANSI.  Sentinel/KV2 working at columbia, duke, whe.
 
@@ -494,12 +497,6 @@ int CtiAnsiTableBase::toUint32STime( BYTE *source, ULONG &result, int format )
        offset = 5;
        //result = 11;
        RWTime timeResult( RWDate( day, month, year + 2000 ), hour, minute);
-       {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout <<endl<< "time " <<month<<"-"<<day<<"-200"<<year<<" "<<hour<<":"<<minute<< endl;
-        dout << "timeResult " <<timeResult << endl;
-       }
-
        //result = RWTime( RWDate( day, month, year ), hour, minute).seconds();
        result = timeResult.seconds();
        }
@@ -507,11 +504,6 @@ int CtiAnsiTableBase::toUint32STime( BYTE *source, ULONG &result, int format )
 
    case 3:
        {
-           {
-               CtiLockGuard< CtiLogger > doubt_guard( dout );
-                dout <<endl<< "*source values " <<(int)*source<<"-"<<(int)*(source +1)<<" "<<(int)*(source +2)<<" "<<(int)*(source +3)<<":"<<(int)*(source +4)<< endl;
-           }
-
            temp = (int)*source  
                + ((int)*(source + 1)* 0x100) 
                + ((int)*(source + 2)* 0x10000) 
@@ -618,34 +610,14 @@ int CtiAnsiTableBase::toUint32LTime( BYTE *source, ULONG &result, int format )
 
    case 3:
        {
-           {
-               CtiLockGuard< CtiLogger > doubt_guard( dout );
-                dout <<endl<< "*source values " <<(int)*source<<"-"<<(int)*(source +1)<<" "<<(int)*(source +2)<<" "<<(int)*(source +3)<<":"<<(int)*(source +4)<< endl;
-           }
            temp = (int)*source  
                + ((int)*(source + 1)* 0x100) 
                + ((int)*(source + 2)* 0x10000) 
                + ((int)*(source + 3)* 0x1000000);
-           {
-               CtiLockGuard< CtiLogger > doubt_guard( dout );
-                dout <<endl<< "RWTime(temp) "<<RWTime(temp*60)<<endl;
-           }
            temp = (temp * 60) + ((int)*(source + 4));
-           {
-               CtiLockGuard< CtiLogger > doubt_guard( dout );
-                dout <<endl<< "temp "<<temp<<endl;
-                dout <<endl<< "RWTime(temp).seconds() "<<RWTime(temp).seconds()<<endl;
-                dout <<endl<< "RWTime(temp) "<<RWTime(temp)<<endl;
-                dout <<endl<< "RWTime(RWDate(1,1,1970)) "<<RWTime(RWDate(1,1,1970))<<endl;
-                dout <<endl<< "RWTime(RWDate(1,1,1970)).seconds() "<<RWTime(RWDate(1,1,1970)).seconds()<<endl;
-           }
-
-
+           
            result = RWTime(temp + RWTime(RWDate(1,1,1970)).seconds() /*- 3600*/).seconds();
-           {
-               CtiLockGuard< CtiLogger > doubt_guard( dout );
-                dout <<endl<< "RWTime(result) "<<RWTime(result)<<endl;
-           }
+           
         }
       break;
    }

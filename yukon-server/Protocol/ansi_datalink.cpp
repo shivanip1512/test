@@ -11,10 +11,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/ansi_datalink.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $                                                198
-* DATE         :  $Date: 2004/12/10 21:58:40 $
+* REVISION     :  $Revision: 1.9 $                                                198
+* DATE         :  $Date: 2005/01/03 23:07:14 $
 *    History: 
       $Log: ansi_datalink.cpp,v $
+      Revision 1.9  2005/01/03 23:07:14  jrichter
+      checking into 3.1, for use at columbia to test sentinel
+
       Revision 1.8  2004/12/10 21:58:40  jrichter
       Good point to check in for ANSI.  Sentinel/KV2 working at columbia, duke, whe.
 
@@ -514,8 +517,7 @@ void CtiANSIDatalink::buildSecure(BYTE aServiceCode, CtiXfer &xfer, BYTE *passwo
 {
    BYTE        data[21];
    BYTEUSHORT  flip;
-
-
+   
    memset( data, NULL, 21 );
    data[0] = aServiceCode;
    memcpy( &data[1], password, 20 );
@@ -538,19 +540,24 @@ void CtiANSIDatalink::buildSecure(BYTE aServiceCode, CtiXfer &xfer, BYTE *passwo
 //we do things in the authenticate portion of logging on to the device IF the device said to do so in the identify portion
 //=========================================================================================================================================
 
-void CtiANSIDatalink::buildAuthenticate(BYTE aServiceCode, CtiXfer &xfer )
+void CtiANSIDatalink::buildAuthenticate(BYTE aServiceCode, CtiXfer &xfer, BYTE *ini_auth_vector )
 {
-   BYTE        data=aServiceCode;
+   BYTE        data[11]; //=aServiceCode;
    BYTEUSHORT  flip;
 
+   memset (data, NULL, 11);
+   data[0] = aServiceCode;
+   data[1] = 0x09; //length
+   data[2] = 0x00; //key id ?????
+   memcpy(&data[3], ini_auth_vector, 8);
    memset( xfer.getOutBuffer(), NULL, 100 );
-   assemblePacket( xfer.getOutBuffer(), &data, 1, 0 );
+   assemblePacket( xfer.getOutBuffer(), data, 11, 0 );
 
-   flip.sh = crc( 1 + HEADER_LEN, xfer.getOutBuffer() ); ///FIXME: this is stolen
-   xfer.getOutBuffer()[7] = flip.ch[1];
-   xfer.getOutBuffer()[8] = flip.ch[0];
+   flip.sh = crc( 11 + HEADER_LEN, xfer.getOutBuffer() ); ///FIXME: this is stolen
+   xfer.getOutBuffer()[11 + HEADER_LEN] = flip.ch[1];
+   xfer.getOutBuffer()[11 + HEADER_LEN] = flip.ch[0];
 
-   xfer.setOutCount( 1 + HEADER_LEN + sizeof( USHORT ) );
+   xfer.setOutCount( 11 + HEADER_LEN + sizeof( USHORT ) );
 
    //we're just going to look for one byte first (the <ack>) then we'll know what's sitting out on the port for us...
    xfer.setInCountExpected( 1 );

@@ -12,10 +12,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/ansi_application.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2004/12/10 21:58:42 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/01/03 23:07:15 $
 *    History: 
       $Log: ansi_application.h,v $
+      Revision 1.7  2005/01/03 23:07:15  jrichter
+      checking into 3.1, for use at columbia to test sentinel
+
       Revision 1.6  2004/12/10 21:58:42  jrichter
       Good point to check in for ANSI.  Sentinel/KV2 working at columbia, duke, whe.
 
@@ -170,6 +173,9 @@ class IM_EX_PROT CtiANSIApplication
     void setPassword( BYTE *password);
     void setAnsiDeviceType(BYTE devType);
 
+
+    int encryptDataMethod();
+
    protected:
 
    private:
@@ -209,6 +215,9 @@ class IM_EX_PROT CtiANSIApplication
        BYTE        _authenticationType;
        BYTE        _algorithmID;
        BYTE        _algorithmValue;
+       BYTE        _authTicketLength;
+       BYTE        *_authTicket;
+       BYTE        *_iniAuthVector;
 
        bool        _readComplete;
        bool        _readFailed;

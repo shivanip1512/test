@@ -10,10 +10,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/prot_ansi_kv2.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2004/12/10 21:58:40 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2005/01/03 23:07:14 $
 *    History: 
       $Log: prot_ansi_kv2.cpp,v $
+      Revision 1.4  2005/01/03 23:07:14  jrichter
+      checking into 3.1, for use at columbia to test sentinel
+
       Revision 1.3  2004/12/10 21:58:40  jrichter
       Good point to check in for ANSI.  Sentinel/KV2 working at columbia, duke, whe.
 
@@ -123,7 +126,7 @@ int CtiProtocolANSI_kv2::calculateLPDataBlockStartIndex(ULONG lastLPTime)
     
 
     currentTime.now();
-    nbrIntervals =  ((currentTime.seconds() - lastLPTime)/60) / getMaxIntervalTime();
+    nbrIntervals =  (abs(currentTime.seconds() - lastLPTime)/60) / getMaxIntervalTime();
     if (nbrIntervals > (((nbrBlksSet-1) * nbrIntsPerBlock) + nbrValidInts))
     {
         nbrIntervals = (((nbrBlksSet-1) * nbrIntsPerBlock) + nbrValidInts); 

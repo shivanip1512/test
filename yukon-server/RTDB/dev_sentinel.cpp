@@ -105,17 +105,17 @@ INT CtiDeviceSentinel::DemandReset( CtiRequestMsg *pReq, CtiCommandParser &parse
       BYTE        password[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 
     // here are the tables requested for the sentinel
-    ANSI_TABLE_WANTS    table[100] = {
+      ANSI_TABLE_WANTS    table[100] = {
         {  0,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
         {  1,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
-        {  7,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_WRITE},
+       // {  7,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_WRITE},
         {  8,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
-        {  -1,     0,      0,     ANSI_TABLE_TYPE_MANUFACTURER,      ANSI_OPERATION_READ}
-        
-    };
+        {  -1,     0,      0,     ANSI_TABLE_TYPE_MANUFACTURER,      ANSI_OPERATION_READ}};
 
     RWCString pswdTemp;
     pswdTemp = getIED().getPassword();
+    pswdTemp.toUpper();
+
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << "pswdTemp "<<pswdTemp<< endl;
@@ -167,6 +167,8 @@ INT CtiDeviceSentinel::DemandReset( CtiRequestMsg *pReq, CtiCommandParser &parse
         }
     }
 
+    /*setUseScanFlags(TRUE);
+
     // currently defaulted at billing data only
     header.lastLoadProfileTime = getLastLPTime().seconds();
     if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
@@ -174,7 +176,8 @@ INT CtiDeviceSentinel::DemandReset( CtiRequestMsg *pReq, CtiCommandParser &parse
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << "lastLPTime "<<getLastLPTime()<< endl;
     }
-
+    setUseScanFlags(FALSE);
+    */
     // lazyness so I don't have to continually remember to update this
     header.numTablesRequested = 0;
     for (int x=0; x < 100; x++)
@@ -200,14 +203,24 @@ INT CtiDeviceSentinel::DemandReset( CtiRequestMsg *pReq, CtiCommandParser &parse
             (header.numTablesRequested*sizeof (ANSI_TABLE_WANTS)));
     memcpy ((aMsg+sizeof(header)+sizeof(password)+sizeof(ANSI_TABLE_WANTS)),
             &scanOperation, sizeof(BYTE));
+    
+   // BYTE julieTEST[5] = {'j', 'u','l','i','e'};
+    //memcpy( aMsg, &julieTEST, sizeof(BYTE) * 5);
 
 
     // keep the list on the scanner side for decode
       outList.insert( OutMessage );
+
+      OutMessage = 0;
    }
    else
    {
       return MEMORY;
+   }
+
+   {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << "outList.entries() = " <<outList.entries()<< endl;
    }
    return NoError;
 }
@@ -290,7 +303,7 @@ INT CtiDeviceSentinel::ExecuteRequest( CtiRequestMsg         *pReq,
         }
     }
 
-    if( nRet != NORMAL )
+        /*if( nRet != NORMAL )
     {
         RWCString resultString;
 
@@ -322,7 +335,7 @@ INT CtiDeviceSentinel::ExecuteRequest( CtiRequestMsg         *pReq,
         }
 
         //executeOnDLCRoute(pReq, parse, OutMessage, tmpOutList, vgList, retList, outList, true);
-    }
+    } */
 
     return nRet;
 }
@@ -334,7 +347,6 @@ INT CtiDeviceSentinel::ExecuteRequest( CtiRequestMsg         *pReq,
 INT CtiDeviceSentinel::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist < CtiMessage >&retList,
                                 RWTPtrSlist< OUTMESS >    &outList)
 {
-    getProtocol().receiveCommResult( InMessage );
     unsigned long *lastLpTime;
     lastLpTime =  (unsigned long *)InMessage->Buffer.InMessage;
     if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
@@ -354,18 +366,15 @@ INT CtiDeviceSentinel::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrS
 
     setUseScanFlags(FALSE);
     //   getProtocol().recvInbound( InMessage );
-
-//   CtiLockGuard< CtiLogger > doubt_guard( dout );
-//   dout << RWTime::now() << " ==============================================" << endl;
-//   dout << RWTime::now() << " ==========The Sentinel responded with data=========" << endl;
-//   dout << RWTime::now() << " ==============================================" << endl;
+    CtiLockGuard< CtiLogger > doubt_guard( dout );
+    dout << RWTime::now() << " ==============================================" << endl;
+    dout << RWTime::now() << " ==========The Sentinel responded with data=========" << endl;
+    dout << RWTime::now() << " ==============================================" << endl;
 
    return( 0 ); //just a val
 }
 INT CtiDeviceSentinel::sendCommResult( INMESS *InMessage)
 {
-    //getProtocol().sendCommResult( InMessage );
-    
     setUseScanFlags(TRUE);
     unsigned long lastLpTime = getLastLPTime().seconds();
 
@@ -381,8 +390,7 @@ INT CtiDeviceSentinel::sendCommResult( INMESS *InMessage)
         dout << RWTime() << "sendCommResult    RWTime(lastLpTime) "<<RWTime(lastLpTime)<< endl;
     }
     setUseScanFlags(FALSE);
-
-
+    
 //   getProtocol().recvInbound( InMessage );
 
 //   CtiLockGuard< CtiLogger > doubt_guard( dout );
@@ -392,6 +400,7 @@ INT CtiDeviceSentinel::sendCommResult( INMESS *InMessage)
 
    return( 0 ); //just a val
 }
+
 
 //=========================================================================================================================================
 //=========================================================================================================================================
@@ -444,6 +453,8 @@ int CtiDeviceSentinel::buildScannerTableRequest (BYTE *aMsg)
 
     RWCString pswdTemp;
     pswdTemp = getIED().getPassword();
+    pswdTemp.toUpper();
+    if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << "pswdTemp "<<pswdTemp<< endl;
@@ -666,6 +677,7 @@ void CtiDeviceSentinel::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
                 pData->setType( pPoint->getType() );
 
                 msgPtr->insert(pData); 
+                if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " gotValue! "<< endl;
@@ -685,7 +697,6 @@ void CtiDeviceSentinel::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
                         pData = new CtiPointDataMsg(pPoint->getID(), getProtocol().getLPValue(y), qual, pPoint->getType());
                         pData->setTags( TAG_POINT_LOAD_PROFILE_DATA );
                         pData->setTime( RWTime(getProtocol().getLPTime(y)) );
-
                         msgPtr->insert(pData); 
                         pData = NULL;
                     }

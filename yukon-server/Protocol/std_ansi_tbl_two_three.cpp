@@ -11,10 +11,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_tbl_two_three.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2004/12/10 21:58:41 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/01/03 23:07:14 $
 *    History: 
       $Log: std_ansi_tbl_two_three.cpp,v $
+      Revision 1.6  2005/01/03 23:07:14  jrichter
+      checking into 3.1, for use at columbia to test sentinel
+
       Revision 1.5  2004/12/10 21:58:41  jrichter
       Good point to check in for ANSI.  Sentinel/KV2 working at columbia, duke, whe.
 
@@ -97,13 +100,10 @@ CtiAnsiTableTwoThree::CtiAnsiTableTwoThree( BYTE *dataBlob, int occur, int summa
    dataBlob += offset;
    _totSize += offset;
 
-   printSummations( _tot_data_block);
-
    _tot_data_block.demands = new DEMANDS_RCD[_demandNums];
    populateDemandsRecord(dataBlob, &_tot_data_block, offset);
    dataBlob += offset;
    _totSize += offset;
-   printDemands(_tot_data_block);
    
    
    _tot_data_block.coincidents = new COINCIDENTS_RCD[_coinNums];

@@ -11,10 +11,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/prot_ansi.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2004/12/10 21:58:40 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2005/01/03 23:07:14 $
 *    History: 
       $Log: prot_ansi.cpp,v $
+      Revision 1.9  2005/01/03 23:07:14  jrichter
+      checking into 3.1, for use at columbia to test sentinel
+
       Revision 1.8  2004/12/10 21:58:40  jrichter
       Good point to check in for ANSI.  Sentinel/KV2 working at columbia, duke, whe.
 
@@ -638,8 +641,8 @@ bool CtiProtocolANSI::decode( CtiXfer &xfer, int status )
               _tableSixTwo->printResult();
           if (_tableSixThree != NULL)
               _tableSixThree->printResult();
-          if (_tableSixFour != NULL)
-              _tableSixFour->printResult();
+          //if (_tableSixFour != NULL)
+         //     _tableSixFour->printResult();
           if (_tableZeroEight != NULL)
               _tableZeroEight->printResult();
 
@@ -1496,8 +1499,18 @@ bool CtiProtocolANSI::retreiveLPDemand( int offset, int dataSet )
                                                 int intvlIndex = 0;
                                                 for (int y = 0; y < totalIntvls; y++) 
                                                 {
-                                                    _lpValues[y] = _tableSixFour->getLPDemandValue ( x, blkIndex, intvlIndex );
-                                                    _lpTimes[y] = _tableSixFour->getLPDemandTime (blkIndex, intvlIndex);
+                                                    if (_tableSixTwo->getNoMultiplierFlag(dataSet) && _tableOneFive != NULL) //no_multiplier_flag == true (constants need to be applied)
+                                                    {
+                                                        _lpValues[y] = _tableSixFour->getLPDemandValue ( x, blkIndex, intvlIndex )
+                                                                        * (_tableOneFive->getElecMultiplier((lpDemandSelect[x]%20)));
+                                                        _lpTimes[y] = _tableSixFour->getLPDemandTime (blkIndex, intvlIndex);
+                                                    }
+                                                    else
+                                                    {
+                                                        _lpValues[y] = _tableSixFour->getLPDemandValue ( x, blkIndex, intvlIndex );
+                                                        _lpTimes[y] = _tableSixFour->getLPDemandTime (blkIndex, intvlIndex);
+                                                    }
+
                                                     if (intvlIndex + 1 == intvlsPerBlk) 
                                                     {
                                                         blkIndex++;
@@ -1858,8 +1871,16 @@ int CtiProtocolANSI::proc09RemoteReset(UINT8 actionFlag)
     reqData.proc.tbl_proc_nbr = 9;
     reqData.proc.std_vs_mfg_flag = 0;
     reqData.proc.selector = 3;
+    BYTE *superTemp;
 
-
+    superTemp = (BYTE *)reqData.proc.tbl_proc_nbr;
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << "tbl_proc_nbr = "<<(int)reqData.proc.tbl_proc_nbr<<endl;
+        dout << "std_vs_mfg_flag = " << (int)reqData.proc.std_vs_mfg_flag<<endl;
+        dout << "selector = "<<(int)reqData.proc.selector<<endl;
+        dout << "hex value : "<<(int)superTemp[0]<<" "<<(int)superTemp[1]<<endl;
+    }
     getApplicationLayer().setProcBfld( reqData.proc );
     _seqNbr++;
     reqData.seq_nbr = _seqNbr;

@@ -14,10 +14,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/ansi_datalink.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2004/12/10 21:58:42 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/01/03 23:07:15 $
 *    History: 
       $Log: ansi_datalink.h,v $
+      Revision 1.7  2005/01/03 23:07:15  jrichter
+      checking into 3.1, for use at columbia to test sentinel
+
       Revision 1.6  2004/12/10 21:58:42  jrichter
       Good point to check in for ANSI.  Sentinel/KV2 working at columbia, duke, whe.
 
@@ -78,7 +81,8 @@ class IM_EX_PROT CtiANSIDatalink
       void buildTiming( BYTE aServiceCode, CtiXfer &xfer );
       void buildLogOn( BYTE aServiceCode, CtiXfer &xfer );
       void buildSecure( BYTE aServiceCode, CtiXfer &xfer, BYTE *password );
-      void buildAuthenticate( BYTE aServiceCode, CtiXfer &xfer );
+     // void buildAuthenticate( BYTE aServiceCode, CtiXfer &xfer );
+      void buildAuthenticate(BYTE aServiceCode, CtiXfer &xfer, BYTE *ini_auth_vector );
       void buildTableRequest( CtiXfer &xfer, int aTableID, BYTE aOperation, int aOffset, BYTE aType, short maxPktSize, BYTE maxNbrPkts );
       void buildWriteRequest(  CtiXfer &xfer, USHORT dataSize, int aTableID, BYTE aOperation, TBL_IDB_BFLD aProc, BYTE *parmPtr, BYTE aSeqNbr );
       void buildWaitRequest(CtiXfer &xfer );

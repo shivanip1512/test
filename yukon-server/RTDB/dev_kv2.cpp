@@ -10,8 +10,8 @@
 * Author: Eric Schmit
 *
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_kv2.cpp-arc  $
-*    REVISION     :  $Revision: 1.7 $
-*    DATE         :  $Date: 2004/12/10 21:58:43 $
+*    REVISION     :  $Revision: 1.8 $
+*    DATE         :  $Date: 2005/01/03 23:07:15 $
 *
 *
 *    AUTHOR: David Sutton
@@ -22,6 +22,9 @@
 *
 *    History: 
       $Log: dev_kv2.cpp,v $
+      Revision 1.8  2005/01/03 23:07:15  jrichter
+      checking into 3.1, for use at columbia to test sentinel
+
       Revision 1.7  2004/12/10 21:58:43  jrichter
       Good point to check in for ANSI.  Sentinel/KV2 working at columbia, duke, whe.
 
@@ -104,12 +107,24 @@ INT CtiDeviceKV2::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                                 RWTPtrSlist< OUTMESS >    &outList)
 {
     getProtocol().receiveCommResult( InMessage );
-    unsigned long lastLpTime;
-    lastLpTime =  (unsigned long )InMessage->Buffer.InMessage;
+    unsigned long *lastLpTime;
+    lastLpTime =  (unsigned long *)InMessage->Buffer.InMessage;
+    if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << "ResultDecode    RWTime(lastLpTime) "<<RWTime(*lastLpTime)<< endl;
+    }
+
     setUseScanFlags(TRUE);
-    setLastLPTime(RWTime(lastLpTime));
+    setLastLPTime(RWTime(*lastLpTime));
+    if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << "ResultDecode    getLastLPTime "<<getLastLPTime()<< endl;
+    }
+    resetScanPending();
 
-
+    setUseScanFlags(FALSE);
 //   getProtocol().recvInbound( InMessage );
 
 //   CtiLockGuard< CtiLogger > doubt_guard( dout );
@@ -125,20 +140,28 @@ INT CtiDeviceKV2::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
 
 INT CtiDeviceKV2::sendCommResult( INMESS *InMessage)
 {
-    getProtocol().sendCommResult( InMessage );
+    setUseScanFlags(TRUE);
+    unsigned long lastLpTime = getLastLPTime().seconds();
+
+    memcpy( InMessage->Buffer.InMessage, (void *)&lastLpTime, sizeof (unsigned long) );
+    InMessage->InLength = sizeof (unsigned long);
+    InMessage->EventCode = NORMAL;
+
 
     if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << "sendCommResult    lastLPTime "<<getLastLPTime()<< endl;
+        dout << RWTime() << "sendCommResult    RWTime(lastLpTime) "<<RWTime(lastLpTime)<< endl;
     }
+    setUseScanFlags(FALSE);
     
 //   getProtocol().recvInbound( InMessage );
 
-//   CtiLockGuard< CtiLogger > doubt_guard( dout );
-//   dout << RWTime::now() << " ==============================================" << endl;
-//   dout << RWTime::now() << " ==========The KV2 responded with data=========" << endl;
-//   dout << RWTime::now() << " ==============================================" << endl;
+   CtiLockGuard< CtiLogger > doubt_guard( dout );
+   dout << RWTime::now() << " ==============================================" << endl;
+   dout << RWTime::now() << " ==========The KV2 responded with data=========" << endl;
+   dout << RWTime::now() << " ==============================================" << endl;
 
    return( 0 ); //just a val
 }
@@ -210,6 +233,7 @@ int CtiDeviceKV2::buildScannerTableRequest (BYTE *aMsg)
 
     RWCString pswdTemp;
     pswdTemp = getIED().getPassword();
+    pswdTemp.toUpper();
     if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -217,8 +241,6 @@ int CtiDeviceKV2::buildScannerTableRequest (BYTE *aMsg)
     }
     BYTE *temp;
     temp = (BYTE *)pswdTemp.data();
-
-
     struct CHexMap
     {
         char c;
@@ -432,7 +454,6 @@ void CtiDeviceKV2::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
                     dout << RWTime() << " getProtocol().getTotalWantedLPBlockInts()  "<< getProtocol().getTotalWantedLPBlockInts()<< endl;
                 }
 
-
                 pData = NULL;
             }
             else if (gotLPValues) 
@@ -460,27 +481,31 @@ void CtiDeviceKV2::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
                 setUseScanFlags(FALSE);
                 setUseScanFlags(TRUE);
                 setLastLPTime(RWTime(getProtocol().getLPTime(getProtocol().getTotalWantedLPBlockInts()-1)));
+                if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << "getProtocol().getTotalWantedLPBlockInts() time  "<<RWTime(getProtocol().getLPTime(getProtocol().getTotalWantedLPBlockInts()-1))<< endl;
+                    dout << RWTime() << "lastLPTime "<<RWTime(getProtocol().getlastLoadProfileTime())<< endl;
+                }
                 setUseScanFlags(FALSE);
-            }  
-              
+            } 
             if (pData != NULL) 
             {
                 delete []pData;
                 pData = NULL;
             } 
-            pPoint = NULL;
-            gotValue = false;
-            gotLPValues = false;
         }
+        pPoint = NULL;
+        gotValue = false;
+        gotLPValues = false;
         x++;
     }
-    msgPtr->insert( msgMulti );
+
     if( msgMulti != NULL )
-   {
-      delete msgMulti;
-      msgMulti = NULL;
-   }  
-    
+    {
+       delete msgMulti;
+       msgMulti = NULL;
+    }  
 }
 
 
