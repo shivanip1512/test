@@ -1,15 +1,20 @@
 <%@ include file="include/StarsHeader.jsp" %>
+<%@ page import="com.cannontech.common.constants.YukonSelectionList" %>
+<%@ page import="com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany" %>
 <%@ page import="com.cannontech.stars.web.servlet.StarsAdmin" %>
 <%
 	String[][] listNameText = {
 		{"Substation", "Substation"},
 		{"DeviceType", "Device Type"},
 		{"DeviceVoltage", "Device Voltage"},
-		{"ServiceCompany", "Service Company"}
+		{"ServiceCompany", "Service Company"},
+		{"DeviceStatus", "Device Status"}
 	};
 	
 	Hashtable unassignedLists = (Hashtable) session.getAttribute(StarsAdmin.UNASSIGNED_LISTS);
 	boolean hasUnassigned = false;
+	
+	LiteStarsEnergyCompany ec = SOAPServer.getEnergyCompany(user.getEnergyCompanyID());
 %>
 <html>
 <head>
@@ -93,6 +98,8 @@
 		
 		boolean unAssigned = ((Boolean) unassignedLists.get(listName)).booleanValue();
 		if (unAssigned) hasUnassigned = true;
+		
+		YukonSelectionList list = ec.getYukonSelectionList(listName);
 %>
                 <tr> 
                   <td width="50%"><%= dispName %>
@@ -103,9 +110,15 @@
                       <input type="button" name="Assign" value="Assign" onclick="location.href='AssignSelectionList.jsp?List=<%= listName %>'">
                     </div>
                   </td>
-                  <td width="25%"> 
+                  <td width="25%">
                     <div align="center"> 
+<%
+		if (list.getUserUpdateAvailable().equalsIgnoreCase("Y")) {
+%> 
                       <input type="button" name="New" value="New" onclick="location.href='AssignSelectionList.jsp?List=<%= listName %>&New=true'">
+<%
+		}
+%>
                     </div>
                   </td>
                 </tr>

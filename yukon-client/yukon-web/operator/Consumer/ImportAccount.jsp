@@ -158,7 +158,7 @@
                     <td width="150"> 
                       <div align="right">Customer File: </div>
                     </td>
-                    <td width="250">
+                    <td width="250"> 
                       <input type="text" name="CustFile" size="40">
                     </td>
                   </tr>
@@ -166,7 +166,7 @@
                     <td width="150"> 
                       <div align="right">Service Info File: </div>
                     </td>
-                    <td width="250">
+                    <td width="250"> 
                       <input type="text" name="ServInfoFile" size="40">
                     </td>
                   </tr>
@@ -174,8 +174,16 @@
                     <td width="150"> 
                       <div align="right">Inventory File: </div>
                     </td>
-                    <td width="250">
+                    <td width="250"> 
                       <input type="text" name="InvFile" size="40">
+                    </td>
+                  </tr>
+                  <tr> 
+                    <td width="150"> 
+                      <div align="right">Receiver File: </div>
+                    </td>
+                    <td width="250"> 
+                      <input type="text" name="RecvrFile" size="40">
                     </td>
                   </tr>
                 </table>
