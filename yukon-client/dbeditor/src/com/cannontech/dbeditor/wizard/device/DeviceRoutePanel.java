@@ -231,8 +231,25 @@ public class DeviceRoutePanel
 			newVal.getDBPersistentVector().add(val);
 
 			((DeviceBase) val).setDeviceID(com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectID());
+			
+			Integer pointID = 
+				new Integer( com.cannontech.database.db.point.Point.getNextPointID() );
+         
+			//A status point is automatically added to each repeater
+			com.cannontech.database.data.point.PointBase newPoint = PointFactory.createNewPoint(
+				pointID,
+				com.cannontech.database.data.point.PointTypes.STATUS_POINT,
+				"COMM STATUS",
+				((DeviceBase) val).getDevice().getDeviceID(),
+					new Integer(PointTypes.PT_OFFSET_TRANS_STATUS) );
+         
+				newPoint.getPoint().setStateGroupID( 
+					new Integer(com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_TWO_STATE_STATUS) );
+   
+				((com.cannontech.database.data.point.StatusPoint) newPoint).setPointStatus(
+					new com.cannontech.database.db.point.PointStatus(pointID));
 
-
+			newVal.getDBPersistentVector().add(newPoint);
 
 			//if the chosen route is a macro route then the generated route will be copied from
 			//the first route in the macro 
