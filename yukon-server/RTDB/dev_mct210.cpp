@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct210.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2004/01/26 21:55:39 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2004/06/01 15:15:23 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -290,7 +290,7 @@ INT CtiDeviceMCT210::decodeGetStatusDisconnect(INMESS *InMessage, RWTime &TimeNo
             *  Send this value to requestor via retList.
             */
 
-            pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, PulseAccumulatorPointType, resultStr, TAG_POINT_MUST_ARCHIVE);
+            pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, StatusPointType, resultStr, TAG_POINT_MUST_ARCHIVE);
 
             if(pData != NULL)
             {
