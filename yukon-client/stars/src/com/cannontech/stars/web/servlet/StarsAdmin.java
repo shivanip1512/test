@@ -364,6 +364,57 @@ public class StarsAdmin extends HttpServlet {
 		}
 	}
 	
+	public static void updateRoute(LiteStarsEnergyCompany energyCompany, int routeID) throws Exception {
+		if (energyCompany.getDefaultRouteID() != routeID) {
+			if (energyCompany.getDefaultRouteID() == LiteStarsEnergyCompany.INVALID_ROUTE_ID) {
+				// Assign the default route to the energy company
+				LMGroupExpressCom grpDftRoute = (LMGroupExpressCom) LMFactory.createLoadManagement( PAOGroups.LM_GROUP_EXPRESSCOMM );
+				grpDftRoute.setPAOName( energyCompany.getName() + " Default Route" );
+				grpDftRoute.setRouteID( new Integer(routeID) );
+				grpDftRoute = (LMGroupExpressCom) Transaction.createTransaction( Transaction.INSERT, grpDftRoute ).execute();
+				ServerUtils.handleDBChangeMsg( grpDftRoute.getDBChangeMsgs(DBChangeMsg.CHANGE_TYPE_ADD)[0] );
+				
+				MacroGroup grpSerial = (MacroGroup) LMFactory.createLoadManagement( PAOGroups.MACRO_GROUP );
+				grpSerial.setPAOName( energyCompany.getName() + " Serial Group" );
+				GenericMacro macro = new GenericMacro();
+				macro.setChildID( grpDftRoute.getPAObjectID() );
+				macro.setChildOrder( new Integer(0) );
+				macro.setMacroType( MacroTypes.GROUP );
+				grpSerial.getMacroGroupVector().add( macro );
+				grpSerial = (MacroGroup) Transaction.createTransaction( Transaction.INSERT, grpSerial ).execute();
+				ServerUtils.handleDBChangeMsg( grpSerial.getDBChangeMsgs(DBChangeMsg.CHANGE_TYPE_ADD)[0] );
+				
+				String sql = "INSERT INTO OperatorSerialGroup VALUES (" + energyCompany.getUserID() + ", " + grpSerial.getPAObjectID() + ")";
+				SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
+				stmt.execute();
+			}
+			else if (routeID > 0 || energyCompany.getDefaultRouteID() > 0) {
+				if (routeID < 0) routeID = 0;
+				
+				String sql = "SELECT exc.LMGroupID FROM LMGroupExpressCom exc, GenericMacro macro, OperatorSerialGroup opgrp " +
+						"WHERE opgrp.LoginID = " + energyCompany.getUserID() + " AND opgrp.LMGroupID = macro.OwnerID " +
+						"AND macro.MacroType = '" + MacroTypes.GROUP + "' AND macro.ChildID = exc.LMGroupID AND exc.SerialNumber = '0'";
+				SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
+				stmt.execute();
+				
+				if (stmt.getRowCount() == 0)
+					throw new Exception( "Not able to find the default route group, sql = \"" + sql + "\"" );
+				int groupID = ((java.math.BigDecimal) stmt.getRow(0)[0]).intValue();
+				
+				LMGroupExpressCom group = new LMGroupExpressCom();
+				group.setLMGroupID( new Integer(groupID) );
+				group = (LMGroupExpressCom) Transaction.createTransaction( Transaction.RETRIEVE, group ).execute();
+				
+				com.cannontech.database.db.device.lm.LMGroupExpressCom grpDB = group.getLMGroupExpressComm();
+				grpDB.setRouteID( new Integer(routeID) );
+				Transaction.createTransaction( Transaction.UPDATE, grpDB ).execute();
+				ServerUtils.handleDBChangeMsg( group.getDBChangeMsgs(DBChangeMsg.CHANGE_TYPE_UPDATE)[0] );
+			}
+			
+			energyCompany.setDefaultRouteID( routeID );
+		}
+	}
+	
 	private void updateEnergyCompany(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
 		
@@ -518,54 +569,7 @@ public class StarsAdmin extends HttpServlet {
 			}
         	
 			int routeID = Integer.parseInt(req.getParameter("Route"));
-			if (energyCompany.getDefaultRouteID() != routeID) {
-				if (energyCompany.getDefaultRouteID() == LiteStarsEnergyCompany.INVALID_ROUTE_ID) {
-					// Assign the default route to the energy company
-					LMGroupExpressCom grpDftRoute = (LMGroupExpressCom) LMFactory.createLoadManagement( PAOGroups.LM_GROUP_EXPRESSCOMM );
-					grpDftRoute.setPAOName( energyCompany.getName() + " Default Route" );
-					grpDftRoute.setRouteID( new Integer(routeID) );
-					grpDftRoute = (LMGroupExpressCom) Transaction.createTransaction( Transaction.INSERT, grpDftRoute ).execute();
-					ServerUtils.handleDBChangeMsg( grpDftRoute.getDBChangeMsgs(DBChangeMsg.CHANGE_TYPE_ADD)[0] );
-					
-					MacroGroup grpSerial = (MacroGroup) LMFactory.createLoadManagement( PAOGroups.MACRO_GROUP );
-					grpSerial.setPAOName( energyCompany.getName() + " Serial Group" );
-					GenericMacro macro = new GenericMacro();
-					macro.setChildID( grpDftRoute.getPAObjectID() );
-					macro.setChildOrder( new Integer(0) );
-					macro.setMacroType( MacroTypes.GROUP );
-					grpSerial.getMacroGroupVector().add( macro );
-					grpSerial = (MacroGroup) Transaction.createTransaction( Transaction.INSERT, grpSerial ).execute();
-					ServerUtils.handleDBChangeMsg( grpSerial.getDBChangeMsgs(DBChangeMsg.CHANGE_TYPE_ADD)[0] );
-					
-					String sql = "INSERT INTO OperatorSerialGroup VALUES (" + energyCompany.getUserID() + ", " + grpSerial.getPAObjectID() + ")";
-					SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
-					stmt.execute();
-				}
-				else if (routeID > 0 || energyCompany.getDefaultRouteID() > 0) {
-					if (routeID < 0) routeID = 0;
-					
-					String sql = "SELECT exc.LMGroupID FROM LMGroupExpressCom exc, GenericMacro macro, OperatorSerialGroup opgrp " +
-							"WHERE opgrp.LoginID = " + energyCompany.getUserID() + " AND opgrp.LMGroupID = macro.OwnerID " +
-							"AND macro.MacroType = '" + MacroTypes.GROUP + "' AND macro.ChildID = exc.LMGroupID AND exc.SerialNumber = '0'";
-					SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
-					stmt.execute();
-					
-					if (stmt.getRowCount() == 0)
-						throw new Exception( "Not able to find the default route group, sql = \"" + sql + "\"" );
-					int groupID = ((java.math.BigDecimal) stmt.getRow(0)[0]).intValue();
-					
-					LMGroupExpressCom group = new LMGroupExpressCom();
-					group.setLMGroupID( new Integer(groupID) );
-					group = (LMGroupExpressCom) Transaction.createTransaction( Transaction.RETRIEVE, group ).execute();
-					
-					com.cannontech.database.db.device.lm.LMGroupExpressCom grpDB = group.getLMGroupExpressComm();
-					grpDB.setRouteID( new Integer(routeID) );
-					Transaction.createTransaction( Transaction.UPDATE, grpDB ).execute();
-					ServerUtils.handleDBChangeMsg( group.getDBChangeMsgs(DBChangeMsg.CHANGE_TYPE_UPDATE)[0] );
-				}
-				
-				energyCompany.setDefaultRouteID( routeID );
-			}
+			updateRoute( energyCompany, routeID );
 			
 			String[] operGroupNames = req.getParameter("OperatorGroup").split(",");
 			String operGroupIDs = "";
@@ -2250,6 +2254,10 @@ public class StarsAdmin extends HttpServlet {
 				liteUser = createOperatorLogin(
 						req.getParameter("Username2"), req.getParameter("Password2"), UserUtils.STATUS_ENABLED, operGroups, energyCompany );
 			}
+			
+			// Assign default route to the energy company
+			int routeID = Integer.parseInt( req.getParameter("Route") );
+			updateRoute( energyCompany, routeID );
 			
 			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Energy company created successfully");
 		}

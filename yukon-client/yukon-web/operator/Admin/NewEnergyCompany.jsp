@@ -1,6 +1,8 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
-<%@ page import="com.cannontech.stars.web.servlet.StarsAdmin" %>
+<%@ page import="com.cannontech.database.cache.functions.PAOFuncs" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonGroup" %>
+<%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject" %>
+<%@ page import="com.cannontech.stars.web.servlet.StarsAdmin" %>
 <%
 	if (!AuthFuncs.checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_CREATE_ENERGY_COMPANY)) {
 		response.sendRedirect("../Operations.jsp");
@@ -161,9 +163,9 @@ function addCustomerGroup(form) {
                                 <input type="text" name="CustomerGroup" size="30">
                               </td>
                             </tr>
-                            <tr>
+                            <tr> 
                               <td width="25%" align="right">&nbsp;</td>
-                              <td width="75%">
+                              <td width="75%"> 
                                 <select name="CustGroupList">
                                   <%
 	for (int i = 0; i < yukonGroups.size(); i++) {
@@ -237,9 +239,36 @@ function addCustomerGroup(form) {
                           </table>
                         </td>
                       </tr>
+                      <tr>
+                        <td width="10%" align="right" class="TableCell" valign="top">Step 
+                          5:</td>
+                        <td width="90%" class="ConfirmMsg">Select a default route 
+                          for the energy company (If this doesn't apply to you, 
+                          leave it &quot;(none)&quot;): 
+                          <table width="100%" border="0" cellspacing="0" cellpadding="3" class="TableCell">
+                            <tr> 
+                              <td width="25%" align="right">Default Route:</td>
+                              <td width="75%"> 
+                                <select name="Route">
+                                  <option value="<%= LiteStarsEnergyCompany.INVALID_ROUTE_ID %>">(none)</option>
+<%
+	LiteYukonPAObject[] routes = PAOFuncs.getAllLiteRoutes();
+	for (int i = 0; i < routes.length; i++) {
+%>
+                                  <option value="<%= routes[i].getYukonID() %>"><%= routes[i].getPaoName() %></option>
+<%
+	}
+%>
+                                </select>
+                                <span class="ErrorMsg">*</span> 
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
                       <tr> 
                         <td width="10%" align="right" class="TableCell" valign="top"> 
-                          Step 5:</td>
+                          Step 6:</td>
                         <td width="90%" class="ConfirmMsg">After the energy company 
                           is created, login as the default operator created above, 
                           and edit the energy company settings by clicking the 
