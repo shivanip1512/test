@@ -470,8 +470,13 @@ public void releaseSavepoint(Savepoint savepoint) throws SQLException {
  * @see #rollback
  * @since 1.4
  */
-public void rollback(Savepoint savepoint) throws SQLException {
-    throw new Error("Not implemented yet");
+public void rollback(Savepoint savepoint) throws SQLException 
+{
+	if (isClosed)
+	{
+	  throw new SQLException("Pooled connection is closed");
+	}
+   realConn.rollback( savepoint );
 }
    public void setAutoCommit(boolean autoCommit) throws SQLException
    {
@@ -526,8 +531,14 @@ public void setHoldability(int holdability) throws SQLException {
  * @see Savepoint
  * @since 1.4
  */
-public Savepoint setSavepoint() throws SQLException {
-    throw new Error("Not implemented yet");
+public Savepoint setSavepoint() throws SQLException 
+{
+	if (isClosed)
+	{
+	  throw new SQLException("Pooled connection is closed");
+	}
+
+	return realConn.setSavepoint();
 }
 /**
  * Creates a savepoint with the given name in the current transaction
@@ -541,9 +552,16 @@ public Savepoint setSavepoint() throws SQLException {
  * @see Savepoint
  * @since 1.4
  */
-public Savepoint setSavepoint(String name) throws SQLException {
-    throw new Error("Not implemented yet");
+public Savepoint setSavepoint(String name) throws SQLException 
+{
+	if (isClosed)
+	{
+	  throw new SQLException("Pooled connection is closed");
+	}
+
+	return realConn.setSavepoint( name );
 }
+
    public void setTransactionIsolation(int level) throws SQLException
    {
 	  if (isClosed)
