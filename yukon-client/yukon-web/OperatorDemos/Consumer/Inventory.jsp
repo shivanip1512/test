@@ -416,7 +416,7 @@ function sendCommand(cmd) {
 %>
                 <tr bgcolor="#FFFFFF" valign="top"> 
                   <td width="104" class="TableCell"> <%= starsApps[i].getCategoryName() %></td>
-                  <td width="100" class="TableCell"> In Service</td>
+                  <td width="100" class="TableCell"><%= program.getStatus() %></td>
                   <td width="120"> 
                     <div align="center"> <img src="<%= category.getStarsWebConfig().getLogoLocation() %>" width="60" height="59"><br>
 					  <span class="TableCell"><%= program.getProgramName() %></span>

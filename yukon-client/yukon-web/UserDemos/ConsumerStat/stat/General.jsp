@@ -105,9 +105,15 @@
                                         <%= program.getProgramName() %></span> 
                                         
                                       </div></td>
-                                    <td width="134" class="Main"> <div align="center"> 
+                                    <td width="134" class="Main"> 
+                                      <div align="center"> 
                                         <%
-		if (todayCtrlHist.getControlHistoryCount() == 0) {
+		if (program.getStatus().equalsIgnoreCase("Out of Service")) {
+%>
+                                        <b>Out of Service</b>
+<%
+		}
+		else if (todayCtrlHist.getControlHistoryCount() == 0) {
 %>
                                         <b>You have not<br>
                                         been controlled</b> 

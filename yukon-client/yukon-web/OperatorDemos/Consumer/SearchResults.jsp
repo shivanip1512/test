@@ -66,7 +66,7 @@ function selectAccount(accountID) {
         <tr> 
           <td  valign="top" width="101">&nbsp; </td>
           <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
-          <td width="657" valign="top" bgcolor="#FFFFFF">
+          <td width="657" height="400" valign="top" bgcolor="#FFFFFF">
               
             <div align="center"><% String header = "SEARCH RESULTS"; %><%@ include file="InfoSearchBar2.jsp" %></div> 
 <%
