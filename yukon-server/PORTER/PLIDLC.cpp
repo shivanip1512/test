@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PLIDLC.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/08/08 23:24:05 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/10/23 21:09:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -276,11 +276,6 @@ GenReply (PBYTE Reply,            /* reply message */
 
    if(Save != NCrcCalc_C ((Reply+1), Length-3))
    {
-      {
-         CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-         dout << " Bytes in.. " << Length << endl;
-      }
       return(BADCRC);
    }
 
