@@ -6,6 +6,7 @@ import java.util.Vector;
 
 import com.cannontech.common.util.Pair;
 import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -74,7 +75,37 @@ public class RoleFuncs
 		
 		return AuthFuncs.getRolePropertyValue( user, rolePropertyID, defaultValue );
 	}
-	
+
+	/**
+	 * Returns the value for a given user and role property.
+	 * If no value is found then defaultValue is returned for convenience.
+	 * @param user
+	 * @param roleProperty
+	 * @return String
+	 */
+	public static String getRolePropValueGroup(int groupID, int rolePropertyID, String defaultValue) 
+	{		
+		LiteYukonGroup group = null;
+			
+		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+		synchronized(cache) 
+		{
+			//find the group with the given groupID (may be slow in the future)
+			List allgrps = cache.getAllYukonGroups();
+			for( int i = 0; i < allgrps.size(); i++ )
+			{
+				LiteYukonGroup u = (LiteYukonGroup)allgrps.get(i); 
+				if( u.getGroupID() == groupID )
+				{
+					group = u;
+					break;
+				}				
+			}
+		
+		}
+		
+		return AuthFuncs.getRolePropValueGroup( group, rolePropertyID, defaultValue );
+	}
 
 	/**
 	 * Dont let anyone instantiate me

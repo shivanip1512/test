@@ -12,9 +12,11 @@ public class YukonGroup extends DBPersistent
 {
 	public static final String TABLE_NAME = "YukonGroup";
 
-	//a mapping table the does not have a DBPersistent
+	//a mapping table that does not have a DBPersistent
 	public static final String TBL_YUKON_USER_GROUP = "YukonUserGroup";
 
+	//what group IDs can be modified
+	public static final int EDITABLE_MIN_GROUP_ID  = 0;
 
 	
 	private Integer groupID;
@@ -100,7 +102,54 @@ public class YukonGroup extends DBPersistent
 		return (YukonGroup[])list.toArray( groups );
 	}
 
+
+
+	/**
+	 * This method was created in VisualAge.
+	 * @return java.lang.Integer
+	 */
+	public static final Integer getNextGroupID( java.sql.Connection conn )
+	{
+		if( conn == null )
+			throw new IllegalStateException("Database connection should not be null.");
+		
+		java.sql.PreparedStatement pstmt = null;
+		java.sql.ResultSet rset = null;
 	
+		String sql = "SELECT max(GroupID) as GroupID FROM " + TABLE_NAME;
+		int newID = 0;
+		
+		try
+		{
+			pstmt = conn.prepareStatement(sql.toString());
+			
+			rset = pstmt.executeQuery();							
+	
+			while( rset.next() )
+			{
+				newID = rset.getInt("GroupID") + 1;
+				break;
+			}
+		}
+		catch( java.sql.SQLException e )
+		{
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+		}
+		finally
+		{
+			try
+			{
+				if( pstmt != null ) pstmt.close();
+			} 
+			catch( java.sql.SQLException e2 )
+			{
+				com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 ); //something is up
+			}	
+		}	
+		
+		return new Integer( newID );
+	}
+
 	/**
 	 * @see com.cannontech.database.db.DBPersistent#add()
 	 */
@@ -128,7 +177,7 @@ public class YukonGroup extends DBPersistent
 		if(results.length == selectColumns.length)
 		{
 			setGroupName((String) results[0]);
-			setGroupDescription( (String) results[0] );
+			setGroupDescription( (String) results[1] );
 		}			
 	}
 

@@ -7,6 +7,8 @@ package com.cannontech.database.model;
 public class DBTreeNode extends javax.swing.tree.DefaultMutableTreeNode 
 {
 	private boolean willHaveChildren = false;
+	private boolean isSystemReserved = false;
+
 /**
  * DBEditorTreeNode constructor comment.
  * @param userObject java.lang.Object
@@ -42,4 +44,23 @@ public void setWillHaveChildren(boolean newWillHaveChildren) {
 public boolean willHaveChildren() {
 	return willHaveChildren;
 }
+
+/**
+ * Insert the method's description here.
+ * Creation date: (4/25/2002 1:17:06 PM)
+ * @return boolean
+ */
+public boolean isSystemReserved() {
+	return isSystemReserved;
+}
+
+/**
+ * Insert the method's description here.
+ * Creation date: (4/25/2002 1:17:06 PM)
+ * @return boolean
+ */
+public void setIsSystemReserved( boolean sysReserved_ ) {
+	isSystemReserved = sysReserved_;
+}
+
 }

@@ -13,7 +13,7 @@ import com.cannontech.message.dispatch.message.DBChangeMsg;
 /*** 
  * @author alauinger
  */
-public class YukonUser extends DBPersistent implements com.cannontech.database.db.CTIDbChange, EditorPanel
+public class YukonUser extends DBPersistent implements com.cannontech.database.db.CTIDbChange, EditorPanel, IYukonRoleContainer
 {	
 	private com.cannontech.database.db.user.YukonUser yukonUser;
 	private Vector yukonGroups; //type = com.cannontech.database.db.user.YukonGroup
@@ -37,6 +37,16 @@ public class YukonUser extends DBPersistent implements com.cannontech.database.d
 		
 	}
 
+
+	public Integer getID()
+	{
+		return getUserID();
+	}
+	
+	public Vector getYukonRoles()
+	{
+		return getYukonUserRoles();	
+	}
 
 	/**
 	 * This method was created in VisualAge.

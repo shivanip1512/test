@@ -255,7 +255,10 @@ public class UserGroupRoleEditorPanel extends com.cannontech.common.gui.util.Dat
 				LiteYukonGroup group = getTableModel().getRowAt(i); 
 				
 				//add a new DBPersistant YukonGroup to our Login
-				login.getYukonGroups().add( LiteFactory.createDBPersistent( group ) );
+				YukonGroup grp = new YukonGroup( new Integer(group.getGroupID()), group.getGroupName() );
+				grp.setGroupDescription( group.getGroupDescription() );
+				
+				login.getYukonGroups().add( grp );
 			}
 
 		}		
@@ -450,7 +453,8 @@ public static void main(java.lang.String[] args) {
 		for( int i = 0; i < login.getYukonGroups().size(); i++ )
 		{
 			LiteYukonGroup group = 
-				(LiteYukonGroup)LiteFactory.createLite( (YukonGroup)login.getYukonGroups().get(i) );
+				(LiteYukonGroup)LiteFactory.createLite( 
+						(YukonGroup)login.getYukonGroups().get(i) );
 
 			int indx = getTableModel().indexOf( group ); 
 

@@ -197,6 +197,11 @@ public final class LiteComparators
 				thisVal = ((LiteYukonRole)o1).getRoleName();
 				anotherVal = ((LiteYukonRole)o2).getRoleName();
 			}			
+			else if(o1 instanceof LiteYukonGroup && o2 instanceof LiteYukonGroup)
+			{
+				thisVal = ((LiteYukonGroup)o1).getGroupName();
+				anotherVal = ((LiteYukonGroup)o2).getGroupName();
+			}			
 			else if(o1 instanceof LiteYukonRoleProperty && o2 instanceof LiteYukonRoleProperty)
 			{
 				thisVal = ((LiteYukonRoleProperty)o1).getKeyName();

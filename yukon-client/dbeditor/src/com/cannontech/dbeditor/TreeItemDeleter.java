@@ -9,6 +9,7 @@ import com.cannontech.common.gui.util.TreeViewPanel;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.model.DBTreeNode;
 
 /**
  * @author rneuharth
@@ -75,6 +76,18 @@ public class TreeItemDeleter
 					
 				return JOptionPane.NO_OPTION;
 		   }
+
+			if( (nodes[i] instanceof DBTreeNode)
+				  && ((DBTreeNode)nodes[i]).isSystemReserved() )
+			{
+				javax.swing.JOptionPane.showMessageDialog(
+					getParentFrame(),
+					"System reserved items can not be deleted",
+					"Unable to Delete",
+					JOptionPane.WARNING_MESSAGE);
+					
+				return JOptionPane.NO_OPTION;
+			}
 	
 		
 			//a DBPersistent object must be created from the Lite object so you can do a delete

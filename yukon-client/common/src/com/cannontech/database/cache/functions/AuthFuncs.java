@@ -8,6 +8,7 @@ import java.util.Map;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
 import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -93,6 +94,30 @@ public class AuthFuncs {
 		synchronized(cache) {
 			Map lookupMap = cache.getYukonUserRolePropertyIDLookupMap();
 			Map propMap = (Map) lookupMap.get(user);
+			if(propMap != null) {
+				Pair p = (Pair) propMap.get(new Integer(rolePropertyID));
+				if(p != null) {
+					return (String) p.second;
+				}
+			}	
+		}
+		return defaultValue;	
+	}
+
+	/**
+	 * Returns the value for a given group and role property.
+	 * If no value is found then defaultValue is returned for convenience.
+	 * @param group
+	 * @param roleProperty
+	 * @return String
+	 */
+	public static String getRolePropValueGroup(LiteYukonGroup group_, int rolePropertyID, String defaultValue) 
+	{
+		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+		synchronized(cache) 
+		{
+			Map lookupMap = cache.getYukonGroupRolePropertyMap();
+			Map propMap = (Map) lookupMap.get( group_ );
 			if(propMap != null) {
 				Pair p = (Pair) propMap.get(new Integer(rolePropertyID));
 				if(p != null) {

@@ -3,13 +3,12 @@ package com.cannontech.database.db.user;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.db.DBPersistent;
 
 /**
  * @author alauinger
  */
-public class YukonUserRole extends DBPersistent 
+public class YukonUserRole extends DBPersistent implements IDefinedYukonRole
 {
 	public static final String TABLE_NAME = "YukonUserRole";
 

@@ -1,14 +1,14 @@
 package com.cannontech.database.db.user;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.db.DBPersistent;
 
 /**
  * @author alauinger
  */
-public class YukonGroupRole extends DBPersistent 
+public class YukonGroupRole extends DBPersistent implements IDefinedYukonRole
 {
 	public static final String TABLE_NAME = "YukonGroupRole";
 
@@ -38,10 +38,121 @@ public class YukonGroupRole extends DBPersistent
 		setValue( value_ );
 	}
 
+
+	/**
+	 * Insert the method's description here.
+	 * Creation date: (12/14/99 10:31:33 AM)
+	 * @return java.lang.Integer
+	 */
+	public static synchronized YukonGroupRole[] getYukonGroupRoles( int groupID_, java.sql.Connection conn )
+	{
+		if( conn == null )
+			throw new IllegalStateException("Database connection should not be null.");
+	
+		
+		java.sql.PreparedStatement pstmt = null;
+		java.sql.ResultSet rset = null;
+		ArrayList list = new ArrayList(32);
+		
+		try 
+		{		
+			 pstmt = conn.prepareStatement(
+					"select GroupRoleID, GroupID, RoleID, RolePropertyID, Value " +
+					"from " + TABLE_NAME + " " +
+					"where GroupID = ?" );
+		    	
+			 pstmt.setInt( 1, groupID_ );
+			 
+			 rset = pstmt.executeQuery();
+				
+			 //get the first returned result
+			 while( rset.next() )
+			 {
+				YukonGroupRole r = new YukonGroupRole(
+					new Integer(rset.getInt("GroupRoleID")),
+					new Integer(rset.getInt("GroupID")),
+					new Integer(rset.getInt("RoleID")),
+					new Integer(rset.getInt("RolePropertyID")),
+					rset.getString("Value") );
+			 	
+				list.add( r );
+			 }
+		    
+		}
+		catch (java.sql.SQLException e) 
+		{
+			 e.printStackTrace();
+		}
+		finally 
+		{
+			 try 
+			 {
+				if ( pstmt != null) pstmt.close();
+			 }
+			 catch (java.sql.SQLException e2) 
+			 {
+				e2.printStackTrace();
+			 }
+		}
+		
+		YukonGroupRole[] roles = new YukonGroupRole[list.size()];
+		return (YukonGroupRole[])list.toArray( roles );
+	}
+
+	/**
+	 * This method was created in VisualAge.
+	 * @return java.lang.Integer
+	 */
+	public static final Integer getNextGroupRoleID( java.sql.Connection conn )
+	{
+		if( conn == null )
+			throw new IllegalStateException("Database connection should not be null.");
+		
+		java.sql.PreparedStatement pstmt = null;
+		java.sql.ResultSet rset = null;
+	
+		String sql = "SELECT max(GroupRoleID) as GroupRoleID " + "FROM " + TABLE_NAME;
+		int newID = 0;
+		
+		try
+		{
+			pstmt = conn.prepareStatement(sql.toString());
+			
+			rset = pstmt.executeQuery();							
+	
+			while( rset.next() )
+			{
+				newID = rset.getInt("GroupRoleID") + 1;
+				break;
+			}
+		}
+		catch( java.sql.SQLException e )
+		{
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+		}
+		finally
+		{
+			try
+			{
+				if( pstmt != null ) pstmt.close();
+			} 
+			catch( java.sql.SQLException e2 )
+			{
+				com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 ); //something is up
+			}	
+		}	
+		
+		return new Integer( newID );
+	}
+
 	/**
 	 * @see com.cannontech.database.db.DBPersistent#add()
 	 */
-	public void add() throws SQLException {
+	public void add() throws SQLException 
+	{
+		if( getGroupRoleID() == null )
+			setGroupRoleID( getNextGroupRoleID(getDbConnection()) );
+
 		Object[] addValues = 
 		{ 
 			getGroupRoleID(), getGroupID(), getRoleID(), getRolePropertyID(), getValue() 

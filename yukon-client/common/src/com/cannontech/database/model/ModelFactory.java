@@ -38,6 +38,7 @@ public final class ModelFactory
 
 	public static final int MCTBROADCAST = 28;
 	public static final int LOGINS = 29;
+	public static final int LOGIN_GROUPS = 30;
 
 	//The above is an enumeration of indices into
 	//the following array
@@ -72,7 +73,8 @@ public final class ModelFactory
 		TestCollectionGroupModel.class,
 /*27*/CapControlFeederModel.class,
 	  	MCTBroadcastGroupTreeModel.class,
-	  	LoginTreeModel.class
+	  	LoginTreeModel.class,
+		LoginGroupTreeModel.class
 	};
 
 /**

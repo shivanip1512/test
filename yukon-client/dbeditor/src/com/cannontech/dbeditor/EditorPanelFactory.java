@@ -30,9 +30,6 @@ public final class EditorPanelFactory
 		{com.cannontech.database.data.capcontrol.CapControlSubBus.class,
 	  	com.cannontech.dbeditor.editor.capsubbus.CCSubstationBusEditorPanel.class},
 		
-//		{com.cannontech.database.data.customer.CICustomerBase.class,
-//		 com.cannontech.dbeditor.editor.device.customercontact.CustomerEditor.class},
-
 		{com.cannontech.database.data.customer.Customer.class,
 		 com.cannontech.dbeditor.editor.contact.CustomerEditor.class},
 
@@ -44,6 +41,9 @@ public final class EditorPanelFactory
 
    	{com.cannontech.database.data.user.YukonUser.class,
 		 com.cannontech.dbeditor.editor.user.LoginEditorPanel.class},
+
+		{com.cannontech.database.data.user.YukonGroup.class,
+		 com.cannontech.dbeditor.editor.user.RoleGroupEditorPanel.class},
 
    	{com.cannontech.database.data.device.DeviceBase.class,
 	  	com.cannontech.dbeditor.editor.device.DeviceEditorPanel.class},

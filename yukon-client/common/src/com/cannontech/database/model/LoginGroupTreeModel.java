@@ -1,17 +1,19 @@
 package com.cannontech.database.model;
 
+import com.cannontech.database.data.lite.LiteYukonGroup;
+import com.cannontech.database.db.user.YukonGroup;
+
 /**
  * This type was created in VisualAge.
  */
-
-public class AlarmCategoriesTreeModel extends DBTreeModel 
+public class LoginGroupTreeModel extends DBTreeModel 
 {
 /**
  * MeterTreeModel constructor comment.
  * @param root javax.swing.tree.TreeNode
  */
-public AlarmCategoriesTreeModel() {
-	super( new DBTreeNode("Alarm Categories") );
+public LoginGroupTreeModel() {
+	super( new DBTreeNode("Login Groups") );
 }
 /**
  * Insert the method's description here.
@@ -20,14 +22,14 @@ public AlarmCategoriesTreeModel() {
  */
 public boolean isLiteTypeSupported( int liteType )
 {
-	return ( liteType == com.cannontech.database.data.lite.LiteTypes.ALARM_CATEGORIES );
+	return ( liteType == com.cannontech.database.data.lite.LiteTypes.YUKON_GROUP );
 }
 /**
  * This method was created in VisualAge.
  * @return java.lang.String
  */
 public String toString() {
-	return "Alarm Categories";
+	return "Login Group";
 }
 /**
  * This method was created in VisualAge.
@@ -39,17 +41,20 @@ public void update() {
 
 	synchronized(cache)
 	{
-		java.util.List alarmStates = cache.getAllAlarmCategories();
+		java.util.List loginGroups = cache.getAllYukonGroups();
+		java.util.Collections.sort( loginGroups, com.cannontech.database.data.lite.LiteComparators.liteStringComparator );
 
 		DBTreeNode rootNode = (DBTreeNode) getRoot();
 		rootNode.removeAllChildren();
-
-		// We start at 1 to leave out the EVENT alarmCategory
-		for( int i = 1; i < alarmStates.size(); i++ )
+		
+		for( int i = 0; i < loginGroups.size(); i++ )
 		{
-			DBTreeNode notifGroupNode = new DBTreeNode( alarmStates.get(i) );
-			notifGroupNode.setIsSystemReserved( true );
-			rootNode.add( notifGroupNode );
+			DBTreeNode lginGroupNode = new DBTreeNode( loginGroups.get(i) );
+
+			lginGroupNode.setIsSystemReserved( 
+					((LiteYukonGroup)loginGroups.get(i)).getGroupID() < YukonGroup.EDITABLE_MIN_GROUP_ID );
+
+			rootNode.add( lginGroupNode );
 		}
 	}
 

@@ -14,15 +14,8 @@ import java.util.Vector;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.PopupMenuEvent;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeCellRenderer;
 
-import sun.awt.SunToolkit;
-
-import Acme.RefInt;
-import Acme.Nnrpd.ArticleCache;
 import com.cannontech.common.editor.PropertyPanel;
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.gui.util.MessagePanel;
@@ -32,10 +25,7 @@ import com.cannontech.common.util.MessageEvent;
 import com.cannontech.common.util.MessageEventListener;
 import com.cannontech.database.DatabaseTypes;
 import com.cannontech.database.Transaction;
-import com.cannontech.database.TransactionException;
-import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.lite.LiteBase;
-import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.route.RouteBase;
@@ -132,6 +122,7 @@ public class DatabaseEditor
 			new Integer(ModelFactory.CICUSTOMER),
 			new Integer(ModelFactory.CONTACT),
 			new Integer(ModelFactory.LOGINS),
+			new Integer(ModelFactory.LOGIN_GROUPS),
 			new Integer(ModelFactory.NOTIFICATION_GROUP),
 			new Integer(ModelFactory.ALARM_STATES),
 			new Integer(ModelFactory.HOLIDAY_SCHEDULE)

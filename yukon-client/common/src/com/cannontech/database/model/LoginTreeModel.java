@@ -1,5 +1,8 @@
 package com.cannontech.database.model;
 
+import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.user.UserUtils;
+
 /**
  * This type was created in VisualAge.
  */
@@ -50,7 +53,11 @@ public void update() {
 		
 		for( int i = 0; i < users.size(); i++ )
 		{
-			DBTreeNode userNode = new DBTreeNode( users.get(i));	
+			DBTreeNode userNode = new DBTreeNode( users.get(i));
+			
+			userNode.setIsSystemReserved( 
+				((LiteYukonUser)users.get(i)).getUserID() == UserUtils.USER_YUKON_ID );
+
 			rootNode.add( userNode );
 		}
 	}

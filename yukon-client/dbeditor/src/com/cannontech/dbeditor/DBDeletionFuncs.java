@@ -5,7 +5,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.holiday.HolidaySchedule;
 import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.database.db.DBPersistent;
-import com.cannontech.user.UserUtils;
+
 
 /**
  * Insert the type's description here.
@@ -254,13 +254,14 @@ public class DBDeletionFuncs
 	 */
 	private static byte createDeleteStringForLogin(int loginID) throws java.sql.SQLException
 	{
+/*
 		if( loginID == UserUtils.USER_YUKON_ID ) //this id is the default
 		{
 			theWarning.delete(0, theWarning.length());
 			theWarning.append(CR_LF + "because it is reserved for system use.");
 			return STATUS_DISALLOW;
 		}
-
+*/
 		if( YukonUser.isUsedByContact(loginID, CtiUtilities.getDatabaseAlias()) )
 		{
 			theWarning.delete(0, theWarning.length());
@@ -333,6 +334,7 @@ public class DBDeletionFuncs
 			anID = ((com.cannontech.database.data.pao.YukonPAObject) toDelete).getPAObjectID().intValue();
 			deletionType = DBDeletionFuncs.PAO_TYPE;
 		}
+/*
 		else if( toDelete instanceof com.cannontech.database.db.notification.AlarmCategory )
 		{
 			message.append("You can not delete alarm categories using the DatabaseEditor"); 
@@ -341,6 +343,7 @@ public class DBDeletionFuncs
 
 			retValue = false;
 		}
+*/
 		else if (toDelete instanceof com.cannontech.database.data.customer.Customer)
 		{
          message.append("Are you sure you want to permanently delete '" + nodeName + "'?" + CR_LF + CR_LF +
@@ -410,8 +413,8 @@ public class DBDeletionFuncs
 				return createDeleteStringForLogin(anID);
 	
 			else if( type == CUSTOMER_TYPE
-						 || type == PAO_TYPE || type == HOLIDAY_SCHEDULE
-						  )
+						 || type == PAO_TYPE 
+						 || type == HOLIDAY_SCHEDULE )
 			{
 				return STATUS_CONFIRM;
 			}

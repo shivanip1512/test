@@ -15,7 +15,7 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTree;
-import javax.swing.KeyStroke;
+import javax.swing.ToolTipManager;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeExpansionListener;
 import javax.swing.event.TreeSelectionListener;
@@ -253,6 +253,9 @@ public JTree getTree()
 				return false;
 		 	}
 		});
+		
+		//do this so we can see the tool tips for each tree node
+		ToolTipManager.sharedInstance().registerComponent(tree);
 	}
 
 	return tree;

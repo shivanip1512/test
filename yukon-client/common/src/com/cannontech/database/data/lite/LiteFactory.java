@@ -2,7 +2,6 @@ package com.cannontech.database.data.lite;
 
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.customer.CICustomerBase;
-import com.cannontech.database.data.customer.CustomerFactory;
 import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.user.YukonGroup;
@@ -118,11 +117,10 @@ public final static com.cannontech.database.db.DBPersistent createDBPersistent(L
 		 		((com.cannontech.database.data.user.YukonUser)returnObject).getYukonUser().setPassword( ((LiteYukonUser)liteObject).getPassword() );
 		 		break;
 			case LiteTypes.YUKON_GROUP:
-				returnObject = new com.cannontech.database.db.user.YukonGroup(
-						new Integer( ((LiteYukonGroup)liteObject).getGroupID() ),
-						((LiteYukonGroup)liteObject).getGroupName() );
-
-				((com.cannontech.database.db.user.YukonGroup)returnObject).setGroupDescription( ((LiteYukonGroup)liteObject).getGroupDescription() );
+				returnObject = new com.cannontech.database.data.user.YukonGroup();
+				((com.cannontech.database.data.user.YukonGroup)returnObject).setGroupID( new Integer(((LiteYukonGroup)liteObject).getGroupID()) );
+				((com.cannontech.database.data.user.YukonGroup)returnObject).getYukonGroup().setGroupName( ((LiteYukonGroup)liteObject).getGroupName() );
+				((com.cannontech.database.data.user.YukonGroup)returnObject).getYukonGroup().setGroupDescription( ((LiteYukonGroup)liteObject).getGroupDescription() );
 				break;
 
 
@@ -240,6 +238,8 @@ public final static LiteBase createLite(com.cannontech.database.db.DBPersistent 
 		
 		((LiteYukonGroup)returnLite).setGroupDescription( ((YukonGroup)val).getGroupDescription() );
 	}	
+
+
 	/* TODO add SystemRole,YukonRoleProperty */
 	else if( val instanceof com.cannontech.database.data.pao.YukonPAObject )
 	{

@@ -1,5 +1,12 @@
 package com.cannontech.database.data.lite;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+import com.cannontech.database.db.user.YukonGroup;
+
 /**
  * @author alauinger
  */
@@ -81,4 +88,50 @@ public class LiteYukonGroup extends LiteBase {
 		groupDescription = string;
 	}
 
+
+
+
+	public void retrieve( String dbAlias )
+	{
+		
+		String sql = 
+			"SELECT GroupName, GroupDescription FROM " + YukonGroup.TABLE_NAME + " " +
+			"WHERE GroupID = " + getGroupID();
+   		
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet rset = null;
+		
+		try 
+		{
+			conn = com.cannontech.database.PoolManager.getInstance().getConnection(
+							dbAlias );
+
+			stmt = conn.createStatement();
+			rset = stmt.executeQuery(sql);
+
+			if( rset.next() ) 
+			{
+				setGroupName( rset.getString(1).trim() );
+				setGroupDescription( rset.getString(2).trim() );
+			}
+		}
+		catch(SQLException e ) 
+		{
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+		}
+		finally 
+		{
+				try {
+					if( stmt != null )
+						stmt.close();
+					if( conn != null )
+						conn.close();
+				}
+				catch( java.sql.SQLException e ) {
+					com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+				}
+		}
+      
+	}
 }
