@@ -597,10 +597,10 @@ void CtiLMProgramDirectGear::restoreGuts(RWvistream& istrm)
           >> _groupselectionmethod
           >> _methodoptiontype
           >> _methodoptionmax
-	  >> _rampininterval
-	  >> _rampinpercent
-	  >> _rampoutinterval
-	  >> _rampoutpercent;
+          >> _rampininterval
+          >> _rampinpercent
+          >> _rampoutinterval
+          >> _rampoutpercent;
 }
 
 /*---------------------------------------------------------------------------
@@ -633,10 +633,10 @@ void CtiLMProgramDirectGear::saveGuts(RWvostream& ostrm ) const
           << _groupselectionmethod
           << _methodoptiontype
           << _methodoptionmax
-	  << _rampininterval
-	  << _rampinpercent
-	  << _rampoutinterval
-	  << _rampoutpercent;
+          << _rampininterval
+          << _rampinpercent
+          << _rampoutinterval
+          << _rampoutpercent;
    
 
     return;
@@ -669,10 +669,10 @@ CtiLMProgramDirectGear& CtiLMProgramDirectGear::operator=(const CtiLMProgramDire
         _groupselectionmethod = right._groupselectionmethod;
         _methodoptiontype = right._methodoptiontype;
         _methodoptionmax = right._methodoptionmax;
-	_rampininterval = right._rampininterval;
-	_rampinpercent = right._rampinpercent;
-	_rampoutinterval = right._rampoutinterval;
-	_rampoutpercent = right._rampoutpercent;
+        _rampininterval = right._rampininterval;
+        _rampinpercent = right._rampinpercent;
+        _rampoutinterval = right._rampoutinterval;
+        _rampoutpercent = right._rampoutpercent;
     }
 
     return *this;
@@ -754,6 +754,7 @@ const RWCString CtiLMProgramDirectGear::RestoreStopType = "Restore";
 const RWCString CtiLMProgramDirectGear::TimeInStopType = "TimeIn";
 const RWCString CtiLMProgramDirectGear::StopCycleStopType = "StopCycle";
 const RWCString CtiLMProgramDirectGear::RampOutStopType = "RampOut";
+const RWCString CtiLMProgramDirectGear::RampOutRestoreStopType = "RampOutRestore";
 
 //Possible gear change condition types
 const RWCString CtiLMProgramDirectGear::NoneChangeCondition = "None";

@@ -4093,7 +4093,8 @@ BOOL CtiLMProgramDirect::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMs
                         }
                         currentLMGroup->setControlCompleteTime(timeToTimeIn);
                    }
-                   else if( !tempMethodStopType.compareTo(CtiLMProgramDirectGear::RampOutStopType,RWCString::ignoreCase))
+                   else if( !tempMethodStopType.compareTo(CtiLMProgramDirectGear::RampOutStopType,RWCString::ignoreCase) ||
+                            !tempMethodStopType.compareTo(CtiLMProgramDirectGear::RampOutRestoreStopType,RWCString::ignoreCase))
                    {
                        currentLMGroup->setIsRampingIn(false);
                        currentLMGroup->setIsRampingOut(true);
@@ -4368,7 +4369,7 @@ bool CtiLMProgramDirect::updateGroupsRampingOut(CtiMultiMsg* multiPilMsg, CtiMul
         }
                 
         // Possibly restore the group now that it has ramped out
-        if(lm_gear->getMethodStopType() == CtiLMProgramDirectGear::RestoreStopType)
+        if(lm_gear->getMethodStopType() == CtiLMProgramDirectGear::RampOutRestoreStopType)
         {
             int priority = 11;
             string ctrl_str = "control restore";
