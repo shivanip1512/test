@@ -52,6 +52,9 @@ public void update()
 		for (int i = 0; i < theBaselines.size(); i++)
 		{
 			DBTreeNode baselineNode = new DBTreeNode(theBaselines.get(i));
+			
+			if(((com.cannontech.database.data.lite.LiteBaseline)theBaselines.get(i)).getBaselineID() == 1)
+				baselineNode.setIsSystemReserved(true);
 
 			rootNode.add(baselineNode);
 		}

@@ -1,5 +1,7 @@
 package com.cannontech.database.model;
 
+import com.cannontech.database.data.lite.LiteHolidaySchedule;
+
 /**
  * Insert the type's description here.
  * Creation date: (8/24/2001 10:45:17 AM)
@@ -52,6 +54,8 @@ public void update()
 		for (int i = 0; i < holidaySchedules.size(); i++)
 		{
 			DBTreeNode holidayScheduleNode = new DBTreeNode(holidaySchedules.get(i));
+			if(((LiteHolidaySchedule)holidaySchedules.get(i)).getHolidayScheduleID() == 0)
+				holidayScheduleNode.setIsSystemReserved(true);
 
 			rootNode.add(holidayScheduleNode);
 		}
