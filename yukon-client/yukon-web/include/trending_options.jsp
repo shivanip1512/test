@@ -5,10 +5,14 @@
       <div>
         <table width="375" border="0" cellspacing="2" cellpadding="0">
           <tr>
-            <form id=MForm method="GET" action="<%=pageName%>" name="MForm">
+            <form id=MForm method="POST" action="<%= request.getContextPath() %>/servlet/GraphGenerator"  name="MForm">
               <INPUT TYPE="hidden" NAME="gdefid" VALUE="<%=graphBean.getGdefid()%>">
               <INPUT TYPE="hidden" NAME="view" VALUE="<%=graphBean.getViewType()%>">
               <INPUT TYPE="hidden" NAME="option" VALUE = "<%=graphBean.getOption()%>" >
+			  <INPUT TYPE="hidden" NAME="action" VALUE = "UpdateOptions" >
+              <input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>?gdefid=<%=graphBean.getGdefid()%>">
+			  <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>?gdefid=<%= graphBean.getGdefid()%>">
+              
               <td width="163" valign="top"><font face="Arial, Helvetica, sans-serif" size="1">Start Date:</font>
 			    <input id="cal" type="text" name="start" value="<%= datePart.format(graphBean.getStartDate()) %>" size="8">
                   <A HREF="javascript:openCalendar(document.getElementById('MForm').cal)"
@@ -50,7 +54,7 @@
           </td>
           <td width="12%">
             <div align="right" class="Subtext">
-			  <a href="JavaScript:" class="Link4" name="optionPopup" onClick="window.open('<%=request.getContextPath()%>/include/options_popup.jsp','optionPopup','width=200,height=160,top=250,left=520');">Options</a>
+			  <a href="JavaScript:" class="Link4" name="optionPopup" onClick="window.open('<%=request.getContextPath()%>/include/options_popup.jsp','optionPopup','width=200,height=160,top=250,left=520');">Options</a>            	                            
             </div>
           </td>
         </tr>
@@ -90,7 +94,7 @@
             <div id = "LINEID" name = "format"  style = "width:75px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "exportData('pdf')">&nbsp;&nbsp;&nbsp;Export .pdf</div>
             <div id = "LINEID" name = "format"  style = "width:75px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "exportData('jpeg')">&nbsp;&nbsp;&nbsp;Export .jpeg</div>
           <%}%>
-            <div id = "PRINTID" name = "print" style = "width:75px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "location='<%=request.getContextPath()%>/trending_print.jsp?';">&nbsp;&nbsp;&nbsp;Print</div>
+            <div id = "PRINTID" name = "print" style = "width:75px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "location='<%=request.getContextPath()%>/include/trending_print.jsp?';">&nbsp;&nbsp;&nbsp;Print</div>
         </div>
       </form>
     </td>
