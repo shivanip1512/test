@@ -243,12 +243,25 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
 
                 if( point )
                 {
-                    //  ACH FIX BLAH BLAH BLAH - NOTE - the control duration is completely arbitrary here.  Fix sometime if necessary
-                    //                                    (i.e. customer doing sheds/restores that need to be accurately LMHist'd)
+                    //  NOTE - the control duration is completely arbitrary here.  Fix sometime if necessary
+                    //           (i.e. customer doing sheds/restores that need to be accurately LMHist'd)
+                    //  Also note that this is sending "CLOSED" as the expected state.
                     CtiLMControlHistoryMsg *hist = CTIDBG_new CtiLMControlHistoryMsg(getID(), point->getPointID(), 1, RWTime(), 86400, 100);
 
                     hist->setMessagePriority(hist->getMessagePriority() + 1);
                     vgList.insert(hist);
+
+                    if(point->isPseudoPoint())
+                    {
+                        // There is no physical point to observe and respect.  We lie to the control point.
+                        CtiPointDataMsg *pData = CTIDBG_new CtiPointDataMsg(point->getID(),
+                                                                            (DOUBLE)hist->getRawState(),
+                                                                            NormalQuality,
+                                                                            StatusPointType,
+                                                                            RWCString("This point has been controlled"));
+                        pData->setUser(pReq->getUser());
+                        vgList.insert(pData);
+                    }
                 }
 
                 _ion.setCommand(CtiProtocolION::Command_ExternalPulseTrigger, offset);
