@@ -17,6 +17,8 @@ public class LMProgramWizardPanel extends com.cannontech.common.wizard.WizardPan
 	private LMProgramEnergyExchangeCustomerListPanel lmProgramEnergyExchangeCustomerListPanel;
 	
 	private LMProgramCurtailmentPanel lmProgramCurtailmentPanel;
+	private LMProgramDirectNotificationPanel lmProgramDirectNotificationPanel;
+	private LMProgramDirectCustomerListPanel lmProgramDirectCustomerListPanel;
 /**
  * LMGroupWizardPanel constructor comment.
  */
@@ -100,6 +102,22 @@ public LMProgramDirectPanel getLmProgramDirectPanel()
 		lmProgramDirectPanel = new LMProgramDirectPanel();
 
 	return lmProgramDirectPanel;
+}
+
+public LMProgramDirectNotificationPanel getLmProgramDirectNotificationPanel() 
+{
+	if( lmProgramDirectNotificationPanel == null )
+		lmProgramDirectNotificationPanel = new LMProgramDirectNotificationPanel();
+
+	return lmProgramDirectNotificationPanel;
+}
+
+public LMProgramDirectCustomerListPanel getLmProgramDirectCustomerListPanel() 
+{
+	if( lmProgramDirectCustomerListPanel == null )
+		lmProgramDirectCustomerListPanel = new LMProgramDirectCustomerListPanel();
+
+	return lmProgramDirectCustomerListPanel;
 }
 /**
  * Insert the method's description here.
@@ -195,6 +213,14 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(com.ca
 		getLmProgramListPanel().initLeftList( !getLmProgramDirectPanel().hasLatchingGear() );
 		return getLmProgramListPanel();
 	}
+	else if( currentInputPanel == getLmProgramListPanel() )
+	{
+		return getLmProgramDirectNotificationPanel();
+	}
+	else if( currentInputPanel == getLmProgramDirectNotificationPanel() )
+	{
+		return getLmProgramDirectCustomerListPanel();
+	}
 	//EExchange program begin
 	else if( currentInputPanel == getLmProgramEnergyExchangePanel() )
 	{
@@ -211,7 +237,7 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(com.ca
 protected boolean isLastInputPanel(com.cannontech.common.gui.util.DataInputPanel currentPanel) 
 {
 	//we dont use the getters for each panel here since this call creates new instances of each
-	return ( currentPanel == lmProgramListPanel
+	return ( currentPanel == lmProgramDirectCustomerListPanel
 				|| currentPanel == lmProgramCurtailListPanel
 				|| currentPanel == lmProgramEnergyExchangeCustomerListPanel );
 }
