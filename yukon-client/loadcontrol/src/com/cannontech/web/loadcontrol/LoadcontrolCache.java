@@ -11,6 +11,7 @@ package com.cannontech.web.loadcontrol;
  * @author: Aaron Lauinger
  */
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -25,6 +26,7 @@ import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.cache.functions.LMFuncs;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.loadcontrol.LMComparators;
 import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.data.LMCurtailCustomer;
 import com.cannontech.loadcontrol.data.LMEnergyExchangeCustomer;
@@ -378,9 +380,11 @@ public Iterator getAllControlAreas( LiteYukonUser yukUser )
     {
         LMControlArea area = (LMControlArea)iter.next();
         if( AuthFuncs.userHasAccessPAO(yukUser, area.getYukonID().intValue()) )
-            paoList.add( area );        
+            paoList.add( area );
     }
 
+    //sort the list base on the names
+    Collections.sort( paoList, LMComparators.lmDataNameComp );
     return paoList.iterator();
 }
 
