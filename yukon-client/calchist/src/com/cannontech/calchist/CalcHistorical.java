@@ -1021,13 +1021,9 @@ public Vector parseAndCalculateRawPointHistories(Vector rawPointHistoryVectorOfV
 				pointDataMsg.setTime(((RawPointHistory) tempRawPointHistoryVector.get(0)).getTimeStamp().getTime());
 				pointDataMsg.setQuality(PointQualities.NON_UPDATED_QUALITY);
 				pointDataMsg.setType(PointTypes.CALCULATED_POINT);
-				if( done )	//last time through
-					pointDataMsg.setTags(0x00000000); //represent the last PointData message in the group
-				else
-					pointDataMsg.setTags(0x00008000); //load profile tag setting
-
+				pointDataMsg.setTags(0x00008000); //load profile tag setting
 				pointDataMsg.setStr("Calc Historical");
-	
+
 				returnVector.addElement(pointDataMsg);
 				updateDynamicCalcHistorical(pointDataMsg.getTimeStamp(), pointID);
 				
@@ -1043,6 +1039,10 @@ public Vector parseAndCalculateRawPointHistories(Vector rawPointHistoryVectorOfV
 	}
 	//DONE HERE>>>>
 	//CTILogger.info("EXIT parseAndCalculateRawPointHistories");
+	//Make the last PointData in the vector have no ("0x0") tags set!
+	if( !returnVector.isEmpty()) 
+		((PointData)returnVector.get(returnVector.size()-1)).setTags(0x00000000);
+	
 	return returnVector;
 }
 
