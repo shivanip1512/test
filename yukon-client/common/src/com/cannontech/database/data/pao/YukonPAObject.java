@@ -347,7 +347,7 @@ public void update() throws java.sql.SQLException
 	public Vector getPAOExclusionVector()
 	{
 		if( paoExclusionVector == null )
-			paoExclusionVector = new Vector(8);
+			paoExclusionVector = new Vector();
 
 		return paoExclusionVector;
 	}

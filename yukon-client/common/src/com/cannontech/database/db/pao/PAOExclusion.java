@@ -43,8 +43,7 @@ public class PAOExclusion extends NestedDBPersistent
 			"FuncName, FuncRequeue, FuncParams " +
 			"FROM " + TABLE_NAME + 
 			" WHERE ExcludedPAOID= ?";
-
-
+			
 	/**
 	 * PAOExclusion constructor comment.
 	 */
@@ -551,5 +550,37 @@ public class PAOExclusion extends NestedDBPersistent
 	{
 		value = integer;
 	}
+	
+	public final static boolean isMasterProgram(Integer anID)
+	{	
+		try
+		{
+			return isMasterProgram(anID, com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
+		}
+		catch (java.sql.SQLException e) 
+		{
+			 e.printStackTrace();
+		}
+		return false;
+	}
+	
+	public final static boolean isMasterProgram(Integer anID, String databaseAlias) throws java.sql.SQLException 
+	{
+		com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
+			"SELECT ExclusionID from " + TABLE_NAME + " WHERE PaoID = " + anID, databaseAlias);
+			
+		try
+		{
+			stmt.execute();
+			return (stmt.getRowCount() > 0 );
+		}
+		catch( Exception e )
+		{
+			return false;
+		}
+
+	}
+	
+	
 
 }
