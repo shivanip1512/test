@@ -7,27 +7,33 @@
     </target>
    
 
-   <target name="build">
+	<target name="build">
        <mkdir dir="build"/>
        
        <javac srcdir="src" destdir="build" target="1.4" debug="true">                               
-          <classpath>                        
+          <classpath>
              <fileset dir="${yukon.lib}">
                 <include name="**/*.jar"/>
              </fileset>
 	      </classpath> 
      	</javac>
 
-       <jar jarfile="${yukon.lib}/report.jar"
-            basedir="build/" 
-            manifest="resource/manifest.mf" />       
-   </target>
+		<jar jarfile="${yukon.lib}/report.jar" basedir="build/" manifest="resource/manifest.mf">
+		    <fileset dir="resource">
+				<include name="**/*.gif"/>
+		 		<include name="**/*.ico"/>       	
+			</fileset>   	
+		</jar>
+	</target>
 
 	<target name="install" depends="build">
-   		<jar jarfile="${yukon.client.bin}/report.jar"
-   			basedir="build/"
-   			manifest="resource/manifest.mf" />   			
-   </target>
+   		<jar jarfile="${yukon.client.bin}/report.jar" basedir="build/" manifest="resource/manifest.mf">
+		    <fileset dir="resource">
+				<include name="**/*.gif"/>
+		 		<include name="**/*.ico"/>       	
+			</fileset>   	
+		</jar>   			
+	</target>
    
    <target name="clean">
        <delete dir="build"/>        
