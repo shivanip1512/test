@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.57 $
-* DATE         :  $Date: 2004/08/11 19:54:21 $
+* REVISION     :  $Revision: 1.58 $
+* DATE         :  $Date: 2004/10/08 20:48:41 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -100,6 +100,7 @@ using namespace std;
 #include "cticalls.h"
 
 #include <stdlib.h>
+#include <crtdbg.h>
 
 #include <stdio.h>
 #include <conio.h>
@@ -180,6 +181,14 @@ using namespace std;
 #define DOUT_OUT TRUE
 
 ULONG TimeSyncRate = 3600L;
+
+static _CRT_ALLOC_HOOK pfnOldCrtAllocHook = NULL;
+
+static int MyAllocHook(int nAllocType, void *pvData,
+                       size_t nSize, int nBlockUse, long lRequest,
+                       const unsigned char * szFileName, int nLine );
+
+
 
 CTI_PORTTHREAD_FUNC_PTR PortThreadFactory(int);
 void DisplayTraceList( CtiPortSPtr Port, RWTPtrSlist< CtiMessage > &traceList, bool consume);
@@ -462,29 +471,43 @@ void applyDeviceQueueReport(const long unusedid, CtiDeviceSPtr RemoteDevice, voi
     LONG PortID = (LONG)lprtid;
     ULONG QueEntCnt = 0L;
 
-    if(RemoteDevice->getType() == TYPE_CCU711 && PortID == RemoteDevice->getPortID())
+    if(lprtid == NULL || PortID == RemoteDevice->getPortID())
     {
-        CtiTransmitter711Info *pInfo = (CtiTransmitter711Info *)RemoteDevice->getTrxInfo();
-
-        if(pInfo != NULL)
+        if(RemoteDevice->getType() == TYPE_CCU711)
         {
-            QueryQueue (pInfo->QueueHandle, &QueEntCnt);
+            CtiTransmitter711Info *pInfo = (CtiTransmitter711Info *)RemoteDevice->getTrxInfo();
+
+            if(pInfo != NULL)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "    CCU:  " << RemoteDevice->getName() << endl;
-                dout << "                   Queue Queue Entries:  " << QueEntCnt << endl;
+                QueryQueue (pInfo->QueueHandle, &QueEntCnt);
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << "    CCU:  " << RemoteDevice->getName() << endl;
+                    dout << "                   Queue Queue Entries:  " << QueEntCnt << endl;
+                }
+                QueryQueue (pInfo->ActinQueueHandle, &QueEntCnt);
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    CHAR oldfill = dout.fill('0');
+                    dout << "                   Actin Queue Entries:  " << QueEntCnt << endl;
+                    dout << "                   Status Byte:          " << hex << setw(4) << (int)pInfo->Status << endl;
+                    dout.fill(oldfill);
+                }
             }
-            QueryQueue (pInfo->ActinQueueHandle, &QueEntCnt);
+        }
+
+        QueEntCnt = RemoteDevice->queuedWorkCount();
+
+        if(QueEntCnt > 0)
+        {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                CHAR oldfill = dout.fill('0');
-                dout << "                   Actin Queue Entries:  " << QueEntCnt << endl;
-                dout << "                   Status Byte:          " << hex << setw(4) << (int)pInfo->Status << endl;
-                dout.fill(oldfill);
+                dout << "    Transmitter:  " << RemoteDevice->getName() << " queued commands:  " << QueEntCnt << " Evaluate Next at " << RemoteDevice->getExclusion().getEvaluateNextAt() << endl;
             }
         }
     }
 }
+
 void applyPortQueueReport(const long unusedid, CtiPortSPtr ptPort, void *passedPtr)
 {
     /* Report on the state of the queues */
@@ -711,6 +734,9 @@ INT PorterMainFunction (INT argc, CHAR **argv)
     if(gConfigParms.isOpt("DEBUG_MEMORY") && !gConfigParms.getValueAsString("DEBUG_MEMORY").compareTo("true", RWCString::ignoreCase) )
         ENABLE_CRT_SHUTDOWN_CHECK;
 
+
+    pfnOldCrtAllocHook = _CrtSetAllocHook(MyAllocHook);
+
     /* A new guy with Yukon,  start a thread to handle GUI requests.  */
     /* This is a future project as of 070799, allowing a GUI to interface with Porter
      * to tweak parameters
@@ -907,6 +933,8 @@ INT PorterMainFunction (INT argc, CHAR **argv)
     }
 
     PorterCleanUp(0);
+
+    _CrtSetAllocHook(pfnOldCrtAllocHook);
 
 #ifdef HARDLOCK
 
@@ -2006,6 +2034,7 @@ bool processInputFunction(CHAR Char)
     case 0x71:              // alt-q
         {
             PortManager.apply( applyPortQueueReport, (void*)1 );
+            DeviceManager.apply( applyDeviceQueueReport, NULL );
 
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -2019,4 +2048,85 @@ bool processInputFunction(CHAR Char)
     }
 
     return process_fail;
+}
+
+
+
+
+static int MyAllocHook(int nAllocType, void *pvData,
+                       size_t nSize, int nBlockUse, long lRequest,
+                       const unsigned char * szFileName, int nLine )
+{
+    static ULONG lastAlloc = 0;
+    static ULONG prevLastAlloc = 0;
+    static ULONG pprevLastAlloc = 0;
+
+    int twnetyfourcnt = 0;
+
+    if(lRequest > 1000000 && (nSize == 24 || nSize == 52 || nSize == 1316 || nSize == 68) )
+    {
+        if( (nSize == 24) )
+        {
+            if(lastAlloc == (lRequest - 1))
+            {
+                twnetyfourcnt++;
+
+                if(prevLastAlloc == (lRequest - 2))
+                {
+                    twnetyfourcnt++;
+
+                    if(pprevLastAlloc == (lRequest - 3))
+                    {
+                        twnetyfourcnt++;
+                    }
+                    pprevLastAlloc = prevLastAlloc;
+                }
+                prevLastAlloc = lastAlloc;
+            }
+
+            twnetyfourcnt++;
+
+            lastAlloc = lRequest;
+        }
+        if((nSize == 52) )
+        {
+            twnetyfourcnt++;
+        }
+        if((nSize == 1316) )
+        {
+            twnetyfourcnt++;
+        }
+        if( (nSize == 68) )
+        {
+            twnetyfourcnt++;
+        }
+        if( (nSize == 63) )
+        {
+            twnetyfourcnt++;
+        }
+        if( (nSize == 164) )
+        {
+            twnetyfourcnt++;
+        }
+    }
+
+#ifdef IGNORE_CRT_ALLOC
+    if(_BLOCK_TYPE(nBlockUse) == _CRT_BLOCK)  // Ignore internal C runtime library allocations
+        return TRUE;
+#endif
+    extern int _crtDbgFlag;
+
+    if( ((_CRTDBG_ALLOC_MEM_DF & _crtDbgFlag) == 0) && ( (nAllocType == _HOOK_ALLOC) || (nAllocType == _HOOK_REALLOC) ) )
+    {
+        // Someone has disabled that the runtime should log this allocation
+        // so we do not log this allocation
+        if(pfnOldCrtAllocHook != NULL)
+            pfnOldCrtAllocHook(nAllocType, pvData, nSize, nBlockUse, lRequest, szFileName, nLine);
+        return TRUE;
+    }
+
+    // call the previous alloc hook
+    if(pfnOldCrtAllocHook != NULL)
+        pfnOldCrtAllocHook(nAllocType, pvData, nSize, nBlockUse, lRequest, szFileName, nLine);
+    return TRUE; // allow the memory operation to proceed
 }
