@@ -220,7 +220,7 @@
 %>
           <tr> 
             <td width="10">&nbsp;</td>
-            <td style="padding:1"><a href="<%= faqLink %>" class="Link2" target="faqs"><span class="NavText"><%= ((String[]) links.get("FAQ.jsp"))[1] %></span></a></td>
+            <td style="padding:1"><a href="<%= faqLink %>" class="Link2" target="faqs"><span class="NavText"><cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_LABEL_FAQ %>" defaultvalue="FAQ"/></span></a></td>
           </tr>
 <%	} else { %>
           <tr> 

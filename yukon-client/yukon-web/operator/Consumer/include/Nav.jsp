@@ -14,9 +14,9 @@
 						  {"Service.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_SERVICE_REQUEST, "Service Request")},
 						  {"ServiceSummary.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_SERVICE_HISTORY, "Service History")},
 						  {"Password.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_CHANGE_LOGIN, "Change Login")},
+						  {"FAQ.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_FAQ, "FAQ")},
 						  {"Privileges.jsp", "Privileges"},
 						  {"PrintExport.jsp", "Print/Export"},
-						  {"FAQ.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_FAQ, "FAQ")},
 						  {"CreateAppliances.jsp", "New"},
 						  {(AuthFuncs.checkRoleProperty(lYukonUser, ConsumerInfoRole.INVENTORY_CHECKING)? "SerialNumber.jsp?action=New" : "CreateHardware.jsp"), "New", "CreateHardware.jsp"},
 						 };
@@ -417,12 +417,12 @@
 		  </cti:checkProperty>
           <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_ADMIN_FAQ %>"> 
 <%
-	String faqLink = AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LINK_FAQ);
+	String faqLink = liteEC.getEnergyCompanySetting(ConsumerInfoRole.WEB_LINK_FAQ);
 	if (ServerUtils.forceNotNone(faqLink).length() > 0) {
 %>
           <tr>
             <td width="10">&nbsp;</td>
-            <td style="padding:1"><a href='<cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_LINK_FAQ %>"/>' class="Link2" target="faqs"><span class="NavText"><%= ((String[]) links.get("FAQ.jsp"))[1] %></span></a></td>
+            <td style="padding:1"><a href="<%= faqLink %>" class="Link2" target="faqs"><span class="NavText"><cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_LABEL_FAQ %>" defaultvalue="FAQ"/></span></a></td>
           </tr>
 <%	} else { %>
           <tr>
