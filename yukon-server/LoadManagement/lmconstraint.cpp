@@ -39,7 +39,7 @@ bool CtiLMConstraintChecker::checkConstraints(const CtiLMProgramDirect& lm_progr
     if( _LM_DEBUG & LM_DEBUG_CONSTRAINTS )
     {
         CtiLockGuard<CtiLogger> dout_guard(dout);
-	if(!ret_val)
+	if(!ret_val && lm_program.getControlType() != CtiLMProgramBase::TimedType)
 	{
 	    dout << RWTime() << " Failed at least one constraint: " << endl;
 	    for(vector<string>::iterator iter = results.begin();
