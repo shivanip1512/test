@@ -30,7 +30,6 @@
 		ecTemp.setMainFaxNumber( request.getParameter("FaxNo") );
 		ecTemp.setEmail( request.getParameter("Email") );
 		ecTemp.setTimeZone( request.getParameter("TimeZone") );
-		
 		ServletUtils.saveRequest(request, session, new String[] {"Route", "OperatorGroup", "CustomerGroup", "AdminEmail", "OptOutNotif"});
 		
 		response.sendRedirect("Address.jsp?referer=EnergyCompany.jsp");

@@ -138,6 +138,16 @@ function init() {
 	document.soForm.TimeCompleted.disabled = false;
 <% } %>
 }
+
+function getPrintableVersion() {
+	if (warnUnsavedChanges())
+		document.rptForm.submit();
+}
+
+function sendWorkOrder() {
+	if (warnUnsavedChanges())
+		document.woForm.submit();
+}
 </script>
 </head>
 
@@ -162,11 +172,15 @@ function init() {
             <table width="100%" border="0" cellspacing="0" cellpadding="3" class="TableCell1">
               <tr>
                 <td width="5">&nbsp;</td>
-                <td><a href="ServiceSummary.jsp" class="Link2">[Back to List]</a></td>
+                <td><a href="ServiceSummary.jsp" onclick="return warnUnsavedChanges();" class="Link2">[Back to List]</a></td>
               </tr>
               <tr>
                 <td width="5">&nbsp;</td>
-                <td><a href="" onclick="document.rptForm.submit(); return false;" class="Link2">Printable Version</a></td>
+                <td><a href="" onclick="getPrintableVersion(); return false;" class="Link2">Printable Version</a></td>
+              </tr>
+              <tr>
+                <td width="5">&nbsp;</td>
+                <td><a href="" onclick="sendWorkOrder(); return false;" class="Link2">Send To Service Company</a></td>
               </tr>
             </table>
 			<form name="rptForm" method="post" action="<%= request.getContextPath() %>/servlet/ReportGenerator">
@@ -178,6 +192,13 @@ function init() {
 			  <input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>?OrderNo=<%= orderNo %>">
 			  <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>?OrderNo=<%= orderNo %>">
 			</form>
+			<form name="woForm" method="post" action="<%= request.getContextPath() %>/servlet/WorkOrderManager">
+			  <input type="hidden" name="action" value="SendWorkOrder">
+              <input type="hidden" name="OrderID" value="<%= order.getOrderID() %>">
+			  <input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>?OrderNo=<%= orderNo %>">
+			  <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>?OrderNo=<%= orderNo %>">
+			  <input type="hidden" name="<%= ServletUtils.CONFIRM_ON_MESSAGE_PAGE %>">
+			</form>
 		  </td>
           <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF">
@@ -185,6 +206,7 @@ function init() {
 			  <% String header = "WORK ORDERS - SERVICE HISTORY"; %>
 			  <%@ include file="include/InfoSearchBar.jsp" %>
 			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
+			  <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
 			</div>
 			<form name="soForm" method="post" action="<%= request.getContextPath() %>/servlet/SOAPClient" onsubmit="return validate(this)" onreset="resetOrder(this)">
 			  <input type="hidden" name="action" value="UpdateWorkOrder">

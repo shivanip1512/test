@@ -42,6 +42,15 @@
 		scTemp.getPrimaryContact().setLastName( request.getParameter("ContactLastName") );
 		scTemp.getPrimaryContact().setFirstName( request.getParameter("ContactFirstName") );
 		
+		ContactNotification email = ServletUtils.getContactNotification(scTemp.getPrimaryContact(), YukonListEntryTypes.YUK_ENTRY_ID_EMAIL);
+		if (email != null) {
+			email.setNotification( request.getParameter("Email") );
+		}
+		else {
+			email = ServletUtils.createContactNotification(request.getParameter("Email"), YukonListEntryTypes.YUK_ENTRY_ID_EMAIL);
+			scTemp.getPrimaryContact().addContactNotification(email);
+		}
+		
 		response.sendRedirect("Address.jsp?referer=ServiceCompany.jsp&Company=" + compIdx);
 		return;
 	}
@@ -127,6 +136,16 @@ function editAddress(form) {
                           #:</td>
                         <td width="75%" class="TableCell"> 
                           <input type="text" name="FaxNo" value="<%= sc.getMainFaxNumber() %>" onchange="setContentChanged(true)">
+                        </td>
+                      </tr>
+                      <tr> 
+                        <td width="25%" align="right" class="TableCell">Email:</td>
+<%
+	ContactNotification email = ServletUtils.getContactNotification(sc.getPrimaryContact(), YukonListEntryTypes.YUK_ENTRY_ID_EMAIL);
+	String emailAddr = (email != null)? email.getNotification() : "";
+%>
+                        <td width="75%" class="TableCell"> 
+                          <input type="text" name="Email" value="<%= emailAddr %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 

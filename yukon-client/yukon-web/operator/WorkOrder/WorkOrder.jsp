@@ -151,6 +151,16 @@ function init() {
 	document.soForm.TimeCompleted.disabled = false;
 <% } %>
 }
+
+function getPrintableVersion() {
+	if (warnUnsavedChanges())
+		document.rptForm.submit();
+}
+
+function sendWorkOrder() {
+	if (warnUnsavedChanges())
+		document.woForm.submit();
+}
 </script>
 </head>
 
@@ -179,7 +189,11 @@ function init() {
               </tr>
               <tr>
                 <td width="5">&nbsp;</td>
-                <td><a href="" onclick="document.rptForm.submit(); return false;" class="Link2">Printable Version</a></td>
+                <td><a href="" onclick="getPrintableVersion(); return false;" class="Link2">Printable Version</a></td>
+              </tr>
+              <tr>
+                <td width="5">&nbsp;</td>
+                <td><a href="" onclick="sendWorkOrder(); return false;" class="Link2">Send To Service Company</a></td>
               </tr>
             </table>
 			<form name="rptForm" method="post" action="<%= request.getContextPath() %>/servlet/ReportGenerator">
@@ -190,6 +204,13 @@ function init() {
 			  <input type="hidden" name="OrderID" value="<%= order.getOrderID() %>">
 			  <input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>?OrderId=<%= orderID %>">
 			  <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>?OrderId=<%= orderID %>">
+			</form>
+			<form name="woForm" method="post" action="<%= request.getContextPath() %>/servlet/WorkOrderManager">
+			  <input type="hidden" name="action" value="SendWorkOrder">
+              <input type="hidden" name="OrderID" value="<%= order.getOrderID() %>">
+              <input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>?OrderId=<%= orderID %>">
+              <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>?OrderId=<%= orderID %>">
+			  <input type="hidden" name="<%= ServletUtils.CONFIRM_ON_MESSAGE_PAGE %>">
 			</form>
           </td>
           <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
