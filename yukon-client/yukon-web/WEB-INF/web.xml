@@ -86,7 +86,6 @@
         <display-name>SOAPServer</display-name>
         <description>Parse the request SOAP message and send back SOAP response.</description>
         <servlet-class>com.cannontech.stars.web.servlet.SOAPServer</servlet-class>
-        <load-on-startup>4</load-on-startup>
     </servlet>
 
     <servlet>
