@@ -5,8 +5,9 @@
 </head>
 
 <body bgcolor="#FFFFFF" text="#000000">
-<form method="POST" action="/servlet/SOAPClient">
-<input type="hidden" name="action" value="SearchCustAccount">
+<form method="POST" action="/servlet/InventoryManager">
+<input type="hidden" name="action" value="SearchInventory">
+<input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/operator/Hardware/ResultSet.jsp">
   <table width="100%" border="0" cellpadding = "5" height="69">
     <tr> 
       <td width="33%" valign = "top" align = "left">&nbsp;</td>
@@ -24,7 +25,7 @@
 %>
         </select>
         <input type="text" name="SearchValue" size = "14">
-        <input type="submit" name="Submit2" value="Search">
+        <input type="submit" name="Submit" value="Search">
         </b></span></td>
     </tr>
   </table>
