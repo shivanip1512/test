@@ -41,28 +41,7 @@ function MM_popupMsg(msg) { //v1.0
                 <br>
                 
               <div align="center"> 
-                <table width="600" border="0" cellspacing="0">
-                  <tr> 
-                    <td width="202"> 
-                      <table width="200" border="0" cellspacing="0" cellpadding="3">
-                        <tr> 
-                        <td><span class="TitleHeader">Acct #<%= account.getAccountNumber() %></span><br>
-                          <span class="NavText"><%= primContact.getFirstName() %> <%= primContact.getLastName() %><br>
-                          <!--<%= account.getCompany() %><br> -->
-                          <%= propAddr.getStreetAddr1() %>, <%= propAddr.getStreetAddr2() %><br>
-                          <%= propAddr.getCity() %>, <%= propAddr.getState() %> <%= propAddr.getZip() %><br>
-                          <%= primContact.getHomePhone() %></span></td>
-                        </tr>
-                      </table>
-                    </td>
-                    <td width="187" valign="top"> 
-                      <div align="center"><span class="TitleHeader"> CHANGE PROGRAM </span></div>
-                    </td>
-                    <td valign="top" width="205" align = "right">
-                      <%@ include file="include/Notice.jsp" %>
-                    </td>
-                  </tr>
-                </table>
+                <%@ include file="include/InfoBar.jsp" %>
                 <table width="600" border="0" cellpadding="0" cellspacing="0">
                   <tr> 
                     <td> 

@@ -3,13 +3,15 @@
     <td width="50%" valign = "top" align = "left"><span class="TitleHeader">Acct 
       #<%= account.getAccountNumber() %></span><br>
       <%
-	StringBuffer phoneNo = new StringBuffer();
-	if (primContact.getHomePhone().length() > 0)
-		phoneNo.append(", ").append(primContact.getHomePhone()).append("(H)");
-	if (primContact.getWorkPhone().length() > 0)
-		phoneNo.append(", ").append(primContact.getWorkPhone()).append("(W)");
+	StringBuffer contPhoneNo = new StringBuffer();
+	ContactNotification contHomePhone = ServletUtils.getContactNotification(primContact, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE);
+	if (contHomePhone != null)
+		contPhoneNo.append(", ").append(contHomePhone.getNotification()).append("(H)");
+	ContactNotification contWorkPhone = ServletUtils.getContactNotification(primContact, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE);
+	if (contWorkPhone != null)
+		contPhoneNo.append(", ").append(contWorkPhone.getNotification()).append("(W)");
 %>
-      <span class="NavText"><%= primContact.getFirstName() %> <%= primContact.getLastName() %><%= phoneNo.toString() %> 
+      <span class="NavText"><%= primContact.getFirstName() %> <%= primContact.getLastName() %><%= contPhoneNo.toString() %> 
       </span><br>
       <span class="NavText"><%= ServletUtils.getOneLineAddress(propAddr) %></span><br>
     </td>

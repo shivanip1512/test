@@ -213,6 +213,13 @@
 	}
 	
 	if (showNotification) {
+		ContactNotification email = ServletUtils.getContactNotification(primContact, YukonListEntryTypes.YUK_ENTRY_ID_EMAIL);
+		String emailAddr = "";
+		String notifyCtrl = "";
+		if (email != null) {
+			emailAddr = email.getNotification();
+			if (!email.getDisabled()) notifyCtrl = "checked";
+		}
 %>
                     <form name="form1" method="POST" action="<%=request.getContextPath()%>/servlet/SOAPClient">
                       <input type="hidden" name="action" value="UpdateCtrlNotification">
@@ -222,13 +229,12 @@
                         <tr> 
                           <td> 
                             <p align="center"> 
-                              <input type="checkbox" name="NotifyControl" value="true"
-							   <% if (primContact.getEmail().getEnabled()) out.print("checked"); %>>
+                              <input type="checkbox" name="NotifyControl" value="true" <%= notifyCtrl %>>
                               <span class="TableCell2"> 
                               I would like to be notified by e-mail of the 
                               <cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_TEXT_ODDS_FOR_CONTROL %>" defaultvalue="odds for control"/>.<br>
                               My e-mail address is:</span><br>
-                              <input type="text" name="Email" maxlength="50" size="30" value="<%= primContact.getEmail().getNotification() %>">
+                              <input type="text" name="Email" maxlength="50" size="30" value="<%= emailAddr %>">
                               <input type="submit" name="Submit" value="Submit">
                               </p>
                           </td>
@@ -237,13 +243,16 @@
                     </form>
 <%
 	}
+	
+	ContactNotification homePhone = ServletUtils.getContactNotification(primContact, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE);
+	String homePhoneNo = (homePhone != null)? homePhone.getNotification() : "";
 %>
                   </td>
                   <td width="171" valign="top"><span class="TitleHeader">Acct #<%= account.getAccountNumber() %></span><br> 
                     <span class="NavText"><%= primContact.getFirstName() %> <%= primContact.getLastName() %><br>
                     <!--<%= account.getCompany() %><br> -->
 					<%= ServletUtils.formatAddress(propAddr) %><br>
-                    <%= primContact.getHomePhone() %></span><br>
+                    <%= homePhoneNo %></span><br>
                     <br>
 <%
 	String genlImgName = ServerUtils.forceNotNone(AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_IMG_GENERAL));
