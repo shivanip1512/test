@@ -67,6 +67,10 @@ public void add() throws java.sql.SQLException
 public void delete() throws java.sql.SQLException 
 {
 	Object constraintValues[] = { getTagID() };
+	
+	//these tables do not have DBPersistent objects
+	delete("DynamicTags", "TagID", getTagID());
+	delete("TagLog", "TagID", getTagID());
 
 	delete( TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
 }
