@@ -7,6 +7,7 @@ package com.cannontech.dbeditor.editor.port;
  import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.port.DirectPort;
 import com.cannontech.database.data.port.LocalDirectPort;
+import com.cannontech.database.data.port.PooledPort;
 import com.cannontech.database.data.port.TerminalServerDirectPort;
 import com.cannontech.database.db.port.CommPort;
 import com.cannontech.database.db.port.PortSettings;
@@ -1137,7 +1138,7 @@ public void setValue(Object val)
 	Integer baudRate = ps.getBaudRate();
 	Integer cdWait = ps.getCdWait();
 
-	if (val instanceof LocalDirectPort)
+	if( val instanceof LocalDirectPort )
 	{
 		
 		getIPAddressLabel().setVisible(false);
@@ -1170,6 +1171,10 @@ public void setValue(Object val)
 		PortTerminalServer pts = ((TerminalServerDirectPort) dp).getPortTerminalServer();
 		getIPAddressTextField().setText(pts.getIpAddress());
 		getPortNumberTextField().setText(pts.getSocketPortNumber().toString());
+	}
+	else if( val instanceof PooledPort )
+	{
+		getConfigurationPanel().setVisible( false );
 	}
 
 	getTypeLabelField().setText(portType);

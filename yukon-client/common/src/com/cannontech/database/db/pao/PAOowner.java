@@ -46,7 +46,7 @@ public void delete() throws java.sql.SQLException
 /**
  * delete method comment.
  */
-public static final void deleteAllPWOowners( Integer paoID, java.sql.Connection conn)
+public static final void deleteAllPAOowners( Integer paoID, java.sql.Connection conn)
 {
 	java.sql.PreparedStatement pstmt = null;
 	java.sql.ResultSet rset = null;
@@ -88,7 +88,7 @@ public static final void deleteAllPWOowners( Integer paoID, java.sql.Connection 
  * This method was created in VisualAge.
  * @param ownerID java.lang.Integer
  */
-public static final PAOowner[] getAllMetersCustomerList(Integer ownerID, java.sql.Connection conn ) throws java.sql.SQLException
+public static final PAOowner[] getAllPAOownerChildren(Integer ownerID, java.sql.Connection conn ) throws java.sql.SQLException
 {
 	java.util.ArrayList tmpList = new java.util.ArrayList(30);
 	java.sql.PreparedStatement pstmt = null;

@@ -494,6 +494,10 @@ public final static int getPortType(String typeString)
 	{
 		return TSERVER_DIALUP;
 	}
+	else	if( typeString.equalsIgnoreCase(PortTypes.STRING_DIALOUT_POOL) )
+	{
+		return DIALOUT_POOL;
+	}
 	else
 		return INVALID;
 

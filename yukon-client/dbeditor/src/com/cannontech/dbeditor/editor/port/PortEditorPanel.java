@@ -10,6 +10,7 @@ import javax.swing.JTabbedPane;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.database.data.pao.PortTypes;
 import com.cannontech.database.data.port.DirectPort;
+import com.cannontech.dbeditor.wizard.port.PooledPortListPanel;
  
 public class PortEditorPanel extends com.cannontech.common.editor.PropertyPanel implements com.cannontech.common.editor.IMultiPanelEditor
 {
@@ -23,7 +24,8 @@ public class PortEditorPanel extends com.cannontech.common.editor.PropertyPanel 
 		{		//0 - PortSettingsEditorPanel
 			PortTypes.LOCAL_DIRECT, PortTypes.LOCAL_SHARED, PortTypes.LOCAL_RADIO,
 			PortTypes.LOCAL_DIALUP, PortTypes.TSERVER_DIRECT, PortTypes.TSERVER_SHARED,
-			PortTypes.TSERVER_RADIO, PortTypes.TSERVER_DIALUP, PortTypes.LOCAL_DIALBACK
+			PortTypes.TSERVER_RADIO, PortTypes.TSERVER_DIALUP, PortTypes.LOCAL_DIALBACK,
+			PortTypes.DIALOUT_POOL
 		},
 		{		//1	- PortTimingsEditorPanel
 			PortTypes.LOCAL_SHARED, PortTypes.LOCAL_RADIO, PortTypes.LOCAL_DIALUP, 
@@ -42,6 +44,9 @@ public class PortEditorPanel extends com.cannontech.common.editor.PropertyPanel 
 			PortTypes.LOCAL_DIRECT, PortTypes.LOCAL_SHARED, PortTypes.LOCAL_RADIO,
 			PortTypes.LOCAL_DIALUP, PortTypes.TSERVER_DIRECT, PortTypes.TSERVER_SHARED,
 			PortTypes.TSERVER_RADIO, PortTypes.TSERVER_DIALUP, PortTypes.LOCAL_DIALBACK
+		},
+		{		//5 - PortPool
+			PortTypes.DIALOUT_POOL
 		}
 
 	};
@@ -93,6 +98,12 @@ public Object[] createNewPanel(int panelIndex)
 			objs[0] = new com.cannontech.dbeditor.editor.port.PortSharingEditorPanel();
 			objs[1] = "Shared";
 			break;
+
+		case 5:
+			objs[0] = new PooledPortListPanel();
+			objs[1] = "Pooled Ports";
+			break;
+
 	}
 		
 	return objs;
@@ -151,8 +162,8 @@ protected String[] getTabNames() {
 private void handleException(java.lang.Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	// com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
-	// com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
+	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
+	com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
 }
 /**
  * Initialize the class.

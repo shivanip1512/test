@@ -14,6 +14,8 @@ public class PortWizardPanel extends com.cannontech.common.wizard.WizardPanel {
 	private SimpleLocalPortSettingsPanel simpleLocalPortSettingsPanel;
 	private SimpleTerminalServerSettingsPanel simpleTerminalServerSettingsPanel;
 	private SimpleDialupModemPanel simpleDialupModemPanel;
+	private PooledPortListPanel pooledPortListPanel;
+	
 /**
  * PortWizardPanel constructor comment.
  */
@@ -27,7 +29,7 @@ public PortWizardPanel() {
  */
 public java.awt.Dimension getActualSize() 
 {
-	setPreferredSize( new java.awt.Dimension(410, 480) );
+	setPreferredSize( new java.awt.Dimension(430, 480) );
 
 	return getPreferredSize();
 }
@@ -71,10 +73,14 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(com.ca
 	}
 	else
 	if( currentInputPanel == getLocalPortTypeQuestionPanel() ||
-		currentInputPanel == getTerminalServerTypeQuestionPanel() )
+		 currentInputPanel == getTerminalServerTypeQuestionPanel() )
 	{
 		if( getPortTypeQuestionPanelA().isLocalSerialPort() )
 		{
+			//set some items to show or not
+			getSimpleLocalPortSettingsPanel().setDisplayItems(
+					getLocalPortTypeQuestionPanel().isDialoutPool() );
+
 			return getSimpleLocalPortSettingsPanel();
 		}
 		else
@@ -94,6 +100,10 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(com.ca
 				 || getLocalPortTypeQuestionPanel().isDialBack() )
 			{
 				return getSimpleDialupModemPanel();
+			}
+			else if( getLocalPortTypeQuestionPanel().isDialoutPool() )
+			{
+				return getPooledPortListPanel();
 			}
 		}
 		else
@@ -130,6 +140,18 @@ protected SimpleDialupModemPanel getSimpleDialupModemPanel() {
 		
 	return simpleDialupModemPanel;
 }
+
+/**
+ * This method was created in VisualAge.
+ * @return com.cannontech.dbeditor.wizard.port.SimpleDialupModemPanel
+ */
+protected PooledPortListPanel getPooledPortListPanel() {
+	if( pooledPortListPanel == null )
+		pooledPortListPanel = new PooledPortListPanel();
+		
+	return pooledPortListPanel;
+}
+
 /**
  * This method was created in VisualAge.
  * @return com.cannontech.dbeditor.wizard.port.SimpleLocalPortSettingsPanel
@@ -171,13 +193,16 @@ protected boolean isLastInputPanel(DataInputPanel panel) {
 				|| (panel == getSimpleLocalPortSettingsPanel() &&
 					 getPortTypeQuestionPanelA().isLocalSerialPort() &&
 					 !getLocalPortTypeQuestionPanel().isDialup() &&
+					 !getLocalPortTypeQuestionPanel().isDialoutPool() &&
 					 !getLocalPortTypeQuestionPanel().isDialBack() )
 					 
 				|| (panel == getSimpleTerminalServerSettingsPanel() &&
 					 !getPortTypeQuestionPanelA().isLocalSerialPort() &&
 					 !getTerminalServerTypeQuestionPanel().isDialup())
+				|| (panel == getPooledPortListPanel())
 			);	
 }
+
 
 /**
  * This method was created in VisualAge.

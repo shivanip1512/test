@@ -263,7 +263,7 @@ public class CICustomerBase extends Customer implements com.cannontech.common.ed
 	//----------------------------------------------------------------------------------
 	//--------------- TODO:  NO LONGER, MUST ADD A MAPPING TABLE FOR METERS-------------
 	//----------------------------------------------------------------------------------
-			com.cannontech.database.db.pao.PAOowner[] meters = com.cannontech.database.db.pao.PAOowner.getAllMetersCustomerList( 
+			com.cannontech.database.db.pao.PAOowner[] meters = com.cannontech.database.db.pao.PAOowner.getAllPAOownerChildren( 
 					getCustomerID(), getDbConnection() );
 			for( int i = 0; i < meters.length; i++ )
 			{
@@ -396,7 +396,7 @@ public class CICustomerBase extends Customer implements com.cannontech.common.ed
 	//--------------- TODO:  NO LONGER, MUST ADD A MAPPING TABLE FOR METERS-------------
 	//----------------------------------------------------------------------------------
 		// delete all the ownership of meters for this customer
-		com.cannontech.database.db.pao.PAOowner.deleteAllPWOowners( 
+		com.cannontech.database.db.pao.PAOowner.deleteAllPAOowners( 
 			getCustomerID(), getDbConnection() );
 
 		// add all the current selected meters for this customer

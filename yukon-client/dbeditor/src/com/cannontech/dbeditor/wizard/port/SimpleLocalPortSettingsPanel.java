@@ -6,6 +6,7 @@ package com.cannontech.dbeditor.wizard.port;
 
 import java.awt.Dimension;
 
+import com.cannontech.database.data.port.DirectPort;
 import com.cannontech.database.data.port.LocalDirectPort;
  
 public class SimpleLocalPortSettingsPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener {
@@ -269,16 +270,22 @@ public Dimension getPreferredSize() {
  * @return java.lang.Object
  * @param val java.lang.Object
  */
-public Object getValue(Object val) {
+public Object getValue(Object val) 
+{
 	//commonObject must be of the local variety
 	String name = getDescriptionTextField().getText().trim();
 	String physicalPort = (String) getPhysicalPortComboBox().getSelectedItem();
 	Integer baudRate = (Integer) getBaudRateComboBox().getSelectedItem();
 
-	((LocalDirectPort) val).setPortName( name );
-	((LocalDirectPort) val).getPortLocalSerial().setPhysicalPort( physicalPort );
-	((LocalDirectPort) val).getPortSettings().setBaudRate( baudRate );
-	((LocalDirectPort) val).getPortSettings().setLineSettings( "8N1" );
+	((DirectPort) val).setPortName( name );
+	((DirectPort) val).getPortSettings().setBaudRate( baudRate );
+	((DirectPort) val).getPortSettings().setLineSettings( "8N1" );
+
+	//be sure this is a local direct port
+	if( val instanceof LocalDirectPort )
+	{
+		((LocalDirectPort) val).getPortLocalSerial().setPhysicalPort( physicalPort );
+	}
 
 	return val;
 }
@@ -289,8 +296,8 @@ public Object getValue(Object val) {
 private void handleException(Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	// com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
-	// com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
+	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
+	com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
 }
 /**
  * Initializes connections
@@ -425,8 +432,19 @@ public static void main(java.lang.String[] args) {
  * This method was created in VisualAge.
  * @param val java.lang.Object
  */
-public void setValue(Object val) {
+public void setValue(Object val) 
+{
 }
+
+public void setDisplayItems( boolean hideItems ) 
+{
+	getPhysicalPortComboBox().setVisible( !hideItems );
+	getPhysicalPortLabel().setVisible( !hideItems );
+
+	getBaudRateComboBox().setVisible( !hideItems );
+	getBaudRateLabel().setVisible( !hideItems );
+}
+
 /**
  * 
  */

@@ -37,6 +37,13 @@ public static DirectPort createPort( int typeOfPort ) throws java.sql.SQLExcepti
 			
 			port = lsp;
 			break;
+
+		case PortTypes.DIALOUT_POOL:
+			PooledPort pp = new PooledPort();		
+			pp.setPortType( PortTypes.STRING_DIALOUT_POOL );
+
+			port = pp;
+			break;
 			
 		case PortTypes.LOCAL_RADIO:
 			LocalRadioPort lrp = new LocalRadioPort();
