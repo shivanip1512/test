@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_scanrate.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/09/06 19:03:45 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/09/09 21:44:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -111,43 +111,40 @@ CtiTableDeviceScanRate& CtiTableDeviceScanRate::setUpdated( const BOOL aBool )
 
 void CtiTableDeviceScanRate::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
+    keyTable = db.table("Device");
     RWDBTable devTbl = db.table(getTableName());
 
     selector <<
+    keyTable["deviceid"] <<
     devTbl["scantype"] <<
     devTbl["intervalrate"] <<
     devTbl["scangroup"] <<
     devTbl["alternaterate"];
 
+    selector.from(keyTable);
     selector.from(devTbl);
 
-    selector.where( selector.where() && keyTable["paobjectid"].leftOuterJoin(devTbl["deviceid"]) );
+    selector.where( selector.where() && keyTable["deviceid"] == devTbl["deviceid"] );
 }
 
 void CtiTableDeviceScanRate::DecodeDatabaseReader(RWDBReader &rdr)
 {
-    RWCString rwstemp;
-    RWDBNullIndicator isNull;
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        if(getDebugLevel() & 0x0800) dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
 
-    rdr["scantype"] >> isNull;
+    RWCString rwstemp;
+
     rdr["scantype"] >> rwstemp;
 
-    if(!isNull && !rwstemp.isNull())
-    {
-        if(getDebugLevel() & 0x0800)
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-
-        _scanType = resolveScanType( rwstemp );
+    _scanType = resolveScanType( rwstemp ); //??????
         rdr["intervalrate"] >> _scanRate;
         rdr["scangroup"] >> _scanGroup;
         rdr["alternaterate"] >> _alternateRate;
 
         _updated = TRUE;                    // _ONLY_ _ONLY_ place this is set.
     }
-}
 
 void CtiTableDeviceScanRate::DumpData()
 {
