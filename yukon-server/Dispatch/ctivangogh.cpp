@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.94 $
-* DATE         :  $Date: 2005/01/18 19:10:13 $
+* REVISION     :  $Revision: 1.95 $
+* DATE         :  $Date: 2005/01/27 17:48:04 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -343,7 +343,7 @@ void CtiVanGogh::VGMainThread()
                         MessageCount += increment;
                         MessageLog += increment;
 
-                        if(increment > 250)
+                        if(increment > 1000)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << RWTime() << " **** BIGMULTI Checkpoint **** submessages to process " << increment << " from " << MsgPtr->getSource() << " " << MsgPtr->getUser() << endl;
@@ -3541,6 +3541,11 @@ INT CtiVanGogh::checkForStatusAlarms(CtiPointDataMsg *pData, CtiMultiWrapper &aW
                             checkStatusState(alarm, pData, aWrap, point, pDyn, pSig );
                             break;
                         }
+                    case (CtiTablePointAlarming::changeOfState):
+                        {
+                            checkChangeOfState(alarm, pData, aWrap, point, pDyn, pSig );
+                            break;
+                        }
                     default:
                         {
                             break;
@@ -6109,6 +6114,45 @@ void CtiVanGogh::checkStatusState(int alarm, CtiPointDataMsg *pData, CtiMultiWra
             deactivatePointAlarm(alarm,aWrap,point,pDyn);
         }
     }
+}
+
+void CtiVanGogh::checkChangeOfState(int alarm, CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, CtiPointBase &point, CtiDynamicPointDispatch *pDyn, CtiSignalMsg *&pSig )
+{
+    #if 0
+    RWCString action;
+    double val = pData->getValue();
+    INT statelimit = (alarm - CtiTablePointAlarming::state0);
+
+    // Value or quality must have been changed!
+    if( (pDyn->getValue() != pData->getValue() || pDyn->getQuality() != pData->getQuality()))
+    {
+        if(!_signalManager.isAlarmed(point.getID(), alarm))
+        {
+            if(gDispatchDebugLevel & DISPATCH_DEBUG_ALARMS)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** COS Violation **** \n" <<
+                "   Point: " << point.getID() << " " << ResolveStateName(point.getStateGroupID(), (int)pData->getValue()) << endl;
+            }
+
+            char tstr[80];
+            _snprintf(tstr, sizeof(tstr)-1, "%s", ResolveStateName(point.getStateGroupID(), (int)pData->getValue()));
+
+            // OK, we have an actual alarm condition to gripe about!
+            pSig = CTIDBG_new CtiSignalMsg(point.getID(), pData->getSOE(), tstr, getAlarmStateName( point.getAlarming().getAlarmCategory(alarm) ), GeneralLogType, point.getAlarming().getAlarmCategory(alarm), pData->getUser());                        // This is an alarm if the alarm state indicates anything other than SignalEvent.
+            // This is an alarm if the alarm state indicates anything other than SignalEvent.
+            tagSignalAsAlarm(point, pSig, alarm, pData);
+        }
+        else if(!_signalManager.isAlarmActive(point.getID(), alarm))
+        {
+            reactivatePointAlarm(alarm,aWrap,point,pDyn);
+        }
+    }
+    else
+    {
+        deactivatePointAlarm(alarm,aWrap,point,pDyn);
+    }
+    #endif
 }
 
 void CtiVanGogh::tagSignalAsAlarm( CtiPointBase &point, CtiSignalMsg *&pSig, int alarm, CtiPointDataMsg *pData )

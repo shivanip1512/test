@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_pt_alarm.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2004/05/20 22:37:43 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2005/01/27 17:47:53 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -73,6 +73,7 @@ public:
       state7,
       state8,
       state9,
+      changeOfState,
 
       invalidstatusstate // = 32
 
