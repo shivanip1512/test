@@ -99,7 +99,19 @@ public int compareRowsByColumn(int row1, int row2 )
 	{
 		String s1 = (String) data.getValueAt(row1, sortingColumn);
 		String s2 = (String) data.getValueAt(row2, sortingColumn);
-		int result = s1.compareTo(s2);
+      int result = s1.compareTo(s2);
+      
+      Double d1, d2;
+      try
+      { //if there is numbers in the string, use those values for a comparison
+         d1 = Double.valueOf( java.text.DecimalFormat.getInstance().parse(s1).toString() );
+         d2 = Double.valueOf( java.text.DecimalFormat.getInstance().parse(s2).toString() );
+         result = d1.compareTo(d2);
+      }
+      catch( Exception e ) 
+      {};  //no big thang, just use the Strings compare to
+      
+      
 		if (result < 0)
 			return 1;
 		else if (result > 0)
