@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.35 $
-* DATE         :  $Date: 2003/06/30 20:01:04 $
+* REVISION     :  $Revision: 1.36 $
+* DATE         :  $Date: 2003/06/30 22:37:33 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -449,12 +449,22 @@ bool CtiDeviceMCT::initCommandStore()
 
    cs._cmd     = CtiProtocolEmetcon::GetConfig_Raw;
    cs._io      = IO_READ;
-   cs._funcLen = make_pair( 0, 0 );
+   cs._funcLen = make_pair( 0, 0 );  //  this will be filled in by executeGetConfig
    _commandStore.insert( cs );
 
    cs._cmd     = CtiProtocolEmetcon::PutConfig_Raw;
    cs._io      = IO_WRITE | Q_ARMC;
-   cs._funcLen = make_pair( 0, 0 );
+   cs._funcLen = make_pair( 0, 0 );  //  this will be filled in by executePutConfig
+   _commandStore.insert( cs );
+
+   cs._cmd     = CtiProtocolEmetcon::Control_Shed;
+   cs._io      = IO_WRITE;
+   cs._funcLen = make_pair( 0, 0 );  //  this will be filled in by executeControl
+   _commandStore.insert( cs );
+
+   cs._cmd     = CtiProtocolEmetcon::Control_Restore;
+   cs._io      = IO_WRITE;
+   cs._funcLen = make_pair( (int)MCT_Restore, 0 );
    _commandStore.insert( cs );
 
    cs._cmd     = CtiProtocolEmetcon::Control_Close;
@@ -2415,7 +2425,54 @@ INT CtiDeviceMCT::executeControl(CtiRequestMsg                  *pReq,
 
     INT function;
 
-    if(parse.getFlags() & CMD_FLAG_CTL_OPEN)
+    if(parse.getFlags() & CMD_FLAG_CTL_SHED)
+    {
+        int shed_duration, shed_function_base, shed_function, relay_mask;
+
+        shed_duration = parse.getiValue("shed");
+        relay_mask    = parse.getiValue("relaymask");
+
+        function = CtiProtocolEmetcon::Control_Shed;
+
+        if(getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO))
+        {
+            if( shed_duration > 0 )
+            {
+                if( shed_duration <= 450 )
+                {
+                    shed_function_base = MCT_Shed_Base_07m;
+                }
+                else if( shed_duration <= 900 )
+                {
+                    shed_function_base = MCT_Shed_Base_15m;
+                }
+                else if( shed_duration <= 1800 )
+                {
+                    shed_function_base = MCT_Shed_Base_30m;
+                }
+                else
+                {
+                    shed_function_base = MCT_Shed_Base_60m;
+                }
+
+                //  if at least one of relays a-d (1-4) are selected
+                if( (relay_mask & 0x0f) > 0x00 )
+                {
+                    shed_function = shed_function_base | (relay_mask & 0x0f);
+
+                    OutMessage->Buffer.BSt.Function = shed_function;
+
+                    found = true;
+                }
+            }
+        }
+    }
+    else if(parse.getFlags() & CMD_FLAG_CTL_RESTORE)
+    {
+        function = CtiProtocolEmetcon::Control_Restore;
+        found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+    }
+    else if(parse.getFlags() & CMD_FLAG_CTL_OPEN)
     {
         function = CtiProtocolEmetcon::Control_Open;
         found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);

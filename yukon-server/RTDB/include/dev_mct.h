@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct.h-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2003/06/27 21:12:43 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2003/06/30 22:37:33 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -61,6 +61,12 @@ protected:
         MCT_GroupAddrEnable  = 0x54,
 
         MCT_Rollover         = 100000,  //  5 digits
+
+        MCT_Restore          = 0x00,
+        MCT_Shed_Base_07m    = 0x00,
+        MCT_Shed_Base_15m    = 0x10,
+        MCT_Shed_Base_30m    = 0x20,
+        MCT_Shed_Base_60m    = 0x30,
 
         MCT_LPInt_Func       = 0x70
     };
