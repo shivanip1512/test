@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.30 $
-* DATE         :  $Date: 2005/03/17 04:41:31 $
+* REVISION     :  $Revision: 1.31 $
+* DATE         :  $Date: 2005/03/17 19:19:17 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -68,6 +68,13 @@ DNP &DNP::operator=(const DNP &aRef)
       Inherited::operator=(aRef);
    }
    return *this;
+}
+
+
+
+LONG DNP::getAddress() const
+{
+    return _dnp_address.getSlaveAddress();
 }
 
 
@@ -516,6 +523,11 @@ INT DNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&
         OutMessage->DeviceID = getID();
         OutMessage->TargetID = getID();
         EstablishOutMessagePriority(OutMessage, pReq->getMessagePriority());
+
+        if( getPortID() == gConfigParms.getValueAsInt("PORTER_DNPUDP_DB_PORTID", 0) )
+        {
+            OutMessage->MessageFlags |= MSGFLG_ROUTE_TO_PORTER_DNPUDP_THREAD;
+        }
 
         sendCommRequest(OutMessage, outList);
 
