@@ -396,7 +396,7 @@
             <td style="padding:1"><%= ((String[]) links.get("Password.jsp"))[1] %></td>
           </tr>
 		  </cti:checkProperty>
-          <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_ADMIN_CHANGE_FAQ %>"> 
+          <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_ADMIN_FAQ %>"> 
 <%
 	String faqLink = AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LINK_FAQ);
 	if (ServerUtils.forceNotNone(faqLink).length() > 0) {
