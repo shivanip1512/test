@@ -164,6 +164,12 @@ public class MV_90Record implements BillingRecordBase
 	public void setDateKW(java.sql.Timestamp timeStamp)
 	{
 		java.util.Date d = new java.util.Date(timeStamp.getTime());
+		
+		if( getTimeKW().equalsIgnoreCase("24:00"))
+		{
+			java.sql.Timestamp dummyTS = new java.sql.Timestamp(timeStamp.getTime() - 86400000);
+			d = new java.util.Date(dummyTS.getTime());
+		}
 		dateKW = DATE_FORMAT.format(d);
 	}
 	/**
