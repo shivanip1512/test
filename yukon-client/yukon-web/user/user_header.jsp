@@ -1,7 +1,9 @@
 <%@ page language="java" %>
 <%@ page import="java.util.*" %>
-<%@ page import="com.cannontech.common.constants.RoleTypes" %>
-<%@ page import="com.cannontech.database.cache.functions.CustomerFuncs" %>
+<%@ page import="com.cannontech.roles.application.*"%>
+<%@ page import="com.cannontech.roles.cicustomer.*"%>
+<%@ page import="com.cannontech.database.cache.functions.ContactFuncs" %>
+<%@ page import="com.cannontech.database.cache.functions.YukonUserFuncs" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
 <%@ page import="com.cannontech.database.data.lite.LiteCICustomer" %>
 <%@ page import="com.cannontech.database.data.lite.LiteContact" %>
@@ -10,35 +12,25 @@
 <%@ taglib uri="/WEB-INF/jruntags.jar" prefix="jrun" %>
 <%@ taglib uri="/WEB-INF/cti.tld" prefix="cti" %>
 
+<link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
 <cti:checklogin/>
 
 <%
+	LiteYukonUser liteYukonUser = (LiteYukonUser) session.getAttribute("YUKON_USER");
+	if( liteYukonUser == null)
+	{
+		response.sendRedirect("/login.jsp"); return;
+	}
+	
     java.text.SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");	  
     java.text.SimpleDateFormat timePart = new java.text.SimpleDateFormat("HH:mm");
     java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM:dd:yyyy:HH:mm:ss");
     String dbAlias = com.cannontech.common.util.CtiUtilities.getDatabaseAlias();
 
-	LiteYukonUser liteYukonUser = null;
-	LiteContact liteContact = null;
-	LiteCICustomer liteCICustomer = null;
-	int liteYukonUserID = -5;
-	int customerID = -1; 
-	try
-	{
-		liteYukonUser = (LiteYukonUser) session.getAttribute("YUKON_USER");
-		liteYukonUserID = liteYukonUser.getLiteID();		
-	}
-	catch (IllegalStateException ise)
-	{
-	}
-	if (liteYukonUser == null)
-	{ 
-		response.sendRedirect("/login.jsp"); return;
-	}
-
-	liteContact = CustomerFuncs.getCustomerContact(liteYukonUserID);
-	liteCICustomer = CustomerFuncs.getOwnerCICustomer(liteContact.getContactID());
-	customerID = liteCICustomer.getCustomerID();
+	LiteContact liteContact = YukonUserFuncs.getLiteContact(liteYukonUser.getLiteID());
+	LiteCICustomer liteCICustomer = ContactFuncs.getCICustomer(liteContact.getContactID());
+	
+	int customerID = liteCICustomer.getCustomerID();
 
     Class[] types = { Integer.class,String.class };    
 	Object[][] gData = com.cannontech.util.ServletUtil.executeSQL( dbAlias, "SELECT GDEF.GRAPHDEFINITIONID, GDEF.NAME FROM GRAPHDEFINITION GDEF, GRAPHCUSTOMERLIST GCL WHERE GDEF.GRAPHDEFINITIONID=GCL.GRAPHDEFINITIONID AND GCL.CUSTOMERID = " + customerID+ " ORDER BY GDEF.NAME", types );
