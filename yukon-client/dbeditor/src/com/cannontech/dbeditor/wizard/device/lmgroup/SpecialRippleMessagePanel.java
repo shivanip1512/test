@@ -631,7 +631,7 @@ public Object getValue(Object o)
 	group.getLmGroupRipple().setRestore(restoreBuffer.toString());
 	group.getLmGroupRipple().setShedTime(shedTime);
 	
-	return group;		
+	return o;		
 	
 }
 /**
