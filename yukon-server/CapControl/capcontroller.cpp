@@ -666,7 +666,7 @@ void CtiCapController::parseMessage(RWCollectable *message, ULONG secondsFrom190
             case MSG_POINTDATA:
                 {
                     pData = (CtiPointDataMsg *)message;
-                    pointDataMsg( pData->getId(), pData->getValue(), pData->getTags(), pData->getTime(), secondsFrom1901 );
+                    pointDataMsg( pData->getId(), pData->getValue(), pData->getQuality(), pData->getTags(), pData->getTime(), secondsFrom1901 );
                 }
                 break;
             case MSG_PCRETURN:
@@ -742,7 +742,7 @@ void CtiCapController::parseMessage(RWCollectable *message, ULONG secondsFrom190
 
     Handles point data messages and updates substation bus point values.
 ---------------------------------------------------------------------------*/
-void CtiCapController::pointDataMsg( long pointID, double value, unsigned tags, RWTime& timestamp, ULONG secondsFrom1901 )
+void CtiCapController::pointDataMsg( long pointID, double value, unsigned quality, unsigned tags, RWTime& timestamp, ULONG secondsFrom1901 )
 {
     if( _CC_DEBUG )
     {
@@ -785,6 +785,7 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned tags, 
             currentSubstationBus->setCurrentVarLoadPointValue(value);
             currentSubstationBus->setBusUpdatedFlag(TRUE);
             currentSubstationBus->figureEstimatedVarLoadPointValue();
+            currentSubstationBus->setCurrentVarPointQuality(quality);
             if( currentSubstationBus->getEstimatedVarLoadPointId() > 0 )
             {
                 sendMessageToDispatch(new CtiPointDataMsg(currentSubstationBus->getEstimatedVarLoadPointId(),currentSubstationBus->getEstimatedVarLoadPointValue(),NormalQuality,AnalogPointType));
@@ -852,6 +853,8 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned tags, 
                     }
                     currentFeeder->setCurrentVarLoadPointValue(value);
                     currentSubstationBus->setBusUpdatedFlag(TRUE);
+                    currentFeeder->figureEstimatedVarLoadPointValue();
+                    currentFeeder->setCurrentVarPointQuality(quality);
                     if( currentFeeder->getEstimatedVarLoadPointId() > 0 )
                     {
                         sendMessageToDispatch(new CtiPointDataMsg(currentFeeder->getEstimatedVarLoadPointId(),currentFeeder->getEstimatedVarLoadPointValue(),NormalQuality,AnalogPointType));
@@ -938,6 +941,15 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned tags, 
                             currentSubstationBus->figureEstimatedVarLoadPointValue();
                             if( currentSubstationBus->getEstimatedVarLoadPointId() > 0 )
                                 sendMessageToDispatch(new CtiPointDataMsg(currentSubstationBus->getEstimatedVarLoadPointId(),currentSubstationBus->getEstimatedVarLoadPointValue(),NormalQuality,AnalogPointType));
+
+                            if( currentSubstationBus->getCurrentWattLoadPointId() > 0 )
+                            {
+                                currentSubstationBus->setEstimatedPowerFactorValue(currentSubstationBus->calculatePowerFactor(currentSubstationBus->getEstimatedVarLoadPointValue(),currentSubstationBus->getCurrentWattLoadPointValue()));
+                            }
+                            if( currentFeeder->getCurrentWattLoadPointId() > 0 )
+                            {
+                                currentFeeder->setEstimatedPowerFactorValue(currentSubstationBus->calculatePowerFactor(currentFeeder->getEstimatedVarLoadPointValue(),currentFeeder->getCurrentWattLoadPointValue()));
+                            }
                             found = TRUE;
                             break;
                         }
