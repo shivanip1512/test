@@ -377,7 +377,7 @@ public Object getValue(Object val)
 	point.getPointAccumulator().setMultiplier(multiplier);
 	point.getPointUnit().setUomID( new Integer(uOfMeasureID) );
 	point.getPointUnit().setDecimalPlaces(new Integer(com.cannontech.dbeditor.DatabaseEditor.getDecimalPlaces()));
-	point.getPoint().setStateGroupID(new Integer(com.cannontech.database.db.state.StateGroup.STATEGROUP_ACCUMULATOR));
+	point.getPoint().setStateGroupID(new Integer(com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_ACCUMULATOR));
 
 	return val;
 }

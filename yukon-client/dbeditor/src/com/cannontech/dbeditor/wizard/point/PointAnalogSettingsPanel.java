@@ -238,7 +238,7 @@ public Object getValue(Object val)
 		((com.cannontech.database.data.lite.LiteUnitMeasure) getUnitOfMeasureComboBox().getSelectedItem()).getUomID();
 
 	point.getPointUnit().setUomID( new Integer(uOfMeasureID) );
-	point.getPoint().setStateGroupID(new Integer(com.cannontech.database.db.state.StateGroup.STATEGROUP_ANALOG));
+	point.getPoint().setStateGroupID(new Integer(com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_ANALOG));
 
 	point.getPointUnit().setDecimalPlaces(new Integer(((Number) getJCSpinFieldDecimalPlaces().getValue()).intValue()));
 	point.getPointAnalog().setMultiplier(multiplier);
