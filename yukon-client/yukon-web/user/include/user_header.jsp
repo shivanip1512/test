@@ -2,6 +2,7 @@
 <%@ page import="java.util.*" %>
 <%@ page import="com.cannontech.roles.application.*"%>
 <%@ page import="com.cannontech.roles.cicustomer.*"%>
+<%@ page import="com.cannontech.roles.analysis.*"%>
 <%@ page import="com.cannontech.database.cache.functions.ContactFuncs" %>
 <%@ page import="com.cannontech.database.cache.functions.YukonUserFuncs" %>
 <%@ page import="com.cannontech.database.cache.functions.EnergyCompanyFuncs" %>
@@ -14,6 +15,7 @@
 
 <%@ page import="com.cannontech.roles.yukon.EnergyCompanyRole" %>
 <%@ page import="com.cannontech.util.ServletUtil" %>
+<%@ page import="com.cannontech.analysis.*"%> 	
 <%@ taglib uri="/WEB-INF/cti.tld" prefix="cti" %>
 
 <cti:checklogin/>
