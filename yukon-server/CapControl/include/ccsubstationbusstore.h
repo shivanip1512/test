@@ -50,6 +50,7 @@ public:
     const RWDBDateTime& getLastDBReloadTime() const;
 
     void verifySubBusAndFeedersStates();
+    void resetDailyOperations();
 
     bool UpdateBusDisableFlagInDB(CtiCCSubstationBus* bus);
     bool UpdateFeederDisableFlagInDB(CtiCCFeeder* feeder);
@@ -58,6 +59,8 @@ public:
     bool UpdateFeederBankListInDB(CtiCCFeeder* feeder);
 
     static const RWCString CAP_CONTROL_DBCHANGE_MSG_SOURCE;
+
+    mutable RWRecursiveLock<RWMutexLock> _storemutex;
 
 private:
 
@@ -99,9 +102,6 @@ private:
 
     //The singleton instance of CtiCCSubstationBusStore
     static CtiCCSubstationBusStore* _instance;
-    
-    mutable RWRecursiveLock<RWMutexLock> _mutex;
-
 
     //Possible static strings
     static const RWCString m3iAMFMInterfaceString;
