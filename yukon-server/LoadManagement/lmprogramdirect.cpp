@@ -216,6 +216,7 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, ULONG c
             }
             else
             {
+                ULONG savedState = getProgramState();
 
                 if( getProgramState() != CtiLMProgramBase::FullyActiveState &&
                     getProgramState() != CtiLMProgramBase::ActiveState )
@@ -252,7 +253,7 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, ULONG c
 
                     if( _LM_DEBUG )
                     {
-                        if( getProgramState() == CtiLMProgramBase::ActiveState )
+                        if( savedState == CtiLMProgramBase::ActiveState )
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << RWTime() << " - Controlling additional time refresh groups, LM Program: " << getPAOName() << ", number of additional groups: " << numberOfGroupsToTake << endl;
@@ -2103,7 +2104,7 @@ BOOL CtiLMProgramDirect::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg*
         {
             returnBoolean = TRUE;
             {
-                RWCString text = RWCString("Manually Stop, LM Program: ");
+                RWCString text = RWCString("Manual Stop, LM Program: ");
                 text += getPAOName();
                 RWCString additional = RWCString("");
                 CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
