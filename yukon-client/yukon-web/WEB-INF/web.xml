@@ -162,7 +162,7 @@
     <display-name>PWordRequest</display-name>
     <description>Allows a user to request a password via email.</description>
     <servlet-class>
-    com.cannontech.servlet.PWordRequest</servlet-class>
+    com.cannontech.stars.web.servlet.PWordRequest</servlet-class>
   </servlet>  
   <!-- STARS specific configs -->
 
