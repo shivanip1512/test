@@ -7,6 +7,7 @@ package com.cannontech.servlet;
 import javax.servlet.http.HttpServlet;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.db.graph.GraphRenderers;
+import com.cannontech.util.ServletUtil;
 
 public class Download extends HttpServlet
 {	
@@ -38,11 +39,11 @@ public void doPost(javax.servlet.http.HttpServletRequest req, javax.servlet.http
 		resp.setDateHeader("Expires", 0); //prevents caching at the proxy server
 
 
-		com.cannontech.graph.GraphBean localBean = (com.cannontech.graph.GraphBean)session.getAttribute("graphBean");
+		com.cannontech.graph.GraphBean localBean = (com.cannontech.graph.GraphBean)session.getAttribute(ServletUtil.ATT_GRAPH_BEAN);
 		if(localBean == null)
 		{
 			System.out.println("!!! BEAN IS NULL !!! ");
-			session.setAttribute("graphBean", new com.cannontech.graph.GraphBean());
+			session.setAttribute(ServletUtil.ATT_GRAPH_BEAN, new com.cannontech.graph.GraphBean());
 		}
 			
 		localBean.updateCurrentPane();
@@ -55,45 +56,45 @@ public void doPost(javax.servlet.http.HttpServletRequest req, javax.servlet.http
 				extension = "png";	//default
 				
 			out = resp.getOutputStream();
-			com.cannontech.graph.Graph graph = localBean.getGraph();
+//			com.cannontech.graph.Graph graph = localBean.getGraph();
 			
-			String fileName = graph.getTrendModel().getChartName().toString();
-			fileName += fileNameFormat.format(graph.getTrendModel().getStartDate());
+			String fileName = localBean.getTrendModel().getChartName().toString();
+			fileName += fileNameFormat.format(localBean.getTrendModel().getStartDate());
 			fileName += "." + extension;
 
 			resp.addHeader("Content-Disposition", "attachment; filename=" + fileName);
 			if (extension.equalsIgnoreCase("csv"))
 			{
 				resp.setContentType("text/x-comma-separated-values");
-				graph.encodeCSV(out);
+				localBean.encodeCSV(out);
 			}
 			else if (extension.equalsIgnoreCase("pdf"))
 			{
 				resp.setContentType("application/pdf");
-				graph.encodePDF(out);
+				localBean.encodePDF(out);
 			}
 			else if (extension.equalsIgnoreCase("jpeg"))
 			{
 				resp.setContentType("image/jpeg");
-				graph.encodeJpeg(out);
+				localBean.encodeJpeg(out);
 			}
 			else if (extension.equalsIgnoreCase("png"))
 			{
 				resp.setContentType("image/x-png");
-				graph.encodePng(out);
+				localBean.encodePng(out);
 			}
 			else if (extension.equalsIgnoreCase("html"))
 			{
 				resp.setContentType("text/html");
-				if( graph.getViewType() == GraphRenderers.TABULAR)
-					graph.encodeTabularHTML(out);
-				else if (graph.getViewType() == GraphRenderers.SUMMARY)
-					graph.encodeSummmaryHTML(out);
+				if( localBean.getViewType() == GraphRenderers.TABULAR)
+					localBean.encodeTabularHTML(out);
+				else if (localBean.getViewType() == GraphRenderers.SUMMARY)
+					localBean.encodeSummmaryHTML(out);
 			}
 			else if (extension.equalsIgnoreCase(""))
 			{
 				resp.setContentType("image/x-png");
-				graph.encodePng(out);
+				localBean.encodePng(out);
 			}
 			out.flush();
 		}
