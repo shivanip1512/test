@@ -464,7 +464,7 @@ private javax.swing.JTextField getJTextFieldTOUScheduleName() {
  */
 public Object getValue(Object val) 
 {
-	if( getJTableRateOffsets().isEditing() )
+	/*if( getJTableRateOffsets().isEditing() )
 		getJTableRateOffsets().getCellEditor().stopCellEditing();
 		
 	TOUSchedule tou = null;
@@ -486,7 +486,8 @@ public Object getValue(Object val)
 		tou.getRateOffsetsVector().addElement(ro);
 	}
 
-	return tou;
+	return tou;*/
+	return null;
 }
 /**
  * Called whenever the part throws an exception.
@@ -712,7 +713,7 @@ public void mouseReleased(java.awt.event.MouseEvent e) {
  */
 public void setValue(Object val) 
 {
-	TOUSchedule tou = null;
+	/*TOUSchedule tou = null;
 	
 	if( val != null )
 	{
@@ -730,6 +731,6 @@ public void setValue(Object val)
 	{
 		//make sure that afledgling TOU Schedule has at least one RateOffset
 		getJTableModel().addRowValue("A", JTextFieldTimeEntry.setTimeTextForField(new Integer(0)));	
-	}
+	}*/
 }
 }
