@@ -11,21 +11,21 @@ Checking table ...
 -	Existence of column
 -	Existence of index
 	Warning	The following table do not have any index:
+		-> OperatorLoginGraphList
+		-> EnergyCompanyCustomerList
+		-> LMMACSScheduleOperatorList
 		-> PointAlarming
 		-> EnergyCompanyOperatorLoginList
-		-> EnergyCompanyCustomerList
-		-> OperatorLoginGraphList
-		-> LMMACSScheduleOperatorList
 -	Existence of key
 -	Number of auto-incremented columns
 -	Existence of reference
 	Warning	The following table do not have any reference:
 		-> LOGIC
+		-> BillingFileFormats
+		-> FDRTelegyrGroup
 		-> CTIDatabase
 		-> GenericMacro
 		-> YukonWebConfiguration
-		-> BillingFileFormats
-		-> FDRTelegyrGroup
 Checking column of table
 -	Column name uniqueness
 -	Column code uniqueness

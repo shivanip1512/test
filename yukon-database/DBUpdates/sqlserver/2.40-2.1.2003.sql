@@ -253,10 +253,6 @@ select paobjectid, 'Default', 'Default', paoname, 'Default' from YukonPAObject
 where type like '%ION%';
 go
 
-alter table EnergyCompany add WebConfigID numeric not null DEFAULT 0;
-go
-
-
 create table YukonWebConfiguration (
 ConfigurationID      numeric              not null,
 LogoLocation         varchar(100)         null,
@@ -376,12 +372,8 @@ insert into yukongrouprole values(-210,-176,'(none)');
 insert into yukongrouprole values(-210,-177,'(none)');
 insert into yukongrouprole values(-210,-179,'(none)');
 insert into yukongrouprole values(-210,-181,'(none)');
-insert into yukongrouprole values(-210,-9000,' ');
-insert into yukongrouprole values(-210,-9001,'Energy Exchange');
-insert into yukongrouprole values(-210,-9002,'Energy Exchange');
-insert into yukongrouprole values(-210,-9003,' ');
-insert into yukongrouprole values(-210,-9010,'Notification');
-insert into yukongrouprole values(-210,-9011,'Curtailment Provider');
+
+
 insert into yukongrouprole values(-211,-100,'/user/ConsumerStat/stat/General.jsp');
 insert into yukongrouprole values(-211,-102,'(none)');
 insert into yukongrouprole values(-211,-160,'(none)');

@@ -10,7 +10,7 @@
 <a:Code>CTI SqlServer 2000</a:Code>
 <a:CDAT>0</a:CDAT>
 <a:CUSR/>
-<a:MDAT>1027631947</a:MDAT>
+<a:MDAT>1054927882</a:MDAT>
 <a:MUSR>rneuharth</a:MUSR>
 <c:Item>
 <o:SObjTargetItem Id="o2">
@@ -419,7 +419,6 @@ is not null
 <o:SObjTargetItemBool Id="o51">
 <a:Name>CKTInTable</a:Name>
 <a:TRGTITEM.Comment>Check on table generated in table</a:TRGTITEM.Comment>
-<a:BOOLITEM.Value>1</a:BOOLITEM.Value>
 </o:SObjTargetItemBool>
 <o:SObjTargetItemText Id="o52">
 <a:Name>ConstName</a:Name>
@@ -919,7 +918,11 @@ the following system variables are available:
 </o:SObjTargetItemText>
 <o:SObjTargetItemText Id="o115">
 <a:Name>Drop</a:Name>
-<a:TEXTITEM.Value>[%USE_SP_FKEY%? execute sp_dropkey &#39;foreign&#39;, %TABLE%, %PARENT%
+<a:TEXTITEM.Value>if exists (select 1
+            from  sysobjects
+           where  id = object_id(&#39;%CONSTNAME%&#39;)
+            and   type = &#39;F&#39;)
+[%USE_SP_FKEY%? execute sp_dropkey &#39;foreign&#39;, %TABLE%, %PARENT%
 :alter table [%QUALIFIER%]%TABLE%
    drop constraint %CONSTNAME%]</a:TEXTITEM.Value>
 <a:TRGTITEM.Comment>Command for dropping a foreign key</a:TRGTITEM.Comment>
@@ -975,7 +978,6 @@ RESTRICT</a:TEXTITEM.Value>
 <o:SObjTargetItemBool Id="o123">
 <a:Name>PKInTable</a:Name>
 <a:TRGTITEM.Comment>Primary key created in table</a:TRGTITEM.Comment>
-<a:BOOLITEM.Value>1</a:BOOLITEM.Value>
 </o:SObjTargetItemBool>
 <o:SObjTargetItemBool Id="o124">
 <a:Name>PkAutoIndex</a:Name>
@@ -1008,7 +1010,11 @@ on %s : category=storage</a:TEXTITEM.Value>
 </o:SObjTargetItemBool>
 <o:SObjTargetItemText Id="o129">
 <a:Name>Drop</a:Name>
-<a:TEXTITEM.Value>[%USE_SP_PKEY%?execute sp_dropkey &#39;primary&#39;, %TABLE%
+<a:TEXTITEM.Value>if exists (select 1
+            from  sysobjects
+           where  id = object_id(&#39;%CONSTNAME%&#39;)
+            and   type = &#39;K&#39;)
+[%USE_SP_PKEY%?execute sp_dropkey &#39;primary&#39;, %TABLE%
 :alter table [%QUALIFIER%]%TABLE%
    drop constraint %CONSTNAME%]</a:TEXTITEM.Value>
 <a:TRGTITEM.Comment>Command for dropping a primary key</a:TRGTITEM.Comment>
@@ -1081,14 +1087,17 @@ i.id=o.parent_obj and o.xtype=&#39;UQ&#39; and i.name=o.name</a:TEXTITEM.Value>
 </o:SObjTargetItemText>
 <o:SObjTargetItemText Id="o139">
 <a:Name>Drop</a:Name>
-<a:TEXTITEM.Value>alter table [%QUALIFIER%]%TABLE%
+<a:TEXTITEM.Value>if exists (select 1
+            from  sysobjects
+           where  id = object_id(&#39;%CONSTNAME%&#39;)
+            and   type = &#39;K&#39;)
+alter table [%QUALIFIER%]%TABLE%
    drop constraint %CONSTNAME%</a:TEXTITEM.Value>
 <a:TRGTITEM.Comment>Command for dropping an alternate key</a:TRGTITEM.Comment>
 </o:SObjTargetItemText>
 <o:SObjTargetItemBool Id="o140">
 <a:Name>UniqInTable</a:Name>
 <a:TRGTITEM.Comment>Alternate key generated in table</a:TRGTITEM.Comment>
-<a:BOOLITEM.Value>1</a:BOOLITEM.Value>
 </o:SObjTargetItemBool>
 <o:SObjTargetItemText Id="o141">
 <a:Name>Add</a:Name>
@@ -1454,10 +1463,10 @@ for attach</a:TEXTITEM.Value>
 </o:SObjTargetItemBool>
 <o:SObjTargetItemText Id="o189">
 <a:Name>Create</a:Name>
-<a:TEXTITEM.Value>create view [%QUALIFIER%]%VIEW% [(%VIEWCOLN%)] as
+<a:TEXTITEM.Value>[%TERM%]
+create view [%QUALIFIER%]%VIEW% [(%VIEWCOLN%)] as
 %SQL%
-[%VIEWCHECK%]
-[%JUNK%]</a:TEXTITEM.Value>
+[%VIEWCHECK%]</a:TEXTITEM.Value>
 <a:TRGTITEM.Comment>Command for creating a view. Example: create view %VIEW%</a:TRGTITEM.Comment>
 </o:SObjTargetItemText>
 <o:SObjTargetItemText Id="o190">
@@ -2097,6 +2106,13 @@ image
 <a:TRGTITEM.Type>1</a:TRGTITEM.Type>
 <a:EXAATTR.Dttp>12</a:EXAATTR.Dttp>
 </o:SObjTargetExaAttr>
+<o:SObjTargetExaAttr Id="o230">
+<a:OID>6DABC6AA-6A6B-4FB0-ABFB-3FA07B365D67</a:OID>
+<a:Name>TERM</a:Name>
+<a:TRGTITEM.Type>1</a:TRGTITEM.Type>
+<a:EXAATTR.Dttp>12</a:EXAATTR.Dttp>
+<a:Vale>go</a:Vale>
+</o:SObjTargetExaAttr>
 </c:Item>
 </o:SObjTargetItem>
 </c:Item>
@@ -2105,7 +2121,7 @@ image
 </o:SObjTargetItem>
 </c:Item>
 <c:TrgrItems>
-<o:SPdoObjTrgi Id="o230">
+<o:SPdoObjTrgi Id="o231">
 <a:OID>D3C39E9E-4352-11D3-A998-006097355E2B</a:OID>
 <a:Name>InsertChildParentExist</a:Name>
 <a:Code>InsertChildParentExist</a:Code>
@@ -2141,7 +2157,7 @@ end
 <a:Decl>.FOREACH_PARENT()
 .ENDFOR</a:Decl>
 </o:SPdoObjTrgi>
-<o:SPdoObjTrgi Id="o231">
+<o:SPdoObjTrgi Id="o232">
 <a:OID>D3C39E9F-4352-11D3-A998-006097355E2B</a:OID>
 <a:Name>InsertTooManyChildren</a:Name>
 <a:Code>InsertTooManyChildren</a:Code>
@@ -2169,7 +2185,7 @@ end
 .FOREACH_PARENT(&quot;FKMAXCARD&quot;)
 .ENDFOR</a:Decl>
 </o:SPdoObjTrgi>
-<o:SPdoObjTrgi Id="o232">
+<o:SPdoObjTrgi Id="o233">
 <a:OID>D3C39EA1-4352-11D3-A998-006097355E2B</a:OID>
 <a:Name>UpdateChangeColumn</a:Name>
 <a:Code>UpdateChangeColumn</a:Code>
@@ -2190,7 +2206,7 @@ if update(%COLUMN%)
 <a:Decl>.FOREACH_COLUMN(&quot;NMFCOL&quot;)
 .ENDFOR</a:Decl>
 </o:SPdoObjTrgi>
-<o:SPdoObjTrgi Id="o233">
+<o:SPdoObjTrgi Id="o234">
 <a:OID>D3C39EA2-4352-11D3-A998-006097355E2B</a:OID>
 <a:Name>UpdateChildParentExist</a:Name>
 <a:Code>UpdateChildParentExist</a:Code>
@@ -2226,7 +2242,7 @@ end
 <a:Decl>.FOREACH_PARENT()
 .ENDFOR</a:Decl>
 </o:SPdoObjTrgi>
-<o:SPdoObjTrgi Id="o234">
+<o:SPdoObjTrgi Id="o235">
 <a:OID>D3C39EA3-4352-11D3-A998-006097355E2B</a:OID>
 <a:Name>UpdateTooManyChildren</a:Name>
 <a:Code>UpdateTooManyChildren</a:Code>
@@ -2254,7 +2270,7 @@ end
 .FOREACH_PARENT(&quot;FKMAXCARD&quot;)
 .ENDFOR</a:Decl>
 </o:SPdoObjTrgi>
-<o:SPdoObjTrgi Id="o235">
+<o:SPdoObjTrgi Id="o236">
 <a:OID>D3C39EA4-4352-11D3-A998-006097355E2B</a:OID>
 <a:Name>UpdateChildChangeParent</a:Name>
 <a:Code>UpdateChildChangeParent</a:Code>
@@ -2275,7 +2291,7 @@ if .JOIN(&quot;update(%FK%)&quot;, &quot;&quot;, &quot; or&quot;)
 <a:Decl>.FOREACH_PARENT(&quot;FKCANTCHG&quot;)
 .ENDFOR</a:Decl>
 </o:SPdoObjTrgi>
-<o:SPdoObjTrgi Id="o236">
+<o:SPdoObjTrgi Id="o237">
 <a:OID>D3C39EA5-4352-11D3-A998-006097355E2B</a:OID>
 <a:Name>UpdateParentRestrict</a:Name>
 <a:Code>UpdateParentRestrict</a:Code>
@@ -2299,7 +2315,7 @@ end
 <a:Decl>.FOREACH_CHILD(&quot;UPDATE RESTRICT&quot;)
 .ENDFOR</a:Decl>
 </o:SPdoObjTrgi>
-<o:SPdoObjTrgi Id="o237">
+<o:SPdoObjTrgi Id="o238">
 <a:OID>D3C39EA6-4352-11D3-A998-006097355E2B</a:OID>
 <a:Name>UpdateParentCascade</a:Name>
 <a:Code>UpdateParentCascade</a:Code>
@@ -2323,7 +2339,7 @@ end
 <a:Decl>.FOREACH_CHILD(&quot;UPDATE CASCADE&quot;)
 .ENDFOR</a:Decl>
 </o:SPdoObjTrgi>
-<o:SPdoObjTrgi Id="o238">
+<o:SPdoObjTrgi Id="o239">
 <a:OID>D3C39EA7-4352-11D3-A998-006097355E2B</a:OID>
 <a:Name>UpdateParentSetNull</a:Name>
 <a:Code>UpdateParentSetNull</a:Code>
@@ -2347,7 +2363,7 @@ end
 <a:Decl>.FOREACH_CHILD(&quot;UPDATE SETNULL&quot;)
 .ENDFOR</a:Decl>
 </o:SPdoObjTrgi>
-<o:SPdoObjTrgi Id="o239">
+<o:SPdoObjTrgi Id="o240">
 <a:OID>D3C39EA8-4352-11D3-A998-006097355E2B</a:OID>
 <a:Name>UpdateParentSetDefault</a:Name>
 <a:Code>UpdateParentSetDefault</a:Code>
@@ -2372,7 +2388,7 @@ end
 <a:Decl>.FOREACH_CHILD(&quot;UPDATE SETDEFAULT&quot;)
 .ENDFOR</a:Decl>
 </o:SPdoObjTrgi>
-<o:SPdoObjTrgi Id="o240">
+<o:SPdoObjTrgi Id="o241">
 <a:OID>D3C39EAA-4352-11D3-A998-006097355E2B</a:OID>
 <a:Name>DeleteParentRestrict</a:Name>
 <a:Code>DeleteParentRestrict</a:Code>
@@ -2392,7 +2408,7 @@ if exists (select 1
 <a:Decl>.FOREACH_CHILD(&quot;DELETE RESTRICT&quot;)
 .ENDFOR</a:Decl>
 </o:SPdoObjTrgi>
-<o:SPdoObjTrgi Id="o241">
+<o:SPdoObjTrgi Id="o242">
 <a:OID>D3C39EAB-4352-11D3-A998-006097355E2B</a:OID>
 <a:Name>DeleteParentCascade</a:Name>
 <a:Code>DeleteParentCascade</a:Code>
@@ -2411,7 +2427,7 @@ where  .JOIN(&quot;t2.%FK% = t1.%PK%&quot;, &quot;and   &quot;)
 <a:Decl>.FOREACH_CHILD(&quot;DELETE CASCADE&quot;)
 .ENDFOR</a:Decl>
 </o:SPdoObjTrgi>
-<o:SPdoObjTrgi Id="o242">
+<o:SPdoObjTrgi Id="o243">
 <a:OID>D3C39EAC-4352-11D3-A998-006097355E2B</a:OID>
 <a:Name>DeleteParentSetNull</a:Name>
 <a:Code>DeleteParentSetNull</a:Code>
@@ -2431,7 +2447,7 @@ where  .JOIN(&quot;t2.%FK% = t1.%PK%&quot;, &quot;and   &quot;)
 <a:Decl>.FOREACH_CHILD(&quot;DELETE SETNULL&quot;)
 .ENDFOR</a:Decl>
 </o:SPdoObjTrgi>
-<o:SPdoObjTrgi Id="o243">
+<o:SPdoObjTrgi Id="o244">
 <a:OID>D3C39EAD-4352-11D3-A998-006097355E2B</a:OID>
 <a:Name>DeleteParentSetDefault</a:Name>
 <a:Code>DeleteParentSetDefault</a:Code>
@@ -2454,7 +2470,7 @@ where  .JOIN(&quot;t2.%FK% = t1.%PK%&quot;, &quot;and   &quot;)
 </o:SPdoObjTrgi>
 </c:TrgrItems>
 <c:TrgrTemplates>
-<o:SPdoObjTrgt Id="o244">
+<o:SPdoObjTrgt Id="o245">
 <a:OID>D3C39E9D-4352-11D3-A998-006097355E2B</a:OID>
 <a:Name>InsertTrigger</a:Name>
 <a:Code>InsertTrigger</a:Code>
@@ -2492,11 +2508,11 @@ go</a:Text>
 <a:Tnam>ti_%.L:TABLE%</a:Tnam>
 <a:TRGT.Type>I</a:TRGT.Type>
 <c:TRGT.Items>
+<o:SPdoObjTrgi Ref="o232"/>
 <o:SPdoObjTrgi Ref="o231"/>
-<o:SPdoObjTrgi Ref="o230"/>
 </c:TRGT.Items>
 </o:SPdoObjTrgt>
-<o:SPdoObjTrgt Id="o245">
+<o:SPdoObjTrgt Id="o246">
 <a:OID>D3C39EA0-4352-11D3-A998-006097355E2B</a:OID>
 <a:Name>UpdateTrigger</a:Name>
 <a:Code>UpdateTrigger</a:Code>
@@ -2546,17 +2562,17 @@ go</a:Text>
 <a:Tnam>tu_%.L:TABLE%</a:Tnam>
 <a:TRGT.Type>U</a:TRGT.Type>
 <c:TRGT.Items>
-<o:SPdoObjTrgi Ref="o232"/>
+<o:SPdoObjTrgi Ref="o233"/>
+<o:SPdoObjTrgi Ref="o240"/>
 <o:SPdoObjTrgi Ref="o239"/>
 <o:SPdoObjTrgi Ref="o238"/>
 <o:SPdoObjTrgi Ref="o237"/>
 <o:SPdoObjTrgi Ref="o236"/>
 <o:SPdoObjTrgi Ref="o235"/>
 <o:SPdoObjTrgi Ref="o234"/>
-<o:SPdoObjTrgi Ref="o233"/>
 </c:TRGT.Items>
 </o:SPdoObjTrgt>
-<o:SPdoObjTrgt Id="o246">
+<o:SPdoObjTrgt Id="o247">
 <a:OID>D3C39EA9-4352-11D3-A998-006097355E2B</a:OID>
 <a:Name>DeleteTrigger</a:Name>
 <a:Code>DeleteTrigger</a:Code>
@@ -2597,10 +2613,10 @@ go</a:Text>
 <a:Tnam>td_%.L:TABLE%</a:Tnam>
 <a:TRGT.Type>D</a:TRGT.Type>
 <c:TRGT.Items>
-<o:SPdoObjTrgi Ref="o241"/>
-<o:SPdoObjTrgi Ref="o240"/>
-<o:SPdoObjTrgi Ref="o243"/>
 <o:SPdoObjTrgi Ref="o242"/>
+<o:SPdoObjTrgi Ref="o241"/>
+<o:SPdoObjTrgi Ref="o244"/>
+<o:SPdoObjTrgi Ref="o243"/>
 </c:TRGT.Items>
 </o:SPdoObjTrgt>
 </c:TrgrTemplates>

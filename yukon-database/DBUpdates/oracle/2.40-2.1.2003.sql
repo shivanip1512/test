@@ -4,15 +4,26 @@
 insert into CTIDatabase values('2.40', 'Ryan', '20-FEB-2003', 'Merged STARS customer structure with Yukon');
 
 
-/******************************************************************************
-*  THIS SCRIPTS NEEDS THE rencol() PROCEDURE INSTALLED BEFORE IT WILL WORK
-*  You must install the rencol() procedure AND run it from 
-*  the sys/CHANGE_ON_INSTALL account
-*
-*  NOTE!!! for Oracle 9.x you should log in as 
-*  sys/CHANGE_ON_INSTALL as sysdba (ACL 7/29)
-*
-******************************************************************************/
+/*********************************************************************************/
+/*  Oracle 9.2 and above have the rename column command built in.                */
+/*  If the DB version is less than 9.2, you must install                         */
+/*  the rencol() procedure AND run it from                                       */
+/*  the sys/CHANGE_ON_INSTALL account manually                                   */
+/*                                                                               */
+/*  NOTE!!! for Oracle 9.0 - 9.1 you should log in as                            */
+/*  sys/CHANGE_ON_INSTALL as sysdba (ACL 7/29)                                   */
+/*                                                                               */
+/*********************************************************************************/
+alter table CICustomerBase rename column DeviceID to CustomerID;
+alter table CICustomerBase rename column AddressID to MainAddressID;
+alter table CICustomerBase rename column CustFPL to CustomerDemandLevel;
+alter table LMProgramCurtailCustomerList rename column DeviceID to ProgramID;
+alter table LMProgramCurtailCustomerList rename column LMCustomerDeviceID to CustomerID;
+alter table LMEnergyExchangeCustomerList rename column DeviceID to ProgramID;
+alter table LMEnergyExchangeCustomerList rename column LMCustomerDeviceID to CustomerID;
+alter table CICustContact rename column DeviceID to CustomerID;
+
+
 
 
 /* ***** IMPORTANT *****  -  the billingFileFormats update is to disable MV_90 DATA Import */
@@ -96,18 +107,10 @@ create table Customer  (
 
 /*****DO NOT ADD ANY REFERENCES TO THIS TABLE UNTIL THE END*****/
 insert into Customer
-select c.deviceid, c.primecontactid, 2, c.custtimezone
+select c.customerid, c.primecontactid, 2, c.custtimezone
 from CICustomerBase c;
 
 alter table CICustomerBase drop constraint FK_YukPA_CICust;
-
-
-exec rencol('<UserName>', 'CICustomerBase', 'DeviceID', 'CustomerID');
-
-exec rencol('<UserName>', 'CICustomerBase', 'AddressID', 'MainAddressID');
-
-exec rencol('<UserName>', 'CICustomerBase', 'CustFPL', 'CustomerDemandLevel');
-
 
 alter table CICustomerBase drop column MainPhoneNumber;
 
@@ -135,15 +138,6 @@ where CustomerID = PAObjectID);
 alter table CICustomerBase
    add constraint FK_CstCI_Cst foreign key (CustomerID)
       references Customer (CustomerID);
-
-exec rencol('<UserName>', 'LMProgramCurtailCustomerList', 'DeviceID', 'ProgramID');
-
-exec rencol('<UserName>', 'LMProgramCurtailCustomerList', 'LMCustomerDeviceID', 'CustomerID');
-
-exec rencol('<UserName>', 'LMEnergyExchangeCustomerList', 'DeviceID', 'ProgramID');
-
-exec rencol('<UserName>', 'LMEnergyExchangeCustomerList', 'LMCustomerDeviceID', 'CustomerID');
-
 
 
 
@@ -214,9 +208,6 @@ alter table Contact
 
 /******************* START CICUSTCONTACT CHANGES *******************/
 rename CICustContact TO CustomerAdditionalContact;
-
-exec rencol('<UserName>', 'CustomerAdditionalContact', 'DeviceID', 'CustomerID');
-
 
 alter table CustomerAdditionalContact drop constraint FK_CICSTBASE_CICSTCONT;
 

@@ -3,6 +3,16 @@
 /******************************************************************************/
 insert into CTIDatabase values('2.41', 'Ryan', '20-MAY-2003', 'Major changes to roles,groups. Added SeasonSchedule, modified LMProgram,DynamicLMGroup,EnergyCompany, PAOExclusion, LMGroupMCT');
 
+
+/**** Add some rows to FDR tables ****/
+insert into fdrinterface values (12,'TEXTIMPORT','Receive,Receive for control','f');
+insert into fdrinterface values (13,'TEXTEXPORT','Send','f');
+insert into fdrinterfaceoption values (12,'Point ID',1,'Text','(none)');
+insert into fdrinterfaceoption values (13,'Point ID',1,'Text','(none)');
+go
+
+
+
 /**** CHANGE THE FDRTranslation PK ****/
 alter table FDRTRANSLATION drop constraint PK_FDRTRANSLATION;
 go
@@ -81,7 +91,6 @@ go
 alter table EnergyCompany drop constraint FK_YkWbC_EnC;
 go
 alter table EnergyCompany drop column RouteID;
-alter table EnergyCompany drop column WebConfigID;
 go
 alter table EnergyCompany ADD UserID numeric not null DEFAULT -1;
 go
@@ -490,7 +499,7 @@ insert into YukonRoleProperty values(-40006,-400,'Hardwares Thermostat','true','
 insert into YukonRoleProperty values(-40007,-400,'Questions Utility','true','Controls whether to show the contact information of the energy company');
 insert into YukonRoleProperty values(-40008,-400,'Questions FAQ','true','Controls whether to show customer FAQs');
 insert into YukonRoleProperty values(-40009,-400,'Admin Change Login','true','Controls whether to allow customers to change their own login');
-insert into YukonRoleProperty values(-40030,-400,'Notification on General Page','false','Controls whether to show the notification email box on the general page (useful only when the programs enrollment feature is not selected)')
+insert into YukonRoleProperty values(-40030,-400,'Notification on General Page','false','Controls whether to show the notification email box on the general page (useful only when the programs enrollment feature is not selected)');
 insert into YukonRoleProperty values(-40031,-400,'Hide Opt Out Box','true','Controls whether to show the opt out box on the programs opt out page');
 insert into YukonRoleProperty values(-40032,-400,'Customized FAQ Link','false','Controls whether the FAQ link links to a customized location provided by the energy company');
 insert into YukonRoleProperty values(-40033,-400,'Customized Utility Email Link','false','Controls whether the utility email links to a customized location provided by the energy company');
