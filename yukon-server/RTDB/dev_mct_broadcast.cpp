@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2005/02/10 23:24:00 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2005/02/25 21:46:50 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -21,6 +21,7 @@
 #include "numstr.h"
 #include "porter.h"
 
+#include "dev_mct.h"     //  for freeze commands
 #include "dev_mct31x.h"  //  for IED scanning capability
 
 set< CtiDLCCommandStore > CtiDeviceMCTBroadcast::_commandStore;
@@ -331,22 +332,22 @@ bool CtiDeviceMCTBroadcast::initCommandStore()
 
     cs._cmd     = CtiProtocolEmetcon::PutStatus_Reset;
     cs._io      = IO_FCT_WRITE;
-    cs._funcLen = make_pair( (int)MCTBCAST_ResetPF, (int)MCTBCAST_ResetPFLen );
+    cs._funcLen = make_pair((int)MCTBCAST_ResetPF, (int)MCTBCAST_ResetPFLen);
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::PutStatus_FreezeOne;
     cs._io      = IO_FCT_WRITE;
-    cs._funcLen = make_pair( (int)MCTBCAST_FreezeOne, (int)MCTBCAST_FreezeLen );
+    cs._funcLen = make_pair((int)CtiDeviceMCT::MCT_Command_FreezeOne, 0);
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::PutStatus_FreezeTwo;
     cs._io      = IO_FCT_WRITE;
-    cs._funcLen = make_pair( (int)MCTBCAST_FreezeTwo, (int)MCTBCAST_FreezeLen );
+    cs._funcLen = make_pair((int)CtiDeviceMCT::MCT_Command_FreezeTwo, 0);
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::PutValue_IEDReset;
     cs._io      = IO_FCT_WRITE;
-    cs._funcLen = make_pair( 0, 0 );
+    cs._funcLen = make_pair(0, 0);
     _commandStore.insert( cs );
 
 
