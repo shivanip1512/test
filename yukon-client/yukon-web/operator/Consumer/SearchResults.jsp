@@ -98,7 +98,7 @@ function selectMemberAccount(accountID, memberID) {
 				
 				LiteStarsCustAccountInformation liteAcctInfo = member.getBriefCustAccountInfo(
 						resp.getStarsBriefCustAccountInfo(i).getAccountID(), true);
-				LiteContact contact = member.getContact(liteAcctInfo.getCustomer().getPrimaryContactID(), liteAcctInfo);
+				LiteContact contact = ContactFuncs.getContact(liteAcctInfo.getCustomer().getPrimaryContactID());
 				LiteAddress addr = member.getAddress(liteAcctInfo.getAccountSite().getStreetAddressID());
 				
 				String homePhone = ECUtils.getNotification(

@@ -334,7 +334,7 @@ function init() {
 	if (liteOrder.getAccountID() > 0) {
 		LiteStarsCustAccountInformation liteAcctInfo = liteEC.getBriefCustAccountInfo(liteOrder.getAccountID(), true);
 		LiteCustomerAccount liteAccount = liteAcctInfo.getCustomerAccount();
-		LiteContact liteContact = liteEC.getContact(liteAcctInfo.getCustomer().getPrimaryContactID(), liteAcctInfo);
+		LiteContact liteContact = ContactFuncs.getContact(liteAcctInfo.getCustomer().getPrimaryContactID());
 		LiteAccountSite liteAcctSite = liteAcctInfo.getAccountSite();
 		LiteAddress liteAddr = liteEC.getAddress(liteAcctSite.getStreetAddressID());
 		

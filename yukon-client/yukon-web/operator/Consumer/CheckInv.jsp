@@ -1,4 +1,5 @@
 <%@ include file="include/StarsHeader.jsp" %>
+<%@ page import="com.cannontech.database.cache.functions.ContactFuncs" %>
 <%@ page import="com.cannontech.database.data.lite.LiteContact" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteAddress" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteInventoryBase" %>
@@ -136,7 +137,7 @@
 	}
 	else {
 		LiteStarsCustAccountInformation liteAcctInfo = liteEC.getBriefCustAccountInfo(liteInv.getAccountID(), true);
-		LiteContact liteContact = liteEC.getContact(liteAcctInfo.getCustomer().getPrimaryContactID(), liteAcctInfo);
+		LiteContact liteContact = com.cannontech.database.cache.functions.ContactFuncs.getContact(liteAcctInfo.getCustomer().getPrimaryContactID());
 		LiteAddress liteAddr = liteEC.getAddress(liteAcctInfo.getAccountSite().getStreetAddressID());
 		
 		String name = ECUtils.formatName(liteContact);
