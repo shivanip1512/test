@@ -339,7 +339,7 @@ public final class ContactFuncs
 			if (stmt.getRowCount() != 1)
 				throw new Exception( "Cannot determine the residential customer with PrimaryContactID=" + contactID );
 			
-			return cache.getCustomer( ((java.math.BigDecimal) stmt.getRow(0)[0]).intValue() );
+			return (LiteCustomer)cache.getAllCustomersMap().get(new Integer( (((java.math.BigDecimal) stmt.getRow(0)[0]).intValue() )));
 		}
 		catch (Exception e) {
 			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );

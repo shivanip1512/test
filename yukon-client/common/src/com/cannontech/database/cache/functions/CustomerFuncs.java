@@ -6,6 +6,7 @@ import java.util.List;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
+import com.cannontech.database.data.lite.LiteCustomer;
 
 /**
  * Insert the type's description here.
@@ -26,24 +27,24 @@ private CustomerFuncs() {
  */
 public static List getAllContacts(int customerID_) 
 {
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+	DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
 	synchronized(cache) 
 	{
-		Iterator iter = cache.getAllCICustomers().iterator();
+		Iterator iter = cache.getAllCustomers().iterator();
 		java.util.Vector allContacts = new java.util.Vector(5);	//guess capacity
 		while(iter.hasNext())
 		{
-			LiteCICustomer ciCustomer = (LiteCICustomer) iter.next();
-			if(ciCustomer.getCustomerID() == customerID_)
+			LiteCustomer customer = (LiteCustomer) iter.next();
+			if(customer.getCustomerID() == customerID_)
 			{
-				int primCntctID = ciCustomer.getPrimaryContactID();
+				int primCntctID = customer.getPrimaryContactID();
 				LiteContact liteContact = ContactFuncs.getContact(primCntctID);
 				if( liteContact != null)
 					allContacts.addElement(liteContact);
 				
-				for (int i = 0; i < ciCustomer.getAdditionalContacts().size(); i++)
+				for (int i = 0; i < customer.getAdditionalContacts().size(); i++)
 				{
-					allContacts.addElement(ciCustomer.getAdditionalContacts().get(i));
+					allContacts.addElement(customer.getAdditionalContacts().get(i));
 				}
 				return allContacts;
 			}
@@ -72,7 +73,18 @@ public static LiteContact getPrimaryContact(int customerID_)
 	}
 	return null;
 }
-
+/**
+ * This method was created in VisualAge.
+ * @return String
+ */
+public static LiteCustomer getLiteCustomer( int custID)
+{
+	DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+	synchronized( cache )
+	{
+		return (LiteCustomer)cache.getAllCustomersMap().get(new Integer (custID));
+	}
+}
 /**
  * Finds all LiteContact instances not used by a CICustomer
  * @return LiteContact

@@ -3,14 +3,13 @@ package com.cannontech.ejb;
 import java.util.List;
 import java.util.Map;
 
-import javax.ejb.SessionBean;
 import javax.ejb.EJBException;
+import javax.ejb.SessionBean;
 import javax.ejb.SessionContext;
 
-import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.data.lite.LiteBase;
-import com.cannontech.database.data.lite.LiteCustomer;
+import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -199,7 +198,23 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
 	{
 		return getCache().getAllCICustomers();
 	}
-	
+	/**
+	 * @ejb:interface-method
+	 * tview-type="remote" 
+	**/
+	 public synchronized java.util.List getAllCustomers()
+	 {
+		 return getCache().getAllCICustomers();
+	 }
+	/**
+	 * @ejb:interface-method
+	 * tview-type="remote" 
+	**/
+	public synchronized java.util.Map getAllCustomersMap()
+	{
+		return getCache().getAllCustomersMap();		
+	}
+	 
    /**
     * @ejb:interface-method
     * tview-type="remote" 
@@ -435,30 +450,7 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
 		return getCache().getAllUserEnergyCompanies();
 	}
 	
-	/**
-	 * @ejb:interface-method
-	 * tview-type="remote"
-	 */
-	public List getAllCustomers() {
-		return getCache().getAllCustomers();
-	}
-	
-	/**
-	 * @ejb:interface-method
-	 * tview-type="remote"
-	 */
-	public LiteCustomer getCustomer(int customerID) {
-		return getCache().getCustomer( customerID );
-	}
-	
-	/**
-	 * @ejb:interface-method
-	 * tview-type="remote"
-	 */
-	public void deleteCustomer(int customerID) {
-		getCache().deleteCustomer( customerID );
-	}
-	
+		
 //   /**
 //    * @ejb:interface-method
 //    * tview-type="remote" 
@@ -508,11 +500,26 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
     * @ejb:interface-method
     * tview-type="remote" 
    **/
-   public synchronized void releaseAllCustomerContacts()
+   public synchronized void releaseAllContacts()
    {
-      getCache().releaseAllCustomerContacts();
+      getCache().releaseAllContacts();
    }
-
+   /**
+	* @ejb:interface-method
+	* tview-type="remote" 
+   **/
+   public synchronized void releaseAllCICustomers()
+   {
+	  getCache().releaseAllCICustomers();
+   }
+   /**
+	* @ejb:interface-method
+	* tview-type="remote" 
+   **/
+   public synchronized void releaseAllCustomers()
+   {
+	  getCache().releaseAllCustomers();
+   }
    /**
     * @ejb:interface-method
     * tview-type="remote" 

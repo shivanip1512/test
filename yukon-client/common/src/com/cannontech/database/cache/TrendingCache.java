@@ -29,15 +29,8 @@ protected TrendingCache(String databaseAlias) {
  * @return java.util.List
  */
 public synchronized java.util.List getAllGraphDefinitions() {
-	if( allGraphDefinitions != null )
-		return allGraphDefinitions;
-	else
-	{
-		allGraphDefinitions = new java.util.ArrayList();
-		GraphDefinitionLoader loader = new GraphDefinitionLoader(allGraphDefinitions, databaseAlias);
-		loader.run();
-		return allGraphDefinitions;
-	}
+	DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+	return cache.getAllGraphDefinitions();
 }
 /**
  * Insert the method's description here.

@@ -28,7 +28,11 @@ public interface DatabaseCache
    public java.util.List getAllContacts(  ) throws java.rmi.RemoteException;
 
    public java.util.List getAllCICustomers(  ) throws java.rmi.RemoteException;
-
+   
+   public java.util.List getAllCustomers(  ) throws java.rmi.RemoteException;
+   
+   public java.util.Map getAllCustomersMap(  ) throws java.rmi.RemoteException;
+   
    public java.util.List getAllDeviceMeterGroups(  ) throws java.rmi.RemoteException;
 
    public java.util.List getAllDevices(  ) throws java.rmi.RemoteException;
@@ -115,7 +119,11 @@ public interface DatabaseCache
 
    public void releaseAllCache(  ) throws java.rmi.RemoteException;
 
-   public void releaseAllCustomerContacts(  ) throws java.rmi.RemoteException;
+   public void releaseAllContacts(  ) throws java.rmi.RemoteException;
+   
+   public void releaseAllCICustomers(  ) throws java.rmi.RemoteException;
+   
+   public void releaseAllCustomers(  ) throws java.rmi.RemoteException;
 
    public void releaseAllDeviceMeterGroups(  ) throws java.rmi.RemoteException;
 

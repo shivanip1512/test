@@ -169,6 +169,24 @@ public class DefaultDatabaseCache implements IDatabaseCache
    }
 
    /**
+	* @ejb:interface-method
+	* tview-type="remote" 
+   **/
+   public synchronized java.util.List getAllCustomers() 
+   {
+	  return getDBCache().getAllCustomers();
+   }
+   /**
+	* @ejb:interface-method
+	* tview-type="remote" 
+   **/
+   public synchronized java.util.Map getAllCustomersMap()
+   {
+	   return getDBCache().getAllCustomersMap();
+   }
+
+
+   /**
     * @ejb:interface-method
     * tview-type="remote" 
    **/
@@ -366,24 +384,16 @@ public class DefaultDatabaseCache implements IDatabaseCache
 	
 	/**
 	 * @ejb:interface-method
-	 * tview-type:"remote"
-	 */
-	public synchronized java.util.List getAllCustomers() {
-		return getDBCache().getAllCustomers();
-	}
-	
-	/**
-	 * @ejb:interface-method
 	 * tview-type="remote"
 	 */
-	public synchronized LiteCustomer getCustomer(int customerID) {
+/*	public synchronized LiteCustomer getCustomer(int customerID) {
 		return getDBCache().getCustomer( customerID );
 	}
 	
 	public synchronized void deleteCustomer(int customerID) {
 		getDBCache().deleteCustomer( customerID );
 	}
-
+*/
 
 //   /**
 //    * @ejb:interface-method
@@ -434,10 +444,28 @@ public class DefaultDatabaseCache implements IDatabaseCache
     * @ejb:interface-method
     * tview-type="remote" 
    **/
-   public synchronized void releaseAllCustomerContacts()
+   public synchronized void releaseAllContacts()
    {
-      getDBCache().releaseAllCustomerContacts();
+      getDBCache().releaseAllContacts();
    }
+
+	/**
+	 * @ejb:interface-method
+	 * tview-type="remote" 
+	**/
+	public synchronized void releaseAllCICustomers()
+	{
+	   getDBCache().releaseAllCICustomers();
+	}
+	
+	/**
+	 * @ejb:interface-method
+	 * tview-type="remote" 
+	**/
+	public synchronized void releaseAllCustomers()
+	{
+	   getDBCache().releaseAllCustomers();
+	}
 
    /**
     * @ejb:interface-method

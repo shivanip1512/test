@@ -8,7 +8,8 @@ package com.cannontech.database.data.customer;
 import com.cannontech.database.db.company.EnergyCompany;
 import com.cannontech.database.db.customer.Address;
 import com.cannontech.database.db.customer.CustomerBaseLinePoint;
-import com.cannontech.database.db.customer.DeviceCustomerList;
+import com.cannontech.database.db.device.lm.LMEnergyExchangeCustomerList;
+import com.cannontech.database.db.web.EnergyCompanyCustomerList;
 
 public class CICustomerBase extends Customer implements com.cannontech.common.editor.EditorPanel, IAddress
 {
@@ -20,14 +21,6 @@ public class CICustomerBase extends Customer implements com.cannontech.common.ed
 	//currently, 1 customer may only belong to 1 EnergyCompany. This is null
 	// if the customer is not owned by an EnergyCompany
 	private EnergyCompany energyCompany = null;
-
-
-	//----------------------------------------------------------------------------------
-	//--------------- NO LONGER, MUST ADD A MAPPING TABLE FOR METERS-------------
-	//----------------------------------------------------------------------------------
-	//contains com.cannontech.database.db.customer.DeviceCustomerList
-		private java.util.Vector deviceVector = null;
-	
 	
 	/**
 	 * CICustomerBase constructor comment.
@@ -162,15 +155,11 @@ public class CICustomerBase extends Customer implements com.cannontech.common.ed
 	 */
 	public void delete() throws java.sql.SQLException
 	{
-		delete(
-			com.cannontech.database.db.device.lm.LMEnergyExchangeCustomerList.TABLE_NAME,
-			"CustomerID",
-			getCustomerID() );
+		delete(LMEnergyExchangeCustomerList.TABLE_NAME, "CustomerID", getCustomerID() );
 	
 		//just delete the bridge value to the EnergyCompanyCustomerList table
-		delete("EnergyCompanyCustomerList", "CustomerID", getCustomerID() );		
+		delete(EnergyCompanyCustomerList.tableName, "CustomerID", getCustomerID() );		
 		
-	
 		delete("LMEnergyExchangeHourlyCustomer", "CustomerID", getCustomerID() );
 		delete("LMEnergyExchangeCustomerReply", "CustomerID", getCustomerID() );
 		delete("LMCurtailCustomerActivity", "CustomerID", getCustomerID() );
@@ -179,21 +168,17 @@ public class CICustomerBase extends Customer implements com.cannontech.common.ed
 
 		
 		//delete("CustomerAddress", "AddressID", getCiCustomerBase().getAddressID() );
-		getAddress().setAddressID( 
-				getCiCustomerBase().getMainAddressID() );
-//					com.cannontech.database.db.customer.CICustomerBase.getCICustomerAddressID(
-//							getCustomerID(), getDbConnection()) );
+		getAddress().setAddressID( getCiCustomerBase().getMainAddressID() );
+//		com.cannontech.database.db.customer.CICustomerBase.getCICustomerAddressID( getCustomerID(), getDbConnection()) );
 	
 		getCiCustomerBase().delete();
 	
 		getAddress().delete();
 		
-	
 		super.delete();
 	
 		setDbConnection(null);
 	}
-
 
 	/**
 	 * Insert the method's description here.
@@ -232,8 +217,6 @@ public class CICustomerBase extends Customer implements com.cannontech.common.ed
 		return customerBaseLinePoint;
 	}
 
-	
-
 	/**
 	 * Insert the method's description here.
 	 * Creation date: (3/26/2002 4:32:41 PM)
@@ -243,18 +226,6 @@ public class CICustomerBase extends Customer implements com.cannontech.common.ed
 		return energyCompany;
 	}
 
-	/**
-	 * Insert the method's description here.
-	 * Creation date: (10/16/2001 12:47:02 PM)
-	 * @return java.util.Vector
-	 */
-	public java.util.Vector getDeviceVector() 
-	{
-		if( deviceVector == null )
-			deviceVector = new java.util.Vector(10);
-	
-		return deviceVector;
-	}
 	/**
 	 * This method was created in VisualAge.
 	 */
@@ -269,34 +240,12 @@ public class CICustomerBase extends Customer implements com.cannontech.common.ed
 		getAddress().setAddressID( getCiCustomerBase().getMainAddressID() );
 		getAddress().retrieve();
 	
-	
-		try
-		{
-	//----------------------------------------------------------------------------------
-	//--------------- NO LONGER, MUST ADD A MAPPING TABLE FOR METERS-------------
-	//----------------------------------------------------------------------------------
-			DeviceCustomerList[] devices = DeviceCustomerList.getAllDeviceCustomerList( 
-					getCustomerID(), getDbConnection() );
-			for( int i = 0; i < devices.length; i++ )
-			{
-				devices[i].setDbConnection(getDbConnection());
-				getDeviceVector().addElement( devices[i] );
-			}
-		}
-		catch(java.sql.SQLException e )
-		{
-			//not necessarily an error
-		}
-	
 	/**************  BEGIN SUPREME HACK!!!!! ***********************************/
 		//if an EnergyCompany exists, gets its values
 		String[] cols = { "EnergyCompanyID", "CustomerID" };
 		String[] keys = { "CustomerID" };
 		Object[] vals = { getCustomerID() };
-		Object[] rets = retrieve( cols,
-									com.cannontech.database.db.web.EnergyCompanyCustomerList.tableName,
-									keys,
-									vals );
+		Object[] rets = retrieve( cols, EnergyCompanyCustomerList.tableName, keys, vals );
 	
 		if( rets.length > 0 )
 		{
@@ -360,13 +309,6 @@ public class CICustomerBase extends Customer implements com.cannontech.common.ed
 		getAddress().setDbConnection(conn);	
 		getCustomerBaseLinePoint().setDbConnection( conn );
 
-	
-	//----------------------------------------------------------------------------------
-	//--------------- NO LONGER, MUST ADD A MAPPING TABLE FOR METERS-------------
-	//----------------------------------------------------------------------------------
-		for (int i = 0; i < getDeviceVector().size(); i++)
-			((com.cannontech.database.db.DBPersistent) getDeviceVector().elementAt(i)).setDbConnection(conn);
-	
 		if( getEnergyCompany() != null )
 			getEnergyCompany().setDbConnection( conn );
 	}
@@ -381,21 +323,12 @@ public class CICustomerBase extends Customer implements com.cannontech.common.ed
 	}
 
 	/**
-	 * Insert the method's description here.
-	 * Creation date: (10/16/2001 12:47:02 PM)
-	 * @param newMeterVector java.util.Vector
-	 */
-	public void setDeviceVector(java.util.Vector deviceVector) {
-		this.deviceVector = deviceVector;
-	}
-	/**
 	 * This method was created in VisualAge.
 	 */
 	public void update() throws java.sql.SQLException 
 	{
 		getAddress().setAddressID(getCiCustomerBase().getMainAddressID());
 		getAddress().update();
-
 		
 		super.update();
 		getCiCustomerBase().update();
@@ -403,21 +336,8 @@ public class CICustomerBase extends Customer implements com.cannontech.common.ed
 		if( getCustomerBaseLinePoint().getPointID() != null )
 			getCustomerBaseLinePoint().update();
 	
-	
-	//----------------------------------------------------------------------------------
-	//--------------- NO LONGER, MUST ADD A MAPPING TABLE FOR METERS-------------
-	//----------------------------------------------------------------------------------
-		// delete all the ownership of meters for this customer
-		DeviceCustomerList.deleteDeviceCustomerList( 
-			getCustomerID(), getDbConnection() );
-
-		// add all the current selected meters for this customer
-		for (int i = 0; i < getDeviceVector().size(); i++)
-			 ((DeviceCustomerList) getDeviceVector().elementAt(i)).add();
-
-	
 		//just delete the bridge value to the EnergyCompanyCustomerList table
-		delete(com.cannontech.database.db.web.EnergyCompanyCustomerList.tableName, "CustomerID", getCustomerID() );
+		delete(EnergyCompanyCustomerList.tableName, "CustomerID", getCustomerID() );
 	
 		//add a new EnergyCompany if needed
 		if( getEnergyCompany() != null )
@@ -430,9 +350,7 @@ public class CICustomerBase extends Customer implements com.cannontech.common.ed
 	
 			//just add the bridge value to the EnergyCompanyCustomerList table
 			// showing that this customer belongs to the EnergyCompany
-			add(
-				com.cannontech.database.db.web.EnergyCompanyCustomerList.tableName,
-				addValues);
+			add( EnergyCompanyCustomerList.tableName, addValues);
 		}
 			 
 		setDbConnection(null);
@@ -446,5 +364,4 @@ public class CICustomerBase extends Customer implements com.cannontech.common.ed
 	{
 		return getCiCustomerBase().getCompanyName();
 	}
-
 }

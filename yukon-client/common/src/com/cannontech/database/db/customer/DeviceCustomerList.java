@@ -8,6 +8,8 @@ package com.cannontech.database.db.customer;
 
 import java.sql.SQLException;
 
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.PoolManager;
 import com.cannontech.database.db.DBPersistent;
 
 /**
@@ -108,90 +110,133 @@ public class DeviceCustomerList extends DBPersistent
 	{
 		deviceID = integer;
 	}
+
+	/**
+	 * @param customerID
+	 * @param conn
+	 * @return
+	 */
+	public static synchronized boolean deleteDeviceCustomerList(Integer customerID, java.sql.Connection conn )
+	{
+		try
+		{
+			if( conn == null )
+				throw new IllegalStateException("Database connection should not be null.");
 	
-    /**
-   * This method was created by Cannon Technologies Inc.
-   * @return boolean
-   * @param deviceID java.lang.Integer
-   */
-  public static boolean deleteDeviceCustomerList(Integer customerID, java.sql.Connection conn)
-  {
-	  com.cannontech.database.SqlStatement stmt =
-		  new com.cannontech.database.SqlStatement("DELETE FROM " + TABLE_NAME + " WHERE CustomerID=" + customerID,
-												   conn);
-	  try
-	  {
-		  stmt.execute();
-	  }
-	  catch(Exception e)
-	  {
-		  com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-		  return false;
-	  }
-
-	  return true;
-  }
-  
-  /**
-   * This method was created in VisualAge.
-   * @return DeviceCustomerList[]
-   * @param stateGroup java.lang.Integer
-   */
-  public static final DeviceCustomerList[] getAllDeviceCustomerList(Integer customerID, java.sql.Connection conn) throws java.sql.SQLException
-  {
-	  java.util.ArrayList tmpList = new java.util.ArrayList(30);
-	  java.sql.PreparedStatement pstmt = null;
-	  java.sql.ResultSet rset = null;
-
-	  String sql = "SELECT DeviceID, CustomerID " +
-				   "FROM " + TABLE_NAME + " WHERE CustomerID= ?";
-
-	  try
-	  {		
-		  if( conn == null )
-		  {
-			  throw new IllegalStateException("Error getting database connection.");
-		  }
-		  else
-		  {
-			  pstmt = conn.prepareStatement(sql.toString());
-			  pstmt.setInt( 1, customerID.intValue() );
+			java.sql.Statement stat = conn.createStatement();
 			
-			  rset = pstmt.executeQuery();							
+			stat.execute( "DELETE FROM " + 
+					DeviceCustomerList.TABLE_NAME + 
+					" WHERE CustomerID=" + customerID );
 	
-			  while( rset.next() )
-			  {
-				  DeviceCustomerList item = new DeviceCustomerList();
+			if( stat != null )
+				stat.close();
+		}
+		catch(Exception e)
+		{
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			return false;
+		}
+		return true;
+	}
+	
+	/**
+	 * @param customerID
+	 * @return
+	 */
+	public static synchronized boolean deleteDeviceCustomerList(Integer customerID)
+	{
+		boolean results = false;
+		java.sql.Connection c = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+		results = DeviceCustomerList.deleteDeviceCustomerList(customerID, c);
+		try{
+			c.close();
+		}
+		catch (SQLException e){
+			e.printStackTrace();
+		}	
+		return results;		
+	}
+	/**
+	 * @param customerID
+	 * @param conn
+	 * @return
+	 * @throws java.sql.SQLException
+	 */
+	public synchronized static final DeviceCustomerList[] getDeviceCustomerList(Integer customerID, java.sql.Connection conn) throws java.sql.SQLException
+	{
+		java.util.ArrayList tmpList = new java.util.ArrayList(30);
+		java.sql.PreparedStatement pstmt = null;
+		java.sql.ResultSet rset = null;
 
-				  item.setDbConnection(conn);
-				  item.setDeviceID( new Integer(rset.getInt("DeviceID")) );
-				  item.setCustomerID( new Integer(rset.getInt("CustomerID")) );
-				  tmpList.add( item );
-			  }
+		String sql = 
+				"SELECT DeviceID,CustomerID " +
+				"FROM " + DeviceCustomerList.TABLE_NAME + 
+				" WHERE CustomerID= ?";
+
+		try
+		{		
+			if( conn == null )
+			{
+				throw new IllegalStateException("Database connection should not be null.");
+			}
+			else
+			{
+				pstmt = conn.prepareStatement(sql.toString());
+				pstmt.setInt( 1, customerID.intValue() );
+			
+				rset = pstmt.executeQuery();							
+	
+				while( rset.next() )
+				{
+					DeviceCustomerList item = new DeviceCustomerList();
+
+					item.setDbConnection(conn);
+					item.setDeviceID( new Integer(rset.getInt("DeviceID")) );
+					item.setCustomerID( new Integer(rset.getInt("CustomerID")) );
+					tmpList.add( item );
+				}
 					
-		  }		
-	  }
-	  catch( java.sql.SQLException e )
-	  {
-		  com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-	  }
-	  finally
-	  {
-		  try
-		  {
-			  if( pstmt != null ) pstmt.close();
-			  if( rset != null ) rset.close();
-		  } 
-		  catch( java.sql.SQLException e2 )
-		  {
-			  com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
-		  }	
-	  }
+			}		
+		}
+		catch( java.sql.SQLException e )
+		{
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+		}
+		finally
+		{
+			try
+			{
+				if( pstmt != null ) pstmt.close();
+				if( rset != null ) rset.close();
+			} 
+			catch( java.sql.SQLException e2 )
+			{
+				com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
+			}	
+		}
 
-
-	  DeviceCustomerList retVal[] = new DeviceCustomerList[ tmpList.size() ];
-	  tmpList.toArray( retVal );
+		DeviceCustomerList retVal[] = new DeviceCustomerList[ tmpList.size() ];
+		tmpList.toArray( retVal );
 	
-	  return retVal;
-  }
+		return retVal;
+	}
+	/**
+	 * @param customerID
+	 * @return
+	 * @throws java.sql.SQLException
+	 */
+	public synchronized static final DeviceCustomerList[] getDeviceCustomerList(Integer customerID) throws java.sql.SQLException
+	{
+		DeviceCustomerList retVal[] = null; 
+		java.sql.Connection c = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+		retVal = DeviceCustomerList.getDeviceCustomerList(customerID, c);
+		try{
+			c.close();
+		}
+		catch (SQLException e){
+			e.printStackTrace();
+		}	
+		return retVal;
+	}
 }

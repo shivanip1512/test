@@ -2,6 +2,7 @@ package com.cannontech.database.data.lite;
 
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.customer.CICustomerBase;
+import com.cannontech.database.data.customer.Customer;
 import com.cannontech.database.data.notification.GroupNotification;
 import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.database.db.DBPersistent;
@@ -59,6 +60,12 @@ public final static com.cannontech.database.db.DBPersistent createDBPersistent(L
 				((CICustomerBase)returnObject).getCustomer().setPrimaryContactID( new Integer(((LiteCICustomer)liteObject).getPrimaryContactID()) );
 				((CICustomerBase)returnObject).getCustomer().setTimeZone( ((LiteCICustomer)liteObject).getTimeZone() );
 				break;
+			case LiteTypes.CUSTOMER:
+				returnObject = new Customer(); 
+				((Customer)returnObject).setCustomerID( new Integer(((LiteCustomer)liteObject).getCustomerID()) );
+				((Customer)returnObject).getCustomer().setPrimaryContactID( new Integer(((LiteCustomer)liteObject).getPrimaryContactID()) );
+				((Customer)returnObject).getCustomer().setTimeZone( ((LiteCustomer)liteObject).getTimeZone() );
+				break;
 			case LiteTypes.POINT:
 				returnObject = com.cannontech.database.data.point.PointFactory.createPoint(((LitePoint)liteObject).getPointType());
 				((com.cannontech.database.data.point.PointBase)returnObject).setPointID(new Integer(((LitePoint)liteObject).getPointID()));
@@ -73,6 +80,11 @@ public final static com.cannontech.database.db.DBPersistent createDBPersistent(L
 				returnObject = new com.cannontech.database.data.graph.GraphDefinition();
 				((com.cannontech.database.data.graph.GraphDefinition)returnObject).getGraphDefinition().setGraphDefinitionID(new Integer(((LiteGraphDefinition)liteObject).getGraphDefinitionID()));
 				((com.cannontech.database.data.graph.GraphDefinition)returnObject).getGraphDefinition().setName(((LiteGraphDefinition)liteObject).getName());
+				break;
+			case LiteTypes.GRAPH_CUSTOMER_LIST:
+				returnObject = new com.cannontech.database.db.graph.GraphCustomerList();
+				((com.cannontech.database.db.graph.GraphCustomerList)returnObject).setCustomerID(new Integer(((LiteGraphCustomerList)liteObject).getCustomerID()));
+				((com.cannontech.database.db.graph.GraphCustomerList)returnObject).setGraphDefinitionID(new Integer(((LiteGraphCustomerList)liteObject).getGraphDefinitionID()));
 				break;
 			case LiteTypes.NOTIFICATION_GROUP:
 				returnObject = new com.cannontech.database.data.notification.GroupNotification();
@@ -201,6 +213,11 @@ public final static LiteBase createLite(com.cannontech.database.db.DBPersistent 
 				((CICustomerBase)val).getCustomerID().intValue(),
 				((CICustomerBase)val).getCiCustomerBase().getCompanyName() );
 	}
+	else if( val instanceof Customer)
+	{
+		returnLite = new LiteCustomer(
+				((Customer)val).getCustomerID().intValue());
+	}
 	else if( val instanceof com.cannontech.database.data.point.PointBase )
 	{
 		returnLite = new LitePoint(
@@ -328,7 +345,7 @@ public final static LiteBase createLite(com.cannontech.database.db.DBPersistent 
 	}	
 
 
-	/* add SystemRole,YukonRoleProperty */
+	/* TODO add SystemRole,YukonRoleProperty */
 	else if( val instanceof com.cannontech.database.data.pao.YukonPAObject )
 	{
 		returnLite = new LiteYukonPAObject( 

@@ -22,11 +22,11 @@ public class LiteCustomer extends LiteBase {
 	//contains com.cannontech.database.data.lite.LiteContact
 	private java.util.Vector additionalContacts = null;
 	
-	// Used for residential customers only
+	// contains int ,Used for residential customers only
 	private java.util.Vector accountIDs = null;
 	private int energyCompanyID = -1;
 	private boolean extended = false;
-
+	
 	public LiteCustomer() {
 		super();
 		setLiteType( LiteTypes.CUSTOMER );

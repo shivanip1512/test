@@ -1,10 +1,8 @@
 package com.cannontech.yukon;
 
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.database.data.lite.LiteBase;
-import com.cannontech.database.data.lite.LiteCustomer;
-
 import com.cannontech.database.cache.DBChangeListener;
+import com.cannontech.database.data.lite.LiteBase;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
 
 /**
  * Interface to Yukon data.
@@ -23,7 +21,13 @@ public interface IDatabaseCache
    public java.util.List getAllContactNotificationGroups();
    public java.util.List getAllContacts();
 
-	public java.util.List getAllCICustomers();
+   public java.util.List getAllCICustomers();
+   public java.util.List getAllCustomers();
+   //	Map<Integer(custID), LiteCustomer>
+   public java.util.Map getAllCustomersMap();
+// public LiteCustomer getCustomer(int customerID);
+// public void deleteCustomer(int customerID);
+   
 	   
    public java.util.List getAllDeviceMeterGroups();
    public java.util.List getAllDevices();
@@ -102,14 +106,9 @@ public interface IDatabaseCache
 
 	//Map<Integer(paoID), LiteYukonPAObject>
 	public java.util.Map getAllPAOsMap();
-	
-	// List of residential customers, load-on-demand!!!
-	public java.util.List getAllCustomers();
-	public LiteCustomer getCustomer(int customerID);
-	public void deleteCustomer(int customerID);
    
 	public boolean hasLoadedGlobals();
-	
+
    /**
     *  Returns the LiteBase object that was added,deleted or updated, 
     *    else null is returned.
@@ -118,7 +117,9 @@ public interface IDatabaseCache
 
    public void releaseAllCache();
    public void releaseAllAlarmCategories();
-   public void releaseAllCustomerContacts();
+   public void releaseAllContacts();
+   public void releaseAllCICustomers();
+   public void releaseAllCustomers();
    public void releaseAllDeviceMeterGroups();
    public void releaseAllYukonImages();
    public void releaseAllGraphDefinitions();

@@ -1,5 +1,10 @@
 package com.cannontech.database.db.graph;
 
+import java.sql.SQLException;
+
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.PoolManager;
+
 /**
  * This type was created in VisualAge.
  */
@@ -45,47 +50,76 @@ public void delete() throws java.sql.SQLException
 
 	delete( TABLE_NAME, CONSTRAINT_COLUMNS, values );
 }
+
 /**
- * This method was created by Cannon Technologies Inc.
- * @return boolean
- * @param deviceID java.lang.Integer
+ * @param customerID
+ * @param conn
+ * @return
  */
-public static boolean deleteCustomerGraphList(Integer customerID, java.sql.Connection conn)
+public static synchronized boolean deleteGraphCustomerList(Integer customerID, java.sql.Connection conn )
 {
-	com.cannontech.database.SqlStatement stmt =
-		new com.cannontech.database.SqlStatement("DELETE FROM " + TABLE_NAME + " WHERE CustomerID=" + customerID,
-												 conn);
 	try
 	{
-		stmt.execute();
+		if( conn == null )
+			throw new IllegalStateException("Database connection should not be null.");
+    			
+		java.sql.Statement stat = conn.createStatement();
+			
+		stat.execute( "DELETE FROM " +
+			GraphCustomerList.TABLE_NAME +
+			" WHERE CustomerID=" + customerID );
+				
+		if( stat != null )
+			stat.close();
 	}
 	catch(Exception e)
 	{
 		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		return false;
 	}
-
 	return true;
-}
+} 
 /**
- * This method was created in VisualAge.
- * @return com.cannontech.database.db.point.State[]
- * @param stateGroup java.lang.Integer
+ * This method was created by Cannon Technologies Inc.
+ * @return boolean
+ * @param deviceID java.lang.Integer
  */
-public static final GraphCustomerList[] getAllGraphCustomerList(Integer customerID, java.sql.Connection conn) throws java.sql.SQLException
+public synchronized static boolean deleteGraphCustomerList(Integer customerID)
+{
+	boolean results = false;
+	java.sql.Connection c = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+	results = GraphCustomerList.deleteGraphCustomerList(customerID, c);
+	try{
+		c.close();
+	}
+	catch (SQLException e){
+		e.printStackTrace();
+	}	
+	return results;		
+}
+	
+/**
+ * @param customerID
+ * @param conn
+ * @return
+ * @throws java.sql.SQLException
+ */
+public synchronized static final GraphCustomerList[] getGraphCustomerList(Integer customerID, java.sql.Connection conn) throws java.sql.SQLException
 {
 	java.util.ArrayList tmpList = new java.util.ArrayList(30);
 	java.sql.PreparedStatement pstmt = null;
 	java.sql.ResultSet rset = null;
 
-	String sql = "SELECT GraphDefinitionID,CustomerID,CustomerOrder " +
-				 "FROM " + TABLE_NAME + " WHERE CustomerID= ?";
+	String sql = 
+			"SELECT GraphDefinitionID,CustomerID,CustomerOrder " +
+			"FROM " + GraphCustomerList.TABLE_NAME + 
+			" WHERE CustomerID= ?";
 
 	try
 	{		
 		if( conn == null )
 		{
-			throw new IllegalStateException("Error getting database connection.");
+			throw new IllegalStateException("Database connection should not be null.");
 		}
 		else
 		{
@@ -124,13 +158,30 @@ public static final GraphCustomerList[] getAllGraphCustomerList(Integer customer
 			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
 		}	
 	}
-
-
 	GraphCustomerList retVal[] = new GraphCustomerList[ tmpList.size() ];
 	tmpList.toArray( retVal );
 	
 	return retVal;
 }
+/**
+ * @param customerID
+ * @return
+ * @throws java.sql.SQLException
+ */
+public synchronized static GraphCustomerList[] getGraphCustomerList(Integer customerID) throws java.sql.SQLException
+{
+	GraphCustomerList retVal[] = null;
+	java.sql.Connection c = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+	retVal = GraphCustomerList.getGraphCustomerList(customerID, c);
+	try{
+		c.close();
+	}
+	catch (SQLException e){
+		e.printStackTrace();
+	}	
+	return retVal;		
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (6/1/2001 2:47:50 PM)

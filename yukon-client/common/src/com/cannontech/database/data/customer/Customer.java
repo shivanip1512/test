@@ -1,5 +1,6 @@
 package com.cannontech.database.data.customer;
 
+import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.contact.Contact;
 import com.cannontech.database.db.customer.DeviceCustomerList;
 import com.cannontech.database.db.graph.GraphCustomerList;
@@ -20,7 +21,6 @@ public class Customer extends com.cannontech.database.db.DBPersistent implements
 
 	//contains ints of ContactIDs
 	private int[] customerContactIDs = new int[0];
-	
 	
 	/**
 	 * Customer constructor comment.
@@ -86,7 +86,6 @@ public class Customer extends com.cannontech.database.db.DBPersistent implements
 			setCustomerID( 
 				com.cannontech.database.db.customer.Customer.getNextCustomerID(getDbConnection()) );
 				
-
 		getCustomer().add();
 		
 		// add all the contacts for this customers
@@ -106,9 +105,13 @@ public class Customer extends com.cannontech.database.db.DBPersistent implements
 			}
 		}
 
+		//Add all customer Graphs
+		for (int i = 0; i < getGraphVector().size(); i++)
+			 ((com.cannontech.database.db.DBPersistent) getGraphVector().elementAt(i)).add();			
+
+		//Add all customer devices
 		for (int i = 0; i < getDeviceVector().size(); i++)
 			 ((com.cannontech.database.db.DBPersistent) getDeviceVector().elementAt(i)).add();			
-		
 	}
 	
 	/** 
@@ -118,17 +121,13 @@ public class Customer extends com.cannontech.database.db.DBPersistent implements
 	public void delete() throws java.sql.SQLException 
 	{
 		// delete all the relations from a graph to this customer
-		com.cannontech.database.db.customer.Customer.deleteCustomerGraphList(
-				getCustomerID(), getDbConnection() );
-
-		// delete all the relations from a device to this customer
-		com.cannontech.database.db.customer.Customer.deleteCustomerDeviceList(
-				getCustomerID(), getDbConnection() );
+		GraphCustomerList.deleteGraphCustomerList( getCustomerID(), getDbConnection() );
 		
+		// delete all the relations from a device to this customer
+		DeviceCustomerList.deleteDeviceCustomerList( getCustomerID(), getDbConnection() );
 		
 		// delete all the contacts for this customer
-		com.cannontech.database.db.contact.Contact.deleteAllAdditionalContacts(
-				getCustomerID(), getDbConnection() );
+		Contact.deleteAllAdditionalContacts( getCustomerID(), getDbConnection() );
 		
 		getCustomer().delete();	
 	}
@@ -139,10 +138,10 @@ public class Customer extends com.cannontech.database.db.DBPersistent implements
 		getCustomer().setDbConnection(conn);
 
 		for (int i = 0; i < getGraphVector().size(); i++)
-			 ((com.cannontech.database.db.DBPersistent) getGraphVector().elementAt(i)).setDbConnection(conn);
+			 ((DBPersistent) getGraphVector().elementAt(i)).setDbConnection(conn);
 			 			
 		for (int i = 0; i < getDeviceVector().size(); i++)
-			 ((com.cannontech.database.db.DBPersistent) getDeviceVector().elementAt(i)).setDbConnection(conn);			
+			 ((DBPersistent) getDeviceVector().elementAt(i)).setDbConnection(conn);			
 
 	}
 	
@@ -152,13 +151,11 @@ public class Customer extends com.cannontech.database.db.DBPersistent implements
 	 */
 	public void retrieve() throws java.sql.SQLException 
 	{
-		if (getCustomer().getCustomerID() == null)
-			getCustomer().retrieve();
+		getCustomer().retrieve();
 	
 		try
 		{
-			GraphCustomerList[] graphs = 
-					com.cannontech.database.db.customer.Customer.getAllGraphCustomerList( 
+			GraphCustomerList[] graphs =  GraphCustomerList.getGraphCustomerList( 
 							getCustomerID(), getDbConnection() );
 
 			for( int i = 0; i < graphs.length; i++ )
@@ -191,8 +188,7 @@ public class Customer extends com.cannontech.database.db.DBPersistent implements
 
 		try
 		{
-			DeviceCustomerList[] devices =
-				com.cannontech.database.db.customer.Customer.getAllDeviceCustomerList( 
+			DeviceCustomerList[] devices = DeviceCustomerList.getDeviceCustomerList( 
 				getCustomerID(), 
 				getDbConnection() );
 
@@ -218,15 +214,13 @@ public class Customer extends com.cannontech.database.db.DBPersistent implements
 		getCustomer().update();
 		
 		// delete all the graph references for this customer
-		GraphCustomerList.deleteCustomerGraphList( getCustomerID(), getDbConnection() );
-
+		GraphCustomerList.deleteGraphCustomerList( getCustomerID(), getDbConnection() );
 		// add all the graphs for this customer
 		for (int i = 0; i < getGraphVector().size(); i++)
 			 ((GraphCustomerList) getGraphVector().elementAt(i)).add();
 
 		// delete all the device references for this customer
 		DeviceCustomerList.deleteDeviceCustomerList( getCustomerID() ,getDbConnection());
-
 		// add all the devices for this customer
 		for (int i = 0; i < getDeviceVector().size(); i++)
 			 ((DeviceCustomerList) getDeviceVector().elementAt(i)).add();

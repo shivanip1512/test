@@ -65,6 +65,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
 	private ArrayList allPointLimits = null;
     private ArrayList allYukonImages = null;
 	private ArrayList allCICustomers = null;
+	private ArrayList allCustomers = null;
 	private ArrayList allLMProgramConstraints = null;
 	private ArrayList allLMScenarios = null;
 
@@ -106,10 +107,8 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
 	
 	private java.util.HashMap allPAOsMap = null;
 	
-	// List of residential customers, load-on-demand!!!
-	private ArrayList allCustomers = null;
-
-	
+	private HashMap allCustomersMap = null;
+		
 /**
  * ServerDatabaseCache constructor comment.
  */
@@ -252,8 +251,8 @@ public synchronized java.util.List getAllContacts()
 	else
 	{
 		allContacts = new java.util.ArrayList();
-		ContactLoader customerContactLoader = new ContactLoader(allContacts, databaseAlias);
-		customerContactLoader.run();
+		ContactLoader contactLoader = new ContactLoader(allContacts, databaseAlias);
+		contactLoader.run();
 		return allContacts;
 	}
 }
@@ -641,6 +640,25 @@ public synchronized java.util.Map getAllPAOsMap()
 		return allPAOsMap;
 	}
 }
+
+/**
+ * Insert the method's description here.
+ * Creation date: (3/14/00 3:19:19 PM)
+ * @return java.util.Collection
+ */
+public synchronized java.util.Map getAllCustomersMap()
+{
+	if( allCustomersMap != null )
+		return allCustomersMap ;
+	else
+	{
+		releaseAllCustomers();
+		getAllCustomers();
+
+		return allCustomersMap;
+	}
+}
+
 
 /**
  * Insert the method's description here.
@@ -1178,36 +1196,13 @@ public synchronized java.util.List getAllYukonPAObjects()
 	 */
 	public List getAllCustomers() {
 		if (allCustomers == null)
+		{
 			allCustomers = new ArrayList();
+			allCustomersMap = new HashMap();
+			CustomerLoader custLoader = new CustomerLoader(allCustomers, allCustomersMap, databaseAlias);
+			custLoader.run();
+		}
 		return allCustomers;
-	}
-	
-	/**
-	 * @see com.cannontech.yukon.IDatabaseCache#getCustomer(int)
-	 */
-	public LiteCustomer getCustomer(int customerID) {
-		List customers = getAllCustomers();
-		for (int i = 0; i < customers.size(); i++) {
-			LiteCustomer liteCustomer = (LiteCustomer) customers.get(i);
-			if (liteCustomer.getCustomerID() == customerID)
-				return liteCustomer;
-		}
-		
-		List ciCustomers = getAllCICustomers();
-		for (int i = 0; i < ciCustomers.size(); i++) {
-			LiteCICustomer liteCICust = (LiteCICustomer) ciCustomers.get(i);
-			if (liteCICust.getCustomerID() == customerID) {
-				if (!liteCICust.isExtended())
-					liteCICust.retrieve( CtiUtilities.getDatabaseAlias() );
-				return liteCICust;
-			}
-		}
-		
-		LiteCustomer liteCustomer = new LiteCustomer( customerID );
-		liteCustomer.retrieve( CtiUtilities.getDatabaseAlias() );
-		customers.add( liteCustomer );
-		
-		return liteCustomer;
 	}
 	
 	public void deleteCustomer(int customerID) {
@@ -1374,7 +1369,7 @@ private synchronized LiteBase handleYukonImageChange( int changeType, int id )
  * Insert the method's description here.
  * Creation date: (12/7/00 12:34:05 PM)
  */
-private synchronized LiteBase handleCustomerContactChange( int changeType, int id )
+private synchronized LiteBase handleContactChange( int changeType, int id )
 {
 	boolean alreadyAdded = false;
 	LiteBase lBase = null;
@@ -1436,7 +1431,7 @@ private synchronized LiteBase handleCustomerContactChange( int changeType, int i
 				//special case for this handler!!!!
 				if( id == DBChangeMsg.CHANGE_INVALID_ID )
 				{
-					releaseAllCustomerContacts();
+					releaseAllContacts();
 					break;
 				}		
 				
@@ -1451,7 +1446,7 @@ private synchronized LiteBase handleCustomerContactChange( int changeType, int i
 				break;
 
 		default:
-				releaseAllCustomerContacts();
+				releaseAllContacts();
 				break;
 	}
 
@@ -1553,7 +1548,7 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg)
 		allCICustomers = null;
 		allNotificationGroups = null;
 
-		retLBase = handleCustomerContactChange( dbType, id );		
+		retLBase = handleContactChange( dbType, id );		
 	}
 	else if( database == DBChangeMsg.CHANGE_GRAPH_DB )
 	{
@@ -1575,22 +1570,18 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg)
 	{
 		retLBase = handleTagChange( dbType, id );
 	}
-	else if( database == DBChangeMsg.CHANGE_LMCONSTRAINT_DB )
+	else if( database == DBChangeMsg.CHANGE_CUSTOMER_DB )
 	{
-		retLBase = handleLMProgramConstraintChange( dbType, id );
-	}
-	else if( database == DBChangeMsg.CHANGE_LMSCENARIO_DB )
-	{
-		retLBase = handleLMScenarioChange( dbType, id );
-	}
-	else if( database == DBChangeMsg.CHANGE_CUSTOMER_DB
+		retLBase = handleCustomerChange( dbType, id );
+	}	
+	else if( database == DBChangeMsg.CHANGE_CI_CUSTOMER_DB
 				|| database == DBChangeMsg.CHANGE_ENERGY_COMPANY_DB )
 	{
 		allEnergyCompanies = null;
 		allUserEnergyCompanies = null;
 
 		//only let the Customer DBChange go into here
-		if( database == DBChangeMsg.CHANGE_CUSTOMER_DB )
+		if( database == DBChangeMsg.CHANGE_CI_CUSTOMER_DB )
 			retLBase = handleCICustomerChange( dbType, id );
 
 	}	
@@ -2405,6 +2396,68 @@ private synchronized LiteBase handleCICustomerChange( int changeType, int id )
  * Insert the method's description here.
  * Creation date: (12/7/00 12:34:05 PM)
  */
+private synchronized LiteBase handleCustomerChange( int changeType, int id )
+{
+	boolean alreadyAdded = false;
+	LiteBase lBase = null;
+
+	// if the storage is not already loaded, we must not care about it
+	if( allCustomers == null )
+		return lBase;
+
+	switch(changeType)
+	{
+		case DBChangeMsg.CHANGE_TYPE_ADD:
+				for(int i=0;i<allCustomers.size();i++)
+				{
+					if( ((LiteCustomer)allCustomers.get(i)).getCustomerID() == id )
+					{
+						alreadyAdded = true;
+						lBase = (LiteBase)allCustomers.get(i);
+						break;
+					}
+				}
+				if( !alreadyAdded )
+				{
+					LiteCustomer lcst = new LiteCustomer(id);
+					lcst.retrieve(databaseAlias);
+					allCustomers.add(lcst);
+					lBase = lcst;
+				}
+				break;
+		case DBChangeMsg.CHANGE_TYPE_UPDATE:
+				for(int i=0;i<allCustomers.size();i++)
+				{
+					if( ((LiteCustomer)allCustomers.get(i)).getCustomerID() == id )
+					{
+						((LiteCustomer)allCustomers.get(i)).retrieve(databaseAlias);
+						lBase = (LiteBase)allCustomers.get(i);
+						break;
+					}
+				}
+				break;
+		case DBChangeMsg.CHANGE_TYPE_DELETE:
+				for(int i=0;i<allCustomers.size();i++)
+				{
+					if( ((LiteCustomer)allCustomers.get(i)).getCustomerID() == id )
+					{
+						lBase = (LiteBase)allCustomers.remove(i);
+						break;
+					}
+				}
+				break;
+		default:
+				releaseAllCustomers();
+				break;
+	}
+
+	return lBase;
+}
+
+/**
+ * Insert the method's description here.
+ * Creation date: (12/7/00 12:34:05 PM)
+ */
 private synchronized LiteBase handleYukonGroupChange( int changeType, int id )
 {
 	boolean alreadyAdded = false;
@@ -2622,7 +2675,9 @@ public synchronized void releaseAllCache()
 	allPointLimits = null;
    allYukonImages = null;
 	allCICustomers = null;
-
+	allCustomers = null;
+	allCustomersMap = null;
+	
 	allYukonUsers = null;
 	allYukonRoles = null;
 	allYukonRoleProperties = null;
@@ -2652,14 +2707,13 @@ public synchronized void releaseAllCache()
 	
 	allPointidMultiplierHashMap = null;
 	allPointIDOffsetHashMap = null;
-	
-	allCustomers = null;
+
 }
 /**
  * Insert the method's description here.
  * Creation date: (3/14/00 3:22:47 PM)
  */
-public synchronized void releaseAllCustomerContacts()
+public synchronized void releaseAllContacts()
 {
 	allContacts = null;
 }
@@ -2742,6 +2796,11 @@ public synchronized void releaseAllCICustomers()
 	allCICustomers = null;
 }
 
+public synchronized void releaseAllCustomers()
+{
+	allCustomers = null;
+	allCustomersMap = null;
+}
 /**
  * Insert the method's description here.
  * Creation date: (3/14/00 3:22:47 PM)
