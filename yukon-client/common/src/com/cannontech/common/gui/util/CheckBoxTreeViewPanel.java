@@ -1,8 +1,7 @@
 package com.cannontech.common.gui.util;
 
-import java.util.Vector;
-
 import com.cannontech.common.gui.tree.CheckNodeSelectionListener;
+import com.cannontech.common.gui.tree.CheckRenderer;
 
 /**
  * This type was created in VisualAge.
@@ -11,42 +10,44 @@ import com.cannontech.common.gui.tree.CheckNodeSelectionListener;
 public class CheckBoxTreeViewPanel extends TreeViewPanel
 {
 	private CheckNodeSelectionListener nodeListener = null;
-	private Vector checkedNodes = null;
-
+	
 	/**
 	 * TreeViewPanel constructor comment.
 	 */
 	public CheckBoxTreeViewPanel(){
-		super();
-	//	getTree().getSelectionModel().setSelectionMode(javax.swing.tree.TreeSelectionModel.SINGLE_TREE_SELECTION );
-		getTree().setCellRenderer( new com.cannontech.common.gui.tree.CheckRenderer() );
-		getTree().addMouseListener(getNodeListener());
+		this(false);
 	}	
 
-	private CheckNodeSelectionListener getNodeListener()
+	/**
+	 * TreeViewPanel constructor comment.
+	 * boolean storeCheckedNodes - true turns the listener on to record the currently checked nodes.
+	 */
+	public CheckBoxTreeViewPanel(boolean storeCheckNodes_)
 	{
-		if( nodeListener == null )
-			nodeListener = new CheckNodeSelectionListener( getTree(), getCheckedNodes() );
-			
-		return nodeListener;
-	}
+		super();
+//		getTree().getSelectionModel().setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
+		getTree().setCellRenderer( new CheckRenderer() );
+		getTree().addMouseListener(getNodeListener());
+		getNodeListener().setStoreCheckedNodes(storeCheckNodes_);
+	}	
 	
 	/**
 	 * @return
 	 */
-	public Vector getCheckedNodes()
+	private CheckNodeSelectionListener getNodeListener()
 	{
-		if(checkedNodes == null)
-			checkedNodes = new Vector();
-		return checkedNodes;
+		if( nodeListener == null )
+			nodeListener = new CheckNodeSelectionListener( getTree());
+			
+		return nodeListener;
 	}
 
 	/**
-	 * @param vector
+	 * @param b
 	 */
-	public void setCheckedNodes(Vector vector)
+	public void setStoreCheckedNodes(boolean b)
 	{
-		checkedNodes = vector;
+		getNodeListener().setStoreCheckedNodes(b);
 	}
 
 }

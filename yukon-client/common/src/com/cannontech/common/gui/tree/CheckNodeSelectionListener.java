@@ -4,13 +4,14 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.Vector;
 
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
+
+import com.cannontech.database.model.CheckBoxDBTreeModel;
 
 /**
  * @author rneuharth
@@ -19,20 +20,20 @@ import javax.swing.tree.TreePath;
 public class CheckNodeSelectionListener extends MouseAdapter
 {
 	private JTree tree = null;
-
-	//Contains LiteBase (hopefully) values.  DOES NOT CONTAIN THE PARENT!!!
-	private Vector checkedNodes = null;
+	
+	private boolean storeCheckedNodes = false;
 
 	/**
 	 * CheckedNodes is a vector for storing the "checked" objects (stored as the getUserObject() from JTree)
+	 * CheckedNodes can (obviously) only be stored if the treeModel is instanceof CheckNodeDBTreeModel
 	 * @param tree
 	 * @param checkedNodes
 	 */
-	public CheckNodeSelectionListener(JTree tree, Vector checkedNodes)
+	public CheckNodeSelectionListener(JTree tree, boolean storeCheckedNodes_)
 	{
 		super();
 		this.tree = tree;
-		this.checkedNodes = checkedNodes;
+		setStoreCheckedNodes(storeCheckedNodes_);
 	}
 	
 	/**
@@ -41,7 +42,7 @@ public class CheckNodeSelectionListener extends MouseAdapter
 	 */
 	public CheckNodeSelectionListener(JTree tree)
 	{
-		this(tree, null);
+		this(tree, false);
 	}	
 
 	/* (non-Javadoc)
@@ -66,7 +67,7 @@ public class CheckNodeSelectionListener extends MouseAdapter
 
 			//be sure we are an editable node
 			if (!node.isSystemReserved())
-				selectNode(node, doSelect, row);
+				selectNode(node, doSelect);
 
 			// I need revalidate if node is root.  but why?
 			if (row == 0)
@@ -107,10 +108,29 @@ public class CheckNodeSelectionListener extends MouseAdapter
 	 * @param selected
 	 * @param row
 	 */
-	private void selectNode(CheckNode node, boolean selected, int row)
+	private void selectNode(CheckNode node, boolean selected)
 	{
-		node.setSelected(selected, checkedNodes);
-
+		if(isStoreCheckedNodes() && tree.getModel() instanceof CheckBoxDBTreeModel)
+			node.setSelected(selected, ((CheckBoxDBTreeModel)tree.getModel()).getCheckedNodes());
+		else
+			node.setSelected(selected);
+			
 		((DefaultTreeModel) tree.getModel()).nodeChanged(node);
+	}
+
+	/**
+	 * @return
+	 */
+	public boolean isStoreCheckedNodes()
+	{
+		return storeCheckedNodes;
+	}
+
+	/**
+	 * @param b
+	 */
+	public void setStoreCheckedNodes(boolean b)
+	{
+		storeCheckedNodes = b;
 	}
 }
