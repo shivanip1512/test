@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2004/09/29 20:26:37 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2004/10/06 16:32:12 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002, 2003, 2004 Cannon Technologies Inc. All rights reserved.
 *---------------------------------------------------------------------------------------------*/
@@ -41,33 +41,28 @@ CtiThreadMonitor::~CtiThreadMonitor()
 void CtiThreadMonitor::run( void )
 {
    int cnt = 0;
-   {
-      CtiLockGuard<CtiLogger> doubt_guard( dout );
-      dout << now() << " Monitor Startup" << endl;
-   }
+
+   messageOut( "ts", "Monitor Startup" );
 
    while( !_quit )
    {
       sleep( 1000 );
 
-      {
-         CtiLockGuard<CtiLogger> doubt_guard( dout );
-         dout << now() << " Monitor Loop" << endl;
-      }
+      messageOut( "ts", "Monitor Loop" );
 
       checkForExpriration();
 
       processQueue();
 
+      processExtraCommands();
+
       processExpired();
+
 
       _queue.clearAndDestroy();
    }
 
-   {
-      CtiLockGuard<CtiLogger> doubt_guard( dout );
-      dout << now() << " Monitor Shutdown" << endl;
-   }
+   messageOut( "ts", "Monitor Shutdown" );
 }
 
 //===========================================================================================================
@@ -96,7 +91,8 @@ void CtiThreadMonitor::checkForExpriration( void )
 }
 
 //===========================================================================================================
-// compare queued ids with stored, mark ones that are found to vaild and add any new ones
+// chug thru the queue and add in new entries that we've heard from and mark them as 'updated'
+// we're also updating entries that existed previously
 //===========================================================================================================
 
 void CtiThreadMonitor::processQueue( void )
@@ -108,6 +104,17 @@ void CtiThreadMonitor::processQueue( void )
 
       int tempId = temp->getId();
 
+      ThreadData::iterator i = _threadData.find( tempId );
+
+      if( i != _threadData.end() )
+      {
+         //update the reg data
+         i->second.setBehaviour( temp->getBehaviour() );
+         i->second.setTickleFreq( temp->getTickleFreq() );
+         i->second.setShutdownFunc( temp->getShutdownFunc() );
+         i->second.setShutdownArgs( temp->getShutdownArgs() );
+      }
+
       pair< ThreadData::iterator, bool > insertpair;
 
       //we try to put the element from the queue into the map
@@ -118,6 +125,8 @@ void CtiThreadMonitor::processQueue( void )
 
       //update the time so we know when we heard last
       (*insertpair.first).second.setTickledTime( second_clock::local_time() );
+
+      delete temp;
    }
 }
 
@@ -129,20 +138,18 @@ void CtiThreadMonitor::processExpired( void )
 {
    try
    {
-      for( ThreadData::iterator i = _threadData.begin(); i != _threadData.end(); /*i++*/ )
+      for( ThreadData::iterator i = _threadData.begin(); i != _threadData.end(); )
       {
          if( !i->second.getReported() )
          {
-            {
-               CtiLockGuard<CtiLogger> doubt_guard( dout );
-               dout << now() << " Thread w/ID " << i->first << " is UNREPORTED" << endl;
-            }
+            messageOut( "tsis", "Thread W/ID", i->first, "Is UNREPORTED" );
 
             int reaction_type = i->second.getBehaviour();
 
             switch( reaction_type )
             {
-            case CtiThreadRegData::None:  
+            case CtiThreadRegData::None:
+            case CtiThreadRegData::LogOut:
                {
                }
                break;
@@ -152,7 +159,7 @@ void CtiThreadMonitor::processExpired( void )
                   CtiThreadRegData::behaviourFuncPtr alt = i->second.getAlternateFunc();
                   void* altArgs = i->second.getAlternateArgs();
 
-                  if( alt != NULL )
+                  if( alt )
                   {  
                      //it doesn't matter if the args are null
                      alt( altArgs );
@@ -165,7 +172,7 @@ void CtiThreadMonitor::processExpired( void )
                   CtiThreadRegData::behaviourFuncPtr hammer = i->second.getShutdownFunc();
                   void* hammerArgs = i->second.getShutdownArgs();
 
-                  if( hammer != NULL )
+                  if( hammer )
                   {
                      //it doesn't matter if the args are null
                      hammer( hammerArgs );
@@ -175,16 +182,12 @@ void CtiThreadMonitor::processExpired( void )
 
             default:
                {
-                  CtiLockGuard<CtiLogger> doubt_guard( dout );
-                  dout << "Illegal behaviour type for id " << i->first << endl;
+                  messageOut( "tsi", "Illegal Behaviour For ID", i->first );  
                }
                break;
             }
 
-            {
-               CtiLockGuard<CtiLogger> doubt_guard( dout );
-               dout << "Removing Thread ID " << i->first << " " << i->second.getName() << endl;
-            }
+            messageOut( "tsisv", "Removing Thread ID", i->first, " ", i->second.getName() );
 
             i = _threadData.erase( i );
          }
@@ -196,8 +199,34 @@ void CtiThreadMonitor::processExpired( void )
    }
    catch( ... )
    {
-      CtiLockGuard<CtiLogger> doubt_guard( dout );
-      dout << now() << "Monitor: Unknown exception in processExpired()" << endl;
+      messageOut( "ts", "Monitor: Unknown Exception In processExpired()" );
+   }
+}
+
+//===========================================================================================================
+//===========================================================================================================
+
+void CtiThreadMonitor::processExtraCommands( void )
+{
+   try
+   {
+      for( ThreadData::iterator i = _threadData.begin(); i != _threadData.end(); )
+      {
+         if( i->second.getBehaviour() == CtiThreadRegData::LogOut )
+         {
+            messageOut( "tsis", "Thread ID", i->first, "Logging Out" );
+
+            i = _threadData.erase( i );
+         }
+         else
+         {
+            i++;
+         }
+      }
+   }
+   catch( ... )
+   {
+      messageOut( "ts", "Monitor: Unknown Exception In processExtraCommands()" );
    }
 }
 
@@ -214,16 +243,13 @@ void CtiThreadMonitor::dump( void )
    {
       CtiThreadRegData temp = i->second;
 
-      {
-         CtiLockGuard<CtiLogger> doubt_guard( dout );
-         dout << endl;
-         dout << "Thread name             : " << temp.getName() << endl;
-         dout << "Thread id               : " << temp.getId() << endl;
-         dout << "Thread behaviour type   : " << temp.getBehaviour() << endl;
-         dout << "Thread tickle frequency : " << temp.getTickleFreq() << endl;
-         dout << "Thread tickle time      : " << timeString( temp.getTickledTime() ) << endl;
-         dout << endl;
-      }
+      messageOut( "" );
+      messageOut( "sv", "Thread name             : ", temp.getName() );
+      messageOut( "si", "Thread id               : ", temp.getId() );
+      messageOut( "si", "Thread behaviour type   : ", temp.getBehaviour() );
+      messageOut( "si", "Thread tickle frequency : ", temp.getTickleFreq() );
+      messageOut( "sv", "Thread tickle time      : ", timeString( temp.getTickledTime() ) );
+      messageOut( "" );
    }  
 }
 
@@ -239,63 +265,88 @@ void CtiThreadMonitor::tickle( const CtiThreadRegData *in )
    //data that is not ours when we delete the queue
    try
    {
-      if( in != NULL )
+      if( in )
       {
          CtiThreadRegData *data = new CtiThreadRegData( *in );
 
-         if( data->getId() != 0 )
+         if( data->getId() )
          {
             data->setTickledTime( second_clock::local_time() );
 
-            if( data->getId() != 0 )
-            {
-               _queue.putQueue( data );
+            _queue.putQueue( data );
 
-               {
-                  CtiLockGuard<CtiLogger> doubt_guard( dout );
-                  dout << now() << " Thread " << data->getName() << " " << data->getId() << " inserted" << endl;
-               }
+            messageOut( "tsis", "Thread", data->getId(), "Inserted" );
 
-               //our thread may have shut down, so we don't want the queue to keep growing
-               //as we won't be processing it anymore
-               if( !isRunning() )
-               {
-                  {
-                     CtiLockGuard<CtiLogger> doubt_guard( dout );
-                     dout << now() <<" WARNING: Monitor is NOT running, deleting monitor queue" << endl;
-                  }
-                  _queue.clearAndDestroy();
-               }
-            }
-            else
+            //our thread may have shut down, so we don't want the queue to keep growing
+            //as we won't be processing it anymore
+            if( !isRunning() )
             {
-               CtiLockGuard<CtiLogger> doubt_guard( dout );
-               dout << now() <<" Thread id INVALID" << endl;
+               messageOut( "ts", "WARNING: Monitor Is NOT Running, Deleting Monitor Queue" );
+               _queue.clearAndDestroy();
             }
+         }
+         else
+         {
+            messageOut( "ts", "Thread Id INVALID" );
          }
       }
    }
    catch( ... )
    {
-      CtiLockGuard<CtiLogger> doubt_guard( dout );
-      dout << now() <<" Monitor passed BAD data" << endl;
+      messageOut( "ts", "Monitor: Passed BAD Data" );
    }
 }
 
 //===========================================================================================================
-// this guy will allow a thread that has registered and is done working to un-register with us politely
+// http://gethelp.devx.com/techtips/cpp_pro/10min/2001/feb/10min0201-3.asp
+//
+// fmt == a format string that we look at to decide how to handle the parameters passed in
+// 'i' == integer
+// 's' == c-style string 
+// 'v' == a std::string 
+// 't' == timestamp
 //===========================================================================================================
 
-void CtiThreadMonitor::removeThread( int id )
+void CtiThreadMonitor::messageOut( const char *fmt, ... )
 {
-   ThreadData::iterator i = _threadData.find( id );
+   const char *p = fmt;
 
-   i = _threadData.erase( i );
+   va_list ap;
+   va_start( ap, fmt );
 
+   CtiLockGuard<CtiLogger> doubt_guard( dout );
+
+   while( *p )
    {
-      CtiLockGuard<CtiLogger> doubt_guard( dout );
-      dout << now() << " Thread with id " << id << " has unregistered" << endl;
+      if( *p == 'i' )
+      {
+         int num = va_arg( ap, int );
+         dout << " " << num;
+      }
+      else if( *p == 't' )
+      {
+         dout << now();
+      }
+      else if( *p == 's' )
+      {
+         string word = va_arg( ap, char * );
+         dout << " " << word;
+      }
+      else if( *p == 'v' )
+      {
+         string word = va_arg( ap, string );
+         dout << " " << word;
+      }
+      else
+      {
+         dout << " messageOut format problem" << endl;
+      }
+
+      ++p;
    }
+   dout << endl;
+
+   va_end( ap );
 }
 
 //===========================================================================================================
