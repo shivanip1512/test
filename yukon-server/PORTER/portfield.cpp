@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.117 $
-* DATE         :  $Date: 2004/08/11 19:53:40 $
+* REVISION     :  $Revision: 1.118 $
+* DATE         :  $Date: 2004/09/20 16:15:01 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1089,11 +1089,12 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                 case TYPE_DARTRTU:
                 case TYPE_SERIESVRTU:
                 case TYPE_SERIESVLMIRTU:
+                case TYPE_RTM:
                     {
                         CtiDeviceSingle *ds = static_cast<CtiDeviceSingle *>(Device.get());
                         int protocolStatus;
 
-                        if( Device->isSingle() && ds->hasProtocol() )
+                        if( Device->isSingle() )
                         {
                             ds->recvCommRequest(OutMessage);
 
@@ -1579,7 +1580,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         status = Port->outMess(trx, Device, traceList);
                         break;
                     }
-                case TYPE_RTM:
+/*                case TYPE_RTM:
                     {
                         OutMessage->InLength = 0;
 
@@ -1592,13 +1593,13 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
                         rtm->prepareOutMessageForComms(OutMessage);
 
-                        /* output the message to the remote */
+                        // output the message to the remote
                         trx.setOutBuffer(OutMessage->Buffer.OutMessage);
                         trx.setOutCount(OutMessage->OutLength);
                         status = Port->outMess(trx, Device, traceList);
 
                         break;
-                    }
+                    }*/
                 default:
                     {
                         {
@@ -1724,7 +1725,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                             break;
 
                         }
-                    case TYPE_RTM:
+                    //case TYPE_RTM:
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
