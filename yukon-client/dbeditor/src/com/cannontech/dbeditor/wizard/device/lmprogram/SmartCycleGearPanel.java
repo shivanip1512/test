@@ -331,7 +331,7 @@ private javax.swing.JComboBox getJComboBoxMaxCycleCount() {
 			ivjJComboBoxMaxCycleCount.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
 			// user code begin {1}
 			ivjJComboBoxMaxCycleCount.addItem( com.cannontech.common.util.CtiUtilities.STRING_NONE );
-			for( int i = 1; i <= 16; i++ )
+			for( int i = 1; i <= 63; i++ )
 				ivjJComboBoxMaxCycleCount.addItem( new Integer(i) );
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -356,7 +356,7 @@ private javax.swing.JComboBox getJComboBoxPeriodCount() {
 			ivjJComboBoxPeriodCount.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
 			ivjJComboBoxPeriodCount.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
 			// user code begin {1}
-			for( int i = 1; i < 49; i++ )
+			for( int i = 1; i <= 63; i++ )
 				ivjJComboBoxPeriodCount.addItem( new Integer(i) );
 
 			//default value
@@ -613,7 +613,7 @@ private com.klg.jclass.field.JCSpinField getJCSpinFieldCyclePeriod() {
 			ivjJCSpinFieldCyclePeriod.setDataProperties(
 					new com.klg.jclass.field.DataProperties(
 						new com.klg.jclass.field.validate.JCIntegerValidator(
-						null, new Integer(1), new Integer(60), null, true, 
+						null, new Integer(1), new Integer(945), null, true, 
 						null, new Integer(1), "#,##0.###;-#,##0.###", false, 
 						false, false, null, new Integer(30)), 
 						new com.klg.jclass.util.value.MutableValueModel(java.lang.Integer.class, 

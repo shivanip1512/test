@@ -494,7 +494,7 @@ private com.klg.jclass.field.JCSpinField getJCSpinFieldCyclePeriod() {
 			ivjJCSpinFieldCyclePeriod.setDataProperties(
 					new com.klg.jclass.field.DataProperties(
 						new com.klg.jclass.field.validate.JCIntegerValidator(
-						null, new Integer(5), new Integer(60), null, true, 
+						null, new Integer(5), new Integer(945), null, true, 
 						null, new Integer(1), "#,##0.###;-#,##0.###", false, 
 						false, false, null, new Integer(30)), 
 						new com.klg.jclass.util.value.MutableValueModel(java.lang.Integer.class, 
