@@ -197,7 +197,7 @@ public class InventoryBean {
 			hardwares = inventorySet;
 		}
 		else if (showEnergyCompany) {
-			if (getFilterBy() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_ENERGY_COMPANY) {
+			if (getMember() >= 0) {
 				LiteStarsEnergyCompany member = StarsDatabaseCache.getInstance().getEnergyCompany( getMember() );
 				ArrayList inventory = member.loadAllInventory( true );
 				

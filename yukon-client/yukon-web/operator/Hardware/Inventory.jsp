@@ -9,7 +9,7 @@
 	<jsp:setProperty name="inventoryBean" property="sortBy" value="<%= YukonListEntryTypes.YUK_DEF_ID_INV_SORT_BY_SERIAL_NO %>"/>
 	<jsp:setProperty name="inventoryBean" property="sortOrder" value="<%= InventoryBean.SORT_ORDER_ASCENDING %>"/>
 	<jsp:setProperty name="inventoryBean" property="filterBy" value="0"/>
-	<jsp:setProperty name="inventoryBean" property="member" value="<%= user.getEnergyCompanyID() %>"/>
+	<jsp:setProperty name="inventoryBean" property="member" value="-1"/>
 	<jsp:setProperty name="inventoryBean" property="page" value="1"/>
 	<% inventoryBean.resetInventoryList(); %>
 <% } %>
@@ -39,7 +39,6 @@ function changeFilter(filterBy) {
 	document.getElementById("DivLocation").style.display = (filterBy == <%= YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_LOCATION %>)? "" : "none";
 	document.getElementById("DivAddressingGroup").style.display = (filterBy == <%= YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_CONFIG %>)? "" : "none";
 	document.getElementById("DivDeviceStatus").style.display = (filterBy == <%= YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_DEV_STATUS %>)? "" : "none";
-	document.getElementById("DivEnergyCompany").style.display = (filterBy == <%= YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_ENERGY_COMPANY %>)? "" : "none";
 }
 
 function init() {
@@ -87,6 +86,27 @@ function showAll(form) {
                   <tr>
                     <td width="75%"> 
                       <table width="100%" border="0" cellspacing="0" cellpadding="3" class="TableCell">
+<% if (AuthFuncs.checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_MANAGE_MEMBERS) && (liteEC.getChildren().size() > 0)) { %>
+                        <tr>
+                          <td width="15%" align="right">Member:</td>
+                          <td width="35%">
+                            <select name="Member">
+                              <option value="-1">All</option>
+                              <%
+	ArrayList descendants = ECUtils.getAllDescendants(liteEC);
+	for (int i = 0; i < descendants.size(); i++) {
+		LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(i);
+		String selected = (company.getLiteID() == inventoryBean.getMember())? "selected" : "";
+%>
+                              <option value="<%= company.getLiteID() %>" <%= selected %>><%= company.getName() %></option>
+                              <%
+	}
+%>
+                            </select>
+                          </td>
+                          <td width="50%">&nbsp;</td>
+                        </tr>
+<% } %>
                         <tr> 
                           <td width="15%"> 
                             <div align="right">Sort by:</div>
@@ -119,20 +139,14 @@ function showAll(form) {
                           <td width="35%"> 
                             <select name="FilterBy" onChange="changeFilter(this.value)">
                               <option value="0">(none)</option>
-<%
+                              <%
 	StarsCustSelectionList filterByList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_INV_FILTER_BY );
 	for (int i = 0; i < filterByList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = filterByList.getStarsSelectionListEntry(i);
 		String selected = (entry.getYukonDefID() == inventoryBean.getFilterBy())? "selected" : "";
 %>
                               <option value="<%= entry.getYukonDefID() %>" <%= selected %>><%= entry.getContent() %></option>
-<%
-	}
-	if (AuthFuncs.checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_MANAGE_MEMBERS) && (liteEC.getChildren().size() > 0)) {
-		String selected = (inventoryBean.getFilterBy() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_ENERGY_COMPANY)? "selected" : "";
-%>
-                              <option value="<%= YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_ENERGY_COMPANY %>" <%= selected %>>Member</option>
-<%
+                              <%
 	}
 %>
                             </select>
@@ -214,20 +228,6 @@ function showAll(form) {
 		String selected = (entry.getYukonDefID() == inventoryBean.getDeviceStatus())? "selected" : "";
 %>
                                 <option value="<%= entry.getYukonDefID() %>" <%= selected %>><%= entry.getContent() %></option>
-                                <%
-	}
-%>
-                              </select>
-                            </div>
-                            <div id="DivEnergyCompany" style="display:none"> 
-                              <select name="Member">
-                                <%
-	ArrayList descendants = ECUtils.getAllDescendants(liteEC);
-	for (int i = 0; i < descendants.size(); i++) {
-		LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(i);
-		String selected = (company.getLiteID() == inventoryBean.getMember())? "selected" : "";
-%>
-                                <option value="<%= company.getLiteID() %>" <%= selected %>><%= company.getName() %></option>
                                 <%
 	}
 %>
