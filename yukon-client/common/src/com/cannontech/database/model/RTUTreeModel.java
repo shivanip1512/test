@@ -22,7 +22,7 @@ public RTUTreeModel() {
  */
 public boolean isDeviceValid( int category_, int class_, int type_ )
 {
-	return (class_ == com.cannontech.database.data.pao.DeviceClasses.LOADMANAGEMENT
+	return( class_ == com.cannontech.database.data.pao.DeviceClasses.LOADMANAGEMENT
 				|| class_ == com.cannontech.database.data.pao.DeviceClasses.IED
 				|| class_ == com.cannontech.database.data.pao.DeviceClasses.METER
 				|| class_ == com.cannontech.database.data.pao.DeviceClasses.RTU
@@ -30,10 +30,11 @@ public boolean isDeviceValid( int category_, int class_, int type_ )
 				|| class_ == com.cannontech.database.data.pao.DeviceClasses.VIRTUAL
 				|| class_ == com.cannontech.database.data.pao.DeviceClasses.RTU
 				|| class_ == com.cannontech.database.data.pao.DeviceClasses.SYSTEM)
-			 &&
-			 (DeviceTypesFuncs.isRTU(type_) 
-				|| type_ == PAOGroups.DAVISWEATHER)
-			 && category_ == PAOGroups.CAT_DEVICE;
+				&&
+				(DeviceTypesFuncs.isRTU(type_) 
+					|| type_ == PAOGroups.DAVISWEATHER)
+				&& category_ == PAOGroups.CAT_DEVICE
+				&& !DeviceTypesFuncs.isIon(type_);
 }
 
 /**
