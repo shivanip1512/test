@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTTIME.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/09/03 14:33:53 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/09/03 20:53:15 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -122,7 +122,6 @@ static void applyPortSendTime(const long unusedid, CtiPortSPtr PortRecord, void 
 
     CtiRTDB<CtiDeviceBase>::CtiRTDBIterator   itr_dev(DeviceManager.getMap());
 
-    // Scan through the ports
     {
         /* check for a remote port */
         if(PortRecord->getName()(0) == '@') return;
@@ -273,8 +272,7 @@ static void applyPortSendTime(const long unusedid, CtiPortSPtr PortRecord, void 
                         {
                             RouteRecord = rte_itr->second;
 
-                            if(RouteRecord->getTrxDeviceID() == RemoteRecord->getID() &&
-                               RouteRecord->isDefaultRoute())
+                            if(RouteRecord->getTrxDeviceID() == RemoteRecord->getID() && RouteRecord->isDefaultRoute())
                             {
                                 /* Check if this is broadcast or lead */
                                 if(CTIScanEnv ("DSM2_LEADTSYNCS", &LeadTimeSyncs))
@@ -638,7 +636,7 @@ VOID TimeSyncThread (PVOID Arg)
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " TimeSyncThread started as TID:  " << CurrentTID() << endl;
+        dout << RWTime() << " TimeSyncThread started as TID:  " << CurrentTID() << " Sync every " << TimeSyncRate << " seconds" << endl;
     }
 
 
