@@ -23,12 +23,18 @@ public class MultiAction implements ActionBase {
 	
 	private SOAPMessage reqMsg = null;
 	private ArrayList actionList = new ArrayList();
-	private boolean error = false;
+	private ActionBase failedAction = null;
 	
-	public void addAction(ActionBase action, HttpServletRequest req, HttpSession session) {
-		if (error) return;
-		
+	public boolean addAction(ActionBase action, HttpServletRequest req, HttpSession session) {
+		// Remove all action of the same type first
+		java.util.Iterator it = actionList.iterator();
+		while (it.hasNext()) {
+			ActionBase act = (ActionBase) it.next();
+			if (action.getClass().equals( act.getClass() ))
+				it.remove();
+		}
 		actionList.add( action );
+		
 		try {
 			if (reqMsg == null) {
 				reqMsg = SOAPUtil.createMessage();
@@ -36,20 +42,23 @@ public class MultiAction implements ActionBase {
 			}
 			
 			SOAPMessage message = action.build(req, session);
+			if (message == null) return false;
+			
 			SOAPUtil.mergeSOAPMsgOfOperation( reqMsg, message );
+			return true;
 		}
 		catch (Exception e) {
 			e.printStackTrace();
-			error = true;
-			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, action.getClass() + ": invalid request parameters" );
+			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Failed to build request message" );
 		}
+		
+		return false;
 	}
 
 	/**
 	 * @see com.cannontech.stars.web.action.ActionBase#build(HttpServletRequest, HttpSession)
 	 */
 	public SOAPMessage build(HttpServletRequest req, HttpSession session) {
-		if (reqMsg == null || error) return null;
 		return reqMsg;
 	}
 
@@ -68,6 +77,8 @@ public class MultiAction implements ActionBase {
 				StarsOperation oper = SOAPUtil.parseSOAPMsgForOperation( msg );
 				if (oper.getStarsFailure() != null) {
 					// If one operation failed, then the whole operation failed
+					failedAction = action;
+					
 					StarsOperation respOper = new StarsOperation();
 					respOper.setStarsFailure( oper.getStarsFailure() );
 					return SOAPUtil.buildSOAPMessage( respOper );
@@ -75,7 +86,7 @@ public class MultiAction implements ActionBase {
 				
 				SOAPUtil.mergeSOAPMsgOfOperation(respMsg, msg);
 			}
-						
+			
 			return respMsg;
 		}
 		catch (Exception e) {
@@ -103,6 +114,12 @@ public class MultiAction implements ActionBase {
         }
         
         return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
+	}
+	
+	public ActionBase getFailedAction() {
+		ActionBase action = failedAction;
+		failedAction = null;
+		return action;
 	}
 
 }
