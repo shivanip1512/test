@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2004/04/22 21:35:08 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2004/05/14 01:07:05 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -29,7 +29,12 @@
 
 set< CtiDLCCommandStore > CtiDeviceMCT410::_commandStore;
 
-CtiDeviceMCT410::CtiDeviceMCT410( )  {  }
+CtiDeviceMCT410::CtiDeviceMCT410( ) :
+    _llpInterestTime(0),
+    _llpInterestOffset(0),
+    _llpInterestChannel(0)
+{
+}
 
 CtiDeviceMCT410::CtiDeviceMCT410( const CtiDeviceMCT410 &aRef )
 {
@@ -91,6 +96,12 @@ bool CtiDeviceMCT410::initCommandStore( )
                               (int)MCT410_FuncReadVoltageLen );
     _commandStore.insert( cs );
 
+    cs._cmd      = CtiProtocolEmetcon::GetValue_Outage;
+    cs._io       = IO_FCT_READ;
+    cs._funcLen  = make_pair( (int)MCT410_FuncReadOutagePos,
+                              (int)MCT410_FuncReadOutageLen );
+    _commandStore.insert( cs );
+
     cs._cmd     = CtiProtocolEmetcon::GetStatus_Internal;
     cs._io      = IO_READ;
     cs._funcLen = make_pair( (int)MCT410_StatusLen,
@@ -101,6 +112,11 @@ bool CtiDeviceMCT410::initCommandStore( )
     cs._io      = IO_FCT_READ;
     cs._funcLen = make_pair( (int)MCT410_FuncReadLPStatusPos,
                              (int)MCT410_FuncReadLPStatusLen );
+    _commandStore.insert( cs );
+
+    cs._cmd     = CtiProtocolEmetcon::PutConfig_Raw;
+    cs._io      = IO_WRITE;
+    cs._funcLen = make_pair( 0, 0 );  //  filled in later
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::PutConfig_TSync;
@@ -131,6 +147,11 @@ bool CtiDeviceMCT410::initCommandStore( )
     cs._io      = IO_READ;
     cs._funcLen = make_pair((int)MCT410_DemandIntervalPos,
                             (int)MCT410_DemandIntervalLen);
+    _commandStore.insert( cs );
+
+    cs._cmd     = CtiProtocolEmetcon::PutConfig_LoadProfileInterval;
+    cs._io      = IO_WRITE;
+    cs._funcLen = make_pair((int)MCT_Function_LPInt, 0);
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::GetConfig_LoadProfileInterval;
@@ -423,52 +444,64 @@ INT CtiDeviceMCT410::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
 
     switch(InMessage->Sequence)
     {
-        case (CtiProtocolEmetcon::Scan_Accum):
-        case (CtiProtocolEmetcon::GetValue_Default):
+        case CtiProtocolEmetcon::Scan_Accum:
+        case CtiProtocolEmetcon::GetValue_Default:
         {
             status = decodeGetValueKWH(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
-        case (CtiProtocolEmetcon::Scan_Integrity):
-        case (CtiProtocolEmetcon::GetValue_Demand):
+        case CtiProtocolEmetcon::Scan_Integrity:
+        case CtiProtocolEmetcon::GetValue_Demand:
         {
             status = decodeGetValueDemand(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
-        case (CtiProtocolEmetcon::GetValue_PeakDemand):
+        case CtiProtocolEmetcon::GetValue_PeakDemand:
         {
             status = decodeGetValuePeakDemand(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
-        case (CtiProtocolEmetcon::GetValue_Voltage):
+        case CtiProtocolEmetcon::GetValue_Voltage:
         {
             status = decodeGetValueVoltage(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
-        case (CtiProtocolEmetcon::Scan_LoadProfile):
+        case CtiProtocolEmetcon::GetValue_Outage:
+        {
+            status = decodeGetValueOutage(InMessage, TimeNow, vgList, retList, outList);
+            break;
+        }
+
+        case CtiProtocolEmetcon::GetValue_LoadProfile:
+        {
+            status = decodeGetValueLoadProfile(InMessage, TimeNow, vgList, retList, outList);
+            break;
+        }
+
+        case CtiProtocolEmetcon::Scan_LoadProfile:
         {
             status = decodeScanLoadProfile(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
-        case (CtiProtocolEmetcon::GetStatus_Internal):
+        case CtiProtocolEmetcon::GetStatus_Internal:
         {
             status = decodeGetStatusInternal(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
-        case (CtiProtocolEmetcon::GetStatus_LoadProfile):
+        case CtiProtocolEmetcon::GetStatus_LoadProfile:
         {
             status = decodeGetStatusLoadProfile(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
-        case (CtiProtocolEmetcon::GetConfig_DemandInterval):
-        case (CtiProtocolEmetcon::GetConfig_LoadProfileInterval):
+        case CtiProtocolEmetcon::GetConfig_DemandInterval:
+        case CtiProtocolEmetcon::GetConfig_LoadProfileInterval:
         {
             status = decodeGetConfigInterval(InMessage, TimeNow, vgList, retList, outList);
             break;
@@ -507,14 +540,17 @@ INT CtiDeviceMCT410::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
 }
 
 
-PointQuality_t CtiDeviceMCT410::getDataQuality( unsigned long value, int bytes )
+PointQuality_t CtiDeviceMCT410::getDataQuality( unsigned char *buf, int len )
 {
-    int errorcode = value & 0xff;
     PointQuality_t retval;
 
-    if( bytes < 4 )     value ^= 0xFF000000;
-    if( bytes < 3 )     value ^= 0x00FF0000;
-    if( bytes < 2 )     value ^= 0x0000FF00;
+    unsigned long errorcode = 0xffffffff;
+
+    for( int i = 0; i < len; i++ )
+    {
+        errorcode <<= 8;
+        errorcode  |= buf[i];
+    }
 
     //  i s'pose this could be a set sometime, eh?
     switch( errorcode )
@@ -565,22 +601,156 @@ PointQuality_t CtiDeviceMCT410::getDataQuality( unsigned long value, int bytes )
 }
 
 
-bool CtiDeviceMCT410::isValidDataQuality( int quality )
+unsigned long CtiDeviceMCT410::getDataValue( unsigned char *buf, int len )
 {
-    bool retval = false;
+    unsigned long val = 0;
 
-    switch( quality )
+    if( getDataQuality(buf, len) == NormalQuality )
     {
-        case PowerfailQuality:
-        case PartialIntervalQuality:
-        case NormalQuality:
+        for( int i = 0; i < len; i++ )
         {
-            retval = true;
+            val <<= 8;
+            val  |= buf[i];
         }
     }
+    else
+    {
+        val = 0;
+    }
 
-    return retval;
+    return val;
 }
+
+
+INT CtiDeviceMCT410::executeGetValueLoadProfile( CtiRequestMsg              *pReq,
+                                                 CtiCommandParser           &parse,
+                                                 OUTMESS                   *&OutMessage,
+                                                 RWTPtrSlist< CtiMessage >  &vgList,
+                                                 RWTPtrSlist< CtiMessage >  &retList,
+                                                 RWTPtrSlist< OUTMESS >     &outList )
+{
+    INT    nRet = NoError;
+
+    CtiReturnMsg *errRet = CTIDBG_new CtiReturnMsg(getID( ),
+                                                   RWCString(OutMessage->Request.CommandStr),
+                                                   RWCString(),
+                                                   nRet,
+                                                   OutMessage->Request.RouteID,
+                                                   OutMessage->Request.MacroOffset,
+                                                   OutMessage->Request.Attempt,
+                                                   OutMessage->Request.TrxID,
+                                                   OutMessage->Request.UserID,
+                                                   OutMessage->Request.SOE,
+                                                   RWOrdered( ));
+    RWTime now_time;
+    RWDate now_date;
+
+    unsigned long request_time, relative_time;
+
+    int request_channel = parse.getiValue("lp_channel");
+    int year, month, day, hour, minute;
+    int interval_len, block_len, function;
+
+    RWCTokenizer date_tok(parse.getsValue("lp_date")),
+                 time_tok(parse.getsValue("lp_time"));
+
+
+    if( request_channel >  0 &&
+        request_channel <= 4 )
+    {
+        month = atoi(RWCString(date_tok("-/")));
+        day   = atoi(RWCString(date_tok("-/")));
+        year  = atoi(RWCString(date_tok("-/")));
+
+        hour   = atoi(RWCString(time_tok(":")));
+        minute = atoi(RWCString(time_tok(":")));
+
+        interval_len = getLoadProfile().getLoadProfileDemandRate();
+        block_len    = 6 * interval_len;
+
+        if( !month )    month = now_date.month();
+        if( !day )      day   = now_date.dayOfMonth();
+        if( !year )     year  = now_date.year();
+
+        request_time  = RWTime(RWDate(day, month, year), hour, minute).seconds();
+        request_time -= request_time % interval_len;
+        request_time -= interval_len;  //  we report interval-ending, yet request interval-beginning...  so back that thing up
+
+        //  this is the number of seconds from the current pointer
+        relative_time = request_time - _llpInterestTime;
+
+        if( (request_channel == _llpInterestChannel)  &&  //  correct channel
+            (relative_time < (8 * block_len))         &&  //  within 8 blocks
+            !(relative_time % block_len) )                //  aligned
+        {
+            //  it's aligned (and close enough) to the block we're pointing at
+            function  = 0x40;
+            function += relative_time / block_len;
+
+            _llpInterestOffset = relative_time;
+        }
+        else
+        {
+            //  just read the first block - it'll be the one we're pointing at
+            function  = 0x40;
+
+            //  we need to set it to the requested interval
+            CtiOutMessage *interest_om = new CtiOutMessage(*OutMessage);
+
+            if( interest_om )
+            {
+                _llpInterestTime    = request_time;
+                _llpInterestOffset  = 0;
+                _llpInterestChannel = request_channel;
+
+                interest_om->Sequence = CtiProtocolEmetcon::PutConfig_LoadProfileInterest;
+
+                interest_om->Buffer.BSt.Function = 0x30;
+                interest_om->Buffer.BSt.IO       = IO_WRITE;
+                interest_om->Buffer.BSt.Length   = 5;
+
+                unsigned long utc_time = request_time - rwEpoch;
+
+                interest_om->Buffer.BSt.Message[0] = (utc_time >> 24) & 0x000000ff;
+                interest_om->Buffer.BSt.Message[1] = (utc_time >> 16) & 0x000000ff;
+                interest_om->Buffer.BSt.Message[2] = (utc_time >>  8) & 0x000000ff;
+                interest_om->Buffer.BSt.Message[3] = (utc_time)       & 0x000000ff;
+
+                interest_om->Buffer.BSt.Message[4] = request_channel & 0x000000ff;
+
+                outList.append(interest_om);
+                interest_om = 0;
+            }
+            else
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+            }
+        }
+
+        OutMessage->Buffer.BSt.Function = function;
+        OutMessage->Buffer.BSt.IO       = IO_FCT_READ;
+        OutMessage->Buffer.BSt.Length   = 13;
+    }
+    else
+    {
+        if( errRet )
+        {
+            RWCString temp = "Bad channel specification - Acceptable values:  1-4";
+            errRet->setResultString( temp );
+            errRet->setStatus(NoMethod);
+            retList.insert( errRet );
+            errRet = NULL;
+        }
+
+        nRet = NoMethod;
+    }
+
+    return nRet;
+}
+
 
 INT CtiDeviceMCT410::decodeGetValueKWH(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
@@ -592,8 +762,10 @@ INT CtiDeviceMCT410::decodeGetValueKWH(INMESS *InMessage, RWTime &TimeNow, RWTPt
     INT ErrReturn  = InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
+    unsigned long pulses;
     DOUBLE Value;
     PointQuality_t  quality;
+
     CtiPointBase         *pPoint = NULL;
     CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg      *pData = NULL;
@@ -603,8 +775,6 @@ INT CtiDeviceMCT410::decodeGetValueKWH(INMESS *InMessage, RWTime &TimeNow, RWTPt
         dout << RWTime() << " **** Accumulator Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    ULONG RecentValue = 0;
-    USHORT TempDevType;
 
     //  ACH:  are these necessary?  /mskf
     resetScanFreezePending();
@@ -627,37 +797,45 @@ INT CtiDeviceMCT410::decodeGetValueKWH(INMESS *InMessage, RWTime &TimeNow, RWTPt
 
         pPoint = getDevicePointOffsetTypeEqual( 1, PulseAccumulatorPointType );
 
-        RecentValue = MAKEULONG(MAKEUSHORT(DSt->Message[2], DSt->Message[1]), (USHORT)(DSt->Message[0]));
-
-        quality = getDataQuality(RecentValue, 3);
-
-        if( !isValidDataQuality(quality) )
-        {
-            RecentValue = 0;
-        }
+        pulses  = getDataValue  (DSt->Message, 3);
+        quality = getDataQuality(DSt->Message, 3);
 
         // handle accumulator data here
         if( pPoint != NULL)
         {
             // 24 bit pulse value
-            Value = ((CtiPointNumeric *)pPoint)->computeValueForUOM( RecentValue );
+            Value = ((CtiPointNumeric *)pPoint)->computeValueForUOM( pulses );
             RWTime pointTime;
 
-            resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value,
-                                                                                     ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
-            pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, quality, PulseAccumulatorPointType, resultString);
-
-            if(pData != NULL)
+            if( quality == NormalQuality )
             {
-                pointTime -= pointTime.seconds() % 300;
-                pData->setTime( pointTime );
-                ReturnMsg->PointData().insert(pData);
-                pData = NULL;  // We just put it on the list...
+                resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
+            }
+            else
+            {
+                resultString = getName() + " / " + pPoint->getName() + " = (invalid data)";
+            }
+
+            if( quality != InvalidQuality )
+            {
+                pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, quality, PulseAccumulatorPointType, resultString);
+
+                if(pData != NULL)
+                {
+                    pointTime -= pointTime.seconds() % 300;
+                    pData->setTime( pointTime );
+                    ReturnMsg->PointData().insert(pData);
+                    pData = NULL;  // We just put it on the list...
+                }
+            }
+            else
+            {
+                ReturnMsg->setResultString("Invalid quality");
             }
         }
         else
         {
-            resultString = getName() + " / KYZ 1 = " + CtiNumStr(RecentValue) + "  --  POINT UNDEFINED IN DB";
+            resultString = getName() + " / KYZ 1 = " + CtiNumStr(pulses) + "  --  POINT UNDEFINED IN DB";
             ReturnMsg->setResultString(resultString);
         }
 
@@ -704,14 +882,8 @@ INT CtiDeviceMCT410::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
-        Value = MAKEUSHORT(DSt->Message[1], DSt->Message[0]);
-
-        quality = getDataQuality(MAKEUSHORT(DSt->Message[1], DSt->Message[0] ), 2);
-
-        if( !isValidDataQuality(quality) )
-        {
-            Value = 0.0;
-        }
+        Value   = getDataValue  (DSt->Message, 2);
+        quality = getDataQuality(DSt->Message, 2);
 
         //  turn raw pulses into a demand reading
         Value *= DOUBLE(3600 / getDemandInterval());
@@ -745,14 +917,8 @@ INT CtiDeviceMCT410::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
             ReturnMsg->setResultString(resultString);
         }
 
-        Value = MAKEUSHORT(DSt->Message[3], DSt->Message[2]);
-
-        quality = getDataQuality(MAKEUSHORT(DSt->Message[3], DSt->Message[2] ), 2);
-
-        if( !isValidDataQuality(quality) )
-        {
-            Value = 0.0;
-        }
+        Value   = getDataValue  (DSt->Message + 2, 2);
+        quality = getDataQuality(DSt->Message + 2, 2);
 
         pPoint = getDevicePointOffsetTypeEqual( MCT4XX_VoltageOffset, DemandAccumulatorPointType );
 
@@ -785,14 +951,8 @@ INT CtiDeviceMCT410::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
             ReturnMsg->setResultString(ReturnMsg->ResultString() + "\n" + resultString);
         }
 
-        Value = MAKEUSHORT(DSt->Message[5], DSt->Message[4]);
-
-        quality = getDataQuality(MAKEUSHORT(DSt->Message[5], DSt->Message[4] ), 2);
-
-        if( !isValidDataQuality(quality) )
-        {
-            Value = 0.0;
-        }
+        Value   = getDataValue  (DSt->Message + 4, 2);
+        quality = getDataQuality(DSt->Message + 4, 2);
 
         pPoint = getDevicePointOffsetTypeEqual( MCT_PointOffset_Accumulator_Powerfail, PulseAccumulatorPointType );
 
@@ -867,7 +1027,8 @@ INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, RWTime &TimeNow
 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
-        Value = MAKEUSHORT(DSt->Message[1], DSt->Message[0]);
+        Value   = getDataValue  (DSt->Message, 2);
+        quality = getDataQuality(DSt->Message, 2);
 
         timeOfPeak = DSt->Message[2] << 24 |
                      DSt->Message[3] << 16 |
@@ -875,14 +1036,6 @@ INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, RWTime &TimeNow
                      DSt->Message[5];
 
         tmpTime = RWTime(timeOfPeak + rwEpoch);
-
-        //  note that this is the same as above - this needs to be consolidated into a single temporary integer variable
-        quality = getDataQuality(MAKEUSHORT(DSt->Message[1], DSt->Message[0] ), 2);
-
-        if( !isValidDataQuality(quality) )
-        {
-            Value = 0.0;
-        }
 
         //  turn raw pulses into a demand reading
         Value *= DOUBLE(3600 / getDemandInterval());
@@ -916,14 +1069,8 @@ INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, RWTime &TimeNow
             ReturnMsg->setResultString(resultString);
         }
 
-        Value = MAKEULONG(MAKEUSHORT(DSt->Message[8], DSt->Message[7]), (USHORT)(DSt->Message[6]));
-
-        quality = getDataQuality(MAKEULONG(MAKEUSHORT(DSt->Message[8], DSt->Message[7]), (USHORT)(DSt->Message[6])), 3);
-
-        if( !isValidDataQuality(quality) )
-        {
-            Value = 0.0;
-        }
+        Value   = getDataValue  (DSt->Message + 6, 3);
+        quality = getDataQuality(DSt->Message + 6, 3);
 
         pPoint = getDevicePointOffsetTypeEqual( 1, PulseAccumulatorPointType );
 
@@ -991,14 +1138,8 @@ INT CtiDeviceMCT410::decodeGetValueVoltage( INMESS *InMessage, RWTime &TimeNow, 
 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
-        maxVolts = MAKEUSHORT(DSt->Message[1], DSt->Message[0]);
-
-        quality = getDataQuality(MAKEUSHORT(DSt->Message[1], DSt->Message[0] ), 2);
-
-        if( !isValidDataQuality(quality) )
-        {
-            maxVolts = 0.0;
-        }
+        maxVolts = getDataValue  (DSt->Message, 2);
+        quality  = getDataQuality(DSt->Message, 2);
 
         tmpTime = DSt->Message[2] << 24 |
                   DSt->Message[3] << 16 |
@@ -1007,14 +1148,8 @@ INT CtiDeviceMCT410::decodeGetValueVoltage( INMESS *InMessage, RWTime &TimeNow, 
 
         maxTime = RWTime(tmpTime + rwEpoch);
 
-        minVolts = MAKEUSHORT(DSt->Message[7], DSt->Message[6]);
-
-        quality = getDataQuality(MAKEUSHORT(DSt->Message[7], DSt->Message[6] ), 2);
-
-        if( !isValidDataQuality(quality) )
-        {
-            minVolts = 0.0;
-        }
+        minVolts = getDataValue  (DSt->Message + 6, 2);
+        quality  = getDataQuality(DSt->Message + 6, 2);
 
         tmpTime = DSt->Message[8]  << 24 |
                   DSt->Message[9]  << 16 |
@@ -1040,6 +1175,208 @@ INT CtiDeviceMCT410::decodeGetValueVoltage( INMESS *InMessage, RWTime &TimeNow, 
 
         resultString  = getName() + " / Min Voltage = " + CtiNumStr(minVolts) + " @ " + minTime.asString() + "\n";
         resultString += getName() + " / Max Voltage = " + CtiNumStr(maxVolts) + " @ " + maxTime.asString();
+
+        ReturnMsg->setResultString(resultString);
+
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    }
+
+    return status;
+}
+
+
+INT CtiDeviceMCT410::decodeGetValueOutage( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList )
+{
+    INT status = NORMAL;
+
+    INT ErrReturn  = InMessage->EventCode & 0x3fff;
+    unsigned char *msgbuf = InMessage->Buffer.DSt.Message;
+
+    CtiCommandParser parse(InMessage->Return.CommandStr);
+
+    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    {
+        // No error occured, we must do a real decode!
+
+        int outagenum;
+        unsigned long  timestamp;
+        unsigned short duration;
+        RWCString resultString;
+        RWTime outageTime;
+
+        CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+
+        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+
+            return MEMORY;
+        }
+
+        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
+        outagenum = parse.getiValue("outage");
+
+        if( !(outagenum % 2) )
+        {
+            outagenum--;
+        }
+
+        for( int i = 0; i < 2; i++ )
+        {
+            timestamp = msgbuf[(i*6)+0] << 24 |
+                        msgbuf[(i*6)+1] << 16 |
+                        msgbuf[(i*6)+2] <<  8 |
+                        msgbuf[(i*6)+3];
+
+            duration  = msgbuf[(i*6)+4] << 8 |
+                        msgbuf[(i*6)+5];
+
+            outageTime = RWTime(timestamp + rwEpoch);
+
+            resultString = getName() + " / Outage " + CtiNumStr(outagenum + i) + " : " + outageTime.asString() + " for ";
+
+            if( duration == 0x8000 )
+            {
+                resultString += "(unknown duration)\n";
+            }
+            else
+            {
+                int days, hours, minutes, seconds, cycles;
+
+                if( duration & 0x8000 )
+                {
+                    cycles = (duration & 0x7fff) * 60;
+                }
+                else
+                {
+                    cycles = duration;
+                }
+
+                seconds = cycles  / 60;
+                minutes = seconds / 60;
+                hours   = minutes / 60;
+
+                cycles  %= 60;
+                seconds %= 60;
+                minutes %= 60;
+                hours   %= 24;
+
+                resultString += CtiNumStr(hours).zpad(2) + ":" +
+                                CtiNumStr(minutes).zpad(2) + ":" +
+                                CtiNumStr(seconds).zpad(2);
+
+                if( cycles )
+                {
+                    resultString += ", " + CtiNumStr(cycles) + " cycles\n";
+                }
+            }
+        }
+
+        ReturnMsg->setResultString(resultString);
+
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    }
+
+    return status;
+}
+
+
+INT CtiDeviceMCT410::decodeGetValueLoadProfile(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+{
+    INT status = NORMAL;
+
+    INT ErrReturn =  InMessage->EventCode & 0x3fff;
+    DSTRUCT *DSt  = &InMessage->Buffer.DSt;
+
+    RWCString valReport, resultString;
+    int       interval_len, block_len, function, channel,
+              badData;
+    double    Value;
+    unsigned long timeStamp, pulses, decode_time;
+    PointQuality_t quality;
+
+
+    CtiPointNumeric *pPoint    = NULL;
+    CtiReturnMsg    *ReturnMsg = NULL;  // Message sent to VanGogh, inherits from Multi
+    CtiPointDataMsg *pData     = NULL;
+
+    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    {
+        // No error occured, we must do a real decode!
+
+        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+
+            return MEMORY;
+        }
+
+        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
+        interval_len = getLoadProfile().getLoadProfileDemandRate();
+        block_len    = interval_len * 6;
+
+        channel      = _llpInterestChannel;
+        decode_time  = _llpInterestTime + _llpInterestOffset;
+
+        pPoint = (CtiPointNumeric *)getDevicePointOffsetTypeEqual( channel + OFFSET_LOADPROFILE_OFFSET, DemandAccumulatorPointType );
+
+        for( int i = 0; i < 6; i++ )
+        {
+            //  this is where the block started...
+            timeStamp  = decode_time + (interval_len * i);
+            //  but we want interval *ending* times, so add on one more interval
+            timeStamp += interval_len;
+
+            pulses  = getDataValue  (DSt->Message + (i * 2) + 1, 2);
+            quality = getDataQuality(DSt->Message + (i * 2) + 1, 2);
+
+            if( quality == NormalQuality )
+            {
+                Value = pulses * (3600 / interval_len);
+            }
+
+            if( pPoint != NULL )
+            {
+                Value = pPoint->computeValueForUOM( Value );
+
+                if( quality == NormalQuality )
+                {
+                    valReport = getName() + " / " + pPoint->getName() + " @ " + RWTime(timeStamp).asString() + " = " + CtiNumStr(Value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
+                }
+                else
+                {
+                    valReport = getName() + " / " + pPoint->getName() + " @ " + RWTime(timeStamp).asString() + " = (invalid data)";
+                }
+
+                if( quality != InvalidQuality )
+                {
+                    pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(),
+                                                       Value,
+                                                       quality,
+                                                       DemandAccumulatorPointType,
+                                                       "");
+
+                    pData->setTime( timeStamp );
+
+                    ReturnMsg->insert( pData );
+                }
+            }
+            else
+            {
+                if( quality == NormalQuality )
+                {
+                    resultString += getName() + " / LP channel " + CtiNumStr(channel) + " @ " + RWTime(timeStamp).asString() + " = " + CtiNumStr(Value, 0) + "\n";
+                }
+                else
+                {
+                    resultString += getName() + " / LP channel " + CtiNumStr(channel) + " @ " + RWTime(timeStamp).asString() + " = (invalid data)\n";
+                }
+            }
+        }
 
         ReturnMsg->setResultString(resultString);
 

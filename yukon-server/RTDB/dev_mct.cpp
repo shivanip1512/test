@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.45 $
-* DATE         :  $Date: 2004/04/14 00:46:41 $
+* REVISION     :  $Revision: 1.46 $
+* DATE         :  $Date: 2004/05/14 01:07:05 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -84,45 +84,47 @@ bool CtiDeviceMCT::sspecIsValid( int sspec )
     set< pair<int, int> > mct_sspec;
     pair<int, int> reported;
 
-    mct_sspec.insert(make_pair(TYPELMT2,       36));
+    mct_sspec.insert(make_pair(TYPELMT2,        36));
 
-    mct_sspec.insert(make_pair(TYPEMCT210,     95));
+    mct_sspec.insert(make_pair(TYPEMCT210,      95));
 
-    mct_sspec.insert(make_pair(TYPEMCT213,     95));
+    mct_sspec.insert(make_pair(TYPEMCT213,      95));
 
-    mct_sspec.insert(make_pair(TYPEMCT212,     74));
+    mct_sspec.insert(make_pair(TYPEMCT212,      74));
 
-    mct_sspec.insert(make_pair(TYPEMCT224,     74));
+    mct_sspec.insert(make_pair(TYPEMCT224,      74));
 
-    mct_sspec.insert(make_pair(TYPEMCT226,     74));
+    mct_sspec.insert(make_pair(TYPEMCT226,      74));
 
-    mct_sspec.insert(make_pair(TYPEMCT240,     74));
-    mct_sspec.insert(make_pair(TYPEMCT240,    121));
+    mct_sspec.insert(make_pair(TYPEMCT240,      74));
+    mct_sspec.insert(make_pair(TYPEMCT240,     121));
 
-    mct_sspec.insert(make_pair(TYPEMCT242,    121));
+    mct_sspec.insert(make_pair(TYPEMCT242,     121));
 
-    mct_sspec.insert(make_pair(TYPEMCT248,    121));
+    mct_sspec.insert(make_pair(TYPEMCT248,     121));
 
-    mct_sspec.insert(make_pair(TYPEMCT250,    111));
+    mct_sspec.insert(make_pair(TYPEMCT250,     111));
 
-    mct_sspec.insert(make_pair(TYPEMCT310,    153));
-    mct_sspec.insert(make_pair(TYPEMCT310,   1007));  //  new Grand Unification sspec
+    mct_sspec.insert(make_pair(TYPEMCT310,     153));
+    mct_sspec.insert(make_pair(TYPEMCT310,    1007));  //  new Grand Unification sspec
 
-    mct_sspec.insert(make_pair(TYPEMCT310ID,  153));
-    mct_sspec.insert(make_pair(TYPEMCT310ID, 1007));  //  new Grand Unification sspec
+    mct_sspec.insert(make_pair(TYPEMCT310ID,   153));
+    mct_sspec.insert(make_pair(TYPEMCT310ID,  1007));  //  new Grand Unification sspec
 
-    mct_sspec.insert(make_pair(TYPEMCT310IL, 1007));
+    mct_sspec.insert(make_pair(TYPEMCT310IL,  1007));
 
-    mct_sspec.insert(make_pair(TYPEMCT318L,  1007));
+    mct_sspec.insert(make_pair(TYPEMCT310IDL, 1007));
 
-    mct_sspec.insert(make_pair(TYPEMCT318,    218));
-    mct_sspec.insert(make_pair(TYPEMCT318,   1007));  //  new Grand Unification sspec
+    mct_sspec.insert(make_pair(TYPEMCT318L,   1007));
 
-    mct_sspec.insert(make_pair(TYPEMCT360,    218));
-    mct_sspec.insert(make_pair(TYPEMCT360,   1007));  //  new Grand Unification sspec
+    mct_sspec.insert(make_pair(TYPEMCT318,     218));
+    mct_sspec.insert(make_pair(TYPEMCT318,    1007));  //  new Grand Unification sspec
 
-    mct_sspec.insert(make_pair(TYPEMCT370,    218));
-    mct_sspec.insert(make_pair(TYPEMCT370,   1007));  //  new Grand Unification sspec
+    mct_sspec.insert(make_pair(TYPEMCT360,     218));
+    mct_sspec.insert(make_pair(TYPEMCT360,    1007));  //  new Grand Unification sspec
+
+    mct_sspec.insert(make_pair(TYPEMCT370,     218));
+    mct_sspec.insert(make_pair(TYPEMCT370,    1007));  //  new Grand Unification sspec
 
     //mct_sspec.insert(make_pair(TYPEMCT410,   XXXX));  //  add this later when it's necessary
 
@@ -919,6 +921,7 @@ INT CtiDeviceMCT::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< 
         case CtiProtocolEmetcon::PutConfig_GroupAddr_GoldSilver:
         case CtiProtocolEmetcon::PutConfig_GroupAddr_Lead:
         case CtiProtocolEmetcon::PutConfig_UniqueAddr:
+        case CtiProtocolEmetcon::PutConfig_LoadProfileInterest:
         {
             status = decodePutConfig(InMessage, TimeNow, vgList, retList, outList);
             break;
@@ -996,6 +999,7 @@ INT CtiDeviceMCT::ErrorDecode(INMESS *InMessage, RWTime& Now, RWTPtrSlist< CtiMe
                     {
                         case TYPEMCT310:
                         case TYPEMCT310ID:
+                        case TYPEMCT310IDL:
                         case TYPEMCT310IL:
                         case TYPEMCT318:
                         case TYPEMCT318L:
@@ -1307,6 +1311,18 @@ INT CtiDeviceMCT::executeGetValue( CtiRequestMsg              *pReq,
 
     INT function;
 
+    CtiReturnMsg *errRet = CTIDBG_new CtiReturnMsg(getID( ),
+                                                   RWCString(OutMessage->Request.CommandStr),
+                                                   RWCString(),
+                                                   nRet,
+                                                   OutMessage->Request.RouteID,
+                                                   OutMessage->Request.MacroOffset,
+                                                   OutMessage->Request.Attempt,
+                                                   OutMessage->Request.TrxID,
+                                                   OutMessage->Request.UserID,
+                                                   OutMessage->Request.SOE,
+                                                   RWOrdered( ));
+
     if( parse.getFlags() & CMD_FLAG_GV_IED )  //  This parse has the token "IED" in it!
     {
         if( getType() == TYPEMCT360  ||  //  only these types can have an IED attached
@@ -1401,6 +1417,44 @@ INT CtiDeviceMCT::executeGetValue( CtiRequestMsg              *pReq,
             found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
         }
     }
+    else if( parse.isKeyValid("lp_time") )  //  load profile
+    {
+        function = CtiProtocolEmetcon::GetValue_LoadProfile;
+
+        if( !executeGetValueLoadProfile(pReq, parse, OutMessage, vgList, retList, outList) )
+        {
+            found = true;
+        }
+    }
+    else if( parse.isKeyValid("outage") )  //  outages
+    {
+        int outagenum = parse.getiValue("outage");
+
+        function = CtiProtocolEmetcon::GetValue_Outage;
+        found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+
+        if( outagenum < 0 || outagenum > 6 )
+        {
+            found = false;
+
+            if( errRet )
+            {
+                RWCString temp = "Bad outage specification - Acceptable values:  1-6";
+                errRet->setResultString( temp );
+                errRet->setStatus(NoMethod);
+                retList.insert( errRet );
+                errRet = NULL;
+            }
+        }
+        else if(outagenum > 4 )
+        {
+            OutMessage->Buffer.BSt.Function += 2;
+        }
+        else if(outagenum > 2 )
+        {
+            OutMessage->Buffer.BSt.Function += 1;
+        }
+    }
     else  //  if( parse.getFlags() & CMD_FLAG_GV_KWH ) - default to a KWH read
     {
         if( parse.getFlags() & CMD_FLAG_FROZEN )  //  Read the frozen values...
@@ -1451,6 +1505,16 @@ INT CtiDeviceMCT::executeGetValue( CtiRequestMsg              *pReq,
 
 
     return nRet;
+}
+
+INT CtiDeviceMCT::executeGetValueLoadProfile( CtiRequestMsg              *pReq,
+                                              CtiCommandParser           &parse,
+                                              OUTMESS                   *&OutMessage,
+                                              RWTPtrSlist< CtiMessage >  &vgList,
+                                              RWTPtrSlist< CtiMessage >  &retList,
+                                              RWTPtrSlist< OUTMESS >     &outList )
+{
+    return NoMethod;
 }
 
 INT CtiDeviceMCT::executePutValue(CtiRequestMsg                  *pReq,
@@ -3063,7 +3127,7 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
 
                     ReturnMsg->setResultString( resultString );
                 }
-                else if( getType() == TYPEMCT310ID && (sspec == 1007 || sspec == 153) && !(DSt->Message[1] & 0x40) )
+                else if( (getType() == TYPEMCT310ID || getType() == TYPEMCT310IDL) && (sspec == 1007 || sspec == 153) && !(DSt->Message[1] & 0x40) )
                 {
                     //  if the disconnect option bit is not set
                     resultString = getName( ) + " / option bits not valid - looks like a 310I";
@@ -3072,8 +3136,9 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
                 }
                 else
                 {
-                    if( getType( ) == TYPEMCT310   ||
-                        getType( ) == TYPEMCT310ID ||
+                    if( getType( ) == TYPEMCT310    ||
+                        getType( ) == TYPEMCT310ID  ||
+                        getType( ) == TYPEMCT310IDL ||
                         getType( ) == TYPEMCT310IL )
                     {
                         if( !(DSt->Message[2] & 0x01) )
@@ -3199,8 +3264,9 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
                         unsigned char config_byte = 0xc0;
                         int num_channels = 3;
 
-                        if( getType() == TYPEMCT310   ||
-                            getType() == TYPEMCT310ID ||
+                        if( getType() == TYPEMCT310    ||
+                            getType() == TYPEMCT310ID  ||
+                            getType() == TYPEMCT310IDL ||
                             getType() == TYPEMCT310IL )
                         {
                             num_channels = 1;
@@ -3299,6 +3365,7 @@ bool CtiDeviceMCT::isLoadProfile( int type )
     switch( type )
     {
         case TYPEMCT310IL:
+        case TYPEMCT310IDL:
         case TYPEMCT318L:
         case TYPELMT2:
         case TYPEMCT240:
@@ -3410,6 +3477,7 @@ DOUBLE CtiDeviceMCT::translateStatusValue (INT PointOffset, INT PointType, INT D
 
          case TYPEMCT310:        // In basic,.. SELECT 310 TO 370
          case TYPEMCT310ID:
+         case TYPEMCT310IDL:
          case TYPEMCT318:
          case TYPEMCT310IL:
          case TYPEMCT318L:
@@ -3453,6 +3521,7 @@ DOUBLE CtiDeviceMCT::translateStatusValue (INT PointOffset, INT PointType, INT D
 
          case TYPEMCT310:        // In basic,.. SELECT 310 TO 370
          case TYPEMCT310ID:
+         case TYPEMCT310IDL:
          case TYPEMCT318:
          case TYPEMCT310IL:
          case TYPEMCT318L:
@@ -3515,6 +3584,7 @@ DOUBLE CtiDeviceMCT::translateStatusValue (INT PointOffset, INT PointType, INT D
 
          case TYPEMCT310:        // In basic,.. SELECT 310 TO 370
          case TYPEMCT310ID:
+         case TYPEMCT310IDL:
          case TYPEMCT318:
          case TYPEMCT310IL:
          case TYPEMCT318L:
@@ -3554,6 +3624,7 @@ DOUBLE CtiDeviceMCT::translateStatusValue (INT PointOffset, INT PointType, INT D
 
          case TYPEMCT310:        // In basic,.. SELECT 310 TO 370
          case TYPEMCT310ID:
+         case TYPEMCT310IDL:
          case TYPEMCT318:
          case TYPEMCT310IL:
          case TYPEMCT318L:
@@ -3586,6 +3657,7 @@ DOUBLE CtiDeviceMCT::translateStatusValue (INT PointOffset, INT PointType, INT D
 
          case TYPEMCT310:        // In basic,.. SELECT 310 TO 370
          case TYPEMCT310ID:
+         case TYPEMCT310IDL:
          case TYPEMCT318:
          case TYPEMCT310IL:
          case TYPEMCT318L:
@@ -3618,6 +3690,7 @@ DOUBLE CtiDeviceMCT::translateStatusValue (INT PointOffset, INT PointType, INT D
 
          case TYPEMCT310:        // In basic,.. SELECT 310 TO 370
          case TYPEMCT310ID:
+         case TYPEMCT310IDL:
          case TYPEMCT318:
          case TYPEMCT310IL:
          case TYPEMCT318L:
@@ -3650,6 +3723,7 @@ DOUBLE CtiDeviceMCT::translateStatusValue (INT PointOffset, INT PointType, INT D
 
          case TYPEMCT310:        // In basic,.. SELECT 310 TO 370
          case TYPEMCT310ID:
+         case TYPEMCT310IDL:
          case TYPEMCT318:
          case TYPEMCT310IL:
          case TYPEMCT318L:
@@ -3682,6 +3756,7 @@ DOUBLE CtiDeviceMCT::translateStatusValue (INT PointOffset, INT PointType, INT D
 
          case TYPEMCT310:        // In basic,.. SELECT 310 TO 370
          case TYPEMCT310ID:
+         case TYPEMCT310IDL:
          case TYPEMCT318:
          case TYPEMCT310IL:
          case TYPEMCT318L:
@@ -4099,6 +4174,7 @@ void CtiDeviceMCT::setConfigData( const RWCString &configName, int configType, c
         }
         case TYPEMCT310:
         case TYPEMCT310ID:
+        case TYPEMCT310IDL:
         case TYPEMCT318:
         case TYPEMCT310IL:
         case TYPEMCT318L:
