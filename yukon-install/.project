@@ -5,6 +5,11 @@
 	<projects>
 	</projects>
 	<buildSpec>
+		<buildCommand>
+			<name>com.ibm.etools.validation.validationbuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
 	</buildSpec>
 	<natures>
 	</natures>
