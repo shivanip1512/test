@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/INCLUDE/portdecl.h-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2002/07/18 16:22:52 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2002/08/08 23:19:11 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -43,7 +43,7 @@ INT IDLCAlgStat (PBYTE, PUSHORT);
 VOID APIENTRY PorterCleanUp (ULONG);
 
 /* Prototypes from PORTERSU.C */
-INT SendError (OUTMESS *&, USHORT);
+INT SendError (OUTMESS *&, USHORT, INMESS *InMessage = NULL);
 INT ReportRemoteError (CtiDeviceBase *, ERRSTRUCT *);
 INT ReportDeviceError (DEVICE *, CtiPortSPtr , ERRSTRUCT *);
 
