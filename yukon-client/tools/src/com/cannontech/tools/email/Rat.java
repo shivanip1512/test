@@ -182,12 +182,12 @@ public void executeCheck()
 							"Porter and dispatch all green!" );
 				}
             
-            com.cannontech.clientutils.CTILogger.getStandardLog().info(
-               "***************************************************************");
+//            com.cannontech.clientutils.CTILogger.getStandardLog().info(
+               /*"***************************************************************");
 				com.cannontech.clientutils.CTILogger.getStandardLog().info(
                   "\t" + PROGRAM_NAME + " was found!" );
             com.cannontech.clientutils.CTILogger.getStandardLog().info(
-               "***************************************************************");
+               "***************************************************************");*/
 			}
 			
 
