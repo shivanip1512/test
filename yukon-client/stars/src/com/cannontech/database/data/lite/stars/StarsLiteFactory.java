@@ -1645,14 +1645,12 @@ public class StarsLiteFactory {
 		StarsEnergyCompany starsCompany = new StarsEnergyCompany();
 		starsCompany.setEnergyCompanyID( liteCompany.getLiteID() );
 		starsCompany.setCompanyName( liteCompany.getName() );
+		starsCompany.setMainPhoneNumber( "" );
+		starsCompany.setMainFaxNumber( "" );
+		starsCompany.setEmail( "" );
 		
 		LiteContact liteContact = com.cannontech.database.cache.functions.CustomerContactFuncs.getCustomerContact( liteCompany.getPrimaryContactID() );
-		if (liteContact == null) {
-			starsCompany.setMainPhoneNumber( "N/A" );
-			starsCompany.setMainFaxNumber( "N/A" );
-			starsCompany.setEmail( "N/A" );
-		}
-		else {
+		if (liteContact != null) {
 			for (int i = 0; i < liteContact.getLiteContactNotifications().size(); i++) {
 				LiteContactNotification liteNotif = (LiteContactNotification) liteContact.getLiteContactNotifications().get(i);
 				if (liteNotif.getNotificationCategoryID() == SOAPServer.YUK_LIST_ENTRY_ID_PHONE)

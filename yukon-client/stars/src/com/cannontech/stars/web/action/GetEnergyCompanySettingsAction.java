@@ -121,7 +121,8 @@ public class GetEnergyCompanySettingsAction implements ActionBase {
 		            Hashtable selectionListTable = new Hashtable();
 		            for (int i = 0; i < resp.getStarsCustomerSelectionLists().getStarsCustSelectionListCount(); i++) {
 		            	StarsCustSelectionList list = resp.getStarsCustomerSelectionLists().getStarsCustSelectionList(i);
-		            	selectionListTable.put( list.getListName(), list );
+		            	if (list != null)
+			            	selectionListTable.put( list.getListName(), list );
 		            }
 		        	user.setAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS, selectionListTable );
 	        	}

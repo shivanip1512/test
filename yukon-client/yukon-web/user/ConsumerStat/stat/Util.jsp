@@ -74,7 +74,9 @@
               <%= ecWebSettings.getAlternateDisplayName() %><br>
 			  <%= ServletUtils.getFormattedAddress( energyCompany.getCompanyAddress() ) %><br>
               <br>
+<% if (energyCompany.getMainPhoneNumber().length() > 0) { %>
               Ph: <%= energyCompany.getMainPhoneNumber() %><br>
+<% } %>
 <% if (energyCompany.getMainFaxNumber().length() > 0) { %>
               Fax: <%= energyCompany.getMainFaxNumber() %><br>
 <% } %>

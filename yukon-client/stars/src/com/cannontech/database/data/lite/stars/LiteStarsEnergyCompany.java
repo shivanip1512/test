@@ -1447,8 +1447,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_CALL_TYPE) );
 		}
 		if (AuthFuncs.checkRole( liteUser, RoleTypes.CONSUMERINFO_PROGRAMS_OPTOUT ) != null) {
-			StarsCustSelectionList list = getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD);
-			if (list != null) starsLists.addStarsCustSelectionList( list );
+			starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD) );
 		}
 		if (AuthFuncs.checkRole( liteUser, RoleTypes.CONSUMERINFO_APPLIANCES ) != null) {
 			starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_APPLIANCE_CATEGORY) );
