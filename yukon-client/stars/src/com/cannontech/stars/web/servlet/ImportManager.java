@@ -186,6 +186,7 @@ public class ImportManager extends HttpServlet {
 	public static final int IDX_PROP_NOTES = acct_idx++;
 	public static final int IDX_USERNAME = acct_idx++;
 	public static final int IDX_PASSWORD = acct_idx++;
+	public static final int IDX_LOGIN_GROUP = acct_idx++;
 	public static final int IDX_SUBSTATION = acct_idx++;
 	public static final int IDX_FEEDER = acct_idx++;
 	public static final int IDX_POLE = acct_idx++;
@@ -855,8 +856,19 @@ public class ImportManager extends HttpServlet {
 			login.setPassword( fields[IDX_PASSWORD] );
 			
 			LiteYukonGroup[] custGroups = energyCompany.getResidentialCustomerGroups();
-			if (custGroups != null && custGroups.length > 0)
-				login.setGroupID( custGroups[0].getGroupID() );
+			if (custGroups != null && custGroups.length > 0) {
+				if (fields[IDX_LOGIN_GROUP].length() > 0) {
+					for (int i = 0; i < custGroups.length; i++) {
+						if (custGroups[i].getGroupName().equalsIgnoreCase( fields[IDX_LOGIN_GROUP] )) {
+							login.setGroupID( custGroups[i].getGroupID() );
+							break;
+						}
+					}
+				}
+				else {
+					login.setGroupID( custGroups[0].getGroupID() );
+				}
+			}
 			
 			newAccount.setStarsUpdateLogin( login );
 		}

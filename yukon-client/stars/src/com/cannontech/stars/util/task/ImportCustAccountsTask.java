@@ -64,6 +64,7 @@ public class ImportCustAccountsTask implements TimeConsumingTask {
 		"SERV_VOLT",
 		"USERNAME",
 		"PASSWORD",
+		"LOGIN_GROUP"
 	};
 	
 	private static final String[] HW_COLUMNS = {
@@ -103,6 +104,7 @@ public class ImportCustAccountsTask implements TimeConsumingTask {
 	private static final int COL_SERV_VOLT = acct_col++;
 	private static final int COL_USERNAME = acct_col++;
 	private static final int COL_PASSWORD = acct_col++;
+	private static final int COL_LOGIN_GROUP = acct_col++;
 	
 	// Column indices of the generic hardware info file
 	private static int hw_col = 0;
@@ -635,6 +637,8 @@ public class ImportCustAccountsTask implements TimeConsumingTask {
 			fields[ImportManager.IDX_USERNAME] = columns[ colIdx[COL_USERNAME] ];
 		if (colIdx[COL_PASSWORD] != -1)
 			fields[ImportManager.IDX_PASSWORD] = columns[ colIdx[COL_PASSWORD] ];
+		if (colIdx[COL_LOGIN_GROUP] != -1)
+			fields[ImportManager.IDX_LOGIN_GROUP] = columns[ colIdx[COL_LOGIN_GROUP] ];
 	}
 	
 	private void setHardwareFields(String[] fields, String[] columns, int[] colIdx) {
