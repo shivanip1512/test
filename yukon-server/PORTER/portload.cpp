@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/portload.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/05/08 14:28:07 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/07/18 16:22:50 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -73,23 +73,19 @@
 
 extern CtiRouteManager    RouteManager;
 
+LoadRemoteRoutes(CtiDeviceBase *RemoteRecord);
+LoadPortRoutes (USHORT Port);
+
 /* Routine to load all routes on a system */
-LoadAllRoutes ()
+void applyLoadAllRoutes(const long portid, CtiPortSPtr Port, void *unusedPtr)
 {
-    CtiRTDB<CtiPort>::CtiRTDBIterator   itr(PortManager.getMap());
-
-    for( ; ++itr ; )
-    {
-        LoadPortRoutes (itr.value()->getPortID());
-    }
-
-    return(NORMAL);
+    LoadPortRoutes(Port->getPortID());
+    return;
 }
 
 
 /* Routine to load routes on all remotes on a port */
 LoadPortRoutes (USHORT Port)
-
 {
     CtiDevice *Device;
 

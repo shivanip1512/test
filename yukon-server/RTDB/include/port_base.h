@@ -14,14 +14,16 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_base.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/06/05 17:42:03 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/07/18 16:22:53 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
 #include <windows.h>
 #include <iostream>
+#include <boost/shared_ptr.hpp>
+using boost::shared_ptr;
 using namespace std;
 
 #include <rw/thr/thrfunc.h>
@@ -38,6 +40,8 @@ using namespace std;
   #include "tbl_port_statistics.h"
 #endif
 
+typedef shared_ptr< CtiPort > CtiPortSPtr;
+typedef void (*CTI_PORTTHREAD_FUNC_PTR)(void*);
 
 class CtiTraceMsg;
 
@@ -67,7 +71,8 @@ protected:
 
 private:
 
-    size_t             _traceListOffset;
+    size_t                      _traceListOffset;
+    CTI_PORTTHREAD_FUNC_PTR     _portFunc;
 
 public:
 
@@ -81,6 +86,7 @@ public:
     virtual ~CtiPort();
 
     CtiPort& operator=(const CtiPort& aRef);
+    bool operator<(const CtiPort& rhs) const;
 
     LONG                    getConnectedDevice() const;
     CtiPort&                setConnectedDevice(const LONG d);
@@ -108,6 +114,7 @@ public:
     virtual BOOL connectedTo(ULONG crc);
     virtual INT disconnect(CtiDevice *Device, INT trace);
     virtual BOOL shouldDisconnect() const;
+    virtual CtiPort& setShouldDisconnect(BOOL b = TRUE);
     virtual INT reset(INT trace);
     virtual INT setup(INT trace);
     virtual INT close(INT trace);
@@ -163,11 +170,11 @@ public:
     virtual void Dump() const;
 
     HCTIQUEUE&  getPortQueueHandle();
-    INT         writeQueue(ULONG Request, LONG  DataSize, PVOID Data, ULONG Priority, void (*func)(void *) = NULL, HANDLE hQuit = NULL);
+    INT         writeQueue(ULONG Request, LONG  DataSize, PVOID Data, ULONG Priority, HANDLE hQuit = NULL);
 
     INT queueInit(HANDLE hQuit);                 // Sets up the PortQueue
     INT queueDeInit();               // Blasts the PortQueue
-    INT verifyPortIsRunnable( void (*func)(void *) = NULL , HANDLE hQuit = NULL);
+    INT verifyPortIsRunnable(HANDLE hQuit = NULL);
 
     RWThreadFunction& getPortThread();
 
@@ -191,8 +198,9 @@ public:
 
     ULONG getConnectedDeviceUID() const;
     CtiPort& setConnectedDeviceUID(const ULONG &i);
+    INT verifyPortStatus();
 
-
+    CTI_PORTTHREAD_FUNC_PTR  setPortThreadFunc(CTI_PORTTHREAD_FUNC_PTR aFn);
 };
 
 typedef CtiPort CtiPortBase;
@@ -210,5 +218,7 @@ inline INT CtiPort::isDialup() const { return ((getType() == PortTypeLocalDialup
 inline bool CtiPort::isTCPIPPort() const { return ((getType() == TSERVER_SERIAL_PORT) || (getType() == TSERVER_DIALUP_PORT)); }
 
 inline INT CtiPort::getBaudRate() const { return _tblPortSettings.getBaudRate();}
+inline bool CtiPort::operator<(const CtiPort& rhs) const { return getPortID() < rhs.getPortID(); }
+
 
 #endif // #ifndef __PORT_BASE_H__

@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_modem.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/06/05 17:42:03 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/07/18 16:22:53 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -53,9 +53,8 @@ public:
 
    CtiPortModem& operator=(const CtiPortModem& aRef);
 
-   BOOL&                getShouldDisconnect();
-   BOOL                 shouldDisconnect() const;
-   CtiPortModem&        setShouldDisconnect(BOOL b = TRUE);
+   virtual BOOL                 shouldDisconnect() const;
+   virtual CtiPort&             setShouldDisconnect(BOOL b = TRUE);
 
    RWCString            getDialedUpNumber() const;
    RWCString&           getDialedUpNumber();

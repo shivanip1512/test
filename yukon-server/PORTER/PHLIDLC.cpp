@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PHLIDLC.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/07/03 21:35:13 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/07/18 16:22:48 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -73,11 +73,11 @@ extern CtiPortManager PortManager;
 
 
 /* routine to initialize an idlc device and its counters */
-IDLCInit (CtiPort          *PortRecord,       /* Port record */
+IDLCInit (CtiPortSPtr      PortRecord,        /* Port record */
           CtiDeviceBase    *RemoteRecord,     /* ccu record */
           REMOTESEQUENCE   *RemoteSequence)   /* various ccu specific data */
 {
-    extern void DisplayTraceList( CtiPort *prt, RWTPtrSlist< CtiMessage > &traceList, bool consume);
+    extern void DisplayTraceList( CtiPortSPtr prt, RWTPtrSlist< CtiMessage > &traceList, bool consume);
     BYTE Message[30], Reply[30];
     ULONG Count;
     ULONG i;

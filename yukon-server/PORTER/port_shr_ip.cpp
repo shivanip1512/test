@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/port_shr_ip.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:38 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/07/18 16:22:48 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -36,7 +36,7 @@
 
 #define FILELINE     " " << __FILE__ << " (" << __LINE__ << ")"
 
-CtiPortShareIP::CtiPortShareIP(CtiPort *myPort, INT listenPort) :
+CtiPortShareIP::CtiPortShareIP(CtiPortSPtr myPort, INT listenPort) :
     CtiPortShare(myPort,listenPort),
     _reconnect(false),
     _broadcast(false),

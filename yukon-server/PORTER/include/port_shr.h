@@ -14,12 +14,11 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/INCLUDE/port_shr.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:42 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/07/18 16:22:51 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-
 #include "ctinexus.h"
 #include "dlldefs.h"
 #include "thread.h"
@@ -49,7 +48,7 @@ protected:
 
    UINT _busy;                                  // counts outstanding requests.  > 1 indicates a problem.
    CTINEXUS _returnNexus;                       // Who gets us back where we belong.
-   CtiPort *_port;                      // The port on which this share exists.
+   shared_ptr< CtiPort > _port;                 // The port on which this share exists.
 
    CTINEXUS _listenNexus;
    INT      _listenPort;
@@ -75,7 +74,7 @@ private:
 
 public:
 
-   CtiPortShare(CtiPort* myPort, INT listenPort);
+   CtiPortShare(shared_ptr< CtiPort > myPort, INT listenPort);
    virtual ~CtiPortShare();
 
    UINT getBusyCount() const;
@@ -86,7 +85,7 @@ public:
 
    virtual void interruptBlockingAPI();
 
-   CtiPort *getPort();
+   shared_ptr< CtiPort > getPort();
 
    static USHORT ProcessEventCode(USHORT EventCode);
 

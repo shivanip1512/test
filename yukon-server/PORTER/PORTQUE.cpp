@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTQUE.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2002/07/03 21:36:36 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2002/07/18 16:22:51 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -160,6 +160,8 @@ VOID QueueThread (VOID *Arg)
 /* Routine to process results from CCU's */
 CCUResponseDecode (INMESS *InMessage, CtiDevice *Dev, OUTMESS *OutMessage)
 {
+    extern LoadRemoteRoutes(CtiDeviceBase *RemoteRecord);
+
     ULONG i;
     INMESS ResultMessage;
     USHORT QueTabEnt;

@@ -14,13 +14,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/INCLUDE/portdecl.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2002/07/03 21:35:13 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2002/07/18 16:22:52 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
 #include "rte_base.h"      // For CtiRoute
+#include "port_base.h"
 
 class CtiDeviceBase;
 
@@ -38,30 +39,16 @@ INT IDLCSArm (PBYTE, USHORT);
 INT IDLCua (PBYTE, PUSHORT, PUSHORT);
 INT IDLCAlgStat (PBYTE, PUSHORT);
 
-/* Prototypes from PORTPORT. */
-VOID PortThread (PVOID);
-void RemoteInitialize (const CtiHashKey *key, CtiDeviceBase *&Device, void *ptr);
-void RemoteReset (const CtiHashKey *key, CtiDeviceBase *&Device, void *ptr);
-
 /* Prototypes from PORTER.C */
 VOID APIENTRY PorterCleanUp (ULONG);
 
-
 /* Prototypes from PORTERSU.C */
-//INT StartPortThread (CtiPort *);
-INT StartPortThread (void *);
 INT SendError (OUTMESS *&, USHORT);
 INT ReportRemoteError (CtiDeviceBase *, ERRSTRUCT *);
-INT ReportDeviceError (DEVICE *, CtiPort *, ERRSTRUCT *);
+INT ReportDeviceError (DEVICE *, CtiPortSPtr , ERRSTRUCT *);
 
 /* Prototypes from PORTFILL.C */
 VOID FillerThread (PVOID);
-INT SendFiller (USHORT);
-
-/* Prototypes from PORTLOAD.C */
-INT LoadAllRoutes (VOID);
-INT LoadPortRoutes (USHORT);
-INT LoadRemoteRoutes (CtiDeviceBase*);
 
 /* Prototypes from PORTPERF.C */
 VOID PerfThread (PVOID);
@@ -80,13 +67,13 @@ VOID RouterThread (PVOID);
 /* Prototypes from PORTPIL.C */
 VOID PorterInterfaceThread (PVOID);
 
-/* Prototypes from PORTPORT. */
-VOID PortThread (PVOID);
-void RemoteInitialize (const CtiHashKey *key, CtiDeviceBase *&Device, void *ptr);
-void RemoteReset (const CtiHashKey *key, CtiDeviceBase *&Device, void *ptr);
-INT TDMarkVHandShake (OUTMESS *, INMESS *, CtiPort *, CtiDeviceBase *);
-INT APlusHandShake (OUTMESS *, INMESS *, CtiPort *, CtiDeviceBase *);
-INT SchlHandShake (OUTMESS *, INMESS *, CtiPort *, CtiDeviceBase *);
+/*  */
+VOID PortThread(void *);
+void RemoteInitialize (CtiDeviceBase *&Device, CtiPortSPtr pPort);
+void RemoteReset (CtiDeviceBase *&Device, CtiPortSPtr pPort);
+INT TDMarkVHandShake (OUTMESS *, INMESS *, CtiPortSPtr , CtiDeviceBase *);
+INT APlusHandShake (OUTMESS *, INMESS *, CtiPortSPtr , CtiDeviceBase *);
+INT SchlHandShake (OUTMESS *, INMESS *, CtiPortSPtr , CtiDeviceBase *);
 INT SchlPostScan  ( OUTMESS *OutMessage, INMESS  *InMessage, CtiDeviceBase  *DeviceRecord);
 
 /* Prototypes from PORTQUE.C */
@@ -128,10 +115,6 @@ INT PostIDLC (PBYTE, USHORT);
 INT GenReply (PBYTE, USHORT, PUSHORT, PUSHORT, USHORT);
 INT RTUReply (PBYTE, USHORT);
 INT RTUReplyHeader (USHORT, USHORT, PBYTE, PULONG);
-INT IDLCRej (PBYTE, PUSHORT);
-INT IDLCSRej (PBYTE, USHORT, USHORT);
-INT IDLCSArm (PBYTE, USHORT);
-INT IDLCua (PBYTE, PUSHORT, PUSHORT);
 INT IDLCAlgStat (PBYTE, PUSHORT);
 
 /* id of source process */
@@ -141,7 +124,7 @@ IDLCFunction (CtiDeviceBase *pDev, USHORT Source, USHORT Dest, USHORT Function);
 /* Port record */
 /* ccu record */
 /* various ccu specific data */
-IDLCInit (CtiPort *PortRecord, CtiDeviceBase *RemoteRecord, REMOTESEQUENCE *RemoteSequence);
+IDLCInit (CtiPortSPtr PortRecord, CtiDeviceBase *RemoteRecord, REMOTESEQUENCE *RemoteSequence);
 IDLCSetDelaySets(CtiDeviceBase *pDev);
 IDLCRColQ(CtiDeviceBase *pDev, INT priority = 11);
 IDLCSetBaseSList(CtiDeviceBase *pDev);
@@ -162,7 +145,6 @@ INT TraceIn (PBYTE, USHORT, USHORT, USHORT, USHORT);
 INT TraceOut (PBYTE, USHORT, USHORT, USHORT);
 INT TPrint (PBYTE, USHORT);
 INT BinPrint (BYTE);
-
 
 
 #endif // #ifndef __PORTDECL_H__

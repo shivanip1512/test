@@ -14,8 +14,8 @@
  *
  * PVCS KEYWORDS:
  * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/mgr_port.h-arc  $
- * REVISION     :  $Revision: 1.3 $
- * DATE         :  $Date: 2002/04/16 16:00:29 $
+ * REVISION     :  $Revision: 1.4 $
+ * DATE         :  $Date: 2002/07/18 16:22:53 $
  *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
  * All Rights Reserved
@@ -25,48 +25,57 @@
 #include <rw/db/connect.h>
 
 #include "dlldefs.h"
-#include "rtdb.h"
+#include "smartmap.h"
 #include "port_base.h"
 #include "slctprt.h"
 
-typedef void (*CTI_THREAD_FUNC_PTR)(void *);
-
 IM_EX_PRTDB BOOL isAPort(CtiPort*,void*);
 
-class IM_EX_PRTDB CtiPortManager : public CtiRTDB< CtiPort >
+class IM_EX_PRTDB CtiPortManager
 {
 private:
 
-   CTI_THREAD_FUNC_PTR  _portThreadFunc;
+    CTI_PORTTHREAD_FUNC_PTR     _portThreadFunc;
+    CtiSmartMap< CtiPort >      _smartMap;
+
+    CtiMutex                    _mux;
 
 public:
-   CtiPortManager(CTI_THREAD_FUNC_PTR fn);
 
-   virtual ~CtiPortManager();
+    typedef CtiLockGuard<CtiMutex>              LockGuard;
+    typedef CtiSmartMap< CtiPort >              coll_type;              // This is the collection type!
+    typedef CtiSmartMap< CtiPort >::ptr_type    ptr_type;
+    typedef CtiSmartMap< CtiPort >::spiterator  spiterator;
+    typedef CtiSmartMap< CtiPort >::insert_pair insert_pair;
 
-   void RefreshList(CtiPort* (*Factory)(RWDBReader &) = PortFactory,
-                    BOOL (*fn)(CtiPort*,void*) = isAPort,
-                    void *d = NULL);
 
-   void RefreshEntries(RWDBReader& rdr,
-                       CtiPort* (*Factory)(RWDBReader &),
-                       BOOL (*testFunc)(CtiPort*,void*),
-                       void *arg);
 
-   void DumpList(void);
-   void DeleteList(void);
+    CtiPortManager(CTI_PORTTHREAD_FUNC_PTR fn);
 
-   CtiPort* PortGetEqual(LONG pid);
+    virtual ~CtiPortManager();
 
-   INT      writeQueue(INT pid,
-                       ULONG Request,
-                       ULONG DataSize,
-                       PVOID Data,
-                       ULONG Priority);
+    void RefreshList(CtiPort* (*Factory)(RWDBReader &) = PortFactory, BOOL (*fn)(CtiPort*,void*) = isAPort, void *d = NULL);
+    void RefreshEntries(RWDBReader& rdr, CtiPort* (*Factory)(RWDBReader &), BOOL (*testFunc)(CtiPort*,void*),void *arg);
+    void DumpList(void);
+    void DeleteList(void);
 
-   CTI_THREAD_FUNC_PTR  setPortThreadFunc(CTI_THREAD_FUNC_PTR aFn);
+    void apply(void (*applyFun)(const long, ptr_type, void*), void* d);
 
-   void haltLogs();
+    ptr_type PortGetEqual(LONG pid);
+
+    INT writeQueue(INT pid, ULONG Request, ULONG DataSize, PVOID Data, ULONG Priority);
+
+    CTI_PORTTHREAD_FUNC_PTR setPortThreadFunc(CTI_PORTTHREAD_FUNC_PTR aFn);  // Assign this entry to every (new) entry.  Return the old entry.
+
+    void haltLogs();
+
+    spiterator begin();
+    spiterator end();
+
+    CtiMutex & getMux()
+    {
+        return _mux;
+    }
 };
 
 #endif                  // #ifndef __PORT_MGR_H__

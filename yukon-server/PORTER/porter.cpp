@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2002/07/01 17:54:56 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2002/07/18 16:22:49 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -176,9 +176,7 @@ using namespace std;
 
 ULONG TimeSyncRate;
 
-void ReportPortQueues();
-void PurgePortQueues();
-void DisplayTraceList( CtiPort *Port, RWTPtrSlist< CtiMessage > &traceList, bool consume);
+void DisplayTraceList( CtiPortSPtr Port, RWTPtrSlist< CtiMessage > &traceList, bool consume);
 void LoadPorterGlobals(void);
 INT  RefreshPorterRTDB(void *ptr = NULL);
 void DebugKeyEvent(KEY_EVENT_RECORD *ke);
@@ -187,6 +185,7 @@ extern void QueueThread (void *);
 extern void KickerThread (void *);
 extern void DispatchMsgHandlerThread(VOID *Arg);
 extern HCTIQUEUE* QueueHandle(LONG pid);
+extern void applyLoadAllRoutes(const long portid, CtiPortSPtr Port, void *unusedPtr);
 
 DLLIMPORT extern BOOL PorterQuit;
 
@@ -239,11 +238,10 @@ bool isTAPTermPort(LONG PortNumber)
     return result;
 }
 
-void applyTAPPortStatus(const CtiHashKey *unusedKey, CtiPort *&Port, void *unusedPtr)
+void applyTAPPortStatus(const long portid, CtiPortSPtr &Port, void *unusedPtr)
 {
     /* Find out if we have a TAP terminal */
-    Port->setTAP( isTAPTermPort(Port->getPortID() ));
-
+    Port->setTAP( isTAPTermPort(portid) );
 
     if((PorterDebugLevel & PORTER_DEBUG_VERBOSE) && Port->isTAP())
     {
@@ -253,9 +251,130 @@ void applyTAPPortStatus(const CtiHashKey *unusedKey, CtiPort *&Port, void *unuse
     }
 }
 
-void applyPortVerify(const CtiHashKey *unusedKey, CtiPort *&Port, void *unusedPtr)
+static void applyPortVerify(const long unusedid, CtiPortSPtr Port, void *unusedPtr)
 {
-    Port->verifyPortIsRunnable(PortThread, hPorterEvents[P_QUIT_EVENT]);
+    Port->verifyPortIsRunnable(hPorterEvents[P_QUIT_EVENT]);
+}
+
+static void applyNewLoad(const long unusedid, CtiPortSPtr ptPort, void *unusedPtr)
+{
+    /* Find out if we have a TAP terminal */
+    ptPort->setTAP( isTAPTermPort(ptPort->getPortID()) );
+
+    if((PorterDebugLevel & PORTER_DEBUG_VERBOSE) && ptPort->isTAP())
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " WARNING: " << ptPort->getName() << " has a TAP device on it." << endl;
+        dout << " This currently sets the port to 7E1 mode for ALL devices on the port" << endl;
+    }
+    ptPort->verifyPortIsRunnable(hPorterEvents[P_QUIT_EVENT]);
+}
+
+static void applyPortShares(const long unusedid, CtiPortSPtr ptPort, void *unusedPtr)
+{
+    if( (ptPort->getSharedPortType() == "acs") || (ptPort->getSharedPortType() == "ilex" ) )
+    {
+        CtiPortShare *tmpPortShare = new CtiPortShareIP(ptPort, PORTSHARENEXUS + PortShareManager.size());
+        if( tmpPortShare != NULL )
+        {
+            ((CtiPortShareIP *)tmpPortShare)->setIPPort(ptPort->getSharedSocketNumber());
+            tmpPortShare->start();
+            PortShareManager.push_back(tmpPortShare);
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Error initializing shared port for " << ptPort->getName() << endl;
+        }
+    }
+}
+
+static void applyColdStart(const long unusedid, CtiPortSPtr ptPort, void *unusedPtr)
+{
+    if(!ptPort->isInhibited())
+    {
+        RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(DeviceManager.getMux());       // Protect our iteration!
+        CtiRTDB<CtiDeviceBase>::CtiRTDBIterator   itr_dev(DeviceManager.getMap());
+
+        for(; ++itr_dev ;)
+        {
+            CtiDeviceBase *RemoteDevice = itr_dev.value();
+
+            if(ptPort->getPortID() == RemoteDevice->getPortID() && RemoteDevice->getType() == TYPE_CCU711)
+            {
+                if(RemoteDevice->getAddress() != CCUGLOBAL)
+                {
+                    /* Cold Start */
+                    IDLCFunction (RemoteDevice, 0, DEST_BASE, COLD);
+                }
+            }
+        }
+    }
+}
+
+static void applyPortQueuePurge(const long unusedid, CtiPortSPtr ptPort, void *unusedPtr)
+{
+    if(!ptPort->isInhibited())
+    {
+        ULONG QueEntCnt = 0L;
+        /* Print out the port queue information */
+        QueryQueue (*QueueHandle(ptPort->getPortID()), &QueEntCnt);
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Port: " << setw(2) << ptPort->getPortID() << " / " << ptPort->getName() << " PURGING " << QueEntCnt << " port queue entries" << endl;
+        }
+
+        PurgeQueue (*QueueHandle(ptPort->getPortID()));
+    }
+}
+
+static void applyPortQueueReport(const long unusedid, CtiPortSPtr ptPort, void *unusedPtr)
+{
+    /* Report on the state of the queues */
+
+    if(!ptPort->isInhibited())
+    {
+        ULONG QueEntCnt = 0L;
+        /* Print out the port queue information */
+        QueryQueue (*QueueHandle(ptPort->getPortID()), &QueEntCnt);
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime()<< " Port: " << setw(2) << ptPort->getPortID() << " / " << ptPort->getName() << " Port Queue Entries:  " << QueEntCnt << endl;
+        }
+
+        RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(DeviceManager.getMux());
+        CtiRTDB<CtiDeviceBase>::CtiRTDBIterator itr_dev(DeviceManager.getMap());
+        /* Do the remotes on this port */
+        for(; ++itr_dev ;)
+        {
+            CtiDeviceBase *RemoteDevice = itr_dev.value();
+
+            if(RemoteDevice->getType() == TYPE_CCU711 && ptPort->getPortID() == RemoteDevice->getPortID())
+            {
+                CtiTransmitter711Info *pInfo = (CtiTransmitter711Info *)RemoteDevice->getTrxInfo();
+
+                if(pInfo != NULL)
+                {
+                    QueryQueue (pInfo->QueueHandle, &QueEntCnt);
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << "    CCU:  " << RemoteDevice->getName() << endl;
+                        dout << "                   Queue Queue Entries:  " << QueEntCnt << endl;
+                    }
+                    QueryQueue (pInfo->ActinQueueHandle, &QueEntCnt);
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        CHAR oldfill = dout.fill('0');
+                        dout << "                   Actin Queue Entries:  " << QueEntCnt << endl;
+                        dout << "                   Status Byte:          " << hex << setw(4) << (int)pInfo->Status << endl;
+                        dout.fill(oldfill);
+                    }
+                }
+            }
+        }
+    }
 }
 
 bool containsCCU711(CtiDeviceManager::val_pair a, void* ptr)
@@ -283,11 +402,6 @@ INT PorterMainFunction (INT argc, CHAR **argv)
     BYTE VerKey[8] = {0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
 
     PSZ            Environment;
-
-    /* Definitions to access Btrieve files */
-    CtiPort        *PortRecord;
-    CtiDevice      *RemoteRecord;
-
     /* New stuff for YUKON kbd handling */
     INPUT_RECORD      inRecord;
     HANDLE            hStdIn = GetStdHandle(STD_INPUT_HANDLE);
@@ -439,7 +553,7 @@ INT PorterMainFunction (INT argc, CHAR **argv)
     }
 
     /* Announce our presence to the world */
-    SendProcessStart ("CtiPort CONTROL");           // For elogger.
+    SendProcessStart ("PORT CONTROL");           // For elogger.
 
     if(RefreshPorterRTDB())             // Loads globals and the RTDB
     {
@@ -496,46 +610,19 @@ INT PorterMainFunction (INT argc, CHAR **argv)
     /*
      *  Now start up the ports' thread
      */
-    {  // Add scope for the LockGuard.  Hopefully MSVC60 has the scoping crap done right!
-
-        RWRecursiveLock<RWMutexLock>::LockGuard guard(PortManager.getMux()); // Protect our iteration!
-        CtiRTDB<CtiPort>::CtiRTDBIterator itr(PortManager.getMap());
-
-        for(; ++itr ;)
-        {
-            ((CtiPort*)itr.value())->verifyPortIsRunnable( PortThread , hPorterEvents[P_QUIT_EVENT]);   // Inits the queues and PortThread
-        }
-    }
-
-    if(DO_PORTSHARING)
+    try
     {
-        RWRecursiveLock<RWMutexLock>::LockGuard guard(PortManager.getMux()); // Protect our iteration!
-        CtiRTDB<CtiPort>::CtiRTDBIterator itr(PortManager.getMap());
-
-        CtiPortShare *tmpPortShare;
-
-        for(; ++itr ;)
+        PortManager.apply( applyPortVerify, NULL );
+        if(DO_PORTSHARING)
         {
-            if( ((CtiPort*)itr.value())->getSharedPortType() == "acs" ||
-                ((CtiPort*)itr.value())->getSharedPortType() == "ilex" )
-            {
-                tmpPortShare = new CtiPortShareIP((CtiPort*)itr.value(),
-                                                  PORTSHARENEXUS + PortShareManager.size());
-                if( tmpPortShare != NULL )
-                {
-                    ((CtiPortShareIP *)tmpPortShare)->setIPPort(((CtiPort*)itr.value())->getSharedSocketNumber());
-                    tmpPortShare->start();
-                    PortShareManager.push_back(tmpPortShare);
-                }
-                else
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Error initializing shared port for " << ((CtiPort*)itr.value())->getName() << endl;
-                }
-            }
+            PortManager.apply( applyPortShares, NULL );
         }
     }
-
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
 
 
     /* all of the port threads are started so now start first socket connection handler */
@@ -754,7 +841,7 @@ INT PorterMainFunction (INT argc, CHAR **argv)
                         RWMutexLock::LockGuard  guard(coutMux);
                         fprintf(stdout, "\nDownloading Routes to All CCU-711's\n");
                     }
-                    LoadAllRoutes ();
+                    PortManager.apply( applyLoadAllRoutes, NULL );
                     break;
                 }
             case 0x64:              // alt-d
@@ -833,38 +920,8 @@ INT PorterMainFunction (INT argc, CHAR **argv)
                     RWMutexLock::LockGuard  guard(coutMux);
                     /* Issue a cold start to each CCU */
                     fprintf(stdout, "\nIssuing Cold Starts to All CCU-711's\n");
+                    PortManager.apply( applyColdStart, NULL);
 
-                    {
-                        RWRecursiveLock<RWMutexLock>::LockGuard  port_guard(PortManager.getMux());        // Protect our iteration!
-                        RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(DeviceManager.getMux());       // Protect our iteration!
-
-                        CtiRTDB<CtiPort>::CtiRTDBIterator     itr_prt(PortManager.getMap());
-                        CtiRTDB<CtiDeviceBase>::CtiRTDBIterator   itr_dev(DeviceManager.getMap());
-
-                        for(; ++itr_prt ;)
-                        {
-                            CtiPort *Port = itr_prt.value();
-
-                            if(!Port->isInhibited())
-                            {
-                                itr_dev.reset(DeviceManager.getMap());
-
-                                for(; ++itr_dev ;)
-                                {
-                                    CtiDeviceBase *RemoteDevice = itr_dev.value();
-
-                                    if(Port->getPortID() == RemoteDevice->getPortID() && RemoteDevice->getType() == TYPE_CCU711)
-                                    {
-                                        if(RemoteDevice->getAddress() != CCUGLOBAL)
-                                        {
-                                            /* Cold Start */
-                                            IDLCFunction (RemoteDevice, 0, DEST_BASE, COLD);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
                     break;
                 }
             case 0x73:              // alt-s
@@ -881,14 +938,13 @@ INT PorterMainFunction (INT argc, CHAR **argv)
             case 0x70:              // alt-p
                 {
                     /* DUMP the queues */
-
-                    PurgePortQueues();
-
+                    PortManager.apply( applyPortQueuePurge, NULL );
                     break;
                 }
             case 0x71:              // alt-q
                 {
-                    ReportPortQueues();
+                    RWMutexLock::LockGuard  guard(coutMux);
+                    PortManager.apply( applyPortQueueReport, NULL );
                     break;
                 }
             default:
@@ -1102,7 +1158,7 @@ VOID APIENTRY PorterCleanUp (ULONG Reason)
     }
 
     {
-        RWRecursiveLock<RWMutexLock>::LockGuard prt_guard(PortManager.getMux()); // Protect our destruction!
+        CtiPortManager::LockGuard prt_guard(PortManager.getMux()); // Protect our destruction!
         PortManager.haltLogs();
     }
 
@@ -1194,8 +1250,9 @@ INT RefreshPorterRTDB(void *ptr)
             }
         }
 
-        RWRecursiveLock<RWMutexLock>::LockGuard  guard(PortManager.getMux());
+        CtiPortManager::LockGuard  guard(PortManager.getMux());
         PortManager.RefreshList();
+        // PortManager.DumpList();
     }
 
     if(!PorterQuit && (pChg == NULL || (resolvePAOCategory(pChg->getCategory()) == PAO_CATEGORY_DEVICE) ) )
@@ -1282,9 +1339,14 @@ INT RefreshPorterRTDB(void *ptr)
         }
     }
 
+    try
     {
-        PortManager.apply( applyTAPPortStatus, NULL);
-        PortManager.apply( applyPortVerify, NULL);
+        PortManager.apply( applyNewLoad, NULL );
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     if(pChg != NULL)
@@ -1541,7 +1603,7 @@ void LoadPorterGlobals(void)
 
 
 
-void DisplayTraceList( CtiPort *Port, RWTPtrSlist< CtiMessage > &traceList, bool consume)
+void DisplayTraceList( CtiPortSPtr Port, RWTPtrSlist< CtiMessage > &traceList, bool consume)
 {
     Port->fileTraces(traceList);
 
@@ -1571,91 +1633,4 @@ void DisplayTraceList( CtiPort *Port, RWTPtrSlist< CtiMessage > &traceList, bool
     }
 }
 
-void PurgePortQueues()
-{
-    RWRecursiveLock<RWMutexLock>::LockGuard  port_guard(PortManager.getMux());        // Protect our iteration!
 
-    CtiRTDB<CtiPort>::CtiRTDBIterator     itr_prt(PortManager.getMap());
-    for(; ++itr_prt ;)
-    {
-        CtiPort *Port = itr_prt.value();
-
-        if(!Port->isInhibited())
-        {
-            ULONG QueEntCnt = 0L;
-            /* Print out the port queue information */
-            QueryQueue (*QueueHandle(Port->getPortID()), &QueEntCnt);
-
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Port: " << setw(2) << Port->getPortID() << " / " << Port->getName() << " PURGING " << QueEntCnt << " port queue entries" << endl;
-            }
-
-            PurgeQueue (*QueueHandle(Port->getPortID()));
-        }
-    }
-}
-
-
-void ReportPortQueues()
-{
-    RWMutexLock::LockGuard  guard(coutMux);
-    /* Report on the state of the queues */
-
-    {
-        // Cannot really lock this because the user is needed to complete the iteration.
-        RWRecursiveLock<RWMutexLock>::LockGuard  port_guard(PortManager.getMux());        // Protect our iteration!
-        RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(DeviceManager.getMux());       // Protect our iteration!
-
-        CtiRTDB<CtiPort>::CtiRTDBIterator itr_prt(PortManager.getMap());
-        CtiRTDB<CtiDeviceBase>::CtiRTDBIterator itr_dev(DeviceManager.getMap());
-
-        for(; ++itr_prt ;)
-        {
-            CtiPort *Port = itr_prt.value();
-
-            if(!Port->isInhibited())
-            {
-                ULONG QueEntCnt = 0L;
-                /* Print out the port queue information */
-                QueryQueue (*QueueHandle(Port->getPortID()), &QueEntCnt);
-
-
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime()<< " Port: " << setw(2) << Port->getPortID() << " / " << Port->getName() << " Port Queue Entries:  " << QueEntCnt << endl;
-                }
-
-                itr_dev.reset(DeviceManager.getMap());
-                /* Do the remotes on this port */
-                for(; ++itr_dev ;)
-                {
-                    CtiDeviceBase *RemoteDevice = itr_dev.value();
-
-                    if(Port->getPortID() == RemoteDevice->getPortID() && RemoteDevice->getType() == TYPE_CCU711)
-                    {
-                        CtiTransmitter711Info *pInfo = (CtiTransmitter711Info *)RemoteDevice->getTrxInfo();
-
-                        if(pInfo != NULL)
-                        {
-                            QueryQueue (pInfo->QueueHandle, &QueEntCnt);
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << "    CCU:  " << RemoteDevice->getName() << endl;
-                                dout << "                   Queue Queue Entries:  " << QueEntCnt << endl;
-                            }
-                            QueryQueue (pInfo->ActinQueueHandle, &QueEntCnt);
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                CHAR oldfill = dout.fill('0');
-                                dout << "                   Actin Queue Entries:  " << QueEntCnt << endl;
-                                dout << "                   Status Byte:          " << hex << setw(4) << (int)pInfo->Status << endl;
-                                dout.fill(oldfill);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTERSU.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/06/07 16:13:51 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2002/07/18 16:22:49 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -62,35 +62,6 @@ extern CtiDeviceManager    DeviceManager;
 IM_EX_CTIBASE extern RWMutexLock  coutMux;
 
 HCTIQUEUE*   QueueHandle(LONG pid);
-
-
-INT StartPortThread (void *arg)
-{
-    CtiPort *PortRecord = (CtiPort *)arg;
-
-    /* Check the range of the port and start the appropriate resources */
-    if((PortRecord->getPortID() <= PORTDIRECTMAX) || (PortRecord->getPortID() <= PORTTCPMAX))
-    {
-        /* Let the world know this port is starting */
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Enabling Port:  " << PortRecord->getPortID() << " as " << PortRecord->getName() << endl;
-        }
-
-        /*
-         * Start up the Port thread.
-         * This may be one dat a good plca to start a unique thread based upon port type.
-         * Not today however 072599 CGP
-         */
-        if(_beginthread (PortThread, PORT_THREAD_STK_SIZE, (void*)PortRecord->getPortID()) == -1)
-        {
-            printf("Error Starting Port Thread %2hd\n", PortRecord->getPortID());
-            return(!NORMAL);
-        }
-    }
-
-    return(NORMAL);
-}
 
 /* Routine to send error message back to originating process */
 SendError (OUTMESS *&OutMessage, USHORT ErrorCode)
@@ -200,7 +171,7 @@ SendError (OUTMESS *&OutMessage, USHORT ErrorCode)
 ReportRemoteError (CtiDeviceBase *RemoteRecord, ERRSTRUCT *ErrorRecord)
 {
     COMM_ERROR_LOG_STRUCT ComErrorRecord;
-    CtiPort *PortRecord;
+    CtiPortSPtr PortRecord;
 
     if(!(ErrorRecord->Error) || ErrorRecord->Type == ERRTYPEPROTOCOL)
     {
@@ -245,7 +216,7 @@ ReportRemoteError (CtiDeviceBase *RemoteRecord, ERRSTRUCT *ErrorRecord)
 
 
 /* Add Device error to the comm error log */
-ReportDeviceError (CtiDeviceBase    *DeviceRecord, CtiPort *PortRecord, ERRSTRUCT *ErrorRecord)
+ReportDeviceError (CtiDeviceBase    *DeviceRecord, CtiPortSPtr PortRecord, ERRSTRUCT *ErrorRecord)
 {
     COMM_ERROR_LOG_STRUCT ComErrorRecord;
 
@@ -291,10 +262,10 @@ ReportDeviceError (CtiDeviceBase    *DeviceRecord, CtiPort *PortRecord, ERRSTRUC
 
 HCTIQUEUE*   QueueHandle(LONG pid)
 {
-    HCTIQUEUE   *pQue    = NULL;
-    CtiPort     *pPort   = NULL;
+    HCTIQUEUE *pQue    = NULL;
+    CtiPortSPtr pPort;
 
-    if( NULL != (pPort = PortManager.PortGetEqual(pid)) )
+    if( (pPort = PortManager.PortGetEqual(pid)) )
     {
         pQue = &(pPort->getPortQueueHandle());
     }

@@ -1,4 +1,5 @@
 
+
 #include <iostream>
 #include <iomanip>
 using namespace std;
@@ -201,9 +202,9 @@ INT CtiPort::logBytes(BYTE *Message, ULONG Length) const
     return status;
 }
 
-INT CtiPort::writeQueue(ULONG Request, LONG DataSize, PVOID Data, ULONG Priority, void (*func)(void *), HANDLE hQuit)
+INT CtiPort::writeQueue(ULONG Request, LONG DataSize, PVOID Data, ULONG Priority, HANDLE hQuit)
 {
-    #define DEFAULT_QUEUE_GRIPE_POINT 10
+#define DEFAULT_QUEUE_GRIPE_POINT 10
     int status = NORMAL;
     ULONG QueEntries;
     static ULONG QueueGripe = DEFAULT_QUEUE_GRIPE_POINT;
@@ -221,7 +222,7 @@ INT CtiPort::writeQueue(ULONG Request, LONG DataSize, PVOID Data, ULONG Priority
     }
 #endif
 
-    if(verifyPortIsRunnable( func ) == NORMAL)
+    if(verifyPortIsRunnable( hQuit ) == NORMAL)
     {
         if(_portQueue != NULL)
         {
@@ -306,30 +307,13 @@ INT CtiPort::queueDeInit()
     return status;
 }
 
-INT CtiPort::verifyPortIsRunnable( void (*func)(void *), HANDLE hQuit )
+INT CtiPort::verifyPortIsRunnable( HANDLE hQuit )
 {
     INT status = NORMAL;
 
     try
     {
-#if 0
-        if(!isValid())     // Is the port still valid itself??  Have we been deleted??
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-            if(_portThread.isValid())
-            {
-                queueDeInit();
-                _portThread.requestCancellation();
-                status = !NORMAL;
-            }
-        }
-        else
-#endif
-
-            if( _tblPAO.isInhibited() )
+        if( _tblPAO.isInhibited() )
         {
             status = PORTINHIBITED;
         }
@@ -337,16 +321,16 @@ INT CtiPort::verifyPortIsRunnable( void (*func)(void *), HANDLE hQuit )
         {
             if(!_portThread.isValid() || _portThread.getCompletionState() != RW_THR_PENDING)
             {
-                if(func != NULL)
+                if(_portFunc != 0)
                 {
-                    _portThread = rwMakeThreadFunction( func, (void*)this );
+                    _portThread = rwMakeThreadFunction( _portFunc, (void*)getPortID() );
                     _portThread.start();
                 }
                 else
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << RWTime() << " No port thread function defined" << endl;
                     }
                     status = !NORMAL;
                 }
@@ -360,6 +344,14 @@ INT CtiPort::verifyPortIsRunnable( void (*func)(void *), HANDLE hQuit )
             dout << RWTime() << " **** RW EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ") " << e.why() << endl;
         }
     }
+    catch(...)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ") " << endl;
+        }
+    }
+
 
     return status;
 }
@@ -429,6 +421,7 @@ INT CtiPort::outInMess(CtiXfer& Xfer, CtiDevice *Dev, RWTPtrSlist< CtiMessage > 
 
 
 CtiPort::CtiPort() :
+_portFunc(0),
 _portQueue(NULL),
 _connectedDevice(0L),
 _connectedDeviceUID(-1),
@@ -437,7 +430,8 @@ _tapPort(FALSE)
 {
 }
 
-CtiPort::CtiPort(const CtiPort& aRef)
+CtiPort::CtiPort(const CtiPort& aRef) :
+_portFunc(0)
 {
     *this = aRef;
 }
@@ -557,10 +551,12 @@ INT CtiPort::disconnect(CtiDevice *Device, INT trace)
 
     return NORMAL;
 }
-BOOL CtiPort::shouldDisconnect() const                       { return FALSE;}
-INT CtiPort::reset(INT trace)                                { return NORMAL;}
-INT CtiPort::setup(INT trace)                                { return NORMAL;}
-INT CtiPort::close(INT trace)                                { return NORMAL;}
+
+CtiPort& CtiPort::setShouldDisconnect(BOOL b)               { return *this;}
+BOOL CtiPort::shouldDisconnect() const                      { return FALSE;}
+INT CtiPort::reset(INT trace)                               { return NORMAL;}
+INT CtiPort::setup(INT trace)                               { return NORMAL;}
+INT CtiPort::close(INT trace)                               { return NORMAL;}
 
 
 /* virtuals to make the world all fat and happy */
@@ -674,6 +670,32 @@ CtiPort& CtiPort::setConnectedDeviceUID(const ULONG &i)
 {
     _connectedDeviceUID = i;
     return *this;
+}
+
+
+INT CtiPort::verifyPortStatus()
+{
+    INT         status   = NORMAL;
+
+    if(needsReinit() && !isDialup())
+    {
+        if( NORMAL != (status = init()) )
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Error initializing Virtual Port " << getPortID() << ": \"" << getName() << "\"" << endl;
+            }
+        }
+    }
+
+    return status;
+}
+
+CTI_PORTTHREAD_FUNC_PTR CtiPort::setPortThreadFunc(CTI_PORTTHREAD_FUNC_PTR aFn)
+{
+    CTI_PORTTHREAD_FUNC_PTR oldFn = _portFunc;
+    _portFunc = aFn;
+    return oldFn;
 }
 
 

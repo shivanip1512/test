@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_port.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/05/02 17:02:24 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2002/07/18 16:22:52 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -56,7 +56,7 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserv
     return TRUE;
 }
 
-DLLEXPORT BOOL isAPort(CtiPort* pSp, void *arg)
+DLLEXPORT BOOL isAPort(CtiPort *pSp, void *arg)
 {
     BOOL bRet = FALSE;
 
@@ -72,59 +72,59 @@ DLLEXPORT BOOL isAPort(CtiPort* pSp, void *arg)
     return bRet;
 }
 
-inline RWBoolean
-isNotUpdated(CtiPort *pPort, void* d)
+inline bool isNotUpdated(CtiPortSPtr &Port, void* d)
 {
     // Return TRUE if it is NOT SET
-    return(RWBoolean(!pPort->CtiTablePortBase::getUpdatedFlag()));
+    return( !Port->getUpdatedFlag() );
 }
 
-inline void
-ApplyResetUpdated(const CtiHashKey *key, CtiPort *&pPort, void* d)
+inline void ApplyResetUpdated(const long key, CtiPortSPtr Port, void* d)
 {
-    pPort->resetUpdatedFlag();
+    Port->resetUpdatedFlag();
     return;
 }
 
-void
-ApplyInvalidateNotUpdated(const CtiHashKey *key, CtiPort *&pPort, void* d)
+inline void ApplyDump(const long key, CtiPortSPtr Port, void* d)
 {
-    if(!pPort->getUpdatedFlag())
+    Port->Dump();
+    return;
+}
+
+void ApplyInvalidateNotUpdated(const long key, CtiPortSPtr Port, void* d)
+{
+    if(!Port->getUpdatedFlag())
     {
-        pPort->setValid(FALSE);   //   NOT NOT NOT Valid
+        Port->setValid(FALSE);   //   NOT NOT NOT Valid
     }
     return;
 }
 
-void
-ApplyHaltLog(const CtiHashKey *key, CtiPort *&pPort, void* d)
+void ApplyHaltLog(const long key, CtiPortSPtr Port, void* d)
 {
-    pPort->haltLog();
+    Port->haltLog();
     return;
 }
 
-CtiPortManager::CtiPortManager(CTI_THREAD_FUNC_PTR fn) :
+CtiPortManager::CtiPortManager(CTI_PORTTHREAD_FUNC_PTR fn) :
 _portThreadFunc(fn)
 {}
 
 CtiPortManager::~CtiPortManager() {}
 
-void CtiPortManager::RefreshList(CtiPort* (*Factory)(RWDBReader &),
-                                 BOOL (*testFunc)(CtiPort*,void*),
-                                 void *arg)
+void CtiPortManager::RefreshList(CtiPort* (*Factory)(RWDBReader &), BOOL (*testFunc)(CtiPort*,void*), void *arg)
 {
-    CtiPort *pTempPort = NULL;
+    CtiSmartMap< CtiPort >::ptr_type pTempPort;
 
     try
     {
-        {   // Make sure all objects that that store results
-
+        {
             // Reset everyone's Updated flag.
-            if(Map.entries() > 0)
+            if(!_smartMap.empty())
             {
-                Map.apply(ApplyResetUpdated, NULL);
+                apply(ApplyResetUpdated, NULL);
             }
-            resetErrorCode();
+
+            _smartMap.resetErrorCode();
 
             {
                 CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
@@ -138,7 +138,7 @@ void CtiPortManager::RefreshList(CtiPort* (*Factory)(RWDBReader &),
                 if(DebugLevel & 0x00080000)  cout  << "Looking for Direct and ModemDirect Ports" << endl;
                 CtiPortLocalModem().getSQL( db, keyTable, selector );
                 RWDBReader  rdr = selector.reader( conn );
-                if(DebugLevel & 0x00080000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+                if(DebugLevel & 0x00080000 || _smartMap.setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
                 }
@@ -159,7 +159,7 @@ void CtiPortManager::RefreshList(CtiPort* (*Factory)(RWDBReader &),
                 if(DebugLevel & 0x00080000)  cout  << "Looking for TCPIP Ports" << endl;
                 CtiPortTCPIPDirect().getSQL( db, keyTable, selector );
                 RWDBReader  rdr = selector.reader( conn );
-                if(DebugLevel & 0x00080000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+                if(DebugLevel & 0x00080000 || _smartMap.setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
                 }
@@ -168,43 +168,44 @@ void CtiPortManager::RefreshList(CtiPort* (*Factory)(RWDBReader &),
                 if(DebugLevel & 0x00080000)  cout  << "Done looking for TCPIP Ports" << endl;
             }
 
-            if(getErrorCode() != RWDBStatus::ok)
+            if(_smartMap.getErrorCode() != RWDBStatus::ok)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << " database had a return code of " << getErrorCode() << endl;
+                    dout << " database had a return code of " << _smartMap.getErrorCode() << endl;
                 }
             }
             else
             {
-                if(getErrorCode() != RWDBStatus::ok)
+                if(_smartMap.getErrorCode() != RWDBStatus::ok)
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << " database had a return code of " << getErrorCode() << endl;
+                        dout << " database had a return code of " << _smartMap.getErrorCode() << endl;
                     }
                 }
                 else
                 {
                     // Now I need to check for any Port removals based upon the
                     // Updated Flag being NOT set
-                    Map.apply(ApplyInvalidateNotUpdated, NULL);
+                    apply(ApplyInvalidateNotUpdated, NULL);
+                    pTempPort.reset();
                     do
                     {
-                        pTempPort = remove(isNotUpdated, NULL);
-                        if(pTempPort != NULL)
+                        pTempPort = _smartMap.remove(isNotUpdated, NULL);
+                        if(pTempPort)
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                                 dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                                 dout << "  Evicting " << pTempPort->getName() << " from list" << endl;
                             }
-                            delete pTempPort;
+                            pTempPort.reset();      // Free the thing!
                         }
 
-                    } while(pTempPort != NULL);
+                    } while(pTempPort);
                 }
             }
         }   // Temporary results are destroyed to free the connection
@@ -212,74 +213,79 @@ void CtiPortManager::RefreshList(CtiPort* (*Factory)(RWDBReader &),
     catch(RWExternalErr e )
     {
         //Make sure the list is cleared
-        cout << "Attempting to clear port list..." << endl;
-        Map.clearAndDestroy();
         cout << "getPorts:  " << e.why() << endl;
         RWTHROW(e);
     }
 }
 
-void CtiPortManager::DumpList(void)
+void CtiPortManager::apply(void (*applyFun)(const long, ptr_type, void*), void* d)
 {
-    CtiPort *p = NULL;
     try
     {
-        CtiRTDBIterator itr(Map);
+        CtiLockGuard<CtiMutex> gaurd(_mux);
+        spiterator itr;
 
-        for(;itr();)
+        for(itr = begin(); itr != end(); itr++)
         {
-            p = itr.value();
-            p->Dump();
+            applyFun( itr->first, itr->second, d);
+        }
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+}
+
+
+void CtiPortManager::DumpList(void)
+{
+    try
+    {
+        CtiLockGuard<CtiMutex> gaurd(_mux);
+        spiterator itr;
+
+        for(itr = begin(); itr != end(); itr++)
+        {
+            itr->second->Dump();
         }
     }
     catch(RWExternalErr e )
     {
         //Make sure the list is cleared
-        cout << "Attempting to clear port list..." << endl;
-
-        Map.clearAndDestroy();
-
         cout << "DumpPorts:  " << e.why() << endl;
         RWTHROW(e);
 
     }
 }
 
-CtiPort* CtiPortManager::PortGetEqual(LONG pid)
+CtiPortManager::ptr_type CtiPortManager::PortGetEqual(LONG pid)
 {
-    CtiPort *p = NULL;
+    ptr_type p;
     try
     {
-        CtiHashKey  Key(pid);
-        p = Map.findValue(&Key);
+        p = _smartMap.find(pid);
     }
     catch(RWExternalErr e )
     {
         //Make sure the list is cleared
-        cout << "Attempting to clear port list..." << endl;
-
-        Map.clearAndDestroy();
-
         cout << "PortGetEqual:  " << e.why() << endl;
         RWTHROW(e);
     }
+
     return p;
 }
-
-
 
 void CtiPortManager::RefreshEntries(RWDBReader& rdr, CtiPort* (*Factory)(RWDBReader &), BOOL (*testFunc)(CtiPort*,void*), void *arg)
 {
     LONG     lTemp = 0;
-    CtiPort* pTempPort = NULL;
+    ptr_type pTempPort;
 
-    while( (setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok) && rdr() )
+    while( (_smartMap.setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok) && rdr() )
     {
         rdr["paobjectid"] >> lTemp;            // get the RouteID
-        CtiHashKey key(lTemp);
 
-
-        if( Map.entries() > 0 && ((pTempPort = Map.findValue(&key)) != NULL) )
+        if( !_smartMap.empty() && (pTempPort = _smartMap.find(lTemp)) )
         {
             /*
              *  The point just returned from the rdr already was in my list.  We need to
@@ -294,15 +300,17 @@ void CtiPortManager::RefreshEntries(RWDBReader& rdr, CtiPort* (*Factory)(RWDBRea
         {
             CtiPort* pSp = (*Factory)(rdr);  // Use the reader to get me an object of the proper type
 
+            pSp->setPortThreadFunc( _portThreadFunc );  // Make the thing know who runs it.
+
             if(pSp)
             {
-                pSp->DecodeDatabaseReader(rdr);        // Fills himself in from the reader
+                pSp->DecodeDatabaseReader(rdr);         // Fills himself in from the reader
 
-                if(((*testFunc)(pSp, arg)))            // If I care about this point in the db in question....
+                if(((*testFunc)(pSp, arg)))             // If I care about this point in the db in question....
                 {
                     pSp->setUpdatedFlag();              // Mark it updated
                     pSp->setValid();
-                    Map.insert( new CtiHashKey(pSp->getPortID()), pSp ); // Stuff it in the list
+                    _smartMap.insert( pSp->getPortID(), pSp );    // Stuff it in the list
                 }
                 else
                 {
@@ -317,7 +325,7 @@ INT CtiPortManager::writeQueue(INT pid, ULONG Request, ULONG DataSize, PVOID Dat
 {
     INT status = NORMAL;
 
-    CtiPort *pPort = PortGetEqual(pid);
+    ptr_type pPort = PortGetEqual(pid);
 
     if(pPort->isInhibited())
     {
@@ -325,9 +333,9 @@ INT CtiPortManager::writeQueue(INT pid, ULONG Request, ULONG DataSize, PVOID Dat
     }
     else
     {
-        if(pPort != NULL)
+        if(pPort)
         {
-            status = pPort->writeQueue(Request, DataSize, Data, Priority, _portThreadFunc);
+            status = pPort->writeQueue(Request, DataSize, Data, Priority);
         }
         else
         {
@@ -339,9 +347,9 @@ INT CtiPortManager::writeQueue(INT pid, ULONG Request, ULONG DataSize, PVOID Dat
 }
 
 
-CTI_THREAD_FUNC_PTR CtiPortManager::setPortThreadFunc(CTI_THREAD_FUNC_PTR aFn)
+CTI_PORTTHREAD_FUNC_PTR CtiPortManager::setPortThreadFunc(CTI_PORTTHREAD_FUNC_PTR aFn)
 {
-    CTI_THREAD_FUNC_PTR oldFn = _portThreadFunc;
+    CTI_PORTTHREAD_FUNC_PTR oldFn = _portThreadFunc;
 
     _portThreadFunc = aFn;
 
@@ -351,9 +359,19 @@ CTI_THREAD_FUNC_PTR CtiPortManager::setPortThreadFunc(CTI_THREAD_FUNC_PTR aFn)
 void CtiPortManager::haltLogs()
 {
     // Reset everyone's Updated flag.
-    if(Map.entries() > 0)
+    if(!_smartMap.empty())
     {
-        Map.apply(ApplyHaltLog, NULL);
+        apply(ApplyHaltLog, NULL);
     }
 }
+
+CtiPortManager::spiterator CtiPortManager::begin()
+{
+    return _smartMap.getMap().begin();
+}
+CtiPortManager::spiterator CtiPortManager::end()
+{
+    return _smartMap.getMap().end();
+}
+
 

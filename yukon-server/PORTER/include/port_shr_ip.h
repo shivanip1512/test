@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/INCLUDE/port_shr_ip.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:42 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/07/18 16:22:52 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -29,7 +29,7 @@
 #include "port_shr.h"
 
 class IM_EX_PORTGLOB CtiPortShareIP : public CtiPortShare
-                                      
+
 {
 protected:
 
@@ -46,7 +46,7 @@ private:
 
 public:
 
-   CtiPortShareIP(CtiPort *myPort, INT listenPort);
+   CtiPortShareIP(shared_ptr< CtiPort > myPort, INT listenPort);
    virtual ~CtiPortShareIP();
 
    int getIPPort() const;
@@ -58,7 +58,7 @@ public:
 
    void inThread();
    void outThread();
-      
+
    int inThreadConnectNexus();
    int outThreadValidateNexus();
 

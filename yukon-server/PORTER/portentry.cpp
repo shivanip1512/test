@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2002/07/11 21:10:19 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2002/07/18 16:22:49 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -409,8 +409,8 @@ VOID RouterThread (VOID *TPNumber)
     CHAR Name[100];
 
     /* Definitions to access Btrieve files */
-    CtiPort     *PortRecord;
-    CtiDeviceBase   *RemoteRecord;
+    CtiPortSPtr PortRecord;
+    CtiDeviceBase *RemoteRecord;
     REMOTEPERF  RemotePerf;
     ERRSTRUCT   ErrStruct;
 
@@ -545,7 +545,7 @@ VOID RouterThread (VOID *TPNumber)
             dout << "This might needs fixin' " << __FILE__ << " " << __LINE__ << endl;
             Type = RemoteRecord->getType();
             RemoteRecord->setType(TYPE_REMOTE);
-            RemoteInitialize (NULL, RemoteRecord, (void*)PortRecord);
+            RemoteInitialize (NULL, RemoteRecord, (void*)&PortRecord);
             RemoteRecord->setType(Type);
         }
 
@@ -833,11 +833,11 @@ INT ValidateRemote(OUTMESS *&OutMessage)
 
             if(pInfo == NULL)    // This device has not been initialized as of yet!
             {
-                CtiPort *Port = PortManager.PortGetEqual(OutMessage->Port);
+                CtiPortSPtr Port = PortManager.PortGetEqual(OutMessage->Port);
 
-                if(Port != NULL)
+                if(Port)
                 {
-                    RemoteInitialize(NULL, TransmitterDev, (void*)Port);             /* This is a new one so initialize it */
+                    RemoteInitialize(TransmitterDev, Port);             /* This is a new one so initialize it */
                 }
             }
         }
@@ -866,14 +866,14 @@ INT ValidateRemote(OUTMESS *&OutMessage)
 
 INT ValidatePort(OUTMESS *&OutMessage)
 {
-    INT            j;
-    INT            status = NORMAL;
-    CtiPort        *Port;
+    INT                         j;
+    INT                         status = NORMAL;
+    CtiPortManager::ptr_type    Port;
 
     /* Check the memory database to see if a port like this exists */
-    if(NULL != (Port = PortManager.PortGetEqual ((LONG)OutMessage->Port)))
+    if((Port = PortManager.PortGetEqual((LONG)OutMessage->Port)))
     {
-        Port->verifyPortIsRunnable( PortThread, hPorterEvents[P_QUIT_EVENT] );
+        Port->verifyPortIsRunnable( hPorterEvents[P_QUIT_EVENT] );
 
         if(Port->isInhibited())
         {

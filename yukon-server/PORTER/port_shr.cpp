@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/port_shr.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:37 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/07/18 16:22:48 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -27,7 +27,7 @@
 #include "tcpsup.h"
 #include "CTICALLS.H"
 
-CtiPortShare::CtiPortShare(CtiPort *myPort, INT listenPort) :
+CtiPortShare::CtiPortShare(CtiPortSPtr myPort, INT listenPort) :
    _port(myPort),
    _listenPort(listenPort)
 {
@@ -41,7 +41,7 @@ CtiPortShare::~CtiPortShare()
 }
 
 
-CtiPort* CtiPortShare::getPort()
+CtiPortSPtr CtiPortShare::getPort()
 {
    return _port;
 }
@@ -167,13 +167,13 @@ void CtiPortShare::createNexus(RWCString nexusName)
    }
 
    _listenNexus.CTINexusClose();  // Don't need this anymore.
-   
+
    if( getDebugLevel() == DEBUGLEVEL_LUDICROUS )
    {
       CtiLockGuard<CtiLogger> doubt_guard(dout);
       dout << RWTime() << " closed " << nexusName << endl;
    }
-   
+
    _listenNexus = newNexus;
 
    return;

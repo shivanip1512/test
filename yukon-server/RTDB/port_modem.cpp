@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/port_modem.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/06/11 16:50:31 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2002/07/18 16:22:52 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -45,9 +45,8 @@ CtiPortModem& CtiPortModem::operator=(const CtiPortModem& aRef)
     return *this;
 }
 
-BOOL&                CtiPortModem::getShouldDisconnect()                      { return _shouldDisconnect;}
-BOOL                 CtiPortModem::shouldDisconnect() const                   { return _shouldDisconnect;}
-CtiPortModem&        CtiPortModem::setShouldDisconnect(BOOL b)
+BOOL CtiPortModem::shouldDisconnect() const                   { return _shouldDisconnect;}
+CtiPort& CtiPortModem::setShouldDisconnect(BOOL b)
 {
     _shouldDisconnect = b;
     return *this;

@@ -7,15 +7,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/porttest.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:17 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/07/18 16:22:53 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
 #include <windows.h>
 #include <iostream>
-#include <crtdbg.h>
+#include <exception>
 using namespace std;
 
 #include "dllbase.h"
@@ -23,45 +23,81 @@ using namespace std;
 #include "rtdb.h"
 #include "logger.h"
 
+void ApplyDump(const long key, CtiPortManager::ptr_type Port, void* d)
+{
+    dout << " APPLY FUNC " << endl;
+    Port->Dump();
+    return;
+}
+
+
 void main(int argc, char** argv)
 {
-   int cnt = 1;
-   int stime = 0;
+    int cnt = 1;
+    int stime = 0;
 
-   if(argc > 1)
-      cnt = atoi(argv[1]);
+    if(argc > 1)
+        cnt = atoi(argv[1]);
 
-   if(argc > 2)
-      stime = atoi(argv[2]);
+    if(argc > 2)
+        stime = atoi(argv[2]);
 
-   CtiPortManager     PortManager(NULL);
+    CtiPortManager     PortManager(NULL);
 
-   InitYukonBaseGlobals();
+    InitYukonBaseGlobals();
 
-   dout.start();     // fire up the logger thread
-   dout.setOutputPath(gLogDirectory.data());
-   dout.setOutputFile("porter");
-   dout.setToStdOut(true);
-   dout.setWriteInterval(1);
+    dout.start();     // fire up the logger thread
+    dout.setOutputPath(gLogDirectory.data());
+    dout.setOutputFile("porttester");
+    dout.setToStdOut(true);
+    dout.setWriteInterval(1);
 
 
-   cout << "Porttester is starting up now" << endl;
+    cout << "Porttester is starting up now" << endl;
 
-   for(int i = 0; i < cnt; i++)
-   {
-      InitYukonBaseGlobals();
+    for(int i = 0; i < cnt; i++)
+    {
+        InitYukonBaseGlobals();
 
-      PortManager.RefreshList();
-      PortManager.DumpList();
+        PortManager.RefreshList();
+        PortManager.DumpList();
+        CtiPortManager::ptr_type psPort(PortManager.PortGetEqual(1));
+        if(psPort)
+        {
+            dout << endl << psPort->getName() << " is good. use_count " << psPort.use_count() << endl;
+        }
 
-      if(stime > 0)
-      {
-         Sleep(stime);
-      }
-   }
+        CtiPortManager::ptr_type psPort2(PortManager.PortGetEqual(5));
+        if(psPort2)
+        {
+            dout << endl << psPort2->getName() << " is good. use_count " << psPort2.use_count() << endl << endl;
+        }
 
-   dout.interrupt(CtiThread::SHUTDOWN);
-   dout.join();
+        try
+        {
+            PortManager.apply( ApplyDump, NULL );
+        }
+        catch(exception &e)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << "  " << e.what() << endl;
+        }
+        catch(...)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
 
-   return;
+
+        if(stime > 0)
+        {
+            Sleep(stime);
+        }
+    }
+
+    dout.interrupt(CtiThread::SHUTDOWN);
+    dout.join();
+
+    return;
 }

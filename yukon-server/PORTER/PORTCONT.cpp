@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTCONT.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:30 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/07/18 16:22:49 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -81,7 +81,7 @@ RemoteControl (OUTMESS *OutMessage)
    REMOTE RemoteRecord;
    CTIPOINT PointRecord;
    DEVICE DeviceRecord;
-   CtiPort *PortRecord;
+   CtiPortSPtr PortRecord;
    CONTROLMAP ControlMapRecord;
    ULONG i, j;
    USHORT DIO24;
@@ -204,7 +204,7 @@ RemoteControl (OUTMESS *OutMessage)
    /* Make sure that we have a port */
    if(NULL != (PortRecord = PortManager.getMap().findValue(&TempKey)))
    {
-      if( PortRecord->verifyPortIsRunnable( PortThread, hPorterEvents[P_QUIT_EVENT] ) )
+      if( PortRecord->verifyPortIsRunnable( hPorterEvents[P_QUIT_EVENT] ) )
       {
          return BADPORT;
       }
@@ -294,12 +294,7 @@ RemoteControl (OUTMESS *OutMessage)
 
       /* Sent the message on to the remote */
       /* Message is loaded so send it to appropriate queue */
-      if(PortManager.writeQueue(RemoteRecord.Port,
-                                MyOutMessage->EventCode,
-                                sizeof (*MyOutMessage),
-                                (char *) MyOutMessage,
-                                MyOutMessage->Priority,
-                                PortThread))
+      if(PortManager.writeQueue(RemoteRecord.Port, MyOutMessage->EventCode, sizeof (*MyOutMessage), (char *) MyOutMessage, MyOutMessage->Priority))
       {
          printf ("Error Writing to Queue for Port %2hd\n", RemoteRecord.Port);
          delete (MyOutMessage);
@@ -346,13 +341,7 @@ RemoteControl (OUTMESS *OutMessage)
 
       /* Sent the message on to the remote */
       /* Message is loaded so send it to appropriate queue */
-      if(PortManager.writeQueue(RemoteRecord.Port,
-                                MyOutMessage->EventCode,
-
-                                sizeof (*MyOutMessage),
-                                (char *) MyOutMessage,
-                                MyOutMessage->Priority,
-                                PortThread))
+      if(PortManager.writeQueue(RemoteRecord.Port, MyOutMessage->EventCode, sizeof (*MyOutMessage), (char *) MyOutMessage, MyOutMessage->Priority))
       {
          printf ("Error Writing to Queue for Port %2hd\n", RemoteRecord.Port);
          delete (MyOutMessage);
