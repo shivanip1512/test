@@ -40,10 +40,13 @@ public class RadiusLogin
 			String radiusAddr = RoleFuncs.getGlobalPropertyValue(AuthenticationRole.SERVER_ADDRESS);
 			int authPort = Integer.valueOf(RoleFuncs.getGlobalPropertyValue(AuthenticationRole.AUTH_PORT)).intValue();
 			int acctPort = Integer.valueOf(RoleFuncs.getGlobalPropertyValue(AuthenticationRole.ACCT_PORT)).intValue();
+			int authTimeout = Integer.parseInt(RoleFuncs.getGlobalPropertyValue(AuthenticationRole.AUTH_TIMEOUT)) * 1000;
 			String secret = RoleFuncs.getGlobalPropertyValue(AuthenticationRole.SECRET_KEY);
-			//any other radius attributes we don't know about yet.
+
 		
-			rc = new RadiusClient(radiusAddr, authPort, acctPort, secret);
+			rc = new RadiusClient(
+				radiusAddr, authPort, acctPort, secret, authTimeout );
+			
 			if( basicAuthenticate(rc, username, password))
 			{
 				DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
