@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct210.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/05/28 18:18:22 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/09/18 21:28:37 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -221,7 +221,7 @@ INT CtiDeviceMCT210::decodeGetStatusDisconnect(INMESS *InMessage, RWTime &TimeNo
     resetScanFreezePending();
     resetScanFreezeFailed();
 
-    if(!decodeCheckErrorReturn(InMessage, retList, outList))
+    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {
         // No error occured, we must do a real decode!
         INT disc;
@@ -283,7 +283,8 @@ INT CtiDeviceMCT210::decodeGetStatusDisconnect(INMESS *InMessage, RWTime &TimeNo
             *  Send this value to requestor via retList.
             */
 
-            pData = new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, PulseAccumulatorPointType, resultStr);
+            pData = new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, PulseAccumulatorPointType, resultStr, TAG_POINT_MUST_ARCHIVE);
+
             if(pData != NULL)
             {
                 ReturnMsg->PointData().insert(pData);
