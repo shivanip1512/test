@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2003/10/17 18:39:07 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2003/10/22 22:13:53 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -307,7 +307,7 @@ INT CtiDeviceDNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
                 }
                 case ScanRateIntegrity:
                 {
-                    _dnp.setCommand(CtiProtocolDNP::DNP_Class0123Read);
+                    _dnp.setCommand(CtiProtocolDNP::DNP_Class1230Read);
                     nRet = NoError;
                     break;
                 }
@@ -338,14 +338,36 @@ INT CtiDeviceDNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
             break;
         }
 
+        case PutConfigRequest:
+        {
+            if(parse.isKeyValid("timesync"))
+            {
+                _dnp.setCommand(CtiProtocolDNP::DNP_WriteTime);
+
+                nRet = NoError;
+            }
+
+            break;
+        }
+
+        case GetConfigRequest:
+        {
+            if(parse.isKeyValid("time"))
+            {
+                _dnp.setCommand(CtiProtocolDNP::DNP_ReadTime);
+
+                nRet = NoError;
+            }
+
+            break;
+        }
+
         case GetValueRequest:
         case GetStatusRequest:
         {
 
         }
         case PutStatusRequest:
-        case GetConfigRequest:
-        case PutConfigRequest:
         case LoopbackRequest:
         default:
         {
@@ -416,8 +438,8 @@ INT CtiDeviceDNP::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< 
         switch( _dnp.getCommand() )
         {
             case CtiProtocolDNP::DNP_Class0Read:
-            case CtiProtocolDNP::DNP_Class0123Read:
             case CtiProtocolDNP::DNP_Class123Read:
+            case CtiProtocolDNP::DNP_Class1230Read:
             case CtiProtocolDNP::DNP_Class1Read:
             case CtiProtocolDNP::DNP_Class2Read:
             case CtiProtocolDNP::DNP_Class3Read:
@@ -554,6 +576,34 @@ INT CtiDeviceDNP::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< 
                     delete newReq;
                 }
 
+                break;
+            }
+            case CtiProtocolDNP::DNP_ReadTime:
+            {
+                retMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
+
+                retMsg->setUserMessageId(InMessage->Return.UserID);
+
+                if( _dnp.hasTimeResult() )
+                {
+                    RWTime deviceTime(_dnp.getTimeResult() + rwEpoch);
+
+                    resultString = getName() + " / current time: " + deviceTime.asString();
+
+                    retMsg->setResultString(resultString);
+                }
+                else
+                {
+                    retMsg->setResultString("No time response from DNP device");
+                }
+
+                retList.append(retMsg);
+
+                break;
+            }
+
+            default:
+            {
                 break;
             }
         }
