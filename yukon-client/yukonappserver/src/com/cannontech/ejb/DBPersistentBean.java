@@ -17,6 +17,7 @@ import javax.ejb.EJBException;
 import javax.ejb.SessionBean;
 import javax.ejb.SessionContext;
 
+import com.cannontech.clientutils.CTILogManager;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.StringUtils;
@@ -704,14 +705,15 @@ public class DBPersistentBean implements SessionBean, IDBPersistent
    public static boolean isPrintSQL() 
    {
 		//some other startup init properties
-		String printSQLfile = RoleFuncs.getGlobalPropertyValue( SystemRole.PRINT_INSERTS_SQL );
+		String printSQLfile =
+			CTILogManager.ALL_NAMES[CTILogManager.PRINT_SQL_INSERTS_FILE][1]; 
 
 		try
 		{
 			//#File that logs SQL inserts into the database
-			if( CtiUtilities.STRING_NONE.equalsIgnoreCase(printSQLfile) )
-				sqlFileName =  null;
-			else
+			//if( CtiUtilities.STRING_NONE.equalsIgnoreCase(printSQLfile) )
+			//	sqlFileName =  null;
+			//else
 				sqlFileName = printSQLfile;
 		}
 		catch (Exception e)

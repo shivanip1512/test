@@ -42,7 +42,9 @@ MaxActivateTime = 0 and HolidayScheduleID = 0 and SeasonScheduleID = 0);
 
 delete from LMProgramConstraints where constraintid not in (select constraintid from LMProgram) and constraintid <> 0;
 
-
+delete from yukonuserrole where rolepropertyid = -1012;
+delete from yukongrouprole where rolepropertyid = -1012;
+delete from yukonroleproperty where rolepropertyid = -1012;
 
 
 

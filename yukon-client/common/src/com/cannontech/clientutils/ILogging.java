@@ -16,6 +16,7 @@ interface ILogging
     //special case indexes for levels that do not have classes
     public static final int GENERAL_LOG_LEVEL = 15;
     public static final int LOG_TO_FILE = 16;
+	public static final int PRINT_SQL_INSERTS_FILE = 17;
     
 
     public static final String[] LOG_LEVEL_NAMES =
@@ -38,7 +39,8 @@ interface ILogging
         
         //items that do not have a class definition in ALL_NAMES
         "log_general_level",
-        "log_to_file"
+        "log_to_file",
+		"print_sql_inserts_file"
     };
 
     //a mapping of package objects to their log_level
@@ -64,6 +66,7 @@ interface ILogging
         //items that do not have a class definition
         { "log_general_level", DEFAULT_LOG_LEVEL },
         { "log_to_file", "false" },
+		{ "print_sql_inserts_file", null }
     };
 
 }
