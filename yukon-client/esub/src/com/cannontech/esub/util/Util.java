@@ -27,7 +27,7 @@ import com.loox.jloox.LxRotatable;
 
 /**
  * Creation date: (1/14/2002 4:28:01 PM)
- * @author: 
+ * @author: alauinger 
  */
 public class Util {
 	

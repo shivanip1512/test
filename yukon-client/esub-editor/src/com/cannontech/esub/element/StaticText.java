@@ -13,7 +13,7 @@ import com.loox.jloox.LxAbstractText;
 
 /**
  * Creation date: (1/23/2002 11:36:05 AM)
- * @author: 
+ * @author: alauinger
  */
 public class StaticText extends LxAbstractText implements DrawingElement {
 	private static final String ELEMENT_ID = "staticText";

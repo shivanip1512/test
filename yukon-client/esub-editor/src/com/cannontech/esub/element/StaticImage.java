@@ -15,7 +15,7 @@ import com.loox.jloox.LxAbstractImage;
 
 /**
  * Creation date: (1/22/2002 10:15:09 AM)
- * @author: 
+ * @author: alauinger
  */
 public class StaticImage extends LxAbstractImage implements DrawingElement {
 	
