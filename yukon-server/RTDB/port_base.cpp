@@ -8,11 +8,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.47 $
-* DATE         :  $Date: 2005/01/18 19:12:10 $
+* REVISION     :  $Revision: 1.48 $
+* DATE         :  $Date: 2005/01/27 17:54:11 $
 *
 * HISTORY      :
 * $Log: port_base.cpp,v $
+* Revision 1.48  2005/01/27 17:54:11  cplender
+* Altered the comm logging to create and store in a Comm subdir beneath the base logging directory.
+*
 * Revision 1.47  2005/01/18 19:12:10  cplender
 * _queueGripe added to the port.
 *
@@ -338,7 +341,7 @@ INT CtiPort::writeQueue(ULONG Request, LONG DataSize, PVOID Data, ULONG Priority
 
             status = WriteQueue( _portQueue, Request, DataSize, Data, Priority, &QueEntries);
 
-            if(QueEntries > _queueGripe)
+            if(QueEntries >= _queueGripe)
             {
                 ULONG gripemore = _queueGripe * 2;
                 _queueGripe = _queueGripe + ( gripemore < 1000 ? gripemore : 1000);
@@ -476,8 +479,12 @@ void CtiPort::DecodeDatabaseReader(RWDBReader &rdr)
         {
             RWCString of(getName() + "_");
 
+            RWCString comlogdir(gLogDirectory + "\\Comm");
+            // Create a subdirectory called Comm beneath Log.
+            CreateDirectoryEx( gLogDirectory.data(), comlogdir.data(), NULL);
+
             _portLog.setToStdOut(false);  // Not to std out.
-            _portLog.setOutputPath(gLogDirectory.data());
+            _portLog.setOutputPath(comlogdir.data());
             _portLog.setOutputFile( of.data() );
             _portLog.setWriteInterval(10000);                   // 7/23/01 CGP.
 
