@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsOperation.java,v 1.75 2004/05/18 18:33:54 zyao Exp $
+ * $Id: StarsOperation.java,v 1.76 2004/05/24 21:10:57 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,7 +23,7 @@ import org.xml.sax.ContentHandler;
 /**
  * Root element
  * 
- * @version $Revision: 1.75 $ $Date: 2004/05/18 18:33:54 $
+ * @version $Revision: 1.76 $ $Date: 2004/05/24 21:10:57 $
 **/
 public class StarsOperation implements java.io.Serializable {
 
@@ -164,6 +164,16 @@ public class StarsOperation implements java.io.Serializable {
 
     private StarsUpdateLMHardwareConfigResponse _starsUpdateLMHardwareConfigResponse;
 
+    private StarsSaveThermostatSchedule _starsSaveThermostatSchedule;
+
+    private StarsSaveThermostatScheduleResponse _starsSaveThermostatScheduleResponse;
+
+    private StarsApplyThermostatSchedule _starsApplyThermostatSchedule;
+
+    private StarsApplyThermostatScheduleResponse _starsApplyThermostatScheduleResponse;
+
+    private StarsDeleteThermostatSchedule _starsDeleteThermostatSchedule;
+
 
       //----------------/
      //- Constructors -/
@@ -177,6 +187,28 @@ public class StarsOperation implements java.io.Serializable {
       //-----------/
      //- Methods -/
     //-----------/
+
+    /**
+     * Returns the value of field 'starsApplyThermostatSchedule'.
+     * 
+     * @return the value of field 'starsApplyThermostatSchedule'.
+    **/
+    public StarsApplyThermostatSchedule getStarsApplyThermostatSchedule()
+    {
+        return this._starsApplyThermostatSchedule;
+    } //-- StarsApplyThermostatSchedule getStarsApplyThermostatSchedule() 
+
+    /**
+     * Returns the value of field
+     * 'starsApplyThermostatScheduleResponse'.
+     * 
+     * @return the value of field
+     * 'starsApplyThermostatScheduleResponse'.
+    **/
+    public StarsApplyThermostatScheduleResponse getStarsApplyThermostatScheduleResponse()
+    {
+        return this._starsApplyThermostatScheduleResponse;
+    } //-- StarsApplyThermostatScheduleResponse getStarsApplyThermostatScheduleResponse() 
 
     /**
      * Returns the value of field 'starsCreateAppliance'.
@@ -319,6 +351,16 @@ public class StarsOperation implements java.io.Serializable {
     {
         return this._starsDeleteServiceRequest;
     } //-- StarsDeleteServiceRequest getStarsDeleteServiceRequest() 
+
+    /**
+     * Returns the value of field 'starsDeleteThermostatSchedule'.
+     * 
+     * @return the value of field 'starsDeleteThermostatSchedule'.
+    **/
+    public StarsDeleteThermostatSchedule getStarsDeleteThermostatSchedule()
+    {
+        return this._starsDeleteThermostatSchedule;
+    } //-- StarsDeleteThermostatSchedule getStarsDeleteThermostatSchedule() 
 
     /**
      * Returns the value of field 'starsFailure'.
@@ -509,6 +551,28 @@ public class StarsOperation implements java.io.Serializable {
     {
         return this._starsReloadCustomerAccountResponse;
     } //-- StarsReloadCustomerAccountResponse getStarsReloadCustomerAccountResponse() 
+
+    /**
+     * Returns the value of field 'starsSaveThermostatSchedule'.
+     * 
+     * @return the value of field 'starsSaveThermostatSchedule'.
+    **/
+    public StarsSaveThermostatSchedule getStarsSaveThermostatSchedule()
+    {
+        return this._starsSaveThermostatSchedule;
+    } //-- StarsSaveThermostatSchedule getStarsSaveThermostatSchedule() 
+
+    /**
+     * Returns the value of field
+     * 'starsSaveThermostatScheduleResponse'.
+     * 
+     * @return the value of field
+     * 'starsSaveThermostatScheduleResponse'.
+    **/
+    public StarsSaveThermostatScheduleResponse getStarsSaveThermostatScheduleResponse()
+    {
+        return this._starsSaveThermostatScheduleResponse;
+    } //-- StarsSaveThermostatScheduleResponse getStarsSaveThermostatScheduleResponse() 
 
     /**
      * Returns the value of field 'starsSearchCustomerAccount'.
@@ -846,6 +910,29 @@ public class StarsOperation implements java.io.Serializable {
     } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
+     * Sets the value of field 'starsApplyThermostatSchedule'.
+     * 
+     * @param starsApplyThermostatSchedule the value of field
+     * 'starsApplyThermostatSchedule'.
+    **/
+    public void setStarsApplyThermostatSchedule(StarsApplyThermostatSchedule starsApplyThermostatSchedule)
+    {
+        this._starsApplyThermostatSchedule = starsApplyThermostatSchedule;
+    } //-- void setStarsApplyThermostatSchedule(StarsApplyThermostatSchedule) 
+
+    /**
+     * Sets the value of field
+     * 'starsApplyThermostatScheduleResponse'.
+     * 
+     * @param starsApplyThermostatScheduleResponse the value of
+     * field 'starsApplyThermostatScheduleResponse'.
+    **/
+    public void setStarsApplyThermostatScheduleResponse(StarsApplyThermostatScheduleResponse starsApplyThermostatScheduleResponse)
+    {
+        this._starsApplyThermostatScheduleResponse = starsApplyThermostatScheduleResponse;
+    } //-- void setStarsApplyThermostatScheduleResponse(StarsApplyThermostatScheduleResponse) 
+
+    /**
      * Sets the value of field 'starsCreateAppliance'.
      * 
      * @param starsCreateAppliance the value of field
@@ -998,6 +1085,17 @@ public class StarsOperation implements java.io.Serializable {
     {
         this._starsDeleteServiceRequest = starsDeleteServiceRequest;
     } //-- void setStarsDeleteServiceRequest(StarsDeleteServiceRequest) 
+
+    /**
+     * Sets the value of field 'starsDeleteThermostatSchedule'.
+     * 
+     * @param starsDeleteThermostatSchedule the value of field
+     * 'starsDeleteThermostatSchedule'.
+    **/
+    public void setStarsDeleteThermostatSchedule(StarsDeleteThermostatSchedule starsDeleteThermostatSchedule)
+    {
+        this._starsDeleteThermostatSchedule = starsDeleteThermostatSchedule;
+    } //-- void setStarsDeleteThermostatSchedule(StarsDeleteThermostatSchedule) 
 
     /**
      * Sets the value of field 'starsFailure'.
@@ -1199,6 +1297,29 @@ public class StarsOperation implements java.io.Serializable {
     {
         this._starsReloadCustomerAccountResponse = starsReloadCustomerAccountResponse;
     } //-- void setStarsReloadCustomerAccountResponse(StarsReloadCustomerAccountResponse) 
+
+    /**
+     * Sets the value of field 'starsSaveThermostatSchedule'.
+     * 
+     * @param starsSaveThermostatSchedule the value of field
+     * 'starsSaveThermostatSchedule'.
+    **/
+    public void setStarsSaveThermostatSchedule(StarsSaveThermostatSchedule starsSaveThermostatSchedule)
+    {
+        this._starsSaveThermostatSchedule = starsSaveThermostatSchedule;
+    } //-- void setStarsSaveThermostatSchedule(StarsSaveThermostatSchedule) 
+
+    /**
+     * Sets the value of field
+     * 'starsSaveThermostatScheduleResponse'.
+     * 
+     * @param starsSaveThermostatScheduleResponse the value of
+     * field 'starsSaveThermostatScheduleResponse'.
+    **/
+    public void setStarsSaveThermostatScheduleResponse(StarsSaveThermostatScheduleResponse starsSaveThermostatScheduleResponse)
+    {
+        this._starsSaveThermostatScheduleResponse = starsSaveThermostatScheduleResponse;
+    } //-- void setStarsSaveThermostatScheduleResponse(StarsSaveThermostatScheduleResponse) 
 
     /**
      * Sets the value of field 'starsSearchCustomerAccount'.

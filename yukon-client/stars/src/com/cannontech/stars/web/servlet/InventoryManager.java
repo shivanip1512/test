@@ -188,7 +188,7 @@ public class InventoryManager extends HttpServlet {
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
 		
 		int invID = Integer.parseInt( req.getParameter("InvID") );
-		LiteInventoryBase liteInv = energyCompany.getInventory( invID, true );
+		LiteInventoryBase liteInv = energyCompany.getInventoryBrief( invID, true );
 		
 		if (liteInv.getAccountID() == CtiUtilities.NONE_ID) {
 			// The hardware is in warehouse, so populate the hardware information

@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsThermostatProgramDescriptor.java,v 1.2 2004/05/18 18:33:54 zyao Exp $
+ * $Id: StarsThermostatProgramDescriptor.java,v 1.3 2004/05/24 21:10:56 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.2 $ $Date: 2004/05/18 18:33:54 $
+ * @version $Revision: 1.3 $ $Date: 2004/05/24 21:10:56 $
 **/
 public class StarsThermostatProgramDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 

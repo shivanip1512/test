@@ -17,6 +17,7 @@ import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.action.ActionBase;
+import com.cannontech.stars.web.action.ApplyThermostatScheduleAction;
 import com.cannontech.stars.web.action.CreateApplianceAction;
 import com.cannontech.stars.web.action.CreateCallAction;
 import com.cannontech.stars.web.action.CreateLMHardwareAction;
@@ -26,6 +27,7 @@ import com.cannontech.stars.web.action.DeleteCallReportAction;
 import com.cannontech.stars.web.action.DeleteCustAccountAction;
 import com.cannontech.stars.web.action.DeleteLMHardwareAction;
 import com.cannontech.stars.web.action.DeleteServiceRequestAction;
+import com.cannontech.stars.web.action.DeleteThermostatScheduleAction;
 import com.cannontech.stars.web.action.GetCustAccountAction;
 import com.cannontech.stars.web.action.GetLMCtrlHistAction;
 import com.cannontech.stars.web.action.MultiAction;
@@ -34,6 +36,7 @@ import com.cannontech.stars.web.action.ProgramOptOutAction;
 import com.cannontech.stars.web.action.ProgramReenableAction;
 import com.cannontech.stars.web.action.ProgramSignUpAction;
 import com.cannontech.stars.web.action.ReloadCustAccountAction;
+import com.cannontech.stars.web.action.SaveThermostatScheduleAction;
 import com.cannontech.stars.web.action.SearchCustAccountAction;
 import com.cannontech.stars.web.action.SendOddsForControlAction;
 import com.cannontech.stars.web.action.SendOptOutNotificationAction;
@@ -462,6 +465,15 @@ public class SOAPClient extends HttpServlet {
 		}
 		else if (action.equalsIgnoreCase("UpdateThermostatOption")) {
 			clientAction = new UpdateThermostatManualOptionAction();
+		}
+		else if (action.equalsIgnoreCase("SaveThermostatSchedule")) {
+			clientAction = new SaveThermostatScheduleAction();
+		}
+		else if (action.equalsIgnoreCase("ApplyThermostatSchedule")) {
+			clientAction = new ApplyThermostatScheduleAction();
+		}
+		else if (action.equalsIgnoreCase("DeleteThermostatSchedule")) {
+			clientAction = new DeleteThermostatScheduleAction();
 		}
 		else if (action.equalsIgnoreCase("SendControlOdds")) {
 			clientAction = new SendOddsForControlAction();

@@ -110,6 +110,9 @@ public class LMThermostatSchedule extends DBPersistent {
 				oldSeason.setDbConnection( getDbConnection() );
 				oldSeason.delete();
 			}
+			
+			// Commit the DB changes to prevent deadlock (in LMThermostatSeasonEntry table)
+			getDbConnection().commit();
 		}
 		
 		// The remaining new seasons don't have a corresponding existing season, so add them

@@ -2287,14 +2287,14 @@ public class LiteStarsEnergyCompany extends LiteBase {
 					com.cannontech.database.db.stars.hardware.LMThermostatSchedule.getAllThermostatSchedules( liteAcctInfo.getAccountID() );
 			if (schedules != null) {
 				for (int i = 0; i < schedules.length; i++) {
-					if (schedules[i].getScheduleName().equals( CtiUtilities.STRING_NONE )) continue;
-					
-					LMThermostatSchedule schedule = new LMThermostatSchedule();
-					schedule.setScheduleID( schedules[i].getScheduleID() );
-					schedule = (LMThermostatSchedule) Transaction.createTransaction( Transaction.RETRIEVE, schedule ).execute();
-					
-					LiteLMThermostatSchedule liteSchedule = StarsLiteFactory.createLiteLMThermostatSchedule( schedule );
-					liteAcctInfo.getThermostatSchedules().add( liteSchedule );
+					if (schedules[i].getInventoryID().intValue() == 0) {
+						LMThermostatSchedule schedule = new LMThermostatSchedule();
+						schedule.setScheduleID( schedules[i].getScheduleID() );
+						schedule = (LMThermostatSchedule) Transaction.createTransaction( Transaction.RETRIEVE, schedule ).execute();
+						
+						LiteLMThermostatSchedule liteSchedule = StarsLiteFactory.createLiteLMThermostatSchedule( schedule );
+						liteAcctInfo.getThermostatSchedules().add( liteSchedule );
+					}
 				}
 			}
 			

@@ -400,6 +400,11 @@
 				<xs:element ref="stars-UpdateResidenceInformation" minOccurs="0"/>
 				<xs:element ref="stars-UpdateLMHardwareConfig" minOccurs="0"/>
 				<xs:element ref="stars-UpdateLMHardwareConfigResponse" minOccurs="0"/>
+				<xs:element ref="stars-SaveThermostatSchedule" minOccurs="0"/>
+				<xs:element ref="stars-SaveThermostatScheduleResponse" minOccurs="0"/>
+				<xs:element ref="stars-ApplyThermostatSchedule" minOccurs="0"/>
+				<xs:element ref="stars-ApplyThermostatScheduleResponse" minOccurs="0"/>
+				<xs:element ref="stars-DeleteThermostatSchedule" minOccurs="0"/>
 			</xs:all>
 		</xs:complexType>
 	</xs:element>
@@ -1172,6 +1177,40 @@
 				<xs:element ref="stars-Appliances" minOccurs="0"/>
 				<xs:element ref="stars-Inventories" minOccurs="0"/>
 			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="stars-SaveThermostatSchedule">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="ScheduleName" type="xs:string"/>
+			</xs:sequence>
+			<xs:attribute name="inventoryID" type="xs:int"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="stars-SaveThermostatScheduleResponse">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="stars-ThermostatProgram"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="stars-ApplyThermostatSchedule">
+		<xs:complexType>
+			<xs:attribute name="inventoryID" type="xs:int"/>
+			<xs:attribute name="scheduleID" type="xs:int"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="stars-ApplyThermostatScheduleResponse">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="stars-ThermostatProgram"/>
+			</xs:sequence>
+			<xs:attribute name="inventoryID" type="xs:int"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="stars-DeleteThermostatSchedule">
+		<xs:complexType>
+			<xs:attribute name="scheduleID" type="xs:int"/>
 		</xs:complexType>
 	</xs:element>
 </xs:schema>

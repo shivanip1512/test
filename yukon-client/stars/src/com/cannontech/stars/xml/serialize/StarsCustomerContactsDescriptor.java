@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsCustomerContactsDescriptor.java,v 1.20 2004/05/18 18:33:55 zyao Exp $
+ * $Id: StarsCustomerContactsDescriptor.java,v 1.21 2004/05/24 21:10:58 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.20 $ $Date: 2004/05/18 18:33:55 $
+ * @version $Revision: 1.21 $ $Date: 2004/05/24 21:10:58 $
 **/
 public class StarsCustomerContactsDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 

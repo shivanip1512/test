@@ -806,6 +806,45 @@ public class StarsLiteFactory {
 		entry.setTemperature( new Integer(liteEntry.getTemperature()) );
 	}
 	
+	public static void setLMThermostatSchedule(com.cannontech.database.db.stars.hardware.LMThermostatSchedule schedule, LiteLMThermostatSchedule liteSched) {
+		schedule.setScheduleID( new Integer(liteSched.getScheduleID()) );
+		schedule.setScheduleName( liteSched.getScheduleName() );
+		schedule.setThermostatTypeID( new Integer(liteSched.getThermostatTypeID()) );
+		schedule.setAccountID( new Integer(liteSched.getAccountID()) );
+		schedule.setInventoryID( new Integer(liteSched.getInventoryID()) );
+	}
+	
+	public static com.cannontech.database.data.stars.hardware.LMThermostatSeason createLMThermostatSeason(LiteLMThermostatSeason liteSeason) {
+		com.cannontech.database.data.stars.hardware.LMThermostatSeason season =
+				new com.cannontech.database.data.stars.hardware.LMThermostatSeason();
+		setLMThermostatSeason( season.getLMThermostatSeason(), liteSeason );
+		
+		for (int j = 0; j < liteSeason.getSeasonEntries().size(); j++) {
+			LiteLMThermostatSeasonEntry liteEntry = (LiteLMThermostatSeasonEntry) liteSeason.getSeasonEntries().get(j);
+			
+			com.cannontech.database.db.stars.hardware.LMThermostatSeasonEntry entry =
+					new com.cannontech.database.db.stars.hardware.LMThermostatSeasonEntry();
+			setLMThermostatSeasonEntry( entry, liteEntry );
+			
+			season.getLMThermostatSeasonEntries().add( entry );
+		}
+		
+		return season;
+	}
+	
+	public static com.cannontech.database.data.stars.hardware.LMThermostatSchedule createLMThermostatSchedule(LiteLMThermostatSchedule liteSched) {
+		com.cannontech.database.data.stars.hardware.LMThermostatSchedule schedule =
+				new com.cannontech.database.data.stars.hardware.LMThermostatSchedule();
+		setLMThermostatSchedule( schedule.getLmThermostatSchedule(), liteSched );
+		
+		for (int i = 0; i < liteSched.getThermostatSeasons().size(); i++) {
+			LiteLMThermostatSeason liteSeason = (LiteLMThermostatSeason) liteSched.getThermostatSeasons().get(i);
+			schedule.getThermostatSeasons().add( createLMThermostatSeason(liteSeason) );
+		}
+		
+		return schedule;
+	}
+	
 	public static void setLMThermostatManualEvent(com.cannontech.database.data.stars.event.LMThermostatManualEvent event, LiteLMThermostatManualEvent liteEvent) {
 		setLMCustomerEventBase( event, liteEvent );
 		event.getLmThermostatManualEvent().setInventoryID( new Integer(liteEvent.getInventoryID()) );

@@ -348,7 +348,7 @@ public class CreateLMHardwareAction implements ActionBase {
 			}
 			else {
 				// Add hardware in the inventory to customer account
-				liteInv = energyCompany.getInventory( invID, true );
+				liteInv = energyCompany.getInventoryBrief( invID, true );
 				
 				if (liteInv.getAccountID() > 0) {
 					// Remove hardware from previous account

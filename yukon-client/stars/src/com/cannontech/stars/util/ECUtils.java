@@ -18,6 +18,8 @@ import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteLMCustomerEvent;
 import com.cannontech.database.data.lite.stars.LiteLMProgramEvent;
 import com.cannontech.database.data.lite.stars.LiteLMThermostatManualEvent;
+import com.cannontech.database.data.lite.stars.LiteLMThermostatSchedule;
+import com.cannontech.database.data.lite.stars.LiteLMThermostatSeason;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsGatewayEndDevice;
@@ -292,39 +294,51 @@ public class ECUtils {
 		return (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_INV_CAT_MCT);
 	}
 	
+	/**
+	 * Check to see if the thermostat schedule is vaild
+	 */
+	public static boolean isValidThermostatSchedule(LiteLMThermostatSchedule liteSched) {
+		if (liteSched == null || liteSched.getThermostatSeasons().size() != 2)
+			return false;
+		
+		int thermTypeDefID = YukonListFuncs.getYukonListEntry( liteSched.getThermostatTypeID() ).getYukonDefID();
+		for (int i = 0; i < liteSched.getThermostatSeasons().size(); i++) {
+			int numSeasonEntries = ((LiteLMThermostatSeason) liteSched.getThermostatSeasons().get(i)).getSeasonEntries().size();
+			if ((thermTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT
+					|| thermTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_COMM_EXPRESSSTAT)
+					&& numSeasonEntries != 12
+				|| thermTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_ENERGYPRO
+					&& numSeasonEntries != 28)
+			{
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	
 	public static LiteStarsThermostatSettings getThermostatSettings(LiteStarsLMHardware liteHw, LiteStarsEnergyCompany energyCompany) {
 		try {
 			LiteStarsThermostatSettings settings = new LiteStarsThermostatSettings();
 			settings.setInventoryID( liteHw.getInventoryID() );
         	
-			// Check to see if thermostat schedule is complete, if not, re-create the schedule
+			// Check to see if thermostat schedule is valid, if not, recreate the schedule
+			LiteLMThermostatSchedule liteSched = null;
+			com.cannontech.database.data.stars.hardware.LMThermostatSchedule schedule = null;
+			
 			com.cannontech.database.db.stars.hardware.LMThermostatSchedule scheduleDB =
 					com.cannontech.database.db.stars.hardware.LMThermostatSchedule.getThermostatSchedule( liteHw.getInventoryID() );
 			
-			com.cannontech.database.data.stars.hardware.LMThermostatSchedule schedule = null;
 			if (scheduleDB != null) {
 				schedule = new com.cannontech.database.data.stars.hardware.LMThermostatSchedule();
 				schedule.setScheduleID( scheduleDB.getScheduleID() );
 				schedule = (com.cannontech.database.data.stars.hardware.LMThermostatSchedule)
 						Transaction.createTransaction( Transaction.RETRIEVE, schedule ).execute();
+				
+				liteSched = StarsLiteFactory.createLiteLMThermostatSchedule( schedule );
 			}
 			
-			boolean thermTableComplete = true;
-			if (schedule == null || schedule.getThermostatSeasons().size() != 2)
-				thermTableComplete = false;
-			else {
-				for (int i = 0; i < schedule.getThermostatSeasons().size(); i++) {
-					int numSeasonEntries = ((com.cannontech.database.data.stars.hardware.LMThermostatSeason) schedule.getThermostatSeasons().get(i)).getLMThermostatSeasonEntries().size();
-					if (liteHw.isOneWayThermostat() && numSeasonEntries != 12 ||
-						liteHw.isTwoWayThermostat() && numSeasonEntries != 28)
-					{
-						thermTableComplete = false;
-						break;
-					}
-				}
-			}
-			
-			if (!thermTableComplete) {
+			if (!isValidThermostatSchedule( liteSched )) {
 				if (schedule != null)
 					Transaction.createTransaction( Transaction.DELETE, schedule ).execute();
 				
@@ -333,9 +347,8 @@ public class ECUtils {
 				else
 					settings.setThermostatSchedule( CreateLMHardwareAction.initThermostatSchedule(liteHw, SOAPServer.getDefaultEnergyCompany()) );
 			}
-			else {
-				settings.setThermostatSchedule( StarsLiteFactory.createLiteLMThermostatSchedule(schedule) );
-			}
+			else
+				settings.setThermostatSchedule( liteSched );
         	
 			com.cannontech.database.data.stars.event.LMThermostatManualEvent[] events =
 					com.cannontech.database.data.stars.event.LMThermostatManualEvent.getAllLMThermostatManualEvents( liteHw.getInventoryID() );
