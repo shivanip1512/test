@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2004/02/04 20:26:35 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2004/04/02 16:57:55 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -220,6 +220,14 @@ int CtiDNPDatalink::decode( CtiXfer &xfer, int status )
     {
         if( isControlPending() )
         {
+            if( !_dl_confirm )
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint - datalink control message received, but DL confirm is not enabled for this devicetype **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+            }
+
             decodeControl(xfer, status);
         }
         else
