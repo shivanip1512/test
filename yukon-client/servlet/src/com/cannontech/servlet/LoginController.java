@@ -75,11 +75,11 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 		
 		if(user != null && 
 			(home_url = AuthFuncs.getRolePropertyValue(user,WebClientRole.HOME_URL)) != null) {
-			HttpSession session = req.getSession(true);
+			HttpSession session = req.getSession();
 			
 			try {
 				if (req.getParameter(SAVE_CURRENT_USER) != null) {
-					if (session.getAttribute(YUKON_USER) != null) {
+					if (session != null && session.getAttribute(YUKON_USER) != null) {
 						Properties oldContext = new Properties();
 						Enumeration attNames = session.getAttributeNames();
 						while (attNames.hasMoreElements()) {
@@ -87,13 +87,18 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 							oldContext.put( attName, session.getAttribute(attName) );
 						}
 						
+						session.invalidate();
+						session = req.getSession(true);
+						
 						// Save the old session context and where to direct the browser when the new user logs off
 						session.setAttribute( SAVED_YUKON_USERS, new Pair(oldContext, referer) );
 					}
 				}
 				else {
-					// If SAVED_CURRENT_USER is not specified, "forget" the saved session context
-					session.removeAttribute( SAVED_YUKON_USERS );
+					if (session != null && session.getAttribute(YUKON_USER) != null) {
+						session.invalidate();
+						session = req.getSession(true);
+					}
 					
 					//stash a cookie that might tell us later where they log in at								
 					String loginUrl = AuthFuncs.getRolePropertyValue(user, WebClientRole.LOG_IN_URL, LOGIN_URI);

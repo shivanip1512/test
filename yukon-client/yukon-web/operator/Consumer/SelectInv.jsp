@@ -17,13 +17,13 @@
 
 <jsp:useBean id="selectInvBean" class="com.cannontech.stars.web.bean.InventoryBean" scope="session">
 	<%-- this body is executed only if the bean is created --%>
+	<jsp:setProperty name="selectInvBean" property="energyCompanyID" value="<%= user.getEnergyCompanyID() %>"/>
 	<jsp:setProperty name="selectInvBean" property="sortBy" value="<%= YukonListEntryTypes.YUK_DEF_ID_INV_SORT_BY_SERIAL_NO %>"/>
 	<jsp:setProperty name="selectInvBean" property="htmlStyle" value="<%= InventoryBean.HTML_STYLE_SELECT_INVENTORY %>"/>
 </jsp:useBean>
 	
 <% if (request.getParameter("page") == null) { %>
 	<%-- intialize bean properties --%>
-	<jsp:setProperty name="selectInvBean" property="energyCompanyID" value="<%= user.getEnergyCompanyID() %>"/>
 	<jsp:setProperty name="selectInvBean" property="filterBy" value="<%= YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_LOCATION %>"/>
 	<jsp:setProperty name="selectInvBean" property="location" value="<%= InventoryBean.INV_LOCATION_WAREHOUSE %>"/>
 	<jsp:setProperty name="selectInvBean" property="page" value="1"/>
