@@ -17,10 +17,6 @@
 <%
 	LiteYukonUser liteYukonUser = (LiteYukonUser) session.getAttribute("YUKON_USER");
 	int liteYukonUserID = liteYukonUser.getLiteID();
-	if( liteYukonUser == null)
-	{
-		response.sendRedirect("/login.jsp"); return;
-	}
 	
     java.text.SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");	  
     java.text.SimpleDateFormat timePart = new java.text.SimpleDateFormat("HH:mm");
