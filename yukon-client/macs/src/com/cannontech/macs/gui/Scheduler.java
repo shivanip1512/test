@@ -15,7 +15,7 @@ import com.cannontech.message.util.ConnStateChange;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.roles.application.TDCRole;
 import com.cannontech.yukon.IMACSConnection;
-import com.cannontech.yukon.concrete.ResourceFactory;
+import com.cannontech.yukon.conns.ConnPool;
 
 public class Scheduler implements java.awt.event.ActionListener, com.cannontech.tdc.SpecialTDCChild, java.util.Observer
 {
@@ -183,11 +183,12 @@ private javax.swing.JComboBox getComboBox() {
 
 /**
  * Insert the method's description here.
- * Creation date: (8/7/00 4:11:33 PM)
+ * Creation date: (8/8/00 1:54:34 PM)
+ * @return IMACSConnection
  */
-private IMACSConnection getIMACSConnection() 
+public IMACSConnection getIMACSConnection() 
 {
-	return ResourceFactory.getIYukon().getMACSConnection();
+    return (IMACSConnection)ConnPool.getInstance().getDefMacsConn();
 }
 
 /**

@@ -6,6 +6,7 @@ import java.util.Hashtable;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.roles.yukon.SystemRole;
+import com.cannontech.yukon.IMACSConnection;
 import com.cannontech.yukon.IServerConnection;
 
 /**
@@ -79,11 +80,12 @@ public class ConnPool
             }
             else if( connName.toUpperCase().indexOf(DISPATCH_CONN) >= 0 )
             {
-                
+                //chuck something!            
+                throw new IllegalAccessError("--Dispatch Conns are not implemented in the ConnPool");
             }
             else if( connName.toUpperCase().indexOf(MACS_CONN) >= 0 )
             {
-                
+                conn = createMacsConn();
             }
             else
             {
@@ -176,4 +178,15 @@ public class ConnPool
         return getConn(MACS_CONN);
     }
 
+    /**
+     * Creates a new MACS connection.
+     * 
+     * @return
+     */
+    private IMACSConnection createMacsConn()
+    {       
+        ServerMACSConnection macsConn = new ServerMACSConnection();
+
+        return macsConn;
+    }
 }

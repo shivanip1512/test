@@ -33,7 +33,7 @@ import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
 import com.cannontech.yukon.IMACSConnection;
-import com.cannontech.yukon.concrete.ResourceFactory;
+import com.cannontech.yukon.conns.ConnPool;
 
 public class SchedulerMainPanel extends javax.swing.JPanel implements java.awt.event.ActionListener, java.awt.event.MouseListener, javax.swing.event.ListSelectionListener, javax.swing.event.TableModelListener, com.cannontech.common.wizard.WizardPanelListener, com.cannontech.common.editor.PropertyPanelListener, javax.swing.event.PopupMenuListener, com.cannontech.clientutils.popup.PopUpEventListener, MessageListener
 {
@@ -346,14 +346,15 @@ private javax.swing.JFrame getAvailableFrame()
 	getFrames().add(frame);
 	return frame;
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (8/8/00 1:54:34 PM)
- * @return com.cannontech.macs.ClientConnection
+ * @return IMACSConnection
  */
-private IMACSConnection getIMACSConnection() 
+public IMACSConnection getIMACSConnection() 
 {
-	return ResourceFactory.getIYukon().getMACSConnection();
+    return (IMACSConnection)ConnPool.getInstance().getDefMacsConn();
 }
 
 /**

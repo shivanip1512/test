@@ -19,7 +19,6 @@ public abstract class YukonResourceBase implements IYukon
    protected ITimedDatabaseCache timedDBCache = null;
    protected IDBPersistent dbPersistent = null;
    protected ISQLStatement sqlStatement = null;
-   protected IMACSConnection macsConnection = null;
 
 
 

@@ -8,11 +8,8 @@ package com.cannontech.servlet;
  * @author: Aaron Lauinger
  */
 
-import java.io.IOException;
-
-import com.cannontech.clientutils.CTILogger;
 import com.cannontech.yukon.IMACSConnection;
-import com.cannontech.yukon.concrete.ResourceFactory;
+import com.cannontech.yukon.conns.ConnPool;
 
 
 public class MACSConnectionServlet extends javax.servlet.http.HttpServlet /*implements java.util.Observer*/ {
@@ -26,11 +23,11 @@ public class MACSConnectionServlet extends javax.servlet.http.HttpServlet /*impl
 /**
  * Insert the method's description here.
  * Creation date: (8/8/00 1:54:34 PM)
- * @return com.cannontech.macs.ClientConnection
+ * @return IMACSConnection
  */
 public IMACSConnection getIMACSConnection() 
 {
-	return ResourceFactory.getIYukon().getMACSConnection();
+    return (IMACSConnection)ConnPool.getInstance().getDefMacsConn();
 }
 
 	

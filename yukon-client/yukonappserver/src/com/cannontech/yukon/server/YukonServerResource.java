@@ -80,16 +80,4 @@ public class YukonServerResource extends YukonResourceBase
    }
 
 
-   // ---------------------------------------------------------------------------------
-   //  START of the IMACSConnection implementation
-   // ---------------------------------------------------------------------------------   
-   public IMACSConnection getMACSConnection()
-   {
-       if( macsConnection == null )
-           macsConnection = new com.cannontech.yukon.connections.ServerMACSConnection();
-
-      return macsConnection;
-   }
-
-
 }

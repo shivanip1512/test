@@ -18,6 +18,4 @@ public interface IYukon
    public ITimedDatabaseCache getTimedDBCache();
 
    public ISQLStatement getSQLStatement();
-
-   public IMACSConnection getMACSConnection();
 }
