@@ -75,6 +75,7 @@ public void delete() throws java.sql.SQLException
 	setDbConnection(null);
 */
 	delete( "EnergyCompanyCustomerList", "EnergyCompanyID", getEnergyCompany().getEnergyCompanyID() );
+	delete( "EnergyCompanyOperatorLoginList", "EnergyCompanyID", getEnergyCompany().getEnergyCompanyID() );
 	getEnergyCompany().delete();
 }
 /**
