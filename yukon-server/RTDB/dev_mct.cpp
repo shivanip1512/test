@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.33 $
-* DATE         :  $Date: 2003/06/27 21:12:43 $
+* REVISION     :  $Revision: 1.34 $
+* DATE         :  $Date: 2003/06/27 21:24:42 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2950,16 +2950,16 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
                     //  put the demand interval
                     if( hasVariableDemandRate(getType(), sspec) )
                     {
-                    pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, "putconfig emetcon interval li", InMessage->Return.UserID, InMessage->Return.TrxID, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt);
+                        pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, "putconfig emetcon interval li", InMessage->Return.UserID, InMessage->Return.TrxID, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt);
 
-                    if( pReq != NULL )
-                    {
-                        pReq->setConnectionHandle( InMessage->Return.Connection );
+                        if( pReq != NULL )
+                        {
+                            pReq->setConnectionHandle( InMessage->Return.Connection );
 
-                        CtiCommandParser parse(pReq->CommandString());
-                        CtiDeviceBase::ExecuteRequest(pReq, parse, vgList, retList, outList, OutTemplate);
-                        delete pReq;
-                    }
+                            CtiCommandParser parse(pReq->CommandString());
+                            CtiDeviceBase::ExecuteRequest(pReq, parse, vgList, retList, outList, OutTemplate);
+                            delete pReq;
+                        }
                     }
 
                     if( OutTemplate != NULL )
