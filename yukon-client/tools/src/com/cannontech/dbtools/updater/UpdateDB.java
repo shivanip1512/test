@@ -226,7 +226,7 @@ public class UpdateDB
 				UpdateDB newUp = new UpdateDB( getIMessageFrame() );
 				starsLines = newUp.readFile( starsFile );						
 			}
-			catch( DBUpdateException e )
+			catch( Exception e )
 			{
 				getIMessageFrame().addOutput("--------- CAUGHT EXCEPTION with STARS Update ---------");
 				getIMessageFrame().addOutput("    " + e.getMessage() );
