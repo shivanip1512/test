@@ -1,5 +1,8 @@
 package com.cannontech.dbeditor.editor.notification.group;
 
+import javax.swing.BorderFactory;
+import javax.swing.border.BevelBorder;
+
 import com.cannontech.common.util.CtiUtilities;
 
 /**
@@ -180,6 +183,10 @@ private javax.swing.JEditorPane getJEditorPaneAdditionalMessage() {
 			ivjJEditorPaneAdditionalMessage = new javax.swing.JEditorPane();
 			ivjJEditorPaneAdditionalMessage.setName("JEditorPaneAdditionalMessage");
 			// user code begin {1}
+			
+			ivjJEditorPaneAdditionalMessage.setBorder(
+				BorderFactory.createBevelBorder(BevelBorder.LOWERED) );
+
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
