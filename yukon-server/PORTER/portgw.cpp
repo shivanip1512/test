@@ -10,8 +10,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2003/07/21 21:38:58 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2003/08/05 12:47:20 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -40,7 +40,6 @@ using namespace std;
 #include "portdecl.h"
 #include "portglob.h"
 #include "port_base.h"
-#include "pending_gwresult.h"
 #include "queue.h"
 
 extern CtiPortManager PortManager;
@@ -49,15 +48,13 @@ extern CtiDeviceManager DeviceManager;
 
 // Some Global Manager types to allow us some RTDB stuff.
 
-#define DEFAULT_PORT 5000
+#define DEFAULT_PORT 5000 // 4990
 
 static CtiMutex gwmux;
 
 typedef map< SOCKET, CtiDeviceGateway* > GWMAP_t;
-typedef set< CtiPendingGatewayResult > PENDINGGWOPS_t;
 
 static GWMAP_t gwMap;
-static PENDINGGWOPS_t opSet;
 
 CtiQueue< CtiOutMessage, less<CtiOutMessage> > GatewayOutMessageQueue;
 
@@ -71,7 +68,7 @@ void KeepAliveThread (void *Dummy);
 
 static int SendGet(USHORT Type, LONG dev);
 static int ExecuteParse( CtiCommandParser &parse, CtiOutMessage *&OutMessage );
-static void ReturnDataToClient(int Type, CtiPendingGatewayResult &pop);
+static void ReturnDataToClient(CtiDeviceGatewayStat::OpCol_t &reportableOperations);
 
 
 void GWTimeSyncThread (void *Dummy)
@@ -253,9 +250,16 @@ VOID GWConnectionThread(VOID *Arg)
                 {
                     pGW = new CtiDeviceGateway(msgsock);
                     pGW->start();
-                    pGW->sendGet(TYPE_GETALL);  // Should cause all devices on the gw to report in I hope!
 
+                    Sleep(2500);
+
+                    pGW->sendGet( TYPE_GETALL, 0 );
                     gwMap.insert( GWMAP_t::value_type(msgsock, pGW) );
+
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " New gateway is connected." << endl;
+                    }
                 }
             }
             else
@@ -402,22 +406,12 @@ int ExecuteParse( CtiCommandParser &parse, CtiOutMessage *&OutMessage )
     if(guard.isAcquired())
     {
         {
-            CtiPendingGatewayResult pendingOperation;
-            pendingOperation.setLastControlMessage(OutMessage);
-
             GWMAP_t::iterator itr;
 
             for(itr = gwMap.begin(); itr != gwMap.end() ;itr++)
             {
                 CtiDeviceGateway *pGW = (*itr).second;
-                processedby += pGW->processParse(parse, OutMessage, pendingOperation);
-            }
-
-            ReturnDataToClient(CtiDeviceGroupEnergyPro::StatsCommanded, pendingOperation);
-
-            if(processedby > 0)
-            {
-                opSet.insert( pendingOperation );       // Stuff it in the list!
+                processedby += pGW->processParse(parse, OutMessage);
             }
 
             {
@@ -444,10 +438,13 @@ void GWResultThread (void *Dummy)
         hPorterEvents[P_GWRESULT_EVENT]
     };
 
+    UINT  tidbitCnt = 0;
+    DWORD dwSleepTime = 30000;
+
 
     while(!PorterQuit)
     {
-        DWORD dwWait = WaitForMultipleObjects(sizeof(hArray) / sizeof(HANDLE), hArray, FALSE, 30000);
+        DWORD dwWait = WaitForMultipleObjects(sizeof(hArray) / sizeof(HANDLE), hArray, FALSE, dwSleepTime);
 
         if(dwWait != WAIT_TIMEOUT)
         {
@@ -460,149 +457,155 @@ void GWResultThread (void *Dummy)
                 }
             case WAIT_OBJECT_0 + 1:     // P_GWRESULT_EVENT:
                 {
-
                     ResetEvent( hPorterEvents[P_GWRESULT_EVENT] );
+                    dwSleepTime = 500;          // We must timeout to do a processing run!
+
+                    if( tidbitCnt++ < 100 )     // Do a processing run if we have seen more than 100 tidbits too.
+                        continue;               // The while loop...
+
                     break;
                 }
             default:
                 {
-                    Sleep(100);
+                    Sleep(50);          // No crazy loops here please.
+                    break;
                 }
             }
         }
+        else
+        {
+            dwSleepTime = 30000;
+        }
 
-        if( opSet.size() > 0 )      // There are outstanding operations.
+        tidbitCnt = 0;
+
+        CtiDeviceGatewayStat::OpCol_t reportableOperations;
+
         {
             CtiLockGuard< CtiMutex > guard(gwmux, 15000);
-
             if(guard.isAcquired())
             {
-                RWTime now;
-                PENDINGGWOPS_t::iterator poitr;
+                CtiPendingStatOperation op;
 
-                for( poitr = opSet.begin(); poitr != opSet.end(); )
+                GWMAP_t::iterator gwmapitr;
+                for(gwmapitr = gwMap.begin(); gwmapitr != gwMap.end(); gwmapitr++)
                 {
-                    CtiPendingGatewayResult &op = *poitr;
+                    CtiDeviceGateway *pGW = (*gwmapitr).second;
+                    pGW->checkPendingOperations();
 
-                    GWMAP_t::iterator gwmapitr;
-                    for(gwmapitr = gwMap.begin(); gwmapitr != gwMap.end(); gwmapitr++)
+                    while( pGW->getCompletedOperation(op) )         // Look for any completed operations on this gateway.
                     {
-                        CtiDeviceGateway *pGW = (*gwmapitr).second;
+                        pair<CtiDeviceGatewayStat::OpCol_t::iterator, bool> ip = reportableOperations.insert(op);
 
-                        if( op.includesGW(pGW->getSocket()) )
+                        if(ip.second == false)
                         {
-                            pGW->checkPendingOperation( op );
-                        }
-                    }
-
-                    if(op.isComplete(now))
-                    {
-                        if(op.isExpired(now))
-                        {
-                            ReturnDataToClient(CtiDeviceGroupEnergyPro::CommandExpired, op);
-                        }
-                        else
-                        {
-                            ReturnDataToClient(CtiDeviceGroupEnergyPro::CommandComplete, op);
-                        }
-
-
-                        poitr = opSet.erase(poitr);
-                        continue;
-                    }
-                    else
-                    {
-                        ReturnDataToClient(CtiDeviceGroupEnergyPro::PreliminaryResults, op);
-                    }
-
-                    poitr++;
-                }
-            }
-        }
-    }
-}
-
-void ReturnDataToClient(int Type, CtiPendingGatewayResult &pop)
-{
-    RWTime now;
-    INMESS InMessage;
-
-    extern INT ReturnResultMessage(INT CommResult, INMESS *InMessage, OUTMESS *&OutMessage);
-
-    if(pop.getLastControlMessage() != 0)
-    {
-        CtiOutMessage *pOM = CTIDBG_new CtiOutMessage(*pop.getLastControlMessage());
-        pOM->EventCode |=  RESULT;
-        OutEchoToIN( pOM, &InMessage );
-
-
-        switch(Type)
-        {
-        case (CtiDeviceGroupEnergyPro::PreliminaryResults):
-            {
-                if(0)
-                {
-                    _snprintf( (char*)(InMessage.Buffer.GWRSt.MsgData), 1000, "%s Preliminary completion report: %d of %d confirmed.  %d reported a matching control in progress. %d responded to the initial command", now.asString(), pop.confirmedCount(), pop.postedCount(), pop.matchCount(), pop.respondedCount());
-                }
-                break;
-            }
-        case (CtiDeviceGroupEnergyPro::CommandComplete):
-            {
-                try
-                {
-                    if( pop.getConstReplyVector().size() > 0 )
-                    {
-                        CtiPendingGatewayResult::PGRReplyVector_t::const_iterator citr;
-                        CtiPendingGatewayResult::PGRReplyVector_t &rv = pop.getReplyVector();
-
-                        {
-                            for(citr = rv.begin(); citr != rv.end(); citr++)
                             {
-                                _snprintf( (char*)(InMessage.Buffer.GWRSt.MsgData), 1000, "%s", (*citr).data());
-                                ReturnResultMessage( NORMAL, &InMessage, pOM );
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " **** Operation already in the reportable list!  (This is a logic problem)" << endl;
+                                dout << " Stat      " << op.getSerial() << endl;
+                                dout << " Operation " << op.getOperation() << endl;
                             }
                         }
                     }
                 }
-                catch(...)
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
-
-                _snprintf( (char*)(InMessage.Buffer.GWRSt.MsgData), 1000, "%s Operation completed: %d of %d confirmed.  %d responded with a command match", now.asString(), pop.confirmedCount(), pop.postedCount(), pop.matchCount());
-                break;
-            }
-        case (CtiDeviceGroupEnergyPro::StatsCommanded):
-            {
-                _snprintf( (char*)(InMessage.Buffer.GWRSt.MsgData), 1000, "%s Command processed by %d EnergyPro Thermostats.  Responses pending.", now.asString(), pop.postedCount());
-                break;
-            }
-        case (CtiDeviceGroupEnergyPro::CommandExpired):
-            {
-                _snprintf( (char*)(InMessage.Buffer.GWRSt.MsgData), 1000, "%s Operation expired (timed out, incomplete): %d of %d confirmed.  %d responded with a command match?", now.asString(), pop.confirmedCount(), pop.postedCount(), pop.matchCount());
-                break;
-            }
-        default:
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") " << Type << endl;
-                }
-                delete pOM;
-                pOM = 0;
-                break;
             }
         }
 
-        if(pOM) ReturnResultMessage( NORMAL, &InMessage, pOM );
-        if(pOM) delete pOM;
+        if( !reportableOperations.empty() )
+        {
+            ReturnDataToClient(reportableOperations);
+        }
     }
-    else
+}
+
+
+void ReturnDataToClient(CtiDeviceGatewayStat::OpCol_t &reportableOperations)
+{
+    extern INT ReturnResultMessage(INT CommResult, INMESS *InMessage, OUTMESS *&OutMessage);
+
+    RWTime now;
+    INMESS InMessage;
+
+    try
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CtiDeviceGatewayStat::OpCol_t::iterator ro_itr;
+        for(ro_itr = reportableOperations.begin(); ro_itr != reportableOperations.end(); ro_itr++)
+        {
+            CtiPendingStatOperation &op = *ro_itr;
+
+            #if 0
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << " Stat      " << op.getSerial() << endl;
+                dout << " Operation " << op.getOperation() << endl;
+            }
+            #endif
+
+            if(op.getOutMessage() != 0)
+            {
+                CtiOutMessage *pOM = CTIDBG_new CtiOutMessage(*op.getOutMessage());
+                pOM->EventCode |=  RESULT;
+                OutEchoToIN( pOM, &InMessage );
+
+
+                CtiPendingStatOperation::PGRReplyVector_t::const_iterator citr;
+                CtiPendingStatOperation::PGRReplyVector_t &rv = op.getConstReplyVector();
+
+                if(!rv.empty())
+                {
+                    for(citr = rv.begin(); citr != rv.end(); citr++)
+                    {
+                        _snprintf( (char*)(InMessage.Buffer.GWRSt.MsgData), 1000, "%s", (*citr).data());
+                        ReturnResultMessage( NORMAL, &InMessage, pOM );
+                    }
+                }
+                else
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << "Reply vector is empty" << endl;
+                    }
+                }
+
+                if(pOM)
+                {
+                    delete pOM;
+                    pOM = 0;
+                }
+            }
+            else
+            {
+                CtiPendingStatOperation::PGRReplyVector_t::const_iterator citr;
+                CtiPendingStatOperation::PGRReplyVector_t &rv = op.getConstReplyVector();
+
+                {
+                    for(citr = rv.begin(); citr != rv.end(); citr++)
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " " << (*citr).data() << endl;
+                        }
+                    }
+                }
+            }
+        }
+
+        reportableOperations.clear();
+    }
+    catch(...)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
     }
 
     return;
 }
+
+
+
+
+

@@ -1,4 +1,5 @@
 
+
 /*-----------------------------------------------------------------------------*
 *
 * File:   dev_gwstat
@@ -8,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2003/07/25 19:13:12 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2003/08/05 12:47:19 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -30,9 +31,9 @@
 #define GATEWAY_TEMPERATURE_PRECISION 0
 
 CtiDeviceGatewayStat::CtiDeviceGatewayStat(ULONG sn) :
-    _controlOutMessage(0),
-    _primed(false),
-    _deviceSN(sn)
+_controlOutMessage(0),
+_primed(false),
+_deviceSN(sn)
 {
     _allowedSystemSwitch._utime = YUKONEOT;
     _battery._utime = YUKONEOT;
@@ -78,6 +79,19 @@ CtiDeviceGatewayStat::~CtiDeviceGatewayStat()
         delete _controlOutMessage;
         _controlOutMessage = 0;
     }
+}
+
+CtiDeviceGatewayStat& CtiDeviceGatewayStat::operator=(const CtiDeviceGatewayStat& aRef)
+{
+    if(this != &aRef)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+    }
+
+    return *this;
 }
 
 bool CtiDeviceGatewayStat::isPrimed() const
@@ -458,19 +472,18 @@ bool CtiDeviceGatewayStat::convertGatewayRXStruct( GATEWAYRXSTRUCT &GatewayRX )
 
 bool CtiDeviceGatewayStat::clearPrintList()
 {
+    CtiLockGuard< CtiMutex > gd(_collMux);
+
     bool hasentries = !_printlist.empty();
     _printlist.clear();
 
     return hasentries;
 }
 
-CtiDeviceGatewayStat::StatPrintList_t& CtiDeviceGatewayStat::getPrintList()
-{
-    return _printlist;
-}
-
 bool CtiDeviceGatewayStat::printPacketData( )
 {
+    CtiLockGuard< CtiMutex > gd(_collMux);
+
     {
         StatPrintList_t::const_iterator itr;
 
@@ -486,6 +499,8 @@ bool CtiDeviceGatewayStat::printPacketData( )
 
 bool CtiDeviceGatewayStat::updatePrintList(USHORT Type, RWCString &str )
 {
+    CtiLockGuard< CtiMutex > gd(_collMux);
+
     pair< StatPrintList_t::iterator, bool > insertpair  = _printlist.insert( StatPrintList_t::value_type(Type, str) );
 
     if(insertpair.second == false)
@@ -627,11 +642,13 @@ bool CtiDeviceGatewayStat::generatePacketData( USHORT Type, int day, int period 
     case TYPE_SETPOINTS_CH:
     case TYPE_SETPOINTS:
         {
-            if(Type == TYPE_SETPOINTS_CH) {
+            if(Type == TYPE_SETPOINTS_CH)
+            {
                 now = RWTime(_setpoints._ch_utime);
                 astr = RWCString(now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + RWCString(" Setpoint Confirmed: \n"));
             }
-            else {
+            else
+            {
                 now = RWTime(_setpoints._utime);
                 astr = RWCString(now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + RWCString(" Setpoint Received: \n"));
             }
@@ -779,6 +796,10 @@ bool CtiDeviceGatewayStat::generatePacketData( USHORT Type, int day, int period 
                 astr += RWCString("T8665D");
                 break;
 
+            case 3:
+                astr += RWCString("T8665E");
+                break;
+
             default:
                 astr += RWCString("Invalid = " + CtiNumStr((int)_deviceType._deviceType));
                 break;
@@ -807,11 +828,13 @@ bool CtiDeviceGatewayStat::generatePacketData( USHORT Type, int day, int period 
     case TYPE_DLC_CH:
     case TYPE_DLC:
         {
-            if(Type == TYPE_DLC_CH) {
+            if(Type == TYPE_DLC_CH)
+            {
                 now = RWTime(_DLC._ch_utime);
                 astr = (now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + RWCString(" DLC Confirmed: "));
             }
-            else {
+            else
+            {
                 now = RWTime(_DLC._utime);
                 astr = (now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + RWCString(" DLC Received: " ));
             }
@@ -902,11 +925,13 @@ bool CtiDeviceGatewayStat::generatePacketData( USHORT Type, int day, int period 
     case TYPE_FANSWITCH_CH:
     case TYPE_FANSWITCH:
         {
-            if(Type == TYPE_FANSWITCH_CH) {
+            if(Type == TYPE_FANSWITCH_CH)
+            {
                 now = RWTime(_fanSwitch._ch_utime);
                 astr = (now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + RWCString(" FanSwitch Confirmed: "));
             }
-            else {
+            else
+            {
                 now = RWTime(_fanSwitch._utime);
                 astr = (now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + RWCString(" FanSwitch Received: "));
             }
@@ -935,11 +960,13 @@ bool CtiDeviceGatewayStat::generatePacketData( USHORT Type, int day, int period 
     case TYPE_FILTER_CH:
     case TYPE_FILTER:
         {
-            if(Type == TYPE_FILTER_CH) {
+            if(Type == TYPE_FILTER_CH)
+            {
                 now = RWTime(_filter._ch_utime);
                 astr = (now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + RWCString(" Filter Confirmed: "));
             }
-            else {
+            else
+            {
                 now = RWTime(_filter._utime);
                 astr = (now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + RWCString(" Filter Received: " ));
             }
@@ -1006,11 +1033,13 @@ bool CtiDeviceGatewayStat::generatePacketData( USHORT Type, int day, int period 
     case TYPE_SETPOINTLIMITS_CH:
     case TYPE_SETPOINTLIMITS:
         {
-            if(Type == TYPE_SETPOINTLIMITS_CH) {
+            if(Type == TYPE_SETPOINTLIMITS_CH)
+            {
                 now = RWTime(_setpointLimits._ch_utime);
                 astr = (now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + RWCString(" SetPoint Limits Confirmed: "));
             }
-            else {
+            else
+            {
                 now = RWTime(_setpointLimits._utime);
                 astr = (now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + RWCString(" Setpoint Limits Received: " ));
             }
@@ -1091,11 +1120,13 @@ bool CtiDeviceGatewayStat::generatePacketData( USHORT Type, int day, int period 
     case TYPE_SYSTEMSWITCH_CH:
     case TYPE_SYSTEMSWITCH:
         {
-            if(Type == TYPE_SYSTEMSWITCH_CH) {
+            if(Type == TYPE_SYSTEMSWITCH_CH)
+            {
                 now = RWTime(_systemSwitch._ch_utime);
                 astr = (now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + RWCString(" System Switch Confirmed: "));
             }
-            else {
+            else
+            {
                 now = RWTime(_systemSwitch._utime);
                 astr = (now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + RWCString(" System Switch Received: "));
             }
@@ -1138,11 +1169,13 @@ bool CtiDeviceGatewayStat::generatePacketData( USHORT Type, int day, int period 
     case TYPE_UTILSETPOINT_CH:
     case TYPE_UTILSETPOINT:
         {
-            if(Type == TYPE_UTILSETPOINT_CH) {
+            if(Type == TYPE_UTILSETPOINT_CH)
+            {
                 now = RWTime(_utilSetpoint._ch_utime);
                 astr = (now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + RWCString(" Utility Setpoints Confirmed"));
             }
-            else {
+            else
+            {
                 now = RWTime(_utilSetpoint._utime);
                 astr = (now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + RWCString(" Util Setpoint Received: "));
             }
@@ -1478,7 +1511,7 @@ RWCString CtiDeviceGatewayStat::generateSchedulePeriod(int day, int period)
     bool status = false;
 
     RWCString updated_str("Update Time Unknown");
-    RWCString confirmed_str("Confirm Time Unknown");
+    RWCString confirmed_str;
     RWCString astr;
 
     {
@@ -1499,7 +1532,7 @@ RWCString CtiDeviceGatewayStat::generateSchedulePeriod(int day, int period)
             }
 
 
-            astr = (updated_str + " / " + confirmed_str + RWCString(": Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + RWCString(" Schedule: "));
+            astr = (updated_str + RWCString(" Stat ")  + CtiNumStr(getDeviceSerialNumber()).spad(3) + " " + confirmed_str + RWCString(" Schedule: "));
 
             if(_schedule[day][period]._hour == 254)
             {
@@ -1849,423 +1882,496 @@ void CtiDeviceGatewayStat::sendQueryRuntime(SOCKET msgsock, UCHAR Reset)
     send (msgsock, (char *)&QueryRuntime, sizeof (QUERYRUNTIME), 0);
 }
 
-int CtiDeviceGatewayStat::checkPendingOperation( CtiPendingGatewayResult& pendingOperation )
+int CtiDeviceGatewayStat::checkPendingOperations(  )
 {
     int processed = 0;
     RWTime theend(YUKONEOT);
 
     try
     {
-        if(pendingOperation.isPosted(getDeviceSerialNumber()))  // Make certain we participated in the opertion to start.
+        CtiLockGuard< CtiMutex > gd(_collMux, 5000);
+
+        if(gd.isAcquired() && !_operations.empty())
         {
-            USHORT messagetype = pendingOperation.getMessageType();
-
-            switch(messagetype)
+            CtiDeviceGatewayStat::OpCol_t::iterator oper_itr;
+            for( oper_itr = _operations.begin(); oper_itr != _operations.end(); oper_itr++ )
             {
-            case TYPE_SETDLC:
+                OpCol_t::value_type &valtype = *oper_itr;
+
+                USHORT message_type = valtype.getOperation();
+
+                switch(message_type)
                 {
-                    RWTime arrival(_DLC._utime);
-                    RWTime confirm(_DLC._ch_utime);
-
-                    if(!pendingOperation.isResponded(getDeviceSerialNumber()) && theend != arrival && arrival >= pendingOperation.getTimeSubmitted() )
+                case TYPE_SETDLC:
                     {
-                        if(0)
+                        RWCString astr;
+                        RWTime arrival(_DLC._utime);
+                        RWTime confirm(_DLC._ch_utime);
+
+                        if(!valtype.isResponded() && theend != arrival && arrival >= valtype.getTimeSubmitted() )
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " " << getDeviceSerialNumber() << " **** DLC SUBMITTED **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            dout << arrival << " >= " << pendingOperation.getTimeSubmitted() << endl;
-                        }
-                        pendingOperation.addRespondedSet(getDeviceSerialNumber());
-                    }
-
-                    if( !pendingOperation.isConfirmed(getDeviceSerialNumber()) && theend != confirm && confirm >= pendingOperation.getTimeSubmitted() )
-                    {
-                        if(0)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " " << getDeviceSerialNumber() << " **** DLC CONFIRMED **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            dout << confirm << " >= " << pendingOperation.getTimeSubmitted() << endl;
-                        }
-                        pendingOperation.addConfirmedSet(getDeviceSerialNumber());
-                    }
-
-                    break;
-                }
-            case TYPE_GETALL:
-                {
-                    RWTime arrival(_clock._utime);      // Clock is toward the end of reportables from the gateway.
-
-                    if(!pendingOperation.isResponded(getDeviceSerialNumber()) && theend != arrival && arrival >= pendingOperation.getTimeSubmitted() )
-                    {
-                        if(1)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Pending GETALL complete. **** Stat " << getDeviceSerialNumber() << ".  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
-                        pendingOperation.addRespondedSet(getDeviceSerialNumber());
-                        pendingOperation.addConfirmedSet(getDeviceSerialNumber());
-
-                        clearPrintList();
-                        generatePrintList();
-                        // printPacketData();
-
-                        // Add the reply data into the pending op.
-                        {
-                            StatPrintList_t::iterator itr;
-
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            for(itr = _printlist.begin() ; itr != _printlist.end(); itr++)
+                            astr = RWTime().asString() + " " + CtiNumStr(getDeviceSerialNumber()) + " **** DLC SUBMITTED **** ";
+                            if(1)
                             {
-                                pendingOperation.addReplyVector( ((*itr).second) );
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << astr << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                // dout << arrival << " >= " << valtype.getTimeSubmitted() << endl;
+                            }
+
+                            valtype.addReplyVector( astr );
+                            generateReplyVector(valtype);
+                            valtype.setTimeResponded( arrival );
+                        }
+
+                        if( !valtype.isConfirmed() && theend != confirm && confirm >= valtype.getTimeSubmitted() )
+                        {
+                            astr = RWTime().asString() + " " + CtiNumStr(getDeviceSerialNumber()) + " **** DLC CONFIRMED **** ";
+                            if(1)
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << astr << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                // dout << confirm << " >= " << valtype.getTimeSubmitted() << endl;
+                            }
+
+                            valtype.addReplyVector( astr );
+                            generateReplyVector(valtype);
+                            valtype.setTimeConfirmed( confirm );
+                        }
+
+                        int rcCount = returnCodeCount( message_type );
+                        if( rcCount )
+                        {
+                            removeReturnCode(message_type);
+
+                            astr = RWTime().asString() + " " + CtiNumStr(getDeviceSerialNumber()) + " **** DLC Repeat Match. **** ";
+                            valtype.addReplyVector( astr );
+                            valtype.setTimeResponded( RWTime() );
+                            valtype.setTimeConfirmed( RWTime() );
+                        }
+
+
+                        break;
+                    }
+                case TYPE_GETALL:
+                    {
+                        RWTime arrival(_clock._utime);      // Clock is toward the end of reportables from the gateway.
+
+                        if(!valtype.isResponded() && theend != arrival && arrival >= valtype.getTimeSubmitted() )
+                        {
+                            if(1)
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " **** Pending GETALL complete. **** Stat " << getDeviceSerialNumber() << ".  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            }
+                            valtype.setTimeResponded( arrival );
+                            valtype.setTimeConfirmed( arrival );
+
+                            clearPrintList();
+                            generatePrintList();
+                            // printPacketData();
+
+                            // Add the reply data into the pending op.
+                            if(1)
+                            {
+                                CtiLockGuard< CtiMutex > gd(_collMux);
+                                StatPrintList_t::iterator itr;
+
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                for(itr = _printlist.begin() ; itr != _printlist.end(); itr++)
+                                {
+                                    valtype.addReplyVector( ((*itr).second) );
+                                }
                             }
                         }
+
+                        break;
                     }
-
-                    break;
-                }
-            case TYPE_SETSCHEDULE:
-                {
-                    RWTime arrival;
-
-                    int waiting_on = 0;         // Number of data elements we are waiting on.
-                    int dow;
-                    int pod;
-
-                    for(dow = 0; dow < 7; dow ++)
+                case TYPE_SETSCHEDULE:
                     {
-                        for(pod = 0; pod < EP_PERIODS_PER_DAY; pod ++)
-                        {
-                            if( _schedule[dow][pod]._ch_utime == 86400 )    // Has not been reported back to us yet!
-                            {
-                                waiting_on++;
-                            }
-                        }
-                    }
+                        RWTime arrival;
 
-                    int rcCount = returnCodeCount( messagetype );
-
-                    if( waiting_on == 0 || waiting_on <= rcCount )
-                    {
-                        removeReturnCode(messagetype);
+                        int waiting_on = 0;         // Number of data elements we are waiting on.
+                        int dow;
+                        int pod;
 
                         for(dow = 0; dow < 7; dow ++)
                         {
                             for(pod = 0; pod < EP_PERIODS_PER_DAY; pod ++)
                             {
-                                // Undo them for the next  schedule command!
-                                if( _schedule[dow][pod]._utime == 86400 ) _schedule[dow][pod]._utime = arrival.seconds();
-                                if( _schedule[dow][pod]._ch_utime == 86400 ) _schedule[dow][pod]._ch_utime = arrival.seconds();
+                                if( _schedule[dow][pod]._ch_utime == 86400 )    // Has not been reported back to us yet!
+                                {
+                                    waiting_on++;
+                                }
                             }
                         }
 
-                        if(1)
+                        int rcCount = returnCodeCount( message_type );
+
+                        if( waiting_on == 0 || waiting_on <= rcCount )
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Pending SCHEDULE complete. **** Stat " << getDeviceSerialNumber() << ".  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
-                        pendingOperation.addRespondedSet(getDeviceSerialNumber());
-                        pendingOperation.addConfirmedSet(getDeviceSerialNumber());
+                            removeReturnCode(message_type);
 
-                        generatePacketDataSchedule();
-
-                        // Add the reply data into the pending op.
-                        {
-                            StatPrintList_t::iterator itr;
-
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            for(itr = _printlist.begin() ; itr != _printlist.end(); itr++)
+                            for(dow = 0; dow < 7; dow ++)
                             {
-                                pendingOperation.addReplyVector( ((*itr).second) );
+                                for(pod = 0; pod < EP_PERIODS_PER_DAY; pod ++)
+                                {
+                                    // Undo them for the next  schedule command!
+                                    if( _schedule[dow][pod]._utime == 86400 ) _schedule[dow][pod]._utime = arrival.seconds();
+                                    if( _schedule[dow][pod]._ch_utime == 86400 ) _schedule[dow][pod]._ch_utime = arrival.seconds();
+                                }
+                            }
+
+                            if(1)
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " **** Pending SCHEDULE complete. **** Stat " << getDeviceSerialNumber() << ".  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            }
+                            valtype.setTimeResponded( arrival );
+                            valtype.setTimeConfirmed( arrival );
+
+                            generatePacketDataSchedule();
+
+                            // Add the reply data into the pending op.
+
+                            if(1)
+                            {
+                                CtiLockGuard< CtiMutex > gd(_collMux);
+                                StatPrintList_t::iterator itr;
+
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                for(itr = _printlist.begin() ; itr != _printlist.end(); itr++)
+                                {
+                                    valtype.addReplyVector( ((*itr).second) );
+                                }
                             }
                         }
-                    }
-                    else
-                    {
-                        pendingOperation.setTimeExpires( RWTime() + 300 );   // Five minute expiration time, from now.
+                        else
+                        {
+                            valtype.setTimeExpires( RWTime() + 300 );   // Five minute expiration time, from now.
 
-                        if(0)
+                            if(0)
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " **** Pending SCHEDULE incomplete. **** Stat " << getDeviceSerialNumber() << ".  Waiting on " << waiting_on << " and  " << rcCount << " command matches." << endl;
+                            }
+                        }
+
+                        break;
+                    }
+                case TYPE_SETSETPOINTS:
+                    {
+                        RWTime arrival(_setpoints._utime);
+                        RWTime confirm(_setpoints._ch_utime);
+
+                        if(!valtype.isResponded() && theend != arrival && arrival >= valtype.getTimeSubmitted() )
+                        {
+                            valtype.setTimeResponded( arrival );
+                        }
+
+                        if( !valtype.isConfirmed() && theend != confirm && confirm >= valtype.getTimeSubmitted() )
+                        {
+                            valtype.setTimeConfirmed( confirm );
+
+                            generateReplyVector(valtype);
+                        }
+
+                        break;
+                    }
+                case TYPE_SETDLCOVERRIDE:
+                case TYPE_SETFANSWITCH:
+                case TYPE_SETFILTERRESTART:
+                case TYPE_SETSETPOINTLIMITS:
+                case TYPE_SETSYSTEMSWITCH:
+                case TYPE_SETUTILSETPOINTS:
+                case TYPE_SETUTILOVERRIDE:
+                    {
+                        {
+                            RWCString astr("Operation Complete");
+                            RWTime arrival(_allowedSystemSwitch._utime);
+
+                            if(!valtype.isResponded() && theend != arrival && arrival >= valtype.getTimeSubmitted() )
+                            {
+                                valtype.setTimeResponded( arrival );
+                                valtype.setTimeConfirmed( arrival );
+
+                                valtype.addReplyVector(astr);
+                            }
+                            break;
+                        }
+
+                        break;
+                    }
+                case TYPE_GETALLOWEDSYSTEMSWITCH:
+                    {
+                        RWTime arrival(_allowedSystemSwitch._utime);
+
+                        if(!valtype.isResponded() && theend != arrival && arrival >= valtype.getTimeSubmitted() )
+                        {
+                            valtype.setTimeResponded( arrival );
+                            valtype.setTimeConfirmed( arrival );
+
+                            generateReplyVector(valtype);
+                        }
+                        break;
+                    }
+                case TYPE_GETBATTERY:
+                    {
+                        RWTime arrival(_battery._utime);
+
+                        if(!valtype.isResponded() && theend != arrival && arrival >= valtype.getTimeSubmitted() )
+                        {
+                            valtype.setTimeResponded( arrival );
+                            valtype.setTimeConfirmed( arrival );
+
+                            generateReplyVector(valtype);
+                        }
+                        break;
+                    }
+                case TYPE_GETRUNTIME:
+                    {
+                        RWTime arrival(_runtime._utime);
+
+                        if(!valtype.isResponded() && theend != arrival && arrival >= valtype.getTimeSubmitted() )
+                        {
+                            valtype.setTimeResponded( arrival );
+                            valtype.setTimeConfirmed( arrival );
+
+                            generateReplyVector(valtype);
+                        }
+                        break;
+                    }
+                case TYPE_GETSETPOINTS:
+                    {
+                        RWTime arrival(_setpoints._utime);
+
+                        if(!valtype.isResponded() && theend != arrival && arrival >= valtype.getTimeSubmitted() )
+                        {
+                            valtype.setTimeResponded( arrival );
+                            valtype.setTimeConfirmed( arrival );
+
+                            generateReplyVector(valtype);
+                        }
+                        break;
+                    }
+                case TYPE_GETDEADBAND:
+                    {
+                        RWTime arrival(_deadband._utime);
+
+                        if(!valtype.isResponded() && theend != arrival && arrival >= valtype.getTimeSubmitted() )
+                        {
+                            valtype.setTimeResponded( arrival );
+                            valtype.setTimeConfirmed( arrival );
+
+                            generateReplyVector(valtype);
+                        }
+                        break;
+                    }
+                case TYPE_GETDEVICEABSENT:
+                    {
+                        RWTime arrival(_deviceAbsent._utime);
+
+                        if(!valtype.isResponded() && theend != arrival && arrival >= valtype.getTimeSubmitted() )
+                        {
+                            valtype.setTimeResponded( arrival );
+                            valtype.setTimeConfirmed( arrival );
+
+                            generateReplyVector(valtype);
+                        }
+                        break;
+                    }
+                case TYPE_GETDEVICETYPE:
+                    {
+                        RWTime arrival(_deviceType._utime);
+
+                        if(!valtype.isResponded() && theend != arrival && arrival >= valtype.getTimeSubmitted() )
+                        {
+                            valtype.setTimeResponded( arrival );
+                            valtype.setTimeConfirmed( arrival );
+
+                            generateReplyVector(valtype);
+                        }
+                        break;
+                    }
+                case TYPE_GETDISPLAYEDTEMPERATURE:
+                    {
+                        RWTime arrival(_displayedTemp._utime);
+
+                        if(!valtype.isResponded() && theend != arrival && arrival >= valtype.getTimeSubmitted() )
+                        {
+                            valtype.setTimeResponded( arrival );
+                            valtype.setTimeConfirmed( arrival );
+
+                            generateReplyVector(valtype);
+                        }
+                        break;
+                    }
+                case TYPE_GETDLC:
+                    {
+                        RWTime arrival(_DLC._utime);
+
+                        if(!valtype.isResponded() && theend != arrival && arrival >= valtype.getTimeSubmitted() )
+                        {
+                            valtype.setTimeResponded( arrival );
+                            valtype.setTimeConfirmed( arrival );
+
+                            generateReplyVector(valtype);
+                        }
+                        break;
+                    }
+                case TYPE_GETFANSWITCH:
+                    {
+                        RWTime arrival(_fanSwitch._utime);
+
+                        if(!valtype.isResponded() && theend != arrival && arrival >= valtype.getTimeSubmitted() )
+                        {
+                            valtype.setTimeResponded( arrival );
+                            valtype.setTimeConfirmed( arrival );
+
+                            generateReplyVector(valtype);
+                        }
+                        break;
+                    }
+                case TYPE_GETFILTER:
+                    {
+                        RWTime arrival(_filter._utime);
+
+                        if(!valtype.isResponded() && theend != arrival && arrival >= valtype.getTimeSubmitted() )
+                        {
+                            valtype.setTimeResponded( arrival );
+                            valtype.setTimeConfirmed( arrival );
+
+                            generateReplyVector(valtype);
+                        }
+                        break;
+                    }
+                case TYPE_GETHEATPUMPFAULT:
+                    {
+                        RWTime arrival(_heatPumpFault._utime);
+
+                        if(!valtype.isResponded() && theend != arrival && arrival >= valtype.getTimeSubmitted() )
+                        {
+                            valtype.setTimeResponded( arrival );
+                            valtype.setTimeConfirmed( arrival );
+
+                            generateReplyVector(valtype);
+                        }
+                        break;
+                    }
+                case TYPE_GETSETPOINTLIMITS:
+                    {
+                        RWTime arrival(_setpointLimits._utime);
+
+                        if(!valtype.isResponded() && theend != arrival && arrival >= valtype.getTimeSubmitted() )
+                        {
+                            valtype.setTimeResponded( arrival );
+                            valtype.setTimeConfirmed( arrival );
+
+                            generateReplyVector(valtype);
+                        }
+                        break;
+                    }
+                case TYPE_GETOUTDOORTEMP:
+                    {
+                        RWTime arrival(_outdoorTemp._utime);
+
+                        if(!valtype.isResponded() && theend != arrival && arrival >= valtype.getTimeSubmitted() )
+                        {
+                            valtype.setTimeResponded( arrival );
+                            valtype.setTimeConfirmed( arrival );
+
+                            generateReplyVector(valtype);
+                        }
+                        break;
+                    }
+                case TYPE_GETSYSTEMSWITCH:
+                    {
+                        RWTime arrival(_systemSwitch._utime);
+
+                        if(!valtype.isResponded() && theend != arrival && arrival >= valtype.getTimeSubmitted() )
+                        {
+                            valtype.setTimeResponded( arrival );
+                            valtype.setTimeConfirmed( arrival );
+
+                            generateReplyVector(valtype);
+                        }
+                        break;
+                    }
+                case TYPE_GETUTILSETPOINT:
+                    {
+                        RWTime arrival(_utilSetpoint._utime);
+
+                        if(!valtype.isResponded() && theend != arrival && arrival >= valtype.getTimeSubmitted() )
+                        {
+                            valtype.setTimeResponded( arrival );
+                            valtype.setTimeConfirmed( arrival );
+
+                            generateReplyVector(valtype);
+                        }
+                        break;
+                    }
+                case TYPE_GETCLOCK:
+                    {
+                        RWTime arrival(_clock._utime);
+
+                        if(!valtype.isResponded() && theend != arrival && arrival >= valtype.getTimeSubmitted() )
+                        {
+                            valtype.setTimeResponded( arrival );
+                            valtype.setTimeConfirmed( arrival );
+
+                            generateReplyVector(valtype);
+                        }
+                        break;
+                    }
+                case TYPE_ADDRESSING:
+                case TYPE_GETADDRESSING:
+                    {
+                        RWTime arrival;
+
+                        valtype.setTimeResponded( arrival );
+                        valtype.setTimeConfirmed( arrival );
+                        generateReplyVector(valtype);
+
+                        break;
+                    }
+                case TYPE_GETDEVICEBOUND:
+                    {
+                        RWCString astr;
+                        RWTime arrival;
+
+                        astr = "Stat: " + CtiNumStr(getDeviceSerialNumber()) + " unknown message type in a pending operation: " + CtiNumStr(message_type);
+
+                        valtype.setTimeResponded( arrival );
+                        valtype.setTimeConfirmed( arrival );
+                        generateReplyVector(valtype);
+
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Pending SCHEDULE incomplete. **** Stat " << getDeviceSerialNumber() << ".  Waiting on " << waiting_on << " and  " << rcCount << " command matches." << endl;
+                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << astr << endl;
                         }
+
+                        break;
                     }
-
-                    break;
-                }
-            case TYPE_SETSETPOINTS:
-                {
-                    RWTime arrival(_setpoints._utime);
-                    RWTime confirm(_setpoints._ch_utime);
-
-                    if(!pendingOperation.isResponded(getDeviceSerialNumber()) && theend != arrival && arrival >= pendingOperation.getTimeSubmitted() )
+                case TYPE_GETSCHEDULE:
+                default:
                     {
-                        pendingOperation.addRespondedSet(getDeviceSerialNumber());
+                        RWCString astr;
+                        RWTime arrival;
+
+                        astr = "Stat: " + CtiNumStr(getDeviceSerialNumber()) + " unknown message type in a pending operation: " + CtiNumStr(message_type);
+
+                        valtype.setTimeResponded( arrival );
+                        valtype.setTimeConfirmed( arrival );
+                        generateReplyVector(valtype);
+
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << astr << endl;
+                        }
+
+                        break;
                     }
-
-                    if( !pendingOperation.isConfirmed(getDeviceSerialNumber()) && theend != confirm && confirm >= pendingOperation.getTimeSubmitted() )
-                    {
-                        pendingOperation.addConfirmedSet(getDeviceSerialNumber());
-                    }
-
-                    break;
-                }
-            case TYPE_SETDLCOVERRIDE:
-            case TYPE_SETFANSWITCH:
-            case TYPE_SETFILTERRESTART:
-            case TYPE_SETSETPOINTLIMITS:
-            case TYPE_SETSYSTEMSWITCH:
-            case TYPE_SETUTILSETPOINTS:
-            case TYPE_SETUTILOVERRIDE:
-                {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << " Unknown message type in a pending Operation: " << messagetype << endl;
-                    }
-
-                    break;
-                }
-            case TYPE_GETALLOWEDSYSTEMSWITCH:
-                {
-                    RWTime arrival(_allowedSystemSwitch._utime);
-
-                    if(!pendingOperation.isResponded(getDeviceSerialNumber()) && theend != arrival && arrival >= pendingOperation.getTimeSubmitted() )
-                    {
-                        pendingOperation.addRespondedSet(getDeviceSerialNumber());
-                        pendingOperation.addConfirmedSet(getDeviceSerialNumber());
-
-                        generateReplyVector(pendingOperation);
-                    }
-                    break;
-                }
-            case TYPE_GETBATTERY:
-                {
-                    RWTime arrival(_battery._utime);
-
-                    if(!pendingOperation.isResponded(getDeviceSerialNumber()) && theend != arrival && arrival >= pendingOperation.getTimeSubmitted() )
-                    {
-                        pendingOperation.addRespondedSet(getDeviceSerialNumber());
-                        pendingOperation.addConfirmedSet(getDeviceSerialNumber());
-
-                        generateReplyVector(pendingOperation);
-                    }
-                    break;
-                }
-            case TYPE_GETRUNTIME:
-                {
-                    RWTime arrival(_runtime._utime);
-
-                    if(!pendingOperation.isResponded(getDeviceSerialNumber()) && theend != arrival && arrival >= pendingOperation.getTimeSubmitted() )
-                    {
-                        pendingOperation.addRespondedSet(getDeviceSerialNumber());
-                        pendingOperation.addConfirmedSet(getDeviceSerialNumber());
-
-                        generateReplyVector(pendingOperation);
-                    }
-                    break;
-                }
-            case TYPE_GETSETPOINTS:
-                {
-                    RWTime arrival(_setpoints._utime);
-
-                    if(!pendingOperation.isResponded(getDeviceSerialNumber()) && theend != arrival && arrival >= pendingOperation.getTimeSubmitted() )
-                    {
-                        pendingOperation.addRespondedSet(getDeviceSerialNumber());
-                        pendingOperation.addConfirmedSet(getDeviceSerialNumber());
-
-                        generateReplyVector(pendingOperation);
-                    }
-                    break;
-                }
-            case TYPE_GETDEADBAND:
-                {
-                    RWTime arrival(_deadband._utime);
-
-                    if(!pendingOperation.isResponded(getDeviceSerialNumber()) && theend != arrival && arrival >= pendingOperation.getTimeSubmitted() )
-                    {
-                        pendingOperation.addRespondedSet(getDeviceSerialNumber());
-                        pendingOperation.addConfirmedSet(getDeviceSerialNumber());
-
-                        generateReplyVector(pendingOperation);
-                    }
-                    break;
-                }
-            case TYPE_GETDEVICEABSENT:
-                {
-                    RWTime arrival(_deviceAbsent._utime);
-
-                    if(!pendingOperation.isResponded(getDeviceSerialNumber()) && theend != arrival && arrival >= pendingOperation.getTimeSubmitted() )
-                    {
-                        pendingOperation.addRespondedSet(getDeviceSerialNumber());
-                        pendingOperation.addConfirmedSet(getDeviceSerialNumber());
-
-                        generateReplyVector(pendingOperation);
-                    }
-                    break;
-                }
-            case TYPE_GETDEVICETYPE:
-                {
-                    RWTime arrival(_deviceType._utime);
-
-                    if(!pendingOperation.isResponded(getDeviceSerialNumber()) && theend != arrival && arrival >= pendingOperation.getTimeSubmitted() )
-                    {
-                        pendingOperation.addRespondedSet(getDeviceSerialNumber());
-                        pendingOperation.addConfirmedSet(getDeviceSerialNumber());
-
-                        generateReplyVector(pendingOperation);
-                    }
-                    break;
-                }
-            case TYPE_GETDISPLAYEDTEMPERATURE:
-                {
-                    RWTime arrival(_displayedTemp._utime);
-
-                    if(!pendingOperation.isResponded(getDeviceSerialNumber()) && theend != arrival && arrival >= pendingOperation.getTimeSubmitted() )
-                    {
-                        pendingOperation.addRespondedSet(getDeviceSerialNumber());
-                        pendingOperation.addConfirmedSet(getDeviceSerialNumber());
-
-                        generateReplyVector(pendingOperation);
-                    }
-                    break;
-                }
-            case TYPE_GETDLC:
-                {
-                    RWTime arrival(_DLC._utime);
-
-                    if(!pendingOperation.isResponded(getDeviceSerialNumber()) && theend != arrival && arrival >= pendingOperation.getTimeSubmitted() )
-                    {
-                        pendingOperation.addRespondedSet(getDeviceSerialNumber());
-                        pendingOperation.addConfirmedSet(getDeviceSerialNumber());
-
-                        generateReplyVector(pendingOperation);
-                    }
-                    break;
-                }
-            case TYPE_GETFANSWITCH:
-                {
-                    RWTime arrival(_fanSwitch._utime);
-
-                    if(!pendingOperation.isResponded(getDeviceSerialNumber()) && theend != arrival && arrival >= pendingOperation.getTimeSubmitted() )
-                    {
-                        pendingOperation.addRespondedSet(getDeviceSerialNumber());
-                        pendingOperation.addConfirmedSet(getDeviceSerialNumber());
-
-                        generateReplyVector(pendingOperation);
-                    }
-                    break;
-                }
-            case TYPE_GETFILTER:
-                {
-                    RWTime arrival(_filter._utime);
-
-                    if(!pendingOperation.isResponded(getDeviceSerialNumber()) && theend != arrival && arrival >= pendingOperation.getTimeSubmitted() )
-                    {
-                        pendingOperation.addRespondedSet(getDeviceSerialNumber());
-                        pendingOperation.addConfirmedSet(getDeviceSerialNumber());
-
-                        generateReplyVector(pendingOperation);
-                    }
-                    break;
-                }
-            case TYPE_GETHEATPUMPFAULT:
-                {
-                    RWTime arrival(_heatPumpFault._utime);
-
-                    if(!pendingOperation.isResponded(getDeviceSerialNumber()) && theend != arrival && arrival >= pendingOperation.getTimeSubmitted() )
-                    {
-                        pendingOperation.addRespondedSet(getDeviceSerialNumber());
-                        pendingOperation.addConfirmedSet(getDeviceSerialNumber());
-
-                        generateReplyVector(pendingOperation);
-                    }
-                    break;
-                }
-            case TYPE_GETSETPOINTLIMITS:
-                {
-                    RWTime arrival(_setpointLimits._utime);
-
-                    if(!pendingOperation.isResponded(getDeviceSerialNumber()) && theend != arrival && arrival >= pendingOperation.getTimeSubmitted() )
-                    {
-                        pendingOperation.addRespondedSet(getDeviceSerialNumber());
-                        pendingOperation.addConfirmedSet(getDeviceSerialNumber());
-
-                        generateReplyVector(pendingOperation);
-                    }
-                    break;
-                }
-            case TYPE_GETOUTDOORTEMP:
-                {
-                    RWTime arrival(_outdoorTemp._utime);
-
-                    if(!pendingOperation.isResponded(getDeviceSerialNumber()) && theend != arrival && arrival >= pendingOperation.getTimeSubmitted() )
-                    {
-                        pendingOperation.addRespondedSet(getDeviceSerialNumber());
-                        pendingOperation.addConfirmedSet(getDeviceSerialNumber());
-
-                        generateReplyVector(pendingOperation);
-                    }
-                    break;
-                }
-            case TYPE_GETSYSTEMSWITCH:
-                {
-                    RWTime arrival(_systemSwitch._utime);
-
-                    if(!pendingOperation.isResponded(getDeviceSerialNumber()) && theend != arrival && arrival >= pendingOperation.getTimeSubmitted() )
-                    {
-                        pendingOperation.addRespondedSet(getDeviceSerialNumber());
-                        pendingOperation.addConfirmedSet(getDeviceSerialNumber());
-
-                        generateReplyVector(pendingOperation);
-                    }
-                    break;
-                }
-            case TYPE_GETUTILSETPOINT:
-                {
-                    RWTime arrival(_utilSetpoint._utime);
-
-                    if(!pendingOperation.isResponded(getDeviceSerialNumber()) && theend != arrival && arrival >= pendingOperation.getTimeSubmitted() )
-                    {
-                        pendingOperation.addRespondedSet(getDeviceSerialNumber());
-                        pendingOperation.addConfirmedSet(getDeviceSerialNumber());
-
-                        generateReplyVector(pendingOperation);
-                    }
-                    break;
-                }
-            case TYPE_GETCLOCK:
-                {
-                    RWTime arrival(_clock._utime);
-
-                    if(!pendingOperation.isResponded(getDeviceSerialNumber()) && theend != arrival && arrival >= pendingOperation.getTimeSubmitted() )
-                    {
-                        pendingOperation.addRespondedSet(getDeviceSerialNumber());
-                        pendingOperation.addConfirmedSet(getDeviceSerialNumber());
-
-                        generateReplyVector(pendingOperation);
-                    }
-                    break;
-                }
-            case TYPE_GETDEVICEBOUND:
-                {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << " Unknown message type in a pending Operation: " << messagetype << endl;
-                    }
-
-                    break;
-                }
-            case TYPE_GETSCHEDULE:
-            default:
-                {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << " Unknown message type in a pending Operation: " << messagetype << endl;
-                    }
-
-                    break;
                 }
             }
         }
@@ -2274,14 +2380,14 @@ int CtiDeviceGatewayStat::checkPendingOperation( CtiPendingGatewayResult& pendin
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
     return processed;
 }
 
-int CtiDeviceGatewayStat::processParse(SOCKET msgsock, CtiCommandParser &parse, CtiOutMessage *&OutMessage, CtiPendingGatewayResult& pendingOperation)
+int CtiDeviceGatewayStat::processParse(SOCKET msgsock, CtiCommandParser &parse, CtiOutMessage *&OutMessage)
 {
     bool controlmatch = false;
     int processed = 0;
@@ -2402,7 +2508,7 @@ int CtiDeviceGatewayStat::processParse(SOCKET msgsock, CtiCommandParser &parse, 
             if( parse.isKeyValid("xcschedule") )
             {
                 operation = TYPE_SETSCHEDULE;
-                processed = processSchedule(msgsock,parse,OutMessage,pendingOperation);
+                processed = processSchedule(msgsock, parse, OutMessage);
             }
             else if( parse.isKeyValid("xcsetstate") )
             {
@@ -2527,7 +2633,19 @@ int CtiDeviceGatewayStat::processParse(SOCKET msgsock, CtiCommandParser &parse, 
             if( parse.isKeyValid("epget") )
             {
                 operation = parse.getiValue("epget");
-                sendGet( msgsock, operation );
+                switch(operation)
+                {
+                case TYPE_GETRUNTIME:
+                    {
+                        sendQueryRuntime( msgsock, (UCHAR)FALSE );
+                        break;
+                    }
+                default:
+                    {
+                        sendGet( msgsock, operation );
+                        break;
+                    }
+                }
                 processed++;
             }
         }
@@ -2535,25 +2653,15 @@ int CtiDeviceGatewayStat::processParse(SOCKET msgsock, CtiCommandParser &parse, 
         /*
          *  Check and add to the pendingOperation
          */
-        if(processed && operation != 0xffff)
+        if(processed > 0)
         {
             try
             {
-                if((pendingOperation.getMessageType() == 0 || pendingOperation.getMessageType() == operation))
                 {
-                    pendingOperation.setMessageType(operation);
-                    pendingOperation.addPostedSet( getDeviceSerialNumber() );
+                    CtiPendingStatOperation op( getDeviceSerialNumber(), operation );
+                    op.setOutMessage( OutMessage );
 
-                    if(controlmatch)
-                    {
-                        pendingOperation.addMatchedSet(getDeviceSerialNumber());
-                    }
-                }
-                else
-                {
-                    // Should NEVER PRINT
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint: SHOULD NEVER PRINT **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    addOperation(op);
                 }
             }
             catch(...)
@@ -2594,10 +2702,7 @@ CtiOutMessage*& CtiDeviceGatewayStat::getLastControlSent()
     return _controlOutMessage;
 }
 
-
-
-
-int CtiDeviceGatewayStat::processSchedule(SOCKET msgsock, CtiCommandParser &parse, CtiOutMessage *&OutMessage, CtiPendingGatewayResult& pendingOperation)
+int CtiDeviceGatewayStat::processSchedule(SOCKET msgsock, CtiCommandParser &parse, CtiOutMessage *&OutMessage)
 {
     int processed = 0;
 
@@ -2655,14 +2760,14 @@ int CtiDeviceGatewayStat::processSchedule(SOCKET msgsock, CtiCommandParser &pars
                             }
                         }
 
-                        #if 0
+#if 0
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             dout << " Day    " << dow << endl;
                             dout << " Period " << pod+1 << endl;
                         }
-                        #endif
+#endif
 
                         _schedule[dow][pod]._ch_utime = 86400;
                         _schedule[dow][pod]._utime = 86400;
@@ -2720,14 +2825,14 @@ int CtiDeviceGatewayStat::processSchedule(SOCKET msgsock, CtiCommandParser &pars
                             }
                         }
 
-                        #if 0
+#if 0
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             dout << " Day    " << dow << endl;
                             dout << " Period " << pod+1 << endl;
                         }
-                        #endif
+#endif
 
                         _schedule[dow][pod]._ch_utime = 86400;
                         _schedule[dow][pod]._utime = 86400;
@@ -2785,14 +2890,14 @@ int CtiDeviceGatewayStat::processSchedule(SOCKET msgsock, CtiCommandParser &pars
                             }
                         }
 
-                        #if 0
+#if 0
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             dout << " Day    " << dow << endl;
                             dout << " Period " << pod+1 << endl;
                         }
-                        #endif
+#endif
 
                         _schedule[dow][pod]._ch_utime = 86400;
                         _schedule[dow][pod]._utime = 86400;
@@ -2824,7 +2929,7 @@ int CtiDeviceGatewayStat::processSchedule(SOCKET msgsock, CtiCommandParser &pars
                 if(hh != 0xff || mm != 0xff || heat != 0xff || cool != 0xff)
                 {
                     // One of them were defined!
-                    #if 0
+#if 0
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << " Dow " << hex << (int)dow << dec << endl;
@@ -2834,20 +2939,20 @@ int CtiDeviceGatewayStat::processSchedule(SOCKET msgsock, CtiCommandParser &pars
                         dout << heatstr << " " << (int)heat << endl;
                         dout << coolstr << " " << (int)cool << endl;
                     }
-                    #endif
+#endif
 
                     processed = 1;
 
                     if(dow < 7 && pod < EP_PERIODS_PER_DAY)
                     {
-                        #if 0
+#if 0
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             dout << " Day    " << dow << endl;
                             dout << " Period " << pod+1 << endl;
                         }
-                        #endif
+#endif
 
                         _schedule[dow][pod]._ch_utime = 86400;
                         _schedule[dow][pod]._utime = 86400;
@@ -3100,6 +3205,10 @@ int CtiDeviceGatewayStat::parseGetValueRequest(CtiCommandParser &parse)
     {
         parse.setValue("epget", TYPE_GETALL);
     }
+    else if(CmdStr.contains(" addressing"))
+    {
+        parse.setValue("epget", TYPE_GETADDRESSING);
+    }
 
     return status;
 }
@@ -3114,83 +3223,10 @@ int CtiDeviceGatewayStat::parsePutConfigRequest(CtiCommandParser &parse)
 
     if(CmdStr.contains(" reset filter"))
     {
-        parse.setValue("epget", TYPE_GETALLOWEDSYSTEMSWITCH);
-    }
-    else if(CmdStr.contains(" battery"))
-    {
-        parse.setValue("epget", TYPE_GETBATTERY);
-    }
-    else if( CmdStr.contains(" runtime") )
-    {
-        parse.setValue("epget", TYPE_GETRUNTIME);
-    }
-    else if(CmdStr.contains(" setpoints"))
-    {
-        parse.setValue("epget", TYPE_GETSETPOINTS);
-    }
-    else if(CmdStr.contains(" deadband"))
-    {
-        parse.setValue("epget", TYPE_GETDEADBAND);
-    }
-    else if(CmdStr.contains(" device absent"))
-    {
-        parse.setValue("epget", TYPE_GETDEVICEABSENT);
-    }
-    else if(CmdStr.contains(" device type"))
-    {
-        parse.setValue("epget", TYPE_GETDEVICETYPE);
-    }
-    else if(CmdStr.contains(" displayed temp"))
-    {
-        parse.setValue("epget", TYPE_GETDISPLAYEDTEMPERATURE);
-    }
-    else if(CmdStr.contains(" dlc"))
-    {
-        parse.setValue("epget", TYPE_GETDLC);
-    }
-    else if(CmdStr.contains(" fanswitch") || CmdStr.contains(" fan switch"))
-    {
-        parse.setValue("epget", TYPE_GETFANSWITCH);
-    }
-    else if(CmdStr.contains(" filter"))
-    {
-        parse.setValue("epget", TYPE_GETFILTER);
-    }
-    else if(CmdStr.contains(" heatpump fault"))
-    {
-        parse.setValue("epget", TYPE_GETHEATPUMPFAULT);
-    }
-    else if(CmdStr.contains(" setpoint limits"))
-    {
-        parse.setValue("epget", TYPE_GETSETPOINTLIMITS);
-    }
-    else if(CmdStr.contains(" outdoor temp"))
-    {
-        parse.setValue("epget", TYPE_GETOUTDOORTEMP);
-    }
-    else if(CmdStr.contains(" schedule"))
-    {
-        parse.setValue("epget", TYPE_GETSCHEDULE);
-    }
-    else if(CmdStr.contains(" system switch"))
-    {
-        parse.setValue("epget", TYPE_GETSYSTEMSWITCH);
-    }
-    else if(CmdStr.contains(" utility setpoint"))
-    {
-        parse.setValue("epget", TYPE_GETUTILSETPOINT);
-    }
-    else if(CmdStr.contains(" clock"))
-    {
-        parse.setValue("epget", TYPE_GETCLOCK);
-    }
-    else if(CmdStr.contains(" device bound"))
-    {
-        parse.setValue("epget", TYPE_GETDEVICEBOUND);
-    }
-    else if(CmdStr.contains(" all"))
-    {
-        parse.setValue("epget", TYPE_GETALL);
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** ACH **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
     }
 
     return status;
@@ -3198,18 +3234,32 @@ int CtiDeviceGatewayStat::parsePutConfigRequest(CtiCommandParser &parse)
 
 
 
-void CtiDeviceGatewayStat::generateReplyVector(CtiPendingGatewayResult& pendingOperation)
+void CtiDeviceGatewayStat::generateReplyVector(CtiDeviceGatewayStat::OpCol_t::value_type &valtype)
 {
-    generatePacketData(pendingOperation.getMessageType() - 1000);
-
-    // Add the reply data into the pending op.
+    if(valtype.getOperation() >= 4000)
     {
+        generatePacketData(valtype.getOperation() - 1000);
+    }
+#if 0
+    else if(valtype.getOperation() < 2000)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << "Operation " << valtype.getOperation() << " too low" << endl;
+        }
+    }
+#endif
+    // Add the reply data into the pending op.
+    if(1)
+    {
+        CtiLockGuard< CtiMutex > gd(_collMux);
         StatPrintList_t::iterator itr;
 
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         for(itr = _printlist.begin() ; itr != _printlist.end(); itr++)
         {
-            pendingOperation.addReplyVector( ((*itr).second) );
+            valtype.addReplyVector( ((*itr).second) );
         }
     }
 }
@@ -3272,19 +3322,19 @@ bool CtiDeviceGatewayStat::generateTidbitToDatabase( USHORT Type, int day, int p
             switch(_battery._battery)
             {
             case 0:
-                astr += RWCString("Bad");
+                astr += RWCString("BAD");
                 break;
 
             case 1:
-                astr += RWCString("Good");
+                astr += RWCString("GOOD");
                 break;
 
             case 2:
-                astr += RWCString("Unknown");
+                astr += RWCString("UNKNOWN");
                 break;
 
             default:
-                astr += RWCString("Invalid");
+                astr += RWCString("INVALID");
                 break;
             }
 
@@ -3372,11 +3422,11 @@ bool CtiDeviceGatewayStat::generateTidbitToDatabase( USHORT Type, int day, int p
                 break;
 
             case 255:
-                astr += RWCString("Unknown");
+                astr += RWCString("UNKNOWN");
                 break;
 
             default:
-                astr += RWCString("Invalid");
+                astr += RWCString("INVALID");
             }
 
             if(!astr.isNull())
@@ -3430,7 +3480,7 @@ bool CtiDeviceGatewayStat::generateTidbitToDatabase( USHORT Type, int day, int p
             switch(_deviceType._deviceType)
             {
             case 0:
-                astr += RWCString("Unknown");
+                astr += RWCString("UNKNOWN");
                 break;
 
             case 1:
@@ -3439,6 +3489,10 @@ bool CtiDeviceGatewayStat::generateTidbitToDatabase( USHORT Type, int day, int p
 
             case 2:
                 astr += RWCString("T8665D");
+                break;
+
+            case 3:
+                astr += RWCString("T8665E");
                 break;
 
             default:
@@ -3628,19 +3682,19 @@ bool CtiDeviceGatewayStat::generateTidbitToDatabase( USHORT Type, int day, int p
             switch(_heatPumpFault._heatPumpFault)
             {
             case 0:
-                astr += (RWCString("No Fault"));
+                astr += (RWCString("NO FAULT"));
                 break;
 
             case 1:
-                astr += (RWCString("Fault"));
+                astr += (RWCString("FAULT"));
                 break;
 
             case 255:
-                astr += (RWCString("Unknown"));
+                astr += (RWCString("(UNKNOWN)"));
                 break;
 
             default:
-                astr += (RWCString("Invalid"));
+                astr += (RWCString("INVALID"));
                 break;
             }
 
@@ -3795,11 +3849,13 @@ bool CtiDeviceGatewayStat::generateTidbitToDatabase( USHORT Type, int day, int p
     case TYPE_UTILSETPOINT_CH:
     case TYPE_UTILSETPOINT:
         {
-            if(Type == TYPE_UTILSETPOINT_CH) {
+            if(Type == TYPE_UTILSETPOINT_CH)
+            {
                 now = RWTime(_utilSetpoint._ch_utime);
                 astr = (now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + RWCString(" Utility Setpoints Confirmed"));
             }
-            else {
+            else
+            {
                 now = RWTime(_utilSetpoint._utime);
                 astr = (now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + RWCString(" Util Setpoint Received: "));
             }
@@ -4242,5 +4298,58 @@ RWCString CtiDeviceGatewayStat::getUnitName(bool abbreviated, bool nospaces)
     }
 
     return str;
+}
+
+void CtiDeviceGatewayStat::addOperation(const CtiPendingStatOperation &op)
+{
+    CtiLockGuard< CtiMutex > gd(_collMux);
+
+    if(op.getOperation() > 0)
+    {
+        pair<OpCol_t::iterator, bool> ins_pair = _operations.insert(op);
+
+        if(ins_pair.second == false)    // operation was already in the list.
+        {
+            *(ins_pair.first) = op;     // Update it with the new one.
+        }
+    }
+
+    return;
+}
+
+bool CtiDeviceGatewayStat::getCompletedOperation( CtiPendingStatOperation &op )
+{
+    bool gotone = false;
+
+    CtiLockGuard< CtiMutex > gd(_collMux, 1000);
+
+    try
+    {
+        if(gd.isAcquired() && !_operations.empty())
+        {
+            CtiDeviceGatewayStat::OpCol_t::iterator oper_itr;
+            for( oper_itr = _operations.begin(); oper_itr != _operations.end(); oper_itr++ )
+            {
+                OpCol_t::value_type &valtype = *oper_itr;
+
+                if(valtype.isConfirmed())
+                {
+                    op = valtype;
+                    gotone = true;
+                    _operations.erase(oper_itr);
+                    break;
+                }
+            }
+        }
+    }
+    catch(...)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+    }
+
+    return gotone;
 }
 

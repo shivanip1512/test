@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2003/07/21 22:31:01 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2003/08/05 12:47:20 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -25,16 +25,6 @@
 
 class IM_EX_DEVDB CtiDeviceGroupEnergyPro : public CtiDeviceGroupBase
 {
-public:
-    enum
-    {
-        StatsCommanded = 0,     // Data returned represets a count of the number of stats that were sent a command.
-        PreliminaryResults,     // Data returned represents confirmed, commanded, matched counts.
-        CommandComplete,        // Data returned represents confirmed, commanded, matched counts.
-        CommandExpired
-
-    } EnergyProResponse_t;
-
 protected:
 
     CtiTableExpresscomLoadGroup     _expresscomGroup;

@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2003/07/21 21:34:41 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2003/08/05 12:47:19 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -30,7 +30,6 @@ using namespace std;
 #include "dlldefs.h"
 #include "dev_gwstat.h"
 #include "gateway.h"
-#include "pending_gwresult.h"
 #include "thread.h"
 
 class IM_EX_DEVDB CtiDeviceGateway : public CtiThread
@@ -61,6 +60,15 @@ private:
     SNVECT_t _statSN;   // This is a vector of their serial numbers.
     bool _socketConnected;
 
+    unsigned char   _mac[6];
+    unsigned short  _spid;
+    unsigned short  _geo;
+    unsigned short  _feeder;
+    unsigned long   _zip;
+    unsigned short  _uda;
+    unsigned char   _program;
+    unsigned char   _splinter;
+
 public:
     CtiDeviceGateway(SOCKET msgsock = INVALID_SOCKET);
     CtiDeviceGateway(const CtiDeviceGateway& aRef);
@@ -69,8 +77,8 @@ public:
 
     SOCKET getSocket() const;
 
-    int processParse(CtiCommandParser &parse, CtiOutMessage *&OutMessage, CtiPendingGatewayResult& pendingOperation);
-    int checkPendingOperation( CtiPendingGatewayResult& pendingOperation );
+    int processParse(CtiCommandParser &parse, CtiOutMessage *&OutMessage);
+    int checkPendingOperations();
 
     int sendGet(USHORT Type, LONG dev = 0);
     void sendtm_Clock (void);
@@ -84,5 +92,6 @@ public:
 
     const SNVECT_t& getThermostatSerialNumbers() const;
     void processGatewayMessage(GATEWAYRXSTRUCT &GatewayRX);
+    bool getCompletedOperation( CtiPendingStatOperation &op );
 };
 #endif // #ifndef __DEV_GATEWAY_H__

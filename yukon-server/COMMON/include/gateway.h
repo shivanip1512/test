@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2003/07/23 20:52:59 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2003/08/05 12:47:20 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -45,6 +45,8 @@
 #define TYPE_SETUTILOVERRIDE            2009
 #define TYPE_TM_CLOCK                   2010
 
+#define TYPE_SETADDRESSING              2990
+
 #define TYPE_ALLOWEDSYSTEMSWITCH        3000
 #define TYPE_BATTERY                    3001
 #define TYPE_RUNTIME                    3002
@@ -76,6 +78,7 @@
 #define TYPE_UTILSETPOINT_CH            3116
 
 #define TYPE_RSSI                       3200
+#define TYPE_ADDRESSING                 3990
 
 #define TYPE_GETALLOWEDSYSTEMSWITCH     4000
 #define TYPE_GETBATTERY                 4001
@@ -98,6 +101,7 @@
 #define TYPE_GETDEVICEBOUND             4018
 #define TYPE_GETDEVICERSSI              4019
 
+#define TYPE_GETADDRESSING              4990
 #define TYPE_GETALL                     4999
 
 
@@ -282,6 +286,19 @@ typedef struct {
 
 } RESETREPORT;
 
+typedef struct
+{
+    unsigned char   Mac[6];
+    unsigned short  Spid;
+    unsigned short  Geo;
+    unsigned short  Feeder;
+    unsigned long   Zip;
+    unsigned short  Uda;
+    unsigned char   Program;
+    unsigned char   Splinter;
+
+} ADDRESSING_REPORT;
+
 typedef struct {
     unsigned short Type;
 
@@ -289,12 +306,21 @@ typedef struct {
         GWCOMMAND U;
         RETURNCODEREPORT Return;
         RESETREPORT Reset;
+        ADDRESSING_REPORT Addressing;
     };
 
 } GATEWAYRXSTRUCT;
 
 
+
 // Various structures to send messages to the gateway
+
+typedef struct
+{
+    unsigned short  Type;
+    ADDRESSING_REPORT Addressing;
+
+} ADDRESSING;
 
 typedef struct {
     unsigned short Type;
@@ -442,7 +468,6 @@ typedef struct {
 typedef struct {
     unsigned short Type;
 } KEEPALIVE;
-
 
 
 #endif // #ifndef __GATEWAY_H__

@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2003/07/23 20:55:23 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2003/08/05 12:47:19 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -102,7 +102,7 @@ void CtiDeviceGateway::sendtm_Clock (void)
     send (_msgsock, (char *)&tm_Clock, sizeof (TM_CLOCK), 0);
 }
 
-int CtiDeviceGateway::processParse(CtiCommandParser &parse, CtiOutMessage *&OutMessage, CtiPendingGatewayResult& pendingOperation)
+int CtiDeviceGateway::processParse(CtiCommandParser &parse, CtiOutMessage *&OutMessage)
 {
     int processed = 0;
     int serialnumber = parse.getiValue("serial", 0);
@@ -125,7 +125,7 @@ int CtiDeviceGateway::processParse(CtiCommandParser &parse, CtiOutMessage *&OutM
             for( smitr = _statMap.begin(); smitr != _statMap.end(); smitr++ )
             {
                 CtiDeviceGatewayStat *pGW = (*smitr).second;
-                pGW->processParse( _msgsock, parse, OutMessage, pendingOperation );
+                pGW->processParse( _msgsock, parse, OutMessage );
                 pGW->printPacketData();
 
                 processed++;
@@ -137,22 +137,17 @@ int CtiDeviceGateway::processParse(CtiCommandParser &parse, CtiOutMessage *&OutM
             if( smitr != _statMap.end() )
             {
                 CtiDeviceGatewayStat *pGW = (*smitr).second;
-                pGW->processParse( _msgsock, parse, OutMessage, pendingOperation );
+                pGW->processParse( _msgsock, parse, OutMessage );
 
                 processed++;
             }
-        }
-
-        if(processed > 0)
-        {
-            pendingOperation.addGWSet(_msgsock);
         }
     }
 
     return processed;
 }
 
-int CtiDeviceGateway::checkPendingOperation( CtiPendingGatewayResult& pendingOperation )
+int CtiDeviceGateway::checkPendingOperations(  )
 {
     int processed = 0;
     SMAP_t::iterator smitr;
@@ -160,10 +155,7 @@ int CtiDeviceGateway::checkPendingOperation( CtiPendingGatewayResult& pendingOpe
     for( smitr = _statMap.begin(); smitr != _statMap.end(); smitr++ )
     {
         CtiDeviceGatewayStat *pGW = (*smitr).second;
-        if( pGW->checkPendingOperation( pendingOperation ) )
-        {
-            processed++;
-        }
+        processed += pGW->checkPendingOperations();
     }
 
     return processed;
@@ -382,8 +374,13 @@ int CtiDeviceGateway::getMessageLength(GATEWAYRXSTRUCT *GatewayRX)
         Length = sizeof (GatewayRX->Return);
         break;
 
+    case TYPE_ADDRESSING:
+        Length = sizeof(GatewayRX->Addressing);
+        break;
+
     case TYPE_KEEPALIVE:
         Length = 0;
+        break;
 
     default:
         Length = 0;
@@ -765,6 +762,38 @@ void CtiDeviceGateway::processGatewayMessage(GATEWAYRXSTRUCT &GatewayRX)
 
             break;
         }
+    case TYPE_ADDRESSING:
+        {
+            memcpy(_mac, GatewayRX.Addressing.Mac, 6);
+            _spid = ntohs(GatewayRX.Addressing.Spid);
+            _geo = ntohs(GatewayRX.Addressing.Geo);
+            _feeder = ntohs(GatewayRX.Addressing.Feeder);
+            _zip = ntohl(GatewayRX.Addressing.Zip);
+            _uda = ntohs(GatewayRX.Addressing.Uda);
+            _program = GatewayRX.Addressing.Program;
+            _splinter = GatewayRX.Addressing.Splinter;
+
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << "MAC                    ";
+
+                for(int i = 0; i < 5; i++)
+                {
+                    dout << hex << (int)GatewayRX.Addressing.Mac[i] << ":";
+                }
+                dout << hex << (int)GatewayRX.Addressing.Mac[5] << dec << endl;
+
+                dout << "SPID                   " << ntohs(GatewayRX.Addressing.Spid) << endl;
+                dout << "GEO                    " << ntohs(GatewayRX.Addressing.Geo) << endl;
+                dout << "FEEDER                 " << ntohs(GatewayRX.Addressing.Feeder) << endl;
+                dout << "ZIP                    " << ntohl(GatewayRX.Addressing.Zip) << endl;
+                dout << "UDA                    " << ntohs(GatewayRX.Addressing.Uda) << endl;
+                dout << "PROGRAM                " << (int)GatewayRX.Addressing.Program << endl;
+                dout << "SPLINTER               " << (int)GatewayRX.Addressing.Splinter << endl;
+            }
+
+            break;
+        }
     default:
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -774,3 +803,22 @@ void CtiDeviceGateway::processGatewayMessage(GATEWAYRXSTRUCT &GatewayRX)
 
     return;
 }
+
+bool CtiDeviceGateway::getCompletedOperation( CtiPendingStatOperation &op )
+{
+    bool gotone = false;
+
+    SMAP_t::iterator smitr;
+
+    for( smitr = _statMap.begin(); smitr != _statMap.end(); smitr++ )
+    {
+        CtiDeviceGatewayStat *pGW = (*smitr).second;
+        if( true == (gotone = pGW->getCompletedOperation(op) ) )
+        {
+            break;
+        }
+    }
+
+    return gotone;
+}
+

@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2003/07/23 20:54:30 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2003/08/05 12:47:20 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,6 +19,7 @@
 #ifndef __DEV_GWSTAT_H__
 #define __DEV_GWSTAT_H__
 
+#include <set>
 #include <map>
 #include <vector>
 using namespace std;
@@ -28,7 +29,7 @@ using namespace std;
 #include "dsm2.h"
 #include "dlldefs.h"
 #include "gateway.h"
-#include "pending_gwresult.h"
+#include "pending_stat_operation.h"
 
 #define EP_PERIOD_WAKE          0
 #define EP_PERIOD_LEAVE         1
@@ -82,6 +83,7 @@ class IM_EX_DEVDB CtiDeviceGatewayStat
 {
 public:
 
+    typedef set< CtiPendingStatOperation > OpCol_t;        // The outstanding operaitons.
     typedef map< UINT, RWCString > StatPrintList_t;
     typedef vector< pair<USHORT, USHORT> > StatResponse_t;
 
@@ -93,13 +95,7 @@ public:
 
     virtual ~CtiDeviceGatewayStat();
 
-    CtiDeviceGatewayStat& operator=(const CtiDeviceGatewayStat& aRef)
-    {
-        if(this != &aRef)
-        {
-        }
-        return *this;
-    }
+    CtiDeviceGatewayStat& operator=(const CtiDeviceGatewayStat& aRef);
 
     bool isPrimed() const;
     CtiDeviceGatewayStat& setPrimed(bool prime = true);
@@ -115,9 +111,8 @@ public:
     }
 
     bool setLastControlSent(CtiOutMessage *&OutMessage);
-    int processParse(SOCKET msgsock, CtiCommandParser &parse, CtiOutMessage *&OutMessage, CtiPendingGatewayResult& pendingOperation);
-    int processSchedule(SOCKET msgsock, CtiCommandParser &parse, CtiOutMessage *&OutMessage, CtiPendingGatewayResult& pendingOperation);
-    int checkPendingOperation( CtiPendingGatewayResult& pendingOperation );
+    int processParse(SOCKET msgsock, CtiCommandParser &parse, CtiOutMessage *&OutMessage);
+    int processSchedule(SOCKET msgsock, CtiCommandParser &parse, CtiOutMessage *&OutMessage);
 
     bool convertGatewayRXStruct( GATEWAYRXSTRUCT &GatewayRX );
     void sendGet(SOCKET msgsock, USHORT Type);
@@ -164,9 +159,6 @@ public:
     int returnCodeCount(USHORT message_type);
     int removeReturnCode(USHORT message_type);
 
-
-    StatPrintList_t& getPrintList();
-
     enum {
         scaleToStat = 0,
         scaleFahrenheit,
@@ -181,11 +173,17 @@ public:
     static int convertCDayToStatDay(int dow);
     static int convertStatDayToCDay(UCHAR Day);
 
+    void addOperation(const CtiPendingStatOperation &op);
+    int checkPendingOperations(  );
+
+    bool getCompletedOperation( CtiPendingStatOperation &op );
+
 protected:
 
     CtiMutex        _collMux;
     StatPrintList_t _printlist;          // Last collected stuff from the gw.
     StatResponse_t  _responseVector;
+    OpCol_t         _operations;        // Outstanding operations on the stat.
 
 private:
 
@@ -364,7 +362,7 @@ private:
 
     int parseGetValueRequest(CtiCommandParser &parse);
     int parsePutConfigRequest(CtiCommandParser &parse);
-    void generateReplyVector(CtiPendingGatewayResult& pendingOperation);
+    void generateReplyVector(OpCol_t::value_type &valtype);
     bool generateTidbitToDatabase( USHORT Type, int day, int period );
     RWCString generateTidbitScheduleToDatabase(int day, int period);
 
