@@ -5,6 +5,8 @@ package com.cannontech.common.login;
 
 import java.awt.Frame;
 import java.util.Properties;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.swing.JOptionPane;
 
@@ -35,8 +37,32 @@ public class ClientSession {
 	private boolean localLogin = true;
 	private String errMsg;
 	
-	private static int INVALID_CURRENT_USERID = Integer.MIN_VALUE;
+	private Timer refreshTimer; 
 	
+	private static int SESSION_REFRESH_FREQUENCY = 1000*60*15; //15 minutes
+	
+	private static int INVALID_CURRENT_USERID = Integer.MIN_VALUE;
+		
+	/*
+	 * SessionRefreshTimerTask refreshes a client session on a periodic basis 
+	 * to avoid session timeouts while the client is still running.  
+	 */
+	class SessionRefreshTimerTask extends TimerTask {
+		public void run() {
+			Properties p = null;
+			try {			
+				CTILogger.debug("Refreshing client session: " + sessionID + " with host: " + host + " port: " + port);
+				p = LoginSupport.getDBProperties(sessionID, host, port);
+			}
+			catch(Exception e) {
+				CTILogger.warn("Unable to refresh client  session: " + sessionID + " with host: " + host + " port: " + port, e);							
+			}
+
+			if(p != null && p.size() > 0) {
+				CTILogger.info("Refreshed client session: " + sessionID + " with host: " + host + " port: " + port);
+			}
+		}
+	}
 	/**
 	 * Return the user associated with this session.
 	 * @return
@@ -98,6 +124,8 @@ public class ClientSession {
 			LoginPrefs.getInstance().setCurrentUserID(INVALID_CURRENT_USERID);		
 
 			if(!localLogin) {
+				//Stop session refreshes and close the session
+				refreshTimer.cancel();
 				LoginSupport.closeSession(sessionID, host, port);
 			}
 		}
@@ -131,6 +159,12 @@ public class ClientSession {
 			prefs.setCurrentUserID(user.getUserID());
 			prefs.setCurrentYukonHost(host);
 			prefs.setCurrentYukonPort(port);
+			
+			if(!localLogin) {
+				//fire up a timer to refresh the session 
+				refreshTimer = new Timer(true);
+				refreshTimer.schedule(new SessionRefreshTimerTask(), SESSION_REFRESH_FREQUENCY, SESSION_REFRESH_FREQUENCY);
+			}
 			return true;
 		}
 		
