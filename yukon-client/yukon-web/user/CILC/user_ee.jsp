@@ -17,6 +17,11 @@
 <%@ taglib uri="/WEB-INF/struts.tld" prefix="struts" %>
 <jsp:useBean id="checker" scope="session" class="com.cannontech.validate.PageBean"/>
 <%    
+//    java.util.Enumeration enum1 = request.getParameterNames();
+//    while (enum1.hasMoreElements()) {
+//        out.println(" --" + enum1.nextElement());
+//    }
+
     LCConnectionServlet cs = (LCConnectionServlet) application.getAttribute(LCConnectionServlet.SERVLET_CONTEXT_ID);
     LoadcontrolCache cache = cs.getCache();
     
@@ -26,7 +31,8 @@
 
     java.text.NumberFormat hourFormat = new java.text.DecimalFormat();
     hourFormat.setMinimumIntegerDigits(2);
-	java.text.DecimalFormat numberFormat = new java.text.DecimalFormat("####.00");
+  	java.text.DecimalFormat priceFormat = new java.text.DecimalFormat("#,###.00");
+	java.text.DecimalFormat numberFormat = new java.text.DecimalFormat("#,###");	//Value can only be in whole KW, therefore decimal places are not needed
                    
     // has this customer accepted any current revisions?
 	LMEnergyExchangeOffer offer = null;
@@ -170,10 +176,14 @@
 		int revisionNumber = 0;
 
 		String offerIdStr = request.getParameter("offer");
+		if( offerIdStr == null)
+			offerIdStr = checker.get("offer");
 		if (offerIdStr != null)
 			offerId = Integer.parseInt(offerIdStr);
-
+		
 		String revisionNumberStr = request.getParameter("rev");
+		if( revisionNumberStr == null)
+			revisionNumberStr = checker.get("rev");
 		if (revisionNumberStr != null)
 			revisionNumber = Integer.parseInt(revisionNumberStr);
 
@@ -196,7 +206,7 @@
 				for (int i = 0; i < 24; i++)
 				{
 					double price = ((LMEnergyExchangeHourlyOffer) revision.getEnergyExchangeHourlyOffers().elementAt(i)).getPrice().doubleValue() / 100;
-					priceStrs[i] = numberFormat.format(price);
+					priceStrs[i] = priceFormat.format(price);
 
 					double amount = ((LMEnergyExchangeHourlyOffer) revision.getEnergyExchangeHourlyOffers().elementAt(i)).getAmountRequested().doubleValue();
 					amountStrs[i] = numberFormat.format(amount);
@@ -204,6 +214,8 @@
 
 				checker.set("prices", priceStrs);
 				checker.set("amount", amountStrs);
+				checker.set("offer", offerIdStr);
+				checker.set("rev", revisionNumberStr);
 			}
 			else {
 				java.util.Enumeration enum = request.getParameterNames();
@@ -230,7 +242,7 @@
 		for (int i = 0; i < 24; i++)
 		{
 			try {
-				double amountVal = Double.parseDouble(newAmountStrs[i]);
+				double amountVal = numberFormat.parse(newAmountStrs[i]).doubleValue();
 				if (amountVal == 0)
 					amountStrs[i] = "----";
 				else
@@ -250,7 +262,7 @@
 				try {
 					for (int i = 0; i < 24; i++)
 					{
-						double amountVal = Double.parseDouble(newAmountStrs[i]);                        
+						double amountVal = numberFormat.parse(newAmountStrs[i]).doubleValue();                       
 						if (amountVal == 0)
 							amountStrs[i] = "----";
 						else					  
