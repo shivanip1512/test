@@ -255,7 +255,7 @@ public void actionPerformed(ActionEvent event)
 		advOptsPanel = null;
 		getAdvOptsPanel().showAdvancedOptions();
 	}
-	else if( event.getSource() == getAdvOptsPanel().getOkButton())
+	else if( advOptsPanel != null && event.getSource() == getAdvOptsPanel().getOkButton())
 	{
 		YCDefaults newDefaults = new YCDefaults(
 			(new Integer((String)getAdvOptsPanel().getCommandPriorityTextField().getText())).intValue(),
