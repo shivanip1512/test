@@ -1,0 +1,74 @@
+
+Checking package ...
+-	Circular references
+-	Constraint name uniqueness
+-	Constraint name maximum length
+Checking table ...
+-	Table name uniqueness
+-	Table code uniqueness
+-	Table name maximum length
+-	Table code maximum length
+-	Existence of column
+-	Existence of index
+	Warning	The following table do not have any index:
+		-> PointAlarming
+		-> EnergyCompanyOperatorLoginList
+		-> EnergyCompanyCustomerList
+		-> OperatorLoginGraphList
+		-> LMMACSScheduleOperatorList
+-	Existence of key
+-	Number of auto-incremented columns
+-	Existence of reference
+	Warning	The following table do not have any reference:
+		-> LOGIC
+		-> CTIDatabase
+		-> GenericMacro
+		-> YukonWebConfiguration
+		-> BillingFileFormats
+		-> FDRTelegyrGroup
+Checking column of table
+-	Column name uniqueness
+-	Column code uniqueness
+-	Column code maximum length
+-	Domain divergence
+-	Column mandatory
+-	Detect inconsistencies between default values and check parameters
+-	Detect inconsistencies between check parameters.
+-	Precision > Maximum Length
+-	Check for undefined data types
+-	Foreign key column data type divergence
+-	Foreign key column check parameters divergence
+Checking index of table
+-	Index name uniqueness
+-	Index code uniqueness
+-	Index code maximum length
+-	Existence of index column
+-	Index inclusion
+	Warning	The following index includes another one:
+		-> Indx_DISPLAY2WAYDATA_PK
+Checking key of table
+-	Key name uniqueness
+-	Key code uniqueness
+-	Key code maximum length
+-	Existence of column
+-	Key inclusion
+Checking trigger of table
+-	Trigger code maximum length
+Checking view ...
+-	View name uniqueness
+-	View code uniqueness
+-	View code maximum length
+Checking reference ...
+Checking domain ...
+-	Domain name uniqueness
+-	Domain code uniqueness
+-	Domain code maximum length
+-	Detect inconsistencies between default values and check parameters
+-	Detect inconsistencies between check parameters.
+-	Precision > Maximum Length
+-	Check for undefined data types
+Checking user ...
+Checking procedure ...
+
+0 error(s),  12 warning(s).
+The Physical Data Model is correct, no errors were found.

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI SqlServer 2000                           */
-/* Created on:     5/1/2003 2:19:23 PM                          */
+/* Created on:     5/23/2003 11:01:25 AM                        */
 /*==============================================================*/
 
 
@@ -807,6 +807,14 @@ go
 
 if exists (select 1
             from  sysobjects
+           where  id = object_id('LMGroupMCT')
+            and   type = 'U')
+   drop table LMGroupMCT
+go
+
+
+if exists (select 1
+            from  sysobjects
            where  id = object_id('LMGroupPoint')
             and   type = 'U')
    drop table LMGroupPoint
@@ -986,6 +994,14 @@ if exists (select 1
            where  id = object_id('OperatorSerialGroup')
             and   type = 'U')
    drop table OperatorSerialGroup
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('PAOExclusion')
+            and   type = 'U')
+   drop table PAOExclusion
 go
 
 
@@ -1659,10 +1675,14 @@ go
 /*==============================================================*/
 create table CommPort (
 PORTID               numeric              not null,
-ALARMINHIBIT         varchar(1)           not null,
-COMMONPROTOCOL       varchar(8)           not null,
-PERFORMTHRESHOLD     numeric              not null,
-PERFORMANCEALARM     varchar(1)           not null,
+ALARMINHIBIT         varchar(1)           not null
+     constraint SYS_C0013108 check ("ALARMINHIBIT" IS NOT NULL),
+COMMONPROTOCOL       varchar(8)           not null
+     constraint SYS_C0013109 check ("COMMONPROTOCOL" IS NOT NULL),
+PERFORMTHRESHOLD     numeric              not null
+     constraint SYS_C0013110 check ("PERFORMTHRESHOLD" IS NOT NULL),
+PERFORMANCEALARM     varchar(1)           not null
+     constraint SYS_C0013111 check ("PERFORMANCEALARM" IS NOT NULL),
 SharedPortType       varchar(20)          not null,
 SharedSocketNumber   numeric              not null,
 constraint SYS_C0013112 primary key  (PORTID)
@@ -1783,13 +1803,20 @@ INSERT into device values (0, 'N', 'N');
 /*==============================================================*/
 create table DEVICE2WAYFLAGS (
 DEVICEID             numeric              not null,
-MONTHLYSTATS         varchar(1)           not null,
-TWENTYFOURHOURSTATS  varchar(1)           not null,
-HOURLYSTATS          varchar(1)           not null,
-FAILUREALARM         varchar(1)           not null,
-PERFORMANCETHRESHOLD numeric              not null,
-PERFORMANCEALARM     varchar(1)           not null,
-PERFORMANCETWENTYFOURALARM varchar(1)           not null,
+MONTHLYSTATS         varchar(1)           not null
+     constraint SYS_C0013200 check ("MONTHLYSTATS" IS NOT NULL),
+TWENTYFOURHOURSTATS  varchar(1)           not null
+     constraint SYS_C0013201 check ("TWENTYFOURHOURSTATS" IS NOT NULL),
+HOURLYSTATS          varchar(1)           not null
+     constraint SYS_C0013202 check ("HOURLYSTATS" IS NOT NULL),
+FAILUREALARM         varchar(1)           not null
+     constraint SYS_C0013203 check ("FAILUREALARM" IS NOT NULL),
+PERFORMANCETHRESHOLD numeric              not null
+     constraint SYS_C0013204 check ("PERFORMANCETHRESHOLD" IS NOT NULL),
+PERFORMANCEALARM     varchar(1)           not null
+     constraint SYS_C0013205 check ("PERFORMANCEALARM" IS NOT NULL),
+PERFORMANCETWENTYFOURALARM varchar(1)           not null
+     constraint SYS_C0013206 check ("PERFORMANCETWENTYFOURALARM" IS NOT NULL),
 constraint PK_DEVICE2WAYFLAGS primary key  (DEVICEID)
 )
 go
@@ -1800,7 +1827,8 @@ go
 /*==============================================================*/
 create table DEVICECARRIERSETTINGS (
 DEVICEID             numeric              not null,
-ADDRESS              numeric              not null,
+ADDRESS              numeric              not null
+     constraint SYS_C0013215 check ("ADDRESS" IS NOT NULL),
 constraint PK_DEVICECARRIERSETTINGS primary key  (DEVICEID)
 )
 go
@@ -1811,10 +1839,14 @@ go
 /*==============================================================*/
 create table DEVICEDIALUPSETTINGS (
 DEVICEID             numeric              not null,
-PHONENUMBER          varchar(40)          not null,
-MINCONNECTTIME       numeric              not null,
-MAXCONNECTTIME       numeric              not null,
-LINESETTINGS         varchar(8)           not null,
+PHONENUMBER          varchar(40)          not null
+     constraint SYS_C0013189 check ("PHONENUMBER" IS NOT NULL),
+MINCONNECTTIME       numeric              not null
+     constraint SYS_C0013190 check ("MINCONNECTTIME" IS NOT NULL),
+MAXCONNECTTIME       numeric              not null
+     constraint SYS_C0013191 check ("MAXCONNECTTIME" IS NOT NULL),
+LINESETTINGS         varchar(8)           not null
+     constraint SYS_C0013192 check ("LINESETTINGS" IS NOT NULL),
 BaudRate             numeric              not null,
 constraint PK_DEVICEDIALUPSETTINGS primary key  (DEVICEID)
 )
@@ -1826,8 +1858,10 @@ go
 /*==============================================================*/
 create table DEVICEIDLCREMOTE (
 DEVICEID             numeric              not null,
-ADDRESS              numeric              not null,
-POSTCOMMWAIT         numeric              not null,
+ADDRESS              numeric              not null
+     constraint SYS_C0013239 check ("ADDRESS" IS NOT NULL),
+POSTCOMMWAIT         numeric              not null
+     constraint SYS_C0013240 check ("POSTCOMMWAIT" IS NOT NULL),
 CCUAmpUseType        varchar(20)          not null,
 constraint PK_DEVICEIDLCREMOTE primary key  (DEVICEID)
 )
@@ -1864,12 +1898,18 @@ go
 /*==============================================================*/
 create table DEVICEMCTIEDPORT (
 DEVICEID             numeric              not null,
-CONNECTEDIED         varchar(20)          not null,
-IEDSCANRATE          numeric              not null,
-DEFAULTDATACLASS     numeric              not null,
-DEFAULTDATAOFFSET    numeric              not null,
-PASSWORD             varchar(6)           not null,
-REALTIMESCAN         varchar(1)           not null,
+CONNECTEDIED         varchar(20)          not null
+     constraint SYS_C0013247 check ("CONNECTEDIED" IS NOT NULL),
+IEDSCANRATE          numeric              not null
+     constraint SYS_C0013248 check ("IEDSCANRATE" IS NOT NULL),
+DEFAULTDATACLASS     numeric              not null
+     constraint SYS_C0013249 check ("DEFAULTDATACLASS" IS NOT NULL),
+DEFAULTDATAOFFSET    numeric              not null
+     constraint SYS_C0013250 check ("DEFAULTDATAOFFSET" IS NOT NULL),
+PASSWORD             varchar(6)           not null
+     constraint SYS_C0013251 check ("PASSWORD" IS NOT NULL),
+REALTIMESCAN         varchar(1)           not null
+     constraint SYS_C0013252 check ("REALTIMESCAN" IS NOT NULL),
 constraint PK_DEVICEMCTIEDPORT primary key  (DEVICEID)
 )
 go
@@ -1894,9 +1934,12 @@ go
 /*==============================================================*/
 create table DEVICESCANRATE (
 DEVICEID             numeric              not null,
-SCANTYPE             varchar(20)          not null,
-INTERVALRATE         numeric              not null,
-SCANGROUP            numeric              not null,
+SCANTYPE             varchar(20)          not null
+     constraint SYS_C0013195 check ("SCANTYPE" IS NOT NULL),
+INTERVALRATE         numeric              not null
+     constraint SYS_C0013196 check ("INTERVALRATE" IS NOT NULL),
+SCANGROUP            numeric              not null
+     constraint SYS_C0013197 check ("SCANGROUP" IS NOT NULL),
 AlternateRate        numeric              not null,
 constraint PK_DEVICESCANRATE primary key  (DEVICEID, SCANTYPE)
 )
@@ -2114,12 +2157,18 @@ go
 /*==============================================================*/
 create table DYNAMICPOINTDISPATCH (
 POINTID              numeric              not null,
-TIMESTAMP            datetime             not null,
-QUALITY              numeric              not null,
-VALUE                float                not null,
-TAGS                 numeric              not null,
-NEXTARCHIVE          datetime             not null,
-STALECOUNT           numeric              not null,
+TIMESTAMP            datetime             not null
+     constraint SYS_C0013325 check ("TIMESTAMP" IS NOT NULL),
+QUALITY              numeric              not null
+     constraint SYS_C0013326 check ("QUALITY" IS NOT NULL),
+VALUE                float                not null
+     constraint SYS_C0013327 check ("VALUE" IS NOT NULL),
+TAGS                 numeric              not null
+     constraint SYS_C0013328 check ("TAGS" IS NOT NULL),
+NEXTARCHIVE          datetime             not null
+     constraint SYS_C0013329 check ("NEXTARCHIVE" IS NOT NULL),
+STALECOUNT           numeric              not null
+     constraint SYS_C0013330 check ("STALECOUNT" IS NOT NULL),
 LastAlarmLogID       numeric              not null,
 constraint PK_DYNAMICPOINTDISPATCH primary key  (POINTID)
 )
@@ -2395,9 +2444,8 @@ go
 create table EnergyCompany (
 EnergyCompanyID      numeric              not null,
 Name                 varchar(60)          not null,
-RouteID              numeric              not null,
-WebConfigID          numeric              not null,
 PrimaryContactID     numeric              not null,
+UserID               numeric              not null,
 constraint PK_ENERGYCOMPANY primary key  (EnergyCompanyID)
 )
 go
@@ -2504,7 +2552,7 @@ DIRECTIONTYPE        varchar(20)          not null,
 InterfaceType        varchar(20)          not null,
 DESTINATION          varchar(20)          not null,
 TRANSLATION          varchar(100)         not null,
-constraint PK_FDRTRANSLATION primary key  (POINTID)
+constraint PK_FDRTrans primary key  (POINTID, TRANSLATION)
 )
 go
 
@@ -2583,7 +2631,8 @@ LeftMax              float                not null,
 RightMin             float                not null,
 RightMax             float                not null,
 Type                 char(1)              not null,
-constraint SYS_C0015109 primary key  (GRAPHDEFINITIONID)
+constraint SYS_C0015109 primary key  (GRAPHDEFINITIONID),
+constraint AK_GRNMUQ_GRAPHDEF unique (NAME)
 )
 go
 
@@ -2904,10 +2953,14 @@ go
 /*==============================================================*/
 create table LMGroupEmetcon (
 DEVICEID             numeric              not null,
-GOLDADDRESS          numeric              not null,
-SILVERADDRESS        numeric              not null,
-ADDRESSUSAGE         char(1)              not null,
-RELAYUSAGE           char(1)              not null,
+GOLDADDRESS          numeric              not null
+     constraint SYS_C13351 check ("GOLDADDRESS" IS NOT NULL),
+SILVERADDRESS        numeric              not null
+     constraint SYS_C13352 check ("SILVERADDRESS" IS NOT NULL),
+ADDRESSUSAGE         char(1)              not null
+     constraint SYS_C0013353 check ("ADDRESSUSAGE" IS NOT NULL),
+RELAYUSAGE           char(1)              not null
+     constraint SYS_C0013354 check ("RELAYUSAGE" IS NOT NULL),
 ROUTEID              numeric              not null,
 constraint PK_LMGROUPEMETCON primary key  (DEVICEID)
 )
@@ -2950,6 +3003,21 @@ go
 
 
 insert into LMGroupExpressComAddress values( 0, '(none)', 0, '(none)' );
+
+/*==============================================================*/
+/* Table : LMGroupMCT                                           */
+/*==============================================================*/
+create table LMGroupMCT (
+DeviceID             numeric              not null,
+MCTAddress           numeric              not null,
+MCTLevel             char(1)              not null,
+RelayUsage           char(7)              not null,
+RouteID              numeric              not null,
+MCTDeviceID          numeric              not null,
+constraint PK_LMGrpMCTPK primary key  (DeviceID)
+)
+go
+
 
 /*==============================================================*/
 /* Table : LMGroupPoint                                         */
@@ -3116,7 +3184,8 @@ GroupSelectionMethod varchar(30)          not null,
 MethodOptionType     varchar(30)          not null,
 MethodOptionMax      numeric              not null,
 GearID               numeric              not null,
-constraint PK_LMPROGRAMDIRECTGEAR primary key  (GearID)
+constraint PK_LMPROGRAMDIRECTGEAR primary key  (GearID),
+constraint AK_AKEY_LMPRGDIRG_LMPROGRA unique (DeviceID, GearNumber)
 )
 go
 
@@ -3187,10 +3256,14 @@ go
 /*==============================================================*/
 create table LOGIC (
 LOGICID              numeric              not null,
-LOGICNAME            varchar(20)          not null,
-PERIODICRATE         numeric              not null,
-STATEFLAG            varchar(10)          not null,
-SCRIPTNAME           varchar(20)          not null,
+LOGICNAME            varchar(20)          not null
+     constraint SYS_C0013441 check ("LOGICNAME" IS NOT NULL),
+PERIODICRATE         numeric              not null
+     constraint SYS_C0013442 check ("PERIODICRATE" IS NOT NULL),
+STATEFLAG            varchar(10)          not null
+     constraint SYS_C0013443 check ("STATEFLAG" IS NOT NULL),
+SCRIPTNAME           varchar(20)          not null
+     constraint SYS_C0013444 check ("SCRIPTNAME" IS NOT NULL),
 constraint SYS_C0013445 primary key  (LOGICID)
 )
 go
@@ -3202,7 +3275,8 @@ go
 create table MACROROUTE (
 ROUTEID              numeric              not null,
 SINGLEROUTEID        numeric              not null,
-ROUTEORDER           numeric              not null,
+ROUTEORDER           numeric              not null
+     constraint SYS_C0013273 check ("ROUTEORDER" IS NOT NULL),
 constraint PK_MACROROUTE primary key  (ROUTEID, ROUTEORDER)
 )
 go
@@ -3323,6 +3397,33 @@ go
 
 
 /*==============================================================*/
+/* Table : PAOExclusion                                         */
+/*==============================================================*/
+create table PAOExclusion (
+ExclusionID          numeric              not null,
+PaoID                numeric              not null,
+ExcludedPaoID        numeric              not null,
+PointID              numeric              not null,
+Value                numeric              not null,
+FunctionID           numeric              not null,
+FuncName             varchar(100)         not null,
+FuncRequeue          numeric              not null,
+constraint PK_PAOEXCLUSION primary key  (ExclusionID)
+)
+go
+
+
+/*==============================================================*/
+/* Index: Indx_PAOExclus                                        */
+/*==============================================================*/
+create unique  index Indx_PAOExclus on PAOExclusion (
+PaoID,
+ExcludedPaoID
+)
+go
+
+
+/*==============================================================*/
 /* Table : PAOowner                                             */
 /*==============================================================*/
 create table PAOowner (
@@ -3349,7 +3450,8 @@ PSEUDOFLAG           varchar(1)           not null,
 POINTOFFSET          numeric              not null,
 ARCHIVETYPE          varchar(12)          not null,
 ARCHIVEINTERVAL      numeric              not null,
-constraint Key_PT_PTID primary key  (POINTID)
+constraint Key_PT_PTID primary key  (POINTID),
+constraint AK_KEY_PTNM_YUKPAOID unique (POINTNAME, PAObjectID)
 )
 go
 
@@ -3449,10 +3551,14 @@ go
 /*==============================================================*/
 create table PORTDIALUPMODEM (
 PORTID               numeric              not null,
-MODEMTYPE            varchar(30)          not null,
-INITIALIZATIONSTRING varchar(50)          not null,
-PREFIXNUMBER         varchar(10)          not null,
-SUFFIXNUMBER         varchar(10)          not null,
+MODEMTYPE            varchar(30)          not null
+     constraint SYS_C13171 check ("MODEMTYPE" IS NOT NULL),
+INITIALIZATIONSTRING varchar(50)          not null
+     constraint SYS_C13172 check ("INITIALIZATIONSTRING" IS NOT NULL),
+PREFIXNUMBER         varchar(10)          not null
+     constraint SYS_C0013173 check ("PREFIXNUMBER" IS NOT NULL),
+SUFFIXNUMBER         varchar(10)          not null
+     constraint SYS_C0013174 check ("SUFFIXNUMBER" IS NOT NULL),
 constraint PK_PORTDIALUPMODEM primary key  (PORTID)
 )
 go
@@ -3463,7 +3569,8 @@ go
 /*==============================================================*/
 create table PORTLOCALSERIAL (
 PORTID               numeric              not null,
-PHYSICALPORT         varchar(8)           not null,
+PHYSICALPORT         varchar(8)           not null
+     constraint SYS_C0013146 check ("PHYSICALPORT" IS NOT NULL),
 constraint PK_PORTLOCALSERIAL primary key  (PORTID)
 )
 go
@@ -3474,10 +3581,14 @@ go
 /*==============================================================*/
 create table PORTRADIOSETTINGS (
 PORTID               numeric              not null,
-RTSTOTXWAITSAMED     numeric              not null,
-RTSTOTXWAITDIFFD     numeric              not null,
-RADIOMASTERTAIL      numeric              not null,
-REVERSERTS           numeric              not null,
+RTSTOTXWAITSAMED     numeric              not null
+     constraint SYS_C0013165 check ("RTSTOTXWAITSAMED" IS NOT NULL),
+RTSTOTXWAITDIFFD     numeric              not null
+     constraint SYS_C0013166 check ("RTSTOTXWAITDIFFD" IS NOT NULL),
+RADIOMASTERTAIL      numeric              not null
+     constraint SYS_C0013167 check ("RADIOMASTERTAIL" IS NOT NULL),
+REVERSERTS           numeric              not null
+     constraint SYS_C0013168 check ("REVERSERTS" IS NOT NULL),
 constraint PK_PORTRADIOSETTINGS primary key  (PORTID)
 )
 go
@@ -3488,9 +3599,12 @@ go
 /*==============================================================*/
 create table PORTSETTINGS (
 PORTID               numeric              not null,
-BAUDRATE             numeric              not null,
-CDWAIT               numeric              not null,
-LINESETTINGS         varchar(8)           not null,
+BAUDRATE             numeric              not null
+     constraint SYS_C0013153 check ("BAUDRATE" IS NOT NULL),
+CDWAIT               numeric              not null
+     constraint SYS_C0013154 check ("CDWAIT" IS NOT NULL),
+LINESETTINGS         varchar(8)           not null
+     constraint SYS_C0013155 check ("LINESETTINGS" IS NOT NULL),
 constraint PK_PORTSETTINGS primary key  (PORTID)
 )
 go
@@ -3501,8 +3615,10 @@ go
 /*==============================================================*/
 create table PORTTERMINALSERVER (
 PORTID               numeric              not null,
-IPADDRESS            varchar(16)          not null,
-SOCKETPORTNUMBER     numeric              not null,
+IPADDRESS            varchar(16)          not null
+     constraint SYS_C0013149 check ("IPADDRESS" IS NOT NULL),
+SOCKETPORTNUMBER     numeric              not null
+     constraint SYS_C0013150 check ("SOCKETPORTNUMBER" IS NOT NULL),
 constraint PK_PORTTERMINALSERVER primary key  (PORTID)
 )
 go
@@ -3535,12 +3651,18 @@ insert into pointalarming(pointid, alarmstates, excludenotifystates, notifyonack
 /*==============================================================*/
 create table PortStatistics (
 PORTID               numeric              not null,
-STATISTICTYPE        numeric              not null,
-ATTEMPTS             numeric              not null,
-DATAERRORS           numeric              not null,
-SYSTEMERRORS         numeric              not null,
-STARTDATETIME        datetime             not null,
-STOPDATETIME         datetime             not null,
+STATISTICTYPE        numeric              not null
+     constraint SYS_C0013177 check ("STATISTICTYPE" IS NOT NULL),
+ATTEMPTS             numeric              not null
+     constraint SYS_C0013178 check ("ATTEMPTS" IS NOT NULL),
+DATAERRORS           numeric              not null
+     constraint SYS_C0013179 check ("DATAERRORS" IS NOT NULL),
+SYSTEMERRORS         numeric              not null
+     constraint SYS_C0013180 check ("SYSTEMERRORS" IS NOT NULL),
+STARTDATETIME        datetime             not null
+     constraint SYS_C0013181 check ("STARTDATETIME" IS NOT NULL),
+STOPDATETIME         datetime             not null
+     constraint SYS_C0013182 check ("STOPDATETIME" IS NOT NULL),
 constraint PK_PORTSTATISTICS primary key  (PORTID, STATISTICTYPE)
 )
 go
@@ -3551,11 +3673,16 @@ go
 /*==============================================================*/
 create table PortTiming (
 PORTID               numeric              not null,
-PRETXWAIT            numeric              not null,
-RTSTOTXWAIT          numeric              not null,
-POSTTXWAIT           numeric              not null,
-RECEIVEDATAWAIT      numeric              not null,
-EXTRATIMEOUT         numeric              not null,
+PRETXWAIT            numeric              not null
+     constraint SYS_C0013158 check ("PRETXWAIT" IS NOT NULL),
+RTSTOTXWAIT          numeric              not null
+     constraint SYS_C0013159 check ("RTSTOTXWAIT" IS NOT NULL),
+POSTTXWAIT           numeric              not null
+     constraint SYS_C0013160 check ("POSTTXWAIT" IS NOT NULL),
+RECEIVEDATAWAIT      numeric              not null
+     constraint SYS_C0013161 check ("RECEIVEDATAWAIT" IS NOT NULL),
+EXTRATIMEOUT         numeric              not null
+     constraint SYS_C0013162 check ("EXTRATIMEOUT" IS NOT NULL),
 constraint PK_PORTTIMING primary key  (PORTID)
 )
 go
@@ -3599,8 +3726,10 @@ go
 create table RepeaterRoute (
 ROUTEID              numeric              not null,
 DEVICEID             numeric              not null,
-VARIABLEBITS         numeric              not null,
-REPEATERORDER        numeric              not null,
+VARIABLEBITS         numeric              not null
+     constraint SYS_C0013267 check ("VARIABLEBITS" IS NOT NULL),
+REPEATERORDER        numeric              not null
+     constraint SYS_C0013268 check ("REPEATERORDER" IS NOT NULL),
 constraint PK_REPEATERROUTE primary key  (ROUTEID, DEVICEID)
 )
 go
@@ -3633,10 +3762,14 @@ go
 /*==============================================================*/
 create table STATE (
 STATEGROUPID         numeric              not null,
-RAWSTATE             numeric              not null,
-TEXT                 varchar(20)          not null,
-FOREGROUNDCOLOR      numeric              not null,
-BACKGROUNDCOLOR      numeric              not null,
+RAWSTATE             numeric              not null
+     constraint SYS_C0013338 check ("RAWSTATE" IS NOT NULL),
+TEXT                 varchar(20)          not null
+     constraint SYS_C0013339 check ("TEXT" IS NOT NULL),
+FOREGROUNDCOLOR      numeric              not null
+     constraint SYS_C0013340 check ("FOREGROUNDCOLOR" IS NOT NULL),
+BACKGROUNDCOLOR      numeric              not null
+     constraint SYS_C0013341 check ("BACKGROUNDCOLOR" IS NOT NULL),
 ImageID              numeric              not null,
 constraint PK_STATE primary key  (STATEGROUPID, RAWSTATE)
 )
@@ -3689,7 +3822,8 @@ go
 /*==============================================================*/
 create table STATEGROUP (
 STATEGROUPID         numeric              not null,
-NAME                 varchar(20)          not null,
+NAME                 varchar(20)          not null
+     constraint SYS_C0013127 check ("NAME" IS NOT NULL),
 GroupType            varchar(20)          not null,
 constraint SYS_C0013128 primary key  (STATEGROUPID)
 )
@@ -3720,10 +3854,14 @@ go
 create table SYSTEMLOG (
 LOGID                numeric              not null,
 POINTID              numeric              not null,
-DATETIME             datetime             not null,
-SOE_TAG              numeric              not null,
-TYPE                 numeric              not null,
-PRIORITY             numeric              not null,
+DATETIME             datetime             not null
+     constraint SYS_C0013403 check ("DATETIME" IS NOT NULL),
+SOE_TAG              numeric              not null
+     constraint SYS_C0013404 check ("SOE_TAG" IS NOT NULL),
+TYPE                 numeric              not null
+     constraint SYS_C0013405 check ("TYPE" IS NOT NULL),
+PRIORITY             numeric              not null
+     constraint SYS_C0013406 check ("PRIORITY" IS NOT NULL),
 ACTION               varchar(60)          null,
 DESCRIPTION          varchar(120)         null,
 USERNAME             varchar(30)          null,
@@ -3910,12 +4048,18 @@ INSERT INTO UnitMeasure VALUES( 54,'UNDEF', 0,'Undefined','(none)' );
 /*==============================================================*/
 create table VersacomRoute (
 ROUTEID              numeric              not null,
-UTILITYID            numeric              not null,
-SECTIONADDRESS       numeric              not null,
-CLASSADDRESS         numeric              not null,
-DIVISIONADDRESS      numeric              not null,
-BUSNUMBER            numeric              not null,
-AMPCARDSET           numeric              not null,
+UTILITYID            numeric              not null
+     constraint SYS_C0013276 check ("UTILITYID" IS NOT NULL),
+SECTIONADDRESS       numeric              not null
+     constraint SYS_C0013277 check ("SECTIONADDRESS" IS NOT NULL),
+CLASSADDRESS         numeric              not null
+     constraint SYS_C0013278 check ("CLASSADDRESS" IS NOT NULL),
+DIVISIONADDRESS      numeric              not null
+     constraint SYS_C0013279 check ("DIVISIONADDRESS" IS NOT NULL),
+BUSNUMBER            numeric              not null
+     constraint SYS_C0013280 check ("BUSNUMBER" IS NOT NULL),
+AMPCARDSET           numeric              not null
+     constraint SYS_C0013281 check ("AMPCARDSET" IS NOT NULL),
 constraint PK_VERSACOMROUTE primary key  (ROUTEID)
 )
 go
@@ -3927,13 +4071,17 @@ go
 create table YukonGroup (
 GroupID              numeric              not null,
 GroupName            varchar(120)         not null,
+GroupDescription     varchar(200)         not null,
 constraint PK_YUKONGROUP primary key  (GroupID)
 )
 go
 
 
-insert into YukonGroup values(-1,'yukon');
-insert into YukonGroup values(-100,'operators');
+insert into YukonGroup values(-1,'yukon','The default system user group that allows limited user interaction.');
+insert into YukonGroup values(-100,'operators', 'The default group of yukon operators');
+insert into yukongroup values(-200,'Esub Users', 'The default group of esubstation users');
+insert into yukongroup values(-201,'Esub Operators', 'The default group of esubstation operators');
+
 
 /*==============================================================*/
 /* Table : YukonGroupRole                                       */
@@ -3970,6 +4118,7 @@ insert into YukonGroupRole values(103,-100,-100,-10003,'(none)');
 insert into YukonGroupRole values(104,-100,-100,-10004,'(none)');
 insert into YukonGroupRole values(105,-100,-100,-10005,'(none)');
 insert into YukonGroupRole values(106,-100,-100,-10006,'(none)');
+insert into YukonGroupRole values(107,-100,-100,-10007,'(none)');
 
 /* TDC */
 insert into YukonGroupRole values(120,-100,-101,-10100,'(none)');
@@ -4010,6 +4159,18 @@ insert into YukonGroupRole values(232,-100,-106,-10602,'(none)');
 /* Esubstation Editor */
 insert into YukonGroupRole values(250,-100,-107,-10700,'(none)');
 
+/* Assign roles to the default Esub Users */
+insert into YukonGroupRole values(300,-200,-206,-20600,'(none)');
+insert into YukonGroupRole values(301,-200,-206,-20601,'(none)');
+insert into YukonGroupRole values(302,-200,-206,-20602,'(none)');
+
+/* Assign roles to the default Esub Operators */
+insert into YukonGroupRole values(350,-201,-206,-20600,'(none)');
+insert into YukonGroupRole values(351,-201,-206,-20601,'true');
+insert into YukonGroupRole values(352,-201,-206,-20602,'false');
+
+
+
 /*==============================================================*/
 /* Table : YukonImage                                           */
 /*==============================================================*/
@@ -4039,11 +4200,13 @@ constraint PK_YUKONLISTENTRY primary key  (EntryID)
 go
 
 
-insert into YukonListEntry values( 0, 1, 0, '(none)', 0 );
+insert into YukonListEntry values( 0, 0, 0, '(none)', 0 );
 insert into YukonListEntry values( 1, 1, 0, 'Email', 1 );
 insert into YukonListEntry values( 2, 1, 0, 'Phone Number', 2 );
 insert into YukonListEntry values( 3, 1, 0, 'Pager Number', 2 );
 insert into YukonListEntry values( 4, 1, 0, 'Fax Number', 2 );
+insert into YukonListEntry values( 5, 1, 0, 'Home Phone', 2 );
+insert into YukonListEntry values( 6, 1, 0, 'Work Phone', 2 );
 
 
 insert into YukonListEntry values (1001,1001,0,'Program',1001);
@@ -4160,6 +4323,7 @@ go
 
 /* Default role for all users */
 insert into YukonRole values(-1,'Yukon','Yukon','Default Yukon role');
+insert into YukonRole values(-2,'Energy Company','Yukon','Energy company role');
 
 /* Application specific roles */
 insert into YukonRole values(-100,'Database Editor','Application','Access to the Yukon Database Editor application');
@@ -4180,6 +4344,9 @@ insert into YukonRole values(-203,'Direct Loadcontrol','Operator','Operator  acc
 insert into YukonRole values(-204,'Direct Curtailment','Operator','Operator access to direct curtailment');
 insert into YukonRole values(-205,'Energy Buyback','Operator','Operator access to energy buyback');
 
+/* Operator roles */
+insert into YukonRole values(-206,'Esubstation Drawings','Operator','Operator access to esubstation drawings');
+insert into YukonRole values(-207,'Odds For Control','Operator','Operator access to odds for control');
 
 /* CI customer roles */
 insert into YukonRole values(-300,'Direct Loadcontrol','CICustomer','Customer access to commercial/industrial customer direct loadcontrol');
@@ -4189,9 +4356,8 @@ insert into YukonRole values(-303,'Esubstation Drawings','CICustomer','Customer 
 insert into YukonRole values(-304,'Commercial Metering','CICustomer','Customer access to commercial metering');
 
 /* Consumer roles */
-/* Yao can you fill in this section  */
 insert into YukonRole values(-400,'Consumer Information','Consumer','Description');
-
+insert into YukonRole values(-401,'Residential Customer','Consumer','Access to residential customer information');
 
 /*==============================================================*/
 /* Index: Indx_YukRol_Nm                                        */
@@ -4236,6 +4402,15 @@ insert into YukonRoleProperty values(-10003,-100,'dbeditor_cap_control','true','
 insert into YukonRoleProperty values(-10004,-100,'dbeditor_system','true','Controls whether the System menu item in the View menu is displayed');
 insert into YukonRoleProperty values(-10005,-100,'utility_id_range','1-254','<description>');
 insert into YukonRoleProperty values(-10006,-100,'client_log_level','INFO','Sets the logging level for the application.  Possible values are OFF, FATAL, ERROR, WARN, INFO, DEBUG, or ALL');
+insert into YukonRoleProperty values(-10007,-100,'dbeditor_trans_exclusion','false','Allows the editor panel for the mutual exclusion of transmissions to be shown');
+
+/* Energy Company Role Properties */
+insert into YukonRoleProperty values(-1100,-2,'admin_email_address','info@cannontech.com','Sender address of the emails sent by the STARS server');
+insert into YukonRoleProperty values(-1101,-2,'optout_notification_recipients','info@cannontech.com','Recipients of the opt out notification email');
+insert into YukonRoleProperty values(-1102,-2,'default_time_zone','CST','Default time zone of the energy company');
+insert into YukonRoleProperty values(-1103,-2,'switch_command_file','c:/yukon/switch_command/default_switch.txt','Location of the file to temporarily store the switch commands');
+insert into YukonRoleProperty values(-1104,-2,'optout_command_file','c:/yukon/switch_command/default_optout.txt','Location of the file to temporarily store the opt out commands');
+insert into YukonRoleProperty values(-1105,-2,'customer_group_name','Web Demo Residential Customers','Group name of all the customer logins');
 
 /* TDC Role */
 insert into YukonRoleProperty values(-10100,-101,'loadcontrol_edit','00000000','<description>');
@@ -4279,21 +4454,62 @@ insert into YukonRoleProperty values(-10700,-107,'client_log_level','INFO','Sets
 /* Web Client Role Properties */
 insert into YukonRoleProperty values(-10800,-108,'home_url','/default.jsp','The url to take the user immediately after logging into the Yukon web applicatoin');
 insert into YukonRoleProperty values(-10801,-108,'client_log_level','INFO','Sets the logging level for the application.  Possible values are OFF, FATAL, ERROR, WARN, INFO, DEBUG, or ALL');
+insert into yukonroleproperty values (-10802, -108,'style_sheet','CannonStyle.css','The web client cascading style sheet.');
+insert into yukonroleproperty values (-10803, -108,'nav_bullet_selected','Bullet.gif','The bullet used when an item in the nav is selected.');
+insert into yukonroleproperty values (-10804,-108,'nav_bullet','Bullet2.gif','The bullet used when an item in the nav is NOT selected.');
+insert into yukonroleproperty values (-10805,-108,'header_logo','DemoHeader.gif','The main header logo');
+
+/* Operator Consumer Info Role Properties */
+insert into YukonRoleProperty values(-20100,-201,'Not Implemented','false','Controls whether to show the features not implemented yet (not recommended)');
+insert into YukonRoleProperty values(-20101,-201,'Account General','true','Controls whether to show the general account information');
+insert into YukonRoleProperty values(-20102,-201,'Account Residence','false','Controls whether to show the customer residence information');
+insert into YukonRoleProperty values(-20103,-201,'Account Call Tracking','false','Controls whether to enable the call tracking feature');
+insert into YukonRoleProperty values(-20104,-201,'Metering Interval Data','false','Controls whether to show the metering interval data');
+insert into YukonRoleProperty values(-20105,-201,'Metering Usage','false','Controls whether to show the metering time of use');
+insert into YukonRoleProperty values(-20106,-201,'Programs Control History','true','Controls whether to show the program control history');
+insert into YukonRoleProperty values(-20107,-201,'Programs Enrollment','true','Controls whether to enable the program enrollment feature');
+insert into YukonRoleProperty values(-20108,-201,'Programs Opt Out','true','Controls whether to enable the program opt out/reenable feature');
+insert into YukonRoleProperty values(-20109,-201,'Appliances','true','Controls whether to show the appliance information');
+insert into YukonRoleProperty values(-20110,-201,'Appliances Create','true','Controls whether to enable the appliance creation feature');
+insert into YukonRoleProperty values(-20111,-201,'Hardwares','true','Controls whether to show the hardware information');
+insert into YukonRoleProperty values(-20112,-201,'Hardwares Create','true','Controls whether to enable the hardware creation feature');
+insert into YukonRoleProperty values(-20113,-201,'Hardwares Thermostat','true','Controls whether to enable the thermostat programming feature');
+insert into YukonRoleProperty values(-20114,-201,'Work Orders','false','Controls whether to enable the service request feature');
+insert into YukonRoleProperty values(-20115,-201,'Admin Change Login','true','Controls whether to enable the changing customer login feature');
+insert into YukonRoleProperty values(-20116,-201,'Admin FAQ','false','Controls whether to show customer FAQs');
+insert into YukonRoleProperty values(-20130,-201,'Super Operator','false','Used for some testing functions (not recommended)');
+insert into YukonRoleProperty values(-20131,-201,'New Account Wizard','true','Controls whether to enable the new account wizard');
+insert into YukonRoleProperty values(-20132,-201,'Customized FAQ Link','false','Controls whether the FAQ link links to a customized location provided by the energy company');
+insert into YukonRoleProperty values(-20150,-201,'Web Link FAQ','FAQ.jsp','The customized FAQ link provided by the energy company');
+insert into YukonRoleProperty values(-20151,-201,'Web Text Control','control','The energy company specific term for control');
+insert into YukonRoleProperty values(-20152,-201,'Recommended Settings Button','Recommended Settings','The energy company specific term for Recommended Settings button on the thermostat schedule page');
+insert into YukonRoleProperty values(-20153,-201,'Programs Control History Title','PROGRAMS - CONTROL SUMMARY','Title of the programs control summary page');
+insert into YukonRoleProperty values(-20154,-201,'Program Control History Title','PROGRAM - CONTROL HISTORY','Title of the control history page of a particular program');
+insert into YukonRoleProperty values(-20155,-201,'Program Control Summary Title','PROGRAM - CONTROL SUMMARY','Title of the control summary page of a particular program');
+insert into YukonRoleProperty values(-20156,-201,'Programs Enrollment Title','PROGRAMS - ENROLLMENT','Title of the programs enrollment page');
+insert into YukonRoleProperty values(-20157,-201,'Programs Opt Out Title','PROGRAMS - OPT OUT','Title of the programs opt out page');
+insert into YukonRoleProperty values(-20158,-201,'Change Login Title','ADMINISTRATION - CHANGE LOGIN','Title of the change login page');
+insert into YukonRoleProperty values(-20159,-201,'Programs Control History Label','Control History','Text of the programs control history link');
+insert into YukonRoleProperty values(-20160,-201,'Programs Enrollment Label','Enrollment','Text of the programs enrollment link');
+insert into YukonRoleProperty values(-20161,-201,'Programs Opt Out Label','Opt Out','Text of the programs opt out link');
+insert into YukonRoleProperty values(-20162,-201,'Opt Out Description','If you would like to temporarily opt out of all programs, select the time frame from the drop-down box below, then select Submit.','Description on the programs opt out page');
 
 /* Operator Administrator Role Properties */
-/* Operator Consumer Info Role Properties */
 /* Operator Commercial Metering Role Properties*/
-insert into YukonRoleProperty values(-20300,-203,'Trending Disclaimer',' ','The disclaimer that appears with trends');
+insert into YukonRoleProperty values(-20200,-202,'Trending Disclaimer',' ','The disclaimer that appears with trends');
 
 /* Operator Direct Loadcontrol Role Properties */
-insert into YukonRoleProperty values(-20400,-204,'Direct Loadcontrol Label','Direct Control','The operator specific name for direct loadcontrol');
-insert into YukonRoleProperty values(-20401,-204,'Individual Switch','true','Controls access to operator individual switch control');
+insert into YukonRoleProperty values(-20300,-203,'Direct Loadcontrol Label','Direct Control','The operator specific name for direct loadcontrol');
+insert into YukonRoleProperty values(-20301,-203,'Individual Switch','true','Controls access to operator individual switch control');
 
 /* Operator Direct Curtailment Role Properties */
-insert into YukonRoleProperty values(-20500,-205,'Direct Curtailment Label','Notification','The operator specific name for direct curtailment');
+insert into YukonRoleProperty values(-20400,-204,'Direct Curtailment Label','Notification','The operator specific name for direct curtailment');
 
 /* Operator Energy Exchange Role Properties */
-insert into YukonRoleProperty values(-20501,-205,'Energy Buyback Label','Energy Buyback','The operator specific name for Energy Buyback');
+insert into YukonRoleProperty values(-20500,-205,'Energy Buyback Label','Energy Buyback','The operator specific name for Energy Buyback');
+
+/* Odds For Control Role Properties */
+insert into YukonRoleProperty values(-20700,-207,'Odds For Control Label','Odds for Control','The operator specific name for odds for control');
 
 /* Operator Hardware Inventory Role Properties */
 
@@ -4316,6 +4532,46 @@ insert into YukonRoleProperty values(-30302,-303,'Control','false','Controls con
 
 /* CICustomer Commercial Metering Role Properties */
 insert into YukonRoleProperty values(-30400,-304,'Trending Disclaimer',' ','The disclaimer that appears with trends');
+
+/* Operator Esubstation Drawings Role Properties */
+insert into YukonRoleProperty values(-20600,-206,'View Drawings','true','Controls viewing of Esubstations drawings');
+insert into YukonRoleProperty values(-20601,-206,'Edit Limits','false','Controls editing of point limits');
+insert into YukonRoleProperty values(-20602,-206,'Control','false','Controls control from Esubstation drawings');
+
+/* Residential Customer Role Properties */
+insert into YukonRoleProperty values(-40100,-401,'Not Implemented','false','Controls whether to show the features not implemented yet (not recommended)');
+insert into YukonRoleProperty values(-40101,-401,'Account General','true','Controls whether to show the general account information');
+insert into YukonRoleProperty values(-40102,-401,'Metering Usage','false','Controls whether to show the metering time of use');
+insert into YukonRoleProperty values(-40103,-401,'Programs Control History','true','Controls whether to show the program control history');
+insert into YukonRoleProperty values(-40104,-401,'Programs Enrollment','true','Controls whether to enable the program enrollment feature');
+insert into YukonRoleProperty values(-40105,-401,'Programs Opt Out','true','Controls whether to enable the program opt out/reenable feature');
+insert into YukonRoleProperty values(-40106,-401,'Hardwares Thermostat','true','Controls whether to enable the thermostat programming feature');
+insert into YukonRoleProperty values(-40107,-401,'Questions Utility','true','Controls whether to show the contact information of the energy company');
+insert into YukonRoleProperty values(-40108,-401,'Questions FAQ','true','Controls whether to show customer FAQs');
+insert into YukonRoleProperty values(-40109,-401,'Admin Change Login','true','Controls whether to allow customers to change their own login');
+insert into YukonRoleProperty values(-40130,-401,'Notification on General Page','false','Controls whether to show the notification email box on the general page (useful only when the programs enrollment feature is not selected)')
+insert into YukonRoleProperty values(-40131,-401,'Hide Opt Out Box','true','Controls whether to show the opt out box on the programs opt out page');
+insert into YukonRoleProperty values(-40132,-401,'Customized FAQ Link','false','Controls whether the FAQ link links to a customized location provided by the energy company');
+insert into YukonRoleProperty values(-40133,-401,'Customized Utility Email Link','false','Controls whether the utility email links to a customized location provided by the energy company');
+insert into YukonRoleProperty values(-40150,-401,'Web Link FAQ','FAQ.jsp','The customized FAQ link provided by the energy company');
+insert into YukonRoleProperty values(-40151,-401,'Web Link Utility Email','FAQ.jsp','The customized utility email provided by the energy company');
+insert into YukonRoleProperty values(-40152,-401,'Web Text Control','control','The energy company specific term for control');
+insert into YukonRoleProperty values(-40153,-401,'Web Text Controlled','controlled','The energy company specific term for controlled');
+insert into YukonRoleProperty values(-40154,-401,'Web Text Controlling','controlling','The energy company specific term for controlling');
+insert into YukonRoleProperty values(-40155,-401,'Recommended Settings Button','Recommended Settings','The energy company specific term for Recommended Settings button on the thermostat schedule page');
+insert into YukonRoleProperty values(-40156,-401,'General Title','WELCOME TO ENERGY COMPANY SERVICES!','Title of the general page');
+insert into YukonRoleProperty values(-40157,-401,'Programs Control History Title','PROGRAMS - CONTROL SUMMARY','Title of the programs control summary page');
+insert into YukonRoleProperty values(-40158,-401,'Program Control History Title','PROGRAM - CONTROL HISTORY','Title of the control history page of a particular program');
+insert into YukonRoleProperty values(-40159,-401,'Program Control Summary Title','PROGRAM - CONTROL SUMMARY','Title of the control summary page of a particular program');
+insert into YukonRoleProperty values(-40160,-401,'Programs Enrollment Title','PROGRAMS - ENROLLMENT','Title of the programs enrollment page');
+insert into YukonRoleProperty values(-40161,-401,'Programs Opt Out Title','PROGRAMS - OPT OUT','Title of the programs opt out page');
+insert into YukonRoleProperty values(-40162,-401,'Utility Title','QUESTIONS - UTILITY','Title of the utility page');
+insert into YukonRoleProperty values(-40163,-401,'Change Login Title','ADMINISTRATION - CHANGE LOGIN','Title of the change login page');
+insert into YukonRoleProperty values(-40164,-401,'Programs Control History Label','Control History','Text of the programs control history link');
+insert into YukonRoleProperty values(-40165,-401,'Programs Enrollment Label','Enrollment','Text of the programs enrollment link');
+insert into YukonRoleProperty values(-40166,-401,'Programs Opt Out Label','Opt Out','Text of the programs opt out link');
+insert into YukonRoleProperty values(-40167,-401,'General Description','Thank you for participating in our Consumer Energy Services programs. By participating, you have helped to optimize our delivery of energy, stabilize rates, and reduce energy costs. Best of all, you are saving energy dollars!<br><br>This site is designed to help manage your programs on-line from anywhere with access to a Web browser.','Description on the general page');
+insert into YukonRoleProperty values(-40168,-401,'Opt Out Description','If you would like to temporarily opt out of all programs, select the time frame from the drop-down box below, then select Submit.','Description on the programs opt out page');
 
 /*==============================================================*/
 /* Index: Indx_YukRolPrp_PK                                     */
@@ -5100,8 +5356,8 @@ go
 
 
 alter table EnergyCompany
-   add constraint FK_EnCmpRt foreign key (RouteID)
-      references Route (RouteID)
+   add constraint FK_EngCmp_YkUs foreign key (UserID)
+      references YukonUser (UserID)
 go
 
 
@@ -5174,6 +5430,24 @@ go
 alter table LMDirectOperatorList
    add constraint FK_LMDirOpLs_LMPrD foreign key (ProgramID)
       references LMProgramDirect (DeviceID)
+go
+
+
+alter table LMGroupMCT
+   add constraint FK_LMGrMC_Dev foreign key (DeviceID)
+      references DEVICE (DEVICEID)
+go
+
+
+alter table LMGroupMCT
+   add constraint FK_LMGrMC_Rt foreign key (RouteID)
+      references Route (RouteID)
+go
+
+
+alter table LMGroupMCT
+   add constraint FK_LMGrMC_YkP foreign key (MCTDeviceID)
+      references YukonPAObject (PAObjectID)
 go
 
 
@@ -5276,6 +5550,24 @@ go
 alter table OperatorSerialGroup
    add constraint FK_OpSGrp_OpLg foreign key (LoginID)
       references YukonUser (UserID)
+go
+
+
+alter table PAOExclusion
+   add constraint FK_PAOEx_Pt foreign key (PointID)
+      references POINT (POINTID)
+go
+
+
+alter table PAOExclusion
+   add constraint FK_PAOEx_YkPAO foreign key (PaoID)
+      references YukonPAObject (PAObjectID)
+go
+
+
+alter table PAOExclusion
+   add constraint FK_PAO_REF__YUK foreign key (ExcludedPaoID)
+      references YukonPAObject (PAObjectID)
 go
 
 
@@ -5402,12 +5694,6 @@ go
 alter table YukonUserRole
    add constraint FK_YkUsRlr_YkUsr foreign key (UserID)
       references YukonUser (UserID)
-go
-
-
-alter table EnergyCompany
-   add constraint FK_YkWbC_EnC foreign key (WebConfigID)
-      references YukonWebConfiguration (ConfigurationID)
 go
 
 
