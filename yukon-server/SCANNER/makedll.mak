@@ -97,16 +97,17 @@ scanner.obj:	os2_2w32.h dlldefs.h types.h cticalls.h dbaccess.h \
 		devicetypes.h drp.h elogger.h dsm2err.h alarmlog.h routes.h \
 		queues.h porter.h lm_auto.h perform.h scanner.h ilex.h \
 		master.h scanglob.h scansup.h rtdb.h hashkey.h mgr_device.h \
-		dev_base.h cmdparse.h parsevalue.h rte_base.h dbmemobject.h \
-		ctibase.h ctinexus.h message.h ctidbgmem.h collectable.h \
-		tbl_pao.h tbl_rtcomm.h resolvers.h pointtypes.h yukon.h \
+		dev_base.h cmdparse.h parsevalue.h counter.h dev_exclusion.h \
+		tbl_paoexclusion.h yukon.h ctidbgmem.h rte_base.h \
+		dbmemobject.h ctibase.h ctinexus.h message.h collectable.h \
+		tbl_pao.h tbl_rtcomm.h resolvers.h pointtypes.h \
 		db_entry_defines.h desolvers.h logger.h thread.h tbl_base.h \
-		tbl_2way.h tbl_stats.h tbl_scanrate.h tbl_paoexclusion.h \
-		utility.h slctdev.h dev_single.h msg_pcrequest.h \
-		msg_pcreturn.h msg_multi.h msg_pdata.h pointdefs.h \
-		msg_signal.h tbl_dv_scandata.h tbl_dv_wnd.h dev_mct.h \
-		dev_carrier.h dev_dlcbase.h tbl_route.h tbl_carrier.h \
-		mgr_route.h repeaterrole.h smartmap.h prot_emetcon.h \
+		tbl_2way.h tbl_stats.h tbl_scanrate.h utility.h slctdev.h \
+		smartmap.h dev_single.h msg_pcrequest.h msg_pcreturn.h \
+		msg_multi.h msg_pdata.h pointdefs.h msg_signal.h \
+		tbl_dv_scandata.h tbl_dv_wnd.h prot_base.h xfer.h dialup.h \
+		dev_mct.h dev_carrier.h dev_dlcbase.h tbl_route.h \
+		tbl_carrier.h mgr_route.h repeaterrole.h prot_emetcon.h \
 		tbl_metergrp.h vcomdefs.h tbl_loadprofile.h \
 		tbl_dv_mctiedport.h pt_numeric.h pt_base.h pt_dyn_base.h \
 		tbl_pt_base.h tbl_pt_unit.h tbl_unitmeasure.h tbl_pt_limit.h \

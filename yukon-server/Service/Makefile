@@ -8,6 +8,9 @@ all:
 copy:
         @$(MAKE) -nologo -f makedll.mak $@
 
+deps:
+        @$(MAKE) -nologo -f makedll.mak $@
+
 clean:
         -del \
 *.pdb \

@@ -11,6 +11,9 @@ copy:
                 @$(MAKE) -nologo -f makedll.mak $@
                 @$(MAKE) -nologo -f makeexe.mak $@
 
+deps:
+                @$(MAKE) -nologo -f makeexe.mak $@
+
 clean:
         -del \
 *.pdb \

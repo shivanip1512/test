@@ -97,18 +97,21 @@ exe_cmd.obj:	dlldefs.h con_mgr.h connection.h exchange.h dllbase.h \
 		thread.h message.h ctidbgmem.h collectable.h msg_multi.h \
 		msg_pdata.h pointdefs.h msg_signal.h yukon.h msg_ptreg.h \
 		msg_reg.h queue.h ctibase.h ctinexus.h server_b.h cmdopts.h \
-		msg_cmd.h exe_cmd.h executor.h
+		critical_Section.h msg_cmd.h exe_cmd.h executor.h
 exe_reg.obj:	message.h ctidbgmem.h collectable.h dlldefs.h exe_reg.h \
 		executor.h con_mgr.h connection.h exchange.h dllbase.h \
 		os2_2w32.h types.h cticalls.h dsm2.h mutex.h guard.h logger.h \
 		thread.h msg_multi.h msg_pdata.h pointdefs.h msg_signal.h \
 		yukon.h msg_ptreg.h msg_reg.h queue.h ctibase.h ctinexus.h \
 		con_mgr_vg.h vgexe_factory.h exe_ptchg.h exe_email.h \
-		executorfactory.h exe_cmd.h msg_cmd.h server_b.h cmdopts.h
+		executorfactory.h exe_cmd.h msg_cmd.h server_b.h cmdopts.h \
+		critical_Section.h
+id_svr.obj:	utility.h dsm2.h mutex.h dlldefs.h guard.h id_svr.h \
+		id_build.h id_vinfo.h
 server_b.obj:	executor.h message.h ctidbgmem.h collectable.h dlldefs.h \
 		server_b.h con_mgr.h connection.h exchange.h dllbase.h \
 		os2_2w32.h types.h cticalls.h dsm2.h mutex.h guard.h logger.h \
 		thread.h msg_multi.h msg_pdata.h pointdefs.h msg_signal.h \
 		yukon.h msg_ptreg.h msg_reg.h queue.h ctibase.h ctinexus.h \
-		cmdopts.h msg_cmd.h
+		cmdopts.h critical_Section.h msg_cmd.h numstr.h utility.h
 #ENDUPDATE#

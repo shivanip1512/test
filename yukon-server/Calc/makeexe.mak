@@ -191,22 +191,23 @@ clean:
 #UPDATE#
 calc.obj:	calc.h calccomponent.h pointstore.h hashkey.h rtdb.h \
 		dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
-		mutex.h guard.h pointdefs.h logger.h thread.h
+		mutex.h guard.h pointdefs.h logger.h thread.h numstr.h
 calccomponent.obj:	calccomponent.h pointstore.h hashkey.h rtdb.h \
 		dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
 		mutex.h guard.h pointdefs.h logger.h thread.h calc.h
 calclogicsvc.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h types.h \
-		cticalls.h dsm2.h mutex.h guard.h sema.h ctinexus.h message.h \
-		ctidbgmem.h collectable.h msg_multi.h msg_pdata.h pointdefs.h \
-		msg_signal.h yukon.h msg_cmd.h msg_reg.h msg_ptreg.h \
-		msg_dbchg.h pointtypes.h configparms.h cparms.h logger.h \
-		thread.h utility.h calclogicsvc.h connection.h exchange.h \
-		queue.h cservice.h calcthread.h hashkey.h calc.h \
-		calccomponent.h pointstore.h rtdb.h
+		cticalls.h dsm2.h mutex.h guard.h sema.h ctinexus.h \
+		id_build.h message.h ctidbgmem.h collectable.h msg_multi.h \
+		msg_pdata.h pointdefs.h msg_signal.h yukon.h msg_cmd.h \
+		msg_reg.h msg_ptreg.h msg_dbchg.h numstr.h pointtypes.h \
+		configparms.h cparms.h logger.h thread.h utility.h \
+		calclogicsvc.h connection.h exchange.h queue.h cservice.h \
+		calcthread.h hashkey.h calc.h calccomponent.h pointstore.h \
+		rtdb.h
 calcthread.obj:	ctibase.h ctinexus.h dlldefs.h dllbase.h os2_2w32.h \
 		types.h cticalls.h dsm2.h mutex.h guard.h pointtypes.h \
 		message.h ctidbgmem.h collectable.h msg_multi.h msg_pdata.h \
-		pointdefs.h msg_signal.h yukon.h logger.h thread.h \
+		pointdefs.h msg_signal.h yukon.h logger.h thread.h utility.h \
 		calcthread.h hashkey.h calc.h calccomponent.h pointstore.h \
 		rtdb.h
 calc_logic.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h types.h \

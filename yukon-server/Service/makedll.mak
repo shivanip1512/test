@@ -45,6 +45,10 @@ copy:
            -if exist bin\service.lib copy bin\service.lib $(COMPILEBASE)\lib
 
 
+deps:
+                scandeps -Output makedll.mak *.cpp
+
+
 .cpp.obj :
                 @echo:
                 @echo Compiling: $<
@@ -53,3 +57,5 @@ copy:
                 @echo:
                 $(RWCPPINVOKE) $(CPPFLAGS) $(RWCPPFLAGS) $(DLLFLAGS) $(INCLPATHS) -DWINDOWS -Fo$(OBJ)\ -c $<
 
+#UPDATE#
+#ENDUPDATE#

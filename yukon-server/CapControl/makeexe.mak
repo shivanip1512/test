@@ -116,7 +116,8 @@ capcontroller.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h types.h \
 		msg_pcreturn.h msg_dbchg.h pointtypes.h configparms.h \
 		cparms.h capcontroller.h ccsubstationbusstore.h ccid.h \
 		ccexecutor.h ctdpcptrq.h ctibase.h ctinexus.h netports.h \
-		devicetypes.h resolvers.h db_entry_defines.h
+		devicetypes.h resolvers.h db_entry_defines.h ccclientconn.h \
+		ccclientlistener.h
 cccapbank.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h types.h \
 		cticalls.h dsm2.h mutex.h guard.h sema.h cccapbank.h \
 		observe.h ccid.h pointdefs.h device.h devicetypes.h logger.h \
@@ -129,7 +130,8 @@ ccclientconn.obj:	ccclientconn.h ctdpcptrq.h dlldefs.h observe.h \
 		logger.h thread.h msg_multi.h msg_pdata.h pointdefs.h \
 		msg_signal.h yukon.h msg_ptreg.h msg_reg.h queue.h ccfeeder.h \
 		cccapbank.h msg_pcrequest.h ccstate.h ccexecutor.h \
-		ccsubstationbusstore.h ccid.h ctibase.h ctinexus.h
+		ccsubstationbusstore.h ccid.h ctibase.h ctinexus.h \
+		capcontroller.h msg_cmd.h pointtypes.h configparms.h cparms.h
 ccclientlistener.obj:	ccclientlistener.h ccclientconn.h ctdpcptrq.h \
 		dlldefs.h observe.h types.h ccstate.h connection.h exchange.h \
 		dllbase.h os2_2w32.h cticalls.h dsm2.h mutex.h guard.h \

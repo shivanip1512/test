@@ -137,7 +137,7 @@ id_ctimsg.obj:	utility.h dsm2.h mutex.h dlldefs.h guard.h id_ctimsg.h \
 		id_build.h id_vinfo.h
 message.obj:	message.h ctidbgmem.h collectable.h dlldefs.h dllbase.h \
 		os2_2w32.h types.h cticalls.h dsm2.h mutex.h guard.h logger.h \
-		thread.h
+		thread.h numstr.h
 msg_cmd.obj:	dllbase.h os2_2w32.h dlldefs.h types.h cticalls.h dsm2.h \
 		mutex.h guard.h collectable.h msg_cmd.h message.h ctidbgmem.h \
 		logger.h thread.h
@@ -163,6 +163,14 @@ msg_multiwrap.obj:	logger.h thread.h mutex.h dlldefs.h guard.h \
 		msg_multiwrap.h msg_multi.h collectable.h msg_pdata.h \
 		pointdefs.h message.h ctidbgmem.h msg_signal.h yukon.h \
 		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h
+msg_notif_email.obj:	msg_notif_email.h collectable.h logger.h thread.h \
+		mutex.h dlldefs.h guard.h dllbase.h os2_2w32.h types.h \
+		cticalls.h dsm2.h message.h ctidbgmem.h yukon.h msg_email.h \
+		msg_notif_email_attachment.h
+msg_notif_email_attachment.obj:	msg_notif_email_attachment.h logger.h \
+		thread.h mutex.h dlldefs.h guard.h dllbase.h os2_2w32.h \
+		types.h cticalls.h dsm2.h message.h ctidbgmem.h collectable.h \
+		yukon.h
 msg_pcrequest.obj:	msg_pcrequest.h dlldefs.h message.h ctidbgmem.h \
 		collectable.h logger.h thread.h mutex.h guard.h dllbase.h \
 		os2_2w32.h types.h cticalls.h dsm2.h
@@ -184,12 +192,17 @@ msg_ptreg.obj:	collectable.h logger.h thread.h mutex.h dlldefs.h \
 msg_reg.obj:	collectable.h logger.h thread.h mutex.h dlldefs.h guard.h \
 		msg_reg.h message.h ctidbgmem.h dllbase.h os2_2w32.h types.h \
 		cticalls.h dsm2.h
+msg_server_req.obj:	msg_server_req.h dlldefs.h message.h ctidbgmem.h \
+		collectable.h logger.h thread.h mutex.h guard.h
+msg_server_resp.obj:	msg_server_resp.h dlldefs.h message.h ctidbgmem.h \
+		collectable.h logger.h thread.h mutex.h guard.h rwutil.h \
+		boost_time.h
 msg_signal.obj:	collectable.h logger.h thread.h mutex.h dlldefs.h \
 		guard.h msg_signal.h message.h ctidbgmem.h yukon.h dllbase.h \
 		os2_2w32.h types.h cticalls.h dsm2.h utility.h
 msg_tag.obj:	collectable.h logger.h thread.h mutex.h dlldefs.h guard.h \
 		msg_tag.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
-		message.h ctidbgmem.h yukon.h
+		message.h ctidbgmem.h yukon.h numstr.h
 msg_trace.obj:	dllbase.h os2_2w32.h dlldefs.h types.h cticalls.h \
 		dsm2.h mutex.h guard.h collectable.h logger.h thread.h \
 		msg_trace.h message.h ctidbgmem.h

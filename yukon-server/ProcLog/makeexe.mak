@@ -59,6 +59,9 @@ clean:
                 -del *.lib
                 -del *.exp
 
+deps:
+                scandeps -Output makeexe.mak *.cpp
+
 .cpp.obj:
                 @echo:
                 @echo Compiling: $<
@@ -67,3 +70,6 @@ clean:
                 @echo:
                 $(RWCPPINVOKE) $(CFLAGS) $(RWCPPFLAGS) $(INCLPATHS) -DWINDOWS -Fo$(OBJ)\ -c $<
 
+#UPDATE#
+id_proclog.obj:	id_proclog.h
+#ENDUPDATE#

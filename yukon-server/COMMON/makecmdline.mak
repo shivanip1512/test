@@ -89,6 +89,7 @@ cmdparse.obj:	yukon.h ctidbgmem.h dlldefs.h dllbase.h os2_2w32.h \
 		parsevalue.h cparms.h devicetypes.h logger.h thread.h \
 		numstr.h pointdefs.h utility.h
 counter.obj:	counter.h guard.h dlldefs.h mutex.h
+critical_section.obj:	critical_section.h dlldefs.h
 ctdpcptrq.obj:	ctdpcptrq.h dlldefs.h
 cticalls.obj:	os2_2w32.h dlldefs.h types.h cticalls.h dllbase.h dsm2.h \
 		mutex.h guard.h logger.h thread.h
@@ -109,7 +110,8 @@ desolvers.obj:	desolvers.h db_entry_defines.h yukon.h ctidbgmem.h \
 dllbase.obj:	dsm2.h mutex.h dlldefs.h guard.h yukon.h ctidbgmem.h \
 		dllbase.h os2_2w32.h types.h cticalls.h configparms.h \
 		cparms.h dbaccess.h sema.h ctinexus.h logger.h thread.h \
-		utility.h
+		utility.h thread_monitor.h queue.h thread_register_data.h \
+		boost_time.h
 drpint.obj:	os2_2w32.h dlldefs.h types.h cticalls.h queues.h dsm2.h \
 		mutex.h guard.h drp.h
 elog_cli.obj:	os2_2w32.h dlldefs.h types.h cticalls.h dsm2.h mutex.h \
@@ -159,6 +161,8 @@ quetest.obj:	queue.h dlldefs.h logger.h thread.h mutex.h guard.h
 queue.obj:	queue.h dlldefs.h logger.h thread.h mutex.h guard.h
 queues.obj:	os2_2w32.h dlldefs.h types.h cticalls.h logger.h thread.h \
 		mutex.h guard.h queues.h dllbase.h dsm2.h
+queues_test.obj:	os2_2w32.h dlldefs.h types.h cticalls.h logger.h \
+		thread.h mutex.h guard.h numstr.h queues.h dllbase.h dsm2.h
 repeaterrole.obj:	repeaterrole.h dlldefs.h
 resolvers.obj:	dsm2.h mutex.h dlldefs.h guard.h resolvers.h types.h \
 		pointtypes.h yukon.h ctidbgmem.h dllbase.h os2_2w32.h \
@@ -173,12 +177,13 @@ statistics.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h types.h \
 		thread.h statistics.h counter.h yukon.h ctidbgmem.h
 stdexcepthdlr.obj:	stdexcepthdlr.h dlldefs.h
 tfexec.obj:	tfexec.h
-thread.obj:	thread.h mutex.h dlldefs.h guard.h
+thread.obj:	dllbase.h os2_2w32.h dlldefs.h types.h cticalls.h dsm2.h \
+		mutex.h guard.h thread.h
 thread_listener.obj:	thread_listener.h thread.h mutex.h dlldefs.h \
 		guard.h
-thread_monitor.obj:	thread_monitor.h queue.h dlldefs.h logger.h \
-		thread.h mutex.h guard.h thread_register_data.h boost_time.h \
-		cticalls.h os2_2w32.h types.h
+thread_monitor.obj:	dllbase.h os2_2w32.h dlldefs.h types.h cticalls.h \
+		dsm2.h mutex.h guard.h logger.h thread.h thread_monitor.h \
+		queue.h thread_register_data.h boost_time.h
 thread_register_data.obj:	thread_register_data.h boost_time.h \
 		cticalls.h os2_2w32.h dlldefs.h types.h
 thread_timer.obj:	thread_timer.h thread.h mutex.h dlldefs.h guard.h \
