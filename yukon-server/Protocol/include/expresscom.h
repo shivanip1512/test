@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2003/03/13 19:35:46 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2003/04/09 22:46:27 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -32,6 +32,8 @@ public:
 
     typedef enum
     {
+        atLoad          = 0x8000,           // Load level addressing
+
         atSpid          = 0x80,            // Service Provider ID
         atGeo           = 0x40,
         atSubstation    = 0x20,

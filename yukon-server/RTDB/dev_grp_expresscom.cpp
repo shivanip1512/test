@@ -1,3 +1,4 @@
+
 /*-----------------------------------------------------------------------------*
 *
 * File:   dev_grp_expresscom
@@ -7,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2003/03/26 20:32:03 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2003/04/09 22:46:26 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -172,7 +173,48 @@ INT CtiDeviceGroupExpresscom::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandPars
             parse.setValue("xc_serial", serial);
         }
 
-        parse.setValue("relaymask", (int)(getExpresscomGroup().getLoadMask()));
+        if(parse.getCommand() == ControlRequest && serial <= 0 && program == 0 && splinter == 0 )
+        {
+            if((getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atLoad) &&
+               (getExpresscomGroup().getLoadMask() != 0))
+            {
+                parse.setValue("relaymask", (int)(getExpresscomGroup().getLoadMask()));
+            }
+            else
+            {
+                // This is bad!  We would control every single load based upon geo addressing...
+                nRet = BADPARAM;
+
+                resultString = "\nERROR: " + getName() + " Group addressing control commands to all loads is prohibited\n" + \
+                               " The group must specify program, splinter or load level addressing";
+                CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr), resultString, nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
+                retList.insert( pRet );
+
+                if(OutMessage)
+                {
+                    delete OutMessage;
+                    OutMessage = NULL;
+                }
+
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << resultString << endl;
+                }
+
+                return nRet;
+            }
+        }
+        else
+        {
+            if((getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atLoad) && (program != 0 || splinter != 0) )
+            {
+                parse.setValue("relaymask", (int)(getExpresscomGroup().getLoadMask()));
+            }
+            else
+            {
+                parse.setValue("relaymask", 0);
+            }
+        }
 
         /*
          * OK, these are the items we are about to set out to perform..  Any additional signals will
@@ -242,14 +284,14 @@ INT CtiDeviceGroupExpresscom::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandPars
 RWCString CtiDeviceGroupExpresscom::getPutConfigAssignment(UINT level)
 {
     RWCString assign = RWCString("xcom assign") +
-        " S" + CtiNumStr(_expresscomGroup.getServiceProvider()) +
-        " G" + CtiNumStr(_expresscomGroup.getGeo()) +
-        " B" + CtiNumStr(_expresscomGroup.getSubstation()) +
-        " F" + CtiNumStr(_expresscomGroup.getFeeder()) +
-        " Z" + CtiNumStr(_expresscomGroup.getZip()) +
-        " U" + CtiNumStr(_expresscomGroup.getUda()) +
-        " P" + CtiNumStr(_expresscomGroup.getProgram()) +
-        " R" + CtiNumStr(_expresscomGroup.getSplinter()) + " Load ";
+                       " S" + CtiNumStr(_expresscomGroup.getServiceProvider()) +
+                       " G" + CtiNumStr(_expresscomGroup.getGeo()) +
+                       " B" + CtiNumStr(_expresscomGroup.getSubstation()) +
+                       " F" + CtiNumStr(_expresscomGroup.getFeeder()) +
+                       " Z" + CtiNumStr(_expresscomGroup.getZip()) +
+                       " U" + CtiNumStr(_expresscomGroup.getUda()) +
+                       " P" + CtiNumStr(_expresscomGroup.getProgram()) +
+                       " R" + CtiNumStr(_expresscomGroup.getSplinter()) + " Load ";
 
     for(int i = 0; i < 15; i++)
     {
@@ -336,6 +378,5 @@ bool CtiDeviceGroupExpresscom::checkForEmptyParseAddressing( CtiCommandParser &p
 
     return status;
 }
-
 
 

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2003/03/13 19:35:25 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2003/04/09 22:46:26 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1107,12 +1107,14 @@ INT resolveRelayUsage(RWCString str)
             }
         }
 
+#if 0
         if(nRet == 0)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << "Invalid relay type, or no relays selected. " << str << endl;
             nRet = A_RESTORE;
         }
+#endif
     }
 
     return nRet;
@@ -1145,6 +1147,8 @@ INT resolveAddressUsage(RWCString str, int type)
             if(!str.match("u").isNull()) nRet |= 0x04;  // User Defined
             if(!str.match("p").isNull()) nRet |= 0x02;  // Program
             if(!str.match("r").isNull()) nRet |= 0x01;  // Splinter
+
+            if(!str.match("l").isNull()) nRet |= 0x8000;  // Load addressing  040903
 
             break;
         }

@@ -847,6 +847,25 @@ void  CtiCommandParser::doParseControl(const RWCString &CmdStr)
             }
         }
 
+        if(CmdStr.contains(" truecycle"))
+        {
+            _cmd["xctruecycle"] = CtiParseValue( TRUE );
+        }
+
+        if(CmdStr.contains(" delta"))
+        {
+            _cmd["xcdelta"] = CtiParseValue( TRUE );    // Temperatures are delta offsets
+        }
+
+        if(CmdStr.contains(" noramp"))
+        {
+            _cmd["xcnoramp"] = CtiParseValue( TRUE );
+        }
+
+        if(CmdStr.contains(" celsius"))
+        {
+            _cmd["xccelsius"] = CtiParseValue( TRUE );  // Temperatures are celsius
+        }
         if(!(token = CmdStr.match("froz(en)?")).isNull())      // Sourcing from CmdStr, which is the entire command string.
         {
             flag |= CMD_FLAG_FROZEN;
@@ -2888,26 +2907,6 @@ void  CtiCommandParser::doParseExpresscomControl(const RWCString &CmdStr)
 
     token = tok(); // Get the first one into the hopper....
 
-    if(CmdStr.contains(" truecycle"))
-    {
-        _cmd["xctruecycle"] = CtiParseValue( TRUE );
-    }
-
-    if(CmdStr.contains(" delta"))
-    {
-        _cmd["xcdelta"] = CtiParseValue( TRUE );    // Temperatures are delta offsets
-    }
-
-    if(CmdStr.contains(" noramp"))
-    {
-        _cmd["xcnoramp"] = CtiParseValue( TRUE );
-    }
-
-
-    if(CmdStr.contains(" celsius"))
-    {
-        _cmd["xccelsius"] = CtiParseValue( TRUE );  // Temperatures are celsius
-    }
 
     if(!(temp = CmdStr.match(" mode (heat)|(cool)|(both)")).isNull())
     {

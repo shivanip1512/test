@@ -13,8 +13,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2002/10/08 20:14:15 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2003/04/09 22:46:27 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -59,7 +59,7 @@ protected:
     UCHAR _program;                 // 1 - 65534
     UCHAR _splinter;
 
-    BYTE _addressUsage;             // bit indicators.  LSB is SPID.  No bits set indicates serial.
+    USHORT _addressUsage;             // bit indicators.  LSB is SPID.  No bits set indicates serial.
     USHORT _loads;             // 0 indicates all loads.  Otherwise, one load per message!
 
 private:
@@ -97,8 +97,8 @@ public:
     UCHAR getSplinter() const;
     CtiTableExpresscomLoadGroup& setSplinter(UCHAR splinter);
 
-    BYTE getAddressUsage() const;
-    CtiTableExpresscomLoadGroup& setAddressUsage(BYTE addrussage);
+    USHORT getAddressUsage() const;
+    CtiTableExpresscomLoadGroup& setAddressUsage(USHORT addrussage);
     BYTE getLoadMask() const;
     CtiTableExpresscomLoadGroup& setLoadMask(BYTE load);
     BOOL useRelay(const INT r) const;

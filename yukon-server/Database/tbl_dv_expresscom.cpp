@@ -10,8 +10,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2002/10/23 21:06:09 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2003/04/09 22:46:27 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -171,11 +171,11 @@ CtiTableExpresscomLoadGroup& CtiTableExpresscomLoadGroup::setSplinter(UCHAR spli
     return *this;
 }
 
-BYTE CtiTableExpresscomLoadGroup::getAddressUsage() const
+USHORT CtiTableExpresscomLoadGroup::getAddressUsage() const
 {
     return _addressUsage;
 }
-CtiTableExpresscomLoadGroup& CtiTableExpresscomLoadGroup::setAddressUsage(BYTE addrussage)
+CtiTableExpresscomLoadGroup& CtiTableExpresscomLoadGroup::setAddressUsage(USHORT addrussage)
 {
     _addressUsage = addrussage;
     return *this;

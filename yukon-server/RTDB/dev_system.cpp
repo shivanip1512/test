@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_system.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2003/03/13 19:36:00 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2003/04/09 22:46:27 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -156,7 +156,7 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
             case ProtocolExpresscomType:
                 {
                     int xcserial = parse.getiValue("serial");
-                    int xcrelaymask = parse.getiValue("relaymask");
+                    int xcrelaymask = parse.getiValue("relaymask", 1);
 
                     parse.setValue("xc_serial", xcserial);
                     parse.setValue("relaymask", xcrelaymask);
@@ -171,7 +171,7 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
                         }
                         else
                         {
-                            problem = RWCString("Invalid Request: (Relay 1,2,3) not specified");
+                            problem = RWCString("Invalid Request: (Load 1,2,3...) not specified");
                         }
 
                         status = CtiInvalidRequest;

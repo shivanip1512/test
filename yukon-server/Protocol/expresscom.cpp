@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2003/03/13 19:35:38 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2003/04/09 22:46:27 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -245,11 +245,11 @@ INT CtiProtocolExpresscom::timedLoadControl(UINT loadMask, UINT shedtime_seconds
     BYTE shedtime = 0;
     BYTE load;
 
-    for(load = 1; load < 15; load++)
+    for(load = 0; load < 15; load++)
     {
         UINT shedtime_minutes = shedtime_seconds / 60;  // This is now in integer minutes
 
-        if(loadMask & (0x01 << (load - 1)))         // We have a message to be build up here!
+        if((!loadMask && load == 0) || (loadMask & (0x01 << (load - 1))))         // We have a message to be build up here!
         {
             flag = (load & 0x0f);                  // Pick up the load designator;
             _message.push_back( mtTimedLoadControl );
@@ -291,6 +291,8 @@ INT CtiProtocolExpresscom::timedLoadControl(UINT loadMask, UINT shedtime_seconds
 
             _messageCount++;
         }
+
+        if(!loadMask && load == 0) break;
     }
 
     return status;
@@ -303,9 +305,9 @@ INT CtiProtocolExpresscom::restoreLoadControl(UINT loadMask, BYTE rand, USHORT d
     BYTE flag;
     BYTE load;
 
-    for(load = 1; load < 15; load++)
+    for(load = 0; load < 15; load++)
     {
-        if(loadMask & (0x01 << (load - 1)))         // We have a message to be build up here!
+        if((!loadMask && load == 0) || (loadMask & (0x01 << (load - 1))))         // We have a message to be build up here!
         {
             flag = (load & 0x0f);                  // Pick up the load designator;
             _message.push_back( mtRestoreLoadControl );
@@ -329,6 +331,8 @@ INT CtiProtocolExpresscom::restoreLoadControl(UINT loadMask, BYTE rand, USHORT d
 
             _messageCount++;
         }
+
+        if(!loadMask && load == 0) break;
     }
 
     return status;
@@ -341,9 +345,9 @@ INT CtiProtocolExpresscom::cycleLoadControl(UINT loadMask, BYTE cyclepercent, BY
     BYTE flag;
     BYTE load;
 
-    for(load = 1; load < 15; load++)
+    for(load = 0; load < 15; load++)
     {
-        if(loadMask & (0x01 << (load - 1)))         // We have a message to be build up here!
+        if((!loadMask && load == 0) || loadMask & (0x01 << (load - 1)))         // We have a message to be build up here!
         {
             flag = (load & 0x0f);                  // Pick up the load designator;
             _message.push_back( mtCycleLoadControl );
@@ -373,6 +377,8 @@ INT CtiProtocolExpresscom::cycleLoadControl(UINT loadMask, BYTE cyclepercent, BY
 
             _messageCount++;
         }
+
+        if(!loadMask && load == 0) break;
     }
 
     return status;
@@ -387,9 +393,9 @@ INT CtiProtocolExpresscom::thermostatLoadControl(UINT loadMask, BYTE cyclepercen
     BYTE flaglo = (noramp ? 0x80 : 0x00);
     BYTE load;
 
-    for(load = 1; load < 15; load++)
+    for(load = 0; load < 15; load++)
     {
-        if(loadMask & (0x01 << (load - 1)))         // We have a message to be build up here!
+        if((!loadMask && load == 0) || loadMask & (0x01 << (load - 1)))         // We have a message to be build up here!
         {
             flaglo |= (load & 0x0f);                  // Pick up the load designator;
             _message.push_back( mtThermostatLoadControl );
@@ -430,6 +436,8 @@ INT CtiProtocolExpresscom::thermostatLoadControl(UINT loadMask, BYTE cyclepercen
 
             _messageCount++;
         }
+
+        if(!loadMask && load == 0) break;
     }
 
     return status;
@@ -667,15 +675,17 @@ INT CtiProtocolExpresscom::service(UINT loadMask, bool activate)
     INT status = NoError;
     BYTE load;
 
-    for(load = 1; load < 15; load++)
+    for(load = 0; load < 15; load++)
     {
-        if(loadMask & (0x01 << (load - 1)))         // We have a message to be build up here!
+        if((!loadMask && load == 0) || loadMask & (0x01 << (load - 1)))         // We have a message to be build up here!
         {
             _message.push_back( mtService );
             _message.push_back( (activate ? 0x80 : 0x00 ) | (load & 0x0f) );
 
             _messageCount++;
         }
+
+        if(!loadMask && load == 0) break;
     }
 
     return status;
@@ -922,7 +932,7 @@ INT CtiProtocolExpresscom::assembleControl(CtiCommandParser &parse, CtiOutMessag
     INT  i;
     INT  status = NORMAL;
     UINT CtlReq = CMD_FLAG_CTL_ALIASMASK & parse.getFlags();
-    INT  relaymask  = parse.getiValue("relaymask", 0x00000001);
+    INT  relaymask  = parse.getiValue("relaymask", 0);
 
     if(CtlReq == CMD_FLAG_CTL_SHED)
     {
@@ -940,8 +950,8 @@ INT CtiProtocolExpresscom::assembleControl(CtiCommandParser &parse, CtiOutMessag
         INT period     = parse.getiValue("cycle_period", 30);
         INT repeat     = parse.getiValue("cycle_count", 8);
         INT delay      = parse.getiValue("delaytime_sec", 0) / 60;
-        bool noramp    = (parse.getiValue("xcnoramp", 0) ? false: true);
-        bool tc        = (parse.getiValue("xctruecycle", 0) ? false: true);
+        bool noramp    = (parse.getiValue("xcnoramp", 0) ? true : false);
+        bool tc        = (parse.getiValue("xctruecycle", 0) ? true : false);
 
         // Add these two items to the list for control accounting!
         parse.setValue("control_reduction", parse.getiValue("cycle", 0) );
@@ -1022,7 +1032,7 @@ INT CtiProtocolExpresscom::assemblePutConfig(CtiCommandParser &parse, CtiOutMess
     INT status = NORMAL;
 
     int serial = parse.getiValue("xc_serial", 0);
-    int relaymask  = parse.getiValue("relaymask", 0x00000001);
+    int relaymask  = parse.getiValue("relaymask", 0);
 
 
     if(serial != 0 && parse.isKeyValid("xcaddress"))
@@ -1309,9 +1319,9 @@ INT CtiProtocolExpresscom::thermostatSetState(UINT loadMask, bool temporary, boo
     BYTE flaglo;
     BYTE load;
 
-    for(load = 1; load < 16; load++)
+    for(load = 0; load < 16; load++)
     {
-        if(loadMask & (0x01 << (load - 1)))         // We have a message to be build up here!
+        if((!loadMask && load == 0) || loadMask & (0x01 << (load - 1)))         // We have a message to be build up here!
         {
             flaghi = ( (temporary ? 0x80 : 0x00) | (fanstate & 0x03) | (sysstate & 0x1c) | (restore ? 0x20 : 0x00));
             flaglo = ( _celsiusMode ? 0x20 : 0x00) | (load & 0x0f);                  // Pick up the load designator;
@@ -1367,6 +1377,8 @@ INT CtiProtocolExpresscom::thermostatSetState(UINT loadMask, bool temporary, boo
 
             _messageCount++;
         }
+
+        if(!loadMask && load == 0) break;
     }
 
     return status;
