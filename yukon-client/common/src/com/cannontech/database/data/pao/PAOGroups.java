@@ -265,6 +265,8 @@ public final static int getDeviceType(String typeString)
    	  return RTC;
    else if (isStringDevice(compareString, STRING_RTM))
    	  return RTM;
+	else if (isStringDevice(compareString, STRING_CBC_EXPRESSCOM))
+		return CBC_EXPRESSCOM;
    else
 	  return INVALID;
 }
@@ -483,6 +485,9 @@ public final static String getPAOTypeString(int type)
 	  	  return STRING_KV[0];
 	  case KVII:
 	  	  return STRING_KVII[0];
+	  	  
+	case CBC_EXPRESSCOM:
+		return STRING_CBC_EXPRESSCOM[0];
  	  
  	  default:
 		  return STRING_INVALID;

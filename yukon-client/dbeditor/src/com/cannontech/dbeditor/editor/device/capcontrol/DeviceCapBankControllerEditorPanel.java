@@ -921,6 +921,8 @@ public com.cannontech.database.data.device.DeviceBase createNewCBC(
       capBankController = DeviceFactory.createDevice(com.cannontech.database.data.pao.PAOGroups.CAPBANKCONTROLLER);
    else if( getCbcType() == com.cannontech.database.data.pao.PAOGroups.DNP_CBC_6510 )
       capBankController = DeviceFactory.createDevice(com.cannontech.database.data.pao.PAOGroups.DNP_CBC_6510);
+	else if( getCbcType() == com.cannontech.database.data.pao.PAOGroups.CBC_EXPRESSCOM )
+		capBankController = DeviceFactory.createDevice(com.cannontech.database.data.pao.PAOGroups.CBC_EXPRESSCOM);
    else
       throw new IllegalStateException("CBC type of: " + getCbcType() + " not found");
 

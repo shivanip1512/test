@@ -147,7 +147,8 @@ public final static boolean isCapBankController( int deviceType )
 {
 	return ( deviceType == CAPBANKCONTROLLER
 			    || deviceType == CBC_FP_2800
-             || deviceType == DNP_CBC_6510 );
+             || deviceType == DNP_CBC_6510
+             || deviceType == CBC_EXPRESSCOM );
 }
 /**
  * This method was created in VisualAge.

@@ -93,6 +93,8 @@ public interface DeviceTypes extends TypeBase
 	
 	public final static int RTM						= DEVICE_OFFSET + 76;
 	
+	public final static int CBC_EXPRESSCOM			= DEVICE_OFFSET + 77;
+	
 
 	//***IMPORTANT ** If you add a deviceType, please update the total device type count!
 	public final static int DEVICE_TYPES_COUNT = 76;
@@ -151,6 +153,7 @@ public interface DeviceTypes extends TypeBase
 	public static final String[] STRING_MACRO_GROUP = {"MACRO GROUP"};
 	public static final String[] STRING_CAP_BANK = {"CAP BANK", "CAPBANK"};
 	public static final String[] STRING_CAP_BANK_CONTROLLER = { "CBC Versacom", "CBC", "CAPBANKCONTROLLER" };
+	public static final String[] STRING_CBC_EXPRESSCOM = { "CBC Expresscom" };
 	public static final String[] STRING_SYSTEM = {"SYSTEM"};
 	public static final String[] STRING_VIRTUAL_SYSTEM = {"VIRTUAL SYSTEM", "VIRTUALSYSTEM"};
 	public static final String[] STRING_LM_DIRECT_PROGRAM = {"LM DIRECT PROGRAM"};
