@@ -90,8 +90,8 @@
               <p align="center" class="Subtext"><br>
               <table width="366" border="0" cellspacing="0" cellpadding="3" align="center">
                 <tr> 
-                    <td align="right" width="143"> 
-                      <input type="submit" value="Re-enable" onclick="this.form.action.value='ReenableProgram'"
+                  <td align="right" width="143"> 
+                    <input type="submit" value="Re-enable" onclick="this.form.action.value='ReenableProgram'"
 					 <% if (programs.getStarsLMProgramCount() == 0) out.print("disabled"); %>>
                   </td>
                     <td width="211"> 
