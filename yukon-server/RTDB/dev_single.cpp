@@ -5,8 +5,8 @@
 * Date:   10/4/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.31 $
-* DATE         :  $Date: 2004/07/27 17:04:53 $
+* REVISION     :  $Revision: 1.32 $
+* DATE         :  $Date: 2004/07/28 18:58:05 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -693,7 +693,7 @@ bool CtiDeviceSingle::isTransactionComplete(void)
 }
 
 
-void CtiDeviceSingle::getVerificationWorkObjects(queue< CtiVerificationBase * > &work_queue)
+void CtiDeviceSingle::getVerificationObjects(queue< CtiVerificationBase * > &work_queue)
 {
 }
 

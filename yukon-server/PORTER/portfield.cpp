@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.114 $
-* DATE         :  $Date: 2004/07/27 15:52:41 $
+* REVISION     :  $Revision: 1.115 $
+* DATE         :  $Date: 2004/07/28 18:58:05 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1126,11 +1126,11 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                             //          i.e. if we're returning a massive event log or something
                             ds->sendCommResult(InMessage);
 
-                            queue< CtiVerificationBase * > work_queue;
+                            queue< CtiVerificationBase * > verification_queue;
 
-                            ds->getVerificationWorkObjects(work_queue);
+                            ds->getVerificationObjects(verification_queue);
 
-                            PorterVerificationThread.push(work_queue);
+                            PorterVerificationThread.push(verification_queue);
                         }
                         else
                         {

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2004/07/27 16:52:51 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2004/07/28 18:58:05 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -52,7 +52,7 @@ private:
 
     //crc_ccitt_type _crc;
     queue< CtiOutMessage * > _codes;
-    queue< CtiVerificationWork * > _work_objects;
+    queue< CtiVerificationBase * > _verification_objects;
     queue< unsigned int > _retrieved_codes;
     queue< unsigned int > _returned_codes;
 
@@ -196,7 +196,7 @@ public:
     int recvCommRequest(OUTMESS *OutMessage);
     int sendCommResult (INMESS  *InMessage);
 
-    void getVerificationWorkObjects(queue< CtiVerificationBase * > &work_queue);
+    void getVerificationObjects(queue< CtiVerificationBase * > &work_queue);
 
     void   queueCode(CtiOutMessage *om);
     bool   hasCodes() const;

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2004/07/27 16:56:57 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2004/07/28 18:58:05 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -44,7 +44,7 @@ public:
     void DecodeDatabaseReader(RWDBReader &rdr);
 
     int decode(CtiXfer &xfer, int status);
-    void getVerificationWorkObjects(queue< CtiVerificationBase * > &work_queue);
+    void getVerificationObjects(queue< CtiVerificationBase * > &vq);
 
     INT ExecuteRequest (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
 

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2004/07/27 16:56:57 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2004/07/28 18:58:05 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -42,9 +42,9 @@ int CtiDeviceLMI::decode(CtiXfer &xfer, int status)
 }
 
 
-void CtiDeviceLMI::getVerificationWorkObjects(queue< CtiVerificationBase * > &work_queue)
+void CtiDeviceLMI::getVerificationObjects(queue< CtiVerificationBase * > &work_queue)
 {
-    _lmi.getVerificationWorkObjects(work_queue);
+    _lmi.getVerificationObjects(work_queue);
 }
 
 

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2004/07/27 16:52:51 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2004/07/28 18:58:05 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -339,12 +339,12 @@ bool CtiProtocolLMI::isTransactionComplete( void )
 }
 
 
-void CtiProtocolLMI::getVerificationWorkObjects(queue< CtiVerificationBase * > &work_queue)
+void CtiProtocolLMI::getVerificationObjects(queue< CtiVerificationBase * > &vq)
 {
-    while( !_work_objects.empty() )
+    while( !_verification_objects.empty() )
     {
-        work_queue.push(_work_objects.front());
-        _work_objects.pop();
+        vq.push(_verification_objects.front());
+        _verification_objects.pop();
     }
 }
 
@@ -471,12 +471,25 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
                         om->VerificationSequence = VerificationSequenceGen();
                     }
 
+                    long id = om->DeviceID;
+
                     ptime::time_duration_type expiration(seconds(60));
                     CtiVerificationWork *work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_Golay, *om, codestr, expiration);
 
-                    _work_objects.push(work);
+                    _verification_objects.push(work);
                     _codes.pop();
 
+                    CtiVerificationReport *report;
+/*
+                    //  testing receipts
+                    report = new CtiVerificationReport(CtiVerificationBase::Protocol_Golay, id, codestr, second_clock::universal_time());
+
+                    _verification_objects.push(report);
+
+                    report = new CtiVerificationReport(CtiVerificationBase::Protocol_Golay, id, string("999999"), second_clock::universal_time());
+
+                    _verification_objects.push(report);
+*/
                     delete om;
                 }
 

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_single.h-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2004/07/27 17:05:34 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2004/07/28 18:58:05 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -143,7 +143,7 @@ public:
     virtual int  sendCommResult(INMESS *InMessage);
     virtual bool isTransactionComplete();
 
-    virtual void getVerificationWorkObjects(queue< CtiVerificationBase * > &work_queue);
+    virtual void getVerificationObjects(queue< CtiVerificationBase * > &work_queue);
 
     virtual INT ProcessResult(INMESS*,
                               RWTime&,
