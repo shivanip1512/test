@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_welco.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/06/18 16:13:45 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2002/06/25 17:48:31 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -624,7 +624,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
                                 /* Apply offset */
                                 PValue += pAccumPoint->getDataOffset();
 
-                                sprintf(tStr, "%s point %s = %f", getName(), pAccumPoint->getName(), PValue);
+                                _snprintf(tStr, 126, "%s point %s = %f", getName(), pAccumPoint->getName(), PValue);
 
                                 pData = new CtiPointDataMsg(pAccumPoint->getPointID(), PValue, NormalQuality, DemandAccumulatorPointType, tStr);
                                 if(pData != NULL)
@@ -650,7 +650,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
                             /* Apply offset */
                             PValue += pAccumPoint->getDataOffset();
 
-                            sprintf(tStr, "%s point %s = %f", getName(), pAccumPoint->getName(), PValue);
+                            _snprintf(tStr, 126, "%s point %s = %f", getName(), pAccumPoint->getName(), PValue);
 
                             pData = new CtiPointDataMsg(pAccumPoint->getPointID(), PValue, NormalQuality, PulseAccumulatorPointType, tStr);
 
@@ -731,60 +731,66 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
                     {
                         Pointer += 2;
 
-                        if((PointRecord = getDevicePointOffsetTypeEqual(PointOffset, DemandAccumulatorPointType)) != NULL)
+                        if( PartHour != 0.0 && (PointRecord = getDevicePointOffsetTypeEqual(PointOffset, DemandAccumulatorPointType)) != NULL)
                         {
                             pAccumPoint = (CtiPointAccumulator *)PointRecord;
 
+                            ULONG  prevpulses = pAccumPoint->getPointHistory().getPresentPulseCount();
+                            ULONG  prespulses = MAKEUSHORT (MyInMessage[Pointer], MyInMessage[Pointer + 1]);
+                            DOUBLE multiplier = pAccumPoint->getMultiplier();
+                            DOUBLE dataoffset = pAccumPoint->getDataOffset();
+
                             /* Copy the pulses */
-                            pAccumPoint->getPointHistory().setPreviousPulseCount(pAccumPoint->getPointHistory().getPresentPulseCount());
-                            pAccumPoint->getPointHistory().setPresentPulseCount(MAKEUSHORT (MyInMessage[Pointer], MyInMessage[Pointer + 1]));
+                            pAccumPoint->getPointHistory().setPreviousPulseCount(prevpulses);
+                            pAccumPoint->getPointHistory().setPresentPulseCount(prespulses);
 
                             if(!(getPrevFreezeNumber()) || !(getLastFreezeNumber()))
                             {
-                                /*
-                                if(PointRecord.CurrentValue < PointRecord.PlugValue)
-                                   PointRecord.CurrentValue = PointRecord.PlugValue;
-                                */
-
                                 // Inform dispatch that the point pump has just been primed.
                             }
                             else
                             {
                                 /* Calculate the number of pulses */
-                                if(pAccumPoint->getPointHistory().getPresentPulseCount() <
-                                   pAccumPoint->getPointHistory().getPreviousPulseCount())
+                                if(prespulses < prevpulses)
                                 {
                                     /* Rollover */
-                                    UValue = 0xffff -
-                                             pAccumPoint->getPointHistory().getPreviousPulseCount() +
-                                             pAccumPoint->getPointHistory().getPresentPulseCount();
+                                    UValue = 0xffff - prevpulses + prespulses;
                                 }
                                 else
                                 {
-                                    UValue = pAccumPoint->getPointHistory().getPresentPulseCount() -
-                                             pAccumPoint->getPointHistory().getPreviousPulseCount();
+                                    UValue = prespulses - prevpulses;
                                 }
 
                                 /* Calculate in units/hour */
-                                PValue = (FLOAT) UValue * pAccumPoint->getMultiplier(); // PointRecord.Multiplier;
+                                PValue = (FLOAT) UValue * multiplier;
 
                                 /* to convert to units */
                                 PValue /= PartHour;
 
                                 /* Apply offset */
-                                PValue += pAccumPoint->getDataOffset();
+                                PValue += dataoffset;
 
-                                sprintf(tStr, "%s point %s = %f", getName(), pAccumPoint->getName(), PValue);
+                                _snprintf(tStr, 126, "%s point %s = %f", getName(), pAccumPoint->getName(), PValue);
 
-                                pData = new CtiPointDataMsg(pAccumPoint->getPointID(),
-                                                            PValue,
-                                                            NormalQuality,
-                                                            DemandAccumulatorPointType,
-                                                            tStr);
+                                pData = new CtiPointDataMsg(pAccumPoint->getPointID(), PValue, NormalQuality, DemandAccumulatorPointType, tStr);
                                 if(pData != NULL)
                                 {
                                     ReturnMsg->PointData().insert(pData);
                                     pData = NULL;  // We just put it on the list...
+                                }
+
+                                if(PValue > 100000.0)
+                                {
+                                    {
+                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                        dout << " " << getName() << " Demand Accum pt. " << pAccumPoint->getName() << " = " << PValue << endl;
+                                        dout << " Previous Pulses   " << prevpulses << endl;
+                                        dout << " Present Pulses    " << prespulses << endl;
+                                        dout << " Point Multiplier  " << multiplier << endl;
+                                        dout << " Point Data Offset " << dataoffset << endl;
+                                        dout << " Part Hour         " << PartHour << endl;
+                                    }
                                 }
                             }
                         }
@@ -804,13 +810,9 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
                             /* Apply offset */
                             PValue += pAccumPoint->getDataOffset();
 
-                            sprintf(tStr, "%s point %s = %f", getName(), pAccumPoint->getName(), PValue);
+                            _snprintf(tStr, 126, "%s point %s = %f", getName(), pAccumPoint->getName(), PValue);
 
-                            pData = new CtiPointDataMsg(pAccumPoint->getPointID(),
-                                                        PValue,
-                                                        NormalQuality,
-                                                        PulseAccumulatorPointType,
-                                                        tStr);
+                            pData = new CtiPointDataMsg(pAccumPoint->getPointID(), PValue, NormalQuality, PulseAccumulatorPointType, tStr);
                             if(pData != NULL)
                             {
                                 ReturnMsg->PointData().insert(pData);
@@ -876,7 +878,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
                         }
 
 
-                        sprintf(tStr, "%s point %s = %s", getName(), PointRecord->getName(), ((PValue == OPENED) ? "OPENED" : "CLOSED") );
+                        _snprintf(tStr, 126, "%s point %s = %s", getName(), PointRecord->getName(), ((PValue == OPENED) ? "OPENED" : "CLOSED") );
 
                         pData = new CtiPointDataMsg(PointRecord->getPointID(), PValue, NormalQuality, StatusPointType, tStr);
                         if(pData != NULL)
@@ -890,7 +892,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
                         {
                             PValue = ( (PValue == CLOSED) ? OPENED : CLOSED );
 
-                            sprintf(tStr, "%s point %s = %s", getName(), PointRecord->getName(), ((PValue == OPENED) ? "OPENED" : "CLOSED") );
+                            _snprintf(tStr, 126, "%s point %s = %s", getName(), PointRecord->getName(), ((PValue == OPENED) ? "OPENED" : "CLOSED") );
 
                             pData = new CtiPointDataMsg(PointRecord->getPointID(), PValue, NormalQuality, StatusPointType, tStr);
 
@@ -948,7 +950,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
 #endif
                         }
 
-                        sprintf(tStr, "%s point %s = %s", getName(), PointRecord->getName(), ((PValue == OPENED) ? "OPENED" : "CLOSED") );
+                        _snprintf(tStr, 126, "%s point %s = %s", getName(), PointRecord->getName(), ((PValue == OPENED) ? "OPENED" : "CLOSED") );
 
                         pData = new CtiPointDataMsg(PointRecord->getPointID(),
                                                     PValue,
@@ -965,7 +967,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
                         if(MyInMessage[(StartPoint * 2) + 3] & 0x40)
                         {
                             PValue = ( (PValue == CLOSED) ? OPENED : CLOSED );
-                            sprintf(tStr, "%s point %s = %s", getName(), PointRecord->getName(), ((PValue == OPENED) ? "OPENED" : "CLOSED") );
+                            _snprintf(tStr, 126, "%s point %s = %s", getName(), PointRecord->getName(), ((PValue == OPENED) ? "OPENED" : "CLOSED") );
                             pData = new CtiPointDataMsg(PointRecord->getPointID(),
                                                         PValue,
                                                         NormalQuality,
@@ -1035,7 +1037,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
 
                         PValue = Value * NumericPoint->getMultiplier() + NumericPoint->getDataOffset();
 
-                        sprintf(tStr, "%s point %s = %f", getName(), NumericPoint->getName(), PValue );
+                        _snprintf(tStr, 126, "%s point %s = %f", getName(), NumericPoint->getName(), PValue );
 
                         pData = new CtiPointDataMsg(NumericPoint->getPointID(),
                                                     PValue,
@@ -1127,7 +1129,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
 
                         PValue = Value * NumericPoint->getMultiplier() + NumericPoint->getDataOffset();
 
-                        sprintf(tStr, "%s point %s = %f", getName(), NumericPoint->getName(), PValue );
+                        _snprintf(tStr, 126, "%s point %s = %f", getName(), NumericPoint->getName(), PValue );
 
                         pData = new CtiPointDataMsg(NumericPoint->getPointID(),
                                                     PValue,
