@@ -4,15 +4,8 @@
 	String action = request.getParameter("action");
 	if (action != null && action.equalsIgnoreCase("CreateMCT")) {
 		// Submitted from CreateMCT.jsp
-		String ref = request.getHeader("referer");
-		session.setAttribute(ServletUtils.ATT_REFERRER2, ref);
-		if (ref.indexOf("Selected") < 0) {
-			if (ref.indexOf("?") < 0)
-				ref += "?Selected";
-			else
-				ref += "&Selected";
-		}
-		session.setAttribute(ServletUtils.ATT_REDIRECT, ref);
+		session.setAttribute(ServletUtils.ATT_REFERRER2, request.getContextPath() + "/operator/Hardware/CreateMCT.jsp");
+		session.setAttribute(ServletUtils.ATT_REDIRECT, request.getContextPath() + "/operator/Hardware/CreateMCT.jsp?Selected");
 	}
 	
 	String referer = (String) session.getAttribute(ServletUtils.ATT_REFERRER2);

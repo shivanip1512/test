@@ -4,6 +4,8 @@
 <jsp:useBean id="inventoryBean" class="com.cannontech.stars.web.bean.InventoryBean" scope="session"/>
 <jsp:setProperty name="inventoryBean" property="energyCompanyID" value="<%= user.getEnergyCompanyID() %>"/>
 
+<% if (request.getParameter("page") == null) inventoryBean.resetInventoryList(); %>
+
 <%-- Grab the search criteria --%>
 <jsp:setProperty name="inventoryBean" property="sortBy" param="SortBy"/>
 <jsp:setProperty name="inventoryBean" property="sortOrder" param="SortOrder"/>

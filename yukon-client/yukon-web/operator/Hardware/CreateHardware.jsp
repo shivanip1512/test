@@ -1,18 +1,47 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.database.data.lite.stars.*" %>
 <%
-	StarsInventory inventory = null;
-	
-	if (request.getParameter("RefId") != null) {
-		int refID = Integer.parseInt( request.getParameter("RefId") );
-		LiteInventoryBase liteInv = liteEC.getInventory(refID, true);
-		if (liteInv != null)
-			inventory = StarsLiteFactory.createStarsInventory(liteInv, liteEC);
+	if (request.getParameter("Init") != null) {
+		// The "Create Hardware" link in the nav is clicked
+		session.removeAttribute(ServletUtils.ATT_LAST_SUBMITTED_REQUEST);
+		session.removeAttribute(InventoryManagerUtil.HARDWARE_ADDRESSING);
+	}
+	else if (request.getParameter("InvID") != null) {
+		// Request from InventoryDetail.jsp to copy a hardware device
+		LiteStarsLMHardware liteHw = (LiteStarsLMHardware) liteEC.getInventory(Integer.parseInt(request.getParameter("InvID")), true);
+		Properties savedReq = new Properties();
+		savedReq.setProperty("DeviceType", String.valueOf(liteHw.getLmHardwareTypeID()));
+		savedReq.setProperty("DeviceLabel", liteHw.getDeviceLabel());
+		savedReq.setProperty("ReceiveDate", ServletUtils.formatDate(new Date(liteHw.getReceiveDate()), datePart));
+		savedReq.setProperty("Voltage", String.valueOf(liteHw.getVoltageID()));
+		savedReq.setProperty("ServiceCompany", String.valueOf(liteHw.getInstallationCompanyID()));
+		savedReq.setProperty("Notes", liteHw.getNotes().replaceAll("<br>", System.getProperty("line.separator")));
+		savedReq.setProperty("Route", String.valueOf(liteHw.getRouteID()));
+		session.setAttribute(ServletUtils.ATT_LAST_SUBMITTED_REQUEST, savedReq);
+		
+		StarsInventory inventory = StarsLiteFactory.createStarsInventory(liteHw, liteEC);
+		if (inventory.getLMHardware().getStarsLMConfiguration() != null)
+			session.setAttribute(InventoryManagerUtil.HARDWARE_ADDRESSING, inventory.getLMHardware().getStarsLMConfiguration());
+	}
+	else if (request.getParameter("Member") != null || request.getParameter("DeviceType") != null) {
+		// Request from the same page while member selection or device type selection has been changed
+		ServletUtils.saveRequest(request, session, new String[] {"Member", "DeviceType", "SerialNo", "DeviceLabel", "AltTrackNo", "ReceiveDate", "Voltage", "ServiceCompany", "Notes", "Route"});
+		if (request.getParameter("UseHardwareAddressing") != null) {
+			StarsLMConfiguration configuration = new StarsLMConfiguration();
+			InventoryManagerUtil.setStarsLMConfiguration(configuration, request);
+			session.setAttribute(InventoryManagerUtil.HARDWARE_ADDRESSING, configuration);
+		}
 	}
 	
-	if (inventory == null)
-		inventory = (StarsInventory) StarsFactory.newStarsInv(StarsInventory.class);
-	inventory.setInstallDate(null);
+	Properties savedReq = (Properties) session.getAttribute(ServletUtils.ATT_LAST_SUBMITTED_REQUEST);
+	if (savedReq == null) savedReq = new Properties();
+	
+	StarsLMConfiguration configuration = (StarsLMConfiguration) session.getAttribute(InventoryManagerUtil.HARDWARE_ADDRESSING);
+	
+	LiteStarsEnergyCompany member = null;
+	if (savedReq.getProperty("Member") != null)
+		member = StarsDatabaseCache.getInstance().getEnergyCompany(Integer.parseInt(savedReq.getProperty("Member")));
+	if (member == null) member = liteEC;
 %>
 <html>
 <head>
@@ -22,6 +51,16 @@
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 
 <script language="JavaScript">
+function changeMember(form) {
+	form.attributes["action"].value = "CreateHardware.jsp";
+	form.submit();
+}
+
+function changeDeviceType(form) {
+	form.attributes["action"].value = "CreateHardware.jsp";
+	form.submit();
+}
+
 function validate(form) {
 	if (form.SerialNo.value == "") {
 		alert("Serial # cannot be empty");
@@ -65,6 +104,25 @@ function validate(form) {
 				<input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/operator/Hardware/InventoryDetail.jsp?InvId=">
 				<input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>">
                 <table width="610" border="0" cellspacing="0" cellpadding="10" align="center">
+<% if (liteEC.getChildren().size() > 0 && AuthFuncs.checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_MANAGE_MEMBERS)) { %>
+                  <tr align="center"> 
+                    <td colspan="2" valign="top" bgcolor="#FFFFFF" class="TableCell"> 
+                      Member: 
+                      <select name="Member" onChange="changeMember(this.form)">
+                        <%
+	ArrayList descendants = ECUtils.getAllDescendants(liteEC);
+	for (int i = 0; i < descendants.size(); i++) {
+		LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(i);
+		String selected = company.equals(member)? "selected" : "";
+%>
+                        <option value="<%= company.getLiteID() %>" <%= selected %>><%= company.getName() %></option>
+                        <%
+	}
+%>
+                      </select>
+                    </td>
+                  </tr>
+<% } %>
                   <tr> 
                     <td width="300" valign="top" bgcolor="#FFFFFF"> 
                       <table width="300" border="0" cellspacing="0" cellpadding="0" align="center">
@@ -77,16 +135,20 @@ function validate(form) {
                                   <div align="right">*Type:</div>
                                 </td>
                                 <td width="210" class="MainText"> 
-                                  <select name="DeviceType" onchange="setContentChanged(true)">
-<%
-	StarsCustSelectionList deviceTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE );
-	for (int i = 0; i < deviceTypeList.getStarsSelectionListEntryCount(); i++) {
-		StarsSelectionListEntry entry = deviceTypeList.getStarsSelectionListEntry(i);
+                                  <select name="DeviceType" onchange="<% if (configuration != null) { %>changeDeviceType(this.form)<% } else { %>setContentChanged(true)<% } %>">
+                                    <%
+	int savedDeviceType = 0;
+	if (savedReq.getProperty("DeviceType") != null)
+		savedDeviceType = Integer.parseInt(savedReq.getProperty("DeviceType"));
+	
+	YukonSelectionList devTypeList = member.getYukonSelectionList( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE );
+	for (int i = 0; i < devTypeList.getYukonListEntries().size(); i++) {
+		YukonListEntry entry = (YukonListEntry) devTypeList.getYukonListEntries().get(i);
 		if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT) continue;
-		String selected = (entry.getEntryID() == inventory.getDeviceType().getEntryID())? "selected" : "";
+		String selected = (entry.getEntryID() == savedDeviceType)? "selected" : "";
 %>
-                                    <option value="<%= entry.getEntryID() %>" <%= selected %>><%= entry.getContent() %></option>
-<%
+                                    <option value="<%= entry.getEntryID() %>" <%= selected %>><%= entry.getEntryText() %></option>
+                                    <%
 	}
 %>
                                   </select>
@@ -97,7 +159,7 @@ function validate(form) {
                                   <div align="right">*Serial #:</div>
                                 </td>
                                 <td width="210"> 
-                                  <input type="text" name="SerialNo" maxlength="30" size="24" onchange="setContentChanged(true)">
+                                  <input type="text" name="SerialNo" maxlength="30" size="24" onchange="setContentChanged(true)" value="<%= StarsUtils.forceNotNull(savedReq.getProperty("SerialNo")) %>">
                                 </td>
                               </tr>
                               <tr> 
@@ -105,7 +167,7 @@ function validate(form) {
                                   <div align="right">Label:</div>
                                 </td>
                                 <td width="210"> 
-                                  <input type="text" name="DeviceLabel" maxlength="30" size="24" value="<%= inventory.getDeviceLabel() %>" onchange="setContentChanged(true)">
+                                  <input type="text" name="DeviceLabel" maxlength="30" size="24" value="<%= StarsUtils.forceNotNull(savedReq.getProperty("DeviceLabel")) %>" onchange="setContentChanged(true)">
                                 </td>
                               </tr>
                               <tr> 
@@ -113,7 +175,7 @@ function validate(form) {
                                   <div align="right">Alt Tracking #:</div>
                                 </td>
                                 <td width="210"> 
-                                  <input type="text" name="AltTrackNo" maxlength="30" size="24" value="<%= inventory.getAltTrackingNumber() %>" onchange="setContentChanged(true)">
+                                  <input type="text" name="AltTrackNo" maxlength="30" size="24" onchange="setContentChanged(true)" value="<%= StarsUtils.forceNotNull(savedReq.getProperty("AltTrackNo")) %>">
                                 </td>
                               </tr>
                               <tr> 
@@ -121,15 +183,7 @@ function validate(form) {
                                   <div align="right">Date Received:</div>
                                 </td>
                                 <td width="210"> 
-                                  <input type="text" name="ReceiveDate" maxlength="30" size="24" value="<%= ServletUtils.formatDate(inventory.getReceiveDate(), datePart) %>" onchange="setContentChanged(true)">
-                                </td>
-                              </tr>
-                              <tr> 
-                                <td width="88" class="TableCell"> 
-                                  <div align="right">Date Removed:</div>
-                                </td>
-                                <td width="210"> 
-                                  <input type="text" name="RemoveDate" maxlength="30" size="24" value="<%= ServletUtils.formatDate(inventory.getRemoveDate(), datePart) %>" onchange="setContentChanged(true)">
+                                  <input type="text" name="ReceiveDate" maxlength="30" size="24" value="<%= StarsUtils.forceNotNull(savedReq.getProperty("ReceiveDate")) %>" onchange="setContentChanged(true)">
                                 </td>
                               </tr>
                               <tr> 
@@ -138,44 +192,21 @@ function validate(form) {
                                 </td>
                                 <td width="210"> 
                                   <select name="Voltage" onchange="setContentChanged(true)">
-<%
-	StarsCustSelectionList voltageList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_VOLTAGE );
-	for (int i = 0; i < voltageList.getStarsSelectionListEntryCount(); i++) {
-		StarsSelectionListEntry entry = voltageList.getStarsSelectionListEntry(i);
-		String selected = (entry.getEntryID() == inventory.getVoltage().getEntryID())? "selected" : "";
+                                    <%
+	int savedVoltage = 0;
+	if (savedReq.getProperty("Voltage") != null)
+		savedVoltage = Integer.parseInt(savedReq.getProperty("Voltage"));
+	
+	YukonSelectionList voltageList = member.getYukonSelectionList( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_VOLTAGE );
+	for (int i = 0; i < voltageList.getYukonListEntries().size(); i++) {
+		YukonListEntry entry = (YukonListEntry) voltageList.getYukonListEntries().get(i);
+		String selected = (entry.getEntryID() == savedVoltage)? "selected" : "";
 %>
-                                    <option value="<%= entry.getEntryID() %>" <%= selected %>><%= entry.getContent() %></option>
-<%
+                                    <option value="<%= entry.getEntryID() %>" <%= selected %>><%= entry.getEntryText() %></option>
+                                    <%
 	}
 %>
                                   </select>
-                                </td>
-                              </tr>
-                              <tr> 
-                                <td width="88" class="TableCell"> 
-                                  <div align="right">Notes:</div>
-                                </td>
-                                <td width="210"> 
-                                  <textarea name="Notes" rows="3" wrap="soft" cols="28" class = "TableCell" onchange="setContentChanged(true)"><%= inventory.getNotes().replaceAll("<br>", System.getProperty("line.separator")) %></textarea>
-                                </td>
-                              </tr>
-                            </table>
-                          </td>
-                        </tr>
-                      </table>
-                    </td>
-                    <td width="300" valign="top" bgcolor="#FFFFFF"> 
-                      <table width="300" border="0" cellspacing="0" cellpadding="0" align="center">
-                        <tr> 
-                          <td><span class="SubtitleHeader">INSTALL</span> 
-                            <hr>
-                            <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
-                              <tr> 
-                                <td width="88" class="TableCell"> 
-                                  <div align="right">Date Installed:</div>
-                                </td>
-                                <td width="210"> 
-                                  <input type="text" name="InstallDate" maxlength="30" size="24" value="<%= ServletUtils.formatDate(inventory.getInstallDate(), datePart) %>" onchange="setContentChanged(true)">
                                 </td>
                               </tr>
                               <tr> 
@@ -183,14 +214,19 @@ function validate(form) {
                                   <div align="right">Service Company:</div>
                                 </td>
                                 <td width="210"> 
-                                  <select name="ServiceCompany" onchange="setContentChanged(true)">
-<%
-	for (int i = 0; i < companies.getStarsServiceCompanyCount(); i++) {
-		StarsServiceCompany company = companies.getStarsServiceCompany(i);
-		String selected = (company.getCompanyID() == inventory.getInstallationCompany().getEntryID()) ? "selected" : "";
+                                  <select name="ServiceCompany">
+                                    <%
+	int savedServiceCompany = 0;
+	if (savedReq.getProperty("ServiceCompany") != null)
+		savedServiceCompany = Integer.parseInt(savedReq.getProperty("ServiceCompany"));
+	
+	StarsServiceCompanies companyList = member.getStarsServiceCompanies();
+	for (int i = 0; i < companyList.getStarsServiceCompanyCount(); i++) {
+		StarsServiceCompany servCompany = companyList.getStarsServiceCompany(i);
+		String selected = (servCompany.getCompanyID() == savedServiceCompany)? "selected" : "";
 %>
-                                    <option value="<%= company.getCompanyID() %>" <%= selected %>><%= company.getCompanyName() %></option>
-<%
+                                    <option value="<%= servCompany.getCompanyID() %>" <%= selected %>><%= servCompany.getCompanyName() %></option>
+                                    <%
 	}
 %>
                                   </select>
@@ -200,18 +236,19 @@ function validate(form) {
                                 <td width="88" class="TableCell"> 
                                   <div align="right">Notes:</div>
                                 </td>
-                                <td width="210"> 
-                                  <textarea name="InstallNotes" rows="3 wrap="soft" cols="28" class = "TableCell" onchange="setContentChanged(true)"><%= inventory.getInstallationNotes().replaceAll("<br>", System.getProperty("line.separator")) %></textarea>
-                                </td>
+                                <td width="210"> <b>
+                                  <textarea name="Notes" rows="3" wrap="soft" cols="28" class = "TableCell" onchange="setContentChanged(true)"><%= StarsUtils.forceNotNull(savedReq.getProperty("Notes")) %></textarea>
+                                  </b> </td>
                               </tr>
                             </table>
                           </td>
                         </tr>
                       </table>
+                    </td>
+                    <td width="300" valign="top" bgcolor="#FFFFFF"> 
                       <table width="300" border="0" cellspacing="0" cellpadding="0">
                         <tr> 
-                          <td valign="top"><span class="SubtitleHeader"><br>
-                            CONFIGURATION</span> 
+                          <td valign="top"><span class="SubtitleHeader">CONFIGURATION</span> 
                             <hr>
                             <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
                               <tr> 
@@ -220,21 +257,25 @@ function validate(form) {
                                 </td>
                                 <td width="210"> 
                                   <select name="Route" onchange="setContentChanged(true)">
-<%
-	String dftRoute = PAOFuncs.getYukonPAOName(liteEC.getDefaultRouteID());
+                                    <%
+	String dftRoute = PAOFuncs.getYukonPAOName(member.getDefaultRouteID());
 	if (dftRoute != null)
 		dftRoute = "Default - " + dftRoute;
 	else
 		dftRoute = "Default - (None)";
 %>
                                     <option value="0"><%= dftRoute %></option>
-<%
-	LiteYukonPAObject[] routes = liteEC.getAllRoutes();
+                                    <%
+	int savedRoute = 0;
+	if (savedReq.getProperty("Route") != null)
+		savedRoute = Integer.parseInt(savedReq.getProperty("Route"));
+	
+	LiteYukonPAObject[] routes = member.getAllRoutes();
 	for (int i = 0; i < routes.length; i++) {
-		String selected = (inventory.getLMHardware() != null && routes[i].getYukonID() == inventory.getLMHardware().getRouteID())? "selected" : "";
+		String selected = (routes[i].getYukonID() == savedRoute)? "selected" : "";
 %>
                                     <option value="<%= routes[i].getYukonID() %>" <%= selected %>><%= routes[i].getPaoName() %></option>
-<%
+                                    <%
 	}
 %>
                                   </select>
@@ -247,14 +288,20 @@ function validate(form) {
                     </td>
                   </tr>
 <%
-	String trackHwAddr = liteEC.getEnergyCompanySetting(EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING);
-	if (inventory.getLMHardware() != null && trackHwAddr != null && Boolean.valueOf(trackHwAddr).booleanValue()) {
-		int hwConfigType = InventoryUtils.getHardwareConfigType(inventory.getDeviceType().getEntryID());
-		StarsLMConfiguration configuration = inventory.getLMHardware().getStarsLMConfiguration();
+	String trackHwAddr = member.getEnergyCompanySetting(EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING);
+	if (trackHwAddr != null && Boolean.valueOf(trackHwAddr).booleanValue() && configuration != null) {
+		// Hide the hardware addressing tables if the protocol of the new device type is different from the saved protocol
+		int hwConfigType = InventoryUtils.getHardwareConfigType(Integer.parseInt(savedReq.getProperty("DeviceType")));
+		if (configuration.getExpressCom() != null && hwConfigType == InventoryUtils.HW_CONFIG_TYPE_EXPRESSCOM
+			|| configuration.getVersaCom() != null && hwConfigType == InventoryUtils.HW_CONFIG_TYPE_VERSACOM
+			|| configuration.getSA205() != null && hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA205
+			|| configuration.getSA305() != null && hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA305
+			|| configuration.getSASimple() != null && hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA_SIMPLE)
+		{
 %>
                   <input type="hidden" name="UseHardwareAddressing" value="true">
-                  <tr>
-                    <td width="300" valign="top" bgcolor="#FFFFFF">
+                  <tr> 
+                    <td width="300" valign="top" bgcolor="#FFFFFF"> 
                       <table width="300" border="0" cellspacing="0" cellpadding="0">
                         <tr> 
                           <td> <span class="SubtitleHeader">ADDRESSING</span> 
@@ -264,7 +311,7 @@ function validate(form) {
                         </tr>
                       </table>
                     </td>
-                    <td width="300" valign="top" bgcolor="#FFFFFF">
+                    <td width="300" valign="top" bgcolor="#FFFFFF"> 
                       <table width="300" border="0" cellspacing="0" cellpadding="0">
                         <tr> 
                           <td> <span class="SubtitleHeader">RELAYS</span> 
@@ -276,6 +323,7 @@ function validate(form) {
                     </td>
                   </tr>
 <%
+		}
 	}
 %>
                 </table>

@@ -1,8 +1,8 @@
 <%
 	// Table of [link, label, page name(optional)]
 	String linkTable[][] = {{"Inventory.jsp", "Show All"},
-						  {"CreateHardware.jsp", "Create Hardware"},
-						  {"CreateMCT.jsp", "Create MCT"},
+						  {"CreateHardware.jsp?Init", "Create Hardware", "CreateHardware.jsp"},
+						  {"CreateMCT.jsp?Init", "Create MCT", "CreateMCT.jsp"},
 						  {"AddSN.jsp", "Add Range"},
 						  {"UpdateSN.jsp", "Update Range"},
 						  {"DeleteSN.jsp", "Delete Range"},

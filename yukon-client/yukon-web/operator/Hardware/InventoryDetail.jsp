@@ -71,7 +71,11 @@ function deleteHardware(form) {
 }
 
 function copyHardware(form) {
-	location.href = '<%= isMCT? "CreateMCT.jsp" : "CreateHardware.jsp" %>?RefId=<%= inventory.getInventoryID() %>';
+	if (<%= isMCT %>)
+		form.attributes["action"].value = "CreateMCT.jsp"
+	else
+		form.attributes["action"].value = "CreateHardware.jsp";
+	form.submit();
 }
 
 function saveToBatch(form) {
