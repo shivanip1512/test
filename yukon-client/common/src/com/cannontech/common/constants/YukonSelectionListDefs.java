@@ -12,8 +12,9 @@ public interface YukonSelectionListDefs {
 
 	public static final int YUK_LIST_ID_CONTACT_TYPE = 1;
 	
-	// List names are used to reference lists in STARS
+	// List names are now only used in STARS
 	public static final String YUK_LIST_NAME_CONTACT_TYPE = "ContactType";
+	
 	public static final String YUK_LIST_NAME_LM_CUSTOMER_EVENT = "LMCustomerEvent";
 	public static final String YUK_LIST_NAME_LM_CUSTOMER_ACTION = "LMCustomerAction";
 	public static final String YUK_LIST_NAME_INVENTORY_CATEGORY = "InventoryCategory";
@@ -27,7 +28,9 @@ public interface YukonSelectionListDefs {
 	public static final String YUK_LIST_NAME_SEARCH_TYPE = "SearchBy";
 	public static final String YUK_LIST_NAME_MANUFACTURER = "Manufacturer";
 	public static final String YUK_LIST_NAME_LOCATION = "ApplianceLocation";
+	public static final String YUK_LIST_NAME_CHANCE_OF_CONTROL = "ChanceOfControl";
 	public static final String YUK_LIST_NAME_TIME_OF_WEEK = "TimeOfWeek";
+	public static final String YUK_LIST_NAME_QUESTION_TYPE = "QuestionType";
 	public static final String YUK_LIST_NAME_ANSWER_TYPE = "AnswerType";
 	public static final String YUK_LIST_NAME_THERMOSTAT_MODE = "ThermostatMode";
 	public static final String YUK_LIST_NAME_THERMOSTAT_FAN_STATE = "ThermostatFanState";
