@@ -771,11 +771,6 @@ insert into YukonRoleProperty values(-20905,-209,'Create Hardware','true','Contr
 insert into yukongrouprole values (-796,-301,-209,-20905,'(none)');
 insert into yukongrouprole values (-2085,-303,-209,-20905,'(none)');
 
-insert into yukongrouprole values (-758,-301,-201,-20158,'(none)');
-insert into yukongrouprole values (-817,-301,-201,-20817,'(none)');
-insert into yukongrouprole values (-2058,-303,-201,-20158,'true');
-insert into yukongrouprole values (-2117,-303,-201,-20817,'(none)');
-
 /* More labels and titles */
 insert into YukonRoleProperty values(-20845,-201,'Label Thermostat Saved Schedules','Saved Schedules','Text of the thermostat saved schedules link');
 insert into YukonRoleProperty values(-20863,-201,'Title Thermostat Saved Schedules','THERMOSTAT - SAVED SCHEDULES','Title of the thermostat saved schedules page');
