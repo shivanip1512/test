@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_single.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/05/02 17:02:24 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/05/28 18:21:37 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -207,7 +207,7 @@ public:
     CtiDeviceSingle& setPrevFreezeTime( const RWTime& aPrevFreezeTime );
     CtiDeviceSingle& setLastLPTime( const RWTime& aLastFreezeTime );
 
-    RWTime nextNearestTime() const;
+    RWTime nextRemoteScan() const;
     RWTime getNextScan(INT a);
     CtiDeviceSingle& setNextScan(INT a, const RWTime &b);
 
