@@ -1035,7 +1035,7 @@ void  CtiCommandParser::doParsePutStatus(const RWCString &CmdStr)
             }
         }
 
-        if(!(token = CmdStr.match("reset")).isNull())
+        if(!(token = CmdStr.match(" reset")).isNull())
         {
             if( _cmd.contains("flag") )
                 flag = _cmd["flag"].getInt();
@@ -1063,6 +1063,7 @@ void  CtiCommandParser::doParseGetConfig(const RWCString &CmdStr)
     RWCRExpr    rawcmd("raw +(func(tion)? +)?start=0x[0-9a-f]+( +[0-9]+)?");
     RWCRExpr    interval("interval +(lp|li)");  //  match "interval lp" and "interval li"
     RWCRExpr    multiplier("mult.* *(kyz *[123])?");
+    RWCRExpr    address("address (group|uniq)");
 
     char *p;
 
@@ -1081,6 +1082,21 @@ void  CtiCommandParser::doParseGetConfig(const RWCString &CmdStr)
         if(!(CmdStr.match("options")).isNull())
         {
             _cmd["options"] = CtiParseValue( "TRUE" );
+        }
+
+        if(!(CmdStr.match("address")).isNull())
+        {
+            if(!(token = CmdStr.match(address)).isNull())
+            {
+                if( !(token.match("group").isNull()) )
+                {
+                    _cmd["address_group"] = CtiParseValue(TRUE);
+                }
+/*                else if( !(token.match("uniq").isNull()) )
+                {
+                    _cmd["address_unique"] = CtiParseValue(TRUE);
+                }*/
+            }
         }
 
         if(!(CmdStr.match("role")).isNull())
@@ -1413,6 +1429,7 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const RWCString &CmdStr)
     RWCRExpr    iedClass("ied +class +[0-9]+ +[0-9]+");
     RWCRExpr    iedScan("ied +scan +[0-9]+ +[0-9]+");
     RWCRExpr    groupAddr("group +(enable)|(disable)");
+    RWCRExpr    address("address +((gold +[0-9]+ +silver +[0-9]+)|(bronze [0-9]+)|(lead +meter +[0-9]+ +load +[0-9]+))");
 
     char *p;
 
@@ -1459,11 +1476,47 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const RWCString &CmdStr)
 
                 if( strcmp( cmdtok().data(), "enable") == 0 )
                 {
-                    _cmd["groupaddr"] = CtiParseValue( 1 );
+                    _cmd["groupaddress_enable"] = CtiParseValue( 1 );
                 }
                 else
                 {
-                    _cmd["groupaddr"] = CtiParseValue( 0 );
+                    _cmd["groupaddress_enable"] = CtiParseValue( 0 );
+                }
+            }
+        }
+        if(!(CmdStr.match("address")).isNull())
+        {
+            if(!(token = CmdStr.match(address)).isNull())
+            {
+                _cmd["groupaddress_set"] = CtiParseValue(TRUE);
+
+                RWCTokenizer cmdtok(token);
+
+                cmdtok();  //  go past "address"
+
+                token = cmdtok();
+
+                if( !(token.match("gold").isNull()) )
+                {
+                    _cmd["groupaddress_gold"] = CtiParseValue(atoi(cmdtok().data()));
+
+                    cmdtok();  //  go past "silver"
+
+                    _cmd["groupaddress_silver"] = CtiParseValue(atoi(cmdtok().data()));
+                }
+                else if( !(token.match("bronze").isNull()) )
+                {
+                    _cmd["groupaddress_bronze"] = CtiParseValue(atoi(cmdtok().data()));
+                }
+                else if( !(token.match("lead").isNull()) )
+                {
+                    cmdtok();  //  go past "meter"
+
+                    _cmd["groupaddress_lead_meter"] = CtiParseValue(atoi(cmdtok().data()));
+
+                    cmdtok();  //  go past "load"
+
+                    _cmd["groupaddress_lead_load"] = CtiParseValue(atoi(cmdtok().data()));
                 }
             }
         }
@@ -2463,6 +2516,15 @@ void  CtiCommandParser::doParsePutStatusEmetcon(const RWCString &CmdStr)
 
     if(!token.isNull() && token == "putstatus")
     {
+        if(CmdStr.contains(" rovr"))
+        {
+            unsigned int flag = getiValue("flag", 0);
+
+            flag |= CMD_FLAG_PS_RESETOVERRIDE;
+
+            _cmd["flag"] = CtiParseValue(flag);
+        }
+
         if(CmdStr.contains(" freeze"))
         {
             unsigned int flag = 0;
