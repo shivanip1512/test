@@ -70,9 +70,15 @@ public void advancedSetupButton_ActionPerformed(java.awt.event.ActionEvent actio
    											"permanently apply your changes now?");
    if(addOrRemoveHasBeenDone && !changeUpdated)
    	{
-   		int optional = javax.swing.JOptionPane.showInternalConfirmDialog(this, message, 
-                                            "Changes not applied.",
-                                            JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+   		int optional = 
+   				javax.swing.JOptionPane.showConfirmDialog(
+   						this, 
+   						message,
+                     "Changes not applied.",
+                     JOptionPane.YES_NO_OPTION,
+                     JOptionPane.WARNING_MESSAGE);
+               
+     
         addOrRemoveHasBeenDone = false;
         if(optional == JOptionPane.YES_OPTION)
         {
