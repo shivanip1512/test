@@ -134,7 +134,8 @@ function changeCategory(checkBox, index) {
 		progIDs[index].value = "";
 		
 		numEnrolledProg--;
-		if (numEnrolledProg == 0) setNotEnrolled(false);
+		if (numEnrolledProg == 0)
+			document.getElementById("NotEnrolled").checked = true;
 	}
 	
 	setSignUpChanged();
@@ -162,11 +163,12 @@ function changeProgram(radioBtn, index) {
 function setNotEnrolled(userAction) {
 	if (userAction) {
 		var categories = document.getElementsByName("AppCat");
-		for (i = 0; i < categories.length; i++)
-			if (categories[i].checked) {
-				categories[i].checked = false;
-				changeCategory(categories[i], i);
+		for (catIdx = 0; catIdx < categories.length; catIdx++) {
+			if (categories[catIdx].checked) {
+				categories[catIdx].checked = false;
+				changeCategory(categories[catIdx], catIdx);
 			}
+		}
 	}
 	document.getElementById("NotEnrolled").checked = true;
 }
@@ -292,8 +294,12 @@ function resendNotEnrolled(form) {
 		}
 %>
                   <tr> 
-                    <td width="81" align = "center"><img id="<%= i %>" src="../../Images/Icons/<%= category.getStarsWebConfig().getLogoLocation() %>" onClick = "toolTipAppear(event, 'tool', <%= i %>, 350, text)"><br>
-                      <span class = "TableCell">Click for description</span></td>
+                    <td width="81" align = "center">
+<% if (!category.getStarsWebConfig().getLogoLocation().equals("")) { %>
+					  <img id="<%= i %>" src="../../Images/Icons/<%= category.getStarsWebConfig().getLogoLocation() %>" onClick = "toolTipAppear(event, 'tool', <%= i %>, 350, text)"><br>
+                      <span class = "TableCell">Click for description</span>
+<% } else { out.print("&nbsp;"); } %>
+					</td>
                     <td width="155" align = "center"> 
                       <table width="110" border="0" cellspacing="0" cellpadding="1" align="center">
 						<input type="hidden" name="CatID" value="<% if (program != null) out.print(category.getApplianceCategoryID()); %>">
