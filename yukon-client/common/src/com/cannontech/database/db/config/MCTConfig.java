@@ -19,7 +19,7 @@ public class MCTConfig extends com.cannontech.database.db.DBPersistent
 	private String configName;
 	private Integer configType;
 	private String configMode;
-	private Integer mctWire1;
+	private Integer mctWire1 = new Integer(-1);
 	private Double ke1;
 	private Integer mctWire2 = new Integer(-1);
 	private Double ke2 = new Double(-1);
