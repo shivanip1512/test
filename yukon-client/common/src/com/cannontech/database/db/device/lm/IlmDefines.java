@@ -35,6 +35,7 @@ public interface IlmDefines
 	public static final String CONTROL_TRUE_CYCLE = "TrueCycle";
 	public static final String THERMOSTAT_SETBACK = "ThermostatSetback";
 	public static final String THERMOSTAT_PRE_OPERATE = "ThermostatPre-operate";
+	public static final String NO_CONTROL = "NoControl";
 
 	//a mapping of all the possible control methods
 	public static final String[] ALL_CONTROL_METHODS =
@@ -46,7 +47,8 @@ public interface IlmDefines
 		CONTROL_ROTATION,
 		CONTROL_LATCHING,
 		THERMOSTAT_PRE_OPERATE,
-		THERMOSTAT_SETBACK
+		THERMOSTAT_SETBACK,
+		NO_CONTROL
 		
 	};
 

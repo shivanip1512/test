@@ -24,6 +24,7 @@ public class DirectModifyGearPanel extends com.cannontech.common.gui.util.DataIn
 	private TimeRefreshGearPanel ivjTimeGearPanel1 = null;
 	private RotationGearPanel ivjRotationGearPanel1= null;
 	private ThermostatSetbackGearPanel ivjThermoSetbackGearPanel1 = null;
+	private NoControlGearPanel ivjNoControlGearPanel1 = null;
 	
 /**
  * Constructor
@@ -376,6 +377,7 @@ private javax.swing.JComboBox getJComboBoxGearType() {
 			ivjJComboBoxGearType.addItem( StringUtils.addCharBetweenWords( ' ', LMProgramDirectGear.CONTROL_TRUE_CYCLE ) );
 			ivjJComboBoxGearType.addItem( StringUtils.addCharBetweenWords( ' ', LMProgramDirectGear.CONTROL_LATCHING ) );
 			ivjJComboBoxGearType.addItem( StringUtils.addCharBetweenWords( ' ', LMProgramDirectGear.THERMOSTAT_SETBACK ) );
+			ivjJComboBoxGearType.addItem( StringUtils.addCharBetweenWords( ' ', LMProgramDirectGear.NO_CONTROL) );
 
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -551,6 +553,10 @@ public Object getValue(Object o)
 	{
 		return getIvjThermoSetbackGearPanel1().getValue(gear);	
 	}
+	else if( gear instanceof com.cannontech.database.data.device.lm.NoControlGear)
+	{
+		return getNoControlGearPanel().getValue(gear);	
+	}
 	else
 		return gear;
 }
@@ -586,6 +592,7 @@ private void initConnections() throws java.lang.Exception {
 	getIvjRotationGearPanel1().addDataInputPanelListener(this);
 	getIvjSmartGearPanel1().addDataInputPanelListener(this);
 	getIvjThermoSetbackGearPanel1().addDataInputPanelListener(this);
+	getNoControlGearPanel().addDataInputPanelListener(this);
 	
 
 }
@@ -761,6 +768,11 @@ private void setGearType(java.lang.String newGearType)
 		//Thermostat Setback
 		getJScrollPane1().setViewportView(getIvjThermoSetbackGearPanel1());
 	}
+	else if( getGearType().equalsIgnoreCase(LMProgramDirectGear.NO_CONTROL) )
+	{
+		//No Control
+		getJScrollPane1().setViewportView(getNoControlGearPanel());
+	}
 	else
 		throw new Error("Unknown LMProgramDirectGear " +
 			"type found, the value = " + getGearType() );
@@ -821,6 +833,10 @@ public void setValue(Object o)
 	else if( gear instanceof com.cannontech.database.data.device.lm.ThermostatSetbackGear )
 	{
 		getIvjThermoSetbackGearPanel1().setValue(gear);	
+	}
+	else if( gear instanceof com.cannontech.database.data.device.lm.NoControlGear )
+	{
+		getNoControlGearPanel().setValue(gear);	
 	}
 	else
 		return;
@@ -897,6 +913,11 @@ public void valueChanging(com.klg.jclass.util.value.JCValueEvent arg1)
 		return ivjThermoSetbackGearPanel1;
 	}
 
+	public NoControlGearPanel getNoControlGearPanel() {
+		if(ivjNoControlGearPanel1 == null)
+			ivjNoControlGearPanel1 = new NoControlGearPanel();
+		return ivjNoControlGearPanel1;
+	}
 	/**
 	 * Returns the ivjTimeGearPanel1.
 	 * @return TimeRefreshGearPanel
@@ -923,6 +944,9 @@ public void valueChanging(com.klg.jclass.util.value.JCValueEvent arg1)
 		this.ivjMasterGearPanel1 = ivjMasterGearPanel1;
 	}
 
+	public void setIvjNoControlGearPanel1(NoControlGearPanel ivjNoControlGearPanel1) {
+		this.ivjNoControlGearPanel1 = ivjNoControlGearPanel1;
+	}
 	/**
 	 * Sets the ivjRotationGearPanel1.
 	 * @param ivjRotationGearPanel1 The ivjRotationGearPanel1 to set

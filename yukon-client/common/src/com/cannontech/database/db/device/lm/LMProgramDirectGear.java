@@ -4,6 +4,7 @@ import java.sql.Statement;
 
 import com.cannontech.database.data.device.lm.ThermostatPreOperateGear;
 import com.cannontech.database.data.device.lm.ThermostatSetbackGear;
+import com.cannontech.database.data.device.lm.NoControlGear;
 import com.cannontech.database.db.NestedDBPersistent;
 
 /**
@@ -127,6 +128,10 @@ public abstract class LMProgramDirectGear
 		else if (gearType.equalsIgnoreCase(THERMOSTAT_SETBACK))
 		{
 			return new ThermostatSetbackGear();
+		}
+		else if (gearType.equalsIgnoreCase(NO_CONTROL))
+		{
+			return new NoControlGear();
 		}
 		else
 			throw new IllegalArgumentException(
