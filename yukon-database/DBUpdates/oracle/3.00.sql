@@ -497,7 +497,7 @@ insert into yukonroleproperty values(-30603, -306, 'Switch Command Control', 'tr
 /*Add the user-control properties to the Web Client Customers group */
 /* REPLACE the 985-989 ids with the proper grouproleid values */
 insert into yukongrouprole values ( 985, -302, -306, -30600, '(none)');
-insert into yukongrouprole values ( 986, -302, -306, -30601, 'true)');
+insert into yukongrouprole values ( 986, -302, -306, -30601, 'true');
 insert into yukongrouprole values ( 987, -302, -306, -30602, 'true');
 insert into yukongrouprole values ( 988, -302, -306, -30603, 'true');
 
