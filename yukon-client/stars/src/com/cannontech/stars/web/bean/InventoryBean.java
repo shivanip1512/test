@@ -8,12 +8,15 @@ import javax.servlet.http.HttpServletRequest;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.lite.stars.LiteAddress;
 import com.cannontech.database.data.lite.stars.LiteCustomerContact;
+import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
+import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.web.servlet.SOAPServer;
 
@@ -35,7 +38,7 @@ public class InventoryBean {
 	
 	public static final int HTML_STYLE_LIST_INVENTORY = 0;
 	public static final int HTML_STYLE_SELECT_INVENTORY = 1;
-	public static final int HTML_STYLE_HARDWARE_SET = 2;
+	public static final int HTML_STYLE_INVENTORY_SET = 2;
 	
 	private static final int DEFAULT_PAGE_SIZE = 20;
 	private static final java.text.SimpleDateFormat dateFormat =
@@ -43,31 +46,62 @@ public class InventoryBean {
 	
 	private static final Comparator INV_ID_CMPTOR = new Comparator() {
 		public int compare(Object o1, Object o2) {
-			LiteStarsLMHardware hw1 = (LiteStarsLMHardware) o1;
-			LiteStarsLMHardware hw2 = (LiteStarsLMHardware) o2;
-			return hw1.getInventoryID() - hw2.getInventoryID();
+			LiteInventoryBase inv1 = (LiteInventoryBase) o1;
+			LiteInventoryBase inv2 = (LiteInventoryBase) o2;
+			return inv1.getInventoryID() - inv2.getInventoryID();
 		}
 	};
 	
+	/**
+	 * Comparator of serial # and device names. Serial # is always "less than"
+	 * device name. To compare two serial #s, try to convert them into decimal
+	 * values first, compare the decimal values if conversion is successful.
+	 */
 	private static final Comparator SERIAL_NO_CMPTOR = new Comparator() {
 		public int compare(Object o1, Object o2) {
-			LiteStarsLMHardware hw1 = (LiteStarsLMHardware) o1;
-			LiteStarsLMHardware hw2 = (LiteStarsLMHardware) o2;
-			int rslt = hw1.getManufactureSerialNumber().compareTo( hw2.getManufactureSerialNumber() );
-			if (rslt == 0)
-				rslt = hw1.getInventoryID() - hw2.getInventoryID();
-			return rslt;
+			LiteInventoryBase inv1 = (LiteInventoryBase) o1;
+			LiteInventoryBase inv2 = (LiteInventoryBase) o2;
+			
+			if ((inv1 instanceof LiteStarsLMHardware) && (inv2 instanceof LiteStarsLMHardware)) {
+				LiteStarsLMHardware hw1 = (LiteStarsLMHardware) inv1;
+				LiteStarsLMHardware hw2 = (LiteStarsLMHardware) inv2;
+				
+				Long sn1 = null;
+				try {
+					sn1 = Long.valueOf( hw1.getManufactureSerialNumber() );
+				}
+				catch (NumberFormatException e) {}
+				
+				Long sn2 = null;
+				try {
+					sn2 = Long.valueOf( hw2.getManufactureSerialNumber() );
+				}
+				catch (NumberFormatException e) {}
+				
+				if (sn1 != null && sn2 != null)
+					return sn1.compareTo( sn2 );
+				else if (sn1 != null && sn2 == null)
+					return -1;
+				else if (sn1 == null && sn2 != null)
+					return 1;
+				else
+					return hw1.getManufactureSerialNumber().compareTo( hw2.getManufactureSerialNumber() );
+			}
+			else if ((inv1 instanceof LiteStarsLMHardware) && !(inv2 instanceof LiteStarsLMHardware))
+				return -1;
+			else if (!(inv1 instanceof LiteStarsLMHardware) && (inv2 instanceof LiteStarsLMHardware))
+				return 1;
+			else
+				return PAOFuncs.getYukonPAOName(inv1.getDeviceID()).compareTo( PAOFuncs.getYukonPAOName(inv2.getDeviceID()) );
 		}
 	};
 	
 	private static final Comparator INST_DATE_CMPTOR = new Comparator() {
 		public int compare(Object o1, Object o2) {
-			LiteStarsLMHardware hw1 = (LiteStarsLMHardware) o1;
-			LiteStarsLMHardware hw2 = (LiteStarsLMHardware) o2;
-			int rslt = new java.util.Date(hw1.getInstallDate()).compareTo( new java.util.Date(hw2.getInstallDate()) );
-			if (rslt == 0)
-				rslt = hw1.getInventoryID() - hw2.getInventoryID();
-			return rslt;
+			LiteInventoryBase inv1 = (LiteInventoryBase) o1;
+			LiteInventoryBase inv2 = (LiteInventoryBase) o2;
+			
+			return new java.util.Date(inv1.getInstallDate()).compareTo( new java.util.Date(inv2.getInstallDate()) );
 		}
 	};
 	
@@ -83,10 +117,10 @@ public class InventoryBean {
 	private int energyCompanyID = 0;
 	private int htmlStyle = HTML_STYLE_LIST_INVENTORY;
 	private String referer = null;
-	private ArrayList hardwareSet = null;
+	private ArrayList inventorySet = null;
 	
 	private LiteStarsEnergyCompany energyCompany = null;
-	private ArrayList hardwareList = null;
+	private ArrayList inventoryList = null;
 	
 	public InventoryBean() {
 	}
@@ -98,100 +132,118 @@ public class InventoryBean {
 	}
 	
 	private ArrayList getHardwareList() {
-		//if (hardwareList != null) return hardwareList;
+		if (inventoryList != null) return inventoryList;
 		
 		ArrayList hardwares = null;
-		if (getHtmlStyle() == HTML_STYLE_HARDWARE_SET)
-			hardwares = hardwareSet;
+		if (getHtmlStyle() == HTML_STYLE_INVENTORY_SET)
+			hardwares = inventorySet;
 		else
 			hardwares = getEnergyCompany().loadAllInventory();
-		java.util.TreeSet sortedHws = null;
 		
+		java.util.TreeSet sortedInvs = null;
 		if (getSortBy() == YukonListEntryTypes.YUK_DEF_ID_INV_SORT_BY_SERIAL_NO)
-			sortedHws = new java.util.TreeSet( SERIAL_NO_CMPTOR );
+			sortedInvs = new java.util.TreeSet( SERIAL_NO_CMPTOR );
 		else if (getSortBy() == YukonListEntryTypes.YUK_DEF_ID_INV_SORT_BY_INST_DATE)
-			sortedHws = new java.util.TreeSet( INST_DATE_CMPTOR );
+			sortedInvs = new java.util.TreeSet( INST_DATE_CMPTOR );
 		else
-			sortedHws = new java.util.TreeSet( INV_ID_CMPTOR );
+			sortedInvs = new java.util.TreeSet( INV_ID_CMPTOR );
 		
 		if (getFilterBy() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_DEV_TYPE) {
 			for (int i = 0; i < hardwares.size(); i++) {
-				LiteStarsLMHardware liteHw = (LiteStarsLMHardware) hardwares.get(i);
-				if (liteHw.getLmHardwareTypeID() == getDeviceType())
-					sortedHws.add( liteHw );
+				LiteInventoryBase liteInv = (LiteInventoryBase) hardwares.get(i);
+				
+				if (liteInv instanceof LiteStarsLMHardware &&
+					((LiteStarsLMHardware)liteInv).getLmHardwareTypeID() == getDeviceType()
+					||
+					ECUtils.isMCT( liteInv.getCategoryID() ) &&
+					getEnergyCompany().getYukonListEntry(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE, getDeviceType()).getYukonDefID()
+							== YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_METER)
+				{
+					sortedInvs.add( liteInv );
+				}
 			}
 		}
 		else if (getFilterBy() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_SRV_COMPANY) {
 			for (int i = 0; i < hardwares.size(); i++) {
-				LiteStarsLMHardware liteHw = (LiteStarsLMHardware) hardwares.get(i);
-				if (liteHw.getInstallationCompanyID() == getServiceCompany())
-					sortedHws.add( liteHw );
+				LiteInventoryBase liteInv = (LiteInventoryBase) hardwares.get(i);
+				
+				if (liteInv.getInstallationCompanyID() == getServiceCompany())
+					sortedInvs.add( liteInv );
 			}
 		}
 		else if (getFilterBy() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_LOCATION) {
 			if (getLocation() == INV_LOCATION_WAREHOUSE) {
 				for (int i = 0; i < hardwares.size(); i++) {
-					LiteStarsLMHardware liteHw = (LiteStarsLMHardware) hardwares.get(i);
-					if (liteHw.getAccountID() == CtiUtilities.NONE_ID)
-						sortedHws.add( liteHw );
+					LiteInventoryBase liteInv = (LiteInventoryBase) hardwares.get(i);
+					
+					if (liteInv.getAccountID() == CtiUtilities.NONE_ID)
+						sortedInvs.add( liteInv );
 				}
 			}
 			else {	// getLocation() == INV_LOCATION_RESIDENCE
 				for (int i = 0; i < hardwares.size(); i++) {
-					LiteStarsLMHardware liteHw = (LiteStarsLMHardware) hardwares.get(i);
-					if (liteHw.getAccountID() != CtiUtilities.NONE_ID)
-						sortedHws.add( liteHw );
+					LiteInventoryBase liteInv = (LiteInventoryBase) hardwares.get(i);
+					
+					if (liteInv.getAccountID() != CtiUtilities.NONE_ID)
+						sortedInvs.add( liteInv );
 				}
 			}
 		}
 		else if (getFilterBy() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_CONFIG) {
 			for (int i = 0; i < hardwares.size(); i++) {
-				LiteStarsLMHardware liteHw = (LiteStarsLMHardware) hardwares.get(i);
+				LiteInventoryBase liteInv = (LiteInventoryBase) hardwares.get(i);
 				
 				int groupID = CtiUtilities.NONE_ID;
-				LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation)
-						getEnergyCompany().getCustAccountInformation( liteHw.getInventoryID(), false );
-				if (liteAcctInfo != null) {
-					for (int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {
-						LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(j);
-						if (liteApp.getInventoryID() == liteHw.getInventoryID() && liteApp.getAddressingGroupID() != CtiUtilities.NONE_ID) {
-							groupID = liteApp.getAddressingGroupID();
-							break;
+				if (liteInv instanceof LiteStarsLMHardware) {
+					LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation)
+							getEnergyCompany().getCustAccountInformation( liteInv.getInventoryID(), false );
+					
+					if (liteAcctInfo != null) {
+						for (int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {
+							LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(j);
+							if (liteApp.getInventoryID() == liteInv.getInventoryID() && liteApp.getAddressingGroupID() != CtiUtilities.NONE_ID) {
+								groupID = liteApp.getAddressingGroupID();
+								break;
+							}
 						}
 					}
-				}
-				else {
-					com.cannontech.database.db.stars.hardware.LMHardwareConfiguration[] configs =
-							com.cannontech.database.db.stars.hardware.LMHardwareConfiguration.getALLHardwareConfigs( new Integer(liteHw.getInventoryID()) );
-					if (configs != null) {
-						for (int j = 0; j < configs.length; j++) {
-							if (configs[j].getAddressingGroupID().intValue() > 0) {
-								groupID = configs[j].getAddressingGroupID().intValue();
-								break;
+					else {
+						com.cannontech.database.db.stars.hardware.LMHardwareConfiguration[] configs =
+								com.cannontech.database.db.stars.hardware.LMHardwareConfiguration.getALLHardwareConfigs( new Integer(liteInv.getInventoryID()) );
+						if (configs != null) {
+							for (int j = 0; j < configs.length; j++) {
+								if (configs[j].getAddressingGroupID().intValue() > 0) {
+									groupID = configs[j].getAddressingGroupID().intValue();
+									break;
+								}
 							}
 						}
 					}
 				}
 				
 				if (groupID == getAddressingGroup())
-					sortedHws.add( liteHw );
+					sortedInvs.add( liteInv );
 			}
 		}
 		else {
-			for (int i = 0; i < hardwares.size(); i++)
-				sortedHws.add( hardwares.get(i) );
+			sortedInvs.addAll( hardwares );
 		}
 		
-		hardwareList = new ArrayList();
-		java.util.Iterator it = sortedHws.iterator();
+		inventoryList = new ArrayList();
+		
+		java.util.Iterator it = sortedInvs.iterator();
 		while (it.hasNext()) {
 			if (getSortOrder() == SORT_ORDER_ASCENDING)
-				hardwareList.add( it.next() );
+				inventoryList.add( it.next() );
 			else
-				hardwareList.add( 0, it.next() );
+				inventoryList.add( 0, it.next() );
 		}
 		
-		return hardwareList;
+		return inventoryList;
+	}
+	
+	public void resetInventoryList() {
+		inventoryList = null;
 	}
 	
 	public String getHTML(HttpServletRequest req) {
@@ -252,43 +304,54 @@ public class InventoryBean {
         if (getHtmlStyle() == HTML_STYLE_SELECT_INVENTORY) {
 	        htmlBuf.append("          <td class='HeaderCell' width='5%'>&nbsp;</td>").append("\r\n");
         }
-        htmlBuf.append("          <td class='HeaderCell' width='17%'>Serial #</td>").append("\r\n");
+        htmlBuf.append("          <td class='HeaderCell' width='17%'>Serial # / DeviceName</td>").append("\r\n");
         htmlBuf.append("          <td class='HeaderCell' width='17%'>Device Type</td>").append("\r\n");
         htmlBuf.append("          <td class='HeaderCell' width='17%'>Install Date</td>").append("\r\n");
         htmlBuf.append("          <td class='HeaderCell' width='49%'>Location</td>").append("\r\n");
         htmlBuf.append("        </tr>").append("\r\n");
         
         for (int i = minInvNo; i <= maxInvNo; i++) {
-        	LiteStarsLMHardware liteHw = (LiteStarsLMHardware) hwList.get(i-1);
-        	String deviceType = getEnergyCompany().getYukonListEntry(
-        			YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE, liteHw.getLmHardwareTypeID()
-        			).getEntryText();
-        	java.util.Date installDate = ServerUtils.translateDate( liteHw.getInstallDate() );
+        	LiteInventoryBase liteInv = (LiteInventoryBase) hwList.get(i-1);
+        	
+        	String deviceType = null;
+        	String deviceName = null;
+        	if (liteInv instanceof LiteStarsLMHardware) {
+        		deviceType = getEnergyCompany().getYukonListEntry(
+						YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE, ((LiteStarsLMHardware)liteInv).getLmHardwareTypeID()
+						).getEntryText();
+				deviceName = ((LiteStarsLMHardware)liteInv).getManufactureSerialNumber();
+        	}
+        	else if (ECUtils.isMCT( liteInv.getCategoryID() )) {
+        		deviceType = getEnergyCompany().getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_METER ).getEntryText();
+        		deviceName = PAOFuncs.getYukonPAOName( liteInv.getDeviceID() );
+        	}
+        	
+        	java.util.Date installDate = ServerUtils.translateDate( liteInv.getInstallDate() );
         	String instDate = (installDate != null)? dateFormat.format(installDate) : "----";
         	
             htmlBuf.append("        <tr>").append("\r\n");
 	        if (getHtmlStyle() == HTML_STYLE_SELECT_INVENTORY) {
 	        	htmlBuf.append("          <td class='TableCell' width='5%'>");
-	        	htmlBuf.append("<input type='radio' name='InvID' value='").append(liteHw.getInventoryID()).append("'>");
+	        	htmlBuf.append("<input type='radio' name='InvID' value='").append(liteInv.getInventoryID()).append("'>");
 	        	htmlBuf.append("</td>").append("\r\n");
 	        }
             htmlBuf.append("          <td class='TableCell' width='17%'>");
-			htmlBuf.append("<a href='InventoryDetail.jsp?InvId=").append(liteHw.getInventoryID());
+			htmlBuf.append("<a href='InventoryDetail.jsp?InvId=").append(liteInv.getInventoryID());
 			if (getHtmlStyle() == HTML_STYLE_SELECT_INVENTORY)
 				htmlBuf.append("&src=SelectInv");
 			else if (getHtmlStyle() == HTML_STYLE_LIST_INVENTORY)
 				htmlBuf.append("&src=Inventory");
-			else if (getHtmlStyle() == HTML_STYLE_HARDWARE_SET)
+			else if (getHtmlStyle() == HTML_STYLE_INVENTORY_SET)
 				htmlBuf.append("&src=ResultSet");
-			htmlBuf.append("'>").append(liteHw.getManufactureSerialNumber()).append("</a>");
+			htmlBuf.append("'>").append(deviceName).append("</a>");
             htmlBuf.append("</td>").append("\r\n");
             htmlBuf.append("          <td class='TableCell' width='17%'>").append(deviceType).append("</td>").append("\r\n");
             htmlBuf.append("          <td class='TableCell' width='17%'>").append(instDate).append("</td>").append("\r\n");
             htmlBuf.append("          <td class='TableCell' width='49%'>");
-            if (liteHw.getAccountID() == 0)
+            if (liteInv.getAccountID() == 0)
             	htmlBuf.append("Warehouse");
             else {
-            	LiteStarsCustAccountInformation liteAcctInfo = getEnergyCompany().getBriefCustAccountInfo( liteHw.getAccountID(), true );
+            	LiteStarsCustAccountInformation liteAcctInfo = getEnergyCompany().getBriefCustAccountInfo( liteInv.getAccountID(), true );
             	LiteCustomerContact liteCont = getEnergyCompany().getCustomerContact( liteAcctInfo.getCustomer().getPrimaryContactID() );
             	LiteAddress liteAddr = getEnergyCompany().getAddress( liteAcctInfo.getAccountSite().getStreetAddressID() );
             	
@@ -327,7 +390,7 @@ public class InventoryBean {
 			htmlBuf.append("</form>").append("\r\n");
         }
         
-        if (getHtmlStyle() == HTML_STYLE_HARDWARE_SET) {
+        if (getHtmlStyle() == HTML_STYLE_INVENTORY_SET) {
 			htmlBuf.append("<br>").append("\r\n");
 			htmlBuf.append("<table width='200' border='0' cellspacing='0' cellpadding='3'>").append("\r\n");
 			htmlBuf.append("  <tr>").append("\r\n");
@@ -414,7 +477,7 @@ public class InventoryBean {
 	public void setFilterBy(int filterBy) {
 		this.filterBy = filterBy;
 		// Update the search result
-		hardwareList = null;
+		inventoryList = null;
 	}
 
 	/**
@@ -530,9 +593,9 @@ public class InventoryBean {
 	/**
 	 * @param list
 	 */
-	public void setHardwareSet(ArrayList list) {
-		hardwareSet = list;
-		hardwareList = null;
+	public void setInventorySet(ArrayList list) {
+		inventorySet = list;
+		inventoryList = null;
 	}
 
 	/**
