@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2003/03/13 19:35:40 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2003/04/25 22:40:45 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -26,8 +26,7 @@
 
 CtiProtocolDNP::CtiProtocolDNP()
 {
-    setMasterAddress(DefaultYukonDNPMasterAddress);
-    setSlaveAddress(DefaultSlaveAddress);
+    setAddresses(DefaultSlaveAddress, DefaultYukonDNPMasterAddress);
 }
 
 CtiProtocolDNP::CtiProtocolDNP(const CtiProtocolDNP &aRef)
@@ -56,15 +55,12 @@ void CtiProtocolDNP::initLayers( void )
 }
 
 
-void CtiProtocolDNP::setMasterAddress( unsigned short address )
+void CtiProtocolDNP::setAddresses( unsigned short slaveAddress, unsigned short masterAddress )
 {
-    _masterAddress = address;
-}
+    _masterAddress = masterAddress;
+    _slaveAddress  = slaveAddress;
 
-
-void CtiProtocolDNP::setSlaveAddress( unsigned short address )
-{
-    _slaveAddress = address;
+    _appLayer.setAddresses(_slaveAddress, _masterAddress);
 }
 
 
@@ -80,8 +76,6 @@ void CtiProtocolDNP::setCommand( DNPCommand command, dnp_output_point *points, i
 {
     unsigned char *tmp;
     int tmplen;
-
-    _appLayer.setAddresses(_slaveAddress, _masterAddress);
 
     switch( command )
     {
