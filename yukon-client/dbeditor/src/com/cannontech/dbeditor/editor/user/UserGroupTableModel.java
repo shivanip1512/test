@@ -31,17 +31,13 @@ public class UserGroupTableModel extends javax.swing.table.AbstractTableModel im
 		Color.BLACK,
 
 		//non selected row
-		Color.BLACK		
+		Color.RED
 	};
 
 	
 	
 	//contains com.cannontech.database.data.lite.LiteYukonGroup;
 	private Vector rows = null;
-	
-	//parallel vector to say what has been selected (contains Boolean)
-	private Vector selectedRows = null;
-	
 	
 	/**
 	 * UserGroupTableModel constructor comment.
@@ -58,8 +54,10 @@ public class UserGroupTableModel extends javax.swing.table.AbstractTableModel im
 	 */
 	public void addRowValue( LiteYukonGroup yukonGroup_, Boolean selected_ ) 
 	{
-		getRows().add( yukonGroup_ );
-		getSelectedRows().add( selected_ );
+		SelectableGroupRow s = new SelectableGroupRow();
+		s.setLiteYukonGroup( yukonGroup_ );
+		s.selected( selected_ );
+		getRows().add( s );
 	}
 
 
@@ -70,13 +68,10 @@ public class UserGroupTableModel extends javax.swing.table.AbstractTableModel im
 
 	public Color getCellForegroundColor(int row, int col)
 	{
-		Boolean isSelected = getSelectedRowAt(row);
-		if( isSelected.booleanValue() )
-		{
-			return CELL_COLORS[0]; //we have a non selected row
-		}
-		else
+		if( getRowAt(row).hasConflict() )
 			return CELL_COLORS[1];
+		else
+			return CELL_COLORS[0];
 	}
 
 	/**
@@ -105,39 +100,16 @@ public class UserGroupTableModel extends javax.swing.table.AbstractTableModel im
 	/**
 	 * getRowAt method comment.
 	 */
-	public LiteYukonGroup getRowAt( int row ) 
+	public SelectableGroupRow getRowAt( int row ) 
 	{
 		if( row <= getRows().size() )
 		{
-			return (LiteYukonGroup)getRows().get(row);
-		}
-		else
-			return null;
-	}
-
-	/**
-	 * getSelectedRowAt method comment.
-	 */
-	public Boolean getSelectedRowAt( int row ) 
-	{
-		if( row <= getRows().size() )
-		{
-			return (Boolean)getSelectedRows().get(row);
+			return (SelectableGroupRow)getRows().get(row);
 		}
 		else
 			return null;
 	}
 	
-	/**
-	 * getSelectedRows method comment.
-	 */
-	private Vector getSelectedRows() 
-	{
-		if( selectedRows == null )
-			selectedRows = new Vector(16);
-		
-		return selectedRows;
-	}
 
 	/**
 	 * getRowCount method comment.
@@ -160,7 +132,13 @@ public class UserGroupTableModel extends javax.swing.table.AbstractTableModel im
 	
 	public int indexOf( LiteYukonGroup group_ )
 	{
-		return getRows().indexOf( group_ );
+		for( int i = 0; i < getRowCount(); i++ )
+		{
+			if( getRowAt(i).getLiteYukonGroup().equals(group_) )
+				return i;
+		}
+		
+		return -1;
 	}
 	
 	/**
@@ -173,16 +151,17 @@ public class UserGroupTableModel extends javax.swing.table.AbstractTableModel im
 	
 		if( row <= getRows().size() )
 		{
-			LiteYukonGroup rowVal = (LiteYukonGroup)getRows().get(row);
-			Boolean sel = (Boolean)getSelectedRows().get(row);
+			SelectableGroupRow sr = getRowAt(row);
 			
 			switch( col )
 			{
 				case COL_SELECTED:
-					return sel;
+					return sr.isSelected();
 	
 			 	case COL_NAME:
-					return rowVal.toString();
+					return 
+						sr.getLiteYukonGroup().toString() +
+						(sr.hasConflict() ? "  (role conflict)" : "");
 					
 				default:
 					return null;
@@ -213,7 +192,6 @@ public class UserGroupTableModel extends javax.swing.table.AbstractTableModel im
 		if( rowNumber >=0 && rowNumber < getRowCount() )
 		{
 			getRows().remove( rowNumber );
-			getSelectedRows().remove( rowNumber );
 		}
 	}
 
@@ -230,7 +208,7 @@ public class UserGroupTableModel extends javax.swing.table.AbstractTableModel im
 			switch( col )
 			{
 			 	case COL_SELECTED:
-					getSelectedRows().setElementAt( new Boolean(value.toString()), row );
+					getRowAt(row).selected( new Boolean(value.toString()) );
 					break;
 			}
 		}

@@ -4,25 +4,37 @@ package com.cannontech.dbeditor.editor.user;
  */
 
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Map;
 
+import javax.swing.JCheckBox;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
+import javax.swing.event.PopupMenuListener;
 import javax.swing.table.TableColumn;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.gui.table.CheckBoxColorRenderer;
 import com.cannontech.common.gui.util.OkCancelDialog;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.PoolManager;
+import com.cannontech.common.util.UniqueSet;
+import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonGroup;
+import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.user.YukonGroup;
 
-public class UserGroupRoleEditorPanel extends com.cannontech.common.gui.util.DataInputPanel
+public class UserGroupRoleEditorPanel extends com.cannontech.common.gui.util.DataInputPanel implements ActionListener, PopupMenuListener
 {
 	private UserGroupTableModel tableModel = null;
 	private javax.swing.JPanel ivjJPanelDescription = null;
@@ -30,6 +42,12 @@ public class UserGroupRoleEditorPanel extends com.cannontech.common.gui.util.Dat
 	private javax.swing.JTable ivjJTableRoleGroup = null;
 	private javax.swing.JScrollPane ivjJScrollPaneTextPane = null;
 	private javax.swing.JTextPane ivjJTextPaneDescription = null;
+	
+	private JCheckBox jCheckBoxUserRoles = null;
+	private JPopupMenu jPopupMenu = null;
+	private JMenuItem jMenuItemRoles = null;
+	private JMenuItem jMenuItemConflicts = null;
+
 
 	/**
 	 * Constructor
@@ -81,6 +99,49 @@ public class UserGroupRoleEditorPanel extends com.cannontech.common.gui.util.Dat
 **end of data**/
 }
 
+	public void actionPerformed(ActionEvent e)
+	{
+		if( e.getSource() == getJCheckBoxUserRoles() )
+		{
+			fireInputUpdate();
+		}
+
+		if( e.getSource() == getJMenuItemRoles() )
+		{
+			int row = getJTableRoleGroup().getSelectedRow();
+			if( row >= 0 )
+				showRoles( row );
+		}
+
+		if( e.getSource() == getJMenuItemConflicts() )
+		{
+			//not sure
+			int row = getJTableRoleGroup().getSelectedRow();
+			if( row >= 0 )
+			{
+				StringBuffer buf = new StringBuffer();
+				buf.append( "Role Category -> Role Name " + System.getProperty("line.separator") );
+				buf.append( "________________________________" + System.getProperty("line.separator") );
+				
+				SelectableGroupRow rowVal = getTableModel().getRowAt( row );
+				Iterator it = rowVal.getConflictIter();
+				while( it.hasNext() )
+				{
+					LiteYukonRole role = (LiteYukonRole)it.next();
+					buf.append( role.getCategory() );
+					buf.append( " -> " + role.getRoleName() + System.getProperty("line.separator") );					
+				}
+				
+				
+				
+				JOptionPane.showMessageDialog(
+						this, buf.toString(), "Role Conflicts", JOptionPane.WARNING_MESSAGE );
+			}
+			
+		}
+
+	}
+	
 	/**
 	 * Return the ConfigurationPanel property value.
 	 * @return javax.swing.JPanel
@@ -139,6 +200,33 @@ public class UserGroupRoleEditorPanel extends com.cannontech.common.gui.util.Dat
 		return ivjJScrollPaneRoleGroup;
 	}
 
+	private JCheckBox getJCheckBoxUserRoles() 
+	{
+		if( jCheckBoxUserRoles == null ) 
+		{
+			try 
+			{
+				jCheckBoxUserRoles = new JCheckBox();
+				jCheckBoxUserRoles.setName("JScrollPaneRoleGroup");
+				jCheckBoxUserRoles.setText("Advanced: Enable User Roles");
+				jCheckBoxUserRoles.setHorizontalAlignment(JCheckBox.TRAILING);
+				jCheckBoxUserRoles.setHorizontalTextPosition(JCheckBox.LEFT);
+				jCheckBoxUserRoles.setToolTipText(
+					"Only use this option if necessary. Role attachment is prefered via a Role Group" );
+			}
+			catch (java.lang.Throwable ivjExc)
+			{
+				handleException(ivjExc);
+			}
+		}
+		
+		return jCheckBoxUserRoles;
+	}
+
+	public boolean isShowingUserRoles()
+	{
+		return getJCheckBoxUserRoles().isSelected();
+	}
 
 	/**
 	 * Return the JScrollPaneTextPane property value.
@@ -256,9 +344,9 @@ public class UserGroupRoleEditorPanel extends com.cannontech.common.gui.util.Dat
 
 		for( int i = 0; i < getTableModel().getRowCount(); i++ )
 		{
-			if( getTableModel().getSelectedRowAt(i).booleanValue() )
+			if( getTableModel().getRowAt(i).isSelected().booleanValue() )
 			{
-				LiteYukonGroup group = getTableModel().getRowAt(i); 
+				LiteYukonGroup group = getTableModel().getRowAt(i).getLiteYukonGroup(); 
 				
 				//add a new DBPersistant YukonGroup to our Login
 				YukonGroup grp = new YukonGroup( new Integer(group.getGroupID()), group.getGroupName() );
@@ -277,19 +365,132 @@ public class UserGroupRoleEditorPanel extends com.cannontech.common.gui.util.Dat
 	 * Called whenever the part throws an exception.
 	 * @param exception java.lang.Throwable
 	 */
-	private void handleException(Throwable exception) {
-	
+	private void handleException(Throwable exception) 
+	{	
 		/* Uncomment the following lines to print uncaught exceptions to stdout */
-		com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
-		com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
+		CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
+		CTILogger.error( exception.getMessage(), exception );;
 	}
 
 
+	private JPopupMenu getJPopupMenu() 
+	{
+		if( jPopupMenu == null) 
+		{
+			try 
+			{
+				jPopupMenu = new JPopupMenu();
+				jPopupMenu.setName("JPopupMenu");
+
+				jPopupMenu.add( getJMenuItemRoles() );
+				jPopupMenu.add( getJMenuItemConflicts() );
+			}
+			catch (java.lang.Throwable ivjExc) 
+			{
+				handleException(ivjExc);
+			}
+		}
+
+		return jPopupMenu;
+	}
+
+	/**
+	 * Returns the jMenuItemRoles property value.
+	 * @return javax.swing.JMenuItem
+	 */
+	private JMenuItem getJMenuItemRoles() 
+	{
+		if( jMenuItemRoles == null ) 
+		{
+			try 
+			{
+				jMenuItemRoles = new JMenuItem();
+				jMenuItemRoles.setName("jMenuItemRoles");
+				jMenuItemRoles.setMnemonic('r');
+				jMenuItemRoles.setText("Roles...");
+			}
+			catch (java.lang.Throwable ivjExc) 
+			{
+				handleException(ivjExc);
+			}
+		}
+
+		return jMenuItemRoles;
+	}
+
+	/**
+	 * Returns the jMenuItemRoles property value.
+	 * @return javax.swing.JMenuItem
+	 */
+	private JMenuItem getJMenuItemConflicts() 
+	{
+		if( jMenuItemConflicts == null ) 
+		{
+			try 
+			{
+				jMenuItemConflicts = new JMenuItem();
+				jMenuItemConflicts.setName("jMenuItemConflicts");
+				jMenuItemConflicts.setMnemonic('c');
+				jMenuItemConflicts.setText("Conflicts...");
+			}
+			catch (java.lang.Throwable ivjExc) 
+			{
+				handleException(ivjExc);
+			}
+		}
+
+		return jMenuItemConflicts;
+	}
+		
+	private void showRoles( int row )
+	{
+		UserRolePanel rolePanel = new UserRolePanel();
+		DBPersistent dbObj = 
+				LiteFactory.createDBPersistent( getTableModel().getRowAt(row).getLiteYukonGroup() );
+
+		try
+		{
+			dbObj = Transaction.createTransaction( 
+							Transaction.RETRIEVE, dbObj ).execute();
+	
+			rolePanel.setValue( dbObj );
+			rolePanel.setRoleTabledEnabled( false );
+						
+			OkCancelDialog diag = new OkCancelDialog(
+					CtiUtilities.getParentFrame(UserGroupRoleEditorPanel.this), 
+					"Group Roles : " + getTableModel().getRowAt(row).getLiteYukonGroup().getGroupName() + "  (Read-only)", 
+					true, rolePanel );
+	
+			diag.setCancelButtonVisible( false );
+			diag.setSize( 520, 610 );
+			diag.setLocationRelativeTo( CtiUtilities.getParentFrame(UserGroupRoleEditorPanel.this) );
+						
+			diag.show();
+		}
+		catch( TransactionException te )
+		{
+			CTILogger.error( "Unabel to get the role data from the database", te );					
+		}
+	
+	}
+	
 	/**
 	 * Initializes connections
 	 */
 	private void initConnections() 
 	{
+		getJCheckBoxUserRoles().addActionListener( this );
+		getJMenuItemRoles().addActionListener( this );
+		getJMenuItemConflicts().addActionListener( this );
+
+		getJPopupMenu().addPopupMenuListener( this );
+
+
+
+		java.awt.event.MouseListener listener = 
+				new com.cannontech.clientutils.popup.PopUpMenuShower( getJPopupMenu() );
+		getJTableRoleGroup().addMouseListener( listener );
+
 
 		//add the mouse listener to our table	
 		final MouseAdapter ma = new MouseAdapter()
@@ -300,46 +501,25 @@ public class UserGroupRoleEditorPanel extends com.cannontech.common.gui.util.Dat
 
 				if( row >= 0 && row <= getTableModel().getRowCount() )
 				{
+					getJTextPaneDescription().setText(
+							getTableModel().getRowAt(row).getLiteYukonGroup().getGroupDescription() );
+
 					if( e.getClickCount() == 2 )
 					{
-						UserRolePanel rolePanel = new UserRolePanel();
-						DBPersistent dbObj = 
-								LiteFactory.createDBPersistent( getTableModel().getRowAt(row) );
-						try
-						{
-							dbObj.setDbConnection( 
-								PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() ) );
-
-							dbObj.retrieve();
-
-							rolePanel.setValue( dbObj );
-							rolePanel.setRoleTabledEnabled( false );
-						
-							OkCancelDialog diag = new OkCancelDialog(
-									CtiUtilities.getParentFrame(UserGroupRoleEditorPanel.this), 
-									"Group Roles : " + getTableModel().getRowAt(row).getGroupName() + "  (Read-only)", 
-									true, rolePanel );
-	
-							diag.setCancelButtonVisible( false );
-							diag.setSize( 520, 610 );
-							diag.setLocationRelativeTo( CtiUtilities.getParentFrame(UserGroupRoleEditorPanel.this) );
-						
-							diag.show();					
-						}
-						catch( SQLException sqlEx )
-						{
-							CTILogger.error( "Unable to get the data for this YukonRoleGroup, aborting operation", sqlEx );
-						}
-						
+						showRoles( row );
 					}
-					else
-					{
-						getJTextPaneDescription().setText(
-								getTableModel().getRowAt(row).getGroupDescription() );
-					}
+
 				}
 
 			}
+			
+			public void mousePressed(MouseEvent event) 
+			{
+				int rLoc = getJTableRoleGroup().rowAtPoint( event.getPoint() );
+	
+				getJTableRoleGroup().getSelectionModel().setSelectionInterval( rLoc, rLoc );
+			}
+		
 		};		
 		getJTableRoleGroup().addMouseListener( ma );
 	}
@@ -353,23 +533,30 @@ public class UserGroupRoleEditorPanel extends com.cannontech.common.gui.util.Dat
 	try {
 		// user code begin {1}
 		// user code end
-		setName("PointAlarmOptionsEditorPanel");
+		setName("UserGroupRoleEditorPanel");
 		setLayout(new java.awt.GridBagLayout());
 		setSize(384, 366);
 
+		java.awt.GridBagConstraints constJCheckBoxUserRoles = new java.awt.GridBagConstraints();
+		constJCheckBoxUserRoles.gridx = 0; constJCheckBoxUserRoles.gridy = 0;
+		constJCheckBoxUserRoles.fill = java.awt.GridBagConstraints.HORIZONTAL;
+		constJCheckBoxUserRoles.anchor = java.awt.GridBagConstraints.EAST;
+		constJCheckBoxUserRoles.insets = new java.awt.Insets(2, 7, 1, 5);
+		add(getJCheckBoxUserRoles(), constJCheckBoxUserRoles);
+
 		java.awt.GridBagConstraints constraintsJScrollPaneRoleGroup = new java.awt.GridBagConstraints();
-		constraintsJScrollPaneRoleGroup.gridx = 0; constraintsJScrollPaneRoleGroup.gridy = 0;
+		constraintsJScrollPaneRoleGroup.gridx = 0; constraintsJScrollPaneRoleGroup.gridy = 1;
 		constraintsJScrollPaneRoleGroup.fill = java.awt.GridBagConstraints.BOTH;
 		constraintsJScrollPaneRoleGroup.anchor = java.awt.GridBagConstraints.WEST;
 		constraintsJScrollPaneRoleGroup.weightx = 1.0;
 		constraintsJScrollPaneRoleGroup.weighty = 1.0;
 		constraintsJScrollPaneRoleGroup.ipadx = 343;
 		constraintsJScrollPaneRoleGroup.ipady = 172;
-		constraintsJScrollPaneRoleGroup.insets = new java.awt.Insets(6, 7, 3, 5);
+		constraintsJScrollPaneRoleGroup.insets = new java.awt.Insets(6, 7, 1, 5);
 		add(getJScrollPaneRoleGroup(), constraintsJScrollPaneRoleGroup);
 
 		java.awt.GridBagConstraints constraintsJPanelDescription = new java.awt.GridBagConstraints();
-		constraintsJPanelDescription.gridx = 0; constraintsJPanelDescription.gridy = 1;
+		constraintsJPanelDescription.gridx = 0; constraintsJPanelDescription.gridy = 2;
 		constraintsJPanelDescription.fill = java.awt.GridBagConstraints.BOTH;
 		constraintsJPanelDescription.anchor = java.awt.GridBagConstraints.WEST;
 		constraintsJPanelDescription.weightx = 1.0;
@@ -389,6 +576,44 @@ public class UserGroupRoleEditorPanel extends com.cannontech.common.gui.util.Dat
 			
 	// user code end
 }
+
+	/**
+	 * Fired when a check box in the Roles table is clicked
+	 * @param e
+	 */
+	private void checkBoxAction()
+	{
+		//validate all the selected roles against one another
+		UniqueSet[] unqSet = validateRoles();					
+					
+		for( int i = 0; i < getTableModel().getRowCount(); i++ )
+		{
+			SelectableGroupRow row = getTableModel().getRowAt(i);
+							
+			//re-init our conflicts
+			row.clearConflicts();
+
+			for( int j = 0; j < unqSet.length; j++ )
+			{
+				UniqueSet us = unqSet[j];
+							
+				if( row.getLiteYukonGroup().equals(us.getKey()) )
+				{
+					row.addConflict( (LiteYukonRole)us.getValue() );
+				}
+														
+			}
+
+		}
+					
+//		UniqueSet p = (UniqueSet)conflictList.get(i);
+//		LiteYukonGroup grp = (LiteYukonGroup)p.getKey();
+//		LiteYukonRole r = (LiteYukonRole)p.getValue();
+//		CTILogger.info( "  " + r.getRoleName() + "  in  " + grp.getGroupName() );
+					
+		fireInputUpdate();
+		getTableModel().fireTableDataChanged();
+	}
 
 	/**
 	 * Insert the method's description here.
@@ -427,17 +652,95 @@ public class UserGroupRoleEditorPanel extends com.cannontech.common.gui.util.Dat
 			{
 				public void actionPerformed(java.awt.event.ActionEvent e) 
 				{
-					fireInputUpdate();
+					checkBoxAction();
 				}
 			});
 
 
 			selColumn.setCellEditor( new javax.swing.DefaultCellEditor(chkBox) );
 		}
-			
+
 	}
+	
+	/**
+	 * Icky method to below, but what other way? May become a performance nightmare.
+	 * 
+	 * Returns an arry of UniqueSet instance in the following:
+	 *   key<LiteYukonGroup>, value<LiteYukonRole>
+	 * 
+	 * If no duplicate roles are foud, a zero length array is ruturned
+	 */
+	private synchronized UniqueSet[] validateRoles()
+	{
+		//stores the conflicts
+		ArrayList conflictList = new ArrayList(64);
+		
+		//stores all groups we already looked at
+		ArrayList allOldGroups = new ArrayList(128);
+		
+		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+		synchronized( cache )
+		{
+		
+			for( int i = 0; i < getTableModel().getRowCount(); i++ )
+			{
+				//if the row is selected, add its roles to our ALL_ROWS list
+				if( getTableModel().getRowAt(i).isSelected().booleanValue() )
+				{
+					LiteYukonGroup currGrp = getTableModel().getRowAt(i).getLiteYukonGroup();
+					
+					Map currRoleMap = (Map)cache.getYukonGroupRolePropertyMap().get( currGrp );
 
+					for( int j = 0; j < allOldGroups.size() && currRoleMap != null; j++ )
+					{
+						LiteYukonGroup oldGrp = (LiteYukonGroup)allOldGroups.get(j);
+						Map oldMap = (Map)cache.getYukonGroupRolePropertyMap().get( oldGrp );
+						
+						Iterator it = currRoleMap.keySet().iterator();
+						while( it.hasNext() )
+						{				
+							LiteYukonRole currRole = (LiteYukonRole)it.next();
+							Object oldRole = ( oldMap == null ? null : oldMap.get( currRole ) ); 
 
+							//if we have an old role, we have the role duplicated in at
+							// least 2 Role Groups
+							if( oldRole != null )
+							{								
+								UniqueSet p1 = new UniqueSet(oldGrp, currRole);
+								if( !conflictList.contains(p1) )
+									conflictList.add( p1 );
+								
+								UniqueSet p2 = new UniqueSet(currGrp, currRole);
+								if( !conflictList.contains(p2) )
+									conflictList.add( p2 );
+							}
+							
+						}
+									
+					}
+
+					//examined this group, put it into the old group mix
+					allOldGroups.add( currGrp );
+				}
+				
+			}
+/*
+			for( int i = 0; i < conflictList.size(); i++ )
+			{
+				UniqueSet p = (UniqueSet)conflictList.get(i);
+				LiteYukonGroup grp = (LiteYukonGroup)p.getKey();
+				LiteYukonRole r = (LiteYukonRole)p.getValue();
+				CTILogger.info( "  " + r.getRoleName() + "  in  " + grp.getGroupName() );
+			}
+*/
+		}
+	
+	
+		//will return a zero lengh array if none are found
+		UniqueSet[] us = new UniqueSet[ conflictList.size() ];
+		return (UniqueSet[])conflictList.toArray( us );
+	}
+	
 	/**
 	 * Insert the method's description here.
 	 * Creation date: (5/1/2001 9:11:36 AM)
@@ -503,5 +806,33 @@ public static void main(java.lang.String[] args) {
 			
 			
 		}
+		
+		checkBoxAction();		
 	}
+	
+	/**
+	 * Insert the method's description here.
+	 * Creation date: (8/25/00 9:45:22 AM)
+	 * @param e javax.swing.event.PopupMenuEvent
+	 */
+	public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent e) 
+	{
+	
+		if( e.getSource() == getJPopupMenu() )
+		{
+			int rLoc = getJTableRoleGroup().getSelectedRow();
+			SelectableGroupRow sRow = getTableModel().getRowAt( rLoc );
+
+			if( sRow != null )
+			{	
+				getJMenuItemConflicts().setEnabled( sRow.hasConflict() ); 
+			}
+		}	
+	}
+
+
+	public void popupMenuCanceled(javax.swing.event.PopupMenuEvent e) {}
+	public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent e) {}
+
+
 }

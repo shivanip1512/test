@@ -1,5 +1,6 @@
 package com.cannontech.dbeditor.editor.user;
 
+import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.gui.util.DataInputPanel;
 
 /**
@@ -50,6 +51,36 @@ public class LoginEditorPanel extends com.cannontech.common.editor.PropertyPanel
 			
 		return objs;
 	}
+	
+	private int getUserRolePanelIndx()
+	{
+		for( int i = 0 ; i < getTabbedPane().getTabCount(); i++ )
+			if( getTabbedPane().getComponentAt(i) instanceof UserRolePanel )
+				return i;
+			
+		return -1;
+	}
+	
+	public void inputUpdate( PropertyPanelEvent event) 
+	{
+		if( event.getSource() instanceof UserGroupRoleEditorPanel )
+		{
+			int rolePanelIndx = getUserRolePanelIndx();
+
+			//show the optional panel here
+			if( rolePanelIndx >= 0 )
+			{
+				getTabbedPane().setEnabledAt(
+					rolePanelIndx,
+					((UserGroupRoleEditorPanel)event.getSource()).isShowingUserRoles() );
+			}
+
+		}
+		
+		//allow our parent to do its thing
+		super.inputUpdate( event );
+	}	
+	
 	/**
 	 * This method was created in VisualAge.
 	 * @return DataInputPanel[]
@@ -135,11 +166,24 @@ public class LoginEditorPanel extends com.cannontech.common.editor.PropertyPanel
 		panels.copyInto( this.inputPanels );
 	
 		this.inputPanelTabNames = new String[tabs.size()];
-		tabs.copyInto( this.inputPanelTabNames );
+		tabs.copyInto( this.inputPanelTabNames );		
 		
 		//Allow super to do whatever it needs to
 		super.setValue( val );
+		
+		
+		//special init code to Disable the user roles tab
+		int rolePanelIndx = getUserRolePanelIndx();
+		if( rolePanelIndx >= 0 )
+		{
+			getTabbedPane().setEnabledAt(
+				rolePanelIndx,
+				false );
+		}
+
 	}
+
+
 	/**
 	 * This method was created in VisualAge.
 	 * @return java.lang.String
