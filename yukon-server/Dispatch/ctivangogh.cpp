@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.40 $
-* DATE         :  $Date: 2003/03/26 20:32:55 $
+* REVISION     :  $Revision: 1.41 $
+* DATE         :  $Date: 2003/04/15 22:12:46 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -3992,7 +3992,7 @@ void CtiVanGogh::doPendingOperations()
                             /*
                              *  Order is important here.  Please do not rearrange the else if conditionals.
                              */
-                            if( ppo.getControl().getControlDuration() > 0 &&
+                            if( ppo.getControl().getControlDuration() >= 0 &&
                                 now.seconds() >= ppo.getControl().getStartTime().seconds() + ppo.getControl().getControlDuration())
                             {
                                 /*

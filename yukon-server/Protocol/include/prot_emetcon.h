@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/prot_emetcon.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2003/03/13 19:35:48 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2003/04/15 22:11:14 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -307,6 +307,8 @@ public:
     INT buildAWordMessages(CtiCommandParser  &parse, const OUTMESS &aOutTemplate);
     INT buildBWordMessages(CtiCommandParser  &parse, const OUTMESS &aOutTemplate);
     bool generateARMMessage(CtiCommandParser  &parse, const OUTMESS &aOutTemplate);
+
+    int getControlInterval(CtiCommandParser &parse) const;
 
 
 #ifdef OLD_CODE

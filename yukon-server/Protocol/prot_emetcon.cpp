@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/prot_emetcon.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2003/03/24 22:22:20 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2003/04/15 22:11:14 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -126,7 +126,7 @@ INT CtiProtocolEmetcon::buildMessages(CtiCommandParser  &parse, const OUTMESS &a
    if(curOutMessage->EventCode & AWORD)
    {
       // Add these two items to the list for control accounting!
-      parse.setValue("control_interval", parse.getiValue("shed", 0));
+      parse.setValue("control_interval", getControlInterval(parse));
       parse.setValue("control_reduction", 100 );
 
       curOutMessage->EventCode &= ~BWORD;  //  maybe we just shouldn't set it above in assembleCommand... ?
@@ -382,5 +382,36 @@ INT CtiProtocolEmetcon::getDeviceType() const
    return _deviceType;
 }
 
+int CtiProtocolEmetcon::getControlInterval(CtiCommandParser &parse) const
+{
+    int nRet = 0;
+    int Seconds = parse.getiValue("shed", 0);
 
+    if(Seconds < 5)
+    {
+        // This must be a restore
+        nRet = 0;
+    }
+    else if(Seconds < 451)
+    {
+        nRet = 450;
+    }
+    else if(Seconds < 901)
+    {
+        nRet = 900;
+    }
+    else if(Seconds < 1801)
+    {
+        nRet = 1800;
+    }
+    else if(Seconds < 3601)
+    {
+        nRet = 3600;
+    }
+    else
+    {
+        nRet = 3600;
+    }
 
+    return nRet;
+}

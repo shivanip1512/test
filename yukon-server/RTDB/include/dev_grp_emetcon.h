@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_grp_emetcon.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/03/13 19:36:11 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2003/04/15 22:10:07 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -65,6 +65,8 @@ public:
                               RWTPtrSlist< CtiMessage >      &vgList,
                               RWTPtrSlist< CtiMessage >      &retList,
                               RWTPtrSlist< OUTMESS >         &outList);
+
+   static RWCString CtiDeviceGroupEmetcon::generateCommandString(OUTMESS *&OutMessage);
 
 };
 #endif // #ifndef __DEV_GRP_EMETCON_H__

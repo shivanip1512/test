@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_grp_emetcon.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2003/03/31 15:10:14 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2003/04/15 22:10:06 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -45,10 +45,10 @@ VOID ParserToAStruct(CtiCommandParser &parse, ASTRUCT *ASt)
 
     if(Flags & CMD_FLAG_CTL_SHED)
     {
-        time = parse.getiValue("shed");
+        time = parse.getiValue("shed", 0);
     }
 
-    if(Flags & CMD_FLAG_CTL_RESTORE)
+    if(Flags & CMD_FLAG_CTL_RESTORE || time == 0)
     {
         ASt->Function = A_RESTORE;
     }
@@ -117,12 +117,12 @@ INT CtiDeviceGroupEmetcon::ExecuteRequest(CtiRequestMsg                  *pReq,
                         RWCString actn = parse.getActionItems()[offset];
                         RWCString desc = getDescription(parse);
 
-                        _lastCommand = actn;
+                        _lastCommand = generateCommandString(OutMessage);
 
                         CtiPointStatus *pControlStatus = (CtiPointStatus*)getDeviceControlPointOffsetEqual( GRP_CONTROL_STATUS );
                         LONG pid = ( (pControlStatus != 0) ? pControlStatus->getPointID() : SYS_PID_LOADMANAGEMENT );
 
-                        vgList.insert(CTIDBG_new CtiSignalMsg(pid, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
+                        vgList.insert(CTIDBG_new CtiSignalMsg(pid, pReq->getSOE(), desc, _lastCommand, LoadMgmtLogType, SignalEvent, pReq->getUser()));
                     }
                 }
 
@@ -341,13 +341,85 @@ void CtiDeviceGroupEmetcon::DecodeDatabaseReader(RWDBReader &rdr)
     EmetconGroup.DecodeDatabaseReader(rdr);
 }
 
+RWCString CtiDeviceGroupEmetcon::generateCommandString(OUTMESS *&OutMessage)
+{
+    RWCString str("SHED ");
 
+    RWCString tmstr;
 
+    switch(OutMessage->Buffer.ASt.Time)
+    {
+    case TIME_7_5:
+        {
+            tmstr = RWCString(" 7.5M");
+            break;
+        }
+    case TIME_15:
+        {
+            tmstr = RWCString(" 15M");
+            break;
+        }
+    case TIME_30:
+        {
+            tmstr = RWCString(" 30M");
+            break;
+        }
+    case TIME_60:
+        {
+            tmstr = RWCString(" 60M");
+            break;
+        }
+    default:
+        {
+            tmstr = RWCString("RESTORE");
+            break;
+        }
+    }
 
+    switch(OutMessage->Buffer.ASt.Function)
+    {
+    case A_SHED_A:
+        {
+            str += RWCString("Relay A") + tmstr;
+            break;
+        }
+    case A_SHED_B:
+        {
+            str += RWCString("Relay B") + tmstr;
+            break;
+        }
+    case A_SHED_C:
+        {
+            str += RWCString("Relay C") + tmstr;
+            break;
+        }
+    case A_SHED_D:
+        {
+            str += RWCString("Relay D") + tmstr;
+            break;
+        }
+    case A_LATCH_OPEN:
+        {
+            str += RWCString("OPEN");
+            break;
+        }
+    case A_LATCH_CLOSE:
+        {
+            str += RWCString("CLOSE ");
+            break;
+        }
+    case A_SCRAM:
+        {
+            str += RWCString("SCRAM ");
+            break;
+        }
+    case A_RESTORE:
+    default:
+        {
+            str = RWCString("RESTORE");
+            break;
+        }
+    }
 
-
-
-
-
-
-
+    return str;
+}

@@ -694,12 +694,12 @@ void  CtiCommandParser::doParseControl(const RWCString &CmdStr)
         {
             flag |= CMD_FLAG_CTL_SHED;
 
-            if(!(token = CmdStr.match("shed *[0-9]+(\\.[0-9]+)? *[hms]?(( )+|$)")).isNull())      // Sourcing from CmdStr, which is the entire command string.
+            if(!(token = CmdStr.match("shed *[0-9]+(\\.([0-9]+)?)? *[hms]?(( )+|$)")).isNull())      // Sourcing from CmdStr, which is the entire command string.
             {
                 DOUBLE mult = 60.0;
 
                 // What shed time is needed now...
-                if(!(temp2 = token.match("[0-9]+(\\.[0-9]+)?")).isNull())
+                if(!(temp2 = token.match("[0-9]+(\\.([0-9]+)?)?")).isNull())
                 {
                     dValue = atof(temp2.data());
                 }
@@ -722,7 +722,7 @@ void  CtiCommandParser::doParseControl(const RWCString &CmdStr)
                     _snprintf(tbuf2, sizeof(tbuf2),"SHED %d", (INT)dValue);
                 }
 
-                if(!(temp2 = token.match("[0-9]+(\\.[0-9]+)? *[hs]")).isNull())
+                if(!(temp2 = token.match("[0-9]+(\\.([0-9]+)?)? *[hs]")).isNull())
                 {
                     /*
                      *  Minutes is the assumed entry format, but we return the number in seconds... so
@@ -2839,6 +2839,10 @@ int CtiCommandParser::getControlled() const
             ctrld = UNCONTROLLED;
         }
         else if(getFlags() & CMD_FLAG_CTL_CLOSE)
+        {
+            ctrld = UNCONTROLLED;
+        }
+        else if(getFlags() & CMD_FLAG_CTL_SHED && (isKeyValid("shed") && getiValue("shed") <= 0) )
         {
             ctrld = UNCONTROLLED;
         }
