@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2004/01/26 21:54:48 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2004/02/11 05:05:39 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -65,159 +65,206 @@ bool CtiDeviceMCT310::initCommandStore( )
     //  300 series common commands
     cs._cmd     = CtiProtocolEmetcon::GetConfig_Time;
     cs._io      = IO_READ;
-    cs._funcLen = make_pair( (int)MCT3XX_TimePos,
-                             (int)MCT3XX_TimeLen );
+    cs._funcLen = make_pair((int)MCT3XX_TimePos,
+                            (int)MCT3XX_TimeLen);
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::GetConfig_DemandInterval;
     cs._io      = IO_READ;
-    cs._funcLen = make_pair( (int)MCT3XX_DemandIntervalPos,
-                             (int)MCT3XX_DemandIntervalLen );
+    cs._funcLen = make_pair((int)MCT3XX_DemandIntervalPos,
+                            (int)MCT3XX_DemandIntervalLen);
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::GetConfig_LoadProfileInterval;
     cs._io      = IO_READ;
-    cs._funcLen = make_pair( (int)MCT3XX_LPIntervalPos,
-                             (int)MCT3XX_LPIntervalLen );
+    cs._funcLen = make_pair((int)MCT3XX_LPIntervalPos,
+                            (int)MCT3XX_LPIntervalLen);
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::GetConfig_Multiplier;
     cs._io      = IO_READ;
-    cs._funcLen = make_pair( (int)MCT3XX_Mult1Pos,
-                             (int)MCT3XX_MultLen );
+    cs._funcLen = make_pair((int)MCT3XX_Mult1Pos,
+                            (int)MCT3XX_MultLen);
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::GetConfig_Options;
     cs._io      = IO_READ;
-    cs._funcLen = make_pair( (int)MCT3XX_OptionPos,
-                             (int)MCT3XX_OptionLen );
+    cs._funcLen = make_pair((int)MCT3XX_OptionPos,
+                            (int)MCT3XX_OptionLen);
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::GetConfig_GroupAddress;
     cs._io      = IO_READ;
-    cs._funcLen = make_pair( (int)MCT3XX_GroupAddrPos,
-                             (int)MCT3XX_GroupAddrLen );
+    cs._funcLen = make_pair((int)MCT3XX_GroupAddrPos,
+                            (int)MCT3XX_GroupAddrLen);
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::PutConfig_GroupAddr_GoldSilver;
     cs._io      = IO_WRITE;
-    cs._funcLen = make_pair( (int)MCT3XX_GroupAddrGoldSilverPos,
-                             (int)MCT3XX_GroupAddrGoldSilverLen );
+    cs._funcLen = make_pair((int)MCT3XX_GroupAddrGoldSilverPos,
+                            (int)MCT3XX_GroupAddrGoldSilverLen);
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::PutConfig_GroupAddr_Bronze;
     cs._io      = IO_WRITE;
-    cs._funcLen = make_pair( (int)MCT3XX_GroupAddrBronzePos,
-                             (int)MCT3XX_GroupAddrBronzeLen );
+    cs._funcLen = make_pair((int)MCT3XX_GroupAddrBronzePos,
+                            (int)MCT3XX_GroupAddrBronzeLen);
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::PutConfig_GroupAddr_Lead;
     cs._io      = IO_WRITE;
-    cs._funcLen = make_pair( (int)MCT3XX_GroupAddrLeadPos,
-                             (int)MCT3XX_GroupAddrLeadLen );
+    cs._funcLen = make_pair((int)MCT3XX_GroupAddrLeadPos,
+                            (int)MCT3XX_GroupAddrLeadLen);
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::PutConfig_DemandInterval;
     cs._io      = IO_WRITE;
-    cs._funcLen = make_pair( (int)MCT3XX_DemandIntervalPos,
-                             (int)MCT3XX_DemandIntervalLen );
+    cs._funcLen = make_pair((int)MCT3XX_DemandIntervalPos,
+                            (int)MCT3XX_DemandIntervalLen);
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::PutConfig_LoadProfileInterval;
     cs._io      = IO_WRITE;
-    cs._funcLen = make_pair( (int)MCT_Function_LPInt, 0 );
+    cs._funcLen = make_pair((int)MCT_Function_LPInt, 0);
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::PutConfig_Multiplier;
     cs._io      = IO_WRITE;
-    cs._funcLen = make_pair( (int)MCT3XX_Mult1Pos,
-                             (int)MCT3XX_MultLen );
+    cs._funcLen = make_pair((int)MCT3XX_Mult1Pos,
+                            (int)MCT3XX_MultLen);
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::PutConfig_TSync;
     cs._io      = IO_WRITE;
-    cs._funcLen = make_pair( (int)MCT_TSyncPos,
-                             (int)MCT_TSyncLen );
+    cs._funcLen = make_pair((int)MCT_TSyncPos,
+                            (int)MCT_TSyncLen);
+    _commandStore.insert( cs );
+
+    cs._cmd     = CtiProtocolEmetcon::PutConfig_OnOffPeak;
+    cs._io      = IO_WRITE;
+    cs._funcLen = make_pair((int)MCT3XX_MinMaxPeakConfigPos, 1);
+    _commandStore.insert( cs );
+
+    cs._cmd     = CtiProtocolEmetcon::PutConfig_MinMax;
+    cs._io      = IO_WRITE;
+    cs._funcLen = make_pair((int)MCT3XX_MinMaxPeakConfigPos, 1);
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::Scan_Accum;
     cs._io      = IO_FCT_READ;
-    cs._funcLen = make_pair( (int)MCT3XX_FuncReadMReadPos,
-                             (int)MCT3XX_FuncReadMReadLen );
+    cs._funcLen = make_pair((int)MCT3XX_FuncReadMReadPos,
+                            (int)MCT3XX_FuncReadMReadLen);
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::GetValue_Default;
     cs._io      = IO_FCT_READ;
-    cs._funcLen = make_pair( (int)MCT3XX_FuncReadMReadPos,
-                             (int)MCT3XX_FuncReadMReadLen );
+    cs._funcLen = make_pair((int)MCT3XX_FuncReadMReadPos,
+                            (int)MCT3XX_FuncReadMReadLen);
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::GetValue_Frozen;
     cs._io      = IO_FCT_READ;
-    cs._funcLen = make_pair( (int)MCT3XX_FuncReadFrozenPos,
-                             (int)MCT3XX_FuncReadFrozenLen );
+    cs._funcLen = make_pair((int)MCT3XX_FuncReadFrozenPos,
+                            (int)MCT3XX_FuncReadFrozenLen);
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::GetStatus_Internal;
     cs._io      = IO_READ;
-    cs._funcLen = make_pair( (int)MCT3XX_GenStatPos,
-                             (int)MCT3XX_GenStatLen );
+    cs._funcLen = make_pair((int)MCT3XX_GenStatPos,
+                            (int)MCT3XX_GenStatLen);
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::PutStatus_Reset;
     cs._io      = IO_WRITE;
-    cs._funcLen = make_pair( (int)MCT3XX_ResetPos,
-                             (int)MCT3XX_ResetLen );
+    cs._funcLen = make_pair((int)MCT3XX_ResetPos,
+                            (int)MCT3XX_ResetLen);
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::GetValue_PFCount;
     cs._io      = IO_READ;
-    cs._funcLen = make_pair( (int)MCT3XX_PFCountPos,
-                             (int)MCT3XX_PFCountLen );
+    cs._funcLen = make_pair((int)MCT3XX_PFCountPos,
+                            (int)MCT3XX_PFCountLen);
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::PutValue_ResetPFCount;
     cs._io      = IO_WRITE;
-    cs._funcLen = make_pair( (int)MCT3XX_PFCountPos,
-                             (int)MCT3XX_PFCountLen);
+    cs._funcLen = make_pair((int)MCT3XX_PFCountPos,
+                            (int)MCT3XX_PFCountLen);
+    _commandStore.insert( cs );
+
+    cs._cmd     = CtiProtocolEmetcon::PutStatus_PeakOn;
+    cs._io      = IO_WRITE;
+    cs._funcLen = make_pair((int)MCT3XX_FunctionPeakOn, 0);
+    _commandStore.insert( cs );
+
+    cs._cmd     = CtiProtocolEmetcon::PutStatus_PeakOff;
+    cs._io      = IO_WRITE;
+    cs._funcLen = make_pair((int)MCT3XX_FunctionPeakOff, 0);
+    _commandStore.insert( cs );
+
+    cs._cmd     = CtiProtocolEmetcon::PutStatus_FreezeOne;
+    cs._io      = IO_WRITE;
+    cs._funcLen = make_pair((int)MCT3XX_FreezeOne, 0);
+    _commandStore.insert( cs );
+
+    cs._cmd     = CtiProtocolEmetcon::PutStatus_FreezeTwo;
+    cs._io      = IO_WRITE;
+    cs._funcLen = make_pair((int)MCT3XX_FreezeTwo, 0);
+    _commandStore.insert( cs );
+
+    //  only valid for sspec 1007 (and above?)
+    cs._cmd      = CtiProtocolEmetcon::Scan_Integrity;
+    cs._io       = IO_READ;
+    cs._funcLen  = make_pair((int)MCT310_DemandPos,
+                             (int)MCT310_DemandLen);
     _commandStore.insert( cs );
 
     //  310 specific commands
     //  310 cannot do a FR0x92 (MCT31X_FuncReadDemand) and can only collect 1 demand reading!
     cs._cmd      = CtiProtocolEmetcon::Scan_Integrity;
     cs._io       = IO_READ;
-    cs._funcLen  = make_pair( (int)MCT310_DemandPos,
-                              (int)MCT310_DemandLen );
+    cs._funcLen  = make_pair((int)MCT310_DemandPos,
+                             (int)MCT310_DemandLen);
     _commandStore.insert( cs );
 
     cs._cmd      = CtiProtocolEmetcon::GetValue_Demand;
     cs._io       = IO_READ;
-    cs._funcLen  = make_pair( (int)MCT310_DemandPos,
-                              (int)MCT310_DemandLen );
+    cs._funcLen  = make_pair((int)MCT310_DemandPos,
+                             (int)MCT310_DemandLen);
     _commandStore.insert( cs );
 
-    cs._cmd     = CtiProtocolEmetcon::PutValue_KYZ;
-    cs._io      = IO_WRITE;
-    cs._funcLen = make_pair( (int)MCT3XX_PutMRead1Pos,
-                             (int)MCT3XX_PutMReadLen );
+    cs._cmd      = CtiProtocolEmetcon::PutValue_KYZ;
+    cs._io       = IO_WRITE;
+    cs._funcLen  = make_pair((int)MCT3XX_PutMRead1Pos,
+                             (int)MCT3XX_PutMReadLen);
+    _commandStore.insert( cs );
+
+    cs._cmd      = CtiProtocolEmetcon::GetValue_PeakDemand;
+    cs._io       = IO_FCT_READ;
+    cs._funcLen  = make_pair((int)MCT3XX_FuncReadMinMaxDemandPos, 4);
+    _commandStore.insert( cs );
+
+    cs._cmd      = CtiProtocolEmetcon::GetValue_FrozenPeakDemand;
+    cs._io       = IO_FCT_READ;
+    cs._funcLen  = make_pair((int)MCT3XX_FuncReadFrozenDemandPos, 4);
     _commandStore.insert( cs );
 
     //  only valid for 310IL, this case handled in getOperation
-    cs._cmd     = CtiProtocolEmetcon::Scan_LoadProfile;
-    cs._io      = IO_FCT_READ;
-    cs._funcLen = make_pair( 0, 0 );
+    cs._cmd      = CtiProtocolEmetcon::Scan_LoadProfile;
+    cs._io       = IO_FCT_READ;
+    cs._funcLen  = make_pair(0, 0);
     _commandStore.insert( cs );
 
-    cs._cmd     = CtiProtocolEmetcon::GetStatus_Disconnect;
-    cs._io      = IO_READ;
-    cs._funcLen = make_pair( (int)MCT310_StatusPos,
-                             (int)MCT310_StatusLen );
+    cs._cmd      = CtiProtocolEmetcon::GetStatus_Disconnect;
+    cs._io       = IO_READ;
+    cs._funcLen  = make_pair((int)MCT310_StatusPos,
+                             (int)MCT310_StatusLen);
     _commandStore.insert( cs );
 
-    cs._cmd     = CtiProtocolEmetcon::GetStatus_LoadProfile;
-    cs._io      = IO_READ;
-    cs._funcLen = make_pair( (int)MCT3XX_LPStatusPos,
-                             (int)MCT3XX_LPStatusLen );
+    cs._cmd      = CtiProtocolEmetcon::GetStatus_LoadProfile;
+    cs._io       = IO_READ;
+    cs._funcLen  = make_pair((int)MCT3XX_LPStatusPos,
+                             (int)MCT3XX_LPStatusLen);
     _commandStore.insert( cs );
 
     return failed;
@@ -506,6 +553,27 @@ INT CtiDeviceMCT310::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
             break;
         }
 
+        case (CtiProtocolEmetcon::GetValue_PeakDemand):
+        case (CtiProtocolEmetcon::GetValue_FrozenPeakDemand):
+        {
+            status = decodeGetValuePeak(InMessage, TimeNow, vgList, retList, outList);
+            break;
+        }
+
+        case (CtiProtocolEmetcon::PutConfig_OnOffPeak):
+        case (CtiProtocolEmetcon::PutConfig_MinMax):
+        {
+            status = decodePutConfigPeakMode(InMessage, TimeNow, vgList, retList, outList);
+            break;
+        }
+
+        case (CtiProtocolEmetcon::PutStatus_FreezeOne):
+        case (CtiProtocolEmetcon::PutStatus_FreezeTwo):
+        {
+            status = decodePutStatus(InMessage, TimeNow, vgList, retList, outList);
+            break;
+        }
+
         case (CtiProtocolEmetcon::GetStatus_Disconnect):
         {
             status = decodeGetStatusDisconnect(InMessage, TimeNow, vgList, retList, outList);
@@ -568,6 +636,53 @@ INT CtiDeviceMCT310::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
         }
     }
 
+
+    return status;
+}
+
+
+INT CtiDeviceMCT310::decodePutConfigPeakMode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+{
+    INT status = NORMAL;
+    ULONG i,x;
+    RWCString resultString;
+
+    INT ErrReturn  = InMessage->EventCode & 0x3fff;
+    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+
+    CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+
+
+    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    {
+        // No error occured, we must do a real decode!
+
+        /* this means we are getting NON-demand accumulator points */
+        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+
+            return MEMORY;
+        }
+
+        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
+        if( InMessage->Sequence == CtiProtocolEmetcon::PutConfig_MinMax )
+        {
+            resultString = getName() + " / peak mode set to \"minmax\"";
+        }
+        else
+        {
+            resultString = getName() + " / peak mode set to \"on/off peak\"";
+        }
+
+        resultString += " - also, wire config and cold load options reset to default;  use DB MCT Config and \"putconfig emetcon install\" instead to avoid this";
+
+        ReturnMsg->setResultString(resultString);
+
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    }
 
     return status;
 }
@@ -736,6 +851,93 @@ INT CtiDeviceMCT310::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
 
         retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
     }
+
+    return status;
+}
+
+
+INT CtiDeviceMCT310::decodeGetValuePeak(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+{
+    int       status = NORMAL;
+    double    Value;
+    RWCString resultString;
+
+    INT ErrReturn  = InMessage->EventCode & 0x3fff;
+    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+
+    CtiPointBase         *pPoint = NULL;
+    CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+    CtiPointDataMsg      *pData = NULL;
+
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Min/Max On/Off-Peak Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    resetScanPending();
+
+    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    {
+        // No error occured, we must do a real decode!
+
+        /* this means we are getting NON-demand accumulator points */
+        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+
+            return MEMORY;
+        }
+
+        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
+        for( int i = 0; i < 2; i++ )
+        {
+            //  ACH:  check error bits
+            Value = MAKEUSHORT(DSt->Message[i*2+1], (DSt->Message[i*2+0] & 0x3f) );
+
+            //  turn raw pulses into a demand reading
+            Value *= DOUBLE(3600 / getDemandInterval());
+
+            // look for the appropriate point
+            pPoint = getDevicePointOffsetTypeEqual( 10 + i, DemandAccumulatorPointType );
+
+            if( pPoint != NULL)
+            {
+                RWRecursiveLock<RWMutexLock>::LockGuard pGuard( pPoint->getMux() );
+                RWTime pointTime;
+
+                Value = ((CtiPointNumeric*)pPoint)->computeValueForUOM(Value);
+
+                resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value,
+                                                                                         ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
+
+                if( InMessage->Sequence == CtiProtocolEmetcon::GetValue_FrozenPeakDemand )
+                {
+                    pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, DemandAccumulatorPointType, resultString);
+                    if(pData != NULL)
+                    {
+                        pointTime -= pointTime.seconds() % getDemandInterval();
+                        pData->setTime( pointTime );
+                        ReturnMsg->PointData().insert(pData);
+                        pData = NULL;  // We just put it on the list...
+                    }
+                }
+                else
+                {
+                    resultString = ReturnMsg->ResultString() + resultString + "\n";
+                    ReturnMsg->setResultString(resultString);
+                }
+            }
+            else
+            {
+                resultString += getName() + " / demand accumulator offset " + CtiNumStr(10+i) + " = " + CtiNumStr(Value) + "  --  point undefined in DB\n";
+                ReturnMsg->setResultString(resultString);
+            }
+        }
+    }
+
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }

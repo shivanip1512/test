@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct31X.cpp-arc  $
-* REVISION     :  $Revision: 1.32 $
-* DATE         :  $Date: 2004/01/06 20:28:29 $
+* REVISION     :  $Revision: 1.33 $
+* DATE         :  $Date: 2004/02/11 05:05:39 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -83,6 +83,16 @@ bool CtiDeviceMCT31X::initCommandStore( )
     cs._cmd     = CtiProtocolEmetcon::Scan_LoadProfile;
     cs._io      = IO_FCT_READ;
     cs._funcLen = make_pair(0,0);
+    _commandStore.insert( cs );
+
+    cs._cmd      = CtiProtocolEmetcon::GetValue_PeakDemand;
+    cs._io       = IO_FCT_READ;
+    cs._funcLen  = make_pair((int)MCT3XX_FuncReadMinMaxDemandPos, 12);
+    _commandStore.insert( cs );
+
+    cs._cmd      = CtiProtocolEmetcon::GetValue_FrozenPeakDemand;
+    cs._io       = IO_FCT_READ;
+    cs._funcLen  = make_pair((int)MCT3XX_FuncReadFrozenDemandPos, 12);
     _commandStore.insert( cs );
 
     //  add the 2 other channels for 318s
@@ -597,6 +607,13 @@ INT CtiDeviceMCT31X::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
         case (CtiProtocolEmetcon::Scan_LoadProfile):
         {
             status = decodeScanLoadProfile(InMessage, TimeNow, vgList, retList, outList);
+            break;
+        }
+
+        case (CtiProtocolEmetcon::GetValue_PeakDemand):
+        case (CtiProtocolEmetcon::GetValue_FrozenPeakDemand):
+        {
+            status = decodeGetValuePeak(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
@@ -2323,6 +2340,93 @@ INT CtiDeviceMCT31X::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
             delete ReturnMsg;
         }
     }
+
+    return status;
+}
+
+
+INT CtiDeviceMCT31X::decodeGetValuePeak(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+{
+    int       status = NORMAL;
+    double    Value;
+    RWCString resultString;
+
+    INT ErrReturn  = InMessage->EventCode & 0x3fff;
+    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+
+    CtiPointBase         *pPoint = NULL;
+    CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+    CtiPointDataMsg      *pData = NULL;
+
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Min/Max On/Off-Peak Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    resetScanPending();
+
+    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    {
+        // No error occured, we must do a real decode!
+
+        /* this means we are getting NON-demand accumulator points */
+        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+
+            return MEMORY;
+        }
+
+        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
+        for( int i = 0; i < 6; i++ )
+        {
+            //  ACH:  check error bits
+            Value = MAKEUSHORT(DSt->Message[i*2+1], (DSt->Message[i*2+0] & 0x3f) );
+
+            //  turn raw pulses into a demand reading
+            Value *= DOUBLE(3600 / getDemandInterval());
+
+            // look for the appropriate point
+            pPoint = getDevicePointOffsetTypeEqual( 10 + i, DemandAccumulatorPointType );
+
+            if( pPoint != NULL)
+            {
+                RWRecursiveLock<RWMutexLock>::LockGuard pGuard( pPoint->getMux() );
+                RWTime pointTime;
+
+                Value = ((CtiPointNumeric*)pPoint)->computeValueForUOM(Value);
+
+                resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value,
+                                                                                         ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
+
+                if( InMessage->Sequence == CtiProtocolEmetcon::GetValue_FrozenPeakDemand )
+                {
+                    pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, DemandAccumulatorPointType, resultString);
+                    if(pData != NULL)
+                    {
+                        pointTime -= pointTime.seconds() % getDemandInterval();
+                        pData->setTime( pointTime );
+                        ReturnMsg->PointData().insert(pData);
+                        pData = NULL;  // We just put it on the list...
+                    }
+                }
+                else
+                {
+                    resultString = ReturnMsg->ResultString() + resultString + "\n";
+                    ReturnMsg->setResultString(resultString);
+                }
+            }
+            else
+            {
+                resultString += getName() + " / demand accumulator offset " + CtiNumStr(10+i) + " = " + CtiNumStr(Value) + "  --  point undefined in DB\n";
+                ReturnMsg->setResultString(resultString);
+            }
+        }
+    }
+
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
