@@ -124,6 +124,12 @@
 		<servlet-class>com.cannontech.servlet.CommanderServlet</servlet-class>
 	</servlet>
 	<servlet>
+		<servlet-name>ImporterServlet</servlet-name>
+		<display-name>ImporterServlet</display-name>
+		<description>Send import commands to database or the bulk importer service.</description>
+		<servlet-class>com.cannontech.servlet.ImporterServlet</servlet-class>
+	</servlet>
+	<servlet>
 		<servlet-name>CurtailmentServlet</servlet-name>
 		<display-name>CurtailmentServlet</display-name>
 		<description>Handles acknowledging of mandatory curtailments.</description>

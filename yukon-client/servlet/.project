@@ -12,6 +12,7 @@
 		<project>report</project>
 		<project>stars</project>
 		<project>tdc</project>
+		<project>tools</project>
 		<project>trending</project>
 	</projects>
 	<buildSpec>

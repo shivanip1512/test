@@ -92,6 +92,8 @@ public class DBChangeMsg extends com.cannontech.message.util.Message
 	public static final int CHANGE_TYPE_ADD = 0;
 	public static final int CHANGE_TYPE_DELETE = 1;
 	public static final int CHANGE_TYPE_UPDATE = 2;
+	
+	public static final int RELOAD_ALL = 0;
 /**
  * DBChangeMsg constructor comment.
  */

@@ -29,8 +29,8 @@ public class ImportData extends NestedDBPersistent
 	public static final String SETTER_COLUMNS[] = 
 	{ 
 		"ADDRESS", "NAME", "ROUTENAME", 
-		"METERNUMBER", "COLLECTIONGROUP", 
-		"ALTGROUP", "TEMPLATENAME"
+		"METERNUMBER", "COLLECTIONGRP", 
+		"ALTGRP", "TEMPLATENAME"
 	};
 
 	public static final String CONSTRAINT_COLUMNS[] = { "ADDRESS" };

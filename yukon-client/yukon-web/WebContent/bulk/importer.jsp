@@ -48,7 +48,7 @@ TH {
 			  </tr>
               <tr bgcolor="#666699"> 
                 <td height = "28" class="Header3" width="420">&nbsp;&nbsp;<font color="#99FFFF" size="2" face="Arial, Helvetica, sans-serif"><em>&nbsp;
-                	<font color="#f8f8f8">Next import attempt: <%= webImp.getNextImportTime() %>. </font>
+                	<font color="#f8f8f8" size="2" face="Arial, Helvetica, sans-serif" class="HeaderCellCrucial">Next import attempt: <%= webImp.getNextImportTime() %>. </font>
             		</em></font></td>
                 <td valign="middle" width="180">&nbsp;</td>
                   
@@ -95,11 +95,13 @@ TH {
 										<TABLE width="735" border="0" cellspacing="0" cellpadding="0"><CAPTION align="bottom"></CAPTION>
 											<TBODY>
 												<TR class="HeaderCell">
+													
 													<TD width="231"><SPAN class="HeaderCellCrucial">&nbsp;Override
 													the import wait period: <FONT color="#000000"> </FONT></SPAN></TD>
-													<TD width="314"><INPUT type="button" name="Import"
-														value="Force Manual Import Event" onclick=<%webImp.forceImport();%>></TD>
-
+													<form name="impButtonForm" method="POST" action="<%= request.getContextPath() %>/servlet/ImporterServlet">
+  														<TD width="314"><INPUT type="submit" name="forceImp"
+															value="Force Manual Import Event"></TD>
+													</form>
 													<TD width="191">
 													<DIV align="right"><BR>
 													<BR>

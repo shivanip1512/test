@@ -33,5 +33,6 @@
     <classpathentry kind="src" path="/stars"/>
     <classpathentry kind="lib" path="/third-party/commons-fileupload.jar"/>
     <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+    <classpathentry kind="src" path="/tools"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>

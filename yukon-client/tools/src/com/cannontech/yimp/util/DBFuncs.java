@@ -19,6 +19,8 @@ import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.PoolManager;
 import java.util.Date;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.ClientConnection;
 
 /**
  * @author jdayton
@@ -100,9 +102,84 @@ public class DBFuncs
 		return template410;
 	}
 	
+	public static boolean IsDuplicateName(String name, Connection conn)
+	{
+		java.sql.PreparedStatement preparedStatement = null;
+		java.sql.ResultSet rset = null;
+		
+		if( conn == null )
+			throw new IllegalArgumentException("Database connection should not be (null)");
+		
+		try
+		{
+			String statement = ("SELECT PAOBJECTID FROM YUKONPAOBJECT WHERE PAONAME = '" 
+							+ name + "' AND TYPE = 'MCT-410IL'");
+
+			preparedStatement = conn.prepareStatement( statement );
+			rset = preparedStatement.executeQuery();
+
+			if(rset != null && rset.next() )
+			{
+				return rset.getInt(1) != 0;
+			}
+		}
+		catch( java.sql.SQLException e )
+		{
+			e.printStackTrace();
+		}
+		
+		return false;
+	}
+	
 	public static int[] getNextPAObjectID(int numberOfImportEntries)
 	{
-		int[] ids = YukonPAObject.getNextYukonPAObjectIDs( numberOfImportEntries );
+		int retVal = 0;
+		java.sql.Connection conn = null;
+		java.sql.PreparedStatement pstmt = null;
+		java.sql.ResultSet rset = null;
+		int[] ids = new int[numberOfImportEntries];
+		
+		try
+		{		
+			conn = com.cannontech.database.PoolManager.getInstance().getConnection(
+				com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+
+			if( conn == null )
+			{
+				throw new IllegalStateException("Database connection cannot be null.");
+			}
+			else
+			{
+				pstmt = conn.prepareStatement("select max(paobjectid) AS maxid from yukonpaobject");
+				rset = pstmt.executeQuery();							
+
+				// Just one please
+				if( rset.next() )
+					retVal = rset.getInt("maxid") + 1;
+			}		
+		}
+		catch( java.sql.SQLException e )
+		{
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+		}
+		finally
+		{
+			try
+			{
+				if( pstmt != null ) pstmt.close();
+			} 
+			catch( java.sql.SQLException e2 )
+			{
+				com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
+			}	
+		}
+		
+		for(int j = 0; j < numberOfImportEntries; j++)
+		{
+			ids[j] = retVal + j;
+		}
+		
+		com.cannontech.clientutils.CTILogger.info("----- getNextYukonPAObjectIDs(yukonPAObjectsCnt) returning with " + numberOfImportEntries + " ids!");
 		
 		return ids;
 	}
@@ -168,18 +245,25 @@ public class DBFuncs
 		return true;
 	}
 	
-	public static boolean writeNextImportTime(Date nextImport)
+	public static boolean writeNextImportTime(Date nextImport, boolean currentlyRunning)
 	{
 		Connection conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
 	
 		if( conn == null )
 			throw new IllegalArgumentException("Database connection should not be (null)");
+			
+		String next;
+		
+		if(currentlyRunning)
+			next = "CURRENTLY RUNNING..";
+		else
+			next = nextImport.toString();
 
 		try
 		{
 			java.sql.Statement stat = conn.createStatement();
 
-			stat.execute("UPDATE DYNAMICIMPORTSTATUS SET NEXTIMPORTTIME = '" + nextImport.toString() + "' WHERE ENTRY = 'SYSTEMVALUE'");
+			stat.execute("UPDATE DYNAMICIMPORTSTATUS SET NEXTIMPORTTIME = '" + next + "' WHERE ENTRY = 'SYSTEMVALUE'");
 		
 			if (stat != null)
 				stat.close();
@@ -206,7 +290,7 @@ public class DBFuncs
 		{
 			java.sql.Statement stat = conn.createStatement();
 
-			stat.execute("UPDATE DYNAMICIMPORTSTATUS SET TOTALSUCCESS = " + success + " WHERE ENTRY = 'SYSTEMVALUE'");
+			stat.execute("UPDATE DYNAMICIMPORTSTATUS SET TOTALSUCCESSES = " + success + " WHERE ENTRY = 'SYSTEMVALUE'");
 		
 			if (stat != null)
 				stat.close();
@@ -249,7 +333,7 @@ public class DBFuncs
 		return true;
 	}
 	
-	public static void alreadyForcedImport()
+	public static synchronized void alreadyForcedImport()
 	{
 		Connection conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
 	
@@ -273,7 +357,34 @@ public class DBFuncs
 		}
 	}
 	
-	public static boolean isForcedImport()
+	public static synchronized boolean forceImport()
+	{
+		Connection conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
+	
+		if( conn == null )
+			throw new IllegalArgumentException("Database connection should not be (null)");
+
+		try
+		{
+			java.sql.Statement stat = conn.createStatement();
+
+			stat.execute("UPDATE DYNAMICIMPORTSTATUS SET FORCEIMPORT = 'Y' WHERE ENTRY = 'SYSTEMVALUE'");
+		
+			if (stat != null)
+				stat.close();
+				
+			conn.close();
+		}
+		catch (Exception e)
+		{
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			return false;
+		}
+
+		return true;
+	}
+	
+	public static synchronized boolean isForcedImport()
 	{
 		boolean isForced = false;
 		
@@ -308,6 +419,24 @@ public class DBFuncs
 		}
 		
 		return isForced;
+	}
+	
+	/*
+	 * If the servers receive a device or point DBChangeMsg with an id of zero, then
+	 * they do a full reload of the database.
+	 * This is a poor man's RELOAD_ALL DBChangeMsg.
+	 */
+	public static void generateBulkDBChangeMsg(int dbField, String objCategory, String objType, ClientConnection dispatchConnection  ) 
+	{
+		DBChangeMsg chumpChange = new com.cannontech.message.dispatch.message.DBChangeMsg(
+			0,
+			dbField,
+			objCategory,
+			objType,
+			DBChangeMsg.CHANGE_TYPE_ADD );
+		
+		dispatchConnection.write(chumpChange);
+				
 	}
 	
 	

@@ -23,7 +23,7 @@ public class ImportWebInfoObject
 {
 	private Vector failures;
 	
-	public final String REFRESH_RATE = "30";
+	public final String REFRESH_RATE = "10";
 	
 	public final String COLUMN_NAMES[] = 
 	{ 
@@ -37,7 +37,7 @@ public class ImportWebInfoObject
 		//getFailures();
 	}
 	
-	public Vector getFailures()
+	public synchronized Vector getFailures()
 	{
 		Connection conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
 			
@@ -78,7 +78,7 @@ public class ImportWebInfoObject
 		return ((ImportFail)getFailureAt(index)).getDateTime().toString();
 	}
 	
-	public String getLastImportTime()
+	public synchronized String getLastImportTime()
 	{
 		String lastImportTime = new String("------------");
 		
@@ -114,7 +114,7 @@ public class ImportWebInfoObject
 		return lastImportTime;
 	}
 	
-	public String getNextImportTime()
+	public synchronized String getNextImportTime()
 	{
 		String nextImportTime = new String("------------");
 		
@@ -150,34 +150,7 @@ public class ImportWebInfoObject
 		return nextImportTime;
 	}
 	
-	public boolean forceImport()
-	{
-		Connection conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-	
-		if( conn == null )
-			throw new IllegalArgumentException("Database connection should not be (null)");
-
-		try
-		{
-			java.sql.Statement stat = conn.createStatement();
-
-			stat.execute("UPDATE DYNAMICIMPORTSTATUS SET FORCEIMPORT = 'Y' WHERE ENTRY = 'SYSTEMVALUE'");
-		
-			if (stat != null)
-				stat.close();
-				
-			conn.close();
-		}
-		catch (Exception e)
-		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-			return false;
-		}
-
-		return true;
-	}
-	
-	public String getTotalSuccesses()
+	public synchronized String getTotalSuccesses()
 	{
 		String totalSuccesses = new String("--");
 		
@@ -213,7 +186,7 @@ public class ImportWebInfoObject
 		return totalSuccesses;
 	}
 	
-	public String getTotalAttempts()
+	public synchronized String getTotalAttempts()
 	{
 		String totalAttempts = new String("--");
 		

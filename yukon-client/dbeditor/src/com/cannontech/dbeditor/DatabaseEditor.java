@@ -1976,11 +1976,20 @@ public void handleDBChangeMsg( com.cannontech.message.dispatch.message.DBChangeM
 
 			} //end of synchronize block
 
-			
-
-		//tell our tree we may need to change the display
-		updateTreePanel( liteBase, msg.getTypeOfChange() );
-
+			/*
+			 * If we get an id of zero, then refresh the whole thing including cache.
+			 */	
+			if(msg.getId() == DBChangeMsg.RELOAD_ALL)
+			{
+				//refresh the cache and the connections state
+				com.cannontech.database.cache.DefaultDatabaseCache.getInstance().releaseAllCache();
+					
+				//do the actual refresh of the tree
+				getTreeViewPanel().refresh();	
+			}
+			else
+				//tell our tree we may need to change the display
+				updateTreePanel( liteBase, msg.getTypeOfChange() );
 
 		//display a messge on the message panel telling us about this event
 		fireMessage( new MessageEvent( DatabaseEditor.this, 

@@ -15,6 +15,7 @@ import com.cannontech.database.db.importer.ImportData;
 import com.cannontech.database.db.importer.ImportFail;
 import com.cannontech.database.db.NestedDBPersistent;
 import com.cannontech.common.util.LogWriter;
+import com.cannontech.database.Transaction;
 
 /**
  * @author jdayton
@@ -73,7 +74,7 @@ public class ImportFuncs
 	 * This method will bring in the contents of the ImportFail
 	 * table in the form of ImportFail objects
 	 */
-	public static Vector getAllFailed(Connection conn)
+	public static synchronized Vector getAllFailed(Connection conn)
 	{
 		Vector failures = new Vector();
 		
@@ -85,7 +86,7 @@ public class ImportFuncs
 		
 		try
 		{
-			String statement = ("SELECT * FROM " + ImportFail.TABLE_NAME);
+			String statement = ("SELECT * FROM " + ImportFail.TABLE_NAME + " ORDER BY DATETIME DESC");
 
 			preparedStatement = conn.prepareStatement( statement );
 			rset = preparedStatement.executeQuery();
@@ -180,21 +181,51 @@ public class ImportFuncs
 	}*/
 	
 	/*
-	 * This method takes in a vector of ImportFail objects
-	 * to be stored in the ImportFail table.
+	 * This method takes in a vector of ImportData objects and
+	 * a vector of ImportFail objects to be stored in the ImportFail table.
 	 */
-	public static void storeFailures(Vector imps, Connection conn) throws java.sql.SQLException
+	public static void storeFailures(Vector impsSuccess, Vector impsFailed, Connection conn) throws java.sql.SQLException
 	{
 		Vector previousFailures = getAllFailed(conn);
 		
-		//unleash the power of the NestedDBPersistent
-		Vector failVector = CtiUtilities.NestedDBPersistentComparator(previousFailures, imps);
+		//this is a little nasty looking, on account of 
+		//how the ImportFail table is supposed to work.
+		Vector failVector = new Vector();
+		for(int j = 0; j < previousFailures.size(); j++)
+		{
+			String addy = ((ImportFail)previousFailures.elementAt(j)).getAddress();
+			for(int x = 0; x < impsSuccess.size(); x++)
+			{
+				//this entry finally worked...remove from ImportFail table
+				if(addy.compareTo(((ImportData)impsSuccess.elementAt(x)).getAddress()) == 0)
+				{
+					((NestedDBPersistent)previousFailures.elementAt(j)).setOpCode(Transaction.DELETE);
+					failVector.addElement(previousFailures.elementAt(j));
+					continue;
+				}
+			}
+			
+			for(int y = 0; y < impsFailed.size(); y++)
+			{
+				//this entry failed again...set the current ImportFail to be updated
+				if(addy.compareTo(((ImportFail)impsFailed.elementAt(y)).getAddress()) == 0)
+				{
+					((NestedDBPersistent)impsFailed.elementAt(y)).setOpCode(Transaction.UPDATE);	
+				}
+			}
+			
+		}
 
 		//throw the ImportFails into the Db
 		for( int i = 0; i < failVector.size(); i++ )
 		{
 			((NestedDBPersistent)failVector.elementAt(i)).setDbConnection(conn);
 			((NestedDBPersistent)failVector.elementAt(i)).executeNestedOp();
+		}
+		for( int k = 0; k < impsFailed.size(); k++ )
+		{
+			((NestedDBPersistent)impsFailed.elementAt(k)).setDbConnection(conn);
+			((NestedDBPersistent)impsFailed.elementAt(k)).executeNestedOp();
 		}
 		
 		return;
@@ -239,15 +270,15 @@ public class ImportFuncs
 		if(importStatus == 'F')
 		{
 			String output = "Failed import entry -- " +
-						event + " -- SQL output: " + sqlEvent 
-						+ " (Exception: " + exception; 
-			logger.log( event, LogWriter.ERROR);
+						event + " -- " + sqlEvent 
+						+ " -- " + exception; 
+			logger.log( output, LogWriter.ERROR);
 		}
 		else if(importStatus == 'S')
 		{
 			String output = "Successful import entry: " +
-						event + ", using SQL statement: " + sqlEvent; 
-			logger.log( event, LogWriter.INFO);
+						event + "----" + sqlEvent; 
+			logger.log( output, LogWriter.INFO);
 		}
 		else
 		{
@@ -270,10 +301,10 @@ public class ImportFuncs
 			{
 				String dataDir = "../log/";
 				String opName = "import" + day;
-				java.io.File file = new java.io.File( dataDir + opName);
+				String filename = dataDir + opName  + ".log";
+				java.io.File file = new java.io.File( filename );
 				if(! file.exists())
 				{
-					String filename = dataDir + opName  + ".log";
 					java.io.FileOutputStream out = new java.io.FileOutputStream(filename, true);
 					java.io.PrintWriter writer = new java.io.PrintWriter(out, true);
 					logger = new LogWriter(opName, LogWriter.DEBUG, writer);

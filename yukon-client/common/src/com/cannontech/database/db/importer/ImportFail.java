@@ -32,8 +32,8 @@ public class ImportFail extends NestedDBPersistent
 	public static final String SETTER_COLUMNS[] = 
 	{ 
 		"ADDRESS", "NAME", "ROUTENAME", 
-		"METERNUMBER", "COLLECTIONGROUP", 
-		"ALTGROUP", "TEMPLATENAME",
+		"METERNUMBER", "COLLECTIONGRP", 
+		"ALTGRP", "TEMPLATENAME",
 		"ERRORMSG", "DATETIME"
 	};
 
