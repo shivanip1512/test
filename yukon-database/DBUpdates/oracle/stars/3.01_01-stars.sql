@@ -173,3 +173,11 @@ update LMHardwareBase set ConfigurationID = 0;
 alter table LMHardwareBase
    add constraint FK_LMHrdB_LMCfg foreign key (ConfigurationID)
       references LMConfigurationBase (ConfigurationID);
+
+alter table WorkOrderBase
+   add constraint FK_WrkOr_SrvC foreign key (ServiceCompanyID)
+      references ServiceCompany (CompanyID);
+
+alter table InventoryBase
+   add constraint FK_InvB_YkLstEvlt foreign key (VoltageID)
+      references YukonListEntry (EntryID);

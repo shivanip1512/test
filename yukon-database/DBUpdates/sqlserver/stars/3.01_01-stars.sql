@@ -210,3 +210,13 @@ alter table LMHardwareBase
    add constraint FK_LMHrdB_LMCfg foreign key (ConfigurationID)
       references LMConfigurationBase (ConfigurationID);
 go
+
+alter table WorkOrderBase
+   add constraint FK_WrkOr_SrvC foreign key (ServiceCompanyID)
+      references ServiceCompany (CompanyID);
+go
+
+alter table InventoryBase
+   add constraint FK_InvB_YkLstEvlt foreign key (VoltageID)
+      references YukonListEntry (EntryID);
+go
