@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2002/05/08 22:32:35 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2002/05/09 14:26:03 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1424,11 +1424,7 @@ void BuildRequestSet(Tcl_Interp* interp, RWCString& cmd_line, RWSet& req_set)
     {
         //WriteOutput("MessagePriority not set, defaulting to 7");
     }
-
-    char* fun = Tcl_GetVar(interp, "MessagePriority", 0 );
-    char* fun2 = Tcl_GetVar(interp, "ScheduleID", 0 );
-
-    
+   
     if( cmd_line.index(".*select[ ]+list[ ]+", &end_index) != RW_NPOS )
     {
         int list_len;
