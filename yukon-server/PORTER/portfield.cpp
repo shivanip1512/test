@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.121 $
-* DATE         :  $Date: 2004/11/03 19:24:53 $
+* REVISION     :  $Revision: 1.122 $
+* DATE         :  $Date: 2004/11/16 20:52:49 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -253,9 +253,26 @@ VOID PortThread(void *pid)
             }
         }
 
+
+//  these calls are expensive, so they're commented out unless we're going to profile the code
+#define TIME_GETWORK 0
+
+#if TIME_GETWORK
+        time_t t = ::time(0);
+#endif
+
         if( !OutMessage && (status = GetWork( Port, OutMessage, QueEntries )) != NORMAL )
         {
-            Sleep(25);
+            Sleep(250);
+
+#if TIME_GETWORK
+            if( (::time(0) - t) > 2 )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint - after getWork() (" << (::time(0) - t) << "s) [continue] for portid " << portid << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+#endif
+
             continue;
         }
         else if(PorterDebugLevel & PORTER_DEBUG_PORTQUEREAD)
@@ -271,6 +288,14 @@ VOID PortThread(void *pid)
                 if(QueEntries > 50) dout << RWTime() << " Port has " << QueEntries << " pending OUTMESS requests " << endl;
             }
         }
+
+#if TIME_GETWORK
+        if( (::time(0) - t) > 2 )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint - after getWork() (" << (::time(0) - t) << "s) [!if] for portid " << portid << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+#endif
 
         /*
          *  Must verify that the outmessage has not expired.  The OM will be consumed and error returned to any
