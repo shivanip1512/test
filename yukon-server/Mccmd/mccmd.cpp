@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/04/19 19:01:53 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2002/04/19 19:42:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -87,9 +87,7 @@ void _MessageThrFunc()
                     else
                     {
                         {
-                            CtiLockGuard< CtiLogger > guard(dout);
-                            dout << "msgid: " << msgid << endl;
-                            dout << "thrid: " << GetThreadIDFromMsgID(msgid) << endl;
+                            CtiLockGuard< CtiLogger > guard(dout);                            
                             dout << RWTime() << " [" << rwThreadId() <<
                                 "] Received unexpected message for interpreter [" <<
                                 GetThreadIDFromMsgID(msgid) << "]" << endl;
