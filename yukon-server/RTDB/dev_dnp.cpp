@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2003/11/17 15:21:38 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2004/03/02 20:54:54 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -162,33 +162,50 @@ INT CtiDeviceDNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
                     //           (i.e. customer doing sheds/restores that need to be accurately LMHist'd)
                     CtiLMControlHistoryMsg *hist = CTIDBG_new CtiLMControlHistoryMsg(getID(), control->getPointID(), 0, RWTime(), 86400, 100);
 
-                    //  ACH:  This is where we'd make a decision about PULSE vs LATCH.
-                    //          Currently, if we get in here, it's all pulse.
-
-                    if( parse.getCommandStr().contains(control->getPointStatus().getStateZeroControl(), RWCString::ignoreCase) )       //  (parse.getFlags() & CMD_FLAG_CTL_OPEN)
+                    //  if the control is latched
+                    if( control->getPointStatus().getControlType() == LatchControlType ||
+                        control->getPointStatus().getControlType() == SBOLatchControlType )
                     {
-                        controltype = CtiDNPBinaryOutputControl::PulseOn;
+                        if( parse.getCommandStr().contains(control->getPointStatus().getStateZeroControl(), RWCString::ignoreCase) )      //  CMD_FLAG_CTL_OPEN
+                        {
+                            controltype = CtiDNPBinaryOutputControl::LatchOff;
+
+                            hist->setRawState(STATEZERO);
+                        }
+                        else if( parse.getCommandStr().contains(control->getPointStatus().getStateOneControl(), RWCString::ignoreCase) )  //  CMD_FLAG_CTL_CLOSE
+                        {
+                            controltype = CtiDNPBinaryOutputControl::LatchOn;
+
+                            hist->setRawState(STATEONE);
+                        }
 
                         offset      = control->getPointStatus().getControlOffset();
-
-                        trip_close  = CtiDNPBinaryOutputControl::Trip;
-                        on_time     = control->getPointStatus().getCloseTime1();
+                        trip_close  = CtiDNPBinaryOutputControl::NUL;
+                        on_time     = 0;
                         off_time    = 0;
-
-                        hist->setRawState(STATEZERO);
                     }
-                    else if( parse.getCommandStr().contains(control->getPointStatus().getStateOneControl(), RWCString::ignoreCase) )  // (parse.getFlags() & CMD_FLAG_CTL_CLOSE)
+                    else  //  assume pulsed
                     {
+                        if( parse.getCommandStr().contains(control->getPointStatus().getStateZeroControl(), RWCString::ignoreCase) )      //  CMD_FLAG_CTL_OPEN
+                        {
+                            trip_close  = CtiDNPBinaryOutputControl::Trip;
+                            on_time     = control->getPointStatus().getCloseTime1();
+
+                            hist->setRawState(STATEZERO);
+                        }
+                        else if( parse.getCommandStr().contains(control->getPointStatus().getStateOneControl(), RWCString::ignoreCase) )  //  CMD_FLAG_CTL_CLOSE
+                        {
+                            trip_close  = CtiDNPBinaryOutputControl::Close;
+                            on_time     = control->getPointStatus().getCloseTime2();
+
+                            hist->setRawState(STATEONE);
+                        }
+
                         controltype = CtiDNPBinaryOutputControl::PulseOn;
-
                         offset      = control->getPointStatus().getControlOffset();
-
-                        trip_close  = CtiDNPBinaryOutputControl::Close;
-                        on_time     = control->getPointStatus().getCloseTime2();
                         off_time    = 0;
-
-                        hist->setRawState(STATEONE);
                     }
+
 
                     hist->setMessagePriority(MAXPRIORITY - 1);
                     vgList.insert(hist);
