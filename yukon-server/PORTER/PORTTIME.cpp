@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTTIME.cpp-arc  $
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2005/02/10 23:23:54 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2005/03/09 22:11:09 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -81,6 +81,8 @@ using namespace std;
 #include "mgr_port.h"
 #include "mgr_device.h"
 #include "dev_base.h"
+#include "dev_ccu.h"
+#include "dev_mct410.h"
 #include "mgr_route.h"
 
 #include "logger.h"
@@ -533,6 +535,114 @@ static void applyDeviceTimeSync(const long unusedid, CtiDeviceSPtr RemoteRecord,
     }
 }
 
+
+//  send out the 400-series time sync on all default routes on this port, since we can't use the normal CCU broadcast format
+static void applyMCT400TimeSync(const long key, CtiRouteSPtr pRoute, void* d)
+{
+    long portid = (long)d;
+    CtiDeviceSPtr RemoteRecord;
+
+    try
+    {
+        RemoteRecord = DeviceManager.getEqual(pRoute->getTrxDeviceID());
+
+        //  make sure the route's transmitting device is on this port...  and make sure this is a default route
+        if( RemoteRecord && (RemoteRecord->getPortID() == portid) && pRoute->isDefaultRoute() )
+        {
+            unsigned long time   = RWTime::now().seconds() - rwEpoch;
+            bool          is_dst = RWTime::now().isDST();
+            int amp      =  0,
+                fixed    = 31,
+                variable =  7;
+
+            BSTRUCT message;
+            OUTMESS *OutMessage = CTIDBG_new OUTMESS;
+
+            if( OutMessage )
+            {
+                if( RemoteRecord->getType() == TYPE_CCU711 )
+                {
+                    amp = ((CtiDeviceCCU *)RemoteRecord.get())->getIDLC().getAmp();
+                }
+
+                //  load up all of the port/route specific items
+                OutMessage->DeviceID  = pRoute->getTrxDeviceID();
+                OutMessage->Port      = portid;
+                OutMessage->Remote    = RemoteRecord->getAddress();
+                OutMessage->TimeOut   = TIMEOUT;
+                OutMessage->Retry     = 0;
+                OutMessage->Sequence  = 0;
+                OutMessage->Priority  = MAXPRIORITY;
+                OutMessage->EventCode = NOWAIT | NORESULT | DTRAN | BWORD; // we don't want this to be hijacked | TSYNC;
+                OutMessage->Command   = CMND_DTRAN;
+                OutMessage->InLength  = 0;
+                OutMessage->ReturnNexus = NULL;
+                OutMessage->SaveNexus   = NULL;
+
+                message.Port     = portid;
+                message.Remote   = RemoteRecord->getAddress();
+
+                message.DlcRoute.Amp      = amp;
+                message.DlcRoute.RepFixed = pRoute->getCCUFixBits();
+                message.DlcRoute.RepVar   = pRoute->getCCUVarBits();
+                message.DlcRoute.Feeder   = pRoute->getBus();
+                message.DlcRoute.Stages   = pRoute->getStages();
+
+                //  VERY 400-series specific, watch this space carefully
+
+                message.Address  = CtiDeviceMCT410::UniversalAddress;
+                message.Function = CtiDeviceMCT410::FuncWrite_TSyncPos;
+                message.Length   = CtiDeviceMCT410::FuncWrite_TSyncLen;
+                message.IO       = IO_FCT_WRITE;
+
+                message.Message[0] = 0xff;  //  global SPID
+                message.Message[1] = (time >> 24) & 0x000000ff;
+                message.Message[2] = (time >> 16) & 0x000000ff;
+                message.Message[3] = (time >>  8) & 0x000000ff;
+                message.Message[4] =  time        & 0x000000ff;
+                message.Message[5] = is_dst;
+
+                INT wordCount;
+                //  Now build up the words in the calling structure
+                C_Words (OutMessage->Buffer.OutMessage+PREIDLEN+PREAMLEN+BWORDLEN,
+                         message.Message,
+                         message.Length,
+                         &wordCount);
+
+                //  build the b word
+                B_Word (OutMessage->Buffer.OutMessage + PREIDLEN + PREAMLEN, message, wordCount);
+
+                //  calculate message lengths
+                OutMessage->InLength = 2;
+                // FIX FIX FIX 090199 CGP OutMessage->TimeOut = TIMEOUT + MyOutMessage.Buffer.BSt.Stages * (MyOutMessage.Buffer.BSt.NumW + 1);
+                OutMessage->OutLength = PREAMLEN + BWORDLEN + wordCount * CWORDLEN + 3;
+
+                BPreamble (OutMessage->Buffer.OutMessage + PREIDLEN, message, wordCount);
+
+                if(PortManager.writeQueue(OutMessage->Port, OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
+                {
+                    printf ("Error Writing to Queue for Port %2hd\n", portid);
+                    delete (OutMessage);
+                }
+            }
+            else
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint - unable to allocate OUTMESS for time sync on portid " << portid << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+            }
+        }
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** EXCEPTION while sending MCT 400 series timesyncs **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+}
+
+
 /* Routine to generate needed time sync messages */
 static void applyPortSendTime(const long unusedid, CtiPortSPtr PortRecord, void *unusedPtr)
 {
@@ -600,6 +710,8 @@ static void applyPortSendTime(const long unusedid, CtiPortSPtr PortRecord, void 
 
         /* Now check for Anything not covered by above */
         DeviceManager.apply(applyDeviceTimeSync, (void*)PortRecord->getPortID());
+
+        RouteManager.apply(applyMCT400TimeSync, (void*)PortRecord->getPortID());
     }
 
     return;
