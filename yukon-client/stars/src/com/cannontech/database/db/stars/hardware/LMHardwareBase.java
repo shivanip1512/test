@@ -94,11 +94,15 @@ public class LMHardwareBase extends DBPersistent {
     	throws java.sql.SQLException
     {
 		String sql = "SELECT inv.InventoryID, ManufacturerSerialNumber FROM " + TABLE_NAME + " inv, ECToInventoryMapping map " +
-				"WHERE LMHardwareTypeID = " + deviceType + " AND ManufacturerSerialNumber >= " + serialNoLB + " AND ManufacturerSerialNumber <= " + serialNoUB +
-				" AND inv.InventoryID >= 0 AND inv.InventoryID = map.InventoryID AND map.EnergyCompanyID = " + energyCompanyID;
-		java.sql.Statement stmt = conn.createStatement();
-		java.sql.ResultSet rset = stmt.executeQuery( sql );
-    	
+				"WHERE LMHardwareTypeID = " + deviceType + " AND ManufacturerSerialNumber >= ? AND ManufacturerSerialNumber <= ?" +
+				" AND inv.InventoryID >= 0 AND inv.InventoryID = map.InventoryID AND map.EnergyCompanyID = ?";
+		
+		java.sql.PreparedStatement stmt = conn.prepareStatement(sql);
+		stmt.setString(1, serialNoLB);
+		stmt.setString(2, serialNoUB);
+		stmt.setInt(3, energyCompanyID);
+		java.sql.ResultSet rset = stmt.executeQuery();
+		
 		java.util.Hashtable snTable = new java.util.Hashtable();
 		while (rset.next()) {
 			int invID = rset.getInt(1);
@@ -112,10 +116,13 @@ public class LMHardwareBase extends DBPersistent {
     public static int[] searchBySerialNumber(String serialNo, int energyCompanyID, java.sql.Connection conn)
     throws java.sql.SQLException {
     	String sql = "SELECT inv.InventoryID FROM " + TABLE_NAME + " inv, ECToInventoryMapping map " +
-    			"WHERE UPPER(ManufacturerSerialNumber) = UPPER('" + serialNo + "') AND inv.InventoryID >= 0 " +
-    			"AND inv.InventoryID = map.InventoryID AND map.EnergyCompanyID = " + energyCompanyID;
-    	java.sql.Statement stmt = conn.createStatement();
-    	java.sql.ResultSet rset = stmt.executeQuery( sql );
+    			"WHERE UPPER(ManufacturerSerialNumber) = UPPER(?) AND inv.InventoryID >= 0 " +
+    			"AND inv.InventoryID = map.InventoryID AND map.EnergyCompanyID = ?";
+    	
+    	java.sql.PreparedStatement stmt = conn.prepareStatement(sql);
+    	stmt.setString(1, serialNo);
+    	stmt.setInt(2, energyCompanyID);
+    	java.sql.ResultSet rset = stmt.executeQuery();
     	
 		java.util.ArrayList invIDList = new java.util.ArrayList();
 		while (rset.next())
