@@ -635,7 +635,7 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                 else if( !currentGearObject->getControlMethod().compareTo(CtiLMProgramDirectGear::MasterCycleMethod,RWCString::ignoreCase) )
                 {
 		    ResetGroups();
-		    StartMasterCycle(secondsFrom1901, currentGearObject);
+		    expectedLoadReduced = StartMasterCycle(secondsFrom1901, currentGearObject);
 		    
 #ifdef _BUNG_		    
                     LONG percent = currentGearObject->getMethodRate();
@@ -2404,12 +2404,22 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(LONG previousGearNu
             }
         }
         else if( !currentGearObject->getControlMethod().compareTo(CtiLMProgramDirectGear::MasterCycleMethod,RWCString::ignoreCase) )
-        {   //NOTE: We may have to adjust this, consider if we go from one master cycle to another... resetting might not be the right thing to do, I think this breaks MASTER-MASTER GEAR changes
-	    // Maybe adding some logic from master to master?  the way it is it isn't going to be smooth
-	    // Add an adjust master cycle function?? 
-	    ResetGroups();
-	    expectedLoadReduced = StartMasterCycle(RWDBDateTime().seconds(), currentGearObject);
-
+        {   
+	    //ResetGroups();  
+	    //expectedLoadReduced = StartMasterCycle(R3WDBDateTime().seconds(), currentGearObject);
+            expectedLoadReduced = 0.0;
+            for(LONG i=0;i<_lmprogramdirectgroups.entries();i++)
+            {
+                CtiLMGroupBase* lm_group = (CtiLMGroupBase*)_lmprogramdirectgroups[i];
+                if( lm_gear->getPercentReduction() > 0.0 )
+                {
+                    expectedLoadReduced  += (currentGearObject->getPercentReduction() / 100.0) * currentGearObject->getKWCapacity();
+                }
+                else
+                {
+                    expectedLoadReduced += currentGearObject->getKWCapacity() * (currentGearObject->getMethodRate() / 100.0);
+                }
+            }
 	    if( getProgramState() != CtiLMProgramBase::ManualActiveState )
 	    {
 		setProgramState(CtiLMProgramBase::FullyActiveState);
@@ -3141,7 +3151,7 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
 		    multiPilMsg->insert( requestMsg );
 		    //This setLastControlSent() is just to be used for new control sent
 		    //setLastControlSent(RWDBDateTime());
-		    setLastGroupControlled(lm_group->getPAOId());
+		    //setLastGroupControlled(lm_group->getPAOId()); 
 		    lm_group->setLastControlSent(RWDBDateTime());
 		    lm_group->setIsRampingIn(false);
 		    lm_group->setGroupControlState(CtiLMGroupBase::ActiveState);
@@ -3156,6 +3166,8 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
 		} //end refreshing or ramping in a group
 	    }
 	}
+
+
 #ifdef _BUNG_    	    
             LONG refreshRate = currentGearObject->getMethodRate();
             LONG shedTime = currentGearObject->getMethodPeriod();
@@ -3424,7 +3436,7 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
                             multiPilMsg->insert( requestMsg );
                             //This setLastControlSent() is just to be used for new control sent
                             //setLastControlSent(RWDBDateTime());
-                            setLastGroupControlled(currentLMGroup->getPAOId());
+                            //setLastGroupControlled(currentLMGroup->getPAOId());
                             currentLMGroup->setLastControlSent(RWDBDateTime());
                             currentLMGroup->setGroupControlState(CtiLMGroupBase::ActiveState);
                             returnBoolean = TRUE;
@@ -3491,7 +3503,8 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
 		CtiLMGroupBase* lm_group = (CtiLMGroupBase*) _lmprogramdirectgroups[i];
 
 		// For special group types we might need to give it a boost to achieve the correct control time
-		if(lm_group->doesMasterCycleNeedToBeUpdated(secondsFrom1901, (lm_group->getLastControlSent().seconds()+off_time), off_time))
+                if( currentLMGroup->doesMasterCycleNeedToBeUpdated(secondsFrom1901, currentLMGroup->getControlCompleteTime().seconds(), currentLMGroup->getControlCompleteTime().seconds() - currentLMGroup->getLastControlSent().seconds()) )                    
+//                    if(lm_group->doesMasterCycleNeedToBeUpdated(secondsFrom1901, (lm_group->getLastControlSent().seconds()+off_time), off_time))
 		{
 		    //if it is a emetcon switch 450 (7.5 min) is correct
 		    //ripple switches have a predetermined shed time
@@ -3508,12 +3521,15 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
 			multiPilMsg->insert(req_msg);
 
 			lm_group->setLastControlString(req_msg->CommandString());
-			lm_group->setLastControlSent(RWDBDateTime());
 			lm_group->setIsRampingIn(false);
 			lm_group->setGroupControlState(CtiLMGroupBase::ActiveState);
 		    
 			setLastGroupControlled(lm_group->getPAOId());
 
+                        RWDBDateTime now;
+                        lm_group->setLastControlSent(now);
+			lm_group->setControlCompleteTime(now.addSeconds(offTime));
+                        
 			if( getProgramState() != CtiLMProgramBase::ManualActiveState &&
 			    getProgramState() != CtiLMProgramBase::TimedActiveState )
 			{
@@ -5229,7 +5245,7 @@ double  CtiLMProgramDirect::StartMasterCycle(ULONG secondsFrom1901, CtiLMProgram
 		    lm_group->setNextControlTime(ctrl_time);
 		}
 		else
-		{
+		{   
 		    CtiLockGuard<CtiLogger> dout_guard(dout);
 		    dout << RWTime() << " **Checkpoint** " <<  "LMProgram: " << getPAOName() << " couldn't find a group to take, master cycle." << __FILE__ << "(" << __LINE__ << ")" << endl;
 		}
