@@ -3,10 +3,15 @@ package com.cannontech.systray;
 import javax.swing.*;
 
 import com.cannontech.alarms.gui.AlarmHandler;
+import com.cannontech.clientutils.AlarmFileWatchDog;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.clientutils.parametersfile.ParameterNotFoundException;
+import com.cannontech.clientutils.parametersfile.ParametersFile;
 import com.cannontech.common.login.ClientSession;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.version.VersionTools;
 
+import java.awt.event.ActionListener;
 import java.util.Vector;
 
 import snoozesoft.systray4j.*;
@@ -15,7 +20,7 @@ import snoozesoft.systray4j.*;
  * The main application that brings up the sys tray icon for Yukon. All components and icons
  * used are created/found in here. 
  */
-public class YukonSysTray implements SysTrayMenuListener
+public class YukonSysTray implements SysTrayMenuListener, ActionListener
 {
 	private AlarmHandler alarmHandler = null;
 	private Thread iconCyclerThrd = null;
@@ -59,7 +64,7 @@ public class YukonSysTray implements SysTrayMenuListener
 	private SysTrayMenuItem menuItemExit = null;
 	private SysTrayMenuItem menuItemAbout = null;
 
-	private SysTrayMenuItem menuItemLogin = null;
+	private SysTrayMenuItem menuItemLogout = null;
 
 	
 	private SysTrayMenuItem menuItemTDC = null;
@@ -67,7 +72,7 @@ public class YukonSysTray implements SysTrayMenuListener
 	private SysTrayMenuItem menuItemTrending = null;
 	private SysTrayMenuItem menuItemCommander = null;
 
-	private CheckableMenuItem chkMnuItemSilence = null;
+	private CheckableMenuItem chkMnuItemMute = null;
 	private SysTrayMenuItem menuItemProperties = null;
 
 
@@ -121,6 +126,23 @@ public class YukonSysTray implements SysTrayMenuListener
 		}
 	}
 
+	public void actionPerformed(java.awt.event.ActionEvent e) 
+	{
+		if( e.getSource() == AlarmFileWatchDog.getInstance() )
+		{
+			try
+			{
+				ParametersFile pf = new ParametersFile( CtiUtilities.OUTPUT_FILE_NAME );
+				getMenuItemMute().setState(
+					Boolean.valueOf(pf.getParameterValue("Mute", "false")).booleanValue() );
+			}
+			catch( ParameterNotFoundException ex)
+			{}			
+
+		}
+
+	}
+	
 	/** 
 	 * This method sets the tooltip flyover text AND it sets the corresponding
 	 * icon to use.
@@ -191,15 +213,25 @@ public class YukonSysTray implements SysTrayMenuListener
 		return alarmHandler;
 	}
 	
+	private void exitApp()
+	{
+		System.exit(0);
+	}
+
 
 	public void menuItemSelected(SysTrayMenuEvent e)
 	{
-		if( e.getSource() == getMenuItemExit() )
+		if( e.getSource() == getMenuItemExit()
+			 || e.getSource() == getMenuItemLogout() )
 		{
 			yukonSysTray.hideIcon();
 			getAlarmHandler().getAlarmClient().stop();
 
-			System.exit(0);
+			if( e.getSource() == getMenuItemLogout() )
+			{}//TODO:do the logout action here like writting to the registry
+
+
+			exitApp();
 		}
 		else if( e.getSource() == getMenuItemAbout() )
 		{
@@ -207,9 +239,18 @@ public class YukonSysTray implements SysTrayMenuListener
 				null,
 				"Yukon Systray Alerter  (Version : " + VersionTools.getYUKON_VERSION() + ")" );
 		}
-		else if( e.getSource() == getMenuItemSilence() )
+		else if( e.getSource() == getMenuItemMute() )
 		{
-			//TODO:do the silence action here
+			try
+			{			
+				ParametersFile pf = new ParametersFile( CtiUtilities.OUTPUT_FILE_NAME );
+				pf.updateValues( 
+					new String[] {"Mute"},
+					new String[] {String.valueOf(getMenuItemMute().getState())} );
+			}
+			catch( ParameterNotFoundException ex )
+			{}			
+			
 		}
 		else if( e.getSource() == getMenuItemProperties() )
 		{
@@ -220,11 +261,59 @@ public class YukonSysTray implements SysTrayMenuListener
 			try
 			{
 				Process p = Runtime.getRuntime().exec(
-					"cmd /C java -jar d:/yukon/client/bin/tdc.jar"); // >> d:/a.txt");
+					ISystrayDefines.EXEC_TDC );
+
+				//start logging the stuff
+				new SystrayLogger(p, "TDC").start();
 			}
 			catch( Exception ex )
 			{
 				CTILogger.error( "Unable to start TDC application", ex );
+			}
+		}
+		else if( e.getSource() == getMenuItemDBEditor() )
+		{
+			try
+			{
+				Process p = Runtime.getRuntime().exec(
+					ISystrayDefines.EXEC_DBEDITOR );
+
+				//start logging the stuff
+				new SystrayLogger(p, "DBEditor").start();
+			}
+			catch( Exception ex )
+			{
+				CTILogger.error( "Unable to start DBEditor application", ex );
+			}
+		}
+		else if( e.getSource() == getMenuItemCommander() )
+		{
+			try
+			{
+				Process p = Runtime.getRuntime().exec(
+					ISystrayDefines.EXEC_COMMANDER );
+
+				//start logging the stuff
+				new SystrayLogger(p, "Commander").start();
+			}
+			catch( Exception ex )
+			{
+				CTILogger.error( "Unable to start Commander application", ex );
+			}
+		}
+		else if( e.getSource() == getMenuItemTrending() )
+		{
+			try
+			{
+				Process p = Runtime.getRuntime().exec(
+					ISystrayDefines.EXEC_TRENDING );
+
+				//start logging the stuff
+				new SystrayLogger(p, "Trending").start();
+			}
+			catch( Exception ex )
+			{
+				CTILogger.error( "Unable to start Trending application", ex );
 			}
 		}
 
@@ -249,7 +338,7 @@ public class YukonSysTray implements SysTrayMenuListener
 		CTILogger.info("Creating systray items...");
 
 		Vector cntrls = new Vector();
-		cntrls.add( getMenuItemSilence() );
+		cntrls.add( getMenuItemMute() );
 		cntrls.add( getMenuItemProperties() );
 
 		Vector apps = new Vector();
@@ -265,12 +354,12 @@ public class YukonSysTray implements SysTrayMenuListener
 
 		// insert items
 		yukonSysTray.addItem( getMenuItemExit() );
+		yukonSysTray.addItem( getMenuItemLogout() );
 		yukonSysTray.addSeparator();
 		yukonSysTray.addItem( getMenuItemAbout() );
 		yukonSysTray.addSeparator();
 		yukonSysTray.addItem( cntrlSubMenu );
-		yukonSysTray.addItem( appSubMenu );		
-		//yukonSysTray.addItem( getMenuItemLogin() ); //top component
+		yukonSysTray.addItem( appSubMenu );  //top component
 		
 		
 		initConnections();
@@ -282,28 +371,41 @@ public class YukonSysTray implements SysTrayMenuListener
 
 	private void initConnections()
 	{
+		//watch a file for changes
+		AlarmFileWatchDog.getInstance().addActionListener( this );
+
 		getMenuItemExit().addSysTrayMenuListener(this);
 		getMenuItemAbout().addSysTrayMenuListener(this);
-		getMenuItemLogin().addSysTrayMenuListener(this);
+		getMenuItemLogout().addSysTrayMenuListener(this);
 		
 		getMenuItemTDC().addSysTrayMenuListener(this);
 		getMenuItemDBEditor().addSysTrayMenuListener(this);
 		getMenuItemTrending().addSysTrayMenuListener(this);
 		getMenuItemCommander().addSysTrayMenuListener(this);
 		
-		getMenuItemSilence().addSysTrayMenuListener(this);
+		getMenuItemMute().addSysTrayMenuListener(this);
 		getMenuItemProperties().addSysTrayMenuListener(this);
 	}
 
-	private CheckableMenuItem getMenuItemSilence()
+	private CheckableMenuItem getMenuItemMute()
 	{
-		if( chkMnuItemSilence == null )
+		if( chkMnuItemMute == null )
 		{
-			chkMnuItemSilence = new CheckableMenuItem("Silence Alarms", "silence");
-			chkMnuItemSilence.setState(false);
+			chkMnuItemMute = new CheckableMenuItem("Mute Alarms", "mute");
+
+			//get the state of this item from a param file
+			try
+			{
+				ParametersFile pf = new ParametersFile( CtiUtilities.OUTPUT_FILE_NAME );
+				chkMnuItemMute.setState(
+					Boolean.valueOf(pf.getParameterValue("Mute", "false")).booleanValue() );
+			}
+			catch( ParameterNotFoundException e )
+			{}			
+			
 		}
 		
-		return chkMnuItemSilence;
+		return chkMnuItemMute;
 	}
 
 	private SysTrayMenuItem getMenuItemProperties()
@@ -326,14 +428,14 @@ public class YukonSysTray implements SysTrayMenuListener
 		return menuItemExit;
 	}
 
-	private SysTrayMenuItem getMenuItemLogin()
+	private SysTrayMenuItem getMenuItemLogout()
 	{
-		if( menuItemLogin == null )
+		if( menuItemLogout == null )
 		{
-			menuItemLogin = new SysTrayMenuItem("Login...", "login");
+			menuItemLogout = new SysTrayMenuItem("Logout", "logout");
 		}
 		
-		return menuItemLogin;
+		return menuItemLogout;
 	}
 
 	private SysTrayMenuItem getMenuItemAbout()
