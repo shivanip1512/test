@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/mgr_season.h-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2003/04/22 21:41:28 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2003/09/22 23:18:58 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -65,6 +65,7 @@ private:
     CtiSeasonManager();
     ~CtiSeasonManager() { };
 
+    static const RWCString seasonsql;
 };
 #endif
 

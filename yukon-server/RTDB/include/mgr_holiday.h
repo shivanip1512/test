@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/mgr_holiday.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/04/22 21:44:03 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2003/09/22 23:18:47 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -55,6 +55,7 @@ private:
     CtiHolidayManager();
     ~CtiHolidayManager() { };
 
+    static const RWCString holidaysql;
 };
 #endif
 

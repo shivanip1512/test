@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_holiday.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2003/04/22 21:44:03 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2003/09/22 23:18:47 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,7 +19,7 @@
 #include "mgr_holiday.h"
 #include "dbaccess.h"
 
-const RWCString sql("select holidayschedule.holidayscheduleid,dateofholiday.holidaymonth,dateofholiday.holidayday,dateofholiday.holidayyear \
+const RWCString CtiHolidayManager::holidaysql("select holidayschedule.holidayscheduleid,dateofholiday.holidaymonth,dateofholiday.holidayday,dateofholiday.holidayyear \
 from holidayschedule,dateofholiday \
 where dateofholiday.holidayscheduleid=holidayschedule.holidayscheduleid");
 
@@ -67,7 +67,7 @@ void CtiHolidayManager::refresh()
         {
             CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
             RWDBConnection conn = getConnection();
-            RWDBReader rdr = ExecuteQuery(conn, sql);
+            RWDBReader rdr = ExecuteQuery(conn, holidaysql);
 
             while( rdr() )
             {

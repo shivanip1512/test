@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_season.cpp-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2003/04/22 21:41:52 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2003/09/22 23:18:58 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,7 +19,7 @@
 #include "mgr_season.h"
 #include "dbaccess.h"
 
-const RWCString sql("select scheduleid, springmonth, springday, summermonth, summerday, fallmonth, fallday, wintermonth, winterday from seasonschedule");
+const RWCString CtiSeasonManager::seasonsql("select scheduleid, springmonth, springday, summermonth, summerday, fallmonth, fallday, wintermonth, winterday from seasonschedule");
 
 CtiSeasonManager::CtiSeasonManager()
 {
@@ -161,7 +161,7 @@ void CtiSeasonManager::refresh()
         {
             CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
             RWDBConnection conn = getConnection();
-            RWDBReader rdr = ExecuteQuery(conn, sql);
+            RWDBReader rdr = ExecuteQuery(conn, seasonsql);
 
             while( rdr() )
             {
