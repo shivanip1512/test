@@ -115,6 +115,11 @@ class IM_EX_FDRBASE CtiFDRInterface
         BOOL connectWithDispatch(void);
         BOOL registerWithDispatch(void);
 
+        enum {ConnectionFailed=0,
+              ConnectionOkWriteFailed,
+              ConnectionOkWriteOk};
+        int attemptSend( CtiMessage *aMessage );
+
         
     protected:
         CtiMutex            iDispatchMux;
