@@ -97,8 +97,22 @@
                           </div></td>
                         <td width="134"> <div align="center"><img src="ControlButton.gif"></div></td>
                       </tr>
+					  
+					  <%
+	for (int i = 0; i < programs.getStarsLMProgramCount(); i++) {
+		StarsLMProgram program = programs.getStarsLMProgram(i);
+		StarsApplianceCategory category = null;
+		
+		for (int j = 0; j < categories.getStarsApplianceCategoryCount(); j++) {
+			StarsApplianceCategory appCat = categories.getStarsApplianceCategory(j);
+			if (appCat.getApplianceCategoryID() == program.getApplianceCategoryID()) {
+				category = appCat;
+				break;
+			}
+		}
+%>
                       <tr> 
-                        <td width="139"> <div align="center"> <span class="TableCell"> 
+                        <td width="139"> <div align="center"> <span class="TableCell"><img src="../<%= category.getStarsWebConfig().getLogoLocation() %>" width="60" height="59"><br> 
                             <%= program.getProgramName() %></span> <br>
                           </div></td>
                         <td width="134" class="Main"> <div align="center"><b>You have not<br>
