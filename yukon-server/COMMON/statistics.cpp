@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2004/09/08 19:55:16 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2004/10/08 20:37:08 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -73,7 +73,10 @@ CtiStatistics::CtiStatistics(long id) :
 CtiStatistics::CtiStatistics(const CtiStatistics& aRef) :
 _dirty(false)
 {
-    *this = aRef;
+    if(this != &aRef)
+    {
+        *this = aRef;
+    }
 }
 
 CtiStatistics::~CtiStatistics()
