@@ -4,6 +4,8 @@ package com.cannontech.dbeditor.wizard.point;
  * This type was created in VisualAge.
  */
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.common.login.ClientSession;
+import com.cannontech.roles.application.DBEditorRole;
 
 public class PointWizardPanel extends com.cannontech.common.wizard.WizardPanel
 {
@@ -79,9 +81,9 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 		boolean editPointID = false;
 		try
 		{
-			java.util.ResourceBundle res = java.util.ResourceBundle.getBundle("config");
-			String editPointIDString = res.getString("point_id_edit").toLowerCase();
-			if (editPointIDString.equals("true"))
+			String editPointIDString = ClientSession.getInstance().getRolePropertyValue(
+					 DBEditorRole.POINT_ID_EDIT,"false" );
+			if(editPointIDString.equals("true"))
 				editPointID = true;
 		}
 		catch (java.util.MissingResourceException e)
@@ -135,9 +137,9 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 		boolean editPointID = false;
 		try
 		{
-			java.util.ResourceBundle res = java.util.ResourceBundle.getBundle("config");
-			String editPointIDString = res.getString("point_id_edit").toLowerCase();
-			if (editPointIDString.equals("true"))
+			String editPointIDString = ClientSession.getInstance().getRolePropertyValue(
+					 DBEditorRole.POINT_ID_EDIT,"false" );
+			if(editPointIDString.equals("true"))
 				editPointID = true;
 		}
 		catch (java.util.MissingResourceException e )
@@ -163,9 +165,9 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 		boolean editPointID = false;
 		try
 		{
-			java.util.ResourceBundle res = java.util.ResourceBundle.getBundle("config");
-			String editPointIDString = res.getString("point_id_edit").toLowerCase();
-			if (editPointIDString.equals("true"))
+			String editPointIDString = ClientSession.getInstance().getRolePropertyValue(
+					 DBEditorRole.POINT_ID_EDIT,"false" );
+			if(editPointIDString.equals("true"))
 				editPointID = true;
 		}
 		catch (java.util.MissingResourceException e)
@@ -188,9 +190,9 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 		boolean editPointID = false;
 		try
 		{
-			java.util.ResourceBundle res = java.util.ResourceBundle.getBundle("config");
-			String editPointIDString = res.getString("point_id_edit").toLowerCase();
-			if (editPointIDString.equals("true"))
+			String editPointIDString = ClientSession.getInstance().getRolePropertyValue(
+					 DBEditorRole.POINT_ID_EDIT,"false" );
+			if(editPointIDString.equals("true"))
 				editPointID = true;
 		}
 		catch (java.util.MissingResourceException e)
