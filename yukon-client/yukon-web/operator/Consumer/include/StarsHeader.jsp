@@ -29,6 +29,12 @@
 <%@ page import="com.cannontech.database.cache.functions.EnergyCompanyFuncs" %>
 <%@ page import="com.cannontech.database.db.graph.GraphRenderers" %>
 <%@ page import="com.cannontech.util.ServletUtil" %>
+<%@ page import="com.cannontech.common.util.CtiUtilities" %>
+
+<%@ page import="com.cannontech.database.cache.DefaultDatabaseCache"%>
+<%@ page import="com.cannontech.database.data.lite.LiteGraphDefinition"%>
+<%@ page import="com.cannontech.database.PoolManager" %>
+<%@ page import="com.cannontech.database.db.graph.GraphCustomerList" %>
 
 <cti:checklogin/>
  
@@ -49,7 +55,7 @@
 	java.text.SimpleDateFormat histDateFormat = new java.text.SimpleDateFormat("MM/dd/yy HH:mm z");
 	java.text.SimpleDateFormat ampmTimeFormat = new java.text.SimpleDateFormat("hh:mm a");
 	
-	String dbAlias = com.cannontech.common.util.CtiUtilities.getDatabaseAlias();
+	String dbAlias = CtiUtilities.getDatabaseAlias();
 	String errorMsg = (String) session.getAttribute(ServletUtils.ATT_ERROR_MESSAGE);
 	session.removeAttribute(ServletUtils.ATT_ERROR_MESSAGE);
 	String confirmMsg = (String) session.getAttribute(ServletUtils.ATT_CONFIRM_MESSAGE);
@@ -98,7 +104,7 @@
 	StarsServiceRequestHistory serviceHist = null;
 	StarsUser userLogin = null;
 	
-	Object[][] gData = null;
+	java.util.Vector custGraphs = null;
 
 	if (user != null) {
 		ecSettings = (StarsEnergyCompanySettings) user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
@@ -151,17 +157,22 @@
 	dateTimeFormat.setTimeZone(tz);
 	histDateFormat.setTimeZone(tz);
 	
-if( account != null)
-{
-    Class[] types = { Integer.class,String.class };  
-    java.lang.String sqlString =  "SELECT DISTINCT GDEF.GRAPHDEFINITIONID, GDEF.NAME " +
-                                  " FROM GRAPHDEFINITION GDEF, GRAPHCUSTOMERLIST GCL "+
-                                  " WHERE GCL.CUSTOMERID = " + account.getCustomerID()+ 
-                                  " AND GDEF.GRAPHDEFINITIONID = GCL.GRAPHDEFINITIONID " +
-                                  " ORDER BY GDEF.NAME";
-
-	gData = com.cannontech.util.ServletUtil.executeSQL( dbAlias, sqlString);
-}
+	if( account != null)
+	{
+		try{
+			com.cannontech.database.data.customer.Customer cust = null;
+			cust = (com.cannontech.database.data.customer.Customer)com.cannontech.database.data.lite.LiteFactory.createDBPersistent(
+							new com.cannontech.database.data.lite.LiteCustomer(account.getCustomerID()));
+		
+			com.cannontech.database.Transaction t = com.cannontech.database.Transaction.createTransaction(
+													com.cannontech.database.Transaction.RETRIEVE, cust);
+			cust = (com.cannontech.database.data.customer.Customer)t.execute();
+			custGraphs = cust.getGraphVector();
+		}
+		catch( java.lang.Exception e){
+			com.cannontech.clientutils.CTILogger.error(e.getMessage(), e);
+		}
+	}
 %>
 	<jsp:useBean id="graphBean" class="com.cannontech.graph.GraphBean" scope="session">
 		<%-- this body is executed only if the bean is created --%>

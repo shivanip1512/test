@@ -5,6 +5,7 @@
 						  {"Residence.jsp", "Residence"},
 						  {"Calls.jsp", "Call Tracking"},
 						  {"Metering.jsp", "Interval Data"},
+						  {"CreateTrend.jsp", "New"},
 						  {"Usage.jsp", "Usage"},
 						  {"ProgramHist.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_CONTROL_HISTORY, "Control History")},
 						  {"Programs.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_ENROLLMENT, "Enrollment")},
@@ -91,12 +92,18 @@
     <td> 
       <div align="left"><span class="NavHeader">Metering</span><br>
         <table width="100%" border="0" cellspacing="0" cellpadding="0">
+	      <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_METERING_USAGE %>"> 
+          <tr>
+            <td width="10"><%= ((String[]) links.get("Usage.jsp"))[0] %></td>
+            <td style="padding:1"><%= ((String[]) links.get("Usage.jsp"))[1] %></td>
+          </tr>
+		  </cti:checkProperty>        
           <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_METERING_INTERVAL_DATA %>"> 
           <tr>
             <td width="10">&nbsp;</td>
             <td>
 <%
-	if( gData != null )
+	if( custGraphs != null )
 	{%>
               <table width="100%" border="0" cellspacing="0" cellpadding="0">
 	<%
@@ -121,18 +128,17 @@
                 </tr>
                 
               </table>
-<%	}%>
-
+<%	}
+%>
             </td>
           </tr>
-	
           </cti:checkProperty>
-		  <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_METERING_USAGE %>"> 
+          <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_METERING_CREATE %>"> 
           <tr>
-            <td width="10"><%= ((String[]) links.get("Usage.jsp"))[0] %></td>
-            <td style="padding:1"><%= ((String[]) links.get("Usage.jsp"))[1] %></td>
+            <td width="10"><%= ((String[]) links.get("CreateTrend.jsp"))[0] %></td>
+            <td style="padding:1"><%= ((String[]) links.get("CreateTrend.jsp"))[1] %></td>
           </tr>
-		  </cti:checkProperty>
+          </cti:checkProperty>          
         </table>
       </div>
     </td>
@@ -536,21 +542,23 @@ pageLinks = new Array(<%= inventories.getStarsInventoryCount() %>);
 </div>
 
 <%
-	if( gData != null )
+	if( custGraphs != null )
 	{%>
 
 <div id="intervalDataMenu" class="bgMenu" style="width:75px" align="left">	
-<%		for( int i = 0; i < gData.length; i++ )                                                          
-		{
+<%
+		for (int i = 0; i < custGraphs.size(); i++){
 			String className = "navmenu1";
 			String indicator = "&nbsp;&nbsp;&nbsp;";
-			if( Integer.parseInt( (gData[i][0]).toString()) == graphBean.getGdefid())
+			GraphCustomerList gcl = (GraphCustomerList) custGraphs.get(i);
+			LiteGraphDefinition lGDef = com.cannontech.database.cache.functions.GraphFuncs.getLiteGraphDefinition(gcl.getGraphDefinitionID().intValue());
+			if( lGDef.getGraphDefinitionID() == graphBean.getGdefid())
 			{
 				className = "navmenu2";
 				indicator = "&nbsp;&#149;&nbsp;";
 			}%>
-  <div id="<%=gData[i][1]%>" name="gdefid" style="width:170px;" onmouseover="changeNavStyle(this)" class = "<%=className%>" onclick = "location='<%=request.getContextPath()%>/operator/Consumer/Metering.jsp?gdefid=<%=gData[i][0]%>';">
-  <%=indicator%><%=gData[i][1]%>
+  <div id="<%=lGDef.getName()%>" name="lGDef" style="width:170px;" onmouseover="changeNavStyle(this)" class = "<%=className%>" onclick = "location='<%=request.getContextPath()%>/operator/Consumer/Metering.jsp?gdefid=<%=lGDef.getGraphDefinitionID()%>';">
+  <%=indicator%><%=lGDef.getName()%>
   </div>
 		<%}%>
 </div>
