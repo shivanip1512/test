@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/09/06 19:03:44 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2003/04/29 13:44:30 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -221,7 +221,7 @@ void CtiTableDeviceMCTIEDPort::DecodeDatabaseReader(RWDBReader &rdr)
 
     rdr["password"] >> temp;
     temp.toLower();
-    if( temp.isNull() || (temp == RWCString("none")) )
+    if( temp.isNull() || !temp.compareTo("none", RWCString::ignoreCase) || !temp.compareTo("(none)", RWCString::ignoreCase) )
         _password = "0000";
     else
         _password = temp;

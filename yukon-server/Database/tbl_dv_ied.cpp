@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_dv_ied.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/05/02 17:02:33 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2003/04/29 13:44:30 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -110,7 +110,10 @@ void CtiTableDeviceIED::DecodeDatabaseReader(const INT DeviceType, RWDBReader &r
 
     rdr["password"]         >> temp;
 
-    if(!temp.isNull() && temp == RWCString("None"))
+    if(temp.isNull() ||
+       !temp.compareTo("0") ||
+       !temp.compareTo("none", RWCString::ignoreCase) ||
+       !temp.compareTo("(none)", RWCString::ignoreCase))
     {
         _password = RWCString();
     }
