@@ -460,6 +460,31 @@ bool validateAndDecodeLine( RWCString &input, int aProtocolFlag, RWCollectableSt
                                             *programming += tempString1;
                                         }
                                     }
+                                    else if (tempString1.contains("temp"))
+                                    {
+                                        *programming += " temp ";
+
+                                        // see if offhours was after this
+                                        if (!(tempString1 = cmdLine(",\r\n")).isNull())
+                                        {
+                                            if (tempString1.contains("offhours:"))
+                                            {
+                                                int colon = tempString1.first(':');
+
+                                                if( colon !=RW_NPOS )
+                                                {
+                                                    tempString1.replace(colon,1,' ');
+                                                    *programming += tempString1;
+                                                }
+                                            }
+                                            else
+                                            {
+                                                CtiLockGuard< CtiLogger > guard(dout);
+                                                dout << RWTime() << " Invalid parameter -" << tempString1 << "- in line (" << input << ") " << endl;
+                                                retCode = false;
+                                            }
+                                        }
+                                    }
                                     else
                                     {
                                         CtiLockGuard< CtiLogger > guard(dout);
