@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_single.h-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2003/04/16 21:25:08 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2003/05/23 22:12:09 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -67,6 +67,10 @@ protected:
 private:
 
     ULONG getTardyTime(int scantype) const;
+    bool hasRateOrClockChanged(int rate, RWTime &Now);
+    BOOL isAlternateRateActive(bool &bScanIsScheduled, RWTime &aNow=RWTime(), int rate = ScanRateInvalid) const;
+    BOOL scheduleSignaledAlternateScan( int rate ) const;
+
 
 public:
 
@@ -146,8 +150,7 @@ public:
     INT         initiateLoadProfileScan(RWTPtrSlist< OUTMESS > &outList, INT ScanPriority = 6);
 
     bool isScanDataValid() const;
-    BOOL isScanWindowOpen(RWTime &aNow=RWTime().now()) const;
-    BOOL isAlternateRateActive(RWTime &aNow=RWTime().now()) const;
+    BOOL isScanWindowOpen(RWTime &aNow=RWTime()) const;
     void checkSignaledAlternateRateForExpiration();
 
     INT validateScanData();
@@ -220,7 +223,6 @@ public:
     virtual bool hasLongScanRate(const RWCString &cmd) const;
 
     RWTime peekDispatchTime() const;
-
 };
 
 #endif // #ifndef __DEV_SINGLE_H__

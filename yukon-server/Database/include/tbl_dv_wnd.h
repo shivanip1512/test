@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_dv_wnd.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:58:15 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2003/05/23 22:12:10 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -18,9 +18,12 @@
 #ifndef __TBL_DEVICEWINDOW_H__
 #define __TBL_DEVICEWINDOW_H__
 
+#include <limits.h>
+#include <set>
+using namespace std;
+
 #include <rw/db/reader.h>
 #include <rw\cstring.h>
-#include <limits.h>
 #include <rw/db/nullind.h>
 #include <rw/db/db.h>
 #include <rw/db/dbase.h>
@@ -42,6 +45,8 @@
 
 class IM_EX_CTIYUKONDB CtiTableDeviceWindow : public CtiMemDBObject
 {
+public:
+    typedef set< int > CtiWindowSet_t;
 protected:
 
    LONG        _ID;
@@ -52,7 +57,9 @@ protected:
    LONG        _alternateDuration; // seconds window is open
 
    // Bookkeeping
-   BOOL        _updated;      // Used to determine updated state of scan rate...
+   BOOL        _updated;    // Used to determine updated state of scan rate...
+   mutable CtiWindowSet_t _signaledRateActive;
+   mutable CtiWindowSet_t _signaledRateSent;
 
 public:
 
@@ -84,7 +91,7 @@ public:
    BOOL getUpdated() const;
    CtiTableDeviceWindow& setUpdated( const BOOL aBool );
 
-	LONG calculateClose(LONG aOpen, LONG aDuration) const;
+    LONG calculateClose(LONG aOpen, LONG aDuration) const;
 
    static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
 
@@ -98,6 +105,11 @@ public:
    virtual RWDBStatus Insert();
    virtual RWDBStatus Update();
    virtual RWDBStatus Delete();
+
+   bool addSignaledRateActive(int rate) const;
+   bool addSignaledRateSent(int rate) const;
+   bool isSignaledRateScheduled(int rate) const;
+   bool verifyWindowMatch() const;
 
 };
 #endif // #ifndef __TBL_SCANWINDOW_H__

@@ -5,8 +5,8 @@
 * Date:   10/4/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2003/04/17 14:49:01 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2003/05/23 22:12:09 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -88,15 +88,13 @@ RWTime CtiDeviceSingle::firstScan( const RWTime &When, INT rate )
 void CtiDeviceSingle::validateScanTimes(bool force)
 {
     RWTime Now;
-    RWTime When;
 
     LockGuard guard(monitor());
 
-#if 1
     for(int rate = 0; rate < ScanRateInvalid; rate++)
     {
         /*
-         *  Make sure we have not gone tardy.. When is used to make sure we are within 1(2)
+         *  Make sure we have not gone tardy.. nextScheduledScan is used to make sure we are within 1 (or 2)
          *  scan intervals of the expected next time...
          */
 
@@ -104,32 +102,23 @@ void CtiDeviceSingle::validateScanTimes(bool force)
 
         if(scanrate >= 0)
         {
-            if(rate == ScanRateGeneral)
-            {
-                When = getNextScan(rate) - scanrate - scanrate;
-            }
-            else
-            {
-                When = getNextScan(rate) - scanrate;
-            }
+            bool scanChanged = hasRateOrClockChanged(rate, Now);
 
-
-            if(Now < When || force == true)
+            if( force == true || scanChanged )
             {
-                if(scanrate >= 0)
+#if 0
                 {
-                    setNextScan(rate, firstScan(Now, rate));
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << getName() << (scanChanged ? " scanChanged " : " force " ) << "  rate " << rate << endl;
                 }
-                else
-                {
-                    setNextScan(rate, RWTime(YUKONEOT));
-                }
+#endif
+                setNextScan(rate, firstScan(Now, rate));
 
-                if(rate == ScanRateAccum)
+                if(rate == ScanRateAccum && scanChanged)
                 {
                     setLastFreezeNumber(0L);
                     setPrevFreezeNumber(0L);
-
                     setLastFreezeTime(RWTime());
                     setPrevFreezeTime(RWTime());
                 }
@@ -141,29 +130,6 @@ void CtiDeviceSingle::validateScanTimes(bool force)
             }
         }
     }
-#else
-
-    LONG maxrate = 0;
-
-    for(int rate = 0; rate < ScanRateInvalid; rate++)
-    {
-        LONG scanrate = getScanRate(rate);
-
-        if(scanrate >= 0 && scanrate > maxrate)
-        {
-            maxrate = scanrate;
-        }
-    }
-
-    // maxrate is the smaller of two hours or double the maxscanrate;
-    maxrate *= 2;
-
-    if(maxrate > 7200)
-    {
-        maxrate = 7200;
-    }
-
-#endif
 }
 
 INT CtiDeviceSingle::initiateAccumulatorScan(RWTPtrSlist< OUTMESS > &outList, INT ScanPriority)
@@ -175,7 +141,6 @@ INT CtiDeviceSingle::initiateAccumulatorScan(RWTPtrSlist< OUTMESS > &outList, IN
      *  This method will be called by each accumulator scanning device prior to the
      *  actual device specific code called by that device type.
      */
-
 
     RWTPtrSlist< CtiMessage > vgList;
     RWTPtrSlist< CtiMessage > retList;
@@ -1274,6 +1239,8 @@ RWTime CtiDeviceSingle::getNextScan(INT a)
 CtiDeviceSingle& CtiDeviceSingle::setNextScan(INT a, const RWTime &b)
 {
     LockGuard guard(monitor());
+
+    scheduleSignaledAlternateScan(a);
     getScanData().setNextScan(a, b);
     return *this;
 }
@@ -1607,18 +1574,29 @@ BOOL CtiDeviceSingle::isRateValid(const INT i) const
     return status;
 }
 
-LONG CtiDeviceSingle::getScanRate(int a) const
+LONG CtiDeviceSingle::getScanRate(int rate) const
 {
     LockGuard guard(monitor());
-    if(_scanRateTbl[a] != NULL)
+
+    if(_scanRateTbl[rate] != NULL)
     {
-        if(isAlternateRateActive())
+        bool bScanIsScheduled;
+        if(isAlternateRateActive(bScanIsScheduled, RWTime(), rate))
         {
-            return _scanRateTbl[a]->getAlternateRate();
+            // FirstScanInSignaledAlternateRate scan GOES NOW, once scheduled we report the normal rate.
+            INT altrate = bScanIsScheduled ? _scanRateTbl[rate]->getAlternateRate() : 1L;
+#if 0
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << getName() << " is using an altrate of " << altrate << endl;
+            }
+#endif
+            return altrate;
         }
         else
         {
-            return _scanRateTbl[a]->getScanRate();
+            return _scanRateTbl[rate]->getScanRate();
         }
     }
     else
@@ -1687,7 +1665,6 @@ void CtiDeviceSingle::checkSignaledAlternateRateForExpiration()
 {
     BOOL status = FALSE;
 
-
     for(int x=0; x <_windowVector.size(); x++)
     {
         if(_windowVector[x].getType() == DeviceWindowSignaledAlternateRate)
@@ -1697,17 +1674,12 @@ void CtiDeviceSingle::checkSignaledAlternateRateForExpiration()
             RWTime now;
 
             // this was a scan once and remove
-            if((open <= now) &&_windowVector[x].getDuration() == 0)
+            if( (open <= now) && ((_windowVector[x].getDuration() == 0) || (now > close)) )
             {
-                status = TRUE;
-            }
-            else if((open <= now) && (now > close))
-            {
-                // we've moved out of the dynamic window, delete it
                 status = TRUE;
             }
 
-            if(status)
+            if(status && _windowVector[x].verifyWindowMatch())
             {
                 _windowVector.erase(_windowVector.begin()+x);
                 break;
@@ -1717,50 +1689,38 @@ void CtiDeviceSingle::checkSignaledAlternateRateForExpiration()
 }
 
 // this does a little more than it probably should but for now it will have to do DLS
-BOOL CtiDeviceSingle::isAlternateRateActive(RWTime &aNow) const
+BOOL CtiDeviceSingle::isAlternateRateActive( bool &bScanIsScheduled, RWTime &aNow, int rate) const
 {
     BOOL status = FALSE;
+
+    bScanIsScheduled = false;
 
     // loop the vector
     for(int x=0; x <_windowVector.size(); x++)
     {
+        RWTime open ( RWTime(RWDate()).seconds()+_windowVector[x].getOpen());
+        RWTime close (open.seconds()+_windowVector[x].getDuration());
+
         if(_windowVector[x].getType() == DeviceWindowAlternateRate)
         {
-            RWTime open ( RWTime(RWDate()).seconds()+_windowVector[x].getOpen());
-            RWTime close (open.seconds()+_windowVector[x].getDuration());
-
             if((open <= aNow) && (close > aNow))
             {
                 status = TRUE;
+                break;
             }
         }
         else if(_windowVector[x].getType() == DeviceWindowSignaledAlternateRate)
         {
             /*********************************
             * we have an alternate rate from the outside somewhere
-            *
-            * once we find it, we must also decide if we should delete
-            * it after using it once
-            *
-            *    duration = 0 means we only do this once
-            **********************************
-            */
-
-            RWTime open ( RWTime(RWDate()).seconds()+_windowVector[x].getOpen());
-            RWTime close (open.seconds()+_windowVector[x].getDuration());
-
-            if((open <= aNow) && (_windowVector[x].getDuration() == 0))
+            ***********************************/
+            if((open <= aNow) && ( (close > aNow) || (_windowVector[x].getDuration() == 0)) )
             {
-                // do this one time
+                _windowVector[x].addSignaledRateActive( rate );
+                bScanIsScheduled = _windowVector[x].isSignaledRateScheduled(rate);
+
                 status = TRUE;
-            }
-            else
-            {
-                // check if we are inside the window
-                if((open <= aNow) && (close > aNow))
-                {
-                    status = TRUE;
-                }
+                break;
             }
         }
     }
@@ -1771,8 +1731,10 @@ void CtiDeviceSingle::applySignaledRateChange(LONG aOpen, LONG aDuration)
 {
     bool found=false;
 
-    if((RWTime(RWDate()).seconds()+aOpen+aDuration > RWTime().seconds()) ||
-       aOpen == -1 || aDuration == 0)
+    RWTime now;
+    RWTime lastMidnight(RWDate());
+
+    if(aOpen == -1 || aDuration == 0 || (lastMidnight.seconds()+aOpen+aDuration > now.seconds()))
     {
         for(int x=0; x <_windowVector.size(); x++)
         {
@@ -1782,8 +1744,8 @@ void CtiDeviceSingle::applySignaledRateChange(LONG aOpen, LONG aDuration)
 
                 if(aOpen == -1)
                 {
-                    _windowVector[x].setOpen (RWTime().seconds() - RWTime(RWDate()).seconds());
-                    _windowVector[x].setAlternateOpen (RWTime().seconds() - RWTime(RWDate()).seconds());
+                    _windowVector[x].setOpen (now.seconds() - lastMidnight.seconds());
+                    _windowVector[x].setAlternateOpen (now.seconds() - lastMidnight.seconds());
                 }
                 else
                 {
@@ -1806,8 +1768,8 @@ void CtiDeviceSingle::applySignaledRateChange(LONG aOpen, LONG aDuration)
 
             if(aOpen == -1)
             {
-                newWindow.setOpen (RWTime().seconds() - RWTime(RWDate()).seconds());
-                newWindow.setAlternateOpen (RWTime().seconds() - RWTime(RWDate()).seconds());
+                newWindow.setOpen (now.seconds() - lastMidnight.seconds());
+                newWindow.setAlternateOpen (now.seconds() - lastMidnight.seconds());
             }
             else
             {
@@ -1820,18 +1782,18 @@ void CtiDeviceSingle::applySignaledRateChange(LONG aOpen, LONG aDuration)
         if(aOpen == -1)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " " << getName() << " changing to alternate scan rate starting now for " << aDuration << " seconds" << endl;
+            dout << now << " " << getName() << " changing to alternate scan rate starting now for " << aDuration << " seconds" << endl;
         }
         else
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " " << getName() << " changing to alternate scan rate starting " << RWTime(RWTime(RWDate()).seconds()+aOpen) << " for " << aDuration << " seconds" << endl;
+            dout << now << " " << getName() << " changing to alternate scan rate starting " << RWTime(lastMidnight.seconds()+aOpen) << " for " << aDuration << " seconds" << endl;
         }
     }
     else
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Signaled alternate scan rate stop time has already passed for " << getName() << " " << RWTime(RWTime(RWDate()).seconds()+aOpen+aDuration) << endl;
+        dout << now << " Signaled alternate scan rate stop time has already passed for " << getName() << " " << RWTime(lastMidnight.seconds()+aOpen+aDuration) << endl;
     }
 }
 
@@ -2212,5 +2174,63 @@ bool CtiDeviceSingle::hasLongScanRate(const RWCString &cmd) const
     }
 
     return bret;
+}
+
+
+bool CtiDeviceSingle::hasRateOrClockChanged(int rate, RWTime &Now)
+{
+    RWTime previousScan;
+    bool bstatus = false;
+
+    LONG scanrate = getScanRate(rate);
+
+    /*
+     *  This is a computation of the "expected" previous scan time based upon the current scan rate.
+     *  It should give an indication if the scan rate or clock has been altered in a manner that is significant.
+     *  The Now < previousScan will ensure that we scan at the smaller of the current or the previous rate
+     *  and then proceed to align to the current rate.
+     */
+    if(rate == ScanRateGeneral)
+    {
+        previousScan = getNextScan(rate) - scanrate - scanrate;
+    }
+    else
+    {
+        previousScan = getNextScan(rate) - scanrate;
+    }
+
+    if(Now < previousScan)
+    {
+        bstatus = true;
+    }
+
+    return bstatus;
+}
+
+BOOL CtiDeviceSingle::scheduleSignaledAlternateScan( int rate ) const
+{
+    BOOL status = FALSE;
+    RWTime now;
+
+    // loop the vector
+    for(int x=0; x <_windowVector.size(); x++)
+    {
+        if(_windowVector[x].getType() == DeviceWindowSignaledAlternateRate)
+        {
+            RWTime open ( RWTime(RWDate()).seconds()+_windowVector[x].getOpen());
+            RWTime close (open.seconds()+_windowVector[x].getDuration());
+
+            /*********************************
+            * we have an alternate rate from the outside somewhere
+            ***********************************/
+            if((open <= now) && ( (close > now) || (_windowVector[x].getDuration() == 0)) )
+            {
+                _windowVector[x].addSignaledRateSent( rate );
+                status = TRUE;
+                break;
+            }
+        }
+    }
+    return status;
 }
 

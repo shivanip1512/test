@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_dv_wnd.cpp-arc  $
-*    REVISION     :  $Revision: 1.7 $
-*    DATE         :  $Date: 2002/11/15 14:07:51 $
+*    REVISION     :  $Revision: 1.8 $
+*    DATE         :  $Date: 2003/05/23 22:12:10 $
 *
 *
 *    AUTHOR: David Sutton
@@ -20,6 +20,9 @@
 *    ---------------------------------------------------
 *    History:
       $Log: tbl_dv_wnd.cpp,v $
+      Revision 1.8  2003/05/23 22:12:10  cplender
+      Workning on making the alternatescan rate logic scan immediately and then at the alternate interval.
+
       Revision 1.7  2002/11/15 14:07:51  cplender
       CRTDBG_new is being used in place of new
 
@@ -319,8 +322,6 @@ RWDBStatus CtiTableDeviceWindow::Restore()
 
 RWDBStatus CtiTableDeviceWindow::Insert()
 {
-
-
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
@@ -347,8 +348,6 @@ RWDBStatus CtiTableDeviceWindow::Update()
 {
     char temp[32];
 
-
-
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
@@ -373,8 +372,6 @@ RWDBStatus CtiTableDeviceWindow::Update()
 
 RWDBStatus CtiTableDeviceWindow::Delete()
 {
-
-
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
@@ -385,3 +382,36 @@ RWDBStatus CtiTableDeviceWindow::Delete()
     deleter.execute( conn );
     return deleter.status();
 }
+
+bool CtiTableDeviceWindow::addSignaledRateActive(int rate) const
+{
+    pair< CtiWindowSet_t::iterator, bool> ipair = _signaledRateActive.insert( rate );
+    return ipair.second;
+}
+
+bool CtiTableDeviceWindow::addSignaledRateSent(int rate) const
+{
+    pair< CtiWindowSet_t::iterator, bool> ipair = _signaledRateSent.insert( rate );
+    return ipair.second;
+}
+
+bool CtiTableDeviceWindow::isSignaledRateScheduled(int rate) const
+{
+    return (_signaledRateSent.find( rate ) != _signaledRateSent.end()); // Found it in there!
+}
+
+bool CtiTableDeviceWindow::verifyWindowMatch() const
+{
+    bool bmatch = false;
+
+    if(_signaledRateSent == _signaledRateActive)
+    {
+        bmatch = true;
+    }
+
+    return bmatch;
+}
+
+
+
+
