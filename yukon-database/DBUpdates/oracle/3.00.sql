@@ -871,7 +871,7 @@ alter table CALCCOMPONENT
 
 alter table PAOExclusion add FuncParams varchar2(200);
 update PAOExclusion set FuncParams = '(none)';
-alter table PAOExclusion alter column FuncParams varchar2(200) not null;
+alter table PAOExclusion modify FuncParams varchar2(200) not null;
 
 delete from fdrinterfaceoption where interfaceid = 14;
 delete from fdrinterface where InterfaceId = 14;
