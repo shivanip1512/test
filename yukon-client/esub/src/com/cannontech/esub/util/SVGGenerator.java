@@ -175,9 +175,9 @@ public class SVGGenerator {
 		textElem.setAttributeNS(null, "x", Integer.toString(x));
 		textElem.setAttributeNS(null, "y", Integer.toString(y));
 		textElem.setAttributeNS(null, "style", "fill:rgb(" + fillColor.getRed() + "," + fillColor.getGreen() + "," + fillColor.getBlue() + ");font-family:'" + text.getFont().getFontName() + "';font-style:" + fontStyleStr + ";font-weight:" + fontWeightStr + ";font-size:" + text.getFont().getSize() + ";opacity:" + opacity + ";");
-		
+		textElem.setAttributeNS(null, "xlink:href", "Javascript:editValue(evt)");
 		//if (text.isEditable()) { 
-		//textElem.setAttributeNS(null, "onclick", "editValue(evt)");	
+		textElem.setAttributeNS(null, "onclick", "editValue(evt)");	
 		//}
 		
 		
