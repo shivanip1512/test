@@ -3,12 +3,12 @@ package com.cannontech.database.model;
 /**
  * This type was created in VisualAge.
  */
-import javax.swing.tree.TreePath;
+//import javax.swing.tree.TreePath;
 
 import com.cannontech.common.gui.tree.CheckNode;
-import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.data.lite.LiteBase;
-import com.cannontech.database.data.lite.LitePoint;
+//import com.cannontech.common.util.CtiUtilities;
+//import com.cannontech.database.data.lite.LiteBase;
+//import com.cannontech.database.data.lite.LitePoint;
 
 public class DeviceCheckBoxTreeModel extends DeviceTreeModel 
 {

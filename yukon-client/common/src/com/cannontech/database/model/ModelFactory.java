@@ -42,16 +42,21 @@ public final class ModelFactory
 	public static final int BASELINE = 31;
 	
 	public static final int LMGROUPEXPRESSCOM = 32;
+
+	public static final int TWOWAYCONFIG = 33;
 	
-	//Report models
-	public static final int LMGROUPREPORT = 33;
+	public static final int TAG = 34;
+	//CheckBox Tree Models
+	public static final int LMGROUP_CHECKBOX = 35;
+	public static final int MCT_CHECKBOX = 36;
+	public static final int DEVICE_CHECKBOX=37;
+	public static final int TRANSMITTER_CHECKBOX=38;
+	public static final int COMMCHANNEL_CHECKBOX=39;
+	public static final int COLLECTIONGROUP_CHECKBOX=40;
 	
-	public static final int TWOWAYCONFIG = 34;
 	
-	public static final int TAG = 35;
-	
-	public static final int LMCONSTRAINT = 36;
-	public static final int LMSCENARIO = 37;
+	public static final int LMCONSTRAINT = 41;
+	public static final int LMSCENARIO = 42;
 
 	//The above is an enumeration of indices into
 	//the following array
@@ -90,9 +95,14 @@ public final class ModelFactory
 		LoginGroupTreeModel.class,
 		BaselineModel.class,
 		LMGroupExpresscomModel.class,
-		LMGroupsCheckBoxModel.class,
-		ConfigModel.class,
+/*33 */ConfigModel.class,
 		TagModel.class,
+		LMGroupsCheckBoxModel.class,
+		MCTCheckBoxTreeModel.class,
+		DeviceCheckBoxTreeModel.class,
+		TransmitterCheckBoxTreeModel.class,
+		CommChannelCheckBoxTreeModel.class,
+		CollectionGroupCheckBoxTreeModel.class
 		LMConstraintModel.class,
 		LMScenarioModel.class
 	};
