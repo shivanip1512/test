@@ -1,4 +1,3 @@
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   prot_sa305
@@ -9,10 +8,13 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/02/10 23:23:58 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/03/10 19:22:50 $
 * HISTORY      :
 * $Log: prot_sa305.h,v $
+* Revision 1.8  2005/03/10 19:22:50  mfisher
+* changed CtiProtocolBase to Cti::Protocol::Interface
+*
 * Revision 1.7  2005/02/10 23:23:58  alauinger
 * Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
 *
@@ -52,9 +54,10 @@ using namespace std;
 #include "dsm2.h"
 #include "pointtypes.h"
 #include "prot_base.h"
+using namespace Cti;  //  in preparation for moving devices to their own namespace
 
 
-class IM_EX_PROT CtiProtocolSA305 : public CtiProtocolBase
+class IM_EX_PROT CtiProtocolSA305 : public Protocol::Interface
 {
 protected:
 

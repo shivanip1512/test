@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2005/02/10 23:23:58 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2005/03/10 19:22:50 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -28,10 +28,12 @@ using namespace std;
 #include "dsm2.h"
 
 #include "prot_seriesv.h"
+using namespace Cti;  //  in preparation for moving devices to their own namespace
+
 #include "verification_objects.h"
 
 
-class IM_EX_PROT CtiProtocolLMI : public CtiProtocolBase
+class IM_EX_PROT CtiProtocolLMI : public Protocol::Interface
 {
 public:
     enum LMICommand;

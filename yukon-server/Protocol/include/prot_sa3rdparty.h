@@ -9,11 +9,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/02/10 23:23:58 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2005/03/10 19:22:50 $
 * HISTORY      :
 *
 * $Log: prot_sa3rdparty.h,v $
+* Revision 1.10  2005/03/10 19:22:50  mfisher
+* changed CtiProtocolBase to Cti::Protocol::Interface
+*
 * Revision 1.9  2005/02/10 23:23:58  alauinger
 * Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
 *
@@ -56,13 +59,15 @@
 #include "dsm2.h"
 #include "pointtypes.h"
 #include "prot_base.h"
+using namespace Cti;  //  in preparation for moving devices to their own namespace
+
 #include "protocol_sa.h"        // Telvent provided sa library.
 
 #define MAX_SAERR_MSG_SIZE 256
 
 #define GRP_SA_RTM 100              // Must be greater than any REAL grouptype.
 
-class IM_EX_PROT CtiProtocolSA3rdParty : public CtiProtocolBase
+class IM_EX_PROT CtiProtocolSA3rdParty : public Protocol::Interface
 {
 protected:
 

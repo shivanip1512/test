@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2004/04/29 19:58:50 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2005/03/10 19:22:50 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -26,8 +26,10 @@
 #include "dsm2.h"
 #include "pointtypes.h"
 #include "prot_base.h"
+using namespace Cti;
 
-class IM_EX_PROT CtiProtocolSA105 : public CtiProtocolBase
+
+class IM_EX_PROT CtiProtocolSA105 : public Protocol::Interface
 {
 public:
 
