@@ -39,7 +39,7 @@ public void run()
 	//temp code
 	timerStart = new java.util.Date();
 	//temp code
-	String sqlString = "SELECT GEARID, GEARNAME, CONTROLMETHOD, DEVICEID, GEARNUMBER FROM LMPROGRAMDIRECTGEAR WHERE GEARID >= 0";
+	String sqlString = "SELECT GEARID, GEARNAME, CONTROLMETHOD, DEVICEID, GEARNUMBER FROM LMPROGRAMDIRECTGEAR WHERE GEARID >= 0 ORDER BY DEVICEID";
 
 	java.sql.Connection conn = null;
 	java.sql.Statement stmt = null;

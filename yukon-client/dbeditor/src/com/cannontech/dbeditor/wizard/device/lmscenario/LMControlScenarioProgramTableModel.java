@@ -11,8 +11,6 @@ import javax.swing.table.AbstractTableModel;
 import com.cannontech.database.data.lite.LiteGear;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 
-import com.cannontech.database.db.device.lm.LMControlScenarioProgram;
-
 /**
  * @author jdayton
  *

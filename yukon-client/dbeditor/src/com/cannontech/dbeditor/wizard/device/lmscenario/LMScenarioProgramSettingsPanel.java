@@ -1,19 +1,11 @@
 package com.cannontech.dbeditor.wizard.device.lmscenario;
 
-import com.cannontech.database.cache.functions.DBPersistentFuncs;
 import com.cannontech.database.data.device.lm.LMScenario;
-import com.cannontech.database.data.device.lm.LMProgramDirect;
-//import com.cannontech.database.data.lite.LiteLMProgScenario;
-import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.device.lm.LMControlScenarioProgram;
-import com.cannontech.database.db.device.lm.LMProgramDirectGear;
 import com.cannontech.database.data.lite.LiteGear;
 import java.util.Vector;
-import javax.swing.JComboBox;
-import com.cannontech.common.gui.util.ComboBoxTableEditor;
-import java.awt.Component;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.database.db.device.lm.LMControlAreaProgram;
@@ -25,6 +17,9 @@ import com.cannontech.common.gui.util.TreeFindPanel;
 import java.awt.event.KeyEvent;
 import javax.swing.KeyStroke;
 import java.awt.event.InputEvent;
+import javax.swing.DefaultComboBoxModel;
+import com.cannontech.common.gui.table.MultiJComboCellRenderer;
+import com.cannontech.common.gui.table.MultiJComboCellEditor;
 
 /**
  * Insert the type's description here.
@@ -433,15 +428,14 @@ private javax.swing.JTable getProgramsTable()
 			ivjProgramsTable.getSelectionModel().setSelectionMode( javax.swing.ListSelectionModel.MULTIPLE_INTERVAL_SELECTION );
 			ivjProgramsTable.setRowHeight(20);
 			
-			//Do any column specific initialization here
+			//Do any column specific initialization here, with the exception of the gear column.
 			javax.swing.table.TableColumn nameColumn = getProgramsTable().getColumnModel().getColumn(LMControlScenarioProgramTableModel.PROGRAMLITEPAO_COLUMN);
 			javax.swing.table.TableColumn startOffsetColumn = getProgramsTable().getColumnModel().getColumn(LMControlScenarioProgramTableModel.STARTOFFSET_COLUMN);
 			javax.swing.table.TableColumn stopOffsetColumn = getProgramsTable().getColumnModel().getColumn(LMControlScenarioProgramTableModel.STOPOFFSET_COLUMN);
-			javax.swing.table.TableColumn startGearColumn = getProgramsTable().getColumnModel().getColumn(LMControlScenarioProgramTableModel.STARTGEAR_COLUMN);
+				
 			nameColumn.setPreferredWidth(100);
 			startOffsetColumn.setPreferredWidth(60);
-			startGearColumn.setPreferredWidth(100);
-	
+
 			//create our editor for the time fields
 			JTextFieldTimeEntry field = new JTextFieldTimeEntry();
 			field.addKeyListener(new java.awt.event.KeyAdapter() 
@@ -463,38 +457,6 @@ private javax.swing.JTable getProgramsTable()
 			rend.setHorizontalAlignment( field.getHorizontalAlignment() );
 			startOffsetColumn.setCellRenderer(rend);
 			stopOffsetColumn.setCellRenderer(rend);
-			
-			
-			//for the gears, just use a default renderer
-			startGearColumn.setCellRenderer(rend);
-			
-			//create the editor for the gear field
-			javax.swing.JComboBox combo = new javax.swing.JComboBox();
-			combo.setBackground(getProgramsTable().getBackground());
-		
-			combo.addActionListener( new java.awt.event.ActionListener()
-			{
-				public void actionPerformed(java.awt.event.ActionEvent e) 
-				{
-					//save the edited cell
-					if( getProgramsTable().isEditing() )
-						getProgramsTable().getCellEditor().stopCellEditing();
-					fireInputUpdate();
-				}
-			});
-			combo.addMouseListener( new java.awt.event.MouseListener()
-			{
-				public void mouseClicked(java.awt.event.MouseEvent e) {}
-				public void mouseEntered(java.awt.event.MouseEvent e) 
-				{
-					//need to populate the combo editor and renderer to the program's gears
-					userWantsTheirGears();
-				}
-				public void mousePressed(java.awt.event.MouseEvent e) {}
-				public void mouseReleased(java.awt.event.MouseEvent e) {}
-				public void mouseExited(java.awt.event.MouseEvent e) {}
-			});
-			startGearColumn.setCellEditor( new ComboBoxTableEditor(combo) );
 			
 		}	
 			
@@ -798,7 +760,7 @@ public boolean isInputValid()
 public void jButtonAdd_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
 	
 	Object[] availablePrograms = getAvailableList().getSelectedValues();
-
+	
 	//also need to update the available programs list
 	Vector allAvailable = new Vector( getAvailableList().getModel().getSize());
 	for( int i = 0; i < getAvailableList().getModel().getSize(); i++ )
@@ -809,20 +771,29 @@ public void jButtonAdd_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
 		Integer programID = new Integer(((LiteYukonPAObject)availablePrograms[h]).getLiteID());
 		LiteYukonPAObject thePAO = PAOFuncs.getLiteYukonPAO(programID.intValue());
 		
+		DefaultComboBoxModel comboModel = new DefaultComboBoxModel();
 		//do the gears, man
 		LiteGear startingGear = null;
 		for(int d = 0; d < allGears.size(); d++)
 		{
-			if( ((LiteGear)allGears.elementAt(d)).getOwnerID() == programID.intValue() )
+			if( ((LiteGear)allGears.elementAt(d)).getOwnerID() == programID.intValue())
 			{
-				startingGear = (LiteGear)allGears.elementAt(d);
-				break;
+				//add gear to the combobox model for the table
+				comboModel.addElement(allGears.elementAt(d));
+				
+				if( ((LiteGear)allGears.elementAt(d)).getGearNumber() == 1 )
+				{
+					//it's a newly added program; just take the first gear for the startgear
+					startingGear = (LiteGear)allGears.elementAt(d);
+					comboModel.setSelectedItem(startingGear);
+				}
 			}
 		}
-	
 		//add the new row
-		getTableModel().addRowValue( thePAO, "0:00", "0:00",
-			startingGear);
+		getTableModel().addRowValue( thePAO, "0:00", "0:00", startingGear);
+			
+		((MultiJComboCellEditor)getProgramsTable().getCellEditor(getTableModel().getRowCount() + 1, 3)).addModel(comboModel);	
+			
 		//autoscroll to show new additions
 		getProgramsTable().scrollRectToVisible( new java.awt.Rectangle(
 			0,
@@ -857,6 +828,8 @@ public void jButtonRemove_ActionPerformed(java.awt.event.ActionEvent actionEvent
 		LiteYukonPAObject thePAO = getTableModel().getProgramLitePAOAt(selectedRows[u]);
 				
 		allAvailable.addElement(thePAO);
+		//renderer is also automatically updated since it uses the same vector of combo box models
+		((MultiJComboCellEditor)getProgramsTable().getCellEditor(u, 3)).removeModel(selectedRows[u]);
 		getTableModel().removeRowValue(selectedRows[u]);
 	}
 	
@@ -935,6 +908,7 @@ public void populateAvailableList()
  * Comment
  */
 public void programsTable_MousePressed(java.awt.event.MouseEvent mouseEvent) {
+	fireInputUpdate();
 	return;
 }
 /**
@@ -954,6 +928,9 @@ public void setValue(Object o)
 	populateAvailableList();
 	
 	Vector assignedPrograms = scen.getAllThePrograms();
+	javax.swing.table.TableColumn startGearColumn = getProgramsTable().getColumnModel().getColumn(LMControlScenarioProgramTableModel.STARTGEAR_COLUMN);
+	startGearColumn.setPreferredWidth(100);
+	Vector models = new Vector();
 	
 	//also need to update the available programs list
 	Vector allAvailable = new Vector( getAvailableList().getModel().getSize());
@@ -965,25 +942,31 @@ public void setValue(Object o)
 		LMControlScenarioProgram lightProgram = (LMControlScenarioProgram)assignedPrograms.elementAt(j);
 		Integer progID = lightProgram.getProgramID();
 		LiteYukonPAObject thePAO = PAOFuncs.getLiteYukonPAO(progID.intValue());
-		
-		//do the gears, man
 		LiteGear startingGear = null;
-
-		//find the start gear
-		for(int x = 0; x < allGears.size(); x++)
+				
+		//do the gears, man
+		DefaultComboBoxModel comboModel = new DefaultComboBoxModel();
+		for( int y = 0; y < allGears.size(); y++ )
 		{
-			if( ((LiteGear)allGears.elementAt(x)).getOwnerID() == progID.intValue() && ((LiteGear)allGears.elementAt(x)).getGearNumber() == lightProgram.getStartGear().intValue() )
+			if( ((LiteGear)allGears.elementAt(y)).getOwnerID() == progID.intValue())
 			{
-				startingGear = (LiteGear)allGears.elementAt(x);
-				break;
+				//add gear to the combobox model for the table
+				comboModel.addElement(allGears.elementAt(y));
+				
+				if(((LiteGear)allGears.elementAt(y)).getGearNumber() == lightProgram.getStartGear().intValue() )
+				{
+					//find the startgear
+					startingGear = (LiteGear)allGears.elementAt(y);
+					comboModel.setSelectedItem(startingGear);
+				}
 			}
 		}
+		models.addElement(comboModel);
 		
 		//add the new row
 		getTableModel().addRowValue( thePAO, JTextFieldTimeEntry.setTimeTextForField(lightProgram.getStartOffset()), JTextFieldTimeEntry.setTimeTextForField(lightProgram.getStopOffset()),
 			startingGear);
-			
-		
+				
 		//make sure that the available programs list is not showing these assigned programs
 		for(int y = 0; y < allAvailable.size(); y++)
 		{
@@ -993,28 +976,12 @@ public void setValue(Object o)
 	}
 	//update the available programs list
 	getAvailableList().setListData(allAvailable);
-		
-}
-//This is what tries to fill the StartGearColumn combo boxes with the correct gears
-public void userWantsTheirGears()
-{
-	int currentRow = getProgramsTable().getSelectedRow();
-	javax.swing.table.TableColumn startGearColumn = getProgramsTable().getColumnModel().getColumn(LMControlScenarioProgramTableModel.STARTGEAR_COLUMN);
-
-	LMControlScenarioProgramTableModel scenModel = (LMControlScenarioProgramTableModel) getTableModel();
-
-	LiteYukonPAObject thePAO = getTableModel().getProgramLitePAOAt(currentRow);
-		
-	Vector specificGears = new Vector();
-	//find the appropriate gears
-	for(int x = 0; x < allGears.size(); x++)
-	{
-		if( ((LiteGear)allGears.elementAt(x)).getOwnerID() == thePAO.getLiteID() )
-			specificGears.addElement(allGears.elementAt(x));
-	}
 	
-	startGearColumn.getCellEditor().getTableCellEditorComponent(
-				getProgramsTable(), specificGears, true, 
-				currentRow, LMControlScenarioProgramTableModel.STARTGEAR_COLUMN);
+	//set up the combo box renderers and editors for the gear column
+	startGearColumn.setCellEditor(new MultiJComboCellEditor(models));
+	startGearColumn.setCellRenderer(new MultiJComboCellRenderer(models));
+	
+		
 }
+
 }
