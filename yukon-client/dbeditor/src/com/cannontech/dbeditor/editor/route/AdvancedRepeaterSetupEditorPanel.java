@@ -51,7 +51,7 @@ private javax.swing.JLabel getAdvancedRepeaterLabel1() {
 			ivjAdvancedRepeaterLabel1 = new javax.swing.JLabel();
 			ivjAdvancedRepeaterLabel1.setName("AdvancedRepeaterLabel1");
 			ivjAdvancedRepeaterLabel1.setFont(new java.awt.Font("dialog", 0, 14));
-			ivjAdvancedRepeaterLabel1.setText("Repeater1");
+			ivjAdvancedRepeaterLabel1.setText("------------");
 			ivjAdvancedRepeaterLabel1.setVisible(true);
 			// user code begin {1}
 			// user code end
@@ -74,7 +74,7 @@ private javax.swing.JLabel getAdvancedRepeaterLabel2() {
 			ivjAdvancedRepeaterLabel2 = new javax.swing.JLabel();
 			ivjAdvancedRepeaterLabel2.setName("AdvancedRepeaterLabel2");
 			ivjAdvancedRepeaterLabel2.setFont(new java.awt.Font("dialog", 0, 14));
-			ivjAdvancedRepeaterLabel2.setText("Repeater2");
+			ivjAdvancedRepeaterLabel2.setText("------------");
 			ivjAdvancedRepeaterLabel2.setVisible(true);
 			// user code begin {1}
 			// user code end
@@ -97,7 +97,7 @@ private javax.swing.JLabel getAdvancedRepeaterLabel3() {
 			ivjAdvancedRepeaterLabel3 = new javax.swing.JLabel();
 			ivjAdvancedRepeaterLabel3.setName("AdvancedRepeaterLabel3");
 			ivjAdvancedRepeaterLabel3.setFont(new java.awt.Font("dialog", 0, 14));
-			ivjAdvancedRepeaterLabel3.setText("Repeater3");
+			ivjAdvancedRepeaterLabel3.setText("------------");
 			ivjAdvancedRepeaterLabel3.setVisible(true);
 			// user code begin {1}
 			// user code end
@@ -120,7 +120,7 @@ private javax.swing.JLabel getAdvancedRepeaterLabel4() {
 			ivjAdvancedRepeaterLabel4 = new javax.swing.JLabel();
 			ivjAdvancedRepeaterLabel4.setName("AdvancedRepeaterLabel4");
 			ivjAdvancedRepeaterLabel4.setFont(new java.awt.Font("dialog", 0, 14));
-			ivjAdvancedRepeaterLabel4.setText("Repeater4");
+			ivjAdvancedRepeaterLabel4.setText("------------");
 			ivjAdvancedRepeaterLabel4.setVisible(true);
 			// user code begin {1}
 			// user code end
@@ -143,7 +143,7 @@ private javax.swing.JLabel getAdvancedRepeaterLabel5() {
 			ivjAdvancedRepeaterLabel5 = new javax.swing.JLabel();
 			ivjAdvancedRepeaterLabel5.setName("AdvancedRepeaterLabel5");
 			ivjAdvancedRepeaterLabel5.setFont(new java.awt.Font("dialog", 0, 14));
-			ivjAdvancedRepeaterLabel5.setText("Repeater5");
+			ivjAdvancedRepeaterLabel5.setText("------------");
 			ivjAdvancedRepeaterLabel5.setVisible(true);
 			// user code begin {1}
 			// user code end
@@ -166,7 +166,7 @@ private javax.swing.JLabel getAdvancedRepeaterLabel6() {
 			ivjAdvancedRepeaterLabel6 = new javax.swing.JLabel();
 			ivjAdvancedRepeaterLabel6.setName("AdvancedRepeaterLabel6");
 			ivjAdvancedRepeaterLabel6.setFont(new java.awt.Font("dialog", 0, 14));
-			ivjAdvancedRepeaterLabel6.setText("Repeater6");
+			ivjAdvancedRepeaterLabel6.setText("------------");
 			ivjAdvancedRepeaterLabel6.setVisible(true);
 			// user code begin {1}
 			// user code end
@@ -189,7 +189,7 @@ private javax.swing.JLabel getAdvancedRepeaterLabel7() {
 			ivjAdvancedRepeaterLabel7 = new javax.swing.JLabel();
 			ivjAdvancedRepeaterLabel7.setName("AdvancedRepeaterLabel7");
 			ivjAdvancedRepeaterLabel7.setFont(new java.awt.Font("dialog", 0, 14));
-			ivjAdvancedRepeaterLabel7.setText("Repeater7");
+			ivjAdvancedRepeaterLabel7.setText("------------");
 			ivjAdvancedRepeaterLabel7.setVisible(true);
 			// user code begin {1}
 			// user code end

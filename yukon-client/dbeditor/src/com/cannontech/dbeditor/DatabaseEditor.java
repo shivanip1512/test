@@ -2924,6 +2924,7 @@ private boolean updateObject(com.cannontech.database.db.DBPersistent object)
 
 	return true;
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (4/22/2002 11:29:42 AM)
@@ -3078,6 +3079,7 @@ public void windowClosing(WindowEvent event)
 	exitConfirm();
 	exit();		
 }
+
 /**
  * This method was created by Cannon Technologies Inc.
  * @param event java.awt.event.WindowEvent

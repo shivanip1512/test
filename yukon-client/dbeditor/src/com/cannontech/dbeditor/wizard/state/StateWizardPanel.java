@@ -22,7 +22,7 @@ public java.awt.Dimension getActualSize()
 
 	return getPreferredSize();
 }
-/**
+/** 
  * This method was created in VisualAge.
  * @return com.cannontech.dbeditor.wizard.route.RepeaterSelectPanel
  */

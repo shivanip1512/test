@@ -1,8 +1,14 @@
 package com.cannontech.dbeditor.editor.route;
 
+import javax.swing.JOptionPane;
+
+import com.cannontech.database.Transaction;
+import com.cannontech.database.data.route.CCURoute;
 import com.cannontech.database.db.*;
 import com.cannontech.dbeditor.editor.regenerate.RegenerateRoute;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.common.gui.util.DataInputPanel;
+import com.cannontech.common.util.MessageEvent;
 
 /**
  * This type was created in VisualAge.
@@ -14,10 +20,13 @@ public class RepeaterSetupEditorPanel extends com.cannontech.common.gui.util.Dat
    private int rightListItemIndex = getRepeatersAddRemovePanel().rightListGetSelectedIndex();
    private boolean rightListDragging = false;
    private com.cannontech.common.gui.util.AddRemovePanel ivjRepeatersAddRemovePanel = null;
-/**
- * Constructor
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
+   private boolean addOrRemoveHasBeenDone = false;
+   private boolean changeUpdated = true;
+
+/*
+  * Constructor
+ WARNING: THIS METHOD WILL BE REGENERATED.
+  */
 public RepeaterSetupEditorPanel() {
    super();
    initialize();
@@ -45,6 +54,7 @@ public void addButtonAction_actionPerformed(java.util.EventObject newEvent) {
    if (newEvent.getSource() == getRepeatersAddRemovePanel()) 
       connEtoC4(newEvent);
    // user code begin {2}
+   
    // user code end
 }
 /**
@@ -56,6 +66,29 @@ public void advancedSetupButton_ActionPerformed(java.awt.event.ActionEvent actio
    getAdvancedRepeaterSetupEditorPanel().setValue(this.objectToEdit);
 
    java.awt.Frame owner = com.cannontech.common.util.CtiUtilities.getParentFrame(this);
+   
+   //This makes sure that the user applies their changes before bringing up the advanced setup dialogue
+   
+   StringBuffer message = new StringBuffer("Advanced Setup may not accurately reflect current status \n" + 
+   											"unless your latest changes are applied.  Do you want to \n" + 
+   											"permanently apply your changes now?");
+   if(addOrRemoveHasBeenDone && !changeUpdated)
+   	{
+   		int optional = javax.swing.JOptionPane.showInternalConfirmDialog(this, message, 
+                                            "Changes not applied.",
+                                            JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+        addOrRemoveHasBeenDone = false;
+        changeUpdated = true;
+        if(optional == JOptionPane.YES_OPTION)
+        {
+			/*start of the chain that leads eventually out to the DatabaseEditor class
+			 * in order to simulate an apply button click so that the db is updated
+			 */
+			
+			fireInputDataPanelEvent( new com.cannontech.common.gui.util.DataInputPanelEvent(this, com.cannontech.common.gui.util.DataInputPanelEvent.EVENT_FORCE_APPLY));
+        }
+           	       	
+   	}
    
    com.cannontech.common.gui.util.BooleanDialog b = new com.cannontech.common.gui.util.BooleanDialog(getAdvancedRepeaterSetupEditorPanel(), owner);
    b.yesButtonSetText("Ok");
@@ -70,6 +103,7 @@ public void advancedSetupButton_ActionPerformed(java.awt.event.ActionEvent actio
       fireInputUpdate();
       setValue(this.objectToEdit);
    }
+   
 }
 /**
  * connEtoC1:  (RepeatersAddRemovePanel.addRemovePanel.rightListMouse_mousePressed(java.util.EventObject) --> RepeaterSetupEditorPanel.repeatersAddRemovePanel_RightListMouse_mousePressed(Ljava.util.EventObject;)V)
@@ -138,6 +172,8 @@ private void connEtoC4(java.util.EventObject arg1) {
       // user code begin {2}
       if( getRepeatersAddRemovePanel().rightListGetModel().getSize() > 0 )
          getAdvancedSetupButton().setEnabled(true);
+      addOrRemoveHasBeenDone = true;
+      changeUpdated = false;
       // user code end
    } catch (java.lang.Throwable ivjExc) {
       // user code begin {3}
@@ -164,6 +200,9 @@ private void connEtoC5(java.util.EventObject arg1) {
       */
       else
       	setAdvancedRepeaterSetupEditorPanel(null);
+      	
+      addOrRemoveHasBeenDone = true;
+      changeUpdated = false;
       // user code end
    } catch (java.lang.Throwable ivjExc) {
       // user code begin {3}
