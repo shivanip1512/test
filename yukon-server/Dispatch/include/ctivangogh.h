@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/ctivangogh.h-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2002/09/09 21:50:24 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2002/09/30 15:04:02 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -225,7 +225,7 @@ public:
     void loadRTDB(bool force = false, CtiMessage *pMsg = NULL);     // Loads all relevant RTDB elements
     void loadStateNames();
     void loadDeviceNames();
-    void loadCICustomers();
+    void loadCICustomers(LONG id = 0);
     RWCString resolveStateName(const CtiPointBase &aPoint , LONG rawValue);
     RWCString resolveDeviceName(const CtiPointBase &aPoint);
     RWCString resolveDeviceObjectType(const LONG devid);
@@ -261,8 +261,8 @@ public:
                                             bool postctlstopaipnt = false);      // Analog point indicating the control remaining will be posted.
     INT updateDeviceStaticTables(LONG did, UINT setmask, UINT tagmask, RWCString user, CtiMultiMsg &sigList);
     INT updatePointStaticTables(LONG pid, UINT setmask, UINT tagmask, RWCString user, CtiMultiMsg &sigList);
-    void adjustDeviceDisableTags();
-    void loadDeviceLites();
+    void adjustDeviceDisableTags(LONG id = 0);
+    void loadDeviceLites(LONG id = 0);
     void pruneCommErrorHistory();
 };
 

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2002/09/19 15:52:36 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2002/09/30 15:04:01 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -261,12 +261,6 @@ void CtiVanGogh::VGMainThread()
                               ConnThread_.getExecutionState() & RW_THR_ACTIVE &&
                               ConnThread_.getCompletionState() == RW_THR_PENDING) )
                         {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
-
-
                             if(ConnThread_.getCompletionState() != RW_THR_PENDING)
                             {
                                 {
@@ -969,7 +963,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                             {
                                 if(ablementDevice(id, setmask, validmask, Cmd->getUser()))
                                 {
-                                    adjustDeviceDisableTags();
+                                    adjustDeviceDisableTags(id);
                                 }
                             }
                             else if(idtype == OP_POINTID)
@@ -1051,41 +1045,49 @@ int CtiVanGogh::postDBChange(const CtiDBChangeMsg &Msg)
 
     try
     {
-        if(Msg.getId())
+        if(RWTime().seconds() - Msg.getMessageTime().seconds() < 900)   // Nothing older than 15 minutes!
         {
-            _snprintf(temp, sizeof(temp) - 1, "ID %ld", Msg.getId());
+            if(Msg.getId())
+            {
+                _snprintf(temp, sizeof(temp) - 1, "ID %ld", Msg.getId());
+            }
+            else
+            {
+                _snprintf(temp, sizeof(temp) - 1, "ENTRY");
+            }
+
+            RWCString desc = RWCString(temp) + resolveDBChangeType(Msg.getTypeOfChange()) + resolveDBChanged(Msg.getDatabase());
+
+            CtiSignalMsg *pSig = new CtiSignalMsg(0, 0, desc, "DATABASE CHANGE");
+
+            pSig->setUser(Msg.getUser());
+
+            // Send the message out to every connected client.
+            {
+                CtiLockGuard<CtiMutex> guard(server_mux);
+                CtiServer::iterator  iter(mConnectionTable);
+
+                for(;(Mgr = (CtiVanGoghConnectionManager *)iter());)
+                {
+                    Mgr->WriteConnQue( Msg.replicateMessage(), 2500 );        // Send a copy of DBCHANGE on to each clients.
+
+                    if(((CtiVanGoghConnectionManager*)Mgr)->getEvent()) // If the client cares about events...
+                    {
+                        Mgr->WriteConnQue(pSig->replicateMessage(), 2500);    // Copy pSig out to any event registered client
+                    }
+                }
+            }
+
+            _signalMsgQueue.putQueue( pSig );
+            loadRTDB(true, Msg.replicateMessage());
         }
         else
         {
-            _snprintf(temp, sizeof(temp) - 1, "ENTRY");
-        }
-
-        loadAlarmToDestinationTranslation();
-
-        RWCString desc = RWCString(temp) + resolveDBChangeType(Msg.getTypeOfChange()) + resolveDBChanged(Msg.getDatabase());
-
-        CtiSignalMsg *pSig = new CtiSignalMsg(0, 0, desc, "DATABASE CHANGE");
-
-        pSig->setUser(Msg.getUser());
-
-        // Send the message out to every connected client.
-        {
-            CtiLockGuard<CtiMutex> guard(server_mux);
-            CtiServer::iterator  iter(mConnectionTable);
-
-            for(;(Mgr = (CtiVanGoghConnectionManager *)iter());)
             {
-                Mgr->WriteConnQue( Msg.replicateMessage(), 2500 );        // Send a copy of DBCHANGE on to each clients.
-
-                if(((CtiVanGoghConnectionManager*)Mgr)->getEvent()) // If the client cares about events...
-                {
-                    Mgr->WriteConnQue(pSig->replicateMessage(), 2500);    // Copy pSig out to any event registered client
-                }
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " DBCHANGE has expired.  It was sent at " << Msg.getMessageTime() << endl;
             }
         }
-
-        _signalMsgQueue.putQueue( pSig );
-        loadRTDB(true, Msg.replicateMessage());
     }
     catch(...)
     {
@@ -2376,10 +2378,6 @@ void CtiVanGogh::writeSignalsToDB(bool justdoit)
 
                             if(Msg->getTags() & MASK_ANY_ALARM)
                             {
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                }
                                 alarmLogSlots.push_back( make_pair(Msg->getId(), sig.getLogID()) );
                             }
 
@@ -2399,16 +2397,6 @@ void CtiVanGogh::writeSignalsToDB(bool justdoit)
                 }
             }
 
-            {
-                RWOrderedIterator itr( postList );
-                for(;NULL != (Msg = (CtiSignalMsg*)itr());)
-                {
-                    postSignalAsEmail( *Msg );
-                }
-
-                postList.clearAndDestroy();
-            }
-
             if(panicCounter > 0)
             {
                 {
@@ -2422,6 +2410,16 @@ void CtiVanGogh::writeSignalsToDB(bool justdoit)
                     dout << " PANIC, Lots of signals" << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
             }
+        }
+
+        {
+            RWOrderedIterator itr( postList );
+            for(;NULL != (Msg = (CtiSignalMsg*)itr());)
+            {
+                postSignalAsEmail( *Msg );
+            }
+
+            postList.clearAndDestroy();
         }
 
         if(!alarmLogSlots.empty())
@@ -3673,6 +3671,11 @@ INT CtiVanGogh::sendMail(const CtiEmailMsg &aMail, const CtiTableGroupRecipient 
 RWCString CtiVanGogh::getAlarmStateName( INT alarm )
 {
     CtiLockGuard<CtiMutex> guard(server_mux);
+    if( _alarmToDestInfo[alarm].grpid < SignalEvent )  // Zero is invalid!
+    {
+        // OK, prime the array!
+        loadAlarmToDestinationTranslation();
+    }
     RWCString str = _alarmToDestInfo[alarm].name;
     return str;
 }
@@ -4073,11 +4076,6 @@ void CtiVanGogh::doPendingOperations()
 
                                 MainQueue_.putQueue( pData );    // Plop it out there for processing.
                             }
-                            else
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << now << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
 
                             it = _pendingPointInfo.erase(it);
                             dumpPendingOps();
@@ -4107,6 +4105,7 @@ void CtiVanGogh::doPendingOperations()
 
 void CtiVanGogh::loadRTDB(bool force, CtiMessage *pMsg)
 {
+    LONG id = 0;
     RWTime Now;
     static RWTime Refresh(rwEpoch);
     CtiDBChangeMsg *pChg = (CtiDBChangeMsg *)pMsg;
@@ -4126,7 +4125,7 @@ void CtiVanGogh::loadRTDB(bool force, CtiMessage *pMsg)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << Now << " Starting loadRTDB. " << endl;
+                dout << Now << " Starting loadRTDB. " << (pChg != 0 ? RWCString(pChg->getCategory() + " DBChange present.") : "No DBChange present.") << endl;
             }
 
             // This loads up the points that VanGogh will manage.
@@ -4135,7 +4134,18 @@ void CtiVanGogh::loadRTDB(bool force, CtiMessage *pMsg)
                 CtiLockGuard<CtiMutex> pmguard(server_mux, 10000);
                 if(pmguard.isAcquired())
                 {
-                    PointMgr.RefreshList(isPoint);
+                    if(pChg != NULL && pChg->getTypeOfChange() == ChangeTypeUpdate)
+                    {
+                        PointMgr.RefreshPoint(pChg->getId());
+                    }
+                    else if(pChg != NULL && pChg->getTypeOfChange() == ChangeTypeAdd)
+                    {
+                        PointMgr.RefreshPoint(pChg->getId());
+                    }
+                    else
+                    {
+                        PointMgr.RefreshList(isPoint);
+                    }
                 }
                 else
                 {
@@ -4151,9 +4161,10 @@ void CtiVanGogh::loadRTDB(bool force, CtiMessage *pMsg)
                 dout << RWTime() << " " << deltaT << " seconds to collect point data from database... " << endl;
             }
 
+#if 0
             Now = Now.now();
 
-            // Make damn sure any signals are in the DB
+            // Make sure any signals are in the DB
             writeSignalsToDB(true);
 
             deltaT = Now.now().seconds() - Now.seconds();
@@ -4162,6 +4173,7 @@ void CtiVanGogh::loadRTDB(bool force, CtiMessage *pMsg)
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " " << deltaT << " seconds to write signal list to DB" << endl;
             }
+#endif
             Now = Now.now();
 
             // Update our Bookkeeping data!!!
@@ -4185,7 +4197,6 @@ void CtiVanGogh::loadRTDB(bool force, CtiMessage *pMsg)
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " " << deltaT << " seconds to load state names" << endl;
             }
-            Now = Now.now();
 
             if( pChg == NULL || (resolvePAOCategory(pChg->getCategory()) == PAO_CATEGORY_DEVICE) )
             {
@@ -4193,16 +4204,19 @@ void CtiVanGogh::loadRTDB(bool force, CtiMessage *pMsg)
 
                 if(guard.isAcquired())
                 {
-                    loadDeviceLites();
+                    id = ((pChg == NULL) ? 0 : pChg->getId());
+
+                    Now = Now.now();
+                    loadDeviceLites(id);
                     deltaT = Now.now().seconds() - Now.seconds();
                     if( deltaT > 5 )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " " << deltaT << " seconds to load lite device data" << endl;
                     }
-                    Now = Now.now();
 
-                    adjustDeviceDisableTags();
+                    Now = Now.now();
+                    adjustDeviceDisableTags(id);
 
                     deltaT = Now.now().seconds() - Now.seconds();
                     if( deltaT > 5 )
@@ -4216,12 +4230,13 @@ void CtiVanGogh::loadRTDB(bool force, CtiMessage *pMsg)
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " INFO: Device lite info was not reloaded.  Exclusion could not be obtained." << endl;
                 }
-
-                Now = Now.now();
             }
+
+            Now = Now.now();
             if( pChg == NULL || (pChg->getDatabase() == ChangeCustomerContactDb) )
             {
-                loadCICustomers();
+                id = ((pChg == NULL) ? 0 : pChg->getId());
+                loadCICustomers(id);
             }
 
             deltaT = Now.now().seconds() - Now.seconds();
@@ -4458,7 +4473,7 @@ void CtiVanGogh::loadStateNames()
  *
  *  Expects protections to be performed by someone else.
  */
-void CtiVanGogh::loadDeviceLites()
+void CtiVanGogh::loadDeviceLites(LONG id)
 {
     if(DebugLevel & 0x00010000)
     {
@@ -4477,6 +4492,11 @@ void CtiVanGogh::loadDeviceLites()
 
         /* Go after the system defined points! */
         CtiDeviceBaseLite().getSQL( db, keyTable, selector );
+
+        if(id != 0)
+        {
+            selector.where( keyTable["paobjectid"] == id && selector.where() );
+        }
 
         rdr = selector.reader(conn);
 
@@ -4554,32 +4574,43 @@ void CtiVanGogh::loadDeviceNames()
     }
 }
 
-void CtiVanGogh::loadCICustomers()
+void CtiVanGogh::loadCICustomers(LONG id)
 {
     CtiLockGuard<CtiMutex> guard(server_mux, 2500);
 
     if(guard.isAcquired())
     {
         CtiDeviceCICustSet_t::iterator it;
-
         bool reloadFailed = false;
 
-        for(it = _ciCustSet.begin(); it != _ciCustSet.end(); it++ )
+        if(id)
         {
-            CtiTableCICustomerBase &theCust = *it;
-            if(theCust.Restore().errorCode() != RWDBStatus::ok)
+            it = _ciCustSet.find(id);
+            if( it != _ciCustSet.end() )
             {
-                reloadFailed = true;
-                break;
+                CtiTableCICustomerBase &theCust = *it;
+                theCust.Restore();
             }
         }
-
-        if(reloadFailed)
+        else
         {
-            _ciCustSet.clear();          // All cicustomers will be reloaded on their next usage..  This shouldn't happen very often
+            for(it = _ciCustSet.begin(); it != _ciCustSet.end(); it++ )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " CI Customer Set has been reset. " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                CtiTableCICustomerBase &theCust = *it;
+                if(theCust.Restore().errorCode() != RWDBStatus::ok)
+                {
+                    reloadFailed = true;
+                    break;
+                }
+            }
+
+            if(reloadFailed)
+            {
+                _ciCustSet.clear();          // All cicustomers will be reloaded on their next usage..  This shouldn't happen very often
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " CI Customer Set has been reset. " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
             }
         }
     }
@@ -4806,6 +4837,12 @@ bool CtiVanGogh::ablementPoint(LONG pid, UINT setmask, UINT tagmask, RWCString u
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+                        else
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << "  Updated " << pPoint->getName() << "'s enablement status" << endl;
                         }
                     }
 
@@ -5675,45 +5712,44 @@ INT CtiVanGogh::updateDeviceStaticTables(LONG did, UINT setmask, UINT tagmask, R
     INT status = NORMAL;
     RWCString objtype = resolveDeviceObjectType(did);
 
-    // Is this a device-based enable or disable?
-
+    CtiLockGuard<CtiMutex> smguard(server_mux, 10000);
+    if(smguard.isAcquired())
     {
-        // In this case, we poke at the PAO table
         CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-        RWDBConnection conn = getConnection();
+        {
+            // In this case, we poke at the PAO table
+            RWDBConnection conn = getConnection();
 
-        RWDBTable yukonPAObjectTable = getDatabase().table("yukonpaobject");
-        RWDBUpdater updater = yukonPAObjectTable.updater();
+            RWDBTable yukonPAObjectTable = getDatabase().table("yukonpaobject");
+            RWDBUpdater updater = yukonPAObjectTable.updater();
 
-        updater.where( yukonPAObjectTable["paobjectid"] == did );
-        updater << yukonPAObjectTable["disableflag"].assign( RWCString((TAG_DISABLE_DEVICE_BY_DEVICE & setmask?'Y':'N')) );
-        updater.execute( conn );
+            updater.where( yukonPAObjectTable["paobjectid"] == did );
+            updater << yukonPAObjectTable["disableflag"].assign( RWCString((TAG_DISABLE_DEVICE_BY_DEVICE & setmask?'Y':'N')) );
+            updater.execute( conn );
 
-        status = (updater.status().isValid() ? NORMAL: UnknownError);
-    }
+            status = (updater.status().isValid() ? NORMAL: UnknownError);
+        }
 
 
-    {
-        // In this case, we poke at the base device table.
+        {
+            // In this case, we poke at the base device table.
+            RWDBConnection conn = getConnection();
 
-        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-        RWDBConnection conn = getConnection();
+            RWDBTable deviceTable = getDatabase().table("device");
+            RWDBUpdater updater = deviceTable.updater();
 
-        RWDBTable deviceTable = getDatabase().table("device");
-        RWDBUpdater updater = deviceTable.updater();
+            updater.where( deviceTable["deviceid"] == did );
+            updater << deviceTable["controlinhibit"].assign( RWCString((TAG_DISABLE_CONTROL_BY_DEVICE & setmask?'Y':'N')) );
+            updater.execute( conn );
 
-        updater.where( deviceTable["deviceid"] == did );
-        updater << deviceTable["controlinhibit"].assign( RWCString((TAG_DISABLE_CONTROL_BY_DEVICE & setmask?'Y':'N')) );
-        updater.execute( conn );
-
-        status = (updater.status().isValid() ? NORMAL: UnknownError);
+            status = (updater.status().isValid() ? NORMAL: UnknownError);
+        }
     }
 
     CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(did, ChangePAODb, "Device", objtype, ChangeTypeUpdate);
     dbChange->setUser(user);
     dbChange->setSource(DISPATCH_APPLICATION_NAME);
     sigList.insert(dbChange);
-
 
     return status;
 }
@@ -5722,37 +5758,40 @@ INT CtiVanGogh::updatePointStaticTables(LONG pid, UINT setmask, UINT tagmask, RW
 {
     INT status = NORMAL;
 
-    if(TAG_DISABLE_POINT_BY_POINT & tagmask)
+    CtiLockGuard<CtiMutex> smguard(server_mux, 10000);
+    if(smguard.isAcquired())
     {
-        // In this case, we poke at the PAO table
         CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-        RWDBConnection conn = getConnection();
 
-        RWDBTable tbl = getDatabase().table("point");
-        RWDBUpdater updater = tbl.updater();
+        if(TAG_DISABLE_POINT_BY_POINT & tagmask)
+        {
+            // In this case, we poke at the PAO table
+            RWDBConnection conn = getConnection();
 
-        updater.where( tbl["pointid"] == pid );
-        updater << tbl["serviceflag"].assign( RWCString((TAG_DISABLE_POINT_BY_POINT & setmask?'Y':'N')) );
-        updater.execute( conn );
+            RWDBTable tbl = getDatabase().table("point");
+            RWDBUpdater updater = tbl.updater();
 
-        status = (updater.status().isValid() ? NORMAL: UnknownError);
-    }
+            updater.where( tbl["pointid"] == pid );
+            updater << tbl["serviceflag"].assign( RWCString((TAG_DISABLE_POINT_BY_POINT & setmask?'Y':'N')) );
+            updater.execute( conn );
 
-    if(TAG_DISABLE_CONTROL_BY_POINT & tagmask)
-    {
-        // In this case, we poke at the base device table.
+            status = (updater.status().isValid() ? NORMAL: UnknownError);
+        }
 
-        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-        RWDBConnection conn = getConnection();
+        if(TAG_DISABLE_CONTROL_BY_POINT & tagmask)
+        {
+            // In this case, we poke at the base device table.
+            RWDBConnection conn = getConnection();
 
-        RWDBTable tbl = getDatabase().table("pointstatus");
-        RWDBUpdater updater = tbl.updater();
+            RWDBTable tbl = getDatabase().table("pointstatus");
+            RWDBUpdater updater = tbl.updater();
 
-        updater.where( tbl["pointid"] == pid );
-        updater << tbl["controlinhibit"].assign( RWCString((TAG_DISABLE_CONTROL_BY_POINT & setmask?'Y':'N')) );
-        updater.execute( conn );
+            updater.where( tbl["pointid"] == pid );
+            updater << tbl["controlinhibit"].assign( RWCString((TAG_DISABLE_CONTROL_BY_POINT & setmask?'Y':'N')) );
+            updater.execute( conn );
 
-        status = (updater.status().isValid() ? NORMAL: UnknownError);
+            status = (updater.status().isValid() ? NORMAL: UnknownError);
+        }
     }
 
     CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(pid, ChangePointDb, "Point", "Point", ChangeTypeUpdate);
@@ -5763,7 +5802,7 @@ INT CtiVanGogh::updatePointStaticTables(LONG pid, UINT setmask, UINT tagmask, RW
     return status;
 }
 
-void CtiVanGogh::adjustDeviceDisableTags()
+void CtiVanGogh::adjustDeviceDisableTags(LONG id)
 {
     if(!_deviceLiteSet.empty())
     {
@@ -5773,16 +5812,39 @@ void CtiVanGogh::adjustDeviceDisableTags()
 
         CtiDeviceLiteSet_t::iterator dnit;
 
-        for(dnit = _deviceLiteSet.begin(); dnit != _deviceLiteSet.end(); dnit++ )
+        if(id == 0)
         {
-            CtiDeviceBaseLite &dLite = *dnit;
+            /*
+             *  This for loop looks at each device in turn and decides if the lite set's static DB entry indicates a disabled status
+             */
+            for(dnit = _deviceLiteSet.begin(); dnit != _deviceLiteSet.end(); dnit++ )
+            {
+                CtiDeviceBaseLite &dLite = *dnit;
 
-            UINT setmask = 0;
+                UINT setmask = 0;
 
-            setmask |= (dLite.getDisableFlag() == "Y" ? TAG_DISABLE_DEVICE_BY_DEVICE : 0 );
-            setmask |= (dLite.getControlInhibitFlag() == "Y" ? TAG_DISABLE_CONTROL_BY_DEVICE : 0 );
+                setmask |= (dLite.getDisableFlag() == "Y" ? TAG_DISABLE_DEVICE_BY_DEVICE : 0 );
+                setmask |= (dLite.getControlInhibitFlag() == "Y" ? TAG_DISABLE_CONTROL_BY_DEVICE : 0 );
 
-            ablementDevice(dLite.getID(), setmask, tagmask, DISPATCH_APPLICATION_NAME);
+                ablementDevice(dLite.getID(), setmask, tagmask, DISPATCH_APPLICATION_NAME);
+            }
+        }
+        else
+        {
+            CtiDeviceBaseLite &dLite = CtiDeviceBaseLite(id);
+            dnit = _deviceLiteSet.find(dLite);
+
+            if( dnit != _deviceLiteSet.end() )
+            {
+                dLite = *dnit;
+
+                UINT setmask = 0;
+
+                setmask |= (dLite.getDisableFlag() == "Y" ? TAG_DISABLE_DEVICE_BY_DEVICE : 0 );
+                setmask |= (dLite.getControlInhibitFlag() == "Y" ? TAG_DISABLE_CONTROL_BY_DEVICE : 0 );
+
+                ablementDevice(dLite.getID(), setmask, tagmask, DISPATCH_APPLICATION_NAME);
+            }
         }
 
         {
@@ -5795,12 +5857,17 @@ void CtiVanGogh::adjustDeviceDisableTags()
                 /*
                  *  K.I.S.S.  Loop through each point looking for a mismatch on tags...
                  *  Yes, this sucks less than the alternative.
+                 *
+                 *  This block looks at each point and re-establishes the device's ablement on it.  MARKING the point
+                 *  as disabled for X because of device.
                  */
 
                 CtiPointClientManager::CtiRTDBIterator  itr(PointMgr.getMap());
                 for(;itr();)
                 {
                     CtiPoint *pPoint = itr.value();
+
+                    if(id != 0 && pPoint->getDeviceID() != id) continue;    // Let's skip devices which DID NOT CHANGE!
 
                     CtiDeviceLiteSet_t::iterator dliteit = deviceLiteFind(pPoint->getDeviceID());
 
@@ -5841,6 +5908,14 @@ void CtiVanGogh::adjustDeviceDisableTags()
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                                 dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            }
+                            else
+                            {
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                    dout << " Updated " << dLite.getName() << "'s enablement status" << endl;
+                                }
                             }
                         }
                     }
@@ -6314,10 +6389,6 @@ void CtiVanGogh::analyzeStatusCommandFail(int alarm, CtiPointDataMsg *pData, Cti
                 {
                     if(ppo.getControl().getStartTime() == RWTime(YUKONEOT) )
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
                         ppo.getControl().setStartTime( pData->getTime() );              // Arrival of this point data indicates a control start, no longer pending!
                     }
 
