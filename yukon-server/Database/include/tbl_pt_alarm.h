@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_pt_alarm.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/08/19 13:50:46 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2003/09/02 18:45:17 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -84,14 +84,6 @@ public:
       rateOfChange,            // for numeric points
       limit0,
       limit1,
-      limit2,
-      limit3,
-      limit4,
-      limit5,
-      limit6,
-      limit7,
-      limit8,
-      limit9,
       highReasonability,
       lowReasonability,
 
