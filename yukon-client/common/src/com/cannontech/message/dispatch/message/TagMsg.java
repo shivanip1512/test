@@ -90,9 +90,9 @@ public class TagMsg extends Message {
 	public void setAction(int action) {
 		if( !(action == ADD_TAG_ACTION 		||
 		      action == REMOVE_TAG_ACTION 	||
-		      action == UPDATE_TAG_ACTION)  ||
-		      action == REPORT_TAG_ACTION ) {
-		   	throw new IllegalArgumentException("Action must be one of ADD_TAG_ACTION, REMOVE_TAG_ACTION, or UPDATE_TAG_ACTION");
+		      action == UPDATE_TAG_ACTION  ||
+		      action == REPORT_TAG_ACTION )) {
+		   	throw new IllegalArgumentException("Action must be one of ADD_TAG_ACTION, REMOVE_TAG_ACTION, UPDATE_TAG_ACTION, or REPORT_TAG_ACTION");
 		   }
 		   
 		this._action = action;
