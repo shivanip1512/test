@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/PORTSUP.H-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/09/19 15:54:23 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/12/03 17:58:13 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -27,7 +27,8 @@ IM_EX_CTIBASE INT SetLineModeE71 (HANDLE);
 IM_EX_CTIBASE INT SetLineModeTAPTerm (HANDLE);
 IM_EX_CTIBASE INT SetBaudRate (HANDLE, USHORT);
 IM_EX_CTIBASE INT SetDefaultDCB (HANDLE);
-IM_EX_CTIBASE INT SetXONXOFFDCB (HANDLE);
+IM_EX_CTIBASE INT EnableXONXOFF (HANDLE);
+IM_EX_CTIBASE INT DisableXONXOFF (HANDLE);
 IM_EX_CTIBASE INT SetReadTimeOut (HANDLE, USHORT);
 IM_EX_CTIBASE INT SetWriteTimeOut (HANDLE, USHORT);
 IM_EX_CTIBASE INT ModemDCD (HANDLE);

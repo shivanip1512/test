@@ -102,7 +102,7 @@ SetLineModeTAPTerm (HANDLE PortHandle)
       return(i);
    }
 
-   return(SetXONXOFFDCB (PortHandle));
+   return(EnableXONXOFF(PortHandle));
 }
 
 
@@ -160,7 +160,30 @@ SetDefaultDCB (HANDLE PortHandle)
 
 
 /* Routine to set the default DCB Info for a port */
-SetXONXOFFDCB (HANDLE PortHandle)
+EnableXONXOFF(HANDLE PortHandle)
+{
+   DCB  dcb;
+   BOOL fSuccess;
+
+   fSuccess = GetCommState(PortHandle, &dcb);
+
+   if(fSuccess)
+   {
+      dcb.fOutX  = TRUE;
+      dcb.fInX   = TRUE;
+
+      fSuccess = SetCommState(PortHandle, &dcb);
+   }
+
+   if(!fSuccess)
+   {
+      return SYSTEM;
+   }
+
+   return(NORMAL);
+}
+/* Routine to set the default DCB Info for a port */
+DisableXONXOFF(HANDLE PortHandle)
 {
    DCB  dcb;
    BOOL fSuccess;
