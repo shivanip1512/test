@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2004/05/24 17:48:39 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2004/05/24 21:40:11 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -139,6 +139,8 @@ private:
     RWTime _completion_time,
            _transmitting_until;
 
+    RWCString _name;
+
 protected:
 
 public:
@@ -151,7 +153,7 @@ public:
 
     enum
     {
-        QueuedWorkToken = 934845  //  w00t
+        QueuedWorkToken = 4845  //  w00t
     };
 
     enum LMICommand
@@ -169,6 +171,7 @@ public:
     };
 
     void setAddress( unsigned char address );
+    void setName( const RWCString &name );
     void setCommand( LMICommand cmd, unsigned control_offset = 0, unsigned control_parameter = 0 );
     void setDeadbands( const vector<unsigned> &points, const vector<unsigned> &deadbands );
 

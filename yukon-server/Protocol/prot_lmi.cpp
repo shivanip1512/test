@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2004/05/24 17:48:39 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2004/05/24 21:40:11 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -64,6 +64,12 @@ void CtiProtocolLMI::setAddress( unsigned char address )
     _address = address;
 
     _seriesv.setAddress(address);
+}
+
+
+void CtiProtocolLMI::setName( const RWCString &name )
+{
+    _name = name;
 }
 
 
@@ -183,11 +189,11 @@ int CtiProtocolLMI::recvCommRequest( OUTMESS *OutMessage )
         lmi_outmess_struct &lmi_om = *((lmi_outmess_struct *)OutMessage->Buffer.OutMessage);
 
         setCommand(lmi_om.command, lmi_om.control_offset, lmi_om.control_parameter);
-
-        _transactionComplete = false;
-        _in_count = 0;
-        _in_total = 0;
     }
+
+    _transactionComplete = false;
+    _in_count = 0;
+    _in_total = 0;
 
     return 0;
 }
@@ -283,7 +289,7 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
                 long percode = gConfigParms.getValueAsULong("PORTER_LMI_TIME_TRANSMIT", 166),
                      fudge   = gConfigParms.getValueAsULong("PORTER_LMI_FUDGE", 1000);
 
-                numcodes  = _completion_time.seconds() - _transmitting_until.seconds();
+                numcodes  = _completion_time.seconds() - _transmitting_until.seconds() * 1000;
                 numcodes -= fudge;
                 numcodes /= percode;
 
@@ -291,16 +297,25 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
                 {
                     numcodes = 42;
                 }
+                else if( numcodes < 0 )
+                {
+                    numcodes = 0;
+                }
 
                 _outbound.body_header.message_type = Opcode_SendCodes;
 
-                if( _codes.size() <= numcodes )
+                if( (long)_codes.size() <= numcodes )
                 {
                     numcodes = _codes.size();
-                    _outbound.body_header.message_type |= 0xc0;  //  last group of codes, send immediately
+
+                    _outbound.data[0] = numcodes | 0xc0;    //  last group of codes, send immediately
+                }
+                else
+                {
+                    _outbound.data[0] = numcodes;
                 }
 
-                _outbound.length = (numcodes * 6);
+                _outbound.length = (numcodes * 6) + 2;
                 _transmitting_until += ((numcodes * percode) + fudge) / 1000;
 
                 for( int i = 0; i < (numcodes * 6); i += 6 )
@@ -310,15 +325,16 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
 
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(slog);
-                        dout << RWTime() << " LMI device loading code: " << current_code << endl;
+                        slog << RWTime() << " LMI device \"" << _name << "\" loading code: " << current_code << endl;
                     }
 
-                    _outbound.data[i+0] = codestr[0];
-                    _outbound.data[i+1] = codestr[1];
-                    _outbound.data[i+2] = codestr[2];
-                    _outbound.data[i+3] = codestr[3];
-                    _outbound.data[i+4] = codestr[4];
-                    _outbound.data[i+5] = codestr[5];
+                    //  all offset by one because of the "num_codes" byte at the beginning
+                    _outbound.data[i+1] = codestr[0];
+                    _outbound.data[i+2] = codestr[1];
+                    _outbound.data[i+3] = codestr[2];
+                    _outbound.data[i+4] = codestr[3];
+                    _outbound.data[i+5] = codestr[4];
+                    _outbound.data[i+6] = codestr[5];
                     _codes.pop_back();
                 }
 
