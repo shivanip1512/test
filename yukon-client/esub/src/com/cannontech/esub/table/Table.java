@@ -132,7 +132,6 @@ public class Table {
 		int extraCellWidth = extraWidth / model.getColumnCount();
 		int remainingWidth = extraWidth % model.getColumnCount();
 		
-		System.out.println("tablewidth:" + tableWidth + " allocated: " + allocatedWidth + "  extra:" + extraCellWidth);
 		for(int col = model.getColumnCount()-1; col >= 0; col--) {
 			widths[col] += extraCellWidth;	
 		}
