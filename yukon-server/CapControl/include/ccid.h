@@ -42,3 +42,7 @@
 #define CTICCDONE_ID    512
 #define CTICCUPDATE_ID    513*/
 
+
+// square root of 3 for power factor calculations
+#define SQRT3               1.7320508075688772935274463415059
+
