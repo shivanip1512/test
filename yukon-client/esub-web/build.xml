@@ -19,6 +19,7 @@
 	<copy todir="build/WEB-INF/lib">
 	    <fileset dir="${yukon.lib}" >
 	        <exclude name="*.properties"/>
+	        <exclude name="j2ee.jar"/>
 	    </fileset>
 	</copy>
         
