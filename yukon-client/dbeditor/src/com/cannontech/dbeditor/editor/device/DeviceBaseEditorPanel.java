@@ -720,13 +720,13 @@ private javax.swing.JCheckBox getControlInhibitCheckBox() {
 			ivjControlInhibitCheckBox = new javax.swing.JCheckBox();
 			ivjControlInhibitCheckBox.setName("ControlInhibitCheckBox");
 			ivjControlInhibitCheckBox.setText("Disable Controls");
-			ivjControlInhibitCheckBox.setMaximumSize(new java.awt.Dimension(124, 26));
+			ivjControlInhibitCheckBox.setMaximumSize(new java.awt.Dimension(206, 26));
 			ivjControlInhibitCheckBox.setActionCommand("Control Inhibit");
 			ivjControlInhibitCheckBox.setBorderPainted(false);
-			ivjControlInhibitCheckBox.setPreferredSize(new java.awt.Dimension(124, 26));
+			ivjControlInhibitCheckBox.setPreferredSize(new java.awt.Dimension(206, 26));
 			ivjControlInhibitCheckBox.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjControlInhibitCheckBox.setMargin(new java.awt.Insets(2, 2, 2, 2));
-			ivjControlInhibitCheckBox.setMinimumSize(new java.awt.Dimension(124, 26));
+			ivjControlInhibitCheckBox.setMinimumSize(new java.awt.Dimension(206, 26));
 			ivjControlInhibitCheckBox.setHorizontalAlignment(2);
 			// user code begin {1}
 			// user code end
@@ -893,7 +893,7 @@ private javax.swing.JPanel getIdentificationPanel() {
 			constraintsControlInhibitCheckBox.anchor = java.awt.GridBagConstraints.WEST;
 			constraintsControlInhibitCheckBox.ipadx = 38;
 			constraintsControlInhibitCheckBox.ipady = -9;
-			constraintsControlInhibitCheckBox.insets = new java.awt.Insets(2, 2, 9, 118);
+			constraintsControlInhibitCheckBox.insets = new java.awt.Insets(2, 2, 9, 83);
 			getIdentificationPanel().add(getControlInhibitCheckBox(), constraintsControlInhibitCheckBox);
 			// user code begin {1}
 			getControlInhibitCheckBox().setVisible(false);
