@@ -609,16 +609,24 @@ public int createRowsForHistoricalView(java.util.Date date, int page)
 	if( rowData == null )
 		return -1;
 
-	StringBuffer b = new StringBuffer(rowQuery);
-	for( int i = 0; i < objs.length; i++ )
-		b.replace( b.indexOf("?"), b.indexOf("?")+1, objs[i].toString() );
-
-
-	CTILogger.debug("   TDC Page=" + page + ", PageCnt=" + pageCount +
-					", min=" + qMin +", max=" + qMax );		
-	CTILogger.debug("   TDC query=" + b.toString() );
-	CTILogger.debug("   TDC rowCnt=" + rowData.length );
-
+	try
+	{
+		StringBuffer b = new StringBuffer(rowQuery);
+		for( int i = 0; i < objs.length; i++ )
+		{
+			int loc = b.toString().indexOf("?");
+			b.replace( loc, loc+1, objs[i].toString() );
+		}
+	
+		CTILogger.debug("   TDC Page=" + page + ", PageCnt=" + pageCount +
+						", min=" + qMin +", max=" + qMax );		
+		CTILogger.debug("   TDC query=" + b.toString() );
+		CTILogger.debug("   TDC rowCnt=" + rowData.length );
+	}
+	catch( Exception e )
+	{}
+	
+	
 	java.util.Date prevDate = null;
 	java.util.GregorianCalendar currentCalendar = null;
 	java.util.GregorianCalendar prevCalendar = null;
