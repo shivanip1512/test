@@ -47,16 +47,19 @@ public void addActionListenerToJComponent( javax.swing.JComponent component )
 	{
 		comboBox = (javax.swing.JComboBox)component;
 
+		getJComboBox().removeAllItems();
 		getJComboBox().addActionListener( getCapBankActionListener() );
 
-		updateAreaList( lastSubAreaMsg );
+		//updateAreaList( lastSubAreaMsg );
+		
+		connect();
 	}
 	
 }
 
 public boolean needsComboIniting()
 {
-	return true;
+	return false; //true;
 }
 
 /**
@@ -70,8 +73,6 @@ public void destroy()
 		if( connectionWrapper != null )
 		{
 			connectionWrapper.removeMessageListener( this );
-//			connectionWrapper.stopInThread();
-//			connectionWrapper.disconnect();
 		}
 
 		if( mainPanel != null )
@@ -169,6 +170,24 @@ private CapBankActionListener getCapBankActionListener()
 	
 	return capBankActionListener;
 }
+
+private void connect()
+{
+	try
+	{	
+		//start the conn!!!
+		getConnectionWrapper().connectWithoutWait(); //connect( 15000 );		
+
+		if( getConnectionWrapper().isValid() )
+			com.cannontech.clientutils.CTILogger.info("Retrieving CBC strategies...");
+	}
+	catch( Exception e)
+	{
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+	}	
+
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (8/7/00 4:11:33 PM)
@@ -184,10 +203,10 @@ private CBCClientConnection getConnectionWrapper()
 
 
 			//start the conn!!!
-			connectionWrapper.connectWithoutWait(); //connect( 15000 );		
+			//connectionWrapper.connectWithoutWait(); //connect( 15000 );		
 
-		 	if( connectionWrapper.isValid() )
-				com.cannontech.clientutils.CTILogger.info("Retrieving CBC strategies...");
+		 	//if( connectionWrapper.isValid() )
+				//com.cannontech.clientutils.CTILogger.info("Retrieving CBC strategies...");
 		}
 		catch( Exception e)
 		{
@@ -470,7 +489,7 @@ private void updateAreaList(CBCSubAreaNames areaNames)
 		
 			// remove all the values in the JComboBox except the first one
 			getJComboBox().removeAllItems();
-			getJComboBox().addItem( SubBusTableModel.ALL_FILTER );
+			//getJComboBox().addItem( SubBusTableModel.ALL_FILTER );
 
 			// add all area names to the JComboBox	
 			for( int i = 0; i < areaNames.getNumberOfAreas(); i++ )
@@ -486,7 +505,10 @@ private void updateAreaList(CBCSubAreaNames areaNames)
 			getJComboBox().addActionListener( getCapBankActionListener() );
 		}
 
+		if( obj == null && getJComboBox().getItemCount() > 0 )
+			getJComboBox().setSelectedIndex( 0 );
 	}
+
 }
 
 public synchronized void messageReceived( MessageEvent e )

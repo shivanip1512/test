@@ -36,11 +36,11 @@ public class SubBusTableModel extends javax.swing.table.AbstractTableModel imple
 	/* END - ROW DATA */
 
    // the string for filtering all areas
-   public static final String ALL_FILTER = "All Areas";
+   //public static final String ALL_FILTER = "All Areas";
 	public static final String STR_NA = "  NA";
 
    // the holder for the current filter, default to all
-   private String filter = ALL_FILTER;
+   private String filter = null; //ALL_FILTER;
 
 	//The columns and their column index	
 	public static final int AREA_NAME_COLUMN  = 0;
@@ -560,39 +560,34 @@ public synchronized void setFilter(java.lang.String newFilter)
 {
    filter = newFilter;
 
-	if( !ALL_FILTER.equalsIgnoreCase(getFilter()) )
-	{
-		int start = -1, stop = getAllSubBuses().size();
+	int start = -1, stop = getAllSubBuses().size();
 
-		for( int i = 0; i < getAllSubBuses().size(); i++ )
+	for( int i = 0; i < getAllSubBuses().size(); i++ )
+	{
+		SubBus realBus = (SubBus)getAllSubBuses().get(i);
+		if( start <= -1 
+			 && realBus.getCcArea().equalsIgnoreCase(getFilter()) )
 		{
-			SubBus realBus = (SubBus)getAllSubBuses().get(i);
-			if( start <= -1 
-				 && realBus.getCcArea().equalsIgnoreCase(getFilter()) )
-			{
-				start = i;
-			}
-			else if( start >= 0 && !realBus.getCcArea().equalsIgnoreCase(getFilter()) )
-			{
-				stop = i;
-				break;
-			}
-	
+			start = i;
 		}
-		
-		if( start < 0 ) //should not occur
+		else if( start >= 0 && !realBus.getCcArea().equalsIgnoreCase(getFilter()) )
 		{
-			currentSubBuses = getAllSubBuses();
-			com.cannontech.clientutils.CTILogger.info("*** Could not find SubBus with the area = " + getFilter() );
+			stop = i;
+			break;
 		}
-		else  //this locks down AllSubBuses and disallows any structural modification to AllSubBuses
-			currentSubBuses = getAllSubBuses().subList(
-										start, 
-										(stop < 0 || stop > getAllSubBuses().size() ? start+1 : stop) );		
+
 	}
-	else
-		 currentSubBuses = getAllSubBuses();  //case for ALL subbuses
 	
+	if( start < 0 ) //should not occur
+	{
+		//currentSubBuses = getAllSubBuses();
+		//clear();
+		com.cannontech.clientutils.CTILogger.info("*** Could not find SubBus with the area = " + getFilter() );
+	}
+	else  //this locks down AllSubBuses and disallows any structural modification to AllSubBuses
+		currentSubBuses = getAllSubBuses().subList(
+									start, 
+									(stop < 0 || stop > getAllSubBuses().size() ? start+1 : stop) );		
 				
 
 	javax.swing.SwingUtilities.invokeLater( new Runnable()

@@ -16,7 +16,7 @@ import com.cannontech.cbc.gui.SubBusTableModel;
  */
 public class CBCSessionInfo
 {
-	private String lastArea = SubBusTableModel.ALL_FILTER;
+	private String lastArea = null; //SubBusTableModel.ALL_FILTER;
 	private int lastSubRowNum = 0;
 	
 	public CBCSessionInfo()
@@ -38,10 +38,7 @@ public class CBCSessionInfo
 	 */
 	public void setLastArea(String area_ )
 	{
-		if( area_ == null )
-			lastArea = SubBusTableModel.ALL_FILTER;
-		else
-			lastArea = area_;
+		lastArea = area_;
 	}
 
 	/**

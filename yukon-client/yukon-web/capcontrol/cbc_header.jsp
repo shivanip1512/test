@@ -38,7 +38,14 @@
 	
 	String subArea = request.getParameter("area");
 	if( subArea != null )
+	{
 		cbcSession.setLastArea( subArea );
+	}
+	else
+	{
+		if( connServlet.getAreaNames().size() > 0 )
+			cbcSession.setLastArea( connServlet.getAreaNames().get(0).toString() );	
+	}
 	
 	
 	cbcAnnex.setUserName( 

@@ -97,7 +97,7 @@ private synchronized void updateAreaList(CBCSubAreaNames areaNames_)
 {
 	// remove all the values in the list
 	getAreaNames().removeAllElements();
-	getAreaNames().add( SubBusTableModel.ALL_FILTER );
+	//getAreaNames().add( SubBusTableModel.ALL_FILTER );
 
 	// add all area names to the list	
 	for( int i = 0; i < areaNames_.getNumberOfAreas(); i++ )

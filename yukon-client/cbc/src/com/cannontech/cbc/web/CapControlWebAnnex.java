@@ -16,7 +16,6 @@ import com.cannontech.cbc.gui.SubBusTableModel;
 import com.cannontech.cbc.messages.CBCCommand;
 import com.cannontech.cbc.messages.CBCSubstationBuses;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.clientutils.commonutils.ModifiedDate;
 import com.cannontech.common.util.WeakObserver;
 import com.cannontech.database.db.state.State;
 import com.cannontech.util.ServletUtil;
@@ -163,6 +162,10 @@ public class CapControlWebAnnex implements java.util.Observer
 			//we must tell our connection we want all the SUBs right away
 			// for our SubTableModel
 			getConnection().executeCommand( 0, CBCCommand.REQUEST_ALL_SUBS );
+			
+			//FIXME: since this is asynchronous, the page is returned before we have any SubBuses, thus
+			// causing a blank page to be displayed. This is a hack around it.
+			Thread.currentThread().sleep( 3500 );
 		}
 		catch( Exception e ) {}
 

@@ -41,8 +41,6 @@
 				"This page did not successfully get the subRowID needed, subRowID=" + strID, e ); 
 		
 		//reset our filter to the default				
-		cbcSession.setLastArea( SubBusTableModel.ALL_FILTER );
-		
 		response.sendRedirect( "subs.jsp" );
 		return;
 	}
