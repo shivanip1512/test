@@ -610,9 +610,13 @@ private void displayAWizardPanel(JMenuItem item)
 		showWizardPanel(new com.cannontech.dbeditor.wizard.customer.CustomerWizardPanel());
 	}
 	else if (item == systemCreateMenu.baselineMenuItem)
-		{
-			showWizardPanel(new com.cannontech.dbeditor.wizard.baseline.BaselineWizardPanel());
-		}
+	{
+		showWizardPanel(new com.cannontech.dbeditor.wizard.baseline.BaselineWizardPanel());
+	}
+	else if (item == systemCreateMenu.tagMenuItem) 
+	{
+			showWizardPanel(new com.cannontech.dbeditor.wizard.tags.TagWizardPanel());
+	}
 
 }
 /**

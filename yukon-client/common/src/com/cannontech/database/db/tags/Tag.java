@@ -17,7 +17,7 @@ public class Tag extends com.cannontech.database.db.DBPersistent
 	private Integer tagID = null;
 	private String tagName = null;
    	private Integer tagLevel = null;
-   	private String inhibit = null;
+	private Character inhibit = new Character('N');
    	private Integer colorID = null;
    	private Integer imageID = null;
    
@@ -116,7 +116,7 @@ public Integer getTagLevel() {
 	return tagLevel;
 }
 
-public String getInhibit() {
+public Character getInhibit() {
 	return inhibit;
 }
 
@@ -140,7 +140,7 @@ public void retrieve()
 		{
 			setTagName( (String) results[1] );
 			setTagLevel( (Integer) results[2] );
-			setInhibit( (String) results[3] );
+			setInhibit( (Character) results[3] );
 			setColorID( (Integer) results[4] );
 			setImageID( (Integer) results[5] );
 		}
@@ -157,7 +157,7 @@ public void setTagLevel(java.lang.Integer newTagLevel) {
 	tagLevel = newTagLevel;
 }
 
-public void setInhibit(String newInhibit) {
+public void setInhibit(Character newInhibit) {
 	inhibit = newInhibit;
 }
 

@@ -3,6 +3,8 @@
  */
 package com.cannontech.database.data.lite;
 
+import com.cannontech.database.db.tags.Tag;
+
 /**
  * @author aaron
  */
@@ -117,5 +119,34 @@ public class LiteTag extends LiteBase {
 	 */
 	public void setTagName(String string) {
 		_tagName = string;
+	}
+	
+	public void retrieve(String databaseAlias) 
+	{
+ 
+	   com.cannontech.database.SqlStatement s = 
+		  new com.cannontech.database.SqlStatement(
+			 "SELECT TagID, TagName, TagLevel, Inhibit, ColorID, ImageID "  + 
+				"FROM TAGS where TagID = " + getTagID(),
+			 com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+
+	   try 
+	   {
+		  s.execute();
+
+		  if( s.getRowCount() <= 0 )
+			 throw new IllegalStateException("Unable to find a tag with ID = " + getLiteID() );
+
+
+		  setTagID( new Integer(s.getRow(0)[0].toString()).intValue() );
+		  setTagName( s.getRow(0)[1].toString() );
+		  setTagLevel( new Integer(s.getRow(0)[2].toString()).intValue());
+		  setInhibit( s.getRow(0)[3].toString().compareTo("Y") == 0);
+	   }
+	   catch( Exception e )
+	   {
+		  com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+	   }
+      
 	}
 }
