@@ -67,30 +67,32 @@ public class ImageInserter extends MessageFrameAdaptor
 			pstmt = conn.prepareStatement(INSERT_SQL);
 			
 			//int id = getMaxID(conn) + 1;
-								
-		File[] allFiles = fDir.listFiles();
-		ImageFilter filter = new ImageFilter();
-		
-		for( int i = 0; i < allFiles.length; i++ ) {
-			File f = allFiles[i];
-			if( f.isFile() && filter.accept(f) ) {
-				String yukName = f.getName().substring(f.getName().indexOf('-')+1);
-				int id = Integer.parseInt(f.getName().substring(0, f.getName().indexOf('-')));
-				
-				long len = f.length();
-				
-				InputStream in = new FileInputStream(f);
-				
-				pstmt.setInt(1, id);
-            	pstmt.setString(2, fDir.getName());
-            	pstmt.setString(3, yukName);
-				pstmt.setBinaryStream(4, in, (int) len);
-				pstmt.execute();
-            
-            getIMessageFrame().addOutput(" (success) Inserted " + yukName + " with id: " + id );
-			}	
-		}
-			pstmt.executeBatch();
+			File[] allFiles = fDir.listFiles();
+			ImageFilter filter = new ImageFilter();
+			
+			for( int i = 0; i < allFiles.length; i++ ) 
+			{
+				File f = allFiles[i];
+				if( f.isFile() && filter.accept(f) ) {
+					String yukName = f.getName().substring(f.getName().indexOf('-')+1);
+					int id = Integer.parseInt(f.getName().substring(0, f.getName().indexOf('-')));
+					
+					long len = f.length();
+					
+					InputStream in = new FileInputStream(f);
+					
+					pstmt.setInt(1, id);
+	            	pstmt.setString(2, fDir.getName());
+	            	pstmt.setString(3, yukName);
+					pstmt.setBinaryStream(4, in, (int) len);
+					pstmt.execute();
+	            
+					getIMessageFrame().addOutput(" (success) Inserted " + yukName + " with id: " + id );
+				}	
+			}
+
+			// Not sure why this was here
+			//pstmt.executeBatch();
 		}
 		catch(Exception e) {
 			e.printStackTrace();
