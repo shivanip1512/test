@@ -4,7 +4,9 @@ import java.awt.Color;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.TreeMap;
 
+import org.jfree.data.time.RegularTimePeriod;
 import org.jfree.data.time.TimeSeriesDataItem;
 
 import com.cannontech.common.gui.util.Colors;
@@ -23,7 +25,7 @@ public class TrendSerie
 {
 	//Contains values of org.jfree.data.time.TimeSeriesDataItem values.
 	//TimeSeriesDataItem has a value and timestamp item.
-	private HashMap dataItemsMap = null;
+	private TreeMap dataItemsMap = null;
 //	private TimeSeriesDataItem[] dataItemArray = null;
 //	private AbstractDataset dataset = null;
 	private Object dataSeries = null;	//THIS SHOULD BE SERIES or DEFAULTCATEGORYDATASET
@@ -89,12 +91,30 @@ public class TrendSerie
 			Iterator iter = getDataItemsMap().entrySet().iterator();
 			while( iter.hasNext())
 			{
-				Map.Entry entry = (Map.Entry)iter.next();
-				TimeSeriesDataItem dataItem = (TimeSeriesDataItem)entry.getValue();
-				areaOfSet += dataItem.getValue().doubleValue();
+				TimeSeriesDataItem dataItem = getDataItem((Map.Entry)iter.next());
+				areaOfSet += dataItem.getValue().doubleValue();					
 			}
 		}
 		return areaOfSet;
+	}
+
+
+	/**
+	 * MUST USE this method to retrieve the dataItem from the MAP.
+	 * This way, the multiplier can be applied to the value.
+	 * @return
+	 */
+	public TimeSeriesDataItem getDataItem(Map.Entry entry_ )
+	{
+		TimeSeriesDataItem item = (TimeSeriesDataItem)entry_.getValue();
+		if( getUseMultiplier() )
+		{
+			RegularTimePeriod tp = item.getPeriod();
+			Number val = new Double(item.getValue().doubleValue() * getMultiplier().doubleValue());
+			TimeSeriesDataItem multDP = new TimeSeriesDataItem(tp, val);
+			return (multDP);			
+		}
+		return item;
 	}
 
 	/**
@@ -124,7 +144,7 @@ public class TrendSerie
 		return dataItemArray;
 	}*/
 	
-	public HashMap getDataItemsMap()
+	public TreeMap getDataItemsMap()
 	{
 		return dataItemsMap;
 	}
@@ -217,8 +237,7 @@ public class TrendSerie
 				Iterator iter = getDataItemsMap().entrySet().iterator();
 				while( iter.hasNext())
 				{
-					Map.Entry entry = (Map.Entry)iter.next();
-					TimeSeriesDataItem dataItem = (TimeSeriesDataItem)entry.getValue();
+					TimeSeriesDataItem dataItem = getDataItem((Map.Entry)iter.next());
 					if( dataItem.getValue().doubleValue() > max)
 					{
 						max = dataItem.getValue().doubleValue();
@@ -244,8 +263,7 @@ public class TrendSerie
 				Iterator iter = getDataItemsMap().entrySet().iterator();
 				while( iter.hasNext())
 				{
-					Map.Entry entry = (Map.Entry)iter.next();
-					TimeSeriesDataItem dataItem = (TimeSeriesDataItem)entry.getValue();
+					TimeSeriesDataItem dataItem = getDataItem((Map.Entry)iter.next());
 					if( dataItem.getValue().doubleValue() < min)
 					{
 						min = dataItem.getValue().doubleValue();					
@@ -334,9 +352,9 @@ public class TrendSerie
 			int index = 0;
 			while( iter.hasNext())
 			{
-				Map.Entry entry = (Map.Entry)iter.next();
-				TimeSeriesDataItem dataItem = (TimeSeriesDataItem)entry.getValue();
+				TimeSeriesDataItem dataItem = getDataItem((Map.Entry)iter.next());
 				valuesArray[index] = dataItem.getValue().doubleValue();
+				
 				long time = dataItem.getPeriod().getStart().getTime();
 				long round = time % resolution;
 				time = time - round;
@@ -367,9 +385,9 @@ public class TrendSerie
 			int index = 0;
 			while( iter.hasNext())
 			{
-				Map.Entry entry = (Map.Entry)iter.next();
-				TimeSeriesDataItem dataItem = (TimeSeriesDataItem)entry.getValue();
+				TimeSeriesDataItem dataItem = getDataItem((Map.Entry)iter.next());
 				valuesArray[index] = dataItem.getValue().doubleValue();
+				
 				long time = dataItem.getPeriod().getStart().getTime();
 				long round = time % resolution;
 				time = time - round;
@@ -400,11 +418,7 @@ public class TrendSerie
 	 * Sets the dataItemArray value.
 	 * @param newDataItemArray org.jfree.data.time.TimeSeriesDataItem []
 	 */
-//	protected void setDataItemArray(TimeSeriesDataItem[] newDataItemArray)
-//	{
-//		dataItemArray = newDataItemArray;
-//	}
-	protected void setDataItemsMap(HashMap newDataItemsMap)
+	protected void setDataItemsMap(TreeMap newDataItemsMap)
 	{
 		dataItemsMap = newDataItemsMap;
 	}
@@ -447,6 +461,9 @@ public class TrendSerie
 	public void setUseMultiplier(boolean selected)
 	{
 		useMultiplier = selected;
+		//Reset the max/min dataItems when multiplier selection changes.
+		maximumTSDataItem = null;
+		minimumTSDataItem = null;
 	}	
 	/**
 	 * Sets the pointID value.
