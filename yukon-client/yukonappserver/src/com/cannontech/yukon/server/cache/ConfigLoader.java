@@ -40,7 +40,7 @@ public void run()
 	//temp code
 	timerStart = new java.util.Date();
 	//temp code
-	String sqlString = "SELECT CONFIGID, CONFIGNAME FROM MCTCONFIG WHERE CONFIGID >= 0";
+	String sqlString = "SELECT CONFIGID, CONFIGNAME, CONFIGTYPE FROM MCTCONFIG WHERE CONFIGID >= 0";
 
 	java.sql.Connection conn = null;
 	java.sql.Statement stmt = null;
@@ -55,9 +55,10 @@ public void run()
 		{
 			int configID = rset.getInt(1);
 			String configName = rset.getString(2).trim();
+			int configType = rset.getInt(3);
 
 			com.cannontech.database.data.lite.LiteConfig basil =
-				new com.cannontech.database.data.lite.LiteConfig( configID );
+				new com.cannontech.database.data.lite.LiteConfig( configID, configName, new Integer(configType) );
 				
 			basil.setConfigName(configName);
 

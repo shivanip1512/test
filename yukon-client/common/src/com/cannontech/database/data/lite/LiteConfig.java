@@ -23,6 +23,7 @@ import com.cannontech.database.db.config.MCTConfig;
 public class LiteConfig extends LiteBase
 {
 	private String configName;
+	private Integer configType;
 /**
  * LiteHolidaySchedule constructor comment.
  */
@@ -52,6 +53,12 @@ public LiteConfig(int configID, String conName_ )
 	setConfigName( conName_ );
 }
 
+public LiteConfig(int configID, String conName_, Integer type )
+{
+	this( configID );
+	setConfigName( conName_ );
+	setConfigType( type );
+}
 /**
  * Insert the method's description here.
  * Creation date: (8/24/2001 11:13:50 AM)
@@ -69,6 +76,10 @@ public int getConfigID()
 public String getConfigName() {
 	return configName;
 }
+
+public Integer getConfigType() {
+	return configType;
+}
 /**
  * retrieve method comment.
  */
@@ -77,7 +88,7 @@ public void retrieve(String databaseAlias)
  
    com.cannontech.database.SqlStatement s = 
 	  new com.cannontech.database.SqlStatement(
-		 "SELECT configID, configName "  + 
+		 "SELECT configID, configName, configType "  + 
 			"FROM " + com.cannontech.database.db.config.MCTConfig.TABLE_NAME +
 			" where configID = " + getConfigID(),
 		 com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
@@ -92,6 +103,7 @@ public void retrieve(String databaseAlias)
 
 	  setConfigID( new Integer(s.getRow(0)[0].toString()).intValue() );
 	  setConfigName( s.getRow(0)[1].toString() );
+	  setConfigType( (Integer)s.getRow(0)[2]);
    }
    catch( Exception e )
    {
@@ -117,6 +129,11 @@ public void setConfigName( String name )
 {
 	configName = name;
 }
+
+public void setConfigType( Integer type )
+{
+	configType = type;
+}
 /**
  * Insert the method's description here.
  * Creation date: (8/24/2001 11:15:17 AM)
@@ -132,11 +149,12 @@ public final java.util.Vector getAllConfigs(java.sql.Connection conn)
 	java.util.Vector returnVector = new java.util.Vector();
 	Integer configID = null;
 	String 	configName = null;
+	Integer configType = null;
 	
 	java.sql.PreparedStatement pstmt = null;
 	java.sql.ResultSet rset = null;
 	
-	String sql = "SELECT configID, configName FROM " +
+	String sql = "SELECT configID, configName, configType FROM " +
 	com.cannontech.database.db.config.MCTConfig.TABLE_NAME +
 		" ORDER BY configID";
 
@@ -156,10 +174,11 @@ public final java.util.Vector getAllConfigs(java.sql.Connection conn)
 			{
 				configID = new Integer( rset.getInt("configID") );
 				configName = rset.getString("configName");
+				configType = new Integer( rset.getInt("configType"));
 				
 				returnVector.addElement( new LiteConfig(
 						configID.intValue(), 
-						configName ));				
+						configName, configType ));				
 			}
 					
 		}		
