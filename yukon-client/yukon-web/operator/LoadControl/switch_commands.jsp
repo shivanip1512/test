@@ -34,8 +34,8 @@
         }
         
     }
-    
-    sql += " )";
+    if( serialGroupIDs.length > 0)
+	    sql += " )";
 
 	versacomNameSerial = com.cannontech.util.ServletUtil.executeSQL( dbAlias, sql, new Class[] { String.class, Integer.class, Integer.class, Integer.class } );
 
@@ -53,8 +53,8 @@
         }
         
     }
-    
-    sql += " )";
+    if( serialGroupIDs.length > 0)
+	    sql += " )";
 
     expresscomNameSerial = com.cannontech.util.ServletUtil.executeSQL( dbAlias, sql, new Class[] { String.class, Integer.class, Integer.class, Integer.class } );
 	
