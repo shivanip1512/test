@@ -178,7 +178,8 @@ private boolean createDevicePointList(java.util.List points, java.util.List dest
 				 && (lp = (LitePoint)points.get(loc++)).getPaobjectID() 
 				  	  == deviceDevID )
 		{
-			destList.add( lp );
+         if( isPointValid(lp) )
+			   destList.add( lp );
 		}
 
 	}
@@ -204,6 +205,12 @@ protected synchronized java.util.List getCacheList(
 {
 	return cache.getAllDevices();
 }
+
+protected boolean isPointValid( LitePoint lp )
+{
+   return true; //all points are valid by default
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (4/17/2002 1:58:45 PM)

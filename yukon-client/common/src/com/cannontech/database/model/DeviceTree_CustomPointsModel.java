@@ -1,12 +1,13 @@
 package com.cannontech.database.model;
 
+import com.cannontech.database.data.device.DeviceTypesFuncs;
+import com.cannontech.database.data.pao.PAOGroups;
+
 /**
  * This type was created in VisualAge.
  */
-public class DeviceTree_CustomPointsModel extends DBTreeModel 
+public class DeviceTree_CustomPointsModel extends DeviceTreeModel
 {
-	private boolean showPoints = true;
-
 	public static final String[] POINT_UNIT_ARRAY =
 	{
 		"KWH",
@@ -31,24 +32,16 @@ public DeviceTree_CustomPointsModel() {
  */
 public DeviceTree_CustomPointsModel( boolean showPointNodes )
 {
-	super( new DBTreeNode("Devices") );
-	showPoints = showPointNodes;
+	super( showPointNodes, new DBTreeNode("Devices") );
 }
-/**
- * Insert the method's description here.
- * Creation date: (4/17/2002 1:58:45 PM)
- * @param lite com.cannontech.database.data.lite.LiteBase
- */
-public boolean insertTreeObject( com.cannontech.database.data.lite.LiteBase lb ) 
+
+public boolean isDeviceValid( int category_, int class_, int type_ )
 {
-	if( lb == null || !isLiteTypeSupported(lb.getLiteType()) )
-		return false;
-
-	//do inserts the old way by reloading the tree
-	update();
-
-	return false;
+   return( com.cannontech.database.data.pao.DeviceClasses.isCoreDeviceClass( class_ )
+            && category_ == PAOGroups.CAT_DEVICE );
 }
+
+
 /**
  * This method was created in VisualAge.
  * @return java.lang.String
@@ -63,26 +56,18 @@ public static boolean isInPointUnitArray( String value )
 	
 	return false;
 }
-/**
- * Insert the method's description here.
- * Creation date: (4/22/2002 2:05:03 PM)
- * @return com.cannontech.database.data.lite.LiteBase[]
- */
-public boolean isLiteTypeSupported( int liteType )
-{
-	return ( liteType == com.cannontech.database.data.lite.LiteTypes.YUKON_PAOBJECT
-		  		|| liteType == com.cannontech.database.data.lite.LiteTypes.POINT );
-}
 
 public void setIncludeUOFMType(long pointUOFMMask)
 {
 	includePoints = pointUOFMMask;
 }
+
 /**
  * This method was created in VisualAge.
  * @return java.lang.String
  */
-public String toString() {
+public String toString() 
+{
 	if( (includePoints & com.cannontech.database.data.lite.LitePoint.POINT_UOFM_GRAPH) == com.cannontech.database.data.lite.LitePoint.POINT_UOFM_GRAPH)
 	{
 		return "Graph Points";
@@ -94,10 +79,19 @@ public String toString() {
 
 	return "Device";
 }
+
+protected boolean isPointValid( com.cannontech.database.data.lite.LitePoint lp )
+{
+   if( lp == null )
+      return false;
+   else
+      return ( lp.getTags() == includePoints );
+}
+
 /**
  * This method was created in VisualAge.
  */
-public void update() {
+/*public void update() {
 
 	com.cannontech.database.cache.DefaultDatabaseCache cache =
 					com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
@@ -159,66 +153,6 @@ public void update() {
 
 	reload();
 }
-/**
- * This method was created in VisualAge.
- */
-/*
-public void update(long includedPoints)
-{
-	com.cannontech.database.cache.DefaultDatabaseCache cache =
-					com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+*/
 
-	synchronized(cache)
-	{
-		java.util.List devices = cache.getAllDevices();
-		java.util.Collections.sort( devices, com.cannontech.database.data.lite.LiteComparators.liteStringComparator );
-		java.util.List points = null;
-		
-		if( showPoints )
-		{
-			points = cache.getAllGraphTaggedPoints();
-			java.util.Collections.sort( points, com.cannontech.database.data.lite.LiteComparators.litePointDeviceIDComparator );
-		}
-
-		DBTreeNode rootNode = (DBTreeNode) getRoot();
-		rootNode.removeAllChildren();
-		
-		int deviceDevID;
-		int deviceClass;
-		for( int i = 0; i < devices.size(); i++ )
-		{
-			deviceClass = ((com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(i)).getPaoClass();
-			
-			if( com.cannontech.database.data.pao.DeviceClasses.isCoreDeviceClass(deviceClass) )
-			{
-				DBTreeNode deviceNode = new DBTreeNode( devices.get(i));	
-				//rootNode.add( deviceNode );
-
-				if( showPoints )
-				{
-					deviceDevID = ((com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(i)).getYukonID();
-					boolean pointsFound = false;
-					for( int j = 0; j < points.size(); j++ )
-					{
-						if( ((com.cannontech.database.data.lite.LitePoint)points.get(j)).getPaobjectID() == deviceDevID 
-							&& ( (com.cannontech.database.data.lite.LitePoint)points.get(j)).getTags() == includedPoints)
-						{
-							//pointsFound = true;
-							rootNode.add( deviceNode );							
-							deviceNode.add( new DBTreeNode( points.get(j)) );
-						}
-						//else if( pointsFound )  // used to optimize the iterations
-						//{						
-							//pointsFound = false;
-							//break;
-						//}					
-					}
-				}
-				
-			}
-		}
-	}
-
-	reload();
-}*/
 }
