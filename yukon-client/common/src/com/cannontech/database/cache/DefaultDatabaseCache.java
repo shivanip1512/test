@@ -594,5 +594,10 @@ public class DefaultDatabaseCache implements IDatabaseCache
 	public Map getYukonUserRolePropertyIDLookupMap() {
 		return getDBCache().getYukonUserRolePropertyIDLookupMap();
 	}
+	
+	public synchronized void releaseAllTags()
+	{
+	   getDBCache().releaseAllTags();
+	}
 
 }

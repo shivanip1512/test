@@ -531,6 +531,11 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
    {
 	  getCache().releaseAllConfigs();
    }
+   
+   public synchronized void releaseAllTags()
+   {   
+	  getCache().releaseAllTags();
+   }
    /**
     * @ejb:interface-method
     * tview-type="remote" 
@@ -618,4 +623,7 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
 		return getCache().getYukonUserRolePropertyIDLookupMap();
 	}
 	
+
+
+
 }

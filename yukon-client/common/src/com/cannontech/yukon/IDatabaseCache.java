@@ -117,6 +117,7 @@ public interface IDatabaseCache
    public void releaseAllHolidaySchedules();
    public void releaseAllBaselines();
    public void releaseAllConfigs();
+   public void releaseAllTags();
    public void releaseAllNotificationGroups();
    public void releaseAllContactNotifications();
    public void releaseAllPoints();
