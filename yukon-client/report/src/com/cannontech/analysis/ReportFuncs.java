@@ -18,6 +18,7 @@ import org.jfree.report.modules.output.csv.CSVQuoter;
 import org.jfree.report.modules.output.pageable.base.PageableReportProcessor;
 import org.jfree.report.modules.output.pageable.pdf.PDFOutputTarget;
 
+import com.cannontech.analysis.report.CapBankReport;
 import com.cannontech.analysis.report.CarrierDBReport;
 import com.cannontech.analysis.report.DailyPeaksReport;
 import com.cannontech.analysis.report.DisconnectReport;
@@ -99,6 +100,9 @@ public class ReportFuncs
 
 			case ReportTypes.POINT_DATA_SUMMARY_DATA:
 				return new PointDataSummaryReport();
+				
+			case ReportTypes.CBC_BANK_DATA:
+				return new CapBankReport();
 				
 			default:
 				return new CarrierDBReport();	//give us something at least....
