@@ -8,23 +8,19 @@ package com.cannontech.export;
 
 public abstract class ExportFormatBase //extends com.ms.service.Service
 {
-	private static final String VERSION = "2.1.18";	
 	private com.cannontech.export.ExportPropertiesBase exportProperties = null;
-//	public static String formatType = null;
-//	public static int formatID = -1;
 
 	private String directory = null;
 	private static com.cannontech.common.util.LogWriter logger = null;
 
 	private java.util.Vector recordVector = null;
 	private static boolean isService = true;
-
-
 	public java.util.GregorianCalendar nextRunTime = null;
-	public Integer runTimeHour = null;
 
 	private static Thread sleepThread = new Thread();
 	private com.cannontech.database.db.notification.NotificationGroup emailGroup = null;
+	
+	private long runTimeInterval = 86400000;
 /**
  * ExportFormatBase constructor comment.
  */
@@ -37,7 +33,6 @@ public abstract String appendBatchFileParms(String batchString);
  * Creation date: (5/18/00 3:50:38 PM)
  */
 /* Return an instance of the ExportFormatBase specified from the command line */
-
 public final static ExportFormatBase createFileFormat(int formatID)
 {
 	ExportFormatBase returnFormat = null;
@@ -49,6 +44,10 @@ public final static ExportFormatBase createFileFormat(int formatID)
 	else if( formatID == ExportFormatTypes.CSVBILLING_FORMAT)
 	{
 		returnFormat = new CSVBillingFormat();
+	}
+	else if( formatID == ExportFormatTypes.IONEVENTLOG_FORMAT)
+	{
+		returnFormat = new IONEventLogFormat();
 	}
 	else
 	{
@@ -69,14 +68,14 @@ public void figureNextRunTime()
 
 		//First time this will run is at 1:00 AM.  Taking a chance that the program
 		// is not getting started up around this time.
-		nextRunTime.set(java.util.GregorianCalendar.HOUR_OF_DAY, getRunTimeHour().intValue());
+		nextRunTime.set(java.util.GregorianCalendar.HOUR_OF_DAY, getExportProperties().getRunTimeHour().intValue());
 		nextRunTime.set(java.util.GregorianCalendar.MINUTE, 0);
 		nextRunTime.set(java.util.GregorianCalendar.SECOND, 0);
 	}
 	else
 	{
 		long lastRunTime = getNextRunTime().getTime().getTime();
-		nextRunTime.setTime(new java.util.Date( lastRunTime + 86400000));
+		nextRunTime.setTime(new java.util.Date( lastRunTime + getRunTimeInterval()));
 	}	
 	logEvent("...Next RunTime to occur at: " + nextRunTime.getTime()+ " ...", com.cannontech.common.util.LogWriter.INFO );
 	logEvent("", com.cannontech.common.util.LogWriter.NONE);
@@ -99,7 +98,7 @@ public String getDirectory()
 		}
 		catch( Exception e)
 		{
-			directory = "c:/yukon/dbpurge/";
+			directory = "c:/yukon/client/export";
 			logEvent("  File Directory was NOT found, DEFAULTED TO " + directory, com.cannontech.common.util.LogWriter.ERROR);
 			logEvent("  Add 'dbpurge_file_directory' to config.properties.", com.cannontech.common.util.LogWriter.INFO);
 		}
@@ -120,7 +119,6 @@ public abstract String getFileName();
  */
 public java.util.GregorianCalendar getNextRunTime()
 {
-	logEvent("  Get next runtime " + directory, com.cannontech.common.util.LogWriter.INFO);	
 	if( nextRunTime == null)
 	{
 		figureNextRunTime();
@@ -138,33 +136,9 @@ public java.util.Vector getRecordVector()
 		
 	return recordVector;
 }
-/**
- * Insert the method's description here.
- * Creation date: (3/18/2002 3:25:01 PM)
- * @return int
- */
-public Integer getRunTimeHour() 
-{
-	if( runTimeHour == null )
-	{
-		try
-		{
-			java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("config");
-			runTimeHour = new Integer(bundle.getString("dbpurge_runtime_hour"));
-			logEvent("  (config.prop)  Hour of Day (0-23) to run is " + runTimeHour, com.cannontech.common.util.LogWriter.INFO);
-		}
-		catch( Exception e)
-		{
-			runTimeHour = new Integer(1);
-			logEvent("  Hour of Day (0-23) was NOT found, DEFAULTED TO " + runTimeHour, com.cannontech.common.util.LogWriter.ERROR);
-			logEvent("  Add 'dbpurge_runtime_hour' to config.properties.", com.cannontech.common.util.LogWriter.INFO);
-		}
-	}
-	return runTimeHour;
-}
 public String getVersion()
 {
-	return VERSION;
+	return com.cannontech.common.version.VersionTools.getYUKON_VERSION();
 }
 private boolean isService()
 {
@@ -180,16 +154,14 @@ public void logEvent(String event, int severity)
 			java.io.File file = new java.io.File( dataDir );
 			file.mkdirs();
 
-			int lastDot = this.getClass().getName().lastIndexOf(".");
-			String className = this.getClass().getName().substring(lastDot + 1);
 			java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
-			String filename = dataDir + className + ".log";
+			String filename = dataDir + this.toString() + ".log";
 			java.io.FileOutputStream out = new java.io.FileOutputStream(filename, true);
 			java.io.PrintWriter writer = new java.io.PrintWriter(out, true);
-			logger = new com.cannontech.common.util.LogWriter(className, com.cannontech.common.util.LogWriter.DEBUG, writer);
+			logger = new com.cannontech.common.util.LogWriter(this.toString(), com.cannontech.common.util.LogWriter.DEBUG, writer);
 
-			logger.log("Starting up " + className, com.cannontech.common.util.LogWriter.INFO );
-			logger.log("Version: " + com.cannontech.common.version.VersionTools.getYUKON_VERSION() +VERSION+ ".", com.cannontech.common.util.LogWriter.INFO );
+			logger.log("Starting up " + this.toString(), com.cannontech.common.util.LogWriter.INFO );
+			logger.log("Version: " + com.cannontech.common.version.VersionTools.getYUKON_VERSION() +getVersion()+ ".", com.cannontech.common.util.LogWriter.INFO );
 
 		}		
 		catch( java.io.IOException e )
@@ -197,6 +169,11 @@ public void logEvent(String event, int severity)
 			e.printStackTrace();
 		}
 	}
+	if( severity == com.cannontech.common.util.LogWriter.INFO)
+		com.cannontech.clientutils.CTILogger.info(event);
+	else if( severity == com.cannontech.common.util.LogWriter.ERROR)
+		com.cannontech.clientutils.CTILogger.error(event);
+		
 	logger.log( event, severity);
 }
 /**
@@ -226,8 +203,8 @@ public static void main(String[] args)
 	}
 	if( format < 0)
 	{
-		com.cannontech.clientutils.CTILogger.info("** Missing FORMAT=<format type> from commandline.");
-		com.cannontech.clientutils.CTILogger.info("** No File Format Specified, Exporting process will exit...");
+		formatBase.logEvent("** Missing FORMAT=<format type> from commandline.", com.cannontech.common.util.LogWriter.INFO);
+		formatBase.logEvent("** No File Format Specified, Exporting process will exit...", com.cannontech.common.util.LogWriter.INFO);
 		System.exit(0);
 	}
 	else
@@ -254,6 +231,7 @@ public static void main(String[] args)
 
 		if (formatBase.getNextRunTime().getTime().compareTo(now) <= 0)
 		{
+			
 			formatBase.retrieveExportData();
 			formatBase.writeToFile();
 			formatBase.figureNextRunTime();
@@ -270,16 +248,14 @@ public static void main(String[] args)
 			}
 			catch (InterruptedException ie)
 			{
-				com.cannontech.clientutils.CTILogger.info("Interrupted Exception!!!");
+				ie.printStackTrace();
 				return;
 			}
 
 		}
 	}while (formatBase.isService());
 
-	com.cannontech.clientutils.CTILogger.info("..Finished " + formatBase.getClass().getName() + " File Export.");
 	formatBase.logEvent("..Finished " + formatBase.getClass().getName()+ " File Export.", com.cannontech.common.util.LogWriter.INFO);
-
 	logger.getPrintWriter().close();
 	logger = null;
 
@@ -295,8 +271,8 @@ public static void runMainWithGui(ExportFormatBase formatBase)
 {
 	if( formatBase.getExportProperties().getFormatID() < 0)
 	{
-		com.cannontech.clientutils.CTILogger.info("** Missing FORMAT=<format type> from commandline.");
-		com.cannontech.clientutils.CTILogger.info("** No File Format Specified, Exporting process will exit...");
+		formatBase.logEvent("** Missing FORMAT=<format type> from commandline.", com.cannontech.common.util.LogWriter.INFO);
+		formatBase.logEvent("** No File Format Specified, Exporting process will exit...", com.cannontech.common.util.LogWriter.INFO);
 		System.exit(0);
 	}
 
@@ -315,10 +291,9 @@ public static void runMainWithGui(ExportFormatBase formatBase)
 
 	System.gc();
 
+	formatBase.logEvent("..Finished " + formatBase.getClass().getName() + " File Export.", com.cannontech.common.util.LogWriter.INFO);
 	logger.getPrintWriter().close();
 	logger = null;
-	com.cannontech.clientutils.CTILogger.info("..Finished " + formatBase.getClass().getName() + " File Export.");
-	formatBase.logEvent("..Finished " + formatBase.getClass().getName()+ " File Export.", com.cannontech.common.util.LogWriter.INFO);
 }
 //public abstract void setAdvancedProperties(AdvancedOptionsPanel advOptsPanel);
 public void setExportProperties(com.cannontech.export.ExportPropertiesBase exportProps)
@@ -348,14 +323,6 @@ private void setEmailGroup(com.cannontech.database.db.notification.NotificationG
 {
 	emailGroup = newEmailGroup;
 }
-//public static void setFormat (int format)
-//{
-//	formatID = format;
-//}
-//public static int getFormatID ()
-//{
-//	return formatID;
-//}
 public void setIsService(boolean value)
 {
 	isService = value;
@@ -379,15 +346,20 @@ public void writeToFile()
 
 		try
 		{
-			java.io.FileWriter outputFileWriter = new java.io.FileWriter( getFileName() );
+			java.io.FileWriter outputFileWriter = new java.io.FileWriter( getDirectory() + getFileName() );
 			outputFileWriter.write( returnBuffer.toString() );
 			outputFileWriter.flush();
 			outputFileWriter.close();
-			logEvent("...Exported * "+ recordVector.size() + " * Records to file " + getFileName(), com.cannontech.common.util.LogWriter.INFO);		
 		}
 		catch (java.io.IOException ioe)
 		{
 			ioe.printStackTrace();
+		}
+		finally
+		{
+			//DISCARD ALL RECORD DATA SO WE CAN START OVER AGAIN.
+			logEvent("...Exported * "+ recordVector.size() + " * Records to file " + getDirectory() + getFileName(), com.cannontech.common.util.LogWriter.INFO);			
+			recordVector.clear();
 		}
 	}
 	else
@@ -395,4 +367,26 @@ public void writeToFile()
 		logEvent("...Exported * 0 * Records.  No file generated.", com.cannontech.common.util.LogWriter.INFO);
 	}
 }
+	/**
+	 * Returns the runTimeInterval.
+	 * @return long
+	 */
+	public long getRunTimeInterval()
+	{
+		return runTimeInterval;
+	}
+
+	/**
+	 * Sets the runTimeInterval.
+	 * @param runTimeInterval The runTimeInterval to set
+	 */
+	public void setRunTimeInterval(long runTimeInterval)
+	{
+		this.runTimeInterval = runTimeInterval;
+	}
+
+	public String toString()
+	{
+		return ExportFormatTypes.getFormatTypeName(getExportProperties().getFormatID());
+	}
 }

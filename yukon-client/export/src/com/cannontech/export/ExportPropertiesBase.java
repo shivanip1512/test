@@ -26,7 +26,7 @@ public class ExportPropertiesBase
 		
 	//DBPURGE PROPERTIES
 	int daysToRetain = 90;
-	int runTimeHour = 1;
+	Integer runTimeHour = null;
 	boolean purgeData = false;
 	
 	/**
@@ -138,8 +138,6 @@ public class ExportPropertiesBase
 			today.set(java.util.GregorianCalendar.SECOND, 0);
 			maxTimestamp.setTime(today.getTime());
 		}
-		System.out.println(" stop DATE = " + this.maxTimestamp.getTime());
-		
 		return this.maxTimestamp;
 	}
 
@@ -162,7 +160,6 @@ public class ExportPropertiesBase
 	
 			this.minTimestamp.setTime(yesterday.getTime());
 		}
-		System.out.println(" start DATE = " + this.minTimestamp.getTime());			
 		return this.minTimestamp;
 	}
 
@@ -188,9 +185,24 @@ public class ExportPropertiesBase
 	 * Returns the runTimeHour.
 	 * @return int
 	 */
-	public int getRunTimeHour()
+	public Integer getRunTimeHour()
 	{
-		return runTimeHour;
+		if( runTimeHour == null )
+		{
+			try
+			{
+				java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("config");
+				runTimeHour = new Integer(bundle.getString("dbpurge_runtime_hour"));
+				com.cannontech.clientutils.CTILogger.info("  (config.prop)  Hour of Day (0-23) to run is " + runTimeHour.intValue());
+			}
+			catch( Exception e)
+			{
+				runTimeHour = new Integer(1);
+				com.cannontech.clientutils.CTILogger.error("  Hour of Day (0-23) was NOT found, DEFAULTED TO " + runTimeHour.intValue());
+				com.cannontech.clientutils.CTILogger.info("  Add 'dbpurge_runtime_hour' to config.properties.");
+			}
+		}
+		return runTimeHour;		
 	}
 
 	/**
@@ -289,7 +301,7 @@ public class ExportPropertiesBase
 	 */
 	public void setRunTimeHour(int runTimeHour)
 	{
-		this.runTimeHour = runTimeHour;
+		this.runTimeHour = new Integer(runTimeHour);
 	}
 
 	/**
