@@ -7,12 +7,14 @@
 package com.cannontech.analysis;
 
 import com.cannontech.analysis.data.SystemLog;
+import com.cannontech.analysis.data.device.Carrier;
+import com.cannontech.analysis.data.device.MissedMeter;
+import com.cannontech.analysis.data.lm.LGAccounting;
 import com.cannontech.analysis.data.lm.LMControlLog;
 import com.cannontech.analysis.data.statistic.CarrierCommData;
 import com.cannontech.analysis.data.statistic.CommChannelData;
 import com.cannontech.analysis.data.statistic.DeviceCommData;
 import com.cannontech.analysis.data.statistic.TransmitterCommData;
-import com.cannontech.analysis.tablemodel.LoadGroupModel;
 
 /**
  * @author snebben
@@ -30,7 +32,10 @@ public class ReportTypes
 	
 	public static final int SYSTEM_LOG_DATA = 4;
 	public static final int LM_CONTROL_LOG_DATA = 5;
-	public static final int LOAD_GROUP_DATA = 6;
+	public static final int LG_ACCOUNTING_DATA = 6;
+	
+	public static final int MISSED_METER_DATA = 7;
+	public static final int CARRIER_DATA = 8;
 	
 	private static Class[] typeToClassMap =
 	{	
@@ -41,7 +46,10 @@ public class ReportTypes
 		
 		SystemLog.class,
 		LMControlLog.class,
-		LoadGroupModel.class
+		LGAccounting.class,
+		
+		MissedMeter.class,
+		Carrier.class
 	};
 	
 	public static Object create(int type) {
