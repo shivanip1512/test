@@ -58,6 +58,13 @@ public class LoadGroupModel extends ReportModelBase
 		
 	/** Array of IDs (of loadGroup paobjectIDs)*/
 	private int loadGroups[] = null;
+
+	/** A flag to show all ActiveRestore types R, T, M, O, N, or C
+	 * When true - all types
+	 * When false - only R, T, M, O types
+	 */
+	private boolean showAllActiveRestore = false;
+	
 	
 	public LoadGroupModel()
 	{
@@ -152,10 +159,13 @@ public class LoadGroupModel extends ReportModelBase
 					}
 					sql.append(") ");
 				}
-				sql.append(" AND (LMCH.ActiveRestore = 'R' " + 
-				" OR LMCH.ActiveRestore = 'T' OR LMCH.ActiveRestore='C' " +
-				" OR LMCH.ActiveRestore='O' OR LMCH.ActiveRestore='M') " +
-				" AND (LMCH.StartDateTime > ?) AND (LMCH.StopDateTime <= ?)" +
+//		DAVID - 7/29/04 I think the only records you need are the ones with a T, M, O or R.  The N or C (which are the other options I think) aren't necessary				
+				sql.append(" AND LMCH.ActiveRestore IN ('R', 'T', 'O', 'M' ");
+				if( isShowAllActiveRestore())
+				{
+					sql.append(", 'C', 'N' "); 
+				}
+				sql.append(") AND (LMCH.StartDateTime > ?) AND (LMCH.StopDateTime <= ?)" +
 				" ORDER BY PAO.PAOName, LMCH.StartDateTime, LMCH.StopDateTime");
 		return sql;
 	}	
@@ -335,6 +345,22 @@ public class LoadGroupModel extends ReportModelBase
 	public String getTitleString()
 	{
 		return title;
+	}
+	/**
+	 * @return
+	 */
+	public boolean isShowAllActiveRestore()
+	{
+		return showAllActiveRestore;
+	}
+
+	/**
+	 * When true - all types
+	 * When false - only R, T, M, O types
+	 */
+	public void setShowAllActiveRestore(boolean showAll)
+	{
+		showAllActiveRestore = showAll;
 	}
 }
 	
