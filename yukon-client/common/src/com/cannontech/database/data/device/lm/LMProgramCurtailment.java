@@ -51,7 +51,8 @@ public void delete() throws java.sql.SQLException {
 	//delete LMCurtailProgramActivity
 	delete("LMCurtailProgramActivity", "DeviceID", getPAObjectID() );
 	//delete all current customerlist entries
-	delete(com.cannontech.database.db.device.lm.LMProgramCurtailCustomerList.TABLE_NAME, "DeviceID", getCurtailmentProgram().getDeviceID());
+	delete(com.cannontech.database.db.device.lm.LMProgramCurtailCustomerList.TABLE_NAME, 
+				"ProgramID", getCurtailmentProgram().getDeviceID());
 
 	getCurtailmentProgram().delete();
 	super.delete();
@@ -125,7 +126,7 @@ public void update() throws java.sql.SQLException
 
 	//delete all current customerlist entries
 	delete( com.cannontech.database.db.device.lm.LMProgramCurtailCustomerList.TABLE_NAME, 
-		"DeviceID",
+		"ProgramID",
 		getCurtailmentProgram().getDeviceID() );
 
 	for( int i = 0; i < getLmProgramStorageVector().size(); i++ )

@@ -1,6 +1,7 @@
 package com.cannontech.database.db.device.lm;
 
-import com.cannontech.database.db.pao.YukonPAObject;
+import com.cannontech.database.db.customer.CICustomerBase;
+
 
 /**
  * This type was created in VisualAge.
@@ -77,10 +78,11 @@ public static final com.cannontech.database.data.device.lm.LMProgramCurtailCusto
 	java.sql.ResultSet rset = null;
 
 	
-	String sql = "select l.ProgramID, y.paoname, l.requireAck, l.customerorder, l.CustomerID " +
-		 "from " + YukonPAObject.TABLE_NAME + " y, lmProgramCurtailCustomerList l " + 
+	String sql = "select l.ProgramID, c.companyname, l.requireAck, l.customerorder, l.CustomerID " +
+		 "from " + CICustomerBase.TABLE_NAME + " c, lmProgramCurtailCustomerList l " + 
 		 "where l.ProgramID = ? " +
-		 "and y.paobjectid = l.CustomerID order by l.customerorder";
+		 "and c.customerid = l.CustomerID order by l.customerorder";
+
 	try
 	{		
 		if( conn == null )
@@ -99,7 +101,7 @@ public static final com.cannontech.database.data.device.lm.LMProgramCurtailCusto
 				com.cannontech.database.data.device.lm.LMProgramCurtailCustomerList customer = new com.cannontech.database.data.device.lm.LMProgramCurtailCustomerList();
 				
 				customer.setDeviceID( new Integer(rset.getInt("ProgramID")) );
-				customer.setCustomerName( rset.getString("paoname") );
+				customer.setCustomerName( rset.getString("companyname") );
 				customer.getLmProgramCurtailCustomerList().setRequireAck( rset.getString("RequireAck") );
 				customer.getLmProgramCurtailCustomerList().setCustomerOrder( new Integer(rset.getInt("CustomerOrder")) );
 				customer.getLmProgramCurtailCustomerList().setCustomerID( new Integer(rset.getInt("CustomerID")) );
