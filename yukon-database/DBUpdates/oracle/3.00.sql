@@ -742,8 +742,7 @@ update YukonGroup set groupname = 'Residential Customers Grp' where groupid= -30
 update YukonGroup set groupname = 'Web Client Customers Grp' where groupid= -302;
 
 
-
-
+update YukonRoleProperty set defaultvalue = 'false' where rolepropertyid = -10000;
 
 update YukonGroupRole set grouproleid=grouproleid * -1 where grouproleid > 0;
 
