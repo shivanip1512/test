@@ -47,7 +47,7 @@ class CtiPointStoreElement : public RWCollectable
     friend class CtiPointStore;
 
 private:
-    long _pointNum, _numUpdates;
+    long _pointNum, _numUpdates, _secondsSincePreviousPointTime;
     double _pointValue;
     unsigned _pointQuality;
     unsigned _pointTags;
@@ -57,7 +57,8 @@ private:
 
 public:
     CtiPointStoreElement( long pointNum = 0, double pointValue = 0.0, unsigned pointQuality = UnintializedQuality, unsigned pointTags = 0 ) :
-    _pointNum(pointNum), _pointValue(pointValue), _pointQuality(pointQuality), _pointTags(pointTags), _numUpdates(0)
+    _pointNum(pointNum), _pointValue(pointValue), _pointQuality(pointQuality), _pointTags(pointTags), _numUpdates(0),
+    _secondsSincePreviousPointTime(60)// one minute seems like a reasonable default
     {  };
 
     long    getPointNum( void )         {   return _pointNum;   };
@@ -66,6 +67,7 @@ public:
     unsigned  getPointTags( void )      {   return _pointTags; };
     RWTime  getPointTime( void )        {   return _pointTime;  };
     long    getNumUpdates( void )       {   return _numUpdates; };
+    long    getSecondsSincePreviousPointTime( void )       {   return _secondsSincePreviousPointTime; }; //mostly used for demand average points
     RWTValHashSetIterator<depStore, depStore, depStore> 
             *getDependents( void )      {   return new RWTValHashSetIterator<depStore, depStore, depStore>( _dependents );    };
 //    RWTValSetIterator<depStore, depStore> 
@@ -74,6 +76,7 @@ public:
 protected:
     void setPointValue( double newValue, RWTime &newTime, unsigned newQuality, unsigned newTags )
     {
+        _secondsSincePreviousPointTime = newTime.seconds() - _pointTime.seconds();
         _pointTime = newTime;
         _pointValue = newValue;
         _pointQuality = newQuality;
