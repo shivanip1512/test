@@ -179,7 +179,10 @@ void CtiLMService::Run()
                 Sleep(1000);
 
             CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
-            RWOrdered* controlAreas = store->getControlAreas(RWDBDateTime().seconds());
+            {
+                RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+                RWOrdered* controlAreas = store->getControlAreas(RWDBDateTime().seconds());
+            }
 
             if ( !store->isValid() )
             {
