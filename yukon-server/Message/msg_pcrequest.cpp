@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/msg_pcrequest.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:21 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/05/07 18:05:13 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -167,7 +167,17 @@ void CtiRequestMsg::dump() const
    dout << " Options Field                 " << _options_field << endl;
 }
 
-CtiRequestMsg::CtiRequestMsg() {};
+CtiRequestMsg::CtiRequestMsg() :
+ _device_id(0),
+ _command_string(""),
+ _user_message_id(0),
+ _transmission_id(0),
+ _route_id(0),
+ _macro_offset(0),
+ _attempt_num(0),
+ _options_field(0),
+ CtiMessage(0)
+ {};
 
 CtiRequestMsg::CtiRequestMsg(long device_id,
                const RWCString& command_string,
