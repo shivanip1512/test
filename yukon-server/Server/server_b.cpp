@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SERVER/server_b.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:48 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/04/18 15:04:06 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -66,12 +66,11 @@ void CtiServer::clientShutdown(CtiConnectionManager *&CM)
             dout << RWTime() << " Client Shutdown " << CM->getClientName() << " / " << CM->getClientAppId() << " / " << CM->getPeer() << endl;
         }
 
-        if(mConnectionTable.remove(CM))
-        {
-            // This connection manager is abandoned now...
-            delete CM;
-            CM = NULL;
-        }
+        mConnectionTable.remove(CM);        // Get it out of the list, if it is in there.
+
+        // This connection manager is abandoned now...
+        delete CM;
+        CM = 0;
     }
 }
 
