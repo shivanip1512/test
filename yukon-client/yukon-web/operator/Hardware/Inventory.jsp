@@ -128,7 +128,7 @@ function showAll(form) {
                               <option value="<%= entry.getYukonDefID() %>" <%= selected %>><%= entry.getContent() %></option>
 <%
 	}
-	if (liteEC.getChildren().size() > 0) {
+	if (AuthFuncs.checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_MANAGE_MEMBERS) && (liteEC.getChildren().size() > 0)) {
 		String selected = (inventoryBean.getFilterBy() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_ENERGY_COMPANY)? "selected" : "";
 %>
                               <option value="<%= YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_ENERGY_COMPANY %>" <%= selected %>>Energy Company</option>

@@ -9,7 +9,8 @@
 	StarsSearchCustomerAccountResponse resp = (StarsSearchCustomerAccountResponse)
 			session.getAttribute(ServletUtils.ATT_ACCOUNT_SEARCH_RESULTS);
 	
-	boolean showEnergyCompany = liteEC.getChildren().size() > 0;
+	boolean showEnergyCompany = AuthFuncs.checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_MANAGE_MEMBERS)
+			&& (liteEC.getChildren().size() > 0);
 	ArrayList descendants = null;
 	if (showEnergyCompany) descendants = com.cannontech.stars.util.ECUtils.getAllDescendants(liteEC);
 %>
