@@ -4,5 +4,5 @@
     <exportSource>false</exportSource>
     <updateXml>true</updateXml>
     <warLocation></warLocation>
-    <webPath>/</webPath>
+    <webPath></webPath>
 </tomcatProjectProperties>
