@@ -76,7 +76,7 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 				//stash a cookie that might tell us later where they log in at								
 				String loginUrl = AuthFuncs.getRolePropertyValue(user, WebClientRole.LOG_IN_URL, LOGIN_URI);
 				Cookie c = new Cookie(LOGIN_URL_COOKIE, loginUrl);
-				c.setPath("/"+session.getServletContext());
+				c.setPath("/"+req.getContextPath());
 				c.setMaxAge(Integer.MAX_VALUE);
 				resp.addCookie(c);
 				
