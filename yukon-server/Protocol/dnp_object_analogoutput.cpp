@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2005/02/10 23:23:56 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2005/03/10 21:24:52 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,27 +17,31 @@
 #include "dnp_object_analogoutput.h"
 #include "logger.h"
 
-CtiDNPAnalogOutput::CtiDNPAnalogOutput(int group, int variation) : CtiDNPObject(group, variation)
+namespace Cti       {
+namespace Protocol  {
+namespace DNP       {
+
+AnalogOutput::AnalogOutput(int group, int variation) : Object(group, variation)
 {
     _value = 0;
     _flags.raw = 0;
 }
 
 
-CtiDNPAnalogOutput::CtiDNPAnalogOutput(int variation) : CtiDNPObject(Group, variation)
+AnalogOutput::AnalogOutput(int variation) : Object(Group, variation)
 {
     _value = 0;
     _flags.raw = 0;
 }
 
 
-void CtiDNPAnalogOutput::setValue(long value)
+void AnalogOutput::setValue(long value)
 {
     _value = value;
 }
 
 
-int CtiDNPAnalogOutput::restore(unsigned char *buf, int len)
+int AnalogOutput::restore(const unsigned char *buf, int len)
 {
     int pos = 0;
 
@@ -62,7 +66,7 @@ int CtiDNPAnalogOutput::restore(unsigned char *buf, int len)
 }
 
 
-int CtiDNPAnalogOutput::restoreVariation(unsigned char *buf, int len, int variation)
+int AnalogOutput::restoreVariation(const unsigned char *buf, int len, int variation)
 {
     int pos = 0;
 
@@ -117,13 +121,13 @@ int CtiDNPAnalogOutput::restoreVariation(unsigned char *buf, int len, int variat
 }
 
 
-int CtiDNPAnalogOutput::serialize(unsigned char *buf)
+int AnalogOutput::serialize(unsigned char *buf) const
 {
     return serializeVariation(buf, getVariation());
 }
 
 
-int CtiDNPAnalogOutput::serializeVariation(unsigned char *buf, int variation)
+int AnalogOutput::serializeVariation(unsigned char *buf, int variation) const
 {
     int pos = 0;
 
@@ -131,7 +135,7 @@ int CtiDNPAnalogOutput::serializeVariation(unsigned char *buf, int variation)
     {
         case AO32Bit:
         {
-            _flags.raw = buf[pos++];
+            buf[pos++] = _flags.raw;
 
             buf[pos++] =  _value        & 0xff;
             buf[pos++] = (_value >>  8) & 0xff;
@@ -143,7 +147,7 @@ int CtiDNPAnalogOutput::serializeVariation(unsigned char *buf, int variation)
 
         case AO16Bit:
         {
-            _flags.raw = buf[pos++];
+            buf[pos++] = _flags.raw;
 
             buf[pos++] =  _value        & 0xff;
             buf[pos++] = (_value >>  8) & 0xff;
@@ -166,7 +170,7 @@ int CtiDNPAnalogOutput::serializeVariation(unsigned char *buf, int variation)
 }
 
 
-int CtiDNPAnalogOutput::getSerializedLen(void)
+int AnalogOutput::getSerializedLen(void) const
 {
     int retVal;
 
@@ -199,7 +203,7 @@ int CtiDNPAnalogOutput::getSerializedLen(void)
 }
 
 
-CtiPointDataMsg *CtiDNPAnalogOutput::getPoint( const CtiDNPTimeCTO *cto )
+CtiPointDataMsg *AnalogOutput::getPoint( const TimeCTO *cto ) const
 {
     CtiPointDataMsg *tmpMsg;
 
@@ -269,14 +273,14 @@ CtiPointDataMsg *CtiDNPAnalogOutput::getPoint( const CtiDNPTimeCTO *cto )
 }
 
 
-CtiDNPAnalogOutputBlock::CtiDNPAnalogOutputBlock(int variation) : CtiDNPObject(Group, variation)
+AnalogOutputBlock::AnalogOutputBlock(int variation) : Object(Group, variation)
 {
     _value  = 0;
     _status = 0;
 }
 
 
-int CtiDNPAnalogOutputBlock::restore(unsigned char *buf, int len)
+int AnalogOutputBlock::restore(const unsigned char *buf, int len)
 {
     int pos = 0;
 
@@ -286,14 +290,14 @@ int CtiDNPAnalogOutputBlock::restore(unsigned char *buf, int len)
     {
         case AOB32Bit:
         {
-            pos += restoreVariation(buf + pos, len - pos, CtiDNPAnalogOutput::AO32Bit);
+            pos += restoreVariation(buf + pos, len - pos, AnalogOutput::AO32Bit);
 
             break;
         }
 
         case AOB16Bit:
         {
-            pos += restoreVariation(buf + pos, len - pos, CtiDNPAnalogOutput::AO16Bit);
+            pos += restoreVariation(buf + pos, len - pos, AnalogOutput::AO16Bit);
 
             break;
         }
@@ -314,7 +318,7 @@ int CtiDNPAnalogOutputBlock::restore(unsigned char *buf, int len)
 }
 
 
-int CtiDNPAnalogOutputBlock::restoreVariation(unsigned char *buf, int len, int variation)
+int AnalogOutputBlock::restoreVariation(const unsigned char *buf, int len, int variation)
 {
     int pos = 0;
 
@@ -371,7 +375,7 @@ int CtiDNPAnalogOutputBlock::restoreVariation(unsigned char *buf, int len, int v
 }
 
 
-int CtiDNPAnalogOutputBlock::serialize(unsigned char *buf)
+int AnalogOutputBlock::serialize(unsigned char *buf) const
 {
     int pos = 0;
 
@@ -379,14 +383,14 @@ int CtiDNPAnalogOutputBlock::serialize(unsigned char *buf)
     {
         case AOB32Bit:
         {
-            pos += serializeVariation(buf, CtiDNPAnalogOutputBlock::AOB32Bit);
+            pos += serializeVariation(buf, AnalogOutputBlock::AOB32Bit);
 
             break;
         }
 
         case AOB16Bit:
         {
-            pos += serializeVariation(buf, CtiDNPAnalogOutputBlock::AOB16Bit);
+            pos += serializeVariation(buf, AnalogOutputBlock::AOB16Bit);
 
             break;
         }
@@ -406,7 +410,7 @@ int CtiDNPAnalogOutputBlock::serialize(unsigned char *buf)
 }
 
 
-int CtiDNPAnalogOutputBlock::serializeVariation(unsigned char *buf, int variation)
+int AnalogOutputBlock::serializeVariation(unsigned char *buf, int variation) const
 {
     int pos = 0;
 
@@ -449,7 +453,7 @@ int CtiDNPAnalogOutputBlock::serializeVariation(unsigned char *buf, int variatio
 }
 
 
-int CtiDNPAnalogOutputBlock::getSerializedLen(void)
+int AnalogOutputBlock::getSerializedLen(void) const
 {
     int retVal;
 
@@ -482,7 +486,13 @@ int CtiDNPAnalogOutputBlock::getSerializedLen(void)
 }
 
 
-void CtiDNPAnalogOutputBlock::setControl(long value)
+void AnalogOutputBlock::setControl(long value)
 {
     _value = value;
 }
+
+}
+}
+}
+
+
