@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2003/08/25 16:21:30 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2003/09/12 02:33:11 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -24,6 +24,8 @@
 #include "sema.h"
 #include "signalmanager.h"
 #include "tbl_dyn_ptalarming.h"
+
+extern RWCString AlarmTagsToString(UINT tags);
 
 CtiSignalManager::CtiSignalManager() :
 _dirty(false)
@@ -41,6 +43,15 @@ CtiSignalManager::~CtiSignalManager()
     SigMgrMap_t::iterator itr;
 
     CtiLockGuard< CtiMutex > tlg(_mux, 5000);
+    while(!tlg.isAcquired())
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+        tlg.tryAcquire(5000);
+    }
+
     if(tlg.isAcquired())
     {
         for(itr = _map.begin(); itr != _map.end(); itr++)
@@ -498,6 +509,7 @@ CtiMultiMsg* CtiSignalManager::getPointSignals(long pointid) const
             if(key.first == pointid && pOriginalSig)
             {
                 pSig = (CtiSignalMsg*)(pOriginalSig->replicateMessage());
+                pSig->setText(AlarmTagsToString(pSig->getTags()) + pSig->getText());
 
                 if(!pMulti)
                 {
