@@ -30,7 +30,7 @@ public class ButtonEditor extends DefaultCellEditor {
 			// 
 			// 
 			JOptionPane.showMessageDialog(button ,label + ": Ouch!");
-			// System.out.println(label + ": Ouch!");
+			// com.cannontech.clientutils.CTILogger.info(label + ": Ouch!");
 		}
 		isPushed = false;
 		return new String( label ) ;

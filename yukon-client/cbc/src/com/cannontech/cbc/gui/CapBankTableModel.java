@@ -255,7 +255,7 @@ private int getCurrentRowBGColors( int rowNumber )
 	}
 	catch( ArrayIndexOutOfBoundsException e )
 	{
-		System.out.println("***** " + this.getClass() + " : getCurrentRowBGColors(int), using DEFAULT_BGCOLOR for row number " + rowNumber + " : " + e.getMessage()	);
+		com.cannontech.clientutils.CTILogger.info("***** " + this.getClass() + " : getCurrentRowBGColors(int), using DEFAULT_BGCOLOR for row number " + rowNumber + " : " + e.getMessage()	);
 		return Colors.getColorID( CapControlTableModel.DEFUALT_BGCOLOR );
 	}  // dont do really anything, just return the DEFAULT_BGCOLOR
 		
@@ -374,7 +374,7 @@ public Object getValueAt(int row, int col)
 					if( rowValue.getControlStatus().intValue() < 0 ||
 						rowValue.getControlStatus().intValue() >= getStateNames().length )
 					{
-						System.out.println("*** A CapBank state was found that has no corresponding status.");
+						com.cannontech.clientutils.CTILogger.info("*** A CapBank state was found that has no corresponding status.");
 						return UNKNOWN_STATE + " (" + rowValue.getControlStatus().intValue() +")" ;
 					}
 					else
@@ -650,7 +650,7 @@ private void setCurrentRowBGColors( int rowNumber, int color )
 	}
 	catch( ArrayIndexOutOfBoundsException e )
 	{
-		System.out.println("***** " + this.getClass() + " : setCurrentRowBGColor() " + e.getMessage() );
+		com.cannontech.clientutils.CTILogger.info("***** " + this.getClass() + " : setCurrentRowBGColor() " + e.getMessage() );
 	}  // dont do really anything
 		
 }

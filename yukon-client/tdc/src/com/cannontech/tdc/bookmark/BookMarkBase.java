@@ -74,7 +74,7 @@ public Object[] getList()
 private void handleException(java.lang.Throwable exception) 
 {
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	System.out.println("--------- UNCAUGHT EXCEPTION in TDCMainPanel() ---------");
+	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION in TDCMainPanel() ---------");
 	exception.printStackTrace(System.out);	
 }
 /**

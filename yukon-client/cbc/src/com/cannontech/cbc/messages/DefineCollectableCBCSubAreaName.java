@@ -64,9 +64,9 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
  */
 public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException 
 {
-	System.out.println("**********************************************************************************");
-	System.out.println("com.cannontech.cbc.DefineCollectableCBCStrategyAreaMessage.saveGuts() should not be called");
-	System.out.println("**********************************************************************************");
+	com.cannontech.clientutils.CTILogger.info("**********************************************************************************");
+	com.cannontech.clientutils.CTILogger.info("com.cannontech.cbc.DefineCollectableCBCStrategyAreaMessage.saveGuts() should not be called");
+	com.cannontech.clientutils.CTILogger.info("**********************************************************************************");
 	
 	//super.saveGuts( obj, vstr, polystr );
 	//java.util.Vector areaStore = ((CBCAreaNames) obj).getAreaNames();

@@ -83,7 +83,7 @@ public static boolean isValidDateString(String dateString) {
 		//if the MM/dd/yy they give us back is different than the one
 		//we gave it then we know its wrong!
 		String newDateString = formatter.format(parsedDate);
-		System.out.println(newDateString);
+		com.cannontech.clientutils.CTILogger.info(newDateString);
 		
 		String patterns[] = { "MM/dd/yy", "M/dd/yy", 
 							  "MM/d/yy", "M/d/yy",
@@ -105,7 +105,7 @@ public static boolean isValidDateString(String dateString) {
 	}
 	catch(Exception e)
 	{
-		System.out.println(e.getMessage());
+		com.cannontech.clientutils.CTILogger.info(e.getMessage());
 		return false;
 	}
 
@@ -149,7 +149,7 @@ public static String toSimpleDateString(java.util.Date d) {
 	}
 	catch(Exception e )
 	{
-		System.out.println(e.getMessage());
+		com.cannontech.clientutils.CTILogger.info(e.getMessage());
 		return new String();
 	}
 	

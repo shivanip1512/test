@@ -472,7 +472,7 @@ private synchronized void handleControlArea(LMControlArea controlArea)
 		}
 		else
 		{
-			System.out.println(getClass() + " - Warning, received unhandled program type");
+			com.cannontech.clientutils.CTILogger.info(getClass() + " - Warning, received unhandled program type");
 		}
 	}
 }
@@ -509,7 +509,7 @@ private void handleEnergyExchangeProgram(LMProgramEnergyExchange prog)
 private synchronized void refresh()
 {
 
-	System.out.println("Refreshing customer-energycompany mappings");
+	com.cannontech.clientutils.CTILogger.info("Refreshing customer-energycompany mappings");
 	
 	// Update energy company - customer mapping from db
 	energyCompanyCustomer.clear();
@@ -531,7 +531,7 @@ private synchronized void refresh()
 
 	
 	{
-		System.out.println("Refreshing customer baselines");
+		com.cannontech.clientutils.CTILogger.info("Refreshing customer baselines");
 		
 		java.sql.Connection conn = null;
 		java.sql.Statement stmt = null;
@@ -552,7 +552,7 @@ private synchronized void refresh()
 		}
 		catch(java.sql.SQLException e)
 		{
-			System.out.println("An error occured refreshing customerbaselines");			
+			com.cannontech.clientutils.CTILogger.info("An error occured refreshing customerbaselines");			
 		}
 		finally
 		{
@@ -563,10 +563,10 @@ private synchronized void refresh()
 			} catch(java.sql.SQLException e2) {  }
 		}
 
-		System.out.println("Loaded " + customerBaseLine.size() + " customer baselines.");
+		com.cannontech.clientutils.CTILogger.info("Loaded " + customerBaseLine.size() + " customer baselines.");
 	}
 	
-	System.out.println("Refreshing control areas");
+	com.cannontech.clientutils.CTILogger.info("Refreshing control areas");
 	
 	if( conn != null )
 	{		
@@ -628,7 +628,7 @@ public void setDbAlias(java.lang.String newDbAlias) {
 	 */
 public synchronized void update(java.util.Observable o, java.lang.Object arg) 
 {
-	System.out.println( getClass() + ": received type: " + arg.getClass());
+	com.cannontech.clientutils.CTILogger.info( getClass() + ": received type: " + arg.getClass());
 
 	if( arg instanceof com.cannontech.loadcontrol.events.LCChangeEvent )
 	{

@@ -327,7 +327,7 @@ public static Object[][] executeSQL(javax.servlet.http.HttpSession session, Stri
 	}
 	catch( ClassCastException ex )
 	{
-		System.out.println("ClassCastException in : executeSQL(HTTPSession, String)");			
+		com.cannontech.clientutils.CTILogger.info("ClassCastException in : executeSQL(HTTPSession, String)");			
 		return null;
 	}
 
@@ -335,7 +335,7 @@ public static Object[][] executeSQL(javax.servlet.http.HttpSession session, Stri
 		
 	if( user == null || dbAlias == null )
 	{
-		System.out.println("DBALIAS or USER is null in executeSQL(HTTPSession, STRING), probably not logged in");
+		com.cannontech.clientutils.CTILogger.info("DBALIAS or USER is null in executeSQL(HTTPSession, STRING), probably not logged in");
 		return null;
 	}
 		
@@ -436,7 +436,7 @@ public static Object[][] executeSQL(javax.servlet.http.HttpSession session, Stri
 	}
 	catch( ClassCastException ex )
 	{
-		System.out.println("ClassCastException in : executeSQL(HTTPSession, String)");			
+		com.cannontech.clientutils.CTILogger.info("ClassCastException in : executeSQL(HTTPSession, String)");			
 		return null;
 	}
 
@@ -444,7 +444,7 @@ public static Object[][] executeSQL(javax.servlet.http.HttpSession session, Stri
 		
 	if( user == null || dbAlias == null )
 	{
-		System.out.println("DBALIAS or USER is null in executeSQL(HTTPSession, STRING), probably not logged in");
+		com.cannontech.clientutils.CTILogger.info("DBALIAS or USER is null in executeSQL(HTTPSession, STRING), probably not logged in");
 		return null;
 	}
 		

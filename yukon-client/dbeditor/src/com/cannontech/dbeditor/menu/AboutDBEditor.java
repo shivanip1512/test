@@ -114,7 +114,7 @@ public void setValue(Object o)
 	}
 	catch(Throwable t)  // Catch ALL things and just print them out
 	{
-		System.out.println("*** Throwable caught in + " + this.getClass() + " : " + t.getMessage() );
+		com.cannontech.clientutils.CTILogger.info("*** Throwable caught in + " + this.getClass() + " : " + t.getMessage() );
 		data.addElement("(Exception occured while getting value)");
 	}
 		

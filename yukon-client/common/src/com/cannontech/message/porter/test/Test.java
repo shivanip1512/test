@@ -27,7 +27,7 @@ public static void main(String[] args)
 		if (o instanceof com.cannontech.message.porter.message.Return)
 		{
 			com.cannontech.message.porter.message.Return r = (com.cannontech.message.porter.message.Return) o;
-			System.out.println(r);
+			com.cannontech.clientutils.CTILogger.info(r);
 		}
 	}
 	catch (java.io.IOException ioe)

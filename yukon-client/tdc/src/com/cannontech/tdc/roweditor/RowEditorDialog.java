@@ -247,7 +247,7 @@ private javax.swing.JPanel getJPanel1() {
 private void handleException(java.lang.Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	System.out.println("--------- UNCAUGHT EXCEPTION RowEditorDialog() ---------");
+	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION RowEditorDialog() ---------");
 	exception.printStackTrace(System.out);
 
 	TDCMainFrame.messageLog.addMessage(exception.toString() + " in : " + this.getClass(), MessageBoxFrame.ERROR_MSG );

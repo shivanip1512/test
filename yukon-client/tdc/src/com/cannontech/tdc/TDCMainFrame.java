@@ -2493,7 +2493,7 @@ public javax.swing.JDialog getTextSearchDialog()
 private void handleException(java.lang.Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	System.out.println("--------- UNCAUGHT EXCEPTION TDCMainFrame() ---------");
+	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION TDCMainFrame() ---------");
 	exception.printStackTrace(System.out);
 
 	TDCMainFrame.messageLog.addMessage(exception.toString() + " in : " + this.getClass(), MessageBoxFrame.ERROR_MSG );
@@ -3100,7 +3100,7 @@ public void jMenuItemPrint_ActionPerformed(java.awt.event.ActionEvent actionEven
 	}
 	catch (JCAWTPrinter.PrinterJobCancelledException e) 
 	{
-		System.out.println("Print Job Cancelled by user");
+		com.cannontech.clientutils.CTILogger.info("Print Job Cancelled by user");
 		return;
 	}
 		
@@ -3487,9 +3487,8 @@ public static void main(java.lang.String[] args)
 {
 	try
 	{
-		System.out.println("Syntax for optional parameters is as follows:");
-		System.out.println("   TDCMainFrame view=<value> display=<value>");
-		System.out.println();
+		com.cannontech.clientutils.CTILogger.info("Syntax for optional parameters is as follows:");
+		com.cannontech.clientutils.CTILogger.info("   TDCMainFrame view=<value> display=<value>");
 
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		javax.swing.ToolTipManager.sharedInstance().setDismissDelay(2000);
@@ -3500,8 +3499,8 @@ public static void main(java.lang.String[] args)
 
 		if( args.length > 1 )  // the user tried to enter some params
 		{
-			System.out.println("Remember when entering parameters be sure to surrond parameters with spaces with double quotes.");
-			System.out.println("Example:  TDCMainFrame view=Core \"display=Event Viewer\" ");
+			com.cannontech.clientutils.CTILogger.info("Remember when entering parameters be sure to surrond parameters with spaces with double quotes.");
+			com.cannontech.clientutils.CTILogger.info("Example:  TDCMainFrame view=Core \"display=Event Viewer\" ");
 			
 			parser = new CommandLineParser( TDCMainFrame.COMMAND_LINE_PARAM_NAMES );						
 			aTDCFrame = overSeer.createTDCMainFrame( parser.parseArgs( args ) );

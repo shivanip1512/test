@@ -51,7 +51,7 @@ public void addRow(Object obj)
 		getRows().add( row );
 	}
 	else
-		System.out.println("*** WRONG CLASS @addRow(Object) : " + obj.getClass().getName() + " in : " + this.getClass().getName() );
+		com.cannontech.clientutils.CTILogger.info("*** WRONG CLASS @addRow(Object) : " + obj.getClass().getName() + " in : " + this.getClass().getName() );
 
 	fireTableDataChanged();
 }
@@ -208,7 +208,7 @@ public void setRowAt( Object obj, int rowIndex )
 		getRows().setElementAt( row, rowIndex );
 	}
 	else
-		System.out.println("*** WRONG CLASS @setRowAt(Object, int): " + obj.getClass().getName() + " in : " + this.getClass().getName() );
+		com.cannontech.clientutils.CTILogger.info("*** WRONG CLASS @setRowAt(Object, int): " + obj.getClass().getName() + " in : " + this.getClass().getName() );
 
 	fireTableDataChanged();
 }
@@ -235,7 +235,7 @@ public void setValueAt(Object value, int row, int col)
 				break;
 				
 			default:
-				System.out.println(this.getClass() + " tried to set value for an invalid column, column number " + col );
+				com.cannontech.clientutils.CTILogger.info(this.getClass() + " tried to set value for an invalid column, column number " + col );
 		}
 	}
 */

@@ -91,7 +91,7 @@ public void initDividerPosition()
 				}
 				catch(InterruptedException e)
 				{
-					System.out.println("(1)The thread that sets the divider in the CompositeJSplitPane was interrupted.");
+					com.cannontech.clientutils.CTILogger.info("(1)The thread that sets the divider in the CompositeJSplitPane was interrupted.");
 				}
 
 				repaint();
@@ -116,7 +116,7 @@ public void initDividerPosition()
 				}
 				catch(InterruptedException e)
 				{
-					System.out.println("(2)The thread that sets the divider in the CompositeJSplitPane was interrupted.");
+					com.cannontech.clientutils.CTILogger.info("(2)The thread that sets the divider in the CompositeJSplitPane was interrupted.");
 				}
 
 				getJSplitPaneInner().repaint();

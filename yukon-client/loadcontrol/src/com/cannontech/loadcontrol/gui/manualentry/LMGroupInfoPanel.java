@@ -692,7 +692,7 @@ public com.cannontech.loadcontrol.data.LMGroupBase getLmGroup() {
 private void handleException(java.lang.Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	System.out.println("--------- UNCAUGHT EXCEPTION ---------");
+	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
 	exception.printStackTrace(System.out);
 }
 /**
@@ -834,7 +834,7 @@ private void initialize() {
  */
 public void jButtonOk_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
-	System.out.println("Pressing OK does nothing, so override me if you want some action.");
+	com.cannontech.clientutils.CTILogger.info("Pressing OK does nothing, so override me if you want some action.");
 	
 	return;
 }

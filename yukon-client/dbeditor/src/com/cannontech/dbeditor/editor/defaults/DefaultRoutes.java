@@ -223,9 +223,9 @@ public static final Vector getDisplayReady(Vector routes, Vector originalDefault
  */
 public static void main(String[] args) {
 	
-	System.out.println("Try");
+	com.cannontech.clientutils.CTILogger.info("Try");
 	calculateDefaults();
-	System.out.println("Success");
+	com.cannontech.clientutils.CTILogger.info("Success");
 	}
 /**
  * Insert the method's description here.

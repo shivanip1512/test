@@ -591,7 +591,7 @@ private ManualEntryJPanel createManualEditorPanel(int selectedRow, Object source
 
 		}
 		else
-			System.out.println("** Unhandled POINTTYPE (" + ptType +") for a Manual Entry Panel **");
+			com.cannontech.clientutils.CTILogger.info("** Unhandled POINTTYPE (" + ptType +") for a Manual Entry Panel **");
 	}
 	catch( NullPointerException ex )
 	{   // one of the values we have is null, lets not create the panel
@@ -824,9 +824,9 @@ public void fireBookMarkSelected( Object source )
 			catch( IllegalArgumentException ex )
 			{
 				ex.printStackTrace(System.out);
-				System.out.println("*****************************************************");
-				System.out.println("  Most likely cause is an invalid database.");
-				System.out.println("*****************************************************");
+				com.cannontech.clientutils.CTILogger.info("*****************************************************");
+				com.cannontech.clientutils.CTILogger.info("  Most likely cause is an invalid database.");
+				com.cannontech.clientutils.CTILogger.info("*****************************************************");
 			}
 
 		}
@@ -977,7 +977,7 @@ private Object[][] getAlarmStatesCache()
 	}
 
 	if( alarmStates.size() <= 1 )
-		System.out.println("*** The AlarmState Table has 1 or less entries in it, not good");
+		com.cannontech.clientutils.CTILogger.info("*** The AlarmState Table has 1 or less entries in it, not good");
 
 	return data;
 }
@@ -1857,7 +1857,7 @@ public java.util.ArrayList getViewableRowNumbers()
 private void handleException(java.lang.Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	System.out.println("--------- UNCAUGHT EXCEPTION in TDCMainPanel() ---------");
+	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION in TDCMainPanel() ---------");
 	exception.printStackTrace(System.out);
 	
 	TDCMainFrame.messageLog.addMessage(exception.toString() + " in : " + this.getClass(), MessageBoxFrame.ERROR_MSG );
@@ -2240,9 +2240,9 @@ private void initializeParameters()
 			catch( Exception ex )
 			{
 				ex.printStackTrace(System.out);
-				System.out.println("*****************************************************");
-				System.out.println("*** Most likely cause is an invalid database.  ******");
-				System.out.println("*****************************************************");
+				com.cannontech.clientutils.CTILogger.info("*****************************************************");
+				com.cannontech.clientutils.CTILogger.info("*** Most likely cause is an invalid database.  ******");
+				com.cannontech.clientutils.CTILogger.info("*****************************************************");
 			}
 		}
 
@@ -2352,7 +2352,7 @@ public void jLabelDisplayTitle_MousePressed(java.awt.event.MouseEvent mouseEvent
 	if( getDisplayTable().getSelectedRow() >= 0 )
 	{
 		PointValues point = getTableDataModel().getPointValue( getDisplayTable().getSelectedRow() );
-		System.out.println("CLCIKSD for ptID = "+ point.getPointData().getId() + " Time = "+ point.getPointData().getTimeStamp() + " tags = " + Long.toHexString(point.getPointData().getTags()) );
+		com.cannontech.clientutils.CTILogger.info("CLCIKSD for ptID = "+ point.getPointData().getId() + " Time = "+ point.getPointData().getTimeStamp() + " tags = " + Long.toHexString(point.getPointData().getTags()) );
 	}
 	
 /*  // a test to force a point into an alarming state
@@ -2878,7 +2878,7 @@ public void jRadioButtonPage_ActionPerformed(java.awt.event.ActionEvent actionEv
 	}
 	catch( Exception e)
 	{
-		System.out.println("*** Exception caught in : jRadioButtonPage_ActionPerformed(ActionEvent) in class : " + this.getClass().getName() );
+		com.cannontech.clientutils.CTILogger.info("*** Exception caught in : jRadioButtonPage_ActionPerformed(ActionEvent) in class : " + this.getClass().getName() );
 	}
 	finally
 	{

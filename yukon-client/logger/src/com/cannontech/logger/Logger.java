@@ -150,7 +150,7 @@ private JCPrinter createPrintJob()
 {		
 	try
 	{
-//System.out.println( System.getProperty("java.awt.printerjob", null) );
+//com.cannontech.clientutils.CTILogger.info( System.getProperty("java.awt.printerjob", null) );
 //sun.awt.windows.WPrinterJob j = new sun.awt.windows.WPrinterJob();
 		PrinterJob pj = PrinterJob.getPrinterJob();
 		pj.printDialog();
@@ -160,7 +160,7 @@ private JCPrinter createPrintJob()
 	}
 	catch( JCAWTPrinter.PrinterJobCancelledException e)
 	{
-		System.out.println("USER CANCELED PRINT JOB");
+		com.cannontech.clientutils.CTILogger.info("USER CANCELED PRINT JOB");
 	}
 		
 	return printer;
@@ -185,7 +185,7 @@ protected void finalize() throws Throwable
 	// This implementation simply forwards the message to super.  You may replace or supplement this.
 	super.finalize();
 	
-System.out.println("	FINALIZING LOGGER");
+com.cannontech.clientutils.CTILogger.info("	FINALIZING LOGGER");
 
 	if( printMode.equalsIgnoreCase(MODE_PRINTER) )
 	{
@@ -284,7 +284,7 @@ private String getTitleText()
 private void handleException(java.lang.Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	System.out.println("--------- UNCAUGHT EXCEPTION ---------");
+	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
 	exception.printStackTrace(System.out);	
 }
 /**
@@ -344,7 +344,7 @@ public static void main(String[] args)
 		}
 		catch( InterruptedException ex )
 		{
-			System.out.println("InterruptedException occured in Main()");
+			com.cannontech.clientutils.CTILogger.info("InterruptedException occured in Main()");
 		}
 	}
 }
@@ -379,7 +379,7 @@ public synchronized void printTextLine(String line, long classification )
 		System.getProperty("java.version").equalsIgnoreCase("1.2.0" ) || 
 		System.getProperty("java.version").equalsIgnoreCase("1.2.1" ) )
 	{
-		System.out.println("Java 1.2 and Java 1.2.1 are not supported");
+		com.cannontech.clientutils.CTILogger.info("Java 1.2 and Java 1.2.1 are not supported");
 		return;
 	}
 
@@ -390,10 +390,10 @@ public synchronized void printTextLine(String line, long classification )
 	else if( printMode.equalsIgnoreCase( MODE_SCREEN ) )
 	{
 		if( lineCount == 0 )
-			System.out.println( getTitleText() );
+			com.cannontech.clientutils.CTILogger.info( getTitleText() );
 
 		lineCount++;
-		System.out.println( line );
+		com.cannontech.clientutils.CTILogger.info( line );
 	}
 	else
 		throw new IllegalArgumentException("Unrecognized PRINT_MODE, " + printMode);
@@ -449,9 +449,9 @@ private void printToPageLayout(String line, long classification)
 	if( lineCount == MAX_LINES )
 	{
 		waitForPrinter();			
-		System.out.println("Starting Print Job");
+		com.cannontech.clientutils.CTILogger.info("Starting Print Job");
 		document.print( printer );
-		System.out.println("Finish Print");
+		com.cannontech.clientutils.CTILogger.info("Finish Print");
 		flow.endFlow();
 		createNewPrinterTools();
 	}	
@@ -484,18 +484,18 @@ private void setLineColor(long classification)
  */
 private void setLoggerParameters() 
 {
-	System.out.println("	Version      : " + VERSION);
-	System.out.println("	Param File   : " + LoggerMainFrame.PARAMETER_FILE_NAME );
+	com.cannontech.clientutils.CTILogger.info("	Version      : " + VERSION);
+	com.cannontech.clientutils.CTILogger.info("	Param File   : " + LoggerMainFrame.PARAMETER_FILE_NAME );
 	
 	if( parametersFile != null && parametersFile.parametersExisted() )
 	{
 		try
 		{
 			setPointReg( parametersFile.getParameterValue("REGISTRATION") );
-			System.out.println("	Registration : " + parametersFile.getParameterValue("REGISTRATION") );
+			com.cannontech.clientutils.CTILogger.info("	Registration : " + parametersFile.getParameterValue("REGISTRATION") );
 			
 			colorEnabled = Boolean.getBoolean( parametersFile.getParameterValue("COLOR_TOGGLE") );
-			System.out.println("	Black/White  : " + parametersFile.getParameterValue("COLOR_TOGGLE") );
+			com.cannontech.clientutils.CTILogger.info("	Black/White  : " + parametersFile.getParameterValue("COLOR_TOGGLE") );
 
 			int seconds = Integer.parseInt( parametersFile.getParameterValue("OUTPUT_SECONDS") ) + 			
 					(60 * Integer.parseInt( parametersFile.getParameterValue("OUTPUT_MINUTES") ) +
@@ -506,10 +506,10 @@ private void setLoggerParameters()
 				timer = new Timer( (seconds > 60 ? seconds : 60) * 1000, this );
 				// kick it off
 				timer.start();
-				System.out.println("	AutoOutput : " + (seconds > 60 ? seconds : 60) + " seconds");
+				com.cannontech.clientutils.CTILogger.info("	AutoOutput : " + (seconds > 60 ? seconds : 60) + " seconds");
 			}
 			else
-				System.out.println("	AutoOutput : Disabled");
+				com.cannontech.clientutils.CTILogger.info("	AutoOutput : Disabled");
 
 			headerText = getHeaderText();
 
@@ -517,14 +517,12 @@ private void setLoggerParameters()
 		}
 		catch( Exception t )  // catch all, no real biggy
 		{
-			System.out.println( t.getMessage() );
+			com.cannontech.clientutils.CTILogger.info( t.getMessage() );
 		}
 		
 	}
 	else
-		System.out.println("	Parameters file is NULL or does not exist");
-
-	System.out.println();	
+		com.cannontech.clientutils.CTILogger.info("	Parameters file is NULL or does not exist");
 }
 /**
  * Insert the method's description here.
@@ -566,7 +564,7 @@ private void waitForPrinter()
 			handleException( ex );
 		}
 		
-		System.out.println("	Wating for printer");		
+		com.cannontech.clientutils.CTILogger.info("	Wating for printer");		
 	}	
 }
 }

@@ -142,7 +142,7 @@ private AlarmTableModel getModel() {
 private void handleException(java.lang.Throwable exception) 
 {
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	System.out.println("--------- UNCAUGHT EXCEPTION --------- " + Thread.currentThread().toString() );
+	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION --------- " + Thread.currentThread().toString() );
 	exception.printStackTrace(System.out);	
 }
 private synchronized void processAlarmColors()
@@ -245,7 +245,7 @@ public void run()
 				}
 				catch ( InterruptedException e )
 				{
-					System.out.println("Thread " + Thread.currentThread().getName() + " was inturrupted during AlarmColor.");
+					com.cannontech.clientutils.CTILogger.info("Thread " + Thread.currentThread().getName() + " was inturrupted during AlarmColor.");
 				}
 				finally
 				{
@@ -261,7 +261,7 @@ public void run()
 			}
 			catch( InterruptedException e )
 			{
-				System.out.println("Thread " + Thread.currentThread().getName() + " was inturrupted during OriginalColor.");
+				com.cannontech.clientutils.CTILogger.info("Thread " + Thread.currentThread().getName() + " was inturrupted during OriginalColor.");
 			}
 		}
 		

@@ -60,7 +60,7 @@ private void write(String str) {
 	{
 		try
 		{
-			System.out.println("Unable to write to " + filePath +", writting to " + fileName );
+			com.cannontech.clientutils.CTILogger.info("Unable to write to " + filePath +", writting to " + fileName );
 			FileWriter fWriter = new FileWriter(this.fileName, true);
 			PrintWriter pWriter = new PrintWriter(fWriter);
 		
@@ -69,7 +69,7 @@ private void write(String str) {
 		}
 		catch(java.io.IOException ex )
 		{
-			System.out.println("Unable to write to " + fileName + ", not writting file.");
+			com.cannontech.clientutils.CTILogger.info("Unable to write to " + fileName + ", not writting file.");
 		}
 	}
 }

@@ -32,7 +32,7 @@ public JDBCAdapter() {
 		try 
 		{
 			Class.forName(driverName);
-			System.out.println("Opening db connection to: " + url);
+			com.cannontech.clientutils.CTILogger.info("Opening db connection to: " + url);
 
 			connection = DriverManager.getConnection(url, user, passwd);
 			statement = connection.createStatement();
@@ -47,7 +47,7 @@ public JDBCAdapter() {
 		}
 	 } 
 	public void close() throws SQLException {
-		System.out.println("Closing db connection");
+		com.cannontech.clientutils.CTILogger.info("Closing db connection");
 		resultSet.close();
 		statement.close();
 		connection.close();
@@ -118,7 +118,7 @@ public JDBCAdapter() {
 				}
 				
 				rows.addElement(newRow);
-				System.out.println("read row: " + rcount++);
+				com.cannontech.clientutils.CTILogger.info("read row: " + rcount++);
 			}
 			
 			//  close(); Need to copy the metaData, bug in jdbc:odbc driver.
@@ -227,7 +227,7 @@ public void setColumnLabel( int whichColumn, String label) {
 			String tableName = metaData.getTableName(column+1);
 			// Some of the drivers seem buggy, tableName should not be null.
 			if (tableName == null) {
-				System.out.println("Table name returned null.");
+				com.cannontech.clientutils.CTILogger.info("Table name returned null.");
 			}
 			String columnName = getColumnName(column);
 			String query =
@@ -248,8 +248,8 @@ public void setColumnLabel( int whichColumn, String label) {
 				query = query + colName +" = "+
 					dbRepresentation(col, getValueAt(row, col));
 			}
-			System.out.println(query);
-			System.out.println("Not sending update to database");
+			com.cannontech.clientutils.CTILogger.info(query);
+			com.cannontech.clientutils.CTILogger.info("Not sending update to database");
 			// statement.executeQuery(query);
 		}
 		catch (SQLException e) {

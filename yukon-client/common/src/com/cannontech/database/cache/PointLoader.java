@@ -76,7 +76,7 @@ timerStart = new java.util.Date();
 //temp code
 timerStop = new java.util.Date();
 System.out.print( (timerStop.getTime() - timerStart.getTime())*.001 );
-System.out.println( " Secs for PointLoader" );
+com.cannontech.clientutils.CTILogger.info( " Secs for PointLoader" );
 //temp code
 	}
 }

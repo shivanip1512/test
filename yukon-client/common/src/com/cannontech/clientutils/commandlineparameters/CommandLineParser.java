@@ -58,7 +58,7 @@ public static void main(String[] args)
 	String[] data = pars.parseArgs( paramsValues );
 
 	for( int i = 0; i < data.length; i++ )
-		System.out.println(data[i]);
+		com.cannontech.clientutils.CTILogger.info(data[i]);
 }
 /**
  * Insert the method's description here.

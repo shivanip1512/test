@@ -1021,7 +1021,7 @@ public Object getValue(Object val) {
 private void handleException(Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	System.out.println("--------- UNCAUGHT EXCEPTION ---------");
+	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
 	exception.printStackTrace(System.out);
 }
 /**
@@ -1277,7 +1277,7 @@ public void setValue(Object val)
 				getSpinField2().setValue( new Integer( pLimit.getLimitDuration().intValue()) );
 			}
 			else
-				System.out.println("****** UNKNOWN LimitNumber( " + pLimit.getLimitNumber().intValue() + ") found in database table PointLimits for pointid = " + pLimit.getPointID().intValue() + " ******");
+				com.cannontech.clientutils.CTILogger.info("****** UNKNOWN LimitNumber( " + pLimit.getLimitNumber().intValue() + ") found in database table PointLimits for pointid = " + pLimit.getPointID().intValue() + " ******");
 		}
 	} //Finished handling limits vector
 

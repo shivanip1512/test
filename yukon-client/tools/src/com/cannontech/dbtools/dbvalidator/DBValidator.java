@@ -20,7 +20,7 @@ public DBValidator() {
 public static void main(String[] args)
 {
 
-   System.out.println("Started....");
+   com.cannontech.clientutils.CTILogger.info("Started....");
 	java.sql.Connection conn = null;
 
    try
@@ -35,12 +35,12 @@ public static void main(String[] args)
 
 	  for( int i = 0; i < files.size(); i++ )
 	  {
-System.out.println("				" + ((java.io.File)files.get(i)).getAbsolutePath() ) ;
+com.cannontech.clientutils.CTILogger.info("				" + ((java.io.File)files.get(i)).getAbsolutePath() ) ;
 		  java.util.jar.JarFile j = new java.util.jar.JarFile(
 			  			((java.io.File)files.get(i)).getAbsolutePath() );
 		  
 		  if (j == null)
-			 System.out.println("Unable to find JAR file.");
+			 com.cannontech.clientutils.CTILogger.info("Unable to find JAR file.");
 
 		  java.util.Enumeration enum = j.entries();
 		  while (enum.hasMoreElements())
@@ -79,7 +79,7 @@ System.out.println("				" + ((java.io.File)files.get(i)).getAbsolutePath() ) ;
 				 && obj.getSuperclass().equals(com.cannontech.database.db.DBPersistent.class) )
 			{
 				
-				System.out.println("PROCESSING : " + classNames.get(i).toString() );
+				com.cannontech.clientutils.CTILogger.info("PROCESSING : " + classNames.get(i).toString() );
 
 				try
 				{
@@ -101,7 +101,7 @@ System.out.println("				" + ((java.io.File)files.get(i)).getAbsolutePath() ) ;
 							 && (obj.getMethods()[y].getParameterTypes()[0] == Integer.class
 								  || obj.getMethods()[y].getParameterTypes()[0] == Long.class) )
 							{
-								System.out.println("		EXECUTING : " + obj.getMethods()[y].getName() );
+								com.cannontech.clientutils.CTILogger.info("		EXECUTING : " + obj.getMethods()[y].getName() );
 								
 								if( obj.getMethods()[y].getParameterTypes()[0] == Long.class) 
 									params[0] = new Long(1);
@@ -114,7 +114,7 @@ System.out.println("				" + ((java.io.File)files.get(i)).getAbsolutePath() ) ;
 					}
 
 					com.cannontech.database.db.DBPersistent db = (com.cannontech.database.db.DBPersistent)instance;
-					System.out.println("		RETRIEVING " );
+					com.cannontech.clientutils.CTILogger.info("		RETRIEVING " );
 					//m = obj.getMethod("retrieve", null);
 					//m.invoke(instance, null);						
 					db.setDbConnection(conn);
@@ -133,12 +133,12 @@ System.out.println("				" + ((java.io.File)files.get(i)).getAbsolutePath() ) ;
 		}
 		catch( ClassNotFoundException e )
 		{
-			System.out.println("ClassNotFoundException for class : " + classNames.get(i).toString() );
+			com.cannontech.clientutils.CTILogger.info("ClassNotFoundException for class : " + classNames.get(i).toString() );
 			continue;
 		}
 		//catch( java.lang.reflect.InvocationTargetException t )
 		//{
-			//System.out.println("InvocationTargetException for class : " + classNames.get(i).toString() );
+			//com.cannontech.clientutils.CTILogger.info("InvocationTargetException for class : " + classNames.get(i).toString() );
 		//}
 
 	

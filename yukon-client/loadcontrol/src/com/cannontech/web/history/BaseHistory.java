@@ -30,7 +30,7 @@ public void gc() {
 		if (conn != null) conn.close();
 		if (stmt != null) stmt.close();
 
-		System.out.println("Connection closed");
+		com.cannontech.clientutils.CTILogger.info("Connection closed");
 	}
 	catch (java.sql.SQLException se) {
 		se.printStackTrace();
@@ -45,7 +45,7 @@ public void getConnection(String dbAlias) {
 		conn = com.cannontech.database.PoolManager.getInstance().getConnection(dbAlias);
 		stmt = conn.createStatement();
 
-		System.out.println("Connected with the datebase");
+		com.cannontech.clientutils.CTILogger.info("Connected with the datebase");
 	}
 	catch (java.sql.SQLException se) {
 		se.printStackTrace();

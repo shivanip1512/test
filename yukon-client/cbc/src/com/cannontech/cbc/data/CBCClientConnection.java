@@ -169,7 +169,7 @@ protected com.cannontech.message.util.ClientConnection getConnection()
 	{
 		getExternalResources();
 		
-		System.out.println("CBCClientConnection Trying to connect to:  " + host + " " + port );
+		com.cannontech.clientutils.CTILogger.info("CBCClientConnection Trying to connect to:  " + host + " " + port );
 		connection = new com.cannontech.message.dispatch.ClientConnection()
 		{
 			protected void registerMappings(CollectableStreamer streamer)
@@ -229,7 +229,7 @@ private void handleCBCStatesMessage(CBCStates msg)
 {
 	com.cannontech.database.db.state.State[] states = new com.cannontech.database.db.state.State[msg.getNumberOfStates()];
 
-System.out.println(new com.cannontech.clientutils.commonutils.ModifiedDate(new java.util.Date().getTime()).toString()
+com.cannontech.clientutils.CTILogger.info(new com.cannontech.clientutils.commonutils.ModifiedDate(new java.util.Date().getTime()).toString()
 		+ " : Got a CapBank State Message with " + msg.getNumberOfStates()
 		+ " states" );
 	
@@ -255,7 +255,7 @@ System.out.println(new com.cannontech.clientutils.commonutils.ModifiedDate(new j
  */
 private void handleCBCSubAreaNames( CBCSubAreaNames msg )
 {
-System.out.println(new com.cannontech.clientutils.commonutils.ModifiedDate(new java.util.Date().getTime()).toString()
+com.cannontech.clientutils.CTILogger.info(new com.cannontech.clientutils.commonutils.ModifiedDate(new java.util.Date().getTime()).toString()
 		+ " : Got an Area Message with " + msg.getNumberOfAreas()
 		+ " areas" );
 
@@ -276,7 +276,7 @@ private void handleCBCSubstationBuses(CBCSubstationBuses msg)
 	SubBus[] buses = new SubBus[ msg.getNumberOfBuses() ];
 	for( int i = 0; i < msg.getNumberOfBuses(); i++ )
 	{
-System.out.println(new com.cannontech.clientutils.commonutils.ModifiedDate(new java.util.Date().getTime()).toString()
+com.cannontech.clientutils.CTILogger.info(new com.cannontech.clientutils.commonutils.ModifiedDate(new java.util.Date().getTime()).toString()
 		+ " : Received SubBus - " + msg.getSubBusAt(i).getCcName() 
 		+ "/" + msg.getSubBusAt(i).getCcArea() );
 
@@ -299,7 +299,7 @@ System.out.println(new com.cannontech.clientutils.commonutils.ModifiedDate(new j
 private void handleException(Throwable exc)
 {
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	System.out.println("---------------- EXCEPTION CBCClientConnection() ----------------");
+	com.cannontech.clientutils.CTILogger.info("---------------- EXCEPTION CBCClientConnection() ----------------");
 	exc.printStackTrace(System.out);
 }
 /**
@@ -339,7 +339,7 @@ public static void main(String args[])
 		//conn.getConnection().write( new CBCCommand( CBCCommand.REQUEST_ALL_SUBS, 0 ) );
 		
 		//Object ret = conn.getConnection().read( 5000 );
-		//System.out.println(ret.getClass());
+		//com.cannontech.clientutils.CTILogger.info(ret.getClass());
 		
 		//while( subs == null )
 		{
@@ -352,10 +352,10 @@ public static void main(String args[])
 		d.showDialog( new com.cannontech.tdc.TDCMainFrame() );
 	
 //for( int i = 0; i < subs.length; i++ )
-	//System.out.println("   " + subs[i].getRecentlyControlledFlag().toString());
+	//com.cannontech.clientutils.CTILogger.info("   " + subs[i].getRecentlyControlledFlag().toString());
 
 		Thread.sleep( 1000 );
-System.out.println("*** HI***");
+com.cannontech.clientutils.CTILogger.info("*** HI***");
 		Thread.sleep( 10000 );
 	}
 	catch( Exception e )
@@ -363,7 +363,7 @@ System.out.println("*** HI***");
 		e.printStackTrace( System.out );
 	}
 
-	System.out.println("exiting main" );
+	com.cannontech.clientutils.CTILogger.info("exiting main" );
 }
 /**
  * run method comment.
@@ -404,10 +404,10 @@ public void run()
 						handleCBCSubAreaNames( (CBCSubAreaNames)in );
 					}				
 					else
-						System.out.println("Unrecoginized CBCMessage in CBClientConnection received.");
+						com.cannontech.clientutils.CTILogger.info("Unrecoginized CBCMessage in CBClientConnection received.");
 				}
 				else
-					System.out.println("Unrecoginized Object in CBClientConnection received.");
+					com.cannontech.clientutils.CTILogger.info("Unrecoginized Object in CBClientConnection received.");
 			}
 
 			if( !getConnection().isValid() )
@@ -430,7 +430,7 @@ public void run()
 	}
 	catch( Exception exx )
 	{
-		System.out.println("*** " + this.getClass().getName() + " Thread DEATH!!!!");
+		com.cannontech.clientutils.CTILogger.info("*** " + this.getClass().getName() + " Thread DEATH!!!!");
 		handleException(exx);
 	}
 	

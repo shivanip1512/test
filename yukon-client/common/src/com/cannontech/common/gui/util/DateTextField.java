@@ -149,14 +149,14 @@ private void connEtoC5() {
  * Comment
  */
 public void dateTextField_CaretUpdate(javax.swing.event.CaretEvent caretEvent) {
-	System.out.println("caret update");
+	com.cannontech.clientutils.CTILogger.info("caret update");
 	return;
 }
 /**
  * Comment
  */
 public void dateTextField_KeyEvents() {
-	System.out.println("key events");
+	com.cannontech.clientutils.CTILogger.info("key events");
 	return;
 }
 /**
@@ -166,21 +166,21 @@ public void dateTextField_KeyPressed(java.awt.event.KeyEvent keyEvent) {
 //	if( keyEvent.getKeyCode() == 8 )
 		keyEvent.setKeyCode( java.awt.event.KeyEvent.VK_UNDEFINED );
 		keyEvent.setKeyChar(java.awt.event.KeyEvent.CHAR_UNDEFINED);
-	System.out.println("key pressed");
+	com.cannontech.clientutils.CTILogger.info("key pressed");
 	return;
 }
 /**
  * Comment
  */
 public void dateTextField_KeyReleased(java.awt.event.KeyEvent keyEvent) {
-	System.out.println("key released");
+	com.cannontech.clientutils.CTILogger.info("key released");
 	return;
 }
 /**
  * Comment
  */
 public void dateTextField_KeyTyped(java.awt.event.KeyEvent keyEvent) {
-	System.out.println("key typed");
+	com.cannontech.clientutils.CTILogger.info("key typed");
 	return;
 }
 /**
@@ -213,7 +213,7 @@ private static void getBuilderData() {
 private void handleException(Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	// System.out.println("--------- UNCAUGHT EXCEPTION ---------");
+	// com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
 	// exception.printStackTrace(System.out);
 }
 /**

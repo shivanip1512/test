@@ -132,7 +132,7 @@ public final static int[] getNextYukonPAObjectIDs( int idCount )
 {
 	//THIS IS A SUPER HACK WAY TO DO THINGS, CHANGE IN THE FUTURE  (It is quick and dirty!!)
 	// *************** BEGIN SUPER HACK *************************/
-	System.out.println("----- getNextYukonPAObjectIDs(yukonPAObjectsCnt) called with " + idCount + " ids!");
+	com.cannontech.clientutils.CTILogger.info("----- getNextYukonPAObjectIDs(yukonPAObjectsCnt) called with " + idCount + " ids!");
 
 	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	int[] returnIDs = new int[idCount];

@@ -106,7 +106,7 @@ java.util.Date s = new java.util.Date();
 
 	DBTreeNode node = findLiteObject( null, lb );
 	
-System.out.println("** Took " + 
+com.cannontech.clientutils.CTILogger.info("** Took " + 
 	(new java.util.Date().getTime() - s.getTime()) * .001 + 
 	" seconds to find node in DBtreeModel using REMOVE, node = " + node );
 
@@ -174,7 +174,7 @@ public boolean updateTreeObject(LiteBase lb)
 java.util.Date s = new java.util.Date();
 	DBTreeNode node = findLiteObject( null, lb );
 
-System.out.println("** Took " + 
+com.cannontech.clientutils.CTILogger.info("** Took " + 
 	(new java.util.Date().getTime() - s.getTime()) * .001 + 
 	" seconds to find node in DBtreeModel using UPDATE, node = " + node);
 

@@ -196,7 +196,7 @@ public Object createCopy()
 			if( newName.equalsIgnoreCase("") || newName.equals( getTopPanel().getName() ) )
 			{
 				invalidName = true;
-				System.out.println("Error");
+				com.cannontech.clientutils.CTILogger.info("Error");
 				TDCMainFrame.messageLog.addMessage("Copy of display " + getTopPanel().getName() + " was not created due to an error with the new name", MessageBoxFrame.ERROR_MSG );
 			}
 			else
@@ -508,7 +508,7 @@ private com.cannontech.tdc.createdisplay.CreateTopPanel getTopPanel() {
 private void handleException(java.lang.Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	System.out.println("--------- UNCAUGHT EXCEPTION IN EditDisplayDialog()---------");
+	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION IN EditDisplayDialog()---------");
 	exception.printStackTrace(System.out);
 
 	TDCMainFrame.messageLog.addMessage(exception.toString() + " in : " + this.getClass(), MessageBoxFrame.ERROR_MSG );	

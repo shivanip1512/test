@@ -254,10 +254,10 @@ public Object getValueAt(int row, int col)
 	{
 		if( !rowValue.isValidState() )
 		{
-			System.out.println("-----------------------------------------------------------------------------------");
-			System.out.println("*** (Row,Col) (" + row + "," + col + ") is in an invalid state in class : " + this.getClass().getName());
-			System.out.println(rowValue.getInvalidStateMsg());			
-			System.out.println("-----------------------------------------------------------------------------------");
+			com.cannontech.clientutils.CTILogger.info("-----------------------------------------------------------------------------------");
+			com.cannontech.clientutils.CTILogger.info("*** (Row,Col) (" + row + "," + col + ") is in an invalid state in class : " + this.getClass().getName());
+			com.cannontech.clientutils.CTILogger.info(rowValue.getInvalidStateMsg());			
+			com.cannontech.clientutils.CTILogger.info("-----------------------------------------------------------------------------------");
 			return ("[Invalid Cell - See Debug Info]");
 		}
 		else

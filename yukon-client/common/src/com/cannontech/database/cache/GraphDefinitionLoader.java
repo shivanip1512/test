@@ -69,7 +69,7 @@ public void run()
 			e.printStackTrace();
 		}
 
-		System.out.println( ((System.currentTimeMillis()-timerStart)*.001) + " Secs for GraphDefinitionLoader" );
+		com.cannontech.clientutils.CTILogger.info( ((System.currentTimeMillis()-timerStart)*.001) + " Secs for GraphDefinitionLoader" );
 	}
 }
 }

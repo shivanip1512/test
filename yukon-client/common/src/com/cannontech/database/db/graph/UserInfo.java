@@ -64,7 +64,7 @@ public static boolean authenticate(UserInfo info, String databaseAlias) {
 		{
 	
 			String realPassword = (String) stmt.getRow(0)[0];
-System.out.println("realpassword for " + info.getUsername() + " is " + realPassword );
+com.cannontech.clientutils.CTILogger.info("realpassword for " + info.getUsername() + " is " + realPassword );
 			if( realPassword.equals( info.getPassword() ) )
 			{
 				validUser = true;

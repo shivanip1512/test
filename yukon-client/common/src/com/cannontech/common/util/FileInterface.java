@@ -69,7 +69,7 @@ public void run()
 		
 			if (!dir.isDirectory())
 			{
-				System.out.println("com.cannontech.common.util.FileInterface - Directory does not exist: " + getDirToWatch());
+				com.cannontech.clientutils.CTILogger.info("com.cannontech.common.util.FileInterface - Directory does not exist: " + getDirToWatch());
 			}
 			else
 			{
@@ -106,7 +106,7 @@ public void run()
 	}
 	catch (InterruptedException ie)
 	{
-		System.out.println("com.cannontech.common.util.FileInterface - Interrupted");
+		com.cannontech.clientutils.CTILogger.info("com.cannontech.common.util.FileInterface - Interrupted");
 	}
 }
 /**

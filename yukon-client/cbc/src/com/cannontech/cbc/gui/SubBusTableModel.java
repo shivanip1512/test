@@ -318,7 +318,7 @@ public Object getValueAt(int row, int col)
 				{
 					//only print the below msg out 1 time per row
 					if( row == 0 )
-						System.out.println("***MINOR ERROR*** Expecting " + sub.getCcName() + " to have at least 1 capbank in the same pending state.");
+						com.cannontech.clientutils.CTILogger.info("***MINOR ERROR*** Expecting " + sub.getCcName() + " to have at least 1 capbank in the same pending state.");
 
 					state = "PENDING"; //we only know its pending for sure
 				}
@@ -500,7 +500,7 @@ public synchronized void setFilter(java.lang.String newFilter)
 			if( start < 0 ) //should not occur
 			{
 				currentSubBuses = getAllSubBuses();
-				System.out.println("*** Could not find SubBus with the area = " + getFilter() );
+				com.cannontech.clientutils.CTILogger.info("*** Could not find SubBus with the area = " + getFilter() );
 			}
 			else  //this locks down AllSubBuses and disallows any structural modification to AllSubBuses
 				currentSubBuses = getAllSubBuses().subList(

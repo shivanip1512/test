@@ -262,7 +262,7 @@ private javax.swing.JPanel getJPanelSlot() {
 private void handleException(java.lang.Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	System.out.println("--------- UNCAUGHT EXCEPTION ---------");
+	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
 	exception.printStackTrace(System.out);
 }
 /**

@@ -117,7 +117,7 @@ timerStart = new java.util.Date();
 //temp code
 timerStop = new java.util.Date();
 System.out.print( (timerStop.getTime() - timerStart.getTime())*.001 );
-System.out.println( " Secs for NotificationGroupLoader" );
+com.cannontech.clientutils.CTILogger.info( " Secs for NotificationGroupLoader" );
 //temp code
 	}
 }

@@ -417,7 +417,7 @@ public Object getValue(Object val)
 private void handleException(java.lang.Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	System.out.println("--------- UNCAUGHT EXCEPTION ---------");
+	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
 	exception.printStackTrace(System.out);
 }
 /**
@@ -538,12 +538,12 @@ public void itemStateChanged(java.awt.event.ItemEvent event)
 		if( event.getStateChange() == java.awt.event.ItemEvent.SELECTED )
 		{
 			//javax.swing.tree.DefaultMutableTreeNode node = getCTITreeViewPanel().getSelectedNode();			
-			//System.out.println( ((com.cannontech.database.data.lite.LiteDevice)node.getUserObject()).getDeviceName() );
+			//com.cannontech.clientutils.CTILogger.info( ((com.cannontech.database.data.lite.LiteDevice)node.getUserObject()).getDeviceName() );
 
 		}
 		else if( event.getStateChange() == java.awt.event.ItemEvent.DESELECTED )
 		{
-			//System.out.println("DESELECTED TREE NODE");
+			//com.cannontech.clientutils.CTILogger.info("DESELECTED TREE NODE");
 			//getCTITreeViewPanel().undoLastSelection(true);
 		}
 

@@ -248,7 +248,7 @@ public java.util.Vector getListData()
 private void handleException(java.lang.Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	// System.out.println("--------- UNCAUGHT EXCEPTION ---------");
+	// com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
 	// exception.printStackTrace(System.out);
 }
 /**
@@ -324,7 +324,7 @@ private void setAnySpecialDisplayInfo()
 			catch( Exception exc )
 			{ // no big deal, we could ignore it
 				getListData().addElement("      (exception getting " + results[i][1].toString() + ")" );
-				System.out.println("Unable to load the client method " + exc.getMessage() + " from the database.");
+				com.cannontech.clientutils.CTILogger.info("Unable to load the client method " + exc.getMessage() + " from the database.");
 			}
 			finally
 			{

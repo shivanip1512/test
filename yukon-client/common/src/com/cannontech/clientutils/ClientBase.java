@@ -145,7 +145,7 @@ public PointRegistration getPointRegistration( Long[] ptIDs )
 private void handleException(Throwable exc)
 {
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	System.out.println("---------------- EXCEPTION ----------------" + this.getClass());
+	com.cannontech.clientutils.CTILogger.info("---------------- EXCEPTION ----------------" + this.getClass());
 	exc.printStackTrace(System.out);
 }
 /**
@@ -254,7 +254,7 @@ public void run()
 				}
 				catch( InterruptedException ex )
 				{
-					//System.out.println("Thread Interrupted in com.cannontech.clientutils.ClientBase");
+					//com.cannontech.clientutils.CTILogger.info("Thread Interrupted in com.cannontech.clientutils.ClientBase");
 					break;
 				}
 			}
@@ -266,7 +266,7 @@ public void run()
 				}
 				catch( InterruptedException ex )
 				{
-					//System.out.println("Thread Interrupted in com.cannontech.clientutils.ClientBase");
+					//com.cannontech.clientutils.CTILogger.info("Thread Interrupted in com.cannontech.clientutils.ClientBase");
 					break;
 				}			
 			}
@@ -336,7 +336,7 @@ private void tryConnection()
 	{
 		getExternalResources();
 		
-		System.out.println("Trying to connect to:  " + HOST + " " + PORT );
+		com.cannontech.clientutils.CTILogger.info("Trying to connect to:  " + HOST + " " + PORT );
 		//connection = new com.cannontech.message.dispatch.ClientConnection();
 		//if( observer != null )
 			//connection.addObserver( observer );
@@ -350,7 +350,7 @@ private void tryConnection()
 		getConnection().setRegistrationMsg( buildRegistrationMessage() );
 		getConnection().connect();
 
-		System.out.println("....Connection & Registration to Server Established.");
+		com.cannontech.clientutils.CTILogger.info("....Connection & Registration to Server Established.");
 	}	
 	catch( java.io.IOException e )
 	{

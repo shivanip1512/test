@@ -130,7 +130,7 @@ public void receivedDBChangMsg( DBChangeMsg msg )
 	String display = caller.getCurrentDisplay().getName() != null ? 
 			caller.getCurrentDisplay().getName() : "#" + caller.getCurrentDisplayNumber();
 
-	System.out.println("DATABASE CHANGE RECEIVED = " + msg.toString() + " Display = " + display );
+	com.cannontech.clientutils.CTILogger.info("DATABASE CHANGE RECEIVED = " + msg.toString() + " Display = " + display );
 	
 	com.cannontech.database.cache.DefaultDatabaseCache.getInstance().handleDBChangeMessage((com.cannontech.message.dispatch.message.DBChangeMsg)msg);
 
@@ -161,7 +161,7 @@ public void receivedPointData( PointData point )
 	String display = caller.getCurrentDisplay().getName() != null ? 
 			caller.getCurrentDisplay().getName() : "#" + caller.getCurrentDisplayNumber();
 			
-	System.out.println("POINTDATA RECEIVED -- PointID = " + point.getId() +
+	com.cannontech.clientutils.CTILogger.info("POINTDATA RECEIVED -- PointID = " + point.getId() +
 		" Value = " + point.getValue() + " Tags(hex) = " + Long.toHexString(point.getTags()) +
 		" Display = " + display );
 
@@ -180,7 +180,7 @@ public void receivedSignal( Signal signal )
 	String display = caller.getCurrentDisplay().getName() != null ? 
 			caller.getCurrentDisplay().getName() : "#" + caller.getCurrentDisplayNumber();
 
-	System.out.println("SIGNAL RECEIVED for ptID = "+ signal.getId() + " alarmStateID = "+ signal.getAlarmStateID() + " Tags(hex) = " + Integer.toHexString(signal.getTags()) +
+	com.cannontech.clientutils.CTILogger.info("SIGNAL RECEIVED for ptID = "+ signal.getId() + " alarmStateID = "+ signal.getAlarmStateID() + " Tags(hex) = " + Integer.toHexString(signal.getTags()) +
 		" Display = " + display );
 	
 	callerModel.processSignalReceived( signal );

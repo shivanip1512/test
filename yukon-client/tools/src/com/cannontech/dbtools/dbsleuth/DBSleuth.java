@@ -135,7 +135,7 @@ private boolean getExternalResources()
 	  }
 	  catch (Exception e)
 	  {
-		 System.out.println("Can't read the properties file. " +
+		 com.cannontech.clientutils.CTILogger.info("Can't read the properties file. " +
 			"Make sure db.properties is in the CLASSPATH" );
 		 return false;
 	  }
@@ -157,7 +157,7 @@ private boolean getExternalResources()
 		 serverField = dbProps.getProperty(poolName + ".url");
 		 if (serverField == null)
 		 {
-			System.out.println("No URL specified for " + poolName);
+			com.cannontech.clientutils.CTILogger.info("No URL specified for " + poolName);
 			continue;
 		 }
 
@@ -484,7 +484,7 @@ private javax.swing.JTextArea getJTextArea() {
 private void handleException(java.lang.Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	// System.out.println("--------- UNCAUGHT EXCEPTION ---------");
+	// com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
 	// exception.printStackTrace(System.out);
 }
 /**
@@ -536,7 +536,7 @@ private void initialize() {
 	if( getExternalResources() )
 	{
 		connect();
-		System.out.println("Connected to DB!");
+		com.cannontech.clientutils.CTILogger.info("Connected to DB!");
 	}
 		
 	// user code end
@@ -546,7 +546,7 @@ private void initialize() {
  */
 public void jButtonConfig_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
-	System.out.println("Config Button does nothing, sorry sleuth.");
+	com.cannontech.clientutils.CTILogger.info("Config Button does nothing, sorry sleuth.");
 	
 	return;
 }
@@ -574,7 +574,7 @@ public void jButtonExecute_ActionPerformed(java.awt.event.ActionEvent actionEven
 	
 	}
 	else
-		System.out.println("Unable to Execute, Not connected to database.");
+		com.cannontech.clientutils.CTILogger.info("Unable to Execute, Not connected to database.");
 	
 	return;
 }
@@ -630,7 +630,7 @@ public void windowClosing(java.awt.event.WindowEvent e)
 
 	try
 	{
-		System.out.println("SLEEPING");					
+		com.cannontech.clientutils.CTILogger.info("SLEEPING");					
 		Thread.sleep(2000);
 	}
 	catch( InterruptedException ex )

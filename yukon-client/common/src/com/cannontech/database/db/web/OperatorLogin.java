@@ -114,21 +114,21 @@ public void retrieve() throws java.sql.SQLException
 {
 	Object constraintValues[] = { new Integer( (int) getOperatorLoginID()) };
 
-System.out.println("operator login id is:  " + constraintValues[0].toString() );
+com.cannontech.clientutils.CTILogger.info("operator login id is:  " + constraintValues[0].toString() );
 
-System.out.println("selectColumns: " );
+com.cannontech.clientutils.CTILogger.info("selectColumns: " );
 for( int i = 0; i < selectColumns.length; i++ )
-System.out.println(selectColumns[i]);
+com.cannontech.clientutils.CTILogger.info(selectColumns[i]);
 
-System.out.println("tablename: " + tableName );
+com.cannontech.clientutils.CTILogger.info("tablename: " + tableName );
 
-System.out.println("constraintColumns: " );
+com.cannontech.clientutils.CTILogger.info("constraintColumns: " );
 for( int i = 0; i < constraintColumns.length; i++ )
-System.out.println(constraintColumns[i]);
+com.cannontech.clientutils.CTILogger.info(constraintColumns[i]);
 
-System.out.println("constraintValues: " );
+com.cannontech.clientutils.CTILogger.info("constraintValues: " );
 for( int i = 0; i < constraintValues.length; i++ )
-System.out.println(constraintValues[i]);
+com.cannontech.clientutils.CTILogger.info(constraintValues[i]);
 	
 	Object results[] = retrieve( selectColumns, tableName, constraintColumns, constraintValues );
 

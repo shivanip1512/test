@@ -213,7 +213,7 @@ public java.awt.Component getTableCellRendererComponent(final javax.swing.JTable
 private void handleException(java.lang.Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	System.out.println("--------- UNCAUGHT EXCEPTION ---------");
+	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
 	exception.printStackTrace(System.out);
 }
 /**
@@ -342,7 +342,7 @@ private void processDirectProgram( com.cannontech.loadcontrol.data.LMProgramDire
 		if( !found )
 		{
 			getJLabelGearName().setText("  -(Gear #" + gear.getGearNumber() + " not Found)");
-			System.out.println("*** For DirectProgram: " + dPrg.getYukonName() + ", gear #" + gear.getGearNumber() + " was not found.");
+			com.cannontech.clientutils.CTILogger.info("*** For DirectProgram: " + dPrg.getYukonName() + ", gear #" + gear.getGearNumber() + " was not found.");
 		}
 		
 		add(getJLabelGearName());

@@ -124,7 +124,7 @@ public void doHandleMessage(Object obj)
 	}
 	else
 	{
-		System.out.println("Received an unknown message of type:  " + obj.getClass() );
+		com.cannontech.clientutils.CTILogger.info("Received an unknown message of type:  " + obj.getClass() );
 	}
 		//throw new RuntimeException("Recieved a message of type " + obj.getClass() );
 	
@@ -229,7 +229,7 @@ public LMProgramBase[] getPrograms(int lmControlAreaID)
  */
 private synchronized void handleLMControlArea(LMControlArea controlArea) 
 {
-	System.out.println( new com.cannontech.clientutils.commonutils.ModifiedDate(new java.util.Date().getTime()).toString() 
+	com.cannontech.clientutils.CTILogger.info( new com.cannontech.clientutils.commonutils.ModifiedDate(new java.util.Date().getTime()).toString() 
 		+ " ---> Received a control area named " + controlArea.getYukonName() );
 
 	synchronized ( getControlAreas() )

@@ -1085,7 +1085,7 @@ public String getVersion()
 private void handleException(java.lang.Throwable exception) 
 {
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	System.out.println("--------- UNCAUGHT EXCEPTION ---------");
+	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
 	exception.printStackTrace(System.out);
 
 	getMessagePanel().messageEvent( new com.cannontech.common.util.MessageEvent(this, "The following exception occured : " + exception.getMessage(), com.cannontech.common.util.MessageEvent.ERROR_MESSAGE) );
@@ -1239,7 +1239,7 @@ public void initDividerPosition()
 				}
 				catch(InterruptedException e)
 				{
-					System.out.println("The thread that sets the divider in the JSplitPane was interrupted.");
+					com.cannontech.clientutils.CTILogger.info("The thread that sets the divider in the JSplitPane was interrupted.");
 				}
 
 				getJSplitPane().repaint();

@@ -1014,7 +1014,7 @@ public String getCellData( int rowPosition, int colPosition )
 	if( getRowCount() <= 0 || rowPosition >= getRowCount() || colPosition >= getColumnCount() ||
 		rowPosition < 0 || colPosition < 0 )
 	{
-		System.out.println(this.getClass().toString() + ".getCellData( int, int ) recieved a bad position");
+		com.cannontech.clientutils.CTILogger.info(this.getClass().toString() + ".getCellData( int, int ) recieved a bad position");
 		return "";
 	}
 	else
@@ -1064,7 +1064,7 @@ private Object getCellValueObject( PointData point, int loc )
 	}
 	catch(ArrayIndexOutOfBoundsException ex )
 	{
-		System.out.println("***** ArrayIndexOutOfBoundsException in " + this.getClass() + " of getCellValueObject(PointData, int) exception = " + ex.getMessage() + " /r/n" );
+		com.cannontech.clientutils.CTILogger.info("***** ArrayIndexOutOfBoundsException in " + this.getClass() + " of getCellValueObject(PointData, int) exception = " + ex.getMessage() + " /r/n" );
 	}
 	
 	switch( point.getType() )
@@ -1094,7 +1094,7 @@ private Object getCellValueObject( PointData point, int loc )
 			}
 			catch( NullPointerException ex )
 			{
-				System.out.println("*** Point '" + pt.getPointName() + "' of type " + com.cannontech.database.data.point.PointTypes.getType( pt.getPointData().getType() ) + " does not have an entry in the POINTUNIT table. ***");
+				com.cannontech.clientutils.CTILogger.info("*** Point '" + pt.getPointName() + "' of type " + com.cannontech.database.data.point.PointTypes.getType( pt.getPointData().getType() ) + " does not have an entry in the POINTUNIT table. ***");
 			}
 			
 			//doubleToLong.applyPattern(pattern);
@@ -1345,7 +1345,7 @@ public Object getValueAt(int aRow, int aColumn)
 	}
 	catch( ArrayIndexOutOfBoundsException ex )
 	{
-		System.out.println(getClass().toString() + ".getValueAt("+aColumn+","+aRow+") threw ArrayIndexOutOfBounds, no major problem");
+		com.cannontech.clientutils.CTILogger.info(getClass().toString() + ".getValueAt("+aColumn+","+aRow+") threw ArrayIndexOutOfBounds, no major problem");
 		
 		// we need to return a new Object to make the renderer happy
 		return new Object();
@@ -1435,7 +1435,7 @@ private void handleDisablity( Signal point )
 private void handleException(java.lang.Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	System.out.println("--------- UNCAUGHT EXCEPTION ---------");
+	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
 	exception.printStackTrace(System.out);
 	
 	TDCMainFrame.messageLog.addMessage(exception.toString() + " in : " + this.getClass(), MessageBoxFrame.ERROR_MSG );
@@ -1604,7 +1604,7 @@ private void insertAlarmDisplayAlarmedRow( Signal signal )
 				}
 				catch(NullPointerException ex )
 				{ 
-					System.out.println("**** NullPointer found in insertAlarmDisplayAlarmedRow() method : " + ex.getMessage() );
+					com.cannontech.clientutils.CTILogger.info("**** NullPointer found in insertAlarmDisplayAlarmedRow() method : " + ex.getMessage() );
 				}
 			}
 			else
@@ -1669,7 +1669,7 @@ private void insertRowByTimeStamp( Vector newRow, int soe_Tag )
 		}
 		catch( ArrayIndexOutOfBoundsException ex )
 		{
-			System.out.println("insertRowByTimeStamp() called with a invalid row number of 0");
+			com.cannontech.clientutils.CTILogger.info("insertRowByTimeStamp() called with a invalid row number of 0");
 		}
 
 		// we are in order, so insert the row at the top
@@ -1985,7 +1985,7 @@ public synchronized void processSignalReceived( Signal signal )
 	else
 	{
 
-System.out.println("*****   " + new ModifiedDate(signal.getTimeStamp().getTime()) );
+com.cannontech.clientutils.CTILogger.info("*****   " + new ModifiedDate(signal.getTimeStamp().getTime()) );
 		handleDisablity( signal );
 		handleAlarm( signal );
 		
@@ -2228,7 +2228,7 @@ private void setCorrectRowValue( PointData point, java.util.Date timeStamp, int 
 		}
 		catch(ArrayIndexOutOfBoundsException ex )
 		{
-			System.out.println("***** ArrayIndexOutOfBoundsException in " + this.getClass() + " of setCorrectRowValue() exception = " + ex.getMessage() + " /r/n" );
+			com.cannontech.clientutils.CTILogger.info("***** ArrayIndexOutOfBoundsException in " + this.getClass() + " of setCorrectRowValue() exception = " + ex.getMessage() + " /r/n" );
 		}
 		
 	}
@@ -2476,7 +2476,7 @@ public void swapColumnTypes(int fromIndx, int toIndx)
 	if( fromIndx < 0 || toIndx < 0 || fromIndx >= columnTypeName.size() || toIndx >= columnTypeName.size() )
 		return;
 
-System.out.println("swapping " + columnTypeName.elementAt(fromIndx) + " with " + columnTypeName.elementAt(toIndx) );
+com.cannontech.clientutils.CTILogger.info("swapping " + columnTypeName.elementAt(fromIndx) + " with " + columnTypeName.elementAt(toIndx) );
 
 	String tmp = columnTypeName.elementAt(fromIndx).toString();
 	columnTypeName.setElementAt( columnTypeName.elementAt(toIndx), fromIndx );

@@ -1133,7 +1133,7 @@ public ConstantTableModel getTableModel()
 private void handleException(java.lang.Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	System.out.println("--------- UNCAUGHT EXCEPTION ---------");
+	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
 	exception.printStackTrace(System.out);
 }
 /**
@@ -1268,7 +1268,7 @@ public void jButtonPrinterSetup_ActionPerformed(java.awt.event.ActionEvent actio
 	
 	printerJob.printDialog();
 
-System.out.println(	printerJob.getUserName() + "  " + 
+com.cannontech.clientutils.CTILogger.info(	printerJob.getUserName() + "  " + 
 	printerJob.toString() );
 */
 
@@ -1358,7 +1358,7 @@ private void retrieveParameters()
 		}
 		catch( com.cannontech.clientutils.parametersfile.ParameterNotFoundException ex )
 		{
-			System.out.println(ex.getMessage()); // no biggy, keep going
+			com.cannontech.clientutils.CTILogger.info(ex.getMessage()); // no biggy, keep going
 		}
 		
 	}

@@ -133,11 +133,11 @@ private Object[] getDeviceNameAndPointName( long id )
  */
 public void receivedDBChangMsg( DBChangeMsg msg ) 
 {
-/*	System.out.println("DATABASE CHANGE RECEIVED DB = "+ msg.getDatabase() );
-	System.out.println("				     DbType = " + msg.getDBType() );
-	System.out.println("					  	 ID = " + msg.getID() );
-	System.out.println("	  			   Priority = " + msg.getPriority() );
-	System.out.println("	  	  			   Time = " + msg.getTimeStamp() );
+/*	com.cannontech.clientutils.CTILogger.info("DATABASE CHANGE RECEIVED DB = "+ msg.getDatabase() );
+	com.cannontech.clientutils.CTILogger.info("				     DbType = " + msg.getDBType() );
+	com.cannontech.clientutils.CTILogger.info("					  	 ID = " + msg.getID() );
+	com.cannontech.clientutils.CTILogger.info("	  			   Priority = " + msg.getPriority() );
+	com.cannontech.clientutils.CTILogger.info("	  	  			   Time = " + msg.getTimeStamp() );
 */
 }
 /**
@@ -155,19 +155,19 @@ public void receivedNullMsg()
  */
 public void receivedPointData( PointData point ) 
 {	
-/*	System.out.println("POINTDATA RECEIVED -- PointID = " + point.getId() );
-	System.out.println("					  	Value = " + point.getValue() );
-	System.out.println("					   Forced = " + point.getForced() );
-	System.out.println("					  	Limit = " + point.getLimit() );
-	System.out.println("					   Offset = " + point.getOffset() );
-	System.out.println("					 Priority = " + point.getPriority() );
-	System.out.println("					  Quality = " + point.getQuality() );
-	System.out.println("					  	  Sig = " + ((point.getSig()==null) ? "null" : "NOT NULL") );
-	System.out.println("					      Str = " + point.getStr() );
-	System.out.println("					  	 Tags = " + point.getTags() );
-	System.out.println("					  	 Time = " + point.getTime() );
-	System.out.println("					TimeStamp = " + point.getTimeStamp() );
-	System.out.println("					  	Type  = " + point.getType() );
+/*	com.cannontech.clientutils.CTILogger.info("POINTDATA RECEIVED -- PointID = " + point.getId() );
+	com.cannontech.clientutils.CTILogger.info("					  	Value = " + point.getValue() );
+	com.cannontech.clientutils.CTILogger.info("					   Forced = " + point.getForced() );
+	com.cannontech.clientutils.CTILogger.info("					  	Limit = " + point.getLimit() );
+	com.cannontech.clientutils.CTILogger.info("					   Offset = " + point.getOffset() );
+	com.cannontech.clientutils.CTILogger.info("					 Priority = " + point.getPriority() );
+	com.cannontech.clientutils.CTILogger.info("					  Quality = " + point.getQuality() );
+	com.cannontech.clientutils.CTILogger.info("					  	  Sig = " + ((point.getSig()==null) ? "null" : "NOT NULL") );
+	com.cannontech.clientutils.CTILogger.info("					      Str = " + point.getStr() );
+	com.cannontech.clientutils.CTILogger.info("					  	 Tags = " + point.getTags() );
+	com.cannontech.clientutils.CTILogger.info("					  	 Time = " + point.getTime() );
+	com.cannontech.clientutils.CTILogger.info("					TimeStamp = " + point.getTimeStamp() );
+	com.cannontech.clientutils.CTILogger.info("					  	Type  = " + point.getType() );
 */
 	//receivedSignal( point.getSig() );
 
@@ -188,16 +188,16 @@ public void receivedPointData( PointData point )
  */
 public void receivedSignal( Signal point ) 
 {
-/*	System.out.println("SIGNAL RECEIVED for ptID = "+ point.getId() );
-	System.out.println(" 	  	  classification = "+ point.getClassification());
-	System.out.println(" 	  	  		  Action = "+ point.getAction());
-	System.out.println(" 	  	  			Flag = "+ point.getFlag());
-	System.out.println(" 	  	  		 LogType = "+ point.getLogType());
-	System.out.println(" 	  	  		Priority = "+ point.getPriority());
-	System.out.println(" 	  	  			 SOE = "+ point.getSoeTag());
-	System.out.println(" 	  	  			 Str = "+ point.getStr());
-	System.out.println(" 	  	  	   TimeStamp = "+ point.getTimeStamp());
-	System.out.println(" 	  	  			User = "+ point.getUser());
+/*	com.cannontech.clientutils.CTILogger.info("SIGNAL RECEIVED for ptID = "+ point.getId() );
+	com.cannontech.clientutils.CTILogger.info(" 	  	  classification = "+ point.getClassification());
+	com.cannontech.clientutils.CTILogger.info(" 	  	  		  Action = "+ point.getAction());
+	com.cannontech.clientutils.CTILogger.info(" 	  	  			Flag = "+ point.getFlag());
+	com.cannontech.clientutils.CTILogger.info(" 	  	  		 LogType = "+ point.getLogType());
+	com.cannontech.clientutils.CTILogger.info(" 	  	  		Priority = "+ point.getPriority());
+	com.cannontech.clientutils.CTILogger.info(" 	  	  			 SOE = "+ point.getSoeTag());
+	com.cannontech.clientutils.CTILogger.info(" 	  	  			 Str = "+ point.getStr());
+	com.cannontech.clientutils.CTILogger.info(" 	  	  	   TimeStamp = "+ point.getTimeStamp());
+	com.cannontech.clientutils.CTILogger.info(" 	  	  			User = "+ point.getUser());
 */
 
 	Object[] names = getDeviceNameAndPointName( point.getId() );		

@@ -352,7 +352,7 @@ private String getTableQuery()
 private void handleException(java.lang.Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	System.out.println("--------- UNCAUGHT EXCEPTION CalendarDialog() ---------");
+	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION CalendarDialog() ---------");
 	exception.printStackTrace(System.out);
 }
 /**

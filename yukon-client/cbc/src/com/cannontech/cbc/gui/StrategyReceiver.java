@@ -170,7 +170,7 @@ private CBCClientConnection getConnectionWrapper()
 			connectionWrapper.addObserver( this );
 
 		 	if( connectionWrapper.isConnValid() )
-				System.out.println("Retrieving CBC strategies...");
+				com.cannontech.clientutils.CTILogger.info("Retrieving CBC strategies...");
 		}
 		catch( Exception e)
 		{
@@ -501,6 +501,6 @@ private void updateAreaList(CBCSubAreaNames areaNames)
 
 	}
 
-System.out.println( "			SIZEJCOMB = " + getJComboBox().getModel().getSize() );
+com.cannontech.clientutils.CTILogger.info( "			SIZEJCOMB = " + getJComboBox().getModel().getSize() );
 }
 }

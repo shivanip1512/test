@@ -417,7 +417,7 @@ java.util.Date timerStart = new java.util.Date();
 //temp code
 timerStop = new java.util.Date();
 System.out.print( (timerStop.getTime() - timerStart.getTime())*.001 );
-System.out.println( " Secs for TreeViewPanel.itemStateChanged(ItemEvent) setModel" );
+com.cannontech.clientutils.CTILogger.info( " Secs for TreeViewPanel.itemStateChanged(ItemEvent) setModel" );
 //temp code
 		
 	}

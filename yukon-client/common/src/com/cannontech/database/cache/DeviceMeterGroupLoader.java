@@ -66,7 +66,7 @@ public void run()
 			e.printStackTrace();
 		}
 
-		System.out.println( ((System.currentTimeMillis() - timer)*.001) + " Secs for DeviceMeterGroupLoader");
+		com.cannontech.clientutils.CTILogger.info( ((System.currentTimeMillis() - timer)*.001) + " Secs for DeviceMeterGroupLoader");
 	}
 }
 }

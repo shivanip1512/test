@@ -249,7 +249,7 @@ public Object getValueAt(int row, int col)
 					if( state == null )
 					{
 						if( row == 0 )
-							System.out.println("***MINOR ERROR*** Expecting " + feeder.getCcName() + " to have at least 1 capbank in the same pending state. (feeder)");
+							com.cannontech.clientutils.CTILogger.info("***MINOR ERROR*** Expecting " + feeder.getCcName() + " to have at least 1 capbank in the same pending state. (feeder)");
 
 						state = "PENDING";  //we dont know what Pending state its in
 					}

@@ -308,7 +308,7 @@ public synchronized java.util.List getAllGraphTaggedPoints()
 			   //temp code
 			   timerStop = new java.util.Date();
 			   System.out.print( (timerStop.getTime() - timerStart.getTime())*.001 );
-			   System.out.println( " Secs for getAllGraphTaggedPoints()" );
+			   com.cannontech.clientutils.CTILogger.info( " Secs for getAllGraphTaggedPoints()" );
 			   //temp code
 
 
@@ -567,7 +567,7 @@ public synchronized java.util.List getAllUnusedCCDevices()
 	   //temp code
 	   java.util.Date timerStop = new java.util.Date();
 	   System.out.print( (timerStop.getTime() - timerStart.getTime())*.001 );
-	   System.out.println( " Secs for getAllUnusedCCPaos()" );
+	   com.cannontech.clientutils.CTILogger.info( " Secs for getAllUnusedCCPaos()" );
 	   //temp code
 
 		}
@@ -629,7 +629,7 @@ public static synchronized DefaultDatabaseCache getInstance()
 {
 	if( cache == null )
 	{
-		System.out.println("CACHE: CREATING NEW CACHE REFERENCE OBJECT");
+		com.cannontech.clientutils.CTILogger.info("CACHE: CREATING NEW CACHE REFERENCE OBJECT");
 		cache = new DefaultDatabaseCache();
 		cache.setDbChangeListener( new CacheDBChangeListener() );
 	}
@@ -644,7 +644,7 @@ public static synchronized DefaultDatabaseCache getInstance()
 
 	if( c == null ) //No cache, or we got GC'd
 	{
-		System.out.println("CACHE: CREATING NEW CACHE REFERENCE OBJECT");
+		com.cannontech.clientutils.CTILogger.info("CACHE: CREATING NEW CACHE REFERENCE OBJECT");
 		c = new DefaultDatabaseCache();
 		//create the DBChange listener
 		c.setDbChangeListener( new CacheDBChangeListener() );
@@ -1445,7 +1445,7 @@ public synchronized void loadAllCache()
 	{
 java.util.Date timerStart = new java.util.Date();
 		runLoaders( runners );
-System.out.println( 
+com.cannontech.clientutils.CTILogger.info( 
 	((new java.util.Date().getTime() - timerStart.getTime())*.001) + " Secs for LOADER" );
 
 	}

@@ -244,7 +244,7 @@ public static final CICustomerBase getCustomerContact(Integer contactID, String 
 		}
 		else
 		{
-System.out.println(GET_CUSTOMER_FROM_CONTACT_SQL);
+com.cannontech.clientutils.CTILogger.info(GET_CUSTOMER_FROM_CONTACT_SQL);
 			pstmt = conn.prepareStatement(GET_CUSTOMER_FROM_CONTACT_SQL);
 			pstmt.setInt( 1, contactID.intValue() );
 			

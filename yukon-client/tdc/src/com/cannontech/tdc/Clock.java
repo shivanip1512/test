@@ -69,7 +69,7 @@ public void run()
 		}
 		catch (InterruptedException e) 
 		{
-			//System.out.println("com.cannontech.tdc.Clock thread interrupted");
+			//com.cannontech.clientutils.CTILogger.info("com.cannontech.tdc.Clock thread interrupted");
 			break; // we were interrupted, lets skidaddle
 		}
 

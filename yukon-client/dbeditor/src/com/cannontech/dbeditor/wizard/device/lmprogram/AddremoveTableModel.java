@@ -51,7 +51,7 @@ public void addRow(Object obj)
 		getRows().add( row );
 	}
 	else
-		System.out.println("*** WRONG : " + obj.getClass().getName() );
+		com.cannontech.clientutils.CTILogger.info("*** WRONG : " + obj.getClass().getName() );
 	//{
 		//RowValue row = new RowValue( (com.cannontech.database.data.device.customer.CustomerBase)obj );
 		//getRows().add( row );
@@ -78,7 +78,7 @@ public void addRow(Object obj, String reqAck )
 		getRows().add( row );
 	}
 	else
-		System.out.println("*** WRONG : " + obj.getClass().getName() );
+		com.cannontech.clientutils.CTILogger.info("*** WRONG : " + obj.getClass().getName() );
 /*	{
 		RowValue row = new RowValue( (com.cannontech.database.data.device.customer.CustomerBase)obj );
 		row.reqAck = (reqAck.equalsIgnoreCase("Y") ? new Boolean(true) : new Boolean(false) );
@@ -216,7 +216,7 @@ public void setValueAt(Object value, int row, int col)
 				break;
 				
 			default:
-				System.out.println(this.getClass() + " tried to set value for an invalid column, column number " + col );
+				com.cannontech.clientutils.CTILogger.info(this.getClass() + " tried to set value for an invalid column, column number " + col );
 		}
 	}
 }

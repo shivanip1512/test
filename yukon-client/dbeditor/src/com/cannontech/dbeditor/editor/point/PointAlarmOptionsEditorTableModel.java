@@ -259,7 +259,7 @@ public void setValueAt(Object value, int row, int col)
 				break;
 				
 			default:
-				System.out.println(this.getClass() + " tried to set value for an invalid column, column number " + col );
+				com.cannontech.clientutils.CTILogger.info(this.getClass() + " tried to set value for an invalid column, column number " + col );
 		}
 	}
 }

@@ -106,7 +106,7 @@ public void delete() throws java.sql.SQLException
 {
 
 	//dont allow deletes, may get ugly!!
-	System.out.println("Delete not allowed int " + this.getClass().getName() );
+	com.cannontech.clientutils.CTILogger.info("Delete not allowed int " + this.getClass().getName() );
 }
 /**
  * Insert the method's description here.
@@ -223,9 +223,9 @@ public void update() throws java.sql.SQLException {
 	/* update(): Don't do this, MultiDBPersistent's
 		 are used for coping multiple Objects at one time */
 		 
-	System.out.println("************************************************");
-	System.out.println("update(): Don't do this, MultiDBPersistent's");
-	System.out.println("are used for coping multiple Objects at one time");
-	System.out.println("************************************************");
+	com.cannontech.clientutils.CTILogger.info("************************************************");
+	com.cannontech.clientutils.CTILogger.info("update(): Don't do this, MultiDBPersistent's");
+	com.cannontech.clientutils.CTILogger.info("are used for coping multiple Objects at one time");
+	com.cannontech.clientutils.CTILogger.info("************************************************");
 }
 }

@@ -16,10 +16,10 @@ public static void main(String[] args)
 {
 	if( args.length < 5 )
 	{
-		System.out.println("Usage:  PointChangeSource vangoghmachine port numberofchanges delay pointcount { pointID } { pointType }");
-		System.out.println("specify numberofchanges = -1 to keep sending changes forever");
-		System.out.println("note that port 1510 has been the default");
-		System.out.println("PointTypes : 0=STATUS  1=ANALOG");		
+		com.cannontech.clientutils.CTILogger.info("Usage:  PointChangeSource vangoghmachine port numberofchanges delay pointcount { pointID } { pointType }");
+		com.cannontech.clientutils.CTILogger.info("specify numberofchanges = -1 to keep sending changes forever");
+		com.cannontech.clientutils.CTILogger.info("note that port 1510 has been the default");
+		com.cannontech.clientutils.CTILogger.info("PointTypes : 0=STATUS  1=ANALOG");		
 		System.exit(0);
 	}
 
@@ -63,7 +63,7 @@ public static void main(String[] args)
 	}
 
 	//First do a registration
-	System.out.println("Registering client with vangogh");
+	com.cannontech.clientutils.CTILogger.info("Registering client with vangogh");
 	com.cannontech.message.dispatch.message.Registration reg = new com.cannontech.message.dispatch.message.Registration();
 	reg.setAppName("Point Change Source - Java" + (new java.util.Date()).getTime() );
 	reg.setAppIsUnique(0);
@@ -73,14 +73,14 @@ public static void main(String[] args)
 	conn.write( reg );
 
 	//Do a loopback
-/*	System.out.println("Attempting a loopback command");
+/*	com.cannontech.clientutils.CTILogger.info("Attempting a loopback command");
 	com.cannontech.message.dispatch.message.Command cmd = new com.cannontech.message.dispatch.message.Command();
 	cmd.setOperation( com.cannontech.message.dispatch.message.Command.NO_OP );
 	conn.write( cmd );
 
 	//Expect the message back
 	Object response = conn.read();
-	System.out.println("Received loopback:  " + response );*/
+	com.cannontech.clientutils.CTILogger.info("Received loopback:  " + response );*/
 
 	//Send changes
 	int numSent = 0;
@@ -120,7 +120,7 @@ public static void main(String[] args)
 		conn.write( outMsg );
 		numSent++;
 		
-		System.out.println((new java.util.Date()).toString() + " - Sent change #" + numSent);
+		com.cannontech.clientutils.CTILogger.info((new java.util.Date()).toString() + " - Sent change #" + numSent);
 		try
 		{
 			Thread.sleep(delay);

@@ -2051,7 +2051,7 @@ public void handleDBChangeMsg( com.cannontech.message.dispatch.message.DBChangeM
 						}			
 					}
 					else
-						System.out.println("**** Unable to find matching object for the DBChangeMsg = " + msg.getDatabase() +
+						com.cannontech.clientutils.CTILogger.info("**** Unable to find matching object for the DBChangeMsg = " + msg.getDatabase() +
 									" and the object is = " + userObject.getClass().getName() );
 
 				}
@@ -2073,7 +2073,7 @@ public void handleDBChangeMsg( com.cannontech.message.dispatch.message.DBChangeM
 			txtMsg.toString(), MessageEvent.INFORMATION_MESSAGE) );
 	}
 	else
-		System.out.println("DBChange Message received that originated from ourself, doing nothing.");
+		com.cannontech.clientutils.CTILogger.info("DBChange Message received that originated from ourself, doing nothing.");
 
 }
 /**
@@ -2083,7 +2083,7 @@ public void handleDBChangeMsg( com.cannontech.message.dispatch.message.DBChangeM
 private void handleException(Throwable exception) 
 {
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	System.out.println("--------- UNCAUGHT EXCEPTION ---------");
+	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
 	exception.printStackTrace(System.out);
 }
 /**
@@ -2167,7 +2167,7 @@ private void initConnections()
 
 				if(e.getClickCount() == 1) 
 				{
-					//System.out.println( "---Tree single ---");					
+					//com.cannontech.clientutils.CTILogger.info( "---Tree single ---");					
 				}
 				else if(e.getClickCount() == 2) 
 				{
@@ -2350,7 +2350,7 @@ timerStart = new java.util.Date();
 //temp code
 timerStop = new java.util.Date();
 System.out.print( (timerStop.getTime() - timerStart.getTime())*.001 );
-System.out.println( " Secs for DatabaseEditor.main()" );
+com.cannontech.clientutils.CTILogger.info( " Secs for DatabaseEditor.main()" );
 //temp code
 	}
 	catch( Throwable t )

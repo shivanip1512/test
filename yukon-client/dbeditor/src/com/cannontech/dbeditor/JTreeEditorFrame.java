@@ -95,7 +95,7 @@ public void setVisible(boolean value)
 	}
 	catch(java.beans.PropertyVetoException e )
 	{
-		System.out.println("*** PropertyVetoException() occured in setVisible(boolean) of " + getClass().getName() + " : " + e.getMessage() );
+		com.cannontech.clientutils.CTILogger.info("*** PropertyVetoException() occured in setVisible(boolean) of " + getClass().getName() + " : " + e.getMessage() );
 	}
 	
 }

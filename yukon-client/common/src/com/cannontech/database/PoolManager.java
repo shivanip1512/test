@@ -195,7 +195,7 @@ public String[] getAllPoolsStrings()
 	  }
 	  else
 	  {
-		   System.out.println("*** LogFile value not found, not logging database activity."); 
+		   com.cannontech.clientutils.CTILogger.info("*** LogFile value not found, not logging database activity."); 
 			pw = null;
 	  }
 
@@ -210,7 +210,7 @@ public String[] getAllPoolsStrings()
 		 catch (Exception e)
 		 {
 			 // no biggy!
-			 System.out.println("*** Unable to set the PrintSQL to the filenamed : " + com.cannontech.common.util.CtiUtilities.getLogDirPath() + "/" + printSQLfile );
+			 com.cannontech.clientutils.CTILogger.info("*** Unable to set the PrintSQL to the filenamed : " + com.cannontech.common.util.CtiUtilities.getLogDirPath() + "/" + printSQLfile );
 		 }
 	  }
  

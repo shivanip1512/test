@@ -141,7 +141,7 @@ private java.lang.String getType() {
 private void handleException(java.lang.Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	System.out.println("--------- UNCAUGHT EXCEPTION ---------");
+	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
 	exception.printStackTrace(System.out);
 }
 /**
@@ -229,11 +229,11 @@ public void updateScriptText(final com.cannontech.message.macs.message.ScriptFil
 	{
 		if( getType().equalsIgnoreCase(Schedule.SCRIPT_TYPE) )
 		{
-			System.out.println("		** RECEIVED AN updateScriptText() msg");
+			com.cannontech.clientutils.CTILogger.info("		** RECEIVED AN updateScriptText() msg");
 
 			if( inputPanels == null )
 			{
-				System.out.println("		   Waiting for input panels to be not null...");
+				com.cannontech.clientutils.CTILogger.info("		   Waiting for input panels to be not null...");
 				synchronized( this )
 				{ wait(); }					
 			}
@@ -242,7 +242,7 @@ public void updateScriptText(final com.cannontech.message.macs.message.ScriptFil
 			{
 				if( inputPanels[i] instanceof com.cannontech.macs.schedule.wizard.ScriptSchedulePanel )
 				{
-					System.out.println("		*** UPDATE SCRIPT TEXT SET");
+					com.cannontech.clientutils.CTILogger.info("		*** UPDATE SCRIPT TEXT SET");
 					((com.cannontech.macs.schedule.wizard.ScriptSchedulePanel)inputPanels[i]).setScriptValues(file);
 					((com.cannontech.macs.schedule.wizard.ScriptSchedulePanel)inputPanels[i]).repaint();
 					

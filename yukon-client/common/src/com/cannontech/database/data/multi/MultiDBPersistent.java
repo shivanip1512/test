@@ -26,10 +26,10 @@ public void retrieve() throws java.sql.SQLException {
 	/* retrieve(): Don't do this, MultiDBPersistent's
 		 are used for coping multiple Objects at one time */
 		 
-	System.out.println("************************************************");
-	System.out.println("retrieve(): Don't do this, MultiDBPersistent's");
-	System.out.println("are used for coping multiple Objects at one time");
-	System.out.println("************************************************");
+	com.cannontech.clientutils.CTILogger.info("************************************************");
+	com.cannontech.clientutils.CTILogger.info("retrieve(): Don't do this, MultiDBPersistent's");
+	com.cannontech.clientutils.CTILogger.info("are used for coping multiple Objects at one time");
+	com.cannontech.clientutils.CTILogger.info("************************************************");
 }
 /**
  * This method was created in VisualAge.

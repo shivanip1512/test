@@ -194,7 +194,7 @@ public void dropActionChanged(java.awt.dnd.DropTargetDragEvent dtde) {}
 private void handleException(java.lang.Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	System.out.println("--------- UNCAUGHT EXCEPTION DragAndDropTable() ---------");
+	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION DragAndDropTable() ---------");
 	exception.printStackTrace(System.out);
 }
 /**

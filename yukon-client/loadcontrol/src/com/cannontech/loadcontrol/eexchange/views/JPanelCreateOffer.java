@@ -928,9 +928,9 @@ public LMProgramEnergyExchange getSelectedEnergyExchangeProgram()
 			return (LMProgramEnergyExchange)getJComboBoxProgram().getSelectedItem();
 		else
 		{
-			System.out.println("*** Found an object of type : " + getJComboBoxProgram().getSelectedItem().getClass().getName());
-			System.out.println("    in the JComboBox of " + this.getClass().getName());
-			System.out.println("    when expecting object of type LMProgramEnergyExchange only!!!");
+			com.cannontech.clientutils.CTILogger.info("*** Found an object of type : " + getJComboBoxProgram().getSelectedItem().getClass().getName());
+			com.cannontech.clientutils.CTILogger.info("    in the JComboBox of " + this.getClass().getName());
+			com.cannontech.clientutils.CTILogger.info("    when expecting object of type LMProgramEnergyExchange only!!!");
 		}
 
 	}
@@ -944,7 +944,7 @@ public LMProgramEnergyExchange getSelectedEnergyExchangeProgram()
 private void handleException(java.lang.Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	System.out.println("--------- UNCAUGHT EXCEPTION ---------");
+	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
 	exception.printStackTrace(System.out);
 }
 /**

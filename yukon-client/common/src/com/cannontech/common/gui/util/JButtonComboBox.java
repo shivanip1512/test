@@ -81,7 +81,7 @@ public JButtonComboBox(javax.swing.ComboBoxModel aModel)
 private void handleException(java.lang.Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	System.out.println("--------- UNCAUGHT EXCEPTION ---------");
+	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
 	exception.printStackTrace(System.out);
 }
 /**
@@ -111,8 +111,8 @@ addItem("Strategic");
 }
 public void itemStateChanged( java.awt.event.ItemEvent e )
 {
-	System.out.println(e.getItem() +" " + e.getID() + " " + java.awt.AWTEvent.ITEM_EVENT_MASK ); //e.DESELECTED == 2 e.SELECTED == 1
-	System.out.println("  Item DONE!!" + ((javax.swing.JComboBox)e.getSource()).getSelectedItem() );
+	com.cannontech.clientutils.CTILogger.info(e.getItem() +" " + e.getID() + " " + java.awt.AWTEvent.ITEM_EVENT_MASK ); //e.DESELECTED == 2 e.SELECTED == 1
+	com.cannontech.clientutils.CTILogger.info("  Item DONE!!" + ((javax.swing.JComboBox)e.getSource()).getSelectedItem() );
 
 
 	if( this.getItemCount() > 0 )

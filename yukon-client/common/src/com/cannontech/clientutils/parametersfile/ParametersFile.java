@@ -184,7 +184,7 @@ private String getToken( String value, String location )
  */
 private void handleException(Throwable t) 
 {
-	System.out.println("--------- UNCAUGHT EXCEPTION ---------");
+	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
 	t.printStackTrace(System.out);
 }
 /**
@@ -275,7 +275,7 @@ public boolean writeNewParameters()
 	boolean retValue = false;
 	
 	if( newParameterValues == null )
-		System.out.println("Unable to write New Parameters because it is NULL");
+		com.cannontech.clientutils.CTILogger.info("Unable to write New Parameters because it is NULL");
 	else
 	{
 		try

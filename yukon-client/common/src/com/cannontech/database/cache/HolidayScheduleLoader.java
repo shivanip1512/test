@@ -77,7 +77,7 @@ public void run()
 		//temp code
 		timerStop = new java.util.Date();
 		System.out.print((timerStop.getTime() - timerStart.getTime()) * .001);
-		System.out.println(" Secs for HolidayScheduleLoader");
+		com.cannontech.clientutils.CTILogger.info(" Secs for HolidayScheduleLoader");
 		//temp code
 	}
 

@@ -79,9 +79,9 @@ public java.lang.String[][] getKeysAndValues() {
 	}
 	catch( java.io.FileNotFoundException fnfe)
 	{
-		System.out.println("*** File Not Found Exception:");
-		System.out.println( this.getClass().getName() + ".getKeysAndValues()" );
-		System.out.println("  " + fnfe.getMessage());
+		com.cannontech.clientutils.CTILogger.info("*** File Not Found Exception:");
+		com.cannontech.clientutils.CTILogger.info( this.getClass().getName() + ".getKeysAndValues()" );
+		com.cannontech.clientutils.CTILogger.info("  " + fnfe.getMessage());
 		fnfe.printStackTrace(System.out);
 	}
 	catch( java.io.IOException ioe )

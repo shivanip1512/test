@@ -27,6 +27,6 @@ public static void main(String[] args)
 	//Object[] a = DataBaseInteraction.queryResults( "select * from rawpointhistory", null );
 	Object[] a = DataBaseInteraction.queryResults( "", null );
 
-System.out.println(a.length + " ");
+com.cannontech.clientutils.CTILogger.info(a.length + " ");
 }
 }

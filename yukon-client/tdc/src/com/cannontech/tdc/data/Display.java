@@ -252,7 +252,7 @@ public static void setDISPLAY_TITLES(Object[] newDISPLAY_TITLES)
 		}
 		catch( ArrayIndexOutOfBoundsException e )
 		{
-			System.out.println("*** " + DISPLAY_TITLES[i] + " not found in the database, the client for this display title must not be available.");
+			com.cannontech.clientutils.CTILogger.info("*** " + DISPLAY_TITLES[i] + " not found in the database, the client for this display title must not be available.");
 		}  //we really dont care here, but we don not want the app to lock!!
 	}
 }

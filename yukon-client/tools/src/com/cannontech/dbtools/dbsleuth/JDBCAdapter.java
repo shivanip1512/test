@@ -38,7 +38,7 @@ public class JDBCAdapter extends AbstractTableModel {
 					   String user, String passwd) {
 		try {
 			Class.forName(driverName);
-			System.out.println("Opening db connection");
+			com.cannontech.clientutils.CTILogger.info("Opening db connection");
 
 			connection = DriverManager.getConnection(url, user, passwd);
 			statement = connection.createStatement();
@@ -59,7 +59,7 @@ public class JDBCAdapter extends AbstractTableModel {
 	 } 
 public void close() throws SQLException 
 {
-	System.out.println("Closing db connection");
+	com.cannontech.clientutils.CTILogger.info("Closing db connection");
 
 	if( resultSet != null )
 		resultSet.close();
@@ -225,7 +225,7 @@ public void setValueAt(Object value, int row, int column)
 	  // Some of the drivers seem buggy, tableName should not be null.
 	  if (tableName == null)
 	  {
-		 System.out.println("Table name returned null.");
+		 com.cannontech.clientutils.CTILogger.info("Table name returned null.");
 	  }
 	  String columnName = getColumnName(column);
 	  String query =
@@ -252,8 +252,8 @@ public void setValueAt(Object value, int row, int column)
 		 }
 		 query = query + colName + " = " + dbRepresentation(col, getValueAt(row, col));
 	  }
-	  System.out.println(query);
-	  System.out.println("Not sending update to database");
+	  com.cannontech.clientutils.CTILogger.info(query);
+	  com.cannontech.clientutils.CTILogger.info("Not sending update to database");
 	  // statement.executeQuery(query);
    }
    catch (SQLException e)

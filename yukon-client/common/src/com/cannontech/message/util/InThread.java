@@ -71,14 +71,14 @@ public void run() {
 
 			if( this.isInterrupted() )
 			{
-				System.out.println("inThread was Interrupted");
+				com.cannontech.clientutils.CTILogger.info("inThread was Interrupted");
 				return;
 			}
 		}		
 	}
 	catch( java.io.IOException e )
 	{
-		System.out.println("  IOException in inThread occured : " + e.getMessage());
+		com.cannontech.clientutils.CTILogger.info("  IOException in inThread occured : " + e.getMessage());
 	}	
 	
 }

@@ -41,12 +41,12 @@ public class CTILogger
 	}
 
 
-   public static void debug( String msg )
+   public static void debug( Object msg )
    {      
       logger.debug( msg );
    }
 
-   public static void info( String msg )
+   public static void info( Object msg )
    {      
       logger.info( msg );
    }
@@ -56,23 +56,27 @@ public class CTILogger
       logger.info( new Long(msg) );
    }
 
+   public static void info( boolean msg )
+   {      
+      logger.info( new Boolean(msg) );
+   }
 
-   public static void error( String msg )
+   public static void error( Object msg )
    {      
       logger.error( msg );
    }
 
-   public static void error( String msg, Throwable t )
+   public static void error( Object msg, Throwable t )
    {      
       logger.error( msg, t );
    }
 
-   public static void fatal( String msg )
+   public static void fatal( Object msg )
    {      
       logger.fatal( msg );
    }
 
-   public static void fatal( String msg, Throwable t )
+   public static void fatal( Object msg, Throwable t )
    {      
       logger.fatal( msg, t );
    }

@@ -858,7 +858,7 @@ public java.util.Date getStartTime()
 		}
 		catch( Exception e )
 		{
-			System.out.println("*** Received a bad value in getStartTime() of " + this.getClass().getName() + " : " + e.getMessage() );
+			com.cannontech.clientutils.CTILogger.info("*** Received a bad value in getStartTime() of " + this.getClass().getName() + " : " + e.getMessage() );
 			return com.cannontech.common.util.CtiUtilities.get1990GregCalendar().getTime();
 		}
 		
@@ -903,7 +903,7 @@ public java.util.Date getStopTime()
 		}
 		catch( Exception e )
 		{
-			System.out.println("*** Received a bad value in getStopTime() of " + this.getClass().getName() + " : " + e.getMessage() );
+			com.cannontech.clientutils.CTILogger.info("*** Received a bad value in getStopTime() of " + this.getClass().getName() + " : " + e.getMessage() );
 			return com.cannontech.common.util.CtiUtilities.get1990GregCalendar().getTime();
 		}
 		
@@ -916,7 +916,7 @@ public java.util.Date getStopTime()
 private void handleException(java.lang.Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	System.out.println("--------- UNCAUGHT EXCEPTION ---------");
+	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
 	exception.printStackTrace(System.out);
 }
 /**

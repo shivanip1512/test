@@ -62,13 +62,13 @@ public void run() {
 	}
 	catch( java.io.IOException e )
 	{
-		System.out.println("  IOException in outThread : " + e.getMessage());
+		com.cannontech.clientutils.CTILogger.info("  IOException in outThread : " + e.getMessage());
 	}
 	catch( InterruptedException ie )
 	{
-		System.out.println("  InterruptedException in outThread : " + ie.getMessage());
+		com.cannontech.clientutils.CTILogger.info("  InterruptedException in outThread : " + ie.getMessage());
 	}
 
-	System.out.println("exiting OutThread::run");
+	com.cannontech.clientutils.CTILogger.info("exiting OutThread::run");
 }
 }

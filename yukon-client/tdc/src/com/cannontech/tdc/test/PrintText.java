@@ -65,7 +65,7 @@ private void displayData()
 	if( data != null && data.size() > 0 )
 	{
 		for( int i = 0; i < data.size(); i++ )
-			System.out.println(data.elementAt(i));
+			com.cannontech.clientutils.CTILogger.info(data.elementAt(i));
 	}
 }
 /**
@@ -127,7 +127,7 @@ public int print(java.awt.Graphics pg, java.awt.print.PageFormat format, int pag
 	  
 		Object obj =  data.elementAt( row );
 		String str = obj.toString();
-System.out.println("STR = " + str );		
+com.cannontech.clientutils.CTILogger.info("STR = " + str );		
 		pg.drawString(str, 0, y);
 	}
 */
@@ -137,7 +137,7 @@ g2d.translate( (int)format.getImageableX(),
 g2d.setFont( new java.awt.Font("Monospaced", java.awt.Font.PLAIN, 8) );
 
 Object obj =  data.elementAt( 0 );
-System.out.println("STR = " + obj.toString() );		
+com.cannontech.clientutils.CTILogger.info("STR = " + obj.toString() );		
 g2d.drawString(obj.toString(), 0, 30);
 
 	System.gc();
@@ -193,14 +193,14 @@ public int printNew(java.awt.Graphics pg, java.awt.print.PageFormat format, int 
 	  
 		Object obj =  data.elementAt( row );
 		String str = obj.toString();
-System.out.println("STR = " + str );		
+com.cannontech.clientutils.CTILogger.info("STR = " + str );		
 		pg.drawString(str, 0, y);
 	}
 */
 Graphics2D g2d = (Graphics2D) pg.create();
 
 Object obj =  data.elementAt( 0 );
-System.out.println("STR = " + obj.toString() );		
+com.cannontech.clientutils.CTILogger.info("STR = " + obj.toString() );		
 g2d.drawString(obj.toString(), 0, 0);
 
 	System.gc();
@@ -261,7 +261,7 @@ public int printOLD(java.awt.Graphics graphics, java.awt.print.PageFormat format
  */
 public void printPage( Vector lines ) 
 {
-System.out.println("		Printing Page");	
+com.cannontech.clientutils.CTILogger.info("		Printing Page");	
 	if( lines == null )
 		return;
 		
@@ -297,7 +297,7 @@ System.out.println("		Printing Page");
 		try 
 	    {
 			printerJob.print();
-System.out.println("		DONE Printing Page");
+com.cannontech.clientutils.CTILogger.info("		DONE Printing Page");
 		} 
 		catch (PrinterException exception) 
 		{

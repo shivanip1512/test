@@ -354,7 +354,7 @@ public Object getValue(Object val)
 private void handleException(Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	System.out.println("--------- UNCAUGHT EXCEPTION ---------");
+	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
 	exception.printStackTrace(System.out);
 }
 /**
@@ -417,7 +417,7 @@ public boolean isInputValid()
 			 || address == 1398101 )
 		{
 			setErrorString("Valid range for MCT addresses is 0 to 2796201 and can not be 1398101");
-			System.out.println("*** Valid range for MCT addresses is 0 to 2796201 and can not be 1398101");
+			com.cannontech.clientutils.CTILogger.info("*** Valid range for MCT addresses is 0 to 2796201 and can not be 1398101");
 			return false;
 		}
 			
@@ -428,7 +428,7 @@ public boolean isInputValid()
 			 || address > 4302 )
 		{
 			setErrorString("Valid range for Repeater900 addresses is 464 to 4302");
-			System.out.println("*** Valid range for Repeater900 addresses is 464 to 4302");
+			com.cannontech.clientutils.CTILogger.info("*** Valid range for Repeater900 addresses is 464 to 4302");
 			return false;
 		}
 	}

@@ -443,7 +443,7 @@ public Object getValue(Object val)
 private void handleException(java.lang.Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	System.out.println("--------- UNCAUGHT EXCEPTION ---------");
+	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
 	exception.printStackTrace(System.out);
 }
 /**
@@ -579,7 +579,7 @@ public boolean isInputValid()
  */
 public void jButtonCheckScript_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
-	System.out.println("Check script is not implemented");
+	com.cannontech.clientutils.CTILogger.info("Check script is not implemented");
 	
 	return;
 }
@@ -588,7 +588,7 @@ public void jButtonCheckScript_ActionPerformed(java.awt.event.ActionEvent action
  */
 public void jComboBoxTemplate_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
-	System.out.println("DO NOTHING FOR TEMPLATE JCOMBOBOX");
+	com.cannontech.clientutils.CTILogger.info("DO NOTHING FOR TEMPLATE JCOMBOBOX");
 	
 	return;
 }
@@ -658,19 +658,19 @@ public void setScriptValues(final com.cannontech.message.macs.message.ScriptFile
 		{
 			if( this.isDisplayable() )
 			{
-System.out.println("		TRUE - ScriptEditor isVisible()");
+com.cannontech.clientutils.CTILogger.info("		TRUE - ScriptEditor isVisible()");
 				break;
 			}
 			else
 			{
-System.out.println("		Sleeping until ScriptEditor isVisible()");
+com.cannontech.clientutils.CTILogger.info("		Sleeping until ScriptEditor isVisible()");
 				Thread.currentThread().sleep(200);
 			}
 		}
 
 		if( i == 25 )
 		{
-			System.out.println("		TimeOut occured while waiting for our ScriptEditor screen to become Visible.");
+			com.cannontech.clientutils.CTILogger.info("		TimeOut occured while waiting for our ScriptEditor screen to become Visible.");
 			return;
 		}
 

@@ -252,7 +252,7 @@ private static String prepareObjectForSQLStatement( Object o )
 	}
 	else
 	{
-		System.out.println("prepareObjectForSQLStatement - warning unhandled type");
+		com.cannontech.clientutils.CTILogger.info("prepareObjectForSQLStatement - warning unhandled type");
 		return o.toString();
 	}
 	
@@ -296,7 +296,7 @@ private void printSQLToFile(String line, Object[] columnValues, SQLException exc
 	catch (Exception e) //catch everything and write the Exception to the log file
 	{
 		if( e instanceof java.io.IOException )
-			System.out.println("*** Cant find SQL Log file named : " + getSQLFileName() +
+			com.cannontech.clientutils.CTILogger.info("*** Cant find SQL Log file named : " + getSQLFileName() +
 	   			" : " + e.getMessage() );
 		else
 		{

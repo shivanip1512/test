@@ -953,7 +953,7 @@ public Object getValue(Object o)
 private void handleException(Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	System.out.println("--------- UNCAUGHT EXCEPTION ---------");
+	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
 	exception.printStackTrace(System.out);
 }
 /**
@@ -1142,7 +1142,7 @@ public boolean isInputValid()
  */
 public void jCheckBoxDayChooser_Action(java.awt.event.ActionEvent e) 
 {
-	//System.out.println("+++++++++++++++ A CHeck Box was pressed!!!");
+	//com.cannontech.clientutils.CTILogger.info("+++++++++++++++ A CHeck Box was pressed!!!");
 	
 	fireInputUpdate();
 	return;

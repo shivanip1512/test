@@ -387,7 +387,7 @@ private com.cannontech.common.gui.util.OkCancelPanel getOkCancelPanel() {
 private void handleException(java.lang.Throwable exception) 
 {
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	System.out.println("--------- UNCAUGHT EXCEPTION ---------");
+	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
 	exception.printStackTrace(System.out);
 
 	TDCMainFrame.messageLog.addMessage(exception.toString() + " in : " + this.getClass(), MessageBoxFrame.ERROR_MSG );
@@ -583,7 +583,7 @@ private void setDisplayMode(int mode)
 		return;
 
 		default:
-		System.out.println("INVALID mode in " + this.getClass().toString() + ", displaying no options." );
+		com.cannontech.clientutils.CTILogger.info("INVALID mode in " + this.getClass().toString() + ", displaying no options." );
 		/* NO BREAK OR RETURN HERE!!, let it fall */
 		
 		case DISPLAY_NO_OPTIONS:

@@ -125,7 +125,7 @@ public void retrieve() throws java.sql.SQLException
  	co.retrieve();
  	co.setDbConnection(null);
 
- 	System.out.println(co);
+ 	com.cannontech.clientutils.CTILogger.info(co);
 
  	OperatorLogin login = getOperatorLogin();
  	login.setDbConnection( getDbConnection() );

@@ -74,11 +74,11 @@ public static void main(String args[]) {
 		s[i] =  new Long( r.nextLong() );
 
 	
-	System.out.println( (a = System.currentTimeMillis()) );
+	com.cannontech.clientutils.CTILogger.info( (a = System.currentTimeMillis()) );
 	lexShellSort(s);
-	System.out.println( (b = System.currentTimeMillis()) );
+	com.cannontech.clientutils.CTILogger.info( (b = System.currentTimeMillis()) );
 
-	System.out.println( b - a );
+	com.cannontech.clientutils.CTILogger.info( b - a );
 	
 }
 }

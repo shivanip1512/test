@@ -126,7 +126,7 @@ public static boolean deleteAllCustomerContacts(Integer deviceID, java.sql.Conne
 			}
 
 			//delete the contacts
-System.out.println( "		CNTACTDELETESTRING = " + contactString.toString() );
+com.cannontech.clientutils.CTILogger.info( "		CNTACTDELETESTRING = " + contactString.toString() );
 			stmt = conn.createStatement();
 			stmt.execute( contactString.toString() );
 			
@@ -136,7 +136,7 @@ System.out.println( "		CNTACTDELETESTRING = " + contactString.toString() );
 			//delete the contact customerLogins
 			if( loginCnt > 0 )
 			{
-System.out.println( "		LOGINDELETESTRING = " + loginString.toString() );
+com.cannontech.clientutils.CTILogger.info( "		LOGINDELETESTRING = " + loginString.toString() );
 				stmt = conn.createStatement();
 				stmt.execute( loginString.toString() );
 

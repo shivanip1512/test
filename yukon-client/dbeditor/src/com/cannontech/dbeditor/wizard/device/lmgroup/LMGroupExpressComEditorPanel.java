@@ -2248,7 +2248,7 @@ public Object getValue(Object o)
 private void handleException(Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	System.out.println("--------- UNCAUGHT EXCEPTION ---------");
+	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
 	exception.printStackTrace(System.out);
 }
 /**
@@ -2274,12 +2274,12 @@ private void initAddressJComboBoxes()
 			getJComboBoxPROG().addItem( addresses[i] );
 		else
 		{
-			System.out.println("********************************");
+			com.cannontech.clientutils.CTILogger.info("********************************");
 
-			System.out.println("*** Found an ExpressCommAddress that is not recognized '" 
+			com.cannontech.clientutils.CTILogger.info("*** Found an ExpressCommAddress that is not recognized '" 
 						+ addresses[i].getAddressType() + "' in " + this.getClass().getName() );
 			
-			System.out.println("********************************");
+			com.cannontech.clientutils.CTILogger.info("********************************");
 		}
 
 }

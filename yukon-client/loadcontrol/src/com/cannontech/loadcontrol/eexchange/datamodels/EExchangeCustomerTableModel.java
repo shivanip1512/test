@@ -117,7 +117,7 @@ public java.awt.Color getCellForegroundColor(int row, int col)
 	{
 		if( rowValue.getOwnerReply() == null )
 		{
-			//System.out.println("*** (null) OwnerReply for customer : " + rowValue.getCustomer().getYukonName() );
+			//com.cannontech.clientutils.CTILogger.info("*** (null) OwnerReply for customer : " + rowValue.getCustomer().getYukonName() );
 			return Color.yellow;
 		}
 		else if( rowValue.getOwnerReply().getAcceptStatus().equalsIgnoreCase(
@@ -248,10 +248,10 @@ public Object getValueAt(int row, int col)
 	{
 		if( !rowValue.isValidState() )
 		{
-			System.out.println("-----------------------------------------------------------------------------------");
-			System.out.println("*** (Row,Col) (" + row + "," + col + ") is in an invalid state in class : " + this.getClass().getName());
-			System.out.println(rowValue.getInvalidStateMsg());
-			System.out.println("-----------------------------------------------------------------------------------");
+			com.cannontech.clientutils.CTILogger.info("-----------------------------------------------------------------------------------");
+			com.cannontech.clientutils.CTILogger.info("*** (Row,Col) (" + row + "," + col + ") is in an invalid state in class : " + this.getClass().getName());
+			com.cannontech.clientutils.CTILogger.info(rowValue.getInvalidStateMsg());
+			com.cannontech.clientutils.CTILogger.info("-----------------------------------------------------------------------------------");
 			return ("[Invalid Cell - See Debug Info]");
 		}
 		else

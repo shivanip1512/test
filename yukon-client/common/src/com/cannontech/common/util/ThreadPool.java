@@ -39,11 +39,11 @@ public class ThreadPool implements Runnable {
 			}
 			catch( InterruptedException  e )
 			{
-				System.out.println("Pooled Thread interrupted");
+				com.cannontech.clientutils.CTILogger.info("Pooled Thread interrupted");
 			}
 			finally
 			{
-				System.out.println("ThreadPool worker thread done");
+				com.cannontech.clientutils.CTILogger.info("ThreadPool worker thread done");
 			}	
 		}
 	}
@@ -135,7 +135,7 @@ public static void main(String[] args)
 			{
 				for( int i = 0; i < 20; i++ )
 				{
-					System.out.println(out);
+					com.cannontech.clientutils.CTILogger.info(out);
 					Thread.sleep(500);
 				}
 			}
@@ -158,9 +158,9 @@ public static void main(String[] args)
 	
 		Thread.sleep(500);
 
-		System.out.println("stop called");
+		com.cannontech.clientutils.CTILogger.info("stop called");
 		pool.stop();
-		System.out.println("join called");
+		com.cannontech.clientutils.CTILogger.info("join called");
 		pool.join();
 	}
 	catch( Throwable t )
@@ -214,7 +214,7 @@ public void run()
 	}
 	catch( InterruptedException e )
 	{
-		System.out.println("ThreadPool interrupted");
+		com.cannontech.clientutils.CTILogger.info("ThreadPool interrupted");
 	}
 	finally
 	{		

@@ -75,7 +75,7 @@ public class TableSorter extends TableMap
 				int viewColumn = columnModel.getColumnIndexAtX(e.getX()); 
 				int column = tableView.convertColumnIndexToModel(viewColumn); 
 				if(e.getClickCount() == 1 && column != -1) {
-					System.out.println("Sorting ..."); 
+					com.cannontech.clientutils.CTILogger.info("Sorting ..."); 
 					int shiftPressed = e.getModifiers()&InputEvent.SHIFT_MASK; 
 					boolean ascending = (shiftPressed == 0); 
 					sorter.sortByColumn(column, ascending); 
@@ -295,7 +295,7 @@ space and avoid unnecessary heap allocation.
 		// n2sort();
 		// qsort(0, indexes.length-1);
 		shuttlesort((int[])indexes.clone(), indexes, 0, indexes.length);
-		System.out.println("Compares: "+compares);
+		com.cannontech.clientutils.CTILogger.info("Compares: "+compares);
 	}
 	public void sortByColumn(int column) {
 		sortByColumn(column, true);
@@ -314,7 +314,7 @@ space and avoid unnecessary heap allocation.
 	}
 	public void tableChanged(TableModelEvent e)
 	{
-	System.out.println("Sorter: tableChanged"); 
+	com.cannontech.clientutils.CTILogger.info("Sorter: tableChanged"); 
 		reallocateIndexes();
 
 		super.tableChanged(e);

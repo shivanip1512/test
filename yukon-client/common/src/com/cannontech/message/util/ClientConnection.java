@@ -104,7 +104,7 @@ public void connect() throws java.io.IOException
 	catch( InterruptedException e )
 	{
 		//e.printStackTrace();
-		System.out.println("InterruptedException in " + this.getClass().getName() + ".connect() : " + e.getMessage());
+		com.cannontech.clientutils.CTILogger.info("InterruptedException in " + this.getClass().getName() + ".connect() : " + e.getMessage());
 	}
 }
 /**
@@ -322,7 +322,7 @@ public void run()
 	{		
 		try
 		{
-			System.out.println("Attempting to open SOCKET");
+			com.cannontech.clientutils.CTILogger.info("Attempting to open SOCKET");
 
 			this.sock = new Socket( this.host, this.port );
 
@@ -347,7 +347,7 @@ public void run()
 			setChanged();
 			notifyObservers(this);
 			
-			System.out.println("SOCKET open for " + this.getClass().getName() );
+			com.cannontech.clientutils.CTILogger.info("SOCKET open for " + this.getClass().getName() );
 
 			do
 			{
@@ -357,19 +357,19 @@ public void run()
 			inThread.interrupt();
 			outThread.interrupt();
 
-			System.out.println("Closing SOCKET for " + this.getClass().getName() );
+			com.cannontech.clientutils.CTILogger.info("Closing SOCKET for " + this.getClass().getName() );
 			sock.close();
 			
 		}
 		catch( InterruptedException e )
 		{
 			// The monitorThread must have been interrupted probably from disconnect()
-			System.out.println("  InterruptedException in monitorThread : " + e.getMessage() );
+			com.cannontech.clientutils.CTILogger.info("  InterruptedException in monitorThread : " + e.getMessage() );
 			return;
 		}
 		catch( java.io.IOException io )
 		{
-			System.out.println( io.getMessage() );
+			com.cannontech.clientutils.CTILogger.info( io.getMessage() );
 		}
 		
 		isValid = false;
@@ -389,12 +389,12 @@ public void run()
 			catch(InterruptedException e )
 			{
 				// The monitorThread must have been interrupted probably from disconnect()
-				System.out.println("  InterruptedException in monitorThread : " +  e.getMessage() );
+				com.cannontech.clientutils.CTILogger.info("  InterruptedException in monitorThread : " +  e.getMessage() );
 				return;
 			}
 		}
 
-		System.out.println("Attempting to reconnect to " + getHost() + ":" + getPort() );
+		com.cannontech.clientutils.CTILogger.info("Attempting to reconnect to " + getHost() + ":" + getPort() );
 	} 
 	
 }

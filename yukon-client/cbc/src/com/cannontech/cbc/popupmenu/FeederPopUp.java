@@ -151,7 +151,7 @@ private javax.swing.JMenuItem getJMenuItemFeederData() {
 private void handleException(java.lang.Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	System.out.println("--------- UNCAUGHT EXCEPTION ---------" + this.getClass());
+	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------" + this.getClass());
 	exception.printStackTrace(System.out);
 }
 /**

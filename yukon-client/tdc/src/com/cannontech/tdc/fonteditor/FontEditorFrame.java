@@ -195,7 +195,7 @@ public java.awt.Font getSelectedFont() {
 private void handleException(java.lang.Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	System.out.println("--------- UNCAUGHT EXCEPTION FontEditorFrame() ---------");
+	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION FontEditorFrame() ---------");
 	exception.printStackTrace(System.out);
 }
 /**

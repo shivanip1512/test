@@ -33,7 +33,7 @@ public void actionPerformed(java.awt.event.ActionEvent e)
 {
 	if( e.getSource() == getJPanelVar_Watts() )
 	{
-		System.out.println("Got a change for the VarWatts Panel!!");
+		com.cannontech.clientutils.CTILogger.info("Got a change for the VarWatts Panel!!");
 		fireInputUpdate();
 	}
 
@@ -134,7 +134,7 @@ public Object getValue(Object val)
 private void handleException(Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	System.out.println("--------- UNCAUGHT EXCEPTION ---------");
+	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
 	exception.printStackTrace(System.out);
 }
 

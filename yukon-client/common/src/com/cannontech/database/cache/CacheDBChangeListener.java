@@ -106,14 +106,14 @@ public void run()
 			if( (REFRESH_GC % cnt) == 0 )
 			{
 				System.gc();
-				//System.out.println("*** System.gc() called");
+				//com.cannontech.clientutils.CTILogger.info("*** System.gc() called");
 			}
 
 		}
 	}
 	catch( Exception e )
 	{
-		System.out.println( "**** " + this.getClass().getName() + " had an unexpected Thread death");
+		com.cannontech.clientutils.CTILogger.info( "**** " + this.getClass().getName() + " had an unexpected Thread death");
 		e.printStackTrace( System.out );
 	}
 	

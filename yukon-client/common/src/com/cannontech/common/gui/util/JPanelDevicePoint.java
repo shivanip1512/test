@@ -213,7 +213,7 @@ public com.cannontech.database.data.lite.LitePoint getSelectedPoint()
 private void handleException(java.lang.Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	System.out.println("--------- UNCAUGHT EXCEPTION ---------");
+	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
 	exception.printStackTrace(System.out);
 }
 /**
@@ -449,7 +449,7 @@ public static void main(java.lang.String[] args) {
 		aDevicePointJPanel.addComboBoxPropertyChangeListener( new java.beans.PropertyChangeListener()
 		{
 			public void propertyChange(java.beans.PropertyChangeEvent evt)
-			{ System.out.println( evt.getSource() ); }
+			{ com.cannontech.clientutils.CTILogger.info( evt.getSource() ); }
 			
 		});
 		

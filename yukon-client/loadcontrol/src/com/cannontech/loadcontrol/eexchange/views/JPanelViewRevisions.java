@@ -424,9 +424,9 @@ public com.cannontech.web.history.HEnergyExchangeProgramOffer getSelectedHistory
 			return (com.cannontech.web.history.HEnergyExchangeProgramOffer)getJComboBoxOfferID().getSelectedItem();
 		else
 		{
-			System.out.println("*** Found an object of type : " + getJComboBoxOfferID().getSelectedItem().getClass().getName());
-			System.out.println("    in the JComboBox of " + this.getClass().getName());
-			System.out.println("    when expecting object of type com.cannontech.web.history.HEnergyExchangeProgramOffer only!!!");
+			com.cannontech.clientutils.CTILogger.info("*** Found an object of type : " + getJComboBoxOfferID().getSelectedItem().getClass().getName());
+			com.cannontech.clientutils.CTILogger.info("    in the JComboBox of " + this.getClass().getName());
+			com.cannontech.clientutils.CTILogger.info("    when expecting object of type com.cannontech.web.history.HEnergyExchangeProgramOffer only!!!");
 		}
 
 	}
@@ -454,7 +454,7 @@ public RevisionHistoryRowData getSelectedRevision()
 private void handleException(java.lang.Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	System.out.println("--------- UNCAUGHT EXCEPTION ---------");
+	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
 	exception.printStackTrace(System.out);
 }
 /**

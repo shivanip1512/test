@@ -303,7 +303,7 @@ private javax.swing.JButton getYesButton() {
 private void handleException(Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	// System.out.println("--------- UNCAUGHT EXCEPTION ---------");
+	// com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
 	// exception.printStackTrace(System.out);
 }
 /**
@@ -366,7 +366,7 @@ public static void main(java.lang.String[] args) {
 		BooleanDialog aBooleanDialog;
 		aBooleanDialog = new BooleanDialog("Does this route use a repeater to rebroadcast the communication?");
 //		aBooleanDialog.pack();
-		System.out.println( aBooleanDialog.getValue() );
+		com.cannontech.clientutils.CTILogger.info( aBooleanDialog.getValue() );
 	} catch (Throwable exception) {
 		System.err.println("Exception occurred in main() of javax.swing.JDialog");
 		exception.printStackTrace(System.out);

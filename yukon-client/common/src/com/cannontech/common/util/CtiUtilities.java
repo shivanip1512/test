@@ -42,7 +42,7 @@ public final class CtiUtilities
 		}
 		catch( java.net.UnknownHostException e )
 		{
-			System.out.println("*** UnknownHostException occured, using (null) for the source in the base message class.");
+			com.cannontech.clientutils.CTILogger.info("*** UnknownHostException occured, using (null) for the source in the base message class.");
 		}
 			
 	}
@@ -231,7 +231,7 @@ public static int[] decodeRangeIDString( String string, final int maxID )
 		}
 		catch( Exception e ) //catch all!
 		{
-			System.out.println("*** Unable to parse UtilityID range string : " + string );
+			com.cannontech.clientutils.CTILogger.info("*** Unable to parse UtilityID range string : " + string );
 		}
 
 	}
@@ -897,12 +897,12 @@ public static final Process showHelp( String helpFileName )
 	}
 	catch( java.io.IOException e )
 	{
-		System.out.println("*** Tried to execute help with the following values:");
+		com.cannontech.clientutils.CTILogger.info("*** Tried to execute help with the following values:");
 		System.out.print("			");
 		for( int i = 0; i < cmd.length; i++ )
 			System.out.print(cmd[i] + " " );
 
-		System.out.println("");
+		com.cannontech.clientutils.CTILogger.info("");
 		e.printStackTrace( System.out );
 	}
 
@@ -933,7 +933,7 @@ public final static void startModal(javax.swing.JInternalFrame frame) {
 						  System.err.println("unable to dispatch event: " + event);
 					  }
 				}
-				System.out.println("here");
+				com.cannontech.clientutils.CTILogger.info("here");
 			} else
 				while (frame.isVisible())
 					frame.wait();

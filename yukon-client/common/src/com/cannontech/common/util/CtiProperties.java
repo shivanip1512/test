@@ -112,7 +112,7 @@ private void initialize()
 	}
 	catch( Exception e )
 	{
-		System.out.println("*** PROPERTY TRANSLATION ERROR: " + KEY_YUKON_VERSION + " key/value not stored." );
+		com.cannontech.clientutils.CTILogger.info("*** PROPERTY TRANSLATION ERROR: " + KEY_YUKON_VERSION + " key/value not stored." );
 	}
 
 
@@ -127,7 +127,7 @@ private void initialize()
 	}
 	catch (Exception e)
 	{
-		System.out.println("Can't read the properties file. " +
+		com.cannontech.clientutils.CTILogger.info("Can't read the properties file. " +
 			"Make sure " + CONFIG_RESOURCE_NAME + " is in the CLASSPATH" );
 
 		return;
@@ -142,7 +142,7 @@ private void initialize()
 		}
 		catch( Exception e )
 		{
-			System.out.println("*** PROPERTY TRANSLATION ERROR: " + ALL_CONFIG_KEYS[i] + " key/value not stored." );
+			com.cannontech.clientutils.CTILogger.info("*** PROPERTY TRANSLATION ERROR: " + ALL_CONFIG_KEYS[i] + " key/value not stored." );
 		}
 
 	}

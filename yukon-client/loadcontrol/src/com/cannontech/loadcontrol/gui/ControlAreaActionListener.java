@@ -57,7 +57,7 @@ private void jComboBox_ActionPerformed(java.awt.event.ActionEvent e)
 
 		}		
 		else
-			System.out.println("*** A String object was not found in the LoadControl's JComboBox, the class found was : " + comboBox.getSelectedItem().getClass() );
+			com.cannontech.clientutils.CTILogger.info("*** A String object was not found in the LoadControl's JComboBox, the class found was : " + comboBox.getSelectedItem().getClass() );
 	}
 		
 }

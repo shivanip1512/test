@@ -246,7 +246,7 @@ public void getChooser()
 			thePath = fileChooser.getSelectedFile().getPath();
 			
 			getPathField().setText(thePath + "\\");
-			System.out.println("** Chooser path was: " + thePath);
+			com.cannontech.clientutils.CTILogger.info("** Chooser path was: " + thePath);
 		}
 		catch (Exception exep)
 		{
@@ -436,7 +436,7 @@ private javax.swing.JButton getStartButton()
  */
 private void handleException(java.lang.Throwable exception) 
 {
-	System.out.println("--------- UNCAUGHT EXCEPTION ---------");
+	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
 	exception.printStackTrace(System.out);
 }
 /**

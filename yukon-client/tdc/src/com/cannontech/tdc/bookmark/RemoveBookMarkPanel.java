@@ -132,7 +132,7 @@ protected void fireJButtonDeleteAction_actionPerformed(java.util.EventObject new
 private BookMarkBase getBookMarkBase() 
 {
 	if( bookMarks == null )
-		System.out.println("BookMarkBase not set in " + this.getClass().getName() );
+		com.cannontech.clientutils.CTILogger.info("BookMarkBase not set in " + this.getClass().getName() );
 		
 	return bookMarks;
 }
@@ -310,7 +310,7 @@ public Object[] getRemovedElements()
 private void handleException(java.lang.Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	System.out.println("--------- UNCAUGHT EXCEPTION ---------");
+	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
 	exception.printStackTrace(System.out);
 
 	TDCMainFrame.messageLog.addMessage(exception.toString() + " in : " + this.getClass(), MessageBoxFrame.ERROR_MSG );

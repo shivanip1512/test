@@ -261,7 +261,7 @@ private synchronized void handleDeleteSchedule(com.cannontech.message.macs.messa
  */
 private synchronized void handleInfo(com.cannontech.message.macs.message.Info info) 
 {
-	System.out.println("Received an Info msg : " + info.getInfo()  );
+	com.cannontech.clientutils.CTILogger.info("Received an Info msg : " + info.getInfo()  );
 	
 	// tell all listeners that we received an Info message
 	setChanged();
@@ -304,7 +304,7 @@ private void handleMulti(com.cannontech.message.dispatch.message.Multi multi)
  */
 private synchronized void handleSchedule(Schedule sched) 
 {
-	System.out.println("Received a schedule named " + sched.getScheduleName() + "/" + sched.getCategoryName() );
+	com.cannontech.clientutils.CTILogger.info("Received a schedule named " + sched.getScheduleName() + "/" + sched.getCategoryName() );
 
 	synchronized ( getSchedules() ) 
 	{
@@ -343,7 +343,7 @@ private synchronized void handleSchedule(Schedule sched)
  */
 private synchronized void handleScriptFile(com.cannontech.message.macs.message.ScriptFile file) 
 {
-	System.out.println("Received a ScriptFile " + file.getFileName()  );
+	com.cannontech.clientutils.CTILogger.info("Received a ScriptFile " + file.getFileName()  );
 
 	synchronized ( getSchedules() ) 
 	{

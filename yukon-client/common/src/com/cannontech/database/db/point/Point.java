@@ -235,7 +235,7 @@ public final static int[] getNextPointIDs( int idCount )
 {
 	//THIS IS A SUPER HACK WAY TO DO THINGS, CHANGE IN THE FUTURE  (It is quick and dirty!!)
 	// *************** BEGIN SUPER HACK *************************/
-	System.out.println("----- getNextPointIDs(yukonPAObjectsCnt) called with " + idCount + " ids!");
+	com.cannontech.clientutils.CTILogger.info("----- getNextPointIDs(yukonPAObjectsCnt) called with " + idCount + " ids!");
 
 	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	int[] returnIDs = new int[idCount];
@@ -323,7 +323,7 @@ public Character getPseudoFlag()
 	}
 	else
 	{
-		System.out.println("***** Unrecognized PSEUDO_FLAG found in : " + this.getClass().getName() );
+		com.cannontech.clientutils.CTILogger.info("***** Unrecognized PSEUDO_FLAG found in : " + this.getClass().getName() );
 		return new Character('?');
 	}
 	

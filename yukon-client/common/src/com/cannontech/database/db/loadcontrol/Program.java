@@ -67,7 +67,7 @@ public static Program[] getAllPrograms(Long userID, String databaseAlias) {
 			program.setTotalControlTime( new Integer( rset.getInt(6 ) ));
 
 			results.add(program);
-		System.out.println("got one->" + program );
+		com.cannontech.clientutils.CTILogger.info("got one->" + program );
 		}
 	}
 	catch( java.sql.SQLException e )
@@ -93,7 +93,7 @@ public static Program[] getAllPrograms(Long userID, String databaseAlias) {
 
 	Program[] returnVal = new Program[results.size()];
 	results.toArray(returnVal);
-System.out.println("returning " + returnVal.length + " programs");	
+com.cannontech.clientutils.CTILogger.info("returning " + returnVal.length + " programs");	
 	return returnVal;
 }
 /**
@@ -171,7 +171,7 @@ public void retrieve() throws java.sql.SQLException
 		setTotalControlTime( (Integer) results[4] );				
 	}
 
-	System.out.println("retrieved->" + this );
+	com.cannontech.clientutils.CTILogger.info("retrieved->" + this );
 }
 /**
  * Insert the method's description here.
@@ -246,7 +246,7 @@ public void update() throws java.sql.SQLException
 
 	String constraintColumns[] = { "ProgramID" };
 	Object constraintValues[] = { getProgramID() };
-System.out.println( "update->" + this );	
+com.cannontech.clientutils.CTILogger.info( "update->" + this );	
 	update( "Program", setColumns, setValues, constraintColumns, constraintValues );	
 }
 }

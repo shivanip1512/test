@@ -1481,7 +1481,7 @@ private int getTotalSeconds( String string )
 private void handleException(java.lang.Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	System.out.println("--------- UNCAUGHT EXCEPTION ---------");
+	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
 	exception.printStackTrace(System.out);
 }
 /**
@@ -1639,7 +1639,7 @@ private boolean isInputValid()
  */
 public void jButtonCancel_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
-	System.out.println("THE CANCEL BUTTON DOES NOTHING!!! (please override me!!)");
+	com.cannontech.clientutils.CTILogger.info("THE CANCEL BUTTON DOES NOTHING!!! (please override me!!)");
 	
 	return;
 }

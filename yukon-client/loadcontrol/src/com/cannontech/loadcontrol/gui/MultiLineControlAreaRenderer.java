@@ -203,7 +203,7 @@ private void handleControlAreaTableModel(ControlAreaTableModel model, int row, i
 private void handleException(java.lang.Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	System.out.println("--------- UNCAUGHT EXCEPTION ---------");
+	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
 	exception.printStackTrace(System.out);
 }
 /**
@@ -279,7 +279,7 @@ private void processLMControlArea( com.cannontech.loadcontrol.data.LMControlArea
 			else if( trigger.getTriggerNumber().intValue() == 2 )
 				text = getTriggerString(trigger);
 			else
-				System.out.println("**** ControlArea '" + value.getYukonName() +"' has more than 2 Triggers defined for it.");
+				com.cannontech.clientutils.CTILogger.info("**** ControlArea '" + value.getYukonName() +"' has more than 2 Triggers defined for it.");
 			
 		}
 	}

@@ -46,7 +46,7 @@ public void caretUpdate(javax.swing.event.CaretEvent e)
 	for( int j = 0; j < getOriginalData().length; j++ )
 		if( text.equalsIgnoreCase( getOriginalData()[j].toString() ) )
 		{
-			System.out.println("added " + getOriginalData()[j]);
+			com.cannontech.clientutils.CTILogger.info("added " + getOriginalData()[j]);
 			this.addItem(getOriginalData()[j]);//getOriginalData()[i]);
 		}
 	
@@ -61,26 +61,26 @@ public void caretUpdate(javax.swing.event.CaretEvent e)
 					for( int j = 0; j < getItemCount(); j++ )
 						if( !getItemAt(j).equals( getOriginalData()[i] ) )
 						{
-							System.out.println("added " + getOriginalData()[i]);
+							com.cannontech.clientutils.CTILogger.info("added " + getOriginalData()[i]);
 							this.addItem(text);//getOriginalData()[i]);
 							break;
 						}
 				}
 				else
 				{
-//					System.out.println("removed "+ getOriginalData()[i]);
+//					com.cannontech.clientutils.CTILogger.info("removed "+ getOriginalData()[i]);
 //					this.removeItem( getOriginalData()[i] );
 				}
 			}
 			else
 			{
 //				this.removeItem( getOriginalData()[i] );
-//				System.out.println("removed " + getOriginalData()[i]);
+//				com.cannontech.clientutils.CTILogger.info("removed " + getOriginalData()[i]);
 			}
 		}
 	}
 	catch(IllegalStateException is )
-	{ System.out.println("is Occured"); }
+	{ com.cannontech.clientutils.CTILogger.info("is Occured"); }
 */
 	setPopupVisible(true);
 }
@@ -99,7 +99,7 @@ private Object[] getOriginalData()
 private void handleException(java.lang.Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	System.out.println("--------- UNCAUGHT EXCEPTION ---------");
+	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
 	exception.printStackTrace(System.out);
 }
 /**
@@ -139,7 +139,7 @@ private void initialize() {
 	}
 	catch( ClassCastException c )
 	{
-		System.out.println("The Default Editor for " + getClass() + " should only be a JTextField.");
+		com.cannontech.clientutils.CTILogger.info("The Default Editor for " + getClass() + " should only be a JTextField.");
 		handleException(c);
 	}
 

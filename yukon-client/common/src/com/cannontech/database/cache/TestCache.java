@@ -10,7 +10,7 @@ public class TestCache {
  */
 public static void main(String[] args) 
 {
-	System.out.println("Test Started...");
+	com.cannontech.clientutils.CTILogger.info("Test Started...");
 	//temp code
 	java.util.Date timerStart = null;
 	java.util.Date timerStop = null;
@@ -26,7 +26,7 @@ public static void main(String[] args)
 	//temp code
 	timerStop = new java.util.Date();
 	//System.out.print( (timerStop.getTime() - timerStart.getTime())*.001 );
-	//System.out.println( " Secs for LOADALLCACHE()" );
+	//com.cannontech.clientutils.CTILogger.info( " Secs for LOADALLCACHE()" );
 	
 	//defaultDatabaseCache.getAllDevices();
 	//defaultDatabaseCache.getAllPoints();
