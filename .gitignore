@@ -63,6 +63,7 @@ yukon-client/trending/build
 yukon-client/webgraph/.cvsignore
 yukon-client/webgraph/bin
 yukon-client/webgraph/build
+yukon-client/yukon-web/.tomcatplugin
 yukon-client/yukon-web/WEB-INF/classes
 yukon-client/yukon-web/_notes
 yukon-client/yukon-web/build
