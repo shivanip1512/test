@@ -21,7 +21,7 @@
 
 #include <rw/toolpro/inetaddr.h>
 
-extern BOOL _CC_DEBUG;
+extern ULONG _CC_DEBUG;
 
 CtiCCClientListener* CtiCCClientListener::_instance = NULL;
 
@@ -42,7 +42,7 @@ CtiCCClientListener* CtiCCClientListener::getInstance()
         if( !(str = gConfigParms.getValueAsString(var)).isNull() )
         {
             LONG capcontrolclientsport = atoi(str.data());
-            if( _CC_DEBUG )
+            if( _CC_DEBUG & CC_DEBUG_STANDARD )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - " << var << ":  " << capcontrolclientsport << endl;
@@ -123,11 +123,11 @@ void CtiCCClientListener::stop()
 
 void CtiCCClientListener::BroadcastMessage(CtiMessage* msg)
 {
-    /*if( _CC_DEBUG )
+    if( _CC_DEBUG & CC_DEBUG_CLIENT )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " BroadcastMessage() called." << endl;
-    }*/
+    }
 
     try
     {
@@ -140,11 +140,11 @@ void CtiCCClientListener::BroadcastMessage(CtiMessage* msg)
             {
                 CtiMessage* replicated_msg = msg->replicateMessage();
 
-                /*if( _CC_DEBUG )
+                if( _CC_DEBUG & CC_DEBUG_CLIENT )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << RWTime() << " Broadcasting classID:  " << replicated_msg->isA() << endl;
-                }*/
+                }
                 _connections[i]->write(replicated_msg);
             }
         }
@@ -157,11 +157,11 @@ void CtiCCClientListener::BroadcastMessage(CtiMessage* msg)
     }
     delete msg;
 
-    /*if( _CC_DEBUG )
+    if( _CC_DEBUG & CC_DEBUG_CLIENT )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " BroadcastMessage() finished." << endl;
-    }*/
+    }
 }
 
 /*---------------------------------------------------------------------------
@@ -272,7 +272,7 @@ void CtiCCClientListener::_check()
                     {
                         {
                             CtiCCClientConnection* toDelete = _connections.removeAt(i);
-							if( _CC_DEBUG )
+							if( _CC_DEBUG & CC_DEBUG_CLIENT )
 							{    
 								CtiLockGuard<CtiLogger> logger_guard(dout);
 								dout << RWTime()  << " - Removing Client Connection: " << toDelete->getConnectionName() << endl;

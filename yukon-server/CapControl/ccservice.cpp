@@ -19,7 +19,7 @@
 #include "logger.h"
 
 //Boolean if debug messages are printed
-BOOL _CC_DEBUG;
+ULONG _CC_DEBUG;
 //Boolean if we ignore non normal qualities
 BOOL _IGNORE_NOT_NORMAL_FLAG;
 
@@ -98,14 +98,28 @@ void CtiCCService::Init()
     RWCString str;
     char var[128];
 
-    _CC_DEBUG = FALSE;
+    _CC_DEBUG = CC_DEBUG_NONE;
 
     strcpy(var, "CAP_CONTROL_DEBUG");
     if( !(str = gConfigParms.getValueAsString(var)).isNull() )
     {
         str.toLower();
-        _CC_DEBUG = (str=="true"?TRUE:FALSE);
-        if( _CC_DEBUG )
+        _CC_DEBUG = (str=="true"?(CC_DEBUG_STANDARD|CC_DEBUG_POINT_DATA):CC_DEBUG_NONE);
+
+        if( !_CC_DEBUG )
+        {
+            if( str=="false" )
+            {
+                _CC_DEBUG = CC_DEBUG_NONE;
+            }
+            else
+            {
+                char *eptr;
+                _CC_DEBUG = strtoul(str.data(), &eptr, 16);
+            }
+        }
+
+        if( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << RWTime() << " - " << var << ":  " << str << endl;
@@ -121,7 +135,7 @@ void CtiCCService::Init()
     if( !(str = gConfigParms.getValueAsString(var)).isNull() )
     {
         dout.setOutputFile(str.data());
-        if( _CC_DEBUG )
+        if( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << RWTime() << " - " << var << ":  " << str << endl;
@@ -138,7 +152,7 @@ void CtiCCService::Init()
     {
         str.toLower();
         _IGNORE_NOT_NORMAL_FLAG = (str=="true"?TRUE:FALSE);
-        if( _CC_DEBUG )
+        if( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << RWTime() << " - " << var << ":  " << str << endl;
@@ -155,7 +169,7 @@ void CtiCCService::Init()
 
 void CtiCCService::DeInit()
 {
-    if( _CC_DEBUG )
+    if( _CC_DEBUG & CC_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " - Cap Control shutdown" << endl;
@@ -167,7 +181,7 @@ void CtiCCService::OnStop()
 {
     SetStatus(SERVICE_STOP_PENDING, 2, 5000 );
 
-    if( _CC_DEBUG )
+    if( _CC_DEBUG & CC_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " - Cap Control shutting down...." << endl;
@@ -228,7 +242,7 @@ void CtiCCService::Run()
 
     SetStatus(SERVICE_START_PENDING, 33, 5000 );
 
-    if( _CC_DEBUG )
+    if( _CC_DEBUG & CC_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " - Starting cap controller thread..." << endl;
@@ -238,7 +252,7 @@ void CtiCCService::Run()
 
     SetStatus(SERVICE_START_PENDING, 66, 5000 );
 
-    if( _CC_DEBUG )
+    if( _CC_DEBUG & CC_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " - Starting client listener thread..." << endl;

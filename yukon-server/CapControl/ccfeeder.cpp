@@ -24,7 +24,7 @@
 #include "capcontroller.h"
 #include "resolvers.h"
 
-extern BOOL _CC_DEBUG;
+extern ULONG _CC_DEBUG;
 extern BOOL _IGNORE_NOT_NORMAL_FLAG;
 
 RWDEFINE_COLLECTABLE( CtiCCFeeder, CTICCFEEDER_ID )
@@ -1073,7 +1073,7 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const RWDBDateTime& 
     
                         request = createDecreaseVarRequest(findCapBankToChangeVars(getKVARSolution()) , pointChanges, getCurrentVarLoadPointValue(), decimalPlaces);
     
-                        if( request == NULL && _CC_DEBUG )
+                        if( request == NULL && (_CC_DEBUG & CC_DEBUG_STANDARD) )
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << RWTime() << " - Can Not Reduce Var level for feeder: " << getPAOName()
@@ -1097,7 +1097,7 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const RWDBDateTime& 
     
                         request = createIncreaseVarRequest(findCapBankToChangeVars(getKVARSolution()), pointChanges, getCurrentVarLoadPointValue(), decimalPlaces);
     
-                        if( request == NULL && _CC_DEBUG )
+                        if( request == NULL && (_CC_DEBUG & CC_DEBUG_STANDARD) )
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << RWTime() << " - Can Not Increase Var level for feeder: " << getPAOName()
@@ -1156,7 +1156,7 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const RWDBDateTime& 
                     }
                 }
     
-                if( capBank == NULL && request == NULL && _CC_DEBUG )
+                if( capBank == NULL && request == NULL && (_CC_DEBUG & CC_DEBUG_STANDARD) )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << RWTime() << " - Can Not Reduce Var level for feeder: " << getPAOName()
@@ -1201,7 +1201,7 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const RWDBDateTime& 
                     }
                 }
     
-                if( capBank == NULL && request == NULL && _CC_DEBUG )
+                if( capBank == NULL && request == NULL && (_CC_DEBUG & CC_DEBUG_STANDARD) )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << RWTime() << " - Can Not Increase Var level for substation bus: " << getPAOName()
@@ -1717,11 +1717,11 @@ void CtiCCFeeder::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDat
             << _estimatedpowerfactorvalue
             << _currentvarpointquality;
 
-            /*if( _CC_DEBUG )
+            if( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - " << inserter.asString().data() << endl;
-            }*/
+            }
 
             inserter.execute( conn );
 

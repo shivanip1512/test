@@ -47,3 +47,14 @@
 // square root of 3 for power factor calculations
 #define SQRT3               1.7320508075688772935274463415059
 
+
+/* Various debug levels */
+#define CC_DEBUG_NONE              0x00000000
+#define CC_DEBUG_STANDARD          0x00000001
+#define CC_DEBUG_POINT_DATA        0x00000002
+#define CC_DEBUG_DATABASE          0x00000004
+#define CC_DEBUG_CLIENT            0x00000008
+#define CC_DEBUG_CONTROL_PARAMS    0x00000010
+//#define CC_DEBUG_                  0x00000000
+#define CC_DEBUG_EXTENDED          0x10000000
+

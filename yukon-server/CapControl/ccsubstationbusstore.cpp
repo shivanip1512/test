@@ -33,7 +33,7 @@
 #include "msg_dbchg.h"
 #include "capcontroller.h"
 
-extern BOOL _CC_DEBUG;
+extern ULONG _CC_DEBUG;
 
 /*---------------------------------------------------------------------------
     Constructor
@@ -320,11 +320,11 @@ void CtiCCSubstationBusStore::reset()
                         selector.orderBy(yukonPAObjectTable["paoname"]);
                         selector.orderBy(pointTable["pointoffset"]);
     
-                        /*if( _CC_DEBUG )
+                        if( _CC_DEBUG & CC_DEBUG_DATABASE )
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << RWTime() << " - " << selector.asString().data() << endl;
-                        }*/
+                        }
     
                         RWDBReader rdr = selector.reader(conn);
     
@@ -443,11 +443,11 @@ void CtiCCSubstationBusStore::reset()
                         selector.orderBy(ccFeederSubAssignmentTable["displayorder"]);
                         selector.orderBy(pointTable["pointoffset"]);
     
-                        /*if( _CC_DEBUG )
+                        if( _CC_DEBUG & CC_DEBUG_DATABASE )
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << RWTime() << " - " << selector.asString().data() << endl;
-                        }*/
+                        }
     
                         RWDBReader rdr = selector.reader(conn);
     
@@ -577,11 +577,11 @@ void CtiCCSubstationBusStore::reset()
                                 selector.orderBy(ccFeederSubAssignmentTable["displayorder"]);
                                 selector.orderBy(ccFeederBankListTable["controlorder"]);
     
-                                /*if( _CC_DEBUG )
+                                if( _CC_DEBUG & CC_DEBUG_DATABASE )
                                 {
                                     CtiLockGuard<CtiLogger> logger_guard(dout);
                                     dout << RWTime() << " - " << selector.asString().data() << endl;
-                                }*/
+                                }
     
                                 RWDBReader rdr = selector.reader(conn);
     
@@ -684,11 +684,11 @@ void CtiCCSubstationBusStore::reset()
     
                         selector.orderBy(stateTable["rawstate"]);
     
-                        /*if( _CC_DEBUG )
+                        if( _CC_DEBUG & CC_DEBUG_DATABASE )
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << RWTime() << " - " << selector.asString().data() << endl;
-                        }*/
+                        }
     
                         RWDBReader rdr = selector.reader(conn);
     
@@ -716,11 +716,11 @@ void CtiCCSubstationBusStore::reset()
     
                         selector.orderBy(yukonPAObjectTable["description"]);
     
-                        /*if( _CC_DEBUG )
+                        if( _CC_DEBUG & CC_DEBUG_DATABASE )
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << RWTime() << " - " << selector.asString().data() << endl;
-                        }*/
+                        }
     
                         RWDBReader rdr = selector.reader(conn);
     
@@ -870,11 +870,11 @@ void CtiCCSubstationBusStore::checkAMFMSystemForUpdates()
 
             selector.orderBy(dni_capacitorTable["datetimestamp"]);
 
-            /*if( _CC_DEBUG )
+            if( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - " << selector.asString() << endl;
-            }*/
+            }
 
             RWDBReader rdr = selector.reader(amfmConn);
 
@@ -1670,7 +1670,7 @@ void CtiCCSubstationBusStore::doResetThr()
     if( !(str = gConfigParms.getValueAsString(var)).isNull() )
     {
         refreshrate = atoi(str.data());
-        if( _CC_DEBUG )
+        if( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << RWTime() << " - " << var << ":  " << refreshrate << endl;
@@ -1730,7 +1730,7 @@ void CtiCCSubstationBusStore::doAMFMThr()
     {
         amfm_interface = str.data();
         amfm_interface.toUpper();
-        if( _CC_DEBUG )
+        if( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << RWTime() << " - " << var << ":  " << amfm_interface << endl;
@@ -1754,7 +1754,7 @@ void CtiCCSubstationBusStore::doAMFMThr()
         if( !(str = gConfigParms.getValueAsString(var)).isNull() )
         {
             refreshrate = atoi(str.data());
-            if( _CC_DEBUG )
+            if( _CC_DEBUG & CC_DEBUG_STANDARD )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - " << var << ":  " << refreshrate << endl;
@@ -1770,7 +1770,7 @@ void CtiCCSubstationBusStore::doAMFMThr()
         if( !(str = gConfigParms.getValueAsString(var)).isNull() )
         {
             dbDll = str.data();
-            if( _CC_DEBUG )
+            if( _CC_DEBUG & CC_DEBUG_STANDARD )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - " << var << ":  " << dbDll << endl;
@@ -1786,7 +1786,7 @@ void CtiCCSubstationBusStore::doAMFMThr()
         if( !(str = gConfigParms.getValueAsString(var)).isNull() )
         {
             dbName = str.data();
-            if( _CC_DEBUG )
+            if( _CC_DEBUG & CC_DEBUG_STANDARD )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - " << var << ":  " << dbName << endl;
@@ -1802,7 +1802,7 @@ void CtiCCSubstationBusStore::doAMFMThr()
         if( !(str = gConfigParms.getValueAsString(var)).isNull() )
         {
             dbUser = str.data();
-            if( _CC_DEBUG )
+            if( _CC_DEBUG & CC_DEBUG_STANDARD )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - " << var << ":  " << dbUser << endl;
@@ -1818,7 +1818,7 @@ void CtiCCSubstationBusStore::doAMFMThr()
         if( !(str = gConfigParms.getValueAsString(var)).isNull() )
         {
             dbPassword = str.data();
-            if( _CC_DEBUG )
+            if( _CC_DEBUG & CC_DEBUG_STANDARD )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - " << var << ":  " << dbPassword << endl;
@@ -1851,7 +1851,7 @@ void CtiCCSubstationBusStore::doAMFMThr()
 
                 if ( RWDBDateTime() >= nextAMFMRefresh )
                 {
-                    if( _CC_DEBUG )
+                    if( _CC_DEBUG & CC_DEBUG_STANDARD )
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << RWTime() << " - Setting AMFM reload flag." << endl;

@@ -20,6 +20,8 @@
 #include "logger.h"
 #include "resolvers.h"
 
+extern ULONG _CC_DEBUG;
+
 RWDEFINE_COLLECTABLE( CtiCCCapBank, CTICCCAPBANK_ID )
 
 /*---------------------------------------------------------------------------
@@ -1005,11 +1007,11 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDa
             << _originalfeederid
             << _originalswitchingorder;
 
-            /*if( _CC_DEBUG )
+            if( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - " << inserter.asString().data() << endl;
-            }*/
+            }
 
             inserter.execute( conn );
 

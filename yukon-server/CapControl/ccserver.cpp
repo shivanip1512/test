@@ -15,7 +15,7 @@
 #include "logger.h"
 #include "configparms.h"
 
-extern BOOL _CC_DEBUG;
+extern ULONG _CC_DEBUG;
 
 //The singleton instance of the server                                       
 CtiCCServer* CtiCCServer::_instance = NULL;
@@ -50,7 +50,7 @@ void CtiCCServer::start()
     if( !(str = gConfigParms.getValueAsString(var)).isNull() )
     {
         _capcontrolclientsport = atoi(str.data());
-        if( _CC_DEBUG )
+        if( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << RWTime() << " - " << var << ":  " << _capcontrolclientsport << endl;
@@ -110,11 +110,11 @@ void CtiCCServer::Broadcast(CtiMessage* message)
 
     _currentmessage = message;
 
-    /*if( _CC_DEBUG )
+    if( _CC_DEBUG & CC_DEBUG_CLIENT )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " - Outgoing Message has class ID of " << message->isA() << endl;
-    }*/
+    }
 
     setChanged();
     notifyObservers();

@@ -18,7 +18,7 @@
                      
 #include <rw/collstr.h>
 
-extern BOOL _CC_DEBUG;
+extern ULONG _CC_DEBUG;
 extern BOOL _IGNORE_NOT_NORMAL_FLAG;
 
 /*===========================================================================
@@ -1500,7 +1500,7 @@ void CtiCCPointDataMsgExecutor::Execute()
     unsigned tags = _pointDataMsg->getTags();
     RWTime& timestamp = _pointDataMsg->getTime();
 
-    //if( _CC_DEBUG )
+    if( _CC_DEBUG & CC_DEBUG_STANDARD )
 	{
         char tempchar[80];
         RWCString outString = "Manual point value received from client, ID:";
@@ -1642,7 +1642,7 @@ void CtiCCShutdownExecutor::Execute()
 {
     try
     {
-        if( _CC_DEBUG )
+        if( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << RWTime() << " - Shutting down client listener thread..." << endl;
@@ -1650,7 +1650,7 @@ void CtiCCShutdownExecutor::Execute()
 
         CtiCCClientListener::getInstance()->stop();
 
-        if( _CC_DEBUG )
+        if( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << RWTime() << " - Client listener thread shutdown." << endl;
@@ -1664,7 +1664,7 @@ void CtiCCShutdownExecutor::Execute()
 
     try
     {
-        if( _CC_DEBUG )
+        if( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << RWTime() << " - Shutting down cap controller thread..." << endl;
@@ -1672,7 +1672,7 @@ void CtiCCShutdownExecutor::Execute()
     
         CtiCapController::getInstance()->stop();
 
-        if( _CC_DEBUG )
+        if( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << RWTime() << " - Cap controller thread shutdown." << endl;
@@ -1686,7 +1686,7 @@ void CtiCCShutdownExecutor::Execute()
 
     try
     {
-        if( _CC_DEBUG )
+        if( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << RWTime() << " - Shutting down substation bus store..." << endl;
@@ -1694,7 +1694,7 @@ void CtiCCShutdownExecutor::Execute()
     
         CtiCCSubstationBusStore::deleteInstance();
 
-        if( _CC_DEBUG )
+        if( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << RWTime() << " - Substation bus store shutdown." << endl;
