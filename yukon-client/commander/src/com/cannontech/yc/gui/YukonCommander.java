@@ -26,7 +26,6 @@ import com.cannontech.database.cache.functions.CommandFuncs;
 import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteBase;
-import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteCommand;
 import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
 import com.cannontech.database.data.lite.LiteFactory;
@@ -1681,7 +1680,7 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 	/**
 	 * Sets the ycClass.modelType
 	 * Valid types located in - com.cannontech.database.model.ModelFactory.DEVICE, DEVICE_METERNUMBER, 
-	 * MCTBROADCAST, LMGROUPS, CAPBANKCONTROLLER, CICUSTOMER, COLLECTIONGROUP, TESTCOLLECTIONGROUP, EDITABLE_xxx
+	 * MCTBROADCAST, LMGROUPS, CAPBANKCONTROLLER, COLLECTIONGROUP, TESTCOLLECTIONGROUP, EDITABLE_xxx
 	 * @param typeSelected int
 	 */
 	private void setModelType(int typeSelected)
@@ -1871,13 +1870,9 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 					getYCCommandMenu().locateRoute.setEnabled(true);
 				}
 			}
-			if( selectedItem instanceof LiteCICustomer)
-				setTitle(displayTitle + " : " + selectedItem.toString());
-			else
-			{
-				displayTitle += " - " + getYC().getDeviceType();
-				setTitle(displayTitle);
-			}
+
+			displayTitle += " - " + getYC().getDeviceType();
+			setTitle(displayTitle);
 		}
 		else if ( ModelFactory.isEditableSerial(getModelType()))
 		{
@@ -2083,7 +2078,6 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 			tempModel.add( ModelFactory.MCTBROADCAST);
 			tempModel.add( ModelFactory.LMGROUPS);
 			tempModel.add( ModelFactory.CAPBANKCONTROLLER);
-			tempModel.add( ModelFactory.CICUSTOMER);
 			tempModel.add( ModelFactory.COLLECTIONGROUP);
 			tempModel.add( ModelFactory.TESTCOLLECTIONGROUP);
 
