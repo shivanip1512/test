@@ -5,6 +5,8 @@ package com.cannontech.yc.gui;
  * Creation date: (2/25/2002 3:24:43 PM)
  * @author: 
  */
+import java.util.Observable;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiProperties;
 import com.cannontech.common.util.CtiUtilities;
@@ -23,7 +25,7 @@ import com.cannontech.database.model.ModelFactory;
 import com.cannontech.message.porter.ClientConnection;
 import com.cannontech.message.porter.message.Request;
 
-public class YC
+public class YC extends Observable implements Runnable
 {
 	public final String ALT_SERIALNUMBER_FILENAME = "VersacomSerial";	//serial number file name
 	public final String SERIALNUMBER_FILENAME = "LCRSerial";	//serial number file name
@@ -56,10 +58,32 @@ public class YC
 	public static int LOOPLOCATE = 3;//loop locate parsed
 	public static int LOOPLOCATE_ROUTE = 4;//loop locate route parsed
 	
+	private Thread inThread;
 	private ClientConnection connToPorter = null;
 	private KeysAndValuesFile keysAndValuesFile = null;
 
 	private YCDefaults ycDefaults = null;
+	
+	public class OutputMessage{
+		public static final int DISPLAY_MESSAGE = 0;
+		public static final int DEBUG_MESSAGE = 1;
+		public int type = DEBUG_MESSAGE;
+		public String text;
+		public java.awt.Color color = java.awt.Color.black;
+		public boolean isUnderline = false; 
+		public OutputMessage(int type_, String message_, java.awt.Color color_)
+		{
+			this(type_, message_, color_, false);
+		}
+		public OutputMessage(int type_, String message_, java.awt.Color color_, boolean underline_)
+		{
+			super();
+			type = type_;
+			text = message_;
+			color = color_;
+			isUnderline = underline_;
+		}
+	}
 	/**
 	 * YC constructor comment.
 	 */
@@ -67,8 +91,10 @@ public class YC
 	{
 		super();
 		getConnToPorter();
+		//Start this Runnable Thread.
+		inThread = new Thread(this);
+		inThread.start();
 		ycDefaults = new YCDefaults();
-		
 	}
 	/**
 	 * Insert the method's description here.
@@ -748,5 +774,177 @@ public class YC
 	{
 		return commandFileExt;
 	}
+	/**
+	 * Run simply waits for Return messages to appear on our connection and
+	 * This should be done without using a separate thread but its not.  rev 2 baby
+	 * adds them to the output pane.
+	 */
+	public void run()
+	{
+		try
+		{
+			java.text.SimpleDateFormat format = new java.text.SimpleDateFormat("MMM d HH:mm:ss a z");
+			long prevUserID = -1;
+			String displayOutput = "";
+			String debugOutput = "";
+			String routeName = null;
+			boolean firstTime = true;
+			for (;;)
+			{
+				java.awt.Color textColor = getYCDefaults().getDisplayTextColor();
+				Object in;
+				debugOutput = "";
+				displayOutput = "";
+				if (getConnToPorter() != null && getConnToPorter().isValid())
+				{
+					if ((in = getConnToPorter().read()) != null)
+					{
+						if (in instanceof com.cannontech.message.porter.message.Return)
+						{
+							com.cannontech.message.porter.message.Return ret = (com.cannontech.message.porter.message.Return) in;
+							OutputMessage message;
+							if( prevUserID != ret.getUserMessageID())
+							{
+//								textColor = java.awt.Color.black;
+								debugOutput = "\n["+ format.format(ret.getTimeStamp()) + "]-{" + ret.getUserMessageID() +"} Return from \'" + ret.getCommandString() + "\'\n";
+								message = new OutputMessage(OutputMessage.DEBUG_MESSAGE, debugOutput, textColor);
+								setChanged();
+								this.notifyObservers(message);
+								debugOutput = "";
+								prevUserID = ret.getUserMessageID();
+							
+								if( firstTime && getLoopType() != YC.NOLOOP)
+								{
+									displayOutput = "\n\nROUTE\t\t\tVALID\t\tERROR";
+									message = new OutputMessage(OutputMessage.DISPLAY_MESSAGE, displayOutput, textColor, true);
+									setChanged();
+									this.notifyObservers(message);
+									displayOutput = "";
+									firstTime = false;
+								}
+							}
+														
+							for (int i = 0; i < ret.getVector().size(); i++)
+							{
+								Object o = ret.getVector().elementAt(i);
+								if (o instanceof com.cannontech.message.dispatch.message.PointData)
+								{
+									com.cannontech.message.dispatch.message.PointData pd = (com.cannontech.message.dispatch.message.PointData) o;
+									if ( pd.getStr().length() > 0 )
+									{
+										int tabCount = (60 - displayOutput.length())/ 24;
+										for (int x = 0; x <= tabCount; x++)
+										{
+											displayOutput += "\t";
+										}
+										debugOutput += pd.getStr() + "\n";
+									}
+								}
+							}
 
+							if (ret.getRouteOffset() > 0)
+							{
+								routeName = com.cannontech.database.cache.functions.PAOFuncs.getYukonPAOName(ret.getRouteOffset());																				
+							}
+
+							if( ret.getExpectMore() == 0)
+							{
+								if( routeName == null)
+								{
+									routeName = com.cannontech.database.cache.functions.PAOFuncs.getYukonPAOName(ret.getDeviceID());
+								}
+
+								displayOutput = "\n" + routeName;
+								int tabCount = (60 - displayOutput.length())/ 24;
+								for (int i = 0; i <= tabCount; i++)
+								{
+									displayOutput += "\t";
+								}
+
+								if( ret.getStatus() != 0)
+								{
+									textColor = getYCDefaults().getInvalidTextColor();
+									if( ret.getExpectMore() == 0)
+										displayOutput += "N\t\t" + ret.getStatus();
+								}
+								else	//status == 0 == successfull
+								{
+									textColor = getYCDefaults().getValidTextColor();
+									if( ret.getExpectMore() == 0)
+										displayOutput += "Y\t\t---";
+								}
+		
+								if( getLoopType() != YC.NOLOOP)
+								{
+									message = new OutputMessage(OutputMessage.DISPLAY_MESSAGE, displayOutput, textColor);
+									setChanged();
+									this.notifyObservers(message);									
+								}
+							}
+							if(ret.getResultString().length() > 0)
+							{
+								debugOutput += ret.getResultString() + "\n";
+							}
+							
+							message = new OutputMessage(OutputMessage.DEBUG_MESSAGE, debugOutput, textColor);
+							setChanged();
+							this.notifyObservers(message);
+							synchronized ( YukonCommander.class )
+							{
+								if( ret.getExpectMore() == 0)	//Only send next message when ret expects nothing more
+								{
+									routeName = null;									
+									//Break out of this outer loop.
+									doneSendMore:
+									if( sendMore == 0)
+									{
+										// command finished
+									}
+									else if ( sendMore > 0)
+									{
+										sendMore--;	//decrement the number of messages to send
+										if (getLoopType() == YC.LOOPLOCATE)
+										{
+											if( getAllRoutes()[sendMore] instanceof LiteYukonPAObject)
+											{
+												LiteYukonPAObject rt = (LiteYukonPAObject) getAllRoutes()[sendMore];
+												while( rt.getType() == PAOGroups.ROUTE_MACRO
+													&& sendMore > 0)
+												{
+													sendMore--;
+													rt = (LiteYukonPAObject) getAllRoutes()[sendMore];
+												}
+												// Have to check again because last one may be route_ macro
+												if(rt.getType() == PAOGroups.ROUTE_MACRO)
+													break doneSendMore;
+
+												getPorterRequest().setRouteID(rt.getYukonID());
+											}
+										}
+										getConnToPorter().write( getPorterRequest());	//do the saved loop request
+									}
+									else
+									{
+										debugOutput = "Command cancelled\n";
+										textColor = getYCDefaults().getInvalidTextColor();
+										message = new OutputMessage(OutputMessage.DEBUG_MESSAGE, debugOutput, textColor);
+										setChanged();
+										this.notifyObservers(message);
+									}
+								}
+							}
+						}
+					}
+				}
+				else
+				{
+					Thread.sleep(1000);
+				}
+			}
+		}
+		catch (InterruptedException e)
+		{
+			e.printStackTrace();
+		}
+	}
 }
