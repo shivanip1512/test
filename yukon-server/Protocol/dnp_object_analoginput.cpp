@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/12/30 16:24:43 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2003/01/07 21:19:36 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -73,8 +73,12 @@ int CtiDNPAnalogInput::restoreVariation(unsigned char *buf, int len, int variati
             {
                 _value = -1;
             }
+            else
+            {
+                _value = 0;
+            }
 
-            _value  = buf[pos++] ;
+            _value |= buf[pos++] ;
             _value |= buf[pos++] <<  8;
             _value |= buf[pos++] << 16;
             _value |= buf[pos++] << 24;
@@ -93,8 +97,12 @@ int CtiDNPAnalogInput::restoreVariation(unsigned char *buf, int len, int variati
             {
                 _value = -1;
             }
+            else
+            {
+                _value = 0;
+            }
 
-            _value  = buf[pos++];
+            _value |= buf[pos++];
             _value |= buf[pos++] << 8;
 
             break;
