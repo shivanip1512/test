@@ -7,6 +7,10 @@
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 <script language="JavaScript">
+function init() {
+	document.getElementById("Reenable").value = '<cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_REENABLE %>" format="all_capital"/>';
+}
+
 function validate(form) {
 	if (form.action.value == "OptOutProgram" && (form.StartDate.value == "" || form.EndDate.value == "")) {
 		alert("The start and end date cannot be empty");
@@ -19,7 +23,7 @@ function validate(form) {
 </script>
 </head>
 
-<body class="Background" leftmargin="0" topmargin="0">
+<body class="Background" leftmargin="0" topmargin="0" onload="init()">
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
@@ -47,7 +51,6 @@ function validate(form) {
               <%@ include file="include/InfoSearchBar.jsp" %>
 			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
 			  <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
-			  
               <table width="550" border="0" cellspacing="0" cellpadding="0">
                 <tr>
                   <td class="MainText" align="center"><cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_DESC_OPT_OUT %>"/>
@@ -55,50 +58,50 @@ function validate(form) {
                 </tr>
               </table>
 			  <br>
-			<form name="form1" method="post" action="<%= request.getContextPath() %>/servlet/SOAPClient" onsubmit="return validate(this)">
-			  <input type="hidden" name="action" value="OptOutProgram">
-			  <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/operator/Consumer/Programs.jsp">
-			  <input type="hidden" name="REDIRECT2" value="<%=request.getContextPath()%>/operator/Consumer/OptForm.jsp">
-			  <input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/operator/Consumer/OptOut.jsp">
-                <table width="350" border="1" cellspacing="0" cellpadding="3" bgcolor="#CCCCCC" align="center">
+			  <form name="form1" method="post" action="<%= request.getContextPath() %>/servlet/SOAPClient" onsubmit="return validate(this)">
+			    <input type="hidden" name="action" value="OptOutProgram">
+			    <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/operator/Consumer/Programs.jsp">
+			    <input type="hidden" name="REDIRECT2" value="<%=request.getContextPath()%>/operator/Consumer/OptForm.jsp">
+			    <input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/operator/Consumer/OptOut.jsp">
+                <table width="350" border="1" cellspacing="0" cellpadding="5" bgcolor="#CCCCCC" align="center">
                   <tr> 
-                  <td> 
-                      <div align="center"> 
-                        <p class="HeaderCell">Temporarily <cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_OPT_OUT_VERB %>" defaultvalue="opt out of"/> 
-                          all programs</p>
-                        <table width="300" border="0" cellspacing="0" cellpadding="3" class="TableCell2">
-                          <tr> 
-                            <td align="right" width="120">Start Date:</td>
-                            <td width="168"> 
-                              <input type="text" name="StartDate" id="StartDate" size="14" value="<%= datePart.format(new Date()) %>">
-                              <a href="javascript:openCalendar(document.getElementById('StartDate'))"
-					    onMouseOver="window.status='Start Date Calendar';return true;"
-						onMouseOut="window.status='';return true;"> <img src="<%= request.getContextPath() %>/WebConfig/yukon/Icons/StartCalendar.gif" width="20" height="15" align="absmiddle" border="0"> 
-                              </a> </td>
-                          </tr>
-                          <tr> 
-                            <td align="right" width="120">End Date (midnight of):</td>
-                            <td width="168"> 
-                              <input type="text" name="EndDate" id="EndDate" size="14" value="<%= datePart.format(new Date()) %>">
-                              <a href="javascript:openCalendar(document.getElementById('EndDate'))"
-					    onMouseOver="window.status='Start Date Calendar';return true;"
-						onMouseOut="window.status='';return true;"> <img src="<%= request.getContextPath() %>/WebConfig/yukon/Icons/StartCalendar.gif" width="20" height="15" align="absmiddle" border="0"> 
-                              </a> </td>
-                          </tr>
-                        </table>
-                        <input type="submit" name="Submit" value="Submit">
-                      </div>
+                    <td align="center"> 
+                      <p class="HeaderCell">Temporarily <cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_OPT_OUT_VERB %>" defaultvalue="opt out of"/> 
+                        all programs</p>
+                      <table width="300" border="0" cellspacing="0" cellpadding="3" class="TableCell2">
+                        <tr> 
+                          <td align="right" width="120">Start Date:</td>
+                          <td width="168"> 
+                            <input type="text" name="StartDate" id="StartDate" size="14" value="<%= datePart.format(new Date()) %>">
+                            <a href="javascript:openCalendar(document.getElementById('StartDate'))"
+							  onMouseOver="window.status='Start Date Calendar';return true;"
+							  onMouseOut="window.status='';return true;"> <img src="<%= request.getContextPath() %>/WebConfig/yukon/Icons/StartCalendar.gif" width="20" height="15" align="absmiddle" border="0"> 
+                            </a>
+						  </td>
+                        </tr>
+                        <tr> 
+                          <td align="right" width="120">End Date (midnight of):</td>
+                          <td width="168"> 
+                            <input type="text" name="EndDate" id="EndDate" size="14" value="<%= datePart.format(new Date()) %>">
+                            <a href="javascript:openCalendar(document.getElementById('EndDate'))"
+							  onMouseOver="window.status='Start Date Calendar';return true;"
+							  onMouseOut="window.status='';return true;"> <img src="<%= request.getContextPath() %>/WebConfig/yukon/Icons/StartCalendar.gif" width="20" height="15" align="absmiddle" border="0"> 
+                            </a>
+						  </td>
+                        </tr>
+                      </table>
+                      <br>
+                      <input type="submit" name="Submit" value="Submit">
                     </td>
-                </tr>
-              </table>
-              <p align="center" class="Subtext"><br>
-              <table width="366" border="0" cellspacing="0" cellpadding="3" align="center">
-                <tr> 
-                  <td align="right" width="143"> 
-                    <input type="submit" value="Re-enable" onclick="this.form.action.value='ReenableProgram'"
-					 <% if (programs.getStarsLMProgramCount() == 0) out.print("disabled"); %>>
-                  </td>
-                  <td width="211"> 
+                  </tr>
+                </table>
+                <br>
+                <table width="400" border="0" cellspacing="0" cellpadding="5" align="center">
+                  <tr> 
+                    <td align="center"> 
+                      <input type="submit" id="Reenable" value="Reenable" onclick="this.form.action.value='ReenableProgram'"
+					    <% if (programs.getStarsLMProgramCount() == 0) out.print("disabled"); %>>
+                      <input type="submit" name="RepeatLast" value="Repeat Last" onClick="this.form.action='RepeatLastOptOut'">
 <%
 	String disabled = "disabled";
 	if (programHistory != null && programHistory.getStarsLMProgramEventCount() > 0) {
@@ -107,20 +110,18 @@ function validate(form) {
 			disabled = "";
 	}
 %>
-                    <input type="submit" value="Cancel Scheduled" onclick="this.form.action.value='CancelScheduledOptOut'" <%= disabled%>>
-                  </td>
-                </tr>
-              </table>
-			</form>
-              <br>
-              <form name="form2" method="post" action="OptHist.jsp">
-                <p align="center" class="SubtitleHeader">Program History
-                <table width="366" border="1" cellspacing="0" align="center" cellpadding="3">
-                  <tr> 
-                    <td class="HeaderCell" width="75">Date</td>
-                    <td class="HeaderCell" width="120">Type - Duration</td>
-                    <td class="HeaderCell" width="145">Program</td>
+                      <input type="submit" value="Cancel Scheduled" onclick="this.form.action.value='CancelScheduledOptOut'" <%= disabled%>>
+                    </td>
                   </tr>
+                </table>
+			  </form>
+              <span class="SubtitleHeader">Program History</span> 
+              <table width="366" border="1" cellspacing="0" align="center" cellpadding="3">
+                <tr> 
+                  <td class="HeaderCell" width="75">Date</td>
+                  <td class="HeaderCell" width="120">Type - Duration</td>
+                  <td class="HeaderCell" width="145">Program</td>
+                </tr>
 <%
 	if (programHistory != null) {
 		int eventCnt = programHistory.getStarsLMProgramEventCount();
@@ -146,36 +147,35 @@ function validate(form) {
 			}
 			if (progNames.equals("")) continue;
 %>
-                  <tr> 
-                    <td class="TableCell" width="75" ><%= datePart.format(event.getEventDateTime()) %></td>
-                    <td class="TableCell" width="120" ><%= event.getEventAction() %> 
-                      <% if (event.hasDuration()) { %>
-                      - <%= durationStr %> 
-                      <% } %>
-                      <%= scheduledStr %> </td>
-                    <td class="TableCell" width="145" ><%= progNames %></td>
-                  </tr>
+                <tr> 
+                  <td class="TableCell" width="75" ><%= datePart.format(event.getEventDateTime()) %></td>
+                  <td class="TableCell" width="120" ><%= event.getEventAction() %> 
+                    <% if (event.hasDuration()) { %>
+                    - <%= durationStr %> 
+                    <% } %>
+                    <%= scheduledStr %> </td>
+                  <td class="TableCell" width="145" ><%= progNames %></td>
+                </tr>
 <%
 		}
 	}
 %>
-                </table>
+              </table>
 <%
 	if (programHistory != null && programHistory.getStarsLMProgramEventCount() > 5) {
 %>
-                <table width="300" border="0" cellspacing="0" cellpadding="0">
-                  <tr>
-                    <td> 
-                      <div align="right">
-                        <input type="button" name="More" value="More" onclick="location='ProgHist.jsp'">
-                      </div>
-                    </td>
-                  </tr>
-                </table>
+              <table width="300" border="0" cellspacing="0" cellpadding="0">
+                <tr> 
+                  <td> 
+                    <div align="right"> 
+                      <input type="button" name="More" value="More" onClick="location='ProgHist.jsp'">
+                    </div>
+                  </td>
+                </tr>
+              </table>
 <%
 	}
 %>
-              </form>
               <br>
             </div>
             <p>&nbsp;</p>

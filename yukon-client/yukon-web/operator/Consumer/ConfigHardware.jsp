@@ -45,6 +45,12 @@
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 
 <script language="JavaScript">
+function init() {
+	if (document.getElementById("Override") != null)
+		document.getElementById("Override").value = '<cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_OVERRIDE %>" format="all_capital"/>';
+	document.getElementById("Reenable").value = '<cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_REENABLE %>" format="all_capital"/>';
+}
+
 function sendCommand(cmd) {
 	var form = document.invForm;
 	form.action.value = cmd;
@@ -70,7 +76,7 @@ function changeProgSelection(chkBox) {
 </script>
 </head>
 
-<body class="Background" leftmargin="0" topmargin="0">
+<body class="Background" leftmargin="0" topmargin="0" onload="init()">
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
@@ -763,7 +769,10 @@ function changeProgSelection(chkBox) {
                 <table width="300" border="0" cellspacing="0" cellpadding="0">
                   <tr> 
                     <td align="center"> 
-                      <input type="button" name="Enable" value="Reenable" onclick="sendCommand('EnableLMHardware')">
+<cti:checkProperty propertyid="<%= ConsumerInfoRole.OVERRIDE_HARDWARE %>">
+                      <input type="button" id="Override" value="Override" onclick="location.href='OverrideHardware.jsp?InvNo=<%= invNo %>'">
+</cti:checkProperty>
+                      <input type="button" id="Reenable" value="Reenable" onclick="sendCommand('EnableLMHardware')">
                     </td>
                   </tr>
                 </table>
