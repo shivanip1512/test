@@ -19,7 +19,6 @@ import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.Transaction;
-import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.cache.functions.ContactFuncs;
@@ -1334,18 +1333,13 @@ public class StarsAdmin extends HttpServlet {
 				// Nothing need to be done is the list is already an inherited list
 				if (cList == null) return;
 				
+				// Try to update the references from the current list to the inherited list
 				StarsAdminUtil.updateListEntryReferences( energyCompany, energyCompany.getParent().getYukonSelectionList(listName) );
 				
-				try {
-					com.cannontech.database.data.constants.YukonSelectionList list =
-							new com.cannontech.database.data.constants.YukonSelectionList();
-					list.setListID( new Integer(cList.getListID()) );
-					Transaction.createTransaction( Transaction.DELETE, list ).execute();
-				}
-				catch (TransactionException e) {
-					CTILogger.error( e.getMessage(), e );
-					throw new WebClientException("Cannot change the selection list to be \"inherited\", make sure its entries are not referenced.");
-				}
+				com.cannontech.database.data.constants.YukonSelectionList list =
+						new com.cannontech.database.data.constants.YukonSelectionList();
+				list.setListID( new Integer(cList.getListID()) );
+				Transaction.createTransaction( Transaction.DELETE, list ).execute();
 				
 				energyCompany.deleteYukonSelectionList( cList );
 			}
@@ -1401,7 +1395,6 @@ public class StarsAdmin extends HttpServlet {
 					
 					cList = new YukonSelectionList();
 					StarsLiteFactory.setConstantYukonSelectionList( cList, listDB );
-					
 					YukonListFuncs.getYukonSelectionLists().put( listDB.getListID(), cList );
 					energyCompany.getAllSelectionLists().add( cList );
 					
@@ -1412,7 +1405,16 @@ public class StarsAdmin extends HttpServlet {
 					}
 					
 					StarsAdminUtil.updateYukonListEntries( cList, entryData, energyCompany );
-					StarsAdminUtil.updateListEntryReferences( energyCompany, cList );
+					
+					// Try to update the refenreces from the inherited list to the list we just created,
+					// if this step failed, then rollback all changes by deleting the list we just created.
+					try {
+						StarsAdminUtil.updateListEntryReferences( energyCompany, cList );
+					}
+					catch (Exception e) {
+						Transaction.createTransaction( Transaction.DELETE, list ).execute();
+						energyCompany.deleteYukonSelectionList( cList );
+					}
 				}
 			}
 			
