@@ -19,8 +19,9 @@ import com.cannontech.common.util.CtiUtilities;
 public class PoolManager
 {
 	//Tomcat specific for now
-	public static final String DB_PROPERTIES_FILE  = 
-			System.getProperty("catalina.home") + "/db.properties";
+	private static final String DB_BASE = System.getProperty("catalina.base");
+	
+	public static final String DB_PROPERTIES_FILE = "/db.properties";
 	
 	public static final String DRV_SQLSERVER = "jdbc:microsoft:sqlserver:";
 	public static final String DRV_ORACLE = "jdbc:oracle:thin:";
@@ -280,11 +281,17 @@ public String[] getAllPoolsStrings()
    
    public static final URL getPropertyURL()
    {   	
-   	//return PoolManager.class.getResource( DB_PROPERTIES_FILE );
    	try
    	{
-			File f = new File(DB_PROPERTIES_FILE);			
-   		return f.toURL();
+			if( DB_BASE == null ) //unknown catalina base, try in the CLASSPATH
+			{
+				return PoolManager.class.getResource( DB_PROPERTIES_FILE );
+			}
+			else
+			{
+				File f = new File( DB_BASE + DB_PROPERTIES_FILE );			
+	   		return f.toURL();
+			}
    	}
    	catch( Exception ex )
    	{
@@ -301,24 +308,34 @@ public String[] getAllPoolsStrings()
    		
 		try
 		{
-			File f = new File(DB_PROPERTIES_FILE);
-			CTILogger.info( " Searching for db.properties in : " + f.getAbsolutePath() );
-			CTILogger.info( "   catalina.home = " + System.getProperty("catalina.home") );
-//			CTILogger.info( " Con = " + f.getCanonicalPath() );
-//			CTILogger.info( " ppp = " + f.getPath() );
+			InputStream is = null;		
+
+			if( DB_BASE == null ) //unknown catalina base, try in the CLASSPATH
+			{
+				is = PoolManager.class.getResourceAsStream( DB_PROPERTIES_FILE );
+			}
+			else
+			{
+				File f = new File( DB_BASE + DB_PROPERTIES_FILE);
+				is = new FileInputStream( DB_BASE + DB_PROPERTIES_FILE );
+
+				CTILogger.info( " Searching for db.properties in : " + f.getAbsolutePath() );
+				CTILogger.info( "   catalina.base = " + DB_BASE );
+//				CTILogger.info( " Con = " + f.getCanonicalPath() );
+//				CTILogger.info( " ppp = " + f.getPath() );
+			}
 			
-			FileInputStream fi = new FileInputStream( DB_PROPERTIES_FILE );
-			
-			InputStream is = fi;		
-			//PoolManager.class.getResourceAsStream( DB_PROPERTIES_FILE );
 
 			props = new Properties();
 			props.load(is);
+			
+			is.close();
 		 }
 		 catch (Exception e)
 		 {
-		  CTILogger.getStandardLog().error("Can't read the properties file. " +
-		 	"Make sure db.properties is in the CLASSPATH" );
+		  	CTILogger.getStandardLog().error("Can't read the properties file. " +
+		 		"Make sure db.properties is in the CLASSPATH" + 
+		 		(DB_BASE != null ? " or in the directory: " + DB_BASE : "") );
 		 }	
 		 finally 
 		 {
