@@ -3,6 +3,8 @@ package com.cannontech.database.db.stars;
 import java.sql.SQLException;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.SqlStatement;
 import com.cannontech.database.db.DBPersistent;
 
 /**
@@ -111,21 +113,12 @@ public class CustomerFAQ extends DBPersistent {
 		update( TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues, SETTER_COLUMNS, setValues );
 	}
 	
-	public static CustomerFAQ[] getAllCustomerFAQs(Integer energyCompanyID) {
-		ECToGenericMapping[] items = ECToGenericMapping.getAllMappingItems(energyCompanyID, TABLE_NAME);
-		if (items == null) return null;
-		if (items.length == 0) return new CustomerFAQ[0];
-		
-		StringBuffer sql = new StringBuffer();
-		sql.append( "SELECT QuestionID, SubjectID, Question, Answer " )
-		   .append( "FROM " ).append( TABLE_NAME )
-		   .append( " WHERE QUESTIONID = " ).append( items[0].getItemID() );
-		for (int i = 1; i < items.length; i++)
-			sql.append( " OR QUESTIONID = " ).append( items[i].getItemID() );
-		sql.append( " ORDER BY SubjectID, QuestionID" );
-		
-		com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
-				sql.toString(), com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+	public static CustomerFAQ[] getAllCustomerFAQs(int faqGrpListID) {
+		String sql = "SELECT QuestionID, SubjectID, Question, Answer" +
+			" FROM " + TABLE_NAME + ", YukonListEntry" +
+			" WHERE SubjectID = EntryID AND ListID = " + faqGrpListID +
+			" ORDER BY SubjectID, QuestionID";
+		SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
 		
 		try {
 			stmt.execute();
@@ -150,12 +143,11 @@ public class CustomerFAQ extends DBPersistent {
 		return null;
 	}
 	
-	public static CustomerFAQ[] getCustomerFAQs(Integer subjectID) {
-		String sql = "SELECT QuestionID, SubjectID, Question, Answer " +
-				"FROM " + TABLE_NAME + " WHERE SubjectID = " + subjectID +
+	public static CustomerFAQ[] getCustomerFAQs(int subjectID) {
+		String sql = "SELECT QuestionID, SubjectID, Question, Answer" +
+				" FROM " + TABLE_NAME + " WHERE SubjectID = " + subjectID +
 				" ORDER BY QuestionID";
-		com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
-				sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+		SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
 		
 		try {
 			stmt.execute();
@@ -177,6 +169,31 @@ public class CustomerFAQ extends DBPersistent {
 		}
 		
 		return null;
+	}
+	
+	public static void deleteCustomerFAQs(int subjectID) {
+		String sql = "DELETE FROM " + TABLE_NAME + " WHERE SubjectID = " + subjectID;
+		SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
+		
+		try {
+			stmt.execute();
+		}
+		catch (Exception e) {
+			CTILogger.error( e.getMessage(), e );
+		}
+	}
+	
+	public static void deleteAllCustomerFAQs(int faqGrpListID) {
+		String sql = "DELETE FROM " + TABLE_NAME + " WHERE SubjectID IN (" +
+			"SELECT EntryID FROM YukonListEntry WHERE ListID = " + faqGrpListID + ")";
+		SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
+		
+		try {
+			stmt.execute();
+		}
+		catch (Exception e) {
+			CTILogger.error( e.getMessage(), e );
+		}
 	}
 
 	/**

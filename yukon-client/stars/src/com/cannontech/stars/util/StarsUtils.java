@@ -200,12 +200,13 @@ public class StarsUtils {
 						tokenList.add( st.sval );
 						isDelimLast = false;
 					}
-					else if (st.ttype == ',') {
+					else if (delim.indexOf(st.ttype) >= 0) {
 						tokenList.add( "" );
 					}
 				}
 				else {
-					if (st.ttype == ',') isDelimLast = true;
+					if (delim.indexOf(st.ttype) >= 0)
+						isDelimLast = true;
 				}
 			}
 		}

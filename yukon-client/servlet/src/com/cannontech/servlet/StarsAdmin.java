@@ -24,12 +24,10 @@ import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.database.cache.functions.EnergyCompanyFuncs;
 import com.cannontech.database.cache.functions.PAOFuncs;
-import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.cache.functions.YukonUserFuncs;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonGroup;
-import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteAddress;
 import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
@@ -52,7 +50,6 @@ import com.cannontech.database.db.stars.customer.CustomerAccount;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.application.WebClientRole;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
-import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.util.ECUtils;
@@ -75,9 +72,6 @@ import com.cannontech.stars.xml.serialize.PrimaryContact;
 import com.cannontech.stars.xml.serialize.QuestionType;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsCustomerAddress;
-import com.cannontech.stars.xml.serialize.StarsCustomerFAQ;
-import com.cannontech.stars.xml.serialize.StarsCustomerFAQGroup;
-import com.cannontech.stars.xml.serialize.StarsCustomerFAQs;
 import com.cannontech.stars.xml.serialize.StarsDefaultThermostatSchedules;
 import com.cannontech.stars.xml.serialize.StarsEnergyCompany;
 import com.cannontech.stars.xml.serialize.StarsExitInterviewQuestion;
@@ -173,12 +167,12 @@ public class StarsAdmin extends HttpServlet {
 			updateSubstation( user, req, session );
 		else if (action.equalsIgnoreCase("DeleteSubstation"))
 			deleteSubstation( user, req, session );
-		else if (action.equalsIgnoreCase("UpdateFAQLink"))
-			updateCustomerFAQLink( user, req, session );
-		else if (action.equalsIgnoreCase("UpdateFAQSubjects"))
-			updateCustomerFAQSubjects( user, req, session );
-		else if (action.equalsIgnoreCase("UpdateCustomerFAQs"))
-			updateCustomerFAQs( user, req, session );
+		else if (action.equalsIgnoreCase("UpdateFAQSource"))
+			updateFAQSource( user, req, session );
+		else if (action.equalsIgnoreCase("UpdateFAQSubjectList"))
+			updateFAQSubjectList( user, req, session );
+		else if (action.equalsIgnoreCase("UpdateFAQSubject"))
+			updateFAQSubject( user, req, session );
 		else if (action.equalsIgnoreCase("DeleteFAQSubject"))
 			deleteFAQSubject( user, req, session );
 		else if (action.equalsIgnoreCase("UpdateInterviewQuestions"))
@@ -1020,72 +1014,91 @@ public class StarsAdmin extends HttpServlet {
 		}
 	}
 	
-	private void updateCustomerFAQLink(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
+	private void updateFAQSource(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
 		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
 		LiteYukonUser liteUser = user.getYukonUser();
         
 		try {
-			boolean customizedFAQ = Boolean.valueOf( req.getParameter("CustomizedFAQ") ).booleanValue();
+			String source = req.getParameter("Source");
 			String faqLink = req.getParameter("FAQLink");
-			String value = AuthFuncs.getRolePropertyValue( liteUser, ConsumerInfoRole.WEB_LINK_FAQ, "(none)" );
+			if (!source.equalsIgnoreCase("Link")) faqLink = CtiUtilities.STRING_NONE;
 			
-			LiteYukonGroup[] customerGroups = energyCompany.getResidentialCustomerGroups();
-			LiteYukonGroup[] operatorGroups = energyCompany.getWebClientOperatorGroups();
-        	
-			String sql = null;
-			com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
-					sql, CtiUtilities.getDatabaseAlias() );
-        	
-			if (customizedFAQ && !value.equals(faqLink) ||
-				!customizedFAQ && StarsUtils.forceNotNone(value).length() > 0)
-			{
-				if (!customizedFAQ) faqLink = "(none)";
-        		
-				for (int i = 0; i < customerGroups.length; i++) {
-					if (AuthFuncs.getRolePropValueGroup(customerGroups[i], ResidentialCustomerRole.WEB_LINK_FAQ, null) != null) {
-						sql = "UPDATE YukonGroupRole SET Value = '" + faqLink + "'" +
-								" WHERE GroupID = " + customerGroups[i].getGroupID() +
-								" AND RoleID = " + ResidentialCustomerRole.ROLEID +
-								" AND RolePropertyID = " + ResidentialCustomerRole.WEB_LINK_FAQ;
-						stmt.setSQLString( sql );
-						stmt.execute();
+			LiteYukonGroup[] custGroups = energyCompany.getResidentialCustomerGroups();
+			LiteYukonGroup[] operGroups = energyCompany.getWebClientOperatorGroups();
+			
+			for (int i = 0; i < operGroups.length; i++) {
+				if (AuthFuncs.getRolePropValueGroup(operGroups[i], ConsumerInfoRole.WEB_LINK_FAQ, null) != null &&
+					StarsAdminUtil.updateGroupRoleProperty(operGroups[i], ConsumerInfoRole.ROLEID, ConsumerInfoRole.WEB_LINK_FAQ, faqLink))
+					ServerUtils.handleDBChange( operGroups[i], DBChangeMsg.CHANGE_TYPE_UPDATE );
+			}
+			
+			for (int i = 0; i < custGroups.length; i++) {
+				if (AuthFuncs.getRolePropValueGroup(custGroups[i], ResidentialCustomerRole.WEB_LINK_FAQ, null) != null &&
+					StarsAdminUtil.updateGroupRoleProperty(custGroups[i], ResidentialCustomerRole.ROLEID, ResidentialCustomerRole.WEB_LINK_FAQ, faqLink))
+					ServerUtils.handleDBChange( custGroups[i], DBChangeMsg.CHANGE_TYPE_UPDATE );
+			}
+			
+			if (source.equalsIgnoreCase("Inherited")) {
+				if (energyCompany.getCustomerFAQs() != null)
+					StarsAdminUtil.deleteAllFAQSubjects( energyCompany, true );
+			}
+			else if (source.equalsIgnoreCase("Customized")) {
+				if (energyCompany.getCustomerFAQs() == null) {
+					// Make a copy of the default the customer FAQs
+					YukonSelectionList dftList = energyCompany.getYukonSelectionList( YukonSelectionListDefs.YUK_LIST_NAME_CUSTOMER_FAQ_GROUP );
+					YukonSelectionList list = energyCompany.addYukonSelectionList( YukonSelectionListDefs.YUK_LIST_NAME_CUSTOMER_FAQ_GROUP, dftList, true );
+					
+					ArrayList dftFAQs = null;
+					if (energyCompany.getParent() != null)
+						dftFAQs = energyCompany.getParent().getAllCustomerFAQs();
+					else
+						dftFAQs = StarsDatabaseCache.getInstance().getDefaultEnergyCompany().getAllCustomerFAQs();
+					
+					for (int i = 0; i < dftFAQs.size(); i++) {
+						LiteCustomerFAQ dftFAQ = (LiteCustomerFAQ) dftFAQs.get(i);
 						
-						ServerUtils.handleDBChange( customerGroups[i], DBChangeMsg.CHANGE_TYPE_UPDATE );
+						com.cannontech.database.db.stars.CustomerFAQ faq = new com.cannontech.database.db.stars.CustomerFAQ();
+						faq.setQuestion( dftFAQ.getQuestion() );
+						faq.setAnswer( dftFAQ.getAnswer() );
+						
+						for (int j = 0; j < dftList.getYukonListEntries().size(); j++) {
+							if (dftFAQ.getSubjectID() == ((YukonListEntry) dftList.getYukonListEntries().get(j)).getEntryID()) {
+								int subjectID = ((YukonListEntry) list.getYukonListEntries().get(j)).getEntryID();
+								faq.setSubjectID( new Integer(subjectID) );
+								break;
+							}
+						}
+						
+						faq = (com.cannontech.database.db.stars.CustomerFAQ)
+								Transaction.createTransaction(Transaction.INSERT, faq).execute();
+						
+						LiteCustomerFAQ liteFAQ = (LiteCustomerFAQ) StarsLiteFactory.createLite( faq );
+						energyCompany.getCustomerFAQs().add( liteFAQ );
 					}
-				}
-	        	
-				for (int i = 0; i < operatorGroups.length; i++) {
-					if (AuthFuncs.getRolePropValueGroup(operatorGroups[i], ConsumerInfoRole.WEB_LINK_FAQ, null) != null) {
-						sql = "UPDATE YukonGroupRole SET Value = '" + faqLink + "'" +
-								" WHERE GroupID = " + operatorGroups[i].getGroupID() +
-								" AND RoleID = " + ConsumerInfoRole.ROLEID +
-								" AND RolePropertyID = " + ConsumerInfoRole.WEB_LINK_FAQ;
-						stmt.setSQLString( sql );
-						stmt.execute();
+					
+					ArrayList descendants = ECUtils.getAllDescendants( energyCompany );
+					for (int i = 0; i < descendants.size(); i++) {
+						LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(i);
+						company.updateStarsCustomerFAQs();
 					}
-	        		
-					ServerUtils.handleDBChange( operatorGroups[i], DBChangeMsg.CHANGE_TYPE_UPDATE );
 				}
 			}
         	
-			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "FAQ link updated successfully");
+			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Customer FAQs updated successfully");
 		}
 		catch (Exception e) {
 			CTILogger.error( e.getMessage(), e );
-			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to update FAQ link");
+			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to update customer FAQs");
 			redirect = referer;
 		}
 	}
 	
-	private void updateCustomerFAQSubjects(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
+	private void updateFAQSubjectList(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
 		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
         
 		try {
-			StarsEnergyCompanySettings ecSettings =
-					(StarsEnergyCompanySettings) session.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
-			StarsCustomerFAQs starsFAQs = ecSettings.getStarsCustomerFAQs();
-			
 			String[] subjectIDs = req.getParameterValues("SubjectIDs");
+			ArrayList newSubjects = new ArrayList();
 			
 			for (int i = 0; i < subjectIDs.length; i++) {
 				int subjectID = Integer.parseInt( subjectIDs[i] );
@@ -1096,15 +1109,15 @@ public class StarsAdmin extends HttpServlet {
 						StarsLiteFactory.createYukonListEntry( subject );
 				Transaction.createTransaction( Transaction.UPDATE, entry ).execute();
 				
-				// Reorder the StarsCustomerFAQGroup objects
-				for (int j = i; j < starsFAQs.getStarsCustomerFAQGroupCount(); j++) {
-					StarsCustomerFAQGroup group = starsFAQs.getStarsCustomerFAQGroup(j);
-					if (group.getSubjectID() == subjectID) {
-						starsFAQs.removeStarsCustomerFAQGroup(j);
-						starsFAQs.addStarsCustomerFAQGroup(i, group);
-						break;
-					}
-				}
+				newSubjects.add( subject );
+			}
+			
+			energyCompany.getYukonSelectionList( YukonSelectionListDefs.YUK_LIST_NAME_CUSTOMER_FAQ_GROUP ).setYukonListEntries( newSubjects );
+			
+			ArrayList descendants = ECUtils.getAllDescendants( energyCompany );
+			for (int i = 0; i < descendants.size(); i++) {
+				LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(i);
+				company.updateStarsCustomerFAQs();
 			}
 
 			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "FAQ subjects updated successfully");
@@ -1116,14 +1129,10 @@ public class StarsAdmin extends HttpServlet {
 		}
 	}
 	
-	private void updateCustomerFAQs(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
+	private void updateFAQSubject(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
 		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
         
 		try {
-			StarsEnergyCompanySettings ecSettings =
-					(StarsEnergyCompanySettings) session.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
-			StarsCustomerFAQs starsFAQs = ecSettings.getStarsCustomerFAQs();
-			
 			int subjectID = Integer.parseInt( req.getParameter("SubjectID") );
 			boolean newGroup = (subjectID == -1);
 			
@@ -1131,8 +1140,8 @@ public class StarsAdmin extends HttpServlet {
 			String[] questions = req.getParameterValues("Questions");
 			String[] answers = req.getParameterValues("Answers");
 			
-			ArrayList liteFAQs = energyCompany.getAllCustomerFAQs();
-			StarsCustomerFAQGroup starsGroup = null;
+			ArrayList liteFAQs = energyCompany.getCustomerFAQs();
+			YukonListEntry liteSubject = null;
 			
 			if (newGroup) {
 				YukonSelectionList cList = energyCompany.getYukonSelectionList( YukonSelectionListDefs.YUK_LIST_NAME_CUSTOMER_FAQ_GROUP );
@@ -1153,16 +1162,10 @@ public class StarsAdmin extends HttpServlet {
 				entry = (com.cannontech.database.db.constants.YukonListEntry)
 						Transaction.createTransaction( Transaction.INSERT, entry ).execute();
 				
-				com.cannontech.common.constants.YukonListEntry cEntry =
-						new com.cannontech.common.constants.YukonListEntry();
-				StarsLiteFactory.setConstantYukonListEntry( cEntry, entry );
-				YukonListFuncs.getYukonListEntries().put( entry.getEntryID(), cEntry );
-				cList.getYukonListEntries().add( cEntry );
-				
-				starsGroup = new StarsCustomerFAQGroup();
-				starsGroup.setSubjectID( cEntry.getEntryID() );
-				starsGroup.setSubject( cEntry.getEntryText() );
-				starsFAQs.addStarsCustomerFAQGroup( starsGroup );
+				liteSubject = new YukonListEntry();
+				StarsLiteFactory.setConstantYukonListEntry( liteSubject, entry );
+				YukonListFuncs.getYukonListEntries().put( entry.getEntryID(), liteSubject );
+				cList.getYukonListEntries().add( liteSubject );
 			}
 			else {
 				synchronized (liteFAQs) {
@@ -1180,24 +1183,14 @@ public class StarsAdmin extends HttpServlet {
 					}
 				}
 				
-				for (int i = 0; i < starsFAQs.getStarsCustomerFAQGroupCount(); i++) {
-					if (starsFAQs.getStarsCustomerFAQGroup(i).getSubjectID() == subjectID) {
-						starsGroup = starsFAQs.getStarsCustomerFAQGroup(i);
-						starsGroup.removeAllStarsCustomerFAQ();
-						break;
-					}
-				}
-				
-				YukonListEntry cEntry = YukonListFuncs.getYukonListEntry( subjectID );
-				if (!cEntry.getEntryText().equals( subject )) {
-					com.cannontech.database.db.constants.YukonListEntry entry = StarsLiteFactory.createYukonListEntry( cEntry );
-					entry.setEntryText( subject );
+				liteSubject = YukonListFuncs.getYukonListEntry( subjectID );
+				if (!liteSubject.getEntryText().equals( subject )) {
+					liteSubject.setEntryText( subject );
+					com.cannontech.database.db.constants.YukonListEntry entry =
+							StarsLiteFactory.createYukonListEntry( liteSubject );
 					
 					entry = (com.cannontech.database.db.constants.YukonListEntry)
 							Transaction.createTransaction( Transaction.UPDATE, entry ).execute();
-					
-					cEntry.setEntryText( subject );
-					starsGroup.setSubject( subject );
 				}
 			}
 			
@@ -1205,7 +1198,7 @@ public class StarsAdmin extends HttpServlet {
 				for (int i = 0; i < questions.length; i++) {
 					com.cannontech.database.db.stars.CustomerFAQ faq =
 							new com.cannontech.database.db.stars.CustomerFAQ();
-					faq.setSubjectID( new Integer(starsGroup.getSubjectID()) );
+					faq.setSubjectID( new Integer(liteSubject.getEntryID()) );
 					faq.setQuestion( questions[i] );
 					faq.setAnswer( answers[i] );
 					
@@ -1214,13 +1207,13 @@ public class StarsAdmin extends HttpServlet {
 					
 					LiteCustomerFAQ liteFAQ = (LiteCustomerFAQ) StarsLiteFactory.createLite( faq );
 					synchronized (liteFAQs) { liteFAQs.add(liteFAQ); }
-					
-					StarsCustomerFAQ starsFAQ = new StarsCustomerFAQ();
-					starsFAQ.setQuestionID( liteFAQ.getQuestionID() );
-					starsFAQ.setQuestion( liteFAQ.getQuestion() );
-					starsFAQ.setAnswer( liteFAQ.getAnswer() );
-					starsGroup.addStarsCustomerFAQ( starsFAQ );
 				}
+			}
+			
+			ArrayList descendants = ECUtils.getAllDescendants( energyCompany );
+			for (int i = 0; i < descendants.size(); i++) {
+				LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(i);
+				company.updateStarsCustomerFAQs();
 			}
 			
 			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Customer FAQs updated successfully");
@@ -1236,51 +1229,15 @@ public class StarsAdmin extends HttpServlet {
 		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
         
 		try {
-			StarsEnergyCompanySettings ecSettings =
-					(StarsEnergyCompanySettings) session.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
-			StarsCustomerFAQs starsFAQs = ecSettings.getStarsCustomerFAQs();
-			
 			int subjectID = Integer.parseInt( req.getParameter("SubjectID") );
-			boolean deleteAll = (subjectID == -1);
-			
-			ArrayList liteFAQs = energyCompany.getAllCustomerFAQs();
-			
-			for (int i = starsFAQs.getStarsCustomerFAQGroupCount() - 1; i >= 0; i--) {
-				StarsCustomerFAQGroup starsGroup = starsFAQs.getStarsCustomerFAQGroup(i);
-				if (!deleteAll && starsGroup.getSubjectID() != subjectID) continue;
-				
-				synchronized (liteFAQs) {
-					Iterator it = liteFAQs.iterator();
-					while (it.hasNext()) {
-						LiteCustomerFAQ liteFAQ = (LiteCustomerFAQ) it.next();
-						if (liteFAQ.getSubjectID() == starsGroup.getSubjectID()) {
-							com.cannontech.database.db.stars.CustomerFAQ faq =
-									new com.cannontech.database.db.stars.CustomerFAQ();
-							faq.setQuestionID( new Integer(liteFAQ.getQuestionID()) );
-							
-							Transaction.createTransaction( Transaction.DELETE, faq ).execute();
-							it.remove();
-						}
-					}
-				}
-				
-				YukonListEntry cEntry = YukonListFuncs.getYukonListEntry( starsGroup.getSubjectID() );
-				com.cannontech.database.db.constants.YukonListEntry entry =
-						StarsLiteFactory.createYukonListEntry( cEntry );
-				
-				Transaction.createTransaction( Transaction.DELETE, entry ).execute();
-				
-				YukonSelectionList cList = energyCompany.getYukonSelectionList( YukonSelectionListDefs.YUK_LIST_NAME_CUSTOMER_FAQ_GROUP );
-				cList.getYukonListEntries().remove( cEntry );
-				YukonListFuncs.getYukonListEntries().remove( entry.getEntryID() );
-				
-				starsFAQs.removeStarsCustomerFAQGroup(i);
-			}
-			
-			if (deleteAll)
+			if (subjectID == -1) {
+				StarsAdminUtil.deleteAllFAQSubjects( energyCompany, false );
 				session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Service companies have been deleted successfully");
-			else
+			}
+			else {
+				StarsAdminUtil.deleteFAQSubject( subjectID, energyCompany );
 				session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Service company has been deleted successfully");
+			}
 		}
 		catch (Exception e) {
 			CTILogger.error( e.getMessage(), e );
@@ -1505,55 +1462,6 @@ public class StarsAdmin extends HttpServlet {
 		}
 	}
 	
-	private LiteYukonUser createOperatorLogin(String username, String password, String status, LiteYukonGroup[] operGroups,
-		LiteStarsEnergyCompany energyCompany) throws Exception
-	{
-		if (YukonUserFuncs.getLiteYukonUser( username ) != null)
-			throw new WebClientException( "Username already exists" );
-		
-		com.cannontech.database.data.user.YukonUser yukonUser = new com.cannontech.database.data.user.YukonUser();
-		com.cannontech.database.db.user.YukonUser userDB = yukonUser.getYukonUser();
-		
-		userDB.setUsername( username );
-		userDB.setPassword( password );
-		userDB.setStatus( status );
-		
-		for (int i = 0; i < operGroups.length; i++) {
-			com.cannontech.database.db.user.YukonGroup group =
-					new com.cannontech.database.db.user.YukonGroup();
-			group.setGroupID( new Integer(operGroups[i].getGroupID()) );
-			yukonUser.getYukonGroups().add( group );
-		}
-		
-		yukonUser = (com.cannontech.database.data.user.YukonUser)
-				Transaction.createTransaction(Transaction.INSERT, yukonUser).execute();
-		
-		if (energyCompany != null) {
-			SqlStatement stmt = new SqlStatement(
-					"INSERT INTO EnergyCompanyOperatorLoginList VALUES(" +
-						energyCompany.getEnergyCompanyID() + ", " + userDB.getUserID() + ")",
-					CtiUtilities.getDatabaseAlias()
-					);
-			stmt.execute();
-			
-			ArrayList operLoginIDs = energyCompany.getOperatorLoginIDs();
-			synchronized (operLoginIDs) {
-				if (!operLoginIDs.contains( userDB.getUserID() ))
-					operLoginIDs.add(userDB.getUserID());
-			}
-		}
-		
-		LiteYukonUser liteUser = new LiteYukonUser(
-				userDB.getUserID().intValue(),
-				userDB.getUsername(),
-				userDB.getPassword(),
-				userDB.getStatus()
-				);
-		ServerUtils.handleDBChange( liteUser, DBChangeMsg.CHANGE_TYPE_ADD );
-		
-		return liteUser;
-	}
-	
 	private void updateOperatorLogin(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
 		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
 		
@@ -1567,8 +1475,8 @@ public class StarsAdmin extends HttpServlet {
 			if (userID == -1) {
 				// Create new operator login
 				LiteYukonGroup liteGroup = AuthFuncs.getGroup( Integer.parseInt(req.getParameter("OperatorGroup")) );
-				LiteYukonUser liteUser = createOperatorLogin( username, password, status,
-						new LiteYukonGroup[] { liteGroup }, energyCompany );
+				LiteYukonUser liteUser = StarsAdminUtil.createOperatorLogin(
+						username, password, status, new LiteYukonGroup[] {liteGroup}, energyCompany );
 				
 				session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, "Operator login created successfully" );
 				redirect += "?UserID=" + liteUser.getUserID();
@@ -1636,7 +1544,7 @@ public class StarsAdmin extends HttpServlet {
 			LiteYukonGroup operGroup = null;
 			
 			String[] operGroupNames = req.getParameter("OperatorGroup").split(",");
-			String operGroupIDs = "";
+			ArrayList operGroupList = new ArrayList();
 			for (int i = 0; i < operGroupNames.length; i++) {
 				String groupName = operGroupNames[i].trim();
 				if (groupName.equals("")) continue;
@@ -1645,18 +1553,19 @@ public class StarsAdmin extends HttpServlet {
 				if (group == null)
 					throw new WebClientException( "Operator group '" + groupName + "' does not exist");
 				
-				if (i == 0)
-					operGroupIDs += String.valueOf( group.getGroupID() );
-				else
-					operGroupIDs += "," + String.valueOf( group.getGroupID() );
-				if (i == 0) operGroup = group;
+				if (operGroup == null) operGroup = group;
+				operGroupList.add( group );
 			}
 			
 			if (operGroup == null)
 				throw new WebClientException( "You must select at least one operator group" );
 			
+			int[] operGroupIDs = new int[ operGroupList.size() ];
+			for (int i = 0; i < operGroupList.size(); i++) 
+				operGroupIDs[i] = ((LiteYukonGroup)operGroupList.get(i)).getGroupID();
+			
 			String[] custGroupNames = req.getParameter("CustomerGroup").split(",");
-			String custGroupIDs = "";
+			ArrayList custGroupList = new ArrayList();
 			for (int i = 0; i < custGroupNames.length; i++) {
 				String groupName = custGroupNames[i].trim();
 				if (groupName.equals("")) continue;
@@ -1664,12 +1573,12 @@ public class StarsAdmin extends HttpServlet {
 				LiteYukonGroup group = AuthFuncs.getGroup( groupName );
 				if (group == null)
 					throw new WebClientException( "Customer group '" + groupName + "' does not exist");
-				
-				if (i == 0)
-					custGroupIDs += String.valueOf( group.getGroupID() );
-				else
-					custGroupIDs += "," + String.valueOf( group.getGroupID() );
+				custGroupList.add( group );
 			}
+			
+			int[] custGroupIDs = new int[ custGroupList.size() ];
+			for (int i = 0; i < custGroupList.size(); i++)
+				custGroupIDs[i] = ((LiteYukonGroup)custGroupList.get(i)).getGroupID();
 			
 			if (YukonUserFuncs.getLiteYukonUser( req.getParameter("Username") ) != null)
 				throw new WebClientException( "Username of default operator login already exists" );
@@ -1679,77 +1588,25 @@ public class StarsAdmin extends HttpServlet {
 				throw new WebClientException( "Username of second operator login already exists" );
 			
 			// Create a privilege group with EnergyCompany and Administrator role
-			String dftOperGroupName = operGroup.getGroupName() + " Admin Grp";
-			if (AuthFuncs.getGroup( dftOperGroupName ) != null) {
+			String adminGroupName = operGroup.getGroupName() + " Admin Grp";
+			if (AuthFuncs.getGroup( adminGroupName ) != null) {
 				int num = 2;
 				while (true) {
-					String groupName = dftOperGroupName + num;
+					String groupName = adminGroupName + num;
 					if (AuthFuncs.getGroup( groupName ) == null) {
-						dftOperGroupName = groupName;
+						adminGroupName = groupName;
 						break;
 					}
 					num++;
 				}
 			}
 			
-			com.cannontech.database.data.user.YukonGroup dftGroup =
-					new com.cannontech.database.data.user.YukonGroup();
-			com.cannontech.database.db.user.YukonGroup dftGroupDB = dftGroup.getYukonGroup();
-			
-			dftGroupDB.setGroupName( dftOperGroupName );
-			dftGroupDB.setGroupDescription( "Privilege group for the energy company's default operator login" );
-			
-			LiteYukonRoleProperty[] roleProps = RoleFuncs.getRoleProperties( EnergyCompanyRole.ROLEID );
-			for (int i = 0; i < roleProps.length; i++) {
-				com.cannontech.database.db.user.YukonGroupRole groupRole =
-						new com.cannontech.database.db.user.YukonGroupRole();
-				
-				groupRole.setRoleID( new Integer(EnergyCompanyRole.ROLEID) );
-				groupRole.setRolePropertyID( new Integer(roleProps[i].getRolePropertyID()) );
-				if (roleProps[i].getRolePropertyID() == EnergyCompanyRole.CUSTOMER_GROUP_IDS)
-					groupRole.setValue( custGroupIDs );
-				else if (roleProps[i].getRolePropertyID() == EnergyCompanyRole.OPERATOR_GROUP_IDS)
-					groupRole.setValue( operGroupIDs );
-				else if (roleProps[i].getRolePropertyID() == EnergyCompanyRole.SINGLE_ENERGY_COMPANY)
-					groupRole.setValue( (req.getParameter("AddMember") == null)? CtiUtilities.TRUE_STRING : CtiUtilities.FALSE_STRING );
-				else if (roleProps[i].getRolePropertyID() == EnergyCompanyRole.OPTIONAL_PRODUCT_DEV) {
-					String value = energyCompany.getEnergyCompanySetting(EnergyCompanyRole.OPTIONAL_PRODUCT_DEV);
-					if (req.getParameter("AddMember") != null && value != null)
-						groupRole.setValue( value );
-					else
-						groupRole.setValue( "00000000" );
-				}
-				else
-					groupRole.setValue( CtiUtilities.STRING_NONE );
-				
-				dftGroup.getYukonGroupRoles().add( groupRole );
-			}
-			
-			roleProps = RoleFuncs.getRoleProperties( AdministratorRole.ROLEID );
-			for (int i = 0; i < roleProps.length; i++) {
-				com.cannontech.database.db.user.YukonGroupRole groupRole =
-						new com.cannontech.database.db.user.YukonGroupRole();
-				
-				groupRole.setRoleID( new Integer(AdministratorRole.ROLEID) );
-				groupRole.setRolePropertyID( new Integer(roleProps[i].getRolePropertyID()) );
-				if (roleProps[i].getRolePropertyID() == AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY)
-					groupRole.setValue( StarsAdminUtil.FIRST_TIME );
-				else
-					groupRole.setValue( CtiUtilities.STRING_NONE );
-				
-				dftGroup.getYukonGroupRoles().add( groupRole );
-			}
-			
-			dftGroup = (com.cannontech.database.data.user.YukonGroup)
-					Transaction.createTransaction(Transaction.INSERT, dftGroup).execute();
-			
-			LiteYukonGroup liteDftGroup = new LiteYukonGroup( dftGroup.getGroupID().intValue() );
-			ServerUtils.handleDBChange( liteDftGroup, DBChangeMsg.CHANGE_TYPE_ADD );
+			LiteYukonGroup liteAdminGrp = StarsAdminUtil.createOperatorAdminGroup( adminGroupName, operGroupIDs, custGroupIDs );
 			
 			// Create the default operator login
 			LiteYukonGroup[] operGroups = (operGroup != null)?
-					new LiteYukonGroup[] { operGroup, liteDftGroup } : new LiteYukonGroup[] { liteDftGroup };
-			LiteYukonUser liteUser = createOperatorLogin(
+					new LiteYukonGroup[] { operGroup, liteAdminGrp } : new LiteYukonGroup[] { liteAdminGrp };
+			LiteYukonUser liteUser = StarsAdminUtil.createOperatorLogin(
 					req.getParameter("Username"), req.getParameter("Password"), UserUtils.STATUS_ENABLED, operGroups, null );
 			
 			// Create primary contact of the energy company
@@ -1805,7 +1662,8 @@ public class StarsAdmin extends HttpServlet {
 			if (req.getParameter("Username2").length() > 0) {
 				operGroups = (operGroup != null)?
 						new LiteYukonGroup[] { operGroup } : new LiteYukonGroup[0];
-				createOperatorLogin( req.getParameter("Username2"), req.getParameter("Password2"), UserUtils.STATUS_ENABLED, operGroups, newCompany );
+				StarsAdminUtil.createOperatorLogin(
+						req.getParameter("Username2"), req.getParameter("Password2"), UserUtils.STATUS_ENABLED, operGroups, newCompany );
 			}
 			
 			// Assign default route to the energy company
@@ -1813,14 +1671,8 @@ public class StarsAdmin extends HttpServlet {
 			StarsAdminUtil.updateDefaultRoute( newCompany, routeID );
 			
 			// Add the new energy company as a member of the current company
-			if (req.getParameter("AddMember") != null) {
-				StarsAdminUtil.addMember( energyCompany, newCompany.getLiteID(), liteUser.getUserID() );
-				
-				// Update the "single_energy_company" role of the current energy company if necessary
-				LiteYukonGroup adminGroup = energyCompany.getOperatorAdminGroup();
-				if (StarsAdminUtil.updateGroupRoleProperty( adminGroup, EnergyCompanyRole.ROLEID, EnergyCompanyRole.SINGLE_ENERGY_COMPANY, CtiUtilities.FALSE_STRING ))
-					ServerUtils.handleDBChange( adminGroup, DBChangeMsg.CHANGE_TYPE_UPDATE );
-			}
+			if (req.getParameter("AddMember") != null)
+				StarsAdminUtil.addMember( energyCompany, newCompany, liteUser.getUserID() );
 			
 			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Energy company created successfully");
 		}
@@ -1972,7 +1824,7 @@ public class StarsAdmin extends HttpServlet {
 		try {
 			int memberID = Integer.parseInt( req.getParameter("MemberID") );
 			int loginID = Integer.parseInt( req.getParameter("LoginID") );
-			StarsAdminUtil.addMember( energyCompany, memberID, loginID );
+			StarsAdminUtil.addMember( energyCompany, StarsDatabaseCache.getInstance().getEnergyCompany(memberID), loginID );
 		}
 		catch (Exception e) {
 			CTILogger.error( e.getMessage(), e );

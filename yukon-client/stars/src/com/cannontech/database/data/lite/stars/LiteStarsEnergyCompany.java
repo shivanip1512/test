@@ -410,115 +410,142 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		workOrdersLoaded = loaded;
 	}
 	
+	private synchronized void startLoadAccountsTask() {
+		if (!isAccountsLoaded() && loadAccountsTaskID == 0 && !ECUtils.isDefaultEnergyCompany( this )) {
+			loadAccountsTaskID = ProgressChecker.addTask( new LoadCustAccountsTask(this) );
+			CTILogger.info( "*** Start loading customer accounts for energy company #" + getEnergyCompanyID() );
+		}
+	}
+	
+	private synchronized boolean isLoadAccountsTaskRunning() {
+		TimeConsumingTask task = ProgressChecker.getTask( loadAccountsTaskID );
+		if (task == null) return false;
+		
+		if (task.getStatus() == TimeConsumingTask.STATUS_FINISHED
+			|| task.getStatus() == TimeConsumingTask.STATUS_ERROR
+			|| task.getStatus() == TimeConsumingTask.STATUS_CANCELED)
+		{
+			ProgressChecker.removeTask( loadAccountsTaskID );
+			loadAccountsTaskID = 0;
+			return false;
+		}
+		
+		return true;
+	}
+	
 	public ArrayList loadAllCustomerAccounts(boolean blockOnWait) {
-		synchronized (LoadCustAccountsTask.class) {
-			if (isAccountsLoaded()) return getAllCustAccountInformation();
-			
-			if (!isAccountsLoaded() && loadAccountsTaskID == 0 && !ECUtils.isDefaultEnergyCompany( this )) {
-				loadAccountsTaskID = ProgressChecker.addTask( new LoadCustAccountsTask(this) );
-				CTILogger.info( "*** Start loading customer accounts for energy company #" + getEnergyCompanyID() );
-			}
-			
-			if (!blockOnWait) return null;
-			
-			while (true) {
-				TimeConsumingTask task = ProgressChecker.getTask( loadAccountsTaskID );
-				if (task == null) return null;
-				
-				if (task.getStatus() == TimeConsumingTask.STATUS_FINISHED
-					|| task.getStatus() == TimeConsumingTask.STATUS_ERROR
-					|| task.getStatus() == TimeConsumingTask.STATUS_CANCELED)
-				{
-					ProgressChecker.removeTask( loadAccountsTaskID );
-					loadAccountsTaskID = 0;
-					
-					if (isAccountsLoaded())
-						return getAllCustAccountInformation();
-					else
-						return null;
-				}
-				
+		if (isAccountsLoaded()) return getAllCustAccountInformation();
+		startLoadAccountsTask();
+		
+		if (!blockOnWait) return null;
+		
+		while (true) {
+			if (isLoadAccountsTaskRunning()) {
 				try {
 					Thread.sleep( 1000 );
 				}
 				catch (InterruptedException e) {}
 			}
+			else {
+				if (isAccountsLoaded())
+					return getAllCustAccountInformation();
+				else
+					return null;
+			}
 		}
+	}
+	
+	private synchronized void startLoadInventoryTask() {
+		if (loadInvTaskID == 0 && !ECUtils.isDefaultEnergyCompany( this )) {
+			loadInvTaskID = ProgressChecker.addTask( new LoadInventoryTask(this) );
+			CTILogger.info( "*** Start loading inventory for energy company #" + getEnergyCompanyID() );
+		}
+	}
+	
+	private synchronized boolean isLoadInventoryTaskRunning() {
+		TimeConsumingTask task = ProgressChecker.getTask( loadInvTaskID );
+		if (task == null) return false;
+		
+		if (task.getStatus() == TimeConsumingTask.STATUS_FINISHED
+			|| task.getStatus() == TimeConsumingTask.STATUS_ERROR
+			|| task.getStatus() == TimeConsumingTask.STATUS_CANCELED)
+		{
+			ProgressChecker.removeTask( loadInvTaskID );
+			loadInvTaskID = 0;
+			return false;
+		}
+		
+		return true;
 	}
 	
 	public ArrayList loadAllInventory(boolean blockOnWait) {
-		synchronized (LoadInventoryTask.class) {
-			if (isInventoryLoaded()) return getAllInventory();
-			
-			if (loadInvTaskID == 0 && !ECUtils.isDefaultEnergyCompany( this )) {
-				loadInvTaskID = ProgressChecker.addTask( new LoadInventoryTask(this) );
-				CTILogger.info( "*** Start loading inventory for energy company #" + getEnergyCompanyID() );
-			}
-			
-			if (!blockOnWait) return null;
-			
-			while (true) {
-				TimeConsumingTask task = ProgressChecker.getTask( loadInvTaskID );
-				if (task == null) return null;
-				
-				if (task.getStatus() == TimeConsumingTask.STATUS_FINISHED
-					|| task.getStatus() == TimeConsumingTask.STATUS_ERROR
-					|| task.getStatus() == TimeConsumingTask.STATUS_CANCELED)
-				{
-					ProgressChecker.removeTask( loadInvTaskID );
-					loadInvTaskID = 0;
-					
-					if (isInventoryLoaded())
-						return getAllInventory();
-					else
-						return null;
-				}
-				
+		if (isInventoryLoaded()) return getAllInventory();
+		startLoadInventoryTask();
+		
+		if (!blockOnWait) return null;
+		
+		while (true) {
+			if (isLoadInventoryTaskRunning()) {
 				try {
 					Thread.sleep( 1000 );
 				}
 				catch (InterruptedException e) {}
 			}
+			else {
+				if (isInventoryLoaded())
+					return getAllInventory();
+				else
+					return null;
+			}
 		}
+	}
+	
+	private synchronized void startLoadWorkOrdersTask() {
+		if (!isWorkOrdersLoaded() && loadOrdersTaskID == 0 && !ECUtils.isDefaultEnergyCompany( this )) {
+			loadOrdersTaskID = ProgressChecker.addTask( new LoadWorkOrdersTask(this) );
+			CTILogger.info( "*** Start loading work orders for energy company #" + getEnergyCompanyID() );
+		}
+	}
+	
+	private synchronized boolean isLoadWorkOrdersTaskRunning() {
+		TimeConsumingTask task = ProgressChecker.getTask( loadOrdersTaskID );
+		if (task == null) return false;
+		
+		if (task.getStatus() == TimeConsumingTask.STATUS_FINISHED
+			|| task.getStatus() == TimeConsumingTask.STATUS_ERROR
+			|| task.getStatus() == TimeConsumingTask.STATUS_CANCELED)
+		{
+			ProgressChecker.removeTask( loadOrdersTaskID );
+			loadOrdersTaskID = 0;
+			return false;
+		}
+		
+		return true;
 	}
 	
 	public ArrayList loadAllWorkOrders(boolean blockOnWait) {
-		synchronized (LoadWorkOrdersTask.class) {
-			if (isWorkOrdersLoaded()) return getAllWorkOrders();
-			
-			if (!isWorkOrdersLoaded() && loadOrdersTaskID == 0 && !ECUtils.isDefaultEnergyCompany( this )) {
-				loadOrdersTaskID = ProgressChecker.addTask( new LoadWorkOrdersTask(this) );
-				CTILogger.info( "*** Start loading work orders for energy company #" + getEnergyCompanyID() );
-			}
-			
-			if (!blockOnWait) return null;
-			
-			while (true) {
-				TimeConsumingTask task = ProgressChecker.getTask( loadOrdersTaskID );
-				if (task == null) return null;
-				
-				if (task.getStatus() == TimeConsumingTask.STATUS_FINISHED
-					|| task.getStatus() == TimeConsumingTask.STATUS_ERROR
-					|| task.getStatus() == TimeConsumingTask.STATUS_CANCELED)
-				{
-					ProgressChecker.removeTask( loadOrdersTaskID );
-					loadOrdersTaskID = 0;
-					
-					if (isWorkOrdersLoaded())
-						return getAllWorkOrders();
-					else
-						return null;
-				}
-				
+		if (isWorkOrdersLoaded()) return getAllWorkOrders();
+		startLoadWorkOrdersTask();
+		
+		if (!blockOnWait) return null;
+		
+		while (true) {
+			if (isLoadWorkOrdersTaskRunning()) {
 				try {
 					Thread.sleep( 1000 );
 				}
 				catch (InterruptedException e) {}
 			}
+			else {
+				if (isWorkOrdersLoaded())
+					return getAllWorkOrders();
+				else
+					return null;
+			}
 		}
 	}
 	
-	public synchronized void init() {
+	public void init() {
 		loadAllInventory( false );
 		loadAllWorkOrders( false );
 	}
@@ -747,35 +774,9 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			selectionLists = new ArrayList();
 	        
 			ECToGenericMapping[] items = ECToGenericMapping.getAllMappingItems( getEnergyCompanyID(), YukonSelectionList.TABLE_NAME );
-			if (items == null) return null;
-			
-			for (int i = 0; i < items.length; i++) {
-				YukonSelectionList cList = YukonListFuncs.getYukonSelectionList( items[i].getItemID().intValue() );
-				if (cList == null) continue;
-				
-				if (ECUtils.isDefaultEnergyCompany(this) || cList.getUserUpdateAvailable().equalsIgnoreCase("Y")) {
-					selectionLists.add( cList );
-				}
-				else {
-					try {
-						com.cannontech.database.data.constants.YukonSelectionList list =
-								new com.cannontech.database.data.constants.YukonSelectionList();
-						list.setListID( new Integer(cList.getListID()) );
-						Transaction.createTransaction( Transaction.DELETE, list ).execute();
-						
-						java.util.Properties entries = YukonListFuncs.getYukonListEntries();
-						synchronized (entries) {
-							for (int j = 0; j < cList.getYukonListEntries().size(); j++) {
-								YukonListEntry entry = (YukonListEntry) cList.getYukonListEntries().get(j);
-								entries.remove( new Integer(entry.getEntryID()) );
-							}
-						}
-						YukonListFuncs.getYukonSelectionLists().remove( new Integer(cList.getListID()) );
-					}
-					catch (TransactionException e) {
-						CTILogger.error( e.getMessage(), e );
-					}
-				}
+			if (items != null) {
+				for (int i = 0; i < items.length; i++)
+					selectionLists.add( YukonListFuncs.getYukonSelectionList(items[i].getItemID().intValue()) );
 			}
 		}
 		
@@ -1357,63 +1358,38 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		return interviewQuestions;
 	}
 	
-	public synchronized ArrayList getAllCustomerFAQs() {
+	public synchronized ArrayList getCustomerFAQs() {
 		if (customerFAQs == null) {
-			customerFAQs = new ArrayList();
-			
-			String listName = YukonSelectionListDefs.YUK_LIST_NAME_CUSTOMER_FAQ_GROUP;
-			YukonSelectionList list = getYukonSelectionList( listName, true, false );
-			
-			if (list == null) {
-				if (ECUtils.isDefaultEnergyCompany( this )) return customerFAQs;
+			YukonSelectionList list = getYukonSelectionList( YukonSelectionListDefs.YUK_LIST_NAME_CUSTOMER_FAQ_GROUP, false, false );
+			if (list != null) {
+				customerFAQs = new ArrayList();
 				
-				// Make a copy of the default the customer FAQs
-				YukonSelectionList dftList = StarsDatabaseCache.getInstance().getDefaultEnergyCompany().getYukonSelectionList( listName );
-				list = addYukonSelectionList( listName, dftList, true );
-				ArrayList dftFAQs = StarsDatabaseCache.getInstance().getDefaultEnergyCompany().getAllCustomerFAQs();
+				com.cannontech.database.db.stars.CustomerFAQ[] faqs =
+						com.cannontech.database.db.stars.CustomerFAQ.getAllCustomerFAQs( list.getListID() );
+				for (int i = 0; i < faqs.length; i++) {
+					LiteCustomerFAQ liteFAQ = (LiteCustomerFAQ) StarsLiteFactory.createLite( faqs[i] );
+					customerFAQs.add( liteFAQ );
+				}
 				
-				for (int i = 0; i < dftFAQs.size(); i++) {
-					LiteCustomerFAQ dftFAQ = (LiteCustomerFAQ) dftFAQs.get(i);
-					com.cannontech.database.db.stars.CustomerFAQ faq =
-							new com.cannontech.database.db.stars.CustomerFAQ();
-					faq.setQuestion( dftFAQ.getQuestion() );
-					faq.setAnswer( dftFAQ.getAnswer() );
-					
-					for (int j = 0; j < dftList.getYukonListEntries().size(); j++) {
-						if (dftFAQ.getSubjectID() == ((YukonListEntry) dftList.getYukonListEntries().get(j)).getEntryID()) {
-							int subjectID = ((YukonListEntry) list.getYukonListEntries().get(j)).getEntryID();
-							faq.setSubjectID( new Integer(subjectID) );
-							break;
-						}
-					}
-					
-					try {
-						faq = (com.cannontech.database.db.stars.CustomerFAQ)
-								Transaction.createTransaction(Transaction.INSERT, faq).execute();
-						LiteCustomerFAQ liteFAQ = (LiteCustomerFAQ) StarsLiteFactory.createLite( faq );
-						customerFAQs.add( liteFAQ );
-					}
-					catch (Exception e) {
-						CTILogger.error( e.getMessage(), e );
-					}
-				}
+				CTILogger.info( "All customer FAQs loaded for energy company #" + getEnergyCompanyID() );
 			}
-			else {
-				for (int i = 0; i < list.getYukonListEntries().size(); i++) {
-					int subjectID = ((YukonListEntry) list.getYukonListEntries().get(i)).getEntryID();
-					com.cannontech.database.db.stars.CustomerFAQ[] faqs =
-							com.cannontech.database.db.stars.CustomerFAQ.getCustomerFAQs( new Integer(subjectID) );
-					for (int j = 0; j < faqs.length; j++) {
-						LiteCustomerFAQ liteFAQ = (LiteCustomerFAQ) StarsLiteFactory.createLite( faqs[j] );
-						customerFAQs.add( liteFAQ );
-					}
-				}
-			}
-			
-			CTILogger.info( "All customer FAQs loaded for energy company #" + getEnergyCompanyID() );
 		}
 		
 		return customerFAQs;
+	}
+	
+	public synchronized void resetCustomerFAQs() {
+		customerFAQs = null;
+	}
+	
+	public ArrayList getAllCustomerFAQs() {
+		ArrayList faqs = getCustomerFAQs();
+		if (faqs != null) return faqs;
+		
+		if (getParent() != null)
+			return getParent().getAllCustomerFAQs();
+		else
+			return StarsDatabaseCache.getInstance().getDefaultEnergyCompany().getAllCustomerFAQs();
 	}
 	
 	/**
@@ -2949,9 +2925,19 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		return starsEnrPrograms;
 	}
 	
+	public synchronized void updateStarsCustomerFAQs() {
+		if (starsCustFAQs == null) return;
+		
+		starsCustFAQs.removeAllStarsCustomerFAQGroup();
+		StarsLiteFactory.setStarsCustomerFAQs( starsCustFAQs, this );
+	}
+	
 	public synchronized StarsCustomerFAQs getStarsCustomerFAQs() {
-		if (starsCustFAQs == null)
-			starsCustFAQs = StarsLiteFactory.createStarsCustomerFAQs( getAllCustomerFAQs() );
+		if (starsCustFAQs == null) {
+			starsCustFAQs = new StarsCustomerFAQs();
+			updateStarsCustomerFAQs();
+		}
+		
 		return starsCustFAQs;
 	}
 	

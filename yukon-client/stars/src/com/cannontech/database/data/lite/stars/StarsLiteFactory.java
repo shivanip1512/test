@@ -12,6 +12,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionList;
+import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.cache.StarsDatabaseCache;
@@ -2387,32 +2388,37 @@ public class StarsLiteFactory {
 		}
 	}
 	
-	public static StarsCustomerFAQs createStarsCustomerFAQs(ArrayList liteFAQs) {
-		StarsCustomerFAQs starsCustFAQs = new StarsCustomerFAQs();
+	public static void setStarsCustomerFAQs(StarsCustomerFAQs starsCustFAQs, LiteStarsEnergyCompany energyCompany) {
+		ArrayList liteFAQs = energyCompany.getAllCustomerFAQs();
+		YukonSelectionList subjects = energyCompany.getYukonSelectionList( YukonSelectionListDefs.YUK_LIST_NAME_CUSTOMER_FAQ_GROUP );
 		
-		int lastSubjectID = CtiUtilities.NONE_ID;
-		StarsCustomerFAQGroup lastGroup = null;
-        
-		// Group the FAQs by their subjects
-		for (int i = 0; i < liteFAQs.size(); i++) {
-			LiteCustomerFAQ liteFAQ = (LiteCustomerFAQ) liteFAQs.get(i);
-        	
-			if (liteFAQ.getSubjectID() != lastSubjectID) {
-				lastSubjectID = liteFAQ.getSubjectID();
-				lastGroup = new StarsCustomerFAQGroup();
-				lastGroup.setSubjectID( lastSubjectID );
-				lastGroup.setSubject( YukonListFuncs.getYukonListEntry(lastSubjectID).getEntryText() );
-				starsCustFAQs.addStarsCustomerFAQGroup( lastGroup );
+		for (int i = 0; i < subjects.getYukonListEntries().size(); i++) {
+			YukonListEntry subject = (YukonListEntry) subjects.getYukonListEntries().get(i);
+			ArrayList faqs = new ArrayList();
+			
+			for (int j = 0; j < liteFAQs.size(); j++) {
+				LiteCustomerFAQ liteFAQ = (LiteCustomerFAQ) liteFAQs.get(j);
+				if (liteFAQ.getSubjectID() == subject.getEntryID())
+					faqs.add( liteFAQ );
 			}
-        	
-			StarsCustomerFAQ starsFAQ = new StarsCustomerFAQ();
-			starsFAQ.setQuestionID( liteFAQ.getQuestionID() );
-			starsFAQ.setQuestion( liteFAQ.getQuestion() );
-			starsFAQ.setAnswer( liteFAQ.getAnswer() );
-			lastGroup.addStarsCustomerFAQ( starsFAQ );
+			
+			if (faqs.size() > 0) {
+				StarsCustomerFAQGroup starsGrp = new StarsCustomerFAQGroup();
+				starsGrp.setSubjectID( subject.getEntryID() );
+				starsGrp.setSubject( subject.getEntryText() );
+				
+				for (int j = 0; j < faqs.size(); j++) {
+					LiteCustomerFAQ liteFAQ = (LiteCustomerFAQ) faqs.get(j);
+					StarsCustomerFAQ starsFAQ = new StarsCustomerFAQ();
+					starsFAQ.setQuestionID( liteFAQ.getQuestionID() );
+					starsFAQ.setQuestion( liteFAQ.getQuestion() );
+					starsFAQ.setAnswer( liteFAQ.getAnswer() );
+					starsGrp.addStarsCustomerFAQ( starsFAQ );
+				}
+				
+				starsCustFAQs.addStarsCustomerFAQGroup( starsGrp );
+			}
 		}
-        
-		return starsCustFAQs;
 	}
 	
 	public static StarsLMProgramEvent createStarsOptOutEvent(OptOutEventQueue.OptOutEvent event, LiteStarsEnergyCompany energyCompany) {

@@ -10,9 +10,14 @@ import java.util.TimeZone;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import com.cannontech.database.cache.functions.AuthFuncs;
+import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
+import com.cannontech.roles.consumer.ResidentialCustomerRole;
+import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
+import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.serialize.ContactNotification;
 import com.cannontech.stars.xml.serialize.ControlSummary;
 import com.cannontech.stars.xml.serialize.StarsAppliance;
@@ -590,6 +595,69 @@ public class ServletUtils {
 		}
 		
 		return null;
+	}
+	
+	/**
+	 * Get the FAQ link (usually a URL to the customer's website rather than using the default FAQ page).
+	 * It will search in the first operator group, then in the first customer group.
+	 * If FAQ link is not set in either of them, a null value will be returned.
+	 */
+	public static String getCustomerFAQLink(LiteStarsEnergyCompany energyCompany) {
+		String faqLink = null;
+		
+		LiteYukonGroup[] operGroups = energyCompany.getWebClientOperatorGroups();
+		if (operGroups.length > 0)
+			faqLink = AuthFuncs.getRolePropValueGroup( operGroups[0], ConsumerInfoRole.WEB_LINK_FAQ, null );
+		
+		if (StarsUtils.forceNotNone(faqLink).length() == 0) {
+			LiteYukonGroup[] custGroups = energyCompany.getResidentialCustomerGroups();
+			if (custGroups.length > 0)
+				faqLink = AuthFuncs.getRolePropValueGroup(custGroups[0], ResidentialCustomerRole.WEB_LINK_FAQ, null);
+		}
+		
+		if (StarsUtils.forceNotNone(faqLink).length() == 0)
+			faqLink = null;
+		
+		return faqLink;
+	}
+	
+	/**
+	 * Get the FAQ link that the given user of the given energy company should see.
+	 * If the user is an operator, search in the operator groups; if it's a residential customer, search in
+	 * the customer groups. If FAQ link is not set in either of them, and the given company has a parent,
+	 * dedicate the search to the parent company, and so on.
+	 */
+	public static String getCustomerFAQLink(StarsYukonUser user, LiteStarsEnergyCompany energyCompany) {
+		String faqLink = null;
+		
+		if (user.getEnergyCompanyID() == energyCompany.getLiteID()) {
+			if (StarsUtils.isOperator(user))
+				faqLink = AuthFuncs.getRolePropertyValue( user.getYukonUser(), ConsumerInfoRole.WEB_LINK_FAQ );
+			else
+				faqLink = AuthFuncs.getRolePropertyValue( user.getYukonUser(), ResidentialCustomerRole.WEB_LINK_FAQ );
+		}
+		else {
+			if (StarsUtils.isOperator(user)) {
+				LiteYukonGroup[] operGroups = energyCompany.getWebClientOperatorGroups();
+				if (operGroups.length > 0)
+					faqLink = AuthFuncs.getRolePropValueGroup( operGroups[0], ConsumerInfoRole.WEB_LINK_FAQ, null );
+			}
+			else {
+				LiteYukonGroup[] custGroups = energyCompany.getResidentialCustomerGroups();
+				if (custGroups.length > 0)
+					faqLink = AuthFuncs.getRolePropValueGroup(custGroups[0], ResidentialCustomerRole.WEB_LINK_FAQ, null);
+			}
+		}
+		
+		if (StarsUtils.forceNotNone(faqLink).length() == 0)
+			faqLink = null;
+		
+		if (faqLink != null || energyCompany.getCustomerFAQs() != null)
+			return faqLink;
+		else if (energyCompany.getParent() != null)
+			return getCustomerFAQLink( user, energyCompany.getParent() );
+		else
+			return null;
 	}
 
 }

@@ -10,21 +10,25 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Properties;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionList;
+import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
+import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.database.cache.functions.EnergyCompanyFuncs;
+import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.cache.functions.YukonUserFuncs;
 import com.cannontech.database.data.device.lm.LMFactory;
@@ -32,8 +36,10 @@ import com.cannontech.database.data.device.lm.LMGroupExpressCom;
 import com.cannontech.database.data.device.lm.MacroGroup;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonGroup;
+import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
+import com.cannontech.database.data.lite.stars.LiteCustomerFAQ;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteLMProgramEvent;
 import com.cannontech.database.data.lite.stars.LiteLMProgramWebPublishing;
@@ -53,6 +59,8 @@ import com.cannontech.database.db.macro.MacroTypes;
 import com.cannontech.database.db.stars.ECToGenericMapping;
 import com.cannontech.database.db.user.YukonGroupRole;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.roles.operator.AdministratorRole;
+import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.StarsUtils;
@@ -492,6 +500,82 @@ public class StarsAdminUtil {
 		}
 	}
 	
+	public static void deleteFAQSubject(int subjectID, LiteStarsEnergyCompany energyCompany)
+		throws TransactionException
+	{
+		com.cannontech.database.db.stars.CustomerFAQ.deleteCustomerFAQs( subjectID );
+		
+		ArrayList liteFAQs = energyCompany.getCustomerFAQs();
+		synchronized (liteFAQs) {
+			Iterator it = liteFAQs.iterator();
+			while (it.hasNext()) {
+				LiteCustomerFAQ liteFAQ = (LiteCustomerFAQ) it.next();
+				if (liteFAQ.getSubjectID() == subjectID) it.remove();
+			}
+		}
+		
+		YukonListEntry cEntry = YukonListFuncs.getYukonListEntry( subjectID );
+		com.cannontech.database.db.constants.YukonListEntry entry = StarsLiteFactory.createYukonListEntry( cEntry );
+		Transaction.createTransaction( Transaction.DELETE, entry ).execute();
+		
+		YukonSelectionList cList = energyCompany.getYukonSelectionList( YukonSelectionListDefs.YUK_LIST_NAME_CUSTOMER_FAQ_GROUP );
+		cList.getYukonListEntries().remove( cEntry );
+		YukonListFuncs.getYukonListEntries().remove( entry.getEntryID() );
+		
+		ArrayList descendants = ECUtils.getAllDescendants( energyCompany );
+		for (int i = 0; i < descendants.size(); i++) {
+			LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(i);
+			company.updateStarsCustomerFAQs();
+		}
+	}
+	
+	public static void deleteAllFAQSubjects(LiteStarsEnergyCompany energyCompany, boolean removeList)
+		throws Exception
+	{
+		YukonSelectionList cList = energyCompany.getYukonSelectionList( YukonSelectionListDefs.YUK_LIST_NAME_CUSTOMER_FAQ_GROUP, false, false );
+		if (cList == null) return;
+		
+		com.cannontech.database.db.stars.CustomerFAQ.deleteAllCustomerFAQs( cList.getListID() );
+		
+		if (removeList) {
+			energyCompany.resetCustomerFAQs();
+			
+			com.cannontech.database.data.constants.YukonSelectionList list =
+					new com.cannontech.database.data.constants.YukonSelectionList();
+			list.setListID( new Integer(cList.getListID()) );
+			Transaction.createTransaction( Transaction.DELETE, list ).execute();
+			
+			energyCompany.deleteYukonSelectionList( cList );
+		}
+		else {
+			energyCompany.getCustomerFAQs().clear();
+			
+			java.sql.Connection conn = null;
+			try {
+				conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
+				com.cannontech.database.db.constants.YukonListEntry.deleteAllListEntries( new Integer(cList.getListID()), conn );
+			}
+			finally {
+				if (conn != null) conn.close();
+			}
+			
+			java.util.Properties entries = YukonListFuncs.getYukonListEntries();
+			synchronized (entries) {
+				for (int i = 0; i < cList.getYukonListEntries().size(); i++) {
+					YukonListEntry entry = (YukonListEntry) cList.getYukonListEntries().get(i);
+					entries.remove( new Integer(entry.getEntryID()) );
+				}
+			}
+			cList.getYukonListEntries().clear();
+		}
+		
+		ArrayList descendants = ECUtils.getAllDescendants( energyCompany );
+		for (int i = 0; i < descendants.size(); i++) {
+			LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(i);
+			company.updateStarsCustomerFAQs();
+		}
+	}
+	
 	/**
 	 * Update entries of a customer selection list. The entryData parameter
 	 * is an array of {entryID(Integer), entryText(String), yukDefID(Integer)}
@@ -645,10 +729,10 @@ public class StarsAdminUtil {
 		synchronized (routeIDs) { routeIDs.remove(rtID); }
 	}
 	
-	public static void addMember(LiteStarsEnergyCompany energyCompany, int memberID, int loginID) throws Exception {
+	public static void addMember(LiteStarsEnergyCompany energyCompany, LiteStarsEnergyCompany member, int loginID) throws Exception {
 		ECToGenericMapping map = new ECToGenericMapping();
 		map.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
-		map.setItemID( new Integer(memberID) );
+		map.setItemID( member.getEnergyCompanyID() );
 		map.setMappingCategory( ECToGenericMapping.MAPPING_CATEGORY_MEMBER );
 		Transaction.createTransaction( Transaction.INSERT, map ).execute();
 		
@@ -659,7 +743,22 @@ public class StarsAdminUtil {
 		}
 		
 		energyCompany.clearHierarchy();
-		StarsDatabaseCache.getInstance().getEnergyCompany( memberID ).clearHierarchy();
+		member.clearHierarchy();
+		
+		// Modify energy company hierarchy related role properties
+		LiteYukonGroup adminGroup = energyCompany.getOperatorAdminGroup();
+		if (updateGroupRoleProperty( adminGroup, EnergyCompanyRole.ROLEID, EnergyCompanyRole.SINGLE_ENERGY_COMPANY, CtiUtilities.FALSE_STRING )
+			|| updateGroupRoleProperty( adminGroup, AdministratorRole.ROLEID, AdministratorRole.ADMIN_MANAGE_MEMBERS, CtiUtilities.TRUE_STRING ))
+			ServerUtils.handleDBChange( adminGroup, DBChangeMsg.CHANGE_TYPE_UPDATE );
+		
+		adminGroup = member.getOperatorAdminGroup();
+		String value = null;
+		if (updateGroupRoleProperty( adminGroup, EnergyCompanyRole.ROLEID, EnergyCompanyRole.SINGLE_ENERGY_COMPANY, CtiUtilities.FALSE_STRING)
+			|| ((value = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING )) != null
+				&& updateGroupRoleProperty( adminGroup, EnergyCompanyRole.ROLEID, EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING, value ))
+			|| ((value = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.OPTIONAL_PRODUCT_DEV )) != null
+				&& updateGroupRoleProperty( adminGroup, EnergyCompanyRole.ROLEID, EnergyCompanyRole.OPTIONAL_PRODUCT_DEV, value )))
+			ServerUtils.handleDBChange( adminGroup, DBChangeMsg.CHANGE_TYPE_UPDATE );
 	}
 	
 	public static void removeMember(LiteStarsEnergyCompany energyCompany, int memberID) throws Exception {
@@ -693,5 +792,145 @@ public class StarsAdminUtil {
 		}
 		
 		energyCompany.clearHierarchy();
+	}
+	
+	public static LiteYukonGroup copyYukonGroup(LiteYukonGroup srcGrp, String grpName)
+		throws TransactionException
+	{
+		com.cannontech.database.data.user.YukonGroup newGroup = new com.cannontech.database.data.user.YukonGroup();
+		com.cannontech.database.db.user.YukonGroup groupDB = newGroup.getYukonGroup();
+		
+		groupDB.setGroupName( grpName );
+		groupDB.setGroupDescription( srcGrp.getGroupDescription() );
+		
+		Map roleMap = (Map) DefaultDatabaseCache.getInstance().getYukonGroupRolePropertyMap().get( srcGrp );
+		Iterator roleIt = roleMap.values().iterator();
+		while (roleIt.hasNext()) {
+			Map rolePropMap = (Map) roleIt.next();
+			Iterator rolePropIt = rolePropMap.keySet().iterator();
+			while (rolePropIt.hasNext()) {
+				LiteYukonRoleProperty liteRoleProp = (LiteYukonRoleProperty) rolePropIt.next();
+				String value = (String) rolePropMap.get(liteRoleProp);
+				
+				com.cannontech.database.db.user.YukonGroupRole groupRole = new com.cannontech.database.db.user.YukonGroupRole();
+				groupRole.setRoleID( new Integer(liteRoleProp.getRoleID()) );
+				groupRole.setRolePropertyID( new Integer(liteRoleProp.getRolePropertyID()) );
+				groupRole.setValue( value );
+				newGroup.getYukonGroupRoles().add( groupRole );
+			}
+		}
+		
+		newGroup = (com.cannontech.database.data.user.YukonGroup)
+				Transaction.createTransaction(Transaction.INSERT, newGroup).execute();
+		
+		LiteYukonGroup liteGroup = new LiteYukonGroup( newGroup.getGroupID().intValue() );
+		ServerUtils.handleDBChange( liteGroup, DBChangeMsg.CHANGE_TYPE_ADD );
+		
+		return AuthFuncs.getGroup( liteGroup.getGroupID() );
+	}
+	
+	public static LiteYukonGroup createOperatorAdminGroup(String grpName, int[] operGrpIDs, int[] custGrpIDs)
+		throws TransactionException
+	{
+		com.cannontech.database.data.user.YukonGroup adminGrp = new com.cannontech.database.data.user.YukonGroup();
+		com.cannontech.database.db.user.YukonGroup groupDB = adminGrp.getYukonGroup();
+		
+		groupDB.setGroupName( grpName );
+		groupDB.setGroupDescription( "Privilege group for the energy company's default operator login" );
+		
+		LiteYukonRoleProperty[] roleProps = RoleFuncs.getRoleProperties( EnergyCompanyRole.ROLEID );
+		for (int i = 0; i < roleProps.length; i++) {
+			com.cannontech.database.db.user.YukonGroupRole groupRole = new com.cannontech.database.db.user.YukonGroupRole();
+			
+			groupRole.setRoleID( new Integer(EnergyCompanyRole.ROLEID) );
+			groupRole.setRolePropertyID( new Integer(roleProps[i].getRolePropertyID()) );
+			if (roleProps[i].getRolePropertyID() == EnergyCompanyRole.CUSTOMER_GROUP_IDS) {
+				String value = "";
+				for (int j = 0; j < custGrpIDs.length; j++)
+					value += custGrpIDs[j] + ",";
+				groupRole.setValue( value );
+			}
+			else if (roleProps[i].getRolePropertyID() == EnergyCompanyRole.OPERATOR_GROUP_IDS) {
+				String value = "";
+				for (int j = 0; j < operGrpIDs.length; j++)
+					value += operGrpIDs[j] + ",";
+				groupRole.setValue( value );
+			}
+			else
+				groupRole.setValue( CtiUtilities.STRING_NONE );
+			
+			adminGrp.getYukonGroupRoles().add( groupRole );
+		}
+		
+		roleProps = RoleFuncs.getRoleProperties( AdministratorRole.ROLEID );
+		for (int i = 0; i < roleProps.length; i++) {
+			com.cannontech.database.db.user.YukonGroupRole groupRole = new com.cannontech.database.db.user.YukonGroupRole();
+			
+			groupRole.setRoleID( new Integer(AdministratorRole.ROLEID) );
+			groupRole.setRolePropertyID( new Integer(roleProps[i].getRolePropertyID()) );
+			if (roleProps[i].getRolePropertyID() == AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY)
+				groupRole.setValue( StarsAdminUtil.FIRST_TIME );
+			else
+				groupRole.setValue( CtiUtilities.STRING_NONE );
+			
+			adminGrp.getYukonGroupRoles().add( groupRole );
+		}
+		
+		adminGrp = (com.cannontech.database.data.user.YukonGroup)
+				Transaction.createTransaction(Transaction.INSERT, adminGrp).execute();
+		
+		LiteYukonGroup liteGroup = new LiteYukonGroup( adminGrp.getGroupID().intValue() );
+		ServerUtils.handleDBChange( liteGroup, DBChangeMsg.CHANGE_TYPE_ADD );
+		
+		return AuthFuncs.getGroup( liteGroup.getGroupID() );
+	}
+	
+	public static LiteYukonUser createOperatorLogin(String username, String password, String status, LiteYukonGroup[] operGroups,
+		LiteStarsEnergyCompany energyCompany) throws Exception
+	{
+		if (YukonUserFuncs.getLiteYukonUser( username ) != null)
+			throw new WebClientException( "Username already exists" );
+		
+		com.cannontech.database.data.user.YukonUser yukonUser = new com.cannontech.database.data.user.YukonUser();
+		com.cannontech.database.db.user.YukonUser userDB = yukonUser.getYukonUser();
+		
+		userDB.setUsername( username );
+		userDB.setPassword( password );
+		userDB.setStatus( status );
+		
+		for (int i = 0; i < operGroups.length; i++) {
+			com.cannontech.database.db.user.YukonGroup group =
+					new com.cannontech.database.db.user.YukonGroup();
+			group.setGroupID( new Integer(operGroups[i].getGroupID()) );
+			yukonUser.getYukonGroups().add( group );
+		}
+		
+		yukonUser = (com.cannontech.database.data.user.YukonUser)
+				Transaction.createTransaction(Transaction.INSERT, yukonUser).execute();
+		
+		if (energyCompany != null) {
+			SqlStatement stmt = new SqlStatement(
+					"INSERT INTO EnergyCompanyOperatorLoginList VALUES(" +
+						energyCompany.getEnergyCompanyID() + ", " + userDB.getUserID() + ")",
+					CtiUtilities.getDatabaseAlias()
+					);
+			stmt.execute();
+			
+			ArrayList operLoginIDs = energyCompany.getOperatorLoginIDs();
+			synchronized (operLoginIDs) {
+				if (!operLoginIDs.contains( userDB.getUserID() ))
+					operLoginIDs.add(userDB.getUserID());
+			}
+		}
+		
+		LiteYukonUser liteUser = new LiteYukonUser(
+				userDB.getUserID().intValue(),
+				userDB.getUsername(),
+				userDB.getPassword(),
+				userDB.getStatus()
+				);
+		ServerUtils.handleDBChange( liteUser, DBChangeMsg.CHANGE_TYPE_ADD );
+		
+		return liteUser;
 	}
 }
