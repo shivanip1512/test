@@ -1664,6 +1664,9 @@ public class StarsAdmin extends HttpServlet {
 			StarsCustSelectionList starsList = StarsLiteFactory.createStarsCustSelectionList( cList );
 			selectionListTable.put( starsList.getListName(), starsList );
 			
+			if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE))
+				energyCompany.updateStarsDefaultThermostatSettings();
+			
 			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Customer selection list updated successfully");
 		}
 		catch (WebClientException e) {
