@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2002/08/15 20:37:20 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2002/08/16 13:06:34 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -201,9 +201,6 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
     /* Give us a tiny attitude */
     CTISetPriority(PRTYS_THREAD, PRTYC_TIMECRITICAL, 0, 0);
 
-    /* Log the start up message */
-    SendProcessStart ("SCANNER");
-
     /* check for various flags */
     if(argc > 1)
     {
@@ -215,20 +212,12 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
                 LogFlag = FALSE;
                 continue;
             }
+
             if(!(stricmp (argv[i], "/NQ")))
             {
                 CCUNoQueue = TRUE;
                 continue;
             }
-
-            #ifdef PIGS_FLY
-            if(!(stricmp (argv[i], "/NQS")))
-            {
-                CCUNoQueueScans = TRUE;
-                continue;
-            }
-
-            #endif
 
             if(!(stricmp (argv[i], "/NLP")))
             {
@@ -1018,11 +1007,6 @@ void InitScannerGlobals(void)
     {
         RWCString Temp = gConfigParms.getValueAsString("SCANNER_RELOAD_RATE");
         SCANNER_RELOAD_RATE = atoi (Temp.data());
-
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Scanner will reload the DB every " << SCANNER_RELOAD_RATE << " seconds " << endl;
-        }
     }
 
     if(gConfigParms.isOpt("SCANNER_DEBUGLEVEL"))
@@ -1118,16 +1102,37 @@ void LoadScannableDevices(void *ptr)
     RWTime start;
     RWTime stop;
 
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " Starting LoadScannableDevices. " << (bforce ? "Due to DBChange." : "Not due to DBChange." ) << endl;
+    }
+
     InitScannerGlobals();      // Go fetch from the environmant
+
+    RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(ScannerDeviceManager.getMux());
 
     if(pChg == NULL || (resolvePAOCategory(pChg->getCategory()) == PAO_CATEGORY_DEVICE) || (resolvePAOCategory(pChg->getCategory()) == PAO_CATEGORY_ROUTE) )
     {
         try
         {
-            RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(ScannerDeviceManager.getMux());       // Protect our iteration!
-
             if(ScannerDebugLevel & SCANNER_DEBUG_DBRELOAD) start = start.now();
-            ScannerDeviceManager.RefreshList();
+            if(pChg && (resolvePAOCategory(pChg->getCategory()) == PAO_CATEGORY_DEVICE))
+            {
+                DeviceRecord = ScannerDeviceManager.getEqual(pChg->getId());
+                if(DeviceRecord)
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " Reloading " << DeviceRecord->getName() << endl;
+                    }
+                }
+                ScannerDeviceManager.RefreshList(pChg->getId());
+            }
+            else
+            {
+                ScannerDeviceManager.RefreshList();
+            }
+
             if(ScannerDebugLevel & SCANNER_DEBUG_DBRELOAD)
             {
                 stop = stop.now();
@@ -1139,7 +1144,15 @@ void LoadScannableDevices(void *ptr)
             }
 
             if(ScannerDebugLevel & SCANNER_DEBUG_DBRELOAD) start = start.now();
-            ScannerDeviceManager.RefreshScanRates();
+
+            if(pChg && (resolvePAOCategory(pChg->getCategory()) == PAO_CATEGORY_DEVICE))
+            {
+                ScannerDeviceManager.RefreshScanRates(pChg->getId());
+            }
+            else
+            {
+                ScannerDeviceManager.RefreshScanRates();
+            }
 
             if(ScannerDebugLevel & SCANNER_DEBUG_DBRELOAD)
             {
@@ -1153,7 +1166,9 @@ void LoadScannableDevices(void *ptr)
 
             if(ScannerDebugLevel & SCANNER_DEBUG_DBRELOAD) start = start.now();
             // Limit this list to just scannable devices!
-            while( 1 )
+            // Only do this if we DID NOT have a DBCHANGE message!
+            // We will break out of the while at the correct point!
+            while(pChg == NULL)
             {
                 CtiDeviceManager::val_pair vt = ScannerDeviceManager.getMap().find(isNotScannable, NULL);
 
@@ -1208,7 +1223,15 @@ void LoadScannableDevices(void *ptr)
             }
 
             if(ScannerDebugLevel & SCANNER_DEBUG_DBRELOAD) start = start.now();
-            ScannerDeviceManager.RefreshRoutes();  // Get the devices which have routes into memory?
+            if(pChg && (resolvePAOCategory(pChg->getCategory()) == PAO_CATEGORY_DEVICE))
+            {
+                ScannerDeviceManager.RefreshRoutes(pChg->getId());  // Get the devices which have routes into memory?
+            }
+            else
+            {
+                ScannerDeviceManager.RefreshRoutes();  // Get the devices which have routes into memory?
+            }
+
             if(ScannerDebugLevel & SCANNER_DEBUG_DBRELOAD)
             {
                 stop = stop.now();
@@ -1230,9 +1253,17 @@ void LoadScannableDevices(void *ptr)
                     dout << RWTime() << " apply( applyUseScanFlags, NULL ) took " << stop.seconds() - start.seconds() << endl;
                 }
             }
+
             // load the scan window list if there is one
             if(ScannerDebugLevel & SCANNER_DEBUG_DBRELOAD) start = start.now();
-            ScannerDeviceManager.RefreshDeviceWindows();
+            if(pChg && (resolvePAOCategory(pChg->getCategory()) == PAO_CATEGORY_DEVICE))
+            {
+                ScannerDeviceManager.RefreshDeviceWindows(pChg->getId());
+            }
+            else
+            {
+                ScannerDeviceManager.RefreshDeviceWindows();
+            }
             if(ScannerDebugLevel & SCANNER_DEBUG_DBRELOAD)
             {
                stop = stop.now();
@@ -1242,7 +1273,6 @@ void LoadScannableDevices(void *ptr)
                   dout << RWTime() << " RefreshDeviceWindows took " << stop.seconds() - start.seconds() << endl;
                }
             }
-
         }
         catch( ... )
         {
@@ -1251,21 +1281,38 @@ void LoadScannableDevices(void *ptr)
         }
     }
 
-
+    // Do this if there is no DBChange, or the change was a DEVICE change!
     if(ScannerDebugLevel & SCANNER_DEBUG_DBRELOAD) start = start.now();
     if(pChg == NULL || (resolvePAOCategory(pChg->getCategory()) == PAO_CATEGORY_DEVICE) )
     {
-        RWRecursiveLock<RWMutexLock>::LockGuard guard(ScannerDeviceManager.getMux());
-        CtiRTDB<CtiDeviceBase>::CtiRTDBIterator   itr_dev(ScannerDeviceManager.getMap());
-        for(; ++itr_dev ;)
+        if(pChg)
         {
-            CtiDeviceBase *pBase = (CtiDeviceBase *)itr_dev.value();
-            RWRecursiveLock<RWMutexLock>::LockGuard devguard(pBase->getMux());
+            CtiDeviceBase *pBase = ScannerDeviceManager.getEqual(pChg->getId());
 
-            if(pBase->isSingle())
+            if(pBase)
             {
-                CtiDeviceSingle* DeviceRecord = (CtiDeviceSingle*)pBase;
-                DeviceRecord->validateScanTimes(bforce);
+                RWRecursiveLock<RWMutexLock>::LockGuard devguard(pBase->getMux());
+
+                if(pBase->isSingle())
+                {
+                    CtiDeviceSingle* DeviceRecord = (CtiDeviceSingle*)pBase;
+                    DeviceRecord->validateScanTimes(bforce);
+                }
+            }
+        }
+        else
+        {
+            CtiRTDB<CtiDeviceBase>::CtiRTDBIterator   itr_dev(ScannerDeviceManager.getMap());
+            for(; ++itr_dev ;)
+            {
+                CtiDeviceBase *pBase = (CtiDeviceBase *)itr_dev.value();
+                RWRecursiveLock<RWMutexLock>::LockGuard devguard(pBase->getMux());
+
+                if(pBase->isSingle())
+                {
+                    CtiDeviceSingle* DeviceRecord = (CtiDeviceSingle*)pBase;
+                    DeviceRecord->validateScanTimes(bforce);
+                }
             }
         }
     }
@@ -1280,35 +1327,30 @@ void LoadScannableDevices(void *ptr)
         }
     }
 
-    if(pChg != NULL)
+    if(pChg != NULL && pChg->getDatabase() == ChangePointDb)  // On a point specific message only!
     {
-        if(pChg->getDatabase() == ChangePointDb)      // On a point specific message only!
+        CtiRTDB<CtiDeviceBase>::CtiRTDBIterator itr_dev(ScannerDeviceManager.getMap());
+        for(; ++itr_dev ;)
         {
-            RWRecursiveLock<RWMutexLock>::LockGuard guard(ScannerDeviceManager.getMux());
-            CtiRTDB<CtiDeviceBase>::CtiRTDBIterator itr_dev(ScannerDeviceManager.getMap());
-            for(; ++itr_dev ;)
+            CtiDeviceBase *pBase = (CtiDeviceBase *)itr_dev.value();
+            RWRecursiveLock<RWMutexLock>::LockGuard devguard(pBase->getMux());
+
+            if(pBase->isSingle())
             {
-                CtiDeviceBase *pBase = (CtiDeviceBase *)itr_dev.value();
-                RWRecursiveLock<RWMutexLock>::LockGuard devguard(pBase->getMux());
+                CtiDeviceSingle *DeviceRecord = (CtiDeviceSingle*)pBase;
 
-                if(pBase->isSingle())
+                if( (pChg->getTypeOfChange() == ChangeTypeAdd) ||
+                    (pChg->getTypeOfChange() == ChangeTypeUpdate && DeviceRecord->getDevicePointEqual(pChg->getId())))        // This device has this ID... Cool, blow it away and break out of the loop.
                 {
-                    CtiDeviceSingle *DeviceRecord = (CtiDeviceSingle*)pBase;
-
-                    if( (pChg->getTypeOfChange() == ChangeTypeAdd) ||
-                        (pChg->getTypeOfChange() == ChangeTypeUpdate && DeviceRecord->getDevicePointEqual(pChg->getId())))        // This device has this ID... Cool, blow it away and break out of the loop.
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " Reloading points on " << pBase->getName() << endl;
-                        }
-                        pBase->RefreshDevicePoints();
-                        break;
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " DBChange forced a reload of points for " << pBase->getName() << endl;
                     }
+                    pBase->RefreshDevicePoints();
+                    break;
                 }
             }
         }
-
     }
 
     if(!bLoaded)
@@ -1319,6 +1361,11 @@ void LoadScannableDevices(void *ptr)
     if(pChg != NULL)
     {
         delete pChg;
+    }
+
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " Done LoadScannableDevices." << endl;
     }
 
     return;
@@ -1346,11 +1393,6 @@ void DispatchMsgHandlerThread(VOID *Arg)
             {
             case MSG_DBCHANGE:
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " DBCHANGE: Scan Event will be FORCED." << endl;
-                    }
-
                     // Refresh the scanner in memory database once every 5 minutes.
                     LoadScannableDevices((void*)MsgPtr->replicateMessage());
                     // Post the wakup to ensure that the main loop re-examines the devices.
@@ -1475,6 +1517,12 @@ void DatabaseHandlerThread(VOID *Arg)
         else
         {
             TimeNow = TimeNow.now();
+
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << TimeNow << " DatabaseHandlerThread managing the database now. " << endl;
+            }
+
             RecordDynamicData();
 
             if(TimeNow >= RefreshTime)

@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2002/08/05 20:42:56 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2002/08/16 13:04:27 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -98,6 +98,11 @@ void CtiDeviceManager::RefreshList(LONG paoID)
         pDev->getSQL( db, keyTable, selector );
         selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
         RWDBReader rdr = selector.reader(conn);
+
+        if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+        }
 
         RefreshDevices(rowFound, rdr, DeviceFactory, isADevice, NULL);
 
@@ -651,7 +656,7 @@ void CtiDeviceManager::RefreshDevices(bool &rowFound, RWDBReader& rdr, CtiDevice
     }
 }
 
-void CtiDeviceManager::RefreshScanRates()
+void CtiDeviceManager::RefreshScanRates(LONG id)
 {
     LONG        lTemp = 0;
     CtiDeviceBase*   pTempCtiDevice = NULL;
@@ -675,12 +680,16 @@ void CtiDeviceManager::RefreshScanRates()
     }
     CtiTableDeviceScanRate::getSQL( db, keyTable, selector );
 
+    if(id > 0)
+    {
+        selector.where(keyTable["deviceid"] == id && selector.where());
+    }
+
     RWDBReader rdr = selector.reader(conn);
     if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
     }
-
     if(DebugLevel & 0x00020000)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -689,10 +698,18 @@ void CtiDeviceManager::RefreshScanRates()
 
     if(setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok)
     {
-        for(;itr();)
+        if(id > 0)
         {
-            pTempCtiDevice = itr.value();
+            pTempCtiDevice = getEqual(id);
             pTempCtiDevice->invalidateScanRates();     // Mark all Scan Rate elements as needing refresh..
+        }
+        else
+        {
+            for(;itr();)
+            {
+                pTempCtiDevice = itr.value();
+                pTempCtiDevice->invalidateScanRates();     // Mark all Scan Rate elements as needing refresh..
+            }
         }
     }
 
@@ -735,7 +752,7 @@ void CtiDeviceManager::RefreshScanRates()
     }
 }
 
-void CtiDeviceManager::RefreshDeviceWindows()
+void CtiDeviceManager::RefreshDeviceWindows(LONG id)
 {
     LONG        lTemp = 0;
     CtiDeviceBase*   pTempCtiDevice = NULL;
@@ -758,6 +775,12 @@ void CtiDeviceManager::RefreshDeviceWindows()
         dout << RWTime() << " Looking for Device Windows" << endl;
     }
     CtiTableDeviceWindow::getSQL( db, keyTable, selector );
+
+    if(id > 0)
+    {
+        selector.where(keyTable["deviceid"] == id && selector.where());
+    }
+
     if(DebugLevel & 0x00020000)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -765,12 +788,6 @@ void CtiDeviceManager::RefreshDeviceWindows()
     }
 
     RWDBReader rdr = selector.reader(conn);
-
-    if(DebugLevel & 0x00020000)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Done looking for ScanWindows" << endl;
-    }
 
     while( (setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok) && rdr() )
     {
@@ -799,9 +816,15 @@ void CtiDeviceManager::RefreshDeviceWindows()
             }
         }
     }
+
+    if(DebugLevel & 0x00020000)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " Done looking for ScanWindows" << endl;
+    }
 }
 
-void CtiDeviceManager::RefreshRoutes()
+void CtiDeviceManager::RefreshRoutes(LONG id)
 {
     LONG        lTemp = 0;
     CtiDeviceBase*   pTempCtiDevice = NULL;
@@ -821,6 +844,11 @@ void CtiDeviceManager::RefreshRoutes()
         dout << RWTime() << " Looking for Routes" << endl;
     }
     CtiTableDeviceRoute::getSQL( db, keyTable, selector );
+
+    if(id > 0)
+    {
+        selector.where(keyTable["deviceid"] == id && selector.where());
+    }
 
     RWDBReader rdr = selector.reader(conn);
     if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
