@@ -1007,7 +1007,7 @@ insert into YukonGroupRole values(-109,-100,-100,-10009,'(none)');
 insert into YukonGroupRole values(-1008,-2,-100,-10008,'(none)');
 insert into YukonGroupRole values(-1009,-2,-100,-10009,'(none)');
 insert into YukonUserRole values(-108,-1,-100,-10008,'(none)');
-insert into YukonUserRole values(-109,-1,-100,-10009,'(none)');
+insert into YukonUserRole values(-109,-1,-100,-10009,'true');
 
 
 
