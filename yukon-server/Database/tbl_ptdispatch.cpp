@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_ptdispatch.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/09/19 18:04:57 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2003/08/19 13:52:04 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -324,15 +324,11 @@ CtiTablePointDispatch& CtiTablePointDispatch::setValue(DOUBLE value)
 
 UINT CtiTablePointDispatch::getTags() const
 {
-
-
     return iTags;
 }
 
 UINT CtiTablePointDispatch::setTags(UINT tags)
 {
-
-
     setDirty(TRUE);
     iTags |= tags;
     return iTags;
