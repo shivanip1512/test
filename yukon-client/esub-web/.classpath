@@ -21,6 +21,5 @@
     <classpathentry kind="lib" path="/third-party/jcommon-0.6.4.jar"/>
     <classpathentry kind="lib" path="/third-party/jfreechart.jar"/>
     <classpathentry kind="lib" path="/third-party/junit.jar"/>
-    <classpathentry kind="lib" path="D:/jboss-3.0.0RC1_tomcat-4.0.3/catalina/lib/jasper-runtime.jar"/>
     <classpathentry kind="output" path="WEB-INF\classes"/>
 </classpath>
