@@ -3837,6 +3837,8 @@ void CtiCommandParser::doParsePutConfigThermostatScheduleDOW(RWTokenizer &tok, I
                 // This is the hh section of the time
                 if(!token.match("[0-9]+").isNull())
                     hh = atoi(token.data());
+                else if(!token.match("hh").isNull())
+                    hh = 254;                           // This is the Energy Pro period cancel indicator.
                 break;
             }
         case 1:
