@@ -1,4 +1,3 @@
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   portfield
@@ -7,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.66 $
-* DATE         :  $Date: 2003/06/02 14:56:07 $
+* REVISION     :  $Revision: 1.67 $
+* DATE         :  $Date: 2003/06/02 20:37:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
