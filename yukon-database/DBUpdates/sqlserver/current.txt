@@ -10,3 +10,12 @@ alter TABLE DynamicCCCapBank add OriginalFeederID NUMERIC not null DEFAULT 0;
 go
 alter TABLE DynamicCCCapBank add OriginalSwitchingOrder NUMERIC not null DEFAULT 0;
 go
+
+
+/* Change all the PAOName illegal chars to - , */
+/* The return result will say all rows updated, but that is not necessarily true */
+update yukonpaobject set paoname = replace(paoname, ',', '-')
+update yukonpaobject set paoname = replace(paoname, '\', '-')
+update yukonpaobject set paoname = replace(paoname, '|', '-')
+update yukonpaobject set paoname = replace(paoname, '"', '-')
+go

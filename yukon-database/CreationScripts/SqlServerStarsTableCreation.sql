@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  STARS                                        */
 /* DBMS name:      CTI SqlServer 2000                           */
-/* Created on:     10/30/2002 11:53:40 AM                       */
+/* Created on:     11/20/2002 10:07:29 AM                       */
 /*==============================================================*/
 
 
@@ -10,14 +10,6 @@ if exists (select 1
            where  id = object_id('AccountSite')
             and   type = 'U')
    drop table AccountSite
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('AirConditioner')
-            and   type = 'U')
-   drop table AirConditioner
 go
 
 
@@ -39,6 +31,14 @@ go
 
 if exists (select 1
             from  sysobjects
+           where  id = object_id('ApplicanceAirConditioner')
+            and   type = 'U')
+   drop table ApplicanceAirConditioner
+go
+
+
+if exists (select 1
+            from  sysobjects
            where  id = object_id('CallReportBase')
             and   type = 'U')
    drop table CallReportBase
@@ -47,9 +47,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('CstBaseCstContactMap')
+           where  id = object_id('ContactNotification')
             and   type = 'U')
-   drop table CstBaseCstContactMap
+   drop table ContactNotification
 go
 
 
@@ -63,9 +63,25 @@ go
 
 if exists (select 1
             from  sysobjects
+           where  id = object_id('CustomerAdditionalContact')
+            and   type = 'U')
+   drop table CustomerAdditionalContact
+go
+
+
+if exists (select 1
+            from  sysobjects
            where  id = object_id('CustomerBase')
             and   type = 'U')
    drop table CustomerBase
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('CustomerFAQ')
+            and   type = 'U')
+   drop table CustomerFAQ
 go
 
 
@@ -199,6 +215,30 @@ go
 
 if exists (select 1
             from  sysobjects
+           where  id = object_id('LMThermostatManualOption')
+            and   type = 'U')
+   drop table LMThermostatManualOption
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('LMThermostatSeason')
+            and   type = 'U')
+   drop table LMThermostatSeason
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('LMThermostatSeasonEntry')
+            and   type = 'U')
+   drop table LMThermostatSeasonEntry
+go
+
+
+if exists (select 1
+            from  sysobjects
            where  id = object_id('ServiceCompany')
             and   type = 'U')
    drop table ServiceCompany
@@ -244,18 +284,6 @@ go
 
 
 /*==============================================================*/
-/* Table : AirConditioner                                       */
-/*==============================================================*/
-create table AirConditioner (
-ApplianceID          numeric              not null,
-TonageID             numeric              null,
-TypeID               numeric              null,
-constraint PK_AIRCONDITIONER primary key  (ApplianceID)
-)
-go
-
-
-/*==============================================================*/
 /* Table : ApplianceBase                                        */
 /*==============================================================*/
 create table ApplianceBase (
@@ -264,6 +292,11 @@ AccountID            numeric              not null,
 ApplianceCategoryID  numeric              not null,
 DEVICEID             numeric              null,
 Notes                varchar(100)         null,
+YearManufactured     numeric              null,
+ManufacturerID       numeric              null,
+LocationID           numeric              null,
+KWCapacity           numeric              null,
+EfficiencyRating     numeric              null,
 constraint PK_APPLIANCEBASE primary key  (ApplianceID)
 )
 go
@@ -278,6 +311,18 @@ CategoryID           numeric              null,
 WebConfigurationID   numeric              null,
 Description          varchar(40)          null,
 constraint PK_APPLIANCECATEGORY primary key  (ApplianceCategoryID)
+)
+go
+
+
+/*==============================================================*/
+/* Table : ApplicanceAirConditioner                             */
+/*==============================================================*/
+create table ApplicanceAirConditioner (
+ApplianceID          numeric              not null,
+TonageID             numeric              null,
+TypeID               numeric              null,
+constraint PK_APPLICANCEAIRCONDITIONER primary key  (ApplianceID)
 )
 go
 
@@ -300,13 +345,14 @@ go
 
 
 /*==============================================================*/
-/* Table : CstBaseCstContactMap                                 */
+/* Table : ContactNotification                                  */
 /*==============================================================*/
-create table CstBaseCstContactMap (
-CustomerID           numeric              not null,
-CustomerContactID    numeric              not null,
-ContactID            numeric              null,
-constraint PK_CSTBASECSTCONTACTMAP primary key  (CustomerID, CustomerContactID)
+create table ContactNotification (
+ContactID            numeric              not null,
+NotificationLabelID  numeric              null,
+NotificationCategoryID numeric              null,
+Notification         varchar(100)         null,
+constraint PK_CONTACTNOTIFICATION primary key  (ContactID)
 )
 go
 
@@ -327,6 +373,17 @@ go
 
 
 /*==============================================================*/
+/* Table : CustomerAdditionalContact                            */
+/*==============================================================*/
+create table CustomerAdditionalContact (
+CompanyID            numeric              not null,
+ContactID            numeric              not null,
+constraint PK_CUSTOMERADDITIONALCONTACT primary key  (CompanyID)
+)
+go
+
+
+/*==============================================================*/
 /* Table : CustomerBase                                         */
 /*==============================================================*/
 create table CustomerBase (
@@ -336,6 +393,19 @@ CustomerTypeID       numeric              not null,
 TimeZone             varchar(30)          null,
 PAObjectID           numeric              null,
 constraint PK_CUSTOMERBASE primary key  (CustomerID)
+)
+go
+
+
+/*==============================================================*/
+/* Table : CustomerFAQ                                          */
+/*==============================================================*/
+create table CustomerFAQ (
+QuestionID           numeric              not null,
+SubjectID            numeric              null,
+Question             varchar(200)         null,
+Answer               varchar(500)         null,
+constraint PK_CUSTOMERFAQ primary key  (QuestionID)
 )
 go
 
@@ -539,8 +609,51 @@ create table LMProgramWebPublishing (
 ApplianceCategoryID  numeric              not null,
 LMProgramID          numeric              not null,
 WebsettingsID        numeric              null,
-DEVICEID             numeric              null,
+DeviceID             numeric              null,
+ChanceOfControlID    numeric              null,
 constraint PK_LMPROGRAMWEBPUBLISHING primary key  (ApplianceCategoryID, LMProgramID)
+)
+go
+
+
+/*==============================================================*/
+/* Table : LMThermostatManualOption                             */
+/*==============================================================*/
+create table LMThermostatManualOption (
+InventoryID          numeric              not null,
+PerviousTemperature  numeric              null,
+HoldTemperature      varchar(1)           null,
+OperationalStateID   numeric              null,
+FanOperationID       numeric              null,
+constraint PK_LMTHERMOSTATMANUALOPTION primary key  (InventoryID)
+)
+go
+
+
+/*==============================================================*/
+/* Table : LMThermostatSeason                                   */
+/*==============================================================*/
+create table LMThermostatSeason (
+SeasonID             numeric              not null,
+InventoryID          numeric              null,
+ConfigurationID      numeric              null,
+WebConfigurationID   numeric              null,
+StartDate            datetime             null,
+DisplayOrder         numeric              null,
+constraint PK_LMTHERMOSTATSEASON primary key  (SeasonID)
+)
+go
+
+
+/*==============================================================*/
+/* Table : LMThermostatSeasonEntry                              */
+/*==============================================================*/
+create table LMThermostatSeasonEntry (
+SeasonID             numeric              not null,
+TimeOfWeekID         numeric              null,
+StartTime            numeric              null,
+Temperature          numeric              null,
+constraint PK_LMTHERMOSTATSEASONENTRY primary key  (SeasonID)
 )
 go
 
@@ -660,7 +773,7 @@ go
 
 alter table AccountSite
    add constraint FK_AccS_CstAd foreign key (AddressID)
-      references CustomerAddress (AddressID)
+      references  ()
 go
 
 
@@ -672,17 +785,41 @@ go
 
 alter table ApplianceBase
    add constraint FK_AppBs_LMPr foreign key (DEVICEID)
-      references LMPROGRAM (DEVICEID)
+      references  ()
 go
 
 
-alter table AirConditioner
+alter table ContactNotification
+   add constraint FK_CntNotCsLs1 foreign key (NotificationCategoryID)
+      references CustomerListEntry (EntryID)
+go
+
+
+alter table ContactNotification
+   add constraint FK_CntNotCsLs2 foreign key (NotificationLabelID)
+      references CustomerListEntry (EntryID)
+go
+
+
+alter table CustomerAdditionalContact
+   add constraint FK_CsCnt_CsAdCn foreign key (ContactID)
+      references  ()
+go
+
+
+alter table LMProgramWebPublishing
+   add constraint FK_CsLEn_LPWbP foreign key (ChanceOfControlID)
+      references CustomerListEntry (EntryID)
+go
+
+
+alter table ApplicanceAirConditioner
    add constraint FK_CsLsE_Ac foreign key (TonageID)
       references CustomerListEntry (EntryID)
 go
 
 
-alter table AirConditioner
+alter table ApplicanceAirConditioner
    add constraint FK_CsLsE_Ac_ty foreign key (TypeID)
       references CustomerListEntry (EntryID)
 go
@@ -700,6 +837,24 @@ alter table LMCustomerEventBase
 go
 
 
+alter table LMThermostatManualOption
+   add constraint FK_CsLsE_LThMnO2 foreign key (OperationalStateID)
+      references CustomerListEntry (EntryID)
+go
+
+
+alter table LMThermostatManualOption
+   add constraint FK_CsLsE_LThMnO1 foreign key (FanOperationID)
+      references CustomerListEntry (EntryID)
+go
+
+
+alter table LMThermostatSeasonEntry
+   add constraint FK_CsLsE_LThSE foreign key (TimeOfWeekID)
+      references CustomerListEntry (EntryID)
+go
+
+
 alter table WorkOrderBase
    add constraint FK_CsLsE_WkB foreign key (WorkTypeID)
       references CustomerListEntry (EntryID)
@@ -712,8 +867,32 @@ alter table WorkOrderBase
 go
 
 
+alter table ApplianceBase
+   add constraint FK_CsLsEn_ApB foreign key (ManufacturerID)
+      references CustomerListEntry (EntryID)
+go
+
+
+alter table ApplianceBase
+   add constraint FK_CsLsEn_ApB2 foreign key (LocationID)
+      references CustomerListEntry (EntryID)
+go
+
+
+alter table CustomerFAQ
+   add constraint FK_CsLsEn_CsF foreign key (SubjectID)
+      references CustomerListEntry (EntryID)
+go
+
+
 alter table ApplianceCategory
    add constraint FK_CsWC_ApCt foreign key (WebConfigurationID)
+      references CustomerWebConfiguration (ConfigurationID)
+go
+
+
+alter table LMThermostatSeason
+   add constraint FK_CsWbC_LThSs foreign key (ConfigurationID)
       references CustomerWebConfiguration (ConfigurationID)
 go
 
@@ -732,7 +911,7 @@ go
 
 alter table ServiceCompany
    add constraint FK_CstAdd_SrC foreign key (AddressID)
-      references CustomerAddress (AddressID)
+      references  ()
 go
 
 
@@ -756,25 +935,13 @@ go
 
 alter table CustomerBase
    add constraint FK_CstBs_CstCnt foreign key (ContactID)
-      references CustomerContact (ContactID)
-go
-
-
-alter table CstBaseCstContactMap
-   add constraint FK_CstBs_CstMp foreign key (CustomerID)
-      references CustomerBase (CustomerID)
-go
-
-
-alter table CstBaseCstContactMap
-   add constraint FK_CstCnt_Csmap foreign key (ContactID)
-      references CustomerContact (ContactID)
+      references  ()
 go
 
 
 alter table ServiceCompany
    add constraint FK_CstCnt_SrvC foreign key (ContactID)
-      references CustomerContact (ContactID)
+      references  ()
 go
 
 
@@ -804,7 +971,7 @@ go
 
 alter table InventoryBase
    add constraint FK_Dev_InvB foreign key (DEVICEID)
-      references DEVICE (DEVICEID)
+      references  ()
 go
 
 
@@ -816,13 +983,13 @@ go
 
 alter table ECToAccountMapping
    add constraint FK_ECTAcc_Enc foreign key (EnergyCompanyID)
-      references EnergyCompany (EnergyCompanyID)
+      references  ()
 go
 
 
 alter table ECToGenericMapping
    add constraint FK_ECTGn_Enc foreign key (EnergyCompanyID)
-      references EnergyCompany (EnergyCompanyID)
+      references  ()
 go
 
 
@@ -834,7 +1001,7 @@ go
 
 alter table ECToInventoryMapping
    add constraint FK_ECTInv_Enc foreign key (EnergyCompanyID)
-      references EnergyCompany (EnergyCompanyID)
+      references  ()
 go
 
 
@@ -846,13 +1013,13 @@ go
 
 alter table ECToCallReportMapping
    add constraint FK_ECTSrv_Enc foreign key (EnergyCompanyID)
-      references EnergyCompany (EnergyCompanyID)
+      references  ()
 go
 
 
 alter table ECToWorkOrderMapping
    add constraint FK_ECTWrk_Enc2 foreign key (EnergyCompanyID)
-      references EnergyCompany (EnergyCompanyID)
+      references  ()
 go
 
 
@@ -864,7 +1031,13 @@ go
 
 alter table ECToLMCustomerEventMapping
    add constraint FK_EnCm_ECLmCs foreign key (EnergyCompanyID)
-      references EnergyCompany (EnergyCompanyID)
+      references  ()
+go
+
+
+alter table LMThermostatSeason
+   add constraint FK_InvB_LThSs foreign key (InventoryID)
+      references InventoryBase (InventoryID)
 go
 
 
@@ -882,7 +1055,7 @@ go
 
 alter table LMHardwareConfiguration
    add constraint FK_LMHrd_LMGr foreign key (DeviceID)
-      references LMGroup (DeviceID)
+      references  ()
 go
 
 
@@ -894,7 +1067,7 @@ go
 
 alter table LMProgramEvent
    add constraint FK_LMPrg_LMPrEv foreign key (DEVICEID)
-      references LMPROGRAM (DEVICEID)
+      references  ()
 go
 
 
@@ -905,8 +1078,8 @@ go
 
 
 alter table LMProgramWebPublishing
-   add constraint FK_LMprApp_LMPrg foreign key (DEVICEID)
-      references LMPROGRAM (DEVICEID)
+   add constraint FK_LMprApp_LMPrg foreign key (DeviceID)
+      references  ()
 go
 
 
@@ -922,8 +1095,8 @@ alter table LMHardwareBase
 go
 
 
-alter table AirConditioner
-   add constraint FK_AIR_ISA__APP foreign key (ApplianceID)
+alter table ApplicanceAirConditioner
+   add constraint FK_APP_ISA__APP foreign key (ApplianceID)
       references ApplianceBase (ApplianceID)
 go
 
