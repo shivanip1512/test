@@ -305,7 +305,9 @@ public class ECActivityLogReport extends YukonReportBase
 
 		final ReportFooter footer = new ReportFooter();
 		footer.getStyle().setStyleProperty( ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 48));
-		footer.getBandDefaults().setFontDefinitionProperty( new FontDefinition("Serif", 12, true, false, false, false));
+//		footer.getBandDefaults().setFontDefinitionProperty( new FontDefinition("Serif", 12, true, false, false, false));
+		footer.getBandDefaults().setFontDefinitionProperty(new FontDefinition("Serif", 10));
+
 		
 		//Add all columns (excluding Date) to the table model.
 		LabelElementFactory factory = new LabelElementFactory();

@@ -19,6 +19,7 @@ import org.jfree.report.elementfactory.StaticShapeElementFactory;
 import org.jfree.report.elementfactory.TextFieldElementFactory;
 import org.jfree.report.function.ExpressionCollection;
 import org.jfree.report.function.FunctionInitializeException;
+import org.jfree.report.function.ItemCountFunction;
 import org.jfree.report.function.ItemHideFunction;
 import org.jfree.report.modules.gui.base.PreviewDialog;
 import org.jfree.report.style.ElementStyleSheet;
@@ -81,7 +82,7 @@ public class ECActivityDetailReport extends YukonReportBase
 		//Define start and stop parameters for a default 90 day report.
 		YukonReportBase report = ReportFuncs.createYukonReport(ReportTypes.EC_ACTIVITY_DETAIL_DATA);
 		((ActivityDetailModel)report.getModel()).setProgramInfoOnly(true);
-		((ActivityDetailModel)report.getModel()).setECIDs(new Integer(1010));
+//		((ActivityDetailModel)report.getModel()).setECIDs(new Integer(1010));
 		
 		java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
 		cal.set(java.util.Calendar.HOUR_OF_DAY, 0);
@@ -152,10 +153,21 @@ public class ECActivityDetailReport extends YukonReportBase
 		hideItem.setProperty("element", ActivityDetailModel.ACCOUNT_NUMBER_STRING+" Element");
 		expressions.add(hideItem);
 
+		expressions.add(getActionCountFunction());
+
 //		expressions.add(getDateExpression(getModel().getColumnProperties(5).getValueFormat(), getModel().getColumnName(5)));
 		return expressions;
 	}
 
+	protected ItemCountFunction getActionCountFunction()
+	{
+		ItemCountFunction countItem = new ItemCountFunction();
+		countItem.setName(ActivityDetailModel.ACTION_STRING + " Count");
+		countItem.setProperty("field", ActivityDetailModel.ACTION_STRING);
+		countItem.setProperty("element", ActivityDetailModel.ACTION_STRING +" Count Element");
+		countItem.setGroup(ActivityDetailModel.ACTION_STRING + " Group");		
+		return countItem;
+	}
 	/**
 	 * Create a Group for LMControlLogData.Date column.  
 	 * @return
@@ -241,10 +253,92 @@ public class ECActivityDetailReport extends YukonReportBase
 				
 		final GroupFooter footer = new GroupFooter();
 		footer.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 18));
+
+//		footer.addElement(createActionGroup());
+
+/*
+		Iterator iter = ((ActivityDetailModel)getModel()).getTotals().entrySet().iterator();
+		int offset = 8;
+		while( iter.hasNext())
+		{
+			offset += 10;
+			Map.Entry entry = ((Map.Entry)iter.next());
+
+			LabelElementFactory factory = new LabelElementFactory();
+			factory.setName(entry.getKey().toString()+ " Group Element");
+			factory.setHorizontalAlignment(ElementAlignment.LEFT);
+			factory.setVerticalAlignment(ElementAlignment.BOTTOM);
+			factory.setAbsolutePosition(new Point2D.Float(150, offset));
+			factory.setMinimumSize(new FloatDimension(348, 18));
+			factory.setText(entry.getKey().toString());
+			SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
+			String keyEntry = entry.getKey().toString();
+//			Date xDate = (Date)header.getElement(ActivityDetailModel.DATE_TIME_STRING + " Group Element").getValue();
+//			if(keyEntry.startsWith( format.format(xDate)))
+//				System.out.println(entry.getKey().toString());
+			System.out.println(header.getElement(ActivityDetailModel.DATE_TIME_STRING + " Group Element").toString());
+			factory.setBold(new Boolean(false));
+			footer.addElement(factory.createElement());
+			
+			factory = new LabelElementFactory();
+			factory.setName(entry.getValue().toString() +" Group Element");
+			factory.setHorizontalAlignment(ElementAlignment.RIGHT);
+			factory.setVerticalAlignment(ElementAlignment.BOTTOM);
+			factory.setAbsolutePosition(new Point2D.Float(500, offset));
+			factory.setMinimumSize(new FloatDimension(25, 18));
+			factory.setText(entry.getValue().toString());
+			factory.setBold(new Boolean(false));
+			footer.addElement(factory.createElement());
+		}
+		offset += 20;
+*/
 		tsGroup.setFooter(footer);
 
 		return tsGroup;
 	}
+	
+	private Group createActionGroup()
+	{
+		int colIndex = ActivityDetailModel.ACTION_COLUMN;
+	
+		final Group tsGroup = new Group();
+		tsGroup.setName(ActivityDetailModel.ACTION_STRING +" Group");
+		tsGroup.addField(getModel().getColumnName(ActivityDetailModel.ENERGY_COMPANY_COLUMN));
+		tsGroup.addField(getModel().getColumnName(ActivityDetailModel.DATE_COLUMN));
+		tsGroup.addField(getModel().getColumnName(ActivityDetailModel.ACTION_COLUMN));
+
+		final GroupHeader header = new GroupHeader();
+		header.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 30));
+		tsGroup.setHeader(header);
+		
+		final GroupFooter footer = new GroupFooter();
+		footer.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 18));
+
+		final TextFieldElementFactory tfactory = new TextFieldElementFactory();
+		tfactory.setName(ActivityDetailModel.DATE_TIME_STRING + " Group Element");
+		tfactory.setAbsolutePosition(new java.awt.geom.Point2D.Float(getModel().getColumnProperties(colIndex).getPositionX(), 10));
+		tfactory.setMinimumSize(new FloatDimension(getModel().getColumnProperties(colIndex).getWidth(), getModel().getColumnProperties(colIndex).getHeight()));
+		tfactory.setHorizontalAlignment(ElementAlignment.LEFT);
+		tfactory.setVerticalAlignment(ElementAlignment.BOTTOM);
+		tfactory.setNullString("<null>");
+		tfactory.setFieldname(getModel().getColumnName(colIndex));
+		tfactory.setBold(new Boolean(true));
+		footer.addElement(tfactory.createElement());
+
+		final NumberFieldElementFactory nfactory = new NumberFieldElementFactory();
+		nfactory.setAbsolutePosition(new java.awt.geom.Point2D.Float(500, 10));
+		nfactory.setMinimumSize(new FloatDimension(25, 10));
+		nfactory.setHorizontalAlignment(ElementAlignment.RIGHT);
+		nfactory.setVerticalAlignment(ElementAlignment.BOTTOM);
+		nfactory.setFieldname(ActivityDetailModel.ACTION_STRING + " Count");
+		nfactory.setDynamicHeight(Boolean.TRUE);
+		footer.addElement(nfactory.createElement());
+
+		tsGroup.setFooter(footer);
+
+		return tsGroup;
+	}
+	
 	/**
 	 * Create a GroupList and all Group(s) to it.
 	 * @return the groupList.
@@ -255,6 +349,7 @@ public class ECActivityDetailReport extends YukonReportBase
 		//Add a Grouping for Date column.
 		list.add(createECGroup());
 		list.add(createTimestampGroup());
+//		list.add(createActionGroup());
 		return list;
 	}
 

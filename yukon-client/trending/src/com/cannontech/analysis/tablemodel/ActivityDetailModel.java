@@ -1,5 +1,6 @@
 package com.cannontech.analysis.tablemodel;
 
+import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -35,7 +36,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 public class ActivityDetailModel extends ReportModelBase
 {
 	/** A string for the title of the data */
-	private static String title = "ENERGY COMPANY ACTIVITY LOG";
+	private static String title = "ENERGY COMPANY ACTIVITY DETAIL";
 	
 	/** Number of columns */
 	protected final int NUMBER_COLUMNS = 6;
@@ -60,8 +61,12 @@ public class ActivityDetailModel extends ReportModelBase
 	public final static String TIME_STRING = "Time";
 	public final static String DESCRIPTION_STRING = "Description";
 
+	public final static String TOTALS_HEADER_STRING = "TOTALS";
+
 	/** Class fields */
 	private int[] ecIDs = null;
+
+	private HashMap totals = null;
 
 	/** Flag for program related activities only */
 	private boolean programInfoOnly = false;	
@@ -579,5 +584,30 @@ public class ActivityDetailModel extends ReportModelBase
 	public void setProgramInfoOnly(boolean programInfo_)
 	{
 		programInfoOnly = programInfo_;
+	}
+	
+	public HashMap getTotals()
+	{
+		if (totals == null)
+		{
+			SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
+			totals = new HashMap();
+			for(int i = 0; i < getData().size(); i++)
+			{
+				//Format the first part of the key to be 8 chars, YYYYMMDD of the dateTime value
+				//NOTE:  This value must be truncated out of the key when only the action is desired!!!
+				String key = ((ActivityLog)getData().get(i)).getDateOnly().toString();
+				key += ((ActivityLog)getData().get(i)).getAction();
+				Integer initValue = (Integer)totals.get(key);
+				if( initValue == null)
+					initValue = new Integer(0);
+	
+				Integer newValue = ((ActivityLog)getData().get(i)).getActionCount();
+				newValue = new Integer(newValue.intValue() + initValue.intValue());
+				
+				totals.put(key, newValue);		
+			}
+		}
+		return totals;
 	}
 }

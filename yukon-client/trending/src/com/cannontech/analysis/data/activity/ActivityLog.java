@@ -25,7 +25,7 @@ public class ActivityLog
 	private Integer custID = null;	//used to get the primary contact
 	private String acctNumber = null;
 	private Integer acctID = null;
-	private Integer actionCount = new Integer(0);			
+	private Integer actionCount = new Integer(1);			
 	private Date dateTime = null;
 	private String action = null;
 	private String description = null;
