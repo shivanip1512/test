@@ -2,7 +2,7 @@ package com.cannontech.database.data.lite;
 
 import java.util.Vector;
 
-import com.cannontech.database.cache.functions.CustomerContactFuncs;
+import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.database.db.customer.CICustomerBase;
 import com.cannontech.database.db.customer.Customer;
 
@@ -209,8 +209,7 @@ public class LiteCICustomer extends LiteBase
 			{
 				//add the LiteContact to this CICustomer
 				getAdditionalContacts().add(
-					CustomerContactFuncs.getCustomerContact(
-						((java.math.BigDecimal) stat.getRow(i)[0]).intValue()) );
+					ContactFuncs.getContact(((java.math.BigDecimal) stat.getRow(i)[0]).intValue()) );
 
 			}
 

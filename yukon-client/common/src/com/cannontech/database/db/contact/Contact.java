@@ -1,7 +1,6 @@
 package com.cannontech.database.db.contact;
 
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.cache.functions.CustomerFuncs;
 import com.cannontech.user.UserUtils;
 
 /**

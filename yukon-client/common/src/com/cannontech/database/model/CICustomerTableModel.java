@@ -5,8 +5,7 @@ package com.cannontech.database.model;
  */
 import javax.swing.tree.TreePath;
 
-import com.cannontech.database.cache.functions.CustomerFuncs;
-import com.cannontech.database.data.customer.CustomerTypes;
+import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
@@ -40,9 +39,9 @@ public boolean insertTreeObject( LiteBase lb )
 		
 	if( lb instanceof LiteContact )
 	{
-		int cntID = ((LiteContact)lb).getContactID();
+		int contactID = ((LiteContact)lb).getContactID();
 
-		LiteCICustomer ownerCst = CustomerFuncs.getOwnerCICustomer( cntID );
+		LiteCICustomer ownerCst = ContactFuncs.getOwnerCICustomer( contactID );
 
 		rootNode = findLiteObject( null, ownerCst );
 
