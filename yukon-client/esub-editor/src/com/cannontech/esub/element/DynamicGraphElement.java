@@ -252,29 +252,16 @@ public class DynamicGraphElement extends LxAbstractRectangle implements DrawingE
 						
 			Graph graph = getCTIGraph();
 			
-			graph.setDatabaseAlias(CtiUtilities.getDatabaseAlias());
 			graph.setSize((int) getWidth(), (int) getHeight());
 			graph.setGraphDefinition(gDef);
-			//graph.setSeriesType( com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES);
 
 			graph.setViewType(getTrendType());
 						
-			// Define the peak series....
-			/*for (int i = 0; i < gDef.getGraphDataSeries().size(); i++)
-			{
-				com.cannontech.database.db.graph.GraphDataSeries gds = (com.cannontech.database.db.graph.GraphDataSeries) gDef.getGraphDataSeries().get(i);
-
-				if ( graph.isPeakSeries( gds.getType()) )
-				{
-					graph.setHasPeakSeries( true );
-					break;
-				}
-			}*/
-		getCTIGraph().setUpdateTrend(true);
-		getCTIGraph().update();
+ 			getCTIGraph().setUpdateTrend(true);
+			getCTIGraph().update();
 		
-		setLastUpdated(new Date());
-		setDirty(false);
+			setLastUpdated(new Date());
+			setDirty(false);
 	} 
 
 	/**
