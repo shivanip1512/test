@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTQUE.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/05/07 19:52:25 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/06/18 16:23:04 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1109,9 +1109,8 @@ QueueFlush (CtiDevice *Dev)
             {
                {
                   CtiLockGuard<CtiLogger> doubt_guard(dout);
-                  dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                  dout << RWTime() << " Flushing " << Dev->getName() << "'s Porter Queue Table" << endl;
                }
-
 
                InMessage.DeviceID      = Dev->getID();
                InMessage.Port          = Dev->getPortID();
@@ -1128,12 +1127,6 @@ QueueFlush (CtiDevice *Dev)
 
                if(pInfo->QueTable[QueTabEnt].EventCode & BWORD)                  // If the outbound request was a BWORD then...
                {
-                  /* save the names */
-#ifdef FIX
-                  memcpy (InMessage.Buffer.DSt.DeviceName, pInfo->QueTable[QueTabEnt].DeviceName, STANDNAMLEN);
-                  memcpy (InMessage.Buffer.DSt.PointName, pInfo->QueTable[QueTabEnt].PointName, STANDNAMLEN);
-#endif
-
                   InMessage.Buffer.DSt.Address = pInfo->QueTable[QueTabEnt].Address;
                }
 
@@ -1226,7 +1219,7 @@ BuildLGrpQ (CtiDevice *Dev)
          /*------------------*
           * the sequence described below is part (most significant USHORT) of a four byte number
           * called QENID (queue entry id) of which the CCU only looks at the most significant BIT
-          * That bit indicates short form or long format queue entries (short == msb(1)) (032201 CP This appears to be WRONG wrt the protocol)
+          * That bit indicates short form or long format queue entries (short == msb(1)) (032201 CP This appears to be contrary to the protocol doc though)
           * That is why global QueSequence is kept in the range 0x8000 to 0xFFFF!
           *------------------*/
          MySequence = QueSequence++;
