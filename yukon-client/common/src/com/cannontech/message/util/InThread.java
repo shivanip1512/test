@@ -4,6 +4,7 @@ package com.cannontech.message.util;
  * This type was created in VisualAge.
  */
 
+import com.cannontech.clientutils.CTILogger;
 import com.roguewave.vsj.CollectableStreamer;
 import com.roguewave.vsj.VirtualInputStream;
 
@@ -56,16 +57,27 @@ public void run() {
 			Object o = istrm.restoreObject( streamer );
 			
 			if( conn.handleMessage( o ) )
-			{
+			{	// Handle each incoming message in a new thread
 				HandleMessage handleThr = new HandleMessage( this.conn, o );
 				handleThr.start();
 			}
 			else
-			{
+			if(conn.isQueueMessages())
+			{   // Add this message to the in queue so it can be 'read'
 				synchronized( in )
 				{
-					in.add( o );
+					in.add( o );								
 					in.notifyAll();
+				}			
+			}
+			
+			if(o instanceof Message)
+			{	// Tell out listeners about this message
+				try { // protect against misbehaved listeners											
+					conn.fireMessageEvent((Message) o);
+				}
+				catch(Throwable t) {
+					CTILogger.error(getClass(), t);
 				}
 			}
 

@@ -33,6 +33,7 @@ public class ClientConnection extends java.util.Observable implements Runnable, 
 	
 	private boolean isValid = false;
 	private boolean autoReconnect = false;
+	private boolean queueMessages = true;
 
 	//seconds until an another attempt is made to reconnect
 	//if autoReconenct is true
@@ -45,6 +46,9 @@ public class ClientConnection extends java.util.Observable implements Runnable, 
 	// so that every read doesn't cause one element to be removed
 	// this is done since removing elements from an arraylist is expensive
 	private int lastReadIndex = 0;
+	
+	// Keep track of all of this connections MessageListeners 
+	private ArrayList messageListeners = new ArrayList(5);
 /**
  * ClientConnection constructor comment.
  */
@@ -444,4 +448,48 @@ public void write(Object o) {
 		outQueue.notifyAll();
 	}
 }
+
+/**
+ * Add a message listener to this connection
+ * @param l
+ */
+public void addMessageListener(MessageListener l) {
+	messageListeners.add(l);
+}
+
+/**
+ *  Remove a message listener from this connection
+ * @param l
+ */
+public void removeMessageListener(MessageListener l) {
+	messageListeners.remove(l);
+}
+
+/**
+ * Send a MessageEvent to all of this connections MessageListeners
+ * @param msg
+ */
+protected void fireMessageEvent(Message msg) {
+	MessageEvent e = new MessageEvent(this, msg);	
+	for(int i = messageListeners.size()-1; i >= 0; i--) {
+		MessageListener ml = (MessageListener) messageListeners.get(i);
+		ml.messageReceived(e);
+	}
+}
+
+	/**
+	 * @return
+	 */
+	public boolean isQueueMessages() {
+		return queueMessages;
+	}
+
+	/**
+	 * Set this to false if you don't want the connection to queue up received messages.
+	 * @param b
+	 */
+	public void setQueueMessages(boolean b) {
+		queueMessages = b;
+	}
+
 }

@@ -13,6 +13,9 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.PointData;
+import com.cannontech.message.util.ClientConnection;
+import com.cannontech.message.util.MessageEvent;
+import com.cannontech.message.util.MessageListener;
 
 /**
  * PointChangeCache provides the current value of all Yukon points.
@@ -33,7 +36,7 @@ import com.cannontech.message.dispatch.message.PointData;
  * @see com.cannontech.message.dispatch.ClientConnection
  */
 
-public class PointChangeCache  implements Runnable, java.util.Observer {	
+public class PointChangeCache  implements java.util.Observer, MessageListener  {	
 	
 	// Connection to dispatch
 	private com.cannontech.message.dispatch.ClientConnection conn = null;
@@ -49,9 +52,6 @@ public class PointChangeCache  implements Runnable, java.util.Observer {
 	// Stores current tags by PointID
 	// (key = Integer, value = Long)	
 	private Hashtable tagData = new Hashtable();
-	
-	// Thread to harvest the incoming messages
-	private Thread runner = null;
 
 	//Date of the last point change received from dispatch
 	private Date lastChange = null;
@@ -113,6 +113,8 @@ public synchronized void connect()
 	conn.setRegistrationMsg(multi);
 	conn.setAutoReconnect(true);
 	conn.setTimeToReconnect(30);
+	conn.addMessageListener(this); 
+	conn.setQueueMessages(false);
 	
 	try
 	{
@@ -123,12 +125,6 @@ public synchronized void connect()
 		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		CTILogger.warn("An error occured connecting with dispatch");
 	}
-
-	if( runner == null )
-	{
-		runner = new Thread(this);
-		runner.start();
-	}	
 }
 /**
  * Insert the method's description here.
@@ -145,23 +141,6 @@ public synchronized void disconnect()
 	{
 		com.cannontech.clientutils.CTILogger.error( io.getMessage(), io );
 		CTILogger.warn("An error occured connecting with dispatch");
-	}
-
-	//interrupt the runner thread and join with it
-	if( runner != null )
-	{
-		runner.interrupt();
-
-		try
-		{
-			runner.join();			
-		}
-		catch( InterruptedException ie )
-		{
-			com.cannontech.clientutils.CTILogger.error( ie.getMessage(), ie );
-		}
-		
-		runner = null;
 	}	
 }
 /**
@@ -304,17 +283,6 @@ private void insertValue(com.cannontech.message.dispatch.message.PointData pData
 }
 
 /**
- * Creation date: (1/23/2002 4:41:41 PM)
- * @param args java.lang.String[]
- */
-public static void main(String[] args) {
-	
-	PointChangeCache pcc = new PointChangeCache();
-	Thread t = new Thread(pcc);
-	t.start();
-	
-}
-/**
  * Insert the method's description here.
  * Creation date: (1/3/2001 12:47:01 PM)
  * @return java.lang.String
@@ -356,53 +324,11 @@ private synchronized String retrieveState(int pointid, double value, String dbAl
 
 	return state;
 }
-/**
- * Insert the method's description here.
- * Creation date: (3/30/00 4:27:52 PM)
- */
-public void run()
-{		
-	try
-	{
-		CTILogger.debug("starting up...");
-		
-		while(true)
-		{
-			Object in;
-			while( (in = conn.read(0)) != null )
-			{
-				if( in instanceof com.cannontech.message.util.Message )
-				{
-					handleMessage( (com.cannontech.message.util.Message) in );
-				}
-				else
-				{
-					CTILogger.warn("received an unknown message of class:  " + in.getClass());
-				}
-			}
-			
-			Thread.sleep(1000);
 
-			if( !conn.isValid() )						
-				CTILogger.warn("connect to dispatch is down...");			
-		}
-	}
-	catch( InterruptedException ie )
-	{
-		CTILogger.debug("closing connection to dispatch");
-	}
-	finally
-	{
-		try
-		{
-			conn.disconnect();
-		}
-		catch( java.io.IOException ioe )
-		{
-			CTILogger.warn("Error disconnecting with vangogh occured");
-		}		
-	}
+public void messageReceived(MessageEvent e) {
+	handleMessage(e.getMessage());	
 }
+
 /**
  * Updates from the client connect show up here
  * Creation date: (3/30/00 5:15:08 PM)
@@ -418,5 +344,12 @@ public void update(java.util.Observable obs, Object val)
 		else
 			CTILogger.debug("Connection to " + conn.getHost() + ":" + conn.getPort() + " is down");
 	}
+}
+/**
+ * Don't use this unless you know why it could be bad.
+ * @return
+ */
+public com.cannontech.message.dispatch.ClientConnection getDispatchConnection() {
+	return conn;
 }
 }
