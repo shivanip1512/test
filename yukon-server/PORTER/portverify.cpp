@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2004/07/28 19:53:16 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2004/09/20 16:14:37 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -204,6 +204,11 @@ void CtiPorterVerification::verificationThread( void )
 
                 status = work->processResult(/* pass in any previous entry with a matching om->VerificationSequence */);
 
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint - writing code sequence \"" << work->getSequence() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+
                 writeWorkRecord(*work);
 
                 if( status == CtiVerificationBase::CodeStatus_Retry )
@@ -215,6 +220,41 @@ void CtiPorterVerification::verificationThread( void )
                     //  possible addition to enhance retry logic  ----
                     //_retry_queue.push_back(work);  //  this is where we keep track of the receivers on which we've already heard this code
                 }
+
+                //  hmm...  i could hash on code instead of receiver...  that would be suave
+
+                //  remove the expectations that weren't received  (maybe change this to a global list based on expiration)
+                vector< long > expectations = work->getExpectations();
+                vector< long >::iterator e_itr;
+
+                for( e_itr = expectations.begin(); e_itr != expectations.end(); e_itr++ )
+                {
+                    receiver_itr r_itr = _receiver_work.find(*e_itr);
+
+                    if( r_itr != _receiver_work.end() )
+                    {
+                        pending_vector &p_v = r_itr->second;
+
+                        //  iterate through all entries, looking for a pointer match
+                        for( pending_itr itr = p_v.begin(); itr != p_v.end(); itr++ )
+                        {
+                            if( *itr == work )
+                            {
+                                p_v.erase(itr);
+
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+                    }
+                }
+
                 //else
                 //{
                 delete work;
