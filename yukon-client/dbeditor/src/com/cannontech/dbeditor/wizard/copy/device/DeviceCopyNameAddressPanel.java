@@ -142,10 +142,7 @@ public class DeviceCopyNameAddressPanel extends com.cannontech.common.gui.util.D
 				ivjAddressTextField.setFont(new java.awt.Font("sansserif", 0, 14));
 				ivjAddressTextField.setColumns(6);
 				// user code begin {1}
-				
-	         ivjAddressTextField.setDocument(
-	            new com.cannontech.common.gui.unchanging.LongRangeDocument() );
-				
+			
 				// user code end
 			} catch (java.lang.Throwable ivjExc) {
 				// user code begin {2}
@@ -700,18 +697,22 @@ public class DeviceCopyNameAddressPanel extends com.cannontech.common.gui.util.D
 	   	}
 	   
 	   
-	      long addy = Long.parseLong(getAddressTextField().getText());
-	      if( !com.cannontech.dbeditor.range.DeviceAddressRange.isValidRange( getDeviceType(), addy ) )
-	      {
-	         setErrorString( com.cannontech.dbeditor.range.DeviceAddressRange.getRangeMessage( getDeviceType() ) );
-	
-	         getJLabelRange().setText( "(" + getErrorString() + ")" );
-	         getJLabelRange().setToolTipText( "(" + getErrorString() + ")" );
-	         return false;
-	      }
-	      else
-	         getJLabelRange().setText( "" );
-	      
+	   	try {
+		      long addy = Long.parseLong(getAddressTextField().getText());
+		      if( !com.cannontech.dbeditor.range.DeviceAddressRange.isValidRange( getDeviceType(), addy ) )
+		      {
+		         setErrorString( com.cannontech.dbeditor.range.DeviceAddressRange.getRangeMessage( getDeviceType() ) );
+		
+		         getJLabelRange().setText( "(" + getErrorString() + ")" );
+		         getJLabelRange().setToolTipText( "(" + getErrorString() + ")" );
+		         return false;
+		      }
+		      else
+		         getJLabelRange().setText( "" );
+	   	}
+	   	catch( NumberFormatException e )
+	   	{} //if this happens, we assume they know what they are 
+	   	   // doing and we accept any string as input	      
 	      
 	   }
 	
@@ -824,7 +825,12 @@ public class DeviceCopyNameAddressPanel extends com.cannontech.common.gui.util.D
          getJTextFieldMeterNumber().setText( ((IEDMeter)val).getDeviceMeterGroup().getMeterNumber().toString() );
 
       if( val instanceof Ion7700 )
+      {
          getPhysicalAddressLabel().setText("Slave Address:");
+         
+         getAddressTextField().setText( 
+            ((Ion7700)val).getDeviceDNP().getSlaveAddress().toString() );            
+      }
    
       if( val instanceof ICapBankController )
       {
@@ -835,7 +841,16 @@ public class DeviceCopyNameAddressPanel extends com.cannontech.common.gui.util.D
          getAddressTextField().setText( 
             ((ICapBankController)val).copiableAddress().toString() );            
       }
- 
+
+      if( val instanceof CapBank )
+      {
+         getPhysicalAddressLabel().setText( "Location:" );
+
+         getAddressTextField().setText( 
+            ((CapBank)val).getPAODescription().toString() );            
+      }
+
+
       getNameTextField().setText( val.getPAOName() );      
    }
    private void setDeviceType( int devType_ )
