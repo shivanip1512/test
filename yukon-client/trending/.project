@@ -4,7 +4,6 @@
 	<comment></comment>
 	<projects>
 		<project>common</project>
-		<project>jfreechart</project>
 		<project>resource</project>
 	</projects>
 	<buildSpec>
