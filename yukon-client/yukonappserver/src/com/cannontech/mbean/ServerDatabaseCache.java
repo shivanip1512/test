@@ -1476,7 +1476,7 @@ private synchronized LiteBase handleContactChange( int changeType, int id )
 				if( id == DBChangeMsg.CHANGE_INVALID_ID )
 					break;
 		
-                lBase = (LiteBase)allPAOsMap.get( new Integer(id) );                
+                lBase = (LiteBase)allContactsMap.get( new Integer(id) );                
                 if( lBase == null )
                 {
                     LiteContact lc = new LiteContact(id);
