@@ -122,8 +122,14 @@ alter table CICustomerBase
 go
 alter table Customer alter column TimeZone VARCHAR(40)
 go
-
-
+sp_rename 'LMProgramCurtailCustomerList.DeviceID', 'ProgramID', 'COLUMN'
+go
+sp_rename 'LMProgramCurtailCustomerList.LMCustomerDeviceID', 'CustomerID', 'COLUMN'
+go
+sp_rename 'LMEnergyExchangeCustomerList.DeviceID', 'ProgramID', 'COLUMN'
+go
+sp_rename 'LMEnergyExchangeCustomerList.LMCustomerDeviceID', 'CustomerID', 'COLUMN'
+go
 
 /******************* START GRAPHCUSTOMERLIST CHANGES *******************/
 alter table GraphCustomerList drop constraint RefGrphCstLst_CICstBse
