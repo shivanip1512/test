@@ -11,8 +11,8 @@ import java.util.Enumeration;
 
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
-import com.cannontech.common.constants.YukonListFuncs;
 import com.cannontech.common.constants.YukonSelectionListDefs;
+import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.db.contact.ContactNotification;
 import com.cannontech.database.data.customer.Contact;

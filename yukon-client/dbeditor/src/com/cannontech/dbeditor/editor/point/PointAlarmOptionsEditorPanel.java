@@ -847,7 +847,7 @@ private int findEmailContact( LiteContact contact )
 			LiteContactNotification ltCntNotif = 
 					(LiteContactNotification)contact.getLiteContactNotifications().get(j);
 						
-			if( ltCntNotif.getNotificationCategoryID() == YukonListEntryTypes.YUK_DEF_ID_EMAIL )
+			if( ltCntNotif.getNotificationCategoryID() == YukonListEntryTypes.YUK_ENTRY_ID_EMAIL )
 			{
 				return ltCntNotif.getContactNotifID();
 			}

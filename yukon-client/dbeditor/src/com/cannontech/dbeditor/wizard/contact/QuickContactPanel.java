@@ -237,7 +237,7 @@ public Object getValue(Object val)
 		
 	cntCn.setNotification( getJTextFieldAddress().getText() );
 	cntCn.setNotificationCatID( 
-			new Integer(YukonListEntryTypes.YUK_DEF_ID_EMAIL) );
+			new Integer(YukonListEntryTypes.YUK_ENTRY_ID_EMAIL) );
 
 	cnt.getContactNotifVect().add( cntCn );
 	return cnt;

@@ -7,7 +7,7 @@ package com.cannontech.dbeditor.wizard.contact;
  */
 import java.util.Vector;
 
-import com.cannontech.common.constants.YukonListFuncs;
+import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.db.contact.ContactNotification;
 
 public class ContactNotificationTableModel extends javax.swing.table.AbstractTableModel 
