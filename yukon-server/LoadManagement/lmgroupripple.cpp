@@ -154,7 +154,7 @@ CtiRequestMsg* CtiLMGroupRipple::createTimeRefreshRequestMsg(ULONG refreshRate, 
     if( _LM_DEBUG )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Sending time refresh command, LM Group: " << getPAOName() << ", string: " << controlString << endl;
+        dout << RWTime() << " - Sending time refresh command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
     }
     return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
 }
@@ -188,7 +188,7 @@ CtiRequestMsg* CtiLMGroupRipple::createRotationRequestMsg(ULONG sendRate, ULONG 
     if( _LM_DEBUG )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Sending rotation command, LM Group: " << getPAOName() << ", string: " << controlString << endl;
+        dout << RWTime() << " - Sending rotation command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
     }
     return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
 }
@@ -206,7 +206,7 @@ CtiRequestMsg* CtiLMGroupRipple::createMasterCycleRequestMsg(ULONG offTime, ULON
     if( _LM_DEBUG )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Sending master cycle command, LM Group: " << getPAOName() << ", string: " << controlString << endl;
+        dout << RWTime() << " - Sending master cycle command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
     }
     return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
 }

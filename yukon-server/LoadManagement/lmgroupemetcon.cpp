@@ -177,7 +177,7 @@ CtiRequestMsg* CtiLMGroupEmetcon::createTimeRefreshRequestMsg(ULONG refreshRate,
     if( _LM_DEBUG )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Sending time refresh command, LM Group: " << getPAOName() << ", string: " << controlString << endl;
+        dout << RWTime() << " - Sending time refresh command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
     }
     return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
 }
@@ -245,7 +245,7 @@ CtiRequestMsg* CtiLMGroupEmetcon::createMasterCycleRequestMsg(ULONG offTime, ULO
     if( _LM_DEBUG )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Sending master cycle command, LM Group: " << getPAOName() << ", string: " << controlString << endl;
+        dout << RWTime() << " - Sending master cycle command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
     }
     return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
 }
