@@ -164,11 +164,6 @@ public final class LiteComparators
 				thisVal = ((LiteCICustomer)o1).getCompanyName();
 				anotherVal = ((LiteCICustomer)o2).getCompanyName();
 			}
-			else if(o1 instanceof LiteYukonPAObject && o2 instanceof LiteYukonPAObject)
-			{
-				thisVal = ((LiteYukonPAObject)o1).getPaoName();
-				anotherVal = ((LiteYukonPAObject)o2).getPaoName();
-			}
 			else if (o1 instanceof LitePoint && o2 instanceof LitePoint)
 			{
 				thisVal = ((LitePoint)o1).getPointName();
