@@ -1,3 +1,6 @@
+delete from ECToGenericMapping where MappingCategory = 'YukonSelectionList' and ItemID in
+(select ListID from YukonSelectionList where ListName like 'OptOutPeriod%' and ListID > 2000);
+
 alter table CustomerAccount
    add constraint FK_CustAcc_Add foreign key (BillingAddressID)
       references Address (AddressID);

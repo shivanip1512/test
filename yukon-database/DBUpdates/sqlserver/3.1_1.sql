@@ -9,8 +9,7 @@ go
 
 delete from YukonListEntry where ListID in
 (select ListID from YukonSelectionList where ListName like 'OptOutPeriod%');
-delete from ECToGenericMapping where MappingCategory = 'YukonSelectionList' and ItemID in
-(select ListID from YukonSelectionList where ListName like 'OptOutPeriod%' and ListID > 2000);
+
 delete from YukonSelectionList where ListName like 'OptOutPeriod%' and ListID > 2000;
 
 insert into YukonListEntry values (1241,1049,1,'1 Day',24);

@@ -601,9 +601,6 @@ update YukonListEntry set YukonDefinitionID=1305, EntryOrder=-1 where EntryID=10
 update YukonListEntry set YukonDefinitionID=1306 where EntryID=1053;
 update YukonListEntry set YukonDefinitionID=1307, EntryOrder=-1 where EntryID=1054;
 update YukonListEntry set YukonDefinitionID=1308, EntryOrder=-1 where EntryID=1055;
-insert into YukonListEntry values (1060,1005,-1,'SA-205',1309);
-insert into YukonListEntry values (1061,1005,-1,'SA-305',1310);
-insert into YukonListEntry values (1062,1005,-1,'LCR-5000(VERSACOM)',1311);
 
 update yukonuserrole set value = 'true' where userroleid = -107;
 
