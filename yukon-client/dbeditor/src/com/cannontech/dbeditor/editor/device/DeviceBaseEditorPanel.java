@@ -1437,7 +1437,7 @@ private javax.swing.JLabel getWaitLabel() {
 			ivjWaitLabel.setMinimumSize(new java.awt.Dimension(65, 16));
 			// user code begin {1}
          
-         ivjWaitLabel.setText("(millis)");
+         ivjWaitLabel.setText("(msec.)");
          
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
