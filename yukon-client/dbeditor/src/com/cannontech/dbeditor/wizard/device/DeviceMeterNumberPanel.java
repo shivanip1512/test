@@ -231,12 +231,7 @@ public boolean isInputValid() {
 		return false;
 	}
 	
-	if(is410 && getMeterNumberTextField().getText().length() < 7)
-	{
-		setErrorString("The Meter Number text field must contain 7 digits for a 410 meter");
-		return false;
-	}
-	
+
 	
 
 	return true;
