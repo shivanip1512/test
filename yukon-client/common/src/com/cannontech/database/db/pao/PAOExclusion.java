@@ -17,12 +17,13 @@ public class PAOExclusion extends com.cannontech.database.db.DBPersistent
 	private Integer functionID = new Integer(CtiUtilities.NONE_ID);
 	private String funcName = CtiUtilities.STRING_NONE;
 	private Integer funcRequeue = new Integer(CtiUtilities.NONE_ID);
+	private String funcParams = CtiUtilities.STRING_NONE;
 
 
 	public static final String SETTER_COLUMNS[] = 
 	{ 
 		"PaoID", "ExcludedPaoID", "PointID",
-		"Value", "FunctionID", "FuncName", "FuncRequeue"
+		"Value", "FunctionID", "FuncName", "FuncRequeue", "FuncParams"
 	};
 
 	public static final String CONSTRAINT_COLUMNS[] = { "ExclusionID" };
@@ -31,7 +32,7 @@ public class PAOExclusion extends com.cannontech.database.db.DBPersistent
 
 	private static final String ALL_EXCL_SQL = 
 			"SELECT ExclusionID, PaoID, ExcludedPaoID, PointID, Value, FunctionID," +
-			"FuncName, FuncRequeue " +
+			"FuncName, FuncRequeue, FuncParams " +
 			"FROM " + TABLE_NAME + 
 			" WHERE PaoID= ?";
 
@@ -47,7 +48,7 @@ public class PAOExclusion extends com.cannontech.database.db.DBPersistent
 	 * PAOExclusion constructor comment.
 	 */
 	public PAOExclusion( Integer paoID_, Integer excludedPaoID_, Integer pointID_,
-			Integer value_, Integer functionID_, String funcName_, Integer funcRequeue_ )
+			Integer value_, Integer functionID_, String funcName_, Integer funcRequeue_, String funcParams_ )
 	{
 		this();
 		
@@ -58,6 +59,7 @@ public class PAOExclusion extends com.cannontech.database.db.DBPersistent
 		setFunctionID( functionID_ );
 		setFuncName( funcName_ );
 		setFuncRequeue( funcRequeue_ );
+		setFuncParams( funcParams_);
 	}
 	
 
@@ -85,7 +87,8 @@ public class PAOExclusion extends com.cannontech.database.db.DBPersistent
 		{
 			getExclusionID(), getPaoID(),
 			getExcludedPaoID(), getPointID(), getValue(), 
-			getFunctionID(), getFuncName(), getFuncRequeue()
+			getFunctionID(), getFuncName(), getFuncRequeue(),
+			getFuncParams()
 		};
 	
 		add( TABLE_NAME, addValues );
@@ -139,6 +142,7 @@ public class PAOExclusion extends com.cannontech.database.db.DBPersistent
 					item.setFunctionID( new Integer(rset.getInt(6)) );
 					item.setFuncName( rset.getString(7) );
 					item.setFuncRequeue( new Integer(rset.getInt(8)) );
+					item.setFuncParams( new String(rset.getString(9)) );
 
 					tmpList.add( item );
 				}
@@ -282,6 +286,7 @@ public class PAOExclusion extends com.cannontech.database.db.DBPersistent
 			setFunctionID( (Integer)results[4] );
 			setFuncName( (String)results[5] );
 			setFuncRequeue( (Integer)results[6] );
+			setFuncParams( (String)results[7] );
 		}
 		else
 			throw new Error(getClass() + " - Incorrect Number of results retrieved");
@@ -298,7 +303,8 @@ public class PAOExclusion extends com.cannontech.database.db.DBPersistent
 		{
 			getPaoID(),
 			getExcludedPaoID(), getPointID(), getValue(), 
-			getFunctionID(), getFuncName(), getFuncRequeue()
+			getFunctionID(), getFuncName(), getFuncRequeue(),
+			getFuncParams()
 		};
 						
 		Object constraintValues[] = { getExclusionID() };
@@ -337,6 +343,10 @@ public class PAOExclusion extends com.cannontech.database.db.DBPersistent
 		return funcRequeue;
 	}
 
+	public String getFuncParams()
+	{
+		return funcParams;
+	}
 	/**
 	 * @return
 	 */
@@ -401,6 +411,10 @@ public class PAOExclusion extends com.cannontech.database.db.DBPersistent
 		funcRequeue = integer;
 	}
 
+	public void setFuncParams(String string)
+	{
+		funcParams = string;
+	}
 	/**
 	 * @param integer
 	 */
