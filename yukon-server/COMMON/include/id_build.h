@@ -13,14 +13,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2002/09/13 15:08:28 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2002/10/02 15:22:11 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
-#define MAJORREVISION   2
-#define MINORREVISION   35
+#define MAJORREVISION   0
+#define MINORREVISION   0
 #define BUILDNUMBER     0
 #define BUILDTIMESTAMP  __TIMESTAMP__
 
