@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2005/02/17 23:35:45 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2005/02/24 13:58:40 $
 *
 * HISTORY      :
 * $Log: prot_sa305.cpp,v $
+* Revision 1.12  2005/02/24 13:58:40  cplender
+* Make certain rate is displayed in the decode.
+*
 * Revision 1.11  2005/02/17 23:35:45  cplender
 * Modified the cycling selection to aim for control percentage, not period.
 *
@@ -1530,6 +1533,8 @@ RWCString  CtiProtocolSA305::asString() const
         haddr = getBits(bit, 1);
 
         raddr = faddr*16 + maddr;
+
+        if(!f1) rstr += ", Family " + CtiNumStr(faddr) + ", Member " + CtiNumStr(maddr) + " (Rate = " + CtiNumStr(raddr) + ").";
     }
 
     if(!f1)
