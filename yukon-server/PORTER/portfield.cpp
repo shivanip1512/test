@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.99 $
-* DATE         :  $Date: 2004/04/14 17:10:39 $
+* REVISION     :  $Revision: 1.100 $
+* DATE         :  $Date: 2004/04/29 20:10:32 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -93,6 +93,7 @@ using namespace std;
 #include "c_port_interface.h"
 #include "mgr_port.h"
 #include "mgr_device.h"
+#include "mgr_exclusion.h"
 #include "dev_base.h"
 #include "dev_cbc6510.h"
 #include "dev_ied.h"
@@ -158,6 +159,8 @@ INT ResetChannel(CtiPortSPtr Port, CtiDevice *Device);
 INT IdentifyDeviceFromOutMessage(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDevice *&Device);
 INT ChooseExclusionDevice(CtiDevice *&Device);
 INT GetWork(CtiPortSPtr Port, CtiOutMessage *&OutMessage, ULONG &QueEntries);
+
+static void ApplyTapNeedsLogon(const CtiHashKey *key, CtiDeviceBase *&Dev, void* vpPortId);
 
 /* Threads that handle each port for communications */
 VOID PortThread(void *pid)
@@ -1520,6 +1523,16 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         status = Port->outMess(trx, Device, traceList);
                         break;
                     }
+                case TYPE_RTC:
+                    {
+                        OutMessage->InLength = 0;
+
+                        /* output the message to the remote */
+                        trx.setOutBuffer(OutMessage->Buffer.OutMessage);
+                        trx.setOutCount(OutMessage->OutLength);
+                        status = Port->outMess(trx, Device, traceList);
+                        break;
+                    }
                 default:
                     {
                         {
@@ -1527,6 +1540,8 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                             dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             dout << "  Device Type " << desolveDeviceType( Device->getType() ) << " Not specifically accounted for." << endl;
                         }
+
+                        status = BADID;
                     }
                 }
 
@@ -1634,6 +1649,19 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                             break;
                         }
 
+                    case TYPE_RTC:
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " " << Device->getName() << " RTC Communication complete." << endl;
+                            }
+                            if(trx.doTrace(status))
+                            {
+                                Port->traceXfer(trx, traceList, Device, status);
+                            }
+                            break;
+
+                        }
                     case TYPECBC6510:
                     case TYPE_DNPRTU:
                     case TYPE_DARTRTU:
@@ -3059,6 +3087,19 @@ INT TerminateHandshake (CtiPortSPtr aPortRecord, CtiDeviceIED *aIEDDevice, RWTPt
                 aPortRecord->setShouldDisconnect( TRUE );
             }
         }
+        else if(aIEDDevice->getCurrentState() == CtiDeviceIED::StateComplete)   // The device did the disconnect.
+        {
+            switch(aIEDDevice->getType())
+            {
+            case TYPE_TAPTERM:
+                {
+                    // Since an EOT was done on this port by this device, all devices on this port need to logon the next loop.
+                    // Sweep the port and tag them so.
+                    DeviceManager.apply( ApplyTapNeedsLogon, (void*)(aPortRecord->getPortID()) );
+                    break;
+                }
+            }
+        }
     }
 
     else if(status == NORMAL && aIEDDevice->getCurrentState() == CtiDeviceIED::StateAbort)
@@ -3189,14 +3230,13 @@ INT GetPreferredProtocolWrap( CtiPortSPtr Port, CtiDevice *Device )
 
 INT ClearExclusions(CtiDevice *Device)
 {
-    // extern CtiExclusionManager   ExclusionManager;
-
+    extern CtiExclusionManager   ExclusionManager;
     INT status = NORMAL;
 
     try
     {
-        // CtiLockGuard  guard(ExclusionManager.getMux());
-        //DeviceManager.removeDeviceExclusionBlocks(Device);
+        CtiLockGuard< CtiMutex > guard(ExclusionManager.getMux());
+        DeviceManager.removeDeviceExclusionBlocks(Device);
         //ExclusionManager.xyz();
     }
     catch(...)
@@ -3811,3 +3851,18 @@ INT GetWork(CtiPortSPtr Port, CtiOutMessage *&OutMessage, ULONG &QueEntries)
 
     return status;
 }
+
+
+void ApplyTapNeedsLogon(const CtiHashKey *key, CtiDeviceBase *&Dev, void* vpPortId)
+{
+    LONG pid = (LONG)vpPortId;
+
+    if( Dev->getType() == TYPE_TAPTERM && Dev->getPortID() == pid )
+    {
+        Dev->setLogOnNeeded( TRUE );
+    }
+
+    return;
+}
+
+

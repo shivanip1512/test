@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.51 $
-* DATE         :  $Date: 2004/03/16 15:50:10 $
+* REVISION     :  $Revision: 1.52 $
+* DATE         :  $Date: 2004/04/29 20:10:32 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -141,6 +141,7 @@ using namespace std;
 #include "portglob.h"
 #include "c_port_interface.h"
 #include "mgr_port.h"
+#include "mgr_exclusion.h"
 #include "mgr_device.h"
 #include "mgr_route.h"
 
@@ -202,6 +203,7 @@ extern INT RunningInConsole;              // From portmain.cpp
 CtiPortManager     PortManager(PortThreadFactory);
 CtiDeviceManager   DeviceManager;
 CtiRouteManager    RouteManager;
+CtiExclusionManager ExclusionManager;
 vector< CtiPortShare * > PortShareManager;
 
 RWThreadFunction _connThread;
