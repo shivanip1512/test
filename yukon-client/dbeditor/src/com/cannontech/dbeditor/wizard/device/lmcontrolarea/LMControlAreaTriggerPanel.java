@@ -411,6 +411,7 @@ public void inputUpdate(PropertyPanelEvent event)
 {
 	fireInputUpdate();
 }
+
 /**
  * This method was created in VisualAge.
  * @return boolean
@@ -541,6 +542,10 @@ public void jComboBoxTrigger_ItemStateChanged(java.awt.event.ItemEvent itemEvent
 		if( itemEvent.getStateChange() == itemEvent.SELECTED )
 			getLMControlAreaTriggerModifyPanel().setValue( itemEvent.getItem() );
 
+
+		if( getJComboBoxTrigger().getSelectedItem() != null )
+			for( int i = 0; i < getJComboBoxTrigger().getItemCount(); i++ )
+				((LMControlAreaTrigger)getJComboBoxTrigger().getItemAt(i)).clearNames();
 	}
 
 	

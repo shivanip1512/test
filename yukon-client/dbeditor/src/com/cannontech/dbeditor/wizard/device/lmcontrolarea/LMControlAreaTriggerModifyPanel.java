@@ -1151,7 +1151,7 @@ private javax.swing.JTextField getJTextFieldATKU() {
 			 || evt.getPropertyName().equalsIgnoreCase(getJPanelTriggerID().PROPERTY_POINT_UPDATE) )
 		{
 			if( evt.getSource() == getJPanelTriggerID() )
-			{			
+			{		
 				updateStates();
 			}
 	

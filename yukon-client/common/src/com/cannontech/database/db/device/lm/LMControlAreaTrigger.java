@@ -1,5 +1,11 @@
 package com.cannontech.database.db.device.lm;
 
+import com.cannontech.database.cache.functions.DeviceFuncs;
+import com.cannontech.database.cache.functions.PointFuncs;
+import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.point.PointTypes;
+
 /**
  * This type was created in VisualAge.
  */
@@ -8,7 +14,7 @@ public class LMControlAreaTrigger extends com.cannontech.database.db.DBPersisten
 	private Integer deviceID = null;
 	private Integer triggerNumber = new Integer(0);
 	private String triggerType = IlmDefines.TYPE_THRESHOLD;
-	private Integer pointID = new Integer(0);
+	private Integer pointID = new Integer( PointTypes.SYS_PID_SYSTEM );
 	private Integer normalState = new Integer(0);
 	private Double threshold = null;
 	private String projectionType = com.cannontech.common.util.CtiUtilities.STRING_NONE;
@@ -31,6 +37,10 @@ public class LMControlAreaTrigger extends com.cannontech.database.db.DBPersisten
 
 
 	public static final String TABLE_NAME = "LMControlAreaTrigger";
+
+	private transient LiteYukonPAObject liteDev = null;
+	private transient LitePoint litePt = null;
+
 /**
  * LMGroupEmetcon constructor comment.
  */
@@ -405,12 +415,48 @@ public void setTriggerNumber(java.lang.Integer newTriggerNumber) {
 public void setTriggerType(java.lang.String newTriggerType) {
 	triggerType = newTriggerType;
 }
+
+private LitePoint getLtPoint()
+{
+	if( getPointID().intValue() == PointTypes.SYS_PID_SYSTEM )
+	{
+		litePt = null;
+	}
+	else if( litePt == null )	
+		litePt = PointFuncs.getLitePoint( getPointID().intValue() );
+		
+	return litePt;
+}
+
+public void clearNames()
+{
+	litePt = null;
+	liteDev = null;
+}
+
+private LiteYukonPAObject getLtPao()
+{
+	if( getPointID().intValue() == PointTypes.SYS_PID_SYSTEM )
+	{
+		liteDev = null;
+	}
+	else if( liteDev == null )
+	{		
+		liteDev = DeviceFuncs.getLiteDevice( getLtPoint().getPaobjectID() );
+	}
+		
+	return liteDev;
+}
+
 /**
  * 
  */
 public String toString()
 {
-	return getTriggerType() + " (PointID: " + getPointID() + ")";
+	return getTriggerType() +
+		( getLtPoint() != null 
+		  ? " (" + getLtPao().getPaoName() + " / " + getLtPoint().getPointName() + ")" 
+		  : " (PointID: " + getPointID() + ")" );
 }
 /**
  * update method comment.
