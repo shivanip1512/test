@@ -426,7 +426,7 @@ INT CTINEXUS::CTINexusWrite(VOID *buf, ULONG len, PULONG BytesWritten, LONG Time
                     }
                     else
                     {
-                        if( !(wbLoops++ % 20) )  //  gripe every 10 seconds
+                        if( !(++wbLoops % 10) )  //  gripe every 5 seconds
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << RWTime() << " Outbound nexus to " << Name << " is full, will wait up to " << TimeOut << " seconds and retry. " << endl;
@@ -455,7 +455,7 @@ INT CTINEXUS::CTINexusWrite(VOID *buf, ULONG len, PULONG BytesWritten, LONG Time
             if(len > 0)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Outbound nexus could not be written. " << len << " bytes were abandoned." << endl;
+                dout << RWTime() << " Outbound nexus to " << Name << " could not be written. " << len << " bytes were abandoned." << endl;
             }
         }
         else
