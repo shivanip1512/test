@@ -5,40 +5,37 @@
 <!-- JavaScript needed for jump menu--->
 
 <%
-	Integer subRowID = null;
-	String strID = request.getParameter("subRowID");
+	Integer paoID = null;
+	String strID = request.getParameter("paoID");
+	SubBus subBus = null;
+	
 	try
 	{
-		subRowID = new Integer(strID);
+		paoID = new Integer(strID);
+		subBus = subBusMdl.getSubBus(paoID.intValue());
 		
 		
-		CTILogger.debug(request.getServletPath() + "	SubRowCnt = " + subBusMdl.getRowCount() + ", rowID=" + subRowID );
+		CTILogger.debug(request.getServletPath() + "	SubRowCnt = " + subBusMdl.getRowCount() + ", paoID=" + paoID );
 		
-		if( subRowID.intValue() >= 0 && subRowID.intValue() < subBusMdl.getRowCount() )
-		{
-			cbcSession.setLastSubRowNum( subRowID.intValue() );
+		cbcSession.setLastSubID( paoID.intValue() );
+		
+		feederMdl.setCurrentSubBus( subBus );
+		
+		CTILogger.debug(request.getServletPath() + "	FdrRowCnt = " + feederMdl.getRowCount() );
+		
+		//set all the banks in the model to the selected SubBuses banks	
+		java.util.Vector banks = new java.util.Vector(32);
+		for( int i = 0; i < feederMdl.getRowCount(); i++ )
+			banks.addAll( feederMdl.getRowAt(i).getCcCapBanks() );
 			
-			feederMdl.setCurrentSubBus( subBusMdl.getRowAt(subRowID.intValue()) );
-			
-			CTILogger.debug(request.getServletPath() + "	FdrRowCnt = " + feederMdl.getRowCount() );
-			
-			//set all the banks in the model to the selected SubBuses banks	
-			java.util.Vector banks = new java.util.Vector(32);
-			for( int i = 0; i < feederMdl.getRowCount(); i++ )
-				banks.addAll( feederMdl.getRowAt(i).getCcCapBanks() );
-				
-			capBankMdl.setCapBankDevices( banks );
-			
-			CTILogger.debug(request.getServletPath() + "	CapRowCnt = " + capBankMdl.getRowCount() );			
-		}
-		else  //just force ourself to catch a newly created exception
-			throw new ArrayIndexOutOfBoundsException(
-					"Sub Row id value out of range, subRowCount = " + subBusMdl.getRowCount() );
+		capBankMdl.setCapBankDevices( banks );
+		
+		CTILogger.debug(request.getServletPath() + "	CapRowCnt = " + capBankMdl.getRowCount() );			
 	}
 	catch( Exception e )
 	{
 		CTILogger.warn( 
-				"This page did not successfully get the subRowID needed, subRowID=" + strID, e ); 
+				"This page did not successfully get the paoID needed, paoID=" + strID, e );
 		
 		//reset our filter to the default				
 		response.sendRedirect( "subs.jsp" );
@@ -48,7 +45,7 @@
 
 <html>
 <head>
-<title>Energy Services Operations Center</title>
+<title>CapControl - Feeders</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <meta http-equiv="refresh" content= <%= cbcAnnex.getRefreshRate() %> >
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
@@ -147,16 +144,17 @@
 				    		  <form name="SubBusForm" method="POST" action="feeders.jsp">
                             <td width="300" height="40"> 
                               <div align="right"><span class="HeaderCell">Other Subs in Area:</span>
-                                <select name="subRowID" onchange="this.form.submit()" >
+                                <select name="paoID" onchange="this.form.submit()" >
                                   <%
 			                  	for( int i = 0; i < subBusMdl.getRowCount(); i++ )
 			                  	{
-			                  		String s = ( subRowID.intValue() == i 
+			                  		SubBus tempBus = subBusMdl.getRowAt(i);
+			                  		String s = (paoID.intValue() == tempBus.getCcId().intValue() 
 			                  						? " selected" : "" ) ;
-			                  		%>
-                                  <option value="<%= i %>" <%= s %>> <%= subBusMdl.getValueAt(i, SubBusTableModel.SUB_NAME_COLUMN) %> 
+			                  	%>
+                                  <option value="<%= tempBus.getCcId() %>" <%= s %>> <%= tempBus.getCcName() %> 
                                   </option>
-                                  <% } %>
+                                <% } %>
                                 </select>
                                 </div>
 									</td>
@@ -184,26 +182,27 @@
                       <tr valign="top"> 
                         <td width="100" class="TableCell">
                           <div name = "sub" align = "left" cursor:default;" >
-									<%= subBusMdl.getValueAt(subRowID.intValue(), SubBusTableModel.SUB_NAME_COLUMN) %> </div>
+							<%= cbcAnnex.getCBCDisplay().getSubBusValueAt(subBus, SubBusTableModel.SUB_NAME_COLUMN) %> </div>
                           </td>
 
                         <td width="44" class="TableCell">
-                        	<a href= "capcontrols.jsp?rowID=<%= subRowID %>&controlType=<%= CapControlWebAnnex.CMD_SUB %>" >
-                        	<font color="<%= CapControlWebAnnex.convertColor(subBusMdl.getCellForegroundColor( subRowID.intValue(), SubBusTableModel.CURRENT_STATE_COLUMN ) ) %>">
-                        	<%= subBusMdl.getValueAt(subRowID.intValue(), SubBusTableModel.CURRENT_STATE_COLUMN) %>
+                        	<a href= "capcontrols.jsp?paoID=<%= paoID %>&controlType=<%= CapControlWebAnnex.CMD_SUB %>" >
+                        	<font color="<%= CapControlWebAnnex.convertColor(subBusMdl.getCellColor(subBus)) %>">
+                        	<%= cbcAnnex.getCBCDisplay().getSubBusValueAt(subBus, SubBusTableModel.CURRENT_STATE_COLUMN) %>
                         </font></a></td>
                         
-                        <td width="44" class="TableCell"><%= subBusMdl.getValueAt(subRowID.intValue(), SubBusTableModel.TARGET_COLUMN) %></td>
-                        <td width="36" class="TableCell"><%= subBusMdl.getValueAt(subRowID.intValue(), SubBusTableModel.VAR_LOAD_COLUMN) %></td>
-                        <td width="45" class="TableCell"><%= subBusMdl.getValueAt(subRowID.intValue(), SubBusTableModel.TIME_STAMP_COLUMN) %></td>
-                        <td width="45" class="TableCell"><%= subBusMdl.getValueAt(subRowID.intValue(), SubBusTableModel.POWER_FACTOR_COLUMN) %></td>
-                        <td width="33" class="TableCell"><%= subBusMdl.getValueAt(subRowID.intValue(), SubBusTableModel.WATTS_COLUMN) %></td>
-                        <td width="36" class="TableCell"><%= subBusMdl.getValueAt(subRowID.intValue(), SubBusTableModel.DAILY_OPERATIONS_COLUMN) %></td>
+                        <td width="44" class="TableCell"><%= cbcAnnex.getCBCDisplay().getSubBusValueAt(subBus, SubBusTableModel.TARGET_COLUMN) %></td>
+                        <td width="36" class="TableCell"><%= cbcAnnex.getCBCDisplay().getSubBusValueAt(subBus, SubBusTableModel.VAR_LOAD_COLUMN) %></td>
+                        <td width="45" class="TableCell"><%= cbcAnnex.getCBCDisplay().getSubBusValueAt(subBus, SubBusTableModel.TIME_STAMP_COLUMN) %></td>
+                        <td width="45" class="TableCell"><%= cbcAnnex.getCBCDisplay().getSubBusValueAt(subBus, SubBusTableModel.POWER_FACTOR_COLUMN) %></td>
+                        <td width="33" class="TableCell"><%= cbcAnnex.getCBCDisplay().getSubBusValueAt(subBus, SubBusTableModel.WATTS_COLUMN) %></td>
+                        <td width="36" class="TableCell"><%= cbcAnnex.getCBCDisplay().getSubBusValueAt(subBus, SubBusTableModel.DAILY_OPERATIONS_COLUMN) %></td>
                         <td width="71" class="TableCell"> 
-                          <select name="select2">
-                            <option value="subs.jsp">Bus kVar</option>
-                            <option value="subs.jsp">Feeder kVar</option>
-                          </select>
+							<select name="selectGraph" onchange="location = this.options[this.selectedIndex].value;">
+							  <option value="subs.jsp">Sub kVar</option>
+							  <option value="subs.jsp">Feeder kVar</option>
+							  <option value="oneline\<%= cbcAnnex.getCBCDisplay().getSubBusValueAt(subBus, SubBusTableModel.SUB_NAME_COLUMN) %>.html">One Line</option>
+							</select>
                         </td>
                         <td width="80" class="TableCell"> 
                           <select name="select3">
@@ -221,7 +220,7 @@
                           <tr> 
                               
                       <td class="HeaderCell">&nbsp;&nbsp;Feeders for Substation:
-					  <span class="SchedText"> <%= subBusMdl.getValueAt(subRowID.intValue(), SubBusTableModel.SUB_NAME_COLUMN) %> 
+					  <span class="SchedText"> <%= subBus.getCcName() %> 
                         </span> </td>
                             </tr>
                         </table>
@@ -247,12 +246,12 @@
                   	{	     
 	                  %>         
                       <tr valign="top"> 
-                        <td width="100" class="TableCell"><a href= "singlefeeder.jsp?feederRowID=<%= i %>" class="Link1">
+                        <td width="100" class="TableCell"><a href= "singlefeeder.jsp?paoID=<%= feederMdl.getRowAt(i).getCcId() %>" class="Link1">
                           <div name = "sub" align = "left" cursor:default;" >
-									<%= feederMdl.getValueAt(i, FeederTableModel.NAME_COLUMN) %> </div>
+							<%= feederMdl.getValueAt(i, FeederTableModel.NAME_COLUMN) %> </div>
                           </a></td>
                         <td width="44" class="TableCell">
-                        	<a href= "capcontrols.jsp?rowID=<%= i %>&controlType=<%= CapControlWebAnnex.CMD_FEEDER %>" >
+                        	<a href= "capcontrols.jsp?paoID=<%= feederMdl.getRowAt(i).getCcId().intValue() %>&controlType=<%= CapControlWebAnnex.CMD_FEEDER %>" >
                         	<font color="<%= CapControlWebAnnex.convertColor(feederMdl.getCellForegroundColor( i, FeederTableModel.CURRENT_STATE_COLUMN ) ) %>">
                         	<%= feederMdl.getValueAt(i, FeederTableModel.CURRENT_STATE_COLUMN) %>
                         </font></a></td>
@@ -288,7 +287,7 @@
                         <table width="736" border="0" cellspacing="0" cellpadding="0">
                           <tr> 
                               <td class="HeaderCell"><span class="HeaderCell">&nbsp;&nbsp;Capacitor Banks for Substation:</span>
-                                <span class="SchedText"> <%= subBusMdl.getValueAt(subRowID.intValue(), SubBusTableModel.SUB_NAME_COLUMN) %> </span>
+                                <span class="SchedText"> <%= subBus.getCcName() %> </span>
                               </td>
                           </tr>
                         </table>
@@ -319,7 +318,7 @@
                         <td width="228" class="TableCell"><%= capBankMdl.getValueAt(i, CapBankTableModel.BANK_ADDRESS_COLUMN) %></td>
                         
                         <td width="43" class="TableCell">
-                        	<a href= "capcontrols.jsp?rowID=<%= i %>&controlType=<%= CapControlWebAnnex.CMD_CAPBANK %>" >
+                        	<a href= "capcontrols.jsp?paoID=<%= capBankMdl.getRowAt(i).getCcId().intValue() %>&controlType=<%= CapControlWebAnnex.CMD_CAPBANK %>" >
                         	<font color="<%= CapControlWebAnnex.convertColor(capBankMdl.getCellForegroundColor( i, CapBankTableModel.STATUS_COLUMN ) ) %>">
                         	<%= capBankMdl.getValueAt(i, CapBankTableModel.STATUS_COLUMN) %>
                         </font></a></td>

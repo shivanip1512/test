@@ -5,6 +5,7 @@ package com.cannontech.cbc.gui;
  */
 import java.awt.Color;
 
+import com.cannontech.cbc.CBCDisplay;
 import com.cannontech.cbc.data.CapBankDevice;
 import com.cannontech.cbc.data.CapControlConst;
 import com.cannontech.cbc.data.Feeder;
@@ -18,7 +19,6 @@ import com.cannontech.message.dispatch.message.Signal;
 import com.cannontech.tdc.alarms.gui.AlarmingRow;
 import com.cannontech.tdc.alarms.gui.AlarmingRowVector;
 import com.cannontech.tdc.alarms.gui.RowBlinker;
-import com.cannontech.clientutils.commonutils.ModifiedDate;
 import com.cannontech.clientutils.tags.IAlarmDefs;
 import com.cannontech.clientutils.tags.TagUtils;
 
@@ -39,6 +39,7 @@ public class CapBankTableModel extends javax.swing.table.AbstractTableModel impl
 	private boolean muted = false;
 	
 	private boolean showingAlarms = true;
+    private CBCDisplay cbcDisplay = null;
 	
 	private String fontName = "dialog";
 	private int fontSize = 12;
@@ -94,13 +95,18 @@ public class CapBankTableModel extends javax.swing.table.AbstractTableModel impl
 
 		{Colors.getColor(Colors.CYAN_ID), Colors.getColor(Colors.BLACK_ID)}, // OpenPending
 		{Colors.getColor(Colors.CYAN_ID), Colors.getColor(Colors.BLACK_ID)}  // ClosePending
-	};	
+	};
+
+
 /**
- * ScheduleTableModel constructor comment.
+ * CapBankTableModel constructor comment.
  */
-public CapBankTableModel() {
+public CapBankTableModel()
+{
 	super();
+    cbcDisplay = new CBCDisplay();
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (3/20/00 11:40:31 AM)
@@ -193,21 +199,29 @@ public java.awt.Color getCellForegroundColor(int row, int col)
 {
 	if( row < getRowCount() && col <= getColumnCount() && getRowAt(row) != null)
 	{
-		int status = getRowAt(row).getControlStatus().intValue();
-
-		synchronized( stateNames )
-		{
-			if( status >= 0 && status < getStateNames().length )
-			{
-				return getStateColors()[status][0];
-			}
-		}
-
+		return getCellColor( getRowAt(row) );
 	}
 
 	// Unknown state, return a crazy color
 	return Color.white;
 }
+
+public java.awt.Color getCellColor( CapBankDevice capBank ) 
+{
+    int status = capBank.getControlStatus().intValue();
+
+    synchronized( stateNames )
+    {
+        if( status >= 0 && status < getStateNames().length )
+        {
+            return getStateColors()[status][0];
+        }
+    }
+
+    // Unknown state, return a crazy color
+    return Color.white;
+}
+
 /**
  * getColumnCount method comment.
  */
@@ -374,6 +388,7 @@ public static java.lang.String[] getStateNames() {
 public int getSubBusRowSelected() {
 	return subBusRowSelected;
 }
+
 /**
  * getValueAt method comment.
  */
@@ -382,54 +397,8 @@ public Object getValueAt(int row, int col)
 	if( row < getRowCount() && row >= 0 )
 	{
 		CapBankDevice rowValue = getRowAt(row);
-		
-		switch( col )
-		{
-		 	case CB_NAME_COLUMN :
-				return rowValue.getCcName() + " (" + rowValue.getControlOrder() + ")";
-
-		 	case BANK_ADDRESS_COLUMN :
-				return rowValue.getCcArea();
-	
-			case STATUS_COLUMN :
-				synchronized( stateNames ) //THIS METHOD IS CALLED BY THE EVENT THREAD(REPAINTS THE SCREEN), BUT WE
-				{									// NEED TO PUT A LOCK ON THE stateNames DATA???!!!! COULD BE DANGEROUS???!!!
-					if( rowValue.getControlStatus().intValue() < 0 ||
-						rowValue.getControlStatus().intValue() >= getStateNames().length )
-					{
-						com.cannontech.clientutils.CTILogger.info("*** A CapBank state was found that has no corresponding status.");
-						return UNKNOWN_STATE + " (" + rowValue.getControlStatus().intValue() +")" ;
-					}
-					else
-					{
-						if( rowValue.getCcDisableFlag().booleanValue() == true )
-							return "DISABLED : " + (rowValue.getOperationalState().equalsIgnoreCase(com.cannontech.database.data.capcontrol.CapBank.FIXED_OPSTATE) 
-															? com.cannontech.database.data.capcontrol.CapBank.FIXED_OPSTATE 
-															: getStateNames()[rowValue.getControlStatus().intValue()]);
-						else
-							return (rowValue.getOperationalState().equalsIgnoreCase(com.cannontech.database.data.capcontrol.CapBank.FIXED_OPSTATE) 
-										? com.cannontech.database.data.capcontrol.CapBank.FIXED_OPSTATE + " : " 
-										: "") + getStateNames()[rowValue.getControlStatus().intValue()];
-					}
-				}
-					
-			case OP_COUNT_COLUMN :
-				return rowValue.getCurrentDailyOperations();
-				
-			case BANK_SIZE_COLUMN :
-				return rowValue.getBankSize();
-
-			case TIME_STAMP_COLUMN :
-				if( rowValue.getLastStatusChangeTime().getTime() <= 
-					   com.cannontech.common.util.CtiUtilities.get1990GregCalendar().getTime().getTime() )
-					return "  ----";
-				else
-					return new ModifiedDate(
-						rowValue.getLastStatusChangeTime().getTime(), ModifiedDate.FRMT_NOSECS );
-
-			default:
-				return null;
-		}				
+        
+        return cbcDisplay.getCapBankValueAt( rowValue, col );
 	}
 	else
 		return null;

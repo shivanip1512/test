@@ -60,7 +60,7 @@ public class DynamicCBCOneLine extends CTIBaseDynMBean
      */
     public String getOutputPath()
     {
-        return oneLine.getDirAndFile();
+        return oneLine.getDirBase();
     }
     
 	//

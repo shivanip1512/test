@@ -8,9 +8,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Vector;
 
+import com.cannontech.cbc.CBCDisplay;
 import com.cannontech.cbc.data.CBCClientConnection;
-import com.cannontech.cbc.data.CapBankDevice;
-import com.cannontech.cbc.data.CapControlConst;
 import com.cannontech.cbc.data.SubBus;
 import com.cannontech.cbc.messages.CBCStates;
 import com.cannontech.cbc.messages.CBCSubAreaNames;
@@ -19,12 +18,9 @@ import com.cannontech.cbc.tablemodelevents.CBCGenericTableModelEvent;
 import com.cannontech.cbc.tablemodelevents.StateTableModelEvent;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageListener;
-import com.cannontech.roles.application.TDCRole;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.clientutils.CommonUtils;
 import com.cannontech.clientutils.commonutils.ModifiedDate;
 import com.cannontech.common.login.ClientSession;
 
@@ -38,7 +34,8 @@ public class SubBusTableModel extends javax.swing.table.AbstractTableModel imple
 	/* END - ROW DATA */
 
     private final Vector areaNames = new Vector(32);
-	public static final String STR_NA = "  NA";
+    
+    private CBCDisplay cbcDisplay = new CBCDisplay();
 
 	// the holder for the current filter, default to all
     private String filter = null; //ALL_FILTER;
@@ -49,13 +46,11 @@ public class SubBusTableModel extends javax.swing.table.AbstractTableModel imple
 	public static final int CURRENT_STATE_COLUMN  = 2;
   	public static final int TARGET_COLUMN  = 3;
   	public static final int VAR_LOAD_COLUMN  = 4;
-  	//public static final int ESTIMATED_VARS_COLUMN  = 5;
   	public static final int WATTS_COLUMN  = 5;
 	public static final int POWER_FACTOR_COLUMN = 6;
   	public static final int TIME_STAMP_COLUMN  = 7;
   	public static final int DAILY_OPERATIONS_COLUMN  = 8;
 
-  	public static final String DASH_LINE = "  ----";
 
     //which LiteYukonUser owns this data
     private LiteYukonUser ownerUser = null;
@@ -70,7 +65,7 @@ public class SubBusTableModel extends javax.swing.table.AbstractTableModel imple
 		"Target",
 		"VAR Load / Est.",
 		"Watts",
-      "PFactor / Est.",
+		"PFactor / Est.",
 		"Date/Time",		
 		"Daily/Max Ops"
 	};
@@ -128,6 +123,8 @@ public SubBusTableModel()
 public SubBusTableModel( LiteYukonUser yukUser )
 {
     super();
+    
+    cbcDisplay = new CBCDisplay();
     
     if( yukUser == null )
         throw new IllegalArgumentException("Do not use a NULL YukonUser for ownership");
@@ -237,22 +234,35 @@ public java.awt.Color getCellForegroundColor(int row, int col)
 		 && col <= getColumnCount()
 		 && getRowAt(row) != null )
 	{
-		if( getRowAt(row).getCcDisableFlag().booleanValue() )
-		{
-			return cellColors[1]; //disabled color
-		}
-		else if( getRowAt(row).getRecentlyControlledFlag().booleanValue() )
-		{
-			return cellColors[2]; //pending color
-		}
-		else
-		{
-			return cellColors[0];
-		}
+        return getCellColor( getRowAt(row) );
 	}
 
 	return Color.white;
 }
+
+
+/**
+ * This method was created in VisualAge.
+ * @return java.awt.Color
+ * @param row int
+ * @param col int
+ */
+public java.awt.Color getCellColor( SubBus subBus ) 
+{
+    if( subBus.getCcDisableFlag().booleanValue() )
+    {
+        return cellColors[1]; //disabled color
+    }
+    else if( subBus.getRecentlyControlledFlag().booleanValue() )
+    {
+        return cellColors[2]; //pending color
+    }
+    else
+    {
+        return cellColors[0];
+    }
+}
+
 /**
  * getColumnCount method comment.
  */
@@ -329,209 +339,17 @@ public int getRowCount()
 {
 	return getCurrentSubBuses().size();
 }
-/**
- * Insert the method's description here.
- * Creation date: (1/2/2001 2:01:14 PM)
- */
-private String getSubBusPendingState( SubBus sub ) 
-{
-	for( int i = 0; i < sub.getCcFeeders().size(); i++ )
-	{
-		com.cannontech.cbc.data.Feeder feeder =
-			(com.cannontech.cbc.data.Feeder)sub.getCcFeeders().get(i);
 
-		int size = feeder.getCcCapBanks().size();
-		for( int j = 0; j < size; j++ )
-		{
-			CapBankDevice capBank = ((CapBankDevice)feeder.getCcCapBanks().elementAt(j));
-			
-			if( capBank.getControlStatus().intValue() == CapControlConst.BANK_CLOSE_PENDING )
-				return CapBankTableModel.getStateNames()[CapControlConst.BANK_CLOSE_PENDING];
-				
-			if( capBank.getControlStatus().intValue() == CapControlConst.BANK_OPEN_PENDING )
-				return CapBankTableModel.getStateNames()[CapControlConst.BANK_OPEN_PENDING];
-		}
-
-	}
-
-	// we are not pending
-	return null;
-}
 /**
  * getValueAt method comment.
  */
 public Object getValueAt(int row, int col) 
 {
 	SubBus sub = getRowAt(row);
-	if( sub == null )
-		return "<<NULL>>";
-
-	switch( col )
-	{
-	 	case SUB_NAME_COLUMN:
-			return sub.getCcName();
-
-	 	case AREA_NAME_COLUMN:
-			return sub.getCcArea();
-
-		case CURRENT_STATE_COLUMN:
-		{
-			String state = null;
-			
-         if( sub.getCcDisableFlag().booleanValue() )
-         {
-            state = "DISABLED";
-         }
-			else if( sub.getRecentlyControlledFlag().booleanValue() )
-			{
-				state = getSubBusPendingState( sub );
-				
-				if( state == null )
-				{
-					//only print the below msg out 1 time per row
-					if( row == 0 )
-						com.cannontech.clientutils.CTILogger.info("***MINOR ERROR*** Expecting " + sub.getCcName() + " to have at least 1 capbank in the same pending state.");
-
-					state = "PENDING"; //we only know its pending for sure
-				}
-				
-			}
-			else
-				state = "ENABLED";
-
-
-			//show waived with a W at the end of the state
-			if( sub.getWaiveControlFlag().booleanValue() )
-				state += "-W";
-
-			return state;
-		}
-
-		case TARGET_COLUMN:
-		{
-			// decide which set Point we are to use
-			if( sub.isPowerFactorControlled() )
-			{
-				return getPowerFactorText(sub.getPeakSetPoint().doubleValue(), false);
-			}
-			else if( sub.getLowerBandWidth().doubleValue() == 0
-						 && sub.getUpperBandWidth().doubleValue() == 0 )
-			{
-				return STR_NA;
-			}
-			else if( sub.getPeakTimeFlag().booleanValue() )
-			{
-				return
-					CommonUtils.formatDecimalPlaces(sub.getPeakSetPoint().doubleValue() - sub.getLowerBandWidth().doubleValue(), 0) +
-					" to " + 
-					CommonUtils.formatDecimalPlaces(sub.getUpperBandWidth().doubleValue() + sub.getPeakSetPoint().doubleValue(), 0) + 
-					" Pk";
-			}
-			else
-			{
-				return
-					CommonUtils.formatDecimalPlaces(sub.getOffPeakSetPoint().doubleValue() - sub.getLowerBandWidth().doubleValue(), 0) +
-					" to " + 
-					CommonUtils.formatDecimalPlaces(sub.getUpperBandWidth().doubleValue() + sub.getOffPeakSetPoint().doubleValue(), 0) + 
-					" OffPk";
-			}
-
-		}
-			
-		case DAILY_OPERATIONS_COLUMN:
-			return new String(sub.getCurrentDailyOperations() + " / " + 
-				(sub.getMaxDailyOperation().intValue() <= 0 
-					? STR_NA 
-					: sub.getMaxDailyOperation().toString()) );
-		
-		case VAR_LOAD_COLUMN:
-      {
-      	String retVal = DASH_LINE; //default just in case
-
-         if( sub.getCurrentVarLoadPointID().intValue() <= PointTypes.SYS_PID_SYSTEM )
-            retVal = DASH_LINE;
-         else 
-         {                        
-         	if( sub.getDecimalPlaces().intValue() == 0 )
-					retVal =  CommonUtils.formatDecimalPlaces( 
-	               sub.getCurrentVarLoadPointValue().doubleValue(), sub.getDecimalPlaces().intValue() );         	
-         	else
-					retVal = CommonUtils.formatDecimalPlaces( 
-	               sub.getCurrentVarLoadPointValue().doubleValue(), sub.getDecimalPlaces().intValue() );
-         }
-         
-			retVal += " / ";
-
-         if( sub.getCurrentVarLoadPointID().intValue() <= PointTypes.SYS_PID_SYSTEM )
-				retVal += DASH_LINE;
-         else 
-         {               
-         	if( sub.getDecimalPlaces().intValue() == 0 )
-					retVal += CommonUtils.formatDecimalPlaces( 
-	               sub.getEstimatedVarLoadPointValue().doubleValue(), sub.getDecimalPlaces().intValue() );         	
-         	else
-					retVal += CommonUtils.formatDecimalPlaces( 
-						sub.getEstimatedVarLoadPointValue().doubleValue(), sub.getDecimalPlaces().intValue() );
-      	}
-      	
-      	return retVal;
-      }
-      
-		case POWER_FACTOR_COLUMN:
-      {
-         return getPowerFactorText( sub.getPowerFactorValue().doubleValue(), true )
-                 + " / " +
-                 getPowerFactorText( sub.getEstimatedPFValue().doubleValue(), true );
-      }
-			
-		case WATTS_COLUMN:
-      {
-         if( sub.getCurrentWattLoadPointID().intValue() <= PointTypes.SYS_PID_SYSTEM )
-            return DASH_LINE;
-         else {
-         	if( sub.getDecimalPlaces().intValue() == 0 )
-					return new Integer( CommonUtils.formatDecimalPlaces( 
-	               sub.getCurrentWattLoadPointValue().doubleValue(), sub.getDecimalPlaces().intValue() ) );         	
-         	else
-		         return new Double( CommonUtils.formatDecimalPlaces( 
-	                  sub.getCurrentWattLoadPointValue().doubleValue(), sub.getDecimalPlaces().intValue() ) );
-         }
-      }
-      	
-		case TIME_STAMP_COLUMN:
-			if( sub.getLastCurrentVarPointUpdateTime().getTime() <= 
-					com.cannontech.common.util.CtiUtilities.get1990GregCalendar().getTime().getTime() )
-				return DASH_LINE;
-			else
-				return new ModifiedDate( sub.getLastCurrentVarPointUpdateTime().getTime(), ModifiedDate.FRMT_NOSECS );
-
-		default:
-			return null;
-	}
-
-	
+    return cbcDisplay.getSubBusValueAt( sub, col );
 }
 
-private String getPowerFactorText( double value, boolean compute )
-{   
-   int decPlaces = 1;
-   try
-   {
-      decPlaces = 
-         Integer.parseInt(
-				ClientSession.getInstance().getRolePropertyValue(
-               TDCRole.PFACTOR_DECIMAL_PLACES, 
-               "1") );
-   }
-   catch( Exception e)
-   {}
-	
-   if( value <= CapControlConst.PF_INVALID_VALUE )
-      return STR_NA;
-   else
-      return CommonUtils.formatDecimalPlaces(
-            value * (compute ? 100 : 1), decPlaces ) + "%"; //get percent   
-}
+
 
 /**
  * This method was created in VisualAge.
@@ -634,7 +452,7 @@ public synchronized void setFilter(java.lang.String newFilter)
 		//currentSubBuses = getAllSubBuses();
 		//clear();
         currentSubBuses = new Vector();
-		com.cannontech.clientutils.CTILogger.info("*** Could not find SubBus with the area = " + getFilter() );
+		CTILogger.info("*** Could not find SubBus with the area = " + getFilter() );
 	}
 	else  //this locks down AllSubBuses and disallows any structural modification to AllSubBuses
 		currentSubBuses = getAllSubBuses().subList(

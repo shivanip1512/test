@@ -11,6 +11,9 @@
 <%@ page import="com.cannontech.cbc.messages.CBCCommand" %>
 <%@ page import="com.cannontech.servlet.CBCConnServlet" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
+<%@ page import="com.cannontech.cbc.data.SubBus" %>
+<%@ page import="com.cannontech.cbc.data.Feeder" %>
+<%@ page import="com.cannontech.cbc.data.CapBankDevice" %>
 
 <jsp:useBean id="cbcAnnex" scope="session"
 	class="com.cannontech.cbc.web.CapControlWebAnnex"

@@ -27,15 +27,16 @@ import com.loox.jloox.LxLine;
 /**
  * @author alauinger
   */
-public class CCOneLineGenerator {
+public class CCOneLineGenerator
+{
+    private static String DEF_CAPCONTROL_HOME = "../subs.jsp";
+    private static String DEF_FEEDERS_HOME = "../feeders.jsp";
+    private static String DEF_CONTROLS_HOME = "../capcontrols.jsp";
 
 	private static final Font DEFAULT_FONT = new java.awt.Font("arial", java.awt.Font.BOLD, 12);
 	
-	public static Drawing generateSVGFileFromSubBus(SubBus subBus) {
-		return generateSVGFileFromSubBus(subBus,"../subs.jsp");
-	}
-	public static Drawing generateSVGFileFromSubBus(SubBus subBus, String allSubsJSP) {
-		
+	public static Drawing generateSVGFileFromSubBus(SubBus subBus, String thisURL )
+    {
 		Drawing d = new Drawing();
 		LxGraph graph = d.getLxGraph();
 		
@@ -206,7 +207,7 @@ public class CCOneLineGenerator {
 			subBusDailyOpsLabel.setPaint(Color.GREEN);
 			subBusDailyOpsLabel.setText("Ops:");
 			graph.add(subBusDailyOpsLabel);
-	
+
 			DynamicText subBusDailyOpsValue = new DynamicText();
 			subBusDailyOpsValue.setX(valueTextHorzLeft);
 			subBusDailyOpsValue.setY(textVertUpper);
@@ -237,9 +238,16 @@ public class CCOneLineGenerator {
 
 		StaticImage allSubsLinkBackButton = new StaticImage();
 		allSubsLinkBackButton.setYukonImage("SubListButton.gif");
-		allSubsLinkBackButton.setCenter(1024-subInfoHorzPosition,subLineLevel-(subInfoVertOffset*1.5));
-		allSubsLinkBackButton.setLinkTo(allSubsJSP);
+		allSubsLinkBackButton.setCenter(1000-subInfoHorzPosition,subLineLevel-(subInfoVertOffset*1.5));
+		allSubsLinkBackButton.setLinkTo(DEF_CAPCONTROL_HOME);
 		graph.add(allSubsLinkBackButton);
+
+        StaticImage feedersLinkBackButton = new StaticImage();
+        feedersLinkBackButton.setYukonImage("FeederListButton.gif");
+        feedersLinkBackButton.setCenter(1130-subInfoHorzPosition,subLineLevel-(subInfoVertOffset*1.5));
+        feedersLinkBackButton.setLinkTo(DEF_FEEDERS_HOME + "?paoID=" + subBus.getCcId() );
+        graph.add(feedersLinkBackButton);
+
 
 		DrawingUpdater updater = new DrawingUpdater(d);
 		updater.updateDrawing();
@@ -441,7 +449,11 @@ public class CCOneLineGenerator {
 					graph.add(stateImage);
 					updater.updateDrawing();
 					stateImage.setCenter(feederPosition,capBankPosition);
-					//stateImage.setLinkTo("capbankmanualchange.html");
+                    stateImage.setLinkTo( DEF_CONTROLS_HOME +
+                            "?paoID=" + currentCapBank.getCcId() +
+                            "&lastSubID=" + subBus.getCcId() +
+                            "&controlType=" + CapControlWebAnnex.CMD_CAPBANK +
+                            "&redirectURL=" + thisURL);                
 
 					StaticText capBankNameString = new StaticText();
 					capBankNameString.setX(feederPosition+capBankNameHorzOffset);
@@ -486,8 +498,12 @@ public class CCOneLineGenerator {
 				graph.add(stateImage);
 				updater.updateDrawing();
 				stateImage.setCenter(feederPosition,capBankPosition);
-				//stateImage.setLinkTo("capbankmanualchange.html");
-
+                stateImage.setLinkTo( DEF_CONTROLS_HOME +
+                        "?paoID=" + currentCapBank.getCcId() +
+                        "&lastSubID=" + subBus.getCcId() +
+                        "&controlType=" + CapControlWebAnnex.CMD_CAPBANK +
+                        "&redirectURL=" + thisURL);                
+                
 				StaticText capBankNameString = new StaticText();
 				capBankNameString.setX(feederPosition+capBankNameHorzOffset);
 				capBankNameString.setY(capBankPosition-capBankNameVertOffset-10.0);

@@ -3,9 +3,10 @@
 <%@ include file="cbc_header.jsp" %>
 
 
+
 <html>
 <head>
-<title>Energy Services Operations Center</title>
+<title>CapControl - Substations</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <meta http-equiv="refresh" content= <%= cbcAnnex.getRefreshRate() %> >
 <link rel="stylesheet" href="../WebConfig/yukon/CannonStyle.css" type="text/css">
@@ -124,17 +125,18 @@
 	                  <% 
 	                  	for( int i = 0; i < subBusMdl.getRowCount(); i++ )
 	                  	{
-	                  %>         
+	                  	   int subbusID = subBusMdl.getRowAt(i).getCcId().intValue();
+	                  %>
                       
                       <tr valign="top"> 
-                        <td width="110" class="TableCell"><a href= "feeders.jsp?subRowID=<%= i %>" >
+                        <td width="110" class="TableCell"><a href= "feeders.jsp?paoID=<%= subbusID %>" >
                           <div name = "subPopup" align = "left" cursor:default;" >
                              <%= subBusMdl.getValueAt(i, SubBusTableModel.SUB_NAME_COLUMN) %> 
                           </div></a>
                         </td>
 
                         <td width="68" class="TableCell">
-                        	<a href= "capcontrols.jsp?rowID=<%= i %>&controlType=<%= CapControlWebAnnex.CMD_SUB %>" >
+                        	<a href= "capcontrols.jsp?paoID=<%= subbusID %>&controlType=<%= CapControlWebAnnex.CMD_SUB %>" >
 	                    		<font color="<%= CapControlWebAnnex.convertColor(subBusMdl.getCellForegroundColor( i, SubBusTableModel.CURRENT_STATE_COLUMN ) ) %>">
 	                    		<%= subBusMdl.getValueAt(i, SubBusTableModel.CURRENT_STATE_COLUMN) %> 
 	                    		</font></a>
@@ -146,14 +148,17 @@
                         <td width="70" class="TableCell"><%= subBusMdl.getValueAt(i, SubBusTableModel.POWER_FACTOR_COLUMN) %></td>
                         <td width="50" class="TableCell"><%= subBusMdl.getValueAt(i, SubBusTableModel.WATTS_COLUMN) %></td>
                         <td width="66" class="TableCell"><%= subBusMdl.getValueAt(i, SubBusTableModel.DAILY_OPERATIONS_COLUMN) %></td>
-                        <td width="72" class="TableCell"> 
-                          <select name="selectGraph" onchange="location = this.options[this.selectedIndex].value;">
-                            <option value="subs.jsp">Sub kVar</option>
-                            <option value="subs.jsp">Feeder kVar</option>
-                            <option value="temp\<%= subBusMdl.getValueAt(i, SubBusTableModel.SUB_NAME_COLUMN) %>.html">One Line</option>
-                          </select>
-                          
+                        
+                        
+                        <td width="72" class="TableCell">                         
+							<select name="selectGraph" onchange="location = this.options[this.selectedIndex].value;">
+							  <option value="subs.jsp">Sub kVar</option>
+							  <option value="subs.jsp">Feeder kVar</option>
+							  <option value="oneline\<%= subBusMdl.getValueAt(i, SubBusTableModel.SUB_NAME_COLUMN) %>.html">One Line</option>
+							</select>
                         </td>
+                        
+                        
                         <td width="72" class="TableCell"> 
                           <select name="select3">
                             <option>Peaks</option>

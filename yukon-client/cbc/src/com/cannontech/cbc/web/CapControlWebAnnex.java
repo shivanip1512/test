@@ -9,6 +9,7 @@ package com.cannontech.cbc.web;
  */
 import java.awt.Color;
 
+import com.cannontech.cbc.CBCDisplay;
 import com.cannontech.cbc.data.CBCClientConnection;
 import com.cannontech.cbc.gui.CapBankTableModel;
 import com.cannontech.cbc.gui.FeederTableModel;
@@ -38,6 +39,9 @@ public class CapControlWebAnnex implements java.util.Observer
 	private SubBusTableModel subBusTableModel = null;
 	private FeederTableModel feederTableModel = null;
 	private CapBankTableModel capBankTableModel = null;
+    
+    //object to render table data
+    private CBCDisplay cbcDisplay = null;
 
 
 	//what our current refresh rate is
@@ -50,44 +54,52 @@ public class CapControlWebAnnex implements java.util.Observer
 	
 
 	//just a ref to a real connection
-	private CBCClientConnection conn = null;
+	private CBCClientConnection _conn = null;
 	
 	/**
 	 * CapControlWebAnnex constructor comment.
 	 */
 	public CapControlWebAnnex()
 	{
-		super();
+		super();        
 	}
 
 	public boolean isConnected()
 	{
 		return getConnection().isValid();
 	}
+    
+    public CBCDisplay getCBCDisplay()
+    {
+        if( cbcDisplay == null )
+            cbcDisplay = new CBCDisplay();
+        
+        return cbcDisplay;
+    }
 
 	public CBCClientConnection getConnection()
 	{
-		if( conn == null )
+		if( _conn == null )
 			throw new IllegalStateException("The CBC Connection should NEVER be (null)");
 
-		return conn;
+		return _conn;
 	}
 
 	public synchronized boolean hasValidConn()
 	{
-		return conn != null;
+		return _conn != null;
 	}
 
-	public void setConnection( CBCClientConnection conn_ )
+	public void setConnection( CBCClientConnection conn )
 	{
 		//only init the conn the annex after we set the conn
-		if( conn == null )
+		if( _conn == null )
 		{
-			conn = conn_;
+            _conn = conn;
 			initialize();
 		}
 		else			
-			conn = conn_;
+            _conn = conn;
 	}
 	
 	public static String convertColor( Color c )

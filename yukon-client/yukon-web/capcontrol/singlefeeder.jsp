@@ -5,28 +5,28 @@
 <!-- JavaScript needed for jump menu--->
 
 <%
-	Integer feederRowID = null;
-	String strID = request.getParameter("feederRowID");
+	SubBus subBus = subBusMdl.getSubBus(cbcSession.getLastSubID());
+	String strID = request.getParameter("paoID");
+	Integer paoID = null;
+	Feeder feeder = null;
+
 	try
 	{
-		feederRowID = new Integer(strID);
-		
+		feederMdl.setCurrentSubBus( subBus );
+
+		paoID = new Integer(strID);
+		feeder = feederMdl.getFeeder(paoID.intValue());
+
 		CTILogger.debug(request.getServletPath() + "	FdrRowCnt = " + feederMdl.getRowCount() );
 		
-		if( feederRowID.intValue() >= 0 && feederRowID.intValue() < feederMdl.getRowCount() )
-		{
-			capBankMdl.setCapBankDevices( feederMdl.getRowAt( feederRowID.intValue() ).getCcCapBanks() );
-			
-			CTILogger.debug(request.getServletPath() + "	CapRowCnt = " + capBankMdl.getRowCount() );
-		}
-		else  //just force ourself to catch a newly created exception
-			throw new ArrayIndexOutOfBoundsException(
-					"Feeder Row id value out of range, fdrRowCount = " + feederMdl.getRowCount() );
+		capBankMdl.setCapBankDevices( feeder.getCcCapBanks() );
+		
+		CTILogger.debug(request.getServletPath() + "	CapRowCnt = " + capBankMdl.getRowCount() );
 	}
 	catch( Exception e )
 	{
 		CTILogger.warn( 
-				"This page did not successfully get the feederRowID needed, feederRowID=" + strID, e ); 
+				"This page did not successfully get the paoID needed, paoID=" + strID, e ); 
 		
 		//reset our filter to the default				
 		response.sendRedirect( "subs.jsp" );
@@ -36,7 +36,7 @@
 
 <html>
 <head>
-<title>Energy Services Operations Center</title>
+<title>CapControl - Single Feeder</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <meta http-equiv="refresh" content= <%= cbcAnnex.getRefreshRate() %> >
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
@@ -128,9 +128,9 @@
                       <td>
                           <tr class="HeaderCell"> 
                               <td width="409">&nbsp;&nbsp;Single Feeder View for the Sub:
-                                <a href= "feeders.jsp?subRowID=<%= cbcSession.getLastSubRowNum() %>" class="Link4">
+                                <a href= "feeders.jsp?paoID=<%= cbcSession.getLastSubID() %>" class="Link4">
                                 <span class="SchedText"> 
-                                <%= subBusMdl.getValueAt(cbcSession.getLastSubRowNum(), SubBusTableModel.SUB_NAME_COLUMN) %>
+                                <%= subBus %>
                                 </span>
                                 </a>
                                 </td>
@@ -140,15 +140,16 @@
                         <td width="300" height="40"> 
                           <div align="right">&nbsp;&nbsp;Other Feeders on Sub :
 							    
-		                    <select name="feederRowID" onchange="this.form.submit()" >
+		                    <select name="paoID" onchange="this.form.submit()" >
 			                  <%
 			                  	for( int i = 0; i < feederMdl.getRowCount(); i++ )
 			                  	{
-			                  		String s = (feederRowID.intValue() == i 
+			                  		Feeder tempFdr = feederMdl.getRowAt(i);
+			                  		String s = (paoID.intValue() == tempFdr.getCcId().intValue()
 			                  						? " selected" : "" ) ;
 			                  		%>
-											<option value="<%= i %>" <%= s %>> 
-												<%= feederMdl.getValueAt(i, FeederTableModel.NAME_COLUMN) %> 
+											<option value="<%= tempFdr.getCcId() %>" <%= s %>> 
+												<%= tempFdr.getCcName() %> 
 											</option>
 			                  <% } %>
 
@@ -174,21 +175,23 @@
                       </tr>
                       
                       <tr valign="top"> 
-                        <td width="100" class="TableCell"><%= feederMdl.getValueAt(feederRowID.intValue(), FeederTableModel.NAME_COLUMN) %></td>
+                        <td width="100" class="TableCell">
+                        	<%= cbcAnnex.getCBCDisplay().getFeederValueAt(feeder, FeederTableModel.NAME_COLUMN, subBus) %>
+                       	</td>
 
                         <td width="44" class="TableCell">
-                        	<a href= "capcontrols.jsp?rowID=<%= feederRowID %>&controlType=<%= CapControlWebAnnex.CMD_FEEDER %>" >
-                        	<font color="<%= CapControlWebAnnex.convertColor(feederMdl.getCellForegroundColor( feederRowID.intValue(), FeederTableModel.CURRENT_STATE_COLUMN ) ) %>">
-                        	<%= feederMdl.getValueAt(feederRowID.intValue(), FeederTableModel.CURRENT_STATE_COLUMN) %>
+                        	<a href= "capcontrols.jsp?paoID=<%= paoID %>&controlType=<%= CapControlWebAnnex.CMD_FEEDER %>" >
+                        	<font color="<%= CapControlWebAnnex.convertColor( feederMdl.getCellColor(feeder) ) %>">
+                        	<%= cbcAnnex.getCBCDisplay().getFeederValueAt(feeder, FeederTableModel.CURRENT_STATE_COLUMN, subBus) %>
                         </font></a></td>
                         
                         
-                        <td width="44" class="TableCell"><%= feederMdl.getValueAt(feederRowID.intValue(), FeederTableModel.TARGET_COLUMN) %></td>
-                        <td width="36" class="TableCell"><%= feederMdl.getValueAt(feederRowID.intValue(), FeederTableModel.VAR_LOAD_COLUMN) %></td>
-								<td width="45" class="TableCell"><%= feederMdl.getValueAt(feederRowID.intValue(), FeederTableModel.TIME_STAMP_COLUMN) %></td>                        
-                        <td width="45" class="TableCell"><%= feederMdl.getValueAt(feederRowID.intValue(), FeederTableModel.POWER_FACTOR_COLUMN) %></td>
-                        <td width="45" class="TableCell"><%= feederMdl.getValueAt(feederRowID.intValue(), FeederTableModel.WATTS_COLUMN) %></td>
-                        <td width="36" class="TableCell"><%= feederMdl.getValueAt(feederRowID.intValue(), FeederTableModel.DAILY_OPERATIONS_COLUMN) %></td>
+                        <td width="44" class="TableCell"><%= cbcAnnex.getCBCDisplay().getFeederValueAt(feeder, FeederTableModel.TARGET_COLUMN, subBus) %></td>
+                        <td width="36" class="TableCell"><%= cbcAnnex.getCBCDisplay().getFeederValueAt(feeder, FeederTableModel.VAR_LOAD_COLUMN, subBus) %></td>
+						<td width="45" class="TableCell"><%= cbcAnnex.getCBCDisplay().getFeederValueAt(feeder, FeederTableModel.TIME_STAMP_COLUMN, subBus) %></td>
+                        <td width="45" class="TableCell"><%= cbcAnnex.getCBCDisplay().getFeederValueAt(feeder, FeederTableModel.POWER_FACTOR_COLUMN, subBus) %></td>
+                        <td width="45" class="TableCell"><%= cbcAnnex.getCBCDisplay().getFeederValueAt(feeder, FeederTableModel.WATTS_COLUMN, subBus) %></td>
+                        <td width="36" class="TableCell"><%= cbcAnnex.getCBCDisplay().getFeederValueAt(feeder, FeederTableModel.DAILY_OPERATIONS_COLUMN, subBus) %></td>
                         <td width="71" class="TableCell"> 
                           <select name="select5">
                             <option>Feeder kVar</option>
@@ -214,7 +217,7 @@
                         <table width="736" border="0" cellspacing="0" cellpadding="0">
                           <tr> 
                               <td class="HeaderCell">&nbsp;&nbsp;Capacitor Banks for Feeder :
-                                <span class="SchedText"> <%= feederMdl.getValueAt(feederRowID.intValue(), FeederTableModel.NAME_COLUMN) %> </span>
+                                <span class="SchedText"> <%= feeder.getCcName() %> </span>
                               </td>
                           </tr>
                         </table>
@@ -233,8 +236,8 @@
                       
 	                  <% 
                   	for( int i = 0; i < capBankMdl.getRowCount(); i++ )
-                  	{	                  	
-	                  %>         
+                  	{
+	                  %>
                       <tr valign="top"> 
                         <td width="130" class="TableCell">
                           <div name = "sub" align = "left" cursor:default;" > 
@@ -245,7 +248,7 @@
                         <td width="228" class="TableCell"><%= capBankMdl.getValueAt(i, CapBankTableModel.BANK_ADDRESS_COLUMN) %></td>
                         
                         <td width="43" class="TableCell">
-                        	<a href= "capcontrols.jsp?rowID=<%= i %>&controlType=<%= CapControlWebAnnex.CMD_CAPBANK %>" >
+                        	<a href= "capcontrols.jsp?paoID=<%= capBankMdl.getRowAt(i).getCcId().intValue() %>&controlType=<%= CapControlWebAnnex.CMD_CAPBANK %>" >
                         	<font color="<%= CapControlWebAnnex.convertColor(capBankMdl.getCellForegroundColor( i, CapBankTableModel.STATUS_COLUMN ) ) %>">
                         	<%= capBankMdl.getValueAt(i, CapBankTableModel.STATUS_COLUMN) %>
                         </font></a></td>

@@ -1,6 +1,7 @@
 package com.cannontech.cbc.web;
 
 import com.cannontech.cbc.data.CBCClientConnection;
+import com.cannontech.cbc.messages.CBCCommand;
 import com.cannontech.cbc.messages.CBCSubstationBuses;
 import com.cannontech.cbc.web.CCOneLineGenerator;
 import com.cannontech.clientutils.CTILogger;
@@ -11,7 +12,7 @@ import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
 
 /**
- * @author rneuharth
+ * @author eWally
  *
  * Generates OneLines for CapControl based on DBChanges messages
  * heard from the CapControl server.
@@ -19,7 +20,7 @@ import com.cannontech.message.util.MessageListener;
  */
 public class OneLineSubs implements MessageListener
 {
-	private String dirAndFile = CtiUtilities.getLogDirPath();
+	private String dirBase = null;
     private CBCClientConnection connection = null;
 
 
@@ -29,6 +30,12 @@ public class OneLineSubs implements MessageListener
 	public OneLineSubs()
 	{
 		super();
+        
+        // /yukon/server/web/webapps/yukon/capcontrol
+        //dirBase = CtiUtilities.getYukonBase() + "/head/yukon-web/capcontrol/oneline";
+        dirBase = CtiUtilities.getYukonBase() + "/server/web/webapps/yukon/capcontrol/oneline";
+        
+        CTILogger.debug(" Oneline generation output: " + dirBase);
 	}
 
 
@@ -43,24 +50,28 @@ public class OneLineSubs implements MessageListener
 		{
 			CBCSubstationBuses subBusMsg = (CBCSubstationBuses)msg;
 			java.lang.Integer msgInfoBitMask = subBusMsg.getMsgInfoBitMask();
-			if( (msgInfoBitMask.intValue() & 0x0000001) == 0x0000001 )
+			if( subBusMsg.isAllSubs() )
 			{
 				for( int i = 0; i < subBusMsg.getNumberOfBuses(); i++ )
 				{
-					CTILogger.info("Generating SubBus - " + subBusMsg.getSubBusAt(i).getCcName() 
-						+ "/" + subBusMsg.getSubBusAt(i).getCcArea() );
+					CTILogger.debug("Generating SubBus: " +
+                            getDirBase() + "/" +
+                            subBusMsg.getSubBusAt(i).getCcName() );
 
-					Drawing ccSubBusDrawing = CCOneLineGenerator.generateSVGFileFromSubBus(subBusMsg.getSubBusAt(i));
+                    String dirAndFileExt = getDirBase() +  "/" +
+                        subBusMsg.getSubBusAt(i).getCcName().trim() + ".jlx";
 
-					String dirAndFileExt = getDirAndFile().concat(subBusMsg.getSubBusAt(i).getCcName().trim());
-					dirAndFileExt = dirAndFileExt.concat(".jlx");
+                    Drawing ccSubBusDrawing = CCOneLineGenerator.generateSVGFileFromSubBus(
+                            subBusMsg.getSubBusAt(i),
+                            "/capcontrol/oneline/" + subBusMsg.getSubBusAt(i).getCcName().trim() + ".html" );
+
+
 					DrawingUpdater updater = new DrawingUpdater(ccSubBusDrawing);
 					updater.updateDrawing();
 		
 					ccSubBusDrawing.exportAs(dirAndFileExt);
 
-					CTILogger.info("Generated SubBus - " + subBusMsg.getSubBusAt(i).getCcName() 
-						+ "/" + subBusMsg.getSubBusAt(i).getCcArea() );
+					CTILogger.debug("...generation complete for " + subBusMsg.getSubBusAt(i).getCcName()); 
 				}
 			}
 		}
@@ -73,7 +84,7 @@ public class OneLineSubs implements MessageListener
 		OneLineSubs thisIsThis = new OneLineSubs(); 
 		if( args.length > 0 ) 
 		{
-			thisIsThis.dirAndFile = args[0];
+			thisIsThis.dirBase = args[0];
 		}
 		CBCClientConnection connection = new CBCClientConnection();
 	
@@ -97,9 +108,9 @@ public class OneLineSubs implements MessageListener
         
 	}
     
-    public String getDirAndFile()
+    public String getDirBase()
     {
-        return dirAndFile;
+        return dirBase;
     }
 
     public void start()
@@ -109,7 +120,9 @@ public class OneLineSubs implements MessageListener
         try
         {
             connection.addMessageListener( this );
-            connection.connectWithoutWait();
+            connection.connect( 15000 );
+
+            connection.executeCommand( 0, CBCCommand.REQUEST_ALL_SUBS );
         }
         catch( Exception e ) {}
     }

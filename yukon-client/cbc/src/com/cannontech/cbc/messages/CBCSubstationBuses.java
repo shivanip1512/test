@@ -27,6 +27,11 @@ public boolean isSubDeleted()
 	return (getMsgInfoBitMask().intValue() & SUB_DELETE) > 0;
 }
 
+public boolean isAllSubs()
+{
+    return (getMsgInfoBitMask().intValue() & SUB_ALL) > 0;
+}
+
 /**
  * This method was created in VisualAge.
  * @return int

@@ -50,7 +50,6 @@ public java.awt.Component getTableCellRendererComponent(javax.swing.JTable table
 		else
 			setBorder( javax.swing.BorderFactory.createMatteBorder( 2, 0, 2, 0, borderColor) );
 
-		setForeground( model.getCellForegroundColor( row, column ).brighter());
 		setFont( boldFont );
 	}
 	else
@@ -58,10 +57,10 @@ public java.awt.Component getTableCellRendererComponent(javax.swing.JTable table
 		// javax.swing.BorderFactory.createEmptyBorder() returns a single instance
 		//   of an empty border, so performance is not degrated by the new operator
 		setBorder( javax.swing.BorderFactory.createEmptyBorder() );
-		setForeground( model.getCellForegroundColor( row, column ));		
 		setFont( plainFont );
 	}
 
+    setForeground( model.getCellForegroundColor(row, column) );
 
 	//do the BG color here
 	setBackground( model.getCellBackgroundColor(row, column) );

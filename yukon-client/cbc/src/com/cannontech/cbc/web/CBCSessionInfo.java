@@ -15,7 +15,7 @@ package com.cannontech.cbc.web;
 public class CBCSessionInfo
 {
 	private String lastArea = null; //SubBusTableModel.ALL_FILTER;
-	private int lastSubRowNum = 0;
+	private int _subID = 0;
 	
 	public CBCSessionInfo()
 	{
@@ -42,17 +42,17 @@ public class CBCSessionInfo
 	/**
 	 * @return
 	 */
-	public int getLastSubRowNum()
+	public int getLastSubID()
 	{
-		return lastSubRowNum;
+		return _subID;
 	}
 
 	/**
 	 * @param int
 	 */
-	public void setLastSubRowNum(int rowNum_)
+	public void setLastSubID(int subID )
 	{
-		lastSubRowNum = rowNum_;
+        _subID = subID;
 	}
 
 }

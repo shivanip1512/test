@@ -4,23 +4,31 @@
 
 <%
 	//-------- PARAMS ----------- 
-	// rowID: The row ID of the selected item in the table
+	// paoID: The pao ID of the selected item in the table
 	// controlType: The type of control we are to do (SUB_CNTRL, FEEDER_CNTRL, CAPBANK_CNTRL) 
 		
 	//get the page we came from, we will return here (null if not found)
 	String refererURL = request.getHeader("referer");
-	String label = new String();
-	Integer hiddenPAOid = null;
-	
-	Integer rowID = null;
-	String strID = request.getParameter("rowID");
+	if( refererURL == null )
+	{
+		refererURL = request.getParameter("redirectURL");		
+		//no need to refresh since we are moving to a different page
+		cbcAnnex.setRefreshRate( CapControlWebAnnex.REF_SECONDS_DEF);
+	}
+		
+
+	String strID = request.getParameter("paoID");
 	String controlType = request.getParameter("controlType");
-	int enableID = -1, disableID = -1;
+	String lastSubid = request.getParameter("lastSubID");
+
+	String label = new String();	
+	Integer paoID = null;
+	int enableID = -1, disableID = -1;	
 	
 	
 	try
 	{
-		rowID = new Integer(strID);
+		paoID = new Integer(strID);
 		
 		//no matter what type of control, the subbus model must have 1 or more buses
 		if( subBusMdl.getRowCount() <= 0 )
@@ -39,11 +47,26 @@
 		disableID = (controlType.equals(CapControlWebAnnex.CMD_SUB) ? CBCCommand.DISABLE_SUBBUS
 						: (controlType.equals(CapControlWebAnnex.CMD_FEEDER) ? CBCCommand.DISABLE_FEEDER
 						: CBCCommand.DISABLE_CAPBANK ));
+			
+		if( lastSubid != null )
+		{
+			Integer subID = new Integer(lastSubid);
+			cbcSession.setLastSubID( subID.intValue() );
+			feederMdl.setCurrentSubBus( subBusMdl.getSubBus(subID.intValue()) );
+			
+			//set all the banks in the model to the selected SubBuses banks	
+			java.util.Vector banks = new java.util.Vector(32);
+			for( int i = 0; i < feederMdl.getRowCount(); i++ )
+				banks.addAll( feederMdl.getRowAt(i).getCcCapBanks() );
+				
+			capBankMdl.setCapBankDevices( banks );
+		}
+
 	}
 	catch( Exception e )
 	{
 		CTILogger.warn( 
-				"This page did not successfully get the rowID, the referer URL, or the controlType rowID =" + strID, e ); 
+				"This page did not successfully get the paoID, the referer URL, or the controlType paoID =" + strID, e ); 
 		
 		if( refererURL != null )
 			response.sendRedirect( refererURL );
@@ -60,7 +83,7 @@
 
 <html>
 <head>
-<title>Energy Services Operations Center</title>
+<title>CapControl - Controls</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link id="StyleSheet" rel="stylesheet" href="../WebConfig/yukon/CannonStyle.css" type="text/css">
 <!--<link id="StyleSheet" rel="stylesheet" href="../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">-->
@@ -122,8 +145,8 @@
                 <td width="739" valign="top" class="MainText" align="center">
                   <% if( CapControlWebAnnex.CMD_SUB.equals(controlType) )
 			{
-						label = subBusMdl.getRowAt(rowID.intValue()).getCcName();
-						hiddenPAOid = subBusMdl.getRowAt(rowID.intValue()).getCcId();
+					SubBus subBus = subBusMdl.getSubBus(paoID.intValue());
+					label = subBus.getCcName();
 %>
                   <table width="740" border="1" align="center" cellpadding="0" cellspacing="0">
                     <tr> 
@@ -151,24 +174,24 @@
                         <td width="80">Reports</td>
                       </tr>
                       <tr valign="top"> 
-                        <td width="100" class="TableCell"><a href= "feeders.jsp?subRowID=<%= rowID.intValue() %>" class="Link1">
+                        <td width="100" class="TableCell"><a href= "feeders.jsp?paoID=<%= paoID.intValue() %>" class="Link1">
                           <div name = "subPopup" align = "left" cursor:default;" >
-                             <%= subBusMdl.getValueAt(rowID.intValue(), SubBusTableModel.SUB_NAME_COLUMN) %> 
+                             <%= cbcAnnex.getCBCDisplay().getSubBusValueAt(subBus, SubBusTableModel.SUB_NAME_COLUMN) %> 
                           </div></a>
                         </td>
                           
 
                         <td width="44" class="TableCell">
-                        	<font color="<%= CapControlWebAnnex.convertColor(subBusMdl.getCellForegroundColor( rowID.intValue(), SubBusTableModel.CURRENT_STATE_COLUMN ) ) %>">
-                        	<%= subBusMdl.getValueAt(rowID.intValue(), SubBusTableModel.CURRENT_STATE_COLUMN) %>
+                        	<font color="<%= CapControlWebAnnex.convertColor(subBusMdl.getCellColor(subBus) ) %>">
+                        	<%= cbcAnnex.getCBCDisplay().getSubBusValueAt(subBus, SubBusTableModel.CURRENT_STATE_COLUMN) %>
                         </font></td>
                         
-                        <td width="44" class="TableCell"><%= subBusMdl.getValueAt(rowID.intValue(), SubBusTableModel.TARGET_COLUMN) %></td>
-                        <td width="36" class="TableCell"><%= subBusMdl.getValueAt(rowID.intValue(), SubBusTableModel.VAR_LOAD_COLUMN) %></td>
-                        <td width="45" class="TableCell"><%= subBusMdl.getValueAt(rowID.intValue(), SubBusTableModel.TIME_STAMP_COLUMN) %></td>
-                        <td width="45" class="TableCell"><%= subBusMdl.getValueAt(rowID.intValue(), SubBusTableModel.POWER_FACTOR_COLUMN) %></td>
-                        <td width="33" class="TableCell"><%= subBusMdl.getValueAt(rowID.intValue(), SubBusTableModel.WATTS_COLUMN) %></td>
-                        <td width="36" class="TableCell"><%= subBusMdl.getValueAt(rowID.intValue(), SubBusTableModel.DAILY_OPERATIONS_COLUMN) %></td>
+                        <td width="44" class="TableCell"><%= cbcAnnex.getCBCDisplay().getSubBusValueAt(subBus, SubBusTableModel.TARGET_COLUMN) %></td>
+                        <td width="36" class="TableCell"><%= cbcAnnex.getCBCDisplay().getSubBusValueAt(subBus, SubBusTableModel.VAR_LOAD_COLUMN) %></td>
+                        <td width="45" class="TableCell"><%= cbcAnnex.getCBCDisplay().getSubBusValueAt(subBus, SubBusTableModel.TIME_STAMP_COLUMN) %></td>
+                        <td width="45" class="TableCell"><%= cbcAnnex.getCBCDisplay().getSubBusValueAt(subBus, SubBusTableModel.POWER_FACTOR_COLUMN) %></td>
+                        <td width="33" class="TableCell"><%= cbcAnnex.getCBCDisplay().getSubBusValueAt(subBus, SubBusTableModel.WATTS_COLUMN) %></td>
+                        <td width="36" class="TableCell"><%= cbcAnnex.getCBCDisplay().getSubBusValueAt(subBus, SubBusTableModel.DAILY_OPERATIONS_COLUMN) %></td>
                         <td width="71" class="TableCell"> 
                           <select name="select2">
                             <option>Graph A</option>
@@ -187,8 +210,10 @@
 		<% }
 			else if( CapControlWebAnnex.CMD_FEEDER.equals(controlType) )
 			{
-						label = feederMdl.getRowAt(rowID.intValue()).getCcName();
-						hiddenPAOid = feederMdl.getRowAt(rowID.intValue()).getCcId();
+				Feeder feeder = feederMdl.getFeeder(paoID.intValue());
+				SubBus parentSub = subBusMdl.getSubBus(cbcSession.getLastSubID());
+				
+				label = feeder.getCcName();
 %>                    
                   <table width="740" border="1" align="center" cellpadding="0" cellspacing="0">
                     <tr>
@@ -219,20 +244,20 @@
                       <tr valign="top"> 
                         <td width="100" class="TableCell">
                           <div name = "sub" align = "left" cursor:default;">
-									<%= feederMdl.getValueAt(rowID.intValue(), FeederTableModel.NAME_COLUMN) %> </div>
+								<%= cbcAnnex.getCBCDisplay().getFeederValueAt(feeder, FeederTableModel.NAME_COLUMN, parentSub) %> </div>
                           </td>
                         <td width="44" class="TableCell">
-                        	<font color="<%= CapControlWebAnnex.convertColor(feederMdl.getCellForegroundColor( rowID.intValue(), FeederTableModel.CURRENT_STATE_COLUMN ) ) %>">
-                        	<%= feederMdl.getValueAt(rowID.intValue(), FeederTableModel.CURRENT_STATE_COLUMN) %>
+                        	<font color="<%= CapControlWebAnnex.convertColor( feederMdl.getCellColor(feeder) ) %>">
+                        	<%= cbcAnnex.getCBCDisplay().getFeederValueAt(feeder, FeederTableModel.CURRENT_STATE_COLUMN, parentSub) %>
                         </font></td>
                         
                         
-                        <td width="44" class="TableCell"><%= feederMdl.getValueAt(rowID.intValue(), FeederTableModel.TARGET_COLUMN) %></td>
-                        <td width="36" class="TableCell"><%= feederMdl.getValueAt(rowID.intValue(), FeederTableModel.VAR_LOAD_COLUMN) %></td>
-								<td width="45" class="TableCell"><%= feederMdl.getValueAt(rowID.intValue(), FeederTableModel.TIME_STAMP_COLUMN) %></td>                        
-                        <td width="45" class="TableCell"><%= feederMdl.getValueAt(rowID.intValue(), FeederTableModel.POWER_FACTOR_COLUMN) %></td>
-                        <td width="45" class="TableCell"><%= feederMdl.getValueAt(rowID.intValue(), FeederTableModel.WATTS_COLUMN) %></td>
-                        <td width="36" class="TableCell"><%= feederMdl.getValueAt(rowID.intValue(), FeederTableModel.DAILY_OPERATIONS_COLUMN) %></td>
+                        <td width="44" class="TableCell"><%= cbcAnnex.getCBCDisplay().getFeederValueAt(feeder, FeederTableModel.TARGET_COLUMN, parentSub) %></td>
+                        <td width="36" class="TableCell"><%= cbcAnnex.getCBCDisplay().getFeederValueAt(feeder, FeederTableModel.VAR_LOAD_COLUMN, parentSub) %></td>
+						<td width="45" class="TableCell"><%= cbcAnnex.getCBCDisplay().getFeederValueAt(feeder, FeederTableModel.TIME_STAMP_COLUMN, parentSub) %></td>
+                        <td width="45" class="TableCell"><%= cbcAnnex.getCBCDisplay().getFeederValueAt(feeder, FeederTableModel.POWER_FACTOR_COLUMN, parentSub) %></td>
+                        <td width="45" class="TableCell"><%= cbcAnnex.getCBCDisplay().getFeederValueAt(feeder, FeederTableModel.WATTS_COLUMN, parentSub) %></td>
+                        <td width="36" class="TableCell"><%= cbcAnnex.getCBCDisplay().getFeederValueAt(feeder, FeederTableModel.DAILY_OPERATIONS_COLUMN, parentSub) %></td>
                         <td width="71" class="TableCell"> 
                           <select name="select5">
                             <option>Graph A</option>
@@ -251,8 +276,8 @@
 		<% }
 			else if( CapControlWebAnnex.CMD_CAPBANK.equals(controlType) )
 			{
-						label = capBankMdl.getRowAt(rowID.intValue()).getCcName();
-						hiddenPAOid = capBankMdl.getRowAt(rowID.intValue()).getCcId();
+				CapBankDevice capBank = capBankMdl.getCapbank(paoID.intValue());				
+				label = capBank.getCcName();
 %>                    
                   <table width="740" border="1" align="center" cellpadding="0" cellspacing="0">
                     <tr> 
@@ -278,20 +303,19 @@
                       <tr valign="top"> 
                         <td width="130" class="TableCell">
                           <div name = "sub" align = "left" cursor:default;"> 
-	                       		<% if( capBankMdl.isRowAlarmed(rowID.intValue()) ) { %> <img src="images/AlarmFlag.gif" width="10"> <% } %>
-                          		<%= capBankMdl.getValueAt(rowID.intValue(), CapBankTableModel.CB_NAME_COLUMN) %>
+                          	<%= cbcAnnex.getCBCDisplay().getCapBankValueAt(capBank, CapBankTableModel.CB_NAME_COLUMN) %>
                           </div>
                         </td>
-                        <td width="228" class="TableCell"><%= capBankMdl.getValueAt(rowID.intValue(), CapBankTableModel.BANK_ADDRESS_COLUMN) %></td>
+                        <td width="228" class="TableCell"><%= cbcAnnex.getCBCDisplay().getCapBankValueAt(capBank, CapBankTableModel.BANK_ADDRESS_COLUMN) %></td>
                         
                         <td width="43" class="TableCell">
-                        	<font color="<%= CapControlWebAnnex.convertColor(capBankMdl.getCellForegroundColor( rowID.intValue(), CapBankTableModel.STATUS_COLUMN ) ) %>">
-                        	<%= capBankMdl.getValueAt(rowID.intValue(), CapBankTableModel.STATUS_COLUMN) %>
+                        	<font color="<%= CapControlWebAnnex.convertColor( capBankMdl.getCellColor(capBank) ) %>">
+                        	<%= cbcAnnex.getCBCDisplay().getCapBankValueAt(capBank, CapBankTableModel.STATUS_COLUMN) %>
                         </font></td>
                         
-                        <td width="98" class="TableCell"> <%= capBankMdl.getValueAt(rowID.intValue(), CapBankTableModel.TIME_STAMP_COLUMN) %></td>
-                        <td width="33" class="TableCell"> <%= capBankMdl.getValueAt(rowID.intValue(), CapBankTableModel.BANK_SIZE_COLUMN) %></td>
-                        <td width="34" class="TableCell"> <%= capBankMdl.getValueAt(rowID.intValue(), CapBankTableModel.OP_COUNT_COLUMN) %></td>
+                        <td width="98" class="TableCell"> <%= cbcAnnex.getCBCDisplay().getCapBankValueAt(capBank, CapBankTableModel.TIME_STAMP_COLUMN) %></td>
+                        <td width="33" class="TableCell"> <%= cbcAnnex.getCBCDisplay().getCapBankValueAt(capBank, CapBankTableModel.BANK_SIZE_COLUMN) %></td>
+                        <td width="34" class="TableCell"> <%= cbcAnnex.getCBCDisplay().getCapBankValueAt(capBank, CapBankTableModel.OP_COUNT_COLUMN) %></td>
                       </tr>
                     </table>
 		<%  } %>
@@ -369,7 +393,7 @@
                                         
                     <input name="redirectURL" type="hidden" value="<%= refererURL %>">
                     <input name="controlType" type="hidden" value="<%= controlType %>">
-                    <input name="paoID" type="hidden" value="<%= hiddenPAOid %>">
+                    <input name="paoID" type="hidden" value="<%= paoID %>">
                   </p>
 
                   <p>&nbsp; </p>

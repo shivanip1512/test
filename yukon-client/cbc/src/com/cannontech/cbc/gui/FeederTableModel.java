@@ -5,16 +5,11 @@ package com.cannontech.cbc.gui;
  */
 import java.awt.Color;
 
+import com.cannontech.cbc.CBCDisplay;
 import com.cannontech.cbc.data.CapBankDevice;
-import com.cannontech.cbc.data.CapControlConst;
 import com.cannontech.cbc.data.Feeder;
 import com.cannontech.cbc.data.SubBus;
 import com.cannontech.cbc.tablemodelevents.CBCGenericTableModelEvent;
-import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.roles.application.TDCRole;
-import com.cannontech.clientutils.CommonUtils;
-import com.cannontech.clientutils.commonutils.ModifiedDate;
-import com.cannontech.common.login.ClientSession;
 
 public class FeederTableModel extends javax.swing.table.AbstractTableModel implements com.cannontech.tdc.alarms.gui.AlarmTableModel, javax.swing.event.TableModelListener, CapControlTableModel, com.cannontech.common.gui.util.SortableTableModel
 {
@@ -22,6 +17,8 @@ public class FeederTableModel extends javax.swing.table.AbstractTableModel imple
 	private int fontSize = 12;
 	private SubBus currentSubBus = null;
 	private int subBusRowSelected = -1;
+    
+    private CBCDisplay cbcDisplay = new CBCDisplay();
 
 	/* ROW SPECIFIC DATA */
 	private java.util.Vector rows = null;
@@ -29,19 +26,15 @@ public class FeederTableModel extends javax.swing.table.AbstractTableModel imple
 	/* END --- ROW SPECIFIC DATA */
 
 	//The columns and their column index	
-	public static final int NAME_COLUMN					= 0;
+	public static final int NAME_COLUMN				= 0;
 	public static final int CURRENT_STATE_COLUMN		= 1;
   	public static final int TARGET_COLUMN				= 2;
   	public static final int VAR_LOAD_COLUMN			= 3;
-  	//public static final int ESTIMATED_VARS_COLUMN	= 4;
   	public static final int WATTS_COLUMN				= 4;
-   public static final int POWER_FACTOR_COLUMN		= 5;
+  	public static final int POWER_FACTOR_COLUMN		= 5;
   	public static final int TIME_STAMP_COLUMN			= 6;
   	public static final int DAILY_OPERATIONS_COLUMN	= 7;
 
-
-   public static final String DASH_LINE = "  ----";
-	public static final String STR_NA = "  NA";
 
 
 	//The column names based on their column index
@@ -51,9 +44,8 @@ public class FeederTableModel extends javax.swing.table.AbstractTableModel imple
 		"State",
 		"Target",
 		"VAR Load / Est.",
-		//"Estimated VARS",
 		"Watts",		
-      "PFactor / Est.",
+		"PFactor / Est.",
 		"Date/Time",
 		"Daily Ops"
 	};
@@ -71,10 +63,12 @@ public class FeederTableModel extends javax.swing.table.AbstractTableModel imple
 	
 
 /**
- * ScheduleTableModel constructor comment.
+ * FeederTableModel constructor comment.
  */
-public FeederTableModel() {
+public FeederTableModel()
+{
 	super();
+    cbcDisplay = new CBCDisplay();
 }
 /**
  * Insert the method's description here.
@@ -140,22 +134,28 @@ public java.awt.Color getCellForegroundColor(int row, int col)
 {
 	if( getRows() != null && getRowCount() > row && col <= getColumnCount() )
 	{
-		if( getRowAt(row).getCcDisableFlag().booleanValue() )
-		{
-			return CELL_COLORS[1]; //disabled color
-		}
-		else if( getRowAt(row).getRecentlyControlledFlag().booleanValue() )
-		{
-			return CELL_COLORS[2]; //pending color
-		}
-		else
-		{
-			return CELL_COLORS[0];
-		}
+		return getCellColor( getRowAt(row) );
 	}
 
 	return Color.WHITE;
 }
+
+public java.awt.Color getCellColor( Feeder feeder ) 
+{
+    if( feeder.getCcDisableFlag().booleanValue() )
+    {
+        return CELL_COLORS[1]; //disabled color
+    }
+    else if( feeder.getRecentlyControlledFlag().booleanValue() )
+    {
+        return CELL_COLORS[2]; //pending color
+    }
+    else
+    {
+        return CELL_COLORS[0];
+    }
+}
+
 /**
  * getColumnCount method comment.
  */
@@ -178,27 +178,7 @@ private SubBus getCurrentSubBus()
 {
 	return currentSubBus;
 }
-/**
- * Insert the method's description here.
- * Creation date: (1/2/2001 2:01:14 PM)
- */
-private String getFeederPendingState( Feeder feeder )
-{
-	int size = feeder.getCcCapBanks().size();
-	for( int j = 0; j < size; j++ )
-	{
-		CapBankDevice capBank = ((CapBankDevice)feeder.getCcCapBanks().elementAt(j));
-		
-		if( capBank.getControlStatus().intValue() == CapControlConst.BANK_CLOSE_PENDING )
-			return CapBankTableModel.getStateNames()[CapControlConst.BANK_CLOSE_PENDING];
-			
-		if( capBank.getControlStatus().intValue() == CapControlConst.BANK_OPEN_PENDING )
-			return CapBankTableModel.getStateNames()[CapControlConst.BANK_OPEN_PENDING];
-	}
 
-	// we are not pending
-	return null;
-}
 /**
  * This method returns the value of a row in the form of a Feeder object.
  * @param rowIndex int
@@ -253,6 +233,7 @@ public java.util.Vector getRows()
 private int getSubBusRowSelected() {
 	return subBusRowSelected;
 }
+
 /**
  * getValueAt method comment.
  */
@@ -260,162 +241,13 @@ public Object getValueAt(int row, int col)
 {
 	if( row < getRowCount() )
 	{
-		Feeder feeder = getRowAt(row);
-
-		switch( col )
-		{
-//		 	case AREA_NAME_COLUMN:
-//				return feeder.getCcArea();
-
-		 	case NAME_COLUMN:
-				return feeder.getCcName();
-
-			case CURRENT_STATE_COLUMN:
-			{
-				String state = null;
-				
-            if( feeder.getCcDisableFlag().booleanValue() )
-            {
-               state = "DISABLED";
-            }
-				else if( feeder.getRecentlyControlledFlag().booleanValue() )
-				{
-					state = getFeederPendingState( feeder );
-					
-					if( state == null )
-					{
-						if( row == 0 )
-							com.cannontech.clientutils.CTILogger.info("***MINOR ERROR*** Expecting " + feeder.getCcName() + " to have at least 1 capbank in the same pending state. (feeder)");
-
-						state = "PENDING";  //we dont know what Pending state its in
-					}
-					
-				}
-				else
-					state = "ENABLED";
-					
-				//show waived with a W at the end of the state
-				if( feeder.getWaiveControlFlag().booleanValue() )
-					state += "-W";
-
-				return state;
-			}
-
-			case TARGET_COLUMN:
-			{
-				// decide which set Point we are to use
-				if( getCurrentSubBus().isPowerFactorControlled() )
-				{
-					return getPowerFactorText(feeder.getPeakSetPoint().doubleValue(), false) + " Pk";
-				}
-				else if( feeder.getLowerBandWidth().doubleValue() == 0
-							 && feeder.getUpperBandWidth().doubleValue() == 0 )
-				{
-					return STR_NA;
-				}
-				if( getCurrentSubBus().getPeakTimeFlag().booleanValue() )
-				{
-					return
-					 CommonUtils.formatDecimalPlaces(feeder.getPeakSetPoint().doubleValue() - feeder.getLowerBandWidth().doubleValue(), 0) +
-					 " to " + 
-					 CommonUtils.formatDecimalPlaces(feeder.getUpperBandWidth().doubleValue() + feeder.getPeakSetPoint().doubleValue(), 0) + 
-					 " Pk";
-				}
-				else
-				{
-					return
-   					CommonUtils.formatDecimalPlaces(feeder.getOffPeakSetPoint().doubleValue() - feeder.getLowerBandWidth().doubleValue(), 0) +
-   					" to " + 
-   					CommonUtils.formatDecimalPlaces(feeder.getUpperBandWidth().doubleValue() + feeder.getOffPeakSetPoint().doubleValue(), 0) + 
-   					" OffPk";
-				}
-
-			}
-
-         case POWER_FACTOR_COLUMN:
-         {
-            return getPowerFactorText( feeder.getPowerFactorValue().doubleValue(), true )
-                    + " / " +
-                    getPowerFactorText( feeder.getEstimatedPFValue().doubleValue(), true );
-         }
-         
-         
-			case DAILY_OPERATIONS_COLUMN:
-				return feeder.getCurrentDailyOperations();
-				
-			case VAR_LOAD_COLUMN:
-         {
-				String retVal = DASH_LINE; //default just in case
-         	
-            if( feeder.getCurrentVarLoadPointID().intValue() <= PointTypes.SYS_PID_SYSTEM )
-               retVal = DASH_LINE;
-            else
-					retVal = com.cannontech.clientutils.CommonUtils.formatDecimalPlaces( 
-							feeder.getCurrentVarLoadPointValue().doubleValue(), getCurrentSubBus().getDecimalPlaces().intValue() );
-
-				retVal += " / ";
-
-            if( feeder.getCurrentVarLoadPointID().intValue() <= PointTypes.SYS_PID_SYSTEM )
-					retVal += DASH_LINE;
-            else
-					retVal += com.cannontech.clientutils.CommonUtils.formatDecimalPlaces( 
-							feeder.getEstimatedVarLoadPointValue().doubleValue(), getCurrentSubBus().getDecimalPlaces().intValue() );
-         
-         	return retVal;
-         }
-         
-			case WATTS_COLUMN:
-	      {
-            if( feeder.getCurrentWattLoadPointID().intValue() <= PointTypes.SYS_PID_SYSTEM )
-               return DASH_LINE;
-	         else {
-	         	if( getCurrentSubBus().getDecimalPlaces().intValue() == 0 )
-						return new Integer( CommonUtils.formatDecimalPlaces( 
-		               feeder.getCurrentWattLoadPointValue().doubleValue(), getCurrentSubBus().getDecimalPlaces().intValue() ) );         	
-	         	else
-			         return new Double( CommonUtils.formatDecimalPlaces( 
-		                  feeder.getCurrentWattLoadPointValue().doubleValue(), getCurrentSubBus().getDecimalPlaces().intValue() ) );
-	         }
-
-	      }
-
-			case TIME_STAMP_COLUMN:
-				if( feeder.getLastCurrentVarPointUpdateTime().getTime() <= 
-						com.cannontech.common.util.CtiUtilities.get1990GregCalendar().getTime().getTime() )
-					return DASH_LINE;
-				else
-					return new ModifiedDate( 
-						feeder.getLastCurrentVarPointUpdateTime().getTime(), ModifiedDate.FRMT_NOSECS );
-	
-			default:
-				return null;
-		}
-
+        Feeder feeder = getRowAt(row);
+        return cbcDisplay.getFeederValueAt( feeder, col, getCurrentSubBus() );
 	}
 	else
-		return null; /// MAYBE NOT A GOOD IDEA!!
-	
+		return null; /// MAYBE NOT A GOOD IDEA!!	
 }
 
-private String getPowerFactorText( double value, boolean compute )
-{
-   int decPlaces = 1;
-   try
-   {
-      decPlaces = 
-         Integer.parseInt(
-				ClientSession.getInstance().getRolePropertyValue(
-               TDCRole.PFACTOR_DECIMAL_PLACES, "1") );
-   }
-   catch( Exception e)
-   {}
-	
-   if( value <= CapControlConst.PF_INVALID_VALUE )
-      return "  NA";
-   else   
-      return com.cannontech.clientutils.CommonUtils.formatDecimalPlaces(
-            value * (compute ? 100 : 1), decPlaces ) + "%"; //get percent   
-}
 
 /**
  * This method was created in VisualAge.
