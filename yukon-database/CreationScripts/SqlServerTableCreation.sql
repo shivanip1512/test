@@ -3985,6 +3985,7 @@ insert into yukongrouprole values(-210,-173,'(none)');
 insert into yukongrouprole values(-210,-174,'(none)');
 insert into yukongrouprole values(-210,-175,'(none)');
 insert into yukongrouprole values(-210,-176,'(none)');
+insert into yukongrouprole values(-210,-179,'(none)');
 insert into yukongrouprole values(-210,-9000,' ');
 insert into yukongrouprole values(-210,-9001,'Energy Exchange');
 insert into yukongrouprole values(-210,-9002,'Energy Exchange');
@@ -4038,7 +4039,7 @@ constraint PK_YUKONLISTENTRY primary key  (EntryID)
 go
 
 
-insert into YukonListEntry values( 0, 1, 0, '(none)', 0 );
+insert into YukonListEntry values( 0, 0, 0, '(none)', 0 );
 insert into YukonListEntry values( 1, 1, 0, 'Email', 1 );
 insert into YukonListEntry values( 2, 1, 0, 'Phone Number', 2 );
 insert into YukonListEntry values( 3, 1, 0, 'Pager Number', 2 );
@@ -4231,6 +4232,7 @@ insert into YukonRole values(-175,'CONSUMERINFO_ADMIN','ConsumerInfo','(none)','
 insert into YukonRole values(-176,'CONSUMERINFO_ADMIN_CHANGE_PASSWORD','ConsumerInfo','(none)','(none)');
 insert into YukonRole values(-177,'CONSUMERINFO_THERMOSTAT','ConsumerInfo','(none)','(none)');
 insert into YukonRole values(-178,'CONSUMERINFO_QUESTIONS','ConsumerInfo','(none)','(none)');
+insert into YukonRole values(-179,'CONSUMERINFO_RESIDENCE','ConsumerInfo','(none)','(none)');
 
 insert into yukonrole values(-200,'ESUBVIEW','Esub','true','(none)');
 insert into yukonrole values(-201,'ESUBEDIT','Esub','true','(none)');
