@@ -1,6 +1,7 @@
 package com.cannontech.servlet;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.yukon.IMACSConnection;
 
 /**
  * parameters:
@@ -34,6 +35,7 @@ public class ScheduleController extends javax.servlet.http.HttpServlet {
 	private static com.cannontech.message.dispatch.ClientConnection vangoghConn = null;
 
 	private int soeTag = 0;
+
 /**
  * ProgramController constructor comment.
  */
@@ -57,8 +59,9 @@ private com.cannontech.message.macs.message.Schedule findSchedule(long id) {
 
 	if( connContainer != null )
 	{
-	    com.cannontech.macs.MACSClientConnection conn = connContainer.getConnection();
-	    com.cannontech.message.macs.message.Schedule[] schedules = conn.retrieveSchedules();
+	    //com.cannontech.macs.MACSClientConnection conn = connContainer.getConnection();
+	    com.cannontech.message.macs.message.Schedule[] schedules = 
+	    		connContainer.getIMACSConnection().retrieveSchedules();
 
 	    if( schedules != null )
 	    {
@@ -82,8 +85,8 @@ private com.cannontech.message.macs.message.Schedule findSchedule(long id) {
  * @return java.util.Date
  * @param time java.lang.String
  */
-java.util.Date parseTime(String time) {
-
+private java.util.Date parseTime(String time) 
+{
 	// 0 == now
 	if( time.equals("0") )
 	{
@@ -157,7 +160,7 @@ public void service(javax.servlet.http.HttpServletRequest req, javax.servlet.htt
 			
 	if( sched != null && connContainer != null )
 	{			
-		com.cannontech.macs.MACSClientConnection conn = connContainer.getConnection();
+		IMACSConnection conn = connContainer.getIMACSConnection();
 	
 		if( (action.equalsIgnoreCase("start") || action.equalsIgnoreCase("startstop")) &&
 			 startDate != null )
@@ -167,7 +170,7 @@ public void service(javax.servlet.http.HttpServletRequest req, javax.servlet.htt
 			startRequest.setSchedId(sched.getId());
 			startRequest.setAction(com.cannontech.message.macs.message.OverrideRequest.OVERRIDE_START);
 			startRequest.setStart(startDate);
-			conn.write(startRequest);
+			conn.writeMsg(startRequest);
 
 			setScheduleRequestPending(sched);
 			CTILogger.info("Start schedule:  " + sched.getId() + " time:  " + startDate);
@@ -181,7 +184,7 @@ public void service(javax.servlet.http.HttpServletRequest req, javax.servlet.htt
 		 	stopRequest.setSchedId(sched.getId());
 			stopRequest.setAction(com.cannontech.message.macs.message.OverrideRequest.OVERRIDE_STOP);
 			stopRequest.setStop(stopDate);
-			conn.write(stopRequest);
+			conn.writeMsg(stopRequest);
 
 			setScheduleRequestPending(sched);
 			CTILogger.info("Stop schedule:  " + sched.getId() + " time:  " );
