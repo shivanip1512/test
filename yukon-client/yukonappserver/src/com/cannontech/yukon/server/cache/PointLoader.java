@@ -4,7 +4,6 @@ import java.util.Map;
 
 import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUnits;
 
 /**
@@ -36,7 +35,7 @@ private void executeNonSQL92Query()
    
    String sqlString = 
       "SELECT POINTID,POINTNAME,POINTTYPE,PAOBJECTID, " +
-      "POINTOFFSET,STATEGROUPID FROM POINT WHERE POINTID > " + PointTypes.SYS_PID_SYSTEM + " " + 
+      "POINTOFFSET,STATEGROUPID FROM POINT " + 
       "ORDER BY PAObjectID, POINTOFFSET";
 
    java.sql.Connection conn = null;
@@ -110,7 +109,6 @@ timerStart = new java.util.Date();
 	String sqlString = "SELECT P.POINTID, POINTNAME, POINTTYPE, PAOBJECTID, POINTOFFSET, STATEGROUPID, UM.FORMULA, UM.UOMID" +
 						" FROM ( POINT P LEFT OUTER JOIN POINTUNIT PU "+
 						" ON P.POINTID = PU.POINTID )  LEFT OUTER JOIN UNITMEASURE UM ON PU.UOMID = UM.UOMID "+
-						" WHERE P.POINTID > " + PointTypes.SYS_PID_SYSTEM +
 						" ORDER BY PAObjectID, POINTOFFSET ";
 	java.sql.Connection conn = null;
 	java.sql.Statement stmt = null;
