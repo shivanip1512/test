@@ -1,6 +1,7 @@
 package com.cannontech.common.gui.tree;
 
 import java.util.Enumeration;
+import java.util.Vector;
 
 import com.cannontech.database.model.DBTreeNode;
 
@@ -12,72 +13,94 @@ import com.cannontech.database.model.DBTreeNode;
  * To enable and disable the creation of type comments go to
  * Window>Preferences>Java>Code Generation.
  */
-public class CheckNode extends DBTreeNode 
+public class CheckNode extends DBTreeNode
 {
-//  public final static int SINGLE_SELECTION = 0;
-//  public final static int DIG_IN_SELECTION = 4;
-//  protected int selectionMode;
-  
-  protected boolean isSelected;
+	//  public final static int SINGLE_SELECTION = 0;
+	//  public final static int DIG_IN_SELECTION = 4;
+	//  protected int selectionMode;
 
-  public CheckNode() {
-    this(null);
-  }
+	protected boolean isSelected;
 
-  public CheckNode(Object userObject) {
-    this(userObject, true, false);
-  }
+	public CheckNode()
+	{
+		this(null);
+	}
 
-  public CheckNode(Object userObject, boolean allowsChildren
-                                    , boolean isSelected) {
-    super(userObject);
-    this.allowsChildren = allowsChildren;
-    this.isSelected = isSelected;
-//    setSelectionMode(DIG_IN_SELECTION);
-  }
+	public CheckNode(Object userObject)
+	{
+		this(userObject, true, false);
+	}
 
-/*
-  public void setSelectionMode(int mode) {
-    selectionMode = mode;
-  }
+	public CheckNode( Object userObject, boolean allowsChildren, boolean isSelected)
+	{
+		super(userObject);
+		this.allowsChildren = allowsChildren;
+		this.isSelected = isSelected;
+		//    setSelectionMode(DIG_IN_SELECTION);
+	}
 
-  public int getSelectionMode() {
-    return selectionMode;
-  }
-*/
+	/*
+	  public void setSelectionMode(int mode) {
+	    selectionMode = mode;
+	  }
+	
+	  public int getSelectionMode() {
+	    return selectionMode;
+	  }
+	*/
 
-  public void setSelected(boolean isSelected) 
-  {
-    this.isSelected = isSelected;
-    
-//    if( (selectionMode == DIG_IN_SELECTION)
-//         && (children != null)) 
-    if( children != null ) 
-	 {
-      Enumeration enum = children.elements();      
-      while (enum.hasMoreElements()) 
-      {
-      	DBTreeNode node = (DBTreeNode)enum.nextElement();
-      	if( node instanceof CheckNode)
-	        ((CheckNode)node).setSelected(isSelected);
-      }
-    }
+	public void setSelected(boolean isSelected)
+	{
+		//A null vector will not keep track of checked objects.
+		setSelected(isSelected, null);
+	}
 
-  }
-  
-  public boolean isSelected() {
-    return isSelected;
-  }
+	public void setSelected(boolean isSelected, Vector checkedNodes)
+	{
+		this.isSelected = isSelected;
+		
+		//NULL checkNodes does not load the vector with the checked objects.
+		if( checkedNodes != null)
+			collectCheckedObjects(checkedNodes);
 
 
-  // If you want to change "isSelected" by CellEditor,
-  /*
-  public void setUserObject(Object obj) {
-    if (obj instanceof Boolean) {
-      setSelected(((Boolean)obj).booleanValue());
-    } else {
-      super.setUserObject(obj);
-    }
-  }
-  */
+		if (children != null)
+		{
+			Enumeration enum = children.elements();
+			while (enum.hasMoreElements())
+			{
+				DBTreeNode node = (DBTreeNode) enum.nextElement();
+				if (node instanceof CheckNode)
+					 ((CheckNode) node).setSelected(isSelected, checkedNodes);
+			}
+		}
+
+	}
+
+	private void collectCheckedObjects(Vector checkedNodes)
+	{
+		if (isSelected && this.getParent() != null)
+		{
+			if (!checkedNodes.contains(this.getUserObject()))
+				checkedNodes.add(this.getUserObject());
+		}
+		else
+			checkedNodes.remove(this.getUserObject());
+	}
+	
+	public boolean isSelected()
+	{
+		return isSelected;
+	}
+
+	// If you want to change "isSelected" by CellEditor,
+	/*
+	public void setUserObject(Object obj) {
+	  if (obj instanceof Boolean) {
+	    setSelected(((Boolean)obj).booleanValue());
+	  } else {
+	    super.setUserObject(obj);
+	  }
+	}
+	*/
 }
