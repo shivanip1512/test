@@ -332,7 +332,7 @@ public class SVGGenerator {
 			imgElem.setAttributeNS(xlinkNS, "xlink:href", Util.genExportedGraphName(graph));
 		}
 		else {
-			imgElem.setAttributeNS(xlinkNS, "xlink:href", "/servlet/GraphGenerator?gdefid=" + graph.getGraphDefinitionID() + "&view=" + graph.getTrendType() + "&width=" + width + "&height=" + height + "&format=png&start=" + dateFormat.format(graph.getCurrentStartDate()) + "&period=" + graph.getDisplayPeriod() + "&option=" + Integer.toString(GraphRenderers.LEGEND_MIN_MAX_MASK));
+			imgElem.setAttributeNS(xlinkNS, "xlink:href", "/servlet/GraphGenerator?action=EncodeGraph&gdefid=" + graph.getGraphDefinitionID() + "&view=" + graph.getTrendType() + "&width=" + width + "&height=" + height + "&format=png&start=" + dateFormat.format(graph.getCurrentStartDate()) + "&period=" + graph.getDisplayPeriod() + "&option=" + Integer.toString(GraphRenderers.LEGEND_MIN_MAX_MASK));
 		}
 		imgElem.setAttributeNS(null, "x", Integer.toString(x));
 		imgElem.setAttributeNS(null, "y", Integer.toString(y));

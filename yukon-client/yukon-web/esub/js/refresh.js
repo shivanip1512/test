@@ -113,7 +113,8 @@ function updateGraph(node) {
 			"&period=" + node.getAttribute('period') +
 			"&db=" + node.getAttribute('db') +
 			"&option=" + node.getAttribute('option') +
-			"&loadfactor=" + node.getAttribute('loadfactor');	
+			"&loadfactor=" + node.getAttribute('loadfactor') +
+			"&action=EncodeGraph";	
 
 	node.setAttributeNS(xlinkNS, 'xlink\:href', url);
 	
