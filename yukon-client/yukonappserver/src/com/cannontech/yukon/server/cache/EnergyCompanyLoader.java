@@ -30,7 +30,7 @@ public class EnergyCompanyLoader implements Runnable
 	{
    		long timerStart = System.currentTimeMillis();
    		
-   		String sql = "SELECT EnergyCompanyID, Name FROM EnergyCompany";
+   		String sql = "SELECT EnergyCompanyID, Name, PrimaryContactID, UserID FROM EnergyCompany";
    		   		
       	Connection conn = null;
       	Statement stmt = null;
@@ -43,8 +43,10 @@ public class EnergyCompanyLoader implements Runnable
       		while (rset.next() ) {
       			int id = rset.getInt(1);
       			String name = rset.getString(2).trim();
+      			int primaryContactID = rset.getInt(3);
+      			int userID = rset.getInt(4);
       			
-      			LiteEnergyCompany company = new LiteEnergyCompany(id,name);
+      			LiteEnergyCompany company = new LiteEnergyCompany(id,name, primaryContactID, userID);
       			allCompanies.add(company);                                   		
          	}
       	}
