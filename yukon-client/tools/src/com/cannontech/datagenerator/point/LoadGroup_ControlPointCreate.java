@@ -1,10 +1,16 @@
 package com.cannontech.datagenerator.point;
 
+import com.cannontech.database.data.device.DeviceTypesFuncs;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.multi.SmartMultiDBPersistent;
+import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.data.point.StatusPoint;
+import com.cannontech.database.db.point.Point;
+import com.cannontech.database.db.point.PointStatus;
 /**
  * @author snebben
  *
@@ -40,33 +46,33 @@ public class LoadGroup_ControlPointCreate extends PointCreate
 		//Points are going to be added to every load group.
 		//There is currently no check to see if the point already exists for a load group paobject.
 
-		com.cannontech.clientutils.CTILogger.info("Starting Daily History Point creation process...");
+		CTILogger.info("Starting Load Group Point creation process...");
 
 		java.util.Vector devicesVector = new java.util.Vector(20);
 		getLoadGroupVector(devicesVector);
 
 		//create an object to hold all of our DBPersistant objects
-		com.cannontech.database.data.multi.SmartMultiDBPersistent multi = new com.cannontech.database.data.multi.SmartMultiDBPersistent();
+		SmartMultiDBPersistent multi = new SmartMultiDBPersistent();
 		
 		// if this is not set to false it will create its own PointIDs
 		multi.setCreateNewPAOIDs( false );
 	
 		int addCount = 0;
-		int pointID = com.cannontech.database.db.point.Point.getNextPointID();
+		int pointID = Point.getNextPointID();
 		for( int i = 0; i < devicesVector.size(); i++)
 		{
-			com.cannontech.database.data.lite.LiteYukonPAObject litePaobject = (com.cannontech.database.data.lite.LiteYukonPAObject)devicesVector.get(i);
+			LiteYukonPAObject litePaobject = (LiteYukonPAObject)devicesVector.get(i);
 			int paobjectID = litePaobject.getLiteID();
 			CreatePointList createPoint = (CreatePointList)createPointHashtable.get(new Integer(paobjectID));
 			
 			if( createPoint.dailyhistory)
 			{
 				multi.addDBPersistent(PointFactory.createAnalogPoint("DAILY HISTORY", 
-																			new Integer(paobjectID),
-																			new Integer(pointID),
-																			PointTypes.PT_OFFSET_DAILY_HISTORY,
-																			PointUnits.UOMID_COUNTS));
-				com.cannontech.clientutils.CTILogger.info("Adding PointId " + pointID + " to Device ID" + devicesVector.get(i));
+						new Integer(paobjectID),
+						new Integer(pointID),
+						PointTypes.PT_OFFSET_DAILY_HISTORY,
+						PointUnits.UOMID_COUNTS));
+				CTILogger.info("Adding PointId " + pointID + " to Device ID" + devicesVector.get(i));
 				pointID++;
 				addCount++;
 			}
@@ -74,11 +80,11 @@ public class LoadGroup_ControlPointCreate extends PointCreate
 			if( createPoint.monthlyHistory)
 			{
 				multi.addDBPersistent(PointFactory.createAnalogPoint("MONTHLY HISTORY", 
-																			new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject)devicesVector.get(i)).getLiteID()),
-																			new Integer(pointID),
-																			PointTypes.PT_OFFSET_MONTHLY_HISTORY,
-																			PointUnits.UOMID_COUNTS));
-				com.cannontech.clientutils.CTILogger.info("Adding PointId " + pointID  + " to Device ID" + devicesVector.get(i));
+						new Integer(((LiteYukonPAObject)devicesVector.get(i)).getLiteID()),
+						new Integer(pointID),
+						PointTypes.PT_OFFSET_MONTHLY_HISTORY,
+						PointUnits.UOMID_COUNTS));
+				CTILogger.info("Adding PointId " + pointID  + " to Device ID" + devicesVector.get(i));
 				pointID++;
 				addCount++;
 			}
@@ -86,11 +92,11 @@ public class LoadGroup_ControlPointCreate extends PointCreate
 			if( createPoint.seasonalHistory)
 			{
 				multi.addDBPersistent(PointFactory.createAnalogPoint("SEASON HISTORY", 
-																			new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject)devicesVector.get(i)).getLiteID()),
-																			new Integer(pointID),
-																			PointTypes.PT_OFFSET_SEASONAL_HISTORY,
-																			PointUnits.UOMID_COUNTS));
-				com.cannontech.clientutils.CTILogger.info("Adding PointId " + pointID + " to Device ID" + devicesVector.get(i));
+						new Integer(((LiteYukonPAObject)devicesVector.get(i)).getLiteID()),
+						new Integer(pointID),
+						PointTypes.PT_OFFSET_SEASONAL_HISTORY,
+						PointUnits.UOMID_COUNTS));
+				CTILogger.info("Adding PointId " + pointID + " to Device ID" + devicesVector.get(i));
 				pointID++;
 				addCount++;
 			}
@@ -98,28 +104,28 @@ public class LoadGroup_ControlPointCreate extends PointCreate
 			if( createPoint.annualHistory)
 			{
 				multi.addDBPersistent(PointFactory.createAnalogPoint("ANNUAL HISTORY", 
-																			new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject)devicesVector.get(i)).getLiteID()),
-																			new Integer(pointID),
-																			PointTypes.PT_OFFSET_ANNUAL_HISTORY,
-																			PointUnits.UOMID_COUNTS));
-				com.cannontech.clientutils.CTILogger.info("Adding PointId " + pointID + " to Device ID" + devicesVector.get(i));
+						new Integer(((LiteYukonPAObject)devicesVector.get(i)).getLiteID()),
+						new Integer(pointID),
+						PointTypes.PT_OFFSET_ANNUAL_HISTORY,
+						PointUnits.UOMID_COUNTS));
+				CTILogger.info("Adding PointId " + pointID + " to Device ID" + devicesVector.get(i));
 				pointID++;
 				addCount++;
 			}
 			
 			if( createPoint.controlStatus)
 			{
-				com.cannontech.database.data.point.PointBase pointBase = PointFactory.createNewPoint(new Integer(pointID),
-																		PointTypes.STATUS_POINT,
-																		"CONTROL STATUS",
-																		new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject)devicesVector.get(i)).getLiteID()),
-																		new Integer(0) );
+				PointBase pointBase = PointFactory.createNewPoint(new Integer(pointID),
+						PointTypes.STATUS_POINT,
+						"CONTROL STATUS",
+						new Integer(((LiteYukonPAObject)devicesVector.get(i)).getLiteID()),
+						new Integer(0) );
 				pointBase.getPoint().setStateGroupID(new Integer(com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_TWO_STATE_STATUS));
-				((StatusPoint)pointBase).setPointStatus( new com.cannontech.database.db.point.PointStatus( new Integer(pointID)));
+				((StatusPoint)pointBase).setPointStatus( new PointStatus( new Integer(pointID)));
 				((StatusPoint)pointBase).getPointStatus().setControlOffset(	new Integer(1));
 				((StatusPoint)pointBase).getPointStatus().setControlType( PointTypes.getType(PointTypes.CONTROLTYPE_NORMAL));
 				multi.addDBPersistent(pointBase);
-				com.cannontech.clientutils.CTILogger.info("Adding PointId " + pointID + " to Device ID" + devicesVector.get(i));
+				CTILogger.info("Adding PointId " + pointID + " to Device ID" + devicesVector.get(i));
 	
 				pointID++;
 				addCount++;
@@ -130,10 +136,10 @@ public class LoadGroup_ControlPointCreate extends PointCreate
 	
 		if( success )
 		{
-			com.cannontech.clientutils.CTILogger.info(addCount + " Load Group Control Points were processed and inserted Successfully");
+			CTILogger.info(addCount + " Load Group Control Points were processed and inserted Successfully");
 		}
 		else
-			com.cannontech.clientutils.CTILogger.info("Load Group Control Points failed insertion");
+			CTILogger.info("Load Group Control Points failed insertion");
 			
 		return success;
 	}
@@ -145,10 +151,12 @@ public class LoadGroup_ControlPointCreate extends PointCreate
 	 * @param _type int
 	 * @return boolean
 	 */
-	public boolean isDeviceValid( com.cannontech.database.data.lite.LiteYukonPAObject litePaobject_ )
+	public boolean isDeviceValid( LiteYukonPAObject litePaobject_ )
 	{
-		// All Groups except Macro groups //
-		return (litePaobject_.getType() != com.cannontech.database.data.device.DeviceTypesFuncs.MACRO_GROUP);
+		//All Groups except Macro groups //
+		return
+			DeviceTypesFuncs.isLmGroup(litePaobject_.getType())
+			&& litePaobject_.getType() != DeviceTypesFuncs.MACRO_GROUP;
 	}
 
 	/**
@@ -195,7 +203,7 @@ public class LoadGroup_ControlPointCreate extends PointCreate
 			
 			for (int i = 0; i < groups.size(); i++)
 			{
-				com.cannontech.database.data.lite.LiteYukonPAObject litePaobject = ((com.cannontech.database.data.lite.LiteYukonPAObject)groups.get(i));
+				LiteYukonPAObject litePaobject = ((LiteYukonPAObject)groups.get(i));
 				if( isDeviceValid( litePaobject ) )
 				{
 					int paobjectID = litePaobject.getLiteID();
@@ -210,7 +218,7 @@ public class LoadGroup_ControlPointCreate extends PointCreate
 					}
 				}
 			}
-			com.cannontech.clientutils.CTILogger.info(deviceVector.size() + " Total Devices needing points added.");
+			CTILogger.info(deviceVector.size() + " Total Devices needing points added.");
 		}
 	}
 }
