@@ -317,6 +317,7 @@ public class StarsLiteFactory {
 		liteCtrlHist.setCurrentSeasonalTime( ctrlHist.getCurrentSeasonalTime().longValue() );
 		liteCtrlHist.setCurrentAnnualTime( ctrlHist.getCurrentAnnualTime().longValue() );
 		liteCtrlHist.setActiveRestore( ctrlHist.getActiveRestore() );
+		liteCtrlHist.setStopDateTime( ctrlHist.getStopDateTime().getTime() );
 	}
 
 	public static void setLiteLMThermostatSeason(LiteLMThermostatSeason liteSeason, com.cannontech.database.db.stars.hardware.LMThermostatSeason season) {
@@ -1222,6 +1223,7 @@ public class StarsLiteFactory {
 	        
         	ControlHistory hist = null;
         	long lastStartTime = 0;
+        	long lastStopTime = 0;
 	        for (int i = startIndex; i < liteCtrlHist.getLmControlHistory().size(); i++) {
 	        	LiteLMControlHistory lmCtrlHist = (LiteLMControlHistory) liteCtrlHist.getLmControlHistory().get(i);
 
@@ -1232,56 +1234,45 @@ public class StarsLiteFactory {
                  * T - Control terminated based on time set in load group.
                  * M - Control terminated because of an active restore or terminate command being sent.
                  * O - Control terminated because a new command of a different nature was sent to this group.
+                 * L - Time log
                  */
                 if (lmCtrlHist.getActiveRestore().equals("N")) {
-                	lastStartTime = lmCtrlHist.getStartDateTime();
-                	
-                	hist = new ControlHistory();
-                	hist.setStartDateTime( new Date(lmCtrlHist.getStartDateTime()) );
-		            hist.setControlDuration( (int) lmCtrlHist.getControlDuration() );
-                	starsCtrlHist.addControlHistory( hist );
-                }
-                else if (lmCtrlHist.getActiveRestore().equals("C")) {
-                	// If this is the last record, and the time stamp is close to now, then we're being controlled right now
-                	if (i == liteCtrlHist.getLmControlHistory().size() - 1) {
-                		//long ctrlPeriod = (hist == null) ? lmCtrlHist.getControlDuration() : lmCtrlHist.getControlDuration() - hist.getControlDuration();
-                		long ctrlPeriod = 30 * 60 * 1000;
-                		if ((new Date().getTime() - lmCtrlHist.getStartDateTime()) * 0.001 - lmCtrlHist.getControlDuration() < 2 * ctrlPeriod)
-                			starsCtrlHist.setBeingControlled( true );
-                	}
-                		
-                	if (Math.abs(lmCtrlHist.getStartDateTime() - lastStartTime) < 1000) {
-                		if (hist != null)
-                			hist.setControlDuration( (int) lmCtrlHist.getControlDuration() );
-                	}
-                	else {
-                		// This is a new control period
-                		lastStartTime = lmCtrlHist.getStartDateTime();
-                		
+                	if (Math.abs(lmCtrlHist.getStartDateTime() - lastStartTime) > 1000) {
+                		// This is a new control
+	                	lastStartTime = lmCtrlHist.getStartDateTime();
+	                	lastStopTime = lmCtrlHist.getStopDateTime();
+	                	
 	                	hist = new ControlHistory();
 	                	hist.setStartDateTime( new Date(lmCtrlHist.getStartDateTime()) );
-			            hist.setControlDuration( (int) lmCtrlHist.getControlDuration() );
+			            hist.setControlDuration( 0 );
 	                	starsCtrlHist.addControlHistory( hist );
                 	}
+                	else {	// This is the continuation of the last control
+                		lastStopTime = lmCtrlHist.getStopDateTime();
+                	}
                 }
-	        	else if (lmCtrlHist.getActiveRestore().equals("M") || lmCtrlHist.getActiveRestore().equals("T")) {
+                else if (lmCtrlHist.getActiveRestore().equals("C")
+                		|| lmCtrlHist.getActiveRestore().equals("L"))
+                {
+                	if (Math.abs(lmCtrlHist.getStartDateTime() - lastStartTime) < 1000) {
+                		if (hist != null)
+	                		hist.setControlDuration( (int)(lmCtrlHist.getStopDateTime() - lastStartTime) / 1000 );
+                	}
+                }
+	        	else if (lmCtrlHist.getActiveRestore().equals("M")
+	        			|| lmCtrlHist.getActiveRestore().equals("T")
+	        			|| lmCtrlHist.getActiveRestore().equals("O"))
+	        	{
 	        		if (Math.abs(lmCtrlHist.getStartDateTime() - lastStartTime) < 1000) {
+	        			lastStopTime = lmCtrlHist.getStopDateTime();
 	        			if (hist != null)
-				            hist.setControlDuration( (int) lmCtrlHist.getControlDuration() );
+				            hist.setControlDuration( (int)(lmCtrlHist.getStopDateTime() - lastStartTime) / 1000 );
 	        		}
-/*	        		else {
-	        			// 'M' and 'T' can be a control period by itself
-			            lastStartTime = lmCtrlHist.getStartDateTime();
-		        		
-			            hist = new ControlHistory();
-			            hist.setStartDateTime( new Date(lmCtrlHist.getStartDateTime()) );
-			            hist.setControlDuration( (int) lmCtrlHist.getControlDuration() );
-			            starsCtrlHist.addControlHistory( hist );
-	        		}
-*/	        		
 		            hist = null;
 	        	}
 	        }
+	        
+	        starsCtrlHist.setBeingControlled( new Date().getTime() < lastStopTime );
         }
         
         if (getSummary) {

@@ -193,7 +193,12 @@ public class SOAPClient extends HttpServlet {
         	errorURL = req.getParameter( ServletUtils.ATT_REFERRER );
         }
 		else if (action.equalsIgnoreCase("NewCustAccount")) {
-			clientAction = new NewCustAccountAction();
+			MultiAction actions = new MultiAction();
+			actions.addAction( new NewCustAccountAction(), req, session );
+			if (req.getParameter("Username") != null)
+				actions.addAction( new UpdateLoginAction(), req, session );
+				
+			clientAction = (ActionBase) actions;
 			if (Boolean.valueOf( req.getParameter("Wizard") ).booleanValue())
 				destURL = "/operator/Consumer/Programs.jsp?Wizard=true";
 			else

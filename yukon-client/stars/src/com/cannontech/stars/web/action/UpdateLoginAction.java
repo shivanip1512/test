@@ -150,25 +150,24 @@ public class UpdateLoginAction implements ActionBase {
 			StarsSuccess success = operation.getStarsSuccess();
 			if (success == null) return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
 			
-			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
-			if (ServerUtils.isOperator( user )) {	// Mixed with server side code!!!
-				StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
-				StarsUpdateLogin updateLogin = reqOper.getStarsUpdateLogin();
-				StarsCustAccountInformation accountInfo = (StarsCustAccountInformation)
-						user.getAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
-						
-				StarsUser starsUser = accountInfo.getStarsUser();
-				if (starsUser == null) {
-					starsUser = new StarsUser();
-					accountInfo.setStarsUser( starsUser );
-				}
-				starsUser.setUsername( updateLogin.getUsername() );
-				starsUser.setPassword( updateLogin.getPassword() );
-			}
-			else if (ServerUtils.isResidentialCustomer( user )) {
-				session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, success.getDescription() );
-			}
+			StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
+			StarsUpdateLogin updateLogin = reqOper.getStarsUpdateLogin();
 			
+			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
+			StarsCustAccountInformation accountInfo = (StarsCustAccountInformation)
+					user.getAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
+					
+			StarsUser starsUser = accountInfo.getStarsUser();
+			if (starsUser == null) {
+				starsUser = new StarsUser();
+				accountInfo.setStarsUser( starsUser );
+			}
+			starsUser.setUsername( updateLogin.getUsername() );
+			starsUser.setPassword( updateLogin.getPassword() );
+
+			if (reqOper.getStarsNewCustomerAccount() == null)	// If not from the new customer account page
+				session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, success.getDescription() );
+				
             return 0;
         }
         catch (Exception e) {

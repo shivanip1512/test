@@ -82,6 +82,8 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
     	energyCompanies = null;
 		webConfigList = null;
     	starsUserList = null;
+    	
+    	com.cannontech.database.cache.DefaultDatabaseCache.getInstance().releaseAllCache();
     }
 
     public SOAPServer() {

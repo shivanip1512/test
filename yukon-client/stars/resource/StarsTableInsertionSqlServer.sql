@@ -12,8 +12,8 @@ insert into YukonWebConfiguration values (1,'','Thank you for participating in o
 INSERT INTO EnergyCompany VALUES (-1,'Default Energy Company',0,0,1);
 
 /* YukonWebConfiguration */
-INSERT INTO YukonWebConfiguration VALUES (-1,'Summer.gif','Default Summer Settings','Summer','');
-INSERT INTO YukonWebConfiguration VALUES (-2,'Winter.gif','Default Winter Settings','Winter','');
+INSERT INTO YukonWebConfiguration VALUES (-1,'Summer.gif','Default Summer Settings','Cooling','Cool');
+INSERT INTO YukonWebConfiguration VALUES (-2,'Winter.gif','Default Winter Settings','Heating','Heat');
 
 /* ServiceCompany */
 INSERT INTO ServiceCompany VALUES (0,'(none)',0,'(none)','(none)',0,'(none)');
@@ -331,16 +331,16 @@ insert into YukonRole values (-1006,'CUSTOMIZED_EMAIL_LINK','WebClient','(none)'
 
 
 /* energy company address */
-insert into Address values (100,'9000 6th Street','','Minneapolis','MN','55441','(none)');
+insert into Address values (101,'9000 6th Street','','Minneapolis','MN','55441','(none)');
 
 /* energy company contact */
-insert into Contact values (100,'(none)','(none)',-1,100);
-insert into ContactNotification values (101,100,2,'N','1-800-555-5432');
-insert into ContactNotification values (102,100,4,'N','1-800-555-5431');
-insert into ContactNotification values (103,100,1,'N','info@xyzutility.com');
+insert into Contact values (101,'(none)','(none)',-1,101);
+insert into ContactNotification values (101,101,2,'N','1-800-555-5432');
+insert into ContactNotification values (102,101,4,'N','1-800-555-5431');
+insert into ContactNotification values (103,101,1,'N','info@xyzutility.com');
 
 /* EnergyCompany */
-insert into EnergyCompany values (1,'Test Company',3,1,100);
+insert into EnergyCompany values (1,'Test Company',3,1,101);
 
 /* Create operator login */
 insert into YukonUser values (101,'op1','op1',0,'1970-01-01','Enabled');

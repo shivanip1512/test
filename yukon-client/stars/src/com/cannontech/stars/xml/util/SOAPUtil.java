@@ -200,10 +200,10 @@ public class SOAPUtil {
 					SOAPElement elmt = (SOAPElement) it.next();
 					
 					// Remove all the existing nodes with the same name first
-					Iterator it2 = operElmt2.getChildElements( elmt.getElementName() );
-					while (it2.hasNext()) {
-						SOAPElement elmt2 = (SOAPElement) it2.next();
-						elmt2.detachNode();
+					Iterator it1 = operElmt1.getChildElements( elmt.getElementName() );
+					while (it1.hasNext()) {
+						SOAPElement elmt1 = (SOAPElement) it1.next();
+						elmt1.detachNode();
 					}
 					
 					operElmt1.addChildElement( elmt );

@@ -101,7 +101,7 @@ public class ServerUtils {
 		
 		PrintWriter fw = null;
 		try {
-			fw = new PrintWriter( new FileWriter(f), true );
+			fw = new PrintWriter( new FileWriter(f, true) );
 			for (int i = 0; i < commands.length; i++)
 				fw.println( commands[i] );
 		}

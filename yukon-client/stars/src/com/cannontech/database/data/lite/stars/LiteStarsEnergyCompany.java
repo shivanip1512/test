@@ -518,7 +518,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			        	thermModeSettings[j] = new Object[2];
 			        	thermModeSettings[j][0] = new Integer( liteSeason.getWebConfigurationID() );
 			        	LiteWebConfiguration liteConfig = SOAPServer.getWebConfiguration( liteSeason.getWebConfigurationID() );
-			        	if (liteConfig.getAlternateDisplayName().equalsIgnoreCase("Summer"))
+			        	if (liteConfig.getUrl().equalsIgnoreCase("Cool"))	// Temporarily use URL field to define cool/heat mode
 			        		thermModeSettings[j][1] = StarsThermoModeSettings.COOL;
 			        	else
 			        		thermModeSettings[j][1] = StarsThermoModeSettings.HEAT;

@@ -97,6 +97,7 @@ public class LMControlHistory {
                 ctrlHist.setCurrentAnnualTime( new Integer(rset.getInt("CURRENTANNUALTIME")) );
                 ctrlHist.setActiveRestore( rset.getString("ACTIVERESTORE") );
                 ctrlHist.setReductionValue( new Double(rset.getDouble("REDUCTIONVALUE")) );
+                ctrlHist.setStopDateTime( new java.util.Date(rset.getTimestamp("STOPDATETIME").getTime()) );
 
                 ctrlHistList.add( ctrlHist );
             }
@@ -153,6 +154,7 @@ public class LMControlHistory {
 				ctrlHists[i].setCurrentAnnualTime( new Integer(((java.math.BigDecimal) row[9]).intValue()) );
 				ctrlHists[i].setActiveRestore( (String) row[10] );
 				ctrlHists[i].setReductionValue( (Double) row[11] );
+				ctrlHists[i].setStopDateTime( (Date) row[12] );
 			}
 			
 			return ctrlHists;
@@ -200,6 +202,7 @@ public class LMControlHistory {
                 ctrlHist.setCurrentAnnualTime( new Integer(rset.getInt("CURRENTANNUALTIME")) );
                 ctrlHist.setActiveRestore( rset.getString("ACTIVERESTORE") );
                 ctrlHist.setReductionValue( new Double(rset.getDouble("REDUCTIONVALUE")) );
+                ctrlHist.setStopDateTime( new java.util.Date(rset.getTimestamp("STOPDATETIME").getTime()) );
 
                 return ctrlHist;
             }

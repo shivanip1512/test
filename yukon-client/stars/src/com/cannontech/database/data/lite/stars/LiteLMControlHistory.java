@@ -21,6 +21,7 @@ public class LiteLMControlHistory extends LiteBase {
 	private long currentSeasonalTime = 0;
 	private long currentAnnualTime = 0;
 	private String activeRestore = null;
+	private long stopDateTime = 0;
 	
 	public LiteLMControlHistory() {
 		super();
@@ -166,6 +167,22 @@ public class LiteLMControlHistory extends LiteBase {
 	 */
 	public void setActiveRestore(String activeRestore) {
 		this.activeRestore = activeRestore;
+	}
+
+	/**
+	 * Returns the stopDateTime.
+	 * @return long
+	 */
+	public long getStopDateTime() {
+		return stopDateTime;
+	}
+
+	/**
+	 * Sets the stopDateTime.
+	 * @param stopDateTime The stopDateTime to set
+	 */
+	public void setStopDateTime(long stopDateTime) {
+		this.stopDateTime = stopDateTime;
 	}
 
 }
