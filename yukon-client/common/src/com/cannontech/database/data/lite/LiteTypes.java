@@ -24,4 +24,23 @@ public final class LiteTypes
     public final static int YUKON_USER = 20;
     public final static int YUKON_ROLE = 21;
     public final static int YUKON_GROUP = 22;
+	
+	// Stars lite types
+	public final static int STARS_CUSTOMER_CONTACT = 101;
+	public final static int STARS_CUSTOMER_ADDRESS = 102;
+	public final static int STARS_LMPROGRAM = 103;
+	public final static int STARS_LMHARDWARE = 104;
+	public final static int STARS_LMCUSTOMER_EVENT = 105;
+	public final static int STARS_LMPROGRAM_EVENT = 106;
+	public final static int STARS_LMHARDWARE_EVENT = 107;
+	public final static int STARS_CONTROL_HISTORY = 108;
+	public final static int STARS_APPLIANCE_CATEGORY = 109;
+	public final static int STARS_CUSTOMER_WEB_CONFIGURATION = 110;
+	public final static int STARS_CUSTOMER_SELECTION_LIST = 111;
+	public final static int STARS_CUSTOMER_ACCOUNT = 112;
+	public final static int STARS_WORK_ORDER_BASE = 113;
+	public final static int STARS_CALL_REPORT_BASE = 114;
+	public final static int STARS_ACCOUNT_SITE = 115;
+	public final static int STARS_SITE_INFORMATION = 116;
+	public final static int STARS_CUSTOMER_BASE = 117;
 }
