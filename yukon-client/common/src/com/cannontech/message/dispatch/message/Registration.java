@@ -10,7 +10,7 @@ public class Registration extends com.cannontech.message.util.Message
 	private int appKnownPort;
 	private int appExpirationDelay;
    
-   private long regID = new java.util.Date().getTime();
+    private long regID = System.currentTimeMillis();
    
 /**
  * Registration constructor comment.
