@@ -29,8 +29,10 @@ yukon-client/export/bin
 yukon-client/export/build
 yukon-client/loadcontrol/.cvsignore
 yukon-client/loadcontrol/bin
+yukon-client/loadcontrol/build
 yukon-client/logger/.cvsignore
 yukon-client/logger/bin
+yukon-client/logger/build
 yukon-client/macs/.cvsignore
 yukon-client/macs/bin
 yukon-client/palm/.cvsignore
