@@ -529,11 +529,11 @@ public class CreateLMHardwareAction implements ActionBase {
 	private void parseResponse(StarsCreateLMHardware createHw, StarsInventory starsInv, StarsCustAccountInformation starsAcctInfo, HttpSession session) {
 		StarsInventories starsInvs = starsAcctInfo.getStarsInventories();
 		
+		String invLabel = ServletUtils.getInventoryLabel( starsInv );
 		int invNo = 0;
 		for (;invNo < starsInvs.getStarsInventoryCount(); invNo++) {
-			StarsInventory inv = starsInvs.getStarsInventory(invNo);
-			if (inv.getDeviceLabel().compareTo( starsInv.getDeviceLabel() ) > 0)
-				break;
+			String label = ServletUtils.getInventoryLabel( starsInvs.getStarsInventory(invNo) );
+			if (label.compareTo(invLabel) > 0) break;
 		}
 		
 		starsInvs.addStarsInventory( invNo, starsInv );
