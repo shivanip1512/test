@@ -40,7 +40,6 @@ public static void main(String[] args)
 
 		LoadControlMainPanel mainPanel = new LoadControlMainPanel();
 		mainPanel.setButtonBarPanelVisible( true );
-		mainPanel.initDividerPosition();
 
 		appFrame.getContentPane().add( mainPanel );
 		

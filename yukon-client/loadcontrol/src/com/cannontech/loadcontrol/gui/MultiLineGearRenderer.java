@@ -19,6 +19,9 @@ public class MultiLineGearRenderer extends javax.swing.JPanel implements javax.s
 	private java.awt.Font boldFont = null;
 	private java.awt.Font plainFont = null;
 	private javax.swing.JLabel ivjJLabelText = null;
+	
+	public static final String STRING_ARROW = "  ->";
+	
 /**
  * MultiLineGearRenderer constructor comment.
  */
@@ -303,7 +306,8 @@ private void processCurtailmentProgram( com.cannontech.loadcontrol.data.LMProgra
 	if( table.getRowHeight() != rowHeight )
 		table.setRowHeight( rowHeight );
 
-	getJLabelGearName().setText("  -Notify Time: " + (int)(value.getMinNotifyTime().intValue() / 60) + "(minutes)");
+	getJLabelGearName().setText(
+			STRING_ARROW + "Notify Time: " + (int)(value.getMinNotifyTime().intValue() / 60) + "(minutes)");
 	
 	add(getJLabelGearName());	
 }
@@ -333,7 +337,8 @@ private void processDirectProgram( com.cannontech.loadcontrol.data.LMProgramDire
 
 			if( dPrg.getCurrentGearNumber().intValue() == gear.getGearNumber().intValue() )
 			{
-				getJLabelGearName().setText("  ->" + gear.getGearName() + " " + gear.getPercentReduction() + "% " );
+				getJLabelGearName().setText(
+						STRING_ARROW + gear.getGearName() + " " + gear.getPercentReduction() + "% " );
 				found = true;
 				break;
 			}			
@@ -341,7 +346,9 @@ private void processDirectProgram( com.cannontech.loadcontrol.data.LMProgramDire
 
 		if( !found )
 		{
-			getJLabelGearName().setText("  -(Gear #" + gear.getGearNumber() + " not Found)");
+			getJLabelGearName().setText(
+				STRING_ARROW + "(Gear #" + gear.getGearNumber() + " not Found)");
+
 			com.cannontech.clientutils.CTILogger.info("*** For DirectProgram: " + dPrg.getYukonName() + ", gear #" + gear.getGearNumber() + " was not found.");
 		}
 		
@@ -349,7 +356,9 @@ private void processDirectProgram( com.cannontech.loadcontrol.data.LMProgramDire
 	}
 	else
 	{
-		getJLabelGearName().setText("  -(No Gears Found)");
+		getJLabelGearName().setText(
+			STRING_ARROW + "(No Gears Found)");
+
 		add(getJLabelGearName());
 	}
 

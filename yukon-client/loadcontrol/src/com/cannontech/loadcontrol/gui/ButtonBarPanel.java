@@ -11,7 +11,9 @@ public class ButtonBarPanel extends javax.swing.JPanel implements java.awt.event
 	private javax.swing.JButton ivjJButtonDisableAll = null;
 	private javax.swing.JButton ivjJButtonEnableAll = null;
 	private javax.swing.JButton ivjJButtonEnableControlArea = null;
-	private javax.swing.JButton ivjJButtonShowGrpsPrgs = null;
+	
+	//private javax.swing.JButton ivjJButtonShowGrpsPrgs = null;
+	
 /**
  * ButtonBarPanel constructor comment.
  */
@@ -55,8 +57,6 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
 		connEtoC3(e);
 	if (e.getSource() == getJButtonEnableControlArea()) 
 		connEtoC5(e);
-	if (e.getSource() == getJButtonShowGrpsPrgs()) 
-		connEtoC6(e);
 	// user code begin {2}
 	// user code end
 }
@@ -122,24 +122,7 @@ private void connEtoC5(java.awt.event.ActionEvent arg1) {
 		handleException(ivjExc);
 	}
 }
-/**
- * connEtoC6:  (JButtonShowGrpsPrgs.action.actionPerformed(java.awt.event.ActionEvent) --> ButtonBarPanel.fireJButtonShowGrpsPrgsAction_actionPerformed(Ljava.util.EventObject;)V)
- * @param arg1 java.awt.event.ActionEvent
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC6(java.awt.event.ActionEvent arg1) {
-	try {
-		// user code begin {1}
-		// user code end
-		this.fireJButtonShowGrpsPrgsAction_actionPerformed(new java.util.EventObject(this));
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
-}
+
 /**
  * Method to support listener events.
  * @param newEvent java.util.EventObject
@@ -170,16 +153,7 @@ protected void fireJButtonEnableControlAreaAction_actionPerformed(java.util.Even
 	};
 	fieldButtonBarPanelListenerEventMulticaster.JButtonEnableControlAreaAction_actionPerformed(newEvent);
 }
-/**
- * Method to support listener events.
- * @param newEvent java.util.EventObject
- */
-protected void fireJButtonShowGrpsPrgsAction_actionPerformed(java.util.EventObject newEvent) {
-	if (fieldButtonBarPanelListenerEventMulticaster == null) {
-		return;
-	};
-	fieldButtonBarPanelListenerEventMulticaster.JButtonShowGrpsPrgsAction_actionPerformed(newEvent);
-}
+
 /**
  * Insert the method's description here.
  * Creation date: (9/27/00 2:24:47 PM)
@@ -192,7 +166,6 @@ public javax.swing.JButton[] getAllJButtons()
 		getJButtonEnableControlArea(),		
 		getJButtonEnableAll(),
 		getJButtonDisableAll(),
-		getJButtonShowGrpsPrgs()
 	};
 	
 	
@@ -288,31 +261,7 @@ public javax.swing.JButton getJButtonEnableControlArea() {
 	}
 	return ivjJButtonEnableControlArea;
 }
-/**
- * Return the JButtonShowControlArea property value.
- * @return javax.swing.JButton
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-public javax.swing.JButton getJButtonShowGrpsPrgs() {
-	if (ivjJButtonShowGrpsPrgs == null) {
-		try {
-			ivjJButtonShowGrpsPrgs = new javax.swing.JButton();
-			ivjJButtonShowGrpsPrgs.setName("JButtonShowGrpsPrgs");
-			ivjJButtonShowGrpsPrgs.setMnemonic('s');
-			ivjJButtonShowGrpsPrgs.setText("Show Groups");
-			ivjJButtonShowGrpsPrgs.setMaximumSize(new java.awt.Dimension(135, 23));
-			ivjJButtonShowGrpsPrgs.setPreferredSize(new java.awt.Dimension(135, 23));
-			ivjJButtonShowGrpsPrgs.setMinimumSize(new java.awt.Dimension(135, 23));
-			// user code begin {1}
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjJButtonShowGrpsPrgs;
-}
+
 /**
  * Called whenever the part throws an exception.
  * @param exception java.lang.Throwable
@@ -334,8 +283,8 @@ private void initConnections() throws java.lang.Exception {
 	getJButtonEnableAll().addActionListener(this);
 	getJButtonDisableAll().addActionListener(this);
 	getJButtonEnableControlArea().addActionListener(this);
-	getJButtonShowGrpsPrgs().addActionListener(this);
 }
+
 /**
  * Initialize the class.
  */
@@ -350,7 +299,7 @@ private void initialize() {
 		add(getJButtonEnableControlArea(), getJButtonEnableControlArea().getName());
 		add(getJButtonEnableAll());
 		add(getJButtonDisableAll());
-		add(getJButtonShowGrpsPrgs(), getJButtonShowGrpsPrgs().getName());
+
 		initConnections();
 	} catch (java.lang.Throwable ivjExc) {
 		handleException(ivjExc);

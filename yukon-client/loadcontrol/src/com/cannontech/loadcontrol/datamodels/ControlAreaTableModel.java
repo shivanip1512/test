@@ -5,6 +5,7 @@ package com.cannontech.loadcontrol.datamodels;
  */
 import java.awt.Color;
 
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.loadcontrol.data.LMControlArea;
 
 public class ControlAreaTableModel extends com.cannontech.tdc.observe.ObservableRowTableModel implements com.cannontech.loadcontrol.gui.ControlAreaListener
@@ -287,12 +288,12 @@ public synchronized Object getValueAt(int row, int col)
 					
 			case START_TIME:
 				if( getRowAt(row).getDisableFlag().booleanValue() )
-					return "  ----";
+					return CtiUtilities.STRING_DASH_LINE;
 				else
 				{					
 					if( getRowAt(row).getDefDailyStartTime() == null
 						 || getRowAt(row).getDefDailyStartTime().intValue() == LMControlArea.INVAID_INT )
-						return "  ----";
+						return CtiUtilities.STRING_DASH_LINE;
 					else
 					{
 						int defStart = getRowAt(row).getDefDailyStartTime().intValue();
@@ -325,12 +326,12 @@ public synchronized Object getValueAt(int row, int col)
 
 			case STOP_TIME:
 				if( getRowAt(row).getDisableFlag().booleanValue() )
-					return "  ----";
+					return CtiUtilities.STRING_DASH_LINE;
 				else
 				{					
 					if( getRowAt(row).getDefDailyStopTime() == null
 						 || getRowAt(row).getDefDailyStopTime().intValue() == LMControlArea.INVAID_INT )
-						return "  ----";
+						return CtiUtilities.STRING_DASH_LINE;
 					else
 					{
 						int defStop = getRowAt(row).getDefDailyStopTime().intValue();

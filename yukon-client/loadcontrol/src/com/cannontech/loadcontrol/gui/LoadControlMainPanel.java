@@ -5,24 +5,21 @@ package com.cannontech.loadcontrol.gui;
  * Creation date: (9/19/00 10:13:05 AM)
  * @author: 
  */
+
+import com.cannontech.common.gui.panel.CompositeJSplitPane;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
+import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.datamodels.ControlAreaTableModel;
 import com.cannontech.loadcontrol.datamodels.GroupTableModel;
 import com.cannontech.loadcontrol.datamodels.ProgramTableModel;
 import com.cannontech.loadcontrol.datamodels.SelectableLMTableModel;
-import com.cannontech.loadcontrol.eexchange.datamodels.EExchangeCustomerTableModel;
-import com.cannontech.loadcontrol.eexchange.datamodels.EExchangeRowData;
-import com.cannontech.loadcontrol.eexchange.datamodels.OfferRowData;
-import com.cannontech.loadcontrol.eexchange.datamodels.OfferTableModel;
-import com.cannontech.loadcontrol.eexchange.gui.EExchangeButtonPanel;
-import com.cannontech.loadcontrol.eexchange.popupmenu.CustomerReplyPopUpMenu;
-import com.cannontech.loadcontrol.eexchange.popupmenu.OfferPopUpMenu;
 import com.cannontech.loadcontrol.messages.LMCommand;
 import com.cannontech.loadcontrol.popup.ControlAreaPopUpMenu;
 import com.cannontech.loadcontrol.popup.CurtailPopUpMenu;
 import com.cannontech.loadcontrol.popup.GroupPopUpMenu;
 import com.cannontech.loadcontrol.popup.ProgramPopUpMenu;
+import com.cannontech.tdc.observe.ObservableJPopupMenu;
 
 public class LoadControlMainPanel extends javax.swing.JPanel implements ButtonBarPanelListener, com.cannontech.tdc.SpecialTDCChild, java.awt.event.MouseListener, java.util.Observer, javax.swing.event.ListSelectionListener, javax.swing.event.PopupMenuListener, javax.swing.event.TableModelListener 
 {
@@ -30,36 +27,35 @@ public class LoadControlMainPanel extends javax.swing.JPanel implements ButtonBa
 	private static int userRightsInt = 0;
 	
 	//All the possible TableModels the BottomTable can have
-	private OfferTableModel offerTableModel = null;
 	private ProgramTableModel programTableModel = null;
 	private GroupTableModel groupTableModel = null;
-	private EExchangeCustomerTableModel eeCustomerTableModel = null;
-	private EExchangeButtonPanel eExchangeButtonPanel = null;
 	
 	private javax.swing.JComboBox comboBox = null;
 	private ControlAreaActionListener controlAreaActionListener = null;
-	private OfferPopUpMenu offerPopUpMenu = null;
-	private CustomerReplyPopUpMenu customerReplyPopUpMenu = null;
 	private ControlAreaPopUpMenu controlAreaPopUpMenu = null;
 	private GroupPopUpMenu groupPopUpMenu = null;
 	private ProgramPopUpMenu programPopUpMenu = null;
 	//private CurtailPopUpMenu curtailCustomerPopUpMenu = null;
 	private com.cannontech.common.gui.util.MessagePanel ivjMessagePanel = null;
-	private javax.swing.JSplitPane ivjJSplitPane = null;
+	private CompositeJSplitPane compSplitPane = null;
 	private ButtonBarPanel ivjButtonBarPanel = null;
 	// Flag for connection to macs server
 	private boolean lastConnectionStatus = false;
+	
 	private javax.swing.JTable ivjJTableControlArea = null;
-	private javax.swing.JTable ivjJTableBottom = null;
-// An invalid time for any schedule date field being the Year 1990 in millis
-	//public static final long INVALID_DATE = 631259999809L;
+	private javax.swing.JTable ivjJTableProgram = null;
+	private javax.swing.JTable ivjJTableGroup = null;
+	
 
 	public final static String LOAD_MANAGEMENT_NAME = "Load Management";
 	public final static String LOADCONTROL_VERSION = 
 			com.cannontech.common.version.VersionTools.getYUKON_VERSION();
 
-	private javax.swing.JScrollPane ivjJScrollPaneBottomTable = null;
 	private javax.swing.JScrollPane ivjJScrollPaneControlArea = null;
+	private javax.swing.JScrollPane ivjJScrollPaneProgramTable = null;
+	private javax.swing.JScrollPane ivjJScrollPaneGroupTable = null;
+
+
 /**
  * LoadControlMainPanel constructor comment.
  */
@@ -85,7 +81,7 @@ public void addActionListenerToJComponent( javax.swing.JComponent component )
 
 		getComboBox().removeAllItems();
 		getComboBox().addItem( ControlAreaActionListener.ALL_CONTROL_AREAS );
-		getComboBox().addItem( ControlAreaActionListener.ENERGY_EXCHANGE );
+		//getComboBox().addItem( ControlAreaActionListener.ENERGY_EXCHANGE );
 		
 		getComboBox().addActionListener( getControlAreaActionListener() );
 	}
@@ -105,55 +101,20 @@ public boolean needsComboIniting()
 public void buttonBarPanel_JButtonDisableAllAction_actionPerformed(java.util.EventObject newEvent) 
 {
 
-	if( getControlAreaTableModel().getCurrentView().equalsIgnoreCase(ControlAreaActionListener.ENERGY_EXCHANGE) )
+	for(int i = 0; i < getControlAreaTableModel().getRowCount(); i++ )
 	{
-		java.awt.Cursor savedCursor = com.cannontech.common.util.CtiUtilities.getParentFrame(this).getCursor();
-		com.cannontech.common.util.CtiUtilities.getParentFrame(this).setCursor( new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR) );
-		final javax.swing.JDialog dialog = new javax.swing.JDialog( com.cannontech.common.util.CtiUtilities.getParentFrame(this) );
-		
-		try
-		{						
-			com.cannontech.loadcontrol.eexchange.views.JPanelViewRevisions panel = new com.cannontech.loadcontrol.eexchange.views.JPanelViewRevisions()
-			{
-				public void exit()
-				{
-					dialog.dispose();
-				}
-
-			};
-
-			//panel.setSelectedOfferID( getSelectedOffer().getOwnerOffer().getOfferID().intValue() );
-			dialog.setContentPane(panel);
-			dialog.setTitle("Revision History");
-			dialog.setModal(true);
-			dialog.setSize(560, 530);
-			dialog.pack();
-			dialog.setLocationRelativeTo(this);
-		}
-		finally
+		if( !getControlAreaTableModel().getRowAt(i).getDisableFlag().booleanValue() )
 		{
-			com.cannontech.common.util.CtiUtilities.getParentFrame(this).setCursor( savedCursor );
+			LoadControlClientConnection.getInstance().write(
+				new LMCommand( LMCommand.DISABLE_CONTROL_AREA,
+					 				getControlAreaTableModel().getRowAt(i).getYukonID().intValue(),
+					 				0, 0.0) );
 		}
-
-		dialog.show();
 	}
-	else
-	{
-		for(int i = 0; i < getControlAreaTableModel().getRowCount(); i++ )
-		{
-			if( !getControlAreaTableModel().getRowAt(i).getDisableFlag().booleanValue() )
-			{
-				LoadControlClientConnection.getInstance().write(
-					new LMCommand( LMCommand.DISABLE_CONTROL_AREA,
-						 				getControlAreaTableModel().getRowAt(i).getYukonID().intValue(),
-						 				0, 0.0) );
-			}
-		}
 
-		getMessagePanel().messageEvent( new com.cannontech.common.util.MessageEvent(this, 
-			"All control areas " +
-			"have been manually DISABLED.", com.cannontech.common.util.MessageEvent.INFORMATION_MESSAGE) );
-	}
+	getMessagePanel().messageEvent( new com.cannontech.common.util.MessageEvent(this, 
+		"All control areas " +
+		"have been manually DISABLED.", com.cannontech.common.util.MessageEvent.INFORMATION_MESSAGE) );
 
 }
 /**
@@ -164,60 +125,24 @@ public void buttonBarPanel_JButtonDisableAllAction_actionPerformed(java.util.Eve
 public void buttonBarPanel_JButtonEnableAllAction_actionPerformed(java.util.EventObject newEvent) 
 {
 
-	if( getControlAreaTableModel().getCurrentView().equalsIgnoreCase(ControlAreaActionListener.ENERGY_EXCHANGE) )
+	boolean enablePerformed = false;
+	
+	for(int i = 0; i < getControlAreaTableModel().getRowCount(); i++ )
 	{
-		java.awt.Cursor savedCursor = com.cannontech.common.util.CtiUtilities.getParentFrame(this).getCursor();
-		com.cannontech.common.util.CtiUtilities.getParentFrame(this).setCursor( new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR) );
-		final javax.swing.JDialog dialog = new javax.swing.JDialog();
-		
-		try
-		{						
-			com.cannontech.loadcontrol.eexchange.views.JPanelCreateOffer panel = new com.cannontech.loadcontrol.eexchange.views.JPanelCreateOffer()
-			{
-				public void exit()
-				{
-					dialog.dispose();
-				}
-
-			};
-
-			dialog.setContentPane(panel);
-			dialog.setTitle("Offer Creation");
-			dialog.setModal(false);
-			dialog.setSize(450, 530);
-			dialog.pack();
-			dialog.setLocationRelativeTo(this);
-		}
-		finally
+		if( getControlAreaTableModel().getRowAt(i).getDisableFlag().booleanValue() )
 		{
-			com.cannontech.common.util.CtiUtilities.getParentFrame(this).setCursor( savedCursor );
+			LoadControlClientConnection.getInstance().write(
+				new LMCommand( LMCommand.ENABLE_CONTROL_AREA,
+					 				getControlAreaTableModel().getRowAt(i).getYukonID().intValue(),
+					 				0, 0.0) );
 		}
-
-
-		dialog.show();
 	}
-	else
-	{
-		boolean enablePerformed = false;
-		
-		for(int i = 0; i < getControlAreaTableModel().getRowCount(); i++ )
-		{
-			if( getControlAreaTableModel().getRowAt(i).getDisableFlag().booleanValue() )
-			{
-				LoadControlClientConnection.getInstance().write(
-					new LMCommand( LMCommand.ENABLE_CONTROL_AREA,
-						 				getControlAreaTableModel().getRowAt(i).getYukonID().intValue(),
-						 				0, 0.0) );
-			}
-		}
 
-		getMessagePanel().messageEvent( new com.cannontech.common.util.MessageEvent(this, 
-			"All control areas " + 
-			"have been manually ENABLED.", com.cannontech.common.util.MessageEvent.INFORMATION_MESSAGE) );
-	}
-		
-
+	getMessagePanel().messageEvent( new com.cannontech.common.util.MessageEvent(this, 
+		"All control areas " + 
+		"have been manually ENABLED.", com.cannontech.common.util.MessageEvent.INFORMATION_MESSAGE) );
 }
+
 /**
  * Comment
  */
@@ -231,6 +156,10 @@ public void buttonBarPanel_JButtonEnableControlAreaAction_actionPerformed(java.u
 				new LMCommand( LMCommand.ENABLE_CONTROL_AREA,
 					 				getSelectedControlArea().getYukonID().intValue(),
 					 				0, 0.0) );
+
+			getMessagePanel().messageEvent( new com.cannontech.common.util.MessageEvent(this, 
+				"Control area '" + getSelectedControlArea().getYukonName() + 
+				"' has been manually ENABLED.", com.cannontech.common.util.MessageEvent.INFORMATION_MESSAGE) );		
 		}
 		else
 		{
@@ -238,192 +167,17 @@ public void buttonBarPanel_JButtonEnableControlAreaAction_actionPerformed(java.u
 				new LMCommand( LMCommand.DISABLE_CONTROL_AREA,
 					 				getSelectedControlArea().getYukonID().intValue(),
 					 				0, 0.0) );
+
+			getMessagePanel().messageEvent( new com.cannontech.common.util.MessageEvent(this, 
+				"Control area '" + getSelectedControlArea().getYukonName() + 
+				"' has been manually DISABLED.", com.cannontech.common.util.MessageEvent.INFORMATION_MESSAGE) );					 				
 		}
+		
 	}
 	
 	return;
 }
-/**
- * Comment
- *	This action will do the ShowGroups/ShowPrograms 
- *	  and ShowOffers/ShowCustomers
- *   based on the current view.
- */
-public void buttonBarPanel_JButtonShowGrpsPrgsAction_actionPerformed1(java.util.EventObject newEvent) 
-{
-	if( getControlAreaTableModel().getCurrentView().equalsIgnoreCase(ControlAreaActionListener.ENERGY_EXCHANGE) )
-	{
-		if( getJTableBottomTableModel() instanceof EExchangeCustomerTableModel )
-		{
-			getButtonBarPanel().getJButtonShowGrpsPrgs().setText("Show Customers");
-			setJTableBottomModel( getOfferTableModel(), new LoadControlCellRenderer() );
-		}
-		else
-		{
-			getButtonBarPanel().getJButtonShowGrpsPrgs().setText("Show Offers");
-			setJTableBottomModel( getEECustomerTableModel(), new LoadControlCellRenderer() );
-		}
-	}
-	else
-	{
-		if( getJTableBottomTableModel() instanceof GroupTableModel )
-		{
-			getButtonBarPanel().getJButtonShowGrpsPrgs().setText("Show Groups");
-			setJTableBottomModel( getProgramTableModel(), new MultiLineGearRenderer() );
-		}
-		else
-		{
-			getButtonBarPanel().getJButtonShowGrpsPrgs().setText("Show Programs");
-			setJTableBottomModel( getGroupTableModel(), new LoadControlCellRenderer() );
-		}
-	}
-	
 
-}
-/**
- * connEtoC1:  (ProgramTable.mouse.mouseClicked(java.awt.event.MouseEvent) --> LoadControlMainPanel.programTable_MouseClicked(Ljava.awt.event.MouseEvent;)V)
- * @param arg1 java.awt.event.MouseEvent
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC1(java.awt.event.MouseEvent arg1) {
-	try {
-		// user code begin {1}
-		// user code end
-		this.controlAreaTable_MouseClicked(arg1);
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
-}
-/**
- * connEtoC2:  (GroupTable.mouse.mousePressed(java.awt.event.MouseEvent) --> LoadControlMainPanel.groupTable_MousePressed(Ljava.awt.event.MouseEvent;)V)
- * @param arg1 java.awt.event.MouseEvent
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC2(java.awt.event.MouseEvent arg1) {
-	try {
-		// user code begin {1}
-		// user code end
-		this.jTableBottom_MouseClicked(arg1);
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
-}
-/**
- * connEtoC3:  (JTableControlArea.mouse.mousePressed(java.awt.event.MouseEvent) --> LoadControlMainPanel.controlAreaTable_MousePressed(Ljava.awt.event.MouseEvent;)V)
- * @param arg1 java.awt.event.MouseEvent
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC3(java.awt.event.MouseEvent arg1) {
-	try {
-		// user code begin {1}
-		// user code end
-		this.controlAreaTable_MousePressed(arg1);
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
-}
-/**
- * connEtoC4:  (ButtonBarPanel.buttonBarPanel.JButtonEnableAllAction_actionPerformed(java.util.EventObject) --> LoadControlMainPanel.buttonBarPanel_JButtonEnableAllAction_actionPerformed(Ljava.util.EventObject;)V)
- * @param arg1 java.util.EventObject
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC4(java.util.EventObject arg1) {
-	try {
-		// user code begin {1}
-		// user code end
-		this.buttonBarPanel_JButtonEnableAllAction_actionPerformed(arg1);
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
-}
-/**
- * connEtoC5:  (ButtonBarPanel.buttonBarPanel.JButtonDisableAllAction_actionPerformed(java.util.EventObject) --> LoadControlMainPanel.buttonBarPanel_JButtonDisableAllAction_actionPerformed(Ljava.util.EventObject;)V)
- * @param arg1 java.util.EventObject
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC5(java.util.EventObject arg1) {
-	try {
-		// user code begin {1}
-		// user code end
-		this.buttonBarPanel_JButtonDisableAllAction_actionPerformed(arg1);
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
-}
-/**
- * connEtoC6:  (JTableBottom.mouse.mousePressed(java.awt.event.MouseEvent) --> LoadControlMainPanel.jTableBottom_MousePressed(Ljava.awt.event.MouseEvent;)V)
- * @param arg1 java.awt.event.MouseEvent
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC6(java.awt.event.MouseEvent arg1) {
-	try {
-		// user code begin {1}
-		// user code end
-		this.jTableBottom_MousePressed(arg1);
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
-}
-/**
- * connEtoC7:  (ButtonBarPanel.buttonBarPanel.JButtonShowControlAreaAction_actionPerformed(java.util.EventObject) --> LoadControlMainPanel.buttonBarPanel_JButtonShowControlAreaAction_actionPerformed(Ljava.util.EventObject;)V)
- * @param arg1 java.util.EventObject
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC7(java.util.EventObject arg1) {
-	try {
-		// user code begin {1}
-		// user code end
-		this.buttonBarPanel_JButtonShowGrpsPrgsAction_actionPerformed1(arg1);
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
-}
-/**
- * connEtoC8:  (ButtonBarPanel.buttonBarPanel.JButtonShowControlAreaAction_actionPerformed(java.util.EventObject) --> LoadControlMainPanel.buttonBarPanel_JButtonShowControlAreaAction_actionPerformed(Ljava.util.EventObject;)V)
- * @param arg1 java.util.EventObject
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC8(java.util.EventObject arg1) {
-	try {
-		// user code begin {1}
-		// user code end
-		this.buttonBarPanel_JButtonEnableControlAreaAction_actionPerformed(arg1);
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
-}
 /**
  * Comment
  */
@@ -437,8 +191,8 @@ public void controlAreaTable_MouseClicked(java.awt.event.MouseEvent event)
 		else
 		{
 			int rowHeight = getJTableControlArea().getRowHeight()-1;
-			int loc = rowHeight + getJTableControlArea().getTableHeader().getHeight() + getJSplitPane().getDividerSize();
-			getJSplitPane().setDividerLocation( loc );
+			int loc = rowHeight + getJTableControlArea().getTableHeader().getHeight() + getCompSplitPane().getDividerSize();
+			getCompSplitPane().setDividerLocation( loc );
 
 			getJScrollPaneControlArea().getViewport().setViewPosition( 
 				new java.awt.Point( 0, getJTableControlArea().getRowHeight() * getJTableControlArea().getSelectedRow() ) );
@@ -448,6 +202,17 @@ public void controlAreaTable_MouseClicked(java.awt.event.MouseEvent event)
 	
 	return;
 }
+
+public void groupTable_MouseClicked(java.awt.event.MouseEvent event) 
+{
+	//If there was a double click open a new edit window
+	if (event.getClickCount() == 2)
+	{
+		if( event.isShiftDown() )
+			showDebugInfo( getGroupTableModel().getRowAt(getJTableGroup().getSelectedRow()) );
+	}
+}
+	
 /**
  * Comment
  */
@@ -479,7 +244,7 @@ private String[] createPrintableText()
 	int j = 0;
 	for( j = 0; j < columnCount; j++ )
 	{
-		tableData[ j ] = getJTableBottomTableModel().getColumnName( j );
+		tableData[ j ] = getProgramTableModel().getColumnName( j );
 	}
 	
 	for( int i = 0; i < rowCount; i++ )
@@ -489,7 +254,7 @@ private String[] createPrintableText()
 			/*if( getJTableBottom().getModel().getValueAt( i, k ).equals("") )
 				break;  // blank row
 			else*/
-				tableData[ j++ ] = getJTableBottomTableModel().getValueAt( i, k ).toString();
+				tableData[ j++ ] = getProgramTableModel().getValueAt( i, k ).toString();
 		}
 	}
 	
@@ -660,7 +425,9 @@ private ControlAreaActionListener getControlAreaActionListener()
 private com.cannontech.loadcontrol.popup.ControlAreaPopUpMenu getControlAreaPopUpMenu() 
 {
 	if( controlAreaPopUpMenu == null )
-		controlAreaPopUpMenu = new ControlAreaPopUpMenu();
+	{
+		controlAreaPopUpMenu = new ControlAreaPopUpMenu();		
+	}
 
 	return controlAreaPopUpMenu;
 }
@@ -686,45 +453,6 @@ private com.cannontech.loadcontrol.popup.CurtailPopUpMenu getCurtailCustomerPopU
 	return curtailCustomerPopUpMenu;
 }
 */
-
-/**
- * Insert the method's description here.
- * Creation date: (1/3/2002 12:32:26 PM)
- * @return CustomerReplyPopUpMenu
- */
-private CustomerReplyPopUpMenu getCustomerReplyPopUpMenu() 
-{
-	if( customerReplyPopUpMenu == null )
-		customerReplyPopUpMenu = new CustomerReplyPopUpMenu();
-
-	return customerReplyPopUpMenu;
-}
-/**
- * Insert the method's description here.
- * Creation date: (9/28/00 11:30:03 AM)
- * @return com.cannontech.loadcontrol.eexchange.datamodels.EExchangeCustomerTableModel
- */
-private EExchangeCustomerTableModel getEECustomerTableModel()
-{
-	if( eeCustomerTableModel == null )
-		eeCustomerTableModel = new EExchangeCustomerTableModel();
-
-	return eeCustomerTableModel;
-}
-/**
- * Return the ButtonBarPanel property value.
- * @return com.cannontech.loadcontrol.eexchange.gui.EExchangeButtonPanel
- */
-private EExchangeButtonPanel getEExchangeBarPanel()
-{
-	if (eExchangeButtonPanel == null) 
-	{
-		eExchangeButtonPanel = new com.cannontech.loadcontrol.eexchange.gui.EExchangeButtonPanel();
-		eExchangeButtonPanel.setName("EExchangeButtonBarPanel");
-	}
-
-	return eExchangeButtonPanel;
-}
 /**
  * Insert the method's description here.
  * Creation date: (8/4/00 8:59:17 AM)
@@ -784,15 +512,18 @@ public String getJComboLabel() {
  * @return javax.swing.JScrollPane
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JScrollPane getJScrollPaneBottomTable() {
-	if (ivjJScrollPaneBottomTable == null) {
+private javax.swing.JScrollPane getJScrollPaneProgramTable() {
+	if (ivjJScrollPaneProgramTable == null) {
 		try {
-			ivjJScrollPaneBottomTable = new javax.swing.JScrollPane();
-			ivjJScrollPaneBottomTable.setName("JScrollPaneBottomTable");
-			ivjJScrollPaneBottomTable.setVerticalScrollBarPolicy(javax.swing.JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-			ivjJScrollPaneBottomTable.setHorizontalScrollBarPolicy(javax.swing.JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-			getJScrollPaneBottomTable().setViewportView(getJTableBottom());
+			ivjJScrollPaneProgramTable = new javax.swing.JScrollPane();
+			ivjJScrollPaneProgramTable.setName("JScrollPaneProgramTable");
+			ivjJScrollPaneProgramTable.setVerticalScrollBarPolicy(javax.swing.JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+			ivjJScrollPaneProgramTable.setHorizontalScrollBarPolicy(javax.swing.JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+			ivjJScrollPaneProgramTable.setViewportView(getJTableProgram());
 			// user code begin {1}
+			
+			ivjJScrollPaneProgramTable.setPreferredSize(new java.awt.Dimension(30, 30));
+			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -800,8 +531,32 @@ private javax.swing.JScrollPane getJScrollPaneBottomTable() {
 			handleException(ivjExc);
 		}
 	}
-	return ivjJScrollPaneBottomTable;
+	return ivjJScrollPaneProgramTable;
 }
+
+private javax.swing.JScrollPane getJScrollPaneGroupTable() {
+	if (ivjJScrollPaneGroupTable == null) {
+		try {
+			ivjJScrollPaneGroupTable = new javax.swing.JScrollPane();
+			ivjJScrollPaneGroupTable.setName("JScrollPaneGroupTable");
+			ivjJScrollPaneGroupTable.setVerticalScrollBarPolicy(javax.swing.JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+			ivjJScrollPaneGroupTable.setHorizontalScrollBarPolicy(javax.swing.JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+			ivjJScrollPaneGroupTable.setViewportView(getJTableGroup());
+			// user code begin {1}
+
+			ivjJScrollPaneGroupTable.setPreferredSize(new java.awt.Dimension(30, 30));
+
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJScrollPaneGroupTable;
+}
+
+
 /**
  * Return the JScrollPaneControlArea property value.
  * @return javax.swing.JScrollPane
@@ -815,7 +570,10 @@ private javax.swing.JScrollPane getJScrollPaneControlArea() {
 			ivjJScrollPaneControlArea.setVerticalScrollBarPolicy(javax.swing.JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 			ivjJScrollPaneControlArea.setHorizontalScrollBarPolicy(javax.swing.JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 			getJScrollPaneControlArea().setViewportView(getJTableControlArea());
-			// user code begin {1}
+			// user code begin {1}		
+			
+			ivjJScrollPaneControlArea.setPreferredSize(new java.awt.Dimension(200, 200));
+				
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -825,86 +583,83 @@ private javax.swing.JScrollPane getJScrollPaneControlArea() {
 	}
 	return ivjJScrollPaneControlArea;
 }
-/**
- * Return the JSplitPane1 property value.
- * @return javax.swing.JSplitPane
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JSplitPane getJSplitPane() {
-	if (ivjJSplitPane == null) {
-		try {
-			ivjJSplitPane = new javax.swing.JSplitPane(javax.swing.JSplitPane.VERTICAL_SPLIT);
-			ivjJSplitPane.setName("JSplitPane");
-			ivjJSplitPane.setDividerSize(8);
-			ivjJSplitPane.setLastDividerLocation(110);
-			ivjJSplitPane.setDividerLocation(110);
-			ivjJSplitPane.setPreferredSize(new java.awt.Dimension(455, 850));
-			ivjJSplitPane.setOneTouchExpandable(true);
-			getJSplitPane().add(getJScrollPaneControlArea(), "top");
-			getJSplitPane().add(getJScrollPaneBottomTable(), "bottom");
-			// user code begin {1}
-			
-			ivjJSplitPane.setLastDividerLocation(1);
-			ivjJSplitPane.setDividerLocation(0.0);
 
-			com.cannontech.common.gui.util.SplitPaneDividerListener list = 
-				new com.cannontech.common.gui.util.SplitPaneDividerListener(getJSplitPane());
-
-			ivjJSplitPane.addComponentListener( list );
-			ivjJSplitPane.addPropertyChangeListener( list );
-			ivjJSplitPane.addMouseMotionListener( list );
-			
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
+private CompositeJSplitPane getCompSplitPane()
+{
+	if( compSplitPane == null )
+	{		
+		compSplitPane = new CompositeJSplitPane( 
+								getJScrollPaneControlArea(), 
+								getJScrollPaneProgramTable(), 
+								getJScrollPaneGroupTable() );
 	}
-	return ivjJSplitPane;
+	
+	return compSplitPane;
 }
+
 /**
  * Return the JTableBottom property value.
  * @return javax.swing.JTable
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JTable getJTableBottom() {
-	if (ivjJTableBottom == null) {
+private javax.swing.JTable getJTableProgram() {
+	if (ivjJTableProgram == null) {
 		try {
-			ivjJTableBottom = new javax.swing.JTable();
-			ivjJTableBottom.setName("JTableBottom");
-			getJScrollPaneBottomTable().setColumnHeaderView(ivjJTableBottom.getTableHeader());
-			ivjJTableBottom.setBounds(0, 0, 200, 200);
+			ivjJTableProgram = new javax.swing.JTable();
+			ivjJTableProgram.setName("JTableBottom");
+			getJScrollPaneProgramTable().setColumnHeaderView(ivjJTableProgram.getTableHeader());
+			ivjJTableProgram.setBounds(0, 0, 200, 200);
 			// user code begin {1}
 
-			ivjJTableBottom.setModel( getProgramTableModel() );
+			ivjJTableProgram.setModel( getProgramTableModel() );
 
-			ivjJTableBottom.setBackground( getJScrollPaneBottomTable().getBackground() );
-			ivjJTableBottom.setAutoCreateColumnsFromModel( true );
-			ivjJTableBottom.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_NEXT_COLUMN);
-			ivjJTableBottom.setGridColor( ivjJTableBottom.getTableHeader().getBackground()  );
-			ivjJTableBottom.setDefaultRenderer( Object.class, new MultiLineGearRenderer() );
-			ivjJTableBottom.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-			ivjJTableBottom.createDefaultColumnsFromModel();
+			ivjJTableProgram.setBackground( getJScrollPaneProgramTable().getBackground() );
+			ivjJTableProgram.setAutoCreateColumnsFromModel( true );
+			ivjJTableProgram.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_NEXT_COLUMN);
+			ivjJTableProgram.setGridColor( ivjJTableProgram.getTableHeader().getBackground()  );
+			ivjJTableProgram.setDefaultRenderer( Object.class, new MultiLineGearRenderer() );
+			ivjJTableProgram.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+			ivjJTableProgram.createDefaultColumnsFromModel();
 			
-			// user code end
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
+
 			handleException(ivjExc);
 		}
 	}
-	return ivjJTableBottom;
+	return ivjJTableProgram;
 }
+
 /**
- * Insert the method's description here.
- * Creation date: (1/16/2002 5:01:33 PM)
- * @return com.cannontech.loadcontrol.datamodels.SelectableLMTableModel
+ * Return the JTableBottom property value.
+ * @return javax.swing.JTable
  */
-private SelectableLMTableModel getJTableBottomTableModel() 
-{
-	return (SelectableLMTableModel)getJTableBottom().getModel();
+private javax.swing.JTable getJTableGroup() {
+	if (ivjJTableGroup == null) {
+		try {
+			ivjJTableGroup = new javax.swing.JTable();
+			ivjJTableGroup.setName("JTableGroup");
+			getJScrollPaneProgramTable().setColumnHeaderView(ivjJTableGroup.getTableHeader());
+			ivjJTableGroup.setBounds(0, 0, 200, 200);
+			// user code begin {1}
+	
+			ivjJTableGroup.setModel( getGroupTableModel() );
+
+			ivjJTableGroup.setBackground( getJScrollPaneGroupTable().getBackground() );
+			ivjJTableGroup.setAutoCreateColumnsFromModel( true );
+			ivjJTableGroup.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_NEXT_COLUMN);
+			ivjJTableGroup.setGridColor( ivjJTableProgram.getTableHeader().getBackground()  );
+			ivjJTableGroup.setDefaultRenderer( Object.class, new LoadControlCellRenderer() );
+			ivjJTableGroup.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+			ivjJTableGroup.createDefaultColumnsFromModel();
+
+		} catch (java.lang.Throwable ivjExc) {
+
+			handleException(ivjExc);
+		}
+	}
+	return ivjJTableGroup;
 }
+
+
 /**
  * Return the JTableControlArea property value.
  * @return javax.swing.JTable
@@ -947,7 +702,8 @@ public javax.swing.JTable[] getJTables()
 	javax.swing.JTable[] tables =
 	{
 		getJTableControlArea(),
-		getJTableBottom()
+		getJTableProgram(),
+		getJTableGroup()
 	};
 		
 	return tables;
@@ -963,7 +719,6 @@ public javax.swing.JTable[] getJTables()
    
 public javax.swing.JPanel getMainJPanel()
 {
-	this.initDividerPosition();
 
 	//if( LoadControlClientConnection.getInstance().needInitConn() )
 	initClientConnection();
@@ -974,17 +729,12 @@ public javax.swing.JPanel getMainJPanel()
  * Return the MessagePanel property value.
  * @return com.cannontech.common.gui.util.MessagePanel
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private com.cannontech.common.gui.util.MessagePanel getMessagePanel() {
 	if (ivjMessagePanel == null) {
 		try {
 			ivjMessagePanel = new com.cannontech.common.gui.util.MessagePanel();
 			ivjMessagePanel.setName("MessagePanel");
-			// user code begin {1}
-			// user code end
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}
@@ -1000,30 +750,6 @@ private com.cannontech.common.gui.util.MessagePanel getMessagePanel() {
 public String getName()
 {
 	return LOAD_MANAGEMENT_NAME;
-}
-/**
- * Insert the method's description here.
- * Creation date: (1/3/2002 12:32:26 PM)
- * @return OfferPopUpMenu
- */
-private OfferPopUpMenu getOfferPopUpMenu() 
-{
-	if( offerPopUpMenu == null )
-		offerPopUpMenu = new OfferPopUpMenu();
-
-	return offerPopUpMenu;
-}
-/**
- * Insert the method's description here.
- * Creation date: (7/30/2001 4:48:52 PM)
- * @return com.cannontech.loadcontrol.datamodels.OfferTableModel
- */
-private OfferTableModel getOfferTableModel() 
-{
-	if( offerTableModel == null )
-		offerTableModel = new OfferTableModel();
-		
-	return offerTableModel;
 }
 /**
  * Insert the method's description here.
@@ -1055,9 +781,9 @@ private ProgramTableModel getProgramTableModel()
  * This method was created in VisualAge.
  * @return Object
  */
-protected Object getSelectedBottomRow() 
+protected Object getSelectedProgram() 
 {
-	javax.swing.ListSelectionModel lsm = getJTableBottom().getSelectionModel();
+	javax.swing.ListSelectionModel lsm = getJTableProgram().getSelectionModel();
 	
 	//only one should be selected
 	int selectedRow = lsm.getMinSelectionIndex();
@@ -1065,13 +791,13 @@ protected Object getSelectedBottomRow()
 	if( selectedRow < 0 )
 		return null;
 		
-	return getJTableBottomTableModel().getRowAt( selectedRow );
+	return getProgramTableModel().getRowAt( selectedRow );
 }
 /**
  * This method was created in VisualAge.
  * @return com.cannontech.loadcontrol.data.LMControlArea
  */
-protected com.cannontech.loadcontrol.data.LMControlArea getSelectedControlArea() 
+protected LMControlArea getSelectedControlArea() 
 {
 	javax.swing.ListSelectionModel lsm = getJTableControlArea().getSelectionModel();
 	
@@ -1156,25 +882,19 @@ private void initClientConnection()
  * Initializes connections
  * @exception java.lang.Exception The exception description.
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private void initConnections() throws java.lang.Exception {
-	// user code begin {1}
-
-
 	//Observe the Connection to the Client
 	LoadControlClientConnection.getInstance().addObserver( this );
 
 	//Listen for any selections made on the JTables
 	getJTableControlArea().getSelectionModel().addListSelectionListener( this );
-	//getJTableBottom().getSelectionModel().addListSelectionListener( this );
+	getJTableProgram().getSelectionModel().addListSelectionListener( this );
 
 	//Listen for TableModelEvents
 	// with the GroupTableModel AND the ProgramTableModel
 	getJTableControlArea().getModel().addTableModelListener( this );
 	getJTableControlArea().getModel().addTableModelListener( getProgramTableModel() );
 	getJTableControlArea().getModel().addTableModelListener( getGroupTableModel() );
-	getJTableControlArea().getModel().addTableModelListener( getOfferTableModel() );
-	getJTableControlArea().getModel().addTableModelListener( getEECustomerTableModel() );
 
 	
 	// add the GroupPopUp menu listener AND the ProgramPopUp menu listener here
@@ -1210,177 +930,77 @@ private void initConnections() throws java.lang.Exception {
 	getGroupPopUpMenu().addPopupMenuListener( this );
 	//getCurtailCustomerPopUpMenu().addPopupMenuListener( this );
 	getProgramPopUpMenu().addPopupMenuListener( this );
-	getCustomerReplyPopUpMenu().addPopupMenuListener( this );
-	getOfferPopUpMenu().addPopupMenuListener( this );
 
 	// add the ControlAreaPopUp menu listener here
 	getJTableControlArea().addMouseListener( new com.cannontech.clientutils.popup.PopUpMenuShower(getControlAreaPopUpMenu()) );
 	getControlAreaPopUpMenu().addPopupMenuListener( this );
 
-	
-	// user code end
 	getButtonBarPanel().addButtonBarPanelListener(this);
+	
+	// Add some table mouse listeners
 	getJTableControlArea().addMouseListener(this);
-	getJTableBottom().addMouseListener(this);
+	getJTableProgram().addMouseListener(this);
+	getJTableGroup().addMouseListener(this);
 }
-/**
- * Insert the method's description here.
- * Creation date: (8/24/00 3:07:26 PM)
- */
-public void initDividerPosition() 
-{
 
-	//just have the split pane start open now
-	getJSplitPane().setDividerLocation( 100 );
-	
-/*** Crazy Code starts here *****************************************************
-	// The following code is ugly, so is the bug its working around!!!!
-	//  Java 1.3 has some more functions for the JSplitPane, available so change 
-	//  this when we get 1.3.   Thank you for your time & understanding.
-	Thread t = new Thread( new Runnable()
-	{
-		public void run()
-		{
-
-			while( getJSplitPane().getDividerLocation() != (getJSplitPane().getPreferredSize().getHeight() / 2) )
-			{
-				//getJSplitPane().setDividerLocation( getJSplitPane().getMaximumDividerLocation() );	
-				getJSplitPane().setDividerLocation( 0.5 );
-				
-				try
-				{
-					Thread.sleep(100);
-				}
-				catch(InterruptedException e)
-				{
-					com.cannontech.clientutils.CTILogger.info("The thread that sets the divider in the JSplitPane was interrupted.");
-				}
-
-				getJSplitPane().repaint();
-			}
-		}
-
-	} );
-	
-	t.setDaemon( true );
-	t.start();
-*** Crazy Code ends here *****************************************************/
-
-}
 /**
  * Initialize the class.
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private void initialize() {
 	try {
-		// user code begin {1}
-		// user code end
 		setName("LoadControlMainPanel");
-		setLayout(new java.awt.GridBagLayout());
-		setSize(638, 454);
+		setLayout( new java.awt.BorderLayout() );
 
-		java.awt.GridBagConstraints constraintsJSplitPane = new java.awt.GridBagConstraints();
-		constraintsJSplitPane.gridx = 1; constraintsJSplitPane.gridy = 2;
-		constraintsJSplitPane.fill = java.awt.GridBagConstraints.BOTH;
-		constraintsJSplitPane.anchor = java.awt.GridBagConstraints.WEST;
-		constraintsJSplitPane.weightx = 1.0;
-		constraintsJSplitPane.weighty = 1.0;
-		constraintsJSplitPane.ipadx = 608;
-		constraintsJSplitPane.ipady = 320;
-		constraintsJSplitPane.insets = new java.awt.Insets(1, 3, 2, 3);
-		add(getJSplitPane(), constraintsJSplitPane);
+		add( getCompSplitPane(), "Center" );
 
-		java.awt.GridBagConstraints constraintsMessagePanel = new java.awt.GridBagConstraints();
-		constraintsMessagePanel.gridx = 1; constraintsMessagePanel.gridy = 3;
-		constraintsMessagePanel.fill = java.awt.GridBagConstraints.HORIZONTAL;
-		constraintsMessagePanel.anchor = java.awt.GridBagConstraints.SOUTHWEST;
-		constraintsMessagePanel.weightx = 1.0;
-		constraintsMessagePanel.weighty = 1.0;
-		constraintsMessagePanel.ipadx = 543;
-		constraintsMessagePanel.ipady = 25;
-		constraintsMessagePanel.insets = new java.awt.Insets(3, 3, 4, 3);
-		add(getMessagePanel(), constraintsMessagePanel);
+		add( getButtonBarPanel(), "North" );
 
-		java.awt.GridBagConstraints constraintsButtonBarPanel = new java.awt.GridBagConstraints();
-		constraintsButtonBarPanel.gridx = 1; constraintsButtonBarPanel.gridy = 1;
-		constraintsButtonBarPanel.fill = java.awt.GridBagConstraints.HORIZONTAL;
-		constraintsButtonBarPanel.anchor = java.awt.GridBagConstraints.NORTHWEST;
-		constraintsButtonBarPanel.weightx = 1.0;
-		constraintsButtonBarPanel.weighty = 1.0;
-		constraintsButtonBarPanel.ipadx = 141;
-		constraintsButtonBarPanel.ipady = 4;
-		constraintsButtonBarPanel.insets = new java.awt.Insets(1, 3, 0, 3);
-		add(getButtonBarPanel(), constraintsButtonBarPanel);
+		add( getMessagePanel(), "South" );
+		
 		initConnections();
+
 	} catch (java.lang.Throwable ivjExc) {
 		handleException(ivjExc);
 	}
-	// user code begin {2}
+}
 
-	// user code end
-}
 /**
  * Method to handle events for the ButtonBarPanelListener interface.
  * @param newEvent java.util.EventObject
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 public void JButtonDisableAllAction_actionPerformed(java.util.EventObject newEvent) {
-	// user code begin {1}
-	// user code end
 	if (newEvent.getSource() == getButtonBarPanel()) 
-		connEtoC5(newEvent);
-	// user code begin {2}
-	// user code end
+		buttonBarPanel_JButtonDisableAllAction_actionPerformed(newEvent);
 }
 /**
  * Method to handle events for the ButtonBarPanelListener interface.
  * @param newEvent java.util.EventObject
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 public void JButtonEnableAllAction_actionPerformed(java.util.EventObject newEvent) {
-	// user code begin {1}
-	// user code end
 	if (newEvent.getSource() == getButtonBarPanel()) 
-		connEtoC4(newEvent);
-	// user code begin {2}
-	// user code end
+		buttonBarPanel_JButtonEnableAllAction_actionPerformed(newEvent);
 }
 /**
  * Method to handle events for the ButtonBarPanelListener interface.
  * @param newEvent java.util.EventObject
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 public void JButtonEnableControlAreaAction_actionPerformed(java.util.EventObject newEvent) {
-	// user code begin {1}
-	// user code end
+
 	if (newEvent.getSource() == getButtonBarPanel()) 
-		connEtoC8(newEvent);
-	// user code begin {2}
-	// user code end
+		buttonBarPanel_JButtonEnableControlAreaAction_actionPerformed(newEvent);
+
 }
-/**
- * Method to handle events for the ButtonBarPanelListener interface.
- * @param newEvent java.util.EventObject
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-public void JButtonShowGrpsPrgsAction_actionPerformed(java.util.EventObject newEvent) {
-	// user code begin {1}
-	// user code end
-	if (newEvent.getSource() == getButtonBarPanel()) 
-		connEtoC7(newEvent);
-	// user code begin {2}
-	// user code end
-}
+
 /**
  * Comment
  */
-public void jTableBottom_MouseClicked(java.awt.event.MouseEvent mouseEvent) 
+public void jTableProgram_MouseClicked(java.awt.event.MouseEvent mouseEvent) 
 {
 	if( mouseEvent.getClickCount() == 2 )
 	{
 		if( mouseEvent.isShiftDown() )
 		{
-			showDebugInfo(  getJTableBottomTableModel().getRowAt(getJTableBottom().getSelectedRow()) );
+			showDebugInfo(  getProgramTableModel().getRowAt(getJTableProgram().getSelectedRow()) );
 		}
 
 	}
@@ -1390,105 +1010,62 @@ public void jTableBottom_MouseClicked(java.awt.event.MouseEvent mouseEvent)
 /**
  * Comment
  */
-public void jTableBottom_MousePressed(java.awt.event.MouseEvent event) 
+public void jTableProgram_MousePressed(java.awt.event.MouseEvent event) 
 {
-	if( event.getSource() == LoadControlMainPanel.this.getJTableBottom() )
+	if( event.getSource() == LoadControlMainPanel.this.getJTableProgram() )
 	{
-		int rowLocation = getJTableBottom().rowAtPoint( event.getPoint() );
+		int rowLocation = getJTableProgram().rowAtPoint( event.getPoint() );
 		
-		getJTableBottom().getSelectionModel().setSelectionInterval(
+		getJTableProgram().getSelectionModel().setSelectionInterval(
 				 		rowLocation, rowLocation );
 	}
 	
 	return;
 }
-/**
- * main entrypoint - starts the part when it is run as an application
- * @param args java.lang.String[]
- */
-public static void main(java.lang.String[] args) {
-	try {
-		javax.swing.JFrame frame = new javax.swing.JFrame();
-		LoadControlMainPanel aLoadControlMainPanel;
-		aLoadControlMainPanel = new LoadControlMainPanel();
-		frame.setContentPane(aLoadControlMainPanel);
-		frame.setSize(aLoadControlMainPanel.getSize());
-		frame.addWindowListener(new java.awt.event.WindowAdapter() {
-			public void windowClosing(java.awt.event.WindowEvent e) {
-				System.exit(0);
-			};
-		});
-		frame.show();
-		java.awt.Insets insets = frame.getInsets();
-		frame.setSize(frame.getWidth() + insets.left + insets.right, frame.getHeight() + insets.top + insets.bottom);
-		frame.setVisible(true);
-	} catch (Throwable exception) {
-		System.err.println("Exception occurred in main() of javax.swing.JPanel");
-		com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
-	}
-}
+
 /**
  * Method to handle events for the MouseListener interface.
  * @param e java.awt.event.MouseEvent
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 public void mouseClicked(java.awt.event.MouseEvent e) {
-	// user code begin {1}
-	// user code end
 	if (e.getSource() == getJTableControlArea()) 
-		connEtoC1(e);
-	if (e.getSource() == getJTableBottom()) 
-		connEtoC2(e);
-	// user code begin {2}
-	// user code end
+		controlAreaTable_MouseClicked(e);
+	if (e.getSource() == getJTableProgram()) 
+		jTableProgram_MouseClicked(e);
+	if (e.getSource() == getJTableGroup()) 
+		groupTable_MouseClicked(e);
 }
 /**
  * Method to handle events for the MouseListener interface.
  * @param e java.awt.event.MouseEvent
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 public void mouseEntered(java.awt.event.MouseEvent e) {
-	// user code begin {1}
-	// user code end
-	// user code begin {2}
-	// user code end
+
 }
 /**
  * Method to handle events for the MouseListener interface.
  * @param e java.awt.event.MouseEvent
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 public void mouseExited(java.awt.event.MouseEvent e) {
-	// user code begin {1}
-	// user code end
-	// user code begin {2}
-	// user code end
 }
 /**
  * Method to handle events for the MouseListener interface.
  * @param e java.awt.event.MouseEvent
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 public void mousePressed(java.awt.event.MouseEvent e) {
-	// user code begin {1}
-	// user code end
 	if (e.getSource() == getJTableControlArea()) 
-		connEtoC3(e);
-	if (e.getSource() == getJTableBottom()) 
-		connEtoC6(e);
-	// user code begin {2}
-	// user code end
+		controlAreaTable_MousePressed(e);
+	if (e.getSource() == getJTableProgram()) 
+		jTableProgram_MousePressed(e);
+
 }
 /**
  * Method to handle events for the MouseListener interface.
  * @param e java.awt.event.MouseEvent
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
+
 public void mouseReleased(java.awt.event.MouseEvent e) {
-	// user code begin {1}
-	// user code end
-	// user code begin {2}
-	// user code end
+
 }
 /**
  * Insert the method's description here.
@@ -1515,7 +1092,7 @@ public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent e)
 {
 	if( e.getSource() == LoadControlMainPanel.this.getGroupPopUpMenu() )
 		getGroupPopUpMenu().setLoadControlGroup( 
-			(com.cannontech.loadcontrol.data.LMGroupBase)getSelectedBottomRow() );
+			(com.cannontech.loadcontrol.data.LMGroupBase)getSelectedProgram() );
 
 /*
 	if( e.getSource() == LoadControlMainPanel.this.getCurtailCustomerPopUpMenu() )
@@ -1530,17 +1107,8 @@ public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent e)
 					getProgramTableModel().getAllRows() );
 					
 		getProgramPopUpMenu().setLoadControlProgram( 
-					(LMProgramBase)getSelectedBottomRow() );
+					(LMProgramBase)getSelectedProgram() );
 	}
-
-	if( e.getSource() == LoadControlMainPanel.this.getOfferPopUpMenu() )
-		getOfferPopUpMenu().setSelectedOffer( 
-					(OfferRowData)getSelectedBottomRow() );
-
-	if( e.getSource() == LoadControlMainPanel.this.getCustomerReplyPopUpMenu() )
-		getCustomerReplyPopUpMenu().setCurrentRow( 
-					(EExchangeRowData)getSelectedBottomRow() );
-
 
 
 	if( e.getSource() == LoadControlMainPanel.this.getControlAreaPopUpMenu() )
@@ -1550,6 +1118,7 @@ public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent e)
 
 		//set the observed flag for our selected row
 		getControlAreaPopUpMenu().setObservable( getControlAreaTableModel().getObservedRow() );
+		getControlAreaPopUpMenu().addObserver( this );
 		
 		getControlAreaPopUpMenu().setLoadControlArea( getSelectedControlArea() );
 	}
@@ -1623,21 +1192,27 @@ public void setGridLines(boolean hGridLines, boolean vGridLines )
 	int vLines = ((vGridLines == true) ? 1 : 0);
 	int hLines = ((hGridLines == true) ? 1 : 0);
 
-	// Set the program Table accordingly	
+	// Set the ControlArea Table accordingly	
 	getJTableControlArea().setIntercellSpacing(new java.awt.Dimension(vLines, hLines));
 	getJTableControlArea().setShowHorizontalLines( hGridLines );
 	getJTableControlArea().setShowVerticalLines( vGridLines );
 
-	// Set the group Table accordingly
-	getJTableBottom().setIntercellSpacing(new java.awt.Dimension(vLines, hLines));
-	getJTableBottom().setShowHorizontalLines( hGridLines );
-	getJTableBottom().setShowVerticalLines( vGridLines );
+	// Set the Program Table accordingly
+	getJTableProgram().setIntercellSpacing(new java.awt.Dimension(vLines, hLines));
+	getJTableProgram().setShowHorizontalLines( hGridLines );
+	getJTableProgram().setShowVerticalLines( vGridLines );
+
+
+	// Set the Group Table accordingly
+	getJTableGroup().setIntercellSpacing(new java.awt.Dimension(vLines, hLines));
+	getJTableGroup().setShowHorizontalLines( hGridLines );
+	getJTableGroup().setShowVerticalLines( vGridLines );
+
 
 		
-	getJTableControlArea().revalidate();
 	getJTableControlArea().repaint();
-	getJTableBottom().revalidate();
-	getJTableBottom().repaint();
+	getJTableProgram().repaint();
+	getJTableGroup().repaint();
 }
 /**
  * Insert the method's description here.
@@ -1645,7 +1220,7 @@ public void setGridLines(boolean hGridLines, boolean vGridLines )
  */
 public void setInitialTitle()
 {
-	//ad
+	//NOT USED
 }
 /**
  * Insert the method's description here.
@@ -1659,26 +1234,7 @@ public void setJButtons(javax.swing.JButton[] buttons)
 	//DO NOTHING
 	//buttonsArray = buttons;
 }
-/**
- * Insert the method's description here.
- * Creation date: (1/17/2002 11:52:05 AM)
- * @param newModel com.cannontech.loadcontrol.datamodels.SelectableLMTableModel
- */
-private void setJTableBottomModel(SelectableLMTableModel newModel, javax.swing.table.TableCellRenderer renderer ) 
-{
-	getJTableBottom().setModel( newModel );
 
-	if( getSelectedControlArea() != null )
-		getJTableBottomTableModel().setCurrentControlArea( getSelectedControlArea() );
-
-	if( renderer != null )
-		getJTableBottom().setDefaultRenderer( Object.class, renderer );
-
-	getJTableBottom().setSize( getJScrollPaneBottomTable().getWidth() -1, getJScrollPaneBottomTable().getHeight() );
-	getJTableBottom().invalidate();
-	getJTableBottom().repaint();
-	
-}
 /**
  * Insert the method's description here.
  * Creation date: (8/29/00 1:32:55 PM)
@@ -1718,21 +1274,18 @@ private void showDebugInfo( Object value )
  */
 protected void synchControlAreaAndButtons()
 {
-	com.cannontech.loadcontrol.data.LMControlArea area = getSelectedControlArea();
+	LMControlArea area = getSelectedControlArea();
 		
 	if( area != null )
 	{
-		if( area.getDisableFlag().booleanValue() )
-		{
+		if( area.getDisableFlag().booleanValue() ) {
 			getButtonBarPanel().getJButtonEnableControlArea().setText("Enable Area");
-			getButtonBarPanel().getJButtonEnableControlArea().setEnabled(true);
 		}
-		else
-		{			
+		else {
 			getButtonBarPanel().getJButtonEnableControlArea().setText("Disable Area");
-			getButtonBarPanel().getJButtonEnableControlArea().setEnabled(true);
 		}
 
+		getButtonBarPanel().getJButtonEnableControlArea().setEnabled(true);
 	}
 
 }
@@ -1742,46 +1295,15 @@ protected void synchControlAreaAndButtons()
  */
 public void tableChanged(javax.swing.event.TableModelEvent event ) 
 {
-	//**** events in here should only come from our JTableControlArea****/
-	if( event instanceof com.cannontech.loadcontrol.events.LCGenericTableModelEvent
-		 && ( ((com.cannontech.loadcontrol.events.LCGenericTableModelEvent)event).getType() 
-			   == com.cannontech.loadcontrol.events.LCGenericTableModelEvent.TYPE_FILTER_CHANGE) )
-	{	
-		if( getControlAreaTableModel().getCurrentView().equalsIgnoreCase(ControlAreaActionListener.ENERGY_EXCHANGE) )
-		{
-			//set us up for Energy Exchange
-			setJTableBottomModel( getOfferTableModel(), new LoadControlCellRenderer() );
-
-			getButtonBarPanel().getJButtonEnableAll().setText("Create Offer");
-			getButtonBarPanel().getJButtonDisableAll().setText("View Revisions");
-			getButtonBarPanel().getJButtonShowGrpsPrgs().setText("Show Customers");
-		}
-		else
-		{
-			//set us up for regular Load Control
-			setJTableBottomModel( getProgramTableModel(), new MultiLineGearRenderer() );
-
-			getButtonBarPanel().getJButtonEnableAll().setText("Enable All") ;
-			getButtonBarPanel().getJButtonDisableAll().setText("Disable All") ;
-			getButtonBarPanel().getJButtonShowGrpsPrgs().setText("Show Groups");
-		}
-
-		//we must get new copys of our LMControlArea objects
-		getJTableBottomTableModel().clear();
-		executeRefreshButton();
-	}
-
-
-
 	if( getSelectedControlArea() != null )
 	{
-		getJTableBottomTableModel().setCurrentControlArea( getSelectedControlArea() );
-
 		//set all the LMProgram values
-		//getProgramTableModel().setCurrentControlArea( getSelectedControlArea() );
+		getProgramTableModel().setCurrentControlArea( getSelectedControlArea() );
 
 		//set all the LMGroup values
-//		getGroupTableModel().setCurrentControlArea( getSelectedControlArea() );
+		getGroupTableModel().setCurrentData( 
+				getSelectedControlArea(),
+				(LMProgramBase)getSelectedProgram() );
 	}
 
 	
@@ -1791,7 +1313,7 @@ public void tableChanged(javax.swing.event.TableModelEvent event )
 			   == com.cannontech.loadcontrol.events.LCGenericTableModelEvent.TYPE_CLEAR) )
 	{
 		getJTableControlArea().getSelectionModel().clearSelection();
-		getJTableBottom().getSelectionModel().clearSelection();
+		getJTableProgram().getSelectionModel().clearSelection();
 		//setSelectionInterval( -1, -1 );
 
 		getGroupTableModel().clear();
@@ -1834,21 +1356,21 @@ public void update(java.util.Observable source, Object val)
 			if( msg.id == com.cannontech.loadcontrol.events.LCChangeEvent.INSERT )
 			{
 				getControlAreaTableModel().addControlArea( 
-						(com.cannontech.loadcontrol.data.LMControlArea)msg.arg );
+						(LMControlArea)msg.arg );
 			}
 			else if( msg.id == com.cannontech.loadcontrol.events.LCChangeEvent.UPDATE )
 			{
 				boolean found = false;
 				for( int i = 0; i < getControlAreaTableModel().getRowCount(); i++ )
 				{
-					com.cannontech.loadcontrol.data.LMControlArea area = (com.cannontech.loadcontrol.data.LMControlArea)
+					LMControlArea area = (LMControlArea)
 									getControlAreaTableModel().getRowAt(i);
 					
-					if( area.equals( (com.cannontech.loadcontrol.data.LMControlArea)msg.arg ) )
+					if( area.equals( (LMControlArea)msg.arg ) )
 					{
 						//update all the the control area's
 						getControlAreaTableModel().setControlAreaAt(
-								(com.cannontech.loadcontrol.data.LMControlArea)msg.arg, i );
+								(LMControlArea)msg.arg, i );
 
 						found = true;
 
@@ -1858,12 +1380,12 @@ public void update(java.util.Observable source, Object val)
 
 				if( !found )
 					getControlAreaTableModel().addControlArea( 
-							(com.cannontech.loadcontrol.data.LMControlArea)msg.arg );
+							(LMControlArea)msg.arg );
 			}
 			else if( msg.id == com.cannontech.loadcontrol.events.LCChangeEvent.DELETE )
 			{
 				getControlAreaTableModel().removeControlArea( 
-					(com.cannontech.loadcontrol.data.LMControlArea)msg.arg );						
+					(LMControlArea)msg.arg );						
 			}
 			else if( msg.id == com.cannontech.loadcontrol.events.LCChangeEvent.DELETE_ALL ) // remove all items
 			{
@@ -1875,6 +1397,13 @@ public void update(java.util.Observable source, Object val)
 		}
 	
 	}
+	else if( source instanceof ObservableJPopupMenu.ObservableJPopUp ) {
+		
+		getMessagePanel().messageEvent( new com.cannontech.common.util.MessageEvent(this,
+			val.toString(),
+			com.cannontech.common.util.MessageEvent.INFORMATION_MESSAGE) );		
+	}
+	
 	
 }
 /**
@@ -1889,13 +1418,14 @@ public void valueChanged(javax.swing.event.ListSelectionEvent event)
 		return;
 	else
 	{
-		getJTableBottomTableModel().setCurrentControlArea( getSelectedControlArea() );
-		
 		//set all the LMProgram values
-		//getProgramTableModel().setCurrentControlArea( getSelectedControlArea() );
+		if( event.getSource() == getJTableControlArea().getSelectionModel() )
+			getProgramTableModel().setCurrentControlArea( getSelectedControlArea() );
 
 		//set all the LMGroup values
-		//getGroupTableModel().setCurrentControlArea( getSelectedControlArea() );
+		getGroupTableModel().setCurrentData( 
+				getSelectedControlArea(),
+				(LMProgramBase)getSelectedProgram() );
 
 		
 		synchControlAreaAndButtons();

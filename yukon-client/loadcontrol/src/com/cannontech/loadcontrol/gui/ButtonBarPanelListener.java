@@ -16,9 +16,4 @@ void JButtonEnableAllAction_actionPerformed(java.util.EventObject newEvent);
  * @param newEvent java.util.EventObject
  */
 void JButtonEnableControlAreaAction_actionPerformed(java.util.EventObject newEvent);
-/**
- * 
- * @param newEvent java.util.EventObject
- */
-void JButtonShowGrpsPrgsAction_actionPerformed(java.util.EventObject newEvent);
 }

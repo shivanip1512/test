@@ -5,7 +5,7 @@ package com.cannontech.loadcontrol.data;
  * Creation date: (7/19/2001 8:49:17 AM)
  * @author: 
  */
-public interface LMProgramMessageCreation {
+public interface ILMProgramMessageCreation {
 /**
  * Insert the method's description here.
  * Creation date: (7/19/2001 8:50:05 AM)

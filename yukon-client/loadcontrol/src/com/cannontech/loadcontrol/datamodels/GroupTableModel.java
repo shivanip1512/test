@@ -5,8 +5,13 @@ package com.cannontech.loadcontrol.datamodels;
  */
 import java.awt.Color;
 
+import com.cannontech.clientutils.commonutils.ModifiedDate;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.loadcontrol.data.ILMGroup;
 import com.cannontech.loadcontrol.data.LMControlArea;
+import com.cannontech.loadcontrol.data.LMCurtailCustomer;
 import com.cannontech.loadcontrol.data.LMGroupBase;
+import com.cannontech.loadcontrol.data.LMProgramBase;
 
 public class GroupTableModel extends javax.swing.table.AbstractTableModel implements javax.swing.event.TableModelListener, SelectableLMTableModel
 {
@@ -25,7 +30,7 @@ public class GroupTableModel extends javax.swing.table.AbstractTableModel implem
 	{
 		"Group Name",
 		"State",
-		"Time",
+		"Start Time",
 		"Day/Month/Season/Year Hrs",
 		"Reduction"
 	};
@@ -107,35 +112,8 @@ private String displayControlTime(long millisecs)
 public java.awt.Color getCellBackgroundColor(int row, int col) 
 {
 	return backGroundColor;
-	
-/*	if( schedules != null && schedules.length > row && col < 5 )
-	{
-		String status = schedules[row].getState();
-
-		if( status.equals(Schedule.Waiting) )
-		{
-			return cellColors[0][1];	
-		}
-		else
-		if( status.equals(Schedule.Running)  )
-		{
-			return cellColors[1][1];
-		}
-		else
-		if( status.equals(Schedule.Deactivated) )
-		{
-			return cellColors[2][1];
-		}
-		else
-		if( status.equals(Schedule.Pending ) )
-		{
-			return cellColors[3][1];
-		}	
-	}
-
-	return Color.black;
-*/
 }
+
 /**
  * This method was created in VisualAge.
  * @return java.awt.Color
@@ -146,7 +124,7 @@ public java.awt.Color getCellForegroundColor(int row, int col)
 {
 	if( getRowAt(row) != null && getRowCount() > row && col < getColumnCount() )
 	{
-		LMGroupBase rowValue = (LMGroupBase)getRowAt(row);
+		ILMGroup rowValue = (ILMGroup)getRowAt(row);
 		String state = rowValue.getGroupControlStateString();
 		
 		if( rowValue.getDisableFlag().booleanValue() )
@@ -154,22 +132,22 @@ public java.awt.Color getCellForegroundColor(int row, int col)
 			return cellColors[4];	
 		}
 		else if( state.equalsIgnoreCase(LMGroupBase.CURRENT_STATES[LMGroupBase.STATE_INACTIVE])
-					|| state.equalsIgnoreCase(com.cannontech.loadcontrol.data.LMCurtailCustomer.ACK_UNACKNOWLEDGED) )
+					|| state.equalsIgnoreCase(LMCurtailCustomer.ACK_UNACKNOWLEDGED) )
 		{
 			return cellColors[0];
 		}
 		else if( state.equalsIgnoreCase(LMGroupBase.CURRENT_STATES[LMGroupBase.STATE_ACTIVE])
-					|| state.equalsIgnoreCase(com.cannontech.loadcontrol.data.LMCurtailCustomer.ACK_ACKNOWLEDGED) )
+					|| state.equalsIgnoreCase(LMCurtailCustomer.ACK_ACKNOWLEDGED) )
 		{
 			return cellColors[1];
 		}
 		else if( state.equalsIgnoreCase(LMGroupBase.CURRENT_STATES[LMGroupBase.STATE_ACTIVE_PENDING])
-					|| state.equalsIgnoreCase(com.cannontech.loadcontrol.data.LMCurtailCustomer.ACK_NOT_REQUIRED) )
+					|| state.equalsIgnoreCase(LMCurtailCustomer.ACK_NOT_REQUIRED) )
 		{
 			return cellColors[2];
 		}
 		else if( state.equalsIgnoreCase(LMGroupBase.CURRENT_STATES[LMGroupBase.STATE_INACTIVE_PENDING])
-					|| state.equalsIgnoreCase(com.cannontech.loadcontrol.data.LMCurtailCustomer.ACK_VERBAL) )
+					|| state.equalsIgnoreCase(LMCurtailCustomer.ACK_VERBAL) )
 		{
 			return cellColors[3];
 		}
@@ -192,15 +170,8 @@ public int getColumnCount() {
 public String getColumnName(int index) {
 	return columnNames[index];
 }
-/**
- * Insert the method's description here.
- * Creation date: (1/11/2002 10:45:49 AM)
- * @return int
- */
-private synchronized int getLastRowIndex() 
-{
-	return (getRowCount() == 0 ? 0 : getRowCount());
-}
+
+
 /**
  * This method returns the value of a row in the form of a LoadControlGroup object.
  * @param rowIndex int
@@ -210,8 +181,9 @@ public synchronized Object getRowAt(int rowIndex)
 	if( rowIndex < 0 || rowIndex >= getRowCount() )
 		return null;
 
-	return (LMGroupBase)getRows().get(rowIndex);
+	return getRows().get(rowIndex);
 }
+
 /**
  * getRowCount method comment.
  */
@@ -248,12 +220,12 @@ public Object getValueAt(int row, int col)
 {
 	if( row < getRowCount() && row >= 0 )
 	{
-		LMGroupBase rowValue = (LMGroupBase)getRowAt(row);
+		ILMGroup rowValue = (ILMGroup)getRowAt(row);
 		
 		switch( col )
 		{
 		 	case GROUP_NAME:
-				return rowValue.getYukonName();
+				return rowValue.getName();
 
 		 	case GROUP_STATE:
 		 		if( rowValue.getDisableFlag().booleanValue() )
@@ -264,16 +236,16 @@ public Object getValueAt(int row, int col)
 			case TIME:
 			{
 				if( rowValue.getGroupTime().getTime() > com.cannontech.common.util.CtiUtilities.get1990GregCalendar().getTime().getTime() )
-					return new com.cannontech.clientutils.commonutils.ModifiedDate( rowValue.getGroupTime().getTime() );
+					return new ModifiedDate( rowValue.getGroupTime().getTime() );
 				else
-					return "  ---";
+					return CtiUtilities.STRING_DASH_LINE;
 			}
 			
 			case STATS:
 				return rowValue.getStatistics();
 				
 		 	case REDUCTION:
-				return rowValue.getKwCapacity();
+				return rowValue.getReduction();
 
 			default:
 				return null;
@@ -307,29 +279,41 @@ public void setBackGroundColor(java.awt.Color newBackGroundColor)
  * Creation date: (4/6/2001 10:08:28 AM)
  * @param newCurrentControlArea com.cannontech.loadcontrol.data.LMControlArea
  */
-public synchronized void setCurrentControlArea(com.cannontech.loadcontrol.data.LMControlArea newCurrentControlArea) 
+public synchronized void setCurrentData(LMControlArea cntrArea_, LMProgramBase prgBse_ ) 
 {
-	currentControlArea = newCurrentControlArea;
+	currentControlArea = cntrArea_;
+	int oldRowCount = getRowCount();
 		
-	if( newCurrentControlArea != null && newCurrentControlArea.getLmProgramVector() != null )
+	if( currentControlArea != null && currentControlArea.getLmProgramVector() != null )
 	{
-		fireTableRowsDeleted( 0, getLastRowIndex() );
 		getRows().removeAllElements();
-		
+
 		for( int i = 0; i < currentControlArea.getLmProgramVector().size(); i++ )
 		{
-			com.cannontech.loadcontrol.data.LMProgramBase prg = 
-				(com.cannontech.loadcontrol.data.LMProgramBase)currentControlArea.getLmProgramVector().get(i);
+			LMProgramBase prg = 
+				(LMProgramBase)currentControlArea.getLmProgramVector().get(i);
 
-			getRows().addAll( rows.size(), prg.getLoadControlGroupVector() );
+			if( prgBse_ != null ) {
+				if( prgBse_.equals(prg) ) {
+					getRows().addAll( rows.size(), prg.getLoadControlGroupVector() );
+					break;	
+				}
+			}			
+			else
+				getRows().addAll( rows.size(), prg.getLoadControlGroupVector() );
 		}
 				
 	}
 	else
 		clear();
 
-	fireTableRowsInserted( 0, getLastRowIndex() );
+	//by using fireTableRowsUpdated(int,int) we do not clear the table selection
+	if( oldRowCount == getRowCount() && oldRowCount >= 0 )	
+		fireTableRowsUpdated( 0, getRowCount()-1 );
+	else
+		fireTableDataChanged();
 }
+
 /**
  * This method was created in VisualAge.
  * @param event javax.swing.event.TableModelEvent

@@ -7,7 +7,7 @@ package com.cannontech.loadcontrol.data;
  */
 import com.cannontech.loadcontrol.messages.LMManualControlMsg;
 
-public class LMProgramCurtailment extends LMProgramBase implements LMProgramMessageCreation
+public class LMProgramCurtailment extends LMProgramBase implements ILMProgramMessageCreation
 {
 	public static String STATUS_NULL = "Null";
 	public static String STATUS_SCHEDULED = "Scheduled";

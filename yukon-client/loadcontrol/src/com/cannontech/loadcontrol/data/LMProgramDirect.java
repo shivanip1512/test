@@ -5,7 +5,7 @@ package com.cannontech.loadcontrol.data;
  * Creation date: (8/17/00 3:06:09 PM)
  * @author: 
  */
-public class LMProgramDirect extends LMProgramBase implements LMProgramMessageCreation
+public class LMProgramDirect extends LMProgramBase implements ILMProgramMessageCreation
 {
 	private Integer currentGearNumber = null;
 	private Integer lastGroupControlled = null;

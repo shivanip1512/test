@@ -44,6 +44,12 @@ public boolean equals(Object o)
 			   (o instanceof LMGroupBase) &&
 			   ( ((LMGroupBase)o).getYukonID().intValue() == getYukonID().intValue()) );
 }
+
+public int hashCode() {
+	return getYukonID().intValue();
+}
+
+
 /**
  * Insert the method's description here.
  * Creation date: (4/16/2001 11:03:32 AM)

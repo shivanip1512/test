@@ -5,6 +5,7 @@ package com.cannontech.loadcontrol.datamodels;
  */
 import java.awt.Color;
 
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 
@@ -241,24 +242,24 @@ public Object getValueAt(int row, int col)
 	
 			case START_TIME:
 				if( prg.getDisableFlag().booleanValue() )
-					return "  ----";
+					return CtiUtilities.STRING_DASH_LINE;
 				else
 				{
 					if( prg.getStartTime() == null
 						 || prg.getStartTime().before(com.cannontech.common.util.CtiUtilities.get1990GregCalendar()) )
-						return " ----";
+						return CtiUtilities.STRING_DASH_LINE;
 					else
 						return new com.cannontech.clientutils.commonutils.ModifiedDate( prg.getStartTime().getTime().getTime() );
 				}
 
 			case STOP_TIME:
 				if( prg.getDisableFlag().booleanValue() )
-					return "  ----";
+					return CtiUtilities.STRING_DASH_LINE;
 				else
 				{
 					if( prg.getStopTime() == null
 						|| prg.getStopTime().before(com.cannontech.common.util.CtiUtilities.get1990GregCalendar()) )
-						return " ----";
+						return CtiUtilities.STRING_DASH_LINE;
 					else
 						return new com.cannontech.clientutils.commonutils.ModifiedDate( prg.getStopTime().getTime().getTime() );
 				}
@@ -310,19 +311,25 @@ private boolean isProgramValid(LMProgramBase prg)
 public synchronized void setCurrentControlArea(com.cannontech.loadcontrol.data.LMControlArea newCurrentControlArea) 
 {
 	currentControlArea = newCurrentControlArea;
-
-	if( getCurrentControlArea() == null || getCurrentControlArea().getLmProgramVector() == null )
+	int oldRowCount = getRowCount();
+	
+	if( getCurrentControlArea() == null 
+		 || getCurrentControlArea().getLmProgramVector() == null )
 	{
 		clear();
 	}
 	else
 	{		
-		fireTableRowsDeleted( 0, getLastRowIndex() );
 		rows = getCurrentControlArea().getLmProgramVector();
 	}
 
-	fireTableRowsInserted( 0, getLastRowIndex() );
+	//by using fireTableRowsUpdated(int,int) we do not clear the table selection
+	if( oldRowCount == getRowCount() && oldRowCount >= 0 )	
+		fireTableRowsUpdated( 0, getRowCount()-1 );
+	else
+		fireTableDataChanged();
 }
+
 /**
  * This method was created in VisualAge.
  * @param event javax.swing.event.TableModelEvent

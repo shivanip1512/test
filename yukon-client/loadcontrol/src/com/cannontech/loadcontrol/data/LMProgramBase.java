@@ -5,7 +5,7 @@ package com.cannontech.loadcontrol.data;
  * Creation date: (8/17/00 3:06:09 PM)
  * @author: 
  */
-public abstract class LMProgramBase implements LMProgramMessageCreation
+public abstract class LMProgramBase implements ILMProgramMessageCreation
 {
 	//control types
 	public static final String CONTROL_AUTOMATIC = "Automatic";
@@ -49,7 +49,7 @@ public abstract class LMProgramBase implements LMProgramMessageCreation
 
 	private java.util.Vector controlWindowVector = null;
 
-	//contains objects of type LMGroupBase
+	//contains objects of type ILMGroup
 	private java.util.Vector loadControlGroupVector = null;
 
 	//data not resotred when sent/received

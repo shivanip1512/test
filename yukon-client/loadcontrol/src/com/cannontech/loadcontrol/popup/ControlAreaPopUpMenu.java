@@ -257,6 +257,10 @@ private void jMenuItemDisableEnable_ActionPerformed(java.awt.event.ActionEvent a
 				new LMCommand( LMCommand.ENABLE_CONTROL_AREA,
 					 				getLoadControlArea().getYukonID().intValue(),
 					 				0, 0.0) );
+					 				
+		fireObservedRowChanged(
+			"Control area '" + getLoadControlArea().getYukonName() +
+			"' has been manually ENABLED." );
 	}
 	else
 	{
@@ -265,10 +269,15 @@ private void jMenuItemDisableEnable_ActionPerformed(java.awt.event.ActionEvent a
 				new LMCommand( LMCommand.DISABLE_CONTROL_AREA,
 					 				getLoadControlArea().getYukonID().intValue(),
 					 				0, 0.0) );
+
+		fireObservedRowChanged(
+			"Control area '" + getLoadControlArea().getYukonName() +
+			"' has been manually DISABLED." );
 	}
 
 	return;
 }
+
 /**
  * Comment
  */
@@ -312,6 +321,13 @@ private void jMenuItemTriggers_ActionPerformed(java.awt.event.ActionEvent action
 		dialog.pack();
 		dialog.show();						
 
+
+		if( panel.getChoice() == ControlAreaTriggerJPanel.CONFIRMED_PANEL ) {
+			fireObservedRowChanged(
+				"Trigger change for '" + getLoadControlArea().getYukonName() +
+				"' executed." );			
+		}
+		
 		//remove our observer
 		//if( getObservable() != null )
 			//getObservable().deleteObserver( panel );
@@ -383,4 +399,5 @@ private void syncMenuItems()
 
 
 }
+
 }

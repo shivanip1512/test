@@ -57,10 +57,4 @@ int getRowCount();
  * @param col int
  */
 java.awt.Color getSelectedRowColor(int row, int col);
-/**
- * Insert the method's description here.
- * Creation date: (4/6/2001 10:08:28 AM)
- * @param newCurrentControlArea com.cannontech.loadcontrol.data.LMControlArea
- */
-void setCurrentControlArea(com.cannontech.loadcontrol.data.LMControlArea newCurrentControlArea);
 }

@@ -56,14 +56,7 @@ public void JButtonEnableControlAreaAction_actionPerformed(java.util.EventObject
 	((com.cannontech.loadcontrol.gui.ButtonBarPanelListener)a).JButtonEnableControlAreaAction_actionPerformed(newEvent);
 	((com.cannontech.loadcontrol.gui.ButtonBarPanelListener)b).JButtonEnableControlAreaAction_actionPerformed(newEvent);
 }
-/**
- * 
- * @param newEvent java.util.EventObject
- */
-public void JButtonShowGrpsPrgsAction_actionPerformed(java.util.EventObject newEvent) {
-	((com.cannontech.loadcontrol.gui.ButtonBarPanelListener)a).JButtonShowGrpsPrgsAction_actionPerformed(newEvent);
-	((com.cannontech.loadcontrol.gui.ButtonBarPanelListener)b).JButtonShowGrpsPrgsAction_actionPerformed(newEvent);
-}
+
 /**
  * 
  * @return java.util.EventListener

@@ -62,6 +62,11 @@ public boolean equals(Object val)
 	else
 		return super.equals(val);
 }
+
+public int hashCode() {
+	return getYukonID().intValue();
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (4/3/2001 10:56:59 AM)
