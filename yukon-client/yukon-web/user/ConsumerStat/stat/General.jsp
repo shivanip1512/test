@@ -71,7 +71,7 @@
 		StarsApplianceCategory category = null;
 		String ctrlOdds = null;
 		
-		StarsLMControlHistory allCtrlHist = liteEC.getStarsLMControlHistory( program.getGroupID() );
+		StarsLMControlHistory allCtrlHist = ServletUtils.getAllControlHistory( program, appliances, liteEC );
 		StarsLMControlHistory todayCtrlHist = ServletUtils.getControlHistory( allCtrlHist, StarsCtrlHistPeriod.PASTDAY, program.getDateEnrolled(), tz );
 		
 		for (int j = 0; j < categories.getStarsApplianceCategoryCount(); j++) {

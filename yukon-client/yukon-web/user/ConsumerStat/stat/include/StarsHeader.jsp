@@ -108,6 +108,7 @@
 	StarsLMProgramHistory programHistory = null;
 	StarsInventories thermostats = null;
 	StarsSavedThermostatSchedules thermSchedules = null;
+	StarsAppliances appliances = null;
 	StarsUser userLogin = null;
 	
 	accountInfo = (StarsCustAccountInformation) session.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
@@ -134,8 +135,9 @@
 			if (inventory.getLMHardware() != null && inventory.getLMHardware().getStarsThermostatSettings() != null)
 				thermostats.addStarsInventory( inventory );
 		}
-		
 		thermSchedules = accountInfo.getStarsSavedThermostatSchedules();
+		
+		appliances = accountInfo.getStarsAppliances();
 	}
 	
 	TimeZone tz = TimeZone.getDefault(); 

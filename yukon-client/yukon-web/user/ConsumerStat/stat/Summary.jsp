@@ -7,7 +7,7 @@
 	if (progNoStr != null) progNo = Integer.parseInt( progNoStr );
 	
 	StarsLMProgram program = programs.getStarsLMProgram( progNo );
-	StarsLMControlHistory allCtrlHist = liteEC.getStarsLMControlHistory( program.getGroupID() );
+	StarsLMControlHistory allCtrlHist = ServletUtils.getAllControlHistory( program, appliances, liteEC );
 	StarsLMControlHistory ctrlHist = ServletUtils.getControlHistory( allCtrlHist, StarsCtrlHistPeriod.ALL, program.getDateEnrolled(), tz );
 	ControlSummary summary = ServletUtils.getControlSummary( ctrlHist, tz );
 	

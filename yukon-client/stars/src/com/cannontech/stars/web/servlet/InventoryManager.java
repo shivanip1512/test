@@ -1153,63 +1153,33 @@ public class InventoryManager extends HttpServlet {
 		if (req.getParameter("SA205_Slot1") != null) {
 			SA205 sa205 = new SA205();
 			
-			sa205.setSlot1( ServletUtils.checkRange(
-					ServletUtils.parseNumeric(req.getParameter("SA205_Slot1"), 0),
-					0, 4095, "Slot Address") );
-			sa205.setSlot2( ServletUtils.checkRange(
-					ServletUtils.parseNumeric(req.getParameter("SA205_Slot2"), 0),
-					0, 4095, "Slot Address") );
-			sa205.setSlot3( ServletUtils.checkRange(
-					ServletUtils.parseNumeric(req.getParameter("SA205_Slot3"), 0),
-					0, 4095, "Slot Address") );
-			sa205.setSlot4( ServletUtils.checkRange(
-					ServletUtils.parseNumeric(req.getParameter("SA205_Slot4"), 0),
-					0, 4095, "Slot Address") );
-			sa205.setSlot5( ServletUtils.checkRange(
-					ServletUtils.parseNumeric(req.getParameter("SA205_Slot5"), 0),
-					0, 4095, "Slot Address") );
-			sa205.setSlot6( ServletUtils.checkRange(
-					ServletUtils.parseNumeric(req.getParameter("SA205_Slot6"), 0),
-					0, 4095, "Slot Address") );
+			sa205.setSlot1( ServletUtils.parseNumber(req.getParameter("SA205_Slot1"), 0, 4095, "Slot Address") );
+			sa205.setSlot2( ServletUtils.parseNumber(req.getParameter("SA205_Slot2"), 0, 4095, "Slot Address") );
+			sa205.setSlot3( ServletUtils.parseNumber(req.getParameter("SA205_Slot3"), 0, 4095, "Slot Address") );
+			sa205.setSlot4( ServletUtils.parseNumber(req.getParameter("SA205_Slot4"), 0, 4095, "Slot Address") );
+			sa205.setSlot5( ServletUtils.parseNumber(req.getParameter("SA205_Slot5"), 0, 4095, "Slot Address") );
+			sa205.setSlot6( ServletUtils.parseNumber(req.getParameter("SA205_Slot6"), 0, 4095, "Slot Address") );
 			
 			starsCfg.setSA205( sa205 );
 		}
 		else if (req.getParameter("SA305_Utility") != null) {
 			SA305 sa305 = new SA305();
 			
-			sa305.setUtility( ServletUtils.checkRange(
-					ServletUtils.parseNumeric(req.getParameter("SA305_Utility"), 0),
-					0, 15, "Utility") );
-			sa305.setGroup( ServletUtils.checkRange(
-					ServletUtils.parseNumeric(req.getParameter("SA305_Group"), 0),
-					0, 63, "Group") );
-			sa305.setDivision( ServletUtils.checkRange(
-					ServletUtils.parseNumeric(req.getParameter("SA305_Division"), 0),
-					0, 63, "Division") );
-			sa305.setSubstation( ServletUtils.checkRange(
-					ServletUtils.parseNumeric(req.getParameter("SA305_Substation"), 0),
-					0, 1023, "Substation") );
-			sa305.setRateFamily( ServletUtils.checkRange(
-					ServletUtils.parseNumeric(req.getParameter("SA305_RateFamily"), 0),
-					0, 7, "Rate Family") );
-			sa305.setRateMember( ServletUtils.checkRange(
-					ServletUtils.parseNumeric(req.getParameter("SA305_RateMember"), 0),
-					0, 15, "Rate Member") );
-			sa305.setRateHierarchy( ServletUtils.checkRange(
-					ServletUtils.parseNumeric(req.getParameter("SA305_RateHierarchy"), 0),
-					0, 1, "Rate Hierarchy") );
+			sa305.setUtility( ServletUtils.parseNumber(req.getParameter("SA305_Utility"), 0, 15, "Utility", true) );
+			sa305.setGroup( ServletUtils.parseNumber(req.getParameter("SA305_Group"), 0, 63, "Group") );
+			sa305.setDivision( ServletUtils.parseNumber(req.getParameter("SA305_Division"), 0, 63, "Division") );
+			sa305.setSubstation( ServletUtils.parseNumber(req.getParameter("SA305_Substation"), 0, 1023, "Substation") );
+			sa305.setRateFamily( ServletUtils.parseNumber(req.getParameter("SA305_RateFamily"), 0, 7, "Rate Family", true) );
+			sa305.setRateMember( ServletUtils.parseNumber(req.getParameter("SA305_RateMember"), 0, 15, "Rate Member", true) );
+			sa305.setRateHierarchy( ServletUtils.parseNumber(req.getParameter("SA305_RateHierarchy"), 0, 1, "Rate Hierarchy", true) );
 			
 			starsCfg.setSA305( sa305 );
 		}
 		else if (req.getParameter("VCOM_Utility") != null) {
 			VersaCom vcom = new VersaCom();
 			
-			vcom.setUtility( ServletUtils.checkRange(
-					ServletUtils.parseNumeric(req.getParameter("VCOM_Utility"), 0),
-					0, 255, "Utility") );
-			vcom.setSection( ServletUtils.checkRange(
-					ServletUtils.parseNumeric(req.getParameter("VCOM_Section"), 0),
-					0, 254, "Section") );
+			vcom.setUtility( ServletUtils.parseNumber(req.getParameter("VCOM_Utility"), 0, 255, "Utility", true) );
+			vcom.setSection( ServletUtils.parseNumber(req.getParameter("VCOM_Section"), 1, 254, "Section") );
 			
 			String[] classAddrs = req.getParameterValues( "VCOM_Class" );
 			int classAddr = 0;
@@ -1228,21 +1198,11 @@ public class InventoryManager extends HttpServlet {
 		else if (req.getParameter("XCOM_SPID") != null) {
 			ExpressCom xcom = new ExpressCom();
 			
-			xcom.setServiceProvider( ServletUtils.checkRange(
-					ServletUtils.parseNumeric(req.getParameter("XCOM_SPID"), 0),
-					0, 65534, "SPID") );
-			xcom.setGEO( ServletUtils.checkRange(
-					ServletUtils.parseNumeric(req.getParameter("XCOM_GEO"), 0),
-					0, 65534, "GEO") );
-			xcom.setSubstation( ServletUtils.checkRange(
-					ServletUtils.parseNumeric(req.getParameter("XCOM_SUB"), 0),
-					0, 65534, "SUB") );
-			xcom.setZip( ServletUtils.checkRange(
-					ServletUtils.parseNumeric(req.getParameter("XCOM_ZIP"), 0),
-					0, 16777214, "ZIP") );
-			xcom.setUserAddress( ServletUtils.checkRange(
-					ServletUtils.parseNumeric(req.getParameter("XCOM_USER"), 0),
-					0, 65534, "USER") );
+			xcom.setServiceProvider( ServletUtils.parseNumber(req.getParameter("XCOM_SPID"), 0, 65534, "SPID", true) );
+			xcom.setGEO( ServletUtils.parseNumber(req.getParameter("XCOM_GEO"), 0, 65534, "GEO") );
+			xcom.setSubstation( ServletUtils.parseNumber(req.getParameter("XCOM_SUB"), 0, 65534, "SUB") );
+			xcom.setZip( ServletUtils.parseNumber(req.getParameter("XCOM_ZIP"), 0, 16777214, "ZIP") );
+			xcom.setUserAddress( ServletUtils.parseNumber(req.getParameter("XCOM_USER"), 0, 65534, "USER") );
 			
 			String[] feeders = req.getParameterValues( "XCOM_FEED" );
 			int feeder = 0;
@@ -1253,7 +1213,7 @@ public class InventoryManager extends HttpServlet {
 			String[] programs = req.getParameterValues("XCOM_Program");
 			String program = "";
 			for (int i = 0; i < programs.length; i++) {
-				ServletUtils.checkRange( ServletUtils.parseNumeric(programs[i], 0), 0, 254, "Program" );
+				ServletUtils.parseNumber(programs[i], 0, 254, "Program" );
 				program += programs[i];
 				if (i < programs.length - 1) program += ",";
 			}
@@ -1262,7 +1222,7 @@ public class InventoryManager extends HttpServlet {
 			String[] splinters = req.getParameterValues("XCOM_Splinter");
 			String splinter = "";
 			for (int i = 0; i < splinters.length; i++) {
-				ServletUtils.checkRange( ServletUtils.parseNumeric(splinters[i], 0), 0, 254, "Splinter" );
+				ServletUtils.parseNumber(splinters[i], 0, 254, "Splinter" );
 				splinter += String.valueOf( splinters[i] );
 				if (i < splinters.length - 1) splinter += ",";
 			}

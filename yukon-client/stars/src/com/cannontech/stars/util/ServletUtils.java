@@ -11,16 +11,21 @@ import java.util.TimeZone;
 
 import javax.servlet.http.HttpSession;
 
+import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
+import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.xml.serialize.ControlHistory;
 import com.cannontech.stars.xml.serialize.ControlSummary;
 import com.cannontech.stars.xml.serialize.StarsAppliance;
 import com.cannontech.stars.xml.serialize.StarsApplianceCategory;
+import com.cannontech.stars.xml.serialize.StarsAppliances;
 import com.cannontech.stars.xml.serialize.StarsCustSelectionList;
 import com.cannontech.stars.xml.serialize.StarsCustomerAddress;
 import com.cannontech.stars.xml.serialize.StarsEnrLMProgram;
 import com.cannontech.stars.xml.serialize.StarsEnrollmentPrograms;
 import com.cannontech.stars.xml.serialize.StarsInventory;
 import com.cannontech.stars.xml.serialize.StarsLMControlHistory;
+import com.cannontech.stars.xml.serialize.StarsLMProgram;
 import com.cannontech.stars.xml.serialize.StarsSelectionListEntry;
 import com.cannontech.stars.xml.serialize.types.StarsCtrlHistPeriod;
 import com.cannontech.stars.xml.serialize.types.StarsThermoDaySettings;
@@ -79,6 +84,8 @@ public class ServletUtils {
 	public static final String UTIL_PHONE_NUMBER = "<<PHONE_NUMBER>>";
 	public static final String UTIL_FAX_NUMBER = "<<FAX_NUMBER>>";
 	public static final String UTIL_EMAIL = "<<EMAIL>>";
+	
+	public static final int NUMBER_UNSET = -1;
 
 	private static java.text.DecimalFormat decFormat = new java.text.DecimalFormat("0.#");
 	
@@ -180,6 +187,52 @@ public class ServletUtils {
 		
 		return dateCal.getTime();
 	}
+	
+	public static StarsLMControlHistory getAllControlHistory(StarsLMProgram program, StarsAppliances appliances, LiteStarsEnergyCompany energyCompany) {
+		String trackHwAddr = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING );
+		if (trackHwAddr != null && Boolean.valueOf(trackHwAddr).booleanValue()) {
+			ArrayList groupIDs = new ArrayList();
+			
+			for (int i = 0; i < appliances.getStarsApplianceCount(); i++) {
+				StarsAppliance app = appliances.getStarsAppliance(i);
+				if (app.getProgramID() == program.getProgramID() && app.getInventoryID() > 0) {
+					LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory( app.getInventoryID(), true );
+					
+					int[] grpIDs = null;
+					if (liteHw.getLMConfiguration() != null)
+						grpIDs = ECUtils.getControllableGroupIDs( liteHw.getLMConfiguration(), app.getLoadNumber() );
+					else if (program.getGroupID() > 0)
+						grpIDs = new int[] { program.getGroupID() };
+					
+					if (grpIDs != null) {
+						for (int j = 0; j < grpIDs.length; j++) {
+							Integer groupID = new Integer( grpIDs[j] );
+							if (!groupIDs.contains(groupID)) groupIDs.add( groupID );
+						}
+					}
+				}
+			}
+			
+			StarsLMControlHistory lmCtrlHist = new StarsLMControlHistory();
+			for (int i = 0; i < groupIDs.size(); i++) {
+				StarsLMControlHistory ctrlHist = energyCompany.getStarsLMControlHistory( ((Integer)groupIDs.get(i)).intValue() );
+				
+				for (int j = 0, k = 0; j < ctrlHist.getControlHistoryCount(); j++) {
+					while (k < lmCtrlHist.getControlHistoryCount()
+						&& !lmCtrlHist.getControlHistory(k).getStartDateTime().after( ctrlHist.getControlHistory(j).getStartDateTime() ))
+						k++;
+					lmCtrlHist.addControlHistory(k++, ctrlHist.getControlHistory(j));
+				}
+				
+				if (ctrlHist.getBeingControlled()) lmCtrlHist.setBeingControlled(true);
+			}
+			
+			return lmCtrlHist;
+		}
+		else {
+			return energyCompany.getStarsLMControlHistory( program.getGroupID() );
+		}
+	}
     
 	public static StarsLMControlHistory getControlHistory(StarsLMControlHistory ctrlHist,
 		StarsCtrlHistPeriod period, Date dateEnrolled, TimeZone tz)
@@ -193,7 +246,14 @@ public class ServletUtils {
         
 		for (int i = ctrlHist.getControlHistoryCount() - 1; i >= 0; i--) {
 			ControlHistory hist = ctrlHist.getControlHistory(i);
-			if ( hist.getStartDateTime().before(date) ) break;
+			if ( hist.getStartDateTime().before(date) ) {
+				int validDuration = (int)((hist.getStartDateTime().getTime() - date.getTime()) / 1000) + hist.getControlDuration();
+				if (validDuration <= 0) break;
+				
+				hist = new ControlHistory();
+				hist.setStartDateTime( date );
+				hist.setControlDuration( validDuration );
+			}
 			ctrlHistInPrd.addControlHistory( hist );
 		}
         
@@ -547,26 +607,33 @@ public class ServletUtils {
 		return fullText.substring( 0, len ) + " ...";
 	}
 	
-	public static String hideUnsetNum(int num, int unset) {
-		return (num == unset)? "" : String.valueOf(num);
+	public static String hideUnsetNumber(int num) {
+		return (num == NUMBER_UNSET)? "" : String.valueOf(num);
 	}
 	
-	public static int parseNumeric(String str, int unset) throws WebClientException {
-		if (str == null || str.equals("")) return unset;
+	public static int parseNumber(String str, int lowerLimit, int upperLimit, String fieldName) throws WebClientException {
+		return parseNumber(str, lowerLimit, upperLimit, fieldName, false);
+	}
+	
+	public static int parseNumber(String str, int lowerLimit, int upperLimit, String fieldName, boolean notEmpty)
+		throws WebClientException
+	{
+		if (str == null || str.trim().equals("")) {
+			if (notEmpty)
+				throw new WebClientException( "The '" + fieldName + "' field cannot be empty" );
+			else
+				return NUMBER_UNSET;
+		}
+		
 		try {
-			return Integer.parseInt( str );
+			int value = Integer.parseInt( str );
+			if (value < lowerLimit || value > upperLimit)
+				throw new WebClientException("The value of '" + fieldName + "' must be between " + lowerLimit + " and " + upperLimit);
+			return value;
 		}
 		catch (NumberFormatException e) {
 			throw new WebClientException( "Invalid numeric value \"" + str + "\"" );
 		}
-	}
-	
-	public static int checkRange(int value, int lowerLimit, int upperLimit, String fieldName)
-		throws WebClientException
-	{
-		if (value < lowerLimit || value > upperLimit)
-			throw new WebClientException("The value of '" + fieldName + "' must be between " + lowerLimit + " and " + upperLimit);
-		return value;
 	}
 
 }
