@@ -536,7 +536,6 @@ public Object getValue(Object o) {
 	
 	YukonPAObject pao = (YukonPAObject)o;
 
-	//if it isn't enabled, forget it!
 	if(getJCheckBoxEnable().isSelected())
 	{
 		//Add new exclusion timing information to the assigned PAOExclusion Vector
@@ -559,7 +558,35 @@ public Object getValue(Object o) {
 		
 		pao.getPAOExclusionVector().add( paoExcl );
 
-	}  
+	} 
+	
+	//if it isn't enabled, save the info but don't make it a "real" entry (append a comment symbol)
+	else if(getCycleTimeJTextField().getText().compareTo("") != 0 &&
+		getJTextFieldOffset().getText().compareTo("") != 0 &&
+		getJTextFieldTransmitTime().getText().compareTo("") != 0)
+	{
+		//Add new exclusion timing information to the assigned PAOExclusion Vector
+		Integer paoID = pao.getPAObjectID();
+		Integer functionID = CtiUtilities.EXCLUSION_TIMING_FUNC_ID;
+		String funcName = CtiUtilities.EXCLUSION_TIME_INFO;
+	
+	    //CycleTime:#,Offset:#,TransmitTime:#,MaxTime:#
+		StringBuffer exclusionTiming = new StringBuffer();
+		//appending the "#" to the string so that porter knows not to use it
+		exclusionTiming.append("#CycleTime:");
+		Integer cycleTime = new Integer(getCycleTimeJTextField().getText());
+		cycleTime = new Integer(cycleTime.intValue() * 60);
+		exclusionTiming.append(cycleTime);
+		exclusionTiming.append(",Offset:" + getJTextFieldOffset().getText());
+		exclusionTiming.append(",TransmitTime:" + getJTextFieldTransmitTime().getText());
+	
+	
+		PAOExclusion paoExcl = new PAOExclusion(
+			paoID, functionID, funcName, exclusionTiming.toString()
+			);
+		
+		pao.getPAOExclusionVector().add( paoExcl );
+	}
 	return pao;
 }
 /**
@@ -624,7 +651,19 @@ public boolean isInputValid()
 {
 	if(getCycleTimeJTextField().getText().compareTo("") == 0 && getJCheckBoxEnable().isSelected())
 	{
-		setErrorString( "No values have been filled in." );
+		setErrorString( "Cycle Time has not been filled in." );
+		return false;
+	}
+	
+	if(getJTextFieldOffset().getText().compareTo("") == 0 && getJCheckBoxEnable().isSelected())
+	{
+		setErrorString( "Offset has not been filled in." );
+		return false;
+	}
+	
+	if(getJTextFieldTransmitTime().getText().compareTo("") == 0 && getJCheckBoxEnable().isSelected())
+	{
+		setErrorString( "Transmit Time has not been filled in." );
 		return false;
 	}
 	
@@ -653,6 +692,7 @@ public void jCheckBoxEnable_ActionPerformed(java.awt.event.ActionEvent actionEve
 	if(getJCheckBoxEnable().isSelected())
 	{
 		enableTimeFields(true);
+		fireInputUpdate();
 	}
 	else
 	{
@@ -707,13 +747,22 @@ public void setValue(Object o)
 				exclusionTimeInfo = temp;
 			}
 	}
-	
 	if(exclusionTimeInfo != null)
 	{
-		getJCheckBoxEnable().doClick();
+		StringTokenizer timeInfo = new StringTokenizer(exclusionTimeInfo.getFuncParams());
+		
+		if(timeInfo.nextToken(" CycleTime:,Offset:,TransmitTime:").compareTo("#") == 0)
+		{	
+			getJCheckBoxEnable().setSelected(false);
+		}
+		else
+		{
+			//start the tokenizer over or we've lost a token
+			timeInfo = new StringTokenizer(exclusionTimeInfo.getFuncParams());
+			getJCheckBoxEnable().doClick();
+		}
 		
 		//CycleTime:#,Offset:#,TransmitTime:#,MaxTime:#
-		StringTokenizer timeInfo = new StringTokenizer(exclusionTimeInfo.getFuncParams());
 		Integer cycleTime = new Integer(timeInfo.nextToken("CycleTime:,"));
 		String offset = timeInfo.nextToken("Offset:,");
 		String transmitTime = timeInfo.nextToken("TransmitTime:,");
