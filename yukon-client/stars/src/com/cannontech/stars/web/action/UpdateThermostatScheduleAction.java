@@ -776,6 +776,15 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 							}
 						}
 						
+						ArrayList liteDftEntries2 = new ArrayList();
+						if (liteDftSeason2.getSeasonEntries() != null) {
+							for (int l = 0; l < liteDftSeason2.getSeasonEntries().size(); l++) {
+								LiteLMThermostatSeasonEntry liteEntry = (LiteLMThermostatSeasonEntry) liteDftSeason2.getSeasonEntries().get(l);
+								if (liteEntry.getTimeOfWeekID() == towIDs[k])
+									liteDftEntries2.add( liteEntry );
+							}
+						}
+						
 						if (liteEntries.size() > 0 && liteEntries.size() != 4) {
 							// Currently this should not happen, so remove these entries
 							throw new Exception( "Invalid number of thermostat season entries: " + liteEntries.size() + ", for season id = " + liteSeason.getSeasonID() );
@@ -817,7 +826,16 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 							for (int l = 0; l < 4; l++) {
 								LiteLMThermostatSeasonEntry liteEntry = (LiteLMThermostatSeasonEntry) liteEntries2.get(l);
 								liteEntry.setStartTime( times[l] );
-								if (temps[l] == -1) liteEntry.setTemperature( temps[l] );
+								if (temps[l] == -1) {
+									liteEntry.setTemperature( temps[l] );
+								}
+								else if (liteEntry.getTemperature() == -1) {
+									if (liteDftEntries2.size() != 4)
+										throw new Exception( "Invalid number of thermostat season entries: " + liteDftEntries2.size() + ", for season id = " + liteDftSeason2.getSeasonID() );
+									int dftTemp = ((LiteLMThermostatSeasonEntry) liteDftEntries2.get(l)).getTemperature();
+									if (dftTemp < 0) dftTemp = 72;
+									liteEntry.setTemperature( dftTemp );
+								}
 								
 								LMThermostatSeasonEntry entry = (LMThermostatSeasonEntry) StarsLiteFactory.createDBPersistent( liteEntry );
 								entry.setDbConnection( conn );
@@ -826,20 +844,15 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 						}
 						else {
 							// Add season entries to the other season, using the new time schedule and the default temperatures
-							for (int l = 0; l < liteDftSeason2.getSeasonEntries().size(); l++) {
-								LiteLMThermostatSeasonEntry liteEntry = (LiteLMThermostatSeasonEntry) liteDftSeason2.getSeasonEntries().get(l);
-								if (liteEntry.getTimeOfWeekID() == towIDs[k])
-									liteEntries2.add( liteEntry );
-							}
-							if (liteEntries2.size() != 4)
-								throw new Exception( "Invalid number of thermostat season entries: " + liteEntries2.size() + ", for season id = " + liteDftSeason2.getSeasonID() );
+							if (liteDftEntries2.size() != 4)
+								throw new Exception( "Invalid number of thermostat season entries: " + liteDftEntries2.size() + ", for season id = " + liteDftSeason2.getSeasonID() );
 							
 							for (int l = 0; l < 4; l++) {
 								LMThermostatSeasonEntry entry = new LMThermostatSeasonEntry();
 								entry.setSeasonID( new Integer(liteSeason2.getSeasonID()) );
 								entry.setTimeOfWeekID( new Integer(towIDs[k]) );
 								entry.setStartTime( new Integer(times[l]) );
-								entry.setTemperature( new Integer(((LiteLMThermostatSeasonEntry) liteEntries2.get(l)).getTemperature()) );
+								entry.setTemperature( new Integer(((LiteLMThermostatSeasonEntry) liteDftEntries2.get(l)).getTemperature()) );
 								entry.setDbConnection( conn );
 								entry.add();
 								
