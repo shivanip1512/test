@@ -121,7 +121,6 @@
 %>
 					    <input type="hidden" name="action" value="GetEnrPrograms">
 						<input type="hidden" name="CompanyID" value="1">
-						<input type="hidden" name="Category" value="Thermostat">
 						<input type="hidden" name="REDIRECT" value="/UserDemos/ConsumerStat/ProgramsNew.jsp">
 						<input type="hidden" name="REFERRER" value="/UserDemos/ConsumerStat/login.jsp">
 <%

@@ -327,7 +327,7 @@ function checkPassword(form) {
                       <tr> 
                         <td width="90" class="TableCell">&nbsp;</td>
                         <td width="210"> 
-                          <input type="submit" name="Same" value="Same as Above" onclick="copyAddress(this.form)">
+                          <input type="button" name="Same" value="Same as Above" onclick="copyAddress(this.form)">
                         </td>
                       </tr>
                       <tr> 
@@ -382,7 +382,6 @@ function checkPassword(form) {
                         <td width="210"> 
                           <select name="Substation">
 <%
-	Hashtable selectionListTable = (Hashtable) operator.getAttribute( "CUSTOMER_SELECTION_LISTS" );
 	StarsCustSelectionList substationList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.database.db.stars.Substation.LISTNAME_SUBSTATION );
 	for (int i = 0; i < substationList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = substationList.getStarsSelectionListEntry(i);

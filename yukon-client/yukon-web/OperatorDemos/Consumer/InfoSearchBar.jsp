@@ -18,11 +18,15 @@
       <td valign = "bottom" align = "center" width="37%" rowspan = "3" class = "Main"><b><%=header%></b></td>
       <td align = "right" width="31%"><span class="Main"><b> 
         <select name="SearchBy">
-          <option value="22" selected><span class="Main"><b>Acct #</b></span></option>
-          <option value="23"><span class="Main"><b>Phone #</b></span></option>
-          <option value="24"><span class="Main"><b>Name</b></span></option>
-		  <option value="SerialNumber"><span class="Main"><b>Serial #</b></span></option>
-		  <option value="WorkOrderNumber"><span class="Main"><b>Order #</b></span></option>
+<%
+	StarsCustSelectionList searchByList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_SEARCHBY );
+	for (int i = 0; i < searchByList.getStarsSelectionListEntryCount(); i++) {
+		StarsSelectionListEntry entry = searchByList.getStarsSelectionListEntry(i);
+%>
+		  <option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
+<%
+	}
+%>
         </select>
         <input type="text" name="SearchValue" size = "15">
         <input type="submit" name="Submit2" value="Search">

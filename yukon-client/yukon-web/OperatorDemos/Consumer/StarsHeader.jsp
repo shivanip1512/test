@@ -20,6 +20,7 @@
 	}
 	
     String dbAlias = operator.getDatabaseAlias();	
+	Hashtable selectionListTable = (Hashtable) operator.getAttribute( "CUSTOMER_SELECTION_LISTS" );
 	
 	StarsCustAccountInformation accountInfo = null;
 	StarsCustomerAccount account = null;

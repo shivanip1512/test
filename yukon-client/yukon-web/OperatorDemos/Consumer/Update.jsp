@@ -150,7 +150,18 @@ function copyAddress(form) {
                                 <div align="right">Substation Name: </div>
                               </td>
                               <td width="210"> 
-                                <input type="text" name="Substation" maxlength="30" size="24" value="<%= siteInfo.getSubstation().getContent() %>">
+								<select name="Substation">
+<%
+	StarsCustSelectionList substationList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.database.db.stars.Substation.LISTNAME_SUBSTATION );
+	for (int i = 0; i < substationList.getStarsSelectionListEntryCount(); i++) {
+		StarsSelectionListEntry entry = substationList.getStarsSelectionListEntry(i);
+		String selectedStr = (entry.getEntryID() == siteInfo.getSubstation().getEntryID()) ? "selected" : "";
+%>
+								  <option value="<%= entry.getEntryID() %>" <%= selectedStr %>><%= entry.getContent() %></option>
+<%
+	}
+%>
+								</select>
                               </td>
                             </tr>
                             <tr> 
