@@ -127,7 +127,7 @@ function decline_form()
                   </tr>
                   <%
                for( int i = 0; i < 12; i++ ) {
-                   String hourStr = hourFormat.format(i) + ":00";
+                   String hourStr = hourFormat.format(i+1) + ":00";
           %>
                   <tr> 
                     <td width="75" height="10" class="TableCell"><%= hourStr %></td>
@@ -183,7 +183,7 @@ function decline_form()
                   </tr>
                   <%
                for( int i = 12; i < 24; i++ ) {
-                   String hourStr = hourFormat.format(i) + ":00";
+                   String hourStr = hourFormat.format(i+1) + ":00";
           %>
                   <tr> 
                     <td width="75" height="10" valign="TOP" class="TableCell"><%= hourStr %></td>
@@ -244,9 +244,9 @@ function decline_form()
           <tr> 
             <td width="36%" valign="TOP"> 
               <p align=RIGHT><span class="Main">Initials:</span></td>
-            <td width="13%" valign="TOP"> 
-              <p align=RIGHT> <struts:text property="initials" size="8" pattern="@not-empty"/> 
-                <%= checker.getError("initials") %>&nbsp; 
+            <td width="13%" align="right" valign="TOP"> 
+              <struts:text property="initials" size="8" pattern="@not-empty"/>
+              <span class="TableCell"><%=checker.getError("initials")%></span>
             </td>
             <td width="16%" valign="TOP"> 
               <div align="right"> 
