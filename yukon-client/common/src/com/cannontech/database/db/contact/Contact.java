@@ -10,7 +10,7 @@ import com.cannontech.user.UserUtils;
 
 public class Contact extends com.cannontech.database.db.DBPersistent implements com.cannontech.database.db.CTIDbChange, com.cannontech.common.editor.EditorPanel
 {
-	public static final int CONTACTID_INVALID = -1;
+	public static final int CONTACTID_INVALID = 0;
 	
 	private Integer contactID = null;
 	private String contFirstName = CtiUtilities.STRING_NONE;

@@ -63,7 +63,32 @@ public class Contact extends com.cannontech.database.db.DBPersistent implements 
 			((DBPersistent)getContactNotifVect().get(i)).add();
 		}		
 	}
+
+
+	/**
+	 * This method was created in VisualAge.
+	 * @param pointID java.lang.Integer
+	 */
+	public final static boolean isUsedInPointAlarming(Integer contactID, String databaseAlias) throws java.sql.SQLException 
+	{
+		com.cannontech.database.SqlStatement stmt =
+			new com.cannontech.database.SqlStatement(
+				"SELECT RecipientID FROM " + 
+				PointAlarming.TABLE_NAME + 
+				" WHERE RecipientID=" + contactID,
+				databaseAlias );
 	
+		try
+		{
+			stmt.execute();
+			return (stmt.getRowCount() > 0 );
+		}
+		catch( Exception e )
+		{
+			return false;
+		}
+	}
+
 	/** 
 	 * This method was created in VisualAge.
 	 * @exception java.sql.SQLException The exception description.

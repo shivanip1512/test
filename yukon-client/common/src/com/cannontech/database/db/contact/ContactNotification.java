@@ -271,7 +271,13 @@ public class ContactNotification extends com.cannontech.database.db.DBPersistent
 	 */
 	public static final void deleteAllContactNotifications( java.sql.Connection conn, int contactID_ ) throws java.sql.SQLException 
 	{
-		String sql = 
+		String sql1 = 
+			"DELETE FROM " + NotificationDestination.TABLE_NAME + " " + 
+			"WHERE RecipientID in (select ContactNotifID " +
+			"from " + TABLE_NAME + " where ContactID = " + contactID_ + ")"; 
+
+
+		String sql2 = 
 			"DELETE FROM " + TABLE_NAME + " " + 
 			"WHERE ContactID = " + contactID_; 
 	
@@ -283,7 +289,9 @@ public class ContactNotification extends com.cannontech.database.db.DBPersistent
 			}
 			else
 			{
-				conn.prepareStatement(sql.toString()).executeUpdate();
+				conn.prepareStatement(sql1.toString()).executeUpdate();
+				
+				conn.prepareStatement(sql2.toString()).executeUpdate();
 			}		
 		}
 		catch( java.sql.SQLException e )

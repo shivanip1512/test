@@ -146,7 +146,16 @@ public class DBDeletionFuncs
 			theWarning.append("\nbecause it is used as a primary contact for a customer.");
 			return STATUS_DISALLOW;
 		}
-	
+
+
+		if( com.cannontech.database.data.customer.Contact.isUsedInPointAlarming(
+				theID, CtiUtilities.getDatabaseAlias() ) )
+		{
+			theWarning.delete(0, theWarning.length());
+			theWarning.append("\nbecause it is used as notifications for point alarms.");
+			return STATUS_DISALLOW;
+		}
+
 		//this object is deleteable
 		return STATUS_ALLOW;
 	}
