@@ -54,7 +54,7 @@ public class Contact extends com.cannontech.database.db.DBPersistent implements 
 		
 		getAddress().add();		
 		getContact().setAddressID( getAddress().getAddressID() );
-
+		
 		
 		getContact().add();
 		
@@ -105,7 +105,8 @@ public class Contact extends com.cannontech.database.db.DBPersistent implements 
 	
 		getContact().delete();
 
-		getAddress().delete();	
+		if (getAddress().getAddressID().intValue() != com.cannontech.common.util.CtiUtilities.NONE_ID)
+			getAddress().delete();	
 	}
 
 	/**
