@@ -1,6 +1,7 @@
 package com.cannontech.dbeditor.editor.device;
 
 import com.cannontech.database.data.device.DeviceBase;
+import com.cannontech.database.db.pao.PAODefines;
 
 /**
  * This type was created in VisualAge.
@@ -258,17 +259,17 @@ public Object getValue(Object val)
 
 	buff.setCharAt( 0, 
 		(getHourlyStatsCheckBox().isSelected() 
-		 ? com.cannontech.database.db.pao.YukonPAObject.STAT_HOURLY
+		 ? PAODefines.STAT_HOURLY
 		 : '-') );
 
 	buff.setCharAt( 1,
 		(getTwentyFourHourStatsCheckBox().isSelected()
-		 ? com.cannontech.database.db.pao.YukonPAObject.STAT_DAILY
+		 ? PAODefines.STAT_DAILY
 		 : '-') );
 
 	buff.setCharAt( 2,
 		(getMonthlyStatsCheckBox().isSelected()
-		 ? com.cannontech.database.db.pao.YukonPAObject.STAT_MONTHLY
+		 ? PAODefines.STAT_MONTHLY
 		 : '-') );
 
 
@@ -366,13 +367,13 @@ public void setValue(Object val)
 	DeviceBase device = (DeviceBase)val;
 
 	getHourlyStatsCheckBox().setSelected(
-		device.getPAOStatistics().indexOf(com.cannontech.database.db.pao.YukonPAObject.STAT_HOURLY) >= 0 );
+		device.getPAOStatistics().indexOf(PAODefines.STAT_HOURLY) >= 0 );
 
 	getTwentyFourHourStatsCheckBox().setSelected(
-		device.getPAOStatistics().indexOf(com.cannontech.database.db.pao.YukonPAObject.STAT_DAILY) >= 0 );
+		device.getPAOStatistics().indexOf(PAODefines.STAT_DAILY) >= 0 );
 
 	getMonthlyStatsCheckBox().setSelected(
-		device.getPAOStatistics().indexOf(com.cannontech.database.db.pao.YukonPAObject.STAT_MONTHLY) >= 0 );
+		device.getPAOStatistics().indexOf(PAODefines.STAT_MONTHLY) >= 0 );
 
 }
 }
