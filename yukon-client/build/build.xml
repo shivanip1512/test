@@ -157,5 +157,12 @@
         <ant dir="${filename}" target="${dotarget}"/>
     </target>
 
-    
+
+	<!--Added build option for copying the needed jar files into the WEB-INF directory of yukon-web. SN-->
+	<target name="webbuild" depends="build,webcopy"/>
+
+    <target name="webcopy">
+        <ant dir="${yukon-web}" target="webcopy"/> 
+    </target>
+     
 </project>
