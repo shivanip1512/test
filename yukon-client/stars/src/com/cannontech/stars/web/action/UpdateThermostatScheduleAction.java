@@ -345,7 +345,11 @@ public class UpdateThermostatScheduleAction implements ActionBase {
     		}
 			
 			if (hasTwoWay) {
-				Thread.sleep(3 * 1000);	// Wait a while for the new settings to be reflected in the table
+				try {
+					Thread.sleep(3 * 1000);	// Wait a while for the new settings to be reflected in the table
+				}
+				catch (InterruptedException e) {}
+				
 				energyCompany.updateThermostatSettings( liteAcctInfo );
 			}
 			
