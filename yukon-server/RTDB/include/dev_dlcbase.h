@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_dlcbase.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/04/22 19:47:16 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/05/20 15:11:24 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -103,6 +103,9 @@ private:
 
    INT retMsgHandler( RWCString commandStr, CtiReturnMsg *retMsg, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList );
    INT decodeCheckErrorReturn(INMESS *InMessage, RWTPtrSlist< CtiMessage > &retList);
+
+   virtual bool processAdditionalRoutes( INMESS *InMessage ) const;
+   virtual ULONG selectInitialMacroRouteOffset() const;
 
 };
 #endif // #ifndef __DEV_DLCBASE_H__

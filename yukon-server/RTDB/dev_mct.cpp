@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2002/05/15 20:34:38 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2002/05/20 15:11:23 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -3402,24 +3402,5 @@ INT CtiDeviceMCT::calcAndInsertLPRequests(OUTMESS *&OutMessage, RWTPtrSlist< OUT
 }
 
 
-bool CtiDeviceMCT::processAdditionalRoutes( INMESS *InMessage ) const
-{
-    bool bret = false;
 
-    if(InMessage->Return.MacroOffset != 0)
-    {
-        CtiRoute *Route = 0;
-
-        if( (Route = CtiDeviceBase::getRoute( InMessage->Return.RouteID )) != NULL )    // This is "this's" route
-        {
-            bret = Route->processAdditionalRoutes(InMessage);
-        }
-    }
-    return bret;
-}
-
-ULONG CtiDeviceMCT::selectInitialMacroRouteOffset() const
-{
-    return 1L;
-}
 

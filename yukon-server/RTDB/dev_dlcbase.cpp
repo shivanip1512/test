@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_dlcbase.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:59 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/05/20 15:11:23 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -315,6 +315,24 @@ INT CtiDeviceDLCBase::decodeCheckErrorReturn(INMESS *InMessage, RWTPtrSlist< Cti
     return ErrReturn;
 }
 
+bool CtiDeviceDLCBase::processAdditionalRoutes( INMESS *InMessage ) const
+{
+    bool bret = false;
 
+    if(InMessage->Return.MacroOffset != 0)
+    {
+        CtiRoute *Route = 0;
 
+        if( (Route = CtiDeviceBase::getRoute( InMessage->Return.RouteID )) != NULL )    // This is "this's" route
+        {
+            bret = Route->processAdditionalRoutes(InMessage);
+        }
+    }
+    return bret;
+}
+
+inline ULONG CtiDeviceDLCBase::selectInitialMacroRouteOffset() const
+{
+    return 1L;
+}
 

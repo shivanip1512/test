@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:25 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/05/20 15:11:24 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -132,9 +132,6 @@ public:
 
     virtual bool clearedForScan( int scantype );
     virtual void resetForScan  ( int scantype );
-    virtual bool processAdditionalRoutes( INMESS *InMessage ) const;
-    virtual ULONG selectInitialMacroRouteOffset() const;
-
 
 };
 #endif // #ifndef __DEV_MCT_H__
