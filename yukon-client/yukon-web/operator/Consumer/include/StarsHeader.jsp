@@ -57,21 +57,17 @@
 	if (user == null && VersionTools.starsExists()) {
 		// This is logged in using the normal LoginController, not the StarsLoginController
 		user = SOAPServer.getStarsYukonUser( lYukonUser );
-		if (user == null) {
-			// Something wrong happened when instantiating the StarsYukonUser
-			response.sendRedirect(request.getContextPath() + "/servlet/LoginController?ACTION=LOGOUT");
-			return;
+		if (user != null) {
+			session.setAttribute(ServletUtils.ATT_STARS_YUKON_USER, user);
+			
+			// Get the energy company settings
+			GetEnergyCompanySettingsAction action = new GetEnergyCompanySettingsAction();
+			SOAPMessage reqMsg = action.build(request, session);
+			SOAPUtil.logSOAPMsgForOperation( reqMsg, "*** Send Message *** " );
+			SOAPMessage respMsg = action.process(reqMsg, session);
+			SOAPUtil.logSOAPMsgForOperation( respMsg, "*** Receive Message *** " );
+			action.parse(reqMsg, respMsg, session);
 		}
-		
-		session.setAttribute(ServletUtils.ATT_STARS_YUKON_USER, user);
-		
-		// Get the energy company settings
-		GetEnergyCompanySettingsAction action = new GetEnergyCompanySettingsAction();
-		SOAPMessage reqMsg = action.build(request, session);
-		SOAPUtil.logSOAPMsgForOperation( reqMsg, "*** Send Message *** " );
-		SOAPMessage respMsg = action.process(reqMsg, session);
-		SOAPUtil.logSOAPMsgForOperation( respMsg, "*** Receive Message *** " );
-		action.parse(reqMsg, respMsg, session);
 	}
 	
 	java.text.SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");

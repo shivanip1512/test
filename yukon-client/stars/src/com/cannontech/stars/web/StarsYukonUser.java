@@ -77,6 +77,8 @@ public class StarsYukonUser {
 		}
 		else if (ECUtils.isResidentialCustomer(this)) {
 			LiteContact liteContact = YukonUserFuncs.getLiteContact( getUserID() );
+			if (liteContact == null)
+				throw new InstantiationException( "Cannot find contact information of this user" );
 			customer = ContactFuncs.getCustomer( liteContact.getContactID() );
 			if (customer == null)
 				throw new InstantiationException( "Cannot find customer information of this user" );
