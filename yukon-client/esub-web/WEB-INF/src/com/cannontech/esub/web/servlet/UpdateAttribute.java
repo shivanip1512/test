@@ -10,11 +10,16 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
+import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.esub.editor.element.PointAttributes;
+import com.cannontech.esub.util.Util;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.Multi;
 
 /**
  * Update a point attribute in the database.
@@ -98,7 +103,17 @@ public class UpdateAttribute extends HttpServlet {
 		catch(TransactionException te) {
 			out.write("error");		
 			return;
-		}		
+		}	
+		
+		// update the cache and send out a db change	
+		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+		DBChangeMsg[] msg = cache.createDBChangeMessages((CTIDbChange) dbObj, DBChangeMsg.CHANGE_TYPE_UPDATE);
+		for(int i = 0; i < msg.length; i++ ) {
+			cache.handleDBChangeMessage(msg[i]);			
+		
+			//send out the change
+			Util.getConnToDispatch().write(msg[i]);
+		}			
 	}
 
 			
