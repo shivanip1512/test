@@ -281,6 +281,38 @@ public class ReportClient
 			getCheckBoxTreeViewPanel().setTreeModels(models);
 			model = new DisconnectModel("History");
 		}
+		
+		else if ( event.getSource() == getReportMenu().getConnectedMenuItem())
+		{
+			com.cannontech.database.model.LiteBaseTreeModel[] models = new com.cannontech.database.model.LiteBaseTreeModel[disconnectModels.length];
+
+			for (int i = 0; i < models.length; i++)
+			{
+				if (disconnectModels[i] == ModelFactory.COLLECTIONGROUP_CHECKBOX)
+				{
+					models[i] = new com.cannontech.database.model.CollectionGroupCheckBoxTreeModel();
+				}
+
+			}
+			getCheckBoxTreeViewPanel().setTreeModels(models);
+			model = new DisconnectModel("Connected");
+		}
+		
+		else if ( event.getSource() == getReportMenu().getDisconnectedMenuItem())
+		{
+			com.cannontech.database.model.LiteBaseTreeModel[] models = new com.cannontech.database.model.LiteBaseTreeModel[disconnectModels.length];
+
+			for (int i = 0; i < models.length; i++)
+			{
+				if (disconnectModels[i] == ModelFactory.COLLECTIONGROUP_CHECKBOX)
+				{
+					models[i] = new com.cannontech.database.model.CollectionGroupCheckBoxTreeModel();
+				}
+
+			}
+			getCheckBoxTreeViewPanel().setTreeModels(models);
+			model = new DisconnectModel("Disconnected");
+		}
 
 		else if (event.getSource() == getReportMenu().getMissedMeterMenuItem()
 				|| event.getSource() == getReportMenu().getSuccessMenuItem())
@@ -428,10 +460,10 @@ public class ReportClient
 
 			}
 			else if (model instanceof PowerFailModel)
-
-				// Need to get the collection group and dates to get missed meters
+					//com.cannontech.clientutils.CTILogger.info("ID =  " + powerFailIDs[i]);
+//
 			{
-
+			
 				long startTime = getStartEndPanel().getStartDateComboBox().getSelectedDate().getTime();
 				long endTime = getStartEndPanel().getEndDateComboBox().getSelectedDate().getTime();
 
@@ -445,7 +477,7 @@ public class ReportClient
 					collectionGroups[i] = tempGroup.toString();
 					//com.cannontech.clientutils.CTILogger.info("ID =  " + powerFailIDs[i]);
 //
-				}
+				}	
 				
 				model.setStartTime(startTime);
 				model.setStopTime(endTime);
@@ -471,38 +503,36 @@ public class ReportClient
 
 			{
 
-				long startTime = getStartEndPanel().getStartDateComboBox().getSelectedDate().getTime();
-				long endTime = getStartEndPanel().getEndDateComboBox().getSelectedDate().getTime();
+			long startTime = getStartEndPanel().getStartDateComboBox().getSelectedDate().getTime();
+			long endTime = getStartEndPanel().getEndDateComboBox().getSelectedDate().getTime();
 
-				DefaultMutableTreeNode[] nodes = getCheckBoxTreeViewPanel().getSelectedNodes();
-			//	com.cannontech.clientutils.CTILogger.info(nodes.length);
-				String collectionGroups[] = new String [nodes.length];
+			DefaultMutableTreeNode[] nodes = getCheckBoxTreeViewPanel().getSelectedNodes();
+			String collectionGroups[] = new String [nodes.length];
 
 			for (int i = 0; i < nodes.length; i++)
 			{
 					String tempGroup = (String) nodes[i].getUserObject();
 					collectionGroups[i] = tempGroup.toString();
-					//com.cannontech.clientutils.CTILogger.info("ID =  " + powerFailIDs[i]);
-//
-				}
-	
-				model.setStartTime(startTime);
-				model.setStopTime(endTime);
-				model.setCollectionGroups(collectionGroups);
-
-				DisconnectReport report = new com.cannontech.analysis.report.DisconnectReport();
 				
-				try
-				{
-					ivjTabbedPane.insertTab("Disconnect",null,report.getPreviewFrame(model),null,0);
+			}
+	
+			model.setStartTime(startTime);
+			model.setStopTime(endTime);
+			model.setCollectionGroups(collectionGroups);
 
-					//report.showPreviewFrame(data);
-				}
-				catch (Exception e)
-				{
-		
-					e.printStackTrace();
-				}
+			DisconnectReport report = new com.cannontech.analysis.report.DisconnectReport();
+			
+			try
+			{
+				ivjTabbedPane.insertTab("Disconnect",null,report.getPreviewFrame(model),null,0);
+
+				//report.showPreviewFrame(data);
+			}
+			catch (Exception e)
+			{
+	
+				e.printStackTrace();
+			}
 
 			}
 			
