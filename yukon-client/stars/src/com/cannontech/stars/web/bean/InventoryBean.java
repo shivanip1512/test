@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.lite.stars.LiteAddress;
 import com.cannontech.database.data.lite.stars.LiteCustomerContact;
@@ -247,9 +248,18 @@ public class InventoryBean {
 	}
 	
 	public String getHTML(HttpServletRequest req) {
+		StringBuffer htmlBuf = new StringBuffer();
+		
 		ArrayList hwList = getHardwareList();
-		if (hwList == null || hwList.size() == 0)
-			return "<p class='MainText'>No hardware found.</p>";
+		if (hwList == null || hwList.size() == 0) {
+			htmlBuf.append("<p class='MainText'>No hardware found.</p>").append("\r\n");
+			htmlBuf.append("<table width='200' border='0' cellspacing='0' cellpadding='0'>").append("\r\n");
+			htmlBuf.append("  <tr>").append("\r\n");
+			htmlBuf.append("    <td align='center'><input type='button' name='Back' value='Back' onclick='history.back()'></td>").append("\r\n");
+			htmlBuf.append("  </tr>").append("\r\n");
+			htmlBuf.append("</table>").append("\r\n");
+			return htmlBuf.toString();
+		}
 		
 		String uri = req.getRequestURI();
 		String pageName = uri.substring( uri.lastIndexOf('/') + 1 );
@@ -287,7 +297,6 @@ public class InventoryBean {
         else
         	navBuf.append("<a class='Link1' href='").append(pageName).append("?page=").append(maxPageNo).append("'>Last</a>");
 		
-		StringBuffer htmlBuf = new StringBuffer();
 		if (getHtmlStyle() == HTML_STYLE_SELECT_INVENTORY) {
 			htmlBuf.append("<form name='InventoryBeanForm' method='post' action='").append(req.getContextPath()).append("/servlet/InventoryManager'>").append("\r\n");
 			htmlBuf.append("<input type='hidden' name='action' value='SelectInventory'>").append("\r\n");
@@ -316,9 +325,7 @@ public class InventoryBean {
         	String deviceType = null;
         	String deviceName = null;
         	if (liteInv instanceof LiteStarsLMHardware) {
-        		deviceType = getEnergyCompany().getYukonListEntry(
-						YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE, ((LiteStarsLMHardware)liteInv).getLmHardwareTypeID()
-						).getEntryText();
+				deviceType = YukonListFuncs.getYukonListEntry( ((LiteStarsLMHardware)liteInv).getLmHardwareTypeID() ).getEntryText();
 				deviceName = ((LiteStarsLMHardware)liteInv).getManufactureSerialNumber();
         	}
         	else if (ECUtils.isMCT( liteInv.getCategoryID() )) {
@@ -377,7 +384,7 @@ public class InventoryBean {
 			htmlBuf.append("<table width='200' border='0' cellspacing='0' cellpadding='3'>").append("\r\n");
 			htmlBuf.append("  <tr>").append("\r\n");
 			htmlBuf.append("    <td align='right'>").append("\r\n");
-			htmlBuf.append("      <input type='submit' name='Submit' value='Select'>").append("\r\n");
+			htmlBuf.append("      <input type='submit' name='Submit' value='Select' onclick='return validate(this.form)'>").append("\r\n");
 			htmlBuf.append("    </td>").append("\r\n");
 			htmlBuf.append("    <td>").append("\r\n");
 			if (referer != null)
@@ -412,6 +419,14 @@ public class InventoryBean {
         htmlBuf.append("</form>").append("\r\n");
         
         htmlBuf.append("<script language='JavaScript'>").append("\r\n");
+		htmlBuf.append("function validate(form) {").append("\r\n");
+		htmlBuf.append("  var radioBtns = document.getElementsByName('InvID');").append("\r\n");
+		htmlBuf.append("  if (radioBtns != null) {").append("\r\n");
+		htmlBuf.append("    for (i = 0; i < radioBtns.length; i++)").append("\r\n");
+		htmlBuf.append("      if (radioBtns[i].checked) return true;").append("\r\n");
+		htmlBuf.append("  }").append("\r\n");
+		htmlBuf.append("  return false;").append("\r\n");
+		htmlBuf.append("}").append("\r\n");
         htmlBuf.append("function selectAccount(accountID) {").append("\r\n");
         htmlBuf.append("  var form = document.cusForm;").append("\r\n");
         htmlBuf.append("  form.AccountID.value = accountID;").append("\r\n");
