@@ -38,6 +38,7 @@ bool CtrlHandler(DWORD fdwCtrlType)
     case CTRL_C_EVENT:
     case CTRL_SHUTDOWN_EVENT:
     case CTRL_CLOSE_EVENT:
+    case CTRL_BREAK_EVENT:
 
         capcontrol_do_quit = TRUE;
         Sleep(30000);
@@ -45,8 +46,6 @@ bool CtrlHandler(DWORD fdwCtrlType)
 
         /* CTRL+CLOSE: confirm that the user wants to exit. */
         /* Pass other signals to the next handler. */
-
-    case CTRL_BREAK_EVENT:
 
     case CTRL_LOGOFF_EVENT:
 
@@ -80,6 +79,8 @@ void CtiCCService::RunInConsole(DWORD argc, LPTSTR* argv)
     Run();
 
     OnStop();
+
+    SetStatus(SERVICE_STOPPED);
 }
 
 void CtiCCService::Init()
@@ -159,11 +160,11 @@ void CtiCCService::OnStop()
 
     delete executor;
 
-    if( _CC_DEBUG )
+    /*if( _CC_DEBUG )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " - Cap Control shut down!" << endl;
-    }
+    }*/
 
     SetStatus(SERVICE_STOP_PENDING, 75, 5000 );
 
@@ -242,13 +243,13 @@ void CtiCCService::Run()
     SetStatus(SERVICE_RUNNING, 0, 0,
               SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_SHUTDOWN );
 
-    while ( !_quit && !capcontrol_do_quit)
+    while ( !_quit && !capcontrol_do_quit )
     {
         Sleep(500);
     }
 
 
-    SetStatus( SERVICE_STOPPED );
+    SetStatus(SERVICE_STOP_PENDING, 50, 5000 );
 }
 
 void CtiCCService::ParseArgs(DWORD argc, LPTSTR* argv)
