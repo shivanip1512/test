@@ -38,6 +38,8 @@ msg_email.obj \
 msg_lmcontrolhistory.obj \
 msg_multi.obj \
 msg_multiwrap.obj \
+msg_notif_email.obj \
+msg_notif_email_attachment.obj \
 msg_pcrequest.obj \
 msg_pcreturn.obj \
 msg_signal.obj \
