@@ -8,7 +8,6 @@ import java.util.Vector;
 
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionListDefs;
-import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.db.contact.ContactNotification;
 import com.cannontech.database.data.customer.Contact;
@@ -828,13 +827,15 @@ public Object getValue(Object val)
 		cnt.getContact().setLogInID( 
 			new Integer( ((LiteYukonUser)selLg).getLiteID()) );
 	}
+    else  //must be (none)
+        cnt.getContact().setLogInID( new Integer(CtiUtilities.NONE_ID) );
+
 
 	Vector holder = new Vector();
 	//grab the latest ContactNotification list
 	for( int i = 0; i < getTableModel().getRowCount(); i++ )
 	{
 		holder.addElement(getTableModel().getContactNotificationRow(i));
-		
 	}
 	
 	//run all the ContactNotifications through the NestedDBPersistent comparator
