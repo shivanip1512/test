@@ -7,695 +7,819 @@ package com.cannontech.calchist;
  */
 import java.util.GregorianCalendar;
 import java.util.Vector;
+
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.point.PointQualities;
 import com.cannontech.database.db.point.calculation.CalcComponent;
+import com.cannontech.database.db.point.calculation.CalcComponentTypes;
 import com.cannontech.message.dispatch.message.PointData;
 
 public class Baseline
 {
-	private String databaseAlias = "yukon";
-	public static java.text.SimpleDateFormat hhmmIntFormat = new java.text.SimpleDateFormat("HHmm");
-	public static java.text.SimpleDateFormat hhIntFormat = new java.text.SimpleDateFormat("HH");
-	public static java.text.SimpleDateFormat mmIntFormat = new java.text.SimpleDateFormat("mm");
-	
+	//contains com.cannontech.database.db.point.calculation.CalcComponent values.
+	public Vector returnPointDataMsgVector = new Vector();
+	private Vector historicalCalcComponents = null;
 	private java.util.GregorianCalendar nextBaselineCalcTime = null;
-	
+	private GregorianCalendar lastUpdateTimestamp = null;
 	private Integer baselineCalcTime = null;//time to start calcs in seconds from midnight (14400 = 4am)
 	private Integer daysPreviousToCollect = null;//time to start calcs in seconds from midnight (14400 = 4am)
-	private Vector calcDatesUsedForBaselineVector = null;
 
-	private Integer [] dailyHoursArray = null;
-	private Double [] dailyValuesArray = null;
-	private java.util.TreeMap baselineTreeMap = null;
+//	private HoursAndValues baselineDataArray = null;
+	private HoursAndValues averageDataArray = null;
 
 	private int[] skipDaysArray = {java.util.Calendar.SATURDAY, java.util.Calendar.SUNDAY};
-
-	//DEFAULT VALUES!!!
-	private int daysUsed = 30;
-	private int percentWindow = 80;
-	private int calcDays = 5;
-	private char[] excludedWeekdays = {'N', 'N', 'N', 'N', 'N', 'Y', 'Y'};
-	private int holidaysUsed = 0;
-
-/**
- * Baseline constructor comment.
- */
-public Baseline() {
-	super();
-}
-/**
- * Insert the method's description here.
- * Creation date: (12/4/2000 2:27:20 PM)
- */
-public void figureNextBaselineCalcTime()
-{
-	if( nextBaselineCalcTime == null )
-	{
-		nextBaselineCalcTime = new GregorianCalendar();
-		//start a week ago on start up
-		nextBaselineCalcTime.set( java.util.Calendar.DAY_OF_YEAR, (nextBaselineCalcTime.get(java.util.Calendar.DAY_OF_YEAR) - getDaysPreviousToCollect().intValue()));
-		nextBaselineCalcTime.set( java.util.Calendar.MINUTE, 0);
-		nextBaselineCalcTime.set( java.util.Calendar.SECOND, 0);
-	}
-
-	GregorianCalendar tempCal = nextBaselineCalcTime;	
-	int calcTimeYear = nextBaselineCalcTime.get(java.util.Calendar.YEAR);
-	int calcTimeDayOfYear = nextBaselineCalcTime.get(java.util.Calendar.DAY_OF_YEAR);
 	
-	if (calcTimeDayOfYear  == 365)
-	{
-		//Check for leap year.
-		if ( nextBaselineCalcTime.isLeapYear(calcTimeYear))
-		{	//just increment the day for leap year, need 366 days!
-			tempCal.set( java.util.Calendar.DAY_OF_YEAR, calcTimeDayOfYear+1) ;
-		}
-		else
-		{	// must set to begining of next year
-			tempCal.set( java.util.Calendar.DAY_OF_YEAR, 1) ;
-			tempCal.set( java.util.Calendar.YEAR, calcTimeYear+1);
-		}
-	}
-	else if ( calcTimeDayOfYear == 366)
-	{	// must set to begining of next year
-		tempCal.set( java.util.Calendar.DAY_OF_YEAR, 1) ;
-		tempCal.set( java.util.Calendar.YEAR, calcTimeYear+1);
-	}
-	else
-	{
-		tempCal.set( java.util.Calendar.DAY_OF_YEAR, calcTimeDayOfYear+1) ;
-	}
-
-	while ( tempCal.get(java.util.Calendar.DAY_OF_WEEK) == java.util.Calendar.SUNDAY || 
-			tempCal.get(java.util.Calendar.DAY_OF_WEEK)== java.util.Calendar.SATURDAY)
-	{
-		tempCal.set( java.util.Calendar.DAY_OF_YEAR, tempCal.get(java.util.Calendar.DAY_OF_YEAR) + 1) ;
-	}
-
-
-	tempCal.set( java.util.Calendar.HOUR_OF_DAY, getBaselineCalcTime().intValue());
-	long nowInMilliSeconds = tempCal.getTime().getTime();
-
-	long topOfTheHour = 3600000;	//number of millis in an hour
-	long tempUpdateTime = nowInMilliSeconds - ( nowInMilliSeconds % topOfTheHour );
-
-	nextBaselineCalcTime = new GregorianCalendar();
-	nextBaselineCalcTime.setTime(new java.util.Date(tempUpdateTime));
-
-	CalcHistorical.logEvent("...Next Baseline Calculation to occur at: " + nextBaselineCalcTime.getTime(), com.cannontech.common.util.LogWriter.INFO);	
-	com.cannontech.clientutils.CTILogger.info("...Next Baseline Calculation to occur at: " + nextBaselineCalcTime.getTime());
-}
-/**
- * Insert the method's description here.
- * Creation date: (12/7/2000 11:43:39 AM)
- * @return java.lang.Integer
- */
-public java.lang.Integer getBaselineCalcTime()
-{
-	if( baselineCalcTime == null )
-	{
-		try
-		{
-			java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("config");
-			baselineCalcTime = new Integer( bundle.getString("calc_historical_baseline_calctime") );
-			daysPreviousToCollect = new Integer( bundle.getString("calc_historical_daysprevioustocollect") );
-			CalcHistorical.logEvent(" (config.prop) Baseline calculation time = " + baselineCalcTime + ":00", com.cannontech.common.util.LogWriter.INFO);
-			com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "]  Baseline calculation time from config.properties is " + baselineCalcTime + ":00");
-		}
-		catch( Exception e)
-		{
-			e.printStackTrace();
-			baselineCalcTime = new Integer(14400);	//default to 4am.
-			CalcHistorical.logEvent("Baseline calc start time was NOT found in config.properties, defaulted to " + baselineCalcTime + " seconds.", com.cannontech.common.util.LogWriter.INFO);
-			com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "]  Baseline calc start time was NOT found in config.properties, defaulted to " + baselineCalcTime + " seconds.");
-			CalcHistorical.logEvent("Add row named 'calc_historical_baseline_calctime' to config.properties. (ex. =4 (as 4am), =23 (as 11pm))", com.cannontech.common.util.LogWriter.DEBUG);
-			com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "]  Add row named 'calc_historical_baseline_calctime' to config.properties. (ex. =4 (as 4am), =23 (as 11pm))");
-			baselineCalcTime = new Integer(4);	//default this bad boy to run at 4am
-			daysPreviousToCollect = new Integer( 7); //default to collect 7 days previous
-		}
-	}
+	private com.cannontech.database.db.baseline.BaseLine baselineProps = null;
 	
-	return baselineCalcTime;
-}
-/**
- * Insert the method's description here.
- * Creation date: (8/9/2001 4:59:53 PM)
- * @param calcComponent com.cannontech.database.db.point.calculation.CalcComponent
- * @param baselineCalDatesVector java.util.Vector
- * @param databaseAlias java.lang.String
- */
-public Vector getBaselinePointDataMsgVector(CalcComponent calcComponent)
-{
-	PointData pointDataMsg = null;
-	Vector returnVector = new Vector();
-
-	if( getDailyValuesArray() != null)
-	{
-		for (int i = 0; i < dailyValuesArray.length; i++)
-		{
-			// Must enter the baseline value into RPH twice in order for Graph to be able to draw it.
-			// Begining Timestamp 00:00:01
-			pointDataMsg = new com.cannontech.message.dispatch.message.PointData();
-			pointDataMsg.setId(calcComponent.getPointID().intValue());
-	
-			pointDataMsg.setValue( dailyValuesArray[i].doubleValue());
-	
-			GregorianCalendar cal = new GregorianCalendar();
-			cal.setTime(getNextBaselineCalcTime().getTime());
-	
-			cal.set(GregorianCalendar.HOUR_OF_DAY, dailyHoursArray[i].intValue() + 1);
-			cal.set(GregorianCalendar.MINUTE, 0);
-			cal.set(GregorianCalendar.SECOND, 0);
-			
-			pointDataMsg.setTimeStamp(cal.getTime());
-			pointDataMsg.setTime(cal.getTime());
-			
-			pointDataMsg.setQuality(PointQualities.NON_UPDATED_QUALITY);
-			pointDataMsg.setType(com.cannontech.database.data.point.PointTypes.CALCULATED_POINT);
-			pointDataMsg.setTags(0x00008000); //load profile tag setting
-			pointDataMsg.setStr("Baseline Calc Historical");
-			returnVector.addElement(pointDataMsg);
-		}
+	/**
+	 * Baseline constructor comment.
+	 */
+	public Baseline() {
+		super();
 	}
-	return returnVector;
-}
-/**
- * Insert the method's description here.
- * Creation date: (1/28/2002 2:46:47 PM)
- * @return java.util.TreeMap
- */
-public java.util.TreeMap getBaselineTreeMap()
-{
-	return baselineTreeMap;
-}
-/**
- * Insert the method's description here.
- * Creation date: (12/7/2000 11:43:39 AM)
- * @return java.lang.Integer
- */
-public java.lang.Integer getDaysPreviousToCollect()
-{
-	if( daysPreviousToCollect == null )
+	/**
+	 * Insert the method's description here.
+	 * Creation date: (12/4/2000 2:27:20 PM)
+	 */
+	public void figureNextBaselineCalcTime()
 	{
-		try
+		if( nextBaselineCalcTime == null )
 		{
-			java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("config");
-			daysPreviousToCollect = new Integer( bundle.getString("calc_historical_daysprevioustocollect") );
+			nextBaselineCalcTime = new GregorianCalendar();
+			//start a week ago on start up
+			nextBaselineCalcTime.add(java.util.Calendar.DAY_OF_YEAR, - getDaysPreviousToCollect().intValue());
+			nextBaselineCalcTime.set(java.util.Calendar.HOUR_OF_DAY, getBaselineCalcTime().intValue());
+			nextBaselineCalcTime.set( java.util.Calendar.MINUTE, 0);
+			nextBaselineCalcTime.set( java.util.Calendar.SECOND, 0);
+			nextBaselineCalcTime.set( java.util.Calendar.MILLISECOND, 0);
 		}
-		catch( Exception e)
-		{
-			e.printStackTrace();
-			daysPreviousToCollect = new Integer( 7); //default to collect 7 days previous
-		}
-	}
 	
-	return daysPreviousToCollect;
-}
-/**
- * Insert the method's description here.
- * Creation date: (12/4/2000 2:27:20 PM)
- */
-public java.util.List getHistoricalBaselineCalcComponents(String databaseAlias)
-{
-	java.util.ArrayList returnList = new java.util.ArrayList();
-
-	java.sql.PreparedStatement preparedStatement = null;
-	java.sql.Connection conn = null;
-	java.sql.ResultSet rset = null;
-	try
-	{
-		conn = com.cannontech.database.PoolManager.getInstance().getConnection( databaseAlias );
-		preparedStatement = conn.prepareStatement("SELECT CC.POINTID, CC.COMPONENTORDER, "+
-			" CC.COMPONENTTYPE, CC.COMPONENTPOINTID, CC.OPERATION, CC.CONSTANT, CC.FUNCTIONNAME "+
-			" FROM CALCCOMPONENT CC, CALCBASE CB "+
-			" WHERE CC.POINTID = CB.POINTID "+
-			" AND FUNCTIONNAME = 'Baseline' "+
-			" AND CB.UPDATETYPE = 'Historical' "+
-			" ORDER BY CC.POINTID, CC.COMPONENTORDER");
-		rset = preparedStatement.executeQuery();
-		while (rset.next())
+//		nextBaselineCalcTime.add(java.util.Calendar.DAY_OF_YEAR, 1);
+		nextBaselineCalcTime.add(java.util.Calendar.HOUR_OF_DAY, 1);
+		while(true)
 		{
-			Integer pointID = new Integer(rset.getInt(1));
-			Integer componentOrder = new Integer(rset.getInt(2));
-			String componentType = rset.getString(3);
-			Integer componentPointID = new Integer(rset.getInt(4));
-			String operation = rset.getString(5);
-			Double constant = new Double(rset.getDouble(6));
-			String functionName = rset.getString(7);
-
-			CalcComponent cc = new CalcComponent( pointID, componentOrder,
-							componentType, componentPointID, operation, constant, functionName );
-
-			returnList.add(cc);
-		}
-	}
-	catch( java.sql.SQLException e )
-	{
-		e.printStackTrace();
-	}
-	finally
-	{
-		try
-		{
-			if( preparedStatement != null )
-				preparedStatement.close();
-			if (rset != null)
-				rset.close();
-			if( conn != null )
-				conn.close();
-		}
-		catch( java.sql.SQLException e )
-		{
-			e.printStackTrace();
-		}
-	}
-
-	return returnList;
-}
-/**
- * Insert the method's description here.
- * Creation date: (12/4/2000 2:27:20 PM)
- */
-public GregorianCalendar getNextBaselineCalcTime()
-{
-	if( nextBaselineCalcTime == null)
-		figureNextBaselineCalcTime();
-
-	return nextBaselineCalcTime;
-}
-/**
- * Starts the application.
- */
-public Vector main()
-{
-	java.util.Date now = null;
-	now = new java.util.Date();
-
-	Vector tempPointDataMsgVector = null;
-	
-	// Get a list of all 'Historical' & 'Baseline' CalcPoints and their fields from Point table in database. 
-	CalcHistorical.allHistoricalCalcComponentsList = getHistoricalBaselineCalcComponents( databaseAlias );
-
-	// Loop through each calcBase point(ID).	
-	for (int i = 0; i < CalcHistorical.calcBasePoints.size(); i++)
-	{
-		CalcHistorical.setPointID(((Integer)CalcHistorical.calcBasePoints.get(i)).intValue());
-
-		CalcComponent calcComponent = null;
-		for (int j = 0; j < CalcHistorical.allHistoricalCalcComponentsList.size(); j++)
-		{
-			if( CalcHistorical.getPointID() == ((CalcComponent) CalcHistorical.allHistoricalCalcComponentsList.get(j)).getPointID().intValue() )
+			if(isSkipDay(nextBaselineCalcTime)) 
 			{
-				calcComponent = (CalcComponent) CalcHistorical.allHistoricalCalcComponentsList.get(j);
-				j = CalcHistorical.allHistoricalCalcComponentsList.size();	//exit for loop
+				System.out.println("** DAY " + nextBaselineCalcTime.get(java.util.Calendar.DAY_OF_WEEK));
+				nextBaselineCalcTime.add(java.util.Calendar.DAY_OF_YEAR, 1);
+			}
+			else
+				break;		
+		}
+//		nextBaselineCalcTime.set(java.util.Calendar.HOUR_OF_DAY, getBaselineCalcTime().intValue());
+	
+		CalcHistorical.logEvent("...Next Baseline Calculation to occur at: " + nextBaselineCalcTime.getTime(), com.cannontech.common.util.LogWriter.INFO);	
+		com.cannontech.clientutils.CTILogger.info("...Next Baseline Calculation to occur at: " + nextBaselineCalcTime.getTime());
+	}
+	/**
+	 * Insert the method's description here.
+	 * Creation date: (12/7/2000 11:43:39 AM)
+	 * @return java.lang.Integer
+	 */
+	public java.lang.Integer getBaselineCalcTime()
+	{
+		if( baselineCalcTime == null )
+		{
+			try
+			{
+				java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("config");
+				baselineCalcTime = new Integer( bundle.getString("calc_historical_baseline_calctime") );
+				daysPreviousToCollect = new Integer( bundle.getString("calc_historical_daysprevioustocollect") );
+				CalcHistorical.logEvent(" (config.prop) Baseline calculation time = " + baselineCalcTime + ":00", com.cannontech.common.util.LogWriter.INFO);
+				com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "]  Baseline calculation time from config.properties is " + baselineCalcTime + ":00");
+			}
+			catch( Exception e)
+			{
+				e.printStackTrace();
+				baselineCalcTime = new Integer(14400);	//default to 4am.
+				CalcHistorical.logEvent("Baseline calc start time was NOT found in config.properties, defaulted to " + baselineCalcTime + " seconds.", com.cannontech.common.util.LogWriter.INFO);
+				com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "]  Baseline calc start time was NOT found in config.properties, defaulted to " + baselineCalcTime + " seconds.");
+				CalcHistorical.logEvent("Add row named 'calc_historical_baseline_calctime' to config.properties. (ex. =4 (as 4am), =23 (as 11pm))", com.cannontech.common.util.LogWriter.DEBUG);
+				com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "]  Add row named 'calc_historical_baseline_calctime' to config.properties. (ex. =4 (as 4am), =23 (as 11pm))");
+				baselineCalcTime = new Integer(4);	//default this bad boy to run at 4am
+				daysPreviousToCollect = new Integer( 7); //default to collect 7 days previous
 			}
 		}
-		if( calcComponent == null)
-			break;
-
-		// Calendar used to track/locate which days will be valid ones to search.	
-		int daysUsedToCalcBaseline = 0;
-		GregorianCalendar tempCal = new GregorianCalendar();
-		tempCal.setTime( getNextBaselineCalcTime().getTime());
-
-		//start by looking at yesterday's date.
-		tempCal.set( java.util.Calendar.DAY_OF_YEAR, nextBaselineCalcTime.get( java.util.Calendar.DAY_OF_YEAR ) - 1 );
-		tempCal.set( java.util.Calendar.HOUR_OF_DAY, 0);
-
-		int dayofyear = tempCal.get(java.util.Calendar.DAY_OF_YEAR);
 		
-		calcDatesUsedForBaselineVector = new Vector();
-		double baselineValue = 0;
-		Vector validTimestampsVector = new Vector();
-
-		// Parameters (attributes set per pointId (actually per customer).
-		setCustomerBaselineAttributes(CalcHistorical.getPointID(), databaseAlias );
-		setSkipDaysArray();
-		
-		while ( daysUsedToCalcBaseline < calcDays )
-		{
-			boolean skipMe = false;
-
-			// Exclude specified days of the week.
-			for ( int j = 0; j < skipDaysArray.length; j++)
+		return baselineCalcTime;
+	}
+	
+	/*private void print30DayAverageValues(Integer pointID)
+	{
+		if( averageDataArray != null)
+		{			
+			for (int i = 0; i < averageDataArray.length(); i++)
 			{
-				if (tempCal.get( java.util.Calendar.DAY_OF_WEEK) == skipDaysArray[j])
-				{
-					dayofyear = tempCal.get(java.util.Calendar.DAY_OF_YEAR) - 1;
-					skipMe = true;
-					break;
-				}
+				GregorianCalendar cal = new GregorianCalendar();
+				cal.setTime(lastUpdateTimestamp.getTime());
+	
+				cal.set(GregorianCalendar.HOUR_OF_DAY, averageDataArray.getHours()[i].intValue() + 1);
+				cal.set(GregorianCalendar.MINUTE, 0);
+				cal.set(GregorianCalendar.SECOND, 0);
+			
+				System.out.println("AVG TIME : " + cal.getTime() + "   -   VALUE : " + averageDataArray.getValues()[i].doubleValue());
 			}
+		}
+	}*/
+	/**
+	 * Insert the method's description here.
+	 * Creation date: (8/9/2001 4:59:53 PM)
+	 * @param calcComponent com.cannontech.database.db.point.calculation.CalcComponent
+	 * @param baselineCalDatesVector java.util.Vector
+	 */
+	public Vector getBaselinePointDataMsgVector(Integer pointID, HoursAndValues dataArray)
+	{
+		Vector pointDataVector= new Vector();
+		
+		if( dataArray != null)
+		{
+			PointData pointDataMsg = null;
+			for (int i = 0; i < dataArray.length(); i++)
+			{
+				// Must enter the baseline value into RPH twice in order for Graph to be able to draw it.
+				// Begining Timestamp 00:00:01
+				pointDataMsg = new com.cannontech.message.dispatch.message.PointData();
+				pointDataMsg.setId(pointID.intValue());
+		
+				pointDataMsg.setValue( dataArray.getValues()[i].doubleValue());
+		
+				GregorianCalendar cal = new GregorianCalendar();
+//				cal.setTime(getNextBaselineCalcTime().getTime());
+//				cal.setTime(CalcHistorical.getCalcHistoricalLastUpdateTimeStamp(pointID.intValue()).getTime());
+				cal.setTime(lastUpdateTimestamp.getTime());
+		
+				cal.set(GregorianCalendar.HOUR_OF_DAY, dataArray.getHours()[i].intValue() + 1);
+				cal.set(GregorianCalendar.MINUTE, 0);
+				cal.set(GregorianCalendar.SECOND, 0);
 				
-			//else if( ( tempCal.get( java.util.Calendar.DAY_OF_WEEK) == HOLIDAY!!! )
-			//{
-				//tempCal.set( java.util.Calendar.DAY_OF_YEAR, calcHistorical.nextBaselineCalcTime.get( java.util.Calendar.DAY_OF_YEAR) - 1);
-			//}
+				pointDataMsg.setTimeStamp(cal.getTime());
+				pointDataMsg.setTime(cal.getTime());
+				
+				pointDataMsg.setQuality(PointQualities.NON_UPDATED_QUALITY);
+				pointDataMsg.setType(com.cannontech.database.data.point.PointTypes.CALCULATED_POINT);
+				pointDataMsg.setTags(0x00008000); //load profile tag setting
+				pointDataMsg.setStr("Baseline Calc Historical");
+				pointDataVector.addElement(pointDataMsg);
+				CalcHistorical.updateDynamicCalcHistorical(pointDataMsg.getTimeStamp(), pointID.intValue());
+			}
+		}
+		return pointDataVector;
+	}
+	/**
+	 * Insert the method's description here.
+	 * Creation date: (12/7/2000 11:43:39 AM)
+	 * @return java.lang.Integer
+	 */
+	public java.lang.Integer getDaysPreviousToCollect()
+	{
+		if( daysPreviousToCollect == null )
+		{
+			try
+			{
+				java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("config");
+				daysPreviousToCollect = new Integer( bundle.getString("calc_historical_daysprevioustocollect") );
+			}
+			catch( Exception e)
+			{
+				e.printStackTrace();
+				daysPreviousToCollect = new Integer( 7); //default to collect 7 days previous
+			}
+		}
+		
+		return daysPreviousToCollect;
+	}
+	/**
+	 * Insert the method's description here.
+	 * Creation date: (12/4/2000 2:27:20 PM)
+	 */
+	public GregorianCalendar getNextBaselineCalcTime()
+	{
+		if( nextBaselineCalcTime == null)
+			figureNextBaselineCalcTime();
+	
+		return nextBaselineCalcTime;
+	}
+	/**
+	 * Starts the application.
+	 */
+	public Vector main(Integer calcBasePointID)
+	{
+		averageDataArray = null;	//reset for each point.
+			
+		CalcComponent calcComponent = null;
+		CalcComponent percentCalcComponent = null;
+		for (int j = 0; j < getHistoricalCalcComponents().size(); j++)
+		{
+			if( calcBasePointID.intValue() == ((CalcComponent)getHistoricalCalcComponents().get(j)).getPointID().intValue() )
+			{
+				if(  ((CalcComponent) getHistoricalCalcComponents().get(j)).getFunctionName().equalsIgnoreCase(CalcComponentTypes.BASELINE_FUNCTION))
+					calcComponent = (CalcComponent) getHistoricalCalcComponents().get(j);
+				else if( ((CalcComponent)getHistoricalCalcComponents().get(j)).getFunctionName().equalsIgnoreCase(CalcComponentTypes.BASELINE_PERCENT_FUNCTION))
+					percentCalcComponent = (CalcComponent)getHistoricalCalcComponents().get(j);
+			}
+		}
+
+
+		if( calcComponent != null)
+		{
+			lastUpdateTimestamp = CalcHistorical.getCalcHistoricalLastUpdateTimeStamp(calcBasePointID.intValue());
+			System.out.println("LastUpdateTimestamp = " + lastUpdateTimestamp.getTime() + " : " + calcBasePointID);				
+			if( nextBaselineCalcTime.getTime().compareTo(lastUpdateTimestamp.getTime()) <= 0)
+			{
+				//The lastUpdate time is greater than our current calculation time.
+				//We already have this data!
+				System.out.println( " BREAK BASELINETIMESTAMP TO " + lastUpdateTimestamp.getTime());				
+			}		
+			else
+			{	
+				while(true)
+				{
+					if(isSkipDay(lastUpdateTimestamp)) 
+					{
+						lastUpdateTimestamp.add(java.util.Calendar.DAY_OF_YEAR, 1);
+					}
+					else
+						break;		
+				}
+
+				HoursAndValues dataArray = retrieveHoursAndValues(calcComponent, percentCalcComponent);
+				if( dataArray != null)
+					returnPointDataMsgVector.addAll(getBaselinePointDataMsgVector( calcBasePointID, dataArray));
+			}				
+		}
+		return returnPointDataMsgVector;
+	}
+	
+	/**
+	 * @param calcComponent
+	 */
+	private HoursAndValues retrieveHoursAndValues(CalcComponent calcComponent, CalcComponent percentCalcComponent)
+	{
+		CTILogger.info("PROCESSING POINTID " + calcComponent.getPointID());
+		HoursAndValues dataArray = null;
+		//contains java.util.Date values
+		Vector validTimestampsVector = new Vector();
+		
+		// Parameters (attributes set per pointId.
+		retrieveBaselineAttributes(calcComponent.getPointID().intValue());
+		setSkipDaysArray();
+					
+		GregorianCalendar tempCal = (GregorianCalendar)lastUpdateTimestamp.clone();
+		tempCal.add( java.util.Calendar.DAY_OF_YEAR, - 1 );
+	  
+		while ( validTimestampsVector.size() < getBaselineProperties().getCalcDays().intValue() )
+		{
+			boolean validData = true;
+						
+			if ( tempCal.get( java.util.Calendar.DAY_OF_YEAR) <  
+				(lastUpdateTimestamp.get(java.util.Calendar.DAY_OF_YEAR)) - getBaselineProperties().getDaysUsed().intValue() )
+			{
+				// Searched too far back in time.  Only going back up to Baseline.DaysUsed.
+				CTILogger.info("STOP SEARCHING - too far back: " + tempCal.getTime());
+				break;
+			}
+			else if( isSkipDay(tempCal))
+			{	//Invalid.  Baseline.ExcludedWeekDays
+				CTILogger.info("EXCLUDED WEEKDAYS: " + tempCal.getTime());
+				validData = false;
+			}
+			else if( isHoliday(tempCal))
+			{	//Invalid.  Baseline.HolidaysUsed
+				CTILogger.info("HOLIDAYS USED: " + tempCal.getTime());
+				validData = false;
+			}
 			//else if( ( tempCal.get( java.util.Calendar.DAY_OF_WEEK) == PREVIOUSLY CURTAILED DAY!!! )
 			//{
 				//tempCal.set( java.util.Calendar.DAY_OF_YEAR, calcHistorical.nextBaselineCalcTime.get( java.util.Calendar.DAY_OF_YEAR) - 1);					
 			//}
-			if (skipMe)
-			{		
-			}
-			else if ( tempCal.get( java.util.Calendar.DAY_OF_YEAR) < 
-				(getNextBaselineCalcTime().get(java.util.Calendar.DAY_OF_YEAR)) - daysUsed )
-			{
-				// Searched too far back in time.  Only going back up to daysUsed (Database, customerbaseline ).
-				break;
-			}
-			else
-			{
-				// SUCCESSFUL day found to use in baseline calculation.
-				// BAD ASSUMPTION....ASSUMING ALL DATA EXISTS ON A PARTICULAR DAY.
-
-				validTimestampsVector.add( new Long( tempCal.getTime().getTime() ) );
-				daysUsedToCalcBaseline++;	 //increment the number of average baseline values accumulated.
-
-				dayofyear = tempCal.get(java.util.Calendar.DAY_OF_YEAR) - 1;
-			}
-			tempCal.set( java.util.Calendar.DAY_OF_YEAR, dayofyear);
-		}
-		if( daysUsedToCalcBaseline > 0)
-		{
-
-			retrieveDailyBaselineData(calcComponent,validTimestampsVector, databaseAlias);
-			tempPointDataMsgVector = getBaselinePointDataMsgVector( calcComponent);
-		}
-	}		
-	return tempPointDataMsgVector;
-}
-/**
- * Insert the method's description here.
- * Creation date: (8/9/2001 4:59:53 PM)
- * @param calcComponent com.cannontech.database.db.point.calculation.CalcComponent
- * @param baselineCalDatesVector java.util.Vector
- * @param databaseAlias java.lang.String
- */
-public int retrieveDailyBaselineData(CalcComponent calcComponent, Vector validTimestampsVector, String databaseAlias)
-{
-	long DAY = 86400000;
-	com.cannontech.message.dispatch.message.PointData pointDataMsg = null;
-
-	if (calcComponent == null)
-		return 0;
-
-	StringBuffer sql = new StringBuffer("SELECT VALUE, TIMESTAMP FROM RAWPOINTHISTORY WHERE ");
-
-	sql.append(" POINTID = ");
-	sql.append(calcComponent.getComponentPointID());
-
-	// ...for each entry in the baselineCalDatesVector....
-	// Timestamps give us values > 00:00:00 and <= 00:00:00 of the last day+1
-	for (int i = 0; i < validTimestampsVector.size(); i++)
-	{
-		if (i == 0)
-			sql.append(" AND (( TIMESTAMP > ?");
-		else
-			sql.append(" OR ( TIMESTAMP > ?");
-
-		sql.append(" AND TIMESTAMP <= ?");
-		sql.append(")");
-
-		if (i == (validTimestampsVector.size() - 1))
-		{
-			sql.append(") ORDER BY TIMESTAMP");
-		}
-	}
-
-	java.sql.Connection conn = null;
-	java.sql.PreparedStatement pstmt = null;
-	java.sql.ResultSet rset = null;
-
-	try
-	{
-		conn = com.cannontech.database.PoolManager.getInstance().getConnection(databaseAlias);
-
-		if (conn == null)
-		{
-			com.cannontech.clientutils.CTILogger.info(getClass() + ":  Error getting database connection.");
-			CalcHistorical.logEvent(getClass() + ":  Error getting database connection.", com.cannontech.common.util.LogWriter.ERROR);			
-			return 0;
-		}
-		else
-		{
-
-			pstmt = conn.prepareStatement(sql.toString());
-			for (int i = 0; i < validTimestampsVector.size(); i++)
-			{
-				pstmt.setTimestamp(((i * 2) + 1), new java.sql.Timestamp((new Long(validTimestampsVector.get(i).toString()).longValue())));
-				pstmt.setTimestamp(((i * 2) + 2), new java.sql.Timestamp((new Long(validTimestampsVector.get(i).toString()).longValue()) + DAY));
-			}
-
-			rset = pstmt.executeQuery();
-
-			Vector values = new Vector();
-			Vector timestamps = new Vector();
-
-			int rowCount = 0;
-			while (rset.next())
-			{
-				
-				values.add( new Double(rset.getDouble(1)));
-				java.sql.Timestamp ts = rset.getTimestamp(2);
-				int min = (new Integer (mmIntFormat.format(ts).toString()).intValue());
-				int hr = (new Integer (hhIntFormat.format(ts).toString()).intValue());
-			
-				// have to manipulate the hour associated with the value and timestamps.	
-				int keyHour = hr;
-				if( hr == 0)
-				{
-					if( min == 0)
+			else 
+			{	//Checks on actual data, not just date.
+				Vector validTimestamps = new Vector(1);
+				validTimestamps.add(tempCal.getTime());
+				HoursAndValues currentData = retrieveData(calcComponent.getComponentPointID(), validTimestamps);
+				if( currentData == null)
+				{	//Invalid.  No data
+					validData = false;
+					if( validTimestampsVector.size() == 0)
 					{
-						keyHour = 23;
+						CTILogger.info("First day to check and we don't have data.  Going to skip and wait longer!");
+						return null;
+					}
+				}
+				else if(currentData.length() < 24)
+				{	//Invalid.  Not enough data.
+					CTILogger.info("NOT ENOUGH DATA: Only " + currentData.length() + " values found.");
+					validData = false;
+					if( validTimestampsVector.size() == 0)
+					{
+						CTILogger.info("First day to check and we don't have a full days worth of data.  Going to skip and wait longer!");
+//						return null;
+					}
+				}
+				else if(baselineProps.getPercentWindow().intValue() > 0 
+						&& percentCalcComponent != null)
+				{	
+					//0 is default for of % for x days comparison.  Defalut x to 30.
+					if( averageDataArray == null)
+					{
+						Vector tempTimestamp = new Vector(1);
+						tempTimestamp.add(lastUpdateTimestamp.getTime());
+						//Attempt to first load data from the database.
+						averageDataArray = retrieveData(percentCalcComponent.getComponentPointID(), tempTimestamp);
+						if( averageDataArray == null)
+							main(percentCalcComponent.getComponentPointID());											
+
+						// Get the data values for the percent componenet.
+						// if data values are empty call retrieveHoursAndValues on 
+//						load30Average(calcComponent.getComponentPointID());
+//						print30DayAverageValues(calcComponent.getComponentPointID());
+					}
+					if ( isLessThanAverage( tempCal, currentData))
+					{								
+						//Invalid.  Baseline.PercentWindow
+						CTILogger.info("PERCENT WINDOW: " + tempCal.getTime());
+						validData = false;
+					}
+				}
+			}			
+						
+			if( validData)
+			{
+				// SUCCESSFUL date/data found to use in baseline calculation.
+				validTimestampsVector.add( tempCal.getTime());
+			}
+			tempCal.add(java.util.Calendar.DAY_OF_YEAR, -1);
+		}
+		if( validTimestampsVector != null && validTimestampsVector.size() > 0)
+		{
+			for (int i = 0; i < validTimestampsVector.size(); i++)
+				System.out.println((java.util.Date)validTimestampsVector.get(i));
+			
+			dataArray = retrieveData(calcComponent.getComponentPointID(), validTimestampsVector);
+		}
+		return dataArray;
+	}
+	
+	
+	private boolean isHoliday(GregorianCalendar cal)
+	{
+		com.cannontech.database.data.holiday.HolidaySchedule schedule = new com.cannontech.database.data.holiday.HolidaySchedule(getBaselineProperties().getHolidaysUsed());
+		try
+		{
+			com.cannontech.database.Transaction t = com.cannontech.database.Transaction.createTransaction(com.cannontech.database.Transaction.RETRIEVE, schedule);
+			schedule = (com.cannontech.database.data.holiday.HolidaySchedule)t.execute();
+		}
+		catch(Exception e)
+		{
+			com.cannontech.clientutils.CTILogger.error(e.getMessage(), e);
+		}
+		
+		for ( int j = 0; j < schedule.getHolidayDatesVector().size(); j++)
+		{
+			if( ( ( cal.get(java.util.Calendar.MONTH) == 
+				((com.cannontech.database.db.holiday.DateOfHoliday)schedule.getHolidayDatesVector().get(j)).getHolidayMonth().intValue())
+				&& (cal.get(java.util.Calendar.DAY_OF_MONTH) ==
+				((com.cannontech.database.db.holiday.DateOfHoliday)schedule.getHolidayDatesVector().get(j)).getHolidayDay().intValue())) )
+			{
+				if(((com.cannontech.database.db.holiday.DateOfHoliday)schedule.getHolidayDatesVector().get(j)).getHolidayYear().intValue() > 0)
+				{
+					if((cal.get(java.util.Calendar.YEAR) ==
+						((com.cannontech.database.db.holiday.DateOfHoliday)schedule.getHolidayDatesVector().get(j)).getHolidayYear().intValue()))
+						return true;
+				}
+				else
+				{
+					return true;
+				}
+			}				
+		}
+		return false;
+	}
+	private boolean isSkipDay(GregorianCalendar cal)
+	{
+		for ( int i = 0; i < skipDaysArray.length; i++)
+		{
+			if (cal.get( java.util.Calendar.DAY_OF_WEEK) == skipDaysArray[i])
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private boolean isLessThanAverage(GregorianCalendar cal, HoursAndValues data)
+	{
+		if( data != null && averageDataArray != null)
+		{
+			for (int i = 0; i < data.length(); i ++)
+			{
+				if( ((Integer)data.getHours()[i]).intValue() == ((Integer)averageDataArray.getHours()[i]).intValue())
+				{
+					if( ((Double)data.getValues()[i]).doubleValue() <  ((Double)averageDataArray.getValues()[i]).doubleValue() * .75d)
+					{
+						CTILogger.info("DATA IS < 75% for: " + cal.getTime() + " - " + data.getValues()[i] + " < " +averageDataArray.getValues()[i]);
+						return true;
 					}
 				}
 				else
 				{
-					if( min == 0)
-					{
-						keyHour = hr - 1;
-					}
-				}
-
-					
-				timestamps.add(new Integer (keyHour));
-				rowCount++;
-			}
-
-
-			Double[] vals = new Double[values.size()];
-			values.toArray(vals);
-			
-			Integer [] ts = new Integer[timestamps.size()];
-			timestamps.toArray(ts);
-			if (rowCount > 0)
-			{
-				setValuesAndTimestamps(vals, ts);
-				
-				
-				java.util.Set keySet = getBaselineTreeMap().keySet();
-				dailyHoursArray = new Integer [keySet.size()];
-				keySet.toArray(dailyHoursArray);
-	
-				java.util.Collection keyVals = getBaselineTreeMap().values();
-				Object [] tempArray = new Double[keyVals.size()];
-				dailyValuesArray = new Double[keyVals.size()];
-				tempArray = keyVals.toArray();
-	
-				for (int i = 0; i < keyVals.size(); i++)
-				{
-					Double[] v = (Double[])tempArray[i];
-	
-					double counter = v[0].doubleValue();
-					double totalVal = v[1].doubleValue();
-					dailyValuesArray[i] = new Double(totalVal/counter);
+					CTILogger.info("BAD HOUR/MISSING DATA for: " + cal.getTime());
+					return true;
 				}
 			}
 		}
+		return false;
 	}
-	catch (java.sql.SQLException e)
+	/*private void load30Average(Integer pointId)
 	{
-		e.printStackTrace();
+		Vector valid30DayTimestamps = new Vector(30);
+		final int DAYS_AVERAGE = 30;
+		int daysCount = 0;
+		
+		GregorianCalendar tempCal = new GregorianCalendar();
+		tempCal = (GregorianCalendar)lastUpdateTimestamp.clone();
+		//start by looking at yesterday's date.
+		tempCal.add( java.util.Calendar.DAY_OF_YEAR, - 1 );
+		tempCal.set( java.util.Calendar.HOUR_OF_DAY, 0);
+		int totalDaysSearched = 0;		
+		while ( daysCount < DAYS_AVERAGE && totalDaysSearched < 60)
+		{
+			if( isSkipDay(tempCal))
+			{	//Invalid.
+			}
+			else if( isHoliday(tempCal))
+			{	//Invalid.
+			}
+			//else if( ( tempCal.get( java.util.Calendar.DAY_OF_WEEK) == PREVIOUSLY CURTAILED DAY!!! )
+			//{
+				//tempCal.set( java.util.Calendar.DAY_OF_YEAR, calcHistorical.nextBaselineCalcTime.get( java.util.Calendar.DAY_OF_YEAR) - 1);					
+			//}
+			else
+			{
+				// SUCCESSFUL day found to use in baseline calculation.
+				valid30DayTimestamps.add( tempCal.getTime() );
+				daysCount++;	 //increment the number of valid timestamps found.
+			}
+			tempCal.add(java.util.Calendar.DAY_OF_YEAR, -1);
+			totalDaysSearched++;
+		}
+		System.out.println(" *30 DAY LOAD* VALID TIMESTAMPS FOR POINTID " + pointId);
+		for (int i = 0; i < valid30DayTimestamps.size(); i++)
+			System.out.println((java.util.Date)valid30DayTimestamps.get(i));
+			
+		averageDataArray = retrieveData(pointId, valid30DayTimestamps);
 	}
-	finally
+	/*	
+	/**
+	 * Insert the method's description here.
+	 * Creation date: (8/9/2001 4:59:53 PM)
+	 * @param pointID java.util.Integer
+	 * @param validTimestampsVector java.util.Vector contains java.util.Date values.
+	 */
+	public HoursAndValues retrieveData(Integer pointID, Vector validTimestampsVector)
 	{
+		HoursAndValues hoursAndValues = null;
+		long DAY = 86400000;
+		com.cannontech.message.dispatch.message.PointData pointDataMsg = null;
+	
+		StringBuffer sql = new StringBuffer("SELECT VALUE, TIMESTAMP FROM RAWPOINTHISTORY WHERE ");
+	
+		sql.append(" POINTID = ");
+		sql.append(pointID);
+	
+		// ...for each entry in the baselineCalDatesVector....
+		// Timestamps give us values > 00:00:00 and <= 00:00:00 of the last day+1
+		//contains java.util.Date values.
+		Vector sqlQueryDates = new Vector();
+		sqlQueryDates = appendTimestamps(sql, validTimestampsVector);	
+	
+		java.sql.Connection conn = null;
+		java.sql.PreparedStatement pstmt = null;
+		java.sql.ResultSet rset = null;
+	
 		try
 		{
-			if (pstmt != null)
-				pstmt.close();
-			if (rset != null)
-				rset.close();
-			if (conn != null)
-				conn.close();
-		}
-		catch (java.sql.SQLException e2)
-		{
-			e2.printStackTrace(); //sometin is up
-		}
-	}
+			conn = com.cannontech.database.PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+	
+			if (conn == null)
+			{
+				com.cannontech.clientutils.CTILogger.info(getClass() + ":  Error getting database connection.");
+				CalcHistorical.logEvent(getClass() + ":  Error getting database connection.", com.cannontech.common.util.LogWriter.ERROR);			
+				return null;
+			}
+			else
+			{
+				pstmt = conn.prepareStatement(sql.toString());
+				for (int i = 0; i < sqlQueryDates.size(); i++)
+				{
+					pstmt.setTimestamp(i+1, new java.sql.Timestamp(((java.util.Date)sqlQueryDates.get(i)).getTime()));
+				}
+				rset = pstmt.executeQuery();
+	
+				//contains Double values (rawPointHistory values).
+				Vector values = new Vector();
+				//contains Integer values (rawPointHistory timestamps.hour).
+				Vector hours = new Vector();
 
-	return 0; // the average
-}
-/**
- * Insert the method's description here.
- * Creation date: (1/28/2002 2:47:47 PM)
- * @param treeMap java.util.TreeMap
- */
-public void setBaselineTreeMap(java.util.TreeMap treeMap)
-{
-	baselineTreeMap = treeMap;
-}
-/**
- * Insert the method's description here.
- * Creation date: (8/9/2001 4:59:53 PM)
- * @param calcComponent com.cannontech.database.db.point.calculation.CalcComponent
- * @param baselineCalDatesVector java.util.Vector
- * @param databaseAlias java.lang.String
- */
-public void setCustomerBaselineAttributes(int ptID, String databaseAlias)
-{
-	StringBuffer sql = new StringBuffer	("SELECT DAYSUSED, PERCENTWINDOW, CALCDAYS, EXCLUDEDWEEKDAYS, HOLIDAYSUSED ");
-	sql.append("FROM CUSTOMERBASELINE CB, POINT PT, PAOOWNER PAOO ");
-	sql.append("WHERE PT.PAOBJECTID = PAOO.CHILDID ");
-	sql.append("AND CB.CUSTOMERID = PAOO.OWNERID");
+				while (rset.next())
+				{
+					values.add( new Double(rset.getDouble(1)));
+
+					java.sql.Timestamp ts = rset.getTimestamp(2);
+					int keyHour = getAdjustedHour(ts);
+					hours.add(new Integer (keyHour));
+				}
+	
+				if (!values.isEmpty() && !hours.isEmpty())	//hours and values we always both have data or both be empty.
+				{
+					java.util.TreeMap treeMap = buildTreeMap(values, hours);					
+					java.util.Set keySet = treeMap.keySet();
+					java.util.Collection keyVals = treeMap.values();
+
+					Object [] tempArray = new Double[keyVals.size()];
+					hoursAndValues = new HoursAndValues(keySet.size(), keyVals.size());
+					keySet.toArray(hoursAndValues.getHours());
+					tempArray = keyVals.toArray();
 		
-	java.sql.Connection conn = null;
-	java.sql.PreparedStatement stmt = null;
-	java.sql.ResultSet rset = null;
-
-	try
-	{
-		conn = com.cannontech.database.PoolManager.getInstance().getConnection(databaseAlias);
-
-		if( conn == null )
+					for (int i = 0; i < keyVals.size(); i++)
+					{
+						Double[] v = (Double[])tempArray[i];
+						double counter = v[0].doubleValue();
+						double totalVal = v[1].doubleValue();
+						hoursAndValues.values[i] = new Double(totalVal/counter);
+					}
+				}
+			}
+		}
+		catch (java.sql.SQLException e)
 		{
-			com.cannontech.clientutils.CTILogger.info(getClass() + ":  Error getting database connection.");
-			CalcHistorical.logEvent(getClass() + ":  Error getting database connection.", com.cannontech.common.util.LogWriter.ERROR);
-			return;
+			e.printStackTrace();
+		}
+		finally
+		{
+			try
+			{
+				if (pstmt != null)
+					pstmt.close();
+				if (rset != null)
+					rset.close();
+				if (conn != null)
+					conn.close();
+			}
+			catch (java.sql.SQLException e2)
+			{
+				e2.printStackTrace(); //sometin is up
+			}
+		}
+	
+		return hoursAndValues; //hours and values of the retreived data.
+	}
+	
+	private int getAdjustedHour(java.sql.Timestamp ts)
+	{
+		int min = (new Integer ( new java.text.SimpleDateFormat("mm").format(ts).toString()).intValue());
+		int hr = (new Integer (new java.text.SimpleDateFormat("HH").format(ts).toString()).intValue());
+			
+		// have to manipulate the hour associated with the value and timestamps.	
+		if( hr == 0)
+		{
+			if( min == 0)
+			{
+				return 23;
+			}
 		}
 		else
 		{
-			stmt = conn.prepareStatement(sql.toString());
-			rset = stmt.executeQuery();
-
-			while( rset.next())
+			if( min == 0)
 			{
-				daysUsed = rset.getInt(1);
-				percentWindow = rset.getInt(2);
-				calcDays = rset.getInt(3);
-				String days = rset.getString(4);
-				excludedWeekdays = days.toCharArray();
-				holidaysUsed = rset.getInt(5);
+				return (hr - 1);
 			}
 		}
+		return hr; 
 	}
+	/**
+	 * @param sql
+	 * @param validTimestampsVector
+	 * @return Vector of java.util.Date values that will need to be set for the sql statement.
+	 */
+	private Vector appendTimestamps(StringBuffer sql, Vector validTimestampsVector)
+	{
+		Vector vectorOfQueryDates = new Vector();
+		boolean newLine = false; 
+		for (int i = 0; i < validTimestampsVector.size(); i++)
+			{
+				GregorianCalendar endDate = new GregorianCalendar();
+				endDate.setTime((java.util.Date)validTimestampsVector.get(i));
+				endDate.add(java.util.Calendar.DATE, 1);		
+				if (i == 0 )
+				{
+					sql.append(" AND (( TIMESTAMP <= ?");
+					vectorOfQueryDates.add(endDate.getTime());
+//					System.out.println(" AND (( TIMESTAMP <= " + endDate.getTime() );
+				}
+				else if(newLine)
+				{
+					sql.append(" OR ( TIMESTAMP <= ?");
+					vectorOfQueryDates.add(endDate.getTime());
+//					System.out.println(" OR ( TIMESTAMP <= " + endDate.getTime());
+					newLine = false;
+				}
 			
-	catch( java.sql.SQLException e )
-	{
-		e.printStackTrace();
+				//The last timestamp to check so we need to close the statement too.
+				if( i+1 == validTimestampsVector.size())
+				{
+					sql.append(" AND TIMESTAMP > ?)");
+					sql.append(") ORDER BY TIMESTAMP");
+					vectorOfQueryDates.add(validTimestampsVector.get(i));
+//					System.out.println("  AND TIMESTAMP > " + validTimestampsVector.get(i) + ") ORDER BY TIMESTAMP");
+					break;			
+				}
+				//Compare i and i+1 values incremental dates.  If they are in order we may skip the date by making it inclusive in the where clause
+				GregorianCalendar yesterday = new GregorianCalendar();
+				yesterday.setTime((java.util.Date)validTimestampsVector.get(i));
+				yesterday.add(java.util.Calendar.DATE, -1);
+				if( yesterday.getTime().compareTo( (java.util.Date)validTimestampsVector.get(i+1)) == 0)
+				{
+					//SKIP
+				}
+				else
+				{
+					sql.append(" AND TIMESTAMP > ?)");
+					vectorOfQueryDates.add(validTimestampsVector.get(i));
+//					System.out.println(" AND TIMESTAMP > " + validTimestampsVector.get(i));					
+					newLine = true;			
+				}
+			}	
+		return vectorOfQueryDates;
 	}
-	finally
+	/**
+	 * Insert the method's description here.
+	 * Creation date: (1/28/2002 2:47:47 PM)
+	 * values contains java.util.Double values.
+	 * hours contains java.util.Integer values.
+	 * @param treeMap java.util.TreeMap
+	 */
+	public static java.util.TreeMap buildTreeMap(Vector values, Vector hours)
 	{
+		java.util.TreeMap tree = new java.util.TreeMap();
+		if( !hours.isEmpty() && !values.isEmpty())
+		{
+			for( int i = 0; i < hours.size(); i++ )
+			{
+				Integer d = (Integer)hours.get(i);
+				Double[] objectValues = (Double[]) tree.get(d);
+				 		
+				if( objectValues == null )
+				{
+					//objectValues is not in the key already
+					objectValues = new Double[ 2 ];	//1 for counter, 1 for value
+					objectValues[0] = new Double(1);
+					objectValues[1] = (Double)values.get(i);
+					tree.put(d,objectValues);
+				}
+				else
+				{
+					Double newVal = new Double(objectValues[1].doubleValue() + ((Double)values.get(i)).doubleValue());
+		
+					double counter = objectValues[0].doubleValue();
+					objectValues[0] = new Double(objectValues[0].doubleValue() + 1);
+					objectValues[1] = newVal;
+		
+					tree.put(d, objectValues);
+				}
+			}
+		}
+		return tree;
+	}
+	/**
+	 * Insert the method's description here.
+	 * Creation date: (8/9/2001 4:59:53 PM)
+	 * @param calcComponent com.cannontech.database.db.point.calculation.CalcComponent
+	 * @param baselineCalDatesVector java.util.Vector
+	 */
+	public void retrieveBaselineAttributes(int ptID)
+	{
+		StringBuffer sql = new StringBuffer	("SELECT DAYSUSED, PERCENTWINDOW, CALCDAYS, EXCLUDEDWEEKDAYS, HOLIDAYSUSED, BASELINENAME ");
+		sql.append("FROM BASELINE BASE, CALCPOINTBASELINE CPB ");
+		sql.append("WHERE BASE.BASELINEID = CPB.BASELINEID ");
+		sql.append("AND CPB.POINTID = " + ptID);
+			
+		java.sql.Connection conn = null;
+		java.sql.PreparedStatement stmt = null;
+		java.sql.ResultSet rset = null;
+	
 		try
 		{
-			if( stmt != null )
-				stmt.close();
-			if (rset != null)
-				rset.close();
-			if( conn != null )
-				conn.close();
+			conn = com.cannontech.database.PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+	
+			if( conn == null )
+			{
+				com.cannontech.clientutils.CTILogger.info(getClass() + ":  Error getting database connection.");
+				CalcHistorical.logEvent(getClass() + ":  Error getting database connection.", com.cannontech.common.util.LogWriter.ERROR);
+				return;
+			}
+			else
+			{
+				stmt = conn.prepareStatement(sql.toString());
+				rset = stmt.executeQuery();
+	
+				baselineProps = new com.cannontech.database.db.baseline.BaseLine();
+				while( rset.next())
+				{
+					baselineProps.setDaysUsed(new Integer(rset.getInt(1)));
+					baselineProps.setPercentWindow(new Integer(rset.getInt(2)));
+					baselineProps.setCalcDays(new Integer(rset.getInt(3)));
+					baselineProps.setExcludedWeekDays(rset.getString(4));
+					baselineProps.setHolidaysUsed(new Integer(rset.getInt(5)));
+					baselineProps.setBaselineName(rset.getString(6));
+				}
+			}
 		}
+				
 		catch( java.sql.SQLException e )
 		{
 			e.printStackTrace();
 		}
+		finally
+		{
+			try
+			{
+				if( stmt != null )
+					stmt.close();
+				if (rset != null)
+					rset.close();
+				if( conn != null )
+					conn.close();
+			}
+			catch( java.sql.SQLException e )
+			{
+				e.printStackTrace();
+			}
+		}
 	}
-}
-/**
- * Insert the method's description here.
- * Creation date: (12/4/2001 11:08:29 AM)
- */
-public void setSkipDaysArray()
-{
-	Vector skip = new java.util.Vector();
-	
-	int [] days =
-		{java.util.Calendar.MONDAY,
-		java.util.Calendar.TUESDAY,
-		java.util.Calendar.WEDNESDAY,
-		java.util.Calendar.THURSDAY,
-		java.util.Calendar.FRIDAY,
-		java.util.Calendar.SATURDAY,
-		java.util.Calendar.SUNDAY };
+	/**
+	 * Insert the method's description here.
+	 * Creation date: (12/4/2001 11:08:29 AM)
+	 */
+	public void setSkipDaysArray()
+	{
+		Vector skip = new java.util.Vector();
 		
+		int [] days =
+			{java.util.Calendar.SUNDAY,
+			java.util.Calendar.MONDAY,
+			java.util.Calendar.TUESDAY,
+			java.util.Calendar.WEDNESDAY,
+			java.util.Calendar.THURSDAY,
+			java.util.Calendar.FRIDAY,
+			java.util.Calendar.SATURDAY };
+			
+		for (int i = 0; i < baselineProps.getExcludedWeekDays().toString().length(); i++)
+		{
+			if(baselineProps.getExcludedWeekDays().charAt(i) == 'Y')
+				skip.add( new Integer( days[i] ) );
+		}
 	
-	for (int i = 0; i < excludedWeekdays.length; i++)
-		if (excludedWeekdays[i] == 'Y')
-			skip.add( new Integer( days[i] ) );
-
-	skipDaysArray = new int [skip.size()];
-	for ( int i = 0; i < skip.size(); i++)
-	{
-		skipDaysArray[i] = ((Integer) skip.get(i)).intValue();
+		skipDaysArray = new int [skip.size()];
+		for ( int i = 0; i < skip.size(); i++)
+		{
+			skipDaysArray[i] = ((Integer) skip.get(i)).intValue();
+		}
+		
+		
 	}
-	
-	
-}
-/**
- * Insert the method's description here.
- * Creation date: (1/25/2002 4:13:38 PM)
- * @param values double[]
- * @param timestamps int[]
- */
-public void setValuesAndTimestamps(Double[] values, Integer[] timestamps)
-{
-	java.util.TreeMap tree = new java.util.TreeMap();
-
-	for( int l = 0; timestamps != null && values != null &&  l < timestamps.length; l++ )
-	{
- 		Integer d = timestamps[l];
- 		Double[] objectValues = (Double[]) tree.get(d);
-
- 		
- 		if( objectValues == null )
- 		{
-	 		//objectValues is not in the key already
-	 		objectValues = new Double[ 2 ];	//1 for counter, 1 for value
-	 		objectValues[0] = new Double(1);
-	 		objectValues[1] = values[l];
-	 		tree.put(d,objectValues);
- 		}
- 		else
- 		{
-	 		Double newVal = new Double(objectValues[1].doubleValue() + values[l].doubleValue());
-
-	 		double counter = objectValues[0].doubleValue();
-	 		objectValues[0] = new Double(objectValues[0].doubleValue() + 1);
-	 		objectValues[1] = newVal;
-
-	 		tree.put(d, objectValues);
- 		}
-	}
-	//set up a treeMap of keys and values for Graph exporting.
-	setBaselineTreeMap( tree );
-
-}
 	/**
-	 * Returns the dailyValuesArray.
-	 * @return Double[]
+	 * @return
 	 */
-	public Double[] getDailyValuesArray()
+	public com.cannontech.database.db.baseline.BaseLine getBaselineProperties()
 	{
-		return dailyValuesArray;
+		if( baselineProps == null)
+		{
+			baselineProps = new com.cannontech.database.db.baseline.BaseLine();
+			baselineProps.setDaysUsed(new Integer(30));
+			baselineProps.setPercentWindow(new Integer(75));
+			baselineProps.setCalcDays(new Integer(5));
+			baselineProps.setExcludedWeekDays("YNNNNNY");
+			baselineProps.setHolidaysUsed(new Integer(0));
+			baselineProps.setBaselineName("Baseline");
+		}
+		return baselineProps;
+	}
+	/**
+	 * @return
+	 */
+	public Vector getHistoricalCalcComponents()
+	{
+		return historicalCalcComponents;
 	}
 
 	/**
-	 * Sets the dailyValuesArray.
-	 * @param dailyValuesArray The dailyValuesArray to set
+	 * @param vector
 	 */
-	public void setDailyValuesArray(Double[] dailyValuesArray)
+	public void setHistoricalCalcComponents(Vector vector)
 	{
-		this.dailyValuesArray = dailyValuesArray;
+		historicalCalcComponents = vector;
 	}
 
 }
