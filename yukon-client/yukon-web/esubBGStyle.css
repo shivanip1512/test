@@ -1,0 +1,9 @@
+a.BlackLink:active {color: #000000}
+a.BlackLink:visited {color: #000000}
+a.BlackLink:link {color: #000000}
+a.BlackLink:hover {color: #000000}
+.BGNoRepeat {  background-color: #333333; background-image: url(colorstrip.jpg); background-repeat: no-repeat; background-position: center}
+
+.Main {  font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #000000}
+
+
