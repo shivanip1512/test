@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.64 $
-* DATE         :  $Date: 2003/05/15 22:36:40 $
+* REVISION     :  $Revision: 1.65 $
+* DATE         :  $Date: 2003/05/23 22:21:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -70,6 +70,7 @@ using namespace std;
 #include <string.h>
 
 
+#include "cparms.h"
 #include "color.h"
 #include "queues.h"
 #include "dsm2.h"
@@ -871,7 +872,8 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDevice *Devic
      *  reports itself as currently executing...
      */
 
-    if(OutMessage->MessageFlags & MSGFLG_APPLY_EXCLUSION_LOGIC)
+    if(OutMessage->MessageFlags & MSGFLG_APPLY_EXCLUSION_LOGIC ||
+       !gConfigParms.getValueAsString("PORTER_EXCLUSION_TEST").compareTo("true", RWCString::ignoreCase) )
     {
         CtiTablePaoExclusion exclusion;
 
@@ -2345,7 +2347,7 @@ INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OU
     // 050603 CGP The deal with the port/port pool logic!
     try
     {
-        bool portwasquestionable = Port->isQuestionable();      // true if this is not his fist time...
+        bool portwasquestionable = Port->isQuestionable();      // true if this is not his first time...
 
         if(CommResult && GetErrorType( CommResult ) == ERRTYPECOMM)
         {
@@ -2375,10 +2377,33 @@ INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OU
         dout << RWTime() << " EXCEPTION CAUGHT " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-
     if(status == RETRY_SUBMITTED)
     {
         statisticsNewAttempt( port, deviceID, targetID, CommResult );
+    }
+    else if(CommResult != NORMAL)
+    {
+        try
+        {
+            if(OutMessage && OutMessage->MessageFlags & MSGFLG_REQUEUE_CMD_ONCE_ON_FAIL)
+            {
+                CtiOutMessage *NewOM = CTIDBG_new CtiOutMessage(*OutMessage);
+
+                NewOM->Retry = 2;
+                NewOM->MessageFlags &= ~MSGFLG_REQUEUE_CMD_ONCE_ON_FAIL;
+
+                CtiPort *prt = Port.get();
+                prt->writeQueue(NewOM->EventCode, sizeof (*NewOM), (char *) NewOM, NewOM->Priority, PortThread);
+                prt->setShouldDisconnect( TRUE );       // Must hangup!
+            }
+        }
+        catch(...)
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+        }
     }
 
     return status;
@@ -2847,11 +2872,11 @@ INT PerformRequestedCmd ( CtiPortSPtr aPortRecord, CtiDeviceIED *aIED, INMESS *a
         {
             status = aIED->generateCommand ( transfer , traceList);
             status = aPortRecord->outInMess( transfer, aIED, traceList );
-
             if( transfer.doTrace( status ) )
             {
                 aPortRecord->traceXfer(transfer, traceList, aIED, status);
             }
+
             if( deviceCanSurviveThisStatus(status) )
             {
                 status = aIED->decodeResponse (transfer, status, traceList);
@@ -2903,17 +2928,8 @@ INT PerformRequestedCmd ( CtiPortSPtr aPortRecord, CtiDeviceIED *aIED, INMESS *a
             status = !NORMAL;
         }
 
-        try
-        {
-            DisplayTraceList(aPortRecord, traceList, true);
-        }
-        catch(...)
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-        }
+        DisplayTraceList(aPortRecord, traceList, true);
+
     }
     catch(...)
     {
@@ -3577,11 +3593,12 @@ BOOL areAnyQueueEntriesOkToSend(void *data, void* d)
     }
     else
     {
+        if(getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " **** NON-Excludable OM found  **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
-        bStatus = TRUE; // We can send anythig which says it is non-excludable!
+        bStatus = TRUE; // We can send anything which says it is non-excludable!
     }
 
 
