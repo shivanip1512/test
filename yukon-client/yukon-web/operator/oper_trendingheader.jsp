@@ -1,11 +1,11 @@
-<%                	     
+<%            
 // Grab their graphdefinitions
    Class[] types = { Integer.class,String.class };
-   Object[][] gData = com.cannontech.util.ServletUtil.executeSQL( dbAlias, "select graphdefinition.graphdefinitionid,graphdefinition.name from graphdefinition,OperatorLoginGraphList where graphdefinition.graphdefinitionid=OperatorLoginGraphList.graphdefinitionid and OperatorLoginGraphList.OperatorLoginID=" + liteYukonUser.getLiteType() + " order by graphdefinition.graphdefinitionid", types );
+   Object[][] gData = com.cannontech.util.ServletUtil.executeSQL( dbAlias, "select gdef.graphdefinitionid,gdef.name from graphdefinition gdef, OperatorLoginGraphList olgl where gdef.graphdefinitionid=olgl.graphdefinitionid and olgl.OperatorLoginID=" + liteYukonUser.getLiteID() + " order by gdef.graphdefinitionid", types );
 %>
-<jsp:setProperty name="graphBean" property="start" param="start"/>
 <jsp:setProperty name="graphBean" property="period" param="period"/>
 <jsp:setProperty name="graphBean" property="gdefid" param="gdefid"/>
+<jsp:setProperty name="graphBean" property="start" param="start"/>
 <jsp:setProperty name="graphBean" property="viewType" param="view"/>
 <jsp:setProperty name="graphBean" property="option" param="option"/>
 <jsp:setProperty name="graphBean" property="format" param="format"/>
@@ -96,8 +96,6 @@ function initOptions()
 		document.otherOptions.legend_load_factor.checked = true;
 		leg_load_factor = true;
 	}	
-	if (leg_min_max && leg_load_factor) 
-		document.otherOptions.legend.checked = true;	
 }
 
 function changeView(viewType)
@@ -106,39 +104,15 @@ function changeView(viewType)
 	submitMForm();
 }
 
-
-function changeLegend()
-{
-	if (document.otherOptions.legend.checked)
-	{
-		document.otherOptions.legend_min_max.checked = true;
-		document.otherOptions.legend_load_factor.checked = true;
-		showMinMax();
-		showLoadFactor();
-	}
-	else
-	{
-    	document.otherOptions.legend_min_max.checked = false;
-		document.otherOptions.legend_load_factor.checked = false;
-		showMinMax();
-		showLoadFactor();
-	}
-}
-
 function showMinMax()
 {
 	if (document.otherOptions.legend_min_max.checked == true)
 	{
 		setMask(LEGEND_MIN_MAX, true);
-		document.otherOptions.legend.checked = true;
 	}
 	else
 	{
 		setMask(LEGEND_MIN_MAX, false);
-		if (document.otherOptions.legend_load_factor.checked != true)
-		{
-			document.otherOptions.legend.checked = false;
-		}
 	}
 }
 
@@ -147,15 +121,10 @@ function showLoadFactor()
 	if (document.otherOptions.legend_load_factor.checked == true)
 	{
 		setMask(LEGEND_LOAD_FACTOR, true);
-		document.otherOptions.legend.checked = true;
 	}
 	else
 	{
 		setMask(LEGEND_LOAD_FACTOR, false);
-		if (document.otherOptions.legend_min_max.checked != true)
-		{
-			document.otherOptions.legend.checked = false;
-		}
 	}
 }
 
