@@ -925,11 +925,6 @@ BOOL CtiPortDirect::connected()
             }
             else if (getConnectedDevice() <= 0 && dcdTest())
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
-
                 disconnect(CtiDeviceSPtr(), FALSE);
             }
         }
