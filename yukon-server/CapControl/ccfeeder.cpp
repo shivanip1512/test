@@ -750,6 +750,7 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarRequest(RWOrdered& pointChanges, DO
                 ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(1);
                 pointChanges.insert(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType));
                 ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(2);
+                currentCapBank->setLastStatusChangeTime(RWDBDateTime());
             }
             else
             {
@@ -814,6 +815,7 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarRequest(RWOrdered& pointChanges, DO
                 ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(1);
                 pointChanges.insert(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType));
                 ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(2);
+                currentCapBank->setLastStatusChangeTime(RWDBDateTime());
             }
             else
             {
@@ -1056,6 +1058,7 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(RWOrdered& pointChanges, ULONG minC
                 }
                 pointChanges.insert(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType));
                 ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(2);
+                currentCapBank->setLastStatusChangeTime(RWDBDateTime());
             }
             else
             {
@@ -1524,6 +1527,12 @@ void CtiCCFeeder::restore(RWDBReader& rdr)
         rdr["busoptimizedvaroffset"] >> _busoptimizedvaroffset;
         rdr["ctitimestamp"] >> dynamicTimeStamp;
 
+        //if dynamic timestamp from yesterday, zero out operation count
+        if( dynamicTimeStamp.rwdate() < currentDateTime.rwdate() ||
+            currentDateTime.hour() == 0 )
+        {
+            setCurrentDailyOperations(0);
+        }
         _insertDynamicDataFlag = FALSE;
     }
     else
