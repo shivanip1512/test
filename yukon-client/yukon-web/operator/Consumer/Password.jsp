@@ -102,6 +102,29 @@ function generatePassword(form) {
 			  <input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/operator/Consumer/Password.jsp">
                 <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
                   <tr> 
+                    <td width="100" class="TableCell">
+                      <div align="right">Customer Group: </div>
+                    </td>
+                    <td width="200">
+                      <select name="CustomerGroup">
+<%	if (userLogin.getUsername().length() > 0) {
+		String groupID = userLogin.hasGroupID()? String.valueOf(userLogin.getGroupID()) : "";
+		String groupName = userLogin.hasGroupID()? AuthFuncs.getGroup(userLogin.getGroupID()).getGroupName() : "(none)";
+%>
+					    <option value="<%= groupID %>"><%= groupName %></option>
+<%	} else {
+		com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany liteEnergyCompany = SOAPServer.getEnergyCompany(user.getEnergyCompanyID());
+		com.cannontech.database.data.lite.LiteYukonGroup[] custGroups = liteEnergyCompany.getResidentialCustomerGroups();
+		for (int i = 0; i < custGroups.length; i++) {
+%>
+					    <option value="<%= custGroups[i].getGroupID() %>"><%= custGroups[i].getGroupName() %></option>
+<%		}
+	}
+%>
+                      </select>
+                    </td>
+                  </tr>
+                  <tr> 
                     <td width="100" class="TableCell"> 
                       <div align="right">New User Name: </div>
                     </td>

@@ -528,6 +528,24 @@ function clearPage() {
 <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN %>">
               <table width="300" border="0" cellspacing="0" cellpadding="1">
                 <tr> 
+                  <td width="100" class="TableCell">
+                    <div align="right">Customer Group: </div>
+                  </td>
+                  <td width="200">
+                    <select name="CustomerGroup">
+<%
+		com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany liteEnergyCompany = SOAPServer.getEnergyCompany(user.getEnergyCompanyID());
+		com.cannontech.database.data.lite.LiteYukonGroup[] custGroups = liteEnergyCompany.getResidentialCustomerGroups();
+		for (int i = 0; i < custGroups.length; i++) {
+%>
+                      <option value="<%= custGroups[i].getGroupID() %>"><%= custGroups[i].getGroupName() %></option>
+<%
+		}
+%>
+                    </select>
+                  </td>
+                </tr>
+                <tr> 
                   <td width="100" class="TableCell"> 
                     <div align="right">User Name: </div>
                   </td>
