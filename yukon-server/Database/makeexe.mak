@@ -221,8 +221,8 @@ tbl_pao.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h types.h \
 		db_entry_defines.h tbl_pao.h dbmemobject.h
 tbl_port_base.obj:	tbl_port_base.h dbmemobject.h dbaccess.h dlldefs.h \
 		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
-		guard.h sema.h porttypes.h resolvers.h pointtypes.h yukon.h \
-		ctidbgmem.h db_entry_defines.h logger.h thread.h
+		guard.h sema.h resolvers.h pointtypes.h yukon.h ctidbgmem.h \
+		db_entry_defines.h logger.h thread.h
 tbl_port_dialup.obj:	tbl_port_dialup.h dlldefs.h dllbase.h os2_2w32.h \
 		types.h cticalls.h dsm2.h mutex.h guard.h dbmemobject.h \
 		dbaccess.h sema.h resolvers.h pointtypes.h yukon.h \
@@ -232,8 +232,7 @@ tbl_port_serial.obj:	tbl_port_serial.h dbaccess.h dlldefs.h dllbase.h \
 		dbmemobject.h logger.h thread.h
 tbl_port_settings.obj:	tbl_port_settings.h dbmemobject.h dbaccess.h \
 		dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
-		mutex.h guard.h sema.h porttypes.h yukon.h ctidbgmem.h \
-		logger.h thread.h
+		mutex.h guard.h sema.h yukon.h ctidbgmem.h logger.h thread.h
 tbl_port_statistics.obj:	tbl_port_statistics.h dbaccess.h dlldefs.h \
 		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
 		guard.h sema.h dbmemobject.h logger.h thread.h
