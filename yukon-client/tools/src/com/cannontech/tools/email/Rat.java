@@ -155,7 +155,7 @@ public void executeCheck()
 				com.cannontech.clientutils.CTILogger.getStandardLog().info("No connection to porter");
 				if( !isEmailSent() )
 				{
-					sendMailMessage( "porter is NOT responding!!","porter is NOT responding to a loopback!!  You better check it out." );
+					sendMailMessage( "porter is NOT responding!!","porter is NOT responding to a control!!  You better check it out." );
 					
 					setEmailSent( true );
 				}
@@ -179,7 +179,7 @@ public void executeCheck()
 				{
 					setEmailSent( false );
 					sendMailMessage( "Yukon seems fine", 
-							"Seems fine now!" );
+							"Porter and dispatch all green!" );
 				}
             
             com.cannontech.clientutils.CTILogger.getStandardLog().info(
