@@ -377,8 +377,9 @@ public void alarmToolBar_JToolBarButtonSilenceAlarmsAction_actionPerformed(java.
 
 	if( getMainPanel().isClientDisplay() )
 		getMainPanel().getCurrentSpecailChild().setSound( soundToggle );
-	else
-		getMainPanel().getTableDataModel().setSound( soundToggle );
+	
+	//Always set the MainTableModel sound toggle flag	
+	getMainPanel().getTableDataModel().setSound( soundToggle );
 
 	
 	getAlarmToolBar().getJToolBarButtonSilenceAlarms().repaint();

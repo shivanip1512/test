@@ -694,23 +694,26 @@ private void setRowAlarmed( int rowNumber )
 		sig.setDescription("Alarm signal used in CBC client table");
 		sig.setUserName( com.cannontech.common.util.CtiUtilities.getUserName() );
 		
-		if( !getAlarmingRowVector().contains( new Integer(rowNumber) ) )
+		synchronized( getAlarmingRowVector() )
 		{
-			getAlarmingRowVector().addElement( new AlarmingRow(
-							rowNumber,
-							Colors.getColorID( CapControlTableModel.DEFAULT_ALARMCOLOR),  // use this for every alarm for now
-							getCurrentRowBGColors(rowNumber),
-							sig) );
-		}
-
-
-		if( currenBlinkingAlarms == null )
-		{
-			if( showingAlarms )
-				currenBlinkingAlarms = new RowBlinker( this, getAlarmingRowVector() );
-			else
-				toggleAlarms( false ); //we should just kill any possible alarm blinkers
-												// if they are present
+			if( !getAlarmingRowVector().contains( new Integer(rowNumber) ) )
+			{
+				getAlarmingRowVector().addElement( new AlarmingRow(
+								rowNumber,
+								Colors.getColorID( CapControlTableModel.DEFAULT_ALARMCOLOR),  // use this for every alarm for now
+								getCurrentRowBGColors(rowNumber),
+								sig) );
+			}
+	
+	
+			if( currenBlinkingAlarms == null )
+			{
+				if( showingAlarms )
+					currenBlinkingAlarms = new RowBlinker( this, getAlarmingRowVector() );
+				else
+					toggleAlarms( false ); //we should just kill any possible alarm blinkers
+													// if they are present
+			}
 		}
 		
 	}		

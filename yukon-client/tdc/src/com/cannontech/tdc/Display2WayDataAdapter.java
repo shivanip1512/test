@@ -2268,11 +2268,13 @@ public void setRowAlarmed( Signal signal )
 		synchronized( getAlarmingRowVector() )
 		{
 			if( !getAlarmingRowVector().contains( rowLocation ) )
+			{
 				getAlarmingRowVector().addElement( new AlarmingRow(
 						rowLocation.intValue(), 
 						getAlarmColor((int)signal.getAlarmStateID()), 
 						getRowBackgroundColor(rowLocation.intValue()),
 						signal) );
+			}
 			else
 			{
 				getAlarmingRowVector().getAlarmingRow(rowLocation.intValue()).setAlarmColor( 
@@ -2281,10 +2283,12 @@ public void setRowAlarmed( Signal signal )
 				getAlarmingRowVector().getAlarmingRow(rowLocation.intValue()).setSignal( signal );
 			}
 			
-		}
+			if( currentBlinkingAlarms == null )
+				currentBlinkingAlarms = new com.cannontech.tdc.alarms.gui.RowBlinker( this, getAlarmingRowVector() );
+
+		} //end synch
 		
-		if( currentBlinkingAlarms == null )
-			currentBlinkingAlarms = new com.cannontech.tdc.alarms.gui.RowBlinker( this, getAlarmingRowVector() );
+		
 	}		
 }
 /**
