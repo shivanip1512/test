@@ -5,6 +5,7 @@ package com.cannontech.loadcontrol.datamodels;
  * Creation date: (7/25/2001 11:52:00 AM)
  * @author: 
  */
+import com.cannontech.database.db.device.lm.ILMControlAreaTrigger;
 import com.cannontech.loadcontrol.data.LMControlAreaTrigger;
 
 public class ControlAreaRowData 
@@ -69,12 +70,12 @@ public java.lang.String getTriggerValue()
 	if( triggerValue == null )
 	{
 		//Returns the value of the trigger
-		if( getTrigger().getTriggerType().equalsIgnoreCase(com.cannontech.database.db.device.lm.LMControlAreaTrigger.TYPE_STATUS) )
+		if( getTrigger().getTriggerType().equalsIgnoreCase(ILMControlAreaTrigger.TYPE_STATUS) )
 		{
 			triggerValue = com.cannontech.database.cache.functions.StateFuncs.getLiteState( getLitePoint().getStateGroupID(), 
 					getTrigger().getNormalState().intValue()).getStateText();
 		}
-		else if( getTrigger().getTriggerType().equalsIgnoreCase(com.cannontech.database.db.device.lm.LMControlAreaTrigger.TYPE_THRESHOLD) )
+		else if( getTrigger().getTriggerType().equalsIgnoreCase(ILMControlAreaTrigger.TYPE_THRESHOLD) )
 		{
 			triggerValue = getTrigger().getThreshold().toString();
 		}
@@ -94,7 +95,7 @@ public boolean isFiring()
 {
 	if( isValidTrigger() )
 	{
-		if( getTrigger().getTriggerType().equalsIgnoreCase(com.cannontech.database.db.device.lm.LMControlAreaTrigger.TYPE_STATUS) )
+		if( getTrigger().getTriggerType().equalsIgnoreCase(ILMControlAreaTrigger.TYPE_STATUS) )
 		{
 			return getCurrentValue().equalsIgnoreCase(getTriggerValue());
 		}
@@ -151,11 +152,11 @@ public String toString()
 {
 	if( !isValidTrigger() )
 		return "(null)";
-	else if( getTrigger().getTriggerType().equalsIgnoreCase(com.cannontech.database.db.device.lm.LMControlAreaTrigger.TYPE_STATUS) )
+	else if( getTrigger().getTriggerType().equalsIgnoreCase(ILMControlAreaTrigger.TYPE_STATUS) )
 	{
 		return getLitePoint().getPointName().toUpperCase() + " : " + getCurrentValue() + " [Normal = " + getTriggerValue() + "]";
 	}
-	else if( getTrigger().getTriggerType().equalsIgnoreCase(com.cannontech.database.db.device.lm.LMControlAreaTrigger.TYPE_THRESHOLD) )
+	else if( getTrigger().getTriggerType().equalsIgnoreCase(ILMControlAreaTrigger.TYPE_THRESHOLD) )
 	{
 		return getLitePoint().getPointName().toUpperCase() + " : " + getCurrentValue() + " [Threshold = " + getTriggerValue() + "]";
 	}

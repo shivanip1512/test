@@ -5,8 +5,10 @@ package com.cannontech.loadcontrol.gui.manualentry;
  * Creation date: (4/19/2001 3:54:21 PM)
  * @author: 
  */
+import com.cannontech.database.db.device.lm.ILMControlAreaTrigger;
 import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.data.LMControlAreaTrigger;
+import com.cannontech.loadcontrol.datamodels.IProgramTableModel;
 import com.cannontech.loadcontrol.messages.LMCommand;
 
 public class ControlAreaTriggerJPanel extends com.cannontech.common.gui.util.ConfirmationJPanel implements java.awt.event.ActionListener, java.util.Observer {
@@ -220,7 +222,7 @@ private javax.swing.JLabel getJLabelTrigger1NotPresent() {
 		try {
 			ivjJLabelTrigger1NotPresent = new javax.swing.JLabel();
 			ivjJLabelTrigger1NotPresent.setName("JLabelTrigger1NotPresent");
-			ivjJLabelTrigger1NotPresent.setText("(Not Present)");
+			ivjJLabelTrigger1NotPresent.setText("(No Threshold Trigger Present)");
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -283,7 +285,7 @@ private javax.swing.JLabel getJLabelTrigger2NotPresent() {
 		try {
 			ivjJLabelTrigger2NotPresent = new javax.swing.JLabel();
 			ivjJLabelTrigger2NotPresent.setName("JLabelTrigger2NotPresent");
-			ivjJLabelTrigger2NotPresent.setText("(Not Present)");
+			ivjJLabelTrigger2NotPresent.setText("(No Threshold Trigger Present)");
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -611,15 +613,9 @@ public void jButtonUpdate_ActionPerformed(java.awt.event.ActionEvent actionEvent
 		LMControlAreaTrigger trigger = (LMControlAreaTrigger)getLmControlArea().getTriggerVector().get(i);
 
 		double threshValue = 0.0;
-		double restoreVal	= 0.0;
+		double restoreVal = 0.0;
 		
-		if( trigger.getTriggerType().equalsIgnoreCase(com.cannontech.database.db.device.lm.LMControlAreaTrigger.TYPE_STATUS) )
-		{
-			threshValue = (trigger.getTriggerNumber().intValue() == 1 
-						? getJComboBoxTrigger1NewThreshold().getSelectedIndex()
-						: getJComboBoxTrigger2NewThreshold().getSelectedIndex() );
-		}
-		else
+		if( trigger.getTriggerType().equalsIgnoreCase(ILMControlAreaTrigger.TYPE_THRESHOLD) )
 		{
 			try
 			{
@@ -666,19 +662,21 @@ public void jButtonUpdate_ActionPerformed(java.awt.event.ActionEvent actionEvent
 			//only add changes when the value is different
 			if( offsetCmd.getValue() != trigger.getMinRestoreOffset().doubleValue() )
 				multi.getVector().add( offsetCmd );
-		}
-
 		
-		//create a new threshold command message
-		LMCommand threshCmd = new LMCommand(
-				LMCommand.CHANGE_THRESHOLD,
-				getLmControlArea().getYukonID().intValue(),
-				trigger.getTriggerNumber().intValue(),  //the trigger number
-				threshValue );
-
-		//only add changes when the value is different
-		if( threshCmd.getValue() != trigger.getThreshold().doubleValue() )
-			multi.getVector().add( threshCmd );
+		//}
+		
+			//create a new threshold command message
+			LMCommand threshCmd = new LMCommand(
+					LMCommand.CHANGE_THRESHOLD,
+					getLmControlArea().getYukonID().intValue(),
+					trigger.getTriggerNumber().intValue(),  //the trigger number
+					threshValue );
+	
+			//only add changes when the value is different
+			if( threshCmd.getValue() != trigger.getThreshold().doubleValue() )
+				multi.getVector().add( threshCmd );
+		}
+		
 	}
 
 	//send the messages here if we have any
@@ -803,9 +801,8 @@ public void setLmControlArea(com.cannontech.loadcontrol.data.LMControlArea newLm
  */
 private void setTrigger1Values(LMControlAreaTrigger trigger, com.cannontech.database.data.lite.LitePoint point) 
 {
-	getJLabelTrigger1NotPresent().setVisible(false);
-
-	if( trigger.getTriggerType().equalsIgnoreCase(com.cannontech.database.db.device.lm.LMControlAreaTrigger.TYPE_STATUS) )
+/*
+	if( trigger.getTriggerType().equalsIgnoreCase(ILMControlAreaTrigger.TYPE_STATUS) )
 	{
 		//set all our text choices in the text box
 		setComboBoxText( point.getStateGroupID(), getJComboBoxTrigger1NewThreshold() );
@@ -819,7 +816,12 @@ private void setTrigger1Values(LMControlAreaTrigger trigger, com.cannontech.data
 		getJComboBoxTrigger1NewThreshold().setSelectedIndex( trigger.getPointValue().intValue() );
 	}
 	else
+*/
+
+	if( trigger.getTriggerType().equalsIgnoreCase(ILMControlAreaTrigger.TYPE_THRESHOLD) )
 	{
+		getJLabelTrigger1NotPresent().setVisible(false);
+
 		getJComboBoxTrigger1NewThreshold().setEditable(true);
 
 		getJTextFieldTrigger1RestoreOffset().setText( trigger.getMinRestoreOffset().toString() );
@@ -836,9 +838,8 @@ private void setTrigger1Values(LMControlAreaTrigger trigger, com.cannontech.data
  */
 private void setTrigger2Values(LMControlAreaTrigger trigger, com.cannontech.database.data.lite.LitePoint point) 
 {
-	getJLabelTrigger2NotPresent().setVisible(false);
-
-	if( trigger.getTriggerType().equalsIgnoreCase(com.cannontech.database.db.device.lm.LMControlAreaTrigger.TYPE_STATUS) )
+/*
+	if( trigger.getTriggerType().equalsIgnoreCase(ILMControlAreaTrigger.TYPE_STATUS) )
 	{
 		//set all our text choices in the text box
 		setComboBoxText( point.getStateGroupID(), getJComboBoxTrigger2NewThreshold() );
@@ -852,7 +853,11 @@ private void setTrigger2Values(LMControlAreaTrigger trigger, com.cannontech.data
 		getJComboBoxTrigger2NewThreshold().setSelectedIndex( trigger.getPointValue().intValue() );
 	}
 	else
+*/
+	if( trigger.getTriggerType().equalsIgnoreCase(ILMControlAreaTrigger.TYPE_THRESHOLD) )
 	{
+		getJLabelTrigger2NotPresent().setVisible(false);
+
 		getJComboBoxTrigger2NewThreshold().setEditable(true);
 
 		getJTextFieldTrigger2RestoreOffset().setText( trigger.getMinRestoreOffset().toString() );

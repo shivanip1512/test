@@ -15,10 +15,6 @@ public class LMControlArea
 	public static final int STATE_SCHEDULED = 3;
 	public static final int STATE_FULLY_ACTIVE = 4;
 
-	//types a LMControlArea can be
-	public static final String TYPE_THRESHOLD = "Threshold";
-	public static final String TYPE_STATE = "State";
-	
 	private Integer yukonID = null;
 	private String yukonCategory = null;
 	private String yukonClass = null;
@@ -41,7 +37,7 @@ public class LMControlArea
 	private Integer currentDailyStartTime = null;
 	private Integer currentDailyStopTime = null;
 	
-	//LMControlAreaTriggers Objects
+	//LMControlAreaTrigger Objects
 	private java.util.Vector triggerVector = null;
 
 	//LMProgramBase Objects
@@ -63,7 +59,8 @@ public boolean equals(Object val)
 		return super.equals(val);
 }
 
-public int hashCode() {
+public int hashCode() 
+{
 	return getYukonID().intValue();
 }
 

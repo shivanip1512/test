@@ -26,6 +26,8 @@ public class LMControlAreaTrigger
 	private Double peakPointValue = null;
 	private Date lastPeakPointValueTimeStamp = null;
 	private Double projectedPointValue = null;
+
+
 /**
  * Creation date: (7/18/2001 10:24:18 AM)
  * @return java.util.Date

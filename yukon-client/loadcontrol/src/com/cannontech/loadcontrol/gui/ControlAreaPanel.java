@@ -564,7 +564,6 @@ private javax.swing.JTable getJTableTriggers() {
 			ivjJTableTriggers = new javax.swing.JTable();
 			ivjJTableTriggers.setName("JTableTriggers");
 			getJScrollPaneTable().setColumnHeaderView(ivjJTableTriggers.getTableHeader());
-			getJScrollPaneTable().getViewport().setBackingStoreEnabled(true);
 			ivjJTableTriggers.setBounds(0, 0, 200, 200);
 			// user code begin {1}
 

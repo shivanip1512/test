@@ -51,10 +51,13 @@ public LMManualControlMsg createScheduledStartMsg( java.util.Date start,
 	LMManualControlMsg msg = new LMManualControlMsg();
 	java.util.GregorianCalendar cStart = new java.util.GregorianCalendar();
 	cStart.setTime(start);
+	
 	java.util.GregorianCalendar cStop = new java.util.GregorianCalendar();
 	cStop.setTime(stop);
+	
 	java.util.GregorianCalendar cNotif = new java.util.GregorianCalendar();
-	cNotif.setTime(notifyTime);
+	cNotif.setTime(
+		(notifyTime == null ? new java.util.Date() : notifyTime) );
 
 	msg.setStartTime(cStart);
 	msg.setStopTime(cStop);

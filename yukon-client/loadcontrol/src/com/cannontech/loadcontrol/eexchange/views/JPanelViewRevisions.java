@@ -372,7 +372,6 @@ private javax.swing.JTable getJTableRevisions() {
 			ivjJTableRevisions = new javax.swing.JTable();
 			ivjJTableRevisions.setName("JTableRevisions");
 			getJScrollPaneRevisions().setColumnHeaderView(ivjJTableRevisions.getTableHeader());
-			getJScrollPaneRevisions().getViewport().setBackingStoreEnabled(true);
 			ivjJTableRevisions.setBounds(0, 0, 200, 200);
 			// user code begin {1}
 

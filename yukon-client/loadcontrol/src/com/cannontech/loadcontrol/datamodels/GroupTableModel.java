@@ -5,7 +5,9 @@ package com.cannontech.loadcontrol.datamodels;
  */
 import java.awt.Color;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.commonutils.ModifiedDate;
+import com.cannontech.common.util.CtiProperties;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.loadcontrol.data.ILMGroup;
 import com.cannontech.loadcontrol.data.LMControlArea;
@@ -13,10 +15,10 @@ import com.cannontech.loadcontrol.data.LMCurtailCustomer;
 import com.cannontech.loadcontrol.data.LMGroupBase;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 
-public class GroupTableModel extends javax.swing.table.AbstractTableModel implements javax.swing.event.TableModelListener, SelectableLMTableModel
+public class GroupTableModel extends javax.swing.table.AbstractTableModel implements javax.swing.event.TableModelListener, ISelectableLMTableModel
 {
 	private LMControlArea currentControlArea = null;
-	java.util.Vector rows = null;
+	private java.util.Vector rows = null;
 	
 	//The columns and their column index	
 	public static final int GROUP_NAME = 0;
@@ -26,14 +28,40 @@ public class GroupTableModel extends javax.swing.table.AbstractTableModel implem
   	public static final int REDUCTION = 4;
   	
 	//The column names based on their column index
-	public String[] columnNames =
+	public static String[] columnNames =
 	{
 		"Group Name",
 		"State",
-		"Start Time",
+		"Start Date/Time",
 		"Day/Month/Season/Year Hrs",
+		
+		//optional column to show (keep this column last!)
 		"Reduction"
 	};
+	
+	static
+	{
+	   Boolean showRedCol = Boolean.TRUE;
+
+	   try
+	   {
+	      showRedCol = 
+	         Boolean.valueOf(
+	            CtiProperties.getInstance().getProperty(
+	               CtiProperties.KEY_LC_REDUCTION_COL, 
+	               "true") );
+	   }
+	   catch( Exception e)
+	   {}
+   	
+   	if( !showRedCol.booleanValue() )
+   	{
+   		String[] temp = new String[ columnNames.length - 1 ];
+   		System.arraycopy( columnNames, 0, temp, 0, temp.length );
+   		columnNames = temp;
+   	}
+   	
+	}
 
 	// default BG color	
 	Color backGroundColor = Color.black;
@@ -54,6 +82,27 @@ public class GroupTableModel extends javax.swing.table.AbstractTableModel implem
 		Color.red
 	};
 
+
+	public static final java.util.Comparator GROUP_NAME_COMPARATOR = new java.util.Comparator()
+	{
+		public int compare(Object o1, Object o2)
+		{
+			try
+			{
+				String thisVal = ((ILMGroup)o1).getName();
+				String anotherVal = ((ILMGroup)o2).getName();
+				return( thisVal.compareToIgnoreCase(anotherVal) );
+			}
+			catch( Exception e )
+			{
+				CTILogger.error( "Something went wrong with sorting, ignoring sorting rules", e );
+				return 0; 
+			}
+			
+		}
+	};
+
+
 /**
  * ScheduleTableModel constructor comment.
  */
@@ -66,7 +115,10 @@ public GroupTableModel() {
  */
 public void clear() 
 {
-	getRows().removeAllElements();
+	//do NOT remove the elements, but just set the reference to our list to a
+	//  new reference...setting it to NULL would work (getRows().removeAllElements();)
+	rows = new java.util.Vector(10);
+
 	currentControlArea = null;
 
 
@@ -293,16 +345,23 @@ public synchronized void setCurrentData(LMControlArea cntrArea_, LMProgramBase p
 			LMProgramBase prg = 
 				(LMProgramBase)currentControlArea.getLmProgramVector().get(i);
 
-			if( prgBse_ != null ) {
-				if( prgBse_.equals(prg) ) {
+			if( prgBse_ != null )
+			{
+				if( prgBse_.equals(prg) ) 
+				{
 					getRows().addAll( rows.size(), prg.getLoadControlGroupVector() );
-					break;	
+					break; //we only want to see this programs groups, get out now	
 				}
 			}			
 			else
 				getRows().addAll( rows.size(), prg.getLoadControlGroupVector() );
 		}
-				
+	
+		//always keep our list in order by the Group Name
+		// this will sort the references ONLY
+		java.util.Collections.sort( 
+				rows,
+				GROUP_NAME_COMPARATOR );				
 	}
 	else
 		clear();

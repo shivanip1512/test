@@ -5,7 +5,7 @@ package com.cannontech.loadcontrol.datamodels;
  * Creation date: (1/2/2002 9:22:44 AM)
  * @author: 
  */
-public interface SelectableLMTableModel extends javax.swing.table.TableModel
+public interface ISelectableLMTableModel extends javax.swing.table.TableModel
 {
 
 /**

@@ -1,106 +1,92 @@
-package com.cannontech.common.gui.util;
+package com.cannontech.common.gui.panel;
+
+import java.awt.Color;
+
+import com.cannontech.common.gui.util.CheckBoxTableRenderer;
 
 /**
  * Insert the type's description here.
  * Creation date: (5/13/2002 11:02:58 AM)
  * @author: 
  */
-public class MultiSelectJPanel extends javax.swing.JPanel implements java.awt.event.ActionListener {
-
-private class RowValue
+public class MultiSelectJPanel extends javax.swing.JPanel implements java.awt.event.ActionListener 
 {
-	private Object obj = null;
-	private Boolean isChecked = Boolean.FALSE;
-
-	public RowValue( Object obj_ )
-	{ 
-		super();
-		obj = obj_;
-		//isChecked = checked;
-	}
-
-	public Object getObject()
-	{
-		return obj;
-	}
-	public Boolean isChecked()
-	{
-		return isChecked;
-	}
-
-	public void setIsSelected( Boolean selected )
-	{
-		isChecked = selected;
-	}
-
-}
-
-private class MultiTableModel extends javax.swing.table.AbstractTableModel
-{
-	private java.util.Vector rows = new java.util.Vector(10);
-	private final String[] COLUMNS = {"State", "Name"};
-	
-	private MultiTableModel()
-	{ 
-		super();
-	}
-
-	public boolean isCellEditable( int row, int col )
-	{
-		return col == 0;
-	}
-
-	public RowValue getRowAt( int row )
-	{
-		return (RowValue)rows.get(row);
-	}
-	
-	public Object getValueAt( int row, int col) 
-	{
-		RowValue val = (RowValue)rows.get(row);
-
-		if( col == 0 )
-			return val.isChecked();
-		else
-			return val.getObject().toString();
-	}
-
-	public void addRow( RowValue obj )
-	{
-		if( obj != null )
-			rows.add(obj);
-	}
-
-	public void clear()
-	{
-		rows.clear();
-	}
-
-	public int getRowCount()
-	{
-		return rows.size();
-	}
-
-	public int getColumnCount()
-	{
-		return COLUMNS.length;
-	}
-
-	public String getColumnName(int col)
-	{
-		return COLUMNS[col];
-	}
-	
-	public void setValueAt(Object val, int row, int col) 
-	{
-		if( col == 0 )
-			getRowAt(row).setIsSelected( (Boolean)val );
-	}
-
-}
 	private javax.swing.JCheckBox ivjJCheckBoxSelectAll = null;
 	private javax.swing.JScrollPane ivjJScrollPaneTable = null;
 	private javax.swing.JTable ivjJTableSelect = null;
+
+
+	//default table model to be used if none is specified
+	private class MultiTableModel extends javax.swing.table.AbstractTableModel implements IMultiSelectModel
+	{
+		private java.util.Vector rows = new java.util.Vector(10);
+		private final String[] COLUMNS = {"Selected", "Name"};
+		
+		private MultiTableModel()
+		{ 
+			super();
+		}
+	
+		public boolean isCellEditable( int row, int col )
+		{
+			return col == 0;
+		}
+
+		public int getCheckBoxCol()
+		{
+			return 0;
+		}
+	
+		public MultiSelectRow getRowAt( int row )
+		{
+			return (MultiSelectRow)rows.get(row);
+		}
+		
+		public Object getValueAt( int row, int col) 
+		{
+			MultiSelectRow val = (MultiSelectRow)rows.get(row);
+	
+			if( col == 0 )
+				return val.isChecked();
+			else
+				return val.getObject().toString();
+		}
+	
+		public void addRow( MultiSelectRow obj )
+		{
+			if( obj != null )
+				rows.add(obj);
+		}
+	
+		public void clear()
+		{
+			rows.clear();
+		}
+	
+		public int getRowCount()
+		{
+			return rows.size();
+		}
+	
+		public int getColumnCount()
+		{
+			return COLUMNS.length;
+		}
+	
+		public String getColumnName(int col)
+		{
+			return COLUMNS[col];
+		}
+		
+		public void setValueAt(Object val, int row, int col) 
+		{
+			if( col == 0 )
+				getRowAt(row).setIsSelected( (Boolean)val );
+		}
+	
+	}
+
+
 /**
  * MutliSelectJPanel constructor comment.
  */
@@ -160,6 +146,13 @@ private javax.swing.JCheckBox getJCheckBoxSelectAll() {
 	}
 	return ivjJCheckBoxSelectAll;
 }
+
+public void doClickSelectAll()
+{
+	getJCheckBoxSelectAll().doClick();
+}
+
+
 /**
  * Return the JScrollPaneTable property value.
  * @return javax.swing.JScrollPane
@@ -195,15 +188,18 @@ private javax.swing.JTable getJTableSelect() {
 			ivjJTableSelect = new javax.swing.JTable();
 			ivjJTableSelect.setName("JTableSelect");
 			getJScrollPaneTable().setColumnHeaderView(ivjJTableSelect.getTableHeader());
-			getJScrollPaneTable().getViewport().setBackingStoreEnabled(true);
 			ivjJTableSelect.setBounds(0, 0, 200, 200);
 			// user code begin {1}
 
 			ivjJTableSelect.setModel( new MultiTableModel() );
 			ivjJTableSelect.setShowGrid( false );
 			ivjJTableSelect.setIntercellSpacing( new java.awt.Dimension(0,0) );
-			ivjJTableSelect.getTableHeader().setResizingAllowed(false);
 			ivjJTableSelect.getTableHeader().setReorderingAllowed(false);
+			ivjJTableSelect.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_NEXT_COLUMN);
+			
+			//ivjJTableSelect.setForeground( Color.WHITE );
+			//ivjJTableSelect.setBackground( Color.BLACK );
+
 
 			initJTableCellComponents();
 			
@@ -216,6 +212,13 @@ private javax.swing.JTable getJTableSelect() {
 	}
 	return ivjJTableSelect;
 }
+
+public javax.swing.table.TableColumn getTableColumn( int col )
+{
+	return getJTableSelect().getColumnModel().getColumn( col );
+}
+
+
 /**
  * Insert the method's description here.
  * Creation date: (5/13/2002 11:06:32 AM)
@@ -227,7 +230,7 @@ public Object[] getSelectedData()
 	
 	for( int i = 0; i < getTableModel().getRowCount(); i++ )
 	{
-		RowValue val = getTableModel().getRowAt(i);
+		MultiSelectRow val = getTableModel().getRowAt(i);
 		if( val.isChecked().booleanValue() )
 			list.add( val.getObject() );
 	}
@@ -238,10 +241,19 @@ public Object[] getSelectedData()
  * Insert the method's description here.
  * Creation date: (5/13/2002 11:15:36 AM)
  */
-private MultiTableModel getTableModel()
+private IMultiSelectModel getTableModel()
 {
-	return (MultiTableModel)getJTableSelect().getModel();
+	return (IMultiSelectModel)getJTableSelect().getModel();
 }
+
+public void setTableModel( IMultiSelectModel model_ )
+{
+	getJTableSelect().setModel( model_ );
+	
+	initJTableCellComponents();
+}
+
+
 /**
  * Called whenever the part throws an exception.
  * @param exception java.lang.Throwable
@@ -305,10 +317,12 @@ private void initialize() {
 private void initJTableCellComponents()
 {
 	// Do any column specific initialization here
-	javax.swing.table.TableColumn isSelected = getJTableSelect().getColumnModel().getColumn(0);
-	isSelected.setMaxWidth(35);
-	isSelected.setWidth(35);
-	isSelected.setPreferredWidth(35);
+	javax.swing.table.TableColumn isSelected = 
+			getJTableSelect().getColumnModel().getColumn( getTableModel().getCheckBoxCol() );
+
+	isSelected.setMaxWidth(50);
+	isSelected.setWidth(50);
+	isSelected.setPreferredWidth(50);
 	
 	// Create and add the column renderers	
 	com.cannontech.common.gui.util.CheckBoxTableRenderer bxRender = new com.cannontech.common.gui.util.CheckBoxTableRenderer();
@@ -318,10 +332,9 @@ private void initJTableCellComponents()
 	javax.swing.JCheckBox chkBox = new javax.swing.JCheckBox();			
 	chkBox.setHorizontalAlignment(javax.swing.JCheckBox.CENTER);
 	chkBox.setBackground( getJTableSelect().getBackground() );
-	
 
 	isSelected.setCellRenderer(bxRender);
-	isSelected.setCellEditor( new javax.swing.DefaultCellEditor(chkBox) );		
+	isSelected.setCellEditor( new javax.swing.DefaultCellEditor(chkBox) );
 }
 /**
  * Comment
@@ -378,7 +391,7 @@ public void setSelectableData(Object[] data)
 	getTableModel().clear();
 
 	for( int i = 0; i < data.length; i++ )
-		getTableModel().addRow( new RowValue(data[i]) );
+		getTableModel().addRow( new MultiSelectRow(data[i]) );
 	
 }
 /**

@@ -7,9 +7,9 @@ package com.cannontech.dbeditor.wizard.device.lmprogram;
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.database.data.device.lm.LMProgramDirect;
 import com.cannontech.database.db.device.lm.LMProgramDirectGear;
+import com.cannontech.database.db.device.lm.LMProgramDirectGearDefines;
 
 public class LMProgramDirectPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.cannontech.common.gui.util.DataInputPanelListener, java.awt.event.ActionListener, java.awt.event.ItemListener {
-	public static final int MAX_GEAR_COUNT = Integer.MAX_VALUE; //there should not be a limit!
 	private javax.swing.JButton ivjJButtonCreate = null;
 	private javax.swing.JButton ivjJButtonDelete = null;
 	private DirectModifyGearPanel ivjDirectModifyGearPanel = null;
@@ -455,11 +455,12 @@ public void jButtonCreate_ActionPerformed(java.awt.event.ActionEvent actionEvent
 
 
 	//only allow the user to define at most MAX_GEAR_COUNT Gears
-	if( getJComboBoxGear().getItemCount() >= MAX_GEAR_COUNT )
+	if( getJComboBoxGear().getItemCount() >= LMProgramDirectGearDefines.MAX_GEAR_COUNT )
 	{
 		javax.swing.JOptionPane.showMessageDialog(
 			this, 
-			"A Direct Program is only allowed " + MAX_GEAR_COUNT + " or less gears to be defined for it.",
+			"A Direct Program is only allowed " + LMProgramDirectGearDefines.MAX_GEAR_COUNT + 
+			" or less gears to be defined for it.",
 			"Gear Limit Exceeded",
 			javax.swing.JOptionPane.INFORMATION_MESSAGE );
 

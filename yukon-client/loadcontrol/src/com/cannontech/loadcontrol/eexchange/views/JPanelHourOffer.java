@@ -78,7 +78,6 @@ public javax.swing.JTable getJTableHour() {
 			ivjJTableHour = new javax.swing.JTable();
 			ivjJTableHour.setName("JTableHour");
 			getJScrollPaneHour().setColumnHeaderView(ivjJTableHour.getTableHeader());
-			getJScrollPaneHour().getViewport().setBackingStoreEnabled(true);
 			ivjJTableHour.setBounds(0, 0, 200, 200);
 			// user code begin {1}
 

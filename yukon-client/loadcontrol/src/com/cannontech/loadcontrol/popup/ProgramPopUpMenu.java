@@ -5,17 +5,22 @@ package com.cannontech.loadcontrol.popup;
  * Creation date: (1/21/2001 4:40:03 PM)
  * @author: 
  */
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.gui.panel.ManualChangeJPanel;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.data.LMProgramCurtailment;
 import com.cannontech.loadcontrol.data.LMProgramDirect;
 import com.cannontech.loadcontrol.gui.manualentry.CurtailmentEntryPanel;
 import com.cannontech.loadcontrol.gui.manualentry.DirectControlJPanel;
+import com.cannontech.loadcontrol.gui.manualentry.MultiSelectProg;
 import com.cannontech.loadcontrol.messages.LMCommand;
 
 public class ProgramPopUpMenu extends javax.swing.JPopupMenu implements java.awt.event.ActionListener
 {
 	private LMProgramBase loadControlProgram = null;
-	private LMProgramBase[] allLoadControlProgram = null;
+
 	
 	private javax.swing.JMenuItem jMenuItemDisable = null;
 	private javax.swing.JMenuItem jMenuItemStartStop = null;
@@ -49,54 +54,7 @@ public void actionPerformed(java.awt.event.ActionEvent e)
 	if( e.getSource() == getJMenuItemDisable() )
 		jMenuItemDisableEnable_ActionPerformed(e);
 }
-/**
- * Insert the method's description here.
- * Creation date: (5/14/2002 10:50:02 AM)
- * @param panel com.cannontech.loadcontrol.gui.manualentry.DirectControlJPanel
- */
-public com.cannontech.loadcontrol.messages.LMManualControlMsg createMessage(DirectControlJPanel panel, LMProgramBase program) 
-{
-	com.cannontech.loadcontrol.messages.LMManualControlMsg msg = null;
-	
-	//create the new message
-	if( panel.getMode() == com.cannontech.common.gui.panel.ManualChangeJPanel.MODE_STOP )
-	{
-		if( panel.isStopStartNowSelected() )
-			msg = program.createStartStopNowMsg( 
-						panel.getStopTime(),
-			 			(panel.getSelectedGear() != null ? 
-				 		panel.getSelectedGear().getGearNumber().intValue() : 1),
-					 	null, false);
-		else					
-			msg = program.createScheduledStopMsg(
-			 			panel.getStartTime(), 
-			 			panel.getStopTime(),
-			 			(panel.getSelectedGear() != null ? 
-				 		panel.getSelectedGear().getGearNumber().intValue() : 1),
-			 			null);
-	}
-	else
-	{
-		if( panel.isStopStartNowSelected() )
-			msg = program.createStartStopNowMsg(
-						panel.getStopTime(),
-			 			(panel.getSelectedGear() != null ? 
-				 		panel.getSelectedGear().getGearNumber().intValue() : 1),
-					 	null, true);
-		else
-			msg = program.createScheduledStartMsg( 
-			 			panel.getStartTime(), 
-			 			panel.getStopTime(),
-			 			(panel.getSelectedGear() != null ? 
-				 		panel.getSelectedGear().getGearNumber().intValue() : 1),
-			 			null, null );
-	}
 
-	
-	//write the message out
-	return msg;
-	//com.cannontech.loadcontrol.LoadControlClientConnection.getInstance().write(msg);	
-}
 /**
  * Insert the method's description here.
  * Creation date: (1/15/2001 9:20:50 AM)
@@ -231,27 +189,95 @@ private void jMenuItemStartStop_ActionPerformed(java.awt.event.ActionEvent actio
 
 	if( getLoadControlProgram() instanceof LMProgramDirect )
 	{
-		showDirectManualEntry();
+		showDirectManualEntry(
+			"Start...".equalsIgnoreCase(getJMenuItemStartStop().getText())
+			? DirectControlJPanel.MODE_START_STOP
+			: DirectControlJPanel.MODE_STOP  );
 	}
-	else if(  getLoadControlProgram() instanceof LMProgramCurtailment )
+
+	if( getLoadControlProgram() instanceof LMProgramCurtailment )
 	{
 		showCurtailManualEntry();
 	}
-	else
-		throw new IllegalArgumentException("Unable to find LMProgramBase subclass called : " + getLoadControlProgram().getClass().getName() );
 		
 	
 	return;
 }
+
+
+
 /**
  * Insert the method's description here.
- * Creation date: (1/21/2001 5:32:52 PM)
- * @param newLoadControlProgram LMProgramBase
+ * Creation date: (7/16/2001 5:05:29 PM)
  */
-public void setAllLoadControlPrograms( LMProgramBase[] rows ) 
+private void showDirectManualEntry( final int panelMode ) 
 {
-	allLoadControlProgram = rows;
+	final javax.swing.JDialog d = new javax.swing.JDialog( CtiUtilities.getParentFrame(this.getInvoker()) );
+	DirectControlJPanel panel = new DirectControlJPanel()
+	{
+		public void exit()
+		{
+			d.dispose();
+		}
+
+		public void setParentWidth( int x )
+		{
+			d.setSize( d.getWidth() + x, d.getHeight() );
+		}
+	};
+
+
+	d.setTitle(
+		panelMode == DirectControlJPanel.MODE_START_STOP 
+		? "Start Program"
+		: "Stop Program" );
+		
+	panel.setMode( panelMode );
+	
+	
+	d.setModal(true);
+	d.setContentPane(panel);
+	d.setSize(300,250);
+	d.pack();
+	d.setLocationRelativeTo(this);
+
+	if( panel.setMultiSelectObject( new LMProgramBase[] { getLoadControlProgram() } ) )
+	{
+		d.show();
+	
+		if( panel.getChoice() == ManualChangeJPanel.OK_CHOICE )
+		{
+			MultiSelectProg[] selected = panel.getMultiSelectObject();
+	
+			if( selected != null )
+			{
+				//create a multi to hold all of our messages
+				com.cannontech.message.dispatch.message.Multi multi = 
+						new com.cannontech.message.dispatch.message.Multi();
+		
+				for( int i = 0; i < selected.length; i++ )
+				{
+					multi.getVector().add( 
+							DirectControlJPanel.createMessage(
+									panel,
+									selected[i].getBaseProgram(),
+									selected[i].getGearNum() ) );
+				}
+	
+				LoadControlClientConnection.getInstance().write(multi);
+			}
+	
+	
+		}
+	
+	}
+
+
+	//destroy the JDialog
+	d.dispose();
+	
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (1/21/2001 5:32:52 PM)
@@ -261,20 +287,25 @@ public void setLoadControlProgram(LMProgramBase newLoadControlProgram)
 {
 	loadControlProgram = newLoadControlProgram;
 
-	if( getLoadControlProgram() == null )
-		return;
-
-	syncButtons();
-
-	//lastly, check for disablement
-	if( getLoadControlProgram().getDisableFlag().booleanValue() )
+	if( getLoadControlProgram() != null )
 	{
-		getJMenuItemStartStop().setEnabled(false);
-		getJMenuItemDisable().setText("Enable");
+		syncButtons();
+	
+		//lastly, check for disablement
+		if( getLoadControlProgram().getDisableFlag().booleanValue() )
+		{
+			getJMenuItemStartStop().setEnabled(false);
+			getJMenuItemDisable().setText("Enable");
+		}
+		else
+		{
+			getJMenuItemDisable().setText("Disable");
+		}
 	}
 	else
 	{
-		getJMenuItemDisable().setText("Disable");
+		getJMenuItemStartStop().setEnabled(false);
+		getJMenuItemDisable().setEnabled(false);
 	}
 
 }
@@ -339,75 +370,7 @@ private void showCurtailManualEntry()
 	}
 
 }
-/**
- * Insert the method's description here.
- * Creation date: (7/16/2001 5:05:29 PM)
- */
-private void showDirectManualEntry() 
-{
-	final javax.swing.JDialog d = new javax.swing.JDialog( com.cannontech.common.util.CtiUtilities.getParentFrame(this.getInvoker()) );
-	DirectControlJPanel panel = new DirectControlJPanel()
-	{
-		public void exit()
-		{
-			d.dispose();
-		}
 
-		public void setParentWidth( int x )
-		{
-			d.setSize( d.getWidth() + x, d.getHeight() );
-		}
-	};
-
-
-	if( getJMenuItemStartStop().getText().equalsIgnoreCase("Start...") )
-	{
-		d.setTitle("Start Program");
-		panel.setMode( DirectControlJPanel.MODE_START_STOP );
-	}
-	else
-	{
-		d.setTitle("Stop Program");
-		panel.setMode( DirectControlJPanel.MODE_STOP );
-	}
-		
-	
-	panel.setGears( ((LMProgramDirect)getLoadControlProgram()).getDirectGearVector() );
-	panel.setMultiSelectObject( allLoadControlProgram );
-
-	d.setModal(true);
-	d.setContentPane(panel);
-	d.setSize(300,250);
-	d.pack();
-	d.setLocationRelativeTo(this);
-	d.show();
-
-	if( panel.getChoice() == com.cannontech.common.gui.panel.ManualChangeJPanel.OK_CHOICE )
-	{
-		Object[] selected = panel.getMultiSelectObject();
-
-		if( selected == null )
-		{
-			Object[] o = { getLoadControlProgram() };
-			selected = o; //create an array with 1 element
-		}
-
-		//create a multi to hold all of our messages
-		com.cannontech.message.dispatch.message.Multi multi = 
-				new com.cannontech.message.dispatch.message.Multi();
-
-		for( int i = 0; i < selected.length; i++ )
-		{
-			multi.getVector().add( createMessage(panel, (LMProgramBase)selected[i]) );
-		}
-
-		com.cannontech.loadcontrol.LoadControlClientConnection.getInstance().write(multi);
-	}
-
-	//destroy the JDialog
-	d.dispose();
-	
-}
 /**
  * Insert the method's description here.
  * Creation date: (4/9/2001 5:26:53 PM)

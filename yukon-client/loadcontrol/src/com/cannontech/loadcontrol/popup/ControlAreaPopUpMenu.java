@@ -5,10 +5,22 @@ package com.cannontech.loadcontrol.popup;
  * Creation date: (1/21/2001 4:40:03 PM)
  * @author: 
  */
+import java.awt.FlowLayout;
+import javax.swing.JDialog;
+import javax.swing.JOptionPane;
+
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.gui.panel.ManualChangeJPanel;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.data.LMControlArea;
+import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.gui.manualentry.ControlAreaTimeChangeJPanel;
 import com.cannontech.loadcontrol.gui.manualentry.ControlAreaTriggerJPanel;
+import com.cannontech.loadcontrol.gui.manualentry.DirectControlJPanel;
+import com.cannontech.loadcontrol.gui.manualentry.MultiSelectProg;
 import com.cannontech.loadcontrol.messages.LMCommand;
+import com.cannontech.loadcontrol.messages.LMManualControlMsg;
 
 public class ControlAreaPopUpMenu extends com.cannontech.tdc.observe.ObservableJPopupMenu implements java.awt.event.ActionListener
 {
@@ -16,6 +28,9 @@ public class ControlAreaPopUpMenu extends com.cannontech.tdc.observe.ObservableJ
 	private javax.swing.JMenuItem jMenuItemTriggers = null;
 	private javax.swing.JMenuItem jMenuItemDialyTime = null;
 	private javax.swing.JMenuItem jMenuItemDisable = null;
+	private javax.swing.JMenuItem jMenuItemStart = null;
+	private javax.swing.JMenuItem jMenuItemStop = null;
+
 /**
  * ProgramPopUpMenu constructor comment.
  */
@@ -38,6 +53,12 @@ public void actionPerformed(java.awt.event.ActionEvent e)
 
 	if( e.getSource() == getJMenuItemDialyTime() )
 		jMenuItemDailyTime_ActionPerformed(e);
+
+	if( e.getSource() == getJMenuItemStart() )
+		jMenuItemStart_ActionPerformed(e);
+
+	if( e.getSource() == getJMenuItemStop() )
+		jMenuItemStop_ActionPerformed(e);
 
 }
 /**
@@ -65,6 +86,150 @@ private javax.swing.JMenuItem getJMenuItemDialyTime()
 	
 	return jMenuItemDialyTime;
 }
+
+
+/**
+ * Insert the method's description here.
+ * Creation date: (1/15/2001 9:20:50 AM)
+ * @return javax.swing.JMenuItem
+ */
+private javax.swing.JMenuItem getJMenuItemStart() 
+{
+	if( jMenuItemStart == null) 
+	{
+		try 
+		{
+			jMenuItemStart = new javax.swing.JMenuItem();
+			jMenuItemStart.setName("JMenuItemStart");
+			jMenuItemStart.setMnemonic('s');
+			jMenuItemStart.setText("Start Program(s)...");
+			jMenuItemStart.setActionCommand("jMenuItemStart");
+		} 
+		catch (java.lang.Throwable ivjExc) 
+		{
+			handleException(ivjExc);
+		}
+	}
+	
+	return jMenuItemStart;
+}
+
+
+/**
+ * Insert the method's description here.
+ * Creation date: (1/15/2001 9:20:50 AM)
+ * @return javax.swing.JMenuItem
+ */
+private javax.swing.JMenuItem getJMenuItemStop() 
+{
+	if( jMenuItemStop == null) 
+	{
+		try 
+		{
+			jMenuItemStop = new javax.swing.JMenuItem();
+			jMenuItemStop.setName("JjMenuItemStop");
+			jMenuItemStop.setMnemonic('t');
+			jMenuItemStop.setText("Stop Program(s)...");
+			jMenuItemStop.setActionCommand("jMenuItemStop");
+		} 
+		catch (java.lang.Throwable ivjExc) 
+		{
+			handleException(ivjExc);
+		}
+	}
+	
+	return jMenuItemStop;
+}
+
+
+/**
+ * Insert the method's description here.
+ * Creation date: (7/16/2001 5:05:29 PM)
+ */
+private void showDirectManualEntry( final int panelMode ) 
+{
+	final javax.swing.JDialog d = new javax.swing.JDialog( CtiUtilities.getParentFrame(this.getInvoker()) );
+	DirectControlJPanel panel = new DirectControlJPanel()
+	{
+		public void exit()
+		{
+			d.dispose();
+		}
+
+		public void setParentWidth( int x )
+		{
+			d.setSize( d.getWidth() + x, d.getHeight() );
+		}
+	};
+
+
+	d.setTitle(
+		panelMode == DirectControlJPanel.MODE_START_STOP 
+		? "Start Program(s)"
+		: "Stop Program(s)" );
+		
+	panel.setMode( panelMode );
+	
+	
+	d.setModal(true);
+	d.setContentPane(panel);
+	d.setSize(300,250);
+	d.pack();
+	d.setLocationRelativeTo(this);
+
+	//get an array of LMProgramBase to use later 
+	// (only copies the references into the new array, not a full instance copy!!)
+	LMProgramBase[] prgArray = new LMProgramBase[ getLoadControlArea().getLmProgramVector().size() ]; 
+	prgArray = (LMProgramBase[])getLoadControlArea().getLmProgramVector().toArray( prgArray );
+
+	
+	if( panel.setMultiSelectObject( prgArray ) )
+	{
+		d.show();
+	
+		if( panel.getChoice() == ManualChangeJPanel.OK_CHOICE )
+		{
+			MultiSelectProg[] selected = panel.getMultiSelectObject();
+	
+			if( selected != null )
+			{
+				//create a multi to hold all of our messages
+				com.cannontech.message.dispatch.message.Multi multi = 
+						new com.cannontech.message.dispatch.message.Multi();
+		
+				for( int i = 0; i < selected.length; i++ )
+				{
+					multi.getVector().add( 
+							DirectControlJPanel.createMessage(
+									panel,
+									selected[i].getBaseProgram(),
+									selected[i].getGearNum() ) );
+				}
+	
+				LoadControlClientConnection.getInstance().write(multi);
+			}
+	
+	
+		}
+	
+	}
+	else
+	{
+		JOptionPane.showMessageDialog(
+			this,
+			"There are no programs attached to the control area '" + getLoadControlArea().getYukonName() + "'",
+			"Unable to Control Programs",
+			JOptionPane.WARNING_MESSAGE );
+		
+	}
+
+	//destroy the JDialog
+	d.dispose();
+	
+}
+
+
+
 /**
  * Insert the method's description here.
  * Creation date: (1/15/2001 9:20:50 AM)
@@ -143,6 +308,9 @@ private void initConnections()
 	getJMenuItemDisable().addActionListener(this);
 	getJMenuItemTriggers().addActionListener(this);
 	getJMenuItemDialyTime().addActionListener(this);
+
+	getJMenuItemStart().addActionListener(this);
+	getJMenuItemStop().addActionListener(this);
 }
 /**
  * Initialize the class.
@@ -155,10 +323,13 @@ private void initialize()
 		//setPreferredSize(new java.awt.Dimension(75, 25));
 		setBorderPainted( true );
 
+		add(getJMenuItemStart(), getJMenuItemStart().getName());
+		add(getJMenuItemStop(), getJMenuItemStop().getName());
+
 		add(getJMenuItemTriggers(), getJMenuItemTriggers().getName());
 		add(getJMenuItemDialyTime(), getJMenuItemDialyTime().getName());
 		add(getJMenuItemDisable(), getJMenuItemDisable().getName());
-
+		
 
 		initConnections();
 	} 
@@ -168,6 +339,18 @@ private void initialize()
 	}
 	
 }
+
+private void jMenuItemStart_ActionPerformed(java.awt.event.ActionEvent actionEvent)
+{
+	showDirectManualEntry( DirectControlJPanel.MODE_START_STOP );
+}
+
+private void jMenuItemStop_ActionPerformed(java.awt.event.ActionEvent actionEvent)
+{
+	showDirectManualEntry( DirectControlJPanel.MODE_STOP );
+}
+
+
 /**
  * Comment
  */
@@ -175,7 +358,7 @@ private void jMenuItemDailyTime_ActionPerformed(java.awt.event.ActionEvent actio
 {
 	if( !getLoadControlArea().getDisableFlag().booleanValue() )
 	{
-		java.awt.Frame frame = com.cannontech.common.util.CtiUtilities.getParentFrame( this.getInvoker() );
+		java.awt.Frame frame = CtiUtilities.getParentFrame( this.getInvoker() );
 		java.awt.Cursor savedCursor = null;
 		
 		try
@@ -231,7 +414,7 @@ private void jMenuItemDailyTime_ActionPerformed(java.awt.event.ActionEvent actio
 
 				//only send the multi if we have some junk to send.
 				if( multi.getVector().size() > 0 )
-					com.cannontech.loadcontrol.LoadControlClientConnection.getInstance().write(multi);
+					LoadControlClientConnection.getInstance().write(multi);
 			}
 	
 		}
@@ -253,7 +436,7 @@ private void jMenuItemDisableEnable_ActionPerformed(java.awt.event.ActionEvent a
 	if( getLoadControlArea().getDisableFlag().booleanValue() )
 	{
 		//send a message to the server telling it to ENABLE this LMControlArea
-		com.cannontech.loadcontrol.LoadControlClientConnection.getInstance().write(
+		LoadControlClientConnection.getInstance().write(
 				new LMCommand( LMCommand.ENABLE_CONTROL_AREA,
 					 				getLoadControlArea().getYukonID().intValue(),
 					 				0, 0.0) );
@@ -265,7 +448,7 @@ private void jMenuItemDisableEnable_ActionPerformed(java.awt.event.ActionEvent a
 	else
 	{
 		//send a message to the server telling it to DISABLE this LMControlArea
-		com.cannontech.loadcontrol.LoadControlClientConnection.getInstance().write(
+		LoadControlClientConnection.getInstance().write(
 				new LMCommand( LMCommand.DISABLE_CONTROL_AREA,
 					 				getLoadControlArea().getYukonID().intValue(),
 					 				0, 0.0) );
@@ -283,7 +466,7 @@ private void jMenuItemDisableEnable_ActionPerformed(java.awt.event.ActionEvent a
  */
 private void jMenuItemTriggers_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
-	java.awt.Frame frame = com.cannontech.common.util.CtiUtilities.getParentFrame( this.getInvoker() );
+	java.awt.Frame frame = CtiUtilities.getParentFrame( this.getInvoker() );
 	java.awt.Cursor savedCursor = null;
 	
 	try
@@ -366,10 +549,10 @@ public void setLoadControlArea(LMControlArea newLoadControlArea)
 	}
 
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (4/9/2001 5:26:53 PM)
- * @param program com.cannontech.loadcontrol.data.LMProgramEnergyExchange
  */
 private void syncMenuItems()
 {

@@ -4,6 +4,7 @@ package com.cannontech.dbeditor.wizard.device.lmcontrolarea;
  * This type was created in VisualAge.
  */
 
+import com.cannontech.database.db.device.lm.ILMControlAreaTrigger;
 import com.cannontech.database.db.device.lm.LMControlAreaTrigger;
 
 public class LMControlAreaTriggerModifyPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, java.beans.PropertyChangeListener, javax.swing.event.CaretListener {
@@ -205,8 +206,8 @@ private javax.swing.JComboBox getJComboBoxType() {
 			ivjJComboBoxType.setName("JComboBoxType");
 			// user code begin {1}
 
-			ivjJComboBoxType.addItem( LMControlAreaTrigger.TYPE_THRESHOLD );
-			ivjJComboBoxType.addItem( LMControlAreaTrigger.TYPE_STATUS );
+			ivjJComboBoxType.addItem( ILMControlAreaTrigger.TYPE_THRESHOLD );
+			ivjJComboBoxType.addItem( ILMControlAreaTrigger.TYPE_STATUS );
 			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -508,14 +509,14 @@ public Object getValue(Object o)
 	trigger.setPointID( getSelectedPointID() );
 	trigger.setTriggerType( getSelectedType() );
 
-	if( trigger.getTriggerType().equalsIgnoreCase(LMControlAreaTrigger.TYPE_STATUS) )
+	if( trigger.getTriggerType().equalsIgnoreCase(ILMControlAreaTrigger.TYPE_STATUS) )
 	{
 		trigger.setNormalState( getSelectedNormalState() );
 		trigger.setThreshold( new Double(0.0) );
 	}
 	else
 	{
-		trigger.setNormalState( new Integer(LMControlAreaTrigger.INVALID_INT_VALUE) );
+		trigger.setNormalState( new Integer(ILMControlAreaTrigger.INVALID_INT_VALUE) );
 		trigger.setThreshold( getSelectedThreshold() );
 
 		try
@@ -678,7 +679,7 @@ private void initialize() {
 	}
 	// user code begin {2}
 
-	getJLabelNormalStateAndThreshold().setText( LMControlAreaTrigger.TYPE_THRESHOLD );
+	getJLabelNormalStateAndThreshold().setText( ILMControlAreaTrigger.TYPE_THRESHOLD );
 	getJComboBoxNormalState().setVisible(false);
 	getJTextFieldThreshold().setVisible(true);
 
@@ -702,7 +703,7 @@ public boolean isInputValid()
 		return false;
 	}
 
-	if( getJComboBoxType().getSelectedItem().toString().equalsIgnoreCase(LMControlAreaTrigger.TYPE_THRESHOLD) )
+	if( getJComboBoxType().getSelectedItem().toString().equalsIgnoreCase(ILMControlAreaTrigger.TYPE_THRESHOLD) )
 	{
 		try
 		{			
@@ -737,10 +738,10 @@ public void jCheckBoxPeakTracking_ActionPerformed(java.awt.event.ActionEvent act
  */
 public void jComboBoxType_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
-	if( getJComboBoxType().getSelectedItem().toString().equalsIgnoreCase( LMControlAreaTrigger.TYPE_THRESHOLD ) )
+	if( getJComboBoxType().getSelectedItem().toString().equalsIgnoreCase( ILMControlAreaTrigger.TYPE_THRESHOLD ) )
 	{
 
-		getJLabelNormalStateAndThreshold().setText( LMControlAreaTrigger.TYPE_THRESHOLD + ":");
+		getJLabelNormalStateAndThreshold().setText( ILMControlAreaTrigger.TYPE_THRESHOLD + ":");
 		getJComboBoxNormalState().setVisible(false);
 		getJTextFieldThreshold().setVisible(true);
 		getJLabelMinRestOffset().setEnabled(true);
@@ -869,7 +870,7 @@ public void setValue(Object o)
 	//set the states for the row
 	liteState = com.cannontech.database.cache.functions.StateFuncs.getLiteState( ((com.cannontech.database.data.lite.LitePoint)litePoint).getStateGroupID(), trigger.getNormalState().intValue() );
 
-	if( trigger.getTriggerType().equalsIgnoreCase(LMControlAreaTrigger.TYPE_STATUS) )
+	if( trigger.getTriggerType().equalsIgnoreCase(ILMControlAreaTrigger.TYPE_STATUS) )
 	{
 		if( liteState == null )
 			throw new RuntimeException("Unable to find the rawState value of " + 

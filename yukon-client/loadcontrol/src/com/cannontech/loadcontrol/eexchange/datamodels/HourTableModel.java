@@ -5,7 +5,7 @@ package com.cannontech.loadcontrol.eexchange.datamodels;
  */
 import java.awt.Color;
 
-public class HourTableModel extends javax.swing.table.AbstractTableModel implements javax.swing.event.TableModelListener, com.cannontech.loadcontrol.datamodels.SelectableLMTableModel
+public class HourTableModel extends javax.swing.table.AbstractTableModel implements javax.swing.event.TableModelListener, com.cannontech.loadcontrol.datamodels.ISelectableLMTableModel
 {
 	HourRowData[] rows = null;
 	private boolean editable = true;

@@ -270,7 +270,6 @@ private javax.swing.JTable getJTableCustomers() {
 			ivjJTableCustomers = new javax.swing.JTable();
 			ivjJTableCustomers.setName("JTableCustomers");
 			getJScrollPaneCustomers().setColumnHeaderView(ivjJTableCustomers.getTableHeader());
-			getJScrollPaneCustomers().getViewport().setBackingStoreEnabled(true);
 			ivjJTableCustomers.setBounds(0, 0, 200, 200);
 			// user code begin {1}
 

@@ -6,14 +6,28 @@ package com.cannontech.loadcontrol.gui;
  * @author: 
  */
 
+import javax.swing.JDialog;
+import javax.swing.JOptionPane;
+import javax.swing.event.TableModelListener;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+
 import com.cannontech.common.gui.panel.CompositeJSplitPane;
+import com.cannontech.common.gui.util.JDialogWait;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.datamodels.ControlAreaTableModel;
+import com.cannontech.loadcontrol.datamodels.ControlHistoryTableModel;
+import com.cannontech.loadcontrol.datamodels.FilteredControlAreaTableModel;
 import com.cannontech.loadcontrol.datamodels.GroupTableModel;
+import com.cannontech.loadcontrol.datamodels.IControlAreaTableModel;
+import com.cannontech.loadcontrol.datamodels.IProgramTableModel;
 import com.cannontech.loadcontrol.datamodels.ProgramTableModel;
-import com.cannontech.loadcontrol.datamodels.SelectableLMTableModel;
+import com.cannontech.loadcontrol.datamodels.ISelectableLMTableModel;
+import com.cannontech.loadcontrol.displays.*;
+import com.cannontech.loadcontrol.events.LCChangeEvent;
 import com.cannontech.loadcontrol.messages.LMCommand;
 import com.cannontech.loadcontrol.popup.ControlAreaPopUpMenu;
 import com.cannontech.loadcontrol.popup.CurtailPopUpMenu;
@@ -21,13 +35,16 @@ import com.cannontech.loadcontrol.popup.GroupPopUpMenu;
 import com.cannontech.loadcontrol.popup.ProgramPopUpMenu;
 import com.cannontech.tdc.observe.ObservableJPopupMenu;
 
-public class LoadControlMainPanel extends javax.swing.JPanel implements ButtonBarPanelListener, com.cannontech.tdc.SpecialTDCChild, java.awt.event.MouseListener, java.util.Observer, javax.swing.event.ListSelectionListener, javax.swing.event.PopupMenuListener, javax.swing.event.TableModelListener 
+public class LoadControlMainPanel extends javax.swing.JPanel implements ButtonBarPanelListener, 
+		com.cannontech.tdc.SpecialTDCChild, java.awt.event.MouseListener, java.util.Observer, 
+		javax.swing.event.ListSelectionListener, javax.swing.event.PopupMenuListener, javax.swing.event.TableModelListener,
+		IControlAreaListener 
 {
 	//an int read in as a CParm used to turn on/off features
 	private static int userRightsInt = 0;
 	
 	//All the possible TableModels the BottomTable can have
-	private ProgramTableModel programTableModel = null;
+//	private ProgramTableModel programTableModel = null;
 	private GroupTableModel groupTableModel = null;
 	
 	private javax.swing.JComboBox comboBox = null;
@@ -55,6 +72,29 @@ public class LoadControlMainPanel extends javax.swing.JPanel implements ButtonBa
 	private javax.swing.JScrollPane ivjJScrollPaneProgramTable = null;
 	private javax.swing.JScrollPane ivjJScrollPaneGroupTable = null;
 
+	//a class used to handle control area events
+	private LCAreaEventHandler lcAreaEventHandler = null;
+
+	private final EmptyTableModel EMPTY_TABLE_MODEL = 
+			new EmptyTableModel();
+
+	
+	
+	
+	class EmptyTableModel implements TableModel
+	{
+		public int getRowCount() { return 0; }
+		public int getColumnCount()  { return 0; }
+		public String getColumnName(int columnIndex) { return null; }
+		public Class getColumnClass(int columnIndex) { return Object.class; }
+		public boolean isCellEditable(int rowIndex, int columnIndex) { return false; }
+		public Object getValueAt(int rowIndex, int columnIndex) { return null; }
+		public void setValueAt(Object aValue, int rowIndex, int columnIndex) {}
+		public void addTableModelListener(TableModelListener l) {}
+		public void removeTableModelListener(TableModelListener l) {}		
+	}
+
+
 
 /**
  * LoadControlMainPanel constructor comment.
@@ -69,6 +109,38 @@ public void initChild()
 	initialize();
 }
 
+private LCAreaEventHandler getLCAreaEventHandler()
+{
+	if( lcAreaEventHandler == null )
+		lcAreaEventHandler = new LCAreaEventHandler();
+	
+	return lcAreaEventHandler;
+}
+
+public void setCurrentDisplay( LCDisplayItem display_ )
+{
+	if( display_ == null )
+		return;
+
+	//clear out the current model and selected control area
+	getJTableControlArea().getSelectionModel().clearSelection();
+	getControlAreaTableModel().clear();
+
+	//decide which tables model we should change
+	getJTableControlArea().setModel( display_.getLocalTableModels()[LCDisplayItem.TYPE_CONTROL_AREA] );
+	getJTableProgram().setModel( display_.getLocalTableModels()[LCDisplayItem.TYPE_PROGRAM] );
+	getJTableGroup().setModel( display_.getLocalTableModels()[LCDisplayItem.TYPE_GROUP] );
+
+
+	getCompSplitPane().getJSplitPaneInner().getBottomComponent().setVisible(
+			getJTableGroup().getModel() != EMPTY_TABLE_MODEL );
+
+
+	//tell the server we need all the ControlAreas sent to us
+	executeRefreshButton();
+}
+
+
 /**
  * Insert the method's description here.
  * Creation date: (8/7/00 3:41:18 PM)
@@ -78,11 +150,60 @@ public void addActionListenerToJComponent( javax.swing.JComponent component )
 	if( component instanceof javax.swing.JComboBox )
 	{
 		comboBox = (javax.swing.JComboBox)component;
-
 		getComboBox().removeAllItems();
-		getComboBox().addItem( ControlAreaActionListener.ALL_CONTROL_AREAS );
-		//getComboBox().addItem( ControlAreaActionListener.ENERGY_EXCHANGE );
-		
+
+		// ALL getter for TableModels return the initial table model
+				
+		//ALL Display
+		LCDisplayItem d1 = 
+			new LCDisplayItem( ControlAreaActionListener.SEL_ALL_CONTROL_AREAS);
+		d1.setLocalTableModels(
+			new TableModel[] { 
+					getControlAreaTableModel(),
+					getProgramTableModel(),
+					getGroupTableModel() } );
+
+		LCDisplayItem d2 = 
+			new LCDisplayItem( ControlAreaActionListener.SEL_ACTIVE_AREAS );
+		d2.setLocalTableModels(
+			new TableModel[] { 
+					new FilteredControlAreaTableModel(
+						new int[] {LMControlArea.STATE_ACTIVE,
+										LMControlArea.STATE_FULLY_ACTIVE,
+										LMControlArea.STATE_MANUAL_ACTIVE},
+						getControlAreaTableModel().getTableModelListeners()),
+					getProgramTableModel(),
+					getGroupTableModel() } );
+
+
+
+
+		LCDisplayItem d3 =
+			new LCDisplayItem( ControlAreaActionListener.SEL_INACTIVE_AREAS );
+		d3.setLocalTableModels(
+			new TableModel[] { 
+					new FilteredControlAreaTableModel( 
+						new int[] {LMControlArea.STATE_INACTIVE},
+						getControlAreaTableModel().getTableModelListeners()),
+					getProgramTableModel(),
+					getGroupTableModel() } );
+			
+
+		LCDisplayItem d4 =
+			new LCDisplayItem( ControlAreaActionListener.SEL_CNTRL_PT_HISTORY );				
+		d4.setLocalTableModels(
+			new TableModel[] { 
+					getControlAreaTableModel(),
+					new ControlHistoryTableModel(),
+					EMPTY_TABLE_MODEL } );
+
+
+		getComboBox().addItem( d1 );		
+		getComboBox().addItem( d2 );
+		getComboBox().addItem( d3 );
+		getComboBox().addItem( d4 );
+
+
 		getComboBox().addActionListener( getControlAreaActionListener() );
 	}
 	
@@ -181,7 +302,7 @@ public void buttonBarPanel_JButtonEnableControlAreaAction_actionPerformed(java.u
 /**
  * Comment
  */
-public void controlAreaTable_MouseClicked(java.awt.event.MouseEvent event) 
+public void jTableControlArea_MouseClicked(java.awt.event.MouseEvent event) 
 {
 	//If there was a double click open a new edit window
 	if (event.getClickCount() == 2)
@@ -203,7 +324,7 @@ public void controlAreaTable_MouseClicked(java.awt.event.MouseEvent event)
 	return;
 }
 
-public void groupTable_MouseClicked(java.awt.event.MouseEvent event) 
+public void jTableGroup_MouseClicked(java.awt.event.MouseEvent event) 
 {
 	//If there was a double click open a new edit window
 	if (event.getClickCount() == 2)
@@ -212,11 +333,27 @@ public void groupTable_MouseClicked(java.awt.event.MouseEvent event)
 			showDebugInfo( getGroupTableModel().getRowAt(getJTableGroup().getSelectedRow()) );
 	}
 }
+
+/**
+ * Comment
+ */
+public void jTableGroup_MousePressed(java.awt.event.MouseEvent event) 
+{
+	if( event.getSource() == LoadControlMainPanel.this.getJTableGroup() )
+	{
+		int rowLocation = getJTableGroup().rowAtPoint( event.getPoint() );
+			
+		getJTableGroup().getSelectionModel().setSelectionInterval(
+				 		rowLocation, rowLocation );
+	}
+
+	return;
+}
 	
 /**
  * Comment
  */
-public void controlAreaTable_MousePressed(java.awt.event.MouseEvent event) 
+public void jTableControlArea_MousePressed(java.awt.event.MouseEvent event) 
 {
 	if( event.getSource() == LoadControlMainPanel.this.getJTableControlArea() )
 	{
@@ -360,20 +497,23 @@ public javax.swing.JComboBox getComboBox() {
  */
 public String getConnectionState() 
 {
-	StringBuffer title = new StringBuffer("Load Control");
+	StringBuffer title = new StringBuffer(LOAD_MANAGEMENT_NAME);
 	boolean validConn = LoadControlClientConnection.getInstance().isValid();
 
 	if( validConn && !lastConnectionStatus )
 	{
 		// connected and change
-		title.append("   [Connected to LoadControl@" + LoadControlClientConnection.getInstance().getHost() + ":" + LoadControlClientConnection.getInstance().getPort() + "]");
-		getMessagePanel().messageEvent(new com.cannontech.common.util.MessageEvent(this, "Connection to LoadControl server established", com.cannontech.common.util.MessageEvent.INFORMATION_MESSAGE));
+		title.append("   [Connected to " +
+			LOAD_MANAGEMENT_NAME + "@" + LoadControlClientConnection.getInstance().getHost() + ":" + LoadControlClientConnection.getInstance().getPort() + "]");
+
+		getMessagePanel().messageEvent(new com.cannontech.common.util.MessageEvent(this, 
+				"Connection to " + LOAD_MANAGEMENT_NAME + " server established", com.cannontech.common.util.MessageEvent.INFORMATION_MESSAGE));
 	
  	}
 	else if( !validConn && lastConnectionStatus )
 	{
 		// not connected and change
-		title.append("   [Not Connected to LoadControl]");
+		title.append("   [Not Connected to " + LOAD_MANAGEMENT_NAME + "]");
 		//getComboBox().removeAllItems();
 		getProgramTableModel().clear();
 		getControlAreaTableModel().clear();
@@ -381,11 +521,13 @@ public String getConnectionState()
 	}
 	else if( lastConnectionStatus )  // still connected
 	{
-		title.append("   [Connected to LoadControl@" + LoadControlClientConnection.getInstance().getHost() + ":" + LoadControlClientConnection.getInstance().getPort() + "]");
+		title.append("   [Connected to " + LOAD_MANAGEMENT_NAME + "@" + 
+				LoadControlClientConnection.getInstance().getHost() + ":" + 
+				LoadControlClientConnection.getInstance().getPort() + "]");
 	}
 	else // still disconnected
 	{		
-		title.append("   [Not Connected to LoadControl]");
+		title.append("   [Not Connected to " + LOAD_MANAGEMENT_NAME + "]");
 		//getComboBox().removeAllItems();		
 		getProgramTableModel().clear();
 		getControlAreaTableModel().clear();
@@ -405,14 +547,6 @@ private ControlAreaActionListener getControlAreaActionListener()
 	if( controlAreaActionListener == null )
 	{
 		controlAreaActionListener = new ControlAreaActionListener();
-
-		// do this so we can tell the connection what Models to change
-		ControlAreaListener[] listeners =
-		{
-			getControlAreaTableModel()			
-		};
-		
-		controlAreaActionListener.setModelListener( listeners );
 	}
 
 	return controlAreaActionListener;
@@ -435,11 +569,18 @@ private com.cannontech.loadcontrol.popup.ControlAreaPopUpMenu getControlAreaPopU
  * Insert the method's description here.
  * Creation date: (9/29/00 1:46:27 PM)
  * @return ControlAreaTableModel
- */
+ *
 private ControlAreaTableModel getControlAreaTableModel() 
 {
 	return (ControlAreaTableModel)getJTableControlArea().getModel();
 }
+*/
+
+private IControlAreaTableModel getControlAreaTableModel() 
+{
+	return (IControlAreaTableModel)getJTableControlArea().getModel();
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (4/19/2001 12:56:35 PM)
@@ -505,7 +646,7 @@ public javax.swing.JButton[] getJButtons()
  * @return java.lang.String
  */
 public String getJComboLabel() {
-	return "Control Area:";
+	return "View:";
 }
 /**
  * Return the GroupTable property value.
@@ -610,13 +751,16 @@ private javax.swing.JTable getJTableProgram() {
 			ivjJTableProgram.setBounds(0, 0, 200, 200);
 			// user code begin {1}
 
-			ivjJTableProgram.setModel( getProgramTableModel() );
+			ivjJTableProgram.setModel( new ProgramTableModel() );
 
 			ivjJTableProgram.setBackground( getJScrollPaneProgramTable().getBackground() );
 			ivjJTableProgram.setAutoCreateColumnsFromModel( true );
 			ivjJTableProgram.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_NEXT_COLUMN);
 			ivjJTableProgram.setGridColor( ivjJTableProgram.getTableHeader().getBackground()  );
-			ivjJTableProgram.setDefaultRenderer( Object.class, new MultiLineGearRenderer() );
+
+			//ivjJTableProgram.setDefaultRenderer( Object.class, new MultiLineGearRenderer() );
+			ivjJTableProgram.setDefaultRenderer( Object.class, new LoadControlCellRenderer() );
+
 			ivjJTableProgram.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
 			ivjJTableProgram.createDefaultColumnsFromModel();
 			
@@ -765,23 +909,22 @@ private com.cannontech.loadcontrol.popup.ProgramPopUpMenu getProgramPopUpMenu()
 
 	return programPopUpMenu;
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (9/29/00 1:46:27 PM)
  * @return com.cannontech.loadcontrol.datamodels.ProgramTableModel
  */
-private ProgramTableModel getProgramTableModel() 
+private IProgramTableModel getProgramTableModel() 
 {
-	if( programTableModel == null )
-		programTableModel = new ProgramTableModel();
-
-	return programTableModel;
+	return (IProgramTableModel)getJTableProgram().getModel();
 }
+
 /**
  * This method was created in VisualAge.
  * @return Object
  */
-protected Object getSelectedProgram() 
+protected LMProgramBase getSelectedProgram() 
 {
 	javax.swing.ListSelectionModel lsm = getJTableProgram().getSelectionModel();
 	
@@ -791,7 +934,7 @@ protected Object getSelectedProgram()
 	if( selectedRow < 0 )
 		return null;
 		
-	return getProgramTableModel().getRowAt( selectedRow );
+	return getProgramTableModel().getProgramAt( selectedRow );
 }
 /**
  * This method was created in VisualAge.
@@ -882,9 +1025,13 @@ private void initClientConnection()
  * Initializes connections
  * @exception java.lang.Exception The exception description.
  */
-private void initConnections() throws java.lang.Exception {
+private void initConnections() throws java.lang.Exception 
+{
 	//Observe the Connection to the Client
 	LoadControlClientConnection.getInstance().addObserver( this );
+
+	//do this so we can tell the connection what Models to change to
+	getControlAreaActionListener().addControlAreaListener( this );
 
 	//Listen for any selections made on the JTables
 	getJTableControlArea().getSelectionModel().addListSelectionListener( this );
@@ -896,11 +1043,11 @@ private void initConnections() throws java.lang.Exception {
 	getJTableControlArea().getModel().addTableModelListener( getProgramTableModel() );
 	getJTableControlArea().getModel().addTableModelListener( getGroupTableModel() );
 
-	
+
+/** NEED TO ADD THIS ONCE THE DEF_COLLECTABLEs ARE DONE!! ***********
 	// add the GroupPopUp menu listener AND the ProgramPopUp menu listener here
 	//  Note: We have to overide: showIfPopupTrigger(java.awt.event.MouseEvent e)
 	//   because we have a different PopUpBox for each subclass of com.cannontech.loadcontrol.data.LMGroupBase  --Tricky!
-/*	
 	java.awt.event.MouseListener groupListener = new com.cannontech.clientutils.popup.PopUpMenuShower( getGroupPopUpMenu() )
 	{
 		protected void showIfPopupTrigger(java.awt.event.MouseEvent e) 
@@ -908,27 +1055,30 @@ private void initConnections() throws java.lang.Exception {
 			if( e.isPopupTrigger() )
 			{
 				//com.cannontech.loadcontrol.data.LMGroupBase row = getGroupTableModel().getRowAt( getGroupTable().rowAtPoint(e.getPoint()) );
-				Object row = getJTableBottomTableModel().getRowAt( getJTableBottom().rowAtPoint(e.getPoint()) );
+				Object row = getGroupTableModel().getRowAt( getJTableGroup().rowAtPoint(e.getPoint()) );
 
 				//determines what popupBox is shown
 				if( row instanceof com.cannontech.loadcontrol.data.LMGroupBase )
 					getGroupPopUpMenu().show( e.getComponent(), e.getX(), e.getY() );
 				else if( row instanceof LMProgramBase )
 					getProgramPopUpMenu().show( e.getComponent(), e.getX(), e.getY() );
-				else if( row instanceof OfferRowData )
-					getOfferPopUpMenu().show( e.getComponent(), e.getX(), e.getY() );
-				else if( row instanceof EExchangeRowData )
-					getCustomerReplyPopUpMenu().show( e.getComponent(), e.getX(), e.getY() );
-				
+
+//				else if( row instanceof OfferRowData )
+//					getOfferPopUpMenu().show( e.getComponent(), e.getX(), e.getY() );
+//				else if( row instanceof EExchangeRowData )
+//					getCustomerReplyPopUpMenu().show( e.getComponent(), e.getX(), e.getY() );
+
 			}
 		}
 	};
 
-	getJTableBottom().addMouseListener( groupListener );
-*/
-
+	getJTableGroup().addMouseListener( groupListener );
 	getGroupPopUpMenu().addPopupMenuListener( this );
 	//getCurtailCustomerPopUpMenu().addPopupMenuListener( this );
+*/
+
+	//Add the ProgramPopUpMenu menu listeners
+	getJTableProgram().addMouseListener( new com.cannontech.clientutils.popup.PopUpMenuShower(getProgramPopUpMenu()) );
 	getProgramPopUpMenu().addPopupMenuListener( this );
 
 	// add the ControlAreaPopUp menu listener here
@@ -946,22 +1096,28 @@ private void initConnections() throws java.lang.Exception {
 /**
  * Initialize the class.
  */
-private void initialize() {
-	try {
+private void initialize() 
+{
+	
+	try 
+	{
 		setName("LoadControlMainPanel");
 		setLayout( new java.awt.BorderLayout() );
 
-		add( getCompSplitPane(), "Center" );
+		add( getCompSplitPane(), java.awt.BorderLayout.CENTER );
 
-		add( getButtonBarPanel(), "North" );
+		add( getButtonBarPanel(), java.awt.BorderLayout.NORTH );
 
-		add( getMessagePanel(), "South" );
+		add( getMessagePanel(), java.awt.BorderLayout.SOUTH );
 		
 		initConnections();
 
-	} catch (java.lang.Throwable ivjExc) {
+	}
+	catch (java.lang.Throwable ivjExc) 
+	{
 		handleException(ivjExc);
 	}
+
 }
 
 /**
@@ -1000,7 +1156,8 @@ public void jTableProgram_MouseClicked(java.awt.event.MouseEvent mouseEvent)
 	{
 		if( mouseEvent.isShiftDown() )
 		{
-			showDebugInfo(  getProgramTableModel().getRowAt(getJTableProgram().getSelectedRow()) );
+			int row = getJTableProgram().rowAtPoint( mouseEvent.getPoint() );
+			showDebugInfo( getProgramTableModel().getRowAt(row) );  
 		}
 
 	}
@@ -1013,11 +1170,18 @@ public void jTableProgram_MouseClicked(java.awt.event.MouseEvent mouseEvent)
 public void jTableProgram_MousePressed(java.awt.event.MouseEvent event) 
 {
 	if( event.getSource() == LoadControlMainPanel.this.getJTableProgram() )
-	{
+	{		
 		int rowLocation = getJTableProgram().rowAtPoint( event.getPoint() );
-		
-		getJTableProgram().getSelectionModel().setSelectionInterval(
-				 		rowLocation, rowLocation );
+	
+		if( event.isControlDown() )
+		{
+			getJTableControlArea().getSelectionModel().setSelectionInterval(
+				getJTableControlArea().getSelectionModel().getLeadSelectionIndex(),
+				getJTableControlArea().getSelectionModel().getLeadSelectionIndex() );
+		}
+		else
+			getJTableProgram().getSelectionModel().setSelectionInterval(
+					 		rowLocation, rowLocation );
 	}
 	
 	return;
@@ -1027,13 +1191,16 @@ public void jTableProgram_MousePressed(java.awt.event.MouseEvent event)
  * Method to handle events for the MouseListener interface.
  * @param e java.awt.event.MouseEvent
  */
-public void mouseClicked(java.awt.event.MouseEvent e) {
+public void mouseClicked(java.awt.event.MouseEvent e) 
+{
 	if (e.getSource() == getJTableControlArea()) 
-		controlAreaTable_MouseClicked(e);
+		jTableControlArea_MouseClicked(e);
+
 	if (e.getSource() == getJTableProgram()) 
 		jTableProgram_MouseClicked(e);
+
 	if (e.getSource() == getJTableGroup()) 
-		groupTable_MouseClicked(e);
+		jTableGroup_MouseClicked(e);
 }
 /**
  * Method to handle events for the MouseListener interface.
@@ -1052,11 +1219,16 @@ public void mouseExited(java.awt.event.MouseEvent e) {
  * Method to handle events for the MouseListener interface.
  * @param e java.awt.event.MouseEvent
  */
-public void mousePressed(java.awt.event.MouseEvent e) {
+public void mousePressed(java.awt.event.MouseEvent e) 
+{
 	if (e.getSource() == getJTableControlArea()) 
-		controlAreaTable_MousePressed(e);
+		jTableControlArea_MousePressed(e);
+
 	if (e.getSource() == getJTableProgram()) 
 		jTableProgram_MousePressed(e);
+
+	if (e.getSource() == getJTableGroup()) 
+		jTableGroup_MousePressed(e);
 
 }
 /**
@@ -1090,11 +1262,11 @@ public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent e)
  */
 public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent e) 
 {
+/*
 	if( e.getSource() == LoadControlMainPanel.this.getGroupPopUpMenu() )
 		getGroupPopUpMenu().setLoadControlGroup( 
-			(com.cannontech.loadcontrol.data.LMGroupBase)getSelectedProgram() );
+			(com.cannontech.loadcontrol.data.LMGroupBase)getSelectedBottomRow() );
 
-/*
 	if( e.getSource() == LoadControlMainPanel.this.getCurtailCustomerPopUpMenu() )
 		getCurtailCustomerPopUpMenu().setLoadControlGroup( 
 			(com.cannontech.loadcontrol.data.LMGroupBase)getSelectedBottomRow() );
@@ -1103,11 +1275,7 @@ public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent e)
 
 	if( e.getSource() == LoadControlMainPanel.this.getProgramPopUpMenu() )
 	{
-		getProgramPopUpMenu().setAllLoadControlPrograms(
-					getProgramTableModel().getAllRows() );
-					
-		getProgramPopUpMenu().setLoadControlProgram( 
-					(LMProgramBase)getSelectedProgram() );
+		getProgramPopUpMenu().setLoadControlProgram( getSelectedProgram() );
 	}
 
 
@@ -1264,8 +1432,8 @@ private void showDebugInfo( Object value )
 	com.cannontech.debug.gui.ObjectInfoDialog d = new com.cannontech.debug.gui.ObjectInfoDialog(
 		com.cannontech.common.util.CtiUtilities.getParentFrame(this) ); 
 
-	d.setLocation( this.getLocationOnScreen() );		
-	d.setModal( true );		
+	d.setLocation( this.getLocationOnScreen() );
+	d.setModal( true );
 	d.showDialog( value );
 }
 /**
@@ -1278,10 +1446,12 @@ protected void synchControlAreaAndButtons()
 		
 	if( area != null )
 	{
-		if( area.getDisableFlag().booleanValue() ) {
+		if( area.getDisableFlag().booleanValue() ) 
+		{
 			getButtonBarPanel().getJButtonEnableControlArea().setText("Enable Area");
 		}
-		else {
+		else 
+		{
 			getButtonBarPanel().getJButtonEnableControlArea().setText("Disable Area");
 		}
 
@@ -1289,6 +1459,7 @@ protected void synchControlAreaAndButtons()
 	}
 
 }
+
 /**
  * This method was created in VisualAge.
  * @param event javax.swing.event.TableModelEvent
@@ -1298,12 +1469,13 @@ public void tableChanged(javax.swing.event.TableModelEvent event )
 	if( getSelectedControlArea() != null )
 	{
 		//set all the LMProgram values
-		getProgramTableModel().setCurrentControlArea( getSelectedControlArea() );
+		updateProgramTableModel();
+		//getProgramTableModel().setCurrentControlArea( getSelectedControlArea() );
 
+		
 		//set all the LMGroup values
 		getGroupTableModel().setCurrentData( 
-				getSelectedControlArea(),
-				(LMProgramBase)getSelectedProgram() );
+				getSelectedControlArea(), getSelectedProgram() );
 	}
 
 	
@@ -1324,6 +1496,8 @@ public void tableChanged(javax.swing.event.TableModelEvent event )
 	revalidate();
 	synchControlAreaAndButtons();
 }
+
+
 /**
  * Insert the method's description here.
  * Creation date: (3/20/00 11:36:12 AM)
@@ -1348,51 +1522,12 @@ public void update(java.util.Observable source, Object val)
 				f.setTitle(connectedString);						
 		}
 	
-		if( val instanceof com.cannontech.loadcontrol.events.LCChangeEvent )
+		if( val instanceof LCChangeEvent )
 		{
-			final com.cannontech.loadcontrol.events.LCChangeEvent msg = 
-			 			(com.cannontech.loadcontrol.events.LCChangeEvent)val;
-				
-			if( msg.id == com.cannontech.loadcontrol.events.LCChangeEvent.INSERT )
-			{
-				getControlAreaTableModel().addControlArea( 
-						(LMControlArea)msg.arg );
-			}
-			else if( msg.id == com.cannontech.loadcontrol.events.LCChangeEvent.UPDATE )
-			{
-				boolean found = false;
-				for( int i = 0; i < getControlAreaTableModel().getRowCount(); i++ )
-				{
-					LMControlArea area = (LMControlArea)
-									getControlAreaTableModel().getRowAt(i);
-					
-					if( area.equals( (LMControlArea)msg.arg ) )
-					{
-						//update all the the control area's
-						getControlAreaTableModel().setControlAreaAt(
-								(LMControlArea)msg.arg, i );
+			getLCAreaEventHandler().handleChangeEvent( 
+					(LCChangeEvent)val,
+					getControlAreaTableModel() );
 
-						found = true;
-
-						break;
-					}
-				}
-
-				if( !found )
-					getControlAreaTableModel().addControlArea( 
-							(LMControlArea)msg.arg );
-			}
-			else if( msg.id == com.cannontech.loadcontrol.events.LCChangeEvent.DELETE )
-			{
-				getControlAreaTableModel().removeControlArea( 
-					(LMControlArea)msg.arg );						
-			}
-			else if( msg.id == com.cannontech.loadcontrol.events.LCChangeEvent.DELETE_ALL ) // remove all items
-			{
-				getControlAreaTableModel().clear();				
-			}
-
-				
 			//synchControlAreaAndButtons();
 		}
 	
@@ -1414,24 +1549,45 @@ public void valueChanged(javax.swing.event.ListSelectionEvent event)
 {
 	javax.swing.ListSelectionModel lsm = (javax.swing.ListSelectionModel) event.getSource();
 
-	if( lsm.isSelectionEmpty() )
-		return;
-	else
+	//set all the LMProgram values from the Control Area
+	if( event.getSource() == getJTableControlArea().getSelectionModel()
+		 || event.getSource() == getJTableProgram().getSelectionModel() )
 	{
-		//set all the LMProgram values
-		if( event.getSource() == getJTableControlArea().getSelectionModel() )
-			getProgramTableModel().setCurrentControlArea( getSelectedControlArea() );
-
-		//set all the LMGroup values
-		getGroupTableModel().setCurrentData( 
-				getSelectedControlArea(),
-				(LMProgramBase)getSelectedProgram() );
-
-		
-		synchControlAreaAndButtons();
+		updateProgramTableModel();
 	}
 
+	//set all the LMGroup values from the Control Area
+	getGroupTableModel().setCurrentData( 
+			getSelectedControlArea(), getSelectedProgram() );
+
+	synchControlAreaAndButtons();
 }
+
+private void updateProgramTableModel()
+{
+	final JDialogWait d = new JDialogWait( CtiUtilities.getParentFrame(this) );
+	
+	if( getProgramTableModel().showWaiting(getSelectedControlArea()) )
+	{
+		d.setLocationRelativeTo( this );
+		d.show();
+	}
+
+	//this must be done in its own thread since it would block the GUI thread
+	new Thread( new Runnable()
+	{
+		public void run()
+		{ 
+			getProgramTableModel().setCurrentControlArea( getSelectedControlArea() );
+
+			if( d.isShowing() )
+				d.dispose();
+
+		}
+	}, "CtrlHstThread").start();
+	
+}
+
 /**
  * 
  */

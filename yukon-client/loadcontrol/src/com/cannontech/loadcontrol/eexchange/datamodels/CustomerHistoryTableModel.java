@@ -5,7 +5,7 @@ package com.cannontech.loadcontrol.eexchange.datamodels;
  */
 import java.awt.Color;
 
-public class CustomerHistoryTableModel extends javax.swing.table.AbstractTableModel implements com.cannontech.loadcontrol.datamodels.SelectableLMTableModel
+public class CustomerHistoryTableModel extends javax.swing.table.AbstractTableModel implements com.cannontech.loadcontrol.datamodels.ISelectableLMTableModel
 {
 	//stores objects of type RevisionHistoryRowData
 	java.util.Vector rows = null;

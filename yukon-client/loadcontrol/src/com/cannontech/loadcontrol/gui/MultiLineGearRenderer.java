@@ -338,7 +338,7 @@ private void processDirectProgram( com.cannontech.loadcontrol.data.LMProgramDire
 			if( dPrg.getCurrentGearNumber().intValue() == gear.getGearNumber().intValue() )
 			{
 				getJLabelGearName().setText(
-						STRING_ARROW + gear.getGearName() + " " + gear.getPercentReduction() + "% " );
+						STRING_ARROW + gear.getGearName() );
 				found = true;
 				break;
 			}			

@@ -6,6 +6,16 @@ package com.cannontech.database.db.device.lm;
  */
 public interface LMProgramDirectGearDefines 
 {
+	/** NOTE ON GEARS ***
+	 * Gears numbers start at 1, not 0 (zero).
+	 * The gear number is also stored like this in the DB.
+	 */
+	
+	//A large limit is good
+	public static final int MAX_GEAR_COUNT = 16;
+	
+	public static final int INVALID_GEAR_NUM = -1;
+	
 	//all possible values for groupSelectionMethod
 	public static final String SELECTION_LAST_CONTROLLED = "LastControlled";
 	public static final String SELECTION_ALWAYS_FIRST_GROUP = "AlwaysFirstGroup";

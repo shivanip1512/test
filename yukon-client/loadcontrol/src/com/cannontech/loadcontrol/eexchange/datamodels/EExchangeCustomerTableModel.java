@@ -8,7 +8,7 @@ import java.awt.Color;
 import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.data.LMEnergyExchangeCustomer;
 
-public class EExchangeCustomerTableModel extends javax.swing.table.AbstractTableModel implements javax.swing.event.TableModelListener, com.cannontech.loadcontrol.datamodels.SelectableLMTableModel
+public class EExchangeCustomerTableModel extends javax.swing.table.AbstractTableModel implements javax.swing.event.TableModelListener, com.cannontech.loadcontrol.datamodels.ISelectableLMTableModel
 {
 	private LMControlArea currentControlArea = null;
 

@@ -5,13 +5,9 @@ package com.cannontech.database.db.device.lm;
  */
 public class LMControlAreaTrigger extends com.cannontech.database.db.DBPersistent 
 {
-	public static final String TYPE_THRESHOLD = "Threshold";
-	public static final String TYPE_STATUS = "Status";
-	public static final int INVALID_INT_VALUE = 0;
-
 	private Integer deviceID = null;
 	private Integer triggerNumber = new Integer(0);
-	private String triggerType = TYPE_THRESHOLD;
+	private String triggerType = ILMControlAreaTrigger.TYPE_THRESHOLD;
 	private Integer pointID = new Integer(0);
 	private Integer normalState = new Integer(0);
 	private Double threshold = null;

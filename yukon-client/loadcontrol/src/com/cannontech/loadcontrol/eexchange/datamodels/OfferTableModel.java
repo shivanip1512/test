@@ -9,7 +9,7 @@ import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.data.LMEnergyExchangeOffer;
 import com.cannontech.loadcontrol.data.LMProgramEnergyExchange;
 
-public class OfferTableModel extends javax.swing.table.AbstractTableModel implements javax.swing.event.TableModelListener, com.cannontech.loadcontrol.datamodels.SelectableLMTableModel
+public class OfferTableModel extends javax.swing.table.AbstractTableModel implements javax.swing.event.TableModelListener, com.cannontech.loadcontrol.datamodels.ISelectableLMTableModel
 {
 	private String fontName = "dialog";
 	private int fontSize = 12;
