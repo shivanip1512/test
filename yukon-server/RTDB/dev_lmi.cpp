@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2004/06/02 20:56:59 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2004/06/03 23:09:54 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -365,7 +365,8 @@ INT CtiDeviceLMI::queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt)
 {
     int retval = NORMAL;
 
-    if( getExclusion().hasExclusions() )
+    //  make sure we don't requeue our "go" OM
+    if( getExclusion().hasExclusions() && OutMessage->Sequence != CtiProtocolLMI::QueuedWorkToken && OutMessage->MessageFlags & MSGFLG_APPLY_EXCLUSION_LOGIC )
     {
         _lmi.queueCode(atoi(OutMessage->Buffer.SASt._codeSimple));
 
@@ -385,16 +386,11 @@ bool CtiDeviceLMI::getOutMessage(CtiOutMessage *&OutMessage)
 {
     bool retval = false;
 
-    if( _lmi.hasCodes() )
+    if( _lmi.hasCodes() && RWTime::now() > _lmi.getTransmittingUntil() )
     {
         if( !OutMessage )
         {
             OutMessage = new CtiOutMessage();
-
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint - in CtiDeviceLMI::getOutMessage - creating new OM **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
         }
 
         OutMessage->DeviceID = getID();
@@ -403,11 +399,6 @@ bool CtiDeviceLMI::getOutMessage(CtiOutMessage *&OutMessage)
         OutMessage->ExpirationTime = getExclusion().getExecutionGrantExpires().seconds();  //  i'm hijacking this over
 
         retval = true;
-
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint - in CtiDeviceLMI::getOutMessage - returned OM with expiration " << getExclusion().getExecutionGrantExpires() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
     }
     else
     {
@@ -416,11 +407,6 @@ bool CtiDeviceLMI::getOutMessage(CtiOutMessage *&OutMessage)
             delete OutMessage;
 
             OutMessage = 0;
-        }
-
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint - in CtiDeviceLMI::getOutMessage - deleted OM **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
