@@ -34,7 +34,7 @@
 		// Happpens only after hardware is saved
 		referer = (String) session.getAttribute(ServletUtils.ATT_REFERRER2);
 		
-		if (referer.indexOf("ResultSet.jsp") >= 0) {
+		if (referer != null && referer.indexOf("ResultSet.jsp") >= 0) {
 			src = "ResultSet";
 			referer = "ResultSet.jsp";
 		}
@@ -44,12 +44,17 @@
 		}
 	}
 	else if (!src.equalsIgnoreCase("SelectInv")) {
-		referer = request.getHeader("referer");
-		if (referer.indexOf("page=") < 0) {
-			if (referer.indexOf("?") < 0)
-				referer += "?page=1";
-			else
-				referer += "&page=1";
+		if (src.equalsIgnoreCase("Search")) {
+			referer = "Inventory.jsp";
+		}
+		else if (src.equalsIgnoreCase("Inventory") || src.equalsIgnoreCase("ResultSet")) {
+			referer = request.getHeader("referer");
+			if (referer.indexOf("page=") < 0) {
+				if (referer.indexOf("?") < 0)
+					referer += "?page=1";
+				else
+					referer += "&page=1";
+			}
 		}
 		
 		session.setAttribute(ServletUtils.ATT_REFERRER2, referer);
