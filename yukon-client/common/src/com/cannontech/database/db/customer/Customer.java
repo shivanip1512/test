@@ -86,6 +86,7 @@ public class Customer extends com.cannontech.database.db.DBPersistent
 		{
 		    try 
 		    {
+		    	if ( rset != null) rset.close();
 				if ( stmt != null) stmt.close();
 		    }
 		    catch (java.sql.SQLException e2) 

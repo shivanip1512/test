@@ -124,6 +124,7 @@ public static synchronized Integer getNextAddressID( java.sql.Connection conn )
 	{
 	    try 
 	    {
+	    	if ( rset != null) rset.close();
 			if ( stmt != null) stmt.close();
 	    }
 	    catch (java.sql.SQLException e2) 
