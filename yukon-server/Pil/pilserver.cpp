@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.35 $
-* DATE         :  $Date: 2003/05/09 15:54:47 $
+* REVISION     :  $Revision: 1.36 $
+* DATE         :  $Date: 2003/05/15 13:52:03 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -604,6 +604,34 @@ void CtiPILServer::resultThread()
                     delete OutMessage;
                 }
             }
+
+            if( retList.entries() > 0 )
+            {
+                if(vgList.entries())
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Info **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << "   Device " << (DeviceRecord ? DeviceRecord->getName() : "UNKNOWN") << " has generated a dispatch return message.  Data may be duplicated." << endl;
+                    }
+                }
+
+                RWCString cmdstr(InMessage->Return.CommandStr);
+                CtiCommandParser parse( cmdstr );
+                if(parse.getFlags() & CMD_FLAG_UPDATE)
+                {
+                    for(i = 0; i < retList.entries(); i++)
+                    {
+                        CtiMessage *&pMsg = retList.at(i);
+
+                        if(pMsg->isA() == MSG_PCRETURN || pMsg->isA() == MSG_POINTDATA)
+                        {
+                            vgList.append(pMsg->replicateMessage());       // Mash it in ther if we said to do so.
+                        }
+                    }
+                }
+            }
+
 
             while( (i = retList.entries()) > 0 )
             {

@@ -1295,6 +1295,12 @@ void  CtiCommandParser::doParseScan(const RWCString &CmdStr)
             _cmd["scantype"] = CtiParseValue( ScanRateLoadProfile );
         }
     }
+
+    if(CmdStr.contains(" update"))
+    {
+        _cmd["flag"] = CtiParseValue( CMD_FLAG_UPDATE );
+    }
+
 }
 
 UINT     CtiCommandParser::getCommand() const
@@ -1308,20 +1314,12 @@ UINT     CtiCommandParser::getCommand() const
 
 UINT     CtiCommandParser::getFlags() const
 {
-    CtiParseValue& pv = CtiParseValue(); // = _cmd["command"];
-
-    _cmd.findValue("flag", pv);
-
-    return pv.getInt();
+    return getiValue("flag",0);
 }
 
 UINT     CtiCommandParser::getOffset() const
 {
-    CtiParseValue& pv = CtiParseValue(); // = _cmd["command"];
-
-    _cmd.findValue("offset", pv);
-
-    return pv.getInt();
+    return getiValue("offset",-1);
 }
 
 bool  CtiCommandParser::isKeyValid(const RWCString key) const
