@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2003/04/29 13:44:30 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2003/08/11 20:12:12 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -216,6 +216,8 @@ void CtiTableDeviceMCTIEDPort::DecodeDatabaseReader(RWDBReader &rdr)
         _connectedIED = LandisGyrS4;
     else if( temp == "alpha power plus" )
         _connectedIED = AlphaPowerPlus;
+    else if( temp == "general electric kv" )
+        _connectedIED = GeneralElectricKV;
     else
         _connectedIED = InvalidIEDType;
 
