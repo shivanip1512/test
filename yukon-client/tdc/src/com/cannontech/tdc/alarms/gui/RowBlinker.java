@@ -7,23 +7,34 @@ package com.cannontech.tdc.alarms.gui;
  * @Version: <version>
  */
  
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.DataLine;
+import javax.sound.sampled.SourceDataLine;
+
 import com.cannontech.tdc.utils.TDCDefines;
 import com.cannontech.clientutils.CTILogger;
 
 
 public class RowBlinker implements Runnable 
 {
-	private java.applet.AudioClip alarmSound = null;
 	private AlarmingRowVector alarmedRows = null;
 	private AlarmTableModel model = null;
 	private Thread runningThread = null;
 
+
+	private byte tempBuffer[] = new byte[10000];
+	private SourceDataLine sourceDataLine = null;
+	private AudioFormat audioFormat = null;
+	
+	int byteCnt = 0;
+	
 	/**
 	 * Insert the type's description here.
 	 * Creation date: (7/28/00 5:28:12 PM)
 	 * @author: 
 	 */
-
 	public class AlarmTableModelPainter implements Runnable 
 	{
 		private int min = 0;
@@ -86,11 +97,53 @@ public RowBlinker( AlarmTableModel dataModel, AlarmingRowVector alarmedRows )
 	super();
 
 	this.alarmedRows = alarmedRows;
-	this.model = dataModel;
+	this.model = dataModel;	
 }
 
 public void start()
 {
+	try
+	{
+		java.net.URL url = new java.net.URL( "file:/" + TDCDefines.ALARM_SOUND_FILE );
+	
+		AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(url);
+		audioFormat = audioInputStream.getFormat();
+		// At present, ALAW and ULAW encodings must be converted
+		// to PCM_SIGNED before it can be played
+		if (audioFormat.getEncoding() != AudioFormat.Encoding.PCM_SIGNED)
+		{
+			audioFormat = new AudioFormat(
+					AudioFormat.Encoding.PCM_SIGNED,
+					audioFormat.getSampleRate(),
+					audioFormat.getSampleSizeInBits()*2,
+					audioFormat.getChannels(),
+					audioFormat.getFrameSize()*2,
+					audioFormat.getFrameRate(),
+					true); // big endian
+
+			audioInputStream = AudioSystem.getAudioInputStream(
+										audioFormat, audioInputStream);
+		}
+
+
+
+		DataLine.Info dataLineInfo =
+			new DataLine.Info( SourceDataLine.class, audioFormat);
+
+		sourceDataLine =
+			(SourceDataLine)AudioSystem.getLine(dataLineInfo);		
+			
+		//get the stream into memory so we do not have to hit the disk
+		byteCnt = audioInputStream.read(
+							tempBuffer, 0, tempBuffer.length);
+			
+		audioInputStream.close(); //done with the inputstream
+	}
+	catch( Exception e )
+	{
+		handleException( e );
+	}
+	
 	runningThread = new Thread( this , "TDCAlarmColorAndSound" );
 	runningThread.setDaemon(true);
 	runningThread.start();
@@ -109,31 +162,40 @@ public void destroy()
    }
    
 }
-/**
- * Insert the method's description here.
- * Creation date: (4/4/00 5:01:45 PM)
- * Version: <version>
- */
-private java.applet.AudioClip getAlarmSound() 
-{	
-	if( alarmSound == null )
-	{
-		java.net.URL url = null;
-		
-		try
-		{
-			url = new java.net.URL( "file:/" + TDCDefines.ALARM_SOUND_FILE );
-		}
-		catch( java.net.MalformedURLException e )
-		{
-			handleException( e );
-		}
-		
-		alarmSound = java.applet.Applet.newAudioClip( url );
-	}
+private synchronized void playSound()
+{
 	
-	return alarmSound;
+	try
+	{
+		if( !sourceDataLine.isOpen() )
+			sourceDataLine.open(audioFormat);
+
+		sourceDataLine.start();
+
+		//Write data to the internal buffer of
+		// the data line where it will be
+		// delivered to the speaker.
+		if( byteCnt > 0 )
+		{
+			byte[] mutableArray = new byte[ tempBuffer.length ];
+			System.arraycopy( tempBuffer, 0, mutableArray, 0, tempBuffer.length );
+			
+			//sourceDataLine.write MAY cause the given array to be modified!!!
+			sourceDataLine.write( mutableArray, 0, byteCnt );
+		}
+			
+		//Block and wait for internal buffer of the
+		// data line to empty.
+		sourceDataLine.drain();
+		sourceDataLine.stop();
+	}
+	catch (Exception e) 
+	{
+		handleException( e );
+	}
+
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (1/12/2001 1:08:12 PM)
@@ -167,7 +229,8 @@ private synchronized void processAlarmColors()
 			{
 				//we cant be muted and there has to be at least 1 unsilenced row
 				if( !model.isMuted() && alarmedRows.isAnyRowUnSilenced() )
-					getAlarmSound().play();
+					playSound();
+					//getAlarmSound().play();
 
 				maxLoc = loc;
 				minLoc = loc;
