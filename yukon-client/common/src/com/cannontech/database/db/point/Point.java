@@ -117,7 +117,7 @@ public final static Integer getNextCachedPointID()
 		if(points == null || points.size() <= 0)
 			return new Integer(0);
 		else	
-			return new Integer(((LitePoint)points.get(points.size() - 1)).getPointID() );
+			return new Integer(((LitePoint)points.get(points.size() - 1)).getPointID() + 1 );
 	}
 }
 /**
