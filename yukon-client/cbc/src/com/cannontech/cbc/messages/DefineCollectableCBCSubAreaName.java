@@ -54,8 +54,10 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 
 	super.restoreGuts( obj, vstr, polystr );
 	java.util.Vector areaNames = (java.util.Vector)vstr.restoreObject( polystr );
+    //java.util.Vector areaSubIDs = (java.util.Vector)vstr.restoreObject( polystr );
 
-	((CBCSubAreaNames) obj).setAreaNames( areaNames );
+	((CBCSubAreaNames)obj).setAreaNames( areaNames );
+    //((CBCSubAreaNames)obj).setAreaSubIDs( areaSubIDs );
 }
 /**
  * saveGuts method comment.

@@ -6,6 +6,7 @@ import java.util.Vector;
 import com.cannontech.common.editor.EditorPanel;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.contact.Contact;
+import com.cannontech.database.db.user.UserPaoOwner;
 import com.cannontech.database.db.user.YukonGroup;
 import com.cannontech.database.db.user.YukonUserRole;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -122,6 +123,8 @@ public class YukonUser extends DBPersistent implements com.cannontech.database.d
 	{
 		delete( YukonUserRole.TABLE_NAME, "UserID", getYukonUser().getUserID() );
 		delete( YukonGroup.TBL_YUKON_USER_GROUP, "UserID", getYukonUser().getUserID() );
+        delete( UserPaoOwner.TABLE_NAME, "UserID", getYukonUser().getUserID() );
+        
 		getYukonUser().delete();
 	}
 

@@ -4,6 +4,7 @@ import java.util.Vector;
 
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.pao.PAOExclusion;
+import com.cannontech.database.db.user.UserPaoOwner;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.db.NestedDBPersistent;
 
@@ -57,9 +58,10 @@ public void delete() throws java.sql.SQLException
 	//ADD TABLES THAT HAVE A REFERENCE TO THE YukonPAObject TABLE AND THAT
 	// NEED TO BE DELETED WHEN A YukonPAObject ROW IS DELETED (CASCADE DELETE)
 	delete( "DynamicPAOStatistics", "PAObjectID", getPAObjectID() );
-   delete( "CommErrorHistory", "PAObjectID", getPAObjectID() );
-   delete( "LMControlHistory", "PAObjectID", getPAObjectID() );
-   delete( "PAOOwner", "ChildID", getPAObjectID() );
+	delete( "CommErrorHistory", "PAObjectID", getPAObjectID() );
+	delete( "LMControlHistory", "PAObjectID", getPAObjectID() );
+    delete( "PAOOwner", "ChildID", getPAObjectID() );
+    delete( UserPaoOwner.TABLE_NAME, "PaoID", getPAObjectID() );
 
 	PAOExclusion.deleteAllPAOExclusions( getPAObjectID().intValue(), getDbConnection() );
 	

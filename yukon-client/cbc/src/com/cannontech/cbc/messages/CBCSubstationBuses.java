@@ -45,6 +45,16 @@ public SubBus getSubBusAt(int index)
 	else
 		return (SubBus)buses.get(index);
 }
+
+/**
+ * Only used to filter the unwanted SubBuses out
+ */
+public void removeSubBusAt(int index) 
+{
+    if( buses != null && index >= 0 && index < buses.size() )
+        buses.removeElementAt( index );
+}
+
 /**
  * This method was created in VisualAge.
  */

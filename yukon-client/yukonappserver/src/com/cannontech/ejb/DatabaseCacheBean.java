@@ -95,7 +95,16 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
    {
       return getCache().getAllYukonImages();   
    }
-   
+  
+   /**
+    * @ejb:interface-method
+    * tview-type="remote" 
+   **/
+   public void releaseAllCache()
+   {
+       getCache().releaseAllCache();   
+   }
+
    /**
     * @ejb:interface-method
     * tview-type="remote" 
@@ -493,15 +502,6 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
       getCache().releaseAllAlarmCategories();
    }
 
-   /**
-    * @ejb:interface-method
-    * tview-type="remote" 
-   **/
-   public synchronized void releaseAllCache()
-   {
-      getCache().releaseAllCache();
-   }
-
 	/**
 	 * @ejb:interface-method
 	 * tview-type="remote" 
@@ -635,6 +635,13 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
    public synchronized void releaseAllUnitMeasures()
    {   
       getCache().releaseAllUnitMeasures();
+   }
+
+   /**
+    * @see com.cannontech.yukon.IDatabaseCache#getYukonUserPaoOwners()
+    */
+   public synchronized Map getYukonUserPaoOwners() {
+       return getCache().getYukonUserPaoOwners();
    }
 
    /**

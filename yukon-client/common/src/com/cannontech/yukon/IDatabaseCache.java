@@ -1,5 +1,7 @@
 package com.cannontech.yukon;
 
+import java.util.Map;
+
 import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -66,6 +68,9 @@ public interface IDatabaseCache
    public java.util.List getAllYukonRoles();
    public java.util.List getAllYukonRoleProperties();
    
+   //Map< LiteYukonUser, int[]<paoIDs> > 
+   public Map getYukonUserPaoOwners();
+
    //Map<LiteYukonUser,List<LiteYukonGroup>> 
    public java.util.Map getYukonUserGroupMap();
    

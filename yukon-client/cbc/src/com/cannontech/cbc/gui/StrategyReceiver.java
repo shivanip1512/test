@@ -3,15 +3,14 @@ package com.cannontech.cbc.gui;
 /**
  * This type was created in VisualAge.
  */
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
+
 import com.cannontech.cbc.data.CBCClientConnection;
 import com.cannontech.cbc.messages.CBCSubAreaNames;
-import com.cannontech.clientutils.CTILogger;
-import com.cannontech.clientutils.commonutils.ModifiedDate;
-import com.cannontech.message.util.Message;
-import com.cannontech.message.util.MessageEvent;
-import com.cannontech.message.util.MessageListener;
+import com.cannontech.cbc.tablemodelevents.CBCGenericTableModelEvent;
 
-public class StrategyReceiver implements com.cannontech.tdc.SpecialTDCChild, MessageListener
+public class StrategyReceiver implements com.cannontech.tdc.SpecialTDCChild, TableModelListener
 {
 	//a band aid to always allow us to insert the last CBCSubAreaNames we received
 	private CBCSubAreaNames lastSubAreaMsg = null;
@@ -70,11 +69,6 @@ public void destroy()
 {
 	try
 	{
-		if( connectionWrapper != null )
-		{
-			connectionWrapper.removeMessageListener( this );
-		}
-
 		if( mainPanel != null )
 			mainPanel.destroy();
 	}
@@ -199,8 +193,6 @@ private CBCClientConnection getConnectionWrapper()
 		try
 		{	
 			connectionWrapper = new CBCClientConnection();
-			connectionWrapper.addMessageListener( this );
-
 
 			//start the conn!!!
 			//connectionWrapper.connectWithoutWait(); //connect( 15000 );		
@@ -297,9 +289,11 @@ public javax.swing.JPanel getMainJPanel()
 
 		// initDividerPostition is called to set the JSplitPane's divider at the very bottom
 		mainPanel.initDividerPosition();
+        
+        mainPanel.getSubBusTableModel().addTableModelListener( this );
 	}
 	
-	return mainPanel;	
+	return mainPanel;
 }
 
 /**
@@ -378,7 +372,6 @@ public void removeActionListenerFromJComponent( javax.swing.JComponent component
 	{
 		//((javax.swing.JComboBox)component).removeActionListener( getCapBankActionListener() );
 		getJComboBox().removeActionListener( getCapBankActionListener() );
-		getConnectionWrapper().removeMessageListener( this );
 		
 		comboBox = null;
 	}
@@ -511,24 +504,60 @@ private void updateAreaList(CBCSubAreaNames areaNames)
 
 }
 
-public synchronized void messageReceived( MessageEvent e )
+
+/**
+ * This method was created in VisualAge.
+ * @param event javax.swing.event.TableModelEvent
+ */
+public void tableChanged(TableModelEvent event ) 
 {
-	Message in = e.getMessage();
+    if( event instanceof CBCGenericTableModelEvent 
+         && ((CBCGenericTableModelEvent)event).getChangeid() 
+                == CBCGenericTableModelEvent.SUBBUS_AREA_CHANGE ) 
+    {
+        handleAreaChange(); 
 
+    }
+}
 
-	if( in instanceof CBCSubAreaNames )
-	{	
-		CBCSubAreaNames areaNames = (CBCSubAreaNames)in;
-		CTILogger.info( new ModifiedDate(new java.util.Date().getTime()).toString()
-				+ " : Got an Area Message with " + areaNames.getNumberOfAreas()
-				+ " areas" );
-		
-		
-		lastSubAreaMsg = areaNames;
+/**
+ * Adds or removes Geo Areas for substations to our selection JComboBox
+ *
+ */
+public synchronized void handleAreaChange()
+{
+    if( getJComboBox() == null )
+        return;
 
-		updateAreaList( lastSubAreaMsg );
-		
-	}
+    synchronized( getJComboBox() )
+    {
+        Object obj = getJComboBox().getSelectedItem();
+
+        try
+        {
+            getJComboBox().removeActionListener( getCapBankActionListener() );
+        
+            // remove all the values in the JComboBox except the first one
+            getJComboBox().removeAllItems();
+
+            // add all area names to the JComboBox  
+            for( int i = 0; i < mainPanel.getSubBusTableModel().getAreaNames().size(); i++ )
+            {
+                getJComboBox().addItem(
+                        mainPanel.getSubBusTableModel().getAreaNames().get(i) );
+            }
+
+            if( obj != null )
+                getJComboBox().setSelectedItem(obj);
+        }
+        finally  //we must add our listener back!
+        {
+            getJComboBox().addActionListener( getCapBankActionListener() );
+        }
+
+        if( obj == null && getJComboBox().getItemCount() > 0 )
+            getJComboBox().setSelectedIndex( 0 );
+    }
 }
 
 }

@@ -8,7 +8,6 @@ package com.cannontech.servlet;
  */
  
 import java.awt.Color;
-import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -16,9 +15,7 @@ import javax.servlet.http.HttpSession;
 
 import com.cannontech.cbc.data.CBCClientConnection;
 import com.cannontech.cbc.gui.CapBankTableModel;
-import com.cannontech.cbc.gui.SubBusTableModel;
 import com.cannontech.cbc.messages.CBCStates;
-import com.cannontech.cbc.messages.CBCSubAreaNames;
 import com.cannontech.cbc.web.CBCCommandExec;
 import com.cannontech.cbc.web.CapControlWebAnnex;
 import com.cannontech.clientutils.CTILogger;
@@ -38,7 +35,7 @@ public class CBCConnServlet extends javax.servlet.http.HttpServlet implements Me
 	private CBCClientConnection conn;
 
 	//insures only 1 set of these Strings for the servlet
-	private final Vector areaNames = new Vector(32);
+	//private final Vector areaNames = new Vector(32);
 
 
 	//insures only 1 set of these Strings for the servlet
@@ -83,26 +80,25 @@ public synchronized CBCClientConnection getConnection()
 }
 
 
-public Vector getAreaNames()
-{
-	return areaNames;
-}
-
-/**
- * Insert the method's description here.
- * Creation date: (4/12/2002 1:53:27 PM)
- * @param areaNames com.cannontech.cbc.messages.CBCSubAreaNames
- */
-private synchronized void updateAreaList(CBCSubAreaNames areaNames_) 
-{
-	// remove all the values in the list
-	getAreaNames().removeAllElements();
-	//getAreaNames().add( SubBusTableModel.ALL_FILTER );
-
-	// add all area names to the list	
-	for( int i = 0; i < areaNames_.getNumberOfAreas(); i++ )
-		getAreaNames().add( areaNames_.getAreaName(i) );
-}
+//public Vector getAreaNames()
+//{
+//	return areaNames;
+//}
+//
+///**
+// * Insert the method's description here.
+// * Creation date: (4/12/2002 1:53:27 PM)
+// * @param areaNames com.cannontech.cbc.messages.CBCSubAreaNames
+// */
+//private synchronized void updateAreaList(CBCSubAreaNames areaNames_) 
+//{
+//	// remove all the values in the list
+//	getAreaNames().removeAllElements();
+//
+//	// add all area names to the list	
+//	for( int i = 0; i < areaNames_.getNumberOfAreas(); i++ )
+//		getAreaNames().add( areaNames_.getAreaName(i) );
+//}
 
 /**
  * Insert the method's description here.
@@ -250,11 +246,12 @@ public void messageReceived( MessageEvent e )
 
 	CTILogger.debug( getClass().getName() + ": received type: " + in.getClass());
 
-	if( in instanceof CBCSubAreaNames )
-	{
-		updateAreaList( (CBCSubAreaNames)in );
-	}
-	else if( in instanceof CBCStates )
+//	if( in instanceof CBCSubAreaNames )
+//	{
+//		updateAreaList( (CBCSubAreaNames)in );
+//	}
+//	else
+    if( in instanceof CBCStates )
 	{
 		CBCStates cbcStates = (CBCStates)in;
 		State[] states = new State[cbcStates.getNumberOfStates()];

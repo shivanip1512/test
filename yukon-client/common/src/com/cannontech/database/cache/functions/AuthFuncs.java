@@ -308,4 +308,33 @@ public class AuthFuncs {
 			return true;
 		return false;
 	}
+
+    /**
+     * Return true if the use has access to the given PAOid.
+     * By default, the given user has access to ALL PAOS (backwards compatability)
+     * 
+     * @param LiteYukonUser, int
+     * @return boolean
+     */
+    public static boolean userHasAccessPAO( LiteYukonUser user, int paoID )
+    {
+        DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();            
+        synchronized (cache) 
+        {
+            int[] paoIDs = (int[])cache.getYukonUserPaoOwners().get( user );
+
+            if( paoIDs != null )
+            {
+                for( int i = 0; i < paoIDs.length; i++ )
+                    if( paoID == paoIDs[i] )
+                        return true;
+            }
+            else //if the user is not found, we assume they have access to the PAO
+                return true;
+        }
+
+        //the user was found, but the ID was not in the set of
+        //  given IDs, they are not permitted to see this
+        return false;
+    }
 }

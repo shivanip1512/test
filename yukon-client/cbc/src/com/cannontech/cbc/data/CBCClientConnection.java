@@ -6,14 +6,18 @@ package com.cannontech.cbc.data;
  * the base class does all the work.
  */
 import com.cannontech.cbc.messages.CBCCommand;
+import com.cannontech.cbc.messages.CBCSubAreaNames;
+import com.cannontech.cbc.messages.CBCSubstationBuses;
 import com.cannontech.cbc.messages.DefineCollectableCBCCommand;
 import com.cannontech.cbc.messages.DefineCollectableCBCMessage;
 import com.cannontech.cbc.messages.DefineCollectableCBCStateGroupMessage;
 import com.cannontech.cbc.messages.DefineCollectableCBCSubAreaName;
 import com.cannontech.cbc.messages.DefineCollectableCBCSubstationBuses;
 import com.cannontech.cbc.messages.DefineCollectableCBCTempMoveCapBank;
+import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.MessageEvent;
 import com.cannontech.common.util.MessageEventListener;
+import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.message.util.ClientConnection;
 import com.cannontech.message.util.Message;
@@ -26,7 +30,7 @@ public class CBCClientConnection extends ClientConnection
 	private String host = "127.0.0.1";
 	private int port = 1910;
 	
-	private java.util.Vector messageEventListeners = new java.util.Vector();
+	private java.util.Vector messageEvntListGUI = new java.util.Vector();
 	private java.util.Hashtable areaNames = null;
 
 	// this MUST conatin all the DefineCollectibles of the CBC client
@@ -101,13 +105,13 @@ public class CBCClientConnection extends ClientConnection
 	 */
 	public void addMessageEventListener(MessageEventListener listener) {
 	
-		synchronized( messageEventListeners )
+		synchronized( messageEvntListGUI )
 		{
-			for( int i = messageEventListeners.size() - 1; i >= 0; i-- )
-				if( messageEventListeners.elementAt(i) == listener )
+			for( int i = messageEvntListGUI.size() - 1; i >= 0; i-- )
+				if( messageEvntListGUI.elementAt(i) == listener )
 					return;
 	
-			messageEventListeners.addElement(listener);
+			messageEvntListGUI.addElement(listener);
 		}
 	}
 	
@@ -132,10 +136,10 @@ public class CBCClientConnection extends ClientConnection
 	 */
 	public void fireMsgEventGUI(com.cannontech.common.util.MessageEvent event) 
 	{	
-		synchronized( messageEventListeners )
+		synchronized( messageEvntListGUI )
 		{
-			for( int i = messageEventListeners.size() - 1; i >= 0; i-- )
-				((com.cannontech.common.util.MessageEventListener) messageEventListeners.elementAt(i)).messageEvent(event);
+			for( int i = messageEvntListGUI.size() - 1; i >= 0; i-- )
+				((com.cannontech.common.util.MessageEventListener) messageEvntListGUI.elementAt(i)).messageEvent(event);
 		}
 	}
 	/**
@@ -185,6 +189,8 @@ public class CBCClientConnection extends ClientConnection
 		com.cannontech.clientutils.CTILogger.info("---------------- EXCEPTION CBCClientConnection() ----------------");
 		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
+    
+    
 	/**
 	 * Insert the method's description here.
 	 * Creation date: (8/18/00 5:11:57 PM)
@@ -194,6 +200,49 @@ public class CBCClientConnection extends ClientConnection
 		setAutoReconnect( true );
 	}
 	
+    /**
+     * Override the parents implentation so we can filter out the
+     * subs we do not have access to.
+     * 
+     */
+    public void fireMessageEvent(Message msg)
+    {
+        if( msg instanceof CBCSubstationBuses )
+        {
+            //remove any Subs the user should not see
+            CBCSubstationBuses busesMsg = (CBCSubstationBuses)msg;
+            for( int i = (busesMsg.getNumberOfBuses()-1); i >= 0; i-- )
+            {
+                //if the user can not see this sub, let us remove it
+                if( !AuthFuncs.userHasAccessPAO( ClientSession.getInstance().getUser(), busesMsg.getSubBusAt(i).getCcId().intValue() ) )
+                    busesMsg.removeSubBusAt( i );
+            }
+        }
+        else if( msg instanceof CBCSubAreaNames )
+        {
+            //filter based on user and what Areas they can see
+/*
+            CBCSubAreaNames areaMsg = (CBCSubAreaNames)msg;
+            for( int i = (areaMsg.getNumberOfAreas()-1); i >= 0; i-- )
+            {
+                for( int j = 0; j < areaMsg.getAreaSubIDs().size(); j++ )
+                {
+                    int[] subIDs = (int[])areaMsg.getAreaSubIDs().get(j);
+
+                    //if the user can not see this area, let us remove it
+                    if( !AuthFuncs.userHasAccessPAO( ClientSession.getInstance().getUser(), areaMsg.getSubBusAt(i).getCcId().intValue() ) )
+                        busesMsg.removeSubBusAt( i );
+                }
+            }
+*/
+        }
+
+        
+        //let the parent tell everyone its story
+        super.fireMessageEvent( msg );
+    }
+
+    
 	/**
 	 * 
 	 * @return nothing

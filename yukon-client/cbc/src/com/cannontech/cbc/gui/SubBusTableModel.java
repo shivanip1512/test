@@ -4,6 +4,8 @@ package com.cannontech.cbc.gui;
  * This type was created in VisualAge.
  */
 import java.awt.Color;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Vector;
 
 import com.cannontech.cbc.data.CBCClientConnection;
@@ -11,6 +13,7 @@ import com.cannontech.cbc.data.CapBankDevice;
 import com.cannontech.cbc.data.CapControlConst;
 import com.cannontech.cbc.data.SubBus;
 import com.cannontech.cbc.messages.CBCStates;
+import com.cannontech.cbc.messages.CBCSubAreaNames;
 import com.cannontech.cbc.messages.CBCSubstationBuses;
 import com.cannontech.cbc.tablemodelevents.CBCGenericTableModelEvent;
 import com.cannontech.cbc.tablemodelevents.StateTableModelEvent;
@@ -29,18 +32,14 @@ public class SubBusTableModel extends javax.swing.table.AbstractTableModel imple
 
 	/* ROW DATA */
 	private java.util.Vector allSubBuses = null;
-	private java.util.List currentSubBuses = null;
-	
-	//keys are Integer rowNumbers and values are SubBus
-
+	private java.util.List currentSubBuses = null;	
 	/* END - ROW DATA */
 
-   // the string for filtering all areas
-   //public static final String ALL_FILTER = "All Areas";
+    private final Vector areaNames = new Vector(32);
 	public static final String STR_NA = "  NA";
 
-   // the holder for the current filter, default to all
-   private String filter = null; //ALL_FILTER;
+	// the holder for the current filter, default to all
+    private String filter = null; //ALL_FILTER;
 
 	//The columns and their column index	
 	public static final int AREA_NAME_COLUMN  = 0;
@@ -126,6 +125,36 @@ public void clear()
 
 	fireTableDataChanged();
 }
+
+public Vector getAreaNames()
+{
+  return areaNames;
+}
+
+/**
+* This method assumes we have that all the Subs that we care about in memory.
+* It then only adds areas to our list that we have Subs for.
+* 
+* @param areaNames com.cannontech.cbc.messages.CBCSubAreaNames
+*/
+private synchronized void updateAreaList(CBCSubAreaNames areaNames_) 
+{
+  // remove all the values in the list
+  getAreaNames().removeAllElements();
+
+  //create the temporary map to have the needed areas in it
+  HashMap areaMap = new HashMap( areaNames_.getNumberOfAreas() );
+  for( int i = 0; i < getAllSubBuses().size(); i++ )
+      areaMap.put(
+              ((SubBus)getAllSubBuses().get(i)).getCcArea(), "JUNK" );
+
+  
+  // add all area names to the list   
+  for( int i = 0; i < areaNames_.getNumberOfAreas(); i++ )
+      if( areaMap.containsKey(areaNames_.getAreaName(i)) )
+          getAreaNames().add( areaNames_.getAreaName(i) );
+}
+
 
 /**
  * Used to clear all filters and forces the model to recreate them.
@@ -582,6 +611,7 @@ public synchronized void setFilter(java.lang.String newFilter)
 	{
 		//currentSubBuses = getAllSubBuses();
 		//clear();
+        currentSubBuses = new Vector();
 		com.cannontech.clientutils.CTILogger.info("*** Could not find SubBus with the area = " + getFilter() );
 	}
 	else  //this locks down AllSubBuses and disallows any structural modification to AllSubBuses
@@ -683,7 +713,7 @@ public void messageReceived( com.cannontech.message.util.MessageEvent e )
 		}
 		
 
-		StateTableModelEvent stMe = 
+		StateTableModelEvent stMe =
 			new StateTableModelEvent(SubBusTableModel.this, 0, getRowCount()-1,
 					javax.swing.event.TableModelEvent.ALL_COLUMNS, 
 					javax.swing.event.TableModelEvent.UPDATE);
@@ -697,25 +727,37 @@ public void messageReceived( com.cannontech.message.util.MessageEvent e )
 		CBCSubstationBuses busesMsg = (CBCSubstationBuses)in;
 		for( int i = 0; i < busesMsg.getNumberOfBuses(); i++ )
 		{
-			CTILogger.info(new ModifiedDate(new java.util.Date().getTime()).toString()
+			CTILogger.info(new ModifiedDate(new Date().getTime()).toString()
 					+ " : Received SubBus - " + busesMsg.getSubBusAt(i).getCcName() 
 					+ "/" + busesMsg.getSubBusAt(i).getCcArea() );
-		}
-		
+        }
 		
 		
 		//since this is all the subs, lets just clear what we currently have
 		if( busesMsg.isSubDeleted() )
 			handleDeletedSub( busesMsg );
-			//getAllSubBuses().clear();
 
 
+        //only add the subs we are allowed to see
 		SubBus[] allBuses = new SubBus[busesMsg.getNumberOfBuses()];
-		for( int i = 0; i < busesMsg.getNumberOfBuses(); i++ )			
-			allBuses[i] = busesMsg.getSubBusAt(i);
-		
+		for( int i = 0; i < busesMsg.getNumberOfBuses(); i++ )
+		    allBuses[i] = busesMsg.getSubBusAt(i);
+
+
 		updateSubBuses( allBuses );
 	}
+    else if( in instanceof CBCSubAreaNames )
+    {
+        updateAreaList( (CBCSubAreaNames)in );
+
+        CBCGenericTableModelEvent areasChng = 
+            new CBCGenericTableModelEvent( 
+                SubBusTableModel.this,
+                CBCGenericTableModelEvent.SUBBUS_AREA_CHANGE );
+
+        fireTableChanged( areasChng );
+    }
+
 
 	//by using fireTableRowsUpdated(int,int) we do not clear the table selection		
 	if( oldRowCount == getRowCount() )
@@ -724,6 +766,7 @@ public void messageReceived( com.cannontech.message.util.MessageEvent e )
 		fireTableDataChanged();
 
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (4/10/2002 12:26:57 PM)

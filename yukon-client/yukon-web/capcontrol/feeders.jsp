@@ -113,9 +113,9 @@
                           <div align="left"><span class="MainText">Substation Area:</span> 
                             <select name="area" onchange="this.form.submit()" >
                           <%
-	                  	for( int i = 0; i < connServlet.getAreaNames().size(); i++ )
+	                  	for( int i = 0; i < subBusMdl.getAreaNames().size(); i++ )
 	                  	{
-	                  		String area = connServlet.getAreaNames().get(i).toString();
+	                  		String area = subBusMdl.getAreaNames().get(i).toString();
 	                  		
 	                  		String s = ( area.equalsIgnoreCase(cbcSession.getLastArea()) 
 	                  						? " selected" : "" ) ;
@@ -151,7 +151,6 @@
                                   <%
 			                  	for( int i = 0; i < subBusMdl.getRowCount(); i++ )
 			                  	{
-			                  		//String busName = cbcAnnex.getAreaNames().get(i).toString();
 			                  		String s = ( subRowID.intValue() == i 
 			                  						? " selected" : "" ) ;
 			                  		%>

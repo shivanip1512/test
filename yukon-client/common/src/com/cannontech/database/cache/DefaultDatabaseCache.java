@@ -85,7 +85,16 @@ public class DefaultDatabaseCache implements IDatabaseCache
    {
       return getDBCache().getAllYukonImages();   
    }
-   
+
+   /**
+    * @ejb:interface-method
+    * tview-type="remote" 
+   **/
+   public void releaseAllCache()
+   {
+      getDBCache().releaseAllCache();   
+   }
+
    /**
     * @ejb:interface-method
     * tview-type="remote" 
@@ -438,15 +447,6 @@ public class DefaultDatabaseCache implements IDatabaseCache
     * @ejb:interface-method
     * tview-type="remote" 
    **/
-   public synchronized void releaseAllCache()
-   {
-      getDBCache().releaseAllCache();
-   }
-
-   /**
-    * @ejb:interface-method
-    * tview-type="remote" 
-   **/
    public synchronized void releaseAllContacts()
    {
       getDBCache().releaseAllContacts();
@@ -637,6 +637,13 @@ public class DefaultDatabaseCache implements IDatabaseCache
 	public synchronized  Map getYukonGroupRolePropertyMap() {
 		return getDBCache().getYukonGroupRolePropertyMap();
 	}
+
+    /**
+     * @see com.cannontech.yukon.IDatabaseCache#getYukonUserPaoOwners()
+     */
+    public synchronized Map getYukonUserPaoOwners() {
+        return getDBCache().getYukonUserPaoOwners();
+    }
 
 	/**
 	 * @see com.cannontech.yukon.IDatabaseCache#getYukonUserGroupMap()

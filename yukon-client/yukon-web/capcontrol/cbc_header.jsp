@@ -32,6 +32,11 @@
    if( !cbcAnnex.hasValidConn() )
 		cbcAnnex.setConnection( connServlet.getConnection() );
 	
+	/**
+	* Remember this, every client session has its own set of table
+	* models in it. So, each session has its own copy of the blob.
+	* This may need to be reworked when many sessions are present
+	**/
 	SubBusTableModel subBusMdl = cbcAnnex.getSubTableModel(); 
 	FeederTableModel feederMdl = cbcAnnex.getFeederTableModel(); 
 	CapBankTableModel capBankMdl = cbcAnnex.getCapBankTableModel(); 
@@ -44,8 +49,8 @@
 	else
 	{
 		//if we are just starting, we must have an area
-		if( connServlet.getAreaNames().size() > 0 && cbcSession.getLastArea() == null)
-			cbcSession.setLastArea( connServlet.getAreaNames().get(0).toString() );	
+		if( subBusMdl.getAreaNames().size() > 0 && cbcSession.getLastArea() == null)
+			cbcSession.setLastArea( subBusMdl.getAreaNames().get(0).toString() );	
 	}
 	
 	

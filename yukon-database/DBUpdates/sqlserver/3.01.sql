@@ -612,6 +612,27 @@ drop table FDRTelegyrGroup;
 go
 update FDRInterfaceOption set optionlabel = 'Interval (sec)', optiontype = 'Text', optionvalues = '(none)' where interfaceid = 11 and ordering = 2;
 
+create table UserPAOowner (
+UserID               numeric              not null,
+PaoID                numeric              not null
+);
+go
+alter table UserPAOowner
+   add constraint PK_USERPAOOWNER primary key  (UserID, PaoID);
+go
+alter table UserPAOowner
+   add constraint FK_UsPow_YkUsr foreign key (UserID)
+      references YukonUser (UserID);
+go
+alter table UserPAOowner
+   add constraint FK_UsPow_YkP foreign key (PaoID)
+      references YukonPAObject (PAObjectID);
+go
+
+
+
+
+
 
 
 

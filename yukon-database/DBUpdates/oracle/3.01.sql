@@ -511,6 +511,23 @@ insert into yukonroleproperty values(-60119, -601, 'Default Time Period', '(none
 drop table FDRTelegyrGroup;
 update FDRInterfaceOption set optionlabel = 'Interval (sec)', optiontype = 'Text', optionvalues = '(none)' where interfaceid = 11 and ordering = 2;
 
+create table UserPAOowner  (
+   UserID               NUMBER                           not null,
+   PaoID                NUMBER                           not null
+);
+alter table UserPAOowner
+   add constraint PK_USERPAOOWNER primary key (UserID, PaoID);
+alter table UserPAOowner
+   add constraint FK_UsPow_YkUsr foreign key (UserID)
+      references YukonUser (UserID);
+alter table UserPAOowner
+   add constraint FK_UsPow_YkP foreign key (PaoID)
+      references YukonPAObject (PAObjectID);
+
+
+
+
+
 
 
 
