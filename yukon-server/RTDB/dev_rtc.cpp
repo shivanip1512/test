@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2004/05/19 14:48:53 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2004/05/20 22:43:12 $
 *
 * HISTORY      :
 * $Log: dev_rtc.cpp,v $
+* Revision 1.6  2004/05/20 22:43:12  cplender
+* Support for repeating 205 messages after n minutes.
+*
 * Revision 1.5  2004/05/19 14:48:53  cplender
 * Exclusion changes
 *
@@ -40,6 +43,7 @@
 #include "msg_cmd.h"
 #include "msg_lmcontrolhistory.h"
 #include "protocol_sa.h"
+#include "prot_sa3rdparty.h"
 #include "pt_base.h"
 #include "pt_numeric.h"
 #include "pt_status.h"
@@ -59,6 +63,15 @@ CtiDeviceRTC::CtiDeviceRTC(const CtiDeviceRTC &aRef)
 CtiDeviceRTC::~CtiDeviceRTC()
 {
     _workQueue.clearAndDestroy();
+
+    while(!_repeatList.empty())
+    {
+        CtiRepeatCol::reference repeat = _repeatList.front();
+        _repeatList.pop_front();
+
+        CtiOutMessage *pOM = repeat.second;
+        delete pOM;
+    }
 }
 
 CtiDeviceRTC &CtiDeviceRTC::operator=(const CtiDeviceRTC &aRef)
@@ -303,6 +316,33 @@ LONG CtiDeviceRTC::getAddress() const
     return getRTCTable().getRTCAddress();
 }
 
+INT CtiDeviceRTC::queueRepeatToDevice(OUTMESS *&OutMessage, UINT *dqcnt)
+{
+    INT status = NORMAL;
+
+    {
+        _millis += messageDuration(OutMessage->Buffer.SASt._groupType);
+
+        OutMessage->MessageFlags |= MSGFLG_QUEUED_TO_DEVICE;
+        _repeatList.push_back( make_pair(_repeatTime, OutMessage) );
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " " << getName() << " code has been requeued for transmission at " << _repeatTime << endl;
+        }
+
+        OutMessage= 0;
+
+        if(dqcnt)
+        {
+            *dqcnt = (UINT)_repeatList.size();
+        }
+
+        status = QUEUED_TO_DEVICE;
+    }
+
+    return status;
+}
 
 INT CtiDeviceRTC::queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt)
 {
@@ -310,15 +350,7 @@ INT CtiDeviceRTC::queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt)
 
     if(!(MSGFLG_QUEUED_TO_DEVICE & OutMessage->MessageFlags))
     {
-
-        if(OutMessage->Buffer.SASt._groupType == SA205)
-        {
-            _millis += gConfigParms.getValueAsULong("PORTER_RTC_TIME_PER_205_CODE", 1000);
-        }
-        else
-        {
-            _millis += gConfigParms.getValueAsULong("PORTER_RTC_TIME_PER_SIMPLE_CODE", 222);
-        }
+        _millis += messageDuration(OutMessage->Buffer.SASt._groupType);
 
         OutMessage->MessageFlags |= MSGFLG_QUEUED_TO_DEVICE;
         _workQueue.putQueue(OutMessage);
@@ -337,27 +369,52 @@ INT CtiDeviceRTC::queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt)
 
 bool CtiDeviceRTC::hasQueuedWork() const
 {
-    return _workQueue.entries() > 0;
+    bool hasq = false;
+    RWTime now;
+
+    if(!_repeatList.empty())
+    {
+        CtiRepeatCol::const_reference repeat = _repeatList.front();
+
+        if(repeat.first <= now)
+        {
+            // This is a ready list entry.
+            hasq = true;
+        }
+    }
+
+    if( !hasq && _workQueue.entries() > 0  )
+    {
+        hasq = true;
+    }
+
+    return hasq;
 }
 
 bool CtiDeviceRTC::getOutMessage(CtiOutMessage *&OutMessage)
 {
     bool stat = false;
 
-    if( (OutMessage = _workQueue.getQueue( 500 )) != NULL )
+    RWTime now;
+    CtiRepeatCol::value_type repeat;
+
+    if(!_repeatList.empty() && (repeat = _repeatList.front()).first <= now)
     {
-        if(OutMessage->Buffer.SASt._groupType == SA205)
-        {
-            _millis -= gConfigParms.getValueAsULong("PORTER_RTC_TIME_PER_205_CODE", 1000);
-        }
-        else
-        {
-            _millis -= gConfigParms.getValueAsULong("PORTER_RTC_TIME_PER_SIMPLE_CODE", 225);
-        }
+        _repeatList.pop_front();
+        OutMessage = repeat.second;
+        OutMessage->Buffer.SASt._retransmit = TRUE;     // This makes the slog say retransmit.
+        stat = true;
+    }
+    else if( (OutMessage = _workQueue.getQueue( 500 )) != NULL )
+    {
+        stat = true;
+    }
+
+    if(stat)
+    {
+        _millis -= messageDuration(OutMessage->Buffer.SASt._groupType);
 
         if(_millis < 0) _millis = 0;
-
-        stat = true;
     }
 
     return stat;
@@ -389,3 +446,106 @@ LONG CtiDeviceRTC::deviceMaxCommunicationTime() const
     return maxtime;
 }
 
+CtiDeviceRTC& CtiDeviceRTC::setRepeatTime(const RWTime& aRef)
+{
+    _repeatTime = aRef;
+    return *this;
+}
+
+INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
+{
+    RWTime now;
+    INT status = NORMAL;
+
+    CtiOutMessage *rtcOutMessage = 0;
+
+    INT codecount = 1;      // One is for The one in OutMessage.
+
+    ULONG msgMillis = 0;
+
+    try
+    {
+        CtiProtocolSA3rdParty prot;
+
+        prot.setSAData( OutMessage->Buffer.SASt );
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(slog);
+            slog << RWTime() << " " <<  getName() << ": " << prot.asString() << endl;
+        }
+
+        // Any repeats that are generated here should be sent out in the next cycle, or 5 minutes from now!
+        setRepeatTime( getExclusion().getNextTimeSlotOpen() );
+
+        if(OutMessage->Retry-- > 0)
+        {
+            // This OM needs to be plopped on the retry queue!
+            CtiOutMessage *omcopy = new CtiOutMessage(*OutMessage);
+            queueRepeatToDevice(omcopy, NULL);
+        }
+
+        msgMillis += messageDuration(OutMessage->Buffer.SASt._groupType);
+
+
+        while( codecount <= 35 && getOutMessage(rtcOutMessage) && ((now + (msgMillis / 1000) + 1) < getExclusion().getExecutingUntil()) )
+        {
+            now = now.now();
+            codecount++;
+            memcpy((char*)(&OutMessage->Buffer.OutMessage[OutMessage->OutLength]), (char*)rtcOutMessage->Buffer.SASt._buffer, rtcOutMessage->OutLength);
+            OutMessage->OutLength += rtcOutMessage->OutLength;
+
+            msgMillis += messageDuration(rtcOutMessage->Buffer.SASt._groupType);
+            prot.setSAData( rtcOutMessage->Buffer.SASt );
+
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(slog);
+                slog << RWTime() << " " <<  getName() << ": " << prot.asString() << endl;
+            }
+
+            if(rtcOutMessage->Retry-- > 0)
+            {
+                // This OM needs to be plopped on the retry queue!
+                queueRepeatToDevice(rtcOutMessage, NULL);
+            }
+            else
+            {
+                delete rtcOutMessage;
+            }
+
+            rtcOutMessage = 0;
+
+        }
+
+        prot.setTransmitterAddress(getAddress());
+        prot.appendVariableLengthTimeSlot(OutMessage->Buffer.OutMessage, OutMessage->OutLength);
+
+        getExclusion().setEvaluateNextAt((now + (msgMillis / 1000) + 1));
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(slog);
+            slog << RWTime() << " " <<  getName() << " transmitting " << msgMillis << " \"RF\" milliseconds of codes.  Completes at " << (now + (msgMillis / 1000) + 1) << " < " << getExclusion().getExecutingUntil() << endl;
+        }
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    return status;
+}
+
+
+ULONG CtiDeviceRTC::messageDuration(int groupType)
+{
+    ULONG millitime;
+
+    if(groupType == SA205)
+    {
+        millitime = gConfigParms.getValueAsULong("PORTER_RTC_TIME_PER_205_CODE", 1000);
+    }
+    else
+    {
+        millitime = gConfigParms.getValueAsULong("PORTER_RTC_TIME_PER_SIMPLE_CODE", 225);
+    }
+
+    return millitime;
+}

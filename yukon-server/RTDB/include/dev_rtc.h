@@ -9,10 +9,13 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2004/05/19 14:48:53 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2004/05/20 22:43:12 $
 * HISTORY      :
 * $Log: dev_rtc.h,v $
+* Revision 1.6  2004/05/20 22:43:12  cplender
+* Support for repeating 205 messages after n minutes.
+*
 * Revision 1.5  2004/05/19 14:48:53  cplender
 * Exclusion changes
 *
@@ -37,21 +40,33 @@
 #ifndef __DEV_RTC_H__
 #define __DEV_RTC_H__
 
+#include <list>
+using namespace std;
+
 #include "dev_remote.h"
 #include "queue.h"
 #include "tbl_dv_rtc.h"
 
 class IM_EX_DEVDB CtiDeviceRTC : public CtiDeviceRemote
 {
+public:
+
+    typedef list< pair< RWTime, CtiOutMessage* > > CtiRepeatCol;
+
 protected:
 
     CtiTableDeviceRTC _rtcTable;
 
     CtiQueue< CtiOutMessage, less<CtiOutMessage> > _workQueue;
 
+    RWTime _repeatTime;                                             // This is the time assigned to any OM placed on the list!
+    CtiRepeatCol _repeatList;
+
 private:
 
     LONG _millis;
+
+    static ULONG messageDuration(int groupType);
 
 public:
 
@@ -62,6 +77,7 @@ public:
     virtual ~CtiDeviceRTC();
 
     CtiDeviceRTC& operator=(const CtiDeviceRTC& aRef);
+    CtiDeviceRTC& setRepeatTime(const RWTime& aRef);
 
     const CtiTableDeviceRTC& getRTCTable() const;
 
@@ -76,12 +92,16 @@ public:
     virtual LONG deviceQueueCommunicationTime() const;
     virtual LONG deviceMaxCommunicationTime() const;
 
+    INT queueRepeatToDevice(OUTMESS *&OutMessage, UINT *dqcnt);
+
     INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
     INT IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority = MAXPRIORITY - 4);
     INT GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority = MAXPRIORITY - 4);
 
     INT ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage> &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
     INT ErrorDecode (INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage> &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
+
+    INT prepareOutMessageForComms(CtiOutMessage *&OutMessage);
 
 
 };

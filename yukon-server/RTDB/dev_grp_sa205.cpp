@@ -11,12 +11,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2004/05/10 22:35:28 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2004/05/20 22:43:12 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
+#include "cparms.h"
 #include "cmdparse.h"
 #include "dev_grp_sa205.h"
 #include "expresscom.h"
@@ -161,6 +162,7 @@ INT CtiDeviceGroupSA205::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
     {
         OutMessage->TargetID = getID();
         OutMessage->MessageFlags |= MSGFLG_APPLY_EXCLUSION_LOGIC;
+        OutMessage->Retry = gConfigParms.getValueAsInt("PORTER_SA_REPEATS", 1);
 
         //
         // OK, these are the items we are about to set out to perform..  Any additional signals will

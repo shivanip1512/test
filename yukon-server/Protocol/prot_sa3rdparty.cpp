@@ -8,11 +8,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2004/05/19 14:55:55 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2004/05/20 22:44:26 $
 *
 * HISTORY      :
 * $Log: prot_sa3rdparty.cpp,v $
+* Revision 1.3  2004/05/20 22:44:26  cplender
+* Support for repeating 205 messages after n minutes.
+*
 * Revision 1.2  2004/05/19 14:55:55  cplender
 * Supportting new dsm2.h struct CtiSAData
 *
@@ -901,6 +904,10 @@ RWCString CtiProtocolSA3rdParty::asString() const
         }
     }
 
+    if(_sa._retransmit)
+    {
+        rstr += " Retransmission.";
+    }
 
 
     return rstr;
@@ -909,7 +916,7 @@ RWCString CtiProtocolSA3rdParty::asString() const
 
 RWCString CtiProtocolSA3rdParty::strategyAsString() const
 {
-    RWCString rstr(functionAsString() + " " + CtiNumStr(_sa._swTimeout) + " of " + CtiNumStr(_sa._cycleTime) + " seconds. " + CtiNumStr(_sa._repeats) + " repeats");
+    RWCString rstr(functionAsString() + " " + CtiNumStr(_sa._swTimeout) + " of " + CtiNumStr(_sa._cycleTime) + " seconds. " + CtiNumStr(_sa._repeats) + " period repeats.");
     return rstr;
 }
 
