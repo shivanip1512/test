@@ -14,6 +14,7 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.functions.AuthFuncs;
+import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
 import com.cannontech.database.data.lite.stars.LiteLMProgramEvent;
 import com.cannontech.database.data.lite.stars.LiteLMProgram;
@@ -226,7 +227,7 @@ public class ProgramSignUpAction implements ActionBase {
 			String logMsg = "Program Enrolled Before:" + ((progEnrBefore != null)? progEnrBefore : "(None)") +
 					"; Now:" + ((progEnrNow != null)? progEnrNow : "(Not Enrolled)");
 			ActivityLogger.logEvent(user.getUserID(), liteAcctInfo.getAccountID(), energyCompany.getLiteID(), liteAcctInfo.getCustomer().getCustomerID(),
-					"Program Enrollment", logMsg );
+					ActivityLogActions.PROGRAM_ENROLLMENT_ACTION, logMsg );
             
 			if (user == null) {	// Probably from the sign up wizard?
 				StarsSuccess success = new StarsSuccess();

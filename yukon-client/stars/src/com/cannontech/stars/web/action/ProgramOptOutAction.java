@@ -15,6 +15,7 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.functions.AuthFuncs;
+import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.stars.LiteLMHardwareEvent;
 import com.cannontech.database.data.lite.stars.LiteLMProgramEvent;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
@@ -316,7 +317,7 @@ public class ProgramOptOutAction implements ActionBase {
 			// Log activity
 			if (logMsg != null) {
 				ActivityLogger.logEvent(user.getUserID(), liteAcctInfo.getAccountID(), energyCompany.getLiteID(), liteAcctInfo.getCustomer().getCustomerID(),
-						"Program Opt Out", logMsg );
+						ActivityLogActions.PROGRAM_OPT_OUT_ACTION, logMsg );
 			}
 			
         	respOper.setStarsProgramOptOutResponse( resp );

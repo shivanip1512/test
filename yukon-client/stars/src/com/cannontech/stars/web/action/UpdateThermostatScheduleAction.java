@@ -13,6 +13,7 @@ import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.functions.YukonListFuncs;
+import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.stars.LiteLMCustomerEvent;
 import com.cannontech.database.data.lite.stars.LiteLMThermostatSeason;
 import com.cannontech.database.data.lite.stars.LiteLMThermostatSeasonEntry;
@@ -335,7 +336,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 						}
 						
 						ActivityLogger.logEvent(user.getUserID(), liteAcctInfo.getAccountID(), energyCompany.getLiteID(), liteAcctInfo.getCustomer().getCustomerID(),
-								"Thermostat Schedule", logMsg );
+								ActivityLogActions.THERMOSTAT_SCHEDULE_ACTION, logMsg );
 					}
 				}
 				

@@ -43,10 +43,10 @@ public class LoginController extends javax.servlet.http.HttpServlet {
 		
 	private static final String LOGIN_URL_COOKIE = com.cannontech.common.constants.LoginController.LOGIN_URL_COOKIE;
 	
-	private static final String LOGIN_WEB_ACTIVITY_ACTION = com.cannontech.common.constants.LoginController.LOGIN_WEB_ACTIVITY_ACTION;
-	private static final String LOGIN_CLIENT_ACTIVITY_ACTION = com.cannontech.common.constants.LoginController.LOGIN_CLIENT_ACTIVITY_ACTION;
-	private static final String LOGOUT_ACTIVITY_LOG = com.cannontech.common.constants.LoginController.LOGOUT_ACTIVITY_LOG;
-	private static final String LOGIN_FAILED_ACTIVITY_LOG = com.cannontech.common.constants.LoginController.LOGIN_FAILED_ACTIVITY_LOG;
+	private static final String LOGIN_WEB_ACTIVITY_ACTION = com.cannontech.database.data.activity.ActivityLogActions.LOGIN_WEB_ACTIVITY_ACTION;
+	private static final String LOGIN_CLIENT_ACTIVITY_ACTION = com.cannontech.database.data.activity.ActivityLogActions.LOGIN_CLIENT_ACTIVITY_ACTION;
+	private static final String LOGOUT_ACTIVITY_LOG = com.cannontech.database.data.activity.ActivityLogActions.LOGOUT_ACTIVITY_LOG;
+	private static final String LOGIN_FAILED_ACTIVITY_LOG = com.cannontech.database.data.activity.ActivityLogActions.LOGIN_FAILED_ACTIVITY_LOG;
 	
 /**
  * Handles login authentication, logout.

@@ -9,6 +9,7 @@ import javax.xml.soap.SOAPMessage;
 import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.database.Transaction;
+import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.stars.LiteLMThermostatManualEvent;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -241,7 +242,7 @@ public class UpdateThermostatManualOptionAction implements ActionBase {
 				}
 				
 				ActivityLogger.logEvent(user.getUserID(), liteAcctInfo.getAccountID(), energyCompany.getLiteID(), liteAcctInfo.getCustomer().getCustomerID(),
-						"Thermostat Manual", logMsg);
+						ActivityLogActions.THERMOSTAT_MANUAL_ACTION, logMsg);
 				
 				// The StarsThermostatManualEvent element of the response message only need to be set once
 				if (resp.getStarsThermostatManualEvent() == null) {

@@ -1,6 +1,8 @@
 package com.cannontech.servlet;
 
+import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.yukon.IMACSConnection;
 
@@ -179,7 +181,7 @@ public void service(javax.servlet.http.HttpServletRequest req, javax.servlet.htt
 			
            
 			/* Log this activity */
-			com.cannontech.clientutils.ActivityLogger.logEvent(user.getUserID(), sched.getId(), "Manual MACS Schedule Start", "Manual control of MACS schedule requested, start: " + startRequest.getStart() + " stop: " + startRequest.getStop());            
+			ActivityLogger.logEvent(user.getUserID(), sched.getId(), ActivityLogActions.MANUAL_MACS_SCHEDULE_START_ACTION, "Manual control of MACS schedule requested, start: " + startRequest.getStart() + " stop: " + startRequest.getStop());            
 		}		
 
 		if( (action.equalsIgnoreCase("stop") || action.equalsIgnoreCase("startstop")) &&
@@ -197,7 +199,7 @@ public void service(javax.servlet.http.HttpServletRequest req, javax.servlet.htt
 			
 
 			/* Log this activity */
-			com.cannontech.clientutils.ActivityLogger.logEvent(user.getUserID(), sched.getId(), "Manual MACS Schedule Stop", "Manual control of MACS schedule requested, stop: " + stopRequest.getStop());
+			ActivityLogger.logEvent(user.getUserID(), sched.getId(), ActivityLogActions.MANUAL_MACS_SCHEDULE_STOP_ACTION, "Manual control of MACS schedule requested, stop: " + stopRequest.getStop());
 		}
 	}
 	else
