@@ -10,7 +10,6 @@
     <classpathentry kind="lib" path="/third-party/jcchart401K.jar"/>
     <classpathentry kind="lib" path="/third-party/jcfield401K.jar"/>
     <classpathentry kind="lib" path="/third-party/jcpagelayout450K.jar"/>
-    <classpathentry kind="lib" path="/third-party/jloox2.0.2.jar"/>
     <classpathentry kind="lib" path="/third-party/led.jar"/>
     <classpathentry kind="lib" path="/third-party/rwav.jar"/>
     <classpathentry kind="lib" path="/third-party/xerces.jar"/>
@@ -26,5 +25,6 @@
     <classpathentry kind="lib" path="/third-party/jcommon.jar"/>
     <classpathentry kind="lib" path="/third-party/classes12.jar"/>
     <classpathentry kind="src" path="/esub"/>
+    <classpathentry kind="lib" path="/third-party/jloox30.jar"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>
