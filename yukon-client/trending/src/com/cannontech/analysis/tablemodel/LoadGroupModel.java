@@ -144,15 +144,29 @@ public class LoadGroupModel extends ReportModelBase
 	public StringBuffer buildSQLStatement()
 	{
 		
-		StringBuffer sql = new StringBuffer("SELECT PAO.PAOName, LMCH.StartDateTime, LMCH.StopDateTime, "+
-				" LMCH.ControlDuration, LMCH.ControlType, "+
-				" LMCH.CurrentDailyTime, LMCH.CurrentMonthlyTime, "+
-				" LMCH.CurrentSeasonalTime, LMCH.CurrentAnnualTime "+
-				" FROM YukonPAObject PAO, LMControlHistory LMCH "+
-				" WHERE PAO.PAObjectID = LMCH.PAObjectID ");
+		StringBuffer sql = new StringBuffer("SELECT PAO.PAONAME, LMCH.STARTDATETIME, LMCH.STOPDATETIME, "+
+				" LMCH.CONTROLDURATION, LMCH.CONTROLTYPE, "+
+				" LMCH.CURRENTDAILYTIME, LMCH.CURRENTMONTHLYTIME, "+
+				" LMCH.CURRENTSEASONALTIME, LMCH.CURRENTANNUALTIME "+
+				" FROM YUKONPAOBJECT PAO, LMCONTROLHISTORY LMCH "+
+				" WHERE PAO.PAOBJECTID = LMCH.PAOBJECTID ");
+				if( getECIDs() != null)
+				{
+					sql.append("AND LMCH.PAOBJECTID IN " +
+					"(SELECT DISTINCT DG.LMGROUPDEVICEID " +
+					" FROM LMDIRECTOPERATORLIST DOL, LMPROGRAMDIRECTGROUP DG " +
+					" WHERE DOL.PROGRAMID = DG.DEVICEID " +
+					" AND DOL.OPERATORLOGINID IN (SELECT DISTINCT ECLL.OPERATORLOGINID " +
+					" FROM ENERGYCOMPANYOPERATORLOGINLIST ECLL " +
+					" WHERE ECLL.ENERGYCOMPANYID IN ( " + getECIDs()[0]);
+					for (int i = 1; i < getECIDs().length; i++)
+						sql.append(", " + getECIDs()[i]+ " ");
+							 
+					sql.append(")))");
+				}
 				if( getPaoIDs()!= null)	//null load groups means ALL groups!
 				{
-					sql.append(" AND PAO.paobjectid in (" + getPaoIDs()[0] ); 
+					sql.append(" AND PAO.PAOBJECTID in (" + getPaoIDs()[0] ); 
 					for (int i = 1; i < getPaoIDs().length; i++)
 					{
 						sql.append(", " + getPaoIDs()[i]+" ");
