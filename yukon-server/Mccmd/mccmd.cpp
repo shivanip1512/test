@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.38 $
-* DATE         :  $Date: 2004/03/25 17:44:01 $
+* REVISION     :  $Revision: 1.39 $
+* DATE         :  $Date: 2004/06/15 20:34:41 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -617,7 +617,7 @@ int GetStatus(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 {
     RWCString cmd;
     AppendToString(cmd, argc, argv);
-    return DoOneWayRequest(interp, cmd);
+    return DoTwoWayRequest(interp, cmd);
 }
 
 int PutStatus(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
@@ -631,7 +631,7 @@ int GetConfig(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 {
     RWCString cmd;
     AppendToString(cmd, argc, argv);
-    return DoOneWayRequest(interp, cmd);
+    return DoTwoWayRequest(interp, cmd);
 }
 
 int PutConfig(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
