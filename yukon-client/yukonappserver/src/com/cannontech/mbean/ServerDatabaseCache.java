@@ -1444,9 +1444,16 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg)
 	{
 		retLBase = handleBaselineChange( dbType, id );
 	}
-	else if( database == DBChangeMsg.CHANGE_CUSTOMER_DB )
+	else if( database == DBChangeMsg.CHANGE_CUSTOMER_DB
+				|| database == DBChangeMsg.CHANGE_ENERGY_COMPANY_DB )
 	{
-		retLBase = handleCICustomerChange( dbType, id );
+		allEnergyCompanies = null;
+		allUserEnergyCompanies = null;
+
+		//only let the Customer DBChange go into here
+		if( database == DBChangeMsg.CHANGE_CUSTOMER_DB )
+			retLBase = handleCICustomerChange( dbType, id );
+
 	}	
 	else if( database == DBChangeMsg.CHANGE_YUKON_USER_DB ) 
 	{
@@ -1465,11 +1472,6 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg)
 		allUserEnergyCompanies = null;
 		allYukonUserLookupRoleIDs = null;
 	   allYukonUserLookupRolePropertyIDs = null;
-	}
-	else if( database == DBChangeMsg.CHANGE_ENERGY_COMPANY_DB )
-	{
-		allEnergyCompanies = null;
-		allUserEnergyCompanies = null;
 	}
 	else if ( database == DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB )
 	{
