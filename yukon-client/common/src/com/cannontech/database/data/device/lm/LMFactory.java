@@ -57,6 +57,25 @@ public final static com.cannontech.database.data.pao.YukonPAObject createLoadMan
 			retLm.setPAOCategory( com.cannontech.database.data.pao.PAOGroups.STRING_CAT_DEVICE );
 			retLm.setPAOClass(DeviceClasses.STRING_CLASS_GROUP);
 			break;
+		case PAOGroups.LM_GROUP_SA305:
+			retLm = new LMGroupSA305();
+			retLm.setPAOCategory( com.cannontech.database.data.pao.PAOGroups.STRING_CAT_DEVICE );
+			retLm.setPAOClass(DeviceClasses.STRING_CLASS_GROUP);
+		
+		case PAOGroups.LM_GROUP_SA205:
+			retLm = new LMGroupSA205();
+			retLm.setPAOCategory( com.cannontech.database.data.pao.PAOGroups.STRING_CAT_DEVICE );
+			retLm.setPAOClass(DeviceClasses.STRING_CLASS_GROUP);
+		
+		case PAOGroups.LM_GROUP_SADIGITAL:
+			retLm = new LMGroupSADigital();
+			retLm.setPAOCategory( com.cannontech.database.data.pao.PAOGroups.STRING_CAT_DEVICE );
+			retLm.setPAOClass(DeviceClasses.STRING_CLASS_GROUP);
+		
+		case PAOGroups.LM_GROUP_GOLAY:
+			retLm = new LMGroupGolay();
+			retLm.setPAOCategory( com.cannontech.database.data.pao.PAOGroups.STRING_CAT_DEVICE );
+			retLm.setPAOClass(DeviceClasses.STRING_CLASS_GROUP);
 			
 		case PAOGroups.MACRO_GROUP:
 			retLm = new MacroGroup();

@@ -12,7 +12,7 @@ package com.cannontech.database.data.device.lm;
  * To change the template for this generated type comment go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-public class LMGroupSASimple extends LMGroup implements IGroupRoute { 
+public class LMGroupGolay extends LMGroup implements IGroupRoute { 
 	
 	private com.cannontech.database.db.device.lm.LMGroupSASimple lmGroupSASimple = null;
 
@@ -20,11 +20,11 @@ public class LMGroupSASimple extends LMGroup implements IGroupRoute {
 	 * LMGroupSASimple constructor comment.
 	 */
 	
-	public LMGroupSASimple() 
+	public LMGroupGolay() 
 	{
 		super();
 	
-		getYukonPAObject().setType( com.cannontech.database.data.pao.PAOGroups.STRING_SA305_GROUP[0] );
+		getYukonPAObject().setType( com.cannontech.database.data.pao.PAOGroups.STRING_GOLAY_GROUP[0] );
 	}
 
 	/**
