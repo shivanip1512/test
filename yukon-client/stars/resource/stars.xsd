@@ -563,9 +563,7 @@
 	</xs:element>
 	<xs:element name="stars-DeleteCustomerAccount">
 		<xs:complexType>
-			<xs:simpleContent>
-				<xs:extension base="xs:string"/>
-			</xs:simpleContent>
+			<xs:attribute name="DisableReceivers" type="xs:boolean"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="stars-CustomerAccount" type="stars-CustAccount"/>

@@ -1,5 +1,6 @@
 package com.cannontech.stars.web.action;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 
 import javax.servlet.http.HttpServletRequest;
@@ -10,6 +11,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.lite.LiteContact;
+import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
@@ -48,6 +50,9 @@ public class DeleteCustAccountAction implements ActionBase {
 			if (accountInfo == null) return null;
 			
 			StarsDeleteCustomerAccount delAccount = new StarsDeleteCustomerAccount();
+			if (req.getParameter("DisableReceivers") != null)
+				delAccount.setDisableReceivers( Boolean.valueOf(req.getParameter("DisableReceivers")).booleanValue() );
+			
 			StarsOperation operation = new StarsOperation();
 			operation.setStarsDeleteCustomerAccount( delAccount );
 			
@@ -83,6 +88,24 @@ public class DeleteCustAccountAction implements ActionBase {
 			}
         	
 			LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+			
+			StarsDeleteCustomerAccount delAccount = SOAPUtil.parseSOAPMsgForOperation(reqMsg).getStarsDeleteCustomerAccount();
+			if (delAccount.getDisableReceivers()) {
+				// Disable all attached receivers enrolled in any program
+				ArrayList hwToDisable = new ArrayList();
+				
+				for (int i = 0; i < liteAcctInfo.getAppliances().size(); i++) {
+					LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(i);
+					if (liteApp.getProgramID() > 0 && liteApp.getInventoryID() > 0) {
+						LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory( liteApp.getInventoryID(), true );
+						if (!hwToDisable.contains( liteHw )) {
+							hwToDisable.add( liteHw );
+							YukonSwitchCommandAction.sendDisableCommand( energyCompany, liteHw );
+						}
+					}
+				}
+			}
+			
 			deleteCustomerAccount( liteAcctInfo, energyCompany );
             
 			StarsSuccess success = new StarsSuccess();

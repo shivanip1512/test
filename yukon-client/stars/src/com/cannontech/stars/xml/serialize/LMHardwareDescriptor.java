@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: LMHardwareDescriptor.java,v 1.23 2004/07/26 21:33:27 yao Exp $
+ * $Id: LMHardwareDescriptor.java,v 1.24 2004/07/28 22:59:07 yao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.23 $ $Date: 2004/07/26 21:33:27 $
+ * @version $Revision: 1.24 $ $Date: 2004/07/28 22:59:07 $
 **/
 public class LMHardwareDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 

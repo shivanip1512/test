@@ -53,22 +53,30 @@ public class StarsDeleteCustomerAccountDescriptor extends org.exolab.castor.xml.
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
-        //-- _content
-        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_content", "PCDATA", NodeType.Text);
-        desc.setImmutable(true);
+        //-- initialize attribute descriptors
+        
+        //-- _disableReceivers
+        desc = new XMLFieldDescriptorImpl(java.lang.Boolean.TYPE, "_disableReceivers", "DisableReceivers", NodeType.Attribute);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsDeleteCustomerAccount target = (StarsDeleteCustomerAccount) object;
-                return target.getContent();
+                if(!target.hasDisableReceivers())
+                    return null;
+                return new Boolean(target.getDisableReceivers());
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
                     StarsDeleteCustomerAccount target = (StarsDeleteCustomerAccount) object;
-                    target.setContent( (java.lang.String) value);
+                    // if null, use delete method for optional primitives 
+                    if (value == null) {
+                        target.deleteDisableReceivers();
+                        return;
+                    }
+                    target.setDisableReceivers( ((Boolean)value).booleanValue());
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
@@ -81,16 +89,13 @@ public class StarsDeleteCustomerAccountDescriptor extends org.exolab.castor.xml.
         desc.setHandler(handler);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _content
+        //-- validation code for: _disableReceivers
         fieldValidator = new FieldValidator();
         { //-- local scope
-            StringValidator sv = new StringValidator();
-            sv.setWhiteSpace("preserve");
-            fieldValidator.setValidator(sv);
+            BooleanValidator bv = new BooleanValidator();
+            fieldValidator.setValidator(bv);
         }
         desc.setValidator(fieldValidator);
-        
-        //-- initialize attribute descriptors
         
         //-- initialize element descriptors
         

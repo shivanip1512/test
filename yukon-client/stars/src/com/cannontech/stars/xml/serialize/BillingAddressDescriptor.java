@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: BillingAddressDescriptor.java,v 1.84 2004/07/26 21:33:24 yao Exp $
+ * $Id: BillingAddressDescriptor.java,v 1.85 2004/07/28 22:59:05 yao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.84 $ $Date: 2004/07/26 21:33:24 $
+ * @version $Revision: 1.85 $ $Date: 2004/07/28 22:59:05 $
 **/
 public class BillingAddressDescriptor extends StarsCustomerAddressDescriptor {
 

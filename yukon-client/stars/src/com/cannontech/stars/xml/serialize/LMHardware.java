@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: LMHardware.java,v 1.23 2004/07/26 21:33:25 yao Exp $
+ * $Id: LMHardware.java,v 1.24 2004/07/28 22:59:05 yao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.23 $ $Date: 2004/07/26 21:33:25 $
+ * @version $Revision: 1.24 $ $Date: 2004/07/28 22:59:05 $
 **/
 public class LMHardware implements java.io.Serializable {
 

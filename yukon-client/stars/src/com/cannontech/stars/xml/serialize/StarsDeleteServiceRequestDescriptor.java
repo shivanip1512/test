@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsDeleteServiceRequestDescriptor.java,v 1.30 2004/07/26 21:33:31 yao Exp $
+ * $Id: StarsDeleteServiceRequestDescriptor.java,v 1.31 2004/07/28 22:59:11 yao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.30 $ $Date: 2004/07/26 21:33:31 $
+ * @version $Revision: 1.31 $ $Date: 2004/07/28 22:59:11 $
 **/
 public class StarsDeleteServiceRequestDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 

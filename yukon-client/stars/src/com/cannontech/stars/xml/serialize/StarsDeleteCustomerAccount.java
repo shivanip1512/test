@@ -32,10 +32,12 @@ public class StarsDeleteCustomerAccount implements java.io.Serializable {
      //- Class/Member Variables -/
     //--------------------------/
 
+    private boolean _disableReceivers;
+
     /**
-     * internal content storage
+     * keeps track of state for field: _disableReceivers
     **/
-    private java.lang.String _content = "";
+    private boolean _has_disableReceivers;
 
 
       //----------------/
@@ -44,7 +46,6 @@ public class StarsDeleteCustomerAccount implements java.io.Serializable {
 
     public StarsDeleteCustomerAccount() {
         super();
-        setContent("");
     } //-- com.cannontech.stars.xml.serialize.StarsDeleteCustomerAccount()
 
 
@@ -53,15 +54,28 @@ public class StarsDeleteCustomerAccount implements java.io.Serializable {
     //-----------/
 
     /**
-     * Returns the value of field 'content'. The field 'content'
-     * has the following description: internal content storage
-     * 
-     * @return the value of field 'content'.
     **/
-    public java.lang.String getContent()
+    public void deleteDisableReceivers()
     {
-        return this._content;
-    } //-- java.lang.String getContent() 
+        this._has_disableReceivers= false;
+    } //-- void deleteDisableReceivers() 
+
+    /**
+     * Returns the value of field 'disableReceivers'.
+     * 
+     * @return the value of field 'disableReceivers'.
+    **/
+    public boolean getDisableReceivers()
+    {
+        return this._disableReceivers;
+    } //-- boolean getDisableReceivers() 
+
+    /**
+    **/
+    public boolean hasDisableReceivers()
+    {
+        return this._has_disableReceivers;
+    } //-- boolean hasDisableReceivers() 
 
     /**
     **/
@@ -101,15 +115,15 @@ public class StarsDeleteCustomerAccount implements java.io.Serializable {
     } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
-     * Sets the value of field 'content'. The field 'content' has
-     * the following description: internal content storage
+     * Sets the value of field 'disableReceivers'.
      * 
-     * @param content the value of field 'content'.
+     * @param disableReceivers the value of field 'disableReceivers'
     **/
-    public void setContent(java.lang.String content)
+    public void setDisableReceivers(boolean disableReceivers)
     {
-        this._content = content;
-    } //-- void setContent(java.lang.String) 
+        this._disableReceivers = disableReceivers;
+        this._has_disableReceivers = true;
+    } //-- void setDisableReceivers(boolean) 
 
     /**
      * 
