@@ -18,6 +18,7 @@ insert into YukonUserRole values (-1006, -100, -108, -10806, '(none)');
 insert into YukonUserRole values (-1010, -100, -200, -20000, '(none)');
 insert into YukonUserRole values (-1011, -100, -200, -20001, 'true');
 insert into YukonUserRole values (-1012, -100, -200, -20002, '(none)');
+insert into YukonUserRole values (-1013, -100, -200, -20003, '(none)');
 
 /* YukonWebConfiguration */
 INSERT INTO YukonWebConfiguration VALUES (-1,'Summer.gif','Default Summer Settings','Cooling','Cool');
