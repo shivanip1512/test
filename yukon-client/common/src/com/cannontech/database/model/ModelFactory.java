@@ -42,6 +42,9 @@ public final class ModelFactory
 	public static final int BASELINE = 31;
 
 	public static final int LMGROUPEXPRESSCOM = 32;
+	
+	//Report models
+	public static final int LMGROUPREPORT = 33;
 
 	//The above is an enumeration of indices into
 	//the following array
@@ -79,7 +82,8 @@ public final class ModelFactory
 	  	LoginTreeModel.class,
 		LoginGroupTreeModel.class,
 		BaselineModel.class,
-		LMGroupExpresscomModel.class
+		LMGroupExpresscomModel.class,
+		LMGroupsCheckBoxModel.class
 	};
 
 /**
