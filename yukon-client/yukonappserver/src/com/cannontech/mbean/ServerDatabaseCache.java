@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
 import com.cannontech.database.cache.CacheDBChangeListener;
 import com.cannontech.database.cache.DBChangeListener;
@@ -14,6 +15,7 @@ import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteCICustomer;
+import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LitePoint;
@@ -40,7 +42,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
 	private static ServerDatabaseCache cache = null;
 
 	private CacheDBChangeListener dbChangeListener = null;
-	private String databaseAlias = com.cannontech.common.util.CtiUtilities.getDatabaseAlias();
+	private String databaseAlias = CtiUtilities.getDatabaseAlias();
 
 	private ArrayList allYukonPAObjects = null;
 	private ArrayList allPoints = null;
@@ -101,6 +103,9 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
 	private java.util.HashMap allPointsMap = null;
 	
 	private java.util.HashMap allPAOsMap = null;
+	
+	// List of residential customers, load-on-demand!!!
+	private ArrayList allCustomers = null;
 
 	
 /**
@@ -676,7 +681,7 @@ private synchronized void loadPointMaps() {
 	java.sql.ResultSet rset = null;
 	try
 	{
-		conn = com.cannontech.database.PoolManager.getInstance().getConnection(com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
+		conn = com.cannontech.database.PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
 
 		if( conn == null )
 		{
@@ -847,7 +852,7 @@ public synchronized java.util.List getAllUnusedCCDevices()
 			java.util.Collections.sort(allDevices, com.cannontech.database.data.lite.LiteComparators.liteYukonPAObjectIDComparator);
 			allUnusedCCDevices = new java.util.ArrayList( (int)(allDevices.size() * 0.7)  );
 			
-			conn = com.cannontech.database.PoolManager.getInstance().getConnection( com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+			conn = com.cannontech.database.PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
 			stmt = conn.createStatement();
 			rset = stmt.executeQuery(sqlString);
 
@@ -1136,6 +1141,54 @@ public synchronized java.util.List getAllYukonPAObjects()
 			l.run();
 		}
 		return allUserEnergyCompanies;
+	}
+	
+	/**
+	 * @see com.cannontech.yukon.IDatabaseCache#getAllCustomers()
+	 */
+	public List getAllCustomers() {
+		if (allCustomers == null)
+			allCustomers = new ArrayList();
+		return allCustomers;
+	}
+	
+	/**
+	 * @see com.cannontech.yukon.IDatabaseCache#getCustomer(int)
+	 */
+	public LiteCustomer getCustomer(int customerID) {
+		List customers = getAllCustomers();
+		for (int i = 0; i < customers.size(); i++) {
+			LiteCustomer liteCustomer = (LiteCustomer) customers.get(i);
+			if (liteCustomer.getCustomerID() == customerID)
+				return liteCustomer;
+		}
+		
+		List ciCustomers = getAllCICustomers();
+		for (int i = 0; i < ciCustomers.size(); i++) {
+			LiteCICustomer liteCICust = (LiteCICustomer) ciCustomers.get(i);
+			if (liteCICust.getCustomerID() == customerID) {
+				if (!liteCICust.isExtended())
+					liteCICust.retrieve( CtiUtilities.getDatabaseAlias() );
+				return liteCICust;
+			}
+		}
+		
+		LiteCustomer liteCustomer = new LiteCustomer( customerID );
+		liteCustomer.retrieve( CtiUtilities.getDatabaseAlias() );
+		customers.add( liteCustomer );
+		
+		return liteCustomer;
+	}
+	
+	public void deleteCustomer(int customerID) {
+		Iterator it = getAllCustomers().iterator();
+		while (it.hasNext()) {
+			LiteCustomer liteCustomer = (LiteCustomer) it.next();
+			if (liteCustomer.getCustomerID() == customerID) {
+				it.remove();
+				return;
+			}
+		}
 	}
 	
 /**
@@ -2440,6 +2493,8 @@ public synchronized void releaseAllCache()
 	
 	allPointidMultiplierHashMap = null;
 	allPointIDOffsetHashMap = null;
+	
+	allCustomers = null;
 }
 /**
  * Insert the method's description here.

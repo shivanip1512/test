@@ -1,24 +1,16 @@
 package com.cannontech.ejb;
 
-import java.util.Enumeration;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
 import javax.ejb.SessionBean;
 import javax.ejb.EJBException;
 import javax.ejb.SessionContext;
-import javax.management.MBeanServer;
-import javax.management.MBeanServerFactory;
-import javax.management.ObjectName;
-import javax.naming.InitialContext;
-import javax.naming.Reference;
-import javax.rmi.PortableRemoteObject;
 
 import com.cannontech.mbean.ServerDatabaseCache;
-import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.data.lite.LiteBase;
+import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -432,6 +424,31 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
 	public Map getAllUserEnergyCompanies() {
 		return getCache().getAllUserEnergyCompanies();
 	}
+	
+	/**
+	 * @ejb:interface-method
+	 * tview-type="remote"
+	 */
+	public List getAllCustomers() {
+		return getCache().getAllCustomers();
+	}
+	
+	/**
+	 * @ejb:interface-method
+	 * tview-type="remote"
+	 */
+	public LiteCustomer getCustomer(int customerID) {
+		return getCache().getCustomer( customerID );
+	}
+	
+	/**
+	 * @ejb:interface-method
+	 * tview-type="remote"
+	 */
+	public void deleteCustomer(int customerID) {
+		getCache().deleteCustomer( customerID );
+	}
+	
 //   /**
 //    * @ejb:interface-method
 //    * tview-type="remote" 
