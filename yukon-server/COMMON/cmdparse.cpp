@@ -2085,14 +2085,13 @@ void  CtiCommandParser::doParsePutConfigVersacom(const RWCString &CmdStr)
                     flag >>= 2;       // Make the flag match the protocol
 
                     _snprintf(tbuf, sizeof(tbuf), "%s TEMPORARY", t2);
-                    _cmd["vctexservice"] = CtiParseValue( TRUE );
-
 
                     if(!(token = CmdStr.match("offhours +[0-9]+")).isNull())
                     {
                         str = token.match("[0-9]+");
                         int offtimeinhours = atoi(str.data());
 
+                        _cmd["vctexservice"] = CtiParseValue( TRUE );
                         _cmd["vctservicetime"] = CtiParseValue( offtimeinhours > 65535 ? 65535 : offtimeinhours );  // Must be passed as half seconds for VCOM
                     }
                 }
