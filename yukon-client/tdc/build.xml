@@ -20,7 +20,7 @@
 	<jar jarfile="${yukon.lib}/tdc.jar" basedir="build/" manifest="resource/manifest.mf">
  	    <fileset dir="resource">
 			<include name="**/*.gif"/>
-	 		<include name="**/*.ico"/>       	
+	 		<include name="**/*.ico"/>
 		</fileset>
 	</jar>
 
