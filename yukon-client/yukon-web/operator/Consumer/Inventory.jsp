@@ -388,7 +388,7 @@ function changeDeviceType() {
 		StarsLMHardwareEvent event = hwHist.getStarsLMHardwareEvent(i);
 %>
                   <tr valign="top"> 
-                    <td width="50%" class="TableCell" bgcolor="#FFFFFF"><%= datePart.format(event.getEventDateTime()) %></td>
+                    <td width="50%" class="TableCell" bgcolor="#FFFFFF"><%= ServletUtils.formatDate(event.getEventDateTime(), datePart, "----") %></td>
                     <td width="50%" class="TableCell" bgcolor="#FFFFFF"><%= event.getEventAction() %></td>
                   </tr>
                   <%
