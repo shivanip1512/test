@@ -5,17 +5,17 @@ package com.cannontech.database.data.pao;
  */
 public final class DeviceClasses 
 {
-   public final static int TRANSMITTER = 0;
-   public final static int RTU = 1;
-   public final static int IED = 2;
-   public final static int METER = 3;
-   public final static int CARRIER = 4;
-   public final static int GROUP = 5;
-   public final static int CAPCONTROL = 6;
-   public final static int VIRTUAL = 7;
-   public final static int LOADMANAGEMENT = 8;
-   public final static int SYSTEM = 9;
-   public final static int INVALID = 10;
+   public final static int TRANSMITTER       = 1000;
+   public final static int RTU               = 1001;
+   public final static int IED               = 1002;
+   public final static int METER             = 1003;
+   public final static int CARRIER           = 1004;
+   public final static int GROUP             = 1005;
+   public final static int CAPCONTROL        = 1006;
+   public final static int VIRTUAL           = 1007;
+   public final static int LOADMANAGEMENT    = 1008;
+   public final static int SYSTEM            = 1009;
+   public final static int INVALID           = 1011;
    
    public static final String STRING_CLASS_RTU = "RTU";
    public static final String STRING_CLASS_TRANSMITTER = "TRANSMITTER";

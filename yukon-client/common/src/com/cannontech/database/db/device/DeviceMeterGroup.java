@@ -27,17 +27,8 @@ public DeviceMeterGroup()
 {
 	super();
 }
-/**
- * DeviceMeterGroup constructor comment.
- */
-public DeviceMeterGroup(Integer devID, String collectGroup, String testCollGroup, String mtrNumber, String billingGrp ) {
-	super();
-	setDeviceID( devID );
-	setCollectionGroup( collectGroup );
-	setTestCollectionGroup( testCollGroup );
-	setMeterNumber( mtrNumber );
-	setBillingGroup( billingGrp );
-}
+
+
 /**
  * add method comment.
  */

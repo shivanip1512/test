@@ -1849,13 +1849,13 @@ private JTree getTree()
 private DBEditorTreePopUpMenu getTreeNodePopupMenu()
 {
 
-	DefaultMutableTreeNode selectedNode = getTreeViewPanel().getSelectedNode();
-
 	if (treeNodePopUpMenu == null)
 	{
 		treeNodePopUpMenu = new DBEditorTreePopUpMenu();
 		treeNodePopUpMenu.setName("TreeNodePopupMenu");
 	}
+
+/*   DefaultMutableTreeNode selectedNode = getTreeViewPanel().getSelectedNode();
 
 	treeNodePopUpMenu.getJMenuItemChangeType().setEnabled(true);
 	treeNodePopUpMenu.getJMenuItemCopy().setEnabled(true);
@@ -1914,6 +1914,8 @@ private DBEditorTreePopUpMenu getTreeNodePopupMenu()
 		
 
 	}
+*/
+
 	return treeNodePopUpMenu;
 }
 /**
@@ -2339,7 +2341,66 @@ public void popupMenuWillBecomeVisible(PopupMenuEvent event)
 {
 	if( event.getSource() == DatabaseEditor.this.getTreeNodePopupMenu() )
 	{
-		//getTreeNodePopupMenu().setSchedule( getSelectedSchedule() );
+      DefaultMutableTreeNode selectedNode = getTreeViewPanel().getSelectedNode();
+   
+      getTreeNodePopupMenu().getJMenuItemChangeType().setEnabled(true);
+      getTreeNodePopupMenu().getJMenuItemCopy().setEnabled(true);
+      getTreeNodePopupMenu().getJMenuItemDelete().setEnabled(true);
+      getTreeNodePopupMenu().getJMenuItemEdit().setEnabled(true);
+      getTreeNodePopupMenu().getJMenuSortAllPointsBy().setEnabled(false);
+
+
+      if (selectedNode != null)
+      {
+         if (selectedNode instanceof DummyTreeNode || selectedNode.isRoot())
+         {
+            getTreeNodePopupMenu().getJMenuItemChangeType().setEnabled(false);
+            getTreeNodePopupMenu().getJMenuItemCopy().setEnabled(false);
+            getTreeNodePopupMenu().getJMenuItemDelete().setEnabled(false);
+            getTreeNodePopupMenu().getJMenuItemEdit().setEnabled(false);
+   
+            if (!selectedNode.isRoot())
+               getTreeNodePopupMenu().getJMenuSortAllPointsBy().setEnabled(true);
+         }
+         
+         if (selectedNode.getUserObject() instanceof com.cannontech.database.data.lite.LiteYukonPAObject)
+         {
+            com.cannontech.database.data.lite.LiteYukonPAObject litYuk =
+                  (com.cannontech.database.data.lite.LiteYukonPAObject)selectedNode.getUserObject();
+            
+            if( litYuk.getPaoClass() == com.cannontech.database.data.pao.DeviceClasses.CAPCONTROL 
+                || litYuk.getType() == com.cannontech.database.data.pao.PAOGroups.LM_GROUP_RIPPLE
+                || litYuk.getType() == com.cannontech.database.data.pao.PAOGroups.MACRO_GROUP
+                || litYuk.getPaoClass() == com.cannontech.database.data.pao.DeviceClasses.LOADMANAGEMENT )
+            {
+               getTreeNodePopupMenu().getJMenuItemChangeType().setEnabled(false);               
+   
+            }
+            else if ( litYuk.getCategory() == com.cannontech.database.data.pao.PAOGroups.CAT_CUSTOMER
+                       || litYuk.getPaoClass() == com.cannontech.database.data.pao.DeviceClasses.SYSTEM)
+            {
+               getTreeNodePopupMenu().getJMenuItemChangeType().setEnabled(false);
+               getTreeNodePopupMenu().getJMenuItemCopy().setEnabled(false);
+            }
+
+         }
+         else if (
+            selectedNode.getUserObject() instanceof com.cannontech.database.data.lite.LiteNotificationGroup
+               || selectedNode.getUserObject() instanceof com.cannontech.database.data.lite.LiteNotificationRecipient
+               || selectedNode.getUserObject() instanceof com.cannontech.database.data.lite.LiteAlarmCategory
+               || (selectedNode.getUserObject() instanceof com.cannontech.database.data.lite.LiteYukonPAObject
+                   && ((com.cannontech.database.data.lite.LiteYukonPAObject)selectedNode.getUserObject()).getType()
+                        == com.cannontech.database.data.pao.CapControlTypes.CAP_CONTROL_SUBBUS) )
+         {
+            getTreeNodePopupMenu().getJMenuItemChangeType().setEnabled(false);
+            getTreeNodePopupMenu().getJMenuItemCopy().setEnabled(false);
+         }
+      
+         
+   
+      }
+      
+      
 	}
 
 }

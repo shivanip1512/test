@@ -1,17 +1,27 @@
 package com.cannontech.dbeditor.wizard.copy.device;
+import com.cannontech.database.db.device.*;
+import com.cannontech.database.data.*;
+import com.cannontech.database.data.device.*;
 
-import java.awt.Dimension;
-
-import com.cannontech.database.data.device.DeviceBase;
-import com.cannontech.database.db.DBCopiable;
+/**
+ * This type was created in VisualAge.
+ */
+ import java.awt.Dimension;
+ import com.cannontech.database.db.*;
+ import com.cannontech.database.data.device.*;
+ import com.cannontech.database.data.capcontrol.CapBank;
+ import com.cannontech.common.gui.util.DataInputPanel;
  
 public class DeviceCopyNameAddressPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ItemListener, javax.swing.event.CaretListener {
 	private javax.swing.JTextField ivjAddressTextField = null;
 	private javax.swing.JLabel ivjNameLabel = null;
 	private javax.swing.JTextField ivjNameTextField = null;
 	private javax.swing.JLabel ivjPhysicalAddressLabel = null;
-	private javax.swing.JPanel ivjJPanel1 = null;
 	private javax.swing.JCheckBox ivjPointCopyCheckBox = null;
+	private javax.swing.JLabel ivjJLabelMeterNumber = null;
+	private javax.swing.JPanel ivjJPanelCopyDevice = null;
+	private javax.swing.JTextField ivjJTextFieldMeterNumber = null;
+
 /**
  * Constructor
  */
@@ -20,6 +30,8 @@ public DeviceCopyNameAddressPanel() {
 	super();
 	initialize();
 }
+
+
 /**
  * Method to handle events for the CaretListener interface.
  * @param e javax.swing.event.CaretEvent
@@ -35,6 +47,8 @@ public void caretUpdate(javax.swing.event.CaretEvent e) {
 	// user code begin {2}
 	// user code end
 }
+
+
 /**
  * connEtoC1:  (NameTextField.caret.caretUpdate(javax.swing.event.CaretEvent) --> DeviceCopyNameAddressPanel.fireInputUpdate()V)
  * @param arg1 javax.swing.event.CaretEvent
@@ -53,6 +67,8 @@ private void connEtoC1(javax.swing.event.CaretEvent arg1) {
 		handleException(ivjExc);
 	}
 }
+
+
 /**
  * connEtoC2:  (AddressTextField.caret.caretUpdate(javax.swing.event.CaretEvent) --> DeviceCopyNameAddressPanel.fireInputUpdate()V)
  * @param arg1 javax.swing.event.CaretEvent
@@ -71,6 +87,8 @@ private void connEtoC2(javax.swing.event.CaretEvent arg1) {
 		handleException(ivjExc);
 	}
 }
+
+
 /**
  * connEtoC3:  (PointCopyCheckBox.item.itemStateChanged(java.awt.event.ItemEvent) --> DeviceCopyNameAddressPanel.pointCopyCheckBox_ItemStateChanged(Ljava.awt.event.ItemEvent;)V)
  * @param arg1 java.awt.event.ItemEvent
@@ -89,6 +107,8 @@ private void connEtoC3(java.awt.event.ItemEvent arg1) {
 		handleException(ivjExc);
 	}
 }
+
+
 /**
  * Insert the method's description here.
  * Creation date: (2/23/00 10:40:51 AM)
@@ -97,6 +117,8 @@ private void connEtoC3(java.awt.event.ItemEvent arg1) {
 public boolean copyPointsIsChecked() {
 	return getPointCopyCheckBox().isSelected();
 }
+
+
 /**
  * Return the AddressTextField property value.
  * @return javax.swing.JTextField
@@ -110,11 +132,6 @@ private javax.swing.JTextField getAddressTextField() {
 			ivjAddressTextField.setFont(new java.awt.Font("sansserif", 0, 14));
 			ivjAddressTextField.setColumns(6);
 			// user code begin {1}
-         
-         ivjAddressTextField.setDocument( 
-            new com.cannontech.common.gui.unchanging.LongRangeDocument(
-               -999999999, 999999999) );
-         
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -124,56 +141,60 @@ private javax.swing.JTextField getAddressTextField() {
 	}
 	return ivjAddressTextField;
 }
+
+
 /**
- * Return the JPanel1 property value.
- * @return javax.swing.JPanel
+ * 
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JPanel getJPanel1() {
-	if (ivjJPanel1 == null) {
+private static void getBuilderData() {
+/*V1.1
+**start of data**
+	D0CB838494G88G88G64F2CEADGGGGGGGGGGGG8CGGGE2F5E9ECE4E5F2A0E4E1F4E14DBB8DF494E5128861C788EEC0C01675BCD65163B42B5C135B63F6B9E5DD3C439515FD62093BBC173D4DE96E0CAEFA6C931553AF139992A0018402028498A0EA50988822E4472C8AC900C0C0108881A3501969498C19CCF73AFBB293FE642A3E1F6E4EE4A6915EFA4F3CD7697E2A3E1F2A7A6A2B2F2AE60694EF9C6F4AF69493126DA27CEFD7B6A1251F92F27A45D9EE014BBC6349A5363FCDGC5647E28
+	931E8B013673A6CFEEA1395D1B876D7C331E5CA3B7F8F25F0077D564AEEF55AEF8C932CEA1501A7DCBA6773E4E2193E21DDC5AFED3490767F200C2D8EBA7C03F33387E8EE58D47B7C1FBB9FFC748F69032DF42BE9FEEDEE343CF677DCA00369DA00B76B92414F0FA9A34314FC4F8CE15D85F5970DCC2399B6829627D1AC70CA78BFE750E23G57324DAFE0E78B9B5B441FEEF297D5C48EF97C42C1F8D69FE9EB7D442B34D7F825F0D8899B32B7D061EB11FDC1C351AA22417312662B70AAEAD705CF6E8CFAE50F27
+	16BEEBGF5D8EA17F77BFC1A2C6BC724309CA2B3DAD0062FB6675179C186E8B7FA917768E654DBBE3C1782D4FB059C3FAE2866FC0EEA9BCF665D72E6D2B946FA997FD33D169CE3FF1E668C79F07ECE3AAFB8EE9150F7820E71F20FA2F81964933CDC5800FDB321CDE4CF6E9AD96077ECC47CF6E86F87B8AB8B9E7F720E60316942DDA4D07920EBC5929EE3B263ED3CEC7118FFE71AF3AD351DA71AF07F67820D78BD3945GD5GCDGB100F554E6C71DF8971E3BDB0C9A253DDD896FD655BDA11FF6C87149A1F877
+	F80042F1DF48DEC57391426C726C6672847C88C873F737C984A65B89A26CA87D0B5BC8533C87DD2E8432CDFEEC2BE3821FE30A5F12ED3E9F7536EF8B6AED8E3C63B86407610FD17C4ED68B4F766A89EA8B58EEG5A24D62167266502178667B8D2D8596048CD404B587BF6BB0A830C077200458B53715D27D047CD00B7GD281A6GCC874888889DBFF962033EF4DC8F67C08BCB21E31196D5520CBD11E048A7EBDC5797155EF41D88583821D7BC0E69E5628776BD1AFB774104FA19BBF13B038419BE5684AD3D30
+	35FF19F46D2AE0CF5BD8EE6E619F69D9E98832BD4CB171AFD1FC338D4F76769A0A27ED204D82E07DFFCA4F564EF371B6F29F45B71C0B37117D9B050D7800B683006D6F51E6740F65EDF0C6814E8244G4682CC861851A676F8EB5336EFF90E0E5876170D7D0F265761A9478CCD2A8F6B0694764A47A5ADA83504E41D70BE4FB4A1EFAD5D464D27675B8BEB6C134332A699C1A58C33031384E352D91F171A0A300FA6D3EAE330DD06855AD5A2664DBE398AF5A06946172ACFB2E42B8723AFB909B651A99D0799E182
+	5C6B906AABCAFDEEA6486F8C89DDFD73B5621A21ED0404DED2CE2E0467C1B0EEB9842EBC68C5B6A42DCB5868A1FAE607C07F7CF6B8BF6D62ECBE57A4EC303660D6D27E580104B6C86F45B0332732F03C8D1E24F39F813C8A109696F76A6FB6B775F18E109F710EBC59E9796D096D377B59DB58679AB9F1E36CB4D79FE3193E33CE23FC13C02E19GD9E12173FBCF3A19AD6E11F4D9D85F679A980E6C33F600751DFA8A6F9639D38E9B3532AA07FD7022733D7F6529A516DD7A9553E69E20F874D3B5E0B83A09FF64
+	D49143439CF6AB977447A9DDB28CAD5892B164E332E184432D56785FD1DE74EEAED06732BEF786E5F5AA1E5C9200F2C5489A78EA154D3E9A9425AD22B6624961F67A9BFA9FFF867D1B94317FFF5A00B156C5337D9AEDDB74419B7A5ABB9CFBA5FE3527FD0C6FF30D1C2B1C5FDAE3AA75E9AEBE57DA93BF036247038CB3G661BF29F5E58E4DB3BAF9B345B6237672955DCC37075ED47FE1BFE4CA63EEACEEE53AD4D09EDBA501C5826434D3D5BECE7F3A21BE534CB4DA823928D5B4EC07FE67407DEA59C1669C1B4
+	07F0FDBC5708F28443C163C45057AA9B470267E530DF95ED79BA6AF35740FB39AA7CE4F40B70132567FFCC261DF94B11A81E9AFBEB2DA3C5E5B6BBD6357CA463E94057E88FF2C8EE87C555A81130417057D2FF4E71FA8E45BDF9B40AE34B0EA8C16C2BF65584E4EF5B9EA5D69EB464768A7CF74C00FB24A6A005DBE5DF59B929D32A1022C6855D0E0AFA2057615BD6777B6FFF62CE9E5A177B031ADC9FD6A37CDEAA5BFAFC6B8E42F8F837CB27BC6018C6584A3DC1B964AB77025FB1AA68FFBE84570ED568D158B0
+	3EFC8DD22FFA7DCA3EFE57C626835E7F7F15059D5C9FEE12F04F2640DE4E8448D005BFF41DC63A70075C6957A82190B3B7206D6FC0DBCA5DD2EC330FC5AA4BAD171B74A9FD50B31252999FAF1CAE44F3A1F7C4E488E750A19F143BC4CCF2FAE59C6D38940AD831CE7619E5708C59FCB943AFB81358CEDFBE037E3B4D1C7F55B30B8946ACECCEF62EA6C9B8272A855B616A434B0967484FAB769CB98DE443FCFA96BCB3G58584F5F45780CEDD40F941424E9B84FAB9BC59E3D88469583EE274666D2B52697566F9E
+	3768B7975A8BG0A75C47D2E59A47A9D81FAC06F59EF080E7DEEB5F35FEDA6EEAA45C5C089831CA226BFD4E84F5FCBC81EB3111FC018293379676971394E71961C17983006A16CADF656FE7F6E56F5459B2421A65F33F7A43B8FE138F2E9A9BC413AF548FBFCF2CC6C7B8E89F945D81423795E5D715EDFC84F583A0ED68CC4F8D39325E72AD12901F0F8BF18CE0D69E20F87E5BC2FCC8F17765A737F29ABF6B816A551C32941642FB5ACBDCC78C91A137174C38F66F409EA99DE4AE4C5EBA4D891B1029874CA06C4
+	0FF1371A051A4765CBB1C4BDE0300E76BD955A338132GD8EED26A967738B362492D86E0E7F0FD1D7D8C9A003F91E09AG73D3435CE893D76817394E27EFDD4976A84E8389BD5E3C6AB3E1AFF70EA35517D7B99255A8062CD86F189DE17ADB943174985A3558D9F2E2842F25BCED4A373F53135B2FD3483740EB17EFCAA713EFDE27106F70A6146F8A1DAE4F77EE5FA456DCG7315C7451AA3CFA5DA539795776D099D76F3B4EDDEE5427B96A196E57226C6634F114707FBBF9170D323629C7DC4AA321D23AF40F2
+	E11F407319B1CDCB8E73F13CFD2645A5FC9C9179C0D4C65EE7411CD9G4E98444AG55B13146D3ADFD56A16AE23D54A14E2A71B9FDF34C0A0355D84F1818655C2FD03BCE09456774AE837123E271B97DF0DD647493001657A56253F75D716B073A3A2FB9A42E4D46D57598D79157CE0F9B474E40A7475709B3EEB3A90F670008F9789DD2EDF42B33F631DCA3931E0B3AC4DD3031AE0F73D3FCDE644B8F795147B7C0BBG508F60C600E9GF381488531EF9FFA93793F6E7B164C79D9B998534533D72943D77A5421
+	7BC2A29D3ED5D612D807E6544474731ECF68276A02586FC91B2E0E57FBFA0C0B67D50D6315717040A94143108BE20F8A82081B866DD966FE0C7496584EAA0D044DF37A298FE38FC58B36864382D7CBF1DEC52309G43DD161367A8036444B9CA2A1CB8C799A9771EF70F131365B03C16C36F22F9A05F82G06EB54E82EF151133B7D22580FEC83632CC6333D0C3651BF327675FADFB96D550235E67AF736867A1B757479406BAB28BEF5DD566941429B1C531EB6D61384799B0605FC0ED5C4F2AF61FD6A8C256683
+	73AC7C4F56B5094F828D8C188D9A06088B540BA2AEF832937D61C4E8CF8318E36A62E4DD229A6B7C0B4C361D17E0AFAFF537F3DE0771A7373DA77D09EDAF430FB62FAB914DAB475B57B37EB5A64D72BC98D220DAF86CCE479B1286B9ED7C78D768F8C6CBB65E591A4C06194ECBB759F5DEC904AF586E336B28BCCE9F1F45359BAF09586269EE736DB067FB7814FD3EC05C780BF16D34CB42E72C8C609D97B3E5FE1D363BCC7E2FD351C70424AEA5824E24709B9A5B2B62DE19G73CC8548GD8F8095DAF4C267EA1
+	0A712BDF135AC19D47D459CB326858B64D7CFC905AA100D400F400195F8899DF48459C0DD99FA620AC43E1F2F6997136357332A55B7E4B496E7A16A82D53DFE6F77A8A932FD1FC0A8D4F6E7A8CEA5B58CE87DAD9BF61FFD4FADFCE0076E49377D81D70C953CCDCE191628A2F716416DEA3F07B68DDD2856D7DA6EE7A47E2EC33095BC57DFDBA342719387FBCA5464EB6F1110F4458CC9377EF35E2ECD5FF9127BF240A4F849BG1752DF6C51A3E7565A4FBD065D9E4FBEAD68EB605B4D6F1F559DF9FC7C547E626C
+	57F4601C8B201DBFGE49CA06250585BA20FC93FED9CE968F7B0616718739AF7B82A87303DBABB400AC35DF726B9591AA3B431660DC01FBDGF177EA769898EDE5C4B63BC3997D79EEF4BC17DB081D3EC53753115FFFF15869DFF623230E567371CC36875F9232ADFAF0A2897D631F13FEC6DB1242E47A0CBF1B0EEFA1D57DC7B8599E25D1DF9A83DAEA0A5837E027584BC9A9420F862298234C06F696C07EC030C300DAG9FC04AC051AFC67BCD04760C01ACF727F9B9BCB3211DB7C8747B6FCE5546E3D6CA7733
+	0273464BD116GE70794CE777167ECBEE73EED9CDBFBC9543EF6FC8DF7D902391774326EF2FEB671D9E03387311E5DC6D61141F5988F98F0F9148D426FB6E8F8FD1054C128772C3A5ADE564861FC64F088419804ADFC5F7B8DE271D8363956BBC5383E9C4672100FE452B5BEA99236BCFB1070F1EBE348139FF2F356C7253E21FCB01CDBG465BEFBF6E0DB7170DAF4A5BE00BB7247503F6A45B4E5B61D3481BD789C55A43BA67CD26FE85E5C8057E8C377CAB445D886D09A6AF299F75450B1D1F39F13C4C377142
+	5618CF7D946E5D224142BE9F6D11477585EC5C6F2FF25C1B9DD7BA0E5D992BB57A9D0EA16C4E48B6719BA8FE0D8D4F7CEFFD07703F25C09BB2C44470DF52FBB48B5AF957FAF25DGD5GCDG463562FE7ED1E0BB69A347EAD45486881AC236901B49B7C63B3A4F59FF11AB7C5C641F5DCC268CFAA9BBD9ADEA48356C1CCF644F790DDBA81E49175901724D815A8200B5C3A1E6872885E89EAA647BC3201C4907E5335D06A1F98334A2A70443A2190546C00259725F99BD6312FB3A653BAA2CB196A0FDA863ED4ED0
+	6C532FD37419BE3427EFE3F35F6EC3BDE00C57A035E0A91563CF98F8BF9C89F469C12F946255D65A05511FB9D6404719C924B936FA9346B47115F9C61BF4896F2A9E1FDC18E3E3DFA37DGDD6990FE06FEB8525EC263D4C65F5C06313F1539F66F436AC7F7C56DF71BFB982B9F558E9375257B7C0968CDA6BDD414089EB269572ECBD41F6AB7CC44850FFCE52FCF950E5B6490E7A4FE8FC68D635F9D9AE645859B291C0450BAAF7FE33EFC9906A95CEEFF1FAF6C36640E9F115A47DF4A5E12E40D59FC6E52D4EB0D
+	B9FF9C61E47A7C3288FD16DF8A6932B97778281D7F2A253B1256571A791CAAFFCE9F3C05733A75BCB1776C1FBEFE8B1EE1B96AB6AB1EFB61B2A85B2CCBE1486F3420FFF339FBFB393BF267D66857D37E791F32B99BAED8F3DEBC85618C295CA1F4637C462285BE7A6B2C774EE5EB4E5CBA147FA3A27C69BAB4B77EDEEAFB7F3C633B4A0DADDF9E78CE57E03E6A341ABCBF15554479E91B1A38B65221767E79ED171A7C735BFE2A7D73DB66EBDF3C0C67EFA2585CF400CC00C5G0543051FDD5E3119D0BF1B404756
+	79DAB1BF46EF7898E27D67BB124B3A30236F6F85E5EB78D9CA0BE298CABB4EAF703974EEB29415A299AEDFC39DE9415600413AF27CCA1A8304E4BFC533782272EC373A1D15336C11DAD95A427207F19191F3158F97B94B0C885E43BEE8DF8498B5DC54C0EF6B94350D746142DF4D785A9E6B3B5FF3A60C7597FE3D4D11B11C1D733C6BACDFB29DFC892F2D781354D628B7E76BBF9595753D6A6B84CFAF79854EB0F1379489DC3A091B36CE60B22E93F145C9E4136B70E68D4F7DF169DC42CF278EGCB1F371C133D
+	C62354EA5A528F9C986B157CG629100E6G83E08840F80049GB3G6682ACG48CF035885E0A740FE00A60090C03FB4E1FBC70C2D49F8GA45FBCEA001A44EA160C0FBF6520EC23E01EC966DCB7986F75B25791CDD1E54D68E2D87A69AD5743EB17135B73E25237BD2F203ED086BBEC6CD2F96D2718501A2A5F2F4B6639D9CB8ACDDC3DFEC45103D8B3E2BE6AEFA3D797EFD653DA442C3478F8330E62672645471B8FC7C43C1989340691A23E3E23533E7EA440CF9F51FBFE4776E13D0B46F150F781401A119047
+	815482B40F947BF287A96BE5DF58493436187173CC544E0FBA127112421FE3C776640D0DFB55EF9F174E7BCD634F59C947CDAC320F4B647D9671E7617549465D3F4EBE2EB42EDFD5DC3B61FA2113DB9C49ED6EF6C75FB6F737A3318F7DE7C7CF9FFA0FA3318F1D6E307BD07EBDB99A3B344239EBB27BBDEC62CE1A38C7691C08BB91749981937F84658B717BE5DC507C1E9C65ABCAF1CD22BEEB431D64387FF260398111830A793943F38E1A8F87C3A17EBD8D5AA79806E3E46A63C54AE3D015ECFCAFB2F1965FAF
+	6760BE18F7ABF38362DEF2969376BD2620948A1E27DF89B8869D432DEC2F77F492F35F8F5A5EE7C73E7B9866596FF48DD6E73A0F5EF5E741C6317645EB069497839C5653181E5EF6A5375D77DDFD5B6EC72E4436DB6D6AE93B3BDD09EDF71F4BEE3B0CD7C7CC54C1C7DDAFEAE7B9CB696756501EE26282CBC5BDED3A09DB5DAA46960F923801D1B1364C44317B98476EB4F177523BB7855A23CCDC7F23F4AC34271838270F1A6B1A38396B4458625182F7FF3368D7E6625C9B68BEC0BBF5342851CAEF67DB76CA0F
+	A14317448AAC3CB8063C36320D6AE8BC4C11BEDA541B5EDC5A3D8676D3BCDE3C86F6F9E9DFB530EEF526389A585C5156BB2FF7D1BDE782FE81GDBAFA357DA6FFF23FD2D676AE53D52B11EDC09586BDA7FDE543D1616C577EABB742B9EA3647F61516E7233B00F71736A513E78496D051F509876BBABCBFED7895DC740270C917533394D5FE68DA17714B15D6BE7B347445772F6ED68D94BBB3CC15454660C91FA3F85CBB7FC4C0BCBB087C810837A400614D6DB8248467EAB1A9EFF3F21481A27ABFAE5737CEC25
+	B54F072B2DF9BA0FDE59BC7467887CFD7DDAEB1E97CE7EF5F25B8DD5561C7286115B325F50BDECBC86A7A67DD962B248B22C5238E93DC657B53242DC351EDED773BABF70647C61169C87F15613454C855693A77A31FA6222EE2E1E64008B0CE1C97C4FGEFF3C6DCB0DBC1B7996E7F7107CF4DFC72381EC396571335E86247C09E3C39E49FFE7A4BFF7E3017ACD1119D7CD6AEAC255307CBB73AC2F283A976FF01DFE9548D5937DB5C093AC1D6B760CA5B703BE05B76CBFA40C07F7DF183F10671079AE4A5A30724
+	F06BB6F6C1FECC794D5EFD16720AE6CB005FD514DF1C25421CE5554FD73C3569C046149C6258CB1606944937D772C2B8D8CF169881CD5683CA4897D3BF7D0CCE14C73DAD1AE98ECC374E949F052D401A1649F4DB6CEFD28BB28B764245955348B65A93CFF4055943D79310B4D8CA566A8D7C610922151A34EBB698EFBF346F0DE6874966C2F610EF08AB269A4015861662D734F660409D4701A01993D5DC7F407651FF7F72A9BA11B554A09B194AE06836D6D9E95F365B6F8F06E5F382509FCC3F5E1C9E7BD44475
+	D9999B317A40E32F3540FE57121C766D5B697FCA7AFF877E2F2418CA0A295C81CA1CCFFA7D0B2747F414FA09410C4434DE5C660A3D30D346EF1EFD60665FD64F4F82697692977DA297A83B506A458A0B0352C72FDFB6EA5EB05C8B95CDC24C3B58AF3587C3DD20D47374451034162D1C4DBD9A7E21DBF813E2F3FA9896E2F3FBDA882217D1E2817DDFF84572632815F4ECB1AE08AFEF74E056EDB11BE3E3964EFEBE7BB05A0DD5DE0FC172F8C597DE8BE859554D546379FE083518F9D2CAFD5712892F8E61F3CA3E
+	FF1CD6F6B79541E96E770F53AA0B5345B6CE97FFBFB80DB36ACFADE6B1969ACE58BD086F2C663575323D463DF0601A645FA13D09FF077426786F10CE2531678C40E75CA472607C587BA4F98D6AD83B948A99D228EDF758077528BDDD06EC55C1FF914379F551079399EDC68C79BEE79B73FFD0CB8788283F59CDA896GGCCBFGGD0CB818294G94G88G88G64F2CEAD283F59CDA896GGCCBFGG8CGGGGGGGGGGGGGGGGGE2F5E9ECE4E5F2A0E4E1F4E1D0CB8586GGGG81G81G
+	BAGGGE296GGGG
+**end of data**/
+}
+
+/**
+ * Return the JLabelMeterNumber property value.
+ * @return javax.swing.JLabel
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JLabel getJLabelMeterNumber() {
+	if (ivjJLabelMeterNumber == null) {
 		try {
-			ivjJPanel1 = new javax.swing.JPanel();
-			ivjJPanel1.setName("JPanel1");
-			ivjJPanel1.setLayout(new java.awt.GridBagLayout());
-
-			java.awt.GridBagConstraints constraintsNameLabel = new java.awt.GridBagConstraints();
-			constraintsNameLabel.gridx = 1; constraintsNameLabel.gridy = 1;
-			constraintsNameLabel.anchor = java.awt.GridBagConstraints.WEST;
-			constraintsNameLabel.ipadx = 5;
-			constraintsNameLabel.insets = new java.awt.Insets(55, 58, 7, 5);
-			getJPanel1().add(getNameLabel(), constraintsNameLabel);
-
-			java.awt.GridBagConstraints constraintsPhysicalAddressLabel = new java.awt.GridBagConstraints();
-			constraintsPhysicalAddressLabel.gridx = 1; constraintsPhysicalAddressLabel.gridy = 2;
-			constraintsPhysicalAddressLabel.anchor = java.awt.GridBagConstraints.WEST;
-			constraintsPhysicalAddressLabel.ipadx = 36;
-			constraintsPhysicalAddressLabel.insets = new java.awt.Insets(7, 58, 7, 5);
-			getJPanel1().add(getPhysicalAddressLabel(), constraintsPhysicalAddressLabel);
-
-			java.awt.GridBagConstraints constraintsNameTextField = new java.awt.GridBagConstraints();
-			constraintsNameTextField.gridx = 2; constraintsNameTextField.gridy = 1;
-			constraintsNameTextField.fill = java.awt.GridBagConstraints.HORIZONTAL;
-			constraintsNameTextField.anchor = java.awt.GridBagConstraints.WEST;
-			constraintsNameTextField.weightx = 1.0;
-			constraintsNameTextField.ipadx = 168;
-			constraintsNameTextField.insets = new java.awt.Insets(53, 5, 5, 18);
-			getJPanel1().add(getNameTextField(), constraintsNameTextField);
-
-			java.awt.GridBagConstraints constraintsAddressTextField = new java.awt.GridBagConstraints();
-			constraintsAddressTextField.gridx = 2; constraintsAddressTextField.gridy = 2;
-			constraintsAddressTextField.fill = java.awt.GridBagConstraints.HORIZONTAL;
-			constraintsAddressTextField.anchor = java.awt.GridBagConstraints.WEST;
-			constraintsAddressTextField.weightx = 1.0;
-			constraintsAddressTextField.ipadx = 168;
-			constraintsAddressTextField.insets = new java.awt.Insets(5, 5, 5, 18);
-			getJPanel1().add(getAddressTextField(), constraintsAddressTextField);
-
-			java.awt.GridBagConstraints constraintsPointCopyCheckBox = new java.awt.GridBagConstraints();
-			constraintsPointCopyCheckBox.gridx = 1; constraintsPointCopyCheckBox.gridy = 3;
-			constraintsPointCopyCheckBox.fill = java.awt.GridBagConstraints.HORIZONTAL;
-			constraintsPointCopyCheckBox.anchor = java.awt.GridBagConstraints.WEST;
-			constraintsPointCopyCheckBox.insets = new java.awt.Insets(5, 58, 54, 5);
-			getJPanel1().add(getPointCopyCheckBox(), constraintsPointCopyCheckBox);
+			ivjJLabelMeterNumber = new javax.swing.JLabel();
+			ivjJLabelMeterNumber.setName("JLabelMeterNumber");
+			ivjJLabelMeterNumber.setFont(new java.awt.Font("dialog", 0, 14));
+			ivjJLabelMeterNumber.setText("Meter Number:");
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -182,8 +203,112 @@ private javax.swing.JPanel getJPanel1() {
 			handleException(ivjExc);
 		}
 	}
-	return ivjJPanel1;
+	return ivjJLabelMeterNumber;
 }
+
+
+/**
+ * Return the JPanel1 property value.
+ * @return javax.swing.JPanel
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JPanel getJPanelCopyDevice() {
+	if (ivjJPanelCopyDevice == null) {
+		try {
+			ivjJPanelCopyDevice = new javax.swing.JPanel();
+			ivjJPanelCopyDevice.setName("JPanelCopyDevice");
+			ivjJPanelCopyDevice.setLayout(new java.awt.GridBagLayout());
+
+			java.awt.GridBagConstraints constraintsNameLabel = new java.awt.GridBagConstraints();
+			constraintsNameLabel.gridx = 1; constraintsNameLabel.gridy = 1;
+			constraintsNameLabel.anchor = java.awt.GridBagConstraints.WEST;
+			constraintsNameLabel.ipadx = 17;
+			constraintsNameLabel.insets = new java.awt.Insets(28, 38, 7, 0);
+			getJPanelCopyDevice().add(getNameLabel(), constraintsNameLabel);
+
+			java.awt.GridBagConstraints constraintsPhysicalAddressLabel = new java.awt.GridBagConstraints();
+			constraintsPhysicalAddressLabel.gridx = 1; constraintsPhysicalAddressLabel.gridy = 2;
+			constraintsPhysicalAddressLabel.anchor = java.awt.GridBagConstraints.WEST;
+			constraintsPhysicalAddressLabel.ipadx = 48;
+			constraintsPhysicalAddressLabel.insets = new java.awt.Insets(7, 38, 5, 0);
+			getJPanelCopyDevice().add(getPhysicalAddressLabel(), constraintsPhysicalAddressLabel);
+
+			java.awt.GridBagConstraints constraintsNameTextField = new java.awt.GridBagConstraints();
+			constraintsNameTextField.gridx = 2; constraintsNameTextField.gridy = 1;
+			constraintsNameTextField.fill = java.awt.GridBagConstraints.HORIZONTAL;
+			constraintsNameTextField.anchor = java.awt.GridBagConstraints.WEST;
+			constraintsNameTextField.weightx = 1.0;
+			constraintsNameTextField.ipadx = 186;
+			constraintsNameTextField.insets = new java.awt.Insets(26, 0, 5, 18);
+			getJPanelCopyDevice().add(getNameTextField(), constraintsNameTextField);
+
+			java.awt.GridBagConstraints constraintsAddressTextField = new java.awt.GridBagConstraints();
+			constraintsAddressTextField.gridx = 2; constraintsAddressTextField.gridy = 2;
+			constraintsAddressTextField.fill = java.awt.GridBagConstraints.HORIZONTAL;
+			constraintsAddressTextField.anchor = java.awt.GridBagConstraints.WEST;
+			constraintsAddressTextField.weightx = 1.0;
+			constraintsAddressTextField.ipadx = 186;
+			constraintsAddressTextField.insets = new java.awt.Insets(5, 0, 3, 18);
+			getJPanelCopyDevice().add(getAddressTextField(), constraintsAddressTextField);
+
+			java.awt.GridBagConstraints constraintsPointCopyCheckBox = new java.awt.GridBagConstraints();
+			constraintsPointCopyCheckBox.gridx = 1; constraintsPointCopyCheckBox.gridy = 4;
+			constraintsPointCopyCheckBox.anchor = java.awt.GridBagConstraints.WEST;
+			constraintsPointCopyCheckBox.ipadx = 12;
+			constraintsPointCopyCheckBox.insets = new java.awt.Insets(5, 38, 57, 0);
+			getJPanelCopyDevice().add(getPointCopyCheckBox(), constraintsPointCopyCheckBox);
+
+			java.awt.GridBagConstraints constraintsJLabelMeterNumber = new java.awt.GridBagConstraints();
+			constraintsJLabelMeterNumber.gridx = 1; constraintsJLabelMeterNumber.gridy = 3;
+			constraintsJLabelMeterNumber.anchor = java.awt.GridBagConstraints.WEST;
+			constraintsJLabelMeterNumber.ipadx = 11;
+			constraintsJLabelMeterNumber.insets = new java.awt.Insets(6, 38, 6, 0);
+			getJPanelCopyDevice().add(getJLabelMeterNumber(), constraintsJLabelMeterNumber);
+
+			java.awt.GridBagConstraints constraintsJTextFieldMeterNumber = new java.awt.GridBagConstraints();
+			constraintsJTextFieldMeterNumber.gridx = 1; constraintsJTextFieldMeterNumber.gridy = 3;
+			constraintsJTextFieldMeterNumber.gridwidth = 2;
+			constraintsJTextFieldMeterNumber.fill = java.awt.GridBagConstraints.HORIZONTAL;
+			constraintsJTextFieldMeterNumber.anchor = java.awt.GridBagConstraints.WEST;
+			constraintsJTextFieldMeterNumber.weightx = 1.0;
+			constraintsJTextFieldMeterNumber.ipadx = 186;
+			constraintsJTextFieldMeterNumber.insets = new java.awt.Insets(4, 141, 4, 19);
+			getJPanelCopyDevice().add(getJTextFieldMeterNumber(), constraintsJTextFieldMeterNumber);
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJPanelCopyDevice;
+}
+
+/**
+ * Return the JTextFieldMeterNumber property value.
+ * @return javax.swing.JTextField
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JTextField getJTextFieldMeterNumber() {
+	if (ivjJTextFieldMeterNumber == null) {
+		try {
+			ivjJTextFieldMeterNumber = new javax.swing.JTextField();
+			ivjJTextFieldMeterNumber.setName("JTextFieldMeterNumber");
+			ivjJTextFieldMeterNumber.setFont(new java.awt.Font("sansserif", 0, 14));
+			ivjJTextFieldMeterNumber.setColumns(6);
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJTextFieldMeterNumber;
+}
+
+
 /**
  * This method was created in VisualAge.
  * @return java.awt.Dimension
@@ -191,6 +316,8 @@ private javax.swing.JPanel getJPanel1() {
 public Dimension getMinimumSize() {
 	return getPreferredSize();
 }
+
+
 /**
  * Return the NameLabel property value.
  * @return javax.swing.JLabel
@@ -202,7 +329,7 @@ private javax.swing.JLabel getNameLabel() {
 			ivjNameLabel = new javax.swing.JLabel();
 			ivjNameLabel.setName("NameLabel");
 			ivjNameLabel.setFont(new java.awt.Font("dialog", 0, 14));
-			ivjNameLabel.setText("New Device Name:");
+			ivjNameLabel.setText("Device Name:");
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -213,6 +340,7 @@ private javax.swing.JLabel getNameLabel() {
 	}
 	return ivjNameLabel;
 }
+
 /**
  * Return the NameTextField property value.
  * @return javax.swing.JTextField
@@ -236,6 +364,8 @@ private javax.swing.JTextField getNameTextField() {
 	}
 	return ivjNameTextField;
 }
+
+
 /**
  * Return the PhysicalAddressLabel property value.
  * @return javax.swing.JLabel
@@ -247,7 +377,7 @@ private javax.swing.JLabel getPhysicalAddressLabel() {
 			ivjPhysicalAddressLabel = new javax.swing.JLabel();
 			ivjPhysicalAddressLabel.setName("PhysicalAddressLabel");
 			ivjPhysicalAddressLabel.setFont(new java.awt.Font("dialog", 0, 14));
-			ivjPhysicalAddressLabel.setText("New Address:");
+			ivjPhysicalAddressLabel.setText("Address:");
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -258,6 +388,7 @@ private javax.swing.JLabel getPhysicalAddressLabel() {
 	}
 	return ivjPhysicalAddressLabel;
 }
+
 /**
  * Return the PointCopyCheckBox property value.
  * @return javax.swing.JCheckBox
@@ -280,6 +411,8 @@ private javax.swing.JCheckBox getPointCopyCheckBox() {
 	}
 	return ivjPointCopyCheckBox;
 }
+
+
 /**
  * This method was created in VisualAge.
  * @return java.awt.Dimension
@@ -287,6 +420,8 @@ private javax.swing.JCheckBox getPointCopyCheckBox() {
 public Dimension getPreferredSize() {
 	return new Dimension( 350, 200);
 }
+
+
 /**
  * This method was created in VisualAge.
  * @return java.lang.Object
@@ -294,7 +429,7 @@ public Dimension getPreferredSize() {
  */
 public Object getValue(Object val)
 {
-	DeviceBase device = (DeviceBase)val;
+	DeviceBase device = ((DeviceBase) val);
 	int previousDeviceID = device.getDevice().getDeviceID().intValue();
 
 	device.setDeviceID( com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectID() );
@@ -309,67 +444,86 @@ public Object getValue(Object val)
 	objectsToAdd.getDBPersistentVector().add(device);
 
 	//Search for the correct sub-type and set the address
-	if( getAddressTextField().isVisible() && device instanceof DBCopiable )
+	if (getAddressTextField().isVisible())
 	{
-      ((DBCopiable)device).assignAddress( new Integer(getAddressTextField().getText()) );
+		if (val instanceof IDLCBase)
+			 ((IDLCBase) val).getDeviceIDLCRemote().setAddress(new Integer(getAddressTextField().getText()));
+		else if (val instanceof CarrierBase)
+			 ((CarrierBase) val).getDeviceCarrierSettings().setAddress(new Integer(getAddressTextField().getText()));
+		else if (val instanceof CapBank)
+			 ((CapBank) val).setLocation(getAddressTextField().getText());
+		else //didn't find it
+			throw new Error("Unable to determine device type when attempting to set the address");
 	}
 
-	if( com.cannontech.database.data.pao.DeviceClasses.getClass(device.getPAOClass()) 
-         == com.cannontech.database.data.pao.DeviceClasses.TRANSMITTER )
+	//Search for the correct sub-type and set the meter fields
+	if( getJTextFieldMeterNumber().isVisible() )
+	{
+		if( val instanceof MCTBase )
+			 ((MCTBase ) val).getDeviceMeterGroup().setMeterNumber( getJTextFieldMeterNumber().getText() );
+		else if( val instanceof IEDMeter )
+			 ((IEDMeter) val).getDeviceMeterGroup().setMeterNumber( getJTextFieldMeterNumber().getText() );
+		else //didn't find it
+			throw new Error("Unable to determine device type when attempting to set the Meter Number");
+	}
+
+	
+	if (com.cannontech.database.data.pao.DeviceClasses.getClass(device.getPAOClass()) == com.cannontech.database.data.pao.DeviceClasses.TRANSMITTER)
 	{
 		com.cannontech.database.cache.DefaultDatabaseCache cache =
 			com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 		synchronized (cache)
-      {
+	{
 			java.util.List routes = cache.getAllRoutes();
 			com.cannontech.database.data.route.RouteBase newRoute = null;
-			com.cannontech.database.data.route.RouteBase oldRoute = null;
+			DBPersistent oldRoute = null;
 			Integer routeID = null;
 			String type = null;
 
 			for (int i = 0; i < routes.size(); i++)
 			{
-				oldRoute = (com.cannontech.database.data.route.RouteBase)
-                        com.cannontech.database.data.lite.LiteFactory.createDBPersistent(
-                           ((com.cannontech.database.data.lite.LiteYukonPAObject) routes.get(i)) );
+				oldRoute = com.cannontech.database.data.lite.LiteFactory.createDBPersistent(((com.cannontech.database.data.lite.LiteYukonPAObject) routes.get(i)));
 				try
 				{
 					com.cannontech.database.Transaction t =
 						com.cannontech.database.Transaction.createTransaction(com.cannontech.database.Transaction.RETRIEVE, oldRoute);
-
-					oldRoute = (com.cannontech.database.data.route.RouteBase)t.execute();
+					t.execute();
 				}
 				catch (Exception e)
 				{
 					com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 				}
 				
-				if( oldRoute.getDeviceID().intValue() == previousDeviceID )
+				if (oldRoute instanceof com.cannontech.database.data.route.RouteBase)
 				{
-					type = com.cannontech.database.data.pao.PAOGroups.getRouteTypeString( ((com.cannontech.database.data.lite.LiteYukonPAObject) routes.get(i)).getType() );
-					newRoute = com.cannontech.database.data.route.RouteFactory.createRoute(type);
+					if (((com.cannontech.database.data.route.RouteBase) oldRoute).getDeviceID().intValue()
+						== previousDeviceID)
+					{
+						type = com.cannontech.database.data.pao.PAOGroups.getRouteTypeString( ((com.cannontech.database.data.lite.LiteYukonPAObject) routes.get(i)).getType() );
+						newRoute = com.cannontech.database.data.route.RouteFactory.createRoute(type);
 
-					routeID = com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectID();
-					hasRoute = true;
-					break;
+						routeID = com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectID();
+						hasRoute = true;
+						break;
 
+					}
 				}
 			}
 			
 			if (hasRoute) 
 			{
-				newRoute.setRouteID( com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectID() );
-				newRoute.setRouteType( type );
-				newRoute.setRouteName(nameString);
-				newRoute.setDeviceID( ((com.cannontech.database.data.route.RouteBase) oldRoute).getDeviceID() );
-				newRoute.setDefaultRoute( oldRoute.getDefaultRoute() );
+				((com.cannontech.database.data.route.RouteBase) newRoute).setRouteID( com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectID() );
+				((com.cannontech.database.data.route.RouteBase) newRoute).setRouteType( type );
+				((com.cannontech.database.data.route.RouteBase) newRoute).setRouteName(nameString);
+				((com.cannontech.database.data.route.RouteBase) newRoute).setDeviceID(
+					((com.cannontech.database.data.route.RouteBase) oldRoute).getDeviceID() );
+				((com.cannontech.database.data.route.RouteBase) newRoute).setDefaultRoute(
+					((com.cannontech.database.data.route.RouteBase) oldRoute).getDefaultRoute() );
 
 				if( type.equalsIgnoreCase(com.cannontech.database.data.pao.RouteTypes.STRING_CCU) )
 				{
-					((com.cannontech.database.data.route.CCURoute)newRoute).setCarrierRoute(
-                     ((com.cannontech.database.data.route.CCURoute)oldRoute).getCarrierRoute());
-                     
-					((com.cannontech.database.data.route.CCURoute)newRoute).getCarrierRoute().setRouteID(routeID);
+					((com.cannontech.database.data.route.CCURoute) newRoute).setCarrierRoute(((com.cannontech.database.data.route.CCURoute) oldRoute).getCarrierRoute());
+					((com.cannontech.database.data.route.CCURoute) newRoute).getCarrierRoute().setRouteID(routeID);
 				}
 
 				//put the route in the beginning of our Vector
@@ -385,7 +539,7 @@ public Object getValue(Object val)
 		com.cannontech.database.cache.DefaultDatabaseCache cache =
 			com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 		synchronized (cache)
-      {
+	{
 			java.util.List allPoints = cache.getAllPoints();
 			devicePoints = new java.util.Vector();
 
@@ -402,8 +556,7 @@ public Object getValue(Object val)
 					{
 						com.cannontech.database.Transaction t =
 							com.cannontech.database.Transaction.createTransaction(com.cannontech.database.Transaction.RETRIEVE, pointBase);
-						pointBase = (com.cannontech.database.data.point.PointBase)t.execute();
-                  
+						t.execute();
 						devicePoints.addElement(pointBase);
 					}
 					catch (com.cannontech.database.TransactionException e)
@@ -427,9 +580,6 @@ public Object getValue(Object val)
 		}
 
 	}
-   
-
-   //decide what to return
 	if (hasPoints || hasRoute)
 	{
 		return objectsToAdd;
@@ -437,6 +587,8 @@ public Object getValue(Object val)
 	else
 		return val;
 }
+
+
 /**
  * Called whenever the part throws an exception.
  * @param exception java.lang.Throwable
@@ -444,9 +596,11 @@ public Object getValue(Object val)
 private void handleException(Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
-	com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
+	// com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
+	// com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
 }
+
+
 /**
  * Initializes connections
  */
@@ -458,6 +612,8 @@ private void initConnections() throws java.lang.Exception {
 	getNameTextField().addCaretListener(this);
 	getAddressTextField().addCaretListener(this);
 }
+
+
 /**
  * Initialize the class.
  */
@@ -469,7 +625,7 @@ private void initialize() {
 		setName("DeviceNameAddressPanel");
 		setLayout(new java.awt.GridLayout());
 		setSize(350, 200);
-		add(getJPanel1(), getJPanel1().getName());
+		add(getJPanelCopyDevice(), getJPanelCopyDevice().getName());
 		initConnections();
 	} catch (java.lang.Throwable ivjExc) {
 		handleException(ivjExc);
@@ -478,6 +634,7 @@ private void initialize() {
 		
 	// user code end
 }
+
 /**
  * This method was created in VisualAge.
  * @return boolean
@@ -499,6 +656,8 @@ public boolean isInputValid() {
 
 	return true;
 }
+
+
 /**
  * Method to handle events for the ItemListener interface.
  * @param e java.awt.event.ItemEvent
@@ -512,6 +671,8 @@ public void itemStateChanged(java.awt.event.ItemEvent e) {
 	// user code begin {2}
 	// user code end
 }
+
+
 /**
  * main entrypoint - starts the part when it is run as an application
  * @param args java.lang.String[]
@@ -529,6 +690,8 @@ public static void main(java.lang.String[] args) {
 		com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
 	}
 }
+
+
 /**
  * This method was created in VisualAge.
  * @param val java.lang.Object
@@ -537,34 +700,49 @@ public void setValue(Object val )
 {
 	int deviceClass = -1;
 	
-   DeviceBase devBase = (DeviceBase)val;
-   deviceClass = com.cannontech.database.data.pao.DeviceClasses.getClass( devBase.getPAOClass() );
+	if( val instanceof DeviceBase )
+		deviceClass = com.cannontech.database.data.pao.DeviceClasses.getClass( ((DeviceBase)val).getPAOClass() );
+
+	//handle all device Address fields
+	boolean showAddress = 
+			(val instanceof IEDBase)
+			 || (val instanceof com.cannontech.database.data.capcontrol.CapBankController)
+			 || (deviceClass == com.cannontech.database.data.pao.DeviceClasses.GROUP)
+			 || (deviceClass == com.cannontech.database.data.pao.DeviceClasses.VIRTUAL);
+
+	getAddressTextField().setVisible( !showAddress );
+	getPhysicalAddressLabel().setVisible( !showAddress );
+
 	
-   if( val instanceof DBCopiable )
-   {
-      getAddressTextField().setText( ((DBCopiable)devBase).copiableAddress().toString() );
-   }
-	else //if( (val instanceof IEDBase) || (deviceClass == com.cannontech.database.data.pao.DeviceClasses.GROUP) || (deviceClass == com.cannontech.database.data.pao.DeviceClasses.VIRTUAL) )
-	{
-		getAddressTextField().setVisible(false);
-		getPhysicalAddressLabel().setVisible(false);
-	}
-   
-   //1 special case for now!
-   if( val instanceof com.cannontech.database.data.capcontrol.CapBankController )
-   {
-      getPhysicalAddressLabel().setText( "Serial #:" );      
-   }
-		
-	getNameTextField().setText( devBase.getPAOName() );
-	int deviceDeviceID = devBase.getDevice().getDeviceID().intValue();
+	//handle all meter fields
+	boolean showMeterNumber = (val instanceof MCTBase) || (val instanceof IEDMeter);
+	getJTextFieldMeterNumber().setVisible( showMeterNumber );
+	getJLabelMeterNumber().setVisible( showMeterNumber );
+
+
+	
+	if( val instanceof CarrierBase )
+		getAddressTextField().setText( ((CarrierBase)val).getDeviceCarrierSettings().getAddress().toString() );
+	
+	if( val instanceof IDLCBase )
+		getAddressTextField().setText( ((IDLCBase)val).getDeviceIDLCRemote().getAddress().toString() );
+
+	if( val instanceof MCTBase )
+		getJTextFieldMeterNumber().setText( ((MCTBase)val).getDeviceMeterGroup().getMeterNumber().toString() );
+
+	if( val instanceof IEDMeter )
+		getJTextFieldMeterNumber().setText( ((IEDMeter)val).getDeviceMeterGroup().getMeterNumber().toString() );
+
+
+	getNameTextField().setText( ((com.cannontech.database.data.device.DeviceBase)val).getPAOName() );
+	int deviceDeviceID = ((com.cannontech.database.data.device.DeviceBase)val).getDevice().getDeviceID().intValue();
 
 	
 	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized(cache)
 	{
 		java.util.List allPoints = cache.getAllPoints();
-		for( int i = 0; i < allPoints.size(); i++ )
+		for(int i=0;i<allPoints.size();i++)
 		{
 			if( ((com.cannontech.database.data.lite.LitePoint)allPoints.get(i)).getPaobjectID() == deviceDeviceID )
 			{
@@ -574,40 +752,5 @@ public void setValue(Object val )
 			}
 		}
 	}
-}
-/**
- * 
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private static void getBuilderData() {
-/*V1.1
-**start of data**
-	D0CB838494G88G88G96F954ACGGGGGGGGGGGG8CGGGE2F5E9ECE4E5F2A0E4E1F4E14DBA8DD4D467151878C38CC6C86CD6ED3251E8AC1B524426F657EDED8EE55D56B46E093BEBCE6C466D31A927E137264BEE5D56366E49B7838C98B122E00289D6943518509154B4AEA586840988D69690711F674C0399F8B3EF18770061CF765E6F674DE31881B51BF316F3AE6FFD77FE5F3D773B5F3D773B5F7706646DDB10E1316691E249A07C6FA38BA1A9A7887978590A3F9438A8B949C6CCFF7B81F6
-	12EFB42443B396E8317312ECB9E4DAC5963497C3BBEFCE126D9DF84FA5B3AB1CF6F809A02782E8077BE697CEAC272CC94849246DA53733617996C0BC607039C9C6794F5D4E6778559CAF40E2A5A439837B7C60F681471D04F6A3408200E59D2C7FEAF8EE251227151F647D2E45ADA01B3E7FBB6BF664E362A92024130DED644FC2720CE5F3A74A320EE673B15150CE84404927913B63B4BCAB9A3BBBCFB9D40F5DA1F93D2AD7179DAEFB3FFBD072BB6D8E55B7E0F74AFDEE07DCDEDEC31F55007A1364112B1CCE3F
-	2CE90D12D7D68851DDA8675CE896658BBC21CD5C087B07FDA8FBB93457G249878F905082F0177EBG3ADB4C77635FD57079348DBDC3163D6CCD5B91E13EB1EEB64FE56E60FC67747EBAF38FDD1B1EE6DC03D42065F5A5590A819AG940098007728CF841A5E07E755AD3DDA75F8D4EF154FF7DAF17A4F2BCED9017772F220F0DC136CD07DCEC2583AE70D160451E7A2E0635E3E6BF14CA67147058FA4B4ADA16B3FDEEF4D8CE3137571255645DD4C96AB3A02B6E132AFC4143D3EEB2C0F0E15FD0918E5AF1E2E26
-	E504113D6C25A356D44EA73DBBA87BC4B72EF5ADDD6B0370EE617E41700D949FB061193F2E23BE036DE820ED6C963E5176165025A1FDBE49A9EB88EB0739C9D556C6056960D2C2F5593E9FF94FD1184CCCC317BD941FE042B3DD9E27BAE2FBA5500ABDC9B666DF0397B1FEE3209D8F1088308EE0B3C01E977AF9050FFD2769689D7AD8236457CF773A95276CA7EC6CE0735B7014833ADF2A73EA3A64F5482D125FAD5DD2E40D70BE77B723EE37460C0B263E6FG991F4ADE59AF69EE558B5CA1EAF5592F31BEF14D
-	BB310FDF26549637C786819E9F91FC67B56742D311B47D224FA969F2308723AFEC46B56913DA01A3B000F7E617AF37223D4E427C5B81FC069D8ADA10DF3D6C07FCD1DE5E202A5D3D3E961C89C974221DBBE86E188A6F0FFA050D97DDC2DC3A1AE4ABD0851F6616DDA6BEB5EE872AAF7987C40CB594E20EAED5054F7C2CCD78CC4D76A7C949CB67427A8CC20B4AFCC5D1C3E3271572C43DD87B077B5AA6095BD2B5FCCC5DF92E786524B2526E117FDB46DA6D3CCCE381F4DD8A30463071C3AD054CE7CFCB1AAC3C74
-	029F9CCCF686AD4E744C25F113417559E3683F0F62D300E70EAF49F652A7EC77E4E11BC97F0C3B50774EED771CA1C368F527E36F249F3351540B38AF49FD32D72F11FD325789AF9A27BDF891FD0F47ED07EA0C0923F89F44F9B58416E6603FF891E3D152F53F7BD62FAEB74B3A6E76F686690FD3D9DA6FADDFB0C588D9CBAE629C55FE08F3237FD7AEE20CB8D42FD7260BE58C61742F529815955983CAD72B3DDE1D613F5E0AFE5EAD8F709C71D72DD88475C9CAAF669BE64B2552B61C035F6D81974014C5D67AB0
-	FEC7C673CDB6EA879C56BEF3611960933158DFA4E2716060C212F87310B55CDEB277499AEBF68F0F411EE0ACB21D62AF05577DE91AABB8DEE33ADEF89F73A72BDB4657ACAC86AEDEC1FE15A02785C06991B170FE9B52C51E614EDF2DAA8AB329E16BF7AE67605A48BD3DB224E7CCE875067DFEFBF9D7882D155B12518FDFC6DBAA26DC186FC7DBB66D973561D45067D10095BD4C1E1B39BDD83F5D87C4BFA73407819E75076B374E68378E5A29E17AB1FBE55E449AA1DCBD58596B36776AEE4C38128ECE6D6B5529
-	95D95D779A4D5D48A3C79375DDEE9A5D87205D8E9050048F7C7DF6D15F4D69DEC0B6ACFAB7E2BD9B2B717ACE8B7AC0617D223EFB7CAA4A5C8434F4DD2CD942E5739ED325E92A43CD37B7EE6F2BD74CBE42F06DD75E04E7075B2F69F590448131B69DD7D0DF5C7FB81A5783C3C63E4B87390DGA9BA1D2FA54F24FBB46016822C85C8237CDE5D0FF500DB17BDF67C572C431EDA6D123C1D323338CB6A136CD23FEE276944DE8774B378F6042F4B4AA33B180EB235BC5B100B0F340A9A6D095CCAAEF7755373C945E8
-	2EB5DC4D9C3DE32F35341759322DB7E85361E7EDE99BEF7CA6134D6F5481B13F4550E7FD2F185F4DDC737C727A587CAA7A447C1EBC0073F3C8FED937537FDCCB1CDB402E75C3C263532BC6AA1F9F13E9A992B29B01DFF41F1079570361E4A676093DE463381AF6EDDFF05FCD699B3F8733DAEF86754DADFD2175E89C45E777075623FB52C4BDDAG3428FED11F582FE34ECB06B689A4597281CA819A81FC816113BF3BF21CCCD27F55C10C793D1252BCA641F3BFDCFC9565C2CE666D782BE8A71A1309586F266C8F
-	35C3CCE06C5C63C35AEC5C6CF1636CA16D55A16318BF1EEAFDCF6489537216171F2BF6490E6E53EA006F892B524CFBC2F20055F6D983D04F8170B323A50B6BF3E2C0640811DAF30ED8316318F5DB049C218CB07DE286027EDCE21C81575D403C379AE8A9GE4906482D482DC83089A94EBF46C5A47132D91755796359AF0E7A1DFD7076E2D06CDEB8E5C5BDAB40D9B973A968B86432D4521620270EB518275C72DDBD61C4C4EFF16AB6C3CFCD044CFE6513D693AFB5C38D0DDD3C3F4E5BA248E8A9D3206A00EE95D
-	1FC690D7896D968337017AC4G5A31C3C257D9E9D81BACB35ADF24ED4C873C5ECC1B28DE46F1F7D25BC582A6636404B2BECBBD0E40FC71236B116B4AD357435715B557435715672E6FE4F860E1BEDD8AFA5375096B4EAB5743551DFB69DC1FFFFB87652DE932C603838B83CEFBCD5FCD42541FD802F1BB6512657B3772BEE7F4357A38614FBFBF129F5E1FCD7586C99775462AA1D1EFAC33E10EA643100781CA0705DFDC30043B77B8BB4C7C619ABCFD43E3FD03650E1B6D3877CC855A820065GEBGD207C54EC8
-	3DBEE9DEBF9318A02F3FFAA372BA7F4B0D706B7CEFB730D65254DE3FC38EDD4BDF5C48B7E8416C0425841A1D75F9030E57A5FF27BC4E97ECB7738DDA2471BBEEC672973626C3874CEBDAE6444D17F24DEB10B3B2565E87C35AA7C7C4CDF12A484C6F18416FBF874D7C9AC246370734F5035F3B844FB30AB420766AD0BB0E205F149131C7C5C3FB8140AA0075A3EC2FE2BE7935FE5CFFBA7C1287265B6C139DE44DED9C7BCB0B98DB816DC6G9FC0AC40525BC266B3B528B3735EB22EFFC6FA28CF660F86F5AE990D
-	D43794E752334AA82BCF369978BFD0FC3B894F6A16EF521840F6945012C7C5FE6D207975ECD4122DADCA60DEB0F22E53403D560638E550DE95A57C3E33BD325FFA5B437B2D5E9EBEBF8D36CF1C1F6EEB0F64EFCC3FE7691E369EF45BE8687CC93D188719A2F0B7683E5388ED27014B9E92E383866E9F1B4458988377EDA2462E87E0F63DCC44FDFAAA600A6F93FE72624DBD665C05A5FDF97927FE3733013B9C5F8797D21EB83E7DBE113FDE24BC67C2FBA9402A7BC4AD94B8ACEA2104A573C9C3D4FD5873520616
-	E3568D77717B577B0335D0BC54C2CC66DE2B10D98974407D082B371A6BEB7457B88B5B4B99FDE48C9D57220818694F0C21233E5F361A69BF9AC3C79B6D6563595CDEB8A466366505F822FC633FA31E8593791C1279333135089C1C791BCC36C685F4BFA8188AF9FF2A6187B63116ADD345DEE04FC4FD82500E85D88A309AA04520D7D0FA56B4D853E96CBCCD4F4ABD021EE8937BBF0E4367D24EABE5EA787AA290819F39467801A1E32B891F41637833569DACA70DD830F652A1D04FCE436FDC491D389A895350EE
-	2FDAEAA6991F491F88B1B08621086B38E09A4BC196C3562CFD58DF7662750613E4CDC7990B7789DF5CB4CD6449D7B2D1278E552B33BE2F5058EE0077B6G26DBEB7DC43AE51874223ACD8F518D5A7FE3B16B56BB083AB9D42557635538EEB1B4D7E09CA7C01B61AAE92ED8816F2B8CDD7E35E9B2DD4C7AEC8951A5E7C6D097A663A7B4A7207F974C907EF6135C5BF7A64FBD0EDBF25763587E335002392BE4C6F06D997EA90ABFE942337C791211BFEB0096BFC31C273F67427DB4BB9A628F2092208DA0GB0A7DA
-	6CBF79D2A919246EEAD1FD8D30C1A926AD054D6F00755E3E3FFDA7D36429E55FFC02AC1F7EABCB2473E8FCB40B77D57C1952D2C471ECFED73AF0FE1B011677C0126DA4C0A30093E07881B13FF629044D6F0C532DD7693A64F0515BAAB139D6375C9FC4E3B142FC79F87A785A66DC3A28CFE201FFBC409A00648718EEB9B3E9CC59C41FAD8F0C4FD50C77D3CE348356018D52AD3CBA6578CBBA664BC6570066F6C88A3FDD25DD987D274D5B79B863B0EA0C2D580F7726FC0CC1E63425A33857B42AEE3C61758D9837
-	8AE0CFFAAF5413E95ED75AE632FB216119625E2827AA9CBDF62658D3DF3CEA7E261EB3FF3FD578E7687C974F64F9FEE6F0CF5DC7F5A4B4DE459F4B23A3E89A6EB3BF4A96BED37015AF111A17FFE5A90AA0A31973BE71E0D0C6CA5716CCE60BEF6D43FC51A1A91AEC70DE50EF567F641B9F053DC7C7D0B84FA87EDCB123086B9A0BE596DF0BE375076069157B8B0D1B48DAC8444587B4498B67BB3F3B63C0C9E1E9C9E15909A350EF7C7CD3BFE1BC1F5702BC978DC2A9C04A0E895B747585E95FED7A3F11B72FBF48
-	733F687C7FC0C4AE7BB2B6797BD2537BABE4326FEA1F85180CCD1F2B8C16A75638A25761AF3B4257617F6C8ADF077F58B571BD40CFDD113FBF7D074B7C7D0965B9F7G63EFB9785CDA004DG59B1C93642981163225C87884DF1E1725B99E7A71EDF71EB37AE64BB3AA24F352BEB72EF64DA975E715FD2F5DD75A0FF019F68427552D59FC5B25C6DAE34115F5D6952D9D7713D2F8B7DCF11BBA81A6DE34599E29F2B003969B1629CD056BE66CEAEF88EB8ADF53223G2B49FD99228ECA08916700BF27BC13213D85
-	A0EF1638A79D3609BB0F12D9A20F2D3AEE2E1F8BBFC88FDBBFEF3EFE546A1C4562BFFAD6B0472C059C436FDCBAA25C3950DC4E6447E70A3B3B9506CE71D58237E9165843DF98A0064D723AB14EDB25AE3ECB6316267A45CA1F83D197EEF5498E3DC56AB4FC679703D8D715BC14E4BB8B20GCC85188B3094E0A540BA000DG693313EC85G25GB5GEDGAE00E100585942571214A311F4GA4DF946AF0FE490DAE477538B6CCFFC386FC928DDEDBBD9FCC402B512F7AE43FBE403074CB9F37C3CFA0327F868213
-	7B6F14G7DEE85FE57B26063F7B15383385F2B9D9D1AEC444903019C83D727B52A1A9B6FF07859A7635EEA420AFB9C57FB5763D84D380B5ED9EC189DDACB3EC7719BE70756120B0D985C8C34EB3122F61EE2B34BCF847C5A58094FE2EC5D270EE0AC24C05F74B828C381AA81DAG14B86187FB870AA770839661C117E27AFCB5532CCFD49C53E58EFF46470D570D0F2BB20FDB417B2D614F64B063180EEF8EC576391DC3137B5C3BC361F3E66150781CF9E8A8FC4E7CE0481CB3992EF488F3CEA744DD1B516FC383
-	F7594015D31E083B64F66AAE83DFC975C27CD999858AFCAD552B1F625AB82E5E043B4CF10DC398B7B0E5176A97E3AF8E513327DBD1D87BB26D6376C298997638C1F5F47BA4135E8E839754DB9A46B5B076D21686B84DB51CC779C2D8CA0AFB10FE1AEE060E5ECE36567974B7276CFD3F697D290C4F3FE6791B4FD5863B1319CB77304D6033F8CF44F00FD1DC4E43C9B63CFBE2F61AB59259F7670CCC6E3B0F0D04775DC5A363FDB7FEA43C6FBEBDE276DD266B4ACCF1E7D8723038E75AC5FF07D0896DC68357FFD5
-	5CBDDDB3F0AB2B44588483777DFAB1B65140451D97E3D7BFAC6A8969F0F650EFE8B8B0FCC1E0FB90AF42015FA77CBB5535609148E10F08BB16A3D7475E7B6C9DC59FE377998FDD1D6C5EE74C5D0A695E87F3EF9B4890E7E2A67FF5BADFA760FDGCCDEA5894A0BBFBF193C0C8964ADG1EF57C1D71DE0F478DFE9630DD457AB24C794289F6D2BBCD078BB6768D9C465F57E48579BCD7FFF7FCFECE4BB276FB737CF3DE18C0426BA4C3A75B7094DBC84F331A66A7BB8CEEF5B445EC68BBDE1E7663C5E9D612DEC7EC
-	4CED6BC8BA7ADE9D49202ED9C75240ED837873CCBC6214F373E4G376DE3F47B5B059F7EE4758FDB35B48276590357E94DF01E42ECA3BB718B9D7F39E6AD596AC3F51A818F22B47A48507481C5EEA0F99DCD7813A5CD171DD5A20FE9BA595D00120E624F000E1E15B4170EB1774786126E459F1612DD0C2CC85E4E23AC297D116AEB29EA274B0E4BCAC05FDC2AAFF2319BDCF23F3563507EF3494B530835163C29281233D6F24016DAC7366AAE3F2C39D4459970FD427CA72B9F17883DAD8D583DE7CC9FA7EB471B
-	84C3696E40E3B15BD3365702EB847C64A86D095EEFB7FAB82BDD129FC4497EBA9DFFA82B7A8F9A34A93F558F7F5D276FDC33928B1FE48F39CDB282BE1D58BAA40FDB995049D663442AA1F1ABE0A0B1F9358E556F81658AC31493A4C3067D1167CB3F70973F3EC2E584076AE49F33A68CBD5AA92B1E23D59D9DEE2FECB0G53827B3D86FB6CE38F6933AB90377B5CCBEF5C82D728A1E91E52D27A3F0C7EBF067F4BA8260CE24A0E01FDD34904FF21740018B3759F433151836C3530087ABF3D7E7C932FD424EE0459
-	55128C7A1B95D8071CE02FBF75FAEE497E6989DF583BED4E0687F119FC68AD81643B1D31371060EDAA7E8A6AC30ACD9B67D8084D9C6FA1085EE6DEA7C43CC5FB67507F39F7BDEB9C351B0EFD47D0F6EFF8E5A17633594F8F8B71962CDCA7D97C462B7C1E26E1E3096773194361609CF01B94B966237FFF1A7EBE3C261962FE6C482879FEEC73347C0877E3EB6771FB5AF941F3B1BB87A450FD7860FC287F670B3AFFCB436FC96473EC33C7D294DDD23A2B3CCEBC5B1E9E5065609D4A574EA3FFCD7461C4C6DBFE9E
-	756EB20D79DFD0CB8788E5D75C35E493GG90B5GGD0CB818294G94G88G88G96F954ACE5D75C35E493GG90B5GG8CGGGGGGGGGGGGGGGGGE2F5E9ECE4E5F2A0E4E1F4E1D0CB8586GGGG81G81GBAGGG1E93GGGG
-**end of data**/
 }
 }
