@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.54 $
-* DATE         :  $Date: 2005/02/21 21:48:19 $
+* REVISION     :  $Revision: 1.55 $
+* DATE         :  $Date: 2005/02/25 21:55:43 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -458,12 +458,12 @@ bool CtiDeviceMCT::initCommandStore()
 
     cs._cmd     = CtiProtocolEmetcon::PutConfig_GroupAddrEnable;
     cs._io      = IO_WRITE;
-    cs._funcLen = make_pair( (int)MCT_Function_GroupAddrEnable, 0 );
+    cs._funcLen = make_pair( (int)MCT_Command_GroupAddrEnable, 0 );
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::PutConfig_GroupAddrInhibit;
     cs._io      = IO_WRITE;
-    cs._funcLen = make_pair( (int)MCT_Function_GroupAddrInhibit, 0 );
+    cs._funcLen = make_pair( (int)MCT_Command_GroupAddrInhibit, 0 );
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::GetConfig_Raw;
@@ -483,32 +483,32 @@ bool CtiDeviceMCT::initCommandStore()
 
     cs._cmd     = CtiProtocolEmetcon::Control_Close;
     cs._io      = IO_WRITE | Q_ARML;
-    cs._funcLen = make_pair( (int)MCT_Function_Close, 0 );
+    cs._funcLen = make_pair( (int)MCT_Command_Close, 0 );
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::Control_Open;
     cs._io      = IO_WRITE | Q_ARML;
-    cs._funcLen = make_pair( (int)MCT_Function_Open, 0 );
+    cs._funcLen = make_pair( (int)MCT_Command_Open, 0 );
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::Control_Conn;
     cs._io      = IO_WRITE | Q_ARML;
-    cs._funcLen = make_pair( (int)MCT_Function_Close, 0 );
+    cs._funcLen = make_pair( (int)MCT_Command_Close, 0 );
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::Control_Disc;
     cs._io      = IO_WRITE | Q_ARML;
-    cs._funcLen = make_pair( (int)MCT_Function_Open, 0 );
+    cs._funcLen = make_pair( (int)MCT_Command_Open, 0 );
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::PutConfig_ARMC;
     cs._io      = IO_WRITE;
-    cs._funcLen = make_pair( (int)MCT_Function_ARMC, 0);
+    cs._funcLen = make_pair( (int)MCT_Command_ARMC, 0);
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::PutConfig_ARML;
     cs._io      = IO_WRITE;
-    cs._funcLen = make_pair( (int)MCT_Function_ARML, 0);
+    cs._funcLen = make_pair( (int)MCT_Command_ARML, 0);
     _commandStore.insert( cs );
 
     //  putconfig_tsync is in MCT2XX and MCT310 because the 2XX requires an ARMC
@@ -945,6 +945,7 @@ INT CtiDeviceMCT::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< 
         case CtiProtocolEmetcon::PutConfig_UniqueAddr:
         case CtiProtocolEmetcon::PutConfig_LoadProfileInterest:
         case CtiProtocolEmetcon::PutConfig_Disconnect:
+        case CtiProtocolEmetcon::PutConfig_LoadProfileReportPeriod:
         {
             status = decodePutConfig(InMessage, TimeNow, vgList, retList, outList);
             break;
@@ -1111,7 +1112,7 @@ INT CtiDeviceMCT::ErrorDecode(INMESS *InMessage, RWTime& Now, RWTPtrSlist< CtiMe
 
                             if( channel )
                             {
-                                insertPointFail( InMessage, retMsg, ScanRateLoadProfile, channel + OFFSET_LOADPROFILE_OFFSET, DemandAccumulatorPointType );
+                                insertPointFail( InMessage, retMsg, ScanRateLoadProfile, channel + MCT_PointOffset_LoadProfileOffset, DemandAccumulatorPointType );
                             }
 
                             break;
@@ -1123,7 +1124,7 @@ INT CtiDeviceMCT::ErrorDecode(INMESS *InMessage, RWTime& Now, RWTPtrSlist< CtiMe
                             {
                                 if( getLoadProfile().isChannelValid(i) )
                                 {
-                                    insertPointFail( InMessage, retMsg, ScanRateLoadProfile, (i + 1) + OFFSET_LOADPROFILE_OFFSET, DemandAccumulatorPointType );
+                                    insertPointFail( InMessage, retMsg, ScanRateLoadProfile, (i + 1) + MCT_PointOffset_LoadProfileOffset, DemandAccumulatorPointType );
                                 }
                             }
 
@@ -1463,13 +1464,12 @@ INT CtiDeviceMCT::executeGetValue( CtiRequestMsg              *pReq,
             found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
         }
     }
-    else if( parse.isKeyValid("lp_time") )  //  load profile
+    else if( parse.isKeyValid("lp_command") )  //  load profile
     {
-        function = CtiProtocolEmetcon::GetValue_LoadProfile;
-
         if( !executeGetValueLoadProfile(pReq, parse, OutMessage, vgList, retList, outList) )
         {
             found = true;
+            function = OutMessage->Sequence;
         }
     }
     else if( parse.isKeyValid("outage") )  //  outages
@@ -1505,8 +1505,10 @@ INT CtiDeviceMCT::executeGetValue( CtiRequestMsg              *pReq,
     {
         if( parse.getFlags() & CMD_FLAG_FROZEN )  //  Read the frozen values...
         {
-            function = CtiProtocolEmetcon::GetValue_Frozen;
+            function = CtiProtocolEmetcon::GetValue_FrozenKWH;
             found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+
+            //  add point reduction smarts like the below
         }
         else
         {
