@@ -37,7 +37,7 @@
 			<xs:enumeration value="Weekend"/>
 			<xs:enumeration value="Saturday"/>
 			<xs:enumeration value="Sunday"/>
-		</xs:restriction>
+		<xs:enumeration value="All"/></xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="stars-ThermoModeSettings">
 		<xs:restriction base="xs:NMTOKEN">
@@ -961,7 +961,7 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="stars-LMHardwareEvent"/>
-			</xs:sequence>
+			<xs:element ref="stars-ThermostatSeason" minOccurs="0" maxOccurs="2"/></xs:sequence>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="stars-UpdateThermostatManualOption">
@@ -1090,7 +1090,7 @@
 				<xs:element name="MainFaxNumber" type="xs:string"/>
 				<xs:element name="Email" type="xs:string"/>
 				<xs:element name="CompanyAddress" type="stars-CustomerAddress" minOccurs="0"/>
-			</xs:sequence>
+			<xs:element name="TimeZone" minOccurs="0" type="xs:string"/></xs:sequence>
 			<xs:attribute name="energyCompanyID" type="xs:int"/>
 		</xs:complexType>
 	</xs:element>

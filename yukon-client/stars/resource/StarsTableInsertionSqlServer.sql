@@ -157,7 +157,7 @@ insert into YukonListEntry values (1061,1020,1,'PROGRAMS',0);
 insert into YukonListEntry values (1062,1020,2,'THERMOSTAT CONTROL',0);
 insert into YukonListEntry values (1063,1020,3,'SAVINGS',0);
 insert into YukonListEntry values (1064,1001,0,'ThermostatManual',1003);
-insert into YukonListEntry values (1065,1002,0,'Change Schedule',1109);
+insert into YukonListEntry values (1065,1002,0,'Programming',1109);
 insert into YukonListEntry values (1066,1002,0,'Manual Option',1110);
 insert into YukonListEntry values (1067,1007,0,'Generator',1406);
 insert into YukonListEntry values (1068,1007,0,'Grain Dryer',1407);

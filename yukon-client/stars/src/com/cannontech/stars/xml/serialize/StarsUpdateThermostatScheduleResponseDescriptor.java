@@ -94,6 +94,40 @@ public class StarsUpdateThermostatScheduleResponseDescriptor extends org.exolab.
         fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
+        //-- _starsThermostatSeasonList
+        desc = new XMLFieldDescriptorImpl(StarsThermostatSeason.class, "_starsThermostatSeasonList", "stars-ThermostatSeason", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsUpdateThermostatScheduleResponse target = (StarsUpdateThermostatScheduleResponse) object;
+                return target.getStarsThermostatSeason();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsUpdateThermostatScheduleResponse target = (StarsUpdateThermostatScheduleResponse) object;
+                    target.addStarsThermostatSeason( (StarsThermostatSeason) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new StarsThermostatSeason();
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setMultivalued(true);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _starsThermostatSeasonList
+        fieldValidator = new FieldValidator();
+        fieldValidator.setMinOccurs(0);
+        fieldValidator.setMaxOccurs(2);
+        desc.setValidator(fieldValidator);
+        
     } //-- com.cannontech.stars.xml.serialize.StarsUpdateThermostatScheduleResponseDescriptor()
 
 

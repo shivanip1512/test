@@ -68,6 +68,16 @@ public class StarsThermoDaySettings implements java.io.Serializable {
     **/
     public static final StarsThermoDaySettings SUNDAY = new StarsThermoDaySettings(SUNDAY_TYPE, "Sunday");
 
+    /**
+     * The All type
+    **/
+    public static final int ALL_TYPE = 4;
+
+    /**
+     * The instance of the All type
+    **/
+    public static final StarsThermoDaySettings ALL = new StarsThermoDaySettings(ALL_TYPE, "All");
+
     private static java.util.Hashtable _memberTable = init();
 
     private int type = -1;
@@ -116,6 +126,7 @@ public class StarsThermoDaySettings implements java.io.Serializable {
         members.put("Weekend", WEEKEND);
         members.put("Saturday", SATURDAY);
         members.put("Sunday", SUNDAY);
+        members.put("All", ALL);
         return members;
     } //-- java.util.Hashtable init() 
 

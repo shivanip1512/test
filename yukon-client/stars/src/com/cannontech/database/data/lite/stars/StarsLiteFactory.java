@@ -827,21 +827,20 @@ public class StarsLiteFactory {
 		for (int i = 0; i < liteSettings.getThermostatSeasons().size(); i++) {
 			LiteLMThermostatSeason liteSeason = (LiteLMThermostatSeason) liteSettings.getThermostatSeasons().get(i);
 			StarsThermostatSeason starsSeason = new StarsThermostatSeason();
-			
-			//LiteWebConfiguration liteConfig = SOAPServer.getWebConfiguration( liteSeason.getWebConfigurationID() );
-			StarsWebConfig starsConfig = energyCompany.getStarsWebConfig( liteSeason.getWebConfigurationID() );
-			if (starsConfig.getAlternateDisplayName().equalsIgnoreCase("Summer"))
-				starsSeason.setMode( StarsThermoModeSettings.COOL );
-			else
-				starsSeason.setMode( StarsThermoModeSettings.HEAT );
-			
+/*			
 			Calendar startCal = Calendar.getInstance();
 			startCal.setTime( new Date(liteSeason.getStartDate()) );
 			startCal.set( Calendar.YEAR, Calendar.getInstance().get(Calendar.YEAR) );
 			starsSeason.setStartDate( new org.exolab.castor.types.Date(startCal.getTime()) );
-			
-			if (liteSettings.getInventoryID() < 0)	// Add thermostat season web configuration only to default settings
+*/			
+			if (liteSettings.getInventoryID() < 0) {	// Add thermostat season web configuration only to default settings
+				StarsWebConfig starsConfig = energyCompany.getStarsWebConfig( liteSeason.getWebConfigurationID() );
+				if (starsConfig.getAlternateDisplayName().equalsIgnoreCase("Summer"))
+					starsSeason.setMode( StarsThermoModeSettings.COOL );
+				else
+					starsSeason.setMode( StarsThermoModeSettings.HEAT );
 				starsSeason.setStarsWebConfig( starsConfig );
+			}
 			
 			Hashtable towTable = new Hashtable();
 			for (int j = 0; j < liteSeason.getSeasonEntries().size(); j++) {
@@ -860,33 +859,11 @@ public class StarsLiteFactory {
 			while (it.hasNext()) {
 				Map.Entry entry = (Map.Entry) it.next();
 				Integer towID = (Integer) entry.getKey();
-				ArrayList liteEntryList = (ArrayList) entry.getValue();
+				ArrayList liteEntries = (ArrayList) entry.getValue();
 				
-				/* Each thermostat schedule must have 4 "time/temperature"s,
-				 * othewise, use the energy company default.
-				 */
-				if (liteEntryList.size() != 4) continue;
-				
-				StarsThermostatSchedule starsSchd = new StarsThermostatSchedule();
-				starsSchd.setDay( ServerUtils.getThermDaySetting(towID.intValue()) );
-				
-				LiteLMThermostatSeasonEntry liteEntry = (LiteLMThermostatSeasonEntry) liteEntryList.get(0);
-				starsSchd.setTime1( new org.exolab.castor.types.Time(liteEntry.getStartTime() * 1000) );
-				starsSchd.setTemperature1( liteEntry.getTemperature() );
-				
-				liteEntry = (LiteLMThermostatSeasonEntry) liteEntryList.get(1);
-				starsSchd.setTime2( new org.exolab.castor.types.Time(liteEntry.getStartTime() * 1000) );
-				starsSchd.setTemperature2( liteEntry.getTemperature() );
-				
-				liteEntry = (LiteLMThermostatSeasonEntry) liteEntryList.get(2);
-				starsSchd.setTime3( new org.exolab.castor.types.Time(liteEntry.getStartTime() * 1000) );
-				starsSchd.setTemperature3( liteEntry.getTemperature() );
-				
-				liteEntry = (LiteLMThermostatSeasonEntry) liteEntryList.get(3);
-				starsSchd.setTime4( new org.exolab.castor.types.Time(liteEntry.getStartTime() * 1000) );
-				starsSchd.setTemperature4( liteEntry.getTemperature() );
-				
-				starsSeason.addStarsThermostatSchedule( starsSchd );
+				StarsThermostatSchedule starsSched = createStarsThermostatSchedule( towID.intValue(), liteEntries );
+				if (starsSched != null)
+					starsSeason.addStarsThermostatSchedule( starsSched );
 			}
 			
 			starsSettings.addStarsThermostatSeason( starsSeason );
@@ -1439,6 +1416,31 @@ public class StarsLiteFactory {
 		return starsUser;
 	}
 	
+	public static StarsThermostatSchedule createStarsThermostatSchedule(int towID, ArrayList liteEntries) {
+		if (liteEntries.size() != 4) return null;
+		
+		StarsThermostatSchedule starsSched = new StarsThermostatSchedule();
+		starsSched.setDay( ServerUtils.getThermDaySetting(towID) );
+		
+		LiteLMThermostatSeasonEntry liteEntry = (LiteLMThermostatSeasonEntry) liteEntries.get(0);
+		starsSched.setTime1( new org.exolab.castor.types.Time(liteEntry.getStartTime() * 1000) );
+		starsSched.setTemperature1( liteEntry.getTemperature() );
+		
+		liteEntry = (LiteLMThermostatSeasonEntry) liteEntries.get(1);
+		starsSched.setTime2( new org.exolab.castor.types.Time(liteEntry.getStartTime() * 1000) );
+		starsSched.setTemperature2( liteEntry.getTemperature() );
+		
+		liteEntry = (LiteLMThermostatSeasonEntry) liteEntries.get(2);
+		starsSched.setTime3( new org.exolab.castor.types.Time(liteEntry.getStartTime() * 1000) );
+		starsSched.setTemperature3( liteEntry.getTemperature() );
+		
+		liteEntry = (LiteLMThermostatSeasonEntry) liteEntries.get(3);
+		starsSched.setTime4( new org.exolab.castor.types.Time(liteEntry.getStartTime() * 1000) );
+		starsSched.setTemperature4( liteEntry.getTemperature() );
+		
+		return starsSched;
+	}
+	
 	public static StarsThermostatManualEvent createStarsThermostatManualEvent(LiteLMThermostatManualEvent liteEvent) {
 		StarsThermostatManualEvent starsEvent = new StarsThermostatManualEvent();
 		setStarsLMCustomerEvent(starsEvent, liteEvent);
@@ -1812,19 +1814,6 @@ public class StarsLiteFactory {
 	public static boolean isIdenticalAccountSite(LiteAccountSite liteAcctSite, StarsCustAccount starsAcctSite) {
 		return (forceNotNull(liteAcctSite.getSiteNumber()).equals( starsAcctSite.getPropertyNumber() )
 				&& forceNotNull(liteAcctSite.getPropertyNotes()).equals( starsAcctSite.getPropertyNotes() ));
-	}
-	
-	public static boolean isIdenticalThermModeSetting(LiteLMThermostatSeason liteSeason, StarsThermostatSeason starsSeason) {
-		LiteWebConfiguration liteConfig = SOAPServer.getWebConfiguration( liteSeason.getWebConfigurationID() );
-		return ((starsSeason.getMode().getType() == StarsThermoModeSettings.COOL_TYPE) && liteConfig.getAlternateDisplayName().equalsIgnoreCase("Summer")
-				|| (starsSeason.getMode().getType() == StarsThermoModeSettings.HEAT_TYPE) && liteConfig.getAlternateDisplayName().equalsIgnoreCase("Winter"));
-	}
-	
-	public static boolean isIdenticalThermDaySetting(LiteLMThermostatSeasonEntry liteEntry, StarsThermostatSchedule starsSched) {
-		YukonListEntry entry = YukonListFuncs.getYukonListEntry( liteEntry.getTimeOfWeekID() );
-		return ((starsSched.getDay().getType() == StarsThermoDaySettings.WEEKDAY_TYPE) && entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_TOW_WEEKDAY
-				|| (starsSched.getDay().getType() == StarsThermoDaySettings.SATURDAY_TYPE) && entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_TOW_SATURDAY
-				|| (starsSched.getDay().getType() == StarsThermoDaySettings.SUNDAY_TYPE) && entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_TOW_SUNDAY );
 	}
 	
 	public static boolean isIdenticalThermostatSchedule(LiteLMThermostatSeasonEntry[] liteSched, StarsThermostatSchedule starsSched) {

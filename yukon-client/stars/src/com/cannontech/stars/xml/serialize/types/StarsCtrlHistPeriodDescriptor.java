@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsCtrlHistPeriodDescriptor.java,v 1.40 2003/04/21 21:05:51 zyao Exp $
+ * $Id: StarsCtrlHistPeriodDescriptor.java,v 1.41 2003/04/23 19:10:50 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize.types;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.40 $ $Date: 2003/04/21 21:05:51 $
+ * @version $Revision: 1.41 $ $Date: 2003/04/23 19:10:50 $
 **/
 public class StarsCtrlHistPeriodDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
