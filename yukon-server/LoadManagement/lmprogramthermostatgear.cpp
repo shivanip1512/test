@@ -55,51 +55,51 @@ const RWCString& CtiLMProgramThermoStatGear::getSettings() const
 {
     return _settings;
 }
-ULONG CtiLMProgramThermoStatGear::getMinValue() const
+LONG CtiLMProgramThermoStatGear::getMinValue() const
 {
     return _minvalue;
 }
-ULONG CtiLMProgramThermoStatGear::getMaxValue() const
+LONG CtiLMProgramThermoStatGear::getMaxValue() const
 {
     return _maxvalue;
 }
-ULONG CtiLMProgramThermoStatGear::getValueB() const
+LONG CtiLMProgramThermoStatGear::getValueB() const
 {
     return _valueb;
 }
-ULONG CtiLMProgramThermoStatGear::getValueD() const
+LONG CtiLMProgramThermoStatGear::getValueD() const
 {
     return _valued;
 }
-ULONG CtiLMProgramThermoStatGear::getValueF() const
+LONG CtiLMProgramThermoStatGear::getValueF() const
 {
     return _valuef;
 }
-ULONG CtiLMProgramThermoStatGear::getRandom() const
+LONG CtiLMProgramThermoStatGear::getRandom() const
 {
     return _random;
 }
-ULONG CtiLMProgramThermoStatGear::getValueTa() const
+LONG CtiLMProgramThermoStatGear::getValueTa() const
 {
     return _valueta;
 }
-ULONG CtiLMProgramThermoStatGear::getValueTb() const
+LONG CtiLMProgramThermoStatGear::getValueTb() const
 {
     return _valuetb;
 }
-ULONG CtiLMProgramThermoStatGear::getValueTc() const
+LONG CtiLMProgramThermoStatGear::getValueTc() const
 {
     return _valuetc;
 }
-ULONG CtiLMProgramThermoStatGear::getValueTd() const
+LONG CtiLMProgramThermoStatGear::getValueTd() const
 {
     return _valuetd;
 }
-ULONG CtiLMProgramThermoStatGear::getValueTe() const
+LONG CtiLMProgramThermoStatGear::getValueTe() const
 {
     return _valuete;
 }
-ULONG CtiLMProgramThermoStatGear::getValueTf() const
+LONG CtiLMProgramThermoStatGear::getValueTf() const
 {
     return _valuetf;
 }
@@ -110,62 +110,62 @@ CtiLMProgramThermoStatGear& CtiLMProgramThermoStatGear::setSettings(const RWCStr
     _settings = settings;
     return *this;
 }
-CtiLMProgramThermoStatGear& CtiLMProgramThermoStatGear::setMinValue(ULONG val)
+CtiLMProgramThermoStatGear& CtiLMProgramThermoStatGear::setMinValue(LONG val)
 {
     _minvalue = val;
     return *this;
 }
-CtiLMProgramThermoStatGear& CtiLMProgramThermoStatGear::setMaxValue(ULONG val)
+CtiLMProgramThermoStatGear& CtiLMProgramThermoStatGear::setMaxValue(LONG val)
 {
     _maxvalue = val;
     return *this;
 }
-CtiLMProgramThermoStatGear& CtiLMProgramThermoStatGear::setValueB(ULONG val)
+CtiLMProgramThermoStatGear& CtiLMProgramThermoStatGear::setValueB(LONG val)
 {
     _valueb = val;
     return *this;
 }
-CtiLMProgramThermoStatGear& CtiLMProgramThermoStatGear::setValueD(ULONG val)
+CtiLMProgramThermoStatGear& CtiLMProgramThermoStatGear::setValueD(LONG val)
 {
     _valued = val;
     return *this;
 }
-CtiLMProgramThermoStatGear& CtiLMProgramThermoStatGear::setValueF(ULONG val)
+CtiLMProgramThermoStatGear& CtiLMProgramThermoStatGear::setValueF(LONG val)
 {
     _valuef = val;
     return *this;
 }
-CtiLMProgramThermoStatGear& CtiLMProgramThermoStatGear::setRandom(ULONG val)
+CtiLMProgramThermoStatGear& CtiLMProgramThermoStatGear::setRandom(LONG val)
 {
     _random = val;
     return *this;
 }
-CtiLMProgramThermoStatGear& CtiLMProgramThermoStatGear::setValueTa(ULONG val)
+CtiLMProgramThermoStatGear& CtiLMProgramThermoStatGear::setValueTa(LONG val)
 {
     _valueta = val;
     return *this;
 }
-CtiLMProgramThermoStatGear& CtiLMProgramThermoStatGear::setValueTb(ULONG val)
+CtiLMProgramThermoStatGear& CtiLMProgramThermoStatGear::setValueTb(LONG val)
 {
     _valuetb = val;
     return *this;
 }
-CtiLMProgramThermoStatGear& CtiLMProgramThermoStatGear::setValueTc(ULONG val)
+CtiLMProgramThermoStatGear& CtiLMProgramThermoStatGear::setValueTc(LONG val)
 {
     _valuetc = val;
     return *this;
 }
-CtiLMProgramThermoStatGear& CtiLMProgramThermoStatGear::setValueTd(ULONG val)
+CtiLMProgramThermoStatGear& CtiLMProgramThermoStatGear::setValueTd(LONG val)
 {
     _valuetd = val;
     return *this;
 }
-CtiLMProgramThermoStatGear& CtiLMProgramThermoStatGear::setValueTe(ULONG val)
+CtiLMProgramThermoStatGear& CtiLMProgramThermoStatGear::setValueTe(LONG val)
 {
     _valuete = val;
     return *this;
 }
-CtiLMProgramThermoStatGear& CtiLMProgramThermoStatGear::setValueTf(ULONG val)
+CtiLMProgramThermoStatGear& CtiLMProgramThermoStatGear::setValueTf(LONG val)
 {
     _valuetf = val;
     return *this;
@@ -284,6 +284,8 @@ CtiLMProgramThermoStatGear* CtiLMProgramThermoStatGear::replicate() const
 ---------------------------------------------------------------------------*/
 void CtiLMProgramThermoStatGear::restore(RWDBReader& rdr)
 {
+    CtiLMProgramDirectGear::restore(rdr);
+
     rdr["settings"] >> _settings;
     rdr["minvalue"] >> _minvalue;
     rdr["maxvalue"] >> _maxvalue;

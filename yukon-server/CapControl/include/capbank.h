@@ -36,7 +36,7 @@ RWDECLARE_COLLECTABLE( CtiCapBank )
 
     virtual ~CtiCapBank();
 
-    ULONG Id() const;
+    LONG Id() const;
     const RWCString& Name() const;
     const RWCString& Type() const;
     const RWCString& CurrentState() const;
@@ -46,18 +46,18 @@ RWDECLARE_COLLECTABLE( CtiCapBank )
     const RWCString& DeviceClass() const;
     const RWCString& BankAddress() const;
     const RWCString& OperationalState() const;
-    ULONG ControlPointId() const;
+    LONG ControlPointId() const;
     DOUBLE BankSize() const;
-    ULONG ControlDeviceId() const;
-    ULONG StatusPointId() const;
-    ULONG ControlStatus() const;
-    ULONG OperationAnalogPointId() const;
-    ULONG Operations() const;
+    LONG ControlDeviceId() const;
+    LONG StatusPointId() const;
+    LONG ControlStatus() const;
+    LONG OperationAnalogPointId() const;
+    LONG Operations() const;
     const RWDBDateTime& LastStatusChangeTime() const;
-    ULONG TagsControlStatus() const;
+    LONG TagsControlStatus() const;
     BOOL StatusReceivedFlag() const;
 
-    CtiCapBank& setId(ULONG id);
+    CtiCapBank& setId(LONG id);
     CtiCapBank& setName(const RWCString& name);
     CtiCapBank& setType(const RWCString& type);
     CtiCapBank& setCurrentState(const RWCString& current);
@@ -67,15 +67,15 @@ RWDECLARE_COLLECTABLE( CtiCapBank )
     CtiCapBank& setDeviceClass(const RWCString& deviceclass);
     CtiCapBank& setBankAddress(const RWCString& address);
     CtiCapBank& setOperationalState(const RWCString& operational);
-    CtiCapBank& setControlPointId(ULONG controlpoint);
+    CtiCapBank& setControlPointId(LONG controlpoint);
     CtiCapBank& setBankSize(DOUBLE size);
-    CtiCapBank& setControlDeviceId(ULONG controldevice);
-    CtiCapBank& setStatusPointId(ULONG statuspoint);
-    CtiCapBank& setControlStatus(ULONG status);
-    CtiCapBank& setOperationAnalogPointId(ULONG operationpoint);
-    CtiCapBank& setOperations(ULONG operations);
+    CtiCapBank& setControlDeviceId(LONG controldevice);
+    CtiCapBank& setStatusPointId(LONG statuspoint);
+    CtiCapBank& setControlStatus(LONG status);
+    CtiCapBank& setOperationAnalogPointId(LONG operationpoint);
+    CtiCapBank& setOperations(LONG operations);
     CtiCapBank& setLastStatusChangeTime(const RWDBDateTime& laststatuschangetime);
-    CtiCapBank& setTagsControlStatus(ULONG tags);
+    CtiCapBank& setTagsControlStatus(LONG tags);
     CtiCapBank& setStatusReceivedFlag(BOOL statusreceived);
 
     void restoreOperationFields(RWDBReader& rdr);
@@ -108,7 +108,7 @@ RWDECLARE_COLLECTABLE( CtiCapBank )
     
 private:
     
-    ULONG _id;
+    LONG _id;
     RWCString _name;
     RWCString _type;
     RWCString _currentstate;
@@ -118,15 +118,15 @@ private:
     RWCString _deviceclass;
     RWCString _bankaddress;
     RWCString _operationalstate;
-    ULONG _controlpointid;
+    LONG _controlpointid;
     DOUBLE _banksize;
-    ULONG _controldeviceid;
-    ULONG _statuspointid;
-    ULONG _controlstatus;
-    ULONG _operationanalogpointid;
-    ULONG _operations;
+    LONG _controldeviceid;
+    LONG _statuspointid;
+    LONG _controlstatus;
+    LONG _operationanalogpointid;
+    LONG _operations;
     RWDBDateTime _laststatuschangetime;
-    ULONG _tagscontrolstatus;
+    LONG _tagscontrolstatus;
     BOOL _statusreceivedflag;
 
     mutable RWRecursiveLock<RWMutexLock> _mutex;

@@ -57,7 +57,7 @@ CtiLMEnergyExchangeCustomerReply::~CtiLMEnergyExchangeCustomerReply()
 
     Returns the unique id of the customer
 ---------------------------------------------------------------------------*/
-ULONG CtiLMEnergyExchangeCustomerReply::getCustomerId() const
+LONG CtiLMEnergyExchangeCustomerReply::getCustomerId() const
 {
 
     return _customerid;
@@ -68,7 +68,7 @@ ULONG CtiLMEnergyExchangeCustomerReply::getCustomerId() const
 
     Returns the offer id of the customer in a program
 ---------------------------------------------------------------------------*/
-ULONG CtiLMEnergyExchangeCustomerReply::getOfferId() const
+LONG CtiLMEnergyExchangeCustomerReply::getOfferId() const
 {
 
     return _offerid;
@@ -102,7 +102,7 @@ const RWDBDateTime& CtiLMEnergyExchangeCustomerReply::getAcceptDateTime() const
     Returns the offer revision number the customer has accepted or is
     currently being offered in a program
 ---------------------------------------------------------------------------*/
-ULONG CtiLMEnergyExchangeCustomerReply::getRevisionNumber() const
+LONG CtiLMEnergyExchangeCustomerReply::getRevisionNumber() const
 {
 
     return _revisionnumber;
@@ -168,7 +168,7 @@ RWOrdered& CtiLMEnergyExchangeCustomerReply::getLMEnergyExchangeHourlyCustomers(
 
     Sets the id of the customer - use with caution
 ---------------------------------------------------------------------------*/
-CtiLMEnergyExchangeCustomerReply& CtiLMEnergyExchangeCustomerReply::setCustomerId(ULONG custid)
+CtiLMEnergyExchangeCustomerReply& CtiLMEnergyExchangeCustomerReply::setCustomerId(LONG custid)
 {
 
     _customerid = custid;
@@ -181,7 +181,7 @@ CtiLMEnergyExchangeCustomerReply& CtiLMEnergyExchangeCustomerReply::setCustomerI
 
     Sets the offer id of the customer
 ---------------------------------------------------------------------------*/
-CtiLMEnergyExchangeCustomerReply& CtiLMEnergyExchangeCustomerReply::setOfferId(ULONG offid)
+CtiLMEnergyExchangeCustomerReply& CtiLMEnergyExchangeCustomerReply::setOfferId(LONG offid)
 {
 
     _offerid = offid;
@@ -217,7 +217,7 @@ CtiLMEnergyExchangeCustomerReply& CtiLMEnergyExchangeCustomerReply::setAcceptDat
 
     Sets the offer revision number of the customer
 ---------------------------------------------------------------------------*/
-CtiLMEnergyExchangeCustomerReply& CtiLMEnergyExchangeCustomerReply::setRevisionNumber(ULONG revnumber)
+CtiLMEnergyExchangeCustomerReply& CtiLMEnergyExchangeCustomerReply::setRevisionNumber(LONG revnumber)
 {
 
     _revisionnumber = revnumber;
@@ -356,7 +356,7 @@ CtiLMEnergyExchangeCustomerReply& CtiLMEnergyExchangeCustomerReply::operator=(co
         _energyexchangenotes = right._energyexchangenotes;
 
         _lmenergyexchangehourlycustomers.clearAndDestroy();
-        for(UINT i=0;i<right._lmenergyexchangehourlycustomers.entries();i++)
+        for(LONG i=0;i<right._lmenergyexchangehourlycustomers.entries();i++)
         {
             _lmenergyexchangehourlycustomers.insert(((CtiLMEnergyExchangeHourlyCustomer*)right._lmenergyexchangehourlycustomers[i])->replicate());
         }

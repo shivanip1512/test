@@ -35,22 +35,22 @@ RWDECLARE_COLLECTABLE( CtiLMEnergyExchangeCustomerReply )
 
     virtual ~CtiLMEnergyExchangeCustomerReply();
     
-    ULONG getCustomerId() const;
-    ULONG getOfferId() const;
+    LONG getCustomerId() const;
+    LONG getOfferId() const;
     const RWCString& getAcceptStatus() const;
     const RWDBDateTime& getAcceptDateTime() const;
-    ULONG getRevisionNumber() const;
+    LONG getRevisionNumber() const;
     const RWCString& getIPAddressOfAcceptUser() const;
     const RWCString& getUserIdName() const;
     const RWCString& getNameOfAcceptPerson() const;
     const RWCString& getEnergyExchangeNotes() const;
     RWOrdered& getLMEnergyExchangeHourlyCustomers();
 
-    CtiLMEnergyExchangeCustomerReply& setCustomerId(ULONG custid);
-    CtiLMEnergyExchangeCustomerReply& setOfferId(ULONG offid);
+    CtiLMEnergyExchangeCustomerReply& setCustomerId(LONG custid);
+    CtiLMEnergyExchangeCustomerReply& setOfferId(LONG offid);
     CtiLMEnergyExchangeCustomerReply& setAcceptStatus(const RWCString& accstatus);
     CtiLMEnergyExchangeCustomerReply& setAcceptDateTime(const RWDBDateTime& acctime);
-    CtiLMEnergyExchangeCustomerReply& setRevisionNumber(ULONG revnumber);
+    CtiLMEnergyExchangeCustomerReply& setRevisionNumber(LONG revnumber);
     CtiLMEnergyExchangeCustomerReply& setIPAddressOfAcceptUser(const RWCString& ipaddress);
     CtiLMEnergyExchangeCustomerReply& setUserIdName(const RWCString& username);
     CtiLMEnergyExchangeCustomerReply& setNameOfAcceptPerson(const RWCString& nameaccperson);
@@ -85,11 +85,11 @@ protected:
 
 private:
 
-    ULONG _customerid;
-    ULONG _offerid;
+    LONG _customerid;
+    LONG _offerid;
     RWCString _acceptstatus;
     RWDBDateTime _acceptdatetime;
-    ULONG _revisionnumber;
+    LONG _revisionnumber;
     RWCString _ipaddressofacceptuser;
     RWCString _useridname;
     RWCString _nameofacceptperson;

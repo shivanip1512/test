@@ -158,16 +158,16 @@ void CtiCapController::controlLoop()
         RWOrdered substationBusChanges;
         CtiMultiMsg* multiDispatchMsg = new CtiMultiMsg();
         CtiMultiMsg* multiPilMsg = new CtiMultiMsg();
-        ULONG lastThreadPulse = 0;
-        ULONG lastDailyReset = 0;
+        LONG lastThreadPulse = 0;
+        LONG lastDailyReset = 0;
         while(TRUE)
         {
             {
                 RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
                 currentDateTime.now();
-                ULONG secondsFromBeginningOfDay = (currentDateTime.hour() * 3600) + (currentDateTime.minute() * 60) + currentDateTime.second();
-                ULONG secondsFrom1901 = currentDateTime.seconds();
+                LONG secondsFromBeginningOfDay = (currentDateTime.hour() * 3600) + (currentDateTime.minute() * 60) + currentDateTime.second();
+                LONG secondsFrom1901 = currentDateTime.seconds();
     
                 if(_CC_DEBUG)
                 {
@@ -218,7 +218,7 @@ void CtiCapController::controlLoop()
     
                 RWOrdered& pointChanges = multiDispatchMsg->getData();
                 RWOrdered& pilMessages = multiPilMsg->getData();
-                for(UINT i=0;i<ccSubstationBuses.entries();i++)
+                for(LONG i=0;i<ccSubstationBuses.entries();i++)
                 {
                     CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses[i];
     
@@ -516,7 +516,7 @@ CtiConnection* CtiCapController::getPILConnection()
 
     Reads off the Dispatch connection and handles messages accordingly.
 ---------------------------------------------------------------------------*/
-void CtiCapController::checkDispatch(ULONG secondsFrom1901)
+void CtiCapController::checkDispatch(LONG secondsFrom1901)
 {
     BOOL done = FALSE;
     do
@@ -539,7 +539,7 @@ void CtiCapController::checkDispatch(ULONG secondsFrom1901)
 
     Reads off the PIL connection and handles messages accordingly.
 ---------------------------------------------------------------------------*/
-void CtiCapController::checkPIL(ULONG secondsFrom1901)
+void CtiCapController::checkPIL(LONG secondsFrom1901)
 {
     BOOL done = FALSE;
     do
@@ -571,7 +571,7 @@ void CtiCapController::registerForPoints(const RWOrdered& subBuses)
     }
 
     CtiPointRegistrationMsg* regMsg = new CtiPointRegistrationMsg();
-    for(UINT i=0;i<subBuses.entries();i++)
+    for(LONG i=0;i<subBuses.entries();i++)
     {
         CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)subBuses[i];
 
@@ -586,7 +586,7 @@ void CtiCapController::registerForPoints(const RWOrdered& subBuses)
         
         RWOrdered& ccFeeders = currentSubstationBus->getCCFeeders();
 
-        for(UINT j=0;j<ccFeeders.entries();j++)
+        for(LONG j=0;j<ccFeeders.entries();j++)
         {
             CtiCCFeeder* currentFeeder = (CtiCCFeeder*)(ccFeeders[j]);
 
@@ -601,7 +601,7 @@ void CtiCapController::registerForPoints(const RWOrdered& subBuses)
 
             RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
 
-            for(UINT k=0;k<ccCapBanks.entries();k++)
+            for(LONG k=0;k<ccCapBanks.entries();k++)
             {
                 CtiCCCapBank* currentCapBank = (CtiCCCapBank*)(ccCapBanks[k]);
 
@@ -617,7 +617,7 @@ void CtiCapController::registerForPoints(const RWOrdered& subBuses)
         }
     }
 
-    /*for(UINT x=0;x<regMsg->getCount();x++)
+    /*for(LONG x=0;x<regMsg->getCount();x++)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         LONG pid = regMsg->operator [](x);
@@ -632,7 +632,7 @@ void CtiCapController::registerForPoints(const RWOrdered& subBuses)
 
     Reads off the Dispatch connection and handles messages accordingly.
 ---------------------------------------------------------------------------*/
-void CtiCapController::parseMessage(RWCollectable *message, ULONG secondsFrom1901)
+void CtiCapController::parseMessage(RWCollectable *message, LONG secondsFrom1901)
 {
     try
     {
@@ -743,7 +743,7 @@ void CtiCapController::parseMessage(RWCollectable *message, ULONG secondsFrom190
 
     Handles point data messages and updates substation bus point values.
 ---------------------------------------------------------------------------*/
-void CtiCapController::pointDataMsg( long pointID, double value, unsigned quality, unsigned tags, RWTime& timestamp, ULONG secondsFrom1901 )
+void CtiCapController::pointDataMsg( long pointID, double value, unsigned quality, unsigned tags, RWTime& timestamp, LONG secondsFrom1901 )
 {
     if( _CC_DEBUG )
     {
@@ -913,12 +913,12 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                         if( currentCapBank->getStatusPointId() == pointID )
                         {
                             if( timestamp > currentCapBank->getLastStatusChangeTime() ||
-                                currentCapBank->getControlStatus() != (ULONG)value )
+                                currentCapBank->getControlStatus() != (LONG)value )
                             {
                                 currentSubstationBus->setBusUpdatedFlag(TRUE);
                             }
 
-                            if( currentCapBank->getControlStatus() != (ULONG)value &&
+                            if( currentCapBank->getControlStatus() != (LONG)value &&
                                 currentSubstationBus->getRecentlyControlledFlag() &&
                                 currentFeeder->getLastCapBankControlledDeviceId() == currentCapBank->getPAOId() )
                             {
@@ -926,7 +926,7 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                                 currentFeeder->setRecentlyControlledFlag(FALSE);
                                 if( currentSubstationBus->getControlMethod() == CtiCCSubstationBus::IndividualFeederControlMethod )
                                 {
-                                    for(ULONG x=0;x<ccFeeders.entries();x++)
+                                    for(LONG x=0;x<ccFeeders.entries();x++)
                                     {
                                         if( ((CtiCCFeeder*)ccFeeders[x])->getRecentlyControlledFlag() )
                                         {
@@ -936,8 +936,8 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                                     }
                                 }
                             }
-                            currentCapBank->setControlStatus((ULONG)value);
-                            currentCapBank->setTagsControlStatus((ULONG)tags);
+                            currentCapBank->setControlStatus((LONG)value);
+                            currentCapBank->setTagsControlStatus((LONG)tags);
                             currentCapBank->setLastStatusChangeTime(timestamp);
                             currentSubstationBus->figureEstimatedVarLoadPointValue();
                             if( currentSubstationBus->getEstimatedVarLoadPointId() > 0 )
@@ -957,11 +957,11 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                         else if( currentCapBank->getOperationAnalogPointId() == pointID )
                         {
                             if( timestamp > currentCapBank->getLastStatusChangeTime() ||
-                                currentCapBank->getCurrentDailyOperations() != (ULONG)value )
+                                currentCapBank->getCurrentDailyOperations() != (LONG)value )
                             {
                                 currentSubstationBus->setBusUpdatedFlag(TRUE);
                             }
-                            currentCapBank->setCurrentDailyOperations((ULONG)value);
+                            currentCapBank->setCurrentDailyOperations((LONG)value);
                             found = TRUE;
                             break;
                         }
@@ -984,7 +984,7 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
     Handles porter return messages and updates the status of substation bus
     cap bank controls.
 ---------------------------------------------------------------------------*/
-void CtiCapController::porterReturnMsg( long deviceId, RWCString commandString, int status, RWCString resultString, ULONG secondsFrom1901 )
+void CtiCapController::porterReturnMsg( long deviceId, RWCString commandString, int status, RWCString resultString, LONG secondsFrom1901 )
 {
     /*if( _CC_DEBUG )
     {
@@ -1067,7 +1067,7 @@ void CtiCapController::porterReturnMsg( long deviceId, RWCString commandString, 
 
     Handles signal messages and updates substation bus tags.
 ---------------------------------------------------------------------------*/
-void CtiCapController::signalMsg( long pointID, unsigned tags, RWCString text, RWCString additional, ULONG secondsFrom1901 )
+void CtiCapController::signalMsg( long pointID, unsigned tags, RWCString text, RWCString additional, LONG secondsFrom1901 )
 {
     if( _CC_DEBUG )
     {
@@ -1108,11 +1108,11 @@ void CtiCapController::signalMsg( long pointID, unsigned tags, RWCString text, R
 
                     if( currentCapBank->getStatusPointId() == pointID )
                     {
-                        if( currentCapBank->getTagsControlStatus() != (ULONG)tags )
+                        if( currentCapBank->getTagsControlStatus() != (LONG)tags )
                         {
                             currentSubstationBus->setBusUpdatedFlag(TRUE);
                         }
-                        currentCapBank->setTagsControlStatus((ULONG)tags);
+                        currentCapBank->setTagsControlStatus((LONG)tags);
                         found = TRUE;
                         break;
                     }

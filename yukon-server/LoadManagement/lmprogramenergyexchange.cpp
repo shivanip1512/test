@@ -61,7 +61,7 @@ CtiLMProgramEnergyExchange::~CtiLMProgramEnergyExchange()
     
     Returns the minimum notify time in seconds of the energy exchange program
 ---------------------------------------------------------------------------*/
-ULONG CtiLMProgramEnergyExchange::getMinNotifyTime() const
+LONG CtiLMProgramEnergyExchange::getMinNotifyTime() const
 {
 
     return _minnotifytime;
@@ -149,7 +149,7 @@ RWOrdered& CtiLMProgramEnergyExchange::getLMEnergyExchangeCustomers()
     
     Sets the minimum notify time of the energy exchange program
 ---------------------------------------------------------------------------*/    
-CtiLMProgramEnergyExchange& CtiLMProgramEnergyExchange::setMinNotifyTime(ULONG notifytime)
+CtiLMProgramEnergyExchange& CtiLMProgramEnergyExchange::setMinNotifyTime(LONG notifytime)
 {
 
     _minnotifytime = notifytime;
@@ -228,7 +228,7 @@ CtiLMProgramEnergyExchange& CtiLMProgramEnergyExchange::setStoppedEarlyMsg(const
     
     Sets the group selection method of the energy exchange program
 ---------------------------------------------------------------------------*/    
-DOUBLE CtiLMProgramEnergyExchange::reduceProgramLoad(DOUBLE loadReductionNeeded, ULONG currentPriority, RWOrdered controlAreaTriggers, ULONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
+DOUBLE CtiLMProgramEnergyExchange::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, RWOrdered controlAreaTriggers, LONG secondsFromBeginningOfDay, LONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
 {
 
 
@@ -254,7 +254,7 @@ void CtiLMProgramEnergyExchange::stopProgramControl(CtiMultiMsg* multiPilMsg, Ct
     if( getProgramState() == CtiLMProgramBase::ManualActiveState ||
         getProgramState() == CtiLMProgramBase::ActiveState )
     {
-        for(ULONG i=0;i<_lmenergyexchangeoffers.entries();i++)
+        for(LONG i=0;i<_lmenergyexchangeoffers.entries();i++)
         {
             CtiLMEnergyExchangeOffer* currentOffer = (CtiLMEnergyExchangeOffer*)_lmenergyexchangeoffers[i];
             if( currentOffer->getRunStatus() == CtiLMEnergyExchangeOffer::CanceledRunStatus )
@@ -278,15 +278,15 @@ void CtiLMProgramEnergyExchange::stopProgramControl(CtiMultiMsg* multiPilMsg, Ct
 
     Handles manual control messages for the energy exchange program.
 ---------------------------------------------------------------------------*/
-BOOL CtiLMProgramEnergyExchange::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
+BOOL CtiLMProgramEnergyExchange::handleManualControl(LONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
 {
 
 
     BOOL returnBoolean = FALSE;
 
-    ULONG numberOfCompletedOrCanceledOffers = 0;
+    LONG numberOfCompletedOrCanceledOffers = 0;
     const RWDBDateTime currentDateTime;
-    for(ULONG i=0;i<_lmenergyexchangeoffers.entries();i++)
+    for(LONG i=0;i<_lmenergyexchangeoffers.entries();i++)
     {
         CtiLMEnergyExchangeOffer* currentOffer = (CtiLMEnergyExchangeOffer*)_lmenergyexchangeoffers[i];
         CtiLMEnergyExchangeOfferRevision* currentOfferRevision = currentOffer->getCurrentOfferRevision();
@@ -414,7 +414,7 @@ void CtiLMProgramEnergyExchange::notifyCustomers(CtiLMEnergyExchangeOffer* offer
     if( _lmenergyexchangecustomers.entries() > 0 )
     {
         CtiEmailMsg* emailMsg = NULL;
-        for(ULONG i=0;i<_lmenergyexchangecustomers.entries();i++)
+        for(LONG i=0;i<_lmenergyexchangecustomers.entries();i++)
         {
             CtiLMEnergyExchangeCustomer* currentCustomer = (CtiLMEnergyExchangeCustomer*)_lmenergyexchangecustomers[i];
             if( !currentCustomer->hasAcceptedOffer(offer->getOfferId()) )
@@ -483,7 +483,7 @@ void CtiLMProgramEnergyExchange::notifyCustomersOfCancel(CtiLMEnergyExchangeOffe
     if( _lmenergyexchangecustomers.entries() > 0 )
     {
         CtiEmailMsg* emailMsg = NULL;
-        for(ULONG i=0;i<_lmenergyexchangecustomers.entries();i++)
+        for(LONG i=0;i<_lmenergyexchangecustomers.entries();i++)
         {
             CtiLMEnergyExchangeCustomer* currentCustomer = (CtiLMEnergyExchangeCustomer*)_lmenergyexchangecustomers[i];
             if( currentCustomer->hasAcceptedOffer(offer->getOfferId()) )
@@ -598,13 +598,13 @@ CtiLMProgramEnergyExchange& CtiLMProgramEnergyExchange::operator=(const CtiLMPro
         _stoppedearlymsg = right._stoppedearlymsg;
 
         _lmenergyexchangeoffers.clearAndDestroy();
-        for(UINT i=0;i<right._lmenergyexchangeoffers.entries();i++)
+        for(LONG i=0;i<right._lmenergyexchangeoffers.entries();i++)
         {
             _lmenergyexchangeoffers.insert(((CtiLMEnergyExchangeOffer*)right._lmenergyexchangeoffers[i])->replicate());
         }
 
         _lmenergyexchangecustomers.clearAndDestroy();
-        for(UINT j=0;j<right._lmenergyexchangecustomers.entries();j++)
+        for(LONG j=0;j<right._lmenergyexchangecustomers.entries();j++)
         {
             _lmenergyexchangecustomers.insert(((CtiLMEnergyExchangeCustomer*)right._lmenergyexchangecustomers[j])->replicate());
         }
@@ -636,13 +636,13 @@ int CtiLMProgramEnergyExchange::operator!=(const CtiLMProgramEnergyExchange& rig
 
     Returns a boolean if there is a offer for a given date
 ---------------------------------------------------------------------------*/
-BOOL CtiLMProgramEnergyExchange::isOfferWithId(ULONG offerid)
+BOOL CtiLMProgramEnergyExchange::isOfferWithId(LONG offerid)
 {
     BOOL returnBoolean = FALSE;
 
     if( _lmenergyexchangeoffers.entries() > 0 )
     {
-        for(ULONG i=0;i<_lmenergyexchangeoffers.entries();i++)
+        for(LONG i=0;i<_lmenergyexchangeoffers.entries();i++)
         {
             if( offerid == ((CtiLMEnergyExchangeOffer*)_lmenergyexchangeoffers[i])->getOfferId() )
             {
@@ -660,14 +660,14 @@ BOOL CtiLMProgramEnergyExchange::isOfferWithId(ULONG offerid)
 
     Returns a boolean if there is a offer 
 ---------------------------------------------------------------------------*/
-BOOL CtiLMProgramEnergyExchange::isOfferRevisionOpen(ULONG offerID, ULONG revisionNumber)
+BOOL CtiLMProgramEnergyExchange::isOfferRevisionOpen(LONG offerID, LONG revisionNumber)
 {
     BOOL returnBoolean = FALSE;
 
     RWDBDateTime currentDateTime;
     if( _lmenergyexchangeoffers.entries() > 0 )
     {
-        for(ULONG i=0;i<_lmenergyexchangeoffers.entries();i++)
+        for(LONG i=0;i<_lmenergyexchangeoffers.entries();i++)
         {
             CtiLMEnergyExchangeOffer* currentOffer = (CtiLMEnergyExchangeOffer*)_lmenergyexchangeoffers[i];
             if( currentOffer->getOfferId() == offerID  )
@@ -675,7 +675,7 @@ BOOL CtiLMProgramEnergyExchange::isOfferRevisionOpen(ULONG offerID, ULONG revisi
                 if( currentOffer->getLMEnergyExchangeOfferRevisions().entries() > 0 )
                 {
                     RWOrdered& revisions = currentOffer->getLMEnergyExchangeOfferRevisions();
-                    for(ULONG j=0;j<revisions.entries();j++)
+                    for(LONG j=0;j<revisions.entries();j++)
                     {
                         CtiLMEnergyExchangeOfferRevision* currentRevision = (CtiLMEnergyExchangeOfferRevision*)revisions[j];
                         if( currentRevision->getRevisionNumber() == revisionNumber )
@@ -702,13 +702,13 @@ BOOL CtiLMProgramEnergyExchange::isOfferRevisionOpen(ULONG offerID, ULONG revisi
 
     Returns a pointer to a offer for a given offer id
 ---------------------------------------------------------------------------*/
-CtiLMEnergyExchangeOffer* CtiLMProgramEnergyExchange::getOfferWithId(ULONG offerid)
+CtiLMEnergyExchangeOffer* CtiLMProgramEnergyExchange::getOfferWithId(LONG offerid)
 {
     CtiLMEnergyExchangeOffer* returnOffer = NULL;
 
     if( _lmenergyexchangeoffers.entries() > 0 )
     {
-        for(ULONG i=0;i<_lmenergyexchangeoffers.entries();i++)
+        for(LONG i=0;i<_lmenergyexchangeoffers.entries();i++)
         {
             if( offerid == ((CtiLMEnergyExchangeOffer*)_lmenergyexchangeoffers[i])->getOfferId() )
             {
@@ -792,7 +792,7 @@ void CtiLMProgramEnergyExchange::dumpDynamicData(RWDBConnection& conn, RWDBDateT
 {
     if( getManualControlReceivedFlag() )
     {
-        for(ULONG i=0;i<_lmenergyexchangeoffers.entries();i++)
+        for(LONG i=0;i<_lmenergyexchangeoffers.entries();i++)
         {
             ((CtiLMEnergyExchangeOffer*)_lmenergyexchangeoffers[i])->dumpDynamicData(conn, currentDateTime);
         }

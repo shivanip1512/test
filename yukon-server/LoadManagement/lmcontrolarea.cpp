@@ -83,7 +83,7 @@ CtiLMControlArea::~CtiLMControlArea()
 
     Returns the unique id of the control area
 ---------------------------------------------------------------------------*/
-ULONG CtiLMControlArea::getPAOId() const
+LONG CtiLMControlArea::getPAOId() const
 {
     return _paoid;
 }
@@ -123,7 +123,7 @@ const RWCString& CtiLMControlArea::getPAOName() const
 
     Returns the pao type of the control area
 ---------------------------------------------------------------------------*/
-ULONG CtiLMControlArea::getPAOType() const
+LONG CtiLMControlArea::getPAOType() const
 {
     return _paotype;
 }
@@ -163,7 +163,7 @@ const RWCString& CtiLMControlArea::getDefOperationalState() const
 
     Returns the control interval of the control area in seconds
 ---------------------------------------------------------------------------*/
-ULONG CtiLMControlArea::getControlInterval() const
+LONG CtiLMControlArea::getControlInterval() const
 {
     return _controlinterval;
 }
@@ -173,7 +173,7 @@ ULONG CtiLMControlArea::getControlInterval() const
 
     Returns the minimum response time of the control area in seconds
 ---------------------------------------------------------------------------*/
-ULONG CtiLMControlArea::getMinResponseTime() const
+LONG CtiLMControlArea::getMinResponseTime() const
 {
     return _minresponsetime;
 }
@@ -265,7 +265,7 @@ BOOL CtiLMControlArea::getUpdatedFlag() const
 
     Returns the point id of the control area status point
 ---------------------------------------------------------------------------*/
-ULONG CtiLMControlArea::getControlAreaStatusPointId() const
+LONG CtiLMControlArea::getControlAreaStatusPointId() const
 {
     return _controlareastatuspointid;
 }
@@ -275,7 +275,7 @@ ULONG CtiLMControlArea::getControlAreaStatusPointId() const
 
     Returns the state of the control area
 ---------------------------------------------------------------------------*/
-ULONG CtiLMControlArea::getControlAreaState() const
+LONG CtiLMControlArea::getControlAreaState() const
 {
     return _controlareastate;
 }
@@ -320,7 +320,7 @@ LONG CtiLMControlArea::getCurrentDailyStopTime() const
 
     Sets the pao id of the control area - use with caution
 ---------------------------------------------------------------------------*/
-CtiLMControlArea& CtiLMControlArea::setPAOId(ULONG id)
+CtiLMControlArea& CtiLMControlArea::setPAOId(LONG id)
 {
 
     _paoid = id;
@@ -369,7 +369,7 @@ CtiLMControlArea& CtiLMControlArea::setPAOName(const RWCString& name)
 
     Sets the pao type of the control area
 ---------------------------------------------------------------------------*/
-CtiLMControlArea& CtiLMControlArea::setPAOType(ULONG type)
+CtiLMControlArea& CtiLMControlArea::setPAOType(LONG type)
 {
 
     _paotype = type;
@@ -419,7 +419,7 @@ CtiLMControlArea& CtiLMControlArea::setDefOperationalState(const RWCString& opst
 
     Sets the control interval of the control area in seconds
 ---------------------------------------------------------------------------*/
-CtiLMControlArea& CtiLMControlArea::setControlInterval(ULONG interval)
+CtiLMControlArea& CtiLMControlArea::setControlInterval(LONG interval)
 {
 
     _controlinterval = interval;
@@ -432,7 +432,7 @@ CtiLMControlArea& CtiLMControlArea::setControlInterval(ULONG interval)
 
     Sets the minimum response time of the control area in seconds
 ---------------------------------------------------------------------------*/
-CtiLMControlArea& CtiLMControlArea::setMinResponseTime(ULONG response)
+CtiLMControlArea& CtiLMControlArea::setMinResponseTime(LONG response)
 {
 
     _minresponsetime = response;
@@ -487,12 +487,12 @@ CtiLMControlArea& CtiLMControlArea::setRequireAllTriggersActiveFlag(BOOL require
     Figures out when the control area should be checked again according to the
     control interval.
 ---------------------------------------------------------------------------*/
-CtiLMControlArea& CtiLMControlArea::figureNextCheckTime(ULONG secondsFrom1901)
+CtiLMControlArea& CtiLMControlArea::figureNextCheckTime(LONG secondsFrom1901)
 {
 
     if( _controlinterval != 0 )
     {
-        ULONG tempsum = (secondsFrom1901-(secondsFrom1901%_controlinterval))+_controlinterval;
+        LONG tempsum = (secondsFrom1901-(secondsFrom1901%_controlinterval))+_controlinterval;
         _nextchecktime = RWDBDateTime(RWTime(tempsum));
     }
     else
@@ -534,7 +534,7 @@ CtiLMControlArea& CtiLMControlArea::setUpdatedFlag(BOOL updated)
 
     Sets the point id of the control area status point
 ---------------------------------------------------------------------------*/
-CtiLMControlArea& CtiLMControlArea::setControlAreaStatusPointId(ULONG statuspointid)
+CtiLMControlArea& CtiLMControlArea::setControlAreaStatusPointId(LONG statuspointid)
 {
 
     _controlareastatuspointid = statuspointid;
@@ -547,7 +547,7 @@ CtiLMControlArea& CtiLMControlArea::setControlAreaStatusPointId(ULONG statuspoin
 
     Sets the state of the control area
 ---------------------------------------------------------------------------*/
-CtiLMControlArea& CtiLMControlArea::setControlAreaState(ULONG state)
+CtiLMControlArea& CtiLMControlArea::setControlAreaState(LONG state)
 {
 
     _controlareastate = state;
@@ -603,7 +603,7 @@ CtiLMControlArea& CtiLMControlArea::setCurrentDailyStopTime(LONG tempstop)
     Returns a BOOLean if the control area can be controlled at the current
     time and day of the week.
 ---------------------------------------------------------------------------*/
-BOOL CtiLMControlArea::isControlTime(ULONG secondsFromBeginningOfDay)
+BOOL CtiLMControlArea::isControlTime(LONG secondsFromBeginningOfDay)
 {
 
 
@@ -645,7 +645,7 @@ BOOL CtiLMControlArea::isControlStillNeeded()
     DOUBLE currentReduction = 0.0;
     if( _lmprograms.entries() > 0 )
     {
-        for(ULONG i=0;i<_lmprograms.entries();i++)
+        for(LONG i=0;i<_lmprograms.entries();i++)
         {
             CtiLMProgramBase* currentLMProgram = (CtiLMProgramBase*)_lmprograms[i];
             if( currentLMProgram->getReductionTotal() > 0.0 )
@@ -657,8 +657,8 @@ BOOL CtiLMControlArea::isControlStillNeeded()
 
     if( _lmcontrolareatriggers.entries() > 0 )
     {
-        UINT triggersStillTripped = 0;
-        for(UINT i=0;i<_lmcontrolareatriggers.entries();i++)
+        LONG triggersStillTripped = 0;
+        for(LONG i=0;i<_lmcontrolareatriggers.entries();i++)
         {
             CtiLMControlAreaTrigger* currentTrigger = (CtiLMControlAreaTrigger*)_lmcontrolareatriggers[i];
             if( currentTrigger->getTriggerType() == CtiLMControlAreaTrigger::ThresholdTriggerType )
@@ -704,7 +704,7 @@ BOOL CtiLMControlArea::isControlStillNeeded()
     Returns a BOOLean if the control area can be controlled more because the
     time since the last control is at least as long as the min response time.
 ---------------------------------------------------------------------------*/
-BOOL CtiLMControlArea::isPastMinResponseTime(ULONG secondsFrom1901)
+BOOL CtiLMControlArea::isPastMinResponseTime(LONG secondsFrom1901)
 {
 
 
@@ -713,7 +713,7 @@ BOOL CtiLMControlArea::isPastMinResponseTime(ULONG secondsFrom1901)
 
     if( _lmprograms.entries() > 0 )
     {
-        for(ULONG i=0;i<_lmprograms.entries();i++)
+        for(LONG i=0;i<_lmprograms.entries();i++)
         {
             CtiLMProgramBase* currentLMProgram = (CtiLMProgramBase*)_lmprograms[i];
             if( currentLMProgram->getLastControlSent().seconds() + getMinResponseTime() > secondsFrom1901 )
@@ -741,7 +741,7 @@ BOOL CtiLMControlArea::isManualControlReceived()
 
     if( _lmprograms.entries() > 0 )
     {
-        for(ULONG i=0;i<_lmprograms.entries();i++)
+        for(LONG i=0;i<_lmprograms.entries();i++)
         {
             CtiLMProgramBase* currentLMProgram = (CtiLMProgramBase*)_lmprograms[i];
             if( currentLMProgram->getManualControlReceivedFlag() )
@@ -767,7 +767,7 @@ BOOL CtiLMControlArea::isThresholdTriggerTripped()
     BOOL returnBoolean = FALSE;
     if( _lmcontrolareatriggers.entries() > 0 )
     {
-        for(UINT i=0;i<_lmcontrolareatriggers.entries();i++)
+        for(LONG i=0;i<_lmcontrolareatriggers.entries();i++)
         {
             CtiLMControlAreaTrigger* currentTrigger = (CtiLMControlAreaTrigger*)_lmcontrolareatriggers[i];
             if( currentTrigger->getTriggerType() == CtiLMControlAreaTrigger::ThresholdTriggerType )
@@ -798,8 +798,8 @@ DOUBLE CtiLMControlArea::calculateLoadReductionNeeded()
     DOUBLE returnLoadReductionNeeded = 0.0;
     if( _lmcontrolareatriggers.entries() > 0 )
     {
-        UINT triggersTripped = 0;
-        for(UINT i=0;i<_lmcontrolareatriggers.entries();i++)
+        LONG triggersTripped = 0;
+        for(LONG i=0;i<_lmcontrolareatriggers.entries();i++)
         {
             CtiLMControlAreaTrigger* currentTrigger = (CtiLMControlAreaTrigger*)_lmcontrolareatriggers[i];
             if( currentTrigger->getTriggerType() == CtiLMControlAreaTrigger::ThresholdTriggerType )
@@ -823,8 +823,8 @@ DOUBLE CtiLMControlArea::calculateLoadReductionNeeded()
                     {
                         DOUBLE oldThreshold = currentTrigger->getThreshold();
                         DOUBLE thresholdKickDouble = ((DOUBLE)currentTrigger->getThresholdKickPercent())/100.0;
-                        ULONG thresholdKickOffset = (ULONG)(currentTrigger->getThreshold() * thresholdKickDouble);
-                        ULONG amountOverKickValue = currentTrigger->getPointValue() - currentTrigger->getThreshold() - thresholdKickOffset;
+                        LONG thresholdKickOffset = (LONG)(currentTrigger->getThreshold() * thresholdKickDouble);
+                        LONG amountOverKickValue = currentTrigger->getPointValue() - currentTrigger->getThreshold() - thresholdKickOffset;
                         if( amountOverKickValue > 0 )
                         {
                             currentTrigger->setThreshold( currentTrigger->getThreshold() + amountOverKickValue );
@@ -894,13 +894,13 @@ DOUBLE CtiLMControlArea::calculateLoadReductionNeeded()
     Reduces load in the control area by running through the lmprograms to
     determine current priority and controlling one or more lmprograms
 ---------------------------------------------------------------------------*/
-DOUBLE CtiLMControlArea::reduceControlAreaLoad(DOUBLE loadReductionNeeded, ULONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
+DOUBLE CtiLMControlArea::reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG secondsFromBeginningOfDay, LONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
 {
     DOUBLE expectedLoadReduced = 0.0;
-    ULONG newlyActivePrograms = 0;
-    ULONG fullyActivePrograms = 0;
+    LONG newlyActivePrograms = 0;
+    LONG fullyActivePrograms = 0;
 
-    for(ULONG i=0;i<_lmprograms.entries();i++)
+    for(LONG i=0;i<_lmprograms.entries();i++)
     {
         CtiLMProgramBase* currentLMProgram = (CtiLMProgramBase*)_lmprograms[i];
 
@@ -934,12 +934,12 @@ DOUBLE CtiLMControlArea::reduceControlAreaLoad(DOUBLE loadReductionNeeded, ULONG
                     if( currentLMProgram->getPAOType() == TYPE_LMPROGRAM_DIRECT )
                     {
                         CtiLMProgramDirect* lmProgramDirect = (CtiLMProgramDirect*)currentLMProgram;
-                        if( currentLMProgram->getDefaultPriority() > getCurrentPriority() )
+                        if( (LONG)lmProgramDirect->getDefaultPriority() > getCurrentPriority() )
                         {
                             if( getCurrentPriority() < 0 ||
                                 newlyActivePrograms == 0 )
                             {//is inactive or current pass hasn't controlled any new programs
-                                setCurrentPriority(currentLMProgram->getDefaultPriority());
+                                setCurrentPriority(lmProgramDirect->getDefaultPriority());
                             }
                             else
                             {
@@ -997,7 +997,7 @@ DOUBLE CtiLMControlArea::reduceControlAreaLoad(DOUBLE loadReductionNeeded, ULONG
         }
     }
 
-    for(ULONG j=0;j<_lmprograms.entries();j++)
+    for(LONG j=0;j<_lmprograms.entries();j++)
     {
         if( ((CtiLMProgramBase*)_lmprograms[j])->getProgramState() == CtiLMProgramBase::FullyActiveState ||
             ((CtiLMProgramBase*)_lmprograms[j])->getProgramState() == CtiLMProgramBase::ManualActiveState )
@@ -1025,11 +1025,11 @@ DOUBLE CtiLMControlArea::reduceControlAreaLoad(DOUBLE loadReductionNeeded, ULONG
     Reduces load in the control area by running through the lmprograms to
     determine current priority and controlling one or more lmprograms
 ---------------------------------------------------------------------------*/
-DOUBLE CtiLMControlArea::takeAllAvailableControlAreaLoad(ULONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
+DOUBLE CtiLMControlArea::takeAllAvailableControlAreaLoad(LONG secondsFromBeginningOfDay, LONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
 {
     DOUBLE expectedLoadReduced = 0.0;
 
-    for(ULONG i=0;i<_lmprograms.entries();i++)
+    for(LONG i=0;i<_lmprograms.entries();i++)
     {
         CtiLMProgramBase* currentLMProgram = (CtiLMProgramBase*)_lmprograms[i];
 
@@ -1128,12 +1128,12 @@ DOUBLE CtiLMControlArea::takeAllAvailableControlAreaLoad(ULONG secondsFromBeginn
     need to increased.  Refreshes time refresh programs shed times.  Updates
     current hours values in programs as they continue to control.
 ---------------------------------------------------------------------------*/
-BOOL CtiLMControlArea::maintainCurrentControl(ULONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
+BOOL CtiLMControlArea::maintainCurrentControl(LONG secondsFromBeginningOfDay, LONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
 {
     BOOL returnBoolean = FALSE;
-    ULONG numberOfActivePrograms = 0;
-    ULONG numberOfFullyActivePrograms = 0;
-    for(ULONG i=0;i<_lmprograms.entries();i++)
+    LONG numberOfActivePrograms = 0;
+    LONG numberOfFullyActivePrograms = 0;
+    for(LONG i=0;i<_lmprograms.entries();i++)
     {
         CtiLMProgramBase* currentLMProgram = (CtiLMProgramBase*)_lmprograms[i];
         if( currentLMProgram->getPAOType() == TYPE_LMPROGRAM_DIRECT &&
@@ -1185,10 +1185,10 @@ BOOL CtiLMControlArea::stopAllControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* mul
     BOOL returnBOOL = FALSE;
     bool sentSignalMsg = false;
 
-    ULONG previousControlAreaState = getControlAreaState();
-    ULONG numberOfActivePrograms = 0;
-    ULONG numberOfFullyActivePrograms = 0;
-    for(ULONG i=0;i<_lmprograms.entries();i++)
+    LONG previousControlAreaState = getControlAreaState();
+    LONG numberOfActivePrograms = 0;
+    LONG numberOfFullyActivePrograms = 0;
+    for(LONG i=0;i<_lmprograms.entries();i++)
     {
         CtiLMProgramBase* currentLMProgram = (CtiLMProgramBase*)_lmprograms[i];
         if( currentLMProgram->getPAOType() == TYPE_LMPROGRAM_DIRECT &&
@@ -1267,12 +1267,12 @@ BOOL CtiLMControlArea::stopAllControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* mul
 
     Takes appropriate action for a manual control messages.
 ---------------------------------------------------------------------------*/
-void CtiLMControlArea::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
+void CtiLMControlArea::handleManualControl(LONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
 {
-    ULONG previousControlAreaState = getControlAreaState();
-    ULONG numberOfActivePrograms = 0;
-    ULONG numberOfFullyActivePrograms = 0;
-    for(ULONG i=0;i<_lmprograms.entries();i++)
+    LONG previousControlAreaState = getControlAreaState();
+    LONG numberOfActivePrograms = 0;
+    LONG numberOfFullyActivePrograms = 0;
+    for(LONG i=0;i<_lmprograms.entries();i++)
     {
         CtiLMProgramBase* currentLMProgram = (CtiLMProgramBase*)_lmprograms[i];
         if( currentLMProgram->getManualControlReceivedFlag() )
@@ -1549,13 +1549,13 @@ CtiLMControlArea& CtiLMControlArea::operator=(const CtiLMControlArea& right)
         _currentdailystoptime = right._currentdailystoptime;
 
         _lmcontrolareatriggers.clearAndDestroy();
-        for(UINT i=0;i<right._lmcontrolareatriggers.entries();i++)
+        for(LONG i=0;i<right._lmcontrolareatriggers.entries();i++)
         {
             _lmcontrolareatriggers.insert(((CtiLMControlAreaTrigger*)right._lmcontrolareatriggers[i])->replicate());
         }
 
         _lmprograms.clearAndDestroy();
-        for(UINT j=0;j<right._lmprograms.entries();j++)
+        for(LONG j=0;j<right._lmprograms.entries();j++)
         {
             _lmprograms.insert(((CtiLMProgramBase*)right._lmprograms[j])->replicate());
         }

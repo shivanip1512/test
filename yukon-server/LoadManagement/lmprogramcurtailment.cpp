@@ -59,7 +59,7 @@ CtiLMProgramCurtailment::~CtiLMProgramCurtailment()
 
     Returns the minimum notify time in seconds of the curtailment program
 ---------------------------------------------------------------------------*/
-ULONG CtiLMProgramCurtailment::getMinNotifyTime() const
+LONG CtiLMProgramCurtailment::getMinNotifyTime() const
 {
 
     return _minnotifytime;
@@ -103,7 +103,7 @@ const RWCString& CtiLMProgramCurtailment::getMessageFooter() const
 
     Returns the acknowledgement time limit of the curtailment program
 ---------------------------------------------------------------------------*/
-ULONG CtiLMProgramCurtailment::getAckTimeLimit() const
+LONG CtiLMProgramCurtailment::getAckTimeLimit() const
 {
 
     return _acktimelimit;
@@ -137,7 +137,7 @@ const RWCString& CtiLMProgramCurtailment::getStoppedEarlyMsg() const
     Returns the reference of the current control for the
     curtailment program.
 ---------------------------------------------------------------------------*/
-ULONG CtiLMProgramCurtailment::getCurtailReferenceId() const
+LONG CtiLMProgramCurtailment::getCurtailReferenceId() const
 {
 
     return _curtailreferenceid;
@@ -231,7 +231,7 @@ RWOrdered& CtiLMProgramCurtailment::getLMProgramCurtailmentCustomers()
 
     Sets the minimum notify time of the curtailment program
 ---------------------------------------------------------------------------*/
-CtiLMProgramCurtailment& CtiLMProgramCurtailment::setMinNotifyTime(ULONG notifytime)
+CtiLMProgramCurtailment& CtiLMProgramCurtailment::setMinNotifyTime(LONG notifytime)
 {
 
     _minnotifytime = notifytime;
@@ -283,7 +283,7 @@ CtiLMProgramCurtailment& CtiLMProgramCurtailment::setMessageFooter(const RWCStri
 
     Sets the acknowledge time limit of the curtailment program
 ---------------------------------------------------------------------------*/
-CtiLMProgramCurtailment& CtiLMProgramCurtailment::setAckTimeLimit(ULONG timelimit)
+CtiLMProgramCurtailment& CtiLMProgramCurtailment::setAckTimeLimit(LONG timelimit)
 {
 
     _acktimelimit = timelimit;
@@ -323,7 +323,7 @@ CtiLMProgramCurtailment& CtiLMProgramCurtailment::setStoppedEarlyMsg(const RWCSt
     Sets the reference id of the current control for the
     curtailment program.
 ---------------------------------------------------------------------------*/
-CtiLMProgramCurtailment& CtiLMProgramCurtailment::setCurtailReferenceId(ULONG refid)
+CtiLMProgramCurtailment& CtiLMProgramCurtailment::setCurtailReferenceId(LONG refid)
 {
 
     _curtailreferenceid = refid;
@@ -421,7 +421,7 @@ CtiLMProgramCurtailment& CtiLMProgramCurtailment::setAdditionalInfo(const RWCStr
 
     Sets the group selection method of the curtailment program
 ---------------------------------------------------------------------------*/
-DOUBLE CtiLMProgramCurtailment::reduceProgramLoad(DOUBLE loadReductionNeeded, ULONG currentPriority, RWOrdered controlAreaTriggers, ULONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
+DOUBLE CtiLMProgramCurtailment::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, RWOrdered controlAreaTriggers, LONG secondsFromBeginningOfDay, LONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
 {
 
 
@@ -465,7 +465,7 @@ void CtiLMProgramCurtailment::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMu
             setCurtailmentStartTime(RWDBDateTime(1990,1,1,0,0,0,0));
             //setStartedControlling(RWDBDateTime(1990,1,1,0,0,0,0));
             setCurtailmentStopTime(RWDBDateTime(1990,1,1,0,0,0,0));
-            for(ULONG i=0;i<_lmprogramcurtailmentcustomers.entries();i++)
+            for(LONG i=0;i<_lmprogramcurtailmentcustomers.entries();i++)
             {
                 ((CtiLMCurtailCustomer*)_lmprogramcurtailmentcustomers[i])->setAcknowledgeStatus(CtiLMCurtailCustomer::NotRequiredAckStatus);
             }
@@ -481,7 +481,7 @@ void CtiLMProgramCurtailment::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMu
             setCurtailmentStartTime(RWDBDateTime(1990,1,1,0,0,0,0));
             //setStartedControlling(RWDBDateTime(1990,1,1,0,0,0,0));
             setCurtailmentStopTime(RWDBDateTime(1990,1,1,0,0,0,0));
-            for(ULONG i=0;i<_lmprogramcurtailmentcustomers.entries();i++)
+            for(LONG i=0;i<_lmprogramcurtailmentcustomers.entries();i++)
             {
                 ((CtiLMCurtailCustomer*)_lmprogramcurtailmentcustomers[i])->setAcknowledgeStatus(CtiLMCurtailCustomer::NotRequiredAckStatus);
             }
@@ -505,7 +505,7 @@ void CtiLMProgramCurtailment::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMu
 
     Handles manual control messages for the curtailment program.
 ---------------------------------------------------------------------------*/
-BOOL CtiLMProgramCurtailment::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
+BOOL CtiLMProgramCurtailment::handleManualControl(LONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
 {
 
 
@@ -584,7 +584,7 @@ void CtiLMProgramCurtailment::notifyCustomers(CtiMultiMsg* multiDispatchMsg)
     if( _lmprogramcurtailmentcustomers.entries() > 0 )
     {
         CtiEmailMsg* emailMsg = NULL;
-        for(ULONG i=0;i<_lmprogramcurtailmentcustomers.entries();i++)
+        for(LONG i=0;i<_lmprogramcurtailmentcustomers.entries();i++)
         {
             CtiLMCurtailCustomer* currentCustomer = (CtiLMCurtailCustomer*)_lmprogramcurtailmentcustomers[i];
             currentCustomer->setCurtailReferenceId(getCurtailReferenceId());
@@ -612,7 +612,7 @@ void CtiLMProgramCurtailment::notifyCustomers(CtiMultiMsg* multiDispatchMsg)
             emailBody += (getCurtailmentStartTime().rwtime().isDST() ? RWZone::local().altZoneName() : RWZone::local().timeZoneName() );
             emailBody += "\r\n\r\n";// 2 return lines
             emailBody += "Scheduled Duration:  ";
-            ULONG durationInSeconds = getCurtailmentStopTime().seconds() - getCurtailmentStartTime().seconds();
+            LONG durationInSeconds = getCurtailmentStopTime().seconds() - getCurtailmentStartTime().seconds();
             char tempchar[64];
             if( (durationInSeconds/3600) > 0 )
             {
@@ -653,7 +653,7 @@ void CtiLMProgramCurtailment::notifyCustomersOfStop(CtiMultiMsg* multiDispatchMs
     if( _lmprogramcurtailmentcustomers.entries() > 0 )
     {
         CtiEmailMsg* emailMsg = NULL;
-        for(ULONG i=0;i<_lmprogramcurtailmentcustomers.entries();i++)
+        for(LONG i=0;i<_lmprogramcurtailmentcustomers.entries();i++)
         {
             CtiLMCurtailCustomer* currentCustomer = (CtiLMCurtailCustomer*)_lmprogramcurtailmentcustomers[i];
             currentCustomer->dumpDynamicData();
@@ -688,7 +688,7 @@ void CtiLMProgramCurtailment::notifyCustomersOfStop(CtiMultiMsg* multiDispatchMs
             emailBody += (getCurtailmentStartTime().rwtime().isDST() ? RWZone::local().altZoneName() : RWZone::local().timeZoneName() );
             emailBody += "\r\n\r\n";// 2 return lines
             emailBody += "Scheduled Duration:  ";
-            ULONG durationInSeconds = getCurtailmentStopTime().seconds() - getCurtailmentStartTime().seconds();
+            LONG durationInSeconds = getCurtailmentStopTime().seconds() - getCurtailmentStartTime().seconds();
             char tempchar[64];
             if( (durationInSeconds/3600) > 0 )
             {
@@ -753,9 +753,9 @@ void CtiLMProgramCurtailment::addLMCurtailProgramActivityTable()
 
                 if( rdr() )
                 {
-                    ULONG tempUlong = 0;
-                    rdr["curtailreferenceid"] >> tempUlong;
-                    setCurtailReferenceId(tempUlong+1);
+                    LONG tempLONG = 0;
+                    rdr["curtailreferenceid"] >> tempLONG;
+                    setCurtailReferenceId(tempLONG+1);
                 }
                 else
                 {
@@ -844,9 +844,9 @@ void CtiLMProgramCurtailment::updateLMCurtailProgramActivityTable(RWDBConnection
 
                 if( rdr() )
                 {
-                    ULONG tempUlong = 0;
-                    rdr["curtailreferenceid"] >> tempUlong;
-                    setCurtailReferenceId(tempUlong+1);
+                    LONG tempLONG = 0;
+                    rdr["curtailreferenceid"] >> tempLONG;
+                    setCurtailReferenceId(tempLONG+1);
                 }
                 else
                 {
@@ -1033,7 +1033,7 @@ CtiLMProgramCurtailment& CtiLMProgramCurtailment::operator=(const CtiLMProgramCu
         _additionalinfo = right._additionalinfo;
 
         _lmprogramcurtailmentcustomers.clearAndDestroy();
-        for(UINT i=0;i<right._lmprogramcurtailmentcustomers.entries();i++)
+        for(LONG i=0;i<right._lmprogramcurtailmentcustomers.entries();i++)
         {
             _lmprogramcurtailmentcustomers.insert(((CtiLMCurtailCustomer*)right._lmprogramcurtailmentcustomers[i])->replicate());
         }

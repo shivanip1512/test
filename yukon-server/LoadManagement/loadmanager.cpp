@@ -161,8 +161,8 @@ void CtiLoadManager::controlLoop()
                 RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
                 currentDateTime.now();
-                ULONG secondsFromBeginningOfDay = (currentDateTime.hour() * 3600) + (currentDateTime.minute() * 60) + currentDateTime.second();
-                ULONG secondsFrom1901 = currentDateTime.seconds();
+                LONG secondsFromBeginningOfDay = (currentDateTime.hour() * 3600) + (currentDateTime.minute() * 60) + currentDateTime.second();
+                LONG secondsFrom1901 = currentDateTime.seconds();
 
                 if(_LM_DEBUG)
                 {
@@ -205,7 +205,7 @@ void CtiLoadManager::controlLoop()
                 BOOL examinedControlAreaForControlNeededFlag = FALSE;
                 if( controlAreas.entries() > 0 )
                 {
-                    for(UINT i=0;i<controlAreas.entries();i++)
+                    for(LONG i=0;i<controlAreas.entries();i++)
                     {
                         CtiLMControlArea* currentControlArea = (CtiLMControlArea*)controlAreas[i];
 
@@ -527,7 +527,7 @@ CtiConnection* CtiLoadManager::getPILConnection()
 
     Reads off the Dispatch connection and handles messages accordingly.
 ---------------------------------------------------------------------------*/
-void CtiLoadManager::checkDispatch(ULONG secondsFrom1901)
+void CtiLoadManager::checkDispatch(LONG secondsFrom1901)
 {
 
     bool done = FALSE;
@@ -551,7 +551,7 @@ void CtiLoadManager::checkDispatch(ULONG secondsFrom1901)
 
     Reads off the PIL connection and handles messages accordingly.
 ---------------------------------------------------------------------------*/
-void CtiLoadManager::checkPIL(ULONG secondsFrom1901)
+void CtiLoadManager::checkPIL(LONG secondsFrom1901)
 {
 
     bool done = FALSE;
@@ -584,13 +584,13 @@ void CtiLoadManager::registerForPoints(const RWOrdered& controlAreas)
     }
 
     CtiPointRegistrationMsg* regMsg = new CtiPointRegistrationMsg();
-    for(UINT i=0;i<controlAreas.entries();i++)
+    for(LONG i=0;i<controlAreas.entries();i++)
     {
         CtiLMControlArea* currentControlArea = (CtiLMControlArea*)controlAreas[i];
 
         RWOrdered& controlAreaTriggers = currentControlArea->getLMControlAreaTriggers();
 
-        for(UINT j=0;j<controlAreaTriggers.entries();j++)
+        for(LONG j=0;j<controlAreaTriggers.entries();j++)
         {
             CtiLMControlAreaTrigger* currentTrigger = (CtiLMControlAreaTrigger*)controlAreaTriggers[j];
 
@@ -606,13 +606,13 @@ void CtiLoadManager::registerForPoints(const RWOrdered& controlAreas)
 
         RWOrdered& lmPrograms = currentControlArea->getLMPrograms();
 
-        for(UINT k=0;k<lmPrograms.entries();k++)
+        for(LONG k=0;k<lmPrograms.entries();k++)
         {
             CtiLMProgramBase* currentProgram = (CtiLMProgramBase*)lmPrograms[k];
             if( currentProgram->getPAOType() == TYPE_LMPROGRAM_DIRECT )
             {
                 RWOrdered& lmGroups = ((CtiLMProgramDirect*)currentProgram)->getLMProgramDirectGroups();
-                for(UINT l=0;l<lmGroups.entries();l++)
+                for(LONG l=0;l<lmGroups.entries();l++)
                 {
                     CtiLMGroupBase* currentGroup = (CtiLMGroupBase*)lmGroups[l];
                     if( currentGroup->getHoursDailyPointId() > 0 )
@@ -648,7 +648,7 @@ void CtiLoadManager::registerForPoints(const RWOrdered& controlAreas)
 
     Reads off the Dispatch connection and handles messages accordingly.
 ---------------------------------------------------------------------------*/
-void CtiLoadManager::parseMessage(RWCollectable *message, ULONG secondsFrom1901)
+void CtiLoadManager::parseMessage(RWCollectable *message, LONG secondsFrom1901)
 {
     CtiMultiMsg* msgMulti;
     CtiPointDataMsg* pData;
@@ -747,7 +747,7 @@ void CtiLoadManager::parseMessage(RWCollectable *message, ULONG secondsFrom1901)
 
     Handles point data messages and updates strategy point values.
 ---------------------------------------------------------------------------*/
-void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality, unsigned tags, RWTime& timestamp, ULONG secondsFrom1901 )
+void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality, unsigned tags, RWTime& timestamp, LONG secondsFrom1901 )
 {
     if( _LM_DEBUG )
     {
@@ -769,13 +769,13 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
 
     RWOrdered& controlAreas = (*store->getControlAreas(secondsFrom1901));
-    for(UINT i=0;i<controlAreas.entries();i++)
+    for(LONG i=0;i<controlAreas.entries();i++)
     {
         CtiLMControlArea* currentControlArea = (CtiLMControlArea*)controlAreas[i];
 
         RWOrdered& controlAreaTriggers = currentControlArea->getLMControlAreaTriggers();
 
-        for(UINT j=0;j<controlAreaTriggers.entries();j++)
+        for(LONG j=0;j<controlAreaTriggers.entries();j++)
         {
             CtiLMControlAreaTrigger* currentTrigger = (CtiLMControlAreaTrigger*)controlAreaTriggers[j];
 
@@ -795,8 +795,8 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
                     {
                         if( currentTrigger->getProjectionPointEntriesQueue().entries() < currentTrigger->getProjectionPoints() )
                         {//first reading plug in multiple copies
-                            ULONG pass = 1;
-                            ULONG pluggedIntervalDuration = currentTrigger->getProjectAheadDuration()/4;
+                            LONG pass = 1;
+                            LONG pluggedIntervalDuration = currentTrigger->getProjectAheadDuration()/4;
                             while( currentTrigger->getProjectionPointEntriesQueue().entries() < currentTrigger->getProjectionPoints() )
                             {
                                 RWTime pluggedTimestamp(timestamp.seconds() - (pluggedIntervalDuration * (currentTrigger->getProjectionPoints()-pass)));
@@ -830,13 +830,13 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
 
         RWOrdered& lmPrograms = currentControlArea->getLMPrograms();
 
-        for(UINT k=0;k<lmPrograms.entries();k++)
+        for(LONG k=0;k<lmPrograms.entries();k++)
         {
             CtiLMProgramBase* currentProgram = (CtiLMProgramBase*)lmPrograms[k];
             if( currentProgram->getPAOType() == TYPE_LMPROGRAM_DIRECT )
             {
                 RWOrdered& lmGroups = ((CtiLMProgramDirect*)currentProgram)->getLMProgramDirectGroups();
-                for(UINT l=0;l<lmGroups.entries();l++)
+                for(LONG l=0;l<lmGroups.entries();l++)
                 {
                     CtiLMGroupBase* currentGroup = (CtiLMGroupBase*)lmGroups[l];
                     if( currentGroup->getHoursDailyPointId() == pointID )
@@ -871,7 +871,7 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
     Handles porter return messages and updates the status of strategy cap
     bank controls.
 ---------------------------------------------------------------------------*/
-void CtiLoadManager::porterReturnMsg( long deviceId, RWCString commandString, int status, RWCString resultString, ULONG secondsFrom1901 )
+void CtiLoadManager::porterReturnMsg( long deviceId, RWCString commandString, int status, RWCString resultString, LONG secondsFrom1901 )
 {
     /*if( _LM_DEBUG )
     {
@@ -885,7 +885,7 @@ void CtiLoadManager::porterReturnMsg( long deviceId, RWCString commandString, in
 
     Handles signal messages and updates strategy tags.
 ---------------------------------------------------------------------------*/
-void CtiLoadManager::signalMsg( long pointID, unsigned tags, RWCString text, RWCString additional, ULONG secondsFrom1901 )
+void CtiLoadManager::signalMsg( long pointID, unsigned tags, RWCString text, RWCString additional, LONG secondsFrom1901 )
 {
     /*if( _LM_DEBUG )
     {

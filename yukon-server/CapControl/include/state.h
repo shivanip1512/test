@@ -37,12 +37,12 @@ RWDECLARE_COLLECTABLE( CtiCCState )
     virtual ~CtiCCState();
 
     const RWCString& Text() const;
-    ULONG ForegroundColor() const;
-    ULONG BackgroundColor() const;
+    LONG ForegroundColor() const;
+    LONG BackgroundColor() const;
 
     CtiCCState& setText(const RWCString& text);
-    CtiCCState& setForegroundColor(ULONG foregroundcolor);
-    CtiCCState& setBackgroundColor(ULONG backgroundcolor);
+    CtiCCState& setForegroundColor(LONG foregroundcolor);
+    CtiCCState& setBackgroundColor(LONG backgroundcolor);
 
     //Members inherited from RWCollectable
     void restoreGuts(RWvistream& );
@@ -55,8 +55,8 @@ RWDECLARE_COLLECTABLE( CtiCCState )
 private:
 
     RWCString _text;
-    ULONG _foregroundcolor;
-    ULONG _backgroundcolor;
+    LONG _foregroundcolor;
+    LONG _backgroundcolor;
 
     mutable RWRecursiveLock<RWMutexLock> _mutex;
 

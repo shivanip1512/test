@@ -221,7 +221,7 @@ void CtiCController::controlLoop()
             RWOrdered &strategyChanges = strategyMsg->getStrategyList();
             currentDateTime.now();
             unsigned nowInSeconds = (currentDateTime.hour() * 3600) + (currentDateTime.minute() * 60) + currentDateTime.second();
-            for(UINT i=0;i<strategies.entries();i++)
+            for(LONG i=0;i<strategies.entries();i++)
             {
                 CtiCCStrategy* current = (CtiCCStrategy*)strategies[i];
 
@@ -669,7 +669,7 @@ void CtiCController::registerForPoints(CtiCCStrategyStore* store)
 
     RWOrdered &strategies = store->Strategies();
     CtiPointRegistrationMsg* regMsg = new CtiPointRegistrationMsg();
-    for(UINT i=0;i<strategies.entries();i++)
+    for(LONG i=0;i<strategies.entries();i++)
     {
         CtiCCStrategy *current = (CtiCCStrategy*)strategies[i];
 
@@ -680,7 +680,7 @@ void CtiCController::registerForPoints(CtiCCStrategyStore* store)
         
         RWOrdered &capbanks = current->CapBankList();
 
-        for(UINT j=0;j<capbanks.entries();j++)
+        for(LONG j=0;j<capbanks.entries();j++)
         {
             CtiCapBank *capBank = (CtiCapBank*)(current->CapBankList()[j]);
 
@@ -881,12 +881,12 @@ void CtiCController::pointDataMsg( long pointID, double value, unsigned tags, RW
 
                 if( currentCapBank->StatusPointId() == pointID )
                 {
-                    if( currentCapBank->ControlStatus() != (ULONG)value )
+                    if( currentCapBank->ControlStatus() != (LONG)value )
                     {
                         currentStrategy->setStrategyUpdated(TRUE);
                     }
-                    currentCapBank->setControlStatus((ULONG)value);
-                    currentCapBank->setTagsControlStatus((ULONG)tags);
+                    currentCapBank->setControlStatus((LONG)value);
+                    currentCapBank->setTagsControlStatus((LONG)tags);
                     currentCapBank->setLastStatusChangeTime(timestamp);
                     currentCapBank->setStatusReceivedFlag(TRUE);
                     currentStrategy->figureActualVarPointValue();
@@ -897,11 +897,11 @@ void CtiCController::pointDataMsg( long pointID, double value, unsigned tags, RW
                 }
                 else if( currentCapBank->OperationAnalogPointId() == pointID )
                 {
-                    if( currentCapBank->Operations() != (ULONG)value )
+                    if( currentCapBank->Operations() != (LONG)value )
                     {
                         currentStrategy->setStrategyUpdated(TRUE);
                     }
-                    currentCapBank->setOperations((ULONG)value);
+                    currentCapBank->setOperations((LONG)value);
                     found = TRUE;
                     break;
                 }
@@ -1028,11 +1028,11 @@ void CtiCController::signalMsg( long pointID, unsigned tags, RWCString text, RWC
 
                 if( currentCapBank->StatusPointId() == pointID )
                 {
-                    if( currentCapBank->TagsControlStatus() != (ULONG)tags )
+                    if( currentCapBank->TagsControlStatus() != (LONG)tags )
                     {
                         currentStrategy->setStrategyUpdated(TRUE);
                     }
-                    currentCapBank->setTagsControlStatus((ULONG)tags);
+                    currentCapBank->setTagsControlStatus((LONG)tags);
                     found = TRUE;
                     break;
                 }

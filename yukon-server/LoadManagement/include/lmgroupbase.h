@@ -36,78 +36,78 @@ public:
 
     virtual ~CtiLMGroupBase();
     
-    ULONG getPAOId() const;
+    LONG getPAOId() const;
     const RWCString& getPAOCategory() const;
     const RWCString& getPAOClass() const;
     const RWCString& getPAOName() const;
-    ULONG getPAOType() const;
+    LONG getPAOType() const;
     const RWCString& getPAODescription() const;
     BOOL getDisableFlag() const;
-    ULONG getGroupOrder() const;
+    LONG getGroupOrder() const;
     DOUBLE getKWCapacity() const;
-    ULONG getChildOrder() const;
+    LONG getChildOrder() const;
     BOOL getAlarmInhibit() const;
     BOOL getControlInhibit() const;
-    ULONG getGroupControlState() const;
-    ULONG getCurrentHoursDaily() const;
-    ULONG getCurrentHoursMonthly() const;
-    ULONG getCurrentHoursSeasonal() const;
-    ULONG getCurrentHoursAnnually() const;
+    LONG getGroupControlState() const;
+    LONG getCurrentHoursDaily() const;
+    LONG getCurrentHoursMonthly() const;
+    LONG getCurrentHoursSeasonal() const;
+    LONG getCurrentHoursAnnually() const;
     const RWDBDateTime& getLastControlSent() const;
-    ULONG getHoursDailyPointId() const;
-    ULONG getHoursMonthlyPointId() const;
-    ULONG getHoursSeasonalPointId() const;
-    ULONG getHoursAnnuallyPointId() const;
-    ULONG getLMProgramId() const;
+    LONG getHoursDailyPointId() const;
+    LONG getHoursMonthlyPointId() const;
+    LONG getHoursSeasonalPointId() const;
+    LONG getHoursAnnuallyPointId() const;
+    LONG getLMProgramId() const;
 
-    CtiLMGroupBase& setPAOId(ULONG id);
+    CtiLMGroupBase& setPAOId(LONG id);
     CtiLMGroupBase& setPAOCategory(const RWCString& category);
     CtiLMGroupBase& setPAOClass(const RWCString& pclass);
     CtiLMGroupBase& setPAOName(const RWCString& name);
-    CtiLMGroupBase& setPAOType(ULONG type);
+    CtiLMGroupBase& setPAOType(LONG type);
     CtiLMGroupBase& setPAODescription(const RWCString& description);
     CtiLMGroupBase& setDisableFlag(BOOL disable);
-    CtiLMGroupBase& setGroupOrder(ULONG order);
+    CtiLMGroupBase& setGroupOrder(LONG order);
     CtiLMGroupBase& setKWCapacity(DOUBLE kwcap);
-    CtiLMGroupBase& setChildOrder(ULONG order);
+    CtiLMGroupBase& setChildOrder(LONG order);
     CtiLMGroupBase& setAlarmInhibit(BOOL alarm);
     CtiLMGroupBase& setControlInhibit(BOOL control);
-    CtiLMGroupBase& setGroupControlState(ULONG controlstate);
-    CtiLMGroupBase& setCurrentHoursDaily(ULONG daily);
-    CtiLMGroupBase& setCurrentHoursMonthly(ULONG monthly);
-    CtiLMGroupBase& setCurrentHoursSeasonal(ULONG seasonal);
-    CtiLMGroupBase& setCurrentHoursAnnually(ULONG annually);
+    CtiLMGroupBase& setGroupControlState(LONG controlstate);
+    CtiLMGroupBase& setCurrentHoursDaily(LONG daily);
+    CtiLMGroupBase& setCurrentHoursMonthly(LONG monthly);
+    CtiLMGroupBase& setCurrentHoursSeasonal(LONG seasonal);
+    CtiLMGroupBase& setCurrentHoursAnnually(LONG annually);
     CtiLMGroupBase& setLastControlSent(const RWDBDateTime& controlsent);
-    CtiLMGroupBase& setHoursDailyPointId(ULONG dailyid);
-    CtiLMGroupBase& setHoursMonthlyPointId(ULONG monthlyid);
-    CtiLMGroupBase& setHoursSeasonalPointId(ULONG seasonalid);
-    CtiLMGroupBase& setHoursAnnuallyPointId(ULONG annuallyid);
-    CtiLMGroupBase& setLMProgramId(ULONG progid);
+    CtiLMGroupBase& setHoursDailyPointId(LONG dailyid);
+    CtiLMGroupBase& setHoursMonthlyPointId(LONG monthlyid);
+    CtiLMGroupBase& setHoursSeasonalPointId(LONG seasonalid);
+    CtiLMGroupBase& setHoursAnnuallyPointId(LONG annuallyid);
+    CtiLMGroupBase& setLMProgramId(LONG progid);
 
     virtual void dumpDynamicData();
     virtual void dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime);
 
     //virtuals but not pure because only one type of group can handle either of the messages
-    virtual CtiCommandMsg* createLatchingRequestMsg(ULONG rawState, int priority) const;// in CtiLMGroupPoint
-    virtual CtiRequestMsg* createTrueCycleRequestMsg(ULONG percent, ULONG period, ULONG defaultCount, int priority) const;// in CtiLMGroupExpresscom
+    virtual CtiCommandMsg* createLatchingRequestMsg(LONG rawState, int priority) const;// in CtiLMGroupPoint
+    virtual CtiRequestMsg* createTrueCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, int priority) const;// in CtiLMGroupExpresscom
 
     //pure virtuals
     virtual CtiLMGroupBase* replicate() const = 0;
-    virtual CtiRequestMsg* createTimeRefreshRequestMsg(ULONG refreshRate, ULONG shedTime, int priority) const = 0;
-    virtual CtiRequestMsg* createSmartCycleRequestMsg(ULONG percent, ULONG period, ULONG defaultCount, int priority) const = 0;
-    virtual CtiRequestMsg* createRotationRequestMsg(ULONG sendRate, ULONG shedTime, int priority) const = 0;
-    virtual CtiRequestMsg* createMasterCycleRequestMsg(ULONG offTime, ULONG period, int priority) const = 0;
+    virtual CtiRequestMsg* createTimeRefreshRequestMsg(LONG refreshRate, LONG shedTime, int priority) const = 0;
+    virtual CtiRequestMsg* createSmartCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, int priority) const = 0;
+    virtual CtiRequestMsg* createRotationRequestMsg(LONG sendRate, LONG shedTime, int priority) const = 0;
+    virtual CtiRequestMsg* createMasterCycleRequestMsg(LONG offTime, LONG period, int priority) const = 0;
     //virtual CtiRequestMsg* createRequestMsg() const = 0;
     //pure virtuals
 
-    virtual BOOL doesMasterCycleNeedToBeUpdated(ULONG secondsFrom1901, ULONG groupControlDone, ULONG offTime);
+    virtual BOOL doesMasterCycleNeedToBeUpdated(LONG secondsFrom1901, LONG groupControlDone, LONG offTime);
 
     //Members inherited from RWCollectable
     void restoreGuts(RWvistream& );
     void saveGuts(RWvostream& ) const;
 
     CtiLMGroupBase& operator=(const CtiLMGroupBase& right);
-    RWCString convertSecondsToEvenTimeString(ULONG shedTime) const;
+    RWCString convertSecondsToEvenTimeString(LONG shedTime) const;
 
     int operator==(const CtiLMGroupBase& right) const;
     int operator!=(const CtiLMGroupBase& right) const;
@@ -126,31 +126,31 @@ protected:
 
 private:
 
-    ULONG _paoid;
+    LONG _paoid;
     RWCString _paocategory;
     RWCString _paoclass;
     RWCString _paoname;
-    ULONG _paotype;
+    LONG _paotype;
     RWCString _paodescription;
     BOOL _disableflag;
-    ULONG _grouporder;
+    LONG _grouporder;
     DOUBLE _kwcapacity;
-    ULONG _childorder;
+    LONG _childorder;
     BOOL _alarminhibit;
     BOOL _controlinhibit;
-    ULONG _groupcontrolstate;
-    ULONG _currenthoursdaily;
-    ULONG _currenthoursmonthly;
-    ULONG _currenthoursseasonal;
-    ULONG _currenthoursannually;
+    LONG _groupcontrolstate;
+    LONG _currenthoursdaily;
+    LONG _currenthoursmonthly;
+    LONG _currenthoursseasonal;
+    LONG _currenthoursannually;
     RWDBDateTime _lastcontrolsent;
-    ULONG _hoursdailypointid;
-    ULONG _hoursmonthlypointid;
-    ULONG _hoursseasonalpointid;
-    ULONG _hoursannuallypointid;
+    LONG _hoursdailypointid;
+    LONG _hoursmonthlypointid;
+    LONG _hoursseasonalpointid;
+    LONG _hoursannuallypointid;
 
     //don't stream
-    ULONG _lmprogramid;
+    LONG _lmprogramid;
     BOOL _insertDynamicDataFlag;
 };
 #endif

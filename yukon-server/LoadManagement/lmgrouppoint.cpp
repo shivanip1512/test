@@ -52,7 +52,7 @@ CtiLMGroupPoint::~CtiLMGroupPoint()
 
     Returns the Device Id Usage of the group
 ---------------------------------------------------------------------------*/
-ULONG CtiLMGroupPoint::getDeviceIdUsage() const
+LONG CtiLMGroupPoint::getDeviceIdUsage() const
 {
 
     return _deviceidusage;
@@ -63,7 +63,7 @@ ULONG CtiLMGroupPoint::getDeviceIdUsage() const
 
     Returns the Point Id Usage of the group
 ---------------------------------------------------------------------------*/
-ULONG CtiLMGroupPoint::getPointIdUsage() const
+LONG CtiLMGroupPoint::getPointIdUsage() const
 {
 
     return _pointidusage;
@@ -74,7 +74,7 @@ ULONG CtiLMGroupPoint::getPointIdUsage() const
 
     Returns the Start Control Raw State of the group
 ---------------------------------------------------------------------------*/
-ULONG CtiLMGroupPoint::getStartControlRawState() const
+LONG CtiLMGroupPoint::getStartControlRawState() const
 {
 
     return _startcontrolrawstate;
@@ -85,7 +85,7 @@ ULONG CtiLMGroupPoint::getStartControlRawState() const
 
     Sets the Device Id Usage of the group
 ---------------------------------------------------------------------------*/
-CtiLMGroupPoint& CtiLMGroupPoint::setDeviceIdUsage(ULONG deviduse)
+CtiLMGroupPoint& CtiLMGroupPoint::setDeviceIdUsage(LONG deviduse)
 {
 
     _deviceidusage = deviduse;
@@ -97,7 +97,7 @@ CtiLMGroupPoint& CtiLMGroupPoint::setDeviceIdUsage(ULONG deviduse)
 
     Sets the Point Id Usage of the group
 ---------------------------------------------------------------------------*/
-CtiLMGroupPoint& CtiLMGroupPoint::setPointIdUsage(ULONG pointiduse)
+CtiLMGroupPoint& CtiLMGroupPoint::setPointIdUsage(LONG pointiduse)
 {
 
     _pointidusage = pointiduse;
@@ -109,7 +109,7 @@ CtiLMGroupPoint& CtiLMGroupPoint::setPointIdUsage(ULONG pointiduse)
 
     Sets the Start Control Raw State of the group
 ---------------------------------------------------------------------------*/
-CtiLMGroupPoint& CtiLMGroupPoint::setStartControlRawState(ULONG startcontrolstate)
+CtiLMGroupPoint& CtiLMGroupPoint::setStartControlRawState(LONG startcontrolstate)
 {
 
     _startcontrolrawstate = startcontrolstate;
@@ -123,7 +123,7 @@ CtiLMGroupPoint& CtiLMGroupPoint::setStartControlRawState(ULONG startcontrolstat
     Creates a new CtiRequestMsg pointer for a program gear with a control
     method of time refresh with the appropriate refresh rate and shed time.
 --------------------------------------------------------------------------*/
-CtiRequestMsg* CtiLMGroupPoint::createTimeRefreshRequestMsg(ULONG refreshRate, ULONG shedTime, int priority) const
+CtiRequestMsg* CtiLMGroupPoint::createTimeRefreshRequestMsg(LONG refreshRate, LONG shedTime, int priority) const
 {
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -139,7 +139,7 @@ CtiRequestMsg* CtiLMGroupPoint::createTimeRefreshRequestMsg(ULONG refreshRate, U
     method of smart cycle with the appropriate cycle percent, period length,
     and the default count of periods.
 --------------------------------------------------------------------------*/
-CtiRequestMsg* CtiLMGroupPoint::createSmartCycleRequestMsg(ULONG percent, ULONG period, ULONG defaultCount, int priority) const
+CtiRequestMsg* CtiLMGroupPoint::createSmartCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, int priority) const
 {
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -154,7 +154,7 @@ CtiRequestMsg* CtiLMGroupPoint::createSmartCycleRequestMsg(ULONG percent, ULONG 
     Creates a new CtiRequestMsg pointer for a program gear with a control
     method of rotation with the appropriate send rate and shed time.
 --------------------------------------------------------------------------*/
-CtiRequestMsg* CtiLMGroupPoint::createRotationRequestMsg(ULONG sendRate, ULONG shedTime, int priority) const
+CtiRequestMsg* CtiLMGroupPoint::createRotationRequestMsg(LONG sendRate, LONG shedTime, int priority) const
 {
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -169,7 +169,7 @@ CtiRequestMsg* CtiLMGroupPoint::createRotationRequestMsg(ULONG sendRate, ULONG s
     Creates a new CtiRequestMsg pointer for a program gear with a control
     method of master cycle with the appropriate off time, period length.
 --------------------------------------------------------------------------*/
-CtiRequestMsg* CtiLMGroupPoint::createMasterCycleRequestMsg(ULONG offTime, ULONG period, int priority) const
+CtiRequestMsg* CtiLMGroupPoint::createMasterCycleRequestMsg(LONG offTime, LONG period, int priority) const
 {
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -183,7 +183,7 @@ CtiRequestMsg* CtiLMGroupPoint::createMasterCycleRequestMsg(ULONG offTime, ULONG
 
     .
 --------------------------------------------------------------------------*/
-CtiCommandMsg* CtiLMGroupPoint::createLatchingRequestMsg(ULONG rawState, int priority) const
+CtiCommandMsg* CtiLMGroupPoint::createLatchingRequestMsg(LONG rawState, int priority) const
 {
     CtiCommandMsg* returnCommandMsg = new CtiCommandMsg();
     returnCommandMsg->setOperation(CtiCommandMsg::ControlRequest);

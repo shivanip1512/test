@@ -27,7 +27,7 @@
 
 extern BOOL _LM_DEBUG;
 
-ULONG CtiLMProgramBase::numberOfReferences = 0;
+LONG CtiLMProgramBase::numberOfReferences = 0;
 /*---------------------------------------------------------------------------
     Constructors
 ---------------------------------------------------------------------------*/
@@ -79,7 +79,7 @@ CtiLMProgramBase::~CtiLMProgramBase()
 
     Returns the unique id of the substation
 ---------------------------------------------------------------------------*/
-ULONG CtiLMProgramBase::getPAOId() const
+LONG CtiLMProgramBase::getPAOId() const
 {
 
     return _paoid;
@@ -123,7 +123,7 @@ const RWCString& CtiLMProgramBase::getPAOName() const
 
     Returns the pao type of the substation
 ---------------------------------------------------------------------------*/
-ULONG CtiLMProgramBase::getPAOType() const
+LONG CtiLMProgramBase::getPAOType() const
 {
 
     return _paotype;
@@ -156,7 +156,7 @@ BOOL CtiLMProgramBase::getDisableFlag() const
 
     Returns the user order of the program
 ---------------------------------------------------------------------------*/
-ULONG CtiLMProgramBase::getUserOrder() const
+LONG CtiLMProgramBase::getUserOrder() const
 {
 
     return _userorder;
@@ -167,7 +167,7 @@ ULONG CtiLMProgramBase::getUserOrder() const
 
     Returns the stop order of the program
 ---------------------------------------------------------------------------*/
-ULONG CtiLMProgramBase::getStopOrder() const
+LONG CtiLMProgramBase::getStopOrder() const
 {
 
     return _stoporder;
@@ -178,7 +178,7 @@ ULONG CtiLMProgramBase::getStopOrder() const
 
     Returns the default priority of the program
 ---------------------------------------------------------------------------*/
-ULONG CtiLMProgramBase::getDefaultPriority() const
+LONG CtiLMProgramBase::getDefaultPriority() const
 {
 
     return _defaultpriority;
@@ -222,7 +222,7 @@ const RWCString& CtiLMProgramBase::getAvailableWeekDays() const
 
     Returns the max hours daily of the program in seconds
 ---------------------------------------------------------------------------*/
-ULONG CtiLMProgramBase::getMaxHoursDaily() const
+LONG CtiLMProgramBase::getMaxHoursDaily() const
 {
 
     return _maxhoursdaily;
@@ -233,7 +233,7 @@ ULONG CtiLMProgramBase::getMaxHoursDaily() const
 
     Returns the max hours monthly of the program in seconds
 ---------------------------------------------------------------------------*/
-ULONG CtiLMProgramBase::getMaxHoursMonthly() const
+LONG CtiLMProgramBase::getMaxHoursMonthly() const
 {
 
     return _maxhoursmonthly;
@@ -244,7 +244,7 @@ ULONG CtiLMProgramBase::getMaxHoursMonthly() const
 
     Returns the max hours seasonal of the program in seconds
 ---------------------------------------------------------------------------*/
-ULONG CtiLMProgramBase::getMaxHoursSeasonal() const
+LONG CtiLMProgramBase::getMaxHoursSeasonal() const
 {
 
     return _maxhoursseasonal;
@@ -255,7 +255,7 @@ ULONG CtiLMProgramBase::getMaxHoursSeasonal() const
 
     Returns the max hours annually of the program in seconds
 ---------------------------------------------------------------------------*/
-ULONG CtiLMProgramBase::getMaxHoursAnnually() const
+LONG CtiLMProgramBase::getMaxHoursAnnually() const
 {
 
     return _maxhoursannually;
@@ -266,7 +266,7 @@ ULONG CtiLMProgramBase::getMaxHoursAnnually() const
 
     Returns the minimum activate time of the program in minutes
 ---------------------------------------------------------------------------*/
-ULONG CtiLMProgramBase::getMinActivateTime() const
+LONG CtiLMProgramBase::getMinActivateTime() const
 {
 
     return _minactivatetime;
@@ -277,7 +277,7 @@ ULONG CtiLMProgramBase::getMinActivateTime() const
 
     Returns the minimum restart time of the program in minutes
 ---------------------------------------------------------------------------*/
-ULONG CtiLMProgramBase::getMinRestartTime() const
+LONG CtiLMProgramBase::getMinRestartTime() const
 {
 
     return _minrestarttime;
@@ -288,7 +288,7 @@ ULONG CtiLMProgramBase::getMinRestartTime() const
 
     Returns the status point id for the program of the program
 ---------------------------------------------------------------------------*/
-ULONG CtiLMProgramBase::getProgramStatusPointId() const
+LONG CtiLMProgramBase::getProgramStatusPointId() const
 {
 
     return _programstatuspointid;
@@ -299,7 +299,7 @@ ULONG CtiLMProgramBase::getProgramStatusPointId() const
 
     Returns the state of the program
 ---------------------------------------------------------------------------*/
-ULONG CtiLMProgramBase::getProgramState() const
+LONG CtiLMProgramBase::getProgramState() const
 {
 
     return _programstate;
@@ -311,7 +311,7 @@ ULONG CtiLMProgramBase::getProgramState() const
     Returns the pointid of the analog that holds the current total reduction
     of load in the program
 ---------------------------------------------------------------------------*/
-ULONG CtiLMProgramBase::getReductionAnalogPointId() const
+LONG CtiLMProgramBase::getReductionAnalogPointId() const
 {
 
     return _reductionanalogpointid;
@@ -377,7 +377,7 @@ BOOL CtiLMProgramBase::getManualControlReceivedFlag() const
 
     Sets the unique id of the substation - use with caution
 ---------------------------------------------------------------------------*/
-CtiLMProgramBase& CtiLMProgramBase::setPAOId(ULONG id)
+CtiLMProgramBase& CtiLMProgramBase::setPAOId(LONG id)
 {
 
     _paoid = id;
@@ -426,7 +426,7 @@ CtiLMProgramBase& CtiLMProgramBase::setPAOName(const RWCString& name)
 
     Sets the pao type of the substation
 ---------------------------------------------------------------------------*/
-CtiLMProgramBase& CtiLMProgramBase::setPAOType(ULONG type)
+CtiLMProgramBase& CtiLMProgramBase::setPAOType(LONG type)
 {
 
     _paotype = type;
@@ -463,7 +463,7 @@ CtiLMProgramBase& CtiLMProgramBase::setDisableFlag(BOOL disable)
 
     Sets the user order of the program
 ---------------------------------------------------------------------------*/
-CtiLMProgramBase& CtiLMProgramBase::setUserOrder(ULONG userorder)
+CtiLMProgramBase& CtiLMProgramBase::setUserOrder(LONG userorder)
 {
 
     _userorder = userorder;
@@ -476,7 +476,7 @@ CtiLMProgramBase& CtiLMProgramBase::setUserOrder(ULONG userorder)
 
     Sets the stop order of the program
 ---------------------------------------------------------------------------*/
-CtiLMProgramBase& CtiLMProgramBase::setStopOrder(ULONG stoporder)
+CtiLMProgramBase& CtiLMProgramBase::setStopOrder(LONG stoporder)
 {
 
     _stoporder = stoporder;
@@ -489,7 +489,7 @@ CtiLMProgramBase& CtiLMProgramBase::setStopOrder(ULONG stoporder)
 
     Sets the default priority of the program
 ---------------------------------------------------------------------------*/
-CtiLMProgramBase& CtiLMProgramBase::setDefaultPriority(ULONG defpriority)
+CtiLMProgramBase& CtiLMProgramBase::setDefaultPriority(LONG defpriority)
 {
 
     _defaultpriority = defpriority;
@@ -541,7 +541,7 @@ CtiLMProgramBase& CtiLMProgramBase::setAvailableWeekDays(const RWCString& availw
 
     Sets the max hours daily of the program in seconds
 ---------------------------------------------------------------------------*/
-CtiLMProgramBase& CtiLMProgramBase::setMaxHoursDaily(ULONG daily)
+CtiLMProgramBase& CtiLMProgramBase::setMaxHoursDaily(LONG daily)
 {
 
     _maxhoursdaily = daily;
@@ -554,7 +554,7 @@ CtiLMProgramBase& CtiLMProgramBase::setMaxHoursDaily(ULONG daily)
 
     Sets the max hours monthly of the program in seconds
 ---------------------------------------------------------------------------*/
-CtiLMProgramBase& CtiLMProgramBase::setMaxHoursMonthly(ULONG monthly)
+CtiLMProgramBase& CtiLMProgramBase::setMaxHoursMonthly(LONG monthly)
 {
 
     _maxhoursmonthly = monthly;
@@ -567,7 +567,7 @@ CtiLMProgramBase& CtiLMProgramBase::setMaxHoursMonthly(ULONG monthly)
 
     Sets the max hours seasonal of the program in seconds
 ---------------------------------------------------------------------------*/
-CtiLMProgramBase& CtiLMProgramBase::setMaxHoursSeasonal(ULONG seasonal)
+CtiLMProgramBase& CtiLMProgramBase::setMaxHoursSeasonal(LONG seasonal)
 {
 
     _maxhoursseasonal = seasonal;
@@ -580,7 +580,7 @@ CtiLMProgramBase& CtiLMProgramBase::setMaxHoursSeasonal(ULONG seasonal)
 
     Sets the max hours annually of the program in seconds
 ---------------------------------------------------------------------------*/
-CtiLMProgramBase& CtiLMProgramBase::setMaxHoursAnnually(ULONG annually)
+CtiLMProgramBase& CtiLMProgramBase::setMaxHoursAnnually(LONG annually)
 {
 
     _maxhoursannually = annually;
@@ -593,7 +593,7 @@ CtiLMProgramBase& CtiLMProgramBase::setMaxHoursAnnually(ULONG annually)
 
     Sets the minimum activate time of the program in minutes
 ---------------------------------------------------------------------------*/
-CtiLMProgramBase& CtiLMProgramBase::setMinActivateTime(ULONG activate)
+CtiLMProgramBase& CtiLMProgramBase::setMinActivateTime(LONG activate)
 {
 
     _minactivatetime = activate;
@@ -606,7 +606,7 @@ CtiLMProgramBase& CtiLMProgramBase::setMinActivateTime(ULONG activate)
 
     Sets the minimum restart time of the program in minutes
 ---------------------------------------------------------------------------*/
-CtiLMProgramBase& CtiLMProgramBase::setMinRestartTime(ULONG restart)
+CtiLMProgramBase& CtiLMProgramBase::setMinRestartTime(LONG restart)
 {
 
     _minrestarttime = restart;
@@ -619,7 +619,7 @@ CtiLMProgramBase& CtiLMProgramBase::setMinRestartTime(ULONG restart)
 
     Sets the status point id for the program
 ---------------------------------------------------------------------------*/
-CtiLMProgramBase& CtiLMProgramBase::setProgramStatusPointId(ULONG statuspointid)
+CtiLMProgramBase& CtiLMProgramBase::setProgramStatusPointId(LONG statuspointid)
 {
 
     _programstatuspointid = statuspointid;
@@ -632,7 +632,7 @@ CtiLMProgramBase& CtiLMProgramBase::setProgramStatusPointId(ULONG statuspointid)
 
     Sets the current state of the program
 ---------------------------------------------------------------------------*/
-CtiLMProgramBase& CtiLMProgramBase::setProgramState(ULONG progstate)
+CtiLMProgramBase& CtiLMProgramBase::setProgramState(LONG progstate)
 {
 
     _programstate = progstate;
@@ -646,7 +646,7 @@ CtiLMProgramBase& CtiLMProgramBase::setProgramState(ULONG progstate)
     Sets the pointid of the analog point that holds the current reduction
     total for the program
 ---------------------------------------------------------------------------*/
-CtiLMProgramBase& CtiLMProgramBase::setReductionAnalogPointId(ULONG reductionpointid)
+CtiLMProgramBase& CtiLMProgramBase::setReductionAnalogPointId(LONG reductionpointid)
 {
 
     _reductionanalogpointid = reductionpointid;
@@ -734,14 +734,14 @@ BOOL CtiLMProgramBase::isAvailableToday()
 
     Returns boolean if this program is in a valid control window.
 ---------------------------------------------------------------------------*/
-BOOL CtiLMProgramBase::isWithinValidControlWindow(ULONG secondsFromBeginningOfDay)
+BOOL CtiLMProgramBase::isWithinValidControlWindow(LONG secondsFromBeginningOfDay)
 {
 
 
     BOOL returnBoolean = FALSE;
     if( _lmprogramcontrolwindows.entries() > 0 )
     {
-        for(ULONG i=0;i<_lmprogramcontrolwindows.entries();i++)
+        for(LONG i=0;i<_lmprogramcontrolwindows.entries();i++)
         {
             CtiLMProgramControlWindow* currentControlWindow = (CtiLMProgramControlWindow*)_lmprogramcontrolwindows[i];
             if( currentControlWindow->getAvailableStartTime() <= secondsFromBeginningOfDay && secondsFromBeginningOfDay <= currentControlWindow->getAvailableStopTime() )
@@ -885,7 +885,7 @@ CtiLMProgramBase& CtiLMProgramBase::operator=(const CtiLMProgramBase& right)
         _manualcontrolreceivedflag = right._manualcontrolreceivedflag;
 
         _lmprogramcontrolwindows.clearAndDestroy();
-        for(UINT i=0;i<right._lmprogramcontrolwindows.entries();i++)
+        for(LONG i=0;i<right._lmprogramcontrolwindows.entries();i++)
         {
             _lmprogramcontrolwindows.insert(((CtiLMProgramControlWindow*)right._lmprogramcontrolwindows[i])->replicate());
         }

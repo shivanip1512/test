@@ -55,7 +55,7 @@ CtiLMEnergyExchangeHourlyOffer::~CtiLMEnergyExchangeHourlyOffer()
     Returns the reference id of the current hour for the
     energy exchange offer.
 ---------------------------------------------------------------------------*/
-ULONG CtiLMEnergyExchangeHourlyOffer::getOfferId() const
+LONG CtiLMEnergyExchangeHourlyOffer::getOfferId() const
 {
 
     return _offerid;
@@ -67,7 +67,7 @@ ULONG CtiLMEnergyExchangeHourlyOffer::getOfferId() const
     Returns the reference id of the current hour for the
     energy exchange offer.
 ---------------------------------------------------------------------------*/
-ULONG CtiLMEnergyExchangeHourlyOffer::getRevisionNumber() const
+LONG CtiLMEnergyExchangeHourlyOffer::getRevisionNumber() const
 {
 
     return _revisionnumber;
@@ -78,7 +78,7 @@ ULONG CtiLMEnergyExchangeHourlyOffer::getRevisionNumber() const
 
     Returns the hour for the energy exchange offer.
 ---------------------------------------------------------------------------*/
-ULONG CtiLMEnergyExchangeHourlyOffer::getHour() const
+LONG CtiLMEnergyExchangeHourlyOffer::getHour() const
 {
 
     return _hour;
@@ -114,7 +114,7 @@ DOUBLE CtiLMEnergyExchangeHourlyOffer::getAmountRequested() const
     Sets the reference id of the current hour for the
     energy exchange offer.
 ---------------------------------------------------------------------------*/
-CtiLMEnergyExchangeHourlyOffer& CtiLMEnergyExchangeHourlyOffer::setOfferId(ULONG offid)
+CtiLMEnergyExchangeHourlyOffer& CtiLMEnergyExchangeHourlyOffer::setOfferId(LONG offid)
 {
 
     _offerid = offid;
@@ -127,7 +127,7 @@ CtiLMEnergyExchangeHourlyOffer& CtiLMEnergyExchangeHourlyOffer::setOfferId(ULONG
 
     Sets the revision number for the energy exchange offer.
 ---------------------------------------------------------------------------*/
-CtiLMEnergyExchangeHourlyOffer& CtiLMEnergyExchangeHourlyOffer::setRevisionNumber(ULONG revnum)
+CtiLMEnergyExchangeHourlyOffer& CtiLMEnergyExchangeHourlyOffer::setRevisionNumber(LONG revnum)
 {
 
     _revisionnumber = revnum;
@@ -140,7 +140,7 @@ CtiLMEnergyExchangeHourlyOffer& CtiLMEnergyExchangeHourlyOffer::setRevisionNumbe
 
     Sets the hour for the energy exchange offer.
 ---------------------------------------------------------------------------*/
-CtiLMEnergyExchangeHourlyOffer& CtiLMEnergyExchangeHourlyOffer::setHour(ULONG hour)
+CtiLMEnergyExchangeHourlyOffer& CtiLMEnergyExchangeHourlyOffer::setHour(LONG hour)
 {
 
     _hour = hour;

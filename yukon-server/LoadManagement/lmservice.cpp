@@ -198,7 +198,7 @@ void CtiLMService::Run()
                     dout << RWTime().asString() << " - Figuring initial actual var values." << endl;
                 }
 
-                for(ULONG i=0;i<strategies.entries();i++)
+                for(LONG i=0;i<strategies.entries();i++)
                 {
                     CtiLMStrategy *current = (CtiCCStrategy*)strategies[i];
                     if( current->ActualVarPointId() > 0 )

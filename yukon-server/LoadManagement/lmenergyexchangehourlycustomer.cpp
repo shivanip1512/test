@@ -54,7 +54,7 @@ CtiLMEnergyExchangeHourlyCustomer::~CtiLMEnergyExchangeHourlyCustomer()
 
     Returns the unique id of the customer
 ---------------------------------------------------------------------------*/
-ULONG CtiLMEnergyExchangeHourlyCustomer::getCustomerId() const
+LONG CtiLMEnergyExchangeHourlyCustomer::getCustomerId() const
 {
 
     return _customerid;
@@ -65,7 +65,7 @@ ULONG CtiLMEnergyExchangeHourlyCustomer::getCustomerId() const
 
     Returns the offer id of the customer in a program
 ---------------------------------------------------------------------------*/
-ULONG CtiLMEnergyExchangeHourlyCustomer::getOfferId() const
+LONG CtiLMEnergyExchangeHourlyCustomer::getOfferId() const
 {
 
     return _offerid;
@@ -77,7 +77,7 @@ ULONG CtiLMEnergyExchangeHourlyCustomer::getOfferId() const
     Returns the offer revision number the customer has accepted or is
     currently being offered in a program
 ---------------------------------------------------------------------------*/
-ULONG CtiLMEnergyExchangeHourlyCustomer::getRevisionNumber() const
+LONG CtiLMEnergyExchangeHourlyCustomer::getRevisionNumber() const
 {
 
     return _revisionnumber;
@@ -88,7 +88,7 @@ ULONG CtiLMEnergyExchangeHourlyCustomer::getRevisionNumber() const
 
     Returns the hour number
 ---------------------------------------------------------------------------*/
-ULONG CtiLMEnergyExchangeHourlyCustomer::getHour() const
+LONG CtiLMEnergyExchangeHourlyCustomer::getHour() const
 {
 
     return _hour;
@@ -110,7 +110,7 @@ DOUBLE CtiLMEnergyExchangeHourlyCustomer::getAmountCommitted() const
 
     Sets the id of the customer - use with caution
 ---------------------------------------------------------------------------*/
-CtiLMEnergyExchangeHourlyCustomer& CtiLMEnergyExchangeHourlyCustomer::setCustomerId(ULONG custid)
+CtiLMEnergyExchangeHourlyCustomer& CtiLMEnergyExchangeHourlyCustomer::setCustomerId(LONG custid)
 {
 
     _customerid = custid;
@@ -123,7 +123,7 @@ CtiLMEnergyExchangeHourlyCustomer& CtiLMEnergyExchangeHourlyCustomer::setCustome
 
     Sets the offer id of the customer
 ---------------------------------------------------------------------------*/
-CtiLMEnergyExchangeHourlyCustomer& CtiLMEnergyExchangeHourlyCustomer::setOfferId(ULONG offid)
+CtiLMEnergyExchangeHourlyCustomer& CtiLMEnergyExchangeHourlyCustomer::setOfferId(LONG offid)
 {
 
     _offerid = offid;
@@ -135,7 +135,7 @@ CtiLMEnergyExchangeHourlyCustomer& CtiLMEnergyExchangeHourlyCustomer::setOfferId
 
     Sets the offer revision number of the customer
 ---------------------------------------------------------------------------*/
-CtiLMEnergyExchangeHourlyCustomer& CtiLMEnergyExchangeHourlyCustomer::setRevisionNumber(ULONG revnumber)
+CtiLMEnergyExchangeHourlyCustomer& CtiLMEnergyExchangeHourlyCustomer::setRevisionNumber(LONG revnumber)
 {
 
     _revisionnumber = revnumber;
@@ -147,7 +147,7 @@ CtiLMEnergyExchangeHourlyCustomer& CtiLMEnergyExchangeHourlyCustomer::setRevisio
 
     Sets the hour of the customer
 ---------------------------------------------------------------------------*/
-CtiLMEnergyExchangeHourlyCustomer& CtiLMEnergyExchangeHourlyCustomer::setHour(ULONG hour)
+CtiLMEnergyExchangeHourlyCustomer& CtiLMEnergyExchangeHourlyCustomer::setHour(LONG hour)
 {
 
     _hour = hour;

@@ -35,28 +35,28 @@ RWDECLARE_COLLECTABLE( CtiLMEnergyExchangeCustomer )
 
     virtual ~CtiLMEnergyExchangeCustomer();
     
-    ULONG getPAOId() const;
+    LONG getPAOId() const;
     const RWCString& getPAOCategory() const;
     const RWCString& getPAOClass() const;
     const RWCString& getPAOName() const;
-    ULONG getPAOType() const;
+    LONG getPAOType() const;
     const RWCString& getPAODescription() const;
     BOOL getDisableFlag() const;
-    ULONG getCustomerOrder() const;
+    LONG getCustomerOrder() const;
     const RWCString& getCustTimeZone() const;
     RWOrdered& getLMEnergyExchangeCustomerReplies();
 
-    CtiLMEnergyExchangeCustomer& setPAOId(ULONG id);
+    CtiLMEnergyExchangeCustomer& setPAOId(LONG id);
     CtiLMEnergyExchangeCustomer& setPAOCategory(const RWCString& category);
     CtiLMEnergyExchangeCustomer& setPAOClass(const RWCString& pclass);
     CtiLMEnergyExchangeCustomer& setPAOName(const RWCString& name);
-    CtiLMEnergyExchangeCustomer& setPAOType(ULONG type);
+    CtiLMEnergyExchangeCustomer& setPAOType(LONG type);
     CtiLMEnergyExchangeCustomer& setPAODescription(const RWCString& description);
     CtiLMEnergyExchangeCustomer& setDisableFlag(BOOL disable);
-    CtiLMEnergyExchangeCustomer& setCustomerOrder(ULONG order);
+    CtiLMEnergyExchangeCustomer& setCustomerOrder(LONG order);
     CtiLMEnergyExchangeCustomer& setCustTimeZone(const RWCString& timezone);
 
-    BOOL hasAcceptedOffer(ULONG offerid) const;
+    BOOL hasAcceptedOffer(LONG offerid) const;
     CtiLMEnergyExchangeCustomer* replicate() const;
 
     //Members inherited from RWCollectable
@@ -78,14 +78,14 @@ protected:
 
 private:
 
-    ULONG _paoid;
+    LONG _paoid;
     RWCString _paocategory;
     RWCString _paoclass;
     RWCString _paoname;
-    ULONG _paotype;
+    LONG _paotype;
     RWCString _paodescription;
     BOOL _disableflag;
-    ULONG _customerorder;
+    LONG _customerorder;
     RWCString _custtimezone;
 
     RWOrdered _lmenergyexchangecustomerreplies;

@@ -83,11 +83,11 @@ void CtiCCCommandExecutor::EnableStrategy(RWCountedPointer< CtiCountedPCPtrQueue
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     
-    ULONG stratID = _command->Id();
+    LONG stratID = _command->Id();
     CtiCCStrategyStore* store = CtiCCStrategyStore::Instance();
     RWOrdered& strategies = store->Strategies();
 
-    for(ULONG i=0;i<strategies.entries();i++)
+    for(LONG i=0;i<strategies.entries();i++)
     {
         CtiCCStrategy* current = (CtiCCStrategy*)strategies[i];
         if( stratID == current->Id() )
@@ -111,11 +111,11 @@ void CtiCCCommandExecutor::DisableStrategy(RWCountedPointer< CtiCountedPCPtrQueu
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     
-    ULONG stratID = _command->Id();
+    LONG stratID = _command->Id();
     CtiCCStrategyStore* store = CtiCCStrategyStore::Instance();
     RWOrdered& strategies = store->Strategies();
 
-    for(ULONG i=0;i<strategies.entries();i++)
+    for(LONG i=0;i<strategies.entries();i++)
     {
         CtiCCStrategy* current = (CtiCCStrategy*)strategies[i];
         if( stratID == current->Id() )
@@ -139,15 +139,15 @@ void CtiCCCommandExecutor::EnableCapBank(RWCountedPointer< CtiCountedPCPtrQueue<
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     
-    ULONG controlID = _command->Id();
+    LONG controlID = _command->Id();
     bool found = FALSE;
     CtiCCStrategyStore* store = CtiCCStrategyStore::Instance();
     RWOrdered& strategies = store->Strategies();
 
-    for(ULONG i=0;i<strategies.entries();i++)
+    for(LONG i=0;i<strategies.entries();i++)
     {
         RWOrdered& capBanks = ((CtiCCStrategy*)strategies[i])->CapBankList();
-        for(ULONG j=0;j<capBanks.entries();j++)
+        for(LONG j=0;j<capBanks.entries();j++)
         {
             CtiCapBank* current = (CtiCapBank*)capBanks[j];
             if( controlID == current->ControlDeviceId() )
@@ -185,15 +185,15 @@ void CtiCCCommandExecutor::DisableCapBank(RWCountedPointer< CtiCountedPCPtrQueue
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     
-    ULONG controlID = _command->Id();
+    LONG controlID = _command->Id();
     bool found = FALSE;
     CtiCCStrategyStore* store = CtiCCStrategyStore::Instance();
     RWOrdered& strategies = store->Strategies();
 
-    for(ULONG i=0;i<strategies.entries();i++)
+    for(LONG i=0;i<strategies.entries();i++)
     {
         RWOrdered& capBanks = ((CtiCCStrategy*)strategies[i])->CapBankList();
-        for(ULONG j=0;j<capBanks.entries();j++)
+        for(LONG j=0;j<capBanks.entries();j++)
         {
             CtiCapBank* current = (CtiCapBank*)capBanks[j];
             if( controlID == current->ControlDeviceId() )
@@ -231,8 +231,8 @@ void CtiCCCommandExecutor::OpenCapBank(RWCountedPointer< CtiCountedPCPtrQueue<RW
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     
-    ULONG controlID = 0;
-    ULONG bankID = _command->Id();
+    LONG controlID = 0;
+    LONG bankID = _command->Id();
     bool found = FALSE;
     bool savedRecentlyControlledFlag = FALSE;
     CtiMultiMsg* multi = new CtiMultiMsg();
@@ -240,11 +240,11 @@ void CtiCCCommandExecutor::OpenCapBank(RWCountedPointer< CtiCountedPCPtrQueue<RW
     CtiCCStrategyStore* store = CtiCCStrategyStore::Instance();
     RWOrdered& strategies = store->Strategies();
 
-    for(ULONG i=0;i<strategies.entries();i++)
+    for(LONG i=0;i<strategies.entries();i++)
     {
         CtiCCStrategy* currentStrat = (CtiCCStrategy*)strategies[i];
         RWOrdered& capBanks = currentStrat->CapBankList();
-        for(ULONG j=0;j<capBanks.entries();j++)
+        for(LONG j=0;j<capBanks.entries();j++)
         {
             CtiCapBank* currentBank = (CtiCapBank*)capBanks[j];
             if( bankID == currentBank->ControlDeviceId() )
@@ -302,7 +302,7 @@ void CtiCCCommandExecutor::OpenCapBank(RWCountedPointer< CtiCountedPCPtrQueue<RW
         {
             if( savedRecentlyControlledFlag && !currentStrat->RecentlyControlled() )
             {
-                for(ULONG k=0;k<capBanks.entries();k++)
+                for(LONG k=0;k<capBanks.entries();k++)
                 {
                     CtiCapBank* currentBank = (CtiCapBank*)capBanks[k];
                     if( currentBank->ControlStatus() == CtiCapBank::ClosePending )
@@ -361,8 +361,8 @@ void CtiCCCommandExecutor::CloseCapBank(RWCountedPointer< CtiCountedPCPtrQueue<R
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     
-    ULONG controlID = 0;
-    ULONG bankID = _command->Id();
+    LONG controlID = 0;
+    LONG bankID = _command->Id();
     bool found = FALSE;
     bool savedRecentlyControlledFlag = FALSE;
     CtiMultiMsg* multi = new CtiMultiMsg();
@@ -370,11 +370,11 @@ void CtiCCCommandExecutor::CloseCapBank(RWCountedPointer< CtiCountedPCPtrQueue<R
     CtiCCStrategyStore* store = CtiCCStrategyStore::Instance();
     RWOrdered& strategies = store->Strategies();
 
-    for(ULONG i=0;i<strategies.entries();i++)
+    for(LONG i=0;i<strategies.entries();i++)
     {
         CtiCCStrategy* currentStrat = (CtiCCStrategy*)strategies[i];
         RWOrdered& capBanks = currentStrat->CapBankList();
-        for(ULONG j=0;j<capBanks.entries();j++)
+        for(LONG j=0;j<capBanks.entries();j++)
         {
             CtiCapBank* currentBank = (CtiCapBank*)capBanks[j];
             if( bankID == currentBank->ControlDeviceId() )
@@ -433,7 +433,7 @@ void CtiCCCommandExecutor::CloseCapBank(RWCountedPointer< CtiCountedPCPtrQueue<R
         {
             if( savedRecentlyControlledFlag && !currentStrat->RecentlyControlled() )
             {
-                for(ULONG k=0;k<capBanks.entries();k++)
+                for(LONG k=0;k<capBanks.entries();k++)
                 {
                     CtiCapBank* currentBank = (CtiCapBank*)capBanks[k];
                     if( currentBank->ControlStatus() == CtiCapBank::ClosePending )
@@ -492,8 +492,8 @@ void CtiCCCommandExecutor::ConfirmOpen(RWCountedPointer< CtiCountedPCPtrQueue<RW
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     
-    ULONG controlID = 0;
-    ULONG bankID = _command->Id();
+    LONG controlID = 0;
+    LONG bankID = _command->Id();
     bool found = FALSE;
     bool savedRecentlyControlledFlag = FALSE;
     CtiMultiMsg* multi = new CtiMultiMsg();
@@ -501,11 +501,11 @@ void CtiCCCommandExecutor::ConfirmOpen(RWCountedPointer< CtiCountedPCPtrQueue<RW
     CtiCCStrategyStore* store = CtiCCStrategyStore::Instance();
     RWOrdered& strategies = store->Strategies();
 
-    for(ULONG i=0;i<strategies.entries();i++)
+    for(LONG i=0;i<strategies.entries();i++)
     {
         CtiCCStrategy* currentStrat = (CtiCCStrategy*)strategies[i];
         RWOrdered& capBanks = currentStrat->CapBankList();
-        for(ULONG j=0;j<capBanks.entries();j++)
+        for(LONG j=0;j<capBanks.entries();j++)
         {
             CtiCapBank* currentBank = (CtiCapBank*)capBanks[j];
             if( bankID == currentBank->ControlDeviceId() )
@@ -563,7 +563,7 @@ void CtiCCCommandExecutor::ConfirmOpen(RWCountedPointer< CtiCountedPCPtrQueue<RW
         {
             if( savedRecentlyControlledFlag && !currentStrat->RecentlyControlled() )
             {
-                for(ULONG k=0;k<capBanks.entries();k++)
+                for(LONG k=0;k<capBanks.entries();k++)
                 {
                     CtiCapBank* currentBank = (CtiCapBank*)capBanks[k];
                     if( currentBank->ControlStatus() == CtiCapBank::ClosePending )
@@ -622,8 +622,8 @@ void CtiCCCommandExecutor::ConfirmClose(RWCountedPointer< CtiCountedPCPtrQueue<R
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     
-    ULONG controlID = 0;
-    ULONG bankID = _command->Id();
+    LONG controlID = 0;
+    LONG bankID = _command->Id();
     bool found = FALSE;
     bool savedRecentlyControlledFlag = FALSE;
     CtiMultiMsg* multi = new CtiMultiMsg();
@@ -631,11 +631,11 @@ void CtiCCCommandExecutor::ConfirmClose(RWCountedPointer< CtiCountedPCPtrQueue<R
     CtiCCStrategyStore* store = CtiCCStrategyStore::Instance();
     RWOrdered& strategies = store->Strategies();
 
-    for(ULONG i=0;i<strategies.entries();i++)
+    for(LONG i=0;i<strategies.entries();i++)
     {
         CtiCCStrategy* currentStrat = (CtiCCStrategy*)strategies[i];
         RWOrdered& capBanks = currentStrat->CapBankList();
-        for(ULONG j=0;j<capBanks.entries();j++)
+        for(LONG j=0;j<capBanks.entries();j++)
         {
             CtiCapBank* currentBank = (CtiCapBank*)capBanks[j];
             if( bankID == currentBank->ControlDeviceId() )
@@ -694,7 +694,7 @@ void CtiCCCommandExecutor::ConfirmClose(RWCountedPointer< CtiCountedPCPtrQueue<R
         {
             if( savedRecentlyControlledFlag && !currentStrat->RecentlyControlled() )
             {
-                for(ULONG k=0;k<capBanks.entries();k++)
+                for(LONG k=0;k<capBanks.entries();k++)
                 {
                     CtiCapBank* currentBank = (CtiCapBank*)capBanks[k];
                     if( currentBank->ControlStatus() == CtiCapBank::ClosePending )
@@ -859,7 +859,7 @@ void CtiCCPointDataMsgExecutor::Execute(RWCountedPointer< CtiCountedPCPtrQueue<R
 
                 if( currentCapBank->StatusPointId() == pointID )
                 {
-                    if( currentCapBank->ControlStatus() != (ULONG)value )
+                    if( currentCapBank->ControlStatus() != (LONG)value )
                     {
                         if( currentStrategy->RecentlyControlled() &&
                             currentStrategy->LastCapBankControlled() == currentCapBank->Id() )
@@ -867,8 +867,8 @@ void CtiCCPointDataMsgExecutor::Execute(RWCountedPointer< CtiCountedPCPtrQueue<R
                             currentStrategy->setRecentlyControlled(FALSE);
                         }
                         currentStrategy->setStrategyUpdated(TRUE);
-                        currentCapBank->setControlStatus((ULONG)value);
-                        currentCapBank->setTagsControlStatus((ULONG)tags);
+                        currentCapBank->setControlStatus((LONG)value);
+                        currentCapBank->setTagsControlStatus((LONG)tags);
                         currentCapBank->setLastStatusChangeTime(timestamp);
                         currentStrategy->figureActualVarPointValue();
                         if( currentStrategy->ActualVarPointId() > 0 )
@@ -943,7 +943,7 @@ void CtiCCShutdownExecutor::Execute(RWCountedPointer< CtiCountedPCPtrQueue<RWCol
 CtiCCExecutor* CtiCCExecutorFactory::createExecutor(const CtiMessage* message)
 {
     CtiCCExecutor* ret_val = NULL;
-    UINT classId = message->isA();
+    LONG classId = message->isA();
 
     switch ( classId )
     {

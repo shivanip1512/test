@@ -52,7 +52,7 @@ CtiLMEnergyExchangeOffer::~CtiLMEnergyExchangeOffer()
     Returns the pao id of the energy exchange program associated with the
     offer.
 ---------------------------------------------------------------------------*/
-ULONG CtiLMEnergyExchangeOffer::getPAOId() const
+LONG CtiLMEnergyExchangeOffer::getPAOId() const
 {
 
     return _paoid;
@@ -63,7 +63,7 @@ ULONG CtiLMEnergyExchangeOffer::getPAOId() const
 
     Returns the reference id of the energy exchange offer.
 ---------------------------------------------------------------------------*/
-ULONG CtiLMEnergyExchangeOffer::getOfferId() const
+LONG CtiLMEnergyExchangeOffer::getOfferId() const
 {
 
     return _offerid;
@@ -108,7 +108,7 @@ RWOrdered& CtiLMEnergyExchangeOffer::getLMEnergyExchangeOfferRevisions()
     Sets the pao id of the energy exchange program associated with the
     offer.
 ---------------------------------------------------------------------------*/
-CtiLMEnergyExchangeOffer& CtiLMEnergyExchangeOffer::setPAOId(ULONG devid)
+CtiLMEnergyExchangeOffer& CtiLMEnergyExchangeOffer::setPAOId(LONG devid)
 {
 
     _paoid = devid;
@@ -121,7 +121,7 @@ CtiLMEnergyExchangeOffer& CtiLMEnergyExchangeOffer::setPAOId(ULONG devid)
 
     Sets the reference id of the energy exchange offer.
 ---------------------------------------------------------------------------*/
-CtiLMEnergyExchangeOffer& CtiLMEnergyExchangeOffer::setOfferId(ULONG offid)
+CtiLMEnergyExchangeOffer& CtiLMEnergyExchangeOffer::setOfferId(LONG offid)
 {
 
     _offerid = offid;
@@ -211,9 +211,9 @@ void CtiLMEnergyExchangeOffer::addLMEnergyExchangeProgramOfferTable()
 
                 if( rdr() )
                 {
-                    ULONG tempUlong = 0;
-                    rdr["offerid"] >> tempUlong;
-                    setOfferId(tempUlong+1);
+                    LONG tempLONG = 0;
+                    rdr["offerid"] >> tempLONG;
+                    setOfferId(tempLONG+1);
                 }
                 else
                 {
@@ -297,9 +297,9 @@ void CtiLMEnergyExchangeOffer::updateLMEnergyExchangeProgramOfferTable(RWDBConne
 
                 if( rdr() )
                 {
-                    ULONG tempUlong = 0;
-                    rdr["offerid"] >> tempUlong;
-                    setOfferId(tempUlong+1);
+                    LONG tempLONG = 0;
+                    rdr["offerid"] >> tempLONG;
+                    setOfferId(tempLONG+1);
                 }
                 else
                 {
@@ -430,7 +430,7 @@ CtiLMEnergyExchangeOffer& CtiLMEnergyExchangeOffer::operator=(const CtiLMEnergyE
         _offerdate = right._offerdate;
 
         _lmenergyexchangeofferrevisions.clearAndDestroy();
-        for(UINT i=0;i<right._lmenergyexchangeofferrevisions.entries();i++)
+        for(LONG i=0;i<right._lmenergyexchangeofferrevisions.entries();i++)
         {
             _lmenergyexchangeofferrevisions.insert(((CtiLMEnergyExchangeOfferRevision*)right._lmenergyexchangeofferrevisions[i])->replicate());
         }

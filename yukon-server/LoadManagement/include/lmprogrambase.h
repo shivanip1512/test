@@ -30,7 +30,7 @@ class CtiLMProgramBase : public RWCollectable
 
 public:
 
-    static ULONG numberOfReferences;
+    static LONG numberOfReferences;
 
     CtiLMProgramBase();
     CtiLMProgramBase(RWDBReader& rdr);
@@ -38,71 +38,71 @@ public:
 
     virtual ~CtiLMProgramBase();
 
-    ULONG getPAOId() const;
+    LONG getPAOId() const;
     const RWCString& getPAOCategory() const;
     const RWCString& getPAOClass() const;
     const RWCString& getPAOName() const;
-    ULONG getPAOType() const;
+    LONG getPAOType() const;
     const RWCString& getPAODescription() const;
     BOOL getDisableFlag() const;
-    ULONG getUserOrder() const;
-    ULONG getStopOrder() const;
-    ULONG getDefaultPriority() const;
+    LONG getUserOrder() const;
+    LONG getStopOrder() const;
+    LONG getDefaultPriority() const;
     const RWCString& getControlType() const;
     const RWCString& getAvailableSeasons() const;
     const RWCString& getAvailableWeekDays() const;
-    ULONG getMaxHoursDaily() const;
-    ULONG getMaxHoursMonthly() const;
-    ULONG getMaxHoursSeasonal() const;
-    ULONG getMaxHoursAnnually() const;
-    ULONG getMinActivateTime() const;
-    ULONG getMinRestartTime() const;
-    ULONG getProgramStatusPointId() const;
-    ULONG getProgramState() const;
-    ULONG getReductionAnalogPointId() const;
+    LONG getMaxHoursDaily() const;
+    LONG getMaxHoursMonthly() const;
+    LONG getMaxHoursSeasonal() const;
+    LONG getMaxHoursAnnually() const;
+    LONG getMinActivateTime() const;
+    LONG getMinRestartTime() const;
+    LONG getProgramStatusPointId() const;
+    LONG getProgramState() const;
+    LONG getReductionAnalogPointId() const;
     DOUBLE getReductionTotal() const;
     const RWDBDateTime& getStartedControlling() const;
     const RWDBDateTime& getLastControlSent() const;
     BOOL getManualControlReceivedFlag() const;
     RWOrdered& getLMProgramControlWindows();
 
-    CtiLMProgramBase& setPAOId(ULONG id);
+    CtiLMProgramBase& setPAOId(LONG id);
     CtiLMProgramBase& setPAOCategory(const RWCString& category);
     CtiLMProgramBase& setPAOClass(const RWCString& pclass);
     CtiLMProgramBase& setPAOName(const RWCString& name);
-    CtiLMProgramBase& setPAOType(ULONG type);
+    CtiLMProgramBase& setPAOType(LONG type);
     CtiLMProgramBase& setPAODescription(const RWCString& description);
     CtiLMProgramBase& setDisableFlag(BOOL disable);
-    CtiLMProgramBase& setUserOrder(ULONG userorder);
-    CtiLMProgramBase& setStopOrder(ULONG stoporder);
-    CtiLMProgramBase& setDefaultPriority(ULONG defpriority);
+    CtiLMProgramBase& setUserOrder(LONG userorder);
+    CtiLMProgramBase& setStopOrder(LONG stoporder);
+    CtiLMProgramBase& setDefaultPriority(LONG defpriority);
     CtiLMProgramBase& setControlType(const RWCString& conttype);
     CtiLMProgramBase& setAvailableSeasons(const RWCString& availseasons);
     CtiLMProgramBase& setAvailableWeekDays(const RWCString& availweekdays);
-    CtiLMProgramBase& setMaxHoursDaily(ULONG daily);
-    CtiLMProgramBase& setMaxHoursMonthly(ULONG monthly);
-    CtiLMProgramBase& setMaxHoursSeasonal(ULONG seasonal);
-    CtiLMProgramBase& setMaxHoursAnnually(ULONG annually);
-    CtiLMProgramBase& setMinActivateTime(ULONG activate);
-    CtiLMProgramBase& setMinRestartTime(ULONG restart);
-    CtiLMProgramBase& setProgramStatusPointId(ULONG statuspointid);
-    CtiLMProgramBase& setProgramState(ULONG progstate);
-    CtiLMProgramBase& setReductionAnalogPointId(ULONG reductionpointid);
+    CtiLMProgramBase& setMaxHoursDaily(LONG daily);
+    CtiLMProgramBase& setMaxHoursMonthly(LONG monthly);
+    CtiLMProgramBase& setMaxHoursSeasonal(LONG seasonal);
+    CtiLMProgramBase& setMaxHoursAnnually(LONG annually);
+    CtiLMProgramBase& setMinActivateTime(LONG activate);
+    CtiLMProgramBase& setMinRestartTime(LONG restart);
+    CtiLMProgramBase& setProgramStatusPointId(LONG statuspointid);
+    CtiLMProgramBase& setProgramState(LONG progstate);
+    CtiLMProgramBase& setReductionAnalogPointId(LONG reductionpointid);
     CtiLMProgramBase& setStartedControlling(const RWDBDateTime& startcont);
     CtiLMProgramBase& setLastControlSent(const RWDBDateTime& lastcontrol);
     CtiLMProgramBase& setReductionTotal(DOUBLE reduction);
     CtiLMProgramBase& setManualControlReceivedFlag(BOOL manualreceived);
 
     BOOL isAvailableToday();
-    BOOL isWithinValidControlWindow(ULONG secondsFromBeginningOfDay);
+    BOOL isWithinValidControlWindow(LONG secondsFromBeginningOfDay);
     void dumpDynamicData();
     void dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime);
 
-    virtual DOUBLE reduceProgramLoad(DOUBLE loadReductionNeeded, ULONG currentPriority, RWOrdered controlAreaTriggers, ULONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg) = 0;
+    virtual DOUBLE reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, RWOrdered controlAreaTriggers, LONG secondsFromBeginningOfDay, LONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg) = 0;
     virtual CtiLMProgramBase* replicate() const = 0;
     virtual BOOL hasControlHoursAvailable() const = 0;
     virtual void stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg) = 0;
-    virtual BOOL handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg) = 0;
+    virtual BOOL handleManualControl(LONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg) = 0;
 
     //Members inherited from RWCollectable
     void restoreGuts(RWvistream& );
@@ -134,28 +134,28 @@ protected:
 
 private:
     
-    ULONG _paoid;
+    LONG _paoid;
     RWCString _paocategory;
     RWCString _paoclass;
     RWCString _paoname;
-    ULONG _paotype;
+    LONG _paotype;
     RWCString _paodescription;
     BOOL _disableflag;
-    ULONG _userorder;
-    ULONG _stoporder;
-    ULONG _defaultpriority;
+    LONG _userorder;
+    LONG _stoporder;
+    LONG _defaultpriority;
     RWCString _controltype;
     RWCString _availableseasons;
     RWCString _availableweekdays;
-    ULONG _maxhoursdaily;
-    ULONG _maxhoursmonthly;
-    ULONG _maxhoursseasonal;
-    ULONG _maxhoursannually;
-    ULONG _minactivatetime;
-    ULONG _minrestarttime;
-    ULONG _programstatuspointid;
-    ULONG _programstate;
-    ULONG _reductionanalogpointid;
+    LONG _maxhoursdaily;
+    LONG _maxhoursmonthly;
+    LONG _maxhoursseasonal;
+    LONG _maxhoursannually;
+    LONG _minactivatetime;
+    LONG _minrestarttime;
+    LONG _programstatuspointid;
+    LONG _programstate;
+    LONG _reductionanalogpointid;
     DOUBLE _reductiontotal;
     RWDBDateTime _startedcontrolling;
     RWDBDateTime _lastcontrolsent;

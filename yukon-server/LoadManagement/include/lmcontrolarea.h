@@ -35,7 +35,7 @@ public:
 
 RWDECLARE_COLLECTABLE( CtiLMControlArea )
 
-    static ULONG numberOfReferences;
+    static LONG numberOfReferences;
 
     CtiLMControlArea();
     CtiLMControlArea(RWDBReader& rdr);
@@ -43,63 +43,63 @@ RWDECLARE_COLLECTABLE( CtiLMControlArea )
 
     virtual ~CtiLMControlArea();
 
-    ULONG getPAOId() const;
+    LONG getPAOId() const;
     const RWCString& getPAOCategory() const;
     const RWCString& getPAOClass() const;
     const RWCString& getPAOName() const;
-    ULONG getPAOType() const;
+    LONG getPAOType() const;
     const RWCString& getPAODescription() const;
     BOOL getDisableFlag() const;
     const RWCString& getDefOperationalState() const;
-    ULONG getControlInterval() const;
-    ULONG getMinResponseTime() const;
+    LONG getControlInterval() const;
+    LONG getMinResponseTime() const;
     LONG getDefDailyStartTime() const;
     LONG getDefDailyStopTime() const;
     BOOL getRequireAllTriggersActiveFlag() const;
     const RWDBDateTime& getNextCheckTime() const;
     BOOL getNewPointDataReceivedFlag() const;
     BOOL getUpdatedFlag() const;
-    ULONG getControlAreaStatusPointId() const;
-    ULONG getControlAreaState() const;
+    LONG getControlAreaStatusPointId() const;
+    LONG getControlAreaState() const;
     LONG getCurrentPriority() const;
     LONG getCurrentDailyStartTime() const;
     LONG getCurrentDailyStopTime() const;
     RWOrdered& getLMControlAreaTriggers();
     RWOrdered& getLMPrograms();
 
-    CtiLMControlArea& setPAOId(ULONG id);
+    CtiLMControlArea& setPAOId(LONG id);
     CtiLMControlArea& setPAOCategory(const RWCString& category);
     CtiLMControlArea& setPAOClass(const RWCString& pclass);
     CtiLMControlArea& setPAOName(const RWCString& name);
-    CtiLMControlArea& setPAOType(ULONG type);
+    CtiLMControlArea& setPAOType(LONG type);
     CtiLMControlArea& setPAODescription(const RWCString& description);
     CtiLMControlArea& setDisableFlag(BOOL disable);
     CtiLMControlArea& setDefOperationalState(const RWCString& opstate);
-    CtiLMControlArea& setControlInterval(ULONG interval);
-    CtiLMControlArea& setMinResponseTime(ULONG response);
+    CtiLMControlArea& setControlInterval(LONG interval);
+    CtiLMControlArea& setMinResponseTime(LONG response);
     CtiLMControlArea& setDefDailyStartTime(LONG start);
     CtiLMControlArea& setDefDailyStopTime(LONG stop);
     CtiLMControlArea& setRequireAllTriggersActiveFlag(BOOL requireall);
-    CtiLMControlArea& figureNextCheckTime(ULONG secondsFrom1901);
+    CtiLMControlArea& figureNextCheckTime(LONG secondsFrom1901);
     CtiLMControlArea& setNewPointDataReceivedFlag(BOOL newdatareceived);
     CtiLMControlArea& setUpdatedFlag(BOOL updated);
-    CtiLMControlArea& setControlAreaStatusPointId(ULONG statuspointid);
-    CtiLMControlArea& setControlAreaState(ULONG state);
+    CtiLMControlArea& setControlAreaStatusPointId(LONG statuspointid);
+    CtiLMControlArea& setControlAreaState(LONG state);
     CtiLMControlArea& setCurrentPriority(LONG currpriority);
     CtiLMControlArea& setCurrentDailyStartTime(LONG tempstart);
     CtiLMControlArea& setCurrentDailyStopTime(LONG tempstop);
 
-    BOOL isControlTime(ULONG secondsFromBeginningOfDay);
+    BOOL isControlTime(LONG secondsFromBeginningOfDay);
     BOOL isControlStillNeeded();
-    BOOL isPastMinResponseTime(ULONG secondsFrom1901);
+    BOOL isPastMinResponseTime(LONG secondsFrom1901);
     BOOL isManualControlReceived();
     BOOL isThresholdTriggerTripped();
     DOUBLE calculateLoadReductionNeeded();
-    DOUBLE reduceControlAreaLoad(DOUBLE loadReductionNeeded, ULONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
-    DOUBLE takeAllAvailableControlAreaLoad(ULONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
-    BOOL maintainCurrentControl(ULONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
+    DOUBLE reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG secondsFromBeginningOfDay, LONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
+    DOUBLE takeAllAvailableControlAreaLoad(LONG secondsFromBeginningOfDay, LONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
+    BOOL maintainCurrentControl(LONG secondsFromBeginningOfDay, LONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
     BOOL stopAllControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
-    void handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
+    void handleManualControl(LONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
 
     void dumpDynamicData();
     void dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime);
@@ -129,24 +129,24 @@ RWDECLARE_COLLECTABLE( CtiLMControlArea )
 
 private:
     
-    ULONG _paoid;
+    LONG _paoid;
     RWCString _paocategory;
     RWCString _paoclass;
     RWCString _paoname;
-    ULONG _paotype;
+    LONG _paotype;
     RWCString _paodescription;
     BOOL _disableflag;
     RWCString _defoperationalstate;
-    ULONG _controlinterval;
-    ULONG _minresponsetime;
+    LONG _controlinterval;
+    LONG _minresponsetime;
     LONG _defdailystarttime;
     LONG _defdailystoptime;
     BOOL _requirealltriggersactiveflag;
     RWDBDateTime _nextchecktime;
     BOOL _newpointdatareceivedflag;
     BOOL _updatedflag;
-    ULONG _controlareastatuspointid;
-    ULONG _controlareastate;
+    LONG _controlareastatuspointid;
+    LONG _controlareastate;
     LONG _currentpriority;
     LONG _currentdailystarttime;
     LONG _currentdailystoptime;

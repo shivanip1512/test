@@ -66,15 +66,15 @@ public:
     };
 
     CtiLMCommand() { }; //provided for polymorphic persitence only
-    /*CtiLMCommand(UINT command);
-    CtiLMCommand(UINT command, ULONG id);
+    /*CtiLMCommand(LONG command);
+    CtiLMCommand(LONG command, LONG id);
     CtiLMCommand(const CtiLMCommand& commandMsg);*/
     
     virtual ~CtiLMCommand();
 
-    UINT getCommand() const;
-    ULONG getPAOId() const;
-    ULONG getNumber() const;
+    LONG getCommand() const;
+    LONG getPAOId() const;
+    LONG getNumber() const;
     DOUBLE getValue() const;
 
     void restoreGuts(RWvistream&);
@@ -84,9 +84,9 @@ public:
 
 private:
     
-    UINT _command;
-    ULONG _paoid;
-    ULONG _number;
+    LONG _command;
+    LONG _paoid;
+    LONG _number;
     DOUBLE _value;
 };
 
@@ -106,19 +106,19 @@ public:
     };
 
     CtiLMManualControlMsg() { }; //provided for polymorphic persitence only
-    /*CtiLMControlMsg(UINT command);
-    CtiLMControlMsg(UINT command, ULONG id);
+    /*CtiLMControlMsg(LONG command);
+    CtiLMControlMsg(LONG command, LONG id);
     CtiLMControlMsg(const CtiLMCommand& commandMsg);*/
     
     virtual ~CtiLMManualControlMsg();
 
-    UINT getCommand() const;
-    ULONG getPAOId() const;
+    LONG getCommand() const;
+    LONG getPAOId() const;
     const RWDBDateTime& getNotifyTime() const;
     const RWDBDateTime& getStartTime() const;
     const RWDBDateTime& getStopTime() const;
-    ULONG getStartGear() const;
-    ULONG getStartPriority() const;
+    LONG getStartGear() const;
+    LONG getStartPriority() const;
     const RWCString& getAdditionalInfo() const;
 
     void restoreGuts(RWvistream&);
@@ -127,13 +127,13 @@ public:
     CtiLMManualControlMsg& operator=(const CtiLMManualControlMsg& right);
 private:
     
-    UINT _command;
-    ULONG _paoid;
+    LONG _command;
+    LONG _paoid;
     RWDBDateTime _notifytime;
     RWDBDateTime _starttime;
     RWDBDateTime _stoptime;
-    ULONG _startgear;
-    ULONG _startpriority;
+    LONG _startgear;
+    LONG _startpriority;
     RWCString _additionalinfo;
 };
 
@@ -154,21 +154,21 @@ public:
     };
 
     CtiLMEnergyExchangeControlMsg() { }; //provided for polymorphic persitence only
-    /*CtiLMControlMsg(UINT command);
-    CtiLMControlMsg(UINT command, ULONG id);
+    /*CtiLMControlMsg(LONG command);
+    CtiLMControlMsg(LONG command, LONG id);
     CtiLMControlMsg(const CtiLMCommand& commandMsg);*/
     
     virtual ~CtiLMEnergyExchangeControlMsg();
 
-    UINT getCommand() const;
-    ULONG getPAOId() const;
-    ULONG getOfferId() const;
+    LONG getCommand() const;
+    LONG getPAOId() const;
+    LONG getOfferId() const;
     const RWDBDateTime& getOfferDate() const;
     const RWDBDateTime& getNotificationDateTime() const;
     const RWDBDateTime& getExpirationDateTime() const;
     const RWCString& getAdditionalInfo() const;
     DOUBLE getAmountRequested(int i) const;
-    ULONG getPriceOffered(int i) const;
+    LONG getPriceOffered(int i) const;
 
     void restoreGuts(RWvistream&);
     void saveGuts(RWvostream&) const;
@@ -176,15 +176,15 @@ public:
     CtiLMEnergyExchangeControlMsg& operator=(const CtiLMEnergyExchangeControlMsg& right);
 private:
 
-    UINT _command;
-    ULONG _paoid;
-    ULONG _offerid;
+    LONG _command;
+    LONG _paoid;
+    LONG _offerid;
     RWDBDateTime _offerdate;
     RWDBDateTime _notificationdatetime;
     RWDBDateTime _expirationdatetime;
     RWCString _additionalinfo;
     DOUBLE _amountsrequested[HOURS_IN_DAY];
-    ULONG _pricesoffered[HOURS_IN_DAY];
+    LONG _pricesoffered[HOURS_IN_DAY];
 };
 
 
@@ -195,15 +195,15 @@ RWDECLARE_COLLECTABLE( CtiLMEnergyExchangeAcceptMsg )
 public:
 
     CtiLMEnergyExchangeAcceptMsg() { }; //provided for polymorphic persitence only
-    /*CtiLMControlMsg(UINT command);
-    CtiLMControlMsg(UINT command, ULONG id);
+    /*CtiLMControlMsg(LONG command);
+    CtiLMControlMsg(LONG command, LONG id);
     CtiLMControlMsg(const CtiLMCommand& commandMsg);*/
     
     virtual ~CtiLMEnergyExchangeAcceptMsg();
 
-    ULONG getPAOId() const;
-    ULONG getOfferId() const;
-    ULONG getRevisionNumber() const;
+    LONG getPAOId() const;
+    LONG getOfferId() const;
+    LONG getRevisionNumber() const;
     const RWCString& getAcceptStatus() const;
     const RWCString& getIPAddressOfAcceptUser() const;
     const RWCString& getUserIdName() const;
@@ -217,9 +217,9 @@ public:
     CtiLMEnergyExchangeAcceptMsg& operator=(const CtiLMEnergyExchangeAcceptMsg& right);
 private:
 
-    ULONG _paoid;
-    ULONG _offerid;
-    ULONG _revisionnumber;
+    LONG _paoid;
+    LONG _offerid;
+    LONG _revisionnumber;
     RWCString _acceptstatus;
     RWCString _ipaddressofacceptuser;
     RWCString _useridname;
@@ -234,7 +234,7 @@ class CtiLMControlAreaMsg : public CtiLMMessage
 RWDECLARE_COLLECTABLE( CtiLMControlAreaMsg )
 
 public:
-    static ULONG numberOfReferences;
+    static LONG numberOfReferences;
 
     CtiLMControlAreaMsg(RWOrdered& contAreas);
     CtiLMControlAreaMsg(const CtiLMControlAreaMsg& contAreaMsg);
@@ -266,8 +266,8 @@ public:
 
     virtual ~CtiLMCurtailmentAcknowledgeMsg();
 
-    ULONG getPAOId() const;
-    ULONG getCurtailReferenceId() const;
+    LONG getPAOId() const;
+    LONG getCurtailReferenceId() const;
     const RWCString& getAcknowledgeStatus() const;
     const RWCString& getIPAddressOfAckUser() const;
     const RWCString& getUserIdName() const;
@@ -280,8 +280,8 @@ public:
     CtiLMCurtailmentAcknowledgeMsg& operator=(const CtiLMCurtailmentAcknowledgeMsg& right);
 private:
     
-    ULONG _paoid;
-    ULONG _curtailreferenceid;
+    LONG _paoid;
+    LONG _curtailreferenceid;
     RWCString _acknowledgestatus;
     RWCString _ipaddressofackuser;
     RWCString _useridname;

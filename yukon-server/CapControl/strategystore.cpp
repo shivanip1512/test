@@ -199,7 +199,7 @@ void CtiCCStrategyStore::dumpAllDynamicData()
     RWDBDeleter deleter = dynamicCapControlStrategy.deleter();
     deleter.execute( conn );
 
-    for(UINT i=0;i<_strategyList->Strategies().entries();i++)
+    for(LONG i=0;i<_strategyList->Strategies().entries();i++)
     {
         CtiCCStrategy* currentStrat = (CtiCCStrategy*)_strategyList->Strategies()[i];
 
@@ -302,7 +302,7 @@ void CtiCCStrategyStore::reset()
             /************************************************************
             ********    Loading Dynamic Data for each Strategy   ********
             ************************************************************/
-            for(ULONG k=0;k<_strategyList->Strategies().entries();k++)
+            for(LONG k=0;k<_strategyList->Strategies().entries();k++)
             {
                 CtiCCStrategy* currentStrat = (CtiCCStrategy*)_strategyList->Strategies()[k];
 
@@ -343,7 +343,7 @@ void CtiCCStrategyStore::reset()
             /************************************************************
             ********     Loading Cap Banks for each Strategy     ********
             ************************************************************/
-            for(UINT i=0;i<_strategyList->Strategies().entries();i++)
+            for(LONG i=0;i<_strategyList->Strategies().entries();i++)
             {
                 CtiCCStrategy* currentStrat = (CtiCCStrategy*)_strategyList->Strategies()[i];
 
@@ -396,7 +396,7 @@ void CtiCCStrategyStore::reset()
                 }
 
                 RWOrdered &capBankList = currentStrat->CapBankList();
-                for(ULONG j=0;j<capBankList.entries();j++)
+                for(LONG j=0;j<capBankList.entries();j++)
                 {
                     CtiCapBank* currentCapBank = (CtiCapBank*)capBankList[j];
 
@@ -489,7 +489,7 @@ void CtiCCStrategyStore::reset()
                     RWDBSchema schema = rdr.table().schema();
 
                     RWCollectableString* areaString = NULL;
-                    for(UINT k=0;k<schema.entries();k++)
+                    for(LONG k=0;k<schema.entries();k++)
                     {
                         RWCString col = schema[k].qualifiedName();
                         col.toLower();
@@ -596,7 +596,7 @@ void CtiCCStrategyStore::doResetThr()
     time_t start = time(NULL);
 
     RWDBDateTime currenttime = RWDBDateTime();
-    ULONG tempsum = (currenttime.seconds()-(currenttime.seconds()%refreshrate))+refreshrate;
+    LONG tempsum = (currenttime.seconds()-(currenttime.seconds()%refreshrate))+refreshrate;
     RWDBDateTime nextDatabaseRefresh = RWDBDateTime(RWTime(tempsum));
 
     while(1)

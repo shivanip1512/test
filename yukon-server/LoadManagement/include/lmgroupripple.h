@@ -36,17 +36,17 @@ RWDECLARE_COLLECTABLE( CtiLMGroupRipple )
 
     virtual ~CtiLMGroupRipple();
     
-    ULONG getShedTime() const;
+    LONG getShedTime() const;
 
-    CtiLMGroupRipple& setShedTime(ULONG shed);
+    CtiLMGroupRipple& setShedTime(LONG shed);
 
     virtual CtiLMGroupBase* replicate() const;
-    virtual CtiRequestMsg* createTimeRefreshRequestMsg(ULONG refreshRate, ULONG shedTime, int priority) const;
-    virtual CtiRequestMsg* createSmartCycleRequestMsg(ULONG percent, ULONG period, ULONG defaultCount, int priority) const;
-    virtual CtiRequestMsg* createRotationRequestMsg(ULONG sendRate, ULONG shedTime, int priority) const;
-    virtual CtiRequestMsg* createMasterCycleRequestMsg(ULONG offTime, ULONG period, int priority) const;
+    virtual CtiRequestMsg* createTimeRefreshRequestMsg(LONG refreshRate, LONG shedTime, int priority) const;
+    virtual CtiRequestMsg* createSmartCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, int priority) const;
+    virtual CtiRequestMsg* createRotationRequestMsg(LONG sendRate, LONG shedTime, int priority) const;
+    virtual CtiRequestMsg* createMasterCycleRequestMsg(LONG offTime, LONG period, int priority) const;
 
-    virtual BOOL doesMasterCycleNeedToBeUpdated(ULONG secondsFrom1901, ULONG groupControlDone, ULONG offTime);
+    virtual BOOL doesMasterCycleNeedToBeUpdated(LONG secondsFrom1901, LONG groupControlDone, LONG offTime);
 
     //Members inherited from RWCollectable
     void restoreGuts(RWvistream& );
@@ -61,7 +61,7 @@ RWDECLARE_COLLECTABLE( CtiLMGroupRipple )
 
 private:
 
-    ULONG _shedtime;
+    LONG _shedtime;
 
     BOOL _refreshsent;
 

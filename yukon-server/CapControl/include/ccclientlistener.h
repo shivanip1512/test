@@ -24,7 +24,7 @@
 class CtiCCClientListener
 {
 public:
-    CtiCCClientListener(UINT port);
+    CtiCCClientListener(LONG port);
     virtual ~CtiCCClientListener();
 
     virtual void start();
@@ -39,7 +39,7 @@ protected:
 private:
     RWSocketListener* _socketListener;
 
-    UINT _port;   
+    LONG _port;   
     RWThread _listenerthr;
     RWThread _checkthr;
 

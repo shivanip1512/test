@@ -36,12 +36,12 @@ CtiCCClientListener* CtiCCClientListener::getInstance()
     {
         RWCString str;
         char var[128];
-        UINT capcontrolclientsport = CAPCONTROLNEXUS;
+        LONG capcontrolclientsport = CAPCONTROLNEXUS;
 
         strcpy(var, "CAP_CONTROL_PORT");
         if( !(str = gConfigParms.getValueAsString(var)).isNull() )
         {
-            UINT capcontrolclientsport = atoi(str.data());
+            LONG capcontrolclientsport = atoi(str.data());
             if( _CC_DEBUG )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -63,7 +63,7 @@ CtiCCClientListener* CtiCCClientListener::getInstance()
 /*---------------------------------------------------------------------------
     Constructor
 ---------------------------------------------------------------------------*/
-CtiCCClientListener::CtiCCClientListener(UINT port) : _port(port), _doquit(FALSE), _socketListener(NULL)
+CtiCCClientListener::CtiCCClientListener(LONG port) : _port(port), _doquit(FALSE), _socketListener(NULL)
 {  
 }
 
@@ -195,7 +195,7 @@ void CtiCCClientListener::_listen()
                     _connections.insert(conn);
                 }
 
-                ULONG secondsFrom1901 = RWDBDateTime().seconds();
+                LONG secondsFrom1901 = RWDBDateTime().seconds();
                 CtiCCExecutorFactory f;
                 CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
                 {

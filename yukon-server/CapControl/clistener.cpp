@@ -23,7 +23,7 @@
 /*---------------------------------------------------------------------------
     Constructor
 ---------------------------------------------------------------------------*/
-CtiCCClientListener::CtiCCClientListener(UINT port) : _port(port), _listener(0), _doquit(FALSE)
+CtiCCClientListener::CtiCCClientListener(LONG port) : _port(port), _listener(0), _doquit(FALSE)
 {  
 }
 

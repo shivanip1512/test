@@ -54,7 +54,7 @@ CtiLMCurtailCustomer::~CtiLMCurtailCustomer()
 
     Returns the unique id of the substation
 ---------------------------------------------------------------------------*/
-ULONG CtiLMCurtailCustomer::getPAOId() const
+LONG CtiLMCurtailCustomer::getPAOId() const
 {
 
     return _paoid;
@@ -98,7 +98,7 @@ const RWCString& CtiLMCurtailCustomer::getPAOName() const
 
     Returns the pao type of the substation
 ---------------------------------------------------------------------------*/
-ULONG CtiLMCurtailCustomer::getPAOType() const
+LONG CtiLMCurtailCustomer::getPAOType() const
 {
 
     return _paotype;
@@ -131,7 +131,7 @@ BOOL CtiLMCurtailCustomer::getDisableFlag() const
 
     Returns the order of the customer in a program
 ---------------------------------------------------------------------------*/
-ULONG CtiLMCurtailCustomer::getCustomerOrder() const
+LONG CtiLMCurtailCustomer::getCustomerOrder() const
 {
 
     return _customerorder;
@@ -175,7 +175,7 @@ BOOL CtiLMCurtailCustomer::getRequireAck() const
 
     Returns the curtail reference id of the customer in a program
 ---------------------------------------------------------------------------*/
-ULONG CtiLMCurtailCustomer::getCurtailReferenceId() const
+LONG CtiLMCurtailCustomer::getCurtailReferenceId() const
 {
 
     return _curtailreferenceid;
@@ -263,7 +263,7 @@ BOOL CtiLMCurtailCustomer::getAckLateFlag() const
 
     Sets the unique id of the substation - use with caution
 ---------------------------------------------------------------------------*/
-CtiLMCurtailCustomer& CtiLMCurtailCustomer::setPAOId(ULONG id)
+CtiLMCurtailCustomer& CtiLMCurtailCustomer::setPAOId(LONG id)
 {
 
     _paoid = id;
@@ -312,7 +312,7 @@ CtiLMCurtailCustomer& CtiLMCurtailCustomer::setPAOName(const RWCString& name)
 
     Sets the pao type of the substation
 ---------------------------------------------------------------------------*/
-CtiLMCurtailCustomer& CtiLMCurtailCustomer::setPAOType(ULONG type)
+CtiLMCurtailCustomer& CtiLMCurtailCustomer::setPAOType(LONG type)
 {
 
     _paotype = type;
@@ -348,7 +348,7 @@ CtiLMCurtailCustomer& CtiLMCurtailCustomer::setDisableFlag(BOOL disable)
 
     Sets the order of the customer in a program
 ---------------------------------------------------------------------------*/
-CtiLMCurtailCustomer& CtiLMCurtailCustomer::setCustomerOrder(ULONG order)
+CtiLMCurtailCustomer& CtiLMCurtailCustomer::setCustomerOrder(LONG order)
 {
 
     _customerorder = order;
@@ -396,7 +396,7 @@ CtiLMCurtailCustomer& CtiLMCurtailCustomer::setRequireAck(BOOL reqack)
 
     Sets the Curtail Reference Id of the customer
 ---------------------------------------------------------------------------*/
-CtiLMCurtailCustomer& CtiLMCurtailCustomer::setCurtailReferenceId(ULONG refid)
+CtiLMCurtailCustomer& CtiLMCurtailCustomer::setCurtailReferenceId(LONG refid)
 {
 
     _curtailreferenceid = refid;

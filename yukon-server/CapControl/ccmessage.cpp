@@ -79,13 +79,13 @@ RWDEFINE_COLLECTABLE( CtiCCCommand, CTICCCOMMAND_ID )
 /*---------------------------------------------------------------------------
     Constructors
 ---------------------------------------------------------------------------*/
-CtiCCCommand::CtiCCCommand(UINT command) : 
+CtiCCCommand::CtiCCCommand(LONG command) : 
     CtiCCMessage( RWCString("" + command) ),
     _command(command)
 {
 }
     
-CtiCCCommand::CtiCCCommand(UINT command, ULONG id) :
+CtiCCCommand::CtiCCCommand(LONG command, LONG id) :
     CtiCCMessage( RWCString("" + command) ),
     _command(command),
     _id( id )
@@ -109,7 +109,7 @@ CtiCCCommand::~CtiCCCommand()
     
     Returns the specific command that self represents
 ---------------------------------------------------------------------------*/
-UINT CtiCCCommand::getCommand() const
+LONG CtiCCCommand::getCommand() const
 {
     return _command;
 }
@@ -119,7 +119,7 @@ UINT CtiCCCommand::getCommand() const
     
     Returns the id of the object that is associated with command.
 ---------------------------------------------------------------------------*/
-ULONG CtiCCCommand::getId() const
+LONG CtiCCCommand::getId() const
 {
     return _id;
 }

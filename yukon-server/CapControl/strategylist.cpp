@@ -39,7 +39,7 @@ CtiCCStrategyList::CtiCCStrategyList(const CtiCCStrategyList& stratList)
 CtiCCStrategyList::~CtiCCStrategyList()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-    for(UINT i=0;i<_strategies.entries();i++)
+    for(LONG i=0;i<_strategies.entries();i++)
     {
         ((CtiCCStrategy*)_strategies[i])->CapBankList().clearAndDestroy();
     }
@@ -56,7 +56,7 @@ CtiCCStrategyList& CtiCCStrategyList::operator=(const CtiCCStrategyList& right)
     if( this != &right )
     {
         _strategies.clearAndDestroy();
-        for(UINT i=0;i<right._strategies.entries();i++)
+        for(LONG i=0;i<right._strategies.entries();i++)
         {
             _strategies.insert(((CtiCCStrategy*)right._strategies[i])->replicate());
         }

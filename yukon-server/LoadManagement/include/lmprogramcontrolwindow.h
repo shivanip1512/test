@@ -36,15 +36,15 @@ RWDECLARE_COLLECTABLE( CtiLMProgramControlWindow )
 
     virtual ~CtiLMProgramControlWindow();
 
-    ULONG getPAOId() const;
-    ULONG getWindowNumber() const;
-    ULONG getAvailableStartTime() const;
-    ULONG getAvailableStopTime() const;
+    LONG getPAOId() const;
+    LONG getWindowNumber() const;
+    LONG getAvailableStartTime() const;
+    LONG getAvailableStopTime() const;
 
-    CtiLMProgramControlWindow& setPAOId(ULONG paoid);
-    CtiLMProgramControlWindow& setWindowNumber(ULONG winnum);
-    CtiLMProgramControlWindow& setAvailableStartTime(ULONG availstarttime);
-    CtiLMProgramControlWindow& setAvailableStopTime(ULONG availstoptime);
+    CtiLMProgramControlWindow& setPAOId(LONG paoid);
+    CtiLMProgramControlWindow& setWindowNumber(LONG winnum);
+    CtiLMProgramControlWindow& setAvailableStartTime(LONG availstarttime);
+    CtiLMProgramControlWindow& setAvailableStopTime(LONG availstoptime);
 
     CtiLMProgramControlWindow* replicate() const;
 
@@ -61,10 +61,10 @@ RWDECLARE_COLLECTABLE( CtiLMProgramControlWindow )
 
 private:
     
-    ULONG _paoid;
-    ULONG _windownumber;
-    ULONG _availablestarttime;
-    ULONG _availablestoptime;
+    LONG _paoid;
+    LONG _windownumber;
+    LONG _availablestarttime;
+    LONG _availablestoptime;
 
     void restore(RWDBReader& rdr);
 };

@@ -52,7 +52,7 @@ CtiLMGroupRipple::~CtiLMGroupRipple()
 
     Returns the shed time of the group
 ---------------------------------------------------------------------------*/
-ULONG CtiLMGroupRipple::getShedTime() const
+LONG CtiLMGroupRipple::getShedTime() const
 {
 
     return _shedtime;
@@ -63,7 +63,7 @@ ULONG CtiLMGroupRipple::getShedTime() const
 
     Sets the shed time of the group
 ---------------------------------------------------------------------------*/
-CtiLMGroupRipple& CtiLMGroupRipple::setShedTime(ULONG shed)
+CtiLMGroupRipple& CtiLMGroupRipple::setShedTime(LONG shed)
 {
 
     _shedtime = shed;
@@ -77,7 +77,7 @@ CtiLMGroupRipple& CtiLMGroupRipple::setShedTime(ULONG shed)
     Creates a new CtiRequestMsg pointer for a program gear with a control
     method of time refresh with the appropriate refresh rate and shed time.
 --------------------------------------------------------------------------*/
-CtiRequestMsg* CtiLMGroupRipple::createTimeRefreshRequestMsg(ULONG refreshRate, ULONG shedTime, int priority) const
+CtiRequestMsg* CtiLMGroupRipple::createTimeRefreshRequestMsg(LONG refreshRate, LONG shedTime, int priority) const
 {
     RWCString controlString = RWCString("control shed");
 
@@ -96,7 +96,7 @@ CtiRequestMsg* CtiLMGroupRipple::createTimeRefreshRequestMsg(ULONG refreshRate, 
     method of smart cycle with the appropriate cycle percent, period length,
     and the default count of periods.
 --------------------------------------------------------------------------*/
-CtiRequestMsg* CtiLMGroupRipple::createSmartCycleRequestMsg(ULONG percent, ULONG period, ULONG defaultCount, int priority) const
+CtiRequestMsg* CtiLMGroupRipple::createSmartCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, int priority) const
 {
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -111,7 +111,7 @@ CtiRequestMsg* CtiLMGroupRipple::createSmartCycleRequestMsg(ULONG percent, ULONG
     Creates a new CtiRequestMsg pointer for a program gear with a control
     method of rotation with the appropriate send rate and shed time.
 --------------------------------------------------------------------------*/
-CtiRequestMsg* CtiLMGroupRipple::createRotationRequestMsg(ULONG sendRate, ULONG shedTime, int priority) const
+CtiRequestMsg* CtiLMGroupRipple::createRotationRequestMsg(LONG sendRate, LONG shedTime, int priority) const
 {
     RWCString controlString = RWCString("control shed");
 
@@ -129,7 +129,7 @@ CtiRequestMsg* CtiLMGroupRipple::createRotationRequestMsg(ULONG sendRate, ULONG 
     Creates a new CtiRequestMsg pointer for a program gear with a control
     method of master cycle with the appropriate off time, period length.
 --------------------------------------------------------------------------*/
-CtiRequestMsg* CtiLMGroupRipple::createMasterCycleRequestMsg(ULONG offTime, ULONG period, int priority) const
+CtiRequestMsg* CtiLMGroupRipple::createMasterCycleRequestMsg(LONG offTime, LONG period, int priority) const
 {
     RWCString controlString = RWCString("control shed");
 
@@ -146,12 +146,12 @@ CtiRequestMsg* CtiLMGroupRipple::createMasterCycleRequestMsg(ULONG offTime, ULON
 
     
 ---------------------------------------------------------------------------*/
-BOOL CtiLMGroupRipple::doesMasterCycleNeedToBeUpdated(ULONG secondsFrom1901, ULONG groupControlDone, ULONG offTime)
+BOOL CtiLMGroupRipple::doesMasterCycleNeedToBeUpdated(LONG secondsFrom1901, LONG groupControlDone, LONG offTime)
 {
     BOOL returnBOOL = FALSE;
 
-    ULONG controlTimeLeft = groupControlDone - secondsFrom1901;
-    ULONG trueShedTime = getShedTime()+60;
+    LONG controlTimeLeft = groupControlDone - secondsFrom1901;
+    LONG trueShedTime = getShedTime()+60;
     if( !_refreshsent &&
         controlTimeLeft < trueShedTime+2 &&
         controlTimeLeft >= trueShedTime-1 )
@@ -167,8 +167,8 @@ BOOL CtiLMGroupRipple::doesMasterCycleNeedToBeUpdated(ULONG secondsFrom1901, ULO
     {
         if( (offTime/trueShedTime) >= 2 )
         {
-            ULONG numberOfTimesToExtend = (offTime/trueShedTime)-1;
-            for(ULONG i=0;i<numberOfTimesToExtend;i++)
+            LONG numberOfTimesToExtend = (offTime/trueShedTime)-1;
+            for(LONG i=0;i<numberOfTimesToExtend;i++)
             {
                 if( secondsFrom1901 < getLastControlSent().seconds()+trueShedTime+2 &&
                     secondsFrom1901 >= getLastControlSent().seconds()+trueShedTime-1 )

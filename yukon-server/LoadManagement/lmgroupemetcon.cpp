@@ -53,7 +53,7 @@ CtiLMGroupEmetcon::~CtiLMGroupEmetcon()
     Creates a new CtiRequestMsg pointer for a program gear with a control
     method of time refresh with the appropriate refresh rate and shed time.
 --------------------------------------------------------------------------*/
-CtiRequestMsg* CtiLMGroupEmetcon::createTimeRefreshRequestMsg(ULONG refreshRate, ULONG shedTime, int priority) const
+CtiRequestMsg* CtiLMGroupEmetcon::createTimeRefreshRequestMsg(LONG refreshRate, LONG shedTime, int priority) const
 {
     RWCString controlString = RWCString("control shed ");
     controlString += convertSecondsToEvenTimeString(shedTime);
@@ -73,7 +73,7 @@ CtiRequestMsg* CtiLMGroupEmetcon::createTimeRefreshRequestMsg(ULONG refreshRate,
     method of smart cycle with the appropriate cycle percent, period length,
     and the default count of periods.
 --------------------------------------------------------------------------*/
-CtiRequestMsg* CtiLMGroupEmetcon::createSmartCycleRequestMsg(ULONG percent, ULONG period, ULONG defaultCount, int priority) const
+CtiRequestMsg* CtiLMGroupEmetcon::createSmartCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, int priority) const
 {
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -88,7 +88,7 @@ CtiRequestMsg* CtiLMGroupEmetcon::createSmartCycleRequestMsg(ULONG percent, ULON
     Creates a new CtiRequestMsg pointer for a program gear with a control
     method of rotation with the appropriate send rate and shed time.
 --------------------------------------------------------------------------*/
-CtiRequestMsg* CtiLMGroupEmetcon::createRotationRequestMsg(ULONG sendRate, ULONG shedTime, int priority) const
+CtiRequestMsg* CtiLMGroupEmetcon::createRotationRequestMsg(LONG sendRate, LONG shedTime, int priority) const
 {
     RWCString controlString = RWCString("control shed ");
     controlString += convertSecondsToEvenTimeString(shedTime);
@@ -107,10 +107,10 @@ CtiRequestMsg* CtiLMGroupEmetcon::createRotationRequestMsg(ULONG sendRate, ULONG
     Creates a new CtiRequestMsg pointer for a program gear with a control
     method of master cycle with the appropriate off time, period length.
 --------------------------------------------------------------------------*/
-CtiRequestMsg* CtiLMGroupEmetcon::createMasterCycleRequestMsg(ULONG offTime, ULONG period, int priority) const
+CtiRequestMsg* CtiLMGroupEmetcon::createMasterCycleRequestMsg(LONG offTime, LONG period, int priority) const
 {
     RWCString controlString = RWCString("control shed ");
-    ULONG shedTime = 450;
+    LONG shedTime = 450;
     if( offTime > 570 && offTime <= 1220 )
     {
         shedTime = 900;
@@ -139,11 +139,11 @@ CtiRequestMsg* CtiLMGroupEmetcon::createMasterCycleRequestMsg(ULONG offTime, ULO
 
     
 ---------------------------------------------------------------------------*/
-BOOL CtiLMGroupEmetcon::doesMasterCycleNeedToBeUpdated(ULONG secondsFrom1901, ULONG groupControlDone, ULONG offTime)
+BOOL CtiLMGroupEmetcon::doesMasterCycleNeedToBeUpdated(LONG secondsFrom1901, LONG groupControlDone, LONG offTime)
 {
     BOOL returnBOOL = FALSE;
 
-    ULONG controlTimeLeft = groupControlDone - secondsFrom1901;
+    LONG controlTimeLeft = groupControlDone - secondsFrom1901;
     if( !_refreshsent &&
         controlTimeLeft < 572 &&
         controlTimeLeft >= 569 )

@@ -57,7 +57,7 @@ CtiLMControlAreaTrigger::~CtiLMControlAreaTrigger()
 
     Returns the unique id of the trigger
 ---------------------------------------------------------------------------*/
-ULONG CtiLMControlAreaTrigger::getPAOId() const
+LONG CtiLMControlAreaTrigger::getPAOId() const
 {
     return _paoid;
 }
@@ -67,7 +67,7 @@ ULONG CtiLMControlAreaTrigger::getPAOId() const
 
     Returns the trigger number of the trigger
 ---------------------------------------------------------------------------*/
-ULONG CtiLMControlAreaTrigger::getTriggerNumber() const
+LONG CtiLMControlAreaTrigger::getTriggerNumber() const
 {
 
     return _triggernumber;
@@ -89,7 +89,7 @@ const RWCString& CtiLMControlAreaTrigger::getTriggerType() const
 
     Returns the point id of the trigger
 ---------------------------------------------------------------------------*/
-ULONG CtiLMControlAreaTrigger::getPointId() const
+LONG CtiLMControlAreaTrigger::getPointId() const
 {
 
     return _pointid;
@@ -122,7 +122,7 @@ const RWDBDateTime& CtiLMControlAreaTrigger::getLastPointValueTimestamp() const
 
     Returns the raw state of the normal state of the trigger
 ---------------------------------------------------------------------------*/
-ULONG CtiLMControlAreaTrigger::getNormalState() const
+LONG CtiLMControlAreaTrigger::getNormalState() const
 {
 
     return _normalstate;
@@ -155,7 +155,7 @@ const RWCString& CtiLMControlAreaTrigger::getProjectionType() const
 
     Returns the number previous points to include in the projection
 ---------------------------------------------------------------------------*/
-ULONG CtiLMControlAreaTrigger::getProjectionPoints() const
+LONG CtiLMControlAreaTrigger::getProjectionPoints() const
 {
 
     return _projectionpoints;
@@ -166,7 +166,7 @@ ULONG CtiLMControlAreaTrigger::getProjectionPoints() const
 
     Returns how far out to do the projection in seconds
 ---------------------------------------------------------------------------*/
-ULONG CtiLMControlAreaTrigger::getProjectAheadDuration() const
+LONG CtiLMControlAreaTrigger::getProjectAheadDuration() const
 {
 
     return _projectaheadduration;
@@ -177,7 +177,7 @@ ULONG CtiLMControlAreaTrigger::getProjectAheadDuration() const
 
     Returns the threshold kick percentage of the trigger
 ---------------------------------------------------------------------------*/
-ULONG CtiLMControlAreaTrigger::getThresholdKickPercent() const
+LONG CtiLMControlAreaTrigger::getThresholdKickPercent() const
 {
 
     return _thresholdkickpercent;
@@ -199,7 +199,7 @@ DOUBLE CtiLMControlAreaTrigger::getMinRestoreOffset() const
 
     Returns the peak point id of the trigger
 ---------------------------------------------------------------------------*/
-ULONG CtiLMControlAreaTrigger::getPeakPointId() const
+LONG CtiLMControlAreaTrigger::getPeakPointId() const
 {
 
     return _peakpointid;
@@ -255,7 +255,7 @@ RWTValDlist<CtiLMProjectionPointEntry>& CtiLMControlAreaTrigger::getProjectionPo
 
     Sets the id of the control area - use with caution
 ---------------------------------------------------------------------------*/
-CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setPAOId(ULONG id)
+CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setPAOId(LONG id)
 {
 
     _paoid = id;
@@ -268,7 +268,7 @@ CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setPAOId(ULONG id)
 
     Sets the trigger number of the trigger
 ---------------------------------------------------------------------------*/
-CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setTriggerNumber(ULONG trignum)
+CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setTriggerNumber(LONG trignum)
 {
 
     _triggernumber = trignum;
@@ -292,7 +292,7 @@ CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setTriggerType(const RWCString
 
     Sets the point id of the trigger
 ---------------------------------------------------------------------------*/
-CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setPointId(ULONG pntid)
+CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setPointId(LONG pntid)
 {
 
     _pointid = pntid;
@@ -328,7 +328,7 @@ CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setLastPointValueTimestamp(con
 
     Sets the raw state of the normal state of the trigger
 ---------------------------------------------------------------------------*/
-CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setNormalState(ULONG normalst)
+CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setNormalState(LONG normalst)
 {
 
     _normalstate = normalst;
@@ -364,7 +364,7 @@ CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setProjectionType(const RWCStr
 
     Sets the projection points of the trigger
 ---------------------------------------------------------------------------*/
-CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setProjectionPoints(ULONG projpoints)
+CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setProjectionPoints(LONG projpoints)
 {
 
     _projectionpoints = projpoints;
@@ -376,7 +376,7 @@ CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setProjectionPoints(ULONG proj
 
     Sets the number of seconds ahead to do the projection of the trigger
 ---------------------------------------------------------------------------*/
-CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setProjectAheadDuration(ULONG projaheaddur)
+CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setProjectAheadDuration(LONG projaheaddur)
 {
 
     _projectaheadduration = projaheaddur;
@@ -388,7 +388,7 @@ CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setProjectAheadDuration(ULONG 
 
     Sets the threshold kick up percentage of the trigger
 ---------------------------------------------------------------------------*/
-CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setThresholdKickPercent(ULONG threskickpercent)
+CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setThresholdKickPercent(LONG threskickpercent)
 {
 
     _thresholdkickpercent = threskickpercent;
@@ -412,7 +412,7 @@ CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setMinRestoreOffset(DOUBLE min
 
     Sets the peak point id of the trigger
 ---------------------------------------------------------------------------*/
-CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setPeakPointId(ULONG peakptid)
+CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setPeakPointId(LONG peakptid)
 {
 
     _peakpointid = peakptid;

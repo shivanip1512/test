@@ -36,12 +36,12 @@ CtiLMClientListener* CtiLMClientListener::getInstance()
     {
         RWCString str;
         char var[128];
-        UINT loadmanagementclientsport = LOADMANAGEMENTNEXUS;
+        LONG loadmanagementclientsport = LOADMANAGEMENTNEXUS;
 
         strcpy(var, "LOAD_MANAGEMENT_PORT");
         if( !(str = gConfigParms.getValueAsString(var)).isNull() )
         {
-            UINT loadmanagementclientsport = atoi(str.data());
+            LONG loadmanagementclientsport = atoi(str.data());
             if( _LM_DEBUG )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -63,7 +63,7 @@ CtiLMClientListener* CtiLMClientListener::getInstance()
 /*---------------------------------------------------------------------------
     Constructor
 ---------------------------------------------------------------------------*/
-CtiLMClientListener::CtiLMClientListener(UINT port) : _port(port), _doquit(FALSE), _socketListener(NULL)
+CtiLMClientListener::CtiLMClientListener(LONG port) : _port(port), _doquit(FALSE), _socketListener(NULL)
 {  
 }
 

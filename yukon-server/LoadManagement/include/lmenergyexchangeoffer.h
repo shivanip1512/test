@@ -36,14 +36,14 @@ RWDECLARE_COLLECTABLE( CtiLMEnergyExchangeOffer )
 
     virtual ~CtiLMEnergyExchangeOffer();
 
-    ULONG getPAOId() const;
-    ULONG getOfferId() const;
+    LONG getPAOId() const;
+    LONG getOfferId() const;
     const RWCString& getRunStatus() const;
     const RWDBDateTime& getOfferDate() const;
     RWOrdered& getLMEnergyExchangeOfferRevisions();
 
-    CtiLMEnergyExchangeOffer& setPAOId(ULONG paoid);
-    CtiLMEnergyExchangeOffer& setOfferId(ULONG offid);
+    CtiLMEnergyExchangeOffer& setPAOId(LONG paoid);
+    CtiLMEnergyExchangeOffer& setOfferId(LONG offid);
     CtiLMEnergyExchangeOffer& setRunStatus(const RWCString& runstat);
     CtiLMEnergyExchangeOffer& setOfferDate(const RWDBDateTime& offdate);
 
@@ -83,8 +83,8 @@ RWDECLARE_COLLECTABLE( CtiLMEnergyExchangeOffer )
 
 private:
 
-    ULONG _paoid;
-    ULONG _offerid;
+    LONG _paoid;
+    LONG _offerid;
     RWCString _runstatus;
     RWDBDateTime _offerdate;
 

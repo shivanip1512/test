@@ -63,39 +63,39 @@ RWDECLARE_COLLECTABLE( CtiLMControlAreaTrigger )
 
     virtual ~CtiLMControlAreaTrigger();
 
-    ULONG getPAOId() const;
-    ULONG getTriggerNumber() const;
+    LONG getPAOId() const;
+    LONG getTriggerNumber() const;
     const RWCString& getTriggerType() const;
-    ULONG getPointId() const;
+    LONG getPointId() const;
     DOUBLE getPointValue() const;
     const RWDBDateTime& getLastPointValueTimestamp() const;
-    ULONG getNormalState() const;
+    LONG getNormalState() const;
     DOUBLE getThreshold() const;
     const RWCString& getProjectionType() const;
-    ULONG getProjectionPoints() const;
-    ULONG getProjectAheadDuration() const;
-    ULONG getThresholdKickPercent() const;
+    LONG getProjectionPoints() const;
+    LONG getProjectAheadDuration() const;
+    LONG getThresholdKickPercent() const;
     DOUBLE getMinRestoreOffset() const;
-    ULONG getPeakPointId() const;
+    LONG getPeakPointId() const;
     DOUBLE getPeakPointValue() const;
     const RWDBDateTime& getLastPeakPointValueTimestamp() const;
     DOUBLE getProjectedPointValue() const;
     RWTValDlist<CtiLMProjectionPointEntry>& getProjectionPointEntriesQueue();
 
-    CtiLMControlAreaTrigger& setPAOId(ULONG paoid);
-    CtiLMControlAreaTrigger& setTriggerNumber(ULONG trignum);
+    CtiLMControlAreaTrigger& setPAOId(LONG paoid);
+    CtiLMControlAreaTrigger& setTriggerNumber(LONG trignum);
     CtiLMControlAreaTrigger& setTriggerType(const RWCString& trigtype);
-    CtiLMControlAreaTrigger& setPointId(ULONG pntid);
+    CtiLMControlAreaTrigger& setPointId(LONG pntid);
     CtiLMControlAreaTrigger& setPointValue(DOUBLE pntval);
     CtiLMControlAreaTrigger& setLastPointValueTimestamp(const RWDBDateTime& lastvaltime);
-    CtiLMControlAreaTrigger& setNormalState(ULONG normalst);
+    CtiLMControlAreaTrigger& setNormalState(LONG normalst);
     CtiLMControlAreaTrigger& setThreshold(DOUBLE threshold);
     CtiLMControlAreaTrigger& setProjectionType(const RWCString& projtype);
-    CtiLMControlAreaTrigger& setProjectionPoints(ULONG projpoints);
-    CtiLMControlAreaTrigger& setProjectAheadDuration(ULONG projaheaddur);
-    CtiLMControlAreaTrigger& setThresholdKickPercent(ULONG threskickpercent);
+    CtiLMControlAreaTrigger& setProjectionPoints(LONG projpoints);
+    CtiLMControlAreaTrigger& setProjectAheadDuration(LONG projaheaddur);
+    CtiLMControlAreaTrigger& setThresholdKickPercent(LONG threskickpercent);
     CtiLMControlAreaTrigger& setMinRestoreOffset(DOUBLE minrestoffset);
-    CtiLMControlAreaTrigger& setPeakPointId(ULONG peakptid);
+    CtiLMControlAreaTrigger& setPeakPointId(LONG peakptid);
     CtiLMControlAreaTrigger& setPeakPointValue(DOUBLE peakptval);
     CtiLMControlAreaTrigger& setLastPeakPointValueTimestamp(const RWDBDateTime& lastpeakvaltime);
     CtiLMControlAreaTrigger& setProjectedPointValue(DOUBLE pntval);
@@ -126,20 +126,20 @@ RWDECLARE_COLLECTABLE( CtiLMControlAreaTrigger )
 
 private:
     
-    ULONG _paoid;
-    ULONG _triggernumber;
+    LONG _paoid;
+    LONG _triggernumber;
     RWCString _triggertype;
-    ULONG _pointid;
+    LONG _pointid;
     DOUBLE _pointvalue;
     RWDBDateTime _lastpointvaluetimestamp;
-    ULONG _normalstate;
+    LONG _normalstate;
     DOUBLE _threshold;
     RWCString _projectiontype;
-    ULONG _projectionpoints;
-    ULONG _projectaheadduration;
-    ULONG _thresholdkickpercent;
+    LONG _projectionpoints;
+    LONG _projectaheadduration;
+    LONG _thresholdkickpercent;
     DOUBLE _minrestoreoffset;
-    ULONG _peakpointid;
+    LONG _peakpointid;
     DOUBLE _peakpointvalue;
     RWDBDateTime _lastpeakpointvaluetimestamp;
     DOUBLE _projectedpointvalue;

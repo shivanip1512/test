@@ -51,7 +51,7 @@ CtiCCCapBank::~CtiCCCapBank()
 
     Returns the unique id of the cap bank device
 ---------------------------------------------------------------------------*/
-ULONG CtiCCCapBank::getPAOId() const
+LONG CtiCCCapBank::getPAOId() const
 {
     return _paoid;
 }
@@ -161,7 +161,7 @@ const RWCString& CtiCCCapBank::getControllerType() const
 
     Returns the control device id of the cap bank
 ---------------------------------------------------------------------------*/
-ULONG CtiCCCapBank::getControlDeviceId() const
+LONG CtiCCCapBank::getControlDeviceId() const
 {
     return _controldeviceid;
 }
@@ -171,7 +171,7 @@ ULONG CtiCCCapBank::getControlDeviceId() const
 
     Returns the control point id of the cap bank
 ---------------------------------------------------------------------------*/
-ULONG CtiCCCapBank::getControlPointId() const
+LONG CtiCCCapBank::getControlPointId() const
 {
     return _controlpointid;
 }
@@ -181,7 +181,7 @@ ULONG CtiCCCapBank::getControlPointId() const
 
     Returns the bank size of the cap bank
 ---------------------------------------------------------------------------*/
-ULONG CtiCCCapBank::getBankSize() const
+LONG CtiCCCapBank::getBankSize() const
 {
     return _banksize;
 }
@@ -211,7 +211,7 @@ const RWCString& CtiCCCapBank::getSwitchManufacture() const
 
     Returns the map location id of the cap bank
 ---------------------------------------------------------------------------*/
-ULONG CtiCCCapBank::getMapLocationId() const
+LONG CtiCCCapBank::getMapLocationId() const
 {
     return _maplocationid;
 }
@@ -221,7 +221,7 @@ ULONG CtiCCCapBank::getMapLocationId() const
 
     Returns the control order of the cap bank in the list of a feeder
 ---------------------------------------------------------------------------*/
-ULONG CtiCCCapBank::getControlOrder() const
+LONG CtiCCCapBank::getControlOrder() const
 {
     return _controlorder;
 }
@@ -231,7 +231,7 @@ ULONG CtiCCCapBank::getControlOrder() const
 
     Returns the status point id of the cap bank
 ---------------------------------------------------------------------------*/
-ULONG CtiCCCapBank::getStatusPointId() const
+LONG CtiCCCapBank::getStatusPointId() const
 {
     return _statuspointid;
 }
@@ -241,7 +241,7 @@ ULONG CtiCCCapBank::getStatusPointId() const
 
     Returns the control status of the cap bank
 ---------------------------------------------------------------------------*/
-ULONG CtiCCCapBank::getControlStatus() const
+LONG CtiCCCapBank::getControlStatus() const
 {
     return _controlstatus;
 }
@@ -252,7 +252,7 @@ ULONG CtiCCCapBank::getControlStatus() const
     Returns the point id of the analog that holds the number of operations
     on the cap bank
 ---------------------------------------------------------------------------*/
-ULONG CtiCCCapBank::getOperationAnalogPointId() const
+LONG CtiCCCapBank::getOperationAnalogPointId() const
 {
     return _operationanalogpointid;
 }
@@ -262,7 +262,7 @@ ULONG CtiCCCapBank::getOperationAnalogPointId() const
 
     Returns the number operations performed on the cap bank
 ---------------------------------------------------------------------------*/
-ULONG CtiCCCapBank::getCurrentDailyOperations() const
+LONG CtiCCCapBank::getCurrentDailyOperations() const
 {
     return _currentdailyoperations;
 }
@@ -282,7 +282,7 @@ const RWDBDateTime& CtiCCCapBank::getLastStatusChangeTime() const
 
     Returns the tags of control status on the cap bank
 ---------------------------------------------------------------------------*/
-ULONG CtiCCCapBank::getTagsControlStatus() const
+LONG CtiCCCapBank::getTagsControlStatus() const
 {
     return _tagscontrolstatus;
 }
@@ -292,7 +292,7 @@ ULONG CtiCCCapBank::getTagsControlStatus() const
 
     Returns the original feeder id on the cap bank used for temp cap bank moves
 ---------------------------------------------------------------------------*/
-ULONG CtiCCCapBank::getOriginalFeederId() const
+LONG CtiCCCapBank::getOriginalFeederId() const
 {
     return _originalfeederid;
 }
@@ -302,7 +302,7 @@ ULONG CtiCCCapBank::getOriginalFeederId() const
 
     Returns the original switching order on the cap bank used for temp cap bank moves 
 ---------------------------------------------------------------------------*/
-ULONG CtiCCCapBank::getOriginalSwitchingOrder() const
+LONG CtiCCCapBank::getOriginalSwitchingOrder() const
 {
     return _originalswitchingorder;
 }
@@ -312,7 +312,7 @@ ULONG CtiCCCapBank::getOriginalSwitchingOrder() const
 
     Sets the id of the capbank - use with caution
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setPAOId(ULONG id)
+CtiCCCapBank& CtiCCCapBank::setPAOId(LONG id)
 {
     _paoid = id;
     //do not notify observers of this !
@@ -444,7 +444,7 @@ CtiCCCapBank& CtiCCCapBank::setControllerType(const RWCString& controllertype)
 
     Sets the control device id of the capbank
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setControlDeviceId(ULONG controldevice)
+CtiCCCapBank& CtiCCCapBank::setControlDeviceId(LONG controldevice)
 {
     _controldeviceid = controldevice;
 
@@ -456,7 +456,7 @@ CtiCCCapBank& CtiCCCapBank::setControlDeviceId(ULONG controldevice)
 
     Sets the control point id of the capbank
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setControlPointId(ULONG controlpoint)
+CtiCCCapBank& CtiCCCapBank::setControlPointId(LONG controlpoint)
 {
     _controlpointid = controlpoint;
 
@@ -468,7 +468,7 @@ CtiCCCapBank& CtiCCCapBank::setControlPointId(ULONG controlpoint)
 
     Sets the bank size of the capbank
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setBankSize(ULONG size)
+CtiCCCapBank& CtiCCCapBank::setBankSize(LONG size)
 {
     _banksize = size;
 
@@ -504,7 +504,7 @@ CtiCCCapBank& CtiCCCapBank::setSwitchManufacture(const RWCString& manufacture)
 
     Sets the map location id of the capbank
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setMapLocationId(ULONG maplocation)
+CtiCCCapBank& CtiCCCapBank::setMapLocationId(LONG maplocation)
 {
     _maplocationid = maplocation;
 
@@ -516,7 +516,7 @@ CtiCCCapBank& CtiCCCapBank::setMapLocationId(ULONG maplocation)
 
     Sets the control order of the capbank in the list of the parent feeder
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setControlOrder(ULONG order)
+CtiCCCapBank& CtiCCCapBank::setControlOrder(LONG order)
 {
     _controlorder = order;
 
@@ -528,7 +528,7 @@ CtiCCCapBank& CtiCCCapBank::setControlOrder(ULONG order)
 
     Sets the status point id of the capbank
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setStatusPointId(ULONG statuspoint)
+CtiCCCapBank& CtiCCCapBank::setStatusPointId(LONG statuspoint)
 {
     _statuspointid = statuspoint;
 
@@ -540,7 +540,7 @@ CtiCCCapBank& CtiCCCapBank::setStatusPointId(ULONG statuspoint)
 
     Sets the control status of the capbank
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setControlStatus(ULONG status)
+CtiCCCapBank& CtiCCCapBank::setControlStatus(LONG status)
 {
     if( _controlstatus != status )
     {
@@ -560,7 +560,7 @@ CtiCCCapBank& CtiCCCapBank::setControlStatus(ULONG status)
     Sets the point id for the analog point that hold the number of number of
     operations performed on the capbank
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setOperationAnalogPointId(ULONG operationpointid)
+CtiCCCapBank& CtiCCCapBank::setOperationAnalogPointId(LONG operationpointid)
 {
     _operationanalogpointid = operationpointid;
 
@@ -572,7 +572,7 @@ CtiCCCapBank& CtiCCCapBank::setOperationAnalogPointId(ULONG operationpointid)
 
     Sets the number of operations performed on this capbank
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setCurrentDailyOperations(ULONG operations)
+CtiCCCapBank& CtiCCCapBank::setCurrentDailyOperations(LONG operations)
 {
     if( _currentdailyoperations != operations )
     {
@@ -610,7 +610,7 @@ CtiCCCapBank& CtiCCCapBank::setLastStatusChangeTime(const RWDBDateTime& laststat
 
     Sets the tags of control status on the capbank
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setTagsControlStatus(ULONG tags)
+CtiCCCapBank& CtiCCCapBank::setTagsControlStatus(LONG tags)
 {
     if( _tagscontrolstatus != tags )
     {
@@ -629,7 +629,7 @@ CtiCCCapBank& CtiCCCapBank::setTagsControlStatus(ULONG tags)
 
     Sets the original feeder id on the capbank for temp cap bank moves
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setOriginalFeederId(ULONG origfeeder)
+CtiCCCapBank& CtiCCCapBank::setOriginalFeederId(LONG origfeeder)
 {
     if( _originalfeederid != origfeeder )
     {
@@ -648,7 +648,7 @@ CtiCCCapBank& CtiCCCapBank::setOriginalFeederId(ULONG origfeeder)
 
     Sets the switching order on the capbank for temp cap bank moves
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setOriginalSwitchingOrder(ULONG origorder)
+CtiCCCapBank& CtiCCCapBank::setOriginalSwitchingOrder(LONG origorder)
 {
     if( _originalswitchingorder != origorder )
     {

@@ -35,16 +35,16 @@ RWDECLARE_COLLECTABLE( CtiLMEnergyExchangeOfferRevision )
 
     virtual ~CtiLMEnergyExchangeOfferRevision();
     
-    ULONG getOfferId() const;
-    ULONG getRevisionNumber() const;
+    LONG getOfferId() const;
+    LONG getRevisionNumber() const;
     const RWDBDateTime& getActionDateTime() const;
     const RWDBDateTime& getNotificationDateTime() const;
     const RWDBDateTime& getOfferExpirationDateTime() const;
     const RWCString& getAdditionalInfo() const;
     RWOrdered& getLMEnergyExchangeHourlyOffers();
 
-    CtiLMEnergyExchangeOfferRevision& setOfferId(ULONG offid);
-    CtiLMEnergyExchangeOfferRevision& setRevisionNumber(ULONG revnum);
+    CtiLMEnergyExchangeOfferRevision& setOfferId(LONG offid);
+    CtiLMEnergyExchangeOfferRevision& setRevisionNumber(LONG revnum);
     CtiLMEnergyExchangeOfferRevision& setActionDateTime(const RWDBDateTime& actiontime);
     CtiLMEnergyExchangeOfferRevision& setNotificationDateTime(const RWDBDateTime& notifytime);
     CtiLMEnergyExchangeOfferRevision& setOfferExpirationDateTime(const RWDBDateTime& expirationtime);
@@ -54,8 +54,8 @@ RWDECLARE_COLLECTABLE( CtiLMEnergyExchangeOfferRevision )
 
     void addLMEnergyExchangeOfferRevisionTable();
     void updateLMEnergyExchangeOfferRevisionTable();
-    ULONG getFirstCurtailHour() const;
-    ULONG getLastCurtailHour() const;
+    LONG getFirstCurtailHour() const;
+    LONG getLastCurtailHour() const;
     void restoreDynamicData(RWDBReader& rdr);
     void dumpDynamicData();
     
@@ -78,8 +78,8 @@ protected:
 
 private:
 
-    ULONG _offerid;
-    ULONG _revisionnumber;
+    LONG _offerid;
+    LONG _revisionnumber;
     RWDBDateTime _actiondatetime;
     RWDBDateTime _notificationdatetime;
     RWDBDateTime _offerexpirationdatetime;

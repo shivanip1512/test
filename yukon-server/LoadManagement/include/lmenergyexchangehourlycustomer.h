@@ -35,16 +35,16 @@ RWDECLARE_COLLECTABLE( CtiLMEnergyExchangeHourlyCustomer )
 
     virtual ~CtiLMEnergyExchangeHourlyCustomer();
     
-    ULONG getCustomerId() const;
-    ULONG getOfferId() const;
-    ULONG getRevisionNumber() const;
-    ULONG getHour() const;
+    LONG getCustomerId() const;
+    LONG getOfferId() const;
+    LONG getRevisionNumber() const;
+    LONG getHour() const;
     DOUBLE getAmountCommitted() const;
 
-    CtiLMEnergyExchangeHourlyCustomer& setCustomerId(ULONG custid);
-    CtiLMEnergyExchangeHourlyCustomer& setOfferId(ULONG offid);
-    CtiLMEnergyExchangeHourlyCustomer& setRevisionNumber(ULONG revnumber);
-    CtiLMEnergyExchangeHourlyCustomer& setHour(ULONG hour);
+    CtiLMEnergyExchangeHourlyCustomer& setCustomerId(LONG custid);
+    CtiLMEnergyExchangeHourlyCustomer& setOfferId(LONG offid);
+    CtiLMEnergyExchangeHourlyCustomer& setRevisionNumber(LONG revnumber);
+    CtiLMEnergyExchangeHourlyCustomer& setHour(LONG hour);
     CtiLMEnergyExchangeHourlyCustomer& setAmountCommitted(DOUBLE committed);
 
     CtiLMEnergyExchangeHourlyCustomer* replicate() const;
@@ -71,10 +71,10 @@ protected:
 
 private:
 
-    ULONG _customerid;
-    ULONG _offerid;
-    ULONG _revisionnumber;
-    ULONG _hour;
+    LONG _customerid;
+    LONG _offerid;
+    LONG _revisionnumber;
+    LONG _hour;
     DOUBLE _amountcommitted;
 };
 #endif

@@ -36,14 +36,14 @@ RWDECLARE_COLLECTABLE( CtiLMProgramCurtailment )
 
     virtual ~CtiLMProgramCurtailment();
 
-    ULONG getMinNotifyTime() const;
+    LONG getMinNotifyTime() const;
     const RWCString& getHeading() const;
     const RWCString& getMessageHeader() const;
     const RWCString& getMessageFooter() const;
-    ULONG getAckTimeLimit() const;
+    LONG getAckTimeLimit() const;
     const RWCString& getCanceledMsg() const;
     const RWCString& getStoppedEarlyMsg() const;
-    ULONG getCurtailReferenceId() const;
+    LONG getCurtailReferenceId() const;
     const RWDBDateTime& getActionDateTime() const;
     const RWDBDateTime& getNotificationDateTime() const;
     const RWDBDateTime& getCurtailmentStartTime() const;
@@ -52,14 +52,14 @@ RWDECLARE_COLLECTABLE( CtiLMProgramCurtailment )
     const RWCString& getAdditionalInfo() const;
     RWOrdered& getLMProgramCurtailmentCustomers();
 
-    CtiLMProgramCurtailment& setMinNotifyTime(ULONG notifytime);
+    CtiLMProgramCurtailment& setMinNotifyTime(LONG notifytime);
     CtiLMProgramCurtailment& setHeading(const RWCString& head);
     CtiLMProgramCurtailment& setMessageHeader(const RWCString& msgheader);
     CtiLMProgramCurtailment& setMessageFooter(const RWCString& msgfooter);
-    CtiLMProgramCurtailment& setAckTimeLimit(ULONG timelimit);
+    CtiLMProgramCurtailment& setAckTimeLimit(LONG timelimit);
     CtiLMProgramCurtailment& setCanceledMsg(const RWCString& canceled);
     CtiLMProgramCurtailment& setStoppedEarlyMsg(const RWCString& stoppedearly);
-    CtiLMProgramCurtailment& setCurtailReferenceId(ULONG refid);
+    CtiLMProgramCurtailment& setCurtailReferenceId(LONG refid);
     CtiLMProgramCurtailment& setActionDateTime(const RWDBDateTime& actiontime);
     CtiLMProgramCurtailment& setNotificationDateTime(const RWDBDateTime& notificationtime);
     CtiLMProgramCurtailment& setCurtailmentStartTime(const RWDBDateTime& starttime);
@@ -79,10 +79,10 @@ RWDECLARE_COLLECTABLE( CtiLMProgramCurtailment )
     void dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime);
 
     virtual CtiLMProgramBase* replicate() const;
-    virtual DOUBLE reduceProgramLoad(DOUBLE loadReductionNeeded, ULONG currentPriority, RWOrdered controlAreaTriggers, ULONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
+    virtual DOUBLE reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, RWOrdered controlAreaTriggers, LONG secondsFromBeginningOfDay, LONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
     virtual BOOL hasControlHoursAvailable() const;
     virtual void stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
-    virtual BOOL handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
+    virtual BOOL handleManualControl(LONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
 
     //Members inherited from RWCollectable
     void restoreGuts(RWvistream& );
@@ -106,14 +106,14 @@ RWDECLARE_COLLECTABLE( CtiLMProgramCurtailment )
 
 private:
 
-    ULONG _minnotifytime;
+    LONG _minnotifytime;
     RWCString _heading;
     RWCString _messageheader;
     RWCString _messagefooter;
-    ULONG _acktimelimit;
+    LONG _acktimelimit;
     RWCString _canceledmsg;
     RWCString _stoppedearlymsg;
-    ULONG _curtailreferenceid;
+    LONG _curtailreferenceid;
     RWDBDateTime _actiondatetime;
     RWDBDateTime _notificationdatetime;
     RWDBDateTime _curtailmentstarttime;

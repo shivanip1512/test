@@ -61,7 +61,7 @@ CtiCCSubstationBus::~CtiCCSubstationBus()
 
     Returns the unique id of the substation
 ---------------------------------------------------------------------------*/
-ULONG CtiCCSubstationBus::getPAOId() const
+LONG CtiCCSubstationBus::getPAOId() const
 {
     return _paoid;
 }
@@ -141,7 +141,7 @@ const RWCString& CtiCCSubstationBus::getControlMethod() const
 
     Returns the max daily operations of the substation
 ---------------------------------------------------------------------------*/
-ULONG CtiCCSubstationBus::getMaxDailyOperation() const
+LONG CtiCCSubstationBus::getMaxDailyOperation() const
 {
     return _maxdailyoperation;
 }
@@ -181,7 +181,7 @@ DOUBLE CtiCCSubstationBus::getOffPeakSetPoint() const
 
     Returns the peak start time of the substation
 ---------------------------------------------------------------------------*/
-ULONG CtiCCSubstationBus::getPeakStartTime() const
+LONG CtiCCSubstationBus::getPeakStartTime() const
 {
     return _peakstarttime;
 }
@@ -191,7 +191,7 @@ ULONG CtiCCSubstationBus::getPeakStartTime() const
 
     Returns the peak stop time of the substation
 ---------------------------------------------------------------------------*/
-ULONG CtiCCSubstationBus::getPeakStopTime() const
+LONG CtiCCSubstationBus::getPeakStopTime() const
 {
     return _peakstoptime;
 }
@@ -201,7 +201,7 @@ ULONG CtiCCSubstationBus::getPeakStopTime() const
 
     Returns the current var load point id of the substation
 ---------------------------------------------------------------------------*/
-ULONG CtiCCSubstationBus::getCurrentVarLoadPointId() const
+LONG CtiCCSubstationBus::getCurrentVarLoadPointId() const
 {
     return _currentvarloadpointid;
 }
@@ -221,7 +221,7 @@ DOUBLE CtiCCSubstationBus::getCurrentVarLoadPointValue() const
 
     Returns the current watt load point id of the substation
 ---------------------------------------------------------------------------*/
-ULONG CtiCCSubstationBus::getCurrentWattLoadPointId() const
+LONG CtiCCSubstationBus::getCurrentWattLoadPointId() const
 {
     return _currentwattloadpointid;
 }
@@ -251,7 +251,7 @@ DOUBLE CtiCCSubstationBus::getUpperBandwidth() const
 
     Returns the control interval of the substation
 ---------------------------------------------------------------------------*/
-ULONG CtiCCSubstationBus::getControlInterval() const
+LONG CtiCCSubstationBus::getControlInterval() const
 {
     return _controlinterval;
 }
@@ -261,7 +261,7 @@ ULONG CtiCCSubstationBus::getControlInterval() const
 
     Returns the minimum response time of the substation
 ---------------------------------------------------------------------------*/
-ULONG CtiCCSubstationBus::getMinResponseTime() const
+LONG CtiCCSubstationBus::getMinResponseTime() const
 {
     return _minresponsetime;
 }
@@ -271,7 +271,7 @@ ULONG CtiCCSubstationBus::getMinResponseTime() const
 
     Returns the minimum confirm percent of the substation
 ---------------------------------------------------------------------------*/
-ULONG CtiCCSubstationBus::getMinConfirmPercent() const
+LONG CtiCCSubstationBus::getMinConfirmPercent() const
 {
     return _minconfirmpercent;
 }
@@ -281,7 +281,7 @@ ULONG CtiCCSubstationBus::getMinConfirmPercent() const
 
     Returns the failure percent of the substation
 ---------------------------------------------------------------------------*/
-ULONG CtiCCSubstationBus::getFailurePercent() const
+LONG CtiCCSubstationBus::getFailurePercent() const
 {
     return _failurepercent;
 }
@@ -301,7 +301,7 @@ const RWCString& CtiCCSubstationBus::getDaysOfWeek() const
 
     Returns the map location id of the substation
 ---------------------------------------------------------------------------*/
-ULONG CtiCCSubstationBus::getMapLocationId() const
+LONG CtiCCSubstationBus::getMapLocationId() const
 {
     return _maplocationid;
 }
@@ -331,7 +331,7 @@ const RWCString& CtiCCSubstationBus::getControlUnits() const
 
     Returns the decimal places of the substation
 ---------------------------------------------------------------------------*/
-ULONG CtiCCSubstationBus::getDecimalPlaces() const
+LONG CtiCCSubstationBus::getDecimalPlaces() const
 {
     return _decimalplaces;
 }
@@ -381,7 +381,7 @@ const RWDBDateTime& CtiCCSubstationBus::getLastCurrentVarPointUpdateTime() const
 
     Returns the estimated var load point id of the substation
 ---------------------------------------------------------------------------*/
-ULONG CtiCCSubstationBus::getEstimatedVarLoadPointId() const
+LONG CtiCCSubstationBus::getEstimatedVarLoadPointId() const
 {
     return _estimatedvarloadpointid;
 }
@@ -401,7 +401,7 @@ DOUBLE CtiCCSubstationBus::getEstimatedVarLoadPointValue() const
 
     Returns the daily operations analog point id of the substation
 ---------------------------------------------------------------------------*/
-ULONG CtiCCSubstationBus::getDailyOperationsAnalogPointId() const
+LONG CtiCCSubstationBus::getDailyOperationsAnalogPointId() const
 {
     return _dailyoperationsanalogpointid;
 }
@@ -411,7 +411,7 @@ ULONG CtiCCSubstationBus::getDailyOperationsAnalogPointId() const
 
     Returns the current daily operations of the substation
 ---------------------------------------------------------------------------*/
-ULONG CtiCCSubstationBus::getCurrentDailyOperations() const
+LONG CtiCCSubstationBus::getCurrentDailyOperations() const
 {
     return _currentdailyoperations;
 }
@@ -461,7 +461,7 @@ DOUBLE CtiCCSubstationBus::getVarValueBeforeControl() const
 
     Returns the PAO id of the last feeder controlled of the substation
 ---------------------------------------------------------------------------*/
-ULONG CtiCCSubstationBus::getLastFeederControlledPAOId() const
+LONG CtiCCSubstationBus::getLastFeederControlledPAOId() const
 {
     return _lastfeedercontrolledpaoid;
 }
@@ -511,7 +511,7 @@ DOUBLE CtiCCSubstationBus::getKVARSolution() const
 
     Returns the CurrentVarPointQuality of the substation
 ---------------------------------------------------------------------------*/
-ULONG CtiCCSubstationBus::getCurrentVarPointQuality() const
+LONG CtiCCSubstationBus::getCurrentVarPointQuality() const
 {
     return _currentvarpointquality;
 }
@@ -532,7 +532,7 @@ RWOrdered& CtiCCSubstationBus::getCCFeeders()
 
     Sets the unique id of the substation - use with caution
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setPAOId(ULONG id)
+CtiCCSubstationBus& CtiCCSubstationBus::setPAOId(LONG id)
 {
     _paoid = id;
     //do not notify observers of this!
@@ -621,7 +621,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setControlMethod(const RWCString& method
 
     Sets the max daily operations of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setMaxDailyOperation(ULONG max)
+CtiCCSubstationBus& CtiCCSubstationBus::setMaxDailyOperation(LONG max)
 {
     _maxdailyoperation = max;
     return *this;
@@ -665,7 +665,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setOffPeakSetPoint(DOUBLE offpeak)
 
     Sets the peak start time of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setPeakStartTime(ULONG starttime)
+CtiCCSubstationBus& CtiCCSubstationBus::setPeakStartTime(LONG starttime)
 {
     _peakstarttime = starttime;
     return *this;
@@ -676,7 +676,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setPeakStartTime(ULONG starttime)
 
     Sets the peak stop time of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setPeakStopTime(ULONG stoptime)
+CtiCCSubstationBus& CtiCCSubstationBus::setPeakStopTime(LONG stoptime)
 {
     _peakstoptime = stoptime;
     return *this;
@@ -687,7 +687,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setPeakStopTime(ULONG stoptime)
 
     Sets the current var load point id of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setCurrentVarLoadPointId(ULONG currentvarid)
+CtiCCSubstationBus& CtiCCSubstationBus::setCurrentVarLoadPointId(LONG currentvarid)
 {
     _currentvarloadpointid = currentvarid;
     return *this;
@@ -717,7 +717,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCurrentVarLoadPointValue(DOUBLE curre
 
     Sets the current watt load point id of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setCurrentWattLoadPointId(ULONG currentwattid)
+CtiCCSubstationBus& CtiCCSubstationBus::setCurrentWattLoadPointId(LONG currentwattid)
 {
     _currentwattloadpointid = currentwattid;
     return *this;
@@ -758,7 +758,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setUpperBandwidth(DOUBLE bandwidth)
 
     Sets the control interval of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setControlInterval(ULONG interval)
+CtiCCSubstationBus& CtiCCSubstationBus::setControlInterval(LONG interval)
 {
     _controlinterval = interval;
     return *this;
@@ -769,7 +769,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setControlInterval(ULONG interval)
 
     Sets the minimum response time of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setMinResponseTime(ULONG response)
+CtiCCSubstationBus& CtiCCSubstationBus::setMinResponseTime(LONG response)
 {
     _minresponsetime = response;
     return *this;
@@ -780,7 +780,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setMinResponseTime(ULONG response)
 
     Sets the min confirm percent of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setMinConfirmPercent(ULONG confirm)
+CtiCCSubstationBus& CtiCCSubstationBus::setMinConfirmPercent(LONG confirm)
 {
     _minconfirmpercent = confirm;
     return *this;
@@ -791,7 +791,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setMinConfirmPercent(ULONG confirm)
 
     Sets the failure percent of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setFailurePercent(ULONG failure)
+CtiCCSubstationBus& CtiCCSubstationBus::setFailurePercent(LONG failure)
 {
     _failurepercent = failure;
     return *this;
@@ -813,7 +813,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setDaysOfWeek(const RWCString& days)
 
     Sets the map location id of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setMapLocationId(ULONG maplocation)
+CtiCCSubstationBus& CtiCCSubstationBus::setMapLocationId(LONG maplocation)
 {
     _maplocationid = maplocation;
     return *this;
@@ -835,7 +835,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setLowerBandwidth(DOUBLE bandwidth)
 
     Sets the decimal places of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setDecimalPlaces(ULONG places)
+CtiCCSubstationBus& CtiCCSubstationBus::setDecimalPlaces(LONG places)
 {
     _decimalplaces = places;
     return *this;
@@ -852,7 +852,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::figureNextCheckTime()
     RWDBDateTime currenttime = RWDBDateTime();
     if( _controlinterval != 0 )
     {
-        ULONG tempsum = (currenttime.seconds()-(currenttime.seconds()%_controlinterval))+_controlinterval;
+        LONG tempsum = (currenttime.seconds()-(currenttime.seconds()%_controlinterval))+_controlinterval;
         _nextchecktime = RWDBDateTime(RWTime(tempsum));
         /*{
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -929,7 +929,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setLastCurrentVarPointUpdateTime(const R
 
     Sets the estimated var load point id of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setEstimatedVarLoadPointId(ULONG estimatedvarid)
+CtiCCSubstationBus& CtiCCSubstationBus::setEstimatedVarLoadPointId(LONG estimatedvarid)
 {
     _estimatedvarloadpointid = estimatedvarid;
     return *this;
@@ -959,7 +959,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setEstimatedVarLoadPointValue(DOUBLE est
 
     Sets the daily operations analog point id of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setDailyOperationsAnalogPointId(ULONG opanalogpointid)
+CtiCCSubstationBus& CtiCCSubstationBus::setDailyOperationsAnalogPointId(LONG opanalogpointid)
 {
     _dailyoperationsanalogpointid = opanalogpointid;
     return *this;
@@ -970,7 +970,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setDailyOperationsAnalogPointId(ULONG op
 
     Sets the current daily operations of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setCurrentDailyOperations(ULONG operations)
+CtiCCSubstationBus& CtiCCSubstationBus::setCurrentDailyOperations(LONG operations)
 {
     if( _currentdailyoperations != operations )
     {
@@ -989,7 +989,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCurrentDailyOperations(ULONG operatio
 
     Sets the flag if the substation is in peak time
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setPeakTimeFlag(ULONG peaktime)
+CtiCCSubstationBus& CtiCCSubstationBus::setPeakTimeFlag(LONG peaktime)
 {
     if( _peaktimeflag != peaktime )
     {
@@ -1065,7 +1065,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setVarValueBeforeControl(DOUBLE oldvarva
 
     Sets the pao id of the last feeder controlled in the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setLastFeederControlledPAOId(ULONG lastfeederpao)
+CtiCCSubstationBus& CtiCCSubstationBus::setLastFeederControlledPAOId(LONG lastfeederpao)
 {
     if( _lastfeedercontrolledpaoid != lastfeederpao )
     {
@@ -1160,7 +1160,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setEstimatedPowerFactorValue(DOUBLE epfv
 
     Sets the CurrentVarPointQuality in the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setCurrentVarPointQuality(ULONG cvpq)
+CtiCCSubstationBus& CtiCCSubstationBus::setCurrentVarPointQuality(LONG cvpq)
 {
     if( _currentvarpointquality != cvpq )
     {
@@ -1189,12 +1189,12 @@ CtiCCSubstationBus& CtiCCSubstationBus::figureEstimatedVarLoadPointValue()
     else
         tempValue = getCurrentVarLoadPointValue();
 
-    for(UINT i=0;i<_ccfeeders.entries();i++)
+    for(LONG i=0;i<_ccfeeders.entries();i++)
     {
         CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders[i];
         RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
 
-        for(UINT j=0;j<ccCapBanks.entries();j++)
+        for(LONG j=0;j<ccCapBanks.entries();j++)
         {
             CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[j];
             if( currentCapBank->getControlStatus() == CtiCCCapBank::Close ||
@@ -1250,7 +1250,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const RW
     {
         if( _controlmethod == CtiCCSubstationBus::IndividualFeederControlMethod )
         {
-            for(ULONG i=0;i<_ccfeeders.entries();i++)
+            for(LONG i=0;i<_ccfeeders.entries();i++)
             {
                 CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders[i];
                 if( !currentFeeder->getRecentlyControlledFlag() &&
@@ -1368,7 +1368,7 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE setpoint, const RWDB
     {
         CtiCCFeeder* currentFeeder = NULL;
         LONG currentPosition = getLastFeederControlledPosition();
-        ULONG iterations = 0;
+        LONG iterations = 0;
         if( _controlunits == CtiCCSubstationBus::KVARControlUnits )
         {
             if( setpoint < getCurrentVarLoadPointValue() )
@@ -1960,8 +1960,8 @@ BOOL CtiCCSubstationBus::capBankControlStatusUpdate(RWOrdered& pointChanges)
     if( _controlmethod == CtiCCSubstationBus::IndividualFeederControlMethod ||
         _controlmethod == CtiCCSubstationBus::BusOptimizedFeederControlMethod )
     {
-        ULONG recentlyControlledFeeders = 0;
-        for(UINT i=0;i<_ccfeeders.entries();i++)
+        LONG recentlyControlledFeeders = 0;
+        for(LONG i=0;i<_ccfeeders.entries();i++)
         {
             CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders[i];
 
@@ -1997,7 +1997,7 @@ BOOL CtiCCSubstationBus::capBankControlStatusUpdate(RWOrdered& pointChanges)
         }
         else
         {
-            for(UINT i=0;i<_ccfeeders.entries();i++)
+            for(LONG i=0;i<_ccfeeders.entries();i++)
             {
                 currentFeeder = (CtiCCFeeder*)_ccfeeders[i];
 
@@ -2058,7 +2058,7 @@ BOOL CtiCCSubstationBus::isVarCheckNeeded(const RWDBDateTime& currentDateTime)
                         }
                         else
                         {
-                            for(UINT i=0;i<_ccfeeders.entries();i++)
+                            for(LONG i=0;i<_ccfeeders.entries();i++)
                             {
                                 currentFeeder = (CtiCCFeeder*)_ccfeeders[i];
 
@@ -2092,7 +2092,7 @@ BOOL CtiCCSubstationBus::isVarCheckNeeded(const RWDBDateTime& currentDateTime)
                         }
                         else
                         {
-                            for(UINT i=0;i<_ccfeeders.entries();i++)
+                            for(LONG i=0;i<_ccfeeders.entries();i++)
                             {
                                 currentFeeder = (CtiCCFeeder*)_ccfeeders[i];
 
@@ -2113,7 +2113,7 @@ BOOL CtiCCSubstationBus::isVarCheckNeeded(const RWDBDateTime& currentDateTime)
                 else if( _newpointdatareceivedflag )
                 {
                     returnBoolean = TRUE;
-                    for(ULONG i=0;i<_ccfeeders.entries();i++)
+                    for(LONG i=0;i<_ccfeeders.entries();i++)
                     {
                         if( !((CtiCCFeeder*)_ccfeeders[i])->getNewPointDataReceivedFlag() )
                         {
@@ -2128,7 +2128,7 @@ BOOL CtiCCSubstationBus::isVarCheckNeeded(const RWDBDateTime& currentDateTime)
         {
             if( _ccfeeders.entries() > 0 )
             {
-                for(ULONG i=0;i<_ccfeeders.entries();i++)
+                for(LONG i=0;i<_ccfeeders.entries();i++)
                 {
                     if( ((CtiCCFeeder*)_ccfeeders[i])->getNewPointDataReceivedFlag() )
                     {
@@ -2212,7 +2212,7 @@ BOOL CtiCCSubstationBus::isAlreadyControlled()
         {
             if( getMinConfirmPercent() > 0 )
             {
-                for(ULONG i=0;i<_ccfeeders.entries();i++)
+                for(LONG i=0;i<_ccfeeders.entries();i++)
                 {
                     CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders[i];
                     if( currentFeeder->getRecentlyControlledFlag() )
@@ -2232,14 +2232,14 @@ BOOL CtiCCSubstationBus::isAlreadyControlled()
             {
                 DOUBLE oldCalcValue = getVarValueBeforeControl();
                 DOUBLE newCalcValue = getCurrentVarLoadPointValue();
-                for(UINT i=0;i<_ccfeeders.entries();i++)
+                for(LONG i=0;i<_ccfeeders.entries();i++)
                 {
                     CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders[getLastFeederControlledPosition()];
     
                     if( getLastFeederControlledPAOId() == currentFeeder->getPAOId() )
                     {
                         RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
-                        for(UINT j=0;j<ccCapBanks.entries();j++)
+                        for(LONG j=0;j<ccCapBanks.entries();j++)
                         {
                             CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[j];
                             if( currentCapBank->getPAOId() == currentFeeder->getLastCapBankControlledDeviceId() )
@@ -2282,7 +2282,7 @@ BOOL CtiCCSubstationBus::isAlreadyControlled()
                     }
                     else
                     {
-                        for(UINT i=0;i<_ccfeeders.entries();i++)
+                        for(LONG i=0;i<_ccfeeders.entries();i++)
                         {
                             currentFeeder = (CtiCCFeeder*)_ccfeeders[i];
     
@@ -2291,7 +2291,7 @@ BOOL CtiCCSubstationBus::isAlreadyControlled()
                                 if( getLastFeederControlledPAOId() == currentFeeder->getPAOId() )
                                 {
                                     RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
-                                    for(UINT j=0;j<ccCapBanks.entries();j++)
+                                    for(LONG j=0;j<ccCapBanks.entries();j++)
                                     {
                                         CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[j];
                                         if( currentCapBank->getPAOId() == currentFeeder->getLastCapBankControlledDeviceId() )
@@ -2360,7 +2360,7 @@ BOOL CtiCCSubstationBus::isPastResponseTime(const RWDBDateTime& currentDateTime)
 
     if( _controlmethod == CtiCCSubstationBus::IndividualFeederControlMethod )
     {
-        for(UINT i=0;i<_ccfeeders.entries();i++)
+        for(LONG i=0;i<_ccfeeders.entries();i++)
         {
             CtiCCFeeder* currentCCFeeder = (CtiCCFeeder*)_ccfeeders[i];
             if( currentCCFeeder->getRecentlyControlledFlag() &&
@@ -2855,7 +2855,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::operator=(const CtiCCSubstationBus& righ
         _currentvarpointquality = right._currentvarpointquality;
 
         _ccfeeders.clearAndDestroy();
-        for(UINT i=0;i<right._ccfeeders.entries();i++)
+        for(LONG i=0;i<right._ccfeeders.entries();i++)
         {
             _ccfeeders.insert(((CtiCCFeeder*)right._ccfeeders[i])->replicate());
         }

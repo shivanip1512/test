@@ -59,7 +59,7 @@ const RWCString& CtiCCState::Text() const
     
     Returns the foreground color of the state
 ---------------------------------------------------------------------------*/
-ULONG CtiCCState::ForegroundColor() const
+LONG CtiCCState::ForegroundColor() const
 {   
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _foregroundcolor;
@@ -70,7 +70,7 @@ ULONG CtiCCState::ForegroundColor() const
     
     Returns the background color of the state
 ---------------------------------------------------------------------------*/
-ULONG CtiCCState::BackgroundColor() const
+LONG CtiCCState::BackgroundColor() const
 {   
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _backgroundcolor;
@@ -94,7 +94,7 @@ CtiCCState& CtiCCState::setText(const RWCString& text)
     
     Sets the foreground color of the state
 ---------------------------------------------------------------------------*/
-CtiCCState& CtiCCState::setForegroundColor(ULONG foregroundcolor)
+CtiCCState& CtiCCState::setForegroundColor(LONG foregroundcolor)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     _foregroundcolor = foregroundcolor;
@@ -107,7 +107,7 @@ CtiCCState& CtiCCState::setForegroundColor(ULONG foregroundcolor)
     
     Sets the background color of the state
 ---------------------------------------------------------------------------*/
-CtiCCState& CtiCCState::setBackgroundColor(ULONG backgroundcolor)
+CtiCCState& CtiCCState::setBackgroundColor(LONG backgroundcolor)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     _backgroundcolor = backgroundcolor;
@@ -192,7 +192,7 @@ void CtiCCState::restore(RWDBReader& rdr)
 
     RWDBSchema schema = rdr.table().schema();
 
-    for ( UINT i = 0; i < schema.entries(); i++ )
+    for ( LONG i = 0; i < schema.entries(); i++ )
     {
         RWCString col = schema[i].qualifiedName();
         col.toLower();
@@ -209,14 +209,14 @@ void CtiCCState::restore(RWDBReader& rdr)
         }
         else if ( col == "foregroundcolor" )
         {
-            ULONG foregroundcolor;
+            LONG foregroundcolor;
             rdr[col] >> foregroundcolor;
 
             setForegroundColor(foregroundcolor);
         }
         else if ( col == "backgroundcolor" )
         {
-            ULONG backgroundcolor;
+            LONG backgroundcolor;
             rdr[col] >> backgroundcolor;
 
             setBackgroundColor(backgroundcolor);

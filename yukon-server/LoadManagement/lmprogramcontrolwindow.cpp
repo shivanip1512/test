@@ -54,7 +54,7 @@ CtiLMProgramControlWindow::~CtiLMProgramControlWindow()
     
     Returns the unique id of the program control window
 ---------------------------------------------------------------------------*/
-ULONG CtiLMProgramControlWindow::getPAOId() const
+LONG CtiLMProgramControlWindow::getPAOId() const
 {
 
     return _paoid;
@@ -66,7 +66,7 @@ ULONG CtiLMProgramControlWindow::getPAOId() const
     
     Returns the window number of the program control window
 ---------------------------------------------------------------------------*/
-ULONG CtiLMProgramControlWindow::getWindowNumber() const
+LONG CtiLMProgramControlWindow::getWindowNumber() const
 {
 
     return _windownumber;
@@ -78,7 +78,7 @@ ULONG CtiLMProgramControlWindow::getWindowNumber() const
     Returns the available start time as the number of seconds from midnight
     for the program control window.
 ---------------------------------------------------------------------------*/
-ULONG CtiLMProgramControlWindow::getAvailableStartTime() const
+LONG CtiLMProgramControlWindow::getAvailableStartTime() const
 {
 
     return _availablestarttime;
@@ -90,7 +90,7 @@ ULONG CtiLMProgramControlWindow::getAvailableStartTime() const
     Returns the available stop time as the number of seconds from midnight
     for the program control window.
 ---------------------------------------------------------------------------*/
-ULONG CtiLMProgramControlWindow::getAvailableStopTime() const
+LONG CtiLMProgramControlWindow::getAvailableStopTime() const
 {
 
     return _availablestoptime;
@@ -101,7 +101,7 @@ ULONG CtiLMProgramControlWindow::getAvailableStopTime() const
     
     Sets the id of the program control window - use with caution
 ---------------------------------------------------------------------------*/
-CtiLMProgramControlWindow& CtiLMProgramControlWindow::setPAOId(ULONG devid)
+CtiLMProgramControlWindow& CtiLMProgramControlWindow::setPAOId(LONG devid)
 {
 
     _paoid = devid;
@@ -114,7 +114,7 @@ CtiLMProgramControlWindow& CtiLMProgramControlWindow::setPAOId(ULONG devid)
     
     Sets the window number of the program control window
 ---------------------------------------------------------------------------*/    
-CtiLMProgramControlWindow& CtiLMProgramControlWindow::setWindowNumber(ULONG winnum)
+CtiLMProgramControlWindow& CtiLMProgramControlWindow::setWindowNumber(LONG winnum)
 {
 
     _windownumber = winnum;
@@ -128,7 +128,7 @@ CtiLMProgramControlWindow& CtiLMProgramControlWindow::setWindowNumber(ULONG winn
     Sets the available start time as the number of seconds from midnight
     for the program control window.
 ---------------------------------------------------------------------------*/    
-CtiLMProgramControlWindow& CtiLMProgramControlWindow::setAvailableStartTime(ULONG availstarttime)
+CtiLMProgramControlWindow& CtiLMProgramControlWindow::setAvailableStartTime(LONG availstarttime)
 {
 
     _availablestarttime = availstarttime;
@@ -142,7 +142,7 @@ CtiLMProgramControlWindow& CtiLMProgramControlWindow::setAvailableStartTime(ULON
     Sets the available stop time as the number of seconds from midnight
     for the program control window.
 ---------------------------------------------------------------------------*/    
-CtiLMProgramControlWindow& CtiLMProgramControlWindow::setAvailableStopTime(ULONG availstoptime)
+CtiLMProgramControlWindow& CtiLMProgramControlWindow::setAvailableStopTime(LONG availstoptime)
 {
 
     _availablestoptime = availstoptime;

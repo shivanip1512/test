@@ -57,7 +57,7 @@ CtiLMEnergyExchangeCustomer::~CtiLMEnergyExchangeCustomer()
 
     Returns the unique id of the substation
 ---------------------------------------------------------------------------*/
-ULONG CtiLMEnergyExchangeCustomer::getPAOId() const
+LONG CtiLMEnergyExchangeCustomer::getPAOId() const
 {
 
     return _paoid;
@@ -101,7 +101,7 @@ const RWCString& CtiLMEnergyExchangeCustomer::getPAOName() const
 
     Returns the pao type of the substation
 ---------------------------------------------------------------------------*/
-ULONG CtiLMEnergyExchangeCustomer::getPAOType() const
+LONG CtiLMEnergyExchangeCustomer::getPAOType() const
 {
 
     return _paotype;
@@ -134,7 +134,7 @@ BOOL CtiLMEnergyExchangeCustomer::getDisableFlag() const
 
     Returns the order of the customer in a program
 ---------------------------------------------------------------------------*/
-ULONG CtiLMEnergyExchangeCustomer::getCustomerOrder() const
+LONG CtiLMEnergyExchangeCustomer::getCustomerOrder() const
 {
 
     return _customerorder;
@@ -167,7 +167,7 @@ RWOrdered& CtiLMEnergyExchangeCustomer::getLMEnergyExchangeCustomerReplies()
 
     Sets the unique id of the substation - use with caution
 ---------------------------------------------------------------------------*/
-CtiLMEnergyExchangeCustomer& CtiLMEnergyExchangeCustomer::setPAOId(ULONG id)
+CtiLMEnergyExchangeCustomer& CtiLMEnergyExchangeCustomer::setPAOId(LONG id)
 {
 
     _paoid = id;
@@ -216,7 +216,7 @@ CtiLMEnergyExchangeCustomer& CtiLMEnergyExchangeCustomer::setPAOName(const RWCSt
 
     Sets the pao type of the substation
 ---------------------------------------------------------------------------*/    
-CtiLMEnergyExchangeCustomer& CtiLMEnergyExchangeCustomer::setPAOType(ULONG type)
+CtiLMEnergyExchangeCustomer& CtiLMEnergyExchangeCustomer::setPAOType(LONG type)
 {
 
     _paotype = type;
@@ -252,7 +252,7 @@ CtiLMEnergyExchangeCustomer& CtiLMEnergyExchangeCustomer::setDisableFlag(BOOL di
 
     Sets the order of the customer in a program
 ---------------------------------------------------------------------------*/
-CtiLMEnergyExchangeCustomer& CtiLMEnergyExchangeCustomer::setCustomerOrder(ULONG order)
+CtiLMEnergyExchangeCustomer& CtiLMEnergyExchangeCustomer::setCustomerOrder(LONG order)
 {
 
     _customerorder = order;
@@ -278,13 +278,13 @@ CtiLMEnergyExchangeCustomer& CtiLMEnergyExchangeCustomer::setCustTimeZone(const 
     Returns true if this customer has accepted any revisions for a given
     offerid.
 --------------------------------------------------------------------------*/
-BOOL CtiLMEnergyExchangeCustomer::hasAcceptedOffer(ULONG offerid) const
+BOOL CtiLMEnergyExchangeCustomer::hasAcceptedOffer(LONG offerid) const
 {
     BOOL returnBoolean = FALSE;
 
     if( _lmenergyexchangecustomerreplies.entries() > 0 )
     {
-        for(ULONG i=0;i<_lmenergyexchangecustomerreplies.entries();i++)
+        for(LONG i=0;i<_lmenergyexchangecustomerreplies.entries();i++)
         {
             if( ((CtiLMEnergyExchangeCustomerReply*)_lmenergyexchangecustomerreplies[i])->getOfferId() == offerid )
             {
@@ -381,7 +381,7 @@ CtiLMEnergyExchangeCustomer& CtiLMEnergyExchangeCustomer::operator=(const CtiLME
         _custtimezone = right._custtimezone;
         
         _lmenergyexchangecustomerreplies.clearAndDestroy();
-        for(UINT i=0;i<right._lmenergyexchangecustomerreplies.entries();i++)
+        for(LONG i=0;i<right._lmenergyexchangecustomerreplies.entries();i++)
         {
             _lmenergyexchangecustomerreplies.insert(((CtiLMEnergyExchangeCustomerReply*)right._lmenergyexchangecustomerreplies[i])->replicate());
         }

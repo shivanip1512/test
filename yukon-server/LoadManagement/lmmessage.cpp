@@ -92,7 +92,7 @@ CtiLMCommand::~CtiLMCommand()
     
     Returns the specific lm command that self represents
 ---------------------------------------------------------------------------*/
-UINT CtiLMCommand::getCommand() const
+LONG CtiLMCommand::getCommand() const
 {
     return _command;
 }
@@ -102,7 +102,7 @@ UINT CtiLMCommand::getCommand() const
     
     Returns the id of the object that is associated with command.
 ---------------------------------------------------------------------------*/
-ULONG CtiLMCommand::getPAOId() const
+LONG CtiLMCommand::getPAOId() const
 {
     return _paoid;
 }
@@ -112,7 +112,7 @@ ULONG CtiLMCommand::getPAOId() const
     
     Returns the number of the object that is associated with command.
 ---------------------------------------------------------------------------*/
-ULONG CtiLMCommand::getNumber() const
+LONG CtiLMCommand::getNumber() const
 {
     return _number;
 }
@@ -198,7 +198,7 @@ CtiLMManualControlMsg::~CtiLMManualControlMsg()
     
     Returns the specific manual control command that self represents
 ---------------------------------------------------------------------------*/
-UINT CtiLMManualControlMsg::getCommand() const
+LONG CtiLMManualControlMsg::getCommand() const
 {
     return _command;
 }
@@ -208,7 +208,7 @@ UINT CtiLMManualControlMsg::getCommand() const
 
     Returns the id of the object that is associated with control.
 ---------------------------------------------------------------------------*/
-ULONG CtiLMManualControlMsg::getPAOId() const
+LONG CtiLMManualControlMsg::getPAOId() const
 {
     return _paoid;
 }
@@ -249,7 +249,7 @@ const RWDBDateTime& CtiLMManualControlMsg::getStopTime() const
     
     Returns the start gear of the object that is associated with control.
 ---------------------------------------------------------------------------*/
-ULONG CtiLMManualControlMsg::getStartGear() const
+LONG CtiLMManualControlMsg::getStartGear() const
 {
     return _startgear;
 }
@@ -259,7 +259,7 @@ ULONG CtiLMManualControlMsg::getStartGear() const
     
     Returns the start priority of the object that is associated with control.
 ---------------------------------------------------------------------------*/
-ULONG CtiLMManualControlMsg::getStartPriority() const
+LONG CtiLMManualControlMsg::getStartPriority() const
 {
     return _startpriority;
 }
@@ -365,7 +365,7 @@ CtiLMEnergyExchangeControlMsg::~CtiLMEnergyExchangeControlMsg()
     
     Returns the specific manual control command that self represents
 ---------------------------------------------------------------------------*/
-UINT CtiLMEnergyExchangeControlMsg::getCommand() const
+LONG CtiLMEnergyExchangeControlMsg::getCommand() const
 {
     return _command;
 }
@@ -375,7 +375,7 @@ UINT CtiLMEnergyExchangeControlMsg::getCommand() const
 
     Returns the id of the object that is associated with control.
 ---------------------------------------------------------------------------*/
-ULONG CtiLMEnergyExchangeControlMsg::getPAOId() const
+LONG CtiLMEnergyExchangeControlMsg::getPAOId() const
 {
     return _paoid;
 }
@@ -385,7 +385,7 @@ ULONG CtiLMEnergyExchangeControlMsg::getPAOId() const
 
     Returns the id of the object that is associated with control.
 ---------------------------------------------------------------------------*/
-ULONG CtiLMEnergyExchangeControlMsg::getOfferId() const
+LONG CtiLMEnergyExchangeControlMsg::getOfferId() const
 {
     return _offerid;
 }
@@ -454,7 +454,7 @@ DOUBLE CtiLMEnergyExchangeControlMsg::getAmountRequested(int i) const
     
     Returns the list of prices for each hour for the offer date.
 ---------------------------------------------------------------------------*/
-ULONG CtiLMEnergyExchangeControlMsg::getPriceOffered(int i) const
+LONG CtiLMEnergyExchangeControlMsg::getPriceOffered(int i) const
 {
     if( (i>=0) && (i<HOURS_IN_DAY) )
     {
@@ -486,12 +486,12 @@ void CtiLMEnergyExchangeControlMsg::restoreGuts(RWvistream& strm)
          >> tempTime3
          >> _additionalinfo;
 
-    for(ULONG i=0;i<HOURS_IN_DAY;i++)
+    for(LONG i=0;i<HOURS_IN_DAY;i++)
     {
         strm >> _amountsrequested[i];
     }
     
-    for(ULONG j=0;j<HOURS_IN_DAY;j++)
+    for(LONG j=0;j<HOURS_IN_DAY;j++)
     {
         strm >> _pricesoffered[j];
     }
@@ -519,12 +519,12 @@ void CtiLMEnergyExchangeControlMsg::saveGuts(RWvostream& strm) const
          << _expirationdatetime.rwtime()
          << _additionalinfo;
         
-    for(ULONG i=0;i<HOURS_IN_DAY;i++)
+    for(LONG i=0;i<HOURS_IN_DAY;i++)
     {
         strm << _amountsrequested[i];
     }
 
-    for(ULONG j=0;j<HOURS_IN_DAY;j++)
+    for(LONG j=0;j<HOURS_IN_DAY;j++)
     {
         strm << _pricesoffered[j];
     }
@@ -547,12 +547,12 @@ CtiLMEnergyExchangeControlMsg& CtiLMEnergyExchangeControlMsg::operator=(const Ct
         _expirationdatetime = right._expirationdatetime;
         _additionalinfo = right._additionalinfo;
 
-        for(ULONG i=0;i<HOURS_IN_DAY;i++)
+        for(LONG i=0;i<HOURS_IN_DAY;i++)
         {
             _amountsrequested[i] = right.getAmountRequested(i);
         }
 
-        for(ULONG j=0;j<HOURS_IN_DAY;j++)
+        for(LONG j=0;j<HOURS_IN_DAY;j++)
         {
             _pricesoffered[j] = right.getPriceOffered(j);
         }
@@ -583,7 +583,7 @@ CtiLMEnergyExchangeAcceptMsg::~CtiLMEnergyExchangeAcceptMsg()
 
     Returns the id of the program that is associated with control.
 ---------------------------------------------------------------------------*/
-ULONG CtiLMEnergyExchangeAcceptMsg::getPAOId() const
+LONG CtiLMEnergyExchangeAcceptMsg::getPAOId() const
 {
     return _paoid;
 }
@@ -593,7 +593,7 @@ ULONG CtiLMEnergyExchangeAcceptMsg::getPAOId() const
 
     Returns the id of the offer that is associated with control.
 ---------------------------------------------------------------------------*/
-ULONG CtiLMEnergyExchangeAcceptMsg::getOfferId() const
+LONG CtiLMEnergyExchangeAcceptMsg::getOfferId() const
 {
     return _offerid;
 }
@@ -603,7 +603,7 @@ ULONG CtiLMEnergyExchangeAcceptMsg::getOfferId() const
 
     Returns the revision number of the offer that is associated with control.
 ---------------------------------------------------------------------------*/
-ULONG CtiLMEnergyExchangeAcceptMsg::getRevisionNumber() const
+LONG CtiLMEnergyExchangeAcceptMsg::getRevisionNumber() const
 {
     return _revisionnumber;
 }
@@ -699,7 +699,7 @@ void CtiLMEnergyExchangeAcceptMsg::restoreGuts(RWvistream& strm)
          >> _nameofacceptperson
          >> _energyexchangenotes;
 
-    for(ULONG i=0;i<HOURS_IN_DAY;i++)
+    for(LONG i=0;i<HOURS_IN_DAY;i++)
     {
         strm >> _amountscommitted[i];
     }
@@ -726,7 +726,7 @@ void CtiLMEnergyExchangeAcceptMsg::saveGuts(RWvostream& strm) const
          << _nameofacceptperson
          << _energyexchangenotes;
         
-    for(ULONG i=0;i<HOURS_IN_DAY;i++)
+    for(LONG i=0;i<HOURS_IN_DAY;i++)
     {
         strm << _amountscommitted[i];
     }
@@ -750,7 +750,7 @@ CtiLMEnergyExchangeAcceptMsg& CtiLMEnergyExchangeAcceptMsg::operator=(const CtiL
         _nameofacceptperson = right._nameofacceptperson;
         _energyexchangenotes = right._energyexchangenotes;
 
-        for(ULONG i=0;i<HOURS_IN_DAY;i++)
+        for(LONG i=0;i<HOURS_IN_DAY;i++)
         {
             _amountscommitted[i] = right.getAmountCommitted(i);
         }
@@ -766,7 +766,7 @@ CtiLMEnergyExchangeAcceptMsg& CtiLMEnergyExchangeAcceptMsg::operator=(const CtiL
 
 RWDEFINE_COLLECTABLE( CtiLMControlAreaMsg, CTILMCONTROLAREA_MSG_ID )
 
-ULONG CtiLMControlAreaMsg::numberOfReferences = 0;
+LONG CtiLMControlAreaMsg::numberOfReferences = 0;
 /*---------------------------------------------------------------------------
     Constuctors
 ---------------------------------------------------------------------------*/
@@ -880,7 +880,7 @@ CtiLMCurtailmentAcknowledgeMsg::~CtiLMCurtailmentAcknowledgeMsg()
 
     Returns the id of the object that is associated with command.
 ---------------------------------------------------------------------------*/
-ULONG CtiLMCurtailmentAcknowledgeMsg::getPAOId() const
+LONG CtiLMCurtailmentAcknowledgeMsg::getPAOId() const
 {
     return _paoid;
 }
@@ -890,7 +890,7 @@ ULONG CtiLMCurtailmentAcknowledgeMsg::getPAOId() const
 
     Returns the refernce id of the object that is associated with command.
 ---------------------------------------------------------------------------*/
-ULONG CtiLMCurtailmentAcknowledgeMsg::getCurtailReferenceId() const
+LONG CtiLMCurtailmentAcknowledgeMsg::getCurtailReferenceId() const
 {
     return _curtailreferenceid;
 }

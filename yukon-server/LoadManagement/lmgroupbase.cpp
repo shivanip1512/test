@@ -52,7 +52,7 @@ CtiLMGroupBase::~CtiLMGroupBase()
 
     Returns the unique id of the substation
 ---------------------------------------------------------------------------*/
-ULONG CtiLMGroupBase::getPAOId() const
+LONG CtiLMGroupBase::getPAOId() const
 {
 
     return _paoid;
@@ -95,7 +95,7 @@ const RWCString& CtiLMGroupBase::getPAOName() const
 
     Returns the pao type of the substation
 ---------------------------------------------------------------------------*/
-ULONG CtiLMGroupBase::getPAOType() const
+LONG CtiLMGroupBase::getPAOType() const
 {
 
     return _paotype;
@@ -128,7 +128,7 @@ BOOL CtiLMGroupBase::getDisableFlag() const
 
     Returns the order of the group in a program
 ---------------------------------------------------------------------------*/
-ULONG CtiLMGroupBase::getGroupOrder() const
+LONG CtiLMGroupBase::getGroupOrder() const
 {
 
     return _grouporder;
@@ -150,7 +150,7 @@ DOUBLE CtiLMGroupBase::getKWCapacity() const
 
     Returns the order of the group macro children in a program
 ---------------------------------------------------------------------------*/
-ULONG CtiLMGroupBase::getChildOrder() const
+LONG CtiLMGroupBase::getChildOrder() const
 {
 
     return _childorder;
@@ -183,7 +183,7 @@ BOOL CtiLMGroupBase::getControlInhibit() const
 
     Returns the control state of the group
 ---------------------------------------------------------------------------*/
-ULONG CtiLMGroupBase::getGroupControlState() const
+LONG CtiLMGroupBase::getGroupControlState() const
 {
 
     return _groupcontrolstate;
@@ -194,7 +194,7 @@ ULONG CtiLMGroupBase::getGroupControlState() const
 
     Returns the current hours for this day for the group in seconds
 ---------------------------------------------------------------------------*/
-ULONG CtiLMGroupBase::getCurrentHoursDaily() const
+LONG CtiLMGroupBase::getCurrentHoursDaily() const
 {
 
     return _currenthoursdaily;
@@ -205,7 +205,7 @@ ULONG CtiLMGroupBase::getCurrentHoursDaily() const
 
     Returns the current hours for this month for the group in seconds
 ---------------------------------------------------------------------------*/
-ULONG CtiLMGroupBase::getCurrentHoursMonthly() const
+LONG CtiLMGroupBase::getCurrentHoursMonthly() const
 {
 
     return _currenthoursmonthly;
@@ -216,7 +216,7 @@ ULONG CtiLMGroupBase::getCurrentHoursMonthly() const
 
     Returns the current hours for this season for the group in seconds
 ---------------------------------------------------------------------------*/
-ULONG CtiLMGroupBase::getCurrentHoursSeasonal() const
+LONG CtiLMGroupBase::getCurrentHoursSeasonal() const
 {
 
     return _currenthoursseasonal;
@@ -227,7 +227,7 @@ ULONG CtiLMGroupBase::getCurrentHoursSeasonal() const
 
     Returns the current hours for this year for the group in seconds
 ---------------------------------------------------------------------------*/
-ULONG CtiLMGroupBase::getCurrentHoursAnnually() const
+LONG CtiLMGroupBase::getCurrentHoursAnnually() const
 {
 
     return _currenthoursannually;
@@ -249,7 +249,7 @@ const RWDBDateTime& CtiLMGroupBase::getLastControlSent() const
 
     Returns the point id of the daily control hours point for the group
 ---------------------------------------------------------------------------*/
-ULONG CtiLMGroupBase::getHoursDailyPointId() const
+LONG CtiLMGroupBase::getHoursDailyPointId() const
 {
 
     return _hoursdailypointid;
@@ -260,7 +260,7 @@ ULONG CtiLMGroupBase::getHoursDailyPointId() const
 
     Returns the point id of the monthly control hours point for the group
 ---------------------------------------------------------------------------*/
-ULONG CtiLMGroupBase::getHoursMonthlyPointId() const
+LONG CtiLMGroupBase::getHoursMonthlyPointId() const
 {
 
     return _hoursmonthlypointid;
@@ -271,7 +271,7 @@ ULONG CtiLMGroupBase::getHoursMonthlyPointId() const
 
     Returns the point id of the seasonal control hours point for the group
 ---------------------------------------------------------------------------*/
-ULONG CtiLMGroupBase::getHoursSeasonalPointId() const
+LONG CtiLMGroupBase::getHoursSeasonalPointId() const
 {
 
     return _hoursseasonalpointid;
@@ -282,7 +282,7 @@ ULONG CtiLMGroupBase::getHoursSeasonalPointId() const
 
     Returns the point id of the annual control hours point for the group
 ---------------------------------------------------------------------------*/
-ULONG CtiLMGroupBase::getHoursAnnuallyPointId() const
+LONG CtiLMGroupBase::getHoursAnnuallyPointId() const
 {
 
     return _hoursannuallypointid;
@@ -293,7 +293,7 @@ ULONG CtiLMGroupBase::getHoursAnnuallyPointId() const
 
     Returns the pao id of the program that this group is in
 ---------------------------------------------------------------------------*/
-ULONG CtiLMGroupBase::getLMProgramId() const
+LONG CtiLMGroupBase::getLMProgramId() const
 {
 
     return _lmprogramid;
@@ -305,7 +305,7 @@ ULONG CtiLMGroupBase::getLMProgramId() const
 
     Sets the unique id of the substation - use with caution
 ---------------------------------------------------------------------------*/
-CtiLMGroupBase& CtiLMGroupBase::setPAOId(ULONG id)
+CtiLMGroupBase& CtiLMGroupBase::setPAOId(LONG id)
 {
     _paoid = id;
     //do not notify observers of this!
@@ -353,7 +353,7 @@ CtiLMGroupBase& CtiLMGroupBase::setPAOName(const RWCString& name)
 
     Sets the pao type of the substation
 ---------------------------------------------------------------------------*/
-CtiLMGroupBase& CtiLMGroupBase::setPAOType(ULONG type)
+CtiLMGroupBase& CtiLMGroupBase::setPAOType(LONG type)
 {
 
     _paotype = type;
@@ -389,7 +389,7 @@ CtiLMGroupBase& CtiLMGroupBase::setDisableFlag(BOOL disable)
 
     Sets the order of the group in a program
 ---------------------------------------------------------------------------*/
-CtiLMGroupBase& CtiLMGroupBase::setGroupOrder(ULONG order)
+CtiLMGroupBase& CtiLMGroupBase::setGroupOrder(LONG order)
 {
 
     _grouporder = order;
@@ -413,7 +413,7 @@ CtiLMGroupBase& CtiLMGroupBase::setKWCapacity(DOUBLE kwcap)
 
     Sets the order of the group macro children in a program
 ---------------------------------------------------------------------------*/
-CtiLMGroupBase& CtiLMGroupBase::setChildOrder(ULONG order)
+CtiLMGroupBase& CtiLMGroupBase::setChildOrder(LONG order)
 {
 
     _childorder = order;
@@ -449,7 +449,7 @@ CtiLMGroupBase& CtiLMGroupBase::setControlInhibit(BOOL control)
 
     Sets the control state of the group
 ---------------------------------------------------------------------------*/
-CtiLMGroupBase& CtiLMGroupBase::setGroupControlState(ULONG controlstate)
+CtiLMGroupBase& CtiLMGroupBase::setGroupControlState(LONG controlstate)
 {
 
     _groupcontrolstate = controlstate;
@@ -461,7 +461,7 @@ CtiLMGroupBase& CtiLMGroupBase::setGroupControlState(ULONG controlstate)
 
     Sets the current hours for this day for the group in seconds
 ---------------------------------------------------------------------------*/
-CtiLMGroupBase& CtiLMGroupBase::setCurrentHoursDaily(ULONG daily)
+CtiLMGroupBase& CtiLMGroupBase::setCurrentHoursDaily(LONG daily)
 {
 
     _currenthoursdaily = daily;
@@ -473,7 +473,7 @@ CtiLMGroupBase& CtiLMGroupBase::setCurrentHoursDaily(ULONG daily)
 
     Sets the current hours for this month for the group in seconds
 ---------------------------------------------------------------------------*/
-CtiLMGroupBase& CtiLMGroupBase::setCurrentHoursMonthly(ULONG monthly)
+CtiLMGroupBase& CtiLMGroupBase::setCurrentHoursMonthly(LONG monthly)
 {
 
     _currenthoursmonthly = monthly;
@@ -485,7 +485,7 @@ CtiLMGroupBase& CtiLMGroupBase::setCurrentHoursMonthly(ULONG monthly)
 
     Sets the current hours for this season for the group in seconds
 ---------------------------------------------------------------------------*/
-CtiLMGroupBase& CtiLMGroupBase::setCurrentHoursSeasonal(ULONG seasonal)
+CtiLMGroupBase& CtiLMGroupBase::setCurrentHoursSeasonal(LONG seasonal)
 {
 
     _currenthoursseasonal = seasonal;
@@ -497,7 +497,7 @@ CtiLMGroupBase& CtiLMGroupBase::setCurrentHoursSeasonal(ULONG seasonal)
 
     Sets the current hours for this year for the group in seconds
 ---------------------------------------------------------------------------*/
-CtiLMGroupBase& CtiLMGroupBase::setCurrentHoursAnnually(ULONG annually)
+CtiLMGroupBase& CtiLMGroupBase::setCurrentHoursAnnually(LONG annually)
 {
 
     _currenthoursannually = annually;
@@ -521,7 +521,7 @@ CtiLMGroupBase& CtiLMGroupBase::setLastControlSent(const RWDBDateTime& controlse
 
     Sets the point id of the point that tracks daily control hours for the group
 ---------------------------------------------------------------------------*/
-CtiLMGroupBase& CtiLMGroupBase::setHoursDailyPointId(ULONG dailyid)
+CtiLMGroupBase& CtiLMGroupBase::setHoursDailyPointId(LONG dailyid)
 {
 
     _hoursdailypointid = dailyid;
@@ -533,7 +533,7 @@ CtiLMGroupBase& CtiLMGroupBase::setHoursDailyPointId(ULONG dailyid)
 
     Sets the point id of the point that tracks monthly control hours for the group
 ---------------------------------------------------------------------------*/
-CtiLMGroupBase& CtiLMGroupBase::setHoursMonthlyPointId(ULONG monthlyid)
+CtiLMGroupBase& CtiLMGroupBase::setHoursMonthlyPointId(LONG monthlyid)
 {
 
     _hoursmonthlypointid = monthlyid;
@@ -545,7 +545,7 @@ CtiLMGroupBase& CtiLMGroupBase::setHoursMonthlyPointId(ULONG monthlyid)
 
     Sets the point id of the point that tracks seasonal control hours for the group
 ---------------------------------------------------------------------------*/
-CtiLMGroupBase& CtiLMGroupBase::setHoursSeasonalPointId(ULONG seasonalid)
+CtiLMGroupBase& CtiLMGroupBase::setHoursSeasonalPointId(LONG seasonalid)
 {
 
     _hoursseasonalpointid = seasonalid;
@@ -557,7 +557,7 @@ CtiLMGroupBase& CtiLMGroupBase::setHoursSeasonalPointId(ULONG seasonalid)
 
     Sets the point id of the point that tracks annually control hours for the group
 ---------------------------------------------------------------------------*/
-CtiLMGroupBase& CtiLMGroupBase::setHoursAnnuallyPointId(ULONG annuallyid)
+CtiLMGroupBase& CtiLMGroupBase::setHoursAnnuallyPointId(LONG annuallyid)
 {
 
     _hoursannuallypointid = annuallyid;
@@ -569,7 +569,7 @@ CtiLMGroupBase& CtiLMGroupBase::setHoursAnnuallyPointId(ULONG annuallyid)
 
     Sets the pao id of the program that this group is in
 ---------------------------------------------------------------------------*/
-CtiLMGroupBase& CtiLMGroupBase::setLMProgramId(ULONG progid)
+CtiLMGroupBase& CtiLMGroupBase::setLMProgramId(LONG progid)
 {
 
     _lmprogramid = progid;
@@ -582,7 +582,7 @@ CtiLMGroupBase& CtiLMGroupBase::setLMProgramId(ULONG progid)
 
     .
 --------------------------------------------------------------------------*/
-CtiCommandMsg* CtiLMGroupBase::createLatchingRequestMsg(ULONG rawState, int priority) const
+CtiCommandMsg* CtiLMGroupBase::createLatchingRequestMsg(LONG rawState, int priority) const
 {
     CtiCommandMsg* returnCommandMsg = new CtiCommandMsg();
     returnCommandMsg->setOperation(CtiCommandMsg::ControlRequest);
@@ -611,7 +611,7 @@ CtiCommandMsg* CtiLMGroupBase::createLatchingRequestMsg(ULONG rawState, int prio
 
     .
 --------------------------------------------------------------------------*/
-CtiRequestMsg* CtiLMGroupBase::createTrueCycleRequestMsg(ULONG percent, ULONG period, ULONG defaultCount, int priority) const
+CtiRequestMsg* CtiLMGroupBase::createTrueCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, int priority) const
 {
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -749,21 +749,21 @@ int CtiLMGroupBase::operator!=(const CtiLMGroupBase& right) const
 
     
 ---------------------------------------------------------------------------*/
-RWCString CtiLMGroupBase::convertSecondsToEvenTimeString(ULONG shedTime) const
+RWCString CtiLMGroupBase::convertSecondsToEvenTimeString(LONG shedTime) const
 {
     char tempchar[64];
     RWCString retStr;
 
     if( (shedTime % 3600) == 0 )
     {
-        ULONG hourShedTime = shedTime/3600;
+        LONG hourShedTime = shedTime/3600;
         _ultoa(hourShedTime,tempchar,10);
         retStr += tempchar;
         retStr += "h";
     }
     else if( (shedTime % 60) == 0 )
     {
-        ULONG minuteShedTime = shedTime/60;
+        LONG minuteShedTime = shedTime/60;
         _ultoa(minuteShedTime,tempchar,10);
         retStr += tempchar;
         retStr += "m";
@@ -783,7 +783,7 @@ RWCString CtiLMGroupBase::convertSecondsToEvenTimeString(ULONG shedTime) const
 
     doesMasterCycleNeedToBeUpdated
 ---------------------------------------------------------------------------*/
-BOOL CtiLMGroupBase::doesMasterCycleNeedToBeUpdated(ULONG secondsFrom1901, ULONG groupControlDone, ULONG offTime)
+BOOL CtiLMGroupBase::doesMasterCycleNeedToBeUpdated(LONG secondsFrom1901, LONG groupControlDone, LONG offTime)
 {
     /*{
         CtiLockGuard<CtiLogger> logger_guard(dout);

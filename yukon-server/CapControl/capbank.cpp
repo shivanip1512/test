@@ -48,7 +48,7 @@ CtiCapBank::~CtiCapBank()
     
     Returns the unique id of the cap bank device
 ---------------------------------------------------------------------------*/
-ULONG CtiCapBank::Id() const  
+LONG CtiCapBank::Id() const  
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _id;
@@ -158,7 +158,7 @@ const RWCString& CtiCapBank::OperationalState() const
 
     Returns the control point id of the cap bank
 ---------------------------------------------------------------------------*/
-ULONG CtiCapBank::ControlPointId() const
+LONG CtiCapBank::ControlPointId() const
 {   
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _controlpointid;
@@ -180,7 +180,7 @@ DOUBLE CtiCapBank::BankSize() const
 
     Returns the control device id of the cap bank
 ---------------------------------------------------------------------------*/
-ULONG CtiCapBank::ControlDeviceId() const
+LONG CtiCapBank::ControlDeviceId() const
 {   
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _controldeviceid;
@@ -191,7 +191,7 @@ ULONG CtiCapBank::ControlDeviceId() const
 
     Returns the status point id of the cap bank
 ---------------------------------------------------------------------------*/
-ULONG CtiCapBank::StatusPointId() const
+LONG CtiCapBank::StatusPointId() const
 {   
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _statuspointid;
@@ -202,7 +202,7 @@ ULONG CtiCapBank::StatusPointId() const
 
     Returns the control status of the cap bank
 ---------------------------------------------------------------------------*/
-ULONG CtiCapBank::ControlStatus() const
+LONG CtiCapBank::ControlStatus() const
 {   
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _controlstatus;
@@ -214,7 +214,7 @@ ULONG CtiCapBank::ControlStatus() const
     Returns the point id of the analog that holds the number of operations
     on the cap bank
 ---------------------------------------------------------------------------*/
-ULONG CtiCapBank::OperationAnalogPointId() const
+LONG CtiCapBank::OperationAnalogPointId() const
 {   
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _operationanalogpointid;
@@ -225,7 +225,7 @@ ULONG CtiCapBank::OperationAnalogPointId() const
 
     Returns the number operations performed on the cap bank
 ---------------------------------------------------------------------------*/
-ULONG CtiCapBank::Operations() const
+LONG CtiCapBank::Operations() const
 {   
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _operations;
@@ -247,7 +247,7 @@ const RWDBDateTime& CtiCapBank::LastStatusChangeTime() const
 
     Returns the tags of control status on the cap bank
 ---------------------------------------------------------------------------*/
-ULONG CtiCapBank::TagsControlStatus() const
+LONG CtiCapBank::TagsControlStatus() const
 {   
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _tagscontrolstatus;
@@ -269,7 +269,7 @@ BOOL CtiCapBank::StatusReceivedFlag() const
     
     Sets the id of the capbank - use with caution
 ---------------------------------------------------------------------------*/
-CtiCapBank& CtiCapBank::setId(ULONG id)
+CtiCapBank& CtiCapBank::setId(LONG id)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     _id = id;
@@ -399,7 +399,7 @@ CtiCapBank& CtiCapBank::setOperationalState(const RWCString& operational)
     
     Sets the control point id of the capbank
 ---------------------------------------------------------------------------*/    
-CtiCapBank& CtiCapBank::setControlPointId(ULONG controlpoint)
+CtiCapBank& CtiCapBank::setControlPointId(LONG controlpoint)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     _controlpointid = controlpoint;
@@ -425,7 +425,7 @@ CtiCapBank& CtiCapBank::setBankSize(DOUBLE size)
     
     Sets the control device id of the capbank
 ---------------------------------------------------------------------------*/    
-CtiCapBank& CtiCapBank::setControlDeviceId(ULONG controldevice)
+CtiCapBank& CtiCapBank::setControlDeviceId(LONG controldevice)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     _controldeviceid = controldevice;
@@ -438,7 +438,7 @@ CtiCapBank& CtiCapBank::setControlDeviceId(ULONG controldevice)
     
     Sets the status point id of the capbank
 ---------------------------------------------------------------------------*/    
-CtiCapBank& CtiCapBank::setStatusPointId(ULONG statuspoint)
+CtiCapBank& CtiCapBank::setStatusPointId(LONG statuspoint)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     _statuspointid = statuspoint;
@@ -451,7 +451,7 @@ CtiCapBank& CtiCapBank::setStatusPointId(ULONG statuspoint)
     
     Sets the control status of the capbank
 ---------------------------------------------------------------------------*/    
-CtiCapBank& CtiCapBank::setControlStatus(ULONG status)
+CtiCapBank& CtiCapBank::setControlStatus(LONG status)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     _controlstatus = status;
@@ -465,7 +465,7 @@ CtiCapBank& CtiCapBank::setControlStatus(ULONG status)
     Sets the point id for the analog point that hold the number of number of
     operations performed on the capbank
 ---------------------------------------------------------------------------*/    
-CtiCapBank& CtiCapBank::setOperationAnalogPointId(ULONG operationpointid)
+CtiCapBank& CtiCapBank::setOperationAnalogPointId(LONG operationpointid)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     _operationanalogpointid = operationpointid;
@@ -478,7 +478,7 @@ CtiCapBank& CtiCapBank::setOperationAnalogPointId(ULONG operationpointid)
     
     Sets the number of operations performed on this capbank
 ---------------------------------------------------------------------------*/    
-CtiCapBank& CtiCapBank::setOperations(ULONG operations)
+CtiCapBank& CtiCapBank::setOperations(LONG operations)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     _operations = operations;
@@ -504,7 +504,7 @@ CtiCapBank& CtiCapBank::setLastStatusChangeTime(const RWDBDateTime& laststatusch
     
     Sets the tags of control status on the capbank
 ---------------------------------------------------------------------------*/    
-CtiCapBank& CtiCapBank::setTagsControlStatus(ULONG tags)
+CtiCapBank& CtiCapBank::setTagsControlStatus(LONG tags)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     _tagscontrolstatus = tags;
@@ -664,7 +664,7 @@ void CtiCapBank::restore(RWDBReader& rdr)
 
     RWDBSchema schema = rdr.table().schema();
 
-    for ( UINT i = 0; i < schema.entries(); i++ )
+    for ( LONG i = 0; i < schema.entries(); i++ )
     {
         RWCString col = schema[i].qualifiedName();
         col.toLower();
@@ -674,7 +674,7 @@ void CtiCapBank::restore(RWDBReader& rdr)
         //cout << "col is:  " << col << endl;
         if ( col == "deviceid" )
         {
-            ULONG id;
+            LONG id;
             rdr[col] >> id;
 
             setId(id);
@@ -744,7 +744,7 @@ void CtiCapBank::restore(RWDBReader& rdr)
         }
         else if ( col == "controlpointid" )
         {
-            ULONG controlpoint;
+            LONG controlpoint;
             rdr[col] >> controlpoint;
 
             setControlPointId(controlpoint);
@@ -758,14 +758,14 @@ void CtiCapBank::restore(RWDBReader& rdr)
         }
         else if ( col == "controldeviceid" )
         {
-            ULONG controldevice;
+            LONG controldevice;
             rdr[col] >> controldevice;
 
             setControlDeviceId(controldevice);
         }
         else if ( col == "pointid" )
         {
-            ULONG statuspoint;
+            LONG statuspoint;
             rdr[col] >> statuspoint;
 
             setStatusPointId(statuspoint);
@@ -791,7 +791,7 @@ void CtiCapBank::restoreOperationFields(RWDBReader& rdr)
 
     RWDBSchema schema = rdr.table().schema();
 
-    for ( UINT i = 0; i < schema.entries(); i++ )
+    for ( LONG i = 0; i < schema.entries(); i++ )
     {
         RWCString col = schema[i].qualifiedName();
         col.toLower();
@@ -800,7 +800,7 @@ void CtiCapBank::restoreOperationFields(RWDBReader& rdr)
 
         if ( col == "pointid" )
         {
-            ULONG id;
+            LONG id;
             rdr[col] >> id;
 
             setOperationAnalogPointId(id);

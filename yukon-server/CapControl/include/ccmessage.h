@@ -64,14 +64,14 @@ public:
         RETURN_CAP_TO_ORIGINAL_FEEDER//11
     };
 
-    CtiCCCommand(UINT command);
-    CtiCCCommand(UINT command, ULONG id);
+    CtiCCCommand(LONG command);
+    CtiCCCommand(LONG command, LONG id);
     CtiCCCommand(const CtiCCCommand& commandMsg);
     
     virtual ~CtiCCCommand();
 
-    UINT getCommand() const;
-    ULONG getId() const;
+    LONG getCommand() const;
+    LONG getId() const;
 
     void restoreGuts(RWvistream&);
     void saveGuts(RWvostream&) const;
@@ -80,8 +80,8 @@ public:
 private:
     
     CtiCCCommand() { }; //provided for polymorphic persitence only
-    UINT _command;
-    ULONG _id;
+    LONG _command;
+    LONG _id;
 };
 
 class CtiCCCapBankMoveMsg : public CtiCCMessage
@@ -89,8 +89,8 @@ class CtiCCCapBankMoveMsg : public CtiCCMessage
 RWDECLARE_COLLECTABLE( CtiCCCapBankMoveMsg )
 
 public:
-    /*CtiCCCapBankMoveMsg(UINT command);
-    CtiCCCapBankMoveMsg(UINT command, ULONG id);
+    /*CtiCCCapBankMoveMsg(LONG command);
+    CtiCCCapBankMoveMsg(LONG command, LONG id);
     CtiCCCapBankMoveMsg(const CtiCCCommand& commandMsg);*/
     
     virtual ~CtiCCCapBankMoveMsg();

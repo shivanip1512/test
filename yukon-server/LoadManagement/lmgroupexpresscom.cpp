@@ -54,7 +54,7 @@ CtiLMGroupExpresscom::~CtiLMGroupExpresscom()
     Creates a new CtiRequestMsg pointer for a program gear with a control
     method of time refresh with the appropriate refresh rate and shed time.
 --------------------------------------------------------------------------*/
-CtiRequestMsg* CtiLMGroupExpresscom::createTimeRefreshRequestMsg(ULONG refreshRate, ULONG shedTime, int priority) const
+CtiRequestMsg* CtiLMGroupExpresscom::createTimeRefreshRequestMsg(LONG refreshRate, LONG shedTime, int priority) const
 {
     RWCString controlString = RWCString("control xcom shed ");
     controlString += convertSecondsToEvenTimeString(shedTime);
@@ -74,7 +74,7 @@ CtiRequestMsg* CtiLMGroupExpresscom::createTimeRefreshRequestMsg(ULONG refreshRa
     method of smart cycle with the appropriate cycle percent, period length
     in minutes, and the default count of periods.
 --------------------------------------------------------------------------*/
-CtiRequestMsg* CtiLMGroupExpresscom::createSmartCycleRequestMsg(ULONG percent, ULONG period, ULONG defaultCount, int priority) const
+CtiRequestMsg* CtiLMGroupExpresscom::createSmartCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, int priority) const
 {
     char tempchar[64];
     RWCString controlString = RWCString("control xcom cycle ");
@@ -100,7 +100,7 @@ CtiRequestMsg* CtiLMGroupExpresscom::createSmartCycleRequestMsg(ULONG percent, U
     Creates true cycle request msg which is exactly like a smart cycle but
     with the "truecycle" string at the end of the control string.
 --------------------------------------------------------------------------*/
-CtiRequestMsg* CtiLMGroupExpresscom::createTrueCycleRequestMsg(ULONG percent, ULONG period, ULONG defaultCount, int priority) const
+CtiRequestMsg* CtiLMGroupExpresscom::createTrueCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, int priority) const
 {
     char tempchar[64];
     RWCString controlString = RWCString("control xcom cycle ");
@@ -127,7 +127,7 @@ CtiRequestMsg* CtiLMGroupExpresscom::createTrueCycleRequestMsg(ULONG percent, UL
     Creates a new CtiRequestMsg pointer for a program gear with a control
     method of rotation with the appropriate send rate and shed time.
 --------------------------------------------------------------------------*/
-CtiRequestMsg* CtiLMGroupExpresscom::createRotationRequestMsg(ULONG sendRate, ULONG shedTime, int priority) const
+CtiRequestMsg* CtiLMGroupExpresscom::createRotationRequestMsg(LONG sendRate, LONG shedTime, int priority) const
 {
     RWCString controlString = RWCString("control xcom shed ");
     controlString += convertSecondsToEvenTimeString(shedTime);
@@ -146,10 +146,10 @@ CtiRequestMsg* CtiLMGroupExpresscom::createRotationRequestMsg(ULONG sendRate, UL
     Creates a new CtiRequestMsg pointer for a program gear with a control
     method of master cycle with the appropriate off time, period length.
 --------------------------------------------------------------------------*/
-CtiRequestMsg* CtiLMGroupExpresscom::createMasterCycleRequestMsg(ULONG offTime, ULONG period, int priority) const
+CtiRequestMsg* CtiLMGroupExpresscom::createMasterCycleRequestMsg(LONG offTime, LONG period, int priority) const
 {
     RWCString controlString = RWCString("control xcom shed ");
-    ULONG shedTime = 450;
+    LONG shedTime = 450;
     if( offTime > 570 && offTime <= 1220 )
     {
         shedTime = 900;

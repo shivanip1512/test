@@ -58,7 +58,7 @@ const RWCString& CtiCCState::getText() const
     
     Returns the foreground color of the state
 ---------------------------------------------------------------------------*/
-ULONG CtiCCState::getForegroundColor() const
+LONG CtiCCState::getForegroundColor() const
 {   
     return _foregroundcolor;
 }
@@ -68,7 +68,7 @@ ULONG CtiCCState::getForegroundColor() const
     
     Returns the background color of the state
 ---------------------------------------------------------------------------*/
-ULONG CtiCCState::getBackgroundColor() const
+LONG CtiCCState::getBackgroundColor() const
 {   
     return _backgroundcolor;
 }
@@ -90,7 +90,7 @@ CtiCCState& CtiCCState::setText(const RWCString& text)
     
     Sets the foreground color of the state
 ---------------------------------------------------------------------------*/
-CtiCCState& CtiCCState::setForegroundColor(ULONG foregroundcolor)
+CtiCCState& CtiCCState::setForegroundColor(LONG foregroundcolor)
 {
     _foregroundcolor = foregroundcolor;
 
@@ -102,7 +102,7 @@ CtiCCState& CtiCCState::setForegroundColor(ULONG foregroundcolor)
     
     Sets the background color of the state
 ---------------------------------------------------------------------------*/
-CtiCCState& CtiCCState::setBackgroundColor(ULONG backgroundcolor)
+CtiCCState& CtiCCState::setBackgroundColor(LONG backgroundcolor)
 {
     _backgroundcolor = backgroundcolor;
 

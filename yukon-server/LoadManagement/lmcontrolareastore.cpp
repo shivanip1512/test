@@ -88,7 +88,7 @@ CtiLMControlAreaStore::~CtiLMControlAreaStore()
 
     Returns a RWOrdered of CtiLMControlAreas
 ---------------------------------------------------------------------------*/
-RWOrdered* CtiLMControlAreaStore::getControlAreas(ULONG secondsFrom1901)
+RWOrdered* CtiLMControlAreaStore::getControlAreas(LONG secondsFrom1901)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
 
@@ -122,7 +122,7 @@ void CtiLMControlAreaStore::dumpAllDynamicData()
 
         conn.beginTransaction(dynamicLoadManagement);
 
-        for(ULONG i=0;i<_controlAreas->entries();i++)
+        for(LONG i=0;i<_controlAreas->entries();i++)
         {
             CtiLMControlArea* currentLMControlArea = (CtiLMControlArea*)(*_controlAreas)[i];
             currentLMControlArea->dumpDynamicData(conn,currentDateTime);
@@ -130,7 +130,7 @@ void CtiLMControlAreaStore::dumpAllDynamicData()
             RWOrdered& lmControlAreaTriggers = currentLMControlArea->getLMControlAreaTriggers();
             if( lmControlAreaTriggers.entries() > 0 )
             {
-                for(ULONG x=0;x<lmControlAreaTriggers.entries();x++)
+                for(LONG x=0;x<lmControlAreaTriggers.entries();x++)
                 {
                     CtiLMControlAreaTrigger* currentLMControlAreaTrigger = (CtiLMControlAreaTrigger*)lmControlAreaTriggers[x];
                     currentLMControlAreaTrigger->dumpDynamicData(conn,currentDateTime);
@@ -140,7 +140,7 @@ void CtiLMControlAreaStore::dumpAllDynamicData()
             RWOrdered& lmPrograms = currentLMControlArea->getLMPrograms();
             if( lmPrograms.entries() > 0 )
             {
-                for(ULONG j=0;j<lmPrograms.entries();j++)
+                for(LONG j=0;j<lmPrograms.entries();j++)
                 {
                     CtiLMProgramBase* currentLMProgramBase = (CtiLMProgramBase*)lmPrograms[j];
                     currentLMProgramBase->dumpDynamicData(conn,currentDateTime);
@@ -153,7 +153,7 @@ void CtiLMControlAreaStore::dumpAllDynamicData()
                         RWOrdered& lmGroups = currentLMProgramDirect->getLMProgramDirectGroups();
                         if( lmGroups.entries() > 0 )
                         {
-                            for(ULONG k=0;k<lmGroups.entries();k++)
+                            for(LONG k=0;k<lmGroups.entries();k++)
                             {
                                 CtiLMGroupBase* currentLMGroupBase = (CtiLMGroupBase*)lmGroups[k];
                                 currentLMGroupBase->dumpDynamicData(conn,currentDateTime);
@@ -171,7 +171,7 @@ void CtiLMControlAreaStore::dumpAllDynamicData()
                             RWOrdered& lmCurtailCustomers = currentLMProgramCurtailment->getLMProgramCurtailmentCustomers();
                             if( lmCurtailCustomers.entries() > 0 )
                             {
-                                for(ULONG k=0;k<lmCurtailCustomers.entries();k++)
+                                for(LONG k=0;k<lmCurtailCustomers.entries();k++)
                                 {
                                     CtiLMCurtailCustomer* currentLMCurtailCustomer = (CtiLMCurtailCustomer*)lmCurtailCustomers[k];
                                     currentLMCurtailCustomer->dumpDynamicData(conn,currentDateTime);
@@ -288,7 +288,7 @@ void CtiLMControlAreaStore::reset()
                     /************************************************************
                     ********    Loading Triggers for each Control Area   ********
                     ************************************************************/
-                    for(UINT i=0;i<_controlAreas->entries();i++)
+                    for(LONG i=0;i<_controlAreas->entries();i++)
                     {
                         CtiLMControlArea* currentArea = (CtiLMControlArea*)((*_controlAreas)[i]);
     
@@ -339,7 +339,7 @@ void CtiLMControlAreaStore::reset()
                     /************************************************************
                     *******   Loading Program List for each Control Area  *******
                     ************************************************************/
-                    for(UINT x=0;x<_controlAreas->entries();x++)
+                    for(LONG x=0;x<_controlAreas->entries();x++)
                     {
                         CtiLMControlArea* currentArea = (CtiLMControlArea*)((*_controlAreas)[x]);
     
@@ -421,7 +421,7 @@ void CtiLMControlAreaStore::reset()
                             }
                         }
     
-                        for(ULONG y=0;y<lmProgramList.entries();y++)
+                        for(LONG y=0;y<lmProgramList.entries();y++)
                         {
                             CtiLMProgramBase* currentLMProgramBase = (CtiLMProgramBase*)lmProgramList[y];
     
@@ -596,7 +596,7 @@ void CtiLMControlAreaStore::reset()
                                     RWDBNullIndicator isNull;
                                     while ( rdr() )
                                     {
-                                        ULONG tempPAObjectId = 0;
+                                        LONG tempPAObjectId = 0;
                                         RWCString tempPAOCategory;
                                         RWCString tempPAOType;
                                         rdr["category"] >> tempPAOCategory;
@@ -766,7 +766,7 @@ void CtiLMControlAreaStore::reset()
     
                                     if( currentLMProgramCurtailment->getManualControlReceivedFlag() && lmProgramCurtailmentCustomers.entries() > 0 )
                                     {
-                                        for(ULONG temp=0;temp<lmProgramCurtailmentCustomers.entries();temp++)
+                                        for(LONG temp=0;temp<lmProgramCurtailmentCustomers.entries();temp++)
                                         {
                                             ((CtiLMCurtailCustomer*)lmProgramCurtailmentCustomers[temp])->restoreDynamicData(rdr);
                                         }
@@ -835,7 +835,7 @@ void CtiLMControlAreaStore::reset()
                                                 offers.insert(new CtiLMEnergyExchangeOffer(rdr));
                                             }
     
-                                            for(ULONG r=0;r<offers.entries();r++)
+                                            for(LONG r=0;r<offers.entries();r++)
                                             {
                                                 CtiLMEnergyExchangeOffer* currentLMEnergyExchangeOffer = (CtiLMEnergyExchangeOffer*)offers[r];
                                                 RWDBTable lmEnergyExchangeOfferRevisionTable = db.table("lmenergyexchangeofferrevision");
@@ -867,7 +867,7 @@ void CtiLMControlAreaStore::reset()
                                                     offerRevisions.insert(new CtiLMEnergyExchangeOfferRevision(rdr));
                                                 }
     
-                                                for(ULONG s=0;s<offerRevisions.entries();s++)
+                                                for(LONG s=0;s<offerRevisions.entries();s++)
                                                 {
                                                     CtiLMEnergyExchangeOfferRevision* currentLMEnergyExchangeOfferRevision = (CtiLMEnergyExchangeOfferRevision*)offerRevisions[s];
                                                     RWDBTable lmEnergyExchangeHourlyOfferTable = db.table("lmenergyexchangehourlyoffer");
@@ -944,7 +944,7 @@ void CtiLMControlAreaStore::reset()
     
                                     if( currentLMProgramEnergyExchange->getManualControlReceivedFlag() && lmEnergyExchangeCustomers.entries() > 0 )
                                     {
-                                        for(ULONG a=0;a<lmEnergyExchangeCustomers.entries();a++)
+                                        for(LONG a=0;a<lmEnergyExchangeCustomers.entries();a++)
                                         {
                                             CtiLMEnergyExchangeCustomer* currentLMEnergyExchangeCustomer = (CtiLMEnergyExchangeCustomer*)lmEnergyExchangeCustomers[a];
                                             RWDBDateTime currentDateTime;
@@ -986,7 +986,7 @@ void CtiLMControlAreaStore::reset()
                                                 lmEnergyExchangeCustomerReplies.insert(new CtiLMEnergyExchangeCustomerReply(rdr));
                                             }
     
-                                            for(ULONG b=0;b<lmEnergyExchangeCustomerReplies.entries();b++)
+                                            for(LONG b=0;b<lmEnergyExchangeCustomerReplies.entries();b++)
                                             {
                                                 CtiLMEnergyExchangeCustomerReply* currentCustomerReply = (CtiLMEnergyExchangeCustomerReply*)lmEnergyExchangeCustomerReplies[b];
                                                 RWDBDateTime currentDateTime;
@@ -1038,7 +1038,7 @@ void CtiLMControlAreaStore::reset()
                             }
                         }
     
-                        for(ULONG j=0;j<lmProgramList.entries();j++)
+                        for(LONG j=0;j<lmProgramList.entries();j++)
                         {
                             CtiLMProgramBase* currentLMProgramBase = (CtiLMProgramBase*)lmProgramList[j];
     
@@ -1179,7 +1179,7 @@ void CtiLMControlAreaStore::doResetThr()
         time_t start = time(NULL);
 
         RWDBDateTime currenttime = RWDBDateTime();
-        ULONG tempsum = currenttime.seconds()+refreshrate;
+        LONG tempsum = currenttime.seconds()+refreshrate;
         RWDBDateTime nextDatabaseRefresh = RWDBDateTime(RWTime(tempsum));
     
         while(TRUE)

@@ -36,43 +36,43 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirectGear )
 
     virtual ~CtiLMProgramDirectGear();
     
-    ULONG getPAOId() const;
+    LONG getPAOId() const;
     const RWCString& getGearName() const;
-    ULONG getGearNumber() const;
+    LONG getGearNumber() const;
     const RWCString& getControlMethod() const;
-    ULONG getMethodRate() const;
-    ULONG getMethodPeriod() const;
-    ULONG getMethodRateCount() const;
-    ULONG getCycleRefreshRate() const;
+    LONG getMethodRate() const;
+    LONG getMethodPeriod() const;
+    LONG getMethodRateCount() const;
+    LONG getCycleRefreshRate() const;
     const RWCString& getMethodStopType() const;
     const RWCString& getChangeCondition() const;
-    ULONG getChangeDuration() const;
-    ULONG getChangePriority() const;
-    ULONG getChangeTriggerNumber() const;
+    LONG getChangeDuration() const;
+    LONG getChangePriority() const;
+    LONG getChangeTriggerNumber() const;
     DOUBLE getChangeTriggerOffset() const;
-    ULONG getPercentReduction() const;
+    LONG getPercentReduction() const;
     const RWCString& getGroupSelectionMethod() const;
     const RWCString& getMethodOptionType() const;
-    ULONG getMethodOptionMax() const;
+    LONG getMethodOptionMax() const;
 
-    CtiLMProgramDirectGear& setPAOId(ULONG paoid);
+    CtiLMProgramDirectGear& setPAOId(LONG paoid);
     CtiLMProgramDirectGear& setGearName(const RWCString& name);
-    CtiLMProgramDirectGear& setGearNumber(ULONG gearnum);
+    CtiLMProgramDirectGear& setGearNumber(LONG gearnum);
     CtiLMProgramDirectGear& setControlMethod(const RWCString& contmeth);
-    CtiLMProgramDirectGear& setMethodRate(ULONG methrate);
-    CtiLMProgramDirectGear& setMethodPeriod(ULONG methper);
-    CtiLMProgramDirectGear& setMethodRateCount(ULONG methratecount);
-    CtiLMProgramDirectGear& setCycleRefreshRate(ULONG cyclerefresh);
+    CtiLMProgramDirectGear& setMethodRate(LONG methrate);
+    CtiLMProgramDirectGear& setMethodPeriod(LONG methper);
+    CtiLMProgramDirectGear& setMethodRateCount(LONG methratecount);
+    CtiLMProgramDirectGear& setCycleRefreshRate(LONG cyclerefresh);
     CtiLMProgramDirectGear& setMethodStopType(const RWCString& methstoptype);
     CtiLMProgramDirectGear& setChangeCondition(const RWCString& changecond);
-    CtiLMProgramDirectGear& setChangeDuration(ULONG changedur);
-    CtiLMProgramDirectGear& setChangePriority(ULONG changeprior);
-    CtiLMProgramDirectGear& setChangeTriggerNumber(ULONG triggernumber);
+    CtiLMProgramDirectGear& setChangeDuration(LONG changedur);
+    CtiLMProgramDirectGear& setChangePriority(LONG changeprior);
+    CtiLMProgramDirectGear& setChangeTriggerNumber(LONG triggernumber);
     CtiLMProgramDirectGear& setChangeTriggerOffset(DOUBLE triggeroffset);
-    CtiLMProgramDirectGear& setPercentReduction(ULONG percentreduce);
+    CtiLMProgramDirectGear& setPercentReduction(LONG percentreduce);
     CtiLMProgramDirectGear& setGroupSelectionMethod(const RWCString& group);
     CtiLMProgramDirectGear& setMethodOptionType(const RWCString& optype);
-    CtiLMProgramDirectGear& setMethodOptionMax(ULONG opmax);
+    CtiLMProgramDirectGear& setMethodOptionMax(LONG opmax);
 
     CtiLMProgramDirectGear* replicate() const;
 
@@ -94,6 +94,8 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirectGear )
     static const RWCString RotationMethod;
     static const RWCString LatchingMethod;
     static const RWCString TrueCycleMethod;
+    static const RWCString ThermostatSetbackMethod;
+    static const RWCString ThermostatPreOperateMethod;
 
     //Possible method stop types
     static const RWCString RestoreStopType;
@@ -116,28 +118,29 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirectGear )
     static const RWCString CountDownMethodOptionType;
     static const RWCString LimitedCountDownMethodOptionType;
 
+protected:
+    void restore(RWDBReader& rdr);
+
 private:
 
-    ULONG _paoid;
+    LONG _paoid;
     RWCString _gearname;
-    ULONG _gearnumber;
+    LONG _gearnumber;
     RWCString _controlmethod;
-    ULONG _methodrate;
-    ULONG _methodperiod;
-    ULONG _methodratecount;
-    ULONG _cyclerefreshrate;
+    LONG _methodrate;
+    LONG _methodperiod;
+    LONG _methodratecount;
+    LONG _cyclerefreshrate;
     RWCString _methodstoptype;
     RWCString _changecondition;
-    ULONG _changeduration;
-    ULONG _changepriority;
-    ULONG _changetriggernumber;
+    LONG _changeduration;
+    LONG _changepriority;
+    LONG _changetriggernumber;
     DOUBLE _changetriggeroffset;
-    ULONG _percentreduction;
+    LONG _percentreduction;
     RWCString _groupselectionmethod;
     RWCString _methodoptiontype;
-    ULONG _methodoptionmax;
-
-    void restore(RWDBReader& rdr);
+    LONG _methodoptionmax;
 };
 #endif
 

@@ -35,15 +35,15 @@ RWDECLARE_COLLECTABLE( CtiLMEnergyExchangeHourlyOffer )
 
     virtual ~CtiLMEnergyExchangeHourlyOffer();
     
-    ULONG getOfferId() const;
-    ULONG getRevisionNumber() const;
-    ULONG getHour() const;
+    LONG getOfferId() const;
+    LONG getRevisionNumber() const;
+    LONG getHour() const;
     DOUBLE getPrice() const;
     DOUBLE getAmountRequested() const;
 
-    CtiLMEnergyExchangeHourlyOffer& setOfferId(ULONG offid);
-    CtiLMEnergyExchangeHourlyOffer& setRevisionNumber(ULONG revnum);
-    CtiLMEnergyExchangeHourlyOffer& setHour(ULONG hour);
+    CtiLMEnergyExchangeHourlyOffer& setOfferId(LONG offid);
+    CtiLMEnergyExchangeHourlyOffer& setRevisionNumber(LONG revnum);
+    CtiLMEnergyExchangeHourlyOffer& setHour(LONG hour);
     CtiLMEnergyExchangeHourlyOffer& setPrice(DOUBLE price);
     CtiLMEnergyExchangeHourlyOffer& setAmountRequested(DOUBLE amtrequested);
 
@@ -73,9 +73,9 @@ protected:
 
 private:
 
-    ULONG _offerid;
-    ULONG _revisionnumber;
-    ULONG _hour;
+    LONG _offerid;
+    LONG _revisionnumber;
+    LONG _hour;
     DOUBLE _price;
     DOUBLE _amountrequested;
 };

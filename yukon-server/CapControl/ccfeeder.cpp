@@ -59,7 +59,7 @@ CtiCCFeeder::~CtiCCFeeder()
 
     Returns the unique id of the feeder
 ---------------------------------------------------------------------------*/
-ULONG CtiCCFeeder::getPAOId() const
+LONG CtiCCFeeder::getPAOId() const
 {
     return _paoid;
 }
@@ -159,7 +159,7 @@ DOUBLE CtiCCFeeder::getUpperBandwidth() const
 
     Returns the current var load point id of the feeder
 ---------------------------------------------------------------------------*/
-ULONG CtiCCFeeder::getCurrentVarLoadPointId() const
+LONG CtiCCFeeder::getCurrentVarLoadPointId() const
 {
     return _currentvarloadpointid;
 }
@@ -179,7 +179,7 @@ DOUBLE CtiCCFeeder::getCurrentVarLoadPointValue() const
 
     Returns the current watt load point id of the feeder
 ---------------------------------------------------------------------------*/
-ULONG CtiCCFeeder::getCurrentWattLoadPointId() const
+LONG CtiCCFeeder::getCurrentWattLoadPointId() const
 {
     return _currentwattloadpointid;
 }
@@ -199,7 +199,7 @@ DOUBLE CtiCCFeeder::getCurrentWattLoadPointValue() const
 
     Returns the map location id of the feeder
 ---------------------------------------------------------------------------*/
-ULONG CtiCCFeeder::getMapLocationId() const
+LONG CtiCCFeeder::getMapLocationId() const
 {
     return _maplocationid;
 }
@@ -219,7 +219,7 @@ DOUBLE CtiCCFeeder::getLowerBandwidth() const
 
     Returns the display order of the feeder
 ---------------------------------------------------------------------------*/
-ULONG CtiCCFeeder::getDisplayOrder() const
+LONG CtiCCFeeder::getDisplayOrder() const
 {
     return _displayorder;
 }
@@ -249,7 +249,7 @@ const RWDBDateTime& CtiCCFeeder::getLastCurrentVarPointUpdateTime() const
 
     Returns the estimated var load point id of the feeder
 ---------------------------------------------------------------------------*/
-ULONG CtiCCFeeder::getEstimatedVarLoadPointId() const
+LONG CtiCCFeeder::getEstimatedVarLoadPointId() const
 {
     return _estimatedvarloadpointid;
 }
@@ -269,7 +269,7 @@ DOUBLE CtiCCFeeder::getEstimatedVarLoadPointValue() const
 
     Returns the daily operations point id of the feeder
 ---------------------------------------------------------------------------*/
-ULONG CtiCCFeeder::getDailyOperationsAnalogPointId() const
+LONG CtiCCFeeder::getDailyOperationsAnalogPointId() const
 {
     return _dailyoperationsanalogpointid;
 }
@@ -279,7 +279,7 @@ ULONG CtiCCFeeder::getDailyOperationsAnalogPointId() const
 
     Returns the current daily operations of the feeder
 ---------------------------------------------------------------------------*/
-ULONG CtiCCFeeder::getCurrentDailyOperations() const
+LONG CtiCCFeeder::getCurrentDailyOperations() const
 {
     return _currentdailyoperations;
 }
@@ -319,7 +319,7 @@ DOUBLE CtiCCFeeder::getVarValueBeforeControl() const
 
     Returns the device id of the last cap bank controlled of the feeder
 ---------------------------------------------------------------------------*/
-ULONG CtiCCFeeder::getLastCapBankControlledDeviceId() const
+LONG CtiCCFeeder::getLastCapBankControlledDeviceId() const
 {
     return _lastcapbankcontrolleddeviceid;
 }
@@ -329,7 +329,7 @@ ULONG CtiCCFeeder::getLastCapBankControlledDeviceId() const
 
     Returns the bus optimized var category of the feeder
 ---------------------------------------------------------------------------*/
-ULONG CtiCCFeeder::getBusOptimizedVarCategory() const
+LONG CtiCCFeeder::getBusOptimizedVarCategory() const
 {
     return _busoptimizedvarcategory;
 }
@@ -379,7 +379,7 @@ DOUBLE CtiCCFeeder::getEstimatedPowerFactorValue() const
 
     Returns the CurrentVarPointQuality of the feeder
 ---------------------------------------------------------------------------*/
-ULONG CtiCCFeeder::getCurrentVarPointQuality() const
+LONG CtiCCFeeder::getCurrentVarPointQuality() const
 {
     return _currentvarpointquality;
 }
@@ -400,7 +400,7 @@ RWSortedVector& CtiCCFeeder::getCCCapBanks()
 
     Sets the pao id of the feeder - use with caution
 ---------------------------------------------------------------------------*/
-CtiCCFeeder& CtiCCFeeder::setPAOId(ULONG id)
+CtiCCFeeder& CtiCCFeeder::setPAOId(LONG id)
 {
     _paoid = id;
     //do not notify observers of this!
@@ -511,7 +511,7 @@ CtiCCFeeder& CtiCCFeeder::setUpperBandwidth(DOUBLE bandwidth)
 
     Sets the current var load point id of the feeder
 ---------------------------------------------------------------------------*/
-CtiCCFeeder& CtiCCFeeder::setCurrentVarLoadPointId(ULONG currentvarid)
+CtiCCFeeder& CtiCCFeeder::setCurrentVarLoadPointId(LONG currentvarid)
 {
     _currentvarloadpointid = currentvarid;
     return *this;
@@ -541,7 +541,7 @@ CtiCCFeeder& CtiCCFeeder::setCurrentVarLoadPointValue(DOUBLE currentvarval)
 
     Sets the current watt load point id of the feeder
 ---------------------------------------------------------------------------*/
-CtiCCFeeder& CtiCCFeeder::setCurrentWattLoadPointId(ULONG currentwattid)
+CtiCCFeeder& CtiCCFeeder::setCurrentWattLoadPointId(LONG currentwattid)
 {
     _currentwattloadpointid = currentwattid;
     return *this;
@@ -571,7 +571,7 @@ CtiCCFeeder& CtiCCFeeder::setCurrentWattLoadPointValue(DOUBLE currentwattval)
 
     Sets the map location id of the feeder
 ---------------------------------------------------------------------------*/
-CtiCCFeeder& CtiCCFeeder::setMapLocationId(ULONG maplocation)
+CtiCCFeeder& CtiCCFeeder::setMapLocationId(LONG maplocation)
 {
     _maplocationid = maplocation;
     return *this;
@@ -593,7 +593,7 @@ CtiCCFeeder& CtiCCFeeder::setLowerBandwidth(DOUBLE bandwidth)
 
     Sets the display order of the feeder
 ---------------------------------------------------------------------------*/
-CtiCCFeeder& CtiCCFeeder::setDisplayOrder(ULONG order)
+CtiCCFeeder& CtiCCFeeder::setDisplayOrder(LONG order)
 {
     _displayorder = order;
     return *this;
@@ -642,7 +642,7 @@ CtiCCFeeder& CtiCCFeeder::setLastCurrentVarPointUpdateTime(const RWDBDateTime& l
 
     Sets the estimated var load point id of the feeder
 ---------------------------------------------------------------------------*/
-CtiCCFeeder& CtiCCFeeder::setEstimatedVarLoadPointId(ULONG estimatedvarid)
+CtiCCFeeder& CtiCCFeeder::setEstimatedVarLoadPointId(LONG estimatedvarid)
 {
     _estimatedvarloadpointid = estimatedvarid;
     return *this;
@@ -672,7 +672,7 @@ CtiCCFeeder& CtiCCFeeder::setEstimatedVarLoadPointValue(DOUBLE estimatedvarval)
 
     Sets the daily operations analog point id of the feeder
 ---------------------------------------------------------------------------*/
-CtiCCFeeder& CtiCCFeeder::setDailyOperationsAnalogPointId(ULONG opspointid)
+CtiCCFeeder& CtiCCFeeder::setDailyOperationsAnalogPointId(LONG opspointid)
 {
     _dailyoperationsanalogpointid = opspointid;
     return *this;
@@ -683,7 +683,7 @@ CtiCCFeeder& CtiCCFeeder::setDailyOperationsAnalogPointId(ULONG opspointid)
 
     Sets the current daily operations of the feeder
 ---------------------------------------------------------------------------*/
-CtiCCFeeder& CtiCCFeeder::setCurrentDailyOperations(ULONG operations)
+CtiCCFeeder& CtiCCFeeder::setCurrentDailyOperations(LONG operations)
 {
     if( _currentdailyoperations != operations )
     {
@@ -759,7 +759,7 @@ CtiCCFeeder& CtiCCFeeder::setVarValueBeforeControl(DOUBLE oldvarval)
 
     Sets the device id of the last cap bank controlled in the feeder
 ---------------------------------------------------------------------------*/
-CtiCCFeeder& CtiCCFeeder::setLastCapBankControlledDeviceId(ULONG lastcapbank)
+CtiCCFeeder& CtiCCFeeder::setLastCapBankControlledDeviceId(LONG lastcapbank)
 {
     if( _lastcapbankcontrolleddeviceid != lastcapbank )
     {
@@ -835,7 +835,7 @@ CtiCCFeeder& CtiCCFeeder::setEstimatedPowerFactorValue(DOUBLE epfval)
 
     Sets the CurrentVarPointQuality in the feeder
 ---------------------------------------------------------------------------*/
-CtiCCFeeder& CtiCCFeeder::setCurrentVarPointQuality(ULONG cvpq)
+CtiCCFeeder& CtiCCFeeder::setCurrentVarPointQuality(LONG cvpq)
 {
     if( _currentvarpointquality != cvpq )
     {
@@ -904,7 +904,7 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(DOUBLE kvarSolution)
     Creates a CtiRequestMsg to open the next cap bank to increase the
     var level for a strategy.
 ---------------------------------------------------------------------------*/
-CtiRequestMsg* CtiCCFeeder::createIncreaseVarRequest(CtiCCCapBank* capBank, RWOrdered& pointChanges, DOUBLE currentVarLoadPointValue, ULONG decimalPlaces)
+CtiRequestMsg* CtiCCFeeder::createIncreaseVarRequest(CtiCCCapBank* capBank, RWOrdered& pointChanges, DOUBLE currentVarLoadPointValue, LONG decimalPlaces)
 {
     CtiRequestMsg* reqMsg = NULL;
     if( capBank != NULL )
@@ -956,7 +956,7 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarRequest(CtiCCCapBank* capBank, RWOr
     Creates a CtiRequestMsg to close the next cap bank to decrease the
     var level for a strategy.
 ---------------------------------------------------------------------------*/
-CtiRequestMsg* CtiCCFeeder::createDecreaseVarRequest(CtiCCCapBank* capBank, RWOrdered& pointChanges, DOUBLE currentVarLoadPointValue, ULONG decimalPlaces)
+CtiRequestMsg* CtiCCFeeder::createDecreaseVarRequest(CtiCCCapBank* capBank, RWOrdered& pointChanges, DOUBLE currentVarLoadPointValue, LONG decimalPlaces)
 {
     CtiRequestMsg* reqMsg = NULL;
     if( capBank != NULL )
@@ -1016,7 +1016,7 @@ CtiCCFeeder& CtiCCFeeder::figureEstimatedVarLoadPointValue()
     else
         tempValue = getCurrentVarLoadPointValue();
 
-    for(UINT i=0;i<_cccapbanks.entries();i++)
+    for(LONG i=0;i<_cccapbanks.entries();i++)
     {
         CtiCCCapBank* currentCapBank = (CtiCCCapBank*)_cccapbanks[i];
         if( currentCapBank->getControlStatus() == CtiCCCapBank::Close ||
@@ -1036,7 +1036,7 @@ CtiCCFeeder& CtiCCFeeder::figureEstimatedVarLoadPointValue()
 
 
 ---------------------------------------------------------------------------*/
-BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const RWDBDateTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages, BOOL peakTimeFlag, ULONG decimalPlaces, const RWCString& controlUnits)
+BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const RWDBDateTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages, BOOL peakTimeFlag, LONG decimalPlaces, const RWCString& controlUnits)
 {
     BOOL returnBoolean = FALSE;
     DOUBLE setpoint = (peakTimeFlag?getPeakSetPoint():getOffPeakSetPoint());
@@ -1243,14 +1243,14 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const RWDBDateTime& 
 
     Returns a boolean if the current day of the week can be a peak day
 ---------------------------------------------------------------------------*/
-BOOL CtiCCFeeder::capBankControlStatusUpdate(RWOrdered& pointChanges, ULONG minConfirmPercent, ULONG failurePercent, DOUBLE varValueBeforeControl, DOUBLE currentVarLoadPointValue, ULONG currentVarPointQuality)
+BOOL CtiCCFeeder::capBankControlStatusUpdate(RWOrdered& pointChanges, LONG minConfirmPercent, LONG failurePercent, DOUBLE varValueBeforeControl, DOUBLE currentVarLoadPointValue, LONG currentVarPointQuality)
 {
     BOOL returnBoolean = TRUE;
     char tempchar[64] = "";
     RWCString text = "";
     RWCString additional = "";
 
-    for(UINT i=0;i<_cccapbanks.entries();i++)
+    for(LONG i=0;i<_cccapbanks.entries();i++)
     {
         CtiCCCapBank* currentCapBank = (CtiCCCapBank*)_cccapbanks[i];
         if( currentCapBank->getPAOId() == getLastCapBankControlledDeviceId() )
@@ -1439,7 +1439,7 @@ void CtiCCFeeder::fillOutBusOptimizedInfo(BOOL peakTimeFlag)
     Returns a boolean if the last cap bank controlled expected var changes
     are reflected in the current var level before the min response time
 ---------------------------------------------------------------------------*/
-BOOL CtiCCFeeder::isAlreadyControlled(ULONG minConfirmPercent)
+BOOL CtiCCFeeder::isAlreadyControlled(LONG minConfirmPercent)
 {
     BOOL returnBoolean = FALSE;
 
@@ -1450,7 +1450,7 @@ BOOL CtiCCFeeder::isAlreadyControlled(ULONG minConfirmPercent)
         {
             DOUBLE oldVarValue = getVarValueBeforeControl();
             DOUBLE newVarValue = getCurrentVarLoadPointValue();
-            for(UINT i=0;i<_cccapbanks.entries();i++)
+            for(LONG i=0;i<_cccapbanks.entries();i++)
             {
                 CtiCCCapBank* currentCapBank = (CtiCCCapBank*)_cccapbanks[i];
                 if( currentCapBank->getPAOId() == getLastCapBankControlledDeviceId() )
@@ -1501,7 +1501,7 @@ BOOL CtiCCFeeder::isAlreadyControlled(ULONG minConfirmPercent)
 
     Returns a boolean if the last control is past the minimum response time.
 ---------------------------------------------------------------------------*/
-BOOL CtiCCFeeder::isPastResponseTime(const RWDBDateTime& currentDateTime, ULONG minResponseTime)
+BOOL CtiCCFeeder::isPastResponseTime(const RWDBDateTime& currentDateTime, LONG minResponseTime)
 {
     BOOL returnBoolean = FALSE;
 
@@ -1750,7 +1750,7 @@ void CtiCCFeeder::restoreGuts(RWvistream& istrm)
 {
     RWTime tempTime1;
     RWTime tempTime2;
-    ULONG numberOfCapBanks;
+    LONG numberOfCapBanks;
     CtiCCCapBank* currentCapBank = NULL;
 
     RWCollectable::restoreGuts( istrm );
@@ -1787,7 +1787,7 @@ void CtiCCFeeder::restoreGuts(RWvistream& istrm)
     >> _estimatedpowerfactorvalue
     >> _currentvarpointquality;
     istrm >> numberOfCapBanks;
-    for(UINT i=0;i<numberOfCapBanks;i++)
+    for(LONG i=0;i<numberOfCapBanks;i++)
     {
         istrm >> currentCapBank;
         _cccapbanks.insert(currentCapBank);
@@ -1849,7 +1849,7 @@ void CtiCCFeeder::saveGuts(RWvostream& ostrm ) const
     << tempestimatedpowerfactorvalue
     << _currentvarpointquality;
     ostrm << _cccapbanks.entries();
-    for(UINT i=0;i<_cccapbanks.entries();i++)
+    for(LONG i=0;i<_cccapbanks.entries();i++)
     {
         ostrm << (CtiCCCapBank*)_cccapbanks[i];
     }
@@ -1895,7 +1895,7 @@ CtiCCFeeder& CtiCCFeeder::operator=(const CtiCCFeeder& right)
         _currentvarpointquality = right._currentvarpointquality;
 
         _cccapbanks.clearAndDestroy();
-        for(UINT i=0;i<right._cccapbanks.entries();i++)
+        for(LONG i=0;i<right._cccapbanks.entries();i++)
         {
             _cccapbanks.insert(((CtiCCCapBank*)right._cccapbanks[i])->replicate());
         }

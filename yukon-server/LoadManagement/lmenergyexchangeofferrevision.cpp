@@ -58,7 +58,7 @@ CtiLMEnergyExchangeOfferRevision::~CtiLMEnergyExchangeOfferRevision()
     Returns the reference id of the current control for the
     energy exchange program.
 ---------------------------------------------------------------------------*/
-ULONG CtiLMEnergyExchangeOfferRevision::getOfferId() const
+LONG CtiLMEnergyExchangeOfferRevision::getOfferId() const
 {
 
     return _offerid;
@@ -70,7 +70,7 @@ ULONG CtiLMEnergyExchangeOfferRevision::getOfferId() const
     Returns the reference id of the current control for the
     energy exchange program.
 ---------------------------------------------------------------------------*/
-ULONG CtiLMEnergyExchangeOfferRevision::getRevisionNumber() const
+LONG CtiLMEnergyExchangeOfferRevision::getRevisionNumber() const
 {
 
     return _revisionnumber;
@@ -141,7 +141,7 @@ RWOrdered& CtiLMEnergyExchangeOfferRevision::getLMEnergyExchangeHourlyOffers()
     Sets the reference id of the current control for the
     energy exchange program.
 ---------------------------------------------------------------------------*/
-CtiLMEnergyExchangeOfferRevision& CtiLMEnergyExchangeOfferRevision::setOfferId(ULONG offid)
+CtiLMEnergyExchangeOfferRevision& CtiLMEnergyExchangeOfferRevision::setOfferId(LONG offid)
 {
 
     _offerid = offid;
@@ -155,7 +155,7 @@ CtiLMEnergyExchangeOfferRevision& CtiLMEnergyExchangeOfferRevision::setOfferId(U
     Sets the reference id of the current control for the
     energy exchange program.
 ---------------------------------------------------------------------------*/
-CtiLMEnergyExchangeOfferRevision& CtiLMEnergyExchangeOfferRevision::setRevisionNumber(ULONG revnum)
+CtiLMEnergyExchangeOfferRevision& CtiLMEnergyExchangeOfferRevision::setRevisionNumber(LONG revnum)
 {
 
     _revisionnumber = revnum;
@@ -225,9 +225,9 @@ CtiLMEnergyExchangeOfferRevision& CtiLMEnergyExchangeOfferRevision::setAdditiona
 
     Returns .
 ---------------------------------------------------------------------------*/
-ULONG CtiLMEnergyExchangeOfferRevision::getFirstCurtailHour() const
+LONG CtiLMEnergyExchangeOfferRevision::getFirstCurtailHour() const
 {
-    ULONG returnULong = 0;
+    LONG returnLONG = 0;
 
     for(long i=0;i<_lmenergyexchangehourlyoffers.entries();i++)
     {
@@ -235,12 +235,12 @@ ULONG CtiLMEnergyExchangeOfferRevision::getFirstCurtailHour() const
         if( currentHourlyOffer->getAmountRequested() > 0.0 &&
             currentHourlyOffer->getPrice() > 0 )
         {
-            returnULong = currentHourlyOffer->getHour();
+            returnLONG = currentHourlyOffer->getHour();
             break;
         }
     }
 
-    return returnULong;
+    return returnLONG;
 }
 
 /*---------------------------------------------------------------------------
@@ -248,9 +248,9 @@ ULONG CtiLMEnergyExchangeOfferRevision::getFirstCurtailHour() const
 
     Returns .
 ---------------------------------------------------------------------------*/
-ULONG CtiLMEnergyExchangeOfferRevision::getLastCurtailHour() const
+LONG CtiLMEnergyExchangeOfferRevision::getLastCurtailHour() const
 {
-    ULONG returnULong = 0;
+    LONG returnLONG = 0;
 
     for(long i=_lmenergyexchangehourlyoffers.entries()-1;i>=0;i--)
     {
@@ -258,12 +258,12 @@ ULONG CtiLMEnergyExchangeOfferRevision::getLastCurtailHour() const
         if( currentHourlyOffer->getAmountRequested() > 0.0 &&
             currentHourlyOffer->getPrice() > 0 )
         {
-            returnULong = currentHourlyOffer->getHour();
+            returnLONG = currentHourlyOffer->getHour();
             break;
         }
     }
 
-    return returnULong;
+    return returnLONG;
 }
 
 /*-------------------------------------------------------------------------
@@ -345,7 +345,7 @@ CtiLMEnergyExchangeOfferRevision& CtiLMEnergyExchangeOfferRevision::operator=(co
         _additionalinfo = right._additionalinfo;
 
         _lmenergyexchangehourlyoffers.clearAndDestroy();
-        for(UINT i=0;i<right._lmenergyexchangehourlyoffers.entries();i++)
+        for(LONG i=0;i<right._lmenergyexchangehourlyoffers.entries();i++)
         {
             _lmenergyexchangehourlyoffers.insert(((CtiLMEnergyExchangeHourlyOffer*)right._lmenergyexchangehourlyoffers[i])->replicate());
         }

@@ -66,7 +66,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
 
     virtual ~CtiCCFeeder();
 
-    ULONG getPAOId() const;
+    LONG getPAOId() const;
     const RWCString& getPAOCategory() const;
     const RWCString& getPAOClass() const;
     const RWCString& getPAOName() const;
@@ -76,33 +76,33 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     DOUBLE getPeakSetPoint() const;
     DOUBLE getOffPeakSetPoint() const;
     DOUBLE getUpperBandwidth() const;
-    ULONG getCurrentVarLoadPointId() const;
+    LONG getCurrentVarLoadPointId() const;
     DOUBLE getCurrentVarLoadPointValue() const;
-    ULONG getCurrentWattLoadPointId() const;
+    LONG getCurrentWattLoadPointId() const;
     DOUBLE getCurrentWattLoadPointValue() const;
-    ULONG getMapLocationId() const;
+    LONG getMapLocationId() const;
     DOUBLE getLowerBandwidth() const;
-    ULONG getDisplayOrder() const;
+    LONG getDisplayOrder() const;
     BOOL getNewPointDataReceivedFlag() const;
     const RWDBDateTime& getLastCurrentVarPointUpdateTime() const;
-    ULONG getEstimatedVarLoadPointId() const;
+    LONG getEstimatedVarLoadPointId() const;
     DOUBLE getEstimatedVarLoadPointValue() const;
-    ULONG getDailyOperationsAnalogPointId() const;
-    ULONG getCurrentDailyOperations() const;
+    LONG getDailyOperationsAnalogPointId() const;
+    LONG getCurrentDailyOperations() const;
     BOOL getRecentlyControlledFlag() const;
     const RWDBDateTime& getLastOperationTime() const;
     DOUBLE getVarValueBeforeControl() const;
-    ULONG getLastCapBankControlledDeviceId() const;
-    ULONG getBusOptimizedVarCategory() const;
+    LONG getLastCapBankControlledDeviceId() const;
+    LONG getBusOptimizedVarCategory() const;
     DOUBLE getBusOptimizedVarOffset() const;
     DOUBLE getPowerFactorValue() const;
     DOUBLE getKVARSolution() const;
     DOUBLE getEstimatedPowerFactorValue() const;
-    ULONG getCurrentVarPointQuality() const;
+    LONG getCurrentVarPointQuality() const;
 
     RWSortedVector& getCCCapBanks();
 
-    CtiCCFeeder& setPAOId(ULONG id);
+    CtiCCFeeder& setPAOId(LONG id);
     CtiCCFeeder& setPAOCategory(const RWCString& category);
     CtiCCFeeder& setPAOClass(const RWCString& pclass);
     CtiCCFeeder& setPAOName(const RWCString& name);
@@ -112,40 +112,40 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     CtiCCFeeder& setPeakSetPoint(DOUBLE peak);
     CtiCCFeeder& setOffPeakSetPoint(DOUBLE offpeak);
     CtiCCFeeder& setUpperBandwidth(DOUBLE bandwidth);
-    CtiCCFeeder& setCurrentVarLoadPointId(ULONG currentvarid);
+    CtiCCFeeder& setCurrentVarLoadPointId(LONG currentvarid);
     CtiCCFeeder& setCurrentVarLoadPointValue(DOUBLE currentvarval);
-    CtiCCFeeder& setCurrentWattLoadPointId(ULONG currentwattid);
+    CtiCCFeeder& setCurrentWattLoadPointId(LONG currentwattid);
     CtiCCFeeder& setCurrentWattLoadPointValue(DOUBLE currentwattval);
-    CtiCCFeeder& setMapLocationId(ULONG maplocation);
+    CtiCCFeeder& setMapLocationId(LONG maplocation);
     CtiCCFeeder& setLowerBandwidth(DOUBLE bandwidth);
-    CtiCCFeeder& setDisplayOrder(ULONG order);
+    CtiCCFeeder& setDisplayOrder(LONG order);
     CtiCCFeeder& setNewPointDataReceivedFlag(BOOL newpointdatareceived);
     CtiCCFeeder& setLastCurrentVarPointUpdateTime(const RWDBDateTime& lastpointupdate);
-    CtiCCFeeder& setEstimatedVarLoadPointId(ULONG estimatedvarid);
+    CtiCCFeeder& setEstimatedVarLoadPointId(LONG estimatedvarid);
     CtiCCFeeder& setEstimatedVarLoadPointValue(DOUBLE estimatedvarval);
-    CtiCCFeeder& setDailyOperationsAnalogPointId(ULONG opspointid);
-    CtiCCFeeder& setCurrentDailyOperations(ULONG operations);
+    CtiCCFeeder& setDailyOperationsAnalogPointId(LONG opspointid);
+    CtiCCFeeder& setCurrentDailyOperations(LONG operations);
     CtiCCFeeder& setRecentlyControlledFlag(BOOL recentlycontrolled);
     CtiCCFeeder& setLastOperationTime(const RWDBDateTime& lastoperation);
     CtiCCFeeder& setVarValueBeforeControl(DOUBLE oldvarval);
-    CtiCCFeeder& setLastCapBankControlledDeviceId(ULONG lastcapbank);
+    CtiCCFeeder& setLastCapBankControlledDeviceId(LONG lastcapbank);
     //don't think we want public setters for these
-    //CtiCCFeeder& setBusOptimizedVarCategory(ULONG varcategory);
+    //CtiCCFeeder& setBusOptimizedVarCategory(LONG varcategory);
     //CtiCCFeeder& setBusOptimizedVarOffset(DOUBLE varoffset);
     CtiCCFeeder& setPowerFactorValue(DOUBLE pfval);
     CtiCCFeeder& setKVARSolution(DOUBLE solution);
     CtiCCFeeder& setEstimatedPowerFactorValue(DOUBLE epfval);
-    CtiCCFeeder& setCurrentVarPointQuality(ULONG cvpq);
+    CtiCCFeeder& setCurrentVarPointQuality(LONG cvpq);
 
     CtiCCCapBank* findCapBankToChangeVars(DOUBLE kvarSolution);
-    CtiRequestMsg* createIncreaseVarRequest(CtiCCCapBank* capBank, RWOrdered& pointChanges, DOUBLE currentVarLoadPointValue, ULONG decimalPlaces);
-    CtiRequestMsg* createDecreaseVarRequest(CtiCCCapBank* capBank, RWOrdered& pointChanges, DOUBLE currentVarLoadPointValue, ULONG decimalPlaces);
-    BOOL capBankControlStatusUpdate(RWOrdered& pointChanges, ULONG minConfirmPercent, ULONG failurePercent, DOUBLE varValueBeforeControl, DOUBLE currentVarLoadPointValue, ULONG currentVarPointQuality);
+    CtiRequestMsg* createIncreaseVarRequest(CtiCCCapBank* capBank, RWOrdered& pointChanges, DOUBLE currentVarLoadPointValue, LONG decimalPlaces);
+    CtiRequestMsg* createDecreaseVarRequest(CtiCCCapBank* capBank, RWOrdered& pointChanges, DOUBLE currentVarLoadPointValue, LONG decimalPlaces);
+    BOOL capBankControlStatusUpdate(RWOrdered& pointChanges, LONG minConfirmPercent, LONG failurePercent, DOUBLE varValueBeforeControl, DOUBLE currentVarLoadPointValue, LONG currentVarPointQuality);
     //BOOL isPeakDay();
-    BOOL isPastResponseTime(const RWDBDateTime& currentDateTime, ULONG minResponseTime);
-    BOOL checkForAndProvideNeededIndividualControl(const RWDBDateTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages, BOOL peakTimeFlag, ULONG decimalPlaces, const RWCString& controlUnits);
+    BOOL isPastResponseTime(const RWDBDateTime& currentDateTime, LONG minResponseTime);
+    BOOL checkForAndProvideNeededIndividualControl(const RWDBDateTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages, BOOL peakTimeFlag, LONG decimalPlaces, const RWCString& controlUnits);
     CtiCCFeeder& figureEstimatedVarLoadPointValue();
-    BOOL isAlreadyControlled(ULONG minConfirmPercent);
+    BOOL isAlreadyControlled(LONG minConfirmPercent);
     void fillOutBusOptimizedInfo(BOOL peakTimeFlag);
     BOOL isDirty() const;
     void dumpDynamicData();
@@ -171,7 +171,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
 
 private:
 
-    ULONG _paoid;
+    LONG _paoid;
     RWCString _paocategory;
     RWCString _paoclass;
     RWCString _paoname;
@@ -181,29 +181,29 @@ private:
     DOUBLE _peaksetpoint;
     DOUBLE _offpeaksetpoint;
     DOUBLE _upperbandwidth;
-    ULONG _currentvarloadpointid;
+    LONG _currentvarloadpointid;
     DOUBLE _currentvarloadpointvalue;
-    ULONG _currentwattloadpointid;
+    LONG _currentwattloadpointid;
     DOUBLE _currentwattloadpointvalue;
-    ULONG _maplocationid;
+    LONG _maplocationid;
     DOUBLE _lowerbandwidth;
-    ULONG _displayorder;
+    LONG _displayorder;
     BOOL _newpointdatareceivedflag;
     RWDBDateTime _lastcurrentvarpointupdatetime;
-    ULONG _estimatedvarloadpointid;
+    LONG _estimatedvarloadpointid;
     DOUBLE _estimatedvarloadpointvalue;
-    ULONG _dailyoperationsanalogpointid;
-    ULONG _currentdailyoperations;
+    LONG _dailyoperationsanalogpointid;
+    LONG _currentdailyoperations;
     BOOL _recentlycontrolledflag;
     RWDBDateTime _lastoperationtime;
     DOUBLE _varvaluebeforecontrol;
-    ULONG _lastcapbankcontrolleddeviceid;
-    ULONG _busoptimizedvarcategory;
+    LONG _lastcapbankcontrolleddeviceid;
+    LONG _busoptimizedvarcategory;
     DOUBLE _busoptimizedvaroffset;
     DOUBLE _powerfactorvalue;
     DOUBLE _kvarsolution;
     DOUBLE _estimatedpowerfactorvalue;
-    ULONG _currentvarpointquality;
+    LONG _currentvarpointquality;
 
     RWSortedVector _cccapbanks;
 

@@ -36,7 +36,7 @@ RWDECLARE_COLLECTABLE( CtiCCCapBank )
 
     virtual ~CtiCCCapBank();
 
-    ULONG getPAOId() const;
+    LONG getPAOId() const;
     const RWCString& getPAOCategory() const;
     const RWCString& getPAOClass() const;
     const RWCString& getPAOName() const;
@@ -47,23 +47,23 @@ RWDECLARE_COLLECTABLE( CtiCCCapBank )
     BOOL getControlInhibitFlag() const;
     const RWCString& getOperationalState() const;
     const RWCString& getControllerType() const;
-    ULONG getControlDeviceId() const;
-    ULONG getControlPointId() const;
-    ULONG getBankSize() const;
+    LONG getControlDeviceId() const;
+    LONG getControlPointId() const;
+    LONG getBankSize() const;
     const RWCString& getTypeOfSwitch() const;
     const RWCString& getSwitchManufacture() const;
-    ULONG getMapLocationId() const;
-    ULONG getControlOrder() const;
-    ULONG getStatusPointId() const;
-    ULONG getControlStatus() const;
-    ULONG getOperationAnalogPointId() const;
-    ULONG getCurrentDailyOperations() const;
+    LONG getMapLocationId() const;
+    LONG getControlOrder() const;
+    LONG getStatusPointId() const;
+    LONG getControlStatus() const;
+    LONG getOperationAnalogPointId() const;
+    LONG getCurrentDailyOperations() const;
     const RWDBDateTime& getLastStatusChangeTime() const;
-    ULONG getTagsControlStatus() const;
-    ULONG getOriginalFeederId() const;
-    ULONG getOriginalSwitchingOrder() const;
+    LONG getTagsControlStatus() const;
+    LONG getOriginalFeederId() const;
+    LONG getOriginalSwitchingOrder() const;
 
-    CtiCCCapBank& setPAOId(ULONG id);
+    CtiCCCapBank& setPAOId(LONG id);
     CtiCCCapBank& setPAOCategory(const RWCString& category);
     CtiCCCapBank& setPAOClass(const RWCString& pclass);
     CtiCCCapBank& setPAOName(const RWCString& name);
@@ -75,21 +75,21 @@ RWDECLARE_COLLECTABLE( CtiCCCapBank )
     CtiCCCapBank& setDeviceClass(const RWCString& deviceclass);
     CtiCCCapBank& setOperationalState(const RWCString& operational);
     CtiCCCapBank& setControllerType(const RWCString& controllertype);
-    CtiCCCapBank& setControlDeviceId(ULONG controldevice);
-    CtiCCCapBank& setControlPointId(ULONG controlpoint);
-    CtiCCCapBank& setBankSize(ULONG size);
+    CtiCCCapBank& setControlDeviceId(LONG controldevice);
+    CtiCCCapBank& setControlPointId(LONG controlpoint);
+    CtiCCCapBank& setBankSize(LONG size);
     CtiCCCapBank& setTypeOfSwitch(const RWCString& switchtype);
     CtiCCCapBank& setSwitchManufacture(const RWCString& manufacture);
-    CtiCCCapBank& setMapLocationId(ULONG maplocation);
-    CtiCCCapBank& setControlOrder(ULONG order);
-    CtiCCCapBank& setStatusPointId(ULONG statuspoint);
-    CtiCCCapBank& setControlStatus(ULONG status);
-    CtiCCCapBank& setOperationAnalogPointId(ULONG operationpoint);
-    CtiCCCapBank& setCurrentDailyOperations(ULONG operations);
+    CtiCCCapBank& setMapLocationId(LONG maplocation);
+    CtiCCCapBank& setControlOrder(LONG order);
+    CtiCCCapBank& setStatusPointId(LONG statuspoint);
+    CtiCCCapBank& setControlStatus(LONG status);
+    CtiCCCapBank& setOperationAnalogPointId(LONG operationpoint);
+    CtiCCCapBank& setCurrentDailyOperations(LONG operations);
     CtiCCCapBank& setLastStatusChangeTime(const RWDBDateTime& laststatuschangetime);
-    CtiCCCapBank& setTagsControlStatus(ULONG tags);
-    CtiCCCapBank& setOriginalFeederId(ULONG origfeeder);
-    CtiCCCapBank& setOriginalSwitchingOrder(ULONG origorder);
+    CtiCCCapBank& setTagsControlStatus(LONG tags);
+    CtiCCCapBank& setOriginalFeederId(LONG origfeeder);
+    CtiCCCapBank& setOriginalSwitchingOrder(LONG origorder);
 
     CtiCCCapBank* replicate() const;
     virtual int compareTo(const RWCollectable* right) const;
@@ -125,7 +125,7 @@ RWDECLARE_COLLECTABLE( CtiCCCapBank )
     
 private:
 
-    ULONG _paoid;
+    LONG _paoid;
     RWCString _paocategory;
     RWCString _paoclass;
     RWCString _paoname;
@@ -136,21 +136,21 @@ private:
     BOOL _controlinhibitflag;
     RWCString _operationalstate;
     RWCString _controllertype;
-    ULONG _controldeviceid;
-    ULONG _controlpointid;
-    ULONG _banksize;
+    LONG _controldeviceid;
+    LONG _controlpointid;
+    LONG _banksize;
     RWCString _typeofswitch;
     RWCString _switchmanufacture;
-    ULONG _maplocationid;
-    ULONG _controlorder;
-    ULONG _statuspointid;
-    ULONG _controlstatus;
-    ULONG _operationanalogpointid;
-    ULONG _currentdailyoperations;
+    LONG _maplocationid;
+    LONG _controlorder;
+    LONG _statuspointid;
+    LONG _controlstatus;
+    LONG _operationanalogpointid;
+    LONG _currentdailyoperations;
     RWDBDateTime _laststatuschangetime;
-    ULONG _tagscontrolstatus;
-    ULONG _originalfeederid;
-    ULONG _originalswitchingorder;
+    LONG _tagscontrolstatus;
+    LONG _originalfeederid;
+    LONG _originalswitchingorder;
 
     //don't stream
     BOOL _insertDynamicDataFlag;
