@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2002/06/10 21:18:42 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2002/06/21 15:40:21 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -122,6 +122,7 @@ void  DatabaseHandlerThread(VOID *Arg);
 RWTime  TimeOfNextRemoteScan(void);
 RWTime  TimeOfNextLPScan(void);
 
+INT RecordDynamicData();
 void    InitScannerGlobals(void);
 void    DumpRevision(void);
 INT     MakePorterRequests(RWTPtrSlist< OUTMESS > &outList);
@@ -361,37 +362,6 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << TimeNow << " " << tstr << endl;
             }
-
-            TimeNow = TimeNow.now();
-
-            ObjWait = (NextScan[NEXT_SCAN].seconds() - TimeNow.seconds()) * 1000L;
-
-            // Make an attempt to keep the ScanData table current
-            if(ObjWait > 30)
-            {
-                if(ScannerDeviceManager.getMap().entries())
-                {
-                    RWRecursiveLock<RWMutexLock>::LockGuard guard(ScannerDeviceManager.getMux());
-                    CtiRTDB<CtiDeviceBase>::CtiRTDBIterator   itr_dev(ScannerDeviceManager.getMap());
-
-                    for(; ++itr_dev ;)
-                    {
-                        Device = (CtiDevice*) itr_dev.value();
-
-                        if( Device->isSingle() )
-                        {
-                            DeviceRecord = (CtiDeviceSingle*)Device;
-
-                            if(DeviceRecord->getScanData().isDirty())
-                            {
-                                DeviceRecord->getScanData().Update();
-                            }
-                        }
-                    }
-                }
-            }
-
-            TimeNow = TimeNow.now();
 
             ObjWait = (NextScan[NEXT_SCAN].seconds() - TimeNow.seconds()) * 1000L;
 
@@ -1496,6 +1466,7 @@ void DatabaseHandlerThread(VOID *Arg)
         {
             // Refresh the scanner in memory database once every 5 minutes.
             LoadScannableDevices();
+            RecordDynamicData();
             // Post the wakup to ensure that the main loop re-examines the devices.
             SetEvent(hScannerSyncs[ S_SCAN_EVENT ]);
 
@@ -1610,3 +1581,48 @@ INT ReinitializeRemotes(RWTime NextScan[])
     return status;
 }
 
+INT RecordDynamicData()
+{
+    INT status = NORMAL;
+
+    // Make an attempt to keep the ScanData table current
+    if(ScannerDeviceManager.getMap().entries())
+    {
+        CtiDevice *Device;
+
+        RWRecursiveLock<RWMutexLock>::LockGuard guard(ScannerDeviceManager.getMux());
+        CtiRTDB<CtiDeviceBase>::CtiRTDBIterator   itr_dev(ScannerDeviceManager.getMap());
+
+        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+        RWDBConnection conn = getConnection();
+
+        if(conn.isValid())
+        {
+            conn.beginTransaction();
+
+            for(; ++itr_dev ;)
+            {
+                Device = (CtiDevice*) itr_dev.value();
+
+                if( Device->isSingle() )
+                {
+                    CtiDeviceSingle *DeviceRecord = (CtiDeviceSingle*)Device;
+
+                    if(DeviceRecord->getScanData().isDirty())
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << "   Updating DynamicDeviceScanData for device " << DeviceRecord->getName() << endl;
+                        }
+                        DeviceRecord->getScanData().Update(conn);
+                        break;                                      // Only do one per iteration.
+                    }
+                }
+            }
+
+            conn.commitTransaction();
+        }
+    }
+
+    return status;
+}
