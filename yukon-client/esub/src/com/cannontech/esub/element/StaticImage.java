@@ -73,6 +73,14 @@ private void initialize() {
 		setImage( Util.prepareImage(yukonImage.getImageValue()));
 	}
 	
+	/**
+	 * Sets the yukonImage by image name
+	 * @param imageName
+	 */
+	public void setYukonImage(String imageName) {
+		setYukonImage(YukonImageFuncs.getLiteYukonImage(imageName));
+	}
+	
 	public void setImage(Image img) {
 		if( img != null ) 
 			setSize(img.getWidth(null), img.getHeight(null));
