@@ -8,25 +8,16 @@ package com.cannontech.servlet;
  * @author: Aaron Lauinger
  */
 
-import com.cannontech.common.util.LogWriter;
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiProperties;
 import com.cannontech.macs.MACSClientConnection;
-import com.cannontech.util.Constants;
 
 public class MACSConnectionServlet extends javax.servlet.http.HttpServlet implements java.util.Observer {
 
 	// Key used to store instances of this in the servlet context
 	public static final String SERVLET_CONTEXT_ID = "MACSConnection";
-
-	private static final String LOGFILE = "macsconn.log";
-	
-	private LogWriter logger;
 	private MACSClientConnection conn;
-/**
- * MACSConnectionServlet constructor comment.
- */
-public MACSConnectionServlet() {
-	super();
-}
+	
 /**
  * Insert the method's description here.
  * Creation date: (3/21/2001 11:36:13 AM)
@@ -45,12 +36,9 @@ public void destroy()
 	}
 	catch( java.io.IOException ioe )
 	{
-		logger.log("An exception occured disconnecting from MACS", LogWriter.ERROR );
+		CTILogger.error("An exception occured disconnecting from MACS", ioe);
 	}
 
-	logger.getPrintWriter().close();
-	logger = null;
-	
 	super.destroy();
 }
 /**
@@ -71,50 +59,12 @@ public void init(javax.servlet.ServletConfig config) throws javax.servlet.Servle
 {
 	super.init(config);
 
-	try
-	{	
-		java.io.PrintWriter writer = 
-			new java.io.PrintWriter( new java.io.FileOutputStream(LOGFILE, true ));
-					
-		logger = new com.cannontech.common.util.LogWriter("MACSConnectionServlet", com.cannontech.common.util.LogWriter.DEBUG, writer);
-		logger.log("Starting up....", LogWriter.INFO);
-	}
-	catch (java.io.FileNotFoundException e)
-	{
-		e.printStackTrace();
-	}
+	CtiProperties props = CtiProperties.getInstance();
 
-	String mcHost = "127.0.0.1";
-	int mcPort = 1900;
-	
-	//figure out where MACS is
-	java.io.InputStream is = getClass().getResourceAsStream(Constants.CONFIG_PROPERTIES);
-	java.util.Properties props = new java.util.Properties();
+	String mcHost = props.getProperty("macs_machine","127.0.0.1");
+	int mcPort = Integer.parseInt(props.getProperty("macs_port","1900"));
 
-	try
-	{
-		props.load(is);
-	}
-	catch (Exception e)
-	{
-		logger.log("Can't read the properties file. " + "Make sure db.properties is in the CLASSPATH", com.cannontech.common.util.LogWriter.ERROR);
-		return;
-	}
-
-	mcHost = props.getProperty("macs_machine");
-	String portStr = props.getProperty("macs_port");
-
-	try
-	{
-		mcPort = Integer.parseInt(portStr);
-	}
-	catch (NumberFormatException ne)
-	{
-		logger.log("Unable to determine macs_port", com.cannontech.common.util.LogWriter.ERROR);
-		return;
-	}
-
-	logger.log("Will attempt to connect to macs @" + mcHost + ":" + mcPort, com.cannontech.common.util.LogWriter.INFO);
+	CTILogger.info("Will attempt to connect to macs @" + mcHost + ":" + mcPort);
 	conn = new com.cannontech.macs.MACSClientConnection();
 	conn.addObserver(this);
 	
@@ -142,7 +92,7 @@ public void init(javax.servlet.ServletConfig config) throws javax.servlet.Servle
 	catch( java.io.IOException io )
 	{
 		io.printStackTrace();
-		logger.log("An error occured connecting with macs", com.cannontech.common.util.LogWriter.ERROR );
+		CTILogger.error("An error occured connecting with macs", io);
 	}
 
 	// Add this to the context so other servlets can access the connection
@@ -161,13 +111,13 @@ public void update(java.util.Observable obs, Object o)
 	if( obs == conn )
 	{		
 		if( conn.isValid() )
-			logger.log("Connection established to " + conn.getHost() + ":" + conn.getPort(), LogWriter.INFO );
+			CTILogger.info("Connection established to " + conn.getHost() + ":" + conn.getPort());
 		else
-			logger.log("Connection to " + conn.getHost() + ":" + conn.getPort() + " is down", LogWriter.INFO);
+			CTILogger.info("Connection to " + conn.getHost() + ":" + conn.getPort() + " is down");
 	}
 	else
 	{
-		logger.log("Warning!  received an update from an unknown observable!", LogWriter.ERROR );
+		CTILogger.info("Warning!  received an update from an unknown observable!");
 	}
 }
 }

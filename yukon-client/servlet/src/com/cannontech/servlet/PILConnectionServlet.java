@@ -8,27 +8,17 @@ package com.cannontech.servlet;
  * @author: Aaron Lauinger
  */
 
-import com.cannontech.common.util.LogWriter;
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiProperties;
 import com.cannontech.message.porter.ClientConnection;
-import com.cannontech.util.Constants;
 
 public class PILConnectionServlet extends javax.servlet.http.HttpServlet implements java.util.Observer {
 
 	// Key used to store instances of this in the servlet context
 	public static String SERVLET_CONTEXT_ID = "PILConnection";
-
-	private static final String LOGFILE = "pilconn.log";
-	
-	private LogWriter logger;
 	private ClientConnection conn;
+
 /**
- * MACSConnectionServlet constructor comment.
- */
-public PILConnectionServlet() {
-	super();
-}
-/**
- * Insert the method's description here.
  * Creation date: (3/21/2001 11:36:13 AM)
  */
 public void destroy() 
@@ -45,12 +35,9 @@ public void destroy()
 	}
 	catch( java.io.IOException ioe )
 	{
-		logger.log("An exception occured disconnecting from PIL", LogWriter.ERROR );
+		CTILogger.error("An exception occured disconnecting from PIL", ioe);
 	}
 
-	logger.getPrintWriter().close();
-	logger = null;
-	
 	super.destroy();
 }
 /**
@@ -71,50 +58,12 @@ public void init(javax.servlet.ServletConfig config) throws javax.servlet.Servle
 {
 	super.init(config);
 
-	try
-	{		
-		java.io.PrintWriter writer = 
-			new java.io.PrintWriter( new java.io.FileOutputStream(LOGFILE, true ));
-			
-		logger = new com.cannontech.common.util.LogWriter("PILConnectionServlet", com.cannontech.common.util.LogWriter.DEBUG, writer);
-		logger.log("Starting up....", LogWriter.INFO);	
-	}
-	catch (java.io.FileNotFoundException e)
-	{
-		e.printStackTrace();
-	}
-	
-	String host = "127.0.0.1";
-	int port = 1540;
-
-	//figure out where PIL is
-	java.io.InputStream is = getClass().getResourceAsStream(Constants.CONFIG_PROPERTIES);
-	java.util.Properties props = new java.util.Properties();
-
-	try
-	{
-		props.load(is);
-	}
-	catch (Exception e)
-	{
-		logger.log("Can't read the properties file. " + "Make sure db.properties is in the CLASSPATH", com.cannontech.common.util.LogWriter.ERROR);
-		return;
-	}
-	
-	host = props.getProperty("porter_machine");
-	String portStr = props.getProperty("porter_port");
-	
-	try
-	{
-		port = Integer.parseInt(portStr);
-	}
-	catch (NumberFormatException ne)
-	{
-		logger.log("Unable to determine porter_port", com.cannontech.common.util.LogWriter.ERROR);
-		return;
-	}
+	CtiProperties props = CtiProperties.getInstance();
 		
-	logger.log("Will attempt to connect to porter @" + host + ":" + port, com.cannontech.common.util.LogWriter.INFO);
+	String host = props.getProperty("porter_machine");
+	int port = Integer.parseInt(props.getProperty("porter_port","1540"));
+	
+	CTILogger.info("Will attempt to connect to porter @" + host + ":" + port);
 	conn = new ClientConnection();
 	conn.addObserver(this);
 	
@@ -134,7 +83,7 @@ public void init(javax.servlet.ServletConfig config) throws javax.servlet.Servle
 	catch( java.io.IOException io )
 	{
 		io.printStackTrace();
-		logger.log("An error occured connecting with porter", com.cannontech.common.util.LogWriter.ERROR );
+		CTILogger.error("An error occured connecting with porter", io);
 	}
 
 	// Add this to the servlet context
@@ -152,13 +101,13 @@ public void update(java.util.Observable obs, Object o)
 	if( obs == conn )
 	{		
 		if( conn.isValid() )
-			logger.log("Connection established to " + conn.getHost() + ":" + conn.getPort(), LogWriter.INFO );
+			CTILogger.info("Connection established to " + conn.getHost() + ":" + conn.getPort());
 		else
-			logger.log("Connection to " + conn.getHost() + ":" + conn.getPort() + " is down", LogWriter.INFO);
+			CTILogger.info("Connection to " + conn.getHost() + ":" + conn.getPort() + " is down");
 	}
 	else
 	{
-		logger.log("Warning!  received an update from an unknown observable!", LogWriter.ERROR );
+		CTILogger.info("Warning!  received an update from an unknown observable!");
 	}
 }
 }

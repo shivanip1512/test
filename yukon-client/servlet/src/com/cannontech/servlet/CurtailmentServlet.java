@@ -15,8 +15,10 @@ package com.cannontech.servlet;
  * @author: Aaron Lauinger
  */
 
-import com.cannontech.common.util.LogWriter;
-import com.cannontech.database.data.web.User;
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.database.cache.functions.CustomerFuncs;
+import com.cannontech.database.data.lite.LiteCustomerContact;
+import com.cannontech.database.data.lite.LiteYukonUser;
 
 public class CurtailmentServlet extends javax.servlet.http.HttpServlet {
 
@@ -24,7 +26,7 @@ public class CurtailmentServlet extends javax.servlet.http.HttpServlet {
 	
 	private static final String ACK_SQL = "UPDATE LCCurtailCustomerActivity SET AcknowledgementStatus=?,AckDateTime=?,IPAddressOfAckUser=?,UserIDName=? WHERE CustomerID=? AND CurtailReferenceID=?";
 	private static final String ACK_STATUS = "Acknowledged";
-	private LogWriter logger = null;
+	
 /**
  * CurtailmentServlet constructor comment.
  */
@@ -70,7 +72,7 @@ private boolean doAck(String username, int customerID, int curtailEventID, java.
 	 	System.out.println("notes: " + msg.getUserName() );
 	 	
  		conn.write(msg);
- 		logger.log("Ack sent, username: " + username + " curtailid: " + curtailEventID + " ip: " + clientInfo, LogWriter.INFO );
+ 		CTILogger.info("Ack sent, username: " + username + " curtailid: " + curtailEventID + " ip: " + clientInfo);
  		return true;
  	}
  	else
@@ -101,39 +103,35 @@ public void doPost(javax.servlet.http.HttpServletRequest req, javax.servlet.http
 	try
 	{
 		javax.servlet.http.HttpSession session = ((javax.servlet.http.HttpServletRequest) req).getSession(false);
-		User user = null;
-	
-		if (session == null || (user = (User) session.getValue("USER") ) == null )
-		{
-			resp.sendRedirect("/login.jsp");
-			return;
-		}
-			
+		LiteYukonUser user = (LiteYukonUser) session.getAttribute("YUKON_USER");
+					
 		String customerIDStr = req.getParameter("CUSTOMERID");
 		String curtailIDStr  = req.getParameter("CURTAILID");
 		String ackTimeStr    = req.getParameter("ACKTIME");
 		String initials      = req.getParameter("initials");
 		String redirectURI   = req.getParameter("redirect");
 		 
+		LiteCustomerContact contact = CustomerFuncs.getCustomerContact(user.getUserID());
+		
 		// Confirm that the customer id passed here and the id stored
-		// in the session are the same
-		if( user.getCustomerId() != Integer.parseInt(customerIDStr) )
-		{
-			resp.sendRedirect("/login.jsp");
-			return;
-		}
+		// in the session are the same	
+		if( contact == null || 
+			contact.getCustomerID() != Integer.parseInt(customerIDStr) ) {
+				CTILogger.error("Customer id of the current user doesn't match that of the request");
+				return;				
+			}
 
 		if( 
 		!doAck( 	user.getUsername(), 
-			user.getCustomerId(), 	
+			contact.getCustomerID(), 	
 			Integer.parseInt(curtailIDStr), 	
 			new java.util.Date( Long.parseLong(ackTimeStr)), 
 			req.getRemoteAddr(),
 			initials,
-			user.getDatabaseAlias() )
+			"yukon")
 		)
 		{
-			logger.log("An error occured acknowledging", LogWriter.ERROR);
+			CTILogger.error("An error occured acknowledging");
 		}		
 		else
 		{
@@ -147,30 +145,8 @@ public void doPost(javax.servlet.http.HttpServletRequest req, javax.servlet.http
 	}
 	catch(Throwable t )
 	{
-		logger.log(t,"Error processing curtailment acknowledgerequest", LogWriter.ERROR);
+		CTILogger.error("Error processing curtailment acknowledgerequest", t);
 	}
 }
-/**
- * Creation date: (4/2/2001 3:46:53 PM)
- * @param config javax.servlet.ServletConfig
- */
-public void init(javax.servlet.ServletConfig config) throws javax.servlet.ServletException
-{
-	super.init(config);	
-	synchronized (this)
-	{		
-		try
-		{
-			java.io.PrintWriter writer =
-				new java.io.PrintWriter( new java.io.FileOutputStream("curtail.log", true ) );
 
-			logger = new LogWriter("LoginController", com.cannontech.common.util.LogWriter.DEBUG, writer);
-			logger.log("Starting up....", LogWriter.INFO );
-		}
-		catch( java.io.FileNotFoundException e )
-		{
-			e.printStackTrace();
-		}		
-	}
-}
 }

@@ -1,5 +1,7 @@
 package com.cannontech.servlet;
 
+import com.cannontech.clientutils.CTILogger;
+
 /**
  * GraphGenerator generates a gif or jpg image of a graph based on the parameters
  * passed to it.
@@ -20,23 +22,12 @@ package com.cannontech.servlet;
  * Creation date: (12/9/99 3:23:27 PM)
  * @author: Aaron Lauinger
  */
-import com.cannontech.common.util.LogWriter;
-import com.cannontech.database.data.web.User;
 
 public class PeakDataGenerator extends javax.servlet.http.HttpServlet {
-
-	private static com.cannontech.common.util.LogWriter logger = null;
 
 	static java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM:dd:yyyy:HH:mm:ss");
 	
 /**
- * GraphGenerator constructor comment.
- */
-public PeakDataGenerator() {
-	super();
-}
-/**
- * Insert the method's description here.
  * Creation date: (12/9/99 3:24:30 PM)
  * @param req javax.servlet.http.HttpServletRequest
  * @param resp javax.servlet.http.HttpServletResponse
@@ -47,7 +38,7 @@ public void doGet(javax.servlet.http.HttpServletRequest req, javax.servlet.http.
 {
 	try
 	{	
-		logger.log("doGet invoked", LogWriter.DEBUG );	
+		CTILogger.debug("doGet invoked");	
 		javax.servlet.http.HttpSession session = req.getSession(false);
 	
 		if (session == null)
@@ -158,64 +149,18 @@ public void doGet(javax.servlet.http.HttpServletRequest req, javax.servlet.http.
 		}
 		else
 		{
-				logger.log("Null graphdefinition!", LogWriter.ERROR );
+				CTILogger.error("Null graphdefinition!");
 		}	
 
 	}
 	catch( Throwable t )
 	{
-		logger.log("Exception occurd in TabularDataGenerator:  " + t.getMessage(), LogWriter.ERROR );
+		CTILogger.error("Exception occurd in TabularDataGenerator:  ", t);
 		t.printStackTrace();
 	}
 	finally
 	{						
 		System.gc();
 	}		
-}
-/**
- * Insert the method's description here.
- * Creation date: (12/9/99 3:39:10 PM)
- * @param req javax.servlet.http.HttpServletRequest
- * @param resp javax.servlet.http.HttpServletResponse
- * @exception javax.servlet.ServletException The exception description.
- * @exception java.io.IOException The exception description.
- */
-public void doPost(javax.servlet.http.HttpServletRequest req, javax.servlet.http.HttpServletResponse resp) throws javax.servlet.ServletException, java.io.IOException 
-{
-	resp.sendError( javax.servlet.http.HttpServletResponse.SC_METHOD_NOT_ALLOWED);
-}
-/**
- * Insert the method's description here.
- * Creation date: (12/7/99 9:55:11 AM)
- * @param config javax.servlet.ServletConfig
- * @exception javax.servlet.ServletException The exception description.
- */
-public void init(javax.servlet.ServletConfig config) throws javax.servlet.ServletException 
-{
-	try
-	{		
-		synchronized (this)
-	{		
-		try
-		{
-			java.io.FileOutputStream out = new java.io.FileOutputStream("tabgen.log");
-			java.io.PrintWriter writer = new java.io.PrintWriter(out, true);
-			logger = new com.cannontech.common.util.LogWriter("TabularDataGenerator", com.cannontech.common.util.LogWriter.DEBUG, writer);
-
-			logger.log("Starting up....", LogWriter.INFO );
-		}
-		catch( java.io.FileNotFoundException e )
-		{
-			e.printStackTrace();
-		}		
-	}
-	
-	}
-	catch( Exception e )
-	{
-		e.printStackTrace();
-	}
-	
-	super.init(config);
 }
 }

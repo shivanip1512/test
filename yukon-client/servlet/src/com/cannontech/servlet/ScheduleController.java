@@ -1,5 +1,7 @@
 package com.cannontech.servlet;
 
+import com.cannontech.clientutils.CTILogger;
+
 /**
  * parameters:
  * ID - The id of the schedule of interest 
@@ -18,8 +20,6 @@ package com.cannontech.servlet;
  * Creation date: (5/1/00 11:58:27 AM)
  * @author: Aaron Lauinger
  */
-import com.cannontech.common.util.LogWriter;
-import com.cannontech.database.data.web.User;
 
 public class ScheduleController extends javax.servlet.http.HttpServlet {
 
@@ -30,8 +30,6 @@ public class ScheduleController extends javax.servlet.http.HttpServlet {
 	private static final String PSEUDO_SCHEDULE_STATE = "Request Pending";
 	
 	private static java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM-dd-yyyy-HH-mm-ss");
-	
-	private static com.cannontech.common.util.LogWriter logger = null;
 
 	private static com.cannontech.message.dispatch.ClientConnection vangoghConn = null;
 
@@ -42,15 +40,7 @@ public class ScheduleController extends javax.servlet.http.HttpServlet {
 public ScheduleController() {
 	super();
 }
-/**
- * Insert the method's description here.
- * Creation date: (6/16/00 10:26:45 AM)
- */
-public void destroy() 
-{
-	logger.log("destroyed....", LogWriter.INFO );
-	super.destroy();
-}
+
 /**
  * Finds a schedule by id.
  * The linear search time isn't so good here.
@@ -85,28 +75,7 @@ private com.cannontech.message.macs.message.Schedule findSchedule(long id) {
 			
 	return retVal;
 }
-/**
- * Insert the method's description here.
- * Creation date: (5/1/00 11:58:54 AM)
- * @param config javax.servlet.ServletConfig
- * @exception javax.servlet.ServletException The exception description.
- */
-public void init(javax.servlet.ServletConfig config) throws javax.servlet.ServletException
-{
-	super.init(config);
-	
-	try
-	{		
-		java.io.FileOutputStream out = new java.io.FileOutputStream("schedulecontroller.log",true);
-		java.io.PrintWriter writer = new java.io.PrintWriter(out, true);
-		logger = new com.cannontech.common.util.LogWriter("ScheduleController", com.cannontech.common.util.LogWriter.DEBUG, writer);
-		logger.log("Starting up....", LogWriter.INFO);		
-	}
-	catch (java.io.FileNotFoundException e)
-	{
-		e.printStackTrace();
-	}	
-}
+
 /**
  * Insert the method's description here.
  * Creation date: (3/20/2001 7:08:53 PM)
@@ -173,8 +142,6 @@ public void service(javax.servlet.http.HttpServletRequest req, javax.servlet.htt
 	if( session == null )
 		return; //handle error?
 			
- 	User user = (User) session.getValue("USER");	
-
 	String scheduleIDStr = req.getParameter("ID");
 	String action = req.getParameter("ACTION");
 	String startAtStr = req.getParameter("STARTAT");
@@ -203,7 +170,7 @@ public void service(javax.servlet.http.HttpServletRequest req, javax.servlet.htt
 			conn.write(startRequest);
 
 			setScheduleRequestPending(sched);
-			logger.log("Start schedule:  " + sched.getId() + " time:  " + startDate, LogWriter.INFO );
+			CTILogger.info("Start schedule:  " + sched.getId() + " time:  " + startDate);
 		}		
 
 		if( (action.equalsIgnoreCase("stop") || action.equalsIgnoreCase("startstop")) &&
@@ -217,25 +184,25 @@ public void service(javax.servlet.http.HttpServletRequest req, javax.servlet.htt
 			conn.write(stopRequest);
 
 			setScheduleRequestPending(sched);
-			logger.log("Stop schedule:  " + sched.getId() + " time:  " + startDate, LogWriter.INFO );
+			CTILogger.info("Stop schedule:  " + sched.getId() + " time:  " );
 		}
 	}
 	else
 	{
-		logger.log("Received request for unknown schedule, id: " + scheduleIDStr, LogWriter.ERROR );
+		CTILogger.error("Received request for unknown schedule, id: " + scheduleIDStr);
 		//do handle error
 	}
 
 	try
 	{
 		String nextUrl = req.getParameter("URL");
-		nextUrl = java.net.URLDecoder.decode(nextUrl);
+		nextUrl = java.net.URLDecoder.decode(nextUrl, "UTF-8");
 		nextUrl = resp.encodeRedirectURL(nextUrl);
 		resp.sendRedirect(nextUrl);
 	}
 	catch(Exception e )
 	{
-		logger.log( e.getMessage(), LogWriter.ERROR );
+		CTILogger.error("exception", e);
 	}
 	
 }

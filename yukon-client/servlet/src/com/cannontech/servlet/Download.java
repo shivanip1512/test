@@ -1,68 +1,19 @@
 package com.cannontech.servlet;
 
 /**
- * Insert the type's description here.
  * Creation date: (10/19/2001 3:32:09 PM)
  * @author: 
  */
 import javax.servlet.http.HttpServlet;
-
-import com.cannontech.common.util.LogWriter;
+import com.cannontech.clientutils.CTILogger;
 
 public class Download extends HttpServlet
-{
-
-	private static com.cannontech.common.util.LogWriter logger = null;
+{	
 	static java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM:dd:yyyy:HH:mm:ss");
-/**
- * MessageServlet constructor comment.
- */
-public Download() {
-	super();
-}
-public void doGet(javax.servlet.http.HttpServletRequest req, javax.servlet.http.HttpServletResponse resp) throws javax.servlet.ServletException, java.io.IOException
-{
-	resp.sendError( javax.servlet.http.HttpServletResponse.SC_METHOD_NOT_ALLOWED);	
-}
-/**
- * Insert the method's description here.
- * Creation date: (12/7/99 9:55:11 AM)
- * @param config javax.servlet.ServletConfig
- * @exception javax.servlet.ServletException The exception description.
- */
-public void init(javax.servlet.ServletConfig config) throws javax.servlet.ServletException 
-{
-	try
-	{		
-		synchronized (this)
-	{		
-		try
-		{
-			java.io.FileOutputStream out = new java.io.FileOutputStream("download.log");
-			java.io.PrintWriter writer = new java.io.PrintWriter(out, true);
-			logger = new com.cannontech.common.util.LogWriter("Download", com.cannontech.common.util.LogWriter.DEBUG, writer);
-
-			logger.log("Starting up....", LogWriter.INFO );
-		}
-		catch( java.io.FileNotFoundException e )
-		{
-			e.printStackTrace();
-		}		
-	}
 	
-	}
-	catch( Exception e )
-	{
-		e.printStackTrace();
-	}
-	
-	super.init(config);
-}
-
 	String []exportArray = null;
 
 /**
- * Insert the method's description here.
  * Creation date: (12/9/99 3:39:10 PM)
  * @param req javax.servlet.http.HttpServletRequest
  * @param resp javax.servlet.http.HttpServletResponse
@@ -73,7 +24,7 @@ public void doPost(javax.servlet.http.HttpServletRequest req, javax.servlet.http
 	throws javax.servlet.ServletException, java.io.IOException {
 	try
 	{
-		logger.log("doPost invoked", LogWriter.DEBUG);
+		CTILogger.debug("doPost invoked");
 		javax.servlet.http.HttpSession session = req.getSession(false);
 
 		if (session == null)
@@ -243,13 +194,13 @@ public void doPost(javax.servlet.http.HttpServletRequest req, javax.servlet.http
 		}
 		else
 		{
-			logger.log("Null graphdefinition!", LogWriter.ERROR);
+			CTILogger.debug("Null graphdefinition!");
 		}
 
 	}
 	catch (Throwable t)
 	{
-		logger.log("Exception occurd in TabularDataGenerator:  " + t.getMessage(), LogWriter.ERROR);
+		CTILogger.debug("Exception occurd in TabularDataGenerator:  " + t.getMessage());
 		t.printStackTrace();
 	}
 	finally

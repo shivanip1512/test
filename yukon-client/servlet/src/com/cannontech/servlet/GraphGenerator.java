@@ -12,19 +12,12 @@ package com.cannontech.servlet;
  * updated for bean use - 11/20/02 Stacey Nebben
  */
 
-import com.cannontech.common.util.LogWriter;
-import com.cannontech.database.data.web.User;
+import com.cannontech.clientutils.CTILogger;
 
 public class GraphGenerator extends javax.servlet.http.HttpServlet {
-
-	private static com.cannontech.common.util.LogWriter logger = null;
+	
 	private static java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM:dd:yyyy:HH:mm:ss");
-/**
- * GraphGenerator constructor comment.
- */
-public GraphGenerator() {
-	super();
-}
+
 /**
  * Insert the method's description here.
  * Creation date: (12/9/99 3:24:30 PM)
@@ -65,7 +58,8 @@ public synchronized void  doGet(javax.servlet.http.HttpServletRequest req, javax
 	}
 	catch( Throwable t )
 	{
-		logger.log("An exception was throw in GraphGenerator:  " + t.getMessage(), LogWriter.ERROR );
+		
+		CTILogger.error("An exception was throw in GraphGenerator:  ", t);
 		t.printStackTrace();
 	}
 	finally
@@ -97,23 +91,6 @@ public void init(javax.servlet.ServletConfig config) throws javax.servlet.Servle
 	try
 	{
 		javax.swing.UIManager.setLookAndFeel(javax.swing.UIManager.getSystemLookAndFeelClassName());
-
-		synchronized (this)
-	{		
-		try
-		{
-			java.io.FileOutputStream out = new java.io.FileOutputStream("graphgen.log");
-			java.io.PrintWriter writer = new java.io.PrintWriter(out, true);
-			logger = new com.cannontech.common.util.LogWriter("GraphGenerator", com.cannontech.common.util.LogWriter.DEBUG, writer);
-
-			logger.log("Starting up....", LogWriter.INFO );
-		}
-		catch( java.io.FileNotFoundException e )
-		{
-			e.printStackTrace();
-		}		
-	}
-	
 	}
 	catch( Exception e )
 	{

@@ -29,24 +29,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.cannontech.common.util.LogWriter;
-import com.cannontech.database.data.web.Operator;
-import com.cannontech.database.data.web.User;
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.database.data.lite.LiteYukonUser;
 
 public class YukonSwitchCommand extends javax.servlet.http.HttpServlet 
 {
-	private static com.cannontech.common.util.LogWriter logger = null;
-
 	// increment this for every message
 	private long userMessageIDCounter = 1;
+
 /**
- * SwitchCommand constructor comment.
- */
-public YukonSwitchCommand() {
-	super();
-}
-/**
- * Insert the method's description here.
  * Creation date: (12/7/99 9:54:51 AM)
  * @param req javax.servlet.http.HttpServletRequest
  * @param resp javax.servlet.http.HttpServletResponse
@@ -55,13 +46,7 @@ public void doPost(HttpServletRequest req, HttpServletResponse resp) throws java
 {	
 	HttpSession session = req.getSession( false );
 
-	// does not have a session, make them log in
-	if( session == null )
-	{
-		String nextUrl = "/login.jsp?failed=true";
-		nextUrl = resp.encodeRedirectURL(nextUrl);
-		resp.sendRedirect(nextUrl);
-	}
+	LiteYukonUser user = (LiteYukonUser) session.getAttribute("YUKON_USER");
 	
 	String groupID = req.getParameter("groupid");
 	String serialNumber = req.getParameter("serialNumber");
@@ -69,8 +54,6 @@ public void doPost(HttpServletRequest req, HttpServletResponse resp) throws java
 	String function = req.getParameter("function");
 
 	// could be invoked by either operator or user...
-	Operator operator = (Operator) session.getValue("OPERATOR");
-	User user = (User) session.getValue("USER");
 	boolean failed = false;
 
 	StringBuffer command = new StringBuffer();
@@ -124,7 +107,7 @@ public void doPost(HttpServletRequest req, HttpServletResponse resp) throws java
 	else  // unknown function
 	{
 		failed = true;
-		logger.log("Unknown function call '" + function + "' in doPOST in " + this.getClass(), LogWriter.ERROR );
+		CTILogger.error("Unknown function call '" + function + "' in doPOST in " + this.getClass());
 	}
 	
 	//Build target - either serial number or group id
@@ -145,17 +128,12 @@ public void doPost(HttpServletRequest req, HttpServletResponse resp) throws java
 	}
 	else {
 		failed = true;
-		logger.log("Must specify serialNumber or groupid to use", LogWriter.ERROR );
+		CTILogger.error("Must specify serialNumber or groupid to use");
 	}
 	
 	sendCommand(command.toString());
-
-	if( operator != null )
-		logger.log( operator.getOperatorLogin().getUsername() + " - " + command.toString(), LogWriter.INFO );
-
-	if( user != null )
-		logger.log( user.getUsername() + " - " + command.toString(), LogWriter.INFO );	
-
+	CTILogger.info(user.getUsername() + " = " + command.toString());
+		
 	String redirectURL = req.getParameter("nextURL");
 	
 	if( redirectURL != null ) {
@@ -193,37 +171,13 @@ private int getIntValue(String text )
 	}
 	catch( NumberFormatException ex )
 	{
-		logger.log("Unable to convert an integer entered by user", LogWriter.INFO );
+		CTILogger.error("Unable to convert an integer entered by user", ex);
 		return -1; //error	
 	}
 
 	return value;
 }
-/**
- * Inits a logger.
- * Creation date: (12/7/99 9:55:11 AM)
- * @param config javax.servlet.ServletConfig
- * @exception javax.servlet.ServletException The exception description.
- */
-public void init(javax.servlet.ServletConfig config) throws javax.servlet.ServletException 
-{
-	super.init(config);
-		
-	synchronized (this)
-	{		
-		try
-		{
-			java.io.FileOutputStream out = new java.io.FileOutputStream("switch.log", true);
-			java.io.PrintWriter writer = new java.io.PrintWriter(out, true);
-			logger = new com.cannontech.common.util.LogWriter("SwitchCommand", com.cannontech.common.util.LogWriter.DEBUG, writer);
-			logger.log("Starting up....", LogWriter.INFO );
-		}
-		catch( java.io.FileNotFoundException e )
-		{
-			e.printStackTrace();
-		}
-	}
-}
+
 /**
  * Returns the new time string, basically maps
  * what is seen on the jsp page into the format the command
@@ -295,17 +249,16 @@ private void sendCommand(String command)
 
 			conn.write(req);
 
-			logger.log("Sent command to PIL:  " + command, LogWriter.INFO );
+			CTILogger.info("Sent command to PIL:  " + command);
 		}
 		else
 		{
-			logger.log("Failed to retrieve a connection", LogWriter.ERROR );
+			CTILogger.info("Failed to retrieve a connection");
 		}
 	}
 	else
 	{
-		logger.log("Failed to retrieve PILConnectionServlet from servlet context",
-					LogWriter.ERROR );
+		CTILogger.error("Failed to retrieve PILConnectionServlet from servlet context");
 	}
 }
 }
