@@ -18,6 +18,8 @@
 #include "logger.h"
 #include "dbaccess.h"
 
+extern ULONG _LM_DEBUG;
+
 RWDEFINE_COLLECTABLE( CtiLMGroupSA205, CTILMGROUPSA205_ID )
 
 /*---------------------------------------------------------------------------
@@ -52,9 +54,15 @@ CtiLMGroupSA205::~CtiLMGroupSA205()
   --------------------------------------------------------------------------*/
 CtiRequestMsg* CtiLMGroupSA205::createTimeRefreshRequestMsg(LONG refreshRate, LONG shedTime, int priority) const
 {
-    CtiLockGuard<CtiLogger> logger_guard(dout);
-    dout << RWTime() << " - createTimeRefreshRequestMsg() not implemented for sa205 LM Groups " << __FILE__ << " at:" << __LINE__ << endl;
-    return NULL;
+    RWCString controlString = RWCString("control sa205 shed ");
+    controlString += buildShedString(shedTime);
+
+    if( _LM_DEBUG & LM_DEBUG_STANDARD )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Sending time refresh command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
+    }
+    return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
 }
 
 /*-------------------------------------------------------------------------
@@ -92,9 +100,16 @@ CtiRequestMsg* CtiLMGroupSA205::createTrueCycleRequestMsg(LONG percent, LONG per
   --------------------------------------------------------------------------*/
 CtiRequestMsg* CtiLMGroupSA205::createRotationRequestMsg(LONG sendRate, LONG shedTime, int priority) const
 {
-    CtiLockGuard<CtiLogger> logger_guard(dout);
-    dout << RWTime() << " - createRotationRequestMsg() not implemented for sa205 LM Groups " << __FILE__ << " at:" << __LINE__ << endl;
-    return NULL;
+    
+    RWCString controlString = RWCString("control sa205 shed ");
+    controlString += buildShedString(shedTime);
+    
+    if( _LM_DEBUG & LM_DEBUG_STANDARD )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Sending rotation command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
+    }
+    return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
 }
 
 /*-------------------------------------------------------------------------
@@ -105,10 +120,15 @@ CtiRequestMsg* CtiLMGroupSA205::createRotationRequestMsg(LONG sendRate, LONG she
   --------------------------------------------------------------------------*/
 CtiRequestMsg* CtiLMGroupSA205::createMasterCycleRequestMsg(LONG offTime, LONG period, int priority) const
 {
-    CtiLockGuard<CtiLogger> logger_guard(dout);
-    dout << RWTime() << " - createMasterCycleRequestMsg() not implemented for sa205 LM Groups " << __FILE__ << " at:" << __LINE__ << endl;
-    return NULL;
+    RWCString controlString = RWCString("control sa205 shed ");
+    controlString += buildShedString(offTime-60);
 
+    if( _LM_DEBUG & LM_DEBUG_STANDARD )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Sending master cycle command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
+    }
+    return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
 }
 
 /*-------------------------------------------------------------------------

@@ -300,7 +300,7 @@ bool CtiLMConstraintChecker::checkMaxDailyOps(const CtiLMProgramDirect& lm_progr
 	return false;
     }
     
-    return false; 
+    return true;
 }
 
 /*
