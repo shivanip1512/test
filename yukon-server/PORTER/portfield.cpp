@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/05/17 18:50:03 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2002/05/28 18:29:37 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -54,6 +54,7 @@
 #include <process.h>
 #include <iostream>
 #include <iomanip>
+#include <set>
 using namespace std;
 
 #include "os2_2w32.h"
@@ -100,6 +101,7 @@ using namespace std;
 #include "port_base.h"
 #include "port_local_modem.h"
 #include "prot_711.h"
+#include "statistics.h"
 #include "trx_info.h"
 #include "trx_711.h"
 #include "utility.h"
@@ -115,20 +117,8 @@ static ULONG   gQueSlot = 0;
 extern void DisplayTraceList( CtiPort *Port, RWTPtrSlist< CtiMessage > &traceList, bool consume);
 extern HCTIQUEUE* QueueHandle(LONG pid);
 
-/*
- *  This structure describes the port instance in use here.
- *  It is a consolidation of global variables and the port record from the old DSM/2 system
- *  Some elements are valid only for some port types (should be pretty intuitive though).
- */
-typedef struct
-{
-    CtiPort        *Port;
-
-    /* Definitions for TAP Terminal */
-    BOOL           TAPTerm;
-    BOOL           HangUp;
-
-} PortInstData_t;
+typedef set< CtiStatistics > CtiStatisticsSet_t;
+typedef CtiStatisticsSet_t::iterator CtiStatisticsIterator_t;
 
 
 bool deviceCanSurviveThisStatus(INT status);
@@ -159,6 +149,12 @@ INT TerminateHandshake (CtiPort *aPortRecord, CtiDeviceIED *aIEDDevice, RWTPtrSl
 INT PerformRequestedCmd ( CtiPort *aPortRecord, CtiDeviceIED *aIED, INMESS *aInMessage, OUTMESS *aOutMessage, RWTPtrSlist< CtiMessage > &traceList);
 INT ReturnLoadProfileData ( CtiPort *aPortRecord, CtiDeviceIED *aIED, INMESS *aInMessage, OUTMESS *aOutMessage, RWTPtrSlist< CtiMessage > &traceList);
 INT LogonToDevice( CtiPort *aPortRecord, CtiDeviceIED *aIED, INMESS *aInMessage, OUTMESS *aOutMessage, RWTPtrSlist< CtiMessage > &traceList);
+CtiStatisticsIterator_t deviceStatsFind(const LONG paoId);
+
+
+// Global Statistics set
+
+static CtiStatisticsSet_t devicestatset;
 
 
 /* Threads that handle each port for communications */
@@ -272,6 +268,18 @@ VOID PortThread (VOID *arg)
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " Port " << Port->getName() << " read an outmessage for " << tempDev->getName();
                 dout << " at priority " << OutMessage->Priority << endl;
+            }
+        }
+
+        // 20020521 CGP Add request increment code here for the statistics!
+        if(OutMessage->DeviceID > 0)
+        {
+            CtiStatisticsIterator_t dStatItr = deviceStatsFind( OutMessage->DeviceID );
+
+            if( dStatItr != devicestatset.end() )
+            {
+                CtiStatistics &dStats = *dStatItr;
+                dStats.incrementRequest( RWTime() );
             }
         }
 
@@ -985,7 +993,7 @@ INT DevicePreprocessing(CtiPort  *Port, OUTMESS *&OutMessage, CtiDevice *Device)
         {
             if(LCUPreSend (OutMessage, Device))  // Requeued if non-zero returned
             {
-                return MESSAGEREQUEUED;
+                return RETRY_SUBMITTED;
             }
 
             break;
@@ -1158,6 +1166,14 @@ INT CommunicateDevice(CtiPort *Port, INMESS *InMessage, OUTMESS *OutMessage, Cti
                     // OutMessage->EventCode &= ~RESULT;
                     InMessage->Buffer.DUPSt.DUPRep.ReqSt.Command[0] = CtiDeviceIED::CmdScanData;
 
+                    break;
+                }
+            case TYPE_WCTP:
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
                     break;
                 }
             case TYPE_TAPTERM:
@@ -1532,6 +1548,7 @@ INT CommunicateDevice(CtiPort *Port, INMESS *InMessage, OUTMESS *OutMessage, Cti
 
                 case TYPE_SIXNET:
                 case TYPE_TAPTERM:
+                case TYPE_WCTP:
                 case TYPE_ALPHA_PPLUS:
                 case TYPE_ALPHA_A1:
                 case TYPE_FULCRUM:
@@ -1553,6 +1570,7 @@ INT CommunicateDevice(CtiPort *Port, INMESS *InMessage, OUTMESS *OutMessage, Cti
                 // none of these use the transfer struct defined in this function so it blows the thread
                 case TYPE_SIXNET:
                 case TYPE_TAPTERM:
+                case TYPE_WCTP:
                 case TYPE_ALPHA_PPLUS:
                 case TYPE_ALPHA_A1:
                 case TYPE_FULCRUM:
@@ -2043,9 +2061,6 @@ INT CheckAndRetryMessage(INT CommResult, CtiPort *Port, INMESS *InMessage, OUTME
     ERRSTRUCT      ErrStruct;
     bool           iscommfailed = (CommResult == NORMAL);      // Prime with the communication status
 
-    /* Update the performance stats for this remote */
-    UpdatePerformanceData(CommResult, Port, Device);
-
     if(Device->adjustCommCounts( iscommfailed, OutMessage->Retry > 0 ))
     {
         commFail(Device, (iscommfailed ? CLOSED : OPENED));
@@ -2199,6 +2214,18 @@ INT CheckAndRetryMessage(INT CommResult, CtiPort *Port, INMESS *InMessage, OUTME
 
                 break;
             }
+        }
+    }
+
+    if(status == RETRY_SUBMITTED)
+    {
+        // 20020521 CGP Add incrementRetry Code here!
+        CtiStatisticsIterator_t dStatItr = deviceStatsFind( OutMessage->DeviceID );
+
+        if( dStatItr != devicestatset.end() )
+        {
+            CtiStatistics &dStats = *dStatItr;
+            dStats.incrementAttempts( RWTime() );
         }
     }
 
@@ -2362,13 +2389,10 @@ INT DoProcessInMessage(INT CommResult, CtiPort *Port, INMESS *InMessage, OUTMESS
                 if(!CommResult && (InMessage->Buffer.InMessage[4] & VCUOVERQUE))
                 {
                     /* we need to reque this one  */
-                    /* Update the statistics for this TCU */
-                    UpdatePerformanceData(NORMAL, Port, Device);
-
                     /* Drop the priority an notch so we don't hog the channel */
                     if(OutMessage->Priority) OutMessage->Priority--;
 
-                    status = MESSAGEREQUEUED;
+                    status = RETRY_SUBMITTED;
 
                     /* Put it on the queue for this port */
                     if(PortManager.writeQueue(OutMessage->Port, OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
@@ -2392,11 +2416,9 @@ INT DoProcessInMessage(INT CommResult, CtiPort *Port, INMESS *InMessage, OUTMESS
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " " << Device->getName() << " queue full.  Will resubmit." << endl;
                     }
-                    /* Update the statistics for this TCU */
-                    UpdatePerformanceData(NORMAL, Port, Device);
 
                     /* we need to reque this one  */
-                    status = MESSAGEREQUEUED;
+                    status = RETRY_SUBMITTED;
 
                     /* Put it on the queue for this port */
                     if(PortManager.writeQueue(OutMessage->Port, OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
@@ -2425,6 +2447,28 @@ INT DoProcessInMessage(INT CommResult, CtiPort *Port, INMESS *InMessage, OUTMESS
     default:
         {
             break;
+        }
+    }
+
+    // Statistics processing.
+    if(status == RETRY_SUBMITTED)
+    {
+        CtiStatisticsIterator_t dStatItr = deviceStatsFind( InMessage->DeviceID );
+
+        if( dStatItr != devicestatset.end() )
+        {
+            CtiStatistics &dStats = *dStatItr;
+            dStats.incrementAttempts( RWTime() );
+        }
+    }
+    else
+    {
+        CtiStatisticsIterator_t dStatItr = deviceStatsFind( InMessage->DeviceID );
+
+        if( dStatItr != devicestatset.end() )
+        {
+            CtiStatistics &dStats = *dStatItr;
+            dStats.incrementCompletion( RWTime(), CommResult );
         }
     }
 
@@ -2491,7 +2535,6 @@ INT RequeueReportError(INT status, OUTMESS *OutMessage)
     switch(status)
     {
     case RETRY_SUBMITTED:
-    case MESSAGEREQUEUED:
         {
             break;  // Don't call this an error.
         }
@@ -2513,6 +2556,7 @@ INT VTUPrep(CtiPort *Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDevice *De
     if(
       Device->getType() != TYPE_TDMARKV &&
       Device->getType() != TYPE_TAPTERM &&
+      Device->getType() != TYPE_WCTP &&
       Device->getType() != TYPE_ALPHA_PPLUS &&
       Device->getType() != TYPE_FULCRUM &&
       Device->getType() != TYPE_VECTRON &&
@@ -2915,7 +2959,7 @@ void commFail(CtiDeviceBase *Device, INT state)
             VanGoghConnection.WriteConnQue(pData);
         }
     }
-    else if(state == CLOSED)
+    else if(PorterDebugLevel & PORTER_DEBUG_VERBOSE && state == CLOSED)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " " << Device->getName() << " would be COMM FAILED if it had offset " << COMM_FAIL_OFFSET << " defined" << endl;
@@ -2944,3 +2988,39 @@ bool deviceCanSurviveThisStatus(INT status)
 
     return survive;
 }
+
+
+CtiStatisticsIterator_t deviceStatsFind(const LONG paoId)
+{
+    CtiStatisticsIterator_t dstatitr = devicestatset.end();
+
+    if(paoId > 0)
+    {
+        CtiStatistics &dStats = CtiStatistics(paoId);
+
+        dstatitr = devicestatset.find( dStats );
+
+        if( dstatitr == devicestatset.end() )       // It is not in there!  Make an entry!
+        {
+            // We need to load it up, and/or then insert it!
+            // dStats.Restore();
+            pair< CtiStatisticsSet_t::iterator, bool > resultpair;
+
+            // Try to insert. Return indicates success.
+            resultpair = devicestatset.insert( dStats );
+
+            if(resultpair.second == true)           // Insert was successful.
+            {
+                dstatitr = resultpair.first;        // Iterator which points to the set entry.
+            }
+            else
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** UNX Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+        }
+    }
+
+    return dstatitr;
+}
+

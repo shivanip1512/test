@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTERSU.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/05/17 18:51:43 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/05/28 18:29:37 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -207,7 +207,7 @@ ReportRemoteError (CtiDeviceBase *RemoteRecord, ERRSTRUCT *ErrorRecord)
     COMM_ERROR_LOG_STRUCT ComErrorRecord;
     CtiPort *PortRecord;
 
-    if(!(ErrorRecord->Error) || ErrorRecord->Type == ERRTYPEDLC)
+    if(!(ErrorRecord->Error) || ErrorRecord->Type == ERRTYPEPROTOCOL)
     {
         return(NORMAL);
     }

@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2002/05/17 18:47:10 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2002/05/28 18:29:36 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -719,19 +719,19 @@ INT PorterMainFunction (INT argc, CHAR **argv)
                         if(TraceErrorsOnly)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << "Trace is Now On for Errors Only" << endl;
+                            dout << RWTime() << " Trace is Now On for Errors Only" << endl;
                         }
                         else
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << "Trace is Now On for All Messages" << endl;
+                            dout << RWTime() << " Trace is Now On for All Messages" << endl;
                         }
                     }
                     else
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << "Trace is Now Off for All Messages" << endl;
+                            dout << RWTime() << " Trace is Now Off for All Messages" << endl;
                         }
                     }
 
@@ -744,16 +744,20 @@ INT PorterMainFunction (INT argc, CHAR **argv)
                     if(TraceErrorsOnly)
                     {
                         TraceFlag = TRUE;
-                        fprintf(stdout, "Trace is Now On for Errors Only\n");
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " Trace is Now On for Errors Only" << endl;
                     }
                     else if(TraceFlag)
                     {
-                        fprintf(stdout, "Trace is Now On for All Messages\n");
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " Trace is Now On for All Messages" << endl;
                     }
                     else
                     {
-                        //fprintf(stdout, "[1;5;33m\nTrace is Now Off for All Messages\n");
-                        fprintf(stdout, "Trace is Now Off for All Messages\n");
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " Trace is Now Off for All Messages" << endl;
+                        }
                     }
 
                     break;
@@ -923,7 +927,7 @@ INT PorterMainFunction (INT argc, CHAR **argv)
 
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime()<< "Port: " << setw(2) << Port->getPortID() << " / " << Port->getName() << " Port Queue Entries:  " << QueEntCnt << endl;
+                                    dout << RWTime()<< " Port: " << setw(2) << Port->getPortID() << " / " << Port->getName() << " Port Queue Entries:  " << QueEntCnt << endl;
                                 }
 
                                 itr_dev.reset(DeviceManager.getMap());

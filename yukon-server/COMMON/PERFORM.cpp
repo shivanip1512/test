@@ -519,7 +519,7 @@ IM_EX_CTIBASE INT RoutePerform (STATS *Stats, PUSHORT Percent)
 
    if(DLCAttempts >= PerfGlobs->MinCommPercentCalc)
    {
-      if((*Percent = (USHORT)(100 - (100L * Stats->ErrorLog[ERRTYPEDLC]) / DLCAttempts)) <
+      if((*Percent = (USHORT)(100 - (100L * Stats->ErrorLog[ERRTYPEPROTOCOL]) / DLCAttempts)) <
          PerfGlobs->RouteMinPercent)
          return(TRUE);
    }
@@ -547,7 +547,7 @@ IM_EX_CTIBASE INT Route24Perform (STATS *Stats, PUSHORT Percent)
 
    if(DLCAttempts >= PerfGlobs->MinCommPercentCalc)
    {
-      if((*Percent = (USHORT)(100 - (100L * Stats->Error24Log[ERRTYPEDLC]) / DLCAttempts)) <
+      if((*Percent = (USHORT)(100 - (100L * Stats->Error24Log[ERRTYPEPROTOCOL]) / DLCAttempts)) <
          PerfGlobs->RouteMinPercent)
          return(TRUE);
    }
@@ -594,7 +594,7 @@ IM_EX_CTIBASE INT DevicePerform (STATS *Stats, PUSHORT Percent)
 
    if(DLCAttempts >= PerfGlobs->MinCommPercentCalc)
    {
-      if((*Percent = (USHORT)(100 - (100L * Stats->ErrorLog[ERRTYPEDLC]) / DLCAttempts)) <
+      if((*Percent = (USHORT)(100 - (100L * Stats->ErrorLog[ERRTYPEPROTOCOL]) / DLCAttempts)) <
          PerfGlobs->DeviceMinPercent)
          return(TRUE);
    }
@@ -615,13 +615,11 @@ IM_EX_CTIBASE INT Device24Perform (STATS *Stats, PUSHORT Percent)
       }
    }
 
-   DLCAttempts = Stats->Error24Log[NORMAL] - (Stats->Error24Log[ERRTYPEPHONE] +
-                                              Stats->Error24Log[ERRTYPESYSTEM] +
-                                              Stats->Error24Log[ERRTYPEMISC]);
+   DLCAttempts = Stats->Error24Log[NORMAL] - (Stats->Error24Log[ERRTYPEPHONE] + Stats->Error24Log[ERRTYPESYSTEM] + Stats->Error24Log[ERRTYPEMISC]);
 
    if(DLCAttempts >= PerfGlobs->MinCommPercentCalc)
    {
-      if((*Percent = (USHORT)(100 - (100L * Stats->Error24Log[ERRTYPEDLC]) / DLCAttempts)) <
+      if((*Percent = (USHORT)(100 - (100L * Stats->Error24Log[ERRTYPEPROTOCOL]) / DLCAttempts)) <
          PerfGlobs->DeviceMinPercent)
          return(TRUE);
    }
@@ -631,12 +629,7 @@ IM_EX_CTIBASE INT Device24Perform (STATS *Stats, PUSHORT Percent)
 }
 
 
-IM_EX_CTIBASE INT LogCommPercentLow (PCHAR Name,
-                                  USHORT LogCode,
-                                  struct timeb *TimeB,
-                                  USHORT Actual,
-                                  USHORT Limit)
-
+IM_EX_CTIBASE INT LogCommPercentLow (PCHAR Name, USHORT LogCode, struct timeb *TimeB, USHORT Actual, USHORT Limit)
 {
    ALARM_SUM_STRUCT AlarmSumRecord;
    SYSTEMLOGMESS LogMessage;
