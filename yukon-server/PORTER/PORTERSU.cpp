@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTERSU.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2002/08/28 16:21:06 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2002/09/09 14:56:04 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -175,6 +175,13 @@ SendError (OUTMESS *&OutMessage, USHORT ErrorCode, INMESS *PassedInMessage)
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " Error \"" << writeResult << "\" returning error condition to client " << endl;
                     dout << "  DeviceID " << OutMessage->DeviceID << " TargetID " << OutMessage->TargetID << " " << OutMessage->Request.CommandStr  << endl;
+                }
+
+                if(writeResult == BADSOCK)
+                {
+                    extern void blitzNexusFromCCUQueue(CtiDevice *Device, CTINEXUS *&Nexus);
+                    CtiDeviceBase *tempDev = DeviceManager.getEqual(OutMessage->DeviceID);
+                    blitzNexusFromCCUQueue( tempDev, InMessage.ReturnNexus );
                 }
                 // 111901 CGP.  You better not close this.. It is the OutMessage's! // InMessage.ReturnNexus->CTINexusClose();
             }

@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.32 $
-* DATE         :  $Date: 2002/09/03 17:28:50 $
+* REVISION     :  $Revision: 1.33 $
+* DATE         :  $Date: 2002/09/09 14:56:37 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2206,6 +2206,7 @@ INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OU
 INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDevice *Device)
 {
     extern void blitzNexusFromQueue(HCTIQUEUE q, CTINEXUS *&Nexus);
+    extern void blitzNexusFromCCUQueue(CtiDevice *Device, CTINEXUS *&Nexus);
 
     INT            status = NORMAL;
     ULONG          j, QueueCount;
@@ -2261,7 +2262,12 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
 
             if(status == BADSOCK)
             {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
                 blitzNexusFromQueue( Port->getPortQueueHandle(), InMessage->ReturnNexus);
+                blitzNexusFromCCUQueue( Device, InMessage->ReturnNexus);
 
             }
 
