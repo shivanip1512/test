@@ -21,3 +21,13 @@ alter table DynamicLMGroup add ControlStartTime datetime not null DEFAULT '01-JA
 go
 alter table DynamicLMGroup add ControlCompleteTime datetime not null DEFAULT '01-JAN-1990'
 go
+
+
+
+/**** ADD COLUMN TO THE EnergyCompany TABLE ****/
+alter table EnergyCompany add PrimaryContactID numeric not null DEFAULT 0
+go
+alter table EnergyCompany
+   add constraint FK_EnCm_Cnt foreign key (PrimaryContactID)
+      references Contact (ContactID)
+go
