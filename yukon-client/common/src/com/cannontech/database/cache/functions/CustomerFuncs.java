@@ -53,6 +53,27 @@ public static List getAllContacts(int customerID_)
 	return null;
 }
 
+public static LiteContact getPrimaryContact(int customerID_) 
+{
+	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+	synchronized(cache) 
+	{
+		Iterator iter = cache.getAllCICustomers().iterator();
+		while(iter.hasNext())
+		{
+			LiteCICustomer ciCustomer = (LiteCICustomer) iter.next();
+			if(ciCustomer.getCustomerID() == customerID_)
+			{
+				int primCntctID = ciCustomer.getPrimaryContactID();
+				LiteContact liteContact = ContactFuncs.getContact(primCntctID);
+				if( liteContact != null)
+					return liteContact;
+			}
+		}		
+	}
+	return null;
+}
+
 /**
  * Finds all LiteContact instances not used by a CICustomer
  * @return LiteContact
