@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2003/04/01 19:58:20 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2003/04/02 15:53:20 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1164,7 +1164,7 @@ void CtiProtocolION::generateEventLogRead( void )
             tmpProgram   = CTIDBG_new CtiIONProgram();
 
             start        = CTIDBG_new CtiIONUnsignedInt(_eventLogLastPosition + 1);
-            end          = CTIDBG_new CtiIONUnsignedInt(_eventLogCurrentPosition - 1);
+            end          = CTIDBG_new CtiIONUnsignedInt(_eventLogCurrentPosition - 1);  //  it's a look-ahead counter, so get the record just before the end
 
             tmpRange     = CTIDBG_new CtiIONRange(start, end);
 
@@ -1227,8 +1227,7 @@ void CtiProtocolION::decodeEventLogRead( void )
 
                 if( _dsIn.size() > 0 && _dsIn[0]->isNumeric() )
                 {
-                    //  MAGIC NUMBER WARNING:  subtract 1 because it's a look-ahead counter
-                    _eventLogCurrentPosition = _dsIn[0]->getNumericValue() - 1;
+                    _eventLogCurrentPosition = _dsIn[0]->getNumericValue();
 
                     if( _eventLogLastPosition == 0 || _eventLogDepth == 0 )
                     {
@@ -1896,13 +1895,13 @@ void CtiProtocolION::putResult( unsigned char *buf )
     }
 
     header.eventLogLength = eventlog_length;
-    if( _eventLogLastPosition >= (_eventLogCurrentPosition - 1) )
+    if( _eventLogLastPosition < (_eventLogCurrentPosition - 1) )
     {
-        header.eventLogsComplete = true;
+        header.eventLogsComplete = false;
     }
     else
     {
-        header.eventLogsComplete = false;
+        header.eventLogsComplete = true;
     }
 
     memcpy(buf + offset, &header, sizeof(header));
