@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_versacom.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/06/06 19:54:22 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/06/21 15:39:22 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -159,10 +159,12 @@ INT CtiRouteVersacom::ExecuteRequest(CtiRequestMsg                  *pReq,
                     OutMessage->Buffer.VSt.Address           = 0L;
 
                     OutMessage->Buffer.VSt.CommandType       = EXDATA;           // Extended VDATA CONTROL
+#if 0
                     if(parse.getFlags() & CMD_FLAG_TESTMODE)
                     {
                         OutMessage->Buffer.VSt.CommandType   = VDATA;            // VDATA CONTROL
                     }
+#endif
 
                     OutMessage->Buffer.VSt.VData.DataType    = 0;
                     OutMessage->Buffer.VSt.VData.DataLength  = 7;
