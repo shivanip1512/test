@@ -1,5 +1,7 @@
 package com.cannontech.dbeditor.wizard.state;
 
+import com.cannontech.dbeditor.editor.state.GroupStateEditorPanel;
+
 /**
  * This type was created in VisualAge.
  */
@@ -99,7 +101,7 @@ private com.klg.jclass.field.JCSpinField getStateNumberSpinner() {
 			ivjStateNumberSpinner.setDataProperties(
 				new com.klg.jclass.field.DataProperties(
 					new com.klg.jclass.field.validate.JCIntegerValidator(null, 
-						new Integer(2), new Integer(6), null, true, null, 
+						new Integer(2), new Integer(GroupStateEditorPanel.STATE_COUNT), null, true, null, 
 						new Integer(1), "#,##0.###;-#,##0.###", false, false, false, 
 						null, new Integer(2)), new com.klg.jclass.util.value.MutableValueModel(java.lang.Integer.class, 
 							new Integer(1)), new com.klg.jclass.field.JCInvalidInfo(true, 2, new java.awt.Color(0, 0, 0, 255), 
