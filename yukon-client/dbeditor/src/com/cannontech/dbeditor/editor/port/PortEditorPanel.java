@@ -36,21 +36,22 @@ public class PortEditorPanel extends com.cannontech.common.editor.PropertyPanel 
 		{		//2 - PortModemEditorPanel
 			PortTypes.LOCAL_DIALUP, PortTypes.TSERVER_DIALUP, PortTypes.LOCAL_DIALBACK
 		},
-		{		//3 - PortAlarmEditorPanel
+		//Until the background functionality is there, hide this panel.
+		/*{		//3 - PortAlarmEditorPanel
+			PortTypes.LOCAL_DIRECT, PortTypes.LOCAL_SHARED, PortTypes.LOCAL_RADIO,
+			PortTypes.LOCAL_DIALUP, PortTypes.TSERVER_DIRECT, PortTypes.TSERVER_SHARED,
+			PortTypes.TSERVER_RADIO, PortTypes.TSERVER_DIALUP, PortTypes.LOCAL_DIALBACK
+		},*/
+		{		//3 - PortSharingEditorPanel
 			PortTypes.LOCAL_DIRECT, PortTypes.LOCAL_SHARED, PortTypes.LOCAL_RADIO,
 			PortTypes.LOCAL_DIALUP, PortTypes.TSERVER_DIRECT, PortTypes.TSERVER_SHARED,
 			PortTypes.TSERVER_RADIO, PortTypes.TSERVER_DIALUP, PortTypes.LOCAL_DIALBACK
 		},
-		{		//4 - PortSharingEditorPanel
-			PortTypes.LOCAL_DIRECT, PortTypes.LOCAL_SHARED, PortTypes.LOCAL_RADIO,
-			PortTypes.LOCAL_DIALUP, PortTypes.TSERVER_DIRECT, PortTypes.TSERVER_SHARED,
-			PortTypes.TSERVER_RADIO, PortTypes.TSERVER_DIALUP, PortTypes.LOCAL_DIALBACK
-		},
-		{		//5 - PortPool
+		{		//4 - PortPool
 			PortTypes.DIALOUT_POOL
 		},
 		
-		{		//6 - PAOExclusionEditorPanel
+		{		//5 - PAOExclusionEditorPanel
 			PortTypes.LOCAL_DIRECT, PortTypes.LOCAL_SHARED, PortTypes.LOCAL_RADIO,
 			PortTypes.LOCAL_DIALUP, PortTypes.TSERVER_DIRECT, PortTypes.TSERVER_SHARED,
 			PortTypes.TSERVER_RADIO, PortTypes.TSERVER_DIALUP, PortTypes.LOCAL_DIALBACK,
@@ -96,23 +97,23 @@ public Object[] createNewPanel(int panelIndex)
 			objs[0] = new com.cannontech.dbeditor.editor.port.PortModemEditorPanel();
 			objs[1] = "Modem";
 			break;
-
+/*
 		case 3:
 			objs[0] = new com.cannontech.dbeditor.editor.port.PortAlarmEditorPanel();
 			objs[1] = "Alarms";
 			break;
-
-		case 4:
+*/
+		case 3:
 			objs[0] = new com.cannontech.dbeditor.editor.port.PortSharingEditorPanel();
 			objs[1] = "Shared";
 			break;
 
-		case 5:
+		case 4:
 			objs[0] = new PooledPortListPanel();
 			objs[1] = "Pooled Ports";
 			break;
 
-		case 6:
+		case 5:
 			String showIt = 
 					CtiProperties.getInstance().getProperty(CtiProperties.KEY_EDITOR_EXCLUSION, "false");
 
