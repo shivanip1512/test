@@ -11,7 +11,6 @@ Checking table ...
 -	Existence of column
 -	Existence of index
 	Warning	The following table do not have any index:
-		-> PointAlarming
 		-> EnergyCompanyOperatorLoginList
 		-> EnergyCompanyCustomerList
 		-> OperatorLoginGraphList
@@ -70,5 +69,5 @@ Checking domain ...
 Checking user ...
 Checking procedure ...
 
-0 error(s),  13 warning(s).
+0 error(s),  12 warning(s).
 The Physical Data Model is correct, no errors were found.
