@@ -22,7 +22,9 @@ public class Download extends HttpServlet
  * @exception java.io.IOException The exception description.
  */
 public void doPost(javax.servlet.http.HttpServletRequest req, javax.servlet.http.HttpServletResponse resp)
-	throws javax.servlet.ServletException, java.io.IOException {
+	throws javax.servlet.ServletException, java.io.IOException
+{
+	java.text.SimpleDateFormat fileNameFormat = new java.text.SimpleDateFormat("yyyyMMdd");
 	try
 	{
 		CTILogger.debug("doPost invoked");
@@ -66,6 +68,12 @@ public void doPost(javax.servlet.http.HttpServletRequest req, javax.servlet.http
 			if (extension.equalsIgnoreCase("csv"))
 			{
 				resp.setContentType("text/comma-separated-values");
+				String fileName = graph.getTrendModel().getChartName().toString();
+				fileName += fileNameFormat.format(graph.getTrendModel().getStartDate());
+				fileName += ".csv";
+				resp.addHeader("Content-Disposition", "filename=" + fileName);
+				resp.setContentType("text/x-comma-separated-values");
+				
 				ExportDataFile eDataFile = new ExportDataFile(
 				viewType,
 				graph.getFreeChart(), 

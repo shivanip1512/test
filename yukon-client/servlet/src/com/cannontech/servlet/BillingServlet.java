@@ -22,7 +22,9 @@ public class BillingServlet extends HttpServlet
  * @exception java.io.IOException The exception description.
  */
 public void doPost(javax.servlet.http.HttpServletRequest req, javax.servlet.http.HttpServletResponse resp)
-	throws javax.servlet.ServletException, java.io.IOException {
+	throws javax.servlet.ServletException, java.io.IOException
+{
+	java.text.SimpleDateFormat fileNameFormat = new java.text.SimpleDateFormat("yyyyMMdd");
 	try
 	{
 		CTILogger.debug("doPost invoked");
@@ -34,8 +36,7 @@ public void doPost(javax.servlet.http.HttpServletRequest req, javax.servlet.http
 		resp.setHeader("Cache-Control", "no-store"); //HTTP 1.1
 		resp.setHeader("Pragma", "no-cache"); //HTTP 1.0
 		resp.setDateHeader("Expires", 0); //prevents caching at the proxy server
-		resp.setContentType("text/comma-separated-values");
-
+		resp.setContentType("text/x-comma-separated-values");
 
 		BillingBean localBean = (BillingBean)session.getAttribute("billingBean");
 		if(localBean == null)
@@ -43,7 +44,12 @@ public void doPost(javax.servlet.http.HttpServletRequest req, javax.servlet.http
 			CTILogger.debug("!!! BEAN IS NULL !!! ");
 			session.setAttribute("billingBean", new BillingBean());
 		}
-			
+		String fileName = "billing";		
+		fileName += fileNameFormat.format(localBean.getEndDate());
+		fileName += ".csv";
+		resp.addHeader("Content-Disposition", "filename=" + fileName);
+		
+
 		javax.servlet.ServletOutputStream out = null;
 		try
 		{
