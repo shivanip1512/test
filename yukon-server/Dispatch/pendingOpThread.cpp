@@ -8,11 +8,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2004/12/06 22:15:50 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2004/12/14 22:24:37 $
 *
 * HISTORY      :
 * $Log: pendingOpThread.cpp,v $
+* Revision 1.11  2004/12/14 22:24:37  cplender
+* Removed unused _actionCount
+*
 * Revision 1.10  2004/12/06 22:15:50  cplender
 * Missing state in control InProgress.
 *
@@ -221,14 +224,12 @@ void CtiPendingOpThread::processPendableQueue()
 {
     LARGE_INTEGER startTime, completeTime;
     CtiPendable   *pendable;
-    CtiCounter    _actionCount;
 
     int action;
     QueryPerformanceCounter(&startTime);
     while( pendable = _input.getQueue(0) )
     {
         action = pendable->getAction();
-        _actionCount.inc(action);
 
         switch( action )
         {
@@ -279,13 +280,6 @@ void CtiPendingOpThread::processPendableQueue()
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " processPendableQueue duration (ms) = " << PERF_TO_MS(completeTime, startTime, perfFrequency) << endl;
-
-        /*
-        for(action = 0; action <= CtiPendable::CtiPendableAction_ControlStatusChanged; action++)
-        {
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Action " << action << " had " << _actionCount.get(action) << endl;
-        }
-        */
     }
     #endif
 }
