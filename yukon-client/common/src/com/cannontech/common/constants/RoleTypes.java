@@ -59,7 +59,7 @@ public interface RoleTypes {
 	public static final int CICUSTOMER_DIRECT_CONTROL				= -140;
 	public static final int CICUSTOMER_CURTAILMENT						= -141;
 	public static final int CICUSTOMER_ENERGY_EXCHANGE			= -142;
-		
+	
 	public static final int CONSUMERINFO_ACCOUNT											= -160;
 	public static final int CONSUMERINFO_ACCOUNT_GENERAL						= -161;
 	public static final int CONSUMERINFO_ACCOUNT_CALL_TRACKING 			= -162;
@@ -79,13 +79,16 @@ public interface RoleTypes {
 	public static final int CONSUMERINFO_ADMIN_CHANGE_PASSWORD		= -176;
 	public static final int CONSUMERINFO_THERMOSTAT									= -177;
 	public static final int CONSUMERINFO_QUESTIONS										= -178;
-			
+	
 	//Esub category
 	public static final int ESUBVIEW			= -200;
 	public static final int ESUBEDIT				= -201;
 	public static final int ESUBCONTROL 	= -202;
 	
-		// WebText category
+	// Used for testing
+	public static final int WEB_OPERATOR_SUPER	= -1000;
+	
+	// WebText category
 	// text formerly specified in text.properties, sorta belongs near energy exchange and curtailment stuff
 	public static final int TRENDING_DISCLAIMER_TEXT								= -9000;
 	public static final int ENERGYEXCHANGE_TEXT										= -9001;
