@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2002/04/25 19:27:02 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2002/04/30 16:30:09 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -4110,6 +4110,7 @@ INT CtiVanGogh::sendMail(const CtiSignalMsg &sig, const CtiTableNotificationGrou
 
     RWCString pointname;
     RWCString devicetext("Unknown");
+    RWCString paodescription;
     bool excluded = true;
 
     CtiLockGuard<CtiMutex> pmguard(server_mux);
@@ -4119,6 +4120,7 @@ INT CtiVanGogh::sendMail(const CtiSignalMsg &sig, const CtiTableNotificationGrou
             pointname = point->getName();
             devicetext = resolveDeviceName( *point );
             excluded = point->getAlarming().isExcluded(sig.getSignalGroup());
+            paodescription = resolveDeviceDescription( point->getDeviceID() );
         }
 
         // Make sure the ExcludeNotify is 'N'O.
@@ -4136,11 +4138,16 @@ INT CtiVanGogh::sendMail(const CtiSignalMsg &sig, const CtiTableNotificationGrou
                 error += "\r\n\r\n" + grp.getEmailMessage();
             }
 
-
             if(subject.isNull())
             {
                 subject = grp.getEmailSubject() + ".  " + devicetext + " / " + pointname;
             }
+
+            if(!paodescription.isNull())
+            {
+                error += "\r\n\r\n" + paodescription;
+            }
+
 
             SENDMAIL sm;
 
@@ -4187,7 +4194,7 @@ INT CtiVanGogh::sendMail(const CtiEmailMsg &aMail, const CtiTableGroupRecipient 
     sm.lpszReplyToName   = NULL;
     sm.lpszMessageID     = NULL;
     sm.lpszSubject       = aMail.getSubject();
-    sm.lpszMessage       = mailstr;
+    sm.lpszMessage       = mailstr + resolveEmailMsgDescription( aMail );
     sm.bLog              = TRUE;
 
     SendMail(&sm, &status);
@@ -4885,6 +4892,28 @@ RWCString CtiVanGogh::resolveStateName(const CtiPointBase &aPoint , LONG rawValu
             // git should be an iterator which represents the group now!
             CtiTableStateGroup &theGroup = *sgit;
             rStr = theGroup.getRawState(rawValue);
+        }
+    }
+
+    return rStr;
+}
+
+/*
+ *  returns description of the device which IS this pao.
+ */
+RWCString CtiVanGogh::resolveDeviceDescription(LONG PAO)
+{
+    RWCString rStr;
+
+    if(PAO > 0)
+    {
+        CtiDeviceLiteSet_t::iterator dliteit = deviceLiteFind(PAO);
+
+        if( dliteit != _deviceLiteSet.end() )
+        {
+            // dliteit should be an iterator which represents the lite device now!
+            CtiDeviceBaseLite &dLite = *dliteit;
+            rStr = dLite.getDescription();
         }
     }
 
@@ -6452,3 +6481,30 @@ void CtiVanGogh::verifyControlTimesValid( CtiPendingPointOperations &ppc )
     }
 }
 
+
+RWCString CtiVanGogh::resolveEmailMsgDescription( const CtiEmailMsg &aMail )
+{
+    RWCString rstr;
+
+    switch( aMail.getType() )
+    {
+    case (CtiEmailMsg::DeviceIDEmailType):
+        {
+            rstr = RWCString("\r\n\r\n") + resolveDeviceDescription( aMail.getID() );
+            break;
+        }
+    case (CtiEmailMsg::CICustomerEmailType):
+        {
+            CtiLockGuard<CtiMutex> guard(server_mux);
+            CtiTableCICustomerBase *pCustomer = getCustomer( aMail.getID() );
+            rstr = RWCString("\r\n\r\n") + resolveDeviceDescription( pCustomer->getID() );
+            break;
+        }
+    default:
+        {
+            break;
+        }
+    }
+
+    return rstr;
+}

@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/ctivangogh.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:58:27 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/04/30 16:30:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -116,6 +116,7 @@ private:
 
     UINT writeRawPointHistory(bool justdoit, int maxrowstowrite);
     void verifyControlTimesValid( CtiPendingPointOperations &ppc );
+    RWCString resolveEmailMsgDescription( const CtiEmailMsg &aMail );
 
 public:
 
@@ -217,6 +218,7 @@ public:
     RWCString resolveStateName(const CtiPointBase &aPoint , LONG rawValue);
     RWCString resolveDeviceName(const CtiPointBase &aPoint);
     RWCString resolveDeviceObjectType(const LONG devid);
+    RWCString resolveDeviceDescription(LONG PAO);
     CtiTableGroupRecipient* getRecipient( LONG locid );
     CtiTableCICustomerBase* getCustomer( LONG custid );
     void sendSignalToGroup(LONG ngid, CtiSignalMsg sig);
