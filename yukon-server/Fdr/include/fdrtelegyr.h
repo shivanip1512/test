@@ -14,12 +14,15 @@
 *
 * PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdracs.cpp-arc  $
-*    REVISION     :  $Revision: 1.3 $
-*    DATE         :  $Date: 2002/08/23 14:23:47 $
+*    REVISION     :  $Revision: 1.4 $
+*    DATE         :  $Date: 2004/04/01 21:07:53 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *    History:
       $Log: fdrtelegyr.h,v $
+      Revision 1.4  2004/04/01 21:07:53  eschmit
+      fixes for mid-americans telegyr system
+
       Revision 1.3  2002/08/23 14:23:47  eschmit
       Added bunches of fixes after visiting MEC.
 
@@ -131,6 +134,8 @@ protected:
    double                              _hiReasonabilityFilter;
    long                                _linkStatusID;
 
+	bool processBadPoint( int groupid, int index );
+	bool deleteGroups( void );
    void threadFunctionGetDataFromTelegyr( void );
    bool loadTranslationLists( void );
    bool loadLists( CtiFDRPointList &aList );
@@ -146,6 +151,9 @@ protected:
 private:
 
    bool        _connected;
+	bool 			_inited;
+	bool			_regFlag;
+
    RWCString   _path;
    RWCString   _appName;
    RWCString   _apiVersion;
