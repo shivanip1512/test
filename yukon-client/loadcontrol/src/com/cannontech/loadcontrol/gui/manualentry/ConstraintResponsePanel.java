@@ -11,7 +11,6 @@ import javax.swing.table.TableColumn;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.gui.util.CheckBoxTableRenderer;
 import com.cannontech.common.gui.util.DataInputPanel;
-import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.message.server.ServerResponseMsg;
 
 /**
@@ -113,7 +112,7 @@ private javax.swing.JTable getJTableConstraints() {
 
 			ivjJTableConstraints.setModel( getTableModelCons() );
 			ivjJTableConstraints.setFont( new Font("Dialog", Font.PLAIN, 12) );
-			ivjJTableConstraints.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_NEXT_COLUMN);
+			ivjJTableConstraints.setAutoResizeMode( javax.swing.JTable.AUTO_RESIZE_ALL_COLUMNS );
 			ivjJTableConstraints.setShowGrid( false );
 			ivjJTableConstraints.setIntercellSpacing( new Dimension(0,0) );
 			ivjJTableConstraints.setDefaultRenderer(
@@ -141,17 +140,16 @@ private javax.swing.JTable getJTableConstraints() {
 /**
  * Insert the method's description here.
  * Creation date: (11/15/00 10:52:29 AM)
- */
+ */ 
 private void initJTableCellComponents() 
 {
 	// Do any column specific initialization here
-	getJTableConstraints().getColumnModel().getColumn(ConstraintTableModel.COL_STATUS).setPreferredWidth(50);
-	getJTableConstraints().getColumnModel().getColumn(ConstraintTableModel.COL_PROGRAM_NAME).setPreferredWidth(90);
-	getJTableConstraints().getColumnModel().getColumn(ConstraintTableModel.COL_VIOLATION).setPreferredWidth(240);
-	getJTableConstraints().getColumnModel().getColumn(ConstraintTableModel.COL_OVERRIDE).setPreferredWidth(20);
-	//getJTableConstraints().getColumnModel().getColumn(ConstraintTableModel.COL_ACTION).setPreferredWidth(20);
+    getJTableConstraints().getColumnModel().getColumn(ConstraintTableModel.COL_OVERRIDE).setMaxWidth(50);
+    getJTableConstraints().getColumnModel().getColumn(ConstraintTableModel.COL_PROGRAM_NAME).setPreferredWidth(150);
+    getJTableConstraints().getColumnModel().getColumn(ConstraintTableModel.COL_VIOLATION).setPreferredWidth(600);
 
-	TableColumn overColumn = getJTableConstraints().getColumnModel().getColumn(ConstraintTableModel.COL_OVERRIDE);
+    
+    TableColumn overColumn = getJTableConstraints().getColumnModel().getColumn(ConstraintTableModel.COL_OVERRIDE);
 
 	// Create and add the column renderers	
 	CheckBoxTableRenderer bxRender = new CheckBoxTableRenderer();
@@ -219,7 +217,7 @@ private void initialize() {
 		handleException(ivjExc);
 	}
 	// user code begin {2}
-	
+    
 	initJTableCellComponents();
 
 	// user code end

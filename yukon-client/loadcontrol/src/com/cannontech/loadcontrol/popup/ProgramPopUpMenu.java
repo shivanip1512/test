@@ -292,7 +292,7 @@ private void showDirectManualEntry( final int panelMode )
 					
 					diag.setCancelButtonVisible( false );
 					diag.setResizable( true );
-					diag.setSize( 640, 350 );
+					diag.setSize( 800, 350 );
 					diag.setLocationRelativeTo( this );
 
 					diag.show();

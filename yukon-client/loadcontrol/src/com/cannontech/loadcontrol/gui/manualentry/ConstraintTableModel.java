@@ -18,10 +18,10 @@ public class ConstraintTableModel extends javax.swing.table.AbstractTableModel i
 	//The columns and their column index	
 	public static final int COL_OVERRIDE = 0;
 	public static final int COL_PROGRAM_NAME = 1;
-	public static final int COL_STATUS = 2;
-	public static final int COL_VIOLATION = 3;
+	public static final int COL_VIOLATION = 2;
 	
 	//not implemented for now
+    public static final int COL_STATUS = 3;
 	public static final int COL_ACTION = 4;
 
   	
@@ -30,15 +30,15 @@ public class ConstraintTableModel extends javax.swing.table.AbstractTableModel i
 	{
 		"Override",
 		"Program",
-		"Status",
 		"Violation"
 		
+        //"Status",
 		//"Action"
 	};
 
 	private Class[] COLUMN_CLASSES = 
 	{ 
-		Boolean.class, String.class, String.class, String.class, String.class 
+		Boolean.class, String.class, String.class, String.class 
 	};
 	
 	private static final Color[] CELL_COLORS =
@@ -180,12 +180,14 @@ public class ConstraintTableModel extends javax.swing.table.AbstractTableModel i
 				case COL_PROGRAM_NAME:
 				return prg.getLmProgramBase().getYukonName();
 
-				case COL_STATUS:
-				return ServerResponseMsg.getStatusStr(prg.getStatus());
-
 				case COL_VIOLATION:
 				return prg.getViolations();
 
+                
+                //not implemented
+                case COL_STATUS:
+                return ServerResponseMsg.getStatusStr(prg.getStatus());
+                
 				case COL_ACTION:
 				return prg.getAction();
 
