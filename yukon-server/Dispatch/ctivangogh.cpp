@@ -1,4 +1,5 @@
 
+
 #pragma warning( disable : 4786 )  // No truncated debug name warnings please....
 
 /*-----------------------------------------------------------------------------*
@@ -9,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.45 $
-* DATE         :  $Date: 2003/05/23 22:25:49 $
+* REVISION     :  $Revision: 1.46 $
+* DATE         :  $Date: 2003/06/10 21:07:15 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -33,6 +34,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 
 #include "collectable.h"
+#include "monitor.h"
 #include "cparms.h"
 #include "guard.h"
 
@@ -684,6 +686,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                             // Make sure that anyone who cared about the first one gets the CTIDBG_new state of the tag!
                             postMessageToClients(pSigNew);
                             _signalMsgQueue.putQueue(pSigNew);
+                            pSigNew = 0;
                         }
                     }
                 }
@@ -735,13 +738,13 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                                 {
                                     // Message is no longer reportable to any clients...
                                     pSigNew = CTIDBG_new CtiSignalMsg(pSig->getPointID(),
-                                                               pSig->getSOE(),
-                                                               pSig->getText(),
-                                                               pSig->getAdditionalInfo(),
-                                                               pSig->getLogType(),
-                                                               pSig->getPriority(),
-                                                               Cmd->getUser(),
-                                                               pDyn->getDispatch().getTags() | TAG_REPORT_MSG_TO_ALARM_CLIENTS);
+                                                                      pSig->getSOE(),
+                                                                      pSig->getText(),
+                                                                      pSig->getAdditionalInfo(),
+                                                                      pSig->getLogType(),
+                                                                      pSig->getPriority(),
+                                                                      Cmd->getUser(),
+                                                                      pDyn->getDispatch().getTags() | TAG_REPORT_MSG_TO_ALARM_CLIENTS);
 
                                     if(pSigNew != NULL)
                                     {
@@ -765,6 +768,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                         // Make sure that anyone who cared about the first one gets the CTIDBG_new state of the tag!
                         postMessageToClients(pSigNew);
                         _signalMsgQueue.putQueue(pSigNew);
+                        pSigNew = 0;
                     }
                 }
             }
@@ -820,8 +824,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
 
                             if(pDyn != NULL
                                && pDyn->getDispatch().getTags() & TAG_ATTRIB_CONTROL_AVAILABLE
-                               && !(pDyn->getDispatch().getTags() & TAG_DISABLE_CONTROL_BY_POINT ||
-                                    pDyn->getDispatch().getTags() & TAG_DISABLE_CONTROL_BY_DEVICE))
+                               && !(pDyn->getDispatch().getTags() & (TAG_DISABLE_CONTROL_BY_POINT | TAG_DISABLE_CONTROL_BY_DEVICE)))
                             {
                                 if(did == 0)      // We need to find the point's device
                                 {
@@ -851,11 +854,10 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                                 }
 
                                 CtiSignalMsg *pCRP = CTIDBG_new CtiSignalMsg(pPoint->getID(), Cmd->getSOE(), "Control " + ResolveStateName(pPoint->getStateGroupID(), rawstate) + " Sent", RWCString(), GeneralLogType, SignalEvent, Cmd->getUser());
-
                                 MainQueue_.putQueue( pCRP );
+                                pCRP = 0;
+
                                 pDyn->getDispatch().setTags( TAG_CONTROL_PENDING );
-
-
                                 writeControlMessageToPIL(did, rawstate, (CtiPointStatus*)pPoint, Cmd);
                             }
                         }
@@ -954,6 +956,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                             if(pMulti->getData().entries())
                             {
                                 MainQueue_.putQueue(pMulti);
+                                pMulti = 0;
                             }
                             else
                             {
@@ -1077,6 +1080,7 @@ int CtiVanGogh::postDBChange(const CtiDBChangeMsg &Msg)
             }
 
             _signalMsgQueue.putQueue( pSig );
+            pSig = 0;
             loadRTDB(true, Msg.replicateMessage());
         }
         else
@@ -1293,7 +1297,7 @@ INT CtiVanGogh::archivePointDataMessage(const CtiPointDataMsg &aPD)
         {
             CHAR temp[80];
 
-            sprintf(temp, "Point change for unknown PointID: %ld", aPD.getId());
+            _snprintf(temp, 79, "Point change for unknown PointID: %ld", aPD.getId());
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " " << temp << endl;
@@ -1387,14 +1391,14 @@ INT CtiVanGogh::archiveCommErrorHistoryMessage(const CtiCommErrorHistoryMsg& aCE
         {
             // See if I know about this PAO (Device) ID
             _commErrorHistoryQueue.putQueue( CTIDBG_new CtiTableCommErrorHistory(aCEHM.getPAOId(),
-                                                                          aCEHM.getDateTime(),
-                                                                          aCEHM.getSOE(),
-                                                                          aCEHM.getErrorType(),
-                                                                          aCEHM.getErrorNumber(),
-                                                                          aCEHM.getCommand(),
-                                                                          aCEHM.getOutMessage(),
-                                                                          aCEHM.getInMessage()/*,
-                                                                          aCEHM.getCommErrorId()*/));
+                                                                                 aCEHM.getDateTime(),
+                                                                                 aCEHM.getSOE(),
+                                                                                 aCEHM.getErrorType(),
+                                                                                 aCEHM.getErrorNumber(),
+                                                                                 aCEHM.getCommand(),
+                                                                                 aCEHM.getOutMessage(),
+                                                                                 aCEHM.getInMessage()/*,
+                                                                                 aCEHM.getCommErrorId()*/));
         }
     }
     catch( ... )
@@ -1478,6 +1482,16 @@ INT CtiVanGogh::analyzeMessageData( CtiMessage *pMsg )
             {
                 CtiEmailMsg &Email = *((CtiEmailMsg*)pMsg);
                 mail(Email);
+                break;
+            }
+        case MSG_LMCONTROLHISTORY:
+            {
+                processControlMessage((CtiLMControlHistoryMsg*)pMsg);
+                break;
+            }
+        case MSG_COMMERRORHISTORY:
+            {
+                processCommErrorMessage((CtiCommErrorHistoryMsg*)pMsg);
                 break;
             }
         }
@@ -1625,6 +1639,11 @@ INT CtiVanGogh::assembleMultiForConnection(const CtiVanGoghConnectionManager &Co
         {
             break;
         }
+    case MSG_LMCONTROLHISTORY:
+    case MSG_COMMERRORHISTORY:
+        {
+            break;
+        }
     default:
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1746,13 +1765,10 @@ INT CtiVanGogh::assembleMultiFromPointDataForConnection(const CtiVanGoghConnecti
                     }
 
                     if( pDat->getQuality() == ManualQuality ||
-                        !(pDyn->getDispatch().getTags() & (MASK_ANY_SERVICE_DISABLE | MASK_ANY_CONTROL_DISABLE)) )
+                        !(pDyn->getDispatch().getTags() & (MASK_ANY_SERVICE_DISABLE)) ) // (MASK_ANY_SERVICE_DISABLE | MASK_ANY_CONTROL_DISABLE)) )
                     {
                         if(isPointDataForConnection(Conn, *pDat))
                         {
-#ifdef NUMERICNEWINFO
-                            if(isPointDataNewInformation(*pDat))
-#endif
                             {
                                 CtiPointDataMsg *pNew = (CtiPointDataMsg *)pDat->replicateMessage();
 
@@ -1850,6 +1866,8 @@ BOOL CtiVanGogh::isPointDataForConnection(const CtiVanGoghConnectionManager &Con
 
 BOOL CtiVanGogh::isPointDataNewInformation(const CtiPointDataMsg &Msg)
 {
+    bool bValueChange = true;
+    bool bQualityChange = true;
     BOOL bStatus = TRUE;
 
     if( Msg.isExemptable() )      // Find out if we can exempt the data from being sent to clients
@@ -1862,12 +1880,26 @@ BOOL CtiVanGogh::isPointDataNewInformation(const CtiPointDataMsg &Msg)
         {
             CtiDynamicPointDispatch *pDyn = (CtiDynamicPointDispatch*)pPoint->getDynamic();
 
-            if(pDyn != NULL && (pDyn->getValue() == Msg.getValue() && pDyn->getQuality() == Msg.getQuality()) )
+
+            if(pDyn != NULL)
             {
-                bStatus = FALSE;
+                if(pDyn->getValue() == Msg.getValue())
+                {
+                    bValueChange = false;   // There was no value change.
+                }
+
+                if( pDyn->getQuality() == NonUpdatedQuality || pDyn->getQuality() == Msg.getQuality() )
+                {
+                    /*
+                     *  If the qualities have not changed, or the old quality was non-updated, we do not wish to realarm the point.
+                     */
+                    bQualityChange = false;
+                }
             }
         }
     }
+
+    bStatus = ( (bValueChange || bQualityChange) ? TRUE : FALSE );
 
     return bStatus;
 }
@@ -2099,11 +2131,11 @@ INT CtiVanGogh::postMOAUploadToConnection(CtiVanGoghConnectionManager &VGCM, int
                         if( pPC->getManagerList().contains(&VGCM) || (VGCM.isRegForChangeType(TempPoint->getType())))
                         {
                             CtiPointDataMsg *pDat = CTIDBG_new CtiPointDataMsg(TempPoint->getID(),
-                                                                        pDyn->getValue(),
-                                                                        pDyn->getQuality(),
-                                                                        TempPoint->getType(),
-                                                                        RWCString(),
-                                                                        pDyn->getDispatch().getTags());
+                                                                               pDyn->getValue(),
+                                                                               pDyn->getQuality(),
+                                                                               TempPoint->getType(),
+                                                                               RWCString(),
+                                                                               pDyn->getDispatch().getTags());
 
                             if(pDat != NULL)
                             {
@@ -2125,13 +2157,13 @@ INT CtiVanGogh::postMOAUploadToConnection(CtiVanGoghConnectionManager &VGCM, int
                                 if((pSig = _signalsPending.getMap().findValue(&CtiHashKey(TempPoint->getID()))) != NULL)
                                 {
                                     CtiSignalMsg *pNewSig = CTIDBG_new CtiSignalMsg(TempPoint->getID(),
-                                                                             pSig->getSOE(),
-                                                                             pSig->getText(),
-                                                                             pSig->getAdditionalInfo(),
-                                                                             pSig->getLogType(),
-                                                                             pSig->getPriority(),
-                                                                             pSig->getUser(),
-                                                                             pDyn->getDispatch().getTags());
+                                                                                    pSig->getSOE(),
+                                                                                    pSig->getText(),
+                                                                                    pSig->getAdditionalInfo(),
+                                                                                    pSig->getLogType(),
+                                                                                    pSig->getPriority(),
+                                                                                    pSig->getUser(),
+                                                                                    pDyn->getDispatch().getTags());
 
                                     if(pNewSig != NULL)
                                     {
@@ -2369,13 +2401,7 @@ void CtiVanGogh::writeSignalsToDB(bool justdoit)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " SystemLog transaction complete. Inserted " << panicCounter << " signal messages" << endl;
-                }
-
-                if(panicCounter >= 500)
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << " PANIC, Lots of signals" << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << RWTime() << " SystemLog transaction complete. Inserted " << panicCounter << " signal messages.  " << _signalMsgQueue.entries() << " left on queue." << endl;
                 }
             }
         }
@@ -2466,32 +2492,12 @@ void CtiVanGogh::writeArchiveDataToDB(bool justdoit)
                 /*
                  *  double the queue's size if it is more than half full.
                  */
-                if(_archiverQueue.size() < 64000 && (_archiverQueue.entries() > (_archiverQueue.size() / 2)))
-                {
-                    _archiverQueue.resize( _archiverQueue.size() );
-                }
-
                 if(gDispatchDebugLevel & DISPATCH_DEBUG_VERBOSE)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " **** INFO **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     dout << " Archival queue has " << _archiverQueue.entries() << " entries" << endl;
                     dout << " Queue is currently sized at " << _archiverQueue.size() << " entries" << endl;
-                }
-            }
-            else
-            {
-                if(_archiverQueue.entries() == 0 && _archiverQueue.size() > 100 )
-                {
-                    _archiverQueue.resize( 100 - _archiverQueue.size() );    // Shrink back to 100 entries..
-
-                    if(gDispatchDebugLevel & DISPATCH_DEBUG_VERBOSE)
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** INFO **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << " Archival queue is empty.  Capacity has been reduced to default size. " << endl;
-                        dout << " Queue is currently sized at " << _archiverQueue.size() << " entries" << endl;
-                    }
                 }
             }
         }
@@ -2544,45 +2550,20 @@ void CtiVanGogh::writeLMControlHistoryToDB(bool justdoit)
                 }
 
                 conn.commitTransaction(controlHistory);
-
-                if( panicCounter > 0 )
+            }
+            if( panicCounter > 0 )
+            {
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " LMControlHistory transaction complete. Inserted " << panicCounter << " rows" << endl;
-                    }
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " LMControlHistory transaction complete. Inserted " << panicCounter << " rows" << endl;
                 }
             }
 
             if(panicCounter >= PANIC_CONSTANT)
             {
-                /*
-                 *  double the queue's size if it is more than half full.
-                 */
-                if(_lmControlHistoryQueue.size() < 64000 && (_lmControlHistoryQueue.entries() > (_lmControlHistoryQueue.size() / 2)))
-                {
-                    _lmControlHistoryQueue.resize( _lmControlHistoryQueue.size() );
-                }
-
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** INFO **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << " LM Control History queue has " << _lmControlHistoryQueue.entries() << " entries" << endl;
-                    dout << " Queue is currently sized at " << _lmControlHistoryQueue.size() << " entries" << endl;
-                }
-            }
-            else
-            {
-                if(_lmControlHistoryQueue.entries() == 0 && _lmControlHistoryQueue.size() > 100 )
-                {
-                    _lmControlHistoryQueue.resize( 100 - _lmControlHistoryQueue.size() );    // Shrink back to 100 entries..
-
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** INFO **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << " LM Control History queue is empty.  Capacity has been reduced to default size. " << endl;
-                        dout << " Queue is currently sized at " << _lmControlHistoryQueue.size() << " entries" << endl;
-                    }
+                    dout << RWTime() << " LM Control History queue has " << _lmControlHistoryQueue.entries() << " entries" << endl;
                 }
             }
         }
@@ -2638,45 +2619,13 @@ void CtiVanGogh::writeCommErrorHistoryToDB(bool justdoit)
 
                     conn.commitTransaction(commError);
                 }
-
-                if( panicCounter > 0 )
-                {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " CommErrorHistory transaction complete. Inserted " << panicCounter << " rows" << endl;
-                    }
-                }
             }
 
-            if(panicCounter >= PANIC_CONSTANT)
+            if( panicCounter > 0 )
             {
-                /*
-                 *  double the queue's size if it is more than half full.
-                 */
-                if(_commErrorHistoryQueue.size() < 64000 && (_commErrorHistoryQueue.entries() > (_commErrorHistoryQueue.size() / 2)))
-                {
-                    _commErrorHistoryQueue.resize( _commErrorHistoryQueue.size() );
-                }
-
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** INFO **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << " Comm Error History queue has " << _commErrorHistoryQueue.entries() << " entries" << endl;
-                    dout << " Queue is currently sized at " << _commErrorHistoryQueue.size() << " entries" << endl;
-                }
-            }
-            else
-            {
-                if(_commErrorHistoryQueue.entries() == 0 && _commErrorHistoryQueue.size() > 100 )
-                {
-                    _commErrorHistoryQueue.resize( 100 - _commErrorHistoryQueue.size() );    // Shrink back to 100 entries..
-
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** INFO **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << " Comm Error History queue is empty.  Capacity has been reduced to default size. " << endl;
-                        dout << " Queue is currently sized at " << _commErrorHistoryQueue.size() << " entries" << endl;
-                    }
+                    dout << RWTime() << " CommErrorHistory transaction complete. Inserted " << panicCounter << " rows.  " << _commErrorHistoryQueue.entries() << " entries left on queue." << endl;
                 }
             }
 
@@ -2957,25 +2906,13 @@ INT CtiVanGogh::checkSignalStateQuality(CtiSignalMsg  *pSig, CtiMultiWrapper &aW
 
     }
 
+    // This is an alarm if the alarm state indicates anything other than SignalEvent.
+    if(pSig->getSignalGroup() > SignalEvent)
     {
         CtiPoint *point = NULL;
-        CtiLockGuard<CtiMutex> pmguard(server_mux, 300000); // Not in 5 minutes
-
-        if(pmguard.isAcquired())
+        if((point = PointMgr.getEqual(pSig->getId())) != NULL)
         {
-            if((point =  PointMgr.getEqual(pSig->getId())) != NULL)
-            {
-                // This is an alarm if the alarm state indicates anything other than SignalEvent.
-                if(pSig->getSignalGroup() > SignalEvent)
-                {
-                    pSig->setTags(TAG_UNACKNOWLEDGED_ALARM | TAG_ACKNOWLEDGED_ALARM);
-                }
-            }
-        }
-        else
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            pSig->setTags(TAG_UNACKNOWLEDGED_ALARM | TAG_ACKNOWLEDGED_ALARM);
         }
     }
 
@@ -3264,7 +3201,7 @@ void CtiVanGogh::postSignalAsEmail( const CtiSignalMsg &sig )
                     // Check if point identifies a single recipient to be notified on any signal
                     if(rid > 0)
                     {
-                CtiTableContactNotification *pContactNotif = NULL;
+                        CtiTableContactNotification *pContactNotif = NULL;
                         CtiTableNotificationGroup nulGrp;
 
                         nulGrp.setEmailFromAddress(gEmailFrom);
@@ -3615,7 +3552,7 @@ INT CtiVanGogh::sendMail(const CtiSignalMsg &sig, const CtiTableNotificationGrou
             sm.lpszRecipient     = cNotif.getNotification();
 
             // Need to add to the CtiTableContactNotification the contacts name if we want to set this field
-        //            sm.lpszRecipientName = cNotif.getRecipientName();
+            //            sm.lpszRecipientName = cNotif.getRecipientName();
 
             sm.lpszReplyTo       = NULL;
             sm.lpszReplyToName   = NULL;
@@ -3769,9 +3706,9 @@ int  CtiVanGogh::clientRegistration(CtiConnectionManager *CM)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << NowTime.now() << " " <<
-                                CM->getClientName() << " / " <<
-                                CM->getClientAppId() << " / " <<
-                                CM->getPeer() << " just won a client arbitration." << endl;
+                            CM->getClientName() << " / " <<
+                            CM->getClientAppId() << " / " <<
+                            CM->getPeer() << " just won a client arbitration." << endl;
                         }
 
                         removeMgr = TRUE;    // Make the old one go away...
@@ -3985,6 +3922,7 @@ void CtiVanGogh::doPendingOperations()
                             pSig->setMessagePriority( MAXPRIORITY - 1 );
 
                             MainQueue_.putQueue( pSig );
+                            pSig = 0;
 
                             try
                             {
@@ -4029,6 +3967,8 @@ void CtiVanGogh::doPendingOperations()
                                 pCmd->insert(TAG_CONTROL_PENDING);  // Tags to reset.
                                 MainQueue_.putQueue( pCmd );
                                 MainQueue_.putQueue( pSig );
+                                pCmd = 0;
+                                pSig = 0;
                             }
 
                             try
@@ -4066,7 +4006,7 @@ void CtiVanGogh::doPendingOperations()
                                 }
                             }
                             else
-                            if(ppo.getControl().getControlDuration() < 0)
+                                if(ppo.getControl().getControlDuration() < 0)
                             {
                                 /*
                                  *  Do NOTHING.  This is a restore command.
@@ -4117,6 +4057,7 @@ void CtiVanGogh::doPendingOperations()
                                 updateControlHistory( pData->getId(), CtiPendingPointOperations::delayeddatamessage, pData->getTime() );
 
                                 MainQueue_.putQueue( pData );    // Plop it out there for processing.
+                                pData = 0;
                             }
 
                             it = _pendingPointInfo.erase(it);
@@ -4153,8 +4094,6 @@ void CtiVanGogh::loadRTDB(bool force, CtiMessage *pMsg)
     CtiDBChangeMsg *pChg = (CtiDBChangeMsg *)pMsg;
     ULONG   deltaT;
 
-    ResetBreakAlloc();  // Make certain the debug allocator does not break our spirit.
-
     if(pChg != NULL && pChg->getSource() == DISPATCH_APPLICATION_NAME)
     {
         // Don't reload if we sourced it.
@@ -4166,6 +4105,8 @@ void CtiVanGogh::loadRTDB(bool force, CtiMessage *pMsg)
     {
         if(Now > Refresh || force)   // Should be 5 minutes or greater
         {
+            ResetBreakAlloc();  // Make certain the debug allocator does not break our spirit.
+
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << Now << " Starting loadRTDB. " << (pChg != 0 ? RWCString(pChg->getCategory() + " DBChange present.") : "No DBChange present.") << endl;
@@ -4327,13 +4268,13 @@ void CtiVanGogh::loadRTDB(bool force, CtiMessage *pMsg)
                             dout << RWTime() << " Notification Recipients will be reloaded on next usage." << endl;
                         }
                         // Recipients have changed
-            CtiContactNotificationSet_t::iterator cnit;
+                        CtiContactNotificationSet_t::iterator cnit;
 
-            for(cnit = _contactNotificationSet.begin(); cnit != _contactNotificationSet.end(); cnit++)
-              {
-                CtiTableContactNotification &CNotif = *cnit;
-                CNotif.setDirty(true);
-              }
+                        for(cnit = _contactNotificationSet.begin(); cnit != _contactNotificationSet.end(); cnit++)
+                        {
+                            CtiTableContactNotification &CNotif = *cnit;
+                            CNotif.setDirty(true);
+                        }
                     }
                 }
             }
@@ -4587,41 +4528,41 @@ void CtiVanGogh::loadCICustomers(LONG id)
 
 CtiTableContactNotification* CtiVanGogh::getContactNotification(LONG cNotifID)
 {
-  CtiTableContactNotification* pCNotif = NULL;
-  CtiLockGuard<CtiMutex> guard(server_mux);
-  CtiTableContactNotification cNotif(cNotifID);
+    CtiTableContactNotification* pCNotif = NULL;
+    CtiLockGuard<CtiMutex> guard(server_mux);
+    CtiTableContactNotification cNotif(cNotifID);
 
-  CtiContactNotificationSet_t::iterator cnit = _contactNotificationSet.find(cNotif);
+    CtiContactNotificationSet_t::iterator cnit = _contactNotificationSet.find(cNotif);
 
-  if(cnit == _contactNotificationSet.end())
+    if(cnit == _contactNotificationSet.end())
     {
-      // We need to load it up, and then insert it!
-      cNotif.Restore();
+        // We need to load it up, and then insert it!
+        cNotif.Restore();
 
-      pair< CtiContactNotificationSet_t::iterator, bool > resultpair;
-      resultpair = _contactNotificationSet.insert(cNotif);
+        pair< CtiContactNotificationSet_t::iterator, bool > resultpair;
+        resultpair = _contactNotificationSet.insert(cNotif);
 
-      if(resultpair.second == true)
-    {
-      cnit = resultpair.first;
-    }
-    }
-
-  if(cnit != _contactNotificationSet.end())
-    {
-      pCNotif = &(*cnit);
-
-      if(pCNotif->isDirty())
-    {
-      {
-        CtiLockGuard<CtiLogger> guard(dout);
-        dout << RWTime() << " Reloading ContactNotification " << pCNotif->getContactNotificationID() << endl;
-      }
-      pCNotif->Restore();
-    }
+        if(resultpair.second == true)
+        {
+            cnit = resultpair.first;
+        }
     }
 
-  return pCNotif;
+    if(cnit != _contactNotificationSet.end())
+    {
+        pCNotif = &(*cnit);
+
+        if(pCNotif->isDirty())
+        {
+            {
+                CtiLockGuard<CtiLogger> guard(dout);
+                dout << RWTime() << " Reloading ContactNotification " << pCNotif->getContactNotificationID() << endl;
+            }
+            pCNotif->Restore();
+        }
+    }
+
+    return pCNotif;
 }
 /*
 CtiTableGroupRecipient* CtiVanGogh::getRecipient( LONG locid )
@@ -4723,16 +4664,16 @@ void CtiVanGogh::sendSignalToGroup(LONG ngid, const CtiSignalMsg& sig)
 
         for(r_iter = recipients.begin(); r_iter != recipients.end(); r_iter++ )
         {
-        CtiTableContactNotification *pCNotif;
-        int cnotifid = *r_iter;
+            CtiTableContactNotification *pCNotif;
+            int cnotifid = *r_iter;
 
-        {
-          CtiLockGuard<CtiMutex> guard(server_mux);
-          if( (pCNotif = getContactNotification(cnotifid)) != NULL)
-        {
-          //Now we have it ALL!!! send the email
-          sendMail(sig, theGroup, *pCNotif);
-        }
+            {
+                CtiLockGuard<CtiMutex> guard(server_mux);
+                if( (pCNotif = getContactNotification(cnotifid)) != NULL)
+                {
+                    //Now we have it ALL!!! send the email
+                    sendMail(sig, theGroup, *pCNotif);
+                }
             }
         }
     }
@@ -4778,15 +4719,15 @@ void CtiVanGogh::sendEmailToGroup(LONG ngid, const CtiEmailMsg& email)
 
         for(r_iter = recipients.begin(); r_iter != recipients.end(); r_iter++ )
         {
-        CtiTableContactNotification* pCNotif;
+            CtiTableContactNotification* pCNotif;
             int cnotifid = *r_iter;
 
             {
                 CtiLockGuard<CtiMutex> guard(server_mux);
-        if( (pCNotif = getContactNotification(cnotifid)) != NULL)
-          {
-            sendMail(email, *pCNotif);
-          }
+                if( (pCNotif = getContactNotification(cnotifid)) != NULL)
+                {
+                    sendMail(email, *pCNotif);
+                }
             }
         }
     }
@@ -4954,27 +4895,27 @@ int CtiVanGogh::mail(const CtiEmailMsg &aMail)
 
                 if( pCustomer != NULL )
                 {
-            vector<int> recip = pCustomer->getContactNotificationVector();
+                    vector<int> recip = pCustomer->getContactNotificationVector();
                     vector<int>::iterator it;
 
                     try
                     {
-                CtiTableContactNotification *pCNotif = NULL;
+                        CtiTableContactNotification *pCNotif = NULL;
 
                         for(it = recip.begin(); it != recip.end(); ++it)
                         {
                             vector<int>::reference cnotifid = *it;
 
-                if( (pCNotif = getContactNotification(cnotifid)) != NULL)
-                  {
-                // Now we have it ALL!!!! send the email
-                {
-                  CtiLockGuard<CtiLogger> guard(dout);
-                  dout << RWTime() << " Emailing " << cnotifid << endl;
-                }
-                sendMail(aMail, *pCNotif);
-                  }
-            }
+                            if( (pCNotif = getContactNotification(cnotifid)) != NULL)
+                            {
+                                // Now we have it ALL!!!! send the email
+                                {
+                                    CtiLockGuard<CtiLogger> guard(dout);
+                                    dout << RWTime() << " Emailing " << cnotifid << endl;
+                                }
+                                sendMail(aMail, *pCNotif);
+                            }
+                        }
                     }
                     catch(...)
                     {
@@ -6019,7 +5960,8 @@ int CtiVanGogh::analyzeNumericReasonability(CtiPointDataMsg *pData, CtiMultiWrap
     int alarm = NORMAL;
     RWCString text;
 
-    try {
+    try
+    {
         if(pointNumeric.getPointUnits().getHighReasonabilityLimit() != pointNumeric.getPointUnits().getLowReasonabilityLimit())       // They must be different.
         {
             // Evaluate High Limit
@@ -6633,4 +6575,3 @@ void CtiVanGogh::postControlStopPoint( CtiPendingPointOperations &ppc, const RWT
     }
     return;
 }
-
