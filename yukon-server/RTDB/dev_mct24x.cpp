@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct2XX.cpp-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2003/07/17 22:25:55 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2003/10/06 18:43:44 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -210,7 +210,7 @@ ULONG CtiDeviceMCT24X::calcNextLPScanTime( void )
 {
     RWTime Now, blockStart, plannedLPTime, panicLPTime;
     unsigned long nextTime, midnightOffset;
-    int lpBlockSize, lpDemandRate, lpMaxBlocks, lpBlockEvacuationTime = 300;
+    int lpBlockSize, lpDemandRate, lpMaxBlocks;
 
     //  if we're not collecting load profile, we never scan
     if( !getLoadProfile().isChannelValid(0) )
@@ -261,10 +261,7 @@ ULONG CtiDeviceMCT24X::calcNextLPScanTime( void )
         //    after one block (6 intervals) has passed
         plannedLPTime  = blockStart + lpBlockSize;
         //  also make sure we allow time for it to move out of the memory we're requesting
-        plannedLPTime += lpBlockEvacuationTime;
-
-        //  we start to worry if half the intervals have passed and we haven't heard back
-        panicLPTime    = plannedLPTime + ((lpMaxBlocks * lpBlockSize) / 2);
+        plannedLPTime += LPBlockEvacuationTime;
 
         //  if we're still on schedule for our normal request
         //    (and we haven't already made our request for this block)
@@ -273,26 +270,14 @@ ULONG CtiDeviceMCT24X::calcNextLPScanTime( void )
         {
             nextTime = plannedLPTime.seconds();
         }
-        //  if we need to initiate a repeat request
-        else if( _lastLPRequestAttempt < panicLPTime &&
-                 _lastLPRequestBlockStart == blockStart )
-        {
-            nextTime = panicLPTime.seconds();
-        }
-        //  we're overdue
         else
         {
             unsigned int overdueLPRetryRate = getLPRetryRate(lpDemandRate);
 
-            /*if( Now.seconds() % overdueLPRetryRate )*/
-            {
-                nextTime  = Now.seconds() + overdueLPRetryRate;
-                nextTime -= Now.seconds() % overdueLPRetryRate;
-            }
-            /*else
-            {
-                nextTime = Now.seconds();
-            }*/
+            nextTime  = (Now.seconds() - LPBlockEvacuationTime) + overdueLPRetryRate;
+            nextTime -= (Now.seconds() - LPBlockEvacuationTime) % overdueLPRetryRate;
+
+            nextTime += LPBlockEvacuationTime;
         }
     }
 

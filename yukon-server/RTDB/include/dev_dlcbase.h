@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_dlcbase.h-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2003/07/17 22:22:47 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2003/10/06 18:43:45 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -65,13 +65,6 @@ public:
 
 class IM_EX_DEVDB CtiDeviceDLCBase : public CtiDeviceSingle
 {
-protected:
-
-   CtiTableDeviceCarrier      CarrierSettings;
-   CtiTableDeviceRoute        DeviceRoutes;
-
-   unsigned int getLPRetryRate( unsigned int interval );
-
 private:
 
     CtiTableDeviceRoute  getDeviceRoute() const;
@@ -88,6 +81,18 @@ private:
         DefaultLPRetryMinimum    = 900,     //  minimum retry rate is 15 minutes
         DefaultLPRetryMaximum    = 10800    //  maximum is 3 hours
     };
+
+protected:
+
+   CtiTableDeviceCarrier      CarrierSettings;
+   CtiTableDeviceRoute        DeviceRoutes;
+
+   unsigned int getLPRetryRate( unsigned int interval );
+
+   enum
+   {
+       LPBlockEvacuationTime    = 300
+   };
 
 public:
 
