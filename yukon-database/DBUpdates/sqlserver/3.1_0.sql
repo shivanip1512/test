@@ -169,6 +169,12 @@ go
 drop table portstatistics;
 go
 
+alter table LMProgramDirect add NotifyOffset numeric;
+go
+update LMProgramDirect set NotifyOffset = 0;
+go
+alter table LMProgramDirect alter column NotifyOffset numeric not null;
+go
 alter table LMProgramDirect add Heading varchar(40);
 go
 update LMProgramDirect set Heading = '(none)';
@@ -186,18 +192,6 @@ go
 update LMProgramDirect set MessageFooter = '(none)';
 go
 alter table LMProgramDirect alter column MessageFooter varchar(160) not null;
-go
-alter table LMProgramDirect add CanceledMsg varchar(80);
-go
-update LMProgramDirect set CanceledMsg = '(none)';
-go
-alter table LMProgramDirect alter column CanceledMsg varchar(80) not null;
-go
-alter table LMProgramDirect add StoppedEarlyMsg varchar(80);
-go
-update LMProgramDirect set StoppedEarlyMsg = '(none)';
-go
-alter table LMProgramDirect alter column StoppedEarlyMsg varchar(80) not null;
 go
 
 
@@ -361,6 +355,11 @@ insert into yukongrouprole values (-886,-301,-201,-20886,'(none)');
 insert into yukongrouprole values (-887,-301,-201,-20887,'(none)');
 insert into yukongrouprole values (-888,-301,-201,-20888,'(none)');
 insert into yukongrouprole values (-889,-301,-201,-20889,'(none)');
+
+delete from YukonGroupRole where roleid = -3;
+delete from YukonUserRole where roleid = -3;
+delete from YukonRoleProperty where roleid = -3;
+delete from YukonRole where roleid = -3;
 
 /* Authentication (safeword) Role/Properties */
 insert into YukonRole values(-4,'Authentication','Yukon','Settings for using an authentication server to login instead of standard yukon login.');
@@ -587,14 +586,6 @@ alter table LMProgramDirectGear alter column RampOutPercent numeric not null;
 go
 
 
-sp_rename 'LMProgramDirect.NotifyInterval', 'NotifyOffset', 'COLUMN';
-go
-alter table LMProgramDirect drop column CanceledMsg;
-go
-alter table LMProgramDirect drop column StoppedEarlyMsg;
-go
-
-
 alter table DynamicLMProgramDirect add NotifyTime datetime;
 go
 update DynamicLMProgramDirect set NotifyTime = '01-JAN-1990';
@@ -798,11 +789,6 @@ go
 
 alter table LMControlAreaProgram drop column DefaultPriority;
 go
-
-delete from YukonGroupRole where roleid = -3;
-delete from YukonUserRole where roleid = -3;
-delete from YukonRoleProperty where roleid = -3;
-delete from YukonRole where roleid = -3;
 
 create table DeviceVerification (
 ReceiverID           numeric              not null,

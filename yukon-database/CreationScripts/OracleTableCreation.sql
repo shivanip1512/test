@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
-/* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     4/1/2005 9:15:20 AM                          */
+/* DBMS name:      ORACLE Version 9i2                           */
+/* Created on:     4/1/2005 12:20:04 PM                         */
 /*==============================================================*/
 
 

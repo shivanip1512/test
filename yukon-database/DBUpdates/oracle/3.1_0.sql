@@ -138,6 +138,10 @@ alter table LMProgram drop column SeasonScheduleID;
 /* @error ignore */
 drop table portstatistics;
 
+alter table LMProgramDirect add NotifyOffset number;
+update LMProgramDirect set NotifyOffset = 0;
+alter table LMProgramDirect modify NotifyOffset number not null;
+
 alter table LMProgramDirect add Heading varchar2(40);
 update LMProgramDirect set Heading = '(none)';
 alter table LMProgramDirect modify Heading varchar2(40) not null;
@@ -149,15 +153,6 @@ alter table LMProgramDirect modify MessageHeader varchar2(160) not null;
 alter table LMProgramDirect add MessageFooter varchar2(160);
 update LMProgramDirect set MessageFooter = '(none)';
 alter table LMProgramDirect modify MessageFooter varchar2(160) not null;
-
-alter table LMProgramDirect add CanceledMsg varchar2(80);
-update LMProgramDirect set CanceledMsg = '(none)';
-alter table LMProgramDirect modify CanceledMsg varchar2(80) not null;
-
-alter table LMProgramDirect add StoppedEarlyMsg varchar2(80);
-update LMProgramDirect set StoppedEarlyMsg = '(none)';
-alter table LMProgramDirect modify StoppedEarlyMsg varchar2(80) not null;
-
 
 create table DeviceRTC  (
    DeviceID             NUMBER                           not null,
@@ -309,6 +304,11 @@ insert into yukongrouprole values (-886,-301,-201,-20886,'(none)');
 insert into yukongrouprole values (-887,-301,-201,-20887,'(none)');
 insert into yukongrouprole values (-888,-301,-201,-20888,'(none)');
 insert into yukongrouprole values (-889,-301,-201,-20889,'(none)');
+
+delete from YukonGroupRole where roleid = -3;
+delete from YukonUserRole where roleid = -3;
+delete from YukonRoleProperty where roleid = -3;
+delete from YukonRole where roleid = -3;
 
 /* Authentication (safeword) Role/Properties */
 insert into YukonRole values(-4,'Authentication','Yukon','Settings for using an authentication server to login instead of standard yukon login.');
@@ -521,11 +521,6 @@ update LMProgramDirectGear set RampOutPercent = 0;
 alter table LMProgramDirectGear modify RampOutPercent number not null;
 
 
-alter table LMProgramDirect rename column NotifyInterval to NotifyOffset;
-alter table LMProgramDirect drop column CanceledMsg;
-alter table LMProgramDirect drop column StoppedEarlyMsg;
-
-
 alter table DynamicLMProgramDirect ADD NotifyTime DATE;
 UPDATE DynamicLMProgramDirect SET NotifyTime ='01-JAN-1990';
 alter TABLE DynamicLMProgramDirect MODIFY NotifyTime NOT NULL;
@@ -695,12 +690,6 @@ update lmcontrolareaprogram set userorder=defaultpriority;
 alter table lmcontrolareaprogram rename column UserOrder to StartPriority;
 alter table lmcontrolareaprogram rename column StopOrder to StopPriority;
 alter table lmcontrolareaprogram drop column defaultpriority;
-
-
-delete from YukonGroupRole where roleid = -3;
-delete from YukonUserRole where roleid = -3;
-delete from YukonRoleProperty where roleid = -3;
-delete from YukonRole where roleid = -3;
 
 create table DeviceVerification  (
    ReceiverID           NUMBER                           not null,
