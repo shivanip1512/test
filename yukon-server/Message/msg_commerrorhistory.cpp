@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/msg_commerrorhistory.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/04/22 18:25:14 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/08/06 18:53:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -153,11 +153,18 @@ CtiMessage* CtiCommErrorHistoryMsg::replicateMessage() const
 }
 
 
-CtiCommErrorHistoryMsg::CtiCommErrorHistoryMsg(long ceid, long paoid, RWTime time, int type,
-                                               long numb, RWCString comm, RWCString out,
-                                               RWCString in, int pri) :
+CtiCommErrorHistoryMsg::CtiCommErrorHistoryMsg(long paoid,
+                                               int type,
+                                               long errnumb,
+                                               RWCString comm,
+                                               RWCString outmess,
+                                               RWCString inmess,
+                                               int pri,
+                                               RWTime time,
+                                               long ceid
+                                               ) :
    Inherited(pri), _commErrorId(ceid), _paoId(paoid), _dateTime(time), _errorType(type),
-   _errorNumber(numb), _command(comm), _outMessage(out), _inMessage(in)
+   _errorNumber(errnumb), _command(comm), _outMessage(outmess), _inMessage(inmess)
 {
    //Inherited::setPriority(pri);
    //Inherited::setSOE(soe);

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/msg_commerrorhistory.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/04/22 18:25:15 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/08/06 18:53:44 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -42,15 +42,17 @@ public:
 
    typedef CtiMessage Inherited;
 
-   CtiCommErrorHistoryMsg(long       ceid   = 0,
-                          long       paoid  = 0,
-                          RWTime     time   = RWTime(),
-                          int        type   = 0,
-                          long       numb   = 0,
-                          RWCString  comm   = RWCString(),
-                          RWCString  out    = RWCString(),
-                          RWCString  in     = RWCString(),
-                          int        pri    = 7);
+   CtiCommErrorHistoryMsg(
+                          long       paoid      = 0,
+                          int        type       = 0,
+                          long       errornum   = 0,
+                          RWCString  command    = RWCString(),
+                          RWCString  outmess    = RWCString(),
+                          RWCString  inmess     = RWCString(),
+                          int        pri        = 7,
+                          RWTime     time       = RWTime(),
+                          long       ceid       = 0
+                          );
 
    CtiCommErrorHistoryMsg(const CtiCommErrorHistoryMsg& aRef);
    virtual ~CtiCommErrorHistoryMsg();
