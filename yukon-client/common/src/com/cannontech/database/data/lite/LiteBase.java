@@ -56,7 +56,7 @@ public abstract class LiteBase implements java.io.Serializable, Comparable
 	{
 		// liteType will be less than 2^8 = 256
 		// liteID  will be less than 2^24 = 16,777,216
-		return ( ((liteType << 2) | (liteType >> 6)) << 24) ^ liteID;
+		return ( ((liteType << 4) | (liteType >> 4)) << 24) ^ liteID;
 	}
 		
 	/**
