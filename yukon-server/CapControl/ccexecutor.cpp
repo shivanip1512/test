@@ -19,6 +19,7 @@
 #include <rw/collstr.h>
 
 extern BOOL _CC_DEBUG;
+extern BOOL _IGNORE_NOT_NORMAL_FLAG;
 
 /*===========================================================================
     CtiCCCommandExecutor
@@ -422,12 +423,29 @@ void CtiCCCommandExecutor::OpenCapBank()
                         {
                             confirmImmediately = TRUE;
                         }
+                        if( _IGNORE_NOT_NORMAL_FLAG &&
+                            currentFeeder->getCurrentVarPointQuality() != NormalQuality )
+                        {
+                            confirmImmediately = TRUE;
+                        }
                     }
                     else if( currentSubstationBus->getControlMethod() == CtiCCSubstationBus::SubstationBusControlMethod ||
                              currentSubstationBus->getControlMethod() == CtiCCSubstationBus::BusOptimizedFeederControlMethod )
                     {
                         if( savedBusRecentlyControlledFlag ||
                             ((savedBusLastOperationTime.seconds()+2) >= currentSubstationBus->getLastOperationTime().seconds()) )
+                        {
+                            confirmImmediately = TRUE;
+                        }
+                        if( currentSubstationBus->getControlMethod() == CtiCCSubstationBus::SubstationBusControlMethod &&
+                            _IGNORE_NOT_NORMAL_FLAG &&
+                            currentSubstationBus->getCurrentVarPointQuality() != NormalQuality )
+                        {
+                            confirmImmediately = TRUE;
+                        }
+                        if( currentSubstationBus->getControlMethod() == CtiCCSubstationBus::BusOptimizedFeederControlMethod &&
+                            _IGNORE_NOT_NORMAL_FLAG &&
+                            currentFeeder->getCurrentVarPointQuality() != NormalQuality )
                         {
                             confirmImmediately = TRUE;
                         }
@@ -488,7 +506,6 @@ void CtiCCCommandExecutor::CloseCapBank()
     BOOL found = FALSE;
     BOOL savedBusRecentlyControlledFlag = FALSE;
     BOOL savedFeederRecentlyControlledFlag = FALSE;
-    BOOL confirmImmediately = FALSE;
     RWDBDateTime savedBusLastOperationTime = RWDBDateTime(1990,1,1,0,0,0,0);
     RWDBDateTime savedFeederLastOperationTime = RWDBDateTime(1990,1,1,0,0,0,0);
     CtiMultiMsg* multi = new CtiMultiMsg();
@@ -559,11 +576,16 @@ void CtiCCCommandExecutor::CloseCapBank()
 
                     found = TRUE;
 
-                    confirmImmediately = FALSE;
+                    BOOL confirmImmediately = FALSE;
                     if( currentSubstationBus->getControlMethod() == CtiCCSubstationBus::IndividualFeederControlMethod )
                     {
                         if( savedFeederRecentlyControlledFlag ||
                             ((savedFeederLastOperationTime.seconds()+2) >= currentFeeder->getLastOperationTime().seconds()) )
+                        {
+                            confirmImmediately = TRUE;
+                        }
+                        if( _IGNORE_NOT_NORMAL_FLAG &&
+                            currentFeeder->getCurrentVarPointQuality() != NormalQuality )
                         {
                             confirmImmediately = TRUE;
                         }
@@ -573,6 +595,18 @@ void CtiCCCommandExecutor::CloseCapBank()
                     {
                         if( savedBusRecentlyControlledFlag ||
                             ((savedBusLastOperationTime.seconds()+2) >= currentSubstationBus->getLastOperationTime().seconds()) )
+                        {
+                            confirmImmediately = TRUE;
+                        }
+                        if( currentSubstationBus->getControlMethod() == CtiCCSubstationBus::SubstationBusControlMethod &&
+                            _IGNORE_NOT_NORMAL_FLAG &&
+                            currentSubstationBus->getCurrentVarPointQuality() != NormalQuality )
+                        {
+                            confirmImmediately = TRUE;
+                        }
+                        if( currentSubstationBus->getControlMethod() == CtiCCSubstationBus::BusOptimizedFeederControlMethod &&
+                            _IGNORE_NOT_NORMAL_FLAG &&
+                            currentFeeder->getCurrentVarPointQuality() != NormalQuality )
                         {
                             confirmImmediately = TRUE;
                         }
@@ -710,12 +744,29 @@ void CtiCCCommandExecutor::ConfirmOpen()
                         {
                             confirmImmediately = TRUE;
                         }
+                        if( _IGNORE_NOT_NORMAL_FLAG &&
+                            currentFeeder->getCurrentVarPointQuality() != NormalQuality )
+                        {
+                            confirmImmediately = TRUE;
+                        }
                     }
                     else if( currentSubstationBus->getControlMethod() == CtiCCSubstationBus::SubstationBusControlMethod ||
                              currentSubstationBus->getControlMethod() == CtiCCSubstationBus::BusOptimizedFeederControlMethod )
                     {
                         if( savedBusRecentlyControlledFlag ||
                             ((savedBusLastOperationTime.seconds()+currentSubstationBus->getMinResponseTime()) >= currentSubstationBus->getLastOperationTime().seconds()) )
+                        {
+                            confirmImmediately = TRUE;
+                        }
+                        if( currentSubstationBus->getControlMethod() == CtiCCSubstationBus::SubstationBusControlMethod &&
+                            _IGNORE_NOT_NORMAL_FLAG &&
+                            currentSubstationBus->getCurrentVarPointQuality() != NormalQuality )
+                        {
+                            confirmImmediately = TRUE;
+                        }
+                        if( currentSubstationBus->getControlMethod() == CtiCCSubstationBus::BusOptimizedFeederControlMethod &&
+                            _IGNORE_NOT_NORMAL_FLAG &&
+                            currentFeeder->getCurrentVarPointQuality() != NormalQuality )
                         {
                             confirmImmediately = TRUE;
                         }
@@ -855,12 +906,29 @@ void CtiCCCommandExecutor::ConfirmClose()
                         {
                             confirmImmediately = TRUE;
                         }
+                        if( _IGNORE_NOT_NORMAL_FLAG &&
+                            currentFeeder->getCurrentVarPointQuality() != NormalQuality )
+                        {
+                            confirmImmediately = TRUE;
+                        }
                     }
                     else if( currentSubstationBus->getControlMethod() == CtiCCSubstationBus::SubstationBusControlMethod ||
                              currentSubstationBus->getControlMethod() == CtiCCSubstationBus::BusOptimizedFeederControlMethod )
                     {
                         if( savedBusRecentlyControlledFlag ||
                             ((savedBusLastOperationTime.seconds()+currentSubstationBus->getMinResponseTime()) >= currentSubstationBus->getLastOperationTime().seconds()) )
+                        {
+                            confirmImmediately = TRUE;
+                        }
+                        if( currentSubstationBus->getControlMethod() == CtiCCSubstationBus::SubstationBusControlMethod &&
+                            _IGNORE_NOT_NORMAL_FLAG &&
+                            currentSubstationBus->getCurrentVarPointQuality() != NormalQuality )
+                        {
+                            confirmImmediately = TRUE;
+                        }
+                        if( currentSubstationBus->getControlMethod() == CtiCCSubstationBus::BusOptimizedFeederControlMethod &&
+                            _IGNORE_NOT_NORMAL_FLAG &&
+                            currentFeeder->getCurrentVarPointQuality() != NormalQuality )
                         {
                             confirmImmediately = TRUE;
                         }
