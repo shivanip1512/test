@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.41 $
-* DATE         :  $Date: 2003/04/15 22:12:46 $
+* REVISION     :  $Revision: 1.42 $
+* DATE         :  $Date: 2003/04/21 22:08:00 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -848,7 +848,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                                     dout << RWTime() << " " << resolveDeviceName(*pPoint) << " / " << pPoint->getName() << " has gone CONTROL SUBMITTED. Control expires at " << RWTime( Cmd->getMessageTime() + pPoint->getControlExpirationTime()) << endl;
                                 }
 
-                                CtiSignalMsg *pCRP = CTIDBG_new CtiSignalMsg(pPoint->getID(), Cmd->getSOE(), "Control " + ResolveStateName(pPoint->getStateGroupID(), rawstate) + " Sent", RWCString(), GeneralLogType, pPoint->getAlarming().getAlarmStates(CtiTablePointAlarming::commandFailure), Cmd->getUser());
+                                CtiSignalMsg *pCRP = CTIDBG_new CtiSignalMsg(pPoint->getID(), Cmd->getSOE(), "Control " + ResolveStateName(pPoint->getStateGroupID(), rawstate) + " Sent", RWCString(), GeneralLogType, SignalEvent, Cmd->getUser());
 
                                 MainQueue_.putQueue( pCRP );
                                 pDyn->getDispatch().setTags( TAG_CONTROL_PENDING );
@@ -2925,6 +2925,28 @@ INT CtiVanGogh::checkSignalStateQuality(CtiSignalMsg  *pSig, CtiMultiWrapper &aW
             dout << "  " << cliname << "\r" << "just submitted a blank signal message for point id " << pSig->getId() << endl;
         }
 
+    }
+
+    {
+        CtiPoint *point = NULL;
+        CtiLockGuard<CtiMutex> pmguard(server_mux, 300000); // Not in 5 minutes
+
+        if(pmguard.isAcquired())
+        {
+            if((point =  PointMgr.getEqual(pSig->getId())) != NULL)
+            {
+                // This is an alarm if the alarm state indicates anything other than SignalEvent.
+                if(pSig->getSignalGroup() > SignalEvent)
+                {
+                    pSig->setTags(TAG_UNACKNOWLEDGED_ALARM | TAG_ACKNOWLEDGED_ALARM);
+                }
+            }
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
     }
 
     return status;
