@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsInv.java,v 1.2 2004/01/28 20:28:57 zyao Exp $
+ * $Id: StarsInv.java,v 1.3 2004/02/02 23:05:36 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -24,7 +24,7 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.2 $ $Date: 2004/01/28 20:28:57 $
+ * @version $Revision: 1.3 $ $Date: 2004/02/02 23:05:36 $
 **/
 public abstract class StarsInv implements java.io.Serializable {
 
@@ -48,6 +48,8 @@ public abstract class StarsInv implements java.io.Serializable {
     private boolean _has_deviceID;
 
     private java.lang.String _category;
+
+    private DeviceType _deviceType;
 
     private java.lang.String _deviceLabel;
 
@@ -152,6 +154,16 @@ public abstract class StarsInv implements java.io.Serializable {
     {
         return this._deviceStatus;
     } //-- DeviceStatus getDeviceStatus() 
+
+    /**
+     * Returns the value of field 'deviceType'.
+     * 
+     * @return the value of field 'deviceType'.
+    **/
+    public DeviceType getDeviceType()
+    {
+        return this._deviceType;
+    } //-- DeviceType getDeviceType() 
 
     /**
      * Returns the value of field 'installDate'.
@@ -357,6 +369,16 @@ public abstract class StarsInv implements java.io.Serializable {
     {
         this._deviceStatus = deviceStatus;
     } //-- void setDeviceStatus(DeviceStatus) 
+
+    /**
+     * Sets the value of field 'deviceType'.
+     * 
+     * @param deviceType the value of field 'deviceType'.
+    **/
+    public void setDeviceType(DeviceType deviceType)
+    {
+        this._deviceType = deviceType;
+    } //-- void setDeviceType(DeviceType) 
 
     /**
      * Sets the value of field 'installDate'.

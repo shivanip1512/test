@@ -108,7 +108,7 @@
 	<xs:complexType name="stars-Inv">
 		<xs:sequence>
 			<xs:element name="Category" type="xs:string" minOccurs="0"/>
-			<xs:element name="DeviceLabel" type="xs:string" minOccurs="0"/>
+			<xs:element name="DeviceType" minOccurs="0" type="stars-CustListEntry"/><xs:element name="DeviceLabel" type="xs:string" minOccurs="0"/>
 			<xs:element name="InstallationCompany" type="stars-CustListEntry" minOccurs="0"/>
 			<xs:element name="ReceiveDate" type="xs:dateTime" minOccurs="0"/>
 			<xs:element name="InstallDate" type="xs:dateTime" minOccurs="0"/>
@@ -122,7 +122,7 @@
 			<xs:element name="LMHardware" minOccurs="0">
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element name="LMHardwareType" type="stars-CustListEntry"/>
+						
 						<xs:element name="ManufacturerSerialNumber" type="xs:string"/>
 						<xs:element ref="stars-LMHardwareConfig" minOccurs="0" maxOccurs="unbounded"/>
 						<xs:element ref="stars-ThermostatSettings" minOccurs="0"/>

@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: LMHardwareType.java,v 1.2 2004/01/28 20:28:57 zyao Exp $
+ * $Id$
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,9 +23,9 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.2 $ $Date: 2004/01/28 20:28:57 $
+ * @version $Revision$ $Date$
 **/
-public class LMHardwareType extends StarsCustListEntry 
+public class DeviceType extends StarsCustListEntry 
 implements java.io.Serializable
 {
 
@@ -34,9 +34,9 @@ implements java.io.Serializable
      //- Constructors -/
     //----------------/
 
-    public LMHardwareType() {
+    public DeviceType() {
         super();
-    } //-- com.cannontech.stars.xml.serialize.LMHardwareType()
+    } //-- com.cannontech.stars.xml.serialize.DeviceType()
 
 
       //-----------/
@@ -85,11 +85,11 @@ implements java.io.Serializable
      * 
      * @param reader
     **/
-    public static com.cannontech.stars.xml.serialize.LMHardwareType unmarshal(java.io.Reader reader)
+    public static com.cannontech.stars.xml.serialize.DeviceType unmarshal(java.io.Reader reader)
         throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
     {
-        return (com.cannontech.stars.xml.serialize.LMHardwareType) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.LMHardwareType.class, reader);
-    } //-- com.cannontech.stars.xml.serialize.LMHardwareType unmarshal(java.io.Reader) 
+        return (com.cannontech.stars.xml.serialize.DeviceType) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.DeviceType.class, reader);
+    } //-- com.cannontech.stars.xml.serialize.DeviceType unmarshal(java.io.Reader) 
 
     /**
     **/

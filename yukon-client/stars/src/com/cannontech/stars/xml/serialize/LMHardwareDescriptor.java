@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: LMHardwareDescriptor.java,v 1.2 2004/01/28 20:28:57 zyao Exp $
+ * $Id: LMHardwareDescriptor.java,v 1.3 2004/02/02 23:05:36 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.2 $ $Date: 2004/01/28 20:28:57 $
+ * @version $Revision: 1.3 $ $Date: 2004/02/02 23:05:36 $
 **/
 public class LMHardwareDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
@@ -59,40 +59,6 @@ public class LMHardwareDescriptor extends org.exolab.castor.xml.util.XMLClassDes
         //-- initialize attribute descriptors
         
         //-- initialize element descriptors
-        
-        //-- _LMHardwareType
-        desc = new XMLFieldDescriptorImpl(LMHardwareType.class, "_LMHardwareType", "LMHardwareType", NodeType.Element);
-        handler = (new XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                LMHardware target = (LMHardware) object;
-                return target.getLMHardwareType();
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    LMHardware target = (LMHardware) object;
-                    target.setLMHardwareType( (LMHardwareType) value);
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new LMHardwareType();
-            }
-        } );
-        desc.setHandler(handler);
-        desc.setRequired(true);
-        desc.setMultivalued(false);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _LMHardwareType
-        fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
-        desc.setValidator(fieldValidator);
         
         //-- _manufacturerSerialNumber
         desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_manufacturerSerialNumber", "ManufacturerSerialNumber", NodeType.Element);

@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsInvDescriptor.java,v 1.2 2004/01/28 20:28:55 zyao Exp $
+ * $Id: StarsInvDescriptor.java,v 1.3 2004/02/02 23:05:34 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.2 $ $Date: 2004/01/28 20:28:55 $
+ * @version $Revision: 1.3 $ $Date: 2004/02/02 23:05:34 $
 **/
 public class StarsInvDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
@@ -180,6 +180,38 @@ public class StarsInvDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
             sv.setWhiteSpace("preserve");
             fieldValidator.setValidator(sv);
         }
+        desc.setValidator(fieldValidator);
+        
+        //-- _deviceType
+        desc = new XMLFieldDescriptorImpl(DeviceType.class, "_deviceType", "DeviceType", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsInv target = (StarsInv) object;
+                return target.getDeviceType();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsInv target = (StarsInv) object;
+                    target.setDeviceType( (DeviceType) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new DeviceType();
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _deviceType
+        fieldValidator = new FieldValidator();
         desc.setValidator(fieldValidator);
         
         //-- _deviceLabel

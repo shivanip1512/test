@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: LMHardware.java,v 1.2 2004/01/28 20:28:56 zyao Exp $
+ * $Id: LMHardware.java,v 1.3 2004/02/02 23:05:35 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.2 $ $Date: 2004/01/28 20:28:56 $
+ * @version $Revision: 1.3 $ $Date: 2004/02/02 23:05:35 $
 **/
 public class LMHardware implements java.io.Serializable {
 
@@ -33,8 +33,6 @@ public class LMHardware implements java.io.Serializable {
       //--------------------------/
      //- Class/Member Variables -/
     //--------------------------/
-
-    private LMHardwareType _LMHardwareType;
 
     private java.lang.String _manufacturerSerialNumber;
 
@@ -86,16 +84,6 @@ public class LMHardware implements java.io.Serializable {
     {
         return _starsLMHardwareConfigList.elements();
     } //-- java.util.Enumeration enumerateStarsLMHardwareConfig() 
-
-    /**
-     * Returns the value of field 'LMHardwareType'.
-     * 
-     * @return the value of field 'LMHardwareType'.
-    **/
-    public LMHardwareType getLMHardwareType()
-    {
-        return this._LMHardwareType;
-    } //-- LMHardwareType getLMHardwareType() 
 
     /**
      * Returns the value of field 'manufacturerSerialNumber'.
@@ -207,16 +195,6 @@ public class LMHardware implements java.io.Serializable {
         _starsLMHardwareConfigList.removeElementAt(index);
         return (StarsLMHardwareConfig) obj;
     } //-- StarsLMHardwareConfig removeStarsLMHardwareConfig(int) 
-
-    /**
-     * Sets the value of field 'LMHardwareType'.
-     * 
-     * @param LMHardwareType the value of field 'LMHardwareType'.
-    **/
-    public void setLMHardwareType(LMHardwareType LMHardwareType)
-    {
-        this._LMHardwareType = LMHardwareType;
-    } //-- void setLMHardwareType(LMHardwareType) 
 
     /**
      * Sets the value of field 'manufacturerSerialNumber'.
