@@ -14,7 +14,7 @@ public class GDSTableModel extends javax.swing.table.AbstractTableModel
 	public final static int AXIS_NAME_COLUMN = 4;
 	public final static int TYPE_NAME_COLUMN = 5;
 	public final static int MULT_NAME_COLUMN = 6;
-	public final static int SETUP_NAME_COLUMN = 7;
+//	public final static int SETUP_NAME_COLUMN = 7;
 	
 
 //	public static String includeType = com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES;
@@ -27,8 +27,8 @@ public class GDSTableModel extends javax.swing.table.AbstractTableModel
 		"Color",
 		"Axis",
 		"Type",
-		"Multiplier",
-		"Setup"
+		"Multiplier"
+//		, "Setup"
 	};
 
 	public static Class[] columnTypes =
@@ -39,8 +39,8 @@ public class GDSTableModel extends javax.swing.table.AbstractTableModel
 		java.awt.Color.class,
 		String.class,
 		javax.swing.JCheckBox.class,
-		Double.class,
-		String.class
+		Double.class
+//		, String.class
 	};	
 
 	//Graph data series rows
@@ -178,14 +178,16 @@ public Object getGDSAttribute(int index, com.cannontech.database.db.graph.GraphD
 				return "Left";
 
 		case TYPE_NAME_COLUMN:
-			return gds.getType();
-
+		{
+			//Display the String value of the int
+			return com.cannontech.database.db.graph.GraphDataSeries.getType(gds.getType().intValue());
+		}
 		case MULT_NAME_COLUMN:
 			return gds.getMultiplier();
 
-		case SETUP_NAME_COLUMN:
+/*		case SETUP_NAME_COLUMN:
 			return "...";
-			
+*/			
 	}
 	return null;
 }
@@ -251,8 +253,8 @@ public boolean isCellEditable(int row, int column)
 			 column == COLOR_NAME_COLUMN || 
 			 column == AXIS_NAME_COLUMN ||
 			 column == TYPE_NAME_COLUMN ||
-			 column == MULT_NAME_COLUMN ||
-			 column == SETUP_NAME_COLUMN);
+			 column == MULT_NAME_COLUMN /*||
+			 column == SETUP_NAME_COLUMN*/);
 }
 /**
  * Insert the method's description here.
@@ -317,17 +319,20 @@ public void setValueAt(Object value, int row, int col)
 		break;
 		
 		case TYPE_NAME_COLUMN:
-			gds.setType( new String(value.toString()));
+		{
+			//Save the Integer value of the String.
+			gds.setType( new Integer(com.cannontech.database.db.graph.GraphDataSeries.getTypeInt(new String(value.toString()))));
+		}
 		break;
 		
 		case MULT_NAME_COLUMN:
 			gds.setMultiplier( Double.valueOf(value.toString()));
 		break;
 		
-		case SETUP_NAME_COLUMN:
+/*		case SETUP_NAME_COLUMN:
 			//FIX ME!!! nothing yet!!!;
 
-		break;
+		break;*/
 	}
 
 	fireTableRowsUpdated(row, row);	
