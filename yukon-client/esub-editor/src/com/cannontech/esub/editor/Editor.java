@@ -1,6 +1,5 @@
 package com.cannontech.esub.editor;
 
-import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Frame;
@@ -11,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Timer;
 
+import javax.swing.ImageIcon;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -18,6 +18,7 @@ import javax.swing.JInternalFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
@@ -30,6 +31,7 @@ import com.cannontech.esub.element.CurrentAlarmsTable;
 import com.cannontech.esub.element.DrawingElement;
 import com.cannontech.esub.element.DynamicGraphElement;
 import com.cannontech.esub.util.DrawingUpdater;
+import com.cannontech.esub.util.Util;
 
 import com.loox.jloox.LxComponent;
 import com.loox.jloox.LxGraph;
@@ -81,7 +83,7 @@ public class Editor extends JPanel {
 			synchronized(getDrawing()) {				
 				editElement(evt.getLxComponent());
 			}
-		}
+		}		
 	};
 
 	/**
@@ -121,8 +123,7 @@ public class Editor extends JPanel {
 					e.printStackTrace();
 				} finally { //make to always get back into not placing mode
 					elementPlacer.setIsPlacing(false);
-					getDrawing().getLxView().setCursor(
-						new Cursor(Cursor.DEFAULT_CURSOR));
+					getDrawing().getLxView().setCursor(Util.DEFAULT_CURSOR);
 				}
 				
 				}
@@ -138,7 +139,8 @@ public class Editor extends JPanel {
 		boolean retVal = false;
 		
 		//no more updates for a bit
-		drawingUpdateTimer.cancel();
+		stopUpdating();
+		
 		
 		if (propertyDialog == null)
 			propertyDialog =
@@ -177,10 +179,8 @@ public class Editor extends JPanel {
 			propertyDialog.show();
 
 			// start the updates again
-			drawingUpdater = new DrawingUpdater();	
-			drawingUpdater.setDrawing( getDrawing() );
-			drawingUpdateTimer = new Timer();
-			drawingUpdateTimer.schedule(drawingUpdater, 0, 15000);
+			startUpdating();
+			
 		}
 	}
 
@@ -196,44 +196,54 @@ public class Editor extends JPanel {
 	 * and optionally load a default drawing.
 	 * Creation date: (12/11/2001 3:59:21 PM)
 	 */
-	private void initEditor(JPanel p) {
+	private void initEditor(final JPanel p) {
 		//editPopup.add(deletePopupItem);
 		//	Lx.setActionProcessor(actionProcessor);
 
-		EditorPrefs prefs = EditorPrefs.getPreferences();
+		final EditorPrefs prefs = EditorPrefs.getPreferences();
 		
 		drawing = new Drawing();
 
 		elementPlacer = new ElementPlacer();
 
-		LxGraph lxGraph = getDrawing().getLxGraph();
-		LxView lxView = getDrawing().getLxView();
+		final LxGraph lxGraph = getDrawing().getLxGraph();
+		final LxView lxView = getDrawing().getLxView();
 				
-		JPanel viewPanel = new JPanel();
+		final JPanel viewPanel = new JPanel();
 		viewPanel.setLayout(new FlowLayout());		
 		viewPanel.add(lxView);
 		
-		JScrollPane scrollPane = new JScrollPane();
+		final JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setViewportView(viewPanel);
 		
 		EditorActions editorActions = new EditorActions(this);
 		EditorMenus editorMenus = new EditorMenus(editorActions);
 		EditorToolBar editorToolBar = new EditorToolBar(editorActions);
 		EditorKeys editorKeys = new EditorKeys(editorActions);
-		JMenuBar menuBar = editorMenus.getMenuBar();
+		final JMenuBar menuBar = editorMenus.getMenuBar();
+		final JPopupMenu popupMenu = editorMenus.getPopupMenu();
 		JToolBar toolBar = editorToolBar.getToolBar();
 
 		p.setLayout(new java.awt.BorderLayout());
 		p.add(scrollPane, java.awt.BorderLayout.CENTER);
 		p.add(menuBar, java.awt.BorderLayout.NORTH);
 		p.add(toolBar, java.awt.BorderLayout.WEST);
-//		p.setPreferredSize(new Dimension(prefs.getDefaultDrawingWidth(),prefs.getDefaultDrawingHeight()));
-		lxView.addMouseListener(viewMouseListener);		
-						
-		drawingUpdater = new DrawingUpdater();	
-		drawingUpdater.setDrawing( getDrawing() );
-		drawingUpdateTimer = new Timer();
-		drawingUpdateTimer.schedule(drawingUpdater, 0, 15000);
+		lxView.addMouseListener(viewMouseListener);				
+		lxView.addMouseListener(new MouseAdapter() { 
+			public void mousePressed(MouseEvent e) {
+				maybeShowPopup(e);
+			}
+			public void mouseReleased(MouseEvent e) {
+				maybeShowPopup(e);
+			}
+			private void maybeShowPopup(MouseEvent e) {
+				if (e.isPopupTrigger()) {
+					popupMenu.show(e.getComponent(),
+							   e.getX(), e.getY());
+				}
+			}
+		});
+		startUpdating();		
 	}
 
 	public void openDrawing() {
@@ -280,14 +290,18 @@ public class Editor extends JPanel {
 	}
 
 	/**
-	 * URL to a .jlx file
+	 * Load a .jlx file into the editor
 	 * Creation date: (12/11/2001 4:02:39 PM)
-	 * @param drawing java.net.URL
+	 * @param drawingFile
 	 */
-	public void loadDrawing(String drawingFile) {
-	
+	public void loadDrawing(final String drawingFile) {
+		
+		try {
+		setCursor(Util.WAIT_CURSOR);
+								
+		stopUpdating();	
 		getDrawing().load(drawingFile);
-	
+
 		LxComponent[] comps = getDrawing().getLxGraph().getComponents();
 		for (int i = 0; i < comps.length; i++) {
 			setBehavior(comps[i]);
@@ -295,8 +309,14 @@ public class Editor extends JPanel {
 
 		elementPlacer.setIsPlacing(false);
 		setFrameTitle(drawingFile);
-		
+
 		updateSize();
+		startUpdating();
+		
+		} 
+		finally {
+			setCursor(Util.DEFAULT_CURSOR);
+		}
 	}
 
 	/**
@@ -312,33 +332,24 @@ public class Editor extends JPanel {
 				System.exit(0);
 			}
 		});
-
+		
 		Editor editor = new Editor();
 
 		frame.getContentPane().add(editor);
 		frame.setSize(defaultSize);
 		frame.setTitle("Untitled");		
-        frame.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage("esubEditorIcon.png"));
+		ImageIcon icon = new ImageIcon(ClassLoader.getSystemResource("esubEditorIcon.png"));
+        frame.setIconImage(icon.getImage());
 
 		frame.pack();
 		frame.show();
 		
-		com
-			.cannontech
-			.database
-			.cache
-			.DefaultDatabaseCache
-			.getInstance()
-			.getAllDevices();
-		com
-			.cannontech
-			.database
-			.cache
-			.DefaultDatabaseCache
-			.getInstance()
-			.getAllPoints();
-
-		// fire up the db change listener
+		//get this stuff loaded into the cache asap
+		DefaultDatabaseCache.getInstance().getAllDevices();
+		DefaultDatabaseCache.getInstance().getAllPoints();
+		DefaultDatabaseCache.getInstance().getAllStateGroups();
+		
+//		fire up the db change listener
 		DefaultDatabaseCache.getInstance().addDBChangeListener(new DBChangeCaptain());	
 	}
 	/**
@@ -521,5 +532,16 @@ public class Editor extends JPanel {
 				setBehavior((LxComponent) all[i]);
 			}			
 		}		
-	}	
+	}
+	
+	private void startUpdating() {
+		drawingUpdater = new DrawingUpdater();	
+		drawingUpdater.setDrawing( getDrawing() );
+		drawingUpdateTimer = new Timer();
+		drawingUpdateTimer.schedule(drawingUpdater, 0, 15000);
+	}
+	
+	private void stopUpdating() {
+		drawingUpdateTimer.cancel();
+	}		
 }
