@@ -1,15 +1,15 @@
 package com.cannontech.database.cache.functions;
 
+import java.util.Iterator;
+
 import com.cannontech.database.data.lite.LiteYukonImage;
 /**
  * @author rneuharth
+ * @author alauinger
  * Aug 28, 2002 at 8:08:44 AM
- * 
- * A undefined generated comment
  */
 public final class YukonImageFuncs
 {
-
 	/**
 	 * Constructor for YukonImageFuncs.
 	 */
@@ -18,10 +18,8 @@ public final class YukonImageFuncs
 		super();
 	}
 
-
-
    /**
-    * Insert the method's description here.
+    * Returns all available YukonImage categories from the cache.
     * Creation date: (3/26/2001 9:47:28 AM)
     * @return com.cannontech.database.data.lite.LiteState
     * @param stateGroupID int
@@ -61,5 +59,29 @@ public final class YukonImageFuncs
       String[] strs = new String[ imgList.size() ];
       return (String[])imgList.toArray( strs );
    }
+   
+	/**
+	 * Returns the LiteYukonImage in the cache with the given id
+	 * @param id
+	 * @return LiteYukonImage
+	 */
+   	public static LiteYukonImage getLiteYukonImage(int id) {
+   		 com.cannontech.database.cache.DefaultDatabaseCache cache =
+            com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 
+      	synchronized( cache )
+      	{
+         	Iterator iter = cache.getAllYukonImages().iterator();
+         	while( iter.hasNext() ) 
+         	{
+         		LiteYukonImage img = (LiteYukonImage) iter.next();
+         		if( img.getImageID() == id ) 
+         		{
+         			return img;
+         		}
+         	}
+      	}	      
+      	
+      	return null;
+   	}
 }
