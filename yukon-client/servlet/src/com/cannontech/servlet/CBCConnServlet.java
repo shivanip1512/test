@@ -53,7 +53,7 @@ public synchronized CBCClientConnection getConnection()
 	{
 		//first time this app has been hit		
 		Registration reg = new Registration();
-		reg.setAppName("CBC_WEB_CACHE@" + CtiUtilities.getUserName() );
+		reg.setAppName( CtiUtilities.getApplicationName() );
 		reg.setAppIsUnique(0);
 		reg.setAppKnownPort(0);
 		reg.setAppExpirationDelay( 300 );  // 5 minutes

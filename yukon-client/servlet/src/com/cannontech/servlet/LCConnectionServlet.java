@@ -159,8 +159,7 @@ public void init(javax.servlet.ServletConfig config) throws javax.servlet.Servle
 			dispatchConnection = new com.cannontech.message.dispatch.ClientConnection();
 			com.cannontech.message.dispatch.message.Registration reg =
 				new com.cannontech.message.dispatch.message.Registration();
-			reg.setAppName(
-				"LCConnectionServlet @" + com.cannontech.common.util.CtiUtilities.getUserName());
+			reg.setAppName( CtiUtilities.getApplicationName() );
 			reg.setAppIsUnique(0);
 			reg.setAppKnownPort(0);
 			reg.setAppExpirationDelay(300); // 5 minutes should be OK

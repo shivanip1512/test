@@ -11,6 +11,7 @@ import javax.mail.internet.InternetAddress;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.commandlineparameters.CommandLineParser;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.message.dispatch.message.Command;
 import com.cannontech.message.porter.ClientConnection;
 import com.cannontech.message.porter.message.Request;
@@ -216,7 +217,7 @@ private boolean executeCheckDispatchConnection()
 		com.cannontech.message.dispatch.message.Registration reg = 
 					new com.cannontech.message.dispatch.message.Registration();
 					
-		reg.setAppName("PROGRAM_STATE_CHECKER");
+		reg.setAppName( CtiUtilities.getAppRegistration() );
 		reg.setAppIsUnique(1);  //this app IS unique
 		reg.setAppKnownPort(0);
 		reg.setAppExpirationDelay( 60 );  // 1 minutes
@@ -525,6 +526,8 @@ public boolean isEmailSent() {
  */
 public static void main(String[] args) 
 {
+	System.setProperty("cti.app.name", "Rat");
+	
 	try
 	{
 		String[] values = null;

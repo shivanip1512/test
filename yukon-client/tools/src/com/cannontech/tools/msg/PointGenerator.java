@@ -115,7 +115,7 @@ public static void main(String[] args)
 	//First do a registration
 	CTILogger.info("Registering client with vangogh");
 	com.cannontech.message.dispatch.message.Registration reg = new com.cannontech.message.dispatch.message.Registration();
-	reg.setAppName("Point Change Source - Java" + (new java.util.Date()).getTime() );
+	reg.setAppName( CtiUtilities.getAppRegistration() );
 	reg.setAppIsUnique(0);
 	reg.setAppKnownPort(0);
 	reg.setAppExpirationDelay( 300 );

@@ -1,5 +1,7 @@
 package com.cannontech.customer.wpsc;
 
+import com.cannontech.common.util.CtiUtilities;
+
 /**
  * This is the entry point for Wisconsin Public Service Co's custom app
  * It has two main functions:
@@ -228,7 +230,7 @@ public void run()
 	{
 		//Build up a registration message to Dispatch
 		com.cannontech.message.dispatch.message.Registration reg = new com.cannontech.message.dispatch.message.Registration();
-		reg.setAppName("WPSC Module");
+		reg.setAppName( CtiUtilities.getAppRegistration() );
 		reg.setAppIsUnique(0);
 		reg.setAppKnownPort(0);
 		reg.setAppExpirationDelay( 1000000 );

@@ -501,7 +501,7 @@ public ClientConnection getDispatchConnection()
 		dispatchConnection = new ClientConnection();
 
 		Registration reg = new Registration();
-		reg.setAppName("Calc Historical");
+		reg.setAppName( CtiUtilities.getAppRegistration() );
 		reg.setAppIsUnique(0);
 		reg.setAppKnownPort(0);
 		reg.setAppExpirationDelay( 3600 );  // 1 hour should be OK

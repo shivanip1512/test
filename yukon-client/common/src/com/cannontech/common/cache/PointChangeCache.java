@@ -6,6 +6,7 @@ import java.util.Hashtable;
 import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.cache.functions.RoleFuncs;
@@ -98,7 +99,7 @@ public synchronized void connect()
 	conn.setPort(port);
 
 	com.cannontech.message.dispatch.message.Registration reg = new com.cannontech.message.dispatch.message.Registration();
-	reg.setAppName("PointChangeCache " + (new java.util.Date()).getTime());
+	reg.setAppName( CtiUtilities.getAppRegistration() );
 	reg.setAppIsUnique(0);
 	reg.setAppKnownPort(0);
 	reg.setAppExpirationDelay(5000);

@@ -366,7 +366,7 @@ public class SetupServlet extends HttpServlet
 		
 		ClientConnection connToDispatch = new ClientConnection();
 		Registration reg = new Registration();
-		reg.setAppName("SetupServlet" );
+		reg.setAppName( CtiUtilities.getApplicationName() );
 		reg.setAppIsUnique(0);
 		reg.setAppKnownPort(0);
 		reg.setAppExpirationDelay( 30 );  // 30 sec should be OK

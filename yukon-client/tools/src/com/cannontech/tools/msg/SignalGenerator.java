@@ -5,6 +5,7 @@ package com.cannontech.tools.msg;
  * Creation date: (6/13/00 10:50:34 AM)
  * @author: 
  */
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.message.dispatch.ClientConnection;
 
 public class SignalGenerator {
@@ -58,7 +59,7 @@ public static void main(String[] args)
 	//First do a registration
 	com.cannontech.clientutils.CTILogger.info("Registering client with vangogh");
 	com.cannontech.message.dispatch.message.Registration reg = new com.cannontech.message.dispatch.message.Registration();
-	reg.setAppName("Signal Change Tester");
+	reg.setAppName( CtiUtilities.getAppRegistration() );
 	reg.setAppIsUnique(0);
 	reg.setAppKnownPort(0);
 	reg.setAppExpirationDelay( 300 );

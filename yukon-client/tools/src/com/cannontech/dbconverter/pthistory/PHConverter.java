@@ -1,6 +1,8 @@
 package com.cannontech.dbconverter.pthistory;
 
 import java.io.*;
+
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.point.PointQualities;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.message.dispatch.ClientConnection;
@@ -60,7 +62,7 @@ private static ClientConnection connect() throws java.io.IOException {
 
 	Registration reg = new Registration();
 	
-	reg.setAppName("DSM2PointHistoryConverter " + (new java.util.Date()).getTime());
+	reg.setAppName( CtiUtilities.getAppRegistration() );
 	reg.setAppIsUnique(0);	
 	reg.setAppKnownPort(0);	
 	reg.setAppExpirationDelay(5000);
@@ -275,6 +277,7 @@ public static void main(String[] args) throws Exception {
 		System.exit(1);
 	}
 
+	System.setProperty("cti.app.name", "PHConverter");
 	PHConverter p = new PHConverter();
 	p.convert(args[0]);
 	

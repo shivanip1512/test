@@ -46,7 +46,7 @@ public Message buildRegistrationMessage()
 {		
 	//First do a registration
 	Registration reg = new Registration();
-	reg.setAppName("TDC_RECEIVER@" + com.cannontech.common.util.CtiUtilities.getUserName() );
+	reg.setAppName( CtiUtilities.getAppRegistration() );
 	reg.setAppIsUnique(0);
 	reg.setAppKnownPort(0);
 	reg.setAppExpirationDelay( 10 );  // 5 minutes

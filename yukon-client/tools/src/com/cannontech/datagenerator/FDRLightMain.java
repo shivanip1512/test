@@ -6,7 +6,9 @@ package com.cannontech.datagenerator;
  */
 public class FDRLightMain {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) 
+	{
+		System.setProperty("cti.app.name", "FDRLight");
 		FDRLightArgs fdrArgs = new FDRLightArgs();
 		
 		if( args.length != 4 ) {

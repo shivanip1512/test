@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Iterator;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.message.dispatch.message.PointData;
@@ -34,7 +35,7 @@ public class FDRLight {
 		srcConn.setPort(args.getSrcPort());
 		
 		com.cannontech.message.dispatch.message.Registration reg = new com.cannontech.message.dispatch.message.Registration();
-		reg.setAppName("FDRLight " + (new java.util.Date()).getTime());
+		reg.setAppName( CtiUtilities.getAppRegistration() );
 		reg.setAppIsUnique(0);
 		reg.setAppKnownPort(0);
 		reg.setAppExpirationDelay(5000);

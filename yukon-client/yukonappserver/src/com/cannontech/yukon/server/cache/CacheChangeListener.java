@@ -1,5 +1,6 @@
 package com.cannontech.yukon.server.cache;
 
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.database.data.lite.LiteBase;
@@ -49,7 +50,7 @@ public class CacheChangeListener implements DBChangeListener
    
          connToDispatch = new com.cannontech.message.dispatch.ClientConnection();
          com.cannontech.message.dispatch.message.Registration reg = new com.cannontech.message.dispatch.message.Registration();
-         reg.setAppName("JBOSS @" + com.cannontech.common.util.CtiUtilities.getUserName() );
+         reg.setAppName( CtiUtilities.getAppRegistration() );
          reg.setAppIsUnique(0);
          reg.setAppKnownPort(0);
          reg.setAppExpirationDelay( 300 );  // 5 minutes should be OK

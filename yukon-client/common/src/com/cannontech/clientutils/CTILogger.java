@@ -167,9 +167,7 @@ public class CTILogger //implements ILogging
 				fileAppender = new YukonFileAppender(
                                         CTILogManager.LOG_LAYOUT,
 										CtiUtilities.getLogDirPath() + System.getProperty("file.separator") +
-										  (CtiUtilities.getApplicationName().equals(CtiUtilities.STRING_NONE)
-										  ? "webapp"
-										  : CtiUtilities.getApplicationName()) );						
+										  CtiUtilities.getApplicationName() );
 			}
 			catch( Exception e )
 			{

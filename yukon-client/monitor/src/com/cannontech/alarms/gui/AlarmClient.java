@@ -1,6 +1,7 @@
 package com.cannontech.alarms.gui;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.message.dispatch.message.PointData;
@@ -30,7 +31,7 @@ public class AlarmClient extends com.cannontech.clientutils.ClientBase
 	{		
 		//First do a registration
 		Registration reg = new Registration();
-		reg.setAppName("ALARM_SYSTRAY@" + com.cannontech.common.util.CtiUtilities.getUserName() );
+		reg.setAppName( CtiUtilities.getAppRegistration() );
 		reg.setAppIsUnique(0);
 		reg.setAppKnownPort(0);
 		reg.setAppExpirationDelay( 300 );  // 5 minutes
