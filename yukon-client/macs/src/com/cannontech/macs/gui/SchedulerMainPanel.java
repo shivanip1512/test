@@ -1004,17 +1004,18 @@ public void showEditorPanel( final Schedule selectedSchedule )
 		frame.show();
 
 
-		// IF ITS A SCRIPT SCHEDULE, WE MUST GET THE SCRIPT TEXT HERE
-		if( Schedule.SCRIPT_TYPE.equalsIgnoreCase(selectedSchedule.getType()) )
-			getIMACSConnection().sendRetrieveScriptText( selectedSchedule.getScriptFileName() );
-
 		// use a clone of the desired Schedule since we do not want our client
 		// to change its meaning of the Schedule
 		Schedule tempSched = (Schedule)com.cannontech.common.util.CtiUtilities.copyObject(selectedSchedule);
 		tempSched.getNonPersistantData().setCategories( getIMACSConnection().getCategoryNames().keys() );
 		panel.setValue( tempSched );
-		
+
 		frame.validate();
+	
+
+		// IF ITS A SCRIPT SCHEDULE, WE MUST GET THE SCRIPT TEXT HERE
+		if( Schedule.SCRIPT_TYPE.equalsIgnoreCase(selectedSchedule.getType()) )
+			getIMACSConnection().sendRetrieveScriptText( selectedSchedule.getScriptFileName() );		
 	}
 	catch( java.io.IOException e )
 	{
@@ -1170,16 +1171,14 @@ public void update(java.util.Observable obs, Object val)
 		{
 			javax.swing.JFrame f = (javax.swing.JFrame)getFrames().get(i);
 
-			if( f.isVisible() && f.getContentPane() instanceof ScheduleEditorPanel )
-			//{
-				((ScheduleEditorPanel)f.getContentPane()).updateScriptText( (com.cannontech.message.macs.message.ScriptFile)val );
-//				CTILogger.info(" ** Good FRAME " + i + "    " + f.hashCode() );
-//			}
-//			else
-//			{
-//				CTILogger.info(" ** Bad FRAME  " + i + "    " + f.hashCode() );
-//			}
-			
+			if( f.isVisible() 
+			    && f.getContentPane() instanceof ScheduleEditorPanel )
+			{
+				ScheduleEditorPanel pane = (ScheduleEditorPanel)f.getContentPane();
+
+				pane.updateScriptText( (com.cannontech.message.macs.message.ScriptFile)val );
+			}
+
 		}
 		
 	}

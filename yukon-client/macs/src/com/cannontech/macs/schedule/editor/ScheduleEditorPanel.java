@@ -14,7 +14,9 @@ public class ScheduleEditorPanel extends com.cannontech.common.editor.PropertyPa
 	
 	private DataInputPanel[] inputPanels;
 	private String[] inputPanelTabNames;
+	
 	private String type = Schedule.SIMPLE_TYPE;
+	private String scriptFileName = null;
 
 
 	private static final String[][] EDITOR_TYPES =
@@ -57,13 +59,6 @@ public Object[] createNewPanel(int panelIndex)
 
 		case 1:
 			objs[0] = new com.cannontech.macs.schedule.wizard.ScriptSchedulePanel();
-
-/*			if( scriptFileStorage != null )
-			{
-				((com.cannontech.macs.schedule.wizard.ScriptSchedulePanel)objs[0]).setScriptValues( scriptFileStorage );
-				scriptFileStorage = null;
-			}
-*/			
 			objs[1] = "Script";
 			break;
 
@@ -182,6 +177,12 @@ public void setValue(Object val)
 	//We must assume that val is an instance of Schedule
 	Schedule schedule = (Schedule) val;
 	type = schedule.getType();
+	
+	if( getType().equalsIgnoreCase(Schedule.SCRIPT_TYPE) )
+	{
+		scriptFileName = schedule.getScriptFileName();
+	}
+
 
  	for( int i = 0; i < EDITOR_TYPES.length; i++ )
  	{
@@ -201,24 +202,16 @@ public void setValue(Object val)
  	}
 
 
-	//lock down here instead of only on the notifyAll() method
-	synchronized( this )
-	{
-		this.inputPanels = new DataInputPanel[panels.size()];
-		panels.copyInto( this.inputPanels );
-	
-		this.inputPanelTabNames = new String[tabs.size()];
-		tabs.copyInto( this.inputPanelTabNames );
-		
-		//Allow super to do whatever it needs to
-		super.setValue( val );
-		
-		//tell our waiter that all the panel info is set
-		notifyAll();
-		isNotified = true;
-	}
+	this.inputPanels = new DataInputPanel[panels.size()];
+	panels.copyInto( this.inputPanels );
 
+	this.inputPanelTabNames = new String[tabs.size()];
+	tabs.copyInto( this.inputPanelTabNames );
+	
+	//Allow super to do whatever it needs to
+	super.setValue( val );		
 }
+
 /**
  * This method was created in VisualAge.
  * @return java.lang.String
@@ -233,45 +226,34 @@ public String toString() {
  */
 public void updateScriptText(final com.cannontech.message.macs.message.ScriptFile file)
 {
-	try
+	if( getType().equalsIgnoreCase(Schedule.SCRIPT_TYPE) )
 	{
-		if( getType().equalsIgnoreCase(Schedule.SCRIPT_TYPE) )
+		CTILogger.info("		** RECEIVED AN updateScriptText() msg");
+
+		//be sure we have panels before we try to set them
+		if( inputPanels == null ) 
 		{
-			CTILogger.info("		** RECEIVED AN updateScriptText() msg");
-
-			//be sure we have panels before we try to set them
-			if( inputPanels == null ) 
-			{
-				CTILogger.info("		** Waiting for input panels to be not null...");
-				synchronized( this )
-				{ 
-					//only wait if we have not been notified yet
-					if( !isNotified )
-						wait(); 
-				}
-					
-			}
-
-			for( int i = 0; i < inputPanels.length; i++ )
-			{
-				if( inputPanels[i] instanceof com.cannontech.macs.schedule.wizard.ScriptSchedulePanel )
-				{
-					CTILogger.info("		** UPDATE SCRIPT TEXT SET");
-					((com.cannontech.macs.schedule.wizard.ScriptSchedulePanel)inputPanels[i]).setScriptValues(file);
-					((com.cannontech.macs.schedule.wizard.ScriptSchedulePanel)inputPanels[i]).repaint();
-					
-					return;
-				}
-			}
-
+			CTILogger.info("		** Should not have NULL inputPanels");
 		}
+
+		for( int i = 0; inputPanels != null && i < inputPanels.length; i++ )
+		{
+			if( inputPanels[i] instanceof com.cannontech.macs.schedule.wizard.ScriptSchedulePanel 
+				 && 
+				 (file.getFileName() != null && file.getFileName().equalsIgnoreCase(scriptFileName)) )
+			{
+				CTILogger.info("		** UPDATE SCRIPT TEXT SET");
+				((com.cannontech.macs.schedule.wizard.ScriptSchedulePanel)inputPanels[i]).setScriptValues(file);
+				((com.cannontech.macs.schedule.wizard.ScriptSchedulePanel)inputPanels[i]).repaint();
+				
+				return;
+			}
+		}
+
 	}
-	catch( InterruptedException e )
-	{
-		handleException(e);
-	}
-		
+
 }
+
 /**
  * 
  */
