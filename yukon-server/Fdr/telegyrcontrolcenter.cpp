@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2002/07/12 18:30:55 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2002/08/07 17:11:02 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -22,20 +22,33 @@ using namespace std;
 
 #include "telegyrcontrolcenter.h"
 #include "telegyrgroup.h"
+#include "logger.h"                    //temp include
+
+//=================================================================================================================================
+//=================================================================================================================================
 
 CtiTelegyrControlCenter::CtiTelegyrControlCenter()
 {
 }
 
+//=================================================================================================================================
+//=================================================================================================================================
+
 CtiTelegyrControlCenter::~CtiTelegyrControlCenter()
 {
+   if( !_telegyrGroupList.empty() )
+   {
+      _telegyrGroupList.erase( _telegyrGroupList.begin(), _telegyrGroupList.end() );
+   }
 }
+
+//=================================================================================================================================
+//=================================================================================================================================
 
 CtiTelegyrControlCenter& CtiTelegyrControlCenter::operator=( const CtiTelegyrControlCenter &other )
 {
    return *this;
 }
-
 
 //=================================================================================================================================
 //=================================================================================================================================
@@ -187,6 +200,16 @@ vector< CtiTelegyrGroup > & CtiTelegyrControlCenter::getTelegyrGroupList( void )
 
 void CtiTelegyrControlCenter::addToGroupList( CtiTelegyrGroup aGroup )
 {
+//...................... testing ......................
+/*   int   index;
+
+   for( index = 0; index < _telegyrGroupList.size(); index++ )
+   {
+      dout << index << " Group list" << endl;
+   }
+*/
+//...................... testing ......................
+
    _telegyrGroupList.push_back( aGroup );
 }
 
@@ -200,13 +223,14 @@ void CtiTelegyrControlCenter::deleteTelegyrGroupList( void )
    {
        _telegyrGroupList.erase( _telegyrGroupList.begin(), _telegyrGroupList.end() );
 
-
-
-/*
-      if( _telegyrGroupList.getPointList() )
-         _telegyrGroupList.getPointList().erase();
-
-      _telegyrGroupList.erase();
-*/
    }
 }
+
+//=================================================================================================================================
+//=================================================================================================================================
+
+CtiMutex& CtiTelegyrControlCenter::getMutex ()
+{
+    return _mux;
+}
+

@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2002/07/12 18:31:44 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2002/08/07 17:11:10 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -27,6 +27,7 @@
 #include "dlldefs.h"
 #include "fdr.h"
 #include "telegyrgroup.h"
+#include "mutex.h"
 
 class IM_EX_FDRBASE  CtiTelegyrControlCenter
 {
@@ -70,6 +71,8 @@ class IM_EX_FDRBASE  CtiTelegyrControlCenter
 
       void addToGroupList( CtiTelegyrGroup newGroup );
 
+      CtiMutex& getMutex( void );
+
    protected:
 
 
@@ -85,5 +88,6 @@ class IM_EX_FDRBASE  CtiTelegyrControlCenter
       RWCString                           _groupValid;
       RWCString                           _systemType;
 
+      CtiMutex                            _mux;
 };
 #endif // #ifndef __TELEGYRCONTROLCENTERS_H__

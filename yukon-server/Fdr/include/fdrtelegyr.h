@@ -14,12 +14,15 @@
 *
 * PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdracs.cpp-arc  $
-*    REVISION     :  $Revision: 1.1 $
-*    DATE         :  $Date: 2002/07/12 18:31:56 $
+*    REVISION     :  $Revision: 1.2 $
+*    DATE         :  $Date: 2002/08/07 17:10:53 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *    History:
       $Log: fdrtelegyr.h,v $
+      Revision 1.2  2002/08/07 17:10:53  eschmit
+      Took care of some memory leaks, added cparms for appname, some other small changes
+
       Revision 1.1  2002/07/12 18:31:56  eschmit
 
       Initial rev of the Telegyr stuff
@@ -96,6 +99,8 @@ public:
 
    static const CHAR * TBLNAME_TELEGYR_GROUPS;
    static const CHAR * KEY_HI_REASONABILITY_FILTER;
+   static const CHAR * KEY_APPLICATION_NAME;
+   static const CHAR * KEY_API_VERSION;
    static const CHAR * KEY_DB_RELOAD_RATE;
    static const CHAR * KEY_QUEUE_FLUSH_RATE;
    static const CHAR * KEY_DEBUG_MODE;
@@ -104,6 +109,8 @@ public:
    static const CHAR * COLNAME_TELEGYR_NAME;
    static const CHAR * COLNAME_TELEGYR_INTERVAL;
    static const CHAR * COLNAME_TELEGYR_TYPE;
+
+   const char *thisStupidApplicationsDamnName;
 
    long getLinkStatusID( void ) const;
    CtiFDRTelegyr &setLinkStatusID( const long aPointID );
@@ -137,6 +144,8 @@ private:
 
    bool        _connected;
    RWCString   _path;
+   RWCString   _appName;
+   RWCString   _apiVersion;
 };
 
 #endif // #ifndef __FDRTELEGYR_H__
