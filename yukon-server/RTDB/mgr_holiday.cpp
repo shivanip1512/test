@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_holiday.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2003/03/13 19:36:03 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2003/04/22 21:44:03 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -42,9 +42,15 @@ bool CtiHolidayManager::isHoliday(const RWDate& date, long holiday_sched_id)
             (iter->second.year == -1 || iter->second.year == date.year()) )
         {
             is_holiday = true;
+            break;
         }
     }
     return is_holiday;
+}
+
+bool CtiHolidayManager::isHoliday(long holiday_sched_id, const RWDate& date)
+{
+    return isHoliday(date,holiday_sched_id);
 }
 
 void CtiHolidayManager::refresh()
