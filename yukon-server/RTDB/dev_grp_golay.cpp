@@ -8,11 +8,15 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2004/04/29 20:23:49 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2004/05/10 22:35:28 $
 *
 * HISTORY      :
 * $Log: dev_grp_golay.cpp,v $
+* Revision 1.2  2004/05/10 22:35:28  cplender
+* Controls require
+* OutMessage->MessageFlags |= MSGFLG_APPLY_EXCLUSION_LOGIC
+*
 * Revision 1.1  2004/04/29 20:23:49  cplender
 * IR
 *
@@ -188,6 +192,7 @@ INT CtiDeviceGroupGolay::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
         if( (Route = getRoute( getRouteID() )) )    // This is "this's" route
         {
             OutMessage->TargetID = getID();
+            OutMessage->MessageFlags |= MSGFLG_APPLY_EXCLUSION_LOGIC;
 
             //
             // OK, these are the items we are about to set out to perform..  Any additional signals will

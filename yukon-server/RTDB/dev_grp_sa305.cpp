@@ -8,11 +8,15 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2004/03/18 19:46:43 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2004/05/10 22:35:28 $
 *
 * HISTORY      :
 * $Log: dev_grp_sa305.cpp,v $
+* Revision 1.2  2004/05/10 22:35:28  cplender
+* Controls require
+* OutMessage->MessageFlags |= MSGFLG_APPLY_EXCLUSION_LOGIC
+*
 * Revision 1.1  2004/03/18 19:46:43  cplender
 * Added code to support the SA305 protocol and load group
 *
@@ -161,6 +165,7 @@ INT CtiDeviceGroupSA305::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
     if( (Route = getRoute( getRouteID() )) )    // This is "this's" route
     {
         OutMessage->TargetID = getID();
+        OutMessage->MessageFlags |= MSGFLG_APPLY_EXCLUSION_LOGIC;
 
         int serial = (int)(getLoadGroup().getIndividual());
 

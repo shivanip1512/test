@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2004/04/29 19:58:49 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2004/05/10 22:35:28 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -166,6 +166,7 @@ INT CtiDeviceGroupSA105::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
     if( (Route = getRoute( getRouteID() )) )    // This is "this's" route
     {
         OutMessage->TargetID = getID();
+        OutMessage->MessageFlags |= MSGFLG_APPLY_EXCLUSION_LOGIC;
 
         //
         // OK, these are the items we are about to set out to perform..  Any additional signals will
