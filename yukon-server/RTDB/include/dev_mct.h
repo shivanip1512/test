@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/11/01 21:04:06 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2003/02/04 18:06:20 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -41,6 +41,8 @@ protected:
     RWTime _queueTime;
     ULONG _nextLPScanTime;
     ULONG _lpIntervalSent;
+
+    bool _scanGeneralPending, _scanIntegrityPending, _scanAccumulatorPending;
 
     enum
     {
@@ -97,6 +99,12 @@ public:
     static bool initCommandStore( );
     virtual bool getOperation( const UINT &cmdType, USHORT &function, USHORT &length, USHORT &io );
 
+    void setMCTScanPending( int scantype, bool pending );
+    void resetMCTScansPending( void );
+
+    virtual bool clearedForScan( int scantype );
+    virtual void resetForScan  ( int scantype );
+
     virtual INT GeneralScan    ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority = MAXPRIORITY - 4 );
     virtual INT AccumulatorScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority = MAXPRIORITY - 3 );
     virtual INT IntegrityScan  ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority = MAXPRIORITY - 4 );
@@ -132,9 +140,6 @@ public:
     static  DOUBLE translateStatusValue( INT PointOffset, INT PointType, INT DeviceType, PUSHORT DataValueArray );
     static  INT extractStatusData( INMESS *InMessage, INT type, USHORT *StatusData );
     static  INT verifyAlphaBuffer( DSTRUCT *DSt );
-
-    virtual bool clearedForScan( int scantype );
-    virtual void resetForScan  ( int scantype );
 
 };
 #endif // #ifndef __DEV_MCT_H__
