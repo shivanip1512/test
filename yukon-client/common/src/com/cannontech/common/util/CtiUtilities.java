@@ -1005,5 +1005,14 @@ public static String getExtension(java.io.File f) {
     }
     return ext;
  }
+ 
+ public static void setLaF() {
+ 	try {
+		javax.swing.UIManager.setLookAndFeel(
+			javax.swing.UIManager.getSystemLookAndFeelClassName());
+	} catch (Exception e) {
+			e.printStackTrace(); /*Not much to do about*/
+	}
+ }
 
 }
