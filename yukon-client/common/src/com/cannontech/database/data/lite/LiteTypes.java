@@ -44,4 +44,9 @@ public final class LiteTypes
 	public final static int STARS_ACCOUNT_SITE = 115;
 	public final static int STARS_SITE_INFORMATION = 116;
 	public final static int STARS_CUSTOMER_BASE = 117;
+	public final static int STARS_SERVICE_COMPANY = 118;
+	public final static int STARS_THERMOSTAT_SEASON = 119;
+	public final static int STARS_THERMOSTAT_SEASON_ENTRY = 120;
+	public final static int STARS_THERMOSTAT_MANUAL_OPTION = 121;
+	public final static int STARS_INTERVIEW_QUESTION = 122;
 }
