@@ -1145,16 +1145,16 @@ BOOL CtiLMControlArea::maintainCurrentControl(ULONG secondsFromBeginningOfDay, U
             {
                 returnBoolean = TRUE;
             }
-            if( currentLMProgram->getProgramState() == CtiLMProgramBase::FullyActiveState ||
-                currentLMProgram->getProgramState() == CtiLMProgramBase::ManualActiveState )
-            {
-                numberOfFullyActivePrograms++;
-                numberOfActivePrograms++;
-            }
-            else if( currentLMProgram->getProgramState() == CtiLMProgramBase::ActiveState )
-            {
-                numberOfActivePrograms++;
-            }
+		}
+        if( currentLMProgram->getProgramState() == CtiLMProgramBase::FullyActiveState ||
+            currentLMProgram->getProgramState() == CtiLMProgramBase::ManualActiveState )
+        {
+            numberOfFullyActivePrograms++;
+            numberOfActivePrograms++;
+        }
+        else if( currentLMProgram->getProgramState() == CtiLMProgramBase::ActiveState )
+        {
+            numberOfActivePrograms++;
         }
     }
     if( numberOfActivePrograms == 0 )
