@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2005/02/10 23:23:59 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2005/03/10 19:26:00 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -64,8 +64,10 @@ INT CtiDeviceCBC6510::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pars
 
     if( parse.getCommand() == ControlRequest && !(parse.getFlags() & CMD_FLAG_OFFSET) )
     {
+        //  this needs to be fixed/updated to work with the new multiframe porter-side DNP stuff
+        /*
         int offset;
-        CtiDNPBinaryOutputControl::ControlCode controltype;
+        Protocol::DNP::BinaryOutputControl::ControlCode controltype;
 
         if( parse.getFlags() & CMD_FLAG_CTL_OPEN )
         {
@@ -80,28 +82,30 @@ INT CtiDeviceCBC6510::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pars
             offset = 0;
         }
 
-        CtiProtocolDNP::dnp_output_point controlout;
+        Protocol::DNPInterface::output_point controlout;
 
-        controlout.type   = CtiProtocolDNP::DigitalOutput;
-        controlout.offset = offset;
+        controlout.type            = Protocol::DNPInterface::DigitalOutput;
+        controlout.control_offset  = offset;
 
-        controlout.dout.control    = CtiDNPBinaryOutputControl::PulseOn;
-        controlout.dout.trip_close = CtiDNPBinaryOutputControl::NUL;
+        controlout.dout.control    = Protocol::DNP::BinaryOutputControl::PulseOn;
+        controlout.dout.trip_close = Protocol::DNP::BinaryOutputControl::NUL;
         controlout.dout.on_time    = 0;
         controlout.dout.off_time   = 0;
         controlout.dout.count      = 1;
         controlout.dout.queue      = false;
         controlout.dout.clear      = false;
 
-        _dnp.setCommand(CtiProtocolDNP::DNP_SetDigitalOut_Direct, &controlout, 1);
+        if( _dnp.setCommand(Protocol::DNPInterface::Command_SetDigitalOut_Direct, controlout) )
+        {
+            OutMessage->Port = getPortID();
+            OutMessage->DeviceID = getID();
+            OutMessage->TargetID = getID();
 
-        OutMessage->Port = getPortID();
-        OutMessage->DeviceID = getID();
-        OutMessage->TargetID = getID();
+            _dnp.sendCommRequest( OutMessage, outList );
 
-        _dnp.sendCommRequest( OutMessage, outList );
-
-        nRet = NoError;
+            nRet = NoError;
+        }
+        */
     }
     else
     {
@@ -111,7 +115,8 @@ INT CtiDeviceCBC6510::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pars
     return nRet;
 }
 
-
+//  this must override something in dev_dnp to keep this behavior...
+/*
 void CtiDeviceCBC6510::processInboundPoints(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, RWTPtrSlist<CtiPointDataMsg> &points )
 {
     CtiPointDataMsg *tmpMsg;
@@ -196,7 +201,7 @@ void CtiDeviceCBC6510::processInboundPoints(INMESS *InMessage, RWTime &TimeNow, 
         }
     }
 }
-
+*/
 
 /*****************************************************************************
  * This method determines what should be displayed in the "Description" column
