@@ -515,9 +515,14 @@ void CtiLMControlAreaStore::reset()
                     rdr["pointtype"] >> point_type;
                     rdr["pointoffset"] >> point_offset;
 
+                    if(group_id <= 0) //we don't deal with groups with 0 or negative ids
+                    {
+                        continue;
+                    }
+                    
                     map< long, CtiLMGroupPtr >::iterator iter = temp_all_group_map.find(group_id);
                     CtiLMGroupPtr lm_group = iter->second;
-
+                    
                     switch(resolvePointType(point_type.data()))
                     {
                     case AnalogPointType:
