@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>yukon_web</name>
+	<name>yukon-web</name>
 	<comment></comment>
 	<projects>
 		<project>billing</project>
@@ -14,6 +14,7 @@
 		<project>stars</project>
 		<project>tdc</project>
 		<project>third-party</project>
+		<project>tools</project>
 		<project>trending</project>
 		<project>yukonappserver</project>
 	</projects>

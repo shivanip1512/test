@@ -42,5 +42,6 @@
         <webClassPathEntry>/commander/bin</webClassPathEntry>
         <webClassPathEntry>/loadcontrol/bin</webClassPathEntry>
         <webClassPathEntry>/billing/bin</webClassPathEntry>
+        <webClassPathEntry>/tools/bin</webClassPathEntry>
     </webClassPathEntries>
 </tomcatProjectProperties>
