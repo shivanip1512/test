@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base.cpp-arc  $
-* REVISION     :  $Revision: 1.38 $
-* DATE         :  $Date: 2005/02/10 23:23:59 $
+* REVISION     :  $Revision: 1.39 $
+* DATE         :  $Date: 2005/03/01 14:06:45 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -510,6 +510,16 @@ void CtiDeviceBase::DecodeDatabaseReader(RWDBReader &rdr)
     Inherited::DecodeDatabaseReader(rdr);
     _singleDevice = resolveIsDeviceTypeSingle(getType());
     _deviceBase.DecodeDatabaseReader(rdr);
+
+    if(hasExclusions())
+    {
+        for(int i = 0; i < 288; i++)
+        {
+            _submittal.reset(i);
+            _processed.reset(i);
+            _orphaned.reset(i);;
+        }
+    }
 }
 
 /*
