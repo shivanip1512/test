@@ -9,10 +9,13 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2004/09/20 16:11:04 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2004/11/03 17:50:46 $
 * HISTORY      :
 * $Log: dev_rtm.h,v $
+* Revision 1.4  2004/11/03 17:50:46  mfisher
+* added State_Ack
+*
 * Revision 1.3  2004/09/20 16:11:04  mfisher
 * implemented comms in generate() and decode()
 *
@@ -50,6 +53,7 @@ private:
         State_Uninit,
         State_Output,
         State_Input,
+        State_Ack,
         State_Complete
     } _state;
 
