@@ -186,6 +186,30 @@
                       <input type="text" name="RecvrFile" size="40">
                     </td>
                   </tr>
+                  <tr> 
+                    <td width="150"> 
+                      <div align="right">Meter File: </div>
+                    </td>
+                    <td width="250"> 
+                      <input type="text" name="MeterFile" size="40">
+                    </td>
+                  </tr>
+                  <tr> 
+                    <td width="150"> 
+                      <div align="right">Load Info File: </div>
+                    </td>
+                    <td width="250"> 
+                      <input type="text" name="LoadInfoFile" size="40">
+                    </td>
+                  </tr>
+                  <tr> 
+                    <td width="150"> 
+                      <div align="right">Work Order File: </div>
+                    </td>
+                    <td width="250"> 
+                      <input type="text" name="WorkOrderFile" size="40">
+                    </td>
+                  </tr>
                 </table>
 <%	} %>
                 <br>

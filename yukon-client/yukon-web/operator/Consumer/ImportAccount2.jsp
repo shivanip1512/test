@@ -8,7 +8,11 @@
 		{"DeviceType", "Device Type"},
 		{"DeviceVoltage", "Device Voltage"},
 		{"ServiceCompany", "Service Company"},
-		{"DeviceStatus", "Device Status"}
+		{"DeviceStatus", "Device Status"},
+		{"ApplianceCategory", "Appliance Category"},
+		{"Manufacturer", "Manufacturer"},
+		{"ServiceStatus", "Service Status"},
+		{"ServiceType", "Service Type"}
 	};
 	
 	Hashtable unassignedLists = (Hashtable) session.getAttribute(StarsAdmin.UNASSIGNED_LISTS);
@@ -113,7 +117,8 @@
                   <td width="25%">
                     <div align="center"> 
 <%
-		if (list.getUserUpdateAvailable().equalsIgnoreCase("Y")) {
+		if (listName.equals("ServiceCompany") ||
+			list.getUserUpdateAvailable().equalsIgnoreCase("Y")) {
 %> 
                       <input type="button" name="New" value="New" onclick="location.href='AssignSelectionList.jsp?List=<%= listName %>&New=true'">
 <%
