@@ -13,6 +13,7 @@ import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.db.contact.ContactNotification;
 import com.cannontech.database.data.customer.Contact;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.common.util.CtiUtilities;
 
 public class ContactPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener, javax.swing.event.ListSelectionListener {
 	private ContactNotificationTableModel tableModel = null;
@@ -816,8 +817,6 @@ public Object getValue(Object val)
 	else
 		cnt = (Contact)val;
 		
-		
-		
 	//HAVE THE ADD() METHOD GET THE NEW CONTACT_ID!!!!		
 	//cn.getContact().setContactID( recID );
 	cnt.getContact().setContFirstName( getJTextFieldFirstName().getText() );
@@ -830,55 +829,20 @@ public Object getValue(Object val)
 			new Integer( ((LiteYukonUser)selLg).getLiteID()) );
 	}
 
-
-	//create a new vector to store all the notifications we may need to operate on
-	Vector tempVect = new Vector( cnt.getContactNotifVect().size() );
-	for( int j = 0; j < cnt.getContactNotifVect().size(); j++ )
-	{
-		ContactNotification oldNotif = (ContactNotification)cnt.getContactNotifVect().get(j);
-		boolean fnd = false;
-		
-		for( int i = 0; i < getTableModel().getRowCount(); i++ )
-		{
-			ContactNotification cNotif = getTableModel().getContactNotificationRow(i);
-			
-			if( oldNotif.equals(cNotif) )
-			{
-				// item in OLD list & NEW list, update the cNotif
-				cNotif.setOpCode( Transaction.UPDATE );
-				tempVect.add( cNotif );
-				fnd = true;
-				break;
-			}
-		}
-
-		if( !fnd )
-		{
-			// item in OLD list only, delete the oldNotif
-			oldNotif.setOpCode( Transaction.DELETE );
-			tempVect.add( oldNotif );
-		}
-
-	}
-
-
+	Vector holder = new Vector();
+	//grab the latest ContactNotification list
 	for( int i = 0; i < getTableModel().getRowCount(); i++ )
 	{
-		ContactNotification cNotif = getTableModel().getContactNotificationRow(i);
-			
-		//if no id, this object must have been added by the user
-		if( cNotif.getContactNotifID() == null 
-			 || !cnt.getContactNotifVect().contains(cNotif) )
-		{
-			// item in NEW list, add the cNotif
-			cNotif.setOpCode( Transaction.INSERT );
-			tempVect.add( cNotif );
-		}
+		holder.addElement(getTableModel().getContactNotificationRow(i));
+		
 	}
-
-
+	
+	//run all the ContactNotifications through the NestedDBPersistent comparator
+	//to see which ones need to be added, updated, or deleted.
+	Vector newVect = CtiUtilities.NestedDBPersistentComparator(cnt.getContactNotifVect(), holder );
+	
 	cnt.getContactNotifVect().clear();
-	cnt.getContactNotifVect().addAll( tempVect );
+	cnt.getContactNotifVect().addAll( newVect );
 
 
 	return cnt;
