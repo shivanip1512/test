@@ -12,7 +12,7 @@ public interface OperatorRoleDefs extends RoleDefs {
 	public static final int ENERGY_BUYBACK_ROLEID = OPERATOR_ROLEID_BASE - 5;
 	public static final int ESUBSTATION_DRAWINGS_ROLEID = OPERATOR_ROLEID_BASE - 6;
 	public static final int ODDS_FOR_CONTROL_ROLEID = OPERATOR_ROLEID_BASE - 7;
-	public static final int INVENTORY_ROLEID = OPERATOR_ROLEID_BASE - 8;
+	public static final int INVENTORY_ROLEID = OPERATOR_ROLEID_BASE - 9;
 		
 	static final int ADMINISTRATOR_PROPERTYID_BASE = OPERATOR_PROPERTYID_BASE;
 	static final int CONSUMER_INFO_PROPERTYID_BASE = OPERATOR_PROPERTYID_BASE - 100;
