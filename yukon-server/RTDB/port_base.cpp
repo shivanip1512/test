@@ -571,7 +571,6 @@ INT       CtiPort::outClear()           { return NORMAL;}
 INT       CtiPort::byteTime(ULONG bytes) const      { return 0;}
 
 
-bool      CtiPort::needsReinit() const              { return getHandle() == (HANDLE)NULL;}
 HANDLE    CtiPort::getHandle() const                { return NULL;}
 INT       CtiPort::getIPPort() const                { return -1;}
 RWCString CtiPort::getIPAddress() const             { return RWCString("");}
@@ -673,7 +672,7 @@ pair< bool, INT > CtiPort::verifyPortStatus(CtiDevice *Device, INT trace)
 {
     pair< bool, INT > rpair = make_pair( false, NORMAL );
 
-    if( !isDialup() )
+    if( !isDialup() ) // We don't always want to re-open these types of port.
     {
         rpair = checkCommStatus(Device, trace);
     }
@@ -686,7 +685,7 @@ pair< bool, INT > CtiPort::checkCommStatus(CtiDevice *Device, INT trace)
     INT status = NORMAL;
     pair< bool, INT > rpair = make_pair( false, NORMAL );
 
-    if(needsReinit())
+    if(!isViable())
     {
         /* set up the port */
         if( (status = openPort()) != NORMAL )

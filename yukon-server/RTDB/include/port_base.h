@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_base.h-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2002/12/19 20:30:13 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2003/01/07 22:12:05 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -130,7 +130,6 @@ public:
 
     virtual INT       byteTime(ULONG bytes) const;
 
-    virtual bool      needsReinit() const;
     virtual HANDLE    getHandle() const;
     virtual INT       getIPPort() const;
     virtual RWCString getIPAddress() const;
@@ -225,7 +224,7 @@ inline INT CtiPort::getProtocol() const { return _tblPortBase.getProtocol();}
 
 inline INT CtiPort::isDialup() const { return ((getType() == PortTypeLocalDialup || getType() == PortTypeTServerDialup)); }
 inline bool CtiPort::isDialin() const { return ((getType() == PortTypeLocalDialBack || getType() == PortTypeTServerDialBack)); }
-inline bool CtiPort::isTCPIPPort() const { return ((getType() == TSERVER_SERIAL_PORT) || (getType() == TSERVER_DIALUP_PORT)); }
+inline bool CtiPort::isTCPIPPort() const { return ((getType() == PortTypeTServerDirect) || (getType() == PortTypeTServerDialup)); }
 
 inline INT CtiPort::getBaudRate() const { return getTablePortSettings().getBaudRate();}
 inline bool CtiPort::operator<(const CtiPort& rhs) const { return getPortID() < rhs.getPortID(); }

@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/port_tcpip.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2002/12/19 20:30:13 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2003/01/07 22:12:05 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -237,7 +237,7 @@ INT CtiPortTCPIPDirect::openPort(INT rate, INT bits, INT parity, INT stopbits)
 
 INT CtiPortTCPIPDirect::close(INT trace)
 {
-    return shutdownClose();
+    return shutdownClose(__FILE__, __LINE__);
 }
 
 INT CtiPortTCPIPDirect::inClear() const
@@ -415,7 +415,7 @@ INT CtiPortTCPIPDirect::inMess(CtiXfer& Xfer, CtiDevice* Dev, RWTPtrSlist< CtiMe
                 {
                     if(status == BADSOCK)
                     {
-                        shutdownClose();
+                        shutdownClose(__FILE__, __LINE__);
                     }
                 }
 
@@ -431,7 +431,7 @@ INT CtiPortTCPIPDirect::inMess(CtiXfer& Xfer, CtiDevice* Dev, RWTPtrSlist< CtiMe
             {
                 if(status == BADSOCK)
                 {
-                    shutdownClose();
+                    shutdownClose(__FILE__, __LINE__);
                 }
             }
         }
@@ -447,7 +447,7 @@ INT CtiPortTCPIPDirect::inMess(CtiXfer& Xfer, CtiDevice* Dev, RWTPtrSlist< CtiMe
             {
                 if(status == BADSOCK)
                 {
-                    shutdownClose();
+                    shutdownClose(__FILE__, __LINE__);
                 }
             }
 
@@ -517,7 +517,7 @@ INT CtiPortTCPIPDirect::outMess(CtiXfer& Xfer, CtiDevice* Dev, RWTPtrSlist< CtiM
         outClear();
         if( inClear() != NORMAL )
         {
-            shutdownClose( __FILE__, __LINE__);
+            shutdownClose(__FILE__, __LINE__);
         }
 
         /* Key the radio */
@@ -535,7 +535,7 @@ INT CtiPortTCPIPDirect::outMess(CtiXfer& Xfer, CtiDevice* Dev, RWTPtrSlist< CtiM
 
         if( sendData(Xfer.getOutBuffer(), Xfer.getOutCount(), &Written) || Written != Xfer.getOutCount())
         {
-            shutdownClose();
+            shutdownClose(__FILE__, __LINE__);
             status = PORTWRITE;
         }
 
@@ -798,12 +798,6 @@ void CtiPortTCPIPDirect::DecodeDialableDatabaseReader(RWDBReader &rdr)
     }
 }
 
-
-bool CtiPortTCPIPDirect::needsReinit() const
-{
-    return(!isViable());
-}
-
 void CtiPortTCPIPDirect::getSQL(RWDBDatabase &db, RWDBTable &keyTable, RWDBSelector &selector)
 {
     Inherited::getSQL(db, keyTable, selector);
@@ -886,20 +880,22 @@ INT  CtiPortTCPIPDirect::connectToDevice(CtiDevice *Device, INT trace)
     {
         status = Inherited::connectToDevice(Device,trace);
     }
-    return NORMAL;
+    return status;
 }
 
 INT  CtiPortTCPIPDirect::disconnect(CtiDevice *Device, INT trace)
 {
-    Inherited::disconnect(Device,trace);
+    INT status = NORMAL;
 
-    if(_dialable)
+    status = Inherited::disconnect(Device,trace);
+
+    if(!status && _dialable)
     {
         _dialable->disconnect(Device,trace);
         close(trace);                           // Release the port handle
     }
 
-    return NORMAL;
+    return status;
 }
 
 BOOL CtiPortTCPIPDirect::connected()

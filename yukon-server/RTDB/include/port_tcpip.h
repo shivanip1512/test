@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_tcpip.h-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2002/12/19 20:30:14 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2003/01/07 22:12:05 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -88,7 +88,6 @@ public:
    virtual INT inClear() const;
    virtual INT outClear() const;
    virtual void Dump() const;
-   virtual bool needsReinit() const;
    virtual BOOL shouldDisconnect() const;
    virtual CtiPort& setShouldDisconnect(BOOL b = TRUE);
 
