@@ -17,13 +17,12 @@ public class LMControlScenarioProgram extends com.cannontech.database.db.NestedD
 	
 	private Integer scenarioID;
 	private Integer programID;     
-	private Integer startDelay = new Integer(0);
-	private Integer stopOffset = new Integer(0);
+	private Integer startOffset = new Integer(0);
 	private Integer startGear = new Integer(0);
 	
 	public static final String SETTER_COLUMNS[] = 
 	{ 
-		"SCENARIOID", "PROGRAMID", "STARTDELAY", "StopOffset", "STARTGEAR"
+		"SCENARIOID", "PROGRAMID", "STARTOFFSET", "STARTGEAR"
 		
 	};
 
@@ -57,8 +56,8 @@ public class LMControlScenarioProgram extends com.cannontech.database.db.NestedD
 	{
 		Object addValues[] = 
 		{ 
-			getScenarioID(), getProgramID(), getStartDelay(), 
-			getStopOffset(), getStartGear()
+			getScenarioID(), getProgramID(), 
+			getStartOffset(), getStartGear()
 		
 		};
 
@@ -71,8 +70,6 @@ public class LMControlScenarioProgram extends com.cannontech.database.db.NestedD
 		delete( TABLE_NAME, CONSTRAINT_COLUMNS[0], getScenarioID());
 	}
 
-
-
 	public Integer getScenarioID() {
 		return scenarioID;
 	}
@@ -81,21 +78,15 @@ public class LMControlScenarioProgram extends com.cannontech.database.db.NestedD
 		return programID;
 	}
 
-	public Integer getStartDelay() {
-		return startDelay;
-	}
-
-	public Integer getStopOffset() {
-		return stopOffset;
+	public Integer getStartOffset() {
+		return startOffset;
 	}
 
 	public Integer getStartGear() {
 		return startGear;
 	}
 
-	
-	
-	
+		
 	public void retrieve() 
 	{
 		Integer constraintValues[] = { getScenarioID(), getProgramID() };	
@@ -107,9 +98,8 @@ public class LMControlScenarioProgram extends com.cannontech.database.db.NestedD
 			if( results.length == SETTER_COLUMNS.length )
 			{
 				setProgramID((Integer) results[1] );
-				setStartDelay( (Integer) results[2] );
-				setStopOffset( (Integer) results[3] );
-				setStartGear( (Integer) results[4] );
+				setStartOffset( (Integer) results[2] );
+				setStartGear( (Integer) results[3] );
 							
 			}
 		else
@@ -130,26 +120,21 @@ public class LMControlScenarioProgram extends com.cannontech.database.db.NestedD
 		programID = newProgramID;
 	}
 
-	public void setStartDelay(Integer delay) {
-		startDelay = delay;
-	}
-
-	public void setStopOffset(Integer stOff) {
-		stopOffset = stOff;
+	public void setStartOffset(Integer delay) {
+		startOffset = delay;
 	}
 
 	public void setStartGear(Integer gear) {
 		startGear = gear;
 	}
 
-	
 
 	public void update() 
 	{
 		Object setValues[] =
 		{ 
-			getScenarioID(), getProgramID(), getStartDelay(), 
-			getStopOffset(), getStartGear()		
+			getScenarioID(), getProgramID(), 
+			getStartOffset(), getStartGear()		
 		};
 	
 		Object constraintValues[] = { getScenarioID(), getProgramID() };
@@ -172,7 +157,7 @@ public class LMControlScenarioProgram extends com.cannontech.database.db.NestedD
 
 			//get all the programs that are associated with the passed ScenarioID
 			String sql = "select scenarioID, programID,"
-						+ " STARTDELAY, StopOffset, STARTGEAR" 
+						+ " STARTOFFSET, STARTGEAR" 
 						+ " from " + TABLE_NAME +
 					" where scenarioid=? order by programID";
 			try
@@ -190,9 +175,8 @@ public class LMControlScenarioProgram extends com.cannontech.database.db.NestedD
 					LMControlScenarioProgram prog = new LMControlScenarioProgram();	
 					prog.setScenarioID( scenarioID );
 					prog.setProgramID( new Integer(rset.getInt(2)) );
-					prog.setStartDelay( new Integer(rset.getInt(3)) );
-					prog.setStopOffset( new Integer(rset.getInt(4)) );
-					prog.setStartGear( new Integer(rset.getInt(5)) );
+					prog.setStartOffset( new Integer(rset.getInt(3)) );
+					prog.setStartGear( new Integer(rset.getInt(4)) );
 					prog.setDbConnection(conn);
 
 					progList.add(prog);

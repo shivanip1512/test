@@ -8,7 +8,7 @@ package com.cannontech.dbeditor.wizard.device.lmscenario;
 
 import java.util.Vector;
 import javax.swing.table.AbstractTableModel;
-import com.cannontech.database.db.device.lm.LMProgramDirectGear;
+import com.cannontech.database.data.lite.LiteGear;
 
 import com.cannontech.database.db.device.lm.LMControlScenarioProgram;
 
@@ -21,35 +21,31 @@ import com.cannontech.database.db.device.lm.LMControlScenarioProgram;
 public class LMControlScenarioProgramTableModel extends AbstractTableModel 
 {
 	public final static int PROGRAMNAME_COLUMN = 0;
-	public final static int STARTDELAY_COLUMN = 1;
-	public final static int STOPOFFSET_COLUMN = 2;
-	public final static int STARTGEAR_COLUMN = 3;
+	public final static int STARTOFFSET_COLUMN = 1;
+	public final static int STARTGEAR_COLUMN = 2;
 	
 	private String[] COLUMN_NAMES = 
 	{
 		"Program", 
-		"Start Delay", 
-		"Stop Offset",
+		"Start Offset", 
 		"Start Gear"
 	};
 	
-	private Class[] COLUMN_CLASSES = {String.class, Integer.class, Integer.class, LMProgramDirectGear.class};
+	private Class[] COLUMN_CLASSES = {String.class, Integer.class, Integer.class, LiteGear.class};
 	
 	private Vector rows = null;
 	
 	private class RowValue
 	{
 		private String programName = null;
-		private Integer startDelay = null;
-		private Integer stopOffset = null;
-		private LMProgramDirectGear initialGear = null;
+		private Integer startOffset = null;
+		private LiteGear initialGear = null;
 		
-		public RowValue(String programName, Integer startDelay, Integer stopOffset, LMProgramDirectGear initialGear )
+		public RowValue(String programName, Integer startOffset, LiteGear initialGear )
 		{
 			super();
 			this.programName = programName;
-			this.startDelay = startDelay;
-			this.stopOffset = stopOffset;
+			this.startOffset = startOffset;
 			this.initialGear = initialGear;
 		}
 
@@ -57,26 +53,20 @@ public class LMControlScenarioProgramTableModel extends AbstractTableModel
 		public String getProgramName()
 			{ return programName; }
 
-		public Integer getStartDelay()
-			{ return startDelay; }
+		public Integer getStartOffset()
+			{ return startOffset; }
 		
-		public Integer getStopOffset()
-			{ return stopOffset; }
-			
-		public LMProgramDirectGear getStartGear()
+		public LiteGear getStartGear()
 			{ return initialGear; }
 
 		// All setters
 		public void setProgramName(String val)
 			{ programName = val; }
 
-		public void setStartDelay(Integer val)
-			{ startDelay = val; }
+		public void setStartOffset(Integer val)
+			{ startOffset = val; }
 
-		public void setStopOffset(Integer val)
-			{ stopOffset = val; }
-			
-		public void setStartGear(LMProgramDirectGear val)
+		public void setStartGear(LiteGear val)
 			{ initialGear = val; }
 		
 		}
@@ -86,9 +76,9 @@ public class LMControlScenarioProgramTableModel extends AbstractTableModel
 		super();
 	}
 	
-	public void addRowValue(String programName, Integer startDelay, Integer stopOffset, LMProgramDirectGear initialGear) 
+	public void addRowValue(String programName, Integer startOffset, LiteGear initialGear) 
 	{
-		getRows().addElement( new RowValue(programName, startDelay, stopOffset, initialGear) );
+		getRows().addElement( new RowValue(programName, startOffset, initialGear) );
 	}
 	
 	public String getProgramNameAt(int row ) 
@@ -124,35 +114,20 @@ public class LMControlScenarioProgramTableModel extends AbstractTableModel
 	/**
 	 * getValueAt method comment.
 	 */
-	public Integer getStartDelayAt(int row ) 
+	public Integer getStartOffsetAt(int row ) 
 	{
 		if( getRows() == null )
 			return null;
 
 		if( row <= getRows().size() )
 		{
-			return ((RowValue)getRows().elementAt(row)).getStartDelay();
+			return ((RowValue)getRows().elementAt(row)).getStartOffset();
 		}
 		else
 			return null;
 	}
-	/**
-	 * getValueAt method comment.
-	 */
-	public Integer getStopOffsetAt(int row ) 
-	{
-		if( getRows() == null )
-			return null;
-
-		if( row <= getRows().size() )
-		{
-			return ((RowValue)getRows().elementAt(row)).getStopOffset();
-		}
-		else
-			return null;
-	}
-	
-	public LMProgramDirectGear getStartGearAt(int row ) 
+		
+	public LiteGear getStartGearAt(int row ) 
 	{
 		if( getRows() == null )
 			return null;
@@ -197,12 +172,9 @@ public class LMControlScenarioProgramTableModel extends AbstractTableModel
 				case PROGRAMNAME_COLUMN:
 					return rowVal.getProgramName();
 
-				case STARTDELAY_COLUMN:
-					return rowVal.getStartDelay();
+				case STARTOFFSET_COLUMN:
+					return rowVal.getStartOffset();
 	
-				case STOPOFFSET_COLUMN:
-					return rowVal.getStopOffset();
-					
 				case STARTGEAR_COLUMN:
 					return rowVal.getStartGear();
 				
@@ -231,11 +203,11 @@ public class LMControlScenarioProgramTableModel extends AbstractTableModel
 		}
 	}
 	
-	public void setRowValue(int rowNumber, String name, Integer start, Integer stop, LMProgramDirectGear gear) 
+	public void setRowValue(int rowNumber, String name, Integer start, Integer stop, LiteGear gear) 
 	{
 		if( rowNumber >=0 && rowNumber < getRowCount() )
 		{
-			getRows().setElementAt( new RowValue(name, start, stop, gear), rowNumber );
+			getRows().setElementAt( new RowValue(name, start, gear), rowNumber );
 		}
 	}
 	
@@ -250,18 +222,13 @@ public class LMControlScenarioProgramTableModel extends AbstractTableModel
 					((RowValue)getRows().elementAt(row)).setProgramName(value.toString());
 					break;
 				
-				case STARTDELAY_COLUMN:
+				case STARTOFFSET_COLUMN:
 					if(value.toString().compareTo("") != 0)
-						((RowValue)getRows().elementAt(row)).setStartDelay(new Integer(value.toString()));
-					break;
-				
-				case STOPOFFSET_COLUMN:
-					if(value.toString().compareTo("") != 0)
-						((RowValue)getRows().elementAt(row)).setStopOffset(new Integer(value.toString()));
+						((RowValue)getRows().elementAt(row)).setStartOffset(new Integer(value.toString()));
 					break;
 				
 				case STARTGEAR_COLUMN:
-					((RowValue)getRows().elementAt(row)).setStartGear((LMProgramDirectGear)value);
+					((RowValue)getRows().elementAt(row)).setStartGear((LiteGear)value);
 					break;
 				
 				default:
