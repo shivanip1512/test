@@ -61,7 +61,7 @@ create table LMControlScenarioProgram  (
    ScenarioID           NUMBER                           not null,
    ProgramID            NUMBER                           not null,
    StartDelay           NUMBER                           not null,
-   Duration             NUMBER                           not null,
+   StopOffset           NUMBER                           not null,
    StartGear            NUMBER                           not null
 );
 alter table LMControlScenarioProgram

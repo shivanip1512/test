@@ -282,7 +282,7 @@ public Object getValue(Object o) {
 		prog.setScenarioID( scen.getPAObjectID() );
 		prog.setProgramID( new Integer(
 						((com.cannontech.database.data.lite.LiteYukonPAObject)getProgramAddRemovePanel().rightListGetModel().getElementAt(i)).getYukonID() ) );
-		prog.setDuration(new Integer(0));
+		prog.setStopOffset(new Integer(0));
 		prog.setStartDelay(new Integer(0));
 		prog.setStartGear(LMScenario.getDefaultGearID(prog.getProgramID()));
 		

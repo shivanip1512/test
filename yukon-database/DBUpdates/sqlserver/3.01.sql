@@ -72,7 +72,7 @@ create table LMControlScenarioProgram (
 ScenarioID           numeric              not null,
 ProgramID            numeric              not null,
 StartDelay           numeric              not null,
-Duration             numeric              not null,
+StopOffset           numeric              not null,
 StartGear            numeric              not null
 );
 go

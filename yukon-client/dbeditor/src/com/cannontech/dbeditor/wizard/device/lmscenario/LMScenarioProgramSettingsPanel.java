@@ -414,7 +414,7 @@ public Object getValue(Object o)
 			singleProgram = new LMControlScenarioProgram(scen.getPAObjectID());
 			singleProgram.setProgramID(progId);
 			singleProgram.setStartDelay(delay);
-			singleProgram.setDuration(duration);
+			singleProgram.setStopOffset(duration);
 			singleProgram.setStartGear(gearID);
 					
 			thePrograms.addElement(singleProgram);
@@ -620,7 +620,7 @@ public void setValue(Object o)
 		}
 		
 		delay = singleProgram.getStartDelay();
-		duration = singleProgram.getDuration();
+		duration = singleProgram.getStopOffset();
 		
 		//grab the gear name
 		for(int x = 0; x < theGears.size(); x++)
