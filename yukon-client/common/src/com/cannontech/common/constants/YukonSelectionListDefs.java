@@ -64,5 +64,6 @@ public interface YukonSelectionListDefs {
 	public static final String YUK_LIST_NAME_IRRIGATION_TYPE = "IrrigationType";
 	public static final String YUK_LIST_NAME_SOIL_TYPE = "SoilType";
 	public static final String YUK_LIST_NAME_OPT_OUT_PERIOD = "OptOutPeriod";
+	public static final String YUK_LIST_NAME_OPT_OUT_PERIOD_CUS = "OptOutPeriodCustomer";
 	
 }
