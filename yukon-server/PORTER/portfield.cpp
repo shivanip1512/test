@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2002/06/11 16:48:18 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2002/06/11 21:22:45 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -90,6 +90,7 @@ using namespace std;
 #include "mgr_port.h"
 #include "mgr_device.h"
 #include "dev_base.h"
+#include "dev_cbc6510.h"
 #include "dev_ied.h"
 #include "dev_schlum.h"
 #include "dev_remote.h"
@@ -1109,6 +1110,34 @@ INT CommunicateDevice(CtiPort *Port, INMESS *InMessage, OUTMESS *OutMessage, Cti
                     i = Port->outMess(trx, Device, traceList);
                     break;
                 }
+            case TYPECBC6510:
+                {
+                    CtiDeviceCBC6510 *cbcdev = (CtiDeviceCBC6510 *)Device;
+                    CtiProtocolDNP   &dnp    = cbcdev->getProtocol();
+
+                    dnp.recvAppReqLayer(OutMessage);
+
+                    while(!dnp.isTransactionComplete())
+                    {
+                        dnp.generate(trx);
+
+                        status = Port->outInMess(trx, Device, traceList);
+
+                        dnp.decode(trx, status);
+
+                        // Prepare for tracing
+                        if(trx.doTrace(status))
+                        {
+                            Port->traceXfer(trx, traceList, Device, status);
+                        }
+
+                        DisplayTraceList(Port, traceList, true);
+                    }
+
+                    dnp.sendAppRspLayer(InMessage);
+
+                    break;
+                }
             case TYPE_SIXNET:
                 {
                     CtiDeviceIED         *IED= (CtiDeviceIED*)Device;
@@ -1277,7 +1306,6 @@ INT CommunicateDevice(CtiPort *Port, INMESS *InMessage, OUTMESS *OutMessage, Cti
             case TYPE_VECTRON:
             case TYPE_FULCRUM:
             case TYPE_QUANTUM:
-
                 {
                     // Copy the request into the InMessage side....
                     memcpy(&InMessage->Buffer.DUPSt.DUPRep.ReqSt, &OutMessage->Buffer.DUPReq, sizeof(DIALUPREQUEST));
@@ -1481,6 +1509,7 @@ INT CommunicateDevice(CtiPort *Port, INMESS *InMessage, OUTMESS *OutMessage, Cti
                         break;
                     }
 
+                case TYPECBC6510:
                 case TYPE_SIXNET:
                 case TYPE_TAPTERM:
                 case TYPE_WCTP:
@@ -1493,7 +1522,8 @@ INT CommunicateDevice(CtiPort *Port, INMESS *InMessage, OUTMESS *OutMessage, Cti
                 case TYPE_LGS4:
                 default:
                     {
-                        /* These guys are handled in a special way... */
+                        /*  These guys are handled in a special way...  */
+                        /*    they do all of their communications in the "outbound" block - typically in a loop, handling out/in pairs until they're complete.  */
                         break;
                     }
                 }
@@ -1566,6 +1596,7 @@ INT CommunicateDevice(CtiPort *Port, INMESS *InMessage, OUTMESS *OutMessage, Cti
                 case TYPE_JEM2:
                 case TYPE_JEM3:
                 case TYPE_DAVIS:
+                case TYPECBC6510:
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);

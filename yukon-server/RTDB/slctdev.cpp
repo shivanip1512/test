@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/slctdev.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/06/05 16:38:25 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/06/11 21:18:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,6 +20,7 @@
 #include "dev_710.h"
 #include "dev_base.h"
 #include "dev_macro.h"
+#include "dev_cbc6510.h"
 #include "dev_cbc.h"
 #include "dev_ccu.h"
 #include "dev_welco.h"
@@ -251,6 +252,11 @@ DLLEXPORT CtiDeviceBase* DeviceFactory(RWDBReader &rdr)
     case TYPE_SYSTEM:
         {
             Device = (CtiDeviceBase*) new CtiDeviceSystem;
+            break;
+        }
+    case TYPECBC6510:
+        {
+            Device = (CtiDeviceBase*) new CtiDeviceCBC6510;
             break;
         }
     case TYPEFISHERPCBC:

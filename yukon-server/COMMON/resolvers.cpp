@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/05/28 18:13:34 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/06/11 21:19:02 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -455,6 +455,10 @@ INT resolveDeviceType(RWCString rwsTemp)
     else if(rwsTemp == "macro group")
     {
         nRet = TYPE_MACRO;
+    }
+    else if(rwsTemp == "cbc-6510")
+    {
+        nRet = TYPECBC6510;
     }
     else if(rwsTemp == "cbc versacom")
     {
@@ -940,6 +944,7 @@ bool resolveIsDeviceTypeSingle(INT Type)
     case TYPEMCT360:
     case TYPEMCT370:
     case TYPELMT2:
+    case TYPECBC6510:
         {
             bRet = true;
             break;

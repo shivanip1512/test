@@ -41,6 +41,7 @@ dev_base.obj \
 dev_carrier.obj \
 dev_macro.obj \
 dev_cbc.obj \
+dev_cbc6510.obj \
 dev_ccu.obj \
 dev_dct501.obj \
 dev_dlcbase.obj \
