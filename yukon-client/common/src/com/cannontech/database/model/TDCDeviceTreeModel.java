@@ -14,7 +14,7 @@ public class TDCDeviceTreeModel extends DeviceTreeModel
  */
 public TDCDeviceTreeModel() 
 {
-	super(new DBTreeNode("Devices"));
+	super(new DBTreeNode("Point Attachable Objects"));
 }
 /**
  * Insert the method's description here.
@@ -38,7 +38,9 @@ public void update() {
 		java.util.List points = cache.getAllPoints();
 
 		java.util.Collections.sort( devices, com.cannontech.database.data.lite.LiteComparators.liteStringComparator );
-		java.util.Collections.sort( points, com.cannontech.database.data.lite.LiteComparators.litePointDeviceIDComparator );
+		java.util.Collections.sort( points, 
+				com.cannontech.database.data.lite.LiteComparators.liteStringComparator );
+
 
 		javax.swing.tree.DefaultMutableTreeNode rootNode = (javax.swing.tree.DefaultMutableTreeNode) getRoot();
 		rootNode.removeAllChildren();
@@ -70,11 +72,11 @@ public void update() {
 
 						deviceNode.add( new DBTreeNode( points.get(j)) );
 					}
-					else if( pointsFound )  // used to optimize the iterations
-					{						
-						pointsFound = false;
-						break;
-					}					
+//					else if( pointsFound )  // used to optimize the iterations
+//					{						
+//						pointsFound = false;
+//						break;
+//					}					
 				}
 			}
 		}

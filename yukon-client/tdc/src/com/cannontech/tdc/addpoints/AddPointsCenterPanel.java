@@ -6,6 +6,7 @@ package com.cannontech.tdc.addpoints;
  * @author: 
  */
 import java.awt.Cursor;
+import java.awt.Rectangle;
 
 import com.cannontech.tdc.TDCMainFrame;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
@@ -657,10 +658,7 @@ public void rightTable_MouseClicked(java.awt.event.MouseEvent mouseEvent)
 		else
 			model.addBlankRow( getRightTable().getSelectedRow() );
 
-		getRightTable().setRowSelectionInterval( getRightTable().getSelectedRow(), 
-									  						  getRightTable().getSelectedRow() );
-
-		getRightTable().resizeTable();
+		getRightTable().clearSelection();
 	}
 	
 	return;

@@ -105,7 +105,9 @@ private void initialize() {
 		// user code begin {1}
 		
 		dbTreeModel = new com.cannontech.database.model.TDCDeviceTreeModel();
+		//setRootVisible( false );
 		
+
 		// user code end
 		setName("AddPointsTree");
 		setModel(dbTreeModel);

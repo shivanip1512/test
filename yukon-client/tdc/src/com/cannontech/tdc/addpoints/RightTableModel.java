@@ -6,6 +6,12 @@ package com.cannontech.tdc.addpoints;
  */
 import java.util.Vector;
 
+import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.database.cache.functions.PAOFuncs;
+import com.cannontech.database.cache.functions.PointFuncs;
+import com.cannontech.database.data.lite.LiteComparators;
+import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.tdc.TDCMainFrame;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
 import com.cannontech.tdc.utils.DataBaseInteraction;
@@ -124,33 +130,6 @@ public boolean exceededMaxRows()
 }
 
 
-/**
- * Insert the method's description here.
- * Creation date: (4/14/00 10:29:41 AM)
- * Version: <version>
- */
-private java.util.List getCachedDevices() 
-{
-	com.cannontech.database.cache.DefaultDatabaseCache cache =
-			com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-
-	return cache.getAllDevices();
-}
-
-
-/**
- * Insert the method's description here.
- * Creation date: (4/14/00 10:29:41 AM)
- * Version: <version>
- */
-private java.util.List getCachedPoints() 
-{
-	com.cannontech.database.cache.DefaultDatabaseCache cache =
-			com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-
-	return cache.getAllPoints();
-}
-
 
 /**
  * getColumnCount method comment.
@@ -252,42 +231,15 @@ public void insertNewRow ( String ptId )
 	if( exceededMaxRows() )
 		return;
 
-
 	long pointid = Long.parseLong( ptId );
-	java.util.List devices = getCachedDevices();
-	java.util.List points = getCachedPoints();
-	com.cannontech.database.data.lite.LiteYukonPAObject device = null;
-	com.cannontech.database.data.lite.LitePoint point = null;
 
-	// THESE 2 LOOPS MIGHT BE SLOW.  I THINK devices ARE ORDERED BY DEVICEID!!
 	
-	// find the point first	
-	for( int i = 0; i < points.size(); i++ )
-	{		
-		if( pointid == ((com.cannontech.database.data.lite.LitePoint)points.get(i)).getPointID() )
-		{
-			point = ((com.cannontech.database.data.lite.LitePoint)points.get(i));
-			break;
-		}
-	}
-
-	// now find the device
-	if( point != null )
-	{
-		for( int j = 0; j < devices.size(); j++ )
-		{
-			if( point.getPaobjectID() == ((com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(j)).getYukonID() )
-			{
-				device = ((com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(j));
-				break;
-			}			
-		}
-	}
-
-	if( device == null || point == null)
-		return; // No device or point found, get out!!		
-		
-	rows.addElement( new Line( pointid, device.getPaoName(), point.getPointName() ) );
+	LitePoint point = PointFuncs.getLitePoint( (int)pointid );
+	
+	rows.addElement( 
+			new Line( pointid, 
+					PAOFuncs.getYukonPAOName(point.getPaobjectID()), 
+					point.getPointName() ) );
 
 
 	fireTableDataChanged(); // Tell the listeners a new table has arrived.
