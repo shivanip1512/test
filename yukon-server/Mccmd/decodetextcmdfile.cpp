@@ -388,7 +388,7 @@ bool validateAndDecodeLine( RWCString &input, int aProtocolFlag, RWCollectableSt
                                 */
 
                                 // do a select on the group before adding the serial number
-                                *programming = RWCString ("PutConfig serial ");
+                                *programming = RWCString ("set MessagePriority 5 ; PutConfig serial ");
                                 *programming += serialNum;
                                 *programming += RWCString (" template '");
                                 *programming += RWCString (tempString1);
@@ -420,19 +420,19 @@ bool validateAndDecodeLine( RWCString &input, int aProtocolFlag, RWCollectableSt
                             {
                                 if (aProtocolFlag == TEXT_CMD_FILE_SPECIFY_NO_PROTOCOL)
                                 {
-                                    *programming = RWCString ("PutConfig serial ");
+                                    *programming = RWCString ("set MessagePriority 7 ; PutConfig serial ");
                                 }
                                 else if (aProtocolFlag == TEXT_CMD_FILE_SPECIFY_EXPRESSCOM)
                                 {
-                                    *programming = RWCString ("PutConfig xcom serial ");
+                                    *programming = RWCString ("set MessagePriority 7 ; PutConfig xcom serial ");
                                 }
                                 else if (aProtocolFlag == TEXT_CMD_FILE_SPECIFY_VERSACOM)
                                 {
-                                    *programming = RWCString ("PutConfig versacom serial ");
+                                    *programming = RWCString ("set MessagePriority 7 ; PutConfig versacom serial ");
                                 }
                                 else
                                 {
-                                    *programming = RWCString ("PutConfig serial ");
+                                    *programming = RWCString ("set MessagePriority 7 ; PutConfig serial ");
                                 }
 
                                 if (tempString1.contains("in"))
@@ -590,7 +590,7 @@ bool validateAndDecodeLine( RWCString &input, int aProtocolFlag, RWCollectableSt
                                     // make sure we found something
                                     if ((!firstDivision) || (!firstClass) || (haveSection) || (haveUtility))
                                     {
-                                        *programming = "PutConfig versacom serial ";
+                                        *programming = "set MessagePriority 5 ; PutConfig versacom serial ";
                                         *programming +=serialNum;
     
                                         if (haveUtility)
@@ -658,7 +658,7 @@ bool validateAndDecodeLine( RWCString &input, int aProtocolFlag, RWCollectableSt
                         if ((aProtocolFlag == TEXT_CMD_FILE_SPECIFY_NO_PROTOCOL) ||
                             (aProtocolFlag == TEXT_CMD_FILE_SPECIFY_EXPRESSCOM))
                         {
-                            currentCmd = RWCString("PutConfig xcom assign serial ");
+                            currentCmd = RWCString("set MessagePriority 5 ; PutConfig xcom assign serial ");
                             bool haveSomething=false;
                             bool haveFeeder=false;
                             bool haveLoad=false;
@@ -1087,7 +1087,7 @@ bool decodeDsm2Lines( RWCString &aFunction,
                 */
 
                 // do a select on the group before adding the serial number
-                *programming = RWCString ("PutConfig serial ");
+                *programming = RWCString ("set MessagePriority 5 ; PutConfig serial ");
                 *programming += serialNum;
                 *programming += RWCString (" template '");
                 *programming += RWCString ("config: ");
@@ -1112,7 +1112,7 @@ bool decodeDsm2Lines( RWCString &aFunction,
                 * 0 = out, 1 = in
                 *****************************
                 */
-                *programming = RWCString ("PutConfig versacom serial ");
+                *programming = RWCString ("set MessagePriority 7 ; PutConfig versacom serial ");
                 *programming += serialNum;
                 if (atoi (cmd.data()) ==  0)
                 {
