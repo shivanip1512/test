@@ -33,6 +33,7 @@
               <% String header = "PROGRAMS - " + AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_TEXT_ODDS_FOR_CONTROL, "ODDS FOR CONTROL"); %>
               <%@ include file="include/InfoSearchBar2.jsp" %>
 			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
+			  <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
              
               <div align="center"><span class="MainText">Check the appropriate 
                 <cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_ODDS_FOR_CONTROL %>" defaultvalue="odds for control"/> 
