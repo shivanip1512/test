@@ -13,6 +13,7 @@ public class YukonGroup extends DBPersistent {
 	
 	private Integer groupID;
 	private String groupName;
+	private String groupDescription;
 	
 	public YukonGroup() {
 		initialize(null,null);
@@ -35,7 +36,7 @@ public class YukonGroup extends DBPersistent {
 	 * @see com.cannontech.database.db.DBPersistent#add()
 	 */
 	public void add() throws SQLException {
-		Object[] addValues = { getGroupID(), getGroupName() };
+		Object[] addValues = { getGroupID(), getGroupName(), getGroupDescription() };
 		add(TABLE_NAME, addValues);
 	}
 	
@@ -50,13 +51,15 @@ public class YukonGroup extends DBPersistent {
 	 * @see com.cannontech.database.db.DBPersistent#retrieve()
 	 */
 	public void retrieve() throws SQLException {
-		String[] selectColumns = { "GroupName" };
+		String[] selectColumns = { "GroupName", "GroupDescription" };
 		String[] constraintColumns = { "GroupID" };
 		Object[] constraintValues = { getGroupID() };
 		
 		Object[] results = retrieve(selectColumns, TABLE_NAME, constraintColumns, constraintValues);
-		if(results.length == selectColumns.length) {			
+		if(results.length == selectColumns.length)
+		{
 			setGroupName((String) results[0]);
+			setGroupDescription( (String) results[0] );
 		}			
 	}
 
@@ -64,8 +67,8 @@ public class YukonGroup extends DBPersistent {
 	 * @see com.cannontech.database.db.DBPersistent#update()
 	 */
 	public void update() throws SQLException {
-		String[] setColumns = { "GroupName" };
-		Object[] setValues = { getGroupName() };
+		String[] setColumns = { "GroupName", "GroupDescription" };
+		Object[] setValues = { getGroupName(), getGroupDescription() };
 		
 		String[] constraintColumns = { "GroupID" };
 		Object[] constraintValues = { getGroupID() };
@@ -103,6 +106,22 @@ public class YukonGroup extends DBPersistent {
 	 */
 	public void setGroupName(String groupName) {
 		this.groupName = groupName;
+	}
+
+	/**
+	 * @return
+	 */
+	public String getGroupDescription()
+	{
+		return groupDescription;
+	}
+
+	/**
+	 * @param string
+	 */
+	public void setGroupDescription(String string)
+	{
+		groupDescription = string;
 	}
 
 }

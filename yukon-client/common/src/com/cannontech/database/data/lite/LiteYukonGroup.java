@@ -5,6 +5,7 @@ package com.cannontech.database.data.lite;
  */
 public class LiteYukonGroup extends LiteBase {
 	private String groupName;
+	private String groupDescription;
 	
 	public LiteYukonGroup() {
 		initialize(0, null);
@@ -54,6 +55,30 @@ public class LiteYukonGroup extends LiteBase {
 	 */
 	public void setGroupID(int groupID) {
 		setLiteID(groupID);
+	}
+
+	/**
+	 * This method was created by Cannon Technologies Inc.
+	 */
+	public String toString() 
+	{
+		return getGroupName();
+	}
+	
+	/**
+	 * @return String groupDescription
+	 */
+	public String getGroupDescription()
+	{
+		return groupDescription;
+	}
+
+	/**
+	 * @param string
+	 */
+	public void setGroupDescription(String string)
+	{
+		groupDescription = string;
 	}
 
 }
