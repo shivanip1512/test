@@ -271,6 +271,102 @@
                              }
                           %>
       </table>
+      </center>
+      <p align="center"><span class="MainHeader"><b>Future
+        <cti:getProperty propertyid="<%=EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>"/> Summary</b></span>
+      <table width="620" border="1" cellspacing="0" cellpadding="2" align="center">
+        <tr valign="top"> 
+          <td class="HeaderCell">Offer ID</td>
+          <td class="HeaderCell">Program</td>
+          <td class="HeaderCell">Status</td>
+          <td class="HeaderCell">Notify Date/Time</td>
+          <td class="HeaderCell">Expire Date/Time</td>
+          <td class="HeaderCell">Committed Total (kW)</td>
+          <td class="HeaderCell">Target Total (kW)</td>
+        </tr>
+        <%
+                          {
+                        
+                                LMProgramEnergyExchange[] eeProgs = cache.getEnergyCompanyEnergyExchangePrograms(energyCompanyID);
+//out.println("found: " + eeProgs.length + " ee progs for ee company id: " + energyCompanyID);
+                                for( int i = 0; i < eeProgs.length; i++ )
+                                {
+                                  //out.println("found: " + eeProgs[i].getEnergyExchangeOffers().size() + " offers :P");
+                                    for( int j = 0; j < eeProgs[i].getEnergyExchangeOffers().size(); j++ )
+                                    {   
+                                        LMEnergyExchangeOffer offer = (LMEnergyExchangeOffer) eeProgs[i].getEnergyExchangeOffers().elementAt(j);
+
+                                        // Check if it is today                                   
+                                        GregorianCalendar nowCal = new GregorianCalendar();
+                                        GregorianCalendar offerCal = new GregorianCalendar();
+
+                                        nowCal.setTime(new Date());
+                                        offerCal.setTime(offer.getOfferDate());
+
+                                        if( nowCal.get( Calendar.YEAR ) == offerCal.get(Calendar.YEAR) &&
+                                            nowCal.get( Calendar.DAY_OF_YEAR ) != offerCal.get(Calendar.DAY_OF_YEAR) &&
+                                            nowCal.get( Calendar.DAY_OF_YEAR )+1 != offerCal.get(Calendar.DAY_OF_YEAR) )
+                                        {                                    
+                                            // the offer is for today, now show all revisions 
+                                            //out.println("found: " + offer.getEnergyExchangeOfferRevisions().size() + " revisions");
+                                            for( int k = 0; k < offer.getEnergyExchangeOfferRevisions().size(); k++ )
+                                            {                                                
+                                                LMEnergyExchangeOfferRevision revision =  
+                                                    (LMEnergyExchangeOfferRevision) offer.getEnergyExchangeOfferRevisions().elementAt(k);
+
+                                                // Add up the total target from all the hourly offers
+                                                 double targetTotal = 0.0;
+                                                 java.util.Vector hourlyOffers = revision.getEnergyExchangeHourlyOffers();
+                                                // out.println("found: " + hourlyOffers.size() + " hourly!!>>   ");
+                                                 for( int l = 0; l < hourlyOffers.size(); l++ )
+                                                 {
+                                                     LMEnergyExchangeHourlyOffer hourOffer = (LMEnergyExchangeHourlyOffer) hourlyOffers.elementAt(l);
+                                                     targetTotal += hourOffer.getAmountRequested().doubleValue();
+                                                 }
+                                                 
+                                                // Add up all the commited from the customer replies
+                                                 double committedTotal = 0.0;
+                                                 LMEnergyExchangeCustomer[] progCustomers = cache.getEnergyExchangeCustomers(eeProgs[i].getYukonID().longValue());
+
+                                                 if( progCustomers != null )
+                                                 {
+                                                     for( int m = 0; m < progCustomers.length; m++ )
+                                                     {
+                                                         java.util.Vector replies = progCustomers[m].getEnergyExchangeCustomerReplies();
+                                                         for( int n = 0; n < replies.size(); n++ )
+                                                         {
+                                                              LMEnergyExchangeCustomerReply reply = (LMEnergyExchangeCustomerReply) replies.elementAt(n);
+                                                              if( reply.getOfferID().intValue() == revision.getOfferID().intValue() &&
+                                                                  reply.getRevisionNumber().intValue() == revision.getRevisionNumber().intValue() )
+                                                              {                                                              
+                                                                java.util.Vector hourlyReplies = reply.getEnergyExchangeHourlyCustomer();
+                                                                for( int o = 0; o < hourlyReplies.size(); o++ )
+                                                                {
+                                                                    LMEnergyExchangeHourlyCustomer hourlyReply = (LMEnergyExchangeHourlyCustomer) hourlyReplies.elementAt(o);
+                                                                    committedTotal += hourlyReply.getAmountCommitted().doubleValue();
+                                                                }
+                                                              }
+                                                         }
+                                                     }
+                                                 }
+                          %>
+        <tr valign="top"> 
+          <td class="TableCell"><a href="oper_ee.jsp?tab=current&prog=<%= offer.getYukonID() %>&offer=<%= offer.getOfferID() %>&rev=<%= revision.getRevisionNumber() %>" class="Link1"><%= offer.getOfferID() + "-" + revision.getRevisionNumber() %></a></td>
+          <td class="TableCell"><%= eeProgs[i].getYukonName() %></td>
+          <td class="TableCell"><%= offer.getRunStatus() %></td>
+          <td class="TableCell"> <%= timePart.format(revision.getNotificationDateTime()) + " " + tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) + "  " + datePart.format(revision.getNotificationDateTime()) %></td>
+          <td class="TableCell"> <%= timePart.format(revision.getOfferExpirationDateTime()) + " " + tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) + "  " + datePart.format(revision.getOfferExpirationDateTime()) %></td>
+          <td class="TableCell"> <%= committedTotal %></td>
+          <td class="TableCell"> <%= targetTotal %></td>
+        </tr>
+        <%        
+                                           }
+                                        }
+                                    }                                    
+                                }
+                             }
+                          %>
+      </table>      
     <p>&nbsp;</p></td>
   </tr>
 </table>
