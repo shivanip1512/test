@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2003/12/18 15:57:18 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2003/12/28 18:54:14 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -58,14 +58,14 @@ INT CtiDeviceMarkV::ExecuteRequest( CtiRequestMsg             *pReq,
            {
             case ScanRateGeneral:
               {
-                 _transdataProtocol.setCommand( GENERAL, true );  //the bool is temp to force LP collection
+                 _transdataProtocol.setCommand( CtiTransdataApplication::General, true );  //the bool is temp to force LP collection
                                                                   //it will be seperable later
               }
             break;
 
            case  ScanRateLoadProfile:
               {
-                 _transdataProtocol.setCommand( LOADPROFILE, false ); 
+                 _transdataProtocol.setCommand( CtiTransdataApplication::LoadProfile, false ); 
               }
               break;
            }
@@ -128,11 +128,6 @@ INT CtiDeviceMarkV::GeneralScan( CtiRequestMsg              *pReq,
    
    status = ExecuteRequest( pReq, newParse, OutMessage, vgList, retList, outList );
 
-   {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " General Scan" << endl;
-   }
-
    return NoError;
 }
 
@@ -154,11 +149,6 @@ INT CtiDeviceMarkV::LoadProfileScan( CtiRequestMsg              *pReq,
    
    status = ExecuteRequest( pReq, newParse, OutMessage, vgList, retList, outList );
 
-   {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " Load Profile Scan" << endl;
-   }
-
    return NoError;
 }
 
@@ -174,7 +164,7 @@ INT CtiDeviceMarkV::ResultDecode( INMESS                    *InMessage,
    vector<CtiTransdataData *>    transVector;
    
 
-   if( _transdataProtocol.getCommand() == GENERAL )
+   if( _transdataProtocol.getCommand() == CtiTransdataApplication::General )
    {
       memcpy( &_llp, InMessage->Buffer.InMessage, sizeof( _llp ));
       setLastLPTime( RWTime( _llp.lastLP ));
@@ -239,7 +229,7 @@ int CtiDeviceMarkV::decodeResultScan( INMESS                    *InMessage,
 
    {
       CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " ----Process Scanner Message In Progress----" << endl;
+      dout << RWTime() << " ----Scanner Message Process----" << endl;
    }
 
    if( isScanPending() )
@@ -248,8 +238,6 @@ int CtiDeviceMarkV::decodeResultScan( INMESS                    *InMessage,
       {
          switch( transVector[index]->getID() )
          {
-
-            //setLastLPTime (lastIntervalTS.seconds());  //lp thing
 
          case 5:
             {

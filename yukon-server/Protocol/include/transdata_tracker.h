@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2003/12/18 21:49:15 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2003/12/28 18:54:15 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -29,45 +29,11 @@
 
 class IM_EX_PROT CtiTransdataTracker
 {
-   enum
-   {
-      //connect
-      doPassword  = 0,
-      doTime,
-      doIdentify,
-      
-      //billing
-      doScroll,
-      doPullBuffer,
-      doStartProt1,
-      doEndProt1,
-      
-      //loadprofile
-      doEnabledChannels,
-      doIntervalSize,
-//      doTime,
-      doRecordDump,
-      doRecordNumber,
-      doProt1,
-      doProt2,
-      doProt3,
-      
-      //disconnect
-      doLogoff
-   };
-
-   enum
-   {
-      working     = 0,
-      failed
-   };
-
    public:
       
       typedef union
       {
          BYTE     rec[2];
-//         DOUBLE   value;
          UINT     value;
       }lpRecord;
         
@@ -112,6 +78,8 @@ class IM_EX_PROT CtiTransdataTracker
       void reinitalize( void );
       void destroy( void );
       int calcLPRecs( void );
+      int countChannels( void );
+      int calcAcks( int recs );
 
    protected:
 
@@ -119,9 +87,40 @@ class IM_EX_PROT CtiTransdataTracker
 
       enum
       {
+         //connect
+         doPassword  = 0,
+         doEnabledChannels,
+         doTime,
+         doIntervalSize,
+         doIdentify,
+
+         //billing
+         doScroll,
+         doPullBuffer,
+         doProt1,
+
+         //loadprofile
+         doRecordDump,
+         doRecordNumber,
+         doProt2,
+
+         //disconnect
+         doLogoff
+      };
+
+      enum Errors
+      {
+         Working     = 0,
+         Failed
+      };
+
+      enum Sizes
+      {
          Command_size   = 30,
+         Recs_Fitable   = 512,
          Storage_size   = 4500,
-         Meter_size     = 4500
+         Meter_size     = 4500,
+         Max_lp_recs    = 9999
       };
 
       //these are the transdata commands that are defined by the doc 22A204E
@@ -181,12 +180,17 @@ class IM_EX_PROT CtiTransdataTracker
       bool                 _sec;
       bool                 _hold;
       bool                 _dataIsExpected;
+      bool                 _didRecordCheck;
+      bool                 _didLoadProfile;
+      bool                 _didBilling;
+      bool                 _haveData;
 
       int                  _lastState;
       int                  _bytesReceived;
       int                  _meterBytes;
       int                  _failCount;
       int                  _error;
+      int                  _neededAcks;
 
       BYTE                 *_storage;
       BYTE                 *_meterData;

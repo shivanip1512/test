@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2003/12/16 17:23:04 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2003/12/28 18:54:15 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -31,8 +31,8 @@ class IM_EX_PROT CtiProtocolYmodem
       CtiProtocolYmodem();
       ~CtiProtocolYmodem();
 
-      bool generate( CtiXfer &xfer, int bytesWanted, int timeToWait );
-      bool stopAck( CtiXfer &xfer, int bytesWanted, int timeToWait );
+//      bool generate( CtiXfer &xfer, int bytesWanted, int timeToWait );
+      bool generate( CtiXfer &xfer, int reqAcks );
       bool decode( CtiXfer &xfer, int status );
       void setXfer( CtiXfer &xfer, BYTE dataOut, int bytesIn, bool block, ULONG time );
 
@@ -45,12 +45,17 @@ class IM_EX_PROT CtiProtocolYmodem
       bool isCrcValid( void );
       void destroy( void );
       void reinitalize( void );
+      void setError( void );
+      int getError( void );
+      void setStart( bool doSet );
+      int getAcks( void );
+      void setAcks( int acks );
 
    protected:
 
    private:
       
-      enum
+      enum Signals
       {
          //http://www.bsdg.org/swag/COMM/0084.PAS.html
          //Ahh The Rosetta Stone.
@@ -68,7 +73,13 @@ class IM_EX_PROT CtiProtocolYmodem
          Zdle      = 0x18
       };
 
-      enum
+      enum Errors
+      {
+         Working     = 0,
+         Failed
+      };
+
+      enum States
       {
          doStart,
          doAck
@@ -80,11 +91,17 @@ class IM_EX_PROT CtiProtocolYmodem
       };
 
       bool        _finished;
+      bool        _flip;
+      bool        _start;
 
+      int         _failCount;
+      int         _error;
       int         _lastState;
       int         _bytesReceived;
       int         _bytesExpected;
-      
+      int         _acks;
+      int         _reqAcks;
+
       BYTE        *_storage;
 };
 

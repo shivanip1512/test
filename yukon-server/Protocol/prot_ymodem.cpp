@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2003/12/18 15:57:18 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2003/12/28 18:54:15 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *
@@ -60,73 +60,53 @@ void CtiProtocolYmodem::destroy( void )
 
 void CtiProtocolYmodem::reinitalize( void )
 {
-   if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
-   {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " ymodem reinit" << endl;
-   }
-
    _lastState     = doStart;
+
+   _failCount     = 0;
    _bytesReceived = 0;
+   _acks          = 0;
+   _reqAcks       = 0;
+
    _finished      = false;
+   _start         = true;
+   _flip          = false;
+
    _storage       = new BYTE[Storage_size];
 }
 
 //=====================================================================================================================
+//FIXME: the ymodem should send 'C' to begin a transaction and 'ACK' for each subsequent chunk of data returned
 //=====================================================================================================================
 
-bool CtiProtocolYmodem::generate( CtiXfer &xfer, int bytesWanted, int timeToWait )
+//bool CtiProtocolYmodem::generate( CtiXfer &xfer, int bytesWanted, int timeToWait )
+bool CtiProtocolYmodem::generate( CtiXfer &xfer, int reqAcks )
 {
-   if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+   if( _start )
    {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " ymodem generate" << endl;
-   }
-
-   if( _lastState == doAck )
-   {
-      if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
-      {
-         CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " ymodem set ACK" << endl;
-      }
-      
-      _bytesExpected = bytesWanted;
-      _lastState = doStart;
-      setXfer( xfer, Ack, _bytesExpected, false, timeToWait ); //false, 0?
+      _bytesExpected = 1029;
+      setXfer( xfer, Crcnak, _bytesExpected, false, 5 );
+      setAcks( reqAcks );     //when we start the protocol, set how many times we think we'll need to ack
+      _acks = 0;
+      _start = false;
    }
    else
    {
-      if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+//      if( _flip )
       {
-         CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " ymodem set NAK" << endl;
+         _bytesExpected = 1029;
+         setXfer( xfer, Ack, _bytesExpected, false, 5 );
+         _acks++; //////////
       }
-      
-      _bytesExpected = bytesWanted;
-      _lastState = doAck;
-      setXfer( xfer, Crcnak, _bytesExpected, false, timeToWait );
+  /*    else
+      {
+         _bytesExpected = 0;
+         setXfer( xfer, Ack, _bytesExpected, false, 0 );
+         _acks++;
+      }*/
+
+      _flip = !_flip;
    }
-
-   return( false );
-}
-
-//=====================================================================================================================
-//real temp quick hack
-//=====================================================================================================================
-
-bool CtiProtocolYmodem::stopAck( CtiXfer &xfer, int bytesWanted, int timeToWait )
-{
-   if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
-   {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " ymodem stopack" << endl;
-   }
-
-   _bytesExpected = bytesWanted;
-   _lastState = doStart;
-   setXfer( xfer, Ack, _bytesExpected, false, timeToWait ); 
-      
+   
    return( false );
 }
 
@@ -135,12 +115,6 @@ bool CtiProtocolYmodem::stopAck( CtiXfer &xfer, int bytesWanted, int timeToWait 
 
 bool CtiProtocolYmodem::decode( CtiXfer &xfer, int status )
 {
-   if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
-   {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " ymodem decode" << endl;
-   }
-   
    if( xfer.getInCountActual() >= _bytesExpected )
    {
       if( _bytesExpected )
@@ -150,6 +124,10 @@ bool CtiProtocolYmodem::decode( CtiXfer &xfer, int status )
       }
       
       _finished = true;
+   }
+   else
+   {
+      setError();
    }
 
    return( false );
@@ -170,13 +148,16 @@ void CtiProtocolYmodem::retreiveData( BYTE *data, int *bytes )
 {
    if( _storage != NULL )
    {
-      memcpy( data, _storage, _bytesReceived );
+
+      ///do the 'front shaving' here instead of in tracker....
+      memcpy( data, _storage + 3, _bytesReceived - 3 );
       *bytes = _bytesReceived;
 
       memset( _storage, '\0', Storage_size );
 
       _bytesReceived = 0;
       _finished = false;
+//      _start = true;
    }
 }
 
@@ -263,3 +244,51 @@ void CtiProtocolYmodem::setXfer( CtiXfer &xfer, BYTE dataOut, int bytesIn, bool 
    xfer.setNonBlockingReads( block );
 }
 
+//=====================================================================================================================
+//=====================================================================================================================
+
+void CtiProtocolYmodem::setError( void )
+{
+   if( ++_failCount > 1 )
+      _error = Failed;
+   else
+      _error = Working;
+
+   {
+      CtiLockGuard<CtiLogger> doubt_guard(dout);
+      dout << RWTime() << " ymodem error " << _failCount << endl;
+   }
+
+}
+
+//=====================================================================================================================
+//=====================================================================================================================
+
+int CtiProtocolYmodem::getError( void )
+{
+   return( _error );
+}
+
+//=====================================================================================================================
+//=====================================================================================================================
+
+void CtiProtocolYmodem::setStart( bool doSet )
+{
+   _start = doSet;
+}
+
+//=====================================================================================================================
+//=====================================================================================================================
+
+int CtiProtocolYmodem::getAcks( void )
+{
+   return( _acks );
+}
+
+//=====================================================================================================================
+//=====================================================================================================================
+
+void CtiProtocolYmodem::setAcks( int acks )
+{
+   _reqAcks = acks;
+}

@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2003/12/18 21:49:15 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2003/12/28 18:54:15 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -129,109 +129,36 @@ void CtiTransdataTracker::reinitalize( void )
    _datalink.reinitalize();
       
    _lastState        = doPassword;
-   _error            = working;
+   _error            = Working;
    _meterBytes       = 0;
+   _neededAcks       = 1;  //smarter, later
 
    _finished         = true;
    _moveAlong        = false;
    _goodCRC          = false;
    _ymodemsTurn      = false;
-
    _dataIsExpected   = false;;
    _hold             = false;
+   _didRecordCheck   = false;
+   _didLoadProfile   = false;
+   _didBilling       = false;
+   _haveData         = false;
 
    _lp               = new mark_v_lp;
 
-   _storage          = new BYTE[Storage_size];    //supposedly, we'd only need 1k, but...
+   _storage          = new BYTE[Storage_size];    
    _meterData        = new BYTE[Meter_size];
    _lastCommandSent  = new BYTE[Command_size];
-   
-//   _password         = "22222222\r\n";       //silly hard-codedness for now
-}
-
-//=====================================================================================================================
-//=====================================================================================================================
-
-bool CtiTransdataTracker::decodeYModem( CtiXfer &xfer, int status )
-{
-   BYTE  temp[500];
-   int   bytes = 0;
-
-   if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
-   {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " track decode" << endl;
-   }
-
-   if( _ymodemsTurn )
-   {
-      _ymodem.decode( xfer, status );
-
-      if( _ymodem.isTransactionComplete() )
-      {
-         if( _dataIsExpected )
-         {
-            _goodCRC = _ymodem.isCrcValid();
-
-            if( _goodCRC )
-            {
-               _ymodem.retreiveData( _meterData, &_meterBytes );
-               processData( _meterData, _meterBytes );
-               setNextState();
-               _ymodemsTurn = false;
-            }
-         }
-         else
-         {
-            setNextState();
-         }
-
-         if( _moveAlong )
-         {
-            _moveAlong = false;
-            _finished = true;
-         }
-      }
-   }
-   
-   return( false );
-}
-   
-//=====================================================================================================================
-//=====================================================================================================================
-
-bool CtiTransdataTracker::decodeLink( CtiXfer &xfer, int status )
-{
-   BYTE  temp[500];
-   int   bytes = 0;
-   
-   _datalink.readMsg( xfer, status );
-
-   if( _datalink.isTransactionComplete() )
-   {
-      memset( _storage, '\0', Storage_size );
-
-      _datalink.retreiveData( _storage, &_bytesReceived );
-      processComms( _storage, _bytesReceived );
-   }
-   
-   if( _datalink.getError() == failed )
-   {
-      setError();
-      _waiting = false;
-   }
-
-   return( false );
 }
 
 //=====================================================================================================================
 //=====================================================================================================================
 
 bool CtiTransdataTracker::decode( CtiXfer &xfer, int status )
-{
-   if( _error == failed )
+{    
+   if( _error == Failed )
       reset();
-
+       
    switch( _lastState )
    {
    case doPassword:
@@ -248,11 +175,8 @@ bool CtiTransdataTracker::decode( CtiXfer &xfer, int status )
       }
       break;
 
-   case doStartProt1:
-   case doEndProt1:
    case doProt1:
    case doProt2:
-   case doProt3:
       {
          decodeYModem( xfer, status );
       }
@@ -264,6 +188,320 @@ bool CtiTransdataTracker::decode( CtiXfer &xfer, int status )
       break;
    }
    
+   return( true );
+}
+
+//=====================================================================================================================
+//=====================================================================================================================
+
+bool CtiTransdataTracker::decodeYModem( CtiXfer &xfer, int status )
+{
+   _ymodem.decode( xfer, status );
+
+   if( _ymodem.isTransactionComplete() )
+   {
+      _goodCRC = _ymodem.isCrcValid();
+
+      if( _goodCRC )
+      {
+         _ymodem.retreiveData( _meterData, &_meterBytes );
+         processData( _meterData, _meterBytes );
+      }
+   }
+   else
+   {
+//      setError();     //we can get rid of failcounts below
+   }
+   
+   {
+      CtiLockGuard<CtiLogger> doubt_guard(dout);
+      dout << RWTime() << " ================================ getAcks() " << _ymodem.getAcks() << " chunks" << endl;
+   }
+
+   
+   if( _ymodem.getAcks() >= _neededAcks )
+   {
+      _finished = true;
+      //
+      //
+      _ymodem.setStart( true );
+      setNextState();
+   }
+
+   return( false );
+}
+   
+//=====================================================================================================================
+//=====================================================================================================================
+
+bool CtiTransdataTracker::decodeLink( CtiXfer &xfer, int status )
+{
+   _datalink.readMsg( xfer, status );
+
+   if( _datalink.isTransactionComplete() )
+   {
+      memset( _storage, '\0', Storage_size );
+
+      _datalink.retreiveData( _storage, &_bytesReceived );
+      processComms( _storage, _bytesReceived );
+   }
+   else
+   {
+//      setError(); //we can get rid of failcounts below
+   }
+   
+   return( false );
+}
+
+//=====================================================================================================================
+//search for one of our magic conditions that says 'success' of this layer (not ymodem)
+//=====================================================================================================================
+
+bool CtiTransdataTracker::processComms( BYTE *data, int bytes )
+{
+   bool  valid = false;
+
+   if( gotRetry( data, bytes ) )
+   {
+      reset();
+   }
+   else if( gotValidResponse( data, bytes ) )
+   {
+      if( _lastState == doEnabledChannels )
+         grabChannels( data, bytes );
+
+      if( _lastState == doIntervalSize )
+         grabFormat( data, bytes );
+
+      if( _lastState == doTime )
+         grabTime( data, bytes );
+
+      setNextState();
+
+      if( _moveAlong )
+      {
+         _moveAlong = false;
+         _finished = true;
+      }
+
+      valid = true;
+   }
+
+   return( valid );
+}
+
+//=====================================================================================================================
+//if we collected loadprofile data, we need to add our raw data to our lp struct, then copy it back into the main
+// meter buffer so it gets passed up the chain correctly...
+//=====================================================================================================================
+
+bool CtiTransdataTracker::processData( BYTE *data, int bytes )
+{
+   if( _didBilling )
+   {
+      if( _didRecordCheck )
+      {
+         //do loadprofile
+         if( bytes != 0 )
+         {
+            memcpy( _lp->lpData, data, bytes );
+            memcpy( _meterData, _lp, sizeof( *_lp ) );   
+            _meterBytes = sizeof( *_lp );
+            _haveData = true;
+         }
+      }
+      else
+      {
+         //do record check
+         int returningRecs = atoi( ( const char *)data );
+
+         if( returningRecs < _lp->numLpRecs )
+         {
+            _lastState = doRecordDump;
+         }
+         _didRecordCheck = true;
+      }
+   }
+   else
+   {
+      //do billing stuff
+      _didBilling = true;
+      _haveData = true;
+   }
+
+   return( true );
+}
+
+//=====================================================================================================================
+//sequence for the login process
+//=====================================================================================================================
+
+bool CtiTransdataTracker::logOn( CtiXfer &xfer )
+{
+   _finished = false;
+
+   if( _waiting )
+   {
+      setXfer(xfer, "", 1, true, 1 );
+      _datalink.buildMsg( xfer );
+   }
+   else
+   {
+      _waiting = true;
+
+      switch( _lastState )
+      {
+      case doPassword:
+         {
+            setXfer( xfer, _password, strlen( _good_return ), false, 1 );
+            _datalink.buildMsg( xfer );
+            _first = true;
+         }
+         break;
+
+      case doEnabledChannels:
+         {
+            setXfer( xfer, _channels_enabled, 20, true, 1 );
+            _datalink.buildMsg( xfer );
+         }
+         break;
+
+      case doTime:
+         {
+            setXfer( xfer, _get_clock, 50, true, 1 );
+            _datalink.buildMsg( xfer );
+         }
+         break;
+
+      case doIntervalSize:
+         {
+            setXfer( xfer, _interval, 24, true, 1 );
+            _datalink.buildMsg( xfer );
+         }
+         break;
+
+      case doIdentify:
+         {
+            setXfer( xfer, _identify, 41, true, 1 );
+            _datalink.buildMsg( xfer );
+            _moveAlong = true;
+         }
+         break;
+      }
+   }
+
+   return( true );
+}
+
+//=====================================================================================================================
+//sequence for the scan for billing
+//=====================================================================================================================
+
+bool CtiTransdataTracker::billing( CtiXfer &xfer )
+{
+   _finished = false;
+
+   switch( _lastState )
+   {
+   case doScroll:
+      {
+         setXfer( xfer, _search_scrolls, 11, true, 1 );
+         _datalink.buildMsg( xfer );
+      }
+      break;
+
+   case doPullBuffer:
+      {
+         setXfer( xfer, _send_comm_buff, 25, true, 1 );
+         _datalink.buildMsg( xfer );
+      }
+      break;
+
+   case doProt1:
+      {
+         _neededAcks = 1;
+         _ymodem.generate( xfer, _neededAcks );
+      }
+      break;
+   }
+
+   return( true );
+}
+
+//=====================================================================================================================
+//=====================================================================================================================
+
+bool CtiTransdataTracker::loadProfile( CtiXfer &xfer )
+{
+   _finished = false;
+
+   switch( _lastState )
+   {
+   
+   case doRecordDump:
+      {
+         setXfer( xfer, _dump_demands, 47, true, 1 );
+         _datalink.buildMsg( xfer );
+      }
+      break;
+     
+   case doRecordNumber:
+      {
+         //make this crap...
+         _lp->numLpRecs = calcLPRecs();
+         RWCString recNum( CtiNumStr( _lp->numLpRecs ).zpad( 4 ) );
+         recNum.append( "\r\n" );
+         // ...into a function, it's ugly
+
+         setXfer( xfer, recNum, 25, true, 1 );  
+         _datalink.buildMsg( xfer );
+      }
+      break;
+   
+   case doProt2:
+      {
+         _neededAcks = calcAcks( _lp->numLpRecs );
+         {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ need " << _neededAcks << " chunks" << endl;
+         }
+
+         
+         _ymodem.generate( xfer, _neededAcks );
+      }
+      break;
+   }
+
+   return( true );
+}
+
+//=====================================================================================================================
+//we take the number of records that we've decided that we need and figure out how many ymodem-chunks it'll take to
+//get that many load-profile records
+//=====================================================================================================================
+
+int CtiTransdataTracker::calcAcks( int recs )
+{
+   int need = 0;
+
+   need = ( recs / Recs_Fitable ) + 2;
+   
+   return( need );
+}
+
+//=====================================================================================================================
+//last step, but we'll get no response back
+//=====================================================================================================================
+
+bool CtiTransdataTracker::logOff( CtiXfer &xfer )
+{
+   _finished = false;
+
+   setXfer( xfer, _hang_up, 0, true, 2 );
+   
+   _datalink.buildMsg( xfer );
+   _finished = true;
+
    return( true );
 }
 
@@ -293,9 +531,14 @@ bool CtiTransdataTracker::grabChannels( BYTE *data, int bytes )
       }
    }
 
+   for( int x = 0; x < 8; x++ )
+   {
+      _lp->enabledChannels[x] = false;
+   }
+
    for( int index = 0; index < 8; index++ )
    {
-      ptr = strstr( (const char*)ptr, " " );
+      ptr = strstr( ( const char*)ptr, " " );
 
       if( ptr != NULL )
       {
@@ -303,8 +546,6 @@ bool CtiTransdataTracker::grabChannels( BYTE *data, int bytes )
          
          if( *ptr == index + '0' )
             _lp->enabledChannels[index] = true;
-         else
-            _lp->enabledChannels[index] = false;
       }
       else
       {
@@ -436,335 +677,35 @@ bool CtiTransdataTracker::grabReturnedChannels( BYTE *data, int bytes )
       }
    }
 
-
-   return( true );
-}
-
-//=====================================================================================================================
-//search for one of our magic conditions that says 'success' of this layer (not ymodem)
-//=====================================================================================================================
-
-bool CtiTransdataTracker::processComms( BYTE *data, int bytes )
-{
-   bool  valid = false;
-   char  *ptr = NULL;
-   char  fluff[400];
-
-   if( gotRetry( data, bytes ) )
-   {
-      reset();
-   }
-   else if( gotValidResponse( data, bytes ) )
-   {
-      if( _lastState == doEnabledChannels )
-         grabChannels( data, bytes );
-
-      if( _lastState == doIntervalSize )
-         grabFormat( data, bytes );
-
-      if( _lastState == doTime )
-         grabTime( data, bytes );
-      
-//      if( _lastState == doRecordNumber )
-//         grabReturnedChannels( data, bytes );
-
-      setNextState();
-
-      if( _moveAlong )
-      {
-         _moveAlong = false;
-         _finished = true;
-      }
-
-      valid = true;
-   }
-
-   return( valid );
-}
-//=====================================================================================================================
-//if we collected billing data, we don't get here as we can work with the raw data later
-//if we collected loadprofile data, we need to add our raw data to our lp struct, then copy it back into the main
-// meter buffer so it gets passed up the chain correctly...
-//=====================================================================================================================
-
-bool CtiTransdataTracker::processData( BYTE *data, int bytes )
-{
-   bool result = false;
-
-   if( _lastState == doProt2 )
-   {
-      memset( _meterData, '\0', Meter_size );
-      memcpy( _lp->lpData, data + 3, bytes );
-      memcpy( _meterData, _lp, sizeof( *_lp ) );   //not completely convinced that this sizeof(*ptr) works....
-      _meterBytes = sizeof( *_lp );
-      result = true;
-   }
-
-   return( result );
-}
-
-//=====================================================================================================================
-//sequence for the login process
-//=====================================================================================================================
-
-bool CtiTransdataTracker::logOn( CtiXfer &xfer )
-{
-   _finished = false;
-
-   if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
-   {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " track logon" << endl;
-   }
-
-   if( _waiting )
-   {
-      if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
-      {
-         CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " track logon wait" << endl;
-      }
-
-      setXfer(xfer, "", 1, true, 1 );
-      _datalink.buildMsg( xfer );
-   }
-   else
-   {
-      _waiting = true;
-
-      switch( _lastState )
-      {
-      case doPassword:
-         {
-//            setXfer( xfer, "22222222\r\n", strlen( _good_return ), false, 1 );
-            setXfer( xfer, _password, strlen( _good_return ), false, 1 );
-            _datalink.buildMsg( xfer );
-            _first = true;
-         }
-         break;
-
-      case doTime:
-         {
-            setXfer( xfer, _get_clock, 50, true, 1 );//24
-            _datalink.buildMsg( xfer );
-         }
-         break;
-
-      case doIdentify:
-         {
-            setXfer( xfer, _identify, 41, true, 1 );
-            _datalink.buildMsg( xfer );
-            _moveAlong = true;
-         }
-         break;
-      }
-   }
-
-   return( true );
-}
-
-//=====================================================================================================================
-//sequence for the scan for billing
-//=====================================================================================================================
-
-bool CtiTransdataTracker::billing( CtiXfer &xfer )
-{
-   _finished = false;
-
-   if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
-   {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " track billing" << endl;
-   }
-   
-   switch( _lastState )
-   {
-   case doScroll:
-      {
-         setXfer( xfer, _search_scrolls, 11, true, 1 );
-         _datalink.buildMsg( xfer );
-      }
-      break;
-
-   case doPullBuffer:
-      {
-         setXfer( xfer, _send_comm_buff, 25, true, 1 );
-         _datalink.buildMsg( xfer );
-      }
-      break;
-
-   case doStartProt1:
-      {
-         if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
-         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " track billing doStartProt1" << endl;
-         }
-         
-         _ymodem.generate( xfer, 1029, 5 );
-         _dataIsExpected = true;
-         _ymodemsTurn = true;
-      }
-      break;
-
-   case doEndProt1:
-      {
-         if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
-         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " track billing doEndProt1" << endl;
-         }
-         _ymodem.generate( xfer, 0, 1 );
-         _dataIsExpected = false;
-         _ymodemsTurn = true;
-         _moveAlong = true;
-      }
-      break;
-   }
-
    return( true );
 }
 
 //=====================================================================================================================
 //=====================================================================================================================
-
-bool CtiTransdataTracker::loadProfile( CtiXfer &xfer )
-{
-   _finished = false;
-
-   if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
-   {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " track lp" << endl;
-   }
-   
-   switch( _lastState )
-   {
-
-   case doEnabledChannels:
-      {
-         setXfer( xfer, _channels_enabled, 20, true, 1 );
-         _datalink.buildMsg( xfer );
-      }
-      break;
-
-   case doIntervalSize:
-      {
-         setXfer( xfer, _interval, 24, true, 1 );
-         _datalink.buildMsg( xfer );
-      }
-      break;
-/*
-   case doTime:
-      {
-         setXfer( xfer, _get_clock, 50, true, 1 );//24
-         _datalink.buildMsg( xfer );
-      }
-      break;
-*/
-   case doRecordDump:
-      {
-         setXfer( xfer, _dump_demands, 47, true, 1 );
-         _datalink.buildMsg( xfer );
-      }
-      break;
-     
-   case doRecordNumber:
-      {
-         _lp->numLpRecs = calcLPRecs();
-         RWCString recNum( CtiNumStr( _lp->numLpRecs ).zpad( 4 ) );
-         recNum.append( "\r\n" );
-         setXfer( xfer, recNum, 25, true, 1 );  //get this number from layers above
-         _datalink.buildMsg( xfer );
-      }
-      break;
-
-   case doProt1:
-      {
-         if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
-         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " track lp doProt1" << endl;
-         }
-
-         _ymodem.generate( xfer, 1029, 5 );
-         _dataIsExpected = true;
-         _ymodemsTurn = true;
-      }
-      break;
-   
-   case doProt2:
-      {
-         if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
-         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " track lp doProt2" << endl;
-         }
-         _ymodem.generate( xfer, 1029, 5 );
-         _dataIsExpected = true;
-         _ymodemsTurn = true;
-      }
-      break;
-
-   case doProt3:
-      {
-         if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
-         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " track lp doProt3" << endl;
-         }
-         _ymodem.stopAck( xfer, 0, 0 );
-         _dataIsExpected = false;
-         _ymodemsTurn = true;
-         _moveAlong = true;
-      }
-      break;
-   }
-
-   return( true );
-}
-
-//=====================================================================================================================
-//last step, but we'll get no response back
-//=====================================================================================================================
-
-bool CtiTransdataTracker::logOff( CtiXfer &xfer )
-{
-   _finished = false;
-
-   if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
-   {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " track logoff" << endl;
-   }
-
-   setXfer( xfer, _hang_up, 0, true, 2 );
-   
-   _datalink.buildMsg( xfer );
-   _finished = true;
-
-   return( true );
-}
-
-//=====================================================================================================================
-//=====================================================================================================================
-
+ 
 void CtiTransdataTracker::setLastLPTime( ULONG lpTime )
 {
    _lastLPTime = ( ULONG)lpTime;
 }
 
 //=====================================================================================================================
+//one record = one interval for one channel
 //=====================================================================================================================
  
 int CtiTransdataTracker::calcLPRecs( void )
 {
    int numberLPRecs = 0;
-      
-   numberLPRecs = ( _lp->meterTime - _lastLPTime ) / ( _lp->lpFormat[0] * 60 );
+   int channels = countChannels();
 
-   if( numberLPRecs > 9999 )     //the max records that a markV can return
-      numberLPRecs = 9999;
+   numberLPRecs = (( _lp->meterTime - _lastLPTime ) / ( _lp->lpFormat[0] * 60 )) * channels;
+
+   {
+      CtiLockGuard<CtiLogger> doubt_guard(dout);
+      dout << RWTime() << " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ numberLPRecs " << numberLPRecs << endl;
+   }
+
+   if( numberLPRecs > Max_lp_recs )     
+      numberLPRecs = Max_lp_recs;
 
    return( numberLPRecs );
 }
@@ -772,8 +713,27 @@ int CtiTransdataTracker::calcLPRecs( void )
 //=====================================================================================================================
 //=====================================================================================================================
 
+int CtiTransdataTracker::countChannels( void )
+{
+   int ch = 0;
+
+   for( int index = 0; index < 8; index++ )
+   {
+      if( _lp->enabledChannels[index] )
+         ch++;
+   }
+
+   return( ch );
+}
+
+//=====================================================================================================================
+//=====================================================================================================================
+
 bool CtiTransdataTracker::isTransactionComplete( void )
 {
+   if( getError() == Failed )
+      _finished = true;
+
    return( _finished );
 }
 
@@ -788,13 +748,6 @@ void CtiTransdataTracker::setNextState( void )
       _lastState = doPassword;
    else
       _lastState++;
-
-   if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
-   {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " track state " << _lastState << endl;
-   }
-
 }
 
 //=====================================================================================================================
@@ -804,14 +757,11 @@ int CtiTransdataTracker::retreiveData( BYTE *data )
 {
    int temp = _meterBytes;
 
-   //this is just the result of a stupid decision... we'll fix it later
-   if( _lastState == doStartProt1 )
-      memcpy( ( void *)data, ( void *)(_meterData + 3 ), _meterBytes );
-   else
-      memcpy( ( void *)data, ( void *)(_meterData ), _meterBytes );
+   memcpy( ( void *)data, ( void *)(_meterData ), _meterBytes );
    
    _meterBytes = 0;
    
+   _haveData = false;//////////////////
    _goodCRC = false;
    _finished = false;
    
@@ -823,7 +773,7 @@ int CtiTransdataTracker::retreiveData( BYTE *data )
 
 void CtiTransdataTracker::reset( void )
 {
-   _failCount = 0;
+//   _failCount = 0;
    _waiting = false;
    _ymodemsTurn = false;
    _bytesReceived = 0;
@@ -853,10 +803,15 @@ void CtiTransdataTracker::injectData( RWCString str )
 
 void CtiTransdataTracker::setError( void )
 {
-   if( ++_failCount > 3 )
-      _error = failed;
+   if( ++_failCount > 1 )
+   {
+      _error = Failed;
+      _finished = true;
+   }
    else
-      _error = working;
+   {
+      _error = Working;
+   }
 }
 
 //=====================================================================================================================
@@ -864,7 +819,8 @@ void CtiTransdataTracker::setError( void )
 
 bool CtiTransdataTracker::goodCRC( void )
 {
-   return( _goodCRC );
+   return( _haveData );
+   //   return( _goodCRC );
 }
 
 //=====================================================================================================================
@@ -880,7 +836,7 @@ void CtiTransdataTracker::setXfer( CtiXfer &xfer, RWCString dataOut, int bytesIn
    memset( _storage, '\0', Storage_size );
 
    xfer.setMessageStart( true );
-   xfer.setOutCount( strlen( dataOut ) );     //there will be a problem with this using RWCStrings
+   xfer.setOutCount( strlen( dataOut ) );    
    xfer.setInCountExpected( bytesIn );
    xfer.setInTimeout( time );
    xfer.setNonBlockingReads( block );
@@ -946,155 +902,30 @@ bool CtiTransdataTracker::gotRetry( const BYTE *data, int length )
    return( success );
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*bool CtiTransdataTracker::decodeLink( CtiXfer &xfer, int status )
+/*
+bool CtiTransdataTracker::processData( BYTE *data, int bytes )
 {
-   BYTE  temp[500];
-   int   bytes = 0;
-   
-   _datalink.readMsg( xfer, status );
+   bool result = false;
 
-   if( _datalink.isTransactionComplete() )
+   if( _lastState == doProt1 )
    {
-      _datalink.retreiveData( temp, &bytes );
+      int returningRecs = atoi( ( const char *)data + 3 );
 
-      if( bytes != 0 )
+      if( returningRecs < _lp->numLpRecs )
       {
-         memcpy( _storage + _bytesReceived, temp, bytes );
-         _bytesReceived += bytes;
-
-         processComms( _storage, _bytesReceived );
+         _lastState = doRecordDump;
       }
    }
-   
-   if( _datalink.getError() == failed )
+
+   if( _lastState == doProt2 )
    {
-      setError();
-      _waiting = false;
+      memset( _meterData, '\0', Meter_size );
+      memcpy( _lp->lpData, data + 3, bytes );
+      memcpy( _meterData, _lp, sizeof( *_lp ) );   
+      _meterBytes = sizeof( *_lp );
+      result = true;
    }
 
-   return( false );
+   return( result );
 }
 */
-                                                        
-/*bool CtiTransdataTracker::decode( CtiXfer &xfer, int status )
-{
-   BYTE  temp[500];
-   int   bytes = 0;
-
-   if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
-   {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " track decode" << endl;
-   }
-
-   if( _ymodemsTurn )
-   {
-      _ymodem.decode( xfer, status );
-
-      if( _ymodem.isTransactionComplete() )
-      {
-         if( _dataIsExpected )
-         {
-            _goodCRC = _ymodem.isCrcValid();
-
-            if( _goodCRC )
-            {
-               _ymodem.retreiveData( _meterData, &_meterBytes );
-               processData( _meterData );
-               setNextState();
-               _ymodemsTurn = false;
-            }
-         }
-         else
-         {
-            setNextState();
-         }
-
-         if( _moveAlong )
-         {
-            _moveAlong = false;
-            _finished = true;
-         }
-      }
-   }
-   else
-   {
-      _datalink.readMsg( xfer, status );
-
-      if( _datalink.isTransactionComplete() )
-      {
-         _datalink.retreiveData( temp, &bytes );
-
-         if( bytes != 0 )
-         {
-            memcpy( _storage + _bytesReceived, temp, bytes );
-            _bytesReceived += bytes;
-
-            processComms( _storage, _bytesReceived );
-         }
-      }
-   }
-
-   if( _datalink.getError() == failed )
-   {
-      setError();
-      _waiting = false;
-   }
-
-   return( _finished );
-}
-*/
-
-
-
-
-

@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2003/12/18 15:57:18 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2003/12/28 18:54:15 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -65,7 +65,7 @@ void CtiTransdataDatalink::reinitalize( void )
    _bytesExpected       = 0;
    _bytesReceived       = 0;
 
-   _finished            = true;
+   _finished            = false;//true;
 
    _storage             = new BYTE[Storage_size];
 }
@@ -101,6 +101,7 @@ bool CtiTransdataDatalink::readMsg( CtiXfer &xfer, int status )
    {
       _finished = true;
       _bytesExpected = 333;
+      _failCount = 0;
    }
    else
    {
@@ -151,6 +152,12 @@ void CtiTransdataDatalink::setError( void )
       _error = failed;
    else
       _error = working;
+
+   {
+      CtiLockGuard<CtiLogger> doubt_guard(dout);
+      dout << RWTime() << " link error " << _failCount << endl;
+   }
+
 }
 
 //=====================================================================================================================

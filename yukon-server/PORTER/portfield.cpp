@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.88 $
-* DATE         :  $Date: 2003/12/18 15:57:18 $
+* REVISION     :  $Revision: 1.89 $
+* DATE         :  $Date: 2003/12/28 18:54:14 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1419,49 +1419,59 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                 case TYPE_TDMARKV:
                     {
                        extern CtiConnection VanGoghConnection;
-                        BYTE  inBuffer[5000];
-                        BYTE  outBuffer[5000];
-                        ULONG bytesReceived = 0;
+                       BYTE   inBuffer[5000];
+                       BYTE   outBuffer[5000];
+                       ULONG  bytesReceived = 0;
+                       int    error = 0;
 
-                        CtiDeviceMarkV       *markv = ( CtiDeviceMarkV *)Device;
-                        CtiProtocolTransdata &transdata = markv->getProtocol();
+                       CtiDeviceMarkV        *markv = ( CtiDeviceMarkV *)Device;
+                       CtiProtocolTransdata  &transdata = markv->getProtocol();
 
-                        transdata.recvOutbound( OutMessage );
+                       transdata.recvOutbound( OutMessage );
 
-                        trx.setInBuffer( inBuffer );
-                        trx.setOutBuffer( outBuffer );
-                        trx.setInCountActual( &bytesReceived );
+                       trx.setInBuffer( inBuffer );
+                       trx.setOutBuffer( outBuffer );
+                       trx.setInCountActual( &bytesReceived );
 
-                        transdata.reinitalize();
+                       transdata.reinitalize();
 
-                        while( !transdata.isTransactionComplete() )
-                        {
-                           transdata.generate( trx );
+                       while( !transdata.isTransactionComplete() )
+                       {
+                          transdata.generate( trx );
+                          
+                          status = Port->outInMess( trx, Device, traceList );
 
-                           status = Port->outInMess( trx, Device, traceList );
+                          error = transdata.decode( trx, status );
 
-                           transdata.decode( trx, status );
-
-                           if( trx.doTrace( status ))
-                           {
+                          if( trx.doTrace( status ))
+                          {
                              Port->traceXfer( trx, traceList, Device, status );
-                           }
+                          }
 
-                           DisplayTraceList( Port, traceList, true );
-                        }
+                          DisplayTraceList( Port, traceList, true );
+                       }
 
-                        CtiReturnMsg *retMsg = new CtiReturnMsg();
-                        retMsg->PointData().append( new CtiPointDataMsg() );
-                        VanGoghConnection.WriteConnQue( retMsg );
-                        
-                        //send dispatch lp data directly
-                        markv->processDispatchReturnMessage( VanGoghConnection );
+                       if( !error )
+                       {
+                          CtiReturnMsg *retMsg = new CtiReturnMsg();
+                          retMsg->PointData().append( new CtiPointDataMsg() );
+                          VanGoghConnection.WriteConnQue( retMsg );
 
-                        //send the billing data back to scanner
-                        markv->sendCommResult( InMessage );
-                        
-                        transdata.destroy();
-                        break;
+                          //send dispatch lp data directly
+                          markv->processDispatchReturnMessage( VanGoghConnection );
+
+                          //send the billing data back to scanner
+                          markv->sendCommResult( InMessage );
+                       }
+                       else
+                       {
+                          {
+                              CtiLockGuard<CtiLogger> doubt_guard(dout);
+                              dout << RWTime() << " We have errored out " << error << endl;
+                          }
+                       }
+                       transdata.destroy();
+                       break;
                     }
 
                 case TYPE_SIXNET:

@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2003/12/18 15:02:11 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2003/12/28 18:54:15 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -70,33 +70,44 @@ bool CtiProtocolTransdata::decode( CtiXfer &xfer, int status )
 
    if( _application.isTransactionComplete() )
    {
-      _numBytes = _application.retreiveData( _storage );
-      
-      if(( _lpDone ) && ( _billingDone ))
+      if( _application.getError() == Failed )
       {
-         if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
-         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " prot **all done** " << endl;
-         }
-         
+         setError( Failed );
          _finished = true;
       }
       else
       {
-         if( _command == LOADPROFILE )
+         _numBytes = _application.retreiveData( _storage );
+
+         if(( _lpDone ) && ( _billingDone ))
          {
-            processLPData( _storage );
+            if( _application.loggedOff() )
+               _finished = true;
          }
          else
          {
-            processBillingData( _storage );
-            _command = LOADPROFILE;             ////just temp until I get smart
+            if( _command == CtiTransdataApplication::LoadProfile )
+            {
+               processLPData( _storage );
+            }
+            else //_command == GENERAL
+            {
+               processBillingData( _storage );
+
+               if( _application.doLoadProfile() )
+               {
+                  _command = CtiTransdataApplication::LoadProfile;             ////just temp until I get smart
+               }
+               else
+               {
+                  _lpDone = true;   //so we skip trying
+               }
+            }
          }
       }
    }
 
-   return( _finished );
+   return( getError() );
 }
 
 //=====================================================================================================================
@@ -105,12 +116,6 @@ bool CtiProtocolTransdata::decode( CtiXfer &xfer, int status )
 
 void CtiProtocolTransdata::processBillingData( BYTE *data )
 {
-   if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
-   {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " ~~~~~~~~~prot processBilling" << endl;
-   }
-   
    memcpy( _billingBytes, _storage, _numBytes );
    _billingDone = true;
 }
@@ -122,14 +127,7 @@ void CtiProtocolTransdata::processBillingData( BYTE *data )
 
 void CtiProtocolTransdata::processLPData( BYTE *data )
 {
-   if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
-   {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " ~~~~~~~~~prot processLP" << endl;
-   }
-
    memcpy( _lpBytes, _storage, _numBytes );
-
    _lpDone = true;
 }
 
@@ -222,7 +220,8 @@ void CtiProtocolTransdata::reinitalize( void )
    }
 
    _command = 0;
-   
+   _error = Working;
+
    _application.reinitalize();
    
    _collectLP = false;
@@ -241,12 +240,6 @@ void CtiProtocolTransdata::reinitalize( void )
 void CtiProtocolTransdata::destroy( void )
 {
    _application.destroy();
-
-   if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
-   {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " prot DESTROY! DESTROY! DESTROY! DESTROY! DESTROY!" << endl;
-   }
 
    if( _storage )
    {
@@ -307,62 +300,18 @@ int CtiProtocolTransdata::retreiveData( BYTE *data )
    return( temp );
 }
 
+//=====================================================================================================================
+//=====================================================================================================================
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* before alteration to try to get 2 seperate commands to run 11/29/03
-bool CtiProtocolTransdata::decode( CtiXfer &xfer, int status )
+void CtiProtocolTransdata::setError( int err )
 {
-   if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
-   {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " prot decode" << endl;
-   }
-
-   _application.decode( xfer, status );
-
-   if( _application.isTransactionComplete() )
-   {
-      _numBytes = _application.retreiveData( _storage );
-
-      if( _command == LOADPROFILE )
-         processLPData( _storage );
-      else
-         processBillingData( _storage );
-
-      _finished = true;
-   }
-
-   return( _finished );
+   _error = err;
 }
-*/
+
+//=====================================================================================================================
+//=====================================================================================================================
+
+int CtiProtocolTransdata::getError( void )
+{
+   return( _error );
+}

@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2003/12/18 15:02:11 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2003/12/28 18:54:15 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -61,17 +61,26 @@ class IM_EX_PROT CtiProtocolTransdata
       void processLPData( BYTE *data );
       void processBillingData( BYTE *data );
       int retreiveData( BYTE *data );
+      void setError( int err );
+      int getError( void );
+      
       vector<CtiTransdataData *> resultDecode( INMESS *InMessage );
 
    protected:
 
    private:
 
-      enum
+      enum Sizes
       {
          Billing_size      = 1200,
          Storage_size      = 4500,
          Loadprofile_size  = 4500
+      };
+
+      enum Errors
+      {
+         Working     = 0,
+         Failed
       };
 
       bool                       _finished;
@@ -85,7 +94,8 @@ class IM_EX_PROT CtiProtocolTransdata
       
       int                        _numBytes;
       int                        _command;
-      
+      int                        _error;
+
       CtiTransdataApplication    _application;
 };
 #endif // #ifndef __PROT_TRANSDATA_H__

@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2003/12/18 15:57:18 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2003/12/28 18:54:15 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -45,44 +45,30 @@ bool CtiTransdataApplication::generate( CtiXfer &xfer )
    
    switch( _lastState )
    {
-   case doLogOn:
+   case DoLogOn:
       {
-         if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
-         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " case doLogOn" << endl;
-         }
          _tracker.logOn( xfer );
+         _loggedOff = false;
       }
       break;
 
-   case doTalk:
+   case DoTalk:
       {
-         if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+         if( _checkRecs )
          {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " case doTalk" << endl;
+            checkRecs();
          }
+
          switch( _command )   
          {
-         case GENERAL:
+         case General:
             {
-               if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
-               {
-                  CtiLockGuard<CtiLogger> doubt_guard(dout);
-                  dout << RWTime() << " case _command=GENERAL" << endl;
-               }
                _tracker.billing( xfer );    
             }
             break;
 
-         case LOADPROFILE:
+         case LoadProfile:
             {
-               if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
-               {
-                  CtiLockGuard<CtiLogger> doubt_guard(dout);
-                  dout << RWTime() << " case _command=LOADPROFILE" << endl;
-               }
                _tracker.loadProfile( xfer );    
             }
             break;
@@ -90,14 +76,10 @@ bool CtiTransdataApplication::generate( CtiXfer &xfer )
       }
       break;
 
-   case doLogOff:
+   case DoLogOff:
       {
-         if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
-         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " case doLogOff" << endl;
-         }
          _tracker.logOff( xfer );
+         _loggedOff = true;
       }
       break;
    }
@@ -119,23 +101,31 @@ bool CtiTransdataApplication::decode( CtiXfer &xfer, int status )
    _tracker.decode( xfer, status );
 
    if( _tracker.isTransactionComplete() )
-   {
-      if( _tracker.goodCRC() )
+   {  /*
+      if( _tracker.getError() == Failed )
       {
-         if( _storage )
-         {
-            _numBytes = _tracker.retreiveData( _storage );
-            _finished = true;
-         }
-      }
-      
-      if( _lastState == doLogOn )
-         _connected = true;
-      
-      if( _lastState == doLogOff )
+         setError( Failed );
          _finished = true;
-      
-      setNextState();
+      }
+      else */
+      {
+         if( _tracker.goodCRC() )   //fixme; this is a poor name for what it checks
+         {
+            if( _storage )
+            {
+               _numBytes = _tracker.retreiveData( _storage );
+               _finished = true;
+            }
+         }
+
+         if( _lastState == DoLogOn )
+            _connected = true;
+
+         if( _lastState == DoLogOff )
+            _finished = true;
+
+         setNextState();
+      }
    }
 
    return( _finished );
@@ -155,15 +145,15 @@ void CtiTransdataApplication::injectData( RWCString str )
 
 void CtiTransdataApplication::setNextState( void )
 {
-   if( _lastState == doLogOff )
+   if( _lastState == DoLogOff )
    {
-      _lastState = doLogOn;
+      _lastState = DoLogOn;
    }
-   else if( _lastState == doTalk )
+   else if( _lastState == DoTalk )
    {
       if( _getLoadProfile )
       {
-         _command = LOADPROFILE;
+         _command = LoadProfile;
          _getLoadProfile = false;
       }
       else
@@ -175,13 +165,6 @@ void CtiTransdataApplication::setNextState( void )
    {
       _lastState++;
    }
-
-   if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
-   {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " app state " << _lastState << endl;
-   }
-
 }
 
 //=====================================================================================================================
@@ -211,10 +194,16 @@ void CtiTransdataApplication::reinitalize( void )
    
    _tracker.reinitalize();
 
-   _lastState     = doLogOn;
+   _lastState     = DoLogOn;
+   
    _numBytes      = 0;
+   _error         = 0;
+
    _connected     = false;
    _finished      = true;
+   _checkRecs     = true;
+   _loggedOff     = false;
+
    _storage       = new BYTE[Storage_size];
 }
 
@@ -256,390 +245,47 @@ void CtiTransdataApplication::setLastLPTime( ULONG lpTime )
    _tracker.setLastLPTime( lpTime );
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 //=====================================================================================================================
+//if we want to get loadprofile, but there aren't any records needed (based on lastLPTime), we want to over-ride
+//what setcommand() said to do
 //=====================================================================================================================
-/*
-bool CtiTransdataApplication::processData( BYTE *data, int numBytes )
+
+void CtiTransdataApplication::checkRecs( void )
 {
-   if( _tracker.goodCRC() )
-   {
-      if( *data != 0 )
-      {
-         _storage = new BYTE[numBytes + 1];
-         _numBytes = numBytes;
+   if( _tracker.calcLPRecs() == 0 )
+      _getLoadProfile = false;
 
-         if( _storage )
-            _tracker.retreiveData( _storage );
-      }
-   }
-   
-   return( true );
-}
-*/
-/*
-//=====================================================================================================================
-//
-// here is where we'll pull apart all the number data and stick it into the main struct to pass back to scanner
-//
-//NOTE: need to add all 8 channels
-//=====================================================================================================================
-
-void CtiTransdataApplication::decipherConverted( transdata data )
-{
-   switch( data.dataID )
-   {
-   case ch1_TotalUsage:
-      {
-         _sortedData.channel[0].totalUsage_All = data.data;
-      }
-      break;
-
-   case ch1_TotalUsage_A:
-      {
-         _sortedData.channel[0].totalUsage_A = data.data;
-      }
-      break;
-
-   case ch1_TotalUsage_B:
-      {
-         _sortedData.channel[0].totalUsage_B = data.data;
-      }
-      break;
-
-   case ch1_TotalUsage_C:
-      {
-         _sortedData.channel[0].totalUsage_C = data.data;
-      }
-      break;
-
-   case ch1_TotalUsage_D:
-      {
-         _sortedData.channel[0].totalUsage_D = data.data;
-      }
-      break;
-
-   case ch1_CurrentDemand:
-      {
-         _sortedData.channel[0].currentDemand = data.data;
-      }
-      break;
-
-   case ch1_PeakDemand:
-      {
-         _sortedData.channel[0].peakDemand = data.data;
-      }
-      break;
-
-   case ch1_TimePeak:
-      {
-         _sortedData.channel[0].timeOfPeak = data.data;
-      }
-      break;
-
-   case ch1_DateOfPeak:
-      {
-         _sortedData.channel[0].dateOfPeak = data.data;
-      }
-      break;
-
-   case ch1_PreviousDemand:
-      {
-         _sortedData.channel[0].previousDemand = data.data;
-      }
-      break;
-
-   case ch2_TotalUsage:
-      {
-         _sortedData.channel[1].totalUsage_All = data.data;
-      }
-      break;
-
-   case ch2_TotalUsage_A:
-      {
-         _sortedData.channel[1].totalUsage_A = data.data;
-      }
-      break;
-
-   case ch2_TotalUsage_B:
-      {
-         _sortedData.channel[1].totalUsage_B = data.data;
-      }
-      break;
-
-   case ch2_TotalUsage_C:
-      {
-         _sortedData.channel[1].totalUsage_C = data.data;
-      }
-      break;
-
-   case ch2_TotalUsage_D:
-      {
-         _sortedData.channel[1].totalUsage_D = data.data;
-      }
-      break;
-
-   case ch2_CurrentDemand:
-      {
-         _sortedData.channel[1].currentDemand = data.data;
-      }
-      break;
-
-   case ch2_PeakDemand:
-      {
-         _sortedData.channel[1].peakDemand = data.data;
-      }
-      break;
-
-   case ch2_TimePeak:
-      {
-         _sortedData.channel[1].timeOfPeak = data.data;
-      }
-      break;
-
-   case ch2_DateOfPeak:
-      {
-         _sortedData.channel[1].dateOfPeak = data.data;
-      }
-      break;
-
-   case ch2_PreviousDemand:
-      {
-         _sortedData.channel[1].previousDemand = data.data;
-      }
-      break;
-
-   case ch3_TotalUsage:
-      {
-         _sortedData.channel[2].totalUsage_All = data.data;
-      }
-      break;
-
-   case ch3_TotalUsage_A:
-      {
-         _sortedData.channel[2].totalUsage_A = data.data;
-      }
-      break;
-
-   case ch3_TotalUsage_B:
-      {
-         _sortedData.channel[2].totalUsage_B = data.data;
-      }
-      break;
-
-   case ch3_TotalUsage_C:
-      {
-         _sortedData.channel[2].totalUsage_C = data.data;
-      }
-      break;
-
-   case ch3_TotalUsage_D:
-      {
-         _sortedData.channel[2].totalUsage_D = data.data;
-      }
-      break;
-
-
-   case ch3_CurrentDemand:
-      {
-         _sortedData.channel[2].currentDemand = data.data;
-      }
-      break;
-
-   case ch3_PeakDemand:
-      {
-         _sortedData.channel[2].peakDemand = data.data;
-      }
-      break;
-
-   case ch3_TimePeak:
-      {
-         _sortedData.channel[2].timeOfPeak = data.data;
-      }
-      break;
-
-   case ch3_DateOfPeak:
-      {
-         _sortedData.channel[2].dateOfPeak = data.data;
-      }
-      break;
-
-   case ch3_PreviousDemand:
-      {
-         _sortedData.channel[2].previousDemand = data.data;
-      }
-      break;
-
-   case ch4_TotalUsage:
-      {
-         _sortedData.channel[3].totalUsage_All = data.data;
-      }
-      break;
-
-   case ch4_TotalUsage_A:
-      {
-         _sortedData.channel[3].totalUsage_A = data.data;
-      }
-      break;
-
-   case ch4_TotalUsage_B:
-      {
-         _sortedData.channel[3].totalUsage_B = data.data;
-      }
-      break;
-
-   case ch4_TotalUsage_C:
-      {
-         _sortedData.channel[3].totalUsage_C = data.data;
-      }
-      break;
-
-   case ch4_TotalUsage_D:
-      {
-         _sortedData.channel[3].totalUsage_D = data.data;
-      }
-      break;
-
-
-   case ch4_CurrentDemand:
-      {
-         _sortedData.channel[3].currentDemand = data.data;
-      }
-      break;
-
-   case ch4_PeakDemand:
-      {
-         _sortedData.channel[3].peakDemand = data.data;
-      }
-      break;
-
-   case ch4_TimePeak:
-      {
-         _sortedData.channel[3].timeOfPeak = data.data;
-      }
-      break;
-
-   case ch4_DateOfPeak:
-      {
-         _sortedData.channel[3].dateOfPeak = data.data;
-      }
-      break;
-
-   case ch4_PreviousDemand:
-      {
-         _sortedData.channel[3].previousDemand = data.data;
-      }
-      break;
-
-   }
+   _checkRecs = false;
 }
 
-*/
 //=====================================================================================================================
 //=====================================================================================================================
-/*
-vector<CtiTransdataData> CtiTransdataApplication::getConverted( void )
+
+bool CtiTransdataApplication::doLoadProfile( void )
 {
-   return( _transVector );
+   return( _getLoadProfile );
 }
-*/
 
-/*
-         isTime = false;
+//=====================================================================================================================
+//=====================================================================================================================
 
-         ptr = ( unsigned char*)strchr(( const char *)data, '\n' );
-
-         converted.dataID = stringToInt( data, IDD_WIDTH );
-         data += IDD_WIDTH;
-
-         isTime = dataIsTime( converted.dataID );
-
-         if( isTime )
-         {
-            temp = stringToInt( data, DATA_WIDTH );
-         }
-         else
-         {
-            converted.data = stringToInt( data, DATA_WIDTH );
-            formatData( converted );
-         }
-         data += DATA_WIDTH;
-
-         converted.isNegative = isDataNegative( data, SIGN_WIDTH );
-         data += SIGN_WIDTH;
-
-         converted.formatCode = stringToInt( data, FORMAT_WIDTH );
-
-         data = ++ptr;
-
-         if( isTime )
-         {
-            formatTime( converted, temp );
-         }
-         else
-         {
-            formatData( converted );
-         }
-*/
-
-/*
-bool CtiTransdataApplication::generate( CtiXfer &xfer )
+int CtiTransdataApplication::getError( void )
 {
-   if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
-   {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " app gen" << endl;
-   }
+   return( _error );
+}
 
-   _finished = false;
+//=====================================================================================================================
+//=====================================================================================================================
 
-   switch( _lastState )
-   {
-   case doLogOn:
-      _tracker.logOn( xfer );
-      break;
+void CtiTransdataApplication::setError( int err )
+{
+   _error = err;
+}
 
-   case doTalk:
-      {
-         switch( _talkState )
-         {
-         case doBilling:
-            _tracker.billing( xfer );    
-            break;
+//=====================================================================================================================
+//=====================================================================================================================
 
-         case doLoadProfile:
-            _tracker.loadProfile( xfer );    
-            break;
-         }
-      }
-      break;
-
-   case doLogOff:
-      _tracker.logOff( xfer );
-      break;
-   }
-
-   return( true );
-} */
+bool CtiTransdataApplication::loggedOff( void )
+{
+   return( _loggedOff );
+}
