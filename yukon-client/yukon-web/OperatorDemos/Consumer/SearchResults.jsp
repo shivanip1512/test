@@ -69,6 +69,17 @@ function selectAccount(accountID) {
           <td width="657" valign="top" bgcolor="#FFFFFF">
               
             <div align="center"><% String header = "SEARCH RESULTS"; %><%@ include file="InfoSearchBar2.jsp" %></div> 
+<%
+	StarsSearchCustomerAccountResponse resp = (StarsSearchCustomerAccountResponse) operator.getAttribute( "ACCOUNT_SEARCH_RESULTS" );
+	if (resp.getStarsFailure() != null) {
+%>
+            <div align="center">
+              <span class="Main">No customer accounts matching the search criteria.</span> 
+            </div>
+<%
+	}
+	else {
+%>
             <div align="center">
               <span class="Main">The following search results were found:</span> 
             </div>
@@ -85,9 +96,8 @@ function selectAccount(accountID) {
                 <td width="112" class="HeaderCell">Phone#</td>
               </tr>
 <%
-	StarsSearchCustomerAccountResponse resp = (StarsSearchCustomerAccountResponse) operator.getAttribute( "ACCOUNT_SEARCH_RESULTS" );
-	for (int i = 0; i < resp.getStarsCustAccountBriefCount(); i++) {
-		StarsCustAccountBrief acctBrief = resp.getStarsCustAccountBrief(i);
+		for (int i = 0; i < resp.getStarsCustAccountBriefCount(); i++) {
+			StarsCustAccountBrief acctBrief = resp.getStarsCustAccountBrief(i);
 %>
               <tr valign="top"> 
                 <td width="187" class="TableCell">
@@ -97,6 +107,7 @@ function selectAccount(accountID) {
                 <td width="112" class="TableCell"><%= acctBrief.getContPhoneNumber() %></td>
               </tr>
 <%
+		}
 	}
 %>
               </table>
