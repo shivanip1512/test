@@ -184,7 +184,7 @@ private CBCClientConnection getConnectionWrapper()
 
 
 			//start the conn!!!
-			connectionWrapper.connect( 15000 );		
+			connectionWrapper.connectWithoutWait(); //connect( 15000 );		
 
 		 	if( connectionWrapper.isValid() )
 				com.cannontech.clientutils.CTILogger.info("Retrieving CBC strategies...");

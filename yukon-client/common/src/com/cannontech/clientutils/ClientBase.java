@@ -258,7 +258,7 @@ private void tryConnection()
 		getConnection().setPort(PORT);		
 
 		getConnection().setRegistrationMsg( buildRegistrationMessage() );
-		getConnection().connect();
+		getConnection().connectWithoutWait();
 
 		com.cannontech.clientutils.CTILogger.info("....Connection & Registration to Server Established.");
 	}	
