@@ -15,7 +15,6 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.stars.util.ECUtils;
-import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.tools.email.EmailMessage;
 import com.cannontech.util.ServletUtil;
@@ -56,14 +55,6 @@ public class SendControlOddsTask implements Runnable {
 		String footer = "To unsubscribe from the notification list, please go to "
 					  + "http://www.wisewatts.com and login with your username and password. "
 					  + "On the first page (or the \"General\" link), uncheck the notification box and click \"Submit\".";
-		
-		String from = null;
-		if (energyCompany.getPrimaryContactID() > 0) {
-			String[] emails = ContactFuncs.getAllEmailAddresses( energyCompany.getPrimaryContactID() );
-			if (emails.length > 0)
-				from = emails[0];
-		}
-		if (from == null) from = ServerUtils.ADMIN_EMAIL_ADDRESS;
 		
 		ArrayList progList = new ArrayList();	// Programs that are eligible for notification
 		ArrayList programs = energyCompany.getAllPrograms();
@@ -134,7 +125,7 @@ public class SendControlOddsTask implements Runnable {
 					
 					try {
 						EmailMessage emailMsg = new EmailMessage( to, subject, text.toString() );
-						emailMsg.setFrom( from );
+						emailMsg.setFrom( energyCompany.getAdminEmailAddress() );
 						emailMsg.send();
 					}
 					catch (Exception e) {
