@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/DSM2.H-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2003/07/21 22:00:18 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2003/10/30 17:34:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -408,10 +408,6 @@ IM_EX_CTIBASE ULONG OutMessageCount();
 #define B_MASK_C        0x04
 #define B_MASK_D        0x08
 #define B_SCRAM         0x0f
-#define B_LATCH_OPEN    0x41
-#define B_LATCH_CLOSE   0x42
-#define B_STROBE_C      0x41
-#define B_STROBE_D      0X42
 #define B_GETSTATUS     0X3E
 #define B_GETLOAD       0x35
 #define B_GETARM        0x30
