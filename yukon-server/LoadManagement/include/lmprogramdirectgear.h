@@ -93,6 +93,7 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirectGear )
     static const RWCString MasterCycleMethod;
     static const RWCString RotationMethod;
     static const RWCString LatchingMethod;
+    static const RWCString TrueCycleMethod;
 
     //Possible method stop types
     static const RWCString RestoreStopType;
