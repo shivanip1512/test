@@ -48,10 +48,12 @@ public class YukonFileAppender extends FileAppender
 
 		// If the file is more than 1 day old, then we need to rollover immediately
 		File todaysFile = new File( getTodaysFileName() );
-		if( (_now.getTime() - todaysFile.lastModified()) >= 86400000L ) //1 day in millis
-			_nextCheck = System.currentTimeMillis() - 1; //force a rollover immediately
-		else
-			_nextCheck = ServletUtil.getTomorrow().getTime(); //rollover tomorrow
+		if ( todaysFile.exists() ) {
+			if( (_now.getTime() - todaysFile.lastModified()) >= 86400000L ) //1 day in millis
+				_nextCheck = System.currentTimeMillis() - 1; //force a rollover immediately
+			else
+				_nextCheck = ServletUtil.getTomorrow().getTime(); //rollover tomorrow
+		}
 	}
 
 		
