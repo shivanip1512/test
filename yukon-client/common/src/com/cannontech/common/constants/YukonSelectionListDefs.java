@@ -65,5 +65,8 @@ public interface YukonSelectionListDefs {
 	public static final String YUK_LIST_NAME_SOIL_TYPE = "SoilType";
 	public static final String YUK_LIST_NAME_OPT_OUT_PERIOD = "OptOutPeriod";
 	public static final String YUK_LIST_NAME_OPT_OUT_PERIOD_CUS = "OptOutPeriodCustomer";
+	public static final String YUK_LIST_NAME_INV_SEARCH_BY = "InvSearchBy";
+	public static final String YUK_LIST_NAME_INV_SORT_BY = "InvSortBy";
+	public static final String YUK_LIST_NAME_INV_FILTER_BY = "InvFilterBy";
 	
 }

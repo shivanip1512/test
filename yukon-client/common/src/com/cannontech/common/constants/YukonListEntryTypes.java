@@ -71,6 +71,17 @@ public interface YukonListEntryTypes
 	public static final int YUK_DEF_ID_OPTOUT_PERIOD_TOMORROW	= 2601;
 	public static final int YUK_DEF_ID_OPTOUT_PERIOD_TODAY		= 2602;
 	public static final int YUK_DEF_ID_OPTOUT_PERIOD_REPEAT_LAST	= 2699;
+	public static final int YUK_DEF_ID_INV_SEARCH_BY_SERIAL_NO	= 2701;
+	public static final int YUK_DEF_ID_INV_SEARCH_BY_ACCT_NO		= 2702;
+	public static final int YUK_DEF_ID_INV_SEARCH_BY_PHONE_NO	= 2703;
+	public static final int YUK_DEF_ID_INV_SEARCH_BY_LAST_NAME	= 2704;
+	public static final int YUK_DEF_ID_INV_SEARCH_BY_ORDER_NO	= 2705;
+	public static final int YUK_DEF_ID_INV_SORT_BY_SERIAL_NO		= 2801;
+	public static final int YUK_DEF_ID_INV_SORT_BY_INST_DATE		= 2802;
+	public static final int YUK_DEF_ID_INV_FILTER_BY_DEV_TYPE	= 2901;
+	public static final int YUK_DEF_ID_INV_FILTER_BY_SRV_COMPANY	= 2902;
+	public static final int YUK_DEF_ID_INV_FILTER_BY_LOCATION	= 2903;
+	public static final int YUK_DEF_ID_INV_FILTER_BY_CONFIG		= 2904;
 	public static final int YUK_DEF_ID_DEV_TYPE_ENERGYPRO		= 3100;
 	public static final int YUK_DEF_ID_GED_TIMESTAMP				= 3201;
 	public static final int YUK_DEF_ID_GED_SETPOINTS				= 3202;
