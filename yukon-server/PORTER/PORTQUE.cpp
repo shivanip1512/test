@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTQUE.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2002/08/08 23:20:43 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2002/08/16 13:02:45 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -87,6 +87,10 @@ void cleanupOrphanOutMessages(void *unusedptr, void* d);
 
 void blitzNexusFromQueue(HCTIQUEUE q, CTINEXUS *&Nexus)
 {
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " Attempting to remove all queue entries for bad nexus 0x" << Nexus << endl;
+    }
     CleanQueue( q, (void*)Nexus, findReturnNexusMatch, cleanupOrphanOutMessages );
 }
 
