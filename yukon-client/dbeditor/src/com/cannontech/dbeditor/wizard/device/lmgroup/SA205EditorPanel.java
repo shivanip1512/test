@@ -1,5 +1,6 @@
 package com.cannontech.dbeditor.wizard.device.lmgroup;
 
+import com.cannontech.database.data.device.lm.LMGroupSA205;
 /**
  * Insert the type's description here.
  * Creation date: (2/24/2004 5:55:33 PM)
@@ -283,8 +284,35 @@ private javax.swing.JPanel getRelayPanel() {
  * @return java.lang.Object
  * @param o java.lang.Object
  */
-public Object getValue(Object o) {
-	return null;
+public Object getValue(Object o) 
+{
+	LMGroupSA205 twoOhFive = null;
+	
+	if( o instanceof com.cannontech.database.data.multi.MultiDBPersistent )
+	{
+		twoOhFive = (LMGroupSA205)
+			com.cannontech.database.data.multi.MultiDBPersistent.getFirstObjectOfType(
+			LMGroupSA205.class,
+			(com.cannontech.database.data.multi.MultiDBPersistent)o );
+	}
+	else if( o instanceof com.cannontech.database.data.multi.SmartMultiDBPersistent )
+		twoOhFive = (LMGroupSA205)
+			((com.cannontech.database.data.multi.SmartMultiDBPersistent)o).getOwnerDBPersistent();
+	
+	
+	if( o instanceof LMGroupSA205 || twoOhFive != null )
+	{
+		if( twoOhFive == null )
+		twoOhFive = (LMGroupSA205) o;
+			
+		twoOhFive.getLMGroupSA205105().setOperationalAddress(new Integer(getJTextFieldOpAddress().getText()));
+			
+		twoOhFive.getLMGroupSA205105().setLoadNumber((String)getRelayCombosJComboBox().getSelectedItem());
+		
+		
+	}
+	return twoOhFive;
+	
 }
 /**
  * Called whenever the part throws an exception.
@@ -374,5 +402,17 @@ public static void main(java.lang.String[] args) {
  * This method was created in VisualAge.
  * @param o java.lang.Object
  */
-public void setValue(Object o) {}
+public void setValue(Object o) 
+{
+	if(o instanceof LMGroupSA205)
+	{
+		LMGroupSA205 twoOhFive = (LMGroupSA205) o;
+		
+		getJTextFieldOpAddress().setText(twoOhFive.getLMGroupSA205105().getOperationalAddress().toString());
+		
+		getRelayCombosJComboBox().setSelectedItem(twoOhFive.getLMGroupSA205105().getLoadNumber() );
+			
+	}
+
+}
 }
