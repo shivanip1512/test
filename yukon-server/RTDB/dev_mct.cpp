@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.56 $
-* DATE         :  $Date: 2005/03/01 15:59:33 $
+* REVISION     :  $Revision: 1.57 $
+* DATE         :  $Date: 2005/03/01 22:32:34 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -130,9 +130,13 @@ bool CtiDeviceMCT::sspecIsValid( int sspec )
 
     mct_sspec.insert(make_pair(TYPEMCT360,     218));
     mct_sspec.insert(make_pair(TYPEMCT360,    1007));  //  new Grand Unification sspec
+    mct_sspec.insert(make_pair(TYPEMCT360,    1008));  //  these two are the S4 and
+    mct_sspec.insert(make_pair(TYPEMCT360,    1009));  //    the KV...  but i don't know which is which
 
     mct_sspec.insert(make_pair(TYPEMCT370,     218));
-    mct_sspec.insert(make_pair(TYPEMCT370,    1007));  //  new Grand Unification sspec
+    mct_sspec.insert(make_pair(TYPEMCT370,    1007));  //  ditto of the above for the 360
+    mct_sspec.insert(make_pair(TYPEMCT370,    1008));  //
+    mct_sspec.insert(make_pair(TYPEMCT370,    1009));  //
 
     //mct_sspec.insert(make_pair(TYPEMCT410,   XXXX));  //  add this later when it's necessary
 
