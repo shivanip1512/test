@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2003/09/30 18:49:25 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2003/10/12 01:16:06 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -25,6 +25,7 @@
 
 #include "dnp_objects.h"
 #include "dnp_transport.h"
+
 
 #define DNP_APP_BUF_SIZE 2048
 
@@ -167,6 +168,11 @@ public:
     void eraseInboundObjectBlocks( void );
     bool hasInboundPoints( void );
     void getInboundPoints( RWTPtrSlist< CtiPointDataMsg > &pointList );
+
+    bool isControlResult( void ) const;
+    int  getControlResultStatus( void ) const;
+    long getControlResultOffset( void ) const;
+
 
     enum AppFuncCode
     {

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2003/09/30 18:49:09 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2003/10/12 01:16:06 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -269,6 +269,45 @@ void CtiDNPApplication::getInboundPoints( RWTPtrSlist< CtiPointDataMsg > &pointL
             _inObjectBlocks[i]->getPoints(pointList);
         }
     }
+}
+
+
+bool CtiDNPApplication::isControlResult( void ) const
+{
+    bool hasControlResult = false;
+
+    if( _inObjectBlocks.size() && _inObjectBlocks[0]->isBinaryOutputControl() )
+    {
+        hasControlResult = true;
+    }
+
+    return hasControlResult;
+}
+
+
+int CtiDNPApplication::getControlResultStatus( void ) const
+{
+    int retVal = -1;
+
+    if( isControlResult() )
+    {
+        retVal = _inObjectBlocks[0]->getBinaryOutputControlStatus();
+    }
+
+    return retVal;
+}
+
+
+long CtiDNPApplication::getControlResultOffset( void ) const
+{
+    long result = NULL;
+
+    if( isControlResult() )
+    {
+        result = _inObjectBlocks[0]->getBinaryOutputControlOffset();
+    }
+
+    return result;
 }
 
 
