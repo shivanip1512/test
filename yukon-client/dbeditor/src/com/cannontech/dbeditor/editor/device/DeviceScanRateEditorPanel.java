@@ -1537,7 +1537,7 @@ public Object getValue(Object device)
 	java.util.Vector newScanRateVector = new java.util.Vector(3);
 
 
-	if( (val instanceof CCUBase) || (val instanceof TCUBase) || (val instanceof Series5Base)
+	if( (val instanceof CCUBase) || (val instanceof TCUBase) 
 			  || (val instanceof RepeaterBase) ||
 			 (val instanceof PagingTapTerminal) )
 	{
@@ -1571,7 +1571,8 @@ public Object getValue(Object device)
 				|| (val instanceof MCTBase) 
 				|| (val instanceof LCUBase)
             || (val instanceof CapBankController6510)
-            || (val instanceof DNPBase) )
+            || (val instanceof DNPBase)
+            || (val instanceof Series5Base) )
 	{
 		if( getPeriodicHealthCheckBox().isSelected() && getPeriodicHealthCheckBox().isVisible() )
 		{
@@ -1884,8 +1885,7 @@ public void setDeviceType(int type)
 			|| DeviceTypesFuncs.isTCU(type)
 			|| DeviceTypesFuncs.isRepeater(type)
 			|| (type == PAOGroups.TAPTERMINAL)
-			|| (type == PAOGroups.WCTP_TERMINAL)
-			|| (type == PAOGroups.SERIES_5_LMI) )
+			|| (type == PAOGroups.WCTP_TERMINAL) )
 	{
 		getPeriodicHealthCheckBox().setText("Periodic Health Check");
 
@@ -1903,7 +1903,8 @@ public void setDeviceType(int type)
 	if( DeviceTypesFuncs.isRTU(type) 
 				|| DeviceTypesFuncs.isMCT(type)
 				|| DeviceTypesFuncs.isLCU(type)
-            || DeviceTypesFuncs.isCapBankController(type) )
+            || DeviceTypesFuncs.isCapBankController(type)
+            || (type == PAOGroups.SERIES_5_LMI) )
 	{		
 		if( DeviceTypesFuncs.isMCT3xx(type) || DeviceTypesFuncs.isMCT410KWHONLY(type)  )
 		{
@@ -1922,6 +1923,7 @@ public void setDeviceType(int type)
 			getPeriodicHealthIntervalComboBox().setSelectedItem("15 second");
 			getAccumulatorRateComboBox().setSelectedItem("15 minute");
 		}		
+		
 		else if( type == PAOGroups.RTU_DNP
 					 || type == PAOGroups.RTU_DART
                 || type == PAOGroups.DNP_CBC_6510 )
@@ -1955,18 +1957,20 @@ public void setDeviceType(int type)
 
       setIntegrityObjectsVisible(
          !(type == PAOGroups.RTUILEX
-          || type == PAOGroups.LCU415) );
+          || type == PAOGroups.LCU415));
 		
       setHealthObjectsVisible( 
             !(type == PAOGroups.DCT_501
-              || DeviceTypesFuncs.isMCT3xx(type) || DeviceTypesFuncs.isMCT410KWHONLY(type)) );
+              || DeviceTypesFuncs.isMCT3xx(type) || DeviceTypesFuncs.isMCT410KWHONLY(type)
+				|| type == PAOGroups.SERIES_5_LMI) );
       
 		setAccumulatorObjectsVisible( 
 				!(type == PAOGroups.DCT_501 
                || type == PAOGroups.DNP_CBC_6510
 	            || type == PAOGroups.RTU_DNP
 	            || type == PAOGroups.RTU_DART
-					|| type == PAOGroups.LCU_T3026) );
+					|| type == PAOGroups.LCU_T3026
+					|| type == PAOGroups.SERIES_5_LMI) );
 		
 
 		getAccumulatorRateCheckBox().setSelected(false);
@@ -2037,8 +2041,7 @@ public void setValue(Object val)
 		|| (val instanceof TCUBase)
 		|| (val instanceof RepeaterBase)
 		|| (val instanceof PagingTapTerminal)
-		|| (val instanceof IEDMeter)
-		|| (val instanceof Series5Base) )
+		|| (val instanceof IEDMeter))
 	{
 		if (dScanRate.length > 0)
 		{
@@ -2069,7 +2072,8 @@ public void setValue(Object val)
 				|| (val instanceof MCTBase) 
 				|| (val instanceof LCUBase)
             || (val instanceof CapBankController6510)
-            || (val instanceof DNPBase) )
+            || (val instanceof DNPBase)
+            || (val instanceof Series5Base) )
 	{
 
 		for (int i = 0; i < dScanRate.length; i++)
