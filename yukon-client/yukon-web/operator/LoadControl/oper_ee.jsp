@@ -80,7 +80,10 @@
 		if (request.getParameter("error") == null) {
 			if (request.getParameter("submitted") == null) {
 				checker.clear();
-				checker.set("program", programIds[0]);
+				if( programIds.length > 0)
+					checker.set("program", programIds[0]);
+				else
+					checker.set("program", "-1");//give it some invalid value, gets us past exceptions being tossed
 				for (int i = 0; i < 24; i++)
 				{
 					priceStrs[i] = "0";

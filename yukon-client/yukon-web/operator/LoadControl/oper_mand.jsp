@@ -56,7 +56,10 @@
 		if (request.getParameter("error") == null) {	// not back from the confirmation page
 			if (request.getParameter("submitted") == null) {	// not submitted yet
 				checker.clear();
-				checker.set("program", programIds[0]);
+				if( programIds.length > 0)
+					checker.set("program", programIds[0]);
+				else
+					checker.set("program", "-1");//give it some invalid value, gets us past exceptions being tossed
 				checker.set("notifydate", mandDateFormat.format(com.cannontech.util.ServletUtil.getToday(tz)));
 				checker.set("notifytime", mandTimeFormat.format(new java.util.Date()));
 				checker.set("curtaildate", mandDateFormat.format(com.cannontech.util.ServletUtil.getToday(tz)));
