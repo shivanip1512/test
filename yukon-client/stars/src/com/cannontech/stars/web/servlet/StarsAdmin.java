@@ -2320,7 +2320,7 @@ public class StarsAdmin extends HttpServlet {
 				return;
 			}
 			
-			if (task.getStatus() == DeleteCustAccountsTask.STATUS_ERROR) {
+			if (task.getStatus() == DeleteEnergyCompanyTask.STATUS_ERROR) {
 				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, task.getErrorMsg());
 				ProgressChecker.removeTask( id );
 				return;
