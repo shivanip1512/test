@@ -4015,8 +4015,8 @@ public static void main(final java.lang.String[] args)
 	{
 		System.setProperty("cti.app.name", "TDC");
 		
-		com.cannontech.clientutils.CTILogger.info("Syntax for optional parameters is as follows:");
-		com.cannontech.clientutils.CTILogger.info("   TDCMainFrame view=<value> display=<value>");
+		com.cannontech.clientutils.CTILogger.getStandardLog().info("Syntax for optional parameters is as follows:");
+		com.cannontech.clientutils.CTILogger.getStandardLog().info("   TDCMainFrame view=<value> display=<value>");
 
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
       
