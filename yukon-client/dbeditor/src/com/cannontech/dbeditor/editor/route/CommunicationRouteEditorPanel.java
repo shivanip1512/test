@@ -526,10 +526,10 @@ private void loadSignalTransmitterComboBox(String routeType) {
 			{
 				int type = ((com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(i)).getType();
 
-				if( com.cannontech.database.data.device.DeviceTypesFuncs.isCCU(type)
-					 || com.cannontech.database.data.device.DeviceTypesFuncs.isRepeater(type) )
+				if( com.cannontech.database.data.device.DeviceTypesFuncs.isCCU(type)  )
 					getSignalTransmitterComboBox().addItem( devices.get(i) );
-			}
+			}  	//repeaters are not actually signal transmitters, so they should not be in the ComboBox
+				//|| com.cannontech.database.data.device.DeviceTypesFuncs.isRepeater(type)
 		}
 		else if( routeType.equalsIgnoreCase(com.cannontech.database.data.pao.RouteTypes.STRING_TCU) )
 		{
