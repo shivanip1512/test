@@ -65,9 +65,11 @@ import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.util.ECUtils;
+import com.cannontech.stars.util.ProgressChecker;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
+import com.cannontech.stars.util.task.DeleteCustAccountsTask;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.action.UpdateApplianceAction;
 import com.cannontech.stars.web.action.CreateLMHardwareAction;
@@ -2300,23 +2302,32 @@ public class StarsAdmin extends HttpServlet {
         LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
         
 		try {
-			String acctNo = req.getParameter( "AcctNo" ).replace( '*', '%' );
+			String acctNo = req.getParameter( "AcctNo" );
 			int[] accountIDs = CustomerAccount.searchByAccountNumber(
-					energyCompany.getEnergyCompanyID(), acctNo );
+					energyCompany.getEnergyCompanyID(), acctNo.replace('*', '%') );
 			
 			if (accountIDs != null) {
-				for (int i = 0; i < accountIDs.length; i++) {
-					LiteStarsCustAccountInformation liteAcctInfo = energyCompany.getCustAccountInformation( accountIDs[i], true );
-					DeleteCustAccountAction.deleteCustomerAccount( liteAcctInfo, energyCompany );
+				if (accountIDs.length < 50) {
+					for (int i = 0; i < accountIDs.length; i++) {
+						LiteStarsCustAccountInformation liteAcctInfo = energyCompany.getCustAccountInformation( accountIDs[i], true );
+						DeleteCustAccountAction.deleteCustomerAccount( liteAcctInfo, energyCompany );
+					}
+					
+					if (accountIDs.length > 1)
+						session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, accountIDs.length + " customer accounts have been deleted");
+					else
+						session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, accountIDs.length + " customer account have been deleted");
 				}
-				
-				if (accountIDs.length > 1)
-					session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, accountIDs.length + " customer accounts have been deleted" );
-				else
-					session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, accountIDs.length + " customer account has been deleted" );
+				else {
+					// Too many accounts to be deleted, it may take a while
+					DeleteCustAccountsTask task = new DeleteCustAccountsTask(user, accountIDs);
+					long id = ProgressChecker.addTask( task );
+					session.setAttribute(ServletUtils.ATT_REDIRECT, redirect);
+					redirect = req.getContextPath() + "/operator/Admin/Progress.jsp?id=" + id;
+				}
 			}
 			else
-	        	session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Search for account number failed");
+				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Search for account number failed");
 		}
 		catch (Exception e) {
 			e.printStackTrace();
