@@ -39,10 +39,7 @@ public class UpdateUtil {
 				DecimalFormat f = new DecimalFormat();
 				f.setMaximumFractionDigits(lpu.getDecimalPlaces());
 				f.setMinimumFractionDigits(lpu.getDecimalPlaces());
-				text = f.format(pData.getValue());
-				if(text.length() == 1) { //workaround for bugin adobe svg geturl function!
-					text = " " + text;
-				}
+				text = f.format(pData.getValue());				
 				prev = true;
 			}
 		}
@@ -159,7 +156,11 @@ public class UpdateUtil {
 					
 		if( !prev )
 			text = "-";
-			
+		
+		if(text.length() == 1) { //workaround for bugin adobe svg geturl function!
+					text = " " + text;
+		}	
+		
 		return text;		
 }
 
