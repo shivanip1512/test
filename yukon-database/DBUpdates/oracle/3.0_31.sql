@@ -4,7 +4,7 @@
 
 insert into FDRInterface values (21, 'PI','Receive', 't' );
 insert into FDRInterfaceOption values(21, 'Tag Name', 1, 'Text', '(none)' );
-insert into FDRInterfaceOption values(21, 'Period (sec)', 1, 'Text', '(none)' );
+insert into FDRInterfaceOption values(21, 'Period (sec)', 2, 'Text', '(none)' );
 
 
 
