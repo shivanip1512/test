@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2005/03/10 21:27:19 $
+* REVISION     :  $Revision: 1.27 $
+* DATE         :  $Date: 2005/03/17 05:25:42 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -263,6 +263,8 @@ bool Application::errorCondition( void ) const
 
 int Application::generate( CtiXfer &xfer )
 {
+    int retVal = NoError;
+
     if( _transport.isTransactionComplete() )
     {
         switch( _ioState )
@@ -293,34 +295,43 @@ int Application::generate( CtiXfer &xfer )
 
             default:
             {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint - unhandled state " << _ioState << " in Cti::Protocol::DNP::Application::generate() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+            case Failed:
+            {
+                //  eventually, we should respect the results from _transport.initForOutput and _transport.initForInput - they could fail, too
+                retVal = NOTNORMAL;
+
                 break;
             }
         }
     }
 
-    return _transport.generate(xfer);
+    if( !retVal )
+    {
+        retVal = _transport.generate(xfer);
+    }
+
+    return retVal;
 }
 
 
 int Application::decode( CtiXfer &xfer, int status )
 {
     int retVal = NoError;
-    int transportStatus;
 
-    transportStatus = _transport.decode(xfer, status);
-
-    if( _transport.errorCondition() )
+    if( retVal = _transport.decode(xfer, status) )
     {
         if( ++_comm_errors < gDNPInternalRetries )  // CommRetries )
         {
             _ioState = _retryState;
+            retVal = NoError;
         }
         else
         {
             _ioState    = Failed;
-            _retryState = _ioState;
-
-            retVal   = transportStatus;
+            _retryState = Failed;
         }
 
         if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
@@ -338,7 +349,7 @@ int Application::decode( CtiXfer &xfer, int status )
                 if( isOneWay() )
                 {
                     _ioState    = Complete;
-                    _retryState = _ioState;
+                    _retryState = Complete;
                 }
                 else
                 {
@@ -371,7 +382,7 @@ int Application::decode( CtiXfer &xfer, int status )
                     }
                     else
                     {
-                        _ioState = Complete;
+                        _ioState    = Complete;
                         _retryState = _ioState;
                     }
                 }
@@ -395,7 +406,7 @@ int Application::decode( CtiXfer &xfer, int status )
                 }
                 else
                 {
-                    _ioState = Complete;
+                    _ioState    = Complete;
                     _retryState = _ioState;
                 }
 

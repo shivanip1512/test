@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2005/03/10 21:16:23 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2005/03/17 05:23:56 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -124,7 +124,7 @@ int Transport::initForInput(unsigned char *buf)
 
 int Transport::generate( CtiXfer &xfer )
 {
-    int retval = NoError;
+    int retVal = NoError;
     int dataLen, packetLen, first, final;
 
     if( _datalink.isTransactionComplete() )
@@ -133,7 +133,7 @@ int Transport::generate( CtiXfer &xfer )
         {
             case Output:
             {
-                //  prepare transport layer buf dude here man like and stuff for y'all
+                //  prepare transport layer buffer
 
                 first = !(_payload_out.sent > 0);
 
@@ -161,6 +161,7 @@ int Transport::generate( CtiXfer &xfer )
                 //  copy the app layer chunk into the outbound packet
                 memcpy( (void *)_out_packet.data, (void *)&(_payload_out.data[_payload_out.sent]), _current_packet_length );
 
+                //  do we need to observe a return value to handle any errors, or can we let it explode in generate()?
                 _datalink.setToOutput((unsigned char *)&_out_packet, packetLen);
 
                 break;
@@ -175,38 +176,33 @@ int Transport::generate( CtiXfer &xfer )
 
             default:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint - unhandled state " << _ioState << " in Cti::Protocol::DNP::Transport::generate() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+            case Failed:
+            {
+                retVal = NOTNORMAL;
             }
         }
     }
 
-    retval = _datalink.generate(xfer);
+    if( !retVal )
+    {
+        retVal = _datalink.generate(xfer);
+    }
 
-    return retval;
+    return retVal;
 }
 
 
 int Transport::decode( CtiXfer &xfer, int status )
 {
     int retVal = NoError;
-    int datalinkStatus;
 
-    datalinkStatus = _datalink.decode(xfer, status);
-
-    if( _datalink.errorCondition() )
+    if( retVal = _datalink.decode(xfer, status) )
     {
-        //  ACH: if( tries > maxtries ) or something
+        //  make this more robust
         _ioState = Failed;
-        retVal   = datalinkStatus;
-
-        if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
     }
     else if( _datalink.isTransactionComplete() )
     {
