@@ -12,7 +12,7 @@
 		category.setApplianceCategoryID(-1);
 		category.setDescription("");
 		StarsWebConfig cfg = new StarsWebConfig();
-		cfg.setLogoLocation("AC.gif");
+		cfg.setLogoLocation("Load.gif");
 		cfg.setAlternateDisplayName("");
 		cfg.setDescription("");
 		category.setStarsWebConfig( cfg );
