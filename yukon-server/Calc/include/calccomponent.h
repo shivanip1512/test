@@ -35,7 +35,7 @@ private:
     }                    _operationType;
     double               _constantValue;
     RWCString            _functionName;
-    CtiCalc              *_parent;
+    CtiCalc              *_calcpoint;
     int                  _pointUpdated;
     BOOL                 _valid;
     long                 _lastUseUpdateNum;
@@ -53,7 +53,7 @@ public:
 
     CtiCalcComponent( ) :
     _componentType(constant), _pointId(-1), _componentPointId(-1), _operationType(multiplication),
-    _constantValue(0.0), _functionName(""), _valid(0), _lastUseUpdateNum(0), _parent(NULL), _updatesInCurrentAvg(0)
+    _constantValue(0.0), _functionName(""), _valid(0), _lastUseUpdateNum(0), _calcpoint(NULL), _updatesInCurrentAvg(0)
     {};
 
     CtiCalcComponent( const RWCString &componentType, long componentPointId, const RWCString &operationType,
@@ -64,7 +64,7 @@ public:
     ~CtiCalcComponent( )  {};
     void passParent( CtiCalc *parent )    //  this is only for the stack functionality, push( ) and pop( )
     {
-        _parent = parent;
+        _calcpoint = parent;
     };
 
     const RWCString& getFunctionName() {return _functionName;};

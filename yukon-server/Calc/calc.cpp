@@ -280,20 +280,10 @@ BOOL CtiCalc::ready( void )
 */
 CtiCalc& CtiCalc::setNextInterval( int aInterval )
 {
-    RWTime timeNow;
-
     if(aInterval > 0)
     {
-        ULONG secondsPastHour;
-
-        // check where we sit
-        secondsPastHour = timeNow.seconds() % 3600L;
-
-        // if we are on the interval, go now
-        if((secondsPastHour % aInterval) == 0)
-            _nextInterval = timeNow.seconds();
-        else
-            _nextInterval = timeNow.seconds() + (aInterval - (secondsPastHour % aInterval));
+        RWTime timeNow;
+        _nextInterval = nextScheduledTimeAlignedOnRate(timeNow, aInterval)
     }
     else
         _nextInterval = timeNow.seconds();
