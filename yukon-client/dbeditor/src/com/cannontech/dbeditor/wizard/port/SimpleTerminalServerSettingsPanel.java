@@ -340,7 +340,7 @@ public Object getValue(Object val)
 	String ipAddress = getipAddressTextField().getText();
 	Integer portNumber = new Integer(getPortTextField().getText() );
 
-	Integer baudRate = (Integer) getBaudRateComboBox().getSelectedItem();
+	Integer baudRate = new Integer((String) getBaudRateComboBox().getSelectedItem());
 
 	((TerminalServerDirectPort) val).setPortName( name );
 	((TerminalServerDirectPort) val).getPortTerminalServer().setIpAddress( ipAddress );
