@@ -16,13 +16,15 @@ public class YukonDataSetFactory
 {
     private static java.text.SimpleDateFormat LEGEND_FORMAT = new java.text.SimpleDateFormat("MMM dd");
     private static java.text.SimpleDateFormat CATEGORY_FORMAT = new java.text.SimpleDateFormat(" MMM dd, HH:mm ");
+
+	private static Character [] axisChars = new Character[]{new Character('L'), new Character('R')};
     
 	/**
 	 * Insert the method's description here.
 	 * Creation date: (8/2/2001 10:46:02 AM)
 	 * @param gModel com.cannontech.graph.model.GraphModel
 	 */
-	public static java.util.TreeMap buildTreeMap(TrendSerie [] tSeries, int length)
+	public static java.util.TreeMap buildTreeMap(TrendSerie [] tSeries, int length, int datasetIndex)
 	{
 		java.util.TreeMap tree = new java.util.TreeMap();
 
@@ -32,36 +34,40 @@ public class YukonDataSetFactory
 			TrendSerie serie = tSeries[i];			
 			if(GraphDataSeries.isGraphType( serie.getTypeMask()))
 			{
-				if( serie.getDataPairArray() != null)
+				//UNCOMMENT WITH MULTIPLE AXIS SUPPORT				
+				if( serie.getAxis().equals(axisChars[datasetIndex]))
 				{
-			 		long[] timeStamp = new long[serie.getDataPairArray().length];
-			 		double[] values = new double[serie.getDataPairArray().length];
-					for (int x = 0; x < serie.getDataPairArray().length; x++)
+					if( serie.getDataPairArray() != null)
 					{
-						com.jrefinery.data.TimeSeriesDataPair dp = serie.getDataPairArray(x);						
-						timeStamp[x] = dp.getPeriod().getStart();
-						values[x] = dp.getValue().doubleValue();
+				 		long[] timeStamp = new long[serie.getDataPairArray().length];
+				 		double[] values = new double[serie.getDataPairArray().length];
+						for (int x = 0; x < serie.getDataPairArray().length; x++)
+						{
+							com.jrefinery.data.TimeSeriesDataPair dp = serie.getDataPairArray(x);						
+							timeStamp[x] = dp.getPeriod().getStart().getTime();
+							values[x] = dp.getValue().doubleValue();
+						}
+						
+				 		for( int j = 0; timeStamp != null && values != null &&  j < timeStamp.length && j < values.length; j++ )
+				 		{
+					 		Long d = new Long(timeStamp[j]);
+					 		Double[] objectValues = (Double[]) tree.get(d);
+					 		if( objectValues == null )
+					 		{	
+						 		//objectValues is not in the key already
+						 		objectValues = new Double[ length ];
+						 		tree.put(d,objectValues);
+					 		}
+					 		objectValues[validIndex] = new Double(values[j]);
+						}
+						validIndex++;
 					}
-					
-			 		for( int j = 0; timeStamp != null && values != null &&  j < timeStamp.length && j < values.length; j++ )
-			 		{
-				 		Long d = new Long(timeStamp[j]);
-				 		Double[] objectValues = (Double[]) tree.get(d);
-				 		if( objectValues == null )
-				 		{	
-					 		//objectValues is not in the key already
-					 		objectValues = new Double[ length ];
-					 		tree.put(d,objectValues);
-				 		}
-				 		objectValues[validIndex] = new Double(values[j]);
-					}
-					validIndex++;
 				}
 			}
 		}
 		return tree;
 	}
-
+/*
 	public static com.jrefinery.data.TimeSeriesCollection createBasicDataSet(TrendSerie [] tSeries ) 
 	{
 		if( tSeries == null)
@@ -111,7 +117,7 @@ public class YukonDataSetFactory
 							}
 							catch(com.jrefinery.data.SeriesException se)
 							{
-								com.cannontech.clientutils.CTILogger.info("Series ["+i+"] Exception:  PERIOD = " + new java.util.Date(dp.getPeriod().getStart()) + " VALUE = " + dp.getValue().doubleValue());
+								com.cannontech.clientutils.CTILogger.info("Series ["+i+"] Exception:  PERIOD = " + dp.getPeriod().getStart() + " VALUE = " + dp.getValue().doubleValue());
 							}
 						}
 					}
@@ -120,350 +126,563 @@ public class YukonDataSetFactory
 			}
 		}
 		return dSet;
-	}
-	/**
-	 * Insert the method's description here.
-	 * Creation date: (8/2/2001 10:46:02 AM)
-	 * @param cModels FreeChartModel []
-	 */
-	public static com.jrefinery.data.XYSeriesCollection createLoadDurationDataSet(TrendSerie[] tSeries)
+	}*/
+	public static com.jrefinery.data.TimeSeriesCollection [] createBasicDataSet(TrendSerie [] tSeries ) 
 	{
 		if( tSeries == null)
 			return null;
 
-		//Valid series are those that have type = graph.  tSeries has all types of series,
-		//  therefore we need to weed out those we don't want in the graph.
-		int primaryIndex = -1;
-			
-		int validSeriesLength = 0;
-		for( int i = 0; i < tSeries.length; i++)
-		{
-			if(GraphDataSeries.isGraphType(tSeries[i].getTypeMask()))
-			{
-				if( GraphDataSeries.isPrimaryType(tSeries[i].getTypeMask()))
-				{	//find the primary gds, if it exists!
-					primaryIndex = validSeriesLength;
-				}
-				validSeriesLength++;
-			}
-		}
-
-		java.util.TreeMap tree = buildTreeMap(tSeries, validSeriesLength);
-		if( tree == null)
-			return null;
-
-		// Get the keySet (timestamps) in a useable array structure.
-		java.util.Set keySet = tree.keySet();
-		Long[] keyArray = new Long[keySet.size()];
-		keySet.toArray(keyArray);
-
-		// Create the category list (of timestamps).
-		// Categories only serve a purpose to create a graph with a percentage axis.
-		double[] categories = new double[keyArray.length];
-		double categoryCount = keyArray.length -1;// scale is from 0 start point not 1
-		for (int i = 0; i < keyArray.length; i++)
-			categories[i] = ( i / categoryCount ) * 100;
-
-		// Create the dataset of values for each point.
-		Double[][] datasetValues = new Double[validSeriesLength][];
-
-		//This index holder is needed parrallel to i.
-		//When there is a null tSeries[i].getDataPairArray(), we have to ignore the i values interval 
-		//of the tree.get(keyArray[j]).  AKA...the i value can't be incremented, But because i is the 
-		//for loop index of the series, we need another representation of it, hence notNullValuesIndex.
-		int notNullValuesIndex = 0;
-		int allIndex = 0;
-		Double prevValue = null;
-		for (int i = 0; i < tSeries.length; i++)
-		{
-			if(GraphDataSeries.isGraphType(tSeries[i].getTypeMask()))
-			{
-				datasetValues[allIndex] = new Double[keyArray.length];
-				if( tSeries[i].getDataPairArray() != null)
-				{
-					for (int j = 0; j < keyArray.length; j++)
-					{
-						if( GraphDataSeries.isUsageType(tSeries[i].getTypeMask()))
-						{
-							Double[] values = (Double[])tree.get(keyArray[j]);							
-							if( prevValue == null)
-							{
-								prevValue = values[notNullValuesIndex];	//dp.getValue().doubleValue();
-								datasetValues[allIndex][j]= null;
-							}
-							else
-							{
-								Double currentValue = values[notNullValuesIndex];	//dp.getValue().doubleValue();
-								if( currentValue != null && prevValue != null)
-								{
-									datasetValues[allIndex][j] = new Double(currentValue.doubleValue() - prevValue.doubleValue());
-									prevValue = currentValue;
-								}
-							}
-						}						
-						else
-						{
-							Double[] values = (Double[])tree.get(keyArray[j]);
-							datasetValues[allIndex][j] = values[notNullValuesIndex];
-						}
-					}
-					notNullValuesIndex++;
-					allIndex++;
-				}
-				else
-				{
-					if( GraphDataSeries.isPrimaryType(tSeries[i].getTypeMask()))
-					{
-						// We take away the fact there is a primary gds so that when we sort
-						//  the values, we are able to still show load duration.
-						primaryIndex = -1;
-					}
-
-					for (int j = 0; j < keyArray.length; j++)
-					{
-						datasetValues[allIndex][j]= null;
-					}
-					allIndex++;
-				}
-			}
-		}
-
-		//Sort values based on primary gds, if it exists.		
-		sortValuesDescending(datasetValues, primaryIndex);
+		com.jrefinery.data.TimeSeriesCollection [] dSet = new com.jrefinery.data.TimeSeriesCollection[2];
+		dSet[0] = new com.jrefinery.data.TimeSeriesCollection();
+		dSet[1] = new com.jrefinery.data.TimeSeriesCollection();
 		
-		//Create a collection of series as the dataset.
-		com.jrefinery.data.XYSeriesCollection collection = new com.jrefinery.data.XYSeriesCollection();
-		for ( int i = 0; i < datasetValues.length; i++)
-		{
-			com.jrefinery.data.XYSeries xySeries = new com.jrefinery.data.XYSeries(tSeries[i].getLabel());			
-			for (int j = 0; j < datasetValues[i].length; j++)
-			{
-				if( datasetValues[i][j] != null)
-					xySeries.add(categories[j], datasetValues[i][j].doubleValue());
-			}
-			collection.addSeries(xySeries);			
-		}
-		return collection;
-	}
-
-	/**
-	 * Insert the method's description here.
-	 * Creation date: (8/2/2001 10:46:02 AM)
-	 * @param cModels FreeChartModel []
-	 */
-	
-	public static com.jrefinery.data.DefaultCategoryDataset createVerticalCategoryDataSet(TrendSerie[] tSeries)
-	{
-		if( tSeries == null)
-			return null;
-
-		java.util.Vector tNamesVector = new java.util.Vector(tSeries.length);//capacity is best guess right now.
-		int validSeriesLength = 0;
-		
-		for( int i = 0; i < tSeries.length; i++)
-		{
-			if(GraphDataSeries.isGraphType(tSeries[i].getTypeMask()))
-			{
-				tNamesVector.add(tSeries[i].getLabel().toString());
-				validSeriesLength++;
-			}
-		}
-
-		//set the series names up, excluding any not included in the buildTreeMap return.
-		String[] seriesNames = new String[tNamesVector.size()];		
-		tNamesVector.toArray(seriesNames);
-	
-		java.util.TreeMap tree = buildTreeMap(tSeries, validSeriesLength);
-		if( tree == null)
-			return null;
-
-		// Get the keySet (timestamps) in a useable array structure.
-		java.util.Set keySet = tree.keySet();
-		Long[] keyArray = new Long[keySet.size()];
-		keySet.toArray(keyArray);
-		
-		// Create the category list (of timestamps).
-		String[] categoryList = new String[keyArray.length];
-		for (int i = 0; i < keyArray.length; i++)
-		{
-			Long ts = keyArray[i];
-			categoryList[i] = CATEGORY_FORMAT.format(new java.util.Date(ts.longValue()));
-		}
-		
-		// Set series names for each point.
-		Double[][] datasetValues = new Double[validSeriesLength ][];
-		
-		//This index holder is needed parrallel to i.
-		//When there is a null tSeries[i].getDataPairArray(), we have to ignore the i values interval 
-		//of the tree.get(keyArray[j]).  AKA...the i value can't be incremented, But because i is the 
-		//for loop index of the series, we need another representation of it, hence notNullValuesIndex.
-		int notNullValuesIndex = 0;
-		int allIndex = 0;
-		for (int i = 0; i < tSeries.length; i++)
+		for ( int i = 0; i < tSeries.length; i++)
 		{
 			Double prevValue = null;
-			com.jrefinery.data.TimePeriod prevTimePeriod = null;
-			if(GraphDataSeries.isGraphType(tSeries[i].getTypeMask()))
+			TrendSerie serie = tSeries[i];
+			if( serie != null)
 			{
-				datasetValues[allIndex] = new Double[keyArray.length];
-				if( tSeries[i].getDataPairArray() != null)
+				if(GraphDataSeries.isGraphType( serie.getTypeMask()))
 				{
-					for (int j = 0; j < keyArray.length; j++)
+					com.jrefinery.data.BasicTimeSeries series = 
+						new com.jrefinery.data.BasicTimeSeries(serie.getLabel(), com.jrefinery.data.Second.class);
+								
+					if( serie.getDataPairArray() != null)
 					{
-						if( GraphDataSeries.isUsageType(tSeries[i].getTypeMask()))
+						for (int j = 0; j < serie.getDataPairArray().length; j++)
 						{
-							Double[] values = (Double[])tree.get(keyArray[j]);							
-							if( prevValue == null)
+							com.jrefinery.data.TimeSeriesDataPair dp = (com.jrefinery.data.TimeSeriesDataPair)serie.getDataPairArray(j);
+							try
 							{
-								prevValue = values[notNullValuesIndex];	//dp.getValue().doubleValue();
-								datasetValues[allIndex][j]= null;
-							}
-							else
-							{
-								Double currentValue = values[notNullValuesIndex];	//dp.getValue().doubleValue();
-								if( currentValue != null && prevValue != null)
+								if( GraphDataSeries.isUsageType(serie.getTypeMask()))
 								{
-									datasetValues[allIndex][j] = new Double(currentValue.doubleValue() - prevValue.doubleValue());
-									prevValue = currentValue;
+									if( prevValue == null)
+									{
+										prevValue = (Double)dp.getValue();
+									}
+									else
+									{
+										Double currentValue = (Double)dp.getValue();
+										if( currentValue != null && prevValue != null)
+										{
+											com.jrefinery.data.TimeSeriesDataPair tempDP = new com.jrefinery.data.TimeSeriesDataPair(dp.getPeriod(), new Double(currentValue.doubleValue() - prevValue.doubleValue()));
+											prevValue = currentValue;
+											series.add(tempDP);
+										}
+									}
+								}
+								else
+								{
+									series.add(dp);
 								}
 							}
-						}						
-						else
-						{
-							Double[] values = (Double[])tree.get(keyArray[j]);
-							datasetValues[allIndex][j] = values[notNullValuesIndex];
+							catch(com.jrefinery.data.SeriesException se)
+							{
+								com.cannontech.clientutils.CTILogger.info("Series ["+i+"] Exception:  PERIOD = " + dp.getPeriod().getStart() + " VALUE = " + dp.getValue().doubleValue());
+							}
 						}
 					}
-					notNullValuesIndex++;
-					allIndex++;
-				}
-				else
-				{
-					for (int j = 0; j < keyArray.length; j++)
+					if( serie.getAxis().equals(new Character('L')))
 					{
-						datasetValues[allIndex][j]= null;
+						dSet[0].addSeries(series);
 					}
-					allIndex++;
+					else if( serie.getAxis().equals(new Character('R')))
+					{
+						dSet[1].addSeries(series);
+					}
 				}
 			}
 		}
-
-//		com.jrefinery.data.DefaultCategoryDataset dataset = new com.jrefinery.data.DefaultCategoryDataset(getSeriesNames, getCategoryList(), datasetValues);	
-		return (new com.jrefinery.data.DefaultCategoryDataset(seriesNames, categoryList, datasetValues));
+		return dSet;
 	}
 
-
-	public static com.jrefinery.data.DefaultCategoryDataset createVerticalCategoryDataSet_LD(TrendSerie[] tSeries)
+	
+	
+	
+	
+	/**
+	 * Insert the method's description here.
+	 * Creation date: (8/2/2001 10:46:02 AM)
+	 * @param cModels FreeChartModel []
+	 */
+	public static com.jrefinery.data.XYSeriesCollection [] createLoadDurationDataSet(TrendSerie[] tSeries)
 	{
 		if( tSeries == null)
 			return null;
 
-		java.util.Vector tNamesVector = new java.util.Vector(tSeries.length);//capacity is best guess right now.
-		int validSeriesLength = 0;
-		int primaryIndex = -1;
-		
-		for( int i = 0; i < tSeries.length; i++)
+		com.jrefinery.data.XYSeriesCollection [] dataset = new com.jrefinery.data.XYSeriesCollection[2];
+		//Valid series are those that have type = graph.  tSeries has all types of series,
+		//  therefore we need to weed out those we don't want in the graph.
+		for( int datasetIndex = 0; datasetIndex < 2; datasetIndex++)
 		{
-			if(GraphDataSeries.isGraphType(tSeries[i].getTypeMask()))
+			dataset[datasetIndex] = new com.jrefinery.data.XYSeriesCollection();			
+			int primaryIndex = -1;
+			
+			int count = 0;
+			for( int i = 0; i < tSeries.length; i++)
 			{
-				if( GraphDataSeries.isPrimaryType(tSeries[i].getTypeMask()))
-				{	//find the primary gds, if it exists!
-					primaryIndex = validSeriesLength;
-				}
-
-				tNamesVector.add(tSeries[i].getLabel().toString());
-				validSeriesLength++;
-			}
-		}
-
-		//set the series names up, excluding any not included in the buildTreeMap return.		
-		String[] seriesNames = new String[tNamesVector.size()];		
-		tNamesVector.toArray(seriesNames);
-	
-		java.util.TreeMap tree = buildTreeMap(tSeries, validSeriesLength);
-		if( tree == null)
-			return null;
-
-		// Get the keySet (timestamps) in a useable array structure.
-		java.util.Set keySet = tree.keySet();
-		Long[] keyArray = new Long[keySet.size()];
-		keySet.toArray(keyArray);
-		
-		// Create the category list (of timestamps).
-		String[] categoryList = new String[keyArray.length];
-		for (int i = 0; i < keyArray.length; i++)
-		{
-			Long ts = keyArray[i];
-			categoryList[i] = CATEGORY_FORMAT.format(new java.util.Date(ts.longValue()));
-		}
-		
-		// Set series names for each point.
-		Double[][] datasetValues = new Double[validSeriesLength ][];
-		
-		//This index holder is needed parrallel to i.
-		//When there is a null tSeries[i].getDataPairArray(), we have to ignore the i values interval 
-		//of the tree.get(keyArray[j]).  AKA...the i value can't be incremented, But because i is the 
-		//for loop index of the series, we need another representation of it, hence notNullValuesIndex.
-		int notNullValuesIndex = 0;
-		int allIndex = 0;
-		Double prevValue = null;
-		for (int i = 0; i < tSeries.length; i++)
-		{
-			if(GraphDataSeries.isGraphType(tSeries[i].getTypeMask()))
-			{
-				datasetValues[allIndex] = new Double[keyArray.length];
-				if( tSeries[i].getDataPairArray() != null)
+				if(GraphDataSeries.isGraphType(tSeries[i].getTypeMask()))
 				{
-					for (int j = 0; j < keyArray.length; j++)
+					if( tSeries[i].getAxis().equals(axisChars[datasetIndex]))
 					{
-						if( GraphDataSeries.isUsageType(tSeries[i].getTypeMask()))
+						if( GraphDataSeries.isPrimaryType(tSeries[i].getTypeMask()))
+						{	//find the primary gds, if it exists!
+							primaryIndex = count;
+						}
+						count++;
+					}
+				}
+			}
+	
+			java.util.TreeMap tree = buildTreeMap(tSeries, count, datasetIndex);
+			if( tree == null)
+				return null;
+	
+			// Get the keySet (timestamps) in a useable array structure.
+			java.util.Set keySet = tree.keySet();
+			Long[] keyArray = new Long[keySet.size()];
+			keySet.toArray(keyArray);
+	
+			// Create the category list (of timestamps).
+			// Categories only serve a purpose to create a graph with a percentage axis.
+			double[] categories = new double[keyArray.length];
+			double categoryCount = keyArray.length -1;// scale is from 0 start point not 1
+			for (int i = 0; i < keyArray.length; i++)
+				categories[i] = ( i / categoryCount ) * 100;
+	
+			// Create the dataset of values for each point.
+			Double[][] datasetValues = new Double[count][];
+	
+			//This index holder is needed parrallel to i.
+			//When there is a null tSeries[i].getDataPairArray(), we have to ignore the i values interval 
+			//of the tree.get(keyArray[j]).  AKA...the i value can't be incremented, But because i is the 
+			//for loop index of the series, we need another representation of it, hence notNullValuesIndex.
+			int notNullValuesIndex = 0;
+			int allIndex = 0;
+			for (int i = 0; i < tSeries.length; i++)
+			{
+				if(GraphDataSeries.isGraphType(tSeries[i].getTypeMask()))
+				{
+					if( tSeries[i].getAxis().equals(axisChars[datasetIndex]))
+					{
+						datasetValues[allIndex] = new Double[keyArray.length];
+						Double prevValue = null;				
+						if( tSeries[i].getDataPairArray() != null)
 						{
-							Double[] values = (Double[])tree.get(keyArray[j]);							
-							if( prevValue == null)
+							for (int j = 0; j < keyArray.length; j++)
 							{
-								prevValue = values[notNullValuesIndex];	//dp.getValue().doubleValue();
-								datasetValues[allIndex][j]= null;
-							}
-							else
-							{
-								Double currentValue = values[notNullValuesIndex];	//dp.getValue().doubleValue();
-								if( currentValue != null && prevValue != null)
+								Double[] values = (Double[])tree.get(keyArray[j]);
+								if( GraphDataSeries.isUsageType(tSeries[i].getTypeMask()))
 								{
-									datasetValues[allIndex][j] = new Double(currentValue.doubleValue() - prevValue.doubleValue());
-									prevValue = currentValue;
+									if( prevValue == null)
+									{
+										prevValue = values[notNullValuesIndex];	//dp.getValue().doubleValue();
+										datasetValues[allIndex][j]= null;
+									}
+									else
+									{
+										Double currentValue = values[notNullValuesIndex];	//dp.getValue().doubleValue();
+										if( currentValue != null && prevValue != null)
+										{
+											datasetValues[allIndex][j] = new Double(currentValue.doubleValue() - prevValue.doubleValue());
+											prevValue = currentValue;
+										}
+									}
+								}						
+								else
+								{
+									datasetValues[allIndex][j] = values[notNullValuesIndex];
 								}
 							}
-						}						
+							notNullValuesIndex++;
+							allIndex++;
+						}
 						else
 						{
-							Double[] values = (Double[])tree.get(keyArray[j]);
-							datasetValues[allIndex][j] = values[notNullValuesIndex];
+							if( GraphDataSeries.isPrimaryType(tSeries[i].getTypeMask()))
+							{
+								// We take away the fact there is a primary gds so that when we sort
+								//  the values, we are able to still show load duration.
+								primaryIndex = -1;
+							}
+		
+							for (int j = 0; j < keyArray.length; j++)
+							{
+								datasetValues[allIndex][j]= null;
+							}
+							allIndex++;
 						}
 					}
-					notNullValuesIndex++;
-					allIndex++;
 				}
-				else
+			}
+	
+			//Sort values based on primary gds, if it exists.		
+			sortValuesDescending(datasetValues, primaryIndex);
+			
+			//Create a collection of series as the dataset.
+//			com.jrefinery.data.XYSeriesCollection collection = new com.jrefinery.data.XYSeriesCollection();
+			for ( int i = 0; i < datasetValues.length; i++)
+			{
+				com.jrefinery.data.XYSeries xySeries = new com.jrefinery.data.XYSeries(tSeries[i].getLabel());			
+				for (int j = 0; j < datasetValues[i].length; j++)
 				{
-					if( GraphDataSeries.isPrimaryType(tSeries[i].getTypeMask()))
+					if( datasetValues[i][j] != null)
+						xySeries.add(categories[j], datasetValues[i][j].doubleValue());
+				}
+				dataset[datasetIndex].addSeries(xySeries);
+//				collection.addSeries(xySeries);			
+			}
+		}
+		return dataset;
+//		return collection;
+	}
+
+	/**
+	 * Insert the method's description here.
+	 * Creation date: (8/2/2001 10:46:02 AM)
+	 * @param cModels FreeChartModel []
+	 */
+	
+	public static com.jrefinery.data.DefaultCategoryDataset [] createVerticalCategoryDataSet(TrendSerie[] tSeries)
+	{
+		if( tSeries == null)
+			return null;
+
+		com.jrefinery.data.DefaultCategoryDataset[] dataset = new com.jrefinery.data.DefaultCategoryDataset[2];
+		
+//		for( int datasetIndex = 0; datasetIndex < 2; datasetIndex++)
+		//TEMPORARY!! CHECK ACCES WITH JFREECHART 1.0.0 SUPPORT!
+		for( int datasetIndex = 0; datasetIndex < 1; datasetIndex++)
+		{
+			int count = 0;				
+			java.util.Vector namesVector = new java.util.Vector(tSeries.length);//capacity is best guess right now.					
+			for( int i = 0; i < tSeries.length; i++)
+			{
+				if(GraphDataSeries.isGraphType(tSeries[i].getTypeMask()))
+				{
+					//UNCOMMENT WITH MULTIPLE AXIS SUPPORT
+//					if( tSeries[i].getAxis().equals(axisChars[datasetIndex]))
 					{
-						// We take away the fact there is a primary gds so that when we sort
-						//  the values, we are able to still show load duration.
-						primaryIndex = -1;
+						namesVector.add(tSeries[i].getLabel().toString());
+						count++;
 					}
+				}
+			}
+	
+			//set the series names up, excluding any not included in the buildTreeMap return.
+			String[] seriesNames = new String[namesVector.size()];
+			namesVector.toArray(seriesNames);
+		
+		
+		//REPLACE THIS SECTION WITH BUILDTREEMAP(...) WHEN BAR MULTIPLE AXIS IS SUPPORTED//
+//		java.util.TreeMap tree = buildTreeMap(tSeries, count, datasetIndex);
+//		if( tree == null)
+//			return null;		
+		
+		java.util.TreeMap tree = new java.util.TreeMap();
+
+		int validIndex = 0;
+		for( int i = 0; i < tSeries.length; i++ )
+		{
+			TrendSerie serie = tSeries[i];			
+			if(GraphDataSeries.isGraphType( serie.getTypeMask()))
+			{
+				//UNCOMMENT WITH MULTIPLE AXIS SUPPORT				
+//				if( serie.getAxis().equals(axisChars[datasetIndex]))
+				{
+					if( serie.getDataPairArray() != null)
+					{
+				 		long[] timeStamp = new long[serie.getDataPairArray().length];
+				 		double[] values = new double[serie.getDataPairArray().length];
+						for (int x = 0; x < serie.getDataPairArray().length; x++)
+						{
+							com.jrefinery.data.TimeSeriesDataPair dp = serie.getDataPairArray(x);						
+							timeStamp[x] = dp.getPeriod().getStart().getTime();
+							values[x] = dp.getValue().doubleValue();
+						}
 						
-					for (int j = 0; j < keyArray.length; j++)
-					{
-						datasetValues[allIndex][j]= null;
+				 		for( int j = 0; timeStamp != null && values != null &&  j < timeStamp.length && j < values.length; j++ )
+				 		{
+					 		Long d = new Long(timeStamp[j]);
+					 		Double[] objectValues = (Double[]) tree.get(d);
+					 		if( objectValues == null )
+					 		{	
+						 		//objectValues is not in the key already
+						 		objectValues = new Double[ count ];
+						 		tree.put(d,objectValues);
+					 		}
+					 		objectValues[validIndex] = new Double(values[j]);
+						}
+						validIndex++;
 					}
-					allIndex++;
 				}
 			}
 		}
+// END OF BUILDTREEMAP TEMP CODE		
+	
+			// Get the keySet (timestamps) in a useable array structure.
+			java.util.Set keySet = tree.keySet();
+			Long[] keyArray = new Long[keySet.size()];
+			keySet.toArray(keyArray);
+			
+			// Create the category list (of timestamps).
+			String[] categoryList = new String[keyArray.length];
+			for (int i = 0; i < keyArray.length; i++)
+			{
+				Long ts = keyArray[i];
+				categoryList[i] = CATEGORY_FORMAT.format(new java.util.Date(ts.longValue()));
+			}
+			
+			// Set series names for each point.
+			Double[][] datasetValues = new Double[count][];
+			
+			//This index holder is needed parrallel to i.
+			//When there is a null tSeries[i].getDataPairArray(), we have to ignore the i values interval 
+			//of the tree.get(keyArray[j]).  AKA...the i value can't be incremented, But because i is the 
+			//for loop index of the series, we need another representation of it, hence notNullValuesIndex.
+			int notNullValuesIndex = 0;
+			int allIndex = 0;
+			for (int i = 0; i < tSeries.length; i++)
+			{
+				Double prevValue = null;
+				com.jrefinery.data.TimePeriod prevTimePeriod = null;
+				if(GraphDataSeries.isGraphType(tSeries[i].getTypeMask()))
+				{
+					//UNCOMMENT WITH MULTIPLE AXIS SUPPORT					
+//					if( tSeries[i].getAxis().equals(axisChars[datasetIndex]))
+					{
+						datasetValues[allIndex] = new Double[keyArray.length];
+						if( tSeries[i].getDataPairArray() != null)
+						{
+							for (int j = 0; j < keyArray.length; j++)
+							{
+								if( GraphDataSeries.isUsageType(tSeries[i].getTypeMask()))
+								{
+									Double[] values = (Double[])tree.get(keyArray[j]);							
+									if( prevValue == null)
+									{
+										prevValue = values[notNullValuesIndex];	//dp.getValue().doubleValue();
+										datasetValues[allIndex][j]= null;
+									}
+									else
+									{
+										Double currentValue = values[notNullValuesIndex];	//dp.getValue().doubleValue();
+										if( currentValue != null && prevValue != null)
+										{
+											datasetValues[allIndex][j] = new Double(currentValue.doubleValue() - prevValue.doubleValue());
+											prevValue = currentValue;
+										}
+									}
+								}						
+								else
+								{
+									Double[] values = (Double[])tree.get(keyArray[j]);
+									datasetValues[allIndex][j] = values[notNullValuesIndex];
+								}
+							}
+							notNullValuesIndex++;
+							allIndex++;
+						}
+						else
+						{
+							for (int j = 0; j < keyArray.length; j++)
+							{
+								datasetValues[allIndex][j]= null;
+							}
+							allIndex++;
+						}
+					}
+				}
+			}
+			dataset[datasetIndex] = new com.jrefinery.data.DefaultCategoryDataset(seriesNames, categoryList, datasetValues);
+			
+			//TEMPORARY - REMOVE WITH ADDITION OF MULTIPLE AXIS FOR BARS
+			namesVector = new java.util.Vector(tSeries.length);//capacity is best guess right now.
+			seriesNames = new String[namesVector.size()];
+			namesVector.toArray(seriesNames);
+			datasetValues = new Double[0][];			
+			dataset[datasetIndex + 1] = new com.jrefinery.data.DefaultCategoryDataset(seriesNames, categoryList, datasetValues);
+		}
+		return dataset;
+	}
 
-		sortValuesDescending(datasetValues, categoryList, primaryIndex);
+
+	public static com.jrefinery.data.DefaultCategoryDataset [] createVerticalCategoryDataSet_LD(TrendSerie[] tSeries)
+	{
+		if( tSeries == null)
+			return null;
+
+		com.jrefinery.data.DefaultCategoryDataset[] dataset = new com.jrefinery.data.DefaultCategoryDataset[2];
 		
-		return (new com.jrefinery.data.DefaultCategoryDataset(seriesNames, categoryList, datasetValues));
+//		for( int datasetIndex = 0; datasetIndex < 2; datasetIndex++)
+		//TEMPORARY!! CHECK ACCES WITH JFREECHART 1.0.0 SUPPORT!
+		for( int datasetIndex = 0; datasetIndex < 1; datasetIndex++)
+		{
+			java.util.Vector namesVector = new java.util.Vector(tSeries.length);//capacity is best guess right now.
+			int count = 0;
+			int primaryIndex = -1;
+			
+			for( int i = 0; i < tSeries.length; i++)
+			{
+				if(GraphDataSeries.isGraphType(tSeries[i].getTypeMask()))
+				{
+					//UNCOMMENT WITH MULTIPLE AXIS SUPPORT
+	//				if( tSeries[i].getAxis().equals(axisChars[datasetIndex]))
+					{				
+						if( GraphDataSeries.isPrimaryType(tSeries[i].getTypeMask()))
+						{	//find the primary gds, if it exists!
+							primaryIndex = count;
+						}
+						namesVector.add(tSeries[i].getLabel().toString());
+						count++;
+					}
+				}
+			}
+
+			//set the series names up, excluding any not included in the buildTreeMap return.		
+			String[] seriesNames = new String[namesVector.size()];		
+			namesVector.toArray(seriesNames);
+			
+			//REPLACE THIS SECTION WITH BUILDTREEMAP(...) WHEN BAR MULTIPLE AXIS IS SUPPORTED//
+	//		java.util.TreeMap tree = buildTreeMap(tSeries, count, datasetIndex);
+	//		if( tree == null)
+	//			return null;		
+			
+			java.util.TreeMap tree = new java.util.TreeMap();
+
+			int validIndex = 0;
+			for( int i = 0; i < tSeries.length; i++ )
+			{
+				TrendSerie serie = tSeries[i];			
+				if(GraphDataSeries.isGraphType( serie.getTypeMask()))
+				{
+					//UNCOMMENT WITH MULTIPLE AXIS SUPPORT				
+//					if( serie.getAxis().equals(axisChars[datasetIndex]))
+					{
+						if( serie.getDataPairArray() != null)
+						{
+					 		long[] timeStamp = new long[serie.getDataPairArray().length];
+					 		double[] values = new double[serie.getDataPairArray().length];
+							for (int x = 0; x < serie.getDataPairArray().length; x++)
+							{
+								com.jrefinery.data.TimeSeriesDataPair dp = serie.getDataPairArray(x);						
+								timeStamp[x] = dp.getPeriod().getStart().getTime();
+								values[x] = dp.getValue().doubleValue();
+							}
+							
+					 		for( int j = 0; timeStamp != null && values != null &&  j < timeStamp.length && j < values.length; j++ )
+					 		{
+						 		Long d = new Long(timeStamp[j]);
+						 		Double[] objectValues = (Double[]) tree.get(d);
+						 		if( objectValues == null )
+						 		{	
+							 		//objectValues is not in the key already
+							 		objectValues = new Double[ count ];
+							 		tree.put(d,objectValues);
+						 		}
+						 		objectValues[validIndex] = new Double(values[j]);
+							}
+							validIndex++;
+						}
+					}
+				}
+			}
+			// END OF BUILDTREEMAP TEMP CODE	
+			
+			
+			// Get the keySet (timestamps) in a useable array structure.
+			java.util.Set keySet = tree.keySet();
+			Long[] keyArray = new Long[keySet.size()];
+			keySet.toArray(keyArray);
+			
+			// Create the category list (of timestamps).
+			String[] categoryList = new String[keyArray.length];
+			for (int i = 0; i < keyArray.length; i++)
+			{
+				Long ts = keyArray[i];
+				categoryList[i] = CATEGORY_FORMAT.format(new java.util.Date(ts.longValue()));
+			}
+			
+			// Set series names for each point.
+			Double[][] datasetValues = new Double[count][];
+			
+			//This index holder is needed parrallel to i.
+			//When there is a null tSeries[i].getDataPairArray(), we have to ignore the i values interval 
+			//of the tree.get(keyArray[j]).  AKA...the i value can't be incremented, But because i is the 
+			//for loop index of the series, we need another representation of it, hence notNullValuesIndex.
+			int notNullValuesIndex = 0;
+			int allIndex = 0;
+			for (int i = 0; i < tSeries.length; i++)
+			{
+				if(GraphDataSeries.isGraphType(tSeries[i].getTypeMask()))
+				{
+					//UNCOMMENT WITH MULTIPLE AXIS SUPPORT					
+//					if( tSeries[i].getAxis().equals(axisChars[datasetIndex]))
+					{
+						
+						datasetValues[allIndex] = new Double[keyArray.length];
+						Double prevValue = null;
+						if( tSeries[i].getDataPairArray() != null)
+						{
+							for (int j = 0; j < keyArray.length; j++)
+							{
+								if( GraphDataSeries.isUsageType(tSeries[i].getTypeMask()))
+								{
+									Double[] values = (Double[])tree.get(keyArray[j]);							
+									if( prevValue == null)
+									{
+										prevValue = values[notNullValuesIndex];	//dp.getValue().doubleValue();
+										datasetValues[allIndex][j]= null;
+									}
+									else
+									{
+										Double currentValue = values[notNullValuesIndex];	//dp.getValue().doubleValue();
+										if( currentValue != null && prevValue != null)
+										{
+											datasetValues[allIndex][j] = new Double(currentValue.doubleValue() - prevValue.doubleValue());
+											prevValue = currentValue;
+										}
+									}
+								}						
+								else
+								{
+									Double[] values = (Double[])tree.get(keyArray[j]);
+									datasetValues[allIndex][j] = values[notNullValuesIndex];
+								}
+							}
+							notNullValuesIndex++;
+							allIndex++;
+						}
+						else
+						{
+							if( GraphDataSeries.isPrimaryType(tSeries[i].getTypeMask()))
+							{
+								// We take away the fact there is a primary gds so that when we sort
+								//  the values, we are able to still show load duration.
+								primaryIndex = -1;
+							}
+								
+							for (int j = 0; j < keyArray.length; j++)
+							{
+								datasetValues[allIndex][j]= null;
+							}
+							allIndex++;
+						}
+					}
+				}
+			}
+	
+			sortValuesDescending(datasetValues, categoryList, primaryIndex);
+			dataset[datasetIndex] = new com.jrefinery.data.DefaultCategoryDataset(seriesNames, categoryList, datasetValues);
+			
+			//TEMPORARY - REMOVE WITH ADDITION OF MULTIPLE AXIS FOR BARS
+			namesVector = new java.util.Vector(tSeries.length);//capacity is best guess right now.
+			seriesNames = new String[namesVector.size()];
+			namesVector.toArray(seriesNames);
+			datasetValues = new Double[0][];			
+			dataset[datasetIndex + 1] = new com.jrefinery.data.DefaultCategoryDataset(seriesNames, categoryList, datasetValues);
+		}			
+		return dataset;
 	}
 		
 	/**
