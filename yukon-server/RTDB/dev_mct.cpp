@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.38 $
-* DATE         :  $Date: 2003/10/27 22:04:18 $
+* REVISION     :  $Revision: 1.39 $
+* DATE         :  $Date: 2003/10/30 17:39:33 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -31,6 +31,7 @@ using namespace std;
 #include "dev_mct_lmt2.h"
 #include "logger.h"
 #include "mgr_point.h"
+#include "msg_cmd.h"
 #include "pt_numeric.h"
 #include "pt_accum.h"
 #include "porter.h"
@@ -440,12 +441,12 @@ bool CtiDeviceMCT::initCommandStore()
 
    cs._cmd     = CtiProtocolEmetcon::PutConfig_GroupAddrEnable;
    cs._io      = IO_WRITE;
-   cs._funcLen = make_pair( (int)MCT_GroupAddrEnable, 0 );
+   cs._funcLen = make_pair( (int)MCT_Function_GroupAddrEnable, 0 );
    _commandStore.insert( cs );
 
    cs._cmd     = CtiProtocolEmetcon::PutConfig_GroupAddrInhibit;
    cs._io      = IO_WRITE;
-   cs._funcLen = make_pair( (int)MCT_GroupAddrInhibit, 0 );
+   cs._funcLen = make_pair( (int)MCT_Function_GroupAddrInhibit, 0 );
    _commandStore.insert( cs );
 
    cs._cmd     = CtiProtocolEmetcon::GetConfig_Raw;
@@ -470,22 +471,22 @@ bool CtiDeviceMCT::initCommandStore()
 
    cs._cmd     = CtiProtocolEmetcon::Control_Close;
    cs._io      = IO_WRITE;
-   cs._funcLen = make_pair( (int)MCT_FuncWriteClose, 0 );
+   cs._funcLen = make_pair( (int)MCT_Function_Close, 0 );
    _commandStore.insert( cs );
 
    cs._cmd     = CtiProtocolEmetcon::Control_Open;
    cs._io      = IO_WRITE;
-   cs._funcLen = make_pair( (int)MCT_FuncWriteOpen, 0 );
+   cs._funcLen = make_pair( (int)MCT_Function_Open, 0 );
    _commandStore.insert( cs );
 
    cs._cmd     = CtiProtocolEmetcon::Control_Conn;
    cs._io      = IO_WRITE;
-   cs._funcLen = make_pair( (int)MCT_FuncWriteClose, 0 );
+   cs._funcLen = make_pair( (int)MCT_Function_Close, 0 );
    _commandStore.insert( cs );
 
    cs._cmd     = CtiProtocolEmetcon::Control_Disc;
    cs._io      = IO_WRITE;
-   cs._funcLen = make_pair( (int)MCT_FuncWriteOpen, 0 );
+   cs._funcLen = make_pair( (int)MCT_Function_Open, 0 );
    _commandStore.insert( cs );
 
    cs._cmd     = (CtiProtocolEmetcon::Control_ARMS);     // Just here to make this OK.
@@ -517,14 +518,7 @@ INT CtiDeviceMCT::ExecuteRequest( CtiRequestMsg              *pReq,
                                   RWTPtrSlist< CtiMessage >  &retList,
                                   RWTPtrSlist< OUTMESS >     &outList )
 {
-    INT        nRet  = NoError;
-    CtiRouteSPtr Route;
-    RWCString  resultString;
-    long routeID;
-    char Temp[80];
-
-    bool found = false;
-    CtiReturnMsg* pRet = 0;
+    int nRet = NoError;
 
     switch( parse.getCommand( ) )
     {
@@ -588,6 +582,8 @@ INT CtiDeviceMCT::ExecuteRequest( CtiRequestMsg              *pReq,
 
     if( nRet != NORMAL )
     {
+        RWCString resultString;
+
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime( ) << " Couldn't come up with an operation for device " << getName( ) << endl;
@@ -596,16 +592,16 @@ INT CtiDeviceMCT::ExecuteRequest( CtiRequestMsg              *pReq,
 
         resultString = "NoMethod or invalid command.";
         retList.insert( CTIDBG_new CtiReturnMsg(getID( ),
-                                         RWCString(OutMessage->Request.CommandStr),
-                                         resultString,
-                                         nRet,
-                                         OutMessage->Request.RouteID,
-                                         OutMessage->Request.MacroOffset,
-                                         OutMessage->Request.Attempt,
-                                         OutMessage->Request.TrxID,
-                                         OutMessage->Request.UserID,
-                                         OutMessage->Request.SOE,
-                                         RWOrdered( )) );
+                                                RWCString(OutMessage->Request.CommandStr),
+                                                resultString,
+                                                nRet,
+                                                OutMessage->Request.RouteID,
+                                                OutMessage->Request.MacroOffset,
+                                                OutMessage->Request.Attempt,
+                                                OutMessage->Request.TrxID,
+                                                OutMessage->Request.UserID,
+                                                OutMessage->Request.SOE,
+                                                RWOrdered( )) );
     }
     else
     {
@@ -614,112 +610,9 @@ INT CtiDeviceMCT::ExecuteRequest( CtiRequestMsg              *pReq,
             outList.append( OutMessage );
             OutMessage = NULL;
         }
-        /*
-         ***************************** PASS OFF TO ROUTE BEYOND THIS POINT ****************************************
-         */
 
-        for(int i = outList.entries() ; i > 0; i-- )
-        {
-            OUTMESS *pOut = outList.get();
-
-            if( pReq->RouteId() )
-                routeID = pReq->RouteId();
-            else
-                routeID = getRouteID();
-
-            // 082002 CGP // pOut->RouteID         = routeID;
-            pOut->Request.RouteID = routeID;
-
-            EstablishOutMessagePriority( pOut, MAXPRIORITY - 4 );
-
-            if( (Route = CtiDeviceBase::getRoute( pOut->Request.RouteID )) )
-            {
-                pOut->TargetID                = getID();
-                pOut->EventCode = BWORD | RESULT | WAIT;
-
-                if( parse.isKeyValid("noqueue") )
-                {
-                    pOut->EventCode |= DTRAN;
-                    //  pOut->EventCode &= ~QUEUED;
-                }
-
-                pOut->Buffer.BSt.Address      = getAddress();            // The DLC address of the MCT.
-                pOut->Buffer.BSt.DeviceType   = getType();
-                pOut->Buffer.BSt.SSpec        = getSSpec();
-
-                /*
-                 * OK, these are the items we are about to set out to perform..  Any additional signals will
-                 * be added into the list upon completion of the Execute!
-                 */
-                if(parse.getActionItems().entries())
-                {
-                    for(size_t offset = offset; offset < parse.getActionItems().entries(); offset++)
-                    {
-                        RWCString actn = parse.getActionItems()[offset];
-                        RWCString desc = getDescription(parse);
-
-                        vgList.insert(CTIDBG_new CtiSignalMsg(SYS_PID_SYSTEM, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
-                    }
-                }
-
-                /*
-                 *  Form up the reply here since the ExecuteRequest funciton will consume the
-                 *  OutMessage.
-                 */
-                pRet = CTIDBG_new CtiReturnMsg(getID(), RWCString(pOut->Request.CommandStr), Route->getName(), nRet, pOut->Request.RouteID, pOut->Request.MacroOffset, pOut->Request.Attempt, pOut->Request.TrxID, pOut->Request.UserID, pOut->Request.SOE, RWOrdered());
-                // Start the control request on its route(s)
-                if( (nRet = Route->ExecuteRequest(pReq, parse, pOut, vgList, retList, outList)) )
-                {
-                    resultString = "ERROR " + CtiNumStr(nRet) + " performing command on route " + Route->getName().data() + "\n" + FormatError(nRet);
-                    pRet->setResultString(resultString);
-                    pRet->setStatus( nRet );
-                }
-                else
-                {
-                    delete pRet;
-                    pRet = 0;
-                }
-            }
-            else if( getRouteManager() == 0 )       // If there is no route manager, we need porter to do the route work!
-            {
-                // Tell the porter side to complete the assembly of the message.
-                pOut->Request.BuildIt = TRUE;
-                strncpy(pOut->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
-
-                outList.insert( pOut );       // May porter have mercy.
-                pOut = 0;
-            }
-            else
-            {
-                nRet = BADROUTE;
-
-                resultString = "ERROR: Route or Route Transmitter not available for device " + getName();
-
-                pRet = CTIDBG_new CtiReturnMsg(getID(),
-                                                      RWCString(pOut->Request.CommandStr),
-                                                      resultString,
-                                                      nRet,
-                                                      pOut->Request.RouteID,
-                                                      pOut->Request.MacroOffset,
-                                                      pOut->Request.Attempt,
-                                                      pOut->Request.TrxID,
-                                                      pOut->Request.UserID,
-                                                      pOut->Request.SOE,
-                                                      RWOrdered());
-            }
-
-            if(pRet)
-            {
-                retList.insert( pRet );
-            }
-
-            if( pOut )
-            {
-                delete pOut;
-            }
-        }
+        executeOnDLCRoute(pReq, parse, OutMessage, vgList, retList, outList, true);
     }
-
 
     return nRet;
 }
@@ -958,6 +851,7 @@ INT CtiDeviceMCT::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< 
 
     switch( InMessage->Sequence )
     {
+        case CtiProtocolEmetcon::Command_ARMC:
         case CtiProtocolEmetcon::Control_ARMS:
         case CtiProtocolEmetcon::Control_ARML:
         case CtiProtocolEmetcon::Control_Open:
