@@ -69,11 +69,7 @@ public synchronized void  doGet(javax.servlet.http.HttpServletRequest req, javax
 			param = req.getParameter("start");
 			if( param != null) 								
 				localBean.setStart(param);
-			
-/*			param = req.getParameter("tab");
-			if( param != null)
-				localBean.setTab(param);
-*/				
+
 			param = req.getParameter("period");
 			if( param != null)
 				localBean.setPeriod(param);
@@ -96,8 +92,7 @@ public synchronized void  doGet(javax.servlet.http.HttpServletRequest req, javax
 				localBean.setSize(Integer.parseInt(param),Integer.parseInt(param2));
 			}
 		}
-		//This call to setUpdateTrend(true) forces updates to occur all the time.  This needs to go!
-		localBean.getGraph().setUpdateTrend(true);
+
 		localBean.updateCurrentPane();
 		javax.servlet.ServletOutputStream out = null;
 		try
@@ -108,6 +103,7 @@ public synchronized void  doGet(javax.servlet.http.HttpServletRequest req, javax
 	 		resp.setDateHeader ("Expires", 0); 			//prevents caching at the proxy server
 	 	
 	    	out = resp.getOutputStream();
+	    	
 	    	localBean.encode(out);
 			out.flush();
 		}
@@ -122,11 +118,8 @@ public synchronized void  doGet(javax.servlet.http.HttpServletRequest req, javax
 		CTILogger.error("An exception was throw in GraphGenerator:  ", t);
 		t.printStackTrace();
 	}
-	finally
-	{						
-		System.gc();
-	}
 }
+
 /**
  * POST method not supported
  * Creation date: (12/9/99 3:39:10 PM)
