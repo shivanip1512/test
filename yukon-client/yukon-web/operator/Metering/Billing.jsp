@@ -18,17 +18,23 @@
 </head>
 
 <SCRIPT LANGUAGE = "JavaScript">
-function jumpPage(form)
+function jumpPage()
 {
-        form.action="/servlet/BillingServlet?ext=";
-        form.method="post";
-        form.submit();
-        location.href ="/Billing.jsp";
+	update();
+	document.generate.action="/servlet/BillingServlet?";	
+	document.generate.method="post";
+	location.href ="/Billing.jsp";	
 }
-</SCRIPT>
 
+function update()
+{
+	document.MForm.submit();
+}
+
+</SCRIPT>
 <jsp:setProperty name="billingBean" property="fileFormat" param="format"/>
 <jsp:setProperty name="billingBean" property="billingGroupType" param="gType"/>
+<jsp:setProperty name="billingBean" property="billingGroup" param="grp"/>
 <jsp:setProperty name="billingBean" property="appendToFile" param="append"/>
 <jsp:setProperty name="billingBean" property="removeMult" param="mult"/>
 <jsp:setProperty name="billingBean" property="demandDaysPrev" param="dDays"/>
@@ -91,7 +97,7 @@ function jumpPage(form)
 													<tr> 
 														<td width="50%" align = "right" >File Format: </td>
 														<td width="50%"> 
-															<select name = "format">
+															<select name = "format" onchange="update()">
 																<% /* Fill in the possible file format types*/
 																int [] formats = com.cannontech.billing.FileFormatTypes.getValidFormatIDs();	
 																int selectedFormat = billingBean.getFileFormat();
@@ -176,10 +182,11 @@ function jumpPage(form)
 																<tr> 
 																	<td width="50%" align="right">Billing Group Type:</td>
 																	<td width="50%"> 
-																		<select name = "gType">
+																		<select name = "gType" onchange="update()">
 																			<% /* Fill in the possible file format types*/
-																			int [] groupTypes = com.cannontech.billing.mainprograms.BillingFileDefaults.getValidBillGroupTypeIDs();	
+																			int [] groupTypes = com.cannontech.billing.mainprograms.BillingFileDefaults.getValidBillGroupTypeIDs();
 																			int selectedGrpType = billingBean.getBillingGroupType();
+																																					
 																			for( int i = 0; i < groupTypes.length; i++ )
 																			{
 																				if( groupTypes[i] == selectedGrpType)
@@ -197,7 +204,7 @@ function jumpPage(form)
 																		String [] groups = billingBean.getValidBillingGroups();	
 																		String selectedGrp = billingBean.getBillingGroup();
 																		%>
-																		<select name = "grp" size="3" width="50%">
+																		<select name = "grp" size="3" width="50%" onChange="update()">
 																			<% /* Fill in the possible file format types*/
 																			for( int i = 0; i < groups.length; i++ )
 																			{
@@ -217,20 +224,20 @@ function jumpPage(form)
 										</tr>
 									</table>
 								</td>
+								</form>
+								<form name = "generate">
 								<td width="28%" align = "center"  valign = "top"> 
-									<form name="generate">
-										<table width="100%" border="1" cellspacing="0" cellpadding="8" height = "100%">
-											<tr>
-												<td bgcolor ="#CCCCCC">
-													<input type="submit" name="Submit" value="Generate">
-												</td>
-											</tr>
-										</table>
-									</form>
+									<table width="100%" border="1" cellspacing="0" cellpadding="8" height = "100%">
+										<tr>
+											<td bgcolor ="#CCCCCC">
+												<input type="submit" name="generate_submit" value="Generate" onclick = "jumpPage()">
+											</td>
+										</tr>
+									</table>
 								</td>
+								</form>
 							</tr>
 						</table>
-					</form>
 				<p align="center">&nbsp;</p>
 				<p align="center">&nbsp;</p>
 				</td>
