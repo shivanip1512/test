@@ -220,7 +220,7 @@ public void retrieve(String dbalias)
 		d = (DeviceRoutes)t.execute();
 
 		if( d.getRouteID() != null )
-			setAddress( d.getRouteID().intValue() );
+			setRouteID( d.getRouteID().intValue() );
 	}
 	catch( TransactionException e )
 	{
