@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTFILL.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2003/10/23 14:33:50 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2004/01/16 16:52:16 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -214,7 +214,7 @@ static void applySendFillerPage(const long unusedid, CtiPortSPtr Port, void *uid
                                     OutMessage.DeviceID = tapTRX->getID();
                                     OutMessage.TargetID = tapTRX->getID();
                                     OutMessage.Priority = MAXPRIORITY;
-                                    OutMessage.Buffer.VSt.UtilityID = (BYTE)uid; // All Call
+                                    OutMessage.Buffer.VSt.UtilityID = (BYTE)gsUID; // All Call
                                     OutMessage.Retry    = 2;
                                     OutMessage.InLength = -1;
                                     OutMessage.Sequence = 0;
