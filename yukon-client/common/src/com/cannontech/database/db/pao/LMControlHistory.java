@@ -17,14 +17,14 @@ public class LMControlHistory extends com.cannontech.database.db.DBPersistent
 	private Integer currentAnnualTime = null;
 	private String activeRestore = null;
 	private Double reductionValue = null;
-
+	private java.util.Date stopDateTime = null;
 	
 	public final static String SETTER_COLUMNS[] = 
 	{ 
 		"paObjectID", "StartDateTime", "SOETag", "ControlDuration",
 		"ControlType", "CurrentDailyTime", "CurrentMonthlyTime",
 		"CurrentSeasonalTime", "CurrentAnnualTime", "ActiveRestore",
-		"ReductionValue"
+		"ReductionValue", "StopDateTime"
 	};
 
 	public final static String CONSTRAINT_COLUMNS[] = { "LMCtrlHistID" };
@@ -52,7 +52,14 @@ public void add() throws java.sql.SQLException
 {
 	//***************************************
 	//**  We should never add to this table!!!
+	//**  Add is implemented for a custom web page of LMControlHistory.
 	//***************************************
+	Object addValues[] = { getLmCtrlHistID(), getPaObjectID(), getStartDateTime(),
+					getSoeTag(), getControlDuration(), getControlType(),
+					getCurrentDailyTime(), getCurrentMonthlyTime(), getCurrentSeasonalTime(), getCurrentAnnualTime(),
+					getActiveRestore(), getReductionValue(), getStopDateTime()};
+
+	add( TABLE_NAME, addValues );
 }
 /**
  * delete method comment.
@@ -158,6 +165,14 @@ public java.util.Date getStartDateTime() {
 	return startDateTime;
 }
 /**
+ * Insert the method's description here.
+ * Creation date: (3/11/2003 1:25:43 PM)
+ * @return java.util.Date
+ */
+public java.util.Date getStopDateTime() {
+	return stopDateTime;
+}
+/**
  * This method was created in VisualAge.
  * @param pointID java.lang.Integer
  */
@@ -207,6 +222,7 @@ public void retrieve() throws java.sql.SQLException
 		setCurrentAnnualTime( (Integer) results[8] );
 		setActiveRestore( (String) results[9] );		
 		setReductionValue( (Double) results[10] );
+		setStopDateTime( new java.util.Date( ((java.sql.Timestamp) results[11]).getTime()) );
 	}
 	else
 		throw new Error(getClass() + " - Incorrect Number of results retrieved");
@@ -309,13 +325,30 @@ public void setStartDateTime(java.util.Date newStartDateTime) {
 	startDateTime = newStartDateTime;
 }
 /**
+ * Insert the method's description here.
+ * Creation date: (3/11/2003 1:25:43 PM)
+ * @param newStopDateTime java.util.Date
+ */
+public void setStopDateTime(java.util.Date newStopDateTime) {
+	stopDateTime = newStopDateTime;
+}
+/**
  * update method comment.
  */
 public void update() throws java.sql.SQLException 
 {
 	//***************************************
 	//**  We should never update this table!!!
+	//**  Update is implemented for a custom web page of LMControlHistory.
 	//***************************************
-	
+	Object setValues[] = {getPaObjectID(), getStartDateTime(),
+					getSoeTag(), getControlDuration(), getControlType(),
+					getCurrentDailyTime(), getCurrentMonthlyTime(), getCurrentSeasonalTime(), getCurrentAnnualTime(),
+					getActiveRestore(), getReductionValue(), getStopDateTime() };
+					
+	Object constraintValues[] = { getLmCtrlHistID()};
+
+	update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
+
 }
 }
