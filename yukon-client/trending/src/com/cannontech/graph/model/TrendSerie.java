@@ -114,7 +114,8 @@ public class TrendSerie
 	{
 		if( maxArea == 0)
 		{
-			maxArea = getMaximumValue() * getDataPairArray().length;
+			if( getMaximumValue() != null)
+				maxArea = getMaximumValue().doubleValue() * getDataPairArray().length;
 		}
 		return maxArea;
 	}
@@ -158,12 +159,12 @@ public class TrendSerie
 		return minimumTSDataPair;
 	}
 
-	public double getMaximumValue()
+	public Double getMaximumValue()
 	{
 		if( getMaximumTSDataPair() != null)
-			return getMaximumTSDataPair().getValue().doubleValue();
+			return (Double)getMaximumTSDataPair().getValue();
 		else 
-			return -100;
+			return null;
 	}
 	/*
 	public long getMaximumTimestamp()
@@ -171,12 +172,12 @@ public class TrendSerie
 		return getMaximumTSDataPair().getPeriod().getStart();
 	}
 	*/
-	public double getMinimumValue()
+	public Double getMinimumValue()
 	{
 		if( getMinimumTSDataPair() != null)
-			return getMinimumTSDataPair().getValue().doubleValue();
+			return (Double)getMinimumTSDataPair().getValue();
 		else
-			return -100;
+			return null;
 	}
 	/*
 	public long getMinimumTimestamp()

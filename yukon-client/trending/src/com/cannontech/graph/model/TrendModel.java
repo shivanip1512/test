@@ -139,9 +139,10 @@ public Double getLeftScaleMin()
 		{
 			for (int i = 0; i < getTrendSeries().length; i++)
 			{
-				if( getTrendSeries()[i].getMinimumValue() < min)
-					min = getTrendSeries()[i].getMinimumValue();
-					
+				if( getTrendSeries()[i].getMinimumValue() != null)
+					if( getTrendSeries()[i].getMinimumValue().doubleValue() < min)
+						min = getTrendSeries()[i].getMinimumValue().doubleValue();
+			
 			}
 			leftScaleMin = new Double(min);
 		}
@@ -158,9 +159,9 @@ public Double getLeftScaleMax()
 		{
 			for (int i = 0; i < getTrendSeries().length; i++)
 			{
-				if( getTrendSeries()[i].getMaximumValue() > max)
-					max = getTrendSeries()[i].getMaximumValue();
-					
+				if( getTrendSeries()[i].getMaximumValue() != null)
+					if( getTrendSeries()[i].getMaximumValue().doubleValue() > max)
+						max = getTrendSeries()[i].getMaximumValue().doubleValue();
 			}
 			leftScaleMax = new Double(max);
 		}
@@ -177,8 +178,9 @@ public Double getRightScaleMin()
 		{
 			for (int i = 0; i < getTrendSeries().length; i++)
 			{
-				if( getTrendSeries()[i].getMinimumValue() < min)
-					min = getTrendSeries()[i].getMinimumValue();
+				if( getTrendSeries()[i].getMinimumValue() != null)
+				if( getTrendSeries()[i].getMinimumValue().doubleValue() < min)
+					min = getTrendSeries()[i].getMinimumValue().doubleValue();
 					
 			}
 			rightScaleMin = new Double(min);
@@ -196,8 +198,9 @@ public Double getRightScaleMax()
 		{
 			for (int i = 0; i < getTrendSeries().length; i++)
 			{
-				if( getTrendSeries()[i].getMaximumValue() > max)
-					max = getTrendSeries()[i].getMaximumValue();
+				if( getTrendSeries()[i].getMaximumValue() != null)
+				if( getTrendSeries()[i].getMaximumValue().doubleValue() > max)
+					max = getTrendSeries()[i].getMaximumValue().doubleValue();
 					
 			}
 			rightScaleMax = new Double(max);
