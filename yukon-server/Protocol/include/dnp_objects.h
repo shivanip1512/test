@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2003/10/12 01:17:12 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2003/10/17 18:41:46 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -33,19 +33,24 @@ class CtiDNPObject
 protected:
     unsigned char _group, _variation;
 
+    bool _valid;
+
     CtiDNPObject( int group, int variation );
 
 public:
 
     virtual ~CtiDNPObject();
 
-    int getGroup(void);
-    int getVariation(void);
+    int getGroup( void );
+    int getVariation( void );
 
-    virtual int restore(unsigned char *buf, int len);
-    virtual int restoreBits(unsigned char *buf, int bitpos, int len);
-    virtual int serialize(unsigned char *buf);
-    virtual int getSerializedLen(void);
+    virtual int restore( unsigned char *buf, int len );
+    virtual int restoreBits( unsigned char *buf, int bitpos, int len );
+
+    bool isValid( void );
+
+    virtual int serialize( unsigned char *buf );
+    virtual int getSerializedLen( void );
 
     virtual CtiPointDataMsg *getPoint( void );
 };
@@ -69,7 +74,7 @@ private:
     int restoreObject( unsigned char *buf, int len, CtiDNPObject *&obj );
     int restoreBitObject( unsigned char *buf, int bitpos, int len, CtiDNPObject *&obj );
 
-    void eraseObjectList(void);
+    void eraseObjectList( void );
 
 public:
     enum QualifierType;

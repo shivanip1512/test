@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2003/10/12 01:17:12 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2003/10/17 18:41:45 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -60,6 +60,12 @@ int CtiDNPObject::restoreBits( unsigned char *buf, int bitoffset, int len )
     }
 
     return (len * 8) - bitoffset;
+}
+
+
+bool CtiDNPObject::isValid( void )
+{
+    return _valid;
 }
 
 
@@ -805,6 +811,11 @@ int CtiDNPObjectBlock::restoreObject( unsigned char *buf, int len, CtiDNPObject 
     if( obj != NULL )
     {
         lenUsed = obj->restore(buf, len);
+
+        if( !obj->isValid() )
+        {
+            delete obj;
+        }
     }
     else
     {
