@@ -663,12 +663,12 @@ private javax.swing.JTextField getJTextFieldPhoneNumber() {
 						((com.cannontech.database.data.route.RouteBase) oldRoute).getDeviceID() );
 					((com.cannontech.database.data.route.RouteBase) newRoute).setDefaultRoute(
 						((com.cannontech.database.data.route.RouteBase) oldRoute).getDefaultRoute() );
-	
+					((com.cannontech.database.data.route.RouteBase) newRoute).setDeviceID(device.getDevice().getDeviceID());
+					
 					if( type.equalsIgnoreCase(com.cannontech.database.data.pao.RouteTypes.STRING_CCU) )
 					{
 						((com.cannontech.database.data.route.CCURoute) newRoute).setCarrierRoute(((com.cannontech.database.data.route.CCURoute) oldRoute).getCarrierRoute());
 						((com.cannontech.database.data.route.CCURoute) newRoute).getCarrierRoute().setRouteID(routeID);
-						((com.cannontech.database.data.route.CCURoute) newRoute).setDeviceID(device.getDevice().getDeviceID());
 					}
 	
 					/*//put the route as the second place in our Vector
