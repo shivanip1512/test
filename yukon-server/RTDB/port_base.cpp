@@ -82,21 +82,19 @@ INT CtiPort::traceIn(CtiXfer& Xfer, RWTPtrSlist< CtiMessage > &traceList, CtiDev
 
 
                 //  then print the formatted hex trace
-                trace.setBrightMagenta();
-                traceBytes(Xfer.getInBuffer(), Xfer.getInCountActual(), trace, traceList);
+                if(Xfer.getInCountActual() > 0)
+                {
+                    trace.setBrightMagenta();
+                    traceBytes(Xfer.getInBuffer(), Xfer.getInCountActual(), trace, traceList);
+                }
 
                 if(ErrorCode)
                 {
-                    char ebuff[120];
-                    GetErrorString(ErrorCode, ebuff);
                     trace.setBrightRed();
-                    trace.setTrace( RWCString(ebuff) );
+                    trace.setTrace( FormatError(ErrorCode) );
                     trace.setEnd(true);
                     traceList.insert(trace.replicateMessage());
-
                     trace.setNormal();
-                    trace.setEnd(true);
-                    traceList.insert(trace.replicateMessage());
                 }
             }
         }
