@@ -17,6 +17,7 @@ public class DeviceTree_CustomPointsModel extends DBTreeModel
 		"MWVARH"
 	};
 
+	private long includePoints = 0x00000000;
 /**
  * DeviceTreeModel constructor comment.
  * @param root javax.swing.tree.TreeNode
@@ -72,11 +73,25 @@ public boolean isLiteTypeSupported( int liteType )
 	return ( liteType == com.cannontech.database.data.lite.LiteTypes.YUKON_PAOBJECT
 		  		|| liteType == com.cannontech.database.data.lite.LiteTypes.POINT );
 }
+
+public void setIncludeUOFMType(long pointUOFMMask)
+{
+	includePoints = pointUOFMMask;
+}
 /**
  * This method was created in VisualAge.
  * @return java.lang.String
  */
 public String toString() {
+	if( (includePoints & com.cannontech.database.data.lite.LitePoint.POINT_UOFM_GRAPH) == com.cannontech.database.data.lite.LitePoint.POINT_UOFM_GRAPH)
+	{
+		return "Graph Points";
+	}
+	else if( (includePoints & com.cannontech.database.data.lite.LitePoint.POINT_UOFM_USAGE) == com.cannontech.database.data.lite.LitePoint.POINT_UOFM_USAGE)
+	{
+		return "Usage Points";
+	}
+
 	return "Device";
 }
 /**
@@ -119,16 +134,22 @@ public void update() {
 					boolean pointsFound = false;
 					for( int j = 0; j < points.size(); j++ )
 					{
-						if( ((com.cannontech.database.data.lite.LitePoint)points.get(j)).getPaobjectID() == deviceDevID )
+						if( ((com.cannontech.database.data.lite.LitePoint)points.get(j)).getPaobjectID() == deviceDevID 
+							&& ( (com.cannontech.database.data.lite.LitePoint)points.get(j)).getTags() == includePoints)
 						{
 							pointsFound = true;
 							deviceNode.add( new DBTreeNode( points.get(j)) );
 						}
 						else if( pointsFound )  // used to optimize the iterations
 						{						
-							pointsFound = false;
+							j = points.size();
 							break;
 						}					
+					}
+					if( !pointsFound)
+					{
+//						System.out.println( " REMOVE MY DEVICE");
+						rootNode.remove(deviceNode);
 					}
 				}
 				
@@ -141,9 +162,9 @@ public void update() {
 /**
  * This method was created in VisualAge.
  */
+/*
 public void update(long includedPoints)
 {
-
 	com.cannontech.database.cache.DefaultDatabaseCache cache =
 					com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 
@@ -199,5 +220,5 @@ public void update(long includedPoints)
 	}
 
 	reload();
-}
+}*/
 }
