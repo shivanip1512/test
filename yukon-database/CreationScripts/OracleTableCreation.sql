@@ -1769,7 +1769,10 @@ insert into BillingFileFormats values(4,'CTI-CSV');
 insert into BillingFileFormats values(5,'OPU');
 insert into BillingFileFormats values(6,'DAFRON');
 insert into BillingFileFormats values(7,'NCDC');
-insert into billingfileformats values( 11, 'MV_90 DATA Import');
+insert into billingfileformats values( -11, 'MV_90 DATA Import');
+insert into billingfileformats values( 12, 'SEDC 5.4');
+insert into billingfileformats values( 13, 'NISC-Turtle');
+insert into billingfileformats values( 14, 'NISC-NCDC');
 
 /*==============================================================*/
 /* Table : FDRTelegyrGroup                                      */
