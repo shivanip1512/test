@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.55 $
-* DATE         :  $Date: 2004/05/19 14:57:06 $
+* REVISION     :  $Revision: 1.56 $
+* DATE         :  $Date: 2004/07/27 16:41:35 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -126,6 +126,7 @@ using namespace std;
 #include "routes.h"
 #include "porter.h"
 #include "portdecl.h"
+#include "portverify.h"
 #include "master.h"
 #include "elogger.h"
 #include "alarmlog.h"
@@ -174,6 +175,7 @@ using namespace std;
 #define DO_PERFUPDATETHREAD            1
 #define DO_FILLERTHREAD                1
 #define DO_PORTSHARING                 1
+#define DO_VERIFICATIONTHREAD          1
 
 #define DOUT_OUT TRUE
 
@@ -217,6 +219,9 @@ RWThreadFunction _vconfThread;
 
 RWThreadFunction _queueCCU711Thread;
 RWThreadFunction _kickerCCU711Thread;
+
+CtiPorterVerification PorterVerificationThread;
+
 
 static RWWinSockInfo  winsock;
 
@@ -759,6 +764,12 @@ INT PorterMainFunction (INT argc, CHAR **argv)
         _perfThread.start();
     }
 
+    /* Start the verification thread */
+    if(DO_VERIFICATIONTHREAD)
+    {
+        PorterVerificationThread.start();
+    }
+
     /*
      *  Now start up the ports' thread
      */
@@ -927,19 +938,20 @@ VOID APIENTRY PorterCleanUp (ULONG Reason)
         }
     }
 
-    if(_gwThread.isValid())                _gwThread.requestCancellation(200);
-    if(_pilThread.isValid())               _pilThread.requestCancellation(200);
-    if(_dispThread.isValid())              _dispThread.requestCancellation(200);
-    if(_connThread.isValid())              _connThread.requestCancellation(200);
-    if(_guiThread.isValid())               _guiThread.requestCancellation(200);
-    if(_tsyncThread.isValid())             _tsyncThread.requestCancellation(200);
-    if(_perfThread.isValid())              _perfThread.requestCancellation(200);
-    if(_perfuThread.isValid())             _perfuThread.requestCancellation(200);
-    if(_fillerThread.isValid())            _fillerThread.requestCancellation(200);
-    if(_vconfThread.isValid())             _vconfThread.requestCancellation(200);
-    if(_queueCCU711Thread.isValid())       _queueCCU711Thread.requestCancellation(200);
-    if(_kickerCCU711Thread.isValid())      _kickerCCU711Thread.requestCancellation(200);
+    if(_gwThread.isValid())                 _gwThread.requestCancellation(200);
+    if(_pilThread.isValid())                _pilThread.requestCancellation(200);
+    if(_dispThread.isValid())               _dispThread.requestCancellation(200);
+    if(_connThread.isValid())               _connThread.requestCancellation(200);
+    if(_guiThread.isValid())                _guiThread.requestCancellation(200);
+    if(_tsyncThread.isValid())              _tsyncThread.requestCancellation(200);
+    if(_perfThread.isValid())               _perfThread.requestCancellation(200);
+    if(_perfuThread.isValid())              _perfuThread.requestCancellation(200);
+    if(_fillerThread.isValid())             _fillerThread.requestCancellation(200);
+    if(_vconfThread.isValid())              _vconfThread.requestCancellation(200);
+    if(_queueCCU711Thread.isValid())        _queueCCU711Thread.requestCancellation(200);
+    if(_kickerCCU711Thread.isValid())       _kickerCCU711Thread.requestCancellation(200);
 
+    if(PorterVerificationThread.isRunning())    PorterVerificationThread.interrupt(CtiPorterVerification::SHUTDOWN);
 
     if(_connThread.isValid())
     {
@@ -1109,6 +1121,17 @@ VOID APIENTRY PorterCleanUp (ULONG Reason)
             dout << RWTime() << " _kickerCCU711Thread shutdown" << endl;
         }
     }
+
+    if(DO_VERIFICATIONTHREAD)
+    {
+        PorterVerificationThread.join();
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " _verificationThread shutdown" << endl;
+        }
+    }
+
 
     {
         CtiPortManager::LockGuard prt_guard(PortManager.getMux()); // Protect our destruction!
