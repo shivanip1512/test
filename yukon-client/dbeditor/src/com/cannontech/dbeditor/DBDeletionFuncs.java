@@ -2,6 +2,7 @@ package com.cannontech.dbeditor;
 
 import Acme.RefInt;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.user.UserUtils;
 
@@ -13,7 +14,9 @@ import com.cannontech.user.UserUtils;
 public class DBDeletionFuncs 
 {
 	private static StringBuffer theWarning = new StringBuffer("");
+	private static final String CR_LF = System.getProperty("line.separator");
    
+
    //types of delete
 	public static final int POINT_TYPE				= 1;
 	public static final int NOTIF_GROUP_TYPE		= 2;
@@ -50,7 +53,7 @@ public class DBDeletionFuncs
 		if( com.cannontech.database.data.port.DirectPort.hasDevice( theID ) )
 		{
 			theWarning.delete(0, theWarning.length());
-			theWarning.append("\nbecause it is used by a device.");
+			theWarning.append(CR_LF + "because it is used by a device.");
 			return STATUS_DISALLOW;
 		}
 	
@@ -76,21 +79,21 @@ public class DBDeletionFuncs
 		if( (str = com.cannontech.database.data.device.DeviceBase.hasRoute(theID)) != null )
 		{
 			theWarning.delete(0, theWarning.length());
-			theWarning.append("\nbecause it is utilized by the route named '"+ str + "'");
+			theWarning.append(CR_LF + "because it is utilized by the route named '"+ str + "'");
 			return STATUS_DISALLOW;
 		}
 	
 	   if( (str = com.cannontech.database.db.capcontrol.DeviceCBC.usedCapBankController(theID)) != null )
 	   {
 	      theWarning.delete(0, theWarning.length());
-	      theWarning.append("\nbecause it is utilized by the Device named '" + str + "'");
+	      theWarning.append(CR_LF + "because it is utilized by the Device named '" + str + "'");
 	      return STATUS_DISALLOW;
 	   }
 	
 	   if( (str = com.cannontech.database.db.route.RepeaterRoute.isRepeaterUsed(theID)) != null )
 	   {
 	      theWarning.delete(0, theWarning.length());
-	      theWarning.append("\nbecause it is utilized by the route named '"+ str + "'");
+	      theWarning.append(CR_LF + "because it is utilized by the route named '"+ str + "'");
 	      return STATUS_DISALLOW;
 	   }
 	
@@ -114,14 +117,14 @@ public class DBDeletionFuncs
 		if( com.cannontech.database.data.notification.GroupNotification.hasAlarmCategory( theID ) )
 		{
 			theWarning.delete(0, theWarning.length());
-			theWarning.append("\nbecause it is used by an Alarm Category.");
+			theWarning.append(CR_LF + "because it is used by an Alarm Category.");
 			return STATUS_DISALLOW;
 		}
 	
 		if( com.cannontech.database.data.notification.GroupNotification.hasPointAlarming( theID ) )
 		{
 			theWarning.delete(0, theWarning.length());
-			theWarning.append("\nbecause it is used by a point alarm.");
+			theWarning.append(CR_LF + "because it is used by a point alarm.");
 			return STATUS_DISALLOW;
 		}
 	
@@ -143,7 +146,7 @@ public class DBDeletionFuncs
 				theID, CtiUtilities.getDatabaseAlias() ) )
 		{
 			theWarning.delete(0, theWarning.length());
-			theWarning.append("\nbecause it is used as a primary contact for a customer.");
+			theWarning.append(CR_LF + "because it is used as a primary contact for a customer.");
 			return STATUS_DISALLOW;
 		}
 
@@ -152,7 +155,7 @@ public class DBDeletionFuncs
 				theID, CtiUtilities.getDatabaseAlias() ) )
 		{
 			theWarning.delete(0, theWarning.length());
-			theWarning.append("\nbecause it is used as notifications for point alarms.");
+			theWarning.append(CR_LF + "because it is used as notifications for point alarms.");
 			return STATUS_DISALLOW;
 		}
 
@@ -178,42 +181,42 @@ public class DBDeletionFuncs
 		if( com.cannontech.database.data.point.PointBase.hasCapControlSubstationBus( ptID ) )
 		{
 			theWarning.delete(0, theWarning.length());
-			theWarning.append("\nbecause it is used by a CapControl Substation Bus.");
+			theWarning.append(CR_LF + "because it is used by a CapControl Substation Bus.");
 			return STATUS_DISALLOW;
 		}
 	
 		if( com.cannontech.database.data.point.PointBase.hasCapBank( ptID ) )
 		{
 			theWarning.delete(0, theWarning.length());
-			theWarning.append("\nbecause it is used by a CapBank Device.");
+			theWarning.append(CR_LF + "because it is used by a CapBank Device.");
 			return STATUS_DISALLOW;
 		}
 	
 		if( com.cannontech.database.data.point.PointBase.hasLMTrigger( ptID ) )
 		{
 			theWarning.delete(0, theWarning.length());
-			theWarning.append("\nbecause it is used by a LoadManagement Trigger.");
+			theWarning.append(CR_LF + "because it is used by a LoadManagement Trigger.");
 			return STATUS_DISALLOW;
 		}
 	
 		if( com.cannontech.database.data.point.PointBase.hasLMGroup( ptID ) )
 		{
 			theWarning.delete(0, theWarning.length());
-			theWarning.append("\nbecause it is used by a Load Group.");
+			theWarning.append(CR_LF + "because it is used by a Load Group.");
 			return STATUS_DISALLOW;
 		}
 		
 	   if( com.cannontech.database.data.point.PointBase.hasRawPointHistorys( ptID ) )
 	   {
 	      theWarning.delete(0, theWarning.length());
-	      theWarning.append("\nThis point has archived historical data that will be lost if removed.");
+	      theWarning.append(CR_LF + "This point has archived historical data that will be lost if removed.");
 	      return STATUS_CONFIRM;
 	   }
 	   
 	   if( com.cannontech.database.data.point.PointBase.hasSystemLogEntry( ptID ) )
 	   {
 	      theWarning.delete(0, theWarning.length());
-	      theWarning.append("\nThis point has system log data that will be lost if removed.");
+	      theWarning.append(CR_LF + "This point has system log data that will be lost if removed.");
 	      return STATUS_CONFIRM;
 	   }
 	
@@ -233,7 +236,7 @@ public class DBDeletionFuncs
 		if( com.cannontech.database.data.state.GroupState.hasPoint( theID ) )
 		{
 			theWarning.delete(0, theWarning.length());
-			theWarning.append("\nbecause it is used by a point.");
+			theWarning.append(CR_LF + "because it is used by a point.");
 			return STATUS_DISALLOW;
 		}
 	
@@ -252,7 +255,14 @@ public class DBDeletionFuncs
 		if( loginID == UserUtils.USER_YUKON_ID ) //this id is the default
 		{
 			theWarning.delete(0, theWarning.length());
-			theWarning.append("\nbecause it is reserved for system use.");
+			theWarning.append(CR_LF + "because it is reserved for system use.");
+			return STATUS_DISALLOW;
+		}
+
+		if( YukonUser.isUsedByContact(loginID, CtiUtilities.getDatabaseAlias()) )
+		{
+			theWarning.delete(0, theWarning.length());
+			theWarning.append(CR_LF + "because it is used by a contact.");
 			return STATUS_DISALLOW;
 		}
 	
@@ -313,8 +323,8 @@ public class DBDeletionFuncs
 		else if( toDelete instanceof com.cannontech.database.data.pao.YukonPAObject )
 		{
 			message.append("Are you sure you want to permanently delete '" + nodeName + 
-								"' and all of its points?\n\n" +
-								"*The delete process will take extra time if several points are present.\n" +
+								"' and all of its points?" + CR_LF + CR_LF +
+								"*The delete process will take extra time if several points are present." + CR_LF +
 								"*All points history will also be deleted.");
 
 			unableDel.append("You cannot delete the point attachable object '" + nodeName + "'");
@@ -331,7 +341,7 @@ public class DBDeletionFuncs
 		}
 		else if (toDelete instanceof com.cannontech.database.data.customer.Customer)
 		{
-         message.append("Are you sure you want to permanently delete '" + nodeName + "'?\n\n" +
+         message.append("Are you sure you want to permanently delete '" + nodeName + "'?" + CR_LF + CR_LF +
          			"*All customer activity and settings will be deleted");
 
 			unableDel.append("You cannot delete the customer '" + nodeName + "'");
