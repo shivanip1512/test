@@ -273,8 +273,10 @@ public class Contact extends com.cannontech.database.db.DBPersistent implements 
 	}
 	
 	public static int[] searchByPhoneNumber(String phoneNo) {
-		String sql = "SELECT ContactID FROM " + com.cannontech.database.db.contact.Contact.TABLE_NAME
-				   + " WHERE ContPhone1 = '" + phoneNo + "' OR ContPhone2 = '" + phoneNo + "'";
+		String sql = "SELECT DISTINCT ContactID FROM " + com.cannontech.database.db.contact.ContactNotification.TABLE_NAME
+				   + " WHERE Notification = '" + phoneNo + "' AND ("
+				   + "NotificationCategoryID = " + com.cannontech.common.constants.YukonListEntryTypes.YUK_DEF_ID_HOME_PHONE
+				   + " OR NotificationCategoryID = " + com.cannontech.common.constants.YukonListEntryTypes.YUK_DEF_ID_WORK_PHONE + ")";
 		com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
 				sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
 		
