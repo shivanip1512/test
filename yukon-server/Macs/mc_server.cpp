@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_server.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/05/03 18:32:15 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/05/08 16:36:00 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -691,6 +691,7 @@ bool CtiMCServer::processMessage(CtiMessage* msg)
             }
             else
             {
+                RWRecursiveLock<RWMutexLock>::LockGuard guard( _schedule_manager.getMux() );
                 CtiMCSchedule* sched = _schedule_manager.findSchedule(id);
 
                 if( sched != NULL )
@@ -717,30 +718,32 @@ bool CtiMCServer::processMessage(CtiMessage* msg)
                 // so we can log it's name
                 string sched_name;
 
-                {
+                {                
+                    RWRecursiveLock<RWMutexLock>::LockGuard guard( _schedule_manager.getMux() );
+                    
                     CtiMCSchedule* sched = _schedule_manager.findSchedule(id);
-
+    
                     if( sched != NULL )
                     {
                         sched_name = sched->getScheduleName();
                     }
+                    
+                    if( _schedule_manager.deleteSchedule( id ) )
+                    {
+                        // there can be no more events for this schedule
+                        _scheduler.removeEvents( id );
+                        _client_listener.BroadcastMessage( delete_msg->replicateMessage() );
+    
+                        string event_text("Deleted Schedule:  \\\"");
+                        event_text += sched_name;
+                        event_text += "\\\"";
+    
+                        logEvent( string(delete_msg->getUser().data()), event_text );
+    
+                        ret_val = deleted = true;
+                    }
                 }
-
-                if( _schedule_manager.deleteSchedule( id ) )
-                {
-                    // there can be no more events for this schedule
-                    _scheduler.removeEvents( id );
-                    _client_listener.BroadcastMessage( delete_msg->replicateMessage() );
-
-                    string event_text("Deleted Schedule:  \\\"");
-                    event_text += sched_name;
-                    event_text += "\\\"";
-
-                    logEvent( string(delete_msg->getUser().data()), event_text );
-
-                    ret_val = deleted = true;
-                }
-
+                
                 if( !deleted)
                 {
                     errorMsg = new CtiMCInfo();
@@ -923,14 +926,9 @@ bool CtiMCServer::processMessage(CtiMessage* msg)
 
 
                     if( sched != NULL && _schedule_manager.updateSchedule( *sched ) )
-                    {
-                        //Add code to add events
-                        //_scheduler.addEvents( stripSeconds( RWTime::now()), *sched );
-                        //_scheduler.updateEvents( stripSeconds(RWTime::now()), *sched);
+                    {                        
                         _client_listener.BroadcastMessage( sched->replicateMessage() );
-
                         logEvent( string(msg->getUser().data()), event_text );
-
                         ret_val = true;
                     }
                 }
