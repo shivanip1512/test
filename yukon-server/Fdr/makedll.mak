@@ -103,7 +103,8 @@ fdrtristate.dll \
 fdrrccs.dll \
 fdrlodestarimport_enh.dll \
 fdrlodestarimport_std.dll \
-fdrtelegyr.dll
+fdrtelegyr.dll \
+fdrxa21lm.dll
 
 
 
@@ -297,6 +298,16 @@ fdrtelegyr.dll: $(FDRTELEGYROBJS) Makefile
                 -if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
                 @%cd $(CWD)
 
+fdrxa21lm.dll: fdrxa21lm.obj Makefile
+                @%cd $(OBJ)
+                @echo Building  ..\$@
+                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
+                $(CC) $(DLLFLAGS) fdrxa21lm.obj $(INCLPATHS) $(RWLIBS) $(BOOSTLIBS) $(CTIFDRLIBS) $(COMPILEBASE)\lib\cti_fdr.lib /Fe..\$@
+                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+                -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
+                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
+                -if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
+                @%cd $(CWD)
 
 apiclilib.lib:
                 -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
@@ -416,6 +427,11 @@ fdrtelegyr.obj : fdrtelegyr.cpp
                 @echo:
 		$(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(INCLPATHS) -D_DLL_FDRTELEGYRAPI -DWINDOWS -Fo$(OBJ)\ -c $<
  
+fdrxa21lm.obj : fdrxa21lm.cpp
+                @echo:
+                @echo Compiling: $< Output: ..\$@
+                @echo:
+                $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(INCLPATHS) -D_DLL_FDRXA21LM -DWINDOWS -Fo$(OBJ)\ -c $<
 
 .cpp.obj :
                 @echo:
