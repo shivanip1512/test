@@ -25,7 +25,7 @@ public final class CtiUtilities
 	public static final double INVALID_MAX_DOUBLE = 1E30;
 	
 	
-	public static final String COPYRIGHT = "Copyright (C)1999-2003 Cannon Technologies";
+	public static final String COPYRIGHT = "Copyright (C)1999-2004 Cannon Technologies";
 	
 	public static final String USER_DIR = System.getProperty("user.dir") + "/";
 	//+ System.getProperty("file.seperator"); //for some reason, this is null in VA
