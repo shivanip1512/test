@@ -81,6 +81,8 @@ DLLEXPORT void cleanupDB()
     {
         if(db_info[i] != NULL)
         {
+            delete db_info[i]->db;
+            db_info[i]->db = 0;
             delete db_info[i];
             db_info[i] = NULL;
         }
