@@ -80,7 +80,9 @@ public class CBCCommandExec
 			}
 		}
 		else if( cmdID_ == CBCCommand.CLOSE_CAPBANK 
-			 	 || cmdID_ == CBCCommand.OPEN_CAPBANK )
+			 	 || cmdID_ == CBCCommand.OPEN_CAPBANK
+				 || cmdID_ == CBCCommand.BANK_DISABLE_OVUV 
+				 || cmdID_ == CBCCommand.BANK_ENABLE_OVUV )
 		{
 			CapBankDevice bank = (CapBankDevice)cbcCache.getCapBankTableModel().getCapbank( paoID_ );
 			
