@@ -10,6 +10,7 @@ INCLPATHS+= \
 -I$(PROT)\include \
 -I$(CPARMS)\include \
 -I$(PROCLOG)\include \
+-I$(BOOST) \
 -I$(RW) \
 
 
@@ -32,13 +33,16 @@ INCLPATHS+= \
 ;$(TCLINC) \
 ;$(RW)
 
+.PATH.HPP = \
+$(BOOST)
+
 
 
 YUKONHOLIDAYDLLOBJS=\
 mgr_holiday.obj
 
 HOLIDAYDBLIBS=\
-$(COMPILEBASE)\lib\ctibase.lib 
+$(COMPILEBASE)\lib\ctibase.lib
 
 
 CTIPROGS=\
