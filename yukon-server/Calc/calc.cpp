@@ -50,10 +50,11 @@ CtiCalc::CtiCalc( long pointId, const RWCString &updateType, int updateInterval 
 //        _updateType = historical;
 
         // XXX  invalid for now
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "Historical Update Type not supported in calc and logic server." << endl;
-        }
+//        {
+//NO NEED TO PRINT ANYTHING OUT RIGHT NOW...JUST MAKING HUGE FILES OF NOTHING
+//            CtiLockGuard<CtiLogger> doubt_guard(dout);
+//            dout << "Historical Update Type not supported in calc and logic server." << endl;
+//        }
         _valid = FALSE;
     }
     else
