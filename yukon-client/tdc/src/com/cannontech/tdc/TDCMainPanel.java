@@ -711,8 +711,7 @@ public void executeDateChange( java.util.Date newDate )
 			getTableDataModel().clearSystemViewerDisplay( true );
 			resetPagingProperties();
 
-			//add 1 milleseconds less than 1 day (86399999L)
-			getReadOnlyDisplayData( new java.util.Date(newDate.getTime() + 86399999L) );
+			getReadOnlyDisplayData( new java.util.Date(newDate.getTime()) );
 			previousDate = newDate;
 			
 			setDisplayTitle( getCurrentDisplay().getName(), newDate );

@@ -577,7 +577,7 @@ public int createRowsForHistoricalView(java.util.Date date, int page)
    upperCal.set( upperCal.SECOND, 59 );
    upperCal.set( upperCal.MILLISECOND, 999 );
 
-   
+
    Object[] objs = new Object[2];
 	objs[0] = lowerCal.getTime();
    objs[1] = upperCal.getTime();

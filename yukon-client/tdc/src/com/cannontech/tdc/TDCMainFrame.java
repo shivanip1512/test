@@ -389,7 +389,7 @@ public void alarmToolBar_JToolBarJCDateChange_actionPerformed(java.beans.Propert
 		cal.set( cal.SECOND, 0 );
 		cal.set( cal.MINUTE, 0 );
    	
-	  getMainPanel().executeDateChange( cal.getTime() );
+      getMainPanel().executeDateChange( cal.getTime() );
    }
    
 
