@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2004/09/22 20:34:15 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2004/09/23 15:27:00 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002, 2003, 2004 Cannon Technologies Inc. All rights reserved.
 *---------------------------------------------------------------------------------------------*/
@@ -48,11 +48,6 @@ void CtiThreadMonitor::run( void )
    while( !_quit )
    {
       sleep( 1000 );
-
-      {
-         CtiLockGuard<CtiLogger> doubt_guard( dout );
-         dout << now() << " Monitoring" << endl;
-      }
 
       checkForExpriration();
 
@@ -102,14 +97,14 @@ void CtiThreadMonitor::processQueue( void )
 {
    while( _queue.entries() )
    {
-      CtiThreadRegData *temp = _queue.getQueue();
+      CtiThreadRegData temp = *(_queue.getQueue());
 
-      int tempId = temp->getId();
+      int tempId = temp.getId();
 
       pair< ThreadData::iterator, bool > insertpair;
 
       //we try to put the element from the queue into the map
-      insertpair = _threadData.insert( ThreadData::value_type( tempId, *temp ) );
+      insertpair = _threadData.insert( ThreadData::value_type( tempId, temp ) );
 
       //if we succeed, that element did not exist in the map before
       //if we fail, we've heard from a thread we already knew about, 
@@ -131,89 +126,83 @@ void CtiThreadMonitor::processQueue( void )
 
 void CtiThreadMonitor::processExpired( void )
 {
-   for( ThreadData::iterator i = _threadData.begin(); i != _threadData.end(); i++ )
+   try
    {
-      if( !i->second.getReported() )
+      for( ThreadData::iterator i = _threadData.begin(); i != _threadData.end(); i++ )
       {
-         //get any functions we should use
-         CtiThreadRegData::fooptr hammer = i->second.getShutdownFunc();
-         CtiThreadRegData::fooptr alt = i->second.getAlternateFunc();
-
-         //get any args we should use
-         void* hammerArgs = i->second.getShutdownArgs();
-         void* altArgs = i->second.getAlternateArgs();
-
+         if( !i->second.getReported() )
          {
-            CtiLockGuard<CtiLogger> doubt_guard( dout );
-            dout << now() << " Thread w/ID " << i->first << " is UNREPORTED" << endl;
-         }
-
-         int reaction_type = i->second.getBehaviour();
-
-         switch( reaction_type )
-         {
-         case CtiThreadRegData::None:  
-            {
-            }
-            break;
-
-         case CtiThreadRegData::Restart:
-            {
-               if( alt != NULL )
-               {
-                  if( altArgs != NULL )
-                  {
-                     alt( altArgs );
-                  }
-                  else
-                  {
-                     alt( 0 );
-                  }
-               }
-            }
-            break;
-
-         case CtiThreadRegData::KillApp:
-            {
-               if( alt != NULL )
-               {
-                  if( altArgs != NULL )
-                  {
-                     alt( altArgs );
-                  }
-                  else
-                  {
-                     alt( 0 );
-                  }
-               }
-
-               if( hammer != NULL )
-               {
-                  if( hammerArgs != NULL )
-                  {
-                     hammer( hammerArgs );
-                  }
-                  else
-                  {
-                     hammer( 0 );
-                  }
-               }
-            }
-            break;
-
-         default:
             {
                CtiLockGuard<CtiLogger> doubt_guard( dout );
-               dout << "Illegal behaviour type for id " << i->first << endl;
+               dout << now() << " Thread w/ID " << i->first << " is UNREPORTED" << endl;
             }
-            break;
+
+            int reaction_type = i->second.getBehaviour();
+
+            switch( reaction_type )
+            {
+            case CtiThreadRegData::None:  
+               {
+               }
+               break;
+
+            case CtiThreadRegData::Restart:
+               {
+                  CtiThreadRegData::fooptr alt = i->second.getAlternateFunc();
+                  void* altArgs = i->second.getAlternateArgs();
+
+                  if( alt != NULL )
+                  {
+                     if( altArgs != NULL )
+                     {
+                        alt( altArgs );
+                     }
+                     else
+                     {
+                        alt( 0 );
+                     }
+                  }
+               }
+               break;
+
+            case CtiThreadRegData::KillApp:
+               {
+                  CtiThreadRegData::fooptr hammer = i->second.getShutdownFunc();
+                  void* hammerArgs = i->second.getShutdownArgs();
+
+                  if( hammer != NULL )
+                  {
+                     if( hammerArgs != NULL )
+                     {
+                        hammer( hammerArgs );
+                     }
+                     else
+                     {
+                        hammer( 0 );
+                     }
+                  }
+               }
+               break;
+
+            default:
+               {
+                  CtiLockGuard<CtiLogger> doubt_guard( dout );
+                  dout << "Illegal behaviour type for id " << i->first << endl;
+               }
+               break;
+            }
+
+            i = _threadData.erase( i );
+
+            if( i == _threadData.end() )
+               break;
          }
-
-         i = _threadData.erase( i );
-
-         if( i == _threadData.end() )
-            break;
       }
+   }
+   catch( ... )
+   {
+      CtiLockGuard<CtiLogger> doubt_guard( dout );
+      dout << now() << "Monitor: Unknown exception in processExpired()" << endl;
    }
 }
 
@@ -242,25 +231,33 @@ void CtiThreadMonitor::dump( void )
 // each thread that reports to us will give us info (at least initially) that looks like the regdata
 //===========================================================================================================
 
-void CtiThreadMonitor::insertThread( CtiThreadRegData *in )
+void CtiThreadMonitor::insertThread( const CtiThreadRegData *in )
 {
-   in->setTickledTime( second_clock::local_time() );
+   //we need to copy the data locally to put on the queue or we'll destroy
+   //data that is not ours when we delete the queue
+   CtiThreadRegData  data = *in;
 
-   if( in->getId() != 0 )
+   data.setTickledTime( second_clock::local_time() );
+
+   if( data.getId() != 0 )
    {
-      _queue.putQueue( in );
+      _queue.putQueue( &data );
 
       {
          ptime now( second_clock::local_time() );
 
          CtiLockGuard<CtiLogger> doubt_guard( dout );
-         dout << boost::posix_time::to_simple_string( now ) << " Thread " << in->getId() << " inserted" << endl;
+         dout << boost::posix_time::to_simple_string( now ) << " Thread " << data.getId() << " inserted" << endl;
       }
 
       //our thread may have shut down, so we don't want the queue to keep growing
       //as we won't be processing it anymore
       if( !isRunning() )
       {
+         {
+            CtiLockGuard<CtiLogger> doubt_guard( dout );
+            dout << now() <<" WARNING: Monitor is NOT running, deleting monitor queue" << endl;
+         }
          _queue.clearAndDestroy();
       }
    }
@@ -286,7 +283,7 @@ void CtiThreadMonitor::removeThread( int id )
       dout << now() << " Thread with id " << id << " has unregistered" << endl;
    }
 }
-
+/*
 //===========================================================================================================
 //===========================================================================================================
 
@@ -302,7 +299,7 @@ void CtiThreadMonitor::terminate( void )
 {
    _quit = true;
 }
-
+*/
 //===========================================================================================================
 //===========================================================================================================
 

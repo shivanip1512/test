@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2004/09/22 20:34:15 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2004/09/23 15:27:00 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -37,9 +37,9 @@ public:
    CtiThreadMonitor();
    virtual ~CtiThreadMonitor();
 
-   void insertThread( CtiThreadRegData *in ); 
+   void insertThread( const CtiThreadRegData *in ); 
    void dump( void );
-   void terminate( void );
+//   void terminate( void );
    void removeThread( int id );
 
 protected:
@@ -48,7 +48,7 @@ protected:
 
 private:
 
-   void setQuit( bool in );
+//   void setQuit( bool in );
    void checkForExpriration( void );
    void processQueue( void );
    void processExpired( void );
