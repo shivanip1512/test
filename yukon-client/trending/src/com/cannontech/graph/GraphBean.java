@@ -101,7 +101,7 @@ public class GraphBean implements GraphDefines
 	 */
 	public int getOption()
 	{
-		return getGraph().getOptionsMaskHolder();
+		return getGraph().getOptionsMaskSettings();
 	}
 	/**
 	 * Method setOption.
@@ -109,7 +109,7 @@ public class GraphBean implements GraphDefines
 	 */
 	public void setOption(int newOption)
 	{
-		getGraph().setOptionsMaskHolder(newOption);
+		getGraph().getTrendProperties().setOptionsMaskSettings(newOption);
 	}
 	/**
 	 * Method getViewType.
@@ -142,7 +142,11 @@ public class GraphBean implements GraphDefines
 	 */
 	public void setPeriod(String newPeriod)
 	{
-		getGraph().setPeriod(newPeriod);
+		if( !newPeriod.equalsIgnoreCase(getGraph().getPeriod()))
+		{
+			getGraph().setPeriod(newPeriod);
+			setPage(1);
+		}
 	}
 	/**
 	 * Method getWidth.
@@ -167,7 +171,8 @@ public class GraphBean implements GraphDefines
 	 */
 	public void setGdefid(int newGdefid)
 	{
-		getGraph().setGraphDefinition(newGdefid);			
+		if( newGdefid != getGdefid())
+			getGraph().setGraphDefinition(newGdefid);			
 	}
 	/**
 	 * Method getGdefid.
@@ -230,6 +235,8 @@ public class GraphBean implements GraphDefines
 	 */
 	private void initialize()
 	{
+		//Don't attempt to load any preperties from a file.
+		getGraph().setTrendProperties(new com.cannontech.graph.model.TrendProperties(false));
 	}
 	
 	/**
@@ -248,7 +255,8 @@ public class GraphBean implements GraphDefines
 	 */
 	public void setFormat(String newFormat)
 	{
-		format = newFormat;
+		if( !newFormat.equalsIgnoreCase(format))
+			format = newFormat;
 	}
 	
 	/**

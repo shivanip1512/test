@@ -73,10 +73,10 @@ public class GraphClient extends javax.swing.JPanel implements com.cannontech.da
 						{
 							public void run()
 							{
-								java.awt.Frame frame = GraphClient.this.getGraphParentFrame();
+								javax.swing.JFrame frame = GraphClient.this.getGraphParentFrame();
 								java.awt.Cursor savedCursor = GraphClient.this.getCursor();
 	
-								if (getGraph().getTrendModel() != null)
+								if (getTrendModel() != null)
 								{
 									frame.setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
 									// Set to currentDate - always want this date to be TODAY!
@@ -153,6 +153,7 @@ public class GraphClient extends javax.swing.JPanel implements com.cannontech.da
 	private javax.swing.JScrollPane ivjSummaryTabScrollPane = null;
 	private javax.swing.JSlider ivjStartTimeJSlider = null;
 	private javax.swing.JTextField ivjStartTimeTestField = null;
+	private AdvancedOptionsPanel advOptsPanel = null;
 /**
  * This method needs to be implemented for the abstract class JCValueListener.
  *  JCValueListener is the DatePopupComboBox's listener.  This particular method is
@@ -247,20 +248,20 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 	else if( event.getSource() == getOptionsMenu().getLoadDurationMenuItem())
 	{
 		boolean isMasked = getOptionsMenu().getLoadDurationMenuItem().isSelected();
-		getGraph().setOptionsMaskHolder(TrendModelType.LOAD_DURATION_MASK, isMasked);
+		getTrendProperties().updateOptionsMaskSettings(TrendModelType.LOAD_DURATION_MASK, isMasked);
 		actionPerformed_GetRefreshButton(TrendModelType.DONT_CHANGE_VIEW);
 	}
 	else if( event.getSource() == getOptionsMenu().getNoneResMenuItem())
 	{
-		com.cannontech.graph.model.TrendProperties.setResolutionInMillis(1L);
+		getTrendProperties().setResolutionInMillis(1L);
 	}
 	else if( event.getSource() == getOptionsMenu().getSecondResMenuItem())
 	{
-		com.cannontech.graph.model.TrendProperties.setResolutionInMillis(1000L);	
+		getTrendProperties().setResolutionInMillis(1000L);	
 	}
 	else if( event.getSource() == getOptionsMenu().getMinuteResMenuItem())
 	{
-		com.cannontech.graph.model.TrendProperties.setResolutionInMillis(1000L * 60L);	
+		getTrendProperties().setResolutionInMillis(1000L * 60L);	
 	}
 	/*
 	else if ( event.getSource() == getViewMenu().getLoadDurationRadioButtonItem())
@@ -295,7 +296,7 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 	else if( event.getSource() == getOptionsMenu().getMultiplierMenuItem())
 	{
 		boolean isMasked = getOptionsMenu().getMultiplierMenuItem().isSelected();
-		getGraph().setOptionsMaskHolder(TrendModelType.GRAPH_MULTIPLIER, isMasked);
+		getTrendProperties().updateOptionsMaskSettings(TrendModelType.GRAPH_MULTIPLIER_MASK, isMasked);
 		actionPerformed_GetRefreshButton(TrendModelType.DONT_CHANGE_VIEW);
 	}
 	/*
@@ -308,23 +309,33 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 	else if( event.getSource() == getOptionsMenu().getPlotMinMaxValuesMenuItem())
 	{
 		boolean isMasked = getOptionsMenu().getPlotMinMaxValuesMenuItem().isSelected();
-		getGraph().setOptionsMaskHolder(TrendModelType.PLOT_MIN_MAX_MASK, isMasked);
+		getTrendProperties().updateOptionsMaskSettings(TrendModelType.PLOT_MIN_MAX_MASK, isMasked);
 		actionPerformed_GetRefreshButton(TrendModelType.DONT_CHANGE_VIEW);
 	}
 
 	else if( event.getSource() == getOptionsMenu().getShowLoadFactorMenuItem())
 	{
 		boolean isMasked = getOptionsMenu().getShowLoadFactorMenuItem().isSelected();
-		getGraph().setOptionsMaskHolder(TrendModelType.LEGEND_LOAD_FACTOR_MASK, isMasked);
+		getTrendProperties().updateOptionsMaskSettings(TrendModelType.LEGEND_LOAD_FACTOR_MASK, isMasked);
 		actionPerformed_GetRefreshButton(TrendModelType.DONT_CHANGE_VIEW);
 	}
 	else if( event.getSource() == getOptionsMenu().getShowMinMaxMenuItem())
 	{
 		boolean isMasked = getOptionsMenu().getShowMinMaxMenuItem().isSelected();
-		getGraph().setOptionsMaskHolder(TrendModelType.LEGEND_MIN_MAX_MASK, isMasked);
+		getTrendProperties().updateOptionsMaskSettings(TrendModelType.LEGEND_MIN_MAX_MASK, isMasked);
 		actionPerformed_GetRefreshButton(TrendModelType.DONT_CHANGE_VIEW);
 	}
 
+	else if( event.getSource() == getOptionsMenu().getAdvancedOptionsMenuItem())
+	{
+		com.cannontech.graph.model.TrendProperties props = getAdvOptsPanel().showAdvancedOptions(getGraphParentFrame());
+		if (props != null)
+		{
+//			getCommandLogPanel().setVisible( defaults.getShowMessageLog() );			
+//			ycClass.setYCDefaults(defaults);
+		}
+		advOptsPanel = null;
+	}
 	
 	else if( event.getSource() == getTimePeriodComboBox())
 	{
@@ -593,24 +604,24 @@ public void actionPerformed_ExportMenuItem()
 {
 	com.cannontech.graph.exportdata.SaveAsJFileChooser chooser = null;
 	
-	switch(  getGraph().getViewType()  )
+	switch( getTrendProperties().getViewType() )
 	{
 		case TrendModelType.TABULAR_VIEW:
 			chooser = new com.cannontech.graph.exportdata.SaveAsJFileChooser(
-				CtiUtilities.getExportDirPath(), getGraph().getViewType(), 
-				getGraph().getHtmlString(), getGraph().getTrendModel().getChartName().toString(), getGraph().getTrendModel());
+				CtiUtilities.getExportDirPath(), getTrendProperties().getViewType(), 
+				getGraph().getHtmlString(), getTrendModel().getChartName().toString(), getTrendModel());
 				break;
 				
 		case TrendModelType.SUMMARY_VIEW:
 			chooser = new com.cannontech.graph.exportdata.SaveAsJFileChooser(
-				CtiUtilities.getExportDirPath(), getGraph().getViewType(), 
-				getGraph().getHtmlString(), getGraph().getTrendModel().getChartName().toString());
+				CtiUtilities.getExportDirPath(), getTrendProperties().getViewType(), 
+				getGraph().getHtmlString(), getTrendModel().getChartName().toString());
 				break;
 
 		default:
 			chooser = new com.cannontech.graph.exportdata.SaveAsJFileChooser(
-				CtiUtilities.getExportDirPath(), getGraph().getViewType(), 
-				getFreeChart(),	getGraph().getTrendModel().getChartName().toString(), getGraph().getTrendModel());
+				CtiUtilities.getExportDirPath(), getTrendProperties().getViewType(), 
+				getFreeChart(),	getTrendModel().getChartName().toString(), getTrendModel());
 				break;
 				
 	}		
@@ -830,7 +841,7 @@ private String buildHTMLBuffer( HTMLBuffer htmlBuffer)
 	try
 	{
 		returnBuffer = new StringBuffer("<html><center>");
-		TrendModel tModel = getGraph().getTrendModel();
+		TrendModel tModel = getTrendModel();
 		{
 			htmlBuffer.setModel( tModel);
 
@@ -856,6 +867,7 @@ private String buildHTMLBuffer( HTMLBuffer htmlBuffer)
  */
 public void exit()
 {
+	getTrendProperties().writeDefaultsFile();
 	try
 	{
 		if ( getClientConnection() != null && getClientConnection().isValid() )  // free up Dispatchs resources
@@ -896,7 +908,7 @@ private int formatDateRangeSlider(TrendModel model, TabularHtml htmlData)
 
 	if( timePeriod.equalsIgnoreCase( ServletUtil.ONEDAY) ||
 		timePeriod.equalsIgnoreCase(ServletUtil.TODAY) || 
-		(getGraph().getOptionsMaskHolder() & TrendModelType.LOAD_DURATION_MASK) == TrendModelType.LOAD_DURATION_MASK)  //1 day
+		(getTrendProperties().getOptionsMaskSettings() & TrendModelType.LOAD_DURATION_MASK) == TrendModelType.LOAD_DURATION_MASK)  //1 day
 	{
 		//With load duration, we show all values at the same time.
 		getSliderPanel().setVisible(false);
@@ -1130,7 +1142,7 @@ public Graph getGraph()
 		graphClass = new Graph();
 	return graphClass;
 }
-private java.awt.Frame getGraphParentFrame ()
+private javax.swing.JFrame getGraphParentFrame ()
 {
 	return graphClientFrame;
 }
@@ -1243,7 +1255,7 @@ private OptionsMenu getOptionsMenu()
 {
 	if (optionsMenu == null)
 	{
-		optionsMenu = new OptionsMenu();
+		optionsMenu = new OptionsMenu(getTrendProperties().getOptionsMaskSettings(), getTrendProperties().getResolutionInMillis());
 		addMenuItemActionListeners(optionsMenu);
 	}
 	return optionsMenu;
@@ -1480,6 +1492,14 @@ private javax.swing.JTabbedPane getTabbedPane() {
 			ivjTabbedPane.insertTab("Tabular", null, getTabularTabScrollPane(), null, 1);
 			ivjTabbedPane.insertTab("Summary", null, getSummaryTabScrollPane(), null, 2);
 			// user code begin {1}
+			/*
+			if( getTrendProperties().getViewType() == TrendModelType.TABULAR_VIEW)
+				ivjTabbedPane.setSelectedIndex(1);
+			else if( getTrendProperties().getViewType() == TrendModelType.SUMMARY_VIEW)
+				ivjTabbedPane.setSelectedIndex(2);
+			else
+				ivjTabbedPane.setSelectedIndex(0);
+*/				
 			ivjTabbedPane.addChangeListener(this);			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -1648,7 +1668,7 @@ private com.cannontech.common.gui.util.TreeViewPanel getTreeViewPanel() {
 			ivjTreeViewPanel.setMinimumSize(new java.awt.Dimension(50, 10));
 			// user code begin {1}
 			ivjTreeViewPanel.setTreeModels( new com.cannontech.database.model.LiteBaseTreeModel[] { new GraphDefinitionTreeModel() } );
-			ivjTreeViewPanel.addTreeSelectionListener( this );
+						ivjTreeViewPanel.addTreeSelectionListener( this );
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -1804,10 +1824,31 @@ private ViewMenu getViewMenu()
 {
 	if (viewMenu == null)
 	{
-		viewMenu = new ViewMenu();
+		viewMenu = new ViewMenu(getTrendProperties().getViewType());
 		addMenuItemActionListeners(viewMenu);
 	}
 	return viewMenu;
+}
+
+public com.cannontech.graph.model.TrendProperties getTrendProperties()
+{
+	return getGraph().getTrendProperties();
+}
+public TrendModel getTrendModel()
+{
+	return getGraph().getTrendModel();
+}
+/**
+ * Returns the advOptsPanel.
+ * @return AdvancedOptionsPanel
+ */
+public AdvancedOptionsPanel getAdvOptsPanel()
+{
+	if( advOptsPanel == null)
+	{
+		advOptsPanel  = new AdvancedOptionsPanel(getTrendProperties());
+	}
+	return advOptsPanel;
 }
 /**
  * Insert the method's description here.
@@ -2011,6 +2052,10 @@ private void initializeSwingComponents()
 	com.cannontech.database.cache.DefaultDatabaseCache.getInstance().addDBChangeListener(this);	
 
 	getDirectory();	//setup the directory for the exports
+	
+	if( getTrendProperties().getViewType() != TrendModelType.TABULAR_VIEW &&
+		getTrendProperties().getViewType() != TrendModelType.SUMMARY_VIEW )	//not tabular or summary
+		savedViewType = getTrendProperties().getViewType();
 }
 /**
  * Insert the method's description here.
