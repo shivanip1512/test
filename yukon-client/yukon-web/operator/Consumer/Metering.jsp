@@ -4,18 +4,6 @@
 <SCRIPT  LANGUAGE="JavaScript" SRC="../../JavaScript/calendar.js"></SCRIPT>
 <%@ include file="../../include/trending_functions.jsp" %>
 
-<%
-    Class[] types = { Integer.class,String.class };    
-    java.lang.String sqlString =  "SELECT DISTINCT GDEF.GRAPHDEFINITIONID, GDEF.NAME " +
-                                  " FROM GRAPHDEFINITION GDEF, GRAPHCUSTOMERLIST GCL, ENERGYCOMPANYCUSTOMERLIST ECCL "+
-                                  " WHERE ECCL.ENERGYCOMPANYID = " + energyCompanyID + 
-                                  " AND GDEF.GRAPHDEFINITIONID = GCL.GRAPHDEFINITIONID " +
-                                  " AND GCL.CUSTOMERID = ECCL.CUSTOMERID" +
-                                  " ORDER BY GDEF.NAME";
-
-	gData = com.cannontech.util.ServletUtil.executeSQL( dbAlias, sqlString);
-%>
-
 <html>
 <link rel="stylesheet" href="../../WebConfig/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
@@ -62,7 +50,7 @@
 		</tr>
 		<tr>
 			<form>
-			<td  valign="top" width="101"><br>
+			<td  valign="top" width="101">
 			<% String pageName = "Metering.jsp"; %>
 			<%@ include file="include/Nav.jsp" %>
 			</td>
