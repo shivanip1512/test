@@ -9,6 +9,7 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.lite.stars.LiteAddress;
+import com.cannontech.database.data.lite.stars.LiteCustomerContact;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -35,8 +36,9 @@ public class InventoryBean {
 	
 	public static final int HTML_STYLE_LIST_INVENTORY = 0;
 	public static final int HTML_STYLE_SELECT_INVENTORY = 1;
+	public static final int HTML_STYLE_HARDWARE_SET = 2;
 	
-	private static final int PAGE_SIZE = 20;
+	private static final int DEFAULT_PAGE_SIZE = 20;
 	private static final java.text.SimpleDateFormat dateFormat =
 			new java.text.SimpleDateFormat("MM/dd/yyyy");
 	
@@ -78,8 +80,12 @@ public class InventoryBean {
 	private int location = INV_LOCATION_WAREHOUSE;
 	private int addressingGroup = CtiUtilities.NONE_ID;
 	private int page = 1;
+	private int pageSize = DEFAULT_PAGE_SIZE;
 	private int energyCompanyID = 0;
 	private int htmlStyle = HTML_STYLE_LIST_INVENTORY;
+	private String pageName = null;
+	private String referer = null;
+	private ArrayList hardwareSet = null;
 	
 	private LiteStarsEnergyCompany energyCompany = null;
 	private ArrayList hardwareList = null;
@@ -96,7 +102,11 @@ public class InventoryBean {
 	private ArrayList getHardwareList() {
 		if (hardwareList != null) return hardwareList;
 		
-		ArrayList hardwares = getEnergyCompany().loadInventory();
+		ArrayList hardwares = null;
+		if (getHtmlStyle() == HTML_STYLE_HARDWARE_SET)
+			hardwares = hardwareSet;
+		else
+			hardwares = getEnergyCompany().loadInventory();
 		java.util.TreeSet sortedHws = null;
 		
 		if (getSortBy() == YukonListEntryTypes.YUK_DEF_ID_INV_SORT_BY_SERIAL_NO)
@@ -192,11 +202,11 @@ public class InventoryBean {
 			return "<span class='Main'>No hardware found.</span>";
 		
 		if (page < 1) page = 1;
-		int maxPageNo = (int) Math.ceil(hwList.size() * 1.0 / PAGE_SIZE);
+		int maxPageNo = (int) Math.ceil(hwList.size() * 1.0 / pageSize);
 		if (page > maxPageNo) page = maxPageNo;
 		
-		int minInvNo = (page - 1) * PAGE_SIZE + 1;
-		int maxInvNo = Math.min(page * PAGE_SIZE, hwList.size());
+		int minInvNo = (page - 1) * pageSize + 1;
+		int maxInvNo = Math.min(page * pageSize, hwList.size());
         
         StringBuffer navBuf = new StringBuffer();
         navBuf.append(minInvNo);
@@ -207,22 +217,22 @@ public class InventoryBean {
         if (page == 1)
         	navBuf.append("<font color='#CCCCCC'>First</font>");
         else
-        	navBuf.append("<a class='Link1' href='Inventory.jsp?page=1'>First</a>");
+        	navBuf.append("<a class='Link1' href='").append(pageName).append("?page=1'>First</a>");
         navBuf.append(" | ");
         if (page == 1)
         	navBuf.append("<font color='#CCCCCC'>Previous</font>");
         else
-        	navBuf.append("<a class='Link1' href='Inventory.jsp?page=").append(page-1).append("'>Previous</a>");
+        	navBuf.append("<a class='Link1' href='").append(pageName).append("?page=").append(page-1).append("'>Previous</a>");
         navBuf.append(" | ");
         if (page == maxPageNo)
         	navBuf.append("<font color='#CCCCCC'>Next</font>");
         else
-        	navBuf.append("<a class='Link1' href='Inventory.jsp?page=").append(page+1).append("'>Next</a>");
+        	navBuf.append("<a class='Link1' href='").append(pageName).append("?page=").append(page+1).append("'>Next</a>");
         navBuf.append(" | ");
         if (page == maxPageNo)
         	navBuf.append("<font color='#CCCCCC'>Last</font>");
         else
-        	navBuf.append("<a class='Link1' href='Inventory.jsp?page=").append(maxPageNo).append("'>Last</a>");
+        	navBuf.append("<a class='Link1' href='").append(pageName).append("?page=").append(maxPageNo).append("'>Last</a>");
 		
 		StringBuffer htmlBuf = new StringBuffer();
 		if (getHtmlStyle() == HTML_STYLE_SELECT_INVENTORY) {
@@ -272,10 +282,13 @@ public class InventoryBean {
             	htmlBuf.append("Warehouse");
             else {
             	LiteStarsCustAccountInformation liteAcctInfo = getEnergyCompany().getBriefCustAccountInfo( liteHw.getAccountID(), true );
+            	LiteCustomerContact liteCont = getEnergyCompany().getCustomerContact( liteAcctInfo.getCustomer().getPrimaryContactID() );
             	LiteAddress liteAddr = getEnergyCompany().getAddress( liteAcctInfo.getAccountSite().getStreetAddressID() );
+            	
             	htmlBuf.append("<a href='' onclick='selectAccount(").append(liteAcctInfo.getAccountID()).append("); return false;'>");
             	htmlBuf.append("Acct # ").append(liteAcctInfo.getCustomerAccount().getAccountNumber()).append("</a>");
-            	htmlBuf.append(" (").append(ServerUtils.getOneLineAddress(liteAddr)).append(")");
+            	htmlBuf.append(" ").append(ServerUtils.getFormattedName(liteCont));
+            	htmlBuf.append(", ").append(ServerUtils.getOneLineAddress(liteAddr));
             }
             htmlBuf.append("</td>").append("\r\n");
             htmlBuf.append("        </tr>").append("\r\n");
@@ -290,7 +303,6 @@ public class InventoryBean {
         htmlBuf.append("</table>").append("\r\n");
         
         if (getHtmlStyle() == HTML_STYLE_SELECT_INVENTORY) {
-        	String referer = (String) req.getSession(false).getAttribute(ServletUtils.ATT_REFERRER);
         	htmlBuf.append("<br>").append("\r\n");
 			htmlBuf.append("<table width='200' border='0' cellspacing='0' cellpadding='3'>").append("\r\n");
 			htmlBuf.append("  <tr>").append("\r\n");
@@ -298,13 +310,30 @@ public class InventoryBean {
 			htmlBuf.append("      <input type='submit' name='Submit' value='Submit'>").append("\r\n");
 			htmlBuf.append("    </td>").append("\r\n");
 			htmlBuf.append("    <td>").append("\r\n");
-			htmlBuf.append("      <input type='button' name='Cancel' value='Cancel' onclick='location.href=\"").append(referer).append("\"'>").append("\r\n");
+			if (referer != null)
+				htmlBuf.append("      <input type='button' name='Cancel' value='Cancel' onclick='location.href=\"").append(referer).append("\"'>").append("\r\n");
+			else
+				htmlBuf.append("      <input type='button' name='Cancel' value='Cancel' onclick='history.back()'>").append("\r\n");
 			htmlBuf.append("    </td>").append("\r\n");
 			htmlBuf.append("  </tr>").append("\r\n");
 			htmlBuf.append("</table>").append("\r\n");
 			htmlBuf.append("</form>").append("\r\n");
         }
         
+        if (getHtmlStyle() == HTML_STYLE_HARDWARE_SET) {
+			htmlBuf.append("<br>").append("\r\n");
+			htmlBuf.append("<table width='200' border='0' cellspacing='0' cellpadding='3'>").append("\r\n");
+			htmlBuf.append("  <tr>").append("\r\n");
+			htmlBuf.append("    <td align='center'>").append("\r\n");
+			if (referer != null)
+				htmlBuf.append("      <input type='button' name='Back' value='Back' onclick='location.href=\"").append(referer).append("\"'>").append("\r\n");
+			else
+				htmlBuf.append("      <input type='button' name='Back' value='Back' onclick='history.back()'>").append("\r\n");
+			htmlBuf.append("    </td>").append("\r\n");
+			htmlBuf.append("  </tr>").append("\r\n");
+			htmlBuf.append("</table>").append("\r\n");
+        }
+                
         htmlBuf.append("<form name='cusForm' method='post' action='").append(req.getContextPath()).append("/servlet/SOAPClient'>").append("\r\n");
         htmlBuf.append("  <input type='hidden' name='action' value='GetCustAccount'>").append("\r\n");
         htmlBuf.append("  <input type='hidden' name='AccountID' value=''>").append("\r\n");
@@ -475,6 +504,42 @@ public class InventoryBean {
 	 */
 	public void setHtmlStyle(int htmlStyle) {
 		this.htmlStyle = htmlStyle;
+	}
+
+	/**
+	 * @param string
+	 */
+	public void setPageName(String string) {
+		pageName = string;
+	}
+
+	/**
+	 * @return
+	 */
+	public int getPageSize() {
+		return pageSize;
+	}
+
+	/**
+	 * @param i
+	 */
+	public void setPageSize(int i) {
+		pageSize = i;
+	}
+
+	/**
+	 * @param list
+	 */
+	public void setHardwareSet(ArrayList list) {
+		hardwareSet = list;
+		hardwareList = null;
+	}
+
+	/**
+	 * @param string
+	 */
+	public void setReferer(String string) {
+		referer = string;
 	}
 
 }
