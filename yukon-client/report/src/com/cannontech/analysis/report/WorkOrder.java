@@ -18,6 +18,7 @@ import org.jfree.report.PageHeader;
 import org.jfree.report.elementfactory.LabelElementFactory;
 import org.jfree.report.elementfactory.StaticShapeElementFactory;
 import org.jfree.report.elementfactory.TextFieldElementFactory;
+import org.jfree.report.function.FunctionInitializeException;
 import org.jfree.report.modules.gui.base.PreviewDialog;
 import org.jfree.report.style.ElementStyleSheet;
 import org.jfree.report.style.FontDefinition;
@@ -56,15 +57,17 @@ public class WorkOrder extends YukonReportBase
 	}
 
 	/**
-	 * @param base
+	 * Creates the report.
+	 * @return the constructed report.
+	 * @throws FunctionInitializeException if there was a problem initialising any of the functions.
 	 */
-	public void setModel(ReportModelBase base)
+	public JFreeReport createReport() throws org.jfree.report.function.FunctionInitializeException
 	{
-	    super.setModel(base);
 		// Show the report header and footer if there is no specific work order
 		setShowReportFooter( ((WorkOrderModel)getModel()).getOrderID() == null);
 		setShowReportHeader(((WorkOrderModel)getModel()).getOrderID() == null);
-	}
+		return super.createReport();
+	}	
 	/**
 	 * Runs this report and shows a preview dialog.
  	 * @param args the arguments (ignored).
