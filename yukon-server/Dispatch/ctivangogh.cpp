@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.37 $
-* DATE         :  $Date: 2003/01/13 18:23:53 $
+* REVISION     :  $Revision: 1.38 $
+* DATE         :  $Date: 2003/02/19 16:03:06 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -3209,7 +3209,7 @@ void CtiVanGogh::postSignalAsEmail( const CtiSignalMsg &sig )
                     // Check if point identifies a single recipient to be notified on any signal
                     if(rid > 0)
                     {
-                        CtiTableGroupRecipient    *pRecipient = NULL;
+		        CtiTableContactNotification *pContactNotif = NULL;
                         CtiTableNotificationGroup nulGrp;
 
                         nulGrp.setEmailFromAddress(gEmailFrom);
@@ -3217,10 +3217,10 @@ void CtiVanGogh::postSignalAsEmail( const CtiSignalMsg &sig )
                         nulGrp.setGroupName("Yukon Alarming Subsystem");
                         nulGrp.setEmailSubject("YUKON ALARM");
 
-                        if( (pRecipient = getRecipient(rid)) != NULL )
+                        if( (pContactNotif = getContactNotification(rid)) != NULL )
                         {
                             // Now we have it ALL!  Send the email
-                            sendMail(sig, nulGrp, *pRecipient);
+                            sendMail(sig, nulGrp, *pContactNotif);
                         }
                     }
                 }
@@ -3505,7 +3505,7 @@ INT CtiVanGogh::analyzeForNumericAlarms(CtiPointDataMsg *pData, CtiMultiWrapper 
 
 #include <io.h>
 
-INT CtiVanGogh::sendMail(const CtiSignalMsg &sig, const CtiTableNotificationGroup &grp, const CtiTableGroupRecipient &recip, RWCString subject)
+INT CtiVanGogh::sendMail(const CtiSignalMsg &sig, const CtiTableNotificationGroup &grp, const CtiTableContactNotification &cNotif, RWCString subject)
 {
     INT status = NORMAL;
 
@@ -3557,8 +3557,11 @@ INT CtiVanGogh::sendMail(const CtiSignalMsg &sig, const CtiTableNotificationGrou
             sm.lpszHost          = gSMTPServer;                   // Global loaded by ctibase.dll.
             sm.lpszSender        = grp.getEmailFromAddress();
             sm.lpszSenderName    = grp.getGroupName();
-            sm.lpszRecipient     = recip.getEmailAddress();
-            sm.lpszRecipientName = recip.getRecipientName();
+            sm.lpszRecipient     = cNotif.getNotification();
+
+    	    // Need to add to the CtiTableContactNotification the contacts name if we want to set this field
+	    //            sm.lpszRecipientName = cNotif.getRecipientName(); 
+
             sm.lpszReplyTo       = NULL;
             sm.lpszReplyToName   = NULL;
             sm.lpszMessageID     = NULL;
@@ -3580,7 +3583,7 @@ INT CtiVanGogh::sendMail(const CtiSignalMsg &sig, const CtiTableNotificationGrou
     return status;
 }
 
-INT CtiVanGogh::sendMail(const CtiEmailMsg &aMail, const CtiTableGroupRecipient &recip)
+INT CtiVanGogh::sendMail(const CtiEmailMsg &aMail, const CtiTableContactNotification &cNotif)
 {
     INT status = NORMAL;
 
@@ -3591,8 +3594,8 @@ INT CtiVanGogh::sendMail(const CtiEmailMsg &aMail, const CtiTableGroupRecipient 
     sm.lpszHost          = gSMTPServer;                   // Global loaded by ctibase.dll.
     sm.lpszSender        = aMail.getSender();
     sm.lpszSenderName    = NULL;
-    sm.lpszRecipient     = recip.getEmailAddress();
-    sm.lpszRecipientName = recip.getRecipientName();
+    sm.lpszRecipient     = cNotif.getNotification();
+    //    sm.lpszRecipientName = recip.getRecipientName();
     sm.lpszReplyTo       = NULL;
     sm.lpszReplyToName   = NULL;
     sm.lpszMessageID     = NULL;
@@ -4241,13 +4244,13 @@ void CtiVanGogh::loadRTDB(bool force, CtiMessage *pMsg)
                             dout << RWTime() << " Notification Recipients will be reloaded on next usage." << endl;
                         }
                         // Recipients have changed
-                        CtiRecipientSet_t::iterator rit;
-
-                        for(rit = _recipientSet.begin(); rit != _recipientSet.end(); rit++ )
-                        {
-                            CtiTableGroupRecipient &theRecip = *rit;
-                            theRecip.setDirty(true);
-                        }
+			CtiContactNotificationSet_t::iterator cnit;
+			
+			for(cnit = _contactNotificationSet.begin(); cnit != _contactNotificationSet.end(); cnit++)
+			  {
+			    CtiTableContactNotification &CNotif = *cnit;
+			    CNotif.setDirty(true);
+			  }
                     }
                 }
             }
@@ -4499,6 +4502,45 @@ void CtiVanGogh::loadCICustomers(LONG id)
     }
 }
 
+CtiTableContactNotification* CtiVanGogh::getContactNotification(LONG cNotifID)
+{
+  CtiTableContactNotification* pCNotif = NULL;
+  CtiLockGuard<CtiMutex> guard(server_mux);
+  CtiTableContactNotification cNotif(cNotifID);
+  
+  CtiContactNotificationSet_t::iterator cnit = _contactNotificationSet.find(cNotif);
+  
+  if(cnit == _contactNotificationSet.end())
+    {
+      // We need to load it up, and then insert it!
+      cNotif.Restore();
+
+      pair< CtiContactNotificationSet_t::iterator, bool > resultpair;
+      resultpair = _contactNotificationSet.insert(cNotif);
+      
+      if(resultpair.second == true)
+	{
+	  cnit = resultpair.first;
+	}
+    }
+  
+  if(cnit != _contactNotificationSet.end())
+    {
+      pCNotif = &(*cnit);
+      
+      if(pCNotif->isDirty())
+	{
+	  {
+	    CtiLockGuard<CtiLogger> guard(dout);
+	    dout << RWTime() << " Reloading ContactNotification " << pCNotif->getContactNotificationID() << endl;
+	  }
+	  pCNotif->Restore();
+	}
+    }
+	
+  return pCNotif;
+}
+/* 
 CtiTableGroupRecipient* CtiVanGogh::getRecipient( LONG locid )
 {
     CtiTableGroupRecipient *pRecipient = NULL;
@@ -4538,6 +4580,7 @@ CtiTableGroupRecipient* CtiVanGogh::getRecipient( LONG locid )
 
     return pRecipient;
 }
+*/
 
 // Next figure out the translation from alarm group to notification group.
 LONG CtiVanGogh::alarmToNotificationGroup(INT signaltrx)
@@ -4597,16 +4640,16 @@ void CtiVanGogh::sendSignalToGroup(LONG ngid, const CtiSignalMsg& sig)
 
         for(r_iter = recipients.begin(); r_iter != recipients.end(); r_iter++ )
         {
-            CtiTableGroupRecipient *pRecipient;
-            int locationid = *r_iter;
-
-            {
-                CtiLockGuard<CtiMutex> guard(server_mux);
-                if( (pRecipient = getRecipient(locationid)) != NULL )
-                {
-                    // Now we have it ALL!  Send the email
-                    sendMail(sig, theGroup, *pRecipient);
-                }
+	    CtiTableContactNotification *pCNotif;
+	    int cnotifid = *r_iter;
+	    
+	    {
+	      CtiLockGuard<CtiMutex> guard(server_mux);
+	      if( (pCNotif = getContactNotification(cnotifid)) != NULL)
+		{
+		  //Now we have it ALL!!! send the email
+		  sendMail(sig, theGroup, *pCNotif);
+		}
             }
         }
     }
@@ -4652,16 +4695,15 @@ void CtiVanGogh::sendEmailToGroup(LONG ngid, const CtiEmailMsg& email)
 
         for(r_iter = recipients.begin(); r_iter != recipients.end(); r_iter++ )
         {
-            CtiTableGroupRecipient *pRecipient;
-            int locationid = *r_iter;
+	    CtiTableContactNotification* pCNotif;
+            int cnotifid = *r_iter;
 
             {
                 CtiLockGuard<CtiMutex> guard(server_mux);
-                if( (pRecipient = getRecipient(locationid)) != NULL )
-                {
-                    // Now we have it ALL!  Send the email
-                    sendMail(email, *pRecipient);
-                }
+		if( (pCNotif = getContactNotification(cnotifid)) != NULL)
+		  {
+		    sendMail(email, *pCNotif);
+		  }
             }
         }
     }
@@ -4829,28 +4871,27 @@ int CtiVanGogh::mail(const CtiEmailMsg &aMail)
 
                 if( pCustomer != NULL )
                 {
-                    vector<int> recip = pCustomer->getRecipientVector();
+ 		    vector<int> recip = pCustomer->getContactNotificationVector();
                     vector<int>::iterator it;
 
                     try
                     {
-                        CtiTableGroupRecipient *pRecipient = NULL;
-
+		        CtiTableContactNotification *pCNotif = NULL;
+                        
                         for(it = recip.begin(); it != recip.end(); ++it)
                         {
-                            vector<int>::reference locID = *it;
-
-                            if( (pRecipient = getRecipient(locID)) != NULL )
-                            {
-                                // Now we have it ALL!  Send the email
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " Emailing " << locID << " / " << pRecipient->getRecipientName() << endl;
-                                }
-                                sendMail(aMail, *pRecipient);
-                            }
-
-                        }
+                            vector<int>::reference cnotifid = *it;
+			    
+			    if( (pCNotif = getContactNotification(cnotifid)) != NULL)
+			      {
+				// Now we have it ALL!!!! send the email
+				{
+				  CtiLockGuard<CtiLogger> guard(dout);
+				  dout << RWTime() << " Emailing " << cnotifid << endl;
+				}
+				sendMail(aMail, *pCNotif);
+			      }
+			}
                     }
                     catch(...)
                     {

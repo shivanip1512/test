@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/ctivangogh.h-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2002/12/24 18:48:46 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2003/02/19 16:03:06 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -53,12 +53,12 @@ using namespace std;
 #include "pending_info.h"
 #include "tbl_state_grp.h"
 #include "tbl_alm_ngroup.h"
-#include "tbl_alm_nloc.h"
 #include "tbl_lm_controlhist.h"
 #include "tbl_commerrhist.h"
 #include "tbl_rawpthistory.h"
 #include "tbl_signal.h"
-#include "tbl_dv_cicust.h"
+#include "tbl_ci_cust.h"
+#include "tbl_contact_notification.h"
 #include "rtdb.h"
 
 
@@ -80,7 +80,8 @@ public:
 
     typedef set< CtiPendingPointOperations >  CtiPendingOpSet_t;
     typedef set< CtiTableNotificationGroup >  CtiNotificationGroupSet_t;
-    typedef set< CtiTableGroupRecipient >     CtiRecipientSet_t;
+    //    typedef set< CtiTableGroupRecipient >     CtiRecipientSet_t;
+    typedef set< CtiTableContactNotification >  CtiContactNotificationSet_t;
     typedef set< CtiDeviceBaseLite >          CtiDeviceLiteSet_t;
     typedef set< CtiTableCICustomerBase >     CtiDeviceCICustSet_t;
 
@@ -110,7 +111,7 @@ private:
     CtiA2DTranslation_t        _alarmToDestInfo[256];  // This holds translations from alarm ID to DestinationID.
     CtiPendingOpSet_t          _pendingPointInfo;      // This holds temporal information on a per point basis.
     CtiNotificationGroupSet_t  _notificationGroupSet;  // Notification Groups
-    CtiRecipientSet_t          _recipientSet;          // Email/pager targets
+    CtiContactNotificationSet_t _contactNotificationSet; // Email/pager targets
     CtiDeviceLiteSet_t         _deviceLiteSet;
     CtiDeviceCICustSet_t       _ciCustSet;             // customer device.
 
@@ -217,8 +218,9 @@ public:
     void  validateConnections();
     void  postSignalAsEmail( const CtiSignalMsg &sig );
     void  loadAlarmToDestinationTranslation();
-    INT   sendMail(const CtiSignalMsg &sig, const CtiTableNotificationGroup &grp, const CtiTableGroupRecipient &recip, RWCString subject = RWCString());
-    INT   sendMail(const CtiEmailMsg &aMail, const CtiTableGroupRecipient &recip);
+
+    INT   sendMail(const CtiSignalMsg &sig, const CtiTableNotificationGroup &grp, const CtiTableContactNotification &recip, RWCString subject = RWCString());
+    INT   sendMail(const CtiEmailMsg &aMail, const CtiTableContactNotification &recip);
 
     RWCString getAlarmStateName( INT alarm );
 
@@ -234,7 +236,7 @@ public:
     RWCString resolveDeviceName(const CtiPointBase &aPoint);
     RWCString resolveDeviceObjectType(const LONG devid);
     RWCString resolveDeviceDescription(LONG PAO);
-    CtiTableGroupRecipient* getRecipient( LONG locid );
+    CtiTableContactNotification* getContactNotification(LONG notifID);
     CtiTableCICustomerBase* getCustomer( LONG custid );
     void sendSignalToGroup(LONG ngid, const CtiSignalMsg& sig);
     void  sendEmailToGroup(LONG ngid, const CtiEmailMsg& email);
