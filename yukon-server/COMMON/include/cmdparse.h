@@ -190,9 +190,10 @@ public:
  *    Flags Int
  *    Offset Number       (optional)
  */
-#define CMD_FLAG_PS_RESET        0x00000010
-#define CMD_FLAG_PS_FREEZEZERO   0x00000020
-#define CMD_FLAG_PS_FREEZEONE    0x00000040
+#define CMD_FLAG_PS_RESET         0x00000010
+#define CMD_FLAG_PS_FREEZEZERO    0x00000020
+#define CMD_FLAG_PS_FREEZEONE     0x00000040
+#define CMD_FLAG_PS_RESETOVERRIDE 0x00000080
 /* Defined below.... be careful
 #define CMD_FLAG_OFFSET          0x10000000     // A specific offset is defined in the next cmd field
 */
