@@ -1,0 +1,15 @@
+<?xml version = "1.0" standalone = "no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20000802//EN" "http://www.w3.org/TR/2000/CR-SVG-20000802/DTD/svg-20000802.dtd" >
+<svg width = "1361.53125px" height="771.40625px">
+    <defs>
+    </defs>
+    <image id="LxAbstractImage" x="390" y="260" width="89" height="22"  style="fill:none;stroke:rgb(0,0,0); stroke-width:1.0;"     xlink:href="null" >
+    </image>
+    <text id="LxAbstractText"  style="fill:rgb(255,0,51);font-family:'Arial';font-style:normal;font-weight:normal;font-size:96;" transform="translate(210,169.703)"  >THIS IS SOME FAT TEXT!    </text>
+    <text id="LxAbstractText1"  style="fill:rgb(255,255,255);font-family:'Arial';font-style:normal;font-weight:normal;font-size:84;" transform="translate(730.447,290)rotate(90)"  >-69.88    </text>
+    <text id="LxAbstractText2"  style="fill:rgb(255,255,255);font-family:'Arial';font-style:normal;font-weight:normal;font-size:84;" transform="translate(729.135,530)rotate(90)"  >KW    </text>
+    <text id="LxAbstractText3"  style="fill:rgb(255,255,51);font-family:'Arial';font-style:normal;font-weight:normal;font-size:84;" transform="translate(409.047,410.416)rotate(180)"  >0    </text>
+    <text id="LxAbstractText4"  style="fill:rgb(255,255,51);font-family:'Arial';font-style:normal;font-weight:normal;font-size:84;" transform="translate(347.883,409.135)rotate(180)"  >KWH    </text>
+    <text id="LxAbstractText5"  style="fill:rgb(0,255,0);font-family:'Arial';font-style:normal;font-weight:normal;font-size:84;" transform="translate(920,770.99)"  >50.77    </text>
+    <text id="LxAbstractText6"  style="fill:rgb(0,255,0);font-family:'Arial';font-style:normal;font-weight:normal;font-size:84;" transform="translate(1,150,770.99)"  >KW    </text>
+</svg>

@@ -1,0 +1,6123 @@
+JLoox 2.0.2
+"UTF8"
+A 0 1 0 0 ffffffff 1 ! 0
+!
+"Default" 0 32
+0 0 001
+1
+"0" 1
+
+873
+
+com.loox.jloox.LxLine
+! 111101100 50;40;280;80 5 0 $ ! ! 0
+A 0 1 0 0 ffffffff 1 ! 0 0
+2
+0 -140;-40
+1 140;40
+0 0
+
+com.loox.jloox.LxRectangle
+! 111101100 70;90;120;190 5 0 $ ! ! 0
+A 0 1 0 0 ffffffff 1 ! 0 0
+0 0 0
+
+com.cannontech.esub.editor.element.StaticText
+! 110101100 72.578125;137.46875;357.234375;71.109375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffff0066 0 0
+0 0
+"Arial Bold" 0 96 "HORSE!"
+"Arial Bold" 96 255 0 102 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 111.132812;224.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.StateImage
+! 110101100 242;238;20;20 5 0 $ ! ! 0
+A 0 1 0 0 $ 1 ! 0 0
+0 0 0 0 0
+!
+956 ""
+
+com.cannontech.esub.editor.element.StateImage
+! 110101100 328.867188;205.4375;20;20 5 0 $ ! ! 0
+A 0 1 0 0 $ 1 ! 0 0
+0 0 0 0 0
+!
+957 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 130;240;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 161.132812;224.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 180;240;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 181.132812;264.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 200;280;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 131.132812;264.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 150;280;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 61.132812;224.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 80;240;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 71.132812;264.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 90;280;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 281.132812;204.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 331.132812;204.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 350;220;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 351.132812;244.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 370;260;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 301.132812;244.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 320;260;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 231.132812;204.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 338.867188;215.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 241.132812;244.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 260;260;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 61.132812;124.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 111.132812;124.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 130;140;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 131.132812;164.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 150;180;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 81.132812;164.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 100;180;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 11.132812;124.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 30;140;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 21.132812;164.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 40;180;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 94;47;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 144;47;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 160;60;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 161.132812;84.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 180;100;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 111.132812;84.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 130;100;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 44;47;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 60;60;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 51.132812;84.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 70;100;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 251.132812;94.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 301.132812;94.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 320;110;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 321.132812;134.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 340;150;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 271.132812;134.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 290;150;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 201.132812;94.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 220;110;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 211.132812;134.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 230;150;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 430;310;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 480;310;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 498.867188;325.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 500;350;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 518.867188;365.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 450;350;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 468.867188;365.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 380;310;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 488.867188;315.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 390;350;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 498.867188;355.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 80;370;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 130;370;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 148.867188;385.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 150;410;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 168.867188;425.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 100;410;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 118.867188;425.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 30;370;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 48.867188;385.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 40;410;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 58.867188;425.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 241.132812;314.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 291.132812;314.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 310;330;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 311.132812;354.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 330;370;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 261.132812;354.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 280;370;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 191.132812;314.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 210;330;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 201.132812;354.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 220;370;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 480;210;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 530;210;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 551.734375;227.875;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 550;250;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 568.867188;265.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 500;250;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 518.867188;265.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 430;210;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 448.867188;225.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 440;250;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 458.867188;265.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 471.132812;94.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 521.132812;94.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 540;110;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 541.132812;134.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 560;150;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 491.132812;134.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 510;150;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 421.132812;94.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 442.867188;112.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 431.132812;134.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 450;150;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 81.132812;294.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 131.132812;294.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 150;310;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 151.132812;334.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 170;350;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 101.132812;334.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 120;350;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 31.132812;294.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 50;310;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 41.132812;334.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 60;350;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 420;280;8.375;13.15625 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffff00 0 0
+0 0
+"Arial Bold" 0 18 "0"
+556 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 480.132812;179.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 480.132812;179.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 510;420;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 262.867188;52.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 280;300;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 570;180;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 410.132812;179.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 440;420;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 192.867188;52.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 210;300;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 502.867188;182.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 270.132812;189.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 300;430;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 52.867188;62.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 70;310;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 360;190;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 400.132812;269.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 430;510;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 180;140;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 200;390;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 490;270;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 600.132812;269.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 630;510;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 380;140;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 400;390;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 690;270;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 172.265625;99.125;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 222.265625;99.125;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 241.132812;114.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 261.132812;154.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 122.265625;99.125;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 141.132812;114.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 282.265625;149.125;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 301.132812;164.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 231.132812;464.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 250;480;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 130;440;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 611.132812;264.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 602.265625;149.125;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 621.132812;164.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 501.132812;334.5625;8.375;13.15625 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffff00 0 0
+0 0
+"Arial Bold" 0 18 "0"
+556 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 591.132812;474.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 341.132812;104.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 651.132812;234.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 271.132812;104.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 131.132812;114.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 481.265625;324.125;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 571.132812;324.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 681.265625;324.125;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 62.265625;119.125;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 112.265625;119.125;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 131.132812;134.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 151.132812;174.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 12.265625;119.125;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 31.132812;134.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 172.265625;169.125;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 191.132812;184.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 121.132812;484.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 140;500;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 20;460;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 501.132812;284.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 492.265625;169.125;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 514;187;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 388.265625;352.125;8.375;13.15625 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffff00 0 0
+0 0
+"Arial Bold" 0 18 "0"
+556 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 481.132812;494.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 231.132812;124.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 544;257;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 161.132812;124.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 21.132812;134.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 371.265625;344.125;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 461.132812;344.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 571.265625;344.125;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 182.265625;59.125;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 235.132812;61.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 251.132812;74.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 271.132812;114.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 132.265625;59.125;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 151.132812;74.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 292.265625;109.125;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 311.132812;124.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 241.132812;424.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 260;440;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 140;400;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 621.132812;224.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 612.265625;109.125;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 631.132812;124.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 508.265625;292.125;8.375;13.15625 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffff00 0 0
+0 0
+"Arial Bold" 0 18 "0"
+556 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 601.132812;434.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 354;67;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 661.132812;194.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 284;67;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 141.132812;74.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 494.132812;286.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 581.132812;284.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 691.265625;284.125;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 221.132812;154.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 271.132812;154.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 290;170;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 310;210;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 171.132812;154.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 190;170;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 331.132812;204.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 350;220;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 280;520;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 298.867188;535.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 178.867188;495.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 660;320;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 651.132812;204.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 670;220;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 547.132812;387.5625;8.375;13.15625 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffff00 0 0
+0 0
+"Arial Bold" 0 18 "0"
+556 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 640;530;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 390;160;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 700;290;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 320;160;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 180;170;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 530.132812;379.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 620;380;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 730.132812;379.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 101.132812;144.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 151.132812;144.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 170;160;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 190;200;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 51.132812;144.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 70;160;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 211.132812;194.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 230;210;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 160;510;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 178.867188;525.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 58.867188;485.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 540;310;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 534;197;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 552.867188;212.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 427.132812;377.5625;8.375;13.15625 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffff00 0 0
+0 0
+"Arial Bold" 0 18 "0"
+556 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 520;520;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 270;150;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 580;280;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 200;150;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 60;160;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 410.132812;369.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 500;370;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 610.132812;369.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 44;87;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 91.132812;84.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 110;100;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 130;140;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 -8.867188;84.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 12.867188;102.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 151.132812;134.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 170;150;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 100;450;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 118.867188;465.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 -1.132812;425.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 480;250;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 471.132812;134.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 492.867188;152.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 367.132812;317.5625;8.375;13.15625 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffff00 0 0
+0 0
+"Arial Bold" 0 18 "0"
+556 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 460;460;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 210;90;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 520;220;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 140;90;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 2.867188;102.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 350.132812;309.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 440;310;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 550.132812;309.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 251.132812;104.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 301.132812;104.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 320;120;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 340;160;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 201.132812;104.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 220;120;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 361.132812;154.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 380;170;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 310;470;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 328.867188;485.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 208.867188;445.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 690;270;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 681.132812;154.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 700;170;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 577.132812;337.5625;8.375;13.15625 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffff00 0 0
+0 0
+"Arial Bold" 0 18 "0"
+556 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 670;480;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 420;110;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 730;240;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 350;110;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 210;120;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 560.132812;329.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 650;330;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 760.132812;329.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 261.132812;104.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 311.132812;104.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 330;120;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 350;160;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 211.132812;104.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 230;120;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 371.132812;154.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 390;170;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 320;470;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 338.867188;485.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 218.867188;445.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 700;270;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 691.132812;154.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 710;170;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 587.132812;337.5625;8.375;13.15625 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffff00 0 0
+0 0
+"Arial Bold" 0 18 "0"
+556 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 680;480;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 432.867188;112.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 740;240;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 362.867188;112.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 220;120;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 570.132812;329.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 660;330;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 770.132812;329.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.StateImage
+! 110101100 90;520;20;20 5 0 $ ! ! 0
+A 0 1 0 0 $ 1 ! 0 0
+0 0 0 0 0
+!
+948 ""
+
+com.cannontech.esub.editor.element.StateImage
+! 110101100 711;425;20;20 5 0 $ ! ! 0
+A 0 1 0 0 $ 1 ! 0 0
+0 0 0 0 0
+!
+958 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 360;300;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 102.867188;102.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 152.867188;102.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 52.867188;102.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 560.601562;283.3125;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 451.734375;167.875;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 428.867188;335.4375;8.375;13.15625 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffff00 0 0
+0 0
+"Arial Bold" 0 18 "0"
+556 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 271.734375;107.875;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 201.734375;107.875;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 511.734375;237.875;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 61.734375;117.875;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 510;390;8.375;13.15625 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffff00 0 0
+0 0
+"Arial Bold" 0 18 "0"
+556 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 522.867188;242.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 552.867188;312.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 244;117;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 362.867188;122.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 292.867188;122.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 503;342;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 542.867188;252.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 561.734375;267.875;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 52.867188;142.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 21.734375;157.875;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 501.734375;207.875;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 11.734375;157.875;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 441.734375;167.875;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 371.734375;167.875;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 420;530;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 162.867188;332.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 212.867188;332.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 112.867188;332.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 620.601562;513.3125;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 511.734375;397.875;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 488.867188;565.4375;8.375;13.15625 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffff00 0 0
+0 0
+"Arial Bold" 0 18 "0"
+556 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 331.734375;337.875;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 261.734375;337.875;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 571.734375;467.875;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 121.734375;347.875;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 570;620;8.375;13.15625 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffff00 0 0
+0 0
+"Arial Bold" 0 18 "0"
+556 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 582.867188;472.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 612.867188;542.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 304;347;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 422.867188;352.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 352.867188;352.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 563;572;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 602.867188;482.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 621.734375;497.875;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 112.867188;372.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 81.734375;387.875;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 561.734375;437.875;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 71.734375;387.875;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 501.734375;397.875;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 431.734375;397.875;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 351.132812;504.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 94;307;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 144;307;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 44;307;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 551.734375;487.875;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 442.867188;372.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 420;540;8.375;13.15625 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffff00 0 0
+0 0
+"Arial Bold" 0 18 "0"
+556 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 262.867188;312.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 192.867188;312.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 502.867188;442.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 52.867188;322.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 501.132812;594.5625;8.375;13.15625 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffff00 0 0
+0 0
+"Arial Bold" 0 18 "0"
+556 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 514;447;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 544;517;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 235.132812;321.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 354;327;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 284;327;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 494.132812;546.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 534;457;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 552.867188;472.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 44;347;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 12.867188;362.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 492.867188;412.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 2.867188;362.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 432.867188;372.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 362.867188;372.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 201.132812;524.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 -56;327;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 -6;327;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 -106;327;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 401.734375;507.875;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 292.867188;392.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 270;560;8.375;13.15625 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffff00 0 0
+0 0
+"Arial Bold" 0 18 "0"
+556 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 112.867188;332.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 42.867188;332.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 352.867188;462.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 -97.132812;342.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 351.132812;614.5625;8.375;13.15625 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffff00 0 0
+0 0
+"Arial Bold" 0 18 "0"
+556 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 364;467;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 394;537;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 85.132812;341.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 204;347;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 134;347;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 344.132812;566.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 384;477;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 402.867188;492.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 -106;367;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 -137.132812;382.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 342.867188;432.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 -147.132812;382.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 282.867188;392.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 212.867188;392.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 641.132812;224.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 384;27;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 434;27;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 334;27;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 841.734375;207.875;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 732.867188;92.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 710;260;8.375;13.15625 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffff00 0 0
+0 0
+"Arial Bold" 0 18 "0"
+556 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 552.867188;32.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 482.867188;32.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 792.867188;162.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 342.867188;42.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 791.132812;314.5625;8.375;13.15625 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffff00 0 0
+0 0
+"Arial Bold" 0 18 "0"
+556 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 804;167;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 834;237;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 525.132812;41.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 644;47;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 574;47;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 784.132812;266.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 824;177;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 842.867188;192.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 334;67;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 302.867188;82.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 782.867188;132.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 292.867188;82.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 722.867188;92.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 652.867188;92.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 209.398438;456.6875;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 228.265625;472.125;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 198.265625;442.125;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 180;480;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 222.265625;489.125;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 559.398438;366.6875;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 302.265625;169.125;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 352.265625;169.125;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 252.265625;169.125;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 760;350;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 651.132812;234.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 628.265625;402.125;8.375;13.15625 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffff00 0 0
+0 0
+"Arial Bold" 0 18 "0"
+556 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 471.132812;174.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 401.132812;174.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 711.132812;304.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 261.132812;184.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 709.398438;456.6875;8.375;13.15625 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffff00 0 0
+0 0
+"Arial Bold" 0 18 "0"
+556 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 722.265625;309.125;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 752.265625;379.125;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 443.398438;183.6875;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 562.265625;189.125;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 492.265625;189.125;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 702.398438;408.6875;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 742.265625;319.125;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 761.132812;334.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 252.265625;209.125;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 221.132812;224.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 701.132812;274.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 211.132812;224.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 641.132812;234.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 571.132812;234.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 99.398438;346.6875;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 118.265625;362.125;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 88.265625;332.125;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 70;370;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 112.265625;379.125;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 449.398438;256.6875;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 192.265625;59.125;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 242.265625;59.125;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 142.265625;59.125;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 650;240;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 541.132812;124.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 518.265625;292.125;8.375;13.15625 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffff00 0 0
+0 0
+"Arial Bold" 0 18 "0"
+556 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 361.132812;64.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 291.132812;64.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 601.132812;194.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 151.132812;74.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 599.398438;346.6875;8.375;13.15625 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffff00 0 0
+0 0
+"Arial Bold" 0 18 "0"
+556 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 612.265625;199.125;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 642.265625;269.125;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 333.398438;73.6875;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 452.265625;79.125;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 382.265625;79.125;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 592.398438;298.6875;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 632.265625;209.125;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 651.132812;224.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 142.265625;99.125;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 111.132812;114.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 591.132812;164.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 101.132812;114.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 531.132812;124.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 461.132812;124.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 269.398438;476.6875;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 288.265625;492.125;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 258.265625;462.125;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 240;500;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 282.265625;509.125;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 619.398438;386.6875;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 362.265625;189.125;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 412.265625;189.125;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 312.265625;189.125;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 820;370;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 711.132812;254.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 688.265625;422.125;8.375;13.15625 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffff00 0 0
+0 0
+"Arial Bold" 0 18 "0"
+556 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 531.132812;194.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 461.132812;194.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 771.132812;324.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 321.132812;204.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 769.398438;476.6875;8.375;13.15625 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffff00 0 0
+0 0
+"Arial Bold" 0 18 "0"
+556 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 782.265625;329.125;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 812.265625;399.125;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 503.398438;203.6875;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 622.265625;209.125;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 552.265625;209.125;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 762.398438;428.6875;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 802.265625;339.125;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 821.132812;354.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 312.265625;229.125;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 281.132812;244.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 761.132812;294.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 271.132812;244.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 701.132812;254.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 631.132812;254.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 128.265625;322.125;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 147.132812;337.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 117.132812;307.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 98.867188;345.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 141.132812;354.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 478.265625;232.125;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 221.132812;34.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 271.132812;34.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 171.132812;34.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 678.867188;215.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 570;100;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 547.132812;267.5625;8.375;13.15625 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffff00 0 0
+0 0
+"Arial Bold" 0 18 "0"
+556 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 390;40;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 320;40;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 630;170;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 180;50;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 628.265625;322.125;8.375;13.15625 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffff00 0 0
+0 0
+"Arial Bold" 0 18 "0"
+556 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 641.132812;174.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 671.132812;244.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 362.265625;49.125;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 481.132812;54.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 411.132812;54.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 621.265625;274.125;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 661.132812;184.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 680;200;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 171.132812;74.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 140;90;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 620;140;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 130;90;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 560;100;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 490;100;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 291.132812;314.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 310;330;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 280;300;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 261.734375;337.875;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 304;347;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 641.132812;224.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 384;27;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 434;27;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 334;27;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 841.734375;207.875;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 732.867188;92.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 710;260;8.375;13.15625 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffff00 0 0
+0 0
+"Arial Bold" 0 18 "0"
+556 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 552.867188;32.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 482.867188;32.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 792.867188;162.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 342.867188;42.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 791.132812;314.5625;8.375;13.15625 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffff00 0 0
+0 0
+"Arial Bold" 0 18 "0"
+556 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 804;167;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 834;237;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 525.132812;41.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 644;47;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 574;47;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 784.132812;266.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 824;177;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 842.867188;192.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 334;67;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 302.867188;82.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 782.867188;132.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 292.867188;82.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 722.867188;92.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 652.867188;92.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 291.132812;314.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 310;330;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 280;300;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 261.734375;337.875;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 304;347;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 641.132812;224.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 384;27;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 434;27;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 334;27;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 841.734375;207.875;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 732.867188;92.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 710;260;8.375;13.15625 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffff00 0 0
+0 0
+"Arial Bold" 0 18 "0"
+556 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 552.867188;32.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 482.867188;32.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 792.867188;162.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 342.867188;42.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 791.132812;314.5625;8.375;13.15625 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffff00 0 0
+0 0
+"Arial Bold" 0 18 "0"
+556 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 804;167;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 834;237;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 525.132812;41.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 644;47;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 574;47;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 784.132812;266.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 824;177;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 842.867188;192.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 334;67;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 302.867188;82.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 782.867188;132.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 292.867188;82.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 722.867188;92.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 652.867188;92.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 291.132812;314.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 310;330;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 280;300;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 261.734375;337.875;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 304;347;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 641.132812;224.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 384;27;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 434;27;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 334;27;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 841.734375;207.875;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 732.867188;92.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 710;260;8.375;13.15625 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffff00 0 0
+0 0
+"Arial Bold" 0 18 "0"
+556 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 552.867188;32.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 482.867188;32.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 792.867188;162.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 342.867188;42.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 791.132812;314.5625;8.375;13.15625 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffff00 0 0
+0 0
+"Arial Bold" 0 18 "0"
+556 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 804;167;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 834;237;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 525.132812;41.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 644;47;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 574;47;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 784.132812;266.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 824;177;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 842.867188;192.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 334;67;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 302.867188;82.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 782.867188;132.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 292.867188;82.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 722.867188;92.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 652.867188;92.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 291.132812;314.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 310;330;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 280;300;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 261.734375;337.875;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 304;347;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 641.132812;224.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 384;27;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 434;27;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 334;27;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 841.734375;207.875;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 732.867188;92.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 710;260;8.375;13.15625 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffff00 0 0
+0 0
+"Arial Bold" 0 18 "0"
+556 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 552.867188;32.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 482.867188;32.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 792.867188;162.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 342.867188;42.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 791.132812;314.5625;8.375;13.15625 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffff00 0 0
+0 0
+"Arial Bold" 0 18 "0"
+556 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 804;167;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 834;237;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 525.132812;41.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 644;47;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 574;47;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 784.132812;266.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 824;177;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 842.867188;192.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 334;67;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 302.867188;82.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 782.867188;132.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 292.867188;82.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 722.867188;92.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 652.867188;92.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 291.132812;314.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 310;330;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 280;300;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 261.734375;337.875;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 304;347;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 641.132812;224.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 384;27;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 434;27;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 334;27;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 841.734375;207.875;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 732.867188;92.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 710;260;8.375;13.15625 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffff00 0 0
+0 0
+"Arial Bold" 0 18 "0"
+556 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 552.867188;32.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 482.867188;32.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 792.867188;162.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 342.867188;42.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 791.132812;314.5625;8.375;13.15625 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffff00 0 0
+0 0
+"Arial Bold" 0 18 "0"
+556 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 804;167;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 834;237;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 525.132812;41.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 644;47;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 574;47;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 784.132812;266.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 824;177;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 842.867188;192.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 334;67;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 302.867188;82.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 782.867188;132.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 292.867188;82.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 722.867188;92.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 652.867188;92.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 291.132812;314.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 310;330;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 280;300;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 261.734375;337.875;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 304;347;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 641.132812;224.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 384;27;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 434;27;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 334;27;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 841.734375;207.875;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 732.867188;92.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 710;260;8.375;13.15625 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffff00 0 0
+0 0
+"Arial Bold" 0 18 "0"
+556 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 552.867188;32.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 482.867188;32.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 792.867188;162.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 342.867188;42.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 791.132812;314.5625;8.375;13.15625 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffff00 0 0
+0 0
+"Arial Bold" 0 18 "0"
+556 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 804;167;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 834;237;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 525.132812;41.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 644;47;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 574;47;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 784.132812;266.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 824;177;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 842.867188;192.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 334;67;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 302.867188;82.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 782.867188;132.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 292.867188;82.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 722.867188;92.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 652.867188;92.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 291.132812;314.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 310;330;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 280;300;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 261.734375;337.875;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 304;347;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 641.132812;224.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 384;27;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 434;27;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 334;27;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 841.734375;207.875;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 732.867188;92.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 710;260;8.375;13.15625 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffff00 0 0
+0 0
+"Arial Bold" 0 18 "0"
+556 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 552.867188;32.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 482.867188;32.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 792.867188;162.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 342.867188;42.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 791.132812;314.5625;8.375;13.15625 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffff00 0 0
+0 0
+"Arial Bold" 0 18 "0"
+556 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 804;167;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 834;237;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 525.132812;41.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 644;47;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 574;47;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 784.132812;266.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 824;177;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 842.867188;192.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 334;67;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 302.867188;82.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 782.867188;132.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 292.867188;82.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 722.867188;92.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 652.867188;92.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 291.132812;314.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 310;330;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 280;300;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 261.734375;337.875;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 304;347;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 641.132812;224.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 384;27;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 434;27;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 334;27;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 841.734375;207.875;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 732.867188;92.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 710;260;8.375;13.15625 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffff00 0 0
+0 0
+"Arial Bold" 0 18 "0"
+556 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 552.867188;32.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 482.867188;32.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 792.867188;162.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 342.867188;42.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 791.132812;314.5625;8.375;13.15625 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffff00 0 0
+0 0
+"Arial Bold" 0 18 "0"
+556 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 804;167;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 834;237;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 525.132812;41.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 644;47;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 574;47;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 784.132812;266.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 824;177;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 842.867188;192.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 334;67;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 302.867188;82.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 782.867188;132.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 292.867188;82.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 722.867188;92.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 652.867188;92.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 291.132812;314.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 310;330;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 280;300;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 261.734375;337.875;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 304;347;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 641.132812;224.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 384;27;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 434;27;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 334;27;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 841.734375;207.875;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 732.867188;92.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 710;260;8.375;13.15625 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffff00 0 0
+0 0
+"Arial Bold" 0 18 "0"
+556 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 552.867188;32.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 482.867188;32.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 792.867188;162.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 342.867188;42.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 791.132812;314.5625;8.375;13.15625 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffff00 0 0
+0 0
+"Arial Bold" 0 18 "0"
+556 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 804;167;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 834;237;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 525.132812;41.5625;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 644;47;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 574;47;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 784.132812;266.5625;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 824;177;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 842.867188;192.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 334;67;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 302.867188;82.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 782.867188;132.4375;39.494141;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-104.48"
+764 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 292.867188;82.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 722.867188;92.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 652.867188;92.4375;24.098633;12.9375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff33cc00 0 0
+0 0
+"Arial Bold" 0 18 "-72"
+553 ""
+
+
+0

@@ -1,0 +1,20 @@
+JLoox 2.0.2
+"UTF8"
+A 0 1 0 0 ffffffff 1 ! 0
+!
+"Default" 0 32
+0 0 001
+1
+"0" 1
+
+1
+
+com.cannontech.esub.editor.element.StaticImage
+! 111101100 61;78;20;20 5 0 $ ! ! 0
+A 0 1 0 0 $ 1 ! 0 0
+0 0 0 0 0
+!
+21 "green.svg"
+
+
+0

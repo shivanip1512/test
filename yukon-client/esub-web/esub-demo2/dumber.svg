@@ -1,0 +1,13 @@
+<?xml version = "1.0" standalone = "no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20000802//EN" "http://www.w3.org/TR/2000/CR-SVG-20000802/DTD/svg-20000802.dtd" >
+<svg width="1024.0px" height="768.0px" >
+<rect width="100%" height="100%" color="#000000" />
+<image id="LxAbstractImage" xlink:href="UpdateButton.gif" x="390" y="260" width="89" height="22" />
+<text id="LxAbstractText" x="210" y="171" style="fill:rgb(255,0,51);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:96;opacity:1.0;" >THIS IS SOME FAT TEXT!</text>
+<text id="LxAbstractText" x="730" y="519" style="fill:rgb(255,255,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:84;opacity:1.0;" >-69.88</text>
+<text id="LxAbstractText" x="730" y="663" style="fill:rgb(255,255,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:84;opacity:1.0;" >KW</text>
+<text id="LxAbstractText" x="370" y="471" style="fill:rgb(255,255,51);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:84;opacity:1.0;" >0</text>
+<text id="LxAbstractText" x="160" y="470" style="fill:rgb(255,255,51);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:84;opacity:1.0;" >KWH</text>
+<text id="LxAbstractText" x="920" y="771" style="fill:rgb(0,255,0);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:84;opacity:1.0;" >50.77</text>
+<text id="LxAbstractText" x="1150" y="770" style="fill:rgb(0,255,0);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:84;opacity:1.0;" >KW</text>
+</svg>

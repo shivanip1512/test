@@ -1,0 +1,69 @@
+JLoox 2.0.2
+"UTF8"
+A 0 1 0 0 ffffffff 1 ! 0
+!
+"Default" 0 32
+0 0 001
+1
+"0" 1
+
+8
+
+com.cannontech.esub.editor.element.StaticImage
+! 110101100 390;260;89;22 5 0 $ ! ! 0
+A 0 1 0 0 $ 1 ! 0 0
+0 0 0 0 0
+!
+12 ""
+
+com.cannontech.esub.editor.element.StaticText
+! 110101100 210;100;1151.53125;71.109375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffff0033 0 0
+0 0
+"Arial Bold" 0 96 "THIS IS SOME FAT TEXT!"
+"Arial Bold" 96 255 0 51 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 730;290;61.4375;229.679688 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 1.570796
+"Arial Bold" 0 84 "-69.88"
+764 ""
+
+com.cannontech.esub.editor.element.StaticText
+! 110101100 730;530;60.125;133.583984 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 1.570796
+"Arial Bold" 0 84 "KW"
+"Arial Bold" 84 255 255 255 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 370;410;39.046875;61.40625 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffff33 0 0
+0 3.141593
+"Arial Bold" 0 84 "0"
+765 ""
+
+com.cannontech.esub.editor.element.StaticText
+! 110101100 160;410;187.882812;60.125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffff33 0 0
+0 3.141593
+"Arial Bold" 0 84 "KWH"
+"Arial Bold" 84 255 255 51 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 920;710;202.738281;61.40625 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff00ff00 0 0
+0 0
+"Arial Bold" 0 84 "50.77"
+759 ""
+
+com.cannontech.esub.editor.element.StaticText
+! 110101100 1150;710;133.583984;60.125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff00ff00 0 0
+0 0
+"Arial Bold" 0 84 "KW"
+"Arial Bold" 84 0 255 0 ""
+
+
+0

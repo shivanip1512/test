@@ -79,8 +79,8 @@ private void initialize(EditorActions actions) {
 	JMenuItem saveAsItem = createMenuItem(action.getLabel(), action);
 
 	action = actions.getAction(EditorActions.EXPORT_DRAWING);	
-	//action = actions.getAction("ZOOM"); 
 	JMenuItem exportItem = createMenuItem(action.getLabel(), action);
+	exportItem.setEnabled(false);
 	
 	action = actions.getAction(EditorActions.EXIT_EDITOR);
 	JMenuItem exitItem = createMenuItem(action.getLabel(), action);

@@ -1,0 +1,15 @@
+<?xml version = "1.0" standalone = "no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20000802//EN" "http://www.w3.org/TR/2000/CR-SVG-20000802/DTD/svg-20000802.dtd" >
+<svg width="1024.0px" height="768.0px" >
+<rect width="100%" height="100%" color="#000000" />
+<path id="LxLine" style="fill:none;opacity:1.0;stroke:rgb(255,255,255); stroke-width:1.0;" d="M 100.0 20.0 L 950.0 90.0 " />
+<rect id="LxRectangle" x="85" y="125" width="769" height="89" style="fill:none;stroke:rgb(255,255,255); stroke-width:1.0" />
+<image id="LxAbstractImage" xlink:href="OKButton.gif" x="330" y="240" width="71" height="22" />
+<text id="LxAbstractText" x="280" y="463" style="fill:rgb(255,51,51);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:60;opacity:1.0;" >static</text>
+<text id="LxAbstractText" x="660" y="370" style="fill:rgb(255,255,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:96;opacity:1.0;" >-75.48</text>
+<a xlink:href="morningside.jlx">
+<image id="RedBox.gif" xlink:href="RedBox.gif" x="130" y="240" width="20" height="20" />
+</a>
+<text id="LxAbstractText" x="100" y="339" style="fill:rgb(0,204,51);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:96;opacity:1.0;" >This Rules!!</text>
+<text id="LxAbstractText" x="90" y="417" style="fill:rgb(255,255,255);font-family:'Courier New Italic';font-style:normal;font-weight:normal;font-size:12;opacity:1.0;" >font!</text>
+</svg>

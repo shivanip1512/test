@@ -193,7 +193,10 @@ class EditorActions {
 			true) {
 		public void processAction(ActionEvent e) {
 			System.out.println("rotate 180");
-			Util.rotateSelected(editor.getDrawing().getLxGraph(), Math.PI/1.0);
+			/* WORKAROUND FOR JLOOX BUG */
+			/* ROTATE FAILS FOR 180 DEGREE ROTATION!! */
+			Util.rotateSelected(editor.getDrawing().getLxGraph(), Math.PI/2.0);
+			Util.rotateSelected(editor.getDrawing().getLxGraph(), Math.PI/2.0);
 		}
 	};
 	

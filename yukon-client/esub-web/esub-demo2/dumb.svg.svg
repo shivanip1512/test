@@ -1,0 +1,18 @@
+<?xml version = "1.0" standalone = "no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20000802//EN" "http://www.w3.org/TR/2000/CR-SVG-20000802/DTD/svg-20000802.dtd" >
+<svg width = "950.0px" height="463.65625px">
+    <defs>
+    </defs>
+    <path id="LxLine"  style="fill:none;stroke:rgb(255,255,255); stroke-width:1.0;" d="M100,20,l850,70," >
+    </path>
+    <rect id="LxRectangle" x="90" y="130" width="760" height="80"   style="fill:none;stroke:rgb(255,255,255); stroke-width:1.0;"   >
+    </rect>
+    <image id="LxAbstractImage" x="330" y="240" width="71" height="22"  style="fill:none;stroke:rgb(0,0,0); stroke-width:1.0;"     xlink:href="null" >
+    </image>
+    <text id="LxAbstractText"  style="fill:rgb(255,51,51);font-family:'Arial';font-style:normal;font-weight:normal;font-size:60;" transform="translate(280,463.564)"  >static    </text>
+    <text id="LxAbstractText1"  style="fill:rgb(255,255,255);font-family:'Arial';font-style:normal;font-weight:normal;font-size:96;" transform="translate(660,369.703)"  >-75.48    </text>
+    <image id="LxAbstractImage1" x="130" y="240" width="20" height="20"  style="fill:none;stroke:rgb(0,0,0); stroke-width:1.0;"     xlink:href="null" >
+    </image>
+    <text id="LxAbstractText2"  style="fill:rgb(0,204,51);font-family:'Arial';font-style:normal;font-weight:normal;font-size:96;" transform="translate(100,339.703)"  >This Rules!!    </text>
+    <text id="LxAbstractText3"  style="fill:rgb(255,255,255);font-family:'Courier New';font-style:normal;font-weight:normal;font-size:12;" transform="translate(90,416.387)"  >font!    </text>
+</svg>

@@ -5,6 +5,7 @@ import java.awt.Font;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 
@@ -21,14 +22,14 @@ import com.loox.jloox.LxSaveUtils;
  * Creation date: (12/17/2001 1:44:37 PM)
  * @author: 
  */
-public class DynamicText extends LxAbstractText implements DrawingElement {
+public class DynamicText extends LxAbstractText implements DrawingElement, Serializable {
 	static final Font DEFAULT_FONT = new java.awt.Font("arial", java.awt.Font.BOLD, 12);
 	static final Color DEFAULT_COLOR = java.awt.Color.white;
 	static final int INVALID_POINT = -1;	
 
 	private com.cannontech.database.data.lite.LitePoint point;	
 	
-	private Drawing drawing = null;
+	private transient Drawing drawing = null;
 	private String linkTo = "";
 	
 /**

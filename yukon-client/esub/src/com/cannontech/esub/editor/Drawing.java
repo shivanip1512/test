@@ -2,6 +2,7 @@ package com.cannontech.esub.editor;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Serializable;
 
 import com.cannontech.esub.editor.element.DrawingElement;
 import com.cannontech.esub.util.HTMLGenerator;
@@ -20,7 +21,7 @@ import com.loox.jloox.LxView;
  * through an svggenerator without creating an LxView for example)
  * 
  */
-public class Drawing {
+public class Drawing implements Serializable {
 
 	private String fileName;
 
