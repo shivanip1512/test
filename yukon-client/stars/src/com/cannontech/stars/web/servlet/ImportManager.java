@@ -2398,7 +2398,7 @@ public class ImportManager extends HttpServlet {
 		StringBuffer strBuf = new StringBuffer( str.toUpperCase() );
 		strBuf.reverse();
 		
-		while (true) {
+		while (strBuf.length() > 0) {
 			if (Character.isDigit(strBuf.charAt(0)) ||
 				strBuf.charAt(0) == 'A' ||
 				strBuf.charAt(0) == 'P' ||
