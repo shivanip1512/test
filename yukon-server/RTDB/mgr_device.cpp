@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.50 $
-* DATE         :  $Date: 2004/10/12 16:23:42 $
+* REVISION     :  $Revision: 1.51 $
+* DATE         :  $Date: 2004/11/18 23:48:47 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2473,8 +2473,9 @@ CtiDeviceManager::ptr_type CtiDeviceManager::chooseExclusionDevice( LONG portid 
                 // Does this transmitter have any queued work to perform?
                 if(devA->hasQueuedWork())
                 {
-                    // We will preempt transmitter devS if and only if we have been waiting longer than it
-                    if( !devS || (devS && devS->getExclusion().getExecutionGrant() < devA->getExclusion().getExecutionGrant()) )
+                    // We will preempt transmitter devS if and only if we have been waiting longer than it or we have more work to do
+                    if( !devS || (devS && (devS->getExclusion().getExecutionGrant() < devA->getExclusion().getExecutionGrant()) ||
+                                          (devS->deviceQueueCommunicationTime()     < devA->deviceQueueCommunicationTime()) )
                     {
                         // Select the transmitter with the oldest LastExclusionGrant.
                         devS = devA;
@@ -2541,7 +2542,8 @@ CtiDeviceManager::ptr_type CtiDeviceManager::chooseExclusionDevice( LONG portid 
             {
                 if(devA->hasQueuedWork())
                 {
-                    if(!devS || devS->getExclusion().getExecutionGrant() > devA->getExclusion().getExecutionGrant())
+                    if( !devS || (devS && (devS->getExclusion().getExecutionGrant() < devA->getExclusion().getExecutionGrant()) ||
+                                          (devS->deviceQueueCommunicationTime()     < devA->deviceQueueCommunicationTime())) )
                     {
                         devS = devA;    // Select the transmitter with the oldest lastTx.
                         devS->getExclusion().setExecutionGrantExpires(devS->selectCompletionTime());
