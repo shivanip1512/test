@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.70 $
-* DATE         :  $Date: 2005/02/25 21:38:58 $
+* REVISION     :  $Revision: 1.71 $
+* DATE         :  $Date: 2005/04/05 16:55:23 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -167,6 +167,7 @@ using namespace std;
 #include "numstr.h"
 
 #define DO_GATEWAYTHREAD               1
+#define DO_DNPUDPTHREAD                1
 #define DO_PORTERINTERFACETHREAD       1
 #define DO_DISPATCHTHREAD              1
 #define DO_VCONFIGTHREAD               1
@@ -220,6 +221,7 @@ RWThreadFunction _connThread;
 RWThreadFunction _dispThread;
 RWThreadFunction _guiThread;
 RWThreadFunction _gwThread;
+RWThreadFunction _dnpudpThread;
 RWThreadFunction _pilThread;
 RWThreadFunction _tsyncThread;
 RWThreadFunction _perfThread;
@@ -824,6 +826,12 @@ INT PorterMainFunction (INT argc, CHAR **argv)
         _gwThread.start();
     }
 
+    if(DO_DNPUDPTHREAD)
+    {
+        _dnpudpThread = rwMakeThreadFunction( DNPUDPInboundThread, (void*)NULL );
+        _dnpudpThread.start();
+    }
+
     /* Another new Yukon Thread:
      * This thread manages connections to iMacs and other RWCollectable message senders
      * This guy is the PIL
@@ -1043,6 +1051,7 @@ VOID APIENTRY PorterCleanUp (ULONG Reason)
     }
 
     if(_gwThread.isValid())                 _gwThread.requestCancellation(200);
+    if(_dnpudpThread.isValid())             _dnpudpThread.requestCancellation(200);
     if(_pilThread.isValid())                _pilThread.requestCancellation(200);
     if(_dispThread.isValid())               _dispThread.requestCancellation(200);
     if(_connThread.isValid())               _connThread.requestCancellation(200);
@@ -1181,6 +1190,20 @@ VOID APIENTRY PorterCleanUp (ULONG Reason)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " _gwThread shutdown" << endl;
+        }
+    }
+
+    if(_dnpudpThread.isValid())
+    {
+        if(_dnpunpThread.join(15000) != RW_THR_COMPLETED )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " _dnpudpThread did not shutdown" << endl;
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " _dnpudpThread shutdown" << endl;
         }
     }
 
