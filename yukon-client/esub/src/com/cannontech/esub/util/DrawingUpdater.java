@@ -52,7 +52,9 @@ public class DrawingUpdater extends TimerTask {
 
 		synchronized (drawing) {			
 			try {
-				
+				// keep track if we changed anything
+				boolean change = false;
+								
 				PointChangeCache pcc = PointChangeCache.getPointChangeCache();
 
 				LxComponent[] comp = drawing.getLxGraph().getComponents();
@@ -68,8 +70,11 @@ public class DrawingUpdater extends TimerTask {
 							if (pData != null) {
 								DecimalFormat f = new DecimalFormat();
 								f.setMaximumFractionDigits(2);
-
-								dt.setText(f.format(pData.getValue()));
+								String newText = f.format(pData.getValue());
+								if( !dt.getText().equals(newText) ) {
+									dt.setText(newText);
+									change = true;
+								}
 							}
 						}
 
@@ -79,18 +84,22 @@ public class DrawingUpdater extends TimerTask {
 
 							if (pointID > 0) {
 								PointData pData = pcc.getValue(si.getPointID());
-								String state =
+								String newState =
 									pcc.getState(
 										si.getPointID(),
 										pData.getValue());
-
-								si.setState(state);
+								if( !si.getState().equals(newState) ) {
+									si.setState(newState);
+									change = true;
+								}
 							}
 						}
 					}
 
+					//Only force an update if there is a view present
+					//and there has been a change
 					LxView view = drawing.getLxView();
-					if (view != null) {
+					if (change && view != null) {
 						view.repaint();
 					}
 				}
