@@ -61,7 +61,7 @@ package com.comopt.windows;
  */
 public class JNTServices implements IServiceConstants
 {
-	private static final String DLL_FILE = "d:/JNTServices/JNTServices.dll";
+	private static final String DLL_FILE = "JNTServices.dll";
 	private String machineName = null; //local machine
 
 	private static boolean bLibraryLoaded = false;
