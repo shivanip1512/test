@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_main.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/04/16 18:50:56 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/05/09 20:52:45 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -61,7 +61,7 @@ int main(int argc, char* argv[] )
         if ( argc > 1 )
         {
             //Process command line
-            if ( strcmp(argv[1], "-install") == 0  )
+            if (strcmp(argv[1], "-install") == 0)
             {
                 cout << RWTime()  << " - Installing as a service..." << endl;
                 CServiceConfig si(szName, szDisplay);
