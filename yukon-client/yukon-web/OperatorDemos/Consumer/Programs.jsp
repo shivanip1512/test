@@ -1,8 +1,20 @@
 <%@ include file="StarsHeader.jsp" %>
 <%
-	String programStatus = "In Service";
-	if (session.getAttribute("PROGRAM_STATUS") != null)
-		programStatus = (String) session.getAttribute("PROGRAM_STATUS");
+	StarsLMHardwareHistory hwHist = null;
+	if (inventories.getStarsLMHardwareCount() > 0) {
+		StarsLMHardware hw = inventories.getStarsLMHardware(0);
+		hwHist = hw.getStarsLMHardwareHistory();
+	}
+	
+	String programStatus = "Not Enrolled";
+	//programStatus = (String) session.getAttribute("PROGRAM_STATUS");
+	if (hwHist.getLMHardwareEventCount() > 0) {
+		LMHardwareEvent event = hwHist.getLMHardwareEvent(0);
+		if (event.getEventAction().equals("Activation Completed"))
+			programStatus = "In Service";
+		else
+			programStatus = "Out of Service";
+	}
 %>
 <html>
 <head>

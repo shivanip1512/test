@@ -16,6 +16,7 @@ import com.cannontech.database.Transaction;
 public class LMHardwareActivity extends DBPersistent {
 
     private com.cannontech.database.db.starsevent.LMHardwareActivity _LMHardwareActivity = null;
+    private com.cannontech.database.db.starscustomer.CustomerAction customerAction = null;
 
     public LMHardwareActivity() {
         super();
@@ -28,6 +29,7 @@ public class LMHardwareActivity extends DBPersistent {
     public void setDbConnection(java.sql.Connection conn) {
         super.setDbConnection(conn);
         getLMHardwareActivity().setDbConnection(conn);
+        getCustomerAction().setDbConnection(conn);
     }
 
     public void delete() throws java.sql.SQLException {
@@ -44,6 +46,34 @@ public class LMHardwareActivity extends DBPersistent {
 
     public void retrieve() throws java.sql.SQLException {
         getLMHardwareActivity().retrieve();
+        
+        getCustomerAction().setActionID( getLMHardwareActivity().getActionID() );
+        getCustomerAction().retrieve();
+    }
+    
+    public static com.cannontech.database.db.starsevent.LMHardwareActivity getLastLMHardwareEvent(Integer invID) {
+    	java.sql.Connection conn = null;
+
+    	try {
+            conn = com.cannontech.database.PoolManager.getInstance().getConnection(
+                        com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+            if (conn == null) return null;
+            
+			return com.cannontech.database.db.starsevent.LMHardwareActivity.getLastHardwareActivity( invID, conn );
+    	}
+    	catch (Exception e) {
+    		e.printStackTrace();
+    	}
+    	finally {
+    		try {
+    			if (conn != null) conn.close();
+    		}
+    		catch (Exception e) {
+    			e.printStackTrace();
+    		}
+    	}
+    	
+    	return null;
     }
     
     public static StarsLMHardwareHistory getStarsLMHardwareHistory(Integer invID) {
@@ -97,4 +127,23 @@ public class LMHardwareActivity extends DBPersistent {
     public void setLMHardwareActivity(com.cannontech.database.db.starsevent.LMHardwareActivity newLMHardwareActivity) {
         _LMHardwareActivity = newLMHardwareActivity;
     }
+	/**
+	 * Returns the customerAction.
+	 * @return com.cannontech.database.db.starscustomer.CustomerAction
+	 */
+	public com.cannontech.database.db.starscustomer.CustomerAction getCustomerAction() {
+		if (customerAction == null)
+			customerAction = new com.cannontech.database.db.starscustomer.CustomerAction();
+		return customerAction;
+	}
+
+	/**
+	 * Sets the customerAction.
+	 * @param customerAction The customerAction to set
+	 */
+	public void setCustomerAction(
+		com.cannontech.database.db.starscustomer.CustomerAction customerAction) {
+		this.customerAction = customerAction;
+	}
+
 }

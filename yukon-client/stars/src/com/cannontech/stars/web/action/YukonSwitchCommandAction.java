@@ -266,8 +266,69 @@ public class YukonSwitchCommandAction implements ActionBase {
                     String cmd = "putconfig service in serial " + service.getSerialNumber(i);
                     sendCommand(cmd, conn);
                 }
-
-                session.setAttribute("PROGRAM_STATUS", "In Service");
+                
+                Vector invVct = account.getInventoryVector();
+                for (int j = 0; j < invVct.size(); j++) {
+                	com.cannontech.database.data.starshardware.LMHardwareBase hw =
+                			(com.cannontech.database.data.starshardware.LMHardwareBase) invVct.elementAt(j);
+                	com.cannontech.database.db.starshardware.LMHardwareBase hwDB = hw.getLMHardwareBase();
+                			
+                	if (hwDB.getManufacturerSerialNumber().equalsIgnoreCase( service.getSerialNumber(j) )) {
+                		com.cannontech.database.db.starsevent.LMHardwareActivity event =
+	                			com.cannontech.database.data.starsevent.LMHardwareActivity.getLastLMHardwareEvent( hwDB.getInventoryID() );
+                		boolean update = false;
+	                	
+	                	if (event != null && event.getActionID().intValue() == com.cannontech.database.db.starscustomer.CustomerAction.FUTURE_ACTIVATION) {
+	                		update = true;
+	                		event.setActionID( new Integer(com.cannontech.database.db.starscustomer.CustomerAction.ACTIVATION_COMPLETED) );
+	                		event.setEventDateTime( new Date() );
+	                		Transaction.createTransaction( Transaction.UPDATE, event ).execute();
+	                	}
+	                	else {
+	                		event = new com.cannontech.database.db.starsevent.LMHardwareActivity();
+	                		event.setInventoryID( hwDB.getInventoryID() );
+	                		event.setActionID( new Integer(com.cannontech.database.db.starscustomer.CustomerAction.ACTIVATION_COMPLETED) );
+	                		event.setEventDateTime( new Date() );
+	                		event.setNotes("");
+	                		Transaction.createTransaction( Transaction.INSERT, event ).execute();
+	                	}
+                		
+		                Vector appVct = account.getApplianceVector();
+		                for (int k = 0; k < appVct.size(); k++) {
+		                	com.cannontech.database.data.starsappliance.ApplianceBase app =
+		                			(com.cannontech.database.data.starsappliance.ApplianceBase) appVct.elementAt(k);
+			                com.cannontech.database.db.starshardware.LMHardwareConfiguration config = app.getLMHardwareConfig();
+			                
+			                if (config.getInventoryID().intValue() == hwDB.getInventoryID().intValue()) {
+			                	com.cannontech.database.data.device.lm.LMProgramBase program = app.getLMProgram();
+					            if (program.getPAObjectID().intValue() == 0) continue;
+					            
+					            com.cannontech.database.db.starsevent.LMProgramCustomerActivity activity =
+					            		com.cannontech.database.data.starsevent.LMProgramCustomerActivity.getLastCustomerActivity( account.getCustomerAccount().getAccountID() );
+					            
+					            if (update && activity != null) {
+						            activity.setActionID( new Integer(com.cannontech.database.db.starscustomer.CustomerAction.ACTIVATION_COMPLETED) );
+						            activity.setEventDateTime( new Date() );
+				                	Transaction.createTransaction( Transaction.UPDATE, activity ).execute();
+					            }
+					            else {
+					            	activity = new com.cannontech.database.db.starsevent.LMProgramCustomerActivity();
+						            activity.setLMProgramID( program.getPAObjectID() );
+						            activity.setAccountID( account.getCustomerAccount().getAccountID() );
+						            activity.setActionID( new Integer(com.cannontech.database.db.starscustomer.CustomerAction.TEMPORARY_TERMINATION) );
+						            activity.setEventDateTime( new Date() );
+						            activity.setNotes("");
+			                		Transaction.createTransaction( Transaction.INSERT, activity ).execute();
+			                	}
+			                }
+		                }
+                		
+						StarsLMHardwareHistory hwHist = com.cannontech.database.data.starsevent.LMHardwareActivity.getStarsLMHardwareHistory( hwDB.getInventoryID() );
+						cmdResp.setStarsLMHardwareHistory( hwHist );
+						
+						break;
+                	}
+                }
             }
 
             respOper.setStarsSwitchCommandResponse( cmdResp );

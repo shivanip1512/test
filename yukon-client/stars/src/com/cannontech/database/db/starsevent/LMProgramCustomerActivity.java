@@ -38,6 +38,61 @@ public class LMProgramCustomerActivity extends DBPersistent {
         super();
     }
 
+
+	public static LMProgramCustomerActivity getLastCustomerActivity(Integer accountID, java.sql.Connection conn) {
+        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE EventID = ("
+        		   + "SELECT MAX(EventID) FROM " + TABLE_NAME + " WHERE AccountID = ?)";
+
+        java.sql.PreparedStatement pstmt = null;
+        java.sql.ResultSet rset = null;
+        java.util.ArrayList eventList = new java.util.ArrayList();
+
+        try
+        {
+            if( conn == null )
+            {
+                throw new IllegalStateException("Database connection should not be null.");
+            }
+            else
+            {
+                pstmt = conn.prepareStatement(sql);
+                pstmt.setInt( 1, accountID.intValue() );
+                rset = pstmt.executeQuery();
+
+                if (rset.next()) {
+                    LMProgramCustomerActivity event = new LMProgramCustomerActivity();
+
+                    event.setEventID( new Integer(rset.getInt("EventID")) );
+                    event.setActionID( new Integer(rset.getInt("ActionID")) );
+                    event.setLMProgramID( new Integer(rset.getInt("LMProgramID")) );
+                    event.setEventDateTime( new java.util.Date(rset.getTimestamp("EventDateTime").getTime()) );
+                    event.setNotes( rset.getString("Notes") );
+                    event.setAccountID( new Integer(rset.getInt("AccountID")) );
+
+                    return event;
+                }
+            }
+        }
+        catch( java.sql.SQLException e )
+        {
+                e.printStackTrace();
+        }
+        finally
+        {
+            try
+            {
+                if( pstmt != null ) pstmt.close();
+                if (rset != null) rset.close();
+            }
+            catch( java.sql.SQLException e2 )
+            {
+                e2.printStackTrace();
+            }
+        }
+
+        return null;
+	}
+	
     public static LMProgramCustomerActivity[] getAllCustomerActivities(Integer accountID, java.sql.Connection conn) {
         String sql = "SELECT * FROM " + TABLE_NAME + " WHERE AccountID = ?";
 

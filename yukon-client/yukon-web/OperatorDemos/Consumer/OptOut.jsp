@@ -1,7 +1,10 @@
 <%@ include file="StarsHeader.jsp" %>
 <%
-	String programStatus = "In Service";     
-		programStatus = (String) session.getAttribute("PROGRAM_STATUS");
+	StarsLMHardwareHistory hwHist = null;
+	if (inventories.getStarsLMHardwareCount() > 0) {
+		StarsLMHardware hw = inventories.getStarsLMHardware(0);
+		hwHist = hw.getStarsLMHardwareHistory();
+	}
 %>
 <html>
 <head>
@@ -114,14 +117,39 @@ function confirmSubmit(form) { //v1.0
                   <td class="HeaderCell">Date</td>
                   <td class="HeaderCell">Duration</td>
                 </tr>
+<%
+	boolean optOut = false;
+	Calendar startCal = Calendar.getInstance();
+	Calendar stopCal = Calendar.getInstance();
+	
+	for (int i = 0; i < hwHist.getLMHardwareEventCount(); i++) {
+		LMHardwareEvent event = hwHist.getLMHardwareEvent(i);
+		if (event.getEventAction().equals("Future Activation") || event.getEventAction().equals("Activation Completed")) {
+			optOut = true;
+			stopCal.setTime( event.getEventDateTime() );
+		}
+		else if (event.getEventAction().equals("Temporary Termination") && optOut) {
+			optOut = false;
+			startCal.setTime( event.getEventDateTime() );
+			int duration = stopCal.get(Calendar.DATE) - startCal.get(Calendar.DATE);
+			
+			String durStr = String.valueOf(duration);
+			if (duration > 1)
+				durStr += " Days";
+			else
+				durStr += " Day";
+%>
                 <tr> 
-                  <td class="TableCell">12/15/00</td>
-                  <td class="TableCell">3 Days</td>
+                  <td class="TableCell"><%= dateFormat.format(event.getEventDateTime()) %></td>
+                  <td class="TableCell"><%= durStr %></td>
                 </tr>
-                <tr> 
-                  <td class="TableCell">07/17/01</td>
-                  <td class="TableCell">1 Day</td>
-                </tr>
+<%
+		}
+		else {
+			optOut = false;
+		}
+	}
+%>
               </table>
               <br>
               <table width="150" border="0" cellspacing="0" cellpadding="3" align="center">

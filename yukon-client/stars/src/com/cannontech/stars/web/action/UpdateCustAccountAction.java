@@ -26,7 +26,14 @@ public class UpdateCustAccountAction implements ActionBase {
 
     public SOAPMessage build(HttpServletRequest req, HttpSession session) {
         try {
-            StarsCustAccountInfo accountInfo = (StarsCustAccountInfo) session.getAttribute("CUSTOMER_ACCOUNT_INFORMATION");
+			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
+			StarsCustAccountInfo accountInfo = null;
+			if (operator != null)
+				accountInfo = (StarsCustAccountInfo) operator.getAttribute("CUSTOMER_ACCOUNT_INFORMATION");
+			else
+				accountInfo = (StarsCustAccountInfo) session.getAttribute("CUSTOMER_ACCOUNT_INFORMATION");
+            if (accountInfo == null) return null;
+            
             StarsCustomerAccount account = accountInfo.getStarsCustomerAccount();
 
             account.setAccountNumber( req.getParameter("AcctNo") );
@@ -154,7 +161,7 @@ public class UpdateCustAccountAction implements ActionBase {
             transaction = Transaction.createTransaction( Transaction.UPDATE, account );
             transaction.execute();
 
-            respOper.setStarsSuccess( null );
+            respOper.setStarsSuccess( new StarsSuccess() );
 
             return SOAPUtil.buildSOAPMessage( respOper );
         }

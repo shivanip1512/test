@@ -36,10 +36,63 @@ public class LMHardwareActivity extends DBPersistent {
     public LMHardwareActivity() {
         super();
     }
+    
+    public static LMHardwareActivity getLastHardwareActivity(Integer inventoryID, java.sql.Connection conn) {
+        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE EventID = ("
+        		   + "SELECT MAX(EventID) FROM " + TABLE_NAME + " WHERE InventoryID = ?)";
+
+        java.sql.PreparedStatement pstmt = null;
+        java.sql.ResultSet rset = null;
+        java.util.ArrayList eventList = new java.util.ArrayList();
+
+        try
+        {
+            if( conn == null )
+            {
+                throw new IllegalStateException("Database connection should not be null.");
+            }
+            else
+            {
+                pstmt = conn.prepareStatement(sql);
+                pstmt.setInt( 1, inventoryID.intValue() );
+                rset = pstmt.executeQuery();
+
+                if (rset.next()) {
+                    LMHardwareActivity event = new LMHardwareActivity();
+
+                    event.setEventID( new Integer(rset.getInt("EventID")) );
+                    event.setInventoryID( new Integer(rset.getInt("InventoryID")) );
+                    event.setEventDateTime( new java.util.Date(rset.getTimestamp("EventDateTime").getTime()) );
+                    event.setNotes( rset.getString("Notes") );
+                    event.setActionID( new Integer(rset.getInt("ActionID")) );
+
+                    return event;
+                }
+            }
+        }
+        catch( java.sql.SQLException e )
+        {
+                e.printStackTrace();
+        }
+        finally
+        {
+            try
+            {
+                if( pstmt != null ) pstmt.close();
+                if (rset != null) rset.close();
+            }
+            catch( java.sql.SQLException e2 )
+            {
+                e2.printStackTrace();
+            }
+        }
+
+		return null;
+    }
 
     public static LMHardwareActivity[] getAllHardwareActivities(Integer inventoryID, java.sql.Connection conn) {
         String sql = "SELECT * FROM " + TABLE_NAME + " WHERE InventoryID = ? "
-        		   + "ORDER BY EventDateTime DESC";
+        		   + "ORDER BY EventID DESC";
 
         java.sql.PreparedStatement pstmt = null;
         java.sql.ResultSet rset = null;

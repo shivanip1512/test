@@ -15,6 +15,7 @@ import com.cannontech.database.db.*;
 public class LMProgramCustomerActivity extends DBPersistent {
 
     private com.cannontech.database.db.starsevent.LMProgramCustomerActivity _LMProgramCustomerActivity = null;
+    private com.cannontech.database.db.starscustomer.CustomerAction customerAction = null;
 
     public LMProgramCustomerActivity() {
         super();
@@ -27,6 +28,7 @@ public class LMProgramCustomerActivity extends DBPersistent {
     public void setDbConnection(java.sql.Connection conn) {
         super.setDbConnection(conn);
         getLMProgramCustomerActivity().setDbConnection(conn);
+        getCustomerAction().setDbConnection(conn);
     }
 
     public void delete() throws java.sql.SQLException {
@@ -43,6 +45,34 @@ public class LMProgramCustomerActivity extends DBPersistent {
 
     public void retrieve() throws java.sql.SQLException {
         getLMProgramCustomerActivity().retrieve();
+        
+        getCustomerAction().setActionID( getLMProgramCustomerActivity().getAccountID() );
+        getCustomerAction().retrieve();
+    }
+    
+    public static com.cannontech.database.db.starsevent.LMProgramCustomerActivity getLastCustomerActivity(Integer accountID) {
+    	java.sql.Connection conn = null;
+
+    	try {
+            conn = com.cannontech.database.PoolManager.getInstance().getConnection(
+                        com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+            if (conn == null) return null;
+            
+			return com.cannontech.database.db.starsevent.LMProgramCustomerActivity.getLastCustomerActivity( accountID, conn );
+    	}
+    	catch (Exception e) {
+    		e.printStackTrace();
+    	}
+    	finally {
+    		try {
+    			if (conn != null) conn.close();
+    		}
+    		catch (Exception e) {
+    			e.printStackTrace();
+    		}
+    	}
+    	
+    	return null;
     }
 
     public com.cannontech.database.db.starsevent.LMProgramCustomerActivity getLMProgramCustomerActivity() {
@@ -54,4 +84,16 @@ public class LMProgramCustomerActivity extends DBPersistent {
     public void setLMProgramCustomerActivity(com.cannontech.database.db.starsevent.LMProgramCustomerActivity newLMProgramCustomerActivity) {
         _LMProgramCustomerActivity = newLMProgramCustomerActivity;
     }
+    
+	public com.cannontech.database.db.starscustomer.CustomerAction getCustomerAction() {
+		if (customerAction == null)
+			customerAction = new com.cannontech.database.db.starscustomer.CustomerAction();
+		return customerAction;
+	}
+
+	public void setCustomerAction(
+		com.cannontech.database.db.starscustomer.CustomerAction customerAction) {
+		this.customerAction = customerAction;
+	}
+
 }

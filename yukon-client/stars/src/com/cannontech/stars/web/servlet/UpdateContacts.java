@@ -1,6 +1,8 @@
 package com.cannontech.stars.web.servlet;
 
 import javax.servlet.http.*;
+
+import com.cannontech.stars.web.StarsOperator;
 import com.cannontech.stars.xml.serialize.*;
 
 /**
@@ -25,9 +27,16 @@ public class UpdateContacts extends HttpServlet {
         HttpSession session = req.getSession(false);
         if (session == null) resp.sendRedirect(loginURL);
 
-        StarsCustAccountInfo accountInfo = (StarsCustAccountInfo) session.getAttribute("CUSTOMER_ACCOUNT_INFORMATION");
+		StarsOperator operator = (StarsOperator) session.getAttribute( "OPERATOR" );
+		if (operator == null) {
+			resp.sendRedirect(loginURL); return;
+		}
+		
+        StarsCustAccountInfo accountInfo = (StarsCustAccountInfo) operator.getAttribute("CUSTOMER_ACCOUNT_INFORMATION");
         StarsCustomerAccount account = accountInfo.getStarsCustomerAccount();
-        if (account == null) resp.sendRedirect(homeURL);
+        if (account == null) {
+        	resp.sendRedirect(homeURL); return;
+        }
 
         String lastName = req.getParameter("LastName");
         String firstName = req.getParameter("FirstName");
