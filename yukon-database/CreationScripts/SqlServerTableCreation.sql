@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI SqlServer 2000                           */
-/* Created on:     6/3/2004 10:21:19 AM                         */
+/* Created on:     6/25/2004 4:40:44 PM                         */
 /*==============================================================*/
 
 
@@ -466,6 +466,14 @@ if exists (select 1
            where  id = object_id('DateOfHoliday')
             and   type = 'U')
    drop table DateOfHoliday
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DateOfSeason')
+            and   type = 'U')
+   drop table DateOfSeason
 go
 
 
@@ -2380,7 +2388,7 @@ insert into displaycolumns values(1, 'Time Stamp', 11, 1, 60 );
 insert into displaycolumns values(1, 'Device Name', 5, 2, 70 );
 insert into displaycolumns values(1, 'Point Name', 2, 3, 70 );
 insert into displaycolumns values(1, 'Text Message', 12, 4, 180 );
-insert into displaycolumns values(1, 'Additional Info', 10, 5, 180 );
+insert into displaycolumns values(1, 'Additional Info', 7, 5, 180 );
 insert into displaycolumns values(1, 'User Name', 8, 6, 35 );
 
 /*********************************************************************************************************
@@ -2390,13 +2398,13 @@ insert into displaycolumns values(2, 'Time Stamp', 11, 1, 60 );
 insert into displaycolumns values(2, 'Device Name', 5, 2, 70 );
 insert into displaycolumns values(2, 'Point Name', 2, 3, 70 );
 insert into displaycolumns values(2, 'Text Message', 12, 4, 180 );
-insert into displaycolumns values(2, 'Additional Info', 10, 5, 180 );
+insert into displaycolumns values(2, 'Additional Info', 7, 5, 180 );
 insert into displaycolumns values(2, 'User Name', 8, 6, 35 );
 insert into displaycolumns values(3, 'Time Stamp', 11, 1, 70 );
 insert into displaycolumns values(3, 'Device Name', 5, 2, 60 );
 insert into displaycolumns values(3, 'Point Name', 2, 3, 60 );
 insert into displaycolumns values(3, 'Text Message', 12, 4, 200 );
-insert into displaycolumns values(3, 'Additional Info', 10, 5, 200 );
+insert into displaycolumns values(3, 'Additional Info', 7, 5, 200 );
 insert into displaycolumns values(3, 'User Name', 8, 6, 35 );
 *********************************************************************************************************/
 
@@ -2588,12 +2596,12 @@ insert into displaycolumns values(50, 'Device Name', 5, 1, 70 );
 insert into displaycolumns values(50, 'Point Name', 2, 2, 70 );
 insert into displaycolumns values(50, 'Time Stamp', 11, 3, 60 );
 insert into displaycolumns values(50, 'Description', 12, 4, 180 );
-insert into displaycolumns values(50, 'Additional Info', 10, 5, 180 );
+insert into displaycolumns values(50, 'Additional Info', 7, 5, 180 );
 insert into displaycolumns values(51, 'Device Name', 5, 1, 70 );
 insert into displaycolumns values(51, 'Point Name', 2, 2, 70 );
 insert into displaycolumns values(51, 'Time Stamp', 11, 3, 60 );
 insert into displaycolumns values(51, 'Description', 12, 4, 180 );
-insert into displaycolumns values(51, 'Additional Info', 10, 5, 180 );
+insert into displaycolumns values(51, 'Additional Info', 7, 5, 180 );
 insert into displaycolumns values(51, 'User Name', 8, 6, 40 );
 insert into displaycolumns values(51, 'Tag', 13, 7, 60 );
 
@@ -2684,6 +2692,34 @@ go
 
 alter table DateOfHoliday
    add constraint PK_DATEOFHOLIDAY primary key  (HolidayScheduleID, HolidayName)
+go
+
+
+/*==============================================================*/
+/* Table : DateOfSeason                                         */
+/*==============================================================*/
+create table DateOfSeason (
+SeasonScheduleID     numeric              not null,
+SeasonName           varchar(20)          not null,
+SeasonStartMonth     numeric              not null,
+SeasonStartDay       numeric              not null,
+SeasonEndMonth       numeric              not null,
+SeasonEndDay         numeric              not null
+)
+go
+
+
+alter table DateOfSeason
+   add constraint PK_DATEOFSEASON primary key  (SeasonScheduleID)
+go
+
+
+/*==============================================================*/
+/* Index: Indx_DATOFSEAS_NAM                                    */
+/*==============================================================*/
+create unique  index Indx_DATOFSEAS_NAM on DateOfSeason (
+SeasonName
+)
 go
 
 
@@ -2983,7 +3019,9 @@ LastControlSent      datetime             not null,
 TimeStamp            datetime             not null,
 LMProgramID          numeric              not null,
 ControlStartTime     datetime             not null,
-ControlCompleteTime  datetime             not null
+ControlCompleteTime  datetime             not null,
+NextControlTime      datetime             not null,
+InternalState        numeric              not null
 )
 go
 
@@ -3024,7 +3062,8 @@ StartTime            datetime             not null,
 StopTime             datetime             not null,
 TimeStamp            datetime             not null,
 DailyOps             numeric              not null,
-NotifyTime           datetime             not null
+NotifyTime           datetime             not null,
+StartedRampingOut    datetime             not null
 )
 go
 
@@ -4059,7 +4098,6 @@ go
 create table LMProgramConstraints (
 ConstraintID         numeric              not null,
 ConstraintName       varchar(60)          not null,
-AvailableSeasons     varchar(4)           not null,
 AvailableWeekDays    varchar(8)           not null,
 MaxHoursDaily        numeric              not null,
 MaxHoursMonthly      numeric              not null,
@@ -4075,7 +4113,7 @@ SeasonScheduleID     numeric              not null
 go
 
 
-insert into LMProgramConstraints values (0, 'Default Constraint', 'YYYY', 'YYYYYYYN', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+insert into LMProgramConstraints values (0, 'Default Constraint', 'YYYYYYYN', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
 alter table LMProgramConstraints
    add constraint PK_PRGCONSTR primary key  (ConstraintID)
@@ -5047,24 +5085,12 @@ go
 /*==============================================================*/
 create table SeasonSchedule (
 ScheduleID           numeric              not null,
-ScheduleName         varchar(40)          not null,
-SpringMonth          numeric              not null,
-SpringDay            numeric              not null,
-SummerMonth          numeric              not null,
-SummerDay            numeric              not null,
-FallMonth            numeric              not null,
-FallDay              numeric              not null,
-WinterMonth          numeric              not null,
-WinterDay            numeric              not null
+ScheduleName         varchar(40)          not null
 )
 go
 
 
-/* There should be one default season schedule, months range 0-11, days range
-*  1-31.  It is implied that the start of Spring signals the end of Winter, start of
-*  Fall signals the end of Summer, etc.
-*/
-insert into SeasonSchedule values(0,'Default Season Schedule',3,15,5,1,8,15,11,1);
+insert into SeasonSchedule values( 0, 'Empty Schedule' );
 
 alter table SeasonSchedule
    add constraint PK_SEASONSCHEDULE primary key  (ScheduleID)
@@ -7202,8 +7228,8 @@ go
 /* View: LMProgram_View                                         */
 /*==============================================================*/
 go
-create view LMProgram_View (DeviceID, ControlType, ConstraintID , ConstraintName , AvailableSeasons , AvailableWeekDays , MaxHoursDaily , MaxHoursMonthly , MaxHoursSeasonal , MaxHoursAnnually , MinActivateTime , MinRestartTime , MaxDailyOps , MaxActivateTime , HolidayScheduleID , SeasonScheduleID ) as
-select t.DeviceID, t.ControlType, u.ConstraintID, u.ConstraintName, u.AvailableSeasons, u.AvailableWeekDays, u.MaxHoursDaily, u.MaxHoursMonthly, u.MaxHoursSeasonal, u.MaxHoursAnnually, u.MinActivateTime, u.MinRestartTime, u.MaxDailyOps, u.MaxActivateTime, u.HolidayScheduleID, u.SeasonScheduleID
+create view LMProgram_View (DeviceID, ControlType, ConstraintID , ConstraintName , AvailableWeekDays , MaxHoursDaily , MaxHoursMonthly , MaxHoursSeasonal , MaxHoursAnnually , MinActivateTime , MinRestartTime , MaxDailyOps , MaxActivateTime , HolidayScheduleID , SeasonScheduleID ) as
+select t.DeviceID, t.ControlType, u.ConstraintID, u.ConstraintName, u.AvailableWeekDays, u.MaxHoursDaily, u.MaxHoursMonthly, u.MaxHoursSeasonal, u.MaxHoursAnnually, u.MinActivateTime, u.MinRestartTime, u.MaxDailyOps, u.MaxActivateTime, u.HolidayScheduleID, u.SeasonScheduleID
 from LMPROGRAM t, LMProgramConstraints u
 where u.ConstraintID = t.ConstraintID
 go
@@ -7723,6 +7749,12 @@ go
 alter table CustomerAdditionalContact
    add constraint FK_Cust_CustAddCnt foreign key (CustomerID)
       references Customer (CustomerID)
+go
+
+
+alter table DateOfSeason
+   add constraint FK_DaOfSe_SeSc foreign key (SeasonScheduleID)
+      references SeasonSchedule (ScheduleID)
 go
 
 
