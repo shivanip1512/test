@@ -191,6 +191,9 @@ private void handleException(Throwable exception) {
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
 private void initConnections() throws java.lang.Exception {
 	// user code begin {1}
+
+	getJCSpinFieldSocketNumber().addValueListener( this );
+
 	// user code end
 	getJComboBoxPortType().addActionListener(this);
 }
