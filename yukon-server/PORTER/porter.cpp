@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.65 $
-* DATE         :  $Date: 2004/12/14 22:36:13 $
+* REVISION     :  $Revision: 1.66 $
+* DATE         :  $Date: 2005/01/27 17:51:42 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -517,6 +517,7 @@ void applyDeviceLoadReport(const long unusedid, CtiDeviceSPtr RemoteDevice, void
 {
     RWCString printStr;
 
+    bool yep = false;
     int sub, proc, orph;
     LONG PortID = (LONG)lprtid;
 
@@ -527,9 +528,14 @@ void applyDeviceLoadReport(const long unusedid, CtiDeviceSPtr RemoteDevice, void
         for(int i = 0; i < 288; i++)
         {
             RemoteDevice->getQueueMetrics(i, sub, proc, orph);
+            if(sub > 0)
+            {
+                yep = true;
             printStr += CtiNumStr(i).spad(2) + ", " + CtiNumStr(sub).spad(5) + ", " + CtiNumStr(proc).spad(5) + ", " + CtiNumStr(orph).spad(5) + "\n";
         }
+        }
 
+        if(yep)
         {
             CtiLockGuard<CtiLogger> bguard(blog);
             blog << printStr << endl;
@@ -613,6 +619,7 @@ void applyPortQueueReport(const long unusedid, CtiPortSPtr ptPort, void *passedP
 
 void applyPortLoadReport(const long unusedid, CtiPortSPtr ptPort, void *passedPtr)
 {
+    bool yep = false;
     RWCString printStr;
 
     /* Report on the state of the queues */
@@ -626,10 +633,15 @@ void applyPortLoadReport(const long unusedid, CtiPortSPtr ptPort, void *passedPt
         for(int i = 0; i < 288; i++)
         {
             ptPort->getQueueMetrics(i, sub, proc, orph);
+            if(sub > 0)
+            {
+                yep = true;
             printStr += CtiNumStr(i).spad(2) + ", " + CtiNumStr(sub).spad(5) + ", " + CtiNumStr(proc).spad(5) + ", " + CtiNumStr(orph).spad(5) + "\n";
         }
     }
+    }
 
+    if(yep)
     {
         CtiLockGuard<CtiLogger> bguard(blog);
         blog << printStr << endl;
@@ -986,13 +998,11 @@ INT PorterMainFunction (INT argc, CHAR **argv)
             }
         }
 
-        /*
-        if( last_print + 60 <= ::time(0) )
+        if( last_print + 3600 <= ::time(0) )
         {
             last_print = ::time(0);
             processInputFunction(0x79);  //  do an alt-y every 60 seconds
         }
-        */
 
         CTISleep(250);
     }
