@@ -355,6 +355,8 @@ public void JButtonSendAction_actionPerformed(java.util.EventObject newEvent)
  */
 public void update( java.util.Observable originator, Object newValue ) 
 {
+   super.update( originator, newValue );
+
 	if( newValue instanceof ObservedPointDataChange )
 	{
 		ObservedPointDataChange value = (ObservedPointDataChange)newValue;
@@ -368,7 +370,9 @@ public void update( java.util.Observable originator, Object newValue )
 			this.revalidate();
 			this.repaint();
 		}
+      
 	}		
+
 }
 /**
  * 

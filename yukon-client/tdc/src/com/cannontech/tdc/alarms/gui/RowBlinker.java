@@ -8,6 +8,7 @@ package com.cannontech.tdc.alarms.gui;
  */
  
 import com.cannontech.tdc.utils.TDCDefines;
+import com.cannontech.common.util.CtiProperties;
 
 public class RowBlinker implements Runnable 
 {
@@ -15,6 +16,7 @@ public class RowBlinker implements Runnable
 	private AlarmingRowVector alarmedRows = null;
 	private AlarmTableModel model = null;
 	private Thread runningThread = null;
+
 
 
 	/**
@@ -28,6 +30,7 @@ public class RowBlinker implements Runnable
 		private int min = 0;
 		private int max = 0;
 		private AlarmTableModel model = null;
+      
 
 
 		/**
@@ -224,6 +227,7 @@ private synchronized void processOriginalColors()
  */
 public void run() 
 {
+
 	try
 	{
 		while( alarmedRows != null && alarmedRows.size() > 0 
@@ -231,33 +235,35 @@ public void run()
 		{
 			int size = 0;
 			
-			synchronized( alarmedRows )
-			{
-				size = alarmedRows.size();
-
-				if( size == 0 )
-				{
-					runningThread = null;
-					return;
-				}
-				
-				try
-				{
-					processAlarmColors();
-						
-					Thread.sleep( 700 ); //length of time to be Alarm Color				
-				}
-				catch ( InterruptedException e )
-				{
-					com.cannontech.clientutils.CTILogger.debug("Thread " + Thread.currentThread().getName() + " was inturrupted during AlarmColor.");
-				}
-				finally
-				{
-					processOriginalColors();
-					
-				} //end of finally
-			} // end Synch alarmedRows
-
+         if( !CtiProperties.isAlarmColorHidden(TDCDefines.USER_RIGHTS) )
+         {
+   			synchronized( alarmedRows )
+   			{
+   				size = alarmedRows.size();
+   
+   				if( size == 0 )
+   				{
+   					runningThread = null;
+   					return;
+   				}
+   				
+   				try
+   				{
+   					processAlarmColors();
+   						
+   					Thread.sleep( 700 ); //length of time to be Alarm Color				
+   				}
+   				catch ( InterruptedException e )
+   				{
+   					com.cannontech.clientutils.CTILogger.debug("Thread " + Thread.currentThread().getName() + " was inturrupted during AlarmColor.");
+   				}
+   				finally
+   				{
+   					processOriginalColors();
+   					
+   				} //end of finally
+   			} // end Synch alarmedRows
+         }
 			
 			try
 			{

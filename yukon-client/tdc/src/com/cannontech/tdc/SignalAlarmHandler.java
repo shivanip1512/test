@@ -5,7 +5,7 @@ import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.clientutils.commonutils.ModifiedDate;
 import com.cannontech.tdc.data.Display;
 import com.cannontech.tdc.bookmark.BookMarkSelectionListener;
-
+import com.cannontech.tdc.utils.TDCDefines;
 /**
  * @author rneuharth
  * Oct 15, 2002 at 3:01:29 PM
@@ -19,10 +19,19 @@ class SignalAlarmHandler
    
    private static java.awt.Color bgColor = java.awt.SystemColor.control;
    private static java.awt.Color fgColor = java.awt.SystemColor.controlText;
-   
+         
    private Thread alrmBlinker = null;
    private javax.swing.JMenu alarmMenu = null;
-   private int alarmCount = 0;
+   //private int alarmCount = 0;
+
+   //contains javax.swing.JMenuItem
+   private java.util.Vector alarmVector = null;
+   
+   public static final int ALARMS_DISPLAYED = Integer.parseInt(
+         com.cannontech.common.util.CtiProperties.getInstance().getProperty(
+                  com.cannontech.common.util.CtiProperties.KEY_TDC_ALARM_COUNT, 
+                  "3") );
+
    
    private BookMarkSelectionListener bookmarkListener = null;
 
@@ -40,6 +49,8 @@ class SignalAlarmHandler
       bookmarkListener = bookmarkListener_;
       bgColor = alarmMenu.getBackground();
       fgColor = alarmMenu.getForeground();
+      
+      getJMenuAlarms().setHorizontalTextPosition( javax.swing.SwingConstants.RIGHT );
   
       alarmMenu.addMouseListener( new java.awt.event.MouseAdapter()
       {
@@ -52,6 +63,14 @@ class SignalAlarmHandler
 
 	}
 
+   private synchronized java.util.Vector getAlarmVector()
+   {
+      if( alarmVector == null )
+         alarmVector = new java.util.Vector(10);
+   
+      return alarmVector;
+   }
+   
    private javax.swing.JMenu getJMenuAlarms()
    {
       return alarmMenu;
@@ -61,15 +80,17 @@ class SignalAlarmHandler
    {
 
       boolean foundSig = false;
-      int prevAlrmCnt = alarmCount;
+      int prevAlrmCnt = getAlarmVector().size();//alarmCount;
       boolean addAlarm = TagUtils.isAnyAlarm(sig.getTags())
                           && TagUtils.isAlarm(sig.getTags()); // Is Alarm UnAcked??
    
-      for( int i = 0; i < getJMenuAlarms().getItemCount(); i++ )
+      for( int i = 0; i < getAlarmVector().size(); i++ )
       {
+         javax.swing.JMenuItem menuItem = (javax.swing.JMenuItem)getAlarmVector().get(i);
+         
           com.cannontech.message.dispatch.message.Signal storedSig = 
              (com.cannontech.message.dispatch.message.Signal)
-               getJMenuAlarms().getItem(i).getClientProperty("com.cannontech.Signal");
+               menuItem.getClientProperty( SignalAlarmHandler.class.getName() );
    
          //we already have a JMenuItem for this signal
          if( storedSig != null )
@@ -78,17 +99,18 @@ class SignalAlarmHandler
             {
                if( addAlarm )  //update the underlying signal
                {
-                  getJMenuAlarms().getItem(i).putClientProperty( 
-                        "com.cannontech.Signal", sig );
+                  menuItem.putClientProperty( 
+                        SignalAlarmHandler.class.getName(), sig );
                   
                   com.cannontech.database.data.lite.LitePoint lp =      
                      com.cannontech.database.cache.functions.PointFuncs.getLitePoint( (int)sig.getId() );
                   
-                  getJMenuAlarms().getItem(i).setText(
+                  menuItem.setText(
                         "[" + (new ModifiedDate(sig.getTimeStamp().getTime()).toString()) + "] " +
                         com.cannontech.database.cache.functions.PAOFuncs.getYukonPAOName(lp.getPaobjectID()) +
                         " : " +
                         lp.getPointName() );
+                        
                }
                else  //remove the JMenuItem
                {
@@ -109,8 +131,29 @@ class SignalAlarmHandler
       }
       
       
+      //keep our list in order!
+      java.util.Collections.sort(
+         getAlarmVector(),
+         new java.util.Comparator()
+         {            
+            public int compare(Object o1, Object o2)
+            {
+               long val1 = ((Signal)
+                  ((javax.swing.JMenuItem)o1).getClientProperty(
+                  SignalAlarmHandler.class.getName())).getTimeStamp().getTime();
+                  
+               long val2 = ((Signal)
+                  ((javax.swing.JMenuItem)o2).getClientProperty(
+                  SignalAlarmHandler.class.getName())).getTimeStamp().getTime();
+
+               return ( val1 < val2 ? 1 : (val1 == val2 ? 0 : -1) );
+            }
+            
+         });
+
+      
       //set the color of our item
-      if( getJMenuAlarms().getItemCount() <= 0 )
+      if( getAlarmVector().size() <= 0 )
       {
          getJMenuAlarms().setForeground( fgColor );
          getJMenuAlarms().setBackground( bgColor );
@@ -120,32 +163,51 @@ class SignalAlarmHandler
          getJMenuAlarms().setForeground( ALARM_FG_COLOR );         
          
          //only start blinking if we added an alarm
-         if( alarmCount > prevAlrmCnt )
+         if( getAlarmVector().size() > prevAlrmCnt )
             createMenuBlinker();
       }
          
          
       //update the text of our menu
-      getJMenuAlarms().setText( "Alarms: " + alarmCount );
+      getJMenuAlarms().setText( "Alarms: " + getAlarmVector().size() );
+      
+      
+      updateAlarmMenu();
    }
    
    private void removeAlarm( int menuIndx )
    {
-      
-      getJMenuAlarms().remove( menuIndx );
-
-      //decrement the alarm count
-      alarmCount = (alarmCount <= 0 ? 0 : alarmCount - 1);
-      
+      getAlarmVector().remove( menuIndx );      
    }
 
+   private void updateAlarmMenu()
+   {
+      synchronized( getAlarmVector() )
+      {
+         getJMenuAlarms().removeAll();
+         
+         for( int i = 0; i < getAlarmVector().size(); i++ )
+         {
+            javax.swing.JMenuItem item = (javax.swing.JMenuItem)getAlarmVector().get(i);
+            
+            if( i < ALARMS_DISPLAYED )
+            {
+               getJMenuAlarms().add( item );
+            }
+            
+         }
+         
+      }
+      
+   }
+   
    private void addAlarm( Signal sig )
    {
        javax.swing.JMenuItem newItem = new javax.swing.JMenuItem(
             "[" + (new ModifiedDate(sig.getTimeStamp().getTime()).toString()) + "] " +
             com.cannontech.database.cache.functions.PointFuncs.getPointName((int)sig.getId()) );
        
-      newItem.putClientProperty( "com.cannontech.Signal", sig );
+      newItem.putClientProperty( SignalAlarmHandler.class.getName(), sig );
       newItem.setBackground(java.awt.SystemColor.control);
       newItem.setForeground(java.awt.SystemColor.controlText);
 
@@ -159,17 +221,11 @@ class SignalAlarmHandler
       newItem.addActionListener(
          new com.cannontech.tdc.bookmark.SelectionHandler( bookmarkListener ) );
 
-      getJMenuAlarms().add( newItem );
-
-
-      //increment the alarm count      
-      alarmCount++;      
+      getAlarmVector().add( newItem );
    }
    
    private void createMenuBlinker()
-   {
-
-      javax.swing.BorderFactory.createLineBorder( ALARM_BG_COLOR );
+   {            
       if( alrmBlinker == null )
       {
          Runnable r = new Runnable()
@@ -178,41 +234,27 @@ class SignalAlarmHandler
             {
                try
                {
-                  int i = 0;
-                  while( getJMenuAlarms().getItemCount() > 0 )
+                  while( getAlarmVector().size() > 0 )
                   {
-                     getJMenuAlarms().setBackground( ALARM_BG_COLOR );
+                     if( !TDCDefines.ICON_ALARM.equals(getJMenuAlarms().getIcon()) )
+                        getJMenuAlarms().setIcon( TDCDefines.ICON_ALARM );
+                     
+                     Thread.currentThread().sleep(1000);
+
+                     //below is code that uses only color and not the animated gif
+                     /*getJMenuAlarms().setBackground( ALARM_BG_COLOR );
                      Thread.currentThread().sleep(1000);
                      
                      getJMenuAlarms().setBackground( bgColor );
-                     Thread.currentThread().sleep(1000);
+                     Thread.currentThread().sleep(1000);*/
 
-
-
-/*getJMenuAlarms().getGraphics().setColor( ALARM_BG_COLOR );
-
-      getJMenuAlarms().getGraphics().drawLine(
-         i,
-         0,
-         i,
-         getJMenuAlarms().getHeight() );
-
-i++;
-if( i > getJMenuAlarms().getWidth() )
-{
-   i = 0;   
-}
-
-System.out.println("i="+i+", wid="+getJMenuAlarms().getWidth() );
-
-Thread.currentThread().sleep(100);
-*/
                   }
                }
                catch( Exception e ) {}
                finally
                {
-                  getJMenuAlarms().setBackground( bgColor );
+                  //getJMenuAlarms().setBackground( bgColor );
+                  getJMenuAlarms().setIcon( null );                  
 
                   alrmBlinker = null;
                }
@@ -220,10 +262,12 @@ Thread.currentThread().sleep(100);
             }
             
          };
-         
+
+
          alrmBlinker = new Thread(r, "AlarmsCountThread" );
          alrmBlinker.start();
       }
+
       
    }
    

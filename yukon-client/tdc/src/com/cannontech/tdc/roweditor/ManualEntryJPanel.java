@@ -7,7 +7,7 @@ package com.cannontech.tdc.roweditor;
  */
 import com.cannontech.message.dispatch.message.Signal;
 
-public abstract class ManualEntryJPanel extends javax.swing.JPanel 
+public abstract class ManualEntryJPanel extends javax.swing.JPanel
 {
 	// a Signal() is only present when we are alarming
 	private Signal signal = null;
@@ -22,10 +22,11 @@ public abstract class ManualEntryJPanel extends javax.swing.JPanel
 protected ManualEntryJPanel() {
 	super();
 }
+
 /**
  * EditDataPanel constructor comment.
  */
-public ManualEntryJPanel( EditorDialogData data, com.cannontech.tdc.ObservableRow obsValue, Object currentValue, Signal signalData ) 
+public ManualEntryJPanel( EditorDialogData data, java.util.Observable obsValue, Object currentValue, Signal signalData ) 
 {
 	super();
 
@@ -40,12 +41,9 @@ public ManualEntryJPanel( EditorDialogData data, com.cannontech.tdc.ObservableRo
  */
 public ManualEntryJPanel( EditorDialogData data, java.util.Observable obsValue, Object currentValue ) 
 {
-	super();
+	this( data, obsValue, currentValue, null );
 
 	isRowAlarmed = false;
-	editorData = data;
-	observingData = obsValue;
-	startingValue = currentValue;
 }
 /**
  * Insert the method's description here.
@@ -63,6 +61,7 @@ protected EditorDialogData getEditorData() {
 protected java.util.Observable getObservingData() {
 	return observingData;
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (11/14/2001 2:39:29 PM)
@@ -93,4 +92,21 @@ protected java.lang.Object getStartingValue() {
 protected boolean isRowAlarmed() {
 	return isRowAlarmed;
 }
+
+
+protected void update( java.util.Observable originator, Object newValue ) 
+{
+   if( newValue instanceof ObservedPointDataChange )
+   {
+      ObservedPointDataChange value = (ObservedPointDataChange)newValue;
+
+      if( value.getType() == ObservedPointDataChange.POINT_VALUE_TYPE && value.getPointID() == getEditorData().getPointID() )
+      {
+         getEditorData().setTags( value.getTags() );
+      }
+      
+   }     
+
+}
+
 }

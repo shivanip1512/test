@@ -386,6 +386,8 @@ public void jTextFieldValue_CaretUpdate(javax.swing.event.CaretEvent caretEvent)
  */
 public void update( java.util.Observable originator, Object newValue ) 
 {
+   super.update( originator, newValue );
+   
 	if( newValue instanceof ObservedPointDataChange )
 	{
 		ObservedPointDataChange value = (ObservedPointDataChange)newValue;

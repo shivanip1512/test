@@ -5,6 +5,7 @@ package com.cannontech.tdc.utils;
  * @author: 
  */
 
+import com.cannontech.common.util.CtiProperties;
 
 public final class TDCDefines 
 {
@@ -20,7 +21,10 @@ public final class TDCDefines
 	public static final String OUTPUT_FILE_NAME = com.cannontech.common.util.CtiUtilities.getConfigDirPath() + "TDCOut.DAT";
 	public static final String DISPLAY_OUT_FILE_NAME = com.cannontech.common.util.CtiUtilities.getConfigDirPath() + "TDCDisplaySettings.DAT";
 
-	public static final java.awt.Image ICON_TDC = java.awt.Toolkit.getDefaultToolkit().getImage("tdcIcon.gif");
+	public static final java.awt.Image ICON_TDC = java.awt.Toolkit.getDefaultToolkit().getImage("tdcIcon.gif");   
+   public static final javax.swing.Icon ICON_ALARM = 
+      new javax.swing.ImageIcon("AlarmSqr.gif");
+      //new javax.swing.ImageIcon("C:/Documents and Settings/rneuharth/My Documents/My Pictures/AlarmSqr.gif");
 	
 	// JTable model constants
 	public static final int ROW_BREAK_COUNT = 8;
@@ -29,6 +33,11 @@ public final class TDCDefines
 
 	public static int MAX_ROWS = 500;
 	public static final String BOOKMARK_FILE_NAME = com.cannontech.common.util.CtiUtilities.getConfigDirPath() + "/TDCBookMarks.txt";
+
+   //hex value representing the privelages of the user on this machine
+   public static final long USER_RIGHTS = Long.parseLong( 
+         CtiProperties.getInstance().getProperty(
+         CtiProperties.KEY_TDC_RIGHTS, "0"), 16 );
 
 
 /**

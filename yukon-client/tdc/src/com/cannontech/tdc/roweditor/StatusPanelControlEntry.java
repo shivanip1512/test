@@ -585,6 +585,8 @@ private void setStateText(final String state)
  */
 public void update( java.util.Observable originator, Object newValue ) 
 {
+   super.update( originator, newValue );
+
 	if( newValue instanceof ObservedPointDataChange )
 	{
 		ObservedPointDataChange value = (ObservedPointDataChange)newValue;

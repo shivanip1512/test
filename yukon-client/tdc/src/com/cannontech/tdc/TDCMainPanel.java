@@ -36,7 +36,6 @@ import com.cannontech.tdc.utils.TDCDefines;
 public class TDCMainPanel extends javax.swing.JPanel implements com.cannontech.tdc.bookmark.BookMarkSelectionListener, java.awt.event.ActionListener, java.awt.event.ItemListener, java.awt.event.MouseListener, javax.swing.event.PopupMenuListener 
 {
 	//an int read in as a CParm used to turn on/off features
-	private static int userRightsInt = 0;
    public static final String PROP_BOOKMARK = "con.cannontech.BookMark";
 	
 	//a crutch to know if we alread updated our columnData in each Display()
@@ -2018,12 +2017,14 @@ public boolean initComboCurrentDisplay()
 			// add the radio buttons for the display types to the mainframe
 			if( initOnce && getAllDisplays()[i].getDisplayNumber() <= Display.BEGINNING_CLIENT_DISPLAY_NUMBER )
 			{
-				boolean enabled = !((getAllDisplays()[i].getType().equalsIgnoreCase(Display.DISPLAY_TYPES[Display.CAP_CONTROL_CLIENT_TYPE_INDEX])
-					 && com.cannontech.common.util.CtiProperties.isHiddenCapControl(userRightsInt))
-					 || (getAllDisplays()[i].getType().equalsIgnoreCase(Display.DISPLAY_TYPES[Display.LOAD_CONTROL_CLIENT_TYPE_INDEX])
-					 && com.cannontech.common.util.CtiProperties.isHiddenLoadControl(userRightsInt)) 
-					 || (getAllDisplays()[i].getType().equalsIgnoreCase(Display.DISPLAY_TYPES[Display.SCHEDULER_CLIENT_TYPE_INDEX])
-					 && com.cannontech.common.util.CtiProperties.isHiddenMACS(userRightsInt))  );
+				boolean enabled = true;
+            
+            if( getAllDisplays()[i].getType().equalsIgnoreCase(Display.DISPLAY_TYPES[Display.CAP_CONTROL_CLIENT_TYPE_INDEX]) )
+					 enabled = !com.cannontech.common.util.CtiProperties.isHiddenCapControl(TDCDefines.USER_RIGHTS);
+				else if( getAllDisplays()[i].getType().equalsIgnoreCase(Display.DISPLAY_TYPES[Display.LOAD_CONTROL_CLIENT_TYPE_INDEX]) )
+					 enabled = !com.cannontech.common.util.CtiProperties.isHiddenLoadControl(TDCDefines.USER_RIGHTS);
+            else if( getAllDisplays()[i].getType().equalsIgnoreCase(Display.DISPLAY_TYPES[Display.SCHEDULER_CLIENT_TYPE_INDEX]) )
+					 enabled = !com.cannontech.common.util.CtiProperties.isHiddenMACS(TDCDefines.USER_RIGHTS);
 
 				clientList.add( getAllDisplays()[i].getTitle() );					
 				addClientRadioButtons( getAllDisplays()[i].getTitle(), i, enabled );
@@ -2132,12 +2133,8 @@ private void initDisplays( Object[][] query, int index )
 private void initialize() {
 	try {
 		// user code begin {1}
-
-
-		//hex value representing the privelages of the user on this machine
-		userRightsInt = Integer.parseInt( com.cannontech.common.util.CtiProperties.getInstance().getProperty(
-				com.cannontech.common.util.CtiProperties.KEY_TDC_RIGHTS, "0"), 16 );
-		
+      
+      		
 		// user code end
 		setName("TDCMainPanel");
 		setLayout(new java.awt.GridBagLayout());
