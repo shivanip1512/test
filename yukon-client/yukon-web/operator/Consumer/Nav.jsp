@@ -3,7 +3,7 @@
 	String linkMap[][] = {{"Update.jsp", "General"},
 						  {"Contacts.jsp", "Contacts"},
 						  {"Calls.jsp", "Call Tracking"},
-						  {"MeterData.jsp", "Interval Data"},
+						  {"Metering.jsp", "Interval Data"},
 						  {"Usage.jsp", "Usage"},
 						  {"ProgramHist.jsp", "Control History"},
 						  {"Programs.jsp", "Enrollment"},
@@ -87,7 +87,7 @@
   <tr> 
     <td> 
       <div align="left"><span class="Header2">Metering</span><br>
-        <%= links.get("MeterData.jsp") %><br>
+        <%= links.get("Metering.jsp") %><br>
         <%= links.get("Usage.jsp") %></div>
     </td>
   </tr>
