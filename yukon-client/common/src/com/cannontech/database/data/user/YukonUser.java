@@ -183,13 +183,33 @@ public class YukonUser extends DBPersistent implements com.cannontech.database.d
 		}
 	}
 	
-	public void deleteOperatorLogin() throws SQLException {
-		delete( "EnergyCompanyOperatorLoginList", "OperatorLoginID", getYukonUser().getUserID() );
-		delete( "LMDirectOperatorList", "OperatorLoginID", getYukonUser().getUserID() );
-		delete( "OperatorSerialGroup", "LoginID", getYukonUser().getUserID() );
-		delete( "LMMACSScheduleOperatorList", "OperatorLoginID", getYukonUser().getUserID() );
-		delete( "OperatorLoginGraphList", "OperatorLoginID", getYukonUser().getUserID() );
-		delete();
+	public static void deleteOperatorLogin(Integer userID) {
+		java.sql.Connection conn = null;
+		
+		try {
+			conn = com.cannontech.database.PoolManager.getInstance().getConnection(
+					com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+			
+			YukonUser user = new YukonUser();
+			user.setUserID( userID );
+			user.setDbConnection( conn );
+			
+			user.delete( "EnergyCompanyOperatorLoginList", "OperatorLoginID", userID );
+			user.delete( "LMDirectOperatorList", "OperatorLoginID", userID );
+			user.delete( "OperatorSerialGroup", "LoginID", userID );
+			user.delete( "LMMACSScheduleOperatorList", "OperatorLoginID", userID );
+			user.delete( "OperatorLoginGraphList", "OperatorLoginID", userID );
+			user.delete();
+		}
+		catch (java.sql.SQLException e) {
+			e.printStackTrace();
+		}
+		finally {
+			try {
+				if (conn != null) conn.close();
+			}
+			catch (java.sql.SQLException e) {}
+		}
 	}
 
 	/**
