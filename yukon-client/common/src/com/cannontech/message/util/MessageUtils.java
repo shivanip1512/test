@@ -4,7 +4,6 @@ import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.version.VersionTools;
-import com.cannontech.database.db.version.CTIDatabase;
 import com.cannontech.message.dispatch.message.Command;
 
 /**
@@ -53,9 +52,9 @@ public class MessageUtils
 				}
 				
 				String[] vers = VersionTools.getYUKON_VERSION().split("\\.");				
-				Integer clientMaj = new Integer( vers[0] );
-				Integer clientMin = new Integer( vers[1] );
-				Integer clientBuild = new Integer( vers[2] );
+				Integer clientMaj = new Integer( vers[0].trim() );
+				Integer clientMin = new Integer( vers[1].trim() );
+				Integer clientBuild = new Integer( vers[2].trim() );
 
 
 				if( !(clientMaj.equals(servMaj)
