@@ -8,8 +8,8 @@
 * Date:   10/4/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/05/17 18:45:44 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/05/28 18:26:07 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -445,11 +445,6 @@ INT CtiDeviceSingle::initiateGeneralScan(RWTPtrSlist< OUTMESS > &outList, INT Sc
                  *  FIX FIX FIX 082899 CGP
                  */
 
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Device " << getID() << ": " << getName() << " is inhibited!" << endl;
-                }
-
                 adjustNextScanTime(ScanRateGeneral);
                 nRet = SCAN_ERROR_DEVICE_INHIBITED;
             }
@@ -661,7 +656,13 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
 {
     INT   nRet = InMessage->EventCode & 0x3fff;
     INT   DoAccums;
+    INT   status = 0;
     bool  bLastFail = false;
+
+    if( !nRet )
+    {
+        nRet = ResultDecode(InMessage, TimeNow, vgList, retList, outList);
+    }
 
     if(nRet)
     {
@@ -685,7 +686,7 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
                                                     InMessage->Return.UserID,
                                                     InMessage->Return.TrxID,
                                                     InMessage->Return.RouteID,
-                                                    InMessage->Return.MacroOffset + 1,     // This bumps up the route!
+                                                    InMessage->Return.MacroOffset,
                                                     InMessage->Return.Attempt);
 
 
@@ -693,7 +694,7 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
 
             {
                 RWCString msg;
-                CtiReturnMsg *Ret = new CtiReturnMsg(  getID(), CmdStr, RWCString("Macro offset ") + CtiNumStr(InMessage->Return.MacroOffset) + RWCString(" failed. Attempting next offset."), nRet, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, InMessage->Return.TrxID, InMessage->Return.UserID, InMessage->Return.SOE, RWOrdered());
+                CtiReturnMsg *Ret = new CtiReturnMsg(  getID(), CmdStr, RWCString("Macro offset ") + CtiNumStr(InMessage->Return.MacroOffset - 1) + RWCString(" failed. Attempting next offset."), nRet, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, InMessage->Return.TrxID, InMessage->Return.UserID, InMessage->Return.SOE, RWOrdered());
 
                 msg = Ret->ResultString() + "\nError " + CtiNumStr(nRet) + ": " + FormatError(nRet);
                 Ret->setResultString( msg );
@@ -703,7 +704,16 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
             }
 
             size_t cnt = outList.entries();
-            ExecuteRequest(pReq, CtiCommandParser(pReq->CommandString()), vgList, retList, outList, OutTemplate);
+
+            if( 0 != (status = ExecuteRequest(pReq, CtiCommandParser(pReq->CommandString()), vgList, retList, outList, OutTemplate)) )
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << RWTime() << "   Status = " << status << ": " << FormatError(status) << endl;
+                }
+            }
+
             if(cnt == outList.entries())
             {
                 bLastFail = true;
@@ -811,10 +821,6 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
                 setScanResetFailed();
             }
         }
-    }
-    else
-    {
-        nRet = ResultDecode(InMessage, TimeNow, vgList, retList, outList);
     }
 
     return nRet;
@@ -1191,9 +1197,9 @@ CtiDeviceSingle& CtiDeviceSingle::setNextScan(INT a, const RWTime &b)
     return *this;
 }
 
-RWTime CtiDeviceSingle::nextNearestTime() const
+RWTime CtiDeviceSingle::nextRemoteScan() const
 {
-    RWTime nt = getScanData()->nextNearestTime();
+    RWTime nt = getScanData()->nextNearestTime(ScanRateLoadProfile);
 
     if(getDebugLevel() & 0x00100000)
     {

@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_macro.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:19 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/05/28 18:26:57 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -76,21 +76,14 @@ void CtiRouteMacro::DecodeDatabaseReader(RWDBReader &rdr)
 
 
 
-INT CtiRouteMacro::ExecuteRequest(CtiRequestMsg                  *pReq,
-                                  CtiCommandParser               &parse,
-                                  OUTMESS                        *&OutMessage,
-                                  RWTPtrSlist< CtiMessage >      &vgList,
-                                  RWTPtrSlist< CtiMessage >      &retList,
-                                  RWTPtrSlist< OUTMESS >         &outList)
+INT CtiRouteMacro::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     INT nRet = NORMAL;
-    int offset = (OutMessage->Request.MacroOffset) > 0 ? OutMessage->Request.MacroOffset : pReq->MacroOffset();
+    int onebasedoffset = (OutMessage->Request.MacroOffset) > 0 ? OutMessage->Request.MacroOffset : pReq->MacroOffset();
+    int offset = onebasedoffset - 1; // This is a targeted request..  Incomming offset is ONE based.
 
-    if( offset > 0 )
+    if( onebasedoffset > 0 )
     {
-        // This is a targeted request..  Offset is ONE based.
-        offset = offset - 1;
-
         if( offset < RoutePtrList.length())
         {
             CtiRoute *&pRoute = RoutePtrList[offset];
@@ -103,8 +96,15 @@ INT CtiRouteMacro::ExecuteRequest(CtiRequestMsg                  *pReq,
 
                     if(NewOMess)
                     {
-                        // NewOMess->Request.RouteID     = pRoute->getRouteID();
-                        // NewOMess->Request.MacroOffset = offset + 1;    // Ask for this next please.
+                        if(onebasedoffset < RoutePtrList.length())
+                        {
+                            NewOMess->Request.MacroOffset = onebasedoffset + 1;    // Ask for this next (if needed) please.
+                        }
+                        else
+                        {
+                            NewOMess->Request.MacroOffset = 0;    // None left MAKE IT STOP!.
+                        }
+
 
                         if(getDebugLevel() & DEBUGLEVEL_MGR_ROUTE)
                         {
@@ -154,7 +154,7 @@ INT CtiRouteMacro::ExecuteRequest(CtiRequestMsg                  *pReq,
                 if(NewOMess)
                 {
                     NewOMess->Request.RouteID     = pRoute->getRouteID();
-                    NewOMess->Request.MacroOffset = i+1;
+                    NewOMess->Request.MacroOffset = 0; // 20020523 CGP  Oh golly. We say zero since we already will be hitting them on the way by. // i+1;
 
                     if(getDebugLevel() & DEBUGLEVEL_MGR_ROUTE)
                     {
@@ -198,9 +198,9 @@ bool CtiRouteMacro::processAdditionalRoutes( INMESS *InMessage ) const
 {
     bool bret = false;
 
-    if(InMessage->Return.MacroOffset != 0)
+    if(InMessage->Return.MacroOffset > 0)
     {
-        if(getRoutePtrList().entries() >= InMessage->Return.MacroOffset + 1 )
+        if(getRoutePtrList().entries() >= InMessage->Return.MacroOffset )
         {
             bret = true;
         }
