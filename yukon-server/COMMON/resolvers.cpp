@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2003/09/03 18:13:34 $
+* REVISION     :  $Revision: 1.30 $
+* DATE         :  $Date: 2003/10/11 22:07:22 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1563,6 +1563,14 @@ CtiControlType_t  resolveControlType(RWCString& str)
     else if(str == "pseudo")
     {
         Ret = PseudoControlType;
+    }
+    else if(str == "sbo latch")
+    {
+        Ret = SBOLatchControlType;
+    }
+    else if(str == "sbo pulse")
+    {
+        Ret = SBOPulseControlType;
     }
     else
     {

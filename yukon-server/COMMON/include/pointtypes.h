@@ -49,6 +49,8 @@ typedef enum
    NormalControlType,
    LatchControlType,
    PseudoControlType,
+   SBOLatchControlType,
+   SBOPulseControlType,
 
    InvalidControlType              // Place Holder - allows point type looping.
 
