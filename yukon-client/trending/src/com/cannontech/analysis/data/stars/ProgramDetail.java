@@ -1,6 +1,7 @@
 package com.cannontech.analysis.data.stars;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.util.CtiUtilities;
 
 
 
@@ -85,7 +86,7 @@ public class ProgramDetail
 	 */
 	public String getProgramName()
 	{
-		return programName;
+		return CtiUtilities.removeHTML(programName);
 	}
 
 	/**
