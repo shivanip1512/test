@@ -1288,8 +1288,10 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			for (int i = 0; i < appCats.size(); i++) {
 				LiteApplianceCategory appCat = (LiteApplianceCategory) appCats.get(i);
 				if (appCat.getApplianceCategoryID() == applianceCategoryID) {
-					for (int j = 0; j < appCat.getPublishedPrograms().length; j++)
-						deleteLMProgram( appCat.getPublishedPrograms()[j].getProgramID() );
+					if (appCat.getPublishedPrograms() != null) {
+						for (int j = 0; j < appCat.getPublishedPrograms().length; j++)
+							deleteLMProgram( appCat.getPublishedPrograms()[j].getProgramID() );
+					}
 					appCats.remove( i );
 					return appCat;
 				}
