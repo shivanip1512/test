@@ -48,7 +48,6 @@ import com.cannontech.tdc.utils.TDCDefines;
 import com.cannontech.clientutils.commonutils.ModifiedDate;
 import com.cannontech.clientutils.parametersfile.ParameterNotFoundException;
 import com.cannontech.clientutils.parametersfile.ParametersFile;
-import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.debug.gui.AboutDialog;
 
 import java.util.ArrayList;
@@ -3221,7 +3220,6 @@ public void jMenuItemCreate_ActionPerformed(java.awt.event.ActionEvent actionEve
 				
 			setUpMainFrame( previousItem ); // return to the main Frame
 		}
-
 	}
 	finally
 	{
@@ -3315,7 +3313,7 @@ public void jMenuItemEdit_ActionPerformed(java.awt.event.ActionEvent actionEvent
 				getJRadioButtonCustomDisplays().doClick();
 				
 			setUpMainFrame( previousItem ); // return to the main Frame
-		}
+		}		
 	}
 	finally
 	{	
@@ -3515,9 +3513,8 @@ public void jMenuItemMakeCopy_ActionPerformed(java.awt.event.ActionEvent actionE
 		String previousItem = getMainPanel().getJComboCurrentDisplay().getSelectedItem().toString();
 		
 		EditDisplayDialog display = 
-								new EditDisplayDialog( 
-								this, previousItem.toString() );
-								
+				new EditDisplayDialog( this, previousItem.toString() );
+
 		setCursor( original );							
 		display.setModal(true);
 		display.setLocationRelativeTo( this );
@@ -3527,7 +3524,6 @@ public void jMenuItemMakeCopy_ActionPerformed(java.awt.event.ActionEvent actionE
 		// return to the main Frame
 		if( previousItem != null )
 			setUpMainFrame( previousItem );
-
 	}
 	finally
 	{

@@ -45,6 +45,16 @@ public OkCancelDialog(java.awt.Frame owner, String title, boolean modal, DataInp
 	setTitle( title );
 	setDisplayPanel( displayPanel );
 }
+
+protected OkCancelDialog(java.awt.Frame owner, String title, boolean modal )
+{
+	super(owner, modal);
+
+	initialize();
+	
+	setTitle( title );
+}
+
 /**
  * Method to handle events for the ActionListener interface.
  * @param e java.awt.event.ActionEvent
@@ -219,7 +229,7 @@ private javax.swing.JPanel getJPanel1() {
  * @return javax.swing.JPanel
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JPanel getJPanelSlot() {
+protected javax.swing.JPanel getJPanelSlot() {
 	if (ivjJPanelSlot == null) {
 		try {
 			ivjJPanelSlot = new javax.swing.JPanel();

@@ -34,13 +34,7 @@ class IvjEventHandler implements com.cannontech.common.gui.util.OkCancelPanelLis
 				connEtoC4(newEvent);
 		};
 	};
-/**
- * CreateDisplayDialog constructor comment.
- */
-public CreateDisplayDialog() {
-	super();
-	initialize();
-}
+
 /**
  * CreateDisplayDialog constructor comment.
  * @param owner java.awt.Frame
@@ -124,6 +118,16 @@ private com.cannontech.tdc.addpoints.AddPointsCenterPanel getEditDataSetPanel() 
 	}
 	return ivjEditDataSetPanel;
 }
+
+/**
+ * Removes any resources used by this Dialog
+ */
+public void dispose()
+{
+	getEditDataSetPanel().dispose();
+	super.dispose();
+}
+
 /**
  * Return the JDialogContentPane property value.
  * @return javax.swing.JPanel
@@ -399,26 +403,7 @@ private void insertDataSet()
 	
 	return;
 }
-/**
- * main entrypoint - starts the part when it is run as an application
- * @param args java.lang.String[]
- */
-public static void main(java.lang.String[] args) {
-	try {
-		CreateDisplayDialog aCreateDisplayDialog;
-		aCreateDisplayDialog = new CreateDisplayDialog();
-		aCreateDisplayDialog.setModal(true);
-		aCreateDisplayDialog.addWindowListener(new java.awt.event.WindowAdapter() {
-			public void windowClosing(java.awt.event.WindowEvent e) {
-				System.exit(0);
-			};
-		});
-		aCreateDisplayDialog.setVisible(true);
-	} catch (Throwable exception) {
-		System.err.println("Exception occurred in main() of javax.swing.JDialog");
-		com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
-	}
-}
+
 /**
  * Comment
  */

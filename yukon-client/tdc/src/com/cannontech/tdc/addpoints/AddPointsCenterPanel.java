@@ -9,6 +9,8 @@ import java.awt.Cursor;
 
 import javax.swing.ListSelectionModel;
 
+import com.cannontech.common.gui.tree.TreeFindDialog;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -18,6 +20,8 @@ import com.cannontech.tdc.logbox.MessageBoxFrame;
 
 public class AddPointsCenterPanel extends javax.swing.JPanel implements javax.swing.event.TableModelListener, com.cannontech.common.gui.dnd.DragAndDropListener
 {
+	private TreeFindDialog fndDialog = null;
+	
 	private long currentDisplayNumber = com.cannontech.tdc.data.Display.UNKNOWN_DISPLAY_NUMBER;
 	private java.util.Vector selectedPoints = null;
 	private javax.swing.JScrollPane ivjJScrollPaneLeftTree = null;
@@ -55,16 +59,6 @@ class IvjEventHandler implements java.awt.event.ActionListener, java.awt.event.M
  */
 public AddPointsCenterPanel() {
 	super();
-	initialize();
-}
-/**
- * AddPointsCenterPanel constructor comment.
- */
-public AddPointsCenterPanel( long displayNum ) 
-{
-	super();
-
-	currentDisplayNumber = displayNum;
 	initialize();
 }
 
@@ -423,6 +417,9 @@ private void handleException(java.lang.Throwable exception) {
 private void initConnections() throws java.lang.Exception {
 	// user code begin {1}
 
+	fndDialog = new TreeFindDialog(
+			CtiUtilities.getParentFrame(this), getLeftTree() );
+
 	getRightTableModel().addTableModelListener(this);
 
 	getRightTable().addDragAndDropListener(this);
@@ -432,6 +429,7 @@ private void initConnections() throws java.lang.Exception {
 	getJButtonRemove().addActionListener(ivjEventHandler);
 	getRightTable().addMouseListener(ivjEventHandler);
 }
+
 /**
  * Initialize the class.
  */
@@ -607,28 +605,6 @@ public void jDisplayChanged_ActionPerformed( long displayNumber )
 	return;
 }
 /**
- * main entrypoint - starts the part when it is run as an application
- * @param args java.lang.String[]
- */
-public static void main(java.lang.String[] args) {
-	try {
-		javax.swing.JFrame frame = new javax.swing.JFrame();
-		AddPointsCenterPanel aAddPointsCenterPanel;
-		aAddPointsCenterPanel = new AddPointsCenterPanel();
-		frame.setContentPane(aAddPointsCenterPanel);
-		frame.setSize(aAddPointsCenterPanel.getSize());
-		frame.addWindowListener(new java.awt.event.WindowAdapter() {
-			public void windowClosing(java.awt.event.WindowEvent e) {
-				System.exit(0);
-			};
-		});
-		frame.setVisible(true);
-	} catch (Throwable exception) {
-		System.err.println("Exception occurred in main() of javax.swing.JPanel");
-		com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
-	}
-}
-/**
  * Insert the method's description here.
  * Creation date: (1/31/00 9:05:01 AM)
  * @return java.lang.String
@@ -698,6 +674,16 @@ public void tableChanged(javax.swing.event.TableModelEvent e)
 		getJLabelSelected().setText("Selected");
 
 }
+
+/**
+ * Removes any resources used by this Panel
+ */
+public void dispose()
+{
+	fndDialog.removeListener();
+}
+
+
 /**
  * 
  */

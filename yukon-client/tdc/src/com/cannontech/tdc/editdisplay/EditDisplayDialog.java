@@ -45,13 +45,6 @@ class IvjEventHandler implements com.cannontech.common.gui.util.OkCancelPanelLis
 				connEtoC5(newEvent);
 		};
 	};
-/**
- * EditDisplayDialog constructor comment.
- */
-public EditDisplayDialog() {
-	super();
-	initialize();
-}
 
 /**
  * EditDisplayDialog constructor comment.
@@ -251,6 +244,16 @@ private com.cannontech.tdc.addpoints.AddPointsCenterPanel getAddPointsPanel() {
 	}
 	return ivjAddPointsPanel;
 }
+
+/**
+ * Removes any resources used by this Dialog
+ */
+public void dispose()
+{
+	getAddPointsPanel().dispose();
+	super.dispose();
+}
+
 /**
  * Return the JComboBox1 property value.
  * @return javax.swing.JComboBox
@@ -691,25 +694,6 @@ public void jComboBoxCurrentDisplay_ActionPerformed(java.awt.event.ActionEvent a
 	}
 
 	return;
-}
-/**
- * main entrypoint - starts the part when it is run as an application
- * @param args java.lang.String[]
- */
-public static void main(java.lang.String[] args) {
-	try {
-		EditDisplayDialog aEditDisplayDialog;
-		aEditDisplayDialog = new EditDisplayDialog();
-		aEditDisplayDialog.addWindowListener(new java.awt.event.WindowAdapter() {
-			public void windowClosing(java.awt.event.WindowEvent e) {
-				System.exit(0);
-			};
-		});
-		aEditDisplayDialog.setVisible(true);
-	} catch (Throwable exception) {
-		System.err.println("Exception occurred in main() of javax.swing.JDialog");
-		com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
-	}
 }
 /**
  * Comment
