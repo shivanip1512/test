@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.91 $
-* DATE         :  $Date: 2004/12/06 21:31:22 $
+* REVISION     :  $Revision: 1.92 $
+* DATE         :  $Date: 2004/12/28 21:49:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1472,6 +1472,8 @@ INT CtiVanGogh::archivePointDataMessage(const CtiPointDataMsg &aPD)
 
             if(pDyn != NULL)
             {
+                bool isNew = isPointDataNewInformation( aPD, pDyn );    // This must be checked before the setPoint() method is called.
+
                 if( aPD.getTime() >= pDyn->getTimeStamp() || (aPD.getTags() & TAG_POINT_FORCE_UPDATE) )
                 {
                     if( pDyn->getDispatch().getTags() & MASK_ANY_SERVICE_DISABLE ) // (MASK_ANY_SERVICE_DISABLE | MASK_ANY_CONTROL_DISABLE) )
@@ -1500,7 +1502,7 @@ INT CtiVanGogh::archivePointDataMessage(const CtiPointDataMsg &aPD)
                 }
                 else if(pDyn->isArchivePending() ||
                         (TempPoint->getArchiveType() == ArchiveTypeOnUpdate) ||
-                        (TempPoint->getArchiveType() == ArchiveTypeOnChange && isPointDataNewInformation( aPD )))
+                        (TempPoint->getArchiveType() == ArchiveTypeOnChange && isNew))
                 {
                     _archiverQueue.putQueue( CTIDBG_new CtiTableRawPointHistory(TempPoint->getID(), aPD.getQuality(), aPD.getValue(), aPD.getTime(), aPD.getMillis()));
                     TempPoint->setArchivePending(FALSE);
@@ -2040,42 +2042,47 @@ INT CtiVanGogh::assembleMultiFromPointDataForConnection(const CtiVanGoghConnecti
                 {
                     CtiDynamicPointDispatch *pDyn = (CtiDynamicPointDispatch*)pTempPoint->getDynamic();
 
-                    if( pDat->getQuality() == ManualQuality || !(pDyn->getDispatch().getTags() & (MASK_ANY_SERVICE_DISABLE)) ) // (MASK_ANY_SERVICE_DISABLE | MASK_ANY_CONTROL_DISABLE)) )
+
+                    // 20041228 CGP.  This is the correct usage for exemptible... No one wants this code right now.
+                    // if( isPointDataNewInformation(*pDat, pDyn) || !pDat->isExemptable() )    // This is new data and it indicates that it can NOT be skipped if that is NOT the case.
                     {
-                        if(isPointDataForConnection(Conn, *pDat))
+                        if( pDat->getQuality() == ManualQuality || !(pDyn->getDispatch().getTags() & (MASK_ANY_SERVICE_DISABLE)) ) // (MASK_ANY_SERVICE_DISABLE | MASK_ANY_CONTROL_DISABLE)) )
                         {
+                            if(isPointDataForConnection(Conn, *pDat))
                             {
-                                CtiPointDataMsg *pNewData = (CtiPointDataMsg *)pDat->replicateMessage();
+                                {
+                                    CtiPointDataMsg *pNewData = (CtiPointDataMsg *)pDat->replicateMessage();
 
-                                pNewData->resetTags();
-                                pNewData->setTags( pDyn->getDispatch().getTags() );       // Report any set tags out to the clients.
+                                    pNewData->resetTags();
+                                    pNewData->setTags( pDyn->getDispatch().getTags() );       // Report any set tags out to the clients.
 
-                                Ord.insert(pNewData);
+                                    Ord.insert(pNewData);
+                                }
                             }
                         }
-                    }
-                    else if(gDispatchDebugLevel & DISPATCH_DEBUG_VERBOSE)
-                    {
-                        // Point data on a disabled point.
-                        RWCString gripe = RWCString(" NO DATA REPORT to: ") + Conn.getClientName() + RWCString(" ");
-                        INT mask = (pDyn->getDispatch().getTags() & MASK_ANY_DISABLE);
+                        else if(gDispatchDebugLevel & DISPATCH_DEBUG_VERBOSE)
+                        {
+                            // Point data on a disabled point.
+                            RWCString gripe = RWCString(" NO DATA REPORT to: ") + Conn.getClientName() + RWCString(" ");
+                            INT mask = (pDyn->getDispatch().getTags() & MASK_ANY_DISABLE);
 
-                        if(mask & (TAG_DISABLE_DEVICE_BY_DEVICE))
-                        {
-                            gripe += pTempPoint->getName() + RWCString(" is disabled by its device");
-                        }
-                        else if(mask & (TAG_DISABLE_POINT_BY_POINT))
-                        {
-                            gripe += pTempPoint->getName() + RWCString(" is disabled");
-                        }
-                        else if(mask & (TAG_DISABLE_CONTROL_BY_POINT | TAG_DISABLE_CONTROL_BY_DEVICE))
-                        {
-                            gripe += pTempPoint->getName() + RWCString(" is control disabled");
-                        }
+                            if(mask & (TAG_DISABLE_DEVICE_BY_DEVICE))
+                            {
+                                gripe += pTempPoint->getName() + RWCString(" is disabled by its device");
+                            }
+                            else if(mask & (TAG_DISABLE_POINT_BY_POINT))
+                            {
+                                gripe += pTempPoint->getName() + RWCString(" is disabled");
+                            }
+                            else if(mask & (TAG_DISABLE_CONTROL_BY_POINT | TAG_DISABLE_CONTROL_BY_DEVICE))
+                            {
+                                gripe += pTempPoint->getName() + RWCString(" is control disabled");
+                            }
 
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " " << gripe << endl;
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " " << gripe << endl;
+                            }
                         }
                     }
                 }
@@ -2159,38 +2166,27 @@ BOOL CtiVanGogh::isPointDataForConnection(const CtiVanGoghConnectionManager &Con
     return bStatus;
 }
 
-BOOL CtiVanGogh::isPointDataNewInformation(const CtiPointDataMsg &Msg)
+BOOL CtiVanGogh::isPointDataNewInformation(const CtiPointDataMsg &Msg, CtiDynamicPointDispatch *&pDyn)
 {
     bool bValueChange = true;
     bool bQualityChange = true;
     BOOL bStatus = TRUE;
 
-    if( Msg.isExemptable() )      // Find out if we can exempt the data from being sent to clients
+    // Verify that the point has actually changed from the last known!
+    // OR it must be marked for forcing through the system
+    if(pDyn != NULL)
     {
-        // Verify that the point has actually changed from the last known!
-        // OR it must be marked for forcing through the system
-        CtiPoint *pPoint = PointMgr.getEqual(Msg.getId());
-
-        if(pPoint != NULL)      // We do know this point..
+        if(pDyn->getValue() == Msg.getValue())
         {
-            CtiDynamicPointDispatch *pDyn = (CtiDynamicPointDispatch*)pPoint->getDynamic();
+            bValueChange = false;   // There was no value change.
+        }
 
-
-            if(pDyn != NULL)
-            {
-                if(pDyn->getValue() == Msg.getValue())
-                {
-                    bValueChange = false;   // There was no value change.
-                }
-
-                if( pDyn->getQuality() == NonUpdatedQuality || pDyn->getQuality() == Msg.getQuality() )
-                {
-                    /*
-                     *  If the qualities have not changed, or the old quality was non-updated, we do not wish to realarm the point.
-                     */
-                    bQualityChange = false;
-                }
-            }
+        if( pDyn->getQuality() == NonUpdatedQuality || pDyn->getQuality() == Msg.getQuality() )
+        {
+            /*
+             *  If the qualities have not changed, or the old quality was non-updated, we do not wish to realarm the point.
+             */
+            bQualityChange = false;
         }
     }
 
@@ -2332,7 +2328,7 @@ int CtiVanGogh::processControlMessage(CtiLMControlHistoryMsg *pMsg)
 
                 QueryPerformanceCounter(&t7Time);
 
-                #if 0
+#if 0
                 if(PERF_TO_MS(t7Time, startTime, perfFrequency) > 500)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -2345,7 +2341,7 @@ int CtiVanGogh::processControlMessage(CtiLMControlHistoryMsg *pMsg)
                     dout << " t6Time " << PERF_TO_MS(t6Time, startTime, perfFrequency) << endl;
                     dout << " t7Time " << PERF_TO_MS(t7Time, startTime, perfFrequency) << endl;
                 }
-                #endif
+#endif
             }
         }
     }

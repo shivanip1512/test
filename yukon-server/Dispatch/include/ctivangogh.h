@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/ctivangogh.h-arc  $
-* REVISION     :  $Revision: 1.30 $
-* DATE         :  $Date: 2004/12/01 20:15:04 $
+* REVISION     :  $Revision: 1.31 $
+* DATE         :  $Date: 2004/12/28 21:49:55 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -201,7 +201,7 @@ public:
                                          const LONG                          pID);
     BOOL  isPointDataForConnection(const CtiVanGoghConnectionManager   &Conn,
                                    const CtiPointDataMsg               &Msg);
-    BOOL  isPointDataNewInformation(const CtiPointDataMsg &Msg);
+    BOOL  isPointDataNewInformation(const CtiPointDataMsg &Msg, CtiDynamicPointDispatch *&pDyn);
     BOOL  isSignalForConnection(const CtiVanGoghConnectionManager   &Conn, const CtiSignalMsg &Msg);
     BOOL  isTagForConnection(const CtiVanGoghConnectionManager   &Conn, const CtiTagMsg &Msg);
 
