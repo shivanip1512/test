@@ -283,7 +283,7 @@ MM_reloadPage(true);
                         <tr> 
                           <td class = "TableCell" width="84%" height="4" align = "right" > 
                             <div align="center">This page allows you to set your 
-                              ongoing temperature schedule. Simply the slide black 
+                              ongoing temperature schedule. Simply slide the black 
                               arrows and thermometers to change temperatures and 
                               start times for each interval. To make temperary 
                               changes, click the <b>Manual</b> button to the right.</div>

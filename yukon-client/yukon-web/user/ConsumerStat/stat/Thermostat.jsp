@@ -102,6 +102,10 @@ function fanChange(fan) {
 		document.getElementById(fan).style.visibility = 'visible';
 		document.MForm.fan.value = fan;
 	}
+	else {
+		document.getElementById(fan).style.visibility = "hidden";
+		document.MForm.fan.value = "";
+	}
 }
 
 function submitIt() {
