@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2003/10/27 22:04:06 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2003/10/30 17:43:09 $
 *
 * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -26,7 +26,6 @@
 #include "logger.h"
 #include "mgr_point.h"
 #include "porter.h"
-#include "prot_emetcon.h"
 #include "utility.h"
 #include "numstr.h"
 
@@ -122,13 +121,7 @@ INT CtiDeviceRepeater900::ExecuteRequest(CtiRequestMsg                  *pReq,
                                          RWTPtrSlist< CtiMessage >      &retList,
                                          RWTPtrSlist< OUTMESS >         &outList)
 {
-    INT   nRet = NoError;
-    RWCString resultString;
-    CtiRouteSPtr Route;
-    long  routeID;
-
-    bool found = false;
-    CtiReturnMsg* pRet = 0;
+    int nRet = NoError;
 
     switch( parse.getCommand() )
     {
@@ -164,6 +157,7 @@ INT CtiDeviceRepeater900::ExecuteRequest(CtiRequestMsg                  *pReq,
                 dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << "Unsupported command on EMETCON route. Command = " << parse.getCommand() << endl;
             }
+
             nRet = NoMethod;
 
             break;
@@ -172,6 +166,8 @@ INT CtiDeviceRepeater900::ExecuteRequest(CtiRequestMsg                  *pReq,
 
     if(nRet != NORMAL)
     {
+        RWCString resultString;
+
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " Couldn't come up with an operation for device " << getName() << endl;
@@ -180,16 +176,16 @@ INT CtiDeviceRepeater900::ExecuteRequest(CtiRequestMsg                  *pReq,
 
         resultString = "NoMethod or invalid command.";
         retList.insert(CTIDBG_new CtiReturnMsg(getID(),
-                                        RWCString(OutMessage->Request.CommandStr),
-                                        resultString,
-                                        nRet,
-                                        OutMessage->Request.RouteID,
-                                        OutMessage->Request.MacroOffset,
-                                        OutMessage->Request.Attempt,
-                                        OutMessage->Request.TrxID,
-                                        OutMessage->Request.UserID,
-                                        OutMessage->Request.SOE,
-                                        RWOrdered()));
+                                               RWCString(OutMessage->Request.CommandStr),
+                                               resultString,
+                                               nRet,
+                                               OutMessage->Request.RouteID,
+                                               OutMessage->Request.MacroOffset,
+                                               OutMessage->Request.Attempt,
+                                               OutMessage->Request.TrxID,
+                                               OutMessage->Request.UserID,
+                                               OutMessage->Request.SOE,
+                                               RWOrdered()));
     }
     else
     {
@@ -198,105 +194,8 @@ INT CtiDeviceRepeater900::ExecuteRequest(CtiRequestMsg                  *pReq,
             outList.append( OutMessage );
             OutMessage = NULL;
         }
-        /*
-        ***************************** PASS OFF TO ROUTE BEYOND THIS POINT ****************************************
-        */
 
-        for(int i = outList.entries() ; i > 0; i-- )
-        {
-            OUTMESS *pOut = outList.get();
-
-            if( pReq->RouteId() )
-                routeID = pReq->RouteId();
-            else
-                routeID = getRouteID();
-
-            pOut->Request.RouteID = routeID;
-
-            EstablishOutMessagePriority( pOut, MAXPRIORITY - 4 );
-
-            if( (Route = CtiDeviceBase::getRoute( routeID )) )    // This is "this's" route
-            {
-                pOut->TargetID                = getID();
-                pOut->EventCode               = BWORD | RESULT | WAIT;
-
-                if( parse.isKeyValid("noqueue") )
-                {
-                    pOut->EventCode |= DTRAN;
-                }
-
-                pOut->Buffer.BSt.Address      = getAddress();            // The DLC address of the MCT.
-                pOut->Buffer.BSt.DeviceType   = getType();
-                pOut->Buffer.BSt.SSpec        = getSSpec();
-
-                /*
-                 * OK, these are the items we are about to set out to perform..  Any additional signals will
-                 * be added into the list upon completion of the Execute!
-                 */
-                if(parse.getActionItems().entries())
-                {
-                    for(size_t offset = 0 ; offset < parse.getActionItems().entries(); offset++)
-                    {
-                        RWCString actn = parse.getActionItems()[offset];
-                        RWCString desc = getDescription(parse);
-                        vgList.insert(CTIDBG_new CtiSignalMsg(SYS_PID_SYSTEM, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
-                    }
-                }
-
-                /*
-                 *  Form up the reply here since the ExecuteRequest funciton will consume the
-                 *  OutMessage.
-                 */
-                pRet = CTIDBG_new CtiReturnMsg(getID(),
-                                                      RWCString(pOut->Request.CommandStr),
-                                                      Route->getName(),
-                                                      nRet,
-                                                      pOut->Request.RouteID,
-                                                      pOut->Request.MacroOffset,
-                                                      pOut->Request.Attempt,
-                                                      pOut->Request.TrxID,
-                                                      pOut->Request.UserID,
-                                                      pOut->Request.SOE,
-                                                      RWOrdered());
-
-                // Start the control request on its route(s)
-                if( (nRet = Route->ExecuteRequest(pReq, parse, pOut, vgList, retList, outList)) )
-                {
-                    resultString = "ERROR " + CtiNumStr(nRet).spad(3) + " performing command on route " + Route->getName().data();
-                    pRet->setStatus(nRet);
-                    pRet->setResultString(resultString);
-                }
-                else
-                {
-                    delete pRet;
-                    pRet = 0;
-                }
-            }
-            else
-            {
-                nRet = BADROUTE;
-
-                resultString = " ERROR: Route or Route Transmitter not available for device " + getName();
-
-                pRet = CTIDBG_new CtiReturnMsg(getID(),
-                                                      RWCString(pOut->Request.CommandStr),
-                                                      resultString,
-                                                      nRet,
-                                                      pOut->Request.RouteID,
-                                                      pOut->Request.MacroOffset,
-                                                      pOut->Request.Attempt,
-                                                      pOut->Request.TrxID,
-                                                      pOut->Request.UserID,
-                                                      pOut->Request.SOE,
-                                                      RWOrdered());
-
-            }
-
-            if(pRet)
-            {
-                retList.insert( pRet );
-            }
-        }
+        executeOnDLCRoute(pReq, parse, OutMessage, vgList, retList, outList, true);
     }
 
     return nRet;

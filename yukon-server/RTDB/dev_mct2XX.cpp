@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct2XX.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2003/10/27 22:04:04 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2003/10/30 17:45:01 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -24,7 +24,6 @@
 #include "logger.h"
 #include "mgr_point.h"
 #include "porter.h"
-#include "prot_emetcon.h"
 #include "pt_numeric.h"
 #include "yukon.h"
 #include "numstr.h"

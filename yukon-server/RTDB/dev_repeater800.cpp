@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2003/10/27 22:04:06 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2003/10/30 17:43:16 $
 *
 * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -24,7 +24,6 @@
 #include "logger.h"
 #include "mgr_point.h"
 #include "porter.h"
-#include "prot_emetcon.h"
 #include "utility.h"
 #include "numstr.h"
 
