@@ -16,7 +16,7 @@ import com.cannontech.database.data.lite.LiteTag;
  */
 public class TagLoader implements Runnable {
 	
-	private static final String SQL = "select TagID,TagName,TagLevel,Inhibit,ColorID,ImageID from Tags";
+	private static final String SQL = "select TagID,TagName,TagLevel,Inhibit,ColorID,ImageID from Tags order by TagLevel";
 	
 	private List _allTags;
 	private String _dbAlias;
