@@ -104,22 +104,6 @@ void CtiCapController::start()
 ---------------------------------------------------------------------------*/
 void CtiCapController::stop()
 {
-    {
-        RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-        if( _dispatchConnection!=NULL && _dispatchConnection->valid() )
-        {
-            _dispatchConnection->WriteConnQue( new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15) );
-            _dispatchConnection->ShutdownConnection();
-        }
-        if( _pilConnection!=NULL && _pilConnection->valid() )
-        {
-            _pilConnection->WriteConnQue( new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15) );
-            _pilConnection->ShutdownConnection();
-        }
-        dout.interrupt(CtiThread::SHUTDOWN);
-        dout.join();
-    }
-
     if ( _substationBusThread.isValid() && _substationBusThread.requestCancellation() == RW_THR_ABORTED )
     {
         _substationBusThread.terminate();
@@ -132,7 +116,22 @@ void CtiCapController::stop()
     }
     else
     {
+        _substationBusThread.requestCancellation();
         _substationBusThread.join();
+    }
+
+    {
+        RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+        if( _dispatchConnection!=NULL && _dispatchConnection->valid() )
+        {
+            _dispatchConnection->WriteConnQue( new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15) );
+            _dispatchConnection->ShutdownConnection();
+        }
+        if( _pilConnection!=NULL && _pilConnection->valid() )
+        {
+            _pilConnection->WriteConnQue( new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15) );
+            _pilConnection->ShutdownConnection();
+        }
     }
 }
 
