@@ -8,7 +8,7 @@ import java.util.Date;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
 
-public class DefColl_LMCurtailCustomer extends DefColl_LMGroupBase
+public class DefColl_LMCurtailCustomer extends DefColl_LMCICustomerBase
 {
 	//The roguewave class id
 	private static int CTILMCURTAILCUSTOMER_ID = 608;
