@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_base.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/05/14 15:36:57 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/05/28 18:20:27 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -211,7 +211,7 @@ public:
 
     MutexType& getMux()  { return mutex(); }
 
-    virtual ULONG selectInitialMacroRouteOffset() const;
+    virtual ULONG selectInitialMacroRouteOffset(LONG routeid) const;
 };
 
 typedef CtiDeviceBase CtiDevice;
@@ -244,6 +244,6 @@ inline bool CtiDeviceBase::isSingle() const              { LockGuard guard(monit
 
 inline int CtiDeviceBase::getCurrentTrxID() const        { LockGuard gd(monitor()); return(_currTrxID);}
 inline int CtiDeviceBase::getResponsesOnTrxID() const    { LockGuard gd(monitor()); return(_responsesOnTrxID);}
-inline ULONG CtiDeviceBase::selectInitialMacroRouteOffset() const   { return 0; }
+inline ULONG CtiDeviceBase::selectInitialMacroRouteOffset(LONG routeid = 0) const   { return 0; }
 
 #endif // #ifndef __DEV_BASE_H__

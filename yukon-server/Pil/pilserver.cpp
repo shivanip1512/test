@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/05/14 15:39:50 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2002/05/28 18:20:06 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -685,7 +685,7 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
 
         if(Dev != NULL)
         {
-            pExecReq->setMacroOffset( Dev->selectInitialMacroRouteOffset() );
+            pExecReq->setMacroOffset( Dev->selectInitialMacroRouteOffset(pReq->RouteId() != 0 ? pReq->RouteId() : Dev->getRouteID()) );
 
             /*
              *  We will execute based upon the data in the request....
