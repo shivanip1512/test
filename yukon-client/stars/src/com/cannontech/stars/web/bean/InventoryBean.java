@@ -42,8 +42,6 @@ public class InventoryBean {
 	public static final int HTML_STYLE_SELECT_INVENTORY = 1;
 	public static final int HTML_STYLE_INVENTORY_SET = 2;
 	
-	public static final int DEVICE_TYPE_METER = -1;
-	
 	private static final int DEFAULT_PAGE_SIZE = 20;
 	
 	private static final java.text.SimpleDateFormat dateFormat =
@@ -146,7 +144,7 @@ public class InventoryBean {
 	private int htmlStyle = HTML_STYLE_LIST_INVENTORY;
 	private String referer = null;
 	private ArrayList inventorySet = null;
-	private int subEnergyCompany = -1;
+	private int member = -1;
 	
 	private LiteStarsEnergyCompany energyCompany = null;
 	private ArrayList inventoryList = null;
@@ -173,7 +171,7 @@ public class InventoryBean {
 			if (getFilterBy() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_ENERGY_COMPANY) {
 				for (int i = 0; i < companies.size(); i++) {
 					LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) companies.get(i);
-					if (company.getLiteID() == getSubEnergyCompany()) {
+					if (company.getLiteID() == getMember()) {
 						hardwares = company.loadAllInventory();
 						break;
 					}
@@ -197,13 +195,14 @@ public class InventoryBean {
 			sortedInvs = new java.util.TreeSet( INV_ID_CMPTOR );
 		
 		if (getFilterBy() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_DEV_TYPE) {
+			int devTypeMCT = getEnergyCompany().getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT ).getEntryID();
+			
 			for (int i = 0; i < hardwares.size(); i++) {
 				LiteInventoryBase liteInv = (LiteInventoryBase) hardwares.get(i);
 				
 				if (liteInv instanceof LiteStarsLMHardware &&
 					((LiteStarsLMHardware)liteInv).getLmHardwareTypeID() == getDeviceType()
-					||
-					getDeviceType() == DEVICE_TYPE_METER && ECUtils.isMCT(liteInv.getCategoryID()))
+					|| getDeviceType() == devTypeMCT && ECUtils.isMCT(liteInv.getCategoryID()))
 				{
 					sortedInvs.add( liteInv );
 				}
@@ -324,6 +323,18 @@ public class InventoryBean {
 		String uri = req.getRequestURI();
 		String pageName = uri.substring( uri.lastIndexOf('/') + 1 );
 		
+		boolean showEnergyCompany = getEnergyCompany().getChildren().size() > 0;
+		ArrayList descendants = null;
+		if (showEnergyCompany) descendants = ECUtils.getAllDescendants( getEnergyCompany() );
+		
+		String srcStr = "";
+		if (getHtmlStyle() == HTML_STYLE_SELECT_INVENTORY)
+			srcStr = "&src=SelectInv";
+		else if (getHtmlStyle() == HTML_STYLE_LIST_INVENTORY)
+			srcStr = "&src=Inventory";
+		else if (getHtmlStyle() == HTML_STYLE_INVENTORY_SET)
+			srcStr = "&src=ResultSet";
+		
 		if (page < 1) page = 1;
 		int maxPageNo = (int) Math.ceil(hwList.size() * 1.0 / pageSize);
 		if (page > maxPageNo) page = maxPageNo;
@@ -377,9 +388,8 @@ public class InventoryBean {
         htmlBuf.append("          <td class='HeaderCell' width='17%'>Device Type</td>").append(LINE_SEPARATOR);
         htmlBuf.append("          <td class='HeaderCell' width='15%'>Install Date</td>").append(LINE_SEPARATOR);
         htmlBuf.append("          <td class='HeaderCell'>Location</td>").append(LINE_SEPARATOR);
-        if (getEnergyCompany().getChildren().size() > 0) {
+        if (showEnergyCompany)
 			htmlBuf.append("          <td class='HeaderCell' width='17%'>Energy Company</td>").append(LINE_SEPARATOR);
-        }
         htmlBuf.append("        </tr>").append(LINE_SEPARATOR);
         
         for (int i = minInvNo; i <= maxInvNo; i++) {
@@ -406,6 +416,17 @@ public class InventoryBean {
         	dateFormat.setTimeZone( getEnergyCompany().getDefaultTimeZone() );
         	String instDate = (installDate != null)? dateFormat.format(installDate) : "----";
         	
+			LiteStarsEnergyCompany member = getEnergyCompany();
+			if (showEnergyCompany) {
+				for (int j = 0; j < descendants.size(); j++) {
+					LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(j);
+					if (company.getInventoryBrief(liteInv.getInventoryID(), false) != null) {
+						member = company;
+						break;
+					}
+				}
+			}
+			
             htmlBuf.append("        <tr>").append(LINE_SEPARATOR);
             
 	        if (getHtmlStyle() == HTML_STYLE_SELECT_INVENTORY) {
@@ -415,44 +436,36 @@ public class InventoryBean {
 	        }
 	        
             htmlBuf.append("          <td class='TableCell' width='17%'>");
-			htmlBuf.append("<a href='../Hardware/InventoryDetail.jsp?InvId=").append(liteInv.getInventoryID());
-			if (getHtmlStyle() == HTML_STYLE_SELECT_INVENTORY)
-				htmlBuf.append("&src=SelectInv");
-			else if (getHtmlStyle() == HTML_STYLE_LIST_INVENTORY)
-				htmlBuf.append("&src=Inventory");
-			else if (getHtmlStyle() == HTML_STYLE_INVENTORY_SET)
-				htmlBuf.append("&src=ResultSet");
-			htmlBuf.append("'>").append(deviceName).append("</a>");
+            if (showEnergyCompany)
+				htmlBuf.append("<a href='' onclick='selectMemberInventory(").append(liteInv.getInventoryID()).append(",").append(member.getLiteID()).append("); return false;'>").append(deviceName).append("</a>");
+            else
+				htmlBuf.append("<a href='").append(req.getContextPath()).append("/operator/Hardware/InventoryDetail.jsp?InvId=").append(liteInv.getInventoryID()).append(srcStr).append("'>").append(deviceName).append("</a>");
             htmlBuf.append("</td>").append(LINE_SEPARATOR);
             
             htmlBuf.append("          <td class='TableCell' width='17%'>").append(deviceType).append("</td>").append(LINE_SEPARATOR);
             htmlBuf.append("          <td class='TableCell' width='15%'>").append(instDate).append("</td>").append(LINE_SEPARATOR);
             
             htmlBuf.append("          <td class='TableCell'>");
-            if (liteInv.getAccountID() == 0)
-            	htmlBuf.append("Warehouse");
+            if (liteInv.getAccountID() == 0) {
+				htmlBuf.append("Warehouse");
+            }
             else {
-            	LiteStarsCustAccountInformation liteAcctInfo = getEnergyCompany().getBriefCustAccountInfo( liteInv.getAccountID(), true );
-            	LiteContact liteCont = getEnergyCompany().getContact( liteAcctInfo.getCustomer().getPrimaryContactID(), liteAcctInfo );
-            	LiteAddress liteAddr = getEnergyCompany().getAddress( liteAcctInfo.getAccountSite().getStreetAddressID() );
+            	LiteStarsCustAccountInformation liteAcctInfo = member.getBriefCustAccountInfo( liteInv.getAccountID(), true );
+            	LiteContact liteCont = member.getContact( liteAcctInfo.getCustomer().getPrimaryContactID(), liteAcctInfo );
+            	LiteAddress liteAddr = member.getAddress( liteAcctInfo.getAccountSite().getStreetAddressID() );
             	
-            	htmlBuf.append("<a href='' class='Link1' onclick='selectAccount(").append(liteAcctInfo.getAccountID()).append("); return false;'>");
+            	if (showEnergyCompany)
+					htmlBuf.append("<a href='' class='Link1' onclick='selectMemberAccount(").append(liteAcctInfo.getAccountID()).append(",").append(member.getLiteID()).append("); return false;'>");
+            	else
+            		htmlBuf.append("<a href='' class='Link1' onclick='selectAccount(").append(liteAcctInfo.getAccountID()).append("); return false;'>");
             	htmlBuf.append("Acct # ").append(liteAcctInfo.getCustomerAccount().getAccountNumber()).append("</a>");
             	htmlBuf.append(" ").append(ServerUtils.getFormattedName(liteCont));
             	htmlBuf.append(", ").append(ServerUtils.getOneLineAddress(liteAddr));
             }
             htmlBuf.append("</td>").append(LINE_SEPARATOR);
             
-            if (getEnergyCompany().getChildren().size() > 0) {
-				htmlBuf.append("          <td class='TableCell' width='17%'>");
-				ArrayList descendants = ECUtils.getAllDescendants( getEnergyCompany() );
-				for (int j = 0; j < descendants.size(); j++) {
-					LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(j);
-					if (company.getInventoryBrief(liteInv.getInventoryID(), false) != null)
-						htmlBuf.append( company.getName() );
-				}
-				htmlBuf.append("</td>").append(LINE_SEPARATOR);
-            }
+            if (showEnergyCompany)
+				htmlBuf.append("          <td class='TableCell' width='17%'>").append(member.getName()).append("</td>").append(LINE_SEPARATOR);
             
             htmlBuf.append("        </tr>").append(LINE_SEPARATOR);
         }
@@ -496,13 +509,23 @@ public class InventoryBean {
 			htmlBuf.append("  </tr>").append(LINE_SEPARATOR);
 			htmlBuf.append("</table>").append(LINE_SEPARATOR);
         }
-                
+        
         htmlBuf.append("<form name='cusForm' method='post' action='").append(req.getContextPath()).append("/servlet/SOAPClient'>").append(LINE_SEPARATOR);
         htmlBuf.append("  <input type='hidden' name='action' value='GetCustAccount'>").append(LINE_SEPARATOR);
         htmlBuf.append("  <input type='hidden' name='AccountID' value=''>").append(LINE_SEPARATOR);
+        if (showEnergyCompany)
+			htmlBuf.append("  <input type='hidden' name='SwitchContext' value=''>").append(LINE_SEPARATOR);
         htmlBuf.append("  <input type='hidden' name='REDIRECT' value='").append(req.getContextPath()).append("/operator/Consumer/Update.jsp'>").append(LINE_SEPARATOR);
         htmlBuf.append("  <input type='hidden' name='REFERRER' value='").append(req.getRequestURI()).append("'>").append(LINE_SEPARATOR);
         htmlBuf.append("</form>").append(LINE_SEPARATOR);
+        
+        if (showEnergyCompany) {
+			htmlBuf.append("<form name='invForm' method='post' action='").append(req.getContextPath()).append("/servlet/StarsAdmin'>").append(LINE_SEPARATOR);
+			htmlBuf.append("  <input type='hidden' name='action' value='SwitchContext'>").append(LINE_SEPARATOR);
+			htmlBuf.append("  <input type='hidden' name='ContextID' value=''>").append(LINE_SEPARATOR);
+			htmlBuf.append("  <input type='hidden' name='REDIRECT' value=''>").append(LINE_SEPARATOR);
+			htmlBuf.append("</form>").append(LINE_SEPARATOR);
+        }
         
         htmlBuf.append("<script language='JavaScript'>").append(LINE_SEPARATOR);
 		htmlBuf.append("function validate(form) {").append(LINE_SEPARATOR);
@@ -513,11 +536,30 @@ public class InventoryBean {
 		htmlBuf.append("  }").append(LINE_SEPARATOR);
 		htmlBuf.append("  return false;").append(LINE_SEPARATOR);
 		htmlBuf.append("}").append(LINE_SEPARATOR);
+		
         htmlBuf.append("function selectAccount(accountID) {").append(LINE_SEPARATOR);
         htmlBuf.append("  var form = document.cusForm;").append(LINE_SEPARATOR);
         htmlBuf.append("  form.AccountID.value = accountID;").append(LINE_SEPARATOR);
         htmlBuf.append("  form.submit();").append(LINE_SEPARATOR);
         htmlBuf.append("}").append(LINE_SEPARATOR);
+        
+        if (showEnergyCompany) {
+			htmlBuf.append("function selectMemberAccount(accountID, contextID) {").append(LINE_SEPARATOR);
+			htmlBuf.append("  var form = document.cusForm;").append(LINE_SEPARATOR);
+			htmlBuf.append("  form.AccountID.value = accountID;").append(LINE_SEPARATOR);
+			htmlBuf.append("  form.SwitchContext.value = contextID;").append(LINE_SEPARATOR);
+			htmlBuf.append("  form.submit();").append(LINE_SEPARATOR);
+			htmlBuf.append("}").append(LINE_SEPARATOR);
+			
+			htmlBuf.append("function selectMemberInventory(invID, contextID) {").append(LINE_SEPARATOR);
+			htmlBuf.append("  var form = document.invForm;").append(LINE_SEPARATOR);
+			htmlBuf.append("  form.ContextID.value = contextID;").append(LINE_SEPARATOR);
+			htmlBuf.append("  form.REDIRECT.value = '").append(req.getContextPath()).append("/operator/Hardware/InventoryDetail.jsp?InvId='");
+			htmlBuf.append(" + invID + '").append(srcStr).append("';").append(LINE_SEPARATOR);
+			htmlBuf.append("  form.submit();").append(LINE_SEPARATOR);
+			htmlBuf.append("}").append(LINE_SEPARATOR);
+        }
+		
         htmlBuf.append("</script>").append(LINE_SEPARATOR);
         
 		return htmlBuf.toString();
@@ -723,15 +765,15 @@ public class InventoryBean {
 	/**
 	 * @return
 	 */
-	public int getSubEnergyCompany() {
-		return subEnergyCompany;
+	public int getMember() {
+		return member;
 	}
 
 	/**
 	 * @param i
 	 */
-	public void setSubEnergyCompany(int i) {
-		subEnergyCompany = i;
+	public void setMember(int i) {
+		member = i;
 	}
 
 }
