@@ -11,6 +11,7 @@ public class GraphDataSeries extends com.cannontech.database.db.DBPersistent {
 	public static final String GRAPH_SERIES = "graph";
 	public static final String PEAK_SERIES  = "peak";
 	public static final String USAGE_SERIES = "usage";
+	public static final String YESTERDAY_SERIES = "yesterday";
 	
 	private java.lang.Integer graphDataSeriesID = null;
 	private java.lang.String type = GRAPH_SERIES;
