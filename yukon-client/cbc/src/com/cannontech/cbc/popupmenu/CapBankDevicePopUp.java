@@ -4,7 +4,17 @@ import javax.swing.JSeparator;
 
 import com.cannontech.cbc.capbankeditor.CapControlEntryPanel;
 import com.cannontech.cbc.capbankeditor.CapBankTempMovePanel;
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.tags.TagUtils;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.Transaction;
+import com.cannontech.database.cache.functions.PAOFuncs;
+import com.cannontech.database.data.capcontrol.CapBank;
+import com.cannontech.database.data.capcontrol.CapBankController;
+import com.cannontech.database.data.lite.LiteBase;
+import com.cannontech.database.data.lite.LiteFactory;
+import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.db.capcontrol.DeviceCBC;
 import com.cannontech.debug.gui.ObjectInfoDialog;
 import com.cannontech.message.dispatch.message.Command;
 import com.cannontech.yukon.cbc.CBCClientConnection;
@@ -437,7 +447,7 @@ public void jMenuItemClearAlarm_ActionPerformed(java.awt.event.ActionEvent actio
  */
 public void jMenuItemTempMove_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
-	java.awt.Frame pFrame = com.cannontech.common.util.CtiUtilities.getParentFrame(this.getInvoker());	
+	java.awt.Frame pFrame = CtiUtilities.getParentFrame(this.getInvoker());	
 	final javax.swing.JDialog d = new javax.swing.JDialog( pFrame ); 
 
 
@@ -523,11 +533,46 @@ public void jMenuItemCapBankData_ActionPerformed(java.awt.event.ActionEvent acti
 	if( actionEvent.getSource() instanceof javax.swing.JMenuItem )
 	{
 		ObjectInfoDialog d = new ObjectInfoDialog(
-			com.cannontech.common.util.CtiUtilities.getParentFrame(this) ); 
+			CtiUtilities.getParentFrame(this) ); 
 
-		d.setLocationRelativeTo( (javax.swing.JMenuItem)actionEvent.getSource() );
-		d.setModal( true );		
-		d.showDialog( getCapBankDevice() );
+		//do some mapping to get the compatible DBPersistent
+		DBPersistent cbcObject = null;
+		
+		//do not try to get the controller if we are fixed
+		if( !CapBank.FIXED_OPSTATE.equalsIgnoreCase(getCapBankDevice().getOperationalState()) )
+			cbcObject = LiteFactory.convertLiteToDBPers(
+				PAOFuncs.getLiteYukonPAO(getCapBankDevice().getControlDeviceID().intValue()) );
+		
+		try
+		{
+			Object[] items = null;
+
+			if( cbcObject == null )
+				items = new Object[] {getCapBankDevice()};
+			else
+			{
+				Transaction t = Transaction.createTransaction(Transaction.RETRIEVE, cbcObject);
+				cbcObject = t.execute();
+				
+				//DeviceCBC
+				if( cbcObject instanceof CapBankController )
+					items = new Object[] {
+							getCapBankDevice(),
+							cbcObject,
+							((CapBankController)cbcObject).getDeviceCBC() };			
+				else
+					items = new Object[] {getCapBankDevice(), cbcObject};
+			}
+
+			d.setLocationRelativeTo( (javax.swing.JMenuItem)actionEvent.getSource() );
+			d.setModal( true );
+			d.showDialog( items );
+		}
+		catch (Exception e)
+		{
+			CTILogger.error("Unable to retrieve object from the database", e);
+		}
+		        
 	}
 	
 	return;
@@ -583,7 +628,7 @@ private javax.swing.JMenuItem getJMenuItemCapBankData()
  */
 public void jMenuItemManualEntry_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
-	java.awt.Frame pFrame = com.cannontech.common.util.CtiUtilities.getParentFrame(this.getInvoker());
+	java.awt.Frame pFrame = CtiUtilities.getParentFrame(this.getInvoker());
 	
 	final javax.swing.JDialog d = new javax.swing.JDialog( pFrame ); 
 

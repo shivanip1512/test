@@ -1,5 +1,7 @@
 package com.cannontech.debug.gui;
 
+import java.util.Vector;
+
 /**
  * Insert the type's description here.
  * Creation date: (1/5/2001 4:56:13 PM)
@@ -329,70 +331,83 @@ public void okPanel_JButtonOkAction_actionPerformed(java.util.EventObject newEve
 	this.dispose();
 	return;
 }
+
 /**
- * Insert the method's description here.
- * Creation date: (11/20/2001 9:51:36 AM)
- * @param newSubBus com.cannontech.cbc.data.SubBus
+ * @param obj
  *
  * This method will use reflection to get all the "getter" mehods
  *  and print all their values and names in the JList
  */
-public void showDialog( final Object obj )
+private Vector getListData( Object obj )
 {
-	//since reflection could take some time, lets do this in its own Thread
-	new Thread( new Runnable()
+	Vector data = new Vector(
+			obj == null ? 0 : obj.getClass().getMethods().length );
+
+	if( obj != null )
 	{
-		public void run()
+		for( int i = 0; i < obj.getClass().getMethods().length; i++ )
 		{
-			java.util.Vector data = new java.util.Vector(
-				obj == null ? 0 : obj.getClass().getMethods().length );
-
-			if( obj != null )
+			//get all the getters
+			if( obj.getClass().getMethods()[i].getName().startsWith("get")
+				&& obj.getClass().getMethods()[i].getParameterTypes().length == 0 )
 			{
-
-				for( int i = 0; i < obj.getClass().getMethods().length; i++ )
+				try
 				{
-					//get all the getters
-					if( obj.getClass().getMethods()[i].getName().startsWith("get")
-						&& obj.getClass().getMethods()[i].getParameterTypes().length == 0 )
-					{
-						try
-						{
-							Object value = obj.getClass().getMethods()[i].invoke( obj, null );
+					Object value = obj.getClass().getMethods()[i].invoke( obj, null );
 
-							//format all objects that have an unreadable toString() output
-							value = formatSpecialObjects( value );							
-								
-							data.addElement( obj.getClass().getMethods()[i].getName().substring(3) +
-								" : " + (value == null ? "(null)" : value.toString()) );
-						}
-						catch( IllegalAccessException ie )
-						{
-							data.addElement("  <<IllegalAccessException for method : " + obj.getClass().getMethods()[i].getName() + ">>");
-						}
-						catch( java.lang.reflect.InvocationTargetException iv )
-						{
-							data.addElement("  <<InvocationTargetException for method : " + obj.getClass().getMethods()[i].getName() + ">>");
-						}
-
-					}
-
+					//format all objects that have an unreadable toString() output
+					value = formatSpecialObjects( value );							
+						
+					data.addElement( obj.getClass().getMethods()[i].getName().substring(3) +
+						" : " + (value == null ? "(null)" : value.toString()) );
+				}
+				catch( IllegalAccessException ie )
+				{
+					data.addElement("  <<IllegalAccessException for method : " + obj.getClass().getMethods()[i].getName() + ">>");
+				}
+				catch( java.lang.reflect.InvocationTargetException iv )
+				{
+					data.addElement("  <<InvocationTargetException for method : " + obj.getClass().getMethods()[i].getName() + ">>");
 				}
 
-				//give some order to our data
-				java.util.Collections.sort( data );
-
-				getJListInfo().setListData(data);
 			}
-			else
-				data.addElement("(null) object");
 
-
-			show();
 		}
 
-	}).start();
+		//give some order to our data
+		java.util.Collections.sort( data );
+	}
+	else
+		data.addElement("(null) object");
+
+	return data;
 }
+
+/**
+ * Shows multiple objects data. Adds a seperator for each object.
+ */
+public void showDialog( final Object[] objects )
+{
+	Vector totalData = new Vector(64);
+	for( int i = 0; i < objects.length; i++ )
+	{
+		totalData.addAll( getListData(objects[i]) );
+		totalData.add("");  //add a blank line
+	}
+
+	getJListInfo().setListData( totalData );
+	show();
+}
+
+/**
+ * Shows a single objects data
+ */
+public void showDialog( final Object obj )
+{
+	getJListInfo().setListData( getListData(obj) );
+	show();
+}
+
 /**
  * 
  */
