@@ -12,6 +12,7 @@ import javax.management.ObjectName;
 import javax.naming.Context;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 
@@ -136,7 +137,16 @@ public class JRMPServer
 		try
 		{
 			System.setProperty("cti.app.name", "MBeanServer");
-			
+            
+			//Assume the default server login operation
+            ClientSession session = ClientSession.getInstance(); 
+            if(!session.establishDefServerSession())
+                System.exit(-1);          
+                
+            if(session == null) 
+                System.exit(-1);
+
+
 			//RMI specific setters
 			System.setProperty( Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.rmi.registry.RegistryContextFactory" );
 			System.setProperty( Context.PROVIDER_URL, "rmi://localhost:1099" );

@@ -15,6 +15,7 @@ import com.cannontech.database.PoolManager;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.cache.functions.YukonUserFuncs;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.user.UserUtils;
 
 /**
  * Holds session information for client programs.
@@ -170,7 +171,48 @@ public class ClientSession {
 		
 		return false;
 	}
-	
+
+    /**
+     * Establishes local login with a default user. Used by Java servers that should
+     * not prompt for login credentials.
+     * 
+     * Assumes the loginID of USER_ADMIN_ID (Admin user).
+     * 
+     * @return
+     */
+    public synchronized boolean establishDefServerSession()
+    {
+        Properties dbProps = PoolManager.loadDBProperties();
+        
+        boolean success = false;
+        if(dbProps != null && !dbProps.isEmpty())
+        {
+            CTILogger.info("Attempting local load of database properties for SERVER login...");
+
+            int userID = UserUtils.USER_ADMIN_ID;
+            LiteYukonUser u = YukonUserFuncs.getLiteYukonUser(userID);
+            if(u != null)
+            {
+                CTILogger.debug("  Assuming SERVER loginID to be " + userID );
+                setSessionInfo(u, Integer.toString(u.getUserID()), "", Integer.MIN_VALUE);      
+                success = true;
+            }
+            else
+            {
+                CTILogger.info("Unable to find default SERVER loginID of " + userID );
+                success = false;
+            }
+                
+        }
+        else
+        {
+            CTILogger.info("Unable to find local copy of db.properties for SERVER login");
+            success = false;
+        }           
+        
+        return success;
+    }
+    
 	private boolean doLocalLogin(Frame p, Properties props) {
 		PoolManager.setDBProperties(props);
 		
