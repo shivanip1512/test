@@ -62,6 +62,7 @@ public:
 
    T* getQueue()
    {
+      T *pval = NULL;
       try
       {
          LockGuard lock(monitor());   // acquire monitor mutex
@@ -71,10 +72,9 @@ public:
             // thread must have been signalled AND
             //   mutex reacquired to reach here
          }
-         T *pval = pvect_.removeFirst();
+         pval = pvect_.removeFirst();
          slotAvailable.signal();
 
-         return pval;
          // cout << "Number of entries " << pvect_.entries() << endl;
       }
       catch(const RWxmsg& x)
@@ -82,6 +82,8 @@ public:
         cout << "Exception: " << x.why() << endl;
         RWTHROW(x);
       }
+
+      return pval;
    }
 
    T* getQueue(unsigned time)
