@@ -998,6 +998,8 @@ insert into YukonGroupRole values (-1370,-2,-201,-20870,'(none)');
 /* END the Admin role Group */
 
 
+INSERT into point  values (-100, 'System', 'Threshold' , 0, 'Default', 0, 'N', 'N', 'S', 10 ,'None', 0);
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
