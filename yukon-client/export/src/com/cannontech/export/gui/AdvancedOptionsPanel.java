@@ -555,14 +555,14 @@ public javax.swing.JComboBox getNotificationGroupComboBox() {
 			ivjNotificationGroupComboBox.setEnabled(false);
 			// user code begin {1}
 			
-			com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-			synchronized( cache )
-			{
-				java.util.List notifGroups = cache.getAllContactNotificationGroups();
-
-				for( int i = 0; i < notifGroups.size(); i++ )
-					ivjNotificationGroupComboBox.addItem( notifGroups.get(i) );
-			}
+//			com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+//			synchronized( cache )
+//			{
+//				java.util.List notifGroups = cache.getAllContactNotificationGroups();
+//
+//				for( int i = 0; i < notifGroups.size(); i++ )
+//					ivjNotificationGroupComboBox.addItem( notifGroups.get(i) );
+//			}
 						
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
