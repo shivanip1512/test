@@ -596,7 +596,7 @@ public class ActivityDetailModel extends ReportModelBase
 			{
 				//Format the first part of the key to be 8 chars, YYYYMMDD of the dateTime value
 				//NOTE:  This value must be truncated out of the key when only the action is desired!!!
-				String key = ((ActivityLog)getData().get(i)).getDateOnly().toString();
+				String key = format.format(((ActivityLog)getData().get(i)).getDateOnly());
 				key += ((ActivityLog)getData().get(i)).getAction();
 				Integer initValue = (Integer)totals.get(key);
 				if( initValue == null)
