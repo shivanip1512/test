@@ -201,6 +201,21 @@ alter table LMProgramDirect alter column StoppedEarlyMsg varchar(80) not null;
 go
 
 
+create table DeviceRTC (
+DeviceID             numeric              not null,
+RTCAddress           numeric              not null,
+Response             varchar(1)           not null,
+LPTMode              numeric              not null
+);
+go
+alter table DeviceRTC
+   add constraint PK_DEVICERTC primary key  (DeviceID);
+go
+alter table DeviceRTC
+   add constraint FK_Dev_DevRTC foreign key (DeviceID)
+      references DEVICE (DEVICEID);
+go
+
 
 
 /******************************************************************************/

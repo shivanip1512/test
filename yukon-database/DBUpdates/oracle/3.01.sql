@@ -163,6 +163,20 @@ alter table LMProgramDirect modify StoppedEarlyMsg varchar2(80) not null;
 
 
 
+create table DeviceRTC  (
+   DeviceID             NUMBER                           not null,
+   RTCAddress           NUMBER                           not null,
+   Response             VARCHAR2(1)                      not null,
+   LPTMode              NUMBER                           not null
+);
+alter table DeviceRTC
+   add constraint PK_DEVICERTC primary key (DeviceID);
+alter table DeviceRTC
+   add constraint FK_Dev_DevRTC foreign key (DeviceID)
+      references DEVICE (DEVICEID);
+
+
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
