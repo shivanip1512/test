@@ -96,15 +96,15 @@ public StringBuffer getHtml(StringBuffer buf)
 
 	 		for( int j = 0; timeStamp != null && values != null &&  j < timeStamp.length; j++ )
  			{
-				Long d = new Long(timeStamp[j]);
- 				Double[] objectValues = (Double[]) tree.get(new Double(d.doubleValue()));
+				Long tsKey = new Long(timeStamp[j]);
+ 				Double[] objectValues = (Double[]) tree.get(tsKey);
 		 		if( objectValues == null )
  				{
-					if (d.longValue() > tabStDt && d.longValue() <= tabEndDt)
+					if (tsKey.longValue() > tabStDt && tsKey.longValue() <= tabEndDt)
 					{
 						//objectValues is not in the key already
 				 		objectValues = new Double[ validSeriesCount];
-			 			tree.put(new Double(d.doubleValue()),objectValues);
+			 			tree.put(tsKey,objectValues);
 	 				}
 		 		}
 				if( objectValues != null)	//MAY NEED THIS AGAIN
@@ -117,49 +117,44 @@ public StringBuffer getHtml(StringBuffer buf)
 	
 	//time values
 	java.util.Set keySet = tree.keySet();
-	Double[] keyArray = new Double[keySet.size()];
-	String date = dateFormat.format( model.getStartDate());
 
-	int csvRowCount = keySet.size();
-	int csvColCount = validSeriesCount + 2;	// +2 cols -> 1 for date, 1 for time
-
+	Long[] keyArray = new Long[keySet.size()];
 	keySet.toArray(keyArray);
 		
 	//Output html for the timestamps
 	for( int x = 0; x < keyArray.length; x++ )
 	{
-		Double ts1 = keyArray[x];
+		Long ts1 = keyArray[x];
 		buf.append(timeFormat.format(new java.util.Date(ts1.longValue())));
 		buf.append("<BR>\n");
 	}
-//	com.cannontech.clientutils.CTILogger.info(" $$ Collecting timestamps; constructing html for timestamps $$" );
 	buf.append("</FONT></TD>\n");
 
-	//Go through all the points one by one and output their values as html
-	for( int z = 0; z < validSeriesCount; z++ )
+	//Output html for each valid serie's readings.
+	validIndex = 0;
+	for (int i = 0; i < model.getTrendSeries().length; i++)
 	{
-		// Set the number decimal places for each point.
-//		int decimals = model.getTrendSeries()[z].getDecimalPlaces();
-//TEMPORARY ___ SET BACK TO THIS!!!
-//		setFractionDigits( decimals );
-//		setFractionDigits( decimals[z]);
-		setFractionDigits(3);
-		
-		buf.append("<TD VALIGN=\"TOP\" BGCOLOR=\"#CCCC99\" class=\"TableCell\" WIDTH=\"130\">\n");
-		buf.append("<P ALIGN=CENTER><FONT SIZE=\"-1\" FACE=\"Arial\">\n");
-		for( int x = 0; x < keyArray.length;x++ )
+		com.jrefinery.data.TimePeriod prevTimePeriod = null;
+		if(com.cannontech.database.db.graph.GraphDataSeries.isGraphType(model.getTrendSeries()[i].getTypeMask()))
 		{
-			Double[] values = (Double[])tree.get(keyArray[x]);
-			Double val = values[z];
+			setFractionDigits(3);
+			buf.append("<TD VALIGN=\"TOP\" BGCOLOR=\"#CCCC99\" class=\"TableCell\" WIDTH=\"130\">\n");
+			buf.append("<P ALIGN=CENTER><FONT SIZE=\"-1\" FACE=\"Arial\">\n");
 			
-			if( val != null )
-				buf.append(valueFormat.format(val));
-							
-			buf.append("<BR>");
+			for (int j = 0; j < keyArray.length; j++)
+			{
+				Double[] values = (Double[])tree.get(keyArray[j]);												
+				Double val = values[validIndex];
+				if( val != null )
+					buf.append(valueFormat.format(val));
+				buf.append("<BR>");
+			}
+			buf.append("</FONT></TD>\n");
+				
+			validIndex++;
 		}
-		buf.append("</FONT></TD>\n");
-	}			
-	
+	}
+
 	buf.append("</FONT></TD></TR></TABLE></CENTER></TD></TR></TABLE></CENTER>\n");
 
 //	com.cannontech.clientutils.CTILogger.info(" @TABULAR HTML - Took " + (System.currentTimeMillis() - timer) +" millis to build html buffer.");
