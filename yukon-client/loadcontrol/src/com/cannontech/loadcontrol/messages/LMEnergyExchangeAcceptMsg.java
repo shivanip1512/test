@@ -13,11 +13,11 @@ public class LMEnergyExchangeAcceptMsg extends LMMessage
 	private Integer yukonID = null;
 	private Integer offerID = null;
 	private Integer revisionNumber = null;
-	private String acceptStatus = null;
-	private String ipAddressOfCustomer = null;
-	private String userIDName = null;
-	private String nameOfAcceptPerson = null;
-	private String energyExchangeNotes = null;
+	private String acceptStatus = "(none)";
+	private String ipAddressOfCustomer = "(none)";
+	private String userIDName = "(none)";
+	private String nameOfAcceptPerson = "(none)";
+	private String energyExchangeNotes = "(none)";
 	private Double[] amountCommitted = null; //24 hourly amounts
 /**
  * LMEnergyExchangeAcceptMsg constructor comment.
