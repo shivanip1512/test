@@ -945,6 +945,13 @@ delete from yukonroleproperty where rolepropertyid = -40050;
 /* Remove unused yukon list entries */
 delete from yukonlistentry where entrytext = 'LCR-1000';
 
+/* @error ignore */
+insert into YukonListEntry values (1136,1011,0,'Address',1606);
+/* @error ignore */
+insert into YukonListEntry values (1306,1051,0,'Address',2706);
+/* @error ignore */
+insert into YukonListEntry values (1336,1054,0,'Address',3306);
+
 
 
 
