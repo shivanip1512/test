@@ -38,15 +38,15 @@ function confirmDeleteAccount(form) {
 }
 
 function confirmDeleteAppCat() {
-	return confirm("If you delete the appliance category, all the programs and customer appliances under this category will also be deleted. Are you sure you want to continue?");
+	return confirm("If you delete an appliance category, all the programs and appliances under this category will also be deleted. Are you sure you want to continue?");
 }
 
 function confirmDeleteAllAppCats() {
-	return confirm("Are you sure you want to delete all appliance categories, programs, and customer appliances under these categories?");
+	return confirm("Are you sure you want to delete all appliance categories, programs, and appliances under these categories?");
 }
 
 function editServiceCompany(form, compIdx) {
-	form.attributes["action"].value = 'ServiceCompany.jsp?Company=' + compIdx;
+	form.attributes["action"].value = "ServiceCompany.jsp?Company=" + compIdx;
 	form.action.value = "init";
 	form.submit();
 }
@@ -57,6 +57,14 @@ function confirmDeleteCompany() {
 
 function confirmDeleteAllCompanies() {
 	return confirm("Are you sure you want to delete all service companies?");
+}
+
+function confirmDeleteSubstation() {
+	return confirm("Are you sure you want to delete the substation?");
+}
+
+function confirmDeleteAllSubstations() {
+	return confirm("Are you sure you want to delete all substations?");
 }
 
 function confirmDeleteOperatorLogin() {
@@ -191,7 +199,7 @@ function removeAllMembers(form) {
                         </form>
                       </td>
                     </tr>
-<cti:checkNoProperty propertyid="<%= EnergyCompanyRole.SINGLE_ENERGY_COMPANY %>">
+<% if (!ECUtils.isSingleEnergyCompany(liteEC)) { %>
                     <tr> 
                       <td><b><font color="#0000FF">Routes:</font></b> 
                         <table width="100%" border="1" cellspacing="0" cellpadding="0" align="center">
@@ -201,7 +209,7 @@ function removeAllMembers(form) {
                                 <tr> 
                                   <td class="TableCell" width="5%">&nbsp;</td>
                                   <td class="TableCell" width="70%"> 
-<%
+                                    <%
 	LiteYukonPAObject[] inheritedRoutes = null;
 	if (liteEC.getParent() != null)
 		inheritedRoutes= liteEC.getParent().getAllRoutes();
@@ -210,19 +218,19 @@ function removeAllMembers(form) {
 	for (int i = 0; i < routes.length && i < 3; i++) {
 %>
                                     <%= routes[i].getPaoName() %><br>
-<%
+                                    <%
 	}
 	if (routes.length < 3 && inheritedRoutes != null) {
 		for (int i = 0; i < inheritedRoutes.length && i < 3 - routes.length; i++) {
 %>
                                     <%= inheritedRoutes[i].getPaoName() %> (Inherited)<br>
-<%
+                                    <%
 		}
 	}
 	if (routes.length > 3) {
 %>
                                     And more...<br>
-<%
+                                    <%
 	}
 %>
                                   </td>
@@ -237,7 +245,7 @@ function removeAllMembers(form) {
                         <br>
                       </td>
                     </tr>
-</cti:checkNoProperty>
+<% } %>
                     <tr> 
                       <td> 
                         <form name="form3" method="post" action="<%=request.getContextPath()%>/servlet/StarsAdmin">
@@ -305,7 +313,7 @@ function removeAllMembers(form) {
                                     <%
 		if (category.getInherited()) {
 %>
-                                    <td width="25%" class="TableCell">
+                                    <td width="25%" class="TableCell" colspan="2"> 
                                       <input type="button" name="Edit9" value="View" onClick="location.href='ApplianceCategory.jsp?Category=<%= i %>'">
                                       (Inherited) </td>
                                     <%
@@ -341,6 +349,39 @@ function removeAllMembers(form) {
                         </form>
                       </td>
                     </tr>
+                    <tr> 
+                      <td><b><font color="#0000FF">Customer Selection Lists:</font></b> 
+                        <table width="100%" border="1" cellspacing="0" cellpadding="1" align="center">
+                          <tr> 
+                            <td> 
+                              <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                <%
+	ArrayList userLists = liteEC.getAllSelectionLists(user);
+	for (int i = 0; i < userLists.size(); i++) {
+		com.cannontech.common.constants.YukonSelectionList cList = (com.cannontech.common.constants.YukonSelectionList) userLists.get(i);
+		if (cList.getUserUpdateAvailable() == null || !cList.getUserUpdateAvailable().equalsIgnoreCase("Y")) continue;
+%>
+                                <tr> 
+                                  <td class="TableCell" width="5%">&nbsp;</td>
+                                  <td class="TableCell" width="30%"><%= cList.getListName() %></td>
+                                  <td class="TableCell" width="40%"> 
+                                    <hr width="90%" align="left">
+                                  </td>
+                                  <td class="TableCell" width="25%"> 
+                                    <input type="button" name="Edit" value="Edit" onclick="location.href='SelectionList.jsp?List=<%= cList.getListName() %>'">
+                                    <% if (liteEC.getYukonSelectionList(cList.getListName(), false, false) == null) out.print("(Inherited)"); %>
+                                  </td>
+                                </tr>
+                                <%
+	}
+%>
+                              </table>
+                            </td>
+                          </tr>
+                        </table>
+                        <br>
+                      </td>
+                    </tr>
                     <%
 	if (AuthFuncs.checkRoleProperty(lYukonUser, ConsumerInfoRole.CONSUMER_INFO_HARDWARES) ||
 		AuthFuncs.checkRoleProperty(lYukonUser, ConsumerInfoRole.CONSUMER_INFO_WORK_ORDERS))
@@ -364,13 +405,13 @@ function removeAllMembers(form) {
                                   <tr> 
                                     <td class="TableCell" width="5%">&nbsp;</td>
                                     <td class="TableCell" width="70%"><%= company.getCompanyName() %></td>
-<%
+                                    <%
 			if (company.getInherited()) {
 %>
-                                    <td width="25%" class="TableCell">
+                                    <td width="25%" class="TableCell" colspan="2"> 
                                       <input type="button" name="Edit8" value="View" onClick="editServiceCompany(this.form, <%= i %>)">
                                       (Inherited) </td>
-<%
+                                    <%
 			} else {
 %>
                                     <td width="10%" class="TableCell"> 
@@ -379,7 +420,7 @@ function removeAllMembers(form) {
                                     <td width="15%" class="TableCell"> 
                                       <input type="submit" name="Delete" value="Delete" onclick="this.form.CompanyID.value=<%= company.getCompanyID() %>; return confirmDeleteCompany();">
                                     </td>
-<%
+                                    <%
 			}
 %>
                                   </tr>
@@ -403,9 +444,69 @@ function removeAllMembers(form) {
                         </form>
                       </td>
                     </tr>
-                    <%
+<%
 	}
-	
+%>
+                    <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_ACCOUNT_GENERAL %>">
+					<tr>
+                      <td>
+                        <form name="form1" method="post" action="<%=request.getContextPath()%>/servlet/StarsAdmin">
+                          <b><font color="#0000FF">Substations:</font></b> 
+                          <table width="100%" border="1" cellspacing="0" cellpadding="0" align="center">
+                            <tr> 
+                              <td> 
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                  <input type="hidden" name="action" value="DeleteSubstation">
+                                  <input type="hidden" name="SubID" value="0">
+<%
+		// The first substation is always "(none)"
+		for (int i = 1; i < substations.getStarsSubstationCount(); i++) {
+			StarsSubstation substation = substations.getStarsSubstation(i);
+%>
+                                  <tr> 
+                                    <td class="TableCell" width="5%">&nbsp;</td>
+                                    <td class="TableCell" width="70%"><%= substation.getSubstationName() %></td>
+<%
+			if (substation.getInherited()) {
+%>
+                                    <td width="25%" class="TableCell" colspan="2"> 
+                                      <input type="button" name="Edit" value="View" onclick="location.href = 'Substation.jsp?Sub=<%= i %>'">
+                                      (Inherited) </td>
+                                    <%
+			} else {
+%>
+                                    <td width="10%" class="TableCell"> 
+                                      <input type="button" name="Edit" value="Edit" onclick="location.href = 'Substation.jsp?Sub=<%= i %>'">
+                                    </td>
+                                    <td width="15%" class="TableCell"> 
+                                      <input type="submit" name="Delete" value="Delete" onclick="this.form.SubID.value=<%= substation.getSubstationID() %>; return confirmDeleteSubstation();">
+                                    </td>
+<%
+			}
+%>
+                                  </tr>
+<%
+		}
+%>
+                                </table>
+                              </td>
+                            </tr>
+                          </table>
+                          <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
+                            <tr> 
+                              <td width="20%"> 
+                                <input type="submit" name="DeleteAll" value="Delete All" onclick="this.form.SubID.value=-1; return confirmDeleteAllSubstations();">
+                              </td>
+                              <td width="80%"> 
+                                <input type="button" name="New" value="New" onclick="location.href = 'Substation.jsp?Sub=<%= substations.getStarsSubstationCount() %>'">
+                              </td>
+                            </tr>
+                          </table>
+                        </form>
+                      </td>
+                    </tr>
+					</cti:checkProperty>
+                    <%
 	if (AuthFuncs.checkRoleProperty(lYukonUser, ConsumerInfoRole.CONSUMER_INFO_ADMIN_FAQ) ||
 		custGroups.length > 0 && !CtiUtilities.isFalse(AuthFuncs.getRolePropValueGroup(custGroups[0], ResidentialCustomerRole.CONSUMER_INFO_QUESTIONS_FAQ, "false")))
 	{
@@ -545,39 +646,6 @@ function removeAllMembers(form) {
                     <%
 	}
 %>
-                    <tr> 
-                      <td><b><font color="#0000FF">Customer Selection Lists:</font></b> 
-                        <table width="100%" border="1" cellspacing="0" cellpadding="1" align="center">
-                          <tr> 
-                            <td> 
-                              <table width="100%" border="0" cellspacing="0" cellpadding="0">
-                                <%
-	ArrayList userLists = liteEC.getAllSelectionLists(user);
-	for (int i = 0; i < userLists.size(); i++) {
-		com.cannontech.common.constants.YukonSelectionList cList = (com.cannontech.common.constants.YukonSelectionList) userLists.get(i);
-		if (cList.getUserUpdateAvailable() == null || !cList.getUserUpdateAvailable().equalsIgnoreCase("Y")) continue;
-%>
-                                <tr> 
-                                  <td class="TableCell" width="5%">&nbsp;</td>
-                                  <td class="TableCell" width="30%"><%= cList.getListName() %></td>
-                                  <td class="TableCell" width="40%"> 
-                                    <hr width="90%" align="left">
-                                  </td>
-                                  <td class="TableCell" width="25%"> 
-                                    <input type="button" name="Edit" value="Edit" onclick="location.href='SelectionList.jsp?List=<%= cList.getListName() %>'">
-                                    <% if (liteEC.getYukonSelectionList(cList.getListName(), false, false) == null) out.print("(Inherited)"); %>
-                                  </td>
-                                </tr>
-                                <%
-	}
-%>
-                              </table>
-                            </td>
-                          </tr>
-                        </table>
-                        <br>
-                      </td>
-                    </tr>
                     <tr> 
                       <td> 
                         <form name="form6" method="post" action="<%=request.getContextPath()%>/servlet/StarsAdmin">

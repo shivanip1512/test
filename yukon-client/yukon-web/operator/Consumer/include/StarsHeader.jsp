@@ -95,6 +95,7 @@
 	StarsEnergyCompany energyCompany = null;
 	StarsEnrollmentPrograms categories = null;
 	StarsServiceCompanies companies = null;
+	StarsSubstations substations = null;
 	StarsCustomerFAQs customerFAQs = null;
 	StarsExitInterviewQuestions exitQuestions = null;
 	StarsDefaultThermostatSchedules dftThermoSchedules = null;
@@ -127,6 +128,7 @@
 			energyCompany = ecSettings.getStarsEnergyCompany();
 			categories = ecSettings.getStarsEnrollmentPrograms();
 			companies = ecSettings.getStarsServiceCompanies();
+			substations = ecSettings.getStarsSubstations();
 			customerFAQs = ecSettings.getStarsCustomerFAQs();
 			exitQuestions = ecSettings.getStarsExitInterviewQuestions();
 			dftThermoSchedules = ecSettings.getStarsDefaultThermostatSchedules();

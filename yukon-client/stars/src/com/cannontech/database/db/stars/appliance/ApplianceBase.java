@@ -44,14 +44,14 @@ public class ApplianceBase extends DBPersistent {
 		"SELECT MAX(ApplianceID) FROM " + TABLE_NAME;
 	
 	public static final String[] DEPENDENT_TABLES = {
-		"ApplianceAirConditioner",
-		"ApplianceDualFuel",
-		"ApplianceGenerator",
-		"ApplianceGrainDryer",
-		"ApplianceHeatPump",
-		"ApplianceIrrigation",
-		"ApplianceStorageHeat",
-		"ApplianceWaterHeater"
+		ApplianceAirConditioner.TABLE_NAME,
+		ApplianceDualFuel.TABLE_NAME,
+		ApplianceGenerator.TABLE_NAME,
+		ApplianceGrainDryer.TABLE_NAME,
+		ApplianceHeatPump.TABLE_NAME,
+		ApplianceIrrigation.TABLE_NAME,
+		ApplianceStorageHeat.TABLE_NAME,
+		ApplianceWaterHeater.TABLE_NAME
 	};
 
 	public ApplianceBase() {

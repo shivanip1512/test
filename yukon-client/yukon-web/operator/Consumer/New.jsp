@@ -503,12 +503,11 @@ function confirmCancel() {
                         <td width="210"> 
                           <select name="Substation" onchange="setContentChanged(true)">
                             <%
-	StarsCustSelectionList substationList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.database.db.stars.Substation.LISTNAME_SUBSTATION );
-	for (int i = 0; i < substationList.getStarsSelectionListEntryCount(); i++) {
-		StarsSelectionListEntry entry = substationList.getStarsSelectionListEntry(i);
-		String selectedStr = (account.getStarsSiteInformation().getSubstation().getEntryID() == entry.getEntryID()) ? "selected" : "";
+	for (int i = 0; i < substations.getStarsSubstationCount(); i++) {
+		StarsSubstation substation = substations.getStarsSubstation(i);
+		String selected = (account.getStarsSiteInformation().getSubstation().getEntryID() == substation.getSubstationID()) ? "selected" : "";
 %>
-                            <option value="<%= entry.getEntryID() %>" <%= selectedStr %>><%= entry.getContent() %></option>
+                            <option value="<%= substation.getSubstationID() %>" <%= selected %>><%= substation.getSubstationName() %></option>
                             <%
 	}
 %>

@@ -232,12 +232,11 @@ function init() {
                               <td width="210"> 
 								<select name="Substation" onchange="setContentChanged(true)">
 <%
-	StarsCustSelectionList substationList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.database.db.stars.Substation.LISTNAME_SUBSTATION );
-	for (int i = 0; i < substationList.getStarsSelectionListEntryCount(); i++) {
-		StarsSelectionListEntry entry = substationList.getStarsSelectionListEntry(i);
-		String selectedStr = (entry.getEntryID() == siteInfo.getSubstation().getEntryID()) ? "selected" : "";
+	for (int i = 0; i < substations.getStarsSubstationCount(); i++) {
+		StarsSubstation substation = substations.getStarsSubstation(i);
+		String selectedStr = (substation.getSubstationID() == siteInfo.getSubstation().getEntryID()) ? "selected" : "";
 %>
-								  <option value="<%= entry.getEntryID() %>" <%= selectedStr %>><%= entry.getContent() %></option>
+								  <option value="<%= substation.getSubstationID() %>" <%= selectedStr %>><%= substation.getSubstationName() %></option>
 <%
 	}
 %>

@@ -211,16 +211,16 @@ function addProgram(form) {
 var removeWarned = true;
 
 function removeProgram(form) {
-	if (!removeWarned) {
-		removeWarned = true;
-		alert('If you remove a program and click "Submit", all customers currently enrolled in this program will be unenrolled!');
-	}
-	
 	var assgnProgList = document.getElementById("ProgramsAssigned");
 	var availProgList = document.getElementById("ProgramsAvailable");
 	var progList = document.getElementById("Program");
 	
 	if (assgnProgList.selectedIndex >= 0) {
+		if (!removeWarned) {
+			removeWarned = true;
+			alert('WARNING: Removing a program will cause all customers currently enrolled in this program being taken out of it!');
+		}
+		
 		for (i = 1; i < progList.length; i++) {
 			if (progList.options[i].value == assgnProgList.value) {
 				if (i == progList.selectedIndex) {
