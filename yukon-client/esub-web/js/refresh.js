@@ -142,7 +142,6 @@ function updateNode(node) {
 function updateImage(node) {
 	var imageID = node.getAttribute('id');
     if( !isNaN(imageID) ) {        
-        alert(imageID);
         url = '/servlet/StateImageServlet' + '?' + 'id=' + node.getAttribute('id');
         getURL(url, fn);
     }
