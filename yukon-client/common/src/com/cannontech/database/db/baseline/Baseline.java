@@ -81,7 +81,6 @@ public static boolean deleteAllBaselines(Integer blineID, java.sql.Connection co
 	{
 		java.sql.Statement stat = conn.createStatement();
 
-		System.out.println("DELETE FROM " + TABLE_NAME + " WHERE " + CONSTRAINT_COLUMNS[0] + "= " + blineID + " AND WHERE NOT " + SETTER_COLUMNS[1] + "= Default Baseline");
 		stat.execute("DELETE FROM " + TABLE_NAME + " WHERE " + CONSTRAINT_COLUMNS[0] + "= " + blineID + " AND WHERE NOT " + SETTER_COLUMNS[1] + "= Default Baseline");
 		
 		if (stat != null)
