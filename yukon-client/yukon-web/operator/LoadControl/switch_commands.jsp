@@ -180,7 +180,7 @@ dropDownRouteIDArray[<%=ii%>] = <%=nameSerial[i][3]%>;
   if( nameSerial != null ) 
   {
 %>  
-      <FORM name="switchform" METHOD="POST" ACTION="/servlet/SwitchCommand" onSubmit="return validForm(this)">
+      <FORM name="switchform" METHOD="POST" ACTION="<%=request.getContextPath()%>/servlet/SwitchCommand" onSubmit="return validForm(this)">
       <table width="760" border="0" cellspacing="0" cellpadding="0" align="center">
         <tr> 
           <td width="101" bgcolor="#000000" height="1"></td>
