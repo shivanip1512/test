@@ -2208,8 +2208,10 @@ public class ImportManager extends HttpServlet {
 			es.setEntryID( Integer.parseInt(fields[IDX_WH_ENERGY_SRC]) );
 			wh.setEnergySource( es );
 			
-			int numElmt = Integer.parseInt(fields[IDX_WH_NUM_ELEMENTS]);
-			if (numElmt >= 0) wh.setNumberOfElements( numElmt );
+			if (fields[IDX_WH_NUM_ELEMENTS].length() > 0) {
+				int numElmt = Integer.parseInt( fields[IDX_WH_NUM_ELEMENTS] );
+				if (numElmt >= 0) wh.setNumberOfElements( numElmt );
+			}
 			
 			app.setWaterHeater( wh );
 		}
@@ -2224,14 +2226,20 @@ public class ImportManager extends HttpServlet {
 			tsMfc.setEntryID( Integer.parseInt(fields[IDX_GEN_TRAN_SWITCH_MFC]) );
 			gen.setTransferSwitchManufacturer( tsMfc );
 			
-			int peakKW = Integer.parseInt(fields[IDX_GEN_CAPACITY]);
-			if (peakKW >= 0) gen.setPeakKWCapacity( peakKW );
+			if (fields[IDX_GEN_CAPACITY].length() > 0) {
+				int peakKW = Integer.parseInt( fields[IDX_GEN_CAPACITY] );
+				if (peakKW >= 0) gen.setPeakKWCapacity( peakKW );
+			}
 			
-			int fuelCap = Integer.parseInt(fields[IDX_GEN_FUEL_CAP]);
-			if (fuelCap >= 0) gen.setFuelCapGallons( fuelCap );
+			if (fields[IDX_GEN_FUEL_CAP].length() > 0) {
+				int fuelCap = Integer.parseInt( fields[IDX_GEN_FUEL_CAP] );
+				if (fuelCap >= 0) gen.setFuelCapGallons( fuelCap );
+			}
 			
-			int startDelay = Integer.parseInt(fields[IDX_GEN_START_DELAY]);
-			if (startDelay >= 0) gen.setStartDelaySeconds( startDelay );
+			if (fields[IDX_GEN_START_DELAY].length() > 0) {
+				int startDelay = Integer.parseInt( fields[IDX_GEN_START_DELAY] );
+				if (startDelay >= 0) gen.setStartDelaySeconds( startDelay );
+			}
 			
 			app.setGenerator( gen );
 		}
@@ -2304,8 +2312,10 @@ public class ImportManager extends HttpServlet {
 			standbySrc.setEntryID( Integer.parseInt(fields[IDX_HP_STANDBY_SRC]) );
 			hp.setStandbySource( standbySrc );
 			
-			int restartDelay = Integer.parseInt(fields[IDX_HP_RESTART_DELAY]);
-			if (restartDelay >= 0) hp.setRestartDelaySeconds( restartDelay );
+			if (fields[IDX_HP_RESTART_DELAY].length() > 0) {
+				int restartDelay = Integer.parseInt( fields[IDX_HP_RESTART_DELAY] );
+				if (restartDelay >= 0) hp.setRestartDelaySeconds( restartDelay );
+			}
 			
 			app.setHeatPump( hp );
 		}
@@ -2316,11 +2326,15 @@ public class ImportManager extends HttpServlet {
 			type.setEntryID( Integer.parseInt(fields[IDX_SH_TYPE]) );
 			sh.setStorageType( type );
 			
-			int peakKW = Integer.parseInt(fields[IDX_SH_CAPACITY]);
-			if (peakKW >= 0) sh.setPeakKWCapacity( peakKW );
+			if (fields[IDX_SH_CAPACITY].length() > 0) {
+				int peakKW = Integer.parseInt( fields[IDX_SH_CAPACITY] );
+				if (peakKW >= 0) sh.setPeakKWCapacity( peakKW );
+			}
 			
-			int rechargeTime = Integer.parseInt(fields[IDX_SH_RECHARGE_TIME]);
-			if (rechargeTime >= 0) sh.setHoursToRecharge( rechargeTime );
+			if (fields[IDX_SH_RECHARGE_TIME].length() > 0) {
+				int rechargeTime = Integer.parseInt( fields[IDX_SH_RECHARGE_TIME] );
+				if (rechargeTime >= 0) sh.setHoursToRecharge( rechargeTime );
+			}
 			
 			app.setStorageHeat( sh );
 		}
@@ -2331,8 +2345,10 @@ public class ImportManager extends HttpServlet {
 			soType.setEntryID( Integer.parseInt(fields[IDX_DF_SWITCH_OVER_TYPE]) );
 			df.setSwitchOverType( soType );
 			
-			int kwCap2 = Integer.parseInt(fields[IDX_DF_2ND_CAPACITY]);
-			if (kwCap2 >= 0) df.setSecondaryKWCapacity( kwCap2 );
+			if (fields[IDX_DF_2ND_CAPACITY].length() > 0) {
+				int kwCap2 = Integer.parseInt( fields[IDX_DF_2ND_CAPACITY] );
+				if (kwCap2 >= 0) df.setSecondaryKWCapacity( kwCap2 );
+			}
 			
 			SecondaryEnergySource energySrc = new SecondaryEnergySource();
 			energySrc.setEntryID( Integer.parseInt(fields[IDX_DF_2ND_ENERGY_SRC]) );
