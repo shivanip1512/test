@@ -1,7 +1,5 @@
 package com.cannontech.roles;
 
-import com.cannontech.roles.*;
-
 /**
  * @author aaron
  */
