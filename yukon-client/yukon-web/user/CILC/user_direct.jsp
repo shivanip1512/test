@@ -1,3 +1,4 @@
+<%@ include file="../include/user_header.jsp" %>
 <html>
 <head>
 <title>Consumer Energy Services</title>
@@ -5,10 +6,12 @@
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 </head>
-
-<%@ include file="../include/user_header.jsp" %>
-<%@ page import="com.cannontech.message.macs.messages.Schedule" %>
+<html>
+<%@ page import="com.cannontech.message.macs.message.Schedule" %>
 <%@ page import="com.cannontech.loadcontrol.data.LMProgramDirect" %>
+<%@ page import="com.cannontech.servlet.LCConnectionServlet" %>
+<%@ page import="com.cannontech.web.loadcontrol.LoadcontrolCache" %>
+
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="java.util.Vector" %>
 <%@ page import="java.util.Iterator" %>
@@ -26,6 +29,9 @@
                            
     // list to put this customers programs in, contains LMProgramDirect objects
     ArrayList ourPrograms = new ArrayList();
+
+    LCConnectionServlet cs = (LCConnectionServlet) application.getAttribute(LCConnectionServlet.SERVLET_CONTEXT_ID);
+    LoadcontrolCache cache = cs.getCache();
 
     long[] programIDs = com.cannontech.database.db.web.LMDirectCustomerList.getProgramIDs( customerID );    
     java.util.Arrays.sort(programIDs);
@@ -82,7 +88,7 @@
         </tr>
         <tr> 
           <td  valign="top" width="150"> 
-		  <% String pageName = "user_lm_time.jsp"; %>
+		  <% String pageName = "user_direct.jsp"; %>
           <%@ include file="include/nav.jsp" %>
           </td>
           <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
@@ -159,8 +165,8 @@
                 LMProgramDirect p = (LMProgramDirect) iter.next();
 
                 String status = p.getProgramStatusString( p.getProgramStatus().intValue());
-                startStr = "-";               
-                stopStr = "-"; 
+	            String startStr = "-";               
+   	  	        String stopStr = "-"; 
                 String actionURI = "user_direct.jsp";
 
 

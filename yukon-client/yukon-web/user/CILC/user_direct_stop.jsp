@@ -1,3 +1,4 @@
+<%@ include file="../include/user_header.jsp" %>
 <html>
 <head>
 <title>Consumer Energy Services</title>
@@ -23,8 +24,9 @@
   //End hiding script -->
   </SCRIPT>
 </head>
-<%@ include file="../include/user_header.jsp" %>
 <%@ page import="com.cannontech.loadcontrol.data.LMProgramDirect" %>
+<%@ page import="com.cannontech.servlet.LCConnectionServlet" %>
+<%@ page import="com.cannontech.web.loadcontrol.LoadcontrolCache" %>
 <%@ page import="java.util.Calendar" %>
 <%@ taglib uri="/WEB-INF/struts.tld" prefix="struts" %>
 <%@ taglib uri="/WEB-INF/cti.tld" prefix="cti" %>
@@ -43,6 +45,9 @@
       
     //What program are we dealing with?
     int programID = -1;
+
+    LCConnectionServlet cs = (LCConnectionServlet) application.getAttribute(LCConnectionServlet.SERVLET_CONTEXT_ID);
+    LoadcontrolCache cache = cs.getCache();
 
 	if (request.getParameter("SUBMITTED") == null)
 	{
@@ -188,7 +193,7 @@
         </tr>
         <tr> 
           <td  valign="top" width="150"> 
-		  <% String pageName = "user_lm_time.jsp"; %>
+		  <% String pageName = "user_direct.jsp"; %>
           <%@ include file="include/nav.jsp" %>
           </td>
           <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
