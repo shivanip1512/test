@@ -1,22 +1,6 @@
 
 #pragma warning( disable : 4786)
 
-/*-----------------------------------------------------------------------------*
-*
-* File:   telegyrgroup
-*
-* Date:   5/16/2002
-*
-* Author: Eric Schmit
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2002/08/07 17:11:17 $
-*
-* Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
 #include <vector>
 using namespace std;
 

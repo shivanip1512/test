@@ -1,21 +1,6 @@
 
 #pragma warning( disable : 4786)
 
-/*-----------------------------------------------------------------------------*
-*
-* File:   telegyrcontrolcenter
-*
-* Date:   5/20/2002
-*
-* Author: Eric Schmit
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/08/23 14:23:46 $
-*
-* Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include <vector>
 
 using namespace std;
@@ -29,17 +14,6 @@ using namespace std;
 
 CtiTelegyrControlCenter::CtiTelegyrControlCenter()
 {
-/*
-   RWCString name = "MEC";
-   RWCString oper = "LGS";
-   RWCString pass = "1234";
-
-   setChannelID(1);
-   setSysName( name );
-   setOperator( oper );
-   setPassword( pass );
-   setAccess( 1 );
-*/
 }
 
 //=================================================================================================================================
@@ -47,10 +21,7 @@ CtiTelegyrControlCenter::CtiTelegyrControlCenter()
 
 CtiTelegyrControlCenter::~CtiTelegyrControlCenter()
 {
-   if( !_telegyrGroupList.empty() )
-   {
-      _telegyrGroupList.erase( _telegyrGroupList.begin(), _telegyrGroupList.end() );
-   }
+   deleteTelegyrGroupList();
 }
 
 //=================================================================================================================================
@@ -211,15 +182,6 @@ vector< CtiTelegyrGroup > & CtiTelegyrControlCenter::getTelegyrGroupList( void )
 
 void CtiTelegyrControlCenter::addToGroupList( CtiTelegyrGroup aGroup )
 {
-//...................... testing ......................
-/*   int   index;
-
-   for( index = 0; index < _telegyrGroupList.size(); index++ )
-   {
-      dout << index << " Group list" << endl;
-   }
-*/
-//...................... testing ......................
    _telegyrGroupList.push_back( aGroup );
 }
 

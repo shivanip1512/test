@@ -1,6 +1,4 @@
 
-#pragma warning( disable : 4786)
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   telegyrgroup
@@ -12,12 +10,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2002/08/23 14:23:47 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2004/09/27 17:10:39 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
+#pragma warning( disable : 4786)
 #ifndef __TELEGYRGROUP_H__
 #define __TELEGYRGROUP_H__
 
@@ -59,9 +58,11 @@ class IM_EX_FDRTELEGYRAPI CtiTelegyrGroup
     private:
 
         RWCString             _groupName;
-        int                   _groupID;
         RWCString             _groupType;
+
         int                   _interval;
+        int                   _groupID;
+
         vector< CtiFDRPoint > _pointList;
 };
 
