@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2003/12/31 21:04:04 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2004/01/07 16:47:06 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -134,7 +134,7 @@ void CtiTransdataTracker::reinitalize( void )
    _goodCRC          = false;
    _ymodemsTurn      = false;
    _dataIsExpected   = false;
-   _hold             = false;
+//   _hold             = false;
    _didRecordCheck   = false;
    _didLoadProfile   = false;
    _didBilling       = false;
@@ -263,6 +263,8 @@ bool CtiTransdataTracker::processComms( BYTE *data, int bytes )
 
       setNextState();
 
+      _failCount = 0;
+
       if( _moveAlong )
       {
          _moveAlong = false;
@@ -270,6 +272,10 @@ bool CtiTransdataTracker::processComms( BYTE *data, int bytes )
       }
 
       valid = true;
+   }
+   else
+   {
+      setError(); //we're getting crap
    }
 
    return( valid );
@@ -688,10 +694,8 @@ void CtiTransdataTracker::setLastLPTime( ULONG lpTime )
  
 int CtiTransdataTracker::calcLPRecs( void )
 {
-   int numberLPRecs = 0;
    int channels = countChannels();
-
-   numberLPRecs = (( _lp->meterTime - _lastLPTime ) / ( _lp->lpFormat[0] * 60 )) * channels;
+   int numberLPRecs = (( _lp->meterTime - _lastLPTime ) / ( _lp->lpFormat[0] * 60 )) * channels;
 
    if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
    {
@@ -768,7 +772,6 @@ int CtiTransdataTracker::retreiveData( BYTE *data )
 
 void CtiTransdataTracker::reset( void )
 {
-   _failCount = 0;
    _waiting = false;
    _ymodemsTurn = false;
    _bytesReceived = 0;

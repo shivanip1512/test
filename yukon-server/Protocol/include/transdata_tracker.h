@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2003/12/31 21:04:04 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2004/01/07 16:47:06 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -30,13 +30,7 @@
 class IM_EX_PROT CtiTransdataTracker
 {
    public:
-      /*
-      typedef union
-      {
-         BYTE     rec[2];
-         USHORT   value;
-      }lpRecord;
-      */
+      
       struct lpRecord
       {
          BYTE     rec[2];
@@ -183,7 +177,7 @@ class IM_EX_PROT CtiTransdataTracker
       bool                 _ymodemsTurn;
       bool                 _first;
       bool                 _sec;
-      bool                 _hold;
+//      bool                 _hold;
       bool                 _dataIsExpected;
       bool                 _didRecordCheck;
       bool                 _didLoadProfile;

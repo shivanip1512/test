@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2003/12/31 21:04:04 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2004/01/07 16:47:06 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -32,7 +32,8 @@
 #include "mgr_point.h"
 #include "device.h"
 #include "pt_numeric.h"
-#include "connection.h"      
+#include "connection.h" 
+#include "msg_cmd.h"
 
 class IM_EX_DEVDB CtiDeviceMarkV : public CtiDeviceMeter
 {                                        
@@ -76,7 +77,7 @@ private:
 
 
    CtiProtocolTransdata       _transdataProtocol;
-   CtiTransdataData           *_converted;
+//   CtiTransdataData           *_converted;
    CtiProtocolTransdata::llp  _llp;
    
 protected:

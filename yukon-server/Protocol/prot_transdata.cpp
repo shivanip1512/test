@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2003/12/31 21:04:04 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2004/01/07 16:47:06 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -149,11 +149,12 @@ int CtiProtocolTransdata::recvOutbound( OUTMESS *OutMessage )
 
 int CtiProtocolTransdata::sendCommResult( INMESS *InMessage )
 {
-   int length = _numBilling + sizeof( llp );
+   int length = _numBilling;
 
-   memcpy( InMessage->Buffer.InMessage + sizeof( llp ), _billingBytes, length );
-   InMessage->InLength = length;
+   memcpy( InMessage->Buffer.DUPSt.DUPRep.Message + sizeof( llp ), _billingBytes, length );
    
+   InMessage->InLength = length + sizeof( llp );
+      
    _numBytes = 0;
 
    return( NORMAL );
@@ -171,7 +172,7 @@ vector<CtiTransdataData *> CtiProtocolTransdata::resultDecode( INMESS *InMessage
    vector<CtiTransdataData *> transVector;
 
    ptr = ( unsigned char*)( InMessage->Buffer.InMessage );
-   ptr += 3;
+//   ptr += 3;
 
    while( *ptr != NULL )
    {
@@ -219,7 +220,7 @@ void CtiProtocolTransdata::reinitalize( void )
 
    _application.reinitalize();
    
-   _collectLP = true;//false;
+   _collectLP = true;
    _finished = false;
    _billingDone = false;
    _lpDone = false;

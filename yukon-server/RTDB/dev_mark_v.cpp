@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2003/12/31 21:04:04 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2004/01/07 16:47:06 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -163,34 +163,45 @@ INT CtiDeviceMarkV::ResultDecode( INMESS                    *InMessage,
                                   RWTPtrSlist< OUTMESS >    &outList)
 {
    vector<CtiTransdataData *>    transVector;
-   
+   INT                           retCode;
 
-   if( _transdataProtocol.getCommand() == CtiTransdataApplication::General )
+   if( InMessage->Buffer.DUPSt.DUPRep.ReqSt.Command[1] == 0 )
    {
-      memcpy( &_llp, InMessage->Buffer.InMessage, sizeof( _llp ));
-      setLastLPTime( RWTime( _llp.lastLP ));
-      memcpy( InMessage->Buffer.InMessage, InMessage->Buffer.InMessage + sizeof( _llp ), InMessage->InLength-sizeof( _llp ));
-
-      transVector = _transdataProtocol.resultDecode( InMessage );
-
-      if( transVector.size() )
+      if( _transdataProtocol.getCommand() == CtiTransdataApplication::General )
       {
-         decodeResultScan( InMessage,TimeNow, vgList, retList, transVector );
+         memcpy( &_llp, InMessage->Buffer.DUPSt.DUPRep.Message, sizeof( _llp ));
+         RWTime x( _llp.lastLP );
+         setLastLPTime( x );
+         memcpy( InMessage->Buffer.InMessage, InMessage->Buffer.DUPSt.DUPRep.Message + sizeof( _llp ), InMessage->InLength-sizeof( _llp ));
 
-         for( int count = 0; count < transVector.size() - 1; count++ )    //matt say use iterator!
+         transVector = _transdataProtocol.resultDecode( InMessage );
+
+         if( transVector.size() )
          {
-            delete transVector[count];
+            decodeResultScan( InMessage,TimeNow, vgList, retList, transVector );
+
+            for( int count = 0; count < transVector.size() - 1; count++ )    //matt say use iterator!
+            {
+               delete transVector[count];
+            }
          }
       }
+      else //LOADPROFILE
+      {
+      }
+
+      retCode = NORMAL;
    }
-   else //LOADPROFILE
+   else
    {
+      retCode = NOTNORMAL;
    }
 
-   return( NORMAL );
+   return( retCode );
 }
 
 //=====================================================================================================================
+//at the moment, all we do is fail in general, without setting points 'non-updated' or anything fancy
 //=====================================================================================================================
 
 INT CtiDeviceMarkV::ErrorDecode( INMESS                     *InMessage,
@@ -199,7 +210,50 @@ INT CtiDeviceMarkV::ErrorDecode( INMESS                     *InMessage,
                                  RWTPtrSlist< CtiMessage >  &retList,
                                  RWTPtrSlist< OUTMESS >     &outList)
 {
-   return( 1 );
+   INT retCode       = NORMAL;
+   CtiCommandParser  parse( InMessage->Return.CommandStr );
+   CtiReturnMsg     *pPIL = CTIDBG_new CtiReturnMsg(getID(),
+                                             RWCString( InMessage->Return.CommandStr ),
+                                             RWCString(),
+                                             InMessage->EventCode & 0x7fff,
+                                             InMessage->Return.RouteID,
+                                             InMessage->Return.MacroOffset,
+                                             InMessage->Return.Attempt,
+                                             InMessage->Return.TrxID,
+                                             InMessage->Return.UserID);
+   CtiPointDataMsg  *commFailed;
+   CtiPointBase     *commPoint;
+
+   {
+       CtiLockGuard<CtiLogger> doubt_guard(dout);
+       dout << RWTime() << " ----Error Decode For Device " << getName() << " In Progress----" << endl;
+   }
+
+   if( pPIL != NULL )
+   {
+       CtiCommandMsg *pMsg = CTIDBG_new CtiCommandMsg( CtiCommandMsg::UpdateFailed );
+
+       if( pMsg != NULL )
+       {
+           pMsg->insert( -1 );             // This is the dispatch token and is unimplemented at this time
+           pMsg->insert( OP_DEVICEID );      // This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
+           pMsg->insert( getID() );          // The id (device or point which failed)
+           pMsg->insert( ScanRateInvalid );  // One of ScanRateGeneral,ScanRateAccum,ScanRateStatus,ScanRateIntegrity, or if unknown -> ScanRateInvalid defined in yukon.h
+
+           if( InMessage->EventCode != 0 )
+           {
+               pMsg->insert( InMessage->EventCode );
+           }
+           else
+           {
+               pMsg->insert( GeneralScanAborted );
+           }
+
+           retList.insert( pMsg );
+       }
+   }
+
+   return retCode;
 }
 
 //=====================================================================================================================
@@ -218,8 +272,7 @@ int CtiDeviceMarkV::decodeResultScan( INMESS                    *InMessage,
    CtiPointBase      *pPoint = NULL;
    int               index;
    CtiReturnMsg      *pPIL = CTIDBG_new CtiReturnMsg( getID(),
-//                                                       RWCString(InMessage->Return.CommandStr),
-                                                       RWCString("ooowhat?"),
+                                                       RWCString(InMessage->Return.CommandStr),
                                                        RWCString(),
                                                        InMessage->EventCode & 0x7fff,
                                                        InMessage->Return.RouteID,
@@ -227,7 +280,7 @@ int CtiDeviceMarkV::decodeResultScan( INMESS                    *InMessage,
                                                        InMessage->Return.Attempt,
                                                        InMessage->Return.TrxID,
                                                        InMessage->Return.UserID);
-
+ 
    if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
    {
       CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -898,7 +951,7 @@ void CtiDeviceMarkV::processDispatchReturnMessage( CtiConnection &conn )
       if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
       {
          CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " --------Dispatch will see this time ->" << mTime << endl;
+         dout << RWTime() << " ----Dispatch will see this time ->" << mTime << endl;
       }
 
       for( index = 0; index < lp->numLpRecs; )
@@ -916,6 +969,15 @@ void CtiDeviceMarkV::processDispatchReturnMessage( CtiConnection &conn )
                pData->setTags( TAG_POINT_LOAD_PROFILE_DATA );
                pData->setMessageTime( mTime );
                pData->setType( pPoint->getType() );
+
+               if( pPoint->getType() == 0 )
+               {
+                  if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+                  {
+                     CtiLockGuard<CtiLogger> doubt_guard(dout);
+                     dout << RWTime() << " ----Whoa! Point type is " << pPoint->getType() << " " << index << endl;
+                  }
+               }
 
                msgMulti->getData().insert( pData );
 
@@ -950,6 +1012,15 @@ void CtiDeviceMarkV::processDispatchReturnMessage( CtiConnection &conn )
                pData->setMessageTime( mTime );
                pData->setType( pPoint->getType() );
 
+               if( pPoint->getType() == 0 )
+               {
+                  if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+                  {
+                     CtiLockGuard<CtiLogger> doubt_guard(dout);
+                     dout << RWTime() << " ----Whoa! Point type is " << pPoint->getType() << " " << index << endl;
+                  }
+               }
+
                msgMulti->getData().insert( pData );
 
                if( firstLoop )
@@ -983,6 +1054,15 @@ void CtiDeviceMarkV::processDispatchReturnMessage( CtiConnection &conn )
                pData->setMessageTime( mTime );
                pData->setType( pPoint->getType() );
 
+               if( pPoint->getType() == 0 )
+               {
+                  if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+                  {
+                     CtiLockGuard<CtiLogger> doubt_guard(dout);
+                     dout << RWTime() << " ----Whoa! Point type is " << pPoint->getType() << " " << index << endl;
+                  }
+               }
+
                msgMulti->getData().insert( pData );
 
                if( firstLoop )
@@ -1015,6 +1095,15 @@ void CtiDeviceMarkV::processDispatchReturnMessage( CtiConnection &conn )
                pData->setTags( TAG_POINT_LOAD_PROFILE_DATA );
                pData->setMessageTime( mTime );
                pData->setType( pPoint->getType() );
+
+               if( pPoint->getType() == 0 )
+               {
+                  if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+                  {
+                     CtiLockGuard<CtiLogger> doubt_guard(dout);
+                     dout << RWTime() << " ----Whoa! Point type is " << pPoint->getType() << " " << index << endl;
+                  }
+               }
 
                msgMulti->getData().insert( pData );
 
@@ -1072,8 +1161,10 @@ int CtiDeviceMarkV::sendCommResult( INMESS *InMessage )
    lLP = &_llp;
 
    //insert lastlptime struct into inmess
-   memcpy( InMessage->Buffer.InMessage, lLP, sizeof( _llp ) );
-   _transdataProtocol.sendCommResult( InMessage );
+   memcpy( InMessage->Buffer.DUPSt.DUPRep.Message, lLP, sizeof( _llp ) );
+      
+   //we have succeeded in communicating
+   InMessage->Buffer.DUPSt.DUPRep.ReqSt.Command[1] = _transdataProtocol.sendCommResult( InMessage );
               
    return( 1 );
 }
@@ -1084,12 +1175,6 @@ int CtiDeviceMarkV::sendCommResult( INMESS *InMessage )
 void CtiDeviceMarkV::DecodeDatabaseReader( RWDBReader &rdr )
 {
    Inherited::DecodeDatabaseReader( rdr );       // get the base class handled
-
-   if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
-   {
-       CtiLockGuard<CtiLogger> doubt_guard(dout);
-       dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
-   }
 
    getProtocol().injectData( getIED().getPassword() );
 }
