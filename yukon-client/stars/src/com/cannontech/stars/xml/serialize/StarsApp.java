@@ -53,12 +53,19 @@ public abstract class StarsApp implements java.io.Serializable {
     **/
     private boolean _has_inventoryID;
 
-    private int _lmProgramID;
+    private int _programID;
 
     /**
-     * keeps track of state for field: _lmProgramID
+     * keeps track of state for field: _programID
     **/
-    private boolean _has_lmProgramID;
+    private boolean _has_programID;
+
+    private int _loadNumber;
+
+    /**
+     * keeps track of state for field: _loadNumber
+    **/
+    private boolean _has_loadNumber;
 
     private int _yearManufactured;
 
@@ -158,10 +165,17 @@ public abstract class StarsApp implements java.io.Serializable {
 
     /**
     **/
-    public void deleteLmProgramID()
+    public void deleteLoadNumber()
     {
-        this._has_lmProgramID= false;
-    } //-- void deleteLmProgramID() 
+        this._has_loadNumber= false;
+    } //-- void deleteLoadNumber() 
+
+    /**
+    **/
+    public void deleteProgramID()
+    {
+        this._has_programID= false;
+    } //-- void deleteProgramID() 
 
     /**
     **/
@@ -281,14 +295,14 @@ public abstract class StarsApp implements java.io.Serializable {
     } //-- int getKWCapacity() 
 
     /**
-     * Returns the value of field 'lmProgramID'.
+     * Returns the value of field 'loadNumber'.
      * 
-     * @return the value of field 'lmProgramID'.
+     * @return the value of field 'loadNumber'.
     **/
-    public int getLmProgramID()
+    public int getLoadNumber()
     {
-        return this._lmProgramID;
-    } //-- int getLmProgramID() 
+        return this._loadNumber;
+    } //-- int getLoadNumber() 
 
     /**
      * Returns the value of field 'location'.
@@ -329,6 +343,16 @@ public abstract class StarsApp implements java.io.Serializable {
     {
         return this._notes;
     } //-- java.lang.String getNotes() 
+
+    /**
+     * Returns the value of field 'programID'.
+     * 
+     * @return the value of field 'programID'.
+    **/
+    public int getProgramID()
+    {
+        return this._programID;
+    } //-- int getProgramID() 
 
     /**
      * Returns the value of field 'serviceCompany'.
@@ -407,10 +431,17 @@ public abstract class StarsApp implements java.io.Serializable {
 
     /**
     **/
-    public boolean hasLmProgramID()
+    public boolean hasLoadNumber()
     {
-        return this._has_lmProgramID;
-    } //-- boolean hasLmProgramID() 
+        return this._has_loadNumber;
+    } //-- boolean hasLoadNumber() 
+
+    /**
+    **/
+    public boolean hasProgramID()
+    {
+        return this._has_programID;
+    } //-- boolean hasProgramID() 
 
     /**
     **/
@@ -565,15 +596,15 @@ public abstract class StarsApp implements java.io.Serializable {
     } //-- void setKWCapacity(int) 
 
     /**
-     * Sets the value of field 'lmProgramID'.
+     * Sets the value of field 'loadNumber'.
      * 
-     * @param lmProgramID the value of field 'lmProgramID'.
+     * @param loadNumber the value of field 'loadNumber'.
     **/
-    public void setLmProgramID(int lmProgramID)
+    public void setLoadNumber(int loadNumber)
     {
-        this._lmProgramID = lmProgramID;
-        this._has_lmProgramID = true;
-    } //-- void setLmProgramID(int) 
+        this._loadNumber = loadNumber;
+        this._has_loadNumber = true;
+    } //-- void setLoadNumber(int) 
 
     /**
      * Sets the value of field 'location'.
@@ -614,6 +645,17 @@ public abstract class StarsApp implements java.io.Serializable {
     {
         this._notes = notes;
     } //-- void setNotes(java.lang.String) 
+
+    /**
+     * Sets the value of field 'programID'.
+     * 
+     * @param programID the value of field 'programID'.
+    **/
+    public void setProgramID(int programID)
+    {
+        this._programID = programID;
+        this._has_programID = true;
+    } //-- void setProgramID(int) 
 
     /**
      * Sets the value of field 'serviceCompany'.

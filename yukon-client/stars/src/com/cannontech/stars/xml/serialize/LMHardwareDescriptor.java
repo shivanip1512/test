@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: LMHardwareDescriptor.java,v 1.20 2004/06/15 15:45:52 zyao Exp $
+ * $Id: LMHardwareDescriptor.java,v 1.21 2004/06/25 21:37:06 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.20 $ $Date: 2004/06/15 15:45:52 $
+ * @version $Revision: 1.21 $ $Date: 2004/06/25 21:37:06 $
 **/
 public class LMHardwareDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
@@ -204,6 +204,38 @@ public class LMHardwareDescriptor extends org.exolab.castor.xml.util.XMLClassDes
         addFieldDescriptor(desc);
         
         //-- validation code for: _starsThermostatSettings
+        fieldValidator = new FieldValidator();
+        desc.setValidator(fieldValidator);
+        
+        //-- _starsLMConfiguration
+        desc = new XMLFieldDescriptorImpl(StarsLMConfiguration.class, "_starsLMConfiguration", "stars-LMConfiguration", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                LMHardware target = (LMHardware) object;
+                return target.getStarsLMConfiguration();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    LMHardware target = (LMHardware) object;
+                    target.setStarsLMConfiguration( (StarsLMConfiguration) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new StarsLMConfiguration();
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _starsLMConfiguration
         fieldValidator = new FieldValidator();
         desc.setValidator(fieldValidator);
         

@@ -749,7 +749,7 @@ public class UpdateApplianceAction implements ActionBase {
 		liteAppNew.setApplianceID( liteAppOld.getApplianceID() );
 		liteAppNew.setAccountID( liteAppOld.getAccountID() );
 		liteAppNew.setApplianceCategoryID( liteAppOld.getApplianceCategoryID() );
-		liteAppNew.setLmProgramID( liteAppOld.getLmProgramID() );
+		liteAppNew.setProgramID( liteAppOld.getProgramID() );
 		liteAppNew.setYearManufactured( liteAppOld.getYearManufactured() );
 		liteAppNew.setManufacturerID( liteAppOld.getManufacturerID() );
 		liteAppNew.setLocationID( liteAppOld.getLocationID() );

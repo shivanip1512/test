@@ -24,7 +24,7 @@ public class RefreshTimerTask extends StarsTimerTask {
 	private static final long TIMER_PERIOD = 1000 * 60 * 1;	// 1 minutes
 	
 	// Length of time without any action from the client to consider an account inactive
-	private static final long INACTIVE_INTERVAL = 1000 * 60 * 30;
+	private static final long INACTIVE_INTERVAL = 1000 * 60 * 60;
 
 	/**
 	 * @see com.cannontech.stars.util.timertask.StarsTimerTask#isFixedRate()
@@ -67,13 +67,13 @@ public class RefreshTimerTask extends StarsTimerTask {
 			}
 			
 			// Update the real-time data for EnergyPro thermostats
-			ArrayList activeAccounts = new ArrayList( company.getActiveAccounts() );
+			ArrayList activeAccounts = company.getActiveAccounts();
 			for (int j = 0; j < activeAccounts.size(); j++) {
 				StarsCustAccountInformation starsAcctInfo = (StarsCustAccountInformation) activeAccounts.get(j);
 				
 				// If account is no longer active, remove it from the active account list
 				if (System.currentTimeMillis() - starsAcctInfo.getLastActiveTime().getTime() > INACTIVE_INTERVAL) {
-					company.unregisterActiveAccount( starsAcctInfo );
+					company.deleteStarsCustAccountInformation( starsAcctInfo.getStarsCustomerAccount().getAccountID() );
 					continue;
 				}
 				

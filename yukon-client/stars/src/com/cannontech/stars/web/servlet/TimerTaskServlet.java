@@ -28,8 +28,10 @@ import com.cannontech.stars.util.task.StarsTimerTask;
  */
 public class TimerTaskServlet extends HttpServlet {
     
-	// Timer object for periodical tasks
-	private Timer timer = null;
+	// Timer object for less frequently happened tasks
+	private static Timer timer1 = null;
+	// Timer object for frequently happened tasks
+	private static Timer timer2 = null;
 
 	/* (non-Javadoc)
 	 * @see javax.servlet.GenericServlet#init()
@@ -37,10 +39,12 @@ public class TimerTaskServlet extends HttpServlet {
 	public void init() throws ServletException {
 		super.init();
 		
-		timer = new Timer();
-		runTimerTask( new DailyTimerTask() );
-		runTimerTask( new HourlyTimerTask() );
-		runTimerTask( new RefreshTimerTask() );
+		timer1 = new Timer();
+		runTimerTask( new DailyTimerTask(), timer1 );
+		
+		timer2 = new Timer();
+		runTimerTask( new HourlyTimerTask(), timer2 );
+		runTimerTask( new RefreshTimerTask(), timer2 );
 		
 		CTILogger.info("All timer tasks started");
 	}
@@ -52,10 +56,11 @@ public class TimerTaskServlet extends HttpServlet {
 		throws ServletException, IOException
 	{
 		if (req.getParameter("Restart") != null)
-			restartTimerTasks();
+			restartAllTimerTasks();
+		resp.getWriter().println("All timer tasks restarted");
 	}
     
-	private void runTimerTask(StarsTimerTask timerTask) {
+	private static void runTimerTask(StarsTimerTask timerTask, Timer timer) {
 		if (timerTask.isFixedRate()) {
 			// Run the first time after the initial delay,
 			// then run periodically at a fixed rate, e.g. at every midnight
@@ -73,13 +78,21 @@ public class TimerTaskServlet extends HttpServlet {
 		}
 	}
 	
-	private void restartTimerTasks() {
-		if (timer != null) timer.cancel();
+	public static void restartFrequentTimerTasks() {
+		if (timer2 != null) timer2.cancel();
+		timer2 = new Timer();
+		runTimerTask( new HourlyTimerTask(), timer2 );
+		runTimerTask( new RefreshTimerTask(), timer2 );
 		
-		timer = new Timer();
-		runTimerTask( new DailyTimerTask() );
-		runTimerTask( new HourlyTimerTask() );
-		runTimerTask( new RefreshTimerTask() );
+		CTILogger.info("All frequent timer tasks restarted");
+	}
+	
+	public static void restartAllTimerTasks() {
+		if (timer1 != null) timer1.cancel();
+		timer1 = new Timer();
+		runTimerTask( new DailyTimerTask(), timer1 );
+		
+		restartFrequentTimerTasks();
 		
 		CTILogger.info("All timer tasks restarted");
 	}

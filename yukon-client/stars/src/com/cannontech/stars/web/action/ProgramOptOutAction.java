@@ -422,8 +422,8 @@ public class ProgramOptOutAction implements ActionBase {
 			
 			for (int i = 0; i < liteAcctInfo.getAppliances().size(); i++) {
 				LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(i);
-				if (liteApp.getInventoryID() == liteHw.getInventoryID() && liteApp.getLmProgramID() > 0)
-					removeProgramFutureActivationEvents( liteAcctInfo.getProgramHistory(), liteApp.getLmProgramID(), energyCompany );
+				if (liteApp.getInventoryID() == liteHw.getInventoryID() && liteApp.getProgramID() > 0)
+					removeProgramFutureActivationEvents( liteAcctInfo.getProgramHistory(), liteApp.getProgramID(), energyCompany );
 			}
 		}
 		catch (Exception e) {
@@ -436,7 +436,7 @@ public class ProgramOptOutAction implements ActionBase {
 		
 		for (int i = 0; i < liteAcctInfo.getAppliances().size(); i++) {
 			LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(i);
-			if (liteApp.getLmProgramID() > 0 && liteApp.getInventoryID() > 0) {
+			if (liteApp.getProgramID() > 0 && liteApp.getInventoryID() > 0) {
 				LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory( liteApp.getInventoryID(), true );
 				if (!hardwares.contains( liteHw )) hardwares.add( liteHw );
 			}
@@ -732,14 +732,14 @@ public class ProgramOptOutAction implements ActionBase {
 		// Add "Temp Opt Out" and "Future Activation" to program events
 		for (int i = 0; i < liteAcctInfo.getAppliances().size(); i++) {
 			LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(i);
-			if (liteApp.getInventoryID() == liteHw.getInventoryID() && liteApp.getLmProgramID() > 0) {
-				LiteStarsLMProgram liteProg = ProgramSignUpAction.getLMProgram( liteAcctInfo, liteApp.getLmProgramID() );
+			if (liteApp.getInventoryID() == liteHw.getInventoryID() && liteApp.getProgramID() > 0) {
+				LiteStarsLMProgram liteProg = ProgramSignUpAction.getLMProgram( liteAcctInfo, liteApp.getProgramID() );
 				
 				multiDB = new com.cannontech.database.data.multi.MultiDBPersistent();
 	            
 				com.cannontech.database.data.stars.event.LMProgramEvent event =
 						new com.cannontech.database.data.stars.event.LMProgramEvent();
-				event.getLMProgramEvent().setLMProgramID( new Integer(liteApp.getLmProgramID()) );
+				event.getLMProgramEvent().setProgramID( new Integer(liteApp.getProgramID()) );
 				event.getLMProgramEvent().setAccountID( new Integer(liteAcctInfo.getCustomerAccount().getAccountID()) );
 				event.getLMCustomerEventBase().setEventTypeID( progEventEntryID );
 				event.getLMCustomerEventBase().setActionID( tempTermEntryID );
@@ -748,7 +748,7 @@ public class ProgramOptOutAction implements ActionBase {
 				multiDB.getDBPersistentVector().addElement( event );
 	            
 				event = new com.cannontech.database.data.stars.event.LMProgramEvent();
-				event.getLMProgramEvent().setLMProgramID( new Integer(liteApp.getLmProgramID()) );
+				event.getLMProgramEvent().setProgramID( new Integer(liteApp.getProgramID()) );
 				event.getLMProgramEvent().setAccountID( new Integer(liteAcctInfo.getCustomerAccount().getAccountID()) );
 				event.getLMCustomerEventBase().setEventTypeID( progEventEntryID );
 				event.getLMCustomerEventBase().setActionID( futureActEntryID );
@@ -800,9 +800,9 @@ public class ProgramOptOutAction implements ActionBase {
 			// Update the corresponding program status
 			for (int j = 0; j < starsAcctInfo.getStarsAppliances().getStarsApplianceCount(); j++) {
 				StarsAppliance app = starsAcctInfo.getStarsAppliances().getStarsAppliance(j);
-				if (app.getInventoryID() == hwHist.getInventoryID() && app.getLmProgramID() > 0) {
+				if (app.getInventoryID() == hwHist.getInventoryID() && app.getProgramID() > 0) {
 					for (int k = 0; k < programs.getStarsLMProgramCount(); k++) {
-						if (programs.getStarsLMProgram(k).getProgramID() == app.getLmProgramID()) {
+						if (programs.getStarsLMProgram(k).getProgramID() == app.getProgramID()) {
 							programs.getStarsLMProgram(k).setStatus( ServletUtils.OUT_OF_SERVICE );
 							break;
 						}

@@ -11,8 +11,9 @@ import java.util.ArrayList;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.YukonListFuncs;
-import com.cannontech.database.data.lite.stars.LiteLMProgram;
+import com.cannontech.database.data.lite.stars.LiteLMProgramWebPublishing;
 import com.cannontech.database.data.lite.stars.LiteLMThermostatSchedule;
 import com.cannontech.database.data.lite.stars.LiteLMThermostatSeason;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -277,8 +278,11 @@ public class ECUtils {
 		return company.getLiteID() == SOAPServer.DEFAULT_ENERGY_COMPANY_ID;
 	}
 	
-	public static String getPublishedProgramName(LiteLMProgram liteProg, LiteStarsEnergyCompany energyCompany) {
-		String progName = liteProg.getProgramName();
+	public static String getPublishedProgramName(LiteLMProgramWebPublishing liteProg, LiteStarsEnergyCompany energyCompany) {
+		String progName = CtiUtilities.STRING_NONE;
+		
+		if (liteProg.getDeviceID() > 0)
+			progName = PAOFuncs.getYukonPAOName( liteProg.getDeviceID() );
 		
 		StarsWebConfig config = energyCompany.getStarsWebConfig( liteProg.getWebSettingsID() );
 		if (config != null) {

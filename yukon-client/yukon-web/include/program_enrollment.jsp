@@ -195,11 +195,34 @@ function confirmCancel() {
                                 <table width="100%" border="0" cellspacing="0" cellpadding="1">
 <%
 		if (category.getStarsEnrLMProgramCount() == 1) {
-			/* If only one program under this category, only show the description button */
+			String[] progIcons = ServletUtils.getImageNames(category.getStarsEnrLMProgram(0).getStarsWebConfig().getLogoLocation());
 %>
                                   <tr> 
                                     <td width="3%">&nbsp;</td>
-                                    <td class="TableCell">&nbsp;</td>
+                                    <td class="TableCell">
+                          <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                            <tr>
+                              <td width="70%">&nbsp;</td>
+                              <td width="30%">
+<% if (!progIcons[0].equals("")) {
+	savingsIconExists = true;
+%>
+                                <img src="<%= request.getContextPath() %>/WebConfig/yukon/Icons/<%= progIcons[0] %>"> 
+<% } %>
+<% if (!progIcons[1].equals("")) {
+	controlIconExists = true;
+%>
+                                <img src="<%= request.getContextPath() %>/WebConfig/yukon/Icons/<%= progIcons[1] %>"> 
+<% } %>
+<% if (!progIcons[2].equals("")) {
+	envrnmtIconExists = true;
+%>
+                                <img src="<%= request.getContextPath() %>/WebConfig/yukon/Icons/<%= progIcons[2] %>"> 
+                                <% } %>
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
                                     <td class="TableCell" width="17%" align="right" valign="top"> 
                                       <input type="button" name="Details" value="Details" onclick="location.href='ProgramDetails.jsp?Cat=<%= i %><%= inWizardStr %>'">
                                     </td>

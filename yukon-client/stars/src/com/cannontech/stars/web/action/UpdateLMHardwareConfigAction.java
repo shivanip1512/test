@@ -60,11 +60,20 @@ public class UpdateLMHardwareConfigAction implements ActionBase {
 			
 			String[] progIDs = req.getParameterValues( "ProgID" );
 			String[] grpIDs = req.getParameterValues( "GroupID" );
+			String[] loadNos = req.getParameterValues( "LoadNo" );
+			
 			if (progIDs != null) {
 				for (int i = 0; i < progIDs.length; i++) {
+					int loadNo = Integer.parseInt( loadNos[i] );
+					for (int j = 0; j < updateHwConfig.getStarsLMHardwareConfigCount(); j++) {
+						if (updateHwConfig.getStarsLMHardwareConfig(j).getLoadNumber() == loadNo)
+							throw new WebClientException( "Load #" + loadNo + " has been selected more than once" );
+					}
+					
 					StarsLMHardwareConfig config = new StarsLMHardwareConfig();
 					config.setGroupID( Integer.parseInt(grpIDs[i]) );
 					config.setProgramID( Integer.parseInt(progIDs[i]) );
+					config.setLoadNumber( loadNo );
 					updateHwConfig.addStarsLMHardwareConfig( config );
 				}
 			}
@@ -73,6 +82,9 @@ public class UpdateLMHardwareConfigAction implements ActionBase {
 			operation.setStarsUpdateLMHardwareConfig( updateHwConfig );
 			
 			return SOAPUtil.buildSOAPMessage( operation );
+		}
+		catch (WebClientException e) {
+			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, e.getMessage() );
 		}
 		catch (Exception e) {
 			CTILogger.error( e.getMessage(), e );
@@ -119,6 +131,7 @@ public class UpdateLMHardwareConfigAction implements ActionBase {
 				SULMProgram suProg = new SULMProgram();
 				suProg.setProgramID( starsConfig.getProgramID() );
 				suProg.setAddressingGroupID( starsConfig.getGroupID() );
+				suProg.setLoadNumber( starsConfig.getLoadNumber() );
 				progSignUp.getStarsSULMPrograms().addSULMProgram( suProg );
 			}
             

@@ -140,6 +140,7 @@
 						<xs:element name="ManufacturerSerialNumber" type="xs:string"/>
 						<xs:element ref="stars-LMHardwareConfig" minOccurs="0" maxOccurs="unbounded"/>
 						<xs:element ref="stars-ThermostatSettings" minOccurs="0"/>
+						<xs:element ref="stars-LMConfiguration" minOccurs="0"/>
 					</xs:sequence>
 					<xs:attribute name="routeID" type="xs:int"/>
 				</xs:complexType>
@@ -248,7 +249,8 @@
 		<xs:attribute name="applianceID" type="xs:int"/>
 		<xs:attribute name="applianceCategoryID" type="xs:int"/>
 		<xs:attribute name="inventoryID" type="xs:int"/>
-		<xs:attribute name="lmProgramID" type="xs:int"/>
+		<xs:attribute name="programID" type="xs:int"/>
+		<xs:attribute name="loadNumber" type="xs:int"/>
 	</xs:complexType>
 	<xs:complexType name="stars-CustListEntry">
 		<xs:simpleContent>
@@ -416,7 +418,8 @@
 						<xs:attribute name="programID" type="xs:int"/>
 						<xs:attribute name="applianceCategoryID" type="xs:int"/>
 						<xs:attribute name="addressingGroupID" type="xs:int"/>
-						<xs:attribute name="inventoryID"/>
+						<xs:attribute name="inventoryID" type="xs:int"/>
+						<xs:attribute name="loadNumber" type="xs:int"/>
 					</xs:complexType>
 				</xs:element>
 			</xs:sequence>
@@ -478,6 +481,7 @@
 			<xs:sequence>
 				<xs:element name="ProgramName" type="xs:string"/>
 				<xs:element name="Status" type="xs:string" minOccurs="0"/>
+				<xs:element name="DateEnrolled" type="xs:dateTime" minOccurs="0"/>
 				<xs:element ref="stars-LMControlHistory" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attribute name="programID" type="xs:int" use="required"/>
@@ -801,6 +805,40 @@
 			<xs:attribute name="applianceID" type="xs:int"/>
 			<xs:attribute name="groupID" type="xs:int"/>
 			<xs:attribute name="programID" type="xs:int"/>
+			<xs:attribute name="loadNumber" type="xs:int"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="stars-LMConfiguration">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="ColdLoadPickup" type="xs:string"/>
+				<xs:element name="TamperDetect" type="xs:string"/>
+				<xs:element name="SA205" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Slot1" type="xs:int"/>
+							<xs:element name="Slot2" type="xs:int"/>
+							<xs:element name="Slot3" type="xs:int"/>
+							<xs:element name="Slot4" type="xs:int"/>
+							<xs:element name="Slot5" type="xs:int"/>
+							<xs:element name="Slot6" type="xs:int"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="SA305" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Utility" type="xs:int"/>
+							<xs:element name="Group" type="xs:int"/>
+							<xs:element name="Division" type="xs:int"/>
+							<xs:element name="Substation" type="xs:int"/>
+							<xs:element name="RateFamily" type="xs:int"/>
+							<xs:element name="RateMember" type="xs:int"/>
+							<xs:element name="RateHierarchy" type="xs:int"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="stars-WebConfig">
@@ -827,12 +865,13 @@
 	<xs:element name="stars-EnrLMProgram">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="ProgramName" type="xs:string" minOccurs="0"/>
+				<xs:element name="YukonName" type="xs:string" minOccurs="0"/>
 				<xs:element ref="stars-WebConfig" minOccurs="0"/>
 				<xs:element name="AddressingGroup" type="stars-CustListEntry" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element name="ChanceOfControl" type="stars-CustListEntry" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attribute name="programID" type="xs:int"/>
+			<xs:attribute name="deviceID" type="xs:int"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="stars-CustSelectionList">

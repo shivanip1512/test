@@ -19,7 +19,7 @@ import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
 import com.cannontech.database.data.lite.stars.LiteCustomerFAQ;
 import com.cannontech.database.data.lite.stars.LiteInterviewQuestion;
-import com.cannontech.database.data.lite.stars.LiteLMProgram;
+import com.cannontech.database.data.lite.stars.LiteLMProgramWebPublishing;
 import com.cannontech.database.data.lite.stars.LiteServiceCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -263,11 +263,10 @@ public class DeleteEnergyCompanyTask implements TimeConsumingTask {
 				for (int i = 0; i < energyCompany.getAllApplianceCategories().size(); i++) {
 					LiteApplianceCategory liteAppCat = (LiteApplianceCategory) energyCompany.getAllApplianceCategories().get(i);
 					
-					com.cannontech.database.db.stars.LMProgramWebPublishing.deleteAllLMProgramWebPublishing(
-							new Integer(liteAppCat.getApplianceCategoryID()) );
+					com.cannontech.database.db.stars.LMProgramWebPublishing.deleteAllLMProgramWebPublishing( liteAppCat.getApplianceCategoryID() );
 					
 					for (int j = 0; j < liteAppCat.getPublishedPrograms().size(); j++) {
-						LiteLMProgram liteProg = (LiteLMProgram) liteAppCat.getPublishedPrograms().get(j);
+						LiteLMProgramWebPublishing liteProg = (LiteLMProgramWebPublishing) liteAppCat.getPublishedPrograms().get(j);
 						com.cannontech.database.db.web.YukonWebConfiguration cfg =
 								new com.cannontech.database.db.web.YukonWebConfiguration();
 						cfg.setConfigurationID( new Integer(liteProg.getWebSettingsID()) );

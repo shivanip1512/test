@@ -33,19 +33,32 @@
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 <script language="JavaScript">
+function selectHardware(progNo, hwNo) {
+	var checkboxes = document.getElementsByName("InvID" + progNo);
+	var loadNoList = document.getElementsByName("LoadNo" + progNo);
+	loadNoList[hwNo].disabled = !checkboxes[hwNo].checked;
+}
+
 function prepareSubmit(form) {
 	var progIDs = document.getElementsByName("ProgID");
 	for (i = 0; i < progIDs.length; i++) {
 		var checkboxes = document.getElementsByName("InvID" + i);
+		var loadNoList = document.getElementsByName("LoadNo" + i);
+		var invIDs = document.getElementsByName("InvIDs")[i];
+		var loadNos = document.getElementsByName("LoadNos")[i];
 		var hwAssigned = false;
+		
 		for (j = 0; j < checkboxes.length; j++) {
 			if (checkboxes[j].checked) {
 				if (!hwAssigned) {
-					document.getElementsByName("InvIDs")[i].value = checkboxes[j].value;
+					invIDs.value = checkboxes[j].value;
+					loadNos.value = loadNoList[j].value;
 					hwAssigned = true;
 				}
-				else
-					document.getElementsByName("InvIDs")[i].value += "," + checkboxes[j].value;
+				else {
+					invIDs.value += "," + checkboxes[j].value;
+					loadNos.value += "," + loadNoList[j].value;
+				}
 			}
 		}
 <% if (hardwares.size() > 0) { %>
@@ -94,6 +107,7 @@ function prepareSubmit(form) {
 <% } else { %>
               <%@ include file="include/InfoSearchBar2.jsp" %>
 <% } %>
+              <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
               <table width="80%" border="0" cellspacing="0" cellpadding="0">
                 <tr> 
                   <td align="center" class="MainText">For each enrolled program, 
@@ -103,13 +117,13 @@ function prepareSubmit(form) {
               <form name="form1" method="post" action="<%= request.getContextPath() %>/servlet/SOAPClient" onsubmit="return prepareSubmit(this);">
 			    <input type="hidden" name="action" value="SetAddtEnrollInfo">
 			    <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/operator/Consumer/Programs.jsp">
-			    <input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/operator/Consumer/Programs.jsp">
+			    <input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/operator/Consumer/Programs2.jsp">
 				<% if (inWizard) { %><input type="hidden" name="Wizard" value="true"><% } %>
                 <table width="80%" border="1" cellspacing="0" cellpadding="3">
                   <tr align="center"> 
-                    <td class="HeaderCell" width="30%">Enrolled Program</td>
-                    <td class="HeaderCell" width="30%">Group Assigned</td>
-                    <td class="HeaderCell" width="40%">Hardware(s) Assigned</td>
+                    <td class="HeaderCell" width="25%">Enrolled Program</td>
+                    <td class="HeaderCell" width="25%">Group Assigned</td>
+                    <td class="HeaderCell" width="50%">Hardware(s) Assigned</td>
                   </tr>
                   <%
 	for (int i = 0; i < suPrograms.getSULMProgramCount(); i++) {
@@ -141,9 +155,11 @@ function prepareSubmit(form) {
 %>
                   <tr> 
                     <input type="hidden" name="ProgID" value="<%= suProg.getProgramID() %>">
+					<input type="hidden" name="AppCatID" value="<%= suProg.getApplianceCategoryID() %>">
                     <input type="hidden" name="InvIDs" value="">
-                    <td width="30%" class="TableCell"><%= ServletUtils.getProgramDisplayNames(enrProg)[0] %></td>
-                    <td width="30%" class="TableCell"> 
+                    <input type="hidden" name="LoadNos" value="">
+                    <td width="25%" class="TableCell"><%= ServletUtils.getProgramDisplayNames(enrProg)[0] %></td>
+                    <td width="25%" class="TableCell"> 
                       <select name="GroupID">
                         <%
 		for (int j = 0; j < enrProg.getAddressingGroupCount(); j++) {
@@ -156,7 +172,7 @@ function prepareSubmit(form) {
 %>
                       </select>
                     </td>
-                    <td width="40%" class="TableCell"> 
+                    <td width="50%" class="TableCell"> 
                       <table width="100%" border="0" cellspacing="0" cellpadding="1" class="TableCell">
                         <%
 		for (int j = 0; j < hardwares.size(); j++) {
@@ -165,27 +181,39 @@ function prepareSubmit(form) {
 			String label = hardware.getDeviceLabel();
 			if (label.equals("")) label = hardware.getLMHardware().getManufacturerSerialNumber();
 			
-			String checked = "";
-			if (hardwares.size() == 1) {
-				checked = "checked";
-			}
-			else {
-				for (int k = 0; k < appliances.getStarsApplianceCount(); k++) {
-					StarsAppliance app = appliances.getStarsAppliance(k);
-					if (app.getInventoryID() == hardware.getInventoryID() &&
-						(app.getLmProgramID() == suProg.getProgramID() || app.getApplianceCategoryID() == suProg.getApplianceCategoryID()))
-					{
-						checked = "checked";
-						break;
-					}
+			boolean checked = false;
+			int loadNo = 0;
+			if (hardwares.size() == 1) checked = true;
+			for (int k = 0; k < appliances.getStarsApplianceCount(); k++) {
+				StarsAppliance app = appliances.getStarsAppliance(k);
+				if (app.getInventoryID() == hardware.getInventoryID() &&
+					(app.getProgramID() == suProg.getProgramID() || app.getApplianceCategoryID() == suProg.getApplianceCategoryID()))
+				{
+					checked = true;
+					loadNo = app.getLoadNumber();
+					break;
 				}
 			}
 %>
                         <tr> 
-                          <td width="15%" align="right"> 
-                            <input type="checkbox" name="InvID<%= i %>" value="<%= hardware.getInventoryID() %>" <%= checked %>>
+                          <td width="5%" align="right"> 
+                            <input type="checkbox" name="InvID<%= i %>" value="<%= hardware.getInventoryID() %>"
+							  onClick="selectHardware(<%= i %>, <%= j %>)" <%= (checked)?"checked":"" %>>
                           </td>
-                          <td width="85%"><%= label %></td>
+                          <td width="50%"><%= label %></td>
+                          <td width="45%">Load# 
+                            <select name="LoadNo<%= i %>" <%= (checked)?"":"disabled" %>>
+                              <option value="0">(none)</option>
+<%
+			for (int ln = 1; ln <= 8; ln++) {
+				String selected = (ln == loadNo)? "selected" : "";
+%>
+                              <option value="<%= ln %>" <%= selected %>><%= ln %></option>
+<%
+			}
+%>
+                            </select>
+                          </td>
                         </tr>
                         <%
 		}

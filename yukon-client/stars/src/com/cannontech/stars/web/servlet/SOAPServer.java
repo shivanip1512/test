@@ -1,5 +1,6 @@
 package com.cannontech.stars.web.servlet;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -21,7 +22,7 @@ import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
-import com.cannontech.database.data.lite.stars.LiteLMProgram;
+import com.cannontech.database.data.lite.stars.LiteLMProgramWebPublishing;
 import com.cannontech.database.data.lite.stars.LiteServiceCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -34,6 +35,7 @@ import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.StarsFactory;
+import com.cannontech.stars.xml.serialize.AddressingGroup;
 import com.cannontech.stars.xml.serialize.StarsApplianceCategory;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsEnergyCompany;
@@ -459,13 +461,10 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 			for (int i = 0; i < companies.size(); i++) {
 				LiteStarsEnergyCompany energyCompany = (LiteStarsEnergyCompany) companies.get(i);
 				
-				ArrayList programs = energyCompany.getAllLMPrograms();
-				for (int j = 0; j < programs.size(); j++) {
-					LiteLMProgram liteProg = (LiteLMProgram) programs.get(j);
-					if (liteProg.getProgramID() == msg.getId()) {
-						handleLMProgramChange( msg, energyCompany, liteProg );
-						return;
-					}
+				LiteLMProgramWebPublishing liteProg = energyCompany.getProgram( msg.getId() );
+				if (liteProg != null) {
+					handleLMProgramChange( msg, energyCompany, liteProg );
+					return;
 				}
 				
 				ArrayList inventory = energyCompany.getAllInventory();
@@ -619,7 +618,7 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 		}
 	}
 	
-	private void handleLMProgramChange(DBChangeMsg msg, LiteStarsEnergyCompany energyCompany, LiteLMProgram liteProg) {
+	private void handleLMProgramChange(DBChangeMsg msg, LiteStarsEnergyCompany energyCompany, LiteLMProgramWebPublishing liteProg) {
 		switch( msg.getTypeOfChange() )
 		{
 			case DBChangeMsg.CHANGE_TYPE_ADD:
@@ -627,35 +626,57 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 				break;
 				
 			case DBChangeMsg.CHANGE_TYPE_UPDATE :
-				liteProg.setProgramName( PAOFuncs.getYukonPAOName(msg.getId()) );
-				
-				StarsEnrollmentPrograms programs = energyCompany.getStarsEnrollmentPrograms();
-				for (int i = 0; i < programs.getStarsApplianceCategoryCount(); i++) {
-					StarsApplianceCategory appCat = programs.getStarsApplianceCategory(i);
-					boolean programFound = false;
+				try {
+					// Update group list of the LM program
+					com.cannontech.database.db.device.lm.LMProgramDirectGroup[] groups =
+							com.cannontech.database.db.device.lm.LMProgramDirectGroup.getAllDirectGroups( new Integer(liteProg.getDeviceID()) );
+					int[] groupIDs = new int[ groups.length ];
+					for (int k = 0; k < groups.length; k++)
+						groupIDs[k] = groups[k].getLmGroupDeviceID().intValue();
+					liteProg.setGroupIDs( groupIDs );
 					
-					for (int j = 0; j < appCat.getStarsEnrLMProgramCount(); j++) {
-						StarsEnrLMProgram program = appCat.getStarsEnrLMProgram(j);
-						if (program.getProgramID() == liteProg.getProgramID()) {
-							program.setProgramName( liteProg.getProgramName() );
-							programFound = true;
-							break;
-						}
-					}
-					
-					if (programFound) break;
-				}
-				
-				ArrayList accounts = energyCompany.getActiveAccounts();
-				synchronized (accounts) {
-					for (int i = 0; i < accounts.size(); i++) {
-						StarsCustAccountInformation starsAcctInfo = (StarsCustAccountInformation) accounts.get(i);
-						for (int j = 0; j < starsAcctInfo.getStarsLMPrograms().getStarsLMProgramCount(); j++) {
-							StarsLMProgram program = starsAcctInfo.getStarsLMPrograms().getStarsLMProgram(j);
+					StarsEnrollmentPrograms programs = energyCompany.getStarsEnrollmentPrograms();
+					for (int i = 0; i < programs.getStarsApplianceCategoryCount(); i++) {
+						StarsApplianceCategory appCat = programs.getStarsApplianceCategory(i);
+						boolean programFound = false;
+						
+						for (int j = 0; j < appCat.getStarsEnrLMProgramCount(); j++) {
+							StarsEnrLMProgram program = appCat.getStarsEnrLMProgram(j);
 							if (program.getProgramID() == liteProg.getProgramID()) {
-								program.setProgramName( ECUtils.getPublishedProgramName(liteProg, energyCompany) );
+								program.setYukonName( PAOFuncs.getYukonPAOName(liteProg.getDeviceID()) );
+								
+								program.removeAllAddressingGroup();
+								program.addAddressingGroup( (AddressingGroup)StarsFactory.newEmptyStarsCustListEntry(AddressingGroup.class) );
+								for (int k = 0; k < liteProg.getGroupIDs().length; k++) {
+									String groupName = PAOFuncs.getYukonPAOName( liteProg.getGroupIDs()[j] );
+									AddressingGroup group = new AddressingGroup();
+									group.setEntryID( liteProg.getGroupIDs()[j] );
+									group.setContent( groupName );
+									program.addAddressingGroup( group );
+								}
+								
+								programFound = true;
 								break;
 							}
+						}
+						
+						if (programFound) break;
+					}
+				}
+				catch (SQLException e) {
+					CTILogger.error( e.getMessage(), e );
+				}
+				
+				String newProgName = ECUtils.getPublishedProgramName( liteProg, energyCompany );
+				
+				ArrayList accounts = energyCompany.getActiveAccounts();
+				for (int i = 0; i < accounts.size(); i++) {
+					StarsCustAccountInformation starsAcctInfo = (StarsCustAccountInformation) accounts.get(i);
+					for (int j = 0; j < starsAcctInfo.getStarsLMPrograms().getStarsLMProgramCount(); j++) {
+						StarsLMProgram program = starsAcctInfo.getStarsLMPrograms().getStarsLMProgram(j);
+						if (program.getProgramID() == liteProg.getProgramID()) {
+							program.setProgramName( newProgName );
+							break;
 						}
 					}
 				}

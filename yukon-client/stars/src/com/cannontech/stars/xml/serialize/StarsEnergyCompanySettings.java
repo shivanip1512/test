@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsEnergyCompanySettings.java,v 1.13 2004/06/15 15:45:55 zyao Exp $
+ * $Id: StarsEnergyCompanySettings.java,v 1.14 2004/06/25 21:37:08 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,7 +23,7 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.13 $ $Date: 2004/06/15 15:45:55 $
+ * @version $Revision: 1.14 $ $Date: 2004/06/25 21:37:08 $
 **/
 public class StarsEnergyCompanySettings implements java.io.Serializable {
 

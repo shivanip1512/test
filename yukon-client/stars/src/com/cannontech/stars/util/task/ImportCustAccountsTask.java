@@ -11,11 +11,12 @@ import java.util.ArrayList;
 
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
-import com.cannontech.database.data.lite.stars.LiteLMProgram;
+import com.cannontech.database.data.lite.stars.LiteLMProgramWebPublishing;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
+import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ImportProblem;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.WebClientException;
@@ -665,12 +666,14 @@ public class ImportCustAccountsTask implements TimeConsumingTask {
 	}
 	
 	private int[][] getEnrolledProgram(String[] fields, LiteStarsEnergyCompany energyCompany) throws WebClientException {
-		ArrayList programs = energyCompany.getAllLMPrograms();
+		ArrayList programs = energyCompany.getAllPrograms();
 		
 		synchronized (programs) {
 			for (int i = 0; i < programs.size(); i++) {
-				LiteLMProgram liteProg = (LiteLMProgram) programs.get(i);
-				if (liteProg.getProgramName().equalsIgnoreCase( fields[ImportManager.IDX_PROGRAM_NAME] )) {
+				LiteLMProgramWebPublishing liteProg = (LiteLMProgramWebPublishing) programs.get(i);
+				String progName = ECUtils.getPublishedProgramName( liteProg, energyCompany );
+				
+				if (progName.equalsIgnoreCase( fields[ImportManager.IDX_PROGRAM_NAME] )) {
 					int[] suProg = new int[3];
 					suProg[0] = liteProg.getProgramID();
 					suProg[1] = -1;	// ApplianceCategoryID (optional)
@@ -685,7 +688,7 @@ public class ImportCustAccountsTask implements TimeConsumingTask {
 						}
 						
 						if (suProg[2] == -1)
-							throw new WebClientException( "The group '" + fields[ImportManager.IDX_ADDR_GROUP] + "' doesn't belong to program '" + liteProg.getProgramName() + "'" );
+							throw new WebClientException( "The group '" + fields[ImportManager.IDX_ADDR_GROUP] + "' doesn't belong to program '" + progName + "'" );
 					}
 					
 					return new int[][] { suProg };
@@ -741,7 +744,7 @@ public class ImportCustAccountsTask implements TimeConsumingTask {
 	{
 		for (int i = 0; i < liteAcctInfo.getAppliances().size(); i++) {
 			LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(i);
-			if (liteApp.getLmProgramID() == programs[0][0] && liteApp.getInventoryID() == liteInv.getInventoryID())
+			if (liteApp.getProgramID() == programs[0][0] && liteApp.getInventoryID() == liteInv.getInventoryID())
 				return;
 		}
 		
@@ -751,7 +754,7 @@ public class ImportCustAccountsTask implements TimeConsumingTask {
 			int appID = -1;
 			for (int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {
 				LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(j);
-				if (liteApp.getLmProgramID() == programs[0][0]) {
+				if (liteApp.getProgramID() == programs[0][0]) {
 					appID = liteApp.getApplianceID();
 					break;
 				}

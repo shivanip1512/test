@@ -12,21 +12,23 @@ import com.cannontech.database.data.lite.LiteTypes;
  * To enable and disable the creation of type comments go to
  * Window>Preferences>Java>Code Generation.
  */
-public class LiteLMProgram extends LiteBase {
+public class LiteLMProgramWebPublishing extends LiteBase {
 
-	private String programName = null;
+	private int applianceCategoryID = CtiUtilities.NONE_ID;
+	private int deviceID = CtiUtilities.NONE_ID;
 	private int webSettingsID = CtiUtilities.NONE_ID;
 	private int chanceOfControlID = CtiUtilities.NONE_ID;
 	private int programOrder = 0;
 	private int[] groupIDs = null;
 	
-	public LiteLMProgram() {
+	public LiteLMProgramWebPublishing() {
 		super();
+		setLiteType( LiteTypes.STARS_LMPROGRAM );
 	}
 	
-	public LiteLMProgram(int progID) {
+	public LiteLMProgramWebPublishing(int programID) {
 		super();
-		setProgramID( progID );
+		setProgramID( programID );
 		setLiteType( LiteTypes.STARS_LMPROGRAM );
 	}
 	
@@ -34,24 +36,8 @@ public class LiteLMProgram extends LiteBase {
 		return getLiteID();
 	}
 	
-	public void setProgramID(int progID) {
-		setLiteID( progID );
-	}
-	
-	/**
-	 * Returns the programName.
-	 * @return String
-	 */
-	public String getProgramName() {
-		return programName;
-	}
-
-	/**
-	 * Sets the programName.
-	 * @param programName The programName to set
-	 */
-	public void setProgramName(String programName) {
-		this.programName = programName;
+	public void setProgramID(int programID) {
+		setLiteID( programID );
 	}
 
 	/**
@@ -114,6 +100,34 @@ public class LiteLMProgram extends LiteBase {
 	 */
 	public void setProgramOrder(int i) {
 		programOrder = i;
+	}
+
+	/**
+	 * @return
+	 */
+	public int getApplianceCategoryID() {
+		return applianceCategoryID;
+	}
+
+	/**
+	 * @return
+	 */
+	public int getDeviceID() {
+		return deviceID;
+	}
+
+	/**
+	 * @param i
+	 */
+	public void setApplianceCategoryID(int i) {
+		applianceCategoryID = i;
+	}
+
+	/**
+	 * @param i
+	 */
+	public void setDeviceID(int i) {
+		deviceID = i;
 	}
 
 }

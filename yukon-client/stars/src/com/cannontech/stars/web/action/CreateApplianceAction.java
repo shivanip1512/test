@@ -448,7 +448,7 @@ public class CreateApplianceAction implements ActionBase {
         
 		appDB.setAccountID( new Integer(liteAcctInfo.getCustomerAccount().getAccountID()) );
 		appDB.setApplianceCategoryID( new Integer(newApp.getApplianceCategoryID()) );
-		appDB.setLMProgramID( new Integer(0) );
+		appDB.setProgramID( new Integer(0) );
 		appDB.setManufacturerID( new Integer(newApp.getManufacturer().getEntryID()) );
 		appDB.setLocationID( new Integer(newApp.getLocation().getEntryID()) );
 		appDB.setNotes( newApp.getNotes() );

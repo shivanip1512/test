@@ -52,7 +52,7 @@ public class LMProgramEvent extends LMCustomerEventBase {
         getLMProgramEvent().retrieve();
     }
     
-    public static void deleteAllLMProgramEvents(Integer accountID) {
+    public static void deleteAllLMProgramEvents(int accountID) {
     	try {
 	    	Integer[] eventIDs = com.cannontech.database.db.stars.event.LMProgramEvent.getAllLMProgramEventIDs( accountID );
 	    	
@@ -69,7 +69,7 @@ public class LMProgramEvent extends LMCustomerEventBase {
     	}
     }
     
-    public static void deleteLMProgramEvents(Integer accountID, Integer programID) {
+    public static void deleteLMProgramEvents(int accountID, int programID) {
     	try {
     		Integer[] eventIDs = com.cannontech.database.db.stars.event.LMProgramEvent.getLMProgramEventIDs( accountID, programID );
     		
@@ -86,7 +86,7 @@ public class LMProgramEvent extends LMCustomerEventBase {
     	}
     }
     
-	public static void deleteAllLMProgramEvents(Integer energyCompanyID, Integer programID) {
+	public static void deleteAllLMProgramEvents(int energyCompanyID, int programID) {
 		try {
 			Integer[] eventIDs = com.cannontech.database.db.stars.event.LMProgramEvent.getAllLMProgramEventIDs(
 					energyCompanyID, programID );
@@ -104,7 +104,7 @@ public class LMProgramEvent extends LMCustomerEventBase {
 		}
 	}
     
-	public static LMProgramEvent[] getAllLMProgramEvents(Integer accountID) {
+	public static LMProgramEvent[] getAllLMProgramEvents(int accountID) {
 		try {
 			Integer[] eventIDs = com.cannontech.database.db.stars.event.LMProgramEvent.getAllLMProgramEventIDs( accountID );
 			com.cannontech.database.data.stars.event.LMProgramEvent[] events =
@@ -127,7 +127,7 @@ public class LMProgramEvent extends LMCustomerEventBase {
 		return null;
 	}
     
-    public static LMProgramEvent[] getLMProgramEvents(Integer accountID, Integer programID) {
+    public static LMProgramEvent[] getLMProgramEvents(int accountID, int programID) {
     	try {
 	        Integer[] eventIDs = com.cannontech.database.db.stars.event.LMProgramEvent.getLMProgramEventIDs( accountID, programID );
 	        com.cannontech.database.data.stars.event.LMProgramEvent[] events =

@@ -274,10 +274,10 @@ public class DeleteLMHardwareAction implements ActionBase {
 						if (liteApp.getInventoryID() == liteInv.getInventoryID()) {
 							liteApp.setInventoryID( 0 );
 							
-							for (int j = 0; j < liteAcctInfo.getLmPrograms().size(); j++) {
-								LiteStarsLMProgram liteProg = (LiteStarsLMProgram) liteAcctInfo.getLmPrograms().get(j);
+							for (int j = 0; j < liteAcctInfo.getPrograms().size(); j++) {
+								LiteStarsLMProgram liteProg = (LiteStarsLMProgram) liteAcctInfo.getPrograms().get(j);
 								
-								if (liteProg.getLmProgram().getProgramID() == liteApp.getLmProgramID()) {
+								if (liteProg.getProgramID() == liteApp.getProgramID()) {
 									liteProg.setGroupID( 0 );
 									break;
 								}
@@ -302,7 +302,7 @@ public class DeleteLMHardwareAction implements ActionBase {
 				appliance.setInventoryID( 0 );
 				for (int j = 0; j < starsAcctInfo.getStarsLMPrograms().getStarsLMProgramCount(); j++) {
 					StarsLMProgram program = starsAcctInfo.getStarsLMPrograms().getStarsLMProgram(j);
-					if (program.getProgramID() == appliance.getLmProgramID()) {
+					if (program.getProgramID() == appliance.getProgramID()) {
 						program.setGroupID( 0 );
 						break;
 					}

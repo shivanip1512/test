@@ -6,7 +6,7 @@
 		login = new StarsUser();
 		login.setUsername("");
 		login.setPassword("");
-		login.setStatus(StarsLoginStatus.DISABLED);
+		login.setStatus(StarsLoginStatus.ENABLED);
 	}
 %>
 <html>

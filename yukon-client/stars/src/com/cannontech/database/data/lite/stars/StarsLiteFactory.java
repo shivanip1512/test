@@ -25,6 +25,7 @@ import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteTypes;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.stars.hardware.LMConfigurationBase;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.OptOutEventQueue;
@@ -129,8 +130,8 @@ public class StarsLiteFactory {
 			setLiteWebConfiguration( (LiteWebConfiguration) lite, (com.cannontech.database.db.web.YukonWebConfiguration) db );
 		}
 		else if (db instanceof com.cannontech.database.db.stars.LMProgramWebPublishing) {
-			lite = new LiteLMProgram();
-			setLiteLMProgram( (LiteLMProgram) lite, (com.cannontech.database.db.stars.LMProgramWebPublishing) db );
+			lite = new LiteLMProgramWebPublishing();
+			setLiteLMProgramWebPublishing( (LiteLMProgramWebPublishing) lite, (com.cannontech.database.db.stars.LMProgramWebPublishing) db );
 		}
 		
 		return lite;
@@ -188,6 +189,34 @@ public class StarsLiteFactory {
 		liteHw.setRouteID( hw.getLMHardwareBase().getRouteID().intValue() );
 	}
 	
+	public static void setLiteLMConfiguration(LiteLMConfiguration liteCfg, com.cannontech.database.data.stars.hardware.LMConfigurationBase cfg) {
+		liteCfg.setConfigurationID( cfg.getLMConfigurationBase().getConfigurationID().intValue() );
+		liteCfg.setColdLoadPickup( cfg.getLMConfigurationBase().getColdLoadPickup() );
+		liteCfg.setTamperDetect( cfg.getLMConfigurationBase().getTamperDetect() );
+		
+		if (cfg.getSA205() != null) {
+			LiteLMConfiguration.SA205 sa205 = new LiteLMConfiguration.SA205();
+			sa205.setSlot1( cfg.getSA205().getSlot1().intValue() );
+			sa205.setSlot2( cfg.getSA205().getSlot2().intValue() );
+			sa205.setSlot3( cfg.getSA205().getSlot3().intValue() );
+			sa205.setSlot4( cfg.getSA205().getSlot4().intValue() );
+			sa205.setSlot5( cfg.getSA205().getSlot5().intValue() );
+			sa205.setSlot6( cfg.getSA205().getSlot6().intValue() );
+			liteCfg.setSA205( sa205 );
+		}
+		else if (cfg.getSA305() != null) {
+			LiteLMConfiguration.SA305 sa305 = new LiteLMConfiguration.SA305();
+			sa305.setUtility( cfg.getSA305().getUtility().intValue() );
+			sa305.setGroup( cfg.getSA305().getGroupAddress().intValue() );
+			sa305.setDivision( cfg.getSA305().getDivision().intValue() );
+			sa305.setSubstation( cfg.getSA305().getSubstation().intValue() );
+			sa305.setRateFamily( cfg.getSA305().getRateFamily().intValue() );
+			sa305.setRateMember( cfg.getSA305().getRateMember().intValue() );
+			sa305.setRateHierarchy( cfg.getSA305().getRateHierarchy().intValue() );
+			liteCfg.setSA305( sa305 );
+		}
+	}
+	
 	public static void extendLiteInventoryBase(LiteInventoryBase liteInv, LiteStarsEnergyCompany energyCompany) {
 		ArrayList invHist = liteInv.getInventoryHistory();
 		invHist.clear();
@@ -205,6 +234,14 @@ public class StarsLiteFactory {
 			LiteStarsLMHardware liteHw = (LiteStarsLMHardware) liteInv;
 			if (liteHw.isThermostat())
 				liteHw.setThermostatSettings( energyCompany.getThermostatSettings(liteHw) );
+			
+			if (liteHw.getConfigurationID() > 0) {
+				LMConfigurationBase config = LMConfigurationBase.getLMConfiguration(
+						liteHw.getConfigurationID(), YukonListFuncs.getYukonListEntry(liteHw.getLmHardwareTypeID()).getYukonDefID() );
+				LiteLMConfiguration liteCfg = new LiteLMConfiguration();
+				setLiteLMConfiguration( liteCfg, config );
+				liteHw.setLMConfiguration( liteCfg );
+			}
 		}
 		
 		liteInv.setExtended( true );
@@ -225,7 +262,7 @@ public class StarsLiteFactory {
 	
 	public static void setLiteLMProgramEvent(LiteLMProgramEvent liteEvent, com.cannontech.database.data.stars.event.LMProgramEvent event) {
 		setLiteLMCustomerEvent( liteEvent, event.getLMCustomerEventBase() );
-		liteEvent.setProgramID( event.getLMProgramEvent().getLMProgramID().intValue() );
+		liteEvent.setProgramID( event.getLMProgramEvent().getProgramID().intValue() );
 	}
 	
 	public static void setLiteWorkOrderBase(LiteWorkOrderBase liteOrder, com.cannontech.database.db.stars.report.WorkOrderBase order) {
@@ -367,7 +404,7 @@ public class StarsLiteFactory {
 		liteApp.setApplianceID( app.getApplianceBase().getApplianceID().intValue() );
 		liteApp.setAccountID( app.getApplianceBase().getAccountID().intValue() );
 		liteApp.setApplianceCategoryID( app.getApplianceBase().getApplianceCategoryID().intValue() );
-		liteApp.setLmProgramID( app.getApplianceBase().getLMProgramID().intValue() );
+		liteApp.setProgramID( app.getApplianceBase().getProgramID().intValue() );
 		liteApp.setYearManufactured( app.getApplianceBase().getYearManufactured().intValue() );
 		liteApp.setManufacturerID( app.getApplianceBase().getManufacturerID().intValue() );
 		liteApp.setLocationID( app.getApplianceBase().getLocationID().intValue() );
@@ -379,6 +416,7 @@ public class StarsLiteFactory {
 		if (app.getLMHardwareConfig().getInventoryID() != null) {
 			liteApp.setInventoryID( app.getLMHardwareConfig().getInventoryID().intValue() );
 			liteApp.setAddressingGroupID( app.getLMHardwareConfig().getAddressingGroupID().intValue() );
+			liteApp.setLoadNumber( app.getLMHardwareConfig().getLoadNumber().intValue() );
 		}
 	}
 	
@@ -571,28 +609,29 @@ public class StarsLiteFactory {
 		liteConfig.setUrl( config.getURL() );
 	}
 	
-	public static void setLiteLMProgram(LiteLMProgram liteProg, com.cannontech.database.db.stars.LMProgramWebPublishing pubProg) {
-		liteProg.setProgramID( pubProg.getLMProgramID().intValue() );
+	public static void setLiteLMProgramWebPublishing(LiteLMProgramWebPublishing liteProg, com.cannontech.database.db.stars.LMProgramWebPublishing pubProg) {
+		liteProg.setProgramID( pubProg.getProgramID().intValue() );
+		liteProg.setApplianceCategoryID( pubProg.getApplianceCategoryID().intValue() );
+		liteProg.setDeviceID( pubProg.getDeviceID().intValue() );
 		liteProg.setWebSettingsID( pubProg.getWebSettingsID().intValue() );
 		liteProg.setChanceOfControlID( pubProg.getChanceOfControlID().intValue() );
 		liteProg.setProgramOrder( pubProg.getProgramOrder().intValue() );
 		
-		com.cannontech.database.data.lite.LiteYukonPAObject progPao =
-				com.cannontech.database.cache.functions.PAOFuncs.getLiteYukonPAO( pubProg.getLMProgramID().intValue() );
-		if (progPao != null)
-			liteProg.setProgramName( progPao.getPaoName() );
-		
-		try {
-			com.cannontech.database.db.device.lm.LMProgramDirectGroup[] groups =
-					com.cannontech.database.db.device.lm.LMProgramDirectGroup.getAllDirectGroups( pubProg.getLMProgramID() );
-			int[] groupIDs = new int[ groups.length ];
-			for (int k = 0; k < groups.length; k++)
-				groupIDs[k] = groups[k].getLmGroupDeviceID().intValue();
-			liteProg.setGroupIDs( groupIDs );
+		if (pubProg.getDeviceID().intValue() > 0) {
+			try {
+				com.cannontech.database.db.device.lm.LMProgramDirectGroup[] groups =
+						com.cannontech.database.db.device.lm.LMProgramDirectGroup.getAllDirectGroups( pubProg.getDeviceID() );
+				int[] groupIDs = new int[ groups.length ];
+				for (int k = 0; k < groups.length; k++)
+					groupIDs[k] = groups[k].getLmGroupDeviceID().intValue();
+				liteProg.setGroupIDs( groupIDs );
+			}
+			catch (java.sql.SQLException e) {
+				CTILogger.error( e.getMessage(), e );
+			}
 		}
-		catch (java.sql.SQLException e) {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-		}
+		else
+			liteProg.setGroupIDs( new int[0] );
 	}
 	
 	
@@ -857,7 +896,7 @@ public class StarsLiteFactory {
 		app.setApplianceID( new Integer(liteApp.getApplianceID()) );
 		app.getApplianceBase().setAccountID( new Integer(liteApp.getAccountID()) );
 		app.getApplianceBase().setApplianceCategoryID( new Integer(liteApp.getApplianceCategoryID()) );
-		app.getApplianceBase().setLMProgramID( new Integer(liteApp.getLmProgramID()) );
+		app.getApplianceBase().setProgramID( new Integer(liteApp.getProgramID()) );
 		app.getApplianceBase().setYearManufactured( new Integer(liteApp.getYearManufactured()) );
 		app.getApplianceBase().setManufacturerID( new Integer(liteApp.getManufacturerID()) );
 		app.getApplianceBase().setLocationID( new Integer(liteApp.getLocationID()) );
@@ -870,6 +909,7 @@ public class StarsLiteFactory {
 			app.getLMHardwareConfig().setApplianceID( app.getApplianceBase().getApplianceID() );
 			app.getLMHardwareConfig().setInventoryID( new Integer(liteApp.getInventoryID()) );
 			app.getLMHardwareConfig().setAddressingGroupID( new Integer(liteApp.getAddressingGroupID()) );
+			app.getLMHardwareConfig().setLoadNumber( new Integer(liteApp.getLoadNumber()) );
 		}
 	}
 	
@@ -1268,8 +1308,8 @@ public class StarsLiteFactory {
 	public static StarsLMPrograms createStarsLMPrograms(LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany) {
 		StarsLMPrograms starsProgs = new StarsLMPrograms();
 		
-		for (int i = 0; i < liteAcctInfo.getLmPrograms().size(); i++) {
-			LiteStarsLMProgram liteProg = (LiteStarsLMProgram) liteAcctInfo.getLmPrograms().get(i);
+		for (int i = 0; i < liteAcctInfo.getPrograms().size(); i++) {
+			LiteStarsLMProgram liteProg = (LiteStarsLMProgram) liteAcctInfo.getPrograms().get(i);
 			starsProgs.addStarsLMProgram( createStarsLMProgram(liteProg, liteAcctInfo, energyCompany) );
 		}
 		
@@ -1749,18 +1789,10 @@ public class StarsLiteFactory {
 		LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany)
 	{
 		StarsLMProgram starsProg = new StarsLMProgram();
-		starsProg.setProgramID( liteProg.getLmProgram().getProgramID() );
+		starsProg.setProgramID( liteProg.getProgramID() );
+		starsProg.setApplianceCategoryID( liteProg.getPublishedProgram().getApplianceCategoryID() );
 		starsProg.setGroupID( liteProg.getGroupID() );
-		starsProg.setProgramName( ECUtils.getPublishedProgramName(liteProg.getLmProgram(), energyCompany) );
-		
-		ArrayList appCats = energyCompany.getAllApplianceCategories();
-		for (int i = 0; i < appCats.size(); i++) {
-			LiteApplianceCategory appCat = (LiteApplianceCategory) appCats.get(i);
-			if (appCat.getPublishedPrograms().contains( liteProg.getLmProgram() )) {
-				starsProg.setApplianceCategoryID( appCat.getApplianceCategoryID() );
-				break;
-			}
-		}
+		starsProg.setProgramName( ECUtils.getPublishedProgramName(liteProg.getPublishedProgram(), energyCompany) );
 		
 		if (liteProg.isInService())
 			starsProg.setStatus( ServletUtils.IN_SERVICE );
@@ -1769,7 +1801,7 @@ public class StarsLiteFactory {
 		
 		for (int i = liteAcctInfo.getProgramHistory().size() - 1; i >= 0; i--) {
 			LiteLMProgramEvent liteEvent = (LiteLMProgramEvent) liteAcctInfo.getProgramHistory().get(i);
-			if (liteEvent.getProgramID() == liteProg.getLmProgram().getProgramID()) {
+			if (liteEvent.getProgramID() == liteProg.getProgramID()) {
 				YukonListEntry entry = YukonListFuncs.getYukonListEntry( liteEvent.getActionID() );
 				if (entry != null && entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_SIGNUP) {
 					starsProg.setDateEnrolled( new Date(liteEvent.getEventDateTime()) );
@@ -1883,13 +1915,17 @@ public class StarsLiteFactory {
 		starsAppCat.setStarsWebConfig( energyCompany.getStarsWebConfig(liteAppCat.getWebConfigurationID()) );
 		
 		for (int i = 0; i < liteAppCat.getPublishedPrograms().size(); i++) {
-			LiteLMProgram liteProg = (LiteLMProgram) liteAppCat.getPublishedPrograms().get(i);
+			LiteLMProgramWebPublishing liteProg = (LiteLMProgramWebPublishing) liteAppCat.getPublishedPrograms().get(i);
 			
 			StarsEnrLMProgram starsProg = new StarsEnrLMProgram();
 			starsProg.setProgramID( liteProg.getProgramID() );
-			starsProg.setProgramName( liteProg.getProgramName() );
+			starsProg.setDeviceID( liteProg.getDeviceID() );
+			if (liteProg.getDeviceID() > 0)
+				starsProg.setYukonName( PAOFuncs.getYukonPAOName(liteProg.getDeviceID()) );
+			
 			starsProg.setStarsWebConfig( energyCompany.getStarsWebConfig(liteProg.getWebSettingsID()) );
 			
+			starsProg.addAddressingGroup( (AddressingGroup)StarsFactory.newEmptyStarsCustListEntry(AddressingGroup.class) );
 			for (int j = 0; j < liteProg.getGroupIDs().length; j++) {
 				String groupName = com.cannontech.database.cache.functions.PAOFuncs.getYukonPAOName( liteProg.getGroupIDs()[j] );
 				AddressingGroup group = new AddressingGroup();
@@ -2018,7 +2054,9 @@ public class StarsLiteFactory {
 		starsApp.setApplianceID( liteApp.getApplianceID() );
 		starsApp.setApplianceCategoryID( liteApp.getApplianceCategoryID() );
 		starsApp.setInventoryID( liteApp.getInventoryID() );
-		starsApp.setLmProgramID( liteApp.getLmProgramID() );
+		starsApp.setProgramID( liteApp.getProgramID() );
+		starsApp.setLoadNumber( liteApp.getLoadNumber() );
+		
 		starsApp.setNotes( ServerUtils.forceNotNull(liteApp.getNotes()) );
 		starsApp.setModelNumber( ServerUtils.forceNotNull(liteApp.getModelNumber()) );
         
@@ -2294,8 +2332,8 @@ public class StarsLiteFactory {
 		LiteStarsCustAccountInformation liteAcctInfo = energyCompany.getCustAccountInformation( event.getAccountID(), true );
 		for (int i = 0; i < liteAcctInfo.getAppliances().size(); i++) {
 			LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(i);
-			if (liteApp.getInventoryID() == event.getInventoryID() && liteApp.getLmProgramID() > 0)
-				starsEvent.addProgramID( liteApp.getLmProgramID() );
+			if (liteApp.getInventoryID() == event.getInventoryID() && liteApp.getProgramID() > 0)
+				starsEvent.addProgramID( liteApp.getProgramID() );
 		}
 		
 		return starsEvent;

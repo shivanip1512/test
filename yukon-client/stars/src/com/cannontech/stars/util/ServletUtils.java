@@ -427,8 +427,12 @@ public class ServletUtils {
 		}
     	
 		// If not provided, default display name to program name, and short name to display name
-		if (dispNames[0].length() == 0)
-			dispNames[0] = starsProg.getProgramName();
+		if (dispNames[0].length() == 0) {
+			if (starsProg.getYukonName() != null)
+				dispNames[0] = starsProg.getYukonName();
+			else
+				dispNames[0] = "(none)";
+		}
 		if (dispNames[1].length() == 0)
 			dispNames[1] = dispNames[0];
 		return dispNames;

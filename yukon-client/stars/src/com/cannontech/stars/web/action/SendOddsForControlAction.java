@@ -10,7 +10,7 @@ import javax.xml.soap.SOAPMessage;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
-import com.cannontech.database.data.lite.stars.LiteLMProgram;
+import com.cannontech.database.data.lite.stars.LiteLMProgramWebPublishing;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.task.SendControlOddsTask;
@@ -126,12 +126,12 @@ public class SendOddsForControlAction implements ActionBase {
 					for (int j = 0; j < appCatList.size(); j++) {
 						LiteApplianceCategory liteAppCat = (LiteApplianceCategory) appCatList.get(j);
 						for (int k = 0; k < liteAppCat.getPublishedPrograms().size(); k++) {
-							LiteLMProgram liteProg = (LiteLMProgram) liteAppCat.getPublishedPrograms().get(k);
+							LiteLMProgramWebPublishing liteProg = (LiteLMProgramWebPublishing) liteAppCat.getPublishedPrograms().get(k);
 							if (liteProg.getProgramID() == enrProg.getProgramID()) {
 								com.cannontech.database.db.stars.LMProgramWebPublishing pubProg =
 										new com.cannontech.database.db.stars.LMProgramWebPublishing();
 								pubProg.setApplianceCategoryID( new Integer(liteAppCat.getApplianceCategoryID()) );
-								pubProg.setLMProgramID( new Integer(liteProg.getProgramID()) );
+								pubProg.setProgramID( new Integer(liteProg.getProgramID()) );
 								pubProg.setWebSettingsID( new Integer(liteProg.getWebSettingsID()) );
 								pubProg.setChanceOfControlID( new Integer(liteProg.getChanceOfControlID()) );
 								Transaction.createTransaction(Transaction.UPDATE, pubProg).execute();

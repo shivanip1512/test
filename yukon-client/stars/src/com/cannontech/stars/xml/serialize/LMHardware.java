@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: LMHardware.java,v 1.20 2004/06/15 15:45:50 zyao Exp $
+ * $Id: LMHardware.java,v 1.21 2004/06/25 21:37:04 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.20 $ $Date: 2004/06/15 15:45:50 $
+ * @version $Revision: 1.21 $ $Date: 2004/06/25 21:37:04 $
 **/
 public class LMHardware implements java.io.Serializable {
 
@@ -46,6 +46,8 @@ public class LMHardware implements java.io.Serializable {
     private java.util.Vector _starsLMHardwareConfigList;
 
     private StarsThermostatSettings _starsThermostatSettings;
+
+    private StarsLMConfiguration _starsLMConfiguration;
 
 
       //----------------/
@@ -118,6 +120,16 @@ public class LMHardware implements java.io.Serializable {
     {
         return this._routeID;
     } //-- int getRouteID() 
+
+    /**
+     * Returns the value of field 'starsLMConfiguration'.
+     * 
+     * @return the value of field 'starsLMConfiguration'.
+    **/
+    public StarsLMConfiguration getStarsLMConfiguration()
+    {
+        return this._starsLMConfiguration;
+    } //-- StarsLMConfiguration getStarsLMConfiguration() 
 
     /**
      * 
@@ -248,6 +260,17 @@ public class LMHardware implements java.io.Serializable {
         this._routeID = routeID;
         this._has_routeID = true;
     } //-- void setRouteID(int) 
+
+    /**
+     * Sets the value of field 'starsLMConfiguration'.
+     * 
+     * @param starsLMConfiguration the value of field
+     * 'starsLMConfiguration'.
+    **/
+    public void setStarsLMConfiguration(StarsLMConfiguration starsLMConfiguration)
+    {
+        this._starsLMConfiguration = starsLMConfiguration;
+    } //-- void setStarsLMConfiguration(StarsLMConfiguration) 
 
     /**
      * 

@@ -112,6 +112,11 @@
 	
 	accountInfo = (StarsCustAccountInformation) session.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
 	if (accountInfo != null) {
+		if (!liteEC.registerActiveAccount(accountInfo)) {
+			accountInfo = liteEC.getStarsCustAccountInformation(accountInfo.getStarsCustomerAccount().getAccountID());
+			session.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, accountInfo);
+		}
+		
 		account = accountInfo.getStarsCustomerAccount();
 		propAddr = account.getStreetAddress();
 		siteInfo = account.getStarsSiteInformation();
@@ -131,8 +136,6 @@
 		}
 		
 		thermSchedules = accountInfo.getStarsSavedThermostatSchedules();
-		
-		liteEC.registerActiveAccount( accountInfo );
 	}
 	
 	TimeZone tz = TimeZone.getDefault(); 

@@ -19,9 +19,10 @@ public class LMHardwareConfiguration extends DBPersistent {
     private Integer inventoryID = null;
     private Integer applianceID = null;
     private Integer addressingGroupID = new Integer( CtiUtilities.NONE_ID );
+    private Integer loadNumber = new Integer(0);
 
     public static final String[] SETTER_COLUMNS = {
-        "AddressingGroupID"
+        "AddressingGroupID", "LoadNumber"
     };
 
     public static final String[] CONSTRAINT_COLUMNS = {
@@ -35,7 +36,7 @@ public class LMHardwareConfiguration extends DBPersistent {
     }
 
     public static LMHardwareConfiguration getLMHardwareConfiguration(Integer applianceID) {
-        String sql = "SELECT InventoryID, ApplianceID, AddressingGroupID FROM " +
+        String sql = "SELECT InventoryID, ApplianceID, AddressingGroupID, LoadNumber FROM " +
         		TABLE_NAME + " WHERE ApplianceID=" + applianceID;
         SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
         
@@ -48,6 +49,7 @@ public class LMHardwareConfiguration extends DBPersistent {
                 config.setInventoryID( new Integer(((java.math.BigDecimal) stmt.getRow(0)[0]).intValue()) );
                 config.setApplianceID( new Integer(((java.math.BigDecimal) stmt.getRow(0)[1]).intValue()) );
                 config.setAddressingGroupID( new Integer(((java.math.BigDecimal) stmt.getRow(0)[2]).intValue()) );
+                config.setLoadNumber( new Integer(((java.math.BigDecimal) stmt.getRow(0)[3]).intValue()) );
                 
                 return config;
             }
@@ -74,6 +76,7 @@ public class LMHardwareConfiguration extends DBPersistent {
                 configs[i].setInventoryID( new Integer(((java.math.BigDecimal) row[0]).intValue()) );
                 configs[i].setApplianceID( new Integer(((java.math.BigDecimal) row[1]).intValue()) );
                 configs[i].setAddressingGroupID( new Integer(((java.math.BigDecimal) row[2]).intValue()) );
+				configs[i].setLoadNumber( new Integer(((java.math.BigDecimal) row[3]).intValue()) );
             }
             
             return configs;
@@ -117,14 +120,14 @@ public class LMHardwareConfiguration extends DBPersistent {
 
     public void add() throws java.sql.SQLException {
         Object[] addValues = {
-            getInventoryID(), getApplianceID(), getAddressingGroupID()
+            getInventoryID(), getApplianceID(), getAddressingGroupID(), getLoadNumber()
         };
 
         add( TABLE_NAME, addValues );
     }
 
     public void update() throws java.sql.SQLException {
-        Object[] setValues = { getAddressingGroupID() };
+        Object[] setValues = { getAddressingGroupID(), getLoadNumber() };
 
         Object[] constraintValues = { getInventoryID(), getApplianceID() };
 
@@ -138,6 +141,7 @@ public class LMHardwareConfiguration extends DBPersistent {
 
         if (results.length == SETTER_COLUMNS.length) {
             setAddressingGroupID( (Integer) results[1] );
+            setLoadNumber( (Integer) results[2] );
         }
         else
             throw new Error(getClass() + " - Incorrect number of results retrieved");
@@ -166,4 +170,18 @@ public class LMHardwareConfiguration extends DBPersistent {
     public void setAddressingGroupID(Integer newAddressingGroupID) {
         addressingGroupID = newAddressingGroupID;
     }
+	/**
+	 * @return
+	 */
+	public Integer getLoadNumber() {
+		return loadNumber;
+	}
+
+	/**
+	 * @param integer
+	 */
+	public void setLoadNumber(Integer integer) {
+		loadNumber = integer;
+	}
+
 }

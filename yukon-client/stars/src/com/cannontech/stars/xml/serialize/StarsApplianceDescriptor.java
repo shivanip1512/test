@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsApplianceDescriptor.java,v 1.81 2004/06/15 15:45:48 zyao Exp $
+ * $Id: StarsApplianceDescriptor.java,v 1.82 2004/06/25 21:37:03 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.81 $ $Date: 2004/06/15 15:45:48 $
+ * @version $Revision: 1.82 $ $Date: 2004/06/25 21:37:03 $
 **/
 public class StarsApplianceDescriptor extends StarsAppDescriptor {
 

@@ -153,6 +153,8 @@ public class SearchCustAccountAction implements ActionBase {
             	}
             	
             	if (liteAcctInfo != null) {
+            		liteAcctInfo = energyCompany.getCustAccountInformation( liteAcctInfo.getAccountID(), true );
+            		
 					if (liteAcctInfo.hasTwoWayThermostat(energyCompany)) {
 						// Get up-to-date thermostat settings
 						energyCompany.updateThermostatSettings( liteAcctInfo );

@@ -65,7 +65,7 @@ public class CustomerAccount extends DBPersistent {
 		
 		// Delete program events
         com.cannontech.database.data.stars.event.LMProgramEvent.deleteAllLMProgramEvents(
-				getCustomerAccount().getAccountID() );
+				getCustomerAccount().getAccountID().intValue() );
     	
     	// hardware configuration has already been deleted, so we just need to use the DB object here
 		com.cannontech.database.data.stars.appliance.ApplianceBase app =

@@ -100,24 +100,66 @@ public class StarsEnrLMProgramDescriptor extends org.exolab.castor.xml.util.XMLC
         }
         desc.setValidator(fieldValidator);
         
-        //-- initialize element descriptors
-        
-        //-- _programName
-        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_programName", "ProgramName", NodeType.Element);
-        desc.setImmutable(true);
+        //-- _deviceID
+        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_deviceID", "deviceID", NodeType.Attribute);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsEnrLMProgram target = (StarsEnrLMProgram) object;
-                return target.getProgramName();
+                if(!target.hasDeviceID())
+                    return null;
+                return new Integer(target.getDeviceID());
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
                     StarsEnrLMProgram target = (StarsEnrLMProgram) object;
-                    target.setProgramName( (java.lang.String) value);
+                    // if null, use delete method for optional primitives 
+                    if (value == null) {
+                        target.deleteDeviceID();
+                        return;
+                    }
+                    target.setDeviceID( ((Integer)value).intValue());
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        } );
+        desc.setHandler(handler);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _deviceID
+        fieldValidator = new FieldValidator();
+        { //-- local scope
+            IntegerValidator iv = new IntegerValidator();
+            fieldValidator.setValidator(iv);
+        }
+        desc.setValidator(fieldValidator);
+        
+        //-- initialize element descriptors
+        
+        //-- _yukonName
+        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_yukonName", "YukonName", NodeType.Element);
+        desc.setImmutable(true);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsEnrLMProgram target = (StarsEnrLMProgram) object;
+                return target.getYukonName();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsEnrLMProgram target = (StarsEnrLMProgram) object;
+                    target.setYukonName( (java.lang.String) value);
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
@@ -131,7 +173,7 @@ public class StarsEnrLMProgramDescriptor extends org.exolab.castor.xml.util.XMLC
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _programName
+        //-- validation code for: _yukonName
         fieldValidator = new FieldValidator();
         { //-- local scope
             StringValidator sv = new StringValidator();

@@ -53,7 +53,19 @@ public class SULMProgram implements java.io.Serializable {
     **/
     private boolean _has_addressingGroupID;
 
-    private java.lang.String _inventoryID;
+    private int _inventoryID;
+
+    /**
+     * keeps track of state for field: _inventoryID
+    **/
+    private boolean _has_inventoryID;
+
+    private int _loadNumber;
+
+    /**
+     * keeps track of state for field: _loadNumber
+    **/
+    private boolean _has_loadNumber;
 
 
       //----------------/
@@ -82,6 +94,20 @@ public class SULMProgram implements java.io.Serializable {
     {
         this._has_applianceCategoryID= false;
     } //-- void deleteApplianceCategoryID() 
+
+    /**
+    **/
+    public void deleteInventoryID()
+    {
+        this._has_inventoryID= false;
+    } //-- void deleteInventoryID() 
+
+    /**
+    **/
+    public void deleteLoadNumber()
+    {
+        this._has_loadNumber= false;
+    } //-- void deleteLoadNumber() 
 
     /**
     **/
@@ -115,10 +141,20 @@ public class SULMProgram implements java.io.Serializable {
      * 
      * @return the value of field 'inventoryID'.
     **/
-    public java.lang.String getInventoryID()
+    public int getInventoryID()
     {
         return this._inventoryID;
-    } //-- java.lang.String getInventoryID() 
+    } //-- int getInventoryID() 
+
+    /**
+     * Returns the value of field 'loadNumber'.
+     * 
+     * @return the value of field 'loadNumber'.
+    **/
+    public int getLoadNumber()
+    {
+        return this._loadNumber;
+    } //-- int getLoadNumber() 
 
     /**
      * Returns the value of field 'programID'.
@@ -143,6 +179,20 @@ public class SULMProgram implements java.io.Serializable {
     {
         return this._has_applianceCategoryID;
     } //-- boolean hasApplianceCategoryID() 
+
+    /**
+    **/
+    public boolean hasInventoryID()
+    {
+        return this._has_inventoryID;
+    } //-- boolean hasInventoryID() 
+
+    /**
+    **/
+    public boolean hasLoadNumber()
+    {
+        return this._has_loadNumber;
+    } //-- boolean hasLoadNumber() 
 
     /**
     **/
@@ -217,10 +267,22 @@ public class SULMProgram implements java.io.Serializable {
      * 
      * @param inventoryID the value of field 'inventoryID'.
     **/
-    public void setInventoryID(java.lang.String inventoryID)
+    public void setInventoryID(int inventoryID)
     {
         this._inventoryID = inventoryID;
-    } //-- void setInventoryID(java.lang.String) 
+        this._has_inventoryID = true;
+    } //-- void setInventoryID(int) 
+
+    /**
+     * Sets the value of field 'loadNumber'.
+     * 
+     * @param loadNumber the value of field 'loadNumber'.
+    **/
+    public void setLoadNumber(int loadNumber)
+    {
+        this._loadNumber = loadNumber;
+        this._has_loadNumber = true;
+    } //-- void setLoadNumber(int) 
 
     /**
      * Sets the value of field 'programID'.

@@ -121,11 +121,11 @@ public class DeleteApplianceAction implements ActionBase {
 				return SOAPUtil.buildSOAPMessage( respOper );
 			}
         	
-			if (liteApp.getLmProgramID() > 0) {
+			if (liteApp.getProgramID() > 0) {
 				unenrollProgram = true;
 				for (int i = 0; i < liteAcctInfo.getAppliances().size(); i++) {
 					LiteStarsAppliance lApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(i);
-					if (!lApp.equals(liteApp) && lApp.getLmProgramID() == liteApp.getLmProgramID()) {
+					if (!lApp.equals(liteApp) && lApp.getProgramID() == liteApp.getProgramID()) {
 						unenrollProgram = false;
 						break;
 					}
@@ -190,7 +190,7 @@ public class DeleteApplianceAction implements ActionBase {
 				
 				event.setEnergyCompanyID( new Integer(user.getEnergyCompanyID()) );
 				eventDB.setAccountID( new Integer(liteAcctInfo.getCustomerAccount().getAccountID()) );
-				eventDB.setLMProgramID( new Integer(liteApp.getLmProgramID()) );
+				eventDB.setProgramID( new Integer(liteApp.getProgramID()) );
 				eventBase.setEventTypeID( new Integer(energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMPROGRAM).getEntryID()) );
 				eventBase.setActionID( new Integer(energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TERMINATION).getEntryID()) );
 				eventBase.setEventDateTime( new Date() );
@@ -199,10 +199,10 @@ public class DeleteApplianceAction implements ActionBase {
 				LiteLMProgramEvent liteEvent = (LiteLMProgramEvent) StarsLiteFactory.createLite(event);
 				liteAcctInfo.getProgramHistory().add( liteEvent );
 	        	
-				for (int i = 0; i < liteAcctInfo.getLmPrograms().size(); i++) {
-					LiteStarsLMProgram liteProg = (LiteStarsLMProgram) liteAcctInfo.getLmPrograms().get(i);
-					if (liteProg.getLmProgram().getProgramID() == liteApp.getLmProgramID()) {
-						liteAcctInfo.getLmPrograms().remove( liteProg );
+				for (int i = 0; i < liteAcctInfo.getPrograms().size(); i++) {
+					LiteStarsLMProgram liteProg = (LiteStarsLMProgram) liteAcctInfo.getPrograms().get(i);
+					if (liteProg.getProgramID() == liteApp.getProgramID()) {
+						liteAcctInfo.getPrograms().remove( i );
 						break;
 					}
 				}

@@ -89,7 +89,7 @@
                 </tr>
               </table>
               <br>
-              <input type="button" name="Cancel" value="Cancel" onclick="location.href = '../Operations.jsp'">
+              <input type="button" name="Done" value="Done" onclick="location.href = '../Operations.jsp'">
               <p>&nbsp;</p>
               <p>&nbsp;</p>
             </div>

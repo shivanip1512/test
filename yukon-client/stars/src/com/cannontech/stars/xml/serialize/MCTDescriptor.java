@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: MCTDescriptor.java,v 1.20 2004/06/15 15:45:53 zyao Exp $
+ * $Id: MCTDescriptor.java,v 1.21 2004/06/25 21:37:06 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.20 $ $Date: 2004/06/15 15:45:53 $
+ * @version $Revision: 1.21 $ $Date: 2004/06/25 21:37:06 $
 **/
 public class MCTDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 

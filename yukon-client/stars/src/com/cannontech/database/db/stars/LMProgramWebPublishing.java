@@ -2,7 +2,10 @@ package com.cannontech.database.db.stars;
 
 import java.sql.SQLException;
 
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.SqlStatement;
 import com.cannontech.database.db.DBPersistent;
 
 /**
@@ -15,29 +18,34 @@ import com.cannontech.database.db.DBPersistent;
  */
 public class LMProgramWebPublishing extends DBPersistent {
 
-	private Integer applianceCategoryID = null;
-	private Integer lmProgramID = null;
+	private Integer programID = null;
+	private Integer applianceCategoryID = new Integer(CtiUtilities.NONE_ID);
+	private Integer deviceID = new Integer(CtiUtilities.NONE_ID);
 	private Integer webSettingsID = new Integer(CtiUtilities.NONE_ID);
 	private Integer chanceOfControlID = new Integer(CtiUtilities.NONE_ID);
 	private Integer programOrder = new Integer(0);
 
 	public static final String[] SETTER_COLUMNS = {
-		"WebSettingsID", "ChanceOfControlID", "ProgramOrder"
+		"ApplianceCategoryID", "DeviceID", "WebSettingsID", "ChanceOfControlID", "ProgramOrder"
 	};
 
-	public static final String[] CONSTRAINT_COLUMNS = {
-		"ApplianceCategoryID", "LMProgramID"
-	};
+	public static final String[] CONSTRAINT_COLUMNS = { "ProgramID" };
 
 	public static final String TABLE_NAME = "LMProgramWebPublishing";
+	
+	public static final String GET_NEXT_PROGRAM_ID_SQL =
+		"SELECT MAX(ProgramID) FROM " + TABLE_NAME;
 
 	/**
 	 * @see com.cannontech.database.db.DBPersistent#add()
 	 */
 	public void add() throws SQLException {
+		if (getProgramID() == null)
+			setProgramID( getNextProgramID() );
+		
 		Object[] addValues = {
-			getApplianceCategoryID(), getLMProgramID(), getWebSettingsID(),
-			getChanceOfControlID(), getProgramOrder()
+			getApplianceCategoryID(), getDeviceID(), getWebSettingsID(),
+			getChanceOfControlID(), getProgramOrder(), getProgramID()
 		};
 		
 		add(TABLE_NAME, addValues);
@@ -47,9 +55,7 @@ public class LMProgramWebPublishing extends DBPersistent {
 	 * @see com.cannontech.database.db.DBPersistent#delete()
 	 */
 	public void delete() throws SQLException {
-		Object[] constraintValues = {
-			getApplianceCategoryID(), getLMProgramID()
-		};
+		Object[] constraintValues = { getProgramID() };
 		
 		delete(TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues);
 	}
@@ -58,16 +64,16 @@ public class LMProgramWebPublishing extends DBPersistent {
 	 * @see com.cannontech.database.db.DBPersistent#retrieve()
 	 */
 	public void retrieve() throws SQLException {
-		Object[] constraintValues = {
-			getApplianceCategoryID(), getLMProgramID()
-		};
+		Object[] constraintValues = { getProgramID() };
 		
 		Object[] results = retrieve(SETTER_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues);
 		
 		if (results.length == SETTER_COLUMNS.length) {
-			setWebSettingsID( (Integer) results[0] );
-			setChanceOfControlID( (Integer) results[1] );
-			setProgramOrder( (Integer) results[2] );
+			setApplianceCategoryID( (Integer) results[0] );
+			setDeviceID( (Integer) results[1] );
+			setWebSettingsID( (Integer) results[2] );
+			setChanceOfControlID( (Integer) results[3] );
+			setProgramOrder( (Integer) results[4] );
 		}
 		else
 			throw new Error(getClass() + " - Incorrect number of results retrieved");
@@ -78,18 +84,44 @@ public class LMProgramWebPublishing extends DBPersistent {
 	 */
 	public void update() throws SQLException {
 		Object[] setValues = {
-			getWebSettingsID(), getChanceOfControlID(), getProgramOrder()
+			getApplianceCategoryID(), getDeviceID(), getWebSettingsID(),
+			getChanceOfControlID(), getProgramOrder()
 		};
-		Object[] constraintValues = {
-			getApplianceCategoryID(), getLMProgramID()
-		};
+		Object[] constraintValues = { getProgramID() };
 		
 		update(TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues);
 	}
+
+	public final Integer getNextProgramID() {
+		java.sql.PreparedStatement pstmt = null;
+		java.sql.ResultSet rset = null;
+
+		int nextProgramID = 1;
+
+		try {
+			pstmt = getDbConnection().prepareStatement( GET_NEXT_PROGRAM_ID_SQL );
+			rset = pstmt.executeQuery();
+
+			if (rset.next())
+				nextProgramID = rset.getInt(1) + 1;
+		}
+		catch (java.sql.SQLException e) {
+			CTILogger.error( e.getMessage(), e );
+		}
+		finally {
+			try {
+				if( rset != null ) rset.close();
+				if (pstmt != null) pstmt.close();
+			}
+			catch (java.sql.SQLException e2) {}
+		}
+
+		return new Integer( nextProgramID );
+	}
 	
-	public static LMProgramWebPublishing getLMProgramWebPublishing(Integer programID) {
-		String sql = "SELECT ApplianceCategoryID, LMProgramID, WebSettingsID, ChanceOfControlID, ProgramOrder "
-				   + "FROM " + TABLE_NAME + " WHERE LMProgramID = " + programID.toString();
+	public static LMProgramWebPublishing getLMProgramWebPublishing(int programID) {
+		String sql = "SELECT ApplianceCategoryID, DeviceID, WebSettingsID, ChanceOfControlID, ProgramOrder, ProgramID "
+				   + "FROM " + TABLE_NAME + " WHERE ProgramID = " + programID;
         
 		com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
 				sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
@@ -103,25 +135,26 @@ public class LMProgramWebPublishing extends DBPersistent {
 				LMProgramWebPublishing webPub = new LMProgramWebPublishing();
 
 				webPub.setApplianceCategoryID( new Integer(((java.math.BigDecimal) row[0]).intValue()) );
-				webPub.setLMProgramID( new Integer(((java.math.BigDecimal) row[1]).intValue()) );
+				webPub.setDeviceID( new Integer(((java.math.BigDecimal) row[1]).intValue()) );
 				webPub.setWebSettingsID( new Integer(((java.math.BigDecimal) row[2]).intValue()) );
 				webPub.setChanceOfControlID( new Integer(((java.math.BigDecimal) row[3]).intValue()) );
 				webPub.setProgramOrder( new Integer(((java.math.BigDecimal) row[4]).intValue()) );
+				webPub.setProgramID( new Integer(((java.math.BigDecimal) row[5]).intValue()) );
 
 				return webPub;
 			}
 		}
 		catch(Exception e)
 		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 		}
 
 		return null;
 	}
 
-	public static LMProgramWebPublishing[] getAllLMProgramWebPublishing(Integer appCatID) {
-		String sql = "SELECT ApplianceCategoryID, LMProgramID, WebSettingsID, ChanceOfControlID, ProgramOrder "
-				   + "FROM " + TABLE_NAME + " WHERE ApplianceCategoryID = " + appCatID.toString()
+	public static LMProgramWebPublishing[] getAllLMProgramWebPublishing(int appCatID) {
+		String sql = "SELECT ApplianceCategoryID, DeviceID, WebSettingsID, ChanceOfControlID, ProgramOrder, ProgramID "
+				   + "FROM " + TABLE_NAME + " WHERE ApplianceCategoryID = " + appCatID
 				   + " ORDER BY ProgramOrder";
         
 		com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
@@ -137,42 +170,32 @@ public class LMProgramWebPublishing extends DBPersistent {
 				webPubs[i] = new LMProgramWebPublishing();
 
 				webPubs[i].setApplianceCategoryID( new Integer(((java.math.BigDecimal) row[0]).intValue()) );
-				webPubs[i].setLMProgramID( new Integer(((java.math.BigDecimal) row[1]).intValue()) );
+				webPubs[i].setDeviceID( new Integer(((java.math.BigDecimal) row[1]).intValue()) );
 				webPubs[i].setWebSettingsID( new Integer(((java.math.BigDecimal) row[2]).intValue()) );
 				webPubs[i].setChanceOfControlID( new Integer(((java.math.BigDecimal) row[3]).intValue()) );
 				webPubs[i].setProgramOrder( new Integer(((java.math.BigDecimal) row[4]).intValue()) );
+				webPubs[i].setProgramID( new Integer(((java.math.BigDecimal) row[5]).intValue()) );
 			}
             
 			return webPubs;
 		}
 		catch(Exception e)
 		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 		}
         
 		return null;
 	}
 
-	public static void deleteAllLMProgramWebPublishing(Integer appCatID) {
-		java.sql.Connection conn = null;
-		java.sql.PreparedStatement stmt = null;
-		String sql = "DELETE FROM " + TABLE_NAME + " WHERE ApplianceCategoryID = ?";
+	public static void deleteAllLMProgramWebPublishing(int appCatID) {
+		String sql = "DELETE FROM " + TABLE_NAME + " WHERE ApplianceCategoryID = " + appCatID;
+		SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
         
 		try {
-			conn = com.cannontech.database.PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-			stmt = conn.prepareStatement( sql );
-			stmt.setInt( 1, appCatID.intValue() );
 			stmt.execute();
 		}
-		catch (java.sql.SQLException e) {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-		}
-		finally {
-			try {
-				if (stmt != null) stmt.close();
-				if (conn != null) conn.close();
-			}
-			catch (java.sql.SQLException e) {}
+		catch (CommandExecutionException e) {
+			CTILogger.error( e.getMessage(), e );
 		}
 	}
 
@@ -185,11 +208,11 @@ public class LMProgramWebPublishing extends DBPersistent {
 	}
 
 	/**
-	 * Returns the lmProgramID.
+	 * Returns the deviceID.
 	 * @return Integer
 	 */
-	public Integer getLMProgramID() {
-		return lmProgramID;
+	public Integer getDeviceID() {
+		return deviceID;
 	}
 
 	/**
@@ -209,11 +232,11 @@ public class LMProgramWebPublishing extends DBPersistent {
 	}
 
 	/**
-	 * Sets the lmProgramID.
-	 * @param lmProgramID The lmProgramID to set
+	 * Sets the deviceID.
+	 * @param deviceID The deviceID to set
 	 */
-	public void setLMProgramID(Integer lmProgramID) {
-		this.lmProgramID = lmProgramID;
+	public void setDeviceID(Integer deviceID) {
+		this.deviceID = deviceID;
 	}
 
 	/**
@@ -252,6 +275,20 @@ public class LMProgramWebPublishing extends DBPersistent {
 	 */
 	public void setProgramOrder(Integer integer) {
 		programOrder = integer;
+	}
+
+	/**
+	 * @return
+	 */
+	public Integer getProgramID() {
+		return programID;
+	}
+
+	/**
+	 * @param integer
+	 */
+	public void setProgramID(Integer integer) {
+		programID = integer;
 	}
 
 }

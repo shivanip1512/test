@@ -16,7 +16,7 @@ public class LiteStarsAppliance extends LiteBase {
 	
 	private int accountID = com.cannontech.database.db.stars.customer.CustomerAccount.NONE_INT;
 	private int applianceCategoryID = com.cannontech.database.db.stars.appliance.ApplianceCategory.NONE_INT;
-	private int lmProgramID = 0;
+	private int programID = 0;
 	private int yearManufactured = 0;
 	private int manufacturerID = CtiUtilities.NONE_ID;
 	private int locationID = CtiUtilities.NONE_ID;
@@ -27,6 +27,7 @@ public class LiteStarsAppliance extends LiteBase {
 	
 	private int inventoryID = CtiUtilities.NONE_ID;
 	private int addressingGroupID = 0;
+	private int loadNumber = 0;
 	private boolean extended = false;
 	
 	public LiteStarsAppliance() {
@@ -65,11 +66,11 @@ public class LiteStarsAppliance extends LiteBase {
 	}
 
 	/**
-	 * Returns the lmProgramID.
+	 * Returns the programID.
 	 * @return int
 	 */
-	public int getLmProgramID() {
-		return lmProgramID;
+	public int getProgramID() {
+		return programID;
 	}
 
 	/**
@@ -121,11 +122,11 @@ public class LiteStarsAppliance extends LiteBase {
 	}
 
 	/**
-	 * Sets the lmProgramID.
-	 * @param lmProgramID The lmProgramID to set
+	 * Sets the programID.
+	 * @param programID The programID to set
 	 */
-	public void setLmProgramID(int lmProgramID) {
-		this.lmProgramID = lmProgramID;
+	public void setProgramID(int programID) {
+		this.programID = programID;
 	}
 
 	/**
@@ -254,6 +255,20 @@ public class LiteStarsAppliance extends LiteBase {
 	 */
 	public void setExtended(boolean extended) {
 		this.extended = extended;
+	}
+
+	/**
+	 * @return
+	 */
+	public int getLoadNumber() {
+		return loadNumber;
+	}
+
+	/**
+	 * @param i
+	 */
+	public void setLoadNumber(int i) {
+		loadNumber = i;
 	}
 
 }

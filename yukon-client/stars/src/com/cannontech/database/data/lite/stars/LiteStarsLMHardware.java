@@ -23,10 +23,12 @@ public class LiteStarsLMHardware extends LiteInventoryBase {
 	private String manufacturerSerialNumber = null;
 	private int lmHardwareTypeID = CtiUtilities.NONE_ID;
 	private int routeID = CtiUtilities.NONE_ID;
+	private int configurationID = CtiUtilities.NONE_ID;
 	
 	// Extended fields
 	private int thermostatType = THERMOSTAT_TYPE_UNKNOWN;
 	private LiteStarsThermostatSettings thermostatSettings = null;
+	private LiteLMConfiguration lmConfig_ = null;
 	
 	public LiteStarsLMHardware() {
 		super();
@@ -92,6 +94,28 @@ public class LiteStarsLMHardware extends LiteInventoryBase {
 	 */
 	public void setRouteID(int i) {
 		routeID = i;
+	}
+
+	/**
+	 * @return
+	 */
+	public int getConfigurationID() {
+		return configurationID;
+	}
+
+	/**
+	 * @param i
+	 */
+	public void setConfigurationID(int i) {
+		configurationID = i;
+	}
+	
+	public LiteLMConfiguration getLMConfiguration() {
+		return lmConfig_;
+	}
+	
+	public void setLMConfiguration(LiteLMConfiguration lmConfig) {
+		lmConfig_ = lmConfig;
 	}
 
 	/**

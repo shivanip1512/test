@@ -41,7 +41,14 @@ public class StarsEnrLMProgram implements java.io.Serializable {
     **/
     private boolean _has_programID;
 
-    private java.lang.String _programName;
+    private int _deviceID;
+
+    /**
+     * keeps track of state for field: _deviceID
+    **/
+    private boolean _has_deviceID;
+
+    private java.lang.String _yukonName;
 
     private StarsWebConfig _starsWebConfig;
 
@@ -86,6 +93,13 @@ public class StarsEnrLMProgram implements java.io.Serializable {
     {
         _addressingGroupList.insertElementAt(vAddressingGroup, index);
     } //-- void addAddressingGroup(int, AddressingGroup) 
+
+    /**
+    **/
+    public void deleteDeviceID()
+    {
+        this._has_deviceID= false;
+    } //-- void deleteDeviceID() 
 
     /**
     **/
@@ -147,6 +161,16 @@ public class StarsEnrLMProgram implements java.io.Serializable {
     } //-- ChanceOfControl getChanceOfControl() 
 
     /**
+     * Returns the value of field 'deviceID'.
+     * 
+     * @return the value of field 'deviceID'.
+    **/
+    public int getDeviceID()
+    {
+        return this._deviceID;
+    } //-- int getDeviceID() 
+
+    /**
      * Returns the value of field 'programID'.
      * 
      * @return the value of field 'programID'.
@@ -157,16 +181,6 @@ public class StarsEnrLMProgram implements java.io.Serializable {
     } //-- int getProgramID() 
 
     /**
-     * Returns the value of field 'programName'.
-     * 
-     * @return the value of field 'programName'.
-    **/
-    public java.lang.String getProgramName()
-    {
-        return this._programName;
-    } //-- java.lang.String getProgramName() 
-
-    /**
      * Returns the value of field 'starsWebConfig'.
      * 
      * @return the value of field 'starsWebConfig'.
@@ -175,6 +189,23 @@ public class StarsEnrLMProgram implements java.io.Serializable {
     {
         return this._starsWebConfig;
     } //-- StarsWebConfig getStarsWebConfig() 
+
+    /**
+     * Returns the value of field 'yukonName'.
+     * 
+     * @return the value of field 'yukonName'.
+    **/
+    public java.lang.String getYukonName()
+    {
+        return this._yukonName;
+    } //-- java.lang.String getYukonName() 
+
+    /**
+    **/
+    public boolean hasDeviceID()
+    {
+        return this._has_deviceID;
+    } //-- boolean hasDeviceID() 
 
     /**
     **/
@@ -280,6 +311,17 @@ public class StarsEnrLMProgram implements java.io.Serializable {
     } //-- void setChanceOfControl(ChanceOfControl) 
 
     /**
+     * Sets the value of field 'deviceID'.
+     * 
+     * @param deviceID the value of field 'deviceID'.
+    **/
+    public void setDeviceID(int deviceID)
+    {
+        this._deviceID = deviceID;
+        this._has_deviceID = true;
+    } //-- void setDeviceID(int) 
+
+    /**
      * Sets the value of field 'programID'.
      * 
      * @param programID the value of field 'programID'.
@@ -291,16 +333,6 @@ public class StarsEnrLMProgram implements java.io.Serializable {
     } //-- void setProgramID(int) 
 
     /**
-     * Sets the value of field 'programName'.
-     * 
-     * @param programName the value of field 'programName'.
-    **/
-    public void setProgramName(java.lang.String programName)
-    {
-        this._programName = programName;
-    } //-- void setProgramName(java.lang.String) 
-
-    /**
      * Sets the value of field 'starsWebConfig'.
      * 
      * @param starsWebConfig the value of field 'starsWebConfig'.
@@ -309,6 +341,16 @@ public class StarsEnrLMProgram implements java.io.Serializable {
     {
         this._starsWebConfig = starsWebConfig;
     } //-- void setStarsWebConfig(StarsWebConfig) 
+
+    /**
+     * Sets the value of field 'yukonName'.
+     * 
+     * @param yukonName the value of field 'yukonName'.
+    **/
+    public void setYukonName(java.lang.String yukonName)
+    {
+        this._yukonName = yukonName;
+    } //-- void setYukonName(java.lang.String) 
 
     /**
      * 

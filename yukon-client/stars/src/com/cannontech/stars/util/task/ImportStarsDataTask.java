@@ -20,7 +20,7 @@ import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
-import com.cannontech.database.data.lite.stars.LiteLMProgram;
+import com.cannontech.database.data.lite.stars.LiteLMProgramWebPublishing;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -376,7 +376,7 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 						for (int j = 0; j < appCats.size(); j++) {
 							LiteApplianceCategory liteAppCat = (LiteApplianceCategory) appCats.get(j);
 							for (int k = 0; k < liteAppCat.getPublishedPrograms().size(); k++) {
-								LiteLMProgram liteProg = (LiteLMProgram) liteAppCat.getPublishedPrograms().get(k);
+								LiteLMProgramWebPublishing liteProg = (LiteLMProgramWebPublishing) liteAppCat.getPublishedPrograms().get(k);
 								for (int l = 0; l < liteProg.getGroupIDs().length; l++) {
 									if (liteProg.getGroupIDs()[l] == groupID) {
 										progID = liteProg.getProgramID();
@@ -407,7 +407,7 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 							
 							for (int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {
 								LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(j);
-								if (liteApp.getLmProgramID() == progIDs[i]) {
+								if (liteApp.getProgramID() == progIDs[i]) {
 									appIDs[i] = liteApp.getApplianceID();
 									break;
 								}

@@ -17,10 +17,10 @@ public class LMProgramEvent extends DBPersistent {
 
     private Integer eventID = null;
     private Integer accountID = new Integer( CtiUtilities.NONE_ID );
-    private Integer lmProgramID = new Integer( CtiUtilities.NONE_ID );
+    private Integer programID = new Integer( CtiUtilities.NONE_ID );
     
     public static final String[] SETTER_COLUMNS = {
-        "AccountID", "LMProgramID"
+        "AccountID", "ProgramID"
     };
 
     public static final String[] CONSTRAINT_COLUMNS = { "EventID" };
@@ -39,7 +39,7 @@ public class LMProgramEvent extends DBPersistent {
 
     public void add() throws java.sql.SQLException {
         Object[] addValues = {
-            getEventID(), getAccountID(), getLMProgramID(),
+            getEventID(), getAccountID(), getProgramID(),
         };
 
         add( TABLE_NAME, addValues );
@@ -47,7 +47,7 @@ public class LMProgramEvent extends DBPersistent {
 
     public void update() throws java.sql.SQLException {
         Object[] setValues = {
-            getAccountID(), getLMProgramID()
+            getAccountID(), getProgramID()
         };
 
         Object[] constraintValues = { getEventID() };
@@ -62,13 +62,13 @@ public class LMProgramEvent extends DBPersistent {
 
         if (results.length == SETTER_COLUMNS.length) {
             setAccountID( (Integer) results[0] );
-            setLMProgramID( (Integer) results[1] );
+            setProgramID( (Integer) results[1] );
         }
         else
             throw new Error(getClass() + " - Incorrect number of results retrieved");
     }
 
-    public static Integer[] getAllLMProgramEventIDs(Integer accountID) {
+    public static Integer[] getAllLMProgramEventIDs(int accountID) {
         String sql = "SELECT EventID FROM " + TABLE_NAME + " WHERE AccountID=" + accountID + " ORDER BY EventID";
         SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
         
@@ -88,9 +88,9 @@ public class LMProgramEvent extends DBPersistent {
         return null;
     }
     
-    public static Integer[] getLMProgramEventIDs(Integer accountID, Integer programID) {
+    public static Integer[] getLMProgramEventIDs(int accountID, int programID) {
         String sql = "SELECT EventID FROM " + TABLE_NAME + " WHERE AccountID = " + accountID
-        		   + " AND LMProgramID = " + programID + " ORDER BY EventID";
+        		   + " AND ProgramID = " + programID + " ORDER BY EventID";
 		SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
         
         try {
@@ -109,10 +109,10 @@ public class LMProgramEvent extends DBPersistent {
 		return null;
     }
     
-    public static Integer[] getAllLMProgramEventIDs(Integer energyCompanyID, Integer programID) {
+    public static Integer[] getAllLMProgramEventIDs(int energyCompanyID, int programID) {
     	String sql = "SELECT event.EventID FROM " +
     			TABLE_NAME + " event, ECToAccountMapping map " +
-				"WHERE event.LMProgramID = " + programID +
+				"WHERE event.ProgramID = " + programID +
 				" AND event.AccountID = map.AccountID" +
 				" AND map.EnergyCompanyID = " + energyCompanyID;
 		SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
@@ -149,19 +149,19 @@ public class LMProgramEvent extends DBPersistent {
         accountID = newAccountID;
     }
 	/**
-	 * Returns the lmProgramID.
+	 * Returns the programID.
 	 * @return Integer
 	 */
-	public Integer getLMProgramID() {
-		return lmProgramID;
+	public Integer getProgramID() {
+		return programID;
 	}
 
 	/**
-	 * Sets the lmProgramID.
-	 * @param lmProgramID The lmProgramID to set
+	 * Sets the programID.
+	 * @param programID The programID to set
 	 */
-	public void setLMProgramID(Integer lmProgramID) {
-		this.lmProgramID = lmProgramID;
+	public void setProgramID(Integer programID) {
+		this.programID = programID;
 	}
 
 }

@@ -68,8 +68,8 @@ function validate(form) {
                           the energy company name:</span> 
                           <table width="100%" border="0" cellspacing="0" cellpadding="3" class="TableCell">
                             <tr> 
-                              <td width="20%" align="right">Company Name:</td>
-                              <td width="80%"> 
+                              <td width="25%" align="right">Company Name:</td>
+                              <td width="75%"> 
                                 <input type="text" name="CompanyName" size="30">
                               </td>
                             </tr>
@@ -85,14 +85,14 @@ function validate(form) {
                           names below, separated by comma:</span> 
                           <table width="100%" border="0" cellspacing="0" cellpadding="3" class="TableCell">
                             <tr> 
-                              <td width="20%" align="right">Operator Groups:</td>
-                              <td width="80%"> 
+                              <td width="25%" align="right">Operator Groups:</td>
+                              <td width="75%"> 
                                 <input type="text" name="OperatorGroup" size="30">
                               </td>
                             </tr>
                             <tr> 
-                              <td width="20%" align="right">Customer Groups:</td>
-                              <td width="80%"> 
+                              <td width="25%" align="right">Res. Customer Groups:</td>
+                              <td width="75%"> 
                                 <input type="text" name="CustomerGroup" size="30">
                               </td>
                             </tr>
@@ -108,20 +108,20 @@ function validate(form) {
                           has the privilege to edit energy company configuration):</span> 
                           <table width="100%" border="0" cellspacing="0" cellpadding="3" class="TableCell">
                             <tr> 
-                              <td width="20%" align="right">Username:</td>
-                              <td width="80%"> 
+                              <td width="25%" align="right">Username:</td>
+                              <td width="75%"> 
                                 <input type="text" name="Username" size="30">
                               </td>
                             </tr>
                             <tr> 
-                              <td width="20%" align="right">Password:</td>
-                              <td width="80%"> 
+                              <td width="25%" align="right">Password:</td>
+                              <td width="75%"> 
                                 <input type="password" name="Password" size="30">
                               </td>
                             </tr>
                             <tr> 
-                              <td width="20%" align="right">Confirm Password:</td>
-                              <td width="80%"> 
+                              <td width="25%" align="right">Confirm Password:</td>
+                              <td width="75%"> 
                                 <input type="password" name="PasswordC" size="30">
                               </td>
                             </tr>
@@ -130,26 +130,26 @@ function validate(form) {
                       </tr>
                       <tr> 
                         <td width="15%" align="right" class="TableCell" valign="top">Step 
-                          4 (OPTIONAL):</td>
+                          4 (optional):</td>
                         <td width="85%" class="ConfirmMsg"><span class="ConfirmMsg">Create 
                           a second operator login (with only the privileges defined 
                           in the first operator group you just created):</span> 
                           <table width="100%" border="0" cellspacing="0" cellpadding="3" class="TableCell">
                             <tr> 
-                              <td width="20%" align="right">Username:</td>
-                              <td width="80%"> 
+                              <td width="25%" align="right">Username:</td>
+                              <td width="75%"> 
                                 <input type="text" name="Username2" size="30">
                               </td>
                             </tr>
                             <tr> 
-                              <td width="20%" align="right">Password:</td>
-                              <td width="80%"> 
+                              <td width="25%" align="right">Password:</td>
+                              <td width="75%"> 
                                 <input type="password" name="Password2" size="30">
                               </td>
                             </tr>
                             <tr> 
-                              <td width="20%" align="right">Confirm Password:</td>
-                              <td width="80%"> 
+                              <td width="25%" align="right">Confirm Password:</td>
+                              <td width="75%"> 
                                 <input type="password" name="Password2C" size="30">
                               </td>
                             </tr>

@@ -184,16 +184,16 @@ public class StarsAppDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
         }
         desc.setValidator(fieldValidator);
         
-        //-- _lmProgramID
-        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_lmProgramID", "lmProgramID", NodeType.Attribute);
+        //-- _programID
+        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_programID", "programID", NodeType.Attribute);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsApp target = (StarsApp) object;
-                if(!target.hasLmProgramID())
+                if(!target.hasProgramID())
                     return null;
-                return new Integer(target.getLmProgramID());
+                return new Integer(target.getProgramID());
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
@@ -202,10 +202,10 @@ public class StarsAppDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
                     StarsApp target = (StarsApp) object;
                     // if null, use delete method for optional primitives 
                     if (value == null) {
-                        target.deleteLmProgramID();
+                        target.deleteProgramID();
                         return;
                     }
-                    target.setLmProgramID( ((Integer)value).intValue());
+                    target.setProgramID( ((Integer)value).intValue());
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
@@ -218,7 +218,49 @@ public class StarsAppDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
         desc.setHandler(handler);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _lmProgramID
+        //-- validation code for: _programID
+        fieldValidator = new FieldValidator();
+        { //-- local scope
+            IntegerValidator iv = new IntegerValidator();
+            fieldValidator.setValidator(iv);
+        }
+        desc.setValidator(fieldValidator);
+        
+        //-- _loadNumber
+        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_loadNumber", "loadNumber", NodeType.Attribute);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsApp target = (StarsApp) object;
+                if(!target.hasLoadNumber())
+                    return null;
+                return new Integer(target.getLoadNumber());
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsApp target = (StarsApp) object;
+                    // if null, use delete method for optional primitives 
+                    if (value == null) {
+                        target.deleteLoadNumber();
+                        return;
+                    }
+                    target.setLoadNumber( ((Integer)value).intValue());
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        } );
+        desc.setHandler(handler);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _loadNumber
         fieldValidator = new FieldValidator();
         { //-- local scope
             IntegerValidator iv = new IntegerValidator();

@@ -308,6 +308,10 @@ function removeAllMembers(form) {
 		for (int j = 0; j < category.getStarsEnrLMProgramCount(); j++) {
 			StarsEnrLMProgram program = category.getStarsEnrLMProgram(j);
 			String[] dispNames = ServerUtils.splitString(program.getStarsWebConfig().getAlternateDisplayName(), ",");
+			
+			String progName = program.getYukonName();
+			if (progName == null) progName = "&lt;Virtual Program&gt;";
+			
 			String progAlias = "";
 			if (dispNames.length > 0) {
 				if (dispNames[0].length() > 0) {
@@ -322,7 +326,7 @@ function removeAllMembers(form) {
 %>
                                         <tr> 
                                           <td width="15" class="TableCell">&nbsp;</td>
-                                          <td width="458" class="TableCell"><%= program.getProgramName() %> 
+                                          <td width="458" class="TableCell"><%= progName %> 
                                             <%= progAlias %></td>
                                         </tr>
 <%

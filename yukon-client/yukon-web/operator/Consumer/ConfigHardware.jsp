@@ -10,11 +10,16 @@
 	for (int i = 0; i < appliances.getStarsApplianceCount(); i++) {
 		StarsAppliance app = appliances.getStarsAppliance(i);
 		if (app.getInventoryID() == inventory.getInventoryID()) {
-			attachedApps.add(app);
+			int idx = 0;
+			for (idx = 0; idx < attachedApps.size(); idx++) {
+				if (((StarsAppliance)attachedApps.get(idx)).getLoadNumber() > app.getLoadNumber())
+					break;
+			}
+			attachedApps.add(idx, app);
 			
 			for (int j = 0; j < programs.getStarsLMProgramCount(); j++) {
 				StarsLMProgram program = programs.getStarsLMProgram(j);
-				if (program.getProgramID() == app.getLmProgramID()) {
+				if (program.getProgramID() == app.getProgramID()) {
 					if (!attachedProgs.contains(program)) attachedProgs.add(program);
 					break;
 				}
@@ -45,7 +50,9 @@ function sendCommand(cmd) {
 
 function changeProgSelection(chkBox) {
 	var grpList = document.getElementById('Group_Prog' + chkBox.value);
+	var loadList = document.getElementById('Load_Prog' + chkBox.value);
 	grpList.disabled = !chkBox.checked;
+	loadList.disabled = !chkBox.checked;
 }
 </script>
 </head>
@@ -84,11 +91,12 @@ function changeProgSelection(chkBox) {
                 <input type="hidden" name="InvID" value="<%= inventory.getInventoryID() %>">
 				<input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>?InvNo=<%= invNo %>">
 				<input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>?InvNo=<%= invNo %>">
-                <table width="350" border="1" cellspacing="0" cellpadding="3">
+                <table width="60%" border="1" cellspacing="0" cellpadding="3">
                   <tr> 
                     <td width="5%" class="HeaderCell">&nbsp; </td>
-                    <td width="45%" class="HeaderCell">Program</td>
-                    <td width="50%" class="HeaderCell">Assigned Group</td>
+                    <td width="35%" class="HeaderCell">Program</td>
+                    <td width="35%" class="HeaderCell">Assigned Group</td>
+                    <td width="25%" class="HeaderCell">Load #</td>
                   </tr>
 <%
 	for (int i = 0; i < attachedProgs.size(); i++) {
@@ -107,27 +115,43 @@ function changeProgSelection(chkBox) {
 				break;
 			}
 		}
+		
+		int loadNo = 0;
+		for (int j = 0; j < appliances.getStarsApplianceCount(); j++) {
+			StarsAppliance app = appliances.getStarsAppliance(j);
+			if (app.getInventoryID() == inventory.getInventoryID() && app.getProgramID() == program.getProgramID()) {
+				loadNo = app.getLoadNumber();
+				break;
+			}
+		}
 %>
                   <tr> 
                     <td width="5%" height="2"> 
                       <input type="checkbox" name="ProgID" value="<%= program.getProgramID() %>" checked onclick="changeProgSelection(this)">
                     </td>
-                    <td width="45%" class="TableCell" height="2"><%= program.getProgramName() %></td>
-                    <td width="50%" height="2"> 
+                    <td width="35%" class="TableCell" height="2"><%= program.getProgramName() %></td>
+                    <td width="35%" height="2"> 
                       <select id="Group_Prog<%= program.getProgramID() %>" name="GroupID">
 <%
-		if (enrProg == null || enrProg.getAddressingGroupCount() == 0) {
+		for (int j = 0; j < enrProg.getAddressingGroupCount(); j++) {
+			AddressingGroup group = enrProg.getAddressingGroup(j);
+			String selected = (group.getEntryID() == program.getGroupID()) ? "selected" : "";
 %>
+                        <option value="<%= group.getEntryID() %>" <%= selected %>><%= group.getContent() %></option>
+<%
+		}
+%>
+                      </select>
+                    </td>
+                    <td width="25%" height="2">
+                      <select id="Load_Prog<%= program.getProgramID() %>" name="LoadNo">
                         <option value="0">(none)</option>
 <%
-		} else {
-			for (int j = 0; j < enrProg.getAddressingGroupCount(); j++) {
-				AddressingGroup group = enrProg.getAddressingGroup(j);
-				String selectedStr = (group.getEntryID() == program.getGroupID()) ? "selected" : "";
+		for (int ln = 1; ln <= 8; ln++) {
+			String selected = (ln == loadNo)? "selected" : "";
 %>
-                        <option value="<%= group.getEntryID() %>" <%= selectedStr %>><%= group.getContent() %></option>
+                        <option value="<%= ln %>" <%= selected %>><%= ln %></option>
 <%
-			}
 		}
 %>
                       </select>
@@ -152,29 +176,32 @@ function changeProgSelection(chkBox) {
 				break;
 			}
 		}
-		
-		boolean disabled = (enrProg == null) || (enrProg.getAddressingGroupCount() == 0);
 %>
                   <tr> 
                     <td width="5%" height="2"> 
-                      <input type="checkbox" name="ProgID" value="<%= program.getProgramID() %>" onClick="changeProgSelection(this)"
-							 <%= (disabled)? "disabled" : "" %>>
+                      <input type="checkbox" name="ProgID" value="<%= program.getProgramID() %>" onclick="changeProgSelection(this)">
                     </td>
-                    <td width="45%" class="TableCell" height="2"><%= program.getProgramName() %></td>
-                    <td width="50%" height="2"> 
+                    <td width="35%" class="TableCell" height="2"><%= program.getProgramName() %></td>
+                    <td width="35%" height="2"> 
                       <select id="Group_Prog<%= program.getProgramID() %>" name="GroupID" disabled="true">
 <%
-		if (disabled) {
-%>
-                        <option value="0">(none)</option>
-<%
-		} else {
-				for (int j = 0; j < enrProg.getAddressingGroupCount(); j++) {
-					AddressingGroup group = enrProg.getAddressingGroup(j);
+			for (int j = 0; j < enrProg.getAddressingGroupCount(); j++) {
+				AddressingGroup group = enrProg.getAddressingGroup(j);
 %>
                         <option value="<%= group.getEntryID() %>"><%= group.getContent() %></option>
 <%
-				}
+		}
+%>
+                      </select>
+                    </td>
+                    <td width="25%" height="2">
+                      <select id="Load_Prog<%= program.getProgramID() %>" name="LoadNo" disabled="true">
+                        <option value="0">(none)</option>
+<%
+		for (int ln = 1; ln <= 8; ln++) {
+%>
+                        <option value="<%= ln %>"><%= ln %></option>
+<%
 		}
 %>
                       </select>
@@ -206,20 +233,24 @@ function changeProgSelection(chkBox) {
             </div>
             <hr>
             <div align="center"> <span class="TitleHeader">Appliance Summary</span><br>
-              <table width="350" border="1" cellspacing="0" cellpadding="3">
+              <table width="60%" border="1" cellspacing="0" cellpadding="3">
                 <tr bgcolor="#FFFFFF"> 
-                  <td width="104" class="HeaderCell"> Appliance Type</td>
-                  <td width="100" class="HeaderCell"> Status</td>
-                  <td width="120" class="HeaderCell"> Enrolled Programs</td>
+                  <td width="25%" class="HeaderCell"> Appliance Type</td>
+                  <td width="15%" class="HeaderCell">Load #</td>
+                  <td width="15%" class="HeaderCell"> Status</td>
+                  <td width="45%" class="HeaderCell"> Enrolled Programs</td>
                 </tr>
-<%
+                <%
 	for (int i = 0; i < attachedApps.size(); i++) {
 		StarsAppliance appliance = (StarsAppliance) attachedApps.get(i);
+		
+		String loadNo = "(none)";
+		if (appliance.getLoadNumber() > 0) loadNo = String.valueOf(appliance.getLoadNumber());
 		
 		StarsLMProgram program = null;
 		for (int j = 0; j < programs.getStarsLMProgramCount(); j++) {
 			StarsLMProgram starsProg = programs.getStarsLMProgram(j);
-			if (starsProg.getProgramID() == appliance.getLmProgramID()) {
+			if (starsProg.getProgramID() == appliance.getProgramID()) {
 				program = starsProg;
 				break;
 			}
@@ -234,13 +265,14 @@ function changeProgSelection(chkBox) {
 		}
 %>
                 <tr bgcolor="#FFFFFF" valign="top"> 
-                  <td width="104" class="TableCell"><%= ServletUtils.getApplianceDescription(categories, appliance) %></td>
-                  <td width="100" class="TableCell"><%= program.getStatus() %></td>
-                  <td width="120"> 
-                    <div align="center">
-<% if (!category.getStarsWebConfig().getLogoLocation().equals("")) { %>
-					  <img src="../../WebConfig/<%= category.getStarsWebConfig().getLogoLocation() %>"><br>
-<% } %>
+                  <td width="25%" class="TableCell"><%= ServletUtils.getApplianceDescription(categories, appliance) %></td>
+                  <td width="15%" class="TableCell"><%= loadNo %></td>
+                  <td width="15%" class="TableCell"><%= program.getStatus() %></td>
+                  <td width="45%"> 
+                    <div align="center"> 
+                      <% if (!category.getStarsWebConfig().getLogoLocation().equals("")) { %>
+                      <img src="../../WebConfig/<%= category.getStarsWebConfig().getLogoLocation() %>"><br>
+                      <% } %>
                       <span class="TableCell"><%= program.getProgramName() %></span> 
                     </div>
                   </td>

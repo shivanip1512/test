@@ -15,6 +15,7 @@ import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.servlet.InventoryManager;
 import com.cannontech.stars.web.servlet.SOAPServer;
+import com.cannontech.stars.web.servlet.TimerTaskServlet;
 import com.cannontech.util.ServletUtil;
 
 /**
@@ -71,6 +72,9 @@ public class DailyTimerTask extends StarsTimerTask {
 			// Clear all the *active* information
 			company.clearActiveAccounts();
 		}
+		
+		// Restart *frequently happened* timer tasks
+		TimerTaskServlet.restartFrequentTimerTasks();
 		
 		CTILogger.debug( "*** Daily timer task stop ***" );
 	}

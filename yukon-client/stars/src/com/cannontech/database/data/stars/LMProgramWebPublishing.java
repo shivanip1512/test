@@ -17,12 +17,8 @@ public class LMProgramWebPublishing extends DBPersistent {
 	private com.cannontech.database.db.stars.LMProgramWebPublishing lmProgramWebPublishing = null;
 	private com.cannontech.database.db.web.YukonWebConfiguration webConfiguration = null;
 	
-	public void setApplianceCategoryID(Integer newID) {
-		getLMProgramWebPublishing().setApplianceCategoryID( newID );
-	}
-	
-	public void setLMProgramID(Integer newID) {
-		getLMProgramWebPublishing().setLMProgramID( newID );
+	public void setProgramID(Integer programID) {
+		getLMProgramWebPublishing().setProgramID( programID );
 	}
 	
 	public void setDbConnection(java.sql.Connection conn) {

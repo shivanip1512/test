@@ -53,6 +53,13 @@ public class StarsLMHardwareConfig implements java.io.Serializable {
     **/
     private boolean _has_programID;
 
+    private int _loadNumber;
+
+    /**
+     * keeps track of state for field: _loadNumber
+    **/
+    private boolean _has_loadNumber;
+
 
       //----------------/
      //- Constructors -/
@@ -83,6 +90,13 @@ public class StarsLMHardwareConfig implements java.io.Serializable {
 
     /**
     **/
+    public void deleteLoadNumber()
+    {
+        this._has_loadNumber= false;
+    } //-- void deleteLoadNumber() 
+
+    /**
+    **/
     public void deleteProgramID()
     {
         this._has_programID= false;
@@ -109,6 +123,16 @@ public class StarsLMHardwareConfig implements java.io.Serializable {
     } //-- int getGroupID() 
 
     /**
+     * Returns the value of field 'loadNumber'.
+     * 
+     * @return the value of field 'loadNumber'.
+    **/
+    public int getLoadNumber()
+    {
+        return this._loadNumber;
+    } //-- int getLoadNumber() 
+
+    /**
      * Returns the value of field 'programID'.
      * 
      * @return the value of field 'programID'.
@@ -131,6 +155,13 @@ public class StarsLMHardwareConfig implements java.io.Serializable {
     {
         return this._has_groupID;
     } //-- boolean hasGroupID() 
+
+    /**
+    **/
+    public boolean hasLoadNumber()
+    {
+        return this._has_loadNumber;
+    } //-- boolean hasLoadNumber() 
 
     /**
     **/
@@ -197,6 +228,17 @@ public class StarsLMHardwareConfig implements java.io.Serializable {
         this._groupID = groupID;
         this._has_groupID = true;
     } //-- void setGroupID(int) 
+
+    /**
+     * Sets the value of field 'loadNumber'.
+     * 
+     * @param loadNumber the value of field 'loadNumber'.
+    **/
+    public void setLoadNumber(int loadNumber)
+    {
+        this._loadNumber = loadNumber;
+        this._has_loadNumber = true;
+    } //-- void setLoadNumber(int) 
 
     /**
      * Sets the value of field 'programID'.

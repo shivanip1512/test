@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.functions.YukonListFuncs;
 
 /**
@@ -16,20 +17,24 @@ import com.cannontech.database.cache.functions.YukonListFuncs;
  */
 public class LiteStarsLMProgram {
 
-	private LiteLMProgram lmProgram = null;
-	private int groupID = 0;
+	private LiteLMProgramWebPublishing publishedProgram = null;
+	private int groupID = CtiUtilities.NONE_ID;
 	private boolean inService = false;
 	
 	public LiteStarsLMProgram() {
 		super();
 	}
 	
-	public LiteStarsLMProgram(int programID) {
-		lmProgram = new LiteLMProgram( programID );
+	public int getProgramID() {
+		return getPublishedProgram().getProgramID();
 	}
 	
-	public LiteStarsLMProgram(LiteLMProgram program) {
-		lmProgram = program;
+	public LiteStarsLMProgram(int publishingID) {
+		publishedProgram = new LiteLMProgramWebPublishing( publishingID );
+	}
+	
+	public LiteStarsLMProgram(LiteLMProgramWebPublishing program) {
+		publishedProgram = program;
 	}
 	
 	/**
@@ -49,19 +54,19 @@ public class LiteStarsLMProgram {
 	}
 
 	/**
-	 * Returns the lmProgram.
-	 * @return LiteLMProgram
+	 * Returns the publishedProgram.
+	 * @return LiteLMProgramWebPublishing
 	 */
-	public LiteLMProgram getLmProgram() {
-		return lmProgram;
+	public LiteLMProgramWebPublishing getPublishedProgram() {
+		return publishedProgram;
 	}
 
 	/**
-	 * Sets the lmProgram.
-	 * @param lmProgram The lmProgram to set
+	 * Sets the publishedProgram.
+	 * @param publishedProgram The publishedProgram to set
 	 */
-	public void setLmProgram(LiteLMProgram lmProgram) {
-		this.lmProgram = lmProgram;
+	public void setPublishedProgram(LiteLMProgramWebPublishing publishedProgram) {
+		this.publishedProgram = publishedProgram;
 	}
 
 	/**
@@ -75,7 +80,7 @@ public class LiteStarsLMProgram {
 	public void updateProgramStatus(ArrayList programHistory) {
 		for (int i = programHistory.size() - 1; i >= 0 ; i--) {
 			LiteLMProgramEvent liteEvent = (LiteLMProgramEvent) programHistory.get(i);
-			if (liteEvent.getProgramID() != getLmProgram().getProgramID())
+			if (liteEvent.getProgramID() != getProgramID())
 				continue;
 			
 			YukonListEntry entry = YukonListFuncs.getYukonListEntry( liteEvent.getActionID() );

@@ -397,6 +397,7 @@ public class CreateLMHardwareAction implements ActionBase {
 						config.setInventoryID( invDB.getInventoryID() );
 						config.setApplianceID( new Integer(starsConfig.getApplianceID()) );
 						config.setAddressingGroupID( new Integer(starsConfig.getGroupID()) );
+						config.setLoadNumber( new Integer(starsConfig.getLoadNumber()) );
 						
 						config = (com.cannontech.database.db.stars.hardware.LMHardwareConfiguration)
 								Transaction.createTransaction( Transaction.INSERT, config ).execute();
@@ -406,10 +407,11 @@ public class CreateLMHardwareAction implements ActionBase {
 							if (liteApp.getApplianceID() == starsConfig.getApplianceID()) {
 								liteApp.setInventoryID( liteHw.getInventoryID() );
 								liteApp.setAddressingGroupID( config.getAddressingGroupID().intValue() );
+								liteApp.setLoadNumber( config.getLoadNumber().intValue() );
             					
-								for (int k = 0; k < liteAcctInfo.getLmPrograms().size(); k++) {
-									LiteStarsLMProgram liteProg = (LiteStarsLMProgram) liteAcctInfo.getLmPrograms().get(k);
-									if (liteProg.getLmProgram().getProgramID() == liteApp.getLmProgramID()) {
+								for (int k = 0; k < liteAcctInfo.getPrograms().size(); k++) {
+									LiteStarsLMProgram liteProg = (LiteStarsLMProgram) liteAcctInfo.getPrograms().get(k);
+									if (liteProg.getProgramID() == liteApp.getProgramID()) {
 										liteProg.setGroupID( config.getAddressingGroupID().intValue() );
 										break;
 									}
@@ -515,7 +517,7 @@ public class CreateLMHardwareAction implements ActionBase {
 						
 						for (int k = 0; k < starsAcctInfo.getStarsLMPrograms().getStarsLMProgramCount(); k++) {
 							StarsLMProgram prog = starsAcctInfo.getStarsLMPrograms().getStarsLMProgram(k);
-							if (prog.getProgramID() == app.getLmProgramID()) {
+							if (prog.getProgramID() == app.getProgramID()) {
 								prog.setGroupID( config.getGroupID() );
 								break;
 							}

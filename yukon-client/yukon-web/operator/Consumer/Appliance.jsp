@@ -33,7 +33,7 @@
 
 	for (int i = 0; i < programs.getStarsLMProgramCount(); i++) {
 		StarsLMProgram starsProg = programs.getStarsLMProgram(i);
-		if (starsProg.getProgramID() == appliance.getLmProgramID()) {
+		if (starsProg.getProgramID() == appliance.getProgramID()) {
 			program = starsProg;
 			progNo = i;
 			break;

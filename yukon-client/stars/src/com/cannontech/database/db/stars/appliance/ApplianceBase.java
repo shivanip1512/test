@@ -21,7 +21,7 @@ public class ApplianceBase extends DBPersistent {
 	private Integer applianceID = null;
 	private Integer accountID = new Integer( com.cannontech.database.db.stars.customer.CustomerAccount.NONE_INT );
 	private Integer applianceCategoryID = new Integer( ApplianceCategory.NONE_INT );
-	private Integer lmProgramID = new Integer( CtiUtilities.NONE_ID );
+	private Integer programID = new Integer( CtiUtilities.NONE_ID );
 	private Integer yearManufactured = new Integer(0);
 	private Integer manufacturerID = new Integer( CtiUtilities.NONE_ID );
 	private Integer locationID = new Integer( CtiUtilities.NONE_ID );
@@ -31,7 +31,7 @@ public class ApplianceBase extends DBPersistent {
 	private String modelNumber = "";
 
 	public static final String[] SETTER_COLUMNS = {
-		"AccountID", "ApplianceCategoryID", "LMProgramID", "YearManufactured",
+		"AccountID", "ApplianceCategoryID", "ProgramID", "YearManufactured",
 		"ManufacturerID", "LocationID", "KWCapacity", "EfficiencyRating", "Notes", "ModelNumber"
 	};
 
@@ -79,7 +79,7 @@ public class ApplianceBase extends DBPersistent {
 			setApplianceID( getNextApplianceID() );
     		
 		Object[] addValues = {
-			getApplianceID(), getAccountID(), getApplianceCategoryID(), getLMProgramID(), getYearManufactured(),
+			getApplianceID(), getAccountID(), getApplianceCategoryID(), getProgramID(), getYearManufactured(),
 			getManufacturerID(), getLocationID(), getKWCapacity(), getEfficiencyRating(), getNotes(), getModelNumber()
 		};
 
@@ -88,7 +88,7 @@ public class ApplianceBase extends DBPersistent {
 
 	public void update() throws java.sql.SQLException {
 		Object[] setValues = {
-			getAccountID(), getApplianceCategoryID(), getLMProgramID(), getYearManufactured(),
+			getAccountID(), getApplianceCategoryID(), getProgramID(), getYearManufactured(),
 			getManufacturerID(), getLocationID(), getKWCapacity(), getEfficiencyRating(), getNotes(), getModelNumber()
 		};
 
@@ -105,7 +105,7 @@ public class ApplianceBase extends DBPersistent {
 		if (results.length == SETTER_COLUMNS.length) {
 			setAccountID( (Integer) results[0] );
 			setApplianceCategoryID( (Integer) results[1] );
-			setLMProgramID( (Integer) results[2] );
+			setProgramID( (Integer) results[2] );
 			setYearManufactured( (Integer) results[3] );
 			setManufacturerID( (Integer) results[4] );
 			setLocationID( (Integer) results[5] );
@@ -145,9 +145,9 @@ public class ApplianceBase extends DBPersistent {
 		return new Integer( nextApplianceID );
 	}
     
-	public static int[] getAllAccountIDsWithProgram(Integer programID, Integer energyCompanyID) {
+	public static int[] getAllAccountIDsWithProgram(int programID, int energyCompanyID) {
 		String sql = "SELECT DISTINCT app.AccountID FROM " + TABLE_NAME + " app, ECToAccountMapping map " +
-				"WHERE LMProgramID = " + programID + " AND app.AccountID = map.AccountID AND map.EnergyCompanyID = " + energyCompanyID;
+				"WHERE ProgramID = " + programID + " AND app.AccountID = map.AccountID AND map.EnergyCompanyID = " + energyCompanyID;
 		com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
 				sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
     	
@@ -167,9 +167,9 @@ public class ApplianceBase extends DBPersistent {
 		return null;
 	}
     
-	public static int[] getAllApplianceIDsWithProgram(Integer programID, Integer energyCompanyID) {
+	public static int[] getAllApplianceIDsWithProgram(int programID, int energyCompanyID) {
 		String sql = "SELECT ApplianceID FROM " + TABLE_NAME + " app, ECToAccountMapping map " +
-				"WHERE LMProgramID = " + programID + " AND app.AccountID = map.AccountID AND map.EnergyCompanyID = " + energyCompanyID;
+				"WHERE ProgramID = " + programID + " AND app.AccountID = map.AccountID AND map.EnergyCompanyID = " + energyCompanyID;
 		com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
 				sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
     	
@@ -189,7 +189,7 @@ public class ApplianceBase extends DBPersistent {
 		return null;
 	}
     
-	public static int[] getAllAccountIDsWithCategory(Integer appCatID) {
+	public static int[] getAllAccountIDsWithCategory(int appCatID) {
 		String sql = "SELECT DISTINCT AccountID FROM " + TABLE_NAME + " WHERE ApplianceCategoryID = " + appCatID;
 		com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
 				sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
@@ -210,7 +210,7 @@ public class ApplianceBase extends DBPersistent {
 		return null;
 	}
     
-	public static int[] getAllApplianceIDsWithCategory(Integer appCatID) {
+	public static int[] getAllApplianceIDsWithCategory(int appCatID) {
 		String sql = "SELECT ApplianceID FROM " + TABLE_NAME + " WHERE ApplianceCategoryID = " + appCatID;
 		com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
 				sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
@@ -263,19 +263,19 @@ public class ApplianceBase extends DBPersistent {
 		notes = newNotes;
 	}
 	/**
-	 * Returns the lmProgramID.
+	 * Returns the programID.
 	 * @return Integer
 	 */
-	public Integer getLMProgramID() {
-		return lmProgramID;
+	public Integer getProgramID() {
+		return programID;
 	}
 
 	/**
-	 * Sets the lmProgramID.
-	 * @param lmProgramID The lmProgramID to set
+	 * Sets the programID.
+	 * @param programID The programID to set
 	 */
-	public void setLMProgramID(Integer lmProgramID) {
-		this.lmProgramID = lmProgramID;
+	public void setProgramID(Integer programID) {
+		this.programID = programID;
 	}
 
 	/**

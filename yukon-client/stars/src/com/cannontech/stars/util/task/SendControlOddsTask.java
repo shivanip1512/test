@@ -9,8 +9,7 @@ import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
-import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
-import com.cannontech.database.data.lite.stars.LiteLMProgram;
+import com.cannontech.database.data.lite.stars.LiteLMProgramWebPublishing;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
@@ -68,14 +67,11 @@ public class SendControlOddsTask implements Runnable {
 			from = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.ADMIN_EMAIL_ADDRESS );
 		
 		ArrayList progList = new ArrayList();	// Programs that are eligible for notification
-		ArrayList categories = energyCompany.getAllApplianceCategories();
-		for (int i = 0; i < categories.size(); i++) {
-			LiteApplianceCategory category = (LiteApplianceCategory) categories.get(i);
-			for (int j = 0; j < category.getPublishedPrograms().size(); j++) {
-				LiteLMProgram program = (LiteLMProgram) category.getPublishedPrograms().get(j);
-				if (program.getChanceOfControlID() != CtiUtilities.NONE_ID)
-					progList.add( program );
-			}
+		ArrayList programs = energyCompany.getAllPrograms();
+		for (int i = 0; i < programs.size(); i++) {
+			LiteLMProgramWebPublishing program = (LiteLMProgramWebPublishing) programs.get(i);
+			if (program.getChanceOfControlID() != CtiUtilities.NONE_ID)
+				progList.add( program );
 		}
 		
 		if (progList.size() > 0) {
@@ -85,9 +81,9 @@ public class SendControlOddsTask implements Runnable {
 					.append( energyCompanyID )
 					.append( " AND map.AccountID = app.AccountID AND (" )
 					.append( "app.LMProgramID = " )
-					.append( ((LiteLMProgram) progList.get(0)).getProgramID() );
+					.append( ((LiteLMProgramWebPublishing) progList.get(0)).getProgramID() );
 			for (int i = 1; i < progList.size(); i++) {
-				LiteLMProgram program = (LiteLMProgram) progList.get(i);
+				LiteLMProgramWebPublishing program = (LiteLMProgramWebPublishing) progList.get(i);
 				sql.append(" OR app.LMProgramID = ").append(program.getProgramID());
 			}
 			sql.append(")");
@@ -107,9 +103,9 @@ public class SendControlOddsTask implements Runnable {
 						continue;
 					
 					ArrayList activeProgs = new ArrayList();	// List of all the active programs
-					for (int j = 0; j < accountInfo.getLmPrograms().size(); j++) {
-						LiteStarsLMProgram program = (LiteStarsLMProgram) accountInfo.getLmPrograms().get(j);
-						if (progList.contains( program.getLmProgram() ) && program.isInService())
+					for (int j = 0; j < accountInfo.getPrograms().size(); j++) {
+						LiteStarsLMProgram program = (LiteStarsLMProgram) accountInfo.getPrograms().get(j);
+						if (progList.contains( program.getPublishedProgram() ) && program.isInService())
 							activeProgs.add( program );
 					}
 					if (activeProgs.size() == 0) continue;
@@ -124,8 +120,8 @@ public class SendControlOddsTask implements Runnable {
 					StringBuffer text = new StringBuffer( header );
 					for (int j = 0; j < activeProgs.size(); j++) {
 						LiteStarsLMProgram program = (LiteStarsLMProgram) activeProgs.get(j);
-						String progName = ECUtils.getPublishedProgramName( program.getLmProgram(), energyCompany );
-						String ctrlOdds = YukonListFuncs.getYukonListEntry( program.getLmProgram().getChanceOfControlID() ).getEntryText();
+						String progName = ECUtils.getPublishedProgramName( program.getPublishedProgram(), energyCompany );
+						String ctrlOdds = YukonListFuncs.getYukonListEntry( program.getPublishedProgram().getChanceOfControlID() ).getEntryText();
 						
 						text.append( progName );
 						text.append( blanks.substring(progName.length()) );

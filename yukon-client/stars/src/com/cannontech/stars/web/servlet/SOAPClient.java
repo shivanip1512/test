@@ -271,12 +271,14 @@ public class SOAPClient extends HttpServlet {
 					(MultiAction) session.getAttribute( ServletUtils.ATT_NEW_ACCOUNT_WIZARD );
 			
 			try {
-				SOAPMessage msg = actions.getRequestMessage( clientAction );
-				SOAPMessage msg2 = ProgramSignUpAction.setAdditionalEnrollmentInfo( msg, req );
-				actions.addAction( clientAction, msg2 );
+				SOAPMessage msg = ProgramSignUpAction.setAdditionalEnrollmentInfo( req, session );
+				actions.addAction( clientAction, msg );
 			}
 			catch (Exception e) {
-				session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Failed to set additional enrollment information" );
+				if (e instanceof WebClientException)
+					session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, e.getMessage() );
+				else
+					session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Failed to set additional enrollment information" );
 				resp.sendRedirect( errorURL );
 				return;
 			}

@@ -282,8 +282,8 @@ public class ProgramReenableAction implements ActionBase {
 		// Add "Activation Completed" to program events
 		for (int i = 0; i < liteAcctInfo.getAppliances().size(); i++) {
 			LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(i);
-			if (liteApp.getInventoryID() == liteHw.getInventoryID() && liteApp.getLmProgramID() > 0) {
-				LiteStarsLMProgram liteProg = ProgramSignUpAction.getLMProgram( liteAcctInfo, liteApp.getLmProgramID() );
+			if (liteApp.getInventoryID() == liteHw.getInventoryID() && liteApp.getProgramID() > 0) {
+				LiteStarsLMProgram liteProg = ProgramSignUpAction.getLMProgram( liteAcctInfo, liteApp.getProgramID() );
 	        	
 				// If program is already in service, do nothing
 				if (liteProg.isInService()) continue;
@@ -291,7 +291,7 @@ public class ProgramReenableAction implements ActionBase {
 				com.cannontech.database.data.stars.event.LMProgramEvent event =
 						new com.cannontech.database.data.stars.event.LMProgramEvent();
 	            
-				event.getLMProgramEvent().setLMProgramID( new Integer(liteProg.getLmProgram().getProgramID()) );
+				event.getLMProgramEvent().setProgramID( new Integer(liteProg.getProgramID()) );
 				event.getLMProgramEvent().setAccountID( new Integer(liteAcctInfo.getCustomerAccount().getAccountID()) );
 				event.getLMCustomerEventBase().setEventTypeID( progEventEntryID );
 				event.getLMCustomerEventBase().setActionID( actCompEntryID );
@@ -339,9 +339,9 @@ public class ProgramReenableAction implements ActionBase {
 			// Update the corresponding program status
 			for (int j = 0; j < starsAcctInfo.getStarsAppliances().getStarsApplianceCount(); j++) {
 				StarsAppliance app = starsAcctInfo.getStarsAppliances().getStarsAppliance(j);
-				if (app.getInventoryID() == hwHist.getInventoryID() && app.getLmProgramID() > 0) {
+				if (app.getInventoryID() == hwHist.getInventoryID() && app.getProgramID() > 0) {
 					for (int k = 0; k < programs.getStarsLMProgramCount(); k++) {
-						if (programs.getStarsLMProgram(k).getProgramID() == app.getLmProgramID()) {
+						if (programs.getStarsLMProgram(k).getProgramID() == app.getProgramID()) {
 							programs.getStarsLMProgram(k).setStatus( ServletUtils.IN_SERVICE );
 							break;
 						}

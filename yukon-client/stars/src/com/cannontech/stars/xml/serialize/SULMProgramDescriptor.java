@@ -182,21 +182,27 @@ public class SULMProgramDescriptor extends org.exolab.castor.xml.util.XMLClassDe
         desc.setValidator(fieldValidator);
         
         //-- _inventoryID
-        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_inventoryID", "inventoryID", NodeType.Attribute);
-        desc.setImmutable(true);
+        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_inventoryID", "inventoryID", NodeType.Attribute);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 SULMProgram target = (SULMProgram) object;
-                return target.getInventoryID();
+                if(!target.hasInventoryID())
+                    return null;
+                return new Integer(target.getInventoryID());
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
                     SULMProgram target = (SULMProgram) object;
-                    target.setInventoryID( (java.lang.String) value);
+                    // if null, use delete method for optional primitives 
+                    if (value == null) {
+                        target.deleteInventoryID();
+                        return;
+                    }
+                    target.setInventoryID( ((Integer)value).intValue());
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
@@ -212,9 +218,50 @@ public class SULMProgramDescriptor extends org.exolab.castor.xml.util.XMLClassDe
         //-- validation code for: _inventoryID
         fieldValidator = new FieldValidator();
         { //-- local scope
-            StringValidator sv = new StringValidator();
-            sv.setWhiteSpace("preserve");
-            fieldValidator.setValidator(sv);
+            IntegerValidator iv = new IntegerValidator();
+            fieldValidator.setValidator(iv);
+        }
+        desc.setValidator(fieldValidator);
+        
+        //-- _loadNumber
+        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_loadNumber", "loadNumber", NodeType.Attribute);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                SULMProgram target = (SULMProgram) object;
+                if(!target.hasLoadNumber())
+                    return null;
+                return new Integer(target.getLoadNumber());
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    SULMProgram target = (SULMProgram) object;
+                    // if null, use delete method for optional primitives 
+                    if (value == null) {
+                        target.deleteLoadNumber();
+                        return;
+                    }
+                    target.setLoadNumber( ((Integer)value).intValue());
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        } );
+        desc.setHandler(handler);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _loadNumber
+        fieldValidator = new FieldValidator();
+        { //-- local scope
+            IntegerValidator iv = new IntegerValidator();
+            fieldValidator.setValidator(iv);
         }
         desc.setValidator(fieldValidator);
         

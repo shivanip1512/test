@@ -218,10 +218,10 @@ public class SendOptOutNotificationAction implements ActionBase {
 			boolean hasAssignedProg = false;
 			for (int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {
 				LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(j);
-				if (liteApp.getInventoryID() == liteHw.getInventoryID() && liteApp.getLmProgramID() > 0) {
-					LiteStarsLMProgram liteProg = ProgramSignUpAction.getLMProgram( liteAcctInfo, liteApp.getLmProgramID() );
+				if (liteApp.getInventoryID() == liteHw.getInventoryID() && liteApp.getProgramID() > 0) {
+					LiteStarsLMProgram liteProg = ProgramSignUpAction.getLMProgram( liteAcctInfo, liteApp.getProgramID() );
 					
-					String progName = ECUtils.getPublishedProgramName( liteProg.getLmProgram(), energyCompany );
+					String progName = ECUtils.getPublishedProgramName( liteProg.getPublishedProgram(), energyCompany );
 					text.append("    Program: ").append( progName );
 					
 					String groupName = "(none)";

@@ -21,7 +21,7 @@ public class LiteStarsCustAccountInformation extends LiteBase {
 	private LiteAccountSite accountSite = null;
 	private LiteSiteInformation siteInformation = null;
 	private LiteCustomerResidence customerResidence = null;
-	private ArrayList lmPrograms = null;	// List of LiteStarsLMProgram
+	private ArrayList programs = null;		// List of LiteStarsLMProgram
 	private ArrayList appliances = null;	// List of LiteStarsAppliance
 	private ArrayList inventories = null;	// List of IDs of LiteInventoryBase
 	private ArrayList programHistory = null;	// List of LiteLMProgramEvent
@@ -102,13 +102,13 @@ public class LiteStarsCustAccountInformation extends LiteBase {
 	}
 
 	/**
-	 * Returns the lmPrograms.
+	 * Returns the programs.
 	 * @return ArrayList
 	 */
-	public ArrayList getLmPrograms() {
-		if (lmPrograms == null)
-			lmPrograms = new ArrayList();
-		return lmPrograms;
+	public ArrayList getPrograms() {
+		if (programs == null)
+			programs = new ArrayList();
+		return programs;
 	}
 
 	/**
@@ -154,11 +154,11 @@ public class LiteStarsCustAccountInformation extends LiteBase {
 	}
 
 	/**
-	 * Sets the lmPrograms.
-	 * @param lmPrograms The lmPrograms to set
+	 * Sets the programs.
+	 * @param programs The programs to set
 	 */
-	public void setLmPrograms(ArrayList lmPrograms) {
-		this.lmPrograms = lmPrograms;
+	public void setPrograms(ArrayList programs) {
+		this.programs = programs;
 	}
 
 	/**

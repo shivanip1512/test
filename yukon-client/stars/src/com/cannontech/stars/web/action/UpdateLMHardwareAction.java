@@ -127,6 +127,7 @@ public class UpdateLMHardwareAction implements ActionBase {
 							StarsLMHardwareConfig starsConfig = new StarsLMHardwareConfig();
 							starsConfig.setApplianceID( liteApp.getApplianceID() );
 							starsConfig.setGroupID( liteApp.getAddressingGroupID() );
+							starsConfig.setLoadNumber( liteApp.getLoadNumber() );
 							createHw.getLMHardware().addStarsLMHardwareConfig( starsConfig );
 						}
 					}

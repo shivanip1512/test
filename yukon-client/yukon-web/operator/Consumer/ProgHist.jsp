@@ -65,20 +65,11 @@ function confirmSubmit(form) { //v1.0
 			
 			String progNames = "";
 			for (int j = 0; j < event.getProgramIDCount(); j++) {
-				for (int k = 0; k < categories.getStarsApplianceCategoryCount(); k++) {
-					StarsApplianceCategory appCat = categories.getStarsApplianceCategory(k);
-					boolean foundProgram = false;
-					
-					for (int l = 0; l < appCat.getStarsEnrLMProgramCount(); l++) {
-						StarsEnrLMProgram enrProg = appCat.getStarsEnrLMProgram(l);
-						if (enrProg.getProgramID() == event.getProgramID(j)) {
-							progNames += enrProg.getProgramName() + "<br>";
-							foundProgram = true;
-							break;
-						}
+				for (int k = 0; k < programs.getStarsLMProgramCount(); k++) {
+					if (programs.getStarsLMProgram(k).getProgramID() == event.getProgramID(j)) {
+						progNames += programs.getStarsLMProgram(k).getProgramName() + "<br>";
+						break;
 					}
-					
-					if (foundProgram) break;
 				}
 			}
 			if (progNames.equals("")) continue;
