@@ -122,7 +122,7 @@ public class SVGGenerator {
 	private Element createElement(SVGDocument doc, LxComponent comp) {
 			
 			Element elem = null;
-			
+
 			if( comp instanceof LxLine ) {
 				elem = createLine(doc, (LxLine) comp);
 			}
@@ -158,7 +158,7 @@ public class SVGGenerator {
 			if( comp instanceof AlarmTextElement ) {
 				elem = createAlarmText(doc, (AlarmTextElement) comp);
 			}
-				
+			
 			if( elem != null ) {	
 				if( comp instanceof DrawingElement ) {
 					DrawingElement de = (DrawingElement) comp;

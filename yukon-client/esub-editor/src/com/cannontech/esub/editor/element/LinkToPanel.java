@@ -1,6 +1,6 @@
 package com.cannontech.esub.editor.element;
 
-import javax.swing.JButton;
+import javax.swing.JButton; 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
