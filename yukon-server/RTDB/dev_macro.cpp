@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/04/23 14:50:20 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/04/24 21:37:51 $
 *
 * Copyright (c) 1999-2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -180,38 +180,6 @@ INT CtiDeviceMacro::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse
                     }
                 }
             }
-
-#if 0
-            CtiLMControlHistoryMsg *hist = new CtiLMControlHistoryMsg ( getID(),
-                                                                        pPoint->getPointID(),
-                                                                        parse.getControlled(),
-                                                                        RWTime(),
-                                                                        (parse.getControlled() == CONTROLLED ? parse.getiValue("control_interval") : RESTORE_DURATION),
-                                                                        parse.getiValue("control_reduction"));
-
-            hist->setControlType( "Device Macro Controlled" );      // Could be the state group name ????
-            hist->setActiveRestore( parse.getiValue("control_interval") > 0 ? LMAR_TIMED : LMAR_RESTORE);
-            hist->setMessagePriority( hist->getMessagePriority() + 1 );
-            vgList.insert( hist );
-
-            if(pPoint->isPseudoPoint())
-            {
-                // There is no physical point to observe and respect.  We lie to the control point.
-                CtiPointDataMsg *pData = new CtiPointDataMsg( pPoint->getPointID(), (DOUBLE)parse.getControlled(), NormalQuality, StatusPointType, (parse.getControlled() == CONTROLLED ? RWCString(getName() + " controlling") : RWCString(getName() + " restoring")));
-                pData->setMessagePriority( pData->getMessagePriority() + 1 );
-                vgList.insert(pData);
-            }
-
-            if(parse.getControlled() == CONTROLLED && parse.getiValue("control_interval") > 0)
-            {
-                // Present the restore as a delayed update to dispatch.  Note that the order of opened and closed have reversed
-                CtiPointDataMsg *pData = new CtiPointDataMsg( pPoint->getPointID(), (DOUBLE)UNCONTROLLED, NormalQuality, StatusPointType, RWCString(getName() + " restoring (delayed)"), TAG_POINT_DELAYED_UPDATE);
-                pData->setTime( RWTime() + parse.getiValue("control_interval") );
-                pData->setMessagePriority( pData->getMessagePriority() - 1 );
-                vgList.insert(pData);
-            }
-#endif
-
         }
     }
     else

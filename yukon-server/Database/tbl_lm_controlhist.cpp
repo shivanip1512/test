@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_lm_controlhist.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/04/18 15:02:49 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/04/24 21:37:52 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -32,8 +32,9 @@ CtiTableLMControlHistory::CtiTableLMControlHistory(LONG paoid, const RWTime& sta
                                                    LONG lmchid) :
 _lmControlHistID(lmchid), _paoID(paoid), _startDateTime(start), _soeTag(soe),
 _controlDuration(dur), _controlType(type), _currentDailyTime(daily), _currentMonthlyTime(month),
-_currentSeasonalTime(season), _currentAnnualTime(annual), _activeRestore(restore),
-_reductionValue(reduce), _reductionRatio(100), _prevLogTime(start), _prevStopReportTime(start)
+_currentSeasonalTime(season), _currentAnnualTime(annual), _defaultActiveRestore(restore),
+_reductionValue(reduce), _reductionRatio(100), _prevLogTime(start), _prevStopReportTime(start),
+_isNewControl(true)
 {
 }
 
@@ -70,9 +71,12 @@ CtiTableLMControlHistory& CtiTableLMControlHistory::operator=(const CtiTableLMCo
         _activeRestore       = aRef.getActiveRestore();
         _reductionValue      = aRef.getReductionValue();
 
+        _defaultActiveRestore= aRef.getDefaultActiveRestore();
         _prevLogTime         = aRef.getPreviousLogTime();
         _prevStopReportTime  = aRef.getPreviousStopReportTime();
         _reductionRatio      = aRef.getReductionRatio();
+
+        _isNewControl        = aRef._isNewControl;
     }
     return *this;
 }
@@ -237,6 +241,11 @@ CtiTableLMControlHistory& CtiTableLMControlHistory::setCurrentAnnualTime( const 
 
 const RWCString& CtiTableLMControlHistory::getActiveRestore() const
 {
+    if(_isNewControl && _activeRestore == RWCString(LMAR_LOGTIMER) )
+    {
+        _activeRestore = RWCString( LMAR_NEWCONTROL );
+    }
+
     return _activeRestore;
 }
 
@@ -244,6 +253,17 @@ CtiTableLMControlHistory& CtiTableLMControlHistory::setActiveRestore( const RWCS
 {
     setDirty();
     _activeRestore = ar;
+    return *this;
+}
+
+const RWCString& CtiTableLMControlHistory::getDefaultActiveRestore() const
+{
+    return _defaultActiveRestore;
+}
+
+CtiTableLMControlHistory& CtiTableLMControlHistory::setDefaultActiveRestore( const RWCString& ar )
+{
+    _defaultActiveRestore = ar;
     return *this;
 }
 
@@ -311,7 +331,7 @@ void CtiTableLMControlHistory::DecodeDatabaseReader(RWDBReader &rdr)
 
     DecodeControlTimes(rdr);
 
-    rdr["activerestore"]       >> _activeRestore;
+    rdr["activerestore"]       >> _defaultActiveRestore;
     rdr["reductionvalue"]      >> _reductionValue;
 
     setUpdatedFlag();
@@ -445,6 +465,7 @@ RWDBStatus CtiTableLMControlHistory::Insert(RWDBConnection &conn)
     {
         setPreviousLogTime( getStopTime() );
         setDirty(false);
+        _isNewControl = false;
     }
     else
     {
@@ -472,6 +493,7 @@ RWDBStatus CtiTableLMControlHistory::Insert(RWDBConnection &conn)
             {
                 setPreviousLogTime( getStopTime() );
                 setDirty(false);
+                _isNewControl = false;
             }
         }
     }
@@ -495,7 +517,7 @@ RWDBStatus CtiTableLMControlHistory::Update()
     table["startdatetime"].assign(getStartTime() ) <<
     table["stopdatetime"].assign(getStopTime() ) <<
     table["soe_tag"].assign( getSoeTag() ) <<
-    table["controlduration"].assign( getControlDuration() ) <<
+    table["controlduration"].assign( (getStopTime().seconds() - getStartTime().seconds()) ) <<
     table["controltype"].assign( getControlType() ) <<
     table["currentdailytime"].assign( getCurrentDailyTime() ) <<
     table["currentmonthlytime"].assign( getCurrentMonthlyTime() ) <<
@@ -551,8 +573,8 @@ CtiTableLMControlHistory& CtiTableLMControlHistory::incrementTimes(const RWTime 
     return *this;
 }
 
-
 CtiMutex CtiTableLMControlHistory::_soeMux;
+
 LONG CtiTableLMControlHistory::getNextSOE()
 {
     static LONG nextsoe = 0;
@@ -568,6 +590,12 @@ int CtiTableLMControlHistory::getReductionRatio() const
 CtiTableLMControlHistory& CtiTableLMControlHistory::setReductionRatio( int redrat )
 {
     _reductionRatio = redrat;
+    return *this;
+}
+
+CtiTableLMControlHistory& CtiTableLMControlHistory::setNotNewControl()
+{
+    _isNewControl = false;
     return *this;
 }
 

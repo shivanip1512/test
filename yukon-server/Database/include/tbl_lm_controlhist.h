@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_lm_controlhist.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:58:15 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/04/24 21:37:52 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -51,16 +51,19 @@ protected:
    LONG        _currentMonthlyTime;
    LONG        _currentSeasonalTime;
    LONG        _currentAnnualTime;
-   RWCString   _activeRestore;
+   mutable RWCString   _activeRestore;
    DOUBLE      _reductionValue;
 
    // Values below are note stored in the DB.
+   RWCString   _defaultActiveRestore;
    RWTime      _prevLogTime;            // Not stored, but used to determine relative positions of controls
    RWTime      _prevStopReportTime;
    int         _reductionRatio;         // Needed to compute the contribution of cycles
 
+
 private:
 
+    bool _isNewControl;
     static CtiMutex    _soeMux;
 
 public:
@@ -131,6 +134,9 @@ public:
    const RWCString& getActiveRestore() const;
    CtiTableLMControlHistory& setActiveRestore( const RWCString& ar );
 
+   const RWCString& getDefaultActiveRestore() const;
+   CtiTableLMControlHistory& setDefaultActiveRestore( const RWCString& ar );
+
    DOUBLE getReductionValue() const;
    CtiTableLMControlHistory& setReductionValue( const DOUBLE rv );
 
@@ -138,6 +144,8 @@ public:
    CtiTableLMControlHistory& setReductionRatio( int redrat );
 
    CtiTableLMControlHistory& incrementTimes( const RWTime &now, const LONG increment );
+
+   CtiTableLMControlHistory& setNotNewControl( );
 
    static LONG getNextSOE();
    static RWCString getTableName();

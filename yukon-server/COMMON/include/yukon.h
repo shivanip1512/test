@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/yukon.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:57:31 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/04/24 21:37:52 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -28,12 +28,28 @@
 #define SCANNER_REGISTRATION_NAME    "SCANNER"
 
 // Load Management Active Restore Value
-#define LMAR_CONTINUE   "C"
-#define LMAR_RESTORE    "R"
-#define LMAR_TIMED      "T"
-#define LMAR_LATCH      "L"
-#define LMAR_MANUAL     "M"
+#if 0
+
+    #define LMAR_CONTINUE   "C"
+    #define LMAR_RESTORE    "R"
+    #define LMAR_TIMED      "T"
+    #define LMAR_LATCH      "L"
+    #define LMAR_MANUAL     "M"
+
+#else
+
+    #define LMAR_NEWCONTROL         "N"             // This is the first entry for any new control.
+    #define LMAR_LOGTIMER           "L"             // This is a timed log entry.  Nothing exciting happened in this interval.
+    #define LMAR_CONT_CONTROL       "C"             // Previous command was repeated extending the current control interval.
+
+    #define LMAR_TIMED_RESTORE      "T"             // Control terminated based on time set in load group.
+    #define LMAR_MANUAL_RESTORE     "M"             // Control terminated because of an active restore or terminate command being sent.
+    #define LMAR_OVERRIDE_CONTROL   "O"             // Control terminated because a new command of a different nature was sent to this group.
+
+#endif
+
 #define RESTORE_DURATION -1
+
 
 typedef enum
 {

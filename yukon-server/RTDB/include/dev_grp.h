@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_alm_nloc.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/04/22 19:47:16 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/04/24 21:37:51 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -83,15 +83,10 @@ public:
 
         if(pControlStatus != 0)
         {
-            CtiLMControlHistoryMsg *hist = new CtiLMControlHistoryMsg ( getID(),
-                                                                        pControlStatus->getPointID(),
-                                                                        isshed,
-                                                                        RWTime(),
-                                                                        (isshed == CONTROLLED ? shedtime : RESTORE_DURATION),
-                                                                        reductionratio);
+            CtiLMControlHistoryMsg *hist = new CtiLMControlHistoryMsg ( getID(), pControlStatus->getPointID(), isshed, RWTime(), (isshed == CONTROLLED ? shedtime : RESTORE_DURATION), reductionratio);
 
             hist->setControlType( cmd );      // Could be the state group name ????
-            hist->setActiveRestore( shedtime > 0 ? LMAR_TIMED : LMAR_RESTORE);
+            hist->setActiveRestore( shedtime > 0 ? LMAR_TIMED_RESTORE : LMAR_MANUAL_RESTORE);
             hist->setMessagePriority( hist->getMessagePriority() + 1 );
             vgList.insert( hist );
 
@@ -116,11 +111,7 @@ public:
         CtiPointAnalog *pAnalog = (CtiPointAnalog*)getDevicePointOffsetTypeEqual( CONTROLSTOPCOUNTDOWNOFFSET, AnalogPointType );
         if(pAnalog)
         {
-            CtiPointDataMsg *pData = new CtiPointDataMsg( pAnalog->getPointID(),
-                                                          (isshed == CONTROLLED ? (DOUBLE)(shedtime) : (DOUBLE)(0.0)) ,
-                                                          NormalQuality,
-                                                          AnalogPointType,
-                                                          (isshed == CONTROLLED ? RWCString(getName() + " controlling") : RWCString(getName() + " restoring")));
+            CtiPointDataMsg *pData = new CtiPointDataMsg( pAnalog->getPointID(), (isshed == CONTROLLED ? (DOUBLE)(shedtime) : (DOUBLE)(0.0)) , NormalQuality, AnalogPointType, (isshed == CONTROLLED ? RWCString(getName() + " controlling") : RWCString(getName() + " restoring")));
             pData->setMessagePriority( pData->getMessagePriority() + 1 );
             vgList.insert(pData);
         }

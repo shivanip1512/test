@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/04/22 19:59:44 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/04/24 21:37:49 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -87,7 +87,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #define DUMP_RATE                30             // Otherwise, do a dump evey this many seconds
 #define CONFRONT_RATE            300            // Ask every client to post once per 5 minutes or be terminated
 #define UPDATERTDB_RATE          300            // Save all dirty point records once per n seconds
-#define SANITY_RATE              120
+#define SANITY_RATE              300
 
 DLLIMPORT extern CtiLogger   dout;              // From proclog.dll
 
@@ -854,16 +854,12 @@ int  CtiVanGogh::commandMsgHandler(const CtiCommandMsg *Cmd)
                                 pendingControlRequest.setControlTimeout( pPoint->getControlExpirationTime() );
 
                                 pendingControlRequest.getControl().setPAOID( did );
+                                pendingControlRequest.getControl().setStartTime(RWTime(YUKONEOT));
 
-                                CtiSignalMsg *pFailSig = new CtiSignalMsg(pPoint->getID(),
-                                                                          Cmd->getSOE(),                     // soe.
-                                                                          "Control " + resolveStateName(*pPoint, rawstate) + " Failed",
-                                                                          getAlarmStateName( pPoint->getAlarming().getAlarmStates(CtiTablePointAlarming::commandFailure) ),
-                                                                          GeneralLogType,
-                                                                          pPoint->getAlarming().getAlarmStates(CtiTablePointAlarming::commandFailure),
-                                                                          Cmd->getUser());
+                                CtiSignalMsg *pFailSig = new CtiSignalMsg(pPoint->getID(), Cmd->getSOE(), "Control " + resolveStateName(*pPoint, rawstate) + " Failed", getAlarmStateName( pPoint->getAlarming().getAlarmStates(CtiTablePointAlarming::commandFailure) ), GeneralLogType, pPoint->getAlarming().getAlarmStates(CtiTablePointAlarming::commandFailure), Cmd->getUser());
 
                                 pendingControlRequest.setSignal( pFailSig );
+
                                 {
                                     CtiLockGuard<CtiMutex> guard(server_mux);
                                     pair< CtiPendingOpSet_t::iterator, bool > resultpair;
@@ -871,12 +867,37 @@ int  CtiVanGogh::commandMsgHandler(const CtiCommandMsg *Cmd)
 
                                     if(resultpair.second != true)
                                     {
+                                        CtiPendingPointOperations &ppo = *resultpair.first;
+
+                                        if(ppo.getControlState() == CtiPendingPointOperations::controlInProgress)
                                         {
-                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << RWTime() << " Partial Interval Computation " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                            // We've had a collision and must tally the partial interval!
+                                            {
+                                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                                dout << RWTime() << " Partial control interval must be adjusted. " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                            }
+
+                                            if( rawstate != UNCONTROLLED )
+                                            {
+                                                {
+                                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                                }
+                                                ppo.getControl().setActiveRestore(LMAR_CONT_CONTROL);
+                                                pendingControlRequest.getControl().setStartTime(ppo.getControl().getStartTime());
+                                                updateControlHistory( pPoint->getPointID(), CtiPendingPointOperations::newcontrol );
+                                                pendingControlRequest.getControl().setPreviousLogTime(ppo.getControl().getPreviousLogTime());
+                                                pendingControlRequest.getControl().setNotNewControl();
+                                            }
+                                            else
+                                            {
+                                                ppo.getControl().setActiveRestore(LMAR_OVERRIDE_CONTROL);         // It is a new
+                                                updateControlHistory( pPoint->getPointID(), CtiPendingPointOperations::newcontrol );
+                                            }
+
                                         }
-                                        updateControlHistory(pPoint->getID(), CtiPendingPointOperations::newcontrol);
-                                        *resultpair.first = pendingControlRequest;
+
+                                        ppo = pendingControlRequest;    // Copy it to update the control state.
                                     }
 
                                     {
@@ -1995,6 +2016,7 @@ int CtiVanGogh::processControlMessage(CtiLMControlHistoryMsg *pMsg)
                 // We prime the pending control object here, where we know all there is to know.
                 pendingControlLMMsg.getControl().setPAOID(pMsg->getPAOId());
                 pendingControlLMMsg.getControl().setActiveRestore(pMsg->getActiveRestore());
+                pendingControlLMMsg.getControl().setDefaultActiveRestore(pMsg->getActiveRestore());
                 pendingControlLMMsg.getControl().setControlDuration(pMsg->getControlDuration());
                 pendingControlLMMsg.getControl().setControlType(pMsg->getControlType());
                 pendingControlLMMsg.getControl().setReductionValue(pMsg->getReductionValue());
@@ -2027,15 +2049,27 @@ int CtiVanGogh::processControlMessage(CtiLMControlHistoryMsg *pMsg)
                             // We've had a collision and must tally the partial interval!
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " PARTIAL CONTROL INTERVAL MUST BE ADJUSTED. " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << RWTime() << " Partial control interval must be adjusted. " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             }
 
                             if( pMsg->getControlDuration() <= 0 )
                             {
-                                ppo.getControl().setActiveRestore(LMAR_RESTORE);
+                                ppo.getControl().setActiveRestore(LMAR_MANUAL_RESTORE);
+                                updateControlHistory( pPoint->getPointID(), CtiPendingPointOperations::newcontrol, pMsg->getMessageTime() );
                             }
-
-                            updateControlHistory( pPoint->getPointID(), CtiPendingPointOperations::newcontrol, pMsg->getMessageTime() );
+                            else if( pendingControlLMMsg.getControl().getControlType() == ppo.getControl().getControlType() )    // Same types?  Then this is a continuation of the old command!
+                            {
+                                ppo.getControl().setActiveRestore(LMAR_CONT_CONTROL);         // It is a new
+                                pendingControlLMMsg.getControl().setStartTime(ppo.getControl().getStartTime());
+                                updateControlHistory( pPoint->getPointID(), CtiPendingPointOperations::newcontrol, pMsg->getMessageTime() );
+                                pendingControlLMMsg.getControl().setPreviousLogTime(ppo.getControl().getPreviousLogTime());
+                                pendingControlLMMsg.getControl().setNotNewControl();
+                            }
+                            else
+                            {
+                                ppo.getControl().setActiveRestore(LMAR_OVERRIDE_CONTROL);         // It is a new
+                                updateControlHistory( pPoint->getPointID(), CtiPendingPointOperations::newcontrol, pMsg->getMessageTime() );
+                            }
                         }
 
                         ppo = pendingControlLMMsg;    // Copy it to update the control state.
@@ -3517,8 +3551,15 @@ INT CtiVanGogh::analyzeForStatusAlarms(CtiPointDataMsg *pData, CtiMultiWrapper &
                                     {
                                         if(tags & TAG_CONTROL_PENDING)                                          // Are we still awaiting the start of control?
                                         {
-                                            ppo.setControlState(CtiPendingPointOperations::controlInProgress);  // control has begun!
-                                            ppo.getControl().setStartTime( pData->getTime() );                  // Arrival of this point data indicates a control start, no longer pending!
+                                            if(ppo.getControl().getStartTime() == RWTime(YUKONEOT) )
+                                            {
+                                                {
+                                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                                }
+                                                ppo.getControl().setStartTime( pData->getTime() );              // Arrival of this point data indicates a control start, no longer pending!
+                                            }
+
                                             ppo.setSignal(0);                                                   // No longer need to send any error signal.
 
                                             pDyn->getDispatch().resetTags( TAG_CONTROL_PENDING );               // We got to the desired state, no longer pending.. we are now controlling!
@@ -3527,6 +3568,8 @@ INT CtiVanGogh::analyzeForStatusAlarms(CtiPointDataMsg *pData, CtiMultiWrapper &
                                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                                                 dout << RWTime() << " " << resolveDeviceName(point) << " / " << point.getName() << " has gone CONTROL COMPLETE." << endl;
                                             }
+
+                                            ppo.setControlState(CtiPendingPointOperations::controlInProgress);  // control has begun!
                                         }
                                     }
                                     else
@@ -3683,6 +3726,112 @@ INT CtiVanGogh::analyzeForNumericAlarms(CtiPointDataMsg *pData, CtiMultiWrapper 
                     {
                     case (CtiTablePointAlarming::nonUpdatedNumeric):
                         {  // alarm generated by checkCommandDataStateQuality.
+                            break;
+                        }
+                    case (CtiTablePointAlarming::highReasonability):
+                        {
+                            if( lastpointsignal != alarm )
+                            {
+                                RWCString text;
+                                bool balarm = false;
+
+                                if(pNumeric->getPointUnits().getHighReasonabilityLimit() != pNumeric->getPointUnits().getLowReasonabilityLimit())       // They must be different.
+                                {
+                                    if(pNumeric->getPointUnits().getHighReasonabilityLimit() < MAX_HIGH_REASONABILITY)  // Is the reasonability reasonable?
+                                    {
+                                        double val = pData->getValue();
+                                        UINT datatags = pData->getTags() | pDyn->getDispatch().getTags();
+
+                                        if(val > pNumeric->getPointUnits().getHighReasonabilityLimit())
+                                        {
+                                            pData->setValue( pNumeric->getPointUnits().getHighReasonabilityLimit() );          // Value of the CtiPointDataMsg must be be modified.
+                                            pData->setQuality( UnreasonableQuality );
+                                            pDyn->setLastSignal(alarm);
+
+                                            {
+                                                char tstr[120];
+                                                _snprintf(tstr, sizeof(tstr), "Reasonability Limit Exceeded High. %.3f > %.3f", val, pNumeric->getPointUnits().getHighReasonabilityLimit());
+                                                text = RWCString(tstr);
+                                            }
+
+                                            if(gDispatchDebugLevel & DISPATCH_DEBUG_ALARMS)
+                                            {
+                                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                                dout << RWTime() << " **** HIGH REASONABILITY Violation ****  Point: " << point.getName() << " " << text << endl;
+                                            }
+
+                                            pSig = new CtiSignalMsg(point.getID(),
+                                                                    pData->getSOE(),                     // soe.
+                                                                    text,
+                                                                    getAlarmStateName( point.getAlarming().getAlarmStates(alarm) ),
+                                                                    GeneralLogType,
+                                                                    point.getAlarming().getAlarmStates(alarm),
+                                                                    pData->getUser());
+
+                                            // This is an alarm if the alarm state indicates anything other than SignalEvent.
+                                            if(point.getAlarming().getAlarmStates(alarm) > SignalEvent)
+                                            {
+                                                pData->setTags( TAG_UNACKNOWLEDGED_ALARM | TAG_ACKNOWLEDGED_ALARM );
+                                                // Need this here in case the signal gets put on the pending list
+                                                pSig->setTags(TAG_UNACKNOWLEDGED_ALARM | TAG_ACKNOWLEDGED_ALARM);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            break;
+                        }
+                    case (CtiTablePointAlarming::lowReasonability):
+                        {
+                            if( lastpointsignal != alarm )
+                            {
+                                bool balarm = false;
+
+                                if(pNumeric->getPointUnits().getHighReasonabilityLimit() != pNumeric->getPointUnits().getLowReasonabilityLimit())       // They must be different.
+                                {
+                                    if(pNumeric->getPointUnits().getLowReasonabilityLimit() > MIN_LOW_REASONABILITY)  // Is the reasonability reasonable?
+                                    {
+                                        RWCString text;
+                                        double val = pData->getValue();
+                                        UINT datatags = pData->getTags() | pDyn->getDispatch().getTags();
+
+                                        if(val < pNumeric->getPointUnits().getLowReasonabilityLimit())
+                                        {
+                                            pData->setValue( pNumeric->getPointUnits().getLowReasonabilityLimit() );          // Value of the CtiPointDataMsg must be be modified.
+                                            pData->setQuality( UnreasonableQuality );
+                                            pDyn->setLastSignal(alarm);
+
+                                            {
+                                                char tstr[120];
+                                                _snprintf(tstr, sizeof(tstr), "Reasonability Limit Exceeded Low. %.3f < %.3f", val, pNumeric->getPointUnits().getLowReasonabilityLimit());
+                                                text = RWCString(tstr);
+                                            }
+
+                                            if(gDispatchDebugLevel & DISPATCH_DEBUG_ALARMS)
+                                            {
+                                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                                dout << RWTime() << " **** LOW REASONABILITY Violation ****  Point: " << point.getName() << " " << text << endl;
+                                            }
+
+                                            pSig = new CtiSignalMsg(point.getID(),
+                                                                    pData->getSOE(),                     // soe.
+                                                                    text,
+                                                                    getAlarmStateName( point.getAlarming().getAlarmStates(alarm) ),
+                                                                    GeneralLogType,
+                                                                    point.getAlarming().getAlarmStates(alarm),
+                                                                    pData->getUser());
+
+                                            // This is an alarm if the alarm state indicates anything other than SignalEvent.
+                                            if(point.getAlarming().getAlarmStates(alarm) > SignalEvent)
+                                            {
+                                                pData->setTags( TAG_UNACKNOWLEDGED_ALARM | TAG_ACKNOWLEDGED_ALARM );
+                                                // Need this here in case the signal gets put on the pending list
+                                                pSig->setTags(TAG_UNACKNOWLEDGED_ALARM | TAG_ACKNOWLEDGED_ALARM);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                             break;
                         }
                     case (CtiTablePointAlarming::rateOfChange):
@@ -5799,17 +5948,12 @@ void CtiVanGogh::updateControlHistory( long pendid, int cause, const RWTime &the
 
                         ppc.getControl().incrementTimes( thetime, addnlseconds );
 
-                        int origcd = ppc.getControl().getControlDuration();
-                        ppc.getControl().setControlDuration( addnlseconds );
-
                         // Create some lies
-                        RWCString origLMAR = ppc.getControl().getActiveRestore();
-                        ppc.getControl().setActiveRestore( LMAR_CONTINUE );             // Record this as a start or continue interval.
+                        ppc.getControl().setActiveRestore( LMAR_LOGTIMER );             // Record this as a start or continue interval.
                         insertAndPostControlHistoryPoints(ppc, now);
 
                         // OK, set them out for the next run ok. Undo the lies.
-                        ppc.getControl().setActiveRestore( origLMAR );                  // Reset to the original completion state.
-                        ppc.getControl().setControlDuration( origcd );                  // Reset to the original duration.
+                        ppc.getControl().setActiveRestore( ppc.getControl().getDefaultActiveRestore() );        // Reset to the original completion state.
 
                         insertAndPostControlHistoryPoints(ppc, now, false, false, true);    // Post the AI now that the lies are covered up..
                     }
@@ -5839,7 +5983,6 @@ void CtiVanGogh::updateControlHistory( long pendid, int cause, const RWTime &the
                         verifyControlTimesValid(ppc);   // Make sure ppc has been primed.
 
                         ppc.getControl().incrementTimes( now, addnlseconds );
-                        ppc.getControl().setControlDuration( addnlseconds );    // ???
                         ppc.setControlState( CtiPendingPointOperations::controlCompleteCommanded );
                         insertAndPostControlHistoryPoints(ppc, now);
                     }
@@ -5863,7 +6006,6 @@ void CtiVanGogh::updateControlHistory( long pendid, int cause, const RWTime &the
                         verifyControlTimesValid(ppc);   // Make sure ppc has been primed.
 
                         ppc.getControl().incrementTimes( now, addnlseconds );
-                        ppc.getControl().setControlDuration( addnlseconds );    // ???
                         ppc.setControlState( CtiPendingPointOperations::controlCompleteTimedIn );
                         insertAndPostControlHistoryPoints(ppc, now, true, true, true);
                     }
@@ -5886,8 +6028,7 @@ void CtiVanGogh::updateControlHistory( long pendid, int cause, const RWTime &the
                         verifyControlTimesValid(ppc);   // Make sure ppc has been primed.
 
                         ppc.getControl().incrementTimes( now, addnlseconds );
-                        ppc.getControl().setControlDuration( addnlseconds );    // ???
-                        ppc.getControl().setActiveRestore( LMAR_MANUAL );
+                        ppc.getControl().setActiveRestore( LMAR_MANUAL_RESTORE );
                         ppc.setControlState( CtiPendingPointOperations::controlCompleteManual );
                         insertAndPostControlHistoryPoints(ppc, now, true, true, true);
                     }
@@ -6011,11 +6152,7 @@ void CtiVanGogh::insertAndPostControlHistoryPoints( CtiPendingPointOperations &p
                         ctltime = pPoint->computeValueForUOM((double)ppc.getControl().getCurrentAnnualTime());
                     }
 
-                    MainQueue_.putQueue( new CtiPointDataMsg(pPoint->getPointID(),
-                                                             ctltime,
-                                                             NormalQuality,
-                                                             pPoint->getType(),
-                                                             pPoint->getName() + " control history"));
+                    MainQueue_.putQueue( new CtiPointDataMsg(pPoint->getPointID(), ctltime, NormalQuality, pPoint->getType(), pPoint->getName() + " control history"));
                 }
             }
         }

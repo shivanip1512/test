@@ -204,8 +204,13 @@ typedef enum
    DeviceFillerQuality,
    QuestionableQuality,
    OverflowQuality,
-   PowerfailQuality
+   PowerfailQuality,
+   UnreasonableQuality
 
 } PointQuality_t;
+
+// Relatively arbitrary, but should be ok.
+#define MAX_HIGH_REASONABILITY          (1e300)
+#define MIN_LOW_REASONABILITY           (-1e300)
 
 #endif // #ifndef __POINTDEFS_H__

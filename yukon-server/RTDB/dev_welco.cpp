@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_welco.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:10 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/04/24 21:37:51 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1916,12 +1916,7 @@ INT CtiDeviceWelco::executeControl(CtiRequestMsg *pReq, CtiCommandParser &parse,
                         outList.insert( OutMessage );
                         OutMessage = 0;
 
-                        CtiLMControlHistoryMsg *hist = new CtiLMControlHistoryMsg ( ctlPoint->getDeviceID(),
-                                                                                    ctlPoint->getPointID(),
-                                                                                    controlState,
-                                                                                    RWTime(),
-                                                                                    -1,                         // Latched shedtime.
-                                                                                    100);
+                        CtiLMControlHistoryMsg *hist = new CtiLMControlHistoryMsg ( ctlPoint->getDeviceID(), ctlPoint->getPointID(), controlState, RWTime(), -1, 100 );
 
                         hist->setMessagePriority( hist->getMessagePriority() + 1 );
                         vgList.insert( hist );
