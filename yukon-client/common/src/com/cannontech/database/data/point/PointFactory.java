@@ -1,7 +1,6 @@
 package com.cannontech.database.data.point;
 
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 
 /**
  * This type was created in VisualAge.
@@ -193,7 +192,7 @@ public final static PointBase createNewPoint( Integer pointID, int pointType, St
 			PointTypes.getType(pointType),
 			pointName,
 			paoID,
-			"Default",
+			PointLogicalGroups.getLogicalGrp(PointLogicalGroups.LGRP_DEFAULT),
 			new Integer(0),
 			com.cannontech.common.util.CtiUtilities.getFalseCharacter(),
 			com.cannontech.common.util.CtiUtilities.getFalseCharacter(),

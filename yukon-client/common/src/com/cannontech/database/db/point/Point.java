@@ -42,15 +42,8 @@ public class Point extends com.cannontech.database.db.DBPersistent
  */
 public Point() {
 	super();
-	initialize( null, null, null, null, null, null, null, null, null, null, null );
 }
-/**
- * Point constructor comment.
- */
-public Point(Integer pointID, String pointType, String pointName, Integer newPaoID, String logicalGroup, Integer stateGroupID, Character serviceFlag, Character alarmInhibit, Integer pointOffset) {
-	super();
-	initialize(pointID, pointType, pointName, newPaoID, logicalGroup, stateGroupID, serviceFlag, alarmInhibit, pointOffset, null, null );
-}
+
 /**
  * Point constructor comment.
  */
