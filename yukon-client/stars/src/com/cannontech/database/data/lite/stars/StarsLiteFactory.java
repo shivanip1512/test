@@ -122,6 +122,10 @@ public class StarsLiteFactory {
 			lite = new LiteServiceCompany();
 			setLiteServiceCompany( (LiteServiceCompany) lite, (com.cannontech.database.db.stars.report.ServiceCompany) db );
 		}
+		else if (db instanceof com.cannontech.database.db.stars.Substation) {
+			lite = new LiteSubstation();
+			setLiteSubstation( (LiteSubstation) lite, (com.cannontech.database.db.stars.Substation) db );
+		}
 		else if (db instanceof com.cannontech.database.db.stars.CustomerFAQ) {
 			lite = new LiteCustomerFAQ();
 			setLiteCustomerFAQ( (LiteCustomerFAQ) lite, (com.cannontech.database.db.stars.CustomerFAQ) db );
@@ -600,6 +604,12 @@ public class StarsLiteFactory {
 		liteCompany.setHiType( company.getHIType() );
 	}
 	
+	public static void setLiteSubstation(LiteSubstation liteSub, com.cannontech.database.db.stars.Substation sub) {
+		liteSub.setSubstationID( sub.getSubstationID().intValue() );
+		liteSub.setSubstationName( sub.getSubstationName() );
+		liteSub.setRouteID( sub.getRouteID().intValue() );
+	}
+	
 	public static void setLiteCustomerFAQ(LiteCustomerFAQ liteFAQ, com.cannontech.database.db.stars.CustomerFAQ faq) {
 		liteFAQ.setQuestionID( faq.getQuestionID().intValue() );
 		liteFAQ.setSubjectID( faq.getSubjectID().intValue() );
@@ -723,6 +733,9 @@ public class StarsLiteFactory {
 				db = new com.cannontech.database.db.stars.report.ServiceCompany();
 				setServiceCompany( (com.cannontech.database.db.stars.report.ServiceCompany) db, (LiteServiceCompany) lite );
 				break;
+			case LiteTypes.STARS_SUBSTATION:
+				db = new com.cannontech.database.db.stars.Substation();
+				setSubstation( (com.cannontech.database.db.stars.Substation) db, (LiteSubstation) lite );
 		}
 		
 		return db;
@@ -1036,6 +1049,12 @@ public class StarsLiteFactory {
 		company.setMainFaxNumber( liteCompany.getMainFaxNumber() );
 		company.setPrimaryContactID( new Integer(liteCompany.getPrimaryContactID()) );
 		company.setHIType( liteCompany.getHiType() );
+	}
+	
+	public static void setSubstation(com.cannontech.database.db.stars.Substation sub, LiteSubstation liteSub) {
+		sub.setSubstationID( new Integer(liteSub.getSubstationID()) );
+		sub.setSubstationName( liteSub.getSubstationName() );
+		sub.setRouteID( new Integer(liteSub.getRouteID()) );
 	}
 	
 	
@@ -1516,7 +1535,7 @@ public class StarsLiteFactory {
 	
 	public static void setStarsServiceCompany(StarsServiceCompany starsCompany, LiteServiceCompany liteCompany, LiteStarsEnergyCompany energyCompany) {
 		starsCompany.setCompanyID( liteCompany.getCompanyID() );
-		starsCompany.setInherited( liteCompany.getDirectOwner() != energyCompany );
+		starsCompany.setInherited( !energyCompany.getServiceCompanies().contains(liteCompany) );
 		starsCompany.setCompanyName( StarsUtils.forceNotNull(liteCompany.getCompanyName()) );
 		starsCompany.setMainPhoneNumber( StarsUtils.forceNotNone(liteCompany.getMainPhoneNumber()) );
 		starsCompany.setMainFaxNumber( StarsUtils.forceNotNone(liteCompany.getMainFaxNumber()) );
@@ -1960,7 +1979,7 @@ public class StarsLiteFactory {
 		StarsApplianceCategory starsAppCat = new StarsApplianceCategory();
 		starsAppCat.setApplianceCategoryID( liteAppCat.getApplianceCategoryID() );
 		starsAppCat.setCategoryID( liteAppCat.getCategoryID() );
-		starsAppCat.setInherited( liteAppCat.getDirectOwner() != energyCompany );
+		starsAppCat.setInherited( !energyCompany.getApplianceCategories().contains(liteAppCat) );
 		starsAppCat.setDescription( StarsUtils.forceNotNull(liteAppCat.getDescription()) );
 		
 		LiteWebConfiguration liteConfig = StarsDatabaseCache.getInstance().getWebConfiguration( liteAppCat.getWebConfigurationID() );

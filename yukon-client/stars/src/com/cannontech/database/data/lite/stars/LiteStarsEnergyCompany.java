@@ -164,6 +164,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	private ArrayList pubPrograms = null;		// List of LiteLMProgramWebPublishing
 	private ArrayList appCategories = null;		// List of LiteApplianceCategory
 	private ArrayList serviceCompanies = null;	// List of LiteServiceCompany
+	private ArrayList substations = null;		// List of LiteSubstation
 	private ArrayList selectionLists = null;	// List of YukonSelectionList
 	private ArrayList interviewQuestions = null;	// List of LiteInterviewQuestion
 	private ArrayList customerFAQs = null;		// List of LiteCustomerFAQ
@@ -575,6 +576,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		appCategories = null;
 		workOrders = null;
 		serviceCompanies = null;
+		substations = null;
 		selectionLists = null;
 		interviewQuestions = null;
 		customerFAQs = null;
@@ -706,7 +708,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
     				
 			for (int i = 0; i < appCats.length; i++) {
 				LiteApplianceCategory appCat = (LiteApplianceCategory) StarsLiteFactory.createLite( appCats[i] );
-				appCat.setDirectOwner( this );
     			
 				com.cannontech.database.db.stars.LMProgramWebPublishing[] pubProgs =
 						com.cannontech.database.db.stars.LMProgramWebPublishing.getAllLMProgramWebPublishing( appCats[i].getApplianceCategoryID().intValue() );
@@ -1101,15 +1102,12 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	
 	public synchronized ArrayList getServiceCompanies() {
 		if (serviceCompanies == null) {
-			serviceCompanies = new ArrayList();
-			
 			com.cannontech.database.db.stars.report.ServiceCompany[] companies =
 					com.cannontech.database.db.stars.report.ServiceCompany.getAllServiceCompanies( getEnergyCompanyID() );
-			for (int i = 0; i < companies.length; i++) {
-				LiteServiceCompany liteCompany = (LiteServiceCompany) StarsLiteFactory.createLite(companies[i]);
-				liteCompany.setDirectOwner( this );
-				serviceCompanies.add( liteCompany );
-			}
+			
+			serviceCompanies = new ArrayList();
+			for (int i = 0; i < companies.length; i++)
+				serviceCompanies.add( StarsLiteFactory.createLite(companies[i]) );
 			
 			CTILogger.info( "All service companies loaded for energy company #" + getEnergyCompanyID() );
 		}
@@ -1117,12 +1115,37 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		return serviceCompanies;
 	}
 	
-	public synchronized ArrayList getAllServiceCompanies() {
+	public ArrayList getAllServiceCompanies() {
 		ArrayList companies = new ArrayList( getServiceCompanies() );
 		if (getParent() != null)
 			companies.addAll( 0, getParent().getAllServiceCompanies() );
 		
 		return companies;
+	}
+	
+	public synchronized ArrayList getSubstations() {
+		if (substations == null) {
+			com.cannontech.database.db.stars.Substation[] subs =
+					com.cannontech.database.db.stars.Substation.getAllSubstations( getEnergyCompanyID() );
+			
+			substations = new ArrayList();
+			for (int i = 0; i < subs.length; i++) {
+				LiteSubstation liteSub = (LiteSubstation) StarsLiteFactory.createLite(subs[i]);
+				substations.add( liteSub );
+			}
+			
+			CTILogger.info( "All substations loaded for energy company #" + getEnergyCompanyID() );
+		}
+		
+		return substations;
+	}
+	
+	public ArrayList getAllSubstations() {
+		ArrayList substations = new ArrayList( getSubstations() );
+		if (getParent() != null)
+			substations.addAll( 0, getParent().getAllSubstations() );
+		
+		return substations;
 	}
 	
 	public synchronized ArrayList getOperatorLoginIDs() {
@@ -1562,7 +1585,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	}
 	
 	public void addApplianceCategory(LiteApplianceCategory appCat) {
-		appCat.setDirectOwner( this );
 		ArrayList appCats = getApplianceCategories();
 		synchronized (appCats) { appCats.add( appCat ); }
 	}
@@ -1590,19 +1612,16 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	
 	public LiteServiceCompany getServiceCompany(int serviceCompanyID) {
 		ArrayList serviceCompanies = getAllServiceCompanies();
-		synchronized (serviceCompanies) {
-			for (int i = 0; i < serviceCompanies.size(); i++) {
-				LiteServiceCompany serviceCompany = (LiteServiceCompany) serviceCompanies.get(i);
-				if (serviceCompany.getCompanyID() == serviceCompanyID)
-					return serviceCompany;
-			}
+		for (int i = 0; i < serviceCompanies.size(); i++) {
+			LiteServiceCompany serviceCompany = (LiteServiceCompany) serviceCompanies.get(i);
+			if (serviceCompany.getCompanyID() == serviceCompanyID)
+				return serviceCompany;
 		}
 		
 		return null;
 	}
 	
 	public void addServiceCompany(LiteServiceCompany serviceCompany) {
-		serviceCompany.setDirectOwner( this );
 		ArrayList serviceCompanies = getServiceCompanies();
 		synchronized (serviceCompanies) { serviceCompanies.add(serviceCompany); }
 	}
@@ -1615,6 +1634,37 @@ public class LiteStarsEnergyCompany extends LiteBase {
 				if (serviceCompany.getCompanyID() == serviceCompanyID) {
 					serviceCompanies.remove( i );
 					return serviceCompany;
+				}
+			}
+		}
+		
+		return null;
+	}
+	
+	public LiteSubstation getSubstation(int substationID) {
+		ArrayList substations = getAllSubstations();
+		for (int i = 0; i < substations.size(); i++) {
+			LiteSubstation liteSub = (LiteSubstation) substations.get(i);
+			if (liteSub.getSubstationID() == substationID)
+				return liteSub;
+		}
+		
+		return null;
+	}
+	
+	public void addSubstation(LiteSubstation substation) {
+		ArrayList substations = getSubstations();
+		synchronized (substations) { substations.add(substation); }
+	}
+	
+	public LiteSubstation deleteSubstation(int substationID) {
+		ArrayList substations = getSubstations();
+		synchronized (substations) {
+			for (int i = 0; i < substations.size(); i++) {
+				LiteSubstation liteSub = (LiteSubstation) substations.get(i);
+				if (liteSub.getSubstationID() == substationID) {
+					substations.remove(i);
+					return liteSub;
 				}
 			}
 		}
