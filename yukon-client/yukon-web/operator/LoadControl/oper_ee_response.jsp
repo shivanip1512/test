@@ -117,7 +117,7 @@
                 <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>"/>">&nbsp;</td>
               </tr>
               <tr> 
-               <td width="310" height = "28" class="PageHeader">&nbsp;&nbsp;&nbsp;Load Response</td>
+               <td width="310" height = "28" class="PageHeader">&nbsp;&nbsp;&nbsp;<cti:getProperty propertyid="<%=EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>"/></td>
                 <td width="235" height = "28" valign="middle">&nbsp;</td>
                 
                   <td width="58" valign="middle"> 
@@ -190,7 +190,7 @@
                 </td> 
             <td width="35" class="MainHeader"><%= offerID + "-" + revisionNumber %></td>
             <td width="75" class="MainHeader"> 
-                  <p align=RIGHT><b>Date: </b>
+                  <p align=RIGHT><b>Control Date: </b>
                 </td>
             <td width="75" class="MainHeader"><%= responseDateFormat.format( offer.getOfferDate() ) %>
             </td>
@@ -220,7 +220,7 @@
                     <td width="90" valign="TOP" class="HeaderCell">Hour Ending</td>
                         <td width="110" valign="TOP" class="HeaderCell">Offer Price 
                           in $ per kWh</td>
-                        <td width="110" valign="TOP" class="HeaderCell">SCL in 
+                        <td width="110" valign="TOP" class="HeaderCell">CLR in 
                           kW</td>
                   </tr>
                   <%
@@ -267,7 +267,7 @@
                     <td width="90" valign="TOP" class="HeaderCell"> Hour Ending</td>
                         <td width="110" valign="TOP" class="HeaderCell">Offer 
                           Price in $ per kWh</td>
-                        <td width="110" valign="TOP" class="HeaderCell">SCL in 
+                        <td width="110" valign="TOP" class="HeaderCell">CLR in 
                           kW</td>
                   </tr>
                   <%
@@ -321,7 +321,7 @@
         <br>
         <p> 
           <center>
-                <b><span class="MainHeader">TOTAL: <%= totalCommitted %> kW</span></b> 
+                <b><span class="MainHeader">TOTAL: <%= totalCommitted %> kWh</span></b> 
               </center>
         </p>
             <p align="center" class="MainHeader"> <a href="<%= referrer %>" class="Link1"><b>Back to Customer List</b></a> 
