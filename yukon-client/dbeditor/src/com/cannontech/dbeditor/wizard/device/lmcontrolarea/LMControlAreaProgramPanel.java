@@ -734,11 +734,70 @@ private void initConnections() throws java.lang.Exception {
 			}
 		}
 	};
+	
+	final AbstractAction searchActionComboBox = new AbstractAction()
+	{
+		public void actionPerformed(java.awt.event.ActionEvent e)
+		{
+			if( !dialog.isShowing() )
+			{
+				dialog.setSize(250, 120);
+				dialog.setLocationRelativeTo( LMControlAreaProgramPanel.this );
+				dialog.show();
+		
+				if( dialog.getButtonPressed() == OkCancelDialog.OK_PRESSED )
+				{
+					Object value = FND_PANEL.getValue(null);
+					boolean found = false;
+							
+					if( value != null )
+					{
+						int numberOfRows = getJComboBoxLMProgram().getModel().getSize();
+						for(int j = 0; j < numberOfRows; j++)
+						{
+							String programName = ((LiteBase)getJComboBoxLMProgram().getModel().getElementAt(j)).toString();
+							if(programName.compareTo(value.toString()) == 0)
+							{
+								getJComboBoxLMProgram().setSelectedIndex(j);
+								getJComboBoxLMProgram().scrollRectToVisible( new java.awt.Rectangle(
+								0,
+								getJComboBoxLMProgram().getHeight() * (j+1) - getJComboBoxLMProgram().getHeight(),  //just an estimate that works!!
+								100,
+								100) );	
+								found = true;
+								break;
+							}
+							//in case they don't know the full name and just entered a partial
+							if(programName.indexOf(value.toString()) > -1 && programName.indexOf(value.toString()) < 2)
+							{
+								getJComboBoxLMProgram().setSelectedIndex(j);
+								getJComboBoxLMProgram().scrollRectToVisible( new java.awt.Rectangle(
+								0,
+								getJComboBoxLMProgram().getHeight() * (j+1) - getJComboBoxLMProgram().getHeight(),  //just an estimate that works!!
+								100,
+								100) );	
+								found = true;
+								break;
+							}
+						}
+							
+						if( !found )
+							javax.swing.JOptionPane.showMessageDialog(
+								LMControlAreaProgramPanel.this, "Unable to find your selected item", "Item Not Found",
+								javax.swing.JOptionPane.INFORMATION_MESSAGE );
+					}
+				}
+				dialog.setVisible(false);
+			}
+		}
+	};
 
 	//do the secret magic key combo: ALT + S
 	KeyStroke stroke = KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.ALT_DOWN_MASK, true);
 	getJTableProgram().getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(stroke, "FindAction");
 	getJTableProgram().getActionMap().put("FindAction", searchAction);
+	getJComboBoxLMProgram().getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(stroke, "FindAction");
+	getJComboBoxLMProgram().getActionMap().put("FindAction", searchActionComboBox);
 	
 	// user code end
 	getJButtonAdd().addActionListener(ivjEventHandler);
