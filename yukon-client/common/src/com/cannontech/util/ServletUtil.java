@@ -17,6 +17,7 @@ public class ServletUtil {
 	public static final String FIVEWEEKS = "5 Weeks";
 
 	public static final String TODAY = "Today";
+	public static final String YESTERDAY = "Yesterday";
 	public static final String PREVTWODAYS= "Prev 2 Days";
 	public static final String PREVTHREEDAYS= "Prev 3 Days";
 	public static final String PREVFIVEDAYS = "Prev 5 Days";
@@ -562,10 +563,21 @@ public static java.util.Date getEndingDateOfInterval(java.util.Date startingDate
 	
 	int numDays;
 	period = period.trim();
-	
-	if( period.equalsIgnoreCase(ONEDAY) )
+		
+	if( period.equalsIgnoreCase(ONEDAY) 		||
+		period.equalsIgnoreCase(TODAY)			||		
+		period.equalsIgnoreCase(PREVTWODAYS) 	||
+		period.equalsIgnoreCase(PREVTHREEDAYS) 	||
+		period.equalsIgnoreCase(PREVFIVEDAYS) 	||
+		period.equalsIgnoreCase(PREVSEVENDAYS) 	||
+		period.equalsIgnoreCase(PREVONEWEEK) )		
 	{
 		numDays = 1;	
+	}
+	else
+	if( period.equalsIgnoreCase(YESTERDAY) )
+	{
+		numDays = 0;
 	}
 	else
 	if( period.equalsIgnoreCase(THREEDAYS) )
@@ -603,32 +615,6 @@ public static java.util.Date getEndingDateOfInterval(java.util.Date startingDate
 
 		numDays = com.cannontech.common.util.TimeUtil.differenceInDays(startingDate, endOfInterval);		
 	}
-	else
-	if( period.equalsIgnoreCase(TODAY) )
-	{
-		numDays = 1;
-	}
-	else
-	if( period.equalsIgnoreCase(PREVTWODAYS) )
-	{
-		numDays = 1;		
-	}
-	else
-	if( period.equalsIgnoreCase(PREVTHREEDAYS) )
-	{
-		numDays = 1;
-	}
-	else
-	if( period.equalsIgnoreCase(PREVFIVEDAYS) )
-	{
-		numDays = 1;		
-	}
-	else
-	if( period.equalsIgnoreCase(PREVSEVENDAYS) || period.equalsIgnoreCase(PREVONEWEEK) )
-	{
-		numDays = 1;		
-	}
-
 	else
 		return null;
 		
@@ -754,7 +740,8 @@ public static java.util.Date getStartingDateOfInterval(java.util.Date startingDa
 		return startingDate;
 	}
 	else
-	if( period.equalsIgnoreCase(PREVTWODAYS) )
+	if( period.equalsIgnoreCase(PREVTWODAYS) ||
+		period.equalsIgnoreCase(YESTERDAY) )
 	{
 		numDays = -1;
 	}
