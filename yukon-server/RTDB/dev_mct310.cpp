@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.28 $
-* DATE         :  $Date: 2004/04/14 00:47:30 $
+* REVISION     :  $Revision: 1.29 $
+* DATE         :  $Date: 2004/05/14 01:04:52 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -288,8 +288,9 @@ bool CtiDeviceMCT310::getOperation( const UINT &cmd, USHORT &function, USHORT &l
 
     DLCCommandSet::iterator itr = _commandStore.find( CtiDLCCommandStore( cmd ) );
 
-    //  the 310IL is the only 310 that supports load profile, and i didn't want to add a seperate class for the one action
-    if( getType( ) != TYPEMCT310IL &&
+    //  the 310IL/IDL is the only 310 that supports load profile, and i didn't want to add a seperate class for the one action
+    if( getType( ) != TYPEMCT310IL  &&
+        getType( ) != TYPEMCT310IDL &&
         cmd == CtiProtocolEmetcon::Scan_LoadProfile )
     {
         //  for emphasis...
@@ -749,6 +750,7 @@ INT CtiDeviceMCT310::decodeGetValueKWH(INMESS *InMessage, RWTime &TimeNow, RWTPt
             RWTime pointTime;
 
             if( getType() == TYPEMCT310ID ||
+                getType() == TYPEMCT310IDL ||
                 getType() == TYPEMCT310IL )
             {
                 while( Value > MCT_Rollover )
@@ -772,6 +774,7 @@ INT CtiDeviceMCT310::decodeGetValueKWH(INMESS *InMessage, RWTime &TimeNow, RWTPt
         else
         {
             if( getType() == TYPEMCT310ID ||
+                getType() == TYPEMCT310IDL ||
                 getType() == TYPEMCT310IL )
             {
                 while( RecentValue > MCT_Rollover )
@@ -1487,7 +1490,7 @@ INT CtiDeviceMCT310::decodeGetConfigOptions(INMESS *InMessage, RWTime &TimeNow, 
         }
 
         //  310s don't use this bit
-        if( getType() != TYPEMCT310 && getType() != TYPEMCT310ID && getType() != TYPEMCT310IL )
+        if( getType() != TYPEMCT310 && getType() != TYPEMCT310ID && getType() != TYPEMCT310IL && getType() != TYPEMCT310IDL )
         {
             if( optBuf[1] & 0x04 )
                 options += "  In on/off peak mode\n";

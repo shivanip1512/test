@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/devicetypes.h-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2004/03/18 19:48:25 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2004/05/14 01:01:03 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -40,6 +40,7 @@
 #define TYPEMCT318                           68
 #define TYPEMCT310IL                         69
 #define TYPEMCT318L                          70
+#define TYPEMCT310IDL                        71
 /* new MCT devices as of 04-08-97   */
 #define TYPEMCT360                           75
 #define TYPEMCT370                           80
