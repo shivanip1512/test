@@ -87,8 +87,11 @@ public class CentMaineDBConverter extends MessageFrameAdaptor {
 	private StringTokenizer ts;
 	private StringTokenizer ts2;
 	private StringTokenizer ts3;
+	
 	boolean add;
 
+	int num = 0;
+	
 	/**
 	 * CentMaineDBConverter constructor comment.
 	 */
@@ -794,7 +797,10 @@ public class CentMaineDBConverter extends MessageFrameAdaptor {
 			String leadMeter = ts.nextToken().trim();
 			String leadLoad = ts.nextToken().trim();
 			String address = ts.nextToken().trim();
+			ts.nextToken();
+			ts.nextToken();
 			String active = ts.nextToken().trim();
+			System.out.println("Active: ?  : "+active);
 			if (dType.equalsIgnoreCase("MC210I")) {
 				deviceType = DeviceTypes.STRING_MCT_210[0];
 			} else if (
@@ -1002,7 +1008,9 @@ public class CentMaineDBConverter extends MessageFrameAdaptor {
 					new Integer(300));
 				device.getDeviceLoadProfile().setLoadProfileDemandRate(
 					new Integer(300));
+					
 				if (active.equalsIgnoreCase("T")) {
+					num++;
 					device.setDisableFlag(new Character('Y'));
 				}
 				multi.getDBPersistentVector().add(device);
@@ -1013,6 +1021,7 @@ public class CentMaineDBConverter extends MessageFrameAdaptor {
 		}
 
 		boolean success = writeToSQLDatabase(multi);
+		System.out.println("Num " +num);
 
 		if (success) {
 			CTILogger.info(
