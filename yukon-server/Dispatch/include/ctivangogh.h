@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/ctivangogh.h-arc  $
-* REVISION     :  $Revision: 1.28 $
-* DATE         :  $Date: 2004/10/26 16:12:47 $
+* REVISION     :  $Revision: 1.29 $
+* DATE         :  $Date: 2004/11/05 17:24:44 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -52,6 +52,7 @@ using namespace std;
 #include "msg_tag.h"
 #include "guard.h"
 #include "mutex.h"
+#include "pendingopthread.h"
 #include "pending_info.h"
 #include "signalmanager.h"
 #include "tagmanager.h"
@@ -82,9 +83,6 @@ class IM_EX_CTIVANGOGH CtiVanGogh : public CtiServer
 {
 public:
 
-    typedef map< long, CtiTableLMControlHistory >  CtiICLMControlHistMap_t;       // Contains the intial conditions for controls history and control state.
-
-    typedef set< CtiPendingPointOperations >  CtiPendingOpSet_t;
     typedef set< CtiTableNotificationGroup >  CtiNotificationGroupSet_t;
     typedef set< CtiTableContactNotification >  CtiContactNotificationSet_t;
     typedef set< CtiDeviceBaseLite >          CtiDeviceLiteSet_t;
@@ -101,6 +99,8 @@ private:
      *  VGMain's Data Stores.
      */
 
+    CtiPendingOpThread _pendingOpThread;
+
     RWThreadFunction  _rphThread;       // RawPointHistory....
     RWThreadFunction  _archiveThread;
     RWThreadFunction  _timedOpThread;
@@ -112,36 +112,24 @@ private:
 
     CtiQueue< CtiSignalMsg, less<CtiSignalMsg> > _signalMsgQueue;
     CtiQueue< CtiTableRawPointHistory, less<CtiTableRawPointHistory> > _archiverQueue;
-    CtiQueue< CtiTableLMControlHistory, less<CtiTableLMControlHistory> > _lmControlHistoryQueue;
     CtiQueue< CtiTableCommErrorHistory, less<CtiTableCommErrorHistory> > _commErrorHistoryQueue;
 
     // These are the signals which have not been cleared by a client app
     CtiA2DTranslation_t        _alarmToDestInfo[256];  // This holds translations from alarm ID to DestinationID.
-    CtiPendingOpSet_t          _pendingPointInfo;      // This holds temporal information on a per point basis.
     CtiNotificationGroupSet_t  _notificationGroupSet;  // Notification Groups
     CtiContactNotificationSet_t _contactNotificationSet; // Email/pager targets
     CtiDeviceLiteSet_t         _deviceLiteSet;
     CtiDeviceCICustSet_t       _ciCustSet;             // customer device.
 
-    CtiICLMControlHistMap_t _controlHistoryPrimeValues;
-
     CtiSignalManager           _signalManager;
     CtiTagManager              _tagManager;
 
-    static CtiICLMControlHistMap_t _initialConditionControlHistMap;
-    static void resetICControlMap();
-    static bool loadICControlMap();
-    static bool getICControlHistory( CtiTableLMControlHistory &lmch );
-
-
     UINT writeRawPointHistory(bool justdoit, int maxrowstowrite);
-    void verifyControlTimesValid( CtiPendingPointOperations &ppc );
     RWCString resolveEmailMsgDescription( const CtiEmailMsg &aMail );
 
     int checkNumericReasonability(CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, CtiPointNumeric &pointNumeric, CtiDynamicPointDispatch *pDyn, CtiSignalMsg *&pSig );
     void checkNumericRateOfChange(int alarm, CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, CtiPointNumeric &pointNumeric, CtiDynamicPointDispatch *pDyn, CtiSignalMsg *&pSig );
     void checkNumericLimits(int alarm, CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, CtiPointNumeric &pointNumeric, CtiDynamicPointDispatch *pDyn, CtiSignalMsg *&pSig );
-    void checkForPendingLimitViolation(CtiPointDataMsg *pData, CtiPointNumeric &pointNumeric );
 
     void checkStatusUCOS(int alarm, CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, CtiPointBase &point, CtiDynamicPointDispatch *pDyn, CtiSignalMsg *&pSig );
     void checkStatusCommandFail(int alarm, CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, CtiPointBase &point, CtiDynamicPointDispatch *pDyn, CtiSignalMsg *&pSig );
@@ -150,19 +138,13 @@ private:
 
     bool ablementDevice(CtiDeviceLiteSet_t::iterator &dliteit, UINT setmask, UINT tagmask);
     bool ablementPoint(CtiPointBase *&pPoint, bool &devicedifferent, UINT setmask, UINT tagmask, RWCString user, CtiMultiMsg &Multi);
-    bool addToPendingSet(CtiPendingPointOperations &pendingOp, RWTime &updatetime = RWTime());
 
-    void insertControlHistoryRow( CtiPendingPointOperations &ppc);
-    void postControlHistoryPoints( CtiPendingPointOperations &ppc);
-    void postControlStopPoint( CtiPendingPointOperations &ppc, const RWTime &now);
     void bumpDeviceFromAlternateRate(CtiPointBase *pPoint);
     void bumpDeviceToAlternateRate(CtiPointBase *pPoint);
 
     void acknowledgeCommandMsg( CtiPointBase *&pPt, const CtiCommandMsg *&Cmd, int alarmcondition );
     void acknowledgeAlarmCondition( CtiPointBase *&pPt, const CtiCommandMsg *&Cmd, int alarmcondition );
     bool processInputFunction(CHAR Char);
-
-    static bool createOrUpdateICControl(long paoid, CtiTableLMControlHistory &lmch );
 
 public:
 
@@ -229,8 +211,6 @@ public:
     INT   loadPendingSignals();
     void  purifyClientConnectionList();
     void  updateRuntimeDispatchTable(bool force = false);
-    void  writeLMControlHistoryToDB(bool justdoit = false);
-    void writeDynamicLMControlHistoryToDB(bool justdoit = false);
     void  writeCommErrorHistoryToDB(bool justdoit = false);
     void  writeArchiveDataToDB(bool justdoit = false);
     void  writeSignalsToDB(bool justdoit = false);
@@ -255,11 +235,10 @@ public:
     RWCString getAlarmStateName( INT alarm );
 
     virtual int clientPurgeQuestionables(PULONG pDeadClients);
-
+    virtual RWCString getMyServerName() const;
     virtual int   clientRegistration(CtiConnectionManager *CM);
     virtual int   clientArbitrationWinner(CtiConnectionManager *CM);
     void messageDump(CtiMessage *pMsg);
-     void doPendingOperations(bool bShutdown = false);
     void loadRTDB(bool force = false, CtiMessage *pMsg = NULL);     // Loads all relevant RTDB elements
     void loadDeviceNames();
     void loadCICustomers(LONG id = 0);
@@ -278,7 +257,6 @@ public:
     void displayConnections(void);
 
     CtiDeviceLiteSet_t::iterator deviceLiteFind(const LONG paoId);
-    bool removePointDataFromPending( LONG pID, const CtiPointDataMsg &Data);
     void establishListener();
     void reportOnThreads();
     void writeMessageToScanner(const CtiCommandMsg *Cmd);
@@ -286,8 +264,6 @@ public:
     void writeControlMessageToPIL(LONG deviceid, LONG rawstate, CtiPointStatus *pPoint, const CtiCommandMsg *&Cmd  );
     int processControlMessage(CtiLMControlHistoryMsg *pMsg);
     int processCommErrorMessage(CtiCommErrorHistoryMsg *pMsg);
-    void updateControlHistory(  long pendid, int cause, const RWTime &thetime = RWTime(), RWTime &now = RWTime() );
-    void dumpPendingOps(bool force = false);
 
     INT updateDeviceStaticTables(LONG did, UINT setmask, UINT tagmask, RWCString user, CtiMultiMsg &sigList);
     INT updatePointStaticTables(LONG pid, UINT setmask, UINT tagmask, RWCString user, CtiMultiMsg &sigList);
@@ -299,9 +275,17 @@ public:
 
     int processTagMessage(CtiTagMsg &tagMsg);
     int loadPendingControls();
-    bool isPointInPendingControl(LONG pointid);
     void updateGroupPseduoControlPoint(CtiPointBase *&pPt, const RWTime &delaytime);
 
+    void checkForPendingLimitViolation(CtiPointDataMsg *pData, CtiPointNumeric &pointNumeric );
+    bool addToPendingSet(CtiPendingPointOperations *&pendingOp, RWTime &updatetime = RWTime());
+    void insertControlHistoryRow( CtiPendingPointOperations &ppc);
+    //void postControlHistoryPoints( CtiPendingPointOperations &ppc);
+    //void postControlStopPoint( CtiPendingPointOperations &ppc, const RWTime &now);
+    // void dumpPendingOps(bool force = false);
+    bool removePointDataFromPending(LONG pID);
+    bool isPointInPendingControl(LONG pointid);
+    void updateControlHistory(  long pendid, int cause, const RWTime &thetime = RWTime(), RWTime &now = RWTime() );
 
 };
 

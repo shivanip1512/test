@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_lm_controlhist.cpp-arc  $
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2004/10/26 16:12:46 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2004/11/05 17:24:44 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -598,9 +598,6 @@ RWDBStatus CtiTableLMControlHistory::Insert(RWDBConnection &conn)
         }
 
         dbstat = inserter.status();
-
-        // Record the DynamicCondition as well.
-        UpdateDynamic(conn);            // Does this leak memory??
     }
     else
     {
@@ -807,7 +804,7 @@ void CtiTableLMControlHistory::dump() const
         dout << " controlcompletetime   " << getControlCompleteTime() << endl;
         dout << " previouslogtime       " << getPreviousLogTime() << endl;
         dout << " soe_tag               " << getSoeTag() << endl;
-        dout << " controlduration       " << (getControlCompleteTime().seconds() - getStartTime().seconds()) << endl;
+        dout << " controlduration       " << (INT)(getControlCompleteTime().seconds() - getStartTime().seconds()) << endl;
         dout << " controltype           " << getControlType() << endl;
         dout << " currentdailytime      " << getCurrentDailyTime() << endl;
         dout << " currentmonthlytime    " << getCurrentMonthlyTime() << endl;

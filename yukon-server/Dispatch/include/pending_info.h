@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/pending_info.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2004/08/18 22:04:50 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2004/11/05 17:24:44 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -64,9 +64,12 @@ public:
     typedef enum
     {
         pendingInvalid,
-        pendingLimit,
         pendingControl,
-        pendingPointData
+        pendingPointData,
+        pendingLimit
+        // Leave space here for each of the limits.
+        // ...
+
     }
     CtiPendingOpType_t;
 
@@ -139,8 +142,6 @@ private:
     const CtiTableLMControlHistory& getControl() const;
     CtiTableLMControlHistory& getControl();
     CtiPendingPointOperations& setControl(const CtiTableLMControlHistory& ref);
-
-
 
 };
 #endif // #ifndef __PENDING_INFO_H__
