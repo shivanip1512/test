@@ -16,11 +16,10 @@ import java.util.Iterator;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.SqlStatement;
+import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
-import com.cannontech.database.data.lite.stars.LiteLMProgramWebPublishing;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -29,8 +28,10 @@ import com.cannontech.stars.util.ImportProblem;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
-import com.cannontech.stars.web.servlet.ImportManager;
-import com.cannontech.stars.web.servlet.SOAPServer;
+import com.cannontech.stars.web.util.ImportManagerUtil;
+import com.cannontech.stars.xml.serialize.StarsApplianceCategory;
+import com.cannontech.stars.xml.serialize.StarsEnrLMProgram;
+import com.cannontech.stars.xml.serialize.StarsEnrollmentPrograms;
 
 /**
  * @author yao
@@ -200,7 +201,7 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 		}
 		
 		status = STATUS_RUNNING;
-		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
 		
 		acctFieldsList = (ArrayList) preprocessedData.get("CustomerAccount");
 		invFieldsList = (ArrayList) preprocessedData.get("Inventory");
@@ -215,21 +216,21 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 		resFieldsCnt = resFieldsList.size();
 		
 		// Map of import_account_id(Integer) to db_account_id(Integer) or LiteStarsCustAccountInformation object
-		Hashtable acctIDMap = (Hashtable) preprocessedData.get( ImportManager.CUSTOMER_ACCOUNT_MAP );
+		Hashtable acctIDMap = (Hashtable) preprocessedData.get( ImportManagerUtil.CUSTOMER_ACCOUNT_MAP );
 		if (acctIDMap == null) {
 			acctIDMap = new Hashtable();
-			preprocessedData.put( ImportManager.CUSTOMER_ACCOUNT_MAP, acctIDMap );
+			preprocessedData.put( ImportManagerUtil.CUSTOMER_ACCOUNT_MAP, acctIDMap );
 		}
 		
 		// Map of import_inv_id(Integer) to db_app_ids (int[]: {relay1_app_id, relay2_app_id, relay3_app_id})
-		Hashtable appIDMap = (Hashtable) preprocessedData.get( ImportManager.HW_CONFIG_APP_MAP );
+		Hashtable appIDMap = (Hashtable) preprocessedData.get( ImportManagerUtil.HW_CONFIG_APP_MAP );
 		if (appIDMap == null) {
 			appIDMap = new Hashtable();
-			preprocessedData.put( ImportManager.HW_CONFIG_APP_MAP, appIDMap );
+			preprocessedData.put( ImportManagerUtil.HW_CONFIG_APP_MAP, appIDMap );
 		}
 		
 		// Directory where the mapping and log files will be written into
-		String path = (String) preprocessedData.get( ImportManager.CUSTOMER_FILE_PATH );
+		String path = (String) preprocessedData.get( ImportManagerUtil.CUSTOMER_FILE_PATH );
 		
 		String position = null;
 		java.io.PrintWriter fw = null;
@@ -249,13 +250,13 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 			Iterator it = acctFieldsList.listIterator();
 			while (it.hasNext()) {
 				String[] fields = (String[]) it.next();
-				position = "customer file line #" + fields[ImportManager.IDX_LINE_NUM];
+				position = "customer file line #" + fields[ImportManagerUtil.IDX_LINE_NUM];
 				
 				try {
 					// To save database lookup time, only check for constraint for
 					// the first import entry, then assume there won't be any problem
 					ImportProblem problem = new ImportProblem();
-					LiteStarsCustAccountInformation liteAcctInfo = ImportManager.newCustomerAccount(fields, user, energyCompany, first, problem);
+					LiteStarsCustAccountInformation liteAcctInfo = ImportManagerUtil.newCustomerAccount(fields, user, energyCompany, first, problem);
 					if (problem.getProblem() != null) {
 						warnings.add( "WARNING at " + position + ": " + problem.getProblem() );
 						if (warnings.size() > WARNING_NUM_LIMIT)
@@ -264,8 +265,8 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 					
 					first = false;
 					
-					acctIDMap.put( Integer.valueOf(fields[ImportManager.IDX_ACCOUNT_ID]), liteAcctInfo );
-					fw.println(fields[ImportManager.IDX_ACCOUNT_ID] + "," + liteAcctInfo.getAccountID());
+					acctIDMap.put( Integer.valueOf(fields[ImportManagerUtil.IDX_ACCOUNT_ID]), liteAcctInfo );
+					fw.println(fields[ImportManagerUtil.IDX_ACCOUNT_ID] + "," + liteAcctInfo.getAccountID());
 					
 					numAcctAdded++;
 					it.remove();	// Try to free up memory as we go
@@ -297,10 +298,10 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 			it = invFieldsList.listIterator();
 			while (it.hasNext()) {
 				String[] fields = (String[]) it.next();
-				position = "inventory file line #" + fields[ImportManager.IDX_LINE_NUM];
+				position = "inventory file line #" + fields[ImportManagerUtil.IDX_LINE_NUM];
 				
 				try {
-					Integer acctID = Integer.valueOf( fields[ImportManager.IDX_ACCOUNT_ID] );
+					Integer acctID = Integer.valueOf( fields[ImportManagerUtil.IDX_ACCOUNT_ID] );
 					LiteStarsCustAccountInformation liteAcctInfo = null;
 					
 					if (acctID.intValue() > 0) {	
@@ -322,7 +323,7 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 					}
 					
 					ImportProblem problem = new ImportProblem();
-					LiteInventoryBase liteInv = ImportManager.insertLMHardware( fields, liteAcctInfo, energyCompany, first, problem );
+					LiteInventoryBase liteInv = ImportManagerUtil.insertLMHardware( fields, liteAcctInfo, energyCompany, first, problem );
 					if (problem.getProblem() != null) {
 						warnings.add( "WARNING at " + position + ": " + problem.getProblem() );
 						if (warnings.size() > WARNING_NUM_LIMIT)
@@ -333,34 +334,34 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 					it.remove();
 					
 					for (int i = 0; i < 3; i++) {
-						if (fields[ImportManager.IDX_R1_STATUS + i].equals("1"))
-							warnings2.add("Receiver (import_inv_id=" + fields[ImportManager.IDX_INV_ID] + ",db_inv_id=" + liteInv.getInventoryID() + ",serial_no=" + fields[ImportManager.IDX_SERIAL_NO] + ") relay " + (i+1) + " is out of service");
-						else if (fields[ImportManager.IDX_R1_STATUS + i].equals("2"))
-							warnings2.add("Receiver (import_inv_id=" + fields[ImportManager.IDX_INV_ID] + ",db_inv_id=" + liteInv.getInventoryID() + ",serial_no=" + fields[ImportManager.IDX_SERIAL_NO] + ") relay " + (i+1) + " was out before switch placed out");
+						if (fields[ImportManagerUtil.IDX_R1_STATUS + i].equals("1"))
+							warnings2.add("Receiver (import_inv_id=" + fields[ImportManagerUtil.IDX_INV_ID] + ",db_inv_id=" + liteInv.getInventoryID() + ",serial_no=" + fields[ImportManagerUtil.IDX_SERIAL_NO] + ") relay " + (i+1) + " is out of service");
+						else if (fields[ImportManagerUtil.IDX_R1_STATUS + i].equals("2"))
+							warnings2.add("Receiver (import_inv_id=" + fields[ImportManagerUtil.IDX_INV_ID] + ",db_inv_id=" + liteInv.getInventoryID() + ",serial_no=" + fields[ImportManagerUtil.IDX_SERIAL_NO] + ") relay " + (i+1) + " was out before switch placed out");
 					}
 					
 					if (liteAcctInfo != null) {
 						// If load groups for relays are specified, automatically add appliances through program enrollment
-						ArrayList appCats = energyCompany.getAllApplianceCategories();
+						StarsEnrollmentPrograms enrProgs = energyCompany.getStarsEnrollmentPrograms();
 						ArrayList progList = new ArrayList();
 						
 						for (int i = 0; i < 3; i++) {
-							if (fields[ImportManager.IDX_R1_GROUP + i].equals("") || fields[ImportManager.IDX_R1_GROUP + i].equals("0"))
+							if (fields[ImportManagerUtil.IDX_R1_GROUP + i].equals("") || fields[ImportManagerUtil.IDX_R1_GROUP + i].equals("0"))
 								continue;
 							
-							int groupID = Integer.parseInt( fields[ImportManager.IDX_R1_GROUP + i] );
+							int groupID = Integer.parseInt( fields[ImportManagerUtil.IDX_R1_GROUP + i] );
 							int progID = 0;
 							int appCatID = 0;
 							int loadNo = i + 1;
 							
-							for (int j = 0; j < appCats.size(); j++) {
-								LiteApplianceCategory liteAppCat = (LiteApplianceCategory) appCats.get(j);
-								for (int k = 0; k < liteAppCat.getPublishedPrograms().size(); k++) {
-									LiteLMProgramWebPublishing liteProg = (LiteLMProgramWebPublishing) liteAppCat.getPublishedPrograms().get(k);
-									for (int l = 0; l < liteProg.getGroupIDs().length; l++) {
-										if (liteProg.getGroupIDs()[l] == groupID) {
-											progID = liteProg.getProgramID();
-											appCatID = liteAppCat.getApplianceCategoryID();
+							for (int j = 0; j < enrProgs.getStarsApplianceCategoryCount(); j++) {
+								StarsApplianceCategory appCat = enrProgs.getStarsApplianceCategory(j);
+								for (int k = 0; k < appCat.getStarsEnrLMProgramCount(); k++) {
+									StarsEnrLMProgram program = appCat.getStarsEnrLMProgram(k);
+									for (int l = 0; l < program.getAddressingGroupCount(); l++) {
+										if (program.getAddressingGroup(l).getEntryID() == groupID) {
+											progID = program.getProgramID();
+											appCatID = appCat.getApplianceCategoryID();
 											break;
 										}
 									}
@@ -378,7 +379,7 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 						if (progList.size() > 0) {
 							int[][] programs = new int[ progList.size() ][];
 							progList.toArray( programs );
-							ImportManager.programSignUp( programs, liteAcctInfo, liteInv, energyCompany );
+							ImportManagerUtil.programSignUp( programs, liteAcctInfo, liteInv, energyCompany );
 							
 							int[] appIDs = new int[3];
 							for (int i = 0; i < programs.length; i++) {
@@ -396,8 +397,8 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 									throw new WebClientException("Cannot find appliance with RelayNum = " + loadNo);
 							}
 							
-							appIDMap.put( Integer.valueOf(fields[ImportManager.IDX_INV_ID]), appIDs );
-							fw.println(fields[ImportManager.IDX_INV_ID] + "," + appIDs[0] + "," + appIDs[1] + "," + appIDs[2]);
+							appIDMap.put( Integer.valueOf(fields[ImportManagerUtil.IDX_INV_ID]), appIDs );
+							fw.println(fields[ImportManagerUtil.IDX_INV_ID] + "," + appIDs[0] + "," + appIDs[1] + "," + appIDs[2]);
 							
 							numAppAdded += programs.length;
 						}
@@ -418,7 +419,7 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 					else if (e.getMessage().equals( ImportProblem.DEVICE_NAME_NOT_FOUND )) {
 						numDeviceNameNotFound++;
 						
-						if (fields[ImportManager.IDX_SERIAL_NO].length() > 0) {
+						if (fields[ImportManagerUtil.IDX_SERIAL_NO].length() > 0) {
 							if (devCarrSettings == null) {
 								devCarrSettings = new Hashtable();
 								
@@ -433,10 +434,10 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 								}
 							}
 							
-							Integer deviceID = (Integer) devCarrSettings.get( fields[ImportManager.IDX_SERIAL_NO] );
+							Integer deviceID = (Integer) devCarrSettings.get( fields[ImportManagerUtil.IDX_SERIAL_NO] );
 							if (deviceID != null) {
 								LiteYukonPAObject litePao = PAOFuncs.getLiteYukonPAO( deviceID.intValue() );
-								warnings2.add("Meter (import_inv_id=" + fields[ImportManager.IDX_INV_ID] + ",import_acct_id=" + fields[ImportManager.IDX_ACCOUNT_ID] + ",dev_name=" + fields[ImportManager.IDX_DEVICE_NAME] + ",serial_no=" + fields[ImportManager.IDX_SERIAL_NO]
+								warnings2.add("Meter (import_inv_id=" + fields[ImportManagerUtil.IDX_INV_ID] + ",import_acct_id=" + fields[ImportManagerUtil.IDX_ACCOUNT_ID] + ",dev_name=" + fields[ImportManagerUtil.IDX_DEVICE_NAME] + ",serial_no=" + fields[ImportManagerUtil.IDX_SERIAL_NO]
 										+ ") matches Yukon device (dev_id=" + deviceID + ",dev_name=" + litePao.getPaoName() + ") by serial number");
 							}
 						}
@@ -461,10 +462,10 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 			it = appFieldsList.listIterator();
 			while (it.hasNext()) {
 				String[] fields = (String[]) it.next();
-				position = "loadinfo file line #" + fields[ImportManager.IDX_LINE_NUM];
+				position = "loadinfo file line #" + fields[ImportManagerUtil.IDX_LINE_NUM];
 				
 				try {
-					Integer acctID = Integer.valueOf( fields[ImportManager.IDX_ACCOUNT_ID] );
+					Integer acctID = Integer.valueOf( fields[ImportManagerUtil.IDX_ACCOUNT_ID] );
 					LiteStarsCustAccountInformation liteAcctInfo = null;
 					
 					Object obj = acctIDMap.get(acctID);
@@ -482,8 +483,8 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 					if (liteAcctInfo == null)
 						throw new WebClientException("Cannot find customer account with id = " + acctID);
 					
-					Integer invID = Integer.valueOf( fields[ImportManager.IDX_INV_ID] );
-					int relayNum = Integer.parseInt( fields[ImportManager.IDX_RELAY_NUM] );
+					Integer invID = Integer.valueOf( fields[ImportManagerUtil.IDX_INV_ID] );
+					int relayNum = Integer.parseInt( fields[ImportManagerUtil.IDX_RELAY_NUM] );
 					int appID = 0;
 					
 					if (relayNum > 0) {
@@ -491,16 +492,16 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 						if (appIDs != null) appID = appIDs[relayNum - 1];
 					}
 					
-					if (appID > 0 && fields[ImportManager.IDX_AVAIL_FOR_CTRL].equalsIgnoreCase("Y"))
-						ImportManager.updateAppliance( fields, appID, liteAcctInfo, energyCompany );
+					if (appID > 0 && fields[ImportManagerUtil.IDX_AVAIL_FOR_CTRL].equalsIgnoreCase("Y"))
+						ImportManagerUtil.updateAppliance( fields, appID, liteAcctInfo, energyCompany );
 					else
-						ImportManager.newAppliance( fields, liteAcctInfo, energyCompany );
+						ImportManagerUtil.newAppliance( fields, liteAcctInfo, energyCompany );
 					
 					numAppImported++;
 					it.remove();
 					
-					if (fields[ImportManager.IDX_APP_CAT_DEF_ID].equals("")) continue;
-					int catDefID = Integer.parseInt( fields[ImportManager.IDX_APP_CAT_DEF_ID] );
+					if (fields[ImportManagerUtil.IDX_APP_CAT_DEF_ID].equals("")) continue;
+					int catDefID = Integer.parseInt( fields[ImportManagerUtil.IDX_APP_CAT_DEF_ID] );
 					
 					if (catDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_AIR_CONDITIONER)
 						numACImported++;
@@ -541,10 +542,10 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 			it = orderFieldsList.listIterator();
 			while (it.hasNext()) {
 				String[] fields = (String[]) it.next();
-				position = "workorder file line #" + fields[ImportManager.IDX_LINE_NUM];
+				position = "workorder file line #" + fields[ImportManagerUtil.IDX_LINE_NUM];
 				
 				try {
-					Integer acctID = Integer.valueOf( fields[ImportManager.IDX_ACCOUNT_ID] );
+					Integer acctID = Integer.valueOf( fields[ImportManagerUtil.IDX_ACCOUNT_ID] );
 					LiteStarsCustAccountInformation liteAcctInfo = null;
 					
 					if (acctID.intValue() > 0) {
@@ -564,7 +565,7 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 					}
 					
 					ImportProblem problem = new ImportProblem();
-					ImportManager.newServiceRequest(fields, liteAcctInfo, energyCompany, first, problem);
+					ImportManagerUtil.newServiceRequest(fields, liteAcctInfo, energyCompany, first, problem);
 					if (problem.getProblem() != null) {
 						warnings.add( "WARNING at " + position + ": " + problem.getProblem() );
 						if (warnings.size() > WARNING_NUM_LIMIT)
@@ -594,10 +595,10 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 			it = resFieldsList.listIterator();
 			while (it.hasNext()) {
 				String[] fields = (String[]) it.next();
-				position = "resinfo file line #" + fields[ImportManager.IDX_LINE_NUM];
+				position = "resinfo file line #" + fields[ImportManagerUtil.IDX_LINE_NUM];
 				
 				try {
-					Integer acctID = Integer.valueOf( fields[ImportManager.IDX_ACCOUNT_ID] );
+					Integer acctID = Integer.valueOf( fields[ImportManagerUtil.IDX_ACCOUNT_ID] );
 					LiteStarsCustAccountInformation liteAcctInfo = null;
 					
 					if (acctID.intValue() > 0) {
@@ -616,7 +617,7 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 							throw new WebClientException("Cannot find customer account with id=" + acctID.intValue());
 					}
 					
-					ImportManager.newResidenceInfo( fields, liteAcctInfo );
+					ImportManagerUtil.newResidenceInfo( fields, liteAcctInfo );
 					
 					numResAdded++;
 					it.remove();

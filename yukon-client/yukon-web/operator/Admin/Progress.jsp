@@ -34,8 +34,12 @@
 			task.getStatus() == TimeConsumingTask.STATUS_ERROR)
 		{
 			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, taskProgress);
-			if (task.getStatus() == TimeConsumingTask.STATUS_ERROR)
-				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, taskError);
+			if (task.getStatus() == TimeConsumingTask.STATUS_ERROR) {
+				if (taskError != null)
+					session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, taskError);
+				else
+					session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "An error occured during the operation.");
+			}
 			else if (task.getStatus() == TimeConsumingTask.STATUS_CANCELED)
 				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Operation is canceled by user");
 			

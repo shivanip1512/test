@@ -13,6 +13,7 @@ import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.database.Transaction;
+import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.stars.LiteLMCustomerEvent;
@@ -30,7 +31,6 @@ import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
-import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsFailure;
@@ -114,7 +114,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 			}
                 
 			int energyCompanyID = user.getEnergyCompanyID();
-			LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
+			LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( energyCompanyID );
 			
 			StarsUpdateThermostatSchedule updateSched = reqOper.getStarsUpdateThermostatSchedule();
 			StarsUpdateThermostatScheduleResponse resp = null;

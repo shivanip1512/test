@@ -9,6 +9,7 @@ import javax.xml.soap.SOAPMessage;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.database.Transaction;
+import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
@@ -17,8 +18,7 @@ import com.cannontech.database.db.stars.report.WorkOrderBase;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
-import com.cannontech.stars.web.servlet.SOAPServer;
-import com.cannontech.stars.web.servlet.WorkOrderManager;
+import com.cannontech.stars.web.util.WorkOrderManagerUtil;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsFailure;
@@ -54,8 +54,8 @@ public class UpdateServiceRequestAction implements ActionBase {
 			TimeZone tz = TimeZone.getTimeZone( ecSettings.getStarsEnergyCompany().getTimeZone() );
 			if (tz == null) tz = TimeZone.getDefault();
 			
-			StarsOperation operation = (StarsOperation) session.getAttribute(WorkOrderManager.STARS_WORK_ORDER_OPER_REQ);
-			session.removeAttribute( WorkOrderManager.STARS_WORK_ORDER_OPER_REQ );
+			StarsOperation operation = (StarsOperation) session.getAttribute(WorkOrderManagerUtil.STARS_WORK_ORDER_OPER_REQ);
+			session.removeAttribute( WorkOrderManagerUtil.STARS_WORK_ORDER_OPER_REQ );
 			if (operation == null)
 				operation = getRequestOperation( req, tz );
 			
@@ -89,7 +89,7 @@ public class UpdateServiceRequestAction implements ActionBase {
             }
             
         	LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) session.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
-        	LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+        	LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
         	
         	StarsUpdateServiceRequest updateOrder = reqOper.getStarsUpdateServiceRequest();
         	LiteWorkOrderBase liteOrder = energyCompany.getWorkOrderBase( updateOrder.getOrderID(), true );
@@ -191,7 +191,7 @@ public class UpdateServiceRequestAction implements ActionBase {
 		throws WebClientException
 	{
 		StarsUpdateServiceRequest updateOrder = new StarsUpdateServiceRequest();
-		WorkOrderManager.setStarsServiceRequest( updateOrder, req, tz );
+		WorkOrderManagerUtil.setStarsServiceRequest( updateOrder, req, tz );
 			
 		StarsOperation operation = new StarsOperation();
 		operation.setStarsUpdateServiceRequest( updateOrder );

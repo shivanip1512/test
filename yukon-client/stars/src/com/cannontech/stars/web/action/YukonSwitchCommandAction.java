@@ -14,6 +14,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
+import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.stars.LiteLMCustomerEvent;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
@@ -27,7 +28,6 @@ import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
-import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.SA205;
 import com.cannontech.stars.xml.serialize.StarsConfig;
@@ -128,7 +128,7 @@ public class YukonSwitchCommandAction implements ActionBase {
 				return SOAPUtil.buildSOAPMessage( respOper );
 			}
             
-			LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+			LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
             
 			StarsYukonSwitchCommand command = reqOper.getStarsYukonSwitchCommand();
 			StarsYukonSwitchCommandResponse cmdResp = new StarsYukonSwitchCommandResponse();

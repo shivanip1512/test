@@ -10,12 +10,12 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.WebClientException;
-import com.cannontech.stars.web.servlet.InventoryManager;
-import com.cannontech.stars.web.servlet.SOAPServer;
-import com.cannontech.stars.web.servlet.TimerTaskServlet;
+import com.cannontech.stars.web.util.InventoryManagerUtil;
+import com.cannontech.stars.web.util.TimerTaskUtil;
 import com.cannontech.util.ServletUtil;
 
 /**
@@ -55,7 +55,7 @@ public class DailyTimerTask extends StarsTimerTask {
 	public void run() {
 		CTILogger.debug( "*** Daily timer task start ***" );
 		
-		ArrayList companies = SOAPServer.getAllEnergyCompanies();
+		ArrayList companies = StarsDatabaseCache.getInstance().getAllEnergyCompanies();
 		if (companies == null) return;
 		
 		for (int i = 0; i < companies.size(); i++) {
@@ -63,7 +63,7 @@ public class DailyTimerTask extends StarsTimerTask {
 			if (ECUtils.isDefaultEnergyCompany( company )) continue;
 			
 			try {
-				InventoryManager.sendSwitchCommands( company, null );
+				InventoryManagerUtil.sendSwitchCommands( company, null );
 			}
 			catch (WebClientException e) {
 				CTILogger.debug( e.getMessage() );
@@ -74,7 +74,7 @@ public class DailyTimerTask extends StarsTimerTask {
 		}
 		
 		// Restart *frequently happened* timer tasks
-		TimerTaskServlet.restartFrequentTimerTasks();
+		TimerTaskUtil.restartFrequentTimerTasks();
 		
 		CTILogger.debug( "*** Daily timer task stop ***" );
 	}

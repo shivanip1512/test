@@ -13,12 +13,12 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
-import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.serialize.StarsServiceRequest;
 
 /**
@@ -108,7 +108,7 @@ public class WorkOrderBean {
 	 */
 	public LiteStarsEnergyCompany getEnergyCompany() {
 		if (energyCompany == null)
-			energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
+			energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( energyCompanyID );
 		return energyCompany;
 	}
 
@@ -122,7 +122,7 @@ public class WorkOrderBean {
 		if (getHtmlStyle() == HTML_STYLE_SEARCH_RESULTS)
 			workOrders = searchResults;
 		else
-			workOrders = getEnergyCompany().loadWorkOrders();
+			workOrders = getEnergyCompany().loadAllWorkOrders( true );
 		
 		java.util.TreeSet sortedOrders = null;
 		if (getSortBy() == YukonListEntryTypes.YUK_DEF_ID_SO_SORT_BY_ORDER_NO)

@@ -13,6 +13,7 @@ import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.SqlStatement;
+import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.cache.functions.EnergyCompanyFuncs;
 import com.cannontech.database.cache.functions.PAOFuncs;
@@ -28,7 +29,6 @@ import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.LiteWebConfiguration;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.stars.web.StarsYukonUser;
-import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.serialize.types.StarsLoginStatus;
 import com.cannontech.stars.xml.serialize.types.StarsThermoDaySettings;
 import com.cannontech.stars.xml.serialize.types.StarsThermoFanSettings;
@@ -323,7 +323,7 @@ public class ECUtils {
 	}
 	
 	public static boolean isDefaultEnergyCompany(LiteStarsEnergyCompany company) {
-		return company.getLiteID() == SOAPServer.DEFAULT_ENERGY_COMPANY_ID;
+		return company.getLiteID() == StarsDatabaseCache.DEFAULT_ENERGY_COMPANY_ID;
 	}
 
 	public static String getNotification(LiteContactNotification liteNotif) {
@@ -351,7 +351,7 @@ public class ECUtils {
 		if (liteProg.getDeviceID() > 0)
 			progName = PAOFuncs.getYukonPAOName( liteProg.getDeviceID() );
 		
-		LiteWebConfiguration liteConfig = SOAPServer.getWebConfiguration( liteProg.getWebSettingsID() );
+		LiteWebConfiguration liteConfig = StarsDatabaseCache.getInstance().getWebConfiguration( liteProg.getWebSettingsID() );
 		if (liteConfig != null) {
 			String[] dispNames = ServerUtils.splitString( liteConfig.getAlternateDisplayName(), "," );
 			if (dispNames.length > 0 && dispNames[0].length() > 0)
@@ -524,7 +524,7 @@ public class ECUtils {
 	public static ArrayList getLMHardwareInRange(LiteStarsEnergyCompany energyCompany, Integer devTypeID, Integer snFrom, Integer snTo) {
 		ArrayList hwList = new ArrayList();
 		
-		ArrayList inventory = energyCompany.loadAllInventory();
+		ArrayList inventory = energyCompany.loadAllInventory( true );
 		synchronized (inventory) {
 			for (int i = 0; i < inventory.size(); i++) {
 				if (!(inventory.get(i) instanceof LiteStarsLMHardware)) continue;

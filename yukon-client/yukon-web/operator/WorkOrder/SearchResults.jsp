@@ -1,6 +1,6 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.stars.web.bean.WorkOrderBean" %>
-<%@ page import="com.cannontech.stars.web.servlet.WorkOrderManager" %>
+<%@ page import="com.cannontech.stars.web.util.WorkOrderManagerUtil" %>
 
 <jsp:useBean id="searchRsltBean" class="com.cannontech.stars.web.bean.WorkOrderBean" scope="session">
 	<%-- this body is executed only if the bean is created --%>
@@ -54,12 +54,12 @@
 
 <%
 	if (errorMsg == null) {
-		String resultDesc = (String) session.getAttribute(WorkOrderManager.WORK_ORDER_SET_DESC);
+		String resultDesc = (String) session.getAttribute(WorkOrderManagerUtil.WORK_ORDER_SET_DESC);
 %>
               <span class="MainText"><%= resultDesc %></span><br>
               <br>
 <%
-		ArrayList searchResults = (ArrayList) session.getAttribute(WorkOrderManager.WORK_ORDER_SET);
+		ArrayList searchResults = (ArrayList) session.getAttribute(WorkOrderManagerUtil.WORK_ORDER_SET);
 		if (searchResults != null) {
 			searchRsltBean.setSearchResults(searchResults);
 %>

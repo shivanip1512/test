@@ -31,5 +31,8 @@
     <classpathentry kind="lib" path="/third-party/jfreereport.jar"/>
     <classpathentry kind="lib" path="/third-party/jradius-client.jar"/>
     <classpathentry kind="src" path="/report"/>
+    <classpathentry kind="src" path="/stars"/>
+    <classpathentry kind="lib" path="/third-party/commons-fileupload.jar"/>
+    <classpathentry kind="src" path="/dbeditor"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>

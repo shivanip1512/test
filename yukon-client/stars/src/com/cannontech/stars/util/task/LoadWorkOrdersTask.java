@@ -18,7 +18,7 @@ import com.cannontech.stars.util.WebClientException;
  * To change the template for this generated type comment go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-public class LoadInventoryTask implements TimeConsumingTask {
+public class LoadWorkOrdersTask implements TimeConsumingTask {
 
 	int status = STATUS_NOT_INIT;
 	boolean isCanceled = false;
@@ -26,10 +26,10 @@ public class LoadInventoryTask implements TimeConsumingTask {
 	
 	LiteStarsEnergyCompany energyCompany = null;
 	
-	int numInvTotal = 0;
-	int numInvLoaded = 0;
+	int numOrderTotal = 0;
+	int numOrderLoaded = 0;
 	
-	public LoadInventoryTask(LiteStarsEnergyCompany energyCompany) {
+	public LoadWorkOrdersTask(LiteStarsEnergyCompany energyCompany) {
 		this.energyCompany = energyCompany;
 	}
 	
@@ -61,8 +61,8 @@ public class LoadInventoryTask implements TimeConsumingTask {
 	 * @see com.cannontech.stars.util.task.TimeConsumingTask#getProgressMsg()
 	 */
 	public String getProgressMsg() {
-		if (numInvTotal > 0)
-			return numInvLoaded + " of " + numInvTotal + " hardwares loaded in inventory";
+		if (numOrderTotal > 0)
+			return numOrderLoaded + " of " + numOrderTotal + " work orders loaded";
 		return null;
 	}
 
@@ -86,16 +86,16 @@ public class LoadInventoryTask implements TimeConsumingTask {
 		status = STATUS_RUNNING;
 		
 		try {
-			String sql = "SELECT InventoryID FROM ECToInventoryMapping WHERE EnergyCompanyID = "
-					+ energyCompany.getEnergyCompanyID() + " AND InventoryID >= 0";
+			String sql = "SELECT WorkOrderID FROM ECToWorkOrderMapping WHERE EnergyCompanyID=" + energyCompany.getEnergyCompanyID();
 			SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
 			stmt.execute();
 			
-			numInvTotal = stmt.getRowCount();
-			for (numInvLoaded = 0; numInvLoaded < numInvTotal; numInvLoaded++) {
-				int invID = ((java.math.BigDecimal) stmt.getRow(numInvLoaded)[0]).intValue();
-				if (energyCompany.getInventoryBrief(invID, true) == null)
-					throw new WebClientException( "Failed to load inventory with id=" + invID );
+			numOrderTotal = stmt.getRowCount();
+			
+			for (int numOrderLoaded = 0; numOrderLoaded < numOrderTotal; numOrderLoaded++) {
+				int orderID = ((java.math.BigDecimal) stmt.getRow(numOrderLoaded)[0]).intValue();
+				if (energyCompany.getWorkOrderBase(orderID, true) == null)
+					throw new WebClientException( "Failed to load work order with id=" + orderID );
 				
 				if (isCanceled) {
 					status = STATUS_CANCELED;
@@ -103,10 +103,10 @@ public class LoadInventoryTask implements TimeConsumingTask {
 				}
 			}
 			
-			energyCompany.setInventoryLoaded( true );
+			energyCompany.setWorkOrdersLoaded( true );
 			status = STATUS_FINISHED;
 			
-			CTILogger.info( "All inventory loaded for energy company #" + energyCompany.getEnergyCompanyID() );
+			CTILogger.info( "All work orders loaded for energy company #" + energyCompany.getEnergyCompanyID() );
 		}
 		catch (Exception e) {
 			CTILogger.error( e.getMessage(), e );
@@ -115,7 +115,7 @@ public class LoadInventoryTask implements TimeConsumingTask {
 			if (e instanceof WebClientException)
 				errorMsg = e.getMessage();
 			else
-				errorMsg = "Failed to load inventory";
+				errorMsg = "Failed to load work orders";
 		}
 	}
 

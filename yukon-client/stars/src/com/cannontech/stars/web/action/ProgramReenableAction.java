@@ -11,6 +11,7 @@ import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.database.Transaction;
+import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.stars.LiteLMHardwareEvent;
 import com.cannontech.database.data.lite.stars.LiteLMProgramEvent;
@@ -27,7 +28,6 @@ import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
-import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.DeviceStatus;
 import com.cannontech.stars.xml.serialize.StarsAppliance;
@@ -104,7 +104,7 @@ public class ProgramReenableAction implements ActionBase {
             	return SOAPUtil.buildSOAPMessage( respOper );
         	}
 			
-        	energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+        	energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
 			OptOutEventQueue queue = energyCompany.getOptOutEventQueue();
             
             StarsProgramReenable reenable = reqOper.getStarsProgramReenable();
@@ -227,7 +227,7 @@ public class ProgramReenableAction implements ActionBase {
 						session.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
 	            
 				StarsYukonUser user = (StarsYukonUser) session.getAttribute(ServletUtils.ATT_STARS_YUKON_USER);
-				LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+				LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
 	            
 				parseResponse( resp, accountInfo, energyCompany );
             }

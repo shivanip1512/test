@@ -1,6 +1,5 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.stars.web.bean.InventoryBean" %>
-<%@ page import="com.cannontech.stars.web.servlet.InventoryManager" %>
 
 <jsp:useBean id="resultSetBean" class="com.cannontech.stars.web.bean.InventoryBean" scope="session"/>
 <jsp:setProperty name="resultSetBean" property="energyCompanyID" value="<%= user.getEnergyCompanyID() %>"/>
@@ -52,7 +51,7 @@
 
 <%
 	if (errorMsg == null) {
-		String resultDesc = (String) session.getAttribute(InventoryManager.INVENTORY_SET_DESC);
+		String resultDesc = (String) session.getAttribute(InventoryManagerUtil.INVENTORY_SET_DESC);
 %>
               <table width="80%" border="0" cellspacing="0" cellpadding="0">
                 <tr> 
@@ -60,7 +59,7 @@
                 </tr>
               </table>
 <%
-		ArrayList inventorySet = (ArrayList) session.getAttribute(InventoryManager.INVENTORY_SET);
+		ArrayList inventorySet = (ArrayList) session.getAttribute(InventoryManagerUtil.INVENTORY_SET);
 		if (inventorySet != null) {
 			resultSetBean.setInventorySet(inventorySet);
 %>

@@ -5,15 +5,12 @@ import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
-import com.cannontech.database.data.lite.stars.StarsLiteFactory;
-import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
-import com.cannontech.stars.web.servlet.SOAPClient;
-import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsFailure;
@@ -76,8 +73,8 @@ public class GetCustAccountAction implements ActionBase {
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
             
-            StarsYukonUser user = SOAPServer.getStarsYukonUser( liteUser );
-        	LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+            StarsYukonUser user = StarsDatabaseCache.getInstance().getStarsYukonUser( liteUser );
+        	LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
         	
             StarsGetCustomerAccount getAccount = reqOper.getStarsGetCustomerAccount();
             LiteStarsCustAccountInformation liteAcctInfo = null;
@@ -110,13 +107,8 @@ public class GetCustAccountAction implements ActionBase {
 			session.setAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, liteAcctInfo );
     		
     		StarsCustAccountInformation starsAcctInfo = null;
-    		if (SOAPServer.isClientLocal()) {
-    			starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteAcctInfo );
-				session.setAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, starsAcctInfo );
-    		}
-        	else
-				starsAcctInfo = StarsLiteFactory.createStarsCustAccountInformation(
-					liteAcctInfo, energyCompany, ECUtils.isOperator(user) );
+			starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteAcctInfo );
+			session.setAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, starsAcctInfo );
 			
 			StarsGetCustomerAccountResponse resp = new StarsGetCustomerAccountResponse();
 			resp.setStarsCustAccountInformation( starsAcctInfo );
@@ -156,9 +148,6 @@ public class GetCustAccountAction implements ActionBase {
             StarsGetCustomerAccountResponse resp = operation.getStarsGetCustomerAccountResponse();
             StarsCustAccountInformation accountInfo = resp.getStarsCustAccountInformation();
             if (accountInfo == null) return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
-			
-			if (!SOAPClient.isServerLocal())
-				session.setAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, accountInfo );
             
             return 0;
         }

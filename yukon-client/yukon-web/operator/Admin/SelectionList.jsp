@@ -4,7 +4,7 @@
 <%
 	String listName = request.getParameter("List");
 	YukonSelectionList list = liteEC.getYukonSelectionList(listName);
-	YukonSelectionList dftList = SOAPServer.getDefaultEnergyCompany().getYukonSelectionList(listName);
+	YukonSelectionList dftList = StarsDatabaseCache.getInstance().getDefaultEnergyCompany().getYukonSelectionList(listName);
 	if (dftList == null) dftList = new YukonSelectionList();
 	
 	boolean isOptOutPeriod = listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD);

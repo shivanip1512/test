@@ -1,8 +1,8 @@
 <%@ include file="include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.common.constants.YukonSelectionList" %>
-<%@ page import="com.cannontech.stars.web.servlet.ImportManager" %>
+<%@ page import="com.cannontech.stars.web.util.ImportManagerUtil" %>
 <%
-	Hashtable unassignedLists = (Hashtable) session.getAttribute(ImportManager.UNASSIGNED_LISTS);
+	Hashtable unassignedLists = (Hashtable) session.getAttribute(ImportManagerUtil.UNASSIGNED_LISTS);
 	boolean hasUnassigned = false;
 %>
 <html>
@@ -55,9 +55,9 @@
 			  <input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/operator/Consumer/ImportAccount.jsp">
               <table width="300" border="0" cellspacing="0" cellpadding="3" align="center" class="MainText">
 <%
-	for (int i = 0; i < ImportManager.LIST_NAMES.length; i++) {
-		String listName = ImportManager.LIST_NAMES[i][0];
-		String dispName = ImportManager.LIST_NAMES[i][1];
+	for (int i = 0; i < ImportManagerUtil.LIST_NAMES.length; i++) {
+		String listName = ImportManagerUtil.LIST_NAMES[i][0];
+		String dispName = ImportManagerUtil.LIST_NAMES[i][1];
 		
 		if (unassignedLists.get(listName) == null) continue;
 		

@@ -8,6 +8,7 @@ import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.Transaction;
+import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
 import com.cannontech.database.data.lite.stars.LiteLMProgramWebPublishing;
@@ -15,7 +16,6 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.task.SendControlOddsTask;
 import com.cannontech.stars.web.StarsYukonUser;
-import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.ChanceOfControl;
 import com.cannontech.stars.xml.serialize.StarsApplianceCategory;
@@ -110,7 +110,7 @@ public class SendOddsForControlAction implements ActionBase {
 			}
             
 			int energyCompanyID = user.getEnergyCompanyID();
-			LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
+			LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( energyCompanyID );
             
 			ArrayList appCatList = energyCompany.getAllApplianceCategories();
 			StarsSendOddsForControl sendCtrlOdds = reqOper.getStarsSendOddsForControl();

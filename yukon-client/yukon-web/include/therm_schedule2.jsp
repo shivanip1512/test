@@ -20,7 +20,7 @@
 		}
 	}
 	else {
-		dftThermoProgram = SOAPServer.getDefaultEnergyCompany().getStarsDefaultThermostatSchedules().getStarsThermostatProgram(0);
+		dftThermoProgram = StarsDatabaseCache.getInstance().getDefaultEnergyCompany().getStarsDefaultThermostatSchedules().getStarsThermostatProgram(0);
 	}
 
 	StarsThermoDaySettings daySetting = null;

@@ -1,9 +1,10 @@
-package com.cannontech.stars.servletutils;
+package com.cannontech.servlet.logic;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.database.cache.functions.EnergyCompanyFuncs;
 import com.cannontech.database.cache.functions.YukonUserFuncs;
@@ -13,8 +14,6 @@ import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
-import com.cannontech.servlet.logic.RequestPword;
-import com.cannontech.stars.web.servlet.SOAPServer;
 
 /**
  * @author rneuharth
@@ -63,7 +62,7 @@ public class StarsRequestPword extends RequestPword
 				//we may continue after this, remove all the stored data
 				foundData.clear();
 				
-				List engrComps = SOAPServer.getAllEnergyCompanies();
+				List engrComps = StarsDatabaseCache.getInstance().getAllEnergyCompanies();
 				LiteStarsEnergyCompany eComp = null;
 				ArrayList allCustAccts = new ArrayList(8);
 

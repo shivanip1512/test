@@ -1,7 +1,7 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.database.cache.functions.PAOFuncs" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonGroup" %>
-<%@ page import="com.cannontech.stars.web.servlet.StarsAdmin" %>
+<%@ page import="com.cannontech.stars.web.util.StarsAdminUtil" %>
 <%
 	String action = request.getParameter("action");
 	if (action == null) action = "";
@@ -11,19 +11,19 @@
 	
 	if (action.equalsIgnoreCase("init")) {
 		// Remove all saved form fields
-		session.removeAttribute(StarsAdmin.ENERGY_COMPANY_TEMP);
+		session.removeAttribute(StarsAdminUtil.ENERGY_COMPANY_TEMP);
 		session.removeAttribute(ServletUtils.ATT_LAST_SUBMITTED_REQUEST);
 	}
 	else if (action.equalsIgnoreCase("EditAddress")) {
 		// Save all form fields
-		StarsEnergyCompany ecTemp = (StarsEnergyCompany) session.getAttribute(StarsAdmin.ENERGY_COMPANY_TEMP);
+		StarsEnergyCompany ecTemp = (StarsEnergyCompany) session.getAttribute(StarsAdminUtil.ENERGY_COMPANY_TEMP);
 		if (ecTemp == null) {
 			ecTemp = new StarsEnergyCompany();
 			if (energyCompany.getCompanyAddress().getAddressID() == 0)
 				ecTemp.setCompanyAddress( (CompanyAddress)StarsFactory.newStarsCustomerAddress(CompanyAddress.class) );
 			else
 				ecTemp.setCompanyAddress( energyCompany.getCompanyAddress() );
-			session.setAttribute(StarsAdmin.ENERGY_COMPANY_TEMP, ecTemp);
+			session.setAttribute(StarsAdminUtil.ENERGY_COMPANY_TEMP, ecTemp);
 		}
 		
 		ecTemp.setCompanyName( request.getParameter("CompanyName") );
@@ -38,7 +38,7 @@
 		return;
 	}
 	else {
-		ec = (StarsEnergyCompany) session.getAttribute(StarsAdmin.ENERGY_COMPANY_TEMP);
+		ec = (StarsEnergyCompany) session.getAttribute(StarsAdminUtil.ENERGY_COMPANY_TEMP);
 		savedReq = (Properties) session.getAttribute(ServletUtils.ATT_LAST_SUBMITTED_REQUEST);
 		session.removeAttribute(ServletUtils.ATT_LAST_SUBMITTED_REQUEST);
 	}

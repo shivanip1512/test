@@ -144,53 +144,47 @@
 	</servlet>
 	<!-- STARS specific configs -->
 	<servlet>
-		<servlet-name>SOAPServer</servlet-name>
-		<display-name>SOAPServer</display-name>
-		<description>Parse the request SOAP message and send back SOAP response.</description>
-		<servlet-class>com.cannontech.stars.web.servlet.SOAPServer</servlet-class>
-	</servlet>
-	<servlet>
 		<servlet-name>SOAPClient</servlet-name>
 		<display-name>SOAPClient</display-name>
-		<description>Send SOAP request to server and parse respones from server.</description>
-		<servlet-class>com.cannontech.stars.web.servlet.SOAPClient</servlet-class>
+		<description>Handles all requests from consumer information module.</description>
+		<servlet-class>com.cannontech.servlet.SOAPClient</servlet-class>
 	</servlet>
 	<servlet>
 		<servlet-name>StarsAdmin</servlet-name>
 		<display-name>StarsAdmin</display-name>
-		<description>Administration functions for consumer information.</description>
-		<servlet-class>com.cannontech.stars.web.servlet.StarsAdmin</servlet-class>
+		<description>Administration functions for STARS.</description>
+		<servlet-class>com.cannontech.servlet.StarsAdmin</servlet-class>
 	</servlet>
 	<servlet>
 		<servlet-name>InventoryManager</servlet-name>
 		<display-name>InventoryManager</display-name>
 		<description>Inventory management</description>
-		<servlet-class>com.cannontech.stars.web.servlet.InventoryManager</servlet-class>
+		<servlet-class>com.cannontech.servlet.InventoryManager</servlet-class>
 	</servlet>
 	<servlet>
 		<servlet-name>WorkOrderManager</servlet-name>
 		<display-name>WorkOrderManager</display-name>
 		<description>Work order management</description>
-		<servlet-class>com.cannontech.stars.web.servlet.WorkOrderManager</servlet-class>
+		<servlet-class>com.cannontech.servlet.WorkOrderManager</servlet-class>
 	</servlet>
 	<servlet>
 		<servlet-name>StarsPWordRequest</servlet-name>
 		<display-name>StarsPWordRequest</display-name>
 		<description>Allows a user to request a password via email.</description>
-		<servlet-class>com.cannontech.stars.web.servlet.StarsPWordRequest</servlet-class>
+		<servlet-class>com.cannontech.servlet.StarsPWordRequest</servlet-class>
 	</servlet>
 	<servlet>
 		<servlet-name>TimerTaskServlet</servlet-name>
 		<display-name>TimerTaskServlet</display-name>
-		<description>Start periodical tasks when the web server starts.</description>
-		<servlet-class>com.cannontech.stars.web.servlet.TimerTaskServlet</servlet-class>
+		<description>Manages tasks that are executed periodically.</description>
+		<servlet-class>com.cannontech.servlet.TimerTaskServlet</servlet-class>
 		<load-on-startup>6</load-on-startup>
 	</servlet>
 	<servlet>
 		<servlet-name>ImportManager</servlet-name>
 		<display-name>ImportManager</display-name>
 		<description>Customer accounts importing management.</description>
-		<servlet-class>com.cannontech.stars.web.servlet.ImportManager</servlet-class>
+		<servlet-class>com.cannontech.servlet.ImportManager</servlet-class>
 	</servlet>
 	<!-- STARS specific configs -->
 	<!-- CapControl specific configs -->

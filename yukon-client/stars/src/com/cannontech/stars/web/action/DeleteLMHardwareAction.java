@@ -11,6 +11,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.Transaction;
+import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
@@ -22,8 +23,7 @@ import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
-import com.cannontech.stars.web.servlet.InventoryManager;
-import com.cannontech.stars.web.servlet.SOAPServer;
+import com.cannontech.stars.web.util.InventoryManagerUtil;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.StarsAppliance;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
@@ -67,8 +67,8 @@ public class DeleteLMHardwareAction implements ActionBase {
 			}
 			else {
 				// Request redirected from InventoryManager
-				operation = (StarsOperation) session.getAttribute(InventoryManager.STARS_INVENTORY_OPERATION);
-				session.removeAttribute( InventoryManager.STARS_INVENTORY_OPERATION );
+				operation = (StarsOperation) session.getAttribute(InventoryManagerUtil.STARS_INVENTORY_OPERATION);
+				session.removeAttribute( InventoryManagerUtil.STARS_INVENTORY_OPERATION );
 			}
 			
 			return SOAPUtil.buildSOAPMessage( operation );
@@ -97,7 +97,7 @@ public class DeleteLMHardwareAction implements ActionBase {
 				return SOAPUtil.buildSOAPMessage( respOper );
 			}
         	
-			LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+			LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
         	
 			StarsDeleteLMHardware delHw = reqOper.getStarsDeleteLMHardware();
 			LiteInventoryBase liteInv = energyCompany.getInventory( delHw.getInventoryID(), true );

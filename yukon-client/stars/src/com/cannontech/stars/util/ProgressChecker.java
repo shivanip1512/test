@@ -41,10 +41,15 @@ public class ProgressChecker {
 	
 	public static synchronized TimeConsumingTask getTask(long id) {
 		TimeConsumingTask task = (TimeConsumingTask) tasks.get( new Long(id) );
-		if (task != null && task.getStatus() == TimeConsumingTask.STATUS_CANCELING) {
+		if (task != null) {
 			Thread t = (Thread) threads.get( new Long(id) );
-			if (t != null && !t.isAlive())
-				task.setStatus( TimeConsumingTask.STATUS_CANCELED );
+			if (t != null && !t.isAlive()) {
+				if (task.getStatus() == TimeConsumingTask.STATUS_CANCELING)
+					task.setStatus( TimeConsumingTask.STATUS_CANCELED );
+				else if (task.getStatus() != TimeConsumingTask.STATUS_CANCELED
+					&& task.getStatus() != TimeConsumingTask.STATUS_FINISHED)
+					task.setStatus( TimeConsumingTask.STATUS_ERROR);
+			}
 		}
 		
 		return task;

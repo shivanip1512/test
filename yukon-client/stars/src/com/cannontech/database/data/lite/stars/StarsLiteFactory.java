@@ -14,6 +14,7 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.YukonListFuncs;
@@ -36,7 +37,6 @@ import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.OptOutEventQueue;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
-import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.*;
 import com.cannontech.stars.xml.serialize.types.StarsCtrlHistPeriod;
@@ -2024,7 +2024,7 @@ public class StarsLiteFactory {
 		starsAppCat.setInherited( liteAppCat.getDirectOwner() != energyCompany );
 		starsAppCat.setDescription( ServerUtils.forceNotNull(liteAppCat.getDescription()) );
 		
-		LiteWebConfiguration liteConfig = SOAPServer.getWebConfiguration( liteAppCat.getWebConfigurationID() );
+		LiteWebConfiguration liteConfig = StarsDatabaseCache.getInstance().getWebConfiguration( liteAppCat.getWebConfigurationID() );
 		StarsWebConfig starsConfig = createStarsWebConfig( liteConfig );
 		starsAppCat.setStarsWebConfig( starsConfig );
 		
@@ -2037,7 +2037,7 @@ public class StarsLiteFactory {
 			if (liteProg.getDeviceID() > 0)
 				starsProg.setYukonName( PAOFuncs.getYukonPAOName(liteProg.getDeviceID()) );
 			
-			liteConfig = SOAPServer.getWebConfiguration( liteProg.getWebSettingsID() );
+			liteConfig = StarsDatabaseCache.getInstance().getWebConfiguration( liteProg.getWebSettingsID() );
 			starsProg.setStarsWebConfig( createStarsWebConfig(liteConfig) );
 			
 			setAddressingGroups( starsProg, liteProg );

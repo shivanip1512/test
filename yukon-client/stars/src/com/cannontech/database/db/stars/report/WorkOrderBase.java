@@ -5,6 +5,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.stars.util.ServerUtils;
 
 
 /**
@@ -131,7 +132,8 @@ public class WorkOrderBase extends DBPersistent {
     
 	public static int[] searchByOrderNumber(String orderNo, int energyCompanyID) {
 		String sql = "SELECT OrderID FROM " + TABLE_NAME + " wo, ECToWorkOrderMapping map " +
-				"WHERE UPPER(OrderNumber) = UPPER(?) AND wo.OrderID = map.WorkOrderID AND map.EnergyCompanyID = ?";
+				"WHERE (UPPER(OrderNumber) = UPPER(?) OR UPPER(OrderNumber) = UPPER(?)) " +
+				"AND wo.OrderID = map.WorkOrderID AND map.EnergyCompanyID = ?";
 		
 		java.sql.Connection conn = null;
 		java.sql.PreparedStatement stmt = null;
@@ -142,7 +144,8 @@ public class WorkOrderBase extends DBPersistent {
 			
 			stmt = conn.prepareStatement( sql );
 			stmt.setString(1, orderNo);
-			stmt.setInt(2, energyCompanyID);
+			stmt.setString(2, ServerUtils.AUTO_GEN_NUM_PREC + orderNo);
+			stmt.setInt(3, energyCompanyID);
 			
 			rset = stmt.executeQuery();
 	    	

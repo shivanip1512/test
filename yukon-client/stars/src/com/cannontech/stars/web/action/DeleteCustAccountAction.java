@@ -9,6 +9,7 @@ import javax.xml.soap.SOAPMessage;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
+import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
@@ -20,7 +21,6 @@ import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
-import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsDeleteCustomerAccount;
@@ -89,7 +89,7 @@ public class DeleteCustAccountAction implements ActionBase {
 				return SOAPUtil.buildSOAPMessage( respOper );
 			}
         	
-			LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+			LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
 			
 			StarsDeleteCustomerAccount delAccount = SOAPUtil.parseSOAPMsgForOperation(reqMsg).getStarsDeleteCustomerAccount();
 			if (delAccount.getDisableReceivers()) {

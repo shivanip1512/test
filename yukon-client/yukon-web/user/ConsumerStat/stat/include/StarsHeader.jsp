@@ -5,6 +5,7 @@
 
 <%@ page import="com.cannontech.common.constants.YukonListEntryTypes" %>
 <%@ page import="com.cannontech.common.constants.YukonSelectionListDefs" %>
+<%@ page import="com.cannontech.database.cache.StarsDatabaseCache" %>
 <%@ page import="com.cannontech.database.cache.functions.AuthFuncs" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany" %>
@@ -17,7 +18,6 @@
 <%@ page import="com.cannontech.stars.util.ServletUtils" %>
 <%@ page import="com.cannontech.stars.web.StarsYukonUser" %>
 <%@ page import="com.cannontech.stars.web.action.*" %>
-<%@ page import="com.cannontech.stars.web.servlet.SOAPServer" %>
 <%@ page import="com.cannontech.stars.xml.serialize.*" %>
 <%@ page import="com.cannontech.stars.xml.serialize.types.*" %>
 <%@ page import="com.cannontech.stars.xml.util.SOAPUtil" %>
@@ -35,7 +35,7 @@
 			// Stars user doesn't match the yukon user, clear it
 			user = null;
 		}
-		else if (user != SOAPServer.getStarsYukonUser(lYukonUser)) {
+		else if (user != StarsDatabaseCache.getInstance().getStarsYukonUser(lYukonUser)) {
 			// User login no longer valid
 			response.sendRedirect(request.getContextPath() + "/servlet/LoginController?ACTION=LOGOUT");
 			return;
@@ -44,7 +44,7 @@
 	
 	if (user == null) {
 		// This is logged in using the normal LoginController, not the StarsLoginController
-		user = SOAPServer.getStarsYukonUser( lYukonUser );
+		user = StarsDatabaseCache.getInstance().getStarsYukonUser( lYukonUser );
 		if (user == null) {
 			// Something wrong happened when instantiating the StarsYukonUser
 			response.sendRedirect(request.getContextPath() + "/servlet/LoginController?ACTION=LOGOUT");
@@ -79,7 +79,7 @@
 	String confirmMsg = (String) session.getAttribute(ServletUtils.ATT_CONFIRM_MESSAGE);
 	session.removeAttribute(ServletUtils.ATT_CONFIRM_MESSAGE);
 	
-	LiteStarsEnergyCompany liteEC = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+	LiteStarsEnergyCompany liteEC = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
 	
 	StarsEnergyCompanySettings ecSettings = (StarsEnergyCompanySettings)
 			session.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );

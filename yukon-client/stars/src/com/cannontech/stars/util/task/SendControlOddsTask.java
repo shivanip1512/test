@@ -5,6 +5,7 @@ import java.util.StringTokenizer;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.lite.LiteContact;
@@ -15,7 +16,6 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.stars.util.ECUtils;
-import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.tools.email.EmailMessage;
 import com.cannontech.util.ServletUtil;
 
@@ -41,7 +41,7 @@ public class SendControlOddsTask implements Runnable {
 	public void run() {
 		CTILogger.info( "*** Start SendControlOdds task ***" );
 		
-		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
+		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( energyCompanyID );
 		
 		String LINE_SEPARATOR = System.getProperty("line.separator");
 		String blanks = "                                ";

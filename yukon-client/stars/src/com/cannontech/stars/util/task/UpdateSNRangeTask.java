@@ -15,6 +15,7 @@ import javax.servlet.http.HttpSession;
 import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.Transaction;
+import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -24,8 +25,7 @@ import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
-import com.cannontech.stars.web.servlet.InventoryManager;
-import com.cannontech.stars.web.servlet.SOAPServer;
+import com.cannontech.stars.web.util.InventoryManagerUtil;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsInventory;
 
@@ -99,7 +99,7 @@ public class UpdateSNRangeTask implements TimeConsumingTask {
 	public String getProgressMsg() {
 		if (numToBeUpdated > 0) {
 			if (status == STATUS_FINISHED && numFailure == 0) {
-				String snRange = InventoryManager.getSNRange( snFrom, snTo );
+				String snRange = InventoryManagerUtil.getSNRange( snFrom, snTo );
 				if (snRange != null)
 					snRange = "The serial numbers " + snRange;
 				else
@@ -133,7 +133,7 @@ public class UpdateSNRangeTask implements TimeConsumingTask {
 		HttpSession session = request.getSession(false);
 		StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 		
-		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
 		int categoryID = ECUtils.getInventoryCategoryID( devTypeID.intValue(), energyCompany );
 		
 		status = STATUS_RUNNING;
@@ -230,7 +230,7 @@ public class UpdateSNRangeTask implements TimeConsumingTask {
 			}
 		}
 		
-		String snRange = InventoryManager.getSNRange( snFrom, snTo );
+		String snRange = InventoryManagerUtil.getSNRange( snFrom, snTo );
 		if (snRange == null) snRange = "all serial numbers";
 		String logMsg = "Serial Range:" + snRange
 				+ ",Old Device Type:" + YukonListFuncs.getYukonListEntry(devTypeID.intValue()).getEntryText();
@@ -239,15 +239,15 @@ public class UpdateSNRangeTask implements TimeConsumingTask {
 		ActivityLogger.logEvent( user.getUserID(), ActivityLogActions.INVENTORY_UPDATE_RANGE, logMsg );
 		
 		status = STATUS_FINISHED;
-		session.removeAttribute( InventoryManager.INVENTORY_SET );
+		session.removeAttribute( InventoryManagerUtil.INVENTORY_SET );
 		
 		if (numFailure > 0) {
 			String resultDesc = "<span class='ConfirmMsg'>" + numSuccess + " hardwares updated successfully.</span><br>" +
 					"<span class='ErrorMsg'>" + numFailure + " hardwares failed (listed below).<br>" +
 					"Those serial numbers may already exist in the new device type.</span><br>";
 			
-			session.setAttribute(InventoryManager.INVENTORY_SET_DESC, resultDesc);
-			session.setAttribute(InventoryManager.INVENTORY_SET, hardwareSet);
+			session.setAttribute(InventoryManagerUtil.INVENTORY_SET_DESC, resultDesc);
+			session.setAttribute(InventoryManagerUtil.INVENTORY_SET, hardwareSet);
 			session.setAttribute(ServletUtils.ATT_REDIRECT, request.getContextPath() + "/operator/Hardware/ResultSet.jsp");
 		}
 	}

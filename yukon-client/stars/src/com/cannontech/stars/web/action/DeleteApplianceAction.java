@@ -9,6 +9,7 @@ import javax.xml.soap.SOAPMessage;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.database.Transaction;
+import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteLMProgramEvent;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
@@ -25,7 +26,6 @@ import com.cannontech.database.db.stars.appliance.ApplianceStorageHeat;
 import com.cannontech.database.db.stars.appliance.ApplianceWaterHeater;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
-import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.StarsAppliance;
 import com.cannontech.stars.xml.serialize.StarsAppliances;
@@ -173,7 +173,7 @@ public class DeleteApplianceAction implements ActionBase {
     		
 			if (unenrollProgram) {
 				// Add "termination" event to the enrolled program
-				LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+				LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
 				
 				com.cannontech.database.data.stars.event.LMProgramEvent event =
 						new com.cannontech.database.data.stars.event.LMProgramEvent();

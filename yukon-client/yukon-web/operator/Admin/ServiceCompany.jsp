@@ -1,5 +1,5 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
-<%@ page import="com.cannontech.stars.web.servlet.StarsAdmin" %>
+<%@ page import="com.cannontech.stars.web.util.StarsAdminUtil" %>
 <%
 	StarsServiceCompany company = null;
 	int compIdx = Integer.parseInt( request.getParameter("Company") );
@@ -20,10 +20,10 @@
 	if (action == null) action = "";
 	
 	if (action.equalsIgnoreCase("init")) {
-		session.removeAttribute(StarsAdmin.SERVICE_COMPANY_TEMP);
+		session.removeAttribute(StarsAdminUtil.SERVICE_COMPANY_TEMP);
 	}
 	else if (action.equalsIgnoreCase("EditAddress")) {
-		StarsServiceCompany scTemp = (StarsServiceCompany) session.getAttribute(StarsAdmin.SERVICE_COMPANY_TEMP);
+		StarsServiceCompany scTemp = (StarsServiceCompany) session.getAttribute(StarsAdminUtil.SERVICE_COMPANY_TEMP);
 		if (scTemp == null) {
 			scTemp = new StarsServiceCompany();
 			if (company.getCompanyAddress().getAddressID() == 0)
@@ -34,7 +34,7 @@
 				scTemp.setPrimaryContact( (PrimaryContact)StarsFactory.newStarsCustomerContact(PrimaryContact.class) );
 			else
 				scTemp.setPrimaryContact( (PrimaryContact)StarsFactory.newStarsCustomerContact(company.getPrimaryContact(), PrimaryContact.class) );
-			session.setAttribute(StarsAdmin.SERVICE_COMPANY_TEMP, scTemp);
+			session.setAttribute(StarsAdminUtil.SERVICE_COMPANY_TEMP, scTemp);
 		}
 		
 		scTemp.setCompanyName( request.getParameter("CompanyName") );
@@ -47,7 +47,7 @@
 		return;
 	}
 	
-	StarsServiceCompany sc = (StarsServiceCompany) session.getAttribute(StarsAdmin.SERVICE_COMPANY_TEMP);
+	StarsServiceCompany sc = (StarsServiceCompany) session.getAttribute(StarsAdminUtil.SERVICE_COMPANY_TEMP);
 	if (sc == null) sc = company;
 	
 	String address = ServletUtils.getOneLineAddress(sc.getCompanyAddress());

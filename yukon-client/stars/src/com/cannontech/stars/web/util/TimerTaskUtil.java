@@ -1,18 +1,12 @@
 /*
- * Created on Jan 28, 2004
+ * Created on Nov 10, 2004
  *
  * To change the template for this generated file go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-package com.cannontech.stars.web.servlet;
+package com.cannontech.stars.web.util;
 
-import java.io.IOException;
 import java.util.Timer;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.stars.util.task.DailyTimerTask;
@@ -26,40 +20,13 @@ import com.cannontech.stars.util.task.StarsTimerTask;
  * To change the template for this generated type comment go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-public class TimerTaskServlet extends HttpServlet {
-    
+public class TimerTaskUtil {
+
 	// Timer object for less frequently happened tasks
 	private static Timer timer1 = null;
 	// Timer object for frequently happened tasks
 	private static Timer timer2 = null;
-
-	/* (non-Javadoc)
-	 * @see javax.servlet.GenericServlet#init()
-	 */
-	public void init() throws ServletException {
-		super.init();
-		
-		timer1 = new Timer();
-		runTimerTask( new DailyTimerTask(), timer1 );
-		
-		timer2 = new Timer();
-		runTimerTask( new HourlyTimerTask(), timer2 );
-		runTimerTask( new RefreshTimerTask(), timer2 );
-		
-		CTILogger.info("All timer tasks started");
-	}
-
-	/* (non-Javadoc)
-	 * @see javax.servlet.http.HttpServlet#service(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
-	 */
-	protected void service(HttpServletRequest req, HttpServletResponse resp)
-		throws ServletException, IOException
-	{
-		if (req.getParameter("Restart") != null)
-			restartAllTimerTasks();
-		resp.getWriter().println("All timer tasks restarted");
-	}
-    
+	
 	private static void runTimerTask(StarsTimerTask timerTask, Timer timer) {
 		if (timerTask.isFixedRate()) {
 			// Run the first time after the initial delay,
@@ -96,5 +63,4 @@ public class TimerTaskServlet extends HttpServlet {
 		
 		CTILogger.info("All timer tasks restarted");
 	}
-
 }

@@ -12,7 +12,7 @@
 	}
 	
 	String referer = (String) session.getAttribute(ServletUtils.ATT_REFERRER2);
-	int mctCatID = SOAPServer.getEnergyCompany(user.getEnergyCompanyID()).getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_INV_CAT_MCT).getEntryID();
+	int mctCatID = StarsDatabaseCache.getInstance().getEnergyCompany(user.getEnergyCompanyID()).getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_INV_CAT_MCT).getEntryID();
 %>
 
 <jsp:useBean id="mctBean" class="com.cannontech.stars.web.bean.DeviceBean" scope="session">

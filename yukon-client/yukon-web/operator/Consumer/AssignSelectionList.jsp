@@ -1,12 +1,12 @@
 <%@ include file="include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.common.constants.YukonSelectionList" %>
 <%@ page import="com.cannontech.common.constants.YukonListEntry" %>
-<%@ page import="com.cannontech.stars.web.servlet.ImportManager" %>
+<%@ page import="com.cannontech.stars.web.util.ImportManagerUtil" %>
 <%
 	String listName = request.getParameter("List");
 	YukonSelectionList list = liteEC.getYukonSelectionList(listName);
 	
-	Hashtable preprocessedData = (Hashtable) session.getAttribute(ImportManager.PREPROCESSED_DATA);
+	Hashtable preprocessedData = (Hashtable) session.getAttribute(ImportManagerUtil.PREPROCESSED_DATA);
 	TreeMap valueIDMap = (TreeMap) preprocessedData.get(listName);
 	
 	boolean updateAvail = (list != null) && list.getUserUpdateAvailable().equalsIgnoreCase("Y") || listName.equals("ServiceCompany");

@@ -5,6 +5,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
@@ -13,7 +14,6 @@ import com.cannontech.stars.util.OptOutEventQueue;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.web.action.ProgramOptOutAction;
 import com.cannontech.stars.web.action.ProgramReenableAction;
-import com.cannontech.stars.web.servlet.SOAPServer;
 
 /**
  * @author yao
@@ -56,7 +56,7 @@ public class HourlyTimerTask extends StarsTimerTask {
 		CTILogger.debug( "*** Hourly timer task start ***" );
 		
 		/* Check for opted out programs that should be reactivated */
-		ArrayList companies = SOAPServer.getAllEnergyCompanies();
+		ArrayList companies = StarsDatabaseCache.getInstance().getAllEnergyCompanies();
 		if (companies == null) return;
 		
 		Date now = new Date();

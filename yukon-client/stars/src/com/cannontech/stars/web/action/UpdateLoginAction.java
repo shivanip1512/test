@@ -9,6 +9,7 @@ import javax.xml.soap.SOAPMessage;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
+import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.database.cache.functions.YukonUserFuncs;
@@ -24,7 +25,6 @@ import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
-import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsFailure;
@@ -91,7 +91,7 @@ public class UpdateLoginAction implements ActionBase {
 				return SOAPUtil.buildSOAPMessage( respOper );
 			}
             
-			LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+			LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
 			LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation)
 					session.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
             
@@ -236,7 +236,7 @@ public class UpdateLoginAction implements ActionBase {
 		yukonUser.setUserID( new Integer(userID) );
 		Transaction.createTransaction(Transaction.DELETE, yukonUser).execute();
 		
-		SOAPServer.deleteStarsYukonUser( userID );
+		StarsDatabaseCache.getInstance().deleteStarsYukonUser( userID );
 		ServerUtils.handleDBChange( YukonUserFuncs.getLiteYukonUser(userID), DBChangeMsg.CHANGE_TYPE_DELETE );
 	}
 	

@@ -1,4 +1,4 @@
-package com.cannontech.stars.web.servlet;
+package com.cannontech.servlet;
 
 /**
  * Sends password requests to the requestors EnergyCompany,
@@ -9,9 +9,8 @@ package com.cannontech.stars.web.servlet;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.cannontech.servlet.PWordRequest;
 import com.cannontech.servlet.logic.RequestPword;
-import com.cannontech.stars.servletutils.StarsRequestPword;
+import com.cannontech.servlet.logic.StarsRequestPword;
 
 public class StarsPWordRequest extends PWordRequest 
 {

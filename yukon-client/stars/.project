@@ -5,8 +5,6 @@
 	<projects>
 		<project>commander</project>
 		<project>common</project>
-		<project>dbeditor</project>
-		<project>servlet</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

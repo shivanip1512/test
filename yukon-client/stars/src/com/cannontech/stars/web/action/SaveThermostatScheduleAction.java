@@ -13,6 +13,7 @@ import javax.xml.soap.SOAPMessage;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.Transaction;
+import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.lite.stars.LiteLMThermostatSchedule;
 import com.cannontech.database.data.lite.stars.LiteLMThermostatSeason;
@@ -28,7 +29,6 @@ import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
-import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsFailure;
@@ -101,7 +101,7 @@ public class SaveThermostatScheduleAction implements ActionBase {
 				return SOAPUtil.buildSOAPMessage( respOper );
 			}
 			
-			LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+			LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
 			
 			LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory( saveSchedule.getInventoryID(), true );
 			LiteLMThermostatSchedule liteNewSched = liteHw.getThermostatSettings().getThermostatSchedule();
@@ -137,7 +137,7 @@ public class SaveThermostatScheduleAction implements ActionBase {
 				// we can delete a thermostat type without deleting all the saved schedules
 				int hwTypeDefID = YukonListFuncs.getYukonListEntry( liteNewSched.getThermostatTypeID() ).getYukonDefID();
 				schedule.getLmThermostatSchedule().setThermostatTypeID(
-						new Integer(SOAPServer.getDefaultEnergyCompany().getYukonListEntry(hwTypeDefID).getEntryID()) );
+						new Integer(StarsDatabaseCache.getInstance().getDefaultEnergyCompany().getYukonListEntry(hwTypeDefID).getEntryID()) );
 				
 				schedule = (LMThermostatSchedule) Transaction.createTransaction( Transaction.INSERT, schedule ).execute();
 			}

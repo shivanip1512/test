@@ -1,10 +1,10 @@
 <%@ taglib uri="/WEB-INF/cti.tld" prefix="cti" %>
 <%@ page import="java.io.StringWriter" %>
+<%@ page import="com.cannontech.database.cache.StarsDatabaseCache" %>
 <%@ page import="com.cannontech.database.data.lite.stars.*" %>
 <%@ page import="com.cannontech.stars.util.ECUtils" %>
 <%@ page import="com.cannontech.stars.util.ServletUtils" %>
 <%@ page import="com.cannontech.stars.web.StarsYukonUser" %>
-<%@ page import="com.cannontech.stars.web.servlet.SOAPServer" %>
 <%@ page import="com.cannontech.stars.xml.serialize.*" %>
 <cti:checklogin/>
 <%
@@ -14,7 +14,7 @@
 		return;
 	}
 	
-	LiteStarsEnergyCompany liteEC = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+	LiteStarsEnergyCompany liteEC = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
 	
 	String cache = "";
 	
@@ -44,8 +44,8 @@
 	}
 	else if (request.getParameter("ReloadInv") != null) {
 		liteEC.setInventoryLoaded(false);
-		liteEC.loadAllInventory();
-		cache = "Inventory has been reloaded";
+		liteEC.loadAllInventory(false);
+		cache = "Inventory is being reloaded...";
 	}
 %>
 <html>

@@ -12,9 +12,11 @@ import java.util.TimeZone;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteTypes;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.stars.web.servlet.SOAPServer;
+import com.cannontech.yc.gui.YC;
+import com.cannontech.yc.gui.YCDefaults;
 
 /**
  * @author yao
@@ -35,23 +37,17 @@ public class ServerUtils {
 			new java.text.SimpleDateFormat( "yyyyMMdd" );
 	public static final java.text.SimpleDateFormat starsTimeFormat =
 			new java.text.SimpleDateFormat( "HHmm" );
-
-	// Increment this for every message
-	private static long userMessageIDCounter = 1;
-	
-	private static final java.text.SimpleDateFormat dateTimeFormat =
-			new java.text.SimpleDateFormat("MM/dd/yy HH:mm");
-	
-	// Directory for all the temporary files
-    private static final String STARS_TEMP_DIR = "stars_temp";
     
-    // Temporary data files/directories
+	// Temporary data files/directories
 	public static final String SWITCH_COMMAND_FILE = "switch_commands.txt";
 	public static final String OPTOUT_EVENT_FILE = "optout_events.txt";
 	public static final String UPLOAD_DIR = "upload";
 	
 	// Default sender email address from Stars
 	public static final String ADMIN_EMAIL_ADDRESS = "info@cannontech.com";
+	
+	public static final int COMMAND_PRIORITY_CONFIG = 6;
+	public static final int COMMAND_PRIORITY_SERVICE = 7;
 	
 	public static final Comparator YUK_LIST_ENTRY_ALPHA_CMPTR = new Comparator() {
 		public int compare(Object o1, Object o2) {
@@ -62,15 +58,49 @@ public class ServerUtils {
 			return res;
 		}
 	};
+
+	// Increment this for every message
+	private static long userMessageIDCounter = 1;
 	
+	private static final java.text.SimpleDateFormat dateTimeFormat =
+			new java.text.SimpleDateFormat("MM/dd/yy HH:mm");
+	
+	// Directory for all the temporary files
+    private static final String STARS_TEMP_DIR = "stars_temp";
+	
+	// YC object used for sending command to porter
+	private static com.cannontech.yc.gui.YC yc = null;
+	
+	public synchronized static YC getYC() {
+		if (yc == null) {
+			yc = new YC();
+			yc.addObserver( new java.util.Observer() {
+				public void update(java.util.Observable o, Object arg) {
+					if (arg instanceof String) {
+						CTILogger.info( (String)arg );
+					}
+					else {
+						CTILogger.info( ((YC)o).getResultText() );
+						((YC)o).clearResultText();
+					}
+				}
+			});
+		}
+		
+		return yc;
+	}
 	
 	public static void sendSerialCommand(String command, int routeID) throws WebClientException
 	{
 		if (routeID == 0)
 			throw new WebClientException("The route to send the switch command is not specified.");
 		
-		com.cannontech.yc.gui.YC yc = SOAPServer.getYC();
+		int priority = (command.indexOf("putcofig service") >= 0)? COMMAND_PRIORITY_SERVICE : COMMAND_PRIORITY_CONFIG;
+		YCDefaults ycDefaults = new YCDefaults( priority, false, true, false, null );
+		
+		YC yc = getYC();
 		synchronized (yc) {
+			yc.setYCDefaults( ycDefaults );
 			yc.setRouteID( routeID );
 			yc.setCommandString( command );
 			yc.handleSerialNumber();
@@ -92,7 +122,7 @@ public class ServerUtils {
 		if (msg != null) {
 			DefaultDatabaseCache.getInstance().handleDBChangeMessage( msg );
 			
-			com.cannontech.message.util.ClientConnection conn = SOAPServer.getInstance().getClientConnection();
+			com.cannontech.message.util.ClientConnection conn = StarsDatabaseCache.getInstance().getClientConnection();
 			if (conn == null) {
 				CTILogger.error( "Cannot get dispatch client connection" );
 				return;

@@ -11,14 +11,14 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
-import com.cannontech.stars.web.servlet.InventoryManager;
-import com.cannontech.stars.web.servlet.SOAPServer;
+import com.cannontech.stars.web.util.InventoryManagerUtil;
 
 /**
  * @author yao
@@ -52,7 +52,7 @@ public class DeviceBean {
 	
 	private LiteStarsEnergyCompany getEnergyCompany() {
 		if (energyCompany == null)
-			energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
+			energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( energyCompanyID );
 		return energyCompany;
 	}
 	
@@ -61,7 +61,7 @@ public class DeviceBean {
 		deviceList = new ArrayList();
 		
 		String deviceName = getDeviceName();
-		List devices = InventoryManager.searchDevice( getCategoryID(), deviceName );
+		List devices = InventoryManagerUtil.searchDevice( getCategoryID(), deviceName );
 		
 		if (getFilter() == DEV_FILTER_NOT_ASSIGNED
 			|| getFilter() == DEV_FILTER_NOT_IN_INVENTORY)

@@ -106,7 +106,7 @@ function selectMemberAccount(accountID, memberID) {
 			for (int i = 0; i < resp.getStarsBriefCustAccountInfoCount(); i++) {
 				LiteStarsEnergyCompany member = liteEC;
 				if (resp.getStarsBriefCustAccountInfo(i).hasEnergyCompanyID())
-					member = SOAPServer.getEnergyCompany(resp.getStarsBriefCustAccountInfo(i).getEnergyCompanyID());
+					member = StarsDatabaseCache.getInstance().getEnergyCompany(resp.getStarsBriefCustAccountInfo(i).getEnergyCompanyID());
 				
 				LiteStarsCustAccountInformation liteAcctInfo = member.getBriefCustAccountInfo(
 						resp.getStarsBriefCustAccountInfo(i).getAccountID(), true);

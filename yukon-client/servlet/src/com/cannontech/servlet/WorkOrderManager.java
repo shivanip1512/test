@@ -4,11 +4,10 @@
  * To change the template for this generated file go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-package com.cannontech.stars.web.servlet;
+package com.cannontech.servlet;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -18,22 +17,18 @@ import javax.servlet.http.HttpSession;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
 import com.cannontech.database.db.stars.report.WorkOrderBase;
-import com.cannontech.database.cache.functions.AuthFuncs;
-import com.cannontech.roles.operator.ConsumerInfoRole;
-import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.action.CreateServiceRequestAction;
 import com.cannontech.stars.web.action.UpdateServiceRequestAction;
-import com.cannontech.stars.xml.serialize.CurrentState;
-import com.cannontech.stars.xml.serialize.ServiceCompany;
-import com.cannontech.stars.xml.serialize.ServiceType;
+import com.cannontech.stars.web.util.WorkOrderManagerUtil;
 import com.cannontech.stars.xml.serialize.StarsOperation;
-import com.cannontech.stars.xml.serialize.StarsSrvReq;
 
 /**
  * @author yao
@@ -42,11 +37,6 @@ import com.cannontech.stars.xml.serialize.StarsSrvReq;
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
 public class WorkOrderManager extends HttpServlet {
-	
-	public static final String STARS_WORK_ORDER_OPER_REQ = "STARS_WORK_ORDER_OPERATION_REQUEST";
-	
-	public static final String WORK_ORDER_SET = "WORK_ORDER_SET";
-	public static final String WORK_ORDER_SET_DESC = "WORK_ORDER_SET_DESC";
 	
 	private String referer = null;
 	private String redirect = null;
@@ -94,9 +84,9 @@ public class WorkOrderManager extends HttpServlet {
 	}
 	
 	private void searchWorkOrder(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
-		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
 		
-		session.removeAttribute( WORK_ORDER_SET );
+		session.removeAttribute( WorkOrderManagerUtil.WORK_ORDER_SET );
 		
 		int searchBy = Integer.parseInt( req.getParameter("SearchBy") );
 		String searchValue = req.getParameter( "SearchValue" );
@@ -105,12 +95,16 @@ public class WorkOrderManager extends HttpServlet {
 			return;
 		}
 		
+		// Remember the last search option
+		session.setAttribute( ServletUtils.ATT_LAST_SERVICE_SEARCH_OPTION, new Integer(searchBy) );
+		
 		int[] orderIDs = null; 
 		
 		if (searchBy == YukonListEntryTypes.YUK_DEF_ID_SO_SEARCH_BY_ORDER_NO) {
-			if (AuthFuncs.checkRoleProperty(user.getYukonUser(), ConsumerInfoRole.ORDER_NUMBER_AUTO_GEN))
-				searchValue = ServerUtils.AUTO_GEN_NUM_PREC + searchValue;
-			orderIDs = WorkOrderBase.searchByOrderNumber( searchValue, user.getEnergyCompanyID() );
+			ArrayList orderList = energyCompany.searchWorkOrderByOrderNo( searchValue, false );
+			orderIDs = new int[ orderList.size() ];
+			for (int i = 0; i < orderList.size(); i++)
+				orderIDs[i] = ((LiteWorkOrderBase)orderList.get(i)).getOrderID();
 		}
 		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_SO_SEARCH_BY_ACCT_NO) {
 			ArrayList accounts = energyCompany.searchAccountByAccountNo( searchValue, false );
@@ -141,7 +135,7 @@ public class WorkOrderManager extends HttpServlet {
 		}
 		
 		if (orderIDs == null || orderIDs.length == 0) {
-			session.setAttribute(WORK_ORDER_SET_DESC, "<div class='ErrorMsg' align='center'>No service order found matching the search criteria.</div>");
+			session.setAttribute(WorkOrderManagerUtil.WORK_ORDER_SET_DESC, "<div class='ErrorMsg' align='center'>No service order found matching the search criteria.</div>");
 		}
 		else if (orderIDs.length == 1) {
 			redirect = req.getContextPath() + "/operator/WorkOrder/WorkOrder.jsp?OrderId=" + orderIDs[0];
@@ -150,14 +144,14 @@ public class WorkOrderManager extends HttpServlet {
 			ArrayList soList = new ArrayList();
 			for (int i = 0; i < orderIDs.length; i++)
 				soList.add( energyCompany.getWorkOrderBase(orderIDs[i], true) );
-			session.setAttribute(WORK_ORDER_SET, soList);
-			session.setAttribute(WORK_ORDER_SET_DESC, "Click on a Order # to view the service order details.");
+			session.setAttribute(WorkOrderManagerUtil.WORK_ORDER_SET, soList);
+			session.setAttribute(WorkOrderManagerUtil.WORK_ORDER_SET_DESC, "Click on a Order # to view the service order details.");
 			session.setAttribute(ServletUtils.ATT_REFERRER, referer);
 		}
 	}
 	
 	private void preCreateWorkOrder(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
-		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
 		
 		StarsOperation operation = null;
 		try {
@@ -182,11 +176,11 @@ public class WorkOrderManager extends HttpServlet {
 		else
 			operation.getStarsCreateServiceRequest().setAccountID( CtiUtilities.NONE_ID );
 		
-		session.setAttribute(STARS_WORK_ORDER_OPER_REQ, operation);
+		session.setAttribute(WorkOrderManagerUtil.STARS_WORK_ORDER_OPER_REQ, operation);
 	}
 	
 	private void searchCustAccount(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
-		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
 		
 		LiteStarsCustAccountInformation liteAcctInfo = energyCompany.searchAccountByAccountNo( req.getParameter("AcctNo") );
 		if (liteAcctInfo == null) {
@@ -206,7 +200,7 @@ public class WorkOrderManager extends HttpServlet {
 		}
 		
 		operation.getStarsUpdateServiceRequest().setAccountID( liteAcctInfo.getAccountID() );
-		session.setAttribute(STARS_WORK_ORDER_OPER_REQ, operation);
+		session.setAttribute(WorkOrderManagerUtil.STARS_WORK_ORDER_OPER_REQ, operation);
 	}
 	
 	private int[] getOrderIDsByAccounts(ArrayList accounts) {
@@ -234,57 +228,4 @@ public class WorkOrderManager extends HttpServlet {
 		return null;
 	}
 	
-	public static void setStarsServiceRequest(StarsSrvReq starsOrder, HttpServletRequest req, java.util.TimeZone tz)
-		throws WebClientException
-	{
-		if (req.getParameter("OrderID") != null)
-			starsOrder.setOrderID( Integer.parseInt(req.getParameter("OrderID")) );
-		if (req.getParameter("AccountID") != null)
-			starsOrder.setAccountID( Integer.parseInt(req.getParameter("AccountID")) );
-		if (req.getParameter("OrderNo") != null)
-			starsOrder.setOrderNumber( req.getParameter("OrderNo") );
-		if (req.getParameter("ActionTaken") != null)
-			starsOrder.setActionTaken( req.getParameter("ActionTaken").replaceAll(System.getProperty("line.separator"), "<br>") );
-		starsOrder.setOrderedBy( req.getParameter("OrderedBy") );
-		starsOrder.setDescription( req.getParameter("Description").replaceAll(System.getProperty("line.separator"), "<br>") );
-			
-		ServiceType servType = new ServiceType();
-		servType.setEntryID( Integer.parseInt(req.getParameter("ServiceType")) );
-		starsOrder.setServiceType( servType );
-			
-		ServiceCompany company = new ServiceCompany();
-		company.setEntryID( Integer.parseInt(req.getParameter("ServiceCompany") ) );
-		starsOrder.setServiceCompany( company );
-		
-		if (req.getParameter("CurrentState") != null) {
-			CurrentState status = new CurrentState();
-			status.setEntryID( Integer.parseInt(req.getParameter("CurrentState")) );
-			starsOrder.setCurrentState( status );
-		}
-		
-		if (req.getParameter("DateReported").length() > 0) {
-			Date dateReported = ServletUtils.parseDateTime(
-					req.getParameter("DateReported"), req.getParameter("TimeReported"), tz );
-			if (dateReported == null)
-				throw new WebClientException("Invalid report date format '" + req.getParameter("DateReported") + " " + req.getParameter("TimeReported") + "', the date/time should be in the form of 'mm/dd/yy hh:mm'");
-			starsOrder.setDateReported( dateReported );
-		}
-		
-		if (req.getParameter("DateScheduled") != null && req.getParameter("DateScheduled").length() > 0) {
-			Date dateScheduled = ServletUtils.parseDateTime(
-					req.getParameter("DateScheduled"), req.getParameter("TimeScheduled"), tz );
-			if (dateScheduled == null)
-				throw new WebClientException("Invalid scheduled date format '" + req.getParameter("DateScheduled") + " " + req.getParameter("TimeScheduled") + "', the date/time should be in the form of 'mm/dd/yy hh:mm'");
-			starsOrder.setDateScheduled( dateScheduled );
-		}
-		
-		if (req.getParameter("DateCompleted") != null && req.getParameter("DateCompleted").length() > 0) {
-			Date dateCompleted = ServletUtils.parseDateTime(
-					req.getParameter("DateCompleted"), req.getParameter("TimeCompleted"), tz );
-			if (dateCompleted == null)
-				throw new WebClientException("Invalid close date format '" + req.getParameter("DateCompleted") + " " + req.getParameter("TimeCompleted") + "', the date/time should be in the form of 'mm/dd/yy hh:mm'");
-			starsOrder.setDateCompleted( dateCompleted );
-		}
-	}
-
 }

@@ -16,6 +16,7 @@ import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.Pair;
 import com.cannontech.database.Transaction;
+import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -25,8 +26,7 @@ import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
-import com.cannontech.stars.web.servlet.InventoryManager;
-import com.cannontech.stars.web.servlet.SOAPServer;
+import com.cannontech.stars.web.util.InventoryManagerUtil;
 
 /**
  * @author yao
@@ -120,7 +120,7 @@ public class AddSNRangeTask implements TimeConsumingTask {
 		HttpSession session = request.getSession(false);
 		StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 		
-		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
 		Integer categoryID = new Integer( ECUtils.getInventoryCategoryID(devTypeID.intValue(), energyCompany) );
 		
 		status = STATUS_RUNNING;
@@ -183,7 +183,7 @@ public class AddSNRangeTask implements TimeConsumingTask {
 				+ ",Device Type:" + YukonListFuncs.getYukonListEntry(devTypeID.intValue()).getEntryText();
 		ActivityLogger.logEvent( user.getUserID(), ActivityLogActions.INVENTORY_ADD_RANGE, logMsg );
 		
-		session.removeAttribute( InventoryManager.INVENTORY_SET );
+		session.removeAttribute( InventoryManagerUtil.INVENTORY_SET );
 		status = STATUS_FINISHED;
 		
 		if (numFailure > 0) {
@@ -199,9 +199,9 @@ public class AddSNRangeTask implements TimeConsumingTask {
 				resultDesc += "</table><br>";
 			}
 			
-			session.setAttribute(InventoryManager.INVENTORY_SET_DESC, resultDesc);
+			session.setAttribute(InventoryManagerUtil.INVENTORY_SET_DESC, resultDesc);
 			if (hardwareSet.size() > 0)
-				session.setAttribute(InventoryManager.INVENTORY_SET, hardwareSet);
+				session.setAttribute(InventoryManagerUtil.INVENTORY_SET, hardwareSet);
 			session.setAttribute(ServletUtils.ATT_REDIRECT, request.getContextPath() + "/operator/Hardware/ResultSet.jsp");
 		}
 	}

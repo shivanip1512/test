@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMControlHistory;
 import com.cannontech.stars.util.ECUtils;
-import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 
 /**
@@ -53,7 +53,7 @@ public class RefreshTimerTask extends StarsTimerTask {
 	public void run() {
 		CTILogger.debug( "*** Start Refresh timer task ***" );
 		
-		ArrayList companies = SOAPServer.getAllEnergyCompanies();
+		ArrayList companies = StarsDatabaseCache.getInstance().getAllEnergyCompanies();
 		
 		for (int i = 0; i < companies.size(); i++) {
 			LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) companies.get(i);

@@ -14,6 +14,7 @@ import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.database.Transaction;
+import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.activity.ActivityLogActions;
@@ -33,7 +34,6 @@ import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
-import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.DeviceStatus;
 import com.cannontech.stars.xml.serialize.StarsAppliance;
@@ -73,7 +73,7 @@ public class ProgramOptOutAction implements ActionBase {
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 			if (user == null) return null;
 			
-			LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+			LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
 			TimeZone tz = energyCompany.getDefaultTimeZone();
             
 			StarsProgramOptOut optOut = new StarsProgramOptOut();
@@ -172,7 +172,7 @@ public class ProgramOptOutAction implements ActionBase {
             	return SOAPUtil.buildSOAPMessage( respOper );
         	}
 			
-        	energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+        	energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
         	TimeZone tz = energyCompany.getDefaultTimeZone();
 			
             StarsProgramOptOut optOut = reqOper.getStarsProgramOptOut();
@@ -345,7 +345,7 @@ public class ProgramOptOutAction implements ActionBase {
 					session.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
 			
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute(ServletUtils.ATT_STARS_YUKON_USER);
-            LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+            LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
             
             parseResponse( resp, accountInfo, energyCompany );
             
@@ -434,7 +434,7 @@ public class ProgramOptOutAction implements ActionBase {
 	{
 		if (optout.getPeriod() == REPEAT_LAST) return;
 		
-		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
 		
 		String ruleStr = null;
 		if (ECUtils.isOperator( user ))

@@ -6,7 +6,7 @@
 	
 	String invNo = request.getParameter("InvNo");
 	if (invNo == null) invNo = "_NEW";
-	session.setAttribute(InventoryManager.STARS_INVENTORY_NO, invNo);
+	session.setAttribute(InventoryManagerUtil.STARS_INVENTORY_NO, invNo);
 	
 	int deviceType = 0;
 	String serialNo = "";
@@ -14,14 +14,14 @@
 	if (action != null) {
 		if (action.equalsIgnoreCase("New")) {
 			// Came from the nav link, next page is CreateHardware.jsp
-			session.removeAttribute(InventoryManager.STARS_INVENTORY_TEMP + "_NEW");
+			session.removeAttribute(InventoryManagerUtil.STARS_INVENTORY_TEMP + "_NEW");
 			
 			referer = request.getContextPath() + "/operator/Consumer/CreateHardware.jsp";
 			if (request.getParameter("Wizard") != null) referer += "?Wizard=true";
 		}
 		else if (action.equalsIgnoreCase("Change")) {
 			// Came from CreateHardware.jsp or Inventory.jsp
-			StarsInventory inventory = (StarsInventory) session.getAttribute(InventoryManager.STARS_INVENTORY_TEMP + invNo);
+			StarsInventory inventory = (StarsInventory) session.getAttribute(InventoryManagerUtil.STARS_INVENTORY_TEMP + invNo);
 			
 			if (inventory != null) {
 				deviceType = inventory.getDeviceType().getEntryID();
@@ -41,7 +41,7 @@
 	}
 	else {
 		// From SelectInv.jsp when cancel button is clicked
-		StarsInventory inventory = (StarsInventory) session.getAttribute(InventoryManager.STARS_INVENTORY_TEMP + invNo);
+		StarsInventory inventory = (StarsInventory) session.getAttribute(InventoryManagerUtil.STARS_INVENTORY_TEMP + invNo);
 		
 		if (inventory != null && inventory.getLMHardware() != null) {
 			deviceType = inventory.getDeviceType().getEntryID();
@@ -212,7 +212,7 @@ function confirmCancel() {
                   </tr>
                 </table>
                 </form>
-			  <% if (!inWizard || session.getAttribute(InventoryManager.STARS_INVENTORY_TEMP) != null) { %>
+			  <% if (!inWizard || session.getAttribute(InventoryManagerUtil.STARS_INVENTORY_TEMP) != null) { %>
                 <input type="button" name="Cancel" value="Cancel" onclick="location.href = '<%= referer %>'">
 			  <% } else { %>
                 <input type="button" name="Back" value="Back" onclick="location.href = 'New.jsp?Wizard=true'">

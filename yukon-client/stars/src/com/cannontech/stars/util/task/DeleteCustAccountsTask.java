@@ -6,11 +6,11 @@
  */
 package com.cannontech.stars.util.task;
 
+import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.action.DeleteCustAccountAction;
-import com.cannontech.stars.web.servlet.SOAPServer;
 
 /**
  * @author yao
@@ -82,7 +82,7 @@ public class DeleteCustAccountsTask implements TimeConsumingTask {
 	 * @see java.lang.Runnable#run()
 	 */
 	public void run() {
-		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
 		
 		if (accountIDs == null) {
 			status = STATUS_ERROR;

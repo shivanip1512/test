@@ -1,7 +1,4 @@
-package com.cannontech.stars.web.servlet;
-
-import java.io.StringReader;
-import java.io.StringWriter;
+package com.cannontech.servlet;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -11,9 +8,6 @@ import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.cache.functions.RoleFuncs;
-import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
@@ -55,11 +49,8 @@ import com.cannontech.stars.web.action.UpdateServiceRequestAction;
 import com.cannontech.stars.web.action.UpdateThermostatManualOptionAction;
 import com.cannontech.stars.web.action.UpdateThermostatScheduleAction;
 import com.cannontech.stars.web.action.YukonSwitchCommandAction;
-import com.cannontech.stars.xml.serialize.StarsOperation;
-import com.cannontech.stars.xml.util.SOAPMessenger;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
-import com.cannontech.stars.xml.util.XMLUtil;
 
 /**
  * <p>Title: </p>
@@ -72,10 +63,6 @@ import com.cannontech.stars.xml.util.XMLUtil;
 
 public class SOAPClient extends HttpServlet {
 
-	private static String SOAP_SERVER_URL = null;
-	private static SOAPMessenger soapMsgr = null;
-	private static boolean serverLocal = true;
-
 	public static final String LOGIN_URL = "/login.jsp";
 	public static final String HOME_URL = "/operator/Operations.jsp";
 
@@ -83,73 +70,11 @@ public class SOAPClient extends HttpServlet {
 		super();
 	}
 
-	public static boolean isServerLocal() {
-		return serverLocal;
-	}
-
-	public static void setServerLocal(boolean serverLocal) {
-		SOAPClient.serverLocal = serverLocal;
-	}
-
 	/**
 	 * @see javax.servlet.GenericServlet#init()
 	 */
 	public void init() throws ServletException {
 		super.init();
-		
-		// If "stars_soap_server" is not (none), it means SOAPServer is running remotely
-		SOAP_SERVER_URL = RoleFuncs.getGlobalPropertyValue( SystemRole.STARS_SOAP_SERVER );
-		
-		//keep the URL string null if it is not set
-		if( SOAP_SERVER_URL != null && SOAP_SERVER_URL.equals(CtiUtilities.STRING_NONE) )
-			SOAP_SERVER_URL = null;
-		
-		if (SOAP_SERVER_URL != null) {
-			CTILogger.info( "SOAP Server resides remotely at " + SOAP_SERVER_URL );
-			
-			// Try to connect to SOAPServer
-			StarsOperation respOper = sendRecvOperation( new StarsOperation() );
-			if (respOper == null)	// This is not good!
-				CTILogger.error( "Cannot connect to SOAPServer, following operations may not function properly!" );
-			
-			setServerLocal( false );
-			SOAPServer.setClientLocal( false );
-			
-			soapMsgr = new SOAPMessenger( SOAP_SERVER_URL );
-		}
-		else {
-			setServerLocal( true );
-			SOAPServer.setClientLocal( true );
-			
-			// Initiate the SOAPServer
-			SOAPServer.getInstance();
-		}
-	}
-	
-	private static SOAPMessenger getSOAPMessenger() {
-		if (soapMsgr == null)
-			soapMsgr = new SOAPMessenger( SOAP_SERVER_URL );
-		return soapMsgr;
-	}
-
-	private static StarsOperation sendRecvOperation(StarsOperation operation) {
-		try {
-			StringWriter sw = new StringWriter();
-			operation.marshal( sw );
-			String reqStr = XMLUtil.removeXMLDecl( sw.toString() );
-
-			CTILogger.info( "*** Send Message ***  " + reqStr );
-			String respStr = getSOAPMessenger().call( reqStr );
-			CTILogger.info( "*** Receive Message ***  " + respStr );
-
-			StringReader sr = new StringReader( respStr );
-			return StarsOperation.unmarshal( sr );
-		}
-		catch (Exception e) {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-		}
-
-		return null;
 	}
 
 	public void service(HttpServletRequest req, HttpServletResponse resp) throws javax.servlet.ServletException, java.io.IOException {

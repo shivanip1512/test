@@ -3,6 +3,7 @@ package com.cannontech.stars.web.bean;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Hashtable;
 import java.util.Iterator;
 
 import javax.servlet.http.HttpServletRequest;
@@ -10,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
+import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.database.cache.functions.YukonListFuncs;
@@ -29,7 +31,6 @@ import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
-import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.serialize.StreetAddress;
 import com.cannontech.util.ServletUtil;
 
@@ -184,7 +185,7 @@ public class InventoryBean {
 	
 	private LiteStarsEnergyCompany getEnergyCompany() {
 		if (energyCompany == null || energyCompany.getLiteID() != energyCompanyID)
-			energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
+			energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( energyCompanyID );
 		return energyCompany;
 	}
 	
@@ -197,8 +198,8 @@ public class InventoryBean {
 		}
 		else if (showEnergyCompany) {
 			if (getFilterBy() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_ENERGY_COMPANY) {
-				LiteStarsEnergyCompany member = SOAPServer.getEnergyCompany( getMember() );
-				ArrayList inventory = member.loadAllInventory();
+				LiteStarsEnergyCompany member = StarsDatabaseCache.getInstance().getEnergyCompany( getMember() );
+				ArrayList inventory = member.loadAllInventory( true );
 				
 				hardwares = new ArrayList();
 				for (int i = 0; i < inventory.size(); i++)
@@ -210,14 +211,14 @@ public class InventoryBean {
 				
 				for (int i = 0; i < members.size(); i++) {
 					LiteStarsEnergyCompany member = (LiteStarsEnergyCompany) members.get(i);
-					ArrayList inventory = member.loadAllInventory();
+					ArrayList inventory = member.loadAllInventory( true );
 					for (int j = 0; j < inventory.size(); j++)
 						hardwares.add( new Pair(inventory.get(j), member) );
 				}
 			}
 		}
 		else {
-			hardwares = getEnergyCompany().loadAllInventory();
+			hardwares = getEnergyCompany().loadAllInventory( true );
 		}
 		
 		if ((getHtmlStyle() & HTML_STYLE_SELECT_INVENTORY) != 0
@@ -312,40 +313,63 @@ public class InventoryBean {
 			}
 		}
 		else if (getFilterBy() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_CONFIG) {
+			Hashtable ecHwCfgMap = new Hashtable();
+			
 			for (int i = 0; i < hardwares.size(); i++) {
 				LiteInventoryBase liteInv = (LiteInventoryBase)
 						(showEnergyCompany? ((Pair)hardwares.get(i)).getFirst() : hardwares.get(i));
+				if (!(liteInv instanceof LiteStarsLMHardware) || liteInv.getAccountID() == CtiUtilities.NONE_ID)
+					continue;
 				
-				int groupID = CtiUtilities.NONE_ID;
-				if (liteInv instanceof LiteStarsLMHardware) {
+				LiteStarsEnergyCompany company = (showEnergyCompany)?
+						(LiteStarsEnergyCompany) ((Pair)hardwares.get(i)).getSecond() : getEnergyCompany();
+				
+				if (company.isAccountsLoaded()) {
 					LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation)
-							getEnergyCompany().getCustAccountInformation( liteInv.getInventoryID(), false );
+							company.getCustAccountInformation( liteInv.getAccountID(), false );
 					
 					if (liteAcctInfo != null) {
 						for (int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {
 							LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(j);
-							if (liteApp.getInventoryID() == liteInv.getInventoryID() && liteApp.getAddressingGroupID() != CtiUtilities.NONE_ID) {
-								groupID = liteApp.getAddressingGroupID();
+							if (liteApp.getInventoryID() == liteInv.getInventoryID()
+								&& liteApp.getAddressingGroupID() == getAddressingGroup())
+							{
+								sortedInvs.add( hardwares.get(i) );
 								break;
 							}
 						}
 					}
-					else {
-						com.cannontech.database.db.stars.hardware.LMHardwareConfiguration[] configs =
-								com.cannontech.database.db.stars.hardware.LMHardwareConfiguration.getALLHardwareConfigs( new Integer(liteInv.getInventoryID()) );
-						if (configs != null) {
-							for (int j = 0; j < configs.length; j++) {
-								if (configs[j].getAddressingGroupID().intValue() > 0) {
-									groupID = configs[j].getAddressingGroupID().intValue();
-									break;
-								}
+				}
+				else {
+					Hashtable hwCfgMap = (Hashtable) ecHwCfgMap.get( company.getEnergyCompanyID() );
+					if (hwCfgMap == null) {
+						hwCfgMap = new Hashtable();
+						
+						com.cannontech.database.db.stars.hardware.LMHardwareConfiguration[] hwConfig =
+								com.cannontech.database.db.stars.hardware.LMHardwareConfiguration.getAllLMHardwareConfiguration( company.getLiteID() );
+						
+						for (int j = 0; j < hwConfig.length; j++) {
+							ArrayList cfgList = (ArrayList) hwCfgMap.get( hwConfig[j].getInventoryID() );
+							if (cfgList == null) {
+								cfgList = new ArrayList();
+								hwCfgMap.put( hwConfig[j].getInventoryID(), cfgList );
+							}
+							cfgList.add( hwConfig[j].getAddressingGroupID() );
+						}
+						
+						ecHwCfgMap.put( company.getEnergyCompanyID(), hwCfgMap );
+					}
+					
+					ArrayList cfgList = (ArrayList) hwCfgMap.get( new Integer(liteInv.getInventoryID()) );
+					if (cfgList != null) {
+						for (int j = 0; j < cfgList.size(); j++) {
+							if (((Integer)cfgList.get(j)).intValue() == getAddressingGroup()) {
+								sortedInvs.add( hardwares.get(i) );
+								break;
 							}
 						}
 					}
 				}
-				
-				if (groupID == getAddressingGroup())
-					sortedInvs.add( hardwares.get(i) );
 			}
 		}
 		else if (getFilterBy() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_DEV_STATUS) {
@@ -567,14 +591,12 @@ public class InventoryBean {
 				StarsLiteFactory.setStarsCustomerAddress( starsAddr, liteAddr );
 				String address = ServletUtils.getOneLineAddress( starsAddr );
             	
-            	if (!showEnergyCompany || member.equals(energyCompany))
-					htmlBuf.append("<a href='' class='Link1' onclick='selectAccount(").append(liteAcctInfo.getAccountID()).append("); return false;'>")
-							.append("Acct # ").append(liteAcctInfo.getCustomerAccount().getAccountNumber()).append("</a>");
-				else if (isManagable)
-					htmlBuf.append("<a href='' class='Link1' onclick='selectMemberAccount(").append(liteAcctInfo.getAccountID()).append(",").append(member.getLiteID()).append("); return false;'>")
+            	if (!showEnergyCompany || member.equals(energyCompany) || isManagable)
+					htmlBuf.append("<a href='' class='Link1' onclick='selectAccount(").append(liteAcctInfo.getAccountID()).append(",").append(member.getLiteID()).append("); return false;'>")
 							.append("Acct # ").append(liteAcctInfo.getCustomerAccount().getAccountNumber()).append("</a>");
 				else
 					htmlBuf.append("Acct # ").append(liteAcctInfo.getCustomerAccount().getAccountNumber());
+				
 				if (name.length() > 0)
 					htmlBuf.append(" ").append(name);
 				if (address.length() > 0)
@@ -683,20 +705,14 @@ public class InventoryBean {
 		htmlBuf.append("  }").append(LINE_SEPARATOR);
 		htmlBuf.append("}").append(LINE_SEPARATOR);
 		
-		htmlBuf.append("function selectAccount(accountID) {").append(LINE_SEPARATOR);
+		htmlBuf.append("function selectAccount(accountID, memberID) {").append(LINE_SEPARATOR);
 		htmlBuf.append("  var form = document.cusForm;").append(LINE_SEPARATOR);
 		htmlBuf.append("  form.AccountID.value = accountID;").append(LINE_SEPARATOR);
+		htmlBuf.append("  form.SwitchContext.value = memberID;").append(LINE_SEPARATOR);
 		htmlBuf.append("  form.submit();").append(LINE_SEPARATOR);
 		htmlBuf.append("}").append(LINE_SEPARATOR);
         
 		if (showEnergyCompany) {
-			htmlBuf.append("function selectMemberAccount(accountID, memberID) {").append(LINE_SEPARATOR);
-			htmlBuf.append("  var form = document.cusForm;").append(LINE_SEPARATOR);
-			htmlBuf.append("  form.AccountID.value = accountID;").append(LINE_SEPARATOR);
-			htmlBuf.append("  form.SwitchContext.value = memberID;").append(LINE_SEPARATOR);
-			htmlBuf.append("  form.submit();").append(LINE_SEPARATOR);
-			htmlBuf.append("}").append(LINE_SEPARATOR);
-			
 			htmlBuf.append("function selectMemberInventory(invID, memberID) {").append(LINE_SEPARATOR);
 			htmlBuf.append("  var form = document.invForm;").append(LINE_SEPARATOR);
 			htmlBuf.append("  form.MemberID.value = memberID;").append(LINE_SEPARATOR);

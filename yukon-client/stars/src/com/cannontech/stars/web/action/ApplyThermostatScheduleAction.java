@@ -12,6 +12,7 @@ import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.Transaction;
+import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteLMThermostatSchedule;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -21,7 +22,6 @@ import com.cannontech.database.data.stars.hardware.LMThermostatSchedule;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
-import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.StarsApplyThermostatSchedule;
 import com.cannontech.stars.xml.serialize.StarsApplyThermostatScheduleResponse;
@@ -94,7 +94,7 @@ public class ApplyThermostatScheduleAction implements ActionBase {
 				return SOAPUtil.buildSOAPMessage( respOper );
 			}
 			
-			LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+			LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
 			
 			LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory( applySchedule.getInventoryID(), true );
 			LiteLMThermostatSchedule liteOldSched = liteHw.getThermostatSettings().getThermostatSchedule();

@@ -11,6 +11,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
+import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.stars.LiteLMConfiguration;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
@@ -23,8 +24,7 @@ import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.SwitchCommandQueue;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
-import com.cannontech.stars.web.servlet.InventoryManager;
-import com.cannontech.stars.web.servlet.SOAPServer;
+import com.cannontech.stars.web.util.InventoryManagerUtil;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.SULMProgram;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
@@ -86,7 +86,7 @@ public class UpdateLMHardwareConfigAction implements ActionBase {
 			
 			if (req.getParameter("UseHardwareAddressing") != null) {
 				StarsLMConfiguration config = new StarsLMConfiguration();
-				InventoryManager.setStarsLMConfiguration( config, req );
+				InventoryManagerUtil.setStarsLMConfiguration( config, req );
 				updateHwConfig.setStarsLMConfiguration( config );
 			}
 			
@@ -122,7 +122,7 @@ public class UpdateLMHardwareConfigAction implements ActionBase {
 				return SOAPUtil.buildSOAPMessage( respOper );
 			}
         	
-			LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+			LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
             
 			StarsUpdateLMHardwareConfig updateHwConfig = reqOper.getStarsUpdateLMHardwareConfig();
 			LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory( updateHwConfig.getInventoryID(), true );

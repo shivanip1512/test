@@ -1,18 +1,22 @@
-package com.cannontech.stars.web.servlet;
+/*
+ * Created on Nov 9, 2004
+ *
+ * To change the template for this generated file go to
+ * Window>Preferences>Java>Code Generation>Code and Comments
+ */
+package com.cannontech.database.cache;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Vector;
 
-import javax.xml.messaging.JAXMServlet;
-import javax.xml.messaging.ReqRespListener;
-import javax.xml.soap.SOAPMessage;
-
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.PoolManager;
 import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.RoleFuncs;
+import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.cache.functions.YukonUserFuncs;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteBase;
@@ -27,101 +31,45 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteWebConfiguration;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.db.web.YukonWebConfiguration;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
-import com.cannontech.stars.xml.StarsFactory;
+import com.cannontech.stars.web.util.StarsAdminUtil;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsEnergyCompany;
 import com.cannontech.stars.xml.serialize.StarsEnrLMProgram;
 import com.cannontech.stars.xml.serialize.StarsEnrollmentPrograms;
 import com.cannontech.stars.xml.serialize.StarsInventory;
 import com.cannontech.stars.xml.serialize.StarsLMProgram;
-import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsServiceCompany;
-import com.cannontech.stars.xml.serialize.StarsSuccess;
-import com.cannontech.stars.xml.util.SOAPUtil;
-import com.cannontech.stars.xml.util.StarsConstants;
-import com.cannontech.yc.gui.YC;
 
 /**
- * <p>Title: </p>
- * <p>Description: </p>
- * <p>Copyright: Copyright (c) 2002</p>
- * <p>Company: </p>
- * @author unascribed
- * @version 1.0
+ * @author yao
+ *
+ * To change the template for this generated type comment go to
+ * Window>Preferences>Java>Code Generation>Code and Comments
  */
-
-public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cannontech.database.cache.DBChangeListener {
+public class StarsDatabaseCache implements com.cannontech.database.cache.DBChangeListener {
 	
 	public static final int DEFAULT_ENERGY_COMPANY_ID = -1;
-	
-	private static boolean clientLocal = true;
     
-    // Instance of the SOAPServer object
-    private static SOAPServer instance = null;
-	
-	// YC object used for sending command to porter
-	private static com.cannontech.yc.gui.YC yc = null;
+	// Instance of the SOAPServer object
+	private static StarsDatabaseCache instance = null;
 	
 	// Array of all the energy companies (LiteStarsEnergyCompany)
-	private static ArrayList energyCompanies = null;
+	private ArrayList energyCompanies = null;
     
 	// List of web configurations (LiteWebConfiguration)
-    private static ArrayList webConfigList = null;
+	private ArrayList webConfigList = null;
 	
 	// Map from user ID (Integer) to stars users (StarsYukonUser)
-	private static Hashtable starsYukonUsers = null;
+	private Hashtable starsYukonUsers = null;
 	
 	private com.cannontech.message.dispatch.ClientConnection connToDispatch;
-    
-
-	public SOAPServer() {
-		super();
-	}
-
-	/*
-	 * Implementation of ReqRespListener interface
-	 */
-	public void init() throws javax.servlet.ServletException {
-		instance = this;
-		initSOAPServer( instance );		
-	}
-
-	public SOAPMessage onMessage(SOAPMessage message) {
-		StarsOperation respOper = new StarsOperation();
-
-		try {
-			StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( message );
-			if (reqOper == null) {
-				respOper.setStarsFailure( StarsFactory.newStarsFailure(
-						StarsConstants.FAILURE_CODE_NODE_NOT_FOUND, "Invalid request format") );
-				return SOAPUtil.buildSOAPMessage( respOper );
-			}
-        	
-			StarsSuccess success = new StarsSuccess();
-			success.setDescription( "Thanks for waking me up :)" );
-			respOper.setStarsSuccess( success );
-            
-			return SOAPUtil.buildSOAPMessage( respOper );
-		}
-		catch (Exception e) {
-			try {
-				respOper.setStarsFailure( StarsFactory.newStarsFailure(
-						StarsConstants.FAILURE_CODE_RUNTIME_ERROR, "Server error: cannot process request") );
-				return SOAPUtil.buildSOAPMessage( respOper );
-			}
-			catch (Exception e2) {
-				CTILogger.error( e2.getMessage(), e2 );
-			}
-		}
-
-		return null;
-	}
 	
 	private void initDispatchConnection() {
 		String host = RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_MACHINE );
@@ -149,91 +97,77 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 			CTILogger.error( e.getMessage(), e );
 		}
 	}
-    
-	public com.cannontech.message.util.ClientConnection getClientConnection() {
-		return connToDispatch;
-	}
 	
-
-	private static void initSOAPServer(SOAPServer instance) {
-		instance.initDispatchConnection();
+	private void init() {
+		initDispatchConnection();
 		
-		com.cannontech.database.cache.DefaultDatabaseCache.getInstance().addDBChangeListener(instance);	
-		
-		getAllEnergyCompanies();
-		getAllWebConfigurations();
-	}
-    
-	public static SOAPServer getInstance() {
+		com.cannontech.database.cache.DefaultDatabaseCache.getInstance().addDBChangeListener(this);
+	}	
+	
+	public synchronized static StarsDatabaseCache getInstance() {
 		if (instance == null) {
-			instance = new SOAPServer();
-			initSOAPServer(instance);
+			instance = new StarsDatabaseCache();
+			instance.init();
 		}
-		
 		return instance;
 	}
-    
-    public static void refreshCache() {
-    	synchronized (energyCompanies) {
-			if (energyCompanies != null) {
+	
+	public void loadData() {	
+		getAllWebConfigurations();
+		
+		ArrayList allCompanies = getAllEnergyCompanies();
+		
+		final LiteStarsEnergyCompany[] companies = new LiteStarsEnergyCompany[ allCompanies.size() ];
+		allCompanies.toArray( companies );
+		
+		Thread initThrd = new Thread(new Runnable() {
+			public void run() {
+				for (int i = 0; i < companies.length; i++) {
+					if (!ECUtils.isDefaultEnergyCompany( companies[i] )) {
+						companies[i].loadAllInventory( true );
+						companies[i].loadAllCustomerAccounts( true );
+						companies[i].loadAllWorkOrders( true );
+					}
+				}
+			}
+		});
+		initThrd.start();
+	}
+
+	public void refreshCache() {
+		if (energyCompanies != null) {
+			synchronized (energyCompanies) {
 				for (int i = 0; i < energyCompanies.size(); i++)
 					((LiteStarsEnergyCompany) energyCompanies.get(i)).clear();
 			}
 			energyCompanies = null;
-    	}
-    	
-		webConfigList = null;
-		starsYukonUsers = null;
-    	
-    	com.cannontech.database.cache.DefaultDatabaseCache.getInstance().releaseAllCache();
-    	com.cannontech.database.cache.functions.YukonListFuncs.releaseAllConstants();
-    }
-    
-    public static void refreshCache(LiteStarsEnergyCompany company) {
-    	company.clear();
-    	webConfigList = null;
-		
-		com.cannontech.database.cache.functions.YukonListFuncs.releaseAllConstants();
-    }
-
-	public static boolean isClientLocal() {
-		return clientLocal;
-	}
-
-	public static void setClientLocal(boolean clientLocal) {
-		SOAPServer.clientLocal = clientLocal;
-	}
-    
-	public synchronized static YC getYC() {
-		if (yc == null) {
-			yc = new YC();
-			yc.addObserver( new java.util.Observer() {
-				public void update(java.util.Observable o, Object arg) {
-					if (arg instanceof String) {
-						CTILogger.info( (String)arg );
-					}
-					else {
-						CTILogger.info( ((YC)o).getResultText() );
-						((YC)o).clearResultText();
-					}
-				}
-			});
 		}
 		
-		return yc;
+		webConfigList = null;
+		starsYukonUsers = null;
+		
+		DefaultDatabaseCache.getInstance().releaseAllCache();
+		YukonListFuncs.releaseAllConstants();
 	}
-    
-    /*
-     * Start implementation of class functions
-     */
-    public synchronized static ArrayList getAllEnergyCompanies() {
-    	if (energyCompanies == null) {
-    		energyCompanies = new ArrayList();
+
+	public void refreshCache(LiteStarsEnergyCompany company) {
+		company.clear();
+		webConfigList = null;
+		
+		YukonListFuncs.releaseAllConstants();
+	}
+
+	/*
+	 * Start implementation of class functions
+	 */
+	public synchronized ArrayList getAllEnergyCompanies() {
+		if (energyCompanies == null) {
+			energyCompanies = new ArrayList();
 	    	java.sql.Connection conn = null;
 	    	
-    		try {
-	    		conn = com.cannontech.database.PoolManager.getInstance().getConnection(
-	    				com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+			try {
+	    		conn = PoolManager.getInstance().getConnection(
+	    				CtiUtilities.getDatabaseAlias() );
 		    	com.cannontech.database.db.company.EnergyCompany[] companies =
 		    			com.cannontech.database.db.company.EnergyCompany.getEnergyCompanies( conn );
 		    	if (companies == null) return null;
@@ -242,86 +176,86 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 			    	for (int i = 0; i < companies.length; i++)
 			    		energyCompanies.add( new LiteStarsEnergyCompany(companies[i]) );
 			    }
-    		}
-    		catch (Exception e) {
+			}
+			catch (Exception e) {
 				CTILogger.error( e.getMessage(), e );
-    		}
-    		finally {
-    			try {
-    				if (conn != null) conn.close();
-    			}
-    			catch (Exception e2) {
-    				CTILogger.error( e2.getMessage(), e2 );
-    			}
-    		}
+			}
+			finally {
+				try {
+					if (conn != null) conn.close();
+				}
+				catch (Exception e2) {
+					CTILogger.error( e2.getMessage(), e2 );
+				}
+			}
 	    	
 	    	CTILogger.info( "All energy companies loaded" );
-    	}
-    	
-    	return energyCompanies;
-    }
-    
-    public synchronized static ArrayList getAllWebConfigurations() {
-    	if (webConfigList == null) {
-    		webConfigList = new ArrayList();
-    		
-    		com.cannontech.database.db.web.YukonWebConfiguration[] webConfigs =
-    				com.cannontech.database.db.web.YukonWebConfiguration.getAllCustomerWebConfigurations();
-    		for (int i = 0; i < webConfigs.length; i++)
-    			webConfigList.add( (LiteWebConfiguration) StarsLiteFactory.createLite(webConfigs[i]) );
+		}
+		
+		return energyCompanies;
+	}
+
+	public synchronized ArrayList getAllWebConfigurations() {
+		if (webConfigList == null) {
+			webConfigList = new ArrayList();
+			
+			com.cannontech.database.db.web.YukonWebConfiguration[] webConfigs =
+					YukonWebConfiguration.getAllCustomerWebConfigurations();
+			for (int i = 0; i < webConfigs.length; i++)
+				webConfigList.add( (LiteWebConfiguration) StarsLiteFactory.createLite(webConfigs[i]) );
 	    	
 	    	CTILogger.info( "All customer web configurations loaded" );
-    	}
-    	
-    	return webConfigList;
-    }
-    
-	public static Hashtable getAllStarsYukonUsers() {
+		}
+		
+		return webConfigList;
+	}
+
+	public synchronized Hashtable getAllStarsYukonUsers() {
 		if (starsYukonUsers == null)
 			starsYukonUsers = new Hashtable();
 		return starsYukonUsers;
-    }
-    
-    public static LiteStarsEnergyCompany getEnergyCompany(int energyCompanyID) {
-    	ArrayList companies = getAllEnergyCompanies();
+	}
+
+	public LiteStarsEnergyCompany getEnergyCompany(int energyCompanyID) {
+		ArrayList companies = getAllEnergyCompanies();
 		synchronized (companies) {
-    		for (int i = 0; i < companies.size(); i++) {
+			for (int i = 0; i < companies.size(); i++) {
 	    		LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) companies.get(i);
-    			if (company.getEnergyCompanyID().intValue() == energyCompanyID) {
-    				company.init();
+				if (company.getEnergyCompanyID().intValue() == energyCompanyID) {
+					company.init();
 					return company;
-    			}
-    		}
+				}
+			}
 		}
-    	
-    	return null;
-    }
-    
-    public static void addEnergyCompany(LiteStarsEnergyCompany company) {
-    	ArrayList companies = getAllEnergyCompanies();
+		
+		return null;
+	}
+
+	public void addEnergyCompany(LiteStarsEnergyCompany company) {
+		ArrayList companies = getAllEnergyCompanies();
 		synchronized (companies) { companies.add(company); }
-    }
-    
-    public static LiteStarsEnergyCompany deleteEnergyCompany(int energyCompanyID) {
-    	ArrayList companies = getAllEnergyCompanies();
+	}
+
+	public LiteStarsEnergyCompany deleteEnergyCompany(int energyCompanyID) {
+		ArrayList companies = getAllEnergyCompanies();
 		synchronized (companies) {
-    		for (int i = 0; i < companies.size(); i++) {
+			for (int i = 0; i < companies.size(); i++) {
 	    		LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) companies.get(i);
-    			if (company.getEnergyCompanyID().intValue() == energyCompanyID) {
-    				companies.remove( i );
-    				return company;
-    			}
-    		}
+				if (company.getEnergyCompanyID().intValue() == energyCompanyID) {
+					companies.remove( i );
+					return company;
+				}
+			}
 		}
-    	
-    	return null;
-    }
-    
-    public static LiteStarsEnergyCompany getDefaultEnergyCompany() {
-    	return getEnergyCompany( DEFAULT_ENERGY_COMPANY_ID );
-    }
-	
-	public static LiteWebConfiguration getWebConfiguration(int configID) {
+		
+		return null;
+	}
+
+	public LiteStarsEnergyCompany getDefaultEnergyCompany() {
+		return getEnergyCompany( DEFAULT_ENERGY_COMPANY_ID );
+	}
+
+	public LiteWebConfiguration getWebConfiguration(int configID) {
 		ArrayList webConfigList = getAllWebConfigurations();
 		synchronized (webConfigList) {
 			for (int i = 0; i < webConfigList.size(); i++) {
@@ -333,13 +267,13 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 		
 		return null;
 	}
-	
-	public static void addWebConfiguration(LiteWebConfiguration config) {
+
+	public void addWebConfiguration(LiteWebConfiguration config) {
 		ArrayList webConfigList = getAllWebConfigurations();
 		synchronized (webConfigList) { webConfigList.add(config); }
 	}
-	
-	public static LiteWebConfiguration deleteWebConfiguration(int configID) {
+
+	public LiteWebConfiguration deleteWebConfiguration(int configID) {
 		ArrayList webConfigList = getAllWebConfigurations();
 		synchronized (webConfigList) {
 			for (int i = 0; i < webConfigList.size(); i++) {
@@ -353,8 +287,8 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 		
 		return null;
 	}
-	
-	public static StarsYukonUser getStarsYukonUser(LiteYukonUser yukonUser) {
+
+	public StarsYukonUser getStarsYukonUser(LiteYukonUser yukonUser) {
 		Hashtable starsUsers = getAllStarsYukonUsers();
 		Integer userID = new Integer( yukonUser.getUserID() );
 		
@@ -377,13 +311,16 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 		
 		return null;
 	}
-	
-	public static void deleteStarsYukonUser(int userID) {
+
+	public void deleteStarsYukonUser(int userID) {
 		Hashtable starsUsers = getAllStarsYukonUsers();
 		synchronized (starsUsers) { starsUsers.remove( new Integer(userID) ); }
 	}
-	
-		
+    
+	public com.cannontech.message.util.ClientConnection getClientConnection() {
+		return connToDispatch;
+	}
+    
 	public void handleDBChangeMsg(DBChangeMsg msg, LiteBase lBase)
 	{
 		if (msg.getSource().equals(com.cannontech.common.util.CtiUtilities.DEFAULT_MSG_SOURCE))
@@ -625,7 +562,7 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 						StarsLiteFactory.setAddressingGroups( program, liteProg );
 					}
 				}
-				catch (SQLException e) {
+				catch (java.sql.SQLException e) {
 					CTILogger.error( e.getMessage(), e );
 				}
 				
@@ -674,7 +611,7 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 					if (program != null)
 						StarsLiteFactory.setAddressingGroups( program, liteProg );
 				}
-				catch (SQLException e) {
+				catch (java.sql.SQLException e) {
 					CTILogger.error( e.getMessage(), e );
 				}
 				
@@ -741,7 +678,7 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 				
 			case DBChangeMsg.CHANGE_TYPE_DELETE:
 				try {
-					StarsAdmin.removeRoute( energyCompany, msg.getId() );
+					StarsAdminUtil.removeRoute( energyCompany, msg.getId() );
 				}
 				catch (Exception e) {
 					CTILogger.error( e.getMessage(), e );

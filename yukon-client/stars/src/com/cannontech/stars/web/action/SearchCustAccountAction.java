@@ -14,6 +14,7 @@ import javax.xml.soap.SOAPMessage;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.Pair;
+import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.database.cache.functions.YukonListFuncs;
@@ -21,13 +22,10 @@ import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.stars.LiteAddress;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
-import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
-import com.cannontech.stars.web.servlet.SOAPClient;
-import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.SearchBy;
 import com.cannontech.stars.xml.serialize.StarsBriefCustAccountInfo;
@@ -116,7 +114,7 @@ public class SearchCustAccountAction implements ActionBase {
             searchAccount.setSearchValue( req.getParameter("SearchValue") );
             
             // Remember the last search option
-			session.setAttribute( ServletUtils.ATT_LAST_SEARCH_OPTION, new Integer(searchBy.getEntryID()) );
+			session.setAttribute( ServletUtils.ATT_LAST_ACCOUNT_SEARCH_OPTION, new Integer(searchBy.getEntryID()) );
 
             StarsOperation operation = new StarsOperation();
             operation.setStarsSearchCustomerAccount( searchAccount );
@@ -144,7 +142,7 @@ public class SearchCustAccountAction implements ActionBase {
                 return SOAPUtil.buildSOAPMessage( respOper );
             }
             
-        	LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+        	LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
         	
             StarsSearchCustomerAccount searchAccount = reqOper.getStarsSearchCustomerAccount();
             if (searchAccount.getSearchValue().trim().length() == 0) {
@@ -218,14 +216,10 @@ public class SearchCustAccountAction implements ActionBase {
 		            
 					session.setAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, liteAcctInfo );
 		            
-					StarsCustAccountInformation starsAcctInfo = null;
-					if (SOAPServer.isClientLocal()) {
-						starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteAcctInfo );
-						ServletUtils.removeTransientAttributes( session );
-						session.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, starsAcctInfo);
-					}
-					else	
-						starsAcctInfo = StarsLiteFactory.createStarsCustAccountInformation( liteAcctInfo, energyCompany, true );
+					StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteAcctInfo );
+					ServletUtils.removeTransientAttributes( session );
+					session.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, starsAcctInfo);
+					
 					resp.setStarsCustAccountInformation( starsAcctInfo );
             	}
 				else {
@@ -319,11 +313,7 @@ public class SearchCustAccountAction implements ActionBase {
 			StarsSearchCustomerAccountResponse resp = operation.getStarsSearchCustomerAccountResponse();
             if (resp == null) return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
 
-			if (resp.getStarsCustAccountInformation() != null) {
-				if (!SOAPClient.isServerLocal())
-					session.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, resp.getStarsCustAccountInformation());
-			}
-            else {
+			if (resp.getStarsCustAccountInformation() == null) {
             	/* No customer account, or more than one account found */
 				session.setAttribute( ServletUtils.ATT_ACCOUNT_SEARCH_RESULTS, resp );
             	return StarsConstants.FAILURE_CODE_OPERATION_FAILED;

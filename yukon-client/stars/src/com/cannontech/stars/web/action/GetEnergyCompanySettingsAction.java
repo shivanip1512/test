@@ -5,11 +5,10 @@ import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
-import com.cannontech.stars.web.servlet.SOAPClient;
-import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsGetEnergyCompanySettings;
@@ -71,7 +70,7 @@ public class GetEnergyCompanySettingsAction implements ActionBase {
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
             
-        	LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+        	LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
         	energyCompany.init();
         	
 			StarsEnergyCompanySettings settings = energyCompany.getStarsEnergyCompanySettings( user );
@@ -79,8 +78,7 @@ public class GetEnergyCompanySettingsAction implements ActionBase {
         	StarsGetEnergyCompanySettingsResponse resp = new StarsGetEnergyCompanySettingsResponse();
         	resp.setStarsEnergyCompanySettings( settings );
 	        
-            if (SOAPServer.isClientLocal())
-				session.setAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS, settings );
+			session.setAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS, settings );
             
             respOper.setStarsGetEnergyCompanySettingsResponse( resp );
             return SOAPUtil.buildSOAPMessage( respOper );
@@ -116,9 +114,6 @@ public class GetEnergyCompanySettingsAction implements ActionBase {
 			
             StarsGetEnergyCompanySettingsResponse resp = operation.getStarsGetEnergyCompanySettingsResponse();
             if (resp == null) return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
-            
-            if (!SOAPClient.isServerLocal())
-				session.setAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS, resp.getStarsEnergyCompanySettings() );
             
             return 0;
         }

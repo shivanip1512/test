@@ -7,9 +7,8 @@
 <%@ page import="com.cannontech.database.data.lite.stars.LiteStarsLMHardware" %>
 <%@ page import="com.cannontech.database.data.lite.stars.StarsLiteFactory" %>
 <%@ page import="com.cannontech.stars.util.ObjectInOtherEnergyCompanyException" %>
-<%@ page import="com.cannontech.stars.web.servlet.InventoryManager" %>
 <%
-	Object obj = session.getAttribute(InventoryManager.INVENTORY_TO_CHECK);
+	Object obj = session.getAttribute(InventoryManagerUtil.INVENTORY_TO_CHECK);
 	boolean inOther = (obj instanceof ObjectInOtherEnergyCompanyException);
 	LiteInventoryBase liteInv = (LiteInventoryBase) (inOther? ((ObjectInOtherEnergyCompanyException)obj).getObject() : obj);
 	

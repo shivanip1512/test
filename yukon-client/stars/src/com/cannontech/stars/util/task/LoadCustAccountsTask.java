@@ -7,8 +7,6 @@
 package com.cannontech.stars.util.task;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.SqlStatement;
 import com.cannontech.database.data.lite.stars.*;
 import com.cannontech.stars.util.WebClientException;
 
@@ -18,7 +16,7 @@ import com.cannontech.stars.util.WebClientException;
  * To change the template for this generated type comment go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-public class LoadInventoryTask implements TimeConsumingTask {
+public class LoadCustAccountsTask implements TimeConsumingTask {
 
 	int status = STATUS_NOT_INIT;
 	boolean isCanceled = false;
@@ -26,10 +24,10 @@ public class LoadInventoryTask implements TimeConsumingTask {
 	
 	LiteStarsEnergyCompany energyCompany = null;
 	
-	int numInvTotal = 0;
-	int numInvLoaded = 0;
+	int numAcctTotal = 0;
+	int numAcctLoaded = 0;
 	
-	public LoadInventoryTask(LiteStarsEnergyCompany energyCompany) {
+	public LoadCustAccountsTask(LiteStarsEnergyCompany energyCompany) {
 		this.energyCompany = energyCompany;
 	}
 	
@@ -61,8 +59,8 @@ public class LoadInventoryTask implements TimeConsumingTask {
 	 * @see com.cannontech.stars.util.task.TimeConsumingTask#getProgressMsg()
 	 */
 	public String getProgressMsg() {
-		if (numInvTotal > 0)
-			return numInvLoaded + " of " + numInvTotal + " hardwares loaded in inventory";
+		if (numAcctTotal > 0)
+			return numAcctLoaded + " of " + numAcctTotal + " customer accounts loaded";
 		return null;
 	}
 
@@ -86,27 +84,26 @@ public class LoadInventoryTask implements TimeConsumingTask {
 		status = STATUS_RUNNING;
 		
 		try {
-			String sql = "SELECT InventoryID FROM ECToInventoryMapping WHERE EnergyCompanyID = "
-					+ energyCompany.getEnergyCompanyID() + " AND InventoryID >= 0";
-			SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
-			stmt.execute();
-			
-			numInvTotal = stmt.getRowCount();
-			for (numInvLoaded = 0; numInvLoaded < numInvTotal; numInvLoaded++) {
-				int invID = ((java.math.BigDecimal) stmt.getRow(numInvLoaded)[0]).intValue();
-				if (energyCompany.getInventoryBrief(invID, true) == null)
-					throw new WebClientException( "Failed to load inventory with id=" + invID );
+			Object[][] accounts = com.cannontech.database.db.stars.customer.CustomerAccount.getAllCustomerAccounts( energyCompany.getEnergyCompanyID() );
+			if (accounts != null) {
+				numAcctTotal = accounts.length;
 				
-				if (isCanceled) {
-					status = STATUS_CANCELED;
-					return;
+				for (numAcctLoaded = 0; numAcctLoaded < numAcctTotal; numAcctLoaded++) {
+					int accountID = ((Integer)accounts[numAcctLoaded][0]).intValue();
+					if (energyCompany.getBriefCustAccountInfo(accountID, true) == null)
+						throw new WebClientException( "Failed to load customer account with id=" + accountID );
+					
+					if (isCanceled) {
+						status = STATUS_CANCELED;
+						return;
+					}
 				}
 			}
 			
-			energyCompany.setInventoryLoaded( true );
+			energyCompany.setAccountsLoaded( true );
 			status = STATUS_FINISHED;
 			
-			CTILogger.info( "All inventory loaded for energy company #" + energyCompany.getEnergyCompanyID() );
+			CTILogger.info( "All customer accounts loaded for energy company #" + energyCompany.getEnergyCompanyID() );
 		}
 		catch (Exception e) {
 			CTILogger.error( e.getMessage(), e );
@@ -115,7 +112,7 @@ public class LoadInventoryTask implements TimeConsumingTask {
 			if (e instanceof WebClientException)
 				errorMsg = e.getMessage();
 			else
-				errorMsg = "Failed to load inventory";
+				errorMsg = "Failed to load customer accounts";
 		}
 	}
 

@@ -14,7 +14,6 @@
     <classpathentry kind="lib" path="/third-party/struts.jar"/>
     <classpathentry kind="lib" path="/third-party/xerces.jar"/>
     <classpathentry kind="src" path="/common"/>
-    <classpathentry kind="src" path="/servlet"/>
     <classpathentry kind="lib" path="/third-party/commons-logging.jar"/>
     <classpathentry kind="lib" path="/third-party/jaxm-client.jar"/>
     <classpathentry kind="lib" path="/third-party/jruntags.jar"/>
@@ -22,8 +21,7 @@
     <classpathentry kind="lib" path="/third-party/dom4j.jar"/>
     <classpathentry kind="lib" path="/third-party/junit.jar"/>
     <classpathentry kind="src" path="/commander"/>
-    <classpathentry kind="lib" path="/third-party/commons-fileupload.jar"/>
     <classpathentry kind="lib" path="/third-party/jtds.jar"/>
-    <classpathentry kind="src" path="/dbeditor"/>
+    <classpathentry kind="lib" path="/third-party/commons-fileupload.jar"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>

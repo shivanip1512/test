@@ -1,5 +1,5 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
-<%@ page import="com.cannontech.stars.web.servlet.StarsAdmin" %>
+<%@ page import="com.cannontech.stars.web.util.StarsAdminUtil" %>
 <%
 	String referer = request.getParameter("referer");
 	if (referer == null) {
@@ -8,11 +8,11 @@
 	
 	StarsCustomerAddress address = null;
 	if (referer.equalsIgnoreCase("EnergyCompany.jsp")) {
-		StarsEnergyCompany ecTemp = (StarsEnergyCompany) session.getAttribute(StarsAdmin.ENERGY_COMPANY_TEMP);
+		StarsEnergyCompany ecTemp = (StarsEnergyCompany) session.getAttribute(StarsAdminUtil.ENERGY_COMPANY_TEMP);
 		address = ecTemp.getCompanyAddress();
 	}
 	else if (referer.equalsIgnoreCase("ServiceCompany.jsp")) {
-		StarsServiceCompany scTemp = (StarsServiceCompany) session.getAttribute(StarsAdmin.SERVICE_COMPANY_TEMP);
+		StarsServiceCompany scTemp = (StarsServiceCompany) session.getAttribute(StarsAdminUtil.SERVICE_COMPANY_TEMP);
 		address = scTemp.getCompanyAddress();
 		int compIdx = Integer.parseInt( request.getParameter("Company") );
 		referer += "?Company=" + compIdx;

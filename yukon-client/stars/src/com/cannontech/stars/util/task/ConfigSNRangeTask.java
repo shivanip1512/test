@@ -14,6 +14,7 @@ import javax.servlet.http.HttpSession;
 import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.Pair;
+import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -27,8 +28,7 @@ import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.action.UpdateLMHardwareConfigAction;
 import com.cannontech.stars.web.action.YukonSwitchCommandAction;
-import com.cannontech.stars.web.servlet.InventoryManager;
-import com.cannontech.stars.web.servlet.SOAPServer;
+import com.cannontech.stars.web.util.InventoryManagerUtil;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsInventory;
 import com.cannontech.stars.xml.serialize.StarsLMConfiguration;
@@ -127,9 +127,9 @@ public class ConfigSNRangeTask implements TimeConsumingTask {
 	public void run() {
 		HttpSession session = request.getSession(false);
 		StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
-		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
 		
-		invToConfig = (ArrayList) session.getAttribute( InventoryManager.SN_RANGE_TO_CONFIG );
+		invToConfig = (ArrayList) session.getAttribute( InventoryManagerUtil.SN_RANGE_TO_CONFIG );
 		if (invToConfig == null) {
 			status = STATUS_ERROR;
 			errorMsg = "There is no hardware to configure";
@@ -190,7 +190,7 @@ public class ConfigSNRangeTask implements TimeConsumingTask {
 			if (request.getParameter("UseHardwareAddressing") != null) {
 				hwConfig = new StarsLMConfiguration();
 				try {
-					InventoryManager.setStarsLMConfiguration( hwConfig, request );
+					InventoryManagerUtil.setStarsLMConfiguration( hwConfig, request );
 				}
 				catch (WebClientException e) {
 					CTILogger.error( e.getMessage(), e );
@@ -296,8 +296,8 @@ public class ConfigSNRangeTask implements TimeConsumingTask {
 		status = STATUS_FINISHED;
 		
 		if (numFailure == 0)
-			session.removeAttribute( InventoryManager.SN_RANGE_TO_CONFIG );
-		session.removeAttribute( InventoryManager.INVENTORY_SET );
+			session.removeAttribute( InventoryManagerUtil.SN_RANGE_TO_CONFIG );
+		session.removeAttribute( InventoryManagerUtil.INVENTORY_SET );
 		
 		if (numFailure > 0) {
 			String resultDesc = "<span class='ConfirmMsg'>" + "Configuration of " + numSuccess + " hardwares " +
@@ -306,8 +306,8 @@ public class ConfigSNRangeTask implements TimeConsumingTask {
 			if (errorMsg != null)
 				resultDesc += "<span class='ErrorMsg'>First error message: " + errorMsg + "</span><br>";
 			
-			session.setAttribute(InventoryManager.INVENTORY_SET_DESC, resultDesc);
-			session.setAttribute(InventoryManager.INVENTORY_SET, hardwareSet);
+			session.setAttribute(InventoryManagerUtil.INVENTORY_SET_DESC, resultDesc);
+			session.setAttribute(InventoryManagerUtil.INVENTORY_SET, hardwareSet);
 			session.setAttribute(ServletUtils.ATT_REDIRECT, request.getContextPath() + "/operator/Hardware/ResultSet.jsp");
 		}
 	}

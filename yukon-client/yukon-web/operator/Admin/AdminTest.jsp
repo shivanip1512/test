@@ -14,7 +14,7 @@
 	ArrayList members = liteEC.getChildren();
 	ArrayList memberCandidates = new ArrayList();
 	if (AuthFuncs.checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_MANAGE_MEMBERS)) {
-		ArrayList energyCompanies = SOAPServer.getAllEnergyCompanies();
+		ArrayList energyCompanies = StarsDatabaseCache.getInstance().getAllEnergyCompanies();
 		for (int i = 0; i < energyCompanies.size(); i++) {
 			LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) energyCompanies.get(i);
 			if (ECUtils.isDefaultEnergyCompany(company)) continue;	// exclude default energy company

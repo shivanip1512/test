@@ -13,6 +13,7 @@ import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.Transaction;
+import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.cache.functions.YukonUserFuncs;
@@ -32,8 +33,7 @@ import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.action.DeleteCustAccountAction;
-import com.cannontech.stars.web.servlet.SOAPServer;
-import com.cannontech.stars.web.servlet.StarsAdmin;
+import com.cannontech.stars.web.util.StarsAdminUtil;
 
 /**
  * @author yao
@@ -134,7 +134,7 @@ public class DeleteEnergyCompanyTask implements TimeConsumingTask {
 	 * @see java.lang.Runnable#run()
 	 */
 	public void run() {
-		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
 		
 		if (user == null) {
 			status = STATUS_ERROR;
@@ -282,7 +282,7 @@ public class DeleteEnergyCompanyTask implements TimeConsumingTask {
 					StarsLiteFactory.setApplianceCategory( appCat.getApplianceCategory(), liteAppCat );
 					
 					Transaction.createTransaction( Transaction.DELETE, appCat ).execute();
-					SOAPServer.deleteWebConfiguration( liteAppCat.getWebConfigurationID() );
+					StarsDatabaseCache.getInstance().deleteWebConfiguration( liteAppCat.getWebConfigurationID() );
 					
 					for (int j = 0; j < liteAppCat.getPublishedPrograms().size(); j++) {
 						LiteLMProgramWebPublishing liteProg = (LiteLMProgramWebPublishing) liteAppCat.getPublishedPrograms().get(j);
@@ -291,7 +291,7 @@ public class DeleteEnergyCompanyTask implements TimeConsumingTask {
 						cfg.setConfigurationID( new Integer(liteProg.getWebSettingsID()) );
 						
 						Transaction.createTransaction( Transaction.DELETE, cfg ).execute();
-						SOAPServer.deleteWebConfiguration( liteProg.getWebSettingsID() );
+						StarsDatabaseCache.getInstance().deleteWebConfiguration( liteProg.getWebSettingsID() );
 					}
 				}
 				
@@ -368,13 +368,13 @@ public class DeleteEnergyCompanyTask implements TimeConsumingTask {
 				// Delete membership from the energy company hierarchy
 				if (energyCompany.getParent() != null) {
 					currentAction = "Deleting membership";
-					StarsAdmin.removeMember( energyCompany.getParent(), energyCompany.getLiteID() );
+					StarsAdminUtil.removeMember( energyCompany.getParent(), energyCompany.getLiteID() );
 				}
 				
 				// Delete LM groups created for the default route
 				if (energyCompany.getDefaultRouteID() >= 0) {
 					currentAction = "Deleting LM groups created for the default route";
-					StarsAdmin.removeDefaultRoute( energyCompany );
+					StarsAdminUtil.removeDefaultRoute( energyCompany );
 				}
 				
 				// Delete the energy company!
@@ -387,7 +387,7 @@ public class DeleteEnergyCompanyTask implements TimeConsumingTask {
 				
 				Transaction.createTransaction( Transaction.DELETE, ec ).execute();
 				
-				SOAPServer.deleteEnergyCompany( energyCompany.getLiteID() );
+				StarsDatabaseCache.getInstance().deleteEnergyCompany( energyCompany.getLiteID() );
 				ServerUtils.handleDBChange( energyCompany, DBChangeMsg.CHANGE_TYPE_DELETE );
 				if (energyCompany.getPrimaryContactID() != CtiUtilities.NONE_ID) {
 					LiteContact liteContact = ContactFuncs.getContact( energyCompany.getPrimaryContactID() );

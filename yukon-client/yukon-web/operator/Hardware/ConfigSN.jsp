@@ -2,7 +2,6 @@
 <%@ page import="com.cannontech.common.util.Pair" %>
 <%@ page import="com.cannontech.database.cache.functions.YukonListFuncs" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteStarsLMHardware" %>
-<%@ page import="com.cannontech.stars.web.servlet.InventoryManager" %>
 <%
 	String trackHwAddr = liteEC.getEnergyCompanySetting(EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING);
 	boolean useHardwareAddressing = Boolean.valueOf(trackHwAddr).booleanValue();
@@ -10,10 +9,10 @@
 	int hwConfigType = 0;
 	StarsLMConfiguration configuration = null;
 	
-	ArrayList invToConfig = (ArrayList) session.getAttribute(InventoryManager.SN_RANGE_TO_CONFIG);
+	ArrayList invToConfig = (ArrayList) session.getAttribute(InventoryManagerUtil.SN_RANGE_TO_CONFIG);
 	if (invToConfig == null) {
 		invToConfig = new ArrayList();
-		session.setAttribute(InventoryManager.SN_RANGE_TO_CONFIG, invToConfig);
+		session.setAttribute(InventoryManagerUtil.SN_RANGE_TO_CONFIG, invToConfig);
 	}
 	else if (invToConfig.size() > 0) {
 		int devTypeID = 0;
@@ -63,9 +62,9 @@
 		}
 	}
 	else if (request.getParameter("Add") != null) {
-		Object invObj = session.getAttribute(InventoryManager.INVENTORY_TO_CHECK);
+		Object invObj = session.getAttribute(InventoryManagerUtil.INVENTORY_TO_CHECK);
 		if (invObj != null) {
-			session.removeAttribute(InventoryManager.INVENTORY_TO_CHECK);
+			session.removeAttribute(InventoryManagerUtil.INVENTORY_TO_CHECK);
 			
 			LiteStarsLMHardware liteHw = (LiteStarsLMHardware)
 					((invObj instanceof Pair)? ((Pair)invObj).getFirst() : invObj);

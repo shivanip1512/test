@@ -7,9 +7,11 @@
 		<project>cbc</project>
 		<project>commander</project>
 		<project>common</project>
+		<project>dbeditor</project>
 		<project>loadcontrol</project>
 		<project>macs</project>
 		<project>report</project>
+		<project>stars</project>
 		<project>tdc</project>
 		<project>trending</project>
 	</projects>

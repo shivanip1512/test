@@ -15,6 +15,7 @@ import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
+import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
@@ -23,8 +24,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
-import com.cannontech.stars.web.servlet.InventoryManager;
-import com.cannontech.stars.web.servlet.SOAPServer;
+import com.cannontech.stars.web.util.InventoryManagerUtil;
 
 /**
  * @author yao
@@ -84,7 +84,7 @@ public class DeleteSNRangeTask implements TimeConsumingTask {
 	public String getProgressMsg() {
 		if (numToBeDeleted > 0) {
 			if (status == STATUS_FINISHED && numFailure == 0) {
-				String snRange = InventoryManager.getSNRange( snFrom, snTo );
+				String snRange = InventoryManagerUtil.getSNRange( snFrom, snTo );
 				if (snRange != null)
 					snRange = "The serial numbers " + snRange;
 				else
@@ -118,7 +118,7 @@ public class DeleteSNRangeTask implements TimeConsumingTask {
 		HttpSession session = request.getSession(false);
 		StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 		
-		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
 		int categoryID = ECUtils.getInventoryCategoryID( devTypeID.intValue(), energyCompany );
 		
 		status = STATUS_RUNNING;
@@ -126,7 +126,7 @@ public class DeleteSNRangeTask implements TimeConsumingTask {
 		if (ECUtils.isMCT(categoryID)) {
 			ArrayList mctList = new ArrayList();
 			
-			ArrayList inventory = energyCompany.loadAllInventory();
+			ArrayList inventory = energyCompany.loadAllInventory( true );
 			synchronized (inventory) {
 				for (int i = 0; i < inventory.size(); i++) {
 					LiteInventoryBase liteInv = (LiteInventoryBase) inventory.get(i);
@@ -209,22 +209,22 @@ public class DeleteSNRangeTask implements TimeConsumingTask {
 			}
 		}
 		
-		String snRange = InventoryManager.getSNRange( snFrom, snTo );
+		String snRange = InventoryManagerUtil.getSNRange( snFrom, snTo );
 		if (snRange == null) snRange = "all serial numbers";
 		String logMsg = "Serial Range:" + snRange
 				+ ",Device Type:" + YukonListFuncs.getYukonListEntry(devTypeID.intValue()).getEntryText();
 		ActivityLogger.logEvent( user.getUserID(), ActivityLogActions.INVENTORY_DELETE_RANGE, logMsg );
 		
 		status = STATUS_FINISHED;
-		session.removeAttribute( InventoryManager.INVENTORY_SET );
+		session.removeAttribute( InventoryManagerUtil.INVENTORY_SET );
 		
 		if (numFailure > 0) {
 			String resultDesc = "<span class='ConfirmMsg'>" + numSuccess + " hardwares deleted successfully.</span><br>" +
 					"<span class='ErrorMsg'>" + numFailure + " hardwares failed (listed below).<br>" +
 					"If a hardware is assigned to a customer account, you must remove it from the account before deleting it.</span><br>";
 			
-			session.setAttribute(InventoryManager.INVENTORY_SET_DESC, resultDesc);
-			session.setAttribute(InventoryManager.INVENTORY_SET, hardwareSet);
+			session.setAttribute(InventoryManagerUtil.INVENTORY_SET_DESC, resultDesc);
+			session.setAttribute(InventoryManagerUtil.INVENTORY_SET, hardwareSet);
 			session.setAttribute(ServletUtils.ATT_REDIRECT, request.getContextPath() + "/operator/Hardware/ResultSet.jsp");
 		}
 	}

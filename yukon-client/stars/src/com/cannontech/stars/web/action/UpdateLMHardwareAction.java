@@ -10,6 +10,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
+import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteLMHardwareEvent;
@@ -25,8 +26,7 @@ import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
-import com.cannontech.stars.web.servlet.InventoryManager;
-import com.cannontech.stars.web.servlet.SOAPServer;
+import com.cannontech.stars.web.util.InventoryManagerUtil;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.StarsAppliances;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
@@ -63,13 +63,13 @@ public class UpdateLMHardwareAction implements ActionBase {
 			StarsOperation operation = null;
 			if (req.getParameter("InvID") != null) {
 				// Request from Inventory.jsp or ChangeLabel.jsp
-				LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+				LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
 				operation = getRequestOperation( req, energyCompany );
 			}
 			else {
 				// Request redirected from InventoryManager
-				operation = (StarsOperation) session.getAttribute(InventoryManager.STARS_INVENTORY_OPERATION);
-				session.removeAttribute( InventoryManager.STARS_INVENTORY_OPERATION );
+				operation = (StarsOperation) session.getAttribute(InventoryManagerUtil.STARS_INVENTORY_OPERATION);
+				session.removeAttribute( InventoryManagerUtil.STARS_INVENTORY_OPERATION );
 			}
 			
 			return SOAPUtil.buildSOAPMessage( operation );
@@ -101,7 +101,7 @@ public class UpdateLMHardwareAction implements ActionBase {
 				return SOAPUtil.buildSOAPMessage( respOper );
 			}
             
-			LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+			LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
 			LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) session.getAttribute(ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
             
 			StarsUpdateLMHardware updateHw = reqOper.getStarsUpdateLMHardware();
@@ -240,7 +240,7 @@ public class UpdateLMHardwareAction implements ActionBase {
 		
 		if (req.getParameter("DeviceID") != null) {
 			// This comes from operator side
-			InventoryManager.setStarsInv( updateHw, req, energyCompany );
+			InventoryManagerUtil.setStarsInv( updateHw, req, energyCompany );
 			
 			if (req.getParameter("OrigInvID") != null) {
 				int origInvID = Integer.parseInt( req.getParameter("OrigInvID") );

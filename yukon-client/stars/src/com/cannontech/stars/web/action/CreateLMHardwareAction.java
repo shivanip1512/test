@@ -11,6 +11,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
+import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteLMCustomerEvent;
@@ -28,8 +29,7 @@ import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
-import com.cannontech.stars.web.servlet.InventoryManager;
-import com.cannontech.stars.web.servlet.SOAPServer;
+import com.cannontech.stars.web.util.InventoryManagerUtil;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.StarsAppliance;
 import com.cannontech.stars.xml.serialize.StarsCreateLMHardware;
@@ -66,13 +66,13 @@ public class CreateLMHardwareAction implements ActionBase {
 			StarsOperation operation = null;
 			if (req.getParameter("InvID") != null) {
 				// Request from CreateHardware.jsp
-				LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+				LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
 				operation = getRequestOperation( req, energyCompany );
 			}
 			else {
 				// Request redirected from InventoryManager
-				operation = (StarsOperation) session.getAttribute(InventoryManager.STARS_INVENTORY_OPERATION);
-				session.removeAttribute( InventoryManager.STARS_INVENTORY_OPERATION );
+				operation = (StarsOperation) session.getAttribute(InventoryManagerUtil.STARS_INVENTORY_OPERATION);
+				session.removeAttribute( InventoryManagerUtil.STARS_INVENTORY_OPERATION );
 			}
 			
 			return SOAPUtil.buildSOAPMessage( operation );
@@ -111,7 +111,7 @@ public class CreateLMHardwareAction implements ActionBase {
 				return SOAPUtil.buildSOAPMessage( respOper );
 			}
         	
-			LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+			LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
         	
 			StarsCreateLMHardware createHw = reqOper.getStarsCreateLMHardware();
 			LiteInventoryBase liteInv = null;
@@ -179,7 +179,7 @@ public class CreateLMHardwareAction implements ActionBase {
 	
 	public static StarsOperation getRequestOperation(HttpServletRequest req, LiteStarsEnergyCompany energyCompany) throws WebClientException {
 		StarsCreateLMHardware createHw = new StarsCreateLMHardware();
-		InventoryManager.setStarsInv( createHw, req, energyCompany );
+		InventoryManagerUtil.setStarsInv( createHw, req, energyCompany );
 		
 		StarsOperation operation = new StarsOperation();
 		operation.setStarsCreateLMHardware( createHw );
@@ -263,7 +263,7 @@ public class CreateLMHardwareAction implements ActionBase {
 	 */
 	public static LiteLMThermostatSchedule initThermostatSchedule(int hwTypeDefID) throws TransactionException
 	{
-		LiteStarsEnergyCompany energyCompany = SOAPServer.getDefaultEnergyCompany();
+		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getDefaultEnergyCompany();
 		int hwTypeID = energyCompany.getYukonListEntry( hwTypeDefID ).getEntryID();
 		return initThermostatSchedule( hwTypeID, 0, 0, energyCompany );
 	}
@@ -558,7 +558,7 @@ public class CreateLMHardwareAction implements ActionBase {
 			}
 		}
 		
-		session.removeAttribute( InventoryManager.STARS_INVENTORY_TEMP );
+		session.removeAttribute( InventoryManagerUtil.STARS_INVENTORY_TEMP );
 		if (session.getAttribute(ServletUtils.ATT_REDIRECT) == null)
 			session.setAttribute( ServletUtils.ATT_REDIRECT, "/operator/Consumer/Inventory.jsp?InvNo=" + String.valueOf(invNo) );
 	}
