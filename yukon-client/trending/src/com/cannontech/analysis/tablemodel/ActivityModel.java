@@ -124,7 +124,7 @@ public class ActivityModel extends ReportModelBase
 	 */
 	public StringBuffer buildSQLStatement()
 	{
-		StringBuffer sql = new StringBuffer("SELECT AL.ENERGYCOMPANYID, AL.CUSTOMERID, AL.ACCOUNTID, CA.ACCOUNTNUMBER, ACTION, " + 
+		StringBuffer sql = new StringBuffer("SELECT AL.ENERGYCOMPANYID, AL.USERID, AL.CUSTOMERID, AL.ACCOUNTID, CA.ACCOUNTNUMBER, ACTION, " + 
 		" COUNT(ACTIVITYLOGID) AS ACTIONCOUNT " + 
 		" FROM ACTIVITYLOG AL LEFT OUTER JOIN CUSTOMERACCOUNT CA " +
 		" ON CA.ACCOUNTID = AL.ACCOUNTID " + 
@@ -132,8 +132,8 @@ public class ActivityModel extends ReportModelBase
 		if( getEnergyCompanyID() != null )
 			sql.append(" AND AL.ENERGYCOMPANYID = " + getEnergyCompanyID());
 		
-		sql.append(" GROUP BY AL.ENERGYCOMPANYID, AL.CUSTOMERID, AL.ACCOUNTID, CA.ACCOUNTNUMBER, ACTION " +
-					" ORDER BY AL.ENERGYCOMPANYID, AL.CUSTOMERID, CA.ACCOUNTNUMBER, ACTION");
+		sql.append(" GROUP BY AL.ENERGYCOMPANYID, AL.USERID, AL.CUSTOMERID, AL.ACCOUNTID, CA.ACCOUNTNUMBER, ACTION " +
+					" ORDER BY AL.ENERGYCOMPANYID, AL.USERID, AL.CUSTOMERID, CA.ACCOUNTNUMBER, ACTION");
 		return sql;
 		
 	}
@@ -172,15 +172,15 @@ public class ActivityModel extends ReportModelBase
 					acctNumHash.put(acctID, acctNum);
 				}
 					
-				sql = new StringBuffer("SELECT ENERGYCOMPANYID, CUSTOMERID, ACCOUNTID, ACTION, " + 
+				sql = new StringBuffer("SELECT ENERGYCOMPANYID, USERID, CUSTOMERID, ACCOUNTID, ACTION, " + 
 					" COUNT(ACTIVITYLOGID) AS ACTIONCOUNT " +
 					" FROM ACTIVITYLOG " +
 					" WHERE TIMESTAMP >= ? ");
 				if( getEnergyCompanyID() != null)
 					sql.append(" AND ENERGYCOMPANYID = " + getEnergyCompanyID());
 
-				sql.append(" GROUP BY ENERGYCOMPANYID, CUSTOMERID, ACCOUNTID, ACTION " +
-							" ORDER BY ENERGYCOMPANYID, CUSTOMERID, ACCOUNTID, ACTION");
+				sql.append(" GROUP BY ENERGYCOMPANYID, USERID, CUSTOMERID, ACCOUNTID, ACTION " +
+							" ORDER BY ENERGYCOMPANYID, USERID, CUSTOMERID, ACCOUNTID, ACTION");
 				
 				pstmt = conn.prepareStatement(sql.toString());
 				pstmt.setTimestamp(1, new java.sql.Timestamp( getStartTime() ));
@@ -194,15 +194,16 @@ public class ActivityModel extends ReportModelBase
 				while( rset.next())
 				{
 					Integer ecID = new Integer(rset.getInt(1));
-					Integer custID = new Integer(rset.getInt(2));
-					Integer acctID = new Integer(rset.getInt(3));
-					String action = rset.getString(4);
-					Integer count = new Integer(rset.getInt(5));
+					Integer userID = new Integer(rset.getInt(2));
+					Integer custID = new Integer(rset.getInt(3));
+					Integer acctID = new Integer(rset.getInt(4));
+					String action = rset.getString(5);
+					Integer count = new Integer(rset.getInt(6));
 					//ENERGYCOMPANYID, CUSTOMERID, ACCOUNTID, ACTION, COUNT(ACTIVITYLOGID) AS ACTIONCOUNT 
 
 					String acctNum = (String)acctNumHash.get(acctID);
 
-					ActivityLog al = new ActivityLog(ecID, custID, acctNum, count, action);
+					ActivityLog al = new ActivityLog(ecID, userID, custID, acctNum, count, action);
 					getData().add(al); 
 				}
 			}
@@ -238,14 +239,15 @@ public class ActivityModel extends ReportModelBase
 		try
 		{
 			Integer ecID = new Integer(rset.getInt(1));
-			Integer custID = new Integer(rset.getInt(2));
-			Integer acctID = new Integer(rset.getInt(3));
-			String acctNum = rset.getString(4);
-			String action = rset.getString(5);
-			Integer count = new Integer(rset.getInt(6));
-			//AL.ENERGYCOMPANYID, AL.CUSTOMERID, AL.ACCOUNTID, CA.ACCOUNTNUMBER, ACTION, COUNT(ACTIVITYLOGID) AS ACTIONCOUNT
+			Integer userID = new Integer(rset.getInt(2));
+			Integer custID = new Integer(rset.getInt(3));
+			Integer acctID = new Integer(rset.getInt(4));
+			String acctNum = rset.getString(5);
+			String action = rset.getString(6);
+			Integer count = new Integer(rset.getInt(7));
+			//AL.ENERGYCOMPANYID, AL.USERID, AL.CUSTOMERID, AL.ACCOUNTID, CA.ACCOUNTNUMBER, ACTION, COUNT(ACTIVITYLOGID) AS ACTIONCOUNT
 	
-			ActivityLog al = new ActivityLog(ecID, custID, acctNum, count, action);
+			ActivityLog al = new ActivityLog(ecID, userID, custID, acctNum, count, action);
 			getData().add(al);
 		}
 		catch(java.sql.SQLException e)
