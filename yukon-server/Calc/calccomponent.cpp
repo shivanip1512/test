@@ -10,8 +10,9 @@ using namespace std;
 #include "logger.h"
 #include "calc.h"
 
-RWDEFINE_NAMED_COLLECTABLE( CtiCalcComponent, "CtiCalcComponent" );
+extern BOOL _CALC_DEBUG;
 
+RWDEFINE_NAMED_COLLECTABLE( CtiCalcComponent, "CtiCalcComponent" );
 
 CtiCalcComponent::CtiCalcComponent( const RWCString &componentType, long componentPointId, 
                                     const RWCString &operationType,
@@ -186,6 +187,7 @@ BOOL CtiCalcComponent::isUpdated( void )
 
 double CtiCalcComponent::calculate( double input )
 {
+    double orignal = input;
     if( _componentType == operation )
     {
         CtiHashKey hashKey(_componentPointId);
@@ -216,6 +218,11 @@ double CtiCalcComponent::calculate( double input )
                 }
                 break;
         }
+        if( _CALC_DEBUG )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << "CtiCalcComponent::calculate(); point operation; input:" << orignal << ",   value:" << componentPointPtr->getPointValue() << ",   return:" << input << endl;
+        }
     }
     else if( _componentType == constant )
     {
@@ -237,12 +244,23 @@ double CtiCalcComponent::calculate( double input )
                 }
                 break;
         }
+        if( _CALC_DEBUG )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << "CtiCalcComponent::calculate(); constant operation; input:" << orignal << ",   constant:" << _constantValue << ",   return:" << input << endl;
+        }
     }
     else if( _componentType == function )
     {
         //  this, to keep this function small, and the functions elsewhere for maintenence
         input = _doFunction( _functionName );
+        if( _CALC_DEBUG )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << "CtiCalcComponent::calculate(); function: " << _functionName << "; input:" << orignal << ",   constant:" << _constantValue << ",   return:" << input << endl;
+        }
     }
+
     return input;
 }
 
