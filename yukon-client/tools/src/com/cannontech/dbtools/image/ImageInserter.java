@@ -59,7 +59,7 @@ public class ImageInserter {
 			conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
 			pstmt = conn.prepareStatement(INSERT_SQL);
 			
-			int id = getMaxID(conn) + 1;
+			//int id = getMaxID(conn) + 1;
 								
 		File[] allFiles = fDir.listFiles();
 		ImageFilter filter = new ImageFilter();
@@ -67,17 +67,20 @@ public class ImageInserter {
 		for( int i = 0; i < allFiles.length; i++ ) {
 			File f = allFiles[i];
 			if( f.isFile() && filter.accept(f) ) {
+				String yukName = f.getName().substring(f.getName().indexOf('-')+1);
+				int id = Integer.parseInt(f.getName().substring(0, f.getName().indexOf('-')));
 				
 				long len = f.length();
+				
 				InputStream in = new FileInputStream(f);
 				
-				pstmt.setInt(1, id++);
-            pstmt.setString(2, fDir.getName());
-            pstmt.setString(3, f.getName());
+				pstmt.setInt(1, id);
+            	pstmt.setString(2, fDir.getName());
+            	pstmt.setString(3, f.getName());
 				pstmt.setBinaryStream(4, in, (int) len);
 				pstmt.execute();
             
-            System.out.println(" (success) Inserted " + f.getName() );
+            System.out.println(" (success) Inserted " + yukName + " with id: " + id );
 			}	
 		}
 			pstmt.executeBatch();
