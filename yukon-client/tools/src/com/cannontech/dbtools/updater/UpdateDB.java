@@ -96,9 +96,9 @@ public class UpdateDB
 	public static double getDBVersion()
 	{
 		//do not lazy init this, just in case!!
-		CTIDatabase db = VersionTools.getDatabaseVersion();			
+		dbVersion = Double.parseDouble( 
+                        VersionTools.getDBVersionRefresh().getVersion() );
 
-		dbVersion = Double.parseDouble( db.getVersion() );
 		return dbVersion;					
 	}
 

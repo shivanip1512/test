@@ -43,11 +43,22 @@ private VersionTools() {
 }
 
 /**
+ * Returns the latest DB version stored in the DB 
+ * 
+ * @return
+ */
+public synchronized static CTIDatabase getDBVersionRefresh()
+{
+    db_obj = null;
+    return getDatabaseVersion();
+}
+
+/**
  * Insert the method's description here.
  * Creation date: (6/25/2001 9:18:30 AM)
  * @return java.lang.String
  */
-public final static CTIDatabase getDatabaseVersion() 
+public synchronized static CTIDatabase getDatabaseVersion() 
 {	
 	if( db_obj != null )
 		return db_obj;

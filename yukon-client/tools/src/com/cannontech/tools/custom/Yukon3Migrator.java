@@ -349,9 +349,8 @@ public class Yukon3Migrator extends MessageFrameAdaptor
 	
 	private double getDBVersion()
 	{
-		CTIDatabase db = VersionTools.getDatabaseVersion();			
-
-		return Double.parseDouble(db.getVersion());				
+		return Double.parseDouble(
+                    VersionTools.getDBVersionRefresh().getVersion() );				
 	}
 
 }
