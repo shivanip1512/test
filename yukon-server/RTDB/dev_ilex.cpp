@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_welco.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2002/11/20 16:40:27 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2002/11/25 16:04:39 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -730,7 +730,7 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
 
                             _snprintf(tStr, 127, "%s point %s = %f", getName(), NumericPoint->getName(), PValue );
 
-                            pData = CTIDBG_new CtiPointDataMsg(PointRecord->getPointID(), PValue, NormalQuality, AnalogPointType, tStr);
+                            pData = CTIDBG_new CtiPointDataMsg(NumericPoint->getPointID(), PValue, NormalQuality, AnalogPointType, tStr);
 
                             if(pData != NULL)
                             {
