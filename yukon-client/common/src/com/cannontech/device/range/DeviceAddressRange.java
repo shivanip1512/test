@@ -6,11 +6,16 @@ package com.cannontech.device.range;
  * 
  * A undefined generated comment
  */
+import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.pao.DeviceTypes;
 
 public class DeviceAddressRange
 {
    private static final RangeBase RANGE_DEFAULT = new RangeBase();
+   
+   private static final RangeBase RANGE_MCT410 = 
+		 new RangeBase( 1000000, 2796201, "Valid range for MCT410 addresses is 1000000 to 2796201");
+		 // and can not be 1398101" );   
    
    private static final RangeBase RANGE_MCT = 
          new RangeBase( 0, 2796201, "Valid range for MCT addresses is 0 to 2796201");
@@ -58,7 +63,11 @@ public class DeviceAddressRange
    
    private static RangeBase getRangeBase( int deviceType_ )
    {
-      if( com.cannontech.database.data.device.DeviceTypesFuncs.isMCT(deviceType_) )
+      if( deviceType_ == DeviceTypesFuncs.MCT410IL)
+      {
+         return RANGE_MCT410;	
+      }
+      else if( com.cannontech.database.data.device.DeviceTypesFuncs.isMCT(deviceType_) )
       {
          return RANGE_MCT;
       }
