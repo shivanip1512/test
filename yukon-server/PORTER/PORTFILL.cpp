@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTFILL.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2003/04/16 18:59:44 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2003/10/23 14:33:50 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -43,13 +43,16 @@
    -------------------------------------------------------------------- */
 #include <windows.h>
 #include <process.h>
-#include "os2_2w32.h"
-#include "cticalls.h"
+#include <vector>
+using namespace std;
 
 #include <stdlib.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+
+#include "os2_2w32.h"
+#include "cticalls.h"
 
 #include "cparms.h"
 #include "queues.h"
@@ -68,6 +71,7 @@
 #include "rtdb.h"
 #include "mgr_port.h"
 #include "mgr_device.h"
+#include "mutex.h"
 #include "dev_tcu.h"
 #include "dev_tap.h"
 #include "dev_wctp.h"
@@ -76,14 +80,16 @@
 
 extern HCTIQUEUE* QueueHandle(LONG pid);
 
+static void WriteMessageToPorter(OUTMESS *&OutMessage);
 static USHORT gsUID = 0;
 static USHORT gsSPID = 0;
 
-// Protocols will be defined as 0x01 Masks Versacom
-// Protocols will be defined as 0x02 Masks Expresscom
-// Therefore 0x03 Masks BOTH
+static CtiMutex vectorLock;                     // Protects iterations and loads.
+static vector< ULONG > vcomFillerPaos;          // PaoIds which will send out Versacom filler messages.
+static vector< ULONG > xcomFillerPaos;          // PaoIds which will send out Expresscom filler messages.
 
-static USHORT sendProtocol = 0x0003;        // Default to both
+
+
 
 /* Routine to generate filler messages */
 static void applySendFiller(const long unusedid, CtiPortSPtr Port, void *uid)
@@ -147,11 +153,7 @@ static void applySendFiller(const long unusedid, CtiPortSPtr Port, void *uid)
                                 OutMessage->Buffer.OutMessage[PREIDLEN + 4] = 0xb8;
                                 OutMessage->Buffer.OutMessage[PREIDLEN + 5] = LOBYTE ((gsUID == 0 ? 0xff : gsUID));
 
-                                if(PortManager.writeQueue(OutMessage->Port, OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
-                                {
-                                    printf ("Error Writing to Queue for Port %2hd\n", xcu->getPortID());
-                                    delete (OutMessage);
-                                }
+                                WriteMessageToPorter(OutMessage);
                             }
 
                             break;
@@ -280,12 +282,7 @@ static void applySendFillerPage(const long unusedid, CtiPortSPtr Port, void *uid
                                                 NewOutMessage->Buffer.TAPSt.Message[i + 1] = 'g';
 
                                                 /* Now add it to the collection of outbound messages */
-                                                // In the beginning (6/25/01) ALL will send a filler message.
-                                                if(PortManager.writeQueue(NewOutMessage->Port, NewOutMessage->EventCode, sizeof (*NewOutMessage), (char *) NewOutMessage, NewOutMessage->Priority))
-                                                {
-                                                    printf ("Error Writing to Queue for Port %2hd\n", tapTRX->getPortID());
-                                                    delete (NewOutMessage);
-                                                }
+                                                WriteMessageToPorter(NewOutMessage);
                                             }
                                             else
                                             {
@@ -346,12 +343,7 @@ static void applySendFillerPage(const long unusedid, CtiPortSPtr Port, void *uid
 
                                         OUTMESS *NewOutMessage = CTIDBG_new OUTMESS( OutMessage );  // Create and copy
                                         /* Now add it to the collection of outbound messages */
-                                        // In the beginning (6/25/01) ALL will send a sync message.
-                                        if(NewOutMessage && PortManager.writeQueue(NewOutMessage->Port, NewOutMessage->EventCode, sizeof (*NewOutMessage), (char *) NewOutMessage, NewOutMessage->Priority))
-                                        {
-                                            printf ("Error Writing to Queue for Port %2hd\n", tapTRX->getPortID());
-                                            delete (NewOutMessage);
-                                        }
+                                        WriteMessageToPorter(NewOutMessage);
                                     }
                                 }
                             }
@@ -438,12 +430,7 @@ static void applySendFillerPage(const long unusedid, CtiPortSPtr Port, void *uid
                                                 NewOutMessage->Buffer.TAPSt.Message[i + 1] = 'g';
 
                                                 /* Now add it to the collection of outbound messages */
-                                                // In the beginning (6/25/01) ALL will send a filler message.
-                                                if(PortManager.writeQueue(NewOutMessage->Port, NewOutMessage->EventCode, sizeof (*NewOutMessage), (char *) NewOutMessage, NewOutMessage->Priority))
-                                                {
-                                                    printf ("Error Writing to Queue for Port %2hd\n", tapTRX->getPortID());
-                                                    delete (NewOutMessage);
-                                                }
+                                                WriteMessageToPorter(NewOutMessage);
                                             }
                                             else
                                             {
@@ -504,12 +491,7 @@ static void applySendFillerPage(const long unusedid, CtiPortSPtr Port, void *uid
 
                                         OUTMESS *NewOutMessage = CTIDBG_new OUTMESS( OutMessage );  // Create and copy
                                         /* Now add it to the collection of outbound messages */
-                                        // In the beginning (6/25/01) ALL will send a sync message.
-                                        if(NewOutMessage && PortManager.writeQueue(NewOutMessage->Port, NewOutMessage->EventCode, sizeof (*NewOutMessage), (char *) NewOutMessage, NewOutMessage->Priority))
-                                        {
-                                            printf ("Error Writing to Queue for Port %2hd\n", tapTRX->getPortID());
-                                            delete (NewOutMessage);
-                                        }
+                                        WriteMessageToPorter(NewOutMessage);
                                     }
                                 }
                             }
@@ -625,3 +607,18 @@ VOID FillerThread (PVOID Arg)
 }
 
 
+void WriteMessageToPorter(OUTMESS *&OutMessage)
+{
+    /* Now add it to the collection of outbound messages */
+    // In the beginning (6/25/01) ALL will send a sync message.
+    if(OutMessage && PortManager.writeQueue(OutMessage->Port, OutMessage->EventCode, sizeof (*OutMessage), (char *)OutMessage, OutMessage->Priority))
+    {
+        printf ("Error Writing to Queue for Port %2hd\n", OutMessage->Port);
+        delete (OutMessage);
+        OutMessage = 0;
+    }
+
+    OutMessage = 0;
+
+    return;
+}
