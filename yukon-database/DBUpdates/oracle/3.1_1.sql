@@ -1441,7 +1441,6 @@ update YukonRoleProperty set DefaultValue='yukon/DefaultHeader.gif' where RolePr
 
 alter table MacSchedule add template NUMBER;
 update MacSchedule set template = 0 where commandfile is not null;
-alter table MacSchedule MODIFY template NULL;
 
 delete from YukonListEntry where ListID in
 (select ListID from YukonSelectionList where ListName like 'OptOutPeriod%');
