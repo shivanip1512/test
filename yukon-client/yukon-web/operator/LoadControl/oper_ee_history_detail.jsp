@@ -45,7 +45,7 @@ System.out.println("revisionNumber: " + revisionNumber);
                 <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>"/>">&nbsp;</td>
               </tr>
               <tr> 
-                <td width="310" height = "28" class="PageHeader">&nbsp;&nbsp;&nbsp;Load Response</td>
+                <td width="310" height = "28" class="PageHeader">&nbsp;&nbsp;&nbsp;<cti:getProperty propertyid="<%=EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>"/></td>
                 <td width="235"  height = "28" valign="middle">&nbsp;</td>
                 
                   <td width="58" valign="middle"> 
@@ -159,8 +159,9 @@ System.out.println("revisionNumber: " + revisionNumber);
 %>
         </table>
             <p align="center" class="MainHeader"><b>TOTAL: <%= numberFormat.format(totalCommitted) %> 
-              kW</b></p>
-        
+              kWh</b></p>
+             <p align="center" class="MainHeader"> <a href="oper_ee.jsp?tab=history" class="Link1"><b>Back 
+             to History Summary</b></a><br>
             <p align="center">&nbsp;
           </td>
         <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
