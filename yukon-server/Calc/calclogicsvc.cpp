@@ -27,6 +27,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "configparms.h"
 #include "logger.h"
 #include "cparms.h"
+#include "utility.h"
 
 #include "calclogicsvc.h"
 
@@ -401,8 +402,18 @@ void CtiCalcLogicService::Run( )
                     }
 
                     nextCheckTime = timeNow + CHECK_RATE_SECONDS;
+
                 }
 
+                if( ((timeNow-18000) % 86400) == 0 )
+                {//reset the max allocations once a day, midnight central standard time
+                    LONG currentAllocations = ResetBreakAlloc();
+                    if( _CALC_DEBUG )
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << RWTime() << " - Current Number of Historical Memory Allocations: " << currentAllocations << endl;
+                    }
+                }
             } // end for userquit
 
 

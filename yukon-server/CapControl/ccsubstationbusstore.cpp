@@ -32,6 +32,7 @@
 #include "configparms.h"
 #include "msg_dbchg.h"
 #include "capcontroller.h"
+#include "utility.h"
 
 extern ULONG _CC_DEBUG;
 
@@ -217,6 +218,13 @@ void CtiCCSubstationBusStore::reset()
     bool wasAlreadyRunning = false;
     try
     {
+        LONG currentAllocations = ResetBreakAlloc();
+        if( _CC_DEBUG & CC_DEBUG_EXTENDED )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << RWTime() << " - Current Number of Historical Memory Allocations: " << currentAllocations << endl;
+        }
+
         {
             CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
             RWDBConnection conn = getConnection();

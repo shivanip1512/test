@@ -45,6 +45,7 @@
 #include "configparms.h"
 #include "msg_dbchg.h"
 #include "loadmanager.h"
+#include "utility.h"
 
 extern ULONG _LM_DEBUG;
 
@@ -215,6 +216,13 @@ void CtiLMControlAreaStore::reset()
     bool wasAlreadyRunning = false;
     try
     {
+        LONG currentAllocations = ResetBreakAlloc();
+        if( _LM_DEBUG & LM_DEBUG_EXTENDED )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << RWTime() << " - Current Number of Historical Memory Allocations: " << currentAllocations << endl;
+        }
+
         RWTimer overallTimer;
         overallTimer.start();
         {
