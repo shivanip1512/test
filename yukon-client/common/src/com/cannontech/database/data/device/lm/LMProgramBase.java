@@ -6,6 +6,7 @@ package com.cannontech.database.data.device.lm;
  * @author: 
  */
 import com.cannontech.database.db.device.lm.LMControlAreaProgram;
+import com.cannontech.database.db.device.lm.LMControlScenarioProgram;
 import com.cannontech.database.db.device.lm.LMProgramControlWindow;
 
 public abstract class LMProgramBase extends com.cannontech.database.data.pao.YukonPAObject implements com.cannontech.common.editor.EditorPanel
@@ -53,6 +54,7 @@ public void delete() throws java.sql.SQLException
 
 	delete("DynamicLMProgram", "DeviceID", getPAObjectID() );
 	delete(LMControlAreaProgram.TABLE_NAME, "LMProgramDeviceID", getPAObjectID() );
+	delete(LMControlScenarioProgram.TABLE_NAME, "ProgramID", getPAObjectID() );
 	
 	
 	getProgram().delete();

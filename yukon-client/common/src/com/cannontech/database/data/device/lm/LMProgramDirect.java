@@ -84,7 +84,7 @@ public void delete() throws java.sql.SQLException
 private void deleteFromDynamicTables() throws java.sql.SQLException
 {
 	delete("DynamicLMProgramDirect", "deviceID", getPAObjectID() );
-	delete("DynamicLMGroup", "LMProgramID", getPAObjectID() );
+	//delete("DynamicLMGroup", "LMProgramID", getPAObjectID() );
 }
 
 /**
