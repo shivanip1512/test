@@ -103,6 +103,7 @@ public interface YukonListEntryTypes
 	public static final int YUK_DEF_ID_INV_SEARCH_BY_LAST_NAME		= 2704;
 	public static final int YUK_DEF_ID_INV_SEARCH_BY_ORDER_NO		= 2705;
 	public static final int YUK_DEF_ID_INV_SEARCH_BY_ADDRESS		= 2706;
+	public static final int YUK_DEF_ID_INV_SEARCH_BY_ALT_TRACK_NO	= 2707;
 	public static final int YUK_DEF_ID_INV_SORT_BY_SERIAL_NO		= 2801;
 	public static final int YUK_DEF_ID_INV_SORT_BY_INST_DATE		= 2802;
 	public static final int YUK_DEF_ID_INV_FILTER_BY_DEV_TYPE		= 2901;
