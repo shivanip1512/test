@@ -36,7 +36,6 @@ public class GraphBean extends Graph
 	private String start = "";
 	private String format = "png";
 	private int page = 1;
-
 	/**
 	 * GraphClient constructor comment.
 	 */
@@ -133,6 +132,26 @@ public class GraphBean extends Graph
 	{
 		if( getGraphDefinition() != null)
 			return getGraphDefinition().getGraphDefinition().getGraphDefinitionID().intValue();
+		else
+			return -1;
+	}
+	/**
+	 * Method setPointID.
+	 * @param newPointid int
+	 */
+	public void setPointid(int newPointID)
+	{
+		if( newPointID != getPointid())
+			setPointIDs(newPointID);			
+	}	
+	/**
+	 * Method getPointID.
+	 * @return int
+	 */
+	public int getPointid()
+	{
+		if( getPointIDs() != null)
+			return getPointIDs()[0];
 		else
 			return -1;
 	}
