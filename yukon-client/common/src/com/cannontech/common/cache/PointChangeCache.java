@@ -1,6 +1,7 @@
 package com.cannontech.common.cache;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiProperties;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.cache.functions.StateFuncs;
@@ -29,7 +30,7 @@ import com.cannontech.database.data.lite.LiteState;
 public class PointChangeCache  implements Runnable, java.util.Observer {	
 	// Connection to dispatch
 	private com.cannontech.message.dispatch.ClientConnection conn = null;
-	
+
 	// Stores current PointData messages by PointID
 	// ( key = Integer, value = com.cannontech.message.dispatch.message.PointData)
 	private java.util.Hashtable pointData = new java.util.Hashtable();
@@ -69,52 +70,38 @@ protected PointChangeCache()
  */
 public synchronized void connect() 
 {
-	String vgHost = "localhost";
-	int vgPort = 1510;
+	String host = CtiProperties.getInstance().getProperty(CtiProperties.KEY_DISPATCH_MACHINE, "127.0.0.1");
+	String portStr = CtiProperties.getInstance().getProperty(CtiProperties.KEY_DISPATCH_PORT, "1510");
+	int port = 1510;
+	
+	try {
+		port = Integer.parseInt(portStr);
+	} catch(NumberFormatException nfe) {
+		CTILogger.warn("Bad value for " + CtiProperties.KEY_DISPATCH_PORT);		
+	}			
 
-	//figure out where vangogh is
-		java.io.InputStream is = getClass().getResourceAsStream("/config.properties");
-		java.util.Properties props = new java.util.Properties();
-		try
-		{
-			props.load(is);
-		}
-		catch (Exception e)
-		{
-			CTILogger.error("Can't read the properties file. " + "Make sure /config.properties is in the CLASSPATH");
-			return;
-		}
-		vgHost = props.getProperty("dispatch_machine");
-		String portStr = props.getProperty("dispatch_port");
-		try
-		{
-			vgPort = Integer.parseInt(portStr);
-		}
-		catch (NumberFormatException ne)
-		{
-			CTILogger.warn("unable to determine dispatch");
-			return;
-		}
-		
-		CTILogger.debug("attempting to connect to vangogh @" + vgHost + ":" + vgPort);
-		conn = new com.cannontech.message.dispatch.ClientConnection();
-		conn.addObserver(this);
-		conn.setHost(vgHost);
-		conn.setPort(vgPort);
-		com.cannontech.message.dispatch.message.Registration reg = new com.cannontech.message.dispatch.message.Registration();
-		reg.setAppName("PointChangeCache " + (new java.util.Date()).getTime());
-		reg.setAppIsUnique(0);
-		reg.setAppKnownPort(0);
-		reg.setAppExpirationDelay(5000);
-		com.cannontech.message.dispatch.message.PointRegistration pReg = new com.cannontech.message.dispatch.message.PointRegistration();
-		pReg.setRegFlags(com.cannontech.message.dispatch.message.PointRegistration.REG_ALL_PTS_MASK |
+	
+	CTILogger.debug("attempting to connect to dispatch @" + host + ":" + port);
+	conn = new com.cannontech.message.dispatch.ClientConnection();
+	conn.addObserver(this);
+	conn.setHost(host);
+	conn.setPort(port);
+
+	com.cannontech.message.dispatch.message.Registration reg = new com.cannontech.message.dispatch.message.Registration();
+	reg.setAppName("PointChangeCache " + (new java.util.Date()).getTime());
+	reg.setAppIsUnique(0);
+	reg.setAppKnownPort(0);
+	reg.setAppExpirationDelay(5000);
+	com.cannontech.message.dispatch.message.PointRegistration pReg = new com.cannontech.message.dispatch.message.PointRegistration();
+	pReg.setRegFlags(com.cannontech.message.dispatch.message.PointRegistration.REG_ALL_PTS_MASK |
 							com.cannontech.message.dispatch.message.PointRegistration.REG_ALARMS );
-		com.cannontech.message.dispatch.message.Multi multi = new com.cannontech.message.dispatch.message.Multi();
-		multi.getVector().addElement(reg);
-		multi.getVector().addElement(pReg);
-		conn.setRegistrationMsg(multi);
-		conn.setAutoReconnect(true);
-		conn.setTimeToReconnect(30);
+
+	com.cannontech.message.dispatch.message.Multi multi = new com.cannontech.message.dispatch.message.Multi();
+	multi.getVector().addElement(reg);
+	multi.getVector().addElement(pReg);
+	conn.setRegistrationMsg(multi);
+	conn.setAutoReconnect(true);
+	conn.setTimeToReconnect(30);
 	
 	try
 	{
