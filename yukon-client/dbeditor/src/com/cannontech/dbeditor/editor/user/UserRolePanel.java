@@ -10,15 +10,18 @@ import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
 
-import javax.swing.DefaultCellEditor;
+import javax.swing.JComboBox;
 import javax.swing.JTextField;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
+import com.cannontech.common.gui.table.JComboCellEditor;
 import com.cannontech.common.gui.tree.CTITreeModel;
 import com.cannontech.common.gui.tree.CheckNode;
 import com.cannontech.common.gui.tree.CheckNodeSelectionListener;
@@ -278,48 +281,40 @@ private javax.swing.JTable getJTableProperties() {
 			ivjJTableProperties.setDefaultRenderer( Object.class, new RolePropertyRenderer() );
 			
 			
-			
+/*
 			//create our editor for the Integer fields
 			javax.swing.JComboBox combo = new javax.swing.JComboBox();
 			combo.setEditable( true );
-//			combo.setDocument( new com.cannontech.common.gui.unchanging.LongRangeDocument(1, 99999) );
 			//try to center our editor text when editing
 			if( combo.getEditor().getEditorComponent() instanceof JTextField )
 			{
 				JTextField txtEditor = (JTextField)combo.getEditor().getEditorComponent();
 				txtEditor.setHorizontalAlignment( JTextField.CENTER );
-				
-/*          
-				txtEditor.addFocusListener( new FocusListener()
-				{
-					public void focusGained(FocusEvent e) 
-                    {
-                        CTILogger.info("FOC GAINED");
-                    }
-
-					public void focusLost(FocusEvent e)
-					{
-						//if a button on the screen was pressed, save the edited cell
-						if( getJTableProperties().isEditing()
-							 && !(e.getOppositeComponent() instanceof JWindow) )
-                        {
-                            CTILogger.info("val= " + getJTableProperties().getCellEditor().getCellEditorValue() );
-                            CTILogger.info(" row= " + getJTableProperties().getSelectedRow() );
-							getJTableProperties().getCellEditor().stopCellEditing();                            
-                        }
-					}
-
-				});
-*/
-
 			}
 
 			DefaultCellEditor ed = new DefaultCellEditor(combo);
 			ed.setClickCountToStart(1);
-
-
 			ivjJTableProperties.setDefaultEditor( Object.class, ed );                  
+*/
             
+            
+            
+            TableColumnModel tcm = ivjJTableProperties.getColumnModel();
+            TableColumn tc = tcm.getColumn(RolePropertyTableModel.COL_VALUE);
+              
+            JComboBox combo = new JComboBox();
+            combo.setEditable( true );
+
+            //try to center our editor text when editing
+            if( combo.getEditor().getEditorComponent() instanceof JTextField )
+            {
+                JTextField txtEditor = (JTextField)combo.getEditor().getEditorComponent();
+                txtEditor.setHorizontalAlignment( JTextField.CENTER );
+            }
+          
+            JComboCellEditor jc = new JComboCellEditor(combo);              
+            tc.setCellEditor( jc );
+                          
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
