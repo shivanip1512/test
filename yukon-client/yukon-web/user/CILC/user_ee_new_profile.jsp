@@ -1,7 +1,7 @@
 <html>
 <%@ include file="../include/user_header.jsp" %>
 <%@ page import="com.cannontech.common.constants.YukonSelectionList"%>
-<%@ page import="com.cannontech.common.constants.YukonListFuncs"%>
+<%@ page import="com.cannontech.database.cache.functions.YukonListFuncs"%>
 <%@ page import="com.cannontech.common.constants.YukonSelectionListDefs"%>
 <%@ page import="com.cannontech.common.constants.YukonListEntry"%>
 <head>
