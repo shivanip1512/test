@@ -498,6 +498,7 @@ static struct {
 { "macs\\mgr_mcsched.cpp", 0.000000, "Unknown" },
 { "macs\\tbl_mcsched.cpp", 0.000000, "Unknown" },
 { "macs\\tbl_mcsimpsched.cpp", 0.000000, "Unknown" },
+{ "mccmd\\.#mccmd.cpp.1.2", 0.000000, "Unknown" },
 { "mccmd\\decodetextcmdfile.cpp", 0.000000, "Unknown" },
 { "mccmd\\include\\decodetextcmdfile.h", 0.000000, "Unknown" },
 { "mccmd\\include\\mccmd.h", 0.000000, "Unknown" },
