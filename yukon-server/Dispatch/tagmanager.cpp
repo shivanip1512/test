@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2003/12/31 16:15:37 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2003/12/31 18:22:40 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -300,9 +300,13 @@ void CtiTagManager::run()
         {
             try
             {
-                processDynamicQueue();
-                processTagLogQueue();
-                processDynamicRemovals();
+                CtiLockGuard< CtiMutex > tlg(_mux, 5000);
+                if(tlg.isAcquired())
+                {
+                    processDynamicQueue();
+                    processTagLogQueue();
+                    processDynamicRemovals();
+                }
             }
             catch(...)
             {
