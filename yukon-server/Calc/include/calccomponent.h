@@ -40,8 +40,7 @@ private:
     BOOL                 _valid;
     long                 _lastUseUpdateNum;
 
-    double               _doFunction( RWCString & );
-    double               _figureDemandAvg( long );
+    double               _doFunction( RWCString &, bool &validCalc );
 
 protected:
     long                 _componentPointId;
@@ -73,7 +72,7 @@ public:
     BOOL isUpdated( int calcsUpdateType = 0, const RWTime &calcsLastUpdateTime = RWTime() );
 
     CtiCalcComponent  &operator=( const CtiCalcComponent &componentToCopy );
-    double            calculate( double input, int &component_quality, RWTime &component_time );
+    double            calculate( double input, int &component_quality, RWTime &component_time, bool &calcValid );
 
 //  as soon as the FIXME in calccomponent.cpp is done, these can be uncommented
 //    or, if they're never used, delete the whole shebang...

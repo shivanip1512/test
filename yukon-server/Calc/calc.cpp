@@ -105,7 +105,7 @@ void CtiCalc::cleanup( void )
 }
 
 
-double CtiCalc::calculate( int &calc_quality, RWTime &calc_time )
+double CtiCalc::calculate( int &calc_quality, RWTime &calc_time, bool &calcValid )
 {
     double retVal = 0.0;
     RWSlistCollectablesIterator iter( _components );
@@ -135,7 +135,7 @@ double CtiCalc::calculate( int &calc_quality, RWTime &calc_time )
             CtiCalcComponent *tmpComponent = (CtiCalcComponent *)iter.key( );
             _valid = _valid & tmpComponent->isValid( );  //  Entire calculation is only valid if each component is valid
 
-            retVal = tmpComponent->calculate( retVal, componentQuality, componentTime );  //  Calculate on returned value
+            retVal = tmpComponent->calculate( retVal, componentQuality, componentTime, calcValid );  //  Calculate on returned value
 
             qualityFlag |= (1 << componentQuality);    // Flag each returned quality...
             solidTime = calcTimeFromComponentTime( componentTime, componentQuality, minTime, maxTime );

@@ -62,7 +62,7 @@ public:
     void appendComponent( CtiCalcComponent *componentToAdd );
     void cleanup( void );
     PointUpdateType getUpdateType( void );
-    double calculate( int &calc_quality, RWTime &calc_time );
+    double calculate( int &calc_quality, RWTime &calc_time, bool &calcValid );
     double figureDemandAvg(long secondsInAvg);
     BOOL ready( void );
     void push( double );

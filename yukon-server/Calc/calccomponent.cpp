@@ -194,7 +194,7 @@ BOOL CtiCalcComponent::isUpdated( int calcsUpdateType, const RWTime &calcsLastUp
         return TRUE;
 }
 
-double CtiCalcComponent::calculate( double input, int &component_quality, RWTime &component_time )
+double CtiCalcComponent::calculate( double input, int &component_quality, RWTime &component_time, bool &calcValid )
 {
     double orignal = input;
 
@@ -223,10 +223,10 @@ double CtiCalcComponent::calculate( double input, int &component_quality, RWTime
     {
         switch( _operationType )
         {
-        case addition:       input = _doFunction(RWCString("addition"));  break;
-        case subtraction:    input = _doFunction(RWCString("subtraction"));  break;
-        case multiplication: input = _doFunction(RWCString("multiplication"));  break;
-        case division:       input = _doFunction(RWCString("division"));  break;
+        case addition:       input = _doFunction(RWCString("addition"), calcValid);  break;
+        case subtraction:    input = _doFunction(RWCString("subtraction"), calcValid);  break;
+        case multiplication: input = _doFunction(RWCString("multiplication"), calcValid);  break;
+        case division:       input = _doFunction(RWCString("division"), calcValid);  break;
         case push:
             {
                 // Handled above with the push based on _componentPointId.
@@ -249,14 +249,14 @@ double CtiCalcComponent::calculate( double input, int &component_quality, RWTime
 
         switch( _operationType )
         {
-        case addition:       input = _doFunction(RWCString("addition"));  break;
-        case subtraction:    input = _doFunction(RWCString("subtraction"));  break;
-        case multiplication: input = _doFunction(RWCString("multiplication"));  break;
-        case division:       input = _doFunction(RWCString("division"));  break;
-        case greater:        input = _doFunction(RWCString(">"));  break;
-        case geq:            input = _doFunction(RWCString(">="));  break;
-        case less:           input = _doFunction(RWCString("<"));  break;
-        case leq:            input = _doFunction(RWCString("<="));  break;
+        case addition:       input = _doFunction(RWCString("addition"), calcValid);  break;
+        case subtraction:    input = _doFunction(RWCString("subtraction"), calcValid);  break;
+        case multiplication: input = _doFunction(RWCString("multiplication"), calcValid);  break;
+        case division:       input = _doFunction(RWCString("division"), calcValid);  break;
+        case greater:        input = _doFunction(RWCString(">"), calcValid);  break;
+        case geq:            input = _doFunction(RWCString(">="), calcValid);  break;
+        case less:           input = _doFunction(RWCString("<"), calcValid);  break;
+        case leq:            input = _doFunction(RWCString("<="), calcValid);  break;
         case push:           break; // This was completed with the above push!
         }
         if( _CALC_DEBUG & CALC_DEBUG_COMPONENT_POSTCALC_VALUE )
@@ -268,7 +268,7 @@ double CtiCalcComponent::calculate( double input, int &component_quality, RWTime
     else if( _componentType == function )
     {
         //  this, to keep this function small, and the functions elsewhere for maintenence
-        input = _doFunction( _functionName );
+        input = _doFunction( _functionName, calcValid );
         if( _CALC_DEBUG & CALC_DEBUG_COMPONENT_POSTCALC_VALUE )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -281,9 +281,10 @@ double CtiCalcComponent::calculate( double input, int &component_quality, RWTime
 }
 
 
-double CtiCalcComponent::_doFunction( RWCString &functionName )
+double CtiCalcComponent::_doFunction( RWCString &functionName, bool &validCalc )
 {
     double retVal = 0.0;
+    validCalc = true;
 
     try
     {
@@ -313,7 +314,12 @@ double CtiCalcComponent::_doFunction( RWCString &functionName )
             double operand2 = _calcpoint->pop( );
             double operand1 = _calcpoint->pop( );
 
-            retVal = operand1 / operand2;
+            if(operand2 != 0.0)
+            {
+                retVal = operand1 / operand2;
+            }
+            else
+                validCalc = false;
         }
         else if( !functionName.compareTo(">") || !functionName.compareTo("greater than",RWCString::ignoreCase) )
         {
@@ -456,6 +462,7 @@ double CtiCalcComponent::_doFunction( RWCString &functionName )
             double NaNDefenseDouble = (kw*kw)+(kvar*kvar);
             if( NaNDefenseDouble <= 0.0 )
             {
+                validCalc = false;
                 kva = 0.0;
             }
             else
@@ -484,6 +491,7 @@ double CtiCalcComponent::_doFunction( RWCString &functionName )
             double NaNDefenseDouble = (kw*kw)+(kvar*kvar);
             if( NaNDefenseDouble <= 0.0 )
             {
+                validCalc = false;
                 kva = 0.0;
             }
             else
@@ -540,6 +548,7 @@ double CtiCalcComponent::_doFunction( RWCString &functionName )
             double kva = 0.0;
             if( NaNDefenseDouble <= 0.0 )
             {
+                validCalc = false;
                 kva = 0.0;
             }
             else
@@ -559,6 +568,7 @@ double CtiCalcComponent::_doFunction( RWCString &functionName )
             double NaNDefenseDouble = (kw*kw)+(kvar*kvar);
             if( NaNDefenseDouble <= 0.0 )
             {
+                validCalc = false;
                 kva = 0.0;
             }
             else
@@ -577,6 +587,7 @@ double CtiCalcComponent::_doFunction( RWCString &functionName )
             double NaNDefenseDouble = (kva*kva)-(kvar*kvar);
             if( NaNDefenseDouble <= 0.0 )
             {
+                validCalc = false;
                 kw = 0.0;
             }
             else
@@ -595,6 +606,7 @@ double CtiCalcComponent::_doFunction( RWCString &functionName )
             double NaNDefenseDouble = (kva*kva)-(kw*kw);
             if( NaNDefenseDouble <= 0.0 )
             {
+                validCalc = false;
                 kvar = 0.0;
             }
             else
@@ -616,6 +628,7 @@ double CtiCalcComponent::_doFunction( RWCString &functionName )
 
             if( componentPointValue <= 0.0 )
             {
+                validCalc = false;
                 retVal = 0.0;
             }
             else
@@ -634,6 +647,7 @@ double CtiCalcComponent::_doFunction( RWCString &functionName )
             }
             else
             {
+                validCalc = false;
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -645,8 +659,6 @@ double CtiCalcComponent::_doFunction( RWCString &functionName )
             double componentPointValue = _calcpoint->pop( );;
             retVal = atan(componentPointValue);
         }
-        //added 3/4/03 JW
-        //added 7/31/03 JW
         else if( !functionName.compareTo("X^Y",RWCString::ignoreCase) )
         {
             double y = _calcpoint->pop();
@@ -670,6 +682,7 @@ double CtiCalcComponent::_doFunction( RWCString &functionName )
         else
         {
             // We do not have a function.
+            validCalc = false;
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " Function " << functionName << " not implemented " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -687,12 +700,12 @@ double CtiCalcComponent::_doFunction( RWCString &functionName )
     }
 
     //added 7/31/03 JW
-    if( _isnan(retVal) )
+    if( _isnan(retVal) || !_finite(retVal) )        // !_finite should be thought of as isInfinite(retVal)  We cannot have that!
     {
         retVal = 0.0;
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << __FILE__ << " (" << __LINE__ << ")  _doFunction tried to return a NaN for Calc Point Id: " << _calcpoint->getPointId() << endl;
+            dout << __FILE__ << " (" << __LINE__ << ")  _doFunction tried to return a NaN/INF for Calc Point Id: " << _calcpoint->getPointId() << endl;
         }
     }
 

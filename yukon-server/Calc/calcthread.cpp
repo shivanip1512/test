@@ -31,25 +31,35 @@ void CtiCalculateThread::pointChange( long changedID, double newValue, RWTime &n
             dout << RWTime() << " - Point Data ID: " << changedID << " Val: " << newValue << " Time: " << newTime << " Quality: " << newQuality << endl;
         }
 
-        if( newTime.seconds() > pointPtr->getPointTime().seconds() ||       // Point Change is newer than last point data
-            ( pointPtr->getNumUpdates() > 0 &&                              // Point has been updated AND
-              ( newQuality != pointPtr->getPointQuality() ||                // quality, tags, or value have changed.
-                newValue != pointPtr->getPointValue() ||
-                newTags != pointPtr->getPointTags() ) ) )
+        if(pointPtr)
         {
-            pointPtr->setPointValue( newValue, newTime, newQuality, newTags );      // Update the pointStore.
-            dependentIterator = pointPtr->getDependents( );
-
-            for( ; (*dependentIterator)( ); )
+            if( newTime.seconds() > pointPtr->getPointTime().seconds() ||       // Point Change is newer than last point data
+                ( pointPtr->getNumUpdates() > 0 &&                              // Point has been updated AND
+                  ( newQuality != pointPtr->getPointQuality() ||                // quality, tags, or value have changed.
+                    newValue != pointPtr->getPointValue() ||
+                    newTags != pointPtr->getPointTags() ) ) )
             {
-                _auAffectedPoints.append( dependentIterator->key( ).dependentID );
-            }
+                pointPtr->setPointValue( newValue, newTime, newQuality, newTags );      // Update the pointStore.
+                dependentIterator = pointPtr->getDependents( );
 
-            delete dependentIterator;
+                for( ; (*dependentIterator)( ); )
+                {
+                    _auAffectedPoints.append( dependentIterator->key( ).dependentID );
+                }
+
+                delete dependentIterator;
+            }
+            else if( pointPtr->getNumUpdates() == 0 )
+            {
+                pointPtr->firstPointValue( newValue, newTime, newQuality, newTags );
+            }
         }
-        else if( pointPtr->getNumUpdates() == 0 )
+        else
         {
-            pointPtr->firstPointValue( newValue, newTime, newQuality, newTags );
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
         }
     }
     catch(...)
@@ -64,6 +74,7 @@ void CtiCalculateThread::periodicLoop( void )
 {
     try
     {
+        bool calcValid;
         float msLeftThisSecond;
         RWTime newTime, tempTime;
         RWTPtrHashMapIterator<CtiHashKey, CtiCalc, my_hash<CtiHashKey> , equal_to<CtiHashKey> > periodicIter( _periodicPoints );
@@ -132,11 +143,12 @@ void CtiCalculateThread::periodicLoop( void )
 
                 {
                     RWMutexLock::LockGuard msgLock(_pointDataMutex);
-                    newPointValue = calcPoint->calculate( calcQuality, calcTime );
+                    newPointValue = calcPoint->calculate( calcQuality, calcTime, calcValid );
                 }
 
                 calcPoint->setNextInterval(calcPoint->getUpdateInterval());
 
+                if(calcValid)
                 {
                     sprintf( pointDescription, "calc point %l update", pointId );
 
@@ -150,6 +162,15 @@ void CtiCalculateThread::periodicLoop( void )
                         dout << RWTime() << " PeriodCalc setting Calc Point ID: " << pointId << " to New Value: " << newPointValue << endl;
                     }
                 }
+                else
+                {
+                    if(_CALC_DEBUG & CALC_DEBUG_POSTCALC_VALUE)
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " ### Calculation of point " << calcPoint->getPointId() << " was invalid (ex. div by zero or sqrt(<0))." << endl;
+                    }
+                }
+
             }
 
             //  post message
@@ -192,6 +213,7 @@ void CtiCalculateThread::onUpdateLoop( void )
 
     try
     {
+        bool calcValid;
         long pointIDChanged, recalcPointID;
         double recalcValue;
         char pointDescription[80];
@@ -262,7 +284,7 @@ void CtiCalculateThread::onUpdateLoop( void )
                     CtiHashKey pointHashKey(calcPoint->getPointId());
                     CtiPointStoreElement* calcPointPtr = (CtiPointStoreElement*)((*pointStore)[&pointHashKey]);
 
-                    recalcValue = calcPoint->calculate( calcQuality, calcTime );    // Here is the MATH
+                    recalcValue = calcPoint->calculate( calcQuality, calcTime, calcValid );    // Here is the MATH
                     calcPoint->setNextInterval(calcPoint->getUpdateInterval());     // This only matters for periodicPlusUpdatePoints.
 
                     // Make sure we do not try to move backwards in time.
@@ -279,46 +301,46 @@ void CtiCalculateThread::onUpdateLoop( void )
 
                     CtiPointDataMsg *pData = NULL;
 
-                    if( calcPoint->getPointCalcWindowEndTime().seconds() > RWTime(RWDate(1,1,1991)).seconds() )
+                    if( calcValid && calcPoint->getPointCalcWindowEndTime() > RWTime(RWDate(1,1,1991)) )
                     {// demand average point madness
 
                         long davgpid = calcPoint->findDemandAvgComponentPointId();
 
                         if(davgpid)
                         {
-                        CtiHashKey componentPointHashKey(davgpid);
-                        CtiPointStoreElement* componentPointPtr = 0;
+                            CtiHashKey componentPointHashKey(davgpid);
+                            CtiPointStoreElement* componentPointPtr = 0;
 
-                        componentPointPtr = (CtiPointStoreElement*)((*pointStore)[&componentPointHashKey]);
+                            componentPointPtr = (CtiPointStoreElement*)((*pointStore)[&componentPointHashKey]);
 
-                        if(componentPointPtr)
-                        {
-                            RWTime now;
+                            if(componentPointPtr)
+                            {
+                                RWTime now;
                                 RWTime et = calcPoint->getPointCalcWindowEndTime();
-                            RWTime etplus = (calcPoint->getPointCalcWindowEndTime() + componentPointPtr->getSecondsSincePreviousPointTime());
+                                RWTime etplus = (calcPoint->getPointCalcWindowEndTime() + componentPointPtr->getSecondsSincePreviousPointTime());
 
                                 if( et <= now &&  now < etplus )    // Are we greater than the end time, but less than the end time + "slop"
                                 {
-                                if( _CALC_DEBUG & CALC_DEBUG_DEMAND_AVG )
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    if( _CALC_DEBUG & CALC_DEBUG_DEMAND_AVG )
+                                    {
+                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
                                         dout << RWTime() << " - New Point Data message for Calc Point Id: " << recalcPointID << " New Demand Avg Value: " << recalcValue << endl;
                                     }
-                                pData = new CtiPointDataMsg(recalcPointID, recalcValue, calcQuality, InvalidPointType);  // Use InvalidPointType so dispatch solves the Analog/Status nature by itself
-                                pData->setTime(calcPoint->getPointCalcWindowEndTime());
-                            }
+                                    pData = new CtiPointDataMsg(recalcPointID, recalcValue, calcQuality, InvalidPointType);  // Use InvalidPointType so dispatch solves the Analog/Status nature by itself
+                                    pData->setTime(calcPoint->getPointCalcWindowEndTime());
+                                }
 
                                 calcPointPtr->setPointValue( recalcValue, RWTime(), NormalQuality, 0 );
                             }
-                        else
-                        {
+                            else
                             {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " **** Error Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Calc Point " << calcPoint->getPointId() << endl;
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << RWTime() << " **** Error Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Calc Point " << calcPoint->getPointId() << endl;
+                                }
                             }
                         }
-                    }
-                    else
+                        else
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -326,11 +348,18 @@ void CtiCalculateThread::onUpdateLoop( void )
                             }
                         }
                     }
-                    else
+                    else if(calcValid)
                     {//normal calc point
-
                         pData = new CtiPointDataMsg(recalcPointID, recalcValue, calcQuality, InvalidPointType);  // Use InvalidPointType so dispatch solves the Analog/Status nature by itself
                         pData->setTime(calcTime);
+                    }
+                    else if(!calcValid)
+                    {
+                        if(_CALC_DEBUG & CALC_DEBUG_POSTCALC_VALUE)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " ### Calculation of point " << calcPoint->getPointId() << " was invalid (ex. div by zero or sqrt(<0))." << endl;
+                        }
                     }
 
                     if( pData != NULL )

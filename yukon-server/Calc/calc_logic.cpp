@@ -19,7 +19,7 @@ int install( void );
 int remove( void );
 
 LPTSTR szServiceName = "CALCLOGIC";
-LPTSTR szDisplayName = "Yukon Calc-Logic Service";
+LPTSTR szDisplayName = "Calc-Logic Service";
 
 extern RWCString CALCVERSION;
 
