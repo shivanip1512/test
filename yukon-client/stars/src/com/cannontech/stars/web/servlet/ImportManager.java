@@ -2663,7 +2663,39 @@ public class ImportManager extends HttpServlet {
 			ArrayList resInfoLines = ServerUtils.readFile( resInfoFile, true );
 			
 			Hashtable preprocessedData = (Hashtable) session.getAttribute(PREPROCESSED_DATA);
-			if (preprocessedData == null)
+			if (preprocessedData != null) {
+				// Clear up the old data from memory
+				ArrayList acctFieldsList = (ArrayList) preprocessedData.get("CustomerAccount");
+				if (acctFieldsList != null) {
+					acctFieldsList.clear();
+					preprocessedData.remove( "CustomerAccount" );
+				}
+				
+				ArrayList invFieldsList = (ArrayList) preprocessedData.get("Inventory");
+				if (invFieldsList != null) {
+					invFieldsList.clear();
+					preprocessedData.remove( "Inventory" );
+				}
+				 
+				ArrayList appFieldsList = (ArrayList) preprocessedData.get("Appliance");
+				if (appFieldsList != null) {
+					appFieldsList.clear();
+					preprocessedData.remove( "Appliance" );
+				}
+				
+				ArrayList orderFieldsList = (ArrayList) preprocessedData.get("WorkOrder");
+				if (orderFieldsList != null) {
+					orderFieldsList.clear();
+					preprocessedData.remove( "WorkOrder" );
+				}
+				
+				ArrayList resFieldsList = (ArrayList) preprocessedData.get("CustomerResidence");
+				if (resFieldsList != null) {
+					resFieldsList.clear();
+					preprocessedData.remove( "CustomerResidence" );
+				}
+			}
+			else
 				preprocessedData = new Hashtable();
 			
 			Hashtable acctIDFields = new Hashtable();	// Map from account id(Integer) to fields(String[])

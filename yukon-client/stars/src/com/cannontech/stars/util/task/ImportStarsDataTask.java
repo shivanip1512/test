@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
+import java.util.Iterator;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
@@ -42,11 +43,18 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 	
 	StarsYukonUser user = null;
 	Hashtable preprocessedData = null;
+	
 	ArrayList acctFieldsList = null;
 	ArrayList invFieldsList = null;
 	ArrayList appFieldsList = null;
 	ArrayList orderFieldsList = null;
 	ArrayList resFieldsList = null;
+	
+	int acctFieldsCnt = 0;
+	int invFieldsCnt = 0;
+	int appFieldsCnt = 0;
+	int orderFieldsCnt = 0;
+	int resFieldsCnt = 0;
 	
 	int numAcctAdded = 0;
 	int numInvAdded = 0;
@@ -103,25 +111,25 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 			}
 			else if (status == STATUS_RUNNING) {
 				msg = "";
-				if (acctFieldsList.size() > 0) {
-					if (numAcctAdded == acctFieldsList.size())
+				if (acctFieldsCnt > 0) {
+					if (numAcctAdded == acctFieldsCnt)
 						msg += numAcctAdded + " customer accounts imported successfully";
 					else
-						msg += numAcctAdded + " of " + acctFieldsList.size() + " customer accounts imported";
+						msg += numAcctAdded + " of " + acctFieldsCnt + " customer accounts imported";
 					msg += LINE_SEPARATOR;
 				}
-				if (invFieldsList.size() > 0) {
-					if (numInvAdded  == invFieldsList.size())
+				if (invFieldsCnt > 0) {
+					if (numInvAdded  == invFieldsCnt)
 						msg += numInvAdded + " hardwares imported successfully";
 					else
-						msg += numInvAdded + " of " + invFieldsList.size() + " hardwares imported";
+						msg += numInvAdded + " of " + invFieldsCnt + " hardwares imported";
 					msg += " (" + numRecvrAdded + " receivers, " + numMeterAdded + " meters)" + LINE_SEPARATOR;
 				}
-				if (appFieldsList.size() > 0) {
-					if (numAppImported == appFieldsList.size())
+				if (appFieldsCnt > 0) {
+					if (numAppImported == appFieldsCnt)
 						msg += numAppImported + " appliances imported successfully";
 					else
-						msg += numAppImported + " of " + appFieldsList.size() + " appliances imported";
+						msg += numAppImported + " of " + appFieldsCnt + " appliances imported";
 					msg += " (" + numACImported + " ac," +
 							numWHImported + " wh," +
 							numGenImported + " gen," +
@@ -133,18 +141,18 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 							numGenlImported + " genl)" +
 							LINE_SEPARATOR;
 				}
-				if (orderFieldsList.size() > 0) {
-					if (numOrderAdded == orderFieldsList.size())
+				if (orderFieldsCnt > 0) {
+					if (numOrderAdded == orderFieldsCnt)
 						msg += numOrderAdded + " work orders imported successfully";
 					else
-						msg += numOrderAdded + " of " + orderFieldsList.size() + " work orders imported";
+						msg += numOrderAdded + " of " + orderFieldsCnt + " work orders imported";
 					msg += LINE_SEPARATOR;
 				}
-				if (resFieldsList.size() > 0) {
-					if (numResAdded == resFieldsList.size())
+				if (resFieldsCnt > 0) {
+					if (numResAdded == resFieldsCnt)
 						msg += numResAdded + " residence info imported successfully";
 					else
-						msg += numResAdded + " of " + resFieldsList.size() + " residence information imported";
+						msg += numResAdded + " of " + resFieldsCnt + " residence information imported";
 				}
 			}
 			
@@ -180,6 +188,12 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 		orderFieldsList = (ArrayList) preprocessedData.get("WorkOrder");
 		resFieldsList = (ArrayList) preprocessedData.get("CustomerResidence");
 		
+		acctFieldsCnt = acctFieldsList.size();
+		invFieldsCnt = invFieldsList.size();
+		appFieldsCnt = appFieldsList.size();
+		orderFieldsCnt = orderFieldsList.size();
+		resFieldsCnt = resFieldsList.size();
+		
 		// Map of import_account_id(Integer) to db_account_id(Integer) or LiteStarsCustAccountInformation object
 		Hashtable acctIDMap = (Hashtable) preprocessedData.get( "CustomerAccountMap" );
 		if (acctIDMap == null) {
@@ -211,8 +225,9 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 			File custMapFile = new File(path, "customer.map");
 			fw = new java.io.PrintWriter(new java.io.FileWriter(custMapFile, true), true);	// Append to file and auto flush
 			
-			for (int i = 0; i < acctFieldsList.size(); i++) {
-				String[] fields = (String[]) acctFieldsList.get(i);
+			Iterator it = acctFieldsList.listIterator();
+			while (it.hasNext()) {
+				String[] fields = (String[]) it.next();
 				lineNo = fields[ImportManager.IDX_LINE_NUM];
 				
 				LiteStarsCustAccountInformation liteAcctInfo = ImportManager.newCustomerAccount( fields, user, energyCompany );
@@ -221,6 +236,7 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 				fw.println(fields[ImportManager.IDX_ACCOUNT_ID] + "," + liteAcctInfo.getAccountID());
 				
 				numAcctAdded++;
+				it.remove();	// Try to free up memory as we go
 				
 				if (isCanceled) {
 					status = STATUS_CANCELED;
@@ -235,8 +251,9 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 			File hwConfigMapFile = new File(path, "hwconfig.map");
 			fw = new java.io.PrintWriter(new java.io.FileWriter(hwConfigMapFile, true), true);
 			
-			for (int i = 0; i < invFieldsList.size(); i++) {
-				String[] fields = (String[]) invFieldsList.get(i);
+			it = invFieldsList.listIterator();
+			while (it.hasNext()) {
+				String[] fields = (String[]) it.next();
 				lineNo = fields[ImportManager.IDX_LINE_NUM];
 				
 				Integer acctID = Integer.valueOf( fields[ImportManager.IDX_ACCOUNT_ID] );
@@ -267,11 +284,11 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 				else if (liteInv.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_TEMP_UNAVAIL)
 					logMsg.add("Receiver (import_inv_id=" + fields[ImportManager.IDX_INV_ID] + ",db_inv_id=" + liteInv.getInventoryID() + ") is temporarily out of service");
 				
-				for (int j = 0; j < 3; j++) {
-					if (fields[ImportManager.IDX_R1_STATUS + j].equals("1"))
-						logMsg.add("Receiver (import_inv_id=" + fields[ImportManager.IDX_INV_ID] + ",db_inv_id=" + liteInv.getInventoryID() + ") relay " + (j+1) + " is out of service");
-					else if (fields[ImportManager.IDX_R1_STATUS + j].equals("2"))
-						logMsg.add("Receiver (import_inv_id=" + fields[ImportManager.IDX_INV_ID] + ",db_inv_id=" + liteInv.getInventoryID() + ") relay " + (j+1) + " was out before switch placed out");
+				for (int i = 0; i < 3; i++) {
+					if (fields[ImportManager.IDX_R1_STATUS + i].equals("1"))
+						logMsg.add("Receiver (import_inv_id=" + fields[ImportManager.IDX_INV_ID] + ",db_inv_id=" + liteInv.getInventoryID() + ") relay " + (i+1) + " is out of service");
+					else if (fields[ImportManager.IDX_R1_STATUS + i].equals("2"))
+						logMsg.add("Receiver (import_inv_id=" + fields[ImportManager.IDX_INV_ID] + ",db_inv_id=" + liteInv.getInventoryID() + ") relay " + (i+1) + " was out before switch placed out");
 				}
 				
 				if (liteAcctInfo != null) {
@@ -280,20 +297,20 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 					ArrayList programs = new ArrayList();
 					int[] progIDs = new int[3];	// Save the program ID on each relay here so we can map them to appliance id later
 					
-					for (int j = 0; j < 3; j++) {
-						if (fields[ImportManager.IDX_R1_GROUP + j].equals("") || fields[ImportManager.IDX_R1_GROUP + j].equals("0"))
+					for (int i = 0; i < 3; i++) {
+						if (fields[ImportManager.IDX_R1_GROUP + i].equals("") || fields[ImportManager.IDX_R1_GROUP + i].equals("0"))
 							continue;
 						
-						int groupID = Integer.parseInt( fields[ImportManager.IDX_R1_GROUP + j] );
+						int groupID = Integer.parseInt( fields[ImportManager.IDX_R1_GROUP + i] );
 						int progID = 0;
 						int appCatID = 0;
 						
-						for (int k = 0; k < appCats.size(); k++) {
-							LiteApplianceCategory liteAppCat = (LiteApplianceCategory) appCats.get(k);
-							for (int l = 0; l < liteAppCat.getPublishedPrograms().length; l++) {
-								LiteLMProgram liteProg = liteAppCat.getPublishedPrograms()[l];
-								for (int m = 0; m < liteProg.getGroupIDs().length; m++) {
-									if (liteProg.getGroupIDs()[m] == groupID) {
+						for (int j = 0; j < appCats.size(); j++) {
+							LiteApplianceCategory liteAppCat = (LiteApplianceCategory) appCats.get(j);
+							for (int k = 0; k < liteAppCat.getPublishedPrograms().length; k++) {
+								LiteLMProgram liteProg = liteAppCat.getPublishedPrograms()[k];
+								for (int l = 0; l < liteProg.getGroupIDs().length; l++) {
+									if (liteProg.getGroupIDs()[l] == groupID) {
 										progID = liteProg.getProgramID();
 										appCatID = liteAppCat.getApplianceCategoryID();
 										progIDs[j] = progID;
@@ -315,19 +332,19 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 						ImportManager.programSignUp( programs, liteAcctInfo, new Integer(liteInv.getInventoryID()), energyCompany, conn );
 						
 						int[] appIDs = new int[3];
-						for (int j = 0; j < 3; j++) {
-							if (progIDs[j] == 0) continue;
+						for (int i = 0; i < 3; i++) {
+							if (progIDs[i] == 0) continue;
 							
-							for (int k = 0; k < liteAcctInfo.getAppliances().size(); k++) {
-								LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(k);
-								if (liteApp.getLmProgramID() == progIDs[j]) {
-									appIDs[j] = liteApp.getApplianceID();
+							for (int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {
+								LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(j);
+								if (liteApp.getLmProgramID() == progIDs[i]) {
+									appIDs[i] = liteApp.getApplianceID();
 									break;
 								}
 							}
 							
-							if (appIDs[j] == 0)	// shouldn't happen
-								throw new WebClientException("Cannot find appliance with RelayNum = " + (j+1));
+							if (appIDs[i] == 0)	// shouldn't happen
+								throw new WebClientException("Cannot find appliance with RelayNum = " + (i+1));
 						}
 						
 						appIDMap.put( new Integer(fields[ImportManager.IDX_INV_ID]), appIDs );
@@ -342,6 +359,7 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 					numRecvrAdded++;
 				else
 					numMeterAdded++;
+				it.remove();
 				
 				if (isCanceled) {
 					status = STATUS_CANCELED;
@@ -353,8 +371,9 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 			fw = null;
 			lineNo = null;
 			
-			for (int i = 0; i < appFieldsList.size(); i++) {
-				String[] fields = (String[]) appFieldsList.get(i);
+			it = appFieldsList.listIterator();
+			while (it.hasNext()) {
+				String[] fields = (String[]) it.next();
 				lineNo = fields[ImportManager.IDX_LINE_NUM];
 				
 				Integer acctID = Integer.valueOf( fields[ImportManager.IDX_ACCOUNT_ID] );
@@ -394,6 +413,7 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 				}
 				
 				numAppImported++;
+				it.remove();
 				
 				if (fields[ImportManager.IDX_APP_CAT_DEF_ID].equals("")) continue;
 				int catDefID = Integer.parseInt( fields[ImportManager.IDX_APP_CAT_DEF_ID] );
@@ -425,8 +445,9 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 			
 			lineNo = null;
 			
-			for (int i = 0; i < orderFieldsList.size(); i++) {
-				String[] fields = (String[]) orderFieldsList.get(i);
+			it = orderFieldsList.listIterator();
+			while (it.hasNext()) {
+				String[] fields = (String[]) it.next();
 				lineNo = fields[ImportManager.IDX_LINE_NUM];
 				
 				Integer acctID = Integer.valueOf( fields[ImportManager.IDX_ACCOUNT_ID] );
@@ -449,7 +470,9 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 				}
 				
 				ImportManager.newServiceRequest( fields, liteAcctInfo, energyCompany );
+				
 				numOrderAdded++;
+				it.remove();
 				
 				if (isCanceled) {
 					status = STATUS_CANCELED;
@@ -459,8 +482,9 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 			
 			lineNo = null;
 			
-			for (int i = 0; i < resFieldsList.size(); i++) {
-				String[] fields = (String[]) resFieldsList.get(i);
+			it = resFieldsList.listIterator();
+			while (it.hasNext()) {
+				String[] fields = (String[]) it.next();
 				lineNo = fields[ImportManager.IDX_LINE_NUM];
 				
 				Integer acctID = Integer.valueOf( fields[ImportManager.IDX_ACCOUNT_ID] );
@@ -483,7 +507,9 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 				}
 				
 				ImportManager.newResidenceInfo( fields, liteAcctInfo );
+				
 				numResAdded++;
+				it.remove();
 				
 				if (isCanceled) {
 					status = STATUS_CANCELED;
@@ -507,15 +533,15 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 				status = STATUS_ERROR;
 				
 				if (lineNo != null) {
-					if (numAcctAdded < acctFieldsList.size())
+					if (numAcctAdded < acctFieldsCnt)
 						errorMsg = "Error encountered when processing customer file line #" + lineNo;
-					else if (numInvAdded < invFieldsList.size())
+					else if (numInvAdded < invFieldsCnt)
 						errorMsg = "Error encountered when processing inventory file line #" + lineNo;
-					else if (numAppImported < appFieldsList.size())
+					else if (numAppImported < appFieldsCnt)
 						errorMsg = "Error encountered when processing loadinfo file line #" + lineNo;
-					else if (numOrderAdded < orderFieldsList.size())
+					else if (numOrderAdded < orderFieldsCnt)
 						errorMsg = "Error encountered when processing workorder file line #" + lineNo;
-					else if (numResAdded < resFieldsList.size())
+					else if (numResAdded < resFieldsCnt)
 						errorMsg = "Error encountered when processing resinfo file line #" + lineNo;
 				}
 				if (errorMsg == null)
@@ -557,24 +583,24 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 			logMsg.add(idx++, "");
 		}
 		
-		if (acctFieldsList.size() > 0) {
-			if (numAcctAdded == acctFieldsList.size())
+		if (acctFieldsCnt > 0) {
+			if (numAcctAdded == acctFieldsCnt)
 				logMsg.add(idx++, numAcctAdded + " customer accounts imported successfully");
 			else
-				logMsg.add(idx++, numAcctAdded + " of " + acctFieldsList.size() + " customer accounts imported");
+				logMsg.add(idx++, numAcctAdded + " of " + acctFieldsCnt + " customer accounts imported");
 		}
-		if (invFieldsList.size() > 0) {
-			if (numInvAdded  == invFieldsList.size())
+		if (invFieldsCnt > 0) {
+			if (numInvAdded  == invFieldsCnt)
 				logMsg.add(idx++, numInvAdded + " hardwares imported successfully");
 			else
-				logMsg.add(idx++, numInvAdded + " of " + invFieldsList.size() + " hardwares imported");
+				logMsg.add(idx++, numInvAdded + " of " + invFieldsCnt + " hardwares imported");
 		}
-		if (appFieldsList.size() > 0) {
+		if (appFieldsCnt > 0) {
 			String msg = null;
-			if (numAppImported == appFieldsList.size())
+			if (numAppImported == appFieldsCnt)
 				msg = numAppImported + " appliances imported successfully";
 			else
-				msg = numAppImported + " of " + appFieldsList.size() + " appliances imported";
+				msg = numAppImported + " of " + appFieldsCnt + " appliances imported";
 			msg += " (" + numACImported + " ac," +
 					numWHImported + " wh," +
 					numGenImported + " gen," +
@@ -586,17 +612,17 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 					numGenlImported + " genl)";
 			logMsg.add(idx++, msg);
 		}
-		if (orderFieldsList.size() > 0) {
-			if (numOrderAdded == orderFieldsList.size())
+		if (orderFieldsCnt > 0) {
+			if (numOrderAdded == orderFieldsCnt)
 				logMsg.add(idx++, numOrderAdded + " work orders imported successfully");
 			else
-				logMsg.add(idx++, numOrderAdded + " of " + orderFieldsList.size() + " work orders imported");
+				logMsg.add(idx++, numOrderAdded + " of " + orderFieldsCnt + " work orders imported");
 		}
-		if (resFieldsList.size() > 0) {
-			if (numResAdded == resFieldsList.size())
+		if (resFieldsCnt > 0) {
+			if (numResAdded == resFieldsCnt)
 				logMsg.add(idx++, numResAdded + " residence info imported successfully");
 			else
-				logMsg.add(idx++, numResAdded + " of " + resFieldsList.size() + " residence information imported");
+				logMsg.add(idx++, numResAdded + " of " + resFieldsCnt + " residence information imported");
 		}
 		logMsg.add(idx++, "");
 		
