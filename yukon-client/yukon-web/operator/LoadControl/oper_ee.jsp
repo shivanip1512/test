@@ -48,7 +48,7 @@
 	java.text.SimpleDateFormat eeDateFormat = new java.text.SimpleDateFormat("MM/dd/yy");
 	java.text.SimpleDateFormat eeTimeFormat = new java.text.SimpleDateFormat("HH:mm");
 	java.text.SimpleDateFormat eeDateTimeFormat = new java.text.SimpleDateFormat("MM/dd/yy HH:mm");
-	java.text.DecimalFormat priceFormat = new java.text.DecimalFormat("\u00A4#,##0.00");
+	java.text.DecimalFormat priceFormat = new java.text.DecimalFormat("#,##0.00");
 	java.text.DecimalFormat numberFormat = new java.text.DecimalFormat("#,###");	//Value can only be in whole KW, therefore decimal places are not needed	
 
 	eeDateFormat.setTimeZone(tz);
