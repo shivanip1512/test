@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2004/02/02 16:59:29 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2004/02/09 16:48:42 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -84,7 +84,7 @@ RWCString CtiTransdataDatalink::buildMsg( RWCString command, RWCString wantToGet
 
    if( _index < command.length() )
    {
-      cmd = RWCString(command.data()[_index]);
+      cmd = RWCString( command.data()[_index] );
       _index++;
    }
    else

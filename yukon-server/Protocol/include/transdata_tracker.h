@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2004/02/02 16:59:30 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2004/02/09 16:48:42 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -120,8 +120,8 @@ class IM_EX_PROT CtiTransdataTracker
          Command_size   = 30,
          Recs_Fitable   = 512,
          Storage_size   = 4500,
-         Meter_size     = 30000,
-         Max_lp_recs    = 9999
+         Meter_size     = 50000,
+         Max_lp_recs    = 5000//9999
       };
 
       //these are the transdata commands that are defined by the doc 22A204E

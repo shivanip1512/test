@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2004/02/02 16:59:29 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2004/02/09 16:48:42 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -213,7 +213,7 @@ bool CtiTransdataTracker::decode( CtiXfer &xfer, int status )
 
 bool CtiTransdataTracker::decodeYModem( CtiXfer &xfer, int status )
 {
-   int bytes;
+   int bytes = 0;
 
    _ymodem.decode( xfer, status );
 
@@ -289,6 +289,9 @@ bool CtiTransdataTracker::processComms( BYTE *data, int bytes )
       if( _lastState == doTime )
          allGood = grabTime( data, bytes );
       
+      //if( _lastState == doLogoff )      //maybe this would help us hang up nicer
+      //   allGood = true;
+
       if( allGood )
       {
          setNextState();
@@ -329,6 +332,12 @@ bool CtiTransdataTracker::processData( BYTE *data, int bytes )
             //copy the packet data we just got 
             memcpy( _lp->lpData + _dataBytes, data, bytes );
             _dataBytes += bytes;
+            
+            if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+            {
+               CtiLockGuard<CtiLogger> doubt_guard(dout);
+               dout << RWTime() << " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ dataBytes " << _dataBytes << endl;
+            }
 
             //copy over any previous data
             memcpy( _meterData, _lp, sizeof( *_lp ) );   
@@ -380,33 +389,33 @@ bool CtiTransdataTracker::logOn( CtiXfer &xfer )
       {
       case doType:    //this is just to get us going
          {
-            setXfer( xfer, _datalink.buildMsg( _revision, _ems ), 30, false, 0 );
+            setXfer( xfer, _datalink.buildMsg( _revision, _ems ), 20, true, 0 );
             _first = true;
          }
          break;
 
       case doPassword:
          {
-            setXfer( xfer, _datalink.buildMsg( _password, _good_return ), 30, false, 0 );
+            setXfer( xfer, _datalink.buildMsg( _password, _good_return ), 8, true, 0 );
             _first = true;
          }
          break;
 
       case doEnabledChannels:
          {
-            setXfer( xfer, _datalink.buildMsg( _channels_enabled, _channels_enabled ), 30, false, 0 );
+            setXfer( xfer, _datalink.buildMsg( _channels_enabled, _good_return ), 25, true, 0 );
          }
          break;
 
       case doTime:
          {
-            setXfer( xfer, _datalink.buildMsg( _get_clock, _get_clock ), 60, false, 0 );
+            setXfer( xfer, _datalink.buildMsg( _get_clock, _good_return ), 60, true, 1 );
          }
          break;
 
       case doIntervalSize:
          {
-            setXfer( xfer, _datalink.buildMsg( _interval, _interval ), 50, false, 0 );            
+            setXfer( xfer, _datalink.buildMsg( _interval, _good_return ), 50, true, 0 );            
             _moveAlong = true;   
          }
          break;
@@ -428,13 +437,13 @@ bool CtiTransdataTracker::billing( CtiXfer &xfer )
    {
    case doScroll:
       {
-         setXfer( xfer, _datalink.buildMsg( _search_scrolls, _search_scrolls ), 50, false, 0 );
+         setXfer( xfer, _datalink.buildMsg( _search_scrolls, _good_return ), 10, true, 0 );
       }
       break;
 
    case doPullBuffer:
       {
-         setXfer( xfer, _datalink.buildMsg( _send_comm_buff, _send_comm_buff ), 50, false, 0 );
+         setXfer( xfer, _datalink.buildMsg( _send_comm_buff, _prot_message ), 50, true, 0 ); 
       }
       break;
 
@@ -450,6 +459,7 @@ bool CtiTransdataTracker::billing( CtiXfer &xfer )
 }
 
 //=====================================================================================================================
+//sequence for the scan for load profile
 //=====================================================================================================================
 
 bool CtiTransdataTracker::loadProfile( CtiXfer &xfer )
@@ -460,7 +470,7 @@ bool CtiTransdataTracker::loadProfile( CtiXfer &xfer )
    {
    case doRecordDump:
       {
-         setXfer( xfer, _datalink.buildMsg( _dump_demands, _dump_demands ), 50, false, 0 );
+         setXfer( xfer, _datalink.buildMsg( _dump_demands, _dump ), 45, false, 0 );
       }
       break;
      
@@ -489,14 +499,14 @@ bool CtiTransdataTracker::loadProfile( CtiXfer &xfer )
 }
 
 //=====================================================================================================================
-//last step, but we'll get no response back
+//last step
 //=====================================================================================================================
 
 bool CtiTransdataTracker::logOff( CtiXfer &xfer )
 {
    _finished = false;
 
-   setXfer( xfer, _datalink.buildMsg( _hang_up, _hang_up ), 30, true, 0 );
+   setXfer( xfer, _datalink.buildMsg( _hang_up, _hang_up ), 4, true, 0 );
    _finished = true;
 
    return( true );
@@ -917,6 +927,7 @@ bool CtiTransdataTracker::gotValidResponse( const BYTE *data, int length )
          ( strstr( ptr + offset, _prot_message ) != NULL ) ||
          ( strstr( ptr + offset, _enter ) != NULL ) ||
          ( strstr( ptr + offset, _dump ) != NULL ) ||
+       /*  ( strstr( ptr + offset, _hang_up ) != NULL ) || */
          ( strstr( ptr + offset, _ems ) != NULL ))
       {
          success = true;
