@@ -136,7 +136,7 @@
 				userLogin.setPassword( "" );
 			}
 			
-			// METERING PARAMTERS
+			// METERING PARAMETERS
 			int contactID = account.getPrimaryContact().getContactID();
 			primContactYukonUser = com.cannontech.database.cache.functions.ContactFuncs.getYukonUser(contactID);
 		}
@@ -150,6 +150,18 @@
 	datePart.setTimeZone(tz);
 	dateFormat.setTimeZone(tz);
 	histDateFormat.setTimeZone(tz);
+	
+if( primContactYukonUser != null)
+{
+    Class[] types = { Integer.class,String.class };  
+    java.lang.String sqlString =  "SELECT DISTINCT GDEF.GRAPHDEFINITIONID, GDEF.NAME " +
+                                  " FROM GRAPHDEFINITION GDEF, GRAPHCUSTOMERLIST GCL "+
+                                  " WHERE GCL.CUSTOMERID = " + primContactYukonUser.getUserID()+ 
+                                  " AND GDEF.GRAPHDEFINITIONID = GCL.GRAPHDEFINITIONID " +
+                                  " ORDER BY GDEF.NAME";
+
+	gData = com.cannontech.util.ServletUtil.executeSQL( dbAlias, sqlString);
+}
 %>
 	<jsp:useBean id="graphBean" class="com.cannontech.graph.GraphBean" scope="session">
 		<%-- this body is executed only if the bean is created --%>

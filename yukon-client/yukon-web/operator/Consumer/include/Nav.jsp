@@ -91,33 +91,39 @@
         <table width="100%" border="0" cellspacing="0" cellpadding="0">
           <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_METERING_INTERVAL_DATA %>"> 
           <tr>
-            <td width="10"><%= ((String[]) links.get("Metering.jsp"))[0] %></td>
-            <td style="padding:1"><%= ((String[]) links.get("Metering.jsp"))[1] %></td>
-          </tr>
-          <%   /* Retrieve all the predefined graphs for this user*/                       
+            <td width="10">&nbsp;</td>
+            <td>
+<%
 	if( gData != null )
-	{
-		for( int i = 0; i < gData.length; i++ )                                                          
-		{
-			String linkImg = null;
+	{%>
+              <table width="100%" border="0" cellspacing="0" cellpadding="0">
+	<%
+		String linkURL = "Metering.jsp";
 			String linkHtml = null;
-			if( Integer.parseInt(gData[i][0].toString()) == graphBean.getGdefid())
+			String linkImgExp = null;
+			
+			if(linkURL.equalsIgnoreCase(pageName))
 			{
-				linkImg = bulletImg;
-				linkHtml = "<span class='Nav'>" + gData[i][1] + "</span>";
+				linkHtml = "<span class='NavGroup' style='cursor:default'>Interval Data</span>";
+				linkImgExp = bulletImg;
 			}
 			else
 			{
-				linkImg = "";
-				linkHtml = "<a href='" + request.getContextPath() + "/operator/Consumer/Metering.jsp?gdefid=" + gData[i][0] + "' class='Link2'><span class='NavText'>" + gData[i][1] + "</span></a>";
-			}%>
-          <tr>
-            <td width="10"><%= linkImg %></td>
-            <td style="padding:1"><%= linkHtml %></td>
+				linkHtml = "<span class='NavGroup' style='cursor:default'>Interval Data</span>";
+				linkImgExp = bulletImgExp;
+			}
+			%>
+                <tr onmouseover="trendMenuAppear(event, this, 'intervalDataMenu')"> 
+                  <td><span class='NavGroup' style='cursor:default'><%=linkHtml%></span></td>
+                  <td width="10" valign="bottom" style="padding-bottom:1"><%=linkImgExp%></td>
+                </tr>
+                
+              </table>
+<%	}%>
+
+            </td>
           </tr>
-          <%
-		}
-	}%>
+	
           </cti:checkProperty>
 		  <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_METERING_USAGE %>"> 
           <tr>
@@ -258,7 +264,7 @@
 			for (int i = 0; i < switches.size(); i++) {
 				String[] linkFields = (String[]) switches.get(i);
 %>
-                <tr onmouseover="menuAppear(event, this, 'switchMenu', <%= linkFields[0] %>)"> 
+                <tr onmouseover="hardwareMenuAppear(event, this, 'switchMenu', <%= linkFields[0] %>)"> 
                   <td width="10" valign="top" style="padding-top:1"><%= linkFields[1] %></td>
                   <td><%= linkFields[2] %></td>
                   <td width="10" valign="bottom" style="padding-bottom:1"><%= linkFields[3] %></td>
@@ -277,7 +283,7 @@
 			for (int i = 0; i < thermostats.size(); i++) {
 				String[] linkFields = (String[]) thermostats.get(i);
 %>
-                <tr onmouseover="menuAppear(event, this, 'thermostatMenu', <%= linkFields[0] %>)"> 
+                <tr onmouseover="hardwareMenuAppear(event, this, 'thermostatMenu', <%= linkFields[0] %>)"> 
                   <td width="10" valign="top" style="padding-top:1"><%= linkFields[1] %></td>
                   <td><%= linkFields[2] %></td>
                   <td width="10" valign="bottom" style="padding-bottom:1"><%= linkFields[3] %></td>
@@ -296,7 +302,7 @@
 			for (int i = 0; i < meters.size(); i++) {
 				String[] linkFields = (String[]) meters.get(i);
 %>
-                <tr onmouseover="menuAppear(event, this, 'meterMenu', <%= linkFields[0] %>)"> 
+                <tr onmouseover="hardwareMenuAppear(event, this, 'meterMenu', <%= linkFields[0] %>)"> 
                   <td width="10" valign="top" style="padding-top:1"><%= linkFields[1] %></td>
                   <td><%= linkFields[2] %></td>
                   <td width="10" valign="bottom" style="padding-bottom:1"><%= linkFields[3] %></td>
@@ -385,9 +391,9 @@
 </cti:checkMultiProperty>
 </table>
 
-<script language="JavaScript" src="../../JavaScript/hardware_menu.js"></script>
+<script language="JavaScript" src="../../JavaScript/nav_menu.js"></script>
 <script language="JavaScript">
-// Initialize variables defined in hardware_menu.js
+// Initialize variables defined in nav_menu.js
 pageName = "<%= pageName %>";
 pageLinks = new Array(<%= inventories.getStarsLMHardwareCount() %>);
 <%
@@ -431,52 +437,73 @@ pageLinks = new Array(<%= inventories.getStarsLMHardwareCount() %>);
 </script>
 
 <div id="switchMenu" class="bgMenu" style="width:75px" align="left">
-  <div id="MenuItem" style="width:75px" onmouseover="changeOptionStyle(this)" class = "navmenu1" onclick = "showPage(0)">
+  <div id="MenuItem" style="width:75px" onmouseover="changeNavStyle(this)" class = "navmenu1" onclick = "showPage(0)">
   &nbsp;&nbsp;&nbsp;Hardware Info
   </div>
-  <div id="MenuItemSelected" style="width:75px; display:none" onmouseover="changeOptionStyle(this)" class = "navmenu2" onclick = "showPage(0)">
+  <div id="MenuItemSelected" style="width:75px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "showPage(0)">
   &nbsp;&#149;&nbsp;Hardware Info
   </div>
-  <div id="MenuItem" style="width:75px" onmouseover="changeOptionStyle(this)" class = "navmenu1" onclick = "showPage(1)">
+  <div id="MenuItem" style="width:75px" onmouseover="changeNavStyle(this)" class = "navmenu1" onclick = "showPage(1)">
   &nbsp;&nbsp;&nbsp;Configuration
   </div>
-  <div id="MenuItemSelected" style="width:75px; display:none" onmouseover="changeOptionStyle(this)" class = "navmenu2" onclick = "showPage(1)">
+  <div id="MenuItemSelected" style="width:75px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "showPage(1)">
   &nbsp;&#149;&nbsp;Configuration
   </div>
 </div>
 
 <div id="thermostatMenu" class="bgMenu" style="width:75px" align="left">
-  <div id="MenuItem" style="width:75px" onmouseover="changeOptionStyle(this)" class = "navmenu1" onclick = "showPage(0)">
+  <div id="MenuItem" style="width:75px" onmouseover="changeNavStyle(this)" class = "navmenu1" onclick = "showPage(0)">
   &nbsp;&nbsp;&nbsp;Hardware Info
   </div>
-  <div id="MenuItemSelected" style="width:75px; display:none" onmouseover="changeOptionStyle(this)" class = "navmenu2" onclick = "showPage(0)">
+  <div id="MenuItemSelected" style="width:75px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "showPage(0)">
   &nbsp;&#149;&nbsp;Hardware Info
   </div>
-  <div id="MenuItem" style="width:75px" onmouseover="changeOptionStyle(this)" class = "navmenu1" onclick = "showPage(1)">
+  <div id="MenuItem" style="width:75px" onmouseover="changeNavStyle(this)" class = "navmenu1" onclick = "showPage(1)">
   &nbsp;&nbsp;&nbsp;Configuration
   </div>
-  <div id="MenuItemSelected" style="width:75px; display:none" onmouseover="changeOptionStyle(this)" class = "navmenu2" onclick = "showPage(1)">
-  &nbsp;&#149;&nbsp;Configuration
+  <div id="MenuItemSelected" style="width:75px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "showPage(1)">
+  &nbsp;&#149;&nbsp;Configuratio
   </div>
-  <div id="MenuItem" style="width:75px" onmouseover="changeOptionStyle(this)" class = "navmenu1" onclick = "showPage(2)">
+  <div id="MenuItem" style="width:75px" onmouseover="changeNavStyle(this)" class = "navmenu1" onclick = "showPage(2)">
   &nbsp;&nbsp;&nbsp;<%= AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_THERM_SCHED, "Schedule") %>
   </div>
-  <div id="MenuItemSelected" style="width:75px; display:none" onmouseover="changeOptionStyle(this)" class = "navmenu2" onclick = "showPage(2)">
+  <div id="MenuItemSelected" style="width:75px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "showPage(2)">
   &nbsp;&#149;&nbsp;<%= AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_THERM_SCHED, "Schedule") %>
   </div>
-  <div id="MenuItem" style="width:75px" onmouseover="changeOptionStyle(this)" class = "navmenu1" onclick = "showPage(3)">
+  <div id="MenuItem" style="width:75px" onmouseover="changeNavStyle(this)" class = "navmenu1" onclick = "showPage(3)">
   &nbsp;&nbsp;&nbsp;<%= AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_THERM_MANUAL, "Manual") %>
   </div>
-  <div id="MenuItemSelected" style="width:75px; display:none" onmouseover="changeOptionStyle(this)" class = "navmenu2" onclick = "showPage(3)">
+  <div id="MenuItemSelected" style="width:75px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "showPage(3)">
   &nbsp;&#149;&nbsp;<%= AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_THERM_MANUAL, "Manual") %>
   </div>
 </div>
 
 <div id="meterMenu" class="bgMenu" style="width:75px" align="left">
-  <div id="MenuItem" style="width:75px" onmouseover="changeOptionStyle(this)" class = "navmenu1" onclick = "showPage(0)">
+  <div id="MenuItem" style="width:75px" onmouseover="changeNavStyle(this)" class = "navmenu1" onclick = "showPage(0)">
   &nbsp;&nbsp;&nbsp;Hardware Info
   </div>
-  <div id="MenuItemSelected" style="width:75px; display:none" onmouseover="changeOptionStyle(this)" class = "navmenu2" onclick = "showPage(0)">
+  <div id="MenuItemSelected" style="width:75px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "location.href=showPage(0)">
   &nbsp;&#149;&nbsp;Hardware Info
   </div>
 </div>
+
+<%
+	if( gData != null )
+	{%>
+
+<div id="intervalDataMenu" class="bgMenu" style="width:75px" align="left">	
+<%		for( int i = 0; i < gData.length; i++ )                                                          
+		{
+			String className = "navmenu1";
+			String indicator = "&nbsp;&nbsp;&nbsp;";
+			if( Integer.parseInt( (gData[i][0]).toString()) == graphBean.getGdefid())
+			{
+				className = "navmenu2";
+				indicator = "&nbsp;&#149;&nbsp;";
+			}%>
+  <div id="<%=gData[i][1]%>" name="gdefid" style="width:170px;" onmouseover="changeNavStyle(this)" class = "<%=className%>" onclick = "location='<%=request.getContextPath()%>/operator/Consumer/Metering.jsp?gdefid=<%=gData[i][0]%>';">
+  <%=indicator%><%=gData[i][1]%>
+  </div>
+		<%}%>
+</div>
+<%	}%>

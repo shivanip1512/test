@@ -189,7 +189,7 @@
 </cti:checkProperty>
 </table>
 
-<script language="JavaScript" src="../../../JavaScript/hardware_menu.js"></script>
+<script language="JavaScript" src="../../../JavaScript/nav_menu.js"></script>
 <script language="JavaScript">
 // Initialize variables defined in thermostat_menu.js
 pageName = "<%= pageName %>";
