@@ -9,6 +9,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteYukonRole;
+import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 /**
@@ -135,6 +136,20 @@ public class AuthFuncs {
 				}
 			}
 		}		
+		return null;
+	}
+	
+	public static LiteYukonRoleProperty getRoleProperty(int propid) {
+		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+		
+		synchronized(cache) {
+			for(Iterator i = cache.getAllYukonRoleProperties().iterator(); i.hasNext();) {
+				LiteYukonRoleProperty p = (LiteYukonRoleProperty) i.next();
+				if(p.getRolePropertyID() == propid) {
+					return p;
+				}
+			}
+		}
 		return null;
 	}
 	
