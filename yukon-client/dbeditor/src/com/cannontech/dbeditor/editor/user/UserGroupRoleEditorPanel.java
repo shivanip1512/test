@@ -3,7 +3,9 @@ package com.cannontech.dbeditor.editor.user;
  * This type was created in VisualAge.
  */
 
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -33,6 +35,7 @@ import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.user.YukonGroup;
+import com.cannontech.user.UserUtils;
 
 public class UserGroupRoleEditorPanel extends com.cannontech.common.gui.util.DataInputPanel implements ActionListener, PopupMenuListener
 {
@@ -612,7 +615,7 @@ public class UserGroupRoleEditorPanel extends com.cannontech.common.gui.util.Dat
 //		CTILogger.info( "  " + r.getRoleName() + "  in  " + grp.getGroupName() );
 					
 		fireInputUpdate();
-		getTableModel().fireTableDataChanged();
+		getTableModel().fireTableRowsUpdated( 0, getTableModel().getRowCount()-1 );
 	}
 
 	/**
@@ -807,7 +810,29 @@ public static void main(java.lang.String[] args) {
 			
 		}
 		
-		checkBoxAction();		
+		checkBoxAction();
+		
+		//special case if we are the admin (yukon user)
+		if( login.getYukonUser().getUserID().intValue() == UserUtils.USER_YUKON_ID )
+		{
+			Font f = new Font( 
+				getJCheckBoxUserRoles().getFont().getName(),
+				Font.BOLD | Font.ITALIC,
+				getJCheckBoxUserRoles().getFont().getSize() );
+
+			getJCheckBoxUserRoles().setFont( f );
+			getJCheckBoxUserRoles().setForeground( Color.RED );
+			
+			getJCheckBoxUserRoles().setText(
+				"**ADMIN USERS CAN NOT BELONG TO ROLE GROUPS**"
+				+ "  User Roles: " );
+
+			getJCheckBoxUserRoles().setToolTipText(
+				"Click this option to change the roles of the admin user");
+
+			getJTableRoleGroup().setEnabled( false );
+		}
+		
 	}
 	
 	/**

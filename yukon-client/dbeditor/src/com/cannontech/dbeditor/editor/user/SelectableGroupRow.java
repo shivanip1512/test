@@ -5,6 +5,7 @@ import java.util.Iterator;
 
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonRole;
+import com.cannontech.roles.YukonGroupRoleDefs;
 
 /**
  * @author rneuharth
@@ -43,6 +44,11 @@ public class SelectableGroupRow
 		conflicts.clear();
 	}
 
+	public boolean isDisabled()
+	{
+		return getLiteYukonGroup().getGroupID() == YukonGroupRoleDefs.GRP_YUKON;
+	}
+	
 
 	/**
 	 * @return

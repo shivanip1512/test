@@ -9,7 +9,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import javax.swing.SwingUtilities;
+import javax.swing.JTextField;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
@@ -30,6 +30,8 @@ import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.database.db.user.IDefinedYukonRole;
 import com.cannontech.database.db.user.YukonGroupRole;
 import com.cannontech.database.db.user.YukonUserRole;
+import com.cannontech.database.model.DBTreeNode;
+import com.cannontech.user.UserUtils;
 
 
 public class UserRolePanel extends com.cannontech.common.gui.util.DataInputPanel {
@@ -272,18 +274,19 @@ private javax.swing.JTable getJTableProperties() {
 			//create our editor for the Integer fields
 			javax.swing.JComboBox combo = new javax.swing.JComboBox();
 			combo.setEditable( true );
-//			combo.addKeyListener(new java.awt.event.KeyAdapter() 
-//			{
-//				public void keyTyped(java.awt.event.KeyEvent e) 
-//				{
-//					fireInputUpdate();
-//				};
-//			});			
-//			combo.setHorizontalAlignment( javax.swing.JTextField.CENTER );
 //			combo.setDocument( new com.cannontech.common.gui.unchanging.LongRangeDocument(1, 99999) );
+			
+			//try to center our editor text when editing
+			if( combo.getEditor().getEditorComponent() instanceof JTextField )
+			{
+				JTextField txtEditor = (JTextField)combo.getEditor().getEditorComponent();
+
+				txtEditor.setHorizontalAlignment( JTextField.CENTER );						
+			}
 			
 			javax.swing.DefaultCellEditor ed = new javax.swing.DefaultCellEditor(combo);
 			ed.setClickCountToStart(1);
+
 
 			ivjJTableProperties.setDefaultEditor( Object.class, ed );
 			
@@ -383,11 +386,29 @@ private javax.swing.JTree getJTreeRoles() {
 					if( !role.getCategory().equalsIgnoreCase(tmpCat) )
 					{
 						tmpCat = role.getCategory();
-						categoryParent = new DefaultMutableTreeNode(tmpCat);
-						root.add( categoryParent );
-					}
 						
-					categoryParent.add( new LiteBaseNode(role) );					
+						if( UserUtils.isHiddenCategory(tmpCat) )
+						{
+							DBTreeNode d = new DBTreeNode( tmpCat + " [SYSTEM]" );
+							d.setIsSystemReserved( true );
+
+							categoryParent = d;
+						}						
+						else
+							categoryParent = new DefaultMutableTreeNode(tmpCat);
+						
+						root.add( categoryParent );						
+					}
+					
+					
+					LiteBaseNode lbNode = new LiteBaseNode(role);	
+
+					//set this to tell the GUI if this node is editable or not					
+					lbNode.setIsSystemReserved( 
+							UserUtils.isHiddenCategory(tmpCat) );
+
+
+					categoryParent.add( lbNode );					
 				}
 				
 			}
@@ -608,29 +629,26 @@ private void initConnections()
 	
 	MouseListener tableMl = new MouseAdapter()
 	{
-		public void mouseClicked(final MouseEvent e) 
+		public void mousePressed(final MouseEvent e) 
 		{
 			int selRow = getJTableProperties().rowAtPoint( e.getPoint() );
 			
 			if(selRow != -1) 
 			{
-				if( e.getClickCount() == 1 ) 
-				{
-					StringBuffer sBuff = new StringBuffer( getJTextPaneDescription().getText() );
-					int indx = 
-							getJTextPaneDescription().getText().indexOf(							 
-										System.getProperty("line.separator") );
+				StringBuffer sBuff = new StringBuffer( getJTextPaneDescription().getText() );
+				int indx = 
+						getJTextPaneDescription().getText().indexOf(							 
+									System.getProperty("line.separator") );
 
-					sBuff.replace( 
-							(indx >= 0 ? indx : sBuff.length()),
-							sBuff.length(),
-							System.getProperty("line.separator") +
-							getJTablePropertyModel().getRowAt(selRow).getLiteProperty().getKeyName() + " : " +
-							getJTablePropertyModel().getRowAt(selRow).getLiteProperty().getDescription() );
+				sBuff.replace( 
+						(indx >= 0 ? indx : sBuff.length()),
+						sBuff.length(),
+						System.getProperty("line.separator") +
+						getJTablePropertyModel().getRowAt(selRow).getLiteProperty().getKeyName() + " : " +
+						getJTablePropertyModel().getRowAt(selRow).getLiteProperty().getDescription() );
 
 
-					getJTextPaneDescription().setText( sBuff.toString() );
-				}
+				getJTextPaneDescription().setText( sBuff.toString() );
 			}
 		}
 	};	
@@ -642,58 +660,55 @@ private void initConnections()
 	// add the mouselistener for the JTree
 	MouseListener treeMl = new MouseAdapter()
 	{
-		public void mouseClicked(final MouseEvent e) 
+		public void mousePressed(final MouseEvent e) 
 		{
 			int selRow = getJTreeRoles().getRowForLocation(e.getX(), e.getY());
 			
 			if(selRow != -1) 
 			{
-				if( e.getClickCount() == 1 ) 
+				TreeNode node = 
+					(TreeNode)getJTreeRoles().getPathForRow( selRow ).getLastPathComponent();
+
+				if( node instanceof LiteBaseNode )
 				{
-					TreeNode node = 
-						(TreeNode)getJTreeRoles().getPathForRow( selRow ).getLastPathComponent();
-
-					if( node instanceof LiteBaseNode )
-					{
-						LiteYukonRole ly =
-							(LiteYukonRole)((LiteBaseNode)node).getUserObject();
-						
-						getJTextPaneDescription().setText(
-							//ly.getRoleName() + " : " +
-							ly.getDescription() );
+					LiteYukonRole ly =
+						(LiteYukonRole)((LiteBaseNode)node).getUserObject();
+					
+					getJTextPaneDescription().setText(
+						//ly.getRoleName() + " : " +
+						ly.getDescription() );
 
 
-						getJTablePropertyModel().clear();
-						LiteYukonRoleProperty[] props = RoleFuncs.getRoleProperties( ly.getRoleID() );
+					getJTablePropertyModel().clear();
+					LiteYukonRoleProperty[] props = RoleFuncs.getRoleProperties( ly.getRoleID() );
 
-						//sort by keys
-						Arrays.sort( props, LiteComparators.liteStringComparator );
-						for( int j = 0; j < props.length; j++ )
-							getJTablePropertyModel().addRolePropertyRow(
-									props[j],
-									getRoleValue(props[j].getRolePropertyID(), props[j].getDefaultValue()) );
-					}
-					else
-					getJTextPaneDescription().setText("");  //clear out any text
+					//sort by keys
+					Arrays.sort( props, LiteComparators.liteStringComparator );
+					for( int j = 0; j < props.length; j++ )
+						getJTablePropertyModel().addRolePropertyRow(
+								props[j],
+								getRoleValue(props[j].getRolePropertyID(), props[j].getDefaultValue()) );
+				
 
-
-					//we may have added a new node to our selectin group
-					SwingUtilities.invokeLater( new Runnable(){
-						public void run() {					
-							updateSelectionCountNodes();
-						}
-					});
-
-					fireInputUpdate();
+					//only allow edits for the non reserved roles
+					getJTableProperties().setEnabled( 
+						!((LiteBaseNode)node).isSystemReserved() );
 				}
-				else if(e.getClickCount() == 2) 
+				else
 				{
-					//executeEditButton_ActionPerformed( new ActionEvent(e.getSource(), e.getID(), "MouseDBLClicked") );
+					getJTablePropertyModel().clear();
+					getJTextPaneDescription().setText("");  //clear out any text
 				}
 			}
+		}
+		
+		public void mouseClicked(final MouseEvent e) 
+		{
+			updateSelectionCountNodes();
+			fireInputUpdate();			
+		}
 		
 
-		}
 	};
 	getJTreeRoles().addMouseListener( treeMl );
 

@@ -27,11 +27,14 @@ public class UserGroupTableModel extends javax.swing.table.AbstractTableModel im
 	//The color schemes - based on the schedule status
 	private static final Color[] CELL_COLORS =
 	{
-		//selected row
+		//default
 		Color.BLACK,
 
-		//non selected row
-		Color.RED
+		//conflict
+		Color.RED,
+
+		//disable / non editable
+		Color.GRAY
 	};
 
 	
@@ -70,6 +73,8 @@ public class UserGroupTableModel extends javax.swing.table.AbstractTableModel im
 	{
 		if( getRowAt(row).hasConflict() )
 			return CELL_COLORS[1];
+		else if( getRowAt(row).isDisabled() )
+			return CELL_COLORS[2];
 		else
 			return CELL_COLORS[0];
 	}
@@ -161,7 +166,8 @@ public class UserGroupTableModel extends javax.swing.table.AbstractTableModel im
 			 	case COL_NAME:
 					return 
 						sr.getLiteYukonGroup().toString() +
-						(sr.hasConflict() ? "  (role conflict)" : "");
+						(sr.hasConflict() ? "  (role conflict)" : "") +
+						(sr.isDisabled() ? "  (RESERVED)" : "");
 					
 				default:
 					return null;
@@ -179,7 +185,7 @@ public class UserGroupTableModel extends javax.swing.table.AbstractTableModel im
 	 */
 	public boolean isCellEditable(int row, int column)
 	{
-		return( column == COL_SELECTED );
+		return( column == COL_SELECTED && !getRowAt(row).isDisabled() );
 	}
 	
 	/**
@@ -204,11 +210,11 @@ public class UserGroupTableModel extends javax.swing.table.AbstractTableModel im
 	{
 		if( row <= getRows().size() && col < getColumnCount() )
 		{
-	
+			SelectableGroupRow sRow = getRowAt(row);
 			switch( col )
 			{
 			 	case COL_SELECTED:
-					getRowAt(row).selected( new Boolean(value.toString()) );
+					sRow.selected( new Boolean(value.toString()) );
 					break;
 			}
 		}

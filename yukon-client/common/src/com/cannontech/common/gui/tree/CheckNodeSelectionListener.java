@@ -49,7 +49,9 @@ public class CheckNodeSelectionListener extends MouseAdapter
                 
          boolean doSelect = !node.isSelected();
          
-			selectNode( node, doSelect, row );
+         //be sure we are an editable node
+         if( !node.isSystemReserved() )
+				selectNode( node, doSelect, row );
 
 			// I need revalidate if node is root.  but why?
 			if (row == 0) 

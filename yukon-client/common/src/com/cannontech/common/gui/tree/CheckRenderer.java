@@ -3,16 +3,13 @@ package com.cannontech.common.gui.tree;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Graphics;
 
 import javax.swing.*;
 import javax.swing.plaf.ColorUIResource;
-import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeCellRenderer;
 
 import com.cannontech.common.gui.util.CtiTreeCellRenderer;
-import com.cannontech.common.gui.util.SimpleLabel;
 
 /**
  * @author rneuharth
@@ -62,8 +59,11 @@ public class CheckRenderer extends JPanel implements TreeCellRenderer
 
     setEnabled(tree.isEnabled());
     
-    
-	 check.setSelected( ((CheckNode)value).isSelected() );    	
+	 check.setSelected( ((CheckNode)value).isSelected() );
+
+	 //only allow edits for the non reserved roles
+	 check.setEnabled( !((CheckNode)value).isSystemReserved() );
+	 label.setEnabled( !((CheckNode)value).isSystemReserved() );
 
     label.setFont(tree.getFont());
     label.setText(stringValue);
@@ -71,16 +71,7 @@ public class CheckRenderer extends JPanel implements TreeCellRenderer
     label.setFocus(hasFocus);
 
 	 label.setIcon(null);
-/*	
-    if (leaf) {
-      label.setIcon(UIManager.getIcon("Tree.leafIcon"));
-    } else if (expanded) {
-      label.setIcon(UIManager.getIcon("Tree.openIcon"));
-    } else {
-      //label.setIcon(UIManager.getIcon("Tree.closedIcon"));
-      label.setIcon(null);
-    }
-*/
+	
     return this;
   }
   
@@ -153,16 +144,22 @@ public class CheckRenderer extends JPanel implements TreeCellRenderer
         	Color fg = null, bg = null;
         	 
         	
-          if (isSelected) 
-          {
+         if( isSelected ) 
+         {
             bg = java.awt.Color.blue;
             fg = java.awt.Color.white;
-          } 
-          else 
-          {
+         } 
+         else 
+         {
             bg = java.awt.Color.white;
             fg = java.awt.Color.black;
-          }
+         }
+         
+         
+			if( !isEnabled() ) 
+			{
+				fg = java.awt.Color.LIGHT_GRAY;				
+			}
           
           Dimension d = getPreferredSize();
 

@@ -2,8 +2,6 @@ package com.cannontech.dbeditor.editor.user;
 /**
  * This type was created in VisualAge.
  */
-import java.awt.Dimension;
-
 import com.cannontech.clientutils.commonutils.ModifiedDate;
 import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.user.UserUtils;
@@ -519,6 +517,20 @@ private javax.swing.JTextField getJTextFieldUserID() {
 }
 
 /**
+ * adds any default group roles for a new user here
+ *  these group DB objects only needs their GroupIDs set for now
+ */		
+/*private void addDefaultGroups( YukonUser user_ )
+{
+	if( user_ == null )
+		return;
+
+	YukonGroup group = new YukonGroup( new Integer(YukonGroupRoleDefs.GRP_YUKON) );
+	user_.getYukonGroups().add( group );
+}
+*/
+
+/**
  * getValue method comment.
  */
 public Object getValue(Object o) 
@@ -526,7 +538,10 @@ public Object getValue(Object o)
 	YukonUser login = null;
 	
 	if( o == null )
+	{
 		login = new YukonUser();
+		/* addDefaultGroups( login ); */
+	}
 	else
 		login = (YukonUser)o;
 
