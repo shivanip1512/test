@@ -112,15 +112,11 @@ public class CICustomerBase extends Customer implements com.cannontech.common.ed
 	}
 	
 	/**
-	 * 
-	 * This method was created in VisualAge.
+	 * This method is added for converting a residential customer into a CI customer,
+	 * only CI customer related tables will be populated. It is also used in add().
+	 * @throws java.sql.SQLException
 	 */
-	public void add() throws java.sql.SQLException 
-	{
-		super.add();
-		
-		setCustomerID( getCustomerID() );
-
+	public void addCICustomer() throws java.sql.SQLException {
 		getAddress().add();
 		
 		getCiCustomerBase().setMainAddressID( getAddress().getAddressID() );
@@ -143,7 +139,19 @@ public class CICustomerBase extends Customer implements com.cannontech.common.ed
 			// showing that this customer belongs to the EnergyCompany
 			add("EnergyCompanyCustomerList", addValues);		
 		}
+	}
+	
+	/**
+	 * 
+	 * This method was created in VisualAge.
+	 */
+	public void add() throws java.sql.SQLException 
+	{
+		super.add();
 		
+		setCustomerID( getCustomerID() );
+		
+		addCICustomer();
 		
 		setDbConnection(null);
 	}
