@@ -5,6 +5,7 @@
 	<projects>
 		<project>common</project>
 		<project>esub-editor</project>
+		<project>servlet</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
