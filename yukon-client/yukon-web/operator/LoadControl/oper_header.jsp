@@ -3,8 +3,9 @@
 <%@ page import="com.cannontech.servlet.LCConnectionServlet" %>
 <%@ page import="com.cannontech.web.loadcontrol.LoadcontrolCache" %>
 <%@ page import="com.cannontech.database.cache.functions.EnergyCompanyFuncs" %>
+<%@ page import="com.cannontech.database.cache.functions.AuthFuncs" %>
 <%@ page import="com.cannontech.web.loadcontrol.LoadcontrolCache" %>
-<%@ page import="com.cannontech.common.util.CtiUtilities" %>
+<%@ page import="com.cannontech.common.util.CtiUtilities" %> 
 <%@ page import="com.cannontech.util.ServletUtil" %>
 
 <%@ page import="com.cannontech.roles.yukon.EnergyCompanyRole" %>
@@ -20,18 +21,18 @@
 <cti:checklogin/>
 <jsp:useBean id="YUKON_USER" scope="session" class="com.cannontech.database.data.lite.LiteYukonUser"/>
 
-<%
+<%  
     String content;
 
   	// YUKON_USER is an ugly name, give it an alias
 	LiteYukonUser user = YUKON_USER;	
-    long energyCompanyID =EnergyCompanyFuncs.getEnergyCompany(user).getEnergyCompanyID();
+    int energyCompanyID =EnergyCompanyFuncs.getEnergyCompany(user).getEnergyCompanyID();
 
     LCConnectionServlet cs = (LCConnectionServlet) application.getAttribute(LCConnectionServlet.SERVLET_CONTEXT_ID);
     LoadcontrolCache cache = cs.getCache();
         
-    TimeZone tz = 
-   	   TimeZone.getTimeZone(com.cannontech.database.cache.functions.AuthFuncs.getRolePropertyValue(user, EnergyCompanyRole.DEFAULT_TIME_ZONE));
+    LiteYukonUser ecUser = EnergyCompanyFuncs.getEnergyCompanyUser(energyCompanyID);
+	TimeZone tz = TimeZone.getTimeZone(AuthFuncs.getRolePropertyValue(ecUser, EnergyCompanyRole.DEFAULT_TIME_ZONE));
    	
     java.text.SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");	  
     java.text.SimpleDateFormat timePart = new java.text.SimpleDateFormat("HH:mm");

@@ -10,10 +10,10 @@
 <%@ page import="java.util.Vector" %> 
 <%@ page import="java.util.Iterator" %>
  
-<cti:checkRole roleid="<%=DirectLoadcontrolRole.ROLEID%>">
+<cti:checkRole roleid="<%=DirectLoadcontrolRole.ROLEID%>">  
 <%
    String pending = request.getParameter("pending");
-   
+     
    if( pending != null )
       out.println("<META HTTP-EQUIV=\"refresh\" CONTENT=\"7;URL=oper_direct.jsp\">");
    else
