@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.49 $
-* DATE         :  $Date: 2004/07/30 21:34:40 $
+* REVISION     :  $Revision: 1.50 $
+* DATE         :  $Date: 2004/10/12 16:23:42 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -123,7 +123,7 @@ static void applyClearExclusions(const long unusedkey, CtiDeviceSPtr Device, voi
 {
     LONG id = (LONG)lptrid;
 
-    if((id && id == Device->getID()) || !id)
+    if( !id || (id && id == Device->getID()))
     {
         Device->clearExclusions();
     }
@@ -161,7 +161,7 @@ bool removeExclusionDevice(CtiDeviceSPtr &Device, void *lptrid)
     bool bstatus = false;
     LONG id = (LONG)lptrid;
 
-    if( !id || (id && Device->getID()) )
+    if( !id || (id == Device->getID()) )
     {
         bstatus = true;
     }
