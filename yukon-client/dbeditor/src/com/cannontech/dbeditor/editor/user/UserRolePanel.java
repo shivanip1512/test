@@ -39,6 +39,7 @@ import com.cannontech.database.db.user.YukonUserRole;
 import com.cannontech.database.model.DBTreeNode;
 import com.cannontech.roles.YukonGroupRoleDefs;
 import com.cannontech.user.UserUtils;
+import com.cannontech.common.login.ClientSession;
 
 
 public class UserRolePanel extends com.cannontech.common.gui.util.DataInputPanel {
@@ -420,12 +421,20 @@ private javax.swing.JTree getJTreeRoles() {
 						root.add( categoryParent );						
 					}
 					
-					
 					LiteBaseNode lbNode = new LiteBaseNode(role);	
 
-					//set this to tell the GUI if this node is editable or not					
-					lbNode.setIsSystemReserved( 
-							UserUtils.isReadOnlyCategory(tmpCat) );
+					//This extra clause is necessary for the RADIUS security interface
+					if(((LiteYukonRole)lbNode.getUserObject()).getRoleName().compareTo(UserUtils.CAT_RADIUS) == 0)
+					{
+						ClientSession session = ClientSession.getInstance();
+						if(session.getUser().getUserID() == com.cannontech.user.UserUtils.USER_ADMIN_ID)
+							lbNode.setIsSystemReserved(false);
+					}
+					//set this to tell the GUI if this node is editable or not		
+					else
+						lbNode.setIsSystemReserved( 
+								UserUtils.isReadOnlyCategory(tmpCat) );
+						
 
 
 					categoryParent.add( lbNode );					
