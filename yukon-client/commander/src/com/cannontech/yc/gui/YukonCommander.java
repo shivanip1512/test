@@ -1567,18 +1567,16 @@ public void run()
 								}
 							}
 						}
-							
-						//}
-						//else
-						//{
-							//appendOutputTextArea("** From Porter: " + ret.getResultString() + "\n");
-						//}
+//						else
+//						{
+//							System.out.println("** From Porter: " + ret.getResultString() + "\n");
+//						}
 					}
-					//else
+//					else
 					//appendOutputTextArea(" ELSE from Return");	
 				}
-				//else
-				//appendOutputTextArea(" ELSE from connection");			
+//				else
+//				appendOutputTextArea(" ELSE from connection");			
 			}
 			else
 			{
@@ -1832,8 +1830,9 @@ private void updateCurrentSelection(Object currentSelection)
  */
 public void valueChanged(TreeSelectionEvent event)
 {
-	com.cannontech.message.util.ConfigParmsFile cpf = null;
 
+	com.cannontech.message.util.ConfigParmsFile cpf = null;
+	setModelType( treeModels[getTreeViewPanel().getSortByComboBox().getSelectedIndex()] );
 	setTreeItem( getTreeViewPanel().getSelectedItem());
 
 	if (getTreeItem() == null)
@@ -1911,7 +1910,6 @@ public void valueChanged(TreeSelectionEvent event)
 		for (int i = 0; i < keysAndValues[0].length; i++)
 			getCommandPanel().getAvailableCommandsComboBox().addItem(keysAndValues[0][i]);
 	}
-	
 	return;
 }
 /**

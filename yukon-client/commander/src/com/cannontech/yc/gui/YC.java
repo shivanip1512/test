@@ -742,7 +742,23 @@ public void writeNewRequestToPorter(com.cannontech.message.porter.message.Reques
 		
 	logCommand("[" + format.format(new java.util.Date(timer)) 
 		+ "] - {"+ currentUserMessageID + "} Command Sent to Device \'"+ getTreeItem() + "\'  -  \'" + getCommand() + "\'");
-	getConnToPorter().write( request );
-	currentUserMessageID++;
+	if( getConnToPorter() != null )
+	{
+		if( getConnToPorter().isValid())
+		{
+			getConnToPorter().write( request );
+			System.out.println(" REQUEST = "+ request.toString());
+			currentUserMessageID++;
+		}
+		else
+		{
+			System.out.println("REQUEST NOT SENT: CONNECTION TO PORTER IS NOT VALID");
+		}
+	}
+	else
+	{
+		System.out.println("REQUEST NOT SENT: CONNECTION TO PORTER IS NULL");
+	}
+		
 }
 }
