@@ -45,9 +45,9 @@ import com.loox.jloox.LxLine;
 import com.loox.jloox.LxRectangle;
 
 /**
+ * Generates an svg document given an Esub drawing
+ * @see SVGOptions
  * @author alauinger
- *
- * Generates an svg document given an LxGraph
  */
 public class SVGGenerator {
 	
@@ -89,9 +89,7 @@ public class SVGGenerator {
 		Element svgRoot = doc.getDocumentElement();
 		svgRoot.setAttributeNS(null, "xmlns","http://www.w3.org/2000/svg");
 		svgRoot.setAttributeNS(null, "xmlns:xlink", "http://www.w3.org/1999/xlink");
-		
-		//DocumentType dt = impl.createDocumentType("svg", "-//W3C//DTD SVG 1.0//EN", "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd");
-		//doc.appendChild(dt);
+		svgRoot.setAttributeNS(null, "viewBox", "0 0 " + d.getMetaElement().getDrawingWidth() + " " + d.getMetaElement().getDrawingHeight());
 		
 		if(genOptions.isScriptingEnabled()) {
 			Element e = doc.createElementNS(null, "script");
@@ -195,9 +193,6 @@ public class SVGGenerator {
 					elem.setAttributeNS(null,"classid",comp.getClass().getName());
 					
 					if(link != null && link.length() > 0) {
-						
-						//elem.setAttributeNS(null,"onclick", "followLink(\"" + link + "\")");						
-						
 						if(comp instanceof LxAbstractText && genOptions.isScriptingEnabled()) {
 							elem.setAttributeNS(null,"onmouseover", "underLine(evt.getTarget())");
 							elem.setAttributeNS(null,"onmouseout", "noUnderLine(evt.getTarget())");
@@ -214,8 +209,6 @@ public class SVGGenerator {
 						linkElem.appendChild(elem);
 						elem = linkElem;
 					}
-				 
-								
 				}
 			}
 			
