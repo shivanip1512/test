@@ -1,0 +1,62 @@
+package com.cannontech.esub.element.persist;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+import com.cannontech.esub.element.DrawingElement;
+import com.cannontech.esub.element.DrawingMetaElement;
+import com.loox.jloox.LxSaveUtils;
+
+/**
+ * @author aaron
+ */
+public class PersistDrawingMetaElement extends BasePersistElement {
+
+	/**
+	 * @see com.cannontech.esub.element.persist.PersistElement#readFromJLX(DrawingElement, InputStream)
+	 */
+	public void readFromJLX(DrawingElement drawingElem, InputStream in, int version)
+		throws IOException {
+			
+			DrawingMetaElement elem = (DrawingMetaElement) drawingElem;
+			
+			switch(version) {
+				
+				case 1: {
+					elem.setDrawingWidth(LxSaveUtils.readInt(in));
+					elem.setDrawingHeight(LxSaveUtils.readInt(in));
+					elem.setRoleID(LxSaveUtils.readInt(in));
+				}
+				break;
+				
+				default: {
+					throw new IOException("Unknown version");
+				}
+			}
+	}
+
+	/**
+	 * @see com.cannontech.esub.element.persist.PersistElement#saveAsJLX(DrawingElement, OutputStream)
+	 */
+	public void saveAsJLX(DrawingElement drawingElem, OutputStream out, int version)
+		throws IOException {
+			
+			DrawingMetaElement elem = (DrawingMetaElement) drawingElem;
+			
+			switch(version) {
+				
+				case 1: {
+					LxSaveUtils.writeInt(out, elem.getDrawingWidth());
+					LxSaveUtils.writeInt(out, elem.getDrawingHeight());
+					LxSaveUtils.writeInt(out, elem.getRoleID());	
+				}
+				break;
+				
+				default: {
+					throw new IOException("Unknown version number");
+				}
+			}
+		}
+
+}
