@@ -8,8 +8,8 @@ import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.cache.functions.YukonUserFuncs;
@@ -201,7 +201,8 @@ public class UpdateLoginAction implements ActionBase {
 	}
 	
 	public static LiteYukonUser createLogin(StarsUpdateLogin login, LiteContact liteContact, LiteStarsEnergyCompany energyCompany)
-	throws CommandExecutionException {
+		throws TransactionException
+	{
 		com.cannontech.database.data.user.YukonUser dataUser = new com.cannontech.database.data.user.YukonUser();
 		com.cannontech.database.db.user.YukonUser dbUser = dataUser.getYukonUser();
         
@@ -239,8 +240,7 @@ public class UpdateLoginAction implements ActionBase {
 		return liteUser;
 	}
 	
-	public static void deleteLogin(int userID, LiteContact liteContact)
-	throws CommandExecutionException {
+	public static void deleteLogin(int userID, LiteContact liteContact) throws TransactionException {
 		if (liteContact != null) {
 			liteContact.setLoginID( com.cannontech.user.UserUtils.USER_STARS_DEFAULT_ID );
 			com.cannontech.database.data.customer.Contact contact =
@@ -258,7 +258,8 @@ public class UpdateLoginAction implements ActionBase {
 	}
 	
 	public static void updateLogin(StarsUpdateLogin updateLogin, LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany)
-	throws WebClientException, CommandExecutionException {
+		throws WebClientException, TransactionException
+	{
 		LiteContact liteContact = energyCompany.getContact( liteAcctInfo.getCustomer().getPrimaryContactID(), liteAcctInfo );
 		int userID = liteContact.getLoginID();
 	    

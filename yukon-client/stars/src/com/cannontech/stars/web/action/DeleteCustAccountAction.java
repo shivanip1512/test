@@ -1,14 +1,18 @@
 package com.cannontech.stars.web.action;
 
+import java.util.Iterator;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
@@ -131,51 +135,49 @@ public class DeleteCustAccountAction implements ActionBase {
 	}
 	
 	public static void deleteCustomerAccount(LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany)
-		throws java.sql.SQLException, com.cannontech.common.util.CommandExecutionException
+		throws TransactionException
 	{
-		java.sql.Connection conn = com.cannontech.database.PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
+		// Delete all the MCTs from inventory
+		Iterator it = liteAcctInfo.getInventories().iterator();
+		while (it.hasNext()) {
+			Integer invID = (Integer) it.next();
+			if (!(energyCompany.getInventory(invID.intValue(), true) instanceof LiteStarsLMHardware)) {
+				com.cannontech.database.data.stars.hardware.InventoryBase inv = new com.cannontech.database.data.stars.hardware.InventoryBase();
+				inv.setInventoryID( invID );
+				Transaction.createTransaction( Transaction.DELETE, inv ).execute();
+				
+				energyCompany.deleteInventory( invID.intValue() );
+				it.remove();
+			}
+		}
 		
-		try {
-			com.cannontech.database.data.stars.customer.CustomerAccount account =
-					StarsLiteFactory.createCustomerAccount(liteAcctInfo, energyCompany);
-			account.setDbConnection( conn );
-			account.delete();
-    		
-			// Delete contacts from database
-			LiteContact primContact = energyCompany.getContact( liteAcctInfo.getCustomer().getPrimaryContactID(), liteAcctInfo );
-			com.cannontech.database.data.customer.Contact contact =
-					(com.cannontech.database.data.customer.Contact) StarsLiteFactory.createDBPersistent( primContact );
-			contact.setDbConnection( conn );
-			contact.delete();
-    		
-			java.util.Vector contacts = liteAcctInfo.getCustomer().getAdditionalContacts();
-			for (int i = 0; i < contacts.size(); i++) {
-				LiteContact liteContact = (LiteContact) contacts.get(i);
-				contact = (com.cannontech.database.data.customer.Contact) StarsLiteFactory.createDBPersistent( liteContact );
-				contact.setDbConnection( conn );
-				contact.delete();
-			}
-			
-			// DB changes must be submitted to make sure there is no deadlock
-			conn.commit();
-    		
-			// Delete login
-			int userID = primContact.getLoginID();
-			if (userID != com.cannontech.user.UserUtils.USER_STARS_DEFAULT_ID &&
-				userID != com.cannontech.user.UserUtils.USER_ADMIN_ID)
-				UpdateLoginAction.deleteLogin( userID, null );
-			
-			// Delete lite and stars objects
-			energyCompany.deleteCustAccountInformation( liteAcctInfo );
-			energyCompany.deleteStarsCustAccountInformation( liteAcctInfo.getAccountID() );
-			//ServerUtils.handleDBChange( liteAcctInfo, DBChangeMsg.CHANGE_TYPE_DELETE );
+		com.cannontech.database.data.stars.customer.CustomerAccount account =
+				StarsLiteFactory.createCustomerAccount(liteAcctInfo, energyCompany);
+		Transaction.createTransaction( Transaction.DELETE, account ).execute();
+		
+		// Delete contacts from database
+		LiteContact primContact = energyCompany.getContact( liteAcctInfo.getCustomer().getPrimaryContactID(), liteAcctInfo );
+		com.cannontech.database.data.customer.Contact contact =
+				(com.cannontech.database.data.customer.Contact) StarsLiteFactory.createDBPersistent( primContact );
+		Transaction.createTransaction( Transaction.DELETE, contact ).execute();
+		
+		java.util.Vector contacts = liteAcctInfo.getCustomer().getAdditionalContacts();
+		for (int i = 0; i < contacts.size(); i++) {
+			LiteContact liteContact = (LiteContact) contacts.get(i);
+			contact = (com.cannontech.database.data.customer.Contact) StarsLiteFactory.createDBPersistent( liteContact );
+			Transaction.createTransaction( Transaction.DELETE, contact ).execute();
 		}
-		finally {
-			try {
-				if (conn != null) conn.close();
-			}
-			catch (java.sql.SQLException e) {}
-		}
+		
+		// Delete login
+		int userID = primContact.getLoginID();
+		if (userID != com.cannontech.user.UserUtils.USER_STARS_DEFAULT_ID &&
+			userID != com.cannontech.user.UserUtils.USER_ADMIN_ID)
+			UpdateLoginAction.deleteLogin( userID, null );
+		
+		// Delete lite and stars objects
+		energyCompany.deleteCustAccountInformation( liteAcctInfo );
+		energyCompany.deleteStarsCustAccountInformation( liteAcctInfo.getAccountID() );
+		//ServerUtils.handleDBChange( liteAcctInfo, DBChangeMsg.CHANGE_TYPE_DELETE );
 	}
 
 }
