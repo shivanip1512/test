@@ -524,6 +524,8 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                                      InMessage->Return.MacroOffset,
                                      InMessage->Return.Attempt);
 
+                newReq.setMessagePriority(15);
+
                 newReq.setConnectionHandle((void *)InMessage->Return.Connection);
 
                 CtiCommandParser parse(newReq.CommandString());
@@ -575,14 +577,26 @@ void CtiDeviceION::processInboundData( INMESS *InMessage, RWTime &TimeNow, RWTPt
     {
         CtiPointDataMsg *tmpMsg;
         CtiPointBase    *point;
-        double value;
-        RWCString resultString;
+        double           value;
+        RWCString        resultString;
+        bool             mustArchive;
 
         tmpMsg = points.removeFirst();
 
         //  !!! tmpMsg->getId() is actually returning the offset !!!  because only the offset and type are known in the protocol object
         if( (point = getDevicePointOffsetTypeEqual(tmpMsg->getId(), tmpMsg->getType())) != NULL )
         {
+            //  ALWAYS archive the event log point
+            if( tmpMsg->getType() == AnalogPointType &&
+                tmpMsg->getId()   == 2600 )
+            {
+                mustArchive = true;
+            }
+            else
+            {
+                mustArchive = false;
+            }
+
             tmpMsg->setId(point->getID());
 
             //  generate the point update string, if applicable
@@ -605,7 +619,8 @@ void CtiDeviceION::processInboundData( INMESS *InMessage, RWTime &TimeNow, RWTPt
 
             tmpMsg->setString(resultString);
 
-            if( parse.isKeyValid("flag") && (parse.getFlags( ) & CMD_FLAG_UPDATE) )
+            if( parse.isKeyValid("flag") && (parse.getFlags( ) & CMD_FLAG_UPDATE)
+                || (mustArchive && !useScanFlags()) )  //  if we must archive this point and we're not Scanner, make sure it gets to VG
             {
                 vgMsg->PointData().append(tmpMsg->replicateMessage());
             }
