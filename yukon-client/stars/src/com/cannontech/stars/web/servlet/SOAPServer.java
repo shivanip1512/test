@@ -121,6 +121,8 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 	    	}
     	}
     	
+    	connToPIL = (com.cannontech.servlet.PILConnectionServlet)
+    			getServletContext().getAttribute(com.cannontech.servlet.PILConnectionServlet.SERVLET_CONTEXT_ID);
     	initDispatchConnection();    	
     	startTimers();
     	
