@@ -51,4 +51,5 @@ public final class LiteTypes
 	public final static int STARS_THERMOSTAT_MANUAL_OPTION = 121;
 	public final static int STARS_INTERVIEW_QUESTION = 122;
 	public final static int STARS_APPLIANCE = 123;
+	public final static int STARS_CUSTOMER_FAQ = 124;
 }

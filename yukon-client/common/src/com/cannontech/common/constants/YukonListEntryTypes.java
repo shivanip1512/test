@@ -55,10 +55,12 @@ public interface YukonListEntryTypes
 	public static final int YUK_DEF_ID_QUE_TYPE_EXIT				= 2202;
 	public static final int YUK_DEF_ID_ANS_TYPE_SELECTION		= 2301;
 	public static final int YUK_DEF_ID_ANS_TYPE_FREE_FORM		= 2302;
-	public static final int YUK_DEF_ID_THERM_MODE_COOL			= 2401;
-	public static final int YUK_DEF_ID_THERM_MODE_HEAT			= 2402;
-	public static final int YUK_DEF_ID_THERM_MODE_OFF			= 2403;
-	public static final int YUK_DEF_ID_FAN_STAT_AUTO				= 2501;
-	public static final int YUK_DEF_ID_FAN_STAT_ON				= 2502;
+	public static final int YUK_DEF_ID_THERM_MODE_DEFAULT		= 2401;
+	public static final int YUK_DEF_ID_THERM_MODE_COOL			= 2402;
+	public static final int YUK_DEF_ID_THERM_MODE_HEAT			= 2403;
+	public static final int YUK_DEF_ID_THERM_MODE_OFF			= 2404;
+	public static final int YUK_DEF_ID_FAN_STAT_DEFAULT			= 2501;
+	public static final int YUK_DEF_ID_FAN_STAT_AUTO				= 2502;
+	public static final int YUK_DEF_ID_FAN_STAT_ON				= 2503;
 
 }
