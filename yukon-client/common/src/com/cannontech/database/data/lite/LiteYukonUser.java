@@ -14,20 +14,22 @@ import com.cannontech.database.db.user.YukonUser;
 public class LiteYukonUser extends LiteBase {
 	private String username;
 	private String password;
+	private String status;
 	
 	private LiteYukonUser() {
-		this(0,null,null);
+		this(0,null,null,null);
 	}
 	
 	public LiteYukonUser(int id) {
-		this(id,null,null);
+		this(id,null,null,null);
 	}
 	
-	public LiteYukonUser(int id, String username, String password) {
+	public LiteYukonUser(int id, String username, String password, String status) {
 		setLiteType(LiteTypes.YUKON_USER);
 		setUserID(id);
 		setUsername(username);
 		setPassword(password);		
+		setStatus(status);
 	}
 	
 	/**
@@ -131,6 +133,22 @@ public class LiteYukonUser extends LiteBase {
 	public String toString()
 	{
 		return getUsername();
+	}
+
+	/**
+	 * Returns the status.
+	 * @return String
+	 */
+	public String getStatus() {
+		return status;
+	}
+
+	/**
+	 * Sets the status.
+	 * @param status The status to set
+	 */
+	public void setStatus(String status) {
+		this.status = status;
 	}
 
 }

@@ -5,20 +5,24 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 /**
+ * Loads all yukon users
  * @author alauinger
  */
 
-public class YukonUserLoader implements Runnable
+public final class YukonUserLoader implements Runnable
 {
-   	private ArrayList allUsers;
-	private String dbAlias = null;
+	private static final String sql = "SELECT UserID,Username,Password,Status FROM YukonUser";
+	
+   	private final List allUsers;
+	private final String dbAlias;
 
-	public YukonUserLoader(ArrayList allUsers, String dbAlias) {
+	public YukonUserLoader(final ArrayList allUsers, final String dbAlias) {
    		this.allUsers = allUsers;
       	this.dbAlias = dbAlias;      	
    	}
@@ -28,10 +32,8 @@ public class YukonUserLoader implements Runnable
 	 */
 	public void run()
 	{
-   		long timerStart = System.currentTimeMillis();
-   		
-   		String sql = "SELECT UserID,Username,Password FROM YukonUser";
-   		
+   		final long timerStart = System.currentTimeMillis();
+
       	Connection conn = null;
       	Statement stmt = null;
       	ResultSet rset = null;
@@ -41,11 +43,12 @@ public class YukonUserLoader implements Runnable
          	rset = stmt.executeQuery(sql);
    
       		while (rset.next() ) {
-      			int userID = rset.getInt(1);
-      			String username = rset.getString(2).trim();
-      			String password = rset.getString(3).trim();
+      			final int userID = rset.getInt(1);
+      			final String username = rset.getString(2).trim();
+      			final String password = rset.getString(3).trim();
+      			final String status = rset.getString(4).trim();
       			
-            	LiteYukonUser user = new LiteYukonUser(userID,username,password);            
+            	final LiteYukonUser user = new LiteYukonUser(userID,username,password,status);            
            		allUsers.add(user);
          	}
       	}

@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
+import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.data.lite.LiteYukonGroup;
@@ -13,12 +13,14 @@ import com.cannontech.database.data.lite.LiteYukonGroup;
  * @author alauinger
  */
 
-public class YukonGroupLoader implements Runnable
+public final class YukonGroupLoader implements Runnable
 {
-   	private ArrayList allGroups;
-	private String dbAlias = null;
+	private static final String sql = "SELECT GroupID,GroupName FROM YukonGroup";
+	
+   	private final List allGroups;
+	private final String dbAlias;
 
-	public YukonGroupLoader(ArrayList allGroups, String dbAlias) {
+	public YukonGroupLoader(final List allGroups, final String dbAlias) {
    		this.allGroups = allGroups;
       	this.dbAlias = dbAlias;      	
    	}
@@ -28,10 +30,8 @@ public class YukonGroupLoader implements Runnable
 	 */
 	public void run()
 	{
-   		long timerStart = System.currentTimeMillis();
+   		final long timerStart = System.currentTimeMillis();
    		
-   		String sql = "SELECT GroupID,GroupName FROM YukonGroup";
-
       	Connection conn = null;
       	Statement stmt = null;
       	ResultSet rset = null;
@@ -41,10 +41,10 @@ public class YukonGroupLoader implements Runnable
          	rset = stmt.executeQuery(sql);
    
       		while (rset.next() ) {      			
-      			int groupID = rset.getInt(1);
-      			String groupName = rset.getString(2).trim();      			
+      			final int groupID = rset.getInt(1);
+      			final String groupName = rset.getString(2).trim();      			
       			
-      			LiteYukonGroup group = new LiteYukonGroup(groupID,groupName);      			
+      			final LiteYukonGroup group = new LiteYukonGroup(groupID,groupName);      			
             	allGroups.add(group);                       		
          	}
       	}

@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -12,26 +11,29 @@ import java.util.Map;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.common.util.Pair;
 import com.cannontech.database.data.lite.LiteYukonRole;
+import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 /**
- * Builds up a Map<LiteYukonUser,List<LiteYukonRole>>
+ * Builds up a Map<LiteYukonUser, Map<LiteYukonRole, Map<LiteYukonRoleProperty, String(value)>>>
  * @author alauinger
  */
 
-public class YukonUserRoleLoader implements Runnable
+public final class YukonUserRoleLoader implements Runnable
 {
-	private Map allUserRoles;
-	private List allUsers;
-	private List allRoles;
-	private String dbAlias = null;
+	private static final String sql = "SELECT UserID,RoleID,RolePropertyID,Value FROM YukonUserRole";
+	final private Map allUserRoleProperties;
+	final private List allUsers;
+	final private List allRoles;
+	final private List allRoleProperties;
+	final private String dbAlias;
 
-	public YukonUserRoleLoader(Map allUserRoles, List allUsers, List allRoles, String dbAlias) {
-		this.allUserRoles = allUserRoles;
+	public YukonUserRoleLoader(final Map allUserRoleProperties, final List allUsers, final List allRoles, final List allRoleProperties, final String dbAlias) {
+		this.allUserRoleProperties = allUserRoleProperties;
    		this.allUsers = allUsers;
    		this.allRoles = allRoles;
+   		this.allRoleProperties = allRoleProperties;
       	this.dbAlias = dbAlias;      	
    	}
 
@@ -40,13 +42,15 @@ public class YukonUserRoleLoader implements Runnable
 	 */
 	public void run()
 	{
-   		long timerStart = System.currentTimeMillis();
-   		
+   		final long timerStart = System.currentTimeMillis();
+		int propertyCount = 0;
+		   		
    		// build up some hashtables to avoid 
    		// exponential algorithm   		
-   		HashMap userMap = new HashMap(allUsers.size()*2);
-   		HashMap roleMap = new HashMap(allRoles.size()*2);
-   		
+   		final HashMap userMap = new HashMap(allUsers.size()*2);
+   		final HashMap roleMap = new HashMap(allRoles.size()*2);
+		final HashMap rolePropertyMap = new HashMap(allRoleProperties.size()*2);
+		
    		Iterator i = allUsers.iterator();
    		while(i.hasNext()) {
    			LiteYukonUser u = (LiteYukonUser) i.next();
@@ -59,8 +63,12 @@ public class YukonUserRoleLoader implements Runnable
    			roleMap.put(new Integer(r.getRoleID()), r);
    		}
    		
-   		String sql = "SELECT UserID,RoleID,Value FROM YukonUserRole";
-   		
+ 		i = allRoleProperties.iterator();
+ 		while(i.hasNext()) {
+ 			LiteYukonRoleProperty p = (LiteYukonRoleProperty) i.next();
+ 			rolePropertyMap.put(new Integer(p.getRolePropertyID()), p);
+ 		}
+ 		
       	Connection conn = null;
       	Statement stmt = null;
       	ResultSet rset = null;
@@ -68,30 +76,36 @@ public class YukonUserRoleLoader implements Runnable
         	conn = com.cannontech.database.PoolManager.getInstance().getConnection(dbAlias);
          	stmt = conn.createStatement();
          	rset = stmt.executeQuery(sql);
-   
-   			Integer lastID = new Integer(Integer.MIN_VALUE);
    		 
       		while (rset.next()) {
-      			Integer userID = new Integer(rset.getInt(1));
-      			Integer roleID = new Integer(rset.getInt(2));
-      			String value = rset.getString(3);
+      			final Integer userID = new Integer(rset.getInt(1));
+      			final Integer roleID = new Integer(rset.getInt(2));
+      			final Integer rolePropertyID = new Integer(rset.getInt(3));
+      			String value = rset.getString(4);
+      			      			
+      			final LiteYukonUser user = (LiteYukonUser) userMap.get(userID);
+      			final LiteYukonRole role = (LiteYukonRole) roleMap.get(roleID);
+      			final LiteYukonRoleProperty roleProperty = (LiteYukonRoleProperty) rolePropertyMap.get(rolePropertyID);
       			
-      			LiteYukonUser user = (LiteYukonUser) userMap.get(userID);
-      			List roleList = (List) allUserRoles.get(user);
-      			if(roleList == null) {
-      				roleList = new ArrayList();
-      				allUserRoles.put(user,roleList);
+      			// Check to see if we should use the properties default 
+      			if(CtiUtilities.STRING_NONE.equalsIgnoreCase(value)) {
+      				value = roleProperty.getDefaultValue();
       			}
-            	
-            	LiteYukonRole role = (LiteYukonRole) roleMap.get(roleID);
-            	
-            	// If (none) appears in the yukongrouprole.value column then use the default value for the role
-            	if(value.equalsIgnoreCase(CtiUtilities.STRING_NONE)) {
-            		value = role.getDefaultValue();
-            	}
-            	
-            	Pair roleValuePair = new Pair(role,value);
-            	roleList.add(roleValuePair);            		
+      			
+      			Map userRoleMap = (Map) allUserRoleProperties.get(user);
+      			if(userRoleMap == null) {
+      				userRoleMap = new HashMap();
+      				allUserRoleProperties.put(user,userRoleMap);      			
+      			}
+      			
+      			Map userRolePropertyMap = (Map) userRoleMap.get(role);
+      			if(userRolePropertyMap == null) {
+      				userRolePropertyMap = new HashMap();
+      				userRoleMap.put(role, userRolePropertyMap);
+      			}
+      			
+      			userRolePropertyMap.put(roleProperty, value);      
+      			propertyCount++;			
          	}
       	}
       	catch(SQLException e ) {
@@ -110,7 +124,7 @@ public class YukonUserRoleLoader implements Runnable
    
    		CTILogger.info( 
        (System.currentTimeMillis() - timerStart)*.001 + 
-       " Secs for YukonUserRoleLoader (" + allUserRoles.size() + " loaded)" );   
+       " Secs for YukonUserRoleLoader (" + propertyCount + " loaded)" );   
       }
    
    }

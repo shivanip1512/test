@@ -21,10 +21,11 @@ public final class LiteTypes
 	public final static int STATE_IMAGE				= 14;
 	public final static int YUKON_USER				= 15;
 	public final static int YUKON_ROLE				= 16;
-	public final static int YUKON_GROUP				= 17;
-	public final static int ENERGY_COMPANY			= 18;
-	public final static int CUSTOMER_CI				= 19;
-	public final static int CONTACT_NOTIFICATION		= 20;
+	public final static int YUKON_ROLE_PROPERTY = 17;
+	public final static int YUKON_GROUP				= 18;
+	public final static int ENERGY_COMPANY			= 19;
+	public final static int CUSTOMER_CI				= 20;
+	public final static int CONTACT_NOTIFICATION		= 21;
 
 	
 	// Stars lite types

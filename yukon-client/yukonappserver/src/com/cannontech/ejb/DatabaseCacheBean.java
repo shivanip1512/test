@@ -319,10 +319,10 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
    }
 
 	/**
-	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonGroupRoleMap()
+	 * @see com.cannontech.yukon.IDatabaseCache#getYukonGroupRoleMap()
 	 */
-	public Map getAllYukonGroupRoleMap() {
-		return getCache().getAllYukonGroupRoleMap();
+	public Map getYukonGroupRolePropertyMap() {
+		return getCache().getYukonGroupRolePropertyMap();
 	}
 
 	/**
@@ -337,8 +337,8 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
     * @ejb:interface-method
     * tview-type="remote" 
    **/
-	public Map getAllYukonGroupUserMap() {
-		return getCache().getAllYukonGroupUserMap();
+	public Map getYukonGroupUserMap() {
+		return getCache().getYukonGroupUserMap();
 	}
 
 	/**
@@ -348,21 +348,29 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
 	public List getAllYukonRoles() {
 		return getCache().getAllYukonRoles();
 	}
-
+	
 	/**
     * @ejb:interface-method
     * tview-type="remote" 
    **/
-	public Map getAllYukonUserGroupMap() {
-		return getCache().getAllYukonUserGroupMap();
+	public List getAllYukonRoleProperties() {
+		return getCache().getAllYukonRoleProperties();
 	}
 
 	/**
     * @ejb:interface-method
     * tview-type="remote" 
    **/
-	public Map getAllYukonUserRoleMap() {
-		return getCache().getAllYukonUserRoleMap();
+	public Map getYukonUserGroupMap() {
+		return getCache().getYukonUserGroupMap();
+	}
+
+	/**
+    * @ejb:interface-method
+    * tview-type="remote" 
+   **/
+	public Map getYukonUserRolePropertyMap() {
+		return getCache().getYukonUserRolePropertyMap();
 	}
 
 	/**
@@ -404,15 +412,6 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
    public synchronized LiteBase handleDBChangeMessage(com.cannontech.message.dispatch.message.DBChangeMsg dbChangeMsg)
    {
       return getCache().handleDBChangeMessage( dbChangeMsg );
-   }
-
-   /**
-    * @ejb:interface-method
-    * tview-type="remote" 
-   **/
-   public synchronized void loadAllCache()
-   {
-      getCache().loadAllCache();
    }
 
    /**
@@ -553,8 +552,16 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
 	 * @ejb:interface-method
 	 * tview-type="remote"
 	 */
-	public Map getAllYukonUserRoleIDLookupMap() {
-		return getCache().getAllYukonUserRoleIDLookupMap();
+	public Map getYukonUserRoleIDLookupMap() {
+		return getCache().getYukonUserRoleIDLookupMap();
 	}
-
+	
+    /**
+	 * @ejb:interface-method
+	 * tview-type="remote"
+	 */
+	public Map getYukonUserRolePropertyIDLookupMap() {
+		return getCache().getYukonUserRolePropertyIDLookupMap();
+	}
+	
 }

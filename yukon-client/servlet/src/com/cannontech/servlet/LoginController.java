@@ -15,12 +15,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.cannontech.common.constants.RoleTypes;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.roles.application.WebClientRole;
 
 public class LoginController extends javax.servlet.http.HttpServlet {
 	
@@ -64,8 +64,8 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 				session.invalidate();
 				resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			}
-			
-			String home_url = AuthFuncs.getRoleValue(user,RoleTypes.HOME_URL);
+
+			String home_url = AuthFuncs.getRolePropertyValue(user,WebClientRole.HOME_URL);
 			resp.sendRedirect(home_url);
 		}
 		else {

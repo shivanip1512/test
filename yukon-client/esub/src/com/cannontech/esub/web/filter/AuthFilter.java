@@ -13,10 +13,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.constants.RoleTypes;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.esub.web.Authenticator;
 import com.cannontech.esub.web.SessionInfo;
+import com.cannontech.roles.application.WebClientRole;
 
 /**
  * @author alauinger
@@ -64,7 +64,11 @@ public class AuthFilter implements Filter {
 		String targetURL = currentURL;
 		
 		Logger.global.info("Auth Filter invoked, currentURI=" + currentURI + "  currentURL=" + currentURL);
-				
+		
+		if(currentURL.startsWith("/client")) {
+			chain.doFilter(req,resp);
+		}
+		
 		// check if the user is signed on
         boolean signedOn = false;
         if (hreq.getSession().getAttribute(LOGGED_IN) != null) {
@@ -79,7 +83,7 @@ public class AuthFilter implements Filter {
         	String target;
         	SessionInfo info;
             if((info=validateLogin(req, resp)) != null) {
-            	target  = AuthFuncs.getRoleValue(info.getUser(),RoleTypes.HOME_URL); 
+            	target = AuthFuncs.getRolePropertyValue(info.getUser(), WebClientRole.HOME_URL);
             	CTILogger.info("Authenticated user:  " + info.getUser().getUsername());
             }
             else {

@@ -10,7 +10,7 @@ import com.cannontech.database.db.DBPersistent;
  */
 public class YukonRole extends DBPersistent 
 {
-	public static final String TABLE_NAME = "YukonRole";
+	public static final String TABLE_NAME = "SystemRole";
 
 	public static final String[] SETTER_COLUMNS  = 
 	{ 

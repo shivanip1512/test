@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -12,26 +11,29 @@ import java.util.Map;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.common.util.Pair;
 import com.cannontech.database.data.lite.LiteYukonRole;
+import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 
 /**
- * Builds up a Map<LiteYukonGroup,List<LiteYukonRole>>
+ * Builds up a Map<LiteYukonGroup, Map<LiteYukonRole, Map<LiteYukonRoleProperty, String(value)>>>
  * @author alauinger
  */
 
-public class YukonGroupRoleLoader implements Runnable
+public final class YukonGroupRoleLoader implements Runnable
 {
-	private Map allGroupRoles;
-	private List allGroups;
-	private List allRoles;
-	private String dbAlias = null;
+	private static final String sql = "SELECT GroupID,RoleID,RolePropertyID,Value FROM YukonGroupRole";
+	final private Map allGroupRoleProperties;
+	final private List allGroups;
+	final private List allRoles;
+	final private List allRoleProperties;
+	final private String dbAlias;
 
-	public YukonGroupRoleLoader(Map allGroupRoles, List allGroups, List allRoles, String dbAlias) {
-		this.allGroupRoles = allGroupRoles;
+	public YukonGroupRoleLoader(final Map allGroupRoleProperties, final List allGroups, final List allRoles, final List allRoleProperties, final String dbAlias) {
+		this.allGroupRoleProperties = allGroupRoleProperties;
    		this.allGroups = allGroups;
    		this.allRoles = allRoles;
+   		this.allRoleProperties = allRoleProperties;
       	this.dbAlias = dbAlias;      	
    	}
 
@@ -40,17 +42,19 @@ public class YukonGroupRoleLoader implements Runnable
 	 */
 	public void run()
 	{
-   		long timerStart = System.currentTimeMillis();
-   		
+   		final long timerStart = System.currentTimeMillis();
+		int propertyCount = 0;
+		   		
    		// build up some hashtables to avoid 
    		// exponential algorithm   		
-   		HashMap userMap = new HashMap(allGroups.size()*2);
-   		HashMap roleMap = new HashMap(allRoles.size()*2);
-   		
+   		final HashMap groupMap = new HashMap(allGroups.size()*2);
+   		final HashMap roleMap = new HashMap(allRoles.size()*2);
+		final HashMap rolePropertyMap = new HashMap(allRoleProperties.size()*2);
+		
    		Iterator i = allGroups.iterator();
    		while(i.hasNext()) {
    			LiteYukonGroup g = (LiteYukonGroup) i.next();
-   			userMap.put(new Integer(g.getGroupID()), g);
+   			groupMap.put(new Integer(g.getGroupID()), g);
    		}
    		
    		i = allRoles.iterator();
@@ -59,8 +63,12 @@ public class YukonGroupRoleLoader implements Runnable
    			roleMap.put(new Integer(r.getRoleID()), r);
    		}
    		
-   		String sql = "SELECT GroupID,RoleID,Value FROM YukonGroupRole";
-   		
+ 		i = allRoleProperties.iterator();
+ 		while(i.hasNext()) {
+ 			LiteYukonRoleProperty p = (LiteYukonRoleProperty) i.next();
+ 			rolePropertyMap.put(new Integer(p.getRolePropertyID()), p);
+ 		}
+ 		
       	Connection conn = null;
       	Statement stmt = null;
       	ResultSet rset = null;
@@ -68,30 +76,36 @@ public class YukonGroupRoleLoader implements Runnable
         	conn = com.cannontech.database.PoolManager.getInstance().getConnection(dbAlias);
          	stmt = conn.createStatement();
          	rset = stmt.executeQuery(sql);
-   
-   			Integer lastID = new Integer(Integer.MIN_VALUE);
    		 
       		while (rset.next()) {
-      			Integer userID = new Integer(rset.getInt(1));
-      			Integer roleID = new Integer(rset.getInt(2));
-      			String value = rset.getString(3);
+      			final Integer groupID = new Integer(rset.getInt(1));
+      			final Integer roleID = new Integer(rset.getInt(2));
+      			final Integer rolePropertyID = new Integer(rset.getInt(3));
+      			String value = rset.getString(4);
+      			      			
+      			final LiteYukonGroup group = (LiteYukonGroup) groupMap.get(groupID);
+      			final LiteYukonRole role = (LiteYukonRole) roleMap.get(roleID);
+      			final LiteYukonRoleProperty roleProperty = (LiteYukonRoleProperty) rolePropertyMap.get(rolePropertyID);
       			
-      			LiteYukonGroup group = (LiteYukonGroup) userMap.get(userID);
-      			List roleList = (List) allGroupRoles.get(group);
-      			if(roleList == null) {
-      				roleList = new ArrayList();
-      				allGroupRoles.put(group,roleList);
+      			// Check to see if we should use the properties default 
+      			if(CtiUtilities.STRING_NONE.equalsIgnoreCase(value)) {
+      				value = roleProperty.getDefaultValue();
       			}
-            	
-            	LiteYukonRole role = (LiteYukonRole) roleMap.get(roleID);
-            	
-            	// If (none) appears in the yukongrouprole.value column then use the default value for the role
-            	if(value.equalsIgnoreCase(CtiUtilities.STRING_NONE)) {
-            		value = role.getDefaultValue();
-            	}
-            	
-            	Pair roleValuePair = new Pair(role,value);
-            	roleList.add(roleValuePair);            		
+      			
+      			Map groupRoleMap = (Map) allGroupRoleProperties.get(group);
+      			if(groupRoleMap == null) {
+      				groupRoleMap = new HashMap();
+      				allGroupRoleProperties.put(group,groupRoleMap);      			
+      			}
+      			
+      			Map groupRolePropertyMap = (Map) groupRoleMap.get(role);
+      			if(groupRolePropertyMap == null) {
+      				groupRolePropertyMap = new HashMap();
+      				groupRoleMap.put(role, groupRolePropertyMap);
+      			}
+      			
+      			groupRolePropertyMap.put(roleProperty, value);      
+      			propertyCount++;			
          	}
       	}
       	catch(SQLException e ) {
@@ -110,7 +124,7 @@ public class YukonGroupRoleLoader implements Runnable
    
    		CTILogger.info( 
        (System.currentTimeMillis() - timerStart)*.001 + 
-       " Secs for YukonGroupRoleLoader (" + allGroupRoles.size() + " loaded)" );   
+       " Secs for YukonGroupRoleLoader (" + propertyCount + " loaded)" );   
       }
    
    }

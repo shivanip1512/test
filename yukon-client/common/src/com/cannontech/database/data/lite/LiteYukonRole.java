@@ -6,27 +6,25 @@ package com.cannontech.database.data.lite;
 public class LiteYukonRole extends LiteBase {	
 	private String roleName;
 	private String category;
-	private String defaultValue;
 	private String description;
 	
 	public LiteYukonRole() {
-		initialize(0,null,null,null,null);
+		initialize(0,null,null,null);
 	}
 
-	public LiteYukonRole(int roleID) {
-		initialize(roleID,null,null,null,null);
+	public LiteYukonRole(final int roleID) {
+		initialize(roleID,null,null,null);
 	}
 
-	public LiteYukonRole(int roleID, String roleName, String category, String defaultValue, String description) {
-		initialize(roleID,roleName,category, defaultValue, description);
+	public LiteYukonRole(final int roleID, final String roleName, final String category, final String description) {
+		initialize(roleID,roleName,category, description);
 	}
 	
-	private void initialize(int roleID, String roleName, String category, String defaultValue, String description) {
+	private void initialize(final int roleID, final String roleName, final String category, final String description) {
 		setLiteType(LiteTypes.YUKON_ROLE);
 		setRoleID(roleID);
 		setRoleName(roleName);		
 		setCategory(category);
-		setDefaultValue(defaultValue);
 		setDescription(description);
 	}
 	
@@ -60,22 +58,6 @@ public class LiteYukonRole extends LiteBase {
 	 */
 	public void setRoleID(int roleID) {
 		setLiteID(roleID);
-	}
-
-	/**
-	 * Returns the defaultValue.
-	 * @return String
-	 */
-	public String getDefaultValue() {
-		return defaultValue;
-	}
-
-	/**
-	 * Sets the defaultValue.
-	 * @param defaultValue The defaultValue to set
-	 */
-	public void setDefaultValue(String defaultValue) {
-		this.defaultValue = defaultValue;
 	}
 
 	/**

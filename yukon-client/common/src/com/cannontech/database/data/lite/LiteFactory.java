@@ -116,7 +116,7 @@ public final static com.cannontech.database.db.DBPersistent createDBPersistent(L
 		 		((com.cannontech.database.data.user.YukonUser)returnObject).getYukonUser().setUsername( ((LiteYukonUser)liteObject).getUsername() );
 		 		((com.cannontech.database.data.user.YukonUser)returnObject).getYukonUser().setPassword( ((LiteYukonUser)liteObject).getPassword() );
 		 		break;
-		 		
+	/* TODO add SystemRole,YukonGroup,YukonRoleProperty */		 		
 		 	case LiteTypes.ENERGY_COMPANY:
 		 		returnObject = new com.cannontech.database.data.company.EnergyCompanyBase();
 		 		((com.cannontech.database.data.company.EnergyCompanyBase)returnObject).setEnergyCompanyID(new Integer(((LiteEnergyCompany)liteObject).getLiteID()));
@@ -219,8 +219,10 @@ public final static LiteBase createLite(com.cannontech.database.db.DBPersistent 
 		returnLite = new LiteYukonUser(
 			((YukonUser)val).getUserID().intValue(),
 			((YukonUser)val).getYukonUser().getUsername(),
-			((YukonUser)val).getYukonUser().getPassword() );
+			((YukonUser)val).getYukonUser().getPassword(),
+			((YukonUser)val).getYukonUser().getStatus() );
 	}
+	/* TODO add SystemRole,YukonGroup,YukonRoleProperty */
 	else if( val instanceof com.cannontech.database.data.pao.YukonPAObject )
 	{
 		returnLite = new LiteYukonPAObject( 

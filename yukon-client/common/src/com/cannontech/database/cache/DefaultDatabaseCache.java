@@ -303,15 +303,6 @@ public class DefaultDatabaseCache implements IDatabaseCache
     * @ejb:interface-method
     * tview-type="remote" 
    **/
-   public synchronized void loadAllCache()
-   {
-      getDBCache().loadAllCache();
-   }
-
-   /**
-    * @ejb:interface-method
-    * tview-type="remote" 
-   **/
    public synchronized void releaseAllAlarmCategories()
    {
       getDBCache().releaseAllAlarmCategories();
@@ -447,8 +438,8 @@ public class DefaultDatabaseCache implements IDatabaseCache
  	* @ejb:interface-method
  	* tview-type="remote"
  	*/
-	public Map getAllYukonUserRoleMap() {
-		return getDBCache().getAllYukonUserRoleMap();
+	public Map getYukonUserRolePropertyMap() {
+		return getDBCache().getYukonUserRolePropertyMap();
 	}	
 
 	/**
@@ -471,28 +462,36 @@ public class DefaultDatabaseCache implements IDatabaseCache
 	 * @ejb:interface-method
 	 * tview-type="remote"
 	 */
+	public List getAllYukonRoleProperties() {
+		return getDBCache().getAllYukonRoleProperties();
+	}
+	
+	/**
+	 * @ejb:interface-method
+	 * tview-type="remote"
+	 */
 	public List getAllYukonUsers() {
 		return getDBCache().getAllYukonUsers();
 	}
 	/**
-	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonGroupRoleMap()
+	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonGroupRolePropertyMap()
 	 */
-	public Map getAllYukonGroupRoleMap() {
-		return getDBCache().getAllYukonGroupRoleMap();
+	public Map getYukonGroupRolePropertyMap() {
+		return getDBCache().getYukonGroupRolePropertyMap();
 	}
 
 	/**
-	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonUserGroupMap()
+	 * @see com.cannontech.yukon.IDatabaseCache#getYukonUserGroupMap()
 	 */
-	public Map getAllYukonUserGroupMap() {
-		return getDBCache().getAllYukonUserGroupMap();
+	public Map getYukonUserGroupMap() {
+		return getDBCache().getYukonUserGroupMap();
 	}
 
 	/**
-	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonGroupUserMap()
+	 * @see com.cannontech.yukon.IDatabaseCache#getYukonGroupUserMap()
 	 */
-	public Map getAllYukonGroupUserMap() {
-		return getDBCache().getAllYukonGroupUserMap();
+	public Map getYukonGroupUserMap() {
+		return getDBCache().getYukonGroupUserMap();
 	}
 
 	/**
@@ -512,8 +511,15 @@ public class DefaultDatabaseCache implements IDatabaseCache
 	/**
 	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonUserRoleIDLookupMap()
 	 */
-	public Map getAllYukonUserRoleIDLookupMap() {
-		return getDBCache().getAllYukonUserRoleIDLookupMap();
+	public Map getYukonUserRoleIDLookupMap() {
+		return getDBCache().getYukonUserRoleIDLookupMap();
+	}
+	
+	/**
+	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonUserRolePropertyIDLookupMap()
+	 */
+	public Map getYukonUserRolePropertyIDLookupMap() {
+		return getDBCache().getYukonUserRolePropertyIDLookupMap();
 	}
 
 }

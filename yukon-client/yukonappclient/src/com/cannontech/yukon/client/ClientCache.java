@@ -17,7 +17,7 @@ import com.cannontech.yukon.IDatabaseCache;
 public class ClientCache implements IDatabaseCache
 {
    private com.cannontech.ejb.DatabaseCache cacheBean = null;
-
+ 
 	/**
 	 * Constructor for ClientCache.
 	 */
@@ -494,10 +494,10 @@ public class ClientCache implements IDatabaseCache
 	/**
 	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonGroupRoleMap()
 	 */
-	public Map getAllYukonGroupRoleMap() {
+	public Map getYukonGroupRolePropertyMap() {
 	  try
       {
-         return getCache().getAllYukonGroupRoleMap();
+         return getCache().getYukonGroupRolePropertyMap();
       }
       catch( java.rmi.RemoteException e )
       {
@@ -524,10 +524,10 @@ public class ClientCache implements IDatabaseCache
 	/**
 	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonGroupUserMap()
 	 */
-	public Map getAllYukonGroupUserMap() {
+	public Map getYukonGroupUserMap() {
 	  try
       {
-         return getCache().getAllYukonGroupUserMap();
+         return getCache().getYukonGroupUserMap();
       }
       catch( java.rmi.RemoteException e )
       {
@@ -551,13 +551,28 @@ public class ClientCache implements IDatabaseCache
       }
 	}
 
-	/**
-	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonUserGroupMap()
+		/**
+	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonRoleProperties()
 	 */
-	public Map getAllYukonUserGroupMap() {
+	public List getAllYukonRoleProperties() {
 	  try
       {
-         return getCache().getAllYukonUserGroupMap();
+         return getCache().getAllYukonRoleProperties();
+      }
+      catch( java.rmi.RemoteException e )
+      {
+         com.cannontech.clientutils.CTILogger.info( e );
+         return new java.util.ArrayList();
+      }
+	}
+	
+	/**
+	 * @see com.cannontech.yukon.IDatabaseCache#getYukonUserGroupMap()
+	 */
+	public Map getYukonUserGroupMap() {
+	  try
+      {
+         return getCache().getYukonUserGroupMap();
       }
       catch( java.rmi.RemoteException e )
       {
@@ -567,12 +582,12 @@ public class ClientCache implements IDatabaseCache
 	}
 
 	/**
-	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonUserRoleLookupMap()
+	 * @see com.cannontech.yukon.IDatabaseCache#getYukonUserRoleIDLookupMap()
 	 */
-	public Map getAllYukonUserRoleLookupMap() {
+	public Map getYukonUserRoleIDLookupMap() {
 	  try
       {
-         return getCache().getAllYukonUserRoleLookupMap();
+         return getCache().getYukonUserRoleIDLookupMap();
       }
       catch( java.rmi.RemoteException e )
       {
@@ -582,12 +597,12 @@ public class ClientCache implements IDatabaseCache
 	}
 
 	/**
-	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonUserRoleIDLookupMap()
+	 * @see com.cannontech.yukon.IDatabaseCache#getYukonUserRolePropertyIDLookupMap()
 	 */
-	public Map getAllYukonUserRoleIDLookupMap() {
+	public Map getYukonUserRolePropertyIDLookupMap() {
 		try 
 		{			
-			return getCache().getAllYukonUserRoleIDLookupMap();
+			return getCache().getYukonUserRolePropertyIDLookupMap();
 		}
 		catch( java.rmi.RemoteException e )
       {
@@ -599,10 +614,10 @@ public class ClientCache implements IDatabaseCache
 	/**
 	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonUserRoleMap()
 	 */
-	public Map getAllYukonUserRoleMap() {
+	public Map getYukonUserRolePropertyMap() {
 	  try
       {
-         return getCache().getAllYukonUserRoleMap();
+         return getCache().getYukonUserRolePropertyMap();
       }
       catch( java.rmi.RemoteException e )
       {

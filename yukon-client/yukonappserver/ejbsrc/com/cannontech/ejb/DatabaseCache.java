@@ -70,18 +70,20 @@ public interface DatabaseCache
    public java.util.List getAllYukonGroups() throws java.rmi.RemoteException;;
    
    public java.util.List getAllYukonRoles() throws java.rmi.RemoteException;;
+   
+   public java.util.List getAllYukonRoleProperties() throws java.rmi.RemoteException;;
     
-   public java.util.Map getAllYukonUserGroupMap() throws java.rmi.RemoteException;;
+   public java.util.Map getYukonUserGroupMap() throws java.rmi.RemoteException;;
    
-   public java.util.Map getAllYukonGroupUserMap() throws java.rmi.RemoteException;;
+   public java.util.Map getYukonGroupUserMap() throws java.rmi.RemoteException;;
        
-   public java.util.Map getAllYukonUserRoleMap() throws java.rmi.RemoteException;;
+   public java.util.Map getYukonUserRolePropertyMap() throws java.rmi.RemoteException;;
    
-   public java.util.Map getAllYukonGroupRoleMap() throws java.rmi.RemoteException;;	
+   public java.util.Map getYukonGroupRolePropertyMap() throws java.rmi.RemoteException;;	
  
-   public java.util.Map getAllYukonUserRoleLookupMap() throws java.rmi.RemoteException;;
+   public java.util.Map getYukonUserRoleIDLookupMap() throws java.rmi.RemoteException;;
    
-   public java.util.Map getAllYukonUserRoleIDLookupMap() throws java.rmi.RemoteException;;
+   public java.util.Map getYukonUserRolePropertyIDLookupMap() throws java.rmi.RemoteException;;
    
    public java.util.List getAllEnergyCompanies() throws java.rmi.RemoteException;
    

@@ -10,13 +10,13 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 
 /**
  * Attempts to matche a roleid with the LiteYukonUser in the current session.
- * If a match is found then the body of the tag is skipped, otherwise it is evaluated.
+ * If the property is true then the body of the tag is skipped, otherwise it is evaluated
  * @author alauinger
- * @see CheckRole
+ * @see CheckNoProperty
  */
-public class CheckNoRole extends BodyTagSupport {
+public class CheckNoProperty extends BodyTagSupport {
 
-	private int roleid;
+	private int propertyid;
 
 	/**
 	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
@@ -25,24 +25,25 @@ public class CheckNoRole extends BodyTagSupport {
 		LiteYukonUser user = 
 			(LiteYukonUser) pageContext.getSession().getAttribute("YUKON_USER");
 			
-		return (user == null || AuthFuncs.checkRole(user,roleid) == null) ?
+		return (user == null || !AuthFuncs.checkRoleProperty(user,propertyid)) ?
 					EVAL_BODY_INCLUDE :
-					SKIP_BODY;			
-	}
-	/**
-	 * Returns the roleid.
-	 * @return int
-	 */
-	public int getRoleid() {
-		return roleid;
+					SKIP_BODY;
 	}
 
 	/**
-	 * Sets the roleid.
-	 * @param roleid The roleid to set
+	 * Returns the propertyid.
+	 * @return int
 	 */
-	public void setRoleid(int roleid) {
-		this.roleid = roleid;
+	public int getPropertyid() {
+		return propertyid;
+	}
+
+	/**
+	 * Sets the propertyid.
+	 * @param propertyid The propertyid to set
+	 */
+	public void setPropertyid(int propertyid) {
+		this.propertyid = propertyid;
 	}
 
 }

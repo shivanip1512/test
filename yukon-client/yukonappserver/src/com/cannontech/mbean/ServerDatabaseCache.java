@@ -1,5 +1,6 @@
 package com.cannontech.mbean;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -14,6 +15,7 @@ import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonRole;
+import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 
@@ -38,52 +40,53 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
 	private CacheDBChangeListener dbChangeListener = null;
 	private String databaseAlias = com.cannontech.common.util.CtiUtilities.getDatabaseAlias();
 
-	private java.util.ArrayList allYukonPAObjects = null;
-	private java.util.ArrayList allPoints = null;
-	private java.util.ArrayList allStateGroups = null;
-	private java.util.ArrayList allUnitMeasures = null;
-	private java.util.ArrayList allNotificationGroups = null;
+	private ArrayList allYukonPAObjects = null;
+	private ArrayList allPoints = null;
+	private ArrayList allStateGroups = null;
+	private ArrayList allUnitMeasures = null;
+	private ArrayList allNotificationGroups = null;
 	
 	//private java.util.ArrayList allUsedContactNotifications = null;
-	private java.util.ArrayList allContactNotifications = null;
+	private ArrayList allContactNotifications = null;
 	
-	private java.util.ArrayList allAlarmCategories = null;
-	private java.util.ArrayList allContacts = null;
-	private java.util.ArrayList allGraphDefinitions = null;
-	private java.util.ArrayList allHolidaySchedules = null;
-	private java.util.ArrayList allDeviceMeterGroups = null;
-	private java.util.ArrayList allPointsUnits = null;
-	private java.util.ArrayList allPointLimits = null;
-   private java.util.ArrayList allYukonImages = null;
-	private java.util.ArrayList allCICustomers = null;
+	private ArrayList allAlarmCategories = null;
+	private ArrayList allContacts = null;
+	private ArrayList allGraphDefinitions = null;
+	private ArrayList allHolidaySchedules = null;
+	private ArrayList allDeviceMeterGroups = null;
+	private ArrayList allPointsUnits = null;
+	private ArrayList allPointLimits = null;
+    private ArrayList allYukonImages = null;
+	private ArrayList allCICustomers = null;
 
-	private java.util.ArrayList allYukonUsers = null;
-	private java.util.ArrayList allYukonRoles = null;
-	private java.util.ArrayList allYukonGroups = null;
+	private ArrayList allYukonUsers = null;
+	private ArrayList allYukonRoles = null;
+	private ArrayList allYukonRoleProperties = null;
+	private ArrayList allYukonGroups = null;
 	
-	private java.util.Map allYukonUserRoles = null;
-	private java.util.Map allYukonGroupRoles = null;
-	private java.util.Map allYukonUserGroups = null;
-	private java.util.Map allYukonGroupUsers = null;
+	private Map allYukonUserRoleProperties = null;
+	private Map allYukonGroupRoleProperties = null;
+	private Map allYukonUserGroups = null;
+	private Map allYukonGroupUsers = null;
 		
 	//derived from allYukonUsers,allYukonRoles,allYukonGroups
 	//see type info in IDatabaseCache
-	private java.util.Map allYukonUserLookupRoles = null;
-	private java.util.Map allYukonUserLookupRoleIDs = null;
+	private Map allYukonUserLookupRoleIDs = null;
+	private Map allYukonUserLookupRolePropertyIDs = null;
 	
-	private java.util.ArrayList allEnergyCompanies = null;
-	private java.util.Map allUserEnergyCompanies = null;
+	private ArrayList allEnergyCompanies = null;
+	private Map allUserEnergyCompanies = null;
 	
 	//lists that are created by the joining/parsing of existing lists
-	private java.util.ArrayList allGraphTaggedPoints = null; //Points
-	private java.util.ArrayList allUnusedCCDevices = null; //PAO
-	private java.util.ArrayList allCapControlFeeders = null; //PAO
-	private java.util.ArrayList allCapControlSubBuses = null; //PAO	
-	private java.util.ArrayList allDevices = null; //PAO
-	private java.util.ArrayList allLMPrograms = null; //PAO
-	private java.util.ArrayList allLoadManagement = null; //PAO
-	private java.util.ArrayList allPorts = null; //PAO
-	private java.util.ArrayList allRoutes = null; //PAO
+	private ArrayList allGraphTaggedPoints = null; //Points
+	private ArrayList allUnusedCCDevices = null; //PAO
+	private ArrayList allCapControlFeeders = null; //PAO
+	private ArrayList allCapControlSubBuses = null; //PAO	
+	private ArrayList allDevices = null; //PAO
+	private ArrayList allLMPrograms = null; //PAO
+	private ArrayList allLoadManagement = null; //PAO
+	private ArrayList allPorts = null; //PAO
+	private ArrayList allRoutes = null; //PAO
 	
 	
 	private java.util.HashMap allPointidMultiplierHashMap = null;
@@ -91,7 +94,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
  * DefaultDatabaseCache constructor comment.
  */
 public ServerDatabaseCache() 
-{
+{ 
 	super();
 }
 
@@ -135,7 +138,6 @@ public synchronized java.util.List getAllAlarmCategories(){
 		alarmStateLoader.run();
 		return allAlarmCategories;
 	}
-
 }
 
 /**
@@ -810,6 +812,14 @@ public synchronized java.util.List getAllYukonPAObjects()
 		return allYukonRoles;				
 	}
 		
+	public List getAllYukonRoleProperties() { 
+		if( allYukonRoleProperties == null) {
+			allYukonRoleProperties = new ArrayList();
+			final YukonRolePropertyLoader l = new YukonRolePropertyLoader(allYukonRoleProperties, databaseAlias);
+			l.run();
+		}
+		return allYukonRoleProperties;
+	}
 	/**
 	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonUsers()
 	 */
@@ -823,36 +833,36 @@ public synchronized java.util.List getAllYukonPAObjects()
 	}
 	
 	/**
-	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonRoleMap()
+	 * @see com.cannontech.yukon.IDatabaseCache#getYukonUserRolePropertyMap()
 	 */
-	public Map getAllYukonUserRoleMap() {
+	public Map getYukonUserRolePropertyMap() {
 		
-		if(allYukonUserRoles == null) {
-			allYukonUserRoles = new java.util.HashMap();
-		    YukonUserRoleLoader l = 
-		    	new YukonUserRoleLoader(allYukonUserRoles, getAllYukonUsers(), getAllYukonRoles(), databaseAlias);
+		if(allYukonUserRoleProperties == null) {
+			allYukonUserRoleProperties = new java.util.HashMap();
+		    final YukonUserRoleLoader l = 
+		    	new YukonUserRoleLoader(allYukonUserRoleProperties, getAllYukonUsers(), getAllYukonRoles(), getAllYukonRoleProperties(), databaseAlias);
 		    l.run();
 		}									
-		return allYukonUserRoles;		
+		return allYukonUserRoleProperties;		
 	}
 	
 	/**
-	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonGroupRoleMap()
+	 * @see com.cannontech.yukon.IDatabaseCache#getYukonGroupRolePropertyMap()
 	 */
-	public Map getAllYukonGroupRoleMap() {
-		if(allYukonGroupRoles == null) {
-			allYukonGroupRoles = new java.util.HashMap();
-			YukonGroupRoleLoader l = 
-				new YukonGroupRoleLoader(allYukonGroupRoles, getAllYukonGroups(), getAllYukonRoles(), databaseAlias);
+	public Map getYukonGroupRolePropertyMap() {
+		if(allYukonGroupRoleProperties == null) {
+			allYukonGroupRoleProperties = new java.util.HashMap();
+			final YukonGroupRoleLoader l = 
+				new YukonGroupRoleLoader(allYukonGroupRoleProperties, getAllYukonGroups(), getAllYukonRoles(), getAllYukonRoleProperties(), databaseAlias);
 			l.run();
 		}		
-		return allYukonGroupRoles;		
+		return allYukonGroupRoleProperties;
 	}
 
 	/**
-	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonUserGroupMap()
+	 * @see com.cannontech.yukon.IDatabaseCache#getYukonUserGroupMap()
 	 */
-	public Map getAllYukonUserGroupMap() {
+	public Map getYukonUserGroupMap() {
 		if(allYukonUserGroups == null) {
 			loadUsersAndGroups();
 		}
@@ -860,9 +870,9 @@ public synchronized java.util.List getAllYukonPAObjects()
 	}
 		
 	/**
-	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonGroupUserMap()
+	 * @see com.cannontech.yukon.IDatabaseCache#getYukonGroupUserMap()
 	 */
-	public Map getAllYukonGroupUserMap() {
+	public Map getYukonGroupUserMap() {
 		if(allYukonUserGroups == null) {
 			loadUsersAndGroups();
 		}
@@ -878,81 +888,98 @@ public synchronized java.util.List getAllYukonPAObjects()
 	}
 	
 	/**
-	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonUserRoleLookupMap()
+	 * @see com.cannontech.yukon.IDatabaseCache#getYukonUserRoleIDLookupMap()
 	 */
-	public Map getAllYukonUserRoleLookupMap() {
-	
-		if(allYukonUserLookupRoles == null) {
-			loadRoleLookupMaps();	
-		}
-		
-		return allYukonUserLookupRoles;			
-	}
-	
-	/**
-	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonUserRoleIDLookupMap()
-	 */
-	public Map getAllYukonUserRoleIDLookupMap() {
+	public Map getYukonUserRoleIDLookupMap() {
 		if(allYukonUserLookupRoleIDs == null) {
 			loadRoleLookupMaps();
 		}
 		return allYukonUserLookupRoleIDs;
 	}
 	
+	public Map getYukonUserRolePropertyIDLookupMap() {
+		if(allYukonUserLookupRolePropertyIDs == null) {
+			loadRoleLookupMaps();
+		}
+		return allYukonUserLookupRolePropertyIDs;
+	}
 	
+	/**
+	 * Fill in allYukonUserLookupRoleIDs and allYukonUserLookupRolePropertyIDs
+	 */	
 	private void loadRoleLookupMaps() 
 	{
-		allYukonUserLookupRoles = new HashMap();
 		allYukonUserLookupRoleIDs = new HashMap();
+		allYukonUserLookupRolePropertyIDs = new HashMap();
 		
 		Iterator iter = getAllYukonUsers().iterator();			
-		Map userRoles = getAllYukonUserRoleMap();
-		Map userGroups =  getAllYukonUserGroupMap();
-		Map groupRoles = getAllYukonGroupRoleMap();
+		Map userRoles = getYukonUserRolePropertyMap();
+		Map userGroups =  getYukonUserGroupMap();
+		Map groupRoles = getYukonGroupRolePropertyMap();
 			
 		while(iter.hasNext()) {
+					
 			LiteYukonUser user = (LiteYukonUser) iter.next();
-			HashMap roleMap = new HashMap();
-			HashMap roleIDMap = new HashMap();
 			
-			// first groups roles then user roles
-			// to maintain correct precedence
+			Map userRoleIDsLookupMap = new HashMap();
+			Map userRolePropertyIDsLookupMap = new HashMap();
+			
+			// first consider group roles then user roles
+			// then user roles to maintain precedence
 			List groups = (List) userGroups.get(user);
 			if(groups != null) {
 				Iterator groupIter = groups.iterator();
 				while(groupIter.hasNext()) {
 					LiteYukonGroup group = (LiteYukonGroup) groupIter.next();
-					List roles = (List) groupRoles.get(group);
-					addRolesToMap(roles, roleMap, roleIDMap);
-				}				
+					Map groupRoleMap = (Map) groupRoles.get(group);
+					if(groupRoleMap != null) {
+						addRolesAndPropertiesToLookupMap(groupRoleMap, userRoleIDsLookupMap, userRolePropertyIDsLookupMap);												
+					}
+				}
 			}
 			
-			List roles = (List) userRoles.get(user);
-			addRolesToMap(roles, roleMap, roleIDMap);
-			
-			allYukonUserLookupRoles.put(user, roleMap);		
-			allYukonUserLookupRoleIDs.put(user, roleIDMap);				
+			//add user roles
+			Map userRoleMap = (Map) userRoles.get(user);
+			if(userRoleMap != null) {			
+				addRolesAndPropertiesToLookupMap(userRoleMap, userRoleIDsLookupMap,userRolePropertyIDsLookupMap);
+			}
+System.out.println("user: " + user.getUserID() + " size: " + userRoleIDsLookupMap.size());			
+			allYukonUserLookupRoleIDs.put(user, userRoleIDsLookupMap);
+			allYukonUserLookupRolePropertyIDs.put(user, userRolePropertyIDsLookupMap);
 		}
 	
+	}
+	/**
+	 * roleMap<LiteYukonRole, Map<LiteYukonRoleProperty,String>>
+	 * roleIDMap<Integer,LiteYukonRole>
+	 * rolePropertyIDMap<Integer,Pair<LiteYukonRoleProperty,String>>
+	 */
+	private void addRolesAndPropertiesToLookupMap(final Map roleMap, final Map roleIDMap, final Map rolePropertyIDMap) {
+		Iterator roleIter = roleMap.keySet().iterator();
+		while(roleIter.hasNext()) {
+			LiteYukonRole groupRole = (LiteYukonRole) roleIter.next();
+System.out.println("putting: " + groupRole.getRoleID());			
+			roleIDMap.put(new Integer(groupRole.getRoleID()), groupRole);						
+						
+			// add roleproperties for this role
+			Map rolePropertyMap = (Map) roleMap.get(groupRole);
+			addRolePropertiesToMap(rolePropertyMap, rolePropertyIDMap);						
+		}	
 	}
 	
 	/**
-	 * Convenience method for loadRoleLookupMaps
-	 * @param roles
-	 * @param roleMap
-	 */
-	private void addRolesToMap(List roleValuePairs, Map roleMap, Map roleIDMap) {
-		if(roleValuePairs != null) {
-			Iterator i = roleValuePairs.iterator();
-			while(i.hasNext()) {
-				Pair p = (Pair) i.next();
-				LiteYukonRole r = (LiteYukonRole) p.first;
-				roleMap.put(r.getRoleName(), p);
-				roleIDMap.put(new Integer(r.getLiteID()), p);
-			}
-		}
+	 * Adds the properties and values in rolePropertyMap<LiteYukonRoleProperty,String>
+	 * into roleIDMap<Integer,Pair<LiteYukonRoleProperty,String>>
+	 * */
+	private void addRolePropertiesToMap(final Map rolePropertyMap, final Map rolePropertyIDMap) {
+		Iterator propertyIter = rolePropertyMap.keySet().iterator();
+		while(propertyIter.hasNext()) {
+			LiteYukonRoleProperty property = (LiteYukonRoleProperty) propertyIter.next();
+			Pair propPair = new Pair(property, rolePropertyMap.get(property));
+			rolePropertyIDMap.put(new Integer(property.getRolePropertyID()), propPair);
+		}		
 	}
-				
+					
 	/**
 	 * @see com.cannontech.yukon.IDatabaseCache#getAllEnergyCompanies()
 	 */
@@ -1324,8 +1351,8 @@ public synchronized LiteBase handleDBChangeMessage(com.cannontech.message.dispat
 		
 		allYukonRoles = null;
 		allYukonGroups = null;
-		allYukonUserRoles = null;
-		allYukonGroupRoles = null;
+		allYukonUserRoleProperties = null;
+		allYukonGroupRoleProperties = null;
 		allYukonUserGroups = null;
 		allYukonGroupUsers = null;
 		allUserEnergyCompanies = null;
@@ -1963,90 +1990,7 @@ private synchronized LiteBase handleYukonPAOChange( int changeType, int id )
 
 	return lBase;
 }
-/**
- * Insert the method's description here.
- * Creation date: (3/14/00 3:22:47 PM)
- */
-public synchronized void loadAllCache()
-{
-	allPoints = new java.util.ArrayList();
-	allStateGroups = new java.util.ArrayList();
-	allUnitMeasures = new java.util.ArrayList();
-	allNotificationGroups = new java.util.ArrayList();
-	allContactNotifications = new java.util.ArrayList();	
-	allAlarmCategories = new java.util.ArrayList();
-	allContacts = new java.util.ArrayList();
-	allGraphDefinitions = new java.util.ArrayList();
-	allHolidaySchedules = new java.util.ArrayList();
-	allYukonPAObjects = new java.util.ArrayList();
-	allDeviceMeterGroups = new java.util.ArrayList();
-   allYukonImages = new java.util.ArrayList();
-	allCICustomers = new java.util.ArrayList();
-	
-	allYukonUsers = new java.util.ArrayList();
-	allYukonRoles = new java.util.ArrayList();
 
-	
-	//prime the maps
-	allYukonUserRoles = new java.util.HashMap();
-
-	
-   //be sure all of our derived storage is cleard
-	allGraphTaggedPoints = null;
-	allUnusedCCDevices = null;
-	allCapControlFeeders = null;
-	allCapControlSubBuses = null;	
-	allDevices = null;
-	allLMPrograms = null;
-	allLoadManagement = null;
-	allPorts = null;
-	allRoutes = null;	
-
-	
-	Runnable[] runners =
-	{
-		new YukonPAOLoader(allYukonPAObjects, databaseAlias),
-		new PointLoader(allPoints, databaseAlias),
-		new StateGroupLoader(allStateGroups, databaseAlias),
-		new UnitMeasureLoader(allUnitMeasures, databaseAlias),
-		new GraphDefinitionLoader(allGraphDefinitions, databaseAlias),		
-		new ContactNotificationGroupLoader(allNotificationGroups, databaseAlias),
-		new AlarmCategoryLoader(allAlarmCategories, databaseAlias),
-		new ContactLoader(allContacts, databaseAlias),
-		new HolidayScheduleLoader(allHolidaySchedules, databaseAlias),
-		new DeviceMeterGroupLoader(allDeviceMeterGroups, databaseAlias),
-      new YukonImageLoader(allYukonImages, databaseAlias),
-      new CICustomerLoader(allCICustomers, databaseAlias),
-      
-		new YukonUserLoader(allYukonUsers, databaseAlias),
-      new YukonRoleLoader(allYukonRoles, databaseAlias),
-      new YukonUserRoleLoader(allYukonUserRoles, getAllYukonUsers(), getAllYukonRoles(), databaseAlias)
-	};
-
-
-	//Just use 1 Thread to load the DB for now
-	for( int i = 0 ; i < runners.length; i++ )
-		runners[i].run();
-	
-/*
-	try
-	{
-java.util.Date timerStart = new java.util.Date();
-		runLoaders( runners );
-com.cannontech.clientutils.CTILogger.info( 
-	((new java.util.Date().getTime() - timerStart.getTime())*.001) + " Secs for LOADER" );
-
-	}
-	catch( Exception e )
-	{
-
-		//oops something went wrong, just load all cache in 1 thread
-		for( int i = 0 ; i < runners.length; i++ )
-			runners[i].run();
-	}
-*/
-
-}
 /**
  * Insert the method's description here.
  * Creation date: (3/14/00 3:22:47 PM)
@@ -2055,36 +1999,58 @@ public synchronized void releaseAllAlarmCategories()
 {
 	allAlarmCategories = null;
 }
+
 /**
- * Insert the method's description here.
+ * Drop all the junk we have accumulated.
+ * Please be keeping this method in sync
  * Creation date: (3/14/00 3:22:47 PM)
  */
 public synchronized void releaseAllCache()
 {
+	allYukonPAObjects = null;
 	allPoints = null;
 	allStateGroups = null;
+	allUnitMeasures = null;
 	allNotificationGroups = null;
+	
 	allContactNotifications = null;
+	
 	allAlarmCategories = null;
 	allContacts = null;
 	allGraphDefinitions = null;
-	allYukonPAObjects = null;
+	allHolidaySchedules = null;
 	allDeviceMeterGroups = null;
-   allYukonImages = null;
+	allPointsUnits = null;
+	allPointLimits = null;
+    allYukonImages = null;
 	allCICustomers = null;
+
+	allYukonUsers = null;
+	allYukonRoles = null;
+	allYukonGroups = null;
 	
+	allYukonUserRoleProperties = null;
+	allYukonGroupRoleProperties = null;
+	allYukonUserGroups = null;
+	allYukonGroupUsers = null;
+		
+	allYukonUserLookupRoleIDs = null;
+	allYukonUserLookupRolePropertyIDs = null;
 	
-	//be sure all of our derived storage is cleard
-	//allUsedContactNotifications = null;
-	allGraphTaggedPoints = null;
-	allUnusedCCDevices = null;
-	allCapControlFeeders = null;
-	allCapControlSubBuses = null;	
-	allDevices = null;
-	allLMPrograms = null;
-	allLoadManagement = null;
-	allPorts = null;
-	allRoutes = null;	
+	allEnergyCompanies = null;
+	allUserEnergyCompanies = null;
+	
+	allGraphTaggedPoints = null; //Points
+	allUnusedCCDevices = null; //PAO
+	allCapControlFeeders = null; //PAO
+	allCapControlSubBuses = null; //PAO	
+	allDevices = null; //PAO
+	allLMPrograms = null; //PAO
+	allLoadManagement = null; //PAO
+	allPorts = null; //PAO
+	allRoutes = null; //PAO
+	
+	allPointidMultiplierHashMap = null;
 }
 /**
  * Insert the method's description here.
@@ -2161,9 +2127,9 @@ public synchronized void releaseAllPoints(){
  * Creation date: (3/14/00 3:22:47 PM)
  */
 public synchronized void releaseAllYukonUsers(){
-
 	allYukonUsers = null;
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (3/14/00 3:22:47 PM)

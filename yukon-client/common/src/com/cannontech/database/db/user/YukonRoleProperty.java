@@ -8,31 +8,31 @@ import com.cannontech.database.db.DBPersistent;
 /**
  * @author alauinger
  */
-public class YukonUserRole extends DBPersistent 
+public class YukonRoleProperty extends DBPersistent 
 {
-	public static final String TABLE_NAME = "YukonUserRole";
+	public static final String TABLE_NAME = "YukonGroupRole";
 
 	public static final String[] SETTER_COLUMNS  = 
 	{ 
-		"UserID","RoleID","RolePropertyID","Value" 
+		"GroupID","RoleID","RolePropertyID","Value" 
 	};
 
-	public static final String[] CONSTRAINT_COLUMNS  = { "UserRoleID" }; 
+	public static final String[] CONSTRAINT_COLUMNS  = { "GroupRoleID" }; 
 	
-	private Integer userRoleID = null;
-	private Integer userID = null;
+	private Integer groupRoleID = null;
+	private Integer groupID = null;
 	private Integer roleID = null;
 	private Integer rolePropertyID = null;
 	private String value = null;
 
-	public YukonUserRole() {
+	public YukonRoleProperty() {
 		super();
 	}
 
-	public YukonUserRole(Integer userRoleID_, Integer userID_, Integer roleID_, Integer rolePropertyID_, String value_) {
+	public YukonRoleProperty(Integer groupRoleID_, Integer groupID_, Integer roleID_, Integer rolePropertyID_, String value_) {
 		this();
-		setUserRoleID(userRoleID_);
-		setUserID( userID_ );
+		setGroupRoleID(groupRoleID_);
+		setGroupID( groupID_ );
 		setRoleID( roleID_ );
 		setRolePropertyID(rolePropertyID_);
 		setValue( value_ );
@@ -44,7 +44,7 @@ public class YukonUserRole extends DBPersistent
 	public void add() throws SQLException {
 		Object[] addValues = 
 		{ 
-			getUserRoleID(), getUserID(), getRoleID(), getRolePropertyID(), getValue() 
+			getGroupRoleID(), getGroupID(), getRoleID(), getRolePropertyID(), getValue() 
 		};
 		add(TABLE_NAME, addValues);
 	}
@@ -56,7 +56,7 @@ public class YukonUserRole extends DBPersistent
 	{
 		Object[] vals = 
 		{ 
-			getUserRoleID()
+			getGroupRoleID()
 		};
 		
 		delete(TABLE_NAME, CONSTRAINT_COLUMNS, vals);
@@ -67,12 +67,12 @@ public class YukonUserRole extends DBPersistent
 	 */
 	public void retrieve() throws SQLException 
 	{
-		Object[] constraintValues = { getUserRoleID() };
+		Object[] constraintValues = { getGroupRoleID() };
 		
 		Object[] results = retrieve(SETTER_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues);
 		if(results.length == SETTER_COLUMNS.length) 
 		{
-			setUserID( (Integer) results[0]);
+			setGroupID( (Integer) results[0]);
 			setRoleID( (Integer) results[1]);
 			setRolePropertyID( (Integer) results[2]);
 			setValue( (String) results[3] );
@@ -86,13 +86,13 @@ public class YukonUserRole extends DBPersistent
 	{
 		Object[] setValues = 
 		{ 
-			getUserID(),
+			getGroupID(),
 			getRoleID(),
 			getRolePropertyID(),
 			getValue() 
 		};
 
-		Object[] constraintValues = { getUserRoleID() };		
+		Object[] constraintValues = { getGroupRoleID() };		
 		
 		update(TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues);
 	}
@@ -115,11 +115,11 @@ public class YukonUserRole extends DBPersistent
 
 
 	/**
-	 * Returns the userID.
+	 * Returns the groupID.
 	 * @return Integer
 	 */
-	public Integer getUserID() {
-		return userID;
+	public Integer getGroupID() {
+		return groupID;
 	}
 
 	/**
@@ -131,11 +131,11 @@ public class YukonUserRole extends DBPersistent
 	}
 
 	/**
-	 * Sets the userID.
-	 * @param userID The userID to set
+	 * Sets the groupID.
+	 * @param groupID The groupID to set
 	 */
-	public void setUserID(Integer userID) {
-		this.userID = userID;
+	public void setGroupID(Integer userID) {
+		this.groupID = userID;
 	}
 
 	/**
@@ -147,19 +147,19 @@ public class YukonUserRole extends DBPersistent
 	}
 
 	/**
-	 * Returns the userRoleID.
+	 * Returns the groupRoleID.
 	 * @return Integer
 	 */
-	public Integer getUserRoleID() {
-		return userRoleID;
+	public Integer getGroupRoleID() {
+		return groupRoleID;
 	}
 
 	/**
-	 * Sets the userRoleID.
-	 * @param userRoleID The userRoleID to set
+	 * Sets the groupRoleID.
+	 * @param groupRoleID The groupRoleID to set
 	 */
-	public void setUserRoleID(Integer userRoleID) {
-		this.userRoleID = userRoleID;
+	public void setGroupRoleID(Integer userRoleID) {
+		this.groupRoleID = userRoleID;
 	}
 
 	/**

@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.constants.RoleTypes;
 import com.cannontech.common.util.Pair;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -19,6 +18,7 @@ import com.cannontech.esub.editor.Drawing;
 import com.cannontech.esub.element.DrawingMetaElement;
 import com.cannontech.esub.util.DrawingUpdater;
 import com.cannontech.esub.web.SessionInfo;
+import com.cannontech.roles.cicustomer.EsubDrawingsRole;
 
 /**
  * Description Here
@@ -58,16 +58,15 @@ public class SVGGenerator extends HttpServlet {
 			
 			// User requires the role specific to access this drawing
 			// and also the Esub VIEW role to see it
-			if( AuthFuncs.checkRole(user, metaElem.getRoleID()) != null &&				
-				AuthFuncs.checkRole(user, RoleTypes.ESUBVIEW) != null  ) {				
+			if( AuthFuncs.checkRole(user, metaElem.getRoleID()) != null &&	
+				AuthFuncs.checkRoleProperty(user, EsubDrawingsRole.VIEW) ) {				
 				
 				// Update the drawing before sending it out to init all the values
 				DrawingUpdater updater = new DrawingUpdater(d);
 				updater.updateDrawing();
 				
 				// enable edit functions?
-				Pair editPair = AuthFuncs.checkRole(user, RoleTypes.ESUBEDIT);			
-				boolean canEdit = (editPair != null);
+				boolean canEdit = AuthFuncs.checkRoleProperty(user, EsubDrawingsRole.EDIT);
 
 				com.cannontech.esub.util.SVGGenerator gen = new com.cannontech.esub.util.SVGGenerator();				
 				gen.generate(w, d, canEdit, false);	

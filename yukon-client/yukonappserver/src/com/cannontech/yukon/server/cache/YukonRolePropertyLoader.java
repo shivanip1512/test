@@ -7,20 +7,22 @@ import java.sql.Statement;
 import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.database.data.lite.LiteYukonRole;
+import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 
 /**
+ * Loads all the yukon role properties into a List
  * @author alauinger
  */
 
-public final class YukonRoleLoader implements Runnable
+public final class YukonRolePropertyLoader implements Runnable
 {
-	private static final String sql = "SELECT RoleID,RoleName,Category,RoleDescription FROM SystemRole";
-   	final private List allRoles;
+	private static final String sql = "SELECT RolePropertyID,RoleID,KeyName,DefaultValue,Description FROM YukonRoleProperty";
+
+   	final private List allRoleProperties;
 	final private String dbAlias;
 
-	public YukonRoleLoader(final List allRoles, final String dbAlias) {
-   		this.allRoles = allRoles;
+	public YukonRolePropertyLoader(final List allRoleProperties, final String dbAlias) {
+   		this.allRoleProperties = allRoleProperties;
       	this.dbAlias = dbAlias;      	
    	}
 
@@ -40,13 +42,14 @@ public final class YukonRoleLoader implements Runnable
          	rset = stmt.executeQuery(sql);
    
       		while (rset.next() ) {      			
-      			final int roleID = rset.getInt(1);
-      			final String roleName = rset.getString(2).trim();
-      			final String category = rset.getString(3).trim();
-      			final String description = rset.getString(4).trim();
-      			      			
-      			final LiteYukonRole role = new LiteYukonRole(roleID, roleName, category, description);      			      			
-            	allRoles.add(role);                       		
+      			final int rolePropertyID = rset.getInt(1);
+      			final int roleID = rset.getInt(2);
+      			final String keyName = rset.getString(3).trim();
+      			final String defaultValue = rset.getString(4).trim();
+      			final String description = rset.getString(5).trim();
+      			
+      			final LiteYukonRoleProperty roleProperty = new LiteYukonRoleProperty(rolePropertyID, roleID, keyName, defaultValue, description);
+            	allRoleProperties.add(roleProperty);                       		
          	}
       	}
       	catch(SQLException e ) {
@@ -65,7 +68,7 @@ public final class YukonRoleLoader implements Runnable
    
    		CTILogger.info( 
        (System.currentTimeMillis() - timerStart)*.001 + 
-       " Secs for YukonRoleLoader (" + allRoles.size() + " loaded)" );   
+       " Secs for YukonRolePropertyLoader (" + allRoleProperties.size() + " loaded)" );   
       }
    
    }

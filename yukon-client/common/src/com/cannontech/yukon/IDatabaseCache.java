@@ -48,22 +48,37 @@ public interface IDatabaseCache
    public java.util.List getAllYukonUsers();
    public java.util.List getAllYukonGroups();
    public java.util.List getAllYukonRoles();
+   public java.util.List getAllYukonRoleProperties();
    
    //Map<LiteYukonUser,List<LiteYukonGroup>> 
-   public java.util.Map getAllYukonUserGroupMap();
+   public java.util.Map getYukonUserGroupMap();
    
    //Map<LiteYukonGroup,List<LiteYukonUser>>
-   public java.util.Map getAllYukonGroupUserMap();
+   public java.util.Map getYukonGroupUserMap();
       
+   //Map<LiteYukonUser, Map<LiteYukonRole, Map<LiteYukonRoleProperty, String(value)>>>
+   public java.util.Map getYukonUserRolePropertyMap();
+   
    //Map<LiteYukonUser,List<Pair<LiteYukonRole,String(value)>>> 
-   public java.util.Map getAllYukonUserRoleMap();
-      
+   //public java.util.Map getAllYukonUserRoleMap();
+     
+   //Map<LiteYukonGroup, Map<LiteYukonRole, Map<LiteYukonRoleProperty, String(value)>>>
+   public java.util.Map getYukonGroupRolePropertyMap();
+   
    //Map<LiteYukonUser,List<Pair<LiteYukonRole,String(value)>>>
-   public java.util.Map getAllYukonGroupRoleMap();	
+   //public java.util.Map getAllYukonGroupRoleMap();	
+   
+   //Map<LiteYukonUser, Map<Integer(rolepropertyid), Pair<LiteYukonRoleProperty, String(value)>>>
+   //Provided as a means to efficiently obtain a roleproperty and its value
+   public java.util.Map getYukonUserRolePropertyIDLookupMap();
+  
+  //Map<LiteYukonUser, Map<Integer(roleid), LiteYukonRole>>
+  //Provided as a means to efficiently obtain a role
+  public java.util.Map getYukonUserRoleIDLookupMap();
            
    //Map<LiteYukonUser,Map<Integer(roleid),Pair<LiteYukonRole,String(value)>>
    //Provided as a means to efficiently obtain a role and its value
-   public java.util.Map getAllYukonUserRoleIDLookupMap(); 
+//   public java.util.Map getAllYukonUserRoleIDLookupMap(); 
    
    public java.util.List getAllEnergyCompanies();
    public java.util.Map getAllUserEnergyCompanies();
@@ -81,7 +96,6 @@ public interface IDatabaseCache
     */
    public LiteBase handleDBChangeMessage(com.cannontech.message.dispatch.message.DBChangeMsg dbChangeMsg);
 
-   public void loadAllCache();
    public void releaseAllCache();
    public void releaseAllAlarmCategories();
    public void releaseAllCustomerContacts();

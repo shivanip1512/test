@@ -6,19 +6,18 @@ import javax.servlet.jsp.JspException;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.data.lite.LiteYukonUser;
 /**
- * Attempts to match the LiteYukonUser in the session with a given role.
- * If a match is found then it writes out the value of the role for this user.
+ * Writes out the value of a role property for the current user.
  * Creation date: (11/13/2001 4:30:35 PM)
  * @author: alauinger
  */
-public class TextTag extends javax.servlet.jsp.tagext.BodyTagSupport {
-	
-	public int roleid;
+public class RoleProperty extends javax.servlet.jsp.tagext.BodyTagSupport {
+
+	public int propertyid;	
 	
 /**
  * TextTag constructor comment.
  */
-public TextTag() {
+public RoleProperty() {
 	super();
 }
 /**
@@ -39,7 +38,7 @@ public int doStartTag() throws JspException {
 		String uri = null;			
 		LiteYukonUser user = (LiteYukonUser) pageContext.getSession().getAttribute("YUKON_USER");
 		if(user != null) {			
-			String text = AuthFuncs.getRoleValue(user,roleid,"");
+			String text = AuthFuncs.getRolePropertyValue(user, propertyid, "Missing rolePropertyID:  " + Integer.toString(propertyid));
 			pageContext.getOut().write(text);
 		}				 	
 	}
@@ -50,20 +49,21 @@ public int doStartTag() throws JspException {
 
 	return SKIP_BODY;
 }
+	
 	/**
-	 * Returns the roleid.
+	 * Returns the propertyid.
 	 * @return int
 	 */
-	public int getRoleid() {
-		return roleid;
+	public int getPropertyid() {
+		return propertyid;
 	}
 
 	/**
-	 * Sets the roleid.
-	 * @param roleid The roleid to set
+	 * Sets the propertyid.
+	 * @param propertyid The propertyid to set
 	 */
-	public void setRoleid(int roleid) {
-		this.roleid = roleid;
+	public void setPropertyid(int propertyid) {
+		this.propertyid = propertyid;
 	}
 
 }
