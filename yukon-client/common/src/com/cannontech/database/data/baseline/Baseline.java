@@ -133,7 +133,7 @@ public Integer getHolidaysUsed()
 	return getBaseline().getHolidaysUsed();
 }
 
-public static boolean inUseByPoints(Integer contactID, String databaseAlias)
+public static boolean inUseByPoints(Integer baselineID, String databaseAlias)
 {
 	return false;
 }
@@ -212,18 +212,4 @@ public void update() throws java.sql.SQLException
 	
 }
 
-public java.util.Vector getAllBaselines(Integer startingID)
-{
-	java.util.Vector holder = new java.util.Vector();
-	try
-	{
-		
-		com.cannontech.database.db.baseline.Baseline.getAllBaselines(startingID, getBaseline().getDbConnection());
-	}
-	catch( java.sql.SQLException e )
-	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-	}
-	return holder;
-}
 }
