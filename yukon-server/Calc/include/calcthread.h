@@ -34,6 +34,19 @@ public:
     {
     };
 
+    ~CtiCalculateThread( void )
+    {
+        _auAffectedPoints.clear();
+        if( _periodicPoints.entries() > 0 )
+        {
+            _periodicPoints.clearAndDestroy();
+        }
+        if( _onUpdatePoints.entries() > 0 )
+        {
+            _onUpdatePoints.clearAndDestroy();
+        }
+    };
+
     RWMutexLock outboxMux;
     
     void calcLoop( void );
