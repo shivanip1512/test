@@ -26,11 +26,8 @@ public class DisconnectPointCreate extends PointCreate
 	 */
 	public boolean isDeviceValid(com.cannontech.database.data.lite.LiteYukonPAObject litePaobject_ )
 	{
-		// Valid MCT213 or MCT310ID
 		int type = litePaobject_.getType();
-		return ( type == DeviceTypesFuncs.MCT213 ||
-					type == DeviceTypesFuncs.MCT310ID ||
-					type == DeviceTypesFuncs.MCT310IDL);
+		return ( DeviceTypesFuncs.isDisconnectMCT(type) );
 	}
 
 	/**
