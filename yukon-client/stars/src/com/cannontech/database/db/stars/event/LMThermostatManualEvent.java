@@ -2,6 +2,7 @@ package com.cannontech.database.db.stars.event;
 
 import java.sql.SQLException;
 
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.db.DBPersistent;
 
 /**
@@ -15,11 +16,11 @@ import com.cannontech.database.db.DBPersistent;
 public class LMThermostatManualEvent extends DBPersistent {
 	
 	private Integer eventID = null;
-	private Integer inventoryID = new Integer(com.cannontech.database.db.stars.hardware.InventoryBase.NONE_INT);
+	private Integer inventoryID = new Integer(CtiUtilities.NONE_ID);
 	private Integer previousTemperature = new Integer(0);
 	private String holdTemperature = new String("N");
-	private Integer operationStateID = new Integer(com.cannontech.common.util.CtiUtilities.NONE_ID);
-	private Integer fanOperationID = new Integer(com.cannontech.common.util.CtiUtilities.NONE_ID);
+	private Integer operationStateID = new Integer(CtiUtilities.NONE_ID);
+	private Integer fanOperationID = new Integer(CtiUtilities.NONE_ID);
 	
 	public static final String[] SETTER_COLUMNS = {
 		"InventoryID", "PreviousTemperature", "HoldTemperature", "OperationStateID", "FanOperationID"

@@ -25,7 +25,7 @@ public class LiteStarsAppliance extends LiteBase {
 	private int kwCapacity = 0;
 	private int efficiencyRating = 0;
 	
-	private int inventoryID = com.cannontech.database.db.stars.hardware.InventoryBase.NONE_INT;
+	private int inventoryID = CtiUtilities.NONE_ID;
 	private int addressingGroupID = 0;
 	
 	public LiteStarsAppliance() {

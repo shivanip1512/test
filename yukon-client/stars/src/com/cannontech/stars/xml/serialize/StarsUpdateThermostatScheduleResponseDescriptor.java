@@ -127,13 +127,11 @@ public class StarsUpdateThermostatScheduleResponseDescriptor extends org.exolab.
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _starsLMHardwareEvent
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
         //-- _starsThermostatSeasonList

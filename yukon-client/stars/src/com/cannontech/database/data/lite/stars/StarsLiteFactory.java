@@ -121,6 +121,18 @@ public class StarsLiteFactory {
 			lite = new LiteServiceCompany();
 			setLiteServiceCompany( (LiteServiceCompany) lite, (com.cannontech.database.db.stars.report.ServiceCompany) db );
 		}
+		else if (db instanceof com.cannontech.database.db.stars.CustomerFAQ) {
+			lite = new LiteCustomerFAQ();
+			setLiteCustomerFAQ( (LiteCustomerFAQ) lite, (com.cannontech.database.db.stars.CustomerFAQ) db );
+		}
+		else if (db instanceof com.cannontech.database.db.stars.InterviewQuestion) {
+			lite = new LiteInterviewQuestion();
+			setLiteInterviewQuestion( (LiteInterviewQuestion) lite, (com.cannontech.database.db.stars.InterviewQuestion) db );
+		}
+		else if (db instanceof com.cannontech.database.db.web.YukonWebConfiguration) {
+			lite = new LiteWebConfiguration();
+			setLiteWebConfiguration( (LiteWebConfiguration) lite, (com.cannontech.database.db.web.YukonWebConfiguration) db );
+		}
 		
 		return lite;
 	}
@@ -397,6 +409,31 @@ public class StarsLiteFactory {
     	liteCompany.setHiType( company.getHIType() );
 	}
 	
+	public static void setLiteCustomerFAQ(LiteCustomerFAQ liteFAQ, com.cannontech.database.db.stars.CustomerFAQ faq) {
+		liteFAQ.setQuestionID( faq.getQuestionID().intValue() );
+		liteFAQ.setSubjectID( faq.getSubjectID().intValue() );
+		liteFAQ.setQuestion( faq.getQuestion() );
+		liteFAQ.setAnswer( faq.getAnswer() );
+	}
+	
+	public static void setLiteInterviewQuestion(LiteInterviewQuestion liteQuestion, com.cannontech.database.db.stars.InterviewQuestion question) {
+		liteQuestion.setQuestionID( question.getQuestionID().intValue() );
+		liteQuestion.setQuestionType( question.getQuestionType().intValue() );
+		liteQuestion.setQuestion( question.getQuestion() );
+		liteQuestion.setMandatory( question.getMandatory() );
+		liteQuestion.setDisplayOrder( question.getDisplayOrder().intValue() );
+		liteQuestion.setAnswerType( question.getAnswerType().intValue() );
+		liteQuestion.setExpectedAnswer( question.getExpectedAnswer().intValue() );
+	}
+	
+	public static void setLiteWebConfiguration(LiteWebConfiguration liteConfig, com.cannontech.database.db.web.YukonWebConfiguration config) {
+		liteConfig.setConfigID(config.getConfigurationID().intValue() );
+		liteConfig.setLogoLocation( config.getLogoLocation() );
+		liteConfig.setDescription( config.getDescription() );
+		liteConfig.setAlternateDisplayName( config.getAlternateDisplayName() );
+		liteConfig.setUrl( config.getURL() );
+	}
+	
 	
 	public static DBPersistent createDBPersistent(LiteBase lite) {
 		DBPersistent db = null;
@@ -404,7 +441,7 @@ public class StarsLiteFactory {
 		switch (lite.getLiteType()) {
 			case LiteTypes.STARS_CUSTOMER_CONTACT:
 				db = new com.cannontech.database.data.customer.Contact();
-				setContact( (com.cannontech.database.data.customer.Contact) db, (LiteCustomerContact) lite );
+				setContact( (com.cannontech.database.data.customer.Contact) db, (LiteCustomerContact) lite, true );
 				break;
 			case LiteTypes.STARS_ADDRESS:
 				db = new com.cannontech.database.db.customer.Address();
@@ -479,7 +516,7 @@ public class StarsLiteFactory {
 		return db;
 	}
 	
-	public static void setContact(com.cannontech.database.data.customer.Contact contact, LiteCustomerContact liteContact) {
+	public static void setContact(com.cannontech.database.data.customer.Contact contact, LiteCustomerContact liteContact, boolean isResidential) {
 		contact.getContact().setContactID( new Integer(liteContact.getContactID()) );
 		contact.getContact().setContLastName( liteContact.getLastName() );
 		contact.getContact().setContFirstName( liteContact.getFirstName() );
@@ -488,7 +525,10 @@ public class StarsLiteFactory {
 		if (liteContact.getHomePhone() != null && liteContact.getHomePhone().length() > 0) {
 			com.cannontech.database.db.contact.ContactNotification notif = new com.cannontech.database.db.contact.ContactNotification();
 			notif.setContactID( new Integer(liteContact.getContactID()) );
-			notif.setNotificationCatID( new Integer(SOAPServer.YUK_LIST_ENTRY_ID_HOME_PHONE) );
+			if (isResidential)
+				notif.setNotificationCatID( new Integer(SOAPServer.YUK_LIST_ENTRY_ID_HOME_PHONE) );
+			else
+				notif.setNotificationCatID( new Integer(SOAPServer.YUK_LIST_ENTRY_ID_PHONE) );
 			notif.setNotification( liteContact.getHomePhone() );
 			notif.setDisableFlag( "Y" );
 			contact.getContactNotifVect().add( notif );
@@ -497,7 +537,10 @@ public class StarsLiteFactory {
 		if (liteContact.getWorkPhone() != null && liteContact.getWorkPhone().length() > 0) {
 			com.cannontech.database.db.contact.ContactNotification notif = new com.cannontech.database.db.contact.ContactNotification();
 			notif.setContactID( new Integer(liteContact.getContactID()) );
-			notif.setNotificationCatID( new Integer(SOAPServer.YUK_LIST_ENTRY_ID_WORK_PHONE) );
+			if (isResidential)
+				notif.setNotificationCatID( new Integer(SOAPServer.YUK_LIST_ENTRY_ID_WORK_PHONE) );
+			else
+				notif.setNotificationCatID( new Integer(SOAPServer.YUK_LIST_ENTRY_ID_FAX) );
 			notif.setNotification( liteContact.getWorkPhone() );
 			notif.setDisableFlag( "Y" );
 			contact.getContactNotifVect().add( notif );
@@ -774,6 +817,49 @@ public class StarsLiteFactory {
 		}
 		
 		return account;
+	}
+	
+	
+	public static com.cannontech.database.db.constants.YukonListEntry createYukonListEntry(com.cannontech.common.constants.YukonListEntry cEntry) {
+		com.cannontech.database.db.constants.YukonListEntry entry = new com.cannontech.database.db.constants.YukonListEntry();
+		entry.setEntryID( new Integer(cEntry.getEntryID()) );
+		entry.setListID( new Integer(cEntry.getListID()) );
+		entry.setEntryOrder( new Integer(cEntry.getEntryOrder()) );
+		entry.setEntryText( cEntry.getEntryText() );
+		entry.setYukonDefID( new Integer(cEntry.getYukonDefID()) );
+		
+		return entry;
+	}
+	
+	public static void setConstantYukonListEntry(
+			com.cannontech.common.constants.YukonListEntry cEntry, com.cannontech.database.db.constants.YukonListEntry entry) {
+		cEntry.setEntryID( entry.getEntryID().intValue() );
+		cEntry.setListID( entry.getListID().intValue() );
+		cEntry.setEntryOrder( entry.getEntryOrder().intValue() );
+		cEntry.setEntryText( entry.getEntryText() );
+		cEntry.setYukonDefID( entry.getYukonDefID().intValue() );
+	}
+	
+	public static com.cannontech.database.db.constants.YukonSelectionList createYukonSelectionList(com.cannontech.common.constants.YukonSelectionList cList) {
+		com.cannontech.database.db.constants.YukonSelectionList list = new com.cannontech.database.db.constants.YukonSelectionList();
+		list.setListID( new Integer(cList.getListID()) );
+		list.setOrdering( cList.getOrdering() );
+		list.setSelectionLabel( cList.getSelectionLabel() );
+		list.setWhereIsList( cList.getWhereIsList() );
+		list.setListName( cList.getListName() );
+		list.setUserUpdateAvailable( cList.getUserUpdateAvailable() );
+		
+		return list;
+	}
+	
+	public static void setConstantYukonSelectionList(
+			com.cannontech.common.constants.YukonSelectionList cList, com.cannontech.database.db.constants.YukonSelectionList list) {
+		cList.setListID( list.getListID().intValue() );
+		cList.setOrdering( list.getOrdering() );
+		cList.setSelectionLabel( list.getSelectionLabel() );
+		cList.setWhereIsList( list.getWhereIsList() );
+		cList.setListName( list.getListName() );
+		cList.setUserUpdateAvailable( list.getUserUpdateAvailable() );
 	}
 
 	
@@ -1368,7 +1454,7 @@ public class StarsLiteFactory {
 		return starsWebConfig;
 	}
 	
-	public static StarsApplianceCategory createStarsApplianceCategory(LiteApplianceCategory liteAppCat, ArrayList liteProgs, int energyCompanyID) {
+	public static StarsApplianceCategory createStarsApplianceCategory(LiteApplianceCategory liteAppCat, int energyCompanyID) {
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
 		
 		StarsApplianceCategory starsAppCat = new StarsApplianceCategory();
@@ -1377,29 +1463,28 @@ public class StarsLiteFactory {
 		starsAppCat.setDescription( ServerUtils.forceNotNull(liteAppCat.getDescription()) );
 		starsAppCat.setStarsWebConfig( energyCompany.getStarsWebConfig(liteAppCat.getWebConfigurationID()) );
 		
-		if (liteProgs != null) {
-			for (int i = 0; i < liteProgs.size(); i++) {
-				LiteLMProgram liteProg = (LiteLMProgram) liteProgs.get(i);
-				StarsEnrLMProgram starsProg = new StarsEnrLMProgram();
-				starsProg.setProgramID( liteProg.getProgramID() );
-				starsProg.setProgramName( liteProg.getProgramName() );
-				starsProg.setStarsWebConfig( energyCompany.getStarsWebConfig(liteProg.getWebSettingsID()) );
-				
-				for (int j = 0; j < liteProg.getGroupIDs().length; j++) {
-        			String groupName = com.cannontech.database.cache.functions.PAOFuncs.getYukonPAOName( liteProg.getGroupIDs()[j] );
-        			AddressingGroup group = new AddressingGroup();
-        			group.setEntryID( liteProg.getGroupIDs()[j] );
-        			group.setContent( groupName );
-        			starsProg.addAddressingGroup( group );
-				}
-				
-				if (liteProg.getChanceOfControlID() != 0) {
-					starsProg.setChanceOfControl( (ChanceOfControl) StarsFactory.newStarsCustListEntry(
-							YukonListFuncs.getYukonListEntry(liteProg.getChanceOfControlID()), ChanceOfControl.class) );
-				}
-				
-				starsAppCat.addStarsEnrLMProgram( starsProg );
+		for (int i = 0; i < liteAppCat.getPublishedPrograms().length; i++) {
+			LiteLMProgram liteProg = liteAppCat.getPublishedPrograms()[i];
+			
+			StarsEnrLMProgram starsProg = new StarsEnrLMProgram();
+			starsProg.setProgramID( liteProg.getProgramID() );
+			starsProg.setProgramName( liteProg.getProgramName() );
+			starsProg.setStarsWebConfig( energyCompany.getStarsWebConfig(liteProg.getWebSettingsID()) );
+			
+			for (int j = 0; j < liteProg.getGroupIDs().length; j++) {
+    			String groupName = com.cannontech.database.cache.functions.PAOFuncs.getYukonPAOName( liteProg.getGroupIDs()[j] );
+    			AddressingGroup group = new AddressingGroup();
+    			group.setEntryID( liteProg.getGroupIDs()[j] );
+    			group.setContent( groupName );
+    			starsProg.addAddressingGroup( group );
 			}
+			
+			if (liteProg.getChanceOfControlID() != 0) {
+				starsProg.setChanceOfControl( (ChanceOfControl) StarsFactory.newStarsCustListEntry(
+						YukonListFuncs.getYukonListEntry(liteProg.getChanceOfControlID()), ChanceOfControl.class) );
+			}
+			
+			starsAppCat.addStarsEnrLMProgram( starsProg );
 		}
 		
 		return starsAppCat;
@@ -1777,27 +1862,13 @@ public class StarsLiteFactory {
         return starsCustSelLists;
 	}
 	
-	public static StarsEnrollmentPrograms createStarsEnrollmentPrograms(ArrayList liteAppCats, String category, int energyCompanyID) {
+	public static StarsEnrollmentPrograms createStarsEnrollmentPrograms(ArrayList liteAppCats, int energyCompanyID) {
 		StarsEnrollmentPrograms starsEnrPrograms = new StarsEnrollmentPrograms();
-        
-        // Generate the category name, example values: "LMPrograms", "LMPrograms-Switch", "LMPrograms-Thermostat"
-        String wholeCatName = "LMPrograms";
-        if (category != null && category.length() > 0)
-        	wholeCatName += "-" + category;
         	
         for (int i = 0; i < liteAppCats.size(); i++) {
         	LiteApplianceCategory liteAppCat = (LiteApplianceCategory) liteAppCats.get(i);
-        	
-        	// Find only LM programs in the specified category
-        	LiteLMProgram[] liteProgs = liteAppCat.getPublishedPrograms();
-        	ArrayList progsInCat = new ArrayList();
-        	for (int j = 0; j < liteProgs.length; j++) {
-        		if (liteProgs[j].getProgramCategory().startsWith( wholeCatName ))
-        			progsInCat.add( liteProgs[j] );
-        	}
-        	
     		starsEnrPrograms.addStarsApplianceCategory(
-    			StarsLiteFactory.createStarsApplianceCategory(liteAppCat, progsInCat, energyCompanyID) );
+    			StarsLiteFactory.createStarsApplianceCategory(liteAppCat, energyCompanyID) );
         }
         
         return starsEnrPrograms;

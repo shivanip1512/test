@@ -346,7 +346,7 @@ public class CreateLMHardwareAction implements ActionBase {
 		return com.cannontech.common.util.CtiUtilities.NONE_ID;
 	}
 	
-	private void populateThermostatTables(int inventoryID, LiteStarsEnergyCompany energyCompany) {
+	public static void populateThermostatTables(int inventoryID, LiteStarsEnergyCompany energyCompany) {
 		com.cannontech.database.data.multi.MultiDBPersistent multiDB =
 				new com.cannontech.database.data.multi.MultiDBPersistent();
 		

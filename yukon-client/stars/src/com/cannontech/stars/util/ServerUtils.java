@@ -320,6 +320,15 @@ public class ServerUtils {
 				typeOfChange
 				);
 		}
+		else if (lite.getLiteType() == LiteTypes.YUKON_GROUP) {
+			msg = new DBChangeMsg(
+				lite.getLiteID(),
+				DBChangeMsg.CHANGE_YUKON_USER_DB,
+				DBChangeMsg.CAT_YUKON_USER_GROUP,
+				DBChangeMsg.CAT_YUKON_USER_GROUP,
+				typeOfChange
+				);
+		}
 		
 		DefaultDatabaseCache.getInstance().handleDBChangeMessage( msg );
 		
@@ -346,6 +355,8 @@ public class ServerUtils {
 	}
 	
 	public static boolean isOneWayThermostat(LiteLMHardwareBase liteHw, LiteStarsEnergyCompany energyCompany) {
+		if (liteHw.getInventoryID() < 0) return true;	// Default hardware is always "a thermostat"
+		
 		int oneWayRecID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_INV_CAT_ONEWAYREC ).getEntryID();
 		int thermTypeID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_THERMOSTAT ).getEntryID();
 		

@@ -111,9 +111,11 @@ public class StarsThermostatDynamicDataDescriptor extends org.exolab.castor.xml.
             {
                 try {
                     StarsThermostatDynamicData target = (StarsThermostatDynamicData) object;
-                    // ignore null values for non optional primitives
-                    if (value == null) return;
-                    
+                    // if null, use delete method for optional primitives 
+                    if (value == null) {
+                        target.deleteDisplayedTemperature();
+                        return;
+                    }
                     target.setDisplayedTemperature( ((Integer)value).intValue());
                 }
                 catch (Exception ex) {
@@ -125,13 +127,11 @@ public class StarsThermostatDynamicDataDescriptor extends org.exolab.castor.xml.
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _displayedTemperature
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         { //-- local scope
             IntegerValidator iv = new IntegerValidator();
             fieldValidator.setValidator(iv);

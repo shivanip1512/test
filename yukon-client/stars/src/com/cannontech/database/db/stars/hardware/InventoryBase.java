@@ -1,5 +1,6 @@
 package com.cannontech.database.db.stars.hardware;
 
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.db.DBPersistent;
 
 
@@ -14,19 +15,17 @@ import com.cannontech.database.db.DBPersistent;
 
 public class InventoryBase extends DBPersistent {
 
-    public static final int NONE_INT = 0;
-
     private Integer inventoryID = null;
-    private Integer accountID = new Integer( com.cannontech.database.db.stars.customer.CustomerAccount.NONE_INT );
-    private Integer installationCompanyID = new Integer( com.cannontech.database.db.stars.report.ServiceCompany.NONE_INT );
-    private Integer categoryID = new Integer( com.cannontech.common.util.CtiUtilities.NONE_ID );
+    private Integer accountID = new Integer( CtiUtilities.NONE_ID );
+    private Integer installationCompanyID = new Integer( CtiUtilities.NONE_ID );
+    private Integer categoryID = new Integer( CtiUtilities.NONE_ID );
     private java.util.Date receiveDate = new java.util.Date(0);
     private java.util.Date installDate = new java.util.Date(0);
     private java.util.Date removeDate = new java.util.Date(0);
     private String alternateTrackingNumber = "";
-    private Integer voltageID = new Integer( com.cannontech.common.util.CtiUtilities.NONE_ID );
+    private Integer voltageID = new Integer( CtiUtilities.NONE_ID );
     private String notes = "";
-    private Integer deviceID = new Integer( NONE_INT );
+    private Integer deviceID = new Integer( CtiUtilities.NONE_ID );
 
     public static final String[] SETTER_COLUMNS = {
         "AccountID", "InstallationCompanyID", "CategoryID", "ReceiveDate", "InstallDate",

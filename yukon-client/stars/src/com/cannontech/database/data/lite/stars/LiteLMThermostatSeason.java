@@ -14,7 +14,7 @@ import com.cannontech.database.data.lite.LiteTypes;
  */
 public class LiteLMThermostatSeason extends LiteBase {
 	
-	private int inventoryID = com.cannontech.database.db.stars.hardware.InventoryBase.NONE_INT;
+	private int inventoryID = CtiUtilities.NONE_ID;
 	private int webConfigurationID = CtiUtilities.NONE_ID;
 	private long startDate = 0;
 	private int displayOrder = 0;

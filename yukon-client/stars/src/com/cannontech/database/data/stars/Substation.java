@@ -33,7 +33,14 @@ public class Substation extends DBPersistent {
 
     public void delete() throws java.sql.SQLException {
     	// delete from mapping table
-    	delete("ECToGenericMapping", "ItemID", getSubstation().getSubstationID());
+    	String[] constraintColumns = {
+    		"ItemID", "MappingCategory"
+    	};
+    	Object[] constraintValues = {
+    		getSubstation().getSubstationID(),
+    		com.cannontech.database.db.stars.Substation.TABLE_NAME
+    	};
+    	delete("ECToGenericMapping", constraintColumns, constraintValues);
     	
         getSubstation().delete();
     }
@@ -48,7 +55,7 @@ public class Substation extends DBPersistent {
     	Object[] addValues = {
     		getEnergyCompanyID(),
     		getSubstation().getSubstationID(),
-    		getSubstation().TABLE_NAME
+    		com.cannontech.database.db.stars.Substation.TABLE_NAME
     	};
     	add("ECToGenericMapping", addValues);
     }

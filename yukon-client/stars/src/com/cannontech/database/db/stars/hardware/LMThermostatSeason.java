@@ -19,7 +19,7 @@ public class LMThermostatSeason extends DBPersistent {
 	public static final int NONE_INT = 0;
 	
 	private Integer seasonID = null;
-	private Integer inventoryID = new Integer(InventoryBase.NONE_INT);
+	private Integer inventoryID = new Integer(CtiUtilities.NONE_ID);
 	private Integer webConfigurationID = new Integer(CtiUtilities.NONE_ID);
 	private Date startDate = new Date(0);
 	private Integer displayOrder = new Integer(0);

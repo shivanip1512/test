@@ -296,16 +296,8 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
     		
     		com.cannontech.database.db.web.YukonWebConfiguration[] webConfigs =
     				com.cannontech.database.db.web.YukonWebConfiguration.getAllCustomerWebConfigurations();
-    		for (int i = 0; i < webConfigs.length; i++) {
-    			LiteWebConfiguration webConfig = new LiteWebConfiguration();
-    			webConfig.setConfigID(webConfigs[i].getConfigurationID().intValue() );
-    			webConfig.setLogoLocation( webConfigs[i].getLogoLocation() );
-    			webConfig.setDescription( webConfigs[i].getDescription() );
-    			webConfig.setAlternateDisplayName( webConfigs[i].getAlternateDisplayName() );
-    			webConfig.setUrl( webConfigs[i].getURL() );
-    			
-    			webConfigList.add( webConfig );
-    		}
+    		for (int i = 0; i < webConfigs.length; i++)
+    			webConfigList.add( (LiteWebConfiguration) StarsLiteFactory.createLite(webConfigs[i]) );
 	    	
 	    	CTILogger.info( "All customer web configurations loaded" );
     	}

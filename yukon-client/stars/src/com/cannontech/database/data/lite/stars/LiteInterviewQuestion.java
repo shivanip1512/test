@@ -16,6 +16,7 @@ public class LiteInterviewQuestion extends LiteBase {
 	private int questionType = com.cannontech.common.util.CtiUtilities.NONE_ID;
 	private String question = null;
 	private String mandatory = null;
+	private int displayOrder = 0;
 	private int answerType = com.cannontech.common.util.CtiUtilities.NONE_ID;
 	private int expectedAnswer = com.cannontech.common.util.CtiUtilities.NONE_ID;
 	
@@ -116,6 +117,22 @@ public class LiteInterviewQuestion extends LiteBase {
 	 */
 	public void setQuestionType(int questionType) {
 		this.questionType = questionType;
+	}
+
+	/**
+	 * Returns the displayOrder.
+	 * @return int
+	 */
+	public int getDisplayOrder() {
+		return displayOrder;
+	}
+
+	/**
+	 * Sets the displayOrder.
+	 * @param displayOrder The displayOrder to set
+	 */
+	public void setDisplayOrder(int displayOrder) {
+		this.displayOrder = displayOrder;
 	}
 
 }

@@ -229,21 +229,7 @@ public class UpdateLoginAction implements ActionBase {
         com.cannontech.database.data.user.YukonUser dataUser = new com.cannontech.database.data.user.YukonUser();
         com.cannontech.database.db.user.YukonUser dbUser = dataUser.getYukonUser();
         
-        String groupName = energyCompany.getEnergyCompanySetting(EnergyCompanyRole.CUSTOMER_GROUP_NAME);
-        DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
-        LiteYukonGroup liteGroup = null;
-        
-        synchronized (cache) {
-        	Iterator it = cache.getAllYukonGroups().iterator();
-        	while (it.hasNext()) {
-        		LiteYukonGroup g = (LiteYukonGroup) it.next();
-        		if (g.getGroupName().equalsIgnoreCase( groupName )) {
-        			liteGroup = g;
-        			break;
-        		}
-        	}
-        }
-        
+        LiteYukonGroup liteGroup = energyCompany.getResidentialCustomerGroup();
         com.cannontech.database.db.user.YukonGroup dbGroup = new com.cannontech.database.db.user.YukonGroup();
         dbGroup.setGroupID( new Integer(liteGroup.getGroupID()) );
         dataUser.getYukonGroups().addElement( dbGroup );

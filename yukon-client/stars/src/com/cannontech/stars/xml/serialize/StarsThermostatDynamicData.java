@@ -136,6 +136,13 @@ public class StarsThermostatDynamicData implements java.io.Serializable {
 
     /**
     **/
+    public void deleteDisplayedTemperature()
+    {
+        this._has_displayedTemperature= false;
+    } //-- void deleteDisplayedTemperature() 
+
+    /**
+    **/
     public void deleteHeatSetpoint()
     {
         this._has_heatSetpoint= false;

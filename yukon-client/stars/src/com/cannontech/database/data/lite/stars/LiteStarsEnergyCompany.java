@@ -17,6 +17,7 @@ import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.Transaction;
+import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.database.cache.functions.YukonUserFuncs;
@@ -24,6 +25,7 @@ import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteTypes;
+import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.stars.appliance.ApplianceAirConditioner;
 import com.cannontech.database.db.stars.appliance.ApplianceDualFuel;
@@ -290,7 +292,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	
 	public void init() {
 		getAllSelectionLists();
-		loadDefaultThermostatSettings();
+		//loadDefaultThermostatSettings();
 		
 		if (getLiteID() != SOAPServer.DEFAULT_ENERGY_COMPANY_ID) {
 			getAllApplianceCategories();
@@ -337,6 +339,22 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	public String getEnergyCompanySetting(int rolePropertyID) {
 		return AuthFuncs.getRolePropertyValue(
 				YukonUserFuncs.getLiteYukonUser(getUserID()), rolePropertyID);
+	}
+	
+	public LiteYukonGroup getResidentialCustomerGroup() {
+		String customerGroupName = getEnergyCompanySetting( EnergyCompanyRole.CUSTOMER_GROUP_NAME );
+        DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+        
+        synchronized (cache) {
+        	java.util.Iterator it = cache.getAllYukonGroups().iterator();
+        	while (it.hasNext()) {
+        		LiteYukonGroup group = (LiteYukonGroup) it.next();
+        		if (group.getGroupName().equalsIgnoreCase( customerGroupName ))
+        			return group;
+        	}
+        }
+        
+        return null;
 	}
     
     public synchronized ArrayList getAllLMPrograms() {
@@ -446,9 +464,71 @@ public class LiteStarsEnergyCompany extends LiteBase {
 				return list;
 		}
 		
-		// if selection list is not found, search the default energy company
-		if (getLiteID() != SOAPServer.DEFAULT_ENERGY_COMPANY_ID)
-			return SOAPServer.getDefaultEnergyCompany().getYukonSelectionList( listName );
+		if (getLiteID() != SOAPServer.DEFAULT_ENERGY_COMPANY_ID) {
+			YukonSelectionList dftList = SOAPServer.getDefaultEnergyCompany().getYukonSelectionList( listName );
+			if (dftList != null) {
+				// If the list is user updatable, return a duplicate of the default list; otherwise return the default list itself
+				if (dftList.getUserUpdateAvailable().equalsIgnoreCase("Y"))
+					return addYukonSelectionList( listName, true );
+				else
+					return dftList;
+			}
+		}
+		
+		return null;
+	}
+	
+	public YukonSelectionList addYukonSelectionList(String listName, boolean populateDefault) {
+		YukonSelectionList dftList = SOAPServer.getDefaultEnergyCompany().getYukonSelectionList( listName );
+		
+		try {
+			com.cannontech.database.data.constants.YukonSelectionList list =
+					new com.cannontech.database.data.constants.YukonSelectionList();
+			com.cannontech.database.db.constants.YukonSelectionList listDB = list.getYukonSelectionList();
+			listDB.setOrdering( dftList.getOrdering() );
+			listDB.setSelectionLabel( dftList.getSelectionLabel() );
+			listDB.setWhereIsList( dftList.getWhereIsList() );
+			listDB.setListName( dftList.getListName() );
+			listDB.setUserUpdateAvailable( dftList.getUserUpdateAvailable() );
+			list.setEnergyCompanyID( getEnergyCompanyID() );
+			
+			list = (com.cannontech.database.data.constants.YukonSelectionList)
+					Transaction.createTransaction(Transaction.INSERT, list).execute();
+			listDB = list.getYukonSelectionList();
+			
+			YukonSelectionList cList = new YukonSelectionList();
+			StarsLiteFactory.setConstantYukonSelectionList(cList, listDB);
+			
+			YukonListFuncs.getYukonSelectionLists().put( listDB.getListID(), cList );
+			ArrayList allLists = getAllSelectionLists();
+			synchronized (allLists) { allLists.add(cList); }
+			
+			if (populateDefault) {
+				for (int i = 0; i < dftList.getYukonListEntries().size(); i++) {
+					YukonListEntry dftEntry = (YukonListEntry) dftList.getYukonListEntries().get(i);
+					
+					com.cannontech.database.db.constants.YukonListEntry entry =
+							new com.cannontech.database.db.constants.YukonListEntry();
+					entry.setListID( listDB.getListID() );
+					entry.setEntryOrder( new Integer(dftEntry.getEntryOrder()) );
+					entry.setEntryText( dftEntry.getEntryText() );
+					entry.setYukonDefID( new Integer(dftEntry.getYukonDefID()) );
+					entry = (com.cannontech.database.db.constants.YukonListEntry)
+							Transaction.createTransaction(Transaction.INSERT, entry).execute();
+					
+					YukonListEntry cEntry = new YukonListEntry();
+					StarsLiteFactory.setConstantYukonListEntry( cEntry, entry );
+					
+					YukonListFuncs.getYukonListEntries().put( entry.getEntryID(), cEntry );
+					cList.getYukonListEntries().add( cEntry );
+				}
+			}
+			
+			return cList;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 		
 		return null;
 	}
@@ -476,9 +556,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	
 	public YukonListEntry getYukonListEntry(String listName, int entryID) {
 		YukonSelectionList list = getYukonSelectionList( listName );
-		if (list == null && getLiteID() != SOAPServer.DEFAULT_ENERGY_COMPANY_ID)
-			list = SOAPServer.getDefaultEnergyCompany().getYukonSelectionList( listName );
-		
 		if (list != null) {
 			ArrayList entries = list.getYukonListEntries();
 			for (int i = 0; i < entries.size(); i++) {
@@ -508,6 +585,8 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	
 	public synchronized void loadDefaultThermostatSettings() {
 		if (dftThermSettings != null && thermModeSettings != null) return;
+		
+		int dftInventoryID = -1;
 		boolean useDefault = false;
 		
 		String sql = "SELECT inv.InventoryID FROM ECToInventoryMapping map, "
@@ -519,53 +598,77 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		
 		try {
 			stmt.execute();
-			if (stmt.getRowCount() > 0) {
-				int dftInventoryID = ((java.math.BigDecimal) stmt.getRow(0)[0]).intValue();
-		        dftThermSettings = new LiteStarsThermostatSettings();
-		        dftThermSettings.setInventoryID( dftInventoryID );
-		        
-		        com.cannontech.database.data.stars.hardware.LMThermostatSeason[] seasons =
-		        		com.cannontech.database.data.stars.hardware.LMThermostatSeason.getAllLMThermostatSeasons(
-		        			new Integer(dftInventoryID) );
-		        			
-		        if (seasons != null) {
-			        dftThermSettings.setThermostatSeasons( new ArrayList() );
-			        thermModeSettings = new Object[ seasons.length ][];
-			        
-			        for (int j = 0; j < seasons.length; j++) {
-			        	LiteLMThermostatSeason liteSeason = (LiteLMThermostatSeason) StarsLiteFactory.createLite( seasons[j] );
-			        	dftThermSettings.getThermostatSeasons().add( liteSeason );
-			        	
-			        	thermModeSettings[j] = new Object[2];
-			        	thermModeSettings[j][0] = new Integer( liteSeason.getWebConfigurationID() );
-			        	LiteWebConfiguration liteConfig = SOAPServer.getWebConfiguration( liteSeason.getWebConfigurationID() );
-			        	if (liteConfig.getUrl().equalsIgnoreCase("Cool"))	// Temporarily use URL field to define cool/heat mode
-			        		thermModeSettings[j][1] = StarsThermoModeSettings.COOL;
-			        	else
-			        		thermModeSettings[j][1] = StarsThermoModeSettings.HEAT;
-			        }
-		        }
-		        else if (getLiteID() != SOAPServer.DEFAULT_ENERGY_COMPANY_ID)
-		        	useDefault = true;
-		        else
-					CTILogger.info( "No default thermostat schedules found!!!" );
-		        
-		        com.cannontech.database.data.stars.event.LMThermostatManualEvent[] events =
-		        		com.cannontech.database.data.stars.event.LMThermostatManualEvent.getAllLMThermostatManualEvents( new Integer(dftInventoryID) );
-		        if (events != null) {
-		        	for (int i = 0; i < events.length; i++)
-		        		dftThermSettings.getThermostatManualEvents().add(
-		        			(LiteLMThermostatManualEvent) StarsLiteFactory.createLite(events[i]) );
-		        }
-		        else if (getLiteID() != SOAPServer.DEFAULT_ENERGY_COMPANY_ID)
-		        	useDefault = true;
-		        else
-					CTILogger.info( "No default thermostat option found!!!" );
+			if (stmt.getRowCount() == 0) {
+	        	if (getLiteID() == SOAPServer.DEFAULT_ENERGY_COMPANY_ID) {
+					CTILogger.info( "No default thermostat settings found!!!" );
+					return;
+	        	}
+	        	
+	        	// Create a default LM hardware (InventoryID < 0) to store thermostat schedules
+	        	sql = "SELECT MIN(InventoryID) - 1 FROM InventoryBase";
+	        	stmt.setSQLString( sql );
+	        	stmt.execute();
+	        	if (stmt.getRowCount() > 0)
+	        		dftInventoryID = ((java.math.BigDecimal) stmt.getRow(0)[0]).intValue();
+	        	
+	        	com.cannontech.database.data.stars.hardware.LMHardwareBase hardware =
+	        			new com.cannontech.database.data.stars.hardware.LMHardwareBase();
+	        	hardware.setInventoryID( new Integer(dftInventoryID) );
+	        	hardware.getInventoryBase().setNotes( "Default Thermostat" );
+	        	hardware.getLMHardwareBase().setManufacturerSerialNumber( "0" );
+	        	hardware.setEnergyCompanyID( getEnergyCompanyID() );
+	        	hardware = (com.cannontech.database.data.stars.hardware.LMHardwareBase)
+	        			Transaction.createTransaction(Transaction.INSERT, hardware).execute();
+				
+	        	com.cannontech.stars.web.action.CreateLMHardwareAction.populateThermostatTables(
+	        			dftInventoryID, SOAPServer.getDefaultEnergyCompany() );
+	        	
+				LiteLMHardwareBase liteHw = (LiteLMHardwareBase) StarsLiteFactory.createLite( hardware );
+				liteHw.setThermostatSettings( getThermostatSettings(liteHw, false) );
+				addLMHardware( liteHw );
 			}
+			
+			dftInventoryID = ((java.math.BigDecimal) stmt.getRow(0)[0]).intValue();
+	        dftThermSettings = new LiteStarsThermostatSettings();
+	        dftThermSettings.setInventoryID( dftInventoryID );
+	        
+	        com.cannontech.database.data.stars.hardware.LMThermostatSeason[] seasons =
+	        		com.cannontech.database.data.stars.hardware.LMThermostatSeason.getAllLMThermostatSeasons(
+	        			new Integer(dftInventoryID) );
+	        			
+	        if (seasons != null) {
+		        dftThermSettings.setThermostatSeasons( new ArrayList() );
+		        thermModeSettings = new Object[ seasons.length ][];
+		        
+		        for (int j = 0; j < seasons.length; j++) {
+		        	LiteLMThermostatSeason liteSeason = (LiteLMThermostatSeason) StarsLiteFactory.createLite( seasons[j] );
+		        	dftThermSettings.getThermostatSeasons().add( liteSeason );
+		        	
+		        	thermModeSettings[j] = new Object[2];
+		        	thermModeSettings[j][0] = new Integer( liteSeason.getWebConfigurationID() );
+		        	LiteWebConfiguration liteConfig = SOAPServer.getWebConfiguration( liteSeason.getWebConfigurationID() );
+		        	if (liteConfig.getUrl().equalsIgnoreCase("Cool"))	// Temporarily use URL field to define cool/heat mode
+		        		thermModeSettings[j][1] = StarsThermoModeSettings.COOL;
+		        	else
+		        		thermModeSettings[j][1] = StarsThermoModeSettings.HEAT;
+		        }
+	        }
 	        else if (getLiteID() != SOAPServer.DEFAULT_ENERGY_COMPANY_ID)
 	        	useDefault = true;
 	        else
-				CTILogger.info( "No default thermostat settings found!!!" );
+				CTILogger.info( "No default thermostat schedules found!!!" );
+	        
+	        com.cannontech.database.data.stars.event.LMThermostatManualEvent[] events =
+	        		com.cannontech.database.data.stars.event.LMThermostatManualEvent.getAllLMThermostatManualEvents( new Integer(dftInventoryID) );
+	        if (events != null) {
+	        	for (int i = 0; i < events.length; i++)
+	        		dftThermSettings.getThermostatManualEvents().add(
+	        			(LiteLMThermostatManualEvent) StarsLiteFactory.createLite(events[i]) );
+	        }
+	        else if (getLiteID() != SOAPServer.DEFAULT_ENERGY_COMPANY_ID)
+	        	useDefault = true;
+	        else
+				CTILogger.info( "No default thermostat option found!!!" );
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -639,14 +742,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			com.cannontech.database.db.stars.InterviewQuestion[] questions =
 					com.cannontech.database.db.stars.InterviewQuestion.getAllInterviewQuestions( getEnergyCompanyID() );
 			for (int i = 0; i < questions.length; i++) {
-				LiteInterviewQuestion liteQuestion = new LiteInterviewQuestion();
-				liteQuestion.setQuestionID( questions[i].getQuestionID().intValue() );
-				liteQuestion.setQuestionType( questions[i].getQuestionType().intValue() );
-				liteQuestion.setQuestion( questions[i].getQuestion() );
-				liteQuestion.setMandatory( questions[i].getMandatory() );
-				liteQuestion.setAnswerType( questions[i].getAnswerType().intValue() );
-				liteQuestion.setExpectedAnswer( questions[i].getExpectedAnswer().intValue() );
-				
+				LiteInterviewQuestion liteQuestion = (LiteInterviewQuestion) StarsLiteFactory.createLite( questions[i] );
 				interviewQuestions.add( liteQuestion );
 			}
 			
@@ -663,12 +759,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			com.cannontech.database.db.stars.CustomerFAQ[] faqs =
 					com.cannontech.database.db.stars.CustomerFAQ.getAllCustomerFAQs( getEnergyCompanyID() );
 			for (int i = 0; i < faqs.length; i++) {
-				LiteCustomerFAQ liteFAQ = new LiteCustomerFAQ();
-				liteFAQ.setQuestionID( faqs[i].getQuestionID().intValue() );
-				liteFAQ.setSubjectID( faqs[i].getSubjectID().intValue() );
-				liteFAQ.setQuestion( faqs[i].getQuestion() );
-				liteFAQ.setAnswer( faqs[i].getAnswer() );
-				
+				LiteCustomerFAQ liteFAQ = (LiteCustomerFAQ) StarsLiteFactory.createLite( faqs[i] );
 				customerFAQs.add( liteFAQ );
 			}
 			
@@ -1705,6 +1796,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			}
 			if (AuthFuncs.checkRoleProperty( liteUser, ConsumerInfoRole.SUPER_OPERATOR )) {
 				starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_APPLIANCE_CATEGORY) );
+				starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_ANSWER_TYPE) );
 			}
 		}
 		else if (ServerUtils.isResidentialCustomer( starsUser )) {
@@ -1733,10 +1825,10 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		return starsLists;
 	}
 	
-	public StarsEnrollmentPrograms getStarsEnrollmentPrograms(String category) {
+	public StarsEnrollmentPrograms getStarsEnrollmentPrograms() {
 		if (starsEnrPrograms == null)
 			starsEnrPrograms = StarsLiteFactory.createStarsEnrollmentPrograms(
-					getAllApplianceCategories(), category, getLiteID() );
+					getAllApplianceCategories(), getLiteID() );
 		return starsEnrPrograms;
 	}
 	
@@ -1812,6 +1904,13 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			
 			return starsWebConfig;
 		}
+	}
+	
+	public void updateStarsWebConfig(int webConfigID) {
+		Hashtable starsWebConfigs = getStarsWebConfigs();
+		LiteWebConfiguration liteWebConfig = SOAPServer.getWebConfiguration( webConfigID );
+		StarsWebConfig starsWebConfig = StarsLiteFactory.createStarsWebConfig( liteWebConfig );
+		synchronized (starsWebConfigs) { starsWebConfigs.put(new Integer(webConfigID), starsWebConfig); }
 	}
 	
 	public void deleteStarsWebConfig(int webConfigID) {

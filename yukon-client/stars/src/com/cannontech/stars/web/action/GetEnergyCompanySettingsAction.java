@@ -85,7 +85,7 @@ public class GetEnergyCompanySettingsAction implements ActionBase {
         	LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
             
         	resp.setStarsEnergyCompany( energyCompany.getStarsEnergyCompany() );
-        	resp.setStarsEnrollmentPrograms( energyCompany.getStarsEnrollmentPrograms(getSettings.getProgramCategory()) );
+        	resp.setStarsEnrollmentPrograms( energyCompany.getStarsEnrollmentPrograms() );
         	resp.setStarsCustomerSelectionLists( energyCompany.getStarsCustomerSelectionLists(user) );
             
             if (ServerUtils.isOperator( user )) {
