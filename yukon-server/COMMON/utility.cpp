@@ -2619,7 +2619,7 @@ LONG GetPAOIdOfEnergyPro(long devicesn)
 
     if(rdr() && rdr.isValid())
     {
-        rdr >> id;
+        rdr["PAOBJECTID"] >> id;
     }
     else if(getDebugLevel() & DEBUGLEVEL_LUDICROUS)
     {
