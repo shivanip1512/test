@@ -8,22 +8,25 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2004/07/09 19:11:11 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2004/07/27 16:52:51 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #pragma warning( disable : 4786)
 
 
+#include <rw/rwdate.h>
+
 #include "logger.h"
 #include "porter.h"
 #include "msg_pdata.h"
 #include "prot_lmi.h"
-#include "rw/rwdate.h"
 #include "utility.h"
 #include "numstr.h"
 #include "cparms.h"
+
+#include "verification_objects.h"
 
 
 CtiProtocolLMI::CtiProtocolLMI() :
@@ -147,7 +150,7 @@ int CtiProtocolLMI::recvCommResult( INMESS *InMessage, RWTPtrSlist< OUTMESS > &o
     //  copy out the codes
     for( int i = 0; i < lmi_in.num_codes; i++ )
     {
-        _returned_codes.push_back(*((unsigned int *)(buf + offset)));
+        _returned_codes.push(*((unsigned int *)(buf + offset)));
 
         offset += sizeof(unsigned int);
     }
@@ -194,8 +197,8 @@ void CtiProtocolLMI::getInboundData( RWTPtrSlist< CtiPointDataMsg > &pointList, 
 
     while( !_returned_codes.empty() )
     {
-        info += CtiNumStr(_returned_codes.back()).zpad(6) + " ";
-        _returned_codes.pop_back();
+        info += CtiNumStr(_returned_codes.front()).zpad(6) + " ";
+        _returned_codes.pop();
 
         if( !(i++ % 6) )
         {
@@ -249,8 +252,8 @@ int CtiProtocolLMI::sendCommResult( INMESS  *InMessage )
     //  store the retrieved codes
     while( !_retrieved_codes.empty() )
     {
-        *((unsigned int *)(buf + offset)) = _retrieved_codes.back();
-        _retrieved_codes.pop_back();
+        *((unsigned int *)(buf + offset)) = _retrieved_codes.front();
+        _retrieved_codes.pop();
 
         offset += sizeof(unsigned int);
     }
@@ -266,9 +269,15 @@ int CtiProtocolLMI::sendCommResult( INMESS  *InMessage )
 }
 
 
-void CtiProtocolLMI::queueCode(unsigned int code)
+void CtiProtocolLMI::queueCode(CtiOutMessage *om)
 {
-    _codes.push_back(code);
+    if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint - OutMessage->VerificationSequence = " << om->VerificationSequence << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    _codes.push(om);
 }
 
 
@@ -277,6 +286,28 @@ bool CtiProtocolLMI::hasCodes( void ) const
     return !_codes.empty();
 }
 
+
+bool CtiProtocolLMI::canTransmit( const RWTime &allowed_time ) const
+{
+    bool retval = false;
+
+    long percode = gConfigParms.getValueAsULong("PORTER_LMI_TIME_TRANSMIT", 250),
+         fudge   = gConfigParms.getValueAsULong("PORTER_LMI_FUDGE", 1000);
+
+    RWTime start_time, required_time;
+
+    if( _transmitting_until < start_time )
+    {
+        required_time = start_time + ((percode + fudge) / 1000);
+
+        if( required_time <= allowed_time )
+        {
+            retval = true;
+        }
+    }
+
+    return retval;
+}
 
 int CtiProtocolLMI::getNumCodes( void ) const
 {
@@ -304,7 +335,17 @@ bool CtiProtocolLMI::isTransactionComplete( void )
         }
     }
 
-    return retval;  //  this is rather naive, and prone to failure
+    return _transactionComplete;  //  this is rather naive - maybe it should check state instead
+}
+
+
+void CtiProtocolLMI::getVerificationWorkObjects(queue< CtiVerificationBase * > &work_queue)
+{
+    while( !_work_objects.empty() )
+    {
+        work_queue.push(_work_objects.front());
+        _work_objects.pop();
+    }
 }
 
 
@@ -342,7 +383,7 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
             case Command_SendQueuedCodes:
             {
                 unsigned long numcodes;
-                int current_code;
+                CtiOutMessage *om;
 
                 long percode = gConfigParms.getValueAsULong("PORTER_LMI_TIME_TRANSMIT", 250);
 
@@ -368,6 +409,7 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
                 else if( numcodes <= 0 )
                 {
                     numcodes = 0;
+
                     _transactionComplete = true;
                 }
 
@@ -405,12 +447,13 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
 
                 for( int i = 0; i < (numcodes * 6); i += 6 )
                 {
-                    current_code = _codes.back();
-                    CtiNumStr codestr(current_code);
+                    om = _codes.front();
+                    om->Buffer.SASt._codeSimple[6] = 0;  //  make sure it's null-terminated, just to be safe...
+                    char (&codestr)[7] = om->Buffer.SASt._codeSimple;
 
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(slog);
-                        slog << current_code << " ";
+                        slog << om->Buffer.SASt._codeSimple << " ";
                     }
 
                     //  all offset by one because of the "num_codes" byte at the beginning
@@ -420,7 +463,21 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
                     _outbound.data[i+4] = codestr[3];
                     _outbound.data[i+5] = codestr[4];
                     _outbound.data[i+6] = codestr[5];
-                    _codes.pop_back();
+
+
+                    //  new CtiVerificationWork message here
+                    if( !om->VerificationSequence )
+                    {
+                        om->VerificationSequence = VerificationSequenceGen();
+                    }
+
+                    ptime::time_duration_type expiration(seconds(60));
+                    CtiVerificationWork *work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_Golay, *om, codestr, expiration);
+
+                    _work_objects.push(work);
+                    _codes.pop();
+
+                    delete om;
                 }
 
                 {
@@ -432,9 +489,21 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
             }
 
             case Command_ReadQueuedCodes:
+            case Command_ReadEchoedCodes:
             {
                 _outbound.length  = 2;
-                _outbound.body_header.message_type = Opcode_GetOriginalCodes;
+
+                if( _command == Command_ReadQueuedCodes )   _outbound.body_header.message_type = Opcode_GetOriginalCodes;
+                if( _command == Command_ReadEchoedCodes )   _outbound.body_header.message_type = Opcode_GetEchoedCodes;
+
+                _outbound.data[0] = _num_codes_retrieved + 1;  //  starts out at 0, incremented by every subsequent retrieval
+
+                break;
+            }
+
+            {
+                _outbound.length  = 2;
+                _outbound.body_header.message_type = Opcode_GetEchoedCodes;
                 _outbound.data[0] = _num_codes_retrieved + 1;  //  starts out at 0, incremented by every subsequent retrieval
 
                 break;
@@ -562,7 +631,7 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
                 {
                     case Command_SendQueuedCodes:
                     {
-                        if( _codes.empty() || (_transmitting_until >= (_completion_time - 1)) )  //  knock off a second so we act polite
+                        if( _codes.empty() || !((_completion_time - 1) > _transmitting_until) )  //  knock off a second so we act polite
                         {
                             _transactionComplete = true;
                         }
@@ -571,6 +640,7 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
                     }
 
                     case Command_ReadQueuedCodes:
+                    case Command_ReadEchoedCodes:
                     {
                         int offset = 0;
 
@@ -588,7 +658,7 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
                             memcpy(buf, _inbound.data + offset, 6);
                             buf[6] = 0;
 
-                            _retrieved_codes.push_back(atoi(buf));
+                            _retrieved_codes.push(atoi(buf));
                             offset += 6;
 
                             _num_codes_retrieved++;
@@ -669,8 +739,7 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
     {
         if( _command == Command_SendQueuedCodes )
         {
-            if( _codes.size() == 0 ||
-                _completion_time > Now )
+            if( _codes.empty() )
             {
                 _transactionComplete = true;
             }
@@ -681,6 +750,12 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
         }
 
         retval = NoError;
+    }
+
+    //  always exit if the expiration time is past
+    if( _completion_time.seconds() && _completion_time <= Now )
+    {
+        _transactionComplete = true;
     }
 
     return retval;

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2004/06/03 23:14:27 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2004/07/27 16:52:51 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -24,10 +24,10 @@
 using namespace std;
 
 #include "dlldefs.h"
-#include "boost/crc.hpp"
-using boost::crc_ccitt_type;
+#include "dsm2.h"
 
 #include "prot_seriesv.h"
+#include "verification_objects.h"
 
 
 class IM_EX_PROT CtiProtocolLMI : public CtiProtocolBase
@@ -51,9 +51,10 @@ private:
     unsigned long _transmitter_power_time;
 
     //crc_ccitt_type _crc;
-    vector<unsigned int> _codes;
-    vector<unsigned int> _retrieved_codes;
-    vector<unsigned int> _returned_codes;
+    queue< CtiOutMessage * > _codes;
+    queue< CtiVerificationWork * > _work_objects;
+    queue< unsigned int > _retrieved_codes;
+    queue< unsigned int > _returned_codes;
 
     unsigned int  _num_codes_retrieved;
 
@@ -175,34 +176,38 @@ public:
         Command_QueueCode,
         Command_TransmitCodes,
         Command_SendQueuedCodes,
-        Command_ReadQueuedCodes
+        Command_ReadQueuedCodes,
+        Command_ReadEchoedCodes
     };
 
-    void setAddress( unsigned char address );
-    void setName( const RWCString &name );
-    void setCommand( LMICommand cmd, unsigned control_offset = 0, unsigned control_parameter = 0 );
-    void setDeadbands( const vector<unsigned> &points, const vector<unsigned> &deadbands );
+    void setAddress(unsigned char address);
+    void setName(const RWCString &name);
+    void setCommand(LMICommand cmd, unsigned control_offset = 0, unsigned control_parameter = 0);
+    void setDeadbands(const vector<unsigned> &points, const vector<unsigned> &deadbands);
 
     //  client-side (Scanner, PIL) functions
-    int sendCommRequest( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > &outList );
-    int recvCommResult ( INMESS   *InMessage,  RWTPtrSlist< OUTMESS > &outList );
+    int sendCommRequest(OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > &outList);
+    int recvCommResult (INMESS   *InMessage,  RWTPtrSlist< OUTMESS > &outList);
 
-    bool hasInboundData( void );
-    void getInboundData( RWTPtrSlist< CtiPointDataMsg > &pointList, RWCString &info );
+    bool hasInboundData();
+    void getInboundData(RWTPtrSlist< CtiPointDataMsg > &pointList, RWCString &info);
 
     //  porter-side (portfield, specificially) functions
-    int recvCommRequest( OUTMESS *OutMessage );
-    int sendCommResult ( INMESS  *InMessage );
+    int recvCommRequest(OUTMESS *OutMessage);
+    int sendCommResult (INMESS  *InMessage);
 
-    void   queueCode( unsigned int code );
-    bool   hasCodes( void ) const;
-    int    getNumCodes( void ) const;
-    RWTime getTransmittingUntil( void ) const;
+    void getVerificationWorkObjects(queue< CtiVerificationBase * > &work_queue);
 
-    bool isTransactionComplete( void );
+    void   queueCode(CtiOutMessage *om);
+    bool   hasCodes() const;
+    bool   canTransmit(const RWTime &allowed_time) const;
+    int    getNumCodes() const;
+    RWTime getTransmittingUntil() const;
 
-    int generate( CtiXfer &xfer );
-    int decode  ( CtiXfer &xfer, int status );
+    bool isTransactionComplete();
+
+    int generate(CtiXfer &xfer);
+    int decode  (CtiXfer &xfer, int status);
 };
 
 #endif // #ifndef __PROT_LMI_H__
