@@ -2443,14 +2443,22 @@ public class StarsLiteFactory {
 		starsEvent.setEventAction( optOutEntry.getEntryText() );
 		starsEvent.setYukonDefID( optOutEntry.getYukonDefID() );
 		starsEvent.setEventDateTime( new Date(event.getStartDateTime()) );
-		starsEvent.setDuration( event.getPeriod() * 24 );
+		starsEvent.setDuration( event.getPeriod() );
 		starsEvent.setNotes( "" );
 		
 		LiteStarsCustAccountInformation liteAcctInfo = energyCompany.getCustAccountInformation( event.getAccountID(), true );
-		for (int i = 0; i < liteAcctInfo.getAppliances().size(); i++) {
-			LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(i);
-			if (liteApp.getInventoryID() == event.getInventoryID() && liteApp.getProgramID() > 0)
-				starsEvent.addProgramID( liteApp.getProgramID() );
+		if (event.getInventoryID() != 0) {
+			for (int i = 0; i < liteAcctInfo.getAppliances().size(); i++) {
+				LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(i);
+				if (liteApp.getInventoryID() == event.getInventoryID() && liteApp.getProgramID() > 0)
+					starsEvent.addProgramID( liteApp.getProgramID() );
+			}
+		}
+		else {
+			for (int i = 0; i < liteAcctInfo.getPrograms().size(); i++) {
+				LiteStarsLMProgram liteProg = (LiteStarsLMProgram) liteAcctInfo.getPrograms().get(i);
+				starsEvent.addProgramID( liteProg.getProgramID() );
+			}
 		}
 		
 		return starsEvent;

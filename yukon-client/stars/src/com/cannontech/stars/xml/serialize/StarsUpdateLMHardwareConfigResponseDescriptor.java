@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsUpdateLMHardwareConfigResponseDescriptor.java,v 1.14 2004/07/08 16:21:18 zyao Exp $
+ * $Id: StarsUpdateLMHardwareConfigResponseDescriptor.java,v 1.15 2004/07/26 21:33:24 yao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.14 $ $Date: 2004/07/08 16:21:18 $
+ * @version $Revision: 1.15 $ $Date: 2004/07/26 21:33:24 $
 **/
 public class StarsUpdateLMHardwareConfigResponseDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 

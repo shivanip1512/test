@@ -83,37 +83,49 @@ public class HourlyTimerTask extends StarsTimerTask {
 				LiteStarsCustAccountInformation liteAcctInfo = company.getCustAccountInformation( dueEvents[j].getAccountID(), true );
 				if (liteAcctInfo == null) continue;
 				
-				LiteStarsLMHardware liteHw = (LiteStarsLMHardware) company.getInventory( dueEvents[j].getInventoryID(), true );
-				if (liteHw == null) continue;
-				
-				int routeID = liteHw.getRouteID();
-				if (routeID == 0) routeID = company.getDefaultRouteID();
-				
 				try {
 					if (dueEvents[j].getPeriod() == OptOutEventQueue.PERIOD_REENABLE) {	// This is a "reenable" event
+						LiteStarsLMHardware liteHw = (LiteStarsLMHardware) company.getInventory( dueEvents[j].getInventoryID(), true );
+						if (liteHw == null) continue;
+						
 						String cmd = ProgramReenableAction.getReenableCommand( liteHw, company );
+						int routeID = liteHw.getRouteID();
+						if (routeID == 0) routeID = company.getDefaultRouteID();
 						ServerUtils.sendSerialCommand( cmd, routeID );
 						
 						ProgramReenableAction.handleReenableEvent( dueEvents[j], company );
 					}
 					else {	// This is a "opt out" event
-						String cmd = ProgramOptOutAction.getOptOutCommand( liteHw, company, dueEvents[j].getPeriod() );
-						ServerUtils.sendSerialCommand( cmd, routeID );
+						ArrayList hardwares = new ArrayList();
+						if (dueEvents[j].getInventoryID() != 0)
+							hardwares.add( company.getInventory(dueEvents[j].getInventoryID(), true) );
+						else
+							hardwares = ProgramOptOutAction.getAffectedHardwares( liteAcctInfo, company );
 						
-						ProgramOptOutAction.handleOptOutEvent( dueEvents[j], company );
-						
-						// Insert a corresponding "reenable" event back into the queue
-						Calendar reenableTime = Calendar.getInstance();
-						reenableTime.setTime( new Date(dueEvents[j].getStartDateTime()) );
-						reenableTime.add( Calendar.HOUR_OF_DAY, dueEvents[j].getPeriod() );
-						
-						OptOutEventQueue.OptOutEvent e = new OptOutEventQueue.OptOutEvent();
-						e.setEnergyCompanyID( company.getLiteID() );
-						e.setStartDateTime( reenableTime.getTimeInMillis() );
-						e.setPeriod( OptOutEventQueue.PERIOD_REENABLE );
-						e.setAccountID( dueEvents[j].getAccountID() );
-						e.setInventoryID( dueEvents[j].getInventoryID() );
-						company.getOptOutEventQueue().addEvent( e, false );
+						for (int k = 0; k < hardwares.size(); k++) {
+							LiteStarsLMHardware liteHw = (LiteStarsLMHardware) hardwares.get(k);
+							
+							String cmd = ProgramOptOutAction.getOptOutCommand( liteHw, company, dueEvents[j].getPeriod() );
+							int routeID = liteHw.getRouteID();
+							if (routeID == 0) routeID = company.getDefaultRouteID();
+							ServerUtils.sendSerialCommand( cmd, routeID );
+							
+							dueEvents[j].setInventoryID( liteHw.getInventoryID() );
+							ProgramOptOutAction.handleOptOutEvent( dueEvents[j], company );
+							
+							// Insert a corresponding "reenable" event back into the queue
+							Calendar reenableTime = Calendar.getInstance();
+							reenableTime.setTime( new Date(dueEvents[j].getStartDateTime()) );
+							reenableTime.add( Calendar.HOUR_OF_DAY, dueEvents[j].getPeriod() );
+							
+							OptOutEventQueue.OptOutEvent e = new OptOutEventQueue.OptOutEvent();
+							e.setEnergyCompanyID( company.getLiteID() );
+							e.setStartDateTime( reenableTime.getTimeInMillis() );
+							e.setPeriod( OptOutEventQueue.PERIOD_REENABLE );
+							e.setAccountID( dueEvents[j].getAccountID() );
+							e.setInventoryID( dueEvents[j].getInventoryID() );
+							company.getOptOutEventQueue().addEvent( e, false );
+						}
 					}
 				}
 				catch (Exception e) {

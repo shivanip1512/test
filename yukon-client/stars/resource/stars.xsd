@@ -1081,6 +1081,7 @@
 	<xs:element name="stars-ProgramReenable">
 		<xs:complexType>
 			<xs:attribute name="inventoryID" type="xs:int"/>
+			<xs:attribute name="cancelScheduledOptOut" type="xs:boolean"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="stars-ProgramReenableResponse">

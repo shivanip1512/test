@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: VersaComDescriptor.java,v 1.1 2004/07/08 16:21:20 zyao Exp $
+ * $Id: VersaComDescriptor.java,v 1.2 2004/07/26 21:33:28 yao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.1 $ $Date: 2004/07/08 16:21:20 $
+ * @version $Revision: 1.2 $ $Date: 2004/07/26 21:33:28 $
 **/
 public class VersaComDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 

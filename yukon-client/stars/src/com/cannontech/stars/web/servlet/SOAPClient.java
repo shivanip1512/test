@@ -369,8 +369,10 @@ public class SOAPClient extends HttpServlet {
         	
 			clientAction = actions;
 		}
-		else if (action.equalsIgnoreCase("ReenableProgram")) {
+		else if (action.equalsIgnoreCase("ReenableProgram") || action.equalsIgnoreCase("CancelScheduledOptOut")) {
 			clientAction = new ProgramReenableAction();
+			if (action.equalsIgnoreCase("CancelScheduledOptOut"))
+				destURL = errorURL = referer;
 		}
 		else if (action.equalsIgnoreCase("DisableLMHardware") || action.equalsIgnoreCase("EnableLMHardware")) {
 			clientAction = new YukonSwitchCommandAction();

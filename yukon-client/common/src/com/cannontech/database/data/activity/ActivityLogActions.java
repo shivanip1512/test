@@ -25,6 +25,7 @@ public interface ActivityLogActions
 	
 	public static final String PROGRAM_OPT_OUT_ACTION = "Program Opt Out";
 	public static final String PROGRAM_REENABLE_ACTION = "Program Reenable";
+	public static final String PROGRAM_CANCEL_SCHEDULED_ACTION = "Program Cancel Scheduled";
 	public static final String PROGRAM_ENROLLMENT_ACTION = "Program Enrollment";
 	
 	public static final String MANUAL_MACS_SCHEDULE_START_ACTION = "Manual MACS Schedule Start";

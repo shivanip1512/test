@@ -242,8 +242,10 @@ public class OptOutEventQueue {
 	
 	/**
 	 * Add an opt out or reenable event to the event queue. There can be at most one
-	 * scheduled opt out event and one reenable event in the queue for a hardware
-	 * at the same time, the new event will replace the old one if necessary.
+	 * scheduled opt out event and one reenable event in the queue for each hardware
+	 * at the same time; and at most one scheduled opt out event for each account
+	 * entirely (the account event and hardware event won't interfere with each other).
+	 * The new event will replace the old one if necessary.
 	 * 
 	 * @param event The opt out event to add to the queue
 	 * @param writeThrough Controls whether to write to the disk file immediately
@@ -258,8 +260,15 @@ public class OptOutEventQueue {
 			return;
 		}
 		
-		OptOutEvent e1 = findOptOutEvent( event.getInventoryID() );
-		OptOutEvent e2 = findReenableEvent( event.getInventoryID() );
+		OptOutEvent e1 = null;
+		OptOutEvent[] events = findOptOutEvents( event.getAccountID() );
+		for (int i = 0; i < events.length; i++) {
+			if (events[i].getInventoryID() == event.getInventoryID()) {
+				e1 = events[i];
+				break;
+			}
+		}
+		OptOutEvent e2 = findOptOutEvent( event.getInventoryID() );
 		
 		if (event.getPeriod() >= 0) {	// This is an opt out event
 			if (e1 != null) {

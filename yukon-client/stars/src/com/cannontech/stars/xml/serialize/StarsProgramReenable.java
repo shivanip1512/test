@@ -39,6 +39,13 @@ public class StarsProgramReenable implements java.io.Serializable {
     **/
     private boolean _has_inventoryID;
 
+    private boolean _cancelScheduledOptOut;
+
+    /**
+     * keeps track of state for field: _cancelScheduledOptOut
+    **/
+    private boolean _has_cancelScheduledOptOut;
+
 
       //----------------/
      //- Constructors -/
@@ -55,10 +62,27 @@ public class StarsProgramReenable implements java.io.Serializable {
 
     /**
     **/
+    public void deleteCancelScheduledOptOut()
+    {
+        this._has_cancelScheduledOptOut= false;
+    } //-- void deleteCancelScheduledOptOut() 
+
+    /**
+    **/
     public void deleteInventoryID()
     {
         this._has_inventoryID= false;
     } //-- void deleteInventoryID() 
+
+    /**
+     * Returns the value of field 'cancelScheduledOptOut'.
+     * 
+     * @return the value of field 'cancelScheduledOptOut'.
+    **/
+    public boolean getCancelScheduledOptOut()
+    {
+        return this._cancelScheduledOptOut;
+    } //-- boolean getCancelScheduledOptOut() 
 
     /**
      * Returns the value of field 'inventoryID'.
@@ -69,6 +93,13 @@ public class StarsProgramReenable implements java.io.Serializable {
     {
         return this._inventoryID;
     } //-- int getInventoryID() 
+
+    /**
+    **/
+    public boolean hasCancelScheduledOptOut()
+    {
+        return this._has_cancelScheduledOptOut;
+    } //-- boolean hasCancelScheduledOptOut() 
 
     /**
     **/
@@ -113,6 +144,18 @@ public class StarsProgramReenable implements java.io.Serializable {
         
         Marshaller.marshal(this, handler);
     } //-- void marshal(org.xml.sax.ContentHandler) 
+
+    /**
+     * Sets the value of field 'cancelScheduledOptOut'.
+     * 
+     * @param cancelScheduledOptOut the value of field
+     * 'cancelScheduledOptOut'.
+    **/
+    public void setCancelScheduledOptOut(boolean cancelScheduledOptOut)
+    {
+        this._cancelScheduledOptOut = cancelScheduledOptOut;
+        this._has_cancelScheduledOptOut = true;
+    } //-- void setCancelScheduledOptOut(boolean) 
 
     /**
      * Sets the value of field 'inventoryID'.

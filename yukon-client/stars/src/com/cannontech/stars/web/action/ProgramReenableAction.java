@@ -43,6 +43,7 @@ import com.cannontech.stars.xml.serialize.StarsProgramReenable;
 import com.cannontech.stars.xml.serialize.StarsProgramReenableResponse;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
+import com.cannontech.util.ServletUtil;
 
 /**
  * @author yao
@@ -63,6 +64,9 @@ public class ProgramReenableAction implements ActionBase {
 			if (user == null) return null;
 
             StarsProgramReenable reEnable = new StarsProgramReenable();
+            if (req.getParameter("action").equalsIgnoreCase("CancelScheduledOptOut"))
+            	reEnable.setCancelScheduledOptOut( true );
+            
             StarsOperation operation = new StarsOperation();
             operation.setStarsProgramReenable( reEnable );
             
@@ -100,66 +104,74 @@ public class ProgramReenableAction implements ActionBase {
             	return SOAPUtil.buildSOAPMessage( respOper );
         	}
 			
-            int energyCompanyID = user.getEnergyCompanyID();
-        	energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
+        	energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+			OptOutEventQueue queue = energyCompany.getOptOutEventQueue();
             
             StarsProgramReenable reenable = reqOper.getStarsProgramReenable();
 			StarsProgramReenableResponse resp = new StarsProgramReenableResponse();
 			
-			// Get all the hardwares to be reenabled
-			ArrayList hardwares = null;
-			if (reenable.hasInventoryID()) {
-				hardwares = new ArrayList();
-				hardwares.add( energyCompany.getInventory(reenable.getInventoryID(), true) );
-			}
-			else
-				hardwares = getAffectedHardwares( liteAcctInfo, energyCompany );
-			
-			if (hardwares.size() == 0) {
-				respOper.setStarsFailure( StarsFactory.newStarsFailure(
-						StarsConstants.FAILURE_CODE_OPERATION_FAILED, "There is no hardware to be reenabled") );
-				return SOAPUtil.buildSOAPMessage( respOper );
-			}
-			
-			int numCanceledEvents = 0;
-			
-			for (int i = 0; i < hardwares.size(); i++) {
-				LiteStarsLMHardware liteHw = (LiteStarsLMHardware) hardwares.get(i);
-				
-				String cmd = getReenableCommand( liteHw, energyCompany );
-				int routeID = liteHw.getRouteID();
-				if (routeID == 0) routeID = energyCompany.getDefaultRouteID();
-				ServerUtils.sendSerialCommand( cmd, routeID );
-				
-				OptOutEventQueue queue = energyCompany.getOptOutEventQueue();
-				OptOutEventQueue.OptOutEvent e1 = queue.findOptOutEvent( liteHw.getInventoryID() );
-				OptOutEventQueue.OptOutEvent e2 = queue.findReenableEvent( liteHw.getInventoryID() );
-				if (e1 != null) {
-					queue.removeEvent(e1);
-					numCanceledEvents++;
+			if (reenable.getCancelScheduledOptOut()) {
+				// Cancel all the scheduled opt out events
+				OptOutEventQueue.OptOutEvent[] events = queue.findOptOutEvents( liteAcctInfo.getAccountID() );
+				if (events.length == 0) {
+					respOper.setStarsFailure( StarsFactory.newStarsFailure(
+							StarsConstants.FAILURE_CODE_OPERATION_FAILED, "There is no " + energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN) + " event to be canceled") );
+					return SOAPUtil.buildSOAPMessage( respOper );
 				}
-				if (e2 != null) queue.removeEvent(e2);
 				
-				StarsLMHardwareHistory hwHist = processReenable( liteHw, liteAcctInfo, energyCompany );
-				resp.addStarsLMHardwareHistory( hwHist );
+				for (int i = 0; i < events.length; i++)
+					queue.removeEvent( events[i] );
+				
+				resp.setStarsLMProgramHistory( StarsLiteFactory.createStarsLMProgramHistory(liteAcctInfo, energyCompany) );
+				resp.setDescription( "The scheduled " + energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN) + " event(s) has been canceled" );
+				
+				ActivityLogger.logEvent(user.getUserID(), liteAcctInfo.getAccountID(), energyCompany.getLiteID(),
+						liteAcctInfo.getCustomer().getCustomerID(), ActivityLogActions.PROGRAM_CANCEL_SCHEDULED_ACTION, "" );
 			}
-			
-			resp.setStarsLMProgramHistory( StarsLiteFactory.createStarsLMProgramHistory(liteAcctInfo, energyCompany) );
-        	
-        	// Send out reenable notification
-        	SendOptOutNotificationAction.sendReenableNotification( energyCompany, liteAcctInfo, reqOper );
-			
-			String desc = ServletUtils.capitalize(energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_REENABLE)) + " command sent out successfully.";
-			if (numCanceledEvents > 0)
-				desc += " A scheduled " + energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN) + " event is canceled.";
-			resp.setDescription( desc );
-			
-			// Log activity
-			String logMsg = "Serial #:" + ((LiteStarsLMHardware) hardwares.get(0)).getManufacturerSerialNumber();
-			for (int i = 1; i < hardwares.size(); i++)
-				logMsg += "," + ((LiteStarsLMHardware) hardwares.get(i)).getManufacturerSerialNumber();
-			ActivityLogger.logEvent(user.getUserID(), liteAcctInfo.getAccountID(), energyCompany.getLiteID(), liteAcctInfo.getCustomer().getCustomerID(),
-					ActivityLogActions.PROGRAM_REENABLE_ACTION, logMsg );
+			else {
+				// Get all the hardwares to be reenabled
+				ArrayList hardwares = null;
+				if (reenable.hasInventoryID()) {
+					hardwares = new ArrayList();
+					hardwares.add( energyCompany.getInventory(reenable.getInventoryID(), true) );
+				}
+				else {
+					hardwares = getAffectedHardwares( liteAcctInfo, energyCompany );
+					if (hardwares.size() == 0) {
+						respOper.setStarsFailure( StarsFactory.newStarsFailure(
+								StarsConstants.FAILURE_CODE_OPERATION_FAILED, "There is no hardware to be reenabled") );
+						return SOAPUtil.buildSOAPMessage( respOper );
+					}
+				}
+				
+				for (int i = 0; i < hardwares.size(); i++) {
+					LiteStarsLMHardware liteHw = (LiteStarsLMHardware) hardwares.get(i);
+					
+					String cmd = getReenableCommand( liteHw, energyCompany );
+					int routeID = liteHw.getRouteID();
+					if (routeID == 0) routeID = energyCompany.getDefaultRouteID();
+					ServerUtils.sendSerialCommand( cmd, routeID );
+					
+					OptOutEventQueue.OptOutEvent event = queue.findReenableEvent( liteHw.getInventoryID() );
+					if (event != null) queue.removeEvent(event);
+					
+					StarsLMHardwareHistory hwHist = processReenable( liteHw, liteAcctInfo, energyCompany );
+					resp.addStarsLMHardwareHistory( hwHist );
+				}
+				
+				resp.setStarsLMProgramHistory( StarsLiteFactory.createStarsLMProgramHistory(liteAcctInfo, energyCompany) );
+				resp.setDescription( ServletUtil.capitalize(energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_REENABLE)) + " command sent out successfully." );
+	        	
+				// Send out reenable notification
+				SendOptOutNotificationAction.sendReenableNotification( energyCompany, liteAcctInfo, reqOper );
+				
+				// Log activity
+				String logMsg = "Serial #:" + ((LiteStarsLMHardware) hardwares.get(0)).getManufacturerSerialNumber();
+				for (int i = 1; i < hardwares.size(); i++)
+					logMsg += "," + ((LiteStarsLMHardware) hardwares.get(i)).getManufacturerSerialNumber();
+				ActivityLogger.logEvent(user.getUserID(), liteAcctInfo.getAccountID(), energyCompany.getLiteID(), liteAcctInfo.getCustomer().getCustomerID(),
+						ActivityLogActions.PROGRAM_REENABLE_ACTION, logMsg );
+			}
 			
             respOper.setStarsProgramReenableResponse( resp );
             return SOAPUtil.buildSOAPMessage( respOper );
