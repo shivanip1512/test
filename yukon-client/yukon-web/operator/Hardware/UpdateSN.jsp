@@ -1,5 +1,13 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject" %>
+<%
+	Properties savedReq = null;
+	if (request.getParameter("failed") != null)
+		savedReq = (Properties) session.getAttribute(ServletUtils.ATT_LAST_SUBMITTED_REQUEST);
+	else
+		session.removeAttribute(ServletUtils.ATT_LAST_SUBMITTED_REQUEST);
+	if (savedReq == null) savedReq = new Properties();
+%>
 <html>
 <head>
 <title>Energy Services Operations Center</title>
@@ -50,10 +58,11 @@ function init() {
               <% String header = "UPDATE SERIAL NUMBER RANGE"; %>
               <%@ include file="include/SearchBar.jsp" %>
 			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
-			  <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
 			  
               <form name="form1" method="post" action="<%= request.getContextPath() %>/servlet/InventoryManager">
 			    <input type="hidden" name="action" value="UpdateSNRange">
+			    <input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>">
+			    <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>?failed">
                 <table width="64%" border="1" cellspacing="0" cellpadding="5" align="center" height="91">
                   <tr> 
                     <td align = "left" class = "MainText" bgcolor="#CCCCCC"><b>Update 
@@ -68,9 +77,9 @@ function init() {
                             <div align="left">Range:</div>
                           </td>
                           <td width="70%"> 
-                            <input type="text" name="From" size="10">
+                            <input type="text" name="From" size="10" value="<%= ServerUtils.forceNotNull(savedReq.getProperty("From")) %>">
                             &nbsp;to&nbsp; 
-                            <input type="text" name="To" size="10">
+                            <input type="text" name="To" size="10" value="<%= ServerUtils.forceNotNull(savedReq.getProperty("To")) %>">
                           </td>
                         </tr>
                         <tr> 
@@ -81,12 +90,17 @@ function init() {
                           <td width="70%"> 
                             <select name="DeviceType" onchange="this.form.NewDeviceType.value = this.value">
 <%
+	int savedDeviceType = 0;
+	if (savedReq.getProperty("DeviceType") != null)
+		savedDeviceType = Integer.parseInt(savedReq.getProperty("DeviceType"));
+	
 	StarsCustSelectionList deviceTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE );
 	for (int i = 0; i < deviceTypeList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = deviceTypeList.getStarsSelectionListEntry(i);
 		if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT) continue;
+		String selected = (entry.getEntryID() == savedDeviceType)? "selected" : "";
 %>
-                              <option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
+                              <option value="<%= entry.getEntryID() %>" <%= selected %>><%= entry.getContent() %></option>
 <%
 	}
 %>
@@ -95,7 +109,8 @@ function init() {
                         </tr>
                         <tr> 
                           <td width="5%"> 
-                            <input type="checkbox" name="UpdateDeviceType" value="true" onClick="updateField(this.form.NewDeviceType, this.checked)">
+                            <input type="checkbox" name="UpdateDeviceType" value="true" onclick="updateField(this.form.NewDeviceType, this.checked)"
+                            <% if (savedReq.getProperty("NewDeviceType") != null) { %>checked<% } %>>
                           </td>
                           <td width="25%"> 
                             <div align="left">New Device Type:</div>
@@ -103,11 +118,16 @@ function init() {
                           <td width="70%"> 
                             <select name="NewDeviceType">
 <%
+	int savedNewDeviceType = 0;
+	if (savedReq.getProperty("NewDeviceType") != null)
+		savedNewDeviceType = Integer.parseInt(savedReq.getProperty("NewDeviceType"));
+	
 	for (int i = 0; i < deviceTypeList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = deviceTypeList.getStarsSelectionListEntry(i);
 		if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT) continue;
+		String selected = (entry.getEntryID() == savedNewDeviceType)? "selected" : "";
 %>
-                              <option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
+                              <option value="<%= entry.getEntryID() %>" <%= selected %>><%= entry.getContent() %></option>
 <%
 	}
 %>
@@ -116,18 +136,21 @@ function init() {
                         </tr>
                         <tr> 
                           <td width="5%"> 
-                            <input type="checkbox" name="UpdateRecvDate" value="true" onclick="updateField(this.form.ReceiveDate, this.checked)">
+                            <input type="checkbox" name="UpdateRecvDate" value="true" onclick="updateField(this.form.ReceiveDate, this.checked)"
+                            <% if (savedReq.getProperty("ReceiveDate") != null) { %>checked<% } %>>
                           </td>
                           <td width="25%"> 
                             <div align="left">Receive Date:</div>
                           </td>
                           <td width="70%"> 
-                            <input type="text" name="ReceiveDate" size="24">
+                            <input type="text" name="ReceiveDate" size="24" value="<%= ServerUtils.forceNotNull(savedReq.getProperty("ReceiveDate")) %>">
+                            <span class="DefaultText">(MM/DD/YYYY)</span>
                           </td>
                         </tr>
                         <tr> 
                           <td width="5%"> 
-                            <input type="checkbox" name="UpdateVoltage" value="true" onclick="updateField(this.form.Voltage, this.checked)">
+                            <input type="checkbox" name="UpdateVoltage" value="true" onclick="updateField(this.form.Voltage, this.checked)"
+                            <% if (savedReq.getProperty("Voltage") != null) { %>checked<% } %>>
                           </td>
                           <td width="25%"> 
                             <div align="left">Voltage:</div>
@@ -135,11 +158,16 @@ function init() {
                           <td width="70%"> 
                             <select name="Voltage">
 <%
+	int savedVoltage = 0;
+	if (savedReq.getProperty("Voltage") != null)
+		savedVoltage = Integer.parseInt(savedReq.getProperty("Voltage"));
+	
 	StarsCustSelectionList voltageList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_VOLTAGE );
 	for (int i = 0; i < voltageList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = voltageList.getStarsSelectionListEntry(i);
+		String selected = (entry.getEntryID() == savedVoltage)? "selected" : "";
 %>
-                              <option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
+                              <option value="<%= entry.getEntryID() %>" <%= selected %>><%= entry.getContent() %></option>
 <%
 	}
 %>
@@ -148,7 +176,8 @@ function init() {
                         </tr>
                         <tr> 
                           <td width="5%"> 
-                            <input type="checkbox" name="UpdateSrvCompany" value="true" onclick="updateField(this.form.ServiceCompany, this.checked)">
+                            <input type="checkbox" name="UpdateSrvCompany" value="true" onclick="updateField(this.form.ServiceCompany, this.checked)"
+                            <% if (savedReq.getProperty("ServiceCompany") != null) { %>checked<% } %>>
                           </td>
                           <td width="25%"> 
                             <div align="left">Service Company:</div>
@@ -156,10 +185,15 @@ function init() {
                           <td width="70%"> 
                             <select name="ServiceCompany">
 <%
+	int savedServiceCompany = 0;
+	if (savedReq.getProperty("ServiceCompany") != null)
+		savedServiceCompany = Integer.parseInt(savedReq.getProperty("ServiceCompany"));
+	
 	for (int i = 0; i < companies.getStarsServiceCompanyCount(); i++) {
 		StarsServiceCompany servCompany = companies.getStarsServiceCompany(i);
+		String selected = (servCompany.getCompanyID() == savedServiceCompany)? "selected" : "";
 %>
-                              <option value="<%= servCompany.getCompanyID() %>"><%= servCompany.getCompanyName() %></option>
+                              <option value="<%= servCompany.getCompanyID() %>" <%= selected %>><%= servCompany.getCompanyName() %></option>
 <%
 	}
 %>
@@ -168,17 +202,23 @@ function init() {
                         </tr>
                         <tr>
                           <td width="5%">
-                            <input type="checkbox" name="UpdateRoute" value="true" onClick="updateField(this.form.Route, this.checked)">
+                            <input type="checkbox" name="UpdateRoute" value="true" onClick="updateField(this.form.Route, this.checked)"
+                            <% if (savedReq.getProperty("Route") != null) { %>checked<% } %>>
                           </td>
                           <td width="25%">Route:</td>
                           <td width="70%">
                             <select name="Route">
                               <option value="0">(Default Route)</option>
 <%
+	int savedRoute = 0;
+	if (savedReq.getProperty("Route") != null)
+		savedRoute = Integer.parseInt(savedReq.getProperty("Route"));
+	
 	LiteYukonPAObject[] routes = liteEC.getAllRoutes();
 	for (int i = 0; i < routes.length; i++) {
+		String selected = (routes[i].getYukonID() == savedRoute)? "selected" : "";
 %>
-                              <option value="<%= routes[i].getYukonID() %>"><%= routes[i].getPaoName() %></option>
+                              <option value="<%= routes[i].getYukonID() %>" <%= selected %>><%= routes[i].getPaoName() %></option>
 <%
 	}
 %>

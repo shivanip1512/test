@@ -122,7 +122,7 @@ public class ConfigSNRangeTask implements TimeConsumingTask {
 		StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
 		
-		invToConfig = (ArrayList) session.getAttribute( InventoryManager.INVENTORY_TO_CONFIG );
+		invToConfig = (ArrayList) session.getAttribute( InventoryManager.SN_RANGE_TO_CONFIG );
 		if (invToConfig == null) {
 			status = STATUS_ERROR;
 			errorMsg = "There is no hardware to configure";
@@ -258,6 +258,7 @@ public class ConfigSNRangeTask implements TimeConsumingTask {
 			}
 			catch (WebClientException e) {
 				CTILogger.error( e.getMessage() , e );
+				if (errorMsg == null) errorMsg = e.getMessage();
 				hardwareSet.add( hwsToConfig.get(i) );
 				numFailure++;
 			}
@@ -288,17 +289,18 @@ public class ConfigSNRangeTask implements TimeConsumingTask {
 		status = STATUS_FINISHED;
 		
 		if (numFailure == 0)
-			session.removeAttribute( InventoryManager.INVENTORY_TO_CONFIG );
+			session.removeAttribute( InventoryManager.SN_RANGE_TO_CONFIG );
 		session.removeAttribute( InventoryManager.INVENTORY_SET );
 		
 		if (numFailure > 0) {
 			String resultDesc = "<span class='ConfirmMsg'>" + "Configuration of " + numSuccess + " hardwares " +
 					((configNow)? "sent out" : "scheduled") + " successfully.</span><br>";
-			resultDesc += "<span class='ErrorMsg'>" + numFailure + " hardware(s) failed. They are listed below:</span><br>";
+			resultDesc += "<span class='ErrorMsg'>" + numFailure + " hardware(s) failed (listed below).</span><br>";
+			if (errorMsg != null)
+				resultDesc += "<span class='ErrorMsg'>First error message: " + errorMsg + "</span><br>";
 			
 			session.setAttribute(InventoryManager.INVENTORY_SET_DESC, resultDesc);
 			session.setAttribute(InventoryManager.INVENTORY_SET, hardwareSet);
-			session.setAttribute(ServletUtils.ATT_REFERRER, request.getHeader("referer"));
 			session.setAttribute(ServletUtils.ATT_REDIRECT, request.getContextPath() + "/operator/Hardware/ResultSet.jsp");
 		}
 	}

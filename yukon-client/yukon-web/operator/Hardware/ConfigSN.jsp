@@ -11,10 +11,10 @@
 	int hwConfigType = 0;
 	StarsLMConfiguration configuration = null;
 	
-	ArrayList invToConfig = (ArrayList) session.getAttribute(InventoryManager.INVENTORY_TO_CONFIG);
+	ArrayList invToConfig = (ArrayList) session.getAttribute(InventoryManager.SN_RANGE_TO_CONFIG);
 	if (invToConfig == null) {
 		invToConfig = new ArrayList();
-		session.setAttribute(InventoryManager.INVENTORY_TO_CONFIG, invToConfig);
+		session.setAttribute(InventoryManager.SN_RANGE_TO_CONFIG, invToConfig);
 	}
 	else if (invToConfig.size() > 0) {
 		int devTypeID = 0;
@@ -29,6 +29,8 @@
 	}
 	
 	if (request.getParameter("AddRange") != null) {
+		ServletUtils.saveRequest(request, session, new String[] {"From", "To", "DeviceType"});
+		
 		Integer devTypeID = Integer.valueOf(request.getParameter("DeviceType"));
 		int newHwConfigType = ECUtils.getHardwareConfigType(devTypeID.intValue());
 		
@@ -51,7 +53,10 @@
 					}
 				}
 				
-				if (!foundRange) invToConfig.add(new Integer[] {devTypeID, snFrom, snTo});
+				if (!foundRange) {
+					invToConfig.add(new Integer[] {devTypeID, snFrom, snTo});
+					hwConfigType = newHwConfigType;
+				}
 			}
 			catch (NumberFormatException e) {
 				errorMsg = "Invalid number format in the SN range";
@@ -81,7 +86,10 @@
 					}
 				}
 				
-				if (!foundHardware) invToConfig.add(invObj);
+				if (!foundHardware) {
+					invToConfig.add(invObj);
+					hwConfigType = newHwConfigType;
+				}
 			}
 		}
 	}
@@ -94,6 +102,13 @@
 	else if (request.getParameter("RemoveAll") != null) {
 		invToConfig.clear();
 	}
+	
+	Properties savedReq = null;
+	if (errorMsg != null)
+		savedReq = (Properties) session.getAttribute(ServletUtils.ATT_LAST_SUBMITTED_REQUEST);
+	else
+		session.removeAttribute(ServletUtils.ATT_LAST_SUBMITTED_REQUEST);
+	if (savedReq == null) savedReq = new Properties();
 %>
 <html>
 <head>
@@ -186,9 +201,9 @@ function removeAllConfig(form) {
                                   <div align="right">Range:</div>
                                 </td>
                                 <td width="75%"> 
-                                  <input type="text" name="From" size="10">
+                                  <input type="text" name="From" size="10" value="<%= ServerUtils.forceNotNull(savedReq.getProperty("From")) %>">
                                   &nbsp;to&nbsp; 
-                                  <input type="text" name="To" size="10">
+                                  <input type="text" name="To" size="10" value="<%= ServerUtils.forceNotNull(savedReq.getProperty("To")) %>">
                                 </td>
                               </tr>
                               <tr> 
@@ -197,14 +212,19 @@ function removeAllConfig(form) {
                                 </td>
                                 <td width="75%"> 
                                   <select name="DeviceType">
-                                    <%
+<%
+	int savedDeviceType = 0;
+	if (savedReq.getProperty("DeviceType") != null)
+		savedDeviceType = Integer.parseInt(savedReq.getProperty("DeviceType"));
+	
 	StarsCustSelectionList deviceTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE );
 	for (int i = 0; i < deviceTypeList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = deviceTypeList.getStarsSelectionListEntry(i);
 		if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT) continue;
+		String selected = (entry.getEntryID() == savedDeviceType)? "selected" : "";
 %>
-                                    <option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
-                                    <%
+                                    <option value="<%= entry.getEntryID() %>" <%= selected %>><%= entry.getContent() %></option>
+<%
 	}
 %>
                                   </select>

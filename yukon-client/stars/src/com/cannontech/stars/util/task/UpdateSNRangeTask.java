@@ -92,8 +92,12 @@ public class UpdateSNRangeTask implements TimeConsumingTask {
 	public String getProgressMsg() {
 		if (numToBeUpdated > 0) {
 			if (status == STATUS_FINISHED && numFailure == 0) {
-				String snToStr = (snTo != null)? " to " + snTo : " and above";
-				return "The serial numbers " + snFrom + snToStr + " have been updated successfully.";
+				String snRange = InventoryManager.getSNRange( snFrom, snTo );
+				if (snRange != null)
+					snRange = "The serial numbers " + snRange;
+				else
+					snRange = "All serial numbers";
+				return snRange + " have been updated successfully.";
 			}
 			else
 				return numSuccess + " of " + numToBeUpdated + " hardwares have been updated.";
@@ -219,7 +223,9 @@ public class UpdateSNRangeTask implements TimeConsumingTask {
 			}
 		}
 		
-		String logMsg = "Serial Range:" + snFrom + ((snTo != null)? " - " + snTo : " and above")
+		String snRange = InventoryManager.getSNRange( snFrom, snTo );
+		if (snRange == null) snRange = "all serial numbers";
+		String logMsg = "Serial Range:" + snRange
 				+ ",Old Device Type:" + YukonListFuncs.getYukonListEntry(devTypeID.intValue()).getEntryText();
 		if (newDevTypeID != null)
 			logMsg += ",New Device Type:" + YukonListFuncs.getYukonListEntry(newDevTypeID.intValue()).getEntryText();
@@ -230,11 +236,10 @@ public class UpdateSNRangeTask implements TimeConsumingTask {
 		
 		if (numFailure > 0) {
 			String resultDesc = "<span class='ConfirmMsg'>" + numSuccess + " hardwares updated successfully.</span><br>" +
-					"<span class='ErrorMsg'>" + numFailure + " hardwares failed (serial numbers in new device type may already exist). They are listed below:</span><br>";
+					"<span class='ErrorMsg'>" + numFailure + " hardwares failed (listed below).<br>Those serial numbers may already exist in the new device type.</span><br>";
 			
 			session.setAttribute(InventoryManager.INVENTORY_SET_DESC, resultDesc);
 			session.setAttribute(InventoryManager.INVENTORY_SET, hardwareSet);
-			session.setAttribute(ServletUtils.ATT_REFERRER, request.getHeader("referer"));
 			session.setAttribute(ServletUtils.ATT_REDIRECT, request.getContextPath() + "/operator/Hardware/ResultSet.jsp");
 		}
 	}

@@ -104,10 +104,11 @@ public class InventoryManager extends HttpServlet {
 	
 	public static final String INVENTORY_TO_CHECK = "INVENTORY_TO_CHECK";
 	public static final String INVENTORY_TO_DELETE = "INVENTORY_TO_DELETE";
-	public static final String INVENTORY_TO_CONFIG = "INVENTORY_TO_CONFIG";
 	
 	public static final String INVENTORY_SET = "INVENTORY_SET";
 	public static final String INVENTORY_SET_DESC = "INVENTORY_SET_DESCRIPTION";
+	
+	public static final String SN_RANGE_TO_CONFIG = "SN_RANGE_TO_CONFIG";
 	
 	private String action = null;
 	private String referer = null;
@@ -130,7 +131,8 @@ public class InventoryManager extends HttpServlet {
 			return;
 		}
         
-		referer = req.getHeader( "referer" );
+		referer = req.getParameter( ServletUtils.ATT_REFERRER );
+		if (referer == null) req.getHeader( "referer" );
 		redirect = req.getParameter( ServletUtils.ATT_REDIRECT );
 		if (redirect == null) redirect = referer;
 		
@@ -813,6 +815,9 @@ public class InventoryManager extends HttpServlet {
 	 * Add hardwares in the given serial # range to inventory 
 	 */
 	private void addSNRange(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
+		ServletUtils.saveRequest( req, session,
+				new String[] {"From", "To", "DeviceType", "ReceiveDate", "Voltage", "ServiceCompany", "Route"} );
+		
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
 		
 		int snFrom = 0, snTo = 0;
@@ -824,12 +829,14 @@ public class InventoryManager extends HttpServlet {
 				snTo = snFrom;
 		}
 		catch (NumberFormatException nfe) {
-			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Serial number must be numerical");
+			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Invalid number format in the SN range");
+			redirect = referer;
 			return;
 		}
 		
 		if (snFrom > snTo) {
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "The 'from' value cannot be greater than the 'to' value");
+			redirect = referer;
 			return;
 		}
 		
@@ -843,17 +850,22 @@ public class InventoryManager extends HttpServlet {
 		if (recvDateStr.length() > 0) {
 			recvDate = com.cannontech.util.ServletUtil.parseDateStringLiberally(recvDateStr, energyCompany.getDefaultTimeZone());
 			if (recvDate == null) {
-				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Invalid receive date format, the date should be in the form of 'mm/dd/yy'");
+				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Invalid receive date format");
+				redirect = referer;
 				return;
 			}
 		}
 		
+		// If operation succeed, display the confirmation message on "Message.jsp";
+		// if operation failed, show the error on "ResultSet.jsp" (the REDIRECT parameter
+		// is set within the AddSNRangeTask.run() method)
 		session.setAttribute( ServletUtils.ATT_REDIRECT2, redirect );
 		session.setAttribute( ServletUtils.ATT_REFERRER2, referer );
-		redirect = referer = req.getContextPath() +
+		redirect = req.getContextPath() +
 				(ECUtils.isOperator(user)? "/operator/Admin/Message.jsp" : "/user/ConsumerStat/stat/Message.jsp");
 		
 		session.removeAttribute( ServletUtils.ATT_REDIRECT );
+		session.setAttribute( ServletUtils.ATT_REFERRER, referer );
 		
 		AddSNRangeTask task = new AddSNRangeTask( snFrom, snTo, devTypeID, recvDate, voltageID, companyID, routeID, req );
 		long id = ProgressChecker.addTask( task );
@@ -890,6 +902,9 @@ public class InventoryManager extends HttpServlet {
 	 * Update information of hardwares in the given serial # range 
 	 */
 	private void updateSNRange(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
+		ServletUtils.saveRequest( req, session,
+				new String[] {"From", "To", "DeviceType", "NewDeviceType", "ReceiveDate", "Voltage", "ServiceCompany", "Route"} );
+		
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
 		
 		Integer devTypeID = Integer.valueOf( req.getParameter("DeviceType") );
@@ -911,12 +926,14 @@ public class InventoryManager extends HttpServlet {
 					snTo = Integer.valueOf( toStr );
 					if (snFrom.intValue() > snTo.intValue()) {
 						session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "The 'From' value is greater than the 'To' value");
+						redirect = referer;
 						return;
 					}
 				}
 			}
 			catch (NumberFormatException nfe) {
 				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Invalid number format in the SN range");
+				redirect = referer;
 				return;
 			}
 		}
@@ -933,7 +950,8 @@ public class InventoryManager extends HttpServlet {
 		if (recvDateStr != null && recvDateStr.length() > 0) {
 			recvDate = com.cannontech.util.ServletUtil.parseDateStringLiberally(recvDateStr, energyCompany.getDefaultTimeZone());
 			if (recvDate == null) {
-				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Invalid receive date format, the date should be in the form of 'mm/dd/yy'");
+				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Invalid receive date format");
+				redirect = referer;
 				return;
 			}
 		}
@@ -943,10 +961,11 @@ public class InventoryManager extends HttpServlet {
 		
 		session.setAttribute( ServletUtils.ATT_REDIRECT2, redirect );
 		session.setAttribute( ServletUtils.ATT_REFERRER2, referer );
-		redirect = referer = req.getContextPath() +
+		redirect = req.getContextPath() +
 				(ECUtils.isOperator(user)? "/operator/Admin/Message.jsp" : "/user/ConsumerStat/stat/Message.jsp");
 		
 		session.removeAttribute( ServletUtils.ATT_REDIRECT );
+		session.setAttribute( ServletUtils.ATT_REFERRER, referer );
 		
 		UpdateSNRangeTask task = new UpdateSNRangeTask( snFrom, snTo, devTypeID, newDevTypeID, recvDate, voltageID, companyID, routeID, req );
 		long id = ProgressChecker.addTask( task );
@@ -983,6 +1002,8 @@ public class InventoryManager extends HttpServlet {
 	 * Delete hardwares in the given serial # range 
 	 */
 	private void deleteSNRange(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
+		ServletUtils.saveRequest( req, session, new String[] {"From", "To", "DeviceType"} );
+		
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
 		
 		String fromStr = req.getParameter("From");
@@ -997,12 +1018,14 @@ public class InventoryManager extends HttpServlet {
 					snTo = Integer.valueOf( toStr );
 					if (snFrom.intValue() > snTo.intValue()) {
 						session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "The 'From' value is greater than the 'To' value");
+						redirect = referer;
 						return;
 					}
 				}
 			}
 			catch (NumberFormatException nfe) {
 				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Invalid number format in the SN range");
+				redirect = referer;
 				return;
 			}
 		}
@@ -1011,10 +1034,11 @@ public class InventoryManager extends HttpServlet {
 		
 		session.setAttribute( ServletUtils.ATT_REDIRECT2, redirect );
 		session.setAttribute( ServletUtils.ATT_REFERRER2, referer );
-		redirect = referer = req.getContextPath() +
+		redirect = req.getContextPath() +
 				(ECUtils.isOperator(user)? "/operator/Admin/Message.jsp" : "/user/ConsumerStat/stat/Message.jsp");
 		
 		session.removeAttribute( ServletUtils.ATT_REDIRECT );
+		session.setAttribute( ServletUtils.ATT_REFERRER, referer );
 		
 		DeleteSNRangeTask task = new DeleteSNRangeTask( snFrom, snTo, devTypeID, req );
 		long id = ProgressChecker.addTask( task );
@@ -1057,10 +1081,11 @@ public class InventoryManager extends HttpServlet {
 		
 		session.setAttribute( ServletUtils.ATT_REDIRECT2, redirect );
 		session.setAttribute( ServletUtils.ATT_REFERRER2, referer );
-		redirect = referer = req.getContextPath() +
+		redirect = req.getContextPath() +
 				(ECUtils.isOperator(user)? "/operator/Admin/Message.jsp" : "/user/ConsumerStat/stat/Message.jsp");
 		
 		session.removeAttribute( ServletUtils.ATT_REDIRECT );
+		session.setAttribute( ServletUtils.ATT_REFERRER, referer );
 		
 		ConfigSNRangeTask task = new ConfigSNRangeTask( configNow, req );
 		long id = ProgressChecker.addTask( task );
@@ -1664,6 +1689,17 @@ public class InventoryManager extends HttpServlet {
 			
 			starsCfg.setExpressCom( xcom );
 		}
+	}
+	
+	public static String getSNRange(Integer snFrom, Integer snTo) {
+		if (snFrom == null && snTo == null)
+			return null;
+		else if (snFrom == null)
+			return snTo.toString() + " and below";
+		else if (snTo == null)
+			return snFrom.toString() + " and above";
+		else
+			return snFrom.toString() + " to " + snTo.toString();
 	}
 
 }

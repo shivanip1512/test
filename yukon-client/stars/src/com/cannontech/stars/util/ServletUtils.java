@@ -6,8 +6,10 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.Properties;
 import java.util.TimeZone;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import com.cannontech.clientutils.CTILogger;
@@ -73,6 +75,7 @@ public class ServletUtils {
 	
 	public static final String ATT_MULTI_ACTIONS = "MULTI_ACTIONS";
 	public static final String ATT_NEW_ACCOUNT_WIZARD = "NEW_ACCOUNT_WIZARD";
+	public static final String ATT_LAST_SUBMITTED_REQUEST = "LAST_SUBMITTED_REQUEST";
 	
 	public static final String ATT_OMIT_GATEWAY_TIMEOUT = "OMIT_GATEWAY_TIMEOUT";
 	public static final String ATT_THERMOSTAT_INVENTORY_IDS = "THERMOSTAT_INVENTORY_IDS";
@@ -650,6 +653,16 @@ public class ServletUtils {
 		catch (Exception e) {
 			CTILogger.error( e.getMessage(), e );
 		}
+	}
+	
+	public static void saveRequest(HttpServletRequest req, HttpSession session, String[] params) {
+		Properties savedReq = new Properties();
+		for (int i = 0; i < params.length; i++) {
+			if (req.getParameter(params[i]) != null)
+				savedReq.setProperty( params[i], req.getParameter(params[i]) );
+		}
+		
+		session.setAttribute( ATT_LAST_SUBMITTED_REQUEST, savedReq );
 	}
 
 }
