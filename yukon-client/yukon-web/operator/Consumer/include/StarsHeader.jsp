@@ -135,10 +135,6 @@
 				userLogin.setUsername( "" );
 				userLogin.setPassword( "" );
 			}
-			
-			// METERING PARAMETERS
-			int contactID = account.getPrimaryContact().getContactID();
-			primContactYukonUser = com.cannontech.database.cache.functions.ContactFuncs.getYukonUser(contactID);
 		}
 	}
 	
