@@ -5,6 +5,8 @@ package com.cannontech.billing.mainprograms;
  * Creation date: (3/4/2002 8:36:18 AM)
  * @author: 
  */ 
+import java.util.Date;
+
 import com.cannontech.billing.*;
 
 public class BillingFileFormatPanel extends javax.swing.JPanel implements java.awt.event.ActionListener, java.awt.event.FocusListener, java.util.Observer {
@@ -62,11 +64,13 @@ private void about()
  */
 public void actionPerformed(java.awt.event.ActionEvent event)
 {
-	if( event.getSource() == getDateComboBox())
+	if( event.getSource() == getDateComboBox() )
 	{
-		java.util.Date newEndDate = null;
-		Object tempDate = getDateComboBox().getSelectedDate();
-		if( tempDate instanceof java.util.Date )
+		java.util.Date newEndDate = getDateComboBox().getSelectedDate();
+//		java.util.Date newEndDate = null;
+//		Object tempDate = getDateComboBox().getSelectedDate();
+	
+/*		if( tempDate instanceof java.util.Date )
 		{
 			newEndDate = (java.util.Date) tempDate;
 		}
@@ -74,10 +78,14 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 		{
 			newEndDate = ((java.util.Calendar) tempDate).getTime();
 		}
-		getBillingDefaults().setEndDate(newEndDate);
+		*/
+//		if( newEndDate != null)
+		{
+			getBillingDefaults().setEndDate(newEndDate);
 
-		getDemandStartDateLabel().setText(startDateFormat.format(getBillingDefaults().getDemandStartDate()));
-		getEnergyStartDateLabel().setText(startDateFormat.format(getBillingDefaults().getEnergyStartDate()));
+			getDemandStartDateLabel().setText(startDateFormat.format(getBillingDefaults().getDemandStartDate()));
+			getEnergyStartDateLabel().setText(startDateFormat.format(getBillingDefaults().getEnergyStartDate()));
+		}
 	}
 	else if( event.getSource() == getGenerateFileToggleButton())
 	{
@@ -1177,9 +1185,9 @@ public BillingFileDefaults retrieveBillingDefaultsFromGui()
 	java.util.Date newEndDate = null;
 	
 	//Object tempDate = getBillingEndDatePopupField().getValueModel().getValue();
-	Object tempDate = getDateComboBox().getSelectedDate();
-
-	if( tempDate instanceof java.util.Date )
+	Date tempDate = getDateComboBox().getSelectedDate();
+	newEndDate = tempDate;
+/*	if( tempDate instanceof java.util.Date )
 	{
 		newEndDate = (java.util.Date) tempDate;
 	}
@@ -1187,7 +1195,7 @@ public BillingFileDefaults retrieveBillingDefaultsFromGui()
 	{
 		newEndDate = ((java.util.Calendar) tempDate).getTime();
 	}
-	
+*/	
 	// Get all selected collection groups from the groupList scroll panel.
 	java.util.Vector selectedCollGrps = new java.util.Vector(getGroupList().getSelectedValues().length);
 	for (int i = 0; i < getGroupList().getSelectedValues().length; i++)
@@ -1212,7 +1220,6 @@ public BillingFileDefaults retrieveBillingDefaultsFromGui()
 	getOutputFileTextField().getText(),
 	getInputFileText(),
 	newEndDate	);
-	System.out.println(" end date from retrieveBillingDefaults = " + newEndDate);
 	return newDefaults;
 }
 private void setBillingDefaults(BillingFileDefaults newDefaults)

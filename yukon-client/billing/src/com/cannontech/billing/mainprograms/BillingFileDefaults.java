@@ -1,5 +1,7 @@
 package com.cannontech.billing.mainprograms;
 
+import java.util.Date;
+
 /**
  * Insert the type's description here.
  * Creation date: (5/6/2002 10:55:56 AM)
@@ -327,11 +329,11 @@ private void setDemandStartDate(java.util.Date newDemandStartDate)
 public void setEndDate(java.util.Date newEndDate)
 {
 	java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
-
 	// add a whole day to now so we can increment the Date field
-	long time = newEndDate.getTime() + 86400000;
+	long day = 86400000;
+	long time = newEndDate.getTime() + day;
+
 	endDate = new java.util.Date(time);
-	
 	cal.setTime(endDate);
 
 	cal.set(java.util.Calendar.HOUR_OF_DAY,0);
@@ -340,7 +342,6 @@ public void setEndDate(java.util.Date newEndDate)
 	cal.set(java.util.Calendar.MILLISECOND,0);
 
 	endDate = cal.getTime();
-
 	getDemandStartDate();
 	getEnergyStartDate();
 }
