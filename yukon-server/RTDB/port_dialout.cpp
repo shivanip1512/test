@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2003/09/29 22:20:24 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2003/10/23 13:52:55 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -97,7 +97,7 @@ INT CtiPortDialout::connectToDevice(CtiDevice *Device, LONG &LastDeviceId, INT t
         {
             RWCString number = getTablePortDialup().getPrefixString() + Device->getPhoneNumber();
             /*  Now Dial */
-            if(modemConnect((char*)number.data(), trace, _superPort->getCDWait() != 0))
+            if(NORMAL != (status = modemConnect((char*)number.data(), trace, _superPort->getCDWait() != 0)))
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -105,8 +105,6 @@ INT CtiPortDialout::connectToDevice(CtiDevice *Device, LONG &LastDeviceId, INT t
                 }
 
                 _superPort->disconnect(Device, trace);    // Poke the handle down.
-
-                status = DIALUPERROR;
             }
         }
     }
@@ -244,7 +242,7 @@ INT CtiPortDialout::modemReset(USHORT Trace, BOOL dcdTest)
             ResponseSize = sizeof (Response);
 
             /* Wait to see if we get the no carrier message */
-            if( !(_superPort->waitForPortResponse(&ResponseSize, Response, 1)) )      // See if we get something back from this guy.
+            if( (_superPort->waitForPortResponse(&ResponseSize, Response, 1)) == NORMAL )      // See if we get something back from this guy.
             {
                 if(Trace)
                 {
@@ -317,7 +315,7 @@ INT CtiPortDialout::modemReset(USHORT Trace, BOOL dcdTest)
         dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ") " << endl;
     }
 
-    return(!NORMAL);
+    return(ErrPortDialupConnect_Port);
 }
 
 
@@ -343,7 +341,7 @@ INT CtiPortDialout::modemSetup(USHORT Trace, BOOL dcdTest)
         if(_superPort->writePort((PVOID)(getTablePortDialup().getModemInitString().data()),
                                  initlen, 1, &BytesWritten) || BytesWritten != initlen)
         {
-            return(!NORMAL);
+            return(ErrPortDialupConnect_Port);
         }
 
         /* Send the CR */
@@ -404,7 +402,7 @@ INT CtiPortDialout::modemSetup(USHORT Trace, BOOL dcdTest)
     if(j >= 5)
     {
         // _superPort->close(TRUE);
-        return(!NORMAL);
+        return(ErrPortDialupConnect_Port);
     }
 
     return(NORMAL);
@@ -443,7 +441,7 @@ INT CtiPortDialout::modemConnect(PCHAR Message, USHORT Trace, BOOL dcdTest)
     /* Perform the dial */
     if(_superPort->writePort(MyMessage, strlen(MyMessage), 1, &BytesWritten) || BytesWritten != strlen(MyMessage))
     {
-        return(!NORMAL);
+        return(ErrPortDialupConnect_Port);
     }
 
     if(Trace)
@@ -455,14 +453,13 @@ INT CtiPortDialout::modemConnect(PCHAR Message, USHORT Trace, BOOL dcdTest)
     ResponseSize = sizeof (Response);
 
     /* Wait for a response from the modem */
-    if(_superPort->waitForPortResponse(&ResponseSize, Response, ModemConnectionTimeout, "CONNECT"))
+    if( NORMAL != (status = _superPort->waitForPortResponse(&ResponseSize, Response, ModemConnectionTimeout, "CONNECT")) )
     {
         if(Trace)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " Port " << _superPort->getName() << " Modem Response Timeout" << endl;
         }
-        status = READTIMEOUT;
     }
     else
     {
@@ -488,6 +485,7 @@ INT CtiPortDialout::modemConnect(PCHAR Message, USHORT Trace, BOOL dcdTest)
                         _superPort->inClear();
 
                         status = NORMAL;
+                        break;                  // the for loop.  dcd is detected!
                     }
                     else
                     {
@@ -506,31 +504,31 @@ INT CtiPortDialout::modemConnect(PCHAR Message, USHORT Trace, BOOL dcdTest)
         }
         else if(!(strnicmp (Response, "NO CARRIER", 10)))
         {
-            status = !NORMAL;
+            status = ErrPortDialupConnect_Device;
         }
         else if(!(strnicmp (Response, "ERROR", 5)))
         {
-            status = !NORMAL;
+            status = ErrPortDialupConnect_Port;
         }
         else if(!(strnicmp (Response, "NO DIAL TONE", 12)))
         {
-            status = !NORMAL;
+            status = ErrPortDialupConnect_Port;
         }
         else if(!(strnicmp (Response, "NO ANSWER", 9)))
         {
-            status = !NORMAL;
+            status = ErrPortDialupConnect_Device;
         }
         else if(!(strnicmp (Response, "BUSY", 4)))
         {
-            status = !NORMAL;
+            status = ErrPortDialupConnect_Device;
         }
         else if(!(strnicmp (Response, "NO DIALTONE", 12)))
         {
-            status = !NORMAL;
+            status = ErrPortDialupConnect_Port;
         }
         else
         {
-            status = !NORMAL;
+            status = ErrPortDialupConnect_Port;
 
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -599,7 +597,7 @@ INT CtiPortDialout::modemHangup(USHORT Trace, BOOL dcdTest)
             ResponseSize = sizeof (Response);
 
             /* Wait to see if we get the no carrier message */
-            if( !(_superPort->waitForPortResponse(&ResponseSize, Response, 1, NULL)) )      // See if we get something back from this guy.
+            if( NORMAL == (_superPort->waitForPortResponse(&ResponseSize, Response, 1, NULL)) )      // See if we get something back from this guy.
             {
                 if(Trace)
                 {
@@ -611,22 +609,8 @@ INT CtiPortDialout::modemHangup(USHORT Trace, BOOL dcdTest)
             // Check for command mode by pegging the modem with an AT.
             _superPort->writePort("AT\r", 3, 1, &BytesWritten);
 
-#if 0
-            if(Trace)
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " " << _superPort->getName()  << " Sent to Modem:  AT" << endl;
-            }
-#endif
             if(_superPort->waitForPortResponse(&ResponseSize, Response, 1, "OK"))
             {
-#if 0
-                if(Trace)
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " " << _superPort->getName()  << " Modem Response Timeout (this may be ok)" << endl;
-                }
-#endif
                 // Maybe we are not in command mode...
                 _superPort->writePort("+++", 3, 1, &BytesWritten);    // Escape to command mode please
                 if(Trace)
