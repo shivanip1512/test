@@ -1,5 +1,5 @@
+@include /custom/MCT-370.txt
 @include MCT-BASE.txt
 @include IED-BASE.txt
-@include /custom/MCT-370.txt
 Read Status Points = getstatus external
 

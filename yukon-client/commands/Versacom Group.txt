@@ -1,5 +1,5 @@
-@include LoadGroup-BASE.txt
 @include /custom/Versacom Group.txt
+@include LoadGroup-BASE.txt
 Cycle 50%/30min= control cycle 50 period 30 count 4
 Terminate Cycle= control cycle terminate
 Set to Out-of-Service = putconfig serice out

@@ -1,2 +1,2 @@
-@include Repeater-BASE.txt
 @include /custom/Repeater.txt
+@include Repeater-BASE.txt

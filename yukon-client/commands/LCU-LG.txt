@@ -1,2 +1,2 @@
-@include LCU-BASE.txt
 @include /custom/LCU-LG.txt
+@include LCU-BASE.txt

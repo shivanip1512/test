@@ -1,5 +1,5 @@
-@include MCT-BASE.txt
 @include /custom/MCT-310ID.txt
+@include MCT-BASE.txt
  = 
 Read Disconnect Status = getstatus disconnect
 Disconnect Meter = control disconnect 
