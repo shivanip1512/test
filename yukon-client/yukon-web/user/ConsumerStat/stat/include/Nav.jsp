@@ -68,23 +68,20 @@
 			StarsLMHardware hw = thermostats.getStarsLMHardware(i);
 			String linkLabel = hw.getDeviceLabel();
 			
-			String linkImg = null;
 			String linkHtml = null;
 			String linkImgExp = null;
 			int pos = pageName.lastIndexOf("Item=");
 			if (pos >= 0 && pageName.substring(pos).equals("Item=" + i)) {
-				linkImg = bulletImg;
 				linkHtml = "<span class='Nav' style='cursor:default'>" + linkLabel + "</span>";
 				linkImgExp = bulletImg;
 			}
 			else {
-				linkImg = "";
-				linkHtml = "<span class='NavText' style='cursor:default; color:#FFFFFF'>" + linkLabel + "</span>";
+				linkHtml = "<span class='NavTextNoLink' style='cursor:default'>" + linkLabel + "</span>";
 				linkImgExp = bulletImgExp;
 			}
 %>
-          <tr onMouseOver="menuAppear(event, this, 'thermostatMenu', <%= i %>)"> 
-            <td width="10" valign="top" style="padding-top:1"><%= linkImg %></td>
+          <tr onMouseOver="hardwareMenuAppear(event, this, 'thermostatMenu', <%= i %>)"> 
+            <td width="10" class="Nav">&nbsp;</td>
             <td><%= linkHtml %></td>
             <td width="10" valign="bottom" style="padding-bottom:1"><%= linkImgExp %></td>
           </tr>
@@ -191,7 +188,7 @@
 
 <script language="JavaScript" src="../../../JavaScript/nav_menu.js"></script>
 <script language="JavaScript">
-// Initialize variables defined in thermostat_menu.js
+// Initialize variables defined in nav_menu.js
 pageName = "<%= pageName %>";
 pageLinks = new Array(<%= thermostats.getStarsLMHardwareCount() %>);
 <%
@@ -218,22 +215,22 @@ pageLinks = new Array(<%= thermostats.getStarsLMHardwareCount() %>);
 </script>
 
 <div id="thermostatMenu" class="bgMenu" style="width:85px" align="left">
-  <div id="MenuItem" style="width:85px" onmouseover="changeOptionStyle(this)" class = "navmenu1" onclick = "showPage(0)">
+  <div id="MenuItem" style="width:85px" onmouseover="changeNavStyle(this)" class = "navmenu1" onclick = "showPage(0)">
   &nbsp;&nbsp;&nbsp;Change Label
   </div>
-  <div id="MenuItemSelected" style="width:85px; display:none" onmouseover="changeOptionStyle(this)" class = "navmenu2" onclick = "showPage(0)">
+  <div id="MenuItemSelected" style="width:85px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "showPage(0)">
   &nbsp;&#149;&nbsp;Change Label
   </div>
-  <div id="MenuItem" style="width:85px" onmouseover="changeOptionStyle(this)" class = "navmenu1" onclick = "showPage(1)">
+  <div id="MenuItem" style="width:85px" onmouseover="changeNavStyle(this)" class = "navmenu1" onclick = "showPage(1)">
   &nbsp;&nbsp;&nbsp;<%= AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_SCHED, "Schedule") %>
   </div>
-  <div id="MenuItemSelected" style="width:85px; display:none" onmouseover="changeOptionStyle(this)" class = "navmenu2" onclick = "showPage(1)">
+  <div id="MenuItemSelected" style="width:85px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "showPage(1)">
   &nbsp;&#149;&nbsp;<%= AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_SCHED, "Schedule") %>
   </div>
-  <div id="MenuItem" style="width:85px" onmouseover="changeOptionStyle(this)" class = "navmenu1" onclick = "showPage(2)">
+  <div id="MenuItem" style="width:85px" onmouseover="changeNavStyle(this)" class = "navmenu1" onclick = "showPage(2)">
   &nbsp;&nbsp;&nbsp;<%= AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_MANUAL, "Manual") %>
   </div>
-  <div id="MenuItemSelected" style="width:85px; display:none" onmouseover="changeOptionStyle(this)" class = "navmenu2" onclick = "showPage(2)">
+  <div id="MenuItemSelected" style="width:85px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "showPage(2)">
   &nbsp;&#149;&nbsp;<%= AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_MANUAL, "Manual") %>
   </div>
 </div>
