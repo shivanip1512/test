@@ -19,7 +19,7 @@ import com.cannontech.database.db.device.lm.IlmDefines;
 import com.cannontech.loadcontrol.LCUtils;
 import com.cannontech.loadcontrol.data.IGearProgram;
 import com.cannontech.loadcontrol.data.LMProgramBase;
-import com.cannontech.loadcontrol.messages.LMManualControlMsg;
+import com.cannontech.loadcontrol.messages.LMManualControlRequest;
 
 /**
  * Insert the type's description here.
@@ -1576,11 +1576,11 @@ private void initialize()
 	}
 
 	/**
-	 * A method to create a LMManualControlMsg with some set values. 
+	 * A method to create a LMManualControlRequest with some set values. 
 	 * Creation date: (5/14/2002 10:50:02 AM)
 	 * @param
 	 */
-	public synchronized LMManualControlMsg createMessage( LMProgramBase program, Integer gearNum ) 
+	public synchronized LMManualControlRequest createMessage( LMProgramBase program, Integer gearNum ) 
 	{
 		return LCUtils.createProgMessage(
 						isStopStartNowSelected(),
@@ -1596,7 +1596,7 @@ private void initialize()
 	 *
 	 * @param
 	 */
-	public synchronized LMManualControlMsg createScenarioMessage( MultiSelectProg program ) 
+	public synchronized LMManualControlRequest createScenarioMessage( MultiSelectProg program ) 
 	{
 		boolean doItNow = false;
 		if( getMode() == MODE_STOP )

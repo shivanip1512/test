@@ -20,7 +20,8 @@ import com.cannontech.loadcontrol.datamodels.GroupTableModel;
 import com.cannontech.loadcontrol.datamodels.ProgramTableModel;
 import com.cannontech.loadcontrol.displays.ControlAreaActionListener;
 import com.cannontech.loadcontrol.gui.MultiLineControlAreaRenderer;
-import com.cannontech.loadcontrol.messages.LMManualControlMsg;
+import com.cannontech.loadcontrol.messages.LMManualControlRequest;
+import com.cannontech.user.UserUtils;
 import com.cannontech.util.ServletUtil;
 
 
@@ -103,7 +104,6 @@ public class LCUtils
 		}
 		else
 			return true;
-
 	}
 
 	public static synchronized String getFgColor( LMControlArea area ) 
@@ -542,16 +542,16 @@ public class LCUtils
 	}
 
 	/**
-	 * A method to create a LMManualControlMsg with some set values. 
+	 * A method to create a LMManualControlRequest with some set values. 
 	 * Creation date: (5/14/2002 10:50:02 AM)
 	 * @param
 	 */
-	public static synchronized LMManualControlMsg createProgMessage(
+	public static synchronized LMManualControlRequest createProgMessage(
 				boolean doItNow, boolean isStop,
 				Date startTime, Date stopTime, LMProgramBase program,
 				Integer gearNum ) 
 	{
-		LMManualControlMsg msg = null;
+		LMManualControlRequest msg = null;
 		
 		//create the new message
 		if( isStop )
@@ -595,7 +595,7 @@ public class LCUtils
 	 * the given start/stop time to the current time.
 	 * @return
 	 */
-	public static synchronized LMManualControlMsg createScenarioMessage( 
+	public static synchronized LMManualControlRequest createScenarioMessage( 
 			LMProgramBase program,
 			boolean isStop,
 			boolean isNow,

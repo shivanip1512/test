@@ -148,8 +148,8 @@ private void jMenuItemCancel_ActionPerformed(java.awt.event.ActionEvent actionEv
 {
 	//send a message to the server telling the prorgram to stop
 	//create a new message to be sent to the server
-/*	com.cannontech.loadcontrol.messages.LMManualControlMsg msg = new com.cannontech.loadcontrol.messages.LMManualControlMsg();
-	msg.setCommand( com.cannontech.loadcontrol.messages.LMManualControlMsg.SCHEDULED_STOP);
+/*	com.cannontech.loadcontrol.messages.LMManualControlRequest msg = new com.cannontech.loadcontrol.messages.LMManualControlRequest();
+	msg.setCommand( com.cannontech.loadcontrol.messages.LMManualControlRequest.SCHEDULED_STOP);
 	msg.setYukonID( getExchangeProgram().getYukonID().intValue() );
 	
 	//send the new message to the server		

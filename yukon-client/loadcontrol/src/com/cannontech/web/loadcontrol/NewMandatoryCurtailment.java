@@ -32,9 +32,9 @@ public void submitMandatoryCurtailment(LoadControlClientConnection conn, int pro
 	java.util.GregorianCalendar stopCal = new java.util.GregorianCalendar();
 	stopCal.setTime(stopDate);
 	
-	com.cannontech.loadcontrol.messages.LMManualControlMsg msg = new com.cannontech.loadcontrol.messages.LMManualControlMsg();
+	com.cannontech.loadcontrol.messages.LMManualControlRequest msg = new com.cannontech.loadcontrol.messages.LMManualControlRequest();
 	
-	msg.setCommand( com.cannontech.loadcontrol.messages.LMManualControlMsg.SCHEDULED_START );
+	msg.setCommand( com.cannontech.loadcontrol.messages.LMManualControlRequest.SCHEDULED_START );
 	msg.setYukonID(programID);
 	msg.setNotifyTime(notifyCal);
 	msg.setStartTime(startCal);
