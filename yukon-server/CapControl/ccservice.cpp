@@ -80,6 +80,8 @@ void CtiCCService::RunInConsole(DWORD argc, LPTSTR* argv)
 
     OnStop();
 
+    dout.interrupt(CtiThread::SHUTDOWN);
+    dout.join();
     SetStatus(SERVICE_STOPPED);
 }
 
