@@ -36,7 +36,11 @@ public class YC extends Observable implements com.cannontech.message.util.Messag
 	/** HashSet of userMessageIds for this instance */
 	private java.util.Set requestMessageIDs = new java.util.HashSet();
 	
-	public final String ALT_SERIALNUMBER_FILENAME = "VersacomSerial";	//serial number file name
+//	public final String ALT_SERIALNUMBER_FILENAME = "VersacomSerial";	//serial number file name
+	public final String VERSACOM_SERIAL_FILENAME = "VersacomSerial";	//serial number file name
+	public final String EXPRESSCOM_SERIAL_FILENAME = "ExpresscomSerial";	//serial number file name
+	public final String SA205_SERIAL_FILENAME = "SA205Serial";	//serial number file name
+	public final String SA305_SERIAL_FILENAME = "SA305Serial";	//serial number file name
 	public final String SERIALNUMBER_FILENAME = "LCRSerial";	//serial number file name
 	public final String DEFAULT_FILENAME = "default";	//serial number file name
 	public final String COLLECTION_GROUP_FILENAME = "CollectionGroup";	//serial number file name
@@ -216,7 +220,7 @@ public class YC extends Observable implements com.cannontech.message.util.Messag
 					handleDevice();
 				}		
 				// Serial Number item in tree selected.
-				else if ( getModelType() == ModelFactory.EDITABLELCRSERIAL)
+				else if (ModelFactory.isEditableSerial(getModelType()))
 				{
 					handleSerialNumber();
 				}
