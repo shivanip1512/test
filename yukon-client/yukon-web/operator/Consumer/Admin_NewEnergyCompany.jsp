@@ -169,7 +169,7 @@ function checkPassword(form) {
                               under the &quot;Yukon&quot; category.</li>
                             <li>Assign a default route to the energy company (more 
                               details later).</li>
-                            <li>Assign LM programs to the energy company.</li>
+                            <li>Assign direct programs to the operator login.</li>
                             <li>Log off and re-login with the operator login you 
                               just created. Click the &quot;Config Energy Company&quot; 
                               button under &quot;Administration&quot;, and edit 
