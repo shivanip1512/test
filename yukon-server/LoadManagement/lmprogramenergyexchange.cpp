@@ -51,7 +51,7 @@ CtiLMProgramEnergyExchange::CtiLMProgramEnergyExchange(const CtiLMProgramEnergyE
 ---------------------------------------------------------------------------*/
 CtiLMProgramEnergyExchange::~CtiLMProgramEnergyExchange()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     _lmenergyexchangeoffers.clearAndDestroy();
     _lmenergyexchangecustomers.clearAndDestroy();
 }
@@ -63,7 +63,7 @@ CtiLMProgramEnergyExchange::~CtiLMProgramEnergyExchange()
 ---------------------------------------------------------------------------*/
 ULONG CtiLMProgramEnergyExchange::getMinNotifyTime() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _minnotifytime;
 }
 
@@ -74,7 +74,7 @@ ULONG CtiLMProgramEnergyExchange::getMinNotifyTime() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiLMProgramEnergyExchange::getHeading() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _heading;
 }
 
@@ -85,7 +85,7 @@ const RWCString& CtiLMProgramEnergyExchange::getHeading() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiLMProgramEnergyExchange::getMessageHeader() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _messageheader;
 }
 
@@ -96,7 +96,7 @@ const RWCString& CtiLMProgramEnergyExchange::getMessageHeader() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiLMProgramEnergyExchange::getMessageFooter() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _messagefooter;
 }
 
@@ -107,7 +107,7 @@ const RWCString& CtiLMProgramEnergyExchange::getMessageFooter() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiLMProgramEnergyExchange::getCanceledMsg() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _canceledmsg;
 }
 
@@ -118,7 +118,7 @@ const RWCString& CtiLMProgramEnergyExchange::getCanceledMsg() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiLMProgramEnergyExchange::getStoppedEarlyMsg() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _stoppedearlymsg;
 }
 
@@ -129,7 +129,7 @@ const RWCString& CtiLMProgramEnergyExchange::getStoppedEarlyMsg() const
 ---------------------------------------------------------------------------*/
 RWOrdered& CtiLMProgramEnergyExchange::getLMEnergyExchangeOffers()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _lmenergyexchangeoffers;
 }
 
@@ -140,7 +140,7 @@ RWOrdered& CtiLMProgramEnergyExchange::getLMEnergyExchangeOffers()
 ---------------------------------------------------------------------------*/
 RWOrdered& CtiLMProgramEnergyExchange::getLMEnergyExchangeCustomers()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _lmenergyexchangecustomers;
 }
 
@@ -151,7 +151,7 @@ RWOrdered& CtiLMProgramEnergyExchange::getLMEnergyExchangeCustomers()
 ---------------------------------------------------------------------------*/    
 CtiLMProgramEnergyExchange& CtiLMProgramEnergyExchange::setMinNotifyTime(ULONG notifytime)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _minnotifytime = notifytime;
 
     return *this;
@@ -164,7 +164,7 @@ CtiLMProgramEnergyExchange& CtiLMProgramEnergyExchange::setMinNotifyTime(ULONG n
 ---------------------------------------------------------------------------*/    
 CtiLMProgramEnergyExchange& CtiLMProgramEnergyExchange::setHeading(const RWCString& head)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _heading = head;
 
     return *this;
@@ -177,7 +177,7 @@ CtiLMProgramEnergyExchange& CtiLMProgramEnergyExchange::setHeading(const RWCStri
 ---------------------------------------------------------------------------*/    
 CtiLMProgramEnergyExchange& CtiLMProgramEnergyExchange::setMessageHeader(const RWCString& msgheader)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _messageheader = msgheader;
 
     return *this;
@@ -190,7 +190,7 @@ CtiLMProgramEnergyExchange& CtiLMProgramEnergyExchange::setMessageHeader(const R
 ---------------------------------------------------------------------------*/    
 CtiLMProgramEnergyExchange& CtiLMProgramEnergyExchange::setMessageFooter(const RWCString& msgfooter)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _messagefooter = msgfooter;
 
     return *this;
@@ -203,7 +203,7 @@ CtiLMProgramEnergyExchange& CtiLMProgramEnergyExchange::setMessageFooter(const R
 ---------------------------------------------------------------------------*/    
 CtiLMProgramEnergyExchange& CtiLMProgramEnergyExchange::setCanceledMsg(const RWCString& canceled)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _canceledmsg = canceled;
 
     return *this;
@@ -216,7 +216,7 @@ CtiLMProgramEnergyExchange& CtiLMProgramEnergyExchange::setCanceledMsg(const RWC
 ---------------------------------------------------------------------------*/    
 CtiLMProgramEnergyExchange& CtiLMProgramEnergyExchange::setStoppedEarlyMsg(const RWCString& stoppedearly)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _stoppedearlymsg = stoppedearly;
 
     return *this;
@@ -230,7 +230,7 @@ CtiLMProgramEnergyExchange& CtiLMProgramEnergyExchange::setStoppedEarlyMsg(const
 ---------------------------------------------------------------------------*/    
 DOUBLE CtiLMProgramEnergyExchange::reduceProgramLoad(DOUBLE loadReductionNeeded, ULONG currentPriority, RWOrdered controlAreaTriggers, ULONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     DOUBLE expectedLoadReduced = 0.0;
 
@@ -244,7 +244,7 @@ DOUBLE CtiLMProgramEnergyExchange::reduceProgramLoad(DOUBLE loadReductionNeeded,
 ---------------------------------------------------------------------------*/
 void CtiLMProgramEnergyExchange::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -261,7 +261,7 @@ void CtiLMProgramEnergyExchange::stopProgramControl(CtiMultiMsg* multiPilMsg, Ct
             {
                 currentOffer->setRunStatus(CtiLMEnergyExchangeOffer::CanceledRunStatus);
                 notifyCustomersOfStop(multiDispatchMsg);
-                currentOffer->updateLMEnergyExchangeProgramOfferTable();
+                currentOffer->dumpDynamicData();
                 //setProgramState(CtiLMProgramBase::InactiveState);
             }
         }
@@ -280,7 +280,7 @@ void CtiLMProgramEnergyExchange::stopProgramControl(CtiMultiMsg* multiPilMsg, Ct
 ---------------------------------------------------------------------------*/
 BOOL CtiLMProgramEnergyExchange::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     BOOL returnBoolean = FALSE;
 
@@ -301,7 +301,7 @@ BOOL CtiLMProgramEnergyExchange::handleManualControl(ULONG secondsFrom1901, CtiM
                     notifyCustomers(currentOffer, multiDispatchMsg);
                     setProgramState(CtiLMProgramBase::ManualActiveState);
                     currentOffer->setRunStatus(CtiLMEnergyExchangeOffer::OpenRunStatus);
-                    currentOffer->updateLMEnergyExchangeProgramOfferTable();
+                    currentOffer->dumpDynamicData();
 
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -316,7 +316,7 @@ BOOL CtiLMProgramEnergyExchange::handleManualControl(ULONG secondsFrom1901, CtiM
                     returnBoolean = TRUE;
                     //setProgramState(CtiLMProgramBase::ManualActiveState);
                     currentOffer->setRunStatus(CtiLMEnergyExchangeOffer::CurtailmentPendingRunStatus);
-                    currentOffer->updateLMEnergyExchangeProgramOfferTable();
+                    currentOffer->dumpDynamicData();
 
                     if( _LM_DEBUG )
                     {
@@ -332,7 +332,7 @@ BOOL CtiLMProgramEnergyExchange::handleManualControl(ULONG secondsFrom1901, CtiM
                     returnBoolean = TRUE;
                     //setProgramState(CtiLMProgramBase::ManualActiveState);
                     currentOffer->setRunStatus(CtiLMEnergyExchangeOffer::CurtailmentPendingRunStatus);
-                    currentOffer->updateLMEnergyExchangeProgramOfferTable();
+                    currentOffer->dumpDynamicData();
 
                     if( _LM_DEBUG )
                     {
@@ -348,7 +348,7 @@ BOOL CtiLMProgramEnergyExchange::handleManualControl(ULONG secondsFrom1901, CtiM
                     returnBoolean = TRUE;
                     //setProgramState(CtiLMProgramBase::ManualActiveState);
                     currentOffer->setRunStatus(CtiLMEnergyExchangeOffer::CurtailmentActiveRunStatus);
-                    currentOffer->updateLMEnergyExchangeProgramOfferTable();
+                    currentOffer->dumpDynamicData();
 
                     if( _LM_DEBUG )
                     {
@@ -364,7 +364,7 @@ BOOL CtiLMProgramEnergyExchange::handleManualControl(ULONG secondsFrom1901, CtiM
                     returnBoolean = TRUE;
                     //setProgramState(CtiLMProgramBase::InactiveState);
                     currentOffer->setRunStatus(CtiLMEnergyExchangeOffer::CompletedRunStatus);
-                    currentOffer->updateLMEnergyExchangeProgramOfferTable();
+                    currentOffer->dumpDynamicData();
 
                     if( _LM_DEBUG )
                     {
@@ -407,7 +407,7 @@ BOOL CtiLMProgramEnergyExchange::handleManualControl(ULONG secondsFrom1901, CtiM
 ---------------------------------------------------------------------------*/
 void CtiLMProgramEnergyExchange::notifyCustomers(CtiLMEnergyExchangeOffer* offer, CtiMultiMsg* multiDispatchMsg)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     CtiLMEnergyExchangeOfferRevision* currentOfferRevision = offer->getCurrentOfferRevision();
 
@@ -476,7 +476,7 @@ void CtiLMProgramEnergyExchange::notifyCustomers(CtiLMEnergyExchangeOffer* offer
 ---------------------------------------------------------------------------*/
 void CtiLMProgramEnergyExchange::notifyCustomersOfCancel(CtiLMEnergyExchangeOffer* offer, CtiMultiMsg* multiDispatchMsg)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     CtiLMEnergyExchangeOfferRevision* currentOfferRevision = offer->getCurrentOfferRevision();
 
@@ -526,7 +526,7 @@ void CtiLMProgramEnergyExchange::notifyCustomersOfCancel(CtiLMEnergyExchangeOffe
 ---------------------------------------------------------------------------*/
 BOOL CtiLMProgramEnergyExchange::hasControlHoursAvailable() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
 
     BOOL returnBoolean = TRUE;
 
@@ -541,7 +541,7 @@ BOOL CtiLMProgramEnergyExchange::hasControlHoursAvailable() const
 void CtiLMProgramEnergyExchange::restoreGuts(RWvistream& istrm)
 {
 
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     CtiLMProgramBase::restoreGuts( istrm );
 
@@ -564,7 +564,7 @@ void CtiLMProgramEnergyExchange::restoreGuts(RWvistream& istrm)
 void CtiLMProgramEnergyExchange::saveGuts(RWvostream& ostrm ) const  
 {
 
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
         
     CtiLMProgramBase::saveGuts( ostrm );
 
@@ -585,7 +585,7 @@ void CtiLMProgramEnergyExchange::saveGuts(RWvostream& ostrm ) const
 ---------------------------------------------------------------------------*/
 CtiLMProgramEnergyExchange& CtiLMProgramEnergyExchange::operator=(const CtiLMProgramEnergyExchange& right)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     if( this != &right )
     {
@@ -618,7 +618,7 @@ CtiLMProgramEnergyExchange& CtiLMProgramEnergyExchange::operator=(const CtiLMPro
 ---------------------------------------------------------------------------*/
 int CtiLMProgramEnergyExchange::operator==(const CtiLMProgramEnergyExchange& right) const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     return CtiLMProgramBase::operator==(right);
 }
 
@@ -627,7 +627,7 @@ int CtiLMProgramEnergyExchange::operator==(const CtiLMProgramEnergyExchange& rig
 ---------------------------------------------------------------------------*/
 int CtiLMProgramEnergyExchange::operator!=(const CtiLMProgramEnergyExchange& right) const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     return CtiLMProgramBase::operator!=(right);
 }
 
@@ -738,7 +738,7 @@ CtiLMProgramBase* CtiLMProgramEnergyExchange::replicate() const
 ---------------------------------------------------------------------------*/
 void CtiLMProgramEnergyExchange::restore(RWDBReader& rdr)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     CtiLMProgramBase::restore(rdr);
 
@@ -758,7 +758,7 @@ void CtiLMProgramEnergyExchange::restore(RWDBReader& rdr)
 ---------------------------------------------------------------------------*/
 void CtiLMProgramEnergyExchange::restoreEnergyExchangeSpecificDatabaseEntries(RWDBReader& rdr)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     RWCString tempBoolString;
 
@@ -772,18 +772,29 @@ void CtiLMProgramEnergyExchange::restoreEnergyExchangeSpecificDatabaseEntries(RW
 
 /*---------------------------------------------------------------------------
     dumpDynamicData
-    
-    Writes out the dynamic information for this energy exchange program.
+
+    Writes out the dynamic information.
 ---------------------------------------------------------------------------*/
 void CtiLMProgramEnergyExchange::dumpDynamicData()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
 
+    dumpDynamicData(conn,RWDBDateTime());
+}
+
+/*---------------------------------------------------------------------------
+    dumpDynamicData
+    
+    Writes out the dynamic information for this energy exchange program.
+---------------------------------------------------------------------------*/
+void CtiLMProgramEnergyExchange::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime)
+{
     if( getManualControlReceivedFlag() )
     {
         for(ULONG i=0;i<_lmenergyexchangeoffers.entries();i++)
         {
-            ((CtiLMEnergyExchangeOffer*)_lmenergyexchangeoffers[i])->updateLMEnergyExchangeProgramOfferTable();
+            ((CtiLMEnergyExchangeOffer*)_lmenergyexchangeoffers[i])->dumpDynamicData(conn, currentDateTime);
         }
     }
 }
@@ -795,7 +806,7 @@ void CtiLMProgramEnergyExchange::dumpDynamicData()
 ---------------------------------------------------------------------------*/
 void CtiLMProgramEnergyExchange::restoreDynamicData(RWDBReader& rdr)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     if( getManualControlReceivedFlag() )
     {

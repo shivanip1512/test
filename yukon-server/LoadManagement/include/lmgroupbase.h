@@ -83,6 +83,7 @@ public:
     CtiLMGroupBase& setHoursAnnuallyPointId(ULONG annuallyid);
 
     virtual void dumpDynamicData();
+    virtual void dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime);
     virtual CtiCommandMsg* createLatchingRequestMsg(ULONG rawState, int priority) const;
 
     //pure virtuals
@@ -145,8 +146,6 @@ private:
 
     //don't stream
     BOOL _insertDynamicDataFlag;
-
-    mutable RWRecursiveLock<RWMutexLock> _mutex;
 };
 #endif
 

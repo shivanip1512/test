@@ -48,10 +48,11 @@ RWDECLARE_COLLECTABLE( CtiLMEnergyExchangeOffer )
     CtiLMEnergyExchangeOffer& setOfferDate(const RWDBDateTime& offdate);
 
     void addLMEnergyExchangeProgramOfferTable();
-    void updateLMEnergyExchangeProgramOfferTable();
+    void updateLMEnergyExchangeProgramOfferTable(RWDBConnection& conn, RWDBDateTime& currentDateTime);
     void deleteLMEnergyExchangeProgramOfferTable();
     void restoreDynamicData(RWDBReader& rdr);
     void dumpDynamicData();
+    void dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime);
     CtiLMEnergyExchangeOfferRevision* getCurrentOfferRevision();
 
     CtiLMEnergyExchangeOffer* replicate() const;
@@ -88,8 +89,6 @@ private:
     RWDBDateTime _offerdate;
 
     RWOrdered _lmenergyexchangeofferrevisions;
-
-    mutable RWRecursiveLock<RWMutexLock> _mutex;
 
     void restore(RWDBReader& rdr);
 };

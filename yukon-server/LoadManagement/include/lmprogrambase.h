@@ -96,6 +96,7 @@ public:
     BOOL isAvailableToday();
     BOOL isWithinValidControlWindow(ULONG secondsFromBeginningOfDay);
     void dumpDynamicData();
+    void dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime);
 
     virtual DOUBLE reduceProgramLoad(DOUBLE loadReductionNeeded, ULONG currentPriority, RWOrdered controlAreaTriggers, ULONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg) = 0;
     virtual CtiLMProgramBase* replicate() const = 0;
@@ -164,8 +165,6 @@ private:
 
     //don't stream
     BOOL _insertDynamicDataFlag;
-
-    mutable RWRecursiveLock<RWMutexLock> _mutex;
 };
 #endif
 

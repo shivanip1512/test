@@ -61,6 +61,7 @@ RWDECLARE_COLLECTABLE( CtiLMProgramEnergyExchange )
     void notifyCustomersOfCancel(CtiLMEnergyExchangeOffer* offer, CtiMultiMsg* multiDispatchMsg);
     void restoreDynamicData(RWDBReader& rdr);
     void dumpDynamicData();
+    void dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime);
 
     virtual CtiLMProgramBase* replicate() const;
     virtual DOUBLE reduceProgramLoad(DOUBLE loadReductionNeeded, ULONG currentPriority, RWOrdered controlAreaTriggers, ULONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
@@ -92,8 +93,6 @@ private:
 
     RWOrdered _lmenergyexchangeoffers;
     RWOrdered _lmenergyexchangecustomers;
-
-    mutable RWRecursiveLock<RWMutexLock> _mutex;
 
     void restore(RWDBReader& rdr);
 };

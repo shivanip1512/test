@@ -56,7 +56,7 @@ CtiLMProgramDirect::CtiLMProgramDirect(const CtiLMProgramDirect& directprog)
 ---------------------------------------------------------------------------*/
 CtiLMProgramDirect::~CtiLMProgramDirect()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     _lmprogramdirectgears.clearAndDestroy();
     _lmprogramdirectgroups.clearAndDestroy();
 }
@@ -69,7 +69,7 @@ CtiLMProgramDirect::~CtiLMProgramDirect()
 ---------------------------------------------------------------------------*/
 ULONG CtiLMProgramDirect::getCurrentGearNumber() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _currentgearnumber;
 }
 
@@ -81,7 +81,7 @@ ULONG CtiLMProgramDirect::getCurrentGearNumber() const
 ---------------------------------------------------------------------------*/
 ULONG CtiLMProgramDirect::getLastGroupControlled() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _lastgroupcontrolled;
 }
 
@@ -92,7 +92,7 @@ ULONG CtiLMProgramDirect::getLastGroupControlled() const
 ---------------------------------------------------------------------------*/
 const RWDBDateTime& CtiLMProgramDirect::getDirectStartTime() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _directstarttime;
 }
 
@@ -103,7 +103,7 @@ const RWDBDateTime& CtiLMProgramDirect::getDirectStartTime() const
 ---------------------------------------------------------------------------*/
 const RWDBDateTime& CtiLMProgramDirect::getDirectStopTime() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _directstoptime;
 }
 
@@ -114,7 +114,7 @@ const RWDBDateTime& CtiLMProgramDirect::getDirectStopTime() const
 ---------------------------------------------------------------------------*/
 RWOrdered& CtiLMProgramDirect::getLMProgramDirectGears()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _lmprogramdirectgears;
 }
 
@@ -125,7 +125,7 @@ RWOrdered& CtiLMProgramDirect::getLMProgramDirectGears()
 ---------------------------------------------------------------------------*/
 RWOrdered& CtiLMProgramDirect::getLMProgramDirectGroups()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _lmprogramdirectgroups;
 }
 
@@ -137,7 +137,7 @@ RWOrdered& CtiLMProgramDirect::getLMProgramDirectGroups()
 ---------------------------------------------------------------------------*/
 CtiLMProgramDirect& CtiLMProgramDirect::setCurrentGearNumber(ULONG currentgear)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _currentgearnumber = currentgear;
 
     return *this;
@@ -151,7 +151,7 @@ CtiLMProgramDirect& CtiLMProgramDirect::setCurrentGearNumber(ULONG currentgear)
 ---------------------------------------------------------------------------*/
 CtiLMProgramDirect& CtiLMProgramDirect::setLastGroupControlled(ULONG lastcontrolled)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _lastgroupcontrolled = lastcontrolled;
 
     return *this;
@@ -164,7 +164,7 @@ CtiLMProgramDirect& CtiLMProgramDirect::setLastGroupControlled(ULONG lastcontrol
 ---------------------------------------------------------------------------*/
 CtiLMProgramDirect& CtiLMProgramDirect::setDirectStartTime(const RWDBDateTime& start)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _directstarttime = start;
 
     return *this;
@@ -177,7 +177,7 @@ CtiLMProgramDirect& CtiLMProgramDirect::setDirectStartTime(const RWDBDateTime& s
 ---------------------------------------------------------------------------*/
 CtiLMProgramDirect& CtiLMProgramDirect::setDirectStopTime(const RWDBDateTime& stop)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _directstoptime = stop;
 
     return *this;
@@ -191,7 +191,7 @@ CtiLMProgramDirect& CtiLMProgramDirect::setDirectStopTime(const RWDBDateTime& st
 ---------------------------------------------------------------------------*/
 DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, ULONG currentPriority, RWOrdered controlAreaTriggers, ULONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
 
     DOUBLE expectedLoadReduced = 0.0;
 
@@ -552,7 +552,7 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, ULONG c
 ---------------------------------------------------------------------------*/
 DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
 
     DOUBLE expectedLoadReduced = 0.0;
 
@@ -872,7 +872,7 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(CtiMultiMsg* multiPilMsg, Cti
 --------------------------------------------------------------------------*/
 CtiLMGroupBase* CtiLMProgramDirect::findGroupToTake(CtiLMProgramDirectGear* currentGearObject)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
 
     CtiLMGroupBase* returnGroup = NULL;
 
@@ -1027,7 +1027,7 @@ CtiLMGroupBase* CtiLMProgramDirect::findGroupToTake(CtiLMProgramDirectGear* curr
 ---------------------------------------------------------------------------*/
 BOOL CtiLMProgramDirect::hasGearChanged(ULONG currentPriority, RWOrdered controlAreaTriggers, ULONG secondsFrom1901)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
 
     BOOL returnBoolean = FALSE;
 
@@ -1173,7 +1173,7 @@ BOOL CtiLMProgramDirect::hasGearChanged(ULONG currentPriority, RWOrdered control
 ---------------------------------------------------------------------------*/
 BOOL CtiLMProgramDirect::maintainProgramControl(ULONG currentPriority, RWOrdered& controlAreaTriggers, ULONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
 
     BOOL returnBoolean = FALSE;
     ULONG previousGearNumber = _currentgearnumber;
@@ -1206,7 +1206,7 @@ BOOL CtiLMProgramDirect::maintainProgramControl(ULONG currentPriority, RWOrdered
 ---------------------------------------------------------------------------*/
 DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(ULONG previousGearNumber, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
 
     DOUBLE expectedLoadReduced = 0.0;
 
@@ -1517,7 +1517,7 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(ULONG previousGearN
 ---------------------------------------------------------------------------*/
 BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
 
     BOOL returnBoolean = FALSE;
     CtiLMProgramDirectGear* currentGearObject = getCurrentGearObject();
@@ -1923,7 +1923,7 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
 ---------------------------------------------------------------------------*/
 void CtiLMProgramDirect::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
 
     CtiLMProgramDirectGear* currentGearObject = getCurrentGearObject();
 
@@ -2045,7 +2045,7 @@ void CtiLMProgramDirect::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMs
 ---------------------------------------------------------------------------*/
 BOOL CtiLMProgramDirect::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     BOOL returnBoolean = FALSE;
 
@@ -2207,7 +2207,7 @@ BOOL CtiLMProgramDirect::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg*
 ---------------------------------------------------------------------------*/
 BOOL CtiLMProgramDirect::hasControlHoursAvailable() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
 
     BOOL returnBoolean = FALSE;
 
@@ -2295,7 +2295,7 @@ ULONG CtiLMProgramDirect::calculateGroupControlTimeLeft(CtiLMGroupBase* currentL
 --------------------------------------------------------------------------*/
 CtiLMProgramDirectGear* CtiLMProgramDirect::getCurrentGearObject()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
 
     CtiLMProgramDirectGear* returnGearObject = NULL;
 
@@ -2319,7 +2319,7 @@ CtiLMProgramDirectGear* CtiLMProgramDirect::getCurrentGearObject()
 --------------------------------------------------------------------------*/
 void CtiLMProgramDirect::restoreGuts(RWvistream& istrm)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     CtiLMProgramBase::restoreGuts( istrm );
 
@@ -2348,7 +2348,7 @@ void CtiLMProgramDirect::restoreGuts(RWvistream& istrm)
 ---------------------------------------------------------------------------*/
 void CtiLMProgramDirect::saveGuts(RWvostream& ostrm ) const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     CtiLMProgramBase::saveGuts( ostrm );
 
@@ -2367,7 +2367,7 @@ void CtiLMProgramDirect::saveGuts(RWvostream& ostrm ) const
 ---------------------------------------------------------------------------*/
 CtiLMProgramDirect& CtiLMProgramDirect::operator=(const CtiLMProgramDirect& right)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     if( this != &right )
     {
@@ -2398,7 +2398,7 @@ CtiLMProgramDirect& CtiLMProgramDirect::operator=(const CtiLMProgramDirect& righ
 ---------------------------------------------------------------------------*/
 int CtiLMProgramDirect::operator==(const CtiLMProgramDirect& right) const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     return CtiLMProgramBase::operator==(right);
 }
 
@@ -2407,7 +2407,7 @@ int CtiLMProgramDirect::operator==(const CtiLMProgramDirect& right) const
 ---------------------------------------------------------------------------*/
 int CtiLMProgramDirect::operator!=(const CtiLMProgramDirect& right) const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     return CtiLMProgramBase::operator!=(right);
 }
 
@@ -2428,7 +2428,7 @@ CtiLMProgramBase* CtiLMProgramDirect::replicate() const
 ---------------------------------------------------------------------------*/
 void CtiLMProgramDirect::restore(RWDBReader& rdr)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     CtiLMProgramBase::restore(rdr);
 
@@ -2446,7 +2446,7 @@ void CtiLMProgramDirect::restore(RWDBReader& rdr)
 ---------------------------------------------------------------------------*/
 void CtiLMProgramDirect::restoreDirectSpecificDatabaseEntries(RWDBReader& rdr)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     RWDBNullIndicator isNull;
     RWDBDateTime dynamicTimeStamp;
     _insertDynamicDataFlag = FALSE;
@@ -2476,17 +2476,24 @@ void CtiLMProgramDirect::restoreDirectSpecificDatabaseEntries(RWDBReader& rdr)
 /*---------------------------------------------------------------------------
     dumpDynamicData
 
-    Writes out the dynamic information for this direct program.
+    Writes out the dynamic information.
 ---------------------------------------------------------------------------*/
 void CtiLMProgramDirect::dumpDynamicData()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-    RWDBDateTime currentDateTime = RWDBDateTime();
-
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
-    {
 
+    dumpDynamicData(conn,RWDBDateTime());
+}
+
+/*---------------------------------------------------------------------------
+    dumpDynamicData
+
+    Writes out the dynamic information for this direct program.
+---------------------------------------------------------------------------*/
+void CtiLMProgramDirect::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime)
+{
+    {
         if( conn.isValid() )
         {
             RWDBTable dynamicLMProgramDirectTable = getDatabase().table( "dynamiclmprogramdirect" );

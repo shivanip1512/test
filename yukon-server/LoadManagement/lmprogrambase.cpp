@@ -65,7 +65,7 @@ CtiLMProgramBase::CtiLMProgramBase(const CtiLMProgramBase& lmprog)
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase::~CtiLMProgramBase()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     _lmprogramcontrolwindows.clearAndDestroy();
     /*numberOfReferences--;
     {
@@ -81,7 +81,7 @@ CtiLMProgramBase::~CtiLMProgramBase()
 ---------------------------------------------------------------------------*/
 ULONG CtiLMProgramBase::getPAOId() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _paoid;
 }
 
@@ -92,7 +92,7 @@ ULONG CtiLMProgramBase::getPAOId() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiLMProgramBase::getPAOCategory() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _paocategory;
 }
 
@@ -103,7 +103,7 @@ const RWCString& CtiLMProgramBase::getPAOCategory() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiLMProgramBase::getPAOClass() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _paoclass;
 }
 
@@ -114,7 +114,7 @@ const RWCString& CtiLMProgramBase::getPAOClass() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiLMProgramBase::getPAOName() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _paoname;
 }
 
@@ -125,7 +125,7 @@ const RWCString& CtiLMProgramBase::getPAOName() const
 ---------------------------------------------------------------------------*/
 ULONG CtiLMProgramBase::getPAOType() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _paotype;
 }
 
@@ -136,7 +136,7 @@ ULONG CtiLMProgramBase::getPAOType() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiLMProgramBase::getPAODescription() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _paodescription;
 }
 
@@ -147,7 +147,7 @@ const RWCString& CtiLMProgramBase::getPAODescription() const
 ---------------------------------------------------------------------------*/
 BOOL CtiLMProgramBase::getDisableFlag() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _disableflag;
 }
 
@@ -158,7 +158,7 @@ BOOL CtiLMProgramBase::getDisableFlag() const
 ---------------------------------------------------------------------------*/
 ULONG CtiLMProgramBase::getUserOrder() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _userorder;
 }
 
@@ -169,7 +169,7 @@ ULONG CtiLMProgramBase::getUserOrder() const
 ---------------------------------------------------------------------------*/
 ULONG CtiLMProgramBase::getStopOrder() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _stoporder;
 }
 
@@ -180,7 +180,7 @@ ULONG CtiLMProgramBase::getStopOrder() const
 ---------------------------------------------------------------------------*/
 ULONG CtiLMProgramBase::getDefaultPriority() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _defaultpriority;
 }
 
@@ -191,7 +191,7 @@ ULONG CtiLMProgramBase::getDefaultPriority() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiLMProgramBase::getControlType() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _controltype;
 }
 
@@ -202,7 +202,7 @@ const RWCString& CtiLMProgramBase::getControlType() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiLMProgramBase::getAvailableSeasons() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _availableseasons;
 }
 
@@ -213,7 +213,7 @@ const RWCString& CtiLMProgramBase::getAvailableSeasons() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiLMProgramBase::getAvailableWeekDays() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _availableweekdays;
 }
 
@@ -224,7 +224,7 @@ const RWCString& CtiLMProgramBase::getAvailableWeekDays() const
 ---------------------------------------------------------------------------*/
 ULONG CtiLMProgramBase::getMaxHoursDaily() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _maxhoursdaily;
 }
 
@@ -235,7 +235,7 @@ ULONG CtiLMProgramBase::getMaxHoursDaily() const
 ---------------------------------------------------------------------------*/
 ULONG CtiLMProgramBase::getMaxHoursMonthly() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _maxhoursmonthly;
 }
 
@@ -246,7 +246,7 @@ ULONG CtiLMProgramBase::getMaxHoursMonthly() const
 ---------------------------------------------------------------------------*/
 ULONG CtiLMProgramBase::getMaxHoursSeasonal() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _maxhoursseasonal;
 }
 
@@ -257,7 +257,7 @@ ULONG CtiLMProgramBase::getMaxHoursSeasonal() const
 ---------------------------------------------------------------------------*/
 ULONG CtiLMProgramBase::getMaxHoursAnnually() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _maxhoursannually;
 }
 
@@ -268,7 +268,7 @@ ULONG CtiLMProgramBase::getMaxHoursAnnually() const
 ---------------------------------------------------------------------------*/
 ULONG CtiLMProgramBase::getMinActivateTime() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _minactivatetime;
 }
 
@@ -279,7 +279,7 @@ ULONG CtiLMProgramBase::getMinActivateTime() const
 ---------------------------------------------------------------------------*/
 ULONG CtiLMProgramBase::getMinRestartTime() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _minrestarttime;
 }
 
@@ -290,7 +290,7 @@ ULONG CtiLMProgramBase::getMinRestartTime() const
 ---------------------------------------------------------------------------*/
 ULONG CtiLMProgramBase::getProgramStatusPointId() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _programstatuspointid;
 }
 
@@ -301,7 +301,7 @@ ULONG CtiLMProgramBase::getProgramStatusPointId() const
 ---------------------------------------------------------------------------*/
 ULONG CtiLMProgramBase::getProgramState() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _programstate;
 }
 
@@ -313,7 +313,7 @@ ULONG CtiLMProgramBase::getProgramState() const
 ---------------------------------------------------------------------------*/
 ULONG CtiLMProgramBase::getReductionAnalogPointId() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _reductionanalogpointid;
 }
 
@@ -324,7 +324,7 @@ ULONG CtiLMProgramBase::getReductionAnalogPointId() const
 ---------------------------------------------------------------------------*/
 DOUBLE CtiLMProgramBase::getReductionTotal() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _reductiontotal;
 }
 
@@ -335,7 +335,7 @@ DOUBLE CtiLMProgramBase::getReductionTotal() const
 ---------------------------------------------------------------------------*/
 const RWDBDateTime& CtiLMProgramBase::getStartedControlling() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _startedcontrolling;
 }
 
@@ -346,7 +346,7 @@ const RWDBDateTime& CtiLMProgramBase::getStartedControlling() const
 ---------------------------------------------------------------------------*/
 const RWDBDateTime& CtiLMProgramBase::getLastControlSent() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _lastcontrolsent;
 }
 
@@ -357,7 +357,7 @@ const RWDBDateTime& CtiLMProgramBase::getLastControlSent() const
 ---------------------------------------------------------------------------*/
 RWOrdered& CtiLMProgramBase::getLMProgramControlWindows()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _lmprogramcontrolwindows;
 }
 
@@ -368,7 +368,7 @@ RWOrdered& CtiLMProgramBase::getLMProgramControlWindows()
 ---------------------------------------------------------------------------*/
 BOOL CtiLMProgramBase::getManualControlReceivedFlag() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _manualcontrolreceivedflag;
 }
 
@@ -379,7 +379,7 @@ BOOL CtiLMProgramBase::getManualControlReceivedFlag() const
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setPAOId(ULONG id)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _paoid = id;
     //do not notify observers of this!
     return *this;
@@ -392,7 +392,7 @@ CtiLMProgramBase& CtiLMProgramBase::setPAOId(ULONG id)
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setPAOCategory(const RWCString& category)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _paocategory = category;
     return *this;
 }
@@ -404,7 +404,7 @@ CtiLMProgramBase& CtiLMProgramBase::setPAOCategory(const RWCString& category)
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setPAOClass(const RWCString& pclass)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _paoclass = pclass;
     return *this;
 }
@@ -416,7 +416,7 @@ CtiLMProgramBase& CtiLMProgramBase::setPAOClass(const RWCString& pclass)
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setPAOName(const RWCString& name)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _paoname = name;
     return *this;
 }
@@ -428,7 +428,7 @@ CtiLMProgramBase& CtiLMProgramBase::setPAOName(const RWCString& name)
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setPAOType(ULONG type)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _paotype = type;
     return *this;
 }
@@ -440,7 +440,7 @@ CtiLMProgramBase& CtiLMProgramBase::setPAOType(ULONG type)
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setPAODescription(const RWCString& description)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _paodescription = description;
     return *this;
 }
@@ -452,7 +452,7 @@ CtiLMProgramBase& CtiLMProgramBase::setPAODescription(const RWCString& descripti
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setDisableFlag(BOOL disable)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _disableflag = disable;
 
     return *this;
@@ -465,7 +465,7 @@ CtiLMProgramBase& CtiLMProgramBase::setDisableFlag(BOOL disable)
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setUserOrder(ULONG userorder)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _userorder = userorder;
 
     return *this;
@@ -478,7 +478,7 @@ CtiLMProgramBase& CtiLMProgramBase::setUserOrder(ULONG userorder)
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setStopOrder(ULONG stoporder)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _stoporder = stoporder;
 
     return *this;
@@ -491,7 +491,7 @@ CtiLMProgramBase& CtiLMProgramBase::setStopOrder(ULONG stoporder)
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setDefaultPriority(ULONG defpriority)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _defaultpriority = defpriority;
 
     return *this;
@@ -504,7 +504,7 @@ CtiLMProgramBase& CtiLMProgramBase::setDefaultPriority(ULONG defpriority)
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setControlType(const RWCString& conttype)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _controltype = conttype;
 
     return *this;
@@ -517,7 +517,7 @@ CtiLMProgramBase& CtiLMProgramBase::setControlType(const RWCString& conttype)
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setAvailableSeasons(const RWCString& availseasons)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _availableseasons = availseasons;
 
     return *this;
@@ -530,7 +530,7 @@ CtiLMProgramBase& CtiLMProgramBase::setAvailableSeasons(const RWCString& availse
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setAvailableWeekDays(const RWCString& availweekdays)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _availableweekdays = availweekdays;
 
     return *this;
@@ -543,7 +543,7 @@ CtiLMProgramBase& CtiLMProgramBase::setAvailableWeekDays(const RWCString& availw
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setMaxHoursDaily(ULONG daily)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _maxhoursdaily = daily;
 
     return *this;
@@ -556,7 +556,7 @@ CtiLMProgramBase& CtiLMProgramBase::setMaxHoursDaily(ULONG daily)
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setMaxHoursMonthly(ULONG monthly)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _maxhoursmonthly = monthly;
 
     return *this;
@@ -569,7 +569,7 @@ CtiLMProgramBase& CtiLMProgramBase::setMaxHoursMonthly(ULONG monthly)
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setMaxHoursSeasonal(ULONG seasonal)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _maxhoursseasonal = seasonal;
 
     return *this;
@@ -582,7 +582,7 @@ CtiLMProgramBase& CtiLMProgramBase::setMaxHoursSeasonal(ULONG seasonal)
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setMaxHoursAnnually(ULONG annually)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _maxhoursannually = annually;
 
     return *this;
@@ -595,7 +595,7 @@ CtiLMProgramBase& CtiLMProgramBase::setMaxHoursAnnually(ULONG annually)
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setMinActivateTime(ULONG activate)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _minactivatetime = activate;
 
     return *this;
@@ -608,7 +608,7 @@ CtiLMProgramBase& CtiLMProgramBase::setMinActivateTime(ULONG activate)
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setMinRestartTime(ULONG restart)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _minrestarttime = restart;
 
     return *this;
@@ -621,7 +621,7 @@ CtiLMProgramBase& CtiLMProgramBase::setMinRestartTime(ULONG restart)
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setProgramStatusPointId(ULONG statuspointid)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _programstatuspointid = statuspointid;
 
     return *this;
@@ -634,7 +634,7 @@ CtiLMProgramBase& CtiLMProgramBase::setProgramStatusPointId(ULONG statuspointid)
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setProgramState(ULONG progstate)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _programstate = progstate;
 
     return *this;
@@ -648,7 +648,7 @@ CtiLMProgramBase& CtiLMProgramBase::setProgramState(ULONG progstate)
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setReductionAnalogPointId(ULONG reductionpointid)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _reductionanalogpointid = reductionpointid;
 
     return *this;
@@ -661,7 +661,7 @@ CtiLMProgramBase& CtiLMProgramBase::setReductionAnalogPointId(ULONG reductionpoi
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setReductionTotal(DOUBLE reduction)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _reductiontotal = reduction;
 
     return *this;
@@ -674,7 +674,7 @@ CtiLMProgramBase& CtiLMProgramBase::setReductionTotal(DOUBLE reduction)
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setStartedControlling(const RWDBDateTime& startcont)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _startedcontrolling = startcont;
 
     return *this;
@@ -687,7 +687,7 @@ CtiLMProgramBase& CtiLMProgramBase::setStartedControlling(const RWDBDateTime& st
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setLastControlSent(const RWDBDateTime& lastcontrol)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _lastcontrolsent = lastcontrol;
 
     return *this;
@@ -700,7 +700,7 @@ CtiLMProgramBase& CtiLMProgramBase::setLastControlSent(const RWDBDateTime& lastc
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setManualControlReceivedFlag(BOOL manualreceived)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _manualcontrolreceivedflag = manualreceived;
 
     return *this;
@@ -714,7 +714,7 @@ CtiLMProgramBase& CtiLMProgramBase::setManualControlReceivedFlag(BOOL manualrece
 ---------------------------------------------------------------------------*/
 BOOL CtiLMProgramBase::isAvailableToday()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
 
     RWTime now;
     struct tm start_tm;
@@ -736,7 +736,7 @@ BOOL CtiLMProgramBase::isAvailableToday()
 ---------------------------------------------------------------------------*/
 BOOL CtiLMProgramBase::isWithinValidControlWindow(ULONG secondsFromBeginningOfDay)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
 
     BOOL returnBoolean = FALSE;
     if( _lmprogramcontrolwindows.entries() > 0 )
@@ -767,7 +767,7 @@ BOOL CtiLMProgramBase::isWithinValidControlWindow(ULONG secondsFromBeginningOfDa
 void CtiLMProgramBase::restoreGuts(RWvistream& istrm)
 {
 
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     RWCollectable::restoreGuts( istrm );
 
@@ -813,7 +813,7 @@ void CtiLMProgramBase::restoreGuts(RWvistream& istrm)
 void CtiLMProgramBase::saveGuts(RWvostream& ostrm ) const
 {
 
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     RWCollectable::saveGuts( ostrm );
 
@@ -853,7 +853,7 @@ void CtiLMProgramBase::saveGuts(RWvostream& ostrm ) const
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::operator=(const CtiLMProgramBase& right)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     if( this != &right )
     {
@@ -900,7 +900,7 @@ CtiLMProgramBase& CtiLMProgramBase::operator=(const CtiLMProgramBase& right)
 ---------------------------------------------------------------------------*/
 int CtiLMProgramBase::operator==(const CtiLMProgramBase& right) const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     return getPAOId() == right.getPAOId();
 }
 
@@ -909,8 +909,21 @@ int CtiLMProgramBase::operator==(const CtiLMProgramBase& right) const
 ---------------------------------------------------------------------------*/
 int CtiLMProgramBase::operator!=(const CtiLMProgramBase& right) const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     return !(operator==(right));
+}
+
+/*---------------------------------------------------------------------------
+    dumpDynamicData
+
+    Writes out the dynamic information.
+---------------------------------------------------------------------------*/
+void CtiLMProgramBase::dumpDynamicData()
+{
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
+
+    dumpDynamicData(conn,RWDBDateTime());
 }
 
 /*---------------------------------------------------------------------------
@@ -918,16 +931,9 @@ int CtiLMProgramBase::operator!=(const CtiLMProgramBase& right) const
 
     Writes out the dynamic information for this strategy.
 ---------------------------------------------------------------------------*/
-void CtiLMProgramBase::dumpDynamicData()
+void CtiLMProgramBase::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime)
 {
-    RWDBDateTime currentDateTime = RWDBDateTime();
-
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
     {
-
         if( conn.isValid() )
         {
             RWDBDatabase db = getDatabase();
@@ -993,7 +999,7 @@ void CtiLMProgramBase::dumpDynamicData()
 ---------------------------------------------------------------------------*/
 void CtiLMProgramBase::restore(RWDBReader& rdr)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     RWDBNullIndicator isNull;
     RWDBDateTime dynamicTimeStamp;

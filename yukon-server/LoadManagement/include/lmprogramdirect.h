@@ -51,6 +51,8 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
     CtiLMProgramDirect& setDirectStopTime(const RWDBDateTime& stop);
 
     void dumpDynamicData();
+    void dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime);
+
     CtiLMGroupBase* findGroupToTake(CtiLMProgramDirectGear* currentGearObject);
     void restoreDirectSpecificDatabaseEntries(RWDBReader& rdr);
     BOOL maintainProgramControl(ULONG currentPriority, RWOrdered& controlAreaTriggers, ULONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
@@ -93,8 +95,6 @@ private:
 
     //don't stream
     BOOL _insertDynamicDataFlag;
-
-    mutable RWRecursiveLock<RWMutexLock> _mutex;
 
     void restore(RWDBReader& rdr);
 };

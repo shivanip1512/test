@@ -71,10 +71,12 @@ RWDECLARE_COLLECTABLE( CtiLMProgramCurtailment )
     void notifyCustomers(CtiMultiMsg* multiDispatchMsg);
     void notifyCustomersOfStop(CtiMultiMsg* multiDispatchMsg);
     void addLMCurtailProgramActivityTable();
-    void updateLMCurtailProgramActivityTable();
+    void updateLMCurtailProgramActivityTable(RWDBConnection& conn, RWDBDateTime& currentDateTime);
     void deleteLMCurtailProgramActivityTable();
     void restoreDynamicData(RWDBReader& rdr);
+
     void dumpDynamicData();
+    void dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime);
 
     virtual CtiLMProgramBase* replicate() const;
     virtual DOUBLE reduceProgramLoad(DOUBLE loadReductionNeeded, ULONG currentPriority, RWOrdered controlAreaTriggers, ULONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
@@ -120,8 +122,6 @@ private:
     RWCString _additionalinfo;
 
     RWOrdered _lmprogramcurtailmentcustomers;
-
-    mutable RWRecursiveLock<RWMutexLock> _mutex;
 
     void restore(RWDBReader& rdr);
 };

@@ -50,7 +50,7 @@ CtiLMProgramCurtailment::CtiLMProgramCurtailment(const CtiLMProgramCurtailment& 
 ---------------------------------------------------------------------------*/
 CtiLMProgramCurtailment::~CtiLMProgramCurtailment()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     _lmprogramcurtailmentcustomers.clearAndDestroy();
 }
 
@@ -61,7 +61,7 @@ CtiLMProgramCurtailment::~CtiLMProgramCurtailment()
 ---------------------------------------------------------------------------*/
 ULONG CtiLMProgramCurtailment::getMinNotifyTime() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _minnotifytime;
 }
 
@@ -72,7 +72,7 @@ ULONG CtiLMProgramCurtailment::getMinNotifyTime() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiLMProgramCurtailment::getHeading() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _heading;
 }
 
@@ -83,7 +83,7 @@ const RWCString& CtiLMProgramCurtailment::getHeading() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiLMProgramCurtailment::getMessageHeader() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _messageheader;
 }
 
@@ -94,7 +94,7 @@ const RWCString& CtiLMProgramCurtailment::getMessageHeader() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiLMProgramCurtailment::getMessageFooter() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _messagefooter;
 }
 
@@ -105,7 +105,7 @@ const RWCString& CtiLMProgramCurtailment::getMessageFooter() const
 ---------------------------------------------------------------------------*/
 ULONG CtiLMProgramCurtailment::getAckTimeLimit() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _acktimelimit;
 }
 
@@ -116,7 +116,7 @@ ULONG CtiLMProgramCurtailment::getAckTimeLimit() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiLMProgramCurtailment::getCanceledMsg() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _canceledmsg;
 }
 
@@ -127,7 +127,7 @@ const RWCString& CtiLMProgramCurtailment::getCanceledMsg() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiLMProgramCurtailment::getStoppedEarlyMsg() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _stoppedearlymsg;
 }
 
@@ -139,7 +139,7 @@ const RWCString& CtiLMProgramCurtailment::getStoppedEarlyMsg() const
 ---------------------------------------------------------------------------*/
 ULONG CtiLMProgramCurtailment::getCurtailReferenceId() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _curtailreferenceid;
 }
 
@@ -151,7 +151,7 @@ ULONG CtiLMProgramCurtailment::getCurtailReferenceId() const
 ---------------------------------------------------------------------------*/
 const RWDBDateTime& CtiLMProgramCurtailment::getActionDateTime() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _actiondatetime;
 }
 
@@ -163,7 +163,7 @@ const RWDBDateTime& CtiLMProgramCurtailment::getActionDateTime() const
 ---------------------------------------------------------------------------*/
 const RWDBDateTime& CtiLMProgramCurtailment::getNotificationDateTime() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _notificationdatetime;
 }
 
@@ -175,7 +175,7 @@ const RWDBDateTime& CtiLMProgramCurtailment::getNotificationDateTime() const
 ---------------------------------------------------------------------------*/
 const RWDBDateTime& CtiLMProgramCurtailment::getCurtailmentStartTime() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _curtailmentstarttime;
 }
 
@@ -187,7 +187,7 @@ const RWDBDateTime& CtiLMProgramCurtailment::getCurtailmentStartTime() const
 ---------------------------------------------------------------------------*/
 const RWDBDateTime& CtiLMProgramCurtailment::getCurtailmentStopTime() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _curtailmentstoptime;
 }
 
@@ -199,7 +199,7 @@ const RWDBDateTime& CtiLMProgramCurtailment::getCurtailmentStopTime() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiLMProgramCurtailment::getRunStatus() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _runstatus;
 }
 
@@ -211,7 +211,7 @@ const RWCString& CtiLMProgramCurtailment::getRunStatus() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiLMProgramCurtailment::getAdditionalInfo() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _additionalinfo;
 }
 
@@ -222,7 +222,7 @@ const RWCString& CtiLMProgramCurtailment::getAdditionalInfo() const
 ---------------------------------------------------------------------------*/
 RWOrdered& CtiLMProgramCurtailment::getLMProgramCurtailmentCustomers()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _lmprogramcurtailmentcustomers;
 }
 
@@ -233,7 +233,7 @@ RWOrdered& CtiLMProgramCurtailment::getLMProgramCurtailmentCustomers()
 ---------------------------------------------------------------------------*/
 CtiLMProgramCurtailment& CtiLMProgramCurtailment::setMinNotifyTime(ULONG notifytime)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _minnotifytime = notifytime;
 
     return *this;
@@ -246,7 +246,7 @@ CtiLMProgramCurtailment& CtiLMProgramCurtailment::setMinNotifyTime(ULONG notifyt
 ---------------------------------------------------------------------------*/
 CtiLMProgramCurtailment& CtiLMProgramCurtailment::setHeading(const RWCString& head)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _heading = head;
 
     return *this;
@@ -259,7 +259,7 @@ CtiLMProgramCurtailment& CtiLMProgramCurtailment::setHeading(const RWCString& he
 ---------------------------------------------------------------------------*/
 CtiLMProgramCurtailment& CtiLMProgramCurtailment::setMessageHeader(const RWCString& msgheader)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _messageheader = msgheader;
 
     return *this;
@@ -272,7 +272,7 @@ CtiLMProgramCurtailment& CtiLMProgramCurtailment::setMessageHeader(const RWCStri
 ---------------------------------------------------------------------------*/
 CtiLMProgramCurtailment& CtiLMProgramCurtailment::setMessageFooter(const RWCString& msgfooter)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _messagefooter = msgfooter;
 
     return *this;
@@ -285,7 +285,7 @@ CtiLMProgramCurtailment& CtiLMProgramCurtailment::setMessageFooter(const RWCStri
 ---------------------------------------------------------------------------*/
 CtiLMProgramCurtailment& CtiLMProgramCurtailment::setAckTimeLimit(ULONG timelimit)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _acktimelimit = timelimit;
 
     return *this;
@@ -298,7 +298,7 @@ CtiLMProgramCurtailment& CtiLMProgramCurtailment::setAckTimeLimit(ULONG timelimi
 ---------------------------------------------------------------------------*/
 CtiLMProgramCurtailment& CtiLMProgramCurtailment::setCanceledMsg(const RWCString& canceled)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _canceledmsg = canceled;
 
     return *this;
@@ -311,7 +311,7 @@ CtiLMProgramCurtailment& CtiLMProgramCurtailment::setCanceledMsg(const RWCString
 ---------------------------------------------------------------------------*/
 CtiLMProgramCurtailment& CtiLMProgramCurtailment::setStoppedEarlyMsg(const RWCString& stoppedearly)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _stoppedearlymsg = stoppedearly;
 
     return *this;
@@ -325,7 +325,7 @@ CtiLMProgramCurtailment& CtiLMProgramCurtailment::setStoppedEarlyMsg(const RWCSt
 ---------------------------------------------------------------------------*/
 CtiLMProgramCurtailment& CtiLMProgramCurtailment::setCurtailReferenceId(ULONG refid)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _curtailreferenceid = refid;
 
     return *this;
@@ -339,7 +339,7 @@ CtiLMProgramCurtailment& CtiLMProgramCurtailment::setCurtailReferenceId(ULONG re
 ---------------------------------------------------------------------------*/
 CtiLMProgramCurtailment& CtiLMProgramCurtailment::setActionDateTime(const RWDBDateTime& actiontime)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _actiondatetime = actiontime;
 
     return *this;
@@ -353,7 +353,7 @@ CtiLMProgramCurtailment& CtiLMProgramCurtailment::setActionDateTime(const RWDBDa
 ---------------------------------------------------------------------------*/
 CtiLMProgramCurtailment& CtiLMProgramCurtailment::setNotificationDateTime(const RWDBDateTime& notifytime)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _notificationdatetime = notifytime;
 
     return *this;
@@ -367,7 +367,7 @@ CtiLMProgramCurtailment& CtiLMProgramCurtailment::setNotificationDateTime(const 
 ---------------------------------------------------------------------------*/
 CtiLMProgramCurtailment& CtiLMProgramCurtailment::setCurtailmentStartTime(const RWDBDateTime& starttime)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _curtailmentstarttime = starttime;
 
     return *this;
@@ -381,7 +381,7 @@ CtiLMProgramCurtailment& CtiLMProgramCurtailment::setCurtailmentStartTime(const 
 ---------------------------------------------------------------------------*/
 CtiLMProgramCurtailment& CtiLMProgramCurtailment::setCurtailmentStopTime(const RWDBDateTime& stoptime)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _curtailmentstoptime = stoptime;
 
     return *this;
@@ -395,7 +395,7 @@ CtiLMProgramCurtailment& CtiLMProgramCurtailment::setCurtailmentStopTime(const R
 ---------------------------------------------------------------------------*/
 CtiLMProgramCurtailment& CtiLMProgramCurtailment::setRunStatus(const RWCString& runstat)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _runstatus = runstat;
 
     return *this;
@@ -409,7 +409,7 @@ CtiLMProgramCurtailment& CtiLMProgramCurtailment::setRunStatus(const RWCString& 
 ---------------------------------------------------------------------------*/
 CtiLMProgramCurtailment& CtiLMProgramCurtailment::setAdditionalInfo(const RWCString& additional)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _additionalinfo = additional;
 
     return *this;
@@ -423,7 +423,7 @@ CtiLMProgramCurtailment& CtiLMProgramCurtailment::setAdditionalInfo(const RWCStr
 ---------------------------------------------------------------------------*/
 DOUBLE CtiLMProgramCurtailment::reduceProgramLoad(DOUBLE loadReductionNeeded, ULONG currentPriority, RWOrdered controlAreaTriggers, ULONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     DOUBLE expectedLoadReduced = 0.0;
 
@@ -437,7 +437,7 @@ DOUBLE CtiLMProgramCurtailment::reduceProgramLoad(DOUBLE loadReductionNeeded, UL
 ---------------------------------------------------------------------------*/
 void CtiLMProgramCurtailment::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     const RWDBDateTime currentDateTime;
     if( getProgramState() == CtiLMProgramBase::StoppingState )
@@ -445,7 +445,7 @@ void CtiLMProgramCurtailment::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMu
         if( currentDateTime >= getCurtailmentStopTime() )
         {
             setRunStatus(CtiLMProgramCurtailment::CompletedRunStatus);
-            updateLMCurtailProgramActivityTable();
+            dumpDynamicData();
             setCurtailReferenceId(0);
             setActionDateTime(RWDBDateTime(1990,1,1,0,0,0,0));
             setNotificationDateTime(RWDBDateTime(1990,1,1,0,0,0,0));
@@ -458,7 +458,7 @@ void CtiLMProgramCurtailment::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMu
             setRunStatus(CtiLMProgramCurtailment::StoppedEarlyRunStatus);
             setCurtailmentStopTime(RWDBDateTime());
             notifyCustomersOfStop(multiDispatchMsg);
-            updateLMCurtailProgramActivityTable();
+            dumpDynamicData();
             setCurtailReferenceId(0);
             setActionDateTime(RWDBDateTime(1990,1,1,0,0,0,0));
             setNotificationDateTime(RWDBDateTime(1990,1,1,0,0,0,0));
@@ -474,7 +474,7 @@ void CtiLMProgramCurtailment::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMu
         {
             setRunStatus(CtiLMProgramCurtailment::CanceledRunStatus);
             notifyCustomersOfStop(multiDispatchMsg);
-            updateLMCurtailProgramActivityTable();
+            dumpDynamicData();
             setCurtailReferenceId(0);
             setActionDateTime(RWDBDateTime(1990,1,1,0,0,0,0));
             setNotificationDateTime(RWDBDateTime(1990,1,1,0,0,0,0));
@@ -507,7 +507,7 @@ void CtiLMProgramCurtailment::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMu
 ---------------------------------------------------------------------------*/
 BOOL CtiLMProgramCurtailment::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     BOOL returnBoolean = FALSE;
 
@@ -520,7 +520,7 @@ BOOL CtiLMProgramCurtailment::handleManualControl(ULONG secondsFrom1901, CtiMult
             notifyCustomers(multiDispatchMsg);
             setProgramState(CtiLMProgramBase::NotifiedState);
             setRunStatus(CtiLMProgramCurtailment::NotifiedRunStatus);
-            updateLMCurtailProgramActivityTable();
+            dumpDynamicData();
 
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -535,7 +535,7 @@ BOOL CtiLMProgramCurtailment::handleManualControl(ULONG secondsFrom1901, CtiMult
             returnBoolean = TRUE;
             setProgramState(CtiLMProgramBase::ManualActiveState);
             setRunStatus(CtiLMProgramCurtailment::ActiveRunStatus);
-            updateLMCurtailProgramActivityTable();
+            dumpDynamicData();
 
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << RWTime() << " - Curtailment went active in program: " << getPAOName() << endl;
@@ -579,7 +579,7 @@ BOOL CtiLMProgramCurtailment::handleManualControl(ULONG secondsFrom1901, CtiMult
 ---------------------------------------------------------------------------*/
 void CtiLMProgramCurtailment::notifyCustomers(CtiMultiMsg* multiDispatchMsg)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     if( _lmprogramcurtailmentcustomers.entries() > 0 )
     {
@@ -648,7 +648,7 @@ void CtiLMProgramCurtailment::notifyCustomers(CtiMultiMsg* multiDispatchMsg)
 ---------------------------------------------------------------------------*/
 void CtiLMProgramCurtailment::notifyCustomersOfStop(CtiMultiMsg* multiDispatchMsg)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     if( _lmprogramcurtailmentcustomers.entries() > 0 )
     {
@@ -656,7 +656,7 @@ void CtiLMProgramCurtailment::notifyCustomersOfStop(CtiMultiMsg* multiDispatchMs
         for(ULONG i=0;i<_lmprogramcurtailmentcustomers.entries();i++)
         {
             CtiLMCurtailCustomer* currentCustomer = (CtiLMCurtailCustomer*)_lmprogramcurtailmentcustomers[i];
-            currentCustomer->updateLMCurtailCustomerActivityTable();
+            currentCustomer->dumpDynamicData();
 
             CtiEmailMsg* emailMsg = new CtiEmailMsg(currentCustomer->getPAOId(),CtiEmailMsg::CICustomerEmailType);
             emailMsg->setSubject(getHeading());
@@ -724,7 +724,7 @@ void CtiLMProgramCurtailment::notifyCustomersOfStop(CtiMultiMsg* multiDispatchMs
 ---------------------------------------------------------------------------*/
 void CtiLMProgramCurtailment::addLMCurtailProgramActivityTable()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
@@ -801,14 +801,10 @@ void CtiLMProgramCurtailment::addLMCurtailProgramActivityTable()
 
     .
 ---------------------------------------------------------------------------*/
-void CtiLMProgramCurtailment::updateLMCurtailProgramActivityTable()
+void CtiLMProgramCurtailment::updateLMCurtailProgramActivityTable(RWDBConnection& conn, RWDBDateTime& currentDateTime)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
 
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
     {
-
         if( conn.isValid() )
         {
             RWDBDatabase db = getDatabase();
@@ -896,7 +892,7 @@ void CtiLMProgramCurtailment::updateLMCurtailProgramActivityTable()
 ---------------------------------------------------------------------------*/
 void CtiLMProgramCurtailment::deleteLMCurtailProgramActivityTable()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
@@ -934,7 +930,7 @@ void CtiLMProgramCurtailment::deleteLMCurtailProgramActivityTable()
 ---------------------------------------------------------------------------*/
 BOOL CtiLMProgramCurtailment::hasControlHoursAvailable() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
 
     BOOL returnBoolean = TRUE;
 
@@ -949,7 +945,7 @@ BOOL CtiLMProgramCurtailment::hasControlHoursAvailable() const
 void CtiLMProgramCurtailment::restoreGuts(RWvistream& istrm)
 {
 
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     CtiLMProgramBase::restoreGuts( istrm );
 
@@ -988,7 +984,7 @@ void CtiLMProgramCurtailment::restoreGuts(RWvistream& istrm)
 void CtiLMProgramCurtailment::saveGuts(RWvostream& ostrm ) const
 {
 
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     CtiLMProgramBase::saveGuts( ostrm );
 
@@ -1016,7 +1012,7 @@ void CtiLMProgramCurtailment::saveGuts(RWvostream& ostrm ) const
 ---------------------------------------------------------------------------*/
 CtiLMProgramCurtailment& CtiLMProgramCurtailment::operator=(const CtiLMProgramCurtailment& right)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     if( this != &right )
     {
@@ -1051,7 +1047,7 @@ CtiLMProgramCurtailment& CtiLMProgramCurtailment::operator=(const CtiLMProgramCu
 ---------------------------------------------------------------------------*/
 int CtiLMProgramCurtailment::operator==(const CtiLMProgramCurtailment& right) const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     return CtiLMProgramBase::operator==(right);
 }
 
@@ -1060,7 +1056,7 @@ int CtiLMProgramCurtailment::operator==(const CtiLMProgramCurtailment& right) co
 ---------------------------------------------------------------------------*/
 int CtiLMProgramCurtailment::operator!=(const CtiLMProgramCurtailment& right) const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     return CtiLMProgramBase::operator!=(right);
 }
 
@@ -1081,7 +1077,7 @@ CtiLMProgramBase* CtiLMProgramCurtailment::replicate() const
 ---------------------------------------------------------------------------*/
 void CtiLMProgramCurtailment::restore(RWDBReader& rdr)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     CtiLMProgramBase::restore(rdr);
 
@@ -1109,7 +1105,7 @@ void CtiLMProgramCurtailment::restore(RWDBReader& rdr)
 ---------------------------------------------------------------------------*/
 void CtiLMProgramCurtailment::restoreCurtailmentSpecificDatabaseEntries(RWDBReader& rdr)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     RWCString tempBoolString;
 
@@ -1125,15 +1121,26 @@ void CtiLMProgramCurtailment::restoreCurtailmentSpecificDatabaseEntries(RWDBRead
 /*---------------------------------------------------------------------------
     dumpDynamicData
 
-    Writes out the dynamic information for this curtailment program.
+    Writes out the dynamic information.
 ---------------------------------------------------------------------------*/
 void CtiLMProgramCurtailment::dumpDynamicData()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
 
+    dumpDynamicData(conn,RWDBDateTime());
+}
+
+/*---------------------------------------------------------------------------
+    dumpDynamicData
+
+    Writes out the dynamic information for this curtailment program.
+---------------------------------------------------------------------------*/
+void CtiLMProgramCurtailment::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime)
+{
     if( getManualControlReceivedFlag() )
     {
-        updateLMCurtailProgramActivityTable();
+        updateLMCurtailProgramActivityTable(conn, currentDateTime);
     }
 }
 
@@ -1144,7 +1151,7 @@ void CtiLMProgramCurtailment::dumpDynamicData()
 ---------------------------------------------------------------------------*/
 void CtiLMProgramCurtailment::restoreDynamicData(RWDBReader& rdr)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     if( getManualControlReceivedFlag() )
     {
