@@ -29,10 +29,10 @@
             </a></font><i><font color="#FFFFFF" size="-1" face="Times New Roman"><br clear="ALL">
               </font></i></td>
             <td width="32%" valign="bottom"> 
-              <div align="center"><img src="esubHeader.gif" width="347" height="30"></div>
+              <div align="center"><img src="esub/images/esubHeader.gif" width="347" height="30"></div>
             </td>
             <td width="34%" valign="top"> 
-              <div align="right"><img src="YukonLogoWhite.gif" width="132" height="28"></div>
+              <div align="right"><img src="esub/images/YukonLogoWhite.gif" width="132" height="28"></div>
               
             <font face="Arial, Helvetica, sans-serif" size="2">\</font> <BR>
             <BR>
@@ -74,7 +74,7 @@
             <p align="center"><font face="Arial, Helvetica, sans-serif" size="2">This 
               applicaion requires Adobe SVG Viewer 3.0 or greater</font> <br>
               <br>
-            <div align="center"><a href="http://www.adobe.com/svg/viewer/install/"><img src="images/svgdownload.gif" width="88" height="31" border="0"></a></div>
+            <div align="center"><a href="http://www.adobe.com/svg/viewer/install/"><img src="esub/images/svgdownload.gif" width="88" height="31" border="0"></a></div>
             <br>
             <font face="Arial, Helvetica, sans-serif" size="2">Sign in below to view our application.</font><br>
               <FORM METHOD="POST" ACTION="/servlet/LoginController"> 
@@ -115,8 +115,9 @@
           </tr>
           <tr> 
             <td width="40%" height="20">&nbsp; </td>
-            <td width="60%" height="20"> <input type="image" src="SubmitButton.gif" width="58" height="20" border="0"></td>
+            <td width="60%" height="20"> <input type="image" src="esub/images/SubmitButton.gif" width="58" height="20" border="0"></td>
             <input name="LOGIN" type="hidden" value="true"/>
+            <input name="ACTION" type="hidden" value="LOGIN"/>
            
           </tr>
         </table>
@@ -124,7 +125,7 @@
 		<div align="center"><br>
                           <font face="Arial, Helvetica, sans-serif" size="2">To obtain a password, 
               or if you have forgotten your password, contact:<br>
-                <a href="mailto:info@cannontech.com"><img src="Contact.gif" width="128" height="20" border="0"></a> 
+                <a href="mailto:info@cannontech.com"><img src="esub/images/Contact.gif" width="128" height="20" border="0"></a> 
                 </font></div>
       </center>
 			</td>
