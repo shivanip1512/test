@@ -200,6 +200,19 @@ public synchronized void setAllSilenced( boolean value_ )
 }
 
 /**
+ * Tells us if at least 1 row needs to have sound
+ * @return void
+ */
+public synchronized boolean isAnyRowUnSilenced()
+{
+	for( int i = 0; i < getAlarmingRows().size(); i++ )
+		if( !((AlarmingRow)getAlarmingRows().get(i)).isSilenced() )
+			return true; //we have at least 1 row that needs sound
+			
+	return false;
+}
+
+/**
  * Insert the method's description here.
  * Creation date: (1/15/2001 11:55:14 AM)
  */

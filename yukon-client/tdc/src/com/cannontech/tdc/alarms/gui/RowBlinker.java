@@ -131,7 +131,6 @@ private java.applet.AudioClip getAlarmSound()
 		}
 		
 		alarmSound = java.applet.Applet.newAudioClip( url );
-
 	}
 	
 	return alarmSound;
@@ -161,15 +160,16 @@ private synchronized void processAlarmColors()
 	for( int i = 0; i < alarmedRows.size(); i++ )
 	{
 		if( alarmedRows.elementAt(i).isBlinking() )
-		{
-			//we cant be muted and the alarm can not be silenced
-			if( !model.isMuted() && !alarmedRows.elementAt(i).isSilenced() )
-				getAlarmSound().play();
-			
+		{			
 			int loc = alarmedRows.elementAt(i).getRowNumber();
 
+			//only do things one time in here
 			if( i == 0 )
 			{
+				//we cant be muted and there has to be at least 1 unsilenced row
+				if( !model.isMuted() && alarmedRows.isAnyRowUnSilenced() )
+					getAlarmSound().play();
+
 				maxLoc = loc;
 				minLoc = loc;
 			}
