@@ -7,6 +7,7 @@ import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.common.constants.YukonSelectionListDefs;
+import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.stars.LiteCustomerResidence;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
@@ -165,7 +166,7 @@ public class UpdateResidenceInfoAction implements ActionBase {
         			MainFuelType.class
         		)
         	);
-        	updateResInfo.setNotes( req.getParameter("Notes") );
+        	updateResInfo.setNotes( req.getParameter("Notes").replaceAll(System.getProperty("line.separator"), "<br>") );
         	
         	StarsOperation operation = new StarsOperation();
         	operation.setStarsUpdateResidenceInformation( updateResInfo );
@@ -198,38 +199,9 @@ public class UpdateResidenceInfoAction implements ActionBase {
             
             LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation)
             		user.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
-            if (liteAcctInfo == null) {
-            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find customer account information") );
-            	return SOAPUtil.buildSOAPMessage( respOper );
-            }
-            
             StarsUpdateResidenceInformation updateResInfo = reqOper.getStarsUpdateResidenceInformation();
-            com.cannontech.database.db.stars.customer.CustomerResidence custRes =
-            		new com.cannontech.database.db.stars.customer.CustomerResidence();
             
-            custRes.setAccountSiteID( new Integer(liteAcctInfo.getAccountSite().getAccountSiteID()) );
-            custRes.setResidenceTypeID( new Integer(updateResInfo.getResidenceType().getEntryID()) );
-            custRes.setConstructionMaterialID( new Integer(updateResInfo.getConstructionMaterial().getEntryID()) );
-            custRes.setDecadeBuiltID( new Integer(updateResInfo.getDecadeBuilt().getEntryID()) );
-            custRes.setSquareFeetID( new Integer(updateResInfo.getSquareFeet().getEntryID()) );
-            custRes.setInsulationDepthID( new Integer(updateResInfo.getInsulationDepth().getEntryID()) );
-            custRes.setGeneralConditionID( new Integer(updateResInfo.getGeneralCondition().getEntryID()) );
-            custRes.setMainCoolingSystemID( new Integer(updateResInfo.getMainCoolingSystem().getEntryID()) );
-            custRes.setMainHeatingSystemID( new Integer(updateResInfo.getMainHeatingSystem().getEntryID()) );
-            custRes.setNumberOfOccupantsID( new Integer(updateResInfo.getNumberOfOccupants().getEntryID()) );
-            custRes.setOwnershipTypeID( new Integer(updateResInfo.getOwnershipType().getEntryID()) );
-            custRes.setMainFuelTypeID( new Integer(updateResInfo.getMainFuelType().getEntryID()) );
-            custRes.setNotes( updateResInfo.getNotes() );
-            
-            if (liteAcctInfo.getCustomerResidence() == null) {
-            	Transaction.createTransaction(Transaction.INSERT, custRes).execute();
-            	liteAcctInfo.setCustomerResidence( (LiteCustomerResidence) StarsLiteFactory.createLite(custRes) );
-            }
-            else {
-            	Transaction.createTransaction(Transaction.UPDATE, custRes).execute();
-            	StarsLiteFactory.setLiteCustomerResidence( liteAcctInfo.getCustomerResidence(), custRes );
-            }
+            updateResidenceInformation( updateResInfo, liteAcctInfo );
             
             StarsSuccess success = new StarsSuccess();
             success.setDescription( "Residential information updated successfully" );
@@ -284,6 +256,36 @@ public class UpdateResidenceInfoAction implements ActionBase {
         }
 
         return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
+	}
+	
+	public static void updateResidenceInformation(StarsUpdateResidenceInformation updateResInfo, LiteStarsCustAccountInformation liteAcctInfo)
+		throws CommandExecutionException
+	{
+		com.cannontech.database.db.stars.customer.CustomerResidence custRes =
+				new com.cannontech.database.db.stars.customer.CustomerResidence();
+        
+		custRes.setAccountSiteID( new Integer(liteAcctInfo.getAccountSite().getAccountSiteID()) );
+		custRes.setResidenceTypeID( new Integer(updateResInfo.getResidenceType().getEntryID()) );
+		custRes.setConstructionMaterialID( new Integer(updateResInfo.getConstructionMaterial().getEntryID()) );
+		custRes.setDecadeBuiltID( new Integer(updateResInfo.getDecadeBuilt().getEntryID()) );
+		custRes.setSquareFeetID( new Integer(updateResInfo.getSquareFeet().getEntryID()) );
+		custRes.setInsulationDepthID( new Integer(updateResInfo.getInsulationDepth().getEntryID()) );
+		custRes.setGeneralConditionID( new Integer(updateResInfo.getGeneralCondition().getEntryID()) );
+		custRes.setMainCoolingSystemID( new Integer(updateResInfo.getMainCoolingSystem().getEntryID()) );
+		custRes.setMainHeatingSystemID( new Integer(updateResInfo.getMainHeatingSystem().getEntryID()) );
+		custRes.setNumberOfOccupantsID( new Integer(updateResInfo.getNumberOfOccupants().getEntryID()) );
+		custRes.setOwnershipTypeID( new Integer(updateResInfo.getOwnershipType().getEntryID()) );
+		custRes.setMainFuelTypeID( new Integer(updateResInfo.getMainFuelType().getEntryID()) );
+		custRes.setNotes( updateResInfo.getNotes() );
+        
+		if (liteAcctInfo.getCustomerResidence() == null) {
+			Transaction.createTransaction(Transaction.INSERT, custRes).execute();
+			liteAcctInfo.setCustomerResidence( (LiteCustomerResidence) StarsLiteFactory.createLite(custRes) );
+		}
+		else {
+			Transaction.createTransaction(Transaction.UPDATE, custRes).execute();
+			StarsLiteFactory.setLiteCustomerResidence( liteAcctInfo.getCustomerResidence(), custRes );
+		}
 	}
 
 }

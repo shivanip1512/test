@@ -7,6 +7,7 @@ import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -77,6 +78,7 @@ public class CreateServiceRequestAction implements ActionBase {
         
         try {
             StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
+			StarsCreateServiceRequest createOrder = reqOper.getStarsCreateServiceRequest();
             
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
             if (user == null) {
@@ -86,64 +88,25 @@ public class CreateServiceRequestAction implements ActionBase {
             }
             
 			LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
-			LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) user.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
-        	
-			StarsCreateServiceRequest createOrder = reqOper.getStarsCreateServiceRequest();
+			
+			LiteStarsCustAccountInformation liteAcctInfo = null;
+			if (createOrder.hasAccountID())	// Request from CreateOrder.jsp
+				liteAcctInfo = energyCompany.getCustAccountInformation(createOrder.getAccountID(), false);
+			else
+				liteAcctInfo = (LiteStarsCustAccountInformation) user.getAttribute(ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
             
-            String orderNo = createOrder.getOrderNumber();
-            if (orderNo != null) {
-				if (orderNo.trim().length() == 0) {
-					respOper.setStarsFailure( StarsFactory.newStarsFailure(
-							StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Order # cannot be empty") );
-					return SOAPUtil.buildSOAPMessage( respOper );
-				}
-				if (orderNo.startsWith( ServerUtils.AUTO_GEN_NUM_PREC )) {
-					respOper.setStarsFailure( StarsFactory.newStarsFailure(
-							StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Order # cannot start with reserved string \"" + ServerUtils.AUTO_GEN_NUM_PREC + "\"") );
-					return SOAPUtil.buildSOAPMessage( respOper );
-				}
-				if (WorkOrderBase.orderNumberExists( orderNo, energyCompany.getEnergyCompanyID() )) {
-					respOper.setStarsFailure( StarsFactory.newStarsFailure(
-							StarsConstants.FAILURE_CODE_INVALID_PRIMARY_FIELD, "Order # already exists, please enter a different one") );
-					return SOAPUtil.buildSOAPMessage( respOper );
-				}
+            LiteWorkOrderBase liteOrder = null;
+            try {
+            	liteOrder = createServiceRequest( createOrder, liteAcctInfo, energyCompany );
             }
-            else {
-        		// Order # not provided, get the next one available
-            	orderNo = energyCompany.getNextOrderNumber();
-            	if (orderNo == null) {
-	            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot assign an order #") );
-	            	return SOAPUtil.buildSOAPMessage( respOper );
-            	}
-				createOrder.setOrderNumber( ServerUtils.AUTO_GEN_NUM_PREC + orderNo );
+            catch (WebClientException e) {
+				respOper.setStarsFailure( StarsFactory.newStarsFailure(
+						StarsConstants.FAILURE_CODE_SESSION_INVALID, e.getMessage()) );
+				return SOAPUtil.buildSOAPMessage( respOper );
             }
-            
-            com.cannontech.database.data.stars.report.WorkOrderBase workOrder = new com.cannontech.database.data.stars.report.WorkOrderBase();
-            com.cannontech.database.db.stars.report.WorkOrderBase workOrderDB = workOrder.getWorkOrderBase();
-            
-            StarsFactory.setWorkOrderBase( workOrderDB, createOrder );
-            
-            if (createOrder.getCurrentState() == null) {
-				workOrderDB.setCurrentStateID( new Integer(
-						energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_PENDING).getEntryID()) );
-            }
-            if (!createOrder.hasAccountID())
-	            workOrderDB.setAccountID( new Integer(liteAcctInfo.getAccountID()) );
-            workOrder.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
-            
-            workOrder = (com.cannontech.database.data.stars.report.WorkOrderBase)
-					Transaction.createTransaction(Transaction.INSERT, workOrder).execute();
-            
-            LiteWorkOrderBase liteOrder = (LiteWorkOrderBase) StarsLiteFactory.createLite( workOrderDB );
-            energyCompany.addWorkOrderBase( liteOrder );
             
             if (createOrder.hasAccountID()) {
             	// Request from CreateOrder.jsp
-				liteAcctInfo = energyCompany.getCustAccountInformation(createOrder.getAccountID(), false);
-				if (liteAcctInfo != null)
-					liteAcctInfo.getServiceRequestHistory().add( 0, new Integer(liteOrder.getOrderID()) );
-				
 				// The request parameter REDIRECT doesn't know the order ID,
 				// so we append it to the end of the parameter value
 				String redirect = (String) session.getAttribute(ServletUtils.ATT_REDIRECT);
@@ -160,12 +123,10 @@ public class CreateServiceRequestAction implements ActionBase {
 				return SOAPUtil.buildSOAPMessage( respOper );
             }
             
-			liteAcctInfo.getServiceRequestHistory().add( 0, new Integer(liteOrder.getOrderID()) );
-            
             StarsServiceRequest starsOrder = StarsLiteFactory.createStarsServiceRequest( liteOrder, energyCompany );
             StarsCreateServiceRequestResponse resp = new StarsCreateServiceRequestResponse();
             resp.setStarsServiceRequest( starsOrder );
-
+            
             respOper.setStarsCreateServiceRequestResponse( resp );
             return SOAPUtil.buildSOAPMessage( respOper );
         }
@@ -225,6 +186,50 @@ public class CreateServiceRequestAction implements ActionBase {
 		StarsOperation operation = new StarsOperation();
 		operation.setStarsCreateServiceRequest( createOrder );
 		return operation;
+	}
+	
+	public static LiteWorkOrderBase createServiceRequest(StarsCreateServiceRequest createOrder, LiteStarsCustAccountInformation liteAcctInfo,
+		LiteStarsEnergyCompany energyCompany) throws WebClientException, CommandExecutionException
+	{
+		String orderNo = createOrder.getOrderNumber();
+		if (orderNo != null) {
+			if (orderNo.trim().length() == 0)
+				throw new WebClientException( "Order # cannot be empty" );
+			if (orderNo.startsWith( ServerUtils.AUTO_GEN_NUM_PREC ))
+				throw new WebClientException( "Order # cannot start with reserved string '" + ServerUtils.AUTO_GEN_NUM_PREC + "'" );
+			if (WorkOrderBase.orderNumberExists( orderNo, energyCompany.getEnergyCompanyID() ))
+				throw new WebClientException( "Order # already exists, please enter a different one" );
+		}
+		else {
+			// Order # not provided, get the next one available
+			orderNo = energyCompany.getNextOrderNumber();
+			if (orderNo == null)
+				throw new WebClientException( "Cannot assign an order #" );
+			createOrder.setOrderNumber( ServerUtils.AUTO_GEN_NUM_PREC + orderNo );
+		}
+        
+		com.cannontech.database.data.stars.report.WorkOrderBase workOrder = new com.cannontech.database.data.stars.report.WorkOrderBase();
+		com.cannontech.database.db.stars.report.WorkOrderBase workOrderDB = workOrder.getWorkOrderBase();
+        
+		StarsFactory.setWorkOrderBase( workOrderDB, createOrder );
+        
+		if (createOrder.getCurrentState() == null) {
+			workOrderDB.setCurrentStateID( new Integer(
+					energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_PENDING).getEntryID()) );
+		}
+		if (!createOrder.hasAccountID())
+			workOrderDB.setAccountID( new Integer(liteAcctInfo.getAccountID()) );
+		workOrder.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+        
+		workOrder = (com.cannontech.database.data.stars.report.WorkOrderBase)
+				Transaction.createTransaction(Transaction.INSERT, workOrder).execute();
+        
+		LiteWorkOrderBase liteOrder = (LiteWorkOrderBase) StarsLiteFactory.createLite( workOrderDB );
+		energyCompany.addWorkOrderBase( liteOrder );
+		if (liteAcctInfo != null)
+			liteAcctInfo.getServiceRequestHistory().add( 0, new Integer(liteOrder.getOrderID()) );
+		
+		return liteOrder;
 	}
 
 }

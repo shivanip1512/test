@@ -7,6 +7,7 @@ import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.common.constants.YukonSelectionListDefs;
+import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.stars.LiteStarsAppAirConditioner;
 import com.cannontech.database.data.lite.stars.LiteStarsAppDualFuel;
@@ -28,6 +29,7 @@ import com.cannontech.database.db.stars.appliance.ApplianceIrrigation;
 import com.cannontech.database.db.stars.appliance.ApplianceStorageHeat;
 import com.cannontech.database.db.stars.appliance.ApplianceWaterHeater;
 import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.ACType;
@@ -50,6 +52,7 @@ import com.cannontech.stars.xml.serialize.Manufacturer;
 import com.cannontech.stars.xml.serialize.MeterLocation;
 import com.cannontech.stars.xml.serialize.MeterVoltage;
 import com.cannontech.stars.xml.serialize.NumberOfGallons;
+import com.cannontech.stars.xml.serialize.PumpSize;
 import com.cannontech.stars.xml.serialize.PumpType;
 import com.cannontech.stars.xml.serialize.SecondaryEnergySource;
 import com.cannontech.stars.xml.serialize.SoilType;
@@ -88,51 +91,49 @@ public class UpdateApplianceAction implements ActionBase {
 		try {
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 			if (user == null) return null;
+			
 			Hashtable selectionLists = (Hashtable) user.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
+			StarsCustAccountInformation accountInfo = (StarsCustAccountInformation)
+					user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
 			
 			int appID = Integer.parseInt(req.getParameter("AppID"));
 			StarsAppliance appliance = null;
 			
-			StarsCustAccountInformation accountInfo = (StarsCustAccountInformation)
-					user.getAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
 			StarsAppliances appliances = accountInfo.getStarsAppliances();
-			for (int i = 0; i < appliances.getStarsApplianceCount(); i++)
+			for (int i = 0; i < appliances.getStarsApplianceCount(); i++) {
 				if (appliances.getStarsAppliance(i).getApplianceID() == appID) {
 					appliance = appliances.getStarsAppliance(i);
 					break;
 				}
+			}
+			
 			if (appliance == null) return null;
 			
-			appliance.setYearManufactured( req.getParameter("ManuYear") );
-			appliance.setNotes( req.getParameter("Notes") );
-			appliance.setModelNumber( req.getParameter("ModelNo") );
+			StarsUpdateAppliance updateApp = (StarsUpdateAppliance)
+					StarsFactory.newStarsApp( appliance, StarsUpdateAppliance.class );
 			
-			try {
-				appliance.setKWCapacity( Integer.parseInt(req.getParameter("KWCapacity")) );
-			}
-			catch (NumberFormatException nfe) {
-				appliance.setKWCapacity( 0 );
-			}
+			updateApp.setApplianceID( appID );
+			updateApp.setYearManufactured( req.getParameter("ManuYear") );
+			updateApp.setNotes( req.getParameter("Notes").replaceAll(System.getProperty("line.separator"), "<br>") );
+			updateApp.setModelNumber( req.getParameter("ModelNo") );
 			
-			try {
-				appliance.setEfficiencyRating( Integer.parseInt(req.getParameter("EffRating")) );
-			}
-			catch (NumberFormatException nfe) {
-				appliance.setEfficiencyRating( 0 );
-			}
+			if (req.getParameter("KWCapacity").length() > 0)
+				updateApp.setKWCapacity( Integer.parseInt(req.getParameter("KWCapacity")) );
+			if (req.getParameter("EffRating").length() > 0)
+				updateApp.setEfficiencyRating( Integer.parseInt(req.getParameter("EffRating")) );
 			
-			appliance.setManufacturer( (Manufacturer)StarsFactory.newStarsCustListEntry(
+			updateApp.setManufacturer( (Manufacturer)StarsFactory.newStarsCustListEntry(
 					ServletUtils.getStarsCustListEntryByID(
 						selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_MANUFACTURER, Integer.parseInt(req.getParameter("Manufacturer"))),
 					Manufacturer.class) );
 			
-			appliance.setLocation( (Location)StarsFactory.newStarsCustListEntry(
+			updateApp.setLocation( (Location)StarsFactory.newStarsCustListEntry(
 					ServletUtils.getStarsCustListEntryByID(
 						selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_APP_LOCATION, Integer.parseInt(req.getParameter("Location"))),
 					Location.class) );
 			
-			if (appliance.getAirConditioner() != null) {
-				AirConditioner ac = appliance.getAirConditioner();
+			if (updateApp.getAirConditioner() != null) {
+				AirConditioner ac = updateApp.getAirConditioner();
 				ac.setTonnage( (Tonnage)StarsFactory.newStarsCustListEntry(
 						ServletUtils.getStarsCustListEntryByID(
 							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_AC_TONNAGE, Integer.parseInt(req.getParameter("AC_Tonnage"))),
@@ -142,8 +143,8 @@ public class UpdateApplianceAction implements ActionBase {
 							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_AC_TYPE, Integer.parseInt(req.getParameter("AC_Type"))),
 						ACType.class) );
 			}
-			else if (appliance.getWaterHeater() != null) {
-				WaterHeater wh = appliance.getWaterHeater();
+			else if (updateApp.getWaterHeater() != null) {
+				WaterHeater wh = updateApp.getWaterHeater();
 				wh.setNumberOfGallons( (NumberOfGallons)StarsFactory.newStarsCustListEntry(
 						ServletUtils.getStarsCustListEntryByID(
 							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_WH_NUM_OF_GALLONS, Integer.parseInt(req.getParameter("WH_GallonNum"))),
@@ -152,22 +153,24 @@ public class UpdateApplianceAction implements ActionBase {
 						ServletUtils.getStarsCustListEntryByID(
 							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_WH_ENERGY_SOURCE, Integer.parseInt(req.getParameter("WH_EnergySrc"))),
 						EnergySource.class) );
-				wh.setNumberOfElements( Integer.parseInt(req.getParameter("WH_ElementNum")) );
+				if (req.getParameter("WH_ElementNum").length() > 0)
+					wh.setNumberOfElements( Integer.parseInt(req.getParameter("WH_ElementNum")) );
 			}
-			else if (appliance.getDualFuel() != null) {
-				DualFuel df = appliance.getDualFuel();
+			else if (updateApp.getDualFuel() != null) {
+				DualFuel df = updateApp.getDualFuel();
 				df.setSwitchOverType( (SwitchOverType)StarsFactory.newStarsCustListEntry(
 						ServletUtils.getStarsCustListEntryByID(
 							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_DF_SWITCH_OVER_TYPE, Integer.parseInt(req.getParameter("DF_SwitchOverType"))),
 						SwitchOverType.class) );
-				df.setSecondaryKWCapacity( Integer.parseInt(req.getParameter("DF_KWCapacity2")) );
+				if (req.getParameter("DF_KWCapacity2").length() > 0)
+					df.setSecondaryKWCapacity( Integer.parseInt(req.getParameter("DF_KWCapacity2")) );
 				df.setSecondaryEnergySource( (SecondaryEnergySource)StarsFactory.newStarsCustListEntry(
 						ServletUtils.getStarsCustListEntryByID(
 							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_DF_SECONDARY_SOURCE, Integer.parseInt(req.getParameter("DF_SecondarySrc"))),
 						SecondaryEnergySource.class) );
 			}
-			else if (appliance.getGenerator() != null) {
-				Generator gen = appliance.getGenerator();
+			else if (updateApp.getGenerator() != null) {
+				Generator gen = updateApp.getGenerator();
 				gen.setTransferSwitchType( (TransferSwitchType)StarsFactory.newStarsCustListEntry(
 						ServletUtils.getStarsCustListEntryByID(
 							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_GEN_TRANSFER_SWITCH_TYPE, Integer.parseInt(req.getParameter("GEN_TranSwitchType"))),
@@ -176,12 +179,15 @@ public class UpdateApplianceAction implements ActionBase {
 						ServletUtils.getStarsCustListEntryByID(
 							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_GEN_TRANSFER_SWITCH_MFG, Integer.parseInt(req.getParameter("GEN_TranSwitchMfg"))),
 						TransferSwitchManufacturer.class) );
-				gen.setPeakKWCapacity( Integer.parseInt(req.getParameter("GEN_KWCapacity")) );
-				gen.setFuelCapGallons( Integer.parseInt(req.getParameter("GEN_FuelCapGal")) );
-				gen.setStartDelaySeconds( Integer.parseInt(req.getParameter("GEN_StartDelaySec")) );
+				if (req.getParameter("GEN_KWCapacity").length() > 0)
+					gen.setPeakKWCapacity( Integer.parseInt(req.getParameter("GEN_KWCapacity")) );
+				if (req.getParameter("GEN_FuelCapGal").length() > 0)
+					gen.setFuelCapGallons( Integer.parseInt(req.getParameter("GEN_FuelCapGal")) );
+				if (req.getParameter("GEN_StartDelaySec").length() > 0)
+					gen.setStartDelaySeconds( Integer.parseInt(req.getParameter("GEN_StartDelaySec")) );
 			}
-			else if (appliance.getGrainDryer() != null) {
-				GrainDryer gd = appliance.getGrainDryer();
+			else if (updateApp.getGrainDryer() != null) {
+				GrainDryer gd = updateApp.getGrainDryer();
 				gd.setDryerType( (DryerType)StarsFactory.newStarsCustListEntry(
 						ServletUtils.getStarsCustListEntryByID(
 							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_GRAIN_DRYER_TYPE, Integer.parseInt(req.getParameter("GD_DryerType"))),
@@ -203,29 +209,36 @@ public class UpdateApplianceAction implements ActionBase {
 							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_GD_HEAT_SOURCE, Integer.parseInt(req.getParameter("GD_BlowerHeatSrc"))),
 						BlowerHeatSource.class) );
 			}
-			else if (appliance.getStorageHeat() != null) {
-				StorageHeat sh = appliance.getStorageHeat();
+			else if (updateApp.getStorageHeat() != null) {
+				StorageHeat sh = updateApp.getStorageHeat();
 				sh.setStorageType( (StorageType)StarsFactory.newStarsCustListEntry(
 						ServletUtils.getStarsCustListEntryByID(
 							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_STORAGE_HEAT_TYPE, Integer.parseInt(req.getParameter("SH_StorageType"))),
 						StorageType.class) );
-				sh.setPeakKWCapacity( Integer.parseInt(req.getParameter("SH_KWCapacity")) );
-				sh.setHoursToRecharge( Integer.parseInt(req.getParameter("SH_RechargeHour")) );
+				if (req.getParameter("SH_KWCapacity").length() > 0)
+					sh.setPeakKWCapacity( Integer.parseInt(req.getParameter("SH_KWCapacity")) );
+				if (req.getParameter("SH_RechargeHour").length() > 0)
+					sh.setHoursToRecharge( Integer.parseInt(req.getParameter("SH_RechargeHour")) );
 			}
-			else if (appliance.getHeatPump() != null) {
-				HeatPump hp = appliance.getHeatPump();
+			else if (updateApp.getHeatPump() != null) {
+				HeatPump hp = updateApp.getHeatPump();
 				hp.setPumpType( (PumpType)StarsFactory.newStarsCustListEntry(
 						ServletUtils.getStarsCustListEntryByID(
 							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_HEAT_PUMP_TYPE, Integer.parseInt(req.getParameter("HP_PumpType"))),
 						PumpType.class) );
+				hp.setPumpSize( (PumpSize)StarsFactory.newStarsCustListEntry(
+						ServletUtils.getStarsCustListEntryByID(
+							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_HEAT_PUMP_SIZE, Integer.parseInt(req.getParameter("HP_PumpSize"))),
+						PumpSize.class) );
 				hp.setStandbySource( (StandbySource)StarsFactory.newStarsCustListEntry(
 						ServletUtils.getStarsCustListEntryByID(
 							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_HP_STANDBY_SOURCE, Integer.parseInt(req.getParameter("HP_StandbySrc"))),
 						StandbySource.class) );
-				hp.setRestartDelaySeconds( Integer.parseInt(req.getParameter("HP_RestartDelaySec")) );
+				if (req.getParameter("HP_RestartDelaySec").length() > 0)
+					hp.setRestartDelaySeconds( Integer.parseInt(req.getParameter("HP_RestartDelaySec")) );
 			}
-			else if (appliance.getIrrigation() != null) {
-				Irrigation irr = appliance.getIrrigation();
+			else if (updateApp.getIrrigation() != null) {
+				Irrigation irr = updateApp.getIrrigation();
 				irr.setIrrigationType( (IrrigationType)StarsFactory.newStarsCustListEntry(
 						ServletUtils.getStarsCustListEntryByID(
 							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_IRRIGATION_TYPE, Integer.parseInt(req.getParameter("IRR_IrrigationType"))),
@@ -253,7 +266,7 @@ public class UpdateApplianceAction implements ActionBase {
 			}
 			
 			StarsOperation operation = new StarsOperation();
-			operation.setStarsUpdateAppliance( (StarsUpdateAppliance) StarsFactory.newStarsApp(appliance, StarsUpdateAppliance.class) );
+			operation.setStarsUpdateAppliance( updateApp );
 			
             return SOAPUtil.buildSOAPMessage( operation );
         }
@@ -282,154 +295,16 @@ public class UpdateApplianceAction implements ActionBase {
             }
             
         	LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) user.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
-        	if (liteAcctInfo == null) {
-            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find customer account information, please login again") );
-            	return SOAPUtil.buildSOAPMessage( respOper );
-        	}
-            
-            StarsUpdateAppliance updateApp = reqOper.getStarsUpdateAppliance();
-            LiteStarsAppliance liteApp = null;
-            
-            for (int i = 0; i < liteAcctInfo.getAppliances().size(); i++) {
-            	LiteStarsAppliance lApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(i);
-            	if (lApp.getApplianceID() == updateApp.getApplianceID()) {
-            		liteApp = lApp;
-            		break;
-            	}
-            }
-            if (liteApp == null) {
-            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find the appliance to be updated") );
-            	return SOAPUtil.buildSOAPMessage( respOper );
-            }
+			StarsUpdateAppliance updateApp = reqOper.getStarsUpdateAppliance();
     		
-    		com.cannontech.database.data.stars.appliance.ApplianceBase app =
-    				(com.cannontech.database.data.stars.appliance.ApplianceBase) StarsLiteFactory.createDBPersistent( liteApp );
-    		com.cannontech.database.db.stars.appliance.ApplianceBase appDB = app.getApplianceBase();
-    		
-    		appDB.setManufacturerID( new Integer(updateApp.getManufacturer().getEntryID()) );
-    		if (updateApp.getYearManufactured().trim().length() > 0)
-    			appDB.setYearManufactured( Integer.valueOf(updateApp.getYearManufactured()) );
-    		appDB.setLocationID( new Integer(updateApp.getLocation().getEntryID()) );
-    		appDB.setNotes( updateApp.getNotes() );
-    		appDB.setModelNumber( updateApp.getModelNumber() );
-    		appDB.setKWCapacity( new Integer(updateApp.getKWCapacity()) );
-    		appDB.setEfficiencyRating( new Integer(updateApp.getEfficiencyRating()) );
-    		
-			Transaction.createTransaction(Transaction.UPDATE, appDB).execute();
-			StarsLiteFactory.setLiteStarsAppliance( liteApp, app );
-			
-			if (updateApp.getAirConditioner() != null && liteApp instanceof LiteStarsAppAirConditioner) {
-				ApplianceAirConditioner appAC = new ApplianceAirConditioner();
-				StarsLiteFactory.setApplianceAirConditioner( appAC, (LiteStarsAppAirConditioner) liteApp );
-				appAC.setTonnageID( new Integer(updateApp.getAirConditioner().getTonnage().getEntryID()) );
-				appAC.setTypeID( new Integer(updateApp.getAirConditioner().getACType().getEntryID()) );
-				
-				if (liteApp.isExtended())
-					appAC = (ApplianceAirConditioner) Transaction.createTransaction(Transaction.UPDATE, appAC).execute();
-				else
-					appAC = (ApplianceAirConditioner) Transaction.createTransaction(Transaction.INSERT, appAC).execute();
-				StarsLiteFactory.setLiteAppAirConditioner( (LiteStarsAppAirConditioner) liteApp, appAC );
-			}
-			else if (updateApp.getWaterHeater() != null && liteApp instanceof LiteStarsAppWaterHeater) {
-				ApplianceWaterHeater appWH = new ApplianceWaterHeater();
-				StarsLiteFactory.setApplianceWaterHeater( appWH, (LiteStarsAppWaterHeater) liteApp );
-				appWH.setNumberOfGallonsID( new Integer(updateApp.getWaterHeater().getNumberOfGallons().getEntryID()) );
-				appWH.setEnergySourceID( new Integer(updateApp.getWaterHeater().getEnergySource().getEntryID()) );
-				appWH.setNumberOfElements( new Integer(updateApp.getWaterHeater().getNumberOfElements()) );
-				
-				if (liteApp.isExtended())
-					appWH = (ApplianceWaterHeater) Transaction.createTransaction(Transaction.UPDATE, appWH).execute();
-				else
-					appWH = (ApplianceWaterHeater) Transaction.createTransaction(Transaction.INSERT, appWH).execute();
-				StarsLiteFactory.setLiteAppWaterHeater( (LiteStarsAppWaterHeater) liteApp, appWH );
-			}
-			else if (updateApp.getDualFuel() != null && liteApp instanceof LiteStarsAppDualFuel) {
-				ApplianceDualFuel appDF = new ApplianceDualFuel();
-				StarsLiteFactory.setApplianceDualFuel( appDF, (LiteStarsAppDualFuel) liteApp );
-				appDF.setSwitchOverTypeID( new Integer(updateApp.getDualFuel().getSwitchOverType().getEntryID()) );
-				appDF.setSecondaryEnergySourceID( new Integer(updateApp.getDualFuel().getSecondaryEnergySource().getEntryID()) );
-				appDF.setSecondaryKWCapacity( new Integer(updateApp.getDualFuel().getSecondaryKWCapacity()) );
-				
-				if (liteApp.isExtended())
-					appDF = (ApplianceDualFuel) Transaction.createTransaction(Transaction.UPDATE, appDF).execute();
-				else
-					appDF = (ApplianceDualFuel) Transaction.createTransaction(Transaction.INSERT, appDF).execute();
-				StarsLiteFactory.setLiteAppDualFuel( (LiteStarsAppDualFuel) liteApp, appDF );
-			}
-			else if (updateApp.getGenerator() != null && liteApp instanceof LiteStarsAppGenerator) {
-				ApplianceGenerator appGen = new ApplianceGenerator();
-				StarsLiteFactory.setApplianceGenerator( appGen, (LiteStarsAppGenerator) liteApp );
-				appGen.setTransferSwitchTypeID( new Integer(updateApp.getGenerator().getTransferSwitchType().getEntryID()) );
-				appGen.setTransferSwitchMfgID( new Integer(updateApp.getGenerator().getTransferSwitchManufacturer().getEntryID()) );
-				appGen.setPeakKWCapacity( new Integer(updateApp.getGenerator().getPeakKWCapacity()) );
-				appGen.setFuelCapGallons( new Integer(updateApp.getGenerator().getFuelCapGallons()) );
-				appGen.setStartDelaySeconds( new Integer(updateApp.getGenerator().getStartDelaySeconds()) );
-				
-				if (liteApp.isExtended())
-					appGen = (ApplianceGenerator) Transaction.createTransaction(Transaction.UPDATE, appGen).execute();
-				else
-					appGen = (ApplianceGenerator) Transaction.createTransaction(Transaction.INSERT, appGen).execute();
-				StarsLiteFactory.setLiteAppGenerator( (LiteStarsAppGenerator) liteApp, appGen );
-			}
-			else if (updateApp.getGrainDryer() != null && liteApp instanceof LiteStarsAppGrainDryer) {
-				ApplianceGrainDryer appGD = new ApplianceGrainDryer();
-				StarsLiteFactory.setApplianceGrainDryer( appGD, (LiteStarsAppGrainDryer) liteApp );
-				appGD.setDryerTypeID( new Integer(updateApp.getGrainDryer().getDryerType().getEntryID()) );
-				appGD.setBinSizeID( new Integer(updateApp.getGrainDryer().getBinSize().getEntryID()) );
-				appGD.setBlowerEnergySourceID( new Integer(updateApp.getGrainDryer().getBlowerEnergySource().getEntryID()) );
-				appGD.setBlowerHorsePowerID( new Integer(updateApp.getGrainDryer().getBlowerHorsePower().getEntryID()) );
-				appGD.setBlowerHeatSourceID( new Integer(updateApp.getGrainDryer().getBlowerHeatSource().getEntryID()) );
-				
-				if (liteApp.isExtended())
-					appGD = (ApplianceGrainDryer) Transaction.createTransaction(Transaction.UPDATE, appGD).execute();
-				else
-					appGD = (ApplianceGrainDryer) Transaction.createTransaction(Transaction.INSERT, appGD).execute();
-				StarsLiteFactory.setLiteAppGrainDryer( (LiteStarsAppGrainDryer) liteApp, appGD );
-			}
-			else if (updateApp.getStorageHeat() != null && liteApp instanceof LiteStarsAppStorageHeat) {
-				ApplianceStorageHeat appSH = new ApplianceStorageHeat();
-				StarsLiteFactory.setApplianceStorageHeat( appSH, (LiteStarsAppStorageHeat) liteApp );
-				appSH.setStorageTypeID( new Integer(updateApp.getStorageHeat().getStorageType().getEntryID()) );
-				appSH.setPeakKWCapacity( new Integer(updateApp.getStorageHeat().getPeakKWCapacity()) );
-				appSH.setHoursToRecharge( new Integer(updateApp.getStorageHeat().getHoursToRecharge()) );
-				
-				if (liteApp.isExtended())
-					appSH = (ApplianceStorageHeat) Transaction.createTransaction(Transaction.UPDATE, appSH).execute();
-				else
-					appSH = (ApplianceStorageHeat) Transaction.createTransaction(Transaction.INSERT, appSH).execute();
-				StarsLiteFactory.setLiteAppStorageHeat( (LiteStarsAppStorageHeat) liteApp, appSH );
-			}
-			else if (updateApp.getHeatPump() != null && liteApp instanceof LiteStarsAppHeatPump) {
-				ApplianceHeatPump appHP = new ApplianceHeatPump();
-				StarsLiteFactory.setApplianceHeatPump( appHP, (LiteStarsAppHeatPump) liteApp );
-				appHP.setPumpTypeID( new Integer(updateApp.getHeatPump().getPumpType().getEntryID()) );
-				appHP.setStandbySourceID( new Integer(updateApp.getHeatPump().getStandbySource().getEntryID()) );
-				appHP.setSecondsDelayToRestart( new Integer(updateApp.getHeatPump().getRestartDelaySeconds()) );
-				
-				if (liteApp.isExtended())
-					appHP = (ApplianceHeatPump) Transaction.createTransaction(Transaction.UPDATE, appHP).execute();
-				else
-					appHP = (ApplianceHeatPump) Transaction.createTransaction(Transaction.INSERT, appHP).execute();
-				StarsLiteFactory.setLiteAppHeatPump( (LiteStarsAppHeatPump) liteApp, appHP );
-			}
-			else if (updateApp.getIrrigation() != null && liteApp instanceof LiteStarsAppIrrigation) {
-				ApplianceIrrigation appIrr = new ApplianceIrrigation();
-				StarsLiteFactory.setApplianceIrrigation( appIrr, (LiteStarsAppIrrigation) liteApp );
-				appIrr.setIrrigationTypeID( new Integer(updateApp.getIrrigation().getIrrigationType().getEntryID()) );
-				appIrr.setHorsePowerID( new Integer(updateApp.getIrrigation().getHorsePower().getEntryID()) );
-				appIrr.setEnergySourceID( new Integer(updateApp.getIrrigation().getEnergySource().getEntryID()) );
-				appIrr.setSoilTypeID( new Integer(updateApp.getIrrigation().getSoilType().getEntryID()) );
-				appIrr.setMeterLocationID( new Integer(updateApp.getIrrigation().getMeterLocation().getEntryID()) );
-				appIrr.setMeterVoltageID( new Integer(updateApp.getIrrigation().getMeterVoltage().getEntryID()) );
-				
-				if (liteApp.isExtended())
-					appIrr = (ApplianceIrrigation) Transaction.createTransaction(Transaction.UPDATE, appIrr).execute();
-				else
-					appIrr = (ApplianceIrrigation) Transaction.createTransaction(Transaction.INSERT, appIrr).execute();
-				StarsLiteFactory.setLiteAppIrrigation( (LiteStarsAppIrrigation) liteApp, appIrr );
-			}
+    		try {
+				updateAppliance( updateApp, liteAcctInfo );
+    		}
+    		catch (WebClientException e) {
+				respOper.setStarsFailure( StarsFactory.newStarsFailure(
+						StarsConstants.FAILURE_CODE_SESSION_INVALID, e.getMessage()) );
+				return SOAPUtil.buildSOAPMessage( respOper );
+    		}
             
             StarsSuccess success = new StarsSuccess();
             success.setDescription("Appliance information updated successfully");
@@ -459,7 +334,8 @@ public class UpdateApplianceAction implements ActionBase {
 	public int parse(SOAPMessage reqMsg, SOAPMessage respMsg, HttpSession session) {
         try {
             StarsOperation operation = SOAPUtil.parseSOAPMsgForOperation( respMsg );
-
+            StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
+            
 			StarsFailure failure = operation.getStarsFailure();
 			if (failure != null) {
 				session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, failure.getDescription() );
@@ -470,6 +346,22 @@ public class UpdateApplianceAction implements ActionBase {
 			if (success == null)
 				return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
 			
+			StarsAppliance appliance = (StarsAppliance)
+					StarsFactory.newStarsApp(reqOper.getStarsUpdateAppliance(), StarsAppliance.class);
+			
+			StarsYukonUser user = (StarsYukonUser)
+					session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
+			StarsCustAccountInformation accountInfo = (StarsCustAccountInformation)
+					user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
+			
+			StarsAppliances appliances = accountInfo.getStarsAppliances();
+			for (int i = 0; i < appliances.getStarsApplianceCount(); i++) {
+				if (appliances.getStarsAppliance(i).getApplianceID() == appliance.getApplianceID()) {
+					appliances.setStarsAppliance(i, appliance);
+					break;
+				}
+			}
+			
             return 0;
         }
         catch (Exception e) {
@@ -477,6 +369,183 @@ public class UpdateApplianceAction implements ActionBase {
         }
 
         return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
+	}
+	
+	public static void updateAppliance(StarsUpdateAppliance updateApp, LiteStarsCustAccountInformation liteAcctInfo)
+		throws WebClientException, CommandExecutionException
+	{
+		LiteStarsAppliance liteApp = null;
+		for (int i = 0; i < liteAcctInfo.getAppliances().size(); i++) {
+			LiteStarsAppliance lApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(i);
+			if (lApp.getApplianceID() == updateApp.getApplianceID()) {
+				liteApp = lApp;
+				break;
+			}
+		}
+        
+		if (liteApp == null)
+			throw new WebClientException( "Cannot find the appliance to be updated" );
+		
+		com.cannontech.database.data.stars.appliance.ApplianceBase app =
+				(com.cannontech.database.data.stars.appliance.ApplianceBase) StarsLiteFactory.createDBPersistent( liteApp );
+		com.cannontech.database.db.stars.appliance.ApplianceBase appDB = app.getApplianceBase();
+    	
+		appDB.setManufacturerID( new Integer(updateApp.getManufacturer().getEntryID()) );
+		appDB.setLocationID( new Integer(updateApp.getLocation().getEntryID()) );
+		appDB.setNotes( updateApp.getNotes() );
+		appDB.setModelNumber( updateApp.getModelNumber() );
+		
+		if (updateApp.getYearManufactured().trim().length() > 0)
+			appDB.setYearManufactured( Integer.valueOf(updateApp.getYearManufactured()) );
+		else
+			appDB.setYearManufactured( new Integer(-1) );
+		if (updateApp.hasKWCapacity())
+			appDB.setKWCapacity( new Integer(updateApp.getKWCapacity()) );
+		else
+			appDB.setKWCapacity( new Integer(-1) );
+		if (updateApp.hasEfficiencyRating())
+			appDB.setEfficiencyRating( new Integer(updateApp.getEfficiencyRating()) );
+		else
+			appDB.setEfficiencyRating( new Integer(-1) );
+    	
+		Transaction.createTransaction(Transaction.UPDATE, appDB).execute();
+		StarsLiteFactory.setLiteStarsAppliance( liteApp, app );
+		
+		if (updateApp.getAirConditioner() != null && liteApp instanceof LiteStarsAppAirConditioner) {
+			ApplianceAirConditioner appAC = new ApplianceAirConditioner();
+			StarsLiteFactory.setApplianceAirConditioner( appAC, (LiteStarsAppAirConditioner) liteApp );
+			appAC.setTonnageID( new Integer(updateApp.getAirConditioner().getTonnage().getEntryID()) );
+			appAC.setTypeID( new Integer(updateApp.getAirConditioner().getACType().getEntryID()) );
+			
+			if (liteApp.isExtended())
+				appAC = (ApplianceAirConditioner) Transaction.createTransaction(Transaction.UPDATE, appAC).execute();
+			else
+				appAC = (ApplianceAirConditioner) Transaction.createTransaction(Transaction.INSERT, appAC).execute();
+			StarsLiteFactory.setLiteAppAirConditioner( (LiteStarsAppAirConditioner) liteApp, appAC );
+		}
+		else if (updateApp.getWaterHeater() != null && liteApp instanceof LiteStarsAppWaterHeater) {
+			ApplianceWaterHeater appWH = new ApplianceWaterHeater();
+			StarsLiteFactory.setApplianceWaterHeater( appWH, (LiteStarsAppWaterHeater) liteApp );
+			appWH.setNumberOfGallonsID( new Integer(updateApp.getWaterHeater().getNumberOfGallons().getEntryID()) );
+			appWH.setEnergySourceID( new Integer(updateApp.getWaterHeater().getEnergySource().getEntryID()) );
+			if (updateApp.getWaterHeater().hasNumberOfElements())
+				appWH.setNumberOfElements( new Integer(updateApp.getWaterHeater().getNumberOfElements()) );
+			else
+				appWH.setNumberOfElements( new Integer(-1) );
+			
+			if (liteApp.isExtended())
+				appWH = (ApplianceWaterHeater) Transaction.createTransaction(Transaction.UPDATE, appWH).execute();
+			else
+				appWH = (ApplianceWaterHeater) Transaction.createTransaction(Transaction.INSERT, appWH).execute();
+			StarsLiteFactory.setLiteAppWaterHeater( (LiteStarsAppWaterHeater) liteApp, appWH );
+		}
+		else if (updateApp.getDualFuel() != null && liteApp instanceof LiteStarsAppDualFuel) {
+			ApplianceDualFuel appDF = new ApplianceDualFuel();
+			StarsLiteFactory.setApplianceDualFuel( appDF, (LiteStarsAppDualFuel) liteApp );
+			appDF.setSwitchOverTypeID( new Integer(updateApp.getDualFuel().getSwitchOverType().getEntryID()) );
+			appDF.setSecondaryEnergySourceID( new Integer(updateApp.getDualFuel().getSecondaryEnergySource().getEntryID()) );
+			if (updateApp.getDualFuel().hasSecondaryKWCapacity())
+				appDF.setSecondaryKWCapacity( new Integer(updateApp.getDualFuel().getSecondaryKWCapacity()) );
+			else
+				appDF.setSecondaryKWCapacity( new Integer(-1) );
+			
+			if (liteApp.isExtended())
+				appDF = (ApplianceDualFuel) Transaction.createTransaction(Transaction.UPDATE, appDF).execute();
+			else
+				appDF = (ApplianceDualFuel) Transaction.createTransaction(Transaction.INSERT, appDF).execute();
+			StarsLiteFactory.setLiteAppDualFuel( (LiteStarsAppDualFuel) liteApp, appDF );
+		}
+		else if (updateApp.getGenerator() != null && liteApp instanceof LiteStarsAppGenerator) {
+			ApplianceGenerator appGen = new ApplianceGenerator();
+			StarsLiteFactory.setApplianceGenerator( appGen, (LiteStarsAppGenerator) liteApp );
+			appGen.setTransferSwitchTypeID( new Integer(updateApp.getGenerator().getTransferSwitchType().getEntryID()) );
+			appGen.setTransferSwitchMfgID( new Integer(updateApp.getGenerator().getTransferSwitchManufacturer().getEntryID()) );
+			if (updateApp.getGenerator().hasPeakKWCapacity())
+				appGen.setPeakKWCapacity( new Integer(updateApp.getGenerator().getPeakKWCapacity()) );
+			else
+				appGen.setPeakKWCapacity( new Integer(-1) );
+			if (updateApp.getGenerator().hasFuelCapGallons())
+				appGen.setFuelCapGallons( new Integer(updateApp.getGenerator().getFuelCapGallons()) );
+			else
+				appGen.setFuelCapGallons( new Integer(-1) );
+			if (updateApp.getGenerator().hasStartDelaySeconds())
+				appGen.setStartDelaySeconds( new Integer(updateApp.getGenerator().getStartDelaySeconds()) );
+			else
+				appGen.setStartDelaySeconds( new Integer(-1) );
+			
+			if (liteApp.isExtended())
+				appGen = (ApplianceGenerator) Transaction.createTransaction(Transaction.UPDATE, appGen).execute();
+			else
+				appGen = (ApplianceGenerator) Transaction.createTransaction(Transaction.INSERT, appGen).execute();
+			StarsLiteFactory.setLiteAppGenerator( (LiteStarsAppGenerator) liteApp, appGen );
+		}
+		else if (updateApp.getGrainDryer() != null && liteApp instanceof LiteStarsAppGrainDryer) {
+			ApplianceGrainDryer appGD = new ApplianceGrainDryer();
+			StarsLiteFactory.setApplianceGrainDryer( appGD, (LiteStarsAppGrainDryer) liteApp );
+			appGD.setDryerTypeID( new Integer(updateApp.getGrainDryer().getDryerType().getEntryID()) );
+			appGD.setBinSizeID( new Integer(updateApp.getGrainDryer().getBinSize().getEntryID()) );
+			appGD.setBlowerEnergySourceID( new Integer(updateApp.getGrainDryer().getBlowerEnergySource().getEntryID()) );
+			appGD.setBlowerHorsePowerID( new Integer(updateApp.getGrainDryer().getBlowerHorsePower().getEntryID()) );
+			appGD.setBlowerHeatSourceID( new Integer(updateApp.getGrainDryer().getBlowerHeatSource().getEntryID()) );
+			
+			if (liteApp.isExtended())
+				appGD = (ApplianceGrainDryer) Transaction.createTransaction(Transaction.UPDATE, appGD).execute();
+			else
+				appGD = (ApplianceGrainDryer) Transaction.createTransaction(Transaction.INSERT, appGD).execute();
+			StarsLiteFactory.setLiteAppGrainDryer( (LiteStarsAppGrainDryer) liteApp, appGD );
+		}
+		else if (updateApp.getStorageHeat() != null && liteApp instanceof LiteStarsAppStorageHeat) {
+			ApplianceStorageHeat appSH = new ApplianceStorageHeat();
+			StarsLiteFactory.setApplianceStorageHeat( appSH, (LiteStarsAppStorageHeat) liteApp );
+			appSH.setStorageTypeID( new Integer(updateApp.getStorageHeat().getStorageType().getEntryID()) );
+			if (updateApp.getStorageHeat().hasPeakKWCapacity())
+				appSH.setPeakKWCapacity( new Integer(updateApp.getStorageHeat().getPeakKWCapacity()) );
+			else
+				appSH.setPeakKWCapacity( new Integer(-1) );
+			if (updateApp.getStorageHeat().hasHoursToRecharge())
+				appSH.setHoursToRecharge( new Integer(updateApp.getStorageHeat().getHoursToRecharge()) );
+			else
+				appSH.setHoursToRecharge( new Integer(-1) );
+			
+			if (liteApp.isExtended())
+				appSH = (ApplianceStorageHeat) Transaction.createTransaction(Transaction.UPDATE, appSH).execute();
+			else
+				appSH = (ApplianceStorageHeat) Transaction.createTransaction(Transaction.INSERT, appSH).execute();
+			StarsLiteFactory.setLiteAppStorageHeat( (LiteStarsAppStorageHeat) liteApp, appSH );
+		}
+		else if (updateApp.getHeatPump() != null && liteApp instanceof LiteStarsAppHeatPump) {
+			ApplianceHeatPump appHP = new ApplianceHeatPump();
+			StarsLiteFactory.setApplianceHeatPump( appHP, (LiteStarsAppHeatPump) liteApp );
+			appHP.setPumpTypeID( new Integer(updateApp.getHeatPump().getPumpType().getEntryID()) );
+			appHP.setPumpSizeID( new Integer(updateApp.getHeatPump().getPumpSize().getEntryID()) );
+			appHP.setStandbySourceID( new Integer(updateApp.getHeatPump().getStandbySource().getEntryID()) );
+			if (updateApp.getHeatPump().hasRestartDelaySeconds())
+				appHP.setSecondsDelayToRestart( new Integer(updateApp.getHeatPump().getRestartDelaySeconds()) );
+			else
+				appHP.setSecondsDelayToRestart( new Integer(-1) );
+			
+			if (liteApp.isExtended())
+				appHP = (ApplianceHeatPump) Transaction.createTransaction(Transaction.UPDATE, appHP).execute();
+			else
+				appHP = (ApplianceHeatPump) Transaction.createTransaction(Transaction.INSERT, appHP).execute();
+			StarsLiteFactory.setLiteAppHeatPump( (LiteStarsAppHeatPump) liteApp, appHP );
+		}
+		else if (updateApp.getIrrigation() != null && liteApp instanceof LiteStarsAppIrrigation) {
+			ApplianceIrrigation appIrr = new ApplianceIrrigation();
+			StarsLiteFactory.setApplianceIrrigation( appIrr, (LiteStarsAppIrrigation) liteApp );
+			appIrr.setIrrigationTypeID( new Integer(updateApp.getIrrigation().getIrrigationType().getEntryID()) );
+			appIrr.setHorsePowerID( new Integer(updateApp.getIrrigation().getHorsePower().getEntryID()) );
+			appIrr.setEnergySourceID( new Integer(updateApp.getIrrigation().getEnergySource().getEntryID()) );
+			appIrr.setSoilTypeID( new Integer(updateApp.getIrrigation().getSoilType().getEntryID()) );
+			appIrr.setMeterLocationID( new Integer(updateApp.getIrrigation().getMeterLocation().getEntryID()) );
+			appIrr.setMeterVoltageID( new Integer(updateApp.getIrrigation().getMeterVoltage().getEntryID()) );
+			
+			if (liteApp.isExtended())
+				appIrr = (ApplianceIrrigation) Transaction.createTransaction(Transaction.UPDATE, appIrr).execute();
+			else
+				appIrr = (ApplianceIrrigation) Transaction.createTransaction(Transaction.INSERT, appIrr).execute();
+			StarsLiteFactory.setLiteAppIrrigation( (LiteStarsAppIrrigation) liteApp, appIrr );
+		}
 	}
 
 }
