@@ -24,7 +24,7 @@ public class YukonRolePropertyFixer {
 	
 	public static void main(String[] args) {
 		if (args.length < 1) {
-			System.out.println( "Usage: java " + AlliantImportRegulator.class.getName() + " input_file [output_file]" );
+			System.out.println( "Usage: java " + AlliantImportCommercial.class.getName() + " input_file [output_file]" );
 			return;
 		}
 		
