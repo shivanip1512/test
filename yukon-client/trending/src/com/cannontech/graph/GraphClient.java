@@ -12,8 +12,12 @@ import java.util.Date;
 import org.jfree.chart.JFreeChart;
 
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.cache.functions.DBPersistentFuncs;
+import com.cannontech.database.Transaction;
+import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.database.cache.functions.GraphFuncs;
 import com.cannontech.database.data.graph.GraphDefinition;
+import com.cannontech.database.data.lite.LiteBase;
+import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.model.GraphDefinitionTreeModel;
 import com.cannontech.graph.buffer.html.HTMLBuffer;
 import com.cannontech.graph.buffer.html.PeakHtml;
@@ -366,9 +370,14 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 		exit();
 	}
 	
-	else if( event.getSource() == getTrendMenu().getGetDataNowMenuItem())
+	else if( event.getSource() == getTrendMenu().getGetDataNowAllMetersMenuItem())
 	{
-		getGraph().getDataNow();
+		getGraph().getDataNow(null);
+	}
+	else if( event.getSource() == getTrendMenu().getGetDataNowSelectedTrendMenuItem())
+	{
+		java.util.List trendPaobjects = GraphFuncs.getLiteYukonPaobjects(getGraph().getGraphDefinition().getGraphDefinition().getGraphDefinitionID().intValue());
+		getGraph().getDataNow(trendPaobjects);
 	}
 	else
 	{
@@ -401,9 +410,26 @@ public void actionPerformed_CreateMenuItem( )
 	
 	if( gDef != null )
 	{
-		DBPersistentFuncs.add(gDef, (com.cannontech.message.dispatch.ClientConnection)getClientConnection());
-		getTreeViewPanel().refresh();
-		getTreeViewPanel().selectObject(gDef);
+		try
+		{
+			Transaction t = Transaction.createTransaction(Transaction.INSERT, gDef);
+			gDef = (GraphDefinition)t.execute();
+
+			//write the DBChangeMessage out to Dispatch since it was a Successfull ADD
+			DBChangeMsg[] dbChange = DefaultDatabaseCache.getInstance().createDBChangeMessages((CTIDbChange)gDef, DBChangeMsg.CHANGE_TYPE_ADD);
+			
+			for( int i = 0; i < dbChange.length; i++)
+			{
+				DefaultDatabaseCache.getInstance().handleDBChangeMessage(dbChange[i]);
+				getGraph().getClientConnection().write(dbChange[i]);
+			}
+			getTreeViewPanel().refresh();
+			getTreeViewPanel().selectObject(gDef);
+		}
+		catch( com.cannontech.database.TransactionException e )
+		{
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+		}
 	}
 	createPanel = null;
 }
@@ -416,16 +442,35 @@ public void actionPerformed_DeleteMenuItem( )
 {
 	Object selected = getTreeViewPanel().getSelectedItem();
 
-	if (selected != null && selected instanceof com.cannontech.database.data.lite.LiteBase)
+	if (selected != null && selected instanceof LiteBase)
 	{
 		int option = javax.swing.JOptionPane.showConfirmDialog( getGraphParentFrame(),
 	        		"Are you sure you want to permanently delete '" + ((com.cannontech.database.data.lite.LiteGraphDefinition)selected).getName() + "'?",
 	        		"Confirm Delete", javax.swing.JOptionPane.YES_NO_OPTION);
 		if (option == javax.swing.JOptionPane.YES_OPTION)
 		{
-			com.cannontech.database.cache.functions.DBPersistentFuncs.delete((com.cannontech.database.data.lite.LiteBase)selected, (com.cannontech.message.dispatch.ClientConnection)getClientConnection());
-			getTreeViewPanel().refresh();
-			getFreeChart().getPlot().setDataset(null);
+			com.cannontech.database.db.DBPersistent dbPersistent = com.cannontech.database.data.lite.LiteFactory.createDBPersistent((LiteBase)selected);
+			try
+			{
+				Transaction t = Transaction.createTransaction( Transaction.DELETE, dbPersistent);
+				dbPersistent = t.execute();
+		
+				//write the DBChangeMessage out to Dispatch since it was a Successfull DELETE
+				DBChangeMsg[] dbChange = DefaultDatabaseCache.getInstance().createDBChangeMessages((CTIDbChange)dbPersistent, DBChangeMsg.CHANGE_TYPE_DELETE);
+				
+				for( int i = 0; i < dbChange.length; i++)
+				{
+					DefaultDatabaseCache.getInstance().handleDBChangeMessage(dbChange[i]);
+					getGraph().getClientConnection().write(dbChange[i]);
+				}
+					
+				getTreeViewPanel().refresh();
+				getFreeChart().getPlot().setDataset(null);
+			}
+			catch( com.cannontech.database.TransactionException e )
+			{
+				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			}
 		}
 	}
 }
@@ -449,20 +494,39 @@ public void actionPerformed_EditMenuItem( )
 		savedCursor = this.getCursor();
 		this.setCursor( new java.awt.Cursor( java.awt.Cursor.WAIT_CURSOR ) );
 		
-		if (selected instanceof com.cannontech.database.data.lite.LiteBase)
+		if (selected instanceof LiteBase)
 		{
-			GraphDefinition gDef = (GraphDefinition)DBPersistentFuncs.retrieve((com.cannontech.database.data.lite.LiteBase)selected);
+			GraphDefinition gDef = (GraphDefinition)com.cannontech.database.data.lite.LiteFactory.createDBPersistent((LiteBase)selected);
+			Transaction t = Transaction.createTransaction(Transaction.RETRIEVE, gDef);
+			gDef = (GraphDefinition)t.execute();			
 
 			createPanel.setValue(gDef);
 			gDef = createPanel.showCreateGraphPanelDialog(getGraphParentFrame());
 			
 			if (gDef != null)	// 'OK' out of dialog to continue on.
 			{
-				DBPersistentFuncs.update(gDef, (com.cannontech.message.dispatch.ClientConnection)getClientConnection());
-				getGraph().setGraphDefinition(gDef);
+				try
+				{
+					t = Transaction.createTransaction( Transaction.UPDATE, gDef);
+					gDef = (GraphDefinition)t.execute();
 			
-				getTreeViewPanel().refresh();
-				getTreeViewPanel().selectObject(gDef);			
+					//write the DBChangeMessage out to Dispatch since it was a Successfull UPDATE
+					DBChangeMsg[] dbChange = DefaultDatabaseCache.getInstance().createDBChangeMessages((CTIDbChange)gDef, DBChangeMsg.CHANGE_TYPE_UPDATE);
+					
+					for( int i = 0; i < dbChange.length; i++)
+					{
+						DefaultDatabaseCache.getInstance().handleDBChangeMessage(dbChange[i]);
+						getGraph().getClientConnection().write(dbChange[i]);
+					}
+					getTreeViewPanel().refresh();
+					getTreeViewPanel().selectObject(gDef);			
+				}
+				catch( com.cannontech.database.TransactionException e )
+				{
+					com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+				}
+
+				getGraph().setGraphDefinition(gDef);
 				updateCurrentPane();
 			}
 			//else (gDef == null)	//'CANCEL' out of dialog.
@@ -1740,7 +1804,7 @@ private ViewMenu getViewMenu()
  * Creation date: (12/20/2001 5:12:47 PM)
  * @param msg com.cannontech.message.dispatch.message.DBChangeMsg
  */
-public void handleDBChangeMsg(com.cannontech.message.dispatch.message.DBChangeMsg msg, com.cannontech.database.data.lite.LiteBase treeObject)
+public void handleDBChangeMsg(com.cannontech.message.dispatch.message.DBChangeMsg msg, LiteBase treeObject)
 {
 	if (!((DBChangeMsg)msg).getSource().equals(com.cannontech.common.util.CtiUtilities.DEFAULT_MSG_SOURCE))
 	{
@@ -2335,12 +2399,11 @@ public void valueChanged(javax.swing.event.TreeSelectionEvent event)
 
 		//Find the selected graph definition and display it
 		Object item = getTreeViewPanel().getSelectedItem();
-		if( item == null || !( item instanceof com.cannontech.database.data.lite.LiteBase) )
+		if( item == null || !( item instanceof LiteBase) )
 			return;
 		
 		// Item is an instance of LiteBase...(from previous statement)	
-//		com.cannontech.database.db.DBPersistent object = DBPersistentFuncs.retrieve((com.cannontech.database.data.lite.LiteBase)item);
-		getGraph().setGraphDefinition( ((com.cannontech.database.data.lite.LiteBase)item).getLiteID());
+		getGraph().setGraphDefinition( ((LiteBase)item).getLiteID());
 
 		//  *Note:  An update will only occur when event is null.
 		//			Null events are passed from the mouse Listener (in displayGraph..)
