@@ -21,6 +21,7 @@
 #include <rw/thr/mutex.h>
 #include <rw/thr/recursiv.h> 
 
+#include "dbaccess.h"
 #include "connection.h"
 #include "types.h"
 #include "observe.h"
@@ -148,7 +149,10 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     DOUBLE convertKQToKVAR(DOUBLE kq, DOUBLE kw);
     DOUBLE convertKVARToKQ(DOUBLE kvar, DOUBLE kw);
     static DOUBLE calculateKVARSolution(const RWCString& controlUnits, DOUBLE setPoint, DOUBLE varValue, DOUBLE wattValue);
+
+    BOOL isDirty() const;
     void dumpDynamicData();
+    void dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime);
 
     //Members inherited from RWCollectable
     void restoreGuts(RWvistream& );
@@ -223,8 +227,7 @@ private:
 
     //don't stream
     BOOL _insertDynamicDataFlag;
-
-    mutable RWRecursiveLock<RWMutexLock> _mutex;
+    BOOL _dirty;
 
     void restore(RWDBReader& rdr);
     RWCString doubleToString(DOUBLE doubleVal);
