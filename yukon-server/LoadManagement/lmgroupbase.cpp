@@ -39,7 +39,7 @@ CtiLMGroupBase::CtiLMGroupBase()
         numberOfReferences++;
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << "Copy Constructor, Number of CtiLMGroupBase increased to: " << numberOfReferences << endl;
+        dout << "Constructor, Number of CtiLMGroupBase increased to: " << numberOfReferences << endl;
     }
 #endif   
     resetInternalState();
@@ -52,7 +52,7 @@ CtiLMGroupBase::CtiLMGroupBase(RWDBReader& rdr)
         numberOfReferences++;
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << "Copy Constructor, Number of CtiLMGroupBaes increased to: " << numberOfReferences << endl;
+        dout << "Constructor(dbreader), Number of CtiLMGroupBaes increased to: " << numberOfReferences << endl;
     }
 #endif    
     resetInternalState();
@@ -551,8 +551,8 @@ CtiLMGroupBase& CtiLMGroupBase::setGroupControlState(LONG controlstate)
 {
     if(_groupcontrolstate != controlstate)
     {
-	_groupcontrolstate = controlstate;
-	setDirty(true);
+        _groupcontrolstate = controlstate;
+        setDirty(true);
     }
     return *this;
 }
@@ -566,8 +566,8 @@ CtiLMGroupBase& CtiLMGroupBase::setCurrentHoursDaily(LONG daily)
 {
     if(_currenthoursdaily != daily)
     {
-	_currenthoursdaily = daily;
-	setDirty(true);
+        _currenthoursdaily = daily;
+        setDirty(true);
     }
     return *this;
 }
@@ -581,8 +581,8 @@ CtiLMGroupBase& CtiLMGroupBase::setCurrentHoursMonthly(LONG monthly)
 {
     if(_currenthoursmonthly != monthly)
     {
-	_currenthoursmonthly = monthly;
-	setDirty(true);
+        _currenthoursmonthly = monthly;
+        setDirty(true);
     }
     return *this;
 }
@@ -596,8 +596,8 @@ CtiLMGroupBase& CtiLMGroupBase::setCurrentHoursSeasonal(LONG seasonal)
 {
     if(_currenthoursseasonal != seasonal)
     {
-	_currenthoursseasonal = seasonal;
-	setDirty(true);
+        _currenthoursseasonal = seasonal;
+        setDirty(true);
     }
     return *this;
 }
@@ -611,8 +611,8 @@ CtiLMGroupBase& CtiLMGroupBase::setCurrentHoursAnnually(LONG annually)
 {
     if(_currenthoursannually != annually)
     {
-	_currenthoursannually = annually;
-	setDirty(true);
+        _currenthoursannually = annually;
+        setDirty(true);
     }
     return *this;
 }
@@ -626,8 +626,8 @@ CtiLMGroupBase& CtiLMGroupBase::setLastControlSent(const RWDBDateTime& controlse
 {
     if(_lastcontrolsent != controlsent)
     {
-	_lastcontrolsent = controlsent;
-	setDirty(true);
+        _lastcontrolsent = controlsent;
+        setDirty(true);
     }
     return *this;
 }
@@ -641,8 +641,8 @@ CtiLMGroupBase& CtiLMGroupBase::setControlStartTime(const RWDBDateTime& start)
 {
     if(_controlstarttime != start)
     {
-	_controlstarttime = start;
-	setDirty(true);
+        _controlstarttime = start;
+        setDirty(true);
     }
     return *this;
 }
@@ -668,8 +668,8 @@ CtiLMGroupBase& CtiLMGroupBase::setNextControlTime(const RWDBDateTime& controlti
 {
     if(_next_control_time != controltime)
     {
-	_next_control_time = controltime;
-	setDirty(true);
+        _next_control_time = controltime;
+        setDirty(true);
     }
     return *this;
 }
@@ -825,27 +825,27 @@ void CtiLMGroupBase::restoreGuts(RWvistream& istrm)
     RWTime tempTime4;
     
     istrm >> _paoid
-	  >> _paocategory
-	  >> _paoclass
-	  >> _paoname
-	  >> _paotype
-	  >> _paodescription
-	  >> _disableflag
-	  >> _grouporder
-	  >> _kwcapacity
-	  >> _childorder
-	  >> _alarminhibit
-	  >> _controlinhibit
-	  >> _groupcontrolstate
-	  >> _currenthoursdaily
-	  >> _currenthoursmonthly
-	  >> _currenthoursseasonal
-	  >> _currenthoursannually
-	  >> tempTime1
-	  >> tempTime2
-	  >> tempTime3
-	  >> tempTime4
-	  >> _internalState;
+          >> _paocategory
+          >> _paoclass
+          >> _paoname
+          >> _paotype
+          >> _paodescription
+          >> _disableflag
+          >> _grouporder
+          >> _kwcapacity
+          >> _childorder
+          >> _alarminhibit
+          >> _controlinhibit
+          >> _groupcontrolstate
+          >> _currenthoursdaily
+          >> _currenthoursmonthly
+          >> _currenthoursseasonal
+          >> _currenthoursannually
+          >> tempTime1
+          >> tempTime2
+          >> tempTime3
+          >> tempTime4
+          >> _internalState;
 
     _lastcontrolsent = RWDBDateTime(tempTime1);
     _controlstarttime = RWDBDateTime(tempTime2);
@@ -863,27 +863,27 @@ void CtiLMGroupBase::saveGuts(RWvostream& ostrm ) const
     RWCollectable::saveGuts( ostrm );
 
     ostrm << _paoid
-	  << _paocategory
-	  << _paoclass
-	  << _paoname
-	  << _paotype
-	  << _paodescription
-	  << _disableflag
-	  << _grouporder
-	  << _kwcapacity
-	  << _childorder
-	  << _alarminhibit
-	  << _controlinhibit
-	  << _groupcontrolstate
-	  << _currenthoursdaily
-	  << _currenthoursmonthly
-	  << _currenthoursseasonal
-	  << _currenthoursannually
-	  << _lastcontrolsent.rwtime()
-	  << _controlstarttime.rwtime()
-	  << _controlcompletetime.rwtime()
-	  << _next_control_time.rwtime()
-	  << _internalState;
+          << _paocategory
+          << _paoclass
+          << _paoname
+          << _paotype
+          << _paodescription
+          << _disableflag
+          << _grouporder
+          << _kwcapacity
+          << _childorder
+          << _alarminhibit
+          << _controlinhibit
+          << _groupcontrolstate
+          << _currenthoursdaily
+          << _currenthoursmonthly
+          << _currenthoursseasonal
+          << _currenthoursannually
+          << _lastcontrolsent.rwtime()
+          << _controlstarttime.rwtime()
+          << _controlcompletetime.rwtime()
+          << _next_control_time.rwtime()
+          << _internalState;
 
     return;
 }
@@ -917,14 +917,14 @@ CtiLMGroupBase& CtiLMGroupBase::operator=(const CtiLMGroupBase& right)
         _lastcontrolsent = right._lastcontrolsent;
         _controlstarttime = right._controlstarttime;
         _controlcompletetime = right._controlcompletetime;
-	_next_control_time = right._next_control_time;
+        _next_control_time = right._next_control_time;
         _hoursdailypointid = right._hoursdailypointid;
         _hoursmonthlypointid = right._hoursmonthlypointid;
         _hoursseasonalpointid = right._hoursseasonalpointid;
         _hoursannuallypointid = right._hoursannuallypointid;
         _controlstatuspointid = right._controlstatuspointid;
         _lastcontrolstring = right._lastcontrolstring;
-	_internalState = right._internalState;
+        _internalState = right._internalState;
     }
 
     return *this;
@@ -955,7 +955,7 @@ int CtiLMGroupBase::operator!=(const CtiLMGroupBase& right) const
 bool CtiLMGroupBase::operator<(const CtiLMGroupBase& right) const
 {
     return (getGroupOrder() < right.getGroupOrder() ||
-	    (getGroupOrder() == right.getGroupOrder() && getChildOrder() < right.getChildOrder()));
+            (getGroupOrder() == right.getGroupOrder() && getChildOrder() < right.getChildOrder()));
 }
 
 /*---------------------------------------------------------------------------
@@ -1075,13 +1075,13 @@ void CtiLMGroupBase::restore(RWDBReader& rdr)
         rdr["controlstarttime"] >> _controlstarttime;
         rdr["controlcompletetime"] >> _controlcompletetime;
         rdr["nextcontroltime"] >> _next_control_time;
-	rdr["internalstate"] >> _internalState;
-	
+        rdr["internalstate"] >> _internalState;
+        
         _insertDynamicDataFlag = FALSE;
-	setDirty(false);
+        setDirty(false);
     }
     else
-#endif	
+#endif  
     {
         setGroupControlState(InactiveState);
         setCurrentHoursDaily(0);
@@ -1092,10 +1092,10 @@ void CtiLMGroupBase::restore(RWDBReader& rdr)
         setControlStartTime(RWDBDateTime(1990,1,1,0,0,0,0));
         setControlCompleteTime(RWDBDateTime(1990,1,1,0,0,0,0));
         setNextControlTime(RWDBDateTime(1990,1,1,0,0,0,0));
-	_internalState = 0;
-	
+        _internalState = 0;
+        
         _insertDynamicDataFlag = TRUE;
-	setDirty(true);
+        setDirty(true);
     }
 
     setHoursDailyPointId(0);
@@ -1132,7 +1132,7 @@ void CtiLMGroupBase::restore(RWDBReader& rdr)
             {
                 _hoursannuallypointid = tempPointId;
             }
-	}
+        }
     }
 */
 }
@@ -1159,7 +1159,7 @@ void CtiLMGroupBase::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& current
 {
     if(!isDirty())
     {
-	return;
+        return;
     }
     
     {
@@ -1180,9 +1180,9 @@ void CtiLMGroupBase::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& current
                         << dynamicLMGroupTable["timestamp"].assign( currentDateTime )
                         << dynamicLMGroupTable["controlstarttime"].assign( getControlStartTime() )
                         << dynamicLMGroupTable["controlcompletetime"].assign( getControlCompleteTime() )
-			<< dynamicLMGroupTable["nextcontroltime"].assign( getNextControlTime() )
-			<< dynamicLMGroupTable["internalstate"].assign( _internalState );
-		
+                        << dynamicLMGroupTable["nextcontroltime"].assign( getNextControlTime() )
+                        << dynamicLMGroupTable["internalstate"].assign( _internalState );
+                
 
                 updater.where(dynamicLMGroupTable["deviceid"]==getPAOId());
 
@@ -1193,7 +1193,7 @@ void CtiLMGroupBase::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& current
                 }
 
                 updater.execute( conn );
-		setDirty(false);
+                setDirty(false);
             }
             else
             {
@@ -1205,17 +1205,17 @@ void CtiLMGroupBase::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& current
                 RWDBInserter inserter = dynamicLMGroupTable.inserter();
 
                 inserter << getPAOId()
-			 << getGroupControlState()
-			 << getCurrentHoursDaily()
-			 << getCurrentHoursMonthly()
-			 << getCurrentHoursSeasonal()
-			 << getCurrentHoursAnnually()
-			 << getLastControlSent()
-			 << currentDateTime
-			 << getControlStartTime()
-			 << getControlCompleteTime()
-			 << getNextControlTime()
-			 << _internalState;
+                         << getGroupControlState()
+                         << getCurrentHoursDaily()
+                         << getCurrentHoursMonthly()
+                         << getCurrentHoursSeasonal()
+                         << getCurrentHoursAnnually()
+                         << getLastControlSent()
+                         << currentDateTime
+                         << getControlStartTime()
+                         << getControlCompleteTime()
+                         << getNextControlTime()
+                         << _internalState;
 
                 if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
                 {
@@ -1226,7 +1226,7 @@ void CtiLMGroupBase::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& current
                 _insertDynamicDataFlag = FALSE;
 
                 inserter.execute( conn );
-		setDirty(false);
+                setDirty(false);
             }
         }
         else
@@ -1244,8 +1244,8 @@ CtiLMGroupBase& CtiLMGroupBase::resetInternalState()
 {
     if(_internalState != 0x00000000)
     {
-	_internalState = 0x00000000;
-	setDirty(true);
+        _internalState = 0x00000000;
+        setDirty(true);
     }
     return *this;
 }
@@ -1257,10 +1257,10 @@ CtiLMGroupBase& CtiLMGroupBase::setIsRampingIn(bool in)
 {
     if(getIsRampingIn() != in)
     {
-	_internalState = (in ?
-			  _internalState | GROUP_RAMPING_IN :
-			  _internalState & ~GROUP_RAMPING_IN);
-	setDirty(true);
+        _internalState = (in ?
+                          _internalState | GROUP_RAMPING_IN :
+                          _internalState & ~GROUP_RAMPING_IN);
+        setDirty(true);
     }
     return *this;
 }
@@ -1272,10 +1272,10 @@ CtiLMGroupBase& CtiLMGroupBase::setIsRampingOut(bool out)
 {
     if(getIsRampingOut() != out)
     {
-	_internalState = (out ?
-			  _internalState | GROUP_RAMPING_OUT :
-			  _internalState & ~GROUP_RAMPING_OUT);
-	setDirty(true);
+        _internalState = (out ?
+                          _internalState | GROUP_RAMPING_OUT :
+                          _internalState & ~GROUP_RAMPING_OUT);
+        setDirty(true);
     }
     return *this;
 }
