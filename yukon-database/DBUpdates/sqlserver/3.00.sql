@@ -791,10 +791,15 @@ insert into displaycolumns values(35, 'User Name', 8, 5, 50 );
 update graphdataseries set moredata = '1072936800000' where moredata = '(none)' and type = 17;
 
 
+delete from YukonUserGroup where userid = -1 and groupid = -100;
 
-
-
-
+update YukonGroup set groupname = 'Yukon Grp' where groupid = -1;
+update YukonGroup set groupname = 'Operators Grp' where groupid= -100;
+update YukonGroup set groupname = 'Esub Users Grp' where groupid= -200;
+update YukonGroup set groupname = 'Esub Operators Grp' where groupid= -201;
+update YukonGroup set groupname = 'Web Client Operators Grp' where groupid= -301;
+update YukonGroup set groupname = 'Residential Customers Grp' where groupid= -300;
+update YukonGroup set groupname = 'Web Client Customers Grp' where groupid= -302;
 
 
 
