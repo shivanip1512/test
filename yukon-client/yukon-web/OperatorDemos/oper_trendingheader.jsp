@@ -7,6 +7,8 @@
    //out.println("select graphdefinition.graphdefinitionid,graphdefinition.name from graphdefinition,GraphCustomerList where graphdefinition.graphdefinitionid=GraphCustomerList.graphdefinitionid and GraphCustomerList.LMCustomerDeviceID=" + user.getCustomerId() + " order by GraphCustomerList.CustomerOrder");
    String referrer;
    int graphDefinitionId = -1;
+   int width = 556;
+   int height = 433;
    java.util.Date start = null;
    java.util.Date saveStart = null;
    java.util.Date stop = null;
@@ -36,6 +38,15 @@
        modelType = Integer.parseInt(modelTypeStr);
 	   //out.println("model Type = "+ modelType + " string "+ modelTypeStr);
    }
+
+   String sizeStr = request.getParameter("width");
+	out.println(" width = " + sizeStr);
+   if( sizeStr != null )                           
+      width = Integer.parseInt(sizeStr);
+   sizeStr = request.getParameter("height");
+   	out.println(" height= " + sizeStr);
+   if( sizeStr != null )                           
+      height = Integer.parseInt(sizeStr);
 
    String gDefIDStr = request.getParameter("gdefid");
    if( gDefIDStr != null )                           
