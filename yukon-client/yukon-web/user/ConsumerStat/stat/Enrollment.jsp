@@ -236,53 +236,6 @@ function confirmSubmit(form) {
                     </table>
                   </form>
 				  <p></p>
-<cti:checkNoProperty propertyid="<%= ResidentialCustomerRole.NOTIFICATION_ON_GENERAL_PAGE %>">
-<%
-	boolean showNotification = false;
-	for (int i = 0; i < categories.getStarsApplianceCategoryCount(); i++) {
-		StarsApplianceCategory category = categories.getStarsApplianceCategory(i);
-		for (int j = 0; j < category.getStarsEnrLMProgramCount(); j++) {
-			StarsEnrLMProgram enrProg = category.getStarsEnrLMProgram(j);
-			if (enrProg.getChanceOfControl() == null) continue;
-			
-			for (int k = 0; k < programs.getStarsLMProgramCount(); k++) {
-				if (programs.getStarsLMProgram(k).getProgramID() == enrProg.getProgramID()) {
-					showNotification = true;
-					break;
-				}
-			}
-			if (showNotification) break;
-		}
-		if (showNotification) break;
-	}
-
-	if (showNotification) {
-%> 
-                  <form name="form1" method="POST" action="<%=request.getContextPath()%>/servlet/SOAPClient">
-                    <input type="hidden" name="action" value="UpdateCtrlNotification">
-                    <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/Enrollment.jsp">
-                    <input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/Enrollment.jsp">
-                    <table width="328" border="1" cellspacing="0" cellpadding="3" bgcolor="#CCCCCC" >
-                      <tr>    
-                        <td height="58"> 
-                          <p align="center" class="TableCell1"> 
-                            <input type="checkbox" name="NotifyControl" value="true"
-							   <% if (primContact.getEmail().getEnabled()) out.print("checked"); %>>
-                            <span class="TableCell3">
-                            I would like to be notified by e-mail of the 
-                            <cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_TEXT_ODDS_FOR_CONTROL %>"/>.<br>
-                             My e-mail address is:<br>   
-                            <input type="text" name="Email" maxlength="50" size="30" value="<%= primContact.getEmail().getNotification() %>">
-                            <input type="submit" name="Submit2" value="Submit">
-                            </span></p>
-                        </td>   
-                       </tr>   
-                     </table>
-				  </form>
-<%
-	}
-%>
-</cti:checkNoProperty>
 				  <p>
                 </td>
               </tr>

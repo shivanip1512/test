@@ -101,40 +101,33 @@
                       <td width="343" valign="top"> 
                         <table width="325" border="1" cellspacing="0" cellpadding="3">
                           <tr> 
-                            <td class="HeaderCell"> 
-                              <div align="center">Begin Date/Time</div>
-                            </td>
-                            <td class="HeaderCell"> 
-                              <div align="left">Duration</div>
-                            </td>
+                            <td class="HeaderCell" width="110">Start</td>
+                            <td class="HeaderCell" width="110"> Stop</td>
+                            <td class="HeaderCell" width="79"> Duration</td>
                           </tr>
-<%
+                          <%
 	int totalSec = 0;
 	
-	for (int i = ctrlHist.getControlHistoryCount() - 1; i >= 0; i--) {
+	for (int i = ctrlHist.getControlHistoryCount() - 1; i >= 0 ; i--) {
 		ControlHistory hist = ctrlHist.getControlHistory(i);
 		
 		int durationSec = hist.getControlDuration();
 		totalSec += durationSec;
+		Date stopTime = new Date(hist.getStartDateTime().getTime() + durationSec * 1000);
 %>
                           <tr> 
-                            <td class="TableCell"> 
-                              <div align="right"><%= histDateFormat.format(hist.getStartDateTime()) %></div>
-                            </td>
-                            <td class="TableCell"> 
-                              <div align="left"><%= ServletUtils.getDurationString(durationSec) %></div>
-                            </td>
+                            <td class="TableCell" width="110"><%= histDateFormat.format(hist.getStartDateTime()) %></td>
+                            <td class="TableCell" width="110"><%= histDateFormat.format(stopTime) %></td>
+                            <td class="TableCell" width="79"><%= ServletUtils.getDurationString(durationSec) %></td>
                           </tr>
-<%
+                          <%
 	}
 %>
                           <tr> 
-                            <td class="Main"> 
+                            <td class="TableCell" colspan="2"> 
                               <div align="right">Total:</div>
                             </td>
-                            <td class="Main"> 
-                              <div align="left"><%= ServletUtils.getDurationString(totalSec) %></div>
-                            </td>
+                            <td class="TableCell" width="79"><%= ServletUtils.getDurationString(totalSec) %></td>
                           </tr>
                         </table>
                       </td>
