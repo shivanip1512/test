@@ -106,33 +106,57 @@ void CtiCapController::start()
 ---------------------------------------------------------------------------*/
 void CtiCapController::stop()
 {
-    if ( _substationBusThread.isValid() && _substationBusThread.requestCancellation() == RW_THR_ABORTED )
+    try
     {
-        _substationBusThread.terminate();
-
+        if ( _substationBusThread.isValid() && _substationBusThread.requestCancellation() == RW_THR_ABORTED )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Forced to terminate." << endl;
+            _substationBusThread.terminate();
+    
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << RWTime() << " - Forced to terminate." << endl;
+            }
+        }
+        else
+        {
+            _substationBusThread.requestCancellation();
+            _substationBusThread.join();
         }
     }
-    else
+    catch(...)
     {
-        _substationBusThread.requestCancellation();
-        _substationBusThread.join();
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 
+    try
     {
         RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
         if( _dispatchConnection!=NULL && _dispatchConnection->valid() )
         {
             _dispatchConnection->WriteConnQue( new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15) );
-            _dispatchConnection->ShutdownConnection();
         }
+        _dispatchConnection->ShutdownConnection();
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
+
+    try
+    {
+        RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
         if( _pilConnection!=NULL && _pilConnection->valid() )
         {
             _pilConnection->WriteConnQue( new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15) );
-            _pilConnection->ShutdownConnection();
         }
+        _pilConnection->ShutdownConnection();
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 }
 
