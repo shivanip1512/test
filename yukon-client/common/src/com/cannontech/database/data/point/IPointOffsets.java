@@ -14,17 +14,19 @@ public interface IPointOffsets
 {
 
    public static final int PT_OFFSET_TOTAL_KWH				= 1;
+   
+   public static final int PT_OFFSET_KW_DEMAND				= 1;
+   public static final int PT_OFFSET_VOLTAGE_DEMAND			= 4;
+   public static final int PT_OFFSET_PEAK_KW_DEMAND			= 11;
+   public static final int PT_OFFSET_MAX_VOLT_DEMAND 		= 14;
+   public static final int PT_OFFSET_MIN_VOLT_DEMAND 		= 15;
    public static final int PT_OFFSET_TOTAL_KVARH			= 21;
    public static final int PT_OFFSET_LP_KW_DEMAND			= 15;
    public static final int PT_OFFSET_KVAR_DEMAND			= 35;
 	
    public static final int PT_OFFSET_LPROFILE_KW_DEMAND   = 101;
-   public static final int PT_OFFSET_LPROFILE_VOLTAGE_DEMAND = 102;
-   public static final int PT_OFFSET_MAX_VOLT_DEMAND 		= 103;
-   public static final int PT_OFFSET_MIN_VOLT_DEMAND 		= 104;
-   public static final int PT_OFFSET_VOLTAGE_DEMAND			= 105;
-   public static final int PT_OFFSET_PEAK_KW_DEMAND			= 106;
-   public static final int PT_OFFSET_KW_DEMAND				= 107;		
+   public static final int PT_OFFSET_LPROFILE_VOLTAGE_DEMAND = 104;
+		
    public static final int PT_OFFSET_TRANS_STATUS			= 2000;
 
    public static final int PT_OFFSET_DAILY_HISTORY			= 2500;
@@ -32,8 +34,7 @@ public interface IPointOffsets
    public static final int PT_OFFSET_SEASONAL_HISTORY		= 2502;
    public static final int PT_OFFSET_ANNUAL_HISTORY		= 2503;
    
-
-
+   
 
    public static final int PT_OFFSET_BILLING_BASELINE		= 6000;	//Billing Point, curtailment settlement (CSVBilling)
    
@@ -43,6 +44,14 @@ public interface IPointOffsets
    public static final PointOffset[] ALL_POINT_OFFSETS =
    {
 		//Offsets for DEVICES
+		new PointOffset( PAOGroups.MCT410IL, PointTypes.PULSE_ACCUMULATOR_POINT,
+					new int[]{1,20},
+					new String[] {"kWh","Power Fail Count"} ),
+		new PointOffset( PAOGroups.MCT410IL, PointTypes.DEMAND_ACCUMULATOR_POINT, 
+					new int[]{1,4,11,14,15,101,104},
+					new String[] {"kW","Peak kW","Voltage","Max Volts","Min Volts",
+								"Load profile kW demand","Load profile voltage"} ),
+
 		new PointOffset( PAOGroups.MCT370, PointTypes.STATUS_POINT, 
 					new int[]{5,6,10,11,12,20},
 					new String[] {"Status of A relay","Status of B relay","Power Fail Flag",
