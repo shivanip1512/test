@@ -316,7 +316,15 @@ double CtiCalcComponent::_doFunction( RWCString &functionName )
             Rating = 1.0;
         }
 
-        Load = sqrt( (LoadWatts * LoadWatts) + (LoadVARs * LoadVARs) );
+        DOUBLE NaNDefenseDouble = (LoadWatts*LoadWatts)+(LoadVARs*LoadVARs);
+        if( NaNDefenseDouble <= 0.0 )
+        {
+            Load = 0.0;
+        }
+        else
+        {
+            Load = sqrt(NaNDefenseDouble);
+        }
         HotSpotTemp = OilTemp + TempRise * pow( (Load / Rating), (2 * Mfactor) );
 
         retVal = HotSpotTemp;
@@ -340,7 +348,15 @@ double CtiCalcComponent::_doFunction( RWCString &functionName )
         DOUBLE newPowerFactorValue = 1.0;
         DOUBLE kva = 0.0;
 
-        kva = sqrt((kw*kw)+(kvar*kvar));
+        DOUBLE NaNDefenseDouble = (kw*kw)+(kvar*kvar);
+        if( NaNDefenseDouble <= 0.0 )
+        {
+            kva = 0.0;
+        }
+        else
+        {
+            kva = sqrt(NaNDefenseDouble);
+        }
 
         if( kva != 0.0 )
         {
@@ -360,7 +376,15 @@ double CtiCalcComponent::_doFunction( RWCString &functionName )
         DOUBLE newPowerFactorValue = 1.0;
         DOUBLE kva = 0.0;
 
-        kva = sqrt((kw*kw)+(kvar*kvar));
+        DOUBLE NaNDefenseDouble = (kw*kw)+(kvar*kvar);
+        if( NaNDefenseDouble <= 0.0 )
+        {
+            kva = 0.0;
+        }
+        else
+        {
+            kva = sqrt(NaNDefenseDouble);
+        }
 
         if( kva != 0.0 )
         {
@@ -406,7 +430,17 @@ double CtiCalcComponent::_doFunction( RWCString &functionName )
     {
         DOUBLE kvar = _parent->pop();
         DOUBLE kw = _parent->pop();
-        DOUBLE kva = sqrt((kw*kw)+(kvar*kvar));
+
+        DOUBLE NaNDefenseDouble = (kw*kw)+(kvar*kvar);
+        DOUBLE kva = 0.0;
+        if( NaNDefenseDouble <= 0.0 )
+        {
+            kva = 0.0;
+        }
+        else
+        {
+            kva = sqrt(NaNDefenseDouble);
+        }
 
         retVal = kva;
     }
@@ -415,7 +449,17 @@ double CtiCalcComponent::_doFunction( RWCString &functionName )
         DOUBLE kq = _parent->pop();
         DOUBLE kw = _parent->pop();
         DOUBLE kvar = ((2.0*kq)-kw)/SQRT3;
-        DOUBLE kva = sqrt((kw*kw)+(kvar*kvar));
+
+        DOUBLE kva = 0.0;
+        DOUBLE NaNDefenseDouble = (kw*kw)+(kvar*kvar);
+        if( NaNDefenseDouble <= 0.0 )
+        {
+            kva = 0.0;
+        }
+        else
+        {
+            kva = sqrt(NaNDefenseDouble);
+        }
 
         retVal = kva;
     }
@@ -424,7 +468,16 @@ double CtiCalcComponent::_doFunction( RWCString &functionName )
         DOUBLE kvar = _parent->pop();
         DOUBLE kva = _parent->pop();
 
-        DOUBLE kw = sqrt((kva*kva)-(kvar*kvar));
+        DOUBLE kw = 0.0;
+        DOUBLE NaNDefenseDouble = (kva*kva)-(kvar*kvar);
+        if( NaNDefenseDouble <= 0.0 )
+        {
+            kw = 0.0;
+        }
+        else
+        {
+            kw = sqrt(NaNDefenseDouble);
+        }
 
         retVal = kw;
     }
@@ -433,7 +486,16 @@ double CtiCalcComponent::_doFunction( RWCString &functionName )
         DOUBLE kva = _parent->pop();
         DOUBLE kw = _parent->pop();
 
-        DOUBLE kvar = sqrt((kva*kva)-(kw*kw));
+        DOUBLE kvar = 0.0;
+        DOUBLE NaNDefenseDouble = (kva*kva)-(kw*kw);
+        if( NaNDefenseDouble <= 0.0 )
+        {
+            kvar = 0.0;
+        }
+        else
+        {
+            kvar = sqrt(NaNDefenseDouble);
+        }
 
         retVal = kvar;
     }
@@ -457,7 +519,14 @@ double CtiCalcComponent::_doFunction( RWCString &functionName )
 
         DOUBLE componentPointValue = componentPointPtr->getPointValue();
 
-        retVal = sqrt(componentPointValue);
+        if( componentPointValue <= 0.0 )
+        {
+            retVal = 0.0;
+        }
+        else
+        {
+            retVal = sqrt(componentPointValue);
+        }
     }
     else if( !functionName.compareTo("COS from P/Q",RWCString::ignoreCase) )
     {
@@ -478,6 +547,15 @@ double CtiCalcComponent::_doFunction( RWCString &functionName )
         retVal = atan(componentPointValue);
     }
     //added 3/4/03 JW
+
+    if( _isnan(retVal) )
+    {
+        retVal = 0.0;
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << __FILE__ << " (" << __LINE__ << ")  _doFunction tried to return a NaN for Calc Point Id: " << _parent->getPointId() << endl;
+        }
+    }
 
     return retVal;
 }
