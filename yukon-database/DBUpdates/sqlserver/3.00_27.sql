@@ -2515,7 +2515,7 @@ go
 alter table ctidatabase add constraint PK_CTIDATABASE primary key  (Version, Build);
 go
 
-
+insert into TOUSchedule values (0, '(none)', 0);
 
 
 

@@ -3921,6 +3921,8 @@ create table TOUSchedule  (
    TOUDefaultRate       VARCHAR2(4)                     not null
 );
 
+insert into TOUSchedule values (0, '(none)', 0);
+
 alter table TOUSchedule
    add constraint PK_TOUSCHEDULE primary key (TOUScheduleID);
 

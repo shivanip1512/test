@@ -1677,6 +1677,7 @@ update yukonpaobject set type = 'MCT-410IL' where type like '%410%';
 alter table ctidatabase drop constraint PK_CTIDATABASE;
 alter table ctidatabase add constraint PK_CTIDATABASE primary key  (Version, Build);
 
+insert into TOUSchedule values (0, '(none)', 0);
 
 
 
