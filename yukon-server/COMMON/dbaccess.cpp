@@ -53,6 +53,29 @@ static const int MAXDBINFO = 2;
 static DBInfo* db_info[MAXDBINFO] = { NULL, NULL};
 
 
+DLLEXPORT void testAnarchyOnDB()
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard guard( DbMutex);
+
+    for(int i = 0; i < MAXDBINFO; i++)
+    {
+        if(db_info[i] != NULL)
+        {
+            if(db_info[i]->db != NULL)
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** ANARCHY **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+
+                delete db_info[i]->db;
+                db_info[i]->db = (RWDBDatabase*)1;                 // Thats a nice pointer!
+                db_info[i]->reconnect = true;
+            }
+        }
+    }
+}
+
 DLLEXPORT void cleanupDB()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( DbMutex);
@@ -150,10 +173,19 @@ RWDBDatabase getDatabase(unsigned dbID)
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " Invalidating all pending connections to " << info->name << " as " << info->user << " with " << info->dll << endl;
             }
-            RWDBConnection conn = db->connection();
-            conn.close();
-
-            delete db;
+            try
+            {
+                RWDBConnection conn = db->connection();
+                conn.close();
+                delete db;
+            }
+            catch(...)
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** EXCEPTION Invalidating database.  Nonfatal. **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+            }
         }
 
         db = NULL;
@@ -166,25 +198,35 @@ RWDBDatabase getDatabase(unsigned dbID)
 
     if( reconnect == true )
     {
-        RWDBManager::setErrorHandler(info->error_handler);
-        *db = RWDBManager::database( info->dll,info->name, info->user, info->password, "" );
-
-        if( db->isValid() )
+        try
         {
-            db->defaultConnections( gMaxDBConnectionCount );
-            reconnect = false;
+            RWDBManager::setErrorHandler(info->error_handler);
+            *db = RWDBManager::database( info->dll,info->name, info->user, info->password, "" );
 
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() <<    " Connected to "    << info->name <<
-            " as "              << info->user <<
-            " with "            << info->dll << endl;
+            if( db->isValid() )
+            {
+                db->defaultConnections( gMaxDBConnectionCount );
+                reconnect = false;
+
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() <<    " Connected to "    << info->name <<
+                " as "              << info->user <<
+                " with "            << info->dll << endl;
+            }
+            else
+            {
+                Sleep(10000);
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " Failed to connect to database" << endl;
+                }
+            }
         }
-        else
+        catch(...)
         {
-            Sleep(10000);
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Failed to connect to database" << endl;
+                dout << RWTime() << " **** EXCEPTION Creating new database connection.  Nonfatal if non-repetitive. **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
     }
