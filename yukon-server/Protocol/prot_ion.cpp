@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2003/06/02 15:03:35 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2003/06/12 21:27:20 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -40,8 +40,8 @@ CtiProtocolION::CtiProtocolION()
 
     _client_eventLogLastPosition = 0;
     _eventLogLastPosition        = 0;
-    _eventLogCurrentPosition     = 0;
-    _eventLogDepth               = 0;
+    _eventLogCurrentPosition     = 1;
+    _eventLogDepth               = 1;
 }
 
 
@@ -128,6 +128,9 @@ void CtiProtocolION::setCommand( IONCommand command )
     _currentCommand.command = command;
     _protocolErrors = 0;
     _abortStatus    = NoError;
+
+    _ionState   = State_Init;
+    _retryState = _ionState;
 }
 
 
@@ -137,6 +140,9 @@ void CtiProtocolION::setCommand( IONCommand command, unsigned int unsigned_int_p
     _currentCommand.unsigned_int_parameter  = unsigned_int_parameter;
     _protocolErrors = 0;
     _abortStatus    = NoError;
+
+    _ionState   = State_Init;
+    _retryState = _ionState;
 }
 
 
@@ -178,6 +184,8 @@ void CtiProtocolION::setConfigRead( bool read )
 
 int CtiProtocolION::generate( CtiXfer &xfer )
 {
+    int retVal = NoError;
+
     if( _appLayer.isTransactionComplete() )
     {
         if( !hasConfigBeenRead() )
@@ -242,7 +250,19 @@ int CtiProtocolION::generate( CtiXfer &xfer )
         }
     }
 
-    return _appLayer.generate(xfer);
+    if( _ionState != State_Abort )
+    {
+        retVal = _appLayer.generate(xfer);
+    }
+    else
+    {
+        xfer.setOutCount(0);
+        xfer.setInCountExpected(0);
+
+        retVal = BADRANGE;
+    }
+
+    return retVal;
 }
 
 
@@ -513,8 +533,7 @@ void CtiProtocolION::decodeConfigRead( void )
         case State_Init:
         case State_RequestFeatureManagerInfo:
         {
-            //  ACH:  check for errors before i just switch to listening mode
-
+            //  any errors would have been caught by decode(), so it's safe to switch to listening mode
             _ionState   = State_ReceiveFeatureManagerInfo;
 
             break;
@@ -558,7 +577,6 @@ void CtiProtocolION::decodeConfigRead( void )
                     dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
-                //  ACH:  maybe increment protocol error count and try again...
                 _protocolErrors++;
                 _ionState = _retryState;
             }
@@ -568,8 +586,7 @@ void CtiProtocolION::decodeConfigRead( void )
 
         case State_RequestManagerInfo:
         {
-            //  ACH:  check for errors before i just switch to listening mode
-
+            //  any errors would have been caught by decode(), so it's safe to switch to listening mode
             _ionState   = State_ReceiveManagerInfo;
 
             break;
@@ -650,7 +667,6 @@ void CtiProtocolION::decodeConfigRead( void )
                     dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
-                //  ACH:  maybe increment protocol error count and try again...
                 _protocolErrors++;
                 _ionState = _retryState;
             }
@@ -660,8 +676,7 @@ void CtiProtocolION::decodeConfigRead( void )
 
         case State_RequestPowerMeterModuleHandles:
         {
-            //  ACH:  check for errors before i just switch to listening mode
-
+            //  any errors would have been caught by decode(), so it's safe to switch to listening mode
             _ionState   = State_ReceivePowerMeterModuleHandles;
 
             break;
@@ -708,7 +723,6 @@ void CtiProtocolION::decodeConfigRead( void )
                     dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
-                //  ACH:  maybe increment protocol error count and try again...
                 _ionState   = State_Abort;
                 _retryState = _ionState;
             }
@@ -718,8 +732,7 @@ void CtiProtocolION::decodeConfigRead( void )
 
         case State_RequestDigitalInputModuleHandles:
         {
-            //  ACH:  check for errors before i just switch to listening mode
-
+            //  any errors would have been caught by decode(), so it's safe to switch to listening mode
             _ionState = State_ReceiveDigitalInputModuleHandles;
 
             break;
@@ -769,7 +782,6 @@ void CtiProtocolION::decodeConfigRead( void )
                     dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
-                //  ACH:  maybe increment protocol error count and try again...
                 _protocolErrors++;
                 _ionState = _retryState;
             }
@@ -779,8 +791,7 @@ void CtiProtocolION::decodeConfigRead( void )
 
         case State_RequestDigitalOutputModuleHandles:
         {
-            //  ACH:  check for errors before i just switch to listening mode
-
+            //  any errors would have been caught by decode(), so it's safe to switch to listening mode
             _ionState = State_ReceiveDigitalOutputModuleHandles;
 
             break;
@@ -832,7 +843,6 @@ void CtiProtocolION::decodeConfigRead( void )
                     dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
-                //  ACH:  maybe increment protocol error count and try again...
                 _protocolErrors++;
                 _ionState = _retryState;
             }
@@ -1028,7 +1038,6 @@ void CtiProtocolION::decodeExceptionScan( void )
                     dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
-                //  ACH:  maybe increment protocol error count and try again...
                 _protocolErrors++;
                 _ionState = _retryState;
             }
@@ -1092,7 +1101,6 @@ void CtiProtocolION::decodeExceptionScan( void )
                     dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
-                //  ACH:  maybe increment protocol error count and try again...
                 _protocolErrors++;
                 _ionState = _retryState;
             }
@@ -1409,7 +1417,6 @@ void CtiProtocolION::decodeIntegrityScan( void )
                     dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
-                //  ACH:  maybe increment protocol error count and try again...
                 _ionState   = State_Abort;
                 _retryState = _ionState;
             }
@@ -1592,52 +1599,67 @@ void CtiProtocolION::decodeEventLogRead( void )
 
                 if( _dsIn.size() >= 2 && _dsIn[0]->isNumeric() && _dsIn[1]->isNumeric() )
                 {
+                    if( _dsIn[0]->getNumericValue() > 0 &&
+                        _dsIn[1]->getNumericValue() > 0 )
+                    {
                     _eventLogCurrentPosition = _dsIn[0]->getNumericValue();
                     _eventLogDepth           = _dsIn[1]->getNumericValue();
 
-                    if( _eventLogLastPosition == 0 )
-                    {
-                        _ionState   = State_RequestEventLogLastPositionSearch;
+                        //  Check if _eventLogLastPosition is outside the range defined
+                        //    by _eventLogCurrentPosition and _eventLogDepth
+                        if( !eventLogLastPositionValid(_eventLogCurrentPosition, _eventLogDepth, _eventLogLastPosition) )
+                        {
+                            //  unreasonable value, so reset _eventLogLastPosition
+
+                            //  make sure we don't go negative
+                            if( _eventLogCurrentPosition < _eventLogDepth )
+                            {
+                                _eventLogLastPosition = 0;
+                            }
+                            else
+                            {
+                                //  set it to the element just before the ones we want to get,
+                                //    since it keeps track of the records already retrieved
+                                _eventLogLastPosition = _eventLogCurrentPosition - _eventLogDepth - 1;
+                            }
+                        }
+
+                        if( (_eventLogLastPosition + 1) >= _eventLogCurrentPosition )
+                        {
+                            //  we seem to have gotten all of the event logs
+                            _ionState   = State_Complete;
                         _retryState = _ionState;
-
-                        _eventLogSearchSuccessPoint = _eventLogCurrentPosition;
-                        _eventLogSearchFailPoint    = _eventLogCurrentPosition - _eventLogDepth;
-
-                        _eventLogSearchPokePoint = _eventLogSearchFailPoint;
-
-                        _eventLogSearchCounter = 0;
-                    }
+                        }
                     else
                     {
-                        //   this also catches the cases where _eventLogLastPosition is greater than _eventLogCurrentPosition,
-                        //     probably because of bad data from the DB
-                        //     this is merely a neat trick, facilitated by unsigned integers...  if they were signed, it would just
-                        //     claim that collection was complete.
-                        //   i.e., current(700) - last(2000) >= depth(150)
-                        if( (_eventLogCurrentPosition - _eventLogLastPosition) >= _eventLogDepth )
-                        {
-                            _eventLogLastPosition = _eventLogCurrentPosition - _eventLogDepth;
-                        }
+                            _eventLogSearchSuccessPoint = _eventLogCurrentPosition;   //  must be >= 1
+                            _eventLogSearchFailPoint    = _eventLogLastPosition + 1;
+                            _eventLogSearchPokePoint    = _eventLogSearchFailPoint;
 
+                        _eventLogSearchCounter = 0;
 
-                        if( (_eventLogLastPosition + 1) < _eventLogCurrentPosition )
-                        {
-                            _ionState = State_RequestEventLogRecords;
-                            _retryState = _ionState;
-                        }
-                        else
-                        {
-                            _ionState = State_Complete;
+                            _ionState   = State_RequestEventLogLastPositionSearch;
                             _retryState = _ionState;
                         }
                     }
-                }
+                        else
+                        {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << "Event log position/depth return < 0, aborting" << endl;
+                        }
+
+                        _ionState   = State_Abort;
+                            _retryState = _ionState;
+                        }
+                    }
                 else
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << "Invalid event log position return, aborting" << endl;
+                        dout << "Invalid event log position/depth return, aborting" << endl;
                     }
 
                     _ionState = State_Abort;
@@ -1692,9 +1714,11 @@ void CtiProtocolION::decodeEventLogRead( void )
                     }
                 }
 
+                //  if the fail point is within 1
                 if( _eventLogSearchSuccessPoint <= (_eventLogSearchFailPoint + 1) )
                 {
-                    _eventLogLastPosition = _eventLogSearchSuccessPoint;
+                    //  subtract 1 so we collect the successful one
+                    _eventLogLastPosition = _eventLogSearchSuccessPoint - 1;
 
                     _ionState = State_RequestEventLogRecords;
                     _retryState = _ionState;
@@ -1876,7 +1900,6 @@ void CtiProtocolION::decodeEventLogRead( void )
                     dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
-                //  ACH:  maybe increment protocol error count and try again...
                 _protocolErrors++;
                 _ionState = _retryState;
             }
@@ -1898,6 +1921,26 @@ void CtiProtocolION::decodeEventLogRead( void )
             break;
         }
     }
+}
+
+
+bool CtiProtocolION::eventLogLastPositionValid( unsigned long currentPos, unsigned long depth, unsigned long lastPos )
+{
+    bool retVal = false;
+
+    //  ensure that:
+    //
+    //  (currentPos - depth) < lastPos < currentPos
+    //
+    if( lastPos < currentPos )
+    {
+        if( (lastPos + depth) > currentPos )
+        {
+            retVal = true;
+        }
+    }
+
+    return retVal;
 }
 
 
@@ -2403,9 +2446,6 @@ int CtiProtocolION::recvCommRequest( OUTMESS *OutMessage )
     {
         _eventLogLastPosition = tmpOM.client_eventLogLastPosition;
     }
-
-    _ionState   = State_Init;
-    _retryState = _ionState;
 
     return retVal;
 }
