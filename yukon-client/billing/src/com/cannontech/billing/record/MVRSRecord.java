@@ -46,11 +46,11 @@ public class MVRSRecord implements BillingRecordBase
 	private ReadingRecord readingRecord;
 	private OffSiteReadsRecord offSiteReadsRecord;
 	private RemoteReadRecord remoteReadRecord;
-	static int numberCustomers = 0;
-	static int numberRoutes = 0;
-	static int numberMeters = 0;
-	static int numberReads = 0;
-	static int inputLine = 1;
+	private int numberCustomers = 0;
+	private int numberRoutes = 0;
+	private int numberMeters = 0;
+	private int numberReads = 0;
+	private int inputLine = 1;
 	private String inputFile = CtiUtilities.getExportDirPath() + "/inFile.txt";
 	//Map of deviceName (MeterNumber) string to RPH object
 	private HashMap deviceNameToRPHMap = null;
@@ -492,7 +492,7 @@ public final String processReadingRecord(String buffer) {
  * @return java.lang.String
  * @param buffer java.lang.String
  */
-public static final String processRouteHeaderAndTrailer(String buffer) {
+public final String processRouteHeaderAndTrailer(String buffer) {
 	StringBuffer storage = new StringBuffer();
 	storage.append(buffer.substring(0,51));
 	storage.append("  ");
@@ -522,4 +522,12 @@ public static final String processRouteHeaderAndTrailer(String buffer) {
     {
         this.inputFile = inputFile;
     }
+	/**
+	 * @return
+	 */
+	public int getNumberMeters()
+	{
+		return numberMeters;
+	}
+
 }

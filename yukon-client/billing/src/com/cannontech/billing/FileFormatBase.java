@@ -11,6 +11,9 @@ import com.cannontech.billing.record.MVRSRecord;
 
 public abstract class FileFormatBase
 {
+	//number of records
+	private int count = 0;
+	
 	//used to store every line of output that will be written to the file
 	// it holds Objects of type BillingRecordBase
 	private java.util.Vector recordVector = null;
@@ -113,6 +116,7 @@ public abstract class FileFormatBase
 	public StringBuffer getOutputAsStringBuffer()
 	{
 		StringBuffer returnBuffer = new StringBuffer();
+		setRecordCount(0);	//reset the count
 		
 		if( getBillingDefaults().getFormatID() == FileFormatTypes.MVRS)//special case!!!
 		{
@@ -121,6 +125,8 @@ public abstract class FileFormatBase
 		    MVRSRecord mvrsRecord = new MVRSRecord();
 		    mvrsRecord.setInputFile(getInputFileName());
 		    returnBuffer.append(mvrsRecord.dataToString());
+		    //set the record format's record count, based on the number of meter records in the file
+		    setRecordCount(mvrsRecord.getNumberMeters());
 		}
 		else
 		{
@@ -332,18 +338,24 @@ public abstract class FileFormatBase
 	 */
 	public int getRecordCount()
 	{
-		int count = 0;
-		if( getRecordVector() != null)
+		if( count == 0 )
 		{
-			for (int i = 0; i < getRecordVector().size(); i++)
+			if( getRecordVector() != null)
 			{
-				if( !(getRecordVector().get(i) instanceof com.cannontech.billing.record.StringRecord))
-					count++;
+				for (int i = 0; i < getRecordVector().size(); i++)
+				{
+					if( !(getRecordVector().get(i) instanceof com.cannontech.billing.record.StringRecord))
+						count++;
+				}
 			}
 		}
 		return count;
 	}
 	
+	private void setRecordCount(int count_)
+	{
+		count = count_;
+	}
 	/**
 	 * Returns a hashtable of pointid as key and multiplier as value.
 	 * Collects the pointid/multiplier from the database.
