@@ -8,11 +8,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2004/06/28 16:40:40 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2004/11/24 17:11:17 $
 *
 * HISTORY      :
 * $Log: dev_grp_sadigital.cpp,v $
+* Revision 1.5  2004/11/24 17:11:17  cplender
+* Working on the configuration of SA receivers.
+*
 * Revision 1.4  2004/06/28 16:40:40  cplender
 * Added toUpper on the string responses to FORCE case insensitivity.
 *
@@ -165,6 +168,8 @@ INT CtiDeviceGroupSADigital::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParse
     CtiRouteSPtr Route;
 
     parse.setValue("type", ProtocolSADigitalType);
+    parse.setValue("sa_mark", getLoadGroup().getMarkIndex());
+    parse.setValue("sa_space", getLoadGroup().getSpaceIndex());
     parse.parse();
 
     bool control = (parse.getFlags() & CMD_FLAG_CTL_SHED);

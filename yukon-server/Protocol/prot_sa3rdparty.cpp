@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2004/11/18 23:38:28 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2004/11/24 17:11:16 $
 *
 * HISTORY      :
 * $Log: prot_sa3rdparty.cpp,v $
+* Revision 1.17  2004/11/24 17:11:16  cplender
+* Working on the configuration of SA receivers.
+*
 * Revision 1.16  2004/11/18 23:38:28  mfisher
 * Debuglevel'd out some (but not all) debug printouts
 *
@@ -128,6 +131,8 @@ INT CtiProtocolSA3rdParty::parseCommand(CtiCommandParser &parse, CtiOutMessage &
     case ProtocolSADigitalType:
         {
             _sa._groupType = SADIG;
+            _sa._mark = parse.getiValue("sa_mark");
+            _sa._space = parse.getiValue("sa_space");
             strncpy(_sa._codeSimple, parse.getsValue("sa_codesimple").data(), 7);
             break;
         }
@@ -241,7 +246,7 @@ INT CtiProtocolSA3rdParty::parseCommand(CtiCommandParser &parse, CtiOutMessage &
                     int i, clsec, clpCount;
                     for(i = 1; i <= 4; i++)
                     {
-                        clpstr = RWCString("coldload_r") + CtiNumStr(i); // coldload_r1,,... coldload_r4
+                        clpstr = RWCString("sa_clpf") + CtiNumStr(i); // coldload_r1,,... coldload_r4
 
                         if( (clsec = parse.getiValue(clpstr,-1)) >= 0 )
                         {
@@ -281,7 +286,7 @@ INT CtiProtocolSA3rdParty::parseCommand(CtiCommandParser &parse, CtiOutMessage &
                     int i, tdCount;
                     for(i = 1; i <= 4; i++)
                     {
-                        tdstr = RWCString("tamperdetect_r") + CtiNumStr(i);
+                        tdstr = RWCString("tamperdetect_f") + CtiNumStr(i);
 
                         if( (tdCount = parse.getiValue(tdstr,-1)) >= 0 )
                         {
@@ -413,6 +418,21 @@ INT CtiProtocolSA3rdParty::assemblePutConfig(CtiCommandParser &parse, CtiOutMess
             }
         }
     }
+    else if(str.contains(" override"))
+    {
+        INT offtime = 0;
+
+        if(!(token = str.match(" override +[0-9]+")).isNull())
+        {
+            str = token.match("[0-9]+");
+            offtime = atoi(str.data());
+            {
+                CtiLockGuard<CtiLogger> slog_guard(slog);
+                slog << RWTime() << " Temporary service command. Serial " << parse.getiValue("serial") << " Offhours = " << offtime << endl;
+            }
+            parse.setValue("sa_offtime", offtime);              // Stored as a string because the Telvent lib wants it that way!!
+        }
+    }
     else if(str.contains(" service"))
     {
         if(str.contains(" temp") && !(token = str.match("service +((in)|(out)|(enable)|(disable))")).isNull())
@@ -445,7 +465,6 @@ INT CtiProtocolSA3rdParty::assemblePutConfig(CtiCommandParser &parse, CtiOutMess
     else if(parse.isKeyValid("sa_tamper"))
     {
     }
-
 
     return status;
 }
@@ -509,9 +528,10 @@ INT CtiProtocolSA3rdParty::loadControl()
         }
     case SADIG:
         {
-            retCode = controlSADigital(_sa._buffer, &_sa._bufferLen, _sa._codeSimple, _sa._transmitterAddress,
-                                       gConfigParms.getValueAsInt("SADIGITIAL_MARK_INDEX",3),
-                                       gConfigParms.getValueAsInt("SADIGITIAL_SPARE_INDEX",10));
+            retCode = controlSADigital(_sa._buffer, &_sa._bufferLen, _sa._codeSimple,
+                                       _sa._transmitterAddress,
+                                       _sa._mark,                                                                       // gConfigParms.getValueAsInt("SADIGITAL_MARK_INDEX",3),
+                                       _sa._space);                                                                     // gConfigParms.getValueAsInt("SADIGITAL_SPACE_INDEX",10));
 
             if( getDebugLevel() & DEBUGLEVEL_SA3RDPARTY )
             {

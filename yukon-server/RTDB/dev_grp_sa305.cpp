@@ -8,11 +8,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2004/11/05 17:25:59 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2004/11/24 17:11:17 $
 *
 * HISTORY      :
 * $Log: dev_grp_sa305.cpp,v $
+* Revision 1.8  2004/11/24 17:11:17  cplender
+* Working on the configuration of SA receivers.
+*
 * Revision 1.7  2004/11/05 17:25:59  cplender
 *
 * Getting 305s to work
@@ -209,6 +212,7 @@ INT CtiDeviceGroupSA305::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
         OutMessage->MessageFlags |= MSGFLG_APPLY_EXCLUSION_LOGIC;
         // OutMessage->Retry = 0;
         OutMessage->Retry = gConfigParms.getValueAsInt("PORTER_SA_REPEATS", 1);
+        OutMessage->ExpirationTime = RWTime().seconds() + parse.getiValue("control_interval", 300); // Time this out in 5 minutes or the setting.
 
         int serial = (int)(getLoadGroup().getIndividual());
 

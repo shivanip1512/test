@@ -8,11 +8,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2004/11/17 23:42:38 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2004/11/24 17:11:16 $
 *
 * HISTORY      :
 * $Log: prot_sa305.cpp,v $
+* Revision 1.6  2004/11/24 17:11:16  cplender
+* Working on the configuration of SA receivers.
+*
 * Revision 1.5  2004/11/17 23:42:38  cplender
 * Complete 305 for RTC transmitter
 *
@@ -415,10 +418,10 @@ INT CtiProtocolSA305::parseCommand(CtiCommandParser &parse, CtiOutMessage &OutMe
 {
     INT status = NORMAL;
 
-
-
     // These elements of addressing must be defined.
     if(_utility <= 0) _utility = parse.getiValue("sa_utility");
+    if(_utility <= 0) _utility = gConfigParms.getValueAsInt("PROTOCOL_305_UTILITY_ADDRESS",0);   // Back up plan.
+
     if(_rateFamily <= 0) _rateFamily = parse.getiValue("sa_ratefamily", 0);
     if(_rateMember <= 0) _rateMember = parse.getiValue("sa_ratemember", 0);
 

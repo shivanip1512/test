@@ -4255,6 +4255,19 @@ void CtiCommandParser::doParsePutConfigSA(const RWCString &CmdStr)
 
     temp = tok(); // Get the first one into the hopper....
 
+
+    if(CmdStr.contains(" utility"))
+    {
+        if(!(temp = CmdStr.match(" utility +[0-9]+")).isNull())
+        {
+            if(!(valStr = temp.match("[0-9]+")).isNull())
+            {
+                iValue = atoi(valStr.data());
+                _cmd["sa_utility"] = CtiParseValue( iValue );
+            }
+        }
+    }
+
     if(CmdStr.contains(" priority"))
     {
         if(!(temp = CmdStr.match(" priority +[0-9]+")).isNull())
@@ -4267,78 +4280,29 @@ void CtiCommandParser::doParsePutConfigSA(const RWCString &CmdStr)
         }
     }
 
-    if(!(CmdStr.match(" cold")).isNull())
-    {
-        if(!(token = CmdStr.match("cold[ a-z_]*" \
-                                  "( *r[1234][ =]*[0-9]+[ =]*[hms]?)" \
-                                  "( *r[1234][ =]*[0-9]+[ =]*[hms]?)?" \
-                                  "( *r[1234][ =]*[0-9]+[ =]*[hms]?)?" \
-                                  "( *r[1234][ =]*[0-9]+[ =]*[hms]?)?")).isNull())
-        {
-            // dout << token << endl;
-            _cmd["sa_coldload"] = TRUE;
-
-            if(!(strnum = token.match("r1[ =]*[0-9]+[ =]*[hms]?")).isNull())
-            {
-                strnum.replace(0, 2, " "); // Blank the r1 to prevent matches on the 1
-                _num = convertTimeInputToSeconds(strnum);
-                _cmd["coldload_r1"] = CtiParseValue( _num );
-
-                _snprintf(tbuf, sizeof(tbuf), "CONFIG COLDLOAD R1 = %d", _num);
-                _actionItems.insert(tbuf);
-            }
-            if(!(strnum = token.match("r2[ =]*[0-9]+[ =]*[hms]?")).isNull())
-            {
-                strnum.replace(0, 2, " "); // Blank the r1 to prevent matches on the 1
-                _num = convertTimeInputToSeconds(strnum);
-                _cmd["coldload_r2"] = CtiParseValue( _num );
-
-                _snprintf(tbuf, sizeof(tbuf), "CONFIG COLDLOAD R2 = %d", _num);
-                _actionItems.insert(tbuf);
-            }
-            if(!(strnum = token.match("r3[ =]*[0-9]+[ =]*[hms]?")).isNull())
-            {
-                strnum.replace(0, 2, " "); // Blank the r1 to prevent matches on the 1
-                _num = convertTimeInputToSeconds(strnum);
-                _cmd["coldload_r3"] = CtiParseValue( _num );
-
-                _snprintf(tbuf, sizeof(tbuf), "CONFIG COLDLOAD R3 = %d", _num);
-                _actionItems.insert(tbuf);
-            }
-            if(!(strnum = token.match("r4[ =]*[0-9]+[ =]*[hms]?")).isNull())
-            {
-                strnum.replace(0, 2, " "); // Blank the r1 to prevent matches on the 1
-                _num = convertTimeInputToSeconds(strnum);
-                _cmd["coldload_r4"] = CtiParseValue( _num );
-
-                _snprintf(tbuf, sizeof(tbuf), "CONFIG COLDLOAD R4 = %d", _num);
-                _actionItems.insert(tbuf);
-            }
-        }
-    }
-    else if(!(CmdStr.match(" tamper")).isNull())
+    if(!(CmdStr.match(" tamper")).isNull())
     {
         if(!(token = CmdStr.match("tamper[ a-z_]*" \
-                                  "( *r[12][ =]*[0-9]+)" \
-                                  "( *r[12][ =]*[0-9]+)?")).isNull())
+                                  "( *f[12][ =]*[0-9]+)" \
+                                  "( *f[12][ =]*[0-9]+)?")).isNull())
         {
             // dout << token << endl;
             _cmd["sa_tamper"] = TRUE;
 
-            if(!(strnum = token.match("r1[ =]*[0-9]+")).isNull())
+            if(!(strnum = token.match("f1[ =]*[0-9]+")).isNull())
             {
                 strnum.replace(0, 2, " "); // Blank the r1 to prevent matches on the 1
                 _num = atoi(strnum.match("[0-9]+").data());
-                _cmd["tamperdetect_r1"] = CtiParseValue( _num );
+                _cmd["tamperdetect_f1"] = CtiParseValue( _num );
 
                 _snprintf(tbuf, sizeof(tbuf), "CONFIG TAMPER COUNT R1 = %d", _num);
                 _actionItems.insert(tbuf);
             }
-            if(!(strnum = token.match("r2[ =]*[0-9]+")).isNull())
+            if(!(strnum = token.match("f2[ =]*[0-9]+")).isNull())
             {
                 strnum.replace(0, 2, " "); // Blank the r1 to prevent matches on the 1
                 _num = atoi(strnum.match("[0-9]+").data());
-                _cmd["tamperdetect_r2"] = CtiParseValue( _num );
+                _cmd["tamperdetect_f2"] = CtiParseValue( _num );
 
                 _snprintf(tbuf, sizeof(tbuf), "CONFIG TAMPER COUNT R2 = %d", _num);
                 _actionItems.insert(tbuf);
@@ -4414,7 +4378,7 @@ void CtiCommandParser::doParsePutConfigSA(const RWCString &CmdStr)
             _cmd["sa_f0bit"] = 1;
             _cmd["sa_assign"] = TRUE;
 
-            if(!(valStr = CmdStr.match(" u[ =]*[0-9]+")).isNull())  // Must be included
+            if(!isKeyValid("sa_utility") &&  !(valStr = CmdStr.match(" u[ =]*[0-9]+")).isNull())  // Must be included (either way is ok)
             {
                 _num = strtol(valStr.match(re_num).data(), &p, 0);
                 _cmd["sa_utility"] = CtiParseValue( _num );
@@ -4476,6 +4440,7 @@ void CtiCommandParser::doParsePutConfigSA(const RWCString &CmdStr)
             _cmd["sa_f0bit"] = 0; // This is a short stuff config.
             if(CmdStr.contains(" coldload"))
             {
+                _cmd["sa_coldload"] = TRUE;
                 // Assume seconds is the input here!
                 if(!(temp = CmdStr.match(" coldload +f1[ =]+[0-9]+")).isNull())
                 {
