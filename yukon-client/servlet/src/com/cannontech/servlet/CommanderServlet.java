@@ -26,20 +26,16 @@ PARAMETERS
  clearResult		- flag (not null)indicating to clear the resultText data field
  timeOut			- Time in millis to wait for a response to come back from YC before ignoring it.
  REDIRECT			- where the servlet should go after the post
+ updateDB			- flag for writing command result to the database(RPH)
 */
-
-import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.cannontech.database.cache.functions.PAOFuncs;
-import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.db.point.RawPointHistory;
 import com.cannontech.util.ServletUtil;
-import com.cannontech.yc.gui.YC;
+import com.cannontech.yc.bean.YCBean;;
 
 public class CommanderServlet extends javax.servlet.http.HttpServlet 
 {
@@ -51,26 +47,26 @@ public class CommanderServlet extends javax.servlet.http.HttpServlet
 		LiteYukonUser user = (LiteYukonUser) session.getAttribute(ServletUtil.ATT_YUKON_USER);
 
 		/**Create a YC bean for the session if one does not already exist.*/
-		YC localBean = (YC)session.getAttribute(ServletUtil.ATT_YC_BEAN);
+		YCBean localBean = (YCBean)session.getAttribute(ServletUtil.ATT_YC_BEAN);
 		if(localBean == null)
 		{
-			session.setAttribute(ServletUtil.ATT_YC_BEAN, new YC());
-			localBean = (YC)session.getAttribute(ServletUtil.ATT_YC_BEAN);
+			session.setAttribute(ServletUtil.ATT_YC_BEAN, new YCBean());
+			localBean = (YCBean)session.getAttribute(ServletUtil.ATT_YC_BEAN);
 		}
 		
 
 		/**Debug print of all parameter names.*/
-/*		java.util.Enumeration enum1 = req.getParameterNames();
+		java.util.Enumeration enum1 = req.getParameterNames();
 		  while (enum1.hasMoreElements()) {
 		  	String ele = enum1.nextElement().toString();
 			 System.out.println(" --" + ele + "  " + req.getParameter(ele));
-		 }*/
+		 }
 		
 		/**deviceID(opt1) or SerialNumber(opt2) must exist!
 		 * deviceID/serialNumber command is sent. */
 		String deviceID = req.getParameter("deviceID");
 		String serialNumber = req.getParameter("serialNumber");
-		
+
 		/** Specific route to send on, only used in the case of loops or serial number is used
 		 * When sending to a device, the route is ignored and the porter connection takes care
 		 * of sending the command on the device's assigned route. */
@@ -78,10 +74,12 @@ public class CommanderServlet extends javax.servlet.http.HttpServlet
 		//Flag to clear the resultText, no commands sent
 		String clear = req.getParameter("clearText");
 
+		//Flag to write to the database
+		String updateDB = req.getParameter("updateDB");
 		if (clear != null)
 			localBean.clearResultText();
 		else
-		{					
+		{
 			String function = req.getParameter("function");	//user friendly command string
 			String command = req.getParameter("command");	//system command string
 			/** Time to wait for return to calling jsp
@@ -93,22 +91,23 @@ public class CommanderServlet extends javax.servlet.http.HttpServlet
 			localBean.setTimeOut(new Integer(timeOut).intValue());
 			
 			//Set our yc bean command string
-			if( command != null)
-				localBean.setCommandString(command);
 			if( command == null )
 			{
 				/** If we have no command string, see if there is a function and find it's
 				 * corresponding command string.  (Will substitute based on key=value
 				 * pairs found in the commands file directory for a particular device. */ 
 				if( function != null)
-				{
 					command = localBean.getCommandFromLabel(function);
-				}
 				else
-				{
-					//QUIT - WE HAVE NO COMMAND?
-				}
+					//WE HAVE NO COMMAND?
+					command = "";
 			}
+			//append 'update' to the command
+			if( updateDB != null)
+				command += " update";
+			
+			localBean.setCommandString(command);
+			
 			//Send the command out on deviceID/serialNumber
 			if( deviceID != null )
 			{	
@@ -145,24 +144,5 @@ public class CommanderServlet extends javax.servlet.http.HttpServlet
 		else {
 			resp.sendRedirect(req.getContextPath() + "/operator/Operations.jsp");
 		}
-	}
-	
-	/**
-	 * Returns a RawPointHistory from HashMap, where deviceID is used to gain a collectino of LitePoints.
-	 * PointOffset and PointType is used to select one of the LitePoints.
-	 */
-	public static RawPointHistory getRPHData(int deviceID, int pointOffset, int pointType, HashMap rphData)
-	{
-		RawPointHistory rph = null;
-		
-		LitePoint [] litePoints = PAOFuncs.getLitePointsForPAObject(deviceID);
-		for (int i = 0; i < litePoints.length; i++)
-		{
-			LitePoint lp = litePoints[i];
-			if( lp.getPointOffset() == pointOffset && pointType == lp.getPointType())
-				return (RawPointHistory)rphData.get(new Integer(lp.getPointID()));
-		}
-		
-		return rph;
 	}
 }
