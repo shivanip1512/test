@@ -4,7 +4,9 @@ import java.awt.Color;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.commonutils.ModifiedDate;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.loadcontrol.data.IGearProgram;
@@ -20,8 +22,11 @@ import com.cannontech.loadcontrol.datamodels.GroupTableModel;
 import com.cannontech.loadcontrol.datamodels.ProgramTableModel;
 import com.cannontech.loadcontrol.displays.ControlAreaActionListener;
 import com.cannontech.loadcontrol.gui.MultiLineControlAreaRenderer;
+import com.cannontech.loadcontrol.gui.manualentry.ResponseProg;
 import com.cannontech.loadcontrol.messages.LMManualControlRequest;
-import com.cannontech.user.UserUtils;
+import com.cannontech.loadcontrol.messages.LMManualControlResponse;
+import com.cannontech.message.server.ServerResponseMsg;
+import com.cannontech.message.util.ServerRequest;
 import com.cannontech.util.ServletUtil;
 
 
@@ -637,4 +642,60 @@ public class LCUtils
 						program,
 						(isStop ? null : new Integer(gearNum)) );
 	}
+	
+	
+	/**
+	 * Executes a batch of requests and waits for their corresponding responses.
+	 * Return false if an error occured, else true.
+	 * If programResp is null, the response from the server is not saved.
+	 * 
+	 * @param lmReqs
+	 * @param programResp
+	 * @return
+	 */
+	public static synchronized boolean executeSyncMessage(
+				LMManualControlRequest[] lmReqs,
+				ResponseProg[] programResp )
+	{
+		boolean success = true;
+
+		try
+		{ 
+			ServerRequest[] srvReqs = ServerRequest.makeServerRequests(
+					LoadControlClientConnection.getInstance(), lmReqs);
+					
+			//what we will show our user
+			ServerResponseMsg[] responseMsgs = new ServerResponseMsg[ srvReqs.length ];
+
+			for( int i = 0; i < srvReqs.length; i++ )
+			{
+				responseMsgs[i] = srvReqs[i].execute();
+			}
+					
+			//fill in our responses
+			for( int i = 0; i < responseMsgs.length && programResp != null; i++ )
+			{
+				// some type of error occured
+				programResp[i].setStatus( responseMsgs[i].getStatus() );
+
+				LMManualControlResponse lmResp = (LMManualControlResponse) responseMsgs[i].getPayload();
+				if(lmResp != null)
+				{
+					//do something interesting.
+					List violationStrs = lmResp.getConstraintViolations();
+					for( int j = 0; j < violationStrs.size(); j++, success = false )
+						programResp[i].addViolation( violationStrs.get(j).toString() );
+				}
+			}
+
+		}
+		catch(Exception e)
+		{
+			CTILogger.error( "No response received from server", e );
+		}
+
+		return success;
+	}
+
+
 }

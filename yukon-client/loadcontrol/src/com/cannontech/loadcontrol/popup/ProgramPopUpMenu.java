@@ -5,25 +5,21 @@ package com.cannontech.loadcontrol.popup;
  * Creation date: (1/21/2001 4:40:03 PM)
  * @author: 
  */
-import java.util.List;
-
-import javax.swing.JOptionPane;
-
 import com.cannontech.common.gui.panel.ManualChangeJPanel;
+import com.cannontech.common.gui.util.OkCancelDialog;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.loadcontrol.LCUtils;
-import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.data.LMProgramCurtailment;
 import com.cannontech.loadcontrol.data.LMProgramDirect;
+import com.cannontech.loadcontrol.gui.manualentry.ConstraintResponsePanel;
 import com.cannontech.loadcontrol.gui.manualentry.CurtailmentEntryPanel;
 import com.cannontech.loadcontrol.gui.manualentry.DirectControlJPanel;
 import com.cannontech.loadcontrol.gui.manualentry.MultiSelectProg;
+import com.cannontech.loadcontrol.gui.manualentry.ResponseProg;
 import com.cannontech.loadcontrol.messages.LMCommand;
 import com.cannontech.loadcontrol.messages.LMManualControlRequest;
-import com.cannontech.loadcontrol.messages.LMManualControlResponse;
-import com.cannontech.message.server.ServerResponseMsg;
-import com.cannontech.message.util.ServerRequest;
+import com.cannontech.message.dispatch.message.Multi;
 
 public class ProgramPopUpMenu extends javax.swing.JPopupMenu implements java.awt.event.ActionListener
 {
@@ -259,64 +255,58 @@ private void showDirectManualEntry( final int panelMode )
 	
 			if( selected != null )
 			{
-				//create a multi to hold all of our messages
-				com.cannontech.message.dispatch.message.Multi multi = 
-						new com.cannontech.message.dispatch.message.Multi();
-		
+				LMManualControlRequest[] lmReqs =
+					new LMManualControlRequest[ selected.length ];
+
+				ResponseProg[] programResp =
+					new ResponseProg[ selected.length ];
+
 				for( int i = 0; i < selected.length; i++ )
 				{
-					multi.getVector().add( 
-							panel.createMessage(
-									selected[i].getBaseProgram(),
-									selected[i].getGearNum() ) );
+					lmReqs[i] = panel.createMessage(
+							selected[i].getBaseProgram(),
+							selected[i].getGearNum() );
+					
+					programResp[i] = new ResponseProg(
+							selected[i].getBaseProgram(),
+							selected[i].getGearNum() );
 				}
-	
-				if( multi.getVector().size() == 1 )
-				{
-					try
-					{ 
-						LMManualControlRequest lmReq = 
-								(LMManualControlRequest)multi.getVector().get(0);
 
-						ServerRequest req = ServerRequest.makeServerRequest(
-								LoadControlClientConnection.getInstance(), lmReq);
-						
-						//what we will show our client
-						String resStr = null;
-
-						ServerResponseMsg responseMsg = req.execute(30000); //30 seconds
-						if(responseMsg.getStatus() != ServerResponseMsg.STATUS_OK)
-						{
-							// some type of error occured
-							resStr = "Messaging problem occured: " 
-									+ responseMsg.getStatusStr() +
-									System.getProperty("line.separator") + System.getProperty("line.separator");
-						}
-	
-						LMManualControlResponse lmResp = (LMManualControlResponse) responseMsg.getPayload();
-						if(lmResp != null)
-						{
-							//do something interesting.
-							List violationStrs = lmResp.getConstraintViolations();
-							for( int i = 0; i < violationStrs.size(); i++ )
-								resStr += violationStrs.get(i) + System.getProperty("line.separator");
-						}
-						
-						if( resStr != null )
-							JOptionPane.showMessageDialog( this, resStr,
-								"Program Constraint Violated",
-								JOptionPane.WARNING_MESSAGE );	
-					}
-					catch(Exception e)
-					{
-						// didn't get a response!
-					}
-
-				}
-				else  //the old way of doing things for now
-					LoadControlClientConnection.getInstance().write(multi);
 				
+				boolean success = LCUtils.executeSyncMessage( lmReqs, programResp );
 
+				
+				if( !success )
+				{
+					final ConstraintResponsePanel constrPanel = new ConstraintResponsePanel();
+					OkCancelDialog diag = new OkCancelDialog(
+						CtiUtilities.getParentFrame(this),
+						"Program Constraint Violation",
+						true,
+						constrPanel );
+
+					//set our responses
+					constrPanel.setValue( programResp );
+					
+					diag.setCancelButtonVisible( false );					
+					diag.setResizable( true );
+					diag.setSize( 640, 350 );
+					diag.setLocationRelativeTo( this );
+
+					diag.show();
+
+					ResponseProg[] respArr = 
+						(ResponseProg[])constrPanel.getValue( null );
+						
+					if( diag.getButtonPressed() == OkCancelDialog.OK_PRESSED
+						&& respArr.length > 0 )
+					{
+						sendOverrides( respArr, panel );
+					}
+
+					diag.dispose();
+
+				}
 				
 				
 			}
@@ -331,6 +321,26 @@ private void showDirectManualEntry( final int panelMode )
 	d.dispose();
 	
 }
+
+private void sendOverrides( ResponseProg[] respArr, DirectControlJPanel panel )
+{
+	LMManualControlRequest[] lmReqs =
+		new LMManualControlRequest[ respArr.length ];
+
+	for( int i = 0; i < respArr.length; i++ )
+	{
+		lmReqs[i] = 
+			panel.createMessage(
+				respArr[i].getProgram(),
+				respArr[i].getGearNum() );
+
+		lmReqs[i].setOverrideConstraints( true );
+	}
+
+	LCUtils.executeSyncMessage( lmReqs, null );
+
+}
+
 
 /**
  * Insert the method's description here.

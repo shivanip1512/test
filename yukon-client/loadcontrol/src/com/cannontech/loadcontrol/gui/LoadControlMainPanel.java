@@ -13,9 +13,11 @@ import javax.swing.table.TableModel;
 
 import com.cannontech.common.gui.panel.CompositeJSplitPane;
 import com.cannontech.common.gui.panel.ManualChangeJPanel;
+import com.cannontech.common.gui.util.OkCancelDialog;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.functions.RoleFuncs;
+import com.cannontech.loadcontrol.LCUtils;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.data.LMGroupBase;
@@ -29,9 +31,12 @@ import com.cannontech.loadcontrol.datamodels.IProgramTableModel;
 import com.cannontech.loadcontrol.datamodels.ProgramTableModel;
 import com.cannontech.loadcontrol.displays.*;
 import com.cannontech.loadcontrol.events.LCChangeEvent;
+import com.cannontech.loadcontrol.gui.manualentry.ConstraintResponsePanel;
 import com.cannontech.loadcontrol.gui.manualentry.DirectControlJPanel;
 import com.cannontech.loadcontrol.gui.manualentry.MultiSelectProg;
+import com.cannontech.loadcontrol.gui.manualentry.ResponseProg;
 import com.cannontech.loadcontrol.messages.LMCommand;
+import com.cannontech.loadcontrol.messages.LMManualControlRequest;
 import com.cannontech.loadcontrol.popup.ControlAreaPopUpMenu;
 import com.cannontech.loadcontrol.popup.GroupPopUpMenu;
 import com.cannontech.loadcontrol.popup.ProgramPopUpMenu;
@@ -302,7 +307,7 @@ public void buttonBarPanel_JButtonEnableAllAction_actionPerformed(java.util.Even
  */
 public void buttonBarPanel_JButtonStartScenarioAction_actionPerformed(java.util.EventObject newEvent) 
 {
-	showControlScenarioWin( DirectControlJPanel.MODE_START_STOP );
+	showContScenWindow( DirectControlJPanel.MODE_START_STOP );
 
 }
 
@@ -311,7 +316,7 @@ public void buttonBarPanel_JButtonStartScenarioAction_actionPerformed(java.util.
  */
 public void buttonBarPanel_JButtonStopScenarioAction_actionPerformed(java.util.EventObject newEvent) 
 {
-	showControlScenarioWin( DirectControlJPanel.MODE_STOP );		
+	showContScenWindow( DirectControlJPanel.MODE_STOP );		
 }
 
 
@@ -319,7 +324,7 @@ public void buttonBarPanel_JButtonStopScenarioAction_actionPerformed(java.util.E
  * Insert the method's description here.
  * Creation date: (7/16/2001 5:05:29 PM)
  */
-private void showControlScenarioWin( final int panelMode ) 
+private void showContScenWindow( final int panelMode ) 
 {
 	Hashtable allProgs = new Hashtable( getControlAreaTableModel().getRowCount() * 3 ); //just a guess
 
@@ -369,17 +374,60 @@ private void showControlScenarioWin( final int panelMode )
 	
 			if( selected != null )
 			{
-				//create a multi to hold all of our messages
-				com.cannontech.message.dispatch.message.Multi multi = 
-						new com.cannontech.message.dispatch.message.Multi();
-		
+				LMManualControlRequest[] lmReqs =
+					new LMManualControlRequest[ selected.length ];
+
+				ResponseProg[] programResp =
+					new ResponseProg[ selected.length ];
+
 				for( int i = 0; i < selected.length; i++ )
 				{
-					multi.getVector().add( 
-							panel.createScenarioMessage( selected[i] ) );
+					lmReqs[i] = panel.createMessage(
+							selected[i].getBaseProgram(),
+							selected[i].getGearNum() );
+					
+					programResp[i] = new ResponseProg(
+							selected[i].getBaseProgram(),
+							selected[i].getGearNum() );
 				}
-	
-				LoadControlClientConnection.getInstance().write(multi);
+
+				
+				boolean success = LCUtils.executeSyncMessage( lmReqs, programResp );
+
+				
+				if( !success )
+				{
+					final ConstraintResponsePanel constrPanel = new ConstraintResponsePanel();
+					OkCancelDialog diag = new OkCancelDialog(
+						CtiUtilities.getParentFrame(this),
+						"Program Constraint Violation",
+						true,
+						constrPanel );
+
+					//set our responses
+					constrPanel.setValue( programResp );
+					
+					diag.setCancelButtonVisible( false );					
+					diag.setResizable( true );
+					diag.setSize( 640, 350 );
+					diag.setLocationRelativeTo( this );
+
+					diag.show();
+
+					ResponseProg[] respArr = 
+						(ResponseProg[])constrPanel.getValue( null );
+						
+					if( diag.getButtonPressed() == OkCancelDialog.OK_PRESSED
+						&& respArr.length > 0 )
+					{
+						sendOverrides( respArr, panel );
+					}
+
+					diag.dispose();
+
+				}
+				
+				
 			}
 	
 	
@@ -398,6 +446,25 @@ private void showControlScenarioWin( final int panelMode )
 
 	//destroy the JDialog
 	d.dispose();
+
+}
+
+private void sendOverrides( ResponseProg[] respArr, DirectControlJPanel panel )
+{
+	LMManualControlRequest[] lmReqs =
+		new LMManualControlRequest[ respArr.length ];
+
+	for( int i = 0; i < respArr.length; i++ )
+	{
+		lmReqs[i] = 
+			panel.createMessage(
+				respArr[i].getProgram(),
+				respArr[i].getGearNum() );
+
+		lmReqs[i].setOverrideConstraints( true );
+	}
+
+	LCUtils.executeSyncMessage( lmReqs, null );
 
 }
 
