@@ -27,7 +27,8 @@ public interface YukonSelectionListDefs {
 	public static final String YUK_LIST_NAME_SERVICE_STATUS = "ServiceStatus";
 	public static final String YUK_LIST_NAME_SEARCH_TYPE = "SearchBy";
 	public static final String YUK_LIST_NAME_MANUFACTURER = "Manufacturer";
-	public static final String YUK_LIST_NAME_LOCATION = "ApplianceLocation";
+	public static final String YUK_LIST_NAME_APP_LOCATION = "ApplianceLocation";
+	public static final String YUK_LIST_NAME_DEVICE_LOCATION = "DeviceLocation";
 	public static final String YUK_LIST_NAME_CHANCE_OF_CONTROL = "ChanceOfControl";
 	public static final String YUK_LIST_NAME_TIME_OF_WEEK = "TimeOfWeek";
 	public static final String YUK_LIST_NAME_QUESTION_TYPE = "QuestionType";
@@ -46,5 +47,21 @@ public interface YukonSelectionListDefs {
 	public static final String YUK_LIST_NAME_NUM_OF_OCCUPANTS = "NumberOfOccupants";
 	public static final String YUK_LIST_NAME_OWNERSHIP_TYPE = "OwnershipType";
 	public static final String YUK_LIST_NAME_FUEL_TYPE = "FuelType";
+	public static final String YUK_LIST_NAME_TONNAGE = "Tonnage";
+	public static final String YUK_LIST_NAME_AC_TYPE = "ACType";
+	public static final String YUK_LIST_NAME_NUM_OF_GALLONS = "NumberOfGallons";
+	public static final String YUK_LIST_NAME_ENERGY_SOURCE = "EnergySource";
+	public static final String YUK_LIST_NAME_SWITCH_OVER_TYPE = "SwitchOverType";
+	public static final String YUK_LIST_NAME_TRANSFER_SWITCH_TYPE = "TransferSwitchType";
+	public static final String YUK_LIST_NAME_TRANSFER_SWITCH_MFG = "TranferSwitchMfg";
+	public static final String YUK_LIST_NAME_DRYER_TYPE = "DryerType";
+	public static final String YUK_LIST_NAME_BIN_SIZE = "BinSize";
+	public static final String YUK_LIST_NAME_HORSE_POWER = "HorsePower";
+	public static final String YUK_LIST_NAME_HEAT_SOURCE = "HeatSource";
+	public static final String YUK_LIST_NAME_STORAGE_TYPE = "StorageType";
+	public static final String YUK_LIST_NAME_PUMP_TYPE = "PumpType";
+	public static final String YUK_LIST_NAME_STANDBY_SOURCE = "StandbySource";
+	public static final String YUK_LIST_NAME_IRRIGATION_TYPE = "IrrigationType";
+	public static final String YUK_LIST_NAME_SOIL_TYPE = "SoilType";
 	
 }
