@@ -1,5 +1,6 @@
 package com.cannontech.database;
 
+import java.net.InetAddress;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -234,15 +235,30 @@ public class ConnectionPool
    private Connection newConnection() throws SQLException
    {
 	  Connection conn = null;
-	  if (user == null) {
-		 conn = DriverManager.getConnection(URL);
+
+	  /*************************************************************************/
+	  /** THESE PROPERTIES MUST BE RECOGNIZED BY THE DB DRIVER TO WORK!!!     **/
+	  /*************************************************************************/
+	  java.util.Properties p = new java.util.Properties();
+	  p.put("user", user);
+	  p.put("password", password);
+	  p.put("programname", System.getProperty("cti.app.name"));
+
+	  try
+	  {
+	  	  conn = DriverManager.getConnection(URL, p);
+	  	  CTILogger.debug("Opened a new connection" );
 	  }
-	  else {
-		 conn = DriverManager.getConnection(URL, user, password);
+	  catch( Exception e )
+	  {
+	  	  //try to connect the old way!
+		  conn = DriverManager.getConnection(URL, user, password);
+		  CTILogger.debug("Opened a new connection using an out dated connection method" );	  	
 	  }
-	  CTILogger.debug("Opened a new connection" );
+
 	  return conn;
    }
+   
    public synchronized void release()
    {
 	  Enumeration allConnections = freeConnections.elements();
