@@ -10,7 +10,6 @@ import com.cannontech.yukon.IYukon;
 // ---------------------------------------------------------------------------------   
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.database.cache.DBChangeListener;
-import com.cannontech.database.cache.CacheDBChangeListener;
 import com.cannontech.database.data.lite.LiteBase;
 
 // ---------------------------------------------------------------------------------

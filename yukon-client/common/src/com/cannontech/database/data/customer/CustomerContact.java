@@ -1,5 +1,7 @@
 package com.cannontech.database.data.customer;
 
+import com.cannontech.database.db.user.YukonUser;
+
 /**
  * This type was created in VisualAge.
  */
@@ -7,7 +9,8 @@ package com.cannontech.database.data.customer;
 public class CustomerContact extends com.cannontech.database.db.DBPersistent implements com.cannontech.database.db.CTIDbChange, com.cannontech.common.editor.EditorPanel
 {
 	private com.cannontech.database.db.customer.CustomerContact customerContact = null;
-	private com.cannontech.database.db.customer.CustomerLogin customerLogin = null;
+	private com.cannontech.database.db.user.YukonUser yukonUser = null;
+	
 /**
  * StatusPoint constructor comment.
  */
@@ -27,21 +30,23 @@ public CustomerContact(Integer contactID) {
  */
 public void add() throws java.sql.SQLException 
 {
-	getCustomerLogin().add();
+	getYukonUser().add();
 	getCustomerContact().add();
 }
-/**
+/** 
  * This method was created in VisualAge.
  * @exception java.sql.SQLException The exception description.
  */
 public void delete() throws java.sql.SQLException 
 {
-	setLogInID( getCustomerContact().getLogInID() );
+	setUserID( getCustomerContact().getLogInID() );
 
 	getCustomerContact().delete();
 
-	if( getCustomerContact().getLogInID().intValue() > com.cannontech.database.db.customer.CustomerLogin.NONE_LOGIN_ID )
-		getCustomerLogin().delete();
+	if( getYukonUser().getUserID() == null &&
+		getYukonUser().getUserID().intValue() > YukonUser.INVALID_ID.intValue() ) {
+			getYukonUser().delete();
+		}
 }
 /**
  * Insert the method's description here.
@@ -55,18 +60,7 @@ public com.cannontech.database.db.customer.CustomerContact getCustomerContact()
 	
 	return customerContact;
 }
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 11:12:12 AM)
- * @return com.cannontech.database.db.customer.CustomerLogin
- */
-public com.cannontech.database.db.customer.CustomerLogin getCustomerLogin() 
-{
-	if( customerLogin == null )
-		customerLogin = new com.cannontech.database.db.customer.CustomerLogin();
-		
-	return customerLogin;
-}
+
 /**
  * Insert the method's description here.
  * Creation date: (12/19/2001 1:45:25 PM)
@@ -95,9 +89,10 @@ public void retrieve() throws java.sql.SQLException
 {
 	getCustomerContact().retrieve();
 
-	setLogInID( getCustomerContact().getLogInID() );
-	if( getCustomerContact().getLogInID().intValue() > com.cannontech.database.db.customer.CustomerLogin.NONE_LOGIN_ID )
-		getCustomerLogin().retrieve();
+	setUserID( getCustomerContact().getLogInID() );
+	if( getYukonUser().getUserID().intValue() > YukonUser.INVALID_ID.intValue() ) {
+		getYukonUser().retrieve();
+	}
 }
 /**
  * This method was created in VisualAge.
@@ -113,14 +108,7 @@ public void setContactID(Integer contactID) {
 public void setCustomerContact(com.cannontech.database.db.customer.CustomerContact newCustomerContact) {
 	customerContact = newCustomerContact;
 }
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 11:12:12 AM)
- * @param newCustomerLogin com.cannontech.database.db.customer.CustomerLogin
- */
-public void setCustomerLogin(com.cannontech.database.db.customer.CustomerLogin newCustomerLogin) {
-	customerLogin = newCustomerLogin;
-}
+
 /**
  * Insert the method's description here.
  * Creation date: (1/4/00 3:32:03 PM)
@@ -131,17 +119,12 @@ public void setDbConnection(java.sql.Connection conn)
 	super.setDbConnection(conn);
 
 	getCustomerContact().setDbConnection(conn);
-	getCustomerLogin().setDbConnection(conn);
+	getYukonUser().setDbConnection(conn);
 }
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 1:23:25 PM)
- * @param loginID java.lang.Integer
- */
-public void setLogInID(Integer loginID) 
-{
-	getCustomerContact().setLogInID( loginID );
-	getCustomerLogin().setLoginID( loginID );
+
+public void setUserID(Integer id) {
+	getCustomerContact().setLogInID(id);
+	getYukonUser().setUserID(id);
 }
 /**
  * This method was created in VisualAge.
@@ -157,16 +140,35 @@ public String toString()
  */
 public void update() throws java.sql.SQLException 
 {	
-	setLogInID( getCustomerContact().getLogInID() );
-	if( getCustomerContact().getLogInID().intValue() > com.cannontech.database.db.customer.CustomerLogin.NONE_LOGIN_ID )
+	setUserID( getCustomerContact().getLogInID() );
+	
+	/*FIXMEFIXME*/
+	/*if( getCustomerContact().getLogInID().intValue() > com.cannontech.database.db.customer.CustomerLogin.NONE_LOGIN_ID )
 	{
 		if( com.cannontech.database.db.customer.CustomerLogin.getCustomerLogin( getCustomerContact().getLogInID() ) != null )
 			getCustomerLogin().update();
 		else
 			getCustomerLogin().add();
 		
-	}
+	}*/
 
 	getCustomerContact().update();	
 }
+	/**
+	 * Returns the yukonUser.
+	 * @return com.cannontech.database.db.user.YukonUser
+	 */
+	public com.cannontech.database.db.user.YukonUser getYukonUser() {
+		return yukonUser;
+	}
+
+	/**
+	 * Sets the yukonUser.
+	 * @param yukonUser The yukonUser to set
+	 */
+	public void setYukonUser(
+		com.cannontech.database.db.user.YukonUser yukonUser) {
+		this.yukonUser = yukonUser;
+	}
+
 }

@@ -1,5 +1,10 @@
 package com.cannontech.database.cache.functions;
 
+import java.util.Iterator;
+
+import com.cannontech.database.data.lite.LiteCustomerContact;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
+
 /**
  * Insert the type's description here.
  * Creation date: (3/26/2001 9:40:33 AM)
@@ -64,5 +69,35 @@ public static java.util.List getAllCustomers()
 		return customers;
 	}
 
+}
+
+/**
+ * Finds the customer contact for this user id
+ * @param userID
+ * @return LiteCustomerContact
+ */
+public static LiteCustomerContact getCustomerContact(int userID) {
+	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+	synchronized(cache) {
+		Iterator iter = cache.getAllCustomerContacts().iterator();
+		while(iter.hasNext()) {
+			LiteCustomerContact contact = (LiteCustomerContact) iter.next();
+			if(contact.getUserID() == userID) {
+				return contact;
+			}
+		}		
+	}	
+	return null;
+}
+
+/**
+ * Finds a lite pao object representing the customer that
+ * that this user id belongs to
+S * @param userID
+ * @return LiteYukonPAObject
+ */
+public static LiteYukonPAObject getCustomer(int userID) {
+	LiteCustomerContact lcc = getCustomerContact(userID);
+	return PAOFuncs.getLiteYukonPAO(lcc.getCustomerID());
 }
 }

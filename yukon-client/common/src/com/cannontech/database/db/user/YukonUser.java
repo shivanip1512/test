@@ -7,13 +7,13 @@ import com.cannontech.database.db.DBPersistent;
 
 /**
  * @author alauinger
- *
  */
 public class YukonUser extends DBPersistent {
 
-	private static final String tableName = "YukonUser";
-	
-	private Integer userID;
+	public static final Integer INVALID_ID = new Integer(Integer.MIN_VALUE);
+	private static final String tableName = "YukonUser";	
+		
+	private Integer userID = INVALID_ID;
 	private String username;
 	private String password;
 	private Integer loginCount;

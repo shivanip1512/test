@@ -1,7 +1,5 @@
 package com.cannontech.yukon;
 
-import com.cannontech.message.util.Message;
-
 /**
  * Base interface for all yukon server connections
  * @author alauinger

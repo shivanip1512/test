@@ -60,6 +60,33 @@ public class AuthFuncs {
 		return null;		
 	}
 	
+	/**
+	 * Returns the value for a given user and role name.
+	 * @param user
+	 * @param roleName
+	 * @return String
+	 */
+	public static String getRoleValue(LiteYukonUser user, String roleName) {
+		return getRoleValue(user,roleName,null);
+	}
+	
+	/**
+	 * Returns the value for a given user and role name.
+	 * If the user doesn't have this role then returns defaultValue for convenience.
+	 * @param user
+	 * @param roleName
+	 * @param defaultValue
+	 * @return String
+	 */
+	public static String getRoleValue(LiteYukonUser user, String roleName, String defaultValue) {
+		Pair p = checkRole(user,roleName);
+		return (p != null ? (String)p.second : defaultValue);
+	}
+	
+	/**
+	 * Dont let anyone instantiate me
+	 * @see java.lang.Object#Object()
+	 */
 	private AuthFuncs() {
 	}
 	

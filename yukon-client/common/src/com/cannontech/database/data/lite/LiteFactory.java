@@ -86,7 +86,7 @@ public final static com.cannontech.database.db.DBPersistent createDBPersistent(L
 				((com.cannontech.database.data.customer.CustomerContact)returnObject).getCustomerContact().setContactID( new Integer(((LiteCustomerContact)liteObject).getContactID()) );
 				((com.cannontech.database.data.customer.CustomerContact)returnObject).getCustomerContact().setContFirstName( ((LiteCustomerContact)liteObject).getContFirstName() );
 				((com.cannontech.database.data.customer.CustomerContact)returnObject).getCustomerContact().setContLastName( ((LiteCustomerContact)liteObject).getContLastName() );
-				((com.cannontech.database.data.customer.CustomerContact)returnObject).setLogInID( new Integer( ((LiteCustomerContact)liteObject).getLoginID() ) );
+				((com.cannontech.database.data.customer.CustomerContact)returnObject).setUserID( new Integer( ((LiteCustomerContact)liteObject).getUserID() ) );
 				break;
 			case LiteTypes.DEVICE_METERNUMBER:
 				returnObject = new com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase();
@@ -106,7 +106,13 @@ public final static com.cannontech.database.db.DBPersistent createDBPersistent(L
             ((com.cannontech.database.db.state.YukonImage)returnObject).setImageCategory( ((LiteYukonImage)liteObject).getImageCategory() );
             break;            
          
-
+		case LiteTypes.YUKON_USER:
+			returnObject = new com.cannontech.database.data.user.YukonUser();
+	 		((com.cannontech.database.data.user.YukonUser)returnObject).setUserID( new Integer(((LiteYukonUser)liteObject).getUserID()) );
+	 		((com.cannontech.database.data.user.YukonUser)returnObject).setUsername( ((LiteYukonUser)liteObject).getUsername() );
+	 		((com.cannontech.database.data.user.YukonUser)returnObject).setPassword( ((LiteYukonUser)liteObject).getPassword() );
+	 		break;
+	 		
 			default:
 				returnObject = null;
 		}

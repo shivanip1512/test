@@ -6,7 +6,6 @@ package com.cannontech.util;
  * @author: 
  */
 
-import com.cannontech.database.data.web.User;
 public class ServletUtil {
 	// Valid periods
 	public static final String ONEDAY = "1 Day";
@@ -318,27 +317,7 @@ public static Object[][] executeSQL(javax.servlet.http.HttpSession session, Stri
 {
 	if( session == null )
 		return null;
-
-	User user = null;
-
-	try
-	{	
-		user = (User)session.getValue("USER");
-	}
-	catch( ClassCastException ex )
-	{
-		com.cannontech.clientutils.CTILogger.info("ClassCastException in : executeSQL(HTTPSession, String)");			
-		return null;
-	}
-
-	String dbAlias = user.getDatabaseAlias();
-		
-	if( user == null || dbAlias == null )
-	{
-		com.cannontech.clientutils.CTILogger.info("DBALIAS or USER is null in executeSQL(HTTPSession, STRING), probably not logged in");
-		return null;
-	}
-		
+			
 	java.sql.Connection connection = null;
 	java.sql.Statement statement = null;
 	java.sql.ResultSet resultSet = null;
@@ -347,7 +326,7 @@ public static Object[][] executeSQL(javax.servlet.http.HttpSession session, Stri
 	
 	try
 	{
-		connection = com.cannontech.database.PoolManager.getInstance().getConnection( dbAlias );
+		connection = com.cannontech.database.PoolManager.getInstance().getConnection("yukon");
 		statement = connection.createStatement();
 		resultSet = statement.executeQuery( query );
 		metaData = resultSet.getMetaData();
@@ -428,26 +407,7 @@ public static Object[][] executeSQL(javax.servlet.http.HttpSession session, Stri
 {
 	if( session == null )
 		return null;
-
-	User user = null;
-	try
-	{	
-		user = (User)session.getValue("USER");
-	}
-	catch( ClassCastException ex )
-	{
-		com.cannontech.clientutils.CTILogger.info("ClassCastException in : executeSQL(HTTPSession, String)");			
-		return null;
-	}
-
-	String dbAlias = user.getDatabaseAlias();
-		
-	if( user == null || dbAlias == null )
-	{
-		com.cannontech.clientutils.CTILogger.info("DBALIAS or USER is null in executeSQL(HTTPSession, STRING), probably not logged in");
-		return null;
-	}
-		
+	
 	java.sql.Connection connection = null;
 	java.sql.Statement statement = null;
 	java.sql.ResultSet resultSet = null;
@@ -456,7 +416,7 @@ public static Object[][] executeSQL(javax.servlet.http.HttpSession session, Stri
 	
 	try
 	{
-		connection = com.cannontech.database.PoolManager.getInstance().getConnection( dbAlias );
+		connection = com.cannontech.database.PoolManager.getInstance().getConnection("yukon");
 		statement = connection.createStatement();
 		resultSet = statement.executeQuery( query );
 		metaData = resultSet.getMetaData();

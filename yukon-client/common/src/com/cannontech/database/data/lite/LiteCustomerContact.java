@@ -1,12 +1,14 @@
 package com.cannontech.database.data.lite;
 
+import com.cannontech.database.db.user.YukonUser;
+
 /*
  */
 public class LiteCustomerContact extends LiteBase
 {
 	private String contFirstName = null;
 	private String contLastName = null;
-	private int loginID = com.cannontech.database.db.customer.CustomerLogin.NONE_LOGIN_ID;
+	private int userID = YukonUser.INVALID_ID.intValue();	
 
 	//what customer this contact is related to
 	private int deviceID = 0;
@@ -29,7 +31,7 @@ public LiteCustomerContact( int contID, String contactFirstName, String contactL
 	contLastName = new String(contactLastName);
 	deviceID = devID;
 	setLiteType(LiteTypes.CUSTOMER_CONTACT);
-	loginID = loginid;
+	this.userID = userID;
 }
 /**
  * Insert the method's description here.
@@ -63,14 +65,7 @@ public java.lang.String getContLastName() {
 public int getDeviceID() {
 	return deviceID;
 }
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 2:35:57 PM)
- * @return int
- */
-public int getLoginID() {
-	return loginID;
-}
+
 /**
  * retrieve method comment.
  */
@@ -92,7 +87,7 @@ public void retrieve(String databaseAlias)
 			setContFirstName( ((String) stmt.getRow(0)[0]) );
 			setContLastName( ((String) stmt.getRow(0)[1]) );
 			setDeviceID( ((java.math.BigDecimal) stmt.getRow(0)[2]).intValue() );
-			setLoginID( ((java.math.BigDecimal) stmt.getRow(0)[3]).intValue() );
+			setUserID( ((java.math.BigDecimal) stmt.getRow(0)[3]).intValue());			
  		}
 
  	}
@@ -135,17 +130,41 @@ public void setDeviceID(int newDeviceID) {
 	deviceID = newDeviceID;
 }
 /**
- * Insert the method's description here.
- * Creation date: (4/3/2001 2:35:57 PM)
- * @param newLoginID int
- */
-public void setLoginID(int newLoginID) {
-	loginID = newLoginID;
-}
-/**
  * This method was created by Cannon Technologies Inc.
  */
 public String toString() {
 	return getContLastName() + ", " + getContFirstName();
 }
+	/**
+	 * Returns the userID.
+	 * @return int
+	 */
+	public int getUserID() {
+		return userID;
+	}
+
+	/**
+	 * Sets the userID.
+	 * @param userID The userID to set
+	 */
+	public void setUserID(int userID) {
+		this.userID = userID;
+	}
+
+	/**
+	 * Returns the customerID.
+	 * @return int
+	 */
+	public int getCustomerID() {
+		return getDeviceID();
+	}
+
+	/**
+	 * Sets the customerID.
+	 * @param customerID The customerID to set
+	 */
+	public void setCustomerID(int customerID) {
+		setDeviceID(customerID);
+	}
+
 }

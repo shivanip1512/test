@@ -8,14 +8,13 @@ package com.cannontech.database.data.customer;
 import com.cannontech.database.db.company.EnergyCompany;
 import com.cannontech.database.db.customer.CustomerAddress;
 import com.cannontech.database.db.customer.CustomerBaseLine;
-import com.cannontech.database.db.customer.CustomerWebSettings;
+import com.cannontech.database.db.user.YukonUser;
 
 public class CICustomerBase extends CustomerBase implements com.cannontech.common.editor.EditorPanel
 {
 	private com.cannontech.database.db.customer.CICustomerBase ciCustomerBase = null;
 
 	private CustomerAddress customerAddress = null;
-	private CustomerWebSettings customerWebSettings = null;
 	private CustomerBaseLine customerBaseLine = null;
 
 	//currently, 1 customer may only belong to 1 EnergyCompany. This is null
@@ -47,8 +46,6 @@ public void add() throws java.sql.SQLException
 	super.add();
 	
 	getCiCustomerBase().add();
-
-	getCustomerWebSettings().add();
 	getCustomerBaseLine().add();
 
 	// add all the contacts for this customers
@@ -57,7 +54,7 @@ public void add() throws java.sql.SQLException
 		for( int i = 0; i < getCustomerContactVector().size(); i++ )
 		{
 			//when creating a CICustomer, we start with no login ability
-			((CustomerContact)getCustomerContactVector().elementAt(i)).setLogInID( new Integer(com.cannontech.database.db.customer.CustomerLogin.NONE_LOGIN_ID) );
+			((CustomerContact)getCustomerContactVector().elementAt(i)).setUserID(YukonUser.INVALID_ID);
 			((CustomerContact)getCustomerContactVector().elementAt(i)).add();
 			
 			Object addValues[] = 
@@ -110,7 +107,6 @@ public void delete() throws java.sql.SQLException
 	// delete all the relations from a graph to this customer
 	com.cannontech.database.db.customer.CustomerContact.deleteCustomerGraphList( getCiCustomerBase().getDeviceID(), getDbConnection() );
 
-	getCustomerWebSettings().delete();
 	delete("LMEnergyExchangeHourlyCustomer", "CustomerID", getCustomerID() );
 	delete("LMEnergyExchangeCustomerReply", "CustomerID", getCustomerID() );
 	delete("LMCurtailCustomerActivity", "CustomerID", getCustomerID() );
@@ -181,17 +177,7 @@ public java.util.Vector getCustomerContactVector()
 
 	return customerContactVector;
 }
-/**
- * Insert the method's description here.
- * Creation date: (7/26/2001 4:59:51 PM)
- * @return com.cannontech.database.db.device.customer.CustomerWebSettings
- */
-public CustomerWebSettings getCustomerWebSettings() {
-	if (customerWebSettings == null) {
-		 customerWebSettings = new CustomerWebSettings();
-	}
-	return customerWebSettings;
-}
+
 /**
  * Insert the method's description here.
  * Creation date: (12/19/2001 1:45:25 PM)
@@ -278,7 +264,6 @@ public void retrieve() throws java.sql.SQLException
 
 	getCustomerAddress().setAddressID( getCiCustomerBase().getAddressID() );
 	getCustomerAddress().retrieve();
-	getCustomerWebSettings().retrieve();
 
 	try
 	{
@@ -392,17 +377,9 @@ public void setCustomerID(Integer custID)
 {
 	super.setCustomerID( custID );
 	getCiCustomerBase().setDeviceID( custID );
-	getCustomerWebSettings().setId((new Long(custID.intValue())).longValue());
 	getCustomerBaseLine().setCustomerID(custID);
 }
-/**
- * Insert the method's description here.
- * Creation date: (7/27/2001 12:20:58 PM)
- */
-public void setCustomerWebSettings(com.cannontech.database.db.customer.CustomerWebSettings newCustomerWebSettings)
-{
-	customerWebSettings = newCustomerWebSettings;
-}
+
 /**
  * Insert the method's description here.
  * Creation date: (1/4/00 3:32:03 PM)
@@ -412,8 +389,7 @@ public void setDbConnection(java.sql.Connection conn)
 {
 	super.setDbConnection(conn);
 	getCiCustomerBase().setDbConnection(conn);
-	getCustomerAddress().setDbConnection(conn);
-	getCustomerWebSettings().setDbConnection(conn);
+	getCustomerAddress().setDbConnection(conn);	
 	getCustomerBaseLine().setDbConnection(conn);
 
 	for (int i = 0; i < getCustomerContactVector().size(); i++)
@@ -464,7 +440,6 @@ public void update() throws java.sql.SQLException
 	super.update();
 	getCiCustomerBase().update();
 
-	getCustomerWebSettings().update();
 	getCustomerBaseLine().update();
 
 	// delete all the customer contacts for this customer
@@ -476,10 +451,9 @@ public void update() throws java.sql.SQLException
 		for (int i = 0; i < getCustomerContactVector().size(); i++)
 		{
 			//when creating a CICustomer, we start with no login ability
-			if (((CustomerContact) getCustomerContactVector().elementAt(i)).getCustomerLogin().getLoginID() == null)
+			if (((CustomerContact) getCustomerContactVector().elementAt(i)).getYukonUser().getUserID() == null)
 			{
-				((CustomerContact) getCustomerContactVector().elementAt(i)).setLogInID(
-					new Integer(com.cannontech.database.db.customer.CustomerLogin.NONE_LOGIN_ID));
+				((CustomerContact) getCustomerContactVector().elementAt(i)).setUserID(YukonUser.INVALID_ID);
 				((CustomerContact) getCustomerContactVector().elementAt(i)).getCustomerContact().add();
 			}
 			else
