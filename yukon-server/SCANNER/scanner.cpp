@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/05/15 20:35:35 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/05/17 18:48:45 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -349,6 +349,8 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << TimeNow << " " << tstr << endl;
             }
+
+            TimeNow = TimeNow.now();
 
             ObjWait = (NextScan[NEXT_SCAN].seconds() - TimeNow.seconds()) * 1000L;
 
