@@ -63,6 +63,8 @@ public interface YukonListEntryTypes
 	public static final int YUK_DEF_ID_THERM_MODE_COOL			= 2402;
 	public static final int YUK_DEF_ID_THERM_MODE_HEAT			= 2403;
 	public static final int YUK_DEF_ID_THERM_MODE_OFF			= 2404;
+	public static final int YUK_DEF_ID_THERM_MODE_AUTO			= 2405;
+	public static final int YUK_DEF_ID_THERM_MODE_EMERGENCY_HEAT	= 2406;
 	public static final int YUK_DEF_ID_FAN_STAT_DEFAULT			= 2501;
 	public static final int YUK_DEF_ID_FAN_STAT_AUTO				= 2502;
 	public static final int YUK_DEF_ID_FAN_STAT_ON				= 2503;
@@ -107,6 +109,9 @@ public interface YukonListEntryTypes
 	public static final int YUK_DEF_ID_GED_DLC					= 3235;
 	public static final int YUK_DEF_ID_GED_FILTER				= 3236;
 	public static final int YUK_DEF_ID_GED_SETPOINT_LIMITS		= 3237;
+	public static final int YUK_DEF_ID_GED_RUNTIMES				= 3238;
+	public static final int YUK_DEF_ID_GED_BATTERY				= 3239;
+	public static final int YUK_DEF_ID_GED_UTILITY_SETPOINTS		= 3240;
 	public static final int YUK_DEF_ID_GED_STRING				= 3299;
 
 }
