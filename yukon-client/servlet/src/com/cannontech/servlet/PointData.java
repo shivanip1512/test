@@ -1,5 +1,7 @@
 package com.cannontech.servlet;
 
+import com.cannontech.common.cache.PointChangeCache;
+
 /**
  * Insert the type's description here.
  * Creation date: (3/30/00 3:15:02 PM)
@@ -27,7 +29,7 @@ public PointData() {
  */
 public void destroy() 
 {
-	PointChangeCache pCC = (PointChangeCache) getServletContext().getAttribute(PointChangeCache.SERVLET_CONTEXT_ID);
+	/*PointChangeCache pCC = (PointChangeCache) getServletContext().getAttribute(PointChangeCache.SERVLET_CONTEXT_ID);
 
 	if( pCC != null )
 	{
@@ -36,7 +38,7 @@ public void destroy()
 	
 	logger.log("destroyed....", com.cannontech.common.util.LogWriter.INFO );
 	
-	super.destroy();
+	super.destroy();*/
 }
 /**
  * Insert the method's description here.
@@ -56,9 +58,9 @@ public void finalize() throws Throwable
 public void init(javax.servlet.ServletConfig config) throws javax.servlet.ServletException
 {
 	super.init(config);
-
+	PointChangeCache.getPointChangeCache().connect();
 	// Add a point change cache to our servlet context
-	PointChangeCache pCC = new PointChangeCache();
+/*	PointChangeCache pCC = new PointChangeCache();
 	pCC.connect();
 	
 	getServletContext().setAttribute(PointChangeCache.SERVLET_CONTEXT_ID, pCC );
@@ -78,7 +80,7 @@ public void init(javax.servlet.ServletConfig config) throws javax.servlet.Servle
 	catch (java.io.FileNotFoundException e)
 	{
 		e.printStackTrace();
-	}
+	}*/
 }
 /**
  * Insert the method's description here.
@@ -90,18 +92,6 @@ public void init(javax.servlet.ServletConfig config) throws javax.servlet.Servle
  */
 public void service(javax.servlet.http.HttpServletRequest req, javax.servlet.http.HttpServletResponse resp) throws javax.servlet.ServletException, java.io.IOException 
 {
-	javax.servlet.http.HttpSession session = req.getSession(false);
-	com.cannontech.database.data.web.User user = null;
-
-	if (session != null)
-		user = (com.cannontech.database.data.web.User) session.getValue("USER");
-		
-	if( user == null )
-	{
-		resp.sendRedirect("/login.jsp");
-		return;
-	}
-				
 	resp.setContentType("text/plain");
 	
 	//required parameter
@@ -131,7 +121,7 @@ public void service(javax.servlet.http.HttpServletRequest req, javax.servlet.htt
 		ne.printStackTrace();
 	}
 		
-	PointChangeCache pCC = (PointChangeCache) getServletContext().getAttribute(PointChangeCache.SERVLET_CONTEXT_ID);
+	PointChangeCache pCC = PointChangeCache.getPointChangeCache(); //(PointChangeCache) getServletContext().getAttribute(PointChangeCache.SERVLET_CONTEXT_ID);
 
 	if( pCC == null )
 	{
@@ -191,7 +181,7 @@ public void service(javax.servlet.http.HttpServletRequest req, javax.servlet.htt
 	else
 	if( data.getType() == com.cannontech.database.data.point.PointTypes.STATUS_POINT )
 	{				
-		resp.getWriter().write( pCC.getState( data.getId(), data.getValue(), user.getDatabaseAlias() ));
+		resp.getWriter().write( pCC.getState( data.getId(), data.getValue(), "yukon"));
 	}
 	else
 	{
