@@ -214,7 +214,7 @@ if (request.getParameter("Submit") != null)
 			  <form name="invForm" method="POST" onsubmit="return hasChanged(this)" action="ConfigMeter.jsp">
 <%--  			  <form name="invForm" method="POST" onsubmit="return hasChanged(this)" action="<%= request.getContextPath() %>/servlet/DBChangeServlet">--%>
                 <input type="hidden" name="action" value="UpdateMeterConfig">
-                <input type="hidden" name="DeviceID" value="<%=deviceID%>">
+                <input type="hidden" name="deviceID" value="<%=deviceID%>">
                 <input type="hidden" name="InvNo" value="<%=invNo%>">
 				<input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/operator/Consumer/ConfigMeter.jsp?InvNo=<%=invNo%>">
 				<input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/operator/Consumer/ConfigMeter.jsp?InvNo=<%= invNo%>">
