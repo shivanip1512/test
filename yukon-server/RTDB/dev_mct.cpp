@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.51 $
-* DATE         :  $Date: 2004/11/12 21:37:10 $
+* REVISION     :  $Revision: 1.52 $
+* DATE         :  $Date: 2004/12/07 18:13:08 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -27,7 +27,9 @@ using namespace std;
 #include "devicetypes.h"
 #include "device.h"
 #include "dev_mct.h"
+#include "dev_mct210.h"
 #include "dev_mct31x.h"  //  for IED scanning capability
+#include "dev_mct410.h"
 #include "dev_mct_lmt2.h"
 #include "logger.h"
 #include "mgr_point.h"
@@ -36,6 +38,7 @@ using namespace std;
 #include "pt_accum.h"
 #include "porter.h"
 #include "utility.h"
+#include "dllyukon.h"
 #include "yukon.h"
 
 set< CtiDLCCommandStore > CtiDeviceMCT::_commandStore;
@@ -44,7 +47,8 @@ set< CtiDLCCommandStore > CtiDeviceMCT::_commandStore;
 CtiDeviceMCT::CtiDeviceMCT() :
     _lpIntervalSent(false),
     _configType(ConfigInvalid),
-    _peakMode(PeakModeInvalid)
+    _peakMode(PeakModeInvalid),
+    _disconnectAddress(0)
 {
     for( int i = 0; i < ChannelCount; i++ )
     {
@@ -372,7 +376,7 @@ void CtiDeviceMCT::sendLPInterval( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > 
 }
 
 
-int CtiDeviceMCT::checkLoadProfileQuality( unsigned long &pulses, PointQuality_t &quality, bool &badData )
+int CtiDeviceMCT::checkDemandQuality( unsigned long &pulses, PointQuality_t &quality, bool &badData )
 {
     unsigned long qualityBits;
     int retVal;
@@ -935,6 +939,7 @@ INT CtiDeviceMCT::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< 
         case CtiProtocolEmetcon::PutConfig_GroupAddr_Lead:
         case CtiProtocolEmetcon::PutConfig_UniqueAddr:
         case CtiProtocolEmetcon::PutConfig_LoadProfileInterest:
+        case CtiProtocolEmetcon::PutConfig_Disconnect:
         {
             status = decodePutConfig(InMessage, TimeNow, vgList, retList, outList);
             break;
@@ -956,6 +961,8 @@ INT CtiDeviceMCT::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< 
         case CtiProtocolEmetcon::PutStatus_PeakOff:
         case CtiProtocolEmetcon::PutStatus_FreezeOne:
         case CtiProtocolEmetcon::PutStatus_FreezeTwo:
+        case CtiProtocolEmetcon::PutStatus_FreezeVoltageOne:
+        case CtiProtocolEmetcon::PutStatus_FreezeVoltageTwo:
         {
             status = decodePutStatus(InMessage, TimeNow, vgList, retList, outList);
             break;
@@ -1811,15 +1818,31 @@ INT CtiDeviceMCT::executePutStatus(CtiRequestMsg                  *pReq,
     }
     else if( parse.isKeyValid("freeze") )
     {
-        if( parse.getiValue("freeze") == 1 )
+        if( parse.isKeyValid("voltage") )
         {
-            function = CtiProtocolEmetcon::PutStatus_FreezeOne;
-            found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+            if( parse.getiValue("freeze") == 1 )
+            {
+                function = CtiProtocolEmetcon::PutStatus_FreezeVoltageOne;
+                found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+            }
+            else if( parse.getiValue("freeze") == 2 )
+            {
+                function = CtiProtocolEmetcon::PutStatus_FreezeVoltageTwo;
+                found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+            }
         }
-        else if( parse.getiValue("freeze") == 2 )
+        else
         {
-            function = CtiProtocolEmetcon::PutStatus_FreezeTwo;
-            found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+            if( parse.getiValue("freeze") == 1 )
+            {
+                function = CtiProtocolEmetcon::PutStatus_FreezeOne;
+                found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+            }
+            else if( parse.getiValue("freeze") == 2 )
+            {
+                function = CtiProtocolEmetcon::PutStatus_FreezeTwo;
+                found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+            }
         }
     }
     else if( parse.isKeyValid("peak") )
@@ -1935,6 +1958,11 @@ INT CtiDeviceMCT::executeGetConfig(CtiRequestMsg                  *pReq,
     else if(parse.isKeyValid("options"))
     {
         function = CtiProtocolEmetcon::GetConfig_Options;
+        found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+    }
+    else if(parse.isKeyValid("disconnect"))
+    {
+        function = CtiProtocolEmetcon::GetConfig_Disconnect;
         found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
     }
     else if(parse.isKeyValid("address_group"))
@@ -2113,6 +2141,25 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
         found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
 
         OutMessage->Buffer.BSt.Message[0] = 0xf8 |  0x04;  //  make sure the 0x04 bit is set
+    }
+    else if( parse.isKeyValid("disconnect") )
+    {
+        function = CtiProtocolEmetcon::PutConfig_Disconnect;
+        found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+
+        if( getType() == TYPEMCT410 )
+        {
+            long tmpaddr = _disconnectAddress & 0x3fffff;  //  make sure it's only 22 bits
+
+            OutMessage->Buffer.BSt.Message[0] = (tmpaddr >> 16) & 0xff;
+            OutMessage->Buffer.BSt.Message[1] = (tmpaddr >>  8) & 0xff;
+            OutMessage->Buffer.BSt.Message[2] =  tmpaddr        & 0xff;
+
+            OutMessage->Buffer.BSt.Message[3] = 0;  //  unused as yet, and also not in the database
+            OutMessage->Buffer.BSt.Message[4] = 0;  //
+
+            OutMessage->Buffer.BSt.Message[5] = 5;  //  5 minutes for the load limit connect delay
+        }
     }
     else if( parse.isKeyValid("groupaddress_enable") )
     {
@@ -3055,6 +3102,124 @@ INT CtiDeviceMCT::decodeGetConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
 }
 
 
+INT CtiDeviceMCT::decodeGetStatusDisconnect(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+{
+    INT status = NORMAL;
+
+    INT ErrReturn  = InMessage->EventCode & 0x3fff;
+    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+
+    CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+    CtiPointDataMsg *pData = NULL;
+    CtiPointBase    *pPoint;
+
+    double    Value;
+    RWCString resultStr, defaultStateName;
+
+    //  ACH:  are these necessary?  /mskf
+    resetScanFreezePending();
+    resetScanFreezeFailed();
+
+    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    {
+        // No error occured, we must do a real decode!
+
+        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+
+            return MEMORY;
+        }
+
+        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
+        Value = CLOSED;
+
+        switch( getType() )
+        {
+            case TYPEMCT213:
+            {
+                switch( DSt->Message[0] & 0xc0 )
+                {
+                    case CtiDeviceMCT210::MCT210_StatusConnected:     Value = CLOSED;  defaultStateName = "Connected";      break;
+                    case CtiDeviceMCT210::MCT210_StatusDisconnected:  Value = OPENED;  defaultStateName = "Disconnected";   break;
+                    default:  Value = -1;
+                }
+
+                break;
+            }
+            case TYPEMCT310ID:
+            case TYPEMCT310IDL:
+            {
+                switch( DSt->Message[0] & 0xc0 )
+                {
+                    case CtiDeviceMCT310::MCT310_StatusConnected:           Value = CLOSED;         defaultStateName = "Connected";             break;
+                    case CtiDeviceMCT310::MCT310_StatusConnectArmed:        Value = INDETERMINATE;  defaultStateName = "Connect armed";         break;
+                    case CtiDeviceMCT310::MCT310_StatusConnectInProgress:   Value = INDETERMINATE;  defaultStateName = "Connect in progress";   break;
+                    case CtiDeviceMCT310::MCT310_StatusDisconnected:        Value = OPENED;         defaultStateName = "Disconnected";          break;
+                }
+
+                break;
+            }
+            case TYPEMCT410:
+            {
+                switch( DSt->Message[0] & 0x03 )
+                {
+                    case CtiDeviceMCT410::MCT410_StatusConnected:               Value = CLOSED;         defaultStateName = "Connected";                 break;
+                    case CtiDeviceMCT410::MCT410_StatusConnectArmed:            Value = INDETERMINATE;  defaultStateName = "Connect armed";             break;
+                    case CtiDeviceMCT410::MCT410_StatusDisconnected:            Value = OPENED;         defaultStateName = "Disconnected";              break;
+                    case CtiDeviceMCT410::MCT410_StatusDisconnectedConfirmed:   Value = OPENED;         defaultStateName = "Confirmed disconnected";    break;
+                }
+
+                break;
+            }
+            default:
+            {
+                Value = INDETERMINATE;
+                defaultStateName = "Not a disconnect meter";
+            }
+        }
+
+        pPoint = getDevicePointOffsetTypeEqual(1, StatusPointType);
+
+        if(pPoint != NULL)
+        {
+            //  This isn't useful when the status to be returned is anything but "connected" or "disconnected" - we need "Connect armed" instead, so this
+            //    will not work too well.
+            RWCString stateName; /* = ResolveStateName(pPoint->getStateGroupID(), Value);
+
+            if( stateName.isNull() )*/
+            {
+                stateName = defaultStateName;
+            }
+
+            resultStr = getName() + " / " + pPoint->getName() + ":" + stateName;
+
+            //  Send this value to requestor via retList.
+
+            pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, StatusPointType, resultStr, TAG_POINT_MUST_ARCHIVE);
+
+            if(pData != NULL)
+            {
+                ReturnMsg->PointData().insert(pData);
+                pData = NULL;
+            }
+        }
+        else
+        {
+            resultStr = getName() + " / Disconnect Status: " + defaultStateName;
+            ReturnMsg->setResultString(resultStr);
+        }
+
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    }
+
+    return status;
+}
+
+
+
 INT CtiDeviceMCT::decodePutValue(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     INT   status = NORMAL,
@@ -3135,6 +3300,8 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
     CtiReturnMsg  *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiRequestMsg *pReq;
 
+    bool expectMore = false;
+
     INT ErrReturn = InMessage->EventCode & 0x3fff;
 
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
@@ -3169,19 +3336,13 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
                 //  if it's an invalid sspec or if the option bits aren't set properly
                 if( !sspecIsValid(sspec) )
                 {
-                    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-
                     resultString = getName( ) + " / sspec \'" + CtiNumStr(sspec) + "\' not valid - looks like an \'" + sspecIsFrom( sspec ) + "\'." + "\n" +
                                    getName( ) + " / install command aborted";
-
-                    ReturnMsg->setResultString( resultString );
                 }
                 else if( (getType() == TYPEMCT310ID || getType() == TYPEMCT310IDL) && (sspec == 1007 || sspec == 153) && !(DSt->Message[1] & 0x40) )
                 {
                     //  if the disconnect option bit is not set
                     resultString = getName( ) + " / option bits not valid - looks like a 310I";
-
-                    ReturnMsg->setResultString( resultString );
                 }
                 else
                 {
@@ -3210,8 +3371,6 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
                             pReq->setCommandString(pReq->CommandString() + " noqueue");
                         }
 
-                        pReq->setConnectionHandle( InMessage->Return.Connection );
-
                         CtiCommandParser parse(pReq->CommandString());
                         CtiDeviceBase::ExecuteRequest(pReq, parse, vgList, retList, outList, OutTemplate);
 
@@ -3227,8 +3386,6 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
                         {
                             pReq->setCommandString(pReq->CommandString() + " noqueue");
                         }
-
-                        pReq->setConnectionHandle( InMessage->Return.Connection );
 
                         CtiCommandParser parse(pReq->CommandString());
                         CtiDeviceBase::ExecuteRequest(pReq, parse, vgList, retList, outList, OutTemplate);
@@ -3248,8 +3405,6 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
                                 pReq->setCommandString(pReq->CommandString() + " noqueue");
                             }
 
-                            pReq->setConnectionHandle( InMessage->Return.Connection );
-
                             CtiCommandParser parse(pReq->CommandString());
                             CtiDeviceBase::ExecuteRequest(pReq, parse, vgList, retList, outList, OutTemplate);
 
@@ -3268,8 +3423,6 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
                             {
                                 pReq->setCommandString(pReq->CommandString() + " noqueue");
                             }
-
-                            pReq->setConnectionHandle( InMessage->Return.Connection );
 
                             CtiCommandParser parse(pReq->CommandString());
                             CtiDeviceBase::ExecuteRequest(pReq, parse, vgList, retList, outList, OutTemplate);
@@ -3291,8 +3444,6 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
                                     pReq->setCommandString(pReq->CommandString() + " noqueue");
                                 }
 
-                                pReq->setConnectionHandle( InMessage->Return.Connection );
-
                                 CtiCommandParser parse(pReq->CommandString());
                                 CtiDeviceBase::ExecuteRequest(pReq, parse, vgList, retList, outList, OutTemplate);
                                 delete pReq;
@@ -3304,7 +3455,7 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " **** Checkpoint - can't send MPKH \"" << _mpkh[0] << "\" to meter **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << RWTime() << " **** Checkpoint - can't send MPKH \"" << _mpkh[0] << "\" to meter \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             }
                         }
                     }
@@ -3337,8 +3488,6 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
                                 pReq->setCommandString(pReq->CommandString() + " noqueue");
                             }
 
-                            pReq->setConnectionHandle( InMessage->Return.Connection );
-
                             CtiCommandParser parse(pReq->CommandString());
                             CtiDeviceBase::ExecuteRequest(pReq, parse, vgList, retList, outList, OutTemplate);
                             delete pReq;
@@ -3357,8 +3506,6 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
                                         pReq->setCommandString(pReq->CommandString() + " noqueue");
                                     }
 
-                                    pReq->setConnectionHandle( InMessage->Return.Connection );
-
                                     CtiCommandParser parse(pReq->CommandString());
                                     CtiDeviceBase::ExecuteRequest(pReq, parse, vgList, retList, outList, OutTemplate);
                                     delete pReq;
@@ -3368,7 +3515,7 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
                             {
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " **** Checkpoint - can't send MPKH \"" << _mpkh[i] << "\" to channel " << i+1 << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                    dout << RWTime() << " **** Checkpoint - can't send MPKH \"" << _mpkh[i] << "\" to channel " << i+1 << " on meter \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                                 }
                             }
                         }
@@ -3381,10 +3528,7 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
                         delete OutTemplate;
                     }
 
-                    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-
                     resultString += getName( ) + " / sspec verified as \'" + sspecIsFrom( sspec ) + "\'.";
-                    ReturnMsg->setResultString( resultString );
                 }
 
                 break;
@@ -3392,13 +3536,14 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
 
             default:
             {
-                ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-
                 resultString = getName( ) + " / command complete";
-                ReturnMsg->setResultString( resultString );
+
                 break;
             }
         }
+
+        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+        ReturnMsg->setResultString( resultString );
 
         retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
     }

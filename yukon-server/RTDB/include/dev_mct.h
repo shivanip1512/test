@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct.h-arc  $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2004/10/25 16:21:18 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2004/12/07 18:13:08 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -65,20 +65,22 @@ protected:
     RWTime        _lastLPRequest;
     unsigned long _nextLPScanTime;
 
+    unsigned long _disconnectAddress;
+
     bool _scanGeneralPending,
          _scanIntegrityPending,
          _scanAccumulatorPending;
 
     enum
     {
-        MCT_ModelPos         = 0x00,
-        MCT_ModelLen         =    8,
-        MCT_SspecLen         =    5,
+        MCT_ModelPos                  = 0x00,
+        MCT_ModelLen                  =    8,
+        MCT_SspecLen                  =    5,
 
-        MCT_TimePos          = 0x46,
-        MCT_TimeLen          =    3,
-        MCT_TSyncPos         = 0x49,
-        MCT_TSyncLen         =    3, //  5,  <-- !!  don't send the extra 2 bytes - this fools Porter into letting it through unscathed
+        MCT_TimePos                   = 0x46,
+        MCT_TimeLen                   =    3,
+        MCT_TSyncPos                  = 0x49,
+        MCT_TSyncLen                  =    3, //  5,  <-- !!  don't send the extra 2 bytes - this fools Porter into letting it through unscathed
 
         MCT_Function_Open             = 0x41,
         MCT_Function_Close            = 0x42,
@@ -90,22 +92,22 @@ protected:
 
         MCT_Function_LPInt            = 0x70,
 
-        MCT_Restore          = 0x00,
-        MCT_Shed_Base_07m    = 0x00,
-        MCT_Shed_Base_15m    = 0x10,
-        MCT_Shed_Base_30m    = 0x20,
-        MCT_Shed_Base_60m    = 0x30,
+        MCT_Restore                   = 0x00,
+        MCT_Shed_Base_07m             = 0x00,
+        MCT_Shed_Base_15m             = 0x10,
+        MCT_Shed_Base_30m             = 0x20,
+        MCT_Shed_Base_60m             = 0x30,
 
-        MCT_Rollover              = 100000,   //  5 digits
-        MCT_DemandIntervalDefault = 300,      //  5 minute default demand, if not specified in the database...
-        MCT_MaxPulseCount         = 10000000,
+        MCT_Rollover                  = 100000,   //  5 digits
+        MCT_DemandIntervalDefault     = 300,      //  5 minute default demand, if not specified in the database...
+        MCT_MaxPulseCount             = 10000000,
+
+        MCT_PeakOffset                = 10,  //  peak demand points are offset by this amount (point offset 11, 12, 13...)
+
+        MCT_LPWindow                  = 60,
 
         MCT_TestAddr1  = 0x155555,
-        MCT_TestAddr2  = 0x2aaaaa,
-
-        MCT_PeakOffset       = 10,  //  peak demand points are offset by this amount (point offset 11, 12, 13...)
-
-        MCT_LPWindow         = 60
+        MCT_TestAddr2  = 0x2aaaaa
     };
 
     enum
@@ -135,7 +137,7 @@ public:
     virtual ULONG calcNextLPScanTime( void );
     ULONG         getNextLPScanTime( void );
     void          sendLPInterval( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > &outList );
-    int           checkLoadProfileQuality( unsigned long &pulses, PointQuality_t &quality, bool &badData );
+    int           checkDemandQuality( unsigned long &pulses, PointQuality_t &quality, bool &badData );
 
     //  porter-side functions
     virtual bool  calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *&OutMessage );
@@ -181,6 +183,8 @@ public:
     INT decodePutStatus( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
     INT decodePutConfig( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
     INT decodeGetConfig( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
+
+    INT decodeGetStatusDisconnect( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
 
     INT  getSSpec() const;
     bool sspecIsValid( int sspec );
