@@ -135,6 +135,7 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 	/* WARNING: THIS METHOD WILL BE REGENERATED. */
 	public YukonCommander() {
 		super();
+		ycClass = new YC();
 		initialize();
 	}
 	/**
@@ -440,6 +441,8 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 	 */
 	private void exit()
 	{
+		ycClass.getYCDefaults().setOutputDividerLoc(getOutputSplitPane().getDividerLocation());
+		ycClass.getYCDefaults().writeDefaultsFile();
 		try
 		{
 			if ( getClientConnection() != null && getClientConnection().isValid() )  // free up Dispatchs resources
@@ -970,6 +973,7 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 				getOutputSplitPane().add(getDebugOutputScrollPane(), "bottom");
 				getOutputSplitPane().add(getDisplayOutputScrollPane(), "top");
 				// user code begin {1}
+				ivjOutputSplitPane.setDividerLocation(ycClass.getYCDefaults().getOutputDividerLoc());
 				// user code end
 			} catch (java.lang.Throwable ivjExc) {
 				// user code begin {2}
@@ -1256,7 +1260,6 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 	private void initialize() {
 		try {
 			// user code begin {1}
-			ycClass = new YC();		
 			// user code end
 			setName("YukonCommander");
 			setSize(841, 647);
@@ -1453,7 +1456,6 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 					c.close();
 			}
 	
-			ycClient.initialize();
 			ycClient.getClientConnection();
 	
 			//set the app to start as close to the center as you can....
