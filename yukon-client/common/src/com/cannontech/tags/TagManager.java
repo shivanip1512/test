@@ -4,6 +4,7 @@
 package com.cannontech.tags;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -87,6 +88,7 @@ public class TagManager implements MessageListener {
 	 * @param tag
 	 */
 	public void removeTag(Tag tag, String username) throws Exception {
+		tag.setTagTime(new Date());
 		TagMsg tm = new TagMsg();
 		tm.setAction(TagMsg.REMOVE_TAG_ACTION);
 		tm.setTag(tag);
@@ -99,10 +101,12 @@ public class TagManager implements MessageListener {
 	 * @param tag
 	 */
 	public void updateTag(Tag tag, String username) throws Exception {
+		tag.setTagTime(new Date());
 		TagMsg tm = new TagMsg();
 		tm.setAction(TagMsg.UPDATE_TAG_ACTION);
 		tm.setTag(tag);
 		tm.setUserName(username);
+
 		writeMsg(tm); 
 	}
 	
