@@ -62,11 +62,12 @@ public class ContactNotification extends NestedDBPersistent
 	 */
 	public boolean equals(Object o)
 	{
-		if( o == null )
+		if( o == null || getContactNotifID() == null )
 			return false;
 		else if( o instanceof ContactNotification )
 		{
-			return ((ContactNotification)o).getContactNotifID().equals( getContactNotifID() );
+            return getContactNotifID().equals(
+                    ((ContactNotification)o).getContactNotifID() );
 		}
 		else
 			return false;
