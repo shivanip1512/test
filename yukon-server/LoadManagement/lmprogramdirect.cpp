@@ -3388,7 +3388,10 @@ BOOL CtiLMProgramDirect::hasControlHoursAvailable() const
 
             // As soon as we find a group with hours available we know that the entire program
             // has at least some hours available
-            if( doesGroupHaveAmpleControlTime(currentLMGroup,0) )
+            if( doesGroupHaveAmpleControlTime(currentLMGroup,0) &&
+                currentLMGroup->getGroupControlState() == CtiLMGroupBase::InactiveState &&
+                !currentLMGroup->getDisableFlag() &&
+                !currentLMGroup->getControlInhibit() )
             {
                 returnBoolean = TRUE;
                 break;
