@@ -82,8 +82,9 @@
                   <td><%= categoryDesc %></td>
                 </tr>
 <%
-		for (int i = 0; i < category.getStarsEnrLMProgramCount(); i++) {
-			StarsEnrLMProgram enrProg = category.getStarsEnrLMProgram(i);
+		if (category.getStarsEnrLMProgramCount() > 1) {
+			for (int i = 0; i < category.getStarsEnrLMProgramCount(); i++) {
+				StarsEnrLMProgram enrProg = category.getStarsEnrLMProgram(i);
 %>
                 <tr> 
                   <td>
@@ -92,6 +93,7 @@
                   </td>
                 </tr>
 <%
+			}
 		}
 %>
               </table>
