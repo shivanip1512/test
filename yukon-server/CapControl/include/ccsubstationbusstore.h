@@ -72,17 +72,20 @@ private:
     void handleAMFMChanges(RWDBReader& rdr);
     void shutdown();
 
-    void feederReconfigureM3IAMFM(LONG capid, RWCString capname, DOUBLE kvarrating,
-                                  RWCString fixedswitched, RWCString cbcmodel,
-                                  LONG cbcserialnumber, RWCString location,
-                                  LONG capswitchingorder, RWCString enableddisabled,
-                                  LONG feederid, RWCString feedername, RWCString typeofcapchange);
+    void feederReconfigureM3IAMFM( RWCString& capacitor_id_string, LONG circt_id_normal,
+                                   RWCString& circt_nam_normal, LONG circt_id_current,
+                                   RWCString& circt_name_current, RWDBDateTime& switch_datetime,
+                                   RWCString& owner, RWCString& capacitor_name, RWCString& kvar_rating,
+                                   RWCString& cap_fs, RWCString& cbc_model, RWCString& serial_no,
+                                   RWCString& location, RWCString& switching_seq, RWCString& cap_disable_flag,
+                                   RWCString& cap_disable_type, RWCString& inoperable_bad_order_equipnote,
+                                   RWCString& open_tag_note, RWCString& cap_change_type );
     void capBankMovedToDifferentFeeder(CtiCCFeeder* oldFeeder, CtiCCCapBank* movedCapBank,
                                        LONG feederid, LONG capswitchingorder);
     void capBankDifferentOrderSameFeeder(CtiCCFeeder* currentFeeder, CtiCCCapBank* currentCapBank,
                                          LONG capswitchingorder);
-    void capOutOfServiceM3IAMFM(LONG feederid, LONG capid, RWCString enableddisabled, RWCString fixedswitched);
-    void feederOutOfServiceM3IAMFM(LONG feederid, RWCString fixedswitched, RWCString enableddisabled);
+    void capOutOfServiceM3IAMFM(LONG feederid, LONG capid, RWCString& enableddisabled, RWCString& fixedswitched);
+    void feederOutOfServiceM3IAMFM(LONG feederid, RWCString& fixedswitched, RWCString& enableddisabled);
 
     void doResetThr();
     void doAMFMThr();
@@ -105,15 +108,20 @@ private:
     //Possible static strings
     static const RWCString m3iAMFMInterfaceString;
 
-    static const RWCString feederReconfigureM3IAMFMChangeTypeString;
-    static const RWCString capOutOfServiceM3IAMFMChangeTypeString;
-    static const RWCString feederOutOfServiceM3IAMFMChangeTypeString;
-    static const RWCString aimImportM3IAMFMChangeTypeString;
+    static const RWCString m3iAMFMChangeTypeCircuitOutOfService;
+    static const RWCString m3iAMFMChangeTypeCircuitReturnToService;
+    static const RWCString m3iAMFMChangeTypeCapOutOfService;
+    static const RWCString m3iAMFMChangeTypeCapReturnedToService;
+    static const RWCString m3iAMFMChangeTypeCircuitReconfigured;
+    static const RWCString m3iAMFMChangeTypeCircuitReconfiguredToNormal;
+    //static const RWCString M3IAMFMCapChangeTypeString;
 
     static const RWCString m3iAMFMEnabledString;
     static const RWCString m3iAMFMDisabledString;
     static const RWCString m3iAMFMFixedString;
     static const RWCString m3iAMFMSwitchedString;
+
+    static const RWCString m3iAMFMNullString;
 
     //mutable RWRecursiveLock<RWMutexLock> _storemutex;
 };

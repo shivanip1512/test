@@ -844,20 +844,25 @@ void CtiCCSubstationBusStore::checkAMFMSystemForUpdates()
             RWDBTable dni_capacitorTable = amfmDB.table("dni_capacitor");
 
             RWDBSelector selector = amfmDB.selector();
-            selector << dni_capacitorTable["datetimestamp"]
-                     << dni_capacitorTable["capid"]
-                     << dni_capacitorTable["capname"]
-                     << dni_capacitorTable["kvarrating"]
-                     << dni_capacitorTable["fixedswitched"]
-                     << dni_capacitorTable["cbcmodel"]
-                     << dni_capacitorTable["cbcserialnumber"]
+            selector << dni_capacitorTable["capacitor_id"]
+                     << dni_capacitorTable["circt_id_normal"]
+                     << dni_capacitorTable["circt_nam_normal"]
+                     << dni_capacitorTable["circt_id_current"]
+                     << dni_capacitorTable["circt_name_current"]
+                     << dni_capacitorTable["switch_datetime"]
+                     << dni_capacitorTable["owner"]
+                     << dni_capacitorTable["capacitor_name"]
+                     << dni_capacitorTable["kvar_rating"]
+                     << dni_capacitorTable["cap_fs"]
+                     << dni_capacitorTable["cbc_model"]
+                     << dni_capacitorTable["serial_no"]
                      << dni_capacitorTable["location"]
-                     << dni_capacitorTable["capswitchingorder"]
-                     << dni_capacitorTable["enableddisabled"]
-                     << dni_capacitorTable["feederid"]
-                     << dni_capacitorTable["feedername"]
-                     << dni_capacitorTable["typeofcapchange"]
-                     << dni_capacitorTable["originator"];
+                     << dni_capacitorTable["switching_seq"]
+                     << dni_capacitorTable["cap_disable_flag"]
+                     << dni_capacitorTable["cap_disable_type"]
+                     << dni_capacitorTable["inoperable_bad_order_equipnote"]
+                     << dni_capacitorTable["open_tag_note"]
+                     << dni_capacitorTable["cap_change_type"];
 
             selector.from(dni_capacitorTable);
 
@@ -927,74 +932,205 @@ void CtiCCSubstationBusStore::handleAMFMChanges(RWDBReader& rdr)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
 
-    RWDBDateTime currentDateTime = RWDBDateTime();
+    RWDBNullIndicator isNull;
 
-    RWDBDateTime datetimestamp;
-    LONG capid;
-    RWCString capname;
-    DOUBLE kvarrating;
-    RWCString fixedswitched;
-    RWCString cbcmodel;
-    LONG cbcserialnumber;
-    RWCString location;
-    LONG capswitchingorder;
-    RWCString enableddisabled;
-    LONG feederid;
-    RWCString feedername;
-    RWCString typeofcapchange;
-    RWCString originator;
+    RWCString       capacitor_id_string;
+    LONG            circt_id_normal;
+    RWCString       circt_nam_normal                  = m3iAMFMNullString;
+    LONG            circt_id_current                  = -1;
+    RWCString       circt_name_current                = m3iAMFMNullString;
+    RWDBDateTime    switch_datetime                   = RWDBDateTime(1990,1,1,0,0,0,0);
+    RWCString       owner                             = m3iAMFMNullString;
+    RWCString       capacitor_name                    = m3iAMFMNullString;
+    RWCString       kvar_rating                       = m3iAMFMNullString;
+    RWCString       cap_fs                            = m3iAMFMNullString;
+    RWCString       cbc_model                         = m3iAMFMNullString;
+    RWCString       serial_no                         = m3iAMFMNullString;
+    RWCString       location                          = m3iAMFMNullString;
+    RWCString       switching_seq                     = m3iAMFMNullString;
+    RWCString       cap_disable_flag                  = m3iAMFMNullString;
+    RWCString       cap_disable_type                  = m3iAMFMNullString;
+    RWCString       inoperable_bad_order_equipnote    = m3iAMFMNullString;
+    RWCString       open_tag_note                     = m3iAMFMNullString;
+    RWCString       cap_change_type                   = m3iAMFMNullString;
 
-    rdr["datetimestamp"]     >> datetimestamp;
-    rdr["capid"]             >> capid;
-    rdr["capname"]           >> capname;
-    rdr["kvarrating"]        >> kvarrating;
-    rdr["fixedswitched"]     >> fixedswitched;
-    rdr["cbcmodel"]          >> cbcmodel;
-    rdr["cbcserialnumber"]   >> cbcserialnumber;
-    rdr["location"]          >> location;
-    rdr["capswitchingorder"] >> capswitchingorder;
-    rdr["enableddisabled"]   >> enableddisabled;
-    rdr["feederid"]          >> feederid;
-    rdr["feedername"]        >> feedername;
-    rdr["typeofcapchange"]   >> typeofcapchange;
-    rdr["originator"]        >> originator;
+    rdr["capacitor_id"] >> capacitor_id_string;
+    rdr["circt_id_normal"] >> circt_id_normal;
+    rdr["circt_nam_normal"] >> isNull;
+    if( !isNull )
+    {
+        rdr["circt_nam_normal"] >> circt_nam_normal;
+    }
+    rdr["circt_id_current"] >> isNull;
+    if( !isNull )
+    {
+        rdr["circt_id_current"] >> circt_id_current;
+    }
+    
+    rdr["circt_name_current"] >> isNull;
+    if( !isNull )
+    {
+        rdr["circt_name_current"] >> circt_name_current;
+    }
+    
+    rdr["switch_datetime"] >> isNull;
+    if( !isNull )
+    {
+        rdr["switch_datetime"] >> switch_datetime;
+    }
+    
+    rdr["owner"] >> isNull;
+    if( !isNull )
+    {
+        rdr["owner"] >> owner;
+    }
+    
+    rdr["capacitor_name"] >> isNull;
+    if( !isNull )
+    {
+        rdr["capacitor_name"] >> capacitor_name;
+    }
+    
+    rdr["kvar_rating"] >> isNull;
+    if( !isNull )
+    {
+        rdr["kvar_rating"] >> kvar_rating;
+    }
+    
+    rdr["cap_fs"] >> isNull;
+    if( !isNull )
+    {
+        rdr["cap_fs"] >> cap_fs;
+    }
+    
+    rdr["cbc_model"] >> isNull;
+    if( !isNull )
+    {
+        rdr["cbc_model"] >> cbc_model;
+    }
+    
+    rdr["serial_no"] >> isNull;
+    if( !isNull )
+    {
+        rdr["serial_no"] >> serial_no;
+    }
+    
+    rdr["location"] >> isNull;
+    if( !isNull )
+    {
+        rdr["location"] >> location;
+    }
+    
+    rdr["switching_seq"] >> isNull;
+    if( !isNull )
+    {
+        rdr["switching_seq"] >> switching_seq;
+    }
+    
+    rdr["cap_disable_flag"] >> isNull;
+    if( !isNull )
+    {
+        rdr["cap_disable_flag"] >> cap_disable_flag;
+    }
+    
+    rdr["cap_disable_type"] >> isNull;
+    if( !isNull )
+    {
+        rdr["cap_disable_type"] >> cap_disable_type;
+    }
+    
+    rdr["inoperable_bad_order_equipnote"] >> isNull;
+    if( !isNull )
+    {
+        rdr["inoperable_bad_order_equipnote"] >> inoperable_bad_order_equipnote;
+    }
+    
+    rdr["open_tag_note"] >> isNull;
+    if( !isNull )
+    {
+        rdr["open_tag_note"] >> open_tag_note;
+    }
+    
+    rdr["cap_change_type"] >> isNull;
+    if( !isNull )
+    {
+        rdr["cap_change_type"] >> cap_change_type;
+    }
 
-    typeofcapchange.toUpper();
-    if( typeofcapchange == feederReconfigureM3IAMFMChangeTypeString ||
-        typeofcapchange == aimImportM3IAMFMChangeTypeString )
-    {
-        feederReconfigureM3IAMFM(capid,capname,kvarrating,fixedswitched,cbcmodel,
-                                 cbcserialnumber,location,capswitchingorder,
-                                 enableddisabled,feederid,feedername,typeofcapchange);
-    }
-    else if( typeofcapchange == capOutOfServiceM3IAMFMChangeTypeString )
-    {
-        capOutOfServiceM3IAMFM(feederid,capid,enableddisabled,fixedswitched);
-    }
-    else if( typeofcapchange == feederOutOfServiceM3IAMFMChangeTypeString )
-    {
-        feederOutOfServiceM3IAMFM(feederid,fixedswitched,enableddisabled);
-    }
-    else
+    if( _CC_DEBUG )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Invalid Type of Cap Change in: " << __FILE__ << " at: " << __LINE__ << endl;
+        dout << RWTime() << " - AMFM system update:"
+             << " capacitor_id_string: "                << capacitor_id_string
+             << " circt_id_normal: "                    << circt_id_normal
+             << " circt_nam_normal: "                   << circt_nam_normal
+             << " circt_id_current: "                   << circt_id_current
+             << " circt_name_current: "                 << circt_name_current
+             << " switch_datetime: "                    << switch_datetime.asString()
+             << " owner: "                              << owner
+             << " capacitor_name: "                     << capacitor_name
+             << " kvar_rating: "                        << kvar_rating
+             << " cap_fs: "                             << cap_fs
+             << " cbc_model: "                          << cbc_model
+             << " serial_no: "                          << serial_no
+             << " location: "                           << location
+             << " switching_seq: "                      << switching_seq
+             << " cap_disable_flag: "                   << cap_disable_flag
+             << " cap_disable_type: "                   << cap_disable_type
+             << " inoperable_bad_order_equipnote: "     << inoperable_bad_order_equipnote
+             << " open_tag_note: "                      << open_tag_note
+             << " cap_change_type: "                    << cap_change_type << endl;
     }
+
+    feederReconfigureM3IAMFM( capacitor_id_string, circt_id_normal, circt_nam_normal, circt_id_current, circt_name_current,
+                              switch_datetime, owner, capacitor_name, kvar_rating, cap_fs, cbc_model, serial_no,                      
+                              location, switching_seq, cap_disable_flag, cap_disable_type,
+                              inoperable_bad_order_equipnote, open_tag_note, cap_change_type );
 }
 
+RWCString translateCBCModelToControllerType(RWCString& cbc_model)
+{
+    RWCString returnString = "(none)";
+    if( !cbc_model.compareTo("CBC5010", RWCString::ignoreCase) )
+    {
+        returnString = "CTI Paging";
+    }
+    else if( !cbc_model.compareTo("CBC3010", RWCString::ignoreCase) )
+    {
+        returnString = "CTI DLC";
+    }
+    else if( !cbc_model.compareTo("CBC2010", RWCString::ignoreCase) )
+    {
+        returnString = "CTI FM";
+    }
+    /*else if( !cbc_model.compareTo(, RWCString::ignoreCase) )
+    {
+    }*/
+    else
+    {
+        returnString = cbc_model;
+    }
+
+    return returnString;
+}
 
 /*---------------------------------------------------------------------------
     feederReconfigureM3IAMFM
 
     .
 ---------------------------------------------------------------------------*/
-void CtiCCSubstationBusStore::feederReconfigureM3IAMFM(LONG capid, RWCString capname, DOUBLE kvarrating,
-                                                       RWCString fixedswitched, RWCString cbcmodel,
-                                                       LONG cbcserialnumber, RWCString location,
-                                                       LONG capswitchingorder, RWCString enableddisabled,
-                                                       LONG feederid, RWCString feedername, RWCString typeofcapchange)
+void CtiCCSubstationBusStore::feederReconfigureM3IAMFM( RWCString& capacitor_id_string, LONG circt_id_normal,
+                                                        RWCString& circt_nam_normal, LONG circt_id_current,
+                                                        RWCString& circt_name_current, RWDBDateTime& switch_datetime,
+                                                        RWCString& owner, RWCString& capacitor_name, RWCString& kvar_rating,
+                                                        RWCString& cap_fs, RWCString& cbc_model, RWCString& serial_no,
+                                                        RWCString& location, RWCString& switching_seq, RWCString& cap_disable_flag,
+                                                        RWCString& cap_disable_type, RWCString& inoperable_bad_order_equipnote,
+                                                        RWCString& open_tag_note, RWCString& cap_change_type )
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+
+    LONG capacitor_id = atol(capacitor_id_string);
 
     BOOL found = FALSE;
     if( _ccSubstationBuses->entries() > 0 )
@@ -1016,11 +1152,12 @@ void CtiCCSubstationBusStore::feederReconfigureM3IAMFM(LONG capid, RWCString cap
                         for(LONG k=0;k<ccCapBanks.entries();k++)
                         {
                             CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
-                            if( currentCapBank->getMapLocationId() == capid )
+                            if( currentCapBank->getMapLocationId() == capacitor_id )
                             {
-                                if( currentFeeder->getMapLocationId() != feederid )
+                                LONG capswitchingorder = atol(switching_seq);
+                                if( currentFeeder->getMapLocationId() != circt_id_current )
                                 {
-                                    capBankMovedToDifferentFeeder(currentFeeder, currentCapBank, feederid, capswitchingorder);
+                                    capBankMovedToDifferentFeeder(currentFeeder, currentCapBank, circt_id_current, capswitchingorder);
                                     currentCCSubstationBus->setBusUpdatedFlag(TRUE);
                                 }
                                 else if( currentCapBank->getControlOrder() != capswitchingorder &&
@@ -1034,20 +1171,141 @@ void CtiCCSubstationBusStore::feederReconfigureM3IAMFM(LONG capid, RWCString cap
 
                                 RWCString tempOperationalState = currentCapBank->getOperationalState();
                                 tempOperationalState.toUpper();
-                                fixedswitched.toUpper();
-                                enableddisabled.toUpper();
-                                if( currentCapBank->getBankSize() != kvarrating ||
-                                    tempOperationalState != fixedswitched ||
-                                    (bool)currentCapBank->getDisableFlag() != (enableddisabled == m3iAMFMDisabledString) )
+                                cap_fs.toUpper();
+                                cap_disable_flag.toUpper();
+                                LONG kvarrating = atol(kvar_rating);
+                                bool updateCapBankFlag = false;
+
+                                if( currentCapBank->getBankSize() != kvarrating )
                                 {
+                                    {
+                                        char tempchar[64] = "";
+                                        RWCString text = RWCString("M3i Change, Cap Bank Bank Size: ");
+                                        text += currentCapBank->getPAOName();
+                                        text += ", PAO Id: ";
+                                        _ltoa(currentCapBank->getPAOId(),tempchar,10);
+                                        text += tempchar;
+                                        RWCString additional = RWCString("Was: ");
+                                        _ltoa(currentCapBank->getBankSize(),tempchar,10);
+                                        additional += tempchar;
+                                        additional += ", Now: ";
+                                        _ltoa(kvarrating,tempchar,10);
+                                        additional += tempchar;
+                                        additional += ", on Feeder: ";
+                                        additional += currentFeeder->getPAOName();
+                                        CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,GeneralLogType,SignalEvent));
+                                        {
+                                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                                            dout << RWTime() << " - " << text << ", " << additional << endl;
+                                        }
+                                    }
                                     currentCapBank->setBankSize(kvarrating);
+                                    updateCapBankFlag = true;
+                                }
+                                if( tempOperationalState != cap_fs )
+                                {
                                     RWCString tempFixedOperationalStateString = CtiCCCapBank::FixedOperationalState;
                                     tempFixedOperationalStateString.toUpper();
-                                    currentCapBank->setOperationalState(fixedswitched==tempFixedOperationalStateString?CtiCCCapBank::FixedOperationalState:CtiCCCapBank::SwitchedOperationalState);
-                                    currentCapBank->setDisableFlag(enableddisabled == m3iAMFMDisabledString);
+                                    {
+                                        char tempchar[64] = "";
+                                        RWCString text = RWCString("M3i Change, Cap Bank Op State: ");
+                                        text += currentCapBank->getPAOName();
+                                        text += ", PAO Id: ";
+                                        _ltoa(currentCapBank->getPAOId(),tempchar,10);
+                                        text += tempchar;
+                                        RWCString additional = RWCString("Was: ");
+                                        additional += currentCapBank->getOperationalState();
+                                        additional += ", Now: ";
+                                        additional += tempFixedOperationalStateString;
+                                        additional += ", on Feeder: ";
+                                        additional += currentFeeder->getPAOName();
+                                        CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,GeneralLogType,SignalEvent));
+                                        {
+                                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                                            dout << RWTime() << " - " << text << ", " << additional << endl;
+                                        }
+                                    }
+                                    currentCapBank->setOperationalState(cap_fs==tempFixedOperationalStateString?CtiCCCapBank::FixedOperationalState:CtiCCCapBank::SwitchedOperationalState);
+                                    updateCapBankFlag = true;
+                                }
+                                if( (bool)currentCapBank->getDisableFlag() != (cap_disable_flag == m3iAMFMDisabledString) )
+                                {
+                                    {
+                                        char tempchar[64] = "";
+                                        RWCString text = RWCString("M3i Change, Cap Bank Disable Flag: ");
+                                        text += currentCapBank->getPAOName();
+                                        text += ", PAO Id: ";
+                                        _ltoa(currentCapBank->getPAOId(),tempchar,10);
+                                        text += tempchar;
+                                        RWCString additional = RWCString("Was: ");
+                                        additional += (currentCapBank->getDisableFlag()?m3iAMFMDisabledString:m3iAMFMEnabledString);
+                                        additional += ", Now: ";
+                                        additional += cap_disable_flag;
+                                        additional += ", on Feeder: ";
+                                        additional += currentFeeder->getPAOName();
+                                        CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,GeneralLogType,SignalEvent));
+                                        {
+                                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                                            dout << RWTime() << " - " << text << ", " << additional << endl;
+                                        }
+                                    }
+                                    currentCapBank->setDisableFlag(cap_disable_flag == m3iAMFMDisabledString);
+                                    updateCapBankFlag = true;
+                                }
+                                if( !currentCapBank->getControllerType().compareTo(translateCBCModelToControllerType(cbc_model), RWCString::ignoreCase) )
+                                {
+                                    {
+                                        char tempchar[64] = "";
+                                        RWCString text = RWCString("M3i Change, Cap Bank Controller Type: ");
+                                        text += currentCapBank->getPAOName();
+                                        text += ", PAO Id: ";
+                                        _ltoa(currentCapBank->getPAOId(),tempchar,10);
+                                        text += tempchar;
+                                        RWCString additional = RWCString("Was: ");
+                                        additional += currentCapBank->getControllerType();
+                                        additional += ", Now: ";
+                                        additional += translateCBCModelToControllerType(cbc_model);
+                                        additional += ", on Feeder: ";
+                                        additional += currentFeeder->getPAOName();
+                                        CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,GeneralLogType,SignalEvent));
+                                        {
+                                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                                            dout << RWTime() << " - " << text << ", " << additional << endl;
+                                        }
+                                    }
+                                    currentCapBank->setControllerType(translateCBCModelToControllerType(cbc_model));
+                                    updateCapBankFlag = true;
+                                }
+                                if( !currentCapBank->getPAODescription().compareTo(location, RWCString::ignoreCase) )
+                                {
+                                    {
+                                        char tempchar[64] = "";
+                                        RWCString text = RWCString("M3i Change, Cap Bank Location: ");
+                                        text += currentCapBank->getPAOName();
+                                        text += ", PAO Id: ";
+                                        _ltoa(currentCapBank->getPAOId(),tempchar,10);
+                                        text += tempchar;
+                                        RWCString additional = RWCString("Was: ");
+                                        additional += currentCapBank->getPAODescription();
+                                        additional += ", Now: ";
+                                        additional += location;
+                                        additional += ", on Feeder: ";
+                                        additional += currentFeeder->getPAOName();
+                                        CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,GeneralLogType,SignalEvent));
+                                        {
+                                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                                            dout << RWTime() << " - " << text << ", " << additional << endl;
+                                        }
+                                    }
+                                    currentCapBank->setPAODescription(location);
+                                    updateCapBankFlag = true;
+                                }
+                                if( updateCapBankFlag )
+                                {
                                     UpdateCapBankInDB(currentCapBank);
                                     currentCCSubstationBus->setBusUpdatedFlag(TRUE);
-
+                                }
+                                /*{
                                     {
                                         CtiLockGuard<CtiLogger> logger_guard(dout);
                                         dout << RWTime() << " - M3I change, 'Feeder Reconfigure' or 'AIM Import' PAO Id: "
@@ -1056,9 +1314,9 @@ void CtiCCSubstationBusStore::feederReconfigureM3IAMFM(LONG capid, RWCString cap
                                              << ", was updated in database with bank size: "
                                              << currentCapBank->getBankSize() << ", operational state: "
                                              << currentCapBank->getOperationalState() << ", and was "
-                                             << enableddisabled << endl;
+                                             << cap_disable_flag << endl;
                                     }
-                                }
+                                }*/
                                 found = TRUE;
                                 break;
                             }
@@ -1079,9 +1337,10 @@ void CtiCCSubstationBusStore::feederReconfigureM3IAMFM(LONG capid, RWCString cap
     if( !found )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Cap Bank not found MapLocationId: " << capid << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+        dout << RWTime() << " - Cap Bank not found MapLocationId: " << capacitor_id << " in: " << __FILE__ << " at: " << __LINE__ << endl;
     }
 }
+                                                        
 
 /*---------------------------------------------------------------------------
     capBankMovedToDifferentFeeder
@@ -1151,6 +1410,29 @@ void CtiCCSubstationBusStore::capBankMovedToDifferentFeeder(CtiCCFeeder* oldFeed
                     UpdateFeederBankListInDB(currentFeeder);
 
                     {
+                        char tempchar[64] = "";
+                        RWCString text = RWCString("M3i Change, Cap Bank moved feeders: ");
+                        text += movedCapBank->getPAOName();
+                        text += ", PAO Id: ";
+                        _ltoa(movedCapBank->getPAOId(),tempchar,10);
+                        text += tempchar;
+                        RWCString additional = RWCString("Moved from: ");
+                        additional += oldFeeder->getPAOName();
+                        additional += ", id: ";
+                        _ltoa(oldFeeder->getPAOId(),tempchar,10);
+                        additional += tempchar;
+                        additional += " To: ";
+                        additional += currentFeeder->getPAOName();
+                        additional += ", id: ";
+                        _ltoa(currentFeeder->getPAOId(),tempchar,10);
+                        additional += tempchar;
+                        CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,GeneralLogType,SignalEvent));
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << RWTime() << " - " << text << ", " << additional << endl;
+                        }
+                    }
+                    /*{
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << RWTime() << " - M3I change, 'Feeder Reconfigure' or 'AIM Import' PAO Id: "
                              << movedCapBank->getPAOId() << ", name: "
@@ -1161,7 +1443,7 @@ void CtiCCSubstationBusStore::capBankMovedToDifferentFeeder(CtiCCFeeder* oldFeed
                              << currentFeeder->getPAOId() << ", name: "
                              << currentFeeder->getPAOName() << ", with order: "
                              << movedCapBank->getControlOrder() << endl;
-                    }
+                    }*/
                     found = TRUE;
                     break;
                 }
@@ -1189,12 +1471,35 @@ void CtiCCSubstationBusStore::capBankDifferentOrderSameFeeder(CtiCCFeeder* curre
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
 
+    LONG oldControlOrder = currentCapBank->getControlOrder();
+
     currentFeeder->getCCCapBanks().remove(currentCapBank);
     currentCapBank->setControlOrder(capswitchingorder);
     currentFeeder->getCCCapBanks().insert(currentCapBank);
     UpdateFeederBankListInDB(currentFeeder);
 
     {
+        char tempchar[64] = "";
+        RWCString text = RWCString("M3i Change, Cap Bank changed order: ");
+        text += currentCapBank->getPAOName();
+        text += ", PAO Id: ";
+        _ltoa(currentCapBank->getPAOId(),tempchar,10);
+        text += tempchar;
+        RWCString additional = RWCString("Moved from: ");
+        _ltoa(oldControlOrder,tempchar,10);
+        additional += tempchar;
+        additional += ", to: ";
+        _ltoa(capswitchingorder,tempchar,10);
+        additional += tempchar;
+        additional += ", on Feeder: ";
+        additional += currentFeeder->getPAOName();
+        CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,GeneralLogType,SignalEvent));
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << RWTime() << " - " << text << ", " << additional << endl;
+        }
+    }
+    /*{
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " - M3I change, 'Feeder Reconfigure' or 'AIM Import' PAO Id: "
              << currentCapBank->getPAOId() << ", name: "
@@ -1203,7 +1508,7 @@ void CtiCCSubstationBusStore::capBankDifferentOrderSameFeeder(CtiCCFeeder* curre
              << currentFeeder->getPAOId() << ", name: "
              << currentFeeder->getPAOName() << ", with order: "
              << currentCapBank->getControlOrder() << endl;
-    }
+    }*/
 }
 
 /*---------------------------------------------------------------------------
@@ -1211,7 +1516,7 @@ void CtiCCSubstationBusStore::capBankDifferentOrderSameFeeder(CtiCCFeeder* curre
 
     .
 ---------------------------------------------------------------------------*/
-void CtiCCSubstationBusStore::capOutOfServiceM3IAMFM(LONG feederid, LONG capid, RWCString enableddisabled, RWCString fixedswitched)
+void CtiCCSubstationBusStore::capOutOfServiceM3IAMFM(LONG feederid, LONG capid, RWCString& enableddisabled, RWCString& fixedswitched)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
 
@@ -1280,7 +1585,7 @@ void CtiCCSubstationBusStore::capOutOfServiceM3IAMFM(LONG feederid, LONG capid, 
 
     .
 ---------------------------------------------------------------------------*/
-void CtiCCSubstationBusStore::feederOutOfServiceM3IAMFM(LONG feederid, RWCString fixedswitched, RWCString enableddisabled)
+void CtiCCSubstationBusStore::feederOutOfServiceM3IAMFM(LONG feederid, RWCString& fixedswitched, RWCString& enableddisabled)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
 
@@ -1856,6 +2161,10 @@ void CtiCCSubstationBusStore::resetDailyOperations()
             RWCString additional = RWCString("Sub Bus: ");
             additional += currentSubstationBus->getPAOName();
             CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,GeneralLogType,SignalEvent));
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << RWTime() << " - " << text << ", " << additional << endl;
+            }
         }
         currentSubstationBus->setCurrentDailyOperations(0);
 
@@ -2014,7 +2323,9 @@ bool CtiCCSubstationBusStore::UpdateCapBankInDB(CtiCCCapBank* capbank)
 
         updater.where( yukonPAObjectTable["paobjectid"] == capbank->getPAOId() );
 
-        updater << yukonPAObjectTable["disableflag"].assign( RWCString((capbank->getDisableFlag()?'Y':'N')) );
+        updater << yukonPAObjectTable["paoname"].assign( capbank->getPAOName() )
+                << yukonPAObjectTable["disableflag"].assign( RWCString((capbank->getDisableFlag()?'Y':'N')) )
+                << yukonPAObjectTable["description"].assign( capbank->getPAODescription() );
 
         updater.execute( conn );
 
@@ -2089,15 +2400,19 @@ bool CtiCCSubstationBusStore::UpdateFeederBankListInDB(CtiCCFeeder* feeder)
 /* Private Static members */
 const RWCString CtiCCSubstationBusStore::m3iAMFMInterfaceString = "M3I";
 
-const RWCString CtiCCSubstationBusStore::feederReconfigureM3IAMFMChangeTypeString = "FEEDER RECONFIGURE";
-const RWCString CtiCCSubstationBusStore::capOutOfServiceM3IAMFMChangeTypeString = "CAP OUT OF SERVICE";
-const RWCString CtiCCSubstationBusStore::feederOutOfServiceM3IAMFMChangeTypeString = "FEEDER OUT OF SERVICE";
-const RWCString CtiCCSubstationBusStore::aimImportM3IAMFMChangeTypeString = "AIM IMPORT";
+const RWCString CtiCCSubstationBusStore::m3iAMFMChangeTypeCircuitOutOfService = "Circuit or Section Out of Service";
+const RWCString CtiCCSubstationBusStore::m3iAMFMChangeTypeCircuitReturnToService = "Circuit or Section Returned to Service";
+const RWCString CtiCCSubstationBusStore::m3iAMFMChangeTypeCapOutOfService = "Cap Control Out of Service";
+const RWCString CtiCCSubstationBusStore::m3iAMFMChangeTypeCapReturnedToService = "Cap Control Returned to Service";
+const RWCString CtiCCSubstationBusStore::m3iAMFMChangeTypeCircuitReconfigured = "Circuit Reconfigured";
+const RWCString CtiCCSubstationBusStore::m3iAMFMChangeTypeCircuitReconfiguredToNormal = "Circuit Reconfigured to Normal";
 
 const RWCString CtiCCSubstationBusStore::m3iAMFMEnabledString = "ENABLED";
 const RWCString CtiCCSubstationBusStore::m3iAMFMDisabledString = "DISABLED";
 const RWCString CtiCCSubstationBusStore::m3iAMFMFixedString = "FIXED";
 const RWCString CtiCCSubstationBusStore::m3iAMFMSwitchedString = "SWITCHED";
+
+const RWCString CtiCCSubstationBusStore::m3iAMFMNullString = "(NULL)";
 
 const RWCString CtiCCSubstationBusStore::CAP_CONTROL_DBCHANGE_MSG_SOURCE = "CAP_CONTROL_SERVER";
 
