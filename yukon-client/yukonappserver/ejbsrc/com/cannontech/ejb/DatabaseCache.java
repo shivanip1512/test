@@ -18,7 +18,7 @@ import com.cannontech.yukon.server.cache.ServerDatabaseCache;
 
 /**
  * Remote interface for DatabaseCache.
- * @xdoclet-generated at Sep 27, 2002 4:47:51 PM
+ * @xdoclet-generated at Oct 2, 2002 11:11:44 AM
  */
 public interface DatabaseCache
    extends javax.ejb.EJBObject
