@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.43 $
-* DATE         :  $Date: 2004/03/11 17:27:44 $
+* REVISION     :  $Revision: 1.44 $
+* DATE         :  $Date: 2004/04/01 21:50:02 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -937,6 +937,8 @@ INT CtiDeviceMCT::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< 
         case CtiProtocolEmetcon::PutStatus_ResetOverride:
         case CtiProtocolEmetcon::PutStatus_PeakOn:
         case CtiProtocolEmetcon::PutStatus_PeakOff:
+        case CtiProtocolEmetcon::PutStatus_FreezeOne:
+        case CtiProtocolEmetcon::PutStatus_FreezeTwo:
         {
             status = decodePutStatus(InMessage, TimeNow, vgList, retList, outList);
             break;
@@ -1385,6 +1387,19 @@ INT CtiDeviceMCT::executeGetValue( CtiRequestMsg              *pReq,
 
         //  ACH:  minimize request length someday, like below
     }
+    else if( parse.getFlags() & CMD_FLAG_GV_VOLTAGE )
+    {
+/*        if( parse.getFlags() & CMD_FLAG_FROZEN )  //  Read the frozen values...
+        {
+            function = CtiProtocolEmetcon::GetValue_FrozenVoltage;
+            found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+        }
+        else if( !parse.isKeyValid("update") ) //  the non-frozen peak values cannot be updated*/
+        {
+            function = CtiProtocolEmetcon::GetValue_Voltage;
+            found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+        }
+    }
     else  //  if( parse.getFlags() & CMD_FLAG_GV_KWH ) - default to a KWH read
     {
         if( parse.getFlags() & CMD_FLAG_FROZEN )  //  Read the frozen values...
@@ -1509,7 +1524,9 @@ INT CtiDeviceMCT::executePutValue(CtiRequestMsg                  *pReq,
 
             //  set the outgoing bytes to 0
             for(int i = 0; i < OutMessage->Buffer.BSt.Length; i++)
+            {
                 OutMessage->Buffer.BSt.Message[i] = 0;
+            }
         }
     }
     else if(parse.getFlags() & CMD_FLAG_PV_IED)     // This parse has the token IED in it!
@@ -1682,9 +1699,12 @@ INT CtiDeviceMCT::executePutStatus(CtiRequestMsg                  *pReq,
         function = CtiProtocolEmetcon::PutStatus_Reset;
         found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
 
-        OutMessage->Buffer.BSt.Message[0] = 0;
-        OutMessage->Buffer.BSt.Message[1] = 0;
-        OutMessage->Buffer.BSt.Message[2] = 0;
+        if( getType() != TYPEMCT410 )
+        {
+            OutMessage->Buffer.BSt.Message[0] = 0;
+            OutMessage->Buffer.BSt.Message[1] = 0;
+            OutMessage->Buffer.BSt.Message[2] = 0;
+        }
     }
     else if( parse.getFlags() & CMD_FLAG_PS_RESETOVERRIDE )
     {
@@ -2298,6 +2318,7 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
                     }
                 }
                 else*/
+                if( getType() != TYPEMCT410 )
                 {
                     intervallength *= 4;  //  all else are in multiples of 15 seconds
                 }
@@ -2337,22 +2358,36 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
 
         unsigned char ticper12hr, ticper5min, ticper15sec;
 
-        //  compute how many of each tic type have passed
-        ticper12hr   = (NowDate.weekDay() % 7) * 2;  //  2 tics every day  (mod 7 because RW says Sunday is 7, we want it 0)
-        ticper12hr  +=  NowTime.hour() / 12;         //  1 tic every 12 hours
+        if( getType() == TYPEMCT410 )
+        {
+            unsigned long time = NowTime.seconds() - rwEpoch;
 
-        ticper5min   = (NowTime.hour() % 12) * 12;   //  12 tics per hour
-        ticper5min  +=  NowTime.minute() / 5;        //  1 tic every 5 minutes
+            OutMessage->Buffer.BSt.Message[0] = 0xff;  //  global SPID
+            OutMessage->Buffer.BSt.Message[1] = (time >> 24) & 0x000000ff;
+            OutMessage->Buffer.BSt.Message[2] = (time >> 16) & 0x000000ff;
+            OutMessage->Buffer.BSt.Message[3] = (time >>  8) & 0x000000ff;
+            OutMessage->Buffer.BSt.Message[4] =  time        & 0x000000ff;
+            OutMessage->Buffer.BSt.Message[5] = NowTime.isDST();
+        }
+        else
+        {
+            //  compute how many of each tic type have passed
+            ticper12hr   = (NowDate.weekDay() % 7) * 2;  //  2 tics every day  (mod 7 because RW says Sunday is 7, we want it 0)
+            ticper12hr  +=  NowTime.hour() / 12;         //  1 tic every 12 hours
 
-        ticper15sec  = (NowTime.minute() % 5) * 4;   //  4 tics per minute
-        ticper15sec +=  NowTime.second() / 15;       //  1 tic every 15 seconds
+            ticper5min   = (NowTime.hour() % 12) * 12;   //  12 tics per hour
+            ticper5min  +=  NowTime.minute() / 5;        //  1 tic every 5 minutes
 
-        //  invert the counters to be tics REMAINING, not PASSED
-        OutMessage->Buffer.BSt.Message[0] =  20 - ticper15sec;
-        OutMessage->Buffer.BSt.Message[1] = 144 - ticper5min;
-        OutMessage->Buffer.BSt.Message[2] =  14 - ticper12hr;
-        OutMessage->Buffer.BSt.Message[3] = 94;  //  DLCFreq1
-        OutMessage->Buffer.BSt.Message[4] = 37;  //  DLCFreq2
+            ticper15sec  = (NowTime.minute() % 5) * 4;   //  4 tics per minute
+            ticper15sec +=  NowTime.second() / 15;       //  1 tic every 15 seconds
+
+            //  invert the counters to be tics REMAINING, not PASSED
+            OutMessage->Buffer.BSt.Message[0] =  20 - ticper15sec;
+            OutMessage->Buffer.BSt.Message[1] = 144 - ticper5min;
+            OutMessage->Buffer.BSt.Message[2] =  14 - ticper12hr;
+            OutMessage->Buffer.BSt.Message[3] = 94;  //  DLCFreq1
+            OutMessage->Buffer.BSt.Message[4] = 37;  //  DLCFreq2
+        }
     }
     else if(parse.isKeyValid("multiplier"))
     {
@@ -2637,7 +2672,7 @@ INT CtiDeviceMCT::decodeGetValue(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
 
                 resultStr = getName() + " / powerfail count = " + CtiNumStr(pfCount);
 
-                if( (pPoint = getDevicePointOffsetTypeEqual( 20, PulseAccumulatorPointType )) != NULL )
+                if( (pPoint = getDevicePointOffsetTypeEqual( MCT_PointOffset_Accumulator_Powerfail, PulseAccumulatorPointType )) != NULL )
                 {
                     Value = ((CtiPointNumeric*)pPoint)->computeValueForUOM(pfCount);
 

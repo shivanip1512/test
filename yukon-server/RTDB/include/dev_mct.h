@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct.h-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2004/01/26 21:58:02 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2004/04/01 21:50:02 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -99,12 +99,15 @@ protected:
 
         MCT_Rollover              = 100000,   //  5 digits
         MCT_DemandIntervalDefault = 300,      //  5 minute default demand, if not specified in the database...
-        MCT_MaxPulseCount         = 10000000
+        MCT_MaxPulseCount         = 10000000,
+
+        MCT_PeakOffset       = 10  //  peak demand points are offset by this amount (point offset 11, 12, 13...)
     };
 
     enum
     {
-        MCT_PointOffset_Status_Powerfail = 10
+        MCT_PointOffset_Status_Powerfail      = 10,
+        MCT_PointOffset_Accumulator_Powerfail = 20
     };
 
 public:

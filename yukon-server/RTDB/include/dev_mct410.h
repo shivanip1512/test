@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT410.h-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2003/10/27 22:04:07 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2004/04/01 21:50:02 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -28,75 +28,51 @@ protected:
     enum
     {
         MCT410_StatusPos         = 0x05,
-        MCT410_StatusLen         =    2,
+        MCT410_StatusLen         =    5,
 
-        MCT410_PowerfailCountPos = 0x07,
+        MCT410_PowerfailCountPos = 0x23,
         MCT410_PowerfailCountLen =    2,
 
         MCT410_AlarmsPos         = 0x15,
         MCT410_AlarmsLen         =    2,
 
+        MCT410_DemandIntervalPos = 0x1a,
+        MCT410_DemandIntervalLen =    1,
+
+        MCT410_LPIntervalPos     = 0x1b,
+        MCT410_LPIntervalLen     =    1,
+
+        MCT410_RTCPos            = 0x40,
+        MCT410_RTCLen            =    4,
+        MCT410_LastTSyncPos      = 0x44,
+        MCT410_LastTSyncLen      =    4,
+
+        MCT410_FuncWriteTSyncPos = 0xf0,
+        MCT410_FuncWriteTSyncLen =    6,
+
         MCT410_FuncReadMReadPos  = 0x90,
         MCT410_FuncReadMReadLen  =    3,  //  this is for the 410 KWH Only;  will need to be increased later
 
         MCT410_FuncReadDemandPos = 0x92,
-        MCT410_FuncReadDemandLen =    3   //  again, this is just getting the status byte and one demand reading
+        MCT410_FuncReadDemandLen =    6,  //  brings back recent demand, avg. voltage, and blink counter
+
+        MCT410_FuncReadPeakDemandPos = 0x93,
+        MCT410_FuncReadPeakDemandLen =    9,  //  peak demand, time of peak, current meter reading
+
+        MCT410_FuncReadVoltagePos = 0x95,
+        MCT410_FuncReadVoltageLen =   12,  //  max and min voltages
+
+        MCT410_FuncReadLPStatusPos = 0x97,
+        MCT410_FuncReadLPStatusLen =   12,
+
+        MCT4XX_FreezeOne         = 0x51,
+        MCT4XX_FreezeTwo         = 0x52,
+
+        MCT4XX_VoltageOffset     =    4,
+
+        MCT4XX_CommandPowerfailReset = 0x89,
+        MCT4XX_CommandReset          = 0x8A,
     };
-
-/*    enum
-    {
-        MCT3XX_FuncReadMReadPos  = 0x90,  //  144
-        MCT3XX_FuncReadMReadLen  =    9,  //  Variable based on point count... Max of 9.
-        MCT3XX_FuncReadFrozenPos = 0x91,  //  145
-        MCT3XX_FuncReadFrozenLen =    9,  //  Variable based on point count... Max of 9.
-
-        MCT3XX_PutMRead1Pos      = 0x20,
-        MCT3XX_PutMRead2Pos      = 0x32,
-        MCT3XX_PutMRead3Pos      = 0x51,
-        MCT3XX_PutMReadLen       =    6,
-
-        MCT3XX_Mult1Pos          = 0x26,
-        MCT3XX_Mult2Pos          = 0x38,
-        MCT3XX_Mult3Pos          = 0x57,
-        MCT3XX_MultLen           =    2,
-
-        MCT3XX_PFCountPos        = 0x07,
-        MCT3XX_PFCountLen        =    2,
-
-        MCT3XX_ResetPos          = 0x06,
-        MCT3XX_ResetLen          =    1,
-
-        MCT3XX_TimePos           = 0x7A,
-        MCT3XX_TimeLen           =    5,
-
-        MCT3XX_LPStatusPos       = 0x70,
-        MCT3XX_LPStatusLen       =    9,
-
-        MCT3XX_DemandIntervalPos = 0x1B,
-        MCT3XX_DemandIntervalLen =    1,
-        MCT3XX_LPIntervalPos     = 0x76,
-        MCT3XX_LPIntervalLen     =    1,
-
-        MCT3XX_OptionPos         = 0x02,
-        MCT3XX_OptionLen         =    6,
-        MCT3XX_GenStatPos        = 0x05,
-        MCT3XX_GenStatLen        =    9
-    };
-
-    enum
-    {
-        MCT3XX_GroupAddrPos     = 0x10,
-        MCT3XX_GroupAddrLen     =    5,
-
-        MCT3XX_GroupAddrBronzePos      = 0x10,
-        MCT3XX_GroupAddrBronzeLen      =    1,
-        MCT3XX_GroupAddrLeadPos        = 0x11,
-        MCT3XX_GroupAddrLeadLen        =    3,
-        MCT3XX_GroupAddrGoldSilverPos  = 0x14,
-        MCT3XX_GroupAddrGoldSilverLen  =    1,
-        MCT3XX_UniqAddrPos             = 0x1A,
-        MCT3XX_UniqAddrLen             =    6
-    };*/
 
 private:
 
@@ -117,11 +93,24 @@ public:
    static bool initCommandStore( );
    virtual bool getOperation( const UINT &cmd,  USHORT &function, USHORT &length, USHORT &io );
 
+   virtual ULONG calcNextLPScanTime( void );
+   virtual INT   calcAndInsertLPRequests( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > &outList );
+   virtual bool  calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *&OutMessage );
+
+   PointQuality_t getDataQuality( int value );
+   bool           isValidDataQuality( int value );
+
    virtual INT ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList );
 
    INT decodeGetValueKWH         ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
    INT decodeGetValueDemand      ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
+   INT decodeGetValuePeakDemand  ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
+   INT decodeGetValueVoltage     ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
+   INT decodeScanLoadProfile     ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
    INT decodeGetStatusInternal   ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
+   INT decodeGetStatusLoadProfile( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
+   INT decodeGetConfigTime       ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
+   INT decodeGetConfigInterval   ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
    INT decodeGetConfigModel      ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
 };
 #endif // #ifndef __DEV_MCT410_H__
