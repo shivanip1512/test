@@ -34,7 +34,7 @@ public class Baseline implements Serializable
 
 	private int[] skipDaysArray = {java.util.Calendar.SATURDAY, java.util.Calendar.SUNDAY};
 	
-	private com.cannontech.database.db.baseline.BaseLine baselineProps = null;
+	private com.cannontech.database.db.baseline.Baseline baselineProps = null;
 	//contains java.util.Date objects.
 	private Vector curtailedDates = null;
 	
@@ -805,13 +805,13 @@ public class Baseline implements Serializable
 				stmt = conn.prepareStatement(sql.toString());
 				rset = stmt.executeQuery();
 	
-				baselineProps = new com.cannontech.database.db.baseline.BaseLine();
+				baselineProps = new com.cannontech.database.db.baseline.Baseline();
 				while( rset.next())
 				{
 					baselineProps.setDaysUsed(new Integer(rset.getInt(1)));
 					baselineProps.setPercentWindow(new Integer(rset.getInt(2)));
 					baselineProps.setCalcDays(new Integer(rset.getInt(3)));
-					baselineProps.setExcludedWeekDays(rset.getString(4));
+					baselineProps.setExcludedWeekdays(rset.getString(4));
 					baselineProps.setHolidaysUsed(new Integer(rset.getInt(5)));
 					baselineProps.setBaselineName(rset.getString(6));
 				}
@@ -856,9 +856,9 @@ public class Baseline implements Serializable
 			java.util.Calendar.FRIDAY,
 			java.util.Calendar.SATURDAY };
 			
-		for (int i = 0; i < baselineProps.getExcludedWeekDays().toString().length(); i++)
+		for (int i = 0; i < baselineProps.getExcludedWeekdays().toString().length(); i++)
 		{
-			if(baselineProps.getExcludedWeekDays().charAt(i) == 'Y')
+			if(baselineProps.getExcludedWeekdays().charAt(i) == 'Y')
 				skip.add( new Integer( days[i] ) );
 		}
 	
@@ -873,15 +873,15 @@ public class Baseline implements Serializable
 	/**
 	 * @return
 	 */
-	public com.cannontech.database.db.baseline.BaseLine getBaselineProperties()
+	public com.cannontech.database.db.baseline.Baseline getBaselineProperties()
 	{
 		if( baselineProps == null)
 		{
-			baselineProps = new com.cannontech.database.db.baseline.BaseLine();
+			baselineProps = new com.cannontech.database.db.baseline.Baseline();
 			baselineProps.setDaysUsed(new Integer(30));
 			baselineProps.setPercentWindow(new Integer(75));
 			baselineProps.setCalcDays(new Integer(5));
-			baselineProps.setExcludedWeekDays("YNNNNNY");
+			baselineProps.setExcludedWeekdays("YNNNNNY");
 			baselineProps.setHolidaysUsed(new Integer(0));
 		}
 		return baselineProps;
