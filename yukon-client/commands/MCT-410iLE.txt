@@ -1,4 +1,4 @@
-@include /custom/MCT-410 kWh Only.txt
+@include /custom/MCT-410iLE.txt
 Read Energy = getvalue kwh
 Read Current Demand = getvalue demand
 Read Options = getconfig model
