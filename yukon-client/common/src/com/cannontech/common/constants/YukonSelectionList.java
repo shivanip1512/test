@@ -12,7 +12,7 @@ public class YukonSelectionList {
 	
 	private int listID = 0;
 	private String ordering = null;
-	private String selectionLable = null;
+	private String selectionLabel = null;
 	private String whereIsList = null;
 	private String listName = null;
 	private String userUpdateAvailable = null;
@@ -62,11 +62,11 @@ public class YukonSelectionList {
 	}
 
 	/**
-	 * Returns the selectionLable.
+	 * Returns the selectionLabel.
 	 * @return String
 	 */
-	public String getSelectionLable() {
-		return selectionLable;
+	public String getSelectionLabel() {
+		return selectionLabel;
 	}
 
 	/**
@@ -110,11 +110,11 @@ public class YukonSelectionList {
 	}
 
 	/**
-	 * Sets the selectionLable.
-	 * @param selectionLable The selectionLable to set
+	 * Sets the selectionLabel.
+	 * @param selectionLabel The selectionLabel to set
 	 */
-	public void setSelectionLable(String selectionLable) {
-		this.selectionLable = selectionLable;
+	public void setSelectionLabel(String selectionLabel) {
+		this.selectionLabel = selectionLabel;
 	}
 
 	/**

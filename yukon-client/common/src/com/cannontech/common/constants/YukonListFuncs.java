@@ -162,7 +162,7 @@ public final class YukonListFuncs implements YukonListEntryTypes
 				YukonSelectionList list = new YukonSelectionList();
 				list.setListID( rset.getInt(1) );
 				list.setOrdering( rset.getString(2) );
-				list.setSelectionLable( rset.getString(3).trim() );
+				list.setSelectionLabel( rset.getString(3).trim() );
 				list.setWhereIsList( rset.getString(4).trim() );
 				list.setListName( rset.getString(5).trim() );
 				list.setUserUpdateAvailable( rset.getString(6).trim() );

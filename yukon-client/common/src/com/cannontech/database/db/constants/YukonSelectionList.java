@@ -42,6 +42,9 @@ public class YukonSelectionList extends DBPersistent {
 	 * @see com.cannontech.database.db.DBPersistent#add()
 	 */
 	public void add() throws SQLException {
+		if (getListID() == null)
+			setListID( getNextListID(getDbConnection()) );
+			
 		Object[] addValues = {
 			getListID(), getOrdering(), getSelectionLabel(), getWhereIsList(),
 			getListName(), getUserUpdateAvailable()
