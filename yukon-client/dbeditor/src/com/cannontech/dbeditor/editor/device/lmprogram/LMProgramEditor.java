@@ -32,6 +32,8 @@ public class LMProgramEditor extends com.cannontech.common.editor.PropertyPanel 
 		{ PAOGroups.LM_DIRECT_PROGRAM },
 		//LMProgramDirectCustomerListPanel
 		{ PAOGroups.LM_DIRECT_PROGRAM },
+		//LMProgramDirectMemberControlPanel
+		{ PAOGroups.LM_DIRECT_PROGRAM },
 		
 		//LMProgramEnergyExchangePanel
 		{ PAOGroups.LM_ENERGY_EXCHANGE_PROGRAM},
@@ -100,11 +102,16 @@ public Object[] createNewPanel(int panelIndex)
 			break;
 			
 		case 8:
+			objs[0] = new com.cannontech.dbeditor.wizard.device.lmprogram.LMProgramDirectMemberControlPanel();
+			objs[1] = "Member Control";
+			break;
+			
+		case 9:
 			objs[0] = new com.cannontech.dbeditor.wizard.device.lmprogram.LMProgramEnergyExchangePanel();
 			objs[1] = "Energy Exchange";
 			break;
 
-		case 9:
+		case 10:
 			objs[0] = new com.cannontech.dbeditor.wizard.device.lmprogram.LMProgramEnergyExchangeCustomerListPanel();
 			objs[1] = "Exchange Customers";
 			break;
