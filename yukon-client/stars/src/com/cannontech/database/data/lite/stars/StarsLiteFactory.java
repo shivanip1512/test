@@ -1813,11 +1813,7 @@ public class StarsLiteFactory {
 	public static StarsServiceRequest createStarsServiceRequest(LiteWorkOrderBase liteOrder, LiteStarsEnergyCompany energyCompany) {
 		StarsServiceRequest starsOrder = new StarsServiceRequest();
 		starsOrder.setOrderID( liteOrder.getOrderID() );
-		
-		String orderNo = ServerUtils.forceNotNull(liteOrder.getOrderNumber());
-		if (orderNo.startsWith( ServerUtils.AUTO_GEN_NUM_PREC ))
-			orderNo = orderNo.substring( ServerUtils.AUTO_GEN_NUM_PREC.length() );
-		starsOrder.setOrderNumber( orderNo );
+		starsOrder.setOrderNumber( ServerUtils.forceNotNull(liteOrder.getOrderNumber()) );
 		
 		starsOrder.setServiceType(
 			(ServiceType) StarsFactory.newStarsCustListEntry(

@@ -12,7 +12,6 @@ import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.db.stars.report.CallReportBase;
-import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
@@ -105,32 +104,25 @@ public class CreateCallAction implements ActionBase {
 			StarsCreateCallReport createCall = reqOper.getStarsCreateCallReport();
             
 			String callNo = createCall.getCallNumber();
-			if (callNo != null) {
-				if (callNo.trim().length() == 0) {
-					respOper.setStarsFailure( StarsFactory.newStarsFailure(
-							StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Tracking # cannot be empty") );
-					return SOAPUtil.buildSOAPMessage( respOper );
+			try {
+				if (callNo != null) {
+					if (callNo.trim().length() == 0)
+						throw new WebClientException( "Tracking # cannot be empty" );
+					if (CallReportBase.callNumberExists( callNo, energyCompany.getEnergyCompanyID() ))
+						throw new WebClientException( "Tracking # already exists, please enter a different one" );
 				}
-				if (callNo.startsWith( ServerUtils.AUTO_GEN_NUM_PREC )) {
-					respOper.setStarsFailure( StarsFactory.newStarsFailure(
-							StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Tracking # cannot start with reserved string \"" + ServerUtils.AUTO_GEN_NUM_PREC + "\"") );
-					return SOAPUtil.buildSOAPMessage( respOper );
-				}
-				if (CallReportBase.callNumberExists( callNo, energyCompany.getEnergyCompanyID() )) {
-					respOper.setStarsFailure( StarsFactory.newStarsFailure(
-							StarsConstants.FAILURE_CODE_INVALID_PRIMARY_FIELD, "Tracking # already exists, please enter a different one") );
-					return SOAPUtil.buildSOAPMessage( respOper );
+				else {
+					// Call tracking # not provided, get the next one available
+					callNo = energyCompany.getNextCallNumber();
+					if (callNo == null)
+						throw new WebClientException( "Cannot assign a tracking #" );
+					createCall.setCallNumber( callNo );
 				}
 			}
-			else {
-				// Call tracking # not provided, get the next one available
-				callNo = energyCompany.getNextCallNumber();
-				if (callNo == null) {
-					respOper.setStarsFailure( StarsFactory.newStarsFailure(
-							StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot assign a tracking #") );
-					return SOAPUtil.buildSOAPMessage( respOper );
-				}
-				createCall.setCallNumber( ServerUtils.AUTO_GEN_NUM_PREC + callNo );
+			catch (WebClientException e) {
+				respOper.setStarsFailure( StarsFactory.newStarsFailure(
+						StarsConstants.FAILURE_CODE_OPERATION_FAILED, e.getMessage()) );
+				return SOAPUtil.buildSOAPMessage( respOper );
 			}
             
 			com.cannontech.database.data.stars.report.CallReportBase callReport = new com.cannontech.database.data.stars.report.CallReportBase();

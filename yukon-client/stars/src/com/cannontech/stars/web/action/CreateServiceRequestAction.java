@@ -16,7 +16,6 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.db.stars.report.WorkOrderBase;
-import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
@@ -201,8 +200,6 @@ public class CreateServiceRequestAction implements ActionBase {
 			if (orderNo != null) {
 				if (orderNo.trim().length() == 0)
 					throw new WebClientException( "Order # cannot be empty" );
-				if (orderNo.startsWith( ServerUtils.AUTO_GEN_NUM_PREC ))
-					throw new WebClientException( "Order # cannot start with reserved string '" + ServerUtils.AUTO_GEN_NUM_PREC + "'" );
 				if (WorkOrderBase.orderNumberExists( orderNo, energyCompany.getEnergyCompanyID() ))
 					throw new WebClientException( "Order # already exists" );
 			}
@@ -211,7 +208,7 @@ public class CreateServiceRequestAction implements ActionBase {
 				orderNo = energyCompany.getNextOrderNumber();
 				if (orderNo == null)
 					throw new WebClientException( "Failed to assign an order # automatically" );
-				createOrder.setOrderNumber( ServerUtils.AUTO_GEN_NUM_PREC + orderNo );
+				createOrder.setOrderNumber( orderNo );
 			}
 		}
         

@@ -28,8 +28,6 @@ import com.cannontech.yc.gui.YCDefaults;
  */
 public class ServerUtils {
     
-	public static final String AUTO_GEN_NUM_PREC = "##";
-    
 	// If date in database is earlier than this, than the date is actually empty
 	public static long VERY_EARLY_TIME = 1000 * 3600 * 24;
     

@@ -150,18 +150,14 @@ public class StarsFactory {
 		try {
 			StarsCallReport starsCall = new StarsCallReport();
 			
-			String callNo = callDB.getCallNumber();
-			if (callNo.startsWith( ServerUtils.AUTO_GEN_NUM_PREC ))
-				callNo = callNo.substring( ServerUtils.AUTO_GEN_NUM_PREC.length() );
-			
-			YukonListEntry callType = YukonListFuncs.getYukonListEntry( callDB.getCallTypeID().intValue() );
-			
 			starsCall.setCallID( callDB.getCallID().intValue() );
-			starsCall.setCallNumber( callNo );
+			starsCall.setCallNumber( callDB.getCallNumber() );
 			starsCall.setCallDate( callDB.getDateTaken() );
-			starsCall.setCallType( (CallType)newStarsCustListEntry(callType, CallType.class) );
 			starsCall.setDescription( callDB.getDescription() );
 			starsCall.setTakenBy( callDB.getTakenBy() );
+			
+			YukonListEntry callType = YukonListFuncs.getYukonListEntry( callDB.getCallTypeID().intValue() );
+			starsCall.setCallType( (CallType)newStarsCustListEntry(callType, CallType.class) );
 			
 			return starsCall;
 		}
@@ -195,14 +191,10 @@ public class StarsFactory {
 			callRprts[i] = new StarsCallReport();
         	
 			callRprts[i].setCallID( calls[i].getCallID().intValue() );
+			callRprts[i].setCallNumber( ServerUtils.forceNotNull(calls[i].getCallNumber()) );
 			callRprts[i].setCallDate( calls[i].getDateTaken() );
 			callRprts[i].setTakenBy( ServerUtils.forceNotNull(calls[i].getTakenBy()) );
 			callRprts[i].setDescription( ServerUtils.forceNotNull(calls[i].getDescription()) );
-        	
-			String callNo = ServerUtils.forceNotNull(calls[i].getCallNumber());
-			if (callNo.startsWith( ServerUtils.AUTO_GEN_NUM_PREC ))
-				callNo = callNo.substring( ServerUtils.AUTO_GEN_NUM_PREC.length() );
-			callRprts[i].setCallNumber( callNo );
         	
 			CallType callType = new CallType();
 			StarsLiteFactory.setStarsCustListEntry( callType, YukonListFuncs.getYukonListEntry(calls[i].getCallTypeID().intValue()) );

@@ -178,8 +178,8 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	// Map of hardware type yukondefid (Integer) to LiteLMThermostatSchedule
 	private Hashtable dftThermSchedules = null;
 	
-	private int nextCallNo = 0;
-	private int nextOrderNo = 0;
+	private long nextCallNo = 0;
+	private long nextOrderNo = 0;
 	
 	private boolean accountsLoaded = false;
 	private boolean inventoryLoaded = false;
@@ -1384,19 +1384,17 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	public synchronized String getNextCallNumber() {
 		if (nextCallNo == 0) {
 			String sql = "SELECT CallNumber FROM CallReportBase call, ECToCallReportMapping map "
-					   + "WHERE map.EnergyCompanyID = " + getEnergyCompanyID() + " AND call.CallID = map.CallReportID "
-					   + "AND CallNumber like '" + ServerUtils.AUTO_GEN_NUM_PREC + "%' ORDER BY CallID DESC";
+					   + "WHERE map.EnergyCompanyID = " + getEnergyCompanyID() + " AND call.CallID = map.CallReportID";
 			SqlStatement stmt = new SqlStatement(
 					sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
-					
+			
 			try {
 				stmt.execute();
-				int maxCallNo = 0;
+				long maxCallNo = 0;
 				
 				for (int i = 0; i < stmt.getRowCount(); i++) {
 					try {
-						String callNoStr = (String) stmt.getRow(i)[0];
-						int callNo = Integer.parseInt( callNoStr.substring(ServerUtils.AUTO_GEN_NUM_PREC.length()) );
+						long callNo = Long.parseLong( (String)stmt.getRow(i)[0] );
 						if (callNo > maxCallNo) maxCallNo = callNo;
 					}
 					catch (NumberFormatException nfe) {}
@@ -1409,6 +1407,15 @@ public class LiteStarsEnergyCompany extends LiteBase {
 				return null;
 			}
 		}
+		
+		try {
+			String val = getEnergyCompanySetting( ConsumerInfoRole.CALL_NUMBER_AUTO_GEN );
+			if (val != null) {
+				long initCallNo = Long.parseLong( val );
+				if (nextCallNo < initCallNo) nextCallNo = initCallNo;
+			}
+		}
+		catch (NumberFormatException e) {}
 		
 		return String.valueOf( nextCallNo++ );
 	}
@@ -1423,19 +1430,17 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	public synchronized String getNextOrderNumber() {
 		if (nextOrderNo == 0) {
 			String sql = "SELECT OrderNumber FROM WorkOrderBase service, ECToWorkOrderMapping map "
-					   + "WHERE map.EnergyCompanyID = " + getEnergyCompanyID() + " AND service.OrderID = map.WorkOrderID "
-					   + "AND OrderNumber like '" + ServerUtils.AUTO_GEN_NUM_PREC + "%' ORDER BY OrderID DESC";
+					   + "WHERE map.EnergyCompanyID = " + getEnergyCompanyID() + " AND service.OrderID = map.WorkOrderID";
 			SqlStatement stmt = new SqlStatement(
 					sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
-					
+			
 			try {
 				stmt.execute();
-				int maxOrderNo = 0;
+				long maxOrderNo = 0;
 				
 				for (int i = 0; i < stmt.getRowCount(); i++) {
 					try {
-						String orderNoStr = (String) stmt.getRow(i)[0];
-						int orderNo = Integer.parseInt( orderNoStr.substring(ServerUtils.AUTO_GEN_NUM_PREC.length()) );
+						long orderNo = Long.parseLong( (String)stmt.getRow(i)[0] );
 						if (orderNo > maxOrderNo) maxOrderNo = orderNo;
 					}
 					catch (NumberFormatException nfe) {}
@@ -1447,6 +1452,15 @@ public class LiteStarsEnergyCompany extends LiteBase {
 				CTILogger.error( e.getMessage(), e );
 			}
 		}
+		
+		try {
+			String val = getEnergyCompanySetting( ConsumerInfoRole.ORDER_NUMBER_AUTO_GEN );
+			if (val != null) {
+				long initOrderNo = Long.parseLong( val );
+				if (nextOrderNo < initOrderNo) nextOrderNo = initOrderNo;
+			}
+		}
+		catch (NumberFormatException e) {}
 		
 		return String.valueOf( nextOrderNo++ );
 	}
@@ -2088,9 +2102,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			
 			for (int i = 0; i < workOrders.size(); i++) {
 				LiteWorkOrderBase liteOrder = (LiteWorkOrderBase) workOrders.get(i);
-				if (liteOrder.getOrderNumber().equalsIgnoreCase(orderNo)
-					|| liteOrder.getOrderNumber().equalsIgnoreCase(ServerUtils.AUTO_GEN_NUM_PREC + orderNo))
-				{
+				if (liteOrder.getOrderNumber().equalsIgnoreCase(orderNo)) {
 					if (searchMembers)
 						orderList.add( new Pair(liteOrder, this) );
 					else

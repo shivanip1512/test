@@ -51,10 +51,33 @@ public class WorkOrderBean {
 		public int compare(Object o1, Object o2) {
 			LiteWorkOrderBase so1 = (LiteWorkOrderBase) o1;
 			LiteWorkOrderBase so2 = (LiteWorkOrderBase) o2;
-			int rslt = so1.getOrderNumber().compareTo( so2.getOrderNumber() );
-			if (rslt == 0)
-				rslt = so1.getOrderID() - so2.getOrderID();
-			return rslt;
+			int result = 0;
+			
+			Long on1 = null;
+			try {
+				on1 = Long.valueOf( so1.getOrderNumber() );
+			}
+			catch (NumberFormatException e) {}
+			
+			Long on2 = null;
+			try {
+				on2 = Long.valueOf( so2.getOrderNumber() );
+			}
+			catch (NumberFormatException e) {}
+			
+			if (on1 != null && on2 != null) {
+				result = on1.compareTo( on2 );
+				if (result == 0) result = so1.getOrderNumber().compareTo( so2.getOrderNumber() );
+			}
+			else if (on1 != null && on2 == null)
+				return -1;
+			else if (on1 == null && on2 != null)
+				return 1;
+			else
+				result = so1.getOrderNumber().compareTo( so2.getOrderNumber() );
+			
+			if (result == 0) result = so1.getOrderID() - so2.getOrderID();
+			return result;
 		}
 	};
 	
