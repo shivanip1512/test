@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2004/05/13 18:11:50 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2004/06/01 18:15:00 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -277,17 +277,22 @@ INT CtiDeviceDNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
                     if( control->getPointStatus().getControlType() == LatchControlType ||
                         control->getPointStatus().getControlType() == SBOLatchControlType )
                     {
-                        if( parse.getCommandStr().contains(control->getPointStatus().getStateZeroControl(), RWCString::ignoreCase) )      //  CMD_FLAG_CTL_OPEN
+                        if( parse.getCommandStr().contains(control->getPointStatus().getStateZeroControl(), RWCString::ignoreCase) )
                         {
-                            controltype = CtiDNPBinaryOutputControl::LatchOff;
-
                             hist->setRawState(STATEZERO);
                         }
-                        else if( parse.getCommandStr().contains(control->getPointStatus().getStateOneControl(), RWCString::ignoreCase) )  //  CMD_FLAG_CTL_CLOSE
+                        else if( parse.getCommandStr().contains(control->getPointStatus().getStateOneControl(), RWCString::ignoreCase) )
+                        {
+                            hist->setRawState(STATEONE);
+                        }
+
+                        if( parse.getFlags() & CMD_FLAG_CTL_OPEN )
+                        {
+                            controltype = CtiDNPBinaryOutputControl::LatchOff;
+                        }
+                        else if( parse.getFlags() & CMD_FLAG_CTL_CLOSE )
                         {
                             controltype = CtiDNPBinaryOutputControl::LatchOn;
-
-                            hist->setRawState(STATEONE);
                         }
 
                         offset      = control->getPointStatus().getControlOffset();
@@ -299,17 +304,24 @@ INT CtiDeviceDNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
                     {
                         if( parse.getCommandStr().contains(control->getPointStatus().getStateZeroControl(), RWCString::ignoreCase) )      //  CMD_FLAG_CTL_OPEN
                         {
-                            trip_close  = CtiDNPBinaryOutputControl::Trip;
                             on_time     = control->getPointStatus().getCloseTime1();
 
                             hist->setRawState(STATEZERO);
                         }
                         else if( parse.getCommandStr().contains(control->getPointStatus().getStateOneControl(), RWCString::ignoreCase) )  //  CMD_FLAG_CTL_CLOSE
                         {
-                            trip_close  = CtiDNPBinaryOutputControl::Close;
                             on_time     = control->getPointStatus().getCloseTime2();
 
                             hist->setRawState(STATEONE);
+                        }
+
+                        if( parse.getFlags() & CMD_FLAG_CTL_OPEN )
+                        {
+                            trip_close  = CtiDNPBinaryOutputControl::Trip;
+                        }
+                        else if( parse.getFlags() & CMD_FLAG_CTL_CLOSE )
+                        {
+                            trip_close  = CtiDNPBinaryOutputControl::Close;
                         }
 
                         controltype = CtiDNPBinaryOutputControl::PulseOn;
