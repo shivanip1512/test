@@ -14,13 +14,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_tcpip.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/09/23 20:26:52 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/12/12 17:06:43 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
 #include "port_base.h"
+#include "port_dialin.h"
 #include "port_dialout.h"
 #include "tbl_port_tcpip.h"
 #include "tcpsup.h"
@@ -44,12 +45,15 @@ private:
    INT                  _baud;
 
    CtiPortDialout       *_dialout;
+   CtiPortDialin        *_dialin;
 
 public:
 
    typedef CtiPort  Inherited;
 
-   CtiPortTCPIPDirect(CtiPortDialout *dial = 0);
+   CtiPortTCPIPDirect();
+   CtiPortTCPIPDirect(CtiPortDialout *dial);
+   CtiPortTCPIPDirect(CtiPortDialin *dial);
 
    CtiPortTCPIPDirect(const CtiPortTCPIPDirect& aRef);
    virtual ~CtiPortTCPIPDirect();
@@ -71,9 +75,10 @@ public:
    virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
    virtual void DecodeDatabaseReader(RWDBReader &rdr);
    virtual void DecodeDialoutDatabaseReader(RWDBReader &rdr);
+   virtual void DecodeDialinDatabaseReader(RWDBReader &rdr);
 
    virtual bool isViable() const;
-   virtual INT init();
+   virtual INT openPort();
    virtual INT reset(INT trace);
    virtual INT setup(INT trace);
    virtual INT close(INT trace);

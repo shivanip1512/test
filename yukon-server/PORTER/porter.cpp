@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.34 $
-* DATE         :  $Date: 2002/12/03 17:57:28 $
+* REVISION     :  $Revision: 1.35 $
+* DATE         :  $Date: 2002/12/12 17:06:34 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -176,6 +176,7 @@ using namespace std;
 
 ULONG TimeSyncRate = 3600L;
 
+CTI_PORTTHREAD_FUNC_PTR PortThreadFactory(int);
 void DisplayTraceList( CtiPortSPtr Port, RWTPtrSlist< CtiMessage > &traceList, bool consume);
 void LoadPorterGlobals(void);
 INT  RefreshPorterRTDB(void *ptr = NULL);
@@ -191,7 +192,7 @@ DLLIMPORT extern BOOL PorterQuit;
 extern INT RunningInConsole;              // From portmain.cpp
 
 // Some Global Manager types to allow us some RTDB stuff.
-CtiPortManager     PortManager(PortThread);
+CtiPortManager     PortManager(PortThreadFactory);
 CtiDeviceManager   DeviceManager;
 CtiRouteManager    RouteManager;
 vector< CtiPortShare * > PortShareManager;
@@ -1658,3 +1659,18 @@ void DisplayTraceList( CtiPortSPtr Port, RWTPtrSlist< CtiMessage > &traceList, b
 }
 
 
+CTI_PORTTHREAD_FUNC_PTR PortThreadFactory(int porttype)
+{
+    CTI_PORTTHREAD_FUNC_PTR fptr = PortThread;
+
+    switch(porttype)
+    {
+    case PortTypeLocalDialBack:
+        {
+            fptr = PortDialbackThread;
+            break;
+        }
+    }
+
+    return fptr;
+}

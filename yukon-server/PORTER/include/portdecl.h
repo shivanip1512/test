@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/INCLUDE/portdecl.h-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2002/09/19 15:54:22 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2002/12/12 17:06:38 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -69,6 +69,7 @@ VOID PorterInterfaceThread (PVOID);
 
 /*  */
 VOID PortThread(void *);
+VOID PortDialbackThread(void *);
 void RemoteInitialize (CtiDeviceBase *&Device, CtiPortSPtr pPort);
 void RemoteReset (CtiDeviceBase *&Device, CtiPortSPtr pPort);
 INT TDMarkVHandShake (OUTMESS *, INMESS *, CtiPortSPtr , CtiDeviceBase *);

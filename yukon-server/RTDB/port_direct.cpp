@@ -21,7 +21,6 @@
 using namespace std;
 
 #include "port_direct.h"
-#include "portsup.h"
 #include "dllbase.h"
 
 CtiTablePortLocalSerial CtiPortDirect::getLocalSerial() const
@@ -40,7 +39,7 @@ CtiPortDirect& CtiPortDirect::setLocalSerial(const CtiTablePortLocalSerial& aRef
     return *this;
 }
 
-INT CtiPortDirect::init()
+INT CtiPortDirect::openPort()
 {
     INT      status = NORMAL;
     ULONG    Result, i;
@@ -56,7 +55,14 @@ INT CtiPortDirect::init()
     }
     else
     {
-        if(CTIOpen ((char*)(_localSerial.getPhysicalPort().data()), &getHandle(), &Result, 0L, FILE_NORMAL, FILE_OPEN, OPEN_ACCESS_READWRITE | OPEN_SHARE_DENYREADWRITE | OPEN_FLAGS_WRITE_THROUGH, 0L) || Result != 1)
+        if(CTIOpen ((char*)(_localSerial.getPhysicalPort().data()),
+                    &getHandle(),
+                    &Result,
+                    0L,
+                    FILE_NORMAL,
+                    FILE_OPEN,
+                    OPEN_ACCESS_READWRITE | OPEN_SHARE_DENYREADWRITE | OPEN_FLAGS_WRITE_THROUGH,
+                    0L) || Result != 1)
         {
             close(false);
 
@@ -73,28 +79,12 @@ INT CtiPortDirect::init()
             dout << RWTime() << " Port " << getName() << " acquiring port handle" << endl;
         }
 
-        /* set the baud rate on the port */
-        if((i = baudRate()) != NORMAL)
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-            return(i);
-        }
 
-        /* set the line characteristics for this port */
-        if((i = SetLineMode(_portHandle)) != NORMAL)
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-            return(i);
-        }
+        /* load _dcb and set the default DCB/COMMTIMEOUTS info for the port */
+        initPrivateStores();
 
-        /* set the default DCB info for the port */
-        if((i = SetDefaultDCB(_portHandle)) != NORMAL)
+        /* set the baud rate bits parity etc! on the port */
+        if((i = setLine()) != NORMAL)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -114,7 +104,7 @@ INT CtiPortDirect::init()
         }
 
         /* set the write timeout for the port */
-        if((i = SetWriteTimeOut(_portHandle, TIMEOUT)) != NORMAL)
+        if((i = setPortWriteTimeOut(TIMEOUT)) != NORMAL)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -126,7 +116,8 @@ INT CtiPortDirect::init()
         /* See if we need to use 7E1 */
         if(isTAP())
         {
-            SetLineModeTAPTerm(getHandle());
+            setLine(0, 7, EVENPARITY, ONESTOPBIT);
+            enableXONXOFF();
         }
 
         /* Lower RTS */
@@ -135,10 +126,46 @@ INT CtiPortDirect::init()
         /* Raise DTR */
         raiseDTR();
 
+        #if 1
+        if((status = reset(true)) != NORMAL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Error resetting port on " << getName() << endl;
+        }
+
+        /* set the modem parameters */
+        if((status = setup(true)) != NORMAL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Error setting port on " << getName() << endl;
+        }
+
+        #else
         if(_dialout && isViable())
         {
-            _dialout->init();   // If we are a dialout port, init the dialout aspects!
+            if((status = reset(true)) != NORMAL)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Error resetting port for dialup on " << getName() << endl;
+            }
+
+            /* set the modem parameters */
+            if((status = setup(true)) != NORMAL)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Error setting port for dialup modem on " << getName() << endl;
+            }
         }
+        else if(_dialin)
+        {
+            enableRTSCTS();
+            _dialin->getModem().setPort(this);
+            _dialin->getModem().waitForOK(500, "OK" );
+            _dialin->getModem().reset();
+            _dialin->getModem().sendString("AT&F&K0&M0&N6\r");
+            _dialin->getModem().setAutoAnswerRingCount(3);
+        }
+        #endif
     }
 
     return status;
@@ -165,9 +192,7 @@ CtiPortDirect& CtiPortDirect::setHandle(const HANDLE& hdl)
     return *this;
 }
 
-
-
-INT CtiPortDirect::baudRate(INT rate) const     // Set/reset the port's baud rate to the DB value
+INT CtiPortDirect::setLine(INT rate, INT bits, INT parity, INT stopbits)
 {
     INT r = getTablePortSettings().getBaudRate();
 
@@ -176,7 +201,12 @@ INT CtiPortDirect::baudRate(INT rate) const     // Set/reset the port's baud rat
         r = rate;
     }
 
-    return(SetBaudRate(_portHandle, r));
+    _dcb.BaudRate  = r;
+    _dcb.ByteSize  = bits;
+    _dcb.Parity    = parity;
+    _dcb.StopBits  = stopbits;
+
+    return (SetCommState(_portHandle, &_dcb) ? NORMAL : SYSTEM);
 }
 
 INT CtiPortDirect::byteTime(ULONG bytes) const
@@ -198,34 +228,54 @@ INT CtiPortDirect::dcdTest() const
     return(isDCD());
 }
 
-INT CtiPortDirect::lowerRTS() const
+INT CtiPortDirect::lowerRTS()
 {
-    return(LowerModemRTS(_portHandle));
+    #if 1
+    return (EscapeCommFunction(_portHandle, CLRRTS) ? NORMAL : SYSTEM);
+    #else
+    _dcb.fRtsControl =  RTS_CONTROL_DISABLE;
+    return (SetCommState( _portHandle, &_dcb ) ? NORMAL : SYSTEM);
+    #endif
 }
 
-INT CtiPortDirect::raiseRTS() const
+INT CtiPortDirect::raiseRTS()
 {
-    return(RaiseModemRTS(_portHandle));
+    #if 1
+    return (EscapeCommFunction(_portHandle, SETRTS) ? NORMAL : SYSTEM);
+    #else
+    _dcb.fRtsControl =  RTS_CONTROL_ENABLE;
+    return (SetCommState( _portHandle, &_dcb ) ? NORMAL : SYSTEM);
+    #endif
 }
 
-INT CtiPortDirect::lowerDTR() const
+INT CtiPortDirect::lowerDTR()
 {
-    return(LowerModemDTR(_portHandle));
+    #if 1
+    return (EscapeCommFunction(_portHandle, CLRDTR) ? NORMAL : SYSTEM);
+    #else
+    _dcb.fDtrControl =  DTR_CONTROL_DISABLE;
+    return (SetCommState( _portHandle, &_dcb ) ? NORMAL : SYSTEM);
+    #endif
 }
 
-INT CtiPortDirect::raiseDTR() const
+INT CtiPortDirect::raiseDTR()
 {
-    return(RaiseModemDTR(_portHandle));
+    #if 1
+    return (EscapeCommFunction(_portHandle, SETDTR) ? NORMAL : SYSTEM);
+    #else
+    _dcb.fDtrControl =  DTR_CONTROL_ENABLE;
+    return (SetCommState( _portHandle, &_dcb ) ? NORMAL : SYSTEM);
+    #endif
 }
 
-INT CtiPortDirect::inClear() const
+INT CtiPortDirect::inClear()
 {
-    return(PortInputFlush(_portHandle));
+    return (PurgeComm(_portHandle, PURGE_RXCLEAR) ? NORMAL : SYSTEM );
 }
 
-INT CtiPortDirect::outClear() const
+INT CtiPortDirect::outClear()
 {
-    return(PortOutputFlush(_portHandle));
+    return (PurgeComm(_portHandle, PURGE_TXCLEAR) ? NORMAL : SYSTEM );
 }
 
 INT CtiPortDirect::inMess(CtiXfer& Xfer, CtiDeviceBase *Dev, RWTPtrSlist< CtiMessage > &traceList)
@@ -253,7 +303,7 @@ INT CtiPortDirect::inMess(CtiXfer& Xfer, CtiDeviceBase *Dev, RWTPtrSlist< CtiMes
             Sleep(250);
 
             bytesavail = 0;
-            bytesavail = GetPortInputQueueCount(getHandle());
+            bytesavail = getPortInQueueCount();
 
             if(0)
             {
@@ -321,7 +371,7 @@ INT CtiPortDirect::inMess(CtiXfer& Xfer, CtiDeviceBase *Dev, RWTPtrSlist< CtiMes
     }
 
     /* Make sure that any errors on the port are cleared */
-    GetPortCommError(getHandle());
+    getPortCommError();
 
     if(status == NORMAL)
     {
@@ -426,9 +476,9 @@ INT CtiPortDirect::readIDLCHeader(CtiXfer& Xfer, unsigned long *byteCount, bool 
         }
 
         /* Make sure that any errors on the port are cleared */
-        GetPortCommError(getHandle());
+        getPortCommError();
 
-    }  while(Message[0] != 0x7e && Message[0] != 0xfc);
+    } while(Message[0] != 0x7e && Message[0] != 0xfc);
 
     //  if we successfully got the framing byte
     if(status == NORMAL)
@@ -615,7 +665,7 @@ INT CtiPortDirect::outMess(CtiXfer& Xfer, CtiDevice *Dev, RWTPtrSlist< CtiMessag
             /* if software queue is not empty wait for it to be */
             for (int cnt=0; cnt < 5; cnt++)
             {
-                if ((ByteCount = GetPortOutputQueueCount(getHandle())) != 0)
+                if ((ByteCount = getPortOutQueueCount()) != 0)
                 {
                     CTISleep ((10000L * ByteCount) / getTablePortSettings().getBaudRate());
                 }
@@ -668,26 +718,47 @@ INT CtiPortDirect::close(INT trace)
 {
     INT status = NORMAL;
 
-    if(getHandle() != NULL)
+    try
     {
-        if(_dialout)
+        if(getHandle() != NULL)
         {
-            _dialout->disconnect(NULL, trace);
-        }
+            if(_dialout)
+            {
+                _dialout->disconnect(NULL, trace);
+            }
+            else if(_dialin)
+            {
+                _dialin->disconnect(NULL, trace);
+            }
 
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " " << getName() << " releasing port handle" << endl;
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " " << getName() << " releasing port handle" << endl;
+            }
+            status = CTIClose(getHandle());
         }
-        status = CTIClose(getHandle());
     }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
     _lastBaudRate = 0;
 
 
     return status;
 }
 
+CtiPortDirect::CtiPortDirect() :
+_dialin(0),
+_dialout(0),
+_portHandle(0)
+{
+}
+
 CtiPortDirect::CtiPortDirect(CtiPortDialout *dial) :
+_dialin(0),
 _dialout(dial),
 _portHandle(0)
 {
@@ -697,7 +768,19 @@ _portHandle(0)
     }
 }
 
+CtiPortDirect::CtiPortDirect(CtiPortDialin *dial) :
+_dialin(dial),
+_dialout(0),
+_portHandle(0)
+{
+    if(_dialin != 0)
+    {
+        _dialin->setSuperPort(this);
+    }
+}
+
 CtiPortDirect::CtiPortDirect(const CtiPortDirect& aRef) :
+_dialin(0),
 _dialout(0),
 _portHandle(0)
 {
@@ -711,6 +794,11 @@ CtiPortDirect::~CtiPortDirect()
     {
         delete _dialout;
         _dialout = 0;
+    }
+    if(_dialin)
+    {
+        delete _dialin;
+        _dialin = 0;
     }
 }
 
@@ -751,10 +839,33 @@ void CtiPortDirect::DecodeDialoutDatabaseReader(RWDBReader &rdr)
     }
 }
 
+void CtiPortDirect::DecodeDialinDatabaseReader(RWDBReader &rdr)
+{
+    if(_dialin)
+    {
+        _dialin->DecodeDatabaseReader(rdr);
+    }
+}
+
 INT CtiPortDirect::setPortReadTimeOut(USHORT timeout)
 {
-    return SetReadTimeOut( getHandle(), timeout );
+    _cto.ReadIntervalTimeout = 0;
+    _cto.ReadTotalTimeoutMultiplier = 0;
+    _cto.ReadTotalTimeoutConstant = (timeout * 1000);
+
+    return (SetCommTimeouts(_portHandle, &_cto) ? NORMAL : SYSTEM);
 }
+
+INT CtiPortDirect::setPortWriteTimeOut(USHORT timeout)
+{
+    _cto.WriteTotalTimeoutMultiplier = 0;
+    _cto.WriteTotalTimeoutConstant = (timeout * 1000);
+
+    return (SetCommTimeouts(_portHandle, &_cto) ? NORMAL : SYSTEM);
+}
+
+
+
 INT CtiPortDirect::waitForPortResponse(PULONG ResponseSize,  PCHAR Response, ULONG Timeout, PCHAR ExpectedResponse)
 {
     INT status = BADPORT;
@@ -762,6 +873,10 @@ INT CtiPortDirect::waitForPortResponse(PULONG ResponseSize,  PCHAR Response, ULO
     if(_dialout)
     {
         status = _dialout->waitForResponse(ResponseSize,Response,Timeout,ExpectedResponse);
+    }
+    else if(_dialin)
+    {
+        status = _dialin->waitForResponse(ResponseSize,Response,Timeout,ExpectedResponse);
     }
     else
     {
@@ -798,6 +913,10 @@ INT CtiPortDirect::reset(INT trace)
     {
         _dialout->reset(trace);
     }
+    else if(_dialin)
+    {
+        _dialin->reset(trace);
+    }
 
     return NORMAL;
 }
@@ -811,6 +930,10 @@ INT CtiPortDirect::setup(INT trace)
     {
         _dialout->setup(trace);
     }
+    else if(_dialin)
+    {
+        _dialin->setup(trace);
+    }
 
     return NORMAL;
 }
@@ -823,6 +946,10 @@ INT  CtiPortDirect::connectToDevice(CtiDevice *Device, INT trace)
     {
         status = _dialout->connectToDevice(Device,trace);
     }
+    else if(_dialin)
+    {
+        status = _dialin->connectToDevice(Device,trace);
+    }
     else
     {
         status = Inherited::connectToDevice(Device,trace);
@@ -833,7 +960,7 @@ INT  CtiPortDirect::connectToDevice(CtiDevice *Device, INT trace)
 INT  CtiPortDirect::disconnect(CtiDevice *Device, INT trace)
 {
     Inherited::disconnect(Device,trace);
-    if(_dialout)
+    if(_dialout || _dialin)
     {
         close(trace);                           // Release the port handle
     }
@@ -862,6 +989,10 @@ BOOL CtiPortDirect::shouldDisconnect() const
     {
         bRet = _dialout->shouldDisconnect();
     }
+    else if(_dialin)
+    {
+        bRet = _dialin->shouldDisconnect();
+    }
 
     return bRet;
 }
@@ -872,8 +1003,92 @@ CtiPort& CtiPortDirect::setShouldDisconnect(BOOL b)
     {
         _dialout->setShouldDisconnect(b);
     }
+    else if(_dialin)
+    {
+        _dialin->setShouldDisconnect(b);
+    }
 
     return *this;
 }
 
 
+int CtiPortDirect::initPrivateStores()
+{
+    GetCommState( _portHandle, &_dcb );
+
+    _dcb.fOutxCtsFlow = FALSE;    // CTS is not monitored for flow control
+    _dcb.fOutxDsrFlow = FALSE;    // DSR is not monitored for flow control
+    _dcb.fOutX        = FALSE;
+    _dcb.fInX         = FALSE;
+    _dcb.fErrorChar   = FALSE;
+    _dcb.fNull        = FALSE;
+    _dcb.fRtsControl  = RTS_CONTROL_DISABLE;
+
+    SetCommState( _portHandle, &_dcb );
+
+    GetCommTimeouts( _portHandle, &_cto );
+
+    return NORMAL;
+}
+
+int CtiPortDirect::enableXONXOFF()
+{
+    _dcb.fOutX  = TRUE;
+    _dcb.fInX   = TRUE;
+
+    return (SetCommState(_portHandle, &_dcb) ? NORMAL : SYSTEM);
+}
+int CtiPortDirect::disableXONXOFF()
+{
+    _dcb.fOutX  = FALSE;
+    _dcb.fInX   = FALSE;
+
+    return (SetCommState(_portHandle, &_dcb) ? NORMAL : SYSTEM);
+}
+
+int CtiPortDirect::enableRTSCTS()
+{
+    _dcb.fOutxCtsFlow = 1;
+    _dcb.fRtsControl = RTS_CONTROL_HANDSHAKE;
+
+    return (SetCommState(_portHandle, &_dcb) ? NORMAL : SYSTEM);
+}
+int CtiPortDirect::disableRTSCTS()
+{
+    _dcb.fOutxCtsFlow = 0;
+    _dcb.fRtsControl = RTS_CONTROL_DISABLE;
+
+    return (SetCommState(_portHandle, &_dcb) ? NORMAL : SYSTEM);
+}
+
+int CtiPortDirect::getPortInQueueCount()
+{
+    DWORD   Err;
+    COMSTAT Stat;
+
+    if(ClearCommError(_portHandle, &Err, &Stat))
+    {
+       return Stat.cbInQue;
+    }
+
+    return 0;
+}
+
+int CtiPortDirect::getPortOutQueueCount()
+{
+    DWORD   Err;
+    COMSTAT Stat;
+
+    if(ClearCommError(_portHandle, &Err, &Stat))
+    {
+       return Stat.cbOutQue;
+    }
+
+    return 0;
+}
+
+int CtiPortDirect::getPortCommError()
+{
+    DWORD   Errors;
+    return ( ClearCommError(_portHandle, &Errors, NULL) ? Errors : SYSTEM );
+}

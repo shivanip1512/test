@@ -12,7 +12,7 @@
 *
 * CVS KEYWORDS:
 * REVISION     :  $Revision $
-* DATE         :  $Date: 2002/12/11 23:37:31 $
+* DATE         :  $Date: 2002/12/12 17:06:39 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -168,34 +168,6 @@ INT CtiPortDialin::disconnect(CtiDevice *Device, INT trace)
     return status;
 }
 
-INT CtiPortDialin::openPort()
-{
-    INT status = NORMAL;
-
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-    return status;
-}
-
-INT CtiPortDialin::writePort(PVOID pBuf, ULONG BufLen, ULONG timeout, PULONG pBytesWritten)
-{
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-    return NORMAL;
-}
-
-INT CtiPortDialin::readPort(PVOID pBuf, ULONG BufLen, ULONG timeout, PULONG pBytesRead)
-{
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-    return NORMAL;
-}
 
 INT CtiPortDialin::close(INT trace)
 {
@@ -210,14 +182,40 @@ INT CtiPortDialin::close(INT trace)
 
 INT CtiPortDialin::reset(INT trace)
 {
-    setDialedUpNumber(RWCString());
-    return modemReset(_superPort->getPortID(), trace);
+    INT status = NORMAL;
+
+    try
+    {
+        setDialedUpNumber(RWCString());
+        status = modemReset(_superPort->getPortID(), trace);
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+    return status;
 }
 
 INT CtiPortDialin::setup(INT trace)
 {
-    setDialedUpNumber(RWCString());
-    return modemSetup(trace, (_superPort->getTablePortSettings().getCDWait() != 0));
+    try
+    {
+        _superPort->enableRTSCTS();
+        _modem.setPort(_superPort);
+        _modem.waitForOK(500, "OK" );
+        _modem.reset();
+        _modem.sendString("AT&F&K0&M0&N6\r");
+        _modem.setAutoAnswerRingCount(3);
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    return NORMAL;
+    //return modemSetup(trace, (_superPort->getTablePortSettings().getCDWait() != 0));
 }
 
 CtiPortDialin& CtiPortDialin::operator=(const CtiPortDialin& aRef)
@@ -686,10 +684,6 @@ INT CtiPortDialin::waitForResponse(PULONG ResponseSize, PCHAR Response, ULONG Ti
     {
         return(NOTNORMAL);
     }
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
 
     /* Set the timeout on read to 1 second */
     // 012201 CGP This clears the buffer on WIN32.//  SetReadTimeOut (PortHandle, 1);
@@ -802,6 +796,6 @@ BOOL CtiPortDialin::validModemResponse (PCHAR Response)
 
 CtiHayesModem& CtiPortDialin::getModem()
 {
-    return modem.setPort( _superPort );
+    return _modem;
 }
 

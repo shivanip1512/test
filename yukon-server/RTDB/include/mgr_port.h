@@ -14,8 +14,8 @@
  *
  * PVCS KEYWORDS:
  * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/mgr_port.h-arc  $
- * REVISION     :  $Revision: 1.6 $
- * DATE         :  $Date: 2002/09/19 15:57:58 $
+ * REVISION     :  $Revision: 1.7 $
+ * DATE         :  $Date: 2002/12/12 17:06:41 $
  *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
  * All Rights Reserved
@@ -35,11 +35,12 @@ class IM_EX_PRTDB CtiPortManager
 {
 private:
 
-    CTI_PORTTHREAD_FUNC_PTR     _portThreadFunc;
+    CTI_PORTTHREAD_FUNC_FACTORY_PTR     _portThreadFuncFactory;
     CtiSmartMap< CtiPort >      _smartMap;
 
     CtiMutex                    _mux;
 
+    void RefreshDialinEntries(bool &rowFound, RWDBReader& rdr, CtiPort* (*Factory)(RWDBReader &), BOOL (*testFunc)(CtiPort*,void*), void *arg);
     void RefreshDialoutEntries(bool &rowFound, RWDBReader& rdr, CtiPort* (*Factory)(RWDBReader &), BOOL (*testFunc)(CtiPort*,void*), void *arg);
     void RefreshEntries(bool &rowFound, RWDBReader& rdr, CtiPort* (*Factory)(RWDBReader &), BOOL (*testFunc)(CtiPort*,void*),void *arg);
 
@@ -53,7 +54,7 @@ public:
 
 
 
-    CtiPortManager(CTI_PORTTHREAD_FUNC_PTR fn);
+    CtiPortManager(CTI_PORTTHREAD_FUNC_FACTORY_PTR fn);
 
     virtual ~CtiPortManager();
 
@@ -67,7 +68,7 @@ public:
 
     INT writeQueue(INT pid, ULONG Request, ULONG DataSize, PVOID Data, ULONG Priority);
 
-    CTI_PORTTHREAD_FUNC_PTR setPortThreadFunc(CTI_PORTTHREAD_FUNC_PTR aFn);  // Assign this entry to every (new) entry.  Return the old entry.
+    CTI_PORTTHREAD_FUNC_FACTORY_PTR setPortThreadFunc(CTI_PORTTHREAD_FUNC_FACTORY_PTR aFn);  // Assign this entry to every (new) entry.  Return the old entry.
 
     void haltLogs();
 

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTTIME.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2002/11/15 14:08:02 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2002/12/12 17:06:37 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -72,7 +72,6 @@ using namespace std;
 #include "porter.h"
 #include "portdecl.h"
 #include "ilex.h"
-#include "portsup.h"
 #include "elogger.h"
 
 #include "portglob.h"
@@ -963,6 +962,7 @@ LoadSES92TimeMessage (BYTE *Message,
 /* Routine to setup a port for a WWV Receivering device */
 int WWVReceiversetup (HANDLE *WWVPortHandle)
 {
+#if 0
     PSZ Environment;
     extern USHORT WWVModel;
     extern USHORT WWVComMode;
@@ -1110,6 +1110,7 @@ int WWVReceiversetup (HANDLE *WWVPortHandle)
         return(i);
     }
 
+#endif
     return(NORMAL);
 }
 
@@ -1358,6 +1359,8 @@ int WWVBufferWrite (HANDLE WWVPortHandle, CHAR *QueryCommand)
 {
     ULONG i, BytesWritten;
 
+#if 0
+
     /* cleanup the port before we starte talking to it. */
     if((i = PortInputFlush (WWVPortHandle)) != NORMAL)
     {
@@ -1398,5 +1401,6 @@ int WWVBufferWrite (HANDLE WWVPortHandle, CHAR *QueryCommand)
 
         return(!NORMAL);
     }
+#endif
     return(NORMAL);
 }

@@ -13,8 +13,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2002/12/11 23:37:32 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2002/12/12 17:06:42 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -41,7 +41,7 @@ protected:
     CtiTablePortDialup  _tblPortDialup;
 
 
-    CtiHayesModem       modem;
+    CtiHayesModem       _modem;
 
 private:
 
@@ -87,12 +87,9 @@ public:
     INT  connectToDevice(CtiDevice *Device, INT trace);
     INT  disconnect(CtiDevice *Device, INT trace);
 
-    virtual INT openPort();
-    virtual INT reset(INT trace);
-    virtual INT setup(INT trace);
-    virtual INT close(INT trace);
-    virtual INT writePort(PVOID pBuf, ULONG BufLen, ULONG timeout, PULONG pBytesWritten);
-    virtual INT readPort(PVOID pBuf, ULONG BufLen, ULONG timeout, PULONG pBytesRead);
+    INT reset(INT trace);
+    INT setup(INT trace);
+    INT close(INT trace);
 
     INT waitForResponse(PULONG ResponseSize, PCHAR Response, ULONG Timeout, PCHAR ExpectedResponse);
     static BOOL validModemResponse(PCHAR Response);

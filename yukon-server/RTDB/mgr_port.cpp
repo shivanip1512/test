@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_port.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2002/11/15 14:08:20 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2002/12/12 17:06:38 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -106,8 +106,8 @@ void ApplyHaltLog(const long key, CtiPortSPtr Port, void* d)
     return;
 }
 
-CtiPortManager::CtiPortManager(CTI_PORTTHREAD_FUNC_PTR fn) :
-_portThreadFunc(fn)
+CtiPortManager::CtiPortManager(CTI_PORTTHREAD_FUNC_FACTORY_PTR fn) :
+_portThreadFuncFactory(fn)
 {}
 
 CtiPortManager::~CtiPortManager()
@@ -193,6 +193,27 @@ void CtiPortManager::RefreshList(CtiPort* (*Factory)(RWDBReader &), BOOL (*testF
 
                 RefreshDialoutEntries(rowFound, rdr, Factory, testFunc, arg);
                 if(DebugLevel & 0x00080000)  cout  << "Done looking for DialOut Ports" << endl;
+            }
+
+            {
+                CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+                RWDBConnection conn = getConnection();
+                // are out of scope when the release is called
+
+                RWDBDatabase db = conn.database();
+                RWDBSelector selector = conn.database().selector();
+                RWDBTable   keyTable;
+
+                if(DebugLevel & 0x00080000)  cout  << "Looking for DialIn Ports" << endl;
+                CtiPortDialin().getSQL( db, keyTable, selector );
+                RWDBReader  rdr = selector.reader( conn );
+                if(DebugLevel & 0x00080000 || _smartMap.setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+                }
+
+                RefreshDialinEntries(rowFound, rdr, Factory, testFunc, arg);
+                if(DebugLevel & 0x00080000)  cout  << "Done looking for DialIn Ports" << endl;
             }
 
             if(_smartMap.getErrorCode() != RWDBStatus::ok)
@@ -329,11 +350,11 @@ void CtiPortManager::RefreshEntries(bool &rowFound, RWDBReader& rdr, CtiPort* (*
         {
             CtiPort* pSp = (*Factory)(rdr);  // Use the reader to get me an object of the proper type
 
-            pSp->setPortThreadFunc( _portThreadFunc );  // Make the thing know who runs it.
-
             if(pSp)
             {
                 pSp->DecodeDatabaseReader(rdr);         // Fills himself in from the reader
+
+                pSp->setPortThreadFunc( (*_portThreadFuncFactory)( pSp->getType() ) );  // Make the thing know who runs it.
 
                 if(((*testFunc)(pSp, arg)))             // If I care about this point in the db in question....
                 {
@@ -379,6 +400,35 @@ void CtiPortManager::RefreshDialoutEntries(bool &rowFound, RWDBReader& rdr, CtiP
     }
 }
 
+void CtiPortManager::RefreshDialinEntries(bool &rowFound, RWDBReader& rdr, CtiPort* (*Factory)(RWDBReader &), BOOL (*testFunc)(CtiPort*,void*), void *arg)
+{
+    LONG     lTemp = 0;
+    ptr_type pTempPort;
+
+    while( (_smartMap.setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok) && rdr() )
+    {
+        rowFound = true;
+        rdr["paobjectid"] >> lTemp;            // get the RouteID
+
+        if( !_smartMap.empty() && (pTempPort = _smartMap.find(lTemp)) )
+        {
+            /*
+             *  The point just returned from the rdr already was in my list.  We need to
+             *  update my list entry to the CTIDBG_new settings!
+             */
+
+            pTempPort->DecodeDialinDatabaseReader(rdr);     // Fills himself in from the reader
+        }
+        else
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Port " << lTemp << " not found in pao, but IS in portdialinmodem table" << endl;
+            }
+        }
+    }
+}
+
 INT CtiPortManager::writeQueue(INT pid, ULONG Request, ULONG DataSize, PVOID Data, ULONG Priority)
 {
     INT status = NORMAL;
@@ -405,11 +455,11 @@ INT CtiPortManager::writeQueue(INT pid, ULONG Request, ULONG DataSize, PVOID Dat
 }
 
 
-CTI_PORTTHREAD_FUNC_PTR CtiPortManager::setPortThreadFunc(CTI_PORTTHREAD_FUNC_PTR aFn)
+CTI_PORTTHREAD_FUNC_FACTORY_PTR CtiPortManager::setPortThreadFunc(CTI_PORTTHREAD_FUNC_FACTORY_PTR aFn)
 {
-    CTI_PORTTHREAD_FUNC_PTR oldFn = _portThreadFunc;
+    CTI_PORTTHREAD_FUNC_FACTORY_PTR oldFn = _portThreadFuncFactory;
 
-    _portThreadFunc = aFn;
+    _portThreadFuncFactory = aFn;
 
     return oldFn;
 }

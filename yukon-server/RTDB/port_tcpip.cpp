@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/port_tcpip.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2002/11/15 14:08:22 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2002/12/12 17:06:41 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -25,11 +25,43 @@ using namespace std;
 #include "cparms.h"
 #include "logger.h"
 #include "port_tcpip.h"
-#include "portsup.h"
 #include "utility.h"
 #include "yukon.h"
 
+CtiPortTCPIPDirect::CtiPortTCPIPDirect() :
+_dialin(0),
+_dialout(0),
+_socket(INVALID_SOCKET),
+_open(false),
+_connected(false),
+_failed(false),
+_busy(false),
+_baud(0)
+{
+    if(_dialout != 0)
+    {
+        _dialout->setSuperPort(this);
+    }
+}
+
+CtiPortTCPIPDirect::CtiPortTCPIPDirect(CtiPortDialin *dial) :
+_dialin(dial),
+_dialout(0),
+_socket(INVALID_SOCKET),
+_open(false),
+_connected(false),
+_failed(false),
+_busy(false),
+_baud(0)
+{
+    if(_dialin != 0)
+    {
+        _dialin->setSuperPort(this);
+    }
+}
+
 CtiPortTCPIPDirect::CtiPortTCPIPDirect(CtiPortDialout *dial) :
+_dialin(0),
 _dialout(dial),
 _socket(INVALID_SOCKET),
 _open(false),
@@ -109,7 +141,7 @@ RWCString& CtiPortTCPIPDirect::getIPAddress()
     return _tcpIpInfo.getIPAddress();
 }
 
-INT CtiPortTCPIPDirect::init()
+INT CtiPortTCPIPDirect::openPort()
 {
     INT      status = NORMAL;
 
@@ -206,7 +238,18 @@ INT CtiPortTCPIPDirect::init()
 
         if(_dialout && isViable())
         {
-            _dialout->init();   // If we are a dialout port, init the dialout aspects!
+            if((status = reset(true)) != NORMAL)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Error resetting port for dialup on " << getName() << endl;
+            }
+
+            /* set the modem parameters */
+            if((status = setup(true)) != NORMAL)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Error setting port for dialup modem on " << getName() << endl;
+            }
         }
     }
 
@@ -732,7 +775,7 @@ INT CtiPortTCPIPDirect::sendData(PBYTE Message, ULONG Length, PULONG Written)
 
     if(_socket == INVALID_SOCKET)
     {
-        init();
+        openPort    ();
     }
 
     if( (retval = send (_socket, (CHAR*)Message, Length, 0)) == SOCKET_ERROR )
@@ -777,13 +820,21 @@ void CtiPortTCPIPDirect::DecodeDialoutDatabaseReader(RWDBReader &rdr)
         _dialout->DecodeDatabaseReader(rdr);
     }
 }
+void CtiPortTCPIPDirect::DecodeDialinDatabaseReader(RWDBReader &rdr)
+{
+    if(_dialin)
+    {
+        _dialin->DecodeDatabaseReader(rdr);
+    }
+}
+
 
 bool CtiPortTCPIPDirect::needsReinit() const
 {
     return(!isViable());
 }
 
-void CtiPortTCPIPDirect::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
+void CtiPortTCPIPDirect::getSQL(RWDBDatabase &db, RWDBTable &keyTable, RWDBSelector &selector)
 {
     Inherited::getSQL(db, keyTable, selector);
     CtiTablePortTCPIP::getSQL(db, keyTable, selector);

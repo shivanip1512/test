@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.42 $
-* DATE         :  $Date: 2002/12/03 17:57:41 $
+* REVISION     :  $Revision: 1.43 $
+* DATE         :  $Date: 2002/12/12 17:06:36 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -57,6 +57,10 @@
 #include <set>
 using namespace std;
 
+#include <rw/regexp.h>
+#include <rw\ctoken.h>
+#include <rw\thr\mutex.h>
+
 #include "os2_2w32.h"
 #include "cticalls.h"
 #include "cti_asmc.h"
@@ -65,7 +69,6 @@ using namespace std;
 #include <stdio.h>
 #include <string.h>
 
-#include <rw\thr\mutex.h>
 
 #include "color.h"
 #include "queues.h"
@@ -75,7 +78,6 @@ using namespace std;
 #include "routes.h"
 #include "porter.h"
 #include "master.h"
-#include "portsup.h"
 #include "portdecl.h"
 #include "tcpsup.h"
 #include "perform.h"
@@ -107,6 +109,27 @@ using namespace std;
 #include "utility.h"
 
 #define INF_LOOP_COUNT 10000
+
+
+
+void my_echo( char ch )
+{
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << ch;
+    }
+}
+
+void my_other_echo( char ch )
+{
+    unsigned char uch = (unsigned char)ch;
+
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << ch;
+    }
+}
+
 
 
 /*
@@ -237,7 +260,10 @@ VOID PortThread(void *pid)
             }
             else if( status != ERROR_QUE_UNABLE_TO_ACCESS)
             {
-                printf ("Error Reading Port Queue\n");
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " Error Reading Port Queue" << endl;
+                }
             }
             continue;
         }
@@ -632,7 +658,7 @@ INT ResetPortParameters(CtiPortSPtr Port)
          */
         if( stricmp(Port->getName(), Port->getPortNameWas()) )
         {
-            if(Port->init())
+            if(Port->openPort())
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -680,7 +706,7 @@ INT ResetCommsChannel(CtiPortSPtr Port, CtiDevice *Device, OUTMESS *OutMessage)
         if( (Port->getLastBaudRate() == 0 || Port->needsReinit()) && !Port->isDialup() )
         {
             /* set up the port */
-            if( (status = Port->init()) != NORMAL )
+            if( (status = Port->openPort()) != NORMAL )
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1009,7 +1035,10 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDevice *Devic
 
                                 if(Port->writeQueue(OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority, PortThread))
                                 {
-                                    printf ("\nError Replacing entry onto Queue\n");
+                                    {
+                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                        dout << RWTime() << " Error Replacing entry onto Queue\n" << endl;
+                                    }
                                 }
                                 CTISleep (50L);
                                 break;
@@ -2164,7 +2193,10 @@ INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OU
                     if(PortManager.writeQueue(OutMessage->Port, OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
                     {
                         // VioWrtTTY("Error Writing Retry into Queue\n\r", 31, 0);
-                        printf("Error Writing Retry into Queue\n");
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " Error Writing Retry into Queue" << endl;
+                        }
 
                         delete OutMessage;
                         OutMessage = NULL;
@@ -3031,3 +3063,161 @@ INT verifyConnectedDevice(CtiPortSPtr Port, CtiDevice *pDevice, LONG &oldid, LON
 
     return status;
 }
+
+VOID PortDialbackThread(void *pid)
+{
+    INT            i, status = NORMAL;
+    LONG           portid = (LONG)pid;      // NASTY CAST HERE!!!
+    CtiPortSPtr    Port( PortManager.PortGetEqual( portid ) );      // Bump the reference count on the shared object!
+    DWORD oldmask = 0, inmask = 0;
+    ULONG bytesRead;
+    RWCString byteString;
+    bool copyBytes;
+    int failedattempts;
+
+
+    if(!Port)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+        return;
+    }
+
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " Starting PortDialbackThread as TID " << GetCurrentThreadId() << " for " << Port->getName() << endl;
+    }
+
+    while(!PorterQuit)
+    {
+        try
+        {
+            try
+            {
+                if(!Port->isViable())
+                {
+                    if( (Port->openPort()) != NORMAL )
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " Error initializing Virtual Port " << Port->getPortID() <<" on " << Port->getName() << endl;
+                        }
+                        continue;
+                    }
+                    else
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " Initializing Virtual Port " << Port->getPortID() <<" on " << Port->getName() << " for dialback" << endl;
+                        }
+                    }
+                }
+            }
+            catch(...)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " " << Port->getName() << " Waiting for CD" << endl;
+            }
+
+            int tout = 0;
+            while(!PorterQuit && !Port->isDCD() )
+            {
+                if(!(tout++ % (4*30)))
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " " << Port->getName() << " No DCD yet" << endl;
+                    }
+                }
+                Sleep(250);
+            }
+
+            if(Port->isDCD())
+            {
+                char mych = '\0';
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " Phone has been answered..." << endl;
+                }
+
+                bytesRead = -1;
+                copyBytes = false;
+                byteString = RWCString();
+
+                failedattempts = 0;
+
+                while(failedattempts < 15)
+                {
+                    Port->readPort(&mych, 1, 1, &bytesRead);
+
+                    if(bytesRead != 0)
+                    {
+                        // my_other_echo(mych);
+
+                        if(mych == 'B' || copyBytes)
+                        {
+                            copyBytes = true;
+                            byteString.append(mych);
+
+                            if(byteString.contains("END"))
+                            {
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                    dout << byteString << endl;
+                                }
+
+                                break; // the while!
+                            }
+                        }
+                    }
+                    else
+                    {
+                        failedattempts++;
+                    }
+                }
+
+                if(!byteString.isNull())
+                {
+                    // We need to look for the message.
+                    RWCTokenizer tok(byteString);
+                }
+
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+
+            }
+            else
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " Phone has NOT been answered..." << endl;
+                }
+            }
+
+            Port->disconnect(0, true);
+        }
+        catch(...)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+    }
+
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    return;
+}
+

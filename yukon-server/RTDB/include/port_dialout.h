@@ -13,8 +13,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/09/30 14:58:14 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/12/12 17:06:42 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -70,8 +70,6 @@ public:
 
     void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
     void DecodeDatabaseReader(RWDBReader &rdr);
-
-    INT init();
 
     RWCString  getModemInit() const;
     RWCString& getModemInit();

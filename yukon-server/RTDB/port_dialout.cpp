@@ -11,15 +11,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/11/15 14:08:21 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/12/12 17:06:40 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
 #include "dsm2.h"
 #include "logger.h"
-#include "portsup.h"
 #include "port_dialout.h"
 
 CtiPortDialout& CtiPortDialout::setSuperPort(CtiPort *port)
@@ -193,26 +192,6 @@ void CtiPortDialout::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector
 void CtiPortDialout::DecodeDatabaseReader(RWDBReader &rdr)
 {
     _tblPortDialup.DecodeDatabaseReader(rdr);       // get the base class handled
-}
-
-INT CtiPortDialout::init()
-{
-    INT status;
-
-    if((status = _superPort->reset(true)) != NORMAL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Error resetting dial up modem on " << _superPort->getName() << endl;
-    }
-
-    /* set the modem parameters */
-    if((status = _superPort->setup(true)) != NORMAL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Error setting up dial up modem on " << _superPort->getName() << endl;
-    }
-
-    return status;
 }
 
 /* Routine to force the reset of modem */
@@ -435,7 +414,7 @@ INT CtiPortDialout::modemSetup(USHORT Trace, BOOL dcdTest)
 
     if(j >= 5)
     {
-        _superPort->close(TRUE);
+        // _superPort->close(TRUE);
         return(!NORMAL);
     }
 

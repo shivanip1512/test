@@ -5,7 +5,6 @@
 using namespace std;
 
 #include "port_base.h"
-#include "portsup.h"
 #include "dsm2err.h"
 #include "color.h"
 #include "porter.h"
@@ -366,6 +365,16 @@ void CtiPort::DecodeDialoutDatabaseReader(RWDBReader &rdr)
     return;
 }
 
+void CtiPort::DecodeDialinDatabaseReader(RWDBReader &rdr)
+{
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** DecodeDialinDatabaseReader not defined for " << getName() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    return;
+}
+
 void CtiPort::DecodeDatabaseReader(RWDBReader &rdr)
 {
     LockGuard gd(monitor());
@@ -573,14 +582,13 @@ INT CtiPort::close(INT trace)                               { return NORMAL;}
 INT       CtiPort::ctsTest() const            { return TRUE;}
 INT       CtiPort::dcdTest() const            { return TRUE;}
 
-INT       CtiPort::baudRate(INT rate)         { return NORMAL;}
-INT       CtiPort::lowerRTS() const           { return NORMAL;}
-INT       CtiPort::raiseRTS() const           { return NORMAL;}
-INT       CtiPort::lowerDTR() const           { return NORMAL;}
-INT       CtiPort::raiseDTR() const           { return NORMAL;}
+INT       CtiPort::lowerRTS()           { return NORMAL;}
+INT       CtiPort::raiseRTS()           { return NORMAL;}
+INT       CtiPort::lowerDTR()           { return NORMAL;}
+INT       CtiPort::raiseDTR()           { return NORMAL;}
 
-INT       CtiPort::inClear() const            { return NORMAL;}
-INT       CtiPort::outClear() const           { return NORMAL;}
+INT       CtiPort::inClear()            { return NORMAL;}
+INT       CtiPort::outClear()           { return NORMAL;}
 
 INT       CtiPort::byteTime(ULONG bytes) const      { return 0;}
 
@@ -689,7 +697,7 @@ INT CtiPort::verifyPortStatus()
 
     if(needsReinit() && !isDialup())
     {
-        if( NORMAL != (status = init()) )
+        if( NORMAL != (status = openPort()) )
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -716,7 +724,7 @@ INT CtiPort::checkCommStatus(INT trace)
     if(getLastBaudRate() == 0 || needsReinit())
     {
         /* set up the port */
-        if( (status = init()) != NORMAL )
+        if( (status = openPort()) != NORMAL )
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
