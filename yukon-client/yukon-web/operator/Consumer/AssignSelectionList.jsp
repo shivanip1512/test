@@ -99,7 +99,6 @@ function setEnabled(form, checked, idx) {
 			<form name="form1" method="post" action="<%=request.getContextPath()%>/servlet/ImportManager">
 			  <input type="hidden" name="action" value="AssignSelectionList">
 			  <input type="hidden" name="ListName" value="<%= listName %>">
-			  <input type="hidden" name="NewList" value="<%= newList %>">
 			  <input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/operator/Consumer/ImportAccount2.jsp">
               <table width="500" border="1" cellspacing="0" cellpadding="3" align="center" class="MainText">
                 <tr> 

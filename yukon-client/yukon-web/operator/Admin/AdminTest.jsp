@@ -132,16 +132,22 @@ function confirmDeleteAllCompanies() {
                         <form name="form6" method="post" action="EnergyCompany.jsp">
                           <input type="hidden" name="action" value="init">
                           <b><font color="#0000FF">Energy Company:</font></b> 
-                          <table width="100%" border="0" cellspacing="0" cellpadding="0" class="TableCell">
-                            <tr> 
-                              <td width="5%">&nbsp;</td>
-                              <td width="70%"><%= energyCompany.getCompanyName() %></td>
-                              <td width="25%"> 
-                                <input type="submit" name="Edit" value="Edit">
+                          <table width="100%" border="1" cellspacing="0" cellpadding="0" align="center">
+                            <tr>
+                              <td>
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0" class="TableCell">
+                                  <tr> 
+                                    <td width="5%">&nbsp;</td>
+                                    <td width="70%"><%= energyCompany.getCompanyName() %></td>
+                                    <td width="25%"> 
+                                      <input type="submit" name="Edit3" value="Edit">
+                                    </td>
+                                  </tr>
+                                </table>
                               </td>
                             </tr>
                           </table>
-                        </form>
+                          </form>
                       </td>
                     </tr>
                     <tr> 
@@ -349,6 +355,7 @@ function confirmDeleteAllCompanies() {
                             </td>
                           </tr>
                         </table>
+                        <br>
                       </td>
                     </tr>
 <%
@@ -359,9 +366,11 @@ function confirmDeleteAllCompanies() {
 	{
 %>
                     <tr>
-                      <td><b><font color="#0000FF">Default Thermostat Settings: 
-                        </font></b> 
-                        <table width="100%" border="0" cellspacing="0" cellpadding="0" class="TableCell">
+                      <td><b><font color="#0000FF">Default Thermostat Settings:</font></b> 
+                        <table width="100%" border="1" cellspacing="0" cellpadding="0" align="center">
+                          <tr>
+                            <td>
+                              <table width="100%" border="0" cellspacing="0" cellpadding="0" class="TableCell">
 <%
 		for (int i = 0; i < allDftThermoSettings.length; i++) {
 			StarsThermostatTypes type = allDftThermoSettings[i].getThermostatType();
@@ -371,18 +380,23 @@ function confirmDeleteAllCompanies() {
 			else if (type.getType() == StarsThermostatTypes.ENERGYPRO_TYPE)
 				url = "ThermSchedule2.jsp";
 %>
-                          <tr> 
-                            <td width="5%">&nbsp;</td>
-                            <td width="70%"><%= type.toString() %> Thermostat Schedule</td>
-                            <td width="25%"> 
-                              <input type="button" name="Edit" value="Edit" onclick="location.href = '<%= url %>'">
-                            </td>
-                          </tr>
+                                <tr> 
+                                  <td width="5%">&nbsp;</td>
+                                  <td width="70%"><%= type.toString() %> Thermostat 
+                                    Schedule</td>
+                                  <td width="25%"> 
+                                    <input type="button" name="Edit2" value="Edit" onClick="location.href = '<%= url %>'">
+                                  </td>
+                                </tr>
 <%
 		}
 %>
+                              </table>
+                            </td>
+                          </tr>
                         </table>
-                        </td>
+                        <br>
+                      </td>
                     </tr>
 <%
 	}
