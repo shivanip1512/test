@@ -299,10 +299,16 @@ private void initialize() {
 
 		availablePorts = new java.util.Vector( allPorts.size() );
 
-		//do not add other POOLED ports
+		//do not add other POOLED ports or non-dialup ports
 		for( int i = 0; i < allPorts.size(); i++ )
-			if( ((LiteYukonPAObject)allPorts.get(i)).getType() != PortTypes.DIALOUT_POOL )
+		{
+			if( ((LiteYukonPAObject)allPorts.get(i)).getType() != PortTypes.DIALOUT_POOL && 
+			((LiteYukonPAObject)allPorts.get(i)).getType() != PortTypes.LOCAL_SHARED &&  
+			((LiteYukonPAObject)allPorts.get(i)).getType() != PortTypes.TSERVER_SHARED)
+			{
 				availablePorts.add( allPorts.get(i) );
+			}
+		}
 	}
 
 
@@ -565,7 +571,9 @@ public void setValue(Object val)
 		for(int i=0;i<allPorts.size();i++)
 		{
 			if( ((LiteYukonPAObject)allPorts.get(i)).getType() != PortTypes.DIALOUT_POOL
-				 && !assignedPorts.contains(allPorts.get(i)) )
+				 && !assignedPorts.contains(allPorts.get(i)) && 
+				 ((LiteYukonPAObject)allPorts.get(i)).getType() != PortTypes.LOCAL_SHARED &&  
+				((LiteYukonPAObject)allPorts.get(i)).getType() != PortTypes.TSERVER_SHARED)
 			{
 				availablePorts.addElement( allPorts.get(i) );
 			}
