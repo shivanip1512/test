@@ -69,7 +69,7 @@ public class AuthFilter implements Filter {
         if (hreq.getSession().getAttribute(LOGGED_IN) != null) {
             signedOn =((Boolean)hreq.getSession().getAttribute(LOGGED_IN)).booleanValue();
         } else {
-            hreq.getSession().setAttribute(LOGGED_IN, new Boolean(false));
+            hreq.getSession().setAttribute(LOGGED_IN, Boolean.FALSE);
         }
         
         // Check for a the login field, if set do try to valid them 	
@@ -96,6 +96,7 @@ public class AuthFilter implements Filter {
         	SessionInfo info = validateLogin(req,resp);
 			if(info != null) {
 				CTILogger.info("authenticated username:  " + info.getUser().getUsername());
+				signedOn = true;
 			} //ok if failed, could just be going to login
         }
         
