@@ -35,15 +35,17 @@ public class TrendModel implements com.cannontech.graph.GraphDataFormats
     private java.util.Date startDate = null;
     private java.util.Date	stopDate = null;
     
-    //Max values of all series in model.
-    private Double rightScaleMin = null;
-    private Double rightScaleMax = null;
-    private Double leftScaleMin = null;
-    private Double leftScaleMax = null;
-    
     private String chartName = "Yukon Trending";
     
     private Integer peakPointId = null;
+
+	// Multiple axis setup
+    private Character autoScaleRight = new Character('Y');
+    private Double rightScaleMin = new Double(0.0);
+    private Double rightScaleMax = new Double(100.0);
+    private Character autoScaleLeft = new Character('Y');
+    private Double leftScaleMin = new Double(0.0);
+    private Double leftScaleMax = new Double(100.0);
 
 /**
  * Constructor for TestFreeChart.
@@ -56,6 +58,16 @@ public TrendModel(com.cannontech.database.data.graph.GraphDefinition newGraphDef
 	setStartDate(newGraphDef.getGraphDefinition().getStartDate());
 	setStopDate(newGraphDef.getGraphDefinition().getStopDate());
 	setChartName(newGraphDef.getGraphDefinition().getName());
+	
+	setAutoScaleLeft(newGraphDef.getGraphDefinition().getAutoScaleLeftAxis());
+	setAutoScaleRight(newGraphDef.getGraphDefinition().getAutoScaleRightAxis());
+
+	setRightScaleMax(newGraphDef.getGraphDefinition().getRightMax());
+	setRightScaleMin(newGraphDef.getGraphDefinition().getRightMin());
+	
+	setLeftScaleMax(newGraphDef.getGraphDefinition().getLeftMax());
+	setLeftScaleMin(newGraphDef.getGraphDefinition().getLeftMin());
+
 
 	// Inititialize series properties
 	java.util.Vector dsVector = new java.util.Vector(5);	//some small initial capactiy
@@ -68,13 +80,6 @@ public TrendModel(com.cannontech.database.data.graph.GraphDefinition newGraphDef
 		serie.setLabel(gds.getLabel().toString());
 		serie.setType(gds.getType().toString());
 		serie.setTypeMask(gds.getTypeMask());
-		serie.setAutoScaleRight(newGraphDef.getGraphDefinition().getAutoScaleRightAxis());
-		serie.setRightScaleMax(newGraphDef.getGraphDefinition().getRightMax());
-		serie.setRightScaleMin(newGraphDef.getGraphDefinition().getRightMin());
-	
-		serie.setAutoScaleLeft(newGraphDef.getGraphDefinition().getAutoScaleLeftAxis());
-		serie.setLeftScaleMax(newGraphDef.getGraphDefinition().getLeftMax());
-		serie.setLeftScaleMin(newGraphDef.getGraphDefinition().getLeftMin());
 
 
 
@@ -121,91 +126,29 @@ public TrendModel(java.util.Date newStartDate, java.util.Date newStopDate, Strin
 	hitDatabase_Basic(GraphDataSeries.NORMAL_QUERY_MASK);
 }
 
-//public Character getAutoScaleLeft()
-//{
-//	return autoScaleLeft;
-//}
-//public Character getAutoScaleRight()
-//{
-//	return autoScaleRight;
-//}
+public Character getAutoScaleLeft()
+{
+	return autoScaleLeft;
+}
+public Character getAutoScaleRight()
+{
+	return autoScaleRight;
+}
+
 public Double getLeftScaleMin()
 {
-	if( leftScaleMin == null)
-	{
-		double min = Double.MAX_VALUE;	
-		
-		if( getTrendSeries() != null)
-		{
-			for (int i = 0; i < getTrendSeries().length; i++)
-			{
-				if( getTrendSeries()[i].getMinimumValue() != null)
-					if( getTrendSeries()[i].getMinimumValue().doubleValue() < min)
-						min = getTrendSeries()[i].getMinimumValue().doubleValue();
-			
-			}
-			leftScaleMin = new Double(min);
-		}
-	}
 	return leftScaleMin;
 }
 public Double getLeftScaleMax()
 {
-	if( leftScaleMax == null)
-	{
-		double max = Double.MIN_VALUE;	
-		
-		if( getTrendSeries() != null)
-		{
-			for (int i = 0; i < getTrendSeries().length; i++)
-			{
-				if( getTrendSeries()[i].getMaximumValue() != null)
-					if( getTrendSeries()[i].getMaximumValue().doubleValue() > max)
-						max = getTrendSeries()[i].getMaximumValue().doubleValue();
-			}
-			leftScaleMax = new Double(max);
-		}
-	}
 	return leftScaleMax;
 }
 public Double getRightScaleMin()
 {
-	if( rightScaleMin == null)
-	{
-		double min = Double.MAX_VALUE;	
-		
-		if( getTrendSeries() != null)
-		{
-			for (int i = 0; i < getTrendSeries().length; i++)
-			{
-				if( getTrendSeries()[i].getMinimumValue() != null)
-				if( getTrendSeries()[i].getMinimumValue().doubleValue() < min)
-					min = getTrendSeries()[i].getMinimumValue().doubleValue();
-					
-			}
-			rightScaleMin = new Double(min);
-		}
-	}
 	return rightScaleMin;
 }
 public Double getRightScaleMax()
 {
-	if( rightScaleMax == null)
-	{
-		double max = Double.MIN_VALUE;	
-		
-		if( getTrendSeries() != null)
-		{
-			for (int i = 0; i < getTrendSeries().length; i++)
-			{
-				if( getTrendSeries()[i].getMaximumValue() != null)
-				if( getTrendSeries()[i].getMaximumValue().doubleValue() > max)
-					max = getTrendSeries()[i].getMaximumValue().doubleValue();
-					
-			}
-			rightScaleMax = new Double(max);
-		}
-	}
 	return rightScaleMax;
 }
 
@@ -227,13 +170,42 @@ private java.awt.Color [] getDatasetColors(com.jrefinery.data.AbstractSeriesData
 			if( serie != null && ((serie.getTypeMask() & GraphDataSeries.VALID_INTERVAL_MASK) == serie.getTypeMask()))
 			{
 				if(serie.getColor() != null)
+				{
 					colors[colorCount++] = serie.getColor();
+				}
 			}
 		}
 	}
 	return colors;
 }
 
+public void setAutoScaleLeft(Character newAutoScale)
+{
+	autoScaleLeft = newAutoScale;
+}
+public void setAutoScaleRight(Character newAutoScale)
+{
+	autoScaleRight = newAutoScale;
+}
+
+public void setLeftScaleMin(Double newMin)
+{
+	leftScaleMin = newMin;
+}
+public void setLeftScaleMax(Double newMax)
+{
+	leftScaleMax = newMax;
+}
+public void setRightScaleMin(Double newMin)
+{
+	rightScaleMin = newMin;
+}
+public void setRightScaleMax(Double newMax)
+{
+	rightScaleMax = newMax;
+}
+
+	
 private CategoryAxis getHorizontalCategoryAxis()
 {
 	CategoryAxis catAxis = new HorizontalCategoryAxis("Percent Duration");
@@ -404,11 +376,13 @@ private NumberAxis getVerticalNumberAxis_primary()	//LEFT
 {
 	//Vertical 'values' Axis setup
 	NumberAxis rangeAxis = new VerticalNumberAxis("Reading_L");
-	if(getLeftScaleMin() != null)	// we only have to check min or max because they come only with the other.
+	if( getAutoScaleLeft().charValue() != 'Y')
 	{
+		rangeAxis.setAutoRange(false);
 		rangeAxis.setMaximumAxisValue(getLeftScaleMax().doubleValue());
 		rangeAxis.setMinimumAxisValue(getLeftScaleMin().doubleValue());
 	}
+
 	rangeAxis.setTickMarksVisible(true);
 	rangeAxis.setAutoRangeIncludesZero(false);
 	return rangeAxis;
@@ -417,11 +391,13 @@ private NumberAxis getVerticalNumberAxis_secondary()	//RIGHT
 {
 	//Vertical 'values' Axis setup
 	NumberAxis rangeAxis = new VerticalNumberAxis("Reading_R");
-	if( getRightScaleMin() != null)
+	if( getAutoScaleRight().charValue() != 'Y')
 	{
+		rangeAxis.setAutoRange(false);
 		rangeAxis.setMaximumAxisValue(getRightScaleMax().doubleValue());
 		rangeAxis.setMinimumAxisValue(getRightScaleMin().doubleValue());
 	}
+
 	rangeAxis.setTickMarksVisible(true);
 	rangeAxis.setAutoRangeIncludesZero(false);
 	return rangeAxis;
@@ -431,11 +407,13 @@ private NumberAxis getVerticalNumberAxis3D_primary()	//LEFT
 {
 	//Vertical 'values' Axis setup
 	NumberAxis rangeAxis = new VerticalNumberAxis3D("Reading");
-	if( getLeftScaleMin() != null)
+	if( getAutoScaleLeft().charValue() != 'Y')
 	{
+		rangeAxis.setAutoRange(false);
 		rangeAxis.setMaximumAxisValue(getLeftScaleMax().doubleValue());
 		rangeAxis.setMinimumAxisValue(getLeftScaleMin().doubleValue());
 	}
+		
 	rangeAxis.setTickMarksVisible(true);
 	rangeAxis.setAutoRangeIncludesZero(false);
 	return rangeAxis;
@@ -445,8 +423,9 @@ private NumberAxis getVerticalNumberAxis3D_secondary()	//RIGHT
 {
 	//Vertical 'values' Axis setup
 	NumberAxis rangeAxis = new VerticalNumberAxis3D("Reading");
-	if( getRightScaleMin() != null)
+	if( getAutoScaleRight().charValue() != 'Y')
 	{
+		rangeAxis.setAutoRange(false);
 		rangeAxis.setMaximumAxisValue(getRightScaleMax().doubleValue());
 		rangeAxis.setMinimumAxisValue(getRightScaleMin().doubleValue());
 	}
@@ -490,9 +469,7 @@ private TrendSerie[] hitDatabase_Basic(int seriesTypeMask)
 			if ((seriesTypeMask & GraphDataSeries.YESTERDAY_MASK) == GraphDataSeries.YESTERDAY_MASK)
 			{
 				day = 86400000;
-				System.out.println(" Start = " + getStartDate() + " (-1day)");
 				pstmt.setTimestamp(1, new java.sql.Timestamp( getStartDate().getTime() - day) );
-				System.out.println(" Stop = " + getStopDate()  + " (-1 day)");
 				pstmt.setTimestamp(2, new java.sql.Timestamp( getStopDate().getTime() - day) );
 			}
 			else if ((seriesTypeMask & GraphDataSeries.PEAK_VALUE_MASK) == GraphDataSeries.PEAK_VALUE_MASK)
@@ -502,18 +479,14 @@ private TrendSerie[] hitDatabase_Basic(int seriesTypeMask)
 					if ((trendSeries[i].getTypeMask() & GraphDataSeries.PEAK_VALUE_MASK) ==  GraphDataSeries.PEAK_VALUE_MASK)
 					{
 						day = retrievePeakIntervalTranslateMillis(trendSeries[i].getPointId().intValue());
-						System.out.println(" Peak Start = " + new java.util.Date(getStartDate().getTime() - day));
 						pstmt.setTimestamp(1, new java.sql.Timestamp( getStartDate().getTime() - day) );
-						System.out.println(" Peak Stop = " + new java.util.Date(getStartDate().getTime() - day + 86400000));
 						pstmt.setTimestamp(2, new java.sql.Timestamp( getStartDate().getTime() - day + 86400000) );
 					}
 				}
 			}
 			else
 			{
-				System.out.println(" Start = " + getStartDate());
 				pstmt.setTimestamp(1, new java.sql.Timestamp( getStartDate().getTime()) );
-				System.out.println(" Stop = " + getStopDate());
 				pstmt.setTimestamp(2, new java.sql.Timestamp( getStopDate().getTime()) );
 			}
 			
@@ -644,16 +617,13 @@ private long retrievePeakIntervalTranslateMillis(int peakIntervalPointID)
 			}
 			else
 			{
-				System.out.println("HERE !" + cal.getTime());
 				cal.setTime(new java.util.Date(ts.getTime()));
 				cal.set(java.util.Calendar.HOUR_OF_DAY, 0);
 				cal.set(java.util.Calendar.MINUTE, 0);
 				cal.set(java.util.Calendar.SECOND, 0);
 				cal.set(java.util.Calendar.MILLISECOND, 0);
-				System.out.println("HERE2 !" + cal.getTime());				
 			}
 			ts.setTime(cal.getTime().getTime());
-			System.out.println(" START = " + getStartDate());
 			translateMillis = (getStartDate().getTime() - ts.getTime());
 		}
 	}
@@ -697,30 +667,6 @@ public static void main(String[] args)
 */
 }
 
-//private void setAutoScaleLeft(Character newAutoScale)
-//{
-//	autoScaleLeft = newAutoScale;
-//}
-//private void setAutoScaleRight(Character newAutoScale)
-//{
-//	autoScaleRight = newAutoScale;
-//}
-//private void setLeftScaleMin(Double newMin)
-//{
-//	leftScaleMin = newMin;
-//}
-//private void setLeftScaleMax(Double newMax)
-//{
-//	leftScaleMax = newMax;
-//}
-//private void setRightScaleMin(Double newMin)
-//{
-//	rightScaleMin = newMin;
-//}
-//private void setRightScaleMax(Double newMax)
-//{
-//	rightScaleMax = newMax;
-//}
 /**
  * Insert the method's description here.
  * Creation date: (6/20/2002 8:01:46 AM)
@@ -743,14 +689,17 @@ public void setOptionsMask(int newOptionsMask)
 {
 	optionsMaskSettings = newOptionsMask;
 
-	for (int i = 0; i < trendSeries.length; i++)
+	if( trendSeries != null)
 	{
-		if(( optionsMaskSettings & TrendModelType.GRAPH_MULTIPLIER) == TrendModelType.GRAPH_MULTIPLIER)
+		for (int i = 0; i < trendSeries.length; i++)
 		{
-			trendSeries[i].useMultiplier = true;
+			if(( optionsMaskSettings & TrendModelType.GRAPH_MULTIPLIER) == TrendModelType.GRAPH_MULTIPLIER)
+			{
+				trendSeries[i].useMultiplier = true;
+			}
+			else
+				trendSeries[i].useMultiplier = false;
 		}
-		else
-			trendSeries[i].useMultiplier = false;
 	}
 			
 }
@@ -820,7 +769,7 @@ public JFreeChart refresh(int rendererType)
 //        mavg.setPeriod(30);
 //        com.jrefinery.chart.data.PlotFit pf = new com.jrefinery.chart.data.PlotFit((com.jrefinery.data.XYDataset)dataset, mavg);
 //        dataset = (com.jrefinery.data.AbstractSeriesDataset)pf.getFit();
-		
+		System.out.println(" REND = " + rend.getClass());
 		plot = new com.jrefinery.chart.XYPlot( (com.jrefinery.data.XYDataset)dataset, domainAxis, getVerticalNumberAxis_primary(), rend);
 	}
 	else if( rendererType == TrendModelType.STEP_VIEW)
@@ -877,8 +826,8 @@ public JFreeChart refresh(int rendererType)
 		else
 			dataset = YukonDataSetFactory.createVerticalCategoryDataSet(trendSeries);
 
-		
-		CategoryItemRenderer rend = new VerticalBarRenderer3D(new StandardCategoryToolTipGenerator(), 10);
+//		CategoryItemRenderer rend = new VerticalBarRenderer3D(new StandardCategoryToolTipGenerator(), 10);
+		CategoryItemRenderer rend = new VerticalBarRenderer3D(10, 10);
 		plot = new com.jrefinery.chart.VerticalCategoryPlot( (DefaultCategoryDataset)dataset, getHorizontalCategoryAxis(), getVerticalNumberAxis3D_primary(), rend);
 	}
 
