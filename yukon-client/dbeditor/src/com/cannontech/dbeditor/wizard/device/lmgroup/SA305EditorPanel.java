@@ -1,5 +1,8 @@
 package com.cannontech.dbeditor.wizard.device.lmgroup;
 
+
+import com.cannontech.common.gui.unchanging.StringRangeDocument;
+import com.cannontech.database.data.device.lm.LMGroupSA305;
 /**
  * Insert the type's description here.
  * Creation date: (2/23/2004 5:33:06 PM)
@@ -1035,10 +1038,10 @@ private javax.swing.JTextField getJTextFieldIndividualAddress() {
 			ivjJTextFieldIndividualAddress.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
 			ivjJTextFieldIndividualAddress.setFont(new java.awt.Font("dialog", 0, 10));
 			ivjJTextFieldIndividualAddress.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
-			ivjJTextFieldIndividualAddress.setEnabled(true);
 			ivjJTextFieldIndividualAddress.setEditable(true);
 			// user code begin {1}
-			
+			ivjJTextFieldIndividualAddress.setEnabled(false);
+			ivjJTextDivisionAddress.setDocument( new StringRangeDocument(15) );
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -1430,8 +1433,86 @@ private javax.swing.JLabel getUtilityAddressLabel() {
  * @return java.lang.Object
  * @param o java.lang.Object
  */
-public Object getValue(Object o) {
-	return null;
+public Object getValue(Object o) 
+{
+	LMGroupSA305 threeOhFive = null;
+	
+	if( o instanceof com.cannontech.database.data.multi.MultiDBPersistent )
+	{
+		threeOhFive = (LMGroupSA305)
+			com.cannontech.database.data.multi.MultiDBPersistent.getFirstObjectOfType(
+			LMGroupSA305.class,
+			(com.cannontech.database.data.multi.MultiDBPersistent)o );
+	}
+	else if( o instanceof com.cannontech.database.data.multi.SmartMultiDBPersistent )
+		threeOhFive = (LMGroupSA305)
+			((com.cannontech.database.data.multi.SmartMultiDBPersistent)o).getOwnerDBPersistent();
+		
+	if( o instanceof LMGroupSA305 || threeOhFive != null )
+	{
+		if( threeOhFive == null )
+			threeOhFive = (LMGroupSA305) o;
+		
+		String utilityAddress = getJTextFieldUtilityAddress().getText();
+		String groupAddress = getJTextFieldGroupAddress().getText();
+		String divisionAddress = getJTextDivisionAddress().getText();
+		String subAddress = getJTextFieldSubAddress().getText();
+		String rateFamily = getJTextFieldRateFamily().getText();
+		String rateMember = getJTextFieldRateMember().getText();
+		String rateHierarchy = getJTextFieldRateHierarchy().getText();
+		 	
+		threeOhFive.getLMGroupSA305().setUtilityAddress(new Integer(utilityAddress));
+		if(groupAddress.compareTo("") != 0)
+			threeOhFive.getLMGroupSA305().setGroupAddress(new Integer(groupAddress));
+		if(divisionAddress.compareTo("") != 0)
+			threeOhFive.getLMGroupSA305().setDivisionAddress(new Integer(divisionAddress));
+		if(subAddress.compareTo("") != 0)
+			threeOhFive.getLMGroupSA305().setSubstationAddress(new Integer(subAddress));
+		threeOhFive.getLMGroupSA305().setIndividualAddress(getJTextFieldIndividualAddress().getText());
+		if(rateFamily.compareTo("") != 0)
+			threeOhFive.getLMGroupSA305().setRateFamily(new Integer(rateFamily));
+		if(rateMember.compareTo("") != 0)
+			threeOhFive.getLMGroupSA305().setRateMember(new Integer(rateMember));
+		if(rateHierarchy.compareTo("") != 0)
+			threeOhFive.getLMGroupSA305().setRateHierarchy(new Integer(rateHierarchy));
+		
+		
+		StringBuffer addressUsage = new StringBuffer();
+		addressUsage.append('U');
+		if(getJCheckBoxGroupUsage().isSelected())
+		{
+			addressUsage.append('G');
+		}
+		if(getJCheckBoxDivisionUsage().isSelected())
+		{
+			addressUsage.append('D');
+		}
+		if(getJCheckBoxSubUsage().isSelected())
+		{
+			addressUsage.append('S');
+		}
+		if(getJCheckBoxRateUsage().isSelected())
+		{
+			addressUsage.append('R');
+		}
+		threeOhFive.getLMGroupSA305().setAddressUsage(addressUsage.toString());	
+		
+		StringBuffer relayUsage = new StringBuffer();
+		if(getJCheckBoxRelay1().isSelected())
+			relayUsage.append('1');	
+		if(getJCheckBoxRelay2().isSelected())
+			relayUsage.append('2');	
+		if(getJCheckBoxRelay3().isSelected())
+			relayUsage.append('3');	
+		if(getJCheckBoxRelay4().isSelected())
+			relayUsage.append('4');
+		threeOhFive.getLMGroupSA305().setLoadNumber(relayUsage.toString());		
+			
+
+	}
+	
+	return threeOhFive;
+	
 }
 /**
  * Called whenever the part throws an exception.
@@ -1599,5 +1680,53 @@ public void setJTextFieldSubAddress(javax.swing.JTextField newIvjJTextFieldSubAd
  * This method was created in VisualAge.
  * @param o java.lang.Object
  */
-public void setValue(Object o) {}
+public void setValue(Object o) 
+{
+	if(o instanceof LMGroupSA305)
+	{
+		LMGroupSA305 threeOhFive = (LMGroupSA305) o;
+		
+		getJTextFieldUtilityAddress().setText(threeOhFive.getLMGroupSA305().getUtilityAddress().toString());	
+		getJTextFieldGroupAddress().setText(threeOhFive.getLMGroupSA305().getGroupAddress().toString());
+		getJTextDivisionAddress().setText(threeOhFive.getLMGroupSA305().getDivisionAddress().toString());
+		getJTextFieldSubAddress().setText(threeOhFive.getLMGroupSA305().getSubstationAddress().toString());
+		getJTextFieldIndividualAddress().setText(threeOhFive.getLMGroupSA305().getIndividualAddress());
+		getJTextFieldRateFamily().setText(threeOhFive.getLMGroupSA305().getRateFamily().toString());
+		getJTextFieldRateMember().setText(threeOhFive.getLMGroupSA305().getRateMember().toString());
+		getJTextFieldRateHierarchy().setText(threeOhFive.getLMGroupSA305().getRateHierarchy().toString());
+		
+		String addressUsage = threeOhFive.getLMGroupSA305().getAddressUsage();
+		if(addressUsage.indexOf('G') != -1 )
+			getJCheckBoxGroupUsage().setSelected(true);
+		if(addressUsage.indexOf('D') != -1 )
+			getJCheckBoxDivisionUsage().setSelected(true);
+		if(addressUsage.indexOf('S') != -1 )
+			getJCheckBoxSubUsage().setSelected(true);
+		if(addressUsage.indexOf('R') != -1 )
+			getJCheckBoxRateUsage().setSelected(true);
+			
+		String loadNumber = threeOhFive.getLMGroupSA305().getLoadNumber();
+		if(loadNumber.indexOf('1') != -1 )
+			getJCheckBoxRelay1().setSelected(true);
+		if(loadNumber.indexOf('2') != -1 )
+			getJCheckBoxRelay2().setSelected(true);
+		if(loadNumber.indexOf('3') != -1 )
+			getJCheckBoxRelay3().setSelected(true);
+		if(loadNumber.indexOf('4') != -1 )
+			getJCheckBoxRelay4().setSelected(true);	
+			
+		
+	}
+
+}
+
+public boolean isInputValid() 
+{
+	String utilityAddress = getJTextFieldUtilityAddress().getText();
+	if(utilityAddress.compareTo("") == 0)
+		return false;
+
+	return true;
+}
+
 }
