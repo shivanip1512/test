@@ -21,10 +21,10 @@
 int main(int argc, char* argv[] )
 {
     INT RunningInConsole = FALSE;
-    LPTSTR szServiceName = "Load Management";
+    LPTSTR szServiceName = "LoadManagement";
     LPTSTR szDisplayName = "Yukon Load Management Service";
     HANDLE hExclusion;
-    
+
     /*{
         RWMutexLock::LockGuard guard(coutMux);
         cout << RWTime() << " - Load Management starting up..." << endl;
@@ -70,7 +70,7 @@ int main(int argc, char* argv[] )
         else
         {
             CtiLMService service(szServiceName, szDisplayName, SERVICE_WIN32_OWN_PROCESS );
-            
+
             RunningInConsole = TRUE;
             service.RunInConsole(argc, argv );
         }
@@ -78,7 +78,7 @@ int main(int argc, char* argv[] )
     else
     {
         CtiLMService service(szServiceName, szDisplayName, SERVICE_WIN32_OWN_PROCESS );
-        
+
         //Set up an entry for the one service and go
         BEGIN_SERVICE_MAP
         SERVICE_MAP_ENTRY(CtiLMService, LOADMANAGEMENT)

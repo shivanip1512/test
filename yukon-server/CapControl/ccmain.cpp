@@ -1,8 +1,8 @@
 /*---------------------------------------------------------------------------
         Filename:  ccmain.cpp
-        
+
         Programmer:  Josh Wolberg
-        
+
         Description:    Source file for CtiCCMain.
                         CtiCCMain is the main program for Cap Control.
 
@@ -33,7 +33,7 @@ int main(int argc, char* argv[] )
     RWWinSockInfo sock_init;
 
     INT RunningInConsole = FALSE;
-    LPTSTR szServiceName = "Cap Control";
+    LPTSTR szServiceName = "CapControl";
     LPTSTR szDisplayName = "Yukon Cap Control Service";
     HANDLE hExclusion;
 
@@ -80,7 +80,7 @@ int main(int argc, char* argv[] )
         else
         {
             CtiCCService service(szServiceName, szDisplayName, SERVICE_WIN32_OWN_PROCESS );
-            
+
             RunningInConsole = TRUE;
             service.RunInConsole(argc, argv );
         }
@@ -88,7 +88,7 @@ int main(int argc, char* argv[] )
     else
     {
         CtiCCService service(szServiceName, szDisplayName, SERVICE_WIN32_OWN_PROCESS );
-        
+
         //Set up an entry for the one service and go
         BEGIN_SERVICE_MAP
         SERVICE_MAP_ENTRY(CtiCCService, CAPCONTROL)
