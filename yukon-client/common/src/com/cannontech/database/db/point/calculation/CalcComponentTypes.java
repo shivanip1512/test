@@ -16,7 +16,11 @@ public class CalcComponentTypes
 	public static final String DIVISION_OPERATION = "/";
 	public static final String PUSH_OPERATION = "PUSH";
 	
+	public static final String LABEL_KVAR = "KVAR";
 	
+	
+	
+	/*** START OF CALC FUNCTIONS  ***/
 	public static final String MIN_FUNCTION= "Min";
 	public static final String MAX_FUNCTION = "Max";
 	public static final String BASELINE_FUNCTION = "Baseline";
@@ -36,8 +40,8 @@ public class CalcComponentTypes
 	public static final String SQUARE_ROOT_FUNCTION = "Square Root";
 	public static final String ARCTAN_FUNCTION = "ArcTan";
    
-   
-   public static final String LABEL_KVAR = "KVAR";
+   public static final String KW_FROM_KVAKVAR_FUNCTION = "KW from KVa/KVAR";
+
    
 	//our operation function strings
 	public static String[] CALC_FUNCTIONS =
@@ -54,6 +58,7 @@ public class CalcComponentTypes
 		KVAR_FROM_KWKQ_FUNCTION,
 		KVA_FROM_KWKVAR_FUNCTION,
 		KVA_FROM_KWKQ_FUNCTION,
+		KW_FROM_KVAKVAR_FUNCTION,
 		PFACTOR_KW_KVAR_FUNCTION,
       PFACTOR_KW_KQ_FUNCTION,
       PFACTOR_KW_KVA_FUNCTION,
