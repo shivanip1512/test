@@ -58,7 +58,7 @@ CtiLMGroupVersacom::~CtiLMGroupVersacom()
 CtiRequestMsg* CtiLMGroupVersacom::createTimeRefreshRequestMsg(LONG refreshRate, LONG shedTime, int priority) const
 {
     RWCString controlString = RWCString("control shed ");
-    controlString += convertSecondsToEvenTimeString(shedTime);
+    controlString += buildShedString(shedTime);
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
@@ -85,7 +85,7 @@ CtiRequestMsg* CtiLMGroupVersacom::createSmartCycleRequestMsg(LONG percent, LONG
     _ltoa(defaultCount,tempchar,10);
     controlString += tempchar;
     controlString += " period ";
-    controlString += convertSecondsToEvenTimeString(period);
+    controlString += buildPeriodString(period);
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
@@ -104,7 +104,7 @@ CtiRequestMsg* CtiLMGroupVersacom::createSmartCycleRequestMsg(LONG percent, LONG
 CtiRequestMsg* CtiLMGroupVersacom::createRotationRequestMsg(LONG sendRate, LONG shedTime, int priority) const
 {
     RWCString controlString = RWCString("control shed ");
-    controlString += convertSecondsToEvenTimeString(shedTime);
+    controlString += buildShedString(shedTime);
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
@@ -123,7 +123,7 @@ CtiRequestMsg* CtiLMGroupVersacom::createRotationRequestMsg(LONG sendRate, LONG 
 CtiRequestMsg* CtiLMGroupVersacom::createMasterCycleRequestMsg(LONG offTime, LONG period, int priority) const
 {
     RWCString controlString = RWCString("control shed ");
-    controlString += convertSecondsToEvenTimeString(offTime-60);
+    controlString += buildShedString(offTime-60);
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {

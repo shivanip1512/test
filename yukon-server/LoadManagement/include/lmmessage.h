@@ -102,9 +102,9 @@ private:
 };
 
 
-class CtiLMManualControlMsg : public CtiLMMessage
+class CtiLMManualControlRequest : public CtiLMMessage
 {
-RWDECLARE_COLLECTABLE( CtiLMManualControlMsg )
+RWDECLARE_COLLECTABLE( CtiLMManualControlRequest )
 
 public:
 
@@ -116,12 +116,14 @@ public:
         STOP_NOW
     };
 
-    CtiLMManualControlMsg() { }; //provided for polymorphic persitence only
+    CtiLMManualControlRequest() { }; //provided for polymorphic persitence only
+    CtiLMManualControlRequest(const CtiLMManualControlRequest& req);
+    
     /*CtiLMControlMsg(LONG command);
     CtiLMControlMsg(LONG command, LONG id);
     CtiLMControlMsg(const CtiLMCommand& commandMsg);*/
     
-    virtual ~CtiLMManualControlMsg();
+    virtual ~CtiLMManualControlRequest();
 
     LONG getCommand() const;
     LONG getPAOId() const;
@@ -132,10 +134,12 @@ public:
     LONG getStartPriority() const;
     const RWCString& getAdditionalInfo() const;
 
+    virtual CtiMessage* replicateMessage() const;
+	
     void restoreGuts(RWvistream&);
     void saveGuts(RWvostream&) const;
 
-    CtiLMManualControlMsg& operator=(const CtiLMManualControlMsg& right);
+    CtiLMManualControlRequest& operator=(const CtiLMManualControlRequest& right);
 private:
     
     LONG _command;
@@ -148,6 +152,25 @@ private:
     RWCString _additionalinfo;
 };
 
+class CtiLMManualControlResponse : public CtiLMMessage
+{
+RWDECLARE_COLLECTABLE( CtiLMManualControlResponse )
+
+public:
+
+    CtiLMManualControlResponse() { }; //provided for polymorphic persitence only
+    CtiLMManualControlResponse(const CtiLMManualControlResponse& resp);
+    virtual ~CtiLMManualControlResponse() { };
+
+    virtual CtiMessage* replicateMessage() const;
+    
+    void restoreGuts(RWvistream&);
+    void saveGuts(RWvostream&) const;
+
+    CtiLMManualControlResponse& operator=(const CtiLMManualControlResponse& right);
+private:
+//add constraints?
+};
 
 class CtiLMEnergyExchangeControlMsg : public CtiLMMessage
 {

@@ -88,8 +88,9 @@ class CtiLMControlAreaStore : public RWMonitor< RWRecursiveLock< RWMutexLock > >
 {
 public:   
 
-    RWOrdered* getControlAreas(ULONG secondsFrom1901);
-
+    RWOrdered* getControlAreas(ULONG secondsFrom1901 = RWDBDateTime().seconds());
+    bool findProgram(LONG programID, CtiLMProgramBase** program = NULL, CtiLMControlArea** controlArea = NULL);
+    
     static CtiLMControlAreaStore* getInstance();
     static void deleteInstance();
 

@@ -204,18 +204,23 @@ CtiLMCommand& CtiLMCommand::operator=(const CtiLMCommand& right)
 
 
 /*===========================================================================
-    CtiLMManualControlMsg
+    CtiLMManualControlRequest
     
     Represents a manual program control message from the Load Management
     Client
 ===========================================================================*/
 
-RWDEFINE_COLLECTABLE( CtiLMManualControlMsg, CTILMMANUALCONTROLMSG_ID ) 
+RWDEFINE_COLLECTABLE( CtiLMManualControlRequest, CTILMMANUALCONTROLREQUEST_ID ) 
 
+CtiLMManualControlRequest::CtiLMManualControlRequest(const CtiLMManualControlRequest& req)
+{
+    operator=( req );
+}
+    
 /*---------------------------------------------------------------------------
     Destructor
 ---------------------------------------------------------------------------*/
-CtiLMManualControlMsg::~CtiLMManualControlMsg()
+CtiLMManualControlRequest::~CtiLMManualControlRequest()
 {
 }
 
@@ -224,7 +229,7 @@ CtiLMManualControlMsg::~CtiLMManualControlMsg()
     
     Returns the specific manual control command that self represents
 ---------------------------------------------------------------------------*/
-LONG CtiLMManualControlMsg::getCommand() const
+LONG CtiLMManualControlRequest::getCommand() const
 {
     return _command;
 }
@@ -234,7 +239,7 @@ LONG CtiLMManualControlMsg::getCommand() const
 
     Returns the id of the object that is associated with control.
 ---------------------------------------------------------------------------*/
-LONG CtiLMManualControlMsg::getPAOId() const
+LONG CtiLMManualControlRequest::getPAOId() const
 {
     return _paoid;
 }
@@ -245,7 +250,7 @@ LONG CtiLMManualControlMsg::getPAOId() const
     Returns the notification time of the object that is associated with
     control.
 ---------------------------------------------------------------------------*/
-const RWDBDateTime& CtiLMManualControlMsg::getNotifyTime() const
+const RWDBDateTime& CtiLMManualControlRequest::getNotifyTime() const
 {
     return _notifytime;
 }
@@ -255,7 +260,7 @@ const RWDBDateTime& CtiLMManualControlMsg::getNotifyTime() const
 
     Returns the start time of the object that is associated with control.
 ---------------------------------------------------------------------------*/
-const RWDBDateTime& CtiLMManualControlMsg::getStartTime() const
+const RWDBDateTime& CtiLMManualControlRequest::getStartTime() const
 {
     return _starttime;
 }
@@ -265,7 +270,7 @@ const RWDBDateTime& CtiLMManualControlMsg::getStartTime() const
     
     Returns the stop time of the object that is associated with control.
 ---------------------------------------------------------------------------*/
-const RWDBDateTime& CtiLMManualControlMsg::getStopTime() const
+const RWDBDateTime& CtiLMManualControlRequest::getStopTime() const
 {
     return _stoptime;
 }
@@ -275,7 +280,7 @@ const RWDBDateTime& CtiLMManualControlMsg::getStopTime() const
     
     Returns the start gear of the object that is associated with control.
 ---------------------------------------------------------------------------*/
-LONG CtiLMManualControlMsg::getStartGear() const
+LONG CtiLMManualControlRequest::getStartGear() const
 {
     return _startgear;
 }
@@ -285,7 +290,7 @@ LONG CtiLMManualControlMsg::getStartGear() const
     
     Returns the start priority of the object that is associated with control.
 ---------------------------------------------------------------------------*/
-LONG CtiLMManualControlMsg::getStartPriority() const
+LONG CtiLMManualControlRequest::getStartPriority() const
 {
     return _startpriority;
 }
@@ -296,9 +301,18 @@ LONG CtiLMManualControlMsg::getStartPriority() const
     Returns the additional info string of the object that is associated with
     control.
 ---------------------------------------------------------------------------*/
-const RWCString& CtiLMManualControlMsg::getAdditionalInfo() const
+const RWCString& CtiLMManualControlRequest::getAdditionalInfo() const
 {
     return _additionalinfo;
+}
+
+
+/*---------------------------------------------------------------------------
+    replicateMessage
+---------------------------------------------------------------------------*/
+CtiMessage* CtiLMManualControlRequest::replicateMessage() const
+{
+    return new CtiLMManualControlRequest(*this);
 }
 
 /*-------------------------------------------------------------------------
@@ -306,7 +320,7 @@ const RWCString& CtiLMManualControlMsg::getAdditionalInfo() const
     
     Restores the state of self from the given RWvistream
 ---------------------------------------------------------------------------*/
-void CtiLMManualControlMsg::restoreGuts(RWvistream& strm)
+void CtiLMManualControlRequest::restoreGuts(RWvistream& strm)
 {
     CtiLMMessage::restoreGuts(strm);
     RWTime tempTime1;
@@ -333,7 +347,7 @@ void CtiLMManualControlMsg::restoreGuts(RWvistream& strm)
     
     Saves the state of self into the given RWvostream
 ---------------------------------------------------------------------------*/
-void CtiLMManualControlMsg::saveGuts(RWvostream& strm) const
+void CtiLMManualControlRequest::saveGuts(RWvostream& strm) const
 {
     CtiLMMessage::saveGuts(strm);
 
@@ -352,7 +366,7 @@ void CtiLMManualControlMsg::saveGuts(RWvostream& strm) const
 /*---------------------------------------------------------------------------
     operator=
 ---------------------------------------------------------------------------*/
-CtiLMManualControlMsg& CtiLMManualControlMsg::operator=(const CtiLMManualControlMsg& right)
+CtiLMManualControlRequest& CtiLMManualControlRequest::operator=(const CtiLMManualControlRequest& right)
 {
     if( this != &right )
     {
@@ -369,6 +383,64 @@ CtiLMManualControlMsg& CtiLMManualControlMsg::operator=(const CtiLMManualControl
     return *this;
 }
 
+
+/*===========================================================================
+    CtiLMManualControlResponse
+    
+    Represents a manual program control response from the Load Management
+    Server
+===========================================================================*/
+
+RWDEFINE_COLLECTABLE( CtiLMManualControlResponse, CTILMMANUALCONTROLRESPONSE_ID )
+
+CtiLMManualControlResponse::CtiLMManualControlResponse(const CtiLMManualControlResponse& resp)
+{
+    operator=( resp );
+}
+
+/*---------------------------------------------------------------------------
+    replicateMessage
+---------------------------------------------------------------------------*/
+CtiMessage* CtiLMManualControlResponse::replicateMessage() const
+{
+    return new CtiLMManualControlResponse(*this);
+}
+
+/*-------------------------------------------------------------------------
+    restoreGuts
+    
+    Restores the state of self from the given RWvistream
+---------------------------------------------------------------------------*/
+void CtiLMManualControlResponse::restoreGuts(RWvistream& strm)
+{
+    CtiLMMessage::restoreGuts(strm);
+    return;
+}
+
+/*---------------------------------------------------------------------------
+    saveGuts
+    
+    Saves the state of self into the given RWvostream
+---------------------------------------------------------------------------*/
+void CtiLMManualControlResponse::saveGuts(RWvostream& strm) const
+{
+    CtiLMMessage::saveGuts(strm);
+    return;
+}
+
+/*---------------------------------------------------------------------------
+    operator=
+---------------------------------------------------------------------------*/
+CtiLMManualControlResponse& CtiLMManualControlResponse::operator=(const CtiLMManualControlResponse& right)
+{//call super?
+    if( this != &right )
+    {
+	//add fields here
+    }
+
+    return *this;
+}
+// end response
 
 /*===========================================================================
     CtiLMEnergyExchangeControlMsg

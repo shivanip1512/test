@@ -25,6 +25,8 @@
 #include "msg_multi.h"
 #include "lmgroupbase.h"
 
+class CtiLMProgramControlWindow;
+
 class CtiLMProgramBase : public RWCollectable
 {
 
@@ -116,6 +118,8 @@ public:
     virtual BOOL hasControlHoursAvailable() const = 0;
     virtual BOOL stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, ULONG secondsFrom1901) = 0;
     virtual BOOL handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg) = 0;
+    virtual BOOL isReadyForTimedControl(LONG secondsFromBeginningOfDay);
+    virtual BOOL handleTimedControl(ULONG secondsFrom1901, LONG secondsFromBeginningOfDay, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
     virtual BOOL isPastMinRestartTime(ULONG secondsFrom1901);
 
     //Members inherited from RWCollectable
@@ -132,7 +136,8 @@ public:
     // Possible control types
     static const RWCString AutomaticType;
     static const RWCString ManualOnlyType;
-
+    static const RWCString TimedType;
+    
     // Possible program states
     static int InactiveState;
     static int ActiveState;
@@ -143,9 +148,11 @@ public:
     static int StoppingState;
     static int AttemptingControlState;
     static int NonControllingState;
+    static int TimedActiveState;
 
 protected:
-
+    virtual CtiLMProgramControlWindow* getControlWindow(LONG secondsFromBeginningOfDay);
+    
     void restore(RWDBReader& rdr);
 
 private:

@@ -30,6 +30,7 @@
 #include "msg_pcrequest.h"
 #include "lmcontrolareatrigger.h"
 #include "lmprogramthermostatgear.h"
+#include "lmprogramcontrolwindow.h"
 
 extern ULONG _LM_DEBUG;
 
@@ -2779,7 +2780,8 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
             }
 
             if( returnBoolean &&
-                getProgramState() != CtiLMProgramBase::ManualActiveState )
+                getProgramState() != CtiLMProgramBase::ManualActiveState &&
+		getProgramState() != CtiLMProgramBase::TimedActiveState )
             {
                 if( numberOfActiveGroups == _lmprogramdirectgroups.entries() )
                 {
@@ -2987,7 +2989,8 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
                 }
 
                 if( returnBoolean &&
-                    getProgramState() != CtiLMProgramBase::ManualActiveState )
+                    getProgramState() != CtiLMProgramBase::ManualActiveState &&
+		    getProgramState() != CtiLMProgramBase::TimedActiveState )
                 {
                     if( numberOfActiveGroups == _lmprogramdirectgroups.entries() )
                     {
@@ -3105,7 +3108,8 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
                         currentLMGroup->setLastControlSent(RWDBDateTime());
                         currentLMGroup->setGroupControlState(CtiLMGroupBase::ActiveState);
 
-                        if( getProgramState() != CtiLMProgramBase::ManualActiveState )
+                        if( getProgramState() != CtiLMProgramBase::ManualActiveState &&
+			    getProgramState() != CtiLMProgramBase::TimedActiveState )
                         {
                             setProgramState(CtiLMProgramBase::FullyActiveState);
                         }
@@ -3186,7 +3190,8 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
                 }
             }
 
-            if( getProgramState() != CtiLMProgramBase::ManualActiveState )
+            if( getProgramState() != CtiLMProgramBase::ManualActiveState &&
+		getProgramState() != CtiLMProgramBase::TimedActiveState )
             {
                 setProgramState(CtiLMProgramBase::FullyActiveState);
             }
@@ -3434,8 +3439,6 @@ BOOL CtiLMProgramDirect::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMs
 ---------------------------------------------------------------------------*/
 BOOL CtiLMProgramDirect::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
 {
-
-
     BOOL returnBoolean = FALSE;
 
     if( getProgramState() == CtiLMProgramBase::ScheduledState )
@@ -3581,6 +3584,125 @@ BOOL CtiLMProgramDirect::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg*
     }
 
     return returnBoolean;
+}
+
+
+/*---------------------------------------------------------------------------
+    handleTimedControl
+
+    Handles timed control
+---------------------------------------------------------------------------*/
+BOOL CtiLMProgramDirect::handleTimedControl(ULONG secondsFrom1901, LONG secondsFromBeginningOfDay, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
+{
+    if( getProgramState() == CtiLMProgramBase::ManualActiveState ||
+	getProgramState() == CtiLMProgramBase::ScheduledState )
+    {
+	// don't do any timed control while this program is manually active
+	return FALSE;
+    }
+    
+    // Have we entered or left a control window?
+    bool isReady = isReadyForTimedControl(secondsFromBeginningOfDay);
+    
+    if( getProgramState() == CtiLMProgramBase::InactiveState )
+    {
+	if(isReady)
+	{
+	    string text = "Timed Start, LM Program: ";
+	    text += getPAOName();
+	    string additional = "";
+	    CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text.data(),additional.data(),GeneralLogType,SignalEvent);
+	    signal->setSOE(2);
+
+	    multiDispatchMsg->insert(signal);
+        {
+            CtiLockGuard<CtiLogger> dout_guard(dout);
+            dout << RWTime() << " - " << text << ", " << additional << endl;
+        }
+	manualReduceProgramLoad(multiPilMsg,multiDispatchMsg);
+	setProgramState(CtiLMProgramBase::TimedActiveState);
+	
+	CtiLMProgramControlWindow* controlWindow = getControlWindow(secondsFromBeginningOfDay);
+	assert(controlWindow != NULL); //If we are not in a control window then we shouldn't be starting!
+	RWDBDateTime startTime(RWTime((unsigned long)secondsFrom1901));
+	RWDBDateTime endTime(RWTime((unsigned long) secondsFrom1901 + (controlWindow->getAvailableStopTime() - controlWindow->getAvailableStartTime())));
+
+        setDirectStartTime(startTime);
+	setDirectStopTime(endTime);
+	return TRUE;
+	}
+	else
+	{
+	    return FALSE;
+	}
+	
+    }
+    else if( getProgramState() == CtiLMProgramBase::TimedActiveState )
+    {
+	if(isReady)
+	{
+	    string text = "Timed Stop, LM Program: ";
+	    text += getPAOName();
+	    string additional = "";
+	    CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text.data(),additional.data(),GeneralLogType,SignalEvent);
+	    signal->setSOE(2);
+
+	    multiDispatchMsg->insert(signal);
+        {
+            CtiLockGuard<CtiLogger> dout_guard(dout);
+            dout << RWTime() << " - " << text << ", " << additional << endl;
+        }
+	setProgramState(CtiLMProgramBase::StoppingState); //are we settings thse to make stopprogramcontrol work correctly?
+	//otherwise i don't see why
+	stopProgramControl(multiPilMsg,multiDispatchMsg, secondsFrom1901);
+
+	setReductionTotal(0.0); //is this resetting dynamic info?
+	setProgramState(CtiLMProgramBase::InactiveState);
+	setStartedControlling(RWDBDateTime(1990,1,1,0,0,0,0));
+	return TRUE;
+	}
+	else
+	{
+	    return refreshStandardProgramControl(secondsFrom1901, multiPilMsg, multiDispatchMsg);
+	}
+    }
+    else
+    {
+        {
+            CtiLockGuard<CtiLogger> dout_guard(dout);
+            dout << RWTime() << " **Checkpoint** " << "Invalid timed control state: " << getProgramState()
+	         << " " << __FILE__ << "(" << __LINE__ << ")" << endl;
+	}
+	return FALSE;
+    }
+}
+
+/*---------------------------------------------------------------------------
+    isTimedControlReady
+
+    Returns true if some action due to timed control should be taken.
+---------------------------------------------------------------------------*/
+BOOL CtiLMProgramDirect::isReadyForTimedControl(LONG secondsFromBeginningOfDay)
+{   
+    // If the program IS in a control window and NOT started, then we are ready
+    // to start the program
+    // If the program IS NOT in a control window and IS started, then we are ready
+    // to stop the program
+        
+    if(getControlType() == CtiLMProgramBase::TimedType && !getDisableFlag())
+    {
+	CtiLMProgramControlWindow* controlWindow = getControlWindow(secondsFromBeginningOfDay);
+	if(controlWindow != NULL)
+	{
+   	    return (getProgramState() == CtiLMProgramBase::InactiveState);
+	}
+	else
+	{
+	    return (getProgramState() == CtiLMProgramBase::TimedActiveState);
+
+	}
+    }
+    return FALSE; 
 }
 
 /*---------------------------------------------------------------------------

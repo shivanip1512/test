@@ -39,6 +39,7 @@
 #include "resolvers.h"
 #include "devicetypes.h"
 #include "lmprogramdirect.h"
+#include "clistener.h"
 
 #include <rw/thr/prodcons.h>
 
@@ -240,6 +241,8 @@ void CtiLoadManager::controlLoop()
                             {
                                 currentControlArea->handleManualControl(secondsFrom1901, multiPilMsg,multiDispatchMsg);
                             }
+
+			    currentControlArea->handleTimeBasedControl(secondsFrom1901, secondsFromBeginningOfDay, multiPilMsg, multiDispatchMsg);
 
                             if( !currentControlArea->getDisableFlag() && currentControlArea->isControlTime(secondsFromBeginningOfDay) )
                             {
@@ -837,6 +840,8 @@ void CtiLoadManager::parseMessage(RWCollectable *message, ULONG secondsFrom1901)
                 signalMsg( signal->getId(), signal->getTags(), signal->getText(), signal->getAdditionalInfo(), secondsFrom1901 );
             }
             break;
+        case MSG_TAG:
+	    break; //we don't care.
         default:
             {
                 char tempstr[64] = "";
@@ -1153,3 +1158,22 @@ void CtiLoadManager::sendMessageToPIL( CtiMessage* message )
     }
 }
 
+
+/*---------------------------------------------------------------------------
+    sendMessageToClients
+
+    Sends a cti message to all the attached clients.
+---------------------------------------------------------------------------*/
+void CtiLoadManager::sendMessageToClients( CtiMessage* message )
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+    try
+    {
+        CtiLMClientListener::getInstance()->BroadcastMessage(message);
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
+}

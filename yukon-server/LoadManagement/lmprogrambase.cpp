@@ -864,30 +864,50 @@ BOOL CtiLMProgramBase::isAvailableToday()
 
 /*---------------------------------------------------------------------------
     isWithinValidControlWindow()
-
-    Returns boolean if this program is in a valid control window.
+    
+    Returns TRUE if this program is currenly inside a control window or if
+    there are no control windows.
 ---------------------------------------------------------------------------*/
 BOOL CtiLMProgramBase::isWithinValidControlWindow(LONG secondsFromBeginningOfDay)
 {
-    BOOL returnBoolean = FALSE;
-    if( _lmprogramcontrolwindows.entries() > 0 )
-    {
-        for(LONG i=0;i<_lmprogramcontrolwindows.entries();i++)
-        {
-            CtiLMProgramControlWindow* currentControlWindow = (CtiLMProgramControlWindow*)_lmprogramcontrolwindows[i];
-            if( currentControlWindow->getAvailableStartTime() <= secondsFromBeginningOfDay && secondsFromBeginningOfDay <= currentControlWindow->getAvailableStopTime() )
-            {
-                returnBoolean = TRUE;
-                break;
-            }
-        }
-    }
-    else
-    {
-        returnBoolean = TRUE;
-    }
+    if( _lmprogramcontrolwindows.entries == 0 )
+	return TRUE; // No control windows defined, so anytime is inside our control window
 
-    return returnBoolean;
+    // Try to find the control window we are in
+    CtiLMProgramControlWindow* currentControlWindow = getControlWindow(secondsFromBeginningOfDay);
+    return (currentControlWindow != NULL); 
+}
+
+
+/*---------------------------------------------------------------------------
+    isTimedControlReady
+
+    Returns true if this program is ready to either start or stop via
+    timed control.
+    It is up to subclasses to implement this.
+---------------------------------------------------------------------------*/
+BOOL CtiLMProgramBase::isReadyForTimedControl(LONG secondsFromBeginningOfDay)
+{
+    {
+        CtiLockGuard<CtiLogger> dout_guard(dout);
+        dout << RWTime() << " **Checkpoint** " << "Timed control is not implemented in this program type" << __FILE__ << "(" << __LINE__ << ")" << endl;
+    }
+    return FALSE;
+}
+
+/*---------------------------------------------------------------------------
+    handleTimedControl
+
+    Performs an necessary timed control and returns TRUE if it did something.
+    It is up to subclasses to implement this.
+---------------------------------------------------------------------------*/
+BOOL CtiLMProgramBase::handleTimedControl(ULONG secondsFrom1901, LONG secondsFromBeginningOfDay, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
+{
+    {
+        CtiLockGuard<CtiLogger> dout_guard(dout);
+        dout << RWTime() << " **Checkpoint** " << "Timed control is not implemented in this program type" << __FILE__ << "(" << __LINE__ << ")" << endl;
+    }
+    return FALSE;
 }
 
 /*---------------------------------------------------------------------------
@@ -1251,9 +1271,24 @@ void CtiLMProgramBase::restore(RWDBReader& rdr)
     }
 }
 
+CtiLMProgramControlWindow* CtiLMProgramBase::getControlWindow(LONG secondsFromBeginningOfDay)
+{
+    for(LONG i=0;i<_lmprogramcontrolwindows.entries();i++)
+    {
+	CtiLMProgramControlWindow* currentControlWindow = (CtiLMProgramControlWindow*)_lmprogramcontrolwindows[i];
+	if( currentControlWindow->getAvailableStartTime() <= secondsFromBeginningOfDay && secondsFromBeginningOfDay <= currentControlWindow->getAvailableStopTime() )
+	{
+	    return currentControlWindow;
+	}
+    }
+    return NULL;
+}
+
+
 // Static Members
 const RWCString CtiLMProgramBase::AutomaticType = "Automatic";
 const RWCString CtiLMProgramBase::ManualOnlyType = "ManualOnly";
+const RWCString CtiLMProgramBase::TimedType = "Timed";
 
 int CtiLMProgramBase::InactiveState = STATEZERO;
 int CtiLMProgramBase::ActiveState = STATEONE;
@@ -1264,4 +1299,4 @@ int CtiLMProgramBase::FullyActiveState = STATEFIVE;
 int CtiLMProgramBase::StoppingState = STATESIX;
 int CtiLMProgramBase::AttemptingControlState = STATESEVEN;
 int CtiLMProgramBase::NonControllingState = STATEEIGHT;
-
+int CtiLMProgramBase::TimedActiveState = STATENINE;

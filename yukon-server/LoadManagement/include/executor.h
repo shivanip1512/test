@@ -19,8 +19,14 @@
 #include <rw/thr/thrfunc.h>
 #include <rw/thr/barrier.h>  
 
-#include "lmmessage.h"
 #include "ctdpcptrq.h"
+
+#include "msg_server_req.h"
+
+#include "lmmessage.h"
+#include "lmprogramdirect.h"
+#include "lmprogramcurtailment.h"
+
 
 class CtiLMExecutor
 {
@@ -32,7 +38,6 @@ public:
 protected:
     CtiLMExecutor() {};
 };
-
 
 class CtiLMCommandExecutor : public CtiLMExecutor
 {
@@ -64,23 +69,27 @@ private:
 };
 
 
-class CtiLMManualControlMsgExecutor : public CtiLMExecutor
+class CtiLMManualControlRequestExecutor : public CtiLMExecutor
 {
 public:
-    CtiLMManualControlMsgExecutor(CtiLMManualControlMsg* controlMsg) : _controlMsg(controlMsg) {};
-    virtual ~CtiLMManualControlMsgExecutor() { delete _controlMsg;};
+    CtiLMManualControlRequestExecutor(CtiLMManualControlRequest* controlMsg,
+				  CtiServerRequestMsg* serverReq)
+	: _controlMsg(controlMsg), _request(serverReq) { };
+    virtual ~CtiLMManualControlRequestExecutor() { delete _controlMsg; delete _request; };
 
     virtual void Execute();
 
 private:
-    void ScheduledStart();
-    void ScheduledStop();
-    void StartNow();
-    void StopNow();
+    void StartProgram(CtiLMProgramBase* program, CtiLMControlArea* controlArea);
+    void StopProgram(CtiLMProgramBase* program, CtiLMControlArea* controlArea);
+    void StartDirectProgram(CtiLMProgramDirect* program, CtiLMControlArea* controlArea);
+    void StopDirectProgram(CtiLMProgramDirect* program, CtiLMControlArea* controlArea);
+    void StartCurtailmentProgram(CtiLMProgramCurtailment* program, CtiLMControlArea* controlArea);
+    void StopCurtailmentProgram(CtiLMProgramCurtailment* program, CtiLMControlArea* controlArea);
 
-    CtiLMManualControlMsg* _controlMsg;
+    CtiServerRequestMsg* _request;
+    CtiLMManualControlRequest* _controlMsg;
 };
-
 
 class CtiLMEnergyExchangeControlMsgExecutor : public CtiLMExecutor
 {

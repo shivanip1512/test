@@ -70,6 +70,8 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
     virtual BOOL hasControlHoursAvailable() const;
     virtual BOOL stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, ULONG secondsFrom1901);
     virtual BOOL handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
+    virtual BOOL isReadyForTimedControl(LONG secondsFromBeginningOfDay);
+    virtual BOOL handleTimedControl(ULONG secondsFrom1901, LONG secondsFromBeginningOfDay, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
     virtual BOOL isPastMinRestartTime(ULONG secondsFrom1901);
 
     //Members inherited from RWCollectable

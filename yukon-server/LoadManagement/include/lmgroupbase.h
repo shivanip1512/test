@@ -119,8 +119,10 @@ public:
     void saveGuts(RWvostream& ) const;
 
     CtiLMGroupBase& operator=(const CtiLMGroupBase& right);
-    RWCString convertSecondsToEvenTimeString(LONG shedTime) const;
 
+    RWCString buildShedString(LONG shedTime) const;
+    RWCString buildPeriodString(LONG periodTime) const;
+    
     int operator==(const CtiLMGroupBase& right) const;
     int operator!=(const CtiLMGroupBase& right) const;
 
