@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.82 $
-* DATE         :  $Date: 2004/10/26 16:12:47 $
+* REVISION     :  $Revision: 1.83 $
+* DATE         :  $Date: 2004/10/26 16:15:04 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -538,10 +538,10 @@ void CtiVanGogh::VGMainThread()
             }
 
             QueryPerformanceCounter(&loopDoneTime);
-            if(PERF_TO_MS(loopDoneTime, getQTime, perfFrequency) > 1000)
+            if(PERF_TO_MS(loopDoneTime, getQTime, perfFrequency) > 1050)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << "  Main Loop duration (ms) = " << PERF_TO_MS(loopDoneTime, getQTime, perfFrequency) << " mainqueue has " << MainQueue_.entries() << endl;
+                dout << RWTime() << " Main loop duration: " << PERF_TO_MS(loopDoneTime, getQTime, perfFrequency) << " ms.  MainQueue_ has " << MainQueue_.entries() << endl;
             }
         }
 
