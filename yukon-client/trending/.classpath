@@ -2,6 +2,8 @@
 <classpath>
     <classpathentry kind="src" path="src"/>
     <classpathentry kind="var" path="JRE_LIB" rootpath="JRE_SRCROOT" sourcepath="JRE_SRC"/>
+    <classpathentry exported="true" kind="src" path="/jfreechart"/>
+    <classpathentry kind="lib" path="/third-party/jcommon-0.6.4.jar"/>
     <classpathentry kind="src" path="/common"/>
     <classpathentry kind="lib" path="/third-party/SqlServer.jar"/>
     <classpathentry kind="lib" path="/third-party/acme.jar"/>
@@ -11,12 +13,13 @@
     <classpathentry kind="lib" path="/third-party/jaxm-api.jar"/>
     <classpathentry kind="lib" path="/third-party/jcchart401K.jar"/>
     <classpathentry kind="lib" path="/third-party/jcfield401K.jar"/>
-    <classpathentry kind="lib" path="/third-party/jcommon-0.6.2.jar"/>
     <classpathentry kind="lib" path="/third-party/jcpagelayout450K.jar"/>
-    <classpathentry kind="lib" path="/third-party/jfreechart-0.9.0.jar"/>
     <classpathentry kind="lib" path="/third-party/jloox2.0.2.jar"/>
     <classpathentry kind="lib" path="/third-party/led.jar"/>
     <classpathentry kind="lib" path="/third-party/rwav.jar"/>
     <classpathentry kind="lib" path="/third-party/xerces.jar"/>
+    <classpathentry kind="src" path="/resource"/>
+    <classpathentry kind="lib" path="/third-party/jfreechart.jar"/>
+    <classpathentry kind="lib" path="/third-party/junit.jar"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>
