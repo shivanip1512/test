@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2004/01/06 20:28:29 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2004/01/26 21:54:48 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -56,6 +56,11 @@ bool CtiDeviceMCT310::initCommandStore( )
     bool failed = false;
 
     CtiDLCCommandStore cs;
+
+    cs._cmd     = CtiProtocolEmetcon::PutConfig_Raw;
+    cs._io      = IO_WRITE;
+    cs._funcLen = make_pair( 0, 0 );  //  this will be filled in by executePutConfig
+    _commandStore.insert( cs );
 
     //  300 series common commands
     cs._cmd     = CtiProtocolEmetcon::GetConfig_Time;
