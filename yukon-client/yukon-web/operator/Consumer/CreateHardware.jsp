@@ -260,13 +260,6 @@ function validate(form) {
                           <td width="50%" class="HeaderCell">Assigned Group</td>
                         </tr>
 <%
-	String checkStr = "";
-	String disableStr = "disabled=\"true\"";
-	if (request.getParameter("Wizard") != null) {
-		checkStr = "checked";
-		disableStr = "";
-	}
-	
 	for (int i = 0; i < appliances.getStarsApplianceCount(); i++) {
 		StarsAppliance appliance = appliances.getStarsAppliance(i);
 		if (appliance.getInventoryID() == 0 && appliance.getLmProgramID() > 0) {
@@ -284,16 +277,18 @@ function validate(form) {
 					break;
 				}
 			}
+			boolean disabled = (program == null || program.getAddressingGroupCount() == 0);
 %>
                         <tr> 
                           <td width="27" height="2"> 
-                            <input type="checkbox" name="AppID" value="<%= appliance.getApplianceID() %>" onclick="changeAppSelection(this)" <%= checkStr %>>
+                            <input type="checkbox" name="AppID" value="<%= appliance.getApplianceID() %>" onclick="changeAppSelection(this)"
+							 <%= (disabled)? "disabled" : "" %>>
                           </td>
                           <td width="73" class="TableCell" height="2"><%= program.getProgramName() %></td>
                           <td width="89" height="2"> 
-                            <select id="Group_App<%= appliance.getApplianceID() %>" name="GroupID" <%= disableStr %>>
+                            <select id="Group_App<%= appliance.getApplianceID() %>" name="GroupID" disabled>
 <%
-			if (program == null || program.getAddressingGroupCount() == 0) {
+			if (disabled) {
 %>
                               <option value="0">(none)</option>
 <%

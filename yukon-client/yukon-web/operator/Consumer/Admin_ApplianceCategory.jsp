@@ -2,7 +2,11 @@
 <%@ page import="com.cannontech.servlet.LCConnectionServlet" %>
 <%@ page import="com.cannontech.web.loadcontrol.LoadcontrolCache" %>
 <%@ page import="com.cannontech.loadcontrol.data.LMProgramDirect" %>
-<% if (!AuthFuncs.checkRoleProperty(lYukonUser, ConsumerInfoRole.SUPER_OPERATOR)) { response.sendRedirect("../Operations.jsp"); return; } %>
+<%	if (!AuthFuncs.checkRoleProperty(lYukonUser, com.cannontech.roles.operator.AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY)
+		|| ecSettings == null) {
+		response.sendRedirect("../Operations.jsp"); return;
+	}
+%>
 <%
 	StarsApplianceCategory category = null;
 	int catIdx = Integer.parseInt( request.getParameter("Category") );
@@ -81,7 +85,7 @@ function changeProgramIcons(form) {
 	form.IconEnvrn.src = "../../Images/Icons/" + form.IconNameEnvrn.value;
 }
 
-function addProgram() {
+function addProgram(form) {
 	var assgnProgList = document.getElementById("ProgramsAssigned");
 	var availProgList = document.getElementById("ProgramsAvailable");
 	if (availProgList.value > 0) {
@@ -96,9 +100,17 @@ function addProgram() {
 		emptyOption.innerText = "<No Program Available>";
 		emptyOption.value = "0";
 	}
+	showProgramConfig(form);
 }
 
-function removeProgram() {
+var removeWarned = true;
+
+function removeProgram(form) {
+	if (!removeWarned) {
+		removeWarned = true;
+		alert('If you remove a program and click "Submit", all customers currently enrolled in this program will be unenrolled!');
+	}
+	
 	var assgnProgList = document.getElementById("ProgramsAssigned");
 	var availProgList = document.getElementById("ProgramsAvailable");
 	if (assgnProgList.value > 0) {
@@ -113,6 +125,15 @@ function removeProgram() {
 		emptyOption.innerText = "<No Program Assigned>";
 		emptyOption.value = "0";
 	}
+	
+	curProgID = 0;
+	clearProgramConfig(form);
+}
+
+function init() {
+	removeProgram(document.form1);
+	addProgram(document.form1);
+	removeWarned = false;
 }
 
 function setSameAsProgName(form, checked) {
@@ -142,7 +163,7 @@ var idx = 0;
 	progName[idx] = "<%= program.getProgramName() %>";
 	dispName[idx] = "<%= cfg.getURL() %>";
 	shortName[idx] = "<%= cfg.getAlternateDisplayName() %>";
-	description[idx] = "<%= cfg.getDescription().replaceAll("<br>", "\r\n") %>";
+	description[idx] = '<%= cfg.getDescription().replaceAll("<br>", "\r\n") %>';
 	ctrlOdds[idx] = <%= (program.getChanceOfControl() == null) ? 0 : program.getChanceOfControl().getEntryID() %>;
 	iconNameSmall[idx] = "<%= imgNames[1] %>";
 	iconNameSavings[idx] = "<%= imgNames[2] %>";
@@ -267,7 +288,7 @@ function prepareSubmit(form) {
 </script>
 </head>
 
-<body class="Background" leftmargin="0" topmargin="0">
+<body class="Background" leftmargin="0" topmargin="0" onload="init()">
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
@@ -341,8 +362,9 @@ function prepareSubmit(form) {
                         <td width="18%" align="right" class="TableCell">Display 
                           Name:</td>
                         <td width="82%" class="TableCell"> 
-                          <input type="text" name="DispName" value="<%= category.getStarsWebConfig().getAlternateDisplayName() %>">
-                        </td>
+                          <input type="text" name="DispName" value="<%= category.getStarsWebConfig().getAlternateDisplayName() %>" disabled>
+                          <input type="checkbox" name="SameAsName" value="true" onClick="this.form.DispName.disabled = this.checked" checked>
+                          Same as category name </td>
                       </tr>
                       <tr> 
                         <td width="18%" align="right" class="TableCell" height="7">Type:</td>
@@ -396,15 +418,14 @@ function prepareSubmit(form) {
                                         <option value="<%= program.getProgramID() %>"><%= program.getProgramName() %></option>
 <%	} %>
                                       </select>
-                                      <script language="JavaScript"> removeProgram(); </script>
                                       <br>
                                       <font color="#0000FF">Click on a program 
                                       to show and update its configuration.</font></td>
                                     <td width="50" align="center"> 
                                       <p> 
-                                        <input type="button" id="AddButton" name="Add" value="<<" onclick="addProgram()">
+                                        <input type="button" id="AddButton" name="Add" value="<<" onclick="addProgram(this.form)">
                                         <br>
-                                        <input type="button" id="RemoveButton" name="Remove" value=">>" onclick="removeProgram()">
+                                        <input type="button" id="RemoveButton" name="Remove" value=">>" onclick="removeProgram(this.form)">
                                       </p>
                                       <p>&nbsp; </p>
                                     </td>
@@ -417,7 +438,6 @@ function prepareSubmit(form) {
                                         <option value="<%= program.getYukonID() %>"><%= program.getYukonName() %></option>
 <%	} %>
                                       </select>
-                                      <script language="JavaScript"> addProgram(); </script>
                                     </td>
                                     <td align="center">&nbsp;</td>
                                   </tr>

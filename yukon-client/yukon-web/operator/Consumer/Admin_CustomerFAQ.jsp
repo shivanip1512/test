@@ -1,5 +1,9 @@
 <%@ include file="StarsHeader.jsp" %>
-<% if (!AuthFuncs.checkRoleProperty(lYukonUser, ConsumerInfoRole.SUPER_OPERATOR)) { response.sendRedirect("../Operations.jsp"); return; } %>
+<%	if (!AuthFuncs.checkRoleProperty(lYukonUser, com.cannontech.roles.operator.AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY)
+		|| ecSettings == null) {
+		response.sendRedirect("../Operations.jsp"); return;
+	}
+%>
 <html>
 <head>
 <title>Energy Services Operations Center</title>

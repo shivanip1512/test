@@ -1,6 +1,10 @@
 <%@ include file="StarsHeader.jsp" %>
 <%@ page import="com.cannontech.stars.web.servlet.StarsAdmin" %>
-<% if (!AuthFuncs.checkRoleProperty(lYukonUser, ConsumerInfoRole.SUPER_OPERATOR)) { response.sendRedirect("../Operations.jsp"); return; } %>
+<%	if (!AuthFuncs.checkRoleProperty(lYukonUser, com.cannontech.roles.operator.AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY)
+		|| ecSettings == null) {
+		response.sendRedirect("../Operations.jsp"); return;
+	}
+%>
 <%
 	StarsServiceCompany company = null;
 	int compIdx = Integer.parseInt( request.getParameter("Company") );

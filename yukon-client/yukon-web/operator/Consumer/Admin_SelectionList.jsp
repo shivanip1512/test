@@ -1,11 +1,28 @@
 <%@ include file="StarsHeader.jsp" %>
 <%@ page import="com.cannontech.common.constants.YukonSelectionList" %>
 <%@ page import="com.cannontech.common.constants.YukonListEntry" %>
-<% if (!AuthFuncs.checkRoleProperty(lYukonUser, ConsumerInfoRole.SUPER_OPERATOR)) { response.sendRedirect("../Operations.jsp"); return; } %>
+<%@ page import="com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany" %>
+<%	if (!AuthFuncs.checkRoleProperty(lYukonUser, com.cannontech.roles.operator.AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY)
+		|| ecSettings == null) {
+		response.sendRedirect("../Operations.jsp"); return;
+	}
+%>
 <%
 	String listName = request.getParameter("List");
-	YukonSelectionList list = SOAPServer.getEnergyCompany(user.getEnergyCompanyID()).getYukonSelectionList(listName);
+	LiteStarsEnergyCompany ec = SOAPServer.getEnergyCompany(user.getEnergyCompanyID());
+	YukonSelectionList list = ec.getYukonSelectionList(listName);
 	YukonSelectionList dftList = SOAPServer.getDefaultEnergyCompany().getYukonSelectionList(listName);
+	
+	boolean isOptOutPeriod = listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD);
+	boolean isOptOutPeriodCus = listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD_CUS);
+	boolean sameAsOp = false;
+	if (isOptOutPeriodCus) {
+		dftList = ec.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD);
+		if (list == null) {
+			list = ec.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD);
+			sameAsOp = true;
+		}
+	}
 %>
 <html>
 <head>
@@ -211,10 +228,36 @@ function prepareSubmit(form) {
 		form.insertAdjacentHTML("beforeEnd", html);
 	}
 }
+
+<%	if (isOptOutPeriodCus) { %>
+function setSameAsOp(form, checked) {
+	form.SameAsOp.checked = checked;
+	form.WhereIsList.disabled = checked;
+	form.Ordering.disabled = checked;
+	form.Label.disabled = checked;
+	form.ListEntries.disabled = checked;
+	form.MoveUp.disabled = checked;
+	form.MoveDown.disabled = checked;
+	form.Delete.disabled = checked;
+	form.Default.disabled = checked;
+	form.EntryText.disabled = checked;
+	form.SetYukonDefID.disabled = checked;
+	form.YukonDefID.disabled = checked;
+	form.Save.disabled = checked;
+	form.DefaultListEntries.disabled = checked;
+	if (!checked) showEntry(form);
+}
+<%	} %>
+
+function init() {
+<%	if (isOptOutPeriodCus) { %>
+	setSameAsOp(document.form1, <%= sameAsOp %>);
+<%	} %>
+}
 </script>
 </head>
 
-<body class="Background" leftmargin="0" topmargin="0">
+<body class="Background" leftmargin="0" topmargin="0" onload="init()">
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
@@ -276,12 +319,39 @@ function prepareSubmit(form) {
                   <td height="252"> 
                     <table width="100%" border="0" cellspacing="0" cellpadding="5">
                       <input type="hidden" name="action" value="UpdateSelectionList">
-                      <input type="hidden" name="ListID" value="<%= list.getListID() %>">
+                      <input type="hidden" name="ListName" value="<%= listName %>">
                       <tr> 
                         <td width="18%" align="right" class="TableCell">List Name:</td>
-                        <td width="82%" class="TableCell"><%= list.getListName() %></td>
+                        <td width="82%" class="TableCell">
+                          <table width="100%" border="0" cellspacing="0" cellpadding="0" class="TableCell">
+                            <tr>
+                              <td width="30%"><%= listName %></td>
+                              <td width="70%"> 
+                                <% if (isOptOutPeriodCus) { %>
+                                <input type="checkbox" name="SameAsOp" value="true" onClick="setSameAsOp(this.form, this.checked)">
+                                Same As Operator Side List 
+                                <% } %>
+                              </td>
+                            </tr>
+                          </table>
+                          
+                        </td>
                       </tr>
+<%	if (isOptOutPeriod || isOptOutPeriodCus) { %>
                       <tr> 
+                        <td width="18%" align="right" class="TableCell">&nbsp;</td>
+                        <td width="82%" class="TableCell"> 
+                          <% if (isOptOutPeriod) { %>
+                          <a href="Admin_SelectionList.jsp?List=OptOutPeriodCustomer">View 
+                          Customer Side List</a> 
+                          <% } else { %>
+                          <a href="Admin_SelectionList.jsp?List=OptOutPeriod">View 
+                          Operator Side List</a> 
+                          <% } %>
+                        </td>
+                      </tr>
+<%	} %>
+					  <tr> 
                         <td width="18%" align="right" class="TableCell">Description:</td>
                         <td width="82%" class="TableCell"> 
                           <input type="text" name="WhereIsList" size="50" value="<%= list.getWhereIsList() %>">
@@ -292,7 +362,8 @@ function prepareSubmit(form) {
                         <td width="82%" class="TableCell" valign="middle" height="7"> 
                           <select name="Ordering">
                             <option value="A" <%= list.getOrdering().equalsIgnoreCase("A")? "selected" : "" %>>Alphabetical</option>
-                            <option value="O" <%= list.getOrdering().equalsIgnoreCase("O")? "selected" : "" %>>List Order</option>
+                            <option value="O" <%= list.getOrdering().equalsIgnoreCase("O")? "selected" : "" %>>List 
+                            Order</option>
                           </select>
                         </td>
                       </tr>
@@ -309,12 +380,12 @@ function prepareSubmit(form) {
                             <tr> 
                               <td width="50%">Current List:<br>
                                 <select name="ListEntries" size="5" style="width:150" onClick="showEntry(this.form)">
-<%
+                                  <%
 	for (int i = 0; i < list.getYukonListEntries().size(); i++) {
 		YukonListEntry entry = (YukonListEntry) list.getYukonListEntries().get(i);
 %>
                                   <option value="<%= i %>"><%= entry.getEntryText() %></option>
-<%	} %>
+                                  <%	} %>
                                   <option value="-1">&lt;New List Entry&gt;</option>
                                 </select>
                                 <br>
@@ -341,7 +412,7 @@ function prepareSubmit(form) {
                       <tr> 
                         <td width="18%" align="right" class="TableCell">Entry 
                           Def: </td>
-                        <td width="82%" class="TableCell">
+                        <td width="82%" class="TableCell"> 
                           <table width="100%" border="0" cellspacing="0" cellpadding="0">
                             <tr class="TableCell"> 
                               <td width="50%"> 
@@ -356,16 +427,16 @@ function prepareSubmit(form) {
                                   <br>
                                   <input type="button" name="Save" value="Add" onclick="saveEntry(this.form)">
                                 </p>
-                                </td>
+                              </td>
                               <td width="50%"> 
                                 <p> Default List:<br>
                                   <select name="DefaultListEntries" size="5" style="width:150" onclick="showDefaultEntry(this.form)">
-<%
+                                    <%
 	for (int i = 0; i < dftList.getYukonListEntries().size(); i++) {
 		YukonListEntry entry = (YukonListEntry) dftList.getYukonListEntries().get(i);
 %>
                                     <option><%= entry.getEntryText() %></option>
-<%	} %>
+                                    <%	} %>
                                   </select>
                                 </p>
                               </td>

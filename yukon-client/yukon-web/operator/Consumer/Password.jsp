@@ -95,7 +95,7 @@ function checkPasswords(form) {
                     <div align="right">New Password:</div>
                   </td>
                   <td width="200"> 
-                    <input type="text" name="Password" maxlength="20" size="20" value="<%= userLogin.getPassword() %>" onchange="setPasswordChanged()">
+                    <input type="password" name="Password" maxlength="20" size="20" value="<%= userLogin.getPassword() %>" onchange="setPasswordChanged()">
                   </td>
                 </tr>
                 <tr> 
@@ -103,7 +103,7 @@ function checkPasswords(form) {
                     <div align="right">Confirm Password:</div>
                   </td>
                   <td width="200"> 
-                    <input type="text" name="Password2" maxlength="20" size="20">
+                    <input type="password" name="Password2" maxlength="20" size="20">
                   </td>
                 </tr>
               </table>

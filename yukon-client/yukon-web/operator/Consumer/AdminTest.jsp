@@ -1,5 +1,9 @@
 <%@ include file="StarsHeader.jsp" %>
-<% if (!AuthFuncs.checkRoleProperty(lYukonUser, ConsumerInfoRole.SUPER_OPERATOR)) { response.sendRedirect("../Operations.jsp"); return; } %>
+<%	if (!AuthFuncs.checkRoleProperty(lYukonUser, com.cannontech.roles.operator.AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY)
+		|| ecSettings == null) {
+		response.sendRedirect("../Operations.jsp"); return;
+	}
+%>
 <html>
 <head>
 <title>Energy Services Operations Center</title>
@@ -265,7 +269,8 @@ function confirmDeleteAllCompanies() {
                     <tr> 
                       <td> 
                         <form name="form3" method="post" action="<%=request.getContextPath()%>/servlet/StarsAdmin">
-                          <b><font color="#0000FF">Appliance Categories:</font></b> 
+                          <b><font color="#0000FF">Appliance Categories &amp; 
+                          Published Programs:</font></b> 
                           <table width="100%" border="1" cellspacing="0" cellpadding="0" align="center">
                             <tr> 
                               <td> 
@@ -328,8 +333,9 @@ function confirmDeleteAllCompanies() {
                                 <table width="100%" border="0" cellspacing="0" cellpadding="0">
                                   <input type="hidden" name="action" value="DeleteServiceCompany">
                                   <input type="hidden" name="CompanyID" value="0">
-                                  <%
-	for (int i = 0; i < companies.getStarsServiceCompanyCount(); i++) {
+<%
+	// The first service company is always "(none)"
+	for (int i = 1; i < companies.getStarsServiceCompanyCount(); i++) {
 		StarsServiceCompany company = companies.getStarsServiceCompany(i);
 %>
                                   <tr> 

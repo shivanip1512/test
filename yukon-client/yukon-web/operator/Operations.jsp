@@ -6,6 +6,7 @@
 
 <%@ page import="com.cannontech.roles.application.WebClientRole" %>
 
+<%@ page import="com.cannontech.roles.operator.AdministratorRole" %>
 <%@ page import="com.cannontech.roles.operator.CommercialMeteringRole" %>
 <%@ page import="com.cannontech.roles.operator.ConsumerInfoRole" %>
 <%@ page import="com.cannontech.roles.operator.DirectCurtailmentRole" %>
@@ -67,7 +68,7 @@
             <input type="hidden" name="action" value="SearchCustAccount">
             <td width="97" class="Main">
               <div align = "center" style = "border:solid 1px #666999;">
-                <a href = "Consumer/New.jsp<cti:checkProperty propertyid="<%= ConsumerInfoRole.NEW_ACCOUNT_WIZARD %>">?Wizard=true</cti:checkProperty>" class = "Link1" style = "text-decoration:none;">New 
+                <a href = 'Consumer/New.jsp<cti:checkProperty propertyid="<%= ConsumerInfoRole.NEW_ACCOUNT_WIZARD %>">?Wizard=true</cti:checkProperty>' class = "Link1" style = "text-decoration:none;">New 
                 Account</a>
               </div>
             </td>
@@ -162,38 +163,31 @@
           <form method="post" action="LoadControl/oper_direct.jsp">
             <td width="110" class = "Main">
 <cti:checkRole roleid="<%= DirectLoadcontrolRole.ROLEID %>"> 
-              <div align = "center" style = "border:solid 1px #666999;">
-			    <a href = "LoadControl/oper_direct.jsp" class = "Link1" style = "text-decoration:none;">Direct</a>
-              </div>
+              <div align = "center" style = "border:solid 1px #666999;"> <a href = "LoadControl/oper_direct.jsp" class = "Link1" style = "text-decoration:none;">Direct</a></div>
 </cti:checkRole>
-            &nbsp;</td>
+            </td>
           </form>
           <form method="post" action="LoadControl/oper_mand.jsp">
             <td width="110" class = "Main"> 
 <cti:checkRole roleid="<%= DirectCurtailmentRole.ROLEID %>"> 
-              <div align = "center" style = "border:solid 1px #666999;">
-			    <a href = "LoadControl/oper_mand.jsp" class = "Link1" style = "text-decoration:none;"><cti:getProperty propertyid="<%= DirectCurtailmentRole.CURTAILMENT_LABEL%>"/></a>
-			  </div>
+              <div align = "center" style = "border:solid 1px #666999;"> <a href = "LoadControl/oper_mand.jsp" class = "Link1" style = "text-decoration:none;"><cti:getProperty propertyid="<%= DirectCurtailmentRole.CURTAILMENT_LABEL%>"/></a></div>
 </cti:checkRole>
-            &nbsp;</td>
+			</td>
           </form>
           <form method="post" action="LoadControl/oper_ee.jsp">
             <td width = "110" class = "Main"> 
 <cti:checkRole roleid="<%= EnergyBuybackRole.ROLEID %>"> 
-              <div align = "center" style = "border:solid 1px #666999;">
-			    <a href = "LoadControl/oper_ee.jsp" class = "Link1" style = "text-decoration:none;"><cti:getProperty propertyid="<%= EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>"/></a>
-			  </div>
+              <div align = "center" style = "border:solid 1px #666999;"> <a href = "LoadControl/oper_ee.jsp" class = "Link1" style = "text-decoration:none;"><cti:getProperty propertyid="<%= EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>"/></a></div>
 </cti:checkRole>
-            &nbsp;</td>
+			</td>
 		  </form>
-            <form method="post" action="Consumer/Odds.jsp">
+          <form method="post" action="Consumer/Odds.jsp">
             <td width = "110" class = "Main">
 <cti:checkRole roleid="<%= OddsForControlRole.ROLEID %>">
-              <div align = "center" style = "border:solid 1px #666999;">
-			    <a href = "Consumer/Odds.jsp" class = "Link1" style = "text-decoration:none;">Odds for Control</a>
-			  </div>
+              <div align = "center" style = "border:solid 1px #666999;"> <a href = "Consumer/Odds.jsp" class = "Link1" style = "text-decoration:none;">Odds 
+                for Control</a></div>
 </cti:checkRole>
-            &nbsp;</td>
+			</td>
 		  </form>
           </tr>
         <tr> 
@@ -278,12 +272,14 @@
   </tr>
 </cti:checkRole> 
 
-<cti:checkProperty propertyid="<%= ConsumerInfoRole.SUPER_OPERATOR %>">
+<cti:checkRole roleid="<%= AdministratorRole.ROLEID %>">
   <tr>
     <td width="102" bgcolor="#000000" height="102" background="Admin/AdminImage.jpg">&nbsp;</td>
     <td bgcolor="#FFFFFF" height="102" valign="top"><img src="AdminHeader.gif" width="129" height="15"><br>
       <table width="525" border="0" cellspacing="0" cellpadding="3" align="center">
         <tr> 
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
           <td>&nbsp;</td>
           <td>&nbsp;</td>
         </tr>
@@ -293,10 +289,19 @@
               <div align = "center" style = "border:solid 1px #666999;"><a href = "Admin/Privileges.jsp" class = "Link1" style = "text-decoration:none;">Privileges 
                 </a></div>
             </td>
-            <td align = "center" class = "Main">
-              <div align = "center" style = "border:solid 1px #666999;"><a href = "Consumer/AdminTest.jsp" class = "Link1" style = "text-decoration:none;">Energy 
-                Company Configuration</a></div>
+            <td align = "center" class = "Main" width="150"> 
+<cti:checkProperty propertyid="<%= AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY %>">
+              <div align = "center" style = "border:solid 1px #666999;"><a href = "Consumer/AdminTest.jsp" class = "Link1" style = "text-decoration:none;">Config 
+                Energy Company</a></div>
+</cti:checkProperty>
             </td>
+            <td align = "center" class = "Main" width="150"> 
+<cti:checkProperty propertyid="<%= AdministratorRole.ADMIN_CREATE_ENERGY_COMPANY %>">
+              <div align = "center" style = "border:solid 1px #666999;"><a href = "Consumer/Admin_NewEnergyCompany.jsp" class = "Link1" style = "text-decoration:none;">New 
+                Energy Company</a></div>
+</cti:checkProperty>
+			</td>
+            <td align = "center" class = "Main">&nbsp;</td>
           </form>
         </tr>
       </table>
@@ -308,7 +313,7 @@
     <td width="555" bgcolor="#000000" height="1"><img src="../Images/Icons/VerticalRule.gif"></td>
     <td width="1" background="../Images/Icons/VerticalRule.gif" height="1"></td>
   </tr>
-</cti:checkProperty>
+</cti:checkRole>
   </table>
 <div align="center"></div>
 </body>

@@ -413,16 +413,18 @@ function validate(form) {
 					break;
 				}
 			}
+			boolean disabled = (program == null || program.getAddressingGroupCount() == 0);
 %>
                         <tr> 
                           <td width="27" height="2"> 
-                            <input type="checkbox" name="AppID" value="<%= appliance.getApplianceID() %>" onClick="changeAppSelection(this)">
+                            <input type="checkbox" name="AppID" value="<%= appliance.getApplianceID() %>" onClick="changeAppSelection(this)"
+							 <%= (disabled)? "disabled" : "" %>>
                           </td>
                           <td width="73" class="TableCell" height="2"><%= program.getProgramName() %></td>
                           <td width="89" height="2"> 
                             <select id="Group_App<%= appliance.getApplianceID() %>" name="GroupID" disabled="true">
 <%
-			if (program == null || program.getAddressingGroupCount() == 0) {
+			if (disabled) {
 %>
                               <option value="0">(none)</option>
 <%
