@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.79 $
-* DATE         :  $Date: 2003/10/30 14:45:45 $
+* REVISION     :  $Revision: 1.80 $
+* DATE         :  $Date: 2003/11/05 16:41:59 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -177,6 +177,7 @@ INT GetPreferredProtocolWrap( CtiPortSPtr Port, CtiDevice *Device );
 INT ClearExclusions(CtiPortSPtr Port, CtiDevice *Device);
 BOOL areAnyQueueEntriesOkToSend(void *data, void* d);
 bool ShuffleQueue( CtiPortSPtr shPort, OUTMESS *&OutMessage, CtiDevice *device );
+static INT VerifyOutMessage(OUTMESS *&OutMessage);
 
 /* Threads that handle each port for communications */
 VOID PortThread(void *pid)
@@ -336,6 +337,15 @@ VOID PortThread(void *pid)
                 if(strlen(OutMessage->Request.CommandStr) > 0) dout << RWTime() << " Command : " << OutMessage->Request.CommandStr << endl;
                 if(QueEntries > 50) dout << RWTime() << " Port has " << QueEntries << " pending OUTMESS requests " << endl;
             }
+        }
+
+        /*
+         *  Must verify that the outmessage has not expired.  The OM will be consumed and error returned to any
+         *   requesting client.
+         */
+        if( VerifyOutMessage(OutMessage) != NORMAL )
+        {
+            continue;
         }
 
         Port->setLastOMRead();
@@ -1403,7 +1413,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                      trx.setInBuffer( inBuffer );
                      trx.setOutBuffer( outBuffer );
                      trx.setInCountActual( &bytesReceived );
-                     
+
                      transdata.reinitalize();
 
                      while( !transdata.isTransactionComplete() )
@@ -3802,6 +3812,34 @@ BOOL areAnyQueueEntriesOkToSend(void *data, void* d)
 #endif
 
     return bStatus;
+}
+
+
+/*----------------------------------------------------------------------------*
+ * This function is responsible for verifying that the message is good and will
+ * not cause any immediate problems in the Porter internals.
+ *----------------------------------------------------------------------------*/
+INT VerifyOutMessage(OUTMESS *&OutMessage)
+{
+    INT     nRet = NoError;
+
+    if(OutMessage != NULL)
+    {
+        RWTime  now;
+
+        if(OutMessage->ExpirationTime != 0 && OutMessage->ExpirationTime < now.seconds())
+        {
+            // This OM has expired and should not be acted upon!
+            nRet = ErrRequestExpired;
+            SendError( OutMessage, nRet, NULL );
+        }
+    }
+    else
+    {
+        nRet = MemoryError;
+    }
+
+    return nRet;
 }
 
 

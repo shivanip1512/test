@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/DSM2.H-arc  $
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2003/10/30 17:34:40 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2003/11/05 16:41:58 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -824,6 +824,8 @@ public:
 
    LONG               DeviceIDofLMGroup;           // 091300 CGP Helps us track lm command's success
    UINT               TrxID;                       // 091300 CGP Helps us track lm command's success
+
+   ULONG              ExpirationTime;               // 102703 CGP.  The PortThread will discard this message if it tries to execute after this time (and it is non-zero).
 
    PIL_ECHO           Request;
 

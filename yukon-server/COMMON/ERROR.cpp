@@ -183,6 +183,7 @@ ERRSTRUCT CTIErrors[] = {
     { ControlInhibitedOnDevice, "Device is control disabled", ERRTYPESYSTEM                , " N/A"},
     { ControlInhibitedOnPoint,  "Point is control disabled", ERRTYPESYSTEM                , " N/A"},
     { ControlRequestComplete, "Control Completed",       ERRTYPESYSTEM                , " N/A"},
+    { ErrRequestExpired,    "Requested operation expired due to time",       ERRTYPESYSTEM                , " N/A"},
     { ErrorNexusRead,       "Error Reading Nexus",     ERRTYPESYSTEM                , " N/A"},
 
     { InThreadTerminated,   "CtiConnection: InThread Terminated",     ERRTYPESYSTEM                , " N/A"},
