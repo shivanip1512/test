@@ -102,11 +102,11 @@ insert into YukonListEntry values (1009,1002,0,'Install',1107);
 insert into YukonListEntry values (1010,1002,0,'Configure',1108);
 insert into YukonListEntry values (1011,1003,0,'OneWayReceiver',1201);
 insert into YukonListEntry values (1012,1004,0,'120/120',0);
-insert into YukonListEntry values (1013,1005,0,'LCR-5000',0);
-insert into YukonListEntry values (1014,1005,0,'LCR-4000',0);
-insert into YukonListEntry values (1015,1005,0,'LCR-3000',0);
-insert into YukonListEntry values (1016,1005,0,'LCR-2000',0);
-insert into YukonListEntry values (1017,1005,0,'LCR-1000',0);
+insert into YukonListEntry values (1013,1005,0,'LCR-5000',1302);
+insert into YukonListEntry values (1014,1005,0,'LCR-4000',1302);
+insert into YukonListEntry values (1015,1005,0,'LCR-3000',1302);
+insert into YukonListEntry values (1016,1005,0,'LCR-2000',1302);
+insert into YukonListEntry values (1017,1005,0,'LCR-1000',1302);
 insert into YukonListEntry values (1018,1005,0,'Thermostat',1301);
 insert into YukonListEntry values (1019,1007,0,'Air Conditioner',1401);
 insert into YukonListEntry values (1020,1007,0,'Water Heater',1402);
@@ -196,8 +196,10 @@ insert into YukonListEntry values (1103,1029,0,'9+',0);
 insert into YukonListEntry values (1104,1030,0,'Own',0);
 insert into YukonListEntry values (1105,1030,0,'Rent',0);
 insert into YukonListEntry values (1106,1049,1,'Tomorrow',2601);
-insert into YukonListEntry values (1107,1049,99,'Repeat Last',2699);
-insert into YukonListEntry values (1108,1049,2,'Today',2602);
+insert into YukonListEntry values (1107,1049,2,'Today',2602);
+insert into YukonListEntry values (1108,1049,99,'Repeat Last',2699);
+insert into YukonListEntry values (1109,1003,0,'TwoWayRec',1202);
+insert into YukonListEntry values (1110,1005,0,'EnergyPro',3100);
 
 /* ECToGenericMapping */
 insert into ectogenericmapping values (-1, 1001, 'YukonSelectionList');
@@ -248,7 +250,6 @@ insert into ECToGenericMapping values (-1, 1045, 'YukonSelectionList');
 insert into ECToGenericMapping values (-1, 1046, 'YukonSelectionList');
 insert into ECToGenericMapping values (-1, 1047, 'YukonSelectionList');
 insert into ECToGenericMapping values (-1, 1048, 'YukonSelectionList');
-insert into ECToGenericMapping values (-1, 1049, 'YukonSelectionList');
 
 /* Thermostat tables */
 /* LMThermostatSeason */
