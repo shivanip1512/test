@@ -294,8 +294,9 @@ private javax.swing.JComboBox getJComboBoxHoliday() {
 					ivjJComboBoxHoliday.addItem( holidaySch.get(i) );
 			}
 
-			//not implemented yet
-			ivjJComboBoxHoliday.setEnabled(false);
+			//not implemented yet as of 9-5-2002
+			ivjJComboBoxHoliday.setVisible(false);
+         getJLabelHoliday().setVisible(false);
 			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
