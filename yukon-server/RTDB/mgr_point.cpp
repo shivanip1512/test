@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_point.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2002/09/30 14:52:44 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2002/10/14 13:20:50 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -835,6 +835,7 @@ CtiPoint* CtiPointManager::getOffsetTypeEqual(LONG pao, INT Offset, INT Type)
 
 CtiPoint* CtiPointManager::getEqual (LONG Pt)
 {
+    LockGuard  guard(monitor());
     CtiHashKey key(Pt);
     return Map.findValue(&key);
 
