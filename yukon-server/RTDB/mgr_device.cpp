@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.52 $
-* DATE         :  $Date: 2004/11/23 21:34:09 $
+* REVISION     :  $Revision: 1.53 $
+* DATE         :  $Date: 2004/12/07 18:07:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -29,6 +29,7 @@
 #include "dev_idlc.h"
 #include "dev_carrier.h"
 #include "dev_mct.h"
+#include "dev_mct410.h"
 #include "dev_repeater.h"
 #include "dev_rtc.h"
 #include "dev_rtm.h"
@@ -2220,6 +2221,80 @@ void CtiDeviceManager::refreshMCTConfigs(LONG paoID)
 }
 
 
+void CtiDeviceManager::refreshMCT400Configs(LONG paoID)
+{
+    CtiDeviceSPtr pTempCtiDevice;
+
+    LONG      tmpmctid, tmpdisconnectaddress;
+
+    {
+        RWDBConnection conn   = getConnection();
+        RWDBDatabase db       = getDatabase();
+        RWDBSelector selector = db.selector();
+        RWDBTable configTbl   = db.table("devicemct400series");
+        //RWDBTable tblPAObject = db.table("yukonpaobject");
+        RWDBReader rdr;
+
+        if(DebugLevel & 0x00020000)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for MCT Configs" << endl;
+        }
+
+        selector << configTbl["deviceid"];
+        selector << configTbl["disconnectaddress"];
+
+        if(paoID)
+        {
+            //  no need to bring yukonpaobject into this yet, we'll just link straight to the config table
+            selector.where( selector.where() && configTbl["deviceid"] == paoID );
+        }
+
+        rdr = selector.reader(conn);
+        if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+        }
+
+        if(rdr.status().errorCode() == RWDBStatus::ok)
+        {
+            while( (rdr.status().errorCode() == RWDBStatus::ok) && rdr() )
+            {
+                rdr["deviceid"]          >> tmpmctid;
+                rdr["disconnectaddress"] >> tmpdisconnectaddress;
+
+                pTempCtiDevice = getEqual(tmpmctid);
+
+                if( pTempCtiDevice )
+                {
+                    CtiDeviceMCT410 *tmpMCT410 = (CtiDeviceMCT410 *)pTempCtiDevice.get();
+
+                    if( tmpdisconnectaddress > 0 && tmpdisconnectaddress < 0x400000 )
+                    {
+                        tmpMCT410->setDisconnectAddress(tmpdisconnectaddress);
+                    }
+                    else if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint - invalid disconnect address " << tmpdisconnectaddress << " for device \"" << pTempCtiDevice->getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+                }
+            }
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << "Error reading MCT 400 Configs from database: " << rdr.status().errorCode() << endl;
+        }
+
+        if(DebugLevel & 0x00020000)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for MCT Configs" << endl;
+        }
+    }
+}
+
+
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // This method loads all the device properties/characteristics which must be appended to an already
@@ -2266,6 +2341,14 @@ void CtiDeviceManager::refreshDeviceProperties(LONG paoID)
         dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load MCT Configs" << endl;
     }
 
+    start = start.now();
+    refreshMCT400Configs(paoID);
+    stop = stop.now();
+    if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load MCT 400 Configs" << endl;
+    }
 
 
     if(_includeScanInfo)
