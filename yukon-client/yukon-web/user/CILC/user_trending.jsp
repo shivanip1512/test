@@ -64,15 +64,15 @@ MM_reloadPage(true);
             <%@ include file="nav.jsp" %>
           </td>
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
-          <td width="657" valign="top" bgcolor="#FFFFFF" > 
+          <td width="657" valign="top" bgcolor="#FFFFFF" >
           
 			<%@include file="../../trending_options.jsp"%>
 
             <table width="575" border="0" cellspacing="0" cellpadding="0" align="center" height="46">
-            <tr> 
-            	<td>
-					<hr>
-                	<center>
+              <tr> 
+                <td>
+                  <hr>
+                  <center>
                     <%
 					if( graphBean.getGdefid() <= 0 )
 					{%>
@@ -86,8 +86,7 @@ MM_reloadPage(true);
 					else if( graphBean.getViewType() == TrendModelType.TABULAR_VIEW)
 					{%>
 						<%@ include file="../../trending_tabular.jsp" %>					
-						<%graphBean.updateCurrentPane();
-						out.println(graphBean.getHtmlString());
+						<%
 					}
 					else // "graph" is default
 					{%>
@@ -101,15 +100,15 @@ MM_reloadPage(true);
 					}%>
 					<br><font size="-1"><cti:getProperty propertyid="<%= CommercialMeteringRole.TRENDING_DISCLAIMER%>"/></font>                	
 					</center>
-                  </td>
-                </tr>
-              </table>
-    <br>
-	<td width="1" bgcolor="#000000" height="1"></td>
-	</tr>
-	</table>
+                </td>
+              </tr>
+            </table>
+          <br>
+</td>
+        </tr>
+      </table>
     </td>
-	</tr>
+  </tr>
 </table>
 <!--<script>Calendar.CreateCalendarLayer(10, 275, "");</script>-->
 </body>
