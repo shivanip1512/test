@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2003/12/31 16:15:37 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2004/01/02 16:57:27 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -43,6 +43,8 @@ public:
     typedef map< int, CtiTagMsg* >    TagMgrMap_t;
     typedef map< int, CtiTableTag >   TagTblMap_t;
 
+    typedef map< int, CtiTableDynamicTag >   TagTblDynamicMap_t;
+
     enum {
         ActionNone,
         ActionPointControlInhibit,
@@ -51,13 +53,13 @@ public:
 
 protected:
 
-    CtiQueue< CtiTableDynamicTag, less<CtiTableDynamicTag> >    _dynTagLogQueue;
     CtiQueue< CtiTableTagLog, less<CtiTableTagLog> >            _tagLogQueue;
     // This is a vector of the rows in the dynamic table which need to be Deleted.
     vector< int > _dynamicLogRemovals;
 
-    TagTblMap_t _staticTagTableMap;
-    TagMgrMap_t _dynamicTagMsgMap;
+    TagTblDynamicMap_t _dynTagLogMap;
+    TagTblMap_t _staticTagTableMap;     // Holds STATIC tag information frmo the table called "Tags"
+    TagMgrMap_t _dynamicTagMsgMap;      // Holds the currently active tag messages.
     bool _dirty;
     mutable CtiMutex _mux;
 

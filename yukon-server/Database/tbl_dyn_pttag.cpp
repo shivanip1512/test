@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2003/12/30 21:57:23 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2004/01/02 16:57:27 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -66,11 +66,6 @@ CtiTableDynamicTag& CtiTableDynamicTag::operator=(const CtiTableDynamicTag& aRef
         setTagTime(aRef.getTagTime());
         setReferenceStr(aRef.getReferenceStr());
         setTaggedForStr(aRef.getTaggedForStr());
-
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
     }
     return *this;
 }

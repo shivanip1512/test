@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2003/12/31 18:22:40 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2004/01/02 16:57:27 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -105,12 +105,6 @@ int CtiTagManager::processTagMsg(CtiTagMsg &tag)
 
         bool pre = isPointControlInhibited(tag.getPointID());
 
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << " Pre is " << pre << endl;
-        }
-
         setDirty(true);
 
         switch(tag.getAction())
@@ -144,11 +138,6 @@ int CtiTagManager::processTagMsg(CtiTagMsg &tag)
         }
 
         bool post = isPointControlInhibited(tag.getPointID());
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << " Post is " << post << endl;
-        }
 
         if(pre != post)
         {
@@ -156,21 +145,11 @@ int CtiTagManager::processTagMsg(CtiTagMsg &tag)
             {
                 // We were inhibited and now are not.
                 resultAction = ActionPointInhibitRemove;
-
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
             }
             else
             {
                 // We were not inhibited but now are.
                 resultAction = ActionPointControlInhibit;
-
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
             }
         }
     }
@@ -503,11 +482,11 @@ void CtiTagManager::queueTagLogEntry(const CtiTagMsg &Tag)
 void CtiTagManager::queueDynamicTagLogEntry(const CtiTagMsg &Tag)
 {
     // We need to generate a TagLog entry here!
-    CtiTableDynamicTag *tlog = new CtiTableDynamicTag;
-    tlog->setInstanceId( Tag.getInstanceID() );
-    tlog->setPointId( Tag.getPointID() );
-    tlog->setTagId( Tag.getTagID() );
-    tlog->setUserName( Tag.getUser() );
+    CtiTableDynamicTag tlog;
+    tlog.setInstanceId( Tag.getInstanceID() );
+    tlog.setPointId( Tag.getPointID() );
+    tlog.setTagId( Tag.getTagID() );
+    tlog.setUserName( Tag.getUser() );
 
     RWCString actn;
     switch(Tag.getAction())
@@ -528,52 +507,75 @@ void CtiTagManager::queueDynamicTagLogEntry(const CtiTagMsg &Tag)
         actn = RWCString("Unknown ") + CtiNumStr(Tag.getAction());
         break;
     }
-    tlog->setActionStr( actn );
+    tlog.setActionStr( actn );
 
-    tlog->setDescriptionStr( Tag.getDescriptionStr() );
-    tlog->setTagTime( Tag.getTagTime() );
-    tlog->setReferenceStr( Tag.getReferenceStr() );
-    tlog->setTaggedForStr( Tag.getTaggedForStr() );
+    tlog.setDescriptionStr( Tag.getDescriptionStr() );
+    tlog.setTagTime( Tag.getTagTime() );
+    tlog.setReferenceStr( Tag.getReferenceStr() );
+    tlog.setTaggedForStr( Tag.getTaggedForStr() );
 
-    _dynTagLogQueue.putQueue( tlog );
+    pair< TagTblDynamicMap_t::iterator, bool > ip = _dynTagLogMap.insert( make_pair(tlog.getInstanceId(), tlog) );
+
+    if(ip.second != true)
+    {
+        TagTblDynamicMap_t::iterator itr = ip.first;
+        if(itr != _dynTagLogMap.end())
+        {
+            TagTblDynamicMap_t::value_type vt = *itr;
+            CtiTableDynamicTag &oldTag = vt.second;
+
+            oldTag = tlog;
+
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Updated the dynamic table map!  Tag intance " << oldTag.getInstanceId() << endl;
+            }
+        }
+    }
 }
 
 void CtiTagManager::processDynamicQueue()
 {
-    if(_dynTagLogQueue.entries() > 0)
+    bool failed = false;
+
+    if(!_dynTagLogMap.empty())
     {
         CtiLockGuard< CtiMutex > tlg(_mux, 5000);
         if(tlg.isAcquired())
         {
-            CtiTableDynamicTag *pTag = 0;
-
             RWCString dpa("dyn_tag");
             CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
             RWDBConnection conn = getConnection();
 
             if(conn.isValid())
             {
+                TagTblDynamicMap_t::iterator itr;
                 conn.beginTransaction(dpa);
 
-                while((pTag = _dynTagLogQueue.getQueue(500)) != 0)
+                for(itr = _dynTagLogMap.begin(); itr != _dynTagLogMap.end(); itr++)
                 {
-                    if( pTag->Update(conn).errorCode() != RWDBStatus::ok )
+                    TagTblDynamicMap_t::value_type vt = *itr;
+                    CtiTableDynamicTag &Tag = vt.second;
+
+                    if( Tag.Update(conn).errorCode() != RWDBStatus::ok &&
+                        Tag.Update(conn).errorCode() != RWDBStatus::endOfFetch )
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            pTag->dump();
+                            Tag.dump();
                             dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << " Error code " << Tag.Update(conn).errorCode() << endl;
                         }
 
-                        delete pTag;
+                        failed = true;
                         break;
                     }
-                    else
-                        delete pTag;
                 }
 
                 conn.commitTransaction(dpa);
+
+                if(!failed) _dynTagLogMap.clear();
             }
         }
     }
@@ -846,11 +848,7 @@ bool CtiTagManager::isPointControlInhibited(LONG pid)
 
     if(pid <= 0)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << " Loser" << endl;
-        }
+        return inhibit;
     }
 
     CtiLockGuard< CtiMutex > tlg(_mux, 5000);
@@ -884,11 +882,13 @@ bool CtiTagManager::isPointControlInhibited(LONG pid)
                     if( Tag.getInhibit() )
                     {
                         // This tag causes inhibits to occur!
+                        #if 0
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             dout << " Point " << pid << " is control inhibited due to tag instance " << pTagMsg->getInstanceID() << endl;
                         }
+                        #endif
 
                         inhibit = true;
                         break;                  // The for loop!

@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/test.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2003/12/31 16:16:07 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2004/01/02 16:57:27 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -47,6 +47,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 BOOL           bQuit = FALSE;
 
+int tagProcessInbounds(CtiMessage *&pMsg, int desiredInstance);
 void tagExecute(int argc, char **argv);
 void tagHelp();
 void defaultExecute(int argc, char **argv);
@@ -227,11 +228,6 @@ void tagExecute(int argc, char **argv)
 
     CtiPointManager PointMgr;
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-
     try
     {
         int Op, k;
@@ -251,7 +247,7 @@ void tagExecute(int argc, char **argv)
         pM->setMessagePriority(15);
 
         Connect.WriteConnQue(CTIDBG_new CtiRegistrationMsg(argv[3], rwThreadId(), FALSE));
-        CtiPointRegistrationMsg    *PtRegMsg = CTIDBG_new CtiPointRegistrationMsg(REG_ALL_PTS_MASK);
+        CtiPointRegistrationMsg    *PtRegMsg = CTIDBG_new CtiPointRegistrationMsg(REG_ALL_PTS_MASK | REG_ALARMS);
         PtRegMsg->setMessagePriority(15);
         Connect.WriteConnQue( PtRegMsg );
 
@@ -278,51 +274,94 @@ void tagExecute(int argc, char **argv)
 
         CtiTagMsg *pTag = 0;
 
-        if(argc >= 7)
+        pTag = CTIDBG_new CtiTagMsg;
+
+        pTag->setTagID(1);
+        pTag->setPointID(1);
+        pTag->setAction(CtiTagMsg::AddAction);
+        pTag->setDescriptionStr(RWTime().asString() + " TEST");
+        pTag->setSource("Corey's Tester");
+        pTag->setClientMsgId(21);
+        pTag->setUser("Marley's Ghost");
+
+        pTag->dump();
+        Connect.WriteConnQue(pTag);
+
+
+        // Wait for our message back with the instance id...
+
         {
-            // argv[6] is a new string for msg 5
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << "  Looking for a response from dispatch!" << endl;
+        }
+
+        int instance = 0;
+        while( NULL != (pMsg = Connect.ReadConnQue(30000)) )
+        {
+            instance = tagProcessInbounds( pMsg, 21 );
+            delete pMsg;
+
+            if(instance == 21)
+            {
+                break;
+            }
+        }
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << "  Dispatch responded or timed out!" << endl;
+        }
+
+        if(instance != 0)
+        {
             pTag = CTIDBG_new CtiTagMsg;
 
-            pTag->setInstanceID(atoi(argv[5]));
+            pTag->setInstanceID(instance);
             pTag->setTagID(1);
             pTag->setPointID(1);
             pTag->setAction(CtiTagMsg::UpdateAction);
             pTag->setDescriptionStr(RWTime().asString() + " TEST");
             pTag->setSource("Corey's Tester");
-            pTag->setClientMsgId(52);
+            pTag->setClientMsgId(22);
             pTag->setUser("Harley's Ghost");
 
             pTag->dump();
-        }
-        else if(atoi(argv[5]) == 0)
-        {
+            Connect.WriteConnQue(pTag);
+
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << "  TAG UPDATED!" << endl;
+            }
+            Sleep(30000);
+
+            // Remove
+
             pTag = CTIDBG_new CtiTagMsg;
-
-            pTag->setTagID(2);
+            pTag->setInstanceID(instance);
             pTag->setPointID(1);
-            pTag->setAction(CtiTagMsg::AddAction);
-            pTag->setDescriptionStr(RWTime().asString() + " TEST");
-            pTag->setSource("Corey's Tester");
-            pTag->setClientMsgId(57);
-            pTag->setUser("Marley's Ghost");
-
+            pTag->setAction(CtiTagMsg::RemoveAction);
             pTag->dump();
+            Connect.WriteConnQue(pTag);
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << "  TAG REMOVED!" << endl;
+            }
         }
         else
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << " Removing tag " << atoi(argv[5]) << endl;
+                dout << "   UNABLE TO DETERMINE INSTANCE ID!! " << endl;
             }
 
-            pTag = CTIDBG_new CtiTagMsg;
-            pTag->setInstanceID(atoi(argv[5]));
-            pTag->setAction(CtiTagMsg::RemoveAction);
-            pTag->dump();
+            Sleep(3000);
         }
 
-        Connect.WriteConnQue(pTag);
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -621,4 +660,48 @@ void defaultExecute(int argc, char **argv)
             Sleep(atoi(argv[4]));
         }
     }
+}
+
+
+int tagProcessInbounds(CtiMessage *&pMsg, int desiredInstance)
+{
+    int instance = 0;
+    CtiTagMsg *pTag;
+
+    pMsg->dump();
+
+    if(pMsg->isA() == MSG_TAG)
+    {
+        pTag = (CtiTagMsg*)pMsg;
+
+        if(pTag->getClientMsgId() == desiredInstance)
+        {
+            instance = pTag->getInstanceID();
+
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << "Instance " << instance << endl;
+            }
+        }
+    }
+    else if(pMsg->isA() == MSG_MULTI)
+    {
+        CtiMessage *pMyMsg;
+        CtiMultiMsg *pMulti = (CtiMultiMsg *)pMsg;
+
+        RWOrderedIterator itr( pMulti->getData() );
+
+        for(;NULL != (pMyMsg = (CtiMessage*)itr());)
+        {
+            instance = tagProcessInbounds(pMyMsg, desiredInstance);
+            if(instance == desiredInstance)
+            {
+                break;
+            }
+        }
+
+    }
+
+    return instance;
 }
