@@ -6,20 +6,34 @@ package com.cannontech.servlet;
  *
  * Parameters:
  *	graphBean - takes in an instance of the Graphbean
-
- * Creation date: (12/9/99 3:23:27 PM)
+ * 
+ * Optional Parameters (will change properties of the Graphbean):
+ * gdefid	- GraphDefinition ID
+ * start	- Start date string, see dtFormat optional parameter for formatting
+ * period	- See com.cannontech.util.ServletUtil for valid period strings
+ * view		- See com.cannontech.graph.model.TrendModelType for valid view strings
+ * option	- ?See com.cannontech.graph.model.TrendModelType for valid option masks(?)
+ * format	- gif | png | jpg | svg
+ * dtFormat - overrides the date format, see java.text.SimpleDateFormat
+ * 				Default is MM:dd:yyyy:HH:mm:ss
+ * width	- Width of the generated graph
+ * height	- Height of the generated graph	
+ * 
  * @author: Aaron Lauinger
- * updated for bean use - 11/20/02 Stacey Nebben
+ * @author: Stacey Nebben
  */
 
+import javax.servlet.http.HttpSession;
+
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.graph.GraphDefines;
 
 public class GraphGenerator extends javax.servlet.http.HttpServlet {
 	
-	private static java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM:dd:yyyy:HH:mm:ss");
-
+	private static final String dateFormatStr = "MM:dd:yyyy:HH:mm:ss";
+	
 /**
- * Insert the method's description here.
+ * 
  * Creation date: (12/9/99 3:24:30 PM)
  * @param req javax.servlet.http.HttpServletRequest
  * @param resp javax.servlet.http.HttpServletResponse
@@ -30,42 +44,34 @@ public synchronized void  doGet(javax.servlet.http.HttpServletRequest req, javax
 {
 	try
 	{	 	
-		javax.servlet.http.HttpSession session = req.getSession(false);
-		if (session == null)
-			resp.sendRedirect("/login.jsp");
-
-		resp.setHeader("Cache-Control","no-store"); //HTTP 1.1
-		resp.setHeader("Pragma","no-cache"); 		//HTTP 1.0
-	 	resp.setDateHeader ("Expires", 0); 			//prevents caching at the proxy server
-
-//		java.util.Enumeration enum = req.getParameterNames();
-//		while(enum.hasMoreElements())
-//		{
-//			String x = enum.nextElement();
-//			out.println(x + ", ");
-//		}
+		HttpSession session = req.getSession(false);
+				
 		com.cannontech.graph.GraphBean localBean = (com.cannontech.graph.GraphBean)session.getAttribute("graphBean");
 		if(localBean == null)
 		{
-			System.out.println("!!! BEAN IS NULL !!! ");
 			session.setAttribute("graphBean", new com.cannontech.graph.GraphBean());
 			localBean = (com.cannontech.graph.GraphBean)session.getAttribute("graphBean");
 		}
 
-		{
+		localBean.setTab(GraphDefines.GRAPH_PANE_STRING);
+		localBean.setBeanDateFormat(dateFormatStr);	
+		
+		{			
 			String param;
+			String param2;
+			
 			param = req.getParameter("gdefid");
 			if( param != null)
 				localBean.setGdefid(Integer.parseInt( param));
 				
-			param = req.getParameter("start")		;
-			if( param != null)
+			param = req.getParameter("start");
+			if( param != null) 								
 				localBean.setStartStr(param);
-	
+			
 			param = req.getParameter("tab");
 			if( param != null)
 				localBean.setTab(param);
-	
+				
 			param = req.getParameter("period");
 			if( param != null)
 				localBean.setPeriod(param);
@@ -86,12 +92,22 @@ public synchronized void  doGet(javax.servlet.http.HttpServletRequest req, javax
 			if( param != null)
 				localBean.setBeanDateFormat(param);
 
+			param = req.getParameter("width");
+			param2 = req.getParameter("height");
+			if(param != null && param2 != null) {
+				localBean.setSize(Integer.parseInt(param),Integer.parseInt(param2));
+			}
 		}
 		
 		localBean.updateCurrentPane();
 		javax.servlet.ServletOutputStream out = null;
 		try
 		{	
+			// Try to defeat caching
+			resp.setHeader("Cache-Control","no-store"); //HTTP 1.1
+			resp.setHeader("Pragma","no-cache"); 		//HTTP 1.0
+	 		resp.setDateHeader ("Expires", 0); 			//prevents caching at the proxy server
+	 	
 	    	out = resp.getOutputStream();
 	    	localBean.encode(out);
 			out.flush();
@@ -113,7 +129,7 @@ public synchronized void  doGet(javax.servlet.http.HttpServletRequest req, javax
 	}
 }
 /**
- * Insert the method's description here.
+ * POST method not supported
  * Creation date: (12/9/99 3:39:10 PM)
  * @param req javax.servlet.http.HttpServletRequest
  * @param resp javax.servlet.http.HttpServletResponse
@@ -123,25 +139,5 @@ public synchronized void  doGet(javax.servlet.http.HttpServletRequest req, javax
 public void doPost(javax.servlet.http.HttpServletRequest req, javax.servlet.http.HttpServletResponse resp) throws javax.servlet.ServletException, java.io.IOException 
 {
 	resp.sendError( javax.servlet.http.HttpServletResponse.SC_METHOD_NOT_ALLOWED);
-}
-/**
- * Initialzes the logger and sets the swing look and feel.
- * Not sure if the look and feel setting is necessary.
- * Creation date: (12/7/99 9:55:11 AM)
- * @param config javax.servlet.ServletConfig
- * @exception javax.servlet.ServletException The exception description.
- */
-public void init(javax.servlet.ServletConfig config) throws javax.servlet.ServletException 
-{
-	try
-	{
-		javax.swing.UIManager.setLookAndFeel(javax.swing.UIManager.getSystemLookAndFeelClassName());
-	}
-	catch( Exception e )
-	{
-		e.printStackTrace();
-	}
-	
-	super.init(config);
 }
 }
