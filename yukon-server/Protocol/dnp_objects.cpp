@@ -8,14 +8,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2005/02/10 23:23:56 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2005/03/10 21:21:41 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
-
+#include "dllbase.h"
 #include "logger.h"
 
 #include "dnp_objects.h"
@@ -30,18 +30,22 @@
 
 using namespace std;
 
-CtiDNPObject::CtiDNPObject( int group, int variation )
+namespace Cti       {
+namespace Protocol  {
+namespace DNP       {
+
+Object::Object( int group, int variation )
 {
     _group     = group;
     _variation = variation;
 }
 
-CtiDNPObject::~CtiDNPObject()
+Object::~Object()
 {
 
 }
 
-int CtiDNPObject::restore( unsigned char *buf, int len )
+int Object::restore(const unsigned char *buf, int len )
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -52,7 +56,7 @@ int CtiDNPObject::restore( unsigned char *buf, int len )
 }
 
 
-int CtiDNPObject::restoreBits( unsigned char *buf, int bitoffset, int len )
+int Object::restoreBits( const unsigned char *buf, int bitoffset, int len )
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -63,49 +67,49 @@ int CtiDNPObject::restoreBits( unsigned char *buf, int bitoffset, int len )
 }
 
 
-bool CtiDNPObject::isValid( void )
+bool Object::isValid( void )
 {
     return _valid;
 }
 
 
-int CtiDNPObject::serialize(unsigned char *buf)
+int Object::serialize(unsigned char *buf) const
 {
     return 0;
 }
 
-int CtiDNPObject::getSerializedLen(void)
+int Object::getSerializedLen(void) const
 {
     return 0;
 }
 
-int CtiDNPObject::getGroup(void)
+int Object::getGroup(void) const
 {
     return _group;
 }
 
 
-int CtiDNPObject::getVariation(void)
+int Object::getVariation(void) const
 {
     return _variation;
 }
 
 
-CtiPointDataMsg *CtiDNPObject::getPoint( const CtiDNPTimeCTO *cto )
+CtiPointDataMsg *Object::getPoint( const TimeCTO *cto ) const
 {
     return NULL;
 }
 
 
 
-CtiDNPObjectBlock::CtiDNPObjectBlock()
+ObjectBlock::ObjectBlock()
 {
     _restoring = true;
     _valid = false;
 }
 
 
-CtiDNPObjectBlock::CtiDNPObjectBlock( QualifierType type )
+ObjectBlock::ObjectBlock( QualifierType type )
 {
     //  this sets the object to take the group and variation from the first object added;
     //    i don't know if this is necessary or desirable, but it's currently the way most
@@ -114,13 +118,13 @@ CtiDNPObjectBlock::CtiDNPObjectBlock( QualifierType type )
     init(type, -1, -1);
 }
 
-CtiDNPObjectBlock::CtiDNPObjectBlock( QualifierType type, int group, int variation )
+ObjectBlock::ObjectBlock( QualifierType type, int group, int variation )
 {
     init(type, group, variation);
 }
 
 
-void CtiDNPObjectBlock::init( QualifierType type, int group, int variation )
+void ObjectBlock::init( QualifierType type, int group, int variation )
 {
     _restoring = false;
     _group     = group;
@@ -159,155 +163,203 @@ void CtiDNPObjectBlock::init( QualifierType type, int group, int variation )
 }
 
 
-CtiDNPObjectBlock::~CtiDNPObjectBlock()
+ObjectBlock::~ObjectBlock()
 {
-    if( !_objectList.empty() )
-    {
-        eraseObjectList();
-    }
+    erase();
 }
 
 
-bool CtiDNPObjectBlock::addObject( CtiDNPObject *object )
+int ObjectBlock::getGroup(void) const
+{
+    return _group;
+}
+
+
+int ObjectBlock::getVariation(void) const
+{
+    return _variation;
+}
+
+
+bool ObjectBlock::addObject( const Object *object )
 {
     bool success = false;
 
-    switch( _qualifier )
+    if( object )
     {
-        case NoIndex_ByteQty:
-        case NoIndex_NoRange:
-        case NoIndex_ShortQty:
+        switch( _qualifier )
         {
-            if( _group < 0 )
+            case NoIndex_ByteQty:
+            case NoIndex_NoRange:
+            case NoIndex_ShortQty:
             {
-                _group     = object->getGroup();
-                _variation = object->getVariation();
+                if( _group < 0 )
+                {
+                    _group     = object->getGroup();
+                    _variation = object->getVariation();
+                }
+
+                if( object->getGroup()     == _group &&
+                    object->getVariation() == _variation )
+                {
+                    _objectList.push_back(object);
+
+                    success = true;
+                }
+                else
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint - attempt to insert mismatched group and variation into an object block **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << RWTime() << " **** current: (" << _group << ", " << _variation << ")  attempted: (" << object->getGroup() << ", " << object->getVariation() << ") ****" << endl;
+                    }
+                }
+
+                break;
             }
 
-            if( object->getGroup()     == _group &&
-                object->getVariation() == _variation )
-            {
-                _objectList.push_back(object);
-
-                success = true;
-            }
-            else
+            case ByteIndex_ByteQty:
+            case ShortIndex_ShortQty:
+            default:
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << RWTime() << " **** Checkpoint - attempt to use invalid qualifier (" << _qualifier << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
+
+                break;
             }
-
-            break;
-        }
-
-        case ByteIndex_ByteQty:
-        case ShortIndex_ShortQty:
-        default:
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-
-            break;
         }
     }
 
-    _qty = _objectList.size();
-
-    return !success;
+    return success;
 }
 
 
-bool CtiDNPObjectBlock::addObjectIndex( CtiDNPObject *object, int index )
+bool ObjectBlock::addObjectIndex( const Object *object, int index )
 {
     bool success = false;
 
-    if( index > 0 )
+    if( object )
     {
-        //  MAGIC NUMBER WARNING:  turning 1-based offset into a 0-based offset
-        index--;
-    }
-
-    switch( _qualifier )
-    {
-        case ByteIndex_ByteQty:
-        case ShortIndex_ShortQty:
+        if( index > 0 )
         {
-            if( _group < 0 )
-            {
-                _group     = object->getGroup();
-                _variation = object->getVariation();
+            //  MAGIC NUMBER WARNING:  turning 1-based offset into a 0-based offset
+            index--;
 
-                _objectList.push_back(object);
-                _objectIndices.push_back(index);
-
-                success = true;
-            }
-            else if( object->getGroup() == _group )
+            switch( _qualifier )
             {
-                _objectList.push_back(object);
-                _objectIndices.push_back(index);
-
-                success = true;
-            }
-            else
-            {
+                case ByteIndex_ByteQty:
+                case ShortIndex_ShortQty:
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    if( _group < 0 )
+                    {
+                        _group     = object->getGroup();
+                        _variation = object->getVariation();
+                    }
+
+                    if( object->getGroup()     == _group &&
+                        object->getVariation() == _variation )
+                    {
+                        _objectList.push_back(object);
+                        _objectIndices.push_back(index);
+
+                        success = true;
+                    }
+                    else
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint - attempt to insert mismatched group and variation into an object block **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << RWTime() << " **** current: (" << _group << ", " << _variation << ")  attempted: (" << object->getGroup() << ", " << object->getVariation() << ") ****" << endl;
+                        }
+                    }
+
+                    break;
+                }
+
+                case NoIndex_ByteQty:
+                case NoIndex_NoRange:
+                case NoIndex_ShortQty:
+                default:
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint - attempt to use invalid qualifier (" << _qualifier << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+
+                    break;
                 }
             }
-
-            break;
         }
-
-        case NoIndex_ByteQty:
-        case NoIndex_NoRange:
-        case NoIndex_ShortQty:
-        default:
+        else
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << RWTime() << " **** Checkpoint - invalid index (" << index << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
-
-            break;
         }
     }
 
-    _qty = _objectList.size();
-
-    return !success;
+    return success;
 }
 
-/*void CtiDNPObjectBlock::addRange( CtiDNPObject *object, int start, int stop )
+
+/*void ObjectBlock::addRange( Object *object, int start, int stop )
 {
 
 }
+*/
 
-CtiDNPObject *CtiDNPObjectBlock::getObject( int index )
+
+int ObjectBlock::size( void ) const
 {
+    return _objectList.size();
+}
 
-}*/
+bool ObjectBlock::empty( void ) const
+{
+    return _objectList.empty();
+}
 
-void CtiDNPObjectBlock::eraseObjectList( void )
+
+ObjectBlock::object_descriptor ObjectBlock::operator[]( unsigned offset ) const
+{
+    return at(offset);
+}
+
+
+ObjectBlock::object_descriptor ObjectBlock::at( unsigned offset ) const
+{
+    object_descriptor retval = {0, -1};
+
+    if( _objectList.size() > offset )
+    {
+        retval.object = _objectList.at(offset);
+    }
+
+    if( _objectIndices.size() > offset )
+    {
+        //  MAGIC NUMBER WARNING:  turning 0-based offset into 1-based offset
+        retval.index = _objectIndices.at(offset) + 1;
+    }
+
+    return retval;
+}
+
+
+void ObjectBlock::erase( void )
 {
     while( !_objectList.empty() )
     {
-        if( _objectList.back() != NULL )
-        {
-            delete _objectList.back();
-        }
+        delete _objectList.back();
 
         _objectList.pop_back();
     }
 }
 
 
-int CtiDNPObjectBlock::getSerializedLen( void ) const
+int ObjectBlock::getSerializedLen( void ) const
 {
     int blockSize;
 
@@ -371,9 +423,11 @@ int CtiDNPObjectBlock::getSerializedLen( void ) const
 }
 
 
-int CtiDNPObjectBlock::serialize( unsigned char *buf ) const
+int ObjectBlock::serialize( unsigned char *buf ) const
 {
-    int pos, tmpObjLen;
+    int pos, qty;
+
+    qty = _objectList.size();
 
     pos = 0;
 
@@ -387,15 +441,15 @@ int CtiDNPObjectBlock::serialize( unsigned char *buf ) const
         case ByteIndex_ByteQty:
         case NoIndex_ByteQty:
             {
-                buf[pos++] = _qty & 0xff;
+                buf[pos++] = qty & 0xff;
                 break;
             }
 
         case NoIndex_ShortQty:
         case ShortIndex_ShortQty:
             {
-                buf[pos++] = _qty & 0xff;
-                buf[pos++] = (_qty >> 8) & 0xff;
+                buf[pos++] = qty & 0xff;
+                buf[pos++] = (qty >> 8) & 0xff;
                 break;
             }
 
@@ -404,7 +458,7 @@ int CtiDNPObjectBlock::serialize( unsigned char *buf ) const
                 int stop;
 
                 //  start = 5, qty = 1, want stop = 5
-                stop  = _start + _qty - 1;
+                stop  = _start + qty - 1;
 
                 buf[pos++] = _start & 0xff;
                 buf[pos++] = (stop) & 0xff;
@@ -416,7 +470,7 @@ int CtiDNPObjectBlock::serialize( unsigned char *buf ) const
                 int stop;
 
                 //  start = 5, qty = 1, want stop = 5
-                stop  = _start + _qty - 1;
+                stop  = _start + qty - 1;
 
                 buf[pos++] = _start & 0xff;
                 buf[pos++] = (_start >> 8) & 0xff;
@@ -464,10 +518,10 @@ int CtiDNPObjectBlock::serialize( unsigned char *buf ) const
 }
 
 
-int CtiDNPObjectBlock::restore( unsigned char *buf, int len )
+int ObjectBlock::restore( const unsigned char *buf, int len )
 {
-    int pos, bitpos, qtyRestored;
-    CtiDNPObject *tmpObj;
+    int pos, bitpos, qty;
+    Object *tmpObj;
     unsigned short tmp;
 
     pos    = 0;
@@ -484,15 +538,15 @@ int CtiDNPObjectBlock::restore( unsigned char *buf, int len )
             case ShortIndex_ShortQty:
             case NoIndex_ShortQty:
             {
-                _qty  = buf[pos++];
-                _qty |= buf[pos++] << 8;
+                qty  = buf[pos++];
+                qty |= buf[pos++] << 8;
                 break;
             }
 
             case NoIndex_ByteQty:
             case ByteIndex_ByteQty:
             {
-                _qty = buf[pos++];
+                qty = buf[pos++];
                 break;
             }
 
@@ -503,8 +557,8 @@ int CtiDNPObjectBlock::restore( unsigned char *buf, int len )
                 //  the stop index
                 tmp    = buf[pos++];
 
-                _qty   = tmp - _start;
-                _qty  += 1;
+                qty   = tmp - _start;
+                qty  += 1;
 
                 break;
             }
@@ -518,8 +572,8 @@ int CtiDNPObjectBlock::restore( unsigned char *buf, int len )
                 tmp     = buf[pos++];
                 tmp    |= buf[pos++] << 8;
 
-                _qty   = tmp - _start;
-                _qty  += 1;
+                qty   = tmp - _start;
+                qty  += 1;
 
                 break;
             }
@@ -547,9 +601,7 @@ int CtiDNPObjectBlock::restore( unsigned char *buf, int len )
             }
         }
 
-        qtyRestored = 0;
-
-        while( pos < len && qtyRestored < _qty )
+        for( int qty_restored = 0; pos < len && qty_restored < qty; qty_restored++ )
         {
             int idx = 0;
 
@@ -571,7 +623,7 @@ int CtiDNPObjectBlock::restore( unsigned char *buf, int len )
                 case NoIndex_ByteStartStop:
                 case NoIndex_ShortStartStop:
                 {
-                    idx = _start + qtyRestored;
+                    idx = _start + qty_restored;
                     break;
                 }
 
@@ -584,7 +636,7 @@ int CtiDNPObjectBlock::restore( unsigned char *buf, int len )
                         dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
 
-                    idx = 0 + qtyRestored;
+                    idx = 0 + qty_restored;
 
                     break;
                 }
@@ -616,8 +668,6 @@ int CtiDNPObjectBlock::restore( unsigned char *buf, int len )
 
             if( tmpObj != NULL )
             {
-                qtyRestored++;
-
                 _objectList.push_back(tmpObj);
 
                 _objectIndices.push_back(idx);
@@ -626,7 +676,7 @@ int CtiDNPObjectBlock::restore( unsigned char *buf, int len )
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << RWTime() << " **** Checkpoint - error restoring object at pos " << pos << "/" << len << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
                 pos = len;
@@ -645,259 +695,74 @@ int CtiDNPObjectBlock::restore( unsigned char *buf, int len )
 }
 
 
-bool CtiDNPObjectBlock::isBinaryOutputControl( void ) const
-{
-    bool retVal = false;
-
-    if( _group     == CtiDNPBinaryOutputControl::Group &&
-        _variation == CtiDNPBinaryOutputControl::ControlRelayOutputBlock &&
-        _objectList.size() == 1 )
-    {
-        retVal = true;
-    }
-
-    return retVal;
-}
-
-
-int CtiDNPObjectBlock::getBinaryOutputControlStatus( void ) const
-{
-    int retVal = CtiDNPBinaryOutputControl::Status_InvalidStatus;
-
-    if( isBinaryOutputControl() )
-    {
-        retVal = ((CtiDNPBinaryOutputControl *)_objectList[0])->getStatus();
-    }
-
-    return retVal;
-}
-
-
-long CtiDNPObjectBlock::getBinaryOutputControlOffset( void ) const
-{
-    long retVal = -1;
-
-    if( isBinaryOutputControl() )
-    {
-        retVal = _objectIndices[0];
-    }
-
-    return retVal;
-}
-
-
-bool CtiDNPObjectBlock::isCTO( void ) const
-{
-    bool retVal = false;
-
-    //  ACH:  we should eventually care about the CTO vs. un-synchronized CTO
-    if( _group     == CtiDNPTimeCTO::Group &&
-        _objectList.size() == 1 )
-    {
-        retVal = true;
-    }
-
-    return retVal;
-}
-
-
-const CtiDNPTimeCTO *CtiDNPObjectBlock::getCTO( void ) const
-{
-    const CtiDNPTimeCTO *retVal = 0;
-
-    if( isCTO() )
-    {
-        retVal = (const CtiDNPTimeCTO *)_objectList[0];
-    }
-
-    return retVal;
-}
-
-
-bool CtiDNPObjectBlock::isTime( void ) const
-{
-    bool retVal = false;
-
-    //  ACH:  we should eventually care about the CTO vs. un-synchronized CTO
-    if( _group     == CtiDNPTime::Group &&
-        _variation == CtiDNPTime::TimeAndDate &&
-        _objectList.size() == 1 )
-    {
-        retVal = true;
-    }
-
-    return retVal;
-}
-
-
-unsigned long CtiDNPObjectBlock::getTimeSeconds( void ) const
-{
-    return ((CtiDNPTime *)_objectList[0])->getSeconds();
-}
-
-
-bool CtiDNPObjectBlock::hasPoints( void )
-{
-    bool hasPoints = false;
-
-    switch( _group )
-    {
-        case CtiDNPAnalogInput::Group:
-        case CtiDNPAnalogInputChange::Group:
-        case CtiDNPAnalogInputFrozen::Group:
-        case CtiDNPAnalogInputFrozenEvent::Group:
-        case CtiDNPAnalogOutput::Group:
-        case CtiDNPBinaryInput::Group:
-        case CtiDNPBinaryInputChange::Group:
-        case CtiDNPBinaryOutput::Group:
-        case CtiDNPCounter::Group:
-        case CtiDNPCounterChange::Group:
-        case CtiDNPCounterFrozen::Group:
-        case CtiDNPCounterFrozenEvent::Group:
-        {
-            if( !_objectList.empty() )
-            {
-                hasPoints = true;
-            }
-        }
-
-        default:
-        {
-            break;
-        }
-    }
-
-    return hasPoints;
-}
-
-
-void CtiDNPObjectBlock::getPoints( RWTPtrSlist< CtiPointDataMsg > &pointList, const CtiDNPTimeCTO *cto )
-{
-    CtiDNPObject *tmpObj;
-    CtiPointDataMsg *pMsg;
-
-    switch( _group )
-    {
-        case CtiDNPAnalogInput::Group:
-        case CtiDNPAnalogInputChange::Group:
-        case CtiDNPAnalogInputFrozen::Group:
-        case CtiDNPAnalogInputFrozenEvent::Group:
-        case CtiDNPAnalogOutput::Group:
-        case CtiDNPBinaryInput::Group:
-        case CtiDNPBinaryInputChange::Group:
-        case CtiDNPBinaryOutput::Group:
-        case CtiDNPCounter::Group:
-        case CtiDNPCounterChange::Group:
-        case CtiDNPCounterFrozen::Group:
-        case CtiDNPCounterFrozenEvent::Group:
-        {
-            for( int i = 0; i < _objectList.size(); i++ )
-            {
-                tmpObj = _objectList[i];
-
-                //  we're passing in the CTO object here;  the points can do with it as they please
-                pMsg = tmpObj->getPoint(cto);
-
-                if( pMsg != NULL )
-                {
-                    if( _objectIndices[i] >= 0 )
-                    {
-                        //  MAGIC NUMBER WARNING:  turning 0-based offset into 1-based offset
-                        //                           for all consumers
-                        pMsg->setId(_objectIndices[i] + 1);
-
-                        //  if it is a binary output, offset by BinaryOutputStatusOffset (currently 10,000)
-                        //    to make sure it doesn't collide with the other status points
-                        if( tmpObj->getGroup() == CtiDNPBinaryOutput::Group )
-                        {
-                            pMsg->setId(pMsg->getId() + CtiDNPBinaryOutput::BinaryOutputStatusOffset);
-                        }
-                        else if( tmpObj->getGroup() == CtiDNPAnalogOutput::Group )
-                        {
-                            pMsg->setId(pMsg->getId() + CtiDNPAnalogOutput::AnalogOutputOffset);
-                        }
-                    }
-
-                    pointList.append(pMsg);
-                }
-            }
-        }
-
-        default:
-        {
-            break;
-        }
-    }
-}
-
-int CtiDNPObjectBlock::restoreObject( unsigned char *buf, int len, CtiDNPObject *&obj )
+int ObjectBlock::restoreObject( const unsigned char *buf, int len, Object *&obj )
 {
     int lenUsed;
 
     switch( _group )
     {
-        case CtiDNPAnalogInput::Group:
-            obj = CTIDBG_new CtiDNPAnalogInput(_variation);
+        case AnalogInput::Group:
+            obj = CTIDBG_new AnalogInput(_variation);
             break;
 
-        case CtiDNPAnalogInputChange::Group:
-            obj = CTIDBG_new CtiDNPAnalogInputChange(_variation);
+        case AnalogInputChange::Group:
+            obj = CTIDBG_new AnalogInputChange(_variation);
             break;
 
-        case CtiDNPAnalogInputFrozen::Group:
-            obj = CTIDBG_new CtiDNPAnalogInputFrozen(_variation);
+        case AnalogInputFrozen::Group:
+            obj = CTIDBG_new AnalogInputFrozen(_variation);
             break;
 
-        case CtiDNPAnalogInputFrozenEvent::Group:
-            obj = CTIDBG_new CtiDNPAnalogInputFrozenEvent(_variation);
+        case AnalogInputFrozenEvent::Group:
+            obj = CTIDBG_new AnalogInputFrozenEvent(_variation);
             break;
 
-        case CtiDNPAnalogOutput::Group:
-            obj = CTIDBG_new CtiDNPAnalogOutput(_variation);
+        case AnalogOutput::Group:
+            obj = CTIDBG_new AnalogOutput(_variation);
             break;
 
-        case CtiDNPAnalogOutputBlock::Group:
-            obj = CTIDBG_new CtiDNPAnalogOutputBlock(_variation);
+        case AnalogOutputBlock::Group:
+            obj = CTIDBG_new AnalogOutputBlock(_variation);
             break;
 
-        case CtiDNPBinaryInput::Group:
-            obj = CTIDBG_new CtiDNPBinaryInput(_variation);
+        case BinaryInput::Group:
+            obj = CTIDBG_new BinaryInput(_variation);
             break;
 
-        case CtiDNPBinaryInputChange::Group:
-            obj = CTIDBG_new CtiDNPBinaryInputChange(_variation);
+        case BinaryInputChange::Group:
+            obj = CTIDBG_new BinaryInputChange(_variation);
             break;
 
-        case CtiDNPBinaryOutput::Group:
-            obj = CTIDBG_new CtiDNPBinaryOutput(_variation);
+        case BinaryOutput::Group:
+            obj = CTIDBG_new BinaryOutput(_variation);
             break;
 
-        case CtiDNPBinaryOutputControl::Group:
-            obj = CTIDBG_new CtiDNPBinaryOutputControl(_variation);
+        case BinaryOutputControl::Group:
+            obj = CTIDBG_new BinaryOutputControl(_variation);
             break;
 
-        case CtiDNPCounter::Group:
-            obj = CTIDBG_new CtiDNPCounter(_variation);
+        case Counter::Group:
+            obj = CTIDBG_new Counter(_variation);
             break;
 
-        case CtiDNPCounterChange::Group:
-            obj = CTIDBG_new CtiDNPCounterChange(_variation);
+        case CounterChange::Group:
+            obj = CTIDBG_new CounterChange(_variation);
             break;
 
-        case CtiDNPCounterFrozen::Group:
-            obj = CTIDBG_new CtiDNPCounterFrozen(_variation);
+        case CounterFrozen::Group:
+            obj = CTIDBG_new CounterFrozen(_variation);
             break;
 
-        case CtiDNPCounterFrozenEvent::Group:
-            obj = CTIDBG_new CtiDNPCounterFrozenEvent(_variation);
+        case CounterFrozenEvent::Group:
+            obj = CTIDBG_new CounterFrozenEvent(_variation);
             break;
 
-        case CtiDNPTime::Group:
-            obj = CTIDBG_new CtiDNPTime(_variation);
+        case Time::Group:
+            obj = CTIDBG_new Time(_variation);
             break;
 
-        case CtiDNPTimeCTO::Group:
-            obj = CTIDBG_new CtiDNPTimeCTO(_variation);
+        case TimeCTO::Group:
+            obj = CTIDBG_new TimeCTO(_variation);
             break;
 
         default:
@@ -928,7 +793,7 @@ int CtiDNPObjectBlock::restoreObject( unsigned char *buf, int len, CtiDNPObject 
 }
 
 
-int CtiDNPObjectBlock::restoreBitObject( unsigned char *buf, int bitoffset, int len, CtiDNPObject *&obj )
+int ObjectBlock::restoreBitObject( const unsigned char *buf, int bitoffset, int len, Object *&obj )
 {
     int bitpos;
 
@@ -936,16 +801,16 @@ int CtiDNPObjectBlock::restoreBitObject( unsigned char *buf, int bitoffset, int 
 
     switch( _group )
     {
-        case CtiDNPBinaryInput::Group:
-            obj = CTIDBG_new CtiDNPBinaryInput(_variation);
+        case BinaryInput::Group:
+            obj = CTIDBG_new BinaryInput(_variation);
             break;
 
-        case CtiDNPBinaryOutput::Group:
-            obj = CTIDBG_new CtiDNPBinaryOutput(_variation);
+        case BinaryOutput::Group:
+            obj = CTIDBG_new BinaryOutput(_variation);
             break;
 
-        case CtiDNPBinaryOutputControl::Group:
-            obj = CTIDBG_new CtiDNPBinaryOutputControl(_variation);
+        case BinaryOutputControl::Group:
+            obj = CTIDBG_new BinaryOutputControl(_variation);
             break;
 
         default:
@@ -968,5 +833,68 @@ int CtiDNPObjectBlock::restoreBitObject( unsigned char *buf, int bitoffset, int 
     }
 
     return bitpos - bitoffset;
+}
+
+void ObjectBlock::getPoints( queue< CtiPointDataMsg * > &points, const TimeCTO *cto ) const
+{
+    CtiPointDataMsg *pMsg;
+
+    switch( _group )
+    {
+        case AnalogInput::Group:
+        case AnalogInputChange::Group:
+        case AnalogInputFrozen::Group:
+        case AnalogInputFrozenEvent::Group:
+        case AnalogOutput::Group:
+        case BinaryInput::Group:
+        case BinaryInputChange::Group:
+        case BinaryOutput::Group:
+        case Counter::Group:
+        case CounterChange::Group:
+        case CounterFrozen::Group:
+        case CounterFrozenEvent::Group:
+        {
+            object_vector::const_iterator o_itr;
+            index_vector::const_iterator  i_itr = _objectIndices.begin();
+
+            for( o_itr = _objectList.begin(); o_itr != _objectList.end(); o_itr++ )
+            {
+                //  we're passing in the CTO object here;  the points can do with it as they please
+                if( *o_itr && (pMsg = (*o_itr)->getPoint(cto)) )
+                {
+                    if( i_itr != _objectIndices.end() )
+                    {
+                        //  MAGIC NUMBER WARNING:  turning 0-based offset into 1-based offset
+                        pMsg->setId(*i_itr + 1);
+
+                        //  if it is a binary output, offset by BinaryOutputStatusOffset (currently 10,000)
+                        //    to make sure it doesn't collide with the other status points
+                        if( (*o_itr)->getGroup() == BinaryOutput::Group )
+                        {
+                            pMsg->setId(pMsg->getId() + BinaryOutput::BinaryOutputStatusOffset);
+                        }
+                        else if( (*o_itr)->getGroup() == AnalogOutput::Group )
+                        {
+                            pMsg->setId(pMsg->getId() + AnalogOutput::AnalogOutputOffset);
+                        }
+
+                        i_itr++;
+                    }
+
+                    points.push(pMsg);
+                }
+            }
+        }
+
+        default:
+        {
+            break;
+        }
+    }
+}
+
+
+}
+}
 }
 
