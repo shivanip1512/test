@@ -66,7 +66,7 @@ public class GenJLX {
 		
 		StateImage stateImage = new StateImage();
 		stateImage.setCenter(50,120);
-		stateImage.setPoint(PointFuncs.getLitePoint(119));
+		stateImage.setPointID(119);
 		stateImage.setLinkTo("somedetailspage.html");
 		graph.add(stateImage);
 		
