@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_alm_nloc.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/04/22 19:47:17 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/10/02 19:20:04 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -25,7 +25,6 @@
 #include "os2_2w32.h"
 #include "dsm2.h"
 #include "dev_remote.h"
-#include "connection.h"
 #include "tbl_dv_ied.h"
 #include "logger.h"
 #include "xfer.h"

@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_single.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2002/06/20 20:57:32 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2002/10/02 19:20:05 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -34,7 +34,6 @@
 #include "tbl_scanrate.h"
 // #include "rtdb.h"
 #include "yukon.h"
-#include "connection.h"
 #include "msg_pcrequest.h"
 #include "msg_pcreturn.h"
 #include "tbl_dv_scandata.h"

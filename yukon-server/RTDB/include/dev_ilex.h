@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_welco.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/06/05 17:42:02 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/10/02 19:20:04 $
 *
 * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -26,7 +26,6 @@
 #include "dsm2.h"
 #include "dev_idlc.h"
 #include "mgr_point.h"
-#include "connection.h"
 
 
 /* ILEX Message definitions */

@@ -22,7 +22,6 @@
 #include "dsm2.h"
 #include "dev_meter.h"
 #include "mgr_point.h"
-#include "connection.h"
 #include "device.h"
 #include "dev_alpha.h"
 

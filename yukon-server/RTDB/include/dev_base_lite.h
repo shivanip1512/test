@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_base_lite.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/04/22 19:47:15 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/10/02 19:20:03 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -67,7 +67,9 @@ protected:
 
     RWCString getObjectType() const;
     RWCString getDisableFlag() const;
+    bool isDisabled() const;
     RWCString getControlInhibitFlag() const;
+    bool isControlInhibited() const;
 
     bool operator<( const CtiDeviceBaseLite &rhs ) const;
     bool operator==( const CtiDeviceBaseLite &rhs ) const;

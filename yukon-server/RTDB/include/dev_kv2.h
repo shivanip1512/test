@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2002/09/04 13:18:57 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2002/10/02 19:20:04 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -27,7 +27,6 @@
 #include "ctitypes.h"
 #include "types.h"
 #include "mgr_point.h"
-#include "connection.h"
 #include "device.h"
 
 class IM_EX_DEVDB CtiDeviceKV2 : public CtiDeviceMeter

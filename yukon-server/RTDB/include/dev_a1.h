@@ -24,7 +24,6 @@
 #include "dsm2.h"
 #include "dev_meter.h"
 #include "mgr_point.h"
-#include "connection.h"
 //#include "dupreq.h"
 #include "device.h"
 

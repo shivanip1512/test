@@ -22,7 +22,6 @@
 #include "dsm2.h"
 #include "dev_meter.h"
 #include "mgr_point.h"
-#include "connection.h"
 
 #include "ion_rootclasses.h"
 #include "ion_valuebasictypes.h"
@@ -35,8 +34,8 @@ public:
 
     CtiDeviceION( ) { setIONState(IONStateUninitialized); };
     ~CtiDeviceION( ) { freeDataBins( ); };
-       
-    
+
+
     virtual INT ExecuteRequest( CtiRequestMsg              *pReq,
                                 CtiCommandParser           &parse,
                                 OUTMESS                   *&OutMessage,
@@ -50,7 +49,7 @@ public:
                      RWTPtrSlist< CtiMessage >  &vgList,
                      RWTPtrSlist< CtiMessage >  &retList,
                      RWTPtrSlist< OUTMESS >     &outList );
-    
+
     int GeneralScan( CtiRequestMsg              *pReq,
                      CtiCommandParser           &parse,
                      OUTMESS                   *&OutMessage,
@@ -77,7 +76,7 @@ public:
     int allocateDataBins( OUTMESS *outMess );
     int freeDataBins( );
 
-    
+
     int ResultDecode( INMESS *InMessage,
                       RWTime &TimeNow,
                       RWTPtrSlist< CtiMessage > &vgList,
@@ -107,9 +106,9 @@ private:
     void resolveNextStateSelectMeter( void );
     void resolveNextStateScanData( void );
     void resolveNextStateLoadProfile( void );
-    
+
     enum IONStates;
-    
+
     IONStates getIONState( void ) { return _IONState; };
     void      setIONState( IONStates newState ) { _IONState = newState; };
 
@@ -130,7 +129,7 @@ private:
         IONStateComplete,
         IONStateAbort
     } _IONState;
-    
+
     CtiIONApplicationLayer *_appLayer;
     CtiIONNetworkLayer     *_netLayer;
     CtiIONDataLinkLayer    *_dllLayer;

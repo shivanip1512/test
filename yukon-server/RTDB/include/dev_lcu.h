@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_lcu.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:24 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/10/02 19:20:04 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -23,6 +23,7 @@
 using namespace std;
 
 #include <rw/tpslist.h>
+#include <rw/tvordvec.h>
 
 #include "ctitypes.h"
 #include "types.h"
@@ -30,7 +31,6 @@ using namespace std;
 #include "dsm2.h"
 #include "dev_idlc.h"
 #include "mgr_point.h"
-#include "connection.h"
 
 class IM_EX_DEVDB CtiDeviceLCU : public CtiDeviceIDLC
 {
