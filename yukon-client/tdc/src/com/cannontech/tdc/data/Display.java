@@ -3,6 +3,7 @@ package com.cannontech.tdc.data;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.tdc.filter.DefaultTDCFilter;
 import com.cannontech.tdc.filter.ITDCFilter;
 
@@ -259,23 +260,30 @@ public void setDescription(java.lang.String newDescription) {
 	description = newDescription;
 }
 /**
- * Insert the method's description here.
- * Creation date: (3/20/2001 10:36:47 AM)
- * @param newDISPLAY_TITLES java.lang.Object[]
+ * Allows changes to the titles for client displays.
+ * @param displays_
  */ 
-public static void setDISPLAY_TITLES(Object[] newDISPLAY_TITLES) 
+public static void setDISPLAY_TITLES( final Display[] displays_ ) 
 {
-	int originalCount = DISPLAY_TITLES.length;
+	if( displays_ == null )
+		return;
 
-	for( int i = BEGINNING_OPTIONAL_INDEX; i < originalCount; i++ )
+	for( int i = 0; i < displays_.length; i++ )
 	{
 		try
 		{
-			DISPLAY_TITLES[i] = newDISPLAY_TITLES[i-BEGINNING_OPTIONAL_INDEX].toString();
+			if( displays_[i].getDisplayNumber() <= BEGINNING_CLIENT_DISPLAY_NUMBER ) //-1 or less
+			{				
+				int type = Display.getDisplayTypeIndexByType( displays_[i].getType() );
+				
+				DISPLAY_TITLES[type] = displays_[i].getTitle();
+			}
+
 		}
-		catch( ArrayIndexOutOfBoundsException e )
+		catch( Exception e )
 		{
-			com.cannontech.clientutils.CTILogger.info("*** " + DISPLAY_TITLES[i] + " not found in the database, the client for this display title must not be available.");
+			CTILogger.info("*** Unable to set the display title text for display: " +
+				displays_[i].getName() + ", using the defulat setting.");
 		}  //we really dont care here, but we don not want the app to lock!!
 	}
 }

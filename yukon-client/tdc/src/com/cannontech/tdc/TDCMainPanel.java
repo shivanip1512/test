@@ -38,6 +38,7 @@ import com.cannontech.message.dispatch.message.Signal;
 import com.cannontech.tdc.commandevents.AckAlarm;
 import com.cannontech.tdc.data.ColumnData;
 import com.cannontech.tdc.data.Display;
+import com.cannontech.tdc.data.IDisplay;
 import com.cannontech.tdc.filter.ITDCFilter;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
 import com.cannontech.tdc.roweditor.AnalogPanel;
@@ -1962,9 +1963,9 @@ public boolean initComboCurrentDisplay()
 
 	
 	// get the data for the majority of our displays
-	String query = new String
-		("select name, displaynum, title, type, description from display " +
- 		 " order by displaynum, name, type");  //we must keep this ordered by displaynum
+	String query = new String(
+		"select name, displaynum, title, type, description from display " +
+ 		"order by name, type");
 
 	Object[][] values = DataBaseInteraction.queryResults( query, null );
 	
@@ -2010,9 +2011,7 @@ public boolean initComboCurrentDisplay()
             else if( getAllDisplays()[i].getType().equalsIgnoreCase(Display.DISPLAY_TYPES[Display.STATIC_CLIENT_TYPE_INDEX]) )
 					enabled = com.cannontech.common.util.CtiProperties.isClientEnabled(TDCDefines.USER_RIGHTS);
 
-				clientList.add( getAllDisplays()[i].getTitle() );					
 				addClientRadioButtons( getAllDisplays()[i].getTitle(), i, enabled );
-
 			}
          
 
@@ -2034,7 +2033,7 @@ public boolean initComboCurrentDisplay()
 
 		if( initOnce )
 		{
-			Display.setDISPLAY_TITLES( clientList.toArray() );
+			Display.setDISPLAY_TITLES( getAllDisplays() );
 		}
 			
 		readAllDisplayColumnData(); //get all the display column data for each display

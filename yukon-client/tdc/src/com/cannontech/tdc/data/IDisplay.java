@@ -24,18 +24,6 @@ public interface IDisplay
 	public static final int LAST_ALARM_DISPLAY = 14;
 	public static final int VIEWABLE_ALARM_COUNT = 11;  // ALL_ALARM display plus alarmStateIds 2 - 11 displays
 
-	// All possible display types with their default Title values
-	public static final String[] DISPLAY_TYPES =
-	{  
-		"Alarms and Events",		
-		"Custom Displays",
-		"Load Management Client",
-		"Cap Control Client",
-		"Scheduler Client",
-		"Static Displays"
-		//"Energy Exchange Client"
-	};
-
 	//these xxx_TYPE_INDEX variables are a mapping into the DISPLAY_TYPES[]
 	public static final int ALARMS_AND_EVENTS_TYPE_INDEX = 0;
 	public static final int CUSTOM_DISPLAYS_TYPE_INDEX = 1;	
@@ -46,7 +34,22 @@ public interface IDisplay
 	//public static final int EEXCHANGE_CLIENT_TYPE_INDEX = 5;
 	
 	public static final int UNKNOWN_TYPE_INDEX = -1;
-	public static final int BEGINNING_OPTIONAL_INDEX = 2;	// All possible display types with their default Title values
+
+
+	// All possible display types with their default Title values
+	public static final String[] DISPLAY_TYPES =
+	{  
+		/* Mandatory displays */
+		"Alarms and Events",		
+		"Custom Displays",
+
+		/* All optional displays go below*/
+		"Load Management Client",
+		"Cap Control Client",
+		"Scheduler Client",
+		"Static Displays"
+		//"Energy Exchange Client"
+	};
 
 	public static String[] DISPLAY_TITLES =
 	{  
