@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.36 $
-* DATE         :  $Date: 2003/05/15 13:52:03 $
+* REVISION     :  $Revision: 1.37 $
+* DATE         :  $Date: 2003/05/15 22:34:23 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -562,6 +562,8 @@ void CtiPILServer::resultThread()
                 for( i = outList.entries() ; i > 0; i-- )
                 {
                     OutMessage = outList.get();
+
+                    OutMessage->MessageFlags |= MSGFLG_APPLY_EXCLUSION_LOGIC;
 
                     /* if pipe shut down return the error */
                     if(PorterNexus.NexusState == CTINEXUS_STATE_NULL)
