@@ -5,11 +5,13 @@ package com.cannontech.database.data.point;
  */
 import com.cannontech.database.db.point.DynamicCalcHistorical;
 import com.cannontech.database.db.point.calculation.CalcBase;
+import com.cannontech.database.db.point.calculation.CalcPointBaseline;
 import com.cannontech.database.db.point.calculation.CalcComponent;
 
 public class CalculatedPoint extends ScalarPoint {
 	private CalcBase calcBase = null;
 	private java.util.Vector calcComponentVector = null;
+	private CalcPointBaseline calcBaselinePoint = null;
 /**
  * CalculatedPoint constructor comment.
  */
@@ -41,6 +43,8 @@ public void add() throws java.sql.SQLException
 	
 	for( int i = 0; i < getCalcComponentVector().size(); i++ )
 		((CalcComponent) getCalcComponentVector().elementAt(i)).add();
+
+	((CalcPointBaseline) getCalcBaselinePoint()).add();
 }
 /**
  * Insert the method's description here.
@@ -59,6 +63,7 @@ public void addPartial() throws java.sql.SQLException {
 public void delete() throws java.sql.SQLException 
 {
 	CalcComponent.deleteCalcComponents( getPoint().getPointID(), getDbConnection() );
+	CalcPointBaseline.deleteCalcBaselinePoint( getPoint().getPointID(), getDbConnection() );
 	
 	//a dynamic table used by the CalcHistorical application
 	delete(DynamicCalcHistorical.TABLE_NAME, "PointID", getPoint().getPointID());
@@ -72,8 +77,6 @@ public void delete() throws java.sql.SQLException
  * @exception java.sql.SQLException The exception description.
  */
 public void deletePartial() throws java.sql.SQLException {
-
-
 	super.deletePartial();
 }
 /**
@@ -111,6 +114,17 @@ public java.util.Vector getCalcComponentVector() {
 }
 /**
  * This method was created in VisualAge.
+ * @return CalcPointBaseline
+ */
+public CalcPointBaseline getCalcBaselinePoint() {
+
+	if( calcBaselinePoint == null )
+		calcBaselinePoint = new CalcPointBaseline();
+	
+	return calcBaselinePoint;
+}
+/**
+ * This method was created in VisualAge.
  */
 public void retrieve() throws java.sql.SQLException{
 	super.retrieve();
@@ -118,6 +132,7 @@ public void retrieve() throws java.sql.SQLException{
 	getCalcBase().retrieve();
 
 	calcComponentVector = CalcComponent.getCalcComponents(getPoint().getPointID());
+	calcBaselinePoint = CalcPointBaseline.getCalcBaselinePoint(getPoint().getPointID());
 }
 /**
  * This method was created in VisualAge.
@@ -134,6 +149,13 @@ public void setCalcComponentVector(java.util.Vector newValue) {
 	this.calcComponentVector = newValue;
 }
 /**
+ * This method was created in VisualAge.
+ * @param newValue java.util.Vector
+ */
+public void setCalcBaselinePoint(CalcPointBaseline newValue) {
+	this.calcBaselinePoint = newValue;
+}
+/**
  * Insert the method's description here.
  * Creation date: (1/4/00 3:32:03 PM)
  * @param conn java.sql.Connection
@@ -146,6 +168,8 @@ public void setDbConnection(java.sql.Connection conn)
 
 	for( int i = 0; i < getCalcComponentVector().size(); i++ )
 		((CalcComponent) getCalcComponentVector().elementAt(i)).setDbConnection(conn);
+		
+	((CalcPointBaseline) getCalcBaselinePoint()).setDbConnection(conn);
 }
 /**
  * This method was created in VisualAge.
@@ -158,6 +182,8 @@ public void setPointID(Integer pointID) {
 
 	for( int i = 0; i < getCalcComponentVector().size(); i++ )
 		((CalcComponent) getCalcComponentVector().elementAt(i)).setPointID(pointID);
+	
+	((CalcPointBaseline) getCalcBaselinePoint()).setPointID(pointID);		
 }
 /**
  * This method was created in VisualAge.
@@ -168,8 +194,10 @@ public void update() throws java.sql.SQLException {
 	getCalcBase().update();
 
 	CalcComponent.deleteCalcComponents( getPoint().getPointID(), getDbConnection() );
-
 	for( int i = 0; i < getCalcComponentVector().size(); i++ )
 		((CalcComponent) getCalcComponentVector().elementAt(i)).add();
+	
+	CalcPointBaseline.deleteCalcBaselinePoint(getPoint().getPointID(), getDbConnection());	
+	getCalcBaselinePoint().add();
 }
 }
