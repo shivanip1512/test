@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.78 $
-* DATE         :  $Date: 2004/09/20 14:43:31 $
+* REVISION     :  $Revision: 1.79 $
+* DATE         :  $Date: 2004/10/08 20:50:09 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -211,6 +211,8 @@ void CtiVanGogh::VGMainThread()
     UINT iteration = 0;
     UINT maxiterations = Options_.ReturnIntOpt('i') * 60;
     UINT sanity = 0;
+    ULONG MessageCount = 0;
+    ULONG MessageLog = 0;
 
     /*
      *  Iterators, place pointers etc.
@@ -292,6 +294,31 @@ void CtiVanGogh::VGMainThread()
 
                     if(MsgPtr != NULL)
                     {
+                        switch( MsgPtr->isA() )
+                        {
+                        case MSG_PCRETURN:
+                        case MSG_MULTI:
+                            {
+                                MessageCount += ((CtiMultiMsg*)MsgPtr)->getCount();
+                                MessageLog += ((CtiMultiMsg*)MsgPtr)->getCount();
+                                break;
+                            }
+                        default:
+                            {
+                                MessageCount++;
+                                MessageLog++;
+                                break;
+                            }
+                        }
+
+
+                        if( MessageLog > 1000  )
+                        {
+                            MessageLog = 0;
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " Dispatch has processed " << MessageCount << " messages." << endl;
+                        }
+
                         if(gDispatchDebugLevel & DISPATCH_DEBUG_MSGSFRMCLIENT)
                         {
                             {
@@ -816,6 +843,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
 
                                     addToPendingSet(pendingControlRequest, Cmd->getMessageTime());
 
+                                    if(gDispatchDebugLevel & DISPATCH_DEBUG_CONTROLS)
                                     {
                                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                                         dout << RWTime() << " " << devicename << " / " << pPoint->getName() << " has gone CONTROL SUBMITTED. Control expires at " << RWTime( Cmd->getMessageTime() + pPoint->getControlExpirationTime()) << endl;
@@ -969,18 +997,18 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
         {
             if(Cmd->getOpArgList().entries() >= 4)
             {
-            // Vector contains token, pointid, tag(s) to set.
-            LONG token      = Cmd->getOpArgList().at(0);
-            LONG pointid    = Cmd->getOpArgList().at(1);
-            LONG tagstoset  = Cmd->getOpArgList().at(2);
-            LONG tagstoreset= Cmd->getOpArgList().at(3);
+                // Vector contains token, pointid, tag(s) to set.
+                LONG token      = Cmd->getOpArgList().at(0);
+                LONG pointid    = Cmd->getOpArgList().at(1);
+                LONG tagstoset  = Cmd->getOpArgList().at(2);
+                LONG tagstoreset= Cmd->getOpArgList().at(3);
 
-            {
-                CtiPoint *pPt = PointMgr.getEqual( pointid );
-                CtiDynamicPointDispatch *pDyn = (CtiDynamicPointDispatch*)pPt->getDynamic();
-                pDyn->getDispatch().setTags( tagstoset );
-                pDyn->getDispatch().resetTags( tagstoreset );
-            }
+                {
+                    CtiPoint *pPt = PointMgr.getEqual( pointid );
+                    CtiDynamicPointDispatch *pDyn = (CtiDynamicPointDispatch*)pPt->getDynamic();
+                    pDyn->getDispatch().setTags( tagstoset );
+                    pDyn->getDispatch().resetTags( tagstoreset );
+                }
             }
             else
             {
@@ -3036,6 +3064,7 @@ INT CtiVanGogh::checkPointDataStateQuality(CtiPointDataMsg  *pData, CtiMultiWrap
              */
             if(pData->getTags() & TAG_POINT_DELAYED_UPDATE)
             {
+                if(gDispatchDebugLevel & DISPATCH_DEBUG_DELAYED_UPDATE)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " Delayed update \"" << pData->getTime() << "\" is indicated on point data for " << resolveDeviceName(*pPoint) << " / " << pPoint->getName() << endl;
@@ -4037,47 +4066,49 @@ void CtiVanGogh::doPendingOperations(bool bShutdown)
                             it = _pendingPointInfo.erase(it);
                             continue;   // iterator has been repositioned!
                         }
-                        else if(ppo.getControlState() == CtiPendingPointOperations::controlPending &&
-                                now.seconds() > ppo.getTime().seconds() + (ULONG)ppo.getControlTimeout())
+                        else if(ppo.getControlState() == CtiPendingPointOperations::controlPending)
                         {
-                            // Post a message about the time out situation.
-                            CtiSignalMsg *pOrig = ppo.getSignal();
-
-                            if(pOrig)
+                            if(now.seconds() > ppo.getTime().seconds() + (ULONG)ppo.getControlTimeout())
                             {
-                                CtiSignalMsg *pSig = (CtiSignalMsg*)(pOrig->replicateMessage());
-                                pSig->setMessageTime( now );
-                                pSig->setMessagePriority( MAXPRIORITY - 1 );
+                                // Post a message about the time out situation.
+                                CtiSignalMsg *pOrig = ppo.getSignal();
 
+                                if(pOrig)
                                 {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << "  *****************  CONTROL FAILED **************** " << endl;
-                                    pSig->dump();
-                                    dout << "  *************************************************** " << endl;
+                                    CtiSignalMsg *pSig = (CtiSignalMsg*)(pOrig->replicateMessage());
+                                    pSig->setMessageTime( now );
+                                    pSig->setMessagePriority( MAXPRIORITY - 1 );
+
+                                    {
+                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                        dout << "  *****************  CONTROL FAILED **************** " << endl;
+                                        pSig->dump();
+                                        dout << "  *************************************************** " << endl;
+                                    }
+
+                                    CtiCommandMsg *pCmd = CTIDBG_new CtiCommandMsg(CtiCommandMsg::PointTagAdjust, 15);
+                                    pCmd->insert(-1);                   // token
+                                    pCmd->insert(pSig->getId());        // PointID
+                                    pCmd->insert(0x00000000);           // Tags to set
+                                    pCmd->insert(TAG_CONTROL_PENDING);  // Tags to reset.
+                                    MainQueue_.putQueue( pCmd );
+                                    MainQueue_.putQueue( pSig );
+
+                                    pCmd = 0;
+                                    pSig = 0;
                                 }
 
-                                CtiCommandMsg *pCmd = CTIDBG_new CtiCommandMsg(CtiCommandMsg::PointTagAdjust, 15);
-                                pCmd->insert(-1);                   // token
-                                pCmd->insert(pSig->getId());        // PointID
-                                pCmd->insert(0x00000000);           // Tags to set
-                                pCmd->insert(TAG_CONTROL_PENDING);  // Tags to reset.
-                                MainQueue_.putQueue( pCmd );
-                                MainQueue_.putQueue( pSig );
-
-                                pCmd = 0;
-                                pSig = 0;
-                            }
-
-                            try
-                            {
-                                it = _pendingPointInfo.erase(it);
-                                dumpPendingOps();
-                                continue;   // iterator has been repositioned!
-                            }
-                            catch(...)
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << "**** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                try
+                                {
+                                    it = _pendingPointInfo.erase(it);
+                                    dumpPendingOps();
+                                    continue;   // iterator has been repositioned!
+                                }
+                                catch(...)
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << "**** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                }
                             }
                         }
                         else if(ppo.getControlState() == CtiPendingPointOperations::controlInProgress)
@@ -5766,6 +5797,7 @@ void CtiVanGogh::updateControlHistory( long pendid, int cause, const RWTime &the
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << " Thetime seconds() = " << thetime << " addnlt time = " << addnlseconds << endl;
                         ppc.dump();
                     }
                 }
@@ -5820,6 +5852,8 @@ void CtiVanGogh::updateControlHistory( long pendid, int cause, const RWTime &the
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << " Thetime seconds() = " << thetime << " addnlt time = " << addnlseconds << endl;
+                        ppc.dump();
                     }
                 }
                 break;
@@ -5851,6 +5885,8 @@ void CtiVanGogh::updateControlHistory( long pendid, int cause, const RWTime &the
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << " Thetime seconds() = " << thetime << " addnlt time = " << addnlseconds << endl;
+                        ppc.dump();
                     }
                 }
                 break;
@@ -5905,11 +5941,6 @@ void CtiVanGogh::updateControlHistory( long pendid, int cause, const RWTime &the
             }
         case (CtiPendingPointOperations::dispatchShutdown):
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " updateControlHistory: Recording in progress controls for restart." << endl;
-                }
-
                 if(ppc.getControlState() == CtiPendingPointOperations::controlInProgress)
                 {
                     LONG addnlseconds = ppc.getControl().getControlCompleteTime().seconds() - ppc.getControl().getPreviousLogTime().seconds();
@@ -6693,9 +6724,18 @@ void CtiVanGogh::checkStatusCommandFail(int alarm, CtiPointDataMsg *pData, CtiMu
 
                     pDyn->getDispatch().resetTags( TAG_CONTROL_PENDING );               // We got to the desired state, no longer pending.. we are now controlling!
 
+                    if(gDispatchDebugLevel & DISPATCH_DEBUG_CONTROLS)
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " " << resolveDeviceName(point) << " / " << point.getName() << " has gone CONTROL COMPLETE." << endl;
+                        if(pDyn->getValue() == pData->getValue())
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " " << resolveDeviceName(point) << " / " << point.getName() << " CONTROL CONTINUATION/COMPLETE." << endl;
+                        }
+                        else
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " " << resolveDeviceName(point) << " / " << point.getName() << " has gone CONTROL COMPLETE." << endl;
+                        }
                     }
 
                     if(ppo.getControlState() != CtiPendingPointOperations::controlInProgress)
@@ -6840,9 +6880,11 @@ bool CtiVanGogh::addToPendingSet(CtiPendingPointOperations &pendingControlReques
                 // The control command we just received is the same command as that which started the prior control.
                 // This is a repeat/continuation of the old command!  We just record that and continue.
                 ppo.getControl().setActiveRestore(LMAR_CONT_CONTROL);
-                ppo.getControl().setStopTime(pendingControlRequest.getControl().getStartTime());
 
-                updateControlHistory( ppo.getPointID(), CtiPendingPointOperations::repeatcontrol, pendingControlRequest.getControl().getStartTime() );
+                RWTime logTime = pendingControlRequest.getControl().getStartTime() >= ppo.getControl().getPreviousLogTime() ? pendingControlRequest.getControl().getStartTime() : ppo.getControl().getPreviousLogTime();
+
+                ppo.getControl().setStopTime(logTime);
+                updateControlHistory( ppo.getPointID(), CtiPendingPointOperations::repeatcontrol, logTime );
 
                 pendingControlRequest.getControl().setStartTime(ppo.getControl().getStartTime());
                 pendingControlRequest.getControl().setPreviousLogTime(ppo.getControl().getStopTime());
@@ -7357,58 +7399,58 @@ int CtiVanGogh::loadPendingControls()
                     LMCHMap_t::iterator &itr = insertpair.first;
                     CtiTableLMControlHistory &dynControl = (*itr).second;
 
-            CtiPoint *pPt = PointMgr.getControlOffsetEqual(dynControl.getPAOID(),  1);
+                    CtiPoint *pPt = PointMgr.getControlOffsetEqual(dynControl.getPAOID(),  1);
 
-            if(pPt)
-            {
-                RWTime incTime;
-                CtiPendingPointOperations ppc(pPt->getPointID());
-                ppc.setType(CtiPendingPointOperations::pendingControl);
-                ppc.setControlState( CtiPendingPointOperations::controlInProgress );
-                ppc.setTime( dynControl.getStartTime() );
-                ppc.setControl(dynControl);
+                    if(pPt)
+                    {
+                        RWTime incTime;
+                        CtiPendingPointOperations ppc(pPt->getPointID());
+                        ppc.setType(CtiPendingPointOperations::pendingControl);
+                        ppc.setControlState( CtiPendingPointOperations::controlInProgress );
+                        ppc.setTime( dynControl.getStartTime() );
+                        ppc.setControl(dynControl);
 
-                ppc.getControl().setPreviousLogTime(dynControl.getStartTime());
-                ppc.getControl().setPreviousStopReportTime(dynControl.getStartTime());
+                        ppc.getControl().setPreviousLogTime(dynControl.getStartTime());
+                        ppc.getControl().setPreviousStopReportTime(dynControl.getStartTime());
 
-                LONG addnlseconds = 0;
+                        LONG addnlseconds = 0;
 
-                if( dynControl.getStopTime() > incTime )   // Control is not yet complete.
-                {
-                    ppc.getControl().setActiveRestore(LMAR_LOGTIMER);
-                    ppc.getControl().setDefaultActiveRestore(LMAR_TIMED_RESTORE);
-                    addnlseconds = incTime.seconds() - dynControl.getStartTime().seconds();
-                }
-                else    // Control is complete.
-                {
-                    ppc.setControlState( CtiPendingPointOperations::controlCompleteTimedIn );
-                    ppc.getControl().setDefaultActiveRestore(LMAR_TIMED_RESTORE);
-                    ppc.getControl().setActiveRestore(LMAR_TIMED_RESTORE);
-                    incTime = dynControl.getStopTime();
-                    addnlseconds = dynControl.getStopTime().seconds() - dynControl.getStartTime().seconds();
-                }
+                        if( dynControl.getStopTime() > incTime )   // Control is not yet complete.
+                        {
+                            ppc.getControl().setActiveRestore(LMAR_LOGTIMER);
+                            ppc.getControl().setDefaultActiveRestore(LMAR_TIMED_RESTORE);
+                            addnlseconds = incTime.seconds() - dynControl.getStartTime().seconds();
+                        }
+                        else    // Control is complete.
+                        {
+                            ppc.setControlState( CtiPendingPointOperations::controlCompleteTimedIn );
+                            ppc.getControl().setDefaultActiveRestore(LMAR_TIMED_RESTORE);
+                            ppc.getControl().setActiveRestore(LMAR_TIMED_RESTORE);
+                            incTime = dynControl.getStopTime();
+                            addnlseconds = dynControl.getStopTime().seconds() - dynControl.getStartTime().seconds();
+                        }
 
-                if(addnlseconds >= 0)
-                {
-                    ppc.getControl().incrementTimes( incTime, addnlseconds );
+                        if(addnlseconds >= 0)
+                        {
+                            ppc.getControl().incrementTimes( incTime, addnlseconds );
 
-                    insertControlHistoryRow(ppc);
-                    postControlHistoryPoints(ppc);
-                    postControlStopPoint(ppc, incTime);
+                            insertControlHistoryRow(ppc);
+                            postControlHistoryPoints(ppc);
+                            postControlStopPoint(ppc, incTime);
 
-                    ppc.getControl().setActiveRestore(ppc.getControl().getDefaultActiveRestore());
-                }
+                            ppc.getControl().setActiveRestore(ppc.getControl().getDefaultActiveRestore());
+                        }
 
-                updateGroupPseduoControlPoint(pPt, dynControl.getStopTime());
-                addToPendingSet( ppc );
-            }
-            else
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
-            }
+                        updateGroupPseduoControlPoint(pPt, dynControl.getStopTime());
+                        addToPendingSet( ppc );
+                    }
+                    else
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+                    }
 
                     (*itr).second = dynC; // store the new 'N'ew control!
                 }
@@ -7486,13 +7528,14 @@ bool CtiVanGogh::isPointInPendingControl(LONG pointid)
     CtiLockGuard<CtiMutex> guard(server_mux);
     CtiPendingOpSet_t::iterator it = _pendingPointInfo.find(CtiPendingPointOperations(pointid, CtiPendingPointOperations::pendingControl));
 
-    return (it != _pendingPointInfo.end());
+    return(it != _pendingPointInfo.end());
 }
 
 void CtiVanGogh::updateGroupPseduoControlPoint(CtiPointBase *&pPt, const RWTime &delaytime)
 {
     if( pPt->isPseudoPoint() )  // The delayed update is needed in this case!
     {
+        if(gDispatchDebugLevel & DISPATCH_DEBUG_DELAYED_UPDATE)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " " << resolveDeviceName(*pPt) << " / " << pPt->getName() << " has been scheduled/reloaded for delayed update at " << delaytime << endl;
