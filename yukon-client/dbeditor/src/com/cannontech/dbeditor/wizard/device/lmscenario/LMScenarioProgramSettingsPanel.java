@@ -10,7 +10,6 @@ import com.cannontech.database.db.device.lm.LMControlScenarioProgram;
 import com.cannontech.database.db.device.lm.LMProgramDirectGear;
 import com.cannontech.database.data.lite.LiteGear;
 import java.util.Vector;
-import java.util.HashMap;
 import javax.swing.JComboBox;
 import com.cannontech.common.gui.util.ComboBoxTableEditor;
 import java.awt.Component;
@@ -400,6 +399,7 @@ private javax.swing.JTable getProgramsTable()
 			//Do any column specific initialization here
 			javax.swing.table.TableColumn nameColumn = getProgramsTable().getColumnModel().getColumn(LMControlScenarioProgramTableModel.PROGRAMNAME_COLUMN);
 			javax.swing.table.TableColumn startOffsetColumn = getProgramsTable().getColumnModel().getColumn(LMControlScenarioProgramTableModel.STARTOFFSET_COLUMN);
+			javax.swing.table.TableColumn stopOffsetColumn = getProgramsTable().getColumnModel().getColumn(LMControlScenarioProgramTableModel.STOPOFFSET_COLUMN);
 			javax.swing.table.TableColumn startGearColumn = getProgramsTable().getColumnModel().getColumn(LMControlScenarioProgramTableModel.STARTGEAR_COLUMN);
 			nameColumn.setPreferredWidth(100);
 			startOffsetColumn.setPreferredWidth(60);
@@ -420,11 +420,13 @@ private javax.swing.JTable getProgramsTable()
 			javax.swing.DefaultCellEditor ed = new javax.swing.DefaultCellEditor(field);
 			ed.setClickCountToStart(1);
 			startOffsetColumn.setCellEditor( ed );
+			stopOffsetColumn.setCellEditor( ed );
 	
 			//create our renderer for the Integer fields
 			javax.swing.table.DefaultTableCellRenderer rend = new javax.swing.table.DefaultTableCellRenderer();
 			rend.setHorizontalAlignment( field.getHorizontalAlignment() );
 			startOffsetColumn.setCellRenderer(rend);
+			stopOffsetColumn.setCellRenderer(rend);
 			
 			//create the editor for the gear field
 			javax.swing.JComboBox combo = new javax.swing.JComboBox();
@@ -512,7 +514,9 @@ public Object getValue(Object o)
 }
 		newScenarioProgram.setProgramID(new Integer(progID));
 		
-		newScenarioProgram.setStartDelay(getTableModel().getStartOffsetAt(j));
+		newScenarioProgram.setStartOffset(getTableModel().getStartOffsetAt(j));
+		
+		newScenarioProgram.setStopOffset(getTableModel().getStopOffsetAt(j));
 		
 		newScenarioProgram.setStartGear(new Integer(((LiteGear)getTableModel().getStartGearAt(j)).getGearNumber()));
 		
@@ -650,7 +654,7 @@ public void jButtonAdd_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
 			}
 		}
 		//add the new row
-		getTableModel().addRowValue( programName, new Integer(0), 
+		getTableModel().addRowValue( programName, new Integer(0), new Integer(0),
 			startingGear);
 		
 		//update the available programs list
@@ -817,7 +821,7 @@ public void setValue(Object o)
 		}
 		
 		//add the new row
-		getTableModel().addRowValue( programName, lightProgram.getStartDelay(),
+		getTableModel().addRowValue( programName, lightProgram.getStartOffset(), lightProgram.getStopOffset(),
 			startingGear);
 			
 		
