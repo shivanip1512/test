@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/RIPPLE.cpp-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2004/12/31 17:04:39 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2004/12/31 17:07:58 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1303,19 +1303,11 @@ INT ReportCompletionStateToLMGroup(CtiDeviceLCU *lcu)     // f.k.a. ReturnTrxID(
 
     while( lcu->popControlledGroupInfo(LMGIDControl, TrxID) )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Group : " << LMGIDControl  << endl;
-        }
         ProcessRippleGroupTrxID(LMGIDControl, TrxID);
     }
 
     if(lcu->getLastControlMessage() != NULL)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
         LMGIDControl    = lcu->getLastControlMessage()->DeviceIDofLMGroup;
         TrxID           = lcu->getLastControlMessage()->TrxID;
 
