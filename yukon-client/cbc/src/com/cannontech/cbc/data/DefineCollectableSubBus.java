@@ -77,6 +77,9 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
    
    subBus.setLowerBandWidth( new Double( vstr.extractDouble() ) );
    subBus.setControlUnits( (String) vstr.restoreObject( SimpleMappings.CString ) );
+
+	subBus.setControlDelayTime( new Integer( (int)vstr.extractUnsignedInt() ) );
+	subBus.setControlSendRetries( new Integer( (int)vstr.extractUnsignedInt() ) );
    
 	subBus.setDecimalPlaces( new Integer( (int)vstr.extractUnsignedInt() ) );
 	subBus.setNextCheckTime( (java.util.Date)vstr.restoreObject( SimpleMappings.Time ) );
@@ -116,6 +119,9 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
    subBus.setEstimatedPFValue( new Double( vstr.extractDouble() ) );
    subBus.setCurrentVarPtQuality( new Integer( (int)vstr.extractUnsignedInt() ) );
 
+	subBus.setWaiveControlFlag( 
+		((int)vstr.extractUnsignedInt() == 1)
+		? new Boolean(true) : new Boolean(false) );
 
 
 	subBus.setCcFeeders( (java.util.Vector)vstr.restoreObject(polystr) );
@@ -154,6 +160,9 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
    
    vstr.insertDouble( subBus.getLowerBandWidth().doubleValue() );
    vstr.saveObject( subBus.getControlUnits(), SimpleMappings.CString );
+
+	vstr.insertUnsignedInt( subBus.getControlDelayTime().intValue() );
+	vstr.insertUnsignedInt( subBus.getControlSendRetries().intValue() );
    
 	vstr.insertUnsignedInt( subBus.getDecimalPlaces().intValue() );
 	vstr.saveObject( subBus.getNextCheckTime(), SimpleMappings.Time );
@@ -192,6 +201,9 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
    vstr.insertDouble( subBus.getEstimatedPFValue().doubleValue() );
    vstr.insertUnsignedInt( subBus.getCurrentVarPtQuality().intValue() );
 
+	vstr.insertUnsignedInt( 
+		(subBus.getWaiveControlFlag().booleanValue() == true)
+		? 1 : 0 );
    
 	vstr.saveObject( ((java.util.Vector)subBus.getCcFeeders()), polystr );
 }

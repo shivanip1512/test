@@ -1,15 +1,13 @@
 package com.cannontech.cbc.messages;
 
 /**
- * ScheduleCommand objects are sent to the CBC server to request that an operation
- * be done on the given strategy.  Clients only send CBCCommands
+ * CBCCommand objects are sent to the CBC server to request that an operation
+ * be done on the given ID.  Clients only send CBCCommands
  * and the server only receives them.
  */
 
 public class CBCCommand extends com.cannontech.cbc.messages.CBCMessage 
 {
-
-
 	//The following are the different commands that
 	//can be applied to strategies and map into the C++ side
 	public static final int ENABLE_SUBBUS = 0;
@@ -26,6 +24,11 @@ public class CBCCommand extends com.cannontech.cbc.messages.CBCMessage
 	public static final int RETURN_BANK_TO_FEEDER = 11;
 	public static final int RESET_OPCOUNT = 12;
 
+	public static final int WAIVE_SUB = 13;
+	public static final int UNWAIVE_SUB = 14;
+	public static final int WAIVE_FEEDER = 15;
+	public static final int UNWAIVE_FEEDER = 16;
+
 	//server does not use these commands
 	public static final int CMD_MANUAL_ENTRY	= 20;
 
@@ -38,7 +41,7 @@ public class CBCCommand extends com.cannontech.cbc.messages.CBCMessage
 		"DISABLE FEEDER",
 		
 		"ENABLE CAPBANK",
-		"DISABLE CAPBANK",		
+		"DISABLE CAPBANK",  //5		
 		"OPEN CAPBANK",
 		"CLOSE CAPBANK",
 		"CONFIRM OPEN",
@@ -46,9 +49,14 @@ public class CBCCommand extends com.cannontech.cbc.messages.CBCMessage
 		"REQUEST ALL SUBSTATION BUSES",
 		"RETURN BANK TO FEEDER",   //11
 		"UPDATE OPCOUNT",
+		"WAIVE SUB",
+		"UNWAIVE SUB",
+		"WAIVE FEEDER",  //15
+		"UNWAIVE FEEDER",
 		"","","",
-		"","","","",
-		
+
+
+
 		//below are not used by the server
 		"Manual Entry" //20
 	};

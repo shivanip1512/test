@@ -39,6 +39,7 @@ public class Feeder extends StreamableCapObject
    private Double estimatedPFValue = null;
    
    private Integer currentVarPtQuality = null;
+	private Boolean waiveControlFlag = null;
    
 
 	//should only contain objects of type CapBankDevice
@@ -508,6 +509,22 @@ public void setVarValueBeforeControl(java.lang.Double newVarValueBeforeControl) 
 	 */
 	public void setPowerFactorPointID(Integer powerFactorPointID) {
 		this.powerFactorPointID = powerFactorPointID;
+	}
+
+	/**
+	 * @return
+	 */
+	public Boolean getWaiveControlFlag()
+	{
+		return waiveControlFlag;
+	}
+
+	/**
+	 * @param boolean1
+	 */
+	public void setWaiveControlFlag(Boolean boolean1)
+	{
+		waiveControlFlag = boolean1;
 	}
 
 }

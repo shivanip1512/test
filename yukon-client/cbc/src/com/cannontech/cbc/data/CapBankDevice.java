@@ -26,6 +26,8 @@ public class CapBankDevice extends StreamableCapObject
 	private java.util.Date lastStatusChangeTime = null;
 	private Integer tagControlStatus = null;
 	
+	private Integer recloseDelay = null;
+	
 	private int origFeederID = 0;
 
 	/**
@@ -385,4 +387,20 @@ public class CapBankDevice extends StreamableCapObject
 		return getOrigFeederID() != 0;
 	}
 	
+	/**
+	 * @return
+	 */
+	public Integer getRecloseDelay()
+	{
+		return recloseDelay;
+	}
+
+	/**
+	 * @param integer
+	 */
+	public void setRecloseDelay(Integer integer)
+	{
+		recloseDelay = integer;
+	}
+
 }

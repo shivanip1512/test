@@ -58,6 +58,10 @@ public class SubBus extends StreamableCapObject
 
    private Integer currentVarPtQuality = null;
 
+	private Integer controlDelayTime = null;
+	private Integer controlSendRetries = null;
+	private Boolean waiveControlFlag = null;
+
 
 	//should only contain objects of type Feeder
 	private java.util.Vector ccFeeders = null;
@@ -768,6 +772,54 @@ public void setVarValueBeforeControl(java.lang.Double newVarValueBeforeControl) 
 	 */
 	public void setPowerFactorPointId(Integer powerFactorPointId) {
 		this.powerFactorPointId = powerFactorPointId;
+	}
+
+	/**
+	 * @return
+	 */
+	public Integer getControlDelayTime()
+	{
+		return controlDelayTime;
+	}
+
+	/**
+	 * @return
+	 */
+	public Integer getControlSendRetries()
+	{
+		return controlSendRetries;
+	}
+
+	/**
+	 * @return
+	 */
+	public Boolean getWaiveControlFlag()
+	{
+		return waiveControlFlag;
+	}
+
+	/**
+	 * @param integer
+	 */
+	public void setControlDelayTime(Integer integer)
+	{
+		controlDelayTime = integer;
+	}
+
+	/**
+	 * @param integer
+	 */
+	public void setControlSendRetries(Integer integer)
+	{
+		controlSendRetries = integer;
+	}
+
+	/**
+	 * @param boolean1
+	 */
+	public void setWaiveControlFlag(Boolean boolean1)
+	{
+		waiveControlFlag = boolean1;
 	}
 
 }

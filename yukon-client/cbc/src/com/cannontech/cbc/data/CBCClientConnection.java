@@ -16,11 +16,13 @@ import com.cannontech.cbc.messages.DefineCollectableCBCStateGroupMessage;
 import com.cannontech.cbc.messages.DefineCollectableCBCSubAreaName;
 import com.cannontech.cbc.messages.DefineCollectableCBCSubstationBuses;
 import com.cannontech.cbc.messages.DefineCollectableCBCTempMoveCapBank;
+import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.MessageEvent;
 import com.cannontech.common.util.MessageEventListener;
 import com.cannontech.message.util.ClientConnection;
 import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageListener;
+import com.cannontech.roles.yukon.SystemRole;
 import com.roguewave.vsj.CollectableStreamer;
 import com.roguewave.vsj.DefineCollectable;
 
@@ -230,11 +232,11 @@ protected com.cannontech.message.util.ClientConnection getConnection()
  */
 private void getExternalResources() 
 {
-	setHost( com.cannontech.common.util.CtiProperties.getInstance().getProperty(
-		com.cannontech.common.util.CtiProperties.KEY_CAP_CONTROL_MACHINE, "127.0.0.1" ) );
+	setHost( ClientSession.getInstance().getRolePropertyValue(
+		SystemRole.CAP_CONTROL_MACHINE, "127.0.0.1" ) );
 
-	setPort( new Integer( com.cannontech.common.util.CtiProperties.getInstance().getProperty(
-		com.cannontech.common.util.CtiProperties.KEY_CAP_CONTROL_PORT, "1910") ).intValue() );
+	setPort( new Integer( ClientSession.getInstance().getRolePropertyValue(
+		SystemRole.CAP_CONTROL_PORT, "1910") ).intValue() );
 
 }
 /**
