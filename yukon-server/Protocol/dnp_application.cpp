@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2003/06/12 21:33:59 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2003/09/30 18:49:09 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -99,6 +99,8 @@ void CtiDNPApplication::addObjectBlock( const CtiDNPObjectBlock &objBlock )
     unsigned char *tmpbuf;
 
     //  ACH:  complain if generated+existing size > sizeof(OUTMESS.Buffer)
+    //          Actually, move all this to Porter-side;  slim down the OutMess requests like the ION.
+    //          Moving all this back and forth is pointless.
     objBlockLen = objBlock.getSerializedLen();
 
     if( (objBlockLen > 0) &&
@@ -134,15 +136,12 @@ void CtiDNPApplication::serializeReq( unsigned char *buf )
 
     //  copy the packet into the buffer
     memcpy(buf, src, srcLen);
-
-    //  maybe move someday... ?  see comment below in restoreInbound
-    _hasOutput = false;
 }
 
 
 void CtiDNPApplication::restoreRsp( unsigned char *buf, int len )
 {
-    if( len > 0 )
+    if( len > RspHeaderSize )
     {
         //  copy the buffer into the packet
         memcpy(&_appRsp, buf, len);
@@ -201,13 +200,6 @@ void CtiDNPApplication::processInput( void )
         }
 
         dout << endl << endl;
-    }
-
-    if( _appRsp.ctrl.app_confirm )
-    {
-        setCommand(RequestConfirm);
-        _appReq.ctrl.seq = _appRsp.ctrl.seq;
-        _hasOutput = true;
     }
 
     //  ACH:  if class_1 || class_2 || class_3, we need to do something...  pass it up to the protocol layer, eh?
@@ -279,11 +271,6 @@ void CtiDNPApplication::getInboundPoints( RWTPtrSlist< CtiPointDataMsg > &pointL
     }
 }
 
-
-bool CtiDNPApplication::hasOutput( void )
-{
-    return _hasOutput;
-}
 
 
 /*---  Porter-side functions  ---*/
@@ -370,6 +357,35 @@ bool CtiDNPApplication::errorCondition( void )
 
 int CtiDNPApplication::generate( CtiXfer &xfer )
 {
+    if( _transport.isTransactionComplete() )
+    {
+        switch( _ioState )
+        {
+            case Input:
+            {
+                _transport.initForInput((unsigned char *)&_appRsp);
+
+                break;
+            }
+
+            case OutputAck:
+            {
+                //  This is done here instead of
+
+                generateAck(&_appAck, _appRsp.ctrl.seq);
+
+                _transport.initForOutput((unsigned char *)&_appAck, sizeof(_appAck), _dstAddr, _srcAddr);
+
+                break;
+            }
+
+            default:
+            {
+                break;
+            }
+        }
+    }
+
     return _transport.generate(xfer);
 }
 
@@ -409,9 +425,8 @@ int CtiDNPApplication::decode( CtiXfer &xfer, int status )
             {
                 if( isReplyExpected() )
                 {
-                    _transport.initForInput((unsigned char *)&_appRsp);
                     _ioState    = Input;
-                    //  leave _ioState on Output, so we re-output on error
+                    //  leave _retryState on Output, so we re-output on error
                     //  _retryState = _ioState;
                 }
                 else
@@ -428,8 +443,17 @@ int CtiDNPApplication::decode( CtiXfer &xfer, int status )
                 if( _transport.getInputSize() >= RspHeaderSize )
                 {
                     _appRspBytesUsed = _transport.getInputSize() - RspHeaderSize;
-                    _ioState    = Complete;
-                    _retryState = _ioState;
+
+                    if( _appRsp.ctrl.app_confirm )
+                    {
+                        _ioState    = OutputAck;
+                        _retryState = _ioState;
+                    }
+                    else
+                    {
+                        _ioState    = Complete;
+                        _retryState = _ioState;
+                    }
                 }
                 else
                 {
@@ -441,10 +465,18 @@ int CtiDNPApplication::decode( CtiXfer &xfer, int status )
                 break;
             }
 
+            case OutputAck:
+            {
+                _ioState    = Complete;
+                _retryState = _ioState;
+
+                break;
+            }
+
             default:
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << RWTime() << " **** Checkpoint - unknown state(" << _ioState << ") in CtiDNPApplication::decode() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
 
                 _ioState    = Failed;
                 _retryState = _ioState;
@@ -453,5 +485,21 @@ int CtiDNPApplication::decode( CtiXfer &xfer, int status )
     }
 
     return retVal;
+}
+
+
+void CtiDNPApplication::generateAck( appAck *ack_packet, unsigned char seq )
+{
+    memset( ack_packet, 0, sizeof(*ack_packet) );
+
+    ack_packet->func_code = RequestConfirm;
+
+    ack_packet->ctrl.seq         = seq;
+
+    ack_packet->ctrl.first       = 1;
+    ack_packet->ctrl.final       = 1;
+
+    ack_packet->ctrl.app_confirm = 0;
+    ack_packet->ctrl.unsolicited = 0;
 }
 
