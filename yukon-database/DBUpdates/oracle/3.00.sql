@@ -49,7 +49,7 @@ insert into billingFileformats values (9, 'CTI2');
 
 
 alter table GraphDataSeries add renderer smallint;
-update GraphDataSeries set renderer = 0;	/*Line renderer*/
+update GraphDataSeries set renderer = 0;
 alter table GraphDataSeries modify renderer not null;
 
 alter table GraphDataSeries add moreData varchar2(100);

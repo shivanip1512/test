@@ -58,7 +58,7 @@ insert into billingFileformats values (9, 'CTI2');
 
 alter table GraphDataSeries add renderer smallint;
 go
-update GraphDataSeries set renderer = 0;	/*Line renderer */
+update GraphDataSeries set renderer = 0;
 go
 alter table GraphDataSeries alter column renderer smallint not null;
 go
