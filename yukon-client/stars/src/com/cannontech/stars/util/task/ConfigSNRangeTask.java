@@ -131,7 +131,8 @@ public class ConfigSNRangeTask implements TimeConsumingTask {
 		
 		status = STATUS_RUNNING;
 		
-		boolean searchMembers = AuthFuncs.checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS );
+		boolean searchMembers = AuthFuncs.checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS )
+				&& energyCompany.getChildren().size() > 0;
 		hwsToConfig = new ArrayList();
 		
 		for (int i = 0; i < invToConfig.size(); i++) {
