@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2004/07/28 19:01:33 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2004/10/29 20:02:58 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -166,9 +166,9 @@ CtiVerificationWork::CodeStatus CtiVerificationWork::processResult()
 }
 
 
-vector< long > CtiVerificationWork::getExpectations() const
+deque< long > CtiVerificationWork::getExpectations() const
 {
-    vector< long > e;
+    deque< long > e;
     expectation_map::const_iterator itr;
 
     for( itr = _expectations.begin(); itr != _expectations.end(); itr++ )
@@ -182,9 +182,9 @@ vector< long > CtiVerificationWork::getExpectations() const
 }
 
 
-vector< pair< long, ptime > > CtiVerificationWork::getReceipts() const
+deque< pair< long, ptime > > CtiVerificationWork::getReceipts() const
 {
-    vector< pair< long, ptime > > r;
+    deque< pair< long, ptime > > r;
     receipt_map::const_iterator itr;
 
     for( itr = _receipts.begin(); itr != _receipts.end(); itr++ )

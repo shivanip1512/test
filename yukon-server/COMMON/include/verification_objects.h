@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2004/10/12 20:12:05 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2004/10/29 20:02:59 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -22,6 +22,7 @@
 #include "dsm2.h"
 
 #include <string>
+#include <queue>
 using namespace std;
 
 #include "boost_time.h"
@@ -188,8 +189,8 @@ public:
     CodeStatus processResult();
 
     CodeStatus getCodeStatus()   const  {  return _codeDisposition;    };
-    vector< long > getExpectations() const;
-    vector< pair< long, ptime > > getReceipts () const;
+    deque< long > getExpectations() const;
+    deque< pair< long, ptime > > getReceipts () const;
 };
 
 
