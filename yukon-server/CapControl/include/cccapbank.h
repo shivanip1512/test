@@ -60,7 +60,6 @@ RWDECLARE_COLLECTABLE( CtiCCCapBank )
     ULONG getCurrentDailyOperations() const;
     const RWDBDateTime& getLastStatusChangeTime() const;
     ULONG getTagsControlStatus() const;
-    BOOL getStatusReceivedFlag() const;
 
     CtiCCCapBank& setPAOId(ULONG id);
     CtiCCCapBank& setPAOCategory(const RWCString& category);
@@ -87,7 +86,6 @@ RWDECLARE_COLLECTABLE( CtiCCCapBank )
     CtiCCCapBank& setCurrentDailyOperations(ULONG operations);
     CtiCCCapBank& setLastStatusChangeTime(const RWDBDateTime& laststatuschangetime);
     CtiCCCapBank& setTagsControlStatus(ULONG tags);
-    CtiCCCapBank& setStatusReceivedFlag(BOOL statusreceived);
 
     CtiCCCapBank* replicate() const;
     virtual int compareTo(const RWCollectable* right) const;
@@ -145,7 +143,6 @@ private:
     ULONG _currentdailyoperations;
     RWDBDateTime _laststatuschangetime;
     ULONG _tagscontrolstatus;
-    BOOL _statusreceivedflag;
 
     //don't stream
     BOOL _insertDynamicDataFlag;

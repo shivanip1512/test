@@ -312,17 +312,6 @@ ULONG CtiCCCapBank::getTagsControlStatus() const
 }
 
 /*---------------------------------------------------------------------------
-    getStatusReceivedFlag
-
-    Returns the boolean if the status on the cap bank has been received
----------------------------------------------------------------------------*/
-BOOL CtiCCCapBank::getStatusReceivedFlag() const
-{
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
-    return _statusreceivedflag;
-}
-
-/*---------------------------------------------------------------------------
     setPAOId
 
     Sets the id of the capbank - use with caution
@@ -635,19 +624,6 @@ CtiCCCapBank& CtiCCCapBank::setTagsControlStatus(ULONG tags)
     return *this;
 }
 
-/*---------------------------------------------------------------------------
-    setStatusReceivedFlag
-
-    Sets the boolean if the status on the cap bank has been received
----------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setStatusReceivedFlag(BOOL statusreceived)
-{
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-    _statusreceivedflag = statusreceived;
-
-    return *this;
-}
-
 /*-------------------------------------------------------------------------
     restoreGuts
 
@@ -658,6 +634,7 @@ void CtiCCCapBank::restoreGuts(RWvistream& istrm)
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
 
     RWTime tempTime1;
+    BOOL pleaseRemoveMe;
 
     RWCollectable::restoreGuts( istrm );
 
@@ -685,7 +662,7 @@ void CtiCCCapBank::restoreGuts(RWvistream& istrm)
     >> _currentdailyoperations
     >> tempTime1
     >> _tagscontrolstatus
-    >> _statusreceivedflag;
+    >> pleaseRemoveMe;
 
     _laststatuschangetime = RWDBDateTime(tempTime1);
 }
@@ -725,7 +702,7 @@ void CtiCCCapBank::saveGuts(RWvostream& ostrm ) const
     << _currentdailyoperations
     << _laststatuschangetime.rwtime()
     << _tagscontrolstatus
-    << _statusreceivedflag;
+    << TRUE;
 }
 
 /*---------------------------------------------------------------------------
@@ -761,7 +738,6 @@ CtiCCCapBank& CtiCCCapBank::operator=(const CtiCCCapBank& right)
         _currentdailyoperations = right._currentdailyoperations;
         _laststatuschangetime = right._laststatuschangetime;
         _tagscontrolstatus = right._tagscontrolstatus;
-        _statusreceivedflag = right._statusreceivedflag;
     }
     return *this;
 }
@@ -826,7 +802,6 @@ void CtiCCCapBank::restore(RWDBReader& rdr)
 
     setStatusPointId(0);
     setOperationAnalogPointId(0);
-    setStatusReceivedFlag(FALSE);
 
     rdr["controlstatus"] >> isNull;
     if( !isNull )
