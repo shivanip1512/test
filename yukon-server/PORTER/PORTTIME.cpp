@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTTIME.cpp-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2002/12/24 18:50:52 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2003/02/04 17:24:00 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -628,6 +628,8 @@ VOID TimeSyncThread (PVOID Arg)
     struct timeb TimeB;
     ULONG EventWait;
     DWORD dwWait = 0;
+    RWTime nowTime;
+    RWTime nextTime;
 
     /* See if we should even be running */
     if(TimeSyncRate <= 0)
@@ -676,18 +678,20 @@ VOID TimeSyncThread (PVOID Arg)
     for(; PorterQuit != TRUE ;)
     {
         /* Figure out how long to wait */
-        UCTFTime (&TimeB);
+        nowTime = nowTime.now();
 
         // CTIResetEventSem (TimeSyncSem, &PostCount);
         ResetEvent(hPorterEvents[P_TIMESYNC_EVENT]);
 
         if(TimeSyncRate >= 300L)
         {
-            EventWait = 1000L * ((TimeSyncRate - (TimeB.time % TimeSyncRate) + 150L));
+            nextTime = nextScheduledTimeAlignedOnRate( nowTime, TimeSyncRate );
+            EventWait = 1000L * (nextTime.seconds() - nowTime.seconds() + 150L);
         }
         else
         {
-            EventWait = 1000L * (TimeSyncRate - (TimeB.time % TimeSyncRate));
+            nextTime = nextScheduledTimeAlignedOnRate( nowTime, TimeSyncRate );
+            EventWait = 1000L * (nextTime.seconds() - nowTime.seconds());
         }
 
         dwWait = WaitForMultipleObjects(2, hTimeSyncArray, FALSE, EventWait);
@@ -919,8 +923,8 @@ LoadWelcoTimeMessage (BYTE *Message,
     Message[4] = TimeSt.tm_sec;
 
     /* Load the milliseconds */
-    Message[5] = HIBYTE (TimeB.millitm);
-    Message[6] = LOBYTE (TimeB.millitm);
+    Message[5] = LOBYTE (TimeB.millitm);
+    Message[6] = HIBYTE (TimeB.millitm);
 
     return(NORMAL);
 }
