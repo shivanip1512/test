@@ -74,6 +74,8 @@ public class Drawing implements Serializable {
 		// Outof bounds excpetion is popped from an internal sun font cache occaisionally
 		// a retry seems to alleviate things
 		int retries = 3;
+		
+		setFileName(fileName);
 		do {		
 			try {
 				writeSVG(fileName);
