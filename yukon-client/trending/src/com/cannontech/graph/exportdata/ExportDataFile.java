@@ -3,6 +3,11 @@ package com.cannontech.graph.exportdata;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 
+import com.cannontech.database.db.graph.GDSTypesFuncs;
+import com.cannontech.database.db.graph.GraphRenderers;
+import com.cannontech.graph.model.TrendModel;
+import com.cannontech.graph.model.TrendSerie;
+
 /**
  * Insert the type's description here.
  * Creation date: (8/21/2002 9:48:51 AM)
@@ -10,16 +15,15 @@ import org.jfree.chart.JFreeChart;
  */
 public class ExportDataFile implements com.cannontech.graph.GraphDefines
 {
-	private int viewType = com.cannontech.graph.model.TrendModelType.LINE_VIEW;
+	private int viewType = GraphRenderers.LINE;
 	
 	private String fileName = "Chart.csv";
 	private String extension = "csv";
-//	private java.io.File file = new java.io.File("C:/yukon/client/export/Chart.csv");
 	
 	private Object exportObject = null;
 
 	//Object items that are only valid if csv exportting is selected.
-	private com.cannontech.graph.model.TrendModel trendModel = null;	
+	private TrendModel trendModel = null;	
 	private int csvColumnLength = 0;
 	private int csvRowLength = 0;
 
@@ -41,7 +45,7 @@ public class ExportDataFile implements com.cannontech.graph.GraphDefines
 		fileName = newFileName;
 	}
 
-	public ExportDataFile(int trendViewType, Object expObj, String newFileName, com.cannontech.graph.model.TrendModel tModel)
+	public ExportDataFile(int trendViewType, Object expObj, String newFileName, TrendModel tModel)
 	{
 		viewType = trendViewType;
 		exportObject = expObj;
@@ -60,8 +64,8 @@ public class ExportDataFile implements com.cannontech.graph.GraphDefines
 		int validIndex = 0;
 		for( int k = 0; k < trendModel.getTrendSeries().length; k++ )
 		{
-			com.cannontech.graph.model.TrendSerie serie = trendModel.getTrendSeries()[k];
-			if(com.cannontech.database.db.graph.GraphDataSeries.isGraphType( serie.getTypeMask()))
+			TrendSerie serie = trendModel.getTrendSeries()[k];
+			if(GDSTypesFuncs.isGraphType( serie.getTypeMask()))
 			{
 //				if( serie.getDataPairArray() != null)// With this check, null data is not represented with correct point
 				{
@@ -307,7 +311,7 @@ public class ExportDataFile implements com.cannontech.graph.GraphDefines
 			csvColumnLength = 0;
 			for( int i = 0; i < trendModel.getTrendSeries().length; i++)
 			{
-				if(com.cannontech.database.db.graph.GraphDataSeries.isGraphType( trendModel.getTrendSeries()[i].getTypeMask() ))
+				if(GDSTypesFuncs.isGraphType( trendModel.getTrendSeries()[i].getTypeMask() ))
 				{
 					csvColumnLength++;
 				}
@@ -349,9 +353,9 @@ public class ExportDataFile implements com.cannontech.graph.GraphDefines
 			//Go through all the points one by one and add them in the array
 			for( int z = 0; z < trendModel.getTrendSeries().length; z++ )
 			{
-				com.cannontech.graph.model.TrendSerie serie = trendModel.getTrendSeries()[z];
+				TrendSerie serie = trendModel.getTrendSeries()[z];
 				Double prevValue = null;
-				if( com.cannontech.database.db.graph.GraphDataSeries.isGraphType(serie.getTypeMask()))
+				if( GDSTypesFuncs.isGraphType(serie.getTypeMask()))
 				{
 					valueFormat.setMaximumFractionDigits(3);//serie.getDecimalPlaces());
 					valueFormat.setMinimumFractionDigits(3);//serie.getDecimalPlaces());
@@ -367,7 +371,7 @@ public class ExportDataFile implements com.cannontech.graph.GraphDefines
 							exportArray[(csvRowLength * (validIndex+2)) + x ] = "";
 						else
 						{						
-							if( com.cannontech.database.db.graph.GraphDataSeries.isUsageType(serie.getTypeMask()))
+							if( GDSTypesFuncs.isUsageType(serie.getTypeMask()))
 							{
 								if( prevValue == null)
 								{

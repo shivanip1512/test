@@ -9,13 +9,12 @@ import java.util.GregorianCalendar;
 
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.GenericDBCacheHandler;
-import com.cannontech.graph.Graph;
+import com.cannontech.database.db.graph.GraphRenderers;
 import com.cannontech.graph.buffer.html.HTMLBuffer;
 import com.cannontech.graph.buffer.html.PeakHtml;
 import com.cannontech.graph.buffer.html.TabularHtml;
 import com.cannontech.graph.buffer.html.UsageHtml;
 import com.cannontech.graph.model.TrendModel;
-import com.cannontech.graph.model.TrendModelType;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 
 
@@ -88,21 +87,21 @@ public class WebGraph implements Runnable
 			//graph.setSize(width, height);
 			graph.setStartDate(getStartDate());
 			graph.setGraphDefinition(gDef);
-			graph.setViewType(TrendModelType.LINE_VIEW );
+			graph.setViewType(GraphRenderers.LINE);
 	
 			// Graph .png file creation
-			String fileName = getFileName(TrendModelType.LINE_VIEW, gDef.getGraphDefinition().getName());
+			String fileName = getFileName(GraphRenderers.LINE, gDef.getGraphDefinition().getName());
 			graph.setUpdateTrend(true);
 			graph.update();
 			writePNG(fileName);
 	
 			StringBuffer buf = new StringBuffer("<HTML><LINK REL=\"stylesheet\" HREF=\"CannonStyle.ccs\" TYPE=\"text/css\"><CENTER>");		
 			//Tabular .html file creation.
-			fileName = getFileName( TrendModelType.TABULAR_VIEW, gDef.getGraphDefinition().getName());
+			fileName = getFileName( GraphRenderers.TABULAR, gDef.getGraphDefinition().getName());
 			buf.append(getHTMLBuffer( new TabularHtml()));
 	
 			//Summary .html file creation
-			fileName = getFileName( TrendModelType.SUMMARY_VIEW, gDef.getGraphDefinition().getName());
+			fileName = getFileName( GraphRenderers.SUMMARY, gDef.getGraphDefinition().getName());
 			buf.append("<BR><BR>");
 			buf.append( getHTMLBuffer(new PeakHtml()));
 			buf.append( getHTMLBuffer(new UsageHtml()));
@@ -163,13 +162,13 @@ public class WebGraph implements Runnable
 	{
 		switch( fileType )
 		{
-			case TrendModelType.TABULAR_VIEW:
+			case GraphRenderers.TABULAR:
 				return getHomeDirectory() + gDefName + ".html";
 			
-			case TrendModelType.SUMMARY_VIEW:
+			case GraphRenderers.SUMMARY:
 				return getHomeDirectory() + gDefName + ".html";
 
-			case TrendModelType.LINE_VIEW:
+			case GraphRenderers.LINE:
 			default:
 				return getHomeDirectory() + gDefName + ".png";
 		}

@@ -1,5 +1,7 @@
 package com.cannontech.graph.exportdata;
 
+import com.cannontech.database.db.graph.GraphRenderers;
+
 /**
  * Insert the type's description here.
  * Creation date: (8/21/2002 9:48:51 AM)
@@ -46,12 +48,12 @@ public class SaveAsJFileChooser extends javax.swing.JFileChooser implements com.
 	{
 		removeChoosableFileFilter(getFileFilter());
 			
-		if( eDataFile.getViewType() == com.cannontech.graph.model.TrendModelType.TABULAR_VIEW)
+		if( eDataFile.getViewType() == GraphRenderers.TABULAR)
 		{
 			addChoosableFileFilter(new com.cannontech.common.util.FileFilter("html", "Web Page HTML"));
 			addChoosableFileFilter(new com.cannontech.common.util.FileFilter("csv", "Comma Separated"));			
 		}
-		else if( eDataFile.getViewType() == com.cannontech.graph.model.TrendModelType.SUMMARY_VIEW)
+		else if( eDataFile.getViewType() == GraphRenderers.SUMMARY)
 		{
 			addChoosableFileFilter(new com.cannontech.common.util.FileFilter("html", "Web Page HTML"));			
 		}

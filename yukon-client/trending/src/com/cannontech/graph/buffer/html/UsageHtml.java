@@ -5,6 +5,8 @@ package com.cannontech.graph.buffer.html;
  * Creation date: (1/31/2001 1:35:39 PM)
  * @author: 
  */
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.database.db.graph.GDSTypesFuncs;
 import com.cannontech.graph.model.TrendSerie;
 
 public class UsageHtml extends HTMLBuffer
@@ -44,7 +46,7 @@ public StringBuffer getHtml(StringBuffer buf)
 		for( int i = 0; i < model.getTrendSeries().length; i++ )
 		{
 			TrendSerie serie = model.getTrendSeries()[i];
-			if( com.cannontech.database.db.graph.GraphDataSeries.isUsageType(serie.getTypeMask()))
+			if( GDSTypesFuncs.isUsageType(serie.getTypeMask()))
 			{
 				// initialize start,end to min_value which indicates no values found			
 				Double startValue = null;
@@ -203,7 +205,7 @@ public StringBuffer getHtml(StringBuffer buf)
 	catch( Exception e)
 	{
 		buf.append("<BR>No!! Usage points defined\r\n");
-		com.cannontech.clientutils.CTILogger.info(" Exception in UsageHtml.getHtml");
+		CTILogger.info(" Exception in UsageHtml.getHtml");
 		e.printStackTrace();
 		return buf;
 	}	

@@ -9,12 +9,12 @@ package com.cannontech.graph;
 import java.io.IOException;
 import java.util.Date;
 
+import com.cannontech.database.db.graph.GraphRenderers;
 import com.cannontech.graph.buffer.html.HTMLBuffer;
 import com.cannontech.graph.buffer.html.PeakHtml;
 import com.cannontech.graph.buffer.html.TabularHtml;
 import com.cannontech.graph.buffer.html.UsageHtml;
 import com.cannontech.graph.model.TrendModel;
-import com.cannontech.graph.model.TrendModelType;
 import com.cannontech.util.ServletUtil;
 import org.jfree.chart.JFreeChart;
 
@@ -293,7 +293,7 @@ public class GraphBean implements GraphDefines
 	 */
 	public void updateCurrentPane()
 	{
-		if( getViewType() == TrendModelType.TABULAR_VIEW)
+		if( getViewType() == GraphRenderers.TABULAR)
 		{
 			getGraph().update();
 			
@@ -303,7 +303,7 @@ public class GraphBean implements GraphDefines
 			buf.append("</CENTER></HTML>");
 			getGraph().setHtmlString(buf);
 		}
-		else if( getViewType() == TrendModelType.SUMMARY_VIEW)
+		else if( getViewType() == GraphRenderers.SUMMARY)
 		{			
 			StringBuffer buf = new StringBuffer();
 	

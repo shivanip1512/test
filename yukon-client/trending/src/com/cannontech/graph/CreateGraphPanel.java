@@ -10,6 +10,8 @@ import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.db.graph.GDSTypes;
+import com.cannontech.database.db.graph.GDSTypesFuncs;
 import com.cannontech.database.db.graph.GraphDataSeries;
 import com.cannontech.graph.gds.tablemodel.GDSTableModel;
 public class CreateGraphPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.cannontech.common.gui.util.DataInputPanelListener, java.awt.event.ActionListener
@@ -205,7 +207,7 @@ public GraphDataSeries createGDS(com.cannontech.database.data.lite.LitePoint poi
 
 	// call to obtain the type from the database (pointUnit)
 	String type = getPointTypeString(point);
-	gds.setType(new Integer(GraphDataSeries.getTypeInt(type)));
+	gds.setType(new Integer(GDSTypesFuncs.getTypeInt(type)));
 
 	gds.setMultiplier(new Double(1.0));
 	
@@ -617,13 +619,13 @@ private javax.swing.JComboBox getTypeComboBox()
 	if( typeComboBox == null)
 	{
 		String [] typeStrings = new String [] {
-		GraphDataSeries.BASIC_GRAPH_TYPE_STRING,
-		GraphDataSeries.USAGE_TYPE_STRING,
-		GraphDataSeries.YESTERDAY_GRAPH_TYPE_STRING,
-		GraphDataSeries.PEAK_GRAPH_TYPE_STRING,
-		GraphDataSeries.USAGE_GRAPH_TYPE_STRING,
-		GraphDataSeries.DATE_TYPE_STRING
-		//				,GraphDataSeries.THRESHOLD_TYPE_STRING	//not selectable!
+		GDSTypes.BASIC_GRAPH_TYPE_STRING,
+		GDSTypes.USAGE_TYPE_STRING,
+		GDSTypes.YESTERDAY_GRAPH_TYPE_STRING,
+		GDSTypes.PEAK_GRAPH_TYPE_STRING,
+		GDSTypes.USAGE_GRAPH_TYPE_STRING,
+		GDSTypes.DATE_TYPE_STRING
+		//	,GraphDataSeries.THRESHOLD_TYPE_STRING	//not selectable!
 		};
 		typeComboBox = new javax.swing.JComboBox(typeStrings);
 		typeComboBox.addActionListener(this);
@@ -860,16 +862,16 @@ private javax.swing.JPanel getPointOptionsPanel() {
 public String getPointTypeString(LitePoint pt)
 {
 	if( pt.getPointID() == PointTypes.SYS_PID_THRESHOLD)
-		return GraphDataSeries.THRESHOLD_TYPE_STRING;
+		return GDSTypes.THRESHOLD_TYPE_STRING;
 
 	else if( pt.getTags() == LitePoint.POINT_UOFM_GRAPH)
-		return GraphDataSeries.BASIC_GRAPH_TYPE_STRING;
+		return GDSTypes.BASIC_GRAPH_TYPE_STRING;
 
 	else if (pt.getTags() == LitePoint.POINT_UOFM_USAGE)
-		return GraphDataSeries.USAGE_TYPE_STRING;
+		return GDSTypes.USAGE_TYPE_STRING;
 	
 	else
-		return GraphDataSeries.BASIC_GRAPH_TYPE_STRING;	//default
+		return GDSTypes.BASIC_GRAPH_TYPE_STRING;	//default
 }
 /**
  * Return the PrimaryPointComboBox property value.
@@ -1127,14 +1129,14 @@ public Object getValue(Object object)
 		int type = model.getRow(i - 1).getType().intValue();
 		if (getPrimaryPointComboBox().getSelectedIndex() == i)	//PRIMARY POINT FOUND
 		{
-			type |= GraphDataSeries.PRIMARY_TYPE;
+			type |= GDSTypes.PRIMARY_TYPE;
 		}
 		else
 		{
 			//check to make sure it's there if we are going to remove it
-			if( (type & GraphDataSeries.PRIMARY_TYPE) != 0)
+			if( (type & GDSTypes.PRIMARY_TYPE) != 0)
 			{
-				type ^= GraphDataSeries.PRIMARY_TYPE;
+				type ^= GDSTypes.PRIMARY_TYPE;
 			}
 		}
 		model.getRow(i-1).setType(new Integer(type));
@@ -1368,7 +1370,7 @@ public void setValue(Object val)
 	
 		// ADD TABLE ELEMENTS TO PRIMARY POINT COMBOBOX
 		getPrimaryPointComboBox().addItem(elem.getLabel().toString());
-		if(GraphDataSeries.isPrimaryType( elem.getType().intValue()))
+		if(GDSTypesFuncs.isPrimaryType( elem.getType().intValue()))
 		{	
 			//SELECT THE PRIMARY POINT IN THE COMBO BOX.
 			getPrimaryPointComboBox().setSelectedIndex(currentRowIndex + 1);
