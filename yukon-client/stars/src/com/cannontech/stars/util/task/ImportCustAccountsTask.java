@@ -6,7 +6,11 @@
  */
 package com.cannontech.stars.util.task;
 
+import java.io.BufferedReader;
+import java.io.CharArrayWriter;
 import java.io.File;
+import java.io.FileReader;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
@@ -32,6 +36,7 @@ import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.action.DeleteCustAccountAction;
 import com.cannontech.stars.web.servlet.ImportManager;
 import com.cannontech.stars.web.servlet.SOAPServer;
+import com.cannontech.tools.email.EmailMessage;
 import com.cannontech.user.UserUtils;
 
 /**
@@ -132,6 +137,7 @@ public class ImportCustAccountsTask implements TimeConsumingTask {
 	StarsYukonUser user = null;
 	FileItem custFile = null;
 	FileItem hwFile = null;
+	String email = null;
 	
 	String position = null;
 	
@@ -147,10 +153,11 @@ public class ImportCustAccountsTask implements TimeConsumingTask {
 	int numHwUpdated = 0;
 	int numHwRemoved = 0;
 	
-	public ImportCustAccountsTask (StarsYukonUser user, FileItem custFile, FileItem hwFile) {
+	public ImportCustAccountsTask (StarsYukonUser user, FileItem custFile, FileItem hwFile, String email) {
 		this.user = user;
 		this.custFile = custFile;
 		this.hwFile = hwFile;
+		this.email = email;
 	}
 
 	/* (non-Javadoc)
@@ -187,9 +194,10 @@ public class ImportCustAccountsTask implements TimeConsumingTask {
 						msg += numAcctImported + " customer accounts imported successfully";
 					else
 						msg += numAcctImported + " of " + numAcctTotal + " customer accounts imported";
-					msg += " (" + numAcctAdded + " added, " + numAcctUpdated + " updated, " + numAcctRemoved + " removed)" + LINE_SEPARATOR;
+					msg += " (" + numAcctAdded + " added, " + numAcctUpdated + " updated, " + numAcctRemoved + " removed)";
 				}
 				if (numHwTotal > 0) {
+					msg += LINE_SEPARATOR;
 					if (numHwImported == numHwTotal)
 						msg += numHwImported + " hardwares imported successfully";
 					else
@@ -452,7 +460,7 @@ public class ImportCustAccountsTask implements TimeConsumingTask {
 						// If serial # field is empty, this record is for customer action only
 						if (hwFields[ImportManager.IDX_SERIAL_NO].trim().length() == 0) {
 							hwFieldsList.add( null );
-							appFieldsList.add( null );
+							if (appFieldsList != null) appFieldsList.add( null );
 							continue;
 						}
 						
@@ -474,7 +482,7 @@ public class ImportCustAccountsTask implements TimeConsumingTask {
 							if (acctNo == null || !acctNo.equals( custFields[ImportManager.IDX_ACCOUNT_NO] )) {
 								warnings.add( "WARNING at " + position + ": serial #" + hwFields[ImportManager.IDX_SERIAL_NO] + " not found in the customer account" );
 								hwFieldsList.add( null );
-								appFieldsList.add( null );
+								if (appFieldsList != null) appFieldsList.add( null );
 								continue;
 							}
 							
@@ -877,16 +885,24 @@ public class ImportCustAccountsTask implements TimeConsumingTask {
 			}
 			catch (java.io.IOException e) {
 				logFile = null;
-				
+				status = STATUS_ERROR;
 				if (errorMsg != null)
-					errorMsg += LINE_SEPARATOR;
+					errorMsg += LINE_SEPARATOR + "Failed to write log file";
 				else
-					errorMsg = "";
-				errorMsg += "Failed to write log file";
+					errorMsg = "Failed to write log file";
 			}
 			
-			if ((status == STATUS_ERROR || status == STATUS_CANCELED) && logFile != null)
-				errorMsg += LINE_SEPARATOR + "For detailed information, view log file '" + logFile.getPath() + "'";
+			try {
+				if (logFile != null && email != null && email.trim().length() > 0)
+					sendImportLog( logFile, email, energyCompany );
+			}
+			catch (Exception e) {
+				status = STATUS_ERROR;
+				if (errorMsg != null)
+					errorMsg += LINE_SEPARATOR + "Failed to send the import log by email";
+				else
+					errorMsg = "Failed to send the import log by email";
+			}
 		}
 	}
 	
@@ -1061,6 +1077,33 @@ public class ImportCustAccountsTask implements TimeConsumingTask {
 			
 			ImportManager.updateAppliance( appFields, appID, liteAcctInfo, energyCompany );
 		}
+	}
+	
+	private void sendImportLog(File importLog, String email, LiteStarsEnergyCompany energyCompany) throws Exception {
+		EmailMessage emailMsg = new EmailMessage();
+		emailMsg.setFrom( energyCompany.getAdminEmailAddress() );
+		emailMsg.setTo( email );
+		emailMsg.setSubject( "Import Log" );
+		emailMsg.setBody( "The log file containing information of the import process is attached." + LINE_SEPARATOR + LINE_SEPARATOR );
+		
+		CharArrayWriter cw = new CharArrayWriter();
+		PrintWriter pw = new PrintWriter( cw );
+		BufferedReader br = null;
+		
+		try {
+			br = new BufferedReader( new FileReader(importLog) );
+			String line = null;
+			while ((line = br.readLine()) != null)
+				pw.println( line );
+		}
+		finally {
+			if (br != null) br.close();
+		}
+		
+		emailMsg.addAttachment( cw.toCharArray() );
+		emailMsg.addAttachmentName( importLog.getName() );
+		
+		emailMsg.send();
 	}
 
 }

@@ -432,19 +432,11 @@ public class SendOptOutNotificationAction implements ActionBase {
 		String[] to = new String[ toList.size() ];
 		toList.toArray( to );
         
-		String from = null;
-		if (energyCompany.getPrimaryContactID() > 0) {
-			String[] emails = ContactFuncs.getAllEmailAddresses( energyCompany.getPrimaryContactID() );
-			if (emails.length > 0)
-				from = emails[0];
-		}
-		if (from == null) from = ServerUtils.ADMIN_EMAIL_ADDRESS;
-        
 		String subject = ServletUtil.capitalizeAll( energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN) )
 				+ "/" + ServletUtil.capitalizeAll( energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_REENABLE) ) + " Notification";
 		
 		EmailMessage emailMsg = new EmailMessage( to, subject, notifMessage );
-		emailMsg.setFrom( from );
+		emailMsg.setFrom( energyCompany.getAdminEmailAddress() );
 		emailMsg.send();
 	}
 

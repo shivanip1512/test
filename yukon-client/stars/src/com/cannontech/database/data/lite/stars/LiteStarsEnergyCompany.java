@@ -375,6 +375,16 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		
 		return dftTimeZone;
 	}
+	
+	public String getAdminEmailAddress() {
+		if (getPrimaryContactID() > 0) {
+			String[] emails = ContactFuncs.getAllEmailAddresses( getPrimaryContactID() );
+			if (emails.length > 0)
+				return emails[0];
+		}
+		
+		return ServerUtils.ADMIN_EMAIL_ADDRESS;
+	}
 
 	/**
 	 * Returns the opt out event queue.
