@@ -1,0 +1,20 @@
+<%
+	String action = req.getParameter("action");
+	if (action != null && action.equalsIgnoreCase("RefreshCache"))
+		com.cannontech.stars.web.servlet.SOAPServer.refreshCache();
+%>
+
+<html>
+<head>
+<title>Refresh Cache</title>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+<form name="form1" method="post" action="/servlet/SOAPServer">
+  <input type="hidden" name="RefreshCache" value="1">
+  Click the button below to refresh cache: 
+  <p><input type="submit" name="Submit" value="Submit">
+</p></form>
+</body>
+</html>
