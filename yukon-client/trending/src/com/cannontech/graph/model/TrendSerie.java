@@ -1,0 +1,214 @@
+package com.cannontech.graph.model;
+
+import java.awt.Color;
+//
+//import org.exolab.castor.jdo.Database;
+/**
+ * Insert the type's description here.
+ * Creation date: (6/18/2002 2:30:08 PM)
+ * @author: 
+ */
+public class TrendSerie
+{
+	private com.jrefinery.data.TimeSeriesDataPair[] dataPairArray = null;
+
+	private Integer pointId;
+	private String label = null;
+	private Color color = null;
+	private String type = com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES;
+	private String deviceName = null;
+		
+	private com.jrefinery.data.TimeSeriesDataPair minimumTSDataPair = null;
+	private com.jrefinery.data.TimeSeriesDataPair maximumTSDataPair = null;
+
+	// Load factor values computed for each point in the model, stored in an array that
+	//  is in accordance to the order of the pointIds.
+	private double areaOfSet = 0.0; //Load Factor, area under the curve
+	private double maxArea = 0.0;  //Load Factor, total area (using max point value)
+
+	//private double multiplier = 0;	//(Analog, Accumulator) Point's Multiplier
+
+	// Number of decimal places each point has (from pointUnit table)
+	private int decimalPlaces = 3;
+
+	private double[] valuesArray = null;
+	private long[] periodsArray = null;
+	
+	/**
+	 * FreeChartModel constructor comment.
+	 */
+	public TrendSerie()
+	{
+		super();
+	}
+	public double getAreaOfSet()
+	{
+		if( areaOfSet == 0)
+		{
+			for (int i = 0; i < getDataPairArray().length; i++)
+			{
+				areaOfSet += getDataPairArray()[i].getValue().doubleValue();
+			}
+		}
+		return areaOfSet;
+	}
+	public Color getColor()
+	{
+		return color;
+	}
+	public com.jrefinery.data.TimeSeriesDataPair[] getDataPairArray()
+	{
+		return dataPairArray;
+	}
+	public int getDecimalPlaces()
+	{
+		return decimalPlaces;
+	}
+	public String getDeviceName()
+	{
+		return deviceName;
+	}
+	public String getLabel()
+	{
+		return label;
+	}
+	
+	public double getLoadFactor()
+	{
+		if (getMaxArea() != 0.0)
+			return getAreaOfSet() / getMaxArea();
+		else
+			return 0.0;
+	}
+	
+	public double getMaxArea()
+	{
+		if( maxArea == 0)
+		{
+			maxArea = getMaximumValue() * getDataPairArray().length;
+		}
+		return maxArea;
+	}
+
+	public com.jrefinery.data.TimeSeriesDataPair getMaximumTSDataPair()
+	{
+		if( maximumTSDataPair == null)
+		{
+			double max = Double.MIN_VALUE;
+			for (int i = 0; i < getDataPairArray().length; i++)
+			{
+				if( getDataPairArray()[i].getValue().doubleValue() > max)
+				{
+					max = getDataPairArray()[i].getValue().doubleValue();
+					maximumTSDataPair = getDataPairArray()[i];
+				}
+			}
+		}
+		return maximumTSDataPair;
+	}
+	public com.jrefinery.data.TimeSeriesDataPair getMinimumTSDataPair()
+	{
+		if( minimumTSDataPair == null)
+		{
+			double min = Double.MAX_VALUE;
+			for (int i = 0; i < getDataPairArray().length; i++)
+			{
+				if( getDataPairArray()[i].getValue().doubleValue() < min)
+				{
+					min = getDataPairArray()[i].getValue().doubleValue();					
+					minimumTSDataPair = getDataPairArray()[i];
+				}
+			}
+		}
+		return minimumTSDataPair;
+	}
+
+	public double getMaximumValue()
+	{
+		return getMaximumTSDataPair().getValue().doubleValue();
+	}
+	/*
+	public long getMaximumTimestamp()
+	{
+		return getMaximumTSDataPair().getPeriod().getStart();
+	}
+	*/
+	public double getMinimumValue()
+	{
+		return getMinimumTSDataPair().getValue().doubleValue();
+	}
+	/*
+	public long getMinimumTimestamp()
+	{
+		return getMinimumTSDataPair().getPeriod().getStart();
+	}
+	*/
+	public Integer getPointId()
+	{
+		return pointId;
+	}
+	
+	public String getType()
+	{
+		return type;
+	}
+	
+	public double[] getValuesArray()
+	{
+		if( valuesArray == null)
+		{
+			if( getDataPairArray() == null)
+				return null;
+			valuesArray = new double[getDataPairArray().length];
+			for (int i = 0; i < getDataPairArray().length; i++)
+			{
+				valuesArray[i] = getDataPairArray()[i].getValue().doubleValue();
+			}
+		}
+		return valuesArray;
+	}
+	
+	public long[] getPeriodsArray()
+	{
+		if( periodsArray == null)
+		{
+			if( getDataPairArray() == null)
+				return null;
+				
+			periodsArray = new long[getDataPairArray().length];
+			for (int i = 0; i < getDataPairArray().length; i++)
+			{
+				periodsArray[i] = getDataPairArray()[i].getPeriod().getStart();
+			}
+		}
+		return periodsArray;
+	}	
+	protected void setColor(Color newColor)
+	{
+		color = newColor;
+	}
+	protected void setDataPairArray(com.jrefinery.data.TimeSeriesDataPair[] newDataPairArray)
+	{
+		dataPairArray = newDataPairArray;
+	}
+	protected void setDecimalPlaces(int newDecimalPlaces)
+	{
+		decimalPlaces = newDecimalPlaces;
+	}
+	protected void setDeviceName(String newDeviceName)
+	{
+		deviceName = newDeviceName;
+	}
+	protected void setLabel(String newLabel)
+	{
+		label = newLabel;
+	}
+	protected void setPointId(Integer newPointId)
+	{
+		pointId = newPointId;
+	}
+	protected void setType(String newType)
+	{
+		type = newType;
+	}
+}
