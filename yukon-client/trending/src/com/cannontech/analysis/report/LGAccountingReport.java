@@ -50,7 +50,7 @@ public class LGAccountingReport extends YukonReportBase
 	public LGAccountingReport(long startTime_, long stopTime_)
 	{
 		super();
-		data = new LoadGroupModel( startTime_, stopTime_);
+		model = new LoadGroupModel( startTime_, stopTime_);
 	}
 	
 	/**
@@ -58,10 +58,10 @@ public class LGAccountingReport extends YukonReportBase
 	 * Data Base for this report type is instanceOf LoadGroupReportData.
 	 * @param data_ - LoadGroupReportData TableModel data
 	 */
-	public LGAccountingReport(LoadGroupModel data_)
+	public LGAccountingReport(LoadGroupModel model_)
 	{
 		super();
-		data = data_;
+		model = model_;
 	}
 
 	/**
@@ -87,7 +87,7 @@ public class LGAccountingReport extends YukonReportBase
 
 		//Initialize the report data and populate the TableModel (collectData).
 		LGAccountingReport lgaReport = new LGAccountingReport(start, stop);
-		lgaReport.data.collectData();
+		lgaReport.getModel().collectData();
 
 		//Define the report Paper properties and format.
 		java.awt.print.Paper reportPaper = new java.awt.print.Paper();
@@ -98,7 +98,7 @@ public class LGAccountingReport extends YukonReportBase
 		//Create the report
 		JFreeReport report = lgaReport.createReport();
 		report.setDefaultPageFormat(pageFormat);
-		report.setData(lgaReport.data);
+		report.setData(lgaReport.getModel());
 	
 		final PreviewDialog dialog = new PreviewDialog(report);
 		// Add a window closeing event, even though I think it's already handled by setDefaultCloseOperation(..)
@@ -152,12 +152,12 @@ public class LGAccountingReport extends YukonReportBase
 	  tfactory.setFieldname(LGAccounting.PAO_NAME_STRING);
 	  header.addElement(tfactory.createElement());
 	  
-	  for (int i = 1; i < data.getColumnNames().length; i++)
+	  for (int i = 1; i < getModel().getColumnNames().length; i++)
 	  {
 		  factory = new LabelElementFactory();
-		  factory.setAbsolutePosition(new Point2D.Float(data.getColumnProperties(i).getPositionX(), 30));
-		  factory.setText(data.getColumnNames()[i]);
-		  factory.setMinimumSize(new FloatDimension(data.getColumnProperties(i).getWidth(), data.getColumnProperties(i).getHeight() ));
+		  factory.setAbsolutePosition(new Point2D.Float(getModel().getColumnProperties(i).getPositionX(), 30));
+		  factory.setText(getModel().getColumnNames()[i]);
+		  factory.setMinimumSize(new FloatDimension(getModel().getColumnProperties(i).getWidth(), getModel().getColumnProperties(i).getHeight() ));
 		  factory.setHorizontalAlignment(ElementAlignment.LEFT);
 		  factory.setVerticalAlignment(ElementAlignment.BOTTOM);
 		  header.addElement(factory.createElement());
@@ -208,25 +208,25 @@ public class LGAccountingReport extends YukonReportBase
 		}	
 
 		//Start at 1, we don't want to include the Load Group column, our group by column.
-		for (int i = 1; i < data.getColumnNames().length; i++)
+		for (int i = 1; i < getModel().getColumnNames().length; i++)
 		{
 			TextFieldElementFactory factory = new TextFieldElementFactory();
-			if( data.getColumnClass(i).equals(String.class))
+			if( getModel().getColumnClass(i).equals(String.class))
 				factory = new TextFieldElementFactory();
-			else if( data.getColumnClass(i).equals(java.util.Date.class))
+			else if( getModel().getColumnClass(i).equals(java.util.Date.class))
 			{
 				factory = new DateFieldElementFactory();
-				((DateFieldElementFactory)factory).setFormatString(data.getColumnProperties(i).getValueFormat());
+				((DateFieldElementFactory)factory).setFormatString(getModel().getColumnProperties(i).getValueFormat());
 			}
 			
 			if( factory != null)
 			{
-				factory.setAbsolutePosition(new java.awt.geom.Point2D.Float(data.getColumnProperties(i).getPositionX(),data.getColumnProperties(i).getPositionY()));
-				factory.setMinimumSize(new FloatDimension(data.getColumnProperties(i).getWidth(), 10));
+				factory.setAbsolutePosition(new java.awt.geom.Point2D.Float(getModel().getColumnProperties(i).getPositionX(),getModel().getColumnProperties(i).getPositionY()));
+				factory.setMinimumSize(new FloatDimension(getModel().getColumnProperties(i).getWidth(), 10));
 				factory.setHorizontalAlignment(ElementAlignment.LEFT);
 				factory.setVerticalAlignment(ElementAlignment.MIDDLE);
 				factory.setNullString("<null>");
-				factory.setFieldname(data.getColumnNames()[i]);
+				factory.setFieldname(getModel().getColumnNames()[i]);
 				items.addElement(factory.createElement());
 			}
 		}

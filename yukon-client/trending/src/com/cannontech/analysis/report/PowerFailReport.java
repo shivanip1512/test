@@ -44,8 +44,8 @@ public class PowerFailReport extends YukonReportBase
 
 		PowerFailReport powerFailReport = new PowerFailReport();
 		
-		powerFailReport.data = new PowerFailModel();
-		powerFailReport.data.collectData();
+		powerFailReport.setModel( new PowerFailModel());
+		powerFailReport.getModel().collectData();
 		
 		//Define the report Paper properties and format.
 		java.awt.print.Paper reportPaper = new java.awt.print.Paper();
@@ -56,7 +56,7 @@ public class PowerFailReport extends YukonReportBase
 		//Create the report
 		JFreeReport report = powerFailReport.createReport();
 		report.setDefaultPageFormat(pageFormat);
-		report.setData(powerFailReport.data);
+		report.setData(powerFailReport.getModel());
 				
 		final PreviewDialog dialog = new PreviewDialog(report);
 		// Add a window closeing event, even though I think it's already handled by setDefaultCloseOperation(..)

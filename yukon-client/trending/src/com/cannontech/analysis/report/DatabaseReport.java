@@ -48,17 +48,17 @@ public class DatabaseReport extends YukonReportBase
 	public DatabaseReport(String paoClass_)
 	{
 		super();
-		data = new DatabaseModel(paoClass_);
+		model = new DatabaseModel(paoClass_);
 	}
 	/**
 	 * Constructor for Report.
 	 * Data Base for this report type is instanceOf DatabaseModel.
 	 * @param data_ - DatabaseModel TableModel data
 	 */
-	public DatabaseReport(DatabaseModel data_)
+	public DatabaseReport(DatabaseModel model_)
 	{
 		super();
-		data = data_;
+		model = model_;
 	}
 
 	/**
@@ -73,7 +73,7 @@ public class DatabaseReport extends YukonReportBase
 		javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());
 		
 		DatabaseReport dbReport = new DatabaseReport("CARRIER");
-		dbReport.data.collectData();
+		dbReport.getModel().collectData();
 
 		//Define the report Paper properties and format.
 		java.awt.print.Paper reportPaper = new java.awt.print.Paper();
@@ -84,7 +84,7 @@ public class DatabaseReport extends YukonReportBase
 		//Create the report
 		JFreeReport report = dbReport.createReport();
 		report.setDefaultPageFormat(pageFormat);
-		report.setData(dbReport.data);
+		report.setData(dbReport.getModel());
 	
 		final PreviewDialog dialog = new PreviewDialog(report);
 		// Add a window closeing event, even though I think it's already handled by setDefaultCloseOperation(..)
@@ -118,12 +118,12 @@ public class DatabaseReport extends YukonReportBase
 		header.getBandDefaults().setFontDefinitionProperty(new FontDefinition("Serif", 9, true, false, false, false));
 	
 		LabelElementFactory factory;
-		for (int i = 0; i < data.getColumnNames().length; i++)
+		for (int i = 0; i < getModel().getColumnNames().length; i++)
 		{
 			factory = new LabelElementFactory();
-			factory.setAbsolutePosition(new Point2D.Float(data.getColumnProperties(i).getPositionX(), data.getColumnProperties(i).getPositionY()));
-			factory.setText(data.getColumnNames()[i]);
-			factory.setMinimumSize(new FloatDimension(data.getColumnProperties(i).getWidth(), data.getColumnProperties(i).getHeight() ));
+			factory.setAbsolutePosition(new Point2D.Float(getModel().getColumnProperties(i).getPositionX(), getModel().getColumnProperties(i).getPositionY()));
+			factory.setText(getModel().getColumnNames()[i]);
+			factory.setMinimumSize(new FloatDimension(getModel().getColumnProperties(i).getWidth(), getModel().getColumnProperties(i).getHeight() ));
 			factory.setHorizontalAlignment(ElementAlignment.LEFT);
 			factory.setVerticalAlignment(ElementAlignment.BOTTOM);
 			header.addElement(factory.createElement());
@@ -175,36 +175,36 @@ public class DatabaseReport extends YukonReportBase
 		}
 			
 		TextFieldElementFactory factory = new TextFieldElementFactory();
-		factory.setAbsolutePosition(new java.awt.geom.Point2D.Float(data.getColumnProperties(0).getPositionX(),data.getColumnProperties(0).getPositionY()));
-		factory.setMinimumSize(new FloatDimension(data.getColumnProperties(0).getWidth(), 10));
+		factory.setAbsolutePosition(new java.awt.geom.Point2D.Float(getModel().getColumnProperties(0).getPositionX(),getModel().getColumnProperties(0).getPositionY()));
+		factory.setMinimumSize(new FloatDimension(getModel().getColumnProperties(0).getWidth(), 10));
 		factory.setHorizontalAlignment(ElementAlignment.LEFT);
 		factory.setVerticalAlignment(ElementAlignment.MIDDLE);
 		factory.setNullString("<null>");
-		factory.setFieldname(data.getColumnNames()[0]);
+		factory.setFieldname(getModel().getColumnNames()[0]);
 		items.addElement(factory.createElement());
 	
-		for (int i = 0; i < data.getColumnNames().length; i++)
+		for (int i = 0; i < getModel().getColumnNames().length; i++)
 		{
 			NumberFieldElementFactory nfactory;			
-			if( data.getColumnClass(i).equals(String.class))
+			if( getModel().getColumnClass(i).equals(String.class))
 			{
 				factory = new TextFieldElementFactory();
 			}
-			else if( data.getColumnClass(i).equals(Integer.class) ||
-					data.getColumnClass(i).equals(Double.class))
+			else if( getModel().getColumnClass(i).equals(Integer.class) ||
+					getModel().getColumnClass(i).equals(Double.class))
 			{
 				factory = new NumberFieldElementFactory();
-				((NumberFieldElementFactory)factory).setFormatString(data.getColumnProperties(i).getValueFormat());
+				((NumberFieldElementFactory)factory).setFormatString(getModel().getColumnProperties(i).getValueFormat());
 			}
 			
 			if( factory != null)
 			{
-				factory.setAbsolutePosition(new java.awt.geom.Point2D.Float(data.getColumnProperties(i).getPositionX(),data.getColumnProperties(i).getPositionY()));
-				factory.setMinimumSize(new FloatDimension(data.getColumnProperties(i).getWidth(), 10));
+				factory.setAbsolutePosition(new java.awt.geom.Point2D.Float(getModel().getColumnProperties(i).getPositionX(),getModel().getColumnProperties(i).getPositionY()));
+				factory.setMinimumSize(new FloatDimension(getModel().getColumnProperties(i).getWidth(), 10));
 				factory.setHorizontalAlignment(ElementAlignment.LEFT);
 				factory.setVerticalAlignment(ElementAlignment.MIDDLE);
 				factory.setNullString("<null>");
-				factory.setFieldname(data.getColumnNames()[i]);
+				factory.setFieldname(getModel().getColumnNames()[i]);
 				items.addElement(factory.createElement());
 			}
 		}

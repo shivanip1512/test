@@ -48,16 +48,16 @@ public class DisconnectReport extends YukonReportBase
 
 		DisconnectReport DisconnectReport = new DisconnectReport();
 		
-		DisconnectReport.data = new DisconnectModel("History");
+		DisconnectReport.setModel( new DisconnectModel("History"));
 		GregorianCalendar cal = new GregorianCalendar();
-		DisconnectReport.data.setStopTime(cal.getTime().getTime());
+		DisconnectReport.getModel().setStopTime(cal.getTime().getTime());
 		cal.set(Calendar.MONTH,0);
 		cal.set(Calendar.DAY_OF_MONTH,1);
 	
-		DisconnectReport.data.setStartTime(cal.getTime().getTime());
-		DisconnectReport.data.setCollectionGroups(new String[] {"Cycle 1"});
+		DisconnectReport.getModel().setStartTime(cal.getTime().getTime());
+		DisconnectReport.getModel().setCollectionGroups(new String[] {"Cycle 1"});
 		
-		DisconnectReport.data.collectData();
+		DisconnectReport.getModel().collectData();
 		
 		
 		//Define the report Paper properties and format.
@@ -69,7 +69,7 @@ public class DisconnectReport extends YukonReportBase
 		//Create the report
 		JFreeReport report = DisconnectReport.createReport();
 		report.setDefaultPageFormat(pageFormat);
-		report.setData(DisconnectReport.data);
+		report.setData(DisconnectReport.getModel());
 		
 				
 		final PreviewDialog dialog = new PreviewDialog(report);
@@ -273,25 +273,25 @@ public class DisconnectReport extends YukonReportBase
 		items.addElement(factory.createElement());
 		*/
 		
-		for (int i = 2; i < data.getColumnNames().length; i++)
+		for (int i = 2; i < getModel().getColumnNames().length; i++)
 		{
 			TextFieldElementFactory factory = new TextFieldElementFactory();
-			if( data.getColumnClass(i).equals(String.class))
+			if( getModel().getColumnClass(i).equals(String.class))
 				factory = new TextFieldElementFactory();
-			else if( data.getColumnClass(i).equals(java.util.Date.class))
+			else if( getModel().getColumnClass(i).equals(java.util.Date.class))
 			{
 				factory = new DateFieldElementFactory();
-				((DateFieldElementFactory)factory).setFormatString(data.getColumnProperties(i).getValueFormat());
+				((DateFieldElementFactory)factory).setFormatString(getModel().getColumnProperties(i).getValueFormat());
 			}
 			
 			if( factory != null)
 			{
-				factory.setAbsolutePosition(new java.awt.geom.Point2D.Float(data.getColumnProperties(i).getPositionX(),data.getColumnProperties(i).getPositionY()));
-				factory.setMinimumSize(new FloatDimension(data.getColumnProperties(i).getWidth(), 10));
+				factory.setAbsolutePosition(new java.awt.geom.Point2D.Float(getModel().getColumnProperties(i).getPositionX(),getModel().getColumnProperties(i).getPositionY()));
+				factory.setMinimumSize(new FloatDimension(getModel().getColumnProperties(i).getWidth(), 10));
 				factory.setHorizontalAlignment(ElementAlignment.LEFT);
 				factory.setVerticalAlignment(ElementAlignment.MIDDLE);
 				factory.setNullString("<null>");
-				factory.setFieldname(data.getColumnNames()[i]);
+				factory.setFieldname(getModel().getColumnNames()[i]);
 				items.addElement(factory.createElement());
 			}
 			

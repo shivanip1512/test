@@ -19,10 +19,6 @@ import com.cannontech.analysis.data.device.MissedMeter;
 public class MissedMeterModel extends ReportModelBase
 {
 	/** Class fields */
-	/** Start time for query in millis */
-	private long startTime = Long.MIN_VALUE;
-	/** Stop time for query in millis */
-	private long stopTime = Long.MIN_VALUE;
 
 	/**
 	 * 
@@ -157,65 +153,4 @@ public class MissedMeterModel extends ReportModelBase
 		com.cannontech.clientutils.CTILogger.info("Report Records Collected from Database: " + getData().size());
 		return;
 	}
-
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.data.ReportModelBase#getDateRangeString()
-	 */
-	public String getDateRangeString()
-	{
-		java.text.SimpleDateFormat format = new java.text.SimpleDateFormat("MMM dd, yyyy");		
-		return format.format(new java.util.Date(getStartTime()));
-	}
-	/**
-	 * Returns the startTime in millis
-	 * @return long startTime
-	 */
-	//public long getStartTime()
-	//{
-	//	if( startTime < 0 )
-	//	{
-	//		java.util.GregorianCalendar tempCal = new java.util.GregorianCalendar();
-	//		tempCal.set(java.util.Calendar.HOUR_OF_DAY, 0);
-	//		tempCal.set(java.util.Calendar.MINUTE, 0);
-	//		tempCal.set(java.util.Calendar.SECOND, 0);
-	//		tempCal.set(java.util.Calendar.MILLISECOND, 0);
-	//		tempCal.add(java.util.Calendar.DATE, -1);
-	//		startTime = tempCal.getTime().getTime();				
-	//	}
-	//	return startTime;
-	//}
-//
-	/**
-	 * Returns the stopTime in millis
-	 * @return long stopTime
-	 */
-	//public long getStopTime()
-	//{
-	//	if( stopTime < 0 )
-	//	{
-	//		java.util.GregorianCalendar tempCal = new java.util.GregorianCalendar();
-	//		tempCal.setTimeInMillis(getStartTime());
-	//		tempCal.add(java.util.Calendar.DATE, 1);
-	//		stopTime = tempCal.getTime().getTime();				
-	//	}
-	//	return stopTime;
-	//}
-
-	/**
-	 * Set the startTime in millis
-	 * @param long startTime_
-	 */
-	//public void setStartTime(long startTime_)
-	//{
-	//	startTime = startTime_;
-	//}
-
-	/**
-	 * Set the stopTime in millis
-	 * @param long stopTime_
-	 */
-	//public void setStopTime(long stopTime_)
-	//{
-	//	stopTime = stopTime_;
-	//}
 }

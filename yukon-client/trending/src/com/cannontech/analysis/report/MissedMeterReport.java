@@ -44,8 +44,8 @@ public class MissedMeterReport extends YukonReportBase
 
 		MissedMeterReport missedMeterReport = new MissedMeterReport();
 		
-		missedMeterReport.data = new MissedMeterModel();
-		missedMeterReport.data.collectData();
+		missedMeterReport.setModel( new MissedMeterModel());
+		missedMeterReport.getModel().collectData();
 		
 		//Define the report Paper properties and format.
 		java.awt.print.Paper reportPaper = new java.awt.print.Paper();
@@ -56,7 +56,7 @@ public class MissedMeterReport extends YukonReportBase
 		//Create the report
 		JFreeReport report = missedMeterReport.createReport();
 		report.setDefaultPageFormat(pageFormat);
-		report.setData(missedMeterReport.data);
+		report.setData(missedMeterReport.getModel());
 				
 		final PreviewDialog dialog = new PreviewDialog(report);
 		// Add a window closeing event, even though I think it's already handled by setDefaultCloseOperation(..)

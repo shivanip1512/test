@@ -47,11 +47,11 @@ public class LMControlLogReport extends YukonReportBase
 	 * Data Base for this report type is instanceOf SystemLogModel.
 	 * @param data_ - SystemLogModel TableModel data
 	 */
-	public LMControlLogReport(SystemLogModel data_)
+	public LMControlLogReport(SystemLogModel model_)
 	{
 		super();
-		data = data_;
-		data.setReportType(ReportTypes.LM_CONTROL_LOG_DATA);
+		model = model_;
+		model.setReportType(ReportTypes.LM_CONTROL_LOG_DATA);
 	}
 	/**
 	 * Constructor for Report.
@@ -89,10 +89,10 @@ public class LMControlLogReport extends YukonReportBase
 		long start = cal.getTimeInMillis();
 
 		//Initialize the report data and populate the TableModel (collectData).
-		lmControlLogReport.data = new SystemLogModel(start, stop, new Integer(SystemLog.TYPE_LOADMANAGEMENT));
-		lmControlLogReport.data.setReportType(ReportTypes.LM_CONTROL_LOG_DATA); 
+		lmControlLogReport.setModel( new SystemLogModel(start, stop, new Integer(SystemLog.TYPE_LOADMANAGEMENT)));
+		lmControlLogReport.getModel().setReportType(ReportTypes.LM_CONTROL_LOG_DATA); 
 //		lmControlLogReport.data = new LMControlLog(start, stop, new Integer(SystemLog.TYPE_LOADMANAGEMENT));
-		lmControlLogReport.data.collectData();
+		lmControlLogReport.getModel().collectData();
 
 		//Define the report Paper properties and format.
 		java.awt.print.Paper reportPaper = new java.awt.print.Paper();
@@ -103,7 +103,7 @@ public class LMControlLogReport extends YukonReportBase
 		//Create the report
 		JFreeReport report = lmControlLogReport.createReport();
 		report.setDefaultPageFormat(pageFormat);
-		report.setData(lmControlLogReport.data);
+		report.setData(lmControlLogReport.getModel());
 		
 		final PreviewDialog dialog = new PreviewDialog(report);
 		// Add a window closeing event, even though I think it's already handled by setDefaultCloseOperation(..)
@@ -128,7 +128,7 @@ public class LMControlLogReport extends YukonReportBase
 	protected ExpressionCollection getExpressions() throws FunctionInitializeException
 	{
 		super.getExpressions();
-		expressions.add(getDateExpression(data.getColumnProperties(0).getValueFormat(), data.getColumnName(0)));
+		expressions.add(getDateExpression(getModel().getColumnProperties(0).getValueFormat(), getModel().getColumnName(0)));
 		return expressions;
 	}
 	
@@ -148,8 +148,8 @@ public class LMControlLogReport extends YukonReportBase
 
 		final TextFieldElementFactory tfactory = new TextFieldElementFactory();
 		tfactory.setName("Date Group Element");
-		tfactory.setAbsolutePosition(new java.awt.geom.Point2D.Float(data.getColumnProperties(0).getPositionX(), data.getColumnProperties(0).getPositionY()));
-		tfactory.setMinimumSize(new FloatDimension(data.getColumnProperties(0).getWidth(), data.getColumnProperties(0).getHeight()));
+		tfactory.setAbsolutePosition(new java.awt.geom.Point2D.Float(getModel().getColumnProperties(0).getPositionX(), getModel().getColumnProperties(0).getPositionY()));
+		tfactory.setMinimumSize(new FloatDimension(getModel().getColumnProperties(0).getWidth(), getModel().getColumnProperties(0).getHeight()));
 		tfactory.setHorizontalAlignment(ElementAlignment.LEFT);
 		tfactory.setVerticalAlignment(ElementAlignment.BOTTOM);
 		tfactory.setNullString("<null>");
@@ -159,14 +159,14 @@ public class LMControlLogReport extends YukonReportBase
 		header.addElement(StaticShapeElementFactory.createLineShapeElement("line1", null, new BasicStroke(0.5f), new java.awt.geom.Line2D.Float(0, 20, 0, 20)));
 
 		//Add all columns (excluding Date) to the table model.
-		for (int i = 1; i < data.getColumnNames().length; i++)
+		for (int i = 1; i < getModel().getColumnNames().length; i++)
 		{
 			LabelElementFactory factory = new LabelElementFactory();
 			factory.setHorizontalAlignment(ElementAlignment.LEFT);
 			factory.setVerticalAlignment(ElementAlignment.BOTTOM);
-			factory.setAbsolutePosition(new Point2D.Float(data.getColumnProperties(i).getPositionX(), 18));
-			factory.setMinimumSize(new FloatDimension(data.getColumnProperties(i).getWidth(), data.getColumnProperties(i).getHeight() ));
-			factory.setText(data.getColumnNames()[i]);
+			factory.setAbsolutePosition(new Point2D.Float(getModel().getColumnProperties(i).getPositionX(), 18));
+			factory.setMinimumSize(new FloatDimension(getModel().getColumnProperties(i).getWidth(), getModel().getColumnProperties(i).getHeight() ));
+			factory.setText(getModel().getColumnNames()[i]);
 			header.addElement(factory.createElement());
 		}
 		
@@ -215,26 +215,26 @@ public class LMControlLogReport extends YukonReportBase
 					new java.awt.geom.Line2D.Float(0, 10, 0, 10)));
 		}
 		//Start at 1, we don't want to include the Date column, Date is our group by column.
-		for (int i = 1; i < data.getColumnNames().length; i++)
+		for (int i = 1; i < getModel().getColumnNames().length; i++)
 		{
 			TextFieldElementFactory factory = new TextFieldElementFactory();
 
-			if( data.getColumnClass(i).equals(String.class))
+			if( getModel().getColumnClass(i).equals(String.class))
 				factory = new TextFieldElementFactory();
-			else if( data.getColumnClass(i).equals(java.util.Date.class))
+			else if( getModel().getColumnClass(i).equals(java.util.Date.class))
 			{
 				factory = new DateFieldElementFactory();
-				((DateFieldElementFactory)factory).setFormatString(data.getColumnProperties(i).getValueFormat());
+				((DateFieldElementFactory)factory).setFormatString(getModel().getColumnProperties(i).getValueFormat());
 			}
 			
 			if( factory != null)
 			{
-				factory.setAbsolutePosition(new java.awt.geom.Point2D.Float(data.getColumnProperties(i).getPositionX(),data.getColumnProperties(i).getPositionY()));
-				factory.setMinimumSize(new FloatDimension(data.getColumnProperties(i).getWidth(), 10));
+				factory.setAbsolutePosition(new java.awt.geom.Point2D.Float(getModel().getColumnProperties(i).getPositionX(),getModel().getColumnProperties(i).getPositionY()));
+				factory.setMinimumSize(new FloatDimension(getModel().getColumnProperties(i).getWidth(), 10));
 				factory.setHorizontalAlignment(ElementAlignment.LEFT);
 				factory.setVerticalAlignment(ElementAlignment.MIDDLE);
 				factory.setNullString("<null>");
-				factory.setFieldname(data.getColumnNames()[i]);
+				factory.setFieldname(getModel().getColumnNames()[i]);
 				items.addElement(factory.createElement());
 			}
 		}

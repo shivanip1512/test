@@ -22,10 +22,6 @@ public class SystemLogModel extends ReportModelBase
 	/** Class fields */
 	/** Flag indicating data to be ordered ASC or DESC in tableModel*/
 	private boolean orderDescending = false;
-	/** Start time for query in millis */
-	private long startTime = Long.MIN_VALUE;
-	/** Stop time for query in millis */
-	private long stopTime = Long.MIN_VALUE;
 	
 	/**
 	 * Type int from com.cannontech.database.db.point.SystemLog.type
@@ -216,39 +212,6 @@ public class SystemLogModel extends ReportModelBase
 	public void setOrderDescending(boolean orderDesc_)
 	{
 		orderDescending = orderDesc_;
-	}
-	
-	/**
-	 * Returns the startTime
-	 * @return long startTime
-	 */
-	public long getStartTime()
-	{
-		return startTime;
-	}
-	/**
-	 * Returns the stopTime
-	 * @return long stopTime
-	 */
-	public long getStopTime()
-	{
-		return stopTime;
-	}
-	/**
-	 * Set the startTime (in millis)
-	 * @param long startTime
-	 */
-	public void setStartTime(long time)
-	{
-		startTime = time;
-	}
-	/**
-	 * Set the stopTime (in millis)
-	 * @param long stopTime
-	 */
-	public void setStopTime(long time)
-	{
-		stopTime = time;
 	}
 
 	/**

@@ -50,8 +50,7 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 	/** The report type, valid types are in com.cannontech.analysis.data.ReportTypes*/
 	protected int reportType;
 	
-	/** Class fields */
-		/** Start time for query in millis */
+	/** Start time for query in millis */
 	private long startTime = Long.MIN_VALUE;
 	
 	/** Stop time for query in millis */
@@ -64,7 +63,15 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 	{
 		super();
 	}	
-
+	/**
+	 * Default Constructor
+	 */
+	public ReportModelBase(long startTime_, long stopTime_)
+	{
+		this();
+		setStartTime(startTime_);
+		setStopTime(stopTime_);
+	}	
 	/**
 	 * Implement this method to add/populate row items to the data Vector.
 	 */
@@ -250,37 +257,55 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 	}
 	
 	/**
-		 * Returns the startTime in millis
-		 * @return long startTime
-		 */
-		public long getStartTime()
+	 * Returns the startTime in millis
+	 * @return long startTime
+	 */
+	public long getStartTime()
+	{
+		if( startTime < 0 )
 		{
-			return startTime;
+			java.util.GregorianCalendar tempCal = new java.util.GregorianCalendar();
+			tempCal.set(java.util.Calendar.HOUR_OF_DAY, 0);
+			tempCal.set(java.util.Calendar.MINUTE, 0);
+			tempCal.set(java.util.Calendar.SECOND, 0);
+			tempCal.set(java.util.Calendar.MILLISECOND, 0);
+			tempCal.add(java.util.Calendar.DATE, -1);
+			startTime = tempCal.getTime().getTime();				
 		}
-		/**
-		 * Returns the stopTime in millis
-		 * @return long stopTime
-		 */
-		public long getStopTime()
+		return startTime;
+	}
+
+	/**
+	 * Returns the stopTime in millis
+	 * @return long stopTime
+	 */
+	public long getStopTime()
+	{
+		if( stopTime < 0 )
 		{
-			return stopTime;
+			java.util.GregorianCalendar tempCal = new java.util.GregorianCalendar();
+			tempCal.setTimeInMillis(getStartTime());
+			tempCal.add(java.util.Calendar.DATE, 1);
+			stopTime = tempCal.getTime().getTime();				
 		}
-		/**
-		 * Set the startTime in millis
-		 * @param long time
-		 */
-		public void setStartTime(long time)
-		{
-			startTime = time;
-		}
-		/**
-		 * Set the stopTime in millis
-		 * @param long time
-		 */
-		public void setStopTime(long time)
-		{
-			stopTime = time;
-		}
+		return stopTime;
+	}
+	/**
+	 * Set the startTime in millis
+	 * @param long time
+	 */
+	public void setStartTime(long time)
+	{
+		startTime = time;
+	}
+	/**
+	 * Set the stopTime in millis
+	 * @param long time
+	 */
+	public void setStopTime(long time)
+	{
+		stopTime = time;
+	}
 
 	/**
 	 * @return
@@ -305,5 +330,4 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 	{
 		data = vector;
 	}
-
 }

@@ -45,10 +45,10 @@ public class StatisticReport extends YukonReportBase
 	 * Data Base for this report type is instanceOf SystemLogModel.
 	 * @param data_ - SystemLogModel TableModel data
 	 */
-	public StatisticReport(StatisticModel data_)
+	public StatisticReport(StatisticModel model_)
 	{
 		super();
-		data = data_;
+		model = model_;
 	}
 	/**
 	 * Constructor for Report.
@@ -74,7 +74,7 @@ public class StatisticReport extends YukonReportBase
 		else if( reportTypeString.startsWith("comm"))
 			statReportType = ReportTypes.COMM_CHANNEL_DATA;
 
-		data = new StatisticModel(statType_, statReportType);
+		setModel(new StatisticModel(statType_, statReportType));
    }
 	/**
 	 * Runs this report and shows a preview dialog.
@@ -96,7 +96,7 @@ public class StatisticReport extends YukonReportBase
 			statType = args[1];
 		
 		StatisticReport statReport = new StatisticReport(reportType, statType);
-		statReport.data.collectData();
+		statReport.getModel().collectData();
 
 		//Define the report Paper properties and format.
 		java.awt.print.Paper reportPaper = new java.awt.print.Paper();
@@ -107,7 +107,7 @@ public class StatisticReport extends YukonReportBase
 		//Create the report
 		JFreeReport report = statReport.createReport();
 		report.setDefaultPageFormat(pageFormat);
-		report.setData(statReport.data);
+		report.setData(statReport.getModel());
 				
 		final PreviewDialog dialog = new PreviewDialog(report);
 		// Add a window closeing event, even though I think it's already handled by setDefaultCloseOperation(..)
@@ -140,12 +140,12 @@ public class StatisticReport extends YukonReportBase
 		header.getBandDefaults().setFontDefinitionProperty(new FontDefinition("Serif", 9, true, false, false, false));
 	
 		LabelElementFactory factory;
-		for (int i = 0; i < data.getColumnNames().length; i++)
+		for (int i = 0; i < getModel().getColumnNames().length; i++)
 		{
 			factory = new LabelElementFactory();
-			factory.setAbsolutePosition(new Point2D.Float(data.getColumnProperties(i).getPositionX(), data.getColumnProperties(i).getPositionY()));
-			factory.setText(data.getColumnNames()[i]);
-			factory.setMinimumSize(new FloatDimension(data.getColumnProperties(i).getWidth(), data.getColumnProperties(i).getHeight() ));
+			factory.setAbsolutePosition(new Point2D.Float(getModel().getColumnProperties(i).getPositionX(), getModel().getColumnProperties(i).getPositionY()));
+			factory.setText(getModel().getColumnNames()[i]);
+			factory.setMinimumSize(new FloatDimension(getModel().getColumnProperties(i).getWidth(), getModel().getColumnProperties(i).getHeight() ));
 			factory.setHorizontalAlignment(ElementAlignment.LEFT);
 			factory.setVerticalAlignment(ElementAlignment.BOTTOM);
 			header.addElement(factory.createElement());
@@ -197,36 +197,36 @@ public class StatisticReport extends YukonReportBase
 		}
 			
 		TextFieldElementFactory factory = new TextFieldElementFactory();
-		factory.setAbsolutePosition(new java.awt.geom.Point2D.Float(data.getColumnProperties(0).getPositionX(),data.getColumnProperties(0).getPositionY()));
-		factory.setMinimumSize(new FloatDimension(data.getColumnProperties(0).getWidth(), 10));
+		factory.setAbsolutePosition(new java.awt.geom.Point2D.Float(getModel().getColumnProperties(0).getPositionX(), getModel().getColumnProperties(0).getPositionY()));
+		factory.setMinimumSize(new FloatDimension(getModel().getColumnProperties(0).getWidth(), 10));
 		factory.setHorizontalAlignment(ElementAlignment.LEFT);
 		factory.setVerticalAlignment(ElementAlignment.MIDDLE);
 		factory.setNullString("<null>");
-		factory.setFieldname(data.getColumnNames()[0]);
+		factory.setFieldname(getModel().getColumnNames()[0]);
 		items.addElement(factory.createElement());
 	
-		for (int i = 0; i < data.getColumnNames().length; i++)
+		for (int i = 0; i < getModel().getColumnNames().length; i++)
 		{
 			NumberFieldElementFactory nfactory;			
-			if( data.getColumnClass(i).equals(String.class))
+			if( getModel().getColumnClass(i).equals(String.class))
 			{
 				factory = new TextFieldElementFactory();
 			}
-			else if( data.getColumnClass(i).equals(Integer.class) ||
-					data.getColumnClass(i).equals(Double.class))
+			else if( getModel().getColumnClass(i).equals(Integer.class) ||
+					getModel().getColumnClass(i).equals(Double.class))
 			{
 				factory = new NumberFieldElementFactory();
-				((NumberFieldElementFactory)factory).setFormatString(data.getColumnProperties(i).getValueFormat());
+				((NumberFieldElementFactory)factory).setFormatString(getModel().getColumnProperties(i).getValueFormat());
 			}
 			
 			if( factory != null)
 			{
-				factory.setAbsolutePosition(new java.awt.geom.Point2D.Float(data.getColumnProperties(i).getPositionX(),data.getColumnProperties(i).getPositionY()));
-				factory.setMinimumSize(new FloatDimension(data.getColumnProperties(i).getWidth(), 10));
+				factory.setAbsolutePosition(new java.awt.geom.Point2D.Float(getModel().getColumnProperties(i).getPositionX(),getModel().getColumnProperties(i).getPositionY()));
+				factory.setMinimumSize(new FloatDimension(getModel().getColumnProperties(i).getWidth(), 10));
 				factory.setHorizontalAlignment(ElementAlignment.LEFT);
 				factory.setVerticalAlignment(ElementAlignment.MIDDLE);
 				factory.setNullString("<null>");
-				factory.setFieldname(data.getColumnNames()[i]);
+				factory.setFieldname(getModel().getColumnNames()[i]);
 				items.addElement(factory.createElement());
 			}
 		}

@@ -54,7 +54,7 @@ public abstract class YukonReportBase extends java.awt.event.WindowAdapter
 	protected boolean showBackgroundColor = false;
 	
 	/** TableModel data structure */
-	public ReportModelBase data = null;
+	protected ReportModelBase model = null;
 	/** collection of functions */
 	protected ExpressionCollection functions = null;
 	/** collection of expressions */
@@ -66,16 +66,16 @@ public abstract class YukonReportBase extends java.awt.event.WindowAdapter
 	protected String PAGE_XOFY_EXPRESSION = "PageXofY";
 	
 	 
-	public void showPreviewFrame(ReportModelBase data_) throws Exception
+	public void showPreviewFrame(ReportModelBase model_) throws Exception
 	{
 		// initialize JFreeReport
 		Boot.start();
 		
-		data = data_;
-		data.collectData();
+		model = model_;
+		model.collectData();
 
 		JFreeReport report = createReport();
-		report.setData(data);
+		report.setData(model);
 		
 		
 		final PreviewDialog dialog = new PreviewDialog(report);
@@ -84,13 +84,13 @@ public abstract class YukonReportBase extends java.awt.event.WindowAdapter
 		dialog.setVisible(true);
 	}
 	
-	public PreviewInternalFrame getPreviewFrame(ReportModelBase data_) throws Exception
+	public PreviewInternalFrame getPreviewFrame(ReportModelBase model_) throws Exception
 	{
 		Boot.start();
-		data = data_;
-		data.collectData();
+		model = model_;
+		model.collectData();
 		JFreeReport report = createReport();
-		report.setData(data);
+		report.setData(model);
 		final PreviewInternalFrame pFrame = new PreviewInternalFrame(report);
 		
 		return pFrame;
@@ -104,7 +104,7 @@ public abstract class YukonReportBase extends java.awt.event.WindowAdapter
 	public JFreeReport createReport() throws org.jfree.report.function.FunctionInitializeException
 	{
 		final JFreeReport report = new JFreeReport();
-		report.setName(data.getTitleString());
+		report.setName(getModel().getTitleString());
 		report.setReportFooter(createReportFooter());
 		report.setReportHeader(createReportHeader());
 		report.setPageFooter(createPageFooter());
@@ -336,7 +336,7 @@ public abstract class YukonReportBase extends java.awt.event.WindowAdapter
 		factory.setMinimumSize(new FloatDimension(-100, 24));
 		factory.setHorizontalAlignment(ElementAlignment.CENTER);
 		factory.setVerticalAlignment(ElementAlignment.MIDDLE);
-		factory.setText(data.getTitleString());
+		factory.setText(getModel().getTitleString());
 		header.addElement(factory.createElement());
 				
 		factory = new LabelElementFactory();
@@ -344,10 +344,26 @@ public abstract class YukonReportBase extends java.awt.event.WindowAdapter
 		factory.setMinimumSize(new FloatDimension(-100, 24));
 		factory.setHorizontalAlignment(ElementAlignment.CENTER);
 		factory.setVerticalAlignment(ElementAlignment.MIDDLE);
-		factory.setText(data.getDateRangeString());
+		factory.setText(getModel().getDateRangeString());
 		factory.setFontSize(new Integer(12));
 		header.addElement(factory.createElement());		
 
 		return header;
 	}
+	/**
+	 * @return
+	 */
+	public ReportModelBase getModel()
+	{
+		return model;
+	}
+
+	/**
+	 * @param base
+	 */
+	public void setModel(ReportModelBase base)
+	{
+		model = base;
+	}
+
 }

@@ -24,11 +24,6 @@ import com.cannontech.database.data.pao.PAOGroups;
 public class StatisticModel extends ReportModelBase
 {
 	/** Class fields */
-	/** Start time for query in millis */
-	private long startTime = Long.MIN_VALUE;
-	/** Stop time for query in millis */
-	private long stopTime = Long.MIN_VALUE;
-	
 	/** YukonPaobject.paoClass value criteria, null results in all paoClasses */
 	private String paoClass = null;
 	
@@ -39,18 +34,16 @@ public class StatisticModel extends ReportModelBase
 	/** valid types are: Daily | Yesterday | Monthly | LastMonth | HourXX  */
 	private String statType = null;
 
-	private String title = null;
 	/**
 	 * Constructor class
 	 * @param statType_ DynamicPaoStatistics.StatisticType
 	 */
 	
 	public StatisticModel()
-		{
-			this("Daily", ReportTypes.CARRIER_COMM_DATA);//default type		
-		}
-	
-	
+	{
+		this("Daily", ReportTypes.CARRIER_COMM_DATA);//default type		
+	}
+
 	public StatisticModel(String statType_)
 	{
 		this(statType_, ReportTypes.CARRIER_COMM_DATA);//default type		
@@ -198,38 +191,6 @@ public class StatisticModel extends ReportModelBase
 		}
 	}
 
-	/**
-	 * Return the startTime in millis.
-	 * @return long startTime
-	 */
-//	public long getStartTime()
-	//{
-	//	return startTime;
-	//}
-	/**
-	 * Reuturn the stopTime in millis.
-	 * @return long stopTime
-	 */
-	//public long getStopTime()
-	//{
-	//	return stopTime;
-	//}
-	/**
-	 * Set the startTime
-	 * @param long time
-	 */
-	//public void setStartTime(long time)
-	//{
-	//	startTime = time;
-	//}
-	/**
-	 * Set the stopTime
-	 * @param long time
-	 */
-	//public void setStopTime(long time)
-	//{
-	//	stopTime = time;
-	//}
 	/**
 	 * Return the category (YukonPaobject.Category)
 	 * @return String category.

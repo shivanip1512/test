@@ -27,16 +27,15 @@ public class DisconnectModel extends ReportModelBase
 	/** valid types are: Current | Open | Closed | History | Current  */
 	private String disconnectType = null;
 
-	private String title = null;
 	/**
 	 * Constructor class
 	 * @param statType_ DynamicPaoStatistics.StatisticType
 	 */
 	
 	public DisconnectModel()
-		{
-			this("Current", ReportTypes.DISCONNECT_DATA);//default type		
-		}
+	{
+		this("Current", ReportTypes.DISCONNECT_DATA);//default type		
+	}
 	
 	
 	public DisconnectModel(String disconnectType_)
@@ -171,12 +170,6 @@ public class DisconnectModel extends ReportModelBase
 			e.printStackTrace();
 		}
 	}
-
-
-	/**
-	 * Return the paoClass (YukonPaobject.PaoClass)
-	 * @return String paoClass
-	 */
 
 	/**
 	 * Return the statType (DynamicPaoStatistics.statisticType)

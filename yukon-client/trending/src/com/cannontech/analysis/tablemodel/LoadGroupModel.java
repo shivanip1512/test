@@ -33,7 +33,7 @@ public class LoadGroupModel extends ReportModelBase
 	public LoadGroupModel()
 	{
 		super();
-				setReportType(ReportTypes.LG_ACCOUNTING_DATA);
+		setReportType(ReportTypes.LG_ACCOUNTING_DATA);
 	}	
 
 	
@@ -45,9 +45,9 @@ public class LoadGroupModel extends ReportModelBase
 	 * A null loadGroup is specified, which means ALL Load Groups!
 	 */
 	public LoadGroupModel(long startTime_, long stopTime_)
-		{
-			this(null, startTime_, stopTime_, ReportTypes.LG_ACCOUNTING_DATA);
-		}	
+	{
+		this(null, startTime_, stopTime_, ReportTypes.LG_ACCOUNTING_DATA);
+	}	
 	/**
 	 * Constructor class
 	 * @param loadGroup_ YukonPaobject.paobjectID (of array of load groups)
@@ -55,10 +55,9 @@ public class LoadGroupModel extends ReportModelBase
 	 * @param stopTime_ LMControlHistory.stopDateTiem
 	 */
 	public LoadGroupModel(int[] paoIDs_,long startTime_, long stopTime_ )
-		{
-			
-			this(paoIDs_,startTime_, stopTime_, ReportTypes.LG_ACCOUNTING_DATA);
-		}
+	{		
+		this(paoIDs_,startTime_, stopTime_, ReportTypes.LG_ACCOUNTING_DATA);
+	}
 	
 	/**
 	 * Constructor class
@@ -73,7 +72,6 @@ public class LoadGroupModel extends ReportModelBase
 		setStopTime(stopTime_);
 		setReportType(reportType_);
 		setPaoIDs(paoIDs_);
-		
 	}	
 		
 	/**
@@ -200,7 +198,5 @@ public class LoadGroupModel extends ReportModelBase
 		com.cannontech.clientutils.CTILogger.info("Report Records Collected from Database: " + getData().size());
 		return;
 	}
-
-	
 }
 	
