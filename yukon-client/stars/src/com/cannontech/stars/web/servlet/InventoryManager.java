@@ -43,6 +43,7 @@ import com.cannontech.stars.xml.serialize.DeviceType;
 import com.cannontech.stars.xml.serialize.InstallationCompany;
 import com.cannontech.stars.xml.serialize.LMHardware;
 import com.cannontech.stars.xml.serialize.MCT;
+import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsDeleteLMHardware;
 import com.cannontech.stars.xml.serialize.StarsInv;
 import com.cannontech.stars.xml.serialize.StarsInventory;
@@ -471,6 +472,7 @@ public class InventoryManager extends HttpServlet {
 			
 			try {
 				Transaction.createTransaction( Transaction.DELETE, inventory ).execute();
+				energyCompany.deleteInventory( invID );
 			}
 			catch (TransactionException e) {
 				e.printStackTrace();
@@ -488,6 +490,14 @@ public class InventoryManager extends HttpServlet {
 	 */
 	private void addSNRange(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+		
+		Integer devTypeID = Integer.valueOf( req.getParameter("DeviceType") );
+		Integer categoryID = new Integer( ECUtils.getInventoryCategoryID(devTypeID.intValue(), energyCompany) );
+		if (ECUtils.isMCT( categoryID.intValue() )) {
+			String mctType = YukonListFuncs.getYukonListEntry( devTypeID.intValue() ).getEntryText();
+			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Cannot add SN range for device type " + mctType);
+			return;
+		}
 		
 		int snFrom = 0, snTo = 0;
 		try {
@@ -507,10 +517,8 @@ public class InventoryManager extends HttpServlet {
 			return;
 		}
 		
-		Integer devTypeID = Integer.valueOf( req.getParameter("DeviceType") );
 		Integer voltageID = Integer.valueOf( req.getParameter("Voltage") );
 		Integer companyID = Integer.valueOf( req.getParameter("ServiceCompany") );
-		Integer categoryID = new Integer( ECUtils.getInventoryCategoryID(devTypeID.intValue(), energyCompany) );
 		
 		Date recvDate = null;
 		String recvDateStr = req.getParameter("ReceiveDate");
@@ -604,6 +612,31 @@ public class InventoryManager extends HttpServlet {
 	private void updateSNRange(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
 		
+		Integer devTypeID = Integer.valueOf( req.getParameter("DeviceType") );
+		int categoryID = ECUtils.getInventoryCategoryID( devTypeID.intValue(), energyCompany );
+		if (ECUtils.isMCT( categoryID )) {
+			String mctType = YukonListFuncs.getYukonListEntry( devTypeID.intValue() ).getEntryText();
+			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Cannot update SN range for device type " + mctType);
+			return;
+		}
+		
+		Integer newDevTypeID = (req.getParameter("NewDeviceType") != null)?
+				Integer.valueOf( req.getParameter("NewDeviceType") ) : null;
+		int newCatID = CtiUtilities.NONE_ID;
+		if (newDevTypeID != null) {
+			if (newDevTypeID.intValue() == devTypeID.intValue()) {
+				newDevTypeID = null;
+			}
+			else {
+				newCatID = ECUtils.getInventoryCategoryID( newDevTypeID.intValue(), energyCompany );
+				if (ECUtils.isMCT( newCatID )) {
+					String mctType = YukonListFuncs.getYukonListEntry( devTypeID.intValue() ).getEntryText();
+					session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Cannot change device type to " + mctType);
+					return;
+				}
+			}
+		}
+		
 		String fromStr = req.getParameter("From");
 		String toStr = req.getParameter("To");
 		
@@ -634,7 +667,6 @@ public class InventoryManager extends HttpServlet {
 			toStr = String.valueOf( snTo );
 		}
 		
-		Integer devTypeID = Integer.valueOf( req.getParameter("DeviceType") );
 		Integer voltageID = (req.getParameter("Voltage") != null)?
 				Integer.valueOf( req.getParameter("Voltage") ) : null;
 		Integer companyID = (req.getParameter("ServiceCompany") != null)?
@@ -650,7 +682,7 @@ public class InventoryManager extends HttpServlet {
 			}
 		}
 		
-		if (recvDate == null && voltageID == null && companyID == null)
+		if (newDevTypeID == null && recvDate == null && voltageID == null && companyID == null)
 			return;
 		
 		ArrayList hardwareSet = new ArrayList();
@@ -666,12 +698,21 @@ public class InventoryManager extends HttpServlet {
 		java.util.Iterator it = snTable.values().iterator();
 		while (it.hasNext()) {
 			Integer invID = (Integer) it.next();
-			LiteInventoryBase liteInv = energyCompany.getInventoryBrief( invID.intValue(), true );
+			LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventoryBrief( invID.intValue(), true );
 			
 			try {
-				com.cannontech.database.db.stars.hardware.InventoryBase invDB =
-						new com.cannontech.database.db.stars.hardware.InventoryBase();
-				StarsLiteFactory.setInventoryBase( invDB, liteInv );
+				com.cannontech.database.data.stars.hardware.LMHardwareBase hardware =
+						new com.cannontech.database.data.stars.hardware.LMHardwareBase();
+				com.cannontech.database.db.stars.hardware.InventoryBase invDB = hardware.getInventoryBase();
+				
+				if (newDevTypeID != null) {
+					StarsLiteFactory.setLMHardwareBase( hardware, liteHw );
+					hardware.getInventoryBase().setCategoryID( new Integer(newCatID) );
+					hardware.getLMHardwareBase().setLMHardwareTypeID( newDevTypeID );
+				}
+				else {
+					StarsLiteFactory.setInventoryBase( invDB, liteHw );
+				}
 				
 				if (companyID != null)
 					invDB.setInstallationCompanyID( companyID );
@@ -680,15 +721,45 @@ public class InventoryManager extends HttpServlet {
 				if (voltageID != null)
 					invDB.setVoltageID( voltageID );
 				
-				invDB = (com.cannontech.database.db.stars.hardware.InventoryBase)
-						Transaction.createTransaction( Transaction.UPDATE, invDB ).execute();
+				if (newDevTypeID != null) {
+					hardware = (com.cannontech.database.data.stars.hardware.LMHardwareBase)
+							Transaction.createTransaction( Transaction.UPDATE, hardware ).execute();
+					
+					StarsLiteFactory.setLiteStarsLMHardware( liteHw, hardware );
+					if (liteHw.isExtended()) {
+						liteHw.updateThermostatType();
+						if (liteHw.isThermostat())
+							liteHw.setThermostatSettings( energyCompany.getThermostatSettings(liteHw) );
+						else
+							liteHw.setThermostatSettings( null );
+					}
+				}
+				else {
+					invDB = (com.cannontech.database.db.stars.hardware.InventoryBase)
+							Transaction.createTransaction( Transaction.UPDATE, invDB ).execute();
+					StarsLiteFactory.setLiteInventoryBase( liteHw, invDB );
+				}
 				
-				StarsLiteFactory.setLiteInventoryBase( liteInv, invDB );
+				if (liteHw.getAccountID() > 0) {
+					StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteHw.getAccountID() );
+					if (starsAcctInfo != null) {
+						if (!liteHw.isExtended()) StarsLiteFactory.extendLiteInventoryBase( liteHw, energyCompany );
+						
+						for (int i = 0; i < starsAcctInfo.getStarsInventories().getStarsInventoryCount(); i++) {
+							StarsInventory starsInv = starsAcctInfo.getStarsInventories().getStarsInventory(i);
+							if (starsInv.getInventoryID() == invID.intValue()) {
+								StarsLiteFactory.setStarsInv( starsInv, liteHw, energyCompany );
+								break;
+							}
+						}
+					}
+				}
+				
 				numSuccess++;
 			}
 			catch (TransactionException e) {
 				CTILogger.error( e.getMessage(), e );
-				hardwareSet.add( liteInv );
+				hardwareSet.add( liteHw );
 				numFailure++;
 			}
 		}
@@ -852,6 +923,14 @@ public class InventoryManager extends HttpServlet {
 	private void configSNRange(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
 		
+		Integer devTypeID = Integer.valueOf( req.getParameter("DeviceType") );
+		int categoryID = ECUtils.getInventoryCategoryID( devTypeID.intValue(), energyCompany );
+		if (ECUtils.isMCT( categoryID )) {
+			String mctType = YukonListFuncs.getYukonListEntry( devTypeID.intValue() ).getEntryText();
+			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Cannot config SN range for device type " + mctType);
+			return;
+		}
+		
 		String fromStr = req.getParameter("From");
 		String toStr = req.getParameter("To");
 		
@@ -882,7 +961,6 @@ public class InventoryManager extends HttpServlet {
 			toStr = String.valueOf( snTo );
 		}
 		
-		Integer devTypeID = Integer.valueOf( req.getParameter("DeviceType") );
 		boolean configNow = req.getParameter("ConfigNow") != null;
 		
 		SwitchCommandQueue cmdQueue = (configNow)?

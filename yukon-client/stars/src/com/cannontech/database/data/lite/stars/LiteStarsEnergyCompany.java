@@ -508,10 +508,10 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	}
 	
 	public LiteYukonGroup[] getResidentialCustomerGroups() {
-		String[] custGroupNames = getEnergyCompanySetting( EnergyCompanyRole.CUSTOMER_GROUP_NAME ).split(",");
+		String[] custGroupIDs = getEnergyCompanySetting( EnergyCompanyRole.CUSTOMER_GROUP_IDS ).split(",");
 		ArrayList custGroupList = new ArrayList();
-		for (int i = 0; i < custGroupNames.length; i++) {
-			LiteYukonGroup liteGroup = AuthFuncs.getGroup( custGroupNames[i] );
+		for (int i = 0; i < custGroupIDs.length; i++) {
+			LiteYukonGroup liteGroup = AuthFuncs.getGroup( Integer.parseInt(custGroupIDs[i]) );
 			if (liteGroup != null) custGroupList.add( liteGroup );
 		}
 		
@@ -521,10 +521,10 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	}
 	
 	public LiteYukonGroup[] getWebClientOperatorGroups() {
-		String[] operGroupNames = getEnergyCompanySetting( EnergyCompanyRole.OPERATOR_GROUP_NAME ).split(",");
+		String[] operGroupIDs = getEnergyCompanySetting( EnergyCompanyRole.OPERATOR_GROUP_IDS ).split(",");
 		ArrayList operGroupList = new ArrayList();
-		for (int i = 0; i < operGroupNames.length; i++) {
-			LiteYukonGroup liteGroup = AuthFuncs.getGroup( operGroupNames[i] );
+		for (int i = 0; i < operGroupIDs.length; i++) {
+			LiteYukonGroup liteGroup = AuthFuncs.getGroup( Integer.parseInt(operGroupIDs[i]) );
 			if (liteGroup != null) operGroupList.add( liteGroup );
 		}
 		

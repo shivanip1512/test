@@ -226,14 +226,19 @@ public class UpdateThermostatManualOptionAction implements ActionBase {
 					liteHw.getThermostatSettings().getDynamicData().getDisplayedTempUnit() != null)
 					tempUnit = liteHw.getThermostatSettings().getDynamicData().getDisplayedTempUnit();
 				
-				String logMsg = "Serial #:" + liteHw.getManufacturerSerialNumber() + ", ";
-				if (starsOption.getTemperature() == -1)
-					logMsg += "Run Program";
-				else
-					logMsg += "Mode:" + starsOption.getMode().toString() + ", " +
-							"Temp:" + starsOption.getTemperature() + tempUnit +
-							(starsOption.getHold()? "(HOLD)" : "") + ", " +
-							"Fan:" + starsOption.getFan().toString();
+				String logMsg = "Serial #:" + liteHw.getManufacturerSerialNumber();
+				if (starsOption.getMode() != null)
+					logMsg += ", Mode:" + starsOption.getMode().toString();
+				if (starsOption.getTemperature() == -1) {
+					logMsg += ", Run Program";
+				}
+				else {
+					logMsg += ", Temp:" + starsOption.getTemperature() + tempUnit;
+					if (starsOption.getHold())
+						logMsg += "(HOLD)";
+					if (starsOption.getFan() != null)
+						logMsg += ", Fan:" + starsOption.getFan().toString();
+				}
 				
 				ActivityLogger.logEvent(user.getUserID(), liteAcctInfo.getAccountID(), energyCompany.getLiteID(), liteAcctInfo.getCustomer().getCustomerID(),
 						"Thermostat Manual", logMsg);

@@ -1859,8 +1859,8 @@ public class StarsAdmin extends HttpServlet {
 			String warning = null;
 			LiteYukonGroup operGroup = null;
 			
-			String[] operGroupNames= req.getParameter("OperatorGroup").split(",");
-			String operGroupName = "";
+			String[] operGroupNames = req.getParameter("OperatorGroup").split(",");
+			String operGroupIDs = "";
 			for (int i = 0; i < operGroupNames.length; i++) {
 				String groupName = operGroupNames[i].trim();
 				if (groupName.equals("")) continue;
@@ -1870,14 +1870,14 @@ public class StarsAdmin extends HttpServlet {
 					throw new WebClientException( "Operator group '" + groupName + "' doesn't exist");
 				
 				if (i == 0)
-					operGroupName += groupName;
+					operGroupIDs += String.valueOf( group.getGroupID() );
 				else
-					operGroupName += "," + groupName;
+					operGroupIDs += "," + String.valueOf( group.getGroupID() );
 				if (i == 0) operGroup = group;
 			}
 			
 			String[] custGroupNames = req.getParameter("CustomerGroup").split(",");
-			String custGroupName = "";
+			String custGroupIDs = "";
 			for (int i = 0; i < custGroupNames.length; i++) {
 				String groupName = custGroupNames[i].trim();
 				if (groupName.equals("")) continue;
@@ -1887,9 +1887,9 @@ public class StarsAdmin extends HttpServlet {
 					throw new WebClientException( "Customer group '" + groupName + "' doesn't exist");
 				
 				if (i == 0)
-					custGroupName += groupName;
+					custGroupIDs += String.valueOf( group.getGroupID() );
 				else
-					custGroupName += "," + groupName;
+					custGroupIDs += "," + String.valueOf( group.getGroupID() );
 			}
 			
 			if (YukonUserFuncs.getLiteYukonUser( req.getParameter("Username") ) != null)
@@ -1901,7 +1901,7 @@ public class StarsAdmin extends HttpServlet {
 			
 			// Create a privilege group with EnergyCompany and Administrator role
 			String dftOperGroupName = (operGroupNames.length > 0)?
-					operGroupNames[0] + " Default" : "Web Client Operators Default";
+					operGroupNames[0] + " Admin Grp" : "Web Client Operators Admin Grp";
 			
 			if (AuthFuncs.getGroup( dftOperGroupName ) != null) {
 				int num = 2;
@@ -1929,12 +1929,12 @@ public class StarsAdmin extends HttpServlet {
 				
 				groupRole.setRoleID( new Integer(EnergyCompanyRole.ROLEID) );
 				groupRole.setRolePropertyID( new Integer(roleProps[i].getRolePropertyID()) );
-				if (roleProps[i].getRolePropertyID() == EnergyCompanyRole.CUSTOMER_GROUP_NAME)
-					groupRole.setValue( custGroupName );
-				else if (roleProps[i].getRolePropertyID() == EnergyCompanyRole.OPERATOR_GROUP_NAME)
-					groupRole.setValue( operGroupName );
+				if (roleProps[i].getRolePropertyID() == EnergyCompanyRole.CUSTOMER_GROUP_IDS)
+					groupRole.setValue( custGroupIDs );
+				else if (roleProps[i].getRolePropertyID() == EnergyCompanyRole.OPERATOR_GROUP_IDS)
+					groupRole.setValue( operGroupIDs );
 				else
-					groupRole.setValue( CtiUtilities.STRING_NONE );
+					groupRole.setValue( "" );
 				
 				dftGroup.getYukonGroupRoles().add( groupRole );
 			}

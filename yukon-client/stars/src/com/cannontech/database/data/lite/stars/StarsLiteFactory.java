@@ -1573,6 +1573,8 @@ public class StarsLiteFactory {
 		}
 		else {
 			starsInv.setDeviceType( (DeviceType)StarsFactory.newEmptyStarsCustListEntry( DeviceType.class ));
+			starsInv.setLMHardware( null );
+			starsInv.setMCT( null );
 		}
 	}
 	

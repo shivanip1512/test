@@ -174,10 +174,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 					
 					for (int k = 0; k < starsSeason.getStarsThermostatScheduleCount(); k++) {
 						StarsThermostatSchedule starsSched = starsSeason.getStarsThermostatSchedule(k);
-						
 						int towID = ECUtils.getThermSeasonEntryTOWID( starsSched.getDay(), energyCompany );
-						if (towID == 0)
-							throw new Exception( "Invalid thermostat schedule attribute: day = " + starsSched.getDay().toString() );
 						
 						ArrayList oldSched = new ArrayList();
 						for (int l = 0; l < liteSettings.getThermostatSeasons().size(); l++) {
