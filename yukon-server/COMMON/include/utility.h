@@ -17,8 +17,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/utility.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/05/08 14:28:07 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/07/18 16:10:23 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -101,5 +101,6 @@ IM_EX_CTIBASE int generateTransmissionID();
 IM_EX_CTIBASE LONG GetPAOIdOfPoint(long pid);
 IM_EX_CTIBASE INT EstablishOutMessagePriority(OUTMESS *Out, INT priority);
 IM_EX_CTIBASE INT OverrideOutMessagePriority(OUTMESS *Out, INT priority);
+IM_EX_CTIBASE bool CheckSocketSubsystem();
 
 #endif // #ifndef __UTILITY_H__

@@ -985,4 +985,32 @@ LONG GetPAOIdOfPoint(long pid)
     return id;
 }
 
+/*
+ *  Checks if sockets are available in the system.
+ */
+bool CheckSocketSubsystem()
+{
+    bool status = true;
 
+    SOCKET s = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+
+    if(s == INVALID_SOCKET)
+    {
+        status = false;
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Socket subsystem is questionable.  Error " << WSAGetLastError() << endl;
+        }
+    }
+    else
+    {
+        closesocket(s);
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Socket subsystem is OK." << endl;
+        }
+    }
+
+    return status;
+}
