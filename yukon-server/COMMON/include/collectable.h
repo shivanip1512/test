@@ -17,7 +17,7 @@
 #define MSG_REGISTER                      ((MSG_BASE) + 40)
 #define MSG_SERVER_REQUEST                ((MSG_BASE) + 50)
 #define MSG_SERVER_RESPONSE               ((MSG_BASE) + 51)
-#Define MSG_POINTREGISTRATION             ((MSG_BASE) + 70)
+#define MSG_POINTREGISTRATION             ((MSG_BASE) + 70)
 #define MSG_DBCHANGE                      ((MSG_BASE) + 80)
 #define MSG_PCREQUEST                     ((MSG_BASE) + 85)
 #define MSG_PCRETURN                      ((MSG_BASE) + 90)
