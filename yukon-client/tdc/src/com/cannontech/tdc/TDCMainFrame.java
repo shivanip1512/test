@@ -4160,7 +4160,8 @@ public void mainPanel_JComboCurrentDisplayAction_actionPerformed(java.util.Event
 			Display.isHistoryDisplay(source.getCurrentDisplay().getDisplayNumber()) );
 			
 		getAlarmToolBar().setJComponentEnabled( getAlarmToolBar().COMP_INDX_ACKALL,
-			Display.isAlarmDisplay(source.getCurrentDisplay().getDisplayNumber())
+			(Display.isAlarmDisplay(source.getCurrentDisplay().getDisplayNumber())
+			&& !source.getCurrentDisplay().getTdcFilter().getConditions().get(ITDCFilter.COND_HISTORY)) 
 			|| Display.isUserDefinedType(source.getCurrentDisplay().getType()) );
 		
 		getAlarmToolBar().setJComponentEnabled( getAlarmToolBar().COMP_INDX_ACTIVCEALARMS,

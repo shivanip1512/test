@@ -221,6 +221,7 @@ private void handleException(java.lang.Throwable exception)
 private synchronized void processAlarmColors()
 {
 	int maxLoc = 0, minLoc = 0;
+	boolean played = false;
 
 	for( int i = 0; i < alarmedRows.size(); i++ )
 	{
@@ -229,7 +230,7 @@ private synchronized void processAlarmColors()
 			int loc = alarmedRows.elementAt(i).getRowNumber();
 
 			//only do things one time in here
-			if( i == 0 )
+			if( !played )
 			{
 				//we cant be muted and there has to be at least 1 unsilenced row
 				if( !model.isMuted() && alarmedRows.isAnyRowUnSilenced() )
@@ -238,8 +239,9 @@ private synchronized void processAlarmColors()
 
 				maxLoc = loc;
 				minLoc = loc;
+				played = true;
 			}
-				
+
 			if( loc > maxLoc )
 				maxLoc = loc;
 			else if( loc < minLoc )
