@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_accum.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2003/03/13 19:36:16 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2003/06/10 20:57:52 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -63,6 +63,12 @@ public:
             }
          }
       }
+      if( _pointHistory )
+      {
+          delete _pointHistory;
+          _pointHistory = 0;
+      }
+
    }
 
 
