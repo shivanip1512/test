@@ -66,7 +66,9 @@ public:
         WAIVE_SUBSTATION_BUS,//13
         UNWAIVE_SUBSTATION_BUS,//14
         WAIVE_FEEDER,//15
-        UNWAIVE_FEEDER//16
+        UNWAIVE_FEEDER,//16
+        ENABLE_OVUV,//17 
+        DISABLE_OVUV//18
     };
 
     CtiCCCommand(LONG command);

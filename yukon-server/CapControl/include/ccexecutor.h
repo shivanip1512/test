@@ -75,6 +75,8 @@ private:
     void UnwaiveSubstationBus();
     void WaiveFeeder();
     void UnwaiveFeeder();
+    void EnableOvUv();
+    void DisableOvUv();
 
     CtiCCCommand* _command;
 };

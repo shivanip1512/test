@@ -104,6 +104,14 @@ void CtiCCCommandExecutor::Execute()
         UnwaiveFeeder();
         break;
 
+    case CtiCCCommand::ENABLE_OVUV:
+        EnableOvUv();
+        break;
+
+    case CtiCCCommand::DISABLE_OVUV:
+        DisableOvUv();
+        break;
+
     default:
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -358,6 +366,145 @@ void CtiCCCommandExecutor::DisableCapBank()
     }
 }
 
+
+/*---------------------------------------------------------------------------
+    Enable OV/UV
+---------------------------------------------------------------------------*/    
+void CtiCCCommandExecutor::EnableOvUv()
+{
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+
+    LONG controlID = 0;
+    LONG bankID = _command->getId();
+    BOOL found = FALSE;
+    CtiMultiMsg* multi = new CtiMultiMsg();
+   // RWOrdered& pointChanges = multi->getData();
+
+    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(RWDBDateTime().seconds());
+
+    for(LONG i=0;i<ccSubstationBuses.entries();i++)
+    {
+        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses[i];
+        RWOrdered& ccFeeders = currentSubstationBus->getCCFeeders();
+
+        for(LONG j=0;j<ccFeeders.entries();j++)
+        {
+            CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[j];
+            RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
+
+            for(LONG k=0;k<ccCapBanks.entries();k++)
+            {
+                CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
+                if( bankID == currentCapBank->getControlDeviceId() )
+                {
+                    controlID = currentCapBank->getControlDeviceId();
+
+                    RWCString text = RWCString("Cap Bank OV/UV Enabled");
+                    RWCString additional = RWCString("Cap Bank: ");
+                    additional += currentCapBank->getPAOName();
+                    CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
+
+                    found = TRUE;
+                    break;
+                }
+            }
+            if (found)
+            {
+                break;
+            }
+        }
+        if (found)
+        {
+            break;
+        }
+    }
+    if( controlID > 0 )
+    {
+        CtiRequestMsg* reqMsg = new CtiRequestMsg(controlID,"putconfig ovuv enable");
+        reqMsg->setSOE(5);
+        CtiCapController::getInstance()->manualCapBankControl( reqMsg, multi );
+        //CtiCapController::getInstance()->manualCapBankControl( reqMsg );
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Could not create Porter Request Message in: " << __FILE__ << " at: " << __LINE__ << endl;
+    }
+
+
+}
+
+/*---------------------------------------------------------------------------
+    Disable OV/UV
+---------------------------------------------------------------------------*/    
+void CtiCCCommandExecutor::DisableOvUv()
+{
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+
+    LONG controlID = 0;
+    LONG bankID = _command->getId();
+    BOOL found = FALSE;
+    CtiMultiMsg* multi = new CtiMultiMsg();
+    //RWOrdered& pointChanges = multi->getData();
+
+    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(RWDBDateTime().seconds());
+
+    for(LONG i=0;i<ccSubstationBuses.entries();i++)
+    {
+        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses[i];
+        RWOrdered& ccFeeders = currentSubstationBus->getCCFeeders();
+
+        for(LONG j=0;j<ccFeeders.entries();j++)
+        {
+            CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[j];
+            RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
+
+            for(LONG k=0;k<ccCapBanks.entries();k++)
+            {
+                CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
+                if( bankID == currentCapBank->getControlDeviceId() )
+                {
+                    controlID = currentCapBank->getControlDeviceId();
+
+                    RWCString text = RWCString("Cap Bank OV/UV Disabled");
+                    RWCString additional = RWCString("Cap Bank: ");
+                    additional += currentCapBank->getPAOName();
+                    CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
+
+                    found = TRUE;
+                    break;
+
+                }
+
+            }
+            if (found)
+            {
+                break;
+            }
+        }
+        if (found)
+        {
+            break;
+        }
+    }
+    if( controlID > 0 )
+    {
+        CtiRequestMsg* reqMsg = new CtiRequestMsg(controlID,"putconfig ovuv disable");
+        reqMsg->setSOE(5);
+        CtiCapController::getInstance()->manualCapBankControl( reqMsg, multi );
+        //CtiCapController::getInstance()->manualCapBankControl( reqMsg );
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Could not create Porter Request Message in: " << __FILE__ << " at: " << __LINE__ << endl;
+    }
+
+}
+
+
 /*---------------------------------------------------------------------------
     OpenCapBank
 ---------------------------------------------------------------------------*/    
@@ -518,6 +665,7 @@ void CtiCCCommandExecutor::OpenCapBank()
         dout << RWTime() << " - Could not create Porter Request Message in: " << __FILE__ << " at: " << __LINE__ << endl;
     }
 }
+
 
 /*---------------------------------------------------------------------------
     CloseCapBank
