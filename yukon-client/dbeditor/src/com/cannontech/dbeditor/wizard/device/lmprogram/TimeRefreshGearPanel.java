@@ -1588,7 +1588,11 @@ public Object getValue(Object o)
 		gear.setRampInInterval(new Integer(getJTextFieldRampInInterval().getText()));
 	}
 
-	gear.setMethodOptionType(com.cannontech.common.util.StringUtils.removeChars( ' ', (String)getJComboBoxCycleCountSndType().getSelectedItem()));
+	//This will need to be altered once serverside supports the strings for fixed shed times and dynamic shed times
+	if(com.cannontech.common.util.StringUtils.removeChars( ' ', (String)getJComboBoxCycleCountSndType().getSelectedItem()).compareTo(LMProgramDirectGear.OPTION_DYNAMIC_SHED) == 0)
+		gear.setMethodOptionType(LMProgramDirectGear.OPTION_COUNT_DOWN);
+	else
+		gear.setMethodOptionType(LMProgramDirectGear.OPTION_FIXED_COUNT);
 	
 	gear.setPercentReduction( new Integer( ((Number)getJCSpinFieldPercentReduction().getValue()).intValue() ) );
 	
@@ -2110,7 +2114,8 @@ public void setValue(Object o)
 
 	com.cannontech.database.data.device.lm.TimeRefreshGear t = (com.cannontech.database.data.device.lm.TimeRefreshGear)gear;
 
-	if(t.getMethodOptionType().compareTo(LMProgramDirectGear.OPTION_DYNAMIC_SHED) == 0)
+	//This will need to be altered once serverside supports the strings for fixed shed times and dynamic shed times
+	if(t.getMethodOptionType().compareTo(LMProgramDirectGear.OPTION_COUNT_DOWN) == 0)
 	{
 		getJComboBoxShedTimeDigits().setVisible(false);
 		getJComboBoxShedTimeUnits().setVisible(false);
@@ -2124,7 +2129,12 @@ public void setValue(Object o)
 	
 	getJComboBoxNumGroups().setSelectedItem( t.getNumberOfGroups() );
 	
-	getJComboBoxCycleCountSndType().setSelectedItem(StringUtils.addCharBetweenWords( ' ', t.getMethodOptionType()));
+	//This will need to be altered once serverside supports the strings for fixed shed times and dynamic shed times
+	if(t.getMethodOptionType().compareTo(LMProgramDirectGear.OPTION_COUNT_DOWN) == 0)
+		getJComboBoxCycleCountSndType().setSelectedItem(StringUtils.addCharBetweenWords( ' ', LMProgramDirectGear.OPTION_DYNAMIC_SHED));
+	else
+		getJComboBoxCycleCountSndType().setSelectedItem(StringUtils.addCharBetweenWords( ' ', LMProgramDirectGear.OPTION_FIXED_SHED));
+
 
 	com.cannontech.common.util.CtiUtilities.setIntervalComboBoxSelectedItem( 
 			getJComboBoxSendRateDigits(), getJComboBoxSendRateUnits(), t.getRefreshRate().intValue() );
