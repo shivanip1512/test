@@ -132,8 +132,10 @@ public class StarsDatabaseCache implements com.cannontech.database.cache.DBChang
 	public void loadData() {
 		getAllWebConfigurations();
 		
-		ArrayList allCompanies = getAllEnergyCompanies();
+		// Force all contacts to be loaded (since this can take a long time, and slow down the first time login)
+		DefaultDatabaseCache.getInstance().getAllContacts();
 		
+		ArrayList allCompanies = getAllEnergyCompanies();
 		final LiteStarsEnergyCompany[] companies = new LiteStarsEnergyCompany[ allCompanies.size() ];
 		allCompanies.toArray( companies );
 		
