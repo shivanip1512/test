@@ -100,7 +100,6 @@ $(BIN)\*.exe
 
 # The lines below accomplish the ID'ing of the project!
 id:
-            @cid .\include\id_prtdll.h
             @$(MAKE) -nologo -f $(_InputFile) id_prtdll.obj
 
 id_prtdll.obj:    id_prtdll.cpp include\id_prtdll.h

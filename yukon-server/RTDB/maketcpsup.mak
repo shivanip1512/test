@@ -75,7 +75,6 @@ deps:
 
 # The lines below accomplish the ID'ing of the project!
 id:
-            @cid .\include\id_tcpdll.h
             @$(MAKE) -nologo -f $(_InputFile) id_tcpdll.obj
 
 id_tcpdll.obj:    id_tcpdll.cpp include\id_tcpdll.h

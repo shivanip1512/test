@@ -1,11 +1,8 @@
 
 #include "utility.h"
+#include "id_build.h"
 
 #define PROJECT   "CTI Logger DLL "
-
-#define MAJORREVISION   2
-#define MINORREVISION   32
-#define BUILDNUMBER     0
 
 CTICOMPILEINFO CompileInfo = {
    PROJECT,

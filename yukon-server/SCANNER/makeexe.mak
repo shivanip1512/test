@@ -104,7 +104,6 @@ deps:
 
 # The lines below accomplish the ID'ing of the project!
 id:
-            @cid .\include\id_scanner.h
             @$(MAKE) -nologo -f $(_InputFile) id_scanner.obj
 
 id_scanner.obj:    id_scanner.cpp include\id_scanner.h

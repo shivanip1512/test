@@ -159,7 +159,6 @@ deps:
 
 # The lines below accomplish the ID'ing of the project!
 id:
-            @cid .\include\id_porter.h
             @$(MAKE) -nologo -f $(_InputFile) id_porter.obj
 
 id_porter.obj:    id_porter.cpp include\id_porter.h

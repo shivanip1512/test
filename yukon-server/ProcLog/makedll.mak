@@ -61,7 +61,6 @@ clean:
 
 # The lines below accomplish the ID'ing of the project!
 id:
-            @cid .\include\id_proclog.h
             @$(MAKE) -nologo -f $(_InputFile) id_proclog.obj
 
 id_proclog.obj:    id_proclog.cpp include\id_proclog.h

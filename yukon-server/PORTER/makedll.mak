@@ -78,7 +78,6 @@ deps:
 
 # The lines below accomplish the ID'ing of the project!
 id:
-            @cid .\include\id_pgdll.h
             @$(MAKE) -nologo -f $(_InputFile) id_pgdll.obj
 
 id_pgdll.obj:    id_pgdll.cpp include\id_pgdll.h

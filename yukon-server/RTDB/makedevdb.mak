@@ -152,7 +152,6 @@ $(BIN)\*.exe
 
 # The lines below accomplish the ID'ing of the project!
 id:
-            @cid .\include\id_devdll.h
             @$(MAKE) -nologo -f $(_InputFile) id_devdll.obj
 
 id_devdll.obj:    id_devdll.cpp include\id_devdll.h

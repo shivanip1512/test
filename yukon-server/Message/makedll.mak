@@ -96,7 +96,6 @@ $(BIN)\*.exe
 
 # The lines below accomplish the ID'ing of the project!
 id:
-            @cid .\include\id_ctimsg.h
             @$(MAKE) -nologo -f $(_InputFile) id_ctimsg.obj
 
 id_ctimsg.obj:    id_ctimsg.cpp include\id_ctimsg.h
@@ -117,69 +116,69 @@ id_ctimsg.obj:    id_ctimsg.cpp include\id_ctimsg.h
 ######################################################################################
 
 #UPDATE#
-connection.obj:	collectable.h connection.h dlldefs.h exchange.h \
-		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
-		guard.h logger.h thread.h message.h msg_multi.h msg_pdata.h \
-		pointdefs.h msg_signal.h yukon.h msg_ptreg.h msg_reg.h \
-		queue.h
-dll_msg.obj:	dsm2.h mutex.h dlldefs.h guard.h yukon.h dllbase.h \
-		os2_2w32.h types.h cticalls.h connection.h exchange.h \
-		logger.h thread.h message.h collectable.h msg_multi.h \
-		msg_pdata.h pointdefs.h msg_signal.h msg_ptreg.h msg_reg.h \
-		queue.h dll_msg.h utility.h
-id_ctimsg.obj:	utility.h dlldefs.h dsm2.h mutex.h guard.h id_ctimsg.h \
-		id_vinfo.h
-message.obj:	message.h collectable.h dlldefs.h dllbase.h os2_2w32.h \
-		types.h cticalls.h dsm2.h mutex.h guard.h logger.h thread.h
-msg_cmd.obj:	dllbase.h os2_2w32.h dlldefs.h types.h cticalls.h dsm2.h \
-		mutex.h guard.h collectable.h msg_cmd.h message.h logger.h \
-		thread.h
-msg_commerrorhistory.obj:	collectable.h logger.h thread.h mutex.h \
-		dlldefs.h guard.h msg_commerrorhistory.h message.h yukon.h \
-		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h
-msg_dbchg.obj:	collectable.h msg_dbchg.h message.h dlldefs.h yukon.h \
-		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
-		guard.h ctibase.h ctinexus.h logger.h thread.h
-msg_email.obj:	collectable.h logger.h thread.h mutex.h dlldefs.h \
-		guard.h msg_email.h dllbase.h os2_2w32.h types.h cticalls.h \
-		dsm2.h message.h yukon.h
-msg_lmcontrolhistory.obj:	collectable.h logger.h thread.h mutex.h \
-		dlldefs.h guard.h msg_lmcontrolhistory.h pointdefs.h \
-		message.h yukon.h dllbase.h os2_2w32.h types.h cticalls.h \
-		dsm2.h
-msg_multi.obj:	collectable.h msg_multi.h dlldefs.h msg_pdata.h \
-		pointdefs.h message.h msg_signal.h yukon.h dllbase.h \
-		os2_2w32.h types.h cticalls.h dsm2.h mutex.h guard.h \
-		ctibase.h ctinexus.h logger.h thread.h
-msg_multiwrap.obj:	logger.h thread.h mutex.h dlldefs.h guard.h \
-		msg_multiwrap.h msg_multi.h collectable.h msg_pdata.h \
-		pointdefs.h message.h msg_signal.h yukon.h dllbase.h \
-		os2_2w32.h types.h cticalls.h dsm2.h
-msg_pcrequest.obj:	msg_pcrequest.h dlldefs.h message.h collectable.h \
-		logger.h thread.h mutex.h guard.h dllbase.h os2_2w32.h \
-		types.h cticalls.h dsm2.h
-msg_pcreturn.obj:	msg_pcreturn.h dlldefs.h msg_multi.h collectable.h \
-		msg_pdata.h pointdefs.h message.h msg_signal.h yukon.h \
-		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
-		guard.h logger.h thread.h
-msg_pdata.obj:	message.h collectable.h dlldefs.h logger.h thread.h \
-		mutex.h guard.h pointtypes.h msg_pdata.h pointdefs.h \
-		msg_signal.h yukon.h dllbase.h os2_2w32.h types.h cticalls.h \
-		dsm2.h
-msg_ptchg.obj:	collectable.h logger.h thread.h mutex.h dlldefs.h \
-		guard.h msg_ptchg.h msg_pdata.h pointdefs.h message.h \
-		msg_signal.h yukon.h dllbase.h os2_2w32.h types.h cticalls.h \
-		dsm2.h ctibase.h ctinexus.h
-msg_ptreg.obj:	collectable.h logger.h thread.h mutex.h dlldefs.h \
-		guard.h msg_ptreg.h message.h dllbase.h os2_2w32.h types.h \
-		cticalls.h dsm2.h
-msg_reg.obj:	collectable.h logger.h thread.h mutex.h dlldefs.h guard.h \
-		msg_reg.h message.h dllbase.h os2_2w32.h types.h cticalls.h \
-		dsm2.h
-msg_signal.obj:	collectable.h logger.h thread.h mutex.h dlldefs.h \
-		guard.h msg_signal.h message.h yukon.h dllbase.h os2_2w32.h \
-		types.h cticalls.h dsm2.h
-msg_trace.obj:	dllbase.h os2_2w32.h dlldefs.h types.h cticalls.h \
-		dsm2.h mutex.h guard.h collectable.h logger.h thread.h \
-		msg_trace.h message.h
+connection.obj: collectable.h connection.h dlldefs.h exchange.h \
+                dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
+                guard.h logger.h thread.h message.h msg_multi.h msg_pdata.h \
+                pointdefs.h msg_signal.h yukon.h msg_ptreg.h msg_reg.h \
+                queue.h
+dll_msg.obj:    dsm2.h mutex.h dlldefs.h guard.h yukon.h dllbase.h \
+                os2_2w32.h types.h cticalls.h connection.h exchange.h \
+                logger.h thread.h message.h collectable.h msg_multi.h \
+                msg_pdata.h pointdefs.h msg_signal.h msg_ptreg.h msg_reg.h \
+                queue.h dll_msg.h utility.h
+id_ctimsg.obj:  utility.h dlldefs.h dsm2.h mutex.h guard.h id_ctimsg.h \
+                id_vinfo.h
+message.obj:    message.h collectable.h dlldefs.h dllbase.h os2_2w32.h \
+                types.h cticalls.h dsm2.h mutex.h guard.h logger.h thread.h
+msg_cmd.obj:    dllbase.h os2_2w32.h dlldefs.h types.h cticalls.h dsm2.h \
+                mutex.h guard.h collectable.h msg_cmd.h message.h logger.h \
+                thread.h
+msg_commerrorhistory.obj:       collectable.h logger.h thread.h mutex.h \
+                dlldefs.h guard.h msg_commerrorhistory.h message.h yukon.h \
+                dllbase.h os2_2w32.h types.h cticalls.h dsm2.h
+msg_dbchg.obj:  collectable.h msg_dbchg.h message.h dlldefs.h yukon.h \
+                dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
+                guard.h ctibase.h ctinexus.h logger.h thread.h
+msg_email.obj:  collectable.h logger.h thread.h mutex.h dlldefs.h \
+                guard.h msg_email.h dllbase.h os2_2w32.h types.h cticalls.h \
+                dsm2.h message.h yukon.h
+msg_lmcontrolhistory.obj:       collectable.h logger.h thread.h mutex.h \
+                dlldefs.h guard.h msg_lmcontrolhistory.h pointdefs.h \
+                message.h yukon.h dllbase.h os2_2w32.h types.h cticalls.h \
+                dsm2.h
+msg_multi.obj:  collectable.h msg_multi.h dlldefs.h msg_pdata.h \
+                pointdefs.h message.h msg_signal.h yukon.h dllbase.h \
+                os2_2w32.h types.h cticalls.h dsm2.h mutex.h guard.h \
+                ctibase.h ctinexus.h logger.h thread.h
+msg_multiwrap.obj:      logger.h thread.h mutex.h dlldefs.h guard.h \
+                msg_multiwrap.h msg_multi.h collectable.h msg_pdata.h \
+                pointdefs.h message.h msg_signal.h yukon.h dllbase.h \
+                os2_2w32.h types.h cticalls.h dsm2.h
+msg_pcrequest.obj:      msg_pcrequest.h dlldefs.h message.h collectable.h \
+                logger.h thread.h mutex.h guard.h dllbase.h os2_2w32.h \
+                types.h cticalls.h dsm2.h
+msg_pcreturn.obj:       msg_pcreturn.h dlldefs.h msg_multi.h collectable.h \
+                msg_pdata.h pointdefs.h message.h msg_signal.h yukon.h \
+                dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
+                guard.h logger.h thread.h
+msg_pdata.obj:  message.h collectable.h dlldefs.h logger.h thread.h \
+                mutex.h guard.h pointtypes.h msg_pdata.h pointdefs.h \
+                msg_signal.h yukon.h dllbase.h os2_2w32.h types.h cticalls.h \
+                dsm2.h
+msg_ptchg.obj:  collectable.h logger.h thread.h mutex.h dlldefs.h \
+                guard.h msg_ptchg.h msg_pdata.h pointdefs.h message.h \
+                msg_signal.h yukon.h dllbase.h os2_2w32.h types.h cticalls.h \
+                dsm2.h ctibase.h ctinexus.h
+msg_ptreg.obj:  collectable.h logger.h thread.h mutex.h dlldefs.h \
+                guard.h msg_ptreg.h message.h dllbase.h os2_2w32.h types.h \
+                cticalls.h dsm2.h
+msg_reg.obj:    collectable.h logger.h thread.h mutex.h dlldefs.h guard.h \
+                msg_reg.h message.h dllbase.h os2_2w32.h types.h cticalls.h \
+                dsm2.h
+msg_signal.obj: collectable.h logger.h thread.h mutex.h dlldefs.h \
+                guard.h msg_signal.h message.h yukon.h dllbase.h os2_2w32.h \
+                types.h cticalls.h dsm2.h
+msg_trace.obj:  dllbase.h os2_2w32.h dlldefs.h types.h cticalls.h \
+                dsm2.h mutex.h guard.h collectable.h logger.h thread.h \
+                msg_trace.h message.h
 #ENDUPDATE#

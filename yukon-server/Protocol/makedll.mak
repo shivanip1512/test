@@ -110,7 +110,6 @@ $(BIN)\*.exe
 
 # The lines below accomplish the ID'ing of the project!
 id:
-            @cid .\include\id_ctiprot.h
             @$(MAKE) -nologo -f $(_InputFile) id_ctiprot.obj
 
 id_ctiprot.obj:    id_ctiprot.cpp include\id_ctiprot.h

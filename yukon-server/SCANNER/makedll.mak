@@ -77,7 +77,6 @@ deps:
 
 # The lines below accomplish the ID'ing of the project!
 id:
-            @cid .\include\id_sgdll.h
             @$(MAKE) -nologo -f $(_InputFile) id_sgdll.obj
 
 id_sgdll.obj:    id_sgdll.cpp include\id_sgdll.h

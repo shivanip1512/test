@@ -18,6 +18,7 @@ all:
         @%cd $(COMPILEBASE)\cparms
         @$(MAKE) -nologo
         @%cd $(COMPILEBASE)\common
+        @cid .\include\id_build.h
         @echo:
         @title Building in $(COMPILEBASE)\common
         @echo Building in $(COMPILEBASE)\common
