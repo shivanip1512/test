@@ -7,8 +7,13 @@
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 <script language="JavaScript">
-function init() {
-	document.getElementById("Reenable").value = '<cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_REENABLE %>" format="all_capital"/>';
+function initialize() {
+	document.getElementById("Reenable").value = "<cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_REENABLE %>" format="all_capital"/>";
+}
+
+function doAction(form, action) {
+	form.action.value = action;
+	form.submit();
 }
 
 function validate(form) {
@@ -23,7 +28,7 @@ function validate(form) {
 </script>
 </head>
 
-<body class="Background" leftmargin="0" topmargin="0" onload="init()">
+<body class="Background" leftmargin="0" topmargin="0" onload="initialize()">
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
@@ -99,9 +104,9 @@ function validate(form) {
                 <table width="400" border="0" cellspacing="0" cellpadding="5" align="center">
                   <tr> 
                     <td align="center"> 
-                      <input type="submit" id="Reenable" value="Reenable" onclick="this.form.action.value='ReenableProgram'"
+                      <input type="button" id="Reenable" value="Reenable" onclick="doAction(this.form, 'ReenableProgram')"
 					    <% if (programs.getStarsLMProgramCount() == 0) out.print("disabled"); %>>
-                      <input type="submit" name="RepeatLast" value="Repeat Last" onClick="this.form.action='RepeatLastOptOut'">
+                      <input type="button" value="Repeat Last" onclick="doAction(this.form, 'RepeatLastOptOut')">
 <%
 	String disabled = "disabled";
 	if (programHistory != null && programHistory.getStarsLMProgramEventCount() > 0) {
@@ -110,7 +115,7 @@ function validate(form) {
 			disabled = "";
 	}
 %>
-                      <input type="submit" value="Cancel Scheduled" onclick="this.form.action.value='CancelScheduledOptOut'" <%= disabled%>>
+                      <input type="button" value="Cancel Scheduled" onclick="doAction(this.form, 'CancelScheduledOptOut')" <%= disabled%>>
                     </td>
                   </tr>
                 </table>
