@@ -3,7 +3,6 @@ package com.cannontech.stars.util;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.Hashtable;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
 
@@ -89,19 +88,12 @@ public class ServletUtils {
 			timeFormat[i].setLenient( true );
 	}
     
-    /* Table of energy company properties
-     * key: String (property file name)
-     * value: java.util.Properties
-     */
-    private static Hashtable ecPropTable = null;
-    
 
-    public ServletUtils() {
+    public static String forceNotEmpty(String str) {
+    	if (str == null || str.equals(""))
+    		return "&nbsp;";
+    	return str;
     }
-	
-	public static void clear() {
-		ecPropTable = null;
-	}
 
     public static String getDurationString(int sec) {
         String durationStr = null;
