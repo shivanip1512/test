@@ -13,14 +13,17 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/12/30 16:24:45 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2003/01/07 21:17:28 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
 #include "dlldefs.h"
 #include "pointtypes.h"
+
+#include <map>
+using namespace std;
 
 #include "prot_base.h"
 
@@ -48,7 +51,6 @@ private:
     } _currentCommand;
 
     CtiIONUnsignedIntArray *_setup_handles;
-    unsigned int            _currentManagerHandle;
 
     unsigned long _handleManagerPowerMeter,
                   _handleManagerDataRecorder,
@@ -57,9 +59,40 @@ private:
     vector< unsigned long >           _dataRecorderModules;
     vector< vector< unsigned long > > _dataRecorderSources;
 
-    vector< unsigned long > _digitalInModules;
+    typedef map< unsigned long, unsigned long > IONValueRegisterMap;
 
-    unsigned long _powerMeterModule;
+    vector< unsigned long > _digitalInModules;
+    IONValueRegisterMap     _digitalInValueRegisters;
+
+    vector< unsigned long > _powerMeterModules;
+
+    struct ion_pointdata_struct
+    {
+        long offset;
+        long type;
+        unsigned long time;
+        double value;
+        char name[20];
+    };
+
+
+//  ACH, yo
+/*
+    struct ionEventLog
+    {
+
+    };
+*/
+
+    vector< ion_pointdata_struct > _pointData;
+
+    typedef vector< ion_pointdata_struct >::iterator PointDataIterator;
+
+    struct ion_result_descriptor_struct
+    {
+        unsigned long numPoints;
+        unsigned long numEvents;
+    };
 
     bool _configRead;
 
@@ -69,14 +102,74 @@ private:
     void generateConfigRead( void );
     void decodeConfigRead( void );
 
+    void generateExceptionScan( void );
+    void decodeExceptionScan( void );
+
+    void generateIntegrityScan( void );
+    void decodeIntegrityScan( void );
+
+    unsigned long resultSize( void );
+    void putResult( unsigned char *buf );
+
 protected:
 
     int commOut( OUTMESS *&OutMessage );
     int commIn ( INMESS   *InMessage  );
 
-    enum
+    enum IONModuleHandles
     {
-        IONFeatureManagerHandle = 2
+        IONFeatureManager = 2
+    };
+
+    enum IONRegisterHandles
+    {
+        Register_PowerMeter1S_Va          = 0x5800,
+        Register_PowerMeter1S_Vb          = 0x5801,
+        Register_PowerMeter1S_Vc          = 0x5802,
+        Register_PowerMeter1S_VInave      = 0x5803,
+        Register_PowerMeter1S_Vab         = 0x5804,
+        Register_PowerMeter1S_Vbc         = 0x5805,
+        Register_PowerMeter1S_Vca         = 0x5806,
+        Register_PowerMeter1S_VIIave      = 0x5807,
+        Register_PowerMeter1S_Ia          = 0x5808,
+        Register_PowerMeter1S_Ib          = 0x5809,
+        Register_PowerMeter1S_Ic          = 0x580a,
+        Register_PowerMeter1S_Iave        = 0x580b,
+        Register_PowerMeter1S_KWa         = 0x580c,
+        Register_PowerMeter1S_KWb         = 0x580d,
+        Register_PowerMeter1S_KWc         = 0x580e,
+        Register_PowerMeter1S_KWtotal     = 0x580f,
+        Register_PowerMeter1S_KVARa       = 0x5810,
+        Register_PowerMeter1S_KVARb       = 0x5811,
+        Register_PowerMeter1S_KVARc       = 0x5812,
+        Register_PowerMeter1S_KVARtotal   = 0x5813,
+        Register_PowerMeter1S_KVAa        = 0x5814,
+        Register_PowerMeter1S_KVAb        = 0x5815,
+        Register_PowerMeter1S_KVAc        = 0x5816,
+        Register_PowerMeter1S_KVAtotal    = 0x5817,
+        Register_PowerMeter1S_Quadrant1   = 0x61fb,
+        Register_PowerMeter1S_Quadrant2   = 0x61fc,
+        Register_PowerMeter1S_Quadrant3   = 0x61fd,
+        Register_PowerMeter1S_Quadrant4   = 0x61fe,
+        Register_PowerMeter1S_PFSIGNa     = 0x5818,
+        Register_PowerMeter1S_PFSIGNb     = 0x5819,
+        Register_PowerMeter1S_PFSIGNc     = 0x581a,
+        Register_PowerMeter1S_PFSIGNtotal = 0x581b,
+        Register_PowerMeter1S_PFLEADa     = 0x581c,
+        Register_PowerMeter1S_PFLEADb     = 0x581d,
+        Register_PowerMeter1S_PFLEADc     = 0x581e,
+        Register_PowerMeter1S_PFLEADtotal = 0x581f,
+        Register_PowerMeter1S_PFLAGa      = 0x5820,
+        Register_PowerMeter1S_PFLAGb      = 0x5821,
+        Register_PowerMeter1S_PFLAGc      = 0x5822,
+        Register_PowerMeter1S_PFLAGtotal  = 0x5823,
+        Register_PowerMeter1S_Vunbal      = 0x5824,
+        Register_PowerMeter1S_Iunbal      = 0x5825,
+        Register_PowerMeter1S_I4          = 0x5826,
+        Register_PowerMeter1S_V4          = 0x5e4e,
+        Register_PowerMeter1S_I5          = 0x5e4f,
+        Register_PowerMeter1S_PhaseRev    = 0x6000,
+        Register_PowerMeter1S_LineFreq    = 0x5827,
     };
 
     enum IONStates
@@ -93,6 +186,8 @@ protected:
         State_ReceivePowerMeterModuleHandles,
         State_RequestDigitalInputModuleHandles,
         State_ReceiveDigitalInputModuleHandles,
+        State_RequestDigitalInputValueRegisters,
+        State_ReceiveDigitalInputValueRegisters,
         State_RequestDataRecorderModuleHandles,
         State_ReceiveDataRecorderModuleHandles,
         State_RequestDataRecorderInputModuleHandles,
@@ -167,6 +262,13 @@ protected:
         Class_WformRec          = 536
     };
 
+    enum IONModules
+    {
+        Module_PowerModule            = 0x100,
+        Module_PowerModule_MeterUnits = 0x101,
+        Module_PowerModule_HighSpeed  = 0x102
+    };
+
 public:
 
     CtiProtocolION();
@@ -175,6 +277,8 @@ public:
     virtual ~CtiProtocolION();
 
     CtiProtocolION &operator=(const CtiProtocolION &aRef);
+
+    void initializeSets( void );
 
     void setAddresses( unsigned short masterAddress, unsigned short slaveAddress );
 
@@ -240,7 +344,7 @@ public:
         Command_SetDigitalOut
     };
 
-    enum
+    enum IONConstants
     {
         DefaultYukonIONMasterAddress =    5,
         DefaultSlaveAddress          =    1,
