@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base.cpp-arc  $
-* REVISION     :  $Revision: 1.36 $
-* DATE         :  $Date: 2005/01/18 19:11:03 $
+* REVISION     :  $Revision: 1.37 $
+* DATE         :  $Date: 2005/01/27 17:53:26 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1012,14 +1012,14 @@ INT CtiDeviceBase::incQueueSubmittal(int bumpCnt, RWTime &rwt)    // Bumps the c
 {
     int index = (rwt.hour()*60 + rwt.minute()) / 5;
     _submittal.inc(index,bumpCnt);
-    _submittal.inc((index+1)%288,bumpCnt);                        // Zero out the "next" bin in case we've run for a day already... NOT PERFECT!
+    _submittal.reset((index+1)%288);                        // Zero out the "next" bin in case we've run for a day already... NOT PERFECT!
     return _submittal.get(index);
 }
 INT CtiDeviceBase::incQueueProcessed(int bumpCnt, RWTime & rwt)   // Bumps the count of processed deviceQ entries for this 5 minute window.
 {
     int index = (rwt.hour()*60 + rwt.minute()) / 5;
     _processed.inc(index,bumpCnt);
-    _processed.inc((index+1)%288,bumpCnt);                        // Zero out the "next" bin in case we've run for a day already... NOT PERFECT!
+    _processed.reset((index+1)%288);                        // Zero out the "next" bin in case we've run for a day already... NOT PERFECT!
     return _processed.get(index);
 }
 INT CtiDeviceBase::setQueueOrphans(int num, RWTime &rwt)          // Number of queue entries remaining on device following this pass.
