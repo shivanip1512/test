@@ -31,8 +31,9 @@ public class DeviceAddressRange
    //build any extra params into the RangeBase appropriate intsances
    static
    {
-      long[] excludedValues = { 1398101 };
-      RANGE_MCT.setExcludedValues( excludedValues );            
+   	//NOT USED ANYMORE AS OF 12-23-2002
+      //long[] excludedValues = { 1398101 }; 
+      //RANGE_MCT.setExcludedValues( excludedValues );            
    }
 
 
