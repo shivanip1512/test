@@ -1,6 +1,7 @@
-#include "yukon.h"
+#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
 
 #include <windows.h>
+#include "yukon.h"
 #include "logger.h"
 #include "guard.h"
 
@@ -448,10 +449,20 @@ INT CtiFDRClientConnection::writeSocket (CHAR *aBuffer, ULONG length, ULONG &aBy
 	    rwRunnable().yield();
 	}
 
-        if (bytesSent == SOCKET_ERROR || bytesSent != length)
+        if (bytesSent == SOCKET_ERROR)
         {
+	    CtiLockGuard<CtiLogger> dout_guard(dout);
+	    dout << RWTime() << " Socket Error on write, WSAGetLastError() == " << WSAGetLastError() << endl;
+
             retVal =  SOCKET_ERROR;
         }
+	else if( bytesSent != length)
+	{
+	    CtiLockGuard<CtiLogger> dout_guard(dout);
+	    dout << RWTime() << " Socket Error on write, wrote " << bytesSent << " bytes, intended to write " << length << ", WSAGetLastError() == " << WSAGetLastError() << endl;
+	    
+	    retVal = SOCKET_ERROR;
+	}
         else
         {
             aBytesWritten = bytesSent;

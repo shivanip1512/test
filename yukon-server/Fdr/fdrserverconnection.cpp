@@ -1,6 +1,7 @@
-#include "yukon.h"
+#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
 
 #include <windows.h>
+#include "yukon.h"
 #include "logger.h"
 #include "guard.h"
 
@@ -302,6 +303,9 @@ INT CtiFDRServerConnection::readSocket (CHAR *aBuffer, ULONG length, ULONG &aByt
                     }
                     else
                     {
+			CtiLockGuard<CtiLogger> dout_guard(dout);
+			dout << RWTime() << " Socket Error on read, WSAGetLastError() == " << WSAGetLastError() << endl;
+			
                         // problem with the receive
                         retVal = SOCKET_ERROR;
                         break;
