@@ -1681,8 +1681,8 @@ private void initializeSwingComponents()
 	
 	try
 	{
-		java.io.FileReader reader = new java.io.FileReader("d:/yukon/client/bin/CannonStyle.css");
-		styleSheet.loadRules(reader, new java.net.URL("file:D:/yukon/client/bin/CannonStyle.css"));
+		java.io.FileReader reader = new java.io.FileReader("c:/yukon/client/bin/CannonStyle.css");
+		styleSheet.loadRules(reader, new java.net.URL("file:c:/yukon/client/bin/CannonStyle.css"));
 		//styleSheet.addRule("Main {  font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #000000; background-color: #FFFFCC; font-weight: bold}");
 		//styleSheet.addRule("LeftCell {  font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #FFFFFF; background-color: #666699}");
 		//styleSheet.addRule("HeaderCell {  font-family: Arial, Helvetica, sans-serif; font-size: 9pt; font-weight: bold; background-color: blue; color: blue}");
