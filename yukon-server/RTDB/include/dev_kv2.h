@@ -1,3 +1,7 @@
+#pragma warning( disable : 4786)
+#ifndef __DEV_KV2_H__
+#define __DEV_KV2_H__
+
 /*-----------------------------------------------------------------------------*
 *
 * File:   dev_kv2
@@ -8,20 +12,22 @@
 * Author: Eric Schmit
 *
 * PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2003/03/13 19:36:12 $
+* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_kv2.h-arc  $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2003/04/25 15:14:07 $
 *
+*    History: 
+      $Log: dev_kv2.h,v $
+      Revision 1.5  2003/04/25 15:14:07  dsutton
+      Changed general scan and decode result
+
+
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#ifndef __DEV_KV2_H__
-#define __DEV_KV2_H__
-#pragma warning( disable : 4786)
-
 
 #include "dev_meter.h"
 #include "dlldefs.h"
-#include "prot_ansi.h"
+#include "prot_ansi_kv2.h"
 #include "dsm2.h"
 #include "ctitypes.h"
 #include "types.h"
@@ -57,11 +63,7 @@ public:
                            RWTPtrSlist< OUTMESS >     &outList);
 
    CtiProtocolANSI & getProtocol( void );
-   int makeMessageHeader( BYTE *ptr, int command );
-
-private:
-
-protected:
+   int buildScannerTableRequest (BYTE *ptr);
 
    struct WANTS_HEADER
    {
@@ -70,7 +72,9 @@ protected:
       int            command;
    };
 
-   CtiProtocolANSI   _ansiProtocol;
+
+private:
+    CtiProtocolANSI_kv2   _ansiProtocol;
 };
 
 
