@@ -104,11 +104,11 @@ public class YC extends Observable implements Runnable
 	public YC() 
 	{
 		super();
+		ycDefaults = new YCDefaults();
 		getConnToPorter();
 		//Start this Runnable Thread.
 		inThread = new Thread(this);
 		inThread.start();
-		ycDefaults = new YCDefaults();
 	}
 	/**
 	 * Insert the method's description here.
