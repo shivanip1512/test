@@ -43,6 +43,7 @@ public interface YukonListEntryTypes
 	public static final int YUK_DEF_ID_DEV_TYPE_LCR_4000			= 1305;
 	public static final int YUK_DEF_ID_DEV_TYPE_LCR_3000			= 1306;
 	public static final int YUK_DEF_ID_DEV_TYPE_LCR_2000			= 1307;
+	public static final int YUK_DEF_ID_DEV_TYPE_LCR_1000			= 1308;
 	public static final int YUK_DEF_ID_DEV_TYPE_SA205				= 1309;
 	public static final int YUK_DEF_ID_DEV_TYPE_SA305				= 1310;
 	public static final int YUK_DEF_ID_DEV_TYPE_LCR_5000_VCOM		= 1311;
