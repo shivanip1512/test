@@ -27,8 +27,8 @@ public void retrieve() throws java.sql.SQLException {
 		 are used for coping multiple Objects at one time */
 		 
 	com.cannontech.clientutils.CTILogger.info("************************************************");
-	com.cannontech.clientutils.CTILogger.info("retrieve(): Don't do this, MultiDBPersistent's");
-	com.cannontech.clientutils.CTILogger.info("are used for coping multiple Objects at one time");
+	com.cannontech.clientutils.CTILogger.info("retrieve(): Don't do this; MultiDBPersistents");
+	com.cannontech.clientutils.CTILogger.info("are used for copying multiple objects at one time");
 	com.cannontech.clientutils.CTILogger.info("************************************************");
 }
 /**
