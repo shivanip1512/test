@@ -75,18 +75,25 @@ public:
     CtiLMGroupBase& setLastControlSent(const RWDBDateTime& controlsent);
 
     virtual void dumpDynamicData();
+    virtual CtiCommandMsg* createLatchingRequestMsg(ULONG rawState, int priority) const;
+
+    //pure virtuals
     virtual CtiLMGroupBase* replicate() const = 0;
-    virtual CtiRequestMsg* createTimeRefreshRequestMsg(ULONG refreshRate, ULONG shedTime) const = 0;
-    virtual CtiRequestMsg* createSmartCycleRequestMsg(ULONG percent, ULONG period, ULONG defaultCount) const = 0;
-    virtual CtiRequestMsg* createRotationRequestMsg(ULONG sendRate, ULONG shedTime) const = 0;
-    virtual CtiCommandMsg* createLatchingRequestMsg(ULONG rawState) const;
+    virtual CtiRequestMsg* createTimeRefreshRequestMsg(ULONG refreshRate, ULONG shedTime, int priority) const = 0;
+    virtual CtiRequestMsg* createSmartCycleRequestMsg(ULONG percent, ULONG period, ULONG defaultCount, int priority) const = 0;
+    virtual CtiRequestMsg* createRotationRequestMsg(ULONG sendRate, ULONG shedTime, int priority) const = 0;
+    virtual CtiRequestMsg* createMasterCycleRequestMsg(ULONG offTime, ULONG period, int priority) const = 0;
     //virtual CtiRequestMsg* createRequestMsg() const = 0;
+    //pure virtuals
+
+    virtual BOOL doesMasterCycleNeedToBeUpdated(ULONG nowInSeconds, ULONG groupControlDone, ULONG offTime);
 
     //Members inherited from RWCollectable
     void restoreGuts(RWvistream& );
     void saveGuts(RWvostream& ) const;
 
     CtiLMGroupBase& operator=(const CtiLMGroupBase& right);
+    RWCString convertSecondsToEvenTimeString(ULONG shedTime) const;
 
     int operator==(const CtiLMGroupBase& right) const;
     int operator!=(const CtiLMGroupBase& right) const;
