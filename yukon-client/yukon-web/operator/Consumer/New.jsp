@@ -4,6 +4,7 @@
 	StarsNewCustomerAccount newAccount = null;
 	
 	if (request.getParameter("Init") != null) {
+		ServletUtils.removeTransientAttributes(user);
 		session.removeAttribute(ServletUtils.ATT_NEW_ACCOUNT_WIZARD);
 		session.removeAttribute(ServletUtils.ATT_NEW_CUSTOMER_ACCOUNT);
 		session.removeAttribute(InventoryManager.STARS_INVENTORY_TEMP + "_NEW");

@@ -571,7 +571,7 @@ pageLinks = new Array(<%= inventories.getStarsInventoryCount() %>);
   &nbsp;&nbsp;&nbsp;Configuration
   </div>
   <div id="thermostatMenuItemSelected" name="thermostatMenuItemSelected" style="width:75px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "showPage(1)">
-  &nbsp;&#149;&nbsp;Configuratio
+  &nbsp;&#149;&nbsp;Configuration
   </div>
   <div id="thermostatMenuItem" name="thermostatMenuItem" style="width:75px" onmouseover="changeNavStyle(this)" class = "navmenu1" onclick = "showPage(2)">
   &nbsp;&nbsp;&nbsp;<%= AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_THERM_SCHED, "Schedule") %>

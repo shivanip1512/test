@@ -91,7 +91,7 @@ function confirmSubmit(form) {
 	if (form.NotEnrolled != null && form.NotEnrolled.checked)
 		form.NeedMoreInfo.value = "false";
 <% if (request.getParameter("Wizard") == null) { %>
-	if (!signUpChanged) return false;
+	//if (!signUpChanged) return false;
 	return confirm('Are you sure you would like to modify these program options?');
 <% } %>
 	return true;
@@ -362,6 +362,7 @@ function confirmCancel() {
                       </td>
                     </tr>
                   </table>
+				  <br>
 <% } %>
                 </td>
               </tr>

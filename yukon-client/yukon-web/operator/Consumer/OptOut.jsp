@@ -48,8 +48,8 @@
 			  <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/operator/Consumer/Programs.jsp">
 			  <input type="hidden" name="REDIRECT2" value="<%=request.getContextPath()%>/operator/Consumer/OptForm.jsp">
 			  <input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/operator/Consumer/OptOut.jsp">
-              <table width="200" border="1" cellspacing="0" cellpadding="3" bgcolor="#CCCCCC" align="center">
-                <tr> 
+                <table width="250" border="1" cellspacing="0" cellpadding="3" bgcolor="#CCCCCC" align="center">
+                  <tr> 
                   <td> 
                     <div align="center"> 
                       <p class="HeaderCell">Temporarily <cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_OPT_OUT_VERB %>" defaultvalue="opt out of"/> 
@@ -180,7 +180,7 @@
                   <tr>
                     <td> 
                       <div align="right">
-                        <input type="button" name="More" value="More" onclick="location='OptHist.jsp'">
+                        <input type="button" name="More" value="More" onclick="location='ProgHist.jsp'">
                       </div>
                     </td>
                   </tr>

@@ -13,7 +13,7 @@ function validate(form) {
 		alert("Username cannot be empty");
 		return false;
 	}
-	if (form.Password.value == "" && form.Username.value != "") {
+	if (form.Password.value == "" && form.Username.value != "" && form.Status.checked) {
 		alert("Password cannot be empty");
 		return false;
 	}

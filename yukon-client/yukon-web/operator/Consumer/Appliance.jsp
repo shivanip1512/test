@@ -8,10 +8,12 @@
 	int appNo = Integer.parseInt(request.getParameter("AppNo"));
 	StarsAppliance appliance = appliances.getStarsAppliance(appNo);
 	
+	String yearMade = "";
+	if (appliance.hasYearManufactured())
+		yearMade = String.valueOf(appliance.getYearManufactured());
 	String kwCap = "";
 	if (appliance.hasKWCapacity())
 		kwCap = String.valueOf(appliance.getKWCapacity());
-	
 	String effRate = "";
 	if (appliance.hasEfficiencyRating())
 		effRate = String.valueOf(appliance.getEfficiencyRating());
@@ -167,7 +169,7 @@ function deleteAppliance(form) {
                             <div align="right">Year Manufactured:</div>
                           </td>
                           <td width="200"> 
-                            <input type="text" name="ManuYear" maxlength="14" size="14" value="<%= appliance.getYearManufactured() %>">
+                            <input type="text" name="ManuYear" maxlength="14" size="14" value="<%= yearMade %>">
                           </td>
                         </tr>
                         <tr> 

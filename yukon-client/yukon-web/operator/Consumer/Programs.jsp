@@ -150,7 +150,22 @@
 	}
 %>
               </table>
-<% } %>
+<%
+	if (programHistory != null && programHistory.getStarsLMProgramEventCount() > 3) {
+%>
+              <table width="300" border="0" cellspacing="0" cellpadding="0">
+                <tr> 
+                  <td> 
+                    <div align="right"> 
+                      <input type="button" name="More" value="More" onClick="location='ProgHist.jsp'">
+                    </div>
+                  </td>
+                </tr>
+              </table>
+<%
+	}
+ }
+%>
               <p>&nbsp;</p>
             </div>
           </td>

@@ -35,15 +35,15 @@ function confirmSubmit(form) { //v1.0
         </tr>
         <tr> 
           <td  valign="top" width="101">
-		  <% String pageName = "OptOut.jsp"; %>
+		  <% String pageName = "ProgHist.jsp"; %>
           <%@ include file="include/Nav.jsp" %>
 		  </td>
           <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
-            <div align="center">
-              <% String header = AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_TITLE_OPT_OUT, "PROGRAMS - OPT OUT") + " HISTORY"; %>
+            <div align="center"> 
+              <% String header = "PROGRAM HISTORY"; %>
               <%@ include file="include/InfoSearchBar.jsp" %>
-			  
+              <br>
               <table width="360" border="1" cellspacing="0" align="center" cellpadding="3">
                   <tr> 
                     <td class="HeaderCell" width="100">Date</td>
@@ -109,7 +109,7 @@ function confirmSubmit(form) { //v1.0
               <table width="150" border="0" cellspacing="0" cellpadding="3" align="center">
                 <tr> 
                   <td align="center">
-                    <input type="button" name="Back" value="Back" onclick="location='OptOut.jsp'">
+                    <input type="button" name="Back" value="Back" onclick="history.back()">
                   </td>
                 </tr>
               </table>

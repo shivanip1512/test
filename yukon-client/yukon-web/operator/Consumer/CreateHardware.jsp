@@ -1,6 +1,7 @@
 <%@ include file="include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.database.cache.functions.PAOFuncs" %>
 <%@ page import="com.cannontech.database.cache.functions.YukonListFuncs" %>
+<%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject" %>
 <%
 	boolean inWizard = request.getParameter("Wizard") != null;
 	if (!inWizard && accountInfo == null) {
@@ -54,7 +55,7 @@
 		serialLabel = "Serial #";
 	}
 	else if (inventory.getDeviceID() > 0) {
-		com.cannontech.database.data.lite.LiteYukonPAObject litePao = PAOFuncs.getLiteYukonPAO(inventory.getDeviceID());
+		LiteYukonPAObject litePao = PAOFuncs.getLiteYukonPAO(inventory.getDeviceID());
 		devTypeStr = com.cannontech.database.data.pao.PAOGroups.getPAOTypeString(litePao.getType());
 		serialNo = litePao.getPaoName();
 		serialLabel = "Device Name";
@@ -297,6 +298,52 @@ function confirmCancel() {
                           </td>
                         </tr>
                       </table>
+<% if (inventory.getLMHardware() != null) { %>
+                      <table width="300" border="0" cellspacing="0" cellpadding="0">
+                        <tr> 
+                          <td valign="top"><span class="SubtitleHeader"><br>
+                            CONFIGURATION</span> 
+                            <hr>
+                            <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
+                              <tr> 
+                                <td width="100" class="TableCell"> 
+                                  <div align="right">Route: </div>
+                                </td>
+                                <td width="200"> 
+                                  <select name="Route">
+<%
+	LiteStarsEnergyCompany liteEC = SOAPServer.getEnergyCompany(user.getEnergyCompanyID());
+	TreeMap routeMap = new TreeMap();
+	DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+	
+	synchronized (cache) {
+		List allRoutes = cache.getAllRoutes();
+		for (int i = 0; i < allRoutes.size(); i++) {
+			LiteYukonPAObject litePao = (LiteYukonPAObject) allRoutes.get(i);
+			if (litePao.getYukonID() == liteEC.getDefaultRouteID())
+				routeMap.put("", new LiteYukonPAObject(litePao.getYukonID(), litePao.getPaoName() + " (Default)"));
+			else
+				routeMap.put(litePao.getPaoName(), litePao);
+		}
+	}
+	
+	Iterator it = routeMap.values().iterator();
+	while (it.hasNext()) {
+		LiteYukonPAObject route = (LiteYukonPAObject) it.next();
+		String selected = (route.getYukonID() == inventory.getLMHardware().getRouteID())? "selected" : "";
+%>
+                                    <option value="<%= route.getYukonID() %>" <%= selected %>><%= route.getPaoName() %></option>
+<%
+	}
+%>
+                                  </select>
+                                </td>
+                              </tr>
+                            </table>
+                          </td>
+                        </tr>
+                      </table>
+<% } %>
                     </td>
                   </tr>
                 </table>

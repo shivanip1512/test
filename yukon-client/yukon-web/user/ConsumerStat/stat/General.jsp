@@ -45,15 +45,16 @@
                         </td>
                       </tr>
                       <tr> 
-                        <td>
-				          <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
+                        <td> 
                           <table width="400" border="0" cellspacing="0" cellpadding="5">
                             <tr> 
                               <td valign="top">
 								<p class="MainText"><cti:getProperty propertyid="<%=ResidentialCustomerRole.WEB_DESC_GENERAL %>"/></p></td>
                             </tr>
 							<tr>
-							  <td valign="top"><br> 
+							  <td valign="top">
+                                <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
+                                <br> 
                                 <div align="left" class="SubtitleHeader">Your 
                                   Enrolled Programs</div>
                                 <table width="400" border="0" cellspacing="0" cellpadding="3" align="center">

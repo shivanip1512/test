@@ -297,11 +297,11 @@ function changeSerialNo() {
                             </td>
                         </tr>
                       </table>
-                      <table width="100%" border="0" height="68" >
-                        <tr > 
+                        <table width="100%" border="0" >
+                          <tr > 
                           <td class = "TableCell" align = "center">
-                            <table width="250" border="1" height="86" cellpadding="10" cellspacing = "0">
-                              <tr> 
+                              <table width="250" border="1" cellpadding="5" cellspacing = "0">
+                                <tr> 
                                   <td valign = "top" align = "center" class = "TableCell"><b>Service 
                                     Company</b><br>
                                      
@@ -317,7 +317,53 @@ function changeSerialNo() {
                           </td>
                         </tr>
                       </table>
-                     </div>
+<% if (newInv.getLMHardware() != null) { %>
+                        <table width="300" border="0" cellspacing="0" cellpadding="0">
+                          <tr> 
+                            <td valign="top"><span class="SubtitleHeader"><br>
+                              CONFIGURATION</span> 
+                              <hr>
+                              <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
+                                <tr> 
+                                  <td width="100" class="TableCell"> 
+                                    <div align="right">Route: </div>
+                                  </td>
+                                  <td width="200"> 
+                                    <select name="Route">
+<%
+	LiteStarsEnergyCompany liteEC = SOAPServer.getEnergyCompany(user.getEnergyCompanyID());
+	TreeMap routeMap = new TreeMap();
+	DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+	
+	synchronized (cache) {
+		List allRoutes = cache.getAllRoutes();
+		for (int i = 0; i < allRoutes.size(); i++) {
+			LiteYukonPAObject litePao = (LiteYukonPAObject) allRoutes.get(i);
+			if (litePao.getYukonID() == liteEC.getDefaultRouteID())
+				routeMap.put("", new LiteYukonPAObject(litePao.getYukonID(), litePao.getPaoName() + " (Default)"));
+			else
+				routeMap.put(litePao.getPaoName(), litePao);
+		}
+	}
+	
+	Iterator it = routeMap.values().iterator();
+	while (it.hasNext()) {
+		LiteYukonPAObject route = (LiteYukonPAObject) it.next();
+		String selected = (route.getYukonID() == newInv.getLMHardware().getRouteID())? "selected" : "";
+%>
+                                      <option value="<%= route.getYukonID() %>" <%= selected %>><%= route.getPaoName() %></option>
+<%
+	}
+%>
+                                    </select>
+                                  </td>
+                                </tr>
+                              </table>
+                            </td>
+                          </tr>
+                        </table>
+<% } %>
+                      </div>
                   </td>
                 </tr>
               </table>
