@@ -31,9 +31,7 @@ public static void main(String[] args)
 	int[] id = new int[ pointCount ];
 
 	for( int i = 0; i < id.length; i++ )
-	{
 		id[i] = (Integer.decode( args[5+i] )).intValue();
-	}
 
 	boolean forever = false;
 
@@ -84,14 +82,13 @@ public static void main(String[] args)
 		for( int j = 0; j < id.length; j++ )
 		{				
 			com.cannontech.message.dispatch.message.DBChangeMsg msg = new com.cannontech.message.dispatch.message.DBChangeMsg(
-					1,
+					id[j],
 					com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_PAO_DB,
 					com.cannontech.database.data.pao.PAOGroups.STRING_CAT_DEVICE,
 					com.cannontech.database.data.pao.PAOGroups.STRING_CAP_BANK[0],
 					com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_UPDATE );
 
 			msg.setTimeStamp( new java.util.Date() );
-			//msg.setID( id[j] );
 			
 			conn.write( msg );  // write the signal
 		}
