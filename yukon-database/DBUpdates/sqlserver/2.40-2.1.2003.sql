@@ -225,3 +225,6 @@ insert into DeviceMeterGroup
 select paobjectid, 'Default', 'Default', paoname, 'Default' from YukonPAObject
 where type like '%ION%'
 go
+
+alter table EnergyCompany add WebConfigID numeric not null DEFAULT 0
+go

@@ -246,3 +246,8 @@ insert into YukonRole values(-104,'WEB_OPERATOR','WebClient','(none)', '(none)')
 insert into DeviceMeterGroup 
 select paobjectid, 'Default', 'Default', paoname, 'Default' from YukonPAObject
 where type like '%ION%';
+
+
+alter table EnergyCompany ADD WebConfigID NUMBER;
+UPDATE EnergyCompany SET WebConfigID = 0;
+alter TABLE EnergyCompany MODIFY WebConfigID NOT NULL;
