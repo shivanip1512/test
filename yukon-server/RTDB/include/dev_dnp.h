@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_cbc.h-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2004/09/20 16:02:30 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2005/03/10 20:57:22 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -24,8 +24,12 @@
 #include "tbl_dv_address.h"
 
 #include <map>
+#include <string>
 
-class IM_EX_DEVDB CtiDeviceDNP : public CtiDeviceRemote
+namespace Cti       {
+namespace Device    {
+
+class IM_EX_DEVDB DNP : public CtiDeviceRemote
 {
 private:
 
@@ -35,6 +39,38 @@ private:
         unsigned long point_time;
     };
 
+    struct inmess_header
+    {
+        unsigned return_string_length;
+    };
+
+    struct pseudo_info
+    {
+        bool is_pseudo;
+        int  pointid;
+        int  state;
+    };
+
+    struct outmess_header
+    {
+        Protocol::DNPInterface::Command      command;
+        Protocol::DNPInterface::output_point parameter;
+        pseudo_info                          pseudo_info;
+        //  we really only use one outbount point at the moment...  otherwise we'd need a parameter count
+        //    for passing multiple parameters around, etc
+    };
+
+    struct info_struct
+    {
+        Protocol::DNPInterface::Command      protocol_command;
+        Protocol::DNPInterface::output_point protocol_parameter;
+        pseudo_info pseudo_info;
+        string      user;
+    };
+
+    info_struct _porter_info;
+    info_struct _pil_info;
+
     typedef map< long, dnp_accumulator_pointdata > dnp_accumulator_pointdata_map;
 
     dnp_accumulator_pointdata_map _lastIntervalAccumulatorData;
@@ -43,27 +79,37 @@ private:
 
 protected:
 
-    CtiProtocolBase *getProtocol() const;
+    Protocol::DNPInterface _dnp;
+    CtiTableDeviceAddress  _dnp_address;
 
-    CtiProtocolDNP        _dnp;
-    CtiTableDeviceAddress _dnpAddress;
+    queue< string * > _results;
 
     void setDNPScanPending( int scantype, bool pending );
     void resetDNPScansPending( void );
+
+    virtual Protocol::Interface *getProtocol();
 
 public:
 
     typedef CtiDeviceRemote Inherited;
 
-    CtiDeviceDNP();
-    CtiDeviceDNP(const CtiDeviceDNP& aRef);
-    virtual ~CtiDeviceDNP();
+    DNP();
+    DNP(const DNP& aRef);
+    virtual ~DNP();
 
-    CtiDeviceDNP& operator=(const CtiDeviceDNP& aRef);
+    DNP& operator=(const DNP& aRef);
 
     virtual RWCString getDescription(const CtiCommandParser & parse) const;
     virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
     virtual void DecodeDatabaseReader(RWDBReader &rdr);
+
+    int sendCommRequest( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > &outList );
+    int recvCommRequest( OUTMESS *OutMessage );
+
+    virtual int generate(CtiXfer &xfer);
+    virtual int decode(CtiXfer &xfer, int status);
+    void sendDispatchResults(CtiConnection &vg_connection);
+    int  sendCommResult(INMESS *InMessage);
 
     //  virtual in case devices need to form up different DNP requests for the same command ("control open", for example)
     virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
@@ -76,8 +122,10 @@ public:
 
     INT ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage> &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
     INT ErrorDecode (INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage> &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
-    virtual void processInboundPoints(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, RWTPtrSlist<CtiPointDataMsg> &dnpPoints );
+    //virtual void processInboundPoints(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, RWTPtrSlist<CtiPointDataMsg> &dnpPoints );
 };
 
+}
+}
 
 #endif // #ifndef __DEV_CBC_H__
