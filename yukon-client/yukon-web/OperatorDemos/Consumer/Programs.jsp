@@ -200,8 +200,8 @@ function changeProgram(radioBtn, index) {
 						StarsLMProgramHistory progHist = program.getStarsLMProgramHistory();
 						programStatus = "Out of Service";
 						
-						for (int l = progHist.getLMProgramEventCount() - 1; l >= 0 ; l--) {	// search the program history in reverse order
-							LMProgramEvent event = progHist.getLMProgramEvent(l);
+						for (int l = progHist.getStarsLMProgramEventCount() - 1; l >= 0 ; l--) {	// search the program history in reverse order
+							StarsLMProgramEvent event = progHist.getStarsLMProgramEvent(l);
 							if (event.getYukonDefinition().equalsIgnoreCase( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_COMPLETED )) {
 								programStatus = "In Service";
 								break;

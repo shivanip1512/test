@@ -1,11 +1,4 @@
 <%@ include file="StarsHeader.jsp" %>
-<%
-	StarsGetServiceRequestHistoryResponse getServHistResp = (StarsGetServiceRequestHistoryResponse) operator.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + "SERVICE_HISTORY");
-	if (getServHistResp == null) {
-		response.sendRedirect("/servlet/SOAPClient?action=GetServiceHistory"); return;
-	}
-%>
-
 <html>
 <head>
 <title>Energy Services Operations Center</title>
@@ -81,18 +74,18 @@
                 <td width="222" class="HeaderCell">Desription</td>
               </tr>
 <%
-	for (int i = 0; i < getServHistResp.getStarsServiceRequestHistoryCount(); i++) {
-		StarsServiceRequestHistory servHist = getServHistResp.getStarsServiceRequestHistory(i);
+	for (int i = 0; i < serviceHist.getStarsServiceRequestCount(); i++) {
+		StarsServiceRequest order = serviceHist.getStarsServiceRequest(i);
 %>
               <tr valign="top"> 
-                <td width="53" class="TableCell"><a href="SOHistory.jsp" class="Link1"><%= servHist.getOrderNumber() %></a></td>
-                <td width="65" class="TableCell"><% if (servHist.getDateReported() != null) out.print( histDateFormat.format(servHist.getDateReported()) ); %></td>
-                <td width="49" class="TableCell"><%= servHist.getServiceType().getContent() %></td>
-                <td width="52" class="TableCell"><%= servHist.getCurrentState().getContent() %></td>
-                <td width="42" class="TableCell"><%= servHist.getOrderedBy() %></td>
-				<td width="74" class="TableCell"><%= servHist.getServiceCompany().getContent() %></td>
+                <td width="53" class="TableCell"><a href="SOHistory.jsp" class="Link1"><%= order.getOrderNumber() %></a></td>
+                <td width="65" class="TableCell"><% if (order.getDateReported() != null) out.print( histDateFormat.format(order.getDateReported()) ); %></td>
+                <td width="49" class="TableCell"><%= order.getServiceType().getContent() %></td>
+                <td width="52" class="TableCell"><%= order.getCurrentState().getContent() %></td>
+                <td width="42" class="TableCell"><%= order.getOrderedBy() %></td>
+				<td width="74" class="TableCell"><%= order.getServiceCompany().getContent() %></td>
 				<td width="222"> 
-				  <textarea name="textarea2" rows="3" wrap="soft" cols="28" class = "TableCell"><%= servHist.getDescription() %></textarea>
+				  <textarea name="textarea2" rows="3" wrap="soft" cols="28" class = "TableCell"><%= order.getDescription() %></textarea>
 				</td>
               </tr>
 <%

@@ -1,10 +1,4 @@
 <%@ include file="StarsHeader.jsp" %>
-<%
-	StarsGetCallReportHistoryResponse callTrackingResp = (StarsGetCallReportHistoryResponse) operator.getAttribute("$$CALL_TRACKING");
-	if (callTrackingResp == null) {
-		response.sendRedirect("/servlet/SOAPClient?action=CallTracking"); return;
-	}
-%>
 <html>
 <head>
 <title>Energy Services Operations Center</title>
@@ -74,17 +68,17 @@
                     <td class="HeaderCell" width="69">Taken By</td>
                   </tr>
 <%
-	for (int i = 0; i < callTrackingResp.getStarsCallReportHistoryCount(); i++) {
-		StarsCallReportHistory callHist = callTrackingResp.getStarsCallReportHistory(i);
+	for (int i = 0; i < callHist.getStarsCallReportCount(); i++) {
+		StarsCallReport call = callHist.getStarsCallReport(i);
 %>
                   <tr> 
-                    <td class="TableCell" width="61"><%= callHist.getCallNumber() %></td>
-                    <td class="TableCell" width="65"><%= datePart.format( callHist.getCallDate() ) %></td>
-                    <td class="TableCell" width="69"><%= callHist.getCallType().getContent() %></td>
+                    <td class="TableCell" width="61"><%= call.getCallNumber() %></td>
+                    <td class="TableCell" width="65"><%= datePart.format( call.getCallDate() ) %></td>
+                    <td class="TableCell" width="69"><%= call.getCallType().getContent() %></td>
                     <td class="TableCell" width="217"> 
-                      <textarea name="textarea" rows="3"" wrap="soft" cols="50" class = "TableCell"><%= callHist.getDescription() %></textarea>
+                      <textarea name="textarea" rows="3"" wrap="soft" cols="50" class = "TableCell"><%= call.getDescription() %></textarea>
                     </td>
-                    <td class="TableCell" width="69"><%= callHist.getTakenBy() %></td>
+                    <td class="TableCell" width="69"><%= call.getTakenBy() %></td>
                   </tr>
 <%
 	}

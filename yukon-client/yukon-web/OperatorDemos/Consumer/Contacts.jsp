@@ -3,6 +3,7 @@
 	AdditionalContact[] contacts = new AdditionalContact[3];
 	for (int i = 0; i < 3; i++) {
 		contacts[i] = new AdditionalContact();
+		contacts[i].setContactID(0);
 		contacts[i].setLastName("");
 		contacts[i].setFirstName("");
 		contacts[i].setHomePhone("");
@@ -13,6 +14,7 @@
 		if (account.getAdditionalContactCount() <= i) break;
 		
 		AdditionalContact contact = account.getAdditionalContact(i);
+		contacts[i].setContactID( contact.getContactID() );
 		contacts[i].setLastName( contact.getLastName() );
 		contacts[i].setFirstName( contact.getFirstName() );
 		contacts[i].setHomePhone( contact.getHomePhone() );
@@ -96,6 +98,13 @@ function saveChanges() {
               
               <br>
 			<form name="form1" method="POST" action="/servlet/UpdateContacts">
+<%
+	for (int i = 0; i < 3; i++) {
+%>
+			  <input type="hidden" name="ContactID<%= i+2 %>" value="<%= contacts[i].getContactID() %>">
+<%
+	}
+%>
               <table width="610" border="0" cellspacing="0" cellpadding="10" align="center">
                 <tr> 
                     <td width="300" valign="top" bgcolor="#FFFFFF"><span class="MainHeader"><b>CONTACT 

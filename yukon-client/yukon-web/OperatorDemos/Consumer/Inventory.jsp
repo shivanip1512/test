@@ -286,8 +286,8 @@
                               </tr>
 <%
 	StarsLMHardwareHistory hwHist = hardware.getStarsLMHardwareHistory();
-	for (int i = 0; i < hwHist.getLMHardwareEventCount(); i++) {
-		LMHardwareEvent event = hwHist.getLMHardwareEvent(i);
+	for (int i = 0; i < hwHist.getStarsLMHardwareEventCount(); i++) {
+		StarsLMHardwareEvent event = hwHist.getStarsLMHardwareEvent(i);
 %>
 							  <tr valign="top"> 
 							    <td width="104" class="TableCell" bgcolor="#FFFFFF"><%= datePart.format(event.getEventDateTime()) %></td>

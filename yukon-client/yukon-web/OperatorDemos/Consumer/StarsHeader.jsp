@@ -20,7 +20,7 @@
 	
     String dbAlias = operator.getDatabaseAlias();	
 	
-	StarsCustAccountInfo accountInfo = null;
+	StarsCustAccountInformation accountInfo = null;
 	StarsCustomerAccount account = null;
     StreetAddress propAddr = null;
     StarsSiteInformation siteInfo = null;
@@ -30,9 +30,11 @@
 	StarsAppliances appliances = null;
 	StarsInventories inventories = null;
 	StarsLMPrograms programs = null;
+	StarsCallReportHistory callHist = null;
+	StarsServiceRequestHistory serviceHist = null;
 	StarsGetEnrollmentProgramsResponse categories = null;
 	
-	accountInfo = (StarsCustAccountInfo) operator.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION");
+	accountInfo = (StarsCustAccountInformation) operator.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION");
 	if (accountInfo != null) {
 		account = accountInfo.getStarsCustomerAccount();
 		propAddr = account.getStreetAddress();
@@ -43,6 +45,8 @@
 		appliances = accountInfo.getStarsAppliances();
 		inventories = accountInfo.getStarsInventories();
 		programs = accountInfo.getStarsLMPrograms();
+		callHist = accountInfo.getStarsCallReportHistory();
+		serviceHist = accountInfo.getStarsServiceRequestHistory();
 		categories = (StarsGetEnrollmentProgramsResponse) operator.getAttribute( "ENROLLMENT_PROGRAMS" );
 	}
 %>
