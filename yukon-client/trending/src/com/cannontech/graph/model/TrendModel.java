@@ -158,7 +158,7 @@ public Double getLeftScaleMax()
 		{
 			for (int i = 0; i < getTrendSeries().length; i++)
 			{
-				if( getTrendSeries()[i].getMaximumValue() < max)
+				if( getTrendSeries()[i].getMaximumValue() > max)
 					max = getTrendSeries()[i].getMaximumValue();
 					
 			}
@@ -196,7 +196,7 @@ public Double getRightScaleMax()
 		{
 			for (int i = 0; i < getTrendSeries().length; i++)
 			{
-				if( getTrendSeries()[i].getMaximumValue() < max)
+				if( getTrendSeries()[i].getMaximumValue() > max)
 					max = getTrendSeries()[i].getMaximumValue();
 					
 			}
@@ -819,18 +819,6 @@ public JFreeChart refresh(int rendererType)
 //        dataset = (com.jrefinery.data.AbstractSeriesDataset)pf.getFit();
 		
 		plot = new com.jrefinery.chart.XYPlot( (com.jrefinery.data.XYDataset)dataset, domainAxis, getVerticalNumberAxis_primary(), rend);
-
-//       axis2.setAutoRangeIncludesZero(false);
-//        ((com.jrefinery.chart.XYPlot)plot).setSecondaryRangeAxis(axis2);
-//        ((com.jrefinery.chart.XYPlot)plot).setSecondaryDataset(dataset);
-//        ((com.jrefinery.chart.XYPlot)plot).setSecondaryRangeAxis(axis2);
-//        XYItemRenderer renderer = ((com.jrefinery.chart.XYPlot)plot).getRenderer();
-//        DateAxis axis = (DateAxis) ((com.jrefinery.chart.XYPlot)plot).getDomainAxis();
-//        axis.setDateFormatOverride(new java.text.SimpleDateFormat("MMM-yyyy"));
-//
-//		plot.setSecondaryDataset((com.jrefinery.data.XYDataset)dataset);
-//        ((com.jrefinery.chart.XYPlot)plot).addRangeMarker(new com.jrefinery.chart.Marker(.64, java.awt.Color.blue));
-//		
 	}
 	else if( rendererType == TrendModelType.STEP_VIEW)
 	{
