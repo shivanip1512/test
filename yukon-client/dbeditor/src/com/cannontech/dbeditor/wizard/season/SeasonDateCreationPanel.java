@@ -228,12 +228,12 @@ public com.cannontech.database.db.season.DateOfSeason getDateOfSeason()
 	
 	sDate.setSeasonName(getJTextFieldSeasonName().getText());
 
-	sDate.setSeasonStartMonth( new Integer(getJComboBoxStartMonth().getSelectedIndex()) );
+	sDate.setSeasonStartMonth( new Integer(getJComboBoxStartMonth().getSelectedIndex() + 1) );
 
 	sDate.setSeasonStartDay( 
 			new Integer( Integer.parseInt(getJComboBoxStartDay().getSelectedItem().toString()) ) );
 			
-	sDate.setSeasonEndMonth( new Integer(getJComboBoxEndMonth().getSelectedIndex()) );
+	sDate.setSeasonEndMonth( new Integer(getJComboBoxEndMonth().getSelectedIndex() + 1) );
 
 	sDate.setSeasonEndDay( 
 			new Integer( Integer.parseInt(getJComboBoxEndDay().getSelectedItem().toString()) ) );
@@ -912,11 +912,11 @@ public void setDateOfSeason( com.cannontech.database.db.season.DateOfSeason sDat
 {
 	getJTextFieldSeasonName().setText( sDate.getSeasonName() );
 
-	getJComboBoxStartMonth().setSelectedIndex( sDate.getSeasonStartMonth().intValue() );
+	getJComboBoxStartMonth().setSelectedIndex( sDate.getSeasonStartMonth().intValue() - 1 );
 	
 	getJComboBoxStartDay().setSelectedItem( sDate.getSeasonStartDay() );
 	
-	getJComboBoxEndMonth().setSelectedIndex( sDate.getSeasonEndMonth().intValue() );
+	getJComboBoxEndMonth().setSelectedIndex( sDate.getSeasonEndMonth().intValue() - 1);
 	
 	getJComboBoxEndDay().setSelectedItem( sDate.getSeasonEndDay() );
 

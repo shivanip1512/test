@@ -597,13 +597,35 @@ public boolean isInputValid()
 	com.cannontech.common.gui.util.OkCancelPanel o
 			= new com.cannontech.common.gui.util.OkCancelPanel();
 	
-	if( getJTextFieldSeasonScName().getText() != null
-		 && getJTextFieldSeasonScName().getText().length() > 0 )
+	if( getJTextFieldSeasonScName().getText() == null
+		 || ! (getJTextFieldSeasonScName().getText().length() > 0) )
 	{
-		return true;
-	}
-	else
 		return false;
+	}
+
+	for( int i = 0; i < getJTableModel().getRowCount(); i++ )
+	{
+		com.cannontech.database.db.season.DateOfSeason d = getJTableModel().getRowAt(i);
+		int startMonth = d.getSeasonStartMonth().intValue();
+		int endMonth = d.getSeasonEndMonth().intValue();
+		for( int j = i + 1; j < getJTableModel().getRowCount(); j++ )
+		{
+			com.cannontech.database.db.season.DateOfSeason nextDate = getJTableModel().getRowAt(j);
+			int nextStartMonth = nextDate.getSeasonStartMonth().intValue();
+			if(nextStartMonth < endMonth)
+			{
+				setErrorString("Rows " + (i + 1) + " and " + (j+ 1) + " contain seasons that overlap.  Seasons can't overlap in a season schedule." );
+				return false;
+			}
+		}
+		if(endMonth < startMonth)
+		{			
+			setErrorString("Row " + (i + 1) + " contains an improperly defined season.  The end date MUST be later than the start date.");
+			return false;
+		}
+	}
+			
+	return true;
 
 }
 /**
