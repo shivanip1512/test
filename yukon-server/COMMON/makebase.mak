@@ -71,6 +71,9 @@ ucttime.obj \
 utility.obj \
 words.obj \
 xfer.obj \
+verification.obj \
+verification_work.obj \
+verification_report.obj \
 
 
 # portsup.obj \
