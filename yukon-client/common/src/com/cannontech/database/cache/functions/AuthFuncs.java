@@ -64,6 +64,32 @@ public class AuthFuncs {
 	}
 	
 	/**
+	 * Returns a Pair<LiteYukonRole,String> if the given user 
+	 * has been granted the given role.  The second element in the Pair
+	 * is the value of role for this user.
+	 * @param user
+	 * @param roleName
+	 * @return Pair
+	 */
+	public static Pair checkRole(LiteYukonUser user, int roleID) {
+		LiteYukonRole role = getRole(roleID);
+		if(role != null) {			
+			DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+			
+			synchronized(cache) {
+				Map lookupMap = cache.getAllYukonUserRoleLookupMap();
+				
+				Map m = (Map) lookupMap.get(user);
+		    	if(m != null) {
+		    		Pair p = (Pair) m.get(role.getRoleName());
+		    		return p;	    				
+		    	}
+			}
+		}
+		return null;		
+	}
+	
+	/**
 	 * Returns the value for a given user and role name.
 	 * @param user
 	 * @param roleName
