@@ -61,6 +61,12 @@
 			<xs:enumeration value="Commercial"/>
 		</xs:restriction>
 	</xs:simpleType>
+	<xs:simpleType name="stars-LoginStatus">
+		<xs:restriction base="xs:NMTOKEN">
+			<xs:enumeration value="Enabled"/>
+			<xs:enumeration value="Disabled"/>
+		</xs:restriction>
+	</xs:simpleType>
 	<xs:complexType name="stars-ContactNotification">
 		<xs:sequence>
 			<xs:element name="Enabled" type="xs:boolean"/>
@@ -306,6 +312,7 @@
 		<xs:sequence>
 			<xs:element name="Username" type="xs:string"/>
 			<xs:element name="Password" type="xs:string"/>
+			<xs:element name="Status" minOccurs="0" type="stars-LoginStatus"/>
 		</xs:sequence>
 		<xs:attribute name="userID" type="xs:int"/>
 		<xs:attribute name="groupID" type="xs:int"/>
@@ -505,7 +512,7 @@
 		<xs:complexType>
 			<xs:choice>
 				<xs:element ref="stars-CustAccountInformation"/>
-				<xs:element ref="stars-CustAccountBrief" maxOccurs="unbounded"/>
+				<xs:element maxOccurs="unbounded" name="AccountID" type="xs:int"/>
 				<xs:element ref="stars-Failure"/>
 			</xs:choice>
 		</xs:complexType>
@@ -825,17 +832,6 @@
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="stars-SelectionListEntry" type="stars-CustListEntry"/>
-	<xs:element name="stars-CustAccountBrief">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element name="AccountNumber" type="xs:string"/>
-				<xs:element name="ContactName" type="xs:string"/>
-				<xs:element name="ContPhoneNumber" type="xs:string"/>
-				<xs:element name="StreetAddress" type="xs:string"/>
-			</xs:sequence>
-			<xs:attribute name="accountID" type="xs:int"/>
-		</xs:complexType>
-	</xs:element>
 	<xs:element name="stars-CreateAppliance" type="stars-App"/>
 	<xs:element name="stars-CreateApplianceResponse">
 		<xs:complexType>
@@ -1082,7 +1078,6 @@
 				<xs:element name="CompanyAddress" type="stars-CustomerAddress" minOccurs="0"/>
 				<xs:element name="TimeZone" minOccurs="0" type="xs:string"/>
 			</xs:sequence>
-			<xs:attribute name="energyCompanyID" type="xs:int"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="stars-GetEnergyCompanySettings">
@@ -1093,7 +1088,7 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="stars-GetEnergyCompanySettingsResponse">
+	<xs:element name="stars-EnergyCompanySettings">
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="stars-EnergyCompany"/>
@@ -1104,6 +1099,14 @@
 				<xs:element ref="stars-ServiceCompanies" minOccurs="0"/>
 				<xs:element ref="stars-ExitInterviewQuestions" minOccurs="0"/>
 				<xs:element ref="stars-DefaultThermostatSettings" minOccurs="0" maxOccurs="3"/>
+			</xs:sequence>
+			<xs:attribute name="energyCompanyID" type="xs:int"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="stars-GetEnergyCompanySettingsResponse">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="stars-EnergyCompanySettings"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
