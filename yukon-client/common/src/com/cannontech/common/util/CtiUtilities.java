@@ -719,11 +719,11 @@ public final static String getLogDirPath()
 	}
 	else if(isRunningAsClient()) 
 	{
-		return yb + fs + "client" + fs + "log" + fs;
+		return yb + fs + "client" + fs + "log";
 	}
 	else 
 	{
-		return yb + fs + "server" + fs + "log" + fs;
+		return yb + fs + "server" + fs + "log";
 	}
 }
 
