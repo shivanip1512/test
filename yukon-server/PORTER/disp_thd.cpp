@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/disp_thd.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/04/18 16:38:03 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/04/18 21:43:24 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -114,12 +114,16 @@ void DispatchMsgHandlerThread(VOID *Arg)
                         }
                     }
 
-                    if(changeCnt < 1)           // If we have more than one change we must reload all items.
+                    if(changeCnt < 2)           // If we have more than one change we must reload all items.
                     {
                         pChg = (CtiDBChangeMsg *)MsgPtr->replicateMessage();
                     }
 
                     RefreshTime = TimeNow + 120;        // We will update two minutes after db changes cease!
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << TimeNow << " Porter DBRELOAD scheduled at " << RefreshTime << endl;
+                    }
 
                     #else
                     SetEvent(hPorterEvents[P_REFRESH_EVENT]);
@@ -172,11 +176,16 @@ void DispatchMsgHandlerThread(VOID *Arg)
         }
         else if(TimeNow > RefreshTime || ( WAIT_OBJECT_0 == WaitForSingleObject(hPorterEvents[P_REFRESH_EVENT], 0L) ))
         {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << TimeNow << " Porter DBRELOAD." << endl;
+            }
             // Refresh the porter in memory database once every 5 minutes.
             ResetEvent(hPorterEvents[P_REFRESH_EVENT]);
             RefreshPorterRTDB((void*)pChg);                 // Deletes the message!
             RefreshTime = TimeNow - (TimeNow.seconds() % PorterRefreshRate) + PorterRefreshRate;
 
+            changeCnt = 0;
             pChg = NULL;
         }
     } /* End of for */
