@@ -1,21 +1,19 @@
 package com.cannontech.esub.web;
 
-import com.cannontech.database.data.web.User;
+import com.cannontech.database.data.lite.LiteYukonUser;
+
 /**
+ * State info stored in session for esubstation.com
  * @author alauinger
- *
- * To change this generated comment edit the template variable "typecomment":
- * Window>Preferences>Java>Templates.
- * To enable and disable the creation of type comments go to
- * Window>Preferences>Java>Code Generation.
  */
 public class SessionInfo {
-	private User user;
+	private LiteYukonUser user;
+
 	/**
 	 * Returns the user.
-	 * @return User
+	 * @return LiteYukonUser
 	 */
-	public User getUser() {
+	public LiteYukonUser getUser() {
 		return user;
 	}
 
@@ -23,7 +21,7 @@ public class SessionInfo {
 	 * Sets the user.
 	 * @param user The user to set
 	 */
-	public void setUser(User user) {
+	public void setUser(LiteYukonUser user) {
 		this.user = user;
 	}
 

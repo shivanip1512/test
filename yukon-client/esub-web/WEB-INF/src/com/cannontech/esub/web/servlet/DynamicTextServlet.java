@@ -2,7 +2,6 @@ package com.cannontech.esub.web.servlet;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.Random;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -11,9 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.cannontech.common.cache.PointChangeCache;
-import com.cannontech.esub.editor.element.DynamicText;
 import com.cannontech.esub.util.UpdateUtil;
-import com.cannontech.esub.util.Util;
 
 /**
  * PointData will take a point id and a set of attributes for that point and
