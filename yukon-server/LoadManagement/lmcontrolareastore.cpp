@@ -604,6 +604,7 @@ void CtiLMControlAreaStore::reset()
                     long internal_state;
 
                     rdr["groupid"] >> group_id;
+                    rdr["groupcontrolstate"] >> group_control_state;
                     rdr["currenthoursdaily"] >> cur_hours_daily;
                     rdr["currenthoursmonthly"] >> cur_hours_monthly;
                     rdr["currenthoursseasonal"] >> cur_hours_seasonal;
@@ -616,6 +617,7 @@ void CtiLMControlAreaStore::reset()
                     rdr["internalstate"] >> internal_state;
                     
                     CtiLMGroupBase* lm_group = temp_all_group_map.find(group_id)->second;
+                    lm_group->setGroupControlState(group_control_state);
                     lm_group->setCurrentHoursDaily(cur_hours_daily);
                     lm_group->setCurrentHoursMonthly(cur_hours_monthly);
                     lm_group->setCurrentHoursSeasonal(cur_hours_seasonal);
