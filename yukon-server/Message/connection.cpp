@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/connection.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/04/18 16:30:24 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/05/14 15:35:38 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -82,9 +82,9 @@ int CtiConnection::WriteConnQue(CtiMessage *QEnt)
             if(getDebugLevel() & 0x00001000)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "**** QUEUE RESIZED +25 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << "**** QUEUE RESIZED +100 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
-            outQueue.resize( 25 );     // How does 25 sound to you
+            outQueue.resize( 100 );
         }
         else if( !_blockingWrites ) // Lowest sort gets pulled off the Queue
         {
@@ -273,8 +273,7 @@ void CtiConnection::InThread()
                         else if(getDebugLevel() & 0x00001000)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << NowTime << " InThread  : " << who() << " queue is full.  Will BLOCK " << endl;
-                            dout << NowTime << "   It allows " << (INT)inQueue->entries() << " entries" << endl;
+                            dout << NowTime << " InThread  : " << who() << " queue is full.  Will BLOCK. It allows " << (INT)inQueue->entries() << " entries" << endl;
                         }
 
                     }
@@ -410,7 +409,7 @@ void CtiConnection::OutThread()
                     if( _valid )
                     {
                         Out() << *MyMsg;
-                        Out().vflush();
+                        if(outQueue.entries() == 0) Out().vflush();
 
                         messagePeek( MyMsg );
 
