@@ -59,7 +59,6 @@
                   <td class="MainText"><%= resultDesc %></td>
                 </tr>
               </table>
-              <br>
 <%
 		ArrayList inventorySet = (ArrayList) session.getAttribute(InventoryManager.INVENTORY_SET);
 		if (inventorySet != null) {
