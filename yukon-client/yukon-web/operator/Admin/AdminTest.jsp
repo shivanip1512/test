@@ -111,7 +111,7 @@ function confirmDeleteAllCompanies() {
                           <input type="text" name="AcctNo" maxlength="40" size="14">
                         </td>
                         <td width="25%">
-                          <input type="submit" name="Submit" value="Submit" onclick="return confirmDelteAccount(this.form)">
+                          <input type="submit" name="Submit" value="Submit" onclick="return confirmDeleteAccount(this.form)">
                         </td>
                       </tr>
                     </table>
