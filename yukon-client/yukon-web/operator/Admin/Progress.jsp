@@ -6,6 +6,8 @@
 	TimeConsumingTask task = ProgressChecker.getTask(id);
 	
 	boolean isStopped = false;
+	String taskProgress = null;
+	String taskError = null;
 	
 	if (task != null) {
 		if (request.getParameter("Cancel") != null) {
@@ -16,13 +18,21 @@
 			catch (InterruptedException e) {}
 		}
 		
+		taskProgress = task.getProgressMsg();
+		if (taskProgress != null)
+			taskProgress = taskProgress.replaceAll(System.getProperty("line.separator"), "<br>");
+		
+		taskError = task.getErrorMsg();
+		if (taskError != null)
+			taskError = taskError.replaceAll(System.getProperty("line.separator"), "<br>");
+		
 		if (task.getStatus() == TimeConsumingTask.STATUS_FINISHED ||
 			task.getStatus() == TimeConsumingTask.STATUS_CANCELED ||
 			task.getStatus() == TimeConsumingTask.STATUS_ERROR)
 		{
-			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, task.getProgressMsg());
+			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, taskProgress);
 			if (task.getStatus() == TimeConsumingTask.STATUS_ERROR)
-				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, task.getErrorMsg());
+				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, taskError);
 			else if (task.getStatus() == TimeConsumingTask.STATUS_CANCELED)
 				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Operation is canceled by user");
 			
@@ -108,8 +118,8 @@
                     <% } %>
                     <br>
                     <br>
-                    <% if (task.getProgressMsg() != null) out.write("<span class='ConfirmMsg'>" + task.getProgressMsg() + "</span><br>"); %>
-                    <% if (task.getErrorMsg() != null) out.write("<span class='ErrorMsg'>" + task.getErrorMsg() + "</span><br>"); %>
+                    <% if (taskProgress != null) out.write("<span class='ConfirmMsg'>" + taskProgress + "</span><br>"); %>
+                    <% if (taskError != null) out.write("<span class='ErrorMsg'>" + taskError + "</span><br>"); %>
 <% } else { %>
                     No operation found with the specified ID. 
 <% } %>
