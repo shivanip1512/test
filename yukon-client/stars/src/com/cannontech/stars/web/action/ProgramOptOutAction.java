@@ -38,7 +38,7 @@ import com.cannontech.stars.xml.serialize.DeviceStatus;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsCustListEntry;
 import com.cannontech.stars.xml.serialize.StarsFailure;
-import com.cannontech.stars.xml.serialize.StarsGetEnergyCompanySettingsResponse;
+import com.cannontech.stars.xml.serialize.StarsEnergyCompanySettings;
 import com.cannontech.stars.xml.serialize.StarsInventories;
 import com.cannontech.stars.xml.serialize.StarsInventory;
 import com.cannontech.stars.xml.serialize.StarsLMHardwareEvent;
@@ -74,7 +74,7 @@ public class ProgramOptOutAction implements ActionBase {
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 			if (user == null) return null;
 			
-			StarsGetEnergyCompanySettingsResponse ecSettings = (StarsGetEnergyCompanySettingsResponse)
+			StarsEnergyCompanySettings ecSettings = (StarsEnergyCompanySettings)
 					user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
 			Hashtable selectionLists = (Hashtable) user.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
             

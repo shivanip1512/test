@@ -1,6 +1,5 @@
 package com.cannontech.stars.web.action;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
@@ -123,8 +122,8 @@ public class UpdateCustAccountAction implements ActionBase {
 
             return SOAPUtil.buildSOAPMessage( operation );
         }
-		catch (ServletException se) {
-			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, se.getMessage() );
+		catch (WebClientException we) {
+			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, we.getMessage() );
 		}
         catch (Exception e) {
             e.printStackTrace();

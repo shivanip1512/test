@@ -2,7 +2,6 @@ package com.cannontech.stars.web.action;
 
 import java.util.TimeZone;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
@@ -26,7 +25,7 @@ import com.cannontech.stars.xml.serialize.StarsCreateServiceRequest;
 import com.cannontech.stars.xml.serialize.StarsCreateServiceRequestResponse;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsFailure;
-import com.cannontech.stars.xml.serialize.StarsGetEnergyCompanySettingsResponse;
+import com.cannontech.stars.xml.serialize.StarsEnergyCompanySettings;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsServiceRequest;
 import com.cannontech.stars.xml.serialize.StarsSuccess;
@@ -51,8 +50,8 @@ public class CreateServiceRequestAction implements ActionBase {
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 			if (user == null) return null;
 			
-			StarsGetEnergyCompanySettingsResponse ecSettings =
-					(StarsGetEnergyCompanySettingsResponse) user.getAttribute(ServletUtils.ATT_ENERGY_COMPANY_SETTINGS);
+			StarsEnergyCompanySettings ecSettings =
+					(StarsEnergyCompanySettings) user.getAttribute(ServletUtils.ATT_ENERGY_COMPANY_SETTINGS);
 			TimeZone tz = TimeZone.getTimeZone( ecSettings.getStarsEnergyCompany().getTimeZone() );
 			if (tz == null) tz = TimeZone.getDefault();
 			
@@ -63,8 +62,8 @@ public class CreateServiceRequestAction implements ActionBase {
 			
 			return SOAPUtil.buildSOAPMessage( operation );
 		}
-		catch (ServletException se) {
-			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, se.getMessage() );
+		catch (WebClientException we) {
+			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, we.getMessage() );
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -183,7 +182,8 @@ public class CreateServiceRequestAction implements ActionBase {
 	}
 	
 	public static StarsOperation getRequestOperation(HttpServletRequest req, TimeZone tz)
-	throws ServletException {
+		throws WebClientException
+	{
 		StarsCreateServiceRequest createOrder = new StarsCreateServiceRequest();
 		WorkOrderManager.setStarsServiceRequest( createOrder, req, tz );
 		

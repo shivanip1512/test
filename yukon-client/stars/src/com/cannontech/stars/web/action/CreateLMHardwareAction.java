@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.TimeZone;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
@@ -38,7 +37,7 @@ import com.cannontech.stars.xml.serialize.StarsCreateLMHardware;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsDeleteLMHardware;
 import com.cannontech.stars.xml.serialize.StarsFailure;
-import com.cannontech.stars.xml.serialize.StarsGetEnergyCompanySettingsResponse;
+import com.cannontech.stars.xml.serialize.StarsEnergyCompanySettings;
 import com.cannontech.stars.xml.serialize.StarsInventories;
 import com.cannontech.stars.xml.serialize.StarsInventory;
 import com.cannontech.stars.xml.serialize.StarsLMHardwareConfig;
@@ -66,8 +65,8 @@ public class CreateLMHardwareAction implements ActionBase {
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 			if (user == null) return null;
 			
-			StarsGetEnergyCompanySettingsResponse ecSettings =
-					(StarsGetEnergyCompanySettingsResponse) user.getAttribute(ServletUtils.ATT_ENERGY_COMPANY_SETTINGS);
+			StarsEnergyCompanySettings ecSettings =
+					(StarsEnergyCompanySettings) user.getAttribute(ServletUtils.ATT_ENERGY_COMPANY_SETTINGS);
 			TimeZone tz = TimeZone.getTimeZone( ecSettings.getStarsEnergyCompany().getTimeZone() );
 			if (tz == null) tz = TimeZone.getDefault();
 
@@ -84,8 +83,8 @@ public class CreateLMHardwareAction implements ActionBase {
 			
             return SOAPUtil.buildSOAPMessage( operation );
         }
-        catch (ServletException se) {
-			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, se.getMessage() );
+        catch (WebClientException we) {
+			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, we.getMessage() );
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -187,7 +186,7 @@ public class CreateLMHardwareAction implements ActionBase {
         return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
 	}
 	
-	public static StarsOperation getRequestOperation(HttpServletRequest req, TimeZone tz) throws ServletException {
+	public static StarsOperation getRequestOperation(HttpServletRequest req, TimeZone tz) throws WebClientException {
 		StarsCreateLMHardware createHw = new StarsCreateLMHardware();
 		InventoryManager.setStarsInv( createHw, req, tz );
 		

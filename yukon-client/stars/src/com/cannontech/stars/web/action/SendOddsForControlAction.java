@@ -21,7 +21,7 @@ import com.cannontech.stars.xml.serialize.StarsApplianceCategory;
 import com.cannontech.stars.xml.serialize.StarsEnrLMProgram;
 import com.cannontech.stars.xml.serialize.StarsEnrollmentPrograms;
 import com.cannontech.stars.xml.serialize.StarsFailure;
-import com.cannontech.stars.xml.serialize.StarsGetEnergyCompanySettingsResponse;
+import com.cannontech.stars.xml.serialize.StarsEnergyCompanySettings;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsSendOddsForControl;
 import com.cannontech.stars.xml.serialize.StarsSuccess;
@@ -47,7 +47,7 @@ public class SendOddsForControlAction implements ActionBase {
         	if (user == null) return null;
 			
 			Hashtable selectionLists = (Hashtable) user.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
-			StarsGetEnergyCompanySettingsResponse ecSettings = (StarsGetEnergyCompanySettingsResponse)
+			StarsEnergyCompanySettings ecSettings = (StarsEnergyCompanySettings)
 					user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
 			StarsEnrollmentPrograms categories = ecSettings.getStarsEnrollmentPrograms();
 			
@@ -189,7 +189,7 @@ public class SendOddsForControlAction implements ActionBase {
 				return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
 			
         	StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
-			StarsGetEnergyCompanySettingsResponse ecSettings = (StarsGetEnergyCompanySettingsResponse)
+			StarsEnergyCompanySettings ecSettings = (StarsEnergyCompanySettings)
 					user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
 			StarsEnrollmentPrograms categories = ecSettings.getStarsEnrollmentPrograms();
 			

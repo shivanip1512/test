@@ -15,6 +15,7 @@ import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.StarsCustSelectionList;
 import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsGetEnergyCompanySettings;
+import com.cannontech.stars.xml.serialize.StarsEnergyCompanySettings;
 import com.cannontech.stars.xml.serialize.StarsGetEnergyCompanySettingsResponse;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.util.SOAPUtil;
@@ -73,20 +74,12 @@ public class GetEnergyCompanySettingsAction implements ActionBase {
             }
             
         	LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
-        	StarsGetEnergyCompanySettingsResponse resp = energyCompany.getStarsEnergyCompanySettings( user );
+			StarsEnergyCompanySettings settings = energyCompany.getStarsEnergyCompanySettings( user );
+        	
+        	StarsGetEnergyCompanySettingsResponse resp = new StarsGetEnergyCompanySettingsResponse();
+        	resp.setStarsEnergyCompanySettings( settings );
 	        
-            if (SOAPServer.isClientLocal()) {
-	        	user.setAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS, resp );
-	        	if (resp.getStarsCustomerSelectionLists() != null) {
-		            Hashtable selectionListTable = new Hashtable();
-		            for (int i = 0; i < resp.getStarsCustomerSelectionLists().getStarsCustSelectionListCount(); i++) {
-		            	StarsCustSelectionList list = resp.getStarsCustomerSelectionLists().getStarsCustSelectionList(i);
-		            	if (list != null)
-			            	selectionListTable.put( list.getListName(), list );
-		            }
-		        	user.setAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS, selectionListTable );
-	        	}
-            }
+            if (SOAPServer.isClientLocal()) storeEnergyCompanySettings( user, settings );
             
             respOper.setStarsGetEnergyCompanySettingsResponse( resp );
             return SOAPUtil.buildSOAPMessage( respOper );
@@ -96,7 +89,7 @@ public class GetEnergyCompanySettingsAction implements ActionBase {
             
             try {
             	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot get the enrollment program list") );
+            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Failed to get the energy company settings") );
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
             catch (Exception e2) {
@@ -125,16 +118,7 @@ public class GetEnergyCompanySettingsAction implements ActionBase {
             
             if (!SOAPClient.isServerLocal()) {
 	        	StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
-	        	
-	        	user.setAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS, resp );
-	        	if (resp.getStarsCustomerSelectionLists() != null) {
-		            Hashtable selectionListTable = new Hashtable();
-		            for (int i = 0; i < resp.getStarsCustomerSelectionLists().getStarsCustSelectionListCount(); i++) {
-		            	StarsCustSelectionList list = resp.getStarsCustomerSelectionLists().getStarsCustSelectionList(i);
-		            	selectionListTable.put( list.getListName(), list );
-		            }
-		        	user.setAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS, selectionListTable );
-	        	}
+	        	storeEnergyCompanySettings( user, resp.getStarsEnergyCompanySettings() );
             }
             
             return 0;
@@ -144,6 +128,21 @@ public class GetEnergyCompanySettingsAction implements ActionBase {
         }
 
         return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
+	}
+	
+	public static void storeEnergyCompanySettings(StarsYukonUser user, StarsEnergyCompanySettings settings) {
+		user.setAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS, settings );
+		
+		if (settings.getStarsCustomerSelectionLists() != null) {
+			Hashtable selectionListTable = new Hashtable();
+			for (int i = 0; i < settings.getStarsCustomerSelectionLists().getStarsCustSelectionListCount(); i++) {
+				StarsCustSelectionList list = settings.getStarsCustomerSelectionLists().getStarsCustSelectionList(i);
+				if (list != null)
+					selectionListTable.put( list.getListName(), list );
+			}
+			
+			user.setAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS, selectionListTable );
+		}
 	}
 
 }

@@ -5,7 +5,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
@@ -27,6 +26,7 @@ import com.cannontech.database.db.stars.hardware.LMThermostatSeasonEntry;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsFactory;
@@ -67,8 +67,8 @@ public class UpdateThermostatScheduleAction implements ActionBase {
             StarsOperation operation = getRequestOperation( req );
             return SOAPUtil.buildSOAPMessage( operation );
         }
-		catch (ServletException se) {
-			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, se.getMessage() );
+		catch (WebClientException we) {
+			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, we.getMessage() );
 		}
         catch (Exception e) {
             e.printStackTrace();
@@ -461,7 +461,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
         return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
 	}
 	
-	public static StarsOperation getRequestOperation(HttpServletRequest req) throws ServletException {
+	public static StarsOperation getRequestOperation(HttpServletRequest req) throws WebClientException {
 		StarsUpdateThermostatSchedule updateSched = new StarsUpdateThermostatSchedule();
         
 		String[] invIDStrs = req.getParameterValues("InvIDs");
@@ -492,7 +492,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 		if (req.getParameter("time1") != null) {
 			Date time1 = ServletUtils.parseTime(req.getParameter("time1"), TimeZone.getDefault());
 			if (time1 == null)
-				throw new ServletException("Invalid time format '" + req.getParameter("time1") + "'");
+				throw new WebClientException("Invalid time format '" + req.getParameter("time1") + "'");
 	        
 			cal.setTime( time1 );
 			schedule.setTime1( new org.exolab.castor.types.Time(
@@ -509,7 +509,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 		if (req.getParameter("time2") != null) {
 			Date time2 = ServletUtils.parseTime(req.getParameter("time2"), TimeZone.getDefault());
 			if (time2 == null)
-				throw new ServletException("Invalid time format '" + req.getParameter("time2") + "'");
+				throw new WebClientException("Invalid time format '" + req.getParameter("time2") + "'");
 	        
 			cal.setTime( time2 );
 			schedule.setTime2( new org.exolab.castor.types.Time(
@@ -526,7 +526,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 		if (req.getParameter("time3") != null) {
 			Date time3 = ServletUtils.parseTime(req.getParameter("time3"), TimeZone.getDefault());
 			if (time3 == null)
-				throw new ServletException("Invalid time format '" + req.getParameter("time3") + "'");
+				throw new WebClientException("Invalid time format '" + req.getParameter("time3") + "'");
 	        
 			cal.setTime( time3 );
 			schedule.setTime3( new org.exolab.castor.types.Time(
@@ -543,7 +543,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 		if (req.getParameter("time4") != null) {
 			Date time4 = ServletUtils.parseTime(req.getParameter("time4"), TimeZone.getDefault());
 			if (time4 == null)
-				throw new ServletException("Invalid time format '" + req.getParameter("time4") + "'");
+				throw new WebClientException("Invalid time format '" + req.getParameter("time4") + "'");
 	        
 			cal.setTime( time4 );
 			schedule.setTime4( new org.exolab.castor.types.Time(

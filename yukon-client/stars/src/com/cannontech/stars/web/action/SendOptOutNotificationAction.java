@@ -31,7 +31,7 @@ import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.StarsExitInterviewQuestion;
 import com.cannontech.stars.xml.serialize.StarsExitInterviewQuestions;
 import com.cannontech.stars.xml.serialize.StarsFailure;
-import com.cannontech.stars.xml.serialize.StarsGetEnergyCompanySettingsResponse;
+import com.cannontech.stars.xml.serialize.StarsEnergyCompanySettings;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsProgramOptOut;
 import com.cannontech.stars.xml.serialize.StarsSendExitInterviewAnswers;
@@ -60,7 +60,7 @@ public class SendOptOutNotificationAction implements ActionBase {
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
             if (user == null) return null;
             
-			StarsGetEnergyCompanySettingsResponse ecSettings = (StarsGetEnergyCompanySettingsResponse)
+			StarsEnergyCompanySettings ecSettings = (StarsEnergyCompanySettings)
 					user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
 			StarsExitInterviewQuestions questions = ecSettings.getStarsExitInterviewQuestions();
 			StarsSendExitInterviewAnswers sendAnswers = new StarsSendExitInterviewAnswers();
