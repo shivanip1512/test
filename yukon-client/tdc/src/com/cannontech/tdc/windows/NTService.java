@@ -201,7 +201,7 @@ public class NTService
             break;
          case JNTServices.ERROR_SERVICE_ALREADY_RUNNING :
             sErrorMessage =
-               new String("Service(" + sServiceName + ") allready running");
+               new String("Service(" + sServiceName + ") is all ready running");
             break;
          case JNTServices.ERROR_SERVICE_CANNOT_ACCEPT_CTRL :
             sErrorMessage = new String("Service can not accept control");
@@ -241,7 +241,7 @@ public class NTService
             sErrorMessage = new String("No thread");
             break;
          case JNTServices.ERROR_SERVICE_REQUEST_TIMEOUT :
-            sErrorMessage = new String("Request timed out");
+            sErrorMessage = new String("Request timed out (The service may already be running)");
             break;
          case -10 :
             sErrorMessage =

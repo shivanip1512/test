@@ -1,4 +1,5 @@
 package com.cannontech.tdc.windows;
+import javax.swing.JButton;
 import javax.swing.JOptionPane;
 
 /**
@@ -6,12 +7,17 @@ import javax.swing.JOptionPane;
  * Creation date: (10/9/2002 9:47:26 PM)
  * @author: 
  */
-public class WinServicePanel extends javax.swing.JPanel implements com.cannontech.tdc.SpecialTDCChild, java.awt.event.ActionListener, javax.swing.event.PopupMenuListener {
+public class WinServicePanel extends javax.swing.JPanel implements com.cannontech.tdc.SpecialTDCChild, java.awt.event.ActionListener, javax.swing.event.PopupMenuListener 
+{
 	private javax.swing.JTable ivjJTableServices = null;
 	private javax.swing.JScrollPane ivjJScrollPaneTable = null;
    private ServicePopUpMenu servicePopUpMenu = null;
    private javax.swing.JButton[] buttonsArray = new javax.swing.JButton[0];
    private javax.swing.JComboBox comboBox = null;
+
+	private JButton jButtonStartAll = null;
+	private JButton jButtonStopAll = null;
+	
 
 /**
  * WinServicePanel constructor comment.
@@ -28,7 +34,43 @@ public void actionPerformed(java.awt.event.ActionEvent event)
    {
       getJTableModel().setYukonFilter(
 			"Yukon Servers Only".equalsIgnoreCase(comboBox.getSelectedItem().toString()) );
+			
+		getJButtonStartAll().setEnabled(
+			"Yukon Servers Only".equalsIgnoreCase(comboBox.getSelectedItem().toString()) );			
+		getJButtonStopAll().setEnabled(
+			"Yukon Servers Only".equalsIgnoreCase(comboBox.getSelectedItem().toString()) );			
    }
+	else if( event.getSource() == getJButtonStartAll() )
+	{
+		
+		for( int i = 0; i < getJTableModel().getRowCount(); i++ )
+		{
+			NTService serv = getJTableModel().getRowAt(i);
+			
+			if( getJTableModel().isServiceIdle(serv) )
+			{
+				getServicePopUpMenu().setNtServices( serv, true );
+				getServicePopUpMenu().execute_Start( event );
+			}
+				
+		}
+		
+	}
+	else if( event.getSource() == getJButtonStopAll() )
+	{
+
+		for( int i = 0; i < getJTableModel().getRowCount(); i++ )
+		{
+			NTService serv = getJTableModel().getRowAt(i);
+			
+			if( getJTableModel().isServiceIdle(serv) )
+			{
+				getServicePopUpMenu().setNtServices( serv, true );
+				getServicePopUpMenu().execute_Stop( event );
+			}
+				
+		}
+	}
 
 }
 
@@ -292,6 +334,8 @@ private void initConnections()
    });
 
 
+	getJButtonStartAll().addActionListener( this );
+	getJButtonStopAll().addActionListener( this );
 }
 
 
@@ -309,6 +353,14 @@ private void initialize() {
             "localhost") );
       
       getServicePopUpMenu().addPropertyChangeListener( "PopUpChange", getJTableModel() );
+      
+		//add any JButtons here
+		javax.swing.JButton[] buttons =
+		{
+			getJButtonStartAll(),
+			getJButtonStopAll()		
+		};
+		setJButtons( buttons );
       
 		// user code end
 		setName("WinServicePanel");
@@ -330,10 +382,50 @@ private void initialize() {
 	}
 	// user code begin {2}
    
-   initConnections();
+   initConnections();        
    
 	// user code end
 }
+
+
+/**
+ * Insert the method's description here.
+ * Creation date: (8/4/00 9:01:12 AM)
+ * @return javax.swing.JButton
+ */
+public JButton getJButtonStartAll() 
+{
+	if( jButtonStartAll == null )
+	{
+		jButtonStartAll = new JButton("Start All");
+		jButtonStartAll.setActionCommand("StartAll");
+		jButtonStartAll.setMnemonic('t');
+		jButtonStartAll.setPreferredSize( new java.awt.Dimension(80,23) );
+		jButtonStartAll.setToolTipText("Starts all available services");
+	}
+
+	return jButtonStartAll;
+}
+
+/**
+ * Insert the method's description here.
+ * Creation date: (8/4/00 9:01:12 AM)
+ * @return javax.swing.JButton
+ */
+public JButton getJButtonStopAll() 
+{
+	if( jButtonStopAll == null )
+	{
+		jButtonStopAll= new JButton("Stop All");
+		jButtonStopAll.setActionCommand("StopAll");
+		jButtonStopAll.setMnemonic('s');
+		jButtonStopAll.setPreferredSize( new java.awt.Dimension(80,23) );
+		jButtonStopAll.setToolTipText("Stops all available services");
+	}
+
+	return jButtonStopAll;
+}
+
 
 /**
  * main entrypoint - starts the part when it is run as an application

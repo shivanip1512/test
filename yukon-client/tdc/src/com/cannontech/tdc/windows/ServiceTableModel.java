@@ -92,11 +92,11 @@ public class ServiceTableModel extends AbstractTableModel implements com.cannont
       String destState = e.getOldValue().toString();
       String serviceName = e.getNewValue().toString();
       
-System.out.println("PROP CHNG = " + destState+", " + serviceName+", " + src );
-      startRefresh( destState, serviceName, src );
+		CTILogger.debug("PROP CHNG = " + destState+", " + serviceName+", " + src );
+		controlService( destState, serviceName, src );
    }
    
-   private void startRefresh( final String destState, final String serviceName, final javax.swing.JComponent src )
+   private void controlService( final String destState, final String serviceName, final javax.swing.JComponent src )
    {
    	if( !hasConnected )
    		return;
@@ -137,7 +137,7 @@ System.out.println("PROP CHNG = " + destState+", " + serviceName+", " + src );
                   com.cannontech.clientutils.CTILogger.info( error );
                   
                   javax.swing.JOptionPane.showMessageDialog( src, error );
-                  CTILogger.info( "ERROR : " + error + " (" + ret + ")" );
+                  CTILogger.info( "ERROR : (" + serviceName + ") " + error + " (" + ret + ")" );
                   
                   //force a refresh of the row
                   refresh = true;
@@ -158,11 +158,11 @@ System.out.println("PROP CHNG = " + destState+", " + serviceName+", " + src );
                       && (!getRowAt(findServiceIndex(serviceName)).getCurrentStateString().equalsIgnoreCase(destState))
                       && (!refresh) );
               
-              CTILogger.info("Refresh of service done");
+              CTILogger.info("Refresh of service (" + serviceName + ") done");
             }
             catch( Exception e ) 
             {
-               CTILogger.error( "Error in refresh service.", e );
+               CTILogger.error( "Error in refresh service (" + serviceName + ")", e );
             }
             finally
             {
