@@ -274,7 +274,7 @@ function setStopPixTime()
                 <a href="javascript:openCalendar(cmdForm.startdate)"
 						onMouseOver="window.status='Start Date Calendar';return true;"
 						onMouseOut="window.status='';return true;"> 
-						<img src="<%=request.getContextPath()%>/Images/Icons/StartCalendar.gif" width="20" height="15" align="ABSMIDDLE" border="0"></a></td>
+						<img src="<%=request.getContextPath()%>/WebConfig/yukon/Icons/StartCalendar.gif" width="20" height="15" align="ABSMIDDLE" border="0"></a></td>
             </tr>
             <tr> 
               <td width="85" height="85">&nbsp; </td>
@@ -282,7 +282,7 @@ function setStopPixTime()
               <td width="36" height="85" class="TableCell"> 
                 <div align="right">Time: </div>
               </td>
-              <td width="179" background="<%=request.getContextPath()%>/Images/Parts/StartStopBG.gif" height="85" valign="top"> 
+              <td width="179" background="<%=request.getContextPath()%>/WebConfig/yukon/Parts/StartStopBG.gif" height="85" valign="top"> 
                 <table width="100" border="0" cellspacing="0" height="40" align="center">
                   <tr> 
                     <td valign = "top" align = "center"> 
@@ -294,7 +294,7 @@ function setStopPixTime()
                 </table>
                 <img name = "startPtr" onload = "setStartPixTime()" 
 					onMouseDown = "beginDrag(event,0,0,152,9,'showStartTime1()','horizontal','')"
-					src="<%=request.getContextPath()%>/Images/Parts/SliderShort.gif" width="17" height="19"
+					src="<%=request.getContextPath()%>/WebConfig/yukon/Parts/SliderShort.gif" width="17" height="19"
 					style = "position:relative; top:0px; left:9px; cursor:pointer;" ><br>
               </td>
             </tr>
@@ -356,7 +356,7 @@ function setStopPixTime()
                 <a href="javascript:openCalendar(cmdForm.stopdate)"
 						onMouseOver="window.status='Pop Calendar';return true;"
 						onMouseOut="window.status='';return true;">
-						<img src="<%=request.getContextPath()%>/Images/Icons/StartCalendar.gif" width="20" height="15" align="ABSMIDDLE" border="0"></a></td>
+						<img src="<%=request.getContextPath()%>/WebConfig/yukon/Icons/StartCalendar.gif" width="20" height="15" align="ABSMIDDLE" border="0"></a></td>
             </tr>
             <tr> 
               <td width="81" height="85">&nbsp; </td>
@@ -364,7 +364,7 @@ function setStopPixTime()
               <td width="34" height="85"> 
                 <div align="right" class="TableCell">Time: </div>
               </td>
-              <td width="170" background="../../Images/Parts/StartStopBG.gif" height="85" valign="top"> 
+              <td width="170" background="<%=request.getContextPath()%>/WebConfig/yukon/Icons/StartStopBG.gif" height="85" valign="top"> 
                 <table width="100" border="0" cellspacing="0" height="40" align = "center">
                   <tr> 
                     <td align = "center" valign = "top"> 
@@ -373,7 +373,7 @@ function setStopPixTime()
                     </td>
                   </tr>
                 </table>
-                <img name = "stopPtr" src="../../Images/Parts/SliderShort.gif" width="17" height="19"
+                <img name = "stopPtr" src="<%=request.getContextPath()%>/WebConfig/yukon/Icons/SliderShort.gif" width="17" height="19"
 				onMouseDown = "beginDrag(event,0,0,152,9,'showStopTime1()','horizontal','')"
 				onLoad = "setStopPixTime()" style = "position:relative; top:0px; left:152px; cursor:pointer;"><br>
               </td>
@@ -577,7 +577,7 @@ function setStopPixTime()
               <td width="100" class="TableCell"> 
                 <div align="right"><b>New start time: </b></div>
               </td>
-              <td width="179" background="<%=request.getContextPath()%>/Images/Parts/StartStopBG.gif" height="85" valign="top"> 
+              <td width="179" background="<%=request.getContextPath()%>/WebConfig/yukon/Icons/StartStopBG.gif" height="85" valign="top"> 
                 <table width="100" border="0" cellspacing="0" height="40" align="center">
                   <tr> 
                     <td valign = "top" align = "center"> 
@@ -589,7 +589,7 @@ function setStopPixTime()
                 </table>
                 <img name = "startPtr" onload = "setStartPixTime()" 
 					onMouseDown = "beginDrag(event,0,0,parseInt(document.cmdForm.stopPtr.style.left, 10),9,'showStartTime1()','horizontal','')"
-					src="<%=request.getContextPath()%>/Images/Parts/SliderShort.gif" width="17" height="19"
+					src="<%=request.getContextPath()%>/WebConfig/yukon/Icons/SliderShort.gif" width="17" height="19"
 					style = "position:relative; top:0px; left:9px; cursor:pointer;" ><br>
               </td>
             </tr>
@@ -599,7 +599,7 @@ function setStopPixTime()
               <td width="100" class="TableCell"> 
                 <div align="right"><b>New stop time: </b></div>
               </td>
-              <td width="179" background="<%=request.getContextPath()%>/Images/Parts/StartStopBG.gif" height="85" valign="top"> 
+              <td width="179" background="<%=request.getContextPath()%>/WebConfig/yukon/Icons/StartStopBG.gif" height="85" valign="top"> 
                 <table width="100" border="0" cellspacing="0" height="40" align="center">
                   <tr> 
                     <td valign = "top" align = "center"> 
@@ -611,7 +611,7 @@ function setStopPixTime()
                 </table>
                 <img name = "stopPtr" onload = "setStopPixTime()" 
 					onMouseDown = "beginDrag(event,0,0,152,parseInt(document.cmdForm.startPtr.style.left, 10),'showStopTime1()','horizontal','')"
-					src="<%=request.getContextPath()%>/Images/Parts/SliderShort.gif" width="17" height="19"
+					src="<%=request.getContextPath()%>/WebConfig/yukon/Icons/SliderShort.gif" width="17" height="19"
 					style = "position:relative; top:0px; left:9px; cursor:pointer;" ><br>
               </td>
             </tr>
