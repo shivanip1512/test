@@ -45,16 +45,16 @@ RWDEFINE_COLLECTABLE( CtiLMProgramDirect, CTILMPROGRAMDIRECT_ID )
     Constructors
 ---------------------------------------------------------------------------*/
 CtiLMProgramDirect::CtiLMProgramDirect() :
-    _notifytime(RWDBDateTime(1990,1,1,0,0,0,0)),
-    _startedrampingout(RWDBDateTime(1990,1,1,0,0,0,0)),
+    _notifytime(gInvalidRWDBDateTime),
+    _startedrampingout(gInvalidRWDBDateTime),
     _announced_constraint_violation(false)
 
 {
 }
 
 CtiLMProgramDirect::CtiLMProgramDirect(RWDBReader& rdr) :
-    _notifytime(RWDBDateTime(1990,1,1,0,0,0,0)),
-    _startedrampingout(RWDBDateTime(1990,1,1,0,0,0,0)),
+    _notifytime(gInvalidRWDBDateTime),
+    _startedrampingout(gInvalidRWDBDateTime),
         _announced_constraint_violation(false)
 {
     restore(rdr);
@@ -458,7 +458,7 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                     setStartedControlling(RWDBDateTime());
                     incrementDailyOps();
                     setDirectStartTime(RWDBDateTime());
-                    setDirectStopTime(RWDBDateTime(1990,1,1,0,0,0,0));
+                    setDirectStopTime(gInvalidRWDBDateTime);
                     {
                         RWCString text = RWCString("Automatic Start, LM Program: ");
                         text += getPAOName();
@@ -2675,7 +2675,7 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(LONG previousGearNu
                             //multiPilMsg->insert(new CtiRequestMsg(currentLMGroup->getPAOId(), "control terminate"));
                             //setLastControlSent(RWDBDateTime());
                             //currentLMGroup->setLastControlSent(RWDBDateTime());
-                            RWDBDateTime timeToTimeIn = RWDBDateTime(1990,1,1,0,0,0,0);//put in a bogus time stamp
+                            RWDBDateTime timeToTimeIn = gInvalidRWDBDateTime; //put in a bogus time stamp
                             if( !tempControlMethod.compareTo(CtiLMProgramDirectGear::MasterCycleMethod,RWCString::ignoreCase) )
                             {
                                 timeToTimeIn = currentLMGroup->getLastControlSent();
@@ -2733,7 +2733,7 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(LONG previousGearNu
                     }
     
                     currentLMGroup->setGroupControlState(CtiLMGroupBase::InactiveState);
-                    currentLMGroup->setControlStartTime(RWDBDateTime(1990,1,1,0,0,0,0));
+                    currentLMGroup->setControlStartTime(gInvalidRWDBDateTime);
                 }
                 else
                 {
@@ -3226,7 +3226,7 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
                 }
                 else
                 {
-                    if(lm_group->getNextControlTime().seconds() > RWDBDateTime(1991,1,1,0,0,0,0).seconds() &&
+                    if(lm_group->getNextControlTime().seconds() > gInvalidRWDBDateTimeSeconds &&
                        lm_group->getNextControlTime().seconds() < secondsFrom1901 &&
                        (!getIsRampingOut() || (getIsRampingOut() && lm_group->getIsRampingOut())))
                     { //ready to control
@@ -3434,7 +3434,7 @@ BOOL CtiLMProgramDirect::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMs
                         multiPilMsg->insert( requestMsg );
                         setLastControlSent(RWDBDateTime());
                         currentLMGroup->setLastControlSent(RWDBDateTime());
-                        currentLMGroup->setNextControlTime(RWDBDateTime(1990,1,1,0,0,0,0));
+                        currentLMGroup->setNextControlTime(gInvalidRWDBDateTime);
                         RWDBDateTime nowPlusRandom = RWDBDateTime();
                         if( currentLMGroup->getPAOType() == TYPE_LMGROUP_EMETCON )
                         {
@@ -3515,7 +3515,7 @@ BOOL CtiLMProgramDirect::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMs
                         //multiPilMsg->insert(new CtiRequestMsg(currentLMGroup->getPAOId(), "control terminate"));
                         //setLastControlSent(RWDBDateTime());
                         //currentLMGroup->setLastControlSent(RWDBDateTime());
-                        RWDBDateTime timeToTimeIn = RWDBDateTime(1990,1,1,0,0,0,0);//put in a bogus time stamp
+                        RWDBDateTime timeToTimeIn = gInvalidRWDBDateTime;//put in a bogus time stamp
                         if( !tempControlMethod.compareTo(CtiLMProgramDirectGear::MasterCycleMethod,RWCString::ignoreCase) )
                         {
                             timeToTimeIn = currentLMGroup->getLastControlSent();
@@ -3617,7 +3617,7 @@ BOOL CtiLMProgramDirect::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMs
 //                lm_group->setGroupControlState(CtiLMGroupBase::InactiveState);
             }
             setCurrentGearNumber(0);
-            setStartedControlling(RWDBDateTime(1990,1,1,0,0,0,0));
+            setStartedControlling(gInvalidRWDBDateTime);
             setManualControlReceivedFlag(FALSE);
         }
     }
@@ -3819,7 +3819,7 @@ BOOL CtiLMProgramDirect::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg*
 
             setReductionTotal(0.0);
             //        setProgramState(CtiLMProgramBase::InactiveState);
-            setStartedControlling(RWDBDateTime(1990,1,1,0,0,0,0));
+            setStartedControlling(gInvalidRWDBDateTime);
             setDirectStopTime(RWDBDateTime());
         }
     }
@@ -3847,7 +3847,7 @@ BOOL CtiLMProgramDirect::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg*
 
             setReductionTotal(0.0);
 //            setProgramState(CtiLMProgramBase::InactiveState); //stopprogramcountrol should do this
-            setStartedControlling(RWDBDateTime(1990,1,1,0,0,0,0));
+            setStartedControlling(gInvalidRWDBDateTime);
             setDirectStopTime(RWDBDateTime());
         }
         else
@@ -3906,7 +3906,7 @@ BOOL CtiLMProgramDirect::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg*
             setReductionTotal(0.0);
             setProgramState(CtiLMProgramBase::InactiveState);
             ResetGroups();
-            setStartedControlling(RWDBDateTime(1990,1,1,0,0,0,0));
+            setStartedControlling(gInvalidRWDBDateTime);
             setDirectStopTime(RWDBDateTime());
         }
     }
@@ -3931,7 +3931,7 @@ BOOL CtiLMProgramDirect::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg*
 
         setReductionTotal(0.0);
 //        setProgramState(CtiLMProgramBase::InactiveState);
-        setStartedControlling(RWDBDateTime(1990,1,1,0,0,0,0));
+        setStartedControlling(gInvalidRWDBDateTime);
         setDirectStopTime(RWDBDateTime());
     }
     else if(!getIsRampingOut())
@@ -4026,7 +4026,7 @@ BOOL CtiLMProgramDirect::handleTimedControl(ULONG secondsFrom1901, LONG secondsF
             stopProgramControl(multiPilMsg,multiDispatchMsg, secondsFrom1901);
 
             setReductionTotal(0.0); //is this resetting dynamic info?
-            setStartedControlling(RWDBDateTime(1990,1,1,0,0,0,0));
+            setStartedControlling(gInvalidRWDBDateTime);
             return true;
             } //end timed stop
         }
@@ -4495,11 +4495,11 @@ void CtiLMProgramDirect::restore(RWDBReader& rdr)
         setCurrentGearNumber(0);
         setLastGroupControlled(0);
         resetDailyOps();
-        setDirectStartTime(RWDBDateTime(1990,1,1,0,0,0,0));
-        setDirectStopTime(RWDBDateTime(1990,1,1,0,0,0,0));
-        _dynamictimestamp = RWDBDateTime(1990,1,1,0,0,0,0);
-        _notifytime = RWDBDateTime(1990,1,1,0,0,0,0);
-        _startedrampingout = RWDBDateTime(1990,1,1,0,0,0,0);
+        setDirectStartTime(gInvalidRWDBDateTime);
+        setDirectStopTime(gInvalidRWDBDateTime);
+        _dynamictimestamp = gInvalidRWDBDateTime;
+        _notifytime = gInvalidRWDBDateTime;
+        _startedrampingout = gInvalidRWDBDateTime;
         _insertDynamicDataFlag = TRUE;
         setDirty(true);
     }
@@ -4680,7 +4680,7 @@ double CtiLMProgramDirect::getCurrentLoadReduction()
 ----------------------------------------------------------------------------*/  
 void CtiLMProgramDirect::ResetGroups()
 {
-    RWDBDateTime reset_time(1990,1,1,0,0,0,0);
+    RWDBDateTime reset_time(gInvalidRWDBDateTime);
     for(CtiLMGroupIter i = _lmprogramdirectgroups.begin(); i != _lmprogramdirectgroups.end(); i++)
     {
         CtiLMGroupPtr lm_group  = *i;
