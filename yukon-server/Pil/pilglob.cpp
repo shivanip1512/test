@@ -7,6 +7,5 @@
 #include "os2_2w32.h"
 #include "dlldefs.h"
 
-IM_EX_CTIPIL HMTX          LockSem                 = (HMTX) NULL;
 IM_EX_CTIPIL UINT          FluffAndStuff = 0;
 
