@@ -20,9 +20,7 @@ import com.loox.jloox.LxView;
  * A runnable which updates its drawing on each call
  * to run.
  * 
- * The run method is getting a little ungainly
- * 
- * Designed to be used from say a timer
+  * Designed to be used from say a timer
  * @author alauinger
  */
 public class DrawingUpdater extends TimerTask {
@@ -46,16 +44,7 @@ public class DrawingUpdater extends TimerTask {
 		setDrawing(d);
 	}
 
-	/**
-	 * @see java.lang.Runnable#run()
-	 */
-	public void run() {
-		//assert( drawing != null );
-
-		if (drawing == null) {
-			return;
-		} 	
-
+	public void updateDrawing() {
 		synchronized (drawing) {			
 			try {
 				// keep track if we changed anything
@@ -128,6 +117,18 @@ public class DrawingUpdater extends TimerTask {
 			}			
 		}
 
+	}
+	/**
+	 * @see java.lang.Runnable#run()
+	 */
+	public void run() {
+		//assert( drawing != null );
+
+		if (drawing == null) {
+			return;
+		} 	
+
+		updateDrawing();		
 	}
 
 	/**
