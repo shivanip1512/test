@@ -102,7 +102,7 @@ public class TurtleRecordBase implements BillingRecordBase
 	
 		writeToFile.append(getDate() + ",");
 	
-		if(this instanceof SEDC54Record || this instanceof NISC_SinglePhaseRecord)
+		if(this instanceof SEDC54Record)
 		{
 			writeToFile.append("\r\n");
 			return writeToFile.toString();
@@ -127,15 +127,11 @@ public class TurtleRecordBase implements BillingRecordBase
 		}
 			
 		//PeakT
-		if( getTimeKW() != null)
-			writeToFile.append(getTimeKW());
-			
-		writeToFile.append(',');
+		writeToFile.append(getTimeKW() + ',');
 		//PeakD
-		if( getDateKW() != null)
-			writeToFile.append(getDateKW());
+		writeToFile.append(getDateKW());
 			
-		if( this instanceof NCDCRecord)
+		if( this instanceof NCDCRecord || this instanceof NISC_NCDCRecord)
 		{		
 			writeToFile.append("\r\n");
 			return writeToFile.toString();
@@ -143,10 +139,7 @@ public class TurtleRecordBase implements BillingRecordBase
 		writeToFile.append(',');
 		
 		//Stat
-		if( getStat() != null)
-			writeToFile.append(getStat().toString());
-		
-		writeToFile.append(',');
+		writeToFile.append(getStat().toString() + ',');
 		
 		//Sig
 		writeToFile.append(',');
@@ -179,7 +172,8 @@ public class TurtleRecordBase implements BillingRecordBase
 	public String getDate()
 	{
 		if( date == null)
-			return getDateFormat().toPattern();
+			return "";
+
 		return date;
 	}
 	/**
@@ -190,7 +184,8 @@ public class TurtleRecordBase implements BillingRecordBase
 	public String getDateKW()
 	{
 		if( dateKW == null)
-			return getDateFormat().toPattern();
+			return "";
+			
 		return dateKW;
 	}
 	/**
@@ -238,7 +233,8 @@ public class TurtleRecordBase implements BillingRecordBase
 	public String getTime()
 	{
 		if(time == null)
-			return TIME_FORMAT.toPattern();
+			return "";
+			
 		return time;
 	}
 	/**
@@ -249,7 +245,8 @@ public class TurtleRecordBase implements BillingRecordBase
 	public String getTimeKW()
 	{
 		if( timeKW == null)
-			return TIME_FORMAT.toPattern();
+			return "";
+
 		return timeKW;
 	}
 
@@ -270,6 +267,9 @@ public class TurtleRecordBase implements BillingRecordBase
 	 */
 	public String getStat()
 	{
+		if( stat == null)
+			return "";
+			
 		return stat;
 	}
 	
