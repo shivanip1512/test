@@ -40,8 +40,8 @@ public class PointLimitLoader implements Runnable {
 			while (rset.next()) {
 				int pointID = rset.getInt(1);
 				int limitNumber = rset.getInt(2);
-				int highLimit = rset.getInt(3);
-				int lowLimit = rset.getInt(4);
+				double highLimit = rset.getDouble(3);
+				double lowLimit = rset.getDouble(4);
 				int limitDuration = rset.getInt(5);
 
 				LitePointLimit lpl =
