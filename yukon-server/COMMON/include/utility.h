@@ -6,8 +6,8 @@
 #include <rw\cstring.h>
 #include <rw\rwtime.h>
 
-#include "dlldefs.h"
 #include "dsm2.h"
+#include "dlldefs.h"
 
 /*-----------------------------------------------------------------------------*
 *
@@ -18,8 +18,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/utility.h-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2002/09/06 18:51:48 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2002/10/15 17:40:00 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -30,16 +30,18 @@ IM_EX_CTIBASE LONG CommErrorHistoryIdGen(bool force = false);
 IM_EX_CTIBASE INT ChangeIdGen(bool force = false);
 IM_EX_CTIBASE INT SystemLogIdGen();
 IM_EX_CTIBASE INT PAOIdGen();
-IM_EX_CTIBASE INT VCUTime (OUTMESS *, PULONG);
+IM_EX_CTIBASE INT VCUTime (CtiOutMessage *, PULONG);
 IM_EX_CTIBASE BOOL isFileTooBig(RWCString fileName, DWORD thisBig = 0x00500000);
-IM_EX_CTIBASE BOOL InEchoToOut(const INMESS *In, OUTMESS *Out);
-IM_EX_CTIBASE BOOL OutEchoToIN(const OUTMESS *Out, INMESS *In);
+IM_EX_CTIBASE BOOL InEchoToOut(const INMESS *In, CtiOutMessage *Out);
+IM_EX_CTIBASE BOOL OutEchoToIN(const CtiOutMessage *Out, INMESS *In);
 IM_EX_CTIBASE RWCString convertVersacomAddressToHumanForm(INT address);
 IM_EX_CTIBASE INT convertHumanFormAddressToVersacom(INT address);
 
 IM_EX_CTIBASE bool pokeDigiPortserver(CHAR *server, INT port = 23);
 IM_EX_CTIBASE RWCString& traceBuffer(RWCString &str, BYTE *Message, ULONG Length);
 IM_EX_CTIBASE RWTime nextScheduledTimeAlignedOnRate( const RWTime &origin, LONG rate );
+IM_EX_CTIBASE void autopsy(char *calleefile, int calleeline);       // Usage is: autopsy( __FILE__, __LINE__);
+
 
 
 // SendMail defines /////////////////////////////////////////////
@@ -102,8 +104,8 @@ IM_EX_CTIBASE ULONG OutMessageCount();
 IM_EX_CTIBASE bool isLCU(INT type);
 IM_EX_CTIBASE int generateTransmissionID();
 IM_EX_CTIBASE LONG GetPAOIdOfPoint(long pid);
-IM_EX_CTIBASE INT EstablishOutMessagePriority(OUTMESS *Out, INT priority);
-IM_EX_CTIBASE INT OverrideOutMessagePriority(OUTMESS *Out, INT priority);
+IM_EX_CTIBASE INT EstablishOutMessagePriority(CtiOutMessage *Out, INT priority);
+IM_EX_CTIBASE INT OverrideOutMessagePriority(CtiOutMessage *Out, INT priority);
 IM_EX_CTIBASE bool CheckSocketSubsystem();
 
 #endif // #ifndef __UTILITY_H__
