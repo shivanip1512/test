@@ -26,7 +26,7 @@ public final class FileFormatTypes {
 	public static final int MV_90 = 11;
 	public static final int SEDC_5_4 = 12;
 	public static final int NISC = 13;
-	public static final int NISC_SINGLEPHASE = 14;
+	public static final int NISC_NCDC = 14;
 	
 
 	public static final String SEDC_STRING = "SEDC";
@@ -39,7 +39,7 @@ public final class FileFormatTypes {
 	public static final String NCDC_STRING = "NCDC";
 	public static final String SEDC_5_4_STRING = "SEDC 5.4";
 	public static final String NISC_STRING = "NISC-Turtle";
-	public static final String NISC_SINGLEPHASE_STRING = "NISC-Single Phase";
+	public static final String NISC_NCDC_STRING = "NISC-NCDC";
 	
 	//Set DEFAULT array values in case the table doesn't exist.
 	private static int[] validFormatIds =
@@ -54,7 +54,7 @@ public final class FileFormatTypes {
 		NCDC, 
 		SEDC_5_4,
 		NISC,
-		NISC_SINGLEPHASE
+		NISC_NCDC
 		
 	};
 	
@@ -70,7 +70,7 @@ public final class FileFormatTypes {
 		NCDC_STRING, 
 		SEDC_5_4_STRING,
 		NISC_STRING,
-		NISC_SINGLEPHASE_STRING
+		NISC_NCDC_STRING
 	};
 
 
