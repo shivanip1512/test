@@ -11,21 +11,31 @@ import java.awt.Font;
 import java.awt.KeyboardFocusManager;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
+import java.awt.print.PageFormat;
+import java.awt.print.Paper;
+import java.awt.print.PrinterJob;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Vector;
 
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JRadioButton;
+import javax.swing.JSplitPane;
 
 import org.jfree.chart.JFreeChart;
 
 import com.cannontech.analysis.tablemodel.StatisticModel;
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.gui.util.CTIKeyEventDispatcher;
 import com.cannontech.common.gui.util.SplashWindow;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.Transaction;
+import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.cache.functions.GraphFuncs;
 import com.cannontech.database.data.graph.GraphDefinition;
 import com.cannontech.database.data.lite.LiteBase;
@@ -34,6 +44,7 @@ import com.cannontech.database.data.lite.LiteGraphDefinition;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.graph.GraphDataSeries;
 import com.cannontech.database.db.graph.GraphRenderers;
+import com.cannontech.database.model.DeviceTree_CustomPointsModel;
 import com.cannontech.database.model.GraphDefinitionTreeModel;
 import com.cannontech.graph.buffer.html.HTMLBuffer;
 import com.cannontech.graph.buffer.html.PeakHtml;
@@ -47,6 +58,8 @@ import com.cannontech.graph.menu.TrendMenu;
 import com.cannontech.graph.menu.ViewMenu;
 import com.cannontech.graph.model.TrendModel;
 import com.cannontech.graph.model.TrendProperties;
+import com.cannontech.jfreechart.chart.YukonChartPanel;
+import com.cannontech.message.dispatch.message.Command;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.application.TrendingRole;
 import com.cannontech.util.ServletUtil;
@@ -115,8 +128,6 @@ public class GraphClient extends javax.swing.JPanel implements com.cannontech.da
 	private int savedViewType = GraphRenderers.LINE;
 	private static Graph graphClass = null;
 	private static javax.swing.JFrame graphClientFrame = null;
-	private String directory = null;
-	private static boolean isGraphDefinitionEditable = true;
 	public static double scalePercent = 0;
 	private static final int NO_WEEK = 0;	// one week or less
 	private static final int FIRST_WEEK = 1;//exactly the first week
@@ -142,7 +153,6 @@ public class GraphClient extends javax.swing.JPanel implements com.cannontech.da
 	private ViewMenu viewMenu = null;
 	private OptionsMenu optionsMenu = null;
 	private HelpMenu helpMenu = null;
-//	private com.cannontech.message.dispatch.ClientConnection connToDispatch;
 	private com.cannontech.common.gui.util.TreeViewPanel ivjTreeViewPanel = null;
 	private com.cannontech.common.gui.util.DateComboBox ivjStartDateComboBox = null;
 	private com.cannontech.jfreechart.chart.YukonChartPanel freeChartPanel = null;
@@ -307,21 +317,6 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 	{
 		getTrendProperties().setResolutionInMillis(1000L * 60L);	
 	}
-	/*
-	else if ( event.getSource() == getViewMenu().getLoadDurationRadioButtonItem())
-	{
-		actionPerformed_GetRefreshButton(LOAD_DURATION_LINE_MODEL);
-		getOptionsMenu().getPlotYesterdayMenuItem().setEnabled(false);
-		getOptionsMenu().getPlotYesterdayMenuItem().setSelected(false);
-		getFileMenu().getExportMenuitem().setEnabled(true);
-	}
-	else if( event.getSource() == getViewMenu().getLoadDuration3DRadioButtonItem() )
-	{
-		actionPerformed_GetRefreshButton(LOAD_DURATION_STEP_MODEL);
-		getOptionsMenu().getPlotYesterdayMenuItem().setEnabled(false);
-		getFileMenu().getExportMenuitem().setEnabled(true);
-	}
-*/
 	else if( event.getSource() == getOptionsMenu().getPlotYesterdayMenuItem())
 	{
 		com.cannontech.clientutils.CTILogger.info("yesterday change");
@@ -329,34 +324,18 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 		getGraph().setUpdateTrend(true);
 		refresh();
 	}
-	/*
-	else if( event.getSource() == getOptionsMenu().getSetupMultipleDaysMenuItem())
-	{
-		MultipleDaysSetupPanel setupPanel = new MultipleDaysSetupPanel();
-//		setupPanel.setPanelsEnabled(getFileFormatComboBox().getSelectedIndex());
-		setupPanel.showAdvancedOptions( getGraphParentFrame() );
-	}
-*/
 	else if( event.getSource() == getOptionsMenu().getMultiplierMenuItem())
 	{
 		boolean isMasked = getOptionsMenu().getMultiplierMenuItem().isSelected();
 		getTrendProperties().updateOptionsMaskSettings(GraphRenderers.GRAPH_MULTIPLIER_MASK, isMasked);
 		refresh();
 	}
-	/*
-	else if( event.getSource() == getOptionsMenu().getDwellMenuItem())
-	{
-		boolean isMasked = getOptionsMenu().getDwellMenuItem().isSelected();
-		getGraph().setOptionsMaskHolder(GraphRenderers.DWELL_LABELS_MASK, isMasked);
-	}
-	*/
 	else if( event.getSource() == getOptionsMenu().getPlotMinMaxValuesMenuItem())
 	{
 		boolean isMasked = getOptionsMenu().getPlotMinMaxValuesMenuItem().isSelected();
 		getTrendProperties().updateOptionsMaskSettings(GraphRenderers.PLOT_MIN_MAX_MASK, isMasked);
 		refresh();
 	}
-
 	else if( event.getSource() == getOptionsMenu().getShowLoadFactorMenuItem())
 	{
 		boolean isMasked = getOptionsMenu().getShowLoadFactorMenuItem().isSelected();
@@ -369,7 +348,6 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 		getTrendProperties().updateOptionsMaskSettings(GraphRenderers.LEGEND_MIN_MAX_MASK, isMasked);
 		refresh();
 	}
-
 	else if( event.getSource() == getOptionsMenu().getAdvancedOptionsMenuItem())
 	{
 		TrendProperties props = getAdvOptsPanel().showAdvancedOptions(getGraphParentFrame());
@@ -415,20 +393,14 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 	{
 		com.cannontech.common.util.CtiUtilities.showHelp( HELP_FILE );
 	}
-
 	else if(event.getSource() == getHelpMenu().getAboutMenuItem())
 	{
 		about( );
 	}
-	//else if( event.getSource() == graphOptionsMenu.showPointLabelsItem )
-	//{
-		//actionPerformed_ShowPointLabelsItem();
-	//}	
 	else if( event.getSource() == getFileMenu().getExitMenuItem() )
 	{
 		exit();
 	}
-	
 	else if( event.getSource() == getTrendMenu().getGetDataNowAllMetersMenuItem())
 	{
 		getGraph().getDataNow(null);
@@ -477,9 +449,7 @@ public void runReport(StatisticModel reportData)
 	}
 }
 /**
- * Insert the method's description here.
- * Creation date: (6/22/00 2:07:26 PM)
- * @param event java.awt.event.ActionEvent
+ * Display the dialog with about information.
  */
 public void about( ) 
 {
@@ -490,9 +460,7 @@ public void about( )
 	aboutDialog.show();
 }
 /**
- * Insert the method's description here.
- * Creation date: (6/22/00 2:07:26 PM)
- * @param event java.awt.event.ActionEvent
+ * Display a Create Graph Panel.  Set gDef based on the value returned from the create panel.
  */
 public void create( )
 {
@@ -508,9 +476,7 @@ public void create( )
 	createPanel = null;
 }
 /**
- * Insert the method's description here.
- * Creation date: (6/22/00 2:07:26 PM)
- * @param event java.awt.event.ActionEvent
+ * Delete the gDef selected in the tree panel.
  */
 public void delete( )
 {
@@ -530,9 +496,8 @@ public void delete( )
 	}
 }
 /**
- * Insert the method's description here.
- * Creation date: (6/22/00 2:07:26 PM)
- * @param event java.awt.event.ActionEvent
+ * Displays the Create Graph Panel for the gDef selected in the treeViewPanel.
+ * Sets gDef based on the returned updated value.
  */
 public void edit( )
 {
@@ -579,9 +544,7 @@ public void edit( )
 
 }
 /**
- * Insert the method's description here.
- * Creation date: (6/22/00 2:07:26 PM)
- * @param event java.awt.event.ActionEvent
+ * Displays SaveAsJFileChooser based on the currently selected tab from trendProperties.
  */
 public void export()
 {
@@ -610,9 +573,7 @@ public void export()
 	}		
 }
 /**
- * Insert the method's description here.
- * Creation date: (6/22/00 2:07:26 PM)
- * @param event java.awt.event.ActionEvent
+ * Update the selected gDef from treeViewPanel.  Calls updateCurrentPane() to actually update the display.
  */
 public void refresh( )
 {
@@ -648,9 +609,7 @@ public void refresh( )
 	}
 }
 /**
- * Insert the method's description here.
- * Creation date: (6/22/00 2:07:26 PM)
- * @param event java.awt.event.ActionEvent
+ * Updates currentWeek and period values based on TimePeriod selected. 
  */
 public void updateTimePeriod( )
 {
@@ -668,7 +627,6 @@ public void updateTimePeriod( )
 	{
 		getOptionsMenu().getPlotYesterdayMenuItem().setSelected(false);
 		getOptionsMenu().getPlotYesterdayMenuItem().setEnabled(false);
-//		getGraph().setOptionsMaskHolder(GraphRenderers.PLOT_YESTERDAY_MASK, false);
 	}
 	else
 	{
@@ -677,13 +635,10 @@ public void updateTimePeriod( )
 	getGraph().setUpdateTrend(true);
 }
 /**
- * Insert the method's description here.
- * Creation date: (6/22/00 2:07:26 PM)
- * @param event java.awt.event.ActionEvent
+ * Updates the editable items and start date display when period selection changes between current and historical.
  */
 public void toggleTimePeriod( )
 {
-	
 	//ADD CODE FOR WHEN CURRENT/HISTORICAL IS SELECTED 2 TIMES IN A ROW!!!
 	//Put action events from getTimePeriodComboBox on hold until the method ends
 	getTimePeriodComboBox().removeActionListener(this);
@@ -703,7 +658,7 @@ public void toggleTimePeriod( )
 			getTimePeriodComboBox().addItem(ServletUtil.currentPeriods[i]);
 
 		getTimePeriodComboBox().setSelectedIndex(currIndex); //set to saved currentPeriod
-		getStartDateComboBox().setSelectedDate(com.cannontech.util.ServletUtil.getToday()); //set to currentDate
+		getStartDateComboBox().setSelectedDate(ServletUtil.getToday()); //set to currentDate
 		setStartDate(getStartDateComboBox().getSelectedDate());
 		currentWeek = NO_WEEK;
 	}
@@ -718,56 +673,54 @@ public void toggleTimePeriod( )
 
 		// -- Fill combo box with historical time periods
 		for (int i = 0; i < ServletUtil.historicalPeriods.length; i++)
-			getTimePeriodComboBox().addItem(com.cannontech.util.ServletUtil.historicalPeriods[i]);
+			getTimePeriodComboBox().addItem(ServletUtil.historicalPeriods[i]);
 
 		getTimePeriodComboBox().setSelectedIndex(histIndex); //set to saved histPeriod
 		if( histDate != null)
 		{
-			getStartDateComboBox().setSelectedDate(com.cannontech.util.ServletUtil.parseDateStringLiberally( (dateFormat.format( histDate)).toString() )); //set to saved histDate
+			getStartDateComboBox().setSelectedDate(ServletUtil.parseDateStringLiberally( (dateFormat.format( histDate)).toString() )); //set to saved histDate
 			setStartDate(getStartDateComboBox().getSelectedDate());
 		}
 		else
-			com.cannontech.clientutils.CTILogger.info(" %%% hist date null!!! ");
+			com.cannontech.clientutils.CTILogger.debug("Historical date it null, what should we do???");
 	}
 
 	// -- Put the action listener back on the timePeriodComboBox	
 	getTimePeriodComboBox().addActionListener(this);
 	getStartDateComboBox().addActionListener(this);
 	updateTimePeriod();
-	
 }
+
 /**
- * Insert the method's description here.
- * Creation date: (6/22/00 2:07:26 PM)
- * @param event java.awt.event.ActionEvent
+ * Display a printer job dialog, prints the currently viewed tab.
  */
 public void print( )
 {
-	java.awt.print.PrinterJob pj = java.awt.print.PrinterJob.getPrinterJob();
+	PrinterJob pj = PrinterJob.getPrinterJob();
 	if (pj.printDialog())
 	{
-		java.awt.print.PageFormat pf = new java.awt.print.PageFormat();
+		PageFormat pf = new PageFormat();
 		
 		try
 		{
-			java.awt.print.Paper paper = new java.awt.print.Paper();
+			Paper paper = new Paper();
 			if( getTabbedPane().getSelectedComponent() == getGraphTabPanel())
 			{
-				pf.setOrientation(java.awt.print.PageFormat.LANDSCAPE);
+				pf.setOrientation(PageFormat.LANDSCAPE);
 				paper.setImageableArea(30, 40, 552, 712);
 				pf.setPaper(paper);
 				pj.setPrintable(getFreeChartPanel(), pf);
 			}
 			else if( getTabbedPane().getSelectedComponent() == getTabularTabScrollPane())
 			{
-				pf.setOrientation(java.awt.print.PageFormat.PORTRAIT);
+				pf.setOrientation(PageFormat.PORTRAIT);
 				paper.setImageableArea(72, 36, 468, 720);
 				pf.setPaper(paper);
 				pj.setPrintable(getTabularEditorPane(), pf);
 			}
 			else if( getTabbedPane().getSelectedComponent() == getSummaryTabScrollPane())
 			{
-				pf.setOrientation(java.awt.print.PageFormat.PORTRAIT);
+				pf.setOrientation(PageFormat.PORTRAIT);
 				paper.setImageableArea(40, 40, 542, 712);
 				pf.setPaper(paper);
 				pj.setPrintable(getSummaryEditorPane(), pf);
@@ -787,15 +740,14 @@ public void print( )
 	// JDK1.4 should have fixed the issue but I(SN) have still seen inconsistencies with focus.
 	getGraphParentFrame().toFront();//keeps the main frame in front focus
 }
+
 /**
- * Insert the method's description here.
- * Creation date: (5/9/2001 9:55:28 AM)
- * @param menu javax.swing.JMenu
  * Add action listeners to each JMenuItem in menu.
+ * @param menu javax.swing.JMenu
  */
-public void addMenuItemActionListeners(javax.swing.JMenu menu)
+public void addMenuItemActionListeners(JMenu menu)
 {
-	javax.swing.JMenuItem item;
+	JMenuItem item;
 
 	for (int i = 0; i < menu.getItemCount(); i++)
 	{
@@ -806,7 +758,7 @@ public void addMenuItemActionListeners(javax.swing.JMenu menu)
 			menu.getItem(i).addActionListener(this);
 			if( item instanceof javax.swing.JMenu)
 			{
-				for (int j = 0; j < ((javax.swing.JMenu)item).getItemCount(); j++)
+				for (int j = 0; j < ((JMenu)item).getItemCount(); j++)
 				{
 					((javax.swing.JMenu)item).getItem(j).addActionListener(this);
 				}
@@ -815,10 +767,11 @@ public void addMenuItemActionListeners(javax.swing.JMenu menu)
 				
 	}
 }
+
 /**
- * Update the pane.
- *  Calls the html code and the usage code
- * Creation date: (11/15/00 4:11:14 PM)
+ * Returns HTML string buffer for summary, usage or tabular displays.
+ * @param htmlBuffer HTMLBuffer
+ * @return StringBuffer.toString()
  */
 private String buildHTMLBuffer( HTMLBuffer htmlBuffer)
 {
@@ -847,8 +800,10 @@ private String buildHTMLBuffer( HTMLBuffer htmlBuffer)
 	}
 	return returnBuffer.toString();
 }
+
 /**
- * Insert the method's description here.
+ * Writes the current application state to a file for convenient default startup display.
+ * Sends CLIENT_APP_SHUTDOWN message to dispatch before exitting.
  * Creation date: (9/25/2001 11:12:24 AM)
  */
 public void exit()
@@ -858,13 +813,10 @@ public void exit()
 	{
 		if ( getClientConnection() != null && getClientConnection().isValid() )  // free up Dispatches resources
 		{
-			com.cannontech.message.dispatch.message.Command command = new com.cannontech.message.dispatch.message.Command();
+			Command command = new Command();
 			command.setPriority(15);
-			
-			command.setOperation( com.cannontech.message.dispatch.message.Command.CLIENT_APP_SHUTDOWN );
-
+			command.setOperation( Command.CLIENT_APP_SHUTDOWN );
 			getClientConnection().write( command );
-
 			getClientConnection().disconnect();
 		}
 	}
@@ -876,18 +828,18 @@ public void exit()
 	System.exit(0);
 
 }
+
 /**
- * Update the tabular pane.
- * Creation date: (11/15/00 4:11:14 PM)
- * Modified: (7/18/01 by SN) - eliminated a second call to hitDatabase()
+ * Format the tabular view Slider.
+ * Returns the currently selected value from the slider.
+ * @param model
+ * @param htmlData
+ * @return valueSelected
  */
 private int formatDateRangeSlider(TrendModel model, TabularHtml htmlData)
 {
 	String timePeriod = getGraph().getPeriod();
-	
-	java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
 	int valueSelected = Integer.MIN_VALUE;	//some number not -1 or greater
-//	long DAY = 86400000;
 
 	setSliderKeysAndValues(model.getStartDate(), model.getStopDate());
 	int valuesCount = sliderValuesArray.length;	//number of days in time period
@@ -926,16 +878,17 @@ private int formatDateRangeSlider(TrendModel model, TabularHtml htmlData)
 		valueSelected = setLabelData (getTabularSlider().getMinimum(), getTabularSlider().getMaximum(), getTabularSlider().getValue());
 		getTabularSlider().setValue(valueSelected);
 		
+		GregorianCalendar cal = new GregorianCalendar();
 		// If a date is indicated on the slider, just do that day....
 		if( valueSelected > Integer.MIN_VALUE)
 		{
-			//// temporarily set the end date for only one day's data
+			// temporarily set the end date for only one day's data
 			cal.setTime((Date)(sliderValuesArray[valueSelected]).clone());
 			cal.add(Calendar.DATE, 1);
 
 			htmlData.setTabularEndDate(cal.getTime());
 
-			//// temporarily set the start date for only one day's data
+			// temporarily set the start date for only one day's data
 			cal.setTime( ((java.util.Date)sliderValuesArray[valueSelected]) );
 			htmlData.setTabularStartDate(cal.getTime());
 
@@ -1001,28 +954,18 @@ private static void getBuilderData() {
 	GGGGGGGGGGGGGGGGE2F5E9ECE4E5F2A0E4E1F4E1D0CB8586GGGG81G81GBAGGG8AA3GGGG
 **end of data**/
 }
+
 /**
- * Insert the method's description here.
- * Creation date: (5/31/2001 2:48:47 PM)
- * @return com.klg.jclass.chart.JCChart
- */
-/*
-public JCChart getChart()
-{
-	return getGraph().getChart();
-}
-*/
-/**
- * Insert the method's description here.
- * Creation date: (12/20/2001 5:14:03 PM)
+ * Returns the getGraph().connection to dispatch.
  * @return com.cannontech.message.util.ClientConnection
  */
 public com.cannontech.message.util.ClientConnection getClientConnection() {
 	return getGraph().getClientConnection();
 }
+
 /**
- * Return the CurrentRadioButton property value.
- * @return javax.swing.JRadioButton
+ * A radio button for selected the current time frame.
+ * @return javax.swing.JRadioButton ivjCurrentRadioButton
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JRadioButton getCurrentRadioButton() {
@@ -1047,9 +990,8 @@ private javax.swing.JRadioButton getCurrentRadioButton() {
 	return ivjCurrentRadioButton;
 }
 /**
- * Insert the method's description here.
- * Creation date: (7/6/2001 1:32:01 PM)
- * @return javax.swing.ButtonGroup
+ * A button group for current and historical radio button exclusive selection.
+  * @return javax.swing.ButtonGroup dataViewButtonGroup
  */
 private javax.swing.ButtonGroup getDataViewButtonGroup()
 {
@@ -1061,36 +1003,11 @@ private javax.swing.ButtonGroup getDataViewButtonGroup()
 	}
 	return dataViewButtonGroup;
 }
-/**
- * Insert the method's description here.
- * Creation date: (10/25/2001 9:55:03 AM)
- * @return java.lang.String
- */
-public String getDirectory()
-{
-	if( directory == null )
-	{
-		try
-		{
-			java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("config");
-			directory = bundle.getString("yc_common_commands_dir");	//using the YC one so not another one needs to exist.
-			//com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "]  Directory found in config.properties is " + directory);
-			int index = directory.lastIndexOf("/");
-			directory = directory.substring(0, index+1);
-			directory = directory + "export/";
-		}
-		catch( Exception e)
-		{
-			directory= "C:/yukon/client/export/";
-			//com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "]  Directory was NOT found in config.properties, defaulted to " + directory);
-			com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "]  Add row named 'yc_common_commands_dir' to config.properties with the home directory.");
-		}
 
-		java.io.File file = new java.io.File( directory );
-		file.mkdirs();
-	}
-	return directory;
-}
+/**
+ * A menu listing FILE type functions.
+ * @return FileMenu fileMenu
+ */
 private FileMenu getFileMenu()
 {
 	if (fileMenu == null)
@@ -1100,15 +1017,25 @@ private FileMenu getFileMenu()
 	}
 	return fileMenu;
 }
+
+/**
+ * A jFreeChart for containing the graph image.
+ * @return JFreeChart getGraph().getFreeChart()
+ */
 public JFreeChart getFreeChart()
 {
 	return getGraph().getFreeChart();
 }
-private com.cannontech.jfreechart.chart.YukonChartPanel getFreeChartPanel()
+
+/**
+ * A special panel for containing a jfreeChart.
+ * @return YukonChartPanel freeChartPanel
+ */
+private YukonChartPanel getFreeChartPanel()
 {
 	if( freeChartPanel == null)
 	{
-		freeChartPanel = new com.cannontech.jfreechart.chart.YukonChartPanel(getFreeChart());
+		freeChartPanel = new YukonChartPanel(getFreeChart());
 		freeChartPanel.setVisible(true);
 		freeChartPanel.setPopupMenu(null);	//DISABLE popup properties menu
 	}
@@ -1119,10 +1046,10 @@ private com.cannontech.jfreechart.chart.YukonChartPanel getFreeChartPanel()
 	
 	return freeChartPanel;
 }
+
 /**
- * Insert the method's description here.
- * Creation date: (5/30/2001 9:55:19 AM)
- * @return com.cannontech.graph.Graph
+ * An instance of the Graph class.
+ * @return com.cannontech.graph.Graph graphClass
  */
 public Graph getGraph()
 {
@@ -1130,13 +1057,21 @@ public Graph getGraph()
 		graphClass = new Graph();
 	return graphClass;
 }
-private javax.swing.JFrame getGraphParentFrame ()
+
+/**
+ * A defined parent frame.
+ * @return JFrame graphClientFrame
+ */
+private javax.swing.JFrame getGraphParentFrame()
 {
 	return graphClientFrame;
 }
+
 /**
+ * A panel for containing the freeChart panel.
+ * This panel is used as a tabbed pane.
  * Return the GraphTabPanel property value.
- * @return javax.swing.JPanel
+ * @return javax.swing.JPanel ivjGraphTabPanel
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JPanel getGraphTabPanel() {
@@ -1156,6 +1091,11 @@ private javax.swing.JPanel getGraphTabPanel() {
 	}
 	return ivjGraphTabPanel;
 }
+
+/**
+ * A menu listing HELP type functions.
+ * @return HelpMenu helpMenu
+ */
 private HelpMenu getHelpMenu()
 {
 	if (helpMenu == null)
@@ -1165,15 +1105,17 @@ private HelpMenu getHelpMenu()
 	}
 	return helpMenu;
 }
+
 /**
+ * A radio button for selected the historical time frame.
  * Return the HistoricalRadioButton property value.
- * @return javax.swing.JRadioButton
+ * @return javax.swing.JRadioButton ivjHistoricalRadioButton
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JRadioButton getHistoricalRadioButton() {
+private JRadioButton getHistoricalRadioButton() {
 	if (ivjHistoricalRadioButton == null) {
 		try {
-			ivjHistoricalRadioButton = new javax.swing.JRadioButton();
+			ivjHistoricalRadioButton = new JRadioButton();
 			ivjHistoricalRadioButton.setName("HistoricalRadioButton");
 			ivjHistoricalRadioButton.setText("Historical");
 			ivjHistoricalRadioButton.setMinimumSize(new java.awt.Dimension(35, 22));
@@ -1189,15 +1131,17 @@ private javax.swing.JRadioButton getHistoricalRadioButton() {
 	}
 	return ivjHistoricalRadioButton;
 }
+
 /**
+ * A split pane to separate the treeviewPanel and the tabbed pane/trend setup information.
  * Return the JSplitPane1 property value.
- * @return javax.swing.JSplitPane
+ * @return javax.swing.JSplitPane ivjLeftRightSplitPane
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JSplitPane getLeftRightSplitPane() {
+private JSplitPane getLeftRightSplitPane() {
 	if (ivjLeftRightSplitPane == null) {
 		try {
-			ivjLeftRightSplitPane = new javax.swing.JSplitPane(javax.swing.JSplitPane.HORIZONTAL_SPLIT);
+			ivjLeftRightSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 			ivjLeftRightSplitPane.setName("LeftRightSplitPane");
 			ivjLeftRightSplitPane.setDividerSize(4);
 			ivjLeftRightSplitPane.setDividerLocation(206);
@@ -1213,18 +1157,18 @@ private javax.swing.JSplitPane getLeftRightSplitPane() {
 	}
 	return ivjLeftRightSplitPane;
 }
+
 /**
- * Insert the method's description here.
- * Creation date: (5/17/2001 10:57:58 AM)
- * @return javax.swing.JButton
+ * A menu bar for containing the menu lists.
+ * @return javax.swing.JMenuBar menuBar
  */
-private javax.swing.JMenuBar getMenuBar()
+private JMenuBar getMenuBar()
 {
 	if (menuBar == null)
 	{
 		try
 		{
-			menuBar = new javax.swing.JMenuBar();
+			menuBar = new JMenuBar();
 			menuBar.add(getFileMenu());
 			menuBar.add(getTrendMenu());
 			menuBar.add(getViewMenu());
@@ -1233,12 +1177,16 @@ private javax.swing.JMenuBar getMenuBar()
 		}
 		catch (java.lang.Throwable ivjExc) 
 		{
-			com.cannontech.clientutils.CTILogger.info(" Throwable Exception in getMenuBar()");
+			CTILogger.info(" Throwable Exception in getMenuBar()");
 			ivjExc.printStackTrace();
 		}
 	}
 	return menuBar;
 }
+/**
+ * A menu listing OPTIONAS type functions.
+ * @return OptionsMenu optionsMenu
+ */
 private OptionsMenu getOptionsMenu()
 {
 	if (optionsMenu == null)
@@ -1248,6 +1196,7 @@ private OptionsMenu getOptionsMenu()
 	}
 	return optionsMenu;
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (5/17/2001 10:57:58 AM)
@@ -1848,34 +1797,16 @@ public AdvancedOptionsPanel getAdvOptsPanel()
  * Creation date: (12/20/2001 5:12:47 PM)
  * @param msg com.cannontech.message.dispatch.message.DBChangeMsg
  */
-public void handleDBChangeMsg(com.cannontech.message.dispatch.message.DBChangeMsg msg, LiteBase treeObject)
+public void handleDBChangeMsg(DBChangeMsg msg, LiteBase treeObject)
 {
-	if (!((DBChangeMsg)msg).getSource().equals(com.cannontech.common.util.CtiUtilities.DEFAULT_MSG_SOURCE))
+	if (!((DBChangeMsg)msg).getSource().equals(CtiUtilities.DEFAULT_MSG_SOURCE))
 	{
-		com.cannontech.clientutils.CTILogger.info(" ## DBChangeMsg ##\n" + msg);
-		/*
-		if( msg.getDatabase() == msg.CHANGE_POINT_DB )
-		{
-			
-			com.cannontech.database.data.point.PointBase obj = (com.cannontech.database.data.point.PointBase)userObject;
-			if( obj.getPoint().getPointType().equalsIgnoreCase(msg.getObjectType())
-				 && obj.getPoint().getPointID().intValue() == msg.getId() )
-			{
-				
-				txtMsg.append( ". Editing of '"+
-					com.cannontech.database.cache.functions.PAOFuncs.getYukonPAOName(obj.getPoint().getPaoID().intValue()) + "/" +
-					obj.getPoint().getPointName() + "' was canceled." );
+		CTILogger.info(" ## DBChangeMsg ##\n" + msg);
 
-				current.fireCancelButtonPressed();
-			}
-		}
-*/
-
-		// Refreshes the device trees in the createGraphPanel if that's
-		// the panel that is open panel.
+		// Refreshes the device trees in the createGraphPanel if that's the panel that is open panel.
 		if( createPanel != null)
 		{
-			((com.cannontech.database.model.DeviceTree_CustomPointsModel) createPanel.getTreeViewPanel().getTree().getModel()).update();
+			((DeviceTree_CustomPointsModel) createPanel.getTreeViewPanel().getTree().getModel()).update();
 		}
 
 		// Refreshes the device tree panel in the GraphClient. (Main Frame)	
@@ -1896,69 +1827,23 @@ private void handleException(java.lang.Throwable exception) {
 	// com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
 	 exception.printStackTrace(System.out);
 }
-/**
- * Set up a connection to dispatch, for database changes.
- * In the future we could also get point changes and dynamically
- * update a graph.
- * Creation date: (10/31/00 12:18:31 PM)
- */
-/*private void initDispatchConnection() 
-{
-	String host = null;
-	int port;
-	try
-	{
-		java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("config");
-		host = bundle.getString("dispatch_machine");
-		port = (new Integer(bundle.getString("dispatch_port"))).intValue();
-	}
-	catch ( java.util.MissingResourceException mre )
-	{
-		mre.printStackTrace();
-		host = "127.0.0.1";
-		port = 1510;
-	}
-	catch ( NumberFormatException nfe )
-	{
-		nfe.printStackTrace();
-		port = 1510;
-	}
 
-	connToDispatch = new com.cannontech.message.dispatch.ClientConnection();
-
-	com.cannontech.message.dispatch.message.Registration reg = new com.cannontech.message.dispatch.message.Registration();
-	reg.setAppName("Yukon Trending");
-	reg.setAppIsUnique(0);
-	reg.setAppKnownPort(0);
-	reg.setAppExpirationDelay( 1000000 );
-	
-	connToDispatch.setHost(host);
-	connToDispatch.setPort(port);
-	connToDispatch.setAutoReconnect(true);
-	connToDispatch.setRegistrationMsg(reg);
-
-	try
-	{
-		connToDispatch.connectWithoutWait();
-	}
-	catch ( Exception e )
-	{
-		e.printStackTrace();
-	}
-
-	trendDataAutoUpdater = new TrendDataAutoUpdater();
-	trendDataAutoUpdater.start();
-
-	com.cannontech.database.cache.DefaultDatabaseCache.getInstance().addDBChangeListener(this);	
-	//dbChangeListener = new DBChangeMessageListener();
-	//dbChangeListener.start();
-}*/
 /**
  * Insert the method's description here.
  * Creation date: (5/17/2001 11:51:33 AM)
  */
-private void initialize() {
-	try {
+private void initialize()
+{
+	try
+	{
+		// Setup Role Property to create/edit trends.
+		ClientSession session = ClientSession.getInstance();
+		boolean graphEdit = Boolean.valueOf(AuthFuncs.getRolePropertyValue(session.getUser(), TrendingRole.GRAPH_EDIT_GRAPHDEFINITION)).booleanValue();
+		if( !graphEdit )
+		{
+			getTrendMenu().getCreateMenuItem().setEnabled(false);
+			getTrendMenu().getEditMenuItem().setEnabled(false);
+		}
 		// user code begin {1}
 		histDate = com.cannontech.util.ServletUtil.getToday();
 		currDate = com.cannontech.util.ServletUtil.getToday();
@@ -2044,17 +1929,12 @@ private void initializeSwingComponents()
 	catch(java.io.IOException e){com.cannontech.clientutils.CTILogger.info(e);}
 
 	kit.setStyleSheet(styleSheet);
-//		java.util.Enumeration enum = ((javax.swing.text.html.HTMLEditorKit)getTabularEditorPane().getEditorKit()).getStyleSheet().getStyleNames();
-//	while(enum.hasMoreElements())
-//		System.out.println(enum.nextElement());
 
 	trendDataAutoUpdater = new TrendDataAutoUpdater();
 	trendDataAutoUpdater.start();
 
 	com.cannontech.database.cache.DefaultDatabaseCache.getInstance().addDBChangeListener(this);	
 
-	getDirectory();	//setup the directory for the exports
-	
 	if( getTrendProperties().getViewType() != GraphRenderers.TABULAR &&
 		getTrendProperties().getViewType() != GraphRenderers.SUMMARY )	//not tabular or summary
 		savedViewType = getTrendProperties().getViewType();
@@ -2072,25 +1952,17 @@ public static void main(String[] args)
     try
         {
 		System.setProperty("cti.app.name", "Trending");
-        javax.swing.UIManager.setLookAndFeel(
-            javax.swing.UIManager.getSystemLookAndFeelClassName());
+        javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());
 
         javax.swing.JFrame mainFrame = new javax.swing.JFrame();
-		  SplashWindow splash = new SplashWindow(
-		  		mainFrame,
-			  "ctismall.gif",
-			  "Loading " + System.getProperty("cti.app.name") + "...",
-			  new Font("dialog", Font.BOLD, 14 ), Color.black, Color.blue, 2 );
+		mainFrame.setIconImage( java.awt.Toolkit.getDefaultToolkit().getImage("GraphIcon.gif"));
+		mainFrame.setTitle("Yukon Trending");
         
+        SplashWindow splash = new SplashWindow( mainFrame, "ctismall.gif", "Loading " + System.getProperty("cti.app.name") + "...", new Font("dialog", Font.BOLD, 14 ), Color.black, Color.blue, 2 );
         
-        
-        mainFrame.setIconImage(
-            java.awt.Toolkit.getDefaultToolkit().getImage("GraphIcon.gif"));
-            	
 		ClientSession session = ClientSession.getInstance(); 
-		if(!session.establishSession(mainFrame)){
+		if(!session.establishSession(mainFrame))
 			System.exit(-1);			
-		}
 	  	
 		if(session == null) 		
 			System.exit(-1);
@@ -2101,63 +1973,22 @@ public static void main(String[] args)
 		  System.exit(-1);				
 		}
 			
-        mainFrame.setTitle("Yukon Trending");
-
         java.awt.Dimension d = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
         mainFrame.setSize((int) (d.width * .85), (int) (d.height * .85));
         mainFrame.setLocation((int) (d.width * .05), (int) (d.height * .05));
-//		mainFrame.setSize(800, 600); //force smallest screen size; used in testing
 
         GraphClient gc = new GraphClient(mainFrame);
         mainFrame.setContentPane(gc);
         mainFrame.setJMenuBar(gc.getMenuBar());
         mainFrame.setVisible(true);
-
         // Add the Window Closing Listener.
         mainFrame.addWindowListener(gc);
-        //gc.initialize();
-        //gc.initializeSwingComponents();
-
-        java.util.ResourceBundle res = null;
-        try
-            {
-            res = java.util.ResourceBundle.getBundle("config");
-        }
-        catch (java.util.MissingResourceException mse)
-            {
-            System.err.println(mse.getMessage());
-            mse.printStackTrace();
-        }
-        catch (NumberFormatException nfe)
-            {
-            nfe.printStackTrace();
-        }
-        /*
-        try
-        {
-        	graphEdit = res.getString("graph_edit_graphdefinition").toLowerCase();
-        }
-        catch( java.util.MissingResourceException mse )
-        {
-        	System.err.println(mse.getMessage());
-        }
-        
-        
-        if( graphEdit.equals("false") )
-        {
-        	isGraphDefinitionEditable = false;
-        	gc.graphTrendMenu.createMenuItem.setEnabled(false);
-        	gc.graphTrendMenu.editMenuItem.setEnabled(false);
-        }
-        */
-
     }
     catch (Exception e)
     {
 		e.printStackTrace( System.err );
 		System.exit(-1);    	
     }
-
 }
 /**
  * Insert the method's description here.
@@ -2229,7 +2060,7 @@ public void setSliderKeysAndValues(java.util.Date start, java.util.Date end)
 	tempCal.setTime(start);
 	while (tempCal.getTime().compareTo(end) < 0)
 	{
-		temp.add(new Date(tempCal.getTime().getTime()));
+		temp.add(new Date(tempCal.getTimeInMillis()));
 		tempCal.add(Calendar.DATE, 1);
 	}
 	sliderValuesArray = new Date[temp.size()];
@@ -2352,7 +2183,6 @@ public void stateChanged(javax.swing.event.ChangeEvent event)
 	
 			if( getTabbedPane().getSelectedComponent() == getGraphTabPanel())
 			{
-	//				com.cannontech.clientutils.CTILogger.info("GRAPH TAB");
 				getGraph().setViewType(savedViewType);
 				if( getTreeViewPanel().getSelectedNode().getParent() == null)	//has no parent, therefore is the root.
 				{
@@ -2364,7 +2194,6 @@ public void stateChanged(javax.swing.event.ChangeEvent event)
 				
 			else if( getTabbedPane().getSelectedComponent() == getTabularTabScrollPane())
 			{
-	//				com.cannontech.clientutils.CTILogger.info("TABULAR TAB");
 				getGraph().setViewType(GraphRenderers.TABULAR);
 				if( getTreeViewPanel().getSelectedNode().getParent() == null)
 				{
@@ -2386,7 +2215,6 @@ public void stateChanged(javax.swing.event.ChangeEvent event)
 			}
 			else if( getTabbedPane().getSelectedComponent() == getSummaryTabScrollPane())
 			{
-	//				com.cannontech.clientutils.CTILogger.info("SUMMARY TAB");
 				getGraph().setViewType(GraphRenderers.SUMMARY);
 				
 				if( getTreeViewPanel().getSelectedNode().getParent() == null)
