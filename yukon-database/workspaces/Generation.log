@@ -1328,7 +1328,7 @@ Creating References...
 Generation successful
 
 Usage:
-  (1) Go to the directory D:\eclipse\head\yukon-database\CreationScripts\
+  (1) Go to the directory D:\eclipse\branch41\yukon-database\CreationScripts\
   (2) Start the SQL interpreter:
         sqlplus <username>/<password>
   (3) Run the database creation script:

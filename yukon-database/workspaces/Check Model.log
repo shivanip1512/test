@@ -11,23 +11,23 @@ Checking table ...
 -	Existence of column
 -	Existence of index
 	Warning	The following table do not have any index:
+		-> LMMACSScheduleOperatorList
 		-> PointAlarming
-		-> EnergyCompanyOperatorLoginList
+		-> GatewayEndDevice
 		-> EnergyCompanyCustomerList
 		-> OperatorLoginGraphList
-		-> LMMACSScheduleOperatorList
-		-> GatewayEndDevice
+		-> EnergyCompanyOperatorLoginList
 -	Existence of key
 -	Number of auto-incremented columns
 -	Existence of reference
 	Warning	The following table do not have any reference:
-		-> LOGIC
-		-> CTIDatabase
-		-> GenericMacro
-		-> BillingFileFormats
 		-> FDRTelegyrGroup
+		-> BillingFileFormats
 		-> YukonWebConfiguration
 		-> GatewayEndDevice
+		-> CTIDatabase
+		-> GenericMacro
+		-> LOGIC
 Checking column of table
 -	Column name uniqueness
 -	Column code uniqueness

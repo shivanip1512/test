@@ -5,11 +5,11 @@
 create table GatewayEndDevice  (
    SerialNumber         VARCHAR2(30)                     not null,
    HardwareType         NUMBER                           not null,
-   DataType             NUMBER,
+   DataType             NUMBER                           not null,
    DataValue            VARCHAR2(100)
 );
 alter table GatewayEndDevice
-   add constraint PK_GATEWAYENDDEVICE primary key (SerialNumber, HardwareType);
+   add constraint PK_GATEWAYENDDEVICE primary key (SerialNumber, HardwareType, DataType);
 
 
 create table DeviceCustomerList  (

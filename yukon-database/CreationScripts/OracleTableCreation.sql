@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI Oracle 8.1.5                             */
-/* Created on:     7/14/2003 1:05:05 PM                         */
+/* Created on:     7/16/2003 1:52:25 PM                         */
 /*==============================================================*/
 
 
@@ -2388,14 +2388,14 @@ alter table GRAPHDEFINITION
 create table GatewayEndDevice  (
    SerialNumber         VARCHAR2(30)                     not null,
    HardwareType         NUMBER                           not null,
-   DataType             NUMBER,
+   DataType             NUMBER                           not null,
    DataValue            VARCHAR2(100)
 )
 /
 
 
 alter table GatewayEndDevice
-   add constraint PK_GATEWAYENDDEVICE primary key (SerialNumber, HardwareType)
+   add constraint PK_GATEWAYENDDEVICE primary key (SerialNumber, HardwareType, DataType)
 /
 
 

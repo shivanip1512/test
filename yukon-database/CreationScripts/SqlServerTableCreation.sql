@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI SqlServer 2000                           */
-/* Created on:     7/14/2003 1:03:53 PM                         */
+/* Created on:     7/16/2003 1:51:35 PM                         */
 /*==============================================================*/
 
 
@@ -2914,14 +2914,14 @@ go
 create table GatewayEndDevice (
 SerialNumber         varchar(30)          not null,
 HardwareType         numeric              not null,
-DataType             numeric              null,
+DataType             numeric              not null,
 DataValue            varchar(100)         null
 )
 go
 
 
 alter table GatewayEndDevice
-   add constraint PK_GATEWAYENDDEVICE primary key  (SerialNumber, HardwareType)
+   add constraint PK_GATEWAYENDDEVICE primary key  (SerialNumber, HardwareType, DataType)
 go
 
 
