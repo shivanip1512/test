@@ -52,6 +52,9 @@ public Tag(Integer id, String name) {
  */
 public void add() throws java.sql.SQLException 
 {
+	if(getTagID() == null)
+		setTagID(getNextTagID());
+	
 	Object addValues[] = { getTagID(), getTagName(), getTagLevel(), getInhibit(), getColorID(), getImageID() };
 
 	add( TABLE_NAME, addValues );
@@ -66,43 +69,32 @@ public void delete() throws java.sql.SQLException
 	delete( TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
 }
 
+public final static Integer getNextTagID() throws java.sql.SQLException 
+{	
+	return getNextTagID(com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
+}
 
-public static synchronized Integer getNextTagID( java.sql.Connection conn )
+/**
+ * This method was created in VisualAge.
+ * @param pointID java.lang.Integer
+ */
+public final static Integer getNextTagID(String databaseAlias) throws java.sql.SQLException 
+{
+	com.cannontech.database.SqlStatement stmt =
+		new com.cannontech.database.SqlStatement("SELECT Max(TagID)+1 FROM " + TABLE_NAME ,
+													databaseAlias );
+
+	try
 	{
-		if( conn == null )
-			throw new IllegalStateException("Database connection should not be null.");
-	
-		java.sql.Statement stmt = null;
-		java.sql.ResultSet rset = null;
-		
-		try 
-		{		
-			stmt = conn.createStatement();
-			 rset = stmt.executeQuery( "SELECT Max(TagID)+1 FROM " + TABLE_NAME );	
-				
-			 //get the first returned result
-			 rset.next();
-			return new Integer( rset.getInt(1) );
-		}
-		catch (java.sql.SQLException e) 
-		{
-			e.printStackTrace();
-		}
-		finally 
-		{
-			try 
-			{
-				if ( stmt != null) stmt.close();
-			}
-			catch (java.sql.SQLException e2) 
-			{
-				e2.printStackTrace();
-			}
-		}
-		
-		//strange, should not get here
-		return new Integer(com.cannontech.common.util.CtiUtilities.NONE_ID);
+		stmt.execute();
+		return ((Integer)stmt.getRow(0)[0] );
 	}
+	catch( Exception e )
+	{
+		return new Integer(-5);
+	}
+}
+
 
 public Integer getTagID() {
 	return tagID;
