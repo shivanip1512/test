@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/pt_dyn_dispatch.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/03/13 19:36:06 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2003/08/19 13:54:07 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -45,8 +45,6 @@ CtiDynamicPointDispatch& CtiDynamicPointDispatch::operator=(const CtiDynamicPoin
 
         _dispatch = aRef.getDispatch();
         _archivePending = aRef.getArchivePending();
-
-        setLastSignal( aRef.getLastSignal() );
     }
     return *this;
 }
@@ -141,15 +139,4 @@ CtiDynamicPointBase*  CtiDynamicPointDispatch::replicate() const
 
     return((CtiDynamicPointBase*)pNew);
 
-}
-
-INT CtiDynamicPointDispatch::getLastSignal( ) const
-{
-    return _lastSignal;
-}
-
-CtiDynamicPointDispatch& CtiDynamicPointDispatch::setLastSignal( const INT &aInt )
-{
-    _lastSignal = aInt;
-    return *this;
 }

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_dyn_dispatch.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2003/03/13 19:36:17 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2003/08/19 13:54:08 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -71,8 +71,5 @@ public:
    RWTime         getNextArchiveTime() const;
    // RWTime&        getNextArchiveTime();
    CtiDynamicPointDispatch&  setNextArchiveTime(const RWTime &aTime);
-
-   INT getLastSignal() const;
-   CtiDynamicPointDispatch& setLastSignal( const INT &aInt );
 };
 #endif // #ifndef __PT_DYN_DISPATCH_H__
