@@ -338,6 +338,32 @@ public String[] getAllPoolsStrings()
 		 	return props;
 		 }
    }
+
+
+	static synchronized public InputStream getDBInputStream() 
+	{
+		InputStream is = null;
+
+		try
+		{
+			is = PoolManager.class.getResourceAsStream( DB_PROPERTIES_FILE );
+
+			if( is == null ) //not in CLASSPATH, check catalina
+			{
+				File f = new File( DB_BASE + DB_PROPERTIES_FILE);
+				is = new FileInputStream( DB_BASE + DB_PROPERTIES_FILE );
+			}
+			
+		 }
+		 catch (Exception e)
+		 {
+			CTILogger.getStandardLog().error("Can't read the properties file. " +
+				"Make sure db.properties is in the CLASSPATH" + 
+				(DB_BASE != null ? " or in the directory: " + DB_BASE : "") );
+		 }	
+
+		return is;
+	}
    
    static synchronized public void setDBProperties(Properties props) 
    {

@@ -42,7 +42,8 @@ public class DBPropertiesServlet extends HttpServlet {
 
 		InputStream is = null;		
 		try {		
-			is = getClass().getResourceAsStream( PoolManager.DB_PROPERTIES_FILE );
+			is = PoolManager.getDBInputStream();
+
 			byte[] buf = new byte[4096];
 			int r = -1;
 			while((r = is.read(buf, 0, buf.length)) != -1) {
@@ -50,7 +51,7 @@ public class DBPropertiesServlet extends HttpServlet {
 			}
 		}
 		catch(Exception e) {
-			CTILogger.error("Couldn't load " + PoolManager.DB_PROPERTIES_FILE, e);
+			CTILogger.error("Couldn't load " + PoolManager.getPropertyURL(), e);
 		}
 		finally {
 			try { if(is != null) is.close(); } catch(IOException e2) {} 			
