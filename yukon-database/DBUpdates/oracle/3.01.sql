@@ -950,6 +950,10 @@ create index Index_DYNVER_CS on DynamicVerification (
    CodeSequence ASC
 );
 
+insert into YukonRoleProperty values(-10010, -100,'z_optional_product_dev','00000000','This feature is for development purposes only');
+insert into YukonGroupRole values(-1010,-2,-100,-10010,'00000000');
+
+
 
 
 
