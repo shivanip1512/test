@@ -13,6 +13,7 @@
 <%@ page import="com.cannontech.roles.operator.DirectLoadcontrolRole" %>
 <%@ page import="com.cannontech.roles.operator.EnergyBuybackRole" %>
 <%@ page import="com.cannontech.roles.operator.OddsForControlRole" %>
+<%@ page import="com.cannontech.roles.operator.InventoryRole" %>
 
 <%@ taglib uri="/WEB-INF/cti.tld" prefix="cti" %>
 <%@ include file="Consumer/StarsHeader.jsp" %>
@@ -21,7 +22,7 @@
 <head>
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link rel="stylesheet" href="../../WebConfig/CannonStyle.css" type="text/css">
+<link rel="stylesheet" href="../WebConfig/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
 <script language="JavaScript">
 function confirmDelete() {
@@ -209,7 +210,7 @@ function confirmDelete() {
   </tr>
 </cti:checkMultiRole>
 
-<cti:checkRole roleid="<%= Integer.MAX_VALUE %>"> <% /* TODO, this section is for hardware inventory is this real stuff? */ %>
+<cti:checkRole roleid="<%= InventoryRole.ROLEID %>"> <% /* TODO, this section is for hardware inventory is this real stuff? */ %>
   <tr> 
     <td width="102" bgcolor="#000000" height="1"><img src="../Images/Icons/VerticalRule.gif"></td>
     <td width="555" bgcolor="#000000" height="1"><img src="../Images/Icons/VerticalRule.gif"></td>
@@ -220,16 +221,23 @@ function confirmDelete() {
     <td width="555" bgcolor="#FFFFFF" height="102" valign="top"><img src="InventoryHeader.gif" width="148" height="15"><br>
       <table width="525" border="0" cellspacing="0" cellpadding="3" align="center">
         <tr> 
-          <td width="144" height="30" valign="bottom"><font face="Arial, Helvetica, sans-serif" size="1">Search 
-            by serial number:</font></td>
-          <td width="369" height="30" valign="bottom">&nbsp;</td>
+          <td width="97" height="30" valign="bottom">&nbsp;</td>
+          <td width="109" height="30" valign="bottom">&nbsp;</td>
+          <td width="250" height="30" valign="bottom"><font face="Arial, Helvetica, sans-serif" size="1">Search 
+            for existing hardware:</font></td>
+          <td height="30" valign="bottom" width="45">&nbsp;</td>
         </tr>
         <tr> 
+          <td width="97" class="Main"> <cti:checkProperty propertyid="<%= InventoryRole.INVENTORY_SHOW_ALL %>"> 
+            <div align = "center" style = "border:solid 1px #666999;"><a href = "Hardware/Inventory.jsp" class = "Link1" style = "text-decoration:none;">Inventory</a></div>
+            </cti:checkProperty></td>
+          <td width="109" class="Main">&nbsp;</td>
           <form name = "serialSearchForm" method="post" action="Hardware/InventoryDetail.jsp">
-            <td width="144"> 
+            <td width="250" class="Main"> 
               <input type="text" name="textfield22">
               &nbsp; </td>
-            <td width="369" valign = "top"> <img src="GoButton.gif" width="23" height="20" onclick = "Javascript:document.serialSearchForm.submit();" > </td>
+            <td valign = "top" class="Main" width="45"> <img src="GoButton.gif" width="23" height="20" onclick = "Javascript:document.serialSearchForm.submit();" > 
+            </td>
           </form>
         </tr>
       </table>
