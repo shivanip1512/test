@@ -413,7 +413,7 @@ public class CreateApplianceAction implements ActionBase {
         
 		appDB.setAccountID( new Integer(liteAcctInfo.getCustomerAccount().getAccountID()) );
 		appDB.setApplianceCategoryID( new Integer(newApp.getApplianceCategoryID()) );
-		appDB.setProgramID( new Integer(0) );
+		appDB.setProgramID( new Integer(newApp.getProgramID()) );
 		appDB.setManufacturerID( new Integer(newApp.getManufacturer().getEntryID()) );
 		appDB.setLocationID( new Integer(newApp.getLocation().getEntryID()) );
 		appDB.setNotes( newApp.getNotes() );
@@ -425,6 +425,11 @@ public class CreateApplianceAction implements ActionBase {
 			appDB.setKWCapacity( new Integer(newApp.getKWCapacity()) );
 		if (newApp.hasEfficiencyRating())
 			appDB.setEfficiencyRating( new Integer(newApp.getEfficiencyRating()) );
+        
+		if (newApp.getInventoryID() > 0) {
+			app.getLMHardwareConfig().setInventoryID( new Integer(newApp.getInventoryID()) );
+			app.getLMHardwareConfig().setLoadNumber( new Integer(newApp.getLoadNumber()) );
+		}
         
 		app = (com.cannontech.database.data.stars.appliance.ApplianceBase)
 				Transaction.createTransaction(Transaction.INSERT, app).execute();

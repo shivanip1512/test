@@ -99,7 +99,7 @@ public class LiteStarsLMProgram {
 			}
 		}
 		
-		inService = false;
+		inService = true;
 	}
 
 }

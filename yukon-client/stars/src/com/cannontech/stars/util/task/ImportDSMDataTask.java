@@ -55,7 +55,6 @@ import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.action.CreateApplianceAction;
 import com.cannontech.stars.web.action.CreateLMHardwareAction;
 import com.cannontech.stars.web.action.NewCustAccountAction;
-import com.cannontech.stars.web.action.ProgramSignUpAction;
 import com.cannontech.stars.web.action.UpdateLMHardwareConfigAction;
 import com.cannontech.stars.web.util.StarsAdminUtil;
 import com.cannontech.stars.xml.StarsFactory;
@@ -73,15 +72,12 @@ import com.cannontech.stars.xml.serialize.NumberOfGallons;
 import com.cannontech.stars.xml.serialize.PrimaryContact;
 import com.cannontech.stars.xml.serialize.SA205;
 import com.cannontech.stars.xml.serialize.SASimple;
-import com.cannontech.stars.xml.serialize.SULMProgram;
 import com.cannontech.stars.xml.serialize.SecondaryEnergySource;
 import com.cannontech.stars.xml.serialize.StarsCreateAppliance;
 import com.cannontech.stars.xml.serialize.StarsCreateLMHardware;
 import com.cannontech.stars.xml.serialize.StarsCustomerAccount;
 import com.cannontech.stars.xml.serialize.StarsLMConfiguration;
 import com.cannontech.stars.xml.serialize.StarsNewCustomerAccount;
-import com.cannontech.stars.xml.serialize.StarsProgramSignUp;
-import com.cannontech.stars.xml.serialize.StarsSULMPrograms;
 import com.cannontech.stars.xml.serialize.StarsSiteInformation;
 import com.cannontech.stars.xml.serialize.StorageHeat;
 import com.cannontech.stars.xml.serialize.StorageType;
@@ -838,9 +834,11 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 				Hashtable rolePropMap = new Hashtable();
 				rolePropMap.put( new Integer(EnergyCompanyRole.OPERATOR_GROUP_IDS), operGroupIDs );
 				rolePropMap.put( new Integer(EnergyCompanyRole.CUSTOMER_GROUP_IDS), "" );
+				rolePropMap.put( new Integer(EnergyCompanyRole.SINGLE_ENERGY_COMPANY), CtiUtilities.FALSE_STRING );
+				rolePropMap.put( new Integer(EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING), CtiUtilities.TRUE_STRING );
 				rolePropMap.put( new Integer(AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY), CtiUtilities.TRUE_STRING );
-				// For testing, turn on the "delete energy company" property
-				rolePropMap.put( new Integer(AdministratorRole.ADMIN_DELETE_ENERGY_COMPANY), CtiUtilities.TRUE_STRING );
+				rolePropMap.put( new Integer(AdministratorRole.ADMIN_VIEW_BATCH_COMMANDS), CtiUtilities.TRUE_STRING );
+				rolePropMap.put( new Integer(AdministratorRole.ADMIN_VIEW_OPT_OUT_EVENTS), CtiUtilities.TRUE_STRING );
 				
 				String adminGrpName = coopName + " Admin Grp";
 				allGroups[allGroups.length - 1] = StarsAdminUtil.createOperatorAdminGroup(adminGrpName, rolePropMap);
@@ -885,11 +883,10 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 					StarsAdminUtil.updateDefaultRoute( member, routeID.intValue() );
 				
 				StarsAdminUtil.addMember( energyCompany, member, liteUser.getUserID() );
+				numCoopImported++;
 				
 				coopMap.put( coopID, member.getEnergyCompanyID() );
 				fw.println( coopID + "," + member.getEnergyCompanyID() );
-				
-				numCoopImported++;
 			}
 		}
 		finally {
@@ -945,11 +942,10 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 				LiteStarsEnergyCompany member = StarsDatabaseCache.getInstance().getEnergyCompany( newCoopID );
 				
 				LiteSubstation sub = StarsAdminUtil.createSubstation( subName, CtiUtilities.NONE_ZERO_ID, member );
+				numSubstationImported++;
 				
 				substationMap.put( subID, new Integer(sub.getSubstationID()) );
 				fw.println( subID + "," + sub.getSubstationID() );
-				
-				numSubstationImported++;
 			}
 		}
 		finally {
@@ -1042,7 +1038,7 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 					}
 					else {
 						lineNo++;
-						fields[27] += NEW_LINE + nextLine;
+						fields[27] += NEW_LINE + nextLine.trim();
 					}
 				}
 				
@@ -1147,12 +1143,11 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 				newAccount.setStarsCustomerAccount( account );
 				
 				LiteStarsCustAccountInformation liteAcctInfo = NewCustAccountAction.newCustomerAccount(newAccount, member);
+				numCustomerImported++;
 				
 				CustomerPK pk = new CustomerPK( fields[0].trim(), fields[1].trim(), fields[2].trim(), coopID.intValue() );
 				customerMap.put( pk, new Integer(liteAcctInfo.getAccountID()) );
 				fw.println( pk.toString() + "," + liteAcctInfo.getAccountID() );
-				
-				numCustomerImported++;
 			}
 		}
 		finally {
@@ -1245,7 +1240,6 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 				
 				StarsCreateLMHardware inv = (StarsCreateLMHardware) StarsFactory.newStarsInv(StarsCreateLMHardware.class);
 				inv.setAltTrackingNumber( fields[24].trim() );
-				inv.setNotes( rt.toString() );
 				if (fields[8].trim().length() > 0)
 					inv.setInstallDate( dateParser.parse(fields[8].trim()) );
 				
@@ -1316,13 +1310,12 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 				}
 				
 				UpdateLMHardwareConfigAction.updateLMConfiguration( starsCfg, liteHw, member );
+				numReceiverImported++;
 				
 				int slotAddr5 = 0;
 				if (starsCfg.getSA205() != null) slotAddr5 = starsCfg.getSA205().getSlot5();
 				receiverMap.put( serialNo, new Integer[] {new Integer(liteHw.getInventoryID()), new Integer(slotAddr5)} );
 				fw.println( serialNo + "," + liteHw.getInventoryID() + "," + slotAddr5 );
-				
-				numReceiverImported++;
 			}
 		}
 		finally {
@@ -1715,44 +1708,31 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 				}
 				
 				app.setNotes( notes );
-				LiteStarsAppliance liteApp = CreateApplianceAction.createAppliance( app, liteAcctInfo, member );
 				
-				if (receiverInfo == null) {
-					importLog.println(errorLocation + ": unable to find receiver \"" + fields[0].trim() + "\", program enrollment skipped.");
-					continue;
-				}
-				
-				int[] programInfo = null;
-				try {
-					programInfo = getMatchingProgram( receiverInfo[1], app.getApplianceCategoryID() );
-				}
-				catch (WebClientException e) {
-					importLog.println(errorLocation + ": " + e.getMessage());
-					continue;
-				}
-				
-				if (programInfo == null) {
-					importLog.println(errorLocation + ": load type \"" + loadType + "\" doesn't match any function under code \"" + receiverInfo[1] + "\"");
-					continue;
+				if (receiverInfo != null) {
+					try {
+						int[] programInfo = getMatchingProgram( receiverInfo[1], app.getApplianceCategoryID() );
+						if (programInfo != null) {
+//							String[] functions = (String[]) getFunctionTable().get( receiverInfo[1] );
+//							importLog.println(errorLocation + ": load type \"" + loadType + "\" matches function #" + programInfo[1] + " \"" + functions[programInfo[1] - 1] + "\" under code \"" + receiverInfo[1] + "\"");
+							app.setInventoryID( ((Integer)receiverInfo[0]).intValue() );
+							app.setProgramID( programInfo[0] );
+							app.setLoadNumber( programInfo[1] );
+						}
+						else {
+							importLog.println(errorLocation + ": load type \"" + loadType + "\" doesn't match any function under code \"" + receiverInfo[1] + "\", program enrollment skipped.");
+						}
+					}
+					catch (WebClientException e) {
+						importLog.println(errorLocation + ": " + e.getMessage());
+					}
 				}
 				else {
-					String[] functions = (String[]) getFunctionTable().get( receiverInfo[1] );
-					importLog.println(errorLocation + ": load type \"" + loadType + "\" matches function #" + programInfo[1] + " \"" + functions[programInfo[1] - 1] + "\" under code \"" + receiverInfo[1] + "\"");
+					importLog.println(errorLocation + ": unable to find receiver \"" + fields[0].trim() + "\", program enrollment skipped.");
 				}
 				
-				SULMProgram suProg = new SULMProgram();
-				suProg.setProgramID( programInfo[0] );
-				suProg.setLoadNumber( programInfo[1] );
-				suProg.setApplianceCategoryID( liteApp.getApplianceCategoryID() );
-				
-				StarsSULMPrograms suPrograms = new StarsSULMPrograms();
-				suPrograms.addSULMProgram( suProg );
-				StarsProgramSignUp progSignUp = new StarsProgramSignUp();
-				progSignUp.setStarsSULMPrograms( suPrograms );
-				
-				LiteStarsLMHardware liteHw = (LiteStarsLMHardware) member.getInventory( ((Integer)receiverInfo[0]).intValue(), true );
-				ProgramSignUpAction.updateProgramEnrollment( progSignUp, liteAcctInfo, liteHw, member );
-				
+				LiteStarsAppliance liteApp = CreateApplianceAction.createAppliance( app, liteAcctInfo, member );
+				if (liteApp.getProgramID() > 0) member.reloadCustAccountInformation( liteAcctInfo );
 				numCtrlLoadImported++;
 			}
 			
