@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_welco.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2002/11/15 14:08:19 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2002/12/03 17:55:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -481,9 +481,8 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
             }
         case IDLC_FREEZE:
             {
-                if(isScanFreezePending())
+                if(isScanFreezePending() || !useScanFlags())
                 {
-                    // dout << RWTime() << " Good/expected freeze response" << endl;
                     resetScanFreezePending();
                     setScanFrozen();
 
@@ -516,8 +515,11 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
                 }
                 else
                 {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " Throwing away unexpected freeze response" << endl;
+                    }
                     // What is this ??? DeviceRecord->ScanStatus &= SCANFREEZEFAILED;
-                    dout << RWTime() << " Throwing away unexpected freeze response" << endl;
                     setScanFreezeFailed();   // FIX FIX FIX 090799 CGP ?????
                     /* message for screwed up freeze */
                 }
@@ -850,9 +852,9 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
 
 #if (DEBUG_PRINT_DECODE > 0)
                         if(PValue == (FLOAT)CLOSED)
-                            dout << RWTime() << " " << PointRecord->getName() << " Status " << PointOffset << " is  CLOSED" << endl;
+                            { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << RWTime() << " " << PointRecord->getName() << " Status " << PointOffset << " is  CLOSED" << endl; }
                         else
-                            dout << RWTime() << " " << PointRecord->getName() << " Status " << PointOffset << " is  OPENED" << endl;
+                            { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << RWTime() << " " << PointRecord->getName() << " Status " << PointOffset << " is  OPENED" << endl; }
 #endif
 
                         /*
@@ -871,9 +873,9 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
                             PValue = ( (PValue == CLOSED) ? OPENED : CLOSED );
 #if (DEBUG_PRINT_DECODE > 0)
                             if(PValue == (FLOAT)CLOSED)
-                                dout << RWTime() << " " << PointRecord->getName() << " Status " << PointOffset << " was CLOSED" << endl;
+                                { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << RWTime() << " " << PointRecord->getName() << " Status " << PointOffset << " was CLOSED" << endl; }
                             else
-                                dout << RWTime() << " " << PointRecord->getName() << " Status " << PointOffset << " was OPENED" << endl;
+                                { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << RWTime() << " " << PointRecord->getName() << " Status " << PointOffset << " was OPENED" << endl; }
 #endif
                         }
 
@@ -933,9 +935,9 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
 
 #if (DEBUG_PRINT_DECODE > 0)
                         if(PValue == (FLOAT)CLOSED)
-                            dout << RWTime() << " Status " << PointOffset << " is  CLOSED" << endl;
+                            { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << RWTime() << " Status " << PointOffset << " is  CLOSED" << endl; }
                         else
-                            dout << RWTime() << " Status " << PointOffset << " is  OPENED" << endl;
+                            { CtiLockGuard<CtiLogger> doubt_guard(dout);  dout << RWTime() << " Status " << PointOffset << " is  OPENED" << endl; }
 #endif
 
                         /* Check if this is "changed" */
@@ -944,9 +946,9 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
                             PValue = ( (PValue == CLOSED) ? OPENED : CLOSED );
 #if (DEBUG_PRINT_DECODE > 0)
                             if(PValue == (FLOAT)CLOSED)
-                                dout << RWTime() << " Status " << PointOffset << " was CLOSED" << endl;
+                                { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << RWTime() << " Status " << PointOffset << " was CLOSED" << endl; }
                             else
-                                dout << RWTime() << " Status " << PointOffset << " was OPENED" << endl;
+                                { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << RWTime() << " Status " << PointOffset << " was OPENED" << endl; }
 #endif
                         }
 
