@@ -382,20 +382,27 @@ function changeSerialNo() {
                 <br>
                 <table width="400" border="0">
                 <tr>
-                  <td align ="right" width = "50%"> 
 <% if (!inWizard) { %>
+                  <td width="40%" align="right"> 
                     <input type="submit" name="Submit" value="Save">
-<% } else { %>
-                    <input type="submit" name="Next" value="Next">
-<% } %>
                   </td>
-                  <td> 
+<% } else { %>
+                  <td width="40%" align="right"> 
+                    <input type="submit" name="Submit" value="Next">
+                  </td>
+                  <td width="20%" align="center"> 
+                    <input type="submit" name="Submit" value="Done">
+                  </td>
+<% } %>
 <% if (!inWizard) { %>
+                  <td width="40%" align="left"> 
                     <input type="reset" name="Cancel" value="Reset">
-<% } else { %>
-                    <input type="button" name="Cancel" value="Cancel" onclick="location.href = '../Operations.jsp'">
-<% } %>
                   </td>
+<% } else { %>
+                  <td width="40%" align="left"> 
+                    <input type="button" name="Cancel" value="Cancel" onclick="location.href = '../Operations.jsp'">
+                  </td>
+<% } %>
                 </tr>
               </table><br>
               </form>

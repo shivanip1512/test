@@ -540,7 +540,7 @@ function clearPage() {
                     <div align="right">Password:</div>
                   </td>
                   <td width="200"> 
-                    <input type="text" name="Password" maxlength="20" size="20" value="<%= userLogin.getPassword() %>">
+                    <input type="password" name="Password" maxlength="20" size="20" value="<%= userLogin.getPassword() %>">
                   </td>
                 </tr>
                 <tr> 
@@ -548,7 +548,7 @@ function clearPage() {
                     <div align="right">Confirm Password:</div>
                   </td>
                   <td width="200"> 
-                    <input type="text" name="Password2" maxlength="20" size="20">
+                    <input type="password" name="Password2" maxlength="20" size="20">
                   </td>
                 </tr>
               </table>
@@ -556,19 +556,20 @@ function clearPage() {
 </cti:checkProperty>
               <table width="400" border="0" cellspacing="0" cellpadding="5" align="center">
                 <tr> 
-                  <td width="190"> 
-                    <div align="right"> 
 <% if (!inWizard) { %>
-                      <input type="submit" name="Save" value="Save">
-<% } else { %>
-                      <input type="submit" name="Next" value="Next">
-<% } %>
-                    </div>
+                  <td width="40%" align="right"> 
+                    <input type="submit" name="Submit" value="Save">
                   </td>
-                  <td width="190"> 
-                    <div align="left"> 
-                      <input type="button" name="Cancel" value="Clear" onclick="clearPage()">
-                    </div>
+<% } else { %>
+                  <td width="40%" align="right"> 
+                    <input type="submit" name="Submit" value="Next">
+                  </td>
+                  <td width="20%" align="center"> 
+                    <input type="submit" name="Submit" value="Done">
+                  </td>
+<% } %>
+                  <td width="40%" align="left"> 
+                    <input type="button" name="Cancel" value="Clear" onclick="clearPage()">
                   </td>
                 </tr>
               </table>
