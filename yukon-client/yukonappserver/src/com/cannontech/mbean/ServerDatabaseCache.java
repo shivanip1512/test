@@ -517,10 +517,10 @@ public synchronized java.util.List getAllLMScenarios()
 	{
 		allLMScenarios = new java.util.ArrayList( getAllYukonPAObjects().size() );
 
-		for( int i = 0; i < getAllYukonPAObjects().size(); i++ )
+		for( int i = 0; i < getAllLoadManagement().size(); i++ )
 		{
-			if( ((com.cannontech.database.data.lite.LiteYukonPAObject)getAllYukonPAObjects().get(i)).getCategory() 
-				  == com.cannontech.database.data.pao.PAOGroups.CAT_SCENARIO )
+			if( ((com.cannontech.database.data.lite.LiteYukonPAObject)getAllYukonPAObjects().get(i)).getType() 
+				  == com.cannontech.database.data.pao.PAOGroups.LM_SCENARIO )
 			allLMScenarios.add( getAllYukonPAObjects().get(i) );
 		}
 

@@ -14,7 +14,6 @@ public final class PAOGroups implements RouteTypes, PortTypes, DeviceTypes, CapC
    public final static int CAT_CUSTOMER = 3;
    public final static int CAT_CAPCONTROL = 4;
    public final static int CAT_LOADCONTROL = 5;
-   public final static int CAT_SCENARIO = 6;
 	  
    public static final String STRING_CAT_DEVICE = "DEVICE";
    public static final String STRING_CAT_ROUTE = "ROUTE";
@@ -22,7 +21,6 @@ public final class PAOGroups implements RouteTypes, PortTypes, DeviceTypes, CapC
    public static final String STRING_CAT_CUSTOMER = "CUSTOMER";
    public static final String STRING_CAT_CAPCONTROL = "CAPCONTROL";
    public static final String STRING_CAT_LOADMANAGEMENT = "LOADMANAGEMENT";
-   public static final String STRING_CAT_LMSCENARIO = "LMSCENARIO";
    public static final String STRING_INVALID = "(invalid)";
 
 
@@ -74,9 +72,6 @@ public final static String getCategory( int intCategory )
 		case CAT_LOADCONTROL:
 			return STRING_CAT_LOADMANAGEMENT;
 			
-		case CAT_SCENARIO:
-			return STRING_CAT_LMSCENARIO;
-		
 		default:
 			return STRING_INVALID;
 	}

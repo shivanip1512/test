@@ -26,7 +26,7 @@ public class LMScenario extends YukonPAObject implements com.cannontech.database
 	public LMScenario()
 	{
 		super();
-		getYukonPAObject().setType( com.cannontech.database.data.pao.PAOGroups.STRING_CAT_LMSCENARIO );
+		getYukonPAObject().setType( com.cannontech.database.data.pao.PAOGroups.STRING_LM_SCENARIO[0] );
 	}
 	
 	
