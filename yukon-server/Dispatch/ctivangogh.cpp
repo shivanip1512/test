@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2002/05/02 17:02:18 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2002/05/08 15:51:03 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -4183,8 +4183,8 @@ INT CtiVanGogh::sendMail(const CtiEmailMsg &aMail, const CtiTableGroupRecipient 
 
     SENDMAIL sm;
 
-    RWCString mailstr = "\r" + aMail.getText();
-
+    RWCString mailstr = "\r" + aMail.getText() + resolveEmailMsgDescription( aMail );
+    
     sm.lpszHost          = gSMTPServer;                   // Global loaded by ctibase.dll.
     sm.lpszSender        = aMail.getSender();
     sm.lpszSenderName    = NULL;
@@ -4194,7 +4194,7 @@ INT CtiVanGogh::sendMail(const CtiEmailMsg &aMail, const CtiTableGroupRecipient 
     sm.lpszReplyToName   = NULL;
     sm.lpszMessageID     = NULL;
     sm.lpszSubject       = aMail.getSubject();
-    sm.lpszMessage       = mailstr + resolveEmailMsgDescription( aMail );
+    sm.lpszMessage       = mailstr.data();
     sm.bLog              = TRUE;
 
     SendMail(&sm, &status);
@@ -6490,7 +6490,7 @@ void CtiVanGogh::verifyControlTimesValid( CtiPendingPointOperations &ppc )
 
 RWCString CtiVanGogh::resolveEmailMsgDescription( const CtiEmailMsg &aMail )
 {
-    RWCString rstr;
+    RWCString rstr("");
 
     switch( aMail.getType() )
     {
