@@ -313,11 +313,12 @@ if (text.length == 2) {
                         <br>
                       </td>
                       <td width="27%" height="40" class="TableCell"> 
-                        <p>Click the up and down arrows until you reach the temperature 
+                        <p>Click the up and down arrows until reaching the temperature 
                           you would like. This temperature will be set until the 
-                          next schedule change. Check <b>HOLD</b> to maintain this setting 
-                          across schedule changes.</p>
-                        <p>You may also change the <b>MODE</b> and <b>FAN</b> settings.</p>
+                          next schedule change. Check <b>HOLD</b> to maintain 
+                          this setting across schedule changes.</p>
+                        <p>You may also change the <b>MODE</b> and <b>FAN</b> 
+                          settings by clicking the selection.</p>
                         <p> BE SURE TO CLICK <b>SUBMIT</b> WHEN DONE!!</p>
                         <p>&nbsp;</p>
                       </td>
@@ -331,7 +332,7 @@ if (text.length == 2) {
 </script>
                 
               <p align="center" class="Main"><font face="Arial, Helvetica, sans-serif" size="1">Copyright 
-                &copy; 2002, Cannon Technologies, Inc. All rights reserved.</font> 
+                &copy; 2003, Cannon Technologies, Inc. All rights reserved.</font> 
               </p>
               <p align="center" class="Main">&nbsp; </p>
                 </div>
