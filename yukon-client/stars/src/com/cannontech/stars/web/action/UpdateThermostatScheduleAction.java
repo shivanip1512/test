@@ -1,6 +1,7 @@
 package com.cannontech.stars.web.action;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -53,6 +54,12 @@ import com.cannontech.stars.xml.util.StarsConstants;
  * Window>Preferences>Java>Code Generation.
  */
 public class UpdateThermostatScheduleAction implements ActionBase {
+	
+	private static final java.text.SimpleDateFormat[] timeFormat =
+	{
+		new java.text.SimpleDateFormat("HH:mm"),
+		new java.text.SimpleDateFormat("hh:mm a")
+	};
 
 	/**
 	 * @see com.cannontech.stars.web.action.ActionBase#build(HttpServletRequest, HttpSession)
@@ -98,17 +105,22 @@ public class UpdateThermostatScheduleAction implements ActionBase {
             schedule.setDay( day );
             season.addStarsThermostatSchedule( schedule );
 	        
-	        java.util.StringTokenizer st = new java.util.StringTokenizer( req.getParameter("time1"), ":" );
-	        long time = (Integer.parseInt(st.nextToken()) * 3600 + Integer.parseInt(st.nextToken()) * 60) * 1000;
+	        Calendar cal = Calendar.getInstance();
+	        
+	        cal.setTime( parseTime(req.getParameter("time1")) );
+	        long time = (cal.get(Calendar.HOUR_OF_DAY) * 3600 + cal.get(cal.MINUTE) * 60) * 1000;
 	        schedule.setTime1( new org.exolab.castor.types.Time(time) );
-	        st = new java.util.StringTokenizer( req.getParameter("time2"), ":" );
-	        time = (Integer.parseInt(st.nextToken()) * 3600 + Integer.parseInt(st.nextToken()) * 60) * 1000;
+	        
+	        cal.setTime( parseTime(req.getParameter("time2")) );
+	        time = (cal.get(Calendar.HOUR_OF_DAY) * 3600 + cal.get(cal.MINUTE) * 60) * 1000;
 	        schedule.setTime2( new org.exolab.castor.types.Time(time) );
-	        st = new java.util.StringTokenizer( req.getParameter("time3"), ":" );
-	        time = (Integer.parseInt(st.nextToken()) * 3600 + Integer.parseInt(st.nextToken()) * 60) * 1000;
+	        
+	        cal.setTime( parseTime(req.getParameter("time3")) );
+	        time = (cal.get(Calendar.HOUR_OF_DAY) * 3600 + cal.get(cal.MINUTE) * 60) * 1000;
 	        schedule.setTime3( new org.exolab.castor.types.Time(time) );
-	        st = new java.util.StringTokenizer( req.getParameter("time4"), ":" );
-	        time = (Integer.parseInt(st.nextToken()) * 3600 + Integer.parseInt(st.nextToken()) * 60) * 1000;
+	        
+	        cal.setTime( parseTime(req.getParameter("time4")) );
+	        time = (cal.get(Calendar.HOUR_OF_DAY) * 3600 + cal.get(cal.MINUTE) * 60) * 1000;
 	        schedule.setTime4( new org.exolab.castor.types.Time(time) );
 	        
 	        boolean noscript = (req.getParameter("temp1") != null);
@@ -563,6 +575,19 @@ public class UpdateThermostatScheduleAction implements ActionBase {
         }
 
         return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
+	}
+	
+	private Date parseTime(String timeStr) {
+		java.util.Date retVal = null;
+		for( int i = 0; i < timeFormat.length; i++ ) {
+			try {
+				retVal = timeFormat[i].parse( timeStr );
+				break;
+			}
+			catch( java.text.ParseException pe ) {}
+		}
+			
+		return retVal;
 	}
 
 }
