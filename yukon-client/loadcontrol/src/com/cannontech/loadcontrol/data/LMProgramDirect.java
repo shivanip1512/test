@@ -1,11 +1,13 @@
 package com.cannontech.loadcontrol.data;
 
+import com.cannontech.loadcontrol.messages.LMManualControlMsg;
+
 /**
  * Insert the type's description here.
  * Creation date: (8/17/00 3:06:09 PM)
  * @author: 
  */
-public class LMProgramDirect extends LMProgramBase implements ILMProgramMessageCreation, IGearProgram
+public class LMProgramDirect extends LMProgramBase implements IGearProgram
 {
 	private Integer currentGearNumber = null;
 	private Integer lastGroupControlled = null;
@@ -27,9 +29,9 @@ public LMProgramDirect()
  * Insert the method's description here.
  * Creation date: (7/19/2001 8:50:05 AM)
  */
-public com.cannontech.loadcontrol.messages.LMManualControlMsg createScheduledStartMsg( java.util.Date start, java.util.Date stop, int gearNumber, java.util.Date notifyTime, String additionalInfo )
+public LMManualControlMsg createScheduledStartMsg( java.util.Date start, java.util.Date stop, int gearNumber, java.util.Date notifyTime, String additionalInfo )
 {
-	com.cannontech.loadcontrol.messages.LMManualControlMsg msg = new com.cannontech.loadcontrol.messages.LMManualControlMsg();
+	LMManualControlMsg msg = new LMManualControlMsg();
 	java.util.GregorianCalendar cStart = new java.util.GregorianCalendar();
 	java.util.GregorianCalendar cStop = new java.util.GregorianCalendar();
 	cStart.setTime( start );
@@ -43,8 +45,9 @@ public com.cannontech.loadcontrol.messages.LMManualControlMsg createScheduledSta
 		msg.setAddditionalInfo(additionalInfo)	;
 
 	msg.setYukonID( getYukonID().intValue() );
+	msg.setStartPriority( getDefaultPriority().intValue() );
 	
-	msg.setCommand( com.cannontech.loadcontrol.messages.LMManualControlMsg.SCHEDULED_START );		
+	msg.setCommand( LMManualControlMsg.SCHEDULED_START );		
 		
 
 	return msg;
@@ -53,9 +56,9 @@ public com.cannontech.loadcontrol.messages.LMManualControlMsg createScheduledSta
  * Insert the method's description here.
  * Creation date: (7/19/2001 8:50:05 AM)
  */
-public com.cannontech.loadcontrol.messages.LMManualControlMsg createScheduledStopMsg( java.util.Date start, java.util.Date stop, int gearNumber, String additionalInfo )
+public LMManualControlMsg createScheduledStopMsg( java.util.Date start, java.util.Date stop, int gearNumber, String additionalInfo )
 {
-	com.cannontech.loadcontrol.messages.LMManualControlMsg msg = new com.cannontech.loadcontrol.messages.LMManualControlMsg();
+	LMManualControlMsg msg = new LMManualControlMsg();
 	java.util.GregorianCalendar cStart = new java.util.GregorianCalendar();
 	java.util.GregorianCalendar cStop = new java.util.GregorianCalendar();
 	cStart.setTime( start );
@@ -70,8 +73,9 @@ public com.cannontech.loadcontrol.messages.LMManualControlMsg createScheduledSto
 
 	
 	msg.setYukonID( getYukonID().intValue() );
+	msg.setStartPriority( getDefaultPriority().intValue() );
 	
-	msg.setCommand( com.cannontech.loadcontrol.messages.LMManualControlMsg.SCHEDULED_STOP );
+	msg.setCommand( LMManualControlMsg.SCHEDULED_STOP );
 		
 
 	return msg;
@@ -80,9 +84,9 @@ public com.cannontech.loadcontrol.messages.LMManualControlMsg createScheduledSto
  * Insert the method's description here.
  * Creation date: (7/19/2001 8:50:05 AM)
  */
-public com.cannontech.loadcontrol.messages.LMManualControlMsg createStartStopNowMsg( java.util.Date stopTime, int gearNumber, String additionalInfo, boolean isStart )
+public LMManualControlMsg createStartStopNowMsg( java.util.Date stopTime, int gearNumber, String additionalInfo, boolean isStart )
 {
-	com.cannontech.loadcontrol.messages.LMManualControlMsg msg = new com.cannontech.loadcontrol.messages.LMManualControlMsg();	
+	LMManualControlMsg msg = new LMManualControlMsg();	
 	java.util.GregorianCalendar cStop = new java.util.GregorianCalendar();
 	cStop.setTime(stopTime);
 
@@ -96,11 +100,12 @@ public com.cannontech.loadcontrol.messages.LMManualControlMsg createStartStopNow
 		msg.setAddditionalInfo(additionalInfo)	;
 
 	msg.setYukonID( getYukonID().intValue() );
+	msg.setStartPriority( getDefaultPriority().intValue() );
 
 	if( isStart )
-		msg.setCommand( com.cannontech.loadcontrol.messages.LMManualControlMsg.START_NOW );
+		msg.setCommand( LMManualControlMsg.START_NOW );
 	else
-		msg.setCommand( com.cannontech.loadcontrol.messages.LMManualControlMsg.STOP_NOW );
+		msg.setCommand( LMManualControlMsg.STOP_NOW );
 
 	return msg;
 }
