@@ -20,6 +20,8 @@
 
 //Boolean if debug messages are printed
 BOOL _CC_DEBUG;
+//Boolean if we ignore non normal qualities
+BOOL _IGNORE_NOT_NORMAL_FLAG;
 
 //Use this to indicate globally when ctrl-c was pressed
 //Kinda ugly... The Run() member function watches this
@@ -119,6 +121,23 @@ void CtiCCService::Init()
     if( !(str = gConfigParms.getValueAsString(var)).isNull() )
     {
         dout.setOutputFile(str.data());
+        if( _CC_DEBUG )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << RWTime() << " - " << var << ":  " << str << endl;
+        }
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+    }
+
+    strcpy(var, "CAP_CONTROL_IGNORE_NOT_NORMAL");
+    if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+    {
+        str.toLower();
+        _IGNORE_NOT_NORMAL_FLAG = (str=="true"?TRUE:FALSE);
         if( _CC_DEBUG )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
