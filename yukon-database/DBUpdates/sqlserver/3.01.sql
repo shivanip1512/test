@@ -367,6 +367,10 @@ insert into yukongrouprole values (-889,-301,-201,-20889,'(none)');
 /* Hardware addressing role property */
 insert into YukonRoleProperty values(-1107,-2,'track_hardware_addressing','false','Controls whether to track the hardware addressing information.');
 
+/* Inventory create hardware role property */
+insert into YukonRoleProperty values(-20905,-209,'Create Hardware','true','Controls whether to allow creating new hardware');
+insert into yukongrouprole values (-796,-301,-209,-20905,'(none)');
+
 /* Authentication (safeword) Role/Properties */
 insert into YukonRole values(-4,'Authentication','Yukon','Settings for using an authentication server to login instead of standard yukon login.');
 
@@ -383,6 +387,179 @@ insert into YukonGroupRole values(-87,-1,-4,-1302,'(none)');
 insert into YukonGroupRole values(-88,-1,-4,-1303,'(none)');
 insert into YukonGroupRole values(-89,-1,-4,-1304,'(none)');
 insert into YukonGroupRole values(-90,-1,-4,-1305,'(none)');
+
+
+/* New default group for STARS operators and customers */
+insert into yukongroup values (-303,'STARS Operators','The default group of STARS operators');
+insert into yukongroup values (-304,'STARS Customers','The default group of STARS customers');
+
+insert into yukongrouprole values (-2000,-303,-108,-10800,'/operator/Operations.jsp');
+insert into yukongrouprole values (-2002,-303,-108,-10802,'(none)');
+insert into yukongrouprole values (-2003,-303,-108,-10803,'(none)');
+insert into yukongrouprole values (-2004,-303,-108,-10804,'(none)');
+insert into yukongrouprole values (-2005,-303,-108,-10805,'(none)');
+insert into yukongrouprole values (-2006,-303,-108,-10806,'(none)');
+insert into yukongrouprole values (-2007,-303,-108,-10807,'(none)');
+insert into yukongrouprole values (-2008,-303,-108,-10808,'(none)');
+
+insert into yukongrouprole values (-2020,-303,-201,-20100,'(none)');
+insert into yukongrouprole values (-2021,-303,-201,-20101,'(none)');
+insert into yukongrouprole values (-2022,-303,-201,-20102,'true');
+insert into yukongrouprole values (-2023,-303,-201,-20103,'(none)');
+insert into yukongrouprole values (-2024,-303,-201,-20104,'(none)');
+insert into yukongrouprole values (-2025,-303,-201,-20105,'(none)');
+insert into yukongrouprole values (-2026,-303,-201,-20106,'(none)');
+insert into yukongrouprole values (-2027,-303,-201,-20107,'(none)');
+insert into yukongrouprole values (-2028,-303,-201,-20108,'(none)');
+insert into yukongrouprole values (-2029,-303,-201,-20109,'(none)');
+insert into yukongrouprole values (-2030,-303,-201,-20110,'(none)');
+insert into yukongrouprole values (-2031,-303,-201,-20111,'(none)');
+insert into yukongrouprole values (-2032,-303,-201,-20112,'(none)');
+insert into yukongrouprole values (-2033,-303,-201,-20113,'(none)');
+insert into yukongrouprole values (-2034,-303,-201,-20114,'true');
+insert into yukongrouprole values (-2035,-303,-201,-20115,'(none)');
+insert into yukongrouprole values (-2036,-303,-201,-20116,'(none)');
+insert into yukongrouprole values (-2037,-303,-201,-20117,'(none)');
+insert into yukongrouprole values (-2038,-303,-201,-20118,'(none)');
+
+insert into yukongrouprole values (-2050,-303,-201,-20150,'(none)');
+insert into yukongrouprole values (-2051,-303,-201,-20151,'(none)');
+insert into yukongrouprole values (-2052,-303,-201,-20152,'STARS');
+insert into yukongrouprole values (-2053,-303,-201,-20153,'(none)');
+insert into yukongrouprole values (-2054,-303,-201,-20154,'(none)');
+insert into yukongrouprole values (-2055,-303,-201,-20155,'true');
+insert into yukongrouprole values (-2056,-303,-201,-20156,'(none)');
+insert into yukongrouprole values (-2057,-303,-201,-20157,'(none)');
+
+insert into yukongrouprole values (-2070,-303,-210,-21000,'(none)');
+insert into yukongrouprole values (-2071,-303,-210,-21001,'(none)');
+
+insert into yukongrouprole values (-2080,-303,-209,-20900,'(none)');
+insert into yukongrouprole values (-2081,-303,-209,-20901,'(none)');
+insert into yukongrouprole values (-2082,-303,-209,-20902,'(none)');
+insert into yukongrouprole values (-2083,-303,-209,-20903,'(none)');
+insert into yukongrouprole values (-2084,-303,-209,-20904,'(none)');
+insert into yukongrouprole values (-2085,-303,-209,-20905,'(none)');
+
+insert into yukongrouprole values (-2100,-303,-201,-20800,'(none)');
+insert into yukongrouprole values (-2101,-303,-201,-20801,'(none)');
+insert into yukongrouprole values (-2110,-303,-201,-20810,'(none)');
+insert into yukongrouprole values (-2113,-303,-201,-20813,'(none)');
+insert into yukongrouprole values (-2114,-303,-201,-20814,'(none)');
+insert into yukongrouprole values (-2115,-303,-201,-20815,'(none)');
+insert into yukongrouprole values (-2116,-303,-201,-20816,'(none)');
+insert into yukongrouprole values (-2119,-303,-201,-20819,'(none)');
+insert into yukongrouprole values (-2120,-303,-201,-20820,'(none)');
+insert into yukongrouprole values (-2130,-303,-201,-20830,'(none)');
+insert into yukongrouprole values (-2131,-303,-201,-20831,'(none)');
+insert into yukongrouprole values (-2132,-303,-201,-20832,'(none)');
+insert into yukongrouprole values (-2133,-303,-201,-20833,'(none)');
+insert into yukongrouprole values (-2134,-303,-201,-20834,'(none)');
+insert into yukongrouprole values (-2135,-303,-201,-20835,'(none)');
+insert into yukongrouprole values (-2136,-303,-201,-20836,'(none)');
+insert into yukongrouprole values (-2137,-303,-201,-20837,'(none)');
+insert into yukongrouprole values (-2138,-303,-201,-20838,'(none)');
+insert into yukongrouprole values (-2139,-303,-201,-20839,'(none)');
+insert into yukongrouprole values (-2140,-303,-201,-20840,'(none)');
+insert into yukongrouprole values (-2141,-303,-201,-20841,'(none)');
+insert into yukongrouprole values (-2142,-303,-201,-20842,'(none)');
+insert into yukongrouprole values (-2143,-303,-201,-20843,'(none)');
+insert into yukongrouprole values (-2144,-303,-201,-20844,'(none)');
+insert into yukongrouprole values (-2150,-303,-201,-20850,'(none)');
+insert into yukongrouprole values (-2151,-303,-201,-20851,'(none)');
+insert into yukongrouprole values (-2152,-303,-201,-20852,'(none)');
+insert into yukongrouprole values (-2153,-303,-201,-20853,'(none)');
+insert into yukongrouprole values (-2154,-303,-201,-20854,'(none)');
+insert into yukongrouprole values (-2155,-303,-201,-20855,'(none)');
+insert into yukongrouprole values (-2156,-303,-201,-20856,'(none)');
+insert into yukongrouprole values (-2157,-303,-201,-20857,'(none)');
+insert into yukongrouprole values (-2158,-303,-201,-20858,'(none)');
+insert into yukongrouprole values (-2159,-303,-201,-20859,'(none)');
+insert into yukongrouprole values (-2160,-303,-201,-20860,'(none)');
+insert into yukongrouprole values (-2161,-303,-201,-20861,'(none)');
+insert into yukongrouprole values (-2162,-303,-201,-20862,'(none)');
+insert into yukongrouprole values (-2170,-303,-201,-20870,'(none)');
+insert into yukongrouprole values (-2180,-303,-201,-20880,'(none)');
+insert into yukongrouprole values (-2181,-303,-201,-20881,'(none)');
+insert into yukongrouprole values (-2182,-303,-201,-20882,'(none)');
+insert into yukongrouprole values (-2183,-303,-201,-20883,'(none)');
+insert into yukongrouprole values (-2184,-303,-201,-20884,'(none)');
+insert into yukongrouprole values (-2185,-303,-201,-20885,'(none)');
+insert into yukongrouprole values (-2186,-303,-201,-20886,'(none)');
+insert into yukongrouprole values (-2187,-303,-201,-20887,'(none)');
+insert into yukongrouprole values (-2188,-303,-201,-20888,'(none)');
+insert into yukongrouprole values (-2189,-303,-201,-20889,'(none)');
+
+insert into yukongrouprole values (-2200,-304,-108,-10800,'/user/ConsumerStat/stat/General.jsp');
+insert into yukongrouprole values (-2202,-304,-108,-10802,'(none)');
+insert into yukongrouprole values (-2203,-304,-108,-10803,'(none)');
+insert into yukongrouprole values (-2204,-304,-108,-10804,'(none)');
+insert into yukongrouprole values (-2205,-304,-108, -10805,'yukon/DemoHeaderCES.gif');
+insert into yukongrouprole values (-2206,-304,-108,-10806,'(none)');
+insert into yukongrouprole values (-2207,-304,-108,-10807,'(none)');
+insert into yukongrouprole values (-2208,-304,-108,-10808,'(none)');
+
+insert into yukongrouprole values (-2220,-304,-400,-40000,'(none)');
+insert into yukongrouprole values (-2221,-304,-400,-40001,'(none)');
+insert into yukongrouprole values (-2222,-304,-400,-40002,'(none)');
+insert into yukongrouprole values (-2223,-304,-400,-40003,'(none)');
+insert into yukongrouprole values (-2224,-304,-400,-40004,'(none)');
+insert into yukongrouprole values (-2225,-304,-400,-40005,'(none)');
+insert into yukongrouprole values (-2226,-304,-400,-40006,'(none)');
+insert into yukongrouprole values (-2227,-304,-400,-40007,'(none)');
+insert into yukongrouprole values (-2228,-304,-400,-40008,'(none)');
+insert into yukongrouprole values (-2229,-304,-400,-40009,'(none)');
+insert into yukongrouprole values (-2230,-304,-400,-40010,'(none)');
+
+insert into yukongrouprole values (-2250,-304,-400,-40050,'(none)');
+insert into yukongrouprole values (-2251,-304,-400,-40051,'(none)');
+insert into yukongrouprole values (-2252,-304,-400,-40052,'(none)');
+insert into yukongrouprole values (-2254,-304,-400,-40054,'(none)');
+insert into yukongrouprole values (-2255,-304,-400,-40055,'(none)');
+
+insert into yukongrouprole values (-2300,-304,-400,-40100,'(none)');
+insert into yukongrouprole values (-2301,-304,-400,-40101,'(none)');
+insert into yukongrouprole values (-2302,-304,-400,-40102,'(none)');
+insert into yukongrouprole values (-2310,-304,-400,-40110,'(none)');
+insert into yukongrouprole values (-2311,-304,-400,-40111,'(none)');
+insert into yukongrouprole values (-2312,-304,-400,-40112,'(none)');
+insert into yukongrouprole values (-2313,-304,-400,-40113,'(none)');
+insert into yukongrouprole values (-2314,-304,-400,-40114,'(none)');
+insert into yukongrouprole values (-2315,-304,-400,-40115,'(none)');
+insert into yukongrouprole values (-2316,-304,-400,-40116,'(none)');
+insert into yukongrouprole values (-2317,-304,-400,-40117,'(none)');
+insert into yukongrouprole values (-2330,-304,-400,-40130,'(none)');
+insert into yukongrouprole values (-2331,-304,-400,-40131,'(none)');
+insert into yukongrouprole values (-2332,-304,-400,-40132,'(none)');
+insert into yukongrouprole values (-2333,-304,-400,-40133,'(none)');
+insert into yukongrouprole values (-2334,-304,-400,-40134,'(none)');
+insert into yukongrouprole values (-2335,-304,-400,-40135,'(none)');
+insert into yukongrouprole values (-2336,-304,-400,-40136,'(none)');
+insert into yukongrouprole values (-2337,-304,-400,-40137,'(none)');
+insert into yukongrouprole values (-2338,-304,-400,-40138,'(none)');
+insert into yukongrouprole values (-2350,-304,-400,-40150,'(none)');
+insert into yukongrouprole values (-2351,-304,-400,-40151,'(none)');
+insert into yukongrouprole values (-2352,-304,-400,-40152,'(none)');
+insert into yukongrouprole values (-2353,-304,-400,-40153,'(none)');
+insert into yukongrouprole values (-2354,-304,-400,-40154,'(none)');
+insert into yukongrouprole values (-2355,-304,-400,-40155,'(none)');
+insert into yukongrouprole values (-2356,-304,-400,-40156,'(none)');
+insert into yukongrouprole values (-2357,-304,-400,-40157,'(none)');
+insert into yukongrouprole values (-2358,-304,-400,-40158,'(none)');
+insert into yukongrouprole values (-2370,-304,-400,-40170,'(none)');
+insert into yukongrouprole values (-2371,-304,-400,-40171,'(none)');
+insert into yukongrouprole values (-2372,-304,-400,-40172,'(none)');
+insert into yukongrouprole values (-2373,-304,-400,-40173,'(none)');
+insert into yukongrouprole values (-2380,-304,-400,-40180,'(none)');
+insert into yukongrouprole values (-2381,-304,-400,-40181,'(none)');
+insert into yukongrouprole values (-2390,-304,-400,-40190,'(none)');
+insert into yukongrouprole values (-2391,-304,-400,-40191,'(none)');
+insert into yukongrouprole values (-2392,-304,-400,-40192,'(none)');
+insert into yukongrouprole values (-2393,-304,-400,-40193,'(none)');
+insert into yukongrouprole values (-2394,-304,-400,-40194,'(none)');
+insert into yukongrouprole values (-2395,-304,-400,-40195,'(none)');
+insert into yukongrouprole values (-2396,-304,-400,-40196,'(none)');
+
 
 alter table DynamicLMProgramDirect add DailyOps numeric;
 go
