@@ -134,41 +134,19 @@ public class DeviceRoutePanel
 		}
 		return ivjRouteLabel;
 	}
-	/**
-	 * This method was created in VisualAge.
-	 * @return java.lang.Object
-	 * @param val java.lang.Object
-	 */
-	public Object getValue(Object val) 
-   {
-		((CarrierBase) val).getDeviceRoutes().setRouteID(new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject) getRouteComboBox().getSelectedItem()).getYukonID()));
-		DBPersistent chosenRoute = LiteFactory.createDBPersistent((LiteBase) getRouteComboBox().getSelectedItem());
-
-		try 
-      {
-         chosenRoute = com.cannontech.database.Transaction.createTransaction(
-                           com.cannontech.database.Transaction.RETRIEVE,
-                           chosenRoute).execute();
-
-		} catch (com.cannontech.database.TransactionException t) 
-      {
-			com.cannontech.clientutils.CTILogger.error(t.getMessage(), t);
-		}
-
-		Integer deviceID = ((RouteBase) chosenRoute).getDeviceID();
-		//special cases for some MCTs
+	
+	public static DBPersistent generatePointsForMCT(Object val) {
 		if( val instanceof MCT310 
 			 || val instanceof MCT310IL 
 			 || val instanceof MCT310ID
 			 || val instanceof MCT310IDL
 			 || val instanceof MCT410IL
-			 || val instanceof MCT410_KWH_Only ) {
-
+			 || val instanceof MCT410_KWH_Only )
+		{
 			com.cannontech.database.data.multi.MultiDBPersistent newVal = new com.cannontech.database.data.multi.MultiDBPersistent();
 			((DeviceBase) val).setDeviceID(com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectID());
 
 			newVal.getDBPersistentVector().add(val);
-
 
 			//accumulator point is automatically added
 			com.cannontech.database.data.point.PointBase newPoint = com.cannontech.database.data.point.PointFactory.createPoint(com.cannontech.database.data.point.PointTypes.PULSE_ACCUMULATOR_POINT);
@@ -181,40 +159,41 @@ public class DeviceRoutePanel
 				multiplier = 0.1;
 			
 			//always create the PulseAccum point
-         newVal.getDBPersistentVector().add( 
-            PointFactory.createPulseAccumPoint(
-               "kWh",
-               ((DeviceBase) val).getDevice().getDeviceID(),
-               new Integer(++pointID),
-               PointTypes.PT_OFFSET_TOTAL_KWH,
-               com.cannontech.database.data.point.PointUnits.UOMID_KWH,
-               multiplier) );
+			newVal.getDBPersistentVector().add( 
+				PointFactory.createPulseAccumPoint(
+				   "kWh",
+				   ((DeviceBase) val).getDevice().getDeviceID(),
+				   new Integer(++pointID),
+				   PointTypes.PT_OFFSET_TOTAL_KWH,
+				   com.cannontech.database.data.point.PointUnits.UOMID_KWH,
+				   multiplier) );
 
 			//only certain devices get this DemandAccum point auto created
 			if( val instanceof MCT310IL
-				 || val instanceof MCT310IDL || val instanceof MCT410IL) {
-	
-	         newVal.getDBPersistentVector().add( 
-	            PointFactory.createDmdAccumPoint(
-	               "kW-LP",
-	               ((DeviceBase) val).getDevice().getDeviceID(),
-	               new Integer(++pointID),
-	               PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND,
-	               com.cannontech.database.data.point.PointUnits.UOMID_KW,
-	               multiplier) );
-				 }			
-				 
+				 || val instanceof MCT310IDL
+				 || val instanceof MCT410IL)
+			{
+				newVal.getDBPersistentVector().add( 
+					PointFactory.createDmdAccumPoint(
+					   "kW-LP",
+					   ((DeviceBase) val).getDevice().getDeviceID(),
+					   new Integer(++pointID),
+					   PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND,
+					   com.cannontech.database.data.point.PointUnits.UOMID_KW,
+					   multiplier) );
+			}
+			
 			//only the 410 gets all these points auto-created
 			if( val instanceof MCT410IL ) 
 			{
 				newVal.getDBPersistentVector().add( 
 					PointFactory.createDmdAccumPoint(
 						"Voltage-LP",
-					   	((DeviceBase) val).getDevice().getDeviceID(),
-					   	new Integer(++pointID),
-					   	PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND,
-					   	com.cannontech.database.data.point.PointUnits.UOMID_VOLTS,
-					   	multiplier) );
+						((DeviceBase) val).getDevice().getDeviceID(),
+						new Integer(++pointID),
+						PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND,
+						com.cannontech.database.data.point.PointUnits.UOMID_VOLTS,
+						multiplier) );
 					   	
 				newVal.getDBPersistentVector().add( 
 					PointFactory.createDmdAccumPoint(
@@ -262,8 +241,6 @@ public class DeviceRoutePanel
 						multiplier) );
 			}
 
-			
-
 			if (val instanceof MCT310ID
 				 || val instanceof MCT310IDL ) 
 			{
@@ -271,12 +248,11 @@ public class DeviceRoutePanel
 				//an automatic status point is created for certain devices
 				//set default for point tables
 				PointBase newPoint2 = PointFactory.createNewPoint(
-	               new Integer(++pointID),
+				   new Integer(++pointID),
 						PointTypes.STATUS_POINT,
 						"DISCONNECT STATUS",
 						((DeviceBase) val).getDevice().getDeviceID(),
 						new Integer(PointTypes.PT_OFFSET_TOTAL_KWH));
-
 
 				newPoint2.getPoint().setStateGroupID(
 						new Integer(StateGroupUtils.STATEGROUP_THREE_STATE_STATUS) );
@@ -289,8 +265,39 @@ public class DeviceRoutePanel
 
 			//returns newVal, a vector with MCT310 or MCT310IL & accumulator point & status point if of type MCTID
 			return newVal;
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * This method was created in VisualAge.
+	 * @return java.lang.Object
+	 * @param val java.lang.Object
+	 */
+	public Object getValue(Object val) 
+   {
+		((CarrierBase) val).getDeviceRoutes().setRouteID(new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject) getRouteComboBox().getSelectedItem()).getYukonID()));
+		DBPersistent chosenRoute = LiteFactory.createDBPersistent((LiteBase) getRouteComboBox().getSelectedItem());
 
-		} else if (val instanceof RepeaterBase) {
+		try 
+      {
+         chosenRoute = com.cannontech.database.Transaction.createTransaction(
+                           com.cannontech.database.Transaction.RETRIEVE,
+                           chosenRoute).execute();
+
+		} catch (com.cannontech.database.TransactionException t) 
+      {
+			com.cannontech.clientutils.CTILogger.error(t.getMessage(), t);
+		}
+
+		Integer deviceID = ((RouteBase) chosenRoute).getDeviceID();
+		
+		//special cases for some MCTs
+		DBPersistent mctVal = generatePointsForMCT(val);
+		if (mctVal != null) return mctVal;
+
+		if (val instanceof RepeaterBase) {
 			com.cannontech.database.data.multi.MultiDBPersistent newVal = new com.cannontech.database.data.multi.MultiDBPersistent();
 			newVal.getDBPersistentVector().add(val);
 
