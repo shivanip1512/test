@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  STARS                                        */
 /* DBMS name:      CTI SqlServer 2000                           */
-/* Created on:     1/13/2003 4:26:35 PM                         */
+/* Created on:     1/22/2003 8:29:24 AM                         */
 /*==============================================================*/
 
 
@@ -47,14 +47,6 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('ContactNotification')
-            and   type = 'U')
-   drop table ContactNotification
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('CustomerAccount')
             and   type = 'U')
    drop table CustomerAccount
@@ -82,22 +74,6 @@ if exists (select 1
            where  id = object_id('CustomerFAQ')
             and   type = 'U')
    drop table CustomerFAQ
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('CustomerListEntry')
-            and   type = 'U')
-   drop table CustomerListEntry
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('CustomerSelectionList')
-            and   type = 'U')
-   drop table CustomerSelectionList
 go
 
 
@@ -379,19 +355,6 @@ go
 
 
 /*==============================================================*/
-/* Table : ContactNotification                                  */
-/*==============================================================*/
-create table ContactNotification (
-ContactID            numeric              not null,
-NotificationLabelID  numeric              null,
-NotificationCategoryID numeric              null,
-Notification         varchar(100)         null,
-constraint PK_CONTACTNOTIFICATION primary key  (ContactID)
-)
-go
-
-
-/*==============================================================*/
 /* Table : CustomerAccount                                      */
 /*==============================================================*/
 create table CustomerAccount (
@@ -401,6 +364,7 @@ AccountNumber        varchar(40)          null,
 CustomerID           numeric              not null,
 BillingAddressID     numeric              null,
 AccountNotes         varchar(200)         null,
+LoginID              numeric              not null,
 constraint PK_CUSTOMERACCOUNT primary key  (AccountID)
 )
 go
@@ -449,35 +413,6 @@ SubjectID            numeric              null,
 Question             varchar(200)         null,
 Answer               varchar(500)         null,
 constraint PK_CUSTOMERFAQ primary key  (QuestionID)
-)
-go
-
-
-/*==============================================================*/
-/* Table : CustomerListEntry                                    */
-/*==============================================================*/
-create table CustomerListEntry (
-EntryID              numeric              not null,
-ListID               numeric              not null,
-EntryOrder           numeric              null,
-EntryText            varchar(50)          null,
-YukonDefinition      varchar(20)          null,
-constraint PK_CUSTOMERLISTENTRY primary key  (EntryID)
-)
-go
-
-
-/*==============================================================*/
-/* Table : CustomerSelectionList                                */
-/*==============================================================*/
-create table CustomerSelectionList (
-ListID               numeric              not null,
-Ordering             varchar(1)           null,
-SelectionLabel       varchar(30)          null,
-WhereIsList          varchar(100)         null,
-ListName             varchar(40)          null,
-UserUpdateAvailable  varchar(1)           null,
-constraint PK_CUSTOMERSELECTIONLIST primary key  (ListID)
 )
 go
 
@@ -866,115 +801,97 @@ go
 
 alter table AccountSite
    add constraint FK_AccS_CstAd foreign key (StreetAddressID)
-      references CustomerAddress ()
+      references Address (AddressID)
 go
 
 
 alter table ApplianceBase
    add constraint FK_AppBs_LMPr foreign key (LMProgramID)
-      references LMPROGRAM ()
-go
-
-
-alter table ContactNotification
-   add constraint FK_CntNotCsLs1 foreign key (NotificationCategoryID)
-      references CustomerListEntry (EntryID)
-go
-
-
-alter table ContactNotification
-   add constraint FK_CntNotCsLs2 foreign key (NotificationLabelID)
-      references CustomerListEntry (EntryID)
-go
-
-
-alter table ContactNotification
-   add constraint FK_Cnt_CntNot foreign key (ContactID)
-      references CustomerContact ()
+      references LMPROGRAM (DEVICEID)
 go
 
 
 alter table CustomerAdditionalContact
    add constraint FK_CsCnt_CsAdCn foreign key (ContactID)
-      references CustomerContact ()
+      references Contact (ContactID)
 go
 
 
 alter table LMProgramWebPublishing
    add constraint FK_CsLEn_LPWbP foreign key (ChanceOfControlID)
-      references CustomerListEntry (EntryID)
-go
-
-
-alter table ApplianceAirConditioner
-   add constraint FK_CsLsE_Ac foreign key (TonnageID)
-      references CustomerListEntry (EntryID)
-go
-
-
-alter table ApplianceAirConditioner
-   add constraint FK_CsLsE_Ac_ty foreign key (TypeID)
-      references CustomerListEntry (EntryID)
-go
-
-
-alter table LMCustomerEventBase
-   add constraint FK_CsLsE_LCstE foreign key (EventTypeID)
-      references CustomerListEntry (EntryID)
-go
-
-
-alter table LMCustomerEventBase
-   add constraint FK_CsLsE_LCstE_a foreign key (ActionID)
-      references CustomerListEntry (EntryID)
-go
-
-
-alter table LMThermostatManualOption
-   add constraint FK_CsLsE_LThMnO2 foreign key (OperationStateID)
-      references CustomerListEntry (EntryID)
-go
-
-
-alter table LMThermostatManualOption
-   add constraint FK_CsLsE_LThMnO1 foreign key (FanOperationID)
-      references CustomerListEntry (EntryID)
-go
-
-
-alter table LMThermostatSeasonEntry
-   add constraint FK_CsLsE_LThSE foreign key (TimeOfWeekID)
-      references CustomerListEntry (EntryID)
-go
-
-
-alter table WorkOrderBase
-   add constraint FK_CsLsE_WkB foreign key (WorkTypeID)
-      references CustomerListEntry (EntryID)
+      references YukonListEntry (EntryID)
 go
 
 
 alter table WorkOrderBase
    add constraint FK_CsLsE_WkB_c foreign key (CurrentStateID)
-      references CustomerListEntry (EntryID)
+      references YukonListEntry (EntryID)
 go
 
 
-alter table ApplianceBase
-   add constraint FK_CsLsEn_ApB foreign key (ManufacturerID)
-      references CustomerListEntry (EntryID)
+alter table ApplianceAirConditioner
+   add constraint FK_CsLsE_Ac_ty foreign key (TypeID)
+      references YukonListEntry (EntryID)
 go
 
 
-alter table ApplianceBase
-   add constraint FK_CsLsEn_ApB2 foreign key (LocationID)
-      references CustomerListEntry (EntryID)
+alter table LMCustomerEventBase
+   add constraint FK_CsLsE_LCstE foreign key (EventTypeID)
+      references YukonListEntry (EntryID)
+go
+
+
+alter table LMThermostatSeasonEntry
+   add constraint FK_CsLsE_LThSE foreign key (TimeOfWeekID)
+      references YukonListEntry (EntryID)
+go
+
+
+alter table LMThermostatManualOption
+   add constraint FK_CsLsE_LThMnO2 foreign key (OperationStateID)
+      references YukonListEntry (EntryID)
+go
+
+
+alter table LMCustomerEventBase
+   add constraint FK_CsLsE_LCstE_a foreign key (ActionID)
+      references YukonListEntry (EntryID)
+go
+
+
+alter table ApplianceAirConditioner
+   add constraint FK_CsLsE_Ac foreign key (TonnageID)
+      references YukonListEntry (EntryID)
+go
+
+
+alter table LMThermostatManualOption
+   add constraint FK_CsLsE_LThMnO1 foreign key (FanOperationID)
+      references YukonListEntry (EntryID)
+go
+
+
+alter table WorkOrderBase
+   add constraint FK_CsLsE_WkB foreign key (WorkTypeID)
+      references YukonListEntry (EntryID)
 go
 
 
 alter table CustomerFAQ
    add constraint FK_CsLsEn_CsF foreign key (SubjectID)
-      references CustomerListEntry (EntryID)
+      references YukonListEntry (EntryID)
+go
+
+
+alter table ApplianceBase
+   add constraint FK_CsLsEn_ApB foreign key (ManufacturerID)
+      references YukonListEntry (EntryID)
+go
+
+
+alter table ApplianceBase
+   add constraint FK_CsLsEn_ApB2 foreign key (LocationID)
+      references YukonListEntry (EntryID)
 go
 
 
@@ -1004,7 +921,7 @@ go
 
 alter table ServiceCompany
    add constraint FK_CstAdd_SrC foreign key (AddressID)
-      references CustomerAddress ()
+      references Address (AddressID)
 go
 
 
@@ -1016,43 +933,43 @@ go
 
 alter table CustomerBase
    add constraint FK_CstBs_CstCnt foreign key (PrimaryContactID)
-      references CustomerContact ()
+      references Contact (ContactID)
 go
 
 
 alter table ServiceCompany
    add constraint FK_CstCnt_SrvC foreign key (PrimaryContactID)
-      references CustomerContact ()
+      references Contact (ContactID)
 go
 
 
 alter table CallReportBase
    add constraint FK_CstELs_ClRB foreign key (CallTypeID)
-      references CustomerListEntry (EntryID)
+      references YukonListEntry (EntryID)
 go
 
 
 alter table ApplianceCategory
    add constraint FK_CstLs_ApCt foreign key (CategoryID)
-      references CustomerListEntry (EntryID)
+      references YukonListEntry (EntryID)
 go
 
 
 alter table InventoryBase
-   add constraint FK_INV_REF__CUS foreign key (CategoryID)
-      references CustomerListEntry (EntryID)
+   add constraint FK_INV_REF__YUK foreign key (CategoryID)
+      references YukonListEntry (EntryID)
 go
 
 
 alter table LMHardwareBase
-   add constraint FK_LMH_REF__CUS foreign key (LMHardwareTypeID)
-      references CustomerListEntry (EntryID)
+   add constraint FK_LMH_REF__YUK foreign key (LMHardwareTypeID)
+      references YukonListEntry (EntryID)
 go
 
 
 alter table InventoryBase
    add constraint FK_Dev_InvB foreign key (DEVICEID)
-      references DEVICE ()
+      references DEVICE (DEVICEID)
 go
 
 
@@ -1064,25 +981,25 @@ go
 
 alter table ECToAccountMapping
    add constraint FK_ECTAcc_Enc foreign key (EnergyCompanyID)
-      references EnergyCompany ()
+      references EnergyCompany (EnergyCompanyID)
 go
 
 
 alter table ECToGenericMapping
    add constraint FK_ECTGn_Enc foreign key (EnergyCompanyID)
-      references EnergyCompany ()
-go
-
-
-alter table ECToInventoryMapping
-   add constraint FK_ECTInv_Enc foreign key (EnergyCompanyID)
-      references EnergyCompany ()
+      references EnergyCompany (EnergyCompanyID)
 go
 
 
 alter table ECToInventoryMapping
    add constraint FK_ECTInv_Enc2 foreign key (InventoryID)
       references InventoryBase (InventoryID)
+go
+
+
+alter table ECToInventoryMapping
+   add constraint FK_ECTInv_Enc foreign key (EnergyCompanyID)
+      references EnergyCompany (EnergyCompanyID)
 go
 
 
@@ -1094,13 +1011,13 @@ go
 
 alter table ECToCallReportMapping
    add constraint FK_ECTSrv_Enc foreign key (EnergyCompanyID)
-      references EnergyCompany ()
+      references EnergyCompany (EnergyCompanyID)
 go
 
 
 alter table ECToWorkOrderMapping
    add constraint FK_ECTWrk_Enc2 foreign key (EnergyCompanyID)
-      references EnergyCompany ()
+      references EnergyCompany (EnergyCompanyID)
 go
 
 
@@ -1112,25 +1029,25 @@ go
 
 alter table ECToLMCustomerEventMapping
    add constraint FK_EnCm_ECLmCs foreign key (EnergyCompanyID)
-      references EnergyCompany ()
+      references EnergyCompany (EnergyCompanyID)
 go
 
 
 alter table InterviewQuestion
    add constraint FK_IntQ_CsLsEn foreign key (QuestionType)
-      references CustomerListEntry (EntryID)
+      references YukonListEntry (EntryID)
 go
 
 
 alter table InterviewQuestion
    add constraint FK_IntQ_CsLsEn2 foreign key (AnswerType)
-      references CustomerListEntry (EntryID)
+      references YukonListEntry (EntryID)
 go
 
 
 alter table InterviewQuestion
    add constraint FK_IntQ_CsLsEn3 foreign key (ExpectedAnswer)
-      references CustomerListEntry (EntryID)
+      references YukonListEntry (EntryID)
 go
 
 
@@ -1154,7 +1071,7 @@ go
 
 alter table LMHardwareConfiguration
    add constraint FK_LMHrd_LMGr foreign key (AddressingGroupID)
-      references LMGroup ()
+      references LMGroup (DeviceID)
 go
 
 
@@ -1166,7 +1083,7 @@ go
 
 alter table LMProgramEvent
    add constraint FK_LMPrg_LMPrEv foreign key (LMProgramID)
-      references LMPROGRAM ()
+      references LMPROGRAM (DEVICEID)
 go
 
 
@@ -1178,7 +1095,7 @@ go
 
 alter table LMProgramWebPublishing
    add constraint FK_LMprApp_LMPrg foreign key (LMProgramID)
-      references LMPROGRAM ()
+      references LMPROGRAM (DEVICEID)
 go
 
 
@@ -1190,13 +1107,19 @@ go
 
 alter table Substation
    add constraint FK_Sub_Rt foreign key (RouteID)
-      references Route ()
+      references Route (RouteID)
 go
 
 
 alter table SiteInformation
    add constraint FK_Sub_Si foreign key (SubstationID)
       references Substation (SubstationID)
+go
+
+
+alter table CustomerAccount
+   add constraint FK_YkUs_CstAcc foreign key (LoginID)
+      references YukonUser (UserID)
 go
 
 

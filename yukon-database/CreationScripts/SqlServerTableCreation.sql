@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI SqlServer 2000                           */
-/* Created on:     1/6/2003 12:09:15 PM                         */
+/* Created on:     1/22/2003 8:14:44 AM                         */
 /*==============================================================*/
 
 
@@ -119,6 +119,14 @@ go
 
 if exists (select 1
             from  sysobjects
+           where  id = object_id('Address')
+            and   type = 'U')
+   drop table Address
+go
+
+
+if exists (select 1
+            from  sysobjects
            where  id = object_id('AlarmCategory')
             and   type = 'U')
    drop table AlarmCategory
@@ -183,14 +191,6 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('CICustContact')
-            and   type = 'U')
-   drop table CICustContact
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('CICustomerBase')
             and   type = 'U')
    drop table CICustomerBase
@@ -247,9 +247,33 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('CustomerAddress')
+           where  id = object_id('Contact')
             and   type = 'U')
-   drop table CustomerAddress
+   drop table Contact
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('ContactNotification')
+            and   type = 'U')
+   drop table ContactNotification
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('Customer')
+            and   type = 'U')
+   drop table Customer
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('CustomerAdditionalContact')
+            and   type = 'U')
+   drop table CustomerAdditionalContact
 go
 
 
@@ -266,14 +290,6 @@ if exists (select 1
            where  id = object_id('CustomerBaseLinePoint')
             and   type = 'U')
    drop table CustomerBaseLinePoint
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('CustomerContact')
-            and   type = 'U')
-   drop table CustomerContact
 go
 
 
@@ -967,14 +983,6 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('NotificationRecipient')
-            and   type = 'U')
-   drop table NotificationRecipient
-go
-
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('OperatorLoginGraphList')
             and   type = 'U')
    drop table OperatorLoginGraphList
@@ -1215,6 +1223,14 @@ go
 
 if exists (select 1
             from  sysobjects
+           where  id = object_id('YukonListEntry')
+            and   type = 'U')
+   drop table YukonListEntry
+go
+
+
+if exists (select 1
+            from  sysobjects
            where  id = object_id('YukonPAObject')
             and   type = 'U')
    drop table YukonPAObject
@@ -1226,6 +1242,14 @@ if exists (select 1
            where  id = object_id('YukonRole')
             and   type = 'U')
    drop table YukonRole
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('YukonSelectionList')
+            and   type = 'U')
+   drop table YukonSelectionList
 go
 
 
@@ -1250,6 +1274,22 @@ if exists (select 1
            where  id = object_id('YukonUserRole')
             and   type = 'U')
    drop table YukonUserRole
+go
+
+
+/*==============================================================*/
+/* Table : Address                                              */
+/*==============================================================*/
+create table Address (
+AddressID            numeric              not null,
+LocationAddress1     varchar(40)          not null,
+LocationAddress2     varchar(40)          not null,
+CityName             varchar(32)          not null,
+StateCode            char(2)              not null,
+ZipCode              varchar(12)          not null,
+County               varchar(30)          not null,
+constraint PK_ADDRESS primary key  (AddressID)
+)
 go
 
 
@@ -1439,30 +1479,16 @@ go
 
 
 /*==============================================================*/
-/* Table : CICustContact                                        */
-/*==============================================================*/
-create table CICustContact (
-DeviceID             numeric              not null,
-ContactID            numeric              not null,
-constraint PK_CICUSTCONTACT primary key  (ContactID, DeviceID)
-)
-go
-
-
-/*==============================================================*/
 /* Table : CICustomerBase                                       */
 /*==============================================================*/
 create table CICustomerBase (
-DeviceID             numeric              not null,
-AddressID            numeric              not null,
-MainPhoneNumber      varchar(18)          not null,
-MainFaxNumber        varchar(18)          not null,
-CustFPL              float                not null,
-PrimeContactID       numeric              not null,
-CustTimeZone         varchar(6)           not null,
+CustomerID           numeric              not null,
+MainAddressID        numeric              not null,
+CustomerDemandLevel  float                not null,
 CurtailmentAgreement varchar(100)         not null,
 CurtailAmount        float                not null,
-constraint PK_CICUSTOMERBASE primary key  (DeviceID)
+CompanyName          varchar(80)          not null,
+constraint PK_CICUSTOMERBASE primary key  (CustomerID)
 )
 go
 
@@ -1630,16 +1656,58 @@ go
 
 
 /*==============================================================*/
-/* Table : CustomerAddress                                      */
+/* Table : Contact                                              */
 /*==============================================================*/
-create table CustomerAddress (
+create table Contact (
+ContactID            numeric              not null,
+ContFirstName        varchar(20)          not null,
+ContLastName         varchar(32)          not null,
+LogInID              numeric              not null,
 AddressID            numeric              not null,
-LocationAddress1     varchar(40)          not null,
-LocationAddress2     varchar(40)          not null,
-CityName             varchar(32)          not null,
-StateCode            char(2)              not null,
-ZipCode              varchar(12)          not null,
-constraint PK_CUSTOMERADDRESS primary key  (AddressID)
+constraint PK_CONTACT primary key  (ContactID)
+)
+go
+
+
+insert into CustomerContact(contactID, contFirstName, contLastName, contPhone1, contPhone2, locationID,loginID)
+values (-1,'(none)','(none)','(none)','(none)',0,-1)
+
+/*==============================================================*/
+/* Table : ContactNotification                                  */
+/*==============================================================*/
+create table ContactNotification (
+ContactID            numeric              not null,
+NotificationCategoryID numeric              not null,
+DisableFlag          char(1)              not null,
+Notification         varchar(130)         not null,
+constraint PK_CONTACTNOTIFICATION primary key  (ContactID, NotificationCategoryID)
+)
+go
+
+
+insert into ContactNotification values( 0, 0, 'N', '(none)' );
+
+
+/*==============================================================*/
+/* Table : Customer                                             */
+/*==============================================================*/
+create table Customer (
+CustomerID           numeric              not null,
+PrimaryContactID     numeric              not null,
+CustomerTypeID       numeric              not null,
+TimeZone             varchar(6)           not null,
+constraint PK_CUSTOMER primary key  (CustomerID)
+)
+go
+
+
+/*==============================================================*/
+/* Table : CustomerAdditionalContact                            */
+/*==============================================================*/
+create table CustomerAdditionalContact (
+CustomerID           numeric              not null,
+ContactID            numeric              not null,
+constraint PK_CUSTOMERADDITIONALCONTACT primary key  (ContactID, CustomerID)
 )
 go
 
@@ -1669,25 +1737,6 @@ constraint PK_CUSTOMERBASELINEPOINT primary key  (CustomerID, PointID)
 )
 go
 
-
-/*==============================================================*/
-/* Table : CustomerContact                                      */
-/*==============================================================*/
-create table CustomerContact (
-ContactID            numeric              not null,
-ContFirstName        varchar(20)          not null,
-ContLastName         varchar(32)          not null,
-ContPhone1           varchar(14)          not null,
-ContPhone2           varchar(14)          not null,
-LocationID           numeric              not null,
-LogInID              numeric              not null,
-constraint PK_CUSTOMERCONTACT primary key  (ContactID)
-)
-go
-
-
-insert into CustomerContact(contactID, contFirstName, contLastName, contPhone1, contPhone2, locationID,loginID)
-values (-1,'(none)','(none)','(none)','(none)',0,-1)
 
 /*==============================================================*/
 /* Table : CustomerLoginSerialGroup                             */
@@ -2586,7 +2635,7 @@ LMPROGRAMDEVICEID    numeric              not null,
 USERORDER            numeric              not null,
 STOPORDER            numeric              not null,
 DEFAULTPRIORITY      numeric              not null,
-constraint PK_LMCONTROLAREAPROGRAM primary key  (DEVICEID)
+constraint PK_LMCONTROLAREAPROGRAM primary key  (DEVICEID, LMPROGRAMDEVICEID)
 )
 go
 
@@ -2966,7 +3015,7 @@ create table LMPROGRAM (
 DEVICEID             numeric              not null,
 CONTROLTYPE          varchar(20)          not null,
 AVAILABLESEASONS     varchar(4)           not null,
-AvWkDys              varchar(8)           not null,
+AvailableWeekDays    varchar(8)           not null,
 MAXHOURSDAILY        numeric              not null,
 MAXHOURSMONTHLY      numeric              not null,
 MAXHOURSSEASONAL     numeric              not null,
@@ -3237,24 +3286,6 @@ GroupName
 )
 go
 
-
-/*==============================================================*/
-/* Table : NotificationRecipient                                */
-/*==============================================================*/
-create table NotificationRecipient (
-RecipientID          numeric              not null,
-RecipientName        varchar(30)          not null,
-EmailAddress         varchar(100)         not null,
-EmailSendType        numeric              not null,
-PagerNumber          varchar(20)          not null,
-DisableFlag          char(1)              not null,
-RecipientType        varchar(20)          not null,
-constraint PKey_GrpRecID primary key  (RecipientID)
-)
-go
-
-
-insert into NotificationRecipient values(0,'(none)','(none)',1,'(none)','N', 'EMAIL');
 
 /*==============================================================*/
 /* Table : OperatorLoginGraphList                               */
@@ -3945,6 +3976,35 @@ go
 insert into YukonImage values( 0, '(none)', '(none)', null );
 
 /*==============================================================*/
+/* Table : YukonListEntry                                       */
+/*==============================================================*/
+create table YukonListEntry (
+EntryID              numeric              not null,
+ListID               numeric              not null,
+EntryOrder           numeric              not null,
+EntryText            varchar(50)          not null,
+YukonDefinitionID    numeric              not null,
+constraint PK_YUKONLISTENTRY primary key  (EntryID)
+)
+go
+
+
+insert into YukonListEntry values( 0, 0, 0, '(none)', 0 );
+insert into YukonListEntry values( 1, 0, 0, 'Email', 1 );
+insert into YukonListEntry values( 2, 0, 0, 'Phone Number', 2 );
+insert into YukonListEntry values( 3, 0, 0, 'Pager Number', 2 );
+insert into YukonListEntry values( 4, 0, 0, 'Fax Number', 2 );
+
+/*==============================================================*/
+/* Index: Indx_YkLstDefID                                       */
+/*==============================================================*/
+create   index Indx_YkLstDefID on YukonListEntry (
+YukonDefinitionID
+)
+go
+
+
+/*==============================================================*/
 /* Table : YukonPAObject                                        */
 /*==============================================================*/
 create table YukonPAObject (
@@ -4035,6 +4095,23 @@ RoleName
 )
 go
 
+
+/*==============================================================*/
+/* Table : YukonSelectionList                                   */
+/*==============================================================*/
+create table YukonSelectionList (
+ListID               numeric              not null,
+Ordering             varchar(1)           not null,
+SelectionLabel       varchar(30)          not null,
+WhereIsList          varchar(100)         not null,
+ListName             varchar(40)          not null,
+UserUpdateAvailable  varchar(1)           not null,
+constraint PK_YUKONSELECTIONLIST primary key  (ListID)
+)
+go
+
+
+insert into YukonSelectionList values( 0, 'N', '(none)', '(none)', '(none)', 'N' );
 
 /*==============================================================*/
 /* Table : YukonUser                                            */
@@ -4253,12 +4330,6 @@ alter table AlarmCategory
 go
 
 
-alter table NotificationDestination
-   add constraint FK_DESTID_RECID foreign key (RecipientID)
-      references NotificationRecipient (RecipientID)
-go
-
-
 alter table LMGroupEmetcon
    add constraint SYS_C0013356 foreign key (DEVICEID)
       references LMGroup (DeviceID)
@@ -4290,12 +4361,6 @@ go
 
 
 alter table PointAlarming
-   add constraint FK_POI_POIN_NOT foreign key (RecipientID)
-      references NotificationRecipient (RecipientID)
-go
-
-
-alter table PointAlarming
    add constraint FK_POINTALAARM_POINT_POINTID foreign key (PointID)
       references POINT (POINTID)
 go
@@ -4309,31 +4374,25 @@ go
 
 alter table LMDirectCustomerList
    add constraint FK_CICstB_LMPrDi foreign key (CustomerID)
-      references CICustomerBase (DeviceID)
+      references CICustomerBase (CustomerID)
 go
 
 
 alter table LMCurtailCustomerActivity
    add constraint FK_CICBas_LMCrtCstAct foreign key (CustomerID)
-      references CICustomerBase (DeviceID)
+      references CICustomerBase (CustomerID)
 go
 
 
 alter table LMProgramCurtailCustomerList
    add constraint FK_CICstBase_LMProgCList foreign key (LMCustomerDeviceID)
-      references CICustomerBase (DeviceID)
-go
-
-
-alter table CICustContact
-   add constraint FK_CICstBase_CICstCont foreign key (DeviceID)
-      references CICustomerBase (DeviceID)
+      references CICustomerBase (CustomerID)
 go
 
 
 alter table CICustomerBase
-   add constraint FK_CICstBas_CstAddrs foreign key (AddressID)
-      references CustomerAddress (AddressID)
+   add constraint FK_CICstBas_CstAddrs foreign key (MainAddressID)
+      references Address (AddressID)
 go
 
 
@@ -4343,25 +4402,19 @@ alter table CALCCOMPONENT
 go
 
 
-alter table CICustContact
+alter table CustomerAdditionalContact
    add constraint FK_CstCont_CICstCont foreign key (ContactID)
-      references CustomerContact (ContactID)
-go
-
-
-alter table CustomerContact
-   add constraint FK_CstCont_GrpRecip foreign key (LocationID)
-      references NotificationRecipient (RecipientID)
+      references Contact (ContactID)
 go
 
 
 alter table CustomerWebSettings
    add constraint FK_CustWebSet_CICstBse foreign key (CustomerID)
-      references CICustomerBase (DeviceID)
+      references CICustomerBase (CustomerID)
 go
 
 
-alter table CustomerContact
+alter table Contact
    add constraint FK_RefCstLg_CustCont foreign key (LogInID)
       references YukonUser (UserID)
 go
@@ -4387,7 +4440,7 @@ go
 
 alter table LMEnergyExchangeCustomerList
    add constraint FK_ExCsLs_CstBs foreign key (LMCustomerDeviceID)
-      references CICustomerBase (DeviceID)
+      references CICustomerBase (CustomerID)
 go
 
 
@@ -4399,7 +4452,7 @@ go
 
 alter table LMEnergyExchangeCustomerReply
    add constraint FK_ExCsRp_CstBs foreign key (CustomerID)
-      references CICustomerBase (DeviceID)
+      references CICustomerBase (CustomerID)
 go
 
 
@@ -4429,7 +4482,7 @@ go
 
 alter table GraphCustomerList
    add constraint FK_GRA_REFG_CIC foreign key (CustomerID)
-      references CICustomerBase (DeviceID)
+      references CICustomerBase (CustomerID)
 go
 
 
@@ -4561,7 +4614,7 @@ go
 
 alter table LMMacsScheduleCustomerList
    add constraint FK_McsSchdCusLst_CICBs foreign key (LMCustomerDeviceID)
-      references CICustomerBase (DeviceID)
+      references CICustomerBase (CustomerID)
 go
 
 
@@ -4615,13 +4668,43 @@ go
 
 alter table EnergyCompanyCustomerList
    add constraint FK_CICstBsEnCmpCsLs foreign key (CustomerID)
-      references CICustomerBase (DeviceID)
+      references CICustomerBase (CustomerID)
 go
 
 
 alter table CustomerBaseLine
    add constraint FK_CICst_CstBsLne foreign key (CustomerID)
-      references CICustomerBase (DeviceID)
+      references CICustomerBase (CustomerID)
+go
+
+
+alter table ContactNotification
+   add constraint FK_CntNot_YkLs foreign key (NotificationCategoryID)
+      references YukonListEntry (EntryID)
+go
+
+
+alter table NotificationDestination
+   add constraint FK_CntNt_NtDst foreign key (RecipientID)
+      references ContactNotification (ContactID)
+go
+
+
+alter table PointAlarming
+   add constraint FK_CntNt_PtAl foreign key (RecipientID)
+      references ContactNotification (ContactID)
+go
+
+
+alter table Contact
+   add constraint FK_CON_REF__ADD foreign key (AddressID)
+      references Address (AddressID)
+go
+
+
+alter table ContactNotification
+   add constraint FK_Cnt_CntNot foreign key (ContactID)
+      references Contact (ContactID)
 go
 
 
@@ -4663,13 +4746,25 @@ go
 
 alter table CustomerBaseLinePoint
    add constraint FK_CstBseLn_CICust foreign key (CustomerID)
-      references CICustomerBase (DeviceID)
+      references CICustomerBase (CustomerID)
 go
 
 
 alter table CustomerBaseLinePoint
    add constraint FK_CstBseLn_ClcBse foreign key (PointID)
       references CALCBASE (POINTID)
+go
+
+
+alter table CICustomerBase
+   add constraint FK_CstCI_Cst foreign key (CustomerID)
+      references Customer (CustomerID)
+go
+
+
+alter table CustomerAdditionalContact
+   add constraint FK_Cust_CustAddCnt foreign key (CustomerID)
+      references Customer (CustomerID)
 go
 
 
@@ -4820,6 +4915,12 @@ go
 alter table LMPROGRAM
    add constraint FK_LmProg_YukPAO foreign key (DEVICEID)
       references YukonPAObject (PAObjectID)
+go
+
+
+alter table YukonListEntry
+   add constraint FK_LstEnty_SelLst foreign key (ListID)
+      references YukonSelectionList (ListID)
 go
 
 
@@ -4987,12 +5088,6 @@ go
 
 alter table PAOowner
    add constraint FK_YukPAO_PAOid foreign key (OwnerID)
-      references YukonPAObject (PAObjectID)
-go
-
-
-alter table CICustomerBase
-   add constraint FK_YukPA_CICust foreign key (DeviceID)
       references YukonPAObject (PAObjectID)
 go
 
