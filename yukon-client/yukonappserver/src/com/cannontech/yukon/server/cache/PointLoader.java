@@ -38,7 +38,7 @@ timerStart = new java.util.Date();
 		"on p.pointid = pu.pointid " +
 		"left outer join unitmeasure um " +
 		"on pu.uomid = um.uomid " +
-		"where p.POINTID > " + PointTypes.SYSTEM_POINT +
+		"where p.POINTID > " + PointTypes.SYS_PID_SYSTEM +
 		" ORDER BY p.PAObjectID, p.POINTOFFSET";
 
 	java.sql.Connection conn = null;
