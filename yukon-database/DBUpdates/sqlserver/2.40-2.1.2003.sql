@@ -144,10 +144,6 @@ go
 alter table NotificationDestination drop constraint FK_DESTID_RECID;
 go
 
-alter table NotificationDestination
-   add constraint FK_CntNt_NtDst foreign key (RecipientID)
-      references ContactNotification (ContactNotifID);
-go
 alter table ContactNotification
    add constraint FK_CntNot_YkLs foreign key (NotificationCategoryID)
       references YukonListEntry (EntryID);
@@ -222,6 +218,10 @@ select r.contactid+1000, r.contactid, 2, 'N', r.contphone1
 from CustomerContact r where r.contactid > 0;
 go
 
+alter table NotificationDestination
+   add constraint FK_CntNt_NtDst foreign key (RecipientID)
+      references ContactNotification (ContactNotifID);
+go
 
 
 /******************* START CUSTOMERCONTACT CHANGES *******************/

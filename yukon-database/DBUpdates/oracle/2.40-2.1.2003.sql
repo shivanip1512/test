@@ -116,10 +116,6 @@ alter table PointAlarming drop constraint FK_POI_POIN_NOT;
 /* @error ignore */
 alter table NotificationDestination drop constraint FK_DESTID_RECID;
 
-alter table NotificationDestination
-   add constraint FK_CntNt_NtDst foreign key (RecipientID)
-      references ContactNotification (ContactNotifID);
-
 alter table ContactNotification
    add constraint FK_CntNot_YkLs foreign key (NotificationCategoryID)
       references YukonListEntry (EntryID);
@@ -176,6 +172,10 @@ from NotificationRecipient r where r.recipientid > 0;
 insert into ContactNotification
 select r.contactid+1000, r.contactid, 2, 'N', r.contphone1
 from CustomerContact r where r.contactid > 0;
+
+alter table NotificationDestination
+   add constraint FK_CntNt_NtDst foreign key (RecipientID)
+      references ContactNotification (ContactNotifID);
 
 rename CustomerContact TO Contact;
 alter table Contact drop column ContPhone1;
