@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2002/10/11 14:08:07 $
+* REVISION     :  $Revision: 1.30 $
+* DATE         :  $Date: 2002/10/23 21:10:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1599,6 +1599,17 @@ void LoadPorterGlobals(void)
         {
             gIDLCEchoSuppression = true;
         }
+    }
+
+    /* Check if we need to start the TCP/IP Interface */
+    if(!(Temp = gConfigParms.getValueAsString("PORTER_CCU_DELAY_FILE")).isNull())
+    {
+        gDelayDatFile = Temp;
+
+    }
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " Using CCU Delay information from " << gDelayDatFile << endl;
     }
 
 

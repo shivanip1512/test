@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PHLIDLC.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2002/09/09 14:38:13 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2002/10/23 21:10:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -572,6 +572,7 @@ Which should work well for any CCU hooked to one of these spread sprectum radios
 /* Routine to initialize CCU algorithm status list */
 IDLCSetDelaySets (CtiDevice *Dev)
 {
+    bool filefound = false;
     USHORT Index;
     OUTMESS *OutMessage;
     CtiTransmitter711Info *p711Info = (CtiTransmitter711Info *)Dev->getTrxInfo();
@@ -581,11 +582,11 @@ IDLCSetDelaySets (CtiDevice *Dev)
     USHORT MyPort, MyRemote;
 
     // 072302 CGP. Let's just make this happen by default.
-    USHORT T_RTSOn      = 100;
-    USHORT T_CTSTo      = 168;
-    USHORT T_KeyOff     = 32;
-    USHORT T_IntraTo    = 248;
-    USHORT BA_Trig      = 170;
+    USHORT T_RTSOn      = 100;          // 600 CCU default
+    USHORT T_CTSTo      = 168;          // 304 CCU default
+    USHORT T_KeyOff     = 32;           // 32  CCU default
+    USHORT T_IntraTo    = 248;          // 400 CCU default
+    USHORT BA_Trig      = 170;          // 170 CCU default
 
     /* attempt to open the OLD file */
     if((HFile = fopen ("DATA\\DELAY.DAT", "r")) != NULL)
@@ -597,9 +598,11 @@ IDLCSetDelaySets (CtiDevice *Dev)
 
         fclose (HFile);
         HFile = NULL;
+
+        filefound = true;
     }
 
-    if((HFile = fopen ("..\\CONFIG\\DELAY.DAT", "r")) != NULL)
+    if((HFile = fopen(gDelayDatFile.data(), "r")) != NULL)
     {
         /* Walk through the file looking for the appropriate port and remote */
         for(;;)
@@ -626,6 +629,16 @@ IDLCSetDelaySets (CtiDevice *Dev)
         }
 
         fclose (HFile);
+        filefound = true;
+    }
+
+    if(!filefound)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << " No delay.dat file was found.  Port Control was looking here " << gDelayDatFile << endl;
+        }
     }
 
     /* If we get here we got one */
