@@ -14,13 +14,7 @@
 		    Account Information&nbsp;&nbsp;</td>
 		  <td width="" valign="middle">&nbsp;</td>
 		  <td width="" valign="middle" align="right">
-<% if (session.getAttribute(ServletUtils.ATT_CONTEXT_SWITCHED) != null) {
-	LiteStarsEnergyCompany origComp = SOAPServer.getEnergyCompany(user.getEnergyCompanyID());
-%>
-			<span class="MainText"><a href="" class="Link3" onclick="document.restoreForm.submit(); return false;">Back To <%= origComp.getName() %></a></span>
-<% } else { %>
             <span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span> 
-<% } %>
 		  &nbsp;&nbsp;&nbsp;</td>
 		  <td width="57" valign="middle" align="left"> 
 			<span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span>

@@ -27,10 +27,10 @@ function selectAccount(accountID) {
 	form.submit();
 }
 
-function selectMemberAccount(accountID, contextID) {
+function selectMemberAccount(accountID, memberID) {
 	var form = document.resultForm;
 	form.AccountID.value = accountID;
-	form.SwitchContext.value = contextID;
+	form.SwitchContext.value = memberID;
 	form.submit();
 }
 </script>
@@ -78,7 +78,9 @@ function selectMemberAccount(accountID, contextID) {
               <input type="hidden" name="AccountID" value="">
 			  <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/operator/Consumer/Update.jsp">
 			  <input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/operator/Consumer/SearchResults.jsp">
-			  
+<% if (showEnergyCompany) { %>
+			  <input type="hidden" name="SwitchContext" value="">
+<% } %>
               <table width="615" border="1" cellspacing="0" cellpadding="3" align="center">
                 <tr> 
                   <td width="15%" class="HeaderCell">Account #</td>
@@ -87,7 +89,6 @@ function selectMemberAccount(accountID, contextID) {
                   <td class="HeaderCell">Address</td>
 <% if (showEnergyCompany) { %>
                   <td width="15%" class="HeaderCell">Energy Company</td>
-				  <input type="hidden" name="SwitchContext" value="">
 <% } %>
                 </tr>
 <%

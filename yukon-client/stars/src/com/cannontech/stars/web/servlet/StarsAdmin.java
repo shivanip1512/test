@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.constants.LoginController;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionList;
@@ -58,10 +57,12 @@ import com.cannontech.database.db.macro.MacroTypes;
 import com.cannontech.database.db.stars.customer.CustomerAccount;
 import com.cannontech.database.db.web.LMDirectOperatorList;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.roles.application.WebClientRole;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
+import com.cannontech.servlet.LoginController;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ProgressChecker;
 import com.cannontech.stars.util.ServerUtils;
@@ -152,13 +153,17 @@ public class StarsAdmin extends HttpServlet {
 			return;
 		}
         
-		if (session.getAttribute(ServletUtils.ATT_CONTEXT_SWITCHED) != null
-			&& !action.equalsIgnoreCase("SwitchContext")
-			&& !action.equalsIgnoreCase("RestoreContext"))
-		{
-			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Operation not allowed because you are currently checking information of a member. To make any changes, you must first log into the member energy company through \"Member Management\"." );
-			resp.sendRedirect( referer );
-			return;
+		if (action.equalsIgnoreCase("SwitchContext")) {
+			try {
+				int memberID = Integer.parseInt( req.getParameter("MemberID") );
+				switchContext( user, req, session, memberID );
+				session = req.getSession( false );
+			}
+			catch (WebClientException e) {
+				session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, e.getMessage() );
+				resp.sendRedirect( referer );
+				return;
+			}
 		}
 		
 		if (action.equalsIgnoreCase("DeleteCustAccounts"))
@@ -201,10 +206,6 @@ public class StarsAdmin extends HttpServlet {
 			updateDirectPrograms( user, req, session );
 		else if (action.equalsIgnoreCase("MemberLogin"))
 			memberLogin( user, req, session );
-		else if (action.equalsIgnoreCase("SwitchContext"))
-			switchContext( user, req, session );
-		else if (action.equalsIgnoreCase("RestoreContext"))
-			restoreContext( user, req, session );
 		else if (action.equalsIgnoreCase("AddMemberEnergyCompany"))
 			addMemberEnergyCompany( user, req, session );
 		else if (action.equalsIgnoreCase("UpdateMemberEnergyCompany"))
@@ -2150,54 +2151,51 @@ public class StarsAdmin extends HttpServlet {
 		int userID = Integer.parseInt( req.getParameter("UserID") );
 		LiteYukonUser memberLogin = YukonUserFuncs.getLiteYukonUser( userID );
 		
-		redirect = req.getContextPath() + "/servlet/LoginController?" +
-				LoginController.ACTION + "=" + LoginController.LOGIN + "&" +
-				LoginController.USERNAME + "=" + memberLogin.getUsername() + "&" +
-				LoginController.PASSWORD + "=" + memberLogin.getPassword() + "&" +
-				LoginController.SAVE_CURRENT_USER + "=true";
+		LiteYukonUser liteUser = null;
+		if (memberLogin == null ||
+			(liteUser = LoginController.internalLogin(
+				req,
+				session,
+				memberLogin.getUsername(),
+				memberLogin.getPassword(),
+				true)) == null)
+		{
+			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "The member login is no longer valid" );
+			return;
+		}
+		
+		redirect = AuthFuncs.getRolePropertyValue( liteUser, WebClientRole.HOME_URL );
 	}
 	
-	public static void doSwitchContext(StarsYukonUser user, HttpSession session, int contextID, String backURL) throws WebClientException {
-		if (contextID == user.getEnergyCompanyID()) return;
-		if (backURL == null) backURL = CtiUtilities.STRING_NONE;
+	public static void switchContext(StarsYukonUser user, HttpServletRequest req, HttpSession session, int memberID) throws WebClientException {
+		if (memberID == user.getEnergyCompanyID()) return;
+		
+//		if (!AuthFuncs.checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS ))
+//			throw new WebClientException( "The current user doesn't have the privilege to manage members" );
 		
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
-		LiteStarsEnergyCompany member = SOAPServer.getEnergyCompany( contextID );
+		LiteStarsEnergyCompany member = SOAPServer.getEnergyCompany( memberID );
 		
 		ArrayList loginIDs = energyCompany.getMemberLoginIDs();
 		for (int i = 0; i < loginIDs.size(); i++) {
 			LiteYukonUser liteUser = YukonUserFuncs.getLiteYukonUser( ((Integer) loginIDs.get(i)).intValue() );
-			if (EnergyCompanyFuncs.getEnergyCompany( liteUser ).getEnergyCompanyID() == contextID) {
-				StarsYukonUser starsUser = SOAPServer.getStarsYukonUser( liteUser );
-				
-				session.setAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS, member.getStarsEnergyCompanySettings(starsUser) );
-				session.setAttribute( ServletUtils.ATT_CONTEXT_SWITCHED, backURL );
+			if (liteUser == null) continue;
+			
+			if (EnergyCompanyFuncs.getEnergyCompany( liteUser ).getEnergyCompanyID() == memberID) {
+				if (LoginController.internalLogin(
+						req,
+						session,
+						liteUser.getUsername(),
+						liteUser.getPassword(),
+						true) == null)
+				{
+					throw new WebClientException( "The member login is no longer valid" );
+				}
 				return;
 			}
 		}
 		
-		throw new WebClientException( "No login assigned to member '" + member.getName() + "'" );
-	}
-	
-	private void switchContext(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
-		int contextID = Integer.parseInt( req.getParameter("ContextID") );
-		try {
-			doSwitchContext( user, session, contextID, referer );
-		}
-		catch (WebClientException e) {
-			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, e.getMessage() );
-		}
-	}
-	
-	private void restoreContext(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
-		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
-		
-		session.setAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS, energyCompany.getStarsEnergyCompanySettings(user) );
-		
-		String backURL = (String) session.getAttribute( ServletUtils.ATT_CONTEXT_SWITCHED );
-		if (backURL != null) redirect = backURL;
-		
-		session.removeAttribute( ServletUtils.ATT_CONTEXT_SWITCHED );
+		throw new WebClientException( "No member login assigned to '" + member.getName() + "'" );
 	}
 	
 	private void addMemberEnergyCompany(StarsYukonUser user, HttpServletRequest req, HttpSession session) {

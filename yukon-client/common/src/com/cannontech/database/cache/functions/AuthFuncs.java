@@ -32,8 +32,6 @@ public class AuthFuncs {
 	 * @return LiteYukonUser
 	 */
 	public static LiteYukonUser login(String username, String password) {
-		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
-		
 		String radiusMethod;
 		//If admin user, skip the radius login attempt (the authentication mode is YUKON when skipped).
 		if( isAdminUser(username))
@@ -48,21 +46,27 @@ public class AuthFuncs {
 		}
 		else
 		{
-			synchronized(cache) {
-				Iterator i = cache.getAllYukonUsers().iterator();
-				while(i.hasNext()) {
-					LiteYukonUser u = (LiteYukonUser) i.next();
-					if( CtiUtilities.isEnabled(u.getStatus()) &&
-						u.getUsername().equals(username) &&
-					    u.getPassword().equals(password) ) {
-					   	return u;  //success!
-					   }
-				}			
-				return null; //failure
-			}
+			return yukonLogin(username, password);
 		}
 	}
+	
+	public static LiteYukonUser yukonLogin(String username, String password) {
+		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
 		
+		synchronized(cache) {
+			Iterator i = cache.getAllYukonUsers().iterator();
+			while(i.hasNext()) {
+				LiteYukonUser u = (LiteYukonUser) i.next();
+				if( CtiUtilities.isEnabled(u.getStatus()) &&
+					u.getUsername().equals(username) &&
+					u.getPassword().equals(password) ) {
+					return u;  //success!
+				   }
+			}			
+			return null; //failure
+		}
+	}
+	
 	/**
 	 * Returns LiteYukonRole if the given user 
 	 * has been granted the given role otherwise null.

@@ -1622,12 +1622,6 @@ public class ImportManager extends HttpServlet {
 		referer = req.getHeader( "referer" );
 		if (redirect == null) redirect = referer;
 		
-		if (session.getAttribute(ServletUtils.ATT_CONTEXT_SWITCHED) != null && !action.equalsIgnoreCase("RestoreContext")) {
-			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Operation not allowed because you are currently checking information of a member. To make any changes, you must first log into the member energy company through \"Member Management\"." );
-			resp.sendRedirect( referer );
-			return;
-		}
-		
 		if (action.equalsIgnoreCase("ImportCustAccounts"))
 			importCustomerAccounts( items, user, req, session );
 		else if (action.equalsIgnoreCase("ImportINIData"))

@@ -5,6 +5,7 @@ import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
@@ -16,7 +17,6 @@ import com.cannontech.stars.web.servlet.SOAPClient;
 import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
-import com.cannontech.stars.xml.serialize.StarsEnergyCompanySettings;
 import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsGetCustomerAccount;
 import com.cannontech.stars.xml.serialize.StarsGetCustomerAccountResponse;
@@ -70,21 +70,15 @@ public class GetCustAccountAction implements ActionBase {
         try {
             StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
 
-			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
-            if (user == null) {
+			LiteYukonUser liteUser = (LiteYukonUser) session.getAttribute( ServletUtils.ATT_YUKON_USER );
+            if (liteUser == null) {
             	respOper.setStarsFailure( StarsFactory.newStarsFailure(
             			StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
             
-        	int energyCompanyID = user.getEnergyCompanyID();
-        	if (session.getAttribute( ServletUtils.ATT_CONTEXT_SWITCHED ) != null) {
-        		StarsEnergyCompanySettings settings = (StarsEnergyCompanySettings)
-						session.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
-        		energyCompanyID = settings.getEnergyCompanyID();
-        	}
-        	
-        	LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
+            StarsYukonUser user = SOAPServer.getStarsYukonUser( liteUser );
+        	LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
         	
             StarsGetCustomerAccount getAccount = reqOper.getStarsGetCustomerAccount();
             LiteStarsCustAccountInformation liteAcctInfo = null;

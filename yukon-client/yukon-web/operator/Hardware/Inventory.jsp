@@ -82,10 +82,11 @@ function showAll(form) {
           </td>
           <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
-            <div align="center">
+            <div align="center"> 
               <% String header = "INVENTORY"; %>
               <%@ include file="include/SearchBar.jsp" %>
-			  <form name="MForm" method="post" action="" onsubmit="setFilterValue(this)">
+              <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
+              <form name="MForm" method="post" action="" onsubmit="setFilterValue(this)">
 			    <input type="hidden" name="page" value="1">
                 <table width="80%" border="0" cellspacing="0" cellpadding="0">
                   <tr>

@@ -556,7 +556,7 @@ public class InventoryBean {
 		if (showEnergyCompany) {
 			htmlBuf.append("<form name='invForm' method='post' action='").append(req.getContextPath()).append("/servlet/StarsAdmin'>").append(LINE_SEPARATOR);
 			htmlBuf.append("  <input type='hidden' name='action' value='SwitchContext'>").append(LINE_SEPARATOR);
-			htmlBuf.append("  <input type='hidden' name='ContextID' value=''>").append(LINE_SEPARATOR);
+			htmlBuf.append("  <input type='hidden' name='MemberID' value=''>").append(LINE_SEPARATOR);
 			htmlBuf.append("  <input type='hidden' name='REDIRECT' value=''>").append(LINE_SEPARATOR);
 			htmlBuf.append("</form>").append(LINE_SEPARATOR);
 		}
@@ -578,16 +578,16 @@ public class InventoryBean {
 		htmlBuf.append("}").append(LINE_SEPARATOR);
         
 		if (showEnergyCompany) {
-			htmlBuf.append("function selectMemberAccount(accountID, contextID) {").append(LINE_SEPARATOR);
+			htmlBuf.append("function selectMemberAccount(accountID, memberID) {").append(LINE_SEPARATOR);
 			htmlBuf.append("  var form = document.cusForm;").append(LINE_SEPARATOR);
 			htmlBuf.append("  form.AccountID.value = accountID;").append(LINE_SEPARATOR);
-			htmlBuf.append("  form.SwitchContext.value = contextID;").append(LINE_SEPARATOR);
+			htmlBuf.append("  form.SwitchContext.value = memberID;").append(LINE_SEPARATOR);
 			htmlBuf.append("  form.submit();").append(LINE_SEPARATOR);
 			htmlBuf.append("}").append(LINE_SEPARATOR);
 			
-			htmlBuf.append("function selectMemberInventory(invID, contextID) {").append(LINE_SEPARATOR);
+			htmlBuf.append("function selectMemberInventory(invID, memberID) {").append(LINE_SEPARATOR);
 			htmlBuf.append("  var form = document.invForm;").append(LINE_SEPARATOR);
-			htmlBuf.append("  form.ContextID.value = contextID;").append(LINE_SEPARATOR);
+			htmlBuf.append("  form.MemberID.value = memberID;").append(LINE_SEPARATOR);
 			htmlBuf.append("  form.REDIRECT.value = '").append(req.getContextPath()).append("/operator/Hardware/InventoryDetail.jsp?InvId='");
 			htmlBuf.append(" + invID + '").append(srcStr).append("';").append(LINE_SEPARATOR);
 			htmlBuf.append("  form.submit();").append(LINE_SEPARATOR);

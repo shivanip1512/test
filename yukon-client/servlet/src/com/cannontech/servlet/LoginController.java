@@ -7,12 +7,16 @@ package com.cannontech.servlet;
  * @author:	Aaron Lauinger 
  */
 
+import java.util.Enumeration;
+import java.util.Properties;
+
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.cannontech.clientutils.ActivityLogger;
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.Pair;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.functions.AuthFuncs;
@@ -37,7 +41,6 @@ public class LoginController extends javax.servlet.http.HttpServlet {
 	private static final String PASSWORD = com.cannontech.common.constants.LoginController.PASSWORD;
 	
 	private static final String REDIRECT = com.cannontech.common.constants.LoginController.REDIRECT;
-	private static final String REFERRER = com.cannontech.common.constants.LoginController.REFERRER;
 	private static final String SAVE_CURRENT_USER = com.cannontech.common.constants.LoginController.SAVE_CURRENT_USER;
 	
 	private static final String YUKON_USER = com.cannontech.common.constants.LoginController.YUKON_USER;
@@ -62,8 +65,7 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 {	
 	String action = req.getParameter(ACTION).toString();
 	String redirectURI = req.getParameter(REDIRECT);
-	String referer = req.getParameter(REFERRER);
-	if (referer == null) referer = req.getHeader("referer");
+	String referer = req.getHeader("referer");
 	
 	if(LOGIN.equalsIgnoreCase(action)) {
 		String username = req.getParameter(USERNAME);
@@ -77,20 +79,20 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 			
 			try {
 				if (req.getParameter(SAVE_CURRENT_USER) != null) {
-					LiteYukonUser oldUser = (LiteYukonUser) session.getAttribute( YUKON_USER );
-					if (oldUser != null) { 
-						java.util.LinkedList savedUsers = (java.util.LinkedList) session.getAttribute( SAVED_YUKON_USERS );
-						if (savedUsers == null) {
-							savedUsers = new java.util.LinkedList();
-							session.setAttribute( SAVED_YUKON_USERS, savedUsers );
+					if (session.getAttribute(YUKON_USER) != null) {
+						Properties oldContext = new Properties();
+						Enumeration attNames = session.getAttributeNames();
+						while (attNames.hasMoreElements()) {
+							String attName = (String) attNames.nextElement();
+							oldContext.put( attName, session.getAttribute(attName) );
 						}
 						
-						// Save the old user and where to direct the browser when the new user logs off
-						savedUsers.addLast( new Pair(oldUser, referer) );
+						// Save the old session context and where to direct the browser when the new user logs off
+						session.setAttribute( SAVED_YUKON_USERS, new Pair(oldContext, referer) );
 					}
 				}
 				else {
-					// If SAVED_CURRENT_USER is not specified, "forget" all the saved users
+					// If SAVED_CURRENT_USER is not specified, "forget" the saved session context
 					session.removeAttribute( SAVED_YUKON_USERS );
 					
 					//stash a cookie that might tell us later where they log in at								
@@ -135,7 +137,7 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 		
 		if(session != null) {
 			LiteYukonUser user = (LiteYukonUser) session.getAttribute(YUKON_USER);			
-			java.util.LinkedList savedUsers = (java.util.LinkedList) session.getAttribute(SAVED_YUKON_USERS);
+			Pair p = (Pair) session.getAttribute(SAVED_YUKON_USERS);
 			session.invalidate();
 			
 			if(user != null) {
@@ -143,16 +145,17 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 				ActivityLogger.logEvent(user.getUserID(),LOGOUT_ACTIVITY_LOG, "User " + user.getUsername() + " (userid=" + user.getUserID() + ") has logged out from " + req.getRemoteAddr());
 			}
 			
-			if (savedUsers != null) {
-				// Restore saved yukon user into session after logging off
-				Pair p = (Pair) savedUsers.removeLast();
-				LiteYukonUser savedUser = (LiteYukonUser) p.getFirst();
+			if (p != null) {
+				Properties oldContext = (Properties) p.getFirst();
 				redirectURI = (String) p.getSecond();
 				
+				// Restore saved session context
 				session = req.getSession( true );
-				session.setAttribute(YUKON_USER, savedUser);
-				if (savedUsers.size() > 0)
-					session.setAttribute(SAVED_YUKON_USERS, savedUsers);
+				Enumeration attNames = oldContext.propertyNames();
+				while (attNames.hasMoreElements()) {
+					String attName = (String) attNames.nextElement();
+					session.setAttribute( attName, oldContext.get(attName) );
+				}
 			}
 		}
 		
@@ -201,8 +204,49 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 	}	
 }
 
-private void initSession(LiteYukonUser user, HttpSession session) throws TransactionException {
+private static void initSession(LiteYukonUser user, HttpSession session) throws TransactionException {
 	session.setAttribute(YUKON_USER, user);
+}
+
+/**
+ * Used to login *internally* if you don't want to go through LoginController
+ * (so that you can get around with Radius login, etc.).
+ * Although this method checks for home_url, it won't redirect the user
+ * to home_url. You're responsible for deciding where to send the user.
+ * Notice that the session is invalidated if login succeed, you should
+ * get a new session object after invoking this method.
+ */
+public static LiteYukonUser internalLogin(HttpServletRequest req, HttpSession session, String username, String password, boolean saveCurrentUser) {
+	LiteYukonUser user = AuthFuncs.yukonLogin(username,password);
+	if (user == null || AuthFuncs.getRolePropertyValue(user,WebClientRole.HOME_URL) == null)
+		return null;
+	
+	Properties oldContext = null;
+	if (saveCurrentUser && session.getAttribute(YUKON_USER) != null) {
+		oldContext = new Properties();
+		Enumeration attNames = session.getAttributeNames();
+		while (attNames.hasMoreElements()) {
+			String attName = (String) attNames.nextElement();
+			oldContext.put( attName, session.getAttribute(attName) );
+		}
+	}
+	
+	session.invalidate();
+	session = req.getSession( true );
+	
+	// Save the old session context and where to direct the browser when the new user logs off
+	if (oldContext != null)
+		session.setAttribute( SAVED_YUKON_USERS, new Pair(oldContext, req.getHeader("referer")) );
+	
+	try {
+		initSession(user, session);
+		ActivityLogger.logEvent(user.getUserID(), LOGIN_WEB_ACTIVITY_ACTION, "User " + user.getUsername() + " (userid=" + user.getUserID() + ") has logged in from " + req.getRemoteAddr());
+	}
+	catch (TransactionException e) {
+		CTILogger.error( e.getMessage(), e );
+	}
+	
+	return user;
 }
 
 }

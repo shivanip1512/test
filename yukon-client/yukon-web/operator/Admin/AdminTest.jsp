@@ -643,6 +643,8 @@ function removeAllMembers(form) {
 		if (userID == lYukonUser.getUserID()) continue;
 		
 		LiteYukonUser liteUser = YukonUserFuncs.getLiteYukonUser(userID);
+		if (liteUser == null) continue;
+		
 		userGroups = (List) userGroupMap.get(liteUser);
 		groupNames = "";
 		for (int j = 0; j < userGroups.size(); j++) {
@@ -720,6 +722,7 @@ function removeAllMembers(form) {
 		for (int j = 0; j < member.getOperatorLoginIDs().size(); j++) {
 			Integer loginID = (Integer) member.getOperatorLoginIDs().get(j);
 			LiteYukonUser login = YukonUserFuncs.getLiteYukonUser(loginID.intValue());
+			if (login == null) continue;
 			String selected = memberLoginIDs.contains(loginID)? "selected" : "";
 %>
                                         <option value="<%= loginID %>" <%= selected %>><%= login.getUsername() %></option>

@@ -15,6 +15,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.action.ActionBase;
 import com.cannontech.stars.web.action.ApplyThermostatScheduleAction;
@@ -171,19 +172,15 @@ public class SOAPClient extends HttpServlet {
 		
 		if (req.getParameter("SwitchContext") != null) {
 			try{
-				int contextID = Integer.parseInt( req.getParameter("SwitchContext") );
-				StarsAdmin.doSwitchContext( user, session, contextID, referer );
+				int memberID = Integer.parseInt( req.getParameter("SwitchContext") );
+				StarsAdmin.switchContext( user, req, session, memberID );
+				session = req.getSession( false );
 			}
-			catch (com.cannontech.stars.util.WebClientException e) {
+			catch (WebClientException e) {
 				session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, e.getMessage() );
 				resp.sendRedirect( referer );
 				return;
 			}
-		}
-		else if (session.getAttribute(ServletUtils.ATT_CONTEXT_SWITCHED) != null) {
-			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Operation not allowed because you are currently checking information of a member. To make any changes, you must first log into the member energy company through \"Member Management\"." );
-			resp.sendRedirect( referer );
-			return;
 		}
     	
 		session.removeAttribute( ServletUtils.ATT_REDIRECT );
