@@ -1113,7 +1113,8 @@ and ( x.ProgramID = p.AddressID and ( p.AddressType = 'PROGRAM' or p.AddressID =
 and ( x.SubstationID = b.AddressID and ( b.AddressType = 'SUBSTATION' or b.AddressID = 0 ) )
 and ( x.SplinterID = sp.AddressID and ( sp.AddressType = 'SPLINTER' or sp.AddressID = 0 ) )
 and ( x.UserID = us.AddressID and ( us.AddressType = 'USER' or us.AddressID = 0 ) )
-and ( x.ZipID = z.AddressID and ( z.AddressType = 'ZIP' or z.AddressID = 0 ) )
+and ( x.ZipID = z.AddressID and ( z.AddressType = 'ZIP' or z.AddressID = 0 ) );
+go
 
 /*N/A*/
 insert into command values(-0, 'Not Available Yet', 'Not Available Yet', 'DEVICE');
