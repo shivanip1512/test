@@ -925,7 +925,7 @@ mgr_point.obj:	pt_base.h dbmemobject.h dlldefs.h resolvers.h types.h \
 		tbl_pt_limit.h tbl_pt_accum.h tbl_pt_accumhistory.h \
 		pt_analog.h tbl_pt_analog.h pt_status.h tbl_pt_status.h \
 		tbl_pt_alarm.h utility.h
-mgr_port.obj:	mgr_port.h dlldefs.h rtdb.h hashkey.h dllbase.h \
+mgr_port.obj:	mgr_port.h dlldefs.h smartmap.h hashkey.h dllbase.h \
 		os2_2w32.h types.h cticalls.h dsm2.h mutex.h guard.h \
 		port_base.h dev_base.h cmdparse.h parsevalue.h tbl_base.h \
 		resolvers.h pointtypes.h yukon.h db_entry_defines.h logger.h \
@@ -965,7 +965,7 @@ pointtest.obj:	logger.h thread.h mutex.h dlldefs.h guard.h mgr_point.h \
 		yukon.h db_entry_defines.h pointdefs.h pt_dyn_base.h \
 		tbl_pt_base.h dbaccess.h sema.h desolvers.h slctpnt.h
 porttest.obj:	dllbase.h os2_2w32.h dlldefs.h types.h cticalls.h dsm2.h \
-		mutex.h guard.h mgr_port.h rtdb.h hashkey.h port_base.h \
+		mutex.h guard.h mgr_port.h smartmap.h hashkey.h port_base.h \
 		dev_base.h cmdparse.h parsevalue.h tbl_base.h resolvers.h \
 		pointtypes.h yukon.h db_entry_defines.h logger.h thread.h \
 		dbmemobject.h tbl_2way.h dbaccess.h sema.h tbl_stats.h \
@@ -973,7 +973,7 @@ porttest.obj:	dllbase.h os2_2w32.h dlldefs.h types.h cticalls.h dsm2.h \
 		porttypes.h tbl_port_settings.h tbl_port_timing.h xfer.h \
 		dialup.h tbl_port_statistics.h slctprt.h rte_base.h ctibase.h \
 		ctinexus.h message.h collectable.h tbl_rtcomm.h pt_base.h \
-		pointdefs.h pt_dyn_base.h tbl_pt_base.h
+		pointdefs.h pt_dyn_base.h tbl_pt_base.h rtdb.h
 port_base.obj:	port_base.h dev_base.h dsm2.h mutex.h dlldefs.h guard.h \
 		cmdparse.h parsevalue.h tbl_base.h resolvers.h types.h \
 		pointtypes.h yukon.h dllbase.h os2_2w32.h cticalls.h \
