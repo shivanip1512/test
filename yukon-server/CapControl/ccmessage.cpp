@@ -267,7 +267,7 @@ RWDEFINE_COLLECTABLE( CtiCCSubstationBusMsg, CTICCSUBSTATIONBUS_MSG_ID )
 /*---------------------------------------------------------------------------
     Constuctors
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBusMsg::CtiCCSubstationBusMsg(RWOrdered& buses) : CtiCCMessage("CCSubstationBuses"), _ccSubstationBuses(NULL)
+CtiCCSubstationBusMsg::CtiCCSubstationBusMsg(RWOrdered& buses, ULONG bitMask) : CtiCCMessage("CCSubstationBuses"), _ccSubstationBuses(NULL), _msgInfoBitMask(bitMask)
 {
     _ccSubstationBuses = new RWOrdered(buses.entries());
     for(int i=0;i<buses.entries();i++)
@@ -276,7 +276,7 @@ CtiCCSubstationBusMsg::CtiCCSubstationBusMsg(RWOrdered& buses) : CtiCCMessage("C
     }
 }
 
-CtiCCSubstationBusMsg::CtiCCSubstationBusMsg(const CtiCCSubstationBusMsg& substationBusMsg) : CtiCCMessage("CCSubstationBuses"), _ccSubstationBuses(NULL)
+CtiCCSubstationBusMsg::CtiCCSubstationBusMsg(const CtiCCSubstationBusMsg& substationBusMsg) : CtiCCMessage("CCSubstationBuses"), _ccSubstationBuses(NULL), _msgInfoBitMask(0)
 {
     operator=(substationBusMsg);
 }
@@ -296,9 +296,6 @@ CtiCCSubstationBusMsg::~CtiCCSubstationBusMsg()
 CtiMessage* CtiCCSubstationBusMsg::replicateMessage() const
 {
     return new CtiCCSubstationBusMsg(*this);
-    /*CtiLockGuard<CtiLogger> logger_guard(dout);
-    dout << RWTime() << " - Do not call me!!! " << __FILE__ << __LINE__ << endl;
-    return NULL;*/
 }
 
 /*---------------------------------------------------------------------------
@@ -308,6 +305,7 @@ CtiCCSubstationBusMsg& CtiCCSubstationBusMsg::operator=(const CtiCCSubstationBus
 {
     if( this != &right )
     {
+        _msgInfoBitMask = right.getMsgInfoBitMask();
         if( _ccSubstationBuses != NULL &&
             _ccSubstationBuses->entries() > 0 )
         {
@@ -332,7 +330,8 @@ CtiCCSubstationBusMsg& CtiCCSubstationBusMsg::operator=(const CtiCCSubstationBus
 void CtiCCSubstationBusMsg::restoreGuts(RWvistream& strm)
 {
     CtiCCMessage::restoreGuts(strm);
-	strm >> _ccSubstationBuses;
+	strm >> _msgInfoBitMask
+         >> _ccSubstationBuses;
 }
 
 /*---------------------------------------------------------------------------
@@ -343,8 +342,12 @@ void CtiCCSubstationBusMsg::restoreGuts(RWvistream& strm)
 void CtiCCSubstationBusMsg::saveGuts(RWvostream& strm) const
 {
     CtiCCMessage::saveGuts(strm);
-    strm << _ccSubstationBuses;
+    strm << _msgInfoBitMask
+         << _ccSubstationBuses;
 }
+
+// Static Members
+ULONG CtiCCSubstationBusMsg::AllSubBusesSent = 0x00000001;
 
 
 /*===========================================================================

@@ -120,23 +120,27 @@ class CtiCCSubstationBusMsg : public CtiCCMessage
 RWDECLARE_COLLECTABLE( CtiCCSubstationBusMsg )
 
 public:
-    CtiCCSubstationBusMsg(RWOrdered& buses);
+    CtiCCSubstationBusMsg(RWOrdered& buses, ULONG bitMask = 0);
     CtiCCSubstationBusMsg(const CtiCCSubstationBusMsg& substationBusesMsg);
 
     virtual ~CtiCCSubstationBusMsg();
 
+    ULONG getMsgInfoBitMask() const { return _msgInfoBitMask; };
     RWOrdered* getCCSubstationBuses() const     { return _ccSubstationBuses; }
-    //RWOrdered& getCCSubstationBuses()                 { return _ccSubstationBuses; }
-    //CtiCCSubstationBusMsg& setCCSubstationBuses(const RWOrdered& buses);
     virtual CtiMessage* replicateMessage() const;
 
     void restoreGuts( RWvistream& );
     void saveGuts( RWvostream&) const;
 
     CtiCCSubstationBusMsg& operator=(const CtiCCSubstationBusMsg& right);
+
+    // Possible bit mask settings
+    static ULONG AllSubBusesSent;
+
 private:
-    CtiCCSubstationBusMsg() : CtiCCMessage("CCSubstationBuses"), _ccSubstationBuses(NULL){};
+    CtiCCSubstationBusMsg() : CtiCCMessage("CCSubstationBuses"), _ccSubstationBuses(NULL), _msgInfoBitMask(0) {};
     
+    ULONG _msgInfoBitMask;
     RWOrdered* _ccSubstationBuses;
 };
 

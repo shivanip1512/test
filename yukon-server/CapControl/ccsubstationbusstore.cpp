@@ -793,7 +793,7 @@ void CtiCCSubstationBusStore::reset()
             dout << RWTime() << " - Store START sending messages to clients." << endl;
         }*/
         CtiCCExecutorFactory f;
-        CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationBusMsg(*_ccSubstationBuses));
+        CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationBusMsg(*_ccSubstationBuses, CtiCCSubstationBusMsg::AllSubBusesSent));
         executor->Execute();
         delete executor;
         executor = f.createExecutor(new CtiCCCapBankStatesMsg(*_ccCapBankStates));

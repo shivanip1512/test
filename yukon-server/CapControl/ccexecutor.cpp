@@ -1131,7 +1131,7 @@ void CtiCCCommandExecutor::SendAllSubstationBuses()
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
     CtiCCExecutorFactory f;
-    CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationBusMsg(*(store->getCCSubstationBuses(RWDBDateTime().seconds()))));
+    CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationBusMsg(*(store->getCCSubstationBuses(RWDBDateTime().seconds())), CtiCCSubstationBusMsg::AllSubBusesSent));
     executor->Execute();
     delete executor;
 }
