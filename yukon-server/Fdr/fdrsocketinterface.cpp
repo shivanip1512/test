@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrsocketinterface.cpp-arc  $
-*    REVISION     :  $Revision: 1.7 $
-*    DATE         :  $Date: 2004/02/13 20:37:04 $
+*    REVISION     :  $Revision: 1.8 $
+*    DATE         :  $Date: 2004/08/30 20:27:54 $
 *
 *
 *    AUTHOR: David Sutton
@@ -20,6 +20,18 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrsocketinterface.cpp,v $
+      Revision 1.8  2004/08/30 20:27:54  dsutton
+      Updated the RCCS interface to accept different connection and listen sockets
+      when the interface is initialized.  A new CPARM was created to define the
+      new connection socket number.  This will allow Progress energy to run both
+      their RCCS system and their Yukon system on the same cluster
+
+      Revision 1.6.6.1  2004/05/11 21:32:53  dsutton
+      Added a time variation to points that is configurable.  The variation
+      allows the user to not send a point if its value hasn't changed and the
+      timestamp is within the range defined by the cparm.  It is available in
+      the ACS interface only at this point.
+
       Revision 1.7  2004/02/13 20:37:04  dsutton
       Added a new cparm for ACS interface that allows the user to filter points
       being routed to ACS by timestamp.  The filter is the number of seconds
@@ -119,6 +131,7 @@
 CtiFDRSocketInterface::CtiFDRSocketInterface(RWCString & interfaceType, int aPortNumber, int aWindow)
 : CtiFDRInterface(interfaceType), 
     iPortNumber (aPortNumber),
+    iConnectPortNumber (aPortNumber),
     iTimestampReasonabilityWindow(aWindow),
     iPointTimeVariation(0),
     iRegistered(true)
@@ -167,6 +180,16 @@ int CtiFDRSocketInterface::getPortNumber () const
 CtiFDRSocketInterface& CtiFDRSocketInterface::setPortNumber (int aPort)
 {
     iPortNumber = aPort;
+    return *this;
+}
+
+int CtiFDRSocketInterface::getConnectPortNumber () const
+{
+    return iConnectPortNumber;
+}
+CtiFDRSocketInterface& CtiFDRSocketInterface::setConnectPortNumber (int aPort)
+{
+    iConnectPortNumber = aPort;
     return *this;
 }
 
@@ -383,7 +406,7 @@ bool CtiFDRSocketInterface::sendMessageToForeignSys ( CtiMessage *aMessage )
             if (getDebugLevel () & STARTUP_FDR_DEBUGLEVEL)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " MOA registration tag set, point " << localMsg->getId() << " will not be sent to " << getInterfaceName() << endl;
+                dout << RWTime() << " Point registration response tag set, point " << localMsg->getId() << " will not be sent to " << getInterfaceName() << endl;
             }
             retVal = false;
         }

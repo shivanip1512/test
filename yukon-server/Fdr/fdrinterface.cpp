@@ -17,10 +17,16 @@
 *    Copyright (C) 2000 Cannon Technologies, Inc.  All rights reserved.
 
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrinterface.cpp-arc  $
-*    REVISION     :  $Revision: 1.14 $
-*    DATE         :  $Date: 2003/04/24 19:42:50 $
+*    REVISION     :  $Revision: 1.15 $
+*    DATE         :  $Date: 2004/08/30 20:27:54 $
 *    History:
       $Log: fdrinterface.cpp,v $
+      Revision 1.15  2004/08/30 20:27:54  dsutton
+      Updated the RCCS interface to accept different connection and listen sockets
+      when the interface is initialized.  A new CPARM was created to define the
+      new connection socket number.  This will allow Progress energy to run both
+      their RCCS system and their Yukon system on the same cluster
+
       Revision 1.14  2003/04/24 19:42:50  dsutton
       Added more try catches around the dispatch connection.  Added dispatch
       mutex in spots it was missing.  After an attempted connection I verify it before
@@ -240,12 +246,6 @@ long CtiFDRInterface::getClientLinkStatusID(RWCString &aClientName)
                 translationPoint = myIterator.value();
                 for (x=0; x < translationPoint->getDestinationList().size(); x++)
                 {
-                    if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Point ID " << translationPoint->getPointID();
-                        dout << " translate: " << translationPoint->getDestinationList()[x].getTranslation() << endl;
-                    }
                     RWCString tempString1,tempString2;
                     RWCTokenizer nextTranslate(translationPoint->getDestinationList()[x].getTranslation());
                     if (!(tempString1 = nextTranslate(";")).isNull())
@@ -264,6 +264,13 @@ long CtiFDRInterface::getClientLinkStatusID(RWCString &aClientName)
                             if (!tempString2.compareTo (aClientName,RWCString::ignoreCase))
                             {
                                 retID = translationPoint->getPointID();
+
+                                if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << RWTime() << " Point ID " << translationPoint->getPointID();
+                                    dout << " defined as " << aClientName << "'s link status point" << endl;
+                                }
                             }
                         }
                     }

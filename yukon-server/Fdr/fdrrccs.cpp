@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrrccs.cpp-arc  $
-*    REVISION     :  $Revision: 1.7 $
-*    DATE         :  $Date: 2002/11/13 19:39:25 $
+*    REVISION     :  $Revision: 1.8 $
+*    DATE         :  $Date: 2004/08/30 20:27:54 $
 *
 *
 *    AUTHOR: David Sutton
@@ -23,6 +23,12 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrrccs.cpp,v $
+      Revision 1.8  2004/08/30 20:27:54  dsutton
+      Updated the RCCS interface to accept different connection and listen sockets
+      when the interface is initialized.  A new CPARM was created to define the
+      new connection socket number.  This will allow Progress energy to run both
+      their RCCS system and their Yukon system on the same cluster
+
       Revision 1.7  2002/11/13 19:39:25  dsutton
       Added a new cparm to handle the exchange on a standalone system
 
@@ -135,6 +141,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 CtiFDR_Rccs * rccsInterface;
 
 const CHAR * CtiFDR_Rccs::KEY_LISTEN_PORT_NUMBER = "FDR_RCCS_PORT_NUMBER";
+const CHAR * CtiFDR_Rccs::KEY_CONNECT_PORT_NUMBER = "FDR_RCCS_CONNECT_PORT_NUMBER";
 const CHAR * CtiFDR_Rccs::KEY_TIMESTAMP_WINDOW = "FDR_RCCS_TIMESTAMP_VALIDITY_WINDOW";
 const CHAR * CtiFDR_Rccs::KEY_DB_RELOAD_RATE = "FDR_RCCS_DB_RELOAD_RATE";
 const CHAR * CtiFDR_Rccs::KEY_SOURCE_NAME = "FDR_RCCS_SOURCE_NAME";
@@ -403,7 +410,19 @@ bool CtiFDR_Rccs::buildAndWriteToForeignSystem (CtiFDRPoint &aPoint )
                             ptr->msgUnion.value.Quality |= DSTACTIVE;
                         }
 
-                        ptr->msgUnion.value.Value = aPoint.getValue();
+                         // need to intercept sending a status point to make it DSM2 like
+                        switch (aPoint.getPointType())
+                        {
+                            case StatusPointType:
+                                {
+                                    ptr->msgUnion.value.Value = aPoint.getValue()+1;
+                                    break;
+                                }
+                            default:
+                                ptr->msgUnion.value.Value = aPoint.getValue();
+                                break;
+                        }
+
                         ptr->msgUnion.value.AlarmState = NORMAL;
 
                         /**************************
@@ -633,6 +652,17 @@ int CtiFDR_Rccs::readConfig( void )
         setPortNumber (INET_PORTNUMBER);
     }
 
+    tempStr = getCparmValueAsString(KEY_CONNECT_PORT_NUMBER);
+    if (tempStr.length() > 0)
+    {
+        setConnectPortNumber (atoi(tempStr));
+    }
+    else
+    {
+        setConnectPortNumber (getPortNumber());
+    }
+
+
     tempStr = getCparmValueAsString(KEY_TIMESTAMP_WINDOW);
     if (tempStr.length() > 0)
     {
@@ -697,7 +727,8 @@ int CtiFDR_Rccs::readConfig( void )
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " RCCS port number " << getPortNumber() << endl;
+            dout << RWTime() << " RCCS listen port number " << getPortNumber() << endl;
+            dout << RWTime() << " RCCS connect port number " << getConnectPortNumber() << endl;
             dout << RWTime() << " RCCS timestamp window " << getTimestampReasonabilityWindow() << endl;
             dout << RWTime() << " RCCS db reload rate " << getReloadRate() << endl;
             dout << RWTime() << " RCCS source name " << getSourceName() << endl;
@@ -815,23 +846,40 @@ int CtiFDR_Rccs::processValueMessage(InetInterface_t *data)
     RWCString            desc;
 
     RWCString deviceName (data->msgUnion.value.DeviceName);
+    RWCString pointName (data->msgUnion.value.PointName);
     translationName.resize(20);
     deviceName.resize(20);
+    pointName.resize(20);
 
     // check for our special device names
     if (!(deviceName.compareTo(RWCString (RCCSDEVICEPRIMARY),RWCString::ignoreCase))
         || !(deviceName.compareTo(RWCString (RCCSDEVICESTANDBY),RWCString::ignoreCase)))
     {
 
+//        {
+//            CtiLockGuard<CtiLogger> doubt_guard(dout);
+//           dout << RWTime() << " Current State of RCCS" << temp << ":  " << deviceName << " / " << pointName << endl;
+//        }
+
+
         //we've got a primary, check his status
-        if (!(RWCString (data->msgUnion.value.PointName).compareTo(RWCString (RCCSPOINTMASTER),RWCString::ignoreCase)))
+        if (!(pointName.compareTo(RWCString (RCCSPOINTMASTER),RWCString::ignoreCase)))
         {
 
             setAuthorizationFlag (atoi(temp.data()), TRUE);
+//            {
+//                CtiLockGuard<CtiLogger> doubt_guard(dout);
+//                dout << RWTime() << " Machine: RCCS" << temp << " has switched itself to primary" << endl;
+//            }
+
         }
         else
         {
             setAuthorizationFlag (atoi(temp.data()), FALSE);
+//            {
+//                CtiLockGuard<CtiLogger> doubt_guard(dout);
+//                dout << RWTime() << " Machine: RCCS" << temp << " has switched itself to backup " << endl;
+//            }
         }
     }
     else

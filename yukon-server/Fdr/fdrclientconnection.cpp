@@ -411,7 +411,7 @@ int CtiFDRClientConnection::initializeConnection (SOCKADDR_IN aAddr)
         {
             aAddr.sin_addr.s_addr = aAddr.sin_addr.s_addr;
             aAddr.sin_family = AF_INET;
-            aAddr.sin_port = htons(getParent()->getPortNumber());
+            aAddr.sin_port = htons(getParent()->getConnectPortNumber());
 
             retVal = connect (tmpConnection,(struct sockaddr *) &aAddr,sizeof (aAddr));
 

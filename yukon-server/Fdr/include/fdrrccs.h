@@ -72,6 +72,9 @@ class IM_EX_FDRRCCS CtiFDR_Rccs : public CtiFDR_Inet
         int processValueMessage(InetInterface_t *data);
         int resolvePairNumber(RWCString &);
 
+        static const CHAR * KEY_CONNECT_PORT_NUMBER;
+
+
     protected:
 
         int   readConfig( void );

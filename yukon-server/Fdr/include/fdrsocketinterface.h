@@ -48,6 +48,8 @@ class IM_EX_FDRBASE CtiFDRSocketInterface : public CtiFDRInterface
         int  getPortNumber () const;
         CtiFDRSocketInterface& setPortNumber(int aPort);
 
+        int  getConnectPortNumber () const;
+        CtiFDRSocketInterface& setConnectPortNumber(int aPort);
         int  getTimestampReasonabilityWindow () const;
         CtiFDRSocketInterface& setTimestampReasonabilityWindow(int aWindow);
                        
@@ -81,6 +83,16 @@ class IM_EX_FDRBASE CtiFDRSocketInterface : public CtiFDRInterface
 
         CtiMutex                    iListenerMux;
         CtiFDRSocketConnection      *iListener;
+
+		/********************************
+        * added for Progress energy to run RCCS and Yukon on the same machine
+        * both applications are trying to listen and connect on socket 1000
+        * so I'm adding a connect socket number to make this work BIG UGLY HACK !!
+        *
+        * value is checked inside of fdrclientconnection and used there if set
+        *********************************
+        */
+        int     iConnectPortNumber;
 
 
 

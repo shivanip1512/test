@@ -52,6 +52,7 @@ class IM_EX_FDRBASE CtiFDRSocketLayer
         USHORT getPortNumber () const;
         CtiFDRSocketLayer& setPortNumber (INT aPortNumber);
 
+        USHORT getConnectPortNumber () const;
         HEV & getConnectionSem ();
         CtiFDRSocketLayer& setConnectionSem (HEV aSem);
 

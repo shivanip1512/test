@@ -177,6 +177,11 @@ USHORT CtiFDRSocketLayer::getPortNumber () const
     return iParent->getPortNumber();
 }
 
+USHORT CtiFDRSocketLayer::getConnectPortNumber () const
+{
+    return iParent->getConnectPortNumber();
+}
+
 int CtiFDRSocketLayer::getOutboundSendRate () const
 {
     return iParent->getOutboundSendRate();
