@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/DSM2.H-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2003/07/21 21:52:13 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2003/07/21 22:00:18 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -781,6 +781,23 @@ typedef struct
 
 } PIL_ECHO;                   // Data echo'ed through porter fro the PIL.
 
+// 061903 Added to support the gateway product.
+typedef struct
+{
+    INT Type;
+    INT Length;
+    BYTE MsgData[256];
+
+} GWSTRUCT;
+
+typedef struct
+{
+    INT Type;               // Type of response
+    INT Data[10];
+    DOUBLE FPData[10];
+    BYTE MsgData[2048];
+
+} GWRESPONSESTRUCT;
 
 /* queing  structures used by protected mode */
 typedef class CtiOutMessage
@@ -828,6 +845,7 @@ public:
       CSTRUCT         CSt;
       TAPSTRUCT       TAPSt;
       DIALUPREQUEST   DUPReq;
+      GWSTRUCT        GWSt;
    } Buffer;
    BYTE               TailFrame[2];               // 082702 CGP    // Hey, it should have been in there for a long time!
 
@@ -948,6 +966,7 @@ typedef struct _INMESS
          DSTRUCT      DSt;              // This looks odd, but it lies on top of the one above.. Don't pull it out!
          DIALUPREPLY  DUPRep;
       } DUPSt;
+      GWRESPONSESTRUCT GWRSt;
    } Buffer;
 } INMESS;
 
