@@ -9,11 +9,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2004/06/24 13:16:12 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2004/07/30 21:35:07 $
 * HISTORY      :
 *
 * $Log: prot_sa3rdparty.h,v $
+* Revision 1.5  2004/07/30 21:35:07  cplender
+* RTM stuff
+*
 * Revision 1.4  2004/06/24 13:16:12  cplender
 * Some cleanup on the simulator to make RTC and LMIRTU trx sessions look the same.
 * Added PORTER_SA_RTC_MAXCODES the maimum number of codes that can be sent in one block
@@ -44,6 +47,8 @@
 
 #define MAX_SAERR_MSG_SIZE 256
 
+#define GRP_SA_RTM 100              // Must be greater than any REAL grouptype.
+
 class IM_EX_PROT CtiProtocolSA3rdParty : public CtiProtocolBase
 {
 protected:
@@ -63,6 +68,8 @@ protected:
 
     INT loadControl();                 // This is a shed!
     INT restoreLoadControl();
+    INT formRTMRequest(USHORT command);
+
 
     /*
      * This method used the input strategy or the period and percentage to produce a strategy value.

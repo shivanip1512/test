@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.115 $
-* DATE         :  $Date: 2004/07/28 18:58:05 $
+* REVISION     :  $Revision: 1.116 $
+* DATE         :  $Date: 2004/07/30 21:36:20 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -77,6 +77,7 @@ using namespace std;
 #include "device.h"
 #include "dev_tap.h"
 #include "dev_rtc.h"
+#include "dev_rtm.h"
 #include "dev_wctp.h"
 #include "routes.h"
 #include "porter.h"
@@ -1580,10 +1581,21 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                     }
                 case TYPE_RTM:
                     {
+                        OutMessage->InLength = 0;
+
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
+
+                        CtiDeviceRTM *rtm = (CtiDeviceRTM *)Device.get();
+
+                        rtm->prepareOutMessageForComms(OutMessage);
+
+                        /* output the message to the remote */
+                        trx.setOutBuffer(OutMessage->Buffer.OutMessage);
+                        trx.setOutCount(OutMessage->OutLength);
+                        status = Port->outMess(trx, Device, traceList);
 
                         break;
                     }
@@ -1712,6 +1724,31 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                             break;
 
                         }
+                    case TYPE_RTM:
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            }
+
+                            /* get the returned message from the remote */
+                            trx.setInBuffer(InMessage->Buffer.InMessage);
+                            trx.setInCountExpected(4 );                     // OutMessage->InLength);
+                            trx.setInCountActual(&InMessage->InLength);
+                            trx.setInTimeout(2);                            // OutMessage->TimeOut);
+                            trx.setMessageStart();                          // This is the first "in" of this message
+                            trx.setMessageComplete();                       // This is the last "in" of this message
+
+                            status = Port->inMess(trx, Device, traceList);
+
+                            // Prepare for tracing
+                            if(trx.doTrace(status))
+                            {
+                                Port->traceXfer(trx, traceList, Device, status);
+                            }
+
+                            break;
+                        }
                     case TYPECBC6510:
                     case TYPE_DNPRTU:
                     case TYPE_DARTRTU:
@@ -1732,7 +1769,6 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                     case TYPE_LGS4:
                     case TYPE_KV2:
                     case TYPE_TDMARKV:
-                    case TYPE_RTM:
                     default:
                         {
                             /*  These guys are handled in a special way...  */

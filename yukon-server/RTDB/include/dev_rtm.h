@@ -9,10 +9,13 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2004/07/20 16:19:03 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2004/07/30 21:35:07 $
 * HISTORY      :
 * $Log: dev_rtm.h,v $
+* Revision 1.2  2004/07/30 21:35:07  cplender
+* RTM stuff
+*
 * Revision 1.1  2004/07/20 16:19:03  cplender
 * IR
 *
@@ -30,7 +33,7 @@ using namespace std;
 #include "dev_ied.h"
 #include "queue.h"
 
-class CtiDeviceRTM : public CtiDeviceIED
+class IM_EX_DEVDB CtiDeviceRTM : public CtiDeviceIED
 {
 protected:
 
@@ -50,6 +53,8 @@ public:
 
     INT ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage> &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
     INT ErrorDecode (INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage> &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
+
+    INT prepareOutMessageForComms(CtiOutMessage *&OutMessage);
 
 };
 #endif // #ifndef __DEV_RTM_H__

@@ -8,11 +8,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2004/07/21 19:48:57 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2004/07/30 21:35:07 $
 *
 * HISTORY      :
 * $Log: dev_rtm.cpp,v $
+* Revision 1.3  2004/07/30 21:35:07  cplender
+* RTM stuff
+*
 * Revision 1.2  2004/07/21 19:48:57  cplender
 * Added the rtm.
 *
@@ -99,6 +102,8 @@ INT CtiDeviceRTM::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OU
 INT CtiDeviceRTM::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     INT nRet = NORMAL;
+    RWCString      resultString;
+
     /*
      *  This method should only be called by the dev_base method
      *   ExecuteRequest(CtiReturnMsg*, INT ScanPriority)
@@ -115,20 +120,35 @@ INT CtiDeviceRTM::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
                 case ScanRateStatus:
                 case ScanRateGeneral:
                 {
-
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << " Address " << getAddress() << endl;
                     }
 
                     CtiProtocolSA3rdParty prot;
+                    prot.setGroupType(GRP_SA_RTM);
+
+                    // parse.setValue("rtm_command", TMS_INIT);
+                    parse.setValue("rtm_command", TMS_ONE);
+                    // parse.setValue("rtm_command", TMS_ALL);
+                    // parse.setValue("rtm_command", TMS_ACK);
 
                     prot.setTransmitterAddress( getAddress() );
-                    prot.parseCommand(parse, *OutMessage);
+
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << endl << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        prot.parseCommand(parse, *OutMessage);
+                    }
+
 
                     if(prot.messageReady())
                     {
+                        RWCString      byteString;
+
+                        OutMessage->DeviceID = getID();
+                        OutMessage->TargetID = getID();
+                        OutMessage->Port = getPortID();
                         OutMessage->EventCode = RESULT | ENCODED;
 
                         OutMessage->Buffer.SASt = prot.getSAData();
@@ -136,8 +156,8 @@ INT CtiDeviceRTM::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
 
                         outList.insert( CTIDBG_new OUTMESS( *OutMessage ) );
 
-                        // prot.copyMessage(byteString);
-                        // resultString = " Command successfully sent on route " + getName() + "\n" + byteString;
+                        prot.copyMessage(byteString);
+                        resultString = " Command successfully sent on route " + getName() + "\n" + byteString;
                     }
 
 
@@ -177,6 +197,82 @@ INT CtiDeviceRTM::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
             break;
         }
     case ControlRequest:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+            Sleep(500);
+
+            CtiProtocolSA3rdParty prot;
+            prot.setGroupType(GRP_SA_RTM);
+
+            if(parse.getCommandStr().contains(" init", RWCString::ignoreCase))
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+
+                parse.setValue("rtm_command", TMS_INIT);
+            }
+            else if(parse.getCommandStr().contains(" one", RWCString::ignoreCase))
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+
+                parse.setValue("rtm_command", TMS_ONE);
+            }
+            else if(parse.getCommandStr().contains(" ack", RWCString::ignoreCase))
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+
+                parse.setValue("rtm_command", TMS_ACK);
+            }
+            else
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+
+                parse.setValue("rtm_command", TMS_ALL);
+            }
+
+            prot.setTransmitterAddress( getAddress() );
+
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << endl << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Address " << getAddress() << endl;
+                prot.parseCommand(parse, *OutMessage);
+            }
+
+
+            if(prot.messageReady())
+            {
+                RWCString      byteString;
+
+                OutMessage->DeviceID = getID();
+                OutMessage->TargetID = getID();
+                OutMessage->Port = getPortID();
+                OutMessage->EventCode = RESULT | ENCODED;
+
+                OutMessage->Buffer.SASt = prot.getSAData();
+                OutMessage->OutLength = prot.getSABufferLen();
+
+                outList.insert( CTIDBG_new OUTMESS( *OutMessage ) );
+
+                prot.copyMessage(byteString);
+                resultString = " Command successfully sent on route " + getName() + "\n" + byteString;
+            }
+
+            break;
+        }
     case GetStatusRequest:
     case LoopbackRequest:
     case GetValueRequest:
@@ -209,6 +305,32 @@ INT CtiDeviceRTM::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
         }
     }
 
+    bool xmore;
+
+    if( resultString.isNull() )
+    {
+        xmore = false;
+        resultString = getName() + " did not transmit commands";
+
+        RWCString desc, actn;
+
+        desc = getName();
+        actn = "FAILURE: Command \"" + parse.getCommandStr() + "\" failed on device";
+
+        vgList.insert(CTIDBG_new CtiSignalMsg(0, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
+    }
+
+    CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, RWCString(OutMessage->Request.CommandStr), resultString, nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
+
+    if(retReturn)
+    {
+        if(parse.isTwoWay()) retReturn->setExpectMore(xmore);
+        retList.insert(retReturn);
+    }
+    else
+    {
+        delete retReturn;
+    }
 
     return nRet;
 }
@@ -227,6 +349,10 @@ INT CtiDeviceRTM::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< 
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
+
+        BYTE buff[] = { 0x42, 0x31, 0x32, 0x41, 0x30, 0x30, 0x30, 0x32, 0x30, 0x35, 0x39, 0x43 };
+
+
     }
     else
     {
@@ -307,3 +433,39 @@ LONG CtiDeviceRTM::getAddress() const
 }
 
 
+INT CtiDeviceRTM::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
+{
+    RWTime now;
+    INT status = NORMAL;
+
+    ULONG msgMillis = 0;
+
+    try
+    {
+        CtiProtocolSA3rdParty prot;
+
+        OutMessage->OutLength = OutMessage->Buffer.SASt._bufferLen;
+
+        prot.setSAData( OutMessage->Buffer.SASt );
+        prot.setGroupType( GRP_SA_RTM );
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(slog);
+            slog << RWTime() << " " << getName() << ": " << prot.asString() << endl;
+            slog << RWTime() << " " << getName() << " sending " << OutMessage->Buffer.SASt._bufferLen << " bytes" << endl;
+        }
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " " << getName() << ": " << prot.asString() << endl;
+            dout << RWTime() << " " << getName() << " sending " << OutMessage->Buffer.SASt._bufferLen << " bytes" << endl;
+        }
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    return status;
+}

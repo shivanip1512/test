@@ -8,11 +8,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2004/06/24 13:16:12 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2004/07/30 21:35:07 $
 *
 * HISTORY      :
 * $Log: prot_sa3rdparty.cpp,v $
+* Revision 1.8  2004/07/30 21:35:07  cplender
+* RTM stuff
+*
 * Revision 1.7  2004/06/24 13:16:12  cplender
 * Some cleanup on the simulator to make RTC and LMIRTU trx sessions look the same.
 * Added PORTER_SA_RTC_MAXCODES the maimum number of codes that can be sent in one block
@@ -115,48 +118,52 @@ INT CtiProtocolSA3rdParty::parseCommand(CtiCommandParser &parse, CtiOutMessage &
         }
     default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-
-            return NoMethod;     // this is a fail for this protocol.
+            break;
         }
     }
 
-    _sa._function = parse.getiValue("sa_function");
-    solveStrategy(parse);
-
-
-    switch(_sa._commandType)
+    if(_sa._groupType == GRP_SA_RTM)
     {
-    case ControlRequest:
+        formRTMRequest( parse.getiValue("rtm_command") );
+        _messageReady = true;
+    }
+    else
+    {
+        switch(_sa._commandType)
         {
-            if( NORMAL == (status = assembleControl( parse, OutMessage )) )
+        case ControlRequest:
             {
-                loadControl();
+                _sa._function = parse.getiValue("sa_function");
+                solveStrategy(parse);
+
+                if( NORMAL == (status = assembleControl( parse, OutMessage )) )
+                {
+                    loadControl();
+                    _messageReady = true;
+                }
+                break;
+            }
+        case PutConfigRequest:
+            {
+                assemblePutConfig( parse, OutMessage );
                 _messageReady = true;
+                break;
             }
-            break;
-        }
-    case PutConfigRequest:
-        {
-            assemblePutConfig( parse, OutMessage );
-            _messageReady = true;
-            break;
-        }
-    default:
-        {
+        default:
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Unsupported command on sa205 route. Command = " << parse.getCommand() << endl;
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << RWTime() << " Unsupported command. Command = " << parse.getCommand() << endl;
+                }
+
+                status = CtiInvalidRequest;
+
+                break;
             }
-
-            status = CtiInvalidRequest;
-
-            break;
         }
     }
+
 
     return status;
 }
@@ -949,6 +956,11 @@ RWCString CtiProtocolSA3rdParty::asString() const
             rstr += "SA DIG - " + RWCString(_sa._codeSimple);
             break;
         }
+    case GRP_SA_RTM:
+        {
+            rstr += "SA RTM - command " + CtiNumStr(_sa._function);
+            break;
+        }
     }
 
     if(_sa._retransmit)
@@ -1293,3 +1305,40 @@ void CtiProtocolSA3rdParty::computeSnCTime()
 
 }
 
+
+/*
+ *  command may be one of the following:
+
+ // TMS command type
+    #define TMS_ONE 0
+    #define TMS_ALL 1
+    #define TMS_INIT 2
+    #define TMS_ACK 3
+ */
+
+INT CtiProtocolSA3rdParty::formRTMRequest(USHORT command)
+{
+    INT retCode;
+
+    _sa._bufferLen = MAX_SA_MSG_SIZE;
+    _sa._function = command;
+
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        retCode = formatTMScmd(_sa._buffer, &_sa._bufferLen, command, _sa._transmitterAddress);
+        dout << " " << _sa._transmitterAddress << endl;
+
+        _sa._bufferLen = _sa._bufferLen * 2;
+    }
+
+    if(retCode)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << " format returned " << retCode << endl;
+        }
+    }
+
+    return retCode;
+}
