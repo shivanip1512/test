@@ -367,19 +367,6 @@ function confirmDelete() {
           <td width="25%">&nbsp;</td>
           <td width="25%">&nbsp;</td>
         </tr>
-<cti:checkProperty propertyid="<%= AdministratorRole.ADMIN_DELETE_ENERGY_COMPANY %>"> 
-        <tr> 
-          <form name="DeleteForm" method="post" action="<%= request.getContextPath() %>/servlet/StarsAdmin">
-            <input type="hidden" name="action" value="DeleteEnergyCompany">
-            <input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/login.jsp">
-            <td align = "center" class="MainText" width="25%"> 
-              <div align = "center" style = "border:solid 1px #666999;"><span class="Clickable" style="text-decoration:none;" onClick="confirmDelete()">Delete 
-                Energy Company</span></div>
-            </td>
-          </form>
-        </tr>
-</cti:checkProperty>
-<cti:checkNoProperty propertyid="<%= AdministratorRole.ADMIN_DELETE_ENERGY_COMPANY %>"> 
         <tr>
 <cti:checkProperty propertyid="<%= AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY %>"> 
           <td align = "center" class = "MainText" width="25%"> 
@@ -399,7 +386,16 @@ function confirmDelete() {
               Energy Company</a></div>
           </td>
 </cti:checkProperty> 
-          <td align = "center" class = "MainText" width="25%">&nbsp;</td>
+<cti:checkProperty propertyid="<%= AdministratorRole.ADMIN_DELETE_ENERGY_COMPANY %>"> 
+          <form name="DeleteForm" method="post" action="<%= request.getContextPath() %>/servlet/StarsAdmin">
+            <input type="hidden" name="action" value="DeleteEnergyCompany">
+            <input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/login.jsp">
+            <td align = "center" class="MainText" width="25%"> 
+              <div align = "center" style = "border:solid 1px #666999;"><span class="Clickable" style="text-decoration:none;" onClick="confirmDelete()">Delete 
+                Energy Company</span></div>
+            </td>
+          </form>
+</cti:checkProperty>
         </tr>
         <tr>
 <cti:checkProperty propertyid="<%= AdministratorRole.ADMIN_VIEW_BATCH_COMMANDS %>"> 
@@ -416,7 +412,6 @@ function confirmDelete() {
           </td>
 </cti:checkProperty> 
         </tr>
-</cti:checkNoProperty> 
       </table>
     </td>
     <td width="1" background="../WebConfig/yukon/Icons/VerticalRule.gif" height="16"></td>

@@ -1,9 +1,6 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.database.cache.functions.PAOFuncs" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject" %>
-<%@ page import="com.cannontech.loadcontrol.data.LMProgramDirect" %>
-<%@ page import="com.cannontech.servlet.LCConnectionServlet" %>
-<%@ page import="com.cannontech.web.loadcontrol.LoadcontrolCache" %>
 <html>
 <head>
 <title>Energy Services Operations Center</title>

@@ -194,7 +194,7 @@ function addCustomerGroup(form) {
                           Route:</td>
                         <td class="TableCell"> 
                           <select name="Route">
-                            <option value="-1">(none)</option>
+                            <option value="<%= LiteStarsEnergyCompany.INVALID_ROUTE_ID %>">(none)</option>
                             <%
 	LiteYukonPAObject[] routes = liteEC.getAllRoutes();
 	for (int i = 0; i < routes.length; i++) {
