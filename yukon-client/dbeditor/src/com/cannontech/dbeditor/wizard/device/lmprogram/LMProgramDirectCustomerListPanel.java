@@ -1,7 +1,6 @@
 package com.cannontech.dbeditor.wizard.device.lmprogram;
 
-import com.cannontech.database.data.customer.CustomerTypes;
-import com.cannontech.database.data.lite.LiteCICustomer;
+import com.cannontech.database.data.lite.LiteNotificationGroup;
 
 /**
  * This type was created in VisualAge.
@@ -96,17 +95,17 @@ private com.cannontech.common.gui.util.AddRemovePanel getAddRemovePanel() {
 public Object getValue(Object o) 
 {
 	com.cannontech.database.data.device.lm.LMProgramDirect program = (com.cannontech.database.data.device.lm.LMProgramDirect)o;
-	program.getLmProgramDirectCustomerVector().removeAllElements();
+	program.getLmProgramDirectNotifyGroupVector().removeAllElements();
 	
 	for( int i = 0; i < getAddRemovePanel().rightListGetModel().getSize(); i++ )
 	{
-		com.cannontech.database.db.device.lm.LMDirectCustomerList customer = new com.cannontech.database.db.device.lm.LMDirectCustomerList();
+		com.cannontech.database.db.device.lm.LMDirectNotificationGroupList group = new com.cannontech.database.db.device.lm.LMDirectNotificationGroupList();
 
-		customer.setDeviceID( program.getPAObjectID() );
-		customer.setCustomerID( new Integer(
-					((LiteCICustomer)getAddRemovePanel().rightListGetModel().getElementAt(i)).getCustomerID() ) );
+		group.setDeviceID( program.getPAObjectID() );
+		group.setCustomerID( new Integer(
+					((LiteNotificationGroup)getAddRemovePanel().rightListGetModel().getElementAt(i)).getNotificationGroupID() ) );
 		
-		program.getLmProgramDirectCustomerVector().addElement( customer );
+		program.getLmProgramDirectNotifyGroupVector().addElement( group );
 	}
 	
 	return o;
@@ -174,15 +173,16 @@ private void initializeAddPanel()
 	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized( cache )
 	{
-		java.util.List customers = cache.getAllCICustomers();
-		java.util.Vector lmCusts = new java.util.Vector( (int)(customers.size() * .75) );
+		java.util.List groups = cache.getAllContactNotificationGroups();
+		java.util.Vector lmNotifies = new java.util.Vector( (int)(groups.size() * .75) );
 
-		for( int i = 0; i < customers.size(); i++ )
+		for( int i = 0; i < groups.size(); i++ )
 		{ 
-			lmCusts.addElement( customers.get(i) );
+			if(((LiteNotificationGroup)groups.get(i)).getNotificationGroupID() != 1)
+				lmNotifies.addElement( groups.get(i) );
 		}
 
-		getAddRemovePanel().leftListSetListData(lmCusts);
+		getAddRemovePanel().leftListSetListData(lmNotifies);
 	}
 }
 /**
@@ -325,14 +325,14 @@ public void setValue(Object o)
 
 	java.util.Vector usedItems = new java.util.Vector( getAddRemovePanel().leftListGetModel().getSize() );
 
-	for( int i = 0; i < program.getLmProgramDirectCustomerVector().size(); i++ )
+	for( int i = 0; i < program.getLmProgramDirectNotifyGroupVector().size(); i++ )
 	{
-		com.cannontech.database.db.device.lm.LMDirectCustomerList customer = (com.cannontech.database.db.device.lm.LMDirectCustomerList)program.getLmProgramDirectCustomerVector().get(i);
+		com.cannontech.database.db.device.lm.LMDirectNotificationGroupList aNotificationGroup = (com.cannontech.database.db.device.lm.LMDirectNotificationGroupList)program.getLmProgramDirectNotifyGroupVector().get(i);
 		
 		for( int j = 0; j < allItems.size(); j++ )
 		{
-			if( ((LiteCICustomer)allItems.get(j)).getCustomerID() ==
-				  customer.getCustomerID().intValue() )
+			if( ((LiteNotificationGroup)allItems.get(j)).getNotificationGroupID() ==
+				aNotificationGroup.getNotificationGroupID().intValue() )
 			{
 				usedItems.add( allItems.get(j) );
 				allItems.removeElementAt(j);				
