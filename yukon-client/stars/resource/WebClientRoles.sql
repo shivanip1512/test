@@ -14,6 +14,9 @@ insert into YukonRoleProperty values(-1107,-2,'opt_out_verb','opt out of','Verbi
 insert into YukonRoleProperty values(-1108,-2,'opt_out_past','opted out','Past form of the customized term for opt out');
 insert into YukonRoleProperty values(-1109,-2,'term_reenable','reenable','Customized term for reenable');
 
+/* Web Client Role Properties */
+insert into YukonRoleProperty values(-10806,-108,'log_off_url','(none)','The url to take the user after logging off the Yukon web application');
+
 /* Operator Administrator Role Properties */
 insert into YukonRoleProperty values(-20000,-200,'Config Energy Company','false','Controls whether to allow configuring the energy company');
 insert into YukonRoleProperty values(-20001,-200,'Create Energy Company','false','Controls whether to allow creating a new energy company');
@@ -83,7 +86,6 @@ insert into YukonRoleProperty values(-40053,-400,'Customized Utility Email Link'
 insert into YukonRoleProperty values(-40054,-400,'Disable Program Signup','false','Controls whether to prevent the customers from enrolling in or out of the programs');
 insert into YukonRoleProperty values(-40100,-400,'Link FAQ','FAQ.jsp','The customized FAQ link');
 insert into YukonRoleProperty values(-40101,-400,'Link Utility Email','FAQ.jsp','The customized utility email');
-insert into YukonRoleProperty values(-40102,-400,'Link log off','(none)','The customized URL to redirect to after the customer log off');
 insert into YukonRoleProperty values(-40110,-400,'Text Control','control','Term for control');
 insert into YukonRoleProperty values(-40111,-400,'Text Controlled','controlled','Past form of the term for control');
 insert into YukonRoleProperty values(-40112,-400,'Text Controlling','controlling','Present form of the term for control');
@@ -121,6 +123,7 @@ insert into yukongrouprole values (502,-300,-108,-10802,'(none)');
 insert into yukongrouprole values (503,-300,-108,-10803,'(none)');
 insert into yukongrouprole values (504,-300,-108,-10804,'(none)');
 insert into yukongrouprole values (505,-300,-108,-10805,'DemoHeaderCES.gif');
+insert into yukongrouprole values (506,-300,-108,-10806,'(none)');
 insert into yukongrouprole values (520,-300,-400,-40000,'true');
 insert into yukongrouprole values (521,-300,-400,-40001,'true');
 insert into yukongrouprole values (522,-300,-400,-40002,'false');
@@ -172,6 +175,7 @@ insert into yukongrouprole values (702,-301,-108,-10802,'(none)');
 insert into yukongrouprole values (703,-301,-108,-10803,'(none)');
 insert into yukongrouprole values (704,-301,-108,-10804,'(none)');
 insert into yukongrouprole values (705,-301,-108,-10805,'(none)');
+insert into yukongrouprole values (706,-301,-108,-10806,'(none)');
 insert into yukongrouprole values (720,-301,-201,-20100,'true');
 insert into yukongrouprole values (721,-301,-201,-20101,'true');
 insert into yukongrouprole values (722,-301,-201,-20102,'true');
