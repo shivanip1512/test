@@ -8,7 +8,8 @@ package com.cannontech.yc.gui;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.FileWriter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Observable;
 import java.util.StringTokenizer;
 import java.util.Vector;
@@ -17,9 +18,13 @@ import javax.swing.Timer;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.KeysAndValues;
+import com.cannontech.common.util.KeysAndValuesFile;
+import com.cannontech.database.Transaction;
+import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.CommandFuncs;
-import com.cannontech.database.cache.functions.DeviceFuncs;
 import com.cannontech.database.cache.functions.PAOFuncs;
+import com.cannontech.database.data.command.DeviceTypeCommand;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase;
@@ -29,6 +34,9 @@ import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.db.command.Command;
+import com.cannontech.database.db.command.CommandCategory;
 import com.cannontech.database.db.device.DeviceMeterGroup;
 import com.cannontech.database.model.ModelFactory;
 import com.cannontech.message.porter.message.Request;
@@ -163,45 +171,11 @@ public class YC extends Observable implements MessageListener
 	public YC(boolean loadDefaultsFromFile_) 
 	{
 		super();
+		loadCustomCommandsFromDatabase();
 		ycDefaults = new YCDefaults(loadDefaultsFromFile_);
 		getPilConn().addMessageListener(this);
-//		loadCustomCommandsFromDatabase();
 	}
 
-    /**
-	 * 
-	 */
-	private void loadCustomCommandsFromDatabase()
-	{
-		
-		File f = new File(CtiUtilities.getCommandsDirPath()+"custom/");
-		
-		String []fileNames = f.list();
-		{
-			for (int i = 0; i < fileNames.length; i++)
-			{
-				System.out.println(fileNames[i]);
-				int extIndex= fileNames[i].lastIndexOf('.');
-				if( extIndex > 0 )
-					if( PAOGroups.getDeviceType(fileNames[i].substring(0, extIndex)) != PAOGroups.INVALID)
-						writeProcessedFile(fileNames[i]);
-			}
-		}
-		// TODO Auto-generated method stub
-		
-	}
-	
-	/**
-	 */
-	public void writeProcessedFile(String procFileName)
-	{
-		File  file = new File(CtiUtilities.getCommandsDirPath()+"custom/" + procFileName);
-		File destFile = new File(CtiUtilities.getCommandsDirPath()+"processed/");
-		destFile.mkdirs();
-		destFile = new File(CtiUtilities.getCommandsDirPath()+"processed/" + procFileName);
-		file.renameTo(destFile);
-	}		
-	
 	private IServerConnection getPilConn()
     {
         return ConnPool.getInstance().getDefPorterConn();        
@@ -1187,4 +1161,196 @@ public class YC extends Observable implements MessageListener
 		}
 		return timerPerfomer;
 	}
+	
+    /**
+	 * Load custom command files to be parsed for custom commands.
+	 */
+	private void loadCustomCommandsFromDatabase()
+	{
+		File f = new File(CtiUtilities.getCommandsDirPath()+"custom/");
+		
+		String []fileNames = f.list();
+		{
+			for (int i = 0; i < fileNames.length; i++)
+			{
+				System.out.println(fileNames[i]);
+				int extIndex= fileNames[i].lastIndexOf('.');
+				if( extIndex > 0 )
+				{
+					String fileName = fileNames[i].substring(0, extIndex);
+					String category = null;
+					
+					if( PAOGroups.getDeviceType(fileName) != PAOGroups.INVALID)
+					{
+					    category = fileName;
+					}
+					else if( fileName.equalsIgnoreCase("alpha-base"))
+				        category = CommandCategory.STRING_CMD_ALPHA_BASE;
+					else if( fileName.equalsIgnoreCase("cbc-base"))
+				        category = CommandCategory.STRING_CMD_CBC_BASE;
+					else if( fileName.equalsIgnoreCase("ccu-base"))
+				        category = CommandCategory.STRING_CMD_CCU_BASE;
+					else if( fileName.equalsIgnoreCase("iedbase"))
+				        category = CommandCategory.STRING_CMD_IED_BASE;
+					else if( fileName.equalsIgnoreCase("ion-base"))
+				        category = CommandCategory.STRING_CMD_ION_BASE;
+					else if( fileName.equalsIgnoreCase("lcu-base"))
+				        category = CommandCategory.STRING_CMD_LCU_BASE;
+					else if( fileName.equalsIgnoreCase("lsbase"))
+				        category = CommandCategory.STRING_CMD_LP_BASE;
+					else if( fileName.equalsIgnoreCase("loadgroup-base"))
+				        category = CommandCategory.STRING_CMD_LOAD_GROUP_BASE;
+					else if( fileName.equalsIgnoreCase("mct-base"))
+				        category = CommandCategory.STRING_CMD_MCT_BASE;
+					else if( fileName.equalsIgnoreCase("rtu-base"))
+				        category = CommandCategory.STRING_CMD_RTU_BASE;
+					else if( fileName.equalsIgnoreCase("repeater-base"))
+				        category = CommandCategory.STRING_CMD_REPEATER_BASE;
+					else if( fileName.equalsIgnoreCase("tcu-base"))
+				        category = CommandCategory.STRING_CMD_TCU_BASE;
+					else if( fileName.equalsIgnoreCase("lcrserial"))
+				        category = CommandCategory.STRING_CMD_SERIALNUMBER;
+					else
+					{
+					    CTILogger.info("UNknown filename: " + fileName);
+					}
+
+					if(category != null)
+					{
+					    parseCommandFile(f.getAbsolutePath()+"/"+fileNames[i], category);
+					}
+				    writeProcessedFile(fileNames[i]);
+				}
+			}
+		}
+		//Force a reload of all commands and deviceTypeCommands!
+		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+		cache.releaseAllCommands();
+		cache.releaseAllDeviceTypeCommands();
+	}
+	
+	/**
+	 * Parse command file for custom commands.
+	 * @param dirFileName
+	 * @param category
+	 */
+	private void parseCommandFile(String dirFileName, String category)
+	{
+		KeysAndValuesFile kavFile = new KeysAndValuesFile(dirFileName);
+		KeysAndValues keysAndValues = kavFile.getKeysAndValues();
+		
+		if( keysAndValues != null )
+		{
+			String labels[] = keysAndValues.getKeys();
+			String commands[] = keysAndValues.getValues();
+
+			DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+			List allCmds = cache.getAllCommands();
+
+			for (int i = 0; i < labels.length; i++)
+			{
+			    Command cmd = new Command();
+			    cmd.setLabel(labels[i].trim());
+			    cmd.setCommand(commands[i].trim());
+			    cmd.setCategory(category);
+			    boolean exists = false;
+				for (int j = 0; j < allCmds.size(); j++)
+				{
+				    LiteCommand lc = (LiteCommand)allCmds.get(j);
+				    if( (lc.getCommand().equalsIgnoreCase(cmd.getCommand()) &&
+				            lc.getLabel().equalsIgnoreCase(cmd.getLabel())))
+				    {
+				        exists = true;
+				        break;
+				    }
+				}
+				if( !exists)
+				{
+				    insertDBPersistent(cmd, Transaction.INSERT);
+					//Lazy man's cache reload! (...we don't have a dispatch connection)
+				    cache.releaseAllCommands();						
+					addDeviceTypeCommand(category, cmd);
+				    System.out.println("adding: " + cmd.toString() + " ID:" + cmd.getCommandID().toString());
+                }
+			}
+			
+		}
+	}
+	
+	/**
+	 * insert item into database.  No DBChange is sent out.
+	 * @param item
+	 * @param transType
+	 */
+	public void insertDBPersistent(DBPersistent item, int transType) 
+	{
+		if( item != null )
+		{
+			try
+			{
+				Transaction t = Transaction.createTransaction(transType, item);
+				item = t.execute();
+			}
+			catch( com.cannontech.database.TransactionException e )
+			{
+				CTILogger.error( e.getMessage(), e );
+			}
+			catch( NullPointerException e )
+			{
+				CTILogger.error( e.getMessage(), e );
+			}
+			
+		}
+	}	
+	/**
+	 * Inserts a deviceTypeCommand into the database for the cmd and devType parameters.
+	 * If the devType is a category, then an entry for every deviceType in that category is inserted.
+	 */
+	private void addDeviceTypeCommand(String devType, Command cmd)
+	{
+		if( CommandCategory.isCommandCategory(devType))
+		{
+	//		The deviceType is actually a category, not a deviceType from YukonPaobject.paoType column
+			ArrayList devTypes = CommandCategory.getAllTypesForCategory(devType);
+			DeviceTypeCommand dbP = null;
+			for (int i = 0; i < devTypes.size(); i++)
+			{
+				//Add to DeviceTypeCommand table, entries for all deviceTypes! yikes...I know
+				dbP = new DeviceTypeCommand();
+				dbP.getDeviceTypeCommand().setDeviceCommandID(com.cannontech.database.db.command.DeviceTypeCommand.getNextID(CtiUtilities.getDatabaseAlias()));
+				dbP.getDeviceTypeCommand().setDeviceType((String)devTypes.get(i));
+				dbP.getDeviceTypeCommand().setDisplayOrder(new Integer(20));//hey, default it, we're going to update it in a bit anyway right? 
+				dbP.getDeviceTypeCommand().setVisibleFlag(new Character('Y'));
+				dbP.setCommand(cmd);
+				insertDBPersistent(dbP, Transaction.INSERT);
+			}
+		}
+		else
+		{
+			//Add to DeviceTypeCommand table, entries for all deviceTypes! yikes...I know
+			DeviceTypeCommand dbP = new DeviceTypeCommand();
+			dbP.getDeviceTypeCommand().setDeviceCommandID(com.cannontech.database.db.command.DeviceTypeCommand.getNextID(CtiUtilities.getDatabaseAlias()));
+			dbP.getDeviceTypeCommand().setDeviceType(devType);
+			dbP.getDeviceTypeCommand().setDisplayOrder(new Integer(20));//hey, default it, we're going to update it in a bit anyway right? 
+			dbP.getDeviceTypeCommand().setVisibleFlag(new Character('Y'));
+			dbP.setCommand(cmd);
+			insertDBPersistent(dbP, Transaction.INSERT);
+		}
+	}	
+	/**
+	 * Move the procFileName from /command/custom/ to /command/processed/ 
+	 */
+	public void writeProcessedFile(String procFileName)
+	{
+		File  file = new File(CtiUtilities.getCommandsDirPath()+"custom/" + procFileName);
+		File destFile = new File(CtiUtilities.getCommandsDirPath()+"processed/");
+		destFile.mkdirs();
+		destFile = new File(CtiUtilities.getCommandsDirPath()+"processed/" + procFileName);
+	    boolean success = file.renameTo(destFile);
+	    if( !success)
+	    {
+	        CTILogger.info("Could not rename file " + procFileName + ".  This file will be deleted.");
+	        file.delete();
+	    }
+	}		
 }
