@@ -17,6 +17,8 @@ import org.jfree.chart.axis.CategoryLabelPositions;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.NumberAxis3D;
+import org.jfree.chart.axis.SegmentedTimeline;
+import org.jfree.chart.axis.Timeline;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.labels.StandardCategoryLabelGenerator;
 import org.jfree.chart.labels.StandardCategoryToolTipGenerator;
@@ -56,6 +58,7 @@ import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.database.data.graph.GraphDefinition;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.db.graph.GDSTypes;
 import com.cannontech.database.db.graph.GDSTypesFuncs;
 import com.cannontech.database.db.graph.GraphDataSeries;
@@ -172,7 +175,7 @@ public TrendModel(GraphDefinition gdef, java.util.Date newStartDate, java.util.D
 	
 }
 
-public TrendModel(java.util.Date newStartDate, java.util.Date newStopDate, String newChartName, Point [] newPoints)
+public TrendModel(java.util.Date newStartDate, java.util.Date newStopDate, String newChartName, LitePoint [] litePoints)
 {
 	// Inititialize chart properties
 	setStartDate(newStartDate);
@@ -180,12 +183,12 @@ public TrendModel(java.util.Date newStartDate, java.util.Date newStopDate, Strin
 	setChartName(newChartName);
 
 	// Inititialize series properties	
-	trendSeries = new TrendSerie[newPoints.length];
-	for (int i = 0; i < newPoints.length; i++)
+	trendSeries = new TrendSerie[litePoints.length];
+	for (int i = 0; i < litePoints.length; i++)
 	{
 		TrendSerie tempSerie = new TrendSerie();
-		tempSerie.setPointId(((Point)newPoints[i]).getPointID());
-		tempSerie.setLabel(((Point)newPoints[i]).getPointName());
+		tempSerie.setPointId(new Integer(((LitePoint)litePoints[i]).getPointID()));
+		tempSerie.setLabel(((LitePoint)litePoints[i]).getPointName());
 		tempSerie.setColor(Colors.getColor(i));	//some distinct color (valid 1-10 only)
 
 		trendSeries[i] = tempSerie;
@@ -374,11 +377,16 @@ private Axis getDomainAxis()
 		}
 		else
 		{
-			DateAxis domainAxis = new DateAxis(getTrendProps().getDomainLabel());
+//			SegmentedTimeline timeline = new SegmentedTimeline(SegmentedTimeline.HOUR_SEGMENT_SIZE, 1, 3);
+////			timeline.setAdjustForDaylightSaving(true);
+//			timeline.setStartTime(getStartDate().getTime());
+			DateAxis domainAxis = new DateAxis(getTrendProps().getDomainLabel());//, timeline);
 			domainAxis.setAutoRange(false);
+//			domainAxis.setDateFormatOverride(dwellValuesDateTimeformat);
 			domainAxis.setMaximumDate(getStopDate());
 			domainAxis.setMinimumDate(getStartDate());
 			domainAxis.setTickMarksVisible(true);
+//			domainAxis.setLabelAngle(Math.PI/2);
 			((DateAxis)domainAxis).setVerticalTickLabels(false);
 			return domainAxis;
 		}
