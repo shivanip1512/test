@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/test.cpp-arc  $
-* REVISION     :  $Revision: 1.28 $
-* DATE         :  $Date: 2004/10/06 16:33:01 $
+* REVISION     :  $Revision: 1.29 $
+* DATE         :  $Date: 2004/10/07 12:25:55 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -156,12 +156,12 @@ void EThread::run( void )
             cnt = 0;
          }
       }
-
+/*
       {
          CtiLockGuard<CtiLogger> doubt_guard( dout );
          dout << _name << " working" << endl;
       }
-
+*/
    }
    set( SHUTDOWN, false ); //reset the flag so we can start it again
 }
@@ -243,7 +243,7 @@ void testThreads( int argc, char **argv )
          else
          {
             delete sam;
-            sam = new EThread( "sam", CtiThreadRegData::None ); 
+            sam = new EThread( "sam", CtiThreadRegData::None, 25 ); 
             sam->start();
             {
                CtiLockGuard<CtiLogger> doubt_guard( dout );
@@ -265,7 +265,7 @@ void testThreads( int argc, char **argv )
          else
          {
             delete joe;
-            joe = new EThread( "joe", CtiThreadRegData::Restart ); 
+            joe = new EThread( "joe", CtiThreadRegData::Restart, 45 ); 
             joe->start();
             {
                CtiLockGuard<CtiLogger> doubt_guard( dout );
@@ -287,7 +287,7 @@ void testThreads( int argc, char **argv )
          else
          {
             delete rat;
-            rat = new EThread( "rat", CtiThreadRegData::KillApp ); 
+            rat = new EThread( "rat", CtiThreadRegData::KillApp, 80 ); 
             rat->start();
             {
                CtiLockGuard<CtiLogger> doubt_guard( dout );
@@ -295,11 +295,12 @@ void testThreads( int argc, char **argv )
             }
          }
       }
-
+/*
       if( !( index % 10 ))
       {
          ThreadMonitor.dump();
       }
+*/      
    }
 }
 
