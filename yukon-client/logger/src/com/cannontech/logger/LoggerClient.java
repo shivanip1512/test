@@ -145,14 +145,7 @@ public void receivedDBChangMsg( DBChangeMsg msg )
 	com.cannontech.clientutils.CTILogger.info("	  	  			   Time = " + msg.getTimeStamp() );
 */
 }
-/**
- * Insert the method's description here.
- * Creation date: (3/22/00 3:02:24 PM)
- * @param mpc com.cannontech.message.dispatch.message.Multi
- */
-public void receivedNullMsg()
-{
-}
+
 /**
  * Insert the method's description here.
  * Creation date: (3/22/00 3:02:24 PM)

@@ -56,8 +56,8 @@ public class SystrayFlasher implements Runnable
 			yukonSysTray.setIcon( ISystrayDefines.ALL_ICONS[ISystrayDefines.ICO_NO_ALRM] );
 
 			//interrupt ourself
-			if( !Thread.currentThread().isInterrupted() )
-				Thread.currentThread().interrupt();
+//			if( !Thread.currentThread().isInterrupted() )
+//				Thread.currentThread().interrupt();
 		}
 
 	}

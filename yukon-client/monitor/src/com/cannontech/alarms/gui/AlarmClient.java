@@ -60,7 +60,6 @@ public class AlarmClient extends com.cannontech.clientutils.ClientBase
 	 * Do a no-op implementation for things we do not care about
 	 */
 	public void receivedDBChangMsg( DBChangeMsg msg ) {}
-	public void receivedNullMsg() {}
 	public void receivedPointData( PointData msg ) {}
 	public void reRegister( Long[] ptIDs ) {}
 
@@ -71,7 +70,9 @@ public class AlarmClient extends com.cannontech.clientutils.ClientBase
 	 */
 	public void receivedSignal( Signal signal )
 	{
-		CTILogger.info("SIGNAL RECEIVED for ptID = "+ signal.getPointID() + " alarmStateID = "+ signal.getCategoryID() + " Tags(hex) = " + Integer.toHexString(signal.getTags()) );
+		CTILogger.info(
+			"SIGNAL RECEIVED for PtID="+ signal.getPointID() + ",AlarmStateID="+ signal.getCategoryID() + ",Tags(hex)=" + Integer.toHexString(signal.getTags()) +
+			",Condition=" + signal.getCondition() );
 	}
 
 }

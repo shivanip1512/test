@@ -7,6 +7,9 @@ import java.util.Vector;
 import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.message.dispatch.message.Signal;
+import com.cannontech.message.util.Message;
+import com.cannontech.message.util.MessageEvent;
+import com.cannontech.message.util.MessageListener;
 import com.cannontech.systray.ISystrayDefines;
 import com.cannontech.systray.YukonSysTray;
 
@@ -16,7 +19,7 @@ import com.cannontech.systray.YukonSysTray;
  * Listens to Alarm changes in the alarm connection. Changes the state of
  * the systray by the alarms/Signals it receives.
  */
-public class AlarmHandler implements Observer
+public class AlarmHandler implements Observer, MessageListener
 {
 	private AlarmClient alarmClient = null;
 	private YukonSysTray yukonSysTray = null;
@@ -44,7 +47,10 @@ public class AlarmHandler implements Observer
 	public AlarmClient getAlarmClient()
 	{
 		if( alarmClient == null )
-			alarmClient = new AlarmClient(this);		
+		{
+			alarmClient = new AlarmClient(this);
+			alarmClient.addMessageListener( this );
+		}		
 
 		return alarmClient;
 	}
@@ -62,7 +68,7 @@ public class AlarmHandler implements Observer
 
 		boolean foundSig = false;
 		int prevAlrmCnt = getSignalVector().size();//alarmCount;
-		boolean addAlarm = TagUtils.isAnyAlarm(sig.getTags());
+		boolean addAlarm = TagUtils.isAlarmUnacked(sig.getTags());
 
 		for( int i = 0; i < getSignalVector().size(); i++ )
 		{
@@ -116,12 +122,21 @@ public class AlarmHandler implements Observer
 				//alarmMenu.setToolTip( "Connected to Server" );
 				yukonSysTray.setTrayText( ISystrayDefines.MSG_ALRM_TOTALS +  
 							getSignalVector().size() );
-		}
-		
-		if( val instanceof Signal )
+		}		
+	}
+	
+	public void messageReceived( MessageEvent e )
+	{
+		Message in = e.getMessage();
+
+		if( in instanceof Signal )
 		{
-			handleSignal( (Signal)val );
-		}			
+			handleSignal( (Signal)in );
+			
+			yukonSysTray.setTrayText( ISystrayDefines.MSG_ALRM_TOTALS +  
+						getSignalVector().size() );			
+		}
 
 	}
+	
 }

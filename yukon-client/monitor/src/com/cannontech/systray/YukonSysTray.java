@@ -71,13 +71,18 @@ public class YukonSysTray implements SysTrayMenuListener, ActionListener, ISystr
 	
 	public synchronized void startCycleImages()
 	{
-		if( iconCyclerThrd == null 
+		if( iconCyclerThrd == null
 			 || iconCyclerThrd.isInterrupted() )
 		{
-			iconCyclerThrd = new Thread( getSystrayFlasher(), "IconCycler" );
-			
-			iconCyclerThrd.start();
+			iconCyclerThrd = new Thread(
+					Thread.currentThread().getThreadGroup(),
+					getSystrayFlasher(), 
+					"IconCycler" );
+
+			iconCyclerThrd.setDaemon( true );
 		}
+
+		iconCyclerThrd.start();
 	}
 
 	public void actionPerformed(java.awt.event.ActionEvent e) 
@@ -138,6 +143,8 @@ public class YukonSysTray implements SysTrayMenuListener, ActionListener, ISystr
 	{
 		if( iconCyclerThrd != null )
 			iconCyclerThrd.interrupt();
+
+		iconCyclerThrd = null;
 	}
 
 	public static void main(String[] args)

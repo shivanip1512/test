@@ -26,11 +26,6 @@ void receivedDBChangMsg( DBChangeMsg msg );
  * Insert the method's description here.
  * Creation date: (6/15/00 2:14:26 PM)
  */
-void receivedNullMsg();
-/**
- * Insert the method's description here.
- * Creation date: (6/15/00 2:14:26 PM)
- */
 void receivedPointData( PointData msg );
 /**
  * Insert the method's description here.
