@@ -15,7 +15,7 @@ public class TransferableObjects implements java.awt.datatransfer.Transferable
 	public final static int JLIST_OBJECT = 0;
 	public final static int STRING_OBJECT = 1;
 
-	public static DataFlavor[] flavors = 
+	public static final DataFlavor[] flavors = 
 	{ 
 		OBJECT_FLAVOR,
 		DataFlavor.stringFlavor
@@ -65,10 +65,10 @@ public java.awt.datatransfer.DataFlavor[] getTransferDataFlavors()
 public boolean isDataFlavorSupported(java.awt.datatransfer.DataFlavor flavor) 
 {
 	boolean returnValue = false;
-
+	
 	for( int i = 0, n = flavors.length; i < n; i++ )
 	{
-		if( flavors.equals( flavors[i] ) )
+		if( flavor.equals( flavors[i] ) )
 		{
 			returnValue = true;
 			break;
