@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2003/07/21 22:29:11 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2003/07/23 20:52:59 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -111,6 +111,9 @@
 
 // Error Types
 #define UNKNOWNDEVICEID                 0001
+#define INVALIDDAY                      0002
+#define INVALIDPERIOD                   0003
+#define DUPLICATEDEVICEID               0004
 
 // Structure to receive messages from the gateway
 
