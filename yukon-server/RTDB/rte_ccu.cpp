@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_ccu.cpp-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2004/05/05 15:31:42 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2004/12/07 18:02:19 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -201,58 +201,58 @@ INT CtiRouteCCU::assembleVersacomRequest(CtiRequestMsg                  *pReq,
             {
                 case TYPE_CCU700:
                 case TYPE_CCU710:
-                {
-                    NewOutMessage->EventCode &= ~QUEUED;
-                    NewOutMessage->EventCode |= (DTRAN | BWORD);
-
-                    /***** FALL THROUGH ** FALL THROUGH *****/
-                }
-                case TYPE_CCU711:
-                {
-                    /* check if queing is allowed */
-                    if(NoQueingVersacom)
                     {
                         NewOutMessage->EventCode &= ~QUEUED;
                         NewOutMessage->EventCode |= (DTRAN | BWORD);
+
+                        /***** FALL THROUGH ** FALL THROUGH *****/
                     }
-                    else
+                case TYPE_CCU711:
                     {
-                        NewOutMessage->EventCode |= BWORD;
+                        /* check if queing is allowed */
+                        if(NoQueingVersacom)
+                        {
+                            NewOutMessage->EventCode &= ~QUEUED;
+                            NewOutMessage->EventCode |= (DTRAN | BWORD);
+                        }
+                        else
+                        {
+                            NewOutMessage->EventCode |= BWORD;
+                        }
+
+                        if(NewOutMessage->EventCode & DTRAN)
+                        {
+                            /* Load the B word */
+                            B_Word (NewOutMessage->Buffer.OutMessage+PREIDLEN+PREAMLEN, BSt, cwordCount);
+
+                            /* Load the C words if neccessary */
+                            if(cwordCount)
+                                C_Words (NewOutMessage->Buffer.OutMessage+PREIDLEN+PREAMLEN+BWORDLEN, BSt.Message, BSt.Length, &cwordCount);
+
+                            /* Now do the preamble */
+                            BPreamble (NewOutMessage->Buffer.OutMessage+PREIDLEN, BSt, cwordCount);
+
+                            /* Calculate the length of the message */
+                            NewOutMessage->OutLength  = PREAMLEN + (cwordCount + 1) * BWORDLEN + 3;
+                            NewOutMessage->EventCode |= DTRAN & BWORD;
+                            NewOutMessage->TimeOut    = TIMEOUT + BSt.DlcRoute.Stages * (cwordCount + 1);
+
+                            /* load the IDLC specific stuff for DTRAN */
+                            NewOutMessage->Source                = 0;
+                            NewOutMessage->Destination           = DEST_DLC;
+                            NewOutMessage->Command               = CMND_DTRAN;
+                            NewOutMessage->InLength              = 2;
+                            NewOutMessage->Buffer.OutMessage[6]  = (UCHAR)OutMessage->InLength;
+                            NewOutMessage->EventCode             &= ~RCONT;
+                        }
+                        else
+                        {
+                            /* Load up the B word stuff */
+                            NewOutMessage->Buffer.BSt = BSt;
+                        }
+
+                        break;
                     }
-
-                    if(NewOutMessage->EventCode & DTRAN)
-                    {
-                        /* Load the B word */
-                        B_Word (NewOutMessage->Buffer.OutMessage+PREIDLEN+PREAMLEN, BSt, cwordCount);
-
-                        /* Load the C words if neccessary */
-                        if(cwordCount)
-                            C_Words (NewOutMessage->Buffer.OutMessage+PREIDLEN+PREAMLEN+BWORDLEN, BSt.Message, BSt.Length, &cwordCount);
-
-                        /* Now do the preamble */
-                        BPreamble (NewOutMessage->Buffer.OutMessage+PREIDLEN, BSt, cwordCount);
-
-                        /* Calculate the length of the message */
-                        NewOutMessage->OutLength  = PREAMLEN + (cwordCount + 1) * BWORDLEN + 3;
-                        NewOutMessage->EventCode |= DTRAN & BWORD;
-                        NewOutMessage->TimeOut    = TIMEOUT + BSt.DlcRoute.Stages * (cwordCount + 1);
-
-                        /* load the IDLC specific stuff for DTRAN */
-                        NewOutMessage->Source                = 0;
-                        NewOutMessage->Destination           = DEST_DLC;
-                        NewOutMessage->Command               = CMND_DTRAN;
-                        NewOutMessage->InLength              = 2;
-                        NewOutMessage->Buffer.OutMessage[6]  = (UCHAR)OutMessage->InLength;
-                        NewOutMessage->EventCode             &= ~RCONT;
-                    }
-                    else
-                    {
-                        /* Load up the B word stuff */
-                        NewOutMessage->Buffer.BSt = BSt;
-                    }
-
-                    break;
-                }
             }
 
             outList.insert(NewOutMessage);
@@ -355,55 +355,55 @@ INT CtiRouteCCU::assembleDLCRequest(CtiRequestMsg                  *pReq,
             /* Things are now ready to go */
             switch( _transmitterDevice->getType() )
             {
-            case TYPE_CCU700:
-            case TYPE_CCU710:
-                {
-                    NewOutMessage->EventCode &= ~QUEUED;
-                    NewOutMessage->EventCode |= (DTRAN | BWORD);
-
-                    /***** FALL THROUGH ** FALL THROUGH *****/
-                }
-            case TYPE_CCU711:
-                {
-                    /* check if queing is allowed */
-                    if(NoQueingDLC)
+                case TYPE_CCU700:
+                case TYPE_CCU710:
                     {
                         NewOutMessage->EventCode &= ~QUEUED;
-                        NewOutMessage->EventCode |= (DTRAN  | BWORD);
-                    }
-                    else
-                    {
-                        // 3/17/02 MSKF //NewOutMessage->EventCode |= BWORD;
-                    }
+                        NewOutMessage->EventCode |= (DTRAN | BWORD);
 
-                    if(NewOutMessage->EventCode & DTRAN)
+                        /***** FALL THROUGH ** FALL THROUGH *****/
+                    }
+                case TYPE_CCU711:
                     {
-                        /* load the IDLC specific stuff for DTRAN */
-                        NewOutMessage->Source                = 0;
-                        NewOutMessage->Destination           = DEST_DLC;
-                        NewOutMessage->Command               = CMND_DTRAN;
-
-                        if(NewOutMessage->InLength <= 0)
+                        /* check if queing is allowed */
+                        if(NoQueingDLC)
                         {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                dout << " 062101 CGP CHECK CHECK CHECK " << endl;
-                            }
-
-                            NewOutMessage->InLength              = 2;
+                            NewOutMessage->EventCode &= ~QUEUED;
+                            NewOutMessage->EventCode |= (DTRAN  | BWORD);
+                        }
+                        else
+                        {
+                            // 3/17/02 MSKF //NewOutMessage->EventCode |= BWORD;
                         }
 
-                        NewOutMessage->Buffer.OutMessage[6]  = (UCHAR)NewOutMessage->InLength;
-                        NewOutMessage->EventCode             &= ~RCONT;
+                        if(NewOutMessage->EventCode & DTRAN)
+                        {
+                            /* load the IDLC specific stuff for DTRAN */
+                            NewOutMessage->Source                = 0;
+                            NewOutMessage->Destination           = DEST_DLC;
+                            NewOutMessage->Command               = CMND_DTRAN;
+
+                            if(NewOutMessage->InLength <= 0)
+                            {
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                    dout << " 062101 CGP CHECK CHECK CHECK " << endl;
+                                }
+
+                                NewOutMessage->InLength              = 2;
+                            }
+
+                            NewOutMessage->Buffer.OutMessage[6]  = (UCHAR)NewOutMessage->InLength;
+                            NewOutMessage->EventCode             &= ~RCONT;
+                        }
+                        else
+                        {
+                            /* Load up the B word stuff */
+                            NewOutMessage->Buffer.BSt = OutMessage->Buffer.BSt;
+                        }
+                        break;
                     }
-                    else
-                    {
-                        /* Load up the B word stuff */
-                        NewOutMessage->Buffer.BSt = OutMessage->Buffer.BSt;
-                    }
-                    break;
-                }
             }
 
             outList.insert(NewOutMessage);
@@ -414,7 +414,9 @@ INT CtiRouteCCU::assembleDLCRequest(CtiRequestMsg                  *pReq,
 
     if(retReturn)
     {
-        if(parse.isTwoWay()) retReturn->setExpectMore(xmore);
+        if(parse.isTwoWay())     retReturn->setExpectMore(xmore);
+        if(parse.isDisconnect()) retReturn->setExpectMore(xmore);  //  we scan afterwards, so you'd best expect another message even though it's not technically two-way
+
         retList.insert(retReturn);
     }
     else
@@ -425,14 +427,18 @@ INT CtiRouteCCU::assembleDLCRequest(CtiRequestMsg                  *pReq,
     return status;
 }
 
-CtiRouteCCU::CtiRouteCCU() {}
+CtiRouteCCU::CtiRouteCCU()
+{
+}
 
 CtiRouteCCU::CtiRouteCCU(const CtiRouteCCU& aRef)
 {
     *this = aRef;
 }
 
-CtiRouteCCU::~CtiRouteCCU() {}
+CtiRouteCCU::~CtiRouteCCU()
+{
+}
 
 CtiRouteCCU& CtiRouteCCU::operator=(const CtiRouteCCU& aRef)
 {
@@ -455,16 +461,40 @@ void CtiRouteCCU::DumpData()
         RepeaterList[i].DumpData();
 }
 
-CtiRouteCCU::CtiRepeaterList_t&     CtiRouteCCU::getRepeaterList()          { return RepeaterList;}
-CtiRouteCCU::CtiRepeaterList_t      CtiRouteCCU::getRepeaterList() const    { return RepeaterList;}
+CtiRouteCCU::CtiRepeaterList_t&     CtiRouteCCU::getRepeaterList()
+{
+    return RepeaterList;
+}
+CtiRouteCCU::CtiRepeaterList_t      CtiRouteCCU::getRepeaterList() const
+{
+    return RepeaterList;
+}
 
-INT    CtiRouteCCU::getStages() const          { return RepeaterList.entries();}
-INT    CtiRouteCCU::getBus() const             { return Carrier.getBus();}
-INT    CtiRouteCCU::getCCUFixBits() const      { return Carrier.getCCUFixBits();}
-INT    CtiRouteCCU::getCCUVarBits() const      { return Carrier.getCCUVarBits();}
+INT    CtiRouteCCU::getStages() const
+{
+    return RepeaterList.entries();
+}
+INT    CtiRouteCCU::getBus() const
+{
+    return Carrier.getBus();
+}
+INT    CtiRouteCCU::getCCUFixBits() const
+{
+    return Carrier.getCCUFixBits();
+}
+INT    CtiRouteCCU::getCCUVarBits() const
+{
+    return Carrier.getCCUVarBits();
+}
 
-CtiTableCarrierRoute    CtiRouteCCU::getCarrier() const         { return Carrier;}
-CtiTableCarrierRoute&   CtiRouteCCU::getCarrier()               { return Carrier;}
+CtiTableCarrierRoute    CtiRouteCCU::getCarrier() const
+{
+    return Carrier;
+}
+CtiTableCarrierRoute&   CtiRouteCCU::getCarrier()
+{
+    return Carrier;
+}
 CtiRouteCCU&            CtiRouteCCU::setCarrier( const CtiTableCarrierRoute& aCarrier)
 {
     Carrier = aCarrier;
