@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/devtest.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/09/09 21:45:08 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/10/23 21:07:58 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -48,8 +48,6 @@ void main(int argc, char** argv)
     INT origDBL = getDebugLevel();
     DebugLevel = 0x80000000;            // OK, trick it!
 
-    Manager.setIncludeScanInfo();       // Do the scanner stuff.
-
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << "Device Tester is starting up now" << endl;
@@ -57,7 +55,7 @@ void main(int argc, char** argv)
 
     for(int i = 0 ; i < cnt; i++)
     {
-        Manager.RefreshList(DeviceFactory, isNotAScannableDevice);
+        Manager.RefreshList(DeviceFactory);
 
         DebugLevel = origDBL;
 
