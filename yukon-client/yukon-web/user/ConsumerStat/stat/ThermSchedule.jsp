@@ -59,10 +59,10 @@
 <head>
 <title>Consumer Energy Services</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link id="CssLink" rel="stylesheet" href="../../demostyle.css" type="text/css">
-<% if (ecWebSettings.getURL().length() > 0) { %>
-	<script language="JavaScript">document.getElementById("CssLink").href = "../../<%= ecWebSettings.getURL() %>";</script>
-<% } %>
+<link id="StyleSheet" rel="stylesheet" href="../../demostyle.css" type="text/css">
+<script language="JavaScript">
+	document.getElementById("StyleSheet").href = '../../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_STYLE_SHEET %>"/>';
+</script>
 
 <script langauge = "JavaScript">
 function updateLayout(hour1, min1, temp1, hour2, min2, temp2, hour3, min3, temp3, hour4, min4, temp4) {
@@ -144,9 +144,9 @@ MM_reloadPage(true);
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
                 <td id="Header" colspan="4" height="74" background="../../Header.gif">&nbsp;</td>
-<% if (ecWebSettings.getLogoLocation().length() > 0) { %>
-	<script language="JavaScript">document.getElementById("Header").background = "../../<%= ecWebSettings.getLogoLocation() %>";</script>
-<% } %>
+<script language="JavaScript">
+	document.getElementById("Header").background = '../../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_HEADER %>"/>';
+</script>
               </tr>
               <tr> 
 				  <td width="265" height="28">&nbsp;</td>
@@ -183,7 +183,7 @@ MM_reloadPage(true);
 		  <td width="657" valign="top" bgcolor="#FFFFFF"> 
               
             <div align="center"><br>
-              <% String header = "THERMOSTAT - SCHEDULE"; %>
+              <% String header = ServletUtils.getECProperty(ecWebSettings.getURL(), ServletUtils.WEB_TEXT_THERM_SCHED_TITLE); %>
               <%@ include file="InfoBar.jsp" %>
               <table width="600" border="0" cellpadding="0" cellspacing="0">
                 <tr>
@@ -407,7 +407,10 @@ updateLayout(
                       <input type="submit" name="Submit" value="Submit" onclick="switchSettings('<%= dayStr %>','<%= modeStr %>')">
                   </td>
                     <td width="64%" align = "left" class = "TableCell"> 
-                      <input type="button" name="default" value="Recommended Settings" title="These are the Acme Utility recommended settings." onclick="setToDefault()">
+                      <input type="button" id="Default" value="Recommended Settings" onclick="setToDefault()">
+<script language="JavaScript">
+	document.getElementById("Default").value = '<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_TEXT_REC_SET_BTN %>"/>';
+</script>
                   </td>
                 </tr>
               </table>

@@ -1,8 +1,10 @@
 package com.cannontech.database.data.lite.stars;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Vector;
+import java.util.Properties;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.RoleTypes;
@@ -66,6 +68,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	private ArrayList interviewQuestions = null;	// List of LiteInterviewQuestion
 	private ArrayList customerFAQs = null;		// List of LiteCustomerFAQ
 	private LiteStarsThermostatSettings dftThermSettings = null;
+	private Properties energyCompanySettings = null;
 	
 	private Object[][] thermModeSettings = null;	// Map between webConfigurationID(Integer) and StarsThermoModeSettings
 	private int nextCallNo = 0;
@@ -173,9 +176,11 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		this.primaryContactID = primaryContactID;
 	}
 	
+	
 	public void init() {
 		getAllSelectionLists();
 		loadDefaultThermostatSettings();
+		loadEnergyCompanySettings();
 		
 		if (getLiteID() != SOAPServer.DEFAULT_ENERGY_COMPANY_ID) {
 			getAllLMPrograms();
@@ -201,6 +206,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		customerFAQs = null;
 		dftThermSettings = null;
 		thermModeSettings = null;
+		energyCompanySettings = null;
 		nextCallNo = 0;
 		nextOrderNo = 0;
 		
@@ -213,6 +219,61 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		starsCustSelLists = null;
 		starsWebConfigs = null;
 		starsCustAcctInfos = null;
+	}
+	
+	public synchronized void loadEnergyCompanySettings() {
+		if (energyCompanySettings != null) return;
+		
+		String propFile = null;
+		if (getLiteID() != SOAPServer.DEFAULT_ENERGY_COMPANY_ID) {
+			LiteWebConfiguration liteConfig = SOAPServer.getWebConfiguration( webConfigID );
+			propFile = liteConfig.getUrl();
+			if (propFile == null ||
+				propFile.length() == 0 ||
+				propFile.equalsIgnoreCase("(none)"))
+				return;
+		}
+		else
+			propFile = ServerUtils.DEFAULT_PROPERTY_FILE;
+			
+		InputStream is = getClass().getResourceAsStream( propFile );
+		Properties props = new Properties();
+		try
+		{
+			props.load(is);
+		}
+		catch (Exception e)
+		{
+			com.cannontech.clientutils.CTILogger.info("Can't read the properties file. " +
+				"Make sure " + propFile + " is in the CLASSPATH" );
+			return;
+		}
+		
+		energyCompanySettings = new Properties();
+		for (int i = 0; i < ServerUtils.ALL_SETTINGS_KEYS.length; i++) {
+			String key = ServerUtils.ALL_SETTINGS_KEYS[i];
+			try {
+				energyCompanySettings.put( key, props.get(key) );
+			}
+			catch (Exception e) {
+				CTILogger.debug( "Property " + key + " not found in settings of energy company #" + getEnergyCompanyID() );
+			}
+		}
+		
+		CTILogger.info( "energy company settings loaded for energy company #" + getEnergyCompanyID() );
+	}
+	
+	public String getEnergyCompanySetting(String key) {
+		if (energyCompanySettings == null)
+			loadEnergyCompanySettings();
+			
+		String value = null;
+		if (energyCompanySettings != null)
+			value = (String) energyCompanySettings.getProperty( key );
+		if (value == null && getLiteID() != SOAPServer.DEFAULT_ENERGY_COMPANY_ID)
+			value = SOAPServer.getDefaultEnergyCompany().getEnergyCompanySetting( key );
+			
+		return value;
 	}
     
     public synchronized ArrayList getAllLMPrograms() {
@@ -522,13 +583,13 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		CTILogger.info( "Default thermostat settings loaded for energy company #" + getEnergyCompanyID() );
 	}
 	
-	public synchronized LiteStarsThermostatSettings getDefaultThermostatSettings() {
+	public LiteStarsThermostatSettings getDefaultThermostatSettings() {
 		if (dftThermSettings == null)
 			loadDefaultThermostatSettings();
 		return dftThermSettings;
 	}
 	
-	public synchronized StarsThermoModeSettings getThermModeSetting(int configID) {
+	public StarsThermoModeSettings getThermModeSetting(int configID) {
 		if (thermModeSettings == null)
 			loadDefaultThermostatSettings();
 		if (thermModeSettings == null) return null;
@@ -540,7 +601,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		return null;
 	}
 	
-	public synchronized Integer getThermSeasonWebConfigID(StarsThermoModeSettings setting) {
+	public Integer getThermSeasonWebConfigID(StarsThermoModeSettings setting) {
 		if (thermModeSettings == null)
 			loadDefaultThermostatSettings();
 		if (thermModeSettings == null) return null;
@@ -1055,7 +1116,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
             com.cannontech.database.db.stars.customer.SiteInformation siteInfoDB = siteInfo.getSiteInformation();
             
             LiteStarsCustAccountInformation accountInfo = new LiteStarsCustAccountInformation( accountDB.getAccountID().intValue() );
-
             accountInfo.setCustomerAccount( (LiteCustomerAccount) StarsLiteFactory.createLite(accountDB) );
             accountInfo.setCustomer( (LiteCustomer) StarsLiteFactory.createLite(customer) );
             accountInfo.setAccountSite( (LiteAccountSite) StarsLiteFactory.createLite(siteDB) );
@@ -1241,11 +1301,13 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		deleteAddress( liteAcctInfo.getCustomerAccount().getBillingAddressID() );
 		deleteAddress( liteAcctInfo.getAccountSite().getStreetAddressID() );
 		
-		// Remove all LM hardwares from lmHardwares
+		// Update all hardwares from lmHardwares (set accountID = 0)
 		for (int i = 0; i < liteAcctInfo.getInventories().size(); i++) {
 			int invID = ((Integer) liteAcctInfo.getInventories().get(i)).intValue();
+			LiteLMHardwareBase liteHw = getLMHardware( invID, false );
+			liteHw.setAccountID( com.cannontech.database.db.stars.customer.CustomerAccount.NONE_INT );
+/*			
 			ArrayList lmHarewares = getAllLMHardwares();
-			
 			synchronized (lmHardwares) {
 				for (int j = 0; j < lmHardwares.size(); j++) {
 					LiteLMHardwareBase liteHw = (LiteLMHardwareBase) lmHardwares.get(j);
@@ -1254,7 +1316,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 						break;
 					}
 				}
-			}
+			}*/
 		}
 		
 		// Remove all work orders from workOrders
@@ -1383,6 +1445,10 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		}
 		if (AuthFuncs.checkRole( liteUser, RoleTypes.CONSUMERINFO_ACCOUNT_CALL_TRACKING ) != null) {
 			starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_CALL_TYPE) );
+		}
+		if (AuthFuncs.checkRole( liteUser, RoleTypes.CONSUMERINFO_PROGRAMS_OPTOUT ) != null) {
+			StarsCustSelectionList list = getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD);
+			if (list != null) starsLists.addStarsCustSelectionList( list );
 		}
 		if (AuthFuncs.checkRole( liteUser, RoleTypes.CONSUMERINFO_APPLIANCES ) != null) {
 			starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_APPLIANCE_CATEGORY) );

@@ -5,14 +5,14 @@
 <head>
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link id="CssLink" rel="stylesheet" href="demostyle.css" type="text/css">
+<link id="StyleSheet" rel="stylesheet" href="demostyle.css" type="text/css">
 <cti:checkRole roleid="<%= RoleTypes.OPERATOR_CONSUMER_INFO %>">
-<% if (ecWebSettings.getURL().length() > 0) { %>
-	<script language="JavaScript">document.getElementById("CssLink").href = "<%= ecWebSettings.getURL() %>";</script>
-<% } %>
+<script language="JavaScript">
+	document.getElementById("StyleSheet").href = '<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_STYLE_SHEET %>"/>';
+</script>
 </cti:checkRole>
 </head>
-<body bgcolor="#666699" text="#000000" leftmargin="0" topmargin="0" link="#000000" vlink="#000000" alink="#000000">
+<body class="Background" text="#000000" leftmargin="0" topmargin="0" link="#000000" vlink="#000000" alink="#000000">
 <table width="658" border="0" cellspacing="0" height="102" cellpadding="0">
   <tr>
     <td width="657"valign="bottom">
@@ -20,9 +20,9 @@
         <tr> 
           <td id="Header" background="Header.gif" height="77" >&nbsp;</td>
 <cti:checkRole roleid="<%= RoleTypes.OPERATOR_CONSUMER_INFO %>">
-<% if (ecWebSettings.getLogoLocation().length() > 0) { %>
-	<script language="JavaScript">document.getElementById("Header").background = "<%= ecWebSettings.getLogoLocation() %>";</script>
-<% } %>
+<script language="JavaScript">
+	document.getElementById("Header").background = '<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_HEADER %>"/>';
+</script>
 </cti:checkRole>
         </tr>
         <tr>

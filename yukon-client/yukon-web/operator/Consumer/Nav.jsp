@@ -17,15 +17,22 @@
 						  {"CreateWizard.jsp", "Create"},
 						  {"PrintExport.jsp", "Print/Export"},
 						  {"CreateAppliances.jsp", "New"},
-						  {"CreateHardware.jsp", "New"}
+						  {"CreateHardware.jsp", "New"},
+						  {"ThermSchedule.jsp", "Schedule"},
+						  {"Thermostat.jsp", "Manual"}
 						 };
 						   
+	String bulletImg = ServletUtils.getImageNames( ecWebSettings.getLogoLocation() )[1];
+	if (bulletImg == null) bulletImg = "Bullet.gif";
+	String bulletImg2 = ServletUtils.getImageNames( ecWebSettings.getLogoLocation() )[2];
+	if (bulletImg2 == null) bulletImg2 = "Bullet2.gif";
+	
 	Hashtable links = new Hashtable();
 	for (int i = 0; i < linkMap.length; i++) {
 		if (linkMap[i][0].equalsIgnoreCase(pageName))
-			links.put(linkMap[i][0], "<img src=\"Bullet.gif\" width=\"12\" height=\"12\"><span class=\"Nav\">" + linkMap[i][1] + "</span>");
+			links.put(linkMap[i][0], "<img src=\"" + bulletImg + "\" width=\"12\" height=\"12\"><span class=\"Nav\">" + linkMap[i][1] + "</span>");
 		else
-			links.put(linkMap[i][0], "<img src=\"Bullet2.gif\" width=\"12\" height=\"12\"><a href=\"" + linkMap[i][0] + "\" class=\"Link2\"><span class=\"NavText\">" + linkMap[i][1] + "</span></a>");
+			links.put(linkMap[i][0], "<img src=\"" + bulletImg2 + "\" width=\"12\" height=\"12\"><a href=\"" + linkMap[i][0] + "\" class=\"Link2\"><span class=\"NavText\">" + linkMap[i][1] + "</span></a>");
 	}
 		
 	String[] appLinks = new String[ appliances.getStarsApplianceCount() ];
@@ -46,9 +53,9 @@
 		}
 			
 		if (pageName.equalsIgnoreCase("Appliance.jsp?AppNo=" + i))
-			appLinks[i] = "<img src=\"Bullet.gif\" width=\"12\" height=\"12\"><span class=\"Nav\">" + linkText + "</span>";
+			appLinks[i] = "<img src=\"" + bulletImg + "\" width=\"12\" height=\"12\"><span class=\"Nav\">" + linkText + "</span>";
 		else
-			appLinks[i] = "<img src=\"Bullet2.gif\" width=\"12\" height=\"12\"><a href=\"Appliance.jsp?AppNo=" + i + "\" class=\"Link2\"><span class=\"NavText\">" + linkText + "</span></a>";
+			appLinks[i] = "<img src=\"" + bulletImg2 + "\" width=\"12\" height=\"12\"><a href=\"Appliance.jsp?AppNo=" + i + "\" class=\"Link2\"><span class=\"NavText\">" + linkText + "</span></a>";
     }
 	
 	String[] invLinks = new String[ inventories.getStarsLMHardwareCount() ];
@@ -69,9 +76,9 @@
 		}
 		
 		if (pageName.equalsIgnoreCase("Inventory.jsp?InvNo=" + i))
-			invLinks[i] = "<img src=\"Bullet.gif\" width=\"12\" height=\"12\"><span class=\"Nav\">" + linkText + "</span>";
+			invLinks[i] = "<img src=\"" + bulletImg + "\" width=\"12\" height=\"12\"><span class=\"Nav\">" + linkText + "</span>";
 		else
-			invLinks[i] = "<img src=\"Bullet2.gif\" width=\"12\" height=\"12\"><a href=\"Inventory.jsp?InvNo=" + i + "\" class=\"Link2\"><span class=\"NavText\">" + linkText + "</span></a>";
+			invLinks[i] = "<img src=\"" + bulletImg2 + "\" width=\"12\" height=\"12\"><a href=\"Inventory.jsp?InvNo=" + i + "\" class=\"Link2\"><span class=\"NavText\">" + linkText + "</span></a>";
 	}
 %>
 
@@ -148,11 +155,27 @@
   <tr> 
     <td> 
       <div align="left"><span class="Header2">Hardware</span><br>
-<%
+        <%
 		for (int i = 0; i < invLinks.length; i++) {
 %>
         <%= invLinks[i] %><br>
 <%
+			if (thermoSettings != null &&
+				inventories.getStarsLMHardware(i).getInventoryID() == thermoSettings.getInventoryID()) {
+%>
+<cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_THERMOSTAT %>">
+	    <table width="90" border="0" cellspacing="0" cellpadding="0">
+          <tr> 
+            <td width="12">&nbsp;</td>
+            <td width="78">
+			  <%= links.get("ThermSchedule.jsp") %><br>
+              <%= links.get("Thermostat.jsp") %><br>
+			</td>
+          </tr>
+        </table>
+</cti:checkRole>
+<%
+			}
 		}
 %>
 <cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_HARDWARES_CREATE %>">

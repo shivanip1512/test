@@ -1,5 +1,6 @@
 package com.cannontech.database.data.lite.stars;
 
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteTypes;
 
@@ -14,17 +15,18 @@ import com.cannontech.database.data.lite.LiteTypes;
 public class LiteLMHardwareBase extends LiteBase {
 
 	private int accountID = com.cannontech.database.db.stars.customer.CustomerAccount.NONE_INT;
-	private int categoryID = com.cannontech.common.util.CtiUtilities.NONE_ID;
+	private int categoryID = CtiUtilities.NONE_ID;
 	private int installationCompanyID = com.cannontech.database.db.stars.report.ServiceCompany.NONE_INT;
 	private long receiveDate = 0;
 	private long installDate = 0;
 	private long removeDate = 0;
 	private String alternateTrackingNumber = null;
-	private int voltageID = com.cannontech.common.util.CtiUtilities.NONE_ID;
+	private int voltageID = CtiUtilities.NONE_ID;
 	private String notes = null;
 	private String manufactureSerialNumber = null;
-	private int lmHardwareTypeID = com.cannontech.common.util.CtiUtilities.NONE_ID;
+	private int lmHardwareTypeID = CtiUtilities.NONE_ID;
 	private java.util.ArrayList lmHardwareHistory = null;	// List of LiteLMCustomerEvent
+	private int deviceStatus = CtiUtilities.NONE_ID;
 	
 	public LiteLMHardwareBase() {
 		super();
@@ -237,6 +239,22 @@ public class LiteLMHardwareBase extends LiteBase {
 	 */
 	public void setAccountID(int accountID) {
 		this.accountID = accountID;
+	}
+
+	/**
+	 * Returns the deviceStatus.
+	 * @return int
+	 */
+	public int getDeviceStatus() {
+		return deviceStatus;
+	}
+
+	/**
+	 * Sets the deviceStatus.
+	 * @param deviceStatus The deviceStatus to set
+	 */
+	public void setDeviceStatus(int deviceStatus) {
+		this.deviceStatus = deviceStatus;
 	}
 
 }

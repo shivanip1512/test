@@ -53,23 +53,28 @@ public class StarsProgramOptOutDescriptor extends org.exolab.castor.xml.util.XML
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
+        
+        //-- set grouping compositor
+        setCompositorAsSequence();
         //-- initialize attribute descriptors
         
-        //-- _reenableDateTime
-        desc = new XMLFieldDescriptorImpl(java.util.Date.class, "_reenableDateTime", "reenableDateTime", NodeType.Attribute);
+        //-- initialize element descriptors
+        
+        //-- _startDateTime
+        desc = new XMLFieldDescriptorImpl(java.util.Date.class, "_startDateTime", "StartDateTime", NodeType.Element);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsProgramOptOut target = (StarsProgramOptOut) object;
-                return target.getReenableDateTime();
+                return target.getStartDateTime();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
                     StarsProgramOptOut target = (StarsProgramOptOut) object;
-                    target.setReenableDateTime( (java.util.Date) value);
+                    target.setStartDateTime( (java.util.Date) value);
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
@@ -81,13 +86,55 @@ public class StarsProgramOptOutDescriptor extends org.exolab.castor.xml.util.XML
         } );
         desc.setHandler( new DateFieldHandler(handler));
         desc.setImmutable(true);
+        desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _reenableDateTime
+        //-- validation code for: _startDateTime
         fieldValidator = new FieldValidator();
         desc.setValidator(fieldValidator);
         
-        //-- initialize element descriptors
+        //-- _period
+        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_period", "Period", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsProgramOptOut target = (StarsProgramOptOut) object;
+                if(!target.hasPeriod())
+                    return null;
+                return new Integer(target.getPeriod());
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsProgramOptOut target = (StarsProgramOptOut) object;
+                    // ignore null values for non optional primitives
+                    if (value == null) return;
+                    
+                    target.setPeriod( ((Integer)value).intValue());
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setRequired(true);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _period
+        fieldValidator = new FieldValidator();
+        fieldValidator.setMinOccurs(1);
+        { //-- local scope
+            IntegerValidator iv = new IntegerValidator();
+            fieldValidator.setValidator(iv);
+        }
+        desc.setValidator(fieldValidator);
         
     } //-- com.cannontech.stars.xml.serialize.StarsProgramOptOutDescriptor()
 

@@ -3,10 +3,10 @@
 <head>
 <title>Consumer Energy Services</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link id="CssLink" rel="stylesheet" href="../../demostyle.css" type="text/css">
-<% if (ecWebSettings.getURL().length() > 0) { %>
-	<script language="JavaScript">document.getElementById("CssLink").href = "../../<%= ecWebSettings.getURL() %>";</script>
-<% } %>
+<link id="StyleSheet" rel="stylesheet" href="../../demostyle.css" type="text/css">
+<script language="JavaScript">
+	document.getElementById("StyleSheet").href = '../../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_STYLE_SHEET %>"/>';
+</script>
 
 <script language="JavaScript">
 function changeCategory(checkbox, index) {
@@ -50,9 +50,9 @@ function changeProgram(radioBtn, index) {
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
                 <td id="Header" colspan="4" height="74" background="../../Header.gif">&nbsp;</td>
-<% if (ecWebSettings.getLogoLocation().length() > 0) { %>
-	<script language="JavaScript">document.getElementById("Header").background = "../../<%= ecWebSettings.getLogoLocation() %>";</script>
-<% } %>
+<script language="JavaScript">
+	document.getElementById("Header").background = '../../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_HEADER %>"/>';
+</script>
               </tr>
               <tr> 
                   <td width="265" height="28">&nbsp;</td>
@@ -87,7 +87,7 @@ function changeProgram(radioBtn, index) {
           <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center"><br>
-              <% String header = "PROGRAMS - ENROLLMENT"; %>
+              <% String header = ServletUtils.getECProperty(ecWebSettings.getURL(), ServletUtils.WEB_TEXT_ENROLL_TITLE); %>
               <%@ include file="InfoBar.jsp" %>
               <table width="600" border="0" cellpadding="0" cellspacing="0">
                 <tr>
@@ -123,7 +123,7 @@ function changeProgram(radioBtn, index) {
 <%
 	boolean showNotification = false;
 	
-	for (int i = 0; i < categories.getStarsApplianceCategoryCount(); i++) {
+	for (int i = 0, idx = 0; i < categories.getStarsApplianceCategoryCount(); i++) {
 		StarsApplianceCategory category = categories.getStarsApplianceCategory(i);
 		if (category.getStarsEnrLMProgramCount() == 0) continue;
 		
@@ -147,7 +147,7 @@ function changeProgram(radioBtn, index) {
                               <td><table width="110" border="0" cellspacing="0" cellpadding="0" align="center">
                                   <tr> 
                                     <td width="23"> <input type="checkbox" name="AppCat" value="<%= category.getApplianceCategoryID() %>"
-								  onclick="changeCategory(this, <%= i %>)" <% if (program != null) out.print("checked"); %>> 
+								  onclick="changeCategory(this, <%= idx %>)" <% if (program != null) out.print("checked"); %>> 
                                       <input type="hidden" name="CatID" value="<% if (program != null) out.print(category.getApplianceCategoryID()); %>"> 
                                       <input type="hidden" name="ProgID" value="<% if (program != null) out.print(program.getProgramID()); %>"> 
                                       <input type="hidden" name="DefProgID" value="<%= category.getStarsEnrLMProgram(0).getProgramID() %>"> 
@@ -174,7 +174,7 @@ function changeProgram(radioBtn, index) {
 %>
                                   <tr> 
                                     <td width="37"> <div align="right"> 
-                                        <input type="radio" name="Program<%= i %>" value="<%= prog.getProgramID() %>" onclick="changeProgram(this, <%= i %>)" <%= checkStr %>>
+                                        <input type="radio" name="Program<%= idx %>" value="<%= prog.getProgramID() %>" onclick="changeProgram(this, <%= idx %>)" <%= checkStr %>>
                                       </div></td>
                                     <td width="70" class="TableCell"><%= prog.getStarsWebConfig().getAlternateDisplayName() %></td>
                                   </tr>
@@ -195,6 +195,7 @@ function changeProgram(radioBtn, index) {
                           </td>
                         </tr>
 <%
+		idx++;
 	}
 %>
                   </table>

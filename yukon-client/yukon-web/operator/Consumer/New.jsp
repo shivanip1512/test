@@ -3,10 +3,10 @@
 <head>
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link id="CssLink" rel="stylesheet" href="../demostyle.css" type="text/css">
-<% if (ecWebSettings.getURL().length() > 0) { %>
-	<script language="JavaScript">document.getElementById("CssLink").href = "../<%= ecWebSettings.getURL() %>";</script>
-<% } %>
+<link id="StyleSheet" rel="stylesheet" href="../demostyle.css" type="text/css">
+<script language="JavaScript">
+	document.getElementById("StyleSheet").href = '../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_STYLE_SHEET %>"/>';
+</script>
 
 <script language="JavaScript">
 function copyAddress(form) {
@@ -39,6 +39,14 @@ function checkPassword(form) {
 	return true;
 }
 
+function checkAccountNo(form) {
+	if (form.AcctNo.value.length == 0) {
+		alert("Account # cannot be empty!");
+		return false;
+	}
+	return true;
+}
+
 function confirmCancel() {
 	if (confirm('Are you sure you want to cancel and discard all the changes you made?'))
 		location = "../Operations.jsp";
@@ -57,9 +65,9 @@ function confirmCancel() {
             <table width="656" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
                 <td id="Header" colspan="4" height="74" background="../Header.gif">&nbsp;</td>
-<% if (ecWebSettings.getLogoLocation().length() > 0) { %>
-	<script language="JavaScript">document.getElementById("Header").background = "../<%= ecWebSettings.getLogoLocation() %>";</script>
-<% } %>
+<script language="JavaScript">
+	document.getElementById("Header").background = '../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_HEADER %>"/>';
+</script>
               </tr>
               <tr> 
                   <td width="265" height = "28" class="Header3" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Customer 
@@ -96,9 +104,8 @@ function confirmCancel() {
           <td width="657" bgcolor="#FFFFFF" valign = "top" align = "center"> 
             <% String header = "NEW SIGNUP"; %>
             <%@ include file="SearchBar.jsp" %>
-            <br>
             <% if (errorMsg != null) out.write("<br><span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
-            <form name="form1" method="POST" action="/servlet/SOAPClient" onSubmit="return checkPassword(this)">
+            <form name="form1" method="POST" action="/servlet/SOAPClient" onSubmit="return checkAccountNo(this)">
               <input type="hidden" name="action" value="NewCustAccount">
 			  <input type="hidden" name="Wizard" value="false">
               <table width="600" border="0" cellspacing="0" cellpadding="10" align="center">
@@ -322,14 +329,6 @@ function confirmCancel() {
                       </tr>
                       <tr> 
                         <td width="90" class="TableCell"> 
-                          <div align="right">County:</div>
-                        </td>
-                        <td width="210"> 
-                          <input type="text" name="SCounty" maxlength="30" size="24">
-                        </td>
-                      </tr>
-                      <tr> 
-                        <td width="90" class="TableCell"> 
                           <div align="right">State:</div>
                         </td>
                         <td width="210"> 
@@ -368,7 +367,7 @@ function confirmCancel() {
                       <tr> 
                         <td width="90" class="TableCell" height="2">&nbsp;</td>
                         <td width="210" height="2" class="TableCell"> 
-                          <input type="checkbox" name="SameAsAbove" value="Same as Above" onClick="copyAddress(this.form)">
+                          <input type="checkbox" name="CopyAddress" value="true" onClick="copyAddress(this.form)">
                           Same as above</td>
                       </tr>
                       <tr> 

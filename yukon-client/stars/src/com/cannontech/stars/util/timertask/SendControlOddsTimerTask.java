@@ -72,8 +72,9 @@ public class SendControlOddsTimerTask extends StarsTimerTask {
 		CTILogger.info( "*** Start SendControlOdds timer task ***" );
 		
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
-		ArrayList progList = new ArrayList();	// Programs that are eligible for notification
+		String from = energyCompany.getEnergyCompanySetting( ServerUtils.ADMIN_EMAIL_ADDRESS );
 		
+		ArrayList progList = new ArrayList();	// Programs that are eligible for notification
 		ArrayList categories = energyCompany.getAllApplianceCategories();
 		for (int i = 0; i < categories.size(); i++) {
 			LiteApplianceCategory category = (LiteApplianceCategory) categories.get(i);
@@ -85,9 +86,6 @@ public class SendControlOddsTimerTask extends StarsTimerTask {
 		}
 		
 		if (progList.size() > 0) {
-			int futureActEntryID = energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_FUTURE_ACTIVATION).getEntryID();
-			int actCompEntryID = energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED).getEntryID();
-			
 			StringBuffer sql = new StringBuffer( "SELECT DISTINCT app.AccountID " )
 					.append( "FROM ApplianceBase app, ECToAccountMapping map " )
 					.append( "WHERE map.EnergyCompanyID = " )
@@ -116,7 +114,7 @@ public class SendControlOddsTimerTask extends StarsTimerTask {
 					for (int j = 0; j < accountInfo.getLmPrograms().size(); j++) {
 						LiteStarsLMProgram program = (LiteStarsLMProgram) accountInfo.getLmPrograms().get(j);
 						if (progList.contains( program.getLmProgram() )
-							&& ServerUtils.isInService( program.getProgramHistory(), futureActEntryID, actCompEntryID ))
+							&& ServerUtils.isInService( program.getProgramHistory() ))
 							activeProgs.add( program );
 					}
 					if (activeProgs.size() == 0) continue;
@@ -141,7 +139,7 @@ public class SendControlOddsTimerTask extends StarsTimerTask {
 					text.append( "\r\n\r\n" ).append( footer );
 					
 					try {
-						ServerUtils.sendEmailMsg( null, to, null, subject, text.toString() );
+						ServerUtils.sendEmailMsg( from, to, null, subject, text.toString() );
 					}
 					catch (Exception e) {
 						e.printStackTrace();

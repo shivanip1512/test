@@ -1,10 +1,13 @@
 package com.cannontech.stars.util;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.GregorianCalendar;
+import java.util.Hashtable;
+import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
 import java.util.TreeMap;
@@ -59,6 +62,7 @@ public class ServletUtils {
 
 	}
 	
+	// Attribute names to store objects in session or StarsYukonUser object
 	public static final String TRANSIENT_ATT_LEADING = "$$";
 	
 	public static final String ATT_ERROR_MESSAGE = "ERROR_MESSAGE";
@@ -81,6 +85,7 @@ public class ServletUtils {
 	public static final String ATT_ACCOUNT_SEARCH_RESULTS = "ACCOUNT_SEARCH_RESULTS";
 	public static final String ATT_CALL_TRACKING_NUMBER = "CALL_TRACKING_NUMBER";
 	public static final String ATT_ORDER_TRACKING_NUMBER = "ORDER_TRACKING_NUMBER";
+	public static final String ATT_NEW_ACCOUNT_WIZARD = "NEW_ACCOUNT_WIZARD";
 	
 	public static final String IN_SERVICE = "In Service";
 	public static final String OUT_OF_SERVICE = "Out of Service";
@@ -88,9 +93,43 @@ public class ServletUtils {
 	public static final String IMAGE_NAME_SEPARATOR = ",";
 	public static final int MAX_NUM_IMAGES = 5;
 	
+    public static final String WEB_STYLE_SHEET = "web_style_sheet";
+    public static final String WEB_HEADER = "web_header";
+    public static final String WEB_NAV_BULLET = "web_nav_bullet";
+    public static final String WEB_NAV_BULLET2 = "web_nav_bullet2";
+    public static final String WEB_TEXT_CONTROL = "web_text_control";
+    public static final String WEB_TEXT_CONTROLLED = "web_text_controlled";
+    public static final String WEB_TEXT_CONTROLLING = "web_text_controlling";
+    public static final String WEB_TEXT_REC_SET_BTN = "web_text_recommended_settings_button";
+    public static final String WEB_TEXT_GENERAL_TITLE = "web_text_general_title";
+    public static final String WEB_TEXT_THERM_SCHED_TITLE = "web_text_thermostat_schedule_title";
+    public static final String WEB_TEXT_THERM_MANUAL_TITLE = "web_text_thermostat_manual_title";
+    public static final String WEB_TEXT_CTRL_SUM_TITLE = "web_text_control_summary_title";
+    public static final String WEB_TEXT_CTRL_HIST_TITLE = "web_text_control_history_title";
+    public static final String WEB_TEXT_ENROLL_TITLE = "web_text_enrollment_title";
+    public static final String WEB_TEXT_OPT_OUT_TITLE = "web_text_opt_out_title";
+    public static final String WEB_TEXT_UTIL_TITLE = "web_text_utility_title";
+    public static final String WEB_TEXT_FAQ_TITLE = "web_text_faq_title";
+    public static final String WEB_TEXT_CHG_PASSWD_TITLE = "web_text_change_password_title";
+    public static final String WEB_TEXT_GENERAL_LINK = "web_text_general_link";
+    public static final String WEB_TEXT_CTRL_SUM_LINK = "web_text_control_summary_link";
+    public static final String WEB_TEXT_ENROLL_LINK = "web_text_enrollment_link";
+    public static final String WEB_TEXT_OPT_OUT_LINK = "web_text_opt_out_link";
+    
+    private static final String DEFAULT_PROPERTY_FILE = "/default.config.properties";
+    
+    private static final String TEXT_FORMAT_UPPER = "upper";
+    private static final String TEXT_FORMAT_LOWER = "lower";
+    private static final String TEXT_FORMAT_CAPITALIZED = "capitalized";
 
+    
     private static java.text.DecimalFormat decFormat = new java.text.DecimalFormat("0.#");
-
+    
+    /* Table of energy company properties
+     * key: String (property file name)
+     * value: java.util.Properties
+     */
+    private static Hashtable ecPropTable = null;
     
 
     public ServletUtils() {
@@ -336,6 +375,10 @@ public class ServletUtils {
     	
     	return sBuf.toString();
     }
+    
+    public static String capitalize(String word) {
+    	return word.substring(0,1).toUpperCase().concat( word.substring(1) );
+    }
 
 	public static StarsCustListEntry getStarsCustListEntry(java.util.Hashtable selectionLists, String listName, int yukonDefID) {
 		StarsCustSelectionList list = (StarsCustSelectionList) selectionLists.get( listName );
@@ -358,7 +401,58 @@ public class ServletUtils {
 		
 		return null;
 	}
-
 	
+	private static Properties getECProperties(String propFile) {
+		if (ecPropTable == null) ecPropTable = new Hashtable();
+		Properties props = (Properties) ecPropTable.get( propFile );
+		if (props == null) {
+			InputStream is = ServletUtils.class.getResourceAsStream( propFile );
+			props = new Properties();
+			try
+			{
+				props.load(is);
+				ecPropTable.put( propFile, props );
+			}
+			catch (Exception e)
+			{
+				com.cannontech.clientutils.CTILogger.info("Can't read the properties file. " +
+					"Make sure " + propFile + " is in the CLASSPATH" );
+				props = null;
+			}
+		}
+		
+		return props;
+	}
+	
+	public static void clearECProperties() {
+		ecPropTable = null;
+	}
+	
+	public static String getECProperty(String propFile, String propName) {
+		String value = null;
+		Properties props = getECProperties( propFile );
+		if (props != null)
+			value = (String) props.get( propName );
+			
+		if ((value == null || value.length() == 0) &&
+			!propFile.equalsIgnoreCase( DEFAULT_PROPERTY_FILE ))
+			value = getECProperty( DEFAULT_PROPERTY_FILE, propName );
+			
+		return value;
+	}
+	
+	public static String getECProperty(String propFile, String propName, String format) {
+		String value = getECProperty( propFile, propName );
+		if (value != null) {
+			if (format.equalsIgnoreCase( TEXT_FORMAT_UPPER ))
+				value = value.toUpperCase();
+			else if (format.equalsIgnoreCase( TEXT_FORMAT_LOWER ))
+				value = value.toLowerCase();
+			else if (format.equalsIgnoreCase( TEXT_FORMAT_CAPITALIZED ))
+				value = capitalize( value );
+		}
+		
+		return value;
+	}
 
 }

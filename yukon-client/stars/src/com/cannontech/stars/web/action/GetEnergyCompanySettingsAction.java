@@ -21,6 +21,7 @@ import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsGetEnergyCompanySettings;
 import com.cannontech.stars.xml.serialize.StarsGetEnergyCompanySettingsResponse;
 import com.cannontech.stars.xml.serialize.StarsOperation;
+import com.cannontech.stars.xml.serialize.StarsWebConfig;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
 
@@ -95,6 +96,7 @@ public class GetEnergyCompanySettingsAction implements ActionBase {
             	resp.setStarsEnergyCompany( energyCompany.getStarsEnergyCompany() );
 	            resp.setStarsWebConfig( energyCompany.getStarsWebConfig(energyCompany.getWebConfigID()) );
             	resp.setStarsEnrollmentPrograms( energyCompany.getStarsEnrollmentPrograms(getSettings.getProgramCategory()) );
+            	
 	            if (ServerUtils.isOperator( user )) {
 	            	resp.setStarsCustomerSelectionLists( energyCompany.getStarsCustomerSelectionLists(user) );
 					if (AuthFuncs.checkRole( user.getYukonUser(), RoleTypes.CONSUMERINFO_HARDWARES ) != null
@@ -102,6 +104,8 @@ public class GetEnergyCompanySettingsAction implements ActionBase {
 						resp.setStarsServiceCompanies( energyCompany.getStarsServiceCompanies() );
 					if (AuthFuncs.checkRole( user.getYukonUser(), RoleTypes.CONSUMERINFO_PROGRAMS_OPTOUT) != null)
 						resp.setStarsExitInterviewQuestions( energyCompany.getStarsExitInterviewQuestions() );
+					if (AuthFuncs.checkRole( user.getYukonUser(), RoleTypes.CONSUMERINFO_THERMOSTAT) != null)
+						resp.setStarsDefaultThermostatSettings( energyCompany.getStarsDefaultThermostatSettings() );
 	            }
 	            else if (ServerUtils.isResidentialCustomer( user )) {
 	            	if (AuthFuncs.checkRole( user.getYukonUser(), RoleTypes.CONSUMERINFO_QUESTIONS ) != null)
@@ -127,6 +131,7 @@ public class GetEnergyCompanySettingsAction implements ActionBase {
 	            resp.setStarsWebConfig( energyCompany.getStarsWebConfig(energyCompany.getWebConfigID()) );
             	resp.setStarsEnrollmentPrograms( StarsLiteFactory.createStarsEnrollmentPrograms(
             			energyCompany.getAllApplianceCategories(), getSettings.getProgramCategory(), energyCompanyID) );
+            			
 	            if (ServerUtils.isOperator( user )) {
 	            	resp.setStarsCustomerSelectionLists( energyCompany.getStarsCustomerSelectionLists(user) );
 					if (AuthFuncs.checkRole( user.getYukonUser(), RoleTypes.CONSUMERINFO_HARDWARES ) != null
@@ -134,6 +139,8 @@ public class GetEnergyCompanySettingsAction implements ActionBase {
 						resp.setStarsServiceCompanies( energyCompany.getStarsServiceCompanies() );
 					if (AuthFuncs.checkRole( user.getYukonUser(), RoleTypes.CONSUMERINFO_PROGRAMS_OPTOUT) != null)
 						resp.setStarsExitInterviewQuestions( energyCompany.getStarsExitInterviewQuestions() );
+					if (AuthFuncs.checkRole( user.getYukonUser(), RoleTypes.CONSUMERINFO_THERMOSTAT) != null)
+						resp.setStarsDefaultThermostatSettings( energyCompany.getStarsDefaultThermostatSettings() );
 	            }
 	            else if (ServerUtils.isResidentialCustomer( user )) {
 	            	if (AuthFuncs.checkRole( user.getYukonUser(), RoleTypes.CONSUMERINFO_QUESTIONS ) != null)

@@ -9,6 +9,7 @@ import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.customer.CustomerTypes;
+import com.cannontech.database.data.lite.stars.LiteAddress;
 import com.cannontech.database.data.lite.stars.LiteCustomerContact;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -89,11 +90,20 @@ public class NewCustAccountAction implements ActionBase {
             account.setStarsSiteInformation( siteInfo );
 
             BillingAddress billAddr = new BillingAddress();
-            billAddr.setStreetAddr1( req.getParameter("BAddr1") );
-            billAddr.setStreetAddr2( req.getParameter("BAddr2") );
-            billAddr.setCity( req.getParameter("BCity") );
-            billAddr.setState( req.getParameter("BState") );
-            billAddr.setZip( req.getParameter("BZip") );
+            if (req.getParameter("CopyAddress") != null) {
+	            billAddr.setStreetAddr1( req.getParameter("SAddr1") );
+	            billAddr.setStreetAddr2( req.getParameter("SAddr2") );
+	            billAddr.setCity( req.getParameter("SCity") );
+	            billAddr.setState( req.getParameter("SState") );
+	            billAddr.setZip( req.getParameter("SZip") );
+            }
+            else {
+	            billAddr.setStreetAddr1( req.getParameter("BAddr1") );
+	            billAddr.setStreetAddr2( req.getParameter("BAddr2") );
+	            billAddr.setCity( req.getParameter("BCity") );
+	            billAddr.setState( req.getParameter("BState") );
+	            billAddr.setZip( req.getParameter("BZip") );
+            }
             account.setBillingAddress( billAddr );
 
             PrimaryContact primContact = new PrimaryContact();
@@ -158,50 +168,65 @@ public class NewCustAccountAction implements ActionBase {
 
             StarsNewCustomerAccount newAccount = reqOper.getStarsNewCustomerAccount();
             StarsCustomerAccount starsAccount = newAccount.getStarsCustomerAccount();
-
-			MultiDBPersistent multiDB = new MultiDBPersistent();
-			
-			/* Begin create CustomerAccount */
-            com.cannontech.database.data.stars.customer.CustomerAccount account =
-                    new com.cannontech.database.data.stars.customer.CustomerAccount();
-            com.cannontech.database.db.stars.customer.CustomerAccount accountDB = account.getCustomerAccount();
             
-            /*- Begin create Customer -*/
+            /* Create contacts */
             com.cannontech.database.data.customer.Contact primContact = new com.cannontech.database.data.customer.Contact();
             StarsFactory.setCustomerContact( primContact, starsAccount.getPrimaryContact() );
-            multiDB.getDBPersistentVector().add( primContact );
+            primContact = (com.cannontech.database.data.customer.Contact)
+		            Transaction.createTransaction(Transaction.INSERT, primContact).execute();
             
             ArrayList addContacts = new ArrayList();
             for (int i = 0; i < starsAccount.getAdditionalContactCount(); i++) {
             	com.cannontech.database.data.customer.Contact contact =
             			new com.cannontech.database.data.customer.Contact();
 	            StarsFactory.setCustomerContact( contact, starsAccount.getAdditionalContact(i) );
-	            multiDB.getDBPersistentVector().add( contact );
+	            contact = (com.cannontech.database.data.customer.Contact)
+			            Transaction.createTransaction(Transaction.INSERT, contact).execute();
 	            addContacts.add( contact );
             }
             
+			/* CustomerAccount: Begin */
+			MultiDBPersistent multiDB = new MultiDBPersistent();
+			
+            com.cannontech.database.data.stars.customer.CustomerAccount account =
+                    new com.cannontech.database.data.stars.customer.CustomerAccount();
+            com.cannontech.database.db.stars.customer.CustomerAccount accountDB = account.getCustomerAccount();
+            
+            /* CustomerAccount->Customer: Begin */
             com.cannontech.database.data.customer.Customer customer =
             		new com.cannontech.database.data.customer.Customer();
             com.cannontech.database.db.customer.Customer customerDB = customer.getCustomer();
             
+            customerDB.setPrimaryContactID( primContact.getContact().getContactID() );
             customerDB.setCustomerTypeID( new Integer(CustomerTypes.CUSTOMER_RESIDENTIAL) );
-            if (starsAccount.getTimeZone() != null)
-            	customerDB.setTimeZone( starsAccount.getTimeZone() );
-            else
-            	customerDB.setTimeZone( "(none)" );		// Should use the default setting of the energy company
-            /*- End create Customer -*/
+            
+            String timeZone = starsAccount.getTimeZone();
+            if (timeZone == null)
+            	timeZone = energyCompany.getEnergyCompanySetting( ServerUtils.DEFAULT_TIME_ZONE );
+            if (timeZone == null)
+            	timeZone = "(none)";
+        	customerDB.setTimeZone( timeZone );
+            
+            int[] contactIDs = new int[ addContacts.size() ];
+            for (int i = 0; i < addContacts.size(); i++) {
+            	com.cannontech.database.data.customer.Contact contact =
+            			(com.cannontech.database.data.customer.Contact) addContacts.get(i);
+            	contactIDs[i] = contact.getContact().getContactID().intValue();
+            }
+            customer.setCustomerContactIDs( contactIDs );
+            /* CustomerAccount->Customer: End */
             
             com.cannontech.database.db.customer.Address billAddr = account.getBillingAddress();
             StarsFactory.setCustomerAddress( billAddr, starsAccount.getBillingAddress() );
             
-            /*- Begin create AccountSite -*/
+            /* CustomerAccount->AccountSite: Begin */
             com.cannontech.database.data.stars.customer.AccountSite acctSite = account.getAccountSite();
             com.cannontech.database.db.stars.customer.AccountSite acctSiteDB = acctSite.getAccountSite();
             
             com.cannontech.database.db.customer.Address propAddr = acctSite.getStreetAddress();
             StarsFactory.setCustomerAddress( propAddr, starsAccount.getStreetAddress() );
 
-			/*-- Begin create SiteInformation --*/
+            /* CustomerAccount->AccountSite->SiteInformation: Begin */
 			com.cannontech.database.data.stars.customer.SiteInformation siteInfo = acctSite.getSiteInformation();
             com.cannontech.database.db.stars.customer.SiteInformation siteInfoDB = siteInfo.getSiteInformation();
             StarsSiteInformation starsSiteInfo = starsAccount.getStarsSiteInformation();
@@ -211,29 +236,28 @@ public class NewCustAccountAction implements ActionBase {
             siteInfoDB.setPole( starsSiteInfo.getPole() );
             siteInfoDB.setTransformerSize( starsSiteInfo.getTransformerSize() );
             siteInfoDB.setServiceVoltage( starsSiteInfo.getServiceVoltage() );
-            /*-- End create SiteInformation --*/
+            /* CustomerAccount->AccountSite->SiteInformation: End */
             
             acctSiteDB.setSiteNumber( starsAccount.getPropertyNumber() );
             acctSiteDB.setPropertyNotes( starsAccount.getPropertyNotes() );
-            /*- End create AccountSite -*/
+            /* CustomerAccount->AccountSite: End */
 
             accountDB.setAccountNumber( starsAccount.getAccountNumber() );
             accountDB.setAccountNotes( starsAccount.getAccountNotes() );
             account.setCustomer( customer );
             account.setEnergyCompanyID( new Integer(user.getEnergyCompanyID()) );
-            /* End create CustomerAccount */
             
             multiDB.getDBPersistentVector().add( account );
     		Transaction.createTransaction( Transaction.INSERT, multiDB ).execute();
             
-            // Add lite contact objects
+            /* Create lite objects */
             LiteCustomerContact liteContact = (LiteCustomerContact) StarsLiteFactory.createLite( primContact );
             energyCompany.addCustomerContact( liteContact );
             for (int i = 0; i < addContacts.size(); i++) {
             	liteContact = (LiteCustomerContact) StarsLiteFactory.createLite( (com.cannontech.database.data.customer.Contact) addContacts.get(i) );
             	energyCompany.addCustomerContact( liteContact );
             }
-            	
+            
 			LiteStarsCustAccountInformation liteAcctInfo = energyCompany.addCustAccountInformation( account );
             user.setAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, liteAcctInfo );
             
@@ -289,6 +313,7 @@ public class NewCustAccountAction implements ActionBase {
 			accountInfo.setStarsServiceRequestHistory( new StarsServiceRequestHistory() );
 			
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
+			ServletUtils.removeTransientAttributes( user );
 			user.setAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, accountInfo );
 			
             return 0;

@@ -48,20 +48,29 @@ public class CustomerAccount extends DBPersistent {
         // delete from the mapping table
         delete( "ECToAccountMapping", "AccountID", getCustomerAccount().getAccountID() );
     	
-/*		com.cannontech.database.db.stars.hardware.InventoryBase[] hws = com.cannontech.database.db.stars.hardware.InventoryBase.getAllInventories(
-            getCustomerAccount().getAccountID(), getDbConnection() );*/
+/* Don't delete hardware information from the database
+		//com.cannontech.database.db.stars.hardware.InventoryBase[] hws = com.cannontech.database.db.stars.hardware.InventoryBase.getAllInventories(
+		//		getCustomerAccount().getAccountID(), getDbConnection() );
         com.cannontech.database.data.stars.hardware.InventoryBase hw = new com.cannontech.database.data.stars.hardware.InventoryBase();
         for (int i = 0; i < getInventoryVector().size(); i++) {
             hw.setInventoryBase( (com.cannontech.database.db.stars.hardware.InventoryBase) getInventoryVector().get(i) );
             hw.setDbConnection( getDbConnection() );
             hw.delete();
         }
-
+*/
+		Vector invVector = getInventoryVector();
+		for (int i = 0; i < invVector.size(); i++) {
+			com.cannontech.database.db.stars.hardware.InventoryBase inv = (com.cannontech.database.db.stars.hardware.InventoryBase) invVector.get(i);
+			inv.setAccountID( new Integer(com.cannontech.database.db.stars.customer.CustomerAccount.NONE_INT) );
+			inv.setDbConnection( getDbConnection() );
+			inv.update();
+		}
+		
         com.cannontech.database.data.stars.event.LMProgramEvent.deleteAllLMProgramEvents(
             getCustomerAccount().getAccountID(), getDbConnection() );
 
-/*		com.cannontech.database.db.stars.appliance.ApplianceBase[] apps =
-        		com.cannontech.database.db.stars.appliance.ApplianceBase.getAllAppliances( getCustomerAccount().getAccountID() );*/
+		//com.cannontech.database.db.stars.appliance.ApplianceBase[] apps =
+        //		com.cannontech.database.db.stars.appliance.ApplianceBase.getAllAppliances( getCustomerAccount().getAccountID() );
         for (int i = 0; i < getApplianceVector().size(); i++) {
 			com.cannontech.database.data.stars.appliance.ApplianceBase app =
         		(com.cannontech.database.data.stars.appliance.ApplianceBase) getApplianceVector().get(i);

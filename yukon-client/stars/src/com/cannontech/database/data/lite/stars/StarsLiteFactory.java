@@ -235,13 +235,15 @@ public class StarsLiteFactory {
 		liteHw.setManufactureSerialNumber( hw.getLMHardwareBase().getManufacturerSerialNumber() );
 		liteHw.setLmHardwareTypeID( hw.getLMHardwareBase().getLMHardwareTypeID().intValue() );
 		
-		liteHw.setLmHardwareHistory( new ArrayList() );
+		ArrayList hwHist = liteHw.getLmHardwareHistory();
 		com.cannontech.database.data.stars.event.LMHardwareEvent[] events =
 				com.cannontech.database.data.stars.event.LMHardwareEvent.getAllLMHardwareEvents( hw.getInventoryBase().getInventoryID() );
 		for (int i = 0; i < events.length; i++) {
 			LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) createLite( events[i] );
-			liteHw.getLmHardwareHistory().add( liteEvent );
+			hwHist.add( liteEvent );
 		}
+		
+		liteHw.setDeviceStatus( ServerUtils.getDeviceStatus(hwHist) );
 	}
 	
 	public static void setLiteLMCustomerEvent(LiteLMCustomerEvent liteEvent, com.cannontech.database.db.stars.event.LMCustomerEventBase event) {
@@ -1170,46 +1172,23 @@ public class StarsLiteFactory {
 		starsHw.setLMDeviceType( hwType );
 		starsHw.setInstallationNotes( "" );
 		
-		DeviceStatus hwStatus = new DeviceStatus();
-		setStarsCustListEntry( hwStatus, energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL) );
-		starsHw.setDeviceStatus( hwStatus );
+		starsHw.setDeviceStatus( (DeviceStatus)	StarsFactory.newStarsCustListEntry(
+				energyCompany.getYukonListEntry( liteHw.getDeviceStatus() ), DeviceStatus.class) );
 		
-		if (liteHw.getLmHardwareHistory() != null) {
-			StarsLMHardwareHistory hwHist = new StarsLMHardwareHistory();
-			for (int i = 0; i < liteHw.getLmHardwareHistory().size(); i++) {
-				LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) liteHw.getLmHardwareHistory().get(i);
-				StarsLMHardwareEvent starsEvent = new StarsLMHardwareEvent();
-				setStarsLMCustomerEvent( starsEvent, liteEvent );
-				hwHist.addStarsLMHardwareEvent( starsEvent );
-			}
-			starsHw.setStarsLMHardwareHistory( hwHist );
-				
-			// set hardware status and installation notes
-			for (int i = hwHist.getStarsLMHardwareEventCount() - 1; i >= 0; i--) {
-				if (hwHist.getStarsLMHardwareEvent(i).getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_CONFIG) {
-					hwStatus = new DeviceStatus();
-					setStarsCustListEntry( hwStatus, energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL) );
-					starsHw.setDeviceStatus( hwStatus );
-				}
-				else if (hwHist.getStarsLMHardwareEvent(i).getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED) {
-					hwStatus = new DeviceStatus();
-					setStarsCustListEntry( hwStatus, energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL) );
-					starsHw.setDeviceStatus( hwStatus );
-					break;
-				}
-				else if (hwHist.getStarsLMHardwareEvent(i).getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TEMP_TERMINATION) {
-					hwStatus = new DeviceStatus();
-					setStarsCustListEntry( hwStatus, energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_TEMP_UNAVAIL) );
-					starsHw.setDeviceStatus( hwStatus );
-					break;
-				}
-			}
-			
-			for (int i = 0; i < hwHist.getStarsLMHardwareEventCount(); i++) {
-				if (hwHist.getStarsLMHardwareEvent(i).getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_INSTALL) {
-					starsHw.setInstallationNotes( hwHist.getStarsLMHardwareEvent(i).getNotes() );
-					break;
-				}
+		StarsLMHardwareHistory hwHist = new StarsLMHardwareHistory();
+		for (int i = 0; i < liteHw.getLmHardwareHistory().size(); i++) {
+			LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) liteHw.getLmHardwareHistory().get(i);
+			StarsLMHardwareEvent starsEvent = new StarsLMHardwareEvent();
+			setStarsLMCustomerEvent( starsEvent, liteEvent );
+			hwHist.addStarsLMHardwareEvent( starsEvent );
+		}
+		starsHw.setStarsLMHardwareHistory( hwHist );
+		
+		// set installation notes
+		for (int i = 0; i < hwHist.getStarsLMHardwareEventCount(); i++) {
+			if (hwHist.getStarsLMHardwareEvent(i).getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_INSTALL) {
+				starsHw.setInstallationNotes( hwHist.getStarsLMHardwareEvent(i).getNotes() );
+				break;
 			}
 		}
 		
@@ -1381,16 +1360,12 @@ public class StarsLiteFactory {
 				progHist.addStarsLMProgramEvent( starsEvent );
 			}
 			starsProg.setStarsLMProgramHistory( progHist );
-			
-			if (ServerUtils.isInService(
-					liteProg.getProgramHistory(),
-					energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_FUTURE_ACTIVATION).getEntryID(),
-					energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED).getEntryID()
-				))
-				starsProg.setStatus( ServletUtils.IN_SERVICE );
-			else
-				starsProg.setStatus( ServletUtils.OUT_OF_SERVICE );
 		}
+		
+		if (liteProg.isInService())
+			starsProg.setStatus( ServletUtils.IN_SERVICE );
+		else
+			starsProg.setStatus( ServletUtils.OUT_OF_SERVICE );
 		
 		return starsProg;
 	}

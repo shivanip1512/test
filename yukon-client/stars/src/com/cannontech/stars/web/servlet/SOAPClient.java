@@ -144,6 +144,7 @@ public class SOAPClient extends HttpServlet {
         HttpSession session = req.getSession(false);
         
 		if (action.equalsIgnoreCase("RefreshCache")) {
+			ServletUtils.clearECProperties();
 			if (isServerLocal()) SOAPServer.refreshCache();
         	if (session != null) session.invalidate();
 			resp.sendRedirect( loginURL ); return;
@@ -205,11 +206,14 @@ public class SOAPClient extends HttpServlet {
 	            actions.addAction( new UpdateControlNotificationAction(), req, session );
 	            
 			clientAction = (ActionBase) actions;
-			if (Boolean.valueOf( req.getParameter("Wizard") ).booleanValue())
+			if (Boolean.valueOf( req.getParameter("Wizard") ).booleanValue()) {
 				destURL = "/operator/Consumer/CreateHardware.jsp?Wizard=true";
-			else
+				errorURL = "/operator/Consumer/Programs.jsp?Wizard=true";
+			}
+			else {
 	        	destURL = req.getParameter(ServletUtils.ATT_REDIRECT);
-        	errorURL = req.getParameter( ServletUtils.ATT_REFERRER );
+	        	errorURL = req.getParameter( ServletUtils.ATT_REFERRER );
+			}
 		}
         else if (action.equalsIgnoreCase("SearchCustAccount")) {
             clientAction = new SearchCustAccountAction();
@@ -334,11 +338,14 @@ public class SOAPClient extends HttpServlet {
         }
         else if (action.equalsIgnoreCase("CreateLMHardware")) {
         	clientAction = new CreateLMHardwareAction();
-        	if (req.getParameter("Wizard") != null)
+        	if (req.getParameter("Wizard") != null) {
         		destURL = "/operator/Consumer/Update.jsp";
-        	else
+        		errorURL = "/operator/Consumer/CreateHardware.jsp?Wizard=true";
+        	}
+        	else {
 	        	destURL = "/operator/Consumer/Inventory.jsp";
-        	errorURL = "/operator/Consumer/CreateHardware.jsp";
+	        	errorURL = "/operator/Consumer/CreateHardware.jsp";
+        	}
         }
         else if (action.equalsIgnoreCase("UpdateLMHardware")) {
         	clientAction = new UpdateLMHardwareAction();
@@ -366,8 +373,8 @@ public class SOAPClient extends HttpServlet {
         }
         else if (action.equalsIgnoreCase("UpdateThermostatOption")) {
         	clientAction = new UpdateThermostatManualOptionAction();
-        	destURL = "/user/ConsumerStat/stat/Thermostat.jsp";
-        	errorURL = "/user/ConsumerStat/stat/Thermostat.jsp";
+        	destURL = req.getParameter(ServletUtils.ATT_REDIRECT);
+        	errorURL = req.getParameter(ServletUtils.ATT_REFERRER);
         }
         else if (action.equalsIgnoreCase("SendControlOdds")) {
         	clientAction = new SendOddsForControlAction();

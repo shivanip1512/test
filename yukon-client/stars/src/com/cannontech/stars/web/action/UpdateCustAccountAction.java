@@ -95,12 +95,21 @@ public class UpdateCustAccountAction implements ActionBase {
             account.setStarsSiteInformation( siteInfo );
 
             BillingAddress billAddr = new BillingAddress();
-            billAddr.setStreetAddr1( req.getParameter("BAddr1") );
-            billAddr.setStreetAddr2( req.getParameter("BAddr2") );
-            billAddr.setCity( req.getParameter("BCity") );
-            billAddr.setState( req.getParameter("BState") );
-            billAddr.setZip( req.getParameter("BZip") );
-            //billAddr.setCounty( req.getParameter("BCounty") );
+            if (req.getParameter("CopyAddress") != null) {
+	            billAddr.setStreetAddr1( req.getParameter("SAddr1") );
+	            billAddr.setStreetAddr2( req.getParameter("SAddr2") );
+	            billAddr.setCity( req.getParameter("SCity") );
+	            billAddr.setState( req.getParameter("SState") );
+	            billAddr.setZip( req.getParameter("SZip") );
+	            //billAddr.setCounty( req.getParameter("BCounty") );
+            }
+            else {
+	            billAddr.setStreetAddr1( req.getParameter("BAddr1") );
+	            billAddr.setStreetAddr2( req.getParameter("BAddr2") );
+	            billAddr.setCity( req.getParameter("BCity") );
+	            billAddr.setState( req.getParameter("BState") );
+	            billAddr.setZip( req.getParameter("BZip") );
+            }
             account.setBillingAddress( billAddr );
 
             PrimaryContact primContact = new PrimaryContact();

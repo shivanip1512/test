@@ -33,7 +33,14 @@ public class StarsProgramOptOut implements java.io.Serializable {
      //- Class/Member Variables -/
     //--------------------------/
 
-    private java.util.Date _reenableDateTime;
+    private java.util.Date _startDateTime;
+
+    private int _period;
+
+    /**
+     * keeps track of state for field: _period
+    **/
+    private boolean _has_period;
 
 
       //----------------/
@@ -50,14 +57,31 @@ public class StarsProgramOptOut implements java.io.Serializable {
     //-----------/
 
     /**
-     * Returns the value of field 'reenableDateTime'.
+     * Returns the value of field 'period'.
      * 
-     * @return the value of field 'reenableDateTime'.
+     * @return the value of field 'period'.
     **/
-    public java.util.Date getReenableDateTime()
+    public int getPeriod()
     {
-        return this._reenableDateTime;
-    } //-- java.util.Date getReenableDateTime() 
+        return this._period;
+    } //-- int getPeriod() 
+
+    /**
+     * Returns the value of field 'startDateTime'.
+     * 
+     * @return the value of field 'startDateTime'.
+    **/
+    public java.util.Date getStartDateTime()
+    {
+        return this._startDateTime;
+    } //-- java.util.Date getStartDateTime() 
+
+    /**
+    **/
+    public boolean hasPeriod()
+    {
+        return this._has_period;
+    } //-- boolean hasPeriod() 
 
     /**
     **/
@@ -97,14 +121,25 @@ public class StarsProgramOptOut implements java.io.Serializable {
     } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
-     * Sets the value of field 'reenableDateTime'.
+     * Sets the value of field 'period'.
      * 
-     * @param reenableDateTime the value of field 'reenableDateTime'
+     * @param period the value of field 'period'.
     **/
-    public void setReenableDateTime(java.util.Date reenableDateTime)
+    public void setPeriod(int period)
     {
-        this._reenableDateTime = reenableDateTime;
-    } //-- void setReenableDateTime(java.util.Date) 
+        this._period = period;
+        this._has_period = true;
+    } //-- void setPeriod(int) 
+
+    /**
+     * Sets the value of field 'startDateTime'.
+     * 
+     * @param startDateTime the value of field 'startDateTime'.
+    **/
+    public void setStartDateTime(java.util.Date startDateTime)
+    {
+        this._startDateTime = startDateTime;
+    } //-- void setStartDateTime(java.util.Date) 
 
     /**
      * 

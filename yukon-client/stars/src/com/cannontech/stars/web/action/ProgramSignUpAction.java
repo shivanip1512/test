@@ -175,8 +175,6 @@ public class ProgramSignUpAction implements ActionBase {
 						eventBase.setEventDateTime( now );
 						Transaction.createTransaction(Transaction.INSERT, event).execute();
 						
-						// What's the initial status of the program?
-						
 						// Add the program to the program list of the account
 		                LiteLMProgram liteProg = energyCompany.getLMProgram( program.getProgramID() );
 		                LiteStarsLMProgram liteStarsProg = new LiteStarsLMProgram( liteProg );
@@ -188,12 +186,12 @@ public class ProgramSignUpAction implements ActionBase {
 		                		com.cannontech.database.data.stars.event.LMProgramEvent.getAllLMProgramEvents(
 		                			new Integer(liteAcctInfo.getCustomerAccount().getAccountID()), new Integer(program.getProgramID()) );
 		                if (events != null) {
-		                	liteStarsProg.setProgramHistory( new ArrayList() );
 		                	for (int k = 0; k < events.length; k++) {
 		                		LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) StarsLiteFactory.createLite( events[k] );
 		                		liteStarsProg.getProgramHistory().add( liteEvent );
 		                	}
 		                }
+		                liteStarsProg.setInService( true );
 		                newProgList.add( liteStarsProg );
 						
     					liteApp.setLmProgramID( program.getProgramID() );
@@ -212,8 +210,6 @@ public class ProgramSignUpAction implements ActionBase {
 						eventBase.setEventDateTime( now );
 						Transaction.createTransaction(Transaction.INSERT, event).execute();
 						
-						// Keep the current program status?
-						
 						// Add "sign up" event to the new program
     					event.setEventID( null );
 						eventDB.setLMProgramID( new Integer(program.getProgramID()) );
@@ -231,12 +227,12 @@ public class ProgramSignUpAction implements ActionBase {
 		                		com.cannontech.database.data.stars.event.LMProgramEvent.getAllLMProgramEvents(
 		                			new Integer(liteAcctInfo.getCustomerAccount().getAccountID()), new Integer(program.getProgramID()) );
 		                if (events != null) {
-		                	liteStarsProg.setProgramHistory( new ArrayList() );
 		                	for (int k = 0; k < events.length; k++) {
 		                		LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) StarsLiteFactory.createLite( events[k] );
 		                		liteStarsProg.getProgramHistory().add( liteEvent );
 		                	}
 		                }
+		                liteStarsProg.setInService( true );
 		                newProgList.add( liteStarsProg );
 						
     					liteApp.setLmProgramID( program.getProgramID() );
@@ -277,20 +273,16 @@ public class ProgramSignUpAction implements ActionBase {
 					// Add the program to the program list of the account
 	                LiteLMProgram liteProg = energyCompany.getLMProgram( program.getProgramID() );
 	                LiteStarsLMProgram liteStarsProg = new LiteStarsLMProgram( liteProg );
-	                if (liteApp.getInventoryID() > 0) {
-	                	if (liteProg.getGroupIDs() != null || liteProg.getGroupIDs().length > 0)
-	                		liteStarsProg.setGroupID( liteProg.getGroupIDs()[0] );
-	                }
 	                com.cannontech.database.data.stars.event.LMProgramEvent[] events =
 	                		com.cannontech.database.data.stars.event.LMProgramEvent.getAllLMProgramEvents(
 	                			new Integer(liteAcctInfo.getCustomerAccount().getAccountID()), new Integer(program.getProgramID()) );
 	                if (events != null) {
-	                	liteStarsProg.setProgramHistory( new ArrayList() );
 	                	for (int k = 0; k < events.length; k++) {
 	                		LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) StarsLiteFactory.createLite( events[k] );
 	                		liteStarsProg.getProgramHistory().add( liteEvent );
 	                	}
 	                }
+	                liteStarsProg.setInService( true );
 	                newProgList.add( liteStarsProg );
 	        		
 	        		com.cannontech.database.data.stars.appliance.ApplianceBase app = new com.cannontech.database.data.stars.appliance.ApplianceBase();

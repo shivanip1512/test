@@ -12,8 +12,8 @@ import java.util.TimerTask;
  */
 public abstract class StarsTimerTask extends TimerTask {
 	
-	private static long MIN_INIT_DELAY = 1000 * 60 * 1;	// 1 minutes
-	private static long MAX_INIT_DELAY = 1000 * 60 * 5;	// 5 minutes
+	private static long MIN_INIT_DELAY = 1000 * 10;	// 10 seconds
+	private static long MAX_INIT_DELAY = 1000 * 30;	// 30 seconds
 	
 	/**
 	 * Return whether the timer task is fixed-rate or fixed delay.

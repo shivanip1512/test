@@ -130,10 +130,10 @@ public class ProgramReenableAction implements ActionBase {
             	Integer invID = (Integer) hwIDList.get(i);
             	LiteLMHardwareBase liteHw = energyCompany.getLMHardware( invID.intValue(), true );
 
-                String cmd = "putconfig service in serial " + liteHw.getManufactureSerialNumber() + routeStr;
+                String cmd = "putconfig xcom service in temp serial " + liteHw.getManufactureSerialNumber() + routeStr;
                 ServerUtils.sendCommand( cmd );
     			
-    			ServerUtils.removeFutureActivation( liteHw.getLmHardwareHistory(), futureActEntryID.intValue() );
+    			ServerUtils.removeLMCustomEvents( liteHw.getLmHardwareHistory(), futureActEntryID.intValue() );
         		com.cannontech.database.data.multi.MultiDBPersistent multiDB = new com.cannontech.database.data.multi.MultiDBPersistent();
         		
         		// Add "Activation Completed" to hardware events
@@ -167,10 +167,9 @@ public class ProgramReenableAction implements ActionBase {
                 	}
                 	
                 	// If program is already in service, do nothing
-            		if (liteProg == null || ServerUtils.isInService(liteProg.getProgramHistory(), futureActEntryID.intValue(), actCompEntryID.intValue()))
-            			continue;
-            			
-            		ServerUtils.removeFutureActivation( liteProg.getProgramHistory(), futureActEntryID.intValue() );
+            		if (liteProg == null || liteProg.isInService()) continue;
+            		
+            		ServerUtils.removeLMCustomEvents( liteProg.getProgramHistory(), futureActEntryID.intValue() );
 		            
 		            com.cannontech.database.data.stars.event.LMProgramEvent event1 =
 		            		new com.cannontech.database.data.stars.event.LMProgramEvent();
@@ -195,6 +194,7 @@ public class ProgramReenableAction implements ActionBase {
 				event = (com.cannontech.database.data.stars.event.LMHardwareEvent) multiDB.getDBPersistentVector().get(0);
 				LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) StarsLiteFactory.createLite( event );
 				liteHw.getLmHardwareHistory().add( liteEvent );
+				liteHw.setDeviceStatus( YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL );
 				
 				StarsLMHardwareHistory hwHist = new StarsLMHardwareHistory();
 				hwHist.setInventoryID( liteHw.getInventoryID() );
@@ -216,6 +216,7 @@ public class ProgramReenableAction implements ActionBase {
 						LiteStarsLMProgram liteProg = (LiteStarsLMProgram) liteAcctInfo.getLmPrograms().get(k);
 						if (liteProg.getLmProgram().getProgramID() != event1.getLMProgramEvent().getLMProgramID().intValue()) continue;
 						liteProg.getProgramHistory().add( liteEvent );
+						liteProg.setInService( true );
 						
 						StarsLMProgramHistory progHist = new StarsLMProgramHistory();
 						progHist.setProgramID( liteProg.getLmProgram().getProgramID() );

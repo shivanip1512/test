@@ -1,24 +1,28 @@
 <%
 	// Map of page name / link text
-	String linkMap[][] = {{"General.jsp", "General"},
+	String linkMap[][] = {{"General.jsp", ServletUtils.getECProperty(ecWebSettings.getURL(), ServletUtils.WEB_TEXT_GENERAL_LINK)},
 						  {"TOU.jsp", "Usage"},
-						  {"ProgramHist.jsp", "Control History"},
-						  {"Programs.jsp", "Add/Change"},
+						  {"ProgramHist.jsp", ServletUtils.getECProperty(ecWebSettings.getURL(), ServletUtils.WEB_TEXT_CTRL_SUM_LINK)},
 						  {"Util.jsp", "Contact Us"},
 						  {"FAQ.jsp", "FAQ"},
-						  {"Enrollment.jsp", "Enrollment"},
-						  {"OptOut.jsp", "Opt Out"},
+						  {"Enrollment.jsp", ServletUtils.getECProperty(ecWebSettings.getURL(), ServletUtils.WEB_TEXT_ENROLL_LINK)},
+						  {"OptOut.jsp", ServletUtils.getECProperty(ecWebSettings.getURL(), ServletUtils.WEB_TEXT_OPT_OUT_LINK)},
 						  {"Thermostat.jsp", "Manual"},
 						  {"ThermSchedule.jsp", "Schedule"},
 						  {"Password.jsp", "Change Password"}
 						 };
 						   
+	String bulletImg = ServletUtils.getImageNames( ecWebSettings.getLogoLocation() )[1];
+	if (bulletImg == null) bulletImg = "Bullet.gif";
+	String bulletImg2 = ServletUtils.getImageNames( ecWebSettings.getLogoLocation() )[2];
+	if (bulletImg2 == null) bulletImg2 = "Bullet2.gif";
+						   
 	Hashtable links = new Hashtable();
 	for (int i = 0; i < linkMap.length; i++) {
 		if (linkMap[i][0].equalsIgnoreCase(pageName))
-			links.put(linkMap[i][0], "<img src=\"Bullet.gif\" width=\"12\" height=\"12\"><span class=\"NavText2\">" + linkMap[i][1] + "</span>");
+			links.put(linkMap[i][0], "<img src=\"" + bulletImg + "\" width=\"12\" height=\"12\"><span class=\"NavText2\">" + linkMap[i][1] + "</span>");
 		else
-			links.put(linkMap[i][0], "<img src=\"Bullet2.gif\" width=\"12\" height=\"12\"><a href=\"" + linkMap[i][0] + "\" class=\"Link2\"><span class=\"NavText\">" + linkMap[i][1] + "</span></a>");
+			links.put(linkMap[i][0], "<img src=\"" + bulletImg2 + "\" width=\"12\" height=\"12\"><a href=\"" + linkMap[i][0] + "\" class=\"Link2\"><span class=\"NavText\">" + linkMap[i][1] + "</span></a>");
 	}
 %>
 

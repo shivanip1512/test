@@ -1,6 +1,7 @@
 package com.cannontech.stars.web.action;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.ResourceBundle;
 import java.util.StringTokenizer;
@@ -116,9 +117,16 @@ public class SendInterviewAnswersAction implements ActionBase {
             text.append("======================================================\r\n");
             
             StarsProgramOptOut optout = reqOper.getStarsProgramOptOut();
+            Date optOutDate = optout.getStartDateTime();
+            if (optOutDate == null) optOutDate = new Date();
+            Calendar cal = Calendar.getInstance();
+            cal.setTime( optOutDate );
+            cal.add( Calendar.DATE, optout.getPeriod() );
+            Date reenableDate = cal.getTime();
+            
             if (optout != null) {
-	            text.append("Override Time: ").append(ServerUtils.formatDate( new Date() )).append("\r\n");
-	            text.append("Reenable Time: ").append(ServerUtils.formatDate( optout.getReenableDateTime() )).append("\r\n\r\n");
+	            text.append("Opt Out Time : ").append(ServerUtils.formatDate( optOutDate )).append("\r\n");
+	            text.append("Reenable Time: ").append(ServerUtils.formatDate( reenableDate )).append("\r\n\r\n");
 	            text.append("Program/Group/Serial #: \r\n");
 	            
 	            for (int i = 0; i < liteAcctInfo.getLmPrograms().size(); i++) {
@@ -171,26 +179,24 @@ public class SendInterviewAnswersAction implements ActionBase {
             	else
             		throw new Exception("Cannot find exit interview question with id = " + answer.getQuestionID());
             }
-        	
-			ResourceBundle bundle = ResourceBundle.getBundle( "config" );
 			
-			String toStr = null;
-			try {
-				toStr = bundle.getString( "optout_notification_recipients" );
+            String toStr = energyCompany.getEnergyCompanySetting( ServerUtils.OPTOUT_NOTIFICATION_RECIPIENTS );
+            if (toStr != null) {
 				StringTokenizer st = new StringTokenizer( toStr, "," );
 				ArrayList toList = new ArrayList();
 				while (st.hasMoreTokens())
 					toList.add( st.nextToken() );
 				String[] to = new String[ toList.size() ];
 				toList.toArray( to );
+	            
+	            String from = energyCompany.getEnergyCompanySetting( ServerUtils.ADMIN_EMAIL_ADDRESS );
 				
 				String subject = "Opt Out Notification";
 				
-				ServerUtils.sendEmailMsg( null, to, null, subject, text.toString() );
-			}
-			catch (java.util.MissingResourceException mre) {
+				ServerUtils.sendEmailMsg( from, to, null, subject, text.toString() );
+            }
+			else
 				CTILogger.info( "Property \"optout_notification_recipients\" not found, opt out notification email isn't sent" );
-			}
             
             StarsSuccess success = new StarsSuccess();
             success.setDescription( "Interview answers have been sent" );

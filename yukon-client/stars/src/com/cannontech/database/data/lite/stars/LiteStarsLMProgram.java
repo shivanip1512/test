@@ -15,6 +15,7 @@ public class LiteStarsLMProgram {
 	private LiteLMProgram lmProgram = null;
 	private int groupID = 0;
 	private java.util.ArrayList programHistory = null;	// List of LiteLMCustomerEvent
+	private boolean inService = false;
 	
 	public LiteStarsLMProgram() {
 		super();
@@ -49,6 +50,8 @@ public class LiteStarsLMProgram {
 	 * @return java.util.ArrayList
 	 */
 	public java.util.ArrayList getProgramHistory() {
+		if (programHistory == null)
+			programHistory = new java.util.ArrayList();
 		return programHistory;
 	}
 
@@ -74,6 +77,22 @@ public class LiteStarsLMProgram {
 	 */
 	public void setLmProgram(LiteLMProgram lmProgram) {
 		this.lmProgram = lmProgram;
+	}
+
+	/**
+	 * Returns the inService.
+	 * @return boolean
+	 */
+	public boolean isInService() {
+		return inService;
+	}
+
+	/**
+	 * Sets the inService.
+	 * @param inService The inService to set
+	 */
+	public void setInService(boolean inService) {
+		this.inService = inService;
 	}
 
 }

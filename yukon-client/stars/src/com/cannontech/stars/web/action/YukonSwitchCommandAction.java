@@ -1,5 +1,7 @@
 package com.cannontech.stars.web.action;
 
+import java.io.*;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
 
@@ -7,9 +9,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
+import com.cannontech.common.constants.RoleTypes;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionListDefs;
+import com.cannontech.common.util.CtiProperties;
 import com.cannontech.database.Transaction;
+import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.data.lite.stars.LiteLMCustomerEvent;
 import com.cannontech.database.data.lite.stars.LiteLMHardwareBase;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
@@ -166,7 +171,8 @@ public class YukonSwitchCommandAction implements ActionBase {
 				// Update lite object and create response
 				LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) StarsLiteFactory.createLite( event );
 				liteHw.getLmHardwareHistory().add( liteEvent );
-					
+				liteHw.setDeviceStatus( YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL );
+				
 				StarsLMHardwareHistory hwHist = new StarsLMHardwareHistory();
 				hwHist.setInventoryID( liteHw.getInventoryID() );
 				for (int k = 0; k < liteHw.getLmHardwareHistory().size(); k++) {
@@ -208,7 +214,8 @@ public class YukonSwitchCommandAction implements ActionBase {
 				// Update lite object and create response
 				LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) StarsLiteFactory.createLite( event );
 				liteHw.getLmHardwareHistory().add( liteEvent );
-					
+				liteHw.setDeviceStatus( YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL );
+				
 				StarsLMHardwareHistory hwHist = new StarsLMHardwareHistory();
 				hwHist.setInventoryID( liteHw.getInventoryID() );
 				for (int k = 0; k < liteHw.getLmHardwareHistory().size(); k++) {
@@ -238,13 +245,17 @@ public class YukonSwitchCommandAction implements ActionBase {
 	            	return SOAPUtil.buildSOAPMessage( respOper );
         		}
         		
+        		ArrayList cmdList = new ArrayList();
         		for (int i = 0; i < configs.length; i++) {
         			if (configs[i].getAddressingGroupID().intValue() == 0) continue;
         			
         			String groupName = com.cannontech.database.cache.functions.PAOFuncs.getYukonPAOName( configs[i].getAddressingGroupID().intValue() );
 	                String cmd = "putconfig serial " + liteHw.getManufactureSerialNumber() + " template '" + groupName + "'" + routeStr;
-	                ServerUtils.sendCommand( cmd );
+	                cmdList.add( cmd );
         		}
+        		String[] commands = new String[ cmdList.size() ];
+        		cmdList.toArray( commands );
+                sendSwitchCommand( user, commands );
 	            
 	            // Add "Config" to hardware events
         		com.cannontech.database.data.stars.event.LMHardwareEvent event = new com.cannontech.database.data.stars.event.LMHardwareEvent();
@@ -353,5 +364,32 @@ public class YukonSwitchCommandAction implements ActionBase {
         }
 
         return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
+    }
+    
+    private void sendSwitchCommand(StarsYukonUser user, String command) throws IOException {
+    	sendSwitchCommand( user, new String[] { command } );
+    }
+    
+    private void sendSwitchCommand(StarsYukonUser user, String[] commands) throws IOException {
+    	if (AuthFuncs.checkRole( user.getYukonUser(), RoleTypes.SWITCH_COMMAND_BATCH ) == null) {
+    		for (int i = 0; i < commands.length; i++)
+    			ServerUtils.sendCommand( commands[i] );
+    	}
+    	else {
+    		String batchCmdFile = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() )
+    								.getEnergyCompanySetting( ServerUtils.SWITCH_COMMAND_FILE );
+    		if (batchCmdFile != null) {
+				File f = new File( batchCmdFile );
+				if (!f.exists()) {
+					File dir = new File( f.getParent() );
+					if (!dir.exists()) dir.mkdirs();
+					f.createNewFile();
+				}
+	    		PrintWriter fw = new PrintWriter( new FileWriter(f), true );
+    			for (int i = 0; i < commands.length; i++)
+    				fw.println( commands[i] );
+    			fw.close();
+    		}
+    	}
     }
 }

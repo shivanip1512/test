@@ -1,10 +1,13 @@
 package com.cannontech.stars.util.timertask;
 
+import java.io.*;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.util.CtiProperties;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.stars.LiteLMCustomerEvent;
 import com.cannontech.database.data.lite.stars.LiteLMHardwareBase;
@@ -51,11 +54,17 @@ public class DailyTimerTask extends StarsTimerTask {
 		CTILogger.info( "*** Daily timer task start ***" );
 		
 		try {
+			/* Check for opted out programs that should be reactivated */
 			LiteStarsEnergyCompany[] companies = SOAPServer.getAllEnergyCompanies();
 			if (companies == null) return;
 			
+			Date now = new Date();
+			Calendar timeLimit = Calendar.getInstance();
+			timeLimit.add(Calendar.MINUTE, 30);	// Give the time limit a 30 minutes margin
+			
 			for (int i = 0; i < companies.length; i++) {
 				if (companies[i].getEnergyCompanyID().intValue() < 0) continue;
+				String routeStr = " select route id " + String.valueOf(companies[i].getRouteID());
 				
 				int reenableActionID = companies[i].getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_FUTURE_ACTIVATION ).getEntryID();
 				int completeActionID = companies[i].getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED ).getEntryID();
@@ -68,7 +77,7 @@ public class DailyTimerTask extends StarsTimerTask {
 						com.cannontech.database.db.stars.event.LMCustomerEventBase.getAllCustomerEvents( programEventID, reenableActionID );
 						
 				for (int j = 0; j < hwEvents.length; j++) {
-					if (hwEvents[j].getEventDateTime().before( new Date() )) {
+					if (hwEvents[j].getEventDateTime().before( timeLimit.getTime() )) {
 						// Send yukon switch command to enable the LM hardware
 						com.cannontech.database.db.stars.event.LMHardwareEvent hwEvent = new com.cannontech.database.db.stars.event.LMHardwareEvent();
 						hwEvent.setEventID( hwEvents[j].getEventID() );
@@ -80,10 +89,10 @@ public class DailyTimerTask extends StarsTimerTask {
 						hw = (com.cannontech.database.db.stars.hardware.LMHardwareBase)
 								Transaction.createTransaction( Transaction.RETRIEVE, hw ).execute();
 								
-						String cmd = "putconfig service in serial " + hw.getManufacturerSerialNumber();
+						String cmd = "putconfig xcom service in temp serial " + hw.getManufacturerSerialNumber() + routeStr;
 						ServerUtils.sendCommand( cmd );
 						
-						CTILogger.debug( "*** Send service in command to serial " + hw.getManufacturerSerialNumber() );
+						CTILogger.debug( "*** Send service in temp command to serial " + hw.getManufacturerSerialNumber() );
 						
 						// Remove "Future Activation", and add "Activation Completed" to hardware events
 						com.cannontech.database.data.stars.event.LMHardwareEvent event1 = new com.cannontech.database.data.stars.event.LMHardwareEvent();
@@ -104,18 +113,17 @@ public class DailyTimerTask extends StarsTimerTask {
 						// Update the lite object
 						LiteLMHardwareBase liteHw = companies[i].getLMHardware( hw.getInventoryID().intValue(), false );
 						if (liteHw != null) {
-							ArrayList hwHist = liteHw.getLmHardwareHistory();
-							if (hwHist != null) {
-								hwHist.remove( StarsLiteFactory.createLite(event1) );
-								hwHist.add( StarsLiteFactory.createLite(event2) );
-							}
+							ServerUtils.removeLMCustomEvents(
+									liteHw.getLmHardwareHistory(),
+									companies[i].getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_FUTURE_ACTIVATION).getEntryID() );
+							liteHw.getLmHardwareHistory().add( StarsLiteFactory.createLite(event2) );
+							liteHw.setDeviceStatus( YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL );
 						}
 					}
 				}
 						
 				for (int j = 0; j < progEvents.length; j++) {
-					Date now = new Date();
-					if (progEvents[j].getEventDateTime().before( now )) {
+					if (progEvents[j].getEventDateTime().before( timeLimit.getTime() )) {
 						progEvents[j].setActionID( new Integer(completeActionID) );
 						progEvents[j].setEventDateTime( now );
 						progEvents[j] = (com.cannontech.database.db.stars.event.LMCustomerEventBase)
@@ -149,9 +157,39 @@ public class DailyTimerTask extends StarsTimerTask {
 										break;
 									}
 								}
+								liteProg.setInService( true );
 								break;
 							}
 							break;
+						}
+					}
+				}
+			}
+			
+			/* Send out opt out commands stored in batch file */
+			for (int i = 0; i < companies.length; i++) {
+				String batchCmdFile = companies[i].getEnergyCompanySetting( ServerUtils.OPTOUT_COMMAND_FILE );
+				if (batchCmdFile != null) {
+					File f = new File( batchCmdFile );
+					if (f.exists()) {
+						BufferedReader br = null;
+						try {
+							br = new BufferedReader( new FileReader(f) );
+							String line = null;
+							while ((line = br.readLine()) != null)
+								ServerUtils.sendCommand( line );
+						}
+						finally {
+							if (br != null) br.close();
+						}
+						
+						// Clear the file content
+						FileWriter fw = null;
+						try {
+							fw = new FileWriter( f );
+						}
+						finally {
+							if (fw != null) fw.close();
 						}
 					}
 				}

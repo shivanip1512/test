@@ -1,3 +1,4 @@
+<%@ taglib uri="/WEB-INF/cti.tld" prefix="cti" %>
 <%@ page import="java.util.*" %>
 <%@ page import="com.cannontech.stars.xml.serialize.*" %>
 <%@ page import="com.cannontech.stars.xml.serialize.types.*" %>

@@ -2,10 +2,10 @@
 <%@ include file="StarsHeader.jsp" %>
 <%@ include file="metering_header.jsp" %>
 <%@ include file="../../trending_functions.jsp" %>
-<link id="CssLink" rel="stylesheet" href="../demostyle.css" type="text/css">
-<% if (ecWebSettings.getURL().length() > 0) { %>
-	<script language="JavaScript">document.getElementById("CssLink").href = "../<%= ecWebSettings.getURL() %>";</script>
-<% } %>
+<link id="StyleSheet" rel="stylesheet" href="../demostyle.css" type="text/css">
+<script language="JavaScript">
+	document.getElementById("StyleSheet").href = '../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_STYLE_SHEET %>"/>';
+</script>
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
@@ -35,10 +35,9 @@ function jumpPage(form)
 				<table width="657" cellspacing="0"  cellpadding="0" border="0">
 				<tr> 
 					<td id="Header" colspan="4" height="74" background="../Header.gif">&nbsp;</td>
-<% if (ecWebSettings.getLogoLocation().length() > 0) { %>
-	<script language="JavaScript">document.getElementById("Header").background = "../<%= ecWebSettings.getLogoLocation() %>";</script>
-<% } %>
-				</tr>
+<script language="JavaScript">
+	document.getElementById("Header").background = '../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_HEADER %>"/>';
+	</script>				</tr>
 				<tr> 
 					<td width="265" height = "28" class="Header3" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Customer Account Information&nbsp;&nbsp;</td>
 					<td width="253" valign="middle">&nbsp;</td>

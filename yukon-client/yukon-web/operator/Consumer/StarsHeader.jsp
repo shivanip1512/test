@@ -4,6 +4,7 @@
 <%@ page import="com.cannontech.common.constants.YukonSelectionListDefs" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
 <%@ page import="com.cannontech.stars.xml.serialize.*" %>
+<%@ page import="com.cannontech.stars.xml.serialize.types.*" %>
 <%@ page import="com.cannontech.stars.web.StarsYukonUser" %>
 <%@ page import="com.cannontech.stars.util.ServletUtils" %>
 
@@ -50,6 +51,7 @@
 	StarsEnrollmentPrograms categories = ecSettings.getStarsEnrollmentPrograms();
 	StarsServiceCompanies companies = ecSettings.getStarsServiceCompanies();
 	StarsExitInterviewQuestions exitQuestions = ecSettings.getStarsExitInterviewQuestions();
+	StarsDefaultThermostatSettings dftThermoSettings = ecSettings.getStarsDefaultThermostatSettings();
 	Hashtable selectionListTable = (Hashtable) user.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
 	
 	StarsCustAccountInformation accountInfo = null;
@@ -65,6 +67,7 @@
 	StarsLMPrograms programs = null;
 	StarsCallReportHistory callHist = null;
 	StarsServiceRequestHistory serviceHist = null;
+	StarsThermostatSettings thermoSettings = null;
 	StarsUser userLogin = null;
 	
 	accountInfo = (StarsCustAccountInformation) user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
@@ -81,6 +84,7 @@
 		programs = accountInfo.getStarsLMPrograms();
 		callHist = accountInfo.getStarsCallReportHistory();
 		serviceHist = accountInfo.getStarsServiceRequestHistory();
+		thermoSettings = accountInfo.getStarsThermostatSettings();
 		
 		userLogin = accountInfo.getStarsUser();
 		if (userLogin == null) {

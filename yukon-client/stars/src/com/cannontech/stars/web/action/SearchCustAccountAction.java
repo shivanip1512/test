@@ -87,6 +87,12 @@ public class SearchCustAccountAction implements ActionBase {
         	LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
 
             StarsSearchCustomerAccount searchAccount = reqOper.getStarsSearchCustomerAccount();
+            if (searchAccount.getSearchValue().length() == 0) {
+            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
+            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "The search value cannot be empty") );
+            	return SOAPUtil.buildSOAPMessage( respOper );
+            }
+            
             LiteStarsCustAccountInformation liteAcctInfo = null;
             CustomerAccount[] accounts = null;
             		

@@ -87,6 +87,7 @@ insert into YukonSelectionList values (1045,'N','(none)','Standby source selecti
 insert into YukonSelectionList values (1046,'N','(none)','Irrigation type selection', 'IrrigationType','N')
 insert into YukonSelectionList values (1047,'N','(none)','Soil type selection', 'SoilType','N')
 insert into YukonSelectionList values (1048,'N','(none)','Device location selection', 'DeviceLocation','N')
+insert into YukonSelectionList values (1049,'N','(none)','Opt out period selection','OptOutPeriod','N')
 
 /* YukonListEntry */
 insert into YukonListEntry values (1001,1001,0,'Program',1001)
@@ -194,6 +195,7 @@ insert into YukonListEntry values (1102,1029,0,'7 - 8',0)
 insert into YukonListEntry values (1103,1029,0,'9+',0)
 insert into YukonListEntry values (1104,1030,0,'Own',0)
 insert into YukonListEntry values (1105,1030,0,'Rent',0)
+insert into YukonListEntry values (1106,1049,0,'Tomorrow',2601)
 
 /* ECToGenericMapping */
 insert into ectogenericmapping values (-1, 1001, 'YukonSelectionList')
@@ -344,6 +346,8 @@ insert into YukonRole values (-1000,'WEB_OPERATOR_SUPER','WebClient','(none)','(
 insert into YukonUserRole values (100,-1000,'(none)')
 insert into YukonRole values (-1001,'NEW_ACCOUNT_WIZARD','WebClient','(none)','(none)')
 insert into YukonUserRole values (100,-1001,'(none)')
+insert into YukonRole values (-1002,'SWITCH_COMMAND_BATCH','WebClient','(none)','(none)')
+insert into YukonUserRole values (100,-1002,'SwitchCommands.txt')
 insert into energycompanyoperatorloginlist values(1,100)
 
 
@@ -388,7 +392,7 @@ insert into InventoryBase values (2,1,1,1011,'18-May-02','01-Jun-02','1970-01-01
 
 /* lmhardware base */
 insert into LMHardwareBase values (1,'550000034',1013)	/* LCR-5000 */
-insert into LMHardwareBase values (2,'600000066',1018)	/* thermostat */
+insert into LMHardwareBase values (2,'000000000',1018)	/* thermostat */
 
 /* appliance category */
 insert into ApplianceCategory values (1, 'Air Conditioner', 1019, 2)
@@ -448,6 +452,7 @@ INSERT INTO ECToInventoryMapping VALUES (1, 1)
 INSERT INTO ECToInventoryMapping VALUES (1, 2)
 
 /* ECToGenericMapping */
+//insert into ECToGenericMapping values (1, 1049, 'YukonSelectionList')
 insert into ECToGenericMapping values (1, 5, 'LMPrograms')
 insert into ECToGenericMapping values (1, 6, 'LMPrograms')
 insert into ECToGenericMapping values (1, 7, 'LMPrograms')

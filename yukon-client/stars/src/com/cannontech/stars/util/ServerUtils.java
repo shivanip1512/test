@@ -1,5 +1,6 @@
 package com.cannontech.stars.util;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Properties;
@@ -16,6 +17,7 @@ import com.cannontech.common.constants.RoleTypes;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonListFuncs;
+import com.cannontech.common.util.CtiProperties;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.AuthFuncs;
@@ -47,10 +49,27 @@ public class ServerUtils {
     
     private static java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM-dd-yy HH:mm");
     
-    private static String ADMIN_EMAIL_ADDRESS = "admin_email_address";
-    
     // If date in database is earlier than this, than the date is actually empty
     private static long VERY_EARLY_TIME = 1000 * 3600 * 24;
+    
+    public static final String DEFAULT_PROPERTY_FILE = "/default.config.properties";
+    
+    public static final String ADMIN_EMAIL_ADDRESS = "admin_email_address";
+    public static final String OPTOUT_NOTIFICATION_RECIPIENTS = "optout_notification_recipients";
+    public static final String DEFAULT_TIME_ZONE = "default_time_zone";
+    public static final String SWITCH_COMMAND_FILE = "switch_command_file";
+    public static final String OPTOUT_COMMAND_FILE = "optout_command_file";
+    
+    public static final String[] ALL_SETTINGS_KEYS = {
+    	ADMIN_EMAIL_ADDRESS,
+    	OPTOUT_NOTIFICATION_RECIPIENTS,
+    	DEFAULT_TIME_ZONE,
+    	SWITCH_COMMAND_FILE,
+    	OPTOUT_COMMAND_FILE,
+    };
+    
+    public static final String DEFAULT_ADMIN_EMAIL_ADDRESS = "info@cannontech.com";
+    public static final String DEFAULT_BATCH_COMMAND_FOLDER = "c:\\yukon\\batch_command";
     
 	
     public static void sendCommand(String command)
@@ -65,16 +84,37 @@ public class ServerUtils {
             new com.cannontech.message.porter.message.Request( 0, command, userMessageIDCounter++ );
         conn.write( req );
         
-        CTILogger.debug( "YukonSwitchCommandAction: Sent command to PIL: " + command );
+        CTILogger.debug( "Sent command to PIL: " + command );
+    }
+    
+    public static void saveCommands(String fileName, String[] commands) throws IOException {
+    	if (fileName == null) return;
+    	
+		File f = new File( fileName );
+		if (!f.exists()) {
+			File dir = new File( f.getParent() );
+			if (!dir.exists()) dir.mkdirs();
+			f.createNewFile();
+		}
+		
+		PrintWriter fw = null;
+		try {
+			fw = new PrintWriter( new FileWriter(f), true );
+			for (int i = 0; i < commands.length; i++)
+				fw.println( commands[i] );
+		}
+		finally {
+			if (fw != null) fw.close();
+		}
     }
 	
-	public static void processFutureActivation(ArrayList custEventHist, int futureActEntryID, int actCompEntryID) {
+	public static void replaceLMCustomEvents(ArrayList custEventHist, int oldActionID, int newActionID) {
 		try {
 			ArrayList eventToBeRemoved = new ArrayList();
 			
 			for (int i = 0; i < custEventHist.size(); i++) {
 				LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) custEventHist.get(i);
-				if (liteEvent.getActionID() == futureActEntryID) {
+				if (liteEvent.getActionID() == oldActionID) {
 					com.cannontech.database.data.stars.event.LMCustomerEventBase event = (com.cannontech.database.data.stars.event.LMCustomerEventBase)
 							StarsLiteFactory.createDBPersistent( liteEvent );
 					com.cannontech.database.db.stars.event.LMCustomerEventBase eventDB = event.getLMCustomerEventBase();
@@ -83,11 +123,11 @@ public class ServerUtils {
 						// Future activation time earlier than current time, change the entry to "Activation Completed"
 						eventDB = (com.cannontech.database.db.stars.event.LMCustomerEventBase)
 								Transaction.createTransaction( Transaction.RETRIEVE, eventDB ).execute();
-						eventDB.setActionID( new Integer(actCompEntryID) );
+						eventDB.setActionID( new Integer(newActionID) );
 						eventDB = (com.cannontech.database.db.stars.event.LMCustomerEventBase)
 								Transaction.createTransaction( Transaction.UPDATE, eventDB ).execute();
 								
-						liteEvent.setActionID( actCompEntryID );
+						liteEvent.setActionID( newActionID );
 					}
 					else {
 						// Future activation time not reached yet, delete the entry
@@ -105,13 +145,13 @@ public class ServerUtils {
 		}
 	}
 	
-	public static void removeFutureActivation(ArrayList custEventHist, int futureActEntryID) {
+	public static void removeLMCustomEvents(ArrayList custEventHist, int actionID) {
 		try {
 			ArrayList eventToBeRemoved = new ArrayList();
 			
 			for (int i = 0; i < custEventHist.size(); i++) {
 				LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) custEventHist.get(i);
-				if (liteEvent.getActionID() == futureActEntryID) {
+				if (liteEvent.getActionID() == actionID) {
 					com.cannontech.database.data.stars.event.LMCustomerEventBase event = (com.cannontech.database.data.stars.event.LMCustomerEventBase)
 							StarsLiteFactory.createDBPersistent( liteEvent );
 					Transaction.createTransaction( Transaction.DELETE, event ).execute();
@@ -128,25 +168,44 @@ public class ServerUtils {
 		}
 	}
 	
-	public static boolean isInService(ArrayList progHist, int futureActEntryID, int actCompEntryID) {
+	public static int getDeviceStatus(ArrayList hwHist) {
+		for (int i = hwHist.size() - 1; i >= 0; i--) {
+			LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) hwHist.get(i);
+			YukonListEntry entry = YukonListFuncs.getYukonListEntry( liteEvent.getActionID() );
+			
+			if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED ||
+				entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_INSTALL)
+				return YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL;
+			if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TEMP_TERMINATION)
+				return YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_TEMP_UNAVAIL;
+			if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TERMINATION)
+				return YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL;
+		}
+		
+		return YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL;
+	}
+	
+	public static boolean isInService(ArrayList progHist) {
 		for (int i = progHist.size() - 1; i >= 0 ; i--) {
 			LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) progHist.get(i);
-			if (liteEvent.getActionID() == futureActEntryID)
-				return false;
-			if (liteEvent.getActionID() == actCompEntryID)
+			YukonListEntry entry = YukonListFuncs.getYukonListEntry( liteEvent.getActionID() );
+			
+			if (liteEvent.getActionID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED ||
+				liteEvent.getActionID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_SIGNUP)
 				return true;
+			if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_FUTURE_ACTIVATION ||
+				liteEvent.getActionID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TERMINATION)
+				return false;
 		}
 		
 		return false;
 	}
 	
 	public static void sendEmailMsg(String from, String[] to, String[] cc, String subject, String text) throws Exception {
-		Properties props = new Properties();
-		props.load( ServerUtils.class.getResourceAsStream("/config.properties") );
+		CtiProperties props = CtiProperties.getInstance();
 		Session session = Session.getDefaultInstance( props, null );
 		
-		if (from == null)
-			from = props.getProperty( ADMIN_EMAIL_ADDRESS, "info@cannontech.com" );
+		if (from == null) from = DEFAULT_ADMIN_EMAIL_ADDRESS;
 		
 		Message emailMsg = new MimeMessage( session );
 		emailMsg.setFrom( new InternetAddress(from) );

@@ -3,10 +3,10 @@
 <head>
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link id="CssLink" rel="stylesheet" href="../demostyle.css" type="text/css">
-<% if (ecWebSettings.getURL().length() > 0) { %>
-	<script language="JavaScript">document.getElementById("CssLink").href = "../<%= ecWebSettings.getURL() %>";</script>
-<% } %>
+<link id="StyleSheet" rel="stylesheet" href="../demostyle.css" type="text/css">
+<script language="JavaScript">
+	document.getElementById("StyleSheet").href = '../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_STYLE_SHEET %>"/>';
+</script>
 
 <script language="JavaScript">
 function confirmCancel() {
@@ -31,9 +31,9 @@ function changeAppSelection(chkBox) {
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
                 <td id="Header" colspan="4" height="74" background="../Header.gif">&nbsp;</td>
-<% if (ecWebSettings.getLogoLocation().length() > 0) { %>
-	<script language="JavaScript">document.getElementById("Header").background = "../<%= ecWebSettings.getLogoLocation() %>";</script>
-<% } %>
+<script language="JavaScript">
+	document.getElementById("Header").background = '../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_HEADER %>"/>';
+</script>
               </tr>
               <tr> 
                   <td width="265" height = "28" class="Header3" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Customer 
@@ -70,7 +70,7 @@ function changeAppSelection(chkBox) {
 		    <% String pageName = "CreateHardware.jsp"; %><%@ include file="Nav.jsp" %>
 <% } else out.print("&nbsp;"); %>
 		  </td>
-          <td width="1" bgcolor="#000000"><img src="switch/VerticalRule.gif" width="1"></td>
+          <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div class = "Main" align="center">
               <% String header = "CREATE NEW HARDWARE"; %>
@@ -199,7 +199,7 @@ function changeAppSelection(chkBox) {
                                   <div align="right">Date Installed: </div>
                                 </td>
                                 <td width="200"> 
-                                  <input type="text" name="InstallDate" maxlength="30" size="24" value="<%= datePart.format(new Date()) %>">
+                                  <input type="text" name="InstallDate" maxlength="30" size="24" value="<%= ServletUtils.formatDate(new Date(), datePart) %>">
                                 </td>
                               </tr>
                               <tr> 
@@ -255,7 +255,7 @@ function changeAppSelection(chkBox) {
                       <table width="300" border="1" cellspacing="0" cellpadding="3">
                         <tr> 
                           <td width="10%" class="HeaderCell">&nbsp; </td>
-                          <td width="40%" class="HeaderCell">Appliance</td>
+                          <td width="40%" class="HeaderCell">Program</td>
                           <td width="50%" class="HeaderCell">Assigned Group</td>
                         </tr>
                         <%
@@ -281,7 +281,7 @@ function changeAppSelection(chkBox) {
                           <td width="27" height="2"> 
                             <input type="checkbox" name="AppID" value="<%= appliance.getApplianceID() %>" onclick="changeAppSelection(this)">
                           </td>
-                          <td width="73" class="TableCell" height="2"><%= appliance.getDescription() %></td>
+                          <td width="73" class="TableCell" height="2"><%= program.getProgramName() %></td>
                           <td width="89" height="2"> 
                             <select id="Group_App<%= appliance.getApplianceID() %>" name="GroupID" disabled="true">
                               <%
