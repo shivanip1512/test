@@ -845,8 +845,19 @@ public void jButtonAdd_ActionPerformed(java.awt.event.ActionEvent actionEvent)
 	if( ! getJTableModel().addRow( programList, (com.cannontech.database.data.lite.LiteYukonPAObject)getJComboBoxLMProgram().getSelectedItem() ) )
  		javax.swing.JOptionPane.showMessageDialog( this, "That Program is already in the list.", "Duplicate Program", javax.swing.JOptionPane.INFORMATION_MESSAGE );
  	
-	fireInputUpdate();
-	return;
+	//autoscroll to show new additions
+	getJTableProgram().scrollRectToVisible( new java.awt.Rectangle(
+		0,
+		getJTableProgram().getRowHeight() * (getJTableProgram().getRowCount() - 4 )- getJTableProgram().getRowHeight(),  //just an estimate that works!!
+		100,
+		100) );	
+ 	
+	//remove it from the combo box to avoid confusion
+	getJComboBoxLMProgram().removeItem(getJComboBoxLMProgram().getSelectedItem());	
+ 	
+ 	fireInputUpdate();
+ 	
+ 	return;
 }
 /**
  * Comment
