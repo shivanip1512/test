@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsThermostatTypes.java,v 1.5 2004/03/24 23:09:38 zyao Exp $
+ * $Id: StarsLoginStatus.java,v 1.1 2004/03/24 23:09:38 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize.types;
@@ -19,9 +19,9 @@ import org.exolab.castor.xml.*;
 /**
  * 
  * 
- * @version $Revision: 1.5 $ $Date: 2004/03/24 23:09:38 $
+ * @version $Revision: 1.1 $ $Date: 2004/03/24 23:09:38 $
 **/
-public class StarsThermostatTypes implements java.io.Serializable {
+public class StarsLoginStatus implements java.io.Serializable {
 
 
       //--------------------------/
@@ -29,34 +29,24 @@ public class StarsThermostatTypes implements java.io.Serializable {
     //--------------------------/
 
     /**
-     * The ExpressStat type
+     * The Enabled type
     **/
-    public static final int EXPRESSSTAT_TYPE = 0;
+    public static final int ENABLED_TYPE = 0;
 
     /**
-     * The instance of the ExpressStat type
+     * The instance of the Enabled type
     **/
-    public static final StarsThermostatTypes EXPRESSSTAT = new StarsThermostatTypes(EXPRESSSTAT_TYPE, "ExpressStat");
+    public static final StarsLoginStatus ENABLED = new StarsLoginStatus(ENABLED_TYPE, "Enabled");
 
     /**
-     * The EnergyPro type
+     * The Disabled type
     **/
-    public static final int ENERGYPRO_TYPE = 1;
+    public static final int DISABLED_TYPE = 1;
 
     /**
-     * The instance of the EnergyPro type
+     * The instance of the Disabled type
     **/
-    public static final StarsThermostatTypes ENERGYPRO = new StarsThermostatTypes(ENERGYPRO_TYPE, "EnergyPro");
-
-    /**
-     * The Commercial type
-    **/
-    public static final int COMMERCIAL_TYPE = 2;
-
-    /**
-     * The instance of the Commercial type
-    **/
-    public static final StarsThermostatTypes COMMERCIAL = new StarsThermostatTypes(COMMERCIAL_TYPE, "Commercial");
+    public static final StarsLoginStatus DISABLED = new StarsLoginStatus(DISABLED_TYPE, "Disabled");
 
     private static java.util.Hashtable _memberTable = init();
 
@@ -69,11 +59,11 @@ public class StarsThermostatTypes implements java.io.Serializable {
      //- Constructors -/
     //----------------/
 
-    private StarsThermostatTypes(int type, java.lang.String value) {
+    private StarsLoginStatus(int type, java.lang.String value) {
         super();
         this.type = type;
         this.stringValue = value;
-    } //-- com.cannontech.stars.xml.serialize.types.StarsThermostatTypes(int, java.lang.String)
+    } //-- com.cannontech.stars.xml.serialize.types.StarsLoginStatus(int, java.lang.String)
 
 
       //-----------/
@@ -82,7 +72,7 @@ public class StarsThermostatTypes implements java.io.Serializable {
 
     /**
      * Returns an enumeration of all possible instances of
-     * StarsThermostatTypes
+     * StarsLoginStatus
     **/
     public static java.util.Enumeration enumerate()
     {
@@ -90,7 +80,7 @@ public class StarsThermostatTypes implements java.io.Serializable {
     } //-- java.util.Enumeration enumerate() 
 
     /**
-     * Returns the type of this StarsThermostatTypes
+     * Returns the type of this StarsLoginStatus
     **/
     public int getType()
     {
@@ -102,14 +92,13 @@ public class StarsThermostatTypes implements java.io.Serializable {
     private static java.util.Hashtable init()
     {
         Hashtable members = new Hashtable();
-        members.put("ExpressStat", EXPRESSSTAT);
-        members.put("EnergyPro", ENERGYPRO);
-        members.put("Commercial", COMMERCIAL);
+        members.put("Enabled", ENABLED);
+        members.put("Disabled", DISABLED);
         return members;
     } //-- java.util.Hashtable init() 
 
     /**
-     * Returns the String representation of this StarsThermostatType
+     * Returns the String representation of this StarsLoginStatus
     **/
     public java.lang.String toString()
     {
@@ -117,20 +106,20 @@ public class StarsThermostatTypes implements java.io.Serializable {
     } //-- java.lang.String toString() 
 
     /**
-     * Returns a new StarsThermostatTypes based on the given String
+     * Returns a new StarsLoginStatus based on the given String
      * value.
      * 
      * @param string
     **/
-    public static com.cannontech.stars.xml.serialize.types.StarsThermostatTypes valueOf(java.lang.String string)
+    public static com.cannontech.stars.xml.serialize.types.StarsLoginStatus valueOf(java.lang.String string)
     {
         java.lang.Object obj = null;
         if (string != null) obj = _memberTable.get(string);
         if (obj == null) {
-            String err = "'" + string + "' is not a valid StarsThermostatTypes";
+            String err = "'" + string + "' is not a valid StarsLoginStatus";
             throw new IllegalArgumentException(err);
         }
-        return (StarsThermostatTypes) obj;
-    } //-- com.cannontech.stars.xml.serialize.types.StarsThermostatTypes valueOf(java.lang.String) 
+        return (StarsLoginStatus) obj;
+    } //-- com.cannontech.stars.xml.serialize.types.StarsLoginStatus valueOf(java.lang.String) 
 
 }

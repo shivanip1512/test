@@ -224,6 +224,39 @@ public class StarsUsrDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
         }
         desc.setValidator(fieldValidator);
         
+        //-- _status
+        desc = new XMLFieldDescriptorImpl(com.cannontech.stars.xml.serialize.types.StarsLoginStatus.class, "_status", "Status", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsUsr target = (StarsUsr) object;
+                return target.getStatus();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsUsr target = (StarsUsr) object;
+                    target.setStatus( (com.cannontech.stars.xml.serialize.types.StarsLoginStatus) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        } );
+        desc.setHandler( new EnumFieldHandler(com.cannontech.stars.xml.serialize.types.StarsLoginStatus.class, handler));
+        desc.setImmutable(true);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _status
+        fieldValidator = new FieldValidator();
+        desc.setValidator(fieldValidator);
+        
     } //-- com.cannontech.stars.xml.serialize.StarsUsrDescriptor()
 
 

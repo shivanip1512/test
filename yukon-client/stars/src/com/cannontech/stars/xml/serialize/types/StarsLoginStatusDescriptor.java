@@ -2,10 +2,10 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id$
+ * $Id: StarsLoginStatusDescriptor.java,v 1.1 2004/03/24 23:09:38 zyao Exp $
  */
 
-package com.cannontech.stars.xml.serialize;
+package com.cannontech.stars.xml.serialize.types;
 
   //---------------------------------/
  //- Imported classes and packages -/
@@ -25,9 +25,9 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision$ $Date$
+ * @version $Revision: 1.1 $ $Date: 2004/03/24 23:09:38 $
 **/
-public class StarsGetEnergyCompanySettingsResponseDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
+public class StarsLoginStatusDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
 
       //--------------------------/
@@ -47,54 +47,17 @@ public class StarsGetEnergyCompanySettingsResponseDescriptor extends org.exolab.
      //- Constructors -/
     //----------------/
 
-    public StarsGetEnergyCompanySettingsResponseDescriptor() {
+    public StarsLoginStatusDescriptor() {
         super();
-        xmlName = "stars-GetEnergyCompanySettingsResponse";
+        xmlName = "stars-LoginStatus";
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
-        
-        //-- set grouping compositor
-        setCompositorAsSequence();
         //-- initialize attribute descriptors
         
         //-- initialize element descriptors
         
-        //-- _starsEnergyCompanySettings
-        desc = new XMLFieldDescriptorImpl(StarsEnergyCompanySettings.class, "_starsEnergyCompanySettings", "stars-EnergyCompanySettings", NodeType.Element);
-        handler = (new XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                StarsGetEnergyCompanySettingsResponse target = (StarsGetEnergyCompanySettingsResponse) object;
-                return target.getStarsEnergyCompanySettings();
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    StarsGetEnergyCompanySettingsResponse target = (StarsGetEnergyCompanySettingsResponse) object;
-                    target.setStarsEnergyCompanySettings( (StarsEnergyCompanySettings) value);
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new StarsEnergyCompanySettings();
-            }
-        } );
-        desc.setHandler(handler);
-        desc.setRequired(true);
-        desc.setMultivalued(false);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _starsEnergyCompanySettings
-        fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
-        desc.setValidator(fieldValidator);
-        
-    } //-- com.cannontech.stars.xml.serialize.StarsGetEnergyCompanySettingsResponseDescriptor()
+    } //-- com.cannontech.stars.xml.serialize.types.StarsLoginStatusDescriptor()
 
 
       //-----------/
@@ -126,7 +89,7 @@ public class StarsGetEnergyCompanySettingsResponseDescriptor extends org.exolab.
     **/
     public java.lang.Class getJavaClass()
     {
-        return com.cannontech.stars.xml.serialize.StarsGetEnergyCompanySettingsResponse.class;
+        return com.cannontech.stars.xml.serialize.types.StarsLoginStatus.class;
     } //-- java.lang.Class getJavaClass() 
 
     /**

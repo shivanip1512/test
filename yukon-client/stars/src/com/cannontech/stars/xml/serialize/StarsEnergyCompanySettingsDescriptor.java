@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsCustomerAddressDescriptor.java,v 1.69 2004/03/24 23:09:36 zyao Exp $
+ * $Id: StarsEnergyCompanySettingsDescriptor.java,v 1.1 2004/03/24 23:09:37 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,9 +25,9 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.69 $ $Date: 2004/03/24 23:09:36 $
+ * @version $Revision: 1.1 $ $Date: 2004/03/24 23:09:37 $
 **/
-public class StarsCustomerAddressDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
+public class StarsEnergyCompanySettingsDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
 
       //--------------------------/
@@ -47,9 +47,9 @@ public class StarsCustomerAddressDescriptor extends org.exolab.castor.xml.util.X
      //- Constructors -/
     //----------------/
 
-    public StarsCustomerAddressDescriptor() {
+    public StarsEnergyCompanySettingsDescriptor() {
         super();
-        xmlName = "stars-CustomerAddress";
+        xmlName = "stars-EnergyCompanySettings";
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
@@ -58,28 +58,28 @@ public class StarsCustomerAddressDescriptor extends org.exolab.castor.xml.util.X
         setCompositorAsSequence();
         //-- initialize attribute descriptors
         
-        //-- _addressID
-        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_addressID", "addressID", NodeType.Attribute);
+        //-- _energyCompanyID
+        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_energyCompanyID", "energyCompanyID", NodeType.Attribute);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
-                StarsCustomerAddress target = (StarsCustomerAddress) object;
-                if(!target.hasAddressID())
+                StarsEnergyCompanySettings target = (StarsEnergyCompanySettings) object;
+                if(!target.hasEnergyCompanyID())
                     return null;
-                return new Integer(target.getAddressID());
+                return new Integer(target.getEnergyCompanyID());
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
-                    StarsCustomerAddress target = (StarsCustomerAddress) object;
+                    StarsEnergyCompanySettings target = (StarsEnergyCompanySettings) object;
                     // if null, use delete method for optional primitives 
                     if (value == null) {
-                        target.deleteAddressID();
+                        target.deleteEnergyCompanyID();
                         return;
                     }
-                    target.setAddressID( ((Integer)value).intValue());
+                    target.setEnergyCompanyID( ((Integer)value).intValue());
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
@@ -92,7 +92,7 @@ public class StarsCustomerAddressDescriptor extends org.exolab.castor.xml.util.X
         desc.setHandler(handler);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _addressID
+        //-- validation code for: _energyCompanyID
         fieldValidator = new FieldValidator();
         { //-- local scope
             IntegerValidator iv = new IntegerValidator();
@@ -102,29 +102,28 @@ public class StarsCustomerAddressDescriptor extends org.exolab.castor.xml.util.X
         
         //-- initialize element descriptors
         
-        //-- _streetAddr1
-        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_streetAddr1", "StreetAddr1", NodeType.Element);
-        desc.setImmutable(true);
+        //-- _starsEnergyCompany
+        desc = new XMLFieldDescriptorImpl(StarsEnergyCompany.class, "_starsEnergyCompany", "stars-EnergyCompany", NodeType.Element);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
-                StarsCustomerAddress target = (StarsCustomerAddress) object;
-                return target.getStreetAddr1();
+                StarsEnergyCompanySettings target = (StarsEnergyCompanySettings) object;
+                return target.getStarsEnergyCompany();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
-                    StarsCustomerAddress target = (StarsCustomerAddress) object;
-                    target.setStreetAddr1( (java.lang.String) value);
+                    StarsEnergyCompanySettings target = (StarsEnergyCompanySettings) object;
+                    target.setStarsEnergyCompany( (StarsEnergyCompany) value);
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
             }
             public java.lang.Object newInstance( java.lang.Object parent ) {
-                return null;
+                return new StarsEnergyCompany();
             }
         } );
         desc.setHandler(handler);
@@ -132,215 +131,238 @@ public class StarsCustomerAddressDescriptor extends org.exolab.castor.xml.util.X
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _streetAddr1
+        //-- validation code for: _starsEnergyCompany
         fieldValidator = new FieldValidator();
         fieldValidator.setMinOccurs(1);
-        { //-- local scope
-            StringValidator sv = new StringValidator();
-            sv.setWhiteSpace("preserve");
-            fieldValidator.setValidator(sv);
-        }
         desc.setValidator(fieldValidator);
         
-        //-- _streetAddr2
-        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_streetAddr2", "StreetAddr2", NodeType.Element);
-        desc.setImmutable(true);
+        //-- _starsWebConfig
+        desc = new XMLFieldDescriptorImpl(StarsWebConfig.class, "_starsWebConfig", "stars-WebConfig", NodeType.Element);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
-                StarsCustomerAddress target = (StarsCustomerAddress) object;
-                return target.getStreetAddr2();
+                StarsEnergyCompanySettings target = (StarsEnergyCompanySettings) object;
+                return target.getStarsWebConfig();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
-                    StarsCustomerAddress target = (StarsCustomerAddress) object;
-                    target.setStreetAddr2( (java.lang.String) value);
+                    StarsEnergyCompanySettings target = (StarsEnergyCompanySettings) object;
+                    target.setStarsWebConfig( (StarsWebConfig) value);
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
             }
             public java.lang.Object newInstance( java.lang.Object parent ) {
-                return null;
+                return new StarsWebConfig();
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _streetAddr2
+        //-- validation code for: _starsWebConfig
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
-        { //-- local scope
-            StringValidator sv = new StringValidator();
-            sv.setWhiteSpace("preserve");
-            fieldValidator.setValidator(sv);
-        }
         desc.setValidator(fieldValidator);
         
-        //-- _city
-        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_city", "City", NodeType.Element);
-        desc.setImmutable(true);
+        //-- _starsEnrollmentPrograms
+        desc = new XMLFieldDescriptorImpl(StarsEnrollmentPrograms.class, "_starsEnrollmentPrograms", "stars-EnrollmentPrograms", NodeType.Element);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
-                StarsCustomerAddress target = (StarsCustomerAddress) object;
-                return target.getCity();
+                StarsEnergyCompanySettings target = (StarsEnergyCompanySettings) object;
+                return target.getStarsEnrollmentPrograms();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
-                    StarsCustomerAddress target = (StarsCustomerAddress) object;
-                    target.setCity( (java.lang.String) value);
+                    StarsEnergyCompanySettings target = (StarsEnergyCompanySettings) object;
+                    target.setStarsEnrollmentPrograms( (StarsEnrollmentPrograms) value);
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
             }
             public java.lang.Object newInstance( java.lang.Object parent ) {
-                return null;
+                return new StarsEnrollmentPrograms();
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _city
+        //-- validation code for: _starsEnrollmentPrograms
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
-        { //-- local scope
-            StringValidator sv = new StringValidator();
-            sv.setWhiteSpace("preserve");
-            fieldValidator.setValidator(sv);
-        }
         desc.setValidator(fieldValidator);
         
-        //-- _state
-        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_state", "State", NodeType.Element);
-        desc.setImmutable(true);
+        //-- _starsCustomerSelectionLists
+        desc = new XMLFieldDescriptorImpl(StarsCustomerSelectionLists.class, "_starsCustomerSelectionLists", "stars-CustomerSelectionLists", NodeType.Element);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
-                StarsCustomerAddress target = (StarsCustomerAddress) object;
-                return target.getState();
+                StarsEnergyCompanySettings target = (StarsEnergyCompanySettings) object;
+                return target.getStarsCustomerSelectionLists();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
-                    StarsCustomerAddress target = (StarsCustomerAddress) object;
-                    target.setState( (java.lang.String) value);
+                    StarsEnergyCompanySettings target = (StarsEnergyCompanySettings) object;
+                    target.setStarsCustomerSelectionLists( (StarsCustomerSelectionLists) value);
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
             }
             public java.lang.Object newInstance( java.lang.Object parent ) {
-                return null;
+                return new StarsCustomerSelectionLists();
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _state
+        //-- validation code for: _starsCustomerSelectionLists
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
-        { //-- local scope
-            StringValidator sv = new StringValidator();
-            sv.setWhiteSpace("preserve");
-            fieldValidator.setValidator(sv);
-        }
         desc.setValidator(fieldValidator);
         
-        //-- _zip
-        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_zip", "Zip", NodeType.Element);
-        desc.setImmutable(true);
+        //-- _starsCustomerFAQs
+        desc = new XMLFieldDescriptorImpl(StarsCustomerFAQs.class, "_starsCustomerFAQs", "stars-CustomerFAQs", NodeType.Element);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
-                StarsCustomerAddress target = (StarsCustomerAddress) object;
-                return target.getZip();
+                StarsEnergyCompanySettings target = (StarsEnergyCompanySettings) object;
+                return target.getStarsCustomerFAQs();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
-                    StarsCustomerAddress target = (StarsCustomerAddress) object;
-                    target.setZip( (java.lang.String) value);
+                    StarsEnergyCompanySettings target = (StarsEnergyCompanySettings) object;
+                    target.setStarsCustomerFAQs( (StarsCustomerFAQs) value);
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
             }
             public java.lang.Object newInstance( java.lang.Object parent ) {
-                return null;
+                return new StarsCustomerFAQs();
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _zip
+        //-- validation code for: _starsCustomerFAQs
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
-        { //-- local scope
-            StringValidator sv = new StringValidator();
-            sv.setWhiteSpace("preserve");
-            fieldValidator.setValidator(sv);
-        }
         desc.setValidator(fieldValidator);
         
-        //-- _county
-        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_county", "County", NodeType.Element);
-        desc.setImmutable(true);
+        //-- _starsServiceCompanies
+        desc = new XMLFieldDescriptorImpl(StarsServiceCompanies.class, "_starsServiceCompanies", "stars-ServiceCompanies", NodeType.Element);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
-                StarsCustomerAddress target = (StarsCustomerAddress) object;
-                return target.getCounty();
+                StarsEnergyCompanySettings target = (StarsEnergyCompanySettings) object;
+                return target.getStarsServiceCompanies();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
-                    StarsCustomerAddress target = (StarsCustomerAddress) object;
-                    target.setCounty( (java.lang.String) value);
+                    StarsEnergyCompanySettings target = (StarsEnergyCompanySettings) object;
+                    target.setStarsServiceCompanies( (StarsServiceCompanies) value);
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
             }
             public java.lang.Object newInstance( java.lang.Object parent ) {
-                return null;
+                return new StarsServiceCompanies();
             }
         } );
         desc.setHandler(handler);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _county
+        //-- validation code for: _starsServiceCompanies
         fieldValidator = new FieldValidator();
-        { //-- local scope
-            StringValidator sv = new StringValidator();
-            sv.setWhiteSpace("preserve");
-            fieldValidator.setValidator(sv);
-        }
         desc.setValidator(fieldValidator);
         
-    } //-- com.cannontech.stars.xml.serialize.StarsCustomerAddressDescriptor()
+        //-- _starsExitInterviewQuestions
+        desc = new XMLFieldDescriptorImpl(StarsExitInterviewQuestions.class, "_starsExitInterviewQuestions", "stars-ExitInterviewQuestions", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsEnergyCompanySettings target = (StarsEnergyCompanySettings) object;
+                return target.getStarsExitInterviewQuestions();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsEnergyCompanySettings target = (StarsEnergyCompanySettings) object;
+                    target.setStarsExitInterviewQuestions( (StarsExitInterviewQuestions) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new StarsExitInterviewQuestions();
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _starsExitInterviewQuestions
+        fieldValidator = new FieldValidator();
+        desc.setValidator(fieldValidator);
+        
+        //-- _starsDefaultThermostatSettingsList
+        desc = new XMLFieldDescriptorImpl(StarsDefaultThermostatSettings.class, "_starsDefaultThermostatSettingsList", "stars-DefaultThermostatSettings", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsEnergyCompanySettings target = (StarsEnergyCompanySettings) object;
+                return target.getStarsDefaultThermostatSettings();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsEnergyCompanySettings target = (StarsEnergyCompanySettings) object;
+                    target.addStarsDefaultThermostatSettings( (StarsDefaultThermostatSettings) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new StarsDefaultThermostatSettings();
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setMultivalued(true);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _starsDefaultThermostatSettingsList
+        fieldValidator = new FieldValidator();
+        fieldValidator.setMinOccurs(0);
+        fieldValidator.setMaxOccurs(3);
+        desc.setValidator(fieldValidator);
+        
+    } //-- com.cannontech.stars.xml.serialize.StarsEnergyCompanySettingsDescriptor()
 
 
       //-----------/
@@ -372,7 +394,7 @@ public class StarsCustomerAddressDescriptor extends org.exolab.castor.xml.util.X
     **/
     public java.lang.Class getJavaClass()
     {
-        return com.cannontech.stars.xml.serialize.StarsCustomerAddress.class;
+        return com.cannontech.stars.xml.serialize.StarsEnergyCompanySettings.class;
     } //-- java.lang.Class getJavaClass() 
 
     /**

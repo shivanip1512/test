@@ -15,8 +15,6 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.Serializable;
 import java.io.Writer;
-import java.util.Enumeration;
-import java.util.Vector;
 import org.exolab.castor.xml.*;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -34,21 +32,7 @@ public class StarsGetEnergyCompanySettingsResponse implements java.io.Serializab
      //- Class/Member Variables -/
     //--------------------------/
 
-    private StarsEnergyCompany _starsEnergyCompany;
-
-    private StarsWebConfig _starsWebConfig;
-
-    private StarsEnrollmentPrograms _starsEnrollmentPrograms;
-
-    private StarsCustomerSelectionLists _starsCustomerSelectionLists;
-
-    private StarsCustomerFAQs _starsCustomerFAQs;
-
-    private StarsServiceCompanies _starsServiceCompanies;
-
-    private StarsExitInterviewQuestions _starsExitInterviewQuestions;
-
-    private java.util.Vector _starsDefaultThermostatSettingsList;
+    private StarsEnergyCompanySettings _starsEnergyCompanySettings;
 
 
       //----------------/
@@ -57,7 +41,6 @@ public class StarsGetEnergyCompanySettingsResponse implements java.io.Serializab
 
     public StarsGetEnergyCompanySettingsResponse() {
         super();
-        _starsDefaultThermostatSettingsList = new Vector();
     } //-- com.cannontech.stars.xml.serialize.StarsGetEnergyCompanySettingsResponse()
 
 
@@ -66,145 +49,14 @@ public class StarsGetEnergyCompanySettingsResponse implements java.io.Serializab
     //-----------/
 
     /**
+     * Returns the value of field 'starsEnergyCompanySettings'.
      * 
-     * 
-     * @param vStarsDefaultThermostatSettings
+     * @return the value of field 'starsEnergyCompanySettings'.
     **/
-    public void addStarsDefaultThermostatSettings(StarsDefaultThermostatSettings vStarsDefaultThermostatSettings)
-        throws java.lang.IndexOutOfBoundsException
+    public StarsEnergyCompanySettings getStarsEnergyCompanySettings()
     {
-        if (!(_starsDefaultThermostatSettingsList.size() < 3)) {
-            throw new IndexOutOfBoundsException();
-        }
-        _starsDefaultThermostatSettingsList.addElement(vStarsDefaultThermostatSettings);
-    } //-- void addStarsDefaultThermostatSettings(StarsDefaultThermostatSettings) 
-
-    /**
-     * 
-     * 
-     * @param index
-     * @param vStarsDefaultThermostatSettings
-    **/
-    public void addStarsDefaultThermostatSettings(int index, StarsDefaultThermostatSettings vStarsDefaultThermostatSettings)
-        throws java.lang.IndexOutOfBoundsException
-    {
-        if (!(_starsDefaultThermostatSettingsList.size() < 3)) {
-            throw new IndexOutOfBoundsException();
-        }
-        _starsDefaultThermostatSettingsList.insertElementAt(vStarsDefaultThermostatSettings, index);
-    } //-- void addStarsDefaultThermostatSettings(int, StarsDefaultThermostatSettings) 
-
-    /**
-    **/
-    public java.util.Enumeration enumerateStarsDefaultThermostatSettings()
-    {
-        return _starsDefaultThermostatSettingsList.elements();
-    } //-- java.util.Enumeration enumerateStarsDefaultThermostatSettings() 
-
-    /**
-     * Returns the value of field 'starsCustomerFAQs'.
-     * 
-     * @return the value of field 'starsCustomerFAQs'.
-    **/
-    public StarsCustomerFAQs getStarsCustomerFAQs()
-    {
-        return this._starsCustomerFAQs;
-    } //-- StarsCustomerFAQs getStarsCustomerFAQs() 
-
-    /**
-     * Returns the value of field 'starsCustomerSelectionLists'.
-     * 
-     * @return the value of field 'starsCustomerSelectionLists'.
-    **/
-    public StarsCustomerSelectionLists getStarsCustomerSelectionLists()
-    {
-        return this._starsCustomerSelectionLists;
-    } //-- StarsCustomerSelectionLists getStarsCustomerSelectionLists() 
-
-    /**
-     * 
-     * 
-     * @param index
-    **/
-    public StarsDefaultThermostatSettings getStarsDefaultThermostatSettings(int index)
-        throws java.lang.IndexOutOfBoundsException
-    {
-        //-- check bounds for index
-        if ((index < 0) || (index > _starsDefaultThermostatSettingsList.size())) {
-            throw new IndexOutOfBoundsException();
-        }
-        
-        return (StarsDefaultThermostatSettings) _starsDefaultThermostatSettingsList.elementAt(index);
-    } //-- StarsDefaultThermostatSettings getStarsDefaultThermostatSettings(int) 
-
-    /**
-    **/
-    public StarsDefaultThermostatSettings[] getStarsDefaultThermostatSettings()
-    {
-        int size = _starsDefaultThermostatSettingsList.size();
-        StarsDefaultThermostatSettings[] mArray = new StarsDefaultThermostatSettings[size];
-        for (int index = 0; index < size; index++) {
-            mArray[index] = (StarsDefaultThermostatSettings) _starsDefaultThermostatSettingsList.elementAt(index);
-        }
-        return mArray;
-    } //-- StarsDefaultThermostatSettings[] getStarsDefaultThermostatSettings() 
-
-    /**
-    **/
-    public int getStarsDefaultThermostatSettingsCount()
-    {
-        return _starsDefaultThermostatSettingsList.size();
-    } //-- int getStarsDefaultThermostatSettingsCount() 
-
-    /**
-     * Returns the value of field 'starsEnergyCompany'.
-     * 
-     * @return the value of field 'starsEnergyCompany'.
-    **/
-    public StarsEnergyCompany getStarsEnergyCompany()
-    {
-        return this._starsEnergyCompany;
-    } //-- StarsEnergyCompany getStarsEnergyCompany() 
-
-    /**
-     * Returns the value of field 'starsEnrollmentPrograms'.
-     * 
-     * @return the value of field 'starsEnrollmentPrograms'.
-    **/
-    public StarsEnrollmentPrograms getStarsEnrollmentPrograms()
-    {
-        return this._starsEnrollmentPrograms;
-    } //-- StarsEnrollmentPrograms getStarsEnrollmentPrograms() 
-
-    /**
-     * Returns the value of field 'starsExitInterviewQuestions'.
-     * 
-     * @return the value of field 'starsExitInterviewQuestions'.
-    **/
-    public StarsExitInterviewQuestions getStarsExitInterviewQuestions()
-    {
-        return this._starsExitInterviewQuestions;
-    } //-- StarsExitInterviewQuestions getStarsExitInterviewQuestions() 
-
-    /**
-     * Returns the value of field 'starsServiceCompanies'.
-     * 
-     * @return the value of field 'starsServiceCompanies'.
-    **/
-    public StarsServiceCompanies getStarsServiceCompanies()
-    {
-        return this._starsServiceCompanies;
-    } //-- StarsServiceCompanies getStarsServiceCompanies() 
-
-    /**
-     * Returns the value of field 'starsWebConfig'.
-     * 
-     * @return the value of field 'starsWebConfig'.
-    **/
-    public StarsWebConfig getStarsWebConfig()
-    {
-        return this._starsWebConfig;
-    } //-- StarsWebConfig getStarsWebConfig() 
+        return this._starsEnergyCompanySettings;
+    } //-- StarsEnergyCompanySettings getStarsEnergyCompanySettings() 
 
     /**
     **/
@@ -244,132 +96,15 @@ public class StarsGetEnergyCompanySettingsResponse implements java.io.Serializab
     } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
+     * Sets the value of field 'starsEnergyCompanySettings'.
+     * 
+     * @param starsEnergyCompanySettings the value of field
+     * 'starsEnergyCompanySettings'.
     **/
-    public void removeAllStarsDefaultThermostatSettings()
+    public void setStarsEnergyCompanySettings(StarsEnergyCompanySettings starsEnergyCompanySettings)
     {
-        _starsDefaultThermostatSettingsList.removeAllElements();
-    } //-- void removeAllStarsDefaultThermostatSettings() 
-
-    /**
-     * 
-     * 
-     * @param index
-    **/
-    public StarsDefaultThermostatSettings removeStarsDefaultThermostatSettings(int index)
-    {
-        java.lang.Object obj = _starsDefaultThermostatSettingsList.elementAt(index);
-        _starsDefaultThermostatSettingsList.removeElementAt(index);
-        return (StarsDefaultThermostatSettings) obj;
-    } //-- StarsDefaultThermostatSettings removeStarsDefaultThermostatSettings(int) 
-
-    /**
-     * Sets the value of field 'starsCustomerFAQs'.
-     * 
-     * @param starsCustomerFAQs the value of field
-     * 'starsCustomerFAQs'.
-    **/
-    public void setStarsCustomerFAQs(StarsCustomerFAQs starsCustomerFAQs)
-    {
-        this._starsCustomerFAQs = starsCustomerFAQs;
-    } //-- void setStarsCustomerFAQs(StarsCustomerFAQs) 
-
-    /**
-     * Sets the value of field 'starsCustomerSelectionLists'.
-     * 
-     * @param starsCustomerSelectionLists the value of field
-     * 'starsCustomerSelectionLists'.
-    **/
-    public void setStarsCustomerSelectionLists(StarsCustomerSelectionLists starsCustomerSelectionLists)
-    {
-        this._starsCustomerSelectionLists = starsCustomerSelectionLists;
-    } //-- void setStarsCustomerSelectionLists(StarsCustomerSelectionLists) 
-
-    /**
-     * 
-     * 
-     * @param index
-     * @param vStarsDefaultThermostatSettings
-    **/
-    public void setStarsDefaultThermostatSettings(int index, StarsDefaultThermostatSettings vStarsDefaultThermostatSettings)
-        throws java.lang.IndexOutOfBoundsException
-    {
-        //-- check bounds for index
-        if ((index < 0) || (index > _starsDefaultThermostatSettingsList.size())) {
-            throw new IndexOutOfBoundsException();
-        }
-        if (!(index < 3)) {
-            throw new IndexOutOfBoundsException();
-        }
-        _starsDefaultThermostatSettingsList.setElementAt(vStarsDefaultThermostatSettings, index);
-    } //-- void setStarsDefaultThermostatSettings(int, StarsDefaultThermostatSettings) 
-
-    /**
-     * 
-     * 
-     * @param starsDefaultThermostatSettingsArray
-    **/
-    public void setStarsDefaultThermostatSettings(StarsDefaultThermostatSettings[] starsDefaultThermostatSettingsArray)
-    {
-        //-- copy array
-        _starsDefaultThermostatSettingsList.removeAllElements();
-        for (int i = 0; i < starsDefaultThermostatSettingsArray.length; i++) {
-            _starsDefaultThermostatSettingsList.addElement(starsDefaultThermostatSettingsArray[i]);
-        }
-    } //-- void setStarsDefaultThermostatSettings(StarsDefaultThermostatSettings) 
-
-    /**
-     * Sets the value of field 'starsEnergyCompany'.
-     * 
-     * @param starsEnergyCompany the value of field
-     * 'starsEnergyCompany'.
-    **/
-    public void setStarsEnergyCompany(StarsEnergyCompany starsEnergyCompany)
-    {
-        this._starsEnergyCompany = starsEnergyCompany;
-    } //-- void setStarsEnergyCompany(StarsEnergyCompany) 
-
-    /**
-     * Sets the value of field 'starsEnrollmentPrograms'.
-     * 
-     * @param starsEnrollmentPrograms the value of field
-     * 'starsEnrollmentPrograms'.
-    **/
-    public void setStarsEnrollmentPrograms(StarsEnrollmentPrograms starsEnrollmentPrograms)
-    {
-        this._starsEnrollmentPrograms = starsEnrollmentPrograms;
-    } //-- void setStarsEnrollmentPrograms(StarsEnrollmentPrograms) 
-
-    /**
-     * Sets the value of field 'starsExitInterviewQuestions'.
-     * 
-     * @param starsExitInterviewQuestions the value of field
-     * 'starsExitInterviewQuestions'.
-    **/
-    public void setStarsExitInterviewQuestions(StarsExitInterviewQuestions starsExitInterviewQuestions)
-    {
-        this._starsExitInterviewQuestions = starsExitInterviewQuestions;
-    } //-- void setStarsExitInterviewQuestions(StarsExitInterviewQuestions) 
-
-    /**
-     * Sets the value of field 'starsServiceCompanies'.
-     * 
-     * @param starsServiceCompanies the value of field
-     * 'starsServiceCompanies'.
-    **/
-    public void setStarsServiceCompanies(StarsServiceCompanies starsServiceCompanies)
-    {
-        this._starsServiceCompanies = starsServiceCompanies;
-    } //-- void setStarsServiceCompanies(StarsServiceCompanies) 
-
-    /**
-     * Sets the value of field 'starsWebConfig'.
-     * 
-     * @param starsWebConfig the value of field 'starsWebConfig'.
-    **/
-    public void setStarsWebConfig(StarsWebConfig starsWebConfig)
-    {
-        this._starsWebConfig = starsWebConfig;
-    } //-- void setStarsWebConfig(StarsWebConfig) 
+        this._starsEnergyCompanySettings = starsEnergyCompanySettings;
+    } //-- void setStarsEnergyCompanySettings(StarsEnergyCompanySettings) 
 
     /**
      * 

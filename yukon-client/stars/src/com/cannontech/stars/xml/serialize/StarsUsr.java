@@ -11,6 +11,7 @@ package com.cannontech.stars.xml.serialize;
  //- Imported classes and packages -/
 //---------------------------------/
 
+import com.cannontech.stars.xml.serialize.types.StarsLoginStatus;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Serializable;
@@ -49,6 +50,8 @@ public abstract class StarsUsr implements java.io.Serializable {
     private java.lang.String _username;
 
     private java.lang.String _password;
+
+    private com.cannontech.stars.xml.serialize.types.StarsLoginStatus _status;
 
 
       //----------------/
@@ -97,6 +100,16 @@ public abstract class StarsUsr implements java.io.Serializable {
     {
         return this._password;
     } //-- java.lang.String getPassword() 
+
+    /**
+     * Returns the value of field 'status'.
+     * 
+     * @return the value of field 'status'.
+    **/
+    public com.cannontech.stars.xml.serialize.types.StarsLoginStatus getStatus()
+    {
+        return this._status;
+    } //-- com.cannontech.stars.xml.serialize.types.StarsLoginStatus getStatus() 
 
     /**
      * Returns the value of field 'userID'.
@@ -181,6 +194,16 @@ public abstract class StarsUsr implements java.io.Serializable {
     {
         this._password = password;
     } //-- void setPassword(java.lang.String) 
+
+    /**
+     * Sets the value of field 'status'.
+     * 
+     * @param status the value of field 'status'.
+    **/
+    public void setStatus(com.cannontech.stars.xml.serialize.types.StarsLoginStatus status)
+    {
+        this._status = status;
+    } //-- void setStatus(com.cannontech.stars.xml.serialize.types.StarsLoginStatus) 
 
     /**
      * Sets the value of field 'userID'.

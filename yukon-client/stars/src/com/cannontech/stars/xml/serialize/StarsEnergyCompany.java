@@ -32,13 +32,6 @@ public class StarsEnergyCompany implements java.io.Serializable {
      //- Class/Member Variables -/
     //--------------------------/
 
-    private int _energyCompanyID;
-
-    /**
-     * keeps track of state for field: _energyCompanyID
-    **/
-    private boolean _has_energyCompanyID;
-
     private java.lang.String _companyName;
 
     private java.lang.String _mainPhoneNumber;
@@ -64,13 +57,6 @@ public class StarsEnergyCompany implements java.io.Serializable {
       //-----------/
      //- Methods -/
     //-----------/
-
-    /**
-    **/
-    public void deleteEnergyCompanyID()
-    {
-        this._has_energyCompanyID= false;
-    } //-- void deleteEnergyCompanyID() 
 
     /**
      * Returns the value of field 'companyAddress'.
@@ -103,16 +89,6 @@ public class StarsEnergyCompany implements java.io.Serializable {
     } //-- java.lang.String getEmail() 
 
     /**
-     * Returns the value of field 'energyCompanyID'.
-     * 
-     * @return the value of field 'energyCompanyID'.
-    **/
-    public int getEnergyCompanyID()
-    {
-        return this._energyCompanyID;
-    } //-- int getEnergyCompanyID() 
-
-    /**
      * Returns the value of field 'mainFaxNumber'.
      * 
      * @return the value of field 'mainFaxNumber'.
@@ -141,13 +117,6 @@ public class StarsEnergyCompany implements java.io.Serializable {
     {
         return this._timeZone;
     } //-- java.lang.String getTimeZone() 
-
-    /**
-    **/
-    public boolean hasEnergyCompanyID()
-    {
-        return this._has_energyCompanyID;
-    } //-- boolean hasEnergyCompanyID() 
 
     /**
     **/
@@ -215,17 +184,6 @@ public class StarsEnergyCompany implements java.io.Serializable {
     {
         this._email = email;
     } //-- void setEmail(java.lang.String) 
-
-    /**
-     * Sets the value of field 'energyCompanyID'.
-     * 
-     * @param energyCompanyID the value of field 'energyCompanyID'.
-    **/
-    public void setEnergyCompanyID(int energyCompanyID)
-    {
-        this._energyCompanyID = energyCompanyID;
-        this._has_energyCompanyID = true;
-    } //-- void setEnergyCompanyID(int) 
 
     /**
      * Sets the value of field 'mainFaxNumber'.
