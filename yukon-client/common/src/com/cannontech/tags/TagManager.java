@@ -3,17 +3,26 @@
  */
 package com.cannontech.tags;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.cache.PointChangeCache;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.PoolManager;
+import com.cannontech.database.db.point.TAGLog;
 import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.message.dispatch.message.TagMsg;
@@ -299,4 +308,49 @@ public class TagManager implements MessageListener {
 		return _clientMessageID++;
 	}
 
+   /**
+    * Returns a List of TagLog objects for the entire history of a point
+ 	* @param pointID
+ 	*/
+	public List getTagLog(int pointID) {
+		final String sql = "select logid,instanceid,pointid,tagid,username,action,description,tagtime,refstr,forstr from taglog where pointid=" + pointID + " order by logid";
+		
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet rset = null;
+		ArrayList tagLog = new ArrayList();
+		
+		try {
+			conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+			stmt = conn.createStatement();
+			rset = stmt.executeQuery(sql);			
+			
+			while(rset.next()) {
+				TAGLog t = new TAGLog();
+				t.setInstanceID(new Integer(rset.getInt(2)));
+				t.setPointID(new Integer(rset.getInt(3)));
+				t.setTagID(new Integer(rset.getInt(4)));
+				t.setUserName(rset.getString(5));
+				t.setAction(rset.getString(6));
+				t.setDescription(rset.getString(7));
+				t.setTagTime(new Date(rset.getTimestamp(8).getTime()));
+				t.setForStr(rset.getString(9));
+				t.setRefStr(rset.getString(10));
+				tagLog.add(t);
+			}
+		}
+		catch(SQLException e) {
+			CTILogger.error("Error retrieving a taglog", e);
+		}
+		finally {
+			try {
+				if(rset != null) rset.close();
+				if(stmt != null) stmt.close();
+				if(conn != null) conn.close();
+			} catch(SQLException sql2) {
+				CTILogger.error("", sql2);
+			}
+		}
+		return tagLog;
+	}
 }

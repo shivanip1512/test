@@ -8,6 +8,7 @@ import java.util.Date;
 public class TAGLog extends com.cannontech.database.db.DBPersistent 
 {
 	private Integer logID = null;
+	private Integer instanceID = null;
 	private Integer pointID = null;
 	private Integer tagID = null;
 	private String userName = null;
@@ -21,7 +22,7 @@ public class TAGLog extends com.cannontech.database.db.DBPersistent
 	public static final String CONSTRAINT_COLUMNS[] = { "LogID" };
 	public static final String COLUMNS[] = 
 	{	
-		"PointID", "TagID", "UserName", "Action",
+		"PointID", "InstanceID", "TagID", "UserName", "Action",
 		"Description", "TagTime", "RefStr", "ForStr"
 	};
 
@@ -41,7 +42,7 @@ public void add() throws java.sql.SQLException
 {
 	Object addValues[] = 
 	{ 
-		getLogID(), getPointID(), getTagID(), getUserName(),
+		getLogID(), getInstanceID(), getPointID(), getTagID(), getUserName(),
 		getAction(), getDescription(),
 		getTagTime(), getRefStr(), getForStr()
 	};
@@ -90,13 +91,14 @@ public void retrieve() throws java.sql.SQLException
 	if( results.length == COLUMNS.length )
 	{
 		setPointID( (Integer) results[0] );
-		setTagID( (Integer) results[1] );
-		setUserName( (String) results[2] );
-		setAction( (String) results[3] );
-		setDescription( (String) results[4] );
-		setTagTime( (Date) results[5] );
-		setRefStr( (String) results[6] );
-		setForStr( (String) results[7] );
+		setInstanceID( (Integer) results[1] );
+		setTagID( (Integer) results[2] );
+		setUserName( (String) results[3] );
+		setAction( (String) results[4] );
+		setDescription( (String) results[5] );
+		setTagTime( (Date) results[6] );
+		setRefStr( (String) results[7] );
+		setForStr( (String) results[8] );
 	}
 	else
 		throw new Error(getClass() + " - Incorrect Number of results retrieved");
@@ -132,7 +134,7 @@ public void update() throws java.sql.SQLException
 {
 	Object setValues[] = 
 	{ 
-		getPointID(), getTagID(), getUserName(),
+		getPointID(), getInstanceID(), getTagID(), getUserName(),
 		getAction(), getDescription(),
 		getTagTime(), getRefStr(), getForStr()
 	};
@@ -237,6 +239,20 @@ public void update() throws java.sql.SQLException
 	public void setUserName(String string)
 	{
 		userName = string;
+	}
+
+	/**
+	 * @return
+	 */
+	public Integer getInstanceID() {
+		return instanceID;
+	}
+
+	/**
+	 * @param integer
+	 */
+	public void setInstanceID(Integer integer) {
+		instanceID = integer;
 	}
 
 }
