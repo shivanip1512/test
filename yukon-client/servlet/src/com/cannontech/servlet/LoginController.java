@@ -114,9 +114,9 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 				ActivityLogger.logEvent(user.getUserID(), LOGIN_WEB_ACTIVITY_ACTION, "User " + user.getUsername() + " (userid=" + user.getUserID() + ") has logged in from " + req.getRemoteAddr());
 				
 			} catch(TransactionException e) {
-				session.invalidate();
+				if (session != null) session.invalidate();
 				resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			} 
+			}
 
 			resp.sendRedirect(req.getContextPath() + home_url);
 		}
