@@ -28,6 +28,9 @@ public class CustomerContact extends com.cannontech.database.db.DBPersistent imp
 	private static final String GET_CUSTOMER_CONTACT_SQL =
 		"SELECT ContactID,ContFirstName,ContLastName,ContPhone1,ContPhone2,LocationID,LogInID FROM " + 
 		TABLE_NAME + " WHERE LoginID=?";
+	
+	private static final String GET_NEXT_CONTACT_ID_SQL =
+		"SELECT MAX(ContactID) FROM " + TABLE_NAME;
 /**
  * LMGroupVersacomSerial constructor comment.
  */
@@ -458,6 +461,38 @@ public final Integer getNextContactID()
 	
 	return new Integer( counter );
 }
+
+/**
+ * Created by yao, get the next contact ID as the maximum existing ID + 1
+ */
+public final Integer getNextContactID2() {
+        java.sql.PreparedStatement pstmt = null;
+        java.sql.ResultSet rset = null;
+
+        int nextContactID = 1;
+
+        try {
+            pstmt = getDbConnection().prepareStatement( GET_NEXT_CONTACT_ID_SQL );
+            rset = pstmt.executeQuery();
+
+            if (rset.next())
+                nextContactID = rset.getInt(1) + 1;
+        }
+        catch (java.sql.SQLException e) {
+            e.printStackTrace();
+        }
+        finally {
+            try {
+                if (pstmt != null) pstmt.close();
+            }
+            catch (java.sql.SQLException e2) {
+                e2.printStackTrace();
+            }
+        }
+
+        return new Integer( nextContactID );
+}
+
 /**
  * retrieve method comment.
  */
