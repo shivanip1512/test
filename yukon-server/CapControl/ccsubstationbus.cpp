@@ -1393,7 +1393,12 @@ DOUBLE CtiCCSubstationBus::calculateKVARSolution(const RWCString& controlUnits, 
              !controlUnits.compareTo(CtiCCSubstationBus::PF_BY_KQControlUnits,RWCString::ignoreCase))
     {
         DOUBLE targetKVA = wattValue / (setPoint/100.0);
-        DOUBLE targetKVAR = sqrt((targetKVA*targetKVA)-(wattValue*wattValue));
+        DOUBLE NaNDefenseDouble = (targetKVA*targetKVA)-(wattValue*wattValue);
+        DOUBLE targetKVAR = 0.0;
+        if( NaNDefenseDouble > 0.0 )
+        {
+            sqrt(NaNDefenseDouble);
+        }
 
         returnKVARSolution = targetKVAR - varValue;
     }
