@@ -9,7 +9,6 @@ import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.point.PointAnalog;
 import com.cannontech.database.db.point.PointLimit;
 
-
 /**
  * 
  * @author alauinger
