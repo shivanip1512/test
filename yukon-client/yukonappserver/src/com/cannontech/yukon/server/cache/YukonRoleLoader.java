@@ -30,7 +30,7 @@ public class YukonRoleLoader implements Runnable
 	{
    		long timerStart = System.currentTimeMillis();
    		
-   		String sql = "SELECT RoleID,RoleName,Category,DefaultValue,Description FROM YukonRole";
+   		String sql = "SELECT RoleID,RoleName,Category,DefaultValue,RoleDescription FROM YukonRole";
    		
       	Connection conn = null;
       	Statement stmt = null;
