@@ -245,8 +245,8 @@ public class ViewCreator
 				tableModel.getRows().addElement( newRow );
 			
 			// put a holder value for the model in row location i
-			tableModel.createDummyPointValue( 0 );
-//			tableModel.createDummyPointValue(
+			tableModel.createPsuedoPointValue( 0 );
+//			tableModel.createPsuedoPointValue(
 //						Integer.parseInt(rowData[i][6].toString()), //pointID
 //						((Timestamp)rowData[i][0]).getTime(), //TimeStamp
 //						CommonUtils.createString( rowData[i][1] ), //DeviceName
@@ -396,10 +396,10 @@ public class ViewCreator
 			else
 				tableModel.getRows().addElement( newRow );
 			
-			tableModel.createDummyPointValue( 0 );
+			tableModel.createPsuedoPointValue( 0 );
 
 			// put a holder value for the model in row location i
-//			tableModel.createDummyPointValue(
+//			tableModel.createPsuedoPointValue(
 //						Integer.parseInt(rowData[i][6].toString()), //pointID
 //						((Timestamp)rowData[i][0]).getTime(), //TimeStamp
 //						CommonUtils.createString( rowData[i][1] ), //DeviceName
@@ -544,7 +544,7 @@ public class ViewCreator
 						  " and s.datetime >= ? " +
 						  " and s.datetime < ? " +
 						  " and s.logid >= ? " +
-						  " and s.logid <= ? " +
+						  " and s.logid < ? " +
 						  " order by s.datetime, s.soe_tag";
    
 		GregorianCalendar lowerCal = new GregorianCalendar();
@@ -639,12 +639,12 @@ public class ViewCreator
 			
 			// put a holder value for the model in row location i
 			if( rowData[i].length >= 7 && rowData[i][6] != null )
-//				tableModel.createDummyPointValue( Long.parseLong(rowData[i][6].toString()),
+//				tableModel.createPsuedoPointValue( Long.parseLong(rowData[i][6].toString()),
 //								((Timestamp)rowData[i][0]).getTime(), //TimeStamp
 //								CommonUtils.createString( rowData[i][1] ), //DeviceName
 //								Integer.parseInt(rowData[i][7].toString()), //SOE_Tag
 //								0 );
-				tableModel.createDummyPointValue( 0 );
+				tableModel.createPsuedoPointValue( 0 );
 
 
 			tableModel.addBlankRowIfNeeded();
@@ -774,8 +774,8 @@ public class ViewCreator
 			
 			// put a holder value for the model in row location i
 			if( rowData[i].length >= 7 && rowData[i][6] != null )
-				tableModel.createDummyPointValue( 0 );
-//				tableModel.createDummyPointValue( 
+				tableModel.createPsuedoPointValue( 0 );
+//				tableModel.createPsuedoPointValue( 
 //						Long.parseLong( rowData[i][6].toString() ),
 //						new Date().getTime(),
 //						"DUMMY",

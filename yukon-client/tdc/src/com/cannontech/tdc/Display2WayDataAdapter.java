@@ -60,6 +60,12 @@ public class Display2WayDataAdapter extends AbstractTableModel implements com.ca
 								PointTypes.INVALID_POINT,
 								"", "", "" );	
 
+	public static final PointValues PSUEDO_POINT_VALUES =
+						new PointValues(
+								TDCDefines.ROW_BREAK_ID,
+								PointTypes.INVALID_POINT,
+								"", "", "" );	
+
 	
 	private Vector columnNames = null;	
 	private Vector columnTypeName = null;
@@ -379,6 +385,24 @@ protected void createDummyPointValue( int location )
 	else
 		pointValues.insertElementAt( DUMMY_POINT_VALUES, location );
 }
+
+/**
+ * Insert the method's description here.
+ * Creation date: (4/12/00 2:23:47 PM)
+ * Version: <version>
+ * @param id long
+ */
+protected void createPsuedoPointValue( int location ) 
+{
+	if( location >= getRowCount() )
+		return;  // cant add it off the chart
+
+	if( location >= getRowCount() ) //Add the new value
+		pointValues.addElement( PSUEDO_POINT_VALUES );
+	else
+		pointValues.insertElementAt( PSUEDO_POINT_VALUES, location );
+}
+
 
 /* TRY TO GET AWAY FROM
 protected void createDummyPointValue( long id, long timeStamp, String deviceName, int soe_tag, int location ) 
@@ -1379,7 +1403,7 @@ public boolean isRowSelectedBlank( int location )
 {
 	if( location < getRows().size() && location >= 0 )
 	{
-		if( getPointID( location ) == TDCDefines.ROW_BREAK_ID )
+		if( getPointValue(location) == DUMMY_POINT_VALUES )
 			return true;
 		else
 			return false;			
