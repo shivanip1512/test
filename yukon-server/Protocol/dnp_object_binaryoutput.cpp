@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2003/11/12 19:54:30 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2003/12/26 17:27:06 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -143,7 +143,7 @@ int CtiDNPBinaryOutput::getSerializedLen(void)
 }
 
 
-CtiPointDataMsg *CtiDNPBinaryOutput::getPoint( void )
+CtiPointDataMsg *CtiDNPBinaryOutput::getPoint( const CtiDNPTimeCTO *cto )
 {
     CtiPointDataMsg *tmpMsg;
 
@@ -205,9 +205,7 @@ CtiPointDataMsg *CtiDNPBinaryOutput::getPoint( void )
 
     //  the ID will be replaced by the offset by the object block, which will then be used by the
     //    device to figure out the true ID
-    tmpMsg = CTIDBG_new CtiPointDataMsg(0, val, NormalQuality, StatusOutputPointType);
-
-    tmpMsg = NULL;
+    tmpMsg = CTIDBG_new CtiPointDataMsg(0, val, NormalQuality, StatusPointType);
 
     return tmpMsg;
 }

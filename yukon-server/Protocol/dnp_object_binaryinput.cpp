@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2003/10/24 17:26:43 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2003/12/26 17:27:06 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -164,7 +164,7 @@ int CtiDNPBinaryInput::getSerializedLen(void)
 }
 
 
-CtiPointDataMsg *CtiDNPBinaryInput::getPoint( void )
+CtiPointDataMsg *CtiDNPBinaryInput::getPoint( const CtiDNPTimeCTO *cto )
 {
     CtiPointDataMsg *tmpMsg;
 
@@ -271,6 +271,12 @@ int CtiDNPBinaryInputChange::restore(unsigned char *buf, int len)
             pos += restoreVariation(buf + pos, len - pos, CtiDNPBinaryInput::WithStatus);
             pos += _timeRelative.restore(buf + pos, len - pos);
 
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << "Time Relative: " << _timeRelative.getSeconds() << "s, " << _timeRelative.getMilliseconds() << "ms" << endl;
+            }
+
             break;
         }
 
@@ -374,19 +380,37 @@ int CtiDNPBinaryInputChange::getSerializedLen(void)
 }
 
 
-CtiPointDataMsg *CtiDNPBinaryInputChange::getPoint( void )
+CtiPointDataMsg *CtiDNPBinaryInputChange::getPoint( const CtiDNPTimeCTO *cto )
 {
-    CtiPointDataMsg *tmpMsg;
-
-    tmpMsg = CtiDNPBinaryInput::getPoint();
+    CtiPointDataMsg *tmpMsg = NULL;
 
     switch(getVariation())
     {
         case WithTime:
         {
-            //tmpMsg->setTime(_time.getSeconds());
+            tmpMsg = CtiDNPBinaryInput::getPoint(cto);
+
+            tmpMsg->setTime(_time.getSeconds() + rwEpoch);
+            tmpMsg->setMillis(_time.getMilliseconds());
 
             break;
+        }
+
+        case WithRelativeTime:
+        {
+            unsigned long seconds;
+            unsigned milliseconds;
+
+            milliseconds = cto->getMilliseconds() + _timeRelative.getMilliseconds();
+            seconds      = cto->getSeconds()      + _timeRelative.getSeconds();
+
+            seconds      += milliseconds / 1000;
+            milliseconds %= 1000;
+
+            tmpMsg = CtiDNPBinaryInput::getPoint(cto);
+
+            tmpMsg->setTime(seconds + rwEpoch);
+            tmpMsg->setMillis(milliseconds);
         }
 
         default:

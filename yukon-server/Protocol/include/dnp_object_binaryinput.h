@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/03/13 19:35:45 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2003/12/26 17:27:06 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -67,7 +67,7 @@ public:
     virtual int serialize(unsigned char *buf);
     virtual int getSerializedLen(void);
 
-    virtual CtiPointDataMsg *getPoint( void );
+    virtual CtiPointDataMsg *getPoint( const CtiDNPTimeCTO *cto );
 };
 
 class CtiDNPBinaryInputChange : public CtiDNPBinaryInput
@@ -95,7 +95,7 @@ public:
     int serialize(unsigned char *buf);
     int getSerializedLen(void);
 
-    CtiPointDataMsg *getPoint( void );
+    CtiPointDataMsg *getPoint( const CtiDNPTimeCTO *cto );
 };
 
 #endif  //  #ifndef __DNP_OBJECT_BINARYINPUT_H__

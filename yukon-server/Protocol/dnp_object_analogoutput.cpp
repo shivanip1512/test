@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2003/10/17 18:42:39 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2003/12/26 17:27:06 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -199,7 +199,7 @@ int CtiDNPAnalogOutput::getSerializedLen(void)
 }
 
 
-CtiPointDataMsg *CtiDNPAnalogOutput::getPoint( void )
+CtiPointDataMsg *CtiDNPAnalogOutput::getPoint( const CtiDNPTimeCTO *cto )
 {
     CtiPointDataMsg *tmpMsg;
 

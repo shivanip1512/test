@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/03/13 19:35:45 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2003/12/26 17:26:24 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -70,7 +70,7 @@ public:
     virtual int serialize(unsigned char *buf);
     virtual int getSerializedLen(void);
 
-    virtual CtiPointDataMsg *getPoint( void );
+    virtual CtiPointDataMsg *getPoint( const CtiDNPTimeCTO *cto );
 };
 
 
@@ -129,7 +129,7 @@ public:
     int serialize(unsigned char *buf);
     int getSerializedLen(void);
 
-    CtiPointDataMsg *getPoint( void );
+    CtiPointDataMsg *getPoint( const CtiDNPTimeCTO *cto );
 };
 
 

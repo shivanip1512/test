@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2003/10/17 18:42:39 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2003/12/26 17:26:24 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -219,7 +219,7 @@ int CtiDNPAnalogInput::getSerializedLen(void)
 }
 
 
-CtiPointDataMsg *CtiDNPAnalogInput::getPoint( void )
+CtiPointDataMsg *CtiDNPAnalogInput::getPoint( const CtiDNPTimeCTO *cto )
 {
     CtiPointDataMsg *tmpMsg;
 
@@ -656,11 +656,11 @@ int CtiDNPAnalogInputChange::getSerializedLen(void)
 }
 
 
-CtiPointDataMsg *CtiDNPAnalogInputChange::getPoint( void )
+CtiPointDataMsg *CtiDNPAnalogInputChange::getPoint( const CtiDNPTimeCTO *cto )
 {
     CtiPointDataMsg *tmpMsg;
 
-    tmpMsg = CtiDNPAnalogInput::getPoint();
+    tmpMsg = CtiDNPAnalogInput::getPoint(cto);
 
     switch(getVariation())
     {
@@ -668,6 +668,7 @@ CtiPointDataMsg *CtiDNPAnalogInputChange::getPoint( void )
         case AI32BitWithTime:
         {
             tmpMsg->setTime(_toc.getSeconds());
+            tmpMsg->setMillis(_toc.getMilliseconds());
 
             break;
         }

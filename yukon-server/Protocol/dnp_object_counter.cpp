@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2003/10/17 18:41:36 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2003/12/26 17:27:06 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -144,7 +144,7 @@ int CtiDNPCounter::serializeVariation(unsigned char *buf, int variation)
 }
 
 
-CtiPointDataMsg *CtiDNPCounter::getPoint( void )
+CtiPointDataMsg *CtiDNPCounter::getPoint( const CtiDNPTimeCTO *cto )
 {
     CtiPointDataMsg *tmpMsg;
 
