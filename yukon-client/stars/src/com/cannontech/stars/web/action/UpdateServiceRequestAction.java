@@ -14,6 +14,7 @@ import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.db.stars.report.WorkOrderBase;
 import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.web.servlet.WorkOrderManager;
@@ -98,21 +99,22 @@ public class UpdateServiceRequestAction implements ActionBase {
 				return SOAPUtil.buildSOAPMessage( respOper );
         	}
         	
-        	WorkOrderBase order = (WorkOrderBase) StarsLiteFactory.createDBPersistent( liteOrder );
-        	StarsFactory.setWorkOrderBase( order, updateOrder );
-        	
-        	// Only update the current state if the state is "upgraded",
-        	// which means pending -> scheduled -> completed or cancelled
 			int statusPending = energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_PENDING).getEntryID();
 			int statusScheduled = energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_SCHEDULED).getEntryID();
 			int statusCompleted = energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_COMPLETED).getEntryID();
 			int statusCancelled = energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_CANCELLED).getEntryID();
-        	if (liteOrder.getCurrentStateID() != statusCompleted && liteOrder.getCurrentStateID() != statusCancelled) {
-        		if (updateOrder.getCurrentState().getEntryID() == statusCompleted ||
-        			updateOrder.getCurrentState().getEntryID() == statusCancelled ||
-        			updateOrder.getCurrentState().getEntryID() == statusScheduled)
-					order.setCurrentStateID( new Integer(updateOrder.getCurrentState().getEntryID()) );
-        	}
+			
+			if (liteOrder.getCurrentStateID() == statusCompleted ||
+				liteOrder.getCurrentStateID() == statusCancelled ||
+				liteOrder.getCurrentStateID() == statusScheduled && updateOrder.getCurrentState().getEntryID() == statusPending)
+			{
+				// If the current state is not "upgraded" (in the order of
+				// pending -> scheduled -> completed or cancelled), then reset it.
+				updateOrder.getCurrentState().setEntryID( liteOrder.getCurrentStateID() );
+			}
+        	
+			WorkOrderBase order = (WorkOrderBase) StarsLiteFactory.createDBPersistent( liteOrder );
+			StarsFactory.setWorkOrderBase( order, updateOrder );
         	
         	order = (WorkOrderBase) Transaction.createTransaction( Transaction.UPDATE, order ).execute();
         	StarsLiteFactory.setLiteWorkOrderBase( liteOrder, order );
@@ -182,7 +184,8 @@ public class UpdateServiceRequestAction implements ActionBase {
         return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
 	}
 	
-	public static StarsOperation getRequestOperation(HttpServletRequest req, TimeZone tz) {
+	public static StarsOperation getRequestOperation(HttpServletRequest req, TimeZone tz)
+	throws WebClientException {
 		StarsUpdateServiceRequest updateOrder = new StarsUpdateServiceRequest();
 		WorkOrderManager.setStarsServiceRequest( updateOrder, req, tz );
 			

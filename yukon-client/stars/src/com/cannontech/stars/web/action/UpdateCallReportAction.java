@@ -9,7 +9,6 @@ import javax.xml.soap.SOAPMessage;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.db.stars.report.CallReportBase;
-import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.StarsFactory;
@@ -52,19 +51,24 @@ public class UpdateCallReportAction implements ActionBase {
 			updateCall.setCallID( Integer.parseInt(req.getParameter("CallID")) );
 			if (req.getParameter("CallNo") != null)
 				updateCall.setCallNumber( req.getParameter("CallNo") );
+			if (req.getParameter("TakenBy") != null)
+				updateCall.setTakenBy( req.getParameter("TakenBy") );
+			if (req.getParameter("Description") != null)
+				updateCall.setDescription( req.getParameter("Description") );
+			
 			if (req.getParameter("CallDate") != null) {
-				String dateTime = req.getParameter("CallDate") + " " + req.getParameter("CallTime");
-				updateCall.setCallDate( ServerUtils.parseDate(dateTime, tz) );
+				java.util.Date callDate = ServletUtils.parseDateTime(
+						req.getParameter("CallDate"), req.getParameter("CallTime"), tz );
+				if (callDate == null)
+					throw new Exception("Invalid date/time format '" + req.getParameter("CallDate") + " " + req.getParameter("CallTime") + "'");
+				updateCall.setCallDate( callDate );
 			}
+			
 			if (req.getParameter("CallType") != null) {
 				CallType callType = new CallType();
 				callType.setEntryID( Integer.parseInt(req.getParameter("CallType")) );
 				updateCall.setCallType( callType );
 			}
-			if (req.getParameter("TakenBy") != null)
-				updateCall.setTakenBy( req.getParameter("TakenBy") );
-			if (req.getParameter("Description") != null)
-				updateCall.setDescription( req.getParameter("Description") );
 			
 			StarsOperation operation = new StarsOperation();
 			operation.setStarsUpdateCallReport( updateCall );

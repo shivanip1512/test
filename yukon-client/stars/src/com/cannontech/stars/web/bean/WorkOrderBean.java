@@ -234,6 +234,8 @@ public class WorkOrderBean {
 			StarsServiceRequest starsOrder = StarsLiteFactory.createStarsServiceRequest(liteOrder, getEnergyCompany());
 			Date date = ServerUtils.translateDate( getRelevantDate(liteOrder) );
 			String dateStr = (date != null)? ServerUtils.formatDate(date, energyCompany.getDefaultTimeZone()) : "----";
+			if (starsOrder.getOrderedBy().equals(""))
+				starsOrder.setOrderedBy( "&nbsp;" );
 			
 			htmlBuf.append("        <tr>").append("\r\n");
 			htmlBuf.append("          <td class='TableCell' width='13%' >")

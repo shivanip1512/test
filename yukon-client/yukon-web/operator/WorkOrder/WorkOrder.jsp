@@ -12,11 +12,6 @@
 	int statusScheduled = liteEC.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_SCHEDULED).getEntryID();
 	int statusCompleted = liteEC.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_COMPLETED).getEntryID();
 	int statusCancelled = liteEC.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_CANCELLED).getEntryID();
-	
-	Date dateScheduled = order.getDateScheduled();
-	if (dateScheduled == null) dateScheduled = new Date();
-	Date dateCompleted = order.getDateCompleted();
-	if (dateCompleted == null) dateCompleted = new Date();
 %>
 <html>
 <head>
@@ -62,13 +57,32 @@ function searchAccount(form) {
 	form.submit();
 }
 
+function getCurrentDate() {
+	date = new Date();
+	year = date.getFullYear();
+	month = ("0" + new String(date.getMonth()+1)).substr(-2);
+	date = ("0" + new String(date.getDate())).substr(-2);
+	return (month + "/" + date + "/" + year);
+}
+
+function getCurrentTime() {
+	date = new Date();
+	hour = ("0" + new String(date.getHours())).substr(-2);
+	minute = ("0" + new String(date.getMinutes())).substr(-2);
+	return (hour + ":" + minute);
+}
+
 var currentDivName = null;
 
 function showDateDiv(form, divName) {
 	currentDivName = divName;
 	document.getElementById("Div" + divName).style.display = "";
-	form.elements[divName].disabled= false;
-	form.elements[divName].select();
+	if (form.elements["Date" + divName].value == "") {
+		form.elements["Date" + divName].value = getCurrentDate();
+		form.elements["Time" + divName].value = getCurrentTime();
+	}
+	form.elements["Date" + divName].disabled= false;
+	form.elements["Date" + divName].select();
 }
 
 function resetOrder(form) {
@@ -82,19 +96,19 @@ function resetOrder(form) {
 function scheduleOrder(form) {
 	form.CurrentState.value = "<%= statusScheduled %>";
 	resetOrder(form);
-	showDateDiv(form, "DateScheduled");
+	showDateDiv(form, "Scheduled");
 }
 
 function closeOrder(form) {
 	form.CurrentState.value = "<%= statusCompleted %>";
 	resetOrder(form);
-	showDateDiv(form, "DateCompleted");
+	showDateDiv(form, "Completed");
 }
 
 function cancelOrder(form) {
 	form.CurrentState.value = "<%= statusCancelled %>";
 	resetOrder(form);
-	showDateDiv(form, "DateCancelled");
+	showDateDiv(form, "Cancelled");
 }
 
 function changeStatus(form) {
@@ -127,15 +141,15 @@ function changeStatus(form) {
 
 function init() {
 <% if (liteOrder.getCurrentStateID() != statusPending) { %>
-	document.getElementById("DivDateScheduled").style.display = "";
+	document.getElementById("DivScheduled").style.display = "";
 	document.soForm.DateScheduled.disabled = false;
 <% } %>
 <% if (liteOrder.getCurrentStateID() == statusCompleted) { %>
-	document.getElementById("DivDateCompleted").style.display = "";
+	document.getElementById("DivCompleted").style.display = "";
 	document.soForm.DateCompleted.disabled = false;
 <% } %>
 <% if (liteOrder.getCurrentStateID() == statusCancelled) { %>
-	document.getElementById("DivDateCancelled").style.display = "";
+	document.getElementById("DivCancelled").style.display = "";
 	document.soForm.DateCancelled.disabled = false;
 <% } %>
 }
@@ -316,41 +330,41 @@ function init() {
                                 </td>
                               </tr>
                             </table>
-                            <div id="DivDateScheduled" style="display:none"> 
+                            <div id="DivScheduled" style="display:none"> 
                               <table width="100%" border="0" cellspacing="0" cellpadding="1">
                                 <tr> 
                                   <td width="30%" align="right" class="TableCell">Date 
                                     Scheduled:</td>
                                   <td width="70%"> 
-                                    <input type="text" name="DateScheduled" size="14" value="<%= datePart.format(dateScheduled) %>" disabled>
+                                    <input type="text" name="DateScheduled" size="14" value="<%= ServletUtils.formatDate(order.getDateScheduled(), datePart) %>" disabled>
                                     - 
-                                    <input type="text" name="TimeScheduled" size="8" value="<%= timeFormat.format(dateScheduled) %>">
+                                    <input type="text" name="TimeScheduled" size="8" value="<%= ServletUtils.formatDate(order.getDateScheduled(), timeFormat) %>">
                                   </td>
                                 </tr>
                               </table>
                             </div>
-                            <div id="DivDateCompleted" style="display:none"> 
+                            <div id="DivCompleted" style="display:none"> 
                               <table width="100%" border="0" cellspacing="0" cellpadding="1">
                                 <tr> 
                                   <td width="30%" align="right" class="TableCell">Date 
                                     Completed:</td>
                                   <td width="70%"> 
-                                    <input type="text" name="DateCompleted" size="14" value="<%= datePart.format(dateCompleted) %>" disabled>
+                                    <input type="text" name="DateCompleted" size="14" value="<%= ServletUtils.formatDate(order.getDateCompleted(), datePart) %>" disabled>
                                     - 
-                                    <input type="text" name="TimeCompleted" size="8" value="<%= timeFormat.format(dateCompleted) %>">
+                                    <input type="text" name="TimeCompleted" size="8" value="<%= ServletUtils.formatDate(order.getDateCompleted(), timeFormat) %>">
                                   </td>
                                 </tr>
                               </table>
                             </div>
-                            <div id="DivDateCancelled" style="display:none"> 
+                            <div id="DivCancelled" style="display:none"> 
                               <table width="100%" border="0" cellspacing="0" cellpadding="1">
                                 <tr> 
                                   <td width="30%" align="right" class="TableCell">Date 
                                     Cancelled:</td>
                                   <td width="70%"> 
-                                    <input type="text" name="DateCancelled" size="14" value="<%= datePart.format(dateCompleted) %>" disabled>
+                                    <input type="text" name="DateCancelled" size="14" value="<%= ServletUtils.formatDate(order.getDateCompleted(), datePart) %>" disabled>
                                     - 
-                                    <input type="text" name="TimeCancelled" size="8" value="<%= timeFormat.format(dateCompleted) %>">
+                                    <input type="text" name="TimeCancelled" size="8" value="<%= ServletUtils.formatDate(order.getDateCompleted(), timeFormat) %>">
                                   </td>
                                 </tr>
                               </table>

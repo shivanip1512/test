@@ -3,18 +3,6 @@
 <%@ page import="com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany" %>
 <%@ page import="com.cannontech.stars.web.servlet.StarsAdmin" %>
 <%
-	String[][] listNameText = {
-		{"Substation", "Substation"},
-		{"DeviceType", "Device Type"},
-		{"DeviceVoltage", "Device Voltage"},
-		{"ServiceCompany", "Service Company"},
-		{"DeviceStatus", "Device Status"},
-		{"ApplianceCategory", "Appliance Category"},
-		{"Manufacturer", "Manufacturer"},
-		{"ServiceStatus", "Service Status"},
-		{"ServiceType", "Service Type"}
-	};
-	
 	Hashtable unassignedLists = (Hashtable) session.getAttribute(StarsAdmin.UNASSIGNED_LISTS);
 	boolean hasUnassigned = false;
 	
@@ -94,9 +82,9 @@
 			  <input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/operator/Consumer/ImportAccount.jsp">
               <table width="300" border="0" cellspacing="0" cellpadding="3" align="center" class="MainText">
 <%
-	for (int i = 0; i < listNameText.length; i++) {
-		String listName = listNameText[i][0];
-		String dispName = listNameText[i][1];
+	for (int i = 0; i < StarsAdmin.LIST_NAMES.length; i++) {
+		String listName = StarsAdmin.LIST_NAMES[i][0];
+		String dispName = StarsAdmin.LIST_NAMES[i][1];
 		
 		if (unassignedLists.get(listName) == null) continue;
 		
@@ -118,6 +106,7 @@
                     <div align="center"> 
 <%
 		if (listName.equals("ServiceCompany") ||
+			listName.equals("ApplianceCategory") ||
 			list.getUserUpdateAvailable().equalsIgnoreCase("Y")) {
 %> 
                       <input type="button" name="New" value="New" onclick="location.href='AssignSelectionList.jsp?List=<%= listName %>&New=true'">

@@ -155,6 +155,18 @@ public class StarsAdmin extends HttpServlet {
     
 	public static final String PREPROCESSED_STARS_DATA = "PREPROCESSED_STARS_DATA";
 	public static final String UNASSIGNED_LISTS = "UNASSIGNED_LISTS";
+	
+	public static final String[][] LIST_NAMES = {
+		{"Substation", "Substation"},
+		{"DeviceType", "Device Type"},
+		{"DeviceVoltage", "Device Voltage"},
+		{"ServiceCompany", "Service Company"},
+		{"DeviceStatus", "Device Status"},
+		{"ApplianceCategory", "Appliance Category"},
+		{"Manufacturer", "Manufacturer"},
+		{"ServiceStatus", "Service Status"},
+		{"ServiceType", "Service Type"}
+	};
     
 	private static final int IDX_ACCOUNT_ID = 0;
 	private static final int IDX_ACCOUNT_NO = 1;
@@ -989,11 +1001,11 @@ public class StarsAdmin extends HttpServlet {
 				if (st.ttype != ',') st.nextToken();
 				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_ORDER_DESC] = st.sval + "<br>";
+					fields[IDX_ORDER_DESC] = st.sval;
 				if (st.ttype != ',') st.nextToken();
 				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_ACTION_TAKEN] = st.sval + "<br>";
+					fields[IDX_ACTION_TAKEN] = st.sval;
 				if (st.ttype != ',') st.nextToken();
 				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_WORD) {
@@ -1348,6 +1360,8 @@ public class StarsAdmin extends HttpServlet {
 			status.setEntryID( Integer.parseInt(fields[IDX_DEVICE_STATUS]) );
 			hardware.setDeviceStatus( status );
 		}
+		else
+			hardware.setDeviceStatus( null );
 		
 		if (fields[IDX_SERVICE_COMPANY].length() > 0) {
 			try {
@@ -1382,6 +1396,9 @@ public class StarsAdmin extends HttpServlet {
 		int devTypeID = getDeviceTypeID( energyCompany, fields[IDX_DEVICE_TYPE] );
 		if (devTypeID == -1)
 			throw new Exception("Invalid device type \"" + fields[IDX_DEVICE_TYPE] + "\"");
+		
+		if (fields[IDX_SERIAL_NO].equals(""))
+			throw new Exception("Serial # cannot be empty");
 		
 		StarsCreateLMHardware createHw = null;
 		LiteStarsLMHardware liteHw = energyCompany.searchForLMHardware( devTypeID, fields[IDX_SERIAL_NO] );
@@ -1771,6 +1788,9 @@ public class StarsAdmin extends HttpServlet {
 		createApp.setApplianceCategoryID( Integer.parseInt(fields[IDX_APP_TYPE]) );
 		createApp.setYearManufactured( fields[IDX_YEAR_MADE] );
 		createApp.setNotes( fields[IDX_APP_NOTES] );
+		createApp.setModelNumber( "" );
+		createApp.setKWCapacity( 0 );
+		createApp.setEfficiencyRating( 0 );
 		
 		Location location = new Location();
 		location.setEntryID( CtiUtilities.NONE_ID );
@@ -1830,6 +1850,7 @@ public class StarsAdmin extends HttpServlet {
 		createOrder.setOrderNumber( fields[IDX_ORDER_NO] );
 		createOrder.setDescription( fields[IDX_ORDER_DESC] );
 		createOrder.setActionTaken( fields[IDX_ACTION_TAKEN] );
+		createOrder.setOrderedBy( "" );
 		
 		if (liteAcctInfo != null)
 			createOrder.setAccountID( liteAcctInfo.getAccountID() );
@@ -1855,7 +1876,7 @@ public class StarsAdmin extends HttpServlet {
 		if (fields[IDX_DATE_SCHEDULED].length() > 0) {
 			try {
 				Date datePart = starsDateFormat.parse( fields[IDX_DATE_SCHEDULED] );
-				Date timePart = ServerUtils.parseTime(
+				Date timePart = ServletUtils.parseTime(
 						formatTimeString(fields[IDX_TIME_SCHEDULED]), energyCompany.getDefaultTimeZone() );
 				
 				if (timePart != null) {
@@ -1863,13 +1884,13 @@ public class StarsAdmin extends HttpServlet {
 					dateCal.setTime( datePart );
 					Calendar timeCal = Calendar.getInstance();
 					timeCal.setTime( timePart );
-					dateCal.set(Calendar.HOUR, timeCal.get(Calendar.HOUR));
+					dateCal.set(Calendar.HOUR_OF_DAY, timeCal.get(Calendar.HOUR_OF_DAY));
 					dateCal.set(Calendar.MINUTE, timeCal.get(Calendar.MINUTE));
 					dateCal.set(Calendar.SECOND, timeCal.get(Calendar.SECOND));
-					createOrder.setDateCompleted( dateCal.getTime() );
+					createOrder.setDateScheduled( dateCal.getTime() );
 				}
 				else
-					createOrder.setDateCompleted( datePart );
+					createOrder.setDateScheduled( datePart );
 			}
 			catch (java.text.ParseException e) {}
 		}
@@ -1947,30 +1968,39 @@ public class StarsAdmin extends HttpServlet {
 			// Sorted maps of import value(String) to id(Integer), filled in assignSelectionList()
 			TreeMap subValueID = (TreeMap) preprocessedData.get("Substation");
 			if (subValueID == null) subValueID = new TreeMap();
+			int subValueCnt = subValueID.size();
 			
 			TreeMap devTypeValueID = (TreeMap) preprocessedData.get("DeviceType");
 			if (devTypeValueID == null) devTypeValueID = new TreeMap();
+			int devTypeValueCnt = devTypeValueID.size();
 			
 			TreeMap devVoltValueID = (TreeMap) preprocessedData.get("DeviceVoltage");
 			if (devVoltValueID == null) devVoltValueID = new TreeMap();
+			int devVoltValueCnt = devVoltValueID.size();
 			
 			TreeMap companyValueID = (TreeMap) preprocessedData.get("ServiceCompany");
 			if (companyValueID == null) companyValueID = new TreeMap();
+			int companyValueCnt = companyValueID.size();
 			
 			TreeMap devStatValueID = (TreeMap) preprocessedData.get("DeviceStatus");
 			if (devStatValueID == null) devStatValueID = new TreeMap();
+			int devStatValueCnt = devStatValueID.size();
 			
 			TreeMap appTypeValueID = (TreeMap) preprocessedData.get("ApplianceCategory");
 			if (appTypeValueID == null) appTypeValueID = new TreeMap();
+			int appTypeValueCnt = appTypeValueID.size();
 			
 			TreeMap appMfcValueID = (TreeMap) preprocessedData.get("Manufacturer");
 			if (appMfcValueID == null) appMfcValueID = new TreeMap();
+			int appMfcValueCnt = appMfcValueID.size();
 			
 			TreeMap orderStatValueID = (TreeMap) preprocessedData.get("ServiceStatus");
 			if (orderStatValueID == null) orderStatValueID = new TreeMap();
+			int orderStatValueCnt = orderStatValueID.size();
 			
 			TreeMap orderTypeValueID = (TreeMap) preprocessedData.get("ServiceType");
 			if (orderTypeValueID == null) orderTypeValueID = new TreeMap();
+			int orderTypeValueCnt = orderTypeValueID.size();
 			
 			Integer zero = new Integer(0);
 			
@@ -2015,7 +2045,7 @@ public class StarsAdmin extends HttpServlet {
 						for (int j = 0; j < custFields.length; j++)
 							if (fields[j].length() > 0) custFields[j] = fields[j];
 						
-						if (fields[IDX_SUBSTATION].length() > 0 && !subValueID.containsKey(fields[IDX_SUBSTATION]))
+						if (!subValueID.containsKey(fields[IDX_SUBSTATION]))
 							subValueID.put( fields[IDX_SUBSTATION], zero );
 					}
 				}
@@ -2026,11 +2056,11 @@ public class StarsAdmin extends HttpServlet {
 				
 				for (int i = 0; i < invLines.size(); i++) {
 					String[] fields = parser.populateFields( (String)invLines.get(i) );
-					if (fields[IDX_DEVICE_TYPE].length() > 0 && !devTypeValueID.containsKey(fields[IDX_DEVICE_TYPE]))
+					if (!devTypeValueID.containsKey(fields[IDX_DEVICE_TYPE]))
 						devTypeValueID.put( fields[IDX_DEVICE_TYPE], zero );
-					if (fields[IDX_DEVICE_VOLTAGE].length() > 0 && !devVoltValueID.containsKey(fields[IDX_DEVICE_VOLTAGE]))
+					if (!devVoltValueID.containsKey(fields[IDX_DEVICE_VOLTAGE]))
 						devVoltValueID.put( fields[IDX_DEVICE_VOLTAGE], zero );
-					if (fields[IDX_SERVICE_COMPANY].length() > 0 && !companyValueID.containsKey(fields[IDX_SERVICE_COMPANY]))
+					if (!companyValueID.containsKey(fields[IDX_SERVICE_COMPANY]))
 						companyValueID.put( fields[IDX_SERVICE_COMPANY], zero );
 					
 					invFieldsList.add( fields );
@@ -2055,7 +2085,7 @@ public class StarsAdmin extends HttpServlet {
 							}
 						}
 						
-						if (fields[IDX_DEVICE_STATUS].length() > 0 && !devStatValueID.containsKey(fields[IDX_DEVICE_STATUS]))
+						if (!devStatValueID.containsKey(fields[IDX_DEVICE_STATUS]))
 							devStatValueID.put( fields[IDX_DEVICE_STATUS], zero );
 					}
 				}
@@ -2088,9 +2118,9 @@ public class StarsAdmin extends HttpServlet {
 					String[] fields = parser.populateFields( (String)loadInfoLines.get(i) );
 					appFieldsList.add( fields );
 					
-					if (fields[IDX_APP_TYPE].length() > 0 && !appTypeValueID.containsKey(fields[IDX_APP_TYPE]))
+					if (!appTypeValueID.containsKey(fields[IDX_APP_TYPE]))
 						appTypeValueID.put( fields[IDX_APP_TYPE], zero );
-					if (fields[IDX_MANUFACTURER].length() > 0 && !appMfcValueID.containsKey(fields[IDX_MANUFACTURER]))
+					if (!appMfcValueID.containsKey(fields[IDX_MANUFACTURER]))
 						appMfcValueID.put( fields[IDX_MANUFACTURER], zero );
 				}
 			}
@@ -2102,11 +2132,11 @@ public class StarsAdmin extends HttpServlet {
 					String[] fields = parser.populateFields( (String)workOrderLines.get(i) );
 					orderFieldsList.add( fields );
 					
-					if (fields[IDX_ORDER_STATUS].length() > 0 && !orderStatValueID.containsKey(fields[IDX_ORDER_STATUS]))
+					if (!orderStatValueID.containsKey(fields[IDX_ORDER_STATUS]))
 						orderStatValueID.put( fields[IDX_ORDER_STATUS], zero );
-					if (fields[IDX_ORDER_TYPE].length() > 0 && !orderTypeValueID.containsKey(fields[IDX_ORDER_TYPE]))
+					if (!orderTypeValueID.containsKey(fields[IDX_ORDER_TYPE]))
 						orderTypeValueID.put( fields[IDX_ORDER_TYPE], zero );
-					if (fields[IDX_ORDER_CONTRACTOR].length() > 0 && !companyValueID.containsKey(fields[IDX_ORDER_CONTRACTOR]))
+					if (!companyValueID.containsKey(fields[IDX_ORDER_CONTRACTOR]))
 						companyValueID.put( fields[IDX_ORDER_CONTRACTOR], zero );
 				}
 			}
@@ -2127,41 +2157,29 @@ public class StarsAdmin extends HttpServlet {
 			session.setAttribute(PREPROCESSED_STARS_DATA, preprocessedData);
 			
 			Hashtable unassignedLists = (Hashtable) session.getAttribute(UNASSIGNED_LISTS);
-			if (unassignedLists == null) unassignedLists = new Hashtable();
-			
-			if (acctFieldsList.size() > 0) {
-				if (subValueID.size() > 0)
-					unassignedLists.put( "Substation", new Boolean(true) );
+			if (unassignedLists == null) {
+				unassignedLists = new Hashtable();
+				session.setAttribute(UNASSIGNED_LISTS, unassignedLists);
 			}
 			
-			if (invFieldsList.size() > 0) {
-				if (devTypeValueID.size() > 0)
-					unassignedLists.put( "DeviceType", new Boolean(true) );
-				if (devVoltValueID.size() > 0)
-					unassignedLists.put( "DeviceVoltage", new Boolean(true) );
-				if (companyValueID.size() > 0)
-					unassignedLists.put( "ServiceCompany", new Boolean(true) );
-				if (devStatValueID.size() > 0)
-					unassignedLists.put( "DeviceStatus", new Boolean(true) );
-			}
-			
-			if (appFieldsList.size() > 0) {
-				if (appTypeValueID.size() > 0)
-					unassignedLists.put( "ApplianceCategory", new Boolean(true) );
-				if (appMfcValueID.size() > 0)
-					unassignedLists.put( "Manufacturer", new Boolean(true) );
-			}
-			
-			if (orderFieldsList.size() > 0) {
-				if (orderStatValueID.size() > 0)
-					unassignedLists.put( "ServiceStatus", new Boolean(true) );
-				if (orderTypeValueID.size() > 0)
-					unassignedLists.put( "ServiceType", new Boolean(true) );
-				if (companyValueID.size() > 0)
-					unassignedLists.put( "ServiceCompany", new Boolean(true) );
-			}
-			
-			session.setAttribute(UNASSIGNED_LISTS, unassignedLists);
+			if (subValueID.size() > subValueCnt)
+				unassignedLists.put( "Substation", new Boolean(true) );
+			if (devTypeValueID.size() > devTypeValueCnt)
+				unassignedLists.put( "DeviceType", new Boolean(true) );
+			if (devVoltValueID.size() > devVoltValueCnt)
+				unassignedLists.put( "DeviceVoltage", new Boolean(true) );
+			if (companyValueID.size() > companyValueCnt)
+				unassignedLists.put( "ServiceCompany", new Boolean(true) );
+			if (devStatValueID.size() > devStatValueCnt)
+				unassignedLists.put( "DeviceStatus", new Boolean(true) );
+			if (appTypeValueID.size() > appTypeValueCnt)
+				unassignedLists.put( "ApplianceCategory", new Boolean(true) );
+			if (appMfcValueID.size() > appMfcValueCnt)
+				unassignedLists.put( "Manufacturer", new Boolean(true) );
+			if (orderStatValueID.size() > orderStatValueCnt)
+				unassignedLists.put( "ServiceStatus", new Boolean(true) );
+			if (orderTypeValueID.size() > orderTypeValueCnt)
+				unassignedLists.put( "ServiceType", new Boolean(true) );
 		}
 		catch (WebClientException e) {
 			e.printStackTrace();
@@ -2219,14 +2237,49 @@ public class StarsAdmin extends HttpServlet {
 						LiteContact liteContact = (LiteContact) StarsLiteFactory.createLite(contact);
 						energyCompany.addContact( liteContact, null );
 						
-						LiteServiceCompany liteCompany = (LiteServiceCompany) StarsLiteFactory.createLite( company.getServiceCompany() );
+						LiteServiceCompany liteCompany = (LiteServiceCompany) StarsLiteFactory.createLite( companyDB );
 						energyCompany.addServiceCompany( liteCompany );
 						
 						StarsServiceCompany starsCompany = new StarsServiceCompany();
 						StarsLiteFactory.setStarsServiceCompany( starsCompany, liteCompany, energyCompany );
 						ecSettings.getStarsServiceCompanies().addStarsServiceCompany( starsCompany );
 						
-						valueIDMap.put( entryTexts[i], new Integer(liteCompany.getCompanyID()) );
+						valueIDMap.put( values[i], companyDB.getCompanyID() );
+					}
+				}
+				else if (listName.equals("ApplianceCategory")) {
+					// Should first delete all appliance categories, but we will assume there is none
+					Integer dftCatID = new Integer(
+							energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_DEFAULT).getEntryID() );
+					
+					for (int i = 0; i < entryTexts.length; i++) {
+						com.cannontech.database.db.web.YukonWebConfiguration config =
+								new com.cannontech.database.db.web.YukonWebConfiguration();
+						config.setLogoLocation( "" );
+						config.setAlternateDisplayName( entryTexts[i] );
+						config.setDescription( "" );
+						config.setURL( "" );
+						
+						com.cannontech.database.data.stars.appliance.ApplianceCategory appCat =
+								new com.cannontech.database.data.stars.appliance.ApplianceCategory();
+						com.cannontech.database.db.stars.appliance.ApplianceCategory appCatDB = appCat.getApplianceCategory();
+						
+						appCatDB.setCategoryID( dftCatID );
+						appCatDB.setDescription( entryTexts[i] );
+						appCat.setWebConfiguration( config );
+						appCat.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+						appCat.setDbConnection( conn );
+						appCat.add();
+						
+						LiteApplianceCategory liteAppCat = (LiteApplianceCategory) StarsLiteFactory.createLite( appCatDB );
+						energyCompany.addApplianceCategory( liteAppCat );
+						LiteWebConfiguration liteConfig = (LiteWebConfiguration) StarsLiteFactory.createLite( config );
+						SOAPServer.addWebConfiguration( liteConfig );
+						
+						StarsApplianceCategory starsAppCat = StarsLiteFactory.createStarsApplianceCategory( liteAppCat, energyCompany );
+						ecSettings.getStarsEnrollmentPrograms().addStarsApplianceCategory( starsAppCat );
+						
+						valueIDMap.put( values[i], appCatDB.getApplianceCategoryID() );
 					}
 				}
 				else {
@@ -2248,7 +2301,7 @@ public class StarsAdmin extends HttpServlet {
 							cEntry.setEntryText( substation.getSubstation().getSubstationName() );
 							cEntries.add( cEntry );
 							
-							valueIDMap.put( entryTexts[i], new Integer(cEntry.getEntryID()) );
+							valueIDMap.put( values[i], new Integer(cEntry.getEntryID()) );
 						}
 					}
 					else {	// All other selection lists
@@ -2275,6 +2328,10 @@ public class StarsAdmin extends HttpServlet {
 						conn.commit();
 						conn.setAutoCommit( autoCommit );
 						
+						for (int i = 0; i < cEntries.size(); i++) {
+							YukonListEntry entry = (YukonListEntry) cEntries.get(i);
+							YukonListFuncs.getYukonListEntries().remove( new Integer(entry.getEntryID()) );
+						}
 						cEntries.clear();
 						
 						for (int i = 0; i < entryTexts.length; i++) {
@@ -2289,8 +2346,9 @@ public class StarsAdmin extends HttpServlet {
 									new com.cannontech.common.constants.YukonListEntry();
 							StarsLiteFactory.setConstantYukonListEntry( cEntry, entry );
 							cEntries.add( cEntry );
+							YukonListFuncs.getYukonListEntries().put( new Integer(cEntry.getEntryID()), cEntry );
 							
-							valueIDMap.put( entryTexts[i], new Integer(cEntry.getEntryID()) );
+							valueIDMap.put( values[i], new Integer(cEntry.getEntryID()) );
 						}
 					}
 					
@@ -2477,7 +2535,19 @@ public class StarsAdmin extends HttpServlet {
 				String[] fields = (String[]) appFieldsList.get(lineNo - 1);
 				Integer acctID = Integer.valueOf( fields[IDX_ACCOUNT_ID] );
 				
-				LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) acctIDMap.get(acctID);
+				LiteStarsCustAccountInformation liteAcctInfo = null;
+				
+				Object obj = acctIDMap.get(acctID);
+				if (obj instanceof LiteStarsCustAccountInformation) {
+					liteAcctInfo = (LiteStarsCustAccountInformation) obj;
+				}
+				else if (obj instanceof Integer) {
+					// This is loaded from file customer.map
+					liteAcctInfo = energyCompany.getCustAccountInformation( ((Integer)obj).intValue(), true );
+					if (liteAcctInfo != null)
+						acctIDMap.put(acctID, liteAcctInfo);
+				}
+				
 				if (liteAcctInfo == null)
 					throw new Exception("Cannot find customer account with id=" + acctID.intValue());
 				
@@ -2490,8 +2560,19 @@ public class StarsAdmin extends HttpServlet {
 				Integer acctID = Integer.valueOf( fields[IDX_ACCOUNT_ID] );
 				
 				LiteStarsCustAccountInformation liteAcctInfo = null;
+				
 				if (acctID.intValue() > 0) {
-					liteAcctInfo = (LiteStarsCustAccountInformation) acctIDMap.get(acctID);
+					Object obj = acctIDMap.get(acctID);
+					if (obj instanceof LiteStarsCustAccountInformation) {
+						liteAcctInfo = (LiteStarsCustAccountInformation) obj;
+					}
+					else if (obj instanceof Integer) {
+						// This is loaded from file customer.map
+						liteAcctInfo = energyCompany.getCustAccountInformation( ((Integer)obj).intValue(), true );
+						if (liteAcctInfo != null)
+							acctIDMap.put(acctID, liteAcctInfo);
+					}
+					
 					if (liteAcctInfo == null)
 						throw new Exception("Cannot find customer account with id=" + acctID.intValue());
 				}
@@ -2870,7 +2951,7 @@ public class StarsAdmin extends HttpServlet {
 				appCat.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
 				appCat.setDbConnection( conn );
 				appCat.add();
-						
+				
 				liteAppCat = (LiteApplianceCategory) StarsLiteFactory.createLite( appCat.getApplianceCategory() );
 				energyCompany.addApplianceCategory( liteAppCat );
 				LiteWebConfiguration liteConfig = (LiteWebConfiguration) StarsLiteFactory.createLite( appCat.getWebConfiguration() );

@@ -38,31 +38,8 @@ public class ServerUtils {
     // If date in database is earlier than this, than the date is actually empty
     private static long VERY_EARLY_TIME = 1000 * 3600 * 24;
 	
-	private static final java.text.SimpleDateFormat[] dateFormat =
-	{
-		new java.text.SimpleDateFormat("MM/dd/yy HH:mm"),
-		new java.text.SimpleDateFormat("MM-dd-yy HH:mm"),
-		new java.text.SimpleDateFormat("MM.dd.yy HH:mm"),
-		new java.text.SimpleDateFormat("MM/dd/yyyy HH:mm"),
-		new java.text.SimpleDateFormat("MM-dd-yyyy HH:mm"),
-		new java.text.SimpleDateFormat("MM.dd.yyyy HH:mm"),
-	};
-	
-	private static final java.text.SimpleDateFormat[] timeFormat =
-	{
-		new java.text.SimpleDateFormat("hh:mm a"),
-		new java.text.SimpleDateFormat("hh:mma"),
-		new java.text.SimpleDateFormat("HH:mm"),
-	};
-
-	//this static initializer sets all the simpledateformat to lenient
-	static
-	{
-		for( int i = 0; i < dateFormat.length; i++ )
-			dateFormat[i].setLenient(true);
-		for (int i = 0; i < timeFormat.length; i++)
-			timeFormat[i].setLenient( true );
-	}
+	private static final java.text.SimpleDateFormat dateTimeFormat =
+			new java.text.SimpleDateFormat("MM/dd/yy HH:mm");
     
 	
     public static void sendCommand(String command)
@@ -106,47 +83,10 @@ public class ServerUtils {
 	 */
 	public static String formatDate(Date date, TimeZone tz) {
 		if (tz != null)
-			dateFormat[0].setTimeZone( tz );
+			dateTimeFormat.setTimeZone( tz );
 		else
-			dateFormat[0].setTimeZone( TimeZone.getDefault() );
-		return dateFormat[0].format( date );
-	}
-	
-	/**
-	 * Parse date/time in the format of MM/dd/yy HH:mm,
-	 * MM-dd-yyyy HH:mm, etc., in the specified time zone
-	 */
-	public static Date parseDate(String dateStr, TimeZone tz) {
-		Date retVal = null;
-		
-		for( int i = 0; i < dateFormat.length; i++ ) {
-			try {
-				dateFormat[i].setTimeZone(tz);
-				retVal = dateFormat[i].parse(dateStr);
-				break;
-			}
-			catch( java.text.ParseException pe ) {}
-		}
-		
-		return retVal;	
-	}
-
-	/**
-	 * Parse time in the specified time zone 
-	 */
-	public static Date parseTime(String timeStr, TimeZone tz) {
-		Date retVal = null;
-		
-		for( int i = 0; i < timeFormat.length; i++ ) {
-			try {
-				timeFormat[i].setTimeZone(tz);
-				retVal = timeFormat[i].parse(timeStr);
-				break;
-			}
-			catch( java.text.ParseException pe ) {}
-		}
-		
-		return retVal;	
+			dateTimeFormat.setTimeZone( TimeZone.getDefault() );
+		return dateTimeFormat.format( date );
 	}
 	
 	public static boolean isOperator(StarsYukonUser user) {

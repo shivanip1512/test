@@ -629,7 +629,7 @@ public class ProgramOptOutAction implements ActionBase {
 			}
 			
 			if (rules.length > 1) {
-				dueTime = ServerUtils.parseTime( rules[1], energyCompany.getDefaultTimeZone() );
+				dueTime = ServletUtils.parseTime( rules[1], energyCompany.getDefaultTimeZone() );
 				if (dueTime == null)
 					throw new WebClientException("Wrong format in the opt out rules '" + rules[1] + "'");
 				

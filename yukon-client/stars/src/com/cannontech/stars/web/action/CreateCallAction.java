@@ -52,10 +52,14 @@ public class CreateCallAction implements ActionBase {
 			StarsCreateCallReport createCall = new StarsCreateCallReport();
 			if (req.getParameter("CallNo") != null)
 				createCall.setCallNumber( req.getParameter("CallNo") );
-			String dateTime = req.getParameter("CallDate") + " " + req.getParameter("CallTime");
-			createCall.setCallDate( ServerUtils.parseDate(dateTime, tz) );
 			createCall.setTakenBy( req.getParameter("TakenBy") );
 			createCall.setDescription( req.getParameter("Description").replaceAll("\r\n", "<br>") );
+			
+			java.util.Date callDate = ServletUtils.parseDateTime(
+					req.getParameter("CallDate"), req.getParameter("CallTime"), tz );
+			if (callDate == null)
+				throw new Exception("Invalid time/date format '" + req.getParameter("CallDate") + " " + req.getParameter("CallTime") + "'");
+			createCall.setCallDate( callDate );
 			
 			CallType callType = new CallType();
 			callType.setEntryID( Integer.parseInt(req.getParameter("CallType")) );

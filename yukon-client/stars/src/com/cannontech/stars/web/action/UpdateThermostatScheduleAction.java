@@ -95,7 +95,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 	        boolean noScript = (req.getParameter("temp1") != null);
 	        
 	        if (req.getParameter("time1") != null) {
-	        	Date time1 = ServerUtils.parseTime(req.getParameter("time1"), TimeZone.getDefault());
+	        	Date time1 = ServletUtils.parseTime(req.getParameter("time1"), TimeZone.getDefault());
 	        	if (time1 == null)
 	        		throw new Exception("Invalid time format '" + req.getParameter("time1") + "'");
 	        	
@@ -112,7 +112,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 	        }
 	        
 	        if (req.getParameter("time2") != null) {
-				Date time2 = ServerUtils.parseTime(req.getParameter("time2"), TimeZone.getDefault());
+				Date time2 = ServletUtils.parseTime(req.getParameter("time2"), TimeZone.getDefault());
 				if (time2 == null)
 					throw new Exception("Invalid time format '" + req.getParameter("time2") + "'");
 	        	
@@ -129,7 +129,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 	        }
 	        
 	        if (req.getParameter("time3") != null) {
-				Date time3 = ServerUtils.parseTime(req.getParameter("time3"), TimeZone.getDefault());
+				Date time3 = ServletUtils.parseTime(req.getParameter("time3"), TimeZone.getDefault());
 				if (time3 == null)
 					throw new Exception("Invalid time format '" + req.getParameter("time3") + "'");
 	        	
@@ -146,7 +146,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 	        }
 	        
 	        if (req.getParameter("time4") != null) {
-				Date time4 = ServerUtils.parseTime(req.getParameter("time4"), TimeZone.getDefault());
+				Date time4 = ServletUtils.parseTime(req.getParameter("time4"), TimeZone.getDefault());
 				if (time4 == null)
 					throw new Exception("Invalid time format '" + req.getParameter("time4") + "'");
 	        	

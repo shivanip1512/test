@@ -8,6 +8,7 @@ package com.cannontech.stars.web.servlet;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -25,6 +26,7 @@ import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.action.CreateServiceRequestAction;
 import com.cannontech.stars.web.action.UpdateServiceRequestAction;
@@ -54,44 +56,44 @@ public class WorkOrderManager extends HttpServlet {
 	 * @see javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
 	 */
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-		throws ServletException, IOException {
-			HttpSession session = req.getSession(false);
-			if (session == null) {
-				resp.sendRedirect( req.getContextPath() + SOAPClient.LOGIN_URL ); return;
-			}
-        
-			StarsYukonUser user = (StarsYukonUser)
-					session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
-			if (user == null) {
-				resp.sendRedirect( req.getContextPath() + SOAPClient.LOGIN_URL );
-				return;
-			}
-        
-			SOAPClient.initSOAPServer( req );
-        
-			referer = req.getHeader( "referer" );
-			redirect = req.getParameter( ServletUtils.ATT_REDIRECT );
-			if (redirect == null) redirect = referer;
+	throws ServletException, IOException {
+		HttpSession session = req.getSession(false);
+		if (session == null) {
+			resp.sendRedirect( req.getContextPath() + SOAPClient.LOGIN_URL ); return;
+		}
+    	
+		StarsYukonUser user = (StarsYukonUser)
+				session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
+		if (user == null) {
+			resp.sendRedirect( req.getContextPath() + SOAPClient.LOGIN_URL );
+			return;
+		}
+    	
+		SOAPClient.initSOAPServer( req );
+    	
+		referer = req.getHeader( "referer" );
+		redirect = req.getParameter( ServletUtils.ATT_REDIRECT );
+		if (redirect == null) redirect = referer;
 		
-			String action = req.getParameter( "action" );
-			if (action == null) action = "";
-			
-			if (action.equalsIgnoreCase("SearchWorkOrder"))
-				searchWorkOrder( user, req, session );
-			else if (action.equalsIgnoreCase("CreateWorkOrder")) {
-				redirect = req.getContextPath() + "/servlet/SOAPClient?action=" + action +
-						"&REDIRECT=" + req.getParameter(ServletUtils.ATT_REDIRECT) +
-						"&REFERRER=" + req.getParameter(ServletUtils.ATT_REFERRER);
-				preCreateWorkOrder( user, req, session );
-			}
-			else if (action.equalsIgnoreCase("SearchCustAccount")) {
-				redirect = req.getContextPath() + "/servlet/SOAPClient?action=UpdateWorkOrder" +
-						"&REDIRECT=" + req.getParameter(ServletUtils.ATT_REDIRECT) +
-						"&REFERRER=" + req.getParameter(ServletUtils.ATT_REFERRER);
-				searchCustAccount( user, req, session );
-			}
-			
-			resp.sendRedirect( redirect );
+		String action = req.getParameter( "action" );
+		if (action == null) action = "";
+		
+		if (action.equalsIgnoreCase("SearchWorkOrder"))
+			searchWorkOrder( user, req, session );
+		else if (action.equalsIgnoreCase("CreateWorkOrder")) {
+			redirect = req.getContextPath() + "/servlet/SOAPClient?action=" + action +
+					"&REDIRECT=" + req.getParameter(ServletUtils.ATT_REDIRECT) +
+					"&REFERRER=" + req.getParameter(ServletUtils.ATT_REFERRER);
+			preCreateWorkOrder( user, req, session );
+		}
+		else if (action.equalsIgnoreCase("SearchCustAccount")) {
+			redirect = req.getContextPath() + "/servlet/SOAPClient?action=UpdateWorkOrder" +
+					"&REDIRECT=" + req.getParameter(ServletUtils.ATT_REDIRECT) +
+					"&REFERRER=" + req.getParameter(ServletUtils.ATT_REFERRER);
+			searchCustAccount( user, req, session );
+		}
+		
+		resp.sendRedirect( redirect );
 	}
 	
 	private void searchWorkOrder(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
@@ -184,7 +186,16 @@ public class WorkOrderManager extends HttpServlet {
 	
 	private void preCreateWorkOrder(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
-		StarsOperation operation = CreateServiceRequestAction.getRequestOperation(req, energyCompany.getDefaultTimeZone());
+		
+		StarsOperation operation = null;
+		try {
+			operation = CreateServiceRequestAction.getRequestOperation(req, energyCompany.getDefaultTimeZone());
+		}
+		catch (WebClientException e) {
+			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, e.getMessage());
+			redirect = referer;
+			return;
+		}
 		
 		if (req.getParameter("AcctNo").trim().length() > 0) {
 			LiteStarsCustAccountInformation liteAcctInfo = energyCompany.searchByAccountNumber( req.getParameter("AcctNo") );
@@ -193,6 +204,7 @@ public class WorkOrderManager extends HttpServlet {
 				redirect = referer;
 				return;
 			}
+			
 			operation.getStarsCreateServiceRequest().setAccountID( liteAcctInfo.getAccountID() );
 		}
 		else
@@ -211,22 +223,30 @@ public class WorkOrderManager extends HttpServlet {
 			return;
 		}
 		
-		StarsOperation operation = UpdateServiceRequestAction.getRequestOperation(req, energyCompany.getDefaultTimeZone());
+		StarsOperation operation = null;
+		try {
+			operation = UpdateServiceRequestAction.getRequestOperation(req, energyCompany.getDefaultTimeZone());
+		}
+		catch (WebClientException e) {
+			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, e.getMessage());
+			redirect = referer;
+			return;
+		}
+		
 		operation.getStarsUpdateServiceRequest().setAccountID( liteAcctInfo.getAccountID() );
 		session.setAttribute(STARS_WORK_ORDER_OPER_REQ, operation);
 	}
 	
-	public static void setStarsServiceRequest(StarsSrvReq starsOrder, HttpServletRequest req, java.util.TimeZone tz) {
+	public static void setStarsServiceRequest(StarsSrvReq starsOrder, HttpServletRequest req, java.util.TimeZone tz)
+	throws WebClientException {
 		if (req.getParameter("OrderID") != null)
 			starsOrder.setOrderID( Integer.parseInt(req.getParameter("OrderID")) );
 		if (req.getParameter("AccountID") != null)
 			starsOrder.setAccountID( Integer.parseInt(req.getParameter("AccountID")) );
 		if (req.getParameter("OrderNo") != null)
 			starsOrder.setOrderNumber( req.getParameter("OrderNo") );
-		if (req.getParameter("DateReported").length() > 0) {
-			String dateTime = req.getParameter("DateReported") + " " + req.getParameter("TimeReported");
-			starsOrder.setDateReported( ServerUtils.parseDate(dateTime, tz) );
-		}
+		if (req.getParameter("ActionTaken") != null)
+			starsOrder.setActionTaken( req.getParameter("ActionTaken").replaceAll("\r\n", "<br>") );
 		starsOrder.setOrderedBy( req.getParameter("OrderedBy") );
 		starsOrder.setDescription( req.getParameter("Description").replaceAll("\r\n", "<br>") );
 			
@@ -244,19 +264,36 @@ public class WorkOrderManager extends HttpServlet {
 			starsOrder.setCurrentState( status );
 		}
 		
-		if (req.getParameter("ActionTaken") != null)
-			starsOrder.setActionTaken( req.getParameter("ActionTaken").replaceAll("\r\n", "<br>") );
+		if (req.getParameter("DateReported").length() > 0) {
+			Date dateReported = ServletUtils.parseDateTime(
+					req.getParameter("DateReported"), req.getParameter("TimeReported"), tz );
+			if (dateReported == null)
+				throw new WebClientException("Invalid date/time format '" + req.getParameter("DateReported") + " " + req.getParameter("TimeReported") + "'");
+			starsOrder.setDateReported( dateReported );
+		}
+		
 		if (req.getParameter("DateScheduled") != null && req.getParameter("DateScheduled").length() > 0) {
-			String dateTime = req.getParameter("DateScheduled") + " " + req.getParameter("TimeScheduled");
-			starsOrder.setDateScheduled( ServerUtils.parseDate(dateTime, tz) );
+			Date dateScheduled = ServletUtils.parseDateTime(
+					req.getParameter("DateScheduled"), req.getParameter("TimeScheduled"), tz );
+			if (dateScheduled == null)
+				throw new WebClientException("Invalid date/time format '" + req.getParameter("DateScheduled") + " " + req.getParameter("TimeScheduled") + "'");
+			starsOrder.setDateScheduled( dateScheduled );
 		}
+		
 		if (req.getParameter("DateCompleted") != null && req.getParameter("DateCompleted").length() > 0) {
-			String dateTime = req.getParameter("DateCompleted") + " " + req.getParameter("TimeCompleted"); 
-			starsOrder.setDateCompleted( ServerUtils.parseDate(dateTime, tz) );
+			Date dateCompleted = ServletUtils.parseDateTime(
+					req.getParameter("DateCompleted"), req.getParameter("TimeCompleted"), tz );
+			if (dateCompleted == null)
+				throw new WebClientException("Invalid date/time format '" + req.getParameter("DateCompleted") + " " + req.getParameter("TimeCompleted") + "'");
+			starsOrder.setDateCompleted( dateCompleted );
 		}
+		
 		if (req.getParameter("DateCancelled") != null && req.getParameter("DateCancelled").length() > 0) {
-			String dateTime = req.getParameter("DateCancelled") + " " + req.getParameter("TimeCancelled"); 
-			starsOrder.setDateCompleted( ServerUtils.parseDate(dateTime, tz) );
+			Date dateCancelled = ServletUtils.parseDateTime(
+					req.getParameter("DateCancelled"), req.getParameter("TimeCancelled"), tz );
+			if (dateCancelled == null)
+				throw new WebClientException("Invalid date/time format '" + req.getParameter("DateCancelled") + " " + req.getParameter("TimeCancelled") + "'");
+			starsOrder.setDateCompleted( dateCancelled );
 		}
 	}
 

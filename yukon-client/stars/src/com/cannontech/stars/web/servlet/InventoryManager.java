@@ -428,12 +428,16 @@ public class InventoryManager extends HttpServlet {
 			
 			if (liteInv instanceof LiteStarsLMHardware) {
 				String serialNo = req.getParameter("SerialNo");
+				if (serialNo.equals("")) {
+					session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Serial # cannot be empty");
+					return;
+				}
 				
-				if (!((LiteStarsLMHardware) liteInv).getManufactureSerialNumber().equals(serialNo)) {
-					if (energyCompany.searchForLMHardware( devTypeID, serialNo ) != null) {
-						session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Serial # already exists, please enter a different one");
-						return;
-					}
+				if (!((LiteStarsLMHardware) liteInv).getManufactureSerialNumber().equals(serialNo)
+					&& energyCompany.searchForLMHardware( devTypeID, serialNo ) != null)
+				{
+					session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Serial # already exists, please enter a different one");
+					return;
 				}
 			}
 			

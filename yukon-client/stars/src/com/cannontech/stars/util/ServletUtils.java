@@ -74,6 +74,20 @@ public class ServletUtils {
 	public static final String UTIL_EMAIL = "<<EMAIL>>";
 
     private static java.text.DecimalFormat decFormat = new java.text.DecimalFormat("0.#");
+	
+	private static final java.text.SimpleDateFormat[] timeFormat =
+	{
+		new java.text.SimpleDateFormat("hh:mm a"),
+		new java.text.SimpleDateFormat("hh:mma"),
+		new java.text.SimpleDateFormat("HH:mm"),
+	};
+
+	//this static initializer sets all the simpledateformat to lenient
+	static
+	{
+		for (int i = 0; i < timeFormat.length; i++)
+			timeFormat[i].setLenient( true );
+	}
     
     /* Table of energy company properties
      * key: String (property file name)
@@ -108,6 +122,47 @@ public class ServletUtils {
 		if (date == null) return emptyStr;
 		return format.format( date );
     }
+
+	/**
+	 * Parse time in the specified time zone 
+	 */
+	public static Date parseTime(String timeStr, TimeZone tz) {
+		Date retVal = null;
+		
+		for( int i = 0; i < timeFormat.length; i++ ) {
+			try {
+				timeFormat[i].setTimeZone(tz);
+				retVal = timeFormat[i].parse(timeStr);
+				break;
+			}
+			catch( java.text.ParseException pe ) {}
+		}
+		
+		return retVal;	
+	}
+	
+	/**
+	 * Parse date/time in the format of MM/dd/yyyy HH:mm,
+	 * MM/dd/yyyy hh:mm a, etc., in the specified time zone
+	 */
+	public static Date parseDateTime(String dateStr, String timeStr, TimeZone tz) {
+		Date datePart = com.cannontech.util.ServletUtil.parseDateStringLiberally( dateStr, tz );
+		if (datePart == null) return null;
+		
+		Date timePart = parseTime( timeStr, tz );
+		if (timePart == null) return null;
+		
+		Calendar dateCal = Calendar.getInstance();
+		dateCal.setTime( datePart );
+		Calendar timeCal = Calendar.getInstance();
+		timeCal.setTime( timePart );
+		
+		dateCal.set(Calendar.HOUR_OF_DAY, timeCal.get(Calendar.HOUR_OF_DAY));
+		dateCal.set(Calendar.MINUTE, timeCal.get(Calendar.MINUTE));
+		dateCal.set(Calendar.SECOND, timeCal.get(Calendar.SECOND));
+		
+		return dateCal.getTime();
+	}
     
     public static StarsLMControlHistory getControlHistory(StarsLMControlHistory ctrlHist, StarsCtrlHistPeriod period, TimeZone tz) {
     	Date date = LMControlHistoryUtil.getPeriodStartTime( period, tz );

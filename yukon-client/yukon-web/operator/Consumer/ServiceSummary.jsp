@@ -102,13 +102,15 @@ function checkOrderNo(form) {
               <%
 	for (int i = 0; i < serviceHist.getStarsServiceRequestCount(); i++) {
 		StarsServiceRequest order = serviceHist.getStarsServiceRequest(i);
+		String orderedBy = order.getOrderedBy();
+		if (orderedBy.equals("")) orderedBy = "&nbsp;";
 %>
               <tr valign="middle"> 
                 <td width="13%" class="TableCell"><a href="SOHistory.jsp?OrderNo=<%= i %>" class="Link1"><%= order.getOrderNumber() %></a></td>
                 <td width="13%" class="TableCell"><%= ServletUtils.formatDate(order.getDateReported(), dateTimeFormat) %></td>
                 <td width="10%" class="TableCell"><%= order.getServiceType().getContent() %></td>
                 <td width="10%" class="TableCell"><%= order.getCurrentState().getContent() %></td>
-                <td width="8%" class="TableCell"><%= order.getOrderedBy() %></td>
+                <td width="8%" class="TableCell"><%= orderedBy %></td>
                 <td width="12%" class="TableCell"><%= order.getServiceCompany().getContent() %></td>
                 <td width="34%"> 
                   <textarea name="Description" rows="3" wrap="soft" cols="35" class="TableCell" readonly><%= order.getDescription().replaceAll("<br>", "\r\n") %></textarea>

@@ -15,6 +15,7 @@ import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.db.stars.report.WorkOrderBase;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.web.servlet.WorkOrderManager;
@@ -122,10 +123,13 @@ public class CreateServiceRequestAction implements ActionBase {
             com.cannontech.database.db.stars.report.WorkOrderBase workOrderDB = workOrder.getWorkOrderBase();
             
             StarsFactory.setWorkOrderBase( workOrderDB, createOrder );
-            workOrderDB.setCurrentStateID( new Integer(
-            		energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_PENDING).getEntryID()) );
-            int accountID = createOrder.hasAccountID()? createOrder.getAccountID() : liteAcctInfo.getAccountID();
-            workOrderDB.setAccountID( new Integer(accountID) );
+            
+            if (createOrder.getCurrentState() == null) {
+				workOrderDB.setCurrentStateID( new Integer(
+						energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_PENDING).getEntryID()) );
+            }
+            if (!createOrder.hasAccountID())
+	            workOrderDB.setAccountID( new Integer(liteAcctInfo.getAccountID()) );
             workOrder.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
             
             workOrder = (com.cannontech.database.data.stars.report.WorkOrderBase)
@@ -213,7 +217,8 @@ public class CreateServiceRequestAction implements ActionBase {
         return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
 	}
 	
-	public static StarsOperation getRequestOperation(HttpServletRequest req, TimeZone tz) {
+	public static StarsOperation getRequestOperation(HttpServletRequest req, TimeZone tz)
+	throws WebClientException {
 		StarsCreateServiceRequest createOrder = new StarsCreateServiceRequest();
 		WorkOrderManager.setStarsServiceRequest( createOrder, req, tz );
 			

@@ -581,16 +581,16 @@ public class StarsFactory {
 			orderDB.setAccountID( new Integer(order.getAccountID()) );
 		if (order.getOrderNumber() != null)
 			orderDB.setOrderNumber( order.getOrderNumber() );
+		if (order.getDateReported() != null)
+			orderDB.setDateReported( order.getDateReported() );
+		
 		orderDB.setWorkTypeID( new Integer(order.getServiceType().getEntryID()) );
-		orderDB.setDateReported( order.getDateReported() );
 		orderDB.setServiceCompanyID( new Integer(order.getServiceCompany().getEntryID()) );
 		orderDB.setOrderedBy( order.getOrderedBy() );
 		orderDB.setDescription( order.getDescription() );
 		
-		/* Don't set the current state ID because we need to check if the state is valid
 		if (order.getCurrentState() != null)
 			orderDB.setCurrentStateID( new Integer(order.getCurrentState().getEntryID()) );
-		*/
 		if (order.getDateScheduled() != null)
 			orderDB.setDateScheduled( order.getDateScheduled() );
 		if (order.getDateCompleted() != null)
