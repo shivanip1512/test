@@ -504,13 +504,13 @@ public void actionPerformed_ExportMenuItem()
 		case TABULAR_PANE:
 			chooser = new com.cannontech.graph.exportdata.SaveAsJFileChooser(
 				CtiUtilities.getExportDirPath(), TABULAR_PANE, 
-				getGraph().getHTMLString(), getGraph().getTrendModel().getChartName().toString(), getGraph().getTrendModel());
+				getGraph().getHtmlString(), getGraph().getTrendModel().getChartName().toString(), getGraph().getTrendModel());
 				break;
 				
 		case SUMMARY_PANE:
 			chooser = new com.cannontech.graph.exportdata.SaveAsJFileChooser(
 				CtiUtilities.getExportDirPath(), SUMMARY_PANE, 
-				getGraph().getHTMLString(), getGraph().getTrendModel().getChartName().toString());
+				getGraph().getHtmlString(), getGraph().getTrendModel().getChartName().toString());
 				break;
 	}		
 
@@ -2169,23 +2169,14 @@ public void stateChanged(javax.swing.event.ChangeEvent event)
 		if( getTrendingTabbedPane().getSelectedComponent() == getGraphTabPanel())
 		{
 			com.cannontech.clientutils.CTILogger.info("GRAPH TAB");
-			getGraph().setSeriesMask(GRAPH_MASK, true);
-			getGraph().setSeriesMask(PEAK_MASK, false);
-			getGraph().setSeriesMask(USAGE_MASK, false);
 		}
 		else if( getTrendingTabbedPane().getSelectedComponent() == getTabularTabScrollPane())
 		{
 			com.cannontech.clientutils.CTILogger.info("TABULAR TAB");
-			getGraph().setSeriesMask(GRAPH_MASK, true);
-			getGraph().setSeriesMask(PEAK_MASK, false);
-			getGraph().setSeriesMask(USAGE_MASK, false);
 		}
 		else if( getTrendingTabbedPane().getSelectedComponent() == getSummaryTabEditorPane())
 		{
 			com.cannontech.clientutils.CTILogger.info("SUMMARY TAB");
-			getGraph().setSeriesMask(GRAPH_MASK, true);
-			getGraph().setSeriesMask(PEAK_MASK, true);
-			getGraph().setSeriesMask(USAGE_MASK, true);
 		}
 	}			
 
