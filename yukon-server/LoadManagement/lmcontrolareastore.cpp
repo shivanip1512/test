@@ -255,32 +255,32 @@ void CtiLMControlAreaStore::reset()
                         RWDBSelector selector = db.selector();
                         selector.distinct();
                         selector << lmGroupMacroExpanderView["paobjectid"]
-                        << lmGroupMacroExpanderView["category"]
-                        << lmGroupMacroExpanderView["paoclass"]
-                        << lmGroupMacroExpanderView["paoname"]
-                        << lmGroupMacroExpanderView["type"]
-                        << lmGroupMacroExpanderView["description"]
-                        << lmGroupMacroExpanderView["disableflag"]
-                        << lmGroupMacroExpanderView["alarminhibit"]
-                        << lmGroupMacroExpanderView["controlinhibit"]
-                        << lmGroupMacroExpanderView["kwcapacity"]
-                        << lmGroupMacroExpanderView["grouporder"]
-                        << lmGroupMacroExpanderView["childorder"]
-                        << lmGroupMacroExpanderView["deviceid"]
-                        << rwdbName("pointdeviceidusage",lmGroupPointTable["deviceidusage"])
-                        << rwdbName("pointpointidusage",lmGroupPointTable["pointidusage"])
-                        << rwdbName("pointstartcontrolrawstate",lmGroupPointTable["startcontrolrawstate"])
-                        << rwdbName("rippleshedtime",lmGroupRippleTable["shedtime"])
-                        << dynamicLMGroupTable["groupcontrolstate"]
-                        << dynamicLMGroupTable["currenthoursdaily"]
-                        << dynamicLMGroupTable["currenthoursmonthly"]
-                        << dynamicLMGroupTable["currenthoursseasonal"]
-                        << dynamicLMGroupTable["currenthoursannually"]
-                        << dynamicLMGroupTable["lastcontrolsent"]
-                        << dynamicLMGroupTable["timestamp"]
-                        << pointTable["pointid"]
-                        << pointTable["pointoffset"]
-                        << pointTable["pointtype"];
+                                 << lmGroupMacroExpanderView["category"]
+                                 << lmGroupMacroExpanderView["paoclass"]
+                                 << lmGroupMacroExpanderView["paoname"]
+                                 << lmGroupMacroExpanderView["type"]
+                                 << lmGroupMacroExpanderView["description"]
+                                 << lmGroupMacroExpanderView["disableflag"]
+                                 << lmGroupMacroExpanderView["alarminhibit"]
+                                 << lmGroupMacroExpanderView["controlinhibit"]
+                                 << lmGroupMacroExpanderView["kwcapacity"]
+                                 << lmGroupMacroExpanderView["grouporder"]
+                                 << lmGroupMacroExpanderView["childorder"]
+                                 << lmGroupMacroExpanderView["deviceid"]
+                                 << rwdbName("pointdeviceidusage",lmGroupPointTable["deviceidusage"])
+                                 << rwdbName("pointpointidusage",lmGroupPointTable["pointidusage"])
+                                 << rwdbName("pointstartcontrolrawstate",lmGroupPointTable["startcontrolrawstate"])
+                                 << rwdbName("rippleshedtime",lmGroupRippleTable["shedtime"])
+                                 << dynamicLMGroupTable["groupcontrolstate"]
+                                 << dynamicLMGroupTable["currenthoursdaily"]
+                                 << dynamicLMGroupTable["currenthoursmonthly"]
+                                 << dynamicLMGroupTable["currenthoursseasonal"]
+                                 << dynamicLMGroupTable["currenthoursannually"]
+                                 << dynamicLMGroupTable["lastcontrolsent"]
+                                 << dynamicLMGroupTable["timestamp"]
+                                 << pointTable["pointid"]
+                                 << pointTable["pointoffset"]
+                                 << pointTable["pointtype"];
 
                         selector.from(lmGroupMacroExpanderView);
                         selector.from(lmGroupPointTable);
@@ -652,6 +652,7 @@ void CtiLMControlAreaStore::reset()
                             CtiLMProgramCurtailment* currentLMProgramCurtailment = (CtiLMProgramCurtailment*)itr.value();
 
                             RWDBTable lmProgramCurtailCustomerListTable = db.table("lmprogramcurtailcustomerlist");
+                            RWDBTable customerTable = db.table("customer");
                             RWDBTable ciCustomerBaseTable = db.table("cicustomerbase");
 
                             RWDBSelector selector = db.selector();
@@ -664,16 +665,18 @@ void CtiLMControlAreaStore::reset()
                                      << yukonPAObjectTable["disableflag"]
                                      << lmProgramCurtailCustomerListTable["customerorder"]
                                      << lmProgramCurtailCustomerListTable["requireack"]
-                                     << ciCustomerBaseTable["custfpl"]
-                                     << ciCustomerBaseTable["custtimezone"];
+                                     << customerTable["timezone"]
+                                     << ciCustomerBaseTable["customerdemandlevel"];
 
                             selector.from(yukonPAObjectTable);
                             selector.from(lmProgramCurtailCustomerListTable);
+                            selector.from(customerTable);
                             selector.from(ciCustomerBaseTable);
 
                             selector.where( lmProgramCurtailCustomerListTable["deviceid"]==currentLMProgramCurtailment->getPAOId() &&
                                             yukonPAObjectTable["paobjectid"]==lmProgramCurtailCustomerListTable["lmcustomerdeviceid"] &&
-                                            ciCustomerBaseTable["deviceid"]==yukonPAObjectTable["paobjectid"] );
+                                            customerTable["customerid"]==yukonPAObjectTable["paobjectid"] &&
+                                            ciCustomerBaseTable["customerid"]==yukonPAObjectTable["paobjectid"] );
 
                             selector.orderBy( lmProgramCurtailCustomerListTable["customerorder"] );
 
@@ -877,7 +880,7 @@ void CtiLMControlAreaStore::reset()
 
                             {
                                 RWDBTable lmEnergyExchangeCustomerListTable = db.table("lmenergyexchangecustomerlist");
-                                RWDBTable ciCustomerBaseTable = db.table("cicustomerbase");
+                                RWDBTable customerTable = db.table("customer");
 
                                 RWDBSelector selector = db.selector();
                                 selector << yukonPAObjectTable["paobjectid"]
@@ -888,15 +891,15 @@ void CtiLMControlAreaStore::reset()
                                          << yukonPAObjectTable["description"]
                                          << yukonPAObjectTable["disableflag"]
                                          << lmEnergyExchangeCustomerListTable["customerorder"]
-                                         << ciCustomerBaseTable["custtimezone"];
+                                         << customerTable["timezone"];
 
                                 selector.from(yukonPAObjectTable);
                                 selector.from(lmEnergyExchangeCustomerListTable);
-                                selector.from(ciCustomerBaseTable);
+                                selector.from(customerTable);
 
-                                selector.where( lmEnergyExchangeCustomerListTable["deviceid"]==currentLMProgramEnergyExchange->getPAOId() &&//will be paobjectid
-                                                yukonPAObjectTable["paobjectid"]==lmEnergyExchangeCustomerListTable["lmcustomerdeviceid"] &&//will be paobjectid
-                                                ciCustomerBaseTable["deviceid"]==yukonPAObjectTable["paobjectid"] );//will be paobjectid
+                                selector.where( lmEnergyExchangeCustomerListTable["deviceid"]==currentLMProgramEnergyExchange->getPAOId() &&
+                                                yukonPAObjectTable["paobjectid"]==lmEnergyExchangeCustomerListTable["lmcustomerdeviceid"] &&
+                                                customerTable["customerid"]==yukonPAObjectTable["paobjectid"] );
 
                                 selector.orderBy( lmEnergyExchangeCustomerListTable["customerorder"] );
 
