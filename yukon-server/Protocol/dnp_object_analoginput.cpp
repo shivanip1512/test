@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/07/25 20:53:18 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/09/18 21:25:40 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -485,7 +485,7 @@ int CtiDNPAnalogInputFrozen::getSerializedLen(void)
 
 //  ---  ANALOG INPUT CHANGE  ---
 
-CtiDNPAnalogInputChange::CtiDNPAnalogInputChange(int variation) : CtiDNPObject(Group, variation),
+CtiDNPAnalogInputChange::CtiDNPAnalogInputChange(int variation) : CtiDNPAnalogInput(Group, variation),
     _toc(CtiDNPTime::TimeAndDate)
 {
 
@@ -494,18 +494,107 @@ CtiDNPAnalogInputChange::CtiDNPAnalogInputChange(int variation) : CtiDNPObject(G
 
 int CtiDNPAnalogInputChange::restore(unsigned char *buf, int len)
 {
+    int pos = 0;
+
+    if( len < getSerializedLen() )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+
+        pos = len;
+    }
+    else
+    {
+        switch(getVariation())
+        {
+            case AI16BitNoTime:
+            {
+                pos += restoreVariation(buf + pos, len - pos, CtiDNPAnalogInput::AI16Bit);
+                break;
+            }
+
+            case AI16BitWithTime:
+            {
+                pos += restoreVariation(buf + pos, len - pos, CtiDNPAnalogInput::AI16Bit);
+                pos += _toc.restore(buf + pos, len - pos);
+                break;
+            }
+
+            case AI32BitNoTime:
+            {
+                pos += restoreVariation(buf + pos, len - pos, CtiDNPAnalogInput::AI32Bit);
+                break;
+            }
+
+            case AI32BitWithTime:
+            {
+                pos += restoreVariation(buf + pos, len - pos, CtiDNPAnalogInput::AI32Bit);
+                pos += _toc.restore(buf + pos, len - pos);
+                break;
+            }
+
+            default:
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+
+                break;
+            }
+        }
     }
 
-    return len;
+    return pos;
 }
 
 
 int CtiDNPAnalogInputChange::serialize(unsigned char *buf)
 {
-    return 0;
+    int pos = 0;
+
+    switch(getVariation())
+    {
+        case AI16BitNoTime:
+        {
+            pos += serializeVariation(buf + pos, CtiDNPAnalogInput::AI16Bit);
+            break;
+        }
+
+        case AI16BitWithTime:
+        {
+            pos += serializeVariation(buf + pos, CtiDNPAnalogInput::AI16Bit);
+            pos += _toc.serialize(buf + pos);
+            break;
+        }
+
+        case AI32BitNoTime:
+        {
+            pos += serializeVariation(buf + pos, CtiDNPAnalogInput::AI32Bit);
+            break;
+        }
+
+        case AI32BitWithTime:
+        {
+            pos += serializeVariation(buf + pos, CtiDNPAnalogInput::AI32Bit);
+            pos += _toc.serialize(buf + pos);
+            break;
+        }
+
+        default:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            break;
+        }
+    }
+
+    return pos;
 }
 
 
@@ -517,25 +606,25 @@ int CtiDNPAnalogInputChange::getSerializedLen(void)
     {
         case AI16BitNoTime:
         {
-            retVal = 0;
+            retVal = 3;
 
             break;
         }
         case AI16BitWithTime:
         {
-            retVal = 0;
+            retVal = 9;
 
             break;
         }
         case AI32BitNoTime:
         {
-            retVal = 0;
+            retVal = 5;
 
             break;
         }
         case AI32BitWithTime:
         {
-            retVal = 0;
+            retVal = 11;
 
             break;
         }
@@ -545,9 +634,35 @@ int CtiDNPAnalogInputChange::getSerializedLen(void)
 }
 
 
+CtiPointDataMsg *CtiDNPAnalogInputChange::getPoint( void )
+{
+    CtiPointDataMsg *tmpMsg;
+
+    tmpMsg = CtiDNPAnalogInput::getPoint();
+
+    switch(getVariation())
+    {
+        case AI16BitWithTime:
+        case AI32BitWithTime:
+        {
+            tmpMsg->setTime(_toc.getSeconds());
+
+            break;
+        }
+
+        default:
+        {
+            break;
+        }
+    }
+
+    return tmpMsg;
+}
+
+
 //  ---  ANALOG INPUT FROZEN EVENT  ---
 
-CtiDNPAnalogInputFrozenEvent::CtiDNPAnalogInputFrozenEvent(int variation) : CtiDNPObject(Group, variation),
+CtiDNPAnalogInputFrozenEvent::CtiDNPAnalogInputFrozenEvent(int variation) : CtiDNPAnalogInput(Group, variation),
     _tofe(CtiDNPTime::TimeAndDate)
 {
 

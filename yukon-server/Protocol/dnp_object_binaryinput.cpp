@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/07/25 20:53:19 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/09/18 21:20:43 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -359,5 +359,30 @@ int CtiDNPBinaryInputChange::getSerializedLen(void)
     }
 
     return len;
+}
+
+
+CtiPointDataMsg *CtiDNPBinaryInputChange::getPoint( void )
+{
+    CtiPointDataMsg *tmpMsg;
+
+    tmpMsg = CtiDNPBinaryInput::getPoint();
+
+    switch(getVariation())
+    {
+        case WithTime:
+        {
+            tmpMsg->setTime(_time.getSeconds());
+
+            break;
+        }
+
+        default:
+        {
+            break;
+        }
+    }
+
+    return tmpMsg;
 }
 

@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/07/25 20:53:20 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/09/18 21:25:40 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -70,7 +70,7 @@ public:
     virtual int serialize(unsigned char *buf);
     virtual int getSerializedLen(void);
 
-    CtiPointDataMsg *getPoint( void );
+    virtual CtiPointDataMsg *getPoint( void );
 };
 
 
@@ -104,7 +104,7 @@ public:
 };
 
 
-class CtiDNPAnalogInputChange : public CtiDNPObject
+class CtiDNPAnalogInputChange : public CtiDNPAnalogInput
 {
 private:
     CtiDNPTime _toc;
@@ -128,10 +128,12 @@ public:
     int restore(unsigned char *buf, int len);
     int serialize(unsigned char *buf);
     int getSerializedLen(void);
+
+    CtiPointDataMsg *getPoint( void );
 };
 
 
-class CtiDNPAnalogInputFrozenEvent : public CtiDNPObject
+class CtiDNPAnalogInputFrozenEvent : public CtiDNPAnalogInput
 {
 private:
     CtiDNPTime _tofe;
