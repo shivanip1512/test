@@ -1,5 +1,5 @@
 <%@ include file="oper_header.jsp" %>
-<%@ include file="oper_trendingheader.jsp" %>  
+<%@ include file="oper_trendingheader.jsp" %>
 <%
              if( graphDefinitionId <= 0 )
              {
@@ -30,7 +30,7 @@
              else // "graph" is default
              {
               %>
-<img src="/servlet/GraphGenerator?<%="db=" + dbAlias + "&gdefid=" + graphDefinitionId + "&width=" + width + "&height=" + height + "&format=gif&start=" + dateFormat.format(start) + "&end=" + dateFormat.format(stop)+ "&model=" + modelType%>"> 
+<img src="/servlet/GraphGenerator?<%="db=" + dbAlias + "&gdefid=" + graphDefinitionId + "&width=" + width + "&height=" + height + "&format=png&start=" + dateFormat.format(start) + "&end=" + dateFormat.format(stop)+ "&model=" + modelType%>"> 
 
 <%
              }
