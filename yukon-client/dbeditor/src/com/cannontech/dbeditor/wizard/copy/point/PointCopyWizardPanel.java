@@ -8,14 +8,13 @@ import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.dbeditor.wizard.point.PointPhysicalSettingsPanel;
-import com.cannontech.dbeditor.wizard.point.PointStatusPhysicalSettingsPanel;
+import com.cannontech.database.data.lite.LiteBase;
 
 public class PointCopyWizardPanel extends com.cannontech.common.wizard.WizardPanel {
 	private PointCopyNameDevicePanel pointCopyNameDevicePanel;
 	private com.cannontech.database.db.DBPersistent copyObject = null;
-	private PointPhysicalSettingsPanel pointPhysicalSettingsPanel;
-	private PointStatusPhysicalSettingsPanel pointStatusPhysicalSettingsPanel;
+	private PointCopyOffsetsPanel pointCopyOffsetsPanel;
+
 	private int pointDeviceID = -1;
 	private int pointType;
 	
@@ -27,7 +26,6 @@ public PointCopyWizardPanel(com.cannontech.database.db.DBPersistent objectToCopy
 	super();
 	setCopyObject(objectToCopy);
 	initialize();
-	
 
 }
 /**
@@ -68,7 +66,6 @@ public java.awt.Dimension getMinimumSize() {
 protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 	com.cannontech.common.gui.util.DataInputPanel currentInputPanel)
 {
-
 	if (currentInputPanel == null)
 	{
 		getPointCopyNameDevicePanel();
@@ -77,29 +74,8 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 	}
 	else if (currentInputPanel == getPointCopyNameDevicePanel())
 	{
-
-		switch (getPointType())
-		{
-			case PointTypes.PULSE_ACCUMULATOR_POINT :
-			case PointTypes.DEMAND_ACCUMULATOR_POINT :
-			case PointTypes.ANALOG_POINT :
-
-				getPointPhysicalSettingsPanel().setValue(null);
-				getPointPhysicalSettingsPanel().reinitialize(
-					new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject) getPointCopyNameDevicePanel().getSelectedDevice()).getYukonID()),
-					getPointType());
-				return getPointPhysicalSettingsPanel();
-
-			case PointTypes.STATUS_POINT :
-				getPointStatusPhysicalSettingsPanel().setValue(null);
-				getPointStatusPhysicalSettingsPanel().reinitialize(
-					new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject) getPointCopyNameDevicePanel().getSelectedDevice()).getYukonID()),
-					getPointType());
-				return getPointStatusPhysicalSettingsPanel();
-
-			default :
-				throw new Error(getClass() + "::" + "getNextInputPanel() - Unrecognized point type:  ");
-		}
+		getPointCopyOffsetsPanel().setCopyValue(getCopyObject(), ((LiteBase)getPointCopyNameDevicePanel().getSelectedDevice()).getLiteID());
+		return getPointCopyOffsetsPanel();
 	}
 	else
 		throw new Error(getClass() + "::" + "getNextInputPanel() - Could not determine next DataInputPanel");
@@ -128,25 +104,13 @@ public int getPointDeviceID()
  * This method was created in VisualAge.
  * @return com.cannontech.dbeditor.wizard.point.PointPhysicalSettingsPanel
  */
-protected PointPhysicalSettingsPanel getPointPhysicalSettingsPanel()
-{
-	if (pointPhysicalSettingsPanel == null)
-		pointPhysicalSettingsPanel = new PointPhysicalSettingsPanel();
-
-	return pointPhysicalSettingsPanel;
+protected PointCopyOffsetsPanel getPointCopyOffsetsPanel() {
+	if( pointCopyOffsetsPanel == null )
+		pointCopyOffsetsPanel = new PointCopyOffsetsPanel();
+		
+	return pointCopyOffsetsPanel;
 }
-/**
- * This method was created in VisualAge.
- * @return com.cannontech.dbeditor.wizard.point.PointStatusPhysicalSettingsPanel
- */
-protected PointStatusPhysicalSettingsPanel getPointStatusPhysicalSettingsPanel()
-{
 
-	if (pointStatusPhysicalSettingsPanel == null)
-		pointStatusPhysicalSettingsPanel = new PointStatusPhysicalSettingsPanel();
-
-	return pointStatusPhysicalSettingsPanel;
-}
 /**
  * Insert the method's description here.
  * Creation date: (6/5/2001 9:40:05 AM)
