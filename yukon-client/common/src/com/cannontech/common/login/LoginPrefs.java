@@ -4,6 +4,7 @@
 package com.cannontech.common.login;
 
 import com.cannontech.common.util.CtiPreferences;
+import com.cannontech.crypto.CtiCipher;
 
 /**
  * LoginPref stores some stuff via the preferences api  
@@ -46,8 +47,17 @@ class LoginPrefs extends CtiPreferences {
 		return get(DEFAULT_USERNAME, "yukon");
 	}
 	
-	public String getDefaultPassword() {
-		return get(DEFAULT_PASSWORD, "yukon");
+	public String getDefaultPassword() 
+	{
+		//if we have a value, we must decrypt it
+		String password = get(DEFAULT_PASSWORD, null);
+		if( password != null )
+		{
+			password = CtiCipher.decrypt(password);
+			return (password == null ? "yukon" : password);
+		}
+		else
+			return "yukon";
 	}
 	
 	public boolean getDefaultRememberPassword() {
@@ -96,8 +106,10 @@ class LoginPrefs extends CtiPreferences {
 		put(DEFAULT_YUKON_PORT, port);
 	}
 	
-	public void setDefaultPassword(String password) {
-		put(DEFAULT_PASSWORD, password);
+	public void setDefaultPassword(String password) 
+	{	
+		//encrypt the stored password
+		put( DEFAULT_PASSWORD, CtiCipher.encrypt(password) );
 	}
 	
 	public void setDefaultRememberPassword(boolean val) {
