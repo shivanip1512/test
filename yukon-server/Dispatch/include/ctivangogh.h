@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/ctivangogh.h-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2002/10/03 16:17:15 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2002/11/07 22:52:50 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -81,7 +81,6 @@ public:
     typedef set< CtiPendingPointOperations >  CtiPendingOpSet_t;
     typedef set< CtiTableNotificationGroup >  CtiNotificationGroupSet_t;
     typedef set< CtiTableGroupRecipient >     CtiRecipientSet_t;
-    typedef set< CtiTableStateGroup >         CtiStateGroupSet_t;
     typedef set< CtiDeviceBaseLite >          CtiDeviceLiteSet_t;
     typedef set< CtiTableCICustomerBase >     CtiDeviceCICustSet_t;
 
@@ -112,7 +111,6 @@ private:
     CtiPendingOpSet_t          _pendingPointInfo;      // This holds temporal information on a per point basis.
     CtiNotificationGroupSet_t  _notificationGroupSet;  // Notification Groups
     CtiRecipientSet_t          _recipientSet;          // Email/pager targets
-    CtiStateGroupSet_t         _stateGroupSet;
     CtiDeviceLiteSet_t         _deviceLiteSet;
     CtiDeviceCICustSet_t       _ciCustSet;             // customer device.
 
@@ -226,10 +224,8 @@ public:
     void messageDump(CtiMessage *pMsg);
      void doPendingOperations();
     void loadRTDB(bool force = false, CtiMessage *pMsg = NULL);     // Loads all relevant RTDB elements
-    void loadStateNames();
     void loadDeviceNames();
     void loadCICustomers(LONG id = 0);
-    RWCString resolveStateName(const CtiPointBase &aPoint , LONG rawValue);
     RWCString resolveDeviceName(const CtiPointBase &aPoint);
     RWCString resolveDeviceObjectType(const LONG devid);
     RWCString resolveDeviceDescription(LONG PAO);

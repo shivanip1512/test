@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.30 $
-* DATE         :  $Date: 2002/11/05 19:38:51 $
+* REVISION     :  $Revision: 1.31 $
+* DATE         :  $Date: 2002/11/07 22:52:50 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -79,6 +79,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "logger.h"
 #include "dllvg.h"
 
+#include "dllyukon.h"
 
 #define DEBUGPOINTCHANGES
 
@@ -830,7 +831,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                                 pendingControlRequest.getControl().setPAOID( did );
                                 pendingControlRequest.getControl().setStartTime(RWTime(YUKONEOT));
 
-                                CtiSignalMsg *pFailSig = new CtiSignalMsg(pPoint->getID(), Cmd->getSOE(), "Control " + resolveStateName(*pPoint, rawstate) + " Failed", getAlarmStateName( pPoint->getAlarming().getAlarmStates(CtiTablePointAlarming::commandFailure) ), GeneralLogType, pPoint->getAlarming().getAlarmStates(CtiTablePointAlarming::commandFailure), Cmd->getUser());
+                                CtiSignalMsg *pFailSig = new CtiSignalMsg(pPoint->getID(), Cmd->getSOE(), "Control " + ResolveStateName(pPoint->getStateGroupID(), rawstate) + " Failed", getAlarmStateName( pPoint->getAlarming().getAlarmStates(CtiTablePointAlarming::commandFailure) ), GeneralLogType, pPoint->getAlarming().getAlarmStates(CtiTablePointAlarming::commandFailure), Cmd->getUser());
 
                                 pendingControlRequest.setSignal( pFailSig );
 
@@ -880,7 +881,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                                     }
                                 }
 
-                                CtiSignalMsg *pCRP = new CtiSignalMsg(pPoint->getID(), Cmd->getSOE(), "Control " + resolveStateName(*pPoint, rawstate) + " Sent", RWCString(), GeneralLogType, pPoint->getAlarming().getAlarmStates(CtiTablePointAlarming::commandFailure), Cmd->getUser());
+                                CtiSignalMsg *pCRP = new CtiSignalMsg(pPoint->getID(), Cmd->getSOE(), "Control " + ResolveStateName(pPoint->getStateGroupID(), rawstate) + " Sent", RWCString(), GeneralLogType, pPoint->getAlarming().getAlarmStates(CtiTablePointAlarming::commandFailure), Cmd->getUser());
 
                                 MainQueue_.putQueue( pCRP );
                                 pDyn->getDispatch().setTags( TAG_CONTROL_PENDING );
@@ -1976,7 +1977,7 @@ int CtiVanGogh::processControlMessage(CtiLMControlHistoryMsg *pMsg)
                 pendingControlLMMsg.getControl().setStopTime(pMsg->getStartDateTime().seconds() + pMsg->getControlDuration());
                 pendingControlLMMsg.getControl().setSoeTag( CtiTableLMControlHistory::getNextSOE() );
 
-                CtiSignalMsg *pFailSig = new CtiSignalMsg(pPoint->getID(), 0, "Control " + resolveStateName(*pPoint, pMsg->getRawState()) + " Failed", getAlarmStateName( pPoint->getAlarming().getAlarmStates(CtiTablePointAlarming::commandFailure) ), GeneralLogType, pPoint->getAlarming().getAlarmStates(CtiTablePointAlarming::commandFailure), pMsg->getUser());
+                CtiSignalMsg *pFailSig = new CtiSignalMsg(pPoint->getID(), 0, "Control " + ResolveStateName(pPoint->getStateGroupID(), pMsg->getRawState()) + " Failed", getAlarmStateName( pPoint->getAlarming().getAlarmStates(CtiTablePointAlarming::commandFailure) ), GeneralLogType, pPoint->getAlarming().getAlarmStates(CtiTablePointAlarming::commandFailure), pMsg->getUser());
 
                 pendingControlLMMsg.setSignal( pFailSig );
 
@@ -3447,7 +3448,7 @@ INT CtiVanGogh::analyzeForStatusAlarms(CtiPointDataMsg *pData, CtiMultiWrapper &
             // We ALWAYS create an occurrence event to stuff a state event log into the systemlog table.
             if( pDyn->getDispatch().getValue() != pData->getValue() )
             {
-                RWCString txt = resolveStateName(point, (int)pData->getValue());
+                RWCString txt = ResolveStateName(point.getStateGroupID(), (int)pData->getValue());
                 RWCString addn;
 
                 if(pData->getQuality() == ManualQuality)
@@ -4201,7 +4202,7 @@ void CtiVanGogh::loadRTDB(bool force, CtiMessage *pMsg)
 
             if( pChg == NULL || (pChg->getDatabase() == ChangeStateGroupDb) )
             {
-                loadStateNames();
+                ReloadStateNames();
             }
             deltaT = Now.now().seconds() - Now.seconds();
             if( deltaT > 5 )
@@ -4338,49 +4339,6 @@ void CtiVanGogh::loadRTDB(bool force, CtiMessage *pMsg)
 }
 
 /*
- *  returns true if the point has a valid state group with this raw value
- */
-RWCString CtiVanGogh::resolveStateName(const CtiPointBase &aPoint , LONG rawValue)
-{
-    RWCString rStr;
-    LONG grpid = aPoint.getStateGroupID();
-
-    if(grpid > 0)
-    {
-        CtiTableStateGroup mygroup( grpid );
-
-        CtiLockGuard<CtiMutex> guard(server_mux);
-
-        CtiStateGroupSet_t::iterator sgit = _stateGroupSet.find( mygroup );
-
-        if( sgit == _stateGroupSet.end() )
-        {
-            // We need to load it up, and/or then insert it!
-            mygroup.Restore();
-
-            pair< CtiStateGroupSet_t::iterator, bool > resultpair;
-
-            // Try to insert. Return indicates success.
-            resultpair = _stateGroupSet.insert( mygroup );
-
-            if(resultpair.second == true)
-            {
-                sgit = resultpair.first;      // Iterator which points to the set entry.
-            }
-        }
-
-        if( sgit != _stateGroupSet.end() )
-        {
-            // git should be an iterator which represents the group now!
-            CtiTableStateGroup &theGroup = *sgit;
-            rStr = theGroup.getRawState(rawValue);
-        }
-    }
-
-    return rStr;
-}
-
-/*
  *  returns description of the device which IS this pao.
  */
 RWCString CtiVanGogh::resolveDeviceDescription(LONG PAO)
@@ -4442,42 +4400,6 @@ RWCString CtiVanGogh::resolveDeviceObjectType(const LONG devid)
     }
 
     return rStr;
-}
-
-void CtiVanGogh::loadStateNames()
-{
-    CtiLockGuard<CtiMutex> guard(server_mux, 5000);
-
-    if(guard.isAcquired())
-    {
-        CtiStateGroupSet_t::iterator sgit;
-
-        bool reloadFailed = false;
-
-        for(sgit = _stateGroupSet.begin(); sgit != _stateGroupSet.end(); sgit++ )
-        {
-            CtiTableStateGroup &theGroup = *sgit;
-            if(theGroup.Restore().errorCode() != RWDBStatus::ok)
-            {
-                reloadFailed = true;
-                break;
-            }
-        }
-
-        if(reloadFailed)
-        {
-            _stateGroupSet.clear();          // All stategroups will be reloaded on their next usage..  This shouldn't happen very often
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " State Group Set reset. " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-        }
-    }
-    else
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " INFO: State group names were not reloaded this pass.  Exclusion could not be obtained." << endl;
-    }
 }
 
 /*
@@ -5359,7 +5281,7 @@ void CtiVanGogh::writeControlMessageToPIL(LONG deviceid, LONG rawstate, CtiPoint
     else
     {
         cmdstr += RWCString("Control ");
-        cmdstr += resolveStateName(*pPoint, rawstate);
+        cmdstr += ResolveStateName(pPoint->getStateGroupID(), rawstate);
     }
 
     cmdstr += RWCString(" select pointid " + CtiNumStr(pPoint->getPointID()));
@@ -6349,7 +6271,7 @@ void CtiVanGogh::analyzeStatusUCOS(int alarm, CtiPointDataMsg *pData, CtiMultiWr
 
                 pDyn->setLastSignal(alarm);
                 // OK, we have an actual alarm condition to gripe about!
-                pSig = new CtiSignalMsg(point.getID(), pData->getSOE(), resolveStateName(point, (int)pData->getValue()), getAlarmStateName( point.getAlarming().getAlarmStates(alarm) ), GeneralLogType, point.getAlarming().getAlarmStates(alarm), pData->getUser());                        // This is an alarm if the alarm state indicates anything other than SignalEvent.
+                pSig = new CtiSignalMsg(point.getID(), pData->getSOE(), ResolveStateName(point.getStateGroupID(), (int)pData->getValue()), getAlarmStateName( point.getAlarming().getAlarmStates(alarm) ), GeneralLogType, point.getAlarming().getAlarmStates(alarm), pData->getUser());                        // This is an alarm if the alarm state indicates anything other than SignalEvent.
 
                 pSig->setAdditionalInfo("UCOS");
                 // This is an alarm if the alarm state indicates anything other than SignalEvent.
@@ -6430,11 +6352,11 @@ void CtiVanGogh::analyzeStatusState(int alarm, CtiPointDataMsg *pData, CtiMultiW
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " **** STATE Violation **** \n" <<
-                "   Point: " << point.getID() << " " << resolveStateName(point, (int)pData->getValue()) << endl;
+                "   Point: " << point.getID() << " " << ResolveStateName(point.getStateGroupID(), (int)pData->getValue()) << endl;
             }
 
             char tstr[80];
-            _snprintf(tstr, sizeof(tstr), "%s", resolveStateName(point, (int)pData->getValue()));
+            _snprintf(tstr, sizeof(tstr), "%s", ResolveStateName(point.getStateGroupID(), (int)pData->getValue()));
 
             pDyn->setLastSignal(alarm);
             // OK, we have an actual alarm condition to gripe about!
