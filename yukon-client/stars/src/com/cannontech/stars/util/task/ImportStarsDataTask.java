@@ -416,8 +416,10 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 				
 				if (appID > 0)
 					ImportManager.updateAppliance( fields, appID, liteAcctInfo, energyCompany );
-				else
+				else {
+					logMsg.add("Load (import_id=" + fields[ImportManager.IDX_APP_ID] + ") no corresponding appliance found for import_inv_id=" + invID + ", relay_num=" + relayNum + ", create new appliance");
 					ImportManager.newAppliance( fields, liteAcctInfo, energyCompany );
+				}
 				
 				numAppImported++;
 				it.remove();
