@@ -342,7 +342,8 @@ void CtiCCCommandExecutor::OpenCapBank(RWCountedPointer< CtiCountedPCPtrQueue<RW
     ULONG controlID = 0;
     ULONG bankID = _command->getId();
     BOOL found = FALSE;
-    BOOL savedRecentlyControlledFlag = FALSE;
+    BOOL savedBusRecentlyControlledFlag = FALSE;
+    BOOL savedFeederRecentlyControlledFlag = FALSE;
     CtiMultiMsg* multi = new CtiMultiMsg();
     RWOrdered& pointChanges = multi->getData();
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
@@ -362,7 +363,8 @@ void CtiCCCommandExecutor::OpenCapBank(RWCountedPointer< CtiCountedPCPtrQueue<RW
                 CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
                 if( bankID == currentCapBank->getControlDeviceId() )
                 {
-                    savedRecentlyControlledFlag = currentSubstationBus->getRecentlyControlledFlag();
+                    savedBusRecentlyControlledFlag = currentSubstationBus->getRecentlyControlledFlag();
+                    savedFeederRecentlyControlledFlag = currentFeeder->getRecentlyControlledFlag();
                     currentSubstationBus->setRecentlyControlledFlag(FALSE);
                     currentFeeder->setRecentlyControlledFlag(FALSE);
                     controlID = currentCapBank->getControlDeviceId();
@@ -383,10 +385,12 @@ void CtiCCCommandExecutor::OpenCapBank(RWCountedPointer< CtiCountedPCPtrQueue<RW
                         additional += currentSubstationBus->getPAOName();
                         pointChanges.insert(new CtiSignalMsg(currentCapBank->getStatusPointId(),1,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
                         ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(1);
-                        if( !savedRecentlyControlledFlag )
+                        if( !savedBusRecentlyControlledFlag ||
+                            (currentSubstationBus->getControlMethod() == CtiCCSubstationBus::IndividualFeederControlMethod && !savedFeederRecentlyControlledFlag) )
                         {
                             pointChanges.insert(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType));
                             ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(2);
+                            currentCapBank->setLastStatusChangeTime(RWDBDateTime());
                         }
                     }
                     else
@@ -403,32 +407,15 @@ void CtiCCCommandExecutor::OpenCapBank(RWCountedPointer< CtiCountedPCPtrQueue<RW
                     }
 
                     found = TRUE;
-                    if( !savedRecentlyControlledFlag )
+                    if( !savedBusRecentlyControlledFlag ||
+                        (currentSubstationBus->getControlMethod() == CtiCCSubstationBus::IndividualFeederControlMethod && !savedFeederRecentlyControlledFlag) )
                     {
                         currentSubstationBus->setRecentlyControlledFlag(TRUE);
                         currentFeeder->setRecentlyControlledFlag(TRUE);
                     }
-                    else
+                    else if( ( (currentSubstationBus->getControlMethod() == CtiCCSubstationBus::SubstationBusControlMethod || currentSubstationBus->getControlMethod() == CtiCCSubstationBus::BusOptimizedFeederControlMethod) && savedBusRecentlyControlledFlag && !currentSubstationBus->getRecentlyControlledFlag() ) ||
+                             ( currentSubstationBus->getControlMethod() == CtiCCSubstationBus::IndividualFeederControlMethod && savedFeederRecentlyControlledFlag && !currentFeeder->getRecentlyControlledFlag() ) )
                     {
-                        currentSubstationBus->setRecentlyControlledFlag(FALSE);
-                        currentFeeder->setRecentlyControlledFlag(FALSE);
-                    }
-                    break;
-                }
-            }
-        }
-        if( found )
-        {
-            if( savedRecentlyControlledFlag && !currentSubstationBus->getRecentlyControlledFlag() )
-            {
-                for(ULONG j=0;j<ccFeeders.entries();j++)
-                {
-                    CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[j];
-                    RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
-
-                    for(ULONG k=0;k<ccCapBanks.entries();k++)
-                    {
-                        CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
                         if( currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending )
                         {
                             if( currentCapBank->getStatusPointId() > 0 )
@@ -436,6 +423,7 @@ void CtiCCCommandExecutor::OpenCapBank(RWCountedPointer< CtiCountedPCPtrQueue<RW
                                 currentCapBank->setControlStatus(CtiCCCapBank::Close);
                                 pointChanges.insert(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::Close,NormalQuality,StatusPointType));
                                 ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(4);
+                                currentCapBank->setLastStatusChangeTime(RWDBDateTime());
                             }
                             else
                             {
@@ -451,6 +439,7 @@ void CtiCCCommandExecutor::OpenCapBank(RWCountedPointer< CtiCountedPCPtrQueue<RW
                                 currentCapBank->setControlStatus(CtiCCCapBank::Open);
                                 pointChanges.insert(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::Open,NormalQuality,StatusPointType));
                                 ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(4);
+                                currentCapBank->setLastStatusChangeTime(RWDBDateTime());
                             }
                             else
                             {
@@ -459,9 +448,32 @@ void CtiCCCommandExecutor::OpenCapBank(RWCountedPointer< CtiCountedPCPtrQueue<RW
                                               << " PAOID: " << currentCapBank->getPAOId() << " doesn't have a status point!" << endl;
                             }
                         }
+                        currentSubstationBus->setRecentlyControlledFlag(FALSE);
+                        currentFeeder->setRecentlyControlledFlag(FALSE);
+                        if( currentSubstationBus->getControlMethod() == CtiCCSubstationBus::IndividualFeederControlMethod )
+                        {
+                            for(ULONG x=0;x<ccFeeders.entries();x++)
+                            {
+                                if( ((CtiCCFeeder*)ccFeeders[x])->getRecentlyControlledFlag() )
+                                {
+                                    currentSubstationBus->setRecentlyControlledFlag(TRUE);
+                                    break;
+                                }
+                            }
+                        }
                     }
+                    else
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << RWTime() << " - Tried to Manual Open Cap Bank: " << currentCapBank->getPAOName()
+                                      << " PAOID: " << currentCapBank->getPAOId() << " and failed." << endl;
+                    }
+                    break;
                 }
             }
+        }
+        if( found )
+        {
             break;
         }
     }
@@ -489,7 +501,8 @@ void CtiCCCommandExecutor::CloseCapBank(RWCountedPointer< CtiCountedPCPtrQueue<R
     ULONG controlID = 0;
     ULONG bankID = _command->getId();
     BOOL found = FALSE;
-    BOOL savedRecentlyControlledFlag = FALSE;
+    BOOL savedBusRecentlyControlledFlag = FALSE;
+    BOOL savedFeederRecentlyControlledFlag = FALSE;
     CtiMultiMsg* multi = new CtiMultiMsg();
     RWOrdered& pointChanges = multi->getData();
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
@@ -509,7 +522,8 @@ void CtiCCCommandExecutor::CloseCapBank(RWCountedPointer< CtiCountedPCPtrQueue<R
                 CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
                 if( bankID == currentCapBank->getControlDeviceId() )
                 {
-                    savedRecentlyControlledFlag = currentSubstationBus->getRecentlyControlledFlag();
+                    savedBusRecentlyControlledFlag = currentSubstationBus->getRecentlyControlledFlag();
+                    savedFeederRecentlyControlledFlag = currentFeeder->getRecentlyControlledFlag();
                     currentSubstationBus->setRecentlyControlledFlag(FALSE);
                     currentFeeder->setRecentlyControlledFlag(FALSE);
                     controlID = currentCapBank->getControlDeviceId();
@@ -531,10 +545,12 @@ void CtiCCCommandExecutor::CloseCapBank(RWCountedPointer< CtiCountedPCPtrQueue<R
                         additional += currentSubstationBus->getPAOName();
                         pointChanges.insert(new CtiSignalMsg(currentCapBank->getStatusPointId(),1,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
                         ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(1);
-                        if( !savedRecentlyControlledFlag )
+                        if( !savedBusRecentlyControlledFlag ||
+                            (currentSubstationBus->getControlMethod() == CtiCCSubstationBus::IndividualFeederControlMethod && !savedFeederRecentlyControlledFlag) )
                         {
                             pointChanges.insert(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType));
                             ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(2);
+                            currentCapBank->setLastStatusChangeTime(RWDBDateTime());
                         }
                     }
                     else
@@ -551,32 +567,15 @@ void CtiCCCommandExecutor::CloseCapBank(RWCountedPointer< CtiCountedPCPtrQueue<R
                     }
 
                     found = TRUE;
-                    if( !savedRecentlyControlledFlag )
+                    if( !savedBusRecentlyControlledFlag ||
+                        (currentSubstationBus->getControlMethod() == CtiCCSubstationBus::IndividualFeederControlMethod && !savedFeederRecentlyControlledFlag) )
                     {
                         currentSubstationBus->setRecentlyControlledFlag(TRUE);
                         currentFeeder->setRecentlyControlledFlag(TRUE);
                     }
-                    else
+                    else if( ( (currentSubstationBus->getControlMethod() == CtiCCSubstationBus::SubstationBusControlMethod || currentSubstationBus->getControlMethod() == CtiCCSubstationBus::BusOptimizedFeederControlMethod) && savedBusRecentlyControlledFlag && !currentSubstationBus->getRecentlyControlledFlag() ) ||
+                             ( currentSubstationBus->getControlMethod() == CtiCCSubstationBus::IndividualFeederControlMethod && savedFeederRecentlyControlledFlag && !currentFeeder->getRecentlyControlledFlag() ) )
                     {
-                        currentSubstationBus->setRecentlyControlledFlag(FALSE);
-                        currentFeeder->setRecentlyControlledFlag(FALSE);
-                    }
-                    break;
-                }
-            }
-        }
-        if( found )
-        {
-            if( savedRecentlyControlledFlag && !currentSubstationBus->getRecentlyControlledFlag() )
-            {
-                for(ULONG j=0;j<ccFeeders.entries();j++)
-                {
-                    CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[j];
-                    RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
-
-                    for(ULONG k=0;k<ccCapBanks.entries();k++)
-                    {
-                        CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
                         if( currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending )
                         {
                             if( currentCapBank->getStatusPointId() > 0 )
@@ -584,6 +583,7 @@ void CtiCCCommandExecutor::CloseCapBank(RWCountedPointer< CtiCountedPCPtrQueue<R
                                 currentCapBank->setControlStatus(CtiCCCapBank::Close);
                                 pointChanges.insert(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::Close,NormalQuality,StatusPointType));
                                 ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(4);
+                                currentCapBank->setLastStatusChangeTime(RWDBDateTime());
                             }
                             else
                             {
@@ -599,6 +599,7 @@ void CtiCCCommandExecutor::CloseCapBank(RWCountedPointer< CtiCountedPCPtrQueue<R
                                 currentCapBank->setControlStatus(CtiCCCapBank::Open);
                                 pointChanges.insert(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::Open,NormalQuality,StatusPointType));
                                 ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(4);
+                                currentCapBank->setLastStatusChangeTime(RWDBDateTime());
                             }
                             else
                             {
@@ -607,9 +608,32 @@ void CtiCCCommandExecutor::CloseCapBank(RWCountedPointer< CtiCountedPCPtrQueue<R
                                               << " PAOID: " << currentCapBank->getPAOId() << " doesn't have a status point!" << endl;
                             }
                         }
+                        currentSubstationBus->setRecentlyControlledFlag(FALSE);
+                        currentFeeder->setRecentlyControlledFlag(FALSE);
+                        if( currentSubstationBus->getControlMethod() == CtiCCSubstationBus::IndividualFeederControlMethod )
+                        {
+                            for(ULONG x=0;x<ccFeeders.entries();x++)
+                            {
+                                if( ((CtiCCFeeder*)ccFeeders[x])->getRecentlyControlledFlag() )
+                                {
+                                    currentSubstationBus->setRecentlyControlledFlag(TRUE);
+                                    break;
+                                }
+                            }
+                        }
                     }
+                    else
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << RWTime() << " - Tried to Manual Open Cap Bank: " << currentCapBank->getPAOName()
+                                      << " PAOID: " << currentCapBank->getPAOId() << " and failed." << endl;
+                    }
+                    break;
                 }
             }
+        }
+        if( found )
+        {
             break;
         }
     }
@@ -637,7 +661,8 @@ void CtiCCCommandExecutor::ConfirmOpen(RWCountedPointer< CtiCountedPCPtrQueue<RW
     ULONG controlID = 0;
     ULONG bankID = _command->getId();
     BOOL found = FALSE;
-    BOOL savedRecentlyControlledFlag = FALSE;
+    BOOL savedBusRecentlyControlledFlag = FALSE;
+    BOOL savedFeederRecentlyControlledFlag = FALSE;
     CtiMultiMsg* multi = new CtiMultiMsg();
     RWOrdered& pointChanges = multi->getData();
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
@@ -658,7 +683,8 @@ void CtiCCCommandExecutor::ConfirmOpen(RWCountedPointer< CtiCountedPCPtrQueue<RW
                 CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
                 if( bankID == currentCapBank->getControlDeviceId() )
                 {
-                    savedRecentlyControlledFlag = currentSubstationBus->getRecentlyControlledFlag();
+                    savedBusRecentlyControlledFlag = currentSubstationBus->getRecentlyControlledFlag();
+                    savedFeederRecentlyControlledFlag = currentFeeder->getRecentlyControlledFlag();
                     currentSubstationBus->setRecentlyControlledFlag(FALSE);
                     currentFeeder->setRecentlyControlledFlag(FALSE);
                     controlID = currentCapBank->getControlDeviceId();
@@ -678,10 +704,11 @@ void CtiCCCommandExecutor::ConfirmOpen(RWCountedPointer< CtiCountedPCPtrQueue<RW
                         additional += currentSubstationBus->getPAOName();
                         pointChanges.insert(new CtiSignalMsg(currentCapBank->getStatusPointId(),1,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
                         ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(1);
-                        if( !savedRecentlyControlledFlag )
+                        if( !(savedFeederRecentlyControlledFlag || savedBusRecentlyControlledFlag) )
                         {
                             pointChanges.insert(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType));
                             ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(2);
+                            currentCapBank->setLastStatusChangeTime(RWDBDateTime());
                         }
                     }
                     else
@@ -698,32 +725,15 @@ void CtiCCCommandExecutor::ConfirmOpen(RWCountedPointer< CtiCountedPCPtrQueue<RW
                     }
 
                     found = TRUE;
-                    if( !savedRecentlyControlledFlag )
+                    if( !savedBusRecentlyControlledFlag ||
+                        (currentSubstationBus->getControlMethod() == CtiCCSubstationBus::IndividualFeederControlMethod && !savedFeederRecentlyControlledFlag) )
                     {
                         currentSubstationBus->setRecentlyControlledFlag(TRUE);
                         currentFeeder->setRecentlyControlledFlag(TRUE);
                     }
-                    else
+                    else if( ( (currentSubstationBus->getControlMethod() == CtiCCSubstationBus::SubstationBusControlMethod || currentSubstationBus->getControlMethod() == CtiCCSubstationBus::BusOptimizedFeederControlMethod) && savedBusRecentlyControlledFlag && !currentSubstationBus->getRecentlyControlledFlag() ) ||
+                             ( currentSubstationBus->getControlMethod() == CtiCCSubstationBus::IndividualFeederControlMethod && savedFeederRecentlyControlledFlag && !currentFeeder->getRecentlyControlledFlag() ) )
                     {
-                        currentSubstationBus->setRecentlyControlledFlag(FALSE);
-                        currentFeeder->setRecentlyControlledFlag(FALSE);
-                    }
-                    break;
-                }
-            }
-        }
-        if( found )
-        {
-            if( savedRecentlyControlledFlag && !currentSubstationBus->getRecentlyControlledFlag() )
-            {
-                for(ULONG j=0;j<ccFeeders.entries();j++)
-                {
-                    CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[j];
-                    RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
-
-                    for(ULONG k=0;k<ccCapBanks.entries();k++)
-                    {
-                        CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
                         if( currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending )
                         {
                             if( currentCapBank->getStatusPointId() > 0 )
@@ -731,6 +741,7 @@ void CtiCCCommandExecutor::ConfirmOpen(RWCountedPointer< CtiCountedPCPtrQueue<RW
                                 currentCapBank->setControlStatus(CtiCCCapBank::Close);
                                 pointChanges.insert(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::Close,NormalQuality,StatusPointType));
                                 ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(4);
+                                currentCapBank->setLastStatusChangeTime(RWDBDateTime());
                             }
                             else
                             {
@@ -746,6 +757,7 @@ void CtiCCCommandExecutor::ConfirmOpen(RWCountedPointer< CtiCountedPCPtrQueue<RW
                                 currentCapBank->setControlStatus(CtiCCCapBank::Open);
                                 pointChanges.insert(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::Open,NormalQuality,StatusPointType));
                                 ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(4);
+                                currentCapBank->setLastStatusChangeTime(RWDBDateTime());
                             }
                             else
                             {
@@ -754,9 +766,32 @@ void CtiCCCommandExecutor::ConfirmOpen(RWCountedPointer< CtiCountedPCPtrQueue<RW
                                               << " PAOID: " << currentCapBank->getPAOId() << " doesn't have a status point!" << endl;
                             }
                         }
+                        currentSubstationBus->setRecentlyControlledFlag(FALSE);
+                        currentFeeder->setRecentlyControlledFlag(FALSE);
+                        if( currentSubstationBus->getControlMethod() == CtiCCSubstationBus::IndividualFeederControlMethod )
+                        {
+                            for(ULONG x=0;x<ccFeeders.entries();x++)
+                            {
+                                if( ((CtiCCFeeder*)ccFeeders[x])->getRecentlyControlledFlag() )
+                                {
+                                    currentSubstationBus->setRecentlyControlledFlag(TRUE);
+                                    break;
+                                }
+                            }
+                        }
                     }
+                    else
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << RWTime() << " - Tried to Manual Open Cap Bank: " << currentCapBank->getPAOName()
+                                      << " PAOID: " << currentCapBank->getPAOId() << " and failed." << endl;
+                    }
+                    break;
                 }
             }
+        }
+        if( found )
+        {
             break;
         }
     }
@@ -784,7 +819,8 @@ void CtiCCCommandExecutor::ConfirmClose(RWCountedPointer< CtiCountedPCPtrQueue<R
     ULONG controlID = 0;
     ULONG bankID = _command->getId();
     BOOL found = FALSE;
-    BOOL savedRecentlyControlledFlag = FALSE;
+    BOOL savedBusRecentlyControlledFlag = FALSE;
+    BOOL savedFeederRecentlyControlledFlag = FALSE;
     CtiMultiMsg* multi = new CtiMultiMsg();
     RWOrdered& pointChanges = multi->getData();
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
@@ -805,7 +841,8 @@ void CtiCCCommandExecutor::ConfirmClose(RWCountedPointer< CtiCountedPCPtrQueue<R
                 CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
                 if( bankID == currentCapBank->getControlDeviceId() )
                 {
-                    savedRecentlyControlledFlag = currentSubstationBus->getRecentlyControlledFlag();
+                    savedBusRecentlyControlledFlag = currentSubstationBus->getRecentlyControlledFlag();
+                    savedFeederRecentlyControlledFlag = currentFeeder->getRecentlyControlledFlag();
                     currentSubstationBus->setRecentlyControlledFlag(FALSE);
                     currentFeeder->setRecentlyControlledFlag(FALSE);
                     controlID = currentCapBank->getControlDeviceId();
@@ -826,10 +863,12 @@ void CtiCCCommandExecutor::ConfirmClose(RWCountedPointer< CtiCountedPCPtrQueue<R
                         additional += currentSubstationBus->getPAOName();
                         pointChanges.insert(new CtiSignalMsg(currentCapBank->getStatusPointId(),1,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
                         ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(1);
-                        if( !savedRecentlyControlledFlag )
+                        if( !savedBusRecentlyControlledFlag ||
+                            (currentSubstationBus->getControlMethod() == CtiCCSubstationBus::IndividualFeederControlMethod && !savedFeederRecentlyControlledFlag) )
                         {
                             pointChanges.insert(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType));
                             ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(2);
+                            currentCapBank->setLastStatusChangeTime(RWDBDateTime());
                         }
                     }
                     else
@@ -846,32 +885,15 @@ void CtiCCCommandExecutor::ConfirmClose(RWCountedPointer< CtiCountedPCPtrQueue<R
                     }
 
                     found = TRUE;
-                    if( !savedRecentlyControlledFlag )
+                    if( !savedBusRecentlyControlledFlag ||
+                        (currentSubstationBus->getControlMethod() == CtiCCSubstationBus::IndividualFeederControlMethod && !savedFeederRecentlyControlledFlag) )
                     {
                         currentSubstationBus->setRecentlyControlledFlag(TRUE);
                         currentFeeder->setRecentlyControlledFlag(TRUE);
                     }
-                    else
+                    else if( ( (currentSubstationBus->getControlMethod() == CtiCCSubstationBus::SubstationBusControlMethod || currentSubstationBus->getControlMethod() == CtiCCSubstationBus::BusOptimizedFeederControlMethod) && savedBusRecentlyControlledFlag && !currentSubstationBus->getRecentlyControlledFlag() ) ||
+                             ( currentSubstationBus->getControlMethod() == CtiCCSubstationBus::IndividualFeederControlMethod && savedFeederRecentlyControlledFlag && !currentFeeder->getRecentlyControlledFlag() ) )
                     {
-                        currentSubstationBus->setRecentlyControlledFlag(FALSE);
-                        currentFeeder->setRecentlyControlledFlag(FALSE);
-                    }
-                    break;
-                }
-            }
-        }
-        if( found )
-        {
-            if( savedRecentlyControlledFlag && !currentSubstationBus->getRecentlyControlledFlag() )
-            {
-                for(ULONG j=0;j<ccFeeders.entries();j++)
-                {
-                    CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[j];
-                    RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
-
-                    for(ULONG k=0;k<ccCapBanks.entries();k++)
-                    {
-                        CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
                         if( currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending )
                         {
                             if( currentCapBank->getStatusPointId() > 0 )
@@ -879,6 +901,7 @@ void CtiCCCommandExecutor::ConfirmClose(RWCountedPointer< CtiCountedPCPtrQueue<R
                                 currentCapBank->setControlStatus(CtiCCCapBank::Close);
                                 pointChanges.insert(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::Close,NormalQuality,StatusPointType));
                                 ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(4);
+                                currentCapBank->setLastStatusChangeTime(RWDBDateTime());
                             }
                             else
                             {
@@ -894,6 +917,7 @@ void CtiCCCommandExecutor::ConfirmClose(RWCountedPointer< CtiCountedPCPtrQueue<R
                                 currentCapBank->setControlStatus(CtiCCCapBank::Open);
                                 pointChanges.insert(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::Open,NormalQuality,StatusPointType));
                                 ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(4);
+                                currentCapBank->setLastStatusChangeTime(RWDBDateTime());
                             }
                             else
                             {
@@ -902,9 +926,32 @@ void CtiCCCommandExecutor::ConfirmClose(RWCountedPointer< CtiCountedPCPtrQueue<R
                                               << " PAOID: " << currentCapBank->getPAOId() << " doesn't have a status point!" << endl;
                             }
                         }
+                        currentSubstationBus->setRecentlyControlledFlag(FALSE);
+                        currentFeeder->setRecentlyControlledFlag(FALSE);
+                        if( currentSubstationBus->getControlMethod() == CtiCCSubstationBus::IndividualFeederControlMethod )
+                        {
+                            for(ULONG x=0;x<ccFeeders.entries();x++)
+                            {
+                                if( ((CtiCCFeeder*)ccFeeders[x])->getRecentlyControlledFlag() )
+                                {
+                                    currentSubstationBus->setRecentlyControlledFlag(TRUE);
+                                    break;
+                                }
+                            }
+                        }
                     }
+                    else
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << RWTime() << " - Tried to Manual Open Cap Bank: " << currentCapBank->getPAOName()
+                                      << " PAOID: " << currentCapBank->getPAOId() << " and failed." << endl;
+                    }
+                    break;
                 }
             }
+        }
+        if( found )
+        {
             break;
         }
     }
@@ -1063,6 +1110,17 @@ void CtiCCPointDataMsgExecutor::Execute(RWCountedPointer< CtiCountedPCPtrQueue<R
                             {
                                 currentSubstationBus->setRecentlyControlledFlag(FALSE);
                                 currentFeeder->setRecentlyControlledFlag(FALSE);
+                                if( currentSubstationBus->getControlMethod() == CtiCCSubstationBus::IndividualFeederControlMethod )
+                                {
+                                    for(ULONG x=0;x<ccFeeders.entries();x++)
+                                    {
+                                        if( ((CtiCCFeeder*)ccFeeders[x])->getRecentlyControlledFlag() )
+                                        {
+                                            currentSubstationBus->setRecentlyControlledFlag(TRUE);
+                                            break;
+                                        }
+                                    }
+                                }
                             }
                             currentSubstationBus->setBusUpdatedFlag(TRUE);
                             currentCapBank->setControlStatus((ULONG)value);
