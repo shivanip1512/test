@@ -14,3 +14,10 @@ go
 alter table pointlimits 
 	add constraint PK__POINTID_LIMITNUM primary key (pointid, limitnumber)
 go
+
+
+/**** ADD COLUMNS TO THE DynamicLMGroup TABLE ****/
+alter table DynamicLMGroup add ControlStartTime datetime not null DEFAULT '01-JAN-1990'
+go
+alter table DynamicLMGroup add ControlCompleteTime datetime not null DEFAULT '01-JAN-1990'
+go
