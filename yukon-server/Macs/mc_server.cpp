@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_server.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2002/10/18 19:53:17 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2002/10/18 21:03:02 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -53,7 +53,7 @@ CtiMCServer::~CtiMCServer()
 void CtiMCServer::run()
 {
     CtiMessage* msg = NULL;
-    unsigned long delay = 0;
+    unsigned long delay = 0; // how long to wait to wait up again max, in seconds
     
     try
     {
@@ -63,7 +63,7 @@ void CtiMCServer::run()
             /* Main Loop */
             while(true)
             {
-                if( (msg =_main_queue.getQueue(delay)) != NULL )
+                if( (msg =_main_queue.getQueue(delay*1000)) != NULL )
                 {
                     if( isSet( CtiThread::SHUTDOWN) )
                     {
@@ -76,10 +76,10 @@ void CtiMCServer::run()
                     // go back to the top to empty out the queue
                     delete msg;
 
-                    delay = millisToNextMinute();
+                    delay = secondsToNextMinute();
                     RWTime nextTime = _scheduler.getNextEventTime();
                     if( nextTime.isValid() ) {
-                        unsigned long next = millisToTime(nextTime);
+                        unsigned long next = secondsToTime(nextTime);
                         if( next < delay ) delay = next;
                     }
                    
@@ -118,10 +118,10 @@ void CtiMCServer::run()
             // force stop any schedules with completed scripts
             checkRunningScripts();
              
-            delay = millisToNextMinute();
+            delay = secondsToNextMinute();
             RWTime nextTime = _scheduler.getNextEventTime();
             if( nextTime.isValid() ) {
-                long next = millisToTime(nextTime);
+                long next = secondsToTime(nextTime);
                 if( next < delay ) delay = next;
              }
 
@@ -1145,23 +1145,23 @@ bool CtiMCServer::isToday(const RWTime& t) const
     return ( RWDate(t) == RWDate::now() );
 }
 
-unsigned long CtiMCServer::millisToNextMinute() const
+unsigned long CtiMCServer::secondsToNextMinute() const
 {
     struct tm* b_time;
 
     time_t now = time(NULL);
     b_time = localtime(&now);
-    return (60 - b_time->tm_sec) * 1000;
+    return (60 - b_time->tm_sec);
 }
 
-unsigned long CtiMCServer::millisToTime(const RWTime& t) const
+unsigned long CtiMCServer::secondsToTime(const RWTime& t) const
 {
     unsigned long t_secs = t.seconds();
     unsigned long now_secs = RWTime::now().seconds();
 
     return ( t_secs < now_secs ?
              0 :
-             (t_secs - now_secs) * 1000 );    
+             (t_secs - now_secs) );    
 }
 
 void CtiMCServer::dumpRunningScripts()

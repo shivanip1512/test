@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/INCLUDE/mc_server.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/10/17 17:49:31 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/10/18 21:03:02 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -143,8 +143,8 @@ private:
     RWTime stripSeconds(const RWTime& now) const;
     bool isToday(const RWTime& now) const;
 
-    unsigned long millisToNextMinute() const;
-    unsigned long millisToTime(const RWTime& t) const;
+    unsigned long secondsToNextMinute() const;
+    unsigned long secondsToTime(const RWTime& t) const;
 };
 
 #endif
