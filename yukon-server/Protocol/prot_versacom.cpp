@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:54 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/05/28 18:12:53 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1729,13 +1729,16 @@ INT CtiProtocolVersacom::assembleControl(CtiCommandParser  &parse, const VSTRUCT
 
     if(CtlReq == CMD_FLAG_CTL_SHED)
     {
+        UINT hasrand  = parse.isKeyValid("shed_rand");
+        UINT hasdelay = parse.isKeyValid("shed_delay");
+
         relay = (relay  == INT_MIN) ? 0  : relay ;     // If zero it means all of them!
 
         // Add these two items to the list for control accounting!
         parse.Map()["control_interval"]  = CtiParseValue( parse.getiValue("shed") );
         parse.Map()["control_reduction"] = CtiParseValue( 100 );
 
-        if( !(relay & 0xfffffff8) )     // Positional relays only one thru three can go out type four (in one message).
+        if( !(hasrand || hasdelay) && !(relay & 0xfffffff8) )     // Positional relays only one thru three can go out type four (in one message).
         {
             // Control time is in the parsers iValue!
             // Assume the VSTRUCT RelayMask is set, otherwise use default relay 0
