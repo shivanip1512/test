@@ -602,6 +602,16 @@ public class YC
 	}
 	/**
 	 * Insert the method's description here.
+	 * Creation date: (2/26/2002 1:48:11 PM)
+	 * @param newRoute java.lang.Object
+	 */
+	public void setRoute(int routeID_) 
+	{
+		LiteYukonPAObject litePaobject = com.cannontech.database.cache.functions.PAOFuncs.getLiteYukonPAO(routeID_);
+		setRoute(litePaobject);
+	}
+	/**
+	 * Insert the method's description here.
 	 * Creation date: (9/10/2001 4:17:54 PM)
 	 * @param newSerialNumber java.lang.String
 	 */
