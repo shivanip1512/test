@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/test.cpp-arc  $
-* REVISION     :  $Revision: 1.30 $
-* DATE         :  $Date: 2004/10/07 16:58:40 $
+* REVISION     :  $Revision: 1.31 $
+* DATE         :  $Date: 2004/10/12 20:18:44 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -52,6 +52,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 BOOL bQuit = FALSE;
 
+void shutdown(int argc, char **argv);
 int tagProcessInbounds(CtiMessage *&pMsg, int clientId);
 void tagExecute(int argc, char **argv);
 void tagHelp();
@@ -127,7 +128,7 @@ void EThread::logOut( void )
 void EThread::run( void )
 {
    int cnt = 0;
-   
+
    while( !isSet( SHUTDOWN ) )
    {
       sleep( 1000 );
@@ -152,7 +153,7 @@ void EThread::run( void )
                CtiThreadRegData *data = new CtiThreadRegData( getID(), _name, _type, _heart_beat, ha, 0 , booya, 0 );
                ThreadMonitor.tickle( data );
             }
-            
+
             cnt = 0;
          }
       }
@@ -191,7 +192,7 @@ void testThreads( int argc, char **argv )
    }
    else
    {
-      sal = new EThread( "sal", CtiThreadRegData::Action1 ); 
+      sal = new EThread( "sal", CtiThreadRegData::Action1 );
       sal->start();
    }
 
@@ -200,7 +201,7 @@ void testThreads( int argc, char **argv )
       Sleep( 1000 );
       index++;
 
-      if( !( index % 33 )) 
+      if( !( index % 33 ))
       {
          if( sal && sal->isRunning() )
          {
@@ -208,7 +209,7 @@ void testThreads( int argc, char **argv )
          }
       }
 
-      if( !( index % 25 )) 
+      if( !( index % 25 ))
       {
          if( bob && bob->isRunning() )
          {
@@ -221,7 +222,7 @@ void testThreads( int argc, char **argv )
          else
          {
             delete bob;
-            bob = new EThread( "bob", CtiThreadRegData::Action2 ); 
+            bob = new EThread( "bob", CtiThreadRegData::Action2 );
             bob->start();
             {
                CtiLockGuard<CtiLogger> doubt_guard( dout );
@@ -230,7 +231,7 @@ void testThreads( int argc, char **argv )
          }
       }
 
-      if( !( index % 35 )) 
+      if( !( index % 35 ))
       {
          if( sam && sam->isRunning() )
          {
@@ -243,7 +244,7 @@ void testThreads( int argc, char **argv )
          else
          {
             delete sam;
-            sam = new EThread( "sam", CtiThreadRegData::None, 25 ); 
+            sam = new EThread( "sam", CtiThreadRegData::None, 25 );
             sam->start();
             {
                CtiLockGuard<CtiLogger> doubt_guard( dout );
@@ -252,7 +253,7 @@ void testThreads( int argc, char **argv )
          }
       }
 
-      if( !( index % 94 )) 
+      if( !( index % 94 ))
       {
          if( joe && joe->isRunning() )
          {
@@ -265,7 +266,7 @@ void testThreads( int argc, char **argv )
          else
          {
             delete joe;
-            joe = new EThread( "joe", CtiThreadRegData::Action1, 45 ); 
+            joe = new EThread( "joe", CtiThreadRegData::Action1, 45 );
             joe->start();
             {
                CtiLockGuard<CtiLogger> doubt_guard( dout );
@@ -274,7 +275,7 @@ void testThreads( int argc, char **argv )
          }
       }
 
-      if( !( index % 61 )) 
+      if( !( index % 61 ))
       {
          if( rat && rat->isRunning() )
          {
@@ -287,7 +288,7 @@ void testThreads( int argc, char **argv )
          else
          {
             delete rat;
-            rat = new EThread( "rat", CtiThreadRegData::Action2, 80 ); 
+            rat = new EThread( "rat", CtiThreadRegData::Action2, 80 );
             rat->start();
             {
                CtiLockGuard<CtiLogger> doubt_guard( dout );
@@ -300,7 +301,7 @@ void testThreads( int argc, char **argv )
       {
          ThreadMonitor.dump();
       }
-*/      
+*/
    }
 }
 
@@ -337,6 +338,7 @@ void booya( void *haha )
 //===========================================================================================================
 
 TESTFUNC_t testfunction[] = {
+    {"shutdown", shutdown, defaultHelp},
     {"seasonreset", seasonExecute, defaultHelp},
     {"tags", tagExecute, tagHelp},
     {"dbchange", dbchangeExecute, defaultHelp},
@@ -382,16 +384,13 @@ void main(int argc, char **argv)
     int i;
     INT point_type;
 
+    RWWinSockInfo info;
+
     dout.start();     // fire up the logger thread
     dout.setOutputPath(gLogDirectory.data());
     dout.setOutputFile(argv[0]);
     dout.setToStdOut(true);
     dout.setWriteInterval(0);
-
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
 
     for(i = 0; testfunction[i].xecute != 0 && i < sizeof(testfunction) / sizeof(TESTFUNC_t); i++ )
     {
@@ -1412,5 +1411,133 @@ void socketExecute(int argc, char **argv)
 
 
 
+}
+
+
+void shutdown(int argc, char **argv)
+{
+    CtiPointManager PointMgr;
+
+    {
+        RWWinSockInfo info;
+
+        try
+        {
+            int Op, k;
+
+            unsigned    timeCnt = rwEpoch;
+            unsigned    pt = 1;
+            CtiMessage  *pMsg;
+
+            srand(1);   // This is replicable.
+
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Loading points...." << endl;
+            }
+            PointMgr.refreshList();     // This should give me all the points in the box.
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " .... Done" << endl;
+            }
+
+            CtiConnection  Connect(VANGOGHNEXUS, argv[2]);
+
+
+            CtiMultiMsg   *pM  = CTIDBG_new CtiMultiMsg;
+
+            pM->setMessagePriority(15);
+
+            Connect.WriteConnQue(CTIDBG_new CtiRegistrationMsg(argv[3], rwThreadId(), FALSE));
+            CtiPointRegistrationMsg    *PtRegMsg = CTIDBG_new CtiPointRegistrationMsg(REG_ALL_PTS_MASK);
+            PtRegMsg->setMessagePriority(15);
+
+            Connect.WriteConnQue( PtRegMsg );
+
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            while( NULL != (pMsg = Connect.ReadConnQue(5000)))
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Inbound message Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    pMsg->dump();
+                }
+
+                delete pMsg;
+            }
+
+
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            INT cnt;
+            while( (cnt = Connect.outQueueCount()) > 0 )
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** OutQueue has **** " << cnt << " entries" << endl;
+                }
+                Sleep(1000);
+            }
+
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime()  << " **** OutQueue is cleared" << endl;
+            }
+
+            while( NULL != (pMsg = Connect.ReadConnQue(2500)))
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Inbound message Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    pMsg->dump();
+                }
+
+                delete pMsg;
+            }
+
+            Connect.WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::Shutdown, 15));
+            Connect.WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 0));
+
+            while( (cnt = Connect.outQueueCount()) > 0 )
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** OutQueue has **** " << cnt << " entries" << endl;
+                }
+                Sleep(1000);
+            }
+
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime()  << " **** OutQueue is cleared" << endl;
+            }
+
+            while( NULL != (pMsg = Connect.ReadConnQue(2500)))
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Inbound message Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    pMsg->dump();
+                }
+
+                delete pMsg;
+            }
+
+            Sleep(5000);
+        }
+        catch(RWxmsg &msg)
+        {
+            cout << "Tester Exception: ";
+            cout << msg.why() << endl;
+        }
+
+    }
 }
 
