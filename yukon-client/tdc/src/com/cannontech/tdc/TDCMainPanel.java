@@ -485,7 +485,8 @@ private ManualEntryJPanel createManualEditorPanel(int selectedRow, Object source
 		{			
 			return new StatusPanelControlEntry( data, currentValue );
 		}
-		else if( PointTypes.getType(ptType) == PointTypes.STATUS_POINT )
+		else if( PointTypes.getType(ptType) == PointTypes.STATUS_POINT
+				 || PointTypes.getType(ptType) == PointTypes.CALCULATED_STATUS_POINT )
 		{			
 			return new StatusPanelManualEntry( data, currentValue );
 		}

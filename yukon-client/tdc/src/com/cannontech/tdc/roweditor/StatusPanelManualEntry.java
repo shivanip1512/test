@@ -26,19 +26,7 @@ private StatusPanelManualEntry() {
 	super();
 	initialize();
 }
-/**
- * EditDataPanel constructor comment.
- */
-public StatusPanelManualEntry( EditorDialogData data, Object currentValue, AlarmingRow alarmRow_ ) 
-{
-	super( data, currentValue, alarmRow_ );
 
-	if( data.getPointType() != com.cannontech.database.data.point.PointTypes.STATUS_POINT )
-		throw new IllegalArgumentException(
-			"An instance of " + this.getClass().getName() + " can only be created with a status point.");
-
-	initialize();
-}
 /**
  * EditDataPanel constructor comment.
  */

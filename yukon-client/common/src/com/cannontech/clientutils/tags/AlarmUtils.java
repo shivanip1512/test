@@ -30,6 +30,7 @@ public class AlarmUtils
 		switch( ptType_ )
 		{
 			case PointTypes.STATUS_POINT:
+			case PointTypes.CALCULATED_STATUS_POINT:
 			{
 				if( conditionID_ >= 0 && conditionID_ < IAlarmDefs.STATUS_ALARM_STATES.length )
 					return IAlarmDefs.STATUS_ALARM_STATES[conditionID_];

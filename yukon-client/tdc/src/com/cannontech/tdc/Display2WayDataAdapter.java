@@ -709,6 +709,7 @@ private Object getCellValueObject( PointValues point, int loc )
 	switch( point.getPointType() )
 	{				
 		case PointTypes.STATUS_POINT:
+		case PointTypes.CALCULATED_STATUS_POINT:
 		{
 			if( point.getValue() % 1 == 0 )  // make sure we have a whole number
 			{
