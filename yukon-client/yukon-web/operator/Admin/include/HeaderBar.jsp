@@ -11,10 +11,7 @@
 	    </tr>
 	    <tr> 
 		  <td width="265" height="28" class="PageHeader" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Administration</td>
-<%
-	if (session.getAttribute(com.cannontech.common.constants.LoginController.SAVED_YUKON_USERS) == null
-		|| liteEC.getParent() == null) {
-%>
+<% if (session.getAttribute(ServletUtils.ATT_CONTEXT_SWITCHED) == null) { %>
 		  <td width="" valign="middle">&nbsp;</td>
 		  <td width="" valign="middle" align="right"> 
 			<span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span>
