@@ -53,8 +53,7 @@ public final class ModelFactory
 	public static final int TRANSMITTER_CHECKBOX=38;
 	public static final int COMMCHANNEL_CHECKBOX=39;
 	public static final int COLLECTIONGROUP_CHECKBOX=40;
-	
-	
+		
 	public static final int LMCONSTRAINT = 41;
 	public static final int LMSCENARIO = 42;
 	
@@ -70,6 +69,9 @@ public final class ModelFactory
 	public static final int LMGROUPSADIGITAL = 50;
 	public static final int GOLAY = 51;
 
+	public static final int ENERGYCOMPANY_CHECKBOX=52;
+	public static final int SYSTEMLOG_TYPES_CHECKBOX=53;
+	
 	//The above is an enumeration of indices into
 	//the following array
 	private static Class[] typeToClassMap =
@@ -95,7 +97,7 @@ public final class ModelFactory
 		LMProgramModel.class,
 		EditableLCRSerialModel.class,
 		LMControlAreaModel.class,
-/*21*/CICustomerTableModel.class,
+/*21*/CICustomerTreeModel.class,
 		DeviceTree_CustomPointsModel.class,
 		HolidayScheduleModel.class,
 		DeviceMeterGroupModel.class,
@@ -125,7 +127,9 @@ public final class ModelFactory
 		LMGroupSA305Model.class,
 		LMGroupSA205Model.class,
 		LMGroupSADigitalModel.class,
-		LMGroupGolayModel.class
+		LMGroupGolayModel.class,
+		EnergyCompanyCheckBoxTreeModel.class,
+/* 53*/	SystemLogTypeCheckBoxTreeModel.class
 	};
 
 /**
@@ -169,7 +173,7 @@ public static DBTreeModel create(int type) {
 	{
 		return typeToClassMap[type];
 	}
-	
+
 	/**
 	 * @param type
 	 * @return
