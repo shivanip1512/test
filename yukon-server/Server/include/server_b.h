@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SERVER/INCLUDE/server_b.h-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2004/12/06 21:31:22 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2004/12/07 01:39:57 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -47,7 +47,7 @@ struct vg_hash
 };
 
 
-// #define USE_CTIMUTEX TRUE
+#define USE_CTIMUTEX TRUE
 
 class IM_EX_CTISVR CtiServer
 {
