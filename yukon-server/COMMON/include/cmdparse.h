@@ -49,32 +49,13 @@ public:
    typedef RWTValHashMap< RWCString, CtiParseValue, simple_hash, equal_to<RWCString> > map_type;
    typedef RWTValHashMapIterator< RWCString, CtiParseValue, simple_hash, equal_to<RWCString> > map_itr_type;
 
-   CtiCommandParser(const RWCString str) :
-      _cmdString(str)
-   {
-      _actionItems.clear();
-      doParse(_cmdString);
-   }
+   CtiCommandParser(const RWCString str);
 
-   CtiCommandParser(const CtiCommandParser& aRef)
-   {
-      _actionItems.clear();
-      *this = aRef;
-   }
+   CtiCommandParser(const CtiCommandParser& aRef);
 
-   virtual ~CtiCommandParser()
-   {
-      _actionItems.clear();
-   }
+   virtual ~CtiCommandParser();
 
-   CtiCommandParser& operator=(const CtiCommandParser& aRef)
-   {
-      if(this != &aRef)
-      {
-         _cmd = aRef.getMap();
-      }
-      return *this;
-   }
+   CtiCommandParser& operator=(const CtiCommandParser& aRef);
 
    map_type    getMap() const    { return _cmd; }
    map_type&   Map()             { return _cmd; }

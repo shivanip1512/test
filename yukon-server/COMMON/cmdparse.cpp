@@ -25,6 +25,38 @@ static RWCRExpr   re_hexnum("0x[0-9a-f]+");
 static RWCRExpr   re_anynum("0x[0-9a-f]+|[0-9]+");
 
 
+
+
+CtiCommandParser::CtiCommandParser(const RWCString str) :
+  _cmdString(str)
+{
+  _actionItems.clear();
+  doParse(_cmdString);
+}
+
+CtiCommandParser::CtiCommandParser(const CtiCommandParser& aRef)
+{
+  _actionItems.clear();
+  *this = aRef;
+}
+
+CtiCommandParser::~CtiCommandParser()
+{
+  _actionItems.clear();
+}
+
+CtiCommandParser& CtiCommandParser::operator=(const CtiCommandParser& aRef)
+{
+  if(this != &aRef)
+  {
+      _cmdString = aRef._cmdString;
+      _actionItems = aRef._actionItems;
+     _cmd = aRef.getMap();
+  }
+  return *this;
+}
+
+
 void  CtiCommandParser::doParse(RWCString Cmd)
 {
     // This may look like replication of the assignment, but allows re-use of the object for
@@ -45,34 +77,40 @@ void  CtiCommandParser::doParse(RWCString Cmd)
 
     RWCTokenizer      tok(temp);
 
+    if(!(token = CmdStr.match("seri")).isNull())
+    {
+        if(!(token = CmdStr.match("seri[a-z]*[= \t]+(([0-9]+)|(0x[0-9a-f]+))")).isNull())
+        {
+            if(!(strnum = token.match(re_hexnum)).isNull())
+            {
+                // dout << __LINE__ << " " << strnum << endl;
+                _num = strtol(strnum.data(), &p, 16);
+            }
+            else if(!(strnum = token.match(re_num)).isNull())
+            {
+                // dout << __LINE__ << " " << strnum << endl;
+                _num = strtol(strnum.data(), &p, 10);
+            }
+            _cmd["serial"] = CtiParseValue( _num );
+        }
+    }
+    else if(!(token = CmdStr.match("addr")).isNull())
+    {
+        if(!(token = CmdStr.match("addr[a-z]*[= \t]+[0-9a-f]+")).isNull())
+        {
+            if(!(strnum = token.match(re_hexnum)).isNull())
+            {
+                _num = strtol(strnum.data(), &p, 16);
+            }
+            else if(!(strnum = token.match(re_num)).isNull())
+            {
+                // dout << __LINE__ << " " << strnum << endl;
+                _num = strtol(strnum.data(), &p, 10);
+            }
+            _cmd["serial"] = CtiParseValue( _num );
+        }
+    }
 
-    if(!(token = CmdStr.match("seri[a-z]*[= \t]+(([0-9]+)|(0x[0-9a-f]+))")).isNull())
-    {
-        if(!(strnum = token.match(re_hexnum)).isNull())
-        {
-            // dout << __LINE__ << " " << strnum << endl;
-            _num = strtol(strnum.data(), &p, 16);
-        }
-        else if(!(strnum = token.match(re_num)).isNull())
-        {
-            // dout << __LINE__ << " " << strnum << endl;
-            _num = strtol(strnum.data(), &p, 10);
-        }
-        _cmd["serial"] = CtiParseValue( _num );
-    }
-    else if(!(token = CmdStr.match("addr[a-z]*[= \t]+[0-9a-f]+")).isNull())
-    {
-        if(!(strnum = token.match(re_hexnum)).isNull())
-        {
-            _num = strtol(strnum.data(), &p, 16);
-        }
-        else if(!(strnum = token.match(re_num)).isNull())
-        {
-            // dout << __LINE__ << " " << strnum << endl;
-            _num = strtol(strnum.data(), &p, 10);
-        }
-        _cmd["serial"] = CtiParseValue( _num );
-    }
 
     if(!(token = CmdStr.match("select")).isNull())
     {
@@ -195,7 +233,6 @@ void  CtiCommandParser::doParse(RWCString Cmd)
         }
 #endif
     }
-
 
     resolveProtocolType();
 
@@ -1540,311 +1577,89 @@ void  CtiCommandParser::doParsePutConfigVersacom(void)
             _actionItems.insert(tbuf);
         }
 
-        if(!(token = CmdStr.match(" clas[a-z]*[ \t=]*([ \t=]+)?0x[0-9a-f]+")).isNull())
+        if(!(token = CmdStr.match(" clas")).isNull())
         {
-            if(!(temp = token.match(re_hexnum)).isNull())
+            if(!(token = CmdStr.match(" clas[a-z]*[ \t=]*([ \t=]+)?0x[0-9a-f]+")).isNull())
             {
-                _num = strtol(temp.data(), &p, 16);
-            }
-            else
-            {
-                _num = strtol(token.match(re_num).data(), &p, 10);
-                _num = (0x0001 << (16 - _num));
-            }
-
-            int itemp = 0;
-            for(int q = 0; q < 16; q++)
-            {
-                itemp |= (((_num >> q) & 0x0001) << (15 - q));
-            }
-            _num = itemp;
-
-            _cmd["class"] = CtiParseValue( _num );
-
-            _snprintf(tbuf, sizeof(tbuf), "CONFIG CLASS = %s", convertVersacomAddressToHumanForm(_num).data());
-            _actionItems.insert(tbuf);
-
-        }
-        else if(!(token = CmdStr.match(" clas[a-z]*[ \t]+[0-9]+" \
-                                       "([ \t]*,[ \t]*[0-9]+)?" \
-                                       "([ \t]*,[ \t]*[0-9]+)?" \
-                                       "([ \t]*,[ \t]*[0-9]+)?" \
-                                       "([ \t]*,[ \t]*[0-9]+)?" \
-                                       "([ \t]*,[ \t]*[0-9]+)?" \
-                                       "([ \t]*,[ \t]*[0-9]+)?" \
-                                       "([ \t]*,[ \t]*[0-9]+)?" \
-                                       "([ \t]*,[ \t]*[0-9]+)?" \
-                                       "([ \t]*,[ \t]*[0-9]+)?" \
-                                       "([ \t]*,[ \t]*[0-9]+)?" \
-                                       "([ \t]*,[ \t]*[0-9]+)?" \
-                                       "([ \t]*,[ \t]*[0-9]+)?" \
-                                       "([ \t]*,[ \t]*[0-9]+)?" \
-                                       "([ \t]*,[ \t]*[0-9]+)?" \
-                                       "([ \t]*,[ \t]*[0-9]+)?" \
-                                      )).isNull())
-        {
-            RWCTokenizer   tok( token );
-            _num = 0;
-            int  mask = 0x0001;
-            int  val;
-
-            tok();   // Get over the class entry
-
-            // dout << __LINE__ << " " << token << endl;
-
-            for(int i = 0; i < 16 && !(temp = tok(", \t\n\0")).isNull() ; i++)
-            {
-                val = atoi( temp.data() );
-
-                // dout << "Masking in " << temp << " " << val << endl;
-                if(val > 0)
-                {
-                    _num |= (mask << (val - 1));
-                }
-            }
-
-            _cmd["class"] = CtiParseValue( _num );
-
-            _snprintf(tbuf, sizeof(tbuf), "CONFIG CLASS = %s", convertVersacomAddressToHumanForm(_num).data());
-            _actionItems.insert(tbuf);
-        }
-
-        if(!(token = CmdStr.match(" divi[a-z]*[ \t=]*([ \t=]+)?0x[0-9a-f]+")).isNull())
-        {
-            if(!(temp = token.match(re_hexnum)).isNull())
-            {
-                _num = strtol(temp.data(), &p, 16);
-            }
-            else
-            {
-                _num = strtol(token.match(re_num).data(), &p, 10);
-                _num = (0x0001 << (16 - _num));
-            }
-
-            int itemp = 0;
-
-            for(int q = 0; q < 16; q++)
-            {
-                itemp |= (((_num >> q) & 0x0001) << (15 - q));
-            }
-
-            _num = itemp;
-
-            _cmd["division"] = CtiParseValue( _num );
-
-            _snprintf(tbuf, sizeof(tbuf), "CONFIG DIVISION = %s", convertVersacomAddressToHumanForm(_num).data());
-            _actionItems.insert(tbuf);
-
-        }
-        else if(!(token = CmdStr.match(" divi[a-z]*[ \t]+[0-9]+" \
-                                       "([ \t]*,[ \t]*[0-9]+)?" \
-                                       "([ \t]*,[ \t]*[0-9]+)?" \
-                                       "([ \t]*,[ \t]*[0-9]+)?" \
-                                       "([ \t]*,[ \t]*[0-9]+)?" \
-                                       "([ \t]*,[ \t]*[0-9]+)?" \
-                                       "([ \t]*,[ \t]*[0-9]+)?" \
-                                       "([ \t]*,[ \t]*[0-9]+)?" \
-                                       "([ \t]*,[ \t]*[0-9]+)?" \
-                                       "([ \t]*,[ \t]*[0-9]+)?" \
-                                       "([ \t]*,[ \t]*[0-9]+)?" \
-                                       "([ \t]*,[ \t]*[0-9]+)?" \
-                                       "([ \t]*,[ \t]*[0-9]+)?" \
-                                       "([ \t]*,[ \t]*[0-9]+)?" \
-                                       "([ \t]*,[ \t]*[0-9]+)?" \
-                                       "([ \t]*,[ \t]*[0-9]+)?" \
-                                      )).isNull())
-        {
-            RWCTokenizer   tok( token );
-            _num = 0;
-            int  mask = 0x0001;
-            int  val;
-
-            tok();   // Get over the "division" entry
-
-            // dout << __LINE__ << " " << token << endl;
-
-            for(int i = 0; i < 16 && !(temp = tok(", \t\n\0")).isNull() ; i++)
-            {
-                val = atoi( temp.data() );
-
-                // dout << "Masking in " << temp << " " << val << endl;
-                if(val > 0)
-                {
-                    _num |= (mask << (val - 1));
-                }
-            }
-
-            _cmd["division"] = CtiParseValue( _num );
-
-            _snprintf(tbuf, sizeof(tbuf), "CONFIG DIVISION = %s", convertVersacomAddressToHumanForm(_num).data());
-            _actionItems.insert(tbuf);
-        }
-
-        if(!(token = CmdStr.match("fromutil[a-z]*[ \t=]*([ \t=]+0x)?[0-9a-f]+")).isNull())
-        {
-            if(!(temp = token.match(re_hexnum)).isNull())
-            {
-                _num = strtol(temp.data(), &p, 16);
-            }
-            else
-            {
-                _num = strtol(token.match(re_num).data(), &p, 10);
-            }
-
-            _cmd["fromutility"] = CtiParseValue( _num );
-
-            _snprintf(tbuf, sizeof(tbuf), "CONFIG FROM UID = %d", _num);
-            _actionItems.insert(tbuf);
-        }
-
-        if(!(token = CmdStr.match("fromsect[a-z]*[ \t=]*([ \t=]+(0x))?[0-9a-f]+")).isNull())
-        {
-            if(!(temp = token.match(re_hexnum)).isNull())
-            {
-                _num = strtol(temp.data(), &p, 16);
-            }
-            else
-            {
-                _num = strtol(token.match(re_num).data(), &p, 10);
-            }
-
-            _cmd["fromsection"] = CtiParseValue( _num );
-
-            _snprintf(tbuf, sizeof(tbuf), "CONFIG FROM SECTION = %d", _num);
-            _actionItems.insert(tbuf);
-        }
-
-        if(!(token = CmdStr.match("fromclas[a-z]*[ \t=]*([ \t=]+)?0x[0-9a-f]+")).isNull())
-        {
-            if(!(temp = token.match(re_hexnum)).isNull())
-            {
-                _num = strtol(temp.data(), &p, 16);
-            }
-            else
-            {
-                _num = strtol(token.match(re_num).data(), &p, 10);
-                _num = (0x0001 << (16 - _num));
-            }
-
-            int itemp = 0;
-            for(int q = 0; q < 16; q++)
-            {
-                itemp |= (((_num >> q) & 0x0001) << (15 - q));
-            }
-            _num = itemp;
-
-            _cmd["fromclass"] = CtiParseValue( _num );
-
-            _snprintf(tbuf, sizeof(tbuf), "CONFIG FROM CLASS = %s", convertVersacomAddressToHumanForm(_num).data());
-            _actionItems.insert(tbuf);
-
-        }
-
-        if(!(token = CmdStr.match("fromdivi[a-z]*[ \t=]*([ \t=]+)?0x[0-9a-f]+")).isNull())
-        {
-            if(!(temp = token.match(re_hexnum)).isNull())
-            {
-                _num = strtol(temp.data(), &p, 16);
-            }
-            else
-            {
-                _num = strtol(token.match(re_num).data(), &p, 10);
-                _num = (0x0001 << (16 - _num));
-            }
-
-            int itemp = 0;
-
-            for(int q = 0; q < 16; q++)
-            {
-                itemp |= (((_num >> q) & 0x0001) << (15 - q));
-            }
-
-            _num = itemp;
-
-            _cmd["fromdivision"] = CtiParseValue( _num );
-
-            _snprintf(tbuf, sizeof(tbuf), "CONFIG FROM DIVISION = %s", convertVersacomAddressToHumanForm(_num).data());
-            _actionItems.insert(tbuf);
-
-        }
-
-
-        if(!(token = CmdStr.match("assign"\
-                                  "([ \t]+[uascd][ \t=]*(0x)?[0-9a-f]+)" \
-                                  "([ \t]+[uascd][ \t=]*(0x)?[0-9a-f]+)?" \
-                                  "([ \t]+[uascd][ \t=]*(0x)?[0-9a-f]+)?" \
-                                  "([ \t]+[uascd][ \t=]*(0x)?[0-9a-f]+)?" \
-                                  "([ \t]+[uascd][ \t=]*(0x)?[0-9a-f]+)?")).isNull())
-        {
-            // dout << token << endl;
-
-            if(!(strnum = token.match("[ \t]u[ \t=]*(0x)?[0-9a-f]+")).isNull())
-            {
-                _num = strtol(strnum.match(re_anynum).data(), &p, 0);
-
-                _cmd["utility"] = CtiParseValue( _num );
-
-                _snprintf(tbuf, sizeof(tbuf), "CONFIG UTILITY = %d", _num);
-                _actionItems.insert(tbuf);
-            }
-            if(!(strnum = token.match("[ \t]+a[ \t=]*(0x)?[0-9a-f]+")).isNull())
-            {
-                if(!(temp = strnum.match(re_hexnum)).isNull())
+                if(!(temp = token.match(re_hexnum)).isNull())
                 {
                     _num = strtol(temp.data(), &p, 16);
                 }
                 else
                 {
-                    _num = strtol(strnum.match(re_num).data(), &p, 10);
-                }
-                _cmd["aux"] = CtiParseValue( _num );
-
-                _snprintf(tbuf, sizeof(tbuf), "CONFIG AUX = %d", _num);
-                _actionItems.insert(tbuf);
-            }
-            if(!(strnum = token.match("[ \t]+s[ \t=]*[0-9]+")).isNull())
-            {
-                _num = strtol(strnum.match(re_num).data(), &p, 10);
-                _cmd["section"] = CtiParseValue( _num );
-
-                _snprintf(tbuf, sizeof(tbuf), "CONFIG SECTION = %d", _num);
-                _actionItems.insert(tbuf);
-            }
-            if(!(strnum = token.match("[ \t]+c[ \t=]*(0x)?[0-9a-f]+")).isNull())
-            {
-                if(!(temp = strnum.match(re_hexnum)).isNull())
-                {
-                    _num = strtol(temp.data(), &p, 16);
-                }
-                else
-                {
-                    _num = strtol(strnum.match(re_num).data(), &p, 10);
+                    _num = strtol(token.match(re_num).data(), &p, 10);
                     _num = (0x0001 << (16 - _num));
                 }
 
                 int itemp = 0;
-
                 for(int q = 0; q < 16; q++)
                 {
                     itemp |= (((_num >> q) & 0x0001) << (15 - q));
                 }
-
                 _num = itemp;
 
                 _cmd["class"] = CtiParseValue( _num );
+
                 _snprintf(tbuf, sizeof(tbuf), "CONFIG CLASS = %s", convertVersacomAddressToHumanForm(_num).data());
                 _actionItems.insert(tbuf);
 
             }
-            if(!(strnum = token.match("[ \t]+d[ \t=]*(0x)?[0-9a-f]+")).isNull())
+            else if(!(token = CmdStr.match(" clas[a-z]*[ \t]+[0-9]+" \
+                                           "([ \t]*,[ \t]*[0-9]+)?" \
+                                           "([ \t]*,[ \t]*[0-9]+)?" \
+                                           "([ \t]*,[ \t]*[0-9]+)?" \
+                                           "([ \t]*,[ \t]*[0-9]+)?" \
+                                           "([ \t]*,[ \t]*[0-9]+)?" \
+                                           "([ \t]*,[ \t]*[0-9]+)?" \
+                                           "([ \t]*,[ \t]*[0-9]+)?" \
+                                           "([ \t]*,[ \t]*[0-9]+)?" \
+                                           "([ \t]*,[ \t]*[0-9]+)?" \
+                                           "([ \t]*,[ \t]*[0-9]+)?" \
+                                           "([ \t]*,[ \t]*[0-9]+)?" \
+                                           "([ \t]*,[ \t]*[0-9]+)?" \
+                                           "([ \t]*,[ \t]*[0-9]+)?" \
+                                           "([ \t]*,[ \t]*[0-9]+)?" \
+                                           "([ \t]*,[ \t]*[0-9]+)?" \
+                                          )).isNull())
             {
-                if(!(temp = strnum.match(re_hexnum)).isNull())
+                RWCTokenizer   tok( token );
+                _num = 0;
+                int  mask = 0x0001;
+                int  val;
+
+                tok();   // Get over the class entry
+
+                // dout << __LINE__ << " " << token << endl;
+
+                for(int i = 0; i < 16 && !(temp = tok(", \t\n\0")).isNull() ; i++)
+                {
+                    val = atoi( temp.data() );
+
+                    // dout << "Masking in " << temp << " " << val << endl;
+                    if(val > 0)
+                    {
+                        _num |= (mask << (val - 1));
+                    }
+                }
+
+                _cmd["class"] = CtiParseValue( _num );
+
+                _snprintf(tbuf, sizeof(tbuf), "CONFIG CLASS = %s", convertVersacomAddressToHumanForm(_num).data());
+                _actionItems.insert(tbuf);
+            }
+        }
+
+        if(!(token = CmdStr.match(" divi")).isNull())
+        {
+            if(!(token = CmdStr.match(" divi[a-z]*[ \t=]*([ \t=]+)?0x[0-9a-f]+")).isNull())
+            {
+                if(!(temp = token.match(re_hexnum)).isNull())
                 {
                     _num = strtol(temp.data(), &p, 16);
                 }
                 else
                 {
-                    _num = strtol(strnum.match(re_num).data(), &p, 10);
+                    _num = strtol(token.match(re_num).data(), &p, 10);
                     _num = (0x0001 << (16 - _num));
                 }
 
@@ -1863,49 +1678,286 @@ void  CtiCommandParser::doParsePutConfigVersacom(void)
                 _actionItems.insert(tbuf);
 
             }
+            else if(!(token = CmdStr.match(" divi[a-z]*[ \t]+[0-9]+" \
+                                           "([ \t]*,[ \t]*[0-9]+)?" \
+                                           "([ \t]*,[ \t]*[0-9]+)?" \
+                                           "([ \t]*,[ \t]*[0-9]+)?" \
+                                           "([ \t]*,[ \t]*[0-9]+)?" \
+                                           "([ \t]*,[ \t]*[0-9]+)?" \
+                                           "([ \t]*,[ \t]*[0-9]+)?" \
+                                           "([ \t]*,[ \t]*[0-9]+)?" \
+                                           "([ \t]*,[ \t]*[0-9]+)?" \
+                                           "([ \t]*,[ \t]*[0-9]+)?" \
+                                           "([ \t]*,[ \t]*[0-9]+)?" \
+                                           "([ \t]*,[ \t]*[0-9]+)?" \
+                                           "([ \t]*,[ \t]*[0-9]+)?" \
+                                           "([ \t]*,[ \t]*[0-9]+)?" \
+                                           "([ \t]*,[ \t]*[0-9]+)?" \
+                                           "([ \t]*,[ \t]*[0-9]+)?" \
+                                          )).isNull())
+            {
+                RWCTokenizer   tok( token );
+                _num = 0;
+                int  mask = 0x0001;
+                int  val;
+
+                tok();   // Get over the "division" entry
+
+                // dout << __LINE__ << " " << token << endl;
+
+                for(int i = 0; i < 16 && !(temp = tok(", \t\n\0")).isNull() ; i++)
+                {
+                    val = atoi( temp.data() );
+
+                    // dout << "Masking in " << temp << " " << val << endl;
+                    if(val > 0)
+                    {
+                        _num |= (mask << (val - 1));
+                    }
+                }
+
+                _cmd["division"] = CtiParseValue( _num );
+
+                _snprintf(tbuf, sizeof(tbuf), "CONFIG DIVISION = %s", convertVersacomAddressToHumanForm(_num).data());
+                _actionItems.insert(tbuf);
+            }
         }
 
-        if(!(token = CmdStr.match("serv[a-z]*[ \t]+((in)|(out)|(enable)|(disable))[ \t]*(t(emp)?)?")).isNull())
+
+        if(!(token = CmdStr.match("from")).isNull())
         {
-            INT   flag = 0;
-
-            /*
-             *  serviceflag == VC_SERVICE_T_OUT == 1 is Temporary OUT of service
-             *  serviceflag == VC_SERVICE_T_IN  == 2 is Temporary IN service
-             *  serviceflag == VC_SERVICE_C_OUT == 4 is Contractual OUT of service
-             *  serviceflag == VC_SERVICE_C_IN  == 8 is Contractual IN service
-             *  serviceflag == VC_SERVICE_MASK  == 0x0f is a mask
-             *-------------------------------------------------------------------------*/
-
-            // What offset is needed now...
-            if(!(strnum = token.match("in")).isNull() ||
-               !(strnum = token.match("enable")).isNull())
+            if(!(token = CmdStr.match("fromutil[a-z]*[ \t=]*([ \t=]+0x)?[0-9a-f]+")).isNull())
             {
-                flag |= 0x08;
+                if(!(temp = token.match(re_hexnum)).isNull())
+                {
+                    _num = strtol(temp.data(), &p, 16);
+                }
+                else
+                {
+                    _num = strtol(token.match(re_num).data(), &p, 10);
+                }
 
-                _snprintf(tbuf, sizeof(tbuf), "SERVICE ENABLE");
-            }
-            else if(!(strnum = token.match("out")).isNull() ||
-                    !(strnum = token.match("disable")).isNull())
-            {
-                flag |= 0x04;
+                _cmd["fromutility"] = CtiParseValue( _num );
 
-                _snprintf(tbuf, sizeof(tbuf), "SERVICE DISABLE");
+                _snprintf(tbuf, sizeof(tbuf), "CONFIG FROM UID = %d", _num);
+                _actionItems.insert(tbuf);
             }
 
-            if(token[token.length() - 1] == 't' && token[token.length() - 2] != 'u') // Verify the 't' is not following 'u' as in "out"
+            if(!(token = CmdStr.match("fromsect[a-z]*[ \t=]*([ \t=]+(0x))?[0-9a-f]+")).isNull())
             {
-                char t2[80];
-                strcpy(t2, tbuf);
+                if(!(temp = token.match(re_hexnum)).isNull())
+                {
+                    _num = strtol(temp.data(), &p, 16);
+                }
+                else
+                {
+                    _num = strtol(token.match(re_num).data(), &p, 10);
+                }
 
-                flag >>= 2;       // Make the flag match the protocol
+                _cmd["fromsection"] = CtiParseValue( _num );
 
-                _snprintf(tbuf, sizeof(tbuf), "%s TEMPORARY", t2);
+                _snprintf(tbuf, sizeof(tbuf), "CONFIG FROM SECTION = %d", _num);
+                _actionItems.insert(tbuf);
             }
 
-            _cmd["service"] = CtiParseValue( flag );
+            if(!(token = CmdStr.match("fromclas[a-z]*[ \t=]*([ \t=]+)?0x[0-9a-f]+")).isNull())
+            {
+                if(!(temp = token.match(re_hexnum)).isNull())
+                {
+                    _num = strtol(temp.data(), &p, 16);
+                }
+                else
+                {
+                    _num = strtol(token.match(re_num).data(), &p, 10);
+                    _num = (0x0001 << (16 - _num));
+                }
 
-            _actionItems.insert(tbuf);
+                int itemp = 0;
+                for(int q = 0; q < 16; q++)
+                {
+                    itemp |= (((_num >> q) & 0x0001) << (15 - q));
+                }
+                _num = itemp;
+
+                _cmd["fromclass"] = CtiParseValue( _num );
+
+                _snprintf(tbuf, sizeof(tbuf), "CONFIG FROM CLASS = %s", convertVersacomAddressToHumanForm(_num).data());
+                _actionItems.insert(tbuf);
+
+            }
+
+            if(!(token = CmdStr.match("fromdivi[a-z]*[ \t=]*([ \t=]+)?0x[0-9a-f]+")).isNull())
+            {
+                if(!(temp = token.match(re_hexnum)).isNull())
+                {
+                    _num = strtol(temp.data(), &p, 16);
+                }
+                else
+                {
+                    _num = strtol(token.match(re_num).data(), &p, 10);
+                    _num = (0x0001 << (16 - _num));
+                }
+
+                int itemp = 0;
+
+                for(int q = 0; q < 16; q++)
+                {
+                    itemp |= (((_num >> q) & 0x0001) << (15 - q));
+                }
+
+                _num = itemp;
+
+                _cmd["fromdivision"] = CtiParseValue( _num );
+
+                _snprintf(tbuf, sizeof(tbuf), "CONFIG FROM DIVISION = %s", convertVersacomAddressToHumanForm(_num).data());
+                _actionItems.insert(tbuf);
+
+            }
+        }
+
+        if(!(token = CmdStr.match("assign")).isNull())
+        {
+            if(!(token = CmdStr.match("assign"\
+                                      "([ \t]+[uascd][ \t=]*(0x)?[0-9a-f]+)" \
+                                      "([ \t]+[uascd][ \t=]*(0x)?[0-9a-f]+)?" \
+                                      "([ \t]+[uascd][ \t=]*(0x)?[0-9a-f]+)?" \
+                                      "([ \t]+[uascd][ \t=]*(0x)?[0-9a-f]+)?" \
+                                      "([ \t]+[uascd][ \t=]*(0x)?[0-9a-f]+)?")).isNull())
+            {
+                // dout << token << endl;
+
+                if(!(strnum = token.match("[ \t]u[ \t=]*(0x)?[0-9a-f]+")).isNull())
+                {
+                    _num = strtol(strnum.match(re_anynum).data(), &p, 0);
+
+                    _cmd["utility"] = CtiParseValue( _num );
+
+                    _snprintf(tbuf, sizeof(tbuf), "CONFIG UTILITY = %d", _num);
+                    _actionItems.insert(tbuf);
+                }
+                if(!(strnum = token.match("[ \t]+a[ \t=]*(0x)?[0-9a-f]+")).isNull())
+                {
+                    if(!(temp = strnum.match(re_hexnum)).isNull())
+                    {
+                        _num = strtol(temp.data(), &p, 16);
+                    }
+                    else
+                    {
+                        _num = strtol(strnum.match(re_num).data(), &p, 10);
+                    }
+                    _cmd["aux"] = CtiParseValue( _num );
+
+                    _snprintf(tbuf, sizeof(tbuf), "CONFIG AUX = %d", _num);
+                    _actionItems.insert(tbuf);
+                }
+                if(!(strnum = token.match("[ \t]+s[ \t=]*[0-9]+")).isNull())
+                {
+                    _num = strtol(strnum.match(re_num).data(), &p, 10);
+                    _cmd["section"] = CtiParseValue( _num );
+
+                    _snprintf(tbuf, sizeof(tbuf), "CONFIG SECTION = %d", _num);
+                    _actionItems.insert(tbuf);
+                }
+                if(!(strnum = token.match("[ \t]+c[ \t=]*(0x)?[0-9a-f]+")).isNull())
+                {
+                    if(!(temp = strnum.match(re_hexnum)).isNull())
+                    {
+                        _num = strtol(temp.data(), &p, 16);
+                    }
+                    else
+                    {
+                        _num = strtol(strnum.match(re_num).data(), &p, 10);
+                        _num = (0x0001 << (16 - _num));
+                    }
+
+                    int itemp = 0;
+
+                    for(int q = 0; q < 16; q++)
+                    {
+                        itemp |= (((_num >> q) & 0x0001) << (15 - q));
+                    }
+
+                    _num = itemp;
+
+                    _cmd["class"] = CtiParseValue( _num );
+                    _snprintf(tbuf, sizeof(tbuf), "CONFIG CLASS = %s", convertVersacomAddressToHumanForm(_num).data());
+                    _actionItems.insert(tbuf);
+
+                }
+                if(!(strnum = token.match("[ \t]+d[ \t=]*(0x)?[0-9a-f]+")).isNull())
+                {
+                    if(!(temp = strnum.match(re_hexnum)).isNull())
+                    {
+                        _num = strtol(temp.data(), &p, 16);
+                    }
+                    else
+                    {
+                        _num = strtol(strnum.match(re_num).data(), &p, 10);
+                        _num = (0x0001 << (16 - _num));
+                    }
+
+                    int itemp = 0;
+
+                    for(int q = 0; q < 16; q++)
+                    {
+                        itemp |= (((_num >> q) & 0x0001) << (15 - q));
+                    }
+
+                    _num = itemp;
+
+                    _cmd["division"] = CtiParseValue( _num );
+
+                    _snprintf(tbuf, sizeof(tbuf), "CONFIG DIVISION = %s", convertVersacomAddressToHumanForm(_num).data());
+                    _actionItems.insert(tbuf);
+
+                }
+            }
+        }
+
+        if(!(token = CmdStr.match("serv")).isNull())
+        {
+            if(!(token = CmdStr.match("serv[a-z]*[ \t]+((in)|(out)|(enable)|(disable))[ \t]*(t(emp)?)?")).isNull())
+            {
+                INT   flag = 0;
+
+                /*
+                 *  serviceflag == VC_SERVICE_T_OUT == 1 is Temporary OUT of service
+                 *  serviceflag == VC_SERVICE_T_IN  == 2 is Temporary IN service
+                 *  serviceflag == VC_SERVICE_C_OUT == 4 is Contractual OUT of service
+                 *  serviceflag == VC_SERVICE_C_IN  == 8 is Contractual IN service
+                 *  serviceflag == VC_SERVICE_MASK  == 0x0f is a mask
+                 *-------------------------------------------------------------------------*/
+
+                // What offset is needed now...
+                if(!(strnum = token.match("in")).isNull() ||
+                   !(strnum = token.match("enable")).isNull())
+                {
+                    flag |= 0x08;
+
+                    _snprintf(tbuf, sizeof(tbuf), "SERVICE ENABLE");
+                }
+                else if(!(strnum = token.match("out")).isNull() ||
+                        !(strnum = token.match("disable")).isNull())
+                {
+                    flag |= 0x04;
+
+                    _snprintf(tbuf, sizeof(tbuf), "SERVICE DISABLE");
+                }
+
+                if(token[token.length() - 1] == 't' && token[token.length() - 2] != 'u') // Verify the 't' is not following 'u' as in "out"
+                {
+                    char t2[80];
+                    strcpy(t2, tbuf);
+
+                    flag >>= 2;       // Make the flag match the protocol
+
+                    _snprintf(tbuf, sizeof(tbuf), "%s TEMPORARY", t2);
+                }
+
+                _cmd["service"] = CtiParseValue( flag );
+
+                _actionItems.insert(tbuf);
+            }
         }
 
         if(!(token = CmdStr.match("led[ \t]+(y|n)(y|n)(y|n)")).isNull())
@@ -1936,148 +1988,162 @@ void  CtiCommandParser::doParsePutConfigVersacom(void)
             _actionItems.insert(tbuf);
         }
 
-        if(!(token = CmdStr.match("reset[_a-z]*([ \t]+((rtc)|(lf)|(r1)|(r2)|(r3)|(r4)|(cl)|(pt)))+")).isNull())
+        if(!(token = CmdStr.match("reset")).isNull())
         {
-            INT   flag = 0;
+            if(!(token = CmdStr.match("reset[_a-z]*([ \t]+((rtc)|(lf)|(r1)|(r2)|(r3)|(r4)|(cl)|(pt)))+")).isNull())
+            {
+                INT   flag = 0;
 
-            if(!(strnum = token.match("rtc")).isNull())
-            {
-                flag |= 0x40;
-            }
-            if(!(strnum = token.match("lf")).isNull())
-            {
-                flag |= 0x20;
-            }
-            if(!(strnum = token.match("r1")).isNull())
-            {
-                flag |= 0x10;
-            }
-            if(!(strnum = token.match("r2")).isNull())
-            {
-                flag |= 0x08;
-            }
-            if(!(strnum = token.match("r3")).isNull())
-            {
-                flag |= 0x04;
-            }
-            if(!(strnum = token.match("cl")).isNull())
-            {
-                flag |= 0x02;
-            }
-            if(!(strnum = token.match("pt")).isNull())
-            {
-                flag |= 0x01;
-            }
+                if(!(strnum = token.match("rtc")).isNull())
+                {
+                    flag |= 0x40;
+                }
+                if(!(strnum = token.match("lf")).isNull())
+                {
+                    flag |= 0x20;
+                }
+                if(!(strnum = token.match("r1")).isNull())
+                {
+                    flag |= 0x10;
+                }
+                if(!(strnum = token.match("r2")).isNull())
+                {
+                    flag |= 0x08;
+                }
+                if(!(strnum = token.match("r3")).isNull())
+                {
+                    flag |= 0x04;
+                }
+                if(!(strnum = token.match("cl")).isNull())
+                {
+                    flag |= 0x02;
+                }
+                if(!(strnum = token.match("pt")).isNull())
+                {
+                    flag |= 0x01;
+                }
 
-            _cmd["reset"] = CtiParseValue( flag );
+                _cmd["reset"] = CtiParseValue( flag );
 
-            _snprintf(tbuf, sizeof(tbuf), "CNTR RESET = 0x%02X", flag);
-            _actionItems.insert(tbuf);
-        }
-
-        if(!(token = CmdStr.match("prop[ a-z_]*[ \t=]*([ \t=]+)?[0-9]+")).isNull())
-        {
-            // What offset is needed now...
-            if(!(strnum = token.match("[0-9]+")).isNull())
-            {
-                _num = strtol(strnum.data(), &p, 10);
-                _cmd["proptime"] = CtiParseValue( _num );
-
-                _snprintf(tbuf, sizeof(tbuf), "CONFIG PROPTIME = %d", _num);
+                _snprintf(tbuf, sizeof(tbuf), "CNTR RESET = 0x%02X", flag);
                 _actionItems.insert(tbuf);
             }
         }
 
-        //if(!(token = CmdStr.match("cold[ \t]*r1[ \t]*([ \t=]+0x)?[0-9a-f]+")).isNull())
-        if(!(token = CmdStr.match("cold[ a-z_]*" \
-                                  "([ \t]*r[123][ \t=]*[0-9]+[ \t=]*[hms]?)" \
-                                  "([ \t]*r[123][ \t=]*[0-9]+[ \t=]*[hms]?)?" \
-                                  "([ \t]*r[123][ \t=]*[0-9]+[ \t=]*[hms]?)?")).isNull())
+        if(!(token = CmdStr.match("prop")).isNull())
         {
-            // dout << token << endl;
-
-            if(!(strnum = token.match("r1[ \t=]*[0-9]+[ \t=]*[hms]?")).isNull())
+            if(!(token = CmdStr.match("prop[ a-z_]*[ \t=]*([ \t=]+)?[0-9]+")).isNull())
             {
-                strnum.replace(0, 2, " "); // Blank the r1 to prevent matches on the 1
-                // _num = strtol(strnum.match(re_anynum).data(), &p, 0);
-                _num = convertTimeInputToSeconds(strnum);
-                _cmd["coldload_r1"] = CtiParseValue( _num );
+                // What offset is needed now...
+                if(!(strnum = token.match("[0-9]+")).isNull())
+                {
+                    _num = strtol(strnum.data(), &p, 10);
+                    _cmd["proptime"] = CtiParseValue( _num );
 
-                _snprintf(tbuf, sizeof(tbuf), "CONFIG COLDLOAD R1 = %d", _num);
-                _actionItems.insert(tbuf);
-            }
-            if(!(strnum = token.match("r2[ \t=]*[0-9]+[ \t=]*[hms]?")).isNull())
-            {
-                strnum.replace(0, 2, " "); // Blank the r1 to prevent matches on the 1
-                //_num = strtol(strnum.match(re_anynum).data(), &p, 0);
-                _num = convertTimeInputToSeconds(strnum);
-                _cmd["coldload_r2"] = CtiParseValue( _num );
-
-                _snprintf(tbuf, sizeof(tbuf), "CONFIG COLDLOAD R2 = %d", _num);
-                _actionItems.insert(tbuf);
-            }
-            if(!(strnum = token.match("r3[ \t=]*[0-9]+[ \t=]*[hms]?")).isNull())
-            {
-                strnum.replace(0, 2, " "); // Blank the r1 to prevent matches on the 1
-                //_num = strtol(strnum.match(re_anynum).data(), &p, 0);
-                _num = convertTimeInputToSeconds(strnum);
-                _cmd["coldload_r3"] = CtiParseValue( _num );
-
-                _snprintf(tbuf, sizeof(tbuf), "CONFIG COLDLOAD R3 = %d", _num);
-                _actionItems.insert(tbuf);
+                    _snprintf(tbuf, sizeof(tbuf), "CONFIG PROPTIME = %d", _num);
+                    _actionItems.insert(tbuf);
+                }
             }
         }
 
-        if(!(token = CmdStr.match("cycle[ a-z]*" \
-                                  "([ \t]*r[123][ \t=]*[0-9]+[ \t=]*)" \
-                                  "([ \t]*r[123][ \t=]*[0-9]+[ \t=]*)?" \
-                                  "([ \t]*r[123][ \t=]*[0-9]+[ \t=]*)?")).isNull())
+        if(!(token = CmdStr.match("cold")).isNull())
         {
-            if(!(strnum = token.match("r1[ \t=]*[0-9]+")).isNull())
+            if(!(token = CmdStr.match("cold[ a-z_]*" \
+                                      "([ \t]*r[123][ \t=]*[0-9]+[ \t=]*[hms]?)" \
+                                      "([ \t]*r[123][ \t=]*[0-9]+[ \t=]*[hms]?)?" \
+                                      "([ \t]*r[123][ \t=]*[0-9]+[ \t=]*[hms]?)?")).isNull())
             {
-                strnum.replace(0, 2, " "); // Blank the r1 to prevent matches on the 1
-                _num = strtol(strnum.match(re_anynum).data(), &p, 0);
-                _cmd["cycle_r1"] = CtiParseValue( _num );
-            }
-            if(!(strnum = token.match("r2[ \t=]*[0-9]+[ \t=]*")).isNull())
-            {
-                strnum.replace(0, 2, " "); // Blank the r1 to prevent matches on the 1
-                _num = strtol(strnum.match(re_anynum).data(), &p, 0);
-                _cmd["cycle_r2"] = CtiParseValue( _num );
-            }
-            if(!(strnum = token.match("r3[ \t=]*[0-9]+[ \t=]*")).isNull())
-            {
-                strnum.replace(0, 2, " "); // Blank the r1 to prevent matches on the 1
-                _num = strtol(strnum.match(re_anynum).data(), &p, 0);
-                _cmd["cycle_r3"] = CtiParseValue( _num );
+                // dout << token << endl;
+
+                if(!(strnum = token.match("r1[ \t=]*[0-9]+[ \t=]*[hms]?")).isNull())
+                {
+                    strnum.replace(0, 2, " "); // Blank the r1 to prevent matches on the 1
+                    // _num = strtol(strnum.match(re_anynum).data(), &p, 0);
+                    _num = convertTimeInputToSeconds(strnum);
+                    _cmd["coldload_r1"] = CtiParseValue( _num );
+
+                    _snprintf(tbuf, sizeof(tbuf), "CONFIG COLDLOAD R1 = %d", _num);
+                    _actionItems.insert(tbuf);
+                }
+                if(!(strnum = token.match("r2[ \t=]*[0-9]+[ \t=]*[hms]?")).isNull())
+                {
+                    strnum.replace(0, 2, " "); // Blank the r1 to prevent matches on the 1
+                    //_num = strtol(strnum.match(re_anynum).data(), &p, 0);
+                    _num = convertTimeInputToSeconds(strnum);
+                    _cmd["coldload_r2"] = CtiParseValue( _num );
+
+                    _snprintf(tbuf, sizeof(tbuf), "CONFIG COLDLOAD R2 = %d", _num);
+                    _actionItems.insert(tbuf);
+                }
+                if(!(strnum = token.match("r3[ \t=]*[0-9]+[ \t=]*[hms]?")).isNull())
+                {
+                    strnum.replace(0, 2, " "); // Blank the r1 to prevent matches on the 1
+                    //_num = strtol(strnum.match(re_anynum).data(), &p, 0);
+                    _num = convertTimeInputToSeconds(strnum);
+                    _cmd["coldload_r3"] = CtiParseValue( _num );
+
+                    _snprintf(tbuf, sizeof(tbuf), "CONFIG COLDLOAD R3 = %d", _num);
+                    _actionItems.insert(tbuf);
+                }
             }
         }
 
-        if(!(token = CmdStr.match("scram[ a-z]*" \
-                                  "([ \t]*r[123][ \t=]*[0-9]+[ \t=]*[hms]?)" \
-                                  "([ \t]*r[123][ \t=]*[0-9]+[ \t=]*[hms]?)?" \
-                                  "([ \t]*r[123][ \t=]*[0-9]+[ \t=]*[hms]?)?")).isNull())
+        if(!(token = CmdStr.match("cycle")).isNull())
         {
-            if(!(strnum = token.match("r1[ \t=]*[0-9]+[ \t=]*[hms]?")).isNull())
+            if(!(token = CmdStr.match("cycle[ a-z]*" \
+                                      "([ \t]*r[123][ \t=]*[0-9]+[ \t=]*)" \
+                                      "([ \t]*r[123][ \t=]*[0-9]+[ \t=]*)?" \
+                                      "([ \t]*r[123][ \t=]*[0-9]+[ \t=]*)?")).isNull())
             {
-                strnum.replace(0, 2, " "); // Blank the r1 to prevent matches on the 1
-                //_num = strtol(strnum.match(re_anynum).data(), &p, 0);
-                _num = convertTimeInputToSeconds(strnum);
-                _cmd["scram_r1"] = CtiParseValue( _num );
+                if(!(strnum = token.match("r1[ \t=]*[0-9]+")).isNull())
+                {
+                    strnum.replace(0, 2, " "); // Blank the r1 to prevent matches on the 1
+                    _num = strtol(strnum.match(re_anynum).data(), &p, 0);
+                    _cmd["cycle_r1"] = CtiParseValue( _num );
+                }
+                if(!(strnum = token.match("r2[ \t=]*[0-9]+[ \t=]*")).isNull())
+                {
+                    strnum.replace(0, 2, " "); // Blank the r1 to prevent matches on the 1
+                    _num = strtol(strnum.match(re_anynum).data(), &p, 0);
+                    _cmd["cycle_r2"] = CtiParseValue( _num );
+                }
+                if(!(strnum = token.match("r3[ \t=]*[0-9]+[ \t=]*")).isNull())
+                {
+                    strnum.replace(0, 2, " "); // Blank the r1 to prevent matches on the 1
+                    _num = strtol(strnum.match(re_anynum).data(), &p, 0);
+                    _cmd["cycle_r3"] = CtiParseValue( _num );
+                }
             }
-            if(!(strnum = token.match("r2[ \t=]*[0-9]+[ \t=]*[hms]?")).isNull())
+        }
+
+        if(!(token = CmdStr.match("scram")).isNull())
+        {
+            if(!(token = CmdStr.match("scram[ a-z]*" \
+                                      "([ \t]*r[123][ \t=]*[0-9]+[ \t=]*[hms]?)" \
+                                      "([ \t]*r[123][ \t=]*[0-9]+[ \t=]*[hms]?)?" \
+                                      "([ \t]*r[123][ \t=]*[0-9]+[ \t=]*[hms]?)?")).isNull())
             {
-                strnum.replace(0, 2, " "); // Blank the r1 to prevent matches on the 1
-                //_num = strtol(strnum.match(re_anynum).data(), &p, 0);
-                _num = convertTimeInputToSeconds(strnum);
-                _cmd["scram_r2"] = CtiParseValue( _num );
-            }
-            if(!(strnum = token.match("r3[ \t=]*[0-9]+[ \t=]*[hms]?")).isNull())
-            {
-                strnum.replace(0, 2, " "); // Blank the r1 to prevent matches on the 1
-                //_num = strtol(strnum.match(re_anynum).data(), &p, 0);
-                _num = convertTimeInputToSeconds(strnum);
-                _cmd["scram_r3"] = CtiParseValue( _num );
+                if(!(strnum = token.match("r1[ \t=]*[0-9]+[ \t=]*[hms]?")).isNull())
+                {
+                    strnum.replace(0, 2, " "); // Blank the r1 to prevent matches on the 1
+                    //_num = strtol(strnum.match(re_anynum).data(), &p, 0);
+                    _num = convertTimeInputToSeconds(strnum);
+                    _cmd["scram_r1"] = CtiParseValue( _num );
+                }
+                if(!(strnum = token.match("r2[ \t=]*[0-9]+[ \t=]*[hms]?")).isNull())
+                {
+                    strnum.replace(0, 2, " "); // Blank the r1 to prevent matches on the 1
+                    //_num = strtol(strnum.match(re_anynum).data(), &p, 0);
+                    _num = convertTimeInputToSeconds(strnum);
+                    _cmd["scram_r2"] = CtiParseValue( _num );
+                }
+                if(!(strnum = token.match("r3[ \t=]*[0-9]+[ \t=]*[hms]?")).isNull())
+                {
+                    strnum.replace(0, 2, " "); // Blank the r1 to prevent matches on the 1
+                    //_num = strtol(strnum.match(re_anynum).data(), &p, 0);
+                    _num = convertTimeInputToSeconds(strnum);
+                    _cmd["scram_r3"] = CtiParseValue( _num );
+                }
             }
         }
 
