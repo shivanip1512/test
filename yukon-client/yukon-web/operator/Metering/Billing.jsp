@@ -1,5 +1,5 @@
 <html>
-<%@ include file="billing_header.jsp" %>
+<%@ include file="include/billing_header.jsp" %>
 <head>
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">

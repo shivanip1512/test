@@ -1,5 +1,5 @@
-<%@ include file="include\oper_header.jsp" %>
-<%@ include file="include\oper_trendingheader.jsp" %>
+<%@ include file="include/oper_header.jsp" %>
+<%@ include file="include/oper_trendingheader.jsp" %>
 <%@ page import="com.cannontech.loadcontrol.data.LMProgramDirect" %>
 <%@ page import="com.cannontech.loadcontrol.data.LMProgramDirectGear" %>
 <%@ page import="java.util.Calendar" %>

@@ -1,6 +1,6 @@
 <html>
 <SCRIPT  LANGUAGE="JavaScript" SRC="../../JavaScript/calendar.js"></SCRIPT>
-<%@ include file="metering_header.jsp" %>
+<%@ include file="include/metering_header.jsp" %>
 <%@ include file="../../include/trending_functions.jsp" %>
 <link rel="stylesheet" href="../../WebConfig/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
@@ -50,7 +50,7 @@
 			<td valign="top" width="101"><br>
 			<table width="101" border="0" cellspacing="0" cellpadding="5">
 			<tr>
-			<%@include file="nav.jsp"%>
+			<%@include file="include/nav.jsp"%>
 			</tr>
 			</table>
 			</td>
