@@ -57,6 +57,9 @@ public class PersistAlarmText extends BasePersistElement {
 				
 				//TODO This could become very inefficient when a lot of points exist, be smarter
 				int[] pointIDs = LxSaveUtils.readIntArray(in,0);
+				if(pointIDs == null)
+					pointIDs = new int[0];
+					
 				ArrayList pointsList = new ArrayList(pointIDs.length);
 				//
 				for(int i = 0; i < pointIDs.length; i++) {
