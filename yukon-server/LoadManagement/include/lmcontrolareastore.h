@@ -31,7 +31,7 @@
 #include "lmprogrambase.h"
 #include "lmid.h"
 
-class CtiLMControlAreaStore
+class CtiLMControlAreaStore : public RWMonitor< RWRecursiveLock< RWMutexLock > >
 {
 public:   
 
@@ -41,17 +41,18 @@ public:
     static void deleteInstance();
 
     void dumpAllDynamicData();
-    bool isValid() const;
+    bool isValid();
     void setValid(bool valid);
-    bool getReregisterForPoints() const;
+    bool getReregisterForPoints();
     void setReregisterForPoints(bool reregister);
-    const RWDBDateTime& getLastDBReloadTime() const;
 
     bool UpdateControlAreaDisableFlagInDB(CtiLMControlArea* controlArea);
     bool UpdateProgramDisableFlagInDB(CtiLMProgramBase* program);
     bool UpdateTriggerInDB(CtiLMControlArea* controlArea, CtiLMControlAreaTrigger* trigger);
 
     static const RWCString LOAD_MANAGEMENT_DBCHANGE_MSG_SOURCE;
+
+    RWRecursiveLock<RWMutexLock> & getMux() { return mutex(); };
 
 private:
 
@@ -76,8 +77,6 @@ private:
 
     //The singleton instance of CtiLMControlAreaStore
     static CtiLMControlAreaStore* _instance;
-    
-    mutable RWRecursiveLock<RWMutexLock> _mutex;
 };
 
 #endif
