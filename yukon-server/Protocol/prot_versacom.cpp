@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2003/03/26 20:33:26 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2003/03/31 15:09:24 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1743,7 +1743,7 @@ INT CtiProtocolVersacom::assembleControl(CtiCommandParser  &parse, const VSTRUCT
 
         // Control percentage is in the parsers iValue!
         // Assume the VSTRUCT RelayMask is set, otherwise use default relay 0
-        if(useVersacomTypeFourControl)
+        if(useVersacomTypeFourControl || getTransmitterType() == TYPE_TCU5000)
         {
             parse.Map()["control_interval"]  = CtiParseValue( 60 * 30 * 8 );    // Assume a bit here!
 
