@@ -26,6 +26,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "pointtypes.h"
 #include "configparms.h"
 #include "logger.h"
+#include "cparms.h"
 
 #include "calclogicsvc.h"
 
@@ -33,6 +34,9 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #define CHECK_RATE_SECONDS  60     // one minute check for db change
 
 BOOL UserQuit = FALSE;
+
+//Boolean if debug messages are printed
+BOOL _CALC_DEBUG;
 
 BOOL MyCtrlHandler( DWORD fdwCtrlType )
 {
@@ -84,7 +88,88 @@ void CtiCalcLogicService::DeInit( )
 
 void CtiCalcLogicService::Init( )
 {
-    char temp[180];
+    //defaults
+    RWCString logFile = RWCString("calc");
+    _dispatchMachine = RWCString("127.0.0.1");
+    _dispatchPort = VANGOGHNEXUS;
+    _CALC_DEBUG = FALSE;
+    //defaults
+
+    RWCString str;
+    char var[128];
+
+    dout.start();     // fire up the logger thread
+    dout.setOutputPath(gLogDirectory.data());
+    dout.setToStdOut(true);
+    dout.setWriteInterval(1);
+
+    strcpy(var, "CALC_LOGIC_LOG_FILE");
+    if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+    {
+        dout.setOutputFile(str.data());
+        if( _CALC_DEBUG )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << RWTime() << " - " << var << ":  " << str << endl;
+        }
+    }
+    else
+    {
+        dout.setOutputFile(logFile.data());
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+    }
+    
+    strcpy(var, "DISPATCH_MACHINE");
+    if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+    {
+        _dispatchMachine = str;
+        if( _CALC_DEBUG )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << RWTime() << " - " << var << ":  " << str << endl;
+        }
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+    }
+
+    strcpy(var, "DISPATCH_PORT");
+    if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+    {
+        _dispatchPort = atoi(str);
+        if( _CALC_DEBUG )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << RWTime() << " - " << var << ":  " << str << endl;
+        }
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+    }
+
+    strcpy(var, "CALC_LOGIC_DEBUG");
+    if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+    {
+        str.toLower();
+        _CALC_DEBUG = (str=="true"?TRUE:FALSE);
+        if( _CALC_DEBUG )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << RWTime() << " - " << var << ":  " << str << endl;
+        }
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+    }
+
+    /*char temp[180];
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -123,7 +208,16 @@ void CtiCalcLogicService::Init( )
             }
             _dispatchPort = VANGOGHNEXUS;
         }
-    }
+
+        if( (*fpGetAsString)( "CALC_LOGIC_DEBUG", temp, 180 ) )
+        {
+            _CALC_DEBUG = temp;
+        }
+        else
+        {
+            _CALC_DEBUG = FALSE;
+        }
+    }*/
 }
 
 
@@ -149,7 +243,7 @@ void CtiCalcLogicService::Run( )
     time_t   nextCheckTime;
 
 
-    dout.start();     // fire up the logger thread
+    /*dout.start();     // fire up the logger thread
     dout.setOutputPath(gLogDirectory.data());
     dout.setOutputFile("calc");
 
@@ -162,7 +256,7 @@ void CtiCalcLogicService::Run( )
     {
         dout.setToStdOut(false);
         dout.setWriteInterval(5000);
-    }
+    }*/
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
