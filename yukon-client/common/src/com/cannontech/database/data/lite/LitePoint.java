@@ -122,15 +122,20 @@ public long getTags() {
 public void retrieve(String databaseAlias) 
 {
  	com.cannontech.database.SqlStatement stmt =
- 		new com.cannontech.database.SqlStatement("SELECT PointName, PointType, PointOffset, PAObjectID FROM Point WHERE PointID = " + Integer.toString(getPointID()), databaseAlias);
+ 		new com.cannontech.database.SqlStatement(
+			"SELECT POINTNAME,POINTTYPE,PAOBJECTID, " +
+			"POINTOFFSET,STATEGROUPID FROM POINT WHERE POINTID = " + 
+			Integer.toString(getPointID()), databaseAlias );
+
 
  	try
  	{
  		stmt.execute();
 		setPointName( ((String) stmt.getRow(0)[0]) );
 		setPointType( com.cannontech.database.data.point.PointTypes.getType(((String) stmt.getRow(0)[1])) );
-		setPointOffset( ((java.math.BigDecimal) stmt.getRow(0)[2]).intValue() );
-		setPaobjectID( ((java.math.BigDecimal) stmt.getRow(0)[3]).intValue() );
+		setPaobjectID( ((java.math.BigDecimal) stmt.getRow(0)[2]).intValue() );
+		setPointOffset( ((java.math.BigDecimal) stmt.getRow(0)[3]).intValue() );
+		setStateGroupID( ((java.math.BigDecimal) stmt.getRow(0)[4]).intValue() );
  	}
  	catch( Exception e )
  	{
