@@ -1,56 +1,36 @@
 <%@ include file="include/StarsHeader.jsp" %>
-<%@ page import="com.cannontech.database.data.lite.LiteDeviceMeterNumber" %>
-<%@ page import="com.cannontech.database.Transaction"%>
-<%@ page import="com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase"%>
-<%@ page import="com.cannontech.database.data.lite.LiteDeviceMeterNumber"%>
 <%@ page import="com.cannontech.database.data.lite.LiteFactory"%>
+<%@ page import="com.cannontech.database.data.lite.LiteDeviceMeterNumber" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject"%>
+
+<%@ page import="com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase"%>
 <%@ page import="com.cannontech.database.data.pao.YukonPAObject"%>
-<%@ page import="com.cannontech.database.cache.functions.PAOFuncs"%>
 <%@ page import="com.cannontech.database.data.device.CarrierBase"%>
+<%@ page import="com.cannontech.database.data.pao.PAOGroups"%>
+
+<%@ page import="com.cannontech.database.cache.functions.PAOFuncs"%>
+<%@ page import="com.cannontech.database.cache.functions.DBPersistentFuncs"%>
 
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } 
 	int invNo = Integer.parseInt(request.getParameter("InvNo"));
 	StarsMCT starsMCT = inventories.getStarsMCT(invNo - inventories.getStarsLMHardwareCount());
-	// Stacey, here are the fields useful to you:
 	int deviceID = starsMCT.getDeviceID();
 
-  	//create a liteDeviceMeterNumber using deviceID
+  	//DeviceMeterGroup - meterNumber, collectionGroup
 	LiteDeviceMeterNumber liteDevMeterNum = new LiteDeviceMeterNumber(deviceID);
 	liteDevMeterNum.retrieve(com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
-
-	//create a DBPersistent DeviceMeterGroup using the liteDeviceMeterNumber
-	DeviceMeterGroupBase devMeterGroup = null;
-	if( liteDevMeterNum != null)
-	{
-		devMeterGroup = (DeviceMeterGroupBase)LiteFactory.createDBPersistent(liteDevMeterNum);
-		try {
-			Transaction t = Transaction.createTransaction(Transaction.RETRIEVE, devMeterGroup);
-			devMeterGroup = (DeviceMeterGroupBase)t.execute();
-		}
-		catch(Exception e) {
-			com.cannontech.clientutils.CTILogger.error(e.getMessage(), e);
-		}
-	}
+	DeviceMeterGroupBase devMeterGroup = (DeviceMeterGroupBase)DBPersistentFuncs.retrieveDBPersistent(liteDevMeterNum);
 
 	//get the liteYukonPao using the deviceID
 	LiteYukonPAObject liteYukonPao = PAOFuncs.getLiteYukonPAO(deviceID);
-    //create a DBPersistent YukonPaobject using the liteYukonPao
-	YukonPAObject yukonPao = (YukonPAObject)LiteFactory.createDBPersistent(liteYukonPao);
-	try	{
-		Transaction t = Transaction.createTransaction(Transaction.RETRIEVE, yukonPao);
-		yukonPao = (YukonPAObject)t.execute();
-	}
-	catch (Exception e1) {
-		// TODO Auto-generated catch block
-		e1.printStackTrace();
-	}
-	//Get the device's routeID
-	int deviceRouteID = -1;
-	//Get the device's physical Address
-	int address = -1;
+	YukonPAObject yukonPao = (YukonPAObject)DBPersistentFuncs.retrieveDBPersistent(liteYukonPao);
+
+	int deviceRouteID = -1;	//Get the device's routeID
+	int address = -1;		//Get the device's physical Address
+	
 	if( yukonPao instanceof CarrierBase)
 	{
+		// DeviceTypesFuncs.isCarrier(liteYukonPao.getType())
 		deviceRouteID = ((CarrierBase)yukonPao).getDeviceRoutes().getRouteID().intValue();
 		address = ((CarrierBase)yukonPao).getDeviceCarrierSettings().getAddress().intValue();
 	}
@@ -106,7 +86,7 @@
         </tr>
         <tr> 
           <td  valign="top" width="101"> 
-            <% String pageName = "ConfigMeter.jsp?invNo=" + deviceID;%>
+            <% String pageName = "ConfigMeter.jsp?InvNo=" + invNo;%>
             <%@ include file="include/Nav.jsp" %>
           </td>
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
@@ -125,30 +105,26 @@
 
 			  <form name="invForm" method="POST" action="<%= request.getContextPath() %>/servlet/SOAPClient">
                 <input type="hidden" name="action" value="UpdateMeterConfig">
-                <input type="hidden" name="invNo" value="<%=deviceID%>">
-				<input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/operator/Consumer/ConfigMeter.jsp?invNo=<%=deviceID %>">
-				<input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/operator/Consumer/ConfigMeter.jsp?invNo=<%= deviceID %>">
+                <input type="hidden" name="InvNo" value="<%=invNo%>">
+				<input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/operator/Consumer/ConfigMeter.jsp?InvNo=<%=invNo%>">
+				<input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/operator/Consumer/ConfigMeter.jsp?InvNo=<%= invNo%>">
                 <table width="350" border="0" cellspacing="0" cellpadding="3">
                   <tr> 
-                    <td width="30%" class="SubtitleHeader" height="2" align="right">Meter 
-                      Name:</td>
-                    <td width="70%" class="TableCell" height="2"><%= yukonPao.getPAOName()%></td>
+                    <td width="30%" class="SubtitleHeader" height="2" align="right">Meter Name:</td>
+                    <td width="70%" class="TableCell" height="2"><%= liteYukonPao.getPaoName()%></td>
                   </tr>
                   <tr> 
-                    <td width="30%" class="SubtitleHeader" height="2" align="right">Meter 
-                      Type:</td>
-                    <td width="70%" class="TableCell" height="2"><%=yukonPao.getPAOType()%></td>
+                    <td width="30%" class="SubtitleHeader" height="2" align="right">Meter Type:</td>
+                    <td width="70%" class="TableCell" height="2"><%=PAOGroups.getPAOTypeString(liteYukonPao.getType())%></td>
                   </tr>
                   <tr> 
-                    <td width="30%" class="SubtitleHeader" height="2" align="right">Meter 
-                      Number:</td>
+                    <td width="30%" class="SubtitleHeader" height="2" align="right">Meter Number:</td>
                     <td width="70%" height="2"> 
                       <input type="text" name="MeterNumberLabel" maxlength="70" size="20" value="<%=devMeterGroup.getDeviceMeterGroup().getMeterNumber()%>">
                     </td>
                   </tr>
                   <tr> 
-                    <td width="30%" class="SubtitleHeader" height="2" align="right">Physical 
-                      Address:</td>
+                    <td width="30%" class="SubtitleHeader" height="2" align="right">Physical Address:</td>
                     <td width="70%" height="2"> 
                       <input type="text" name="PhysicalAddressLabel" size="20" value="<%= address%>" maxlength="70">
                     </td>
