@@ -12,7 +12,8 @@ public class ResourceFactory
    //all class strings better by instances of com.cannontech.yukon.IYukon!!
 	private static final String YUKON_SERVER = 
             "com.cannontech.yukon.server.YukonServerResource";
-               
+
+	//this class has been removed as of 12-4-2003
    private static final String YUKON_CLIENT = 
             "com.cannontech.yukon.client.YukonClientResource";
 
