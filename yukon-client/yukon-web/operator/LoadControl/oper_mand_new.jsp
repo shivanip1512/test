@@ -116,10 +116,14 @@ function confirm_form(f) {
           <tr> 
             <td width="150" class="TableCell"> 
               <div align="right">Notify Time:</div>
-            </td> 
-            <td width="150" class="TableCell"><struts:text property="notifytime" size="10" pattern="@time"/> 
             </td>
-            <td width="150" class="TableCell"><%= tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) %>
+            <td>
+              <table width="150" cellspacing="0">
+                <tr>
+                  <td width="140" class="TableCell"><struts:text property="notifytime" size="10" pattern="@time"/></td>
+                  <td width="10" align="left" class="TableCell"><%= tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) %></td>
+                </tr>
+              </table>
             </td>
           </tr> 
           <tr> <cti:errormsg colSpan="2"><center><%= checker.getError("notifytime") %></center> 
@@ -137,9 +141,13 @@ function confirm_form(f) {
             <td width="150" class="TableCell"> 
               <div align="right">Curtail Time: </div>
             </td>
-            <td width="150" class="TableCell"><struts:text property="curtailtime" size="10" pattern="@time"/> 
-            </td>
-             <td width="150" class="TableCell"><%= tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) %>
+            <td>
+              <table width="150" cellspacing="0">
+                <tr>
+                  <td width="140" class="TableCell"><struts:text property="curtailtime" size="10" pattern="@time"/></td>
+                  <td width="10" align="left" class="TableCell"><%= tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) %></td>
+                </tr>
+              </table>
             </td> 
           </tr>
           <tr> <cti:errormsg colSpan="2"> <center><%= checker.getError("curtailtime") %></center>
