@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.44 $
-* DATE         :  $Date: 2003/09/02 18:50:16 $
+* REVISION     :  $Revision: 1.45 $
+* DATE         :  $Date: 2003/09/08 20:03:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -372,6 +372,12 @@ void applyPortQueuePurge(const long unusedid, CtiPortSPtr ptPort, void *unusedPt
                         }
                         CleanQueue(pInfo->ActinQueueHandle, NULL, findAllQueueEntries, cleanupOrphanOutMessages);
                         //PurgeQueue(pInfo->ActinQueueHandle);
+                    }
+
+                    //  make sure we clear out the pending bits - otherwise the device will refuse any new queued requests
+                    if(pInfo->GetStatus(INLGRPQ))
+                    {
+                        pInfo->ClearStatus(INLGRPQ);
                     }
                 }
             }
