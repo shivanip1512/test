@@ -1579,7 +1579,7 @@ public void setValue(Object val)
 			getLastIntervalDemandRateLabel().setVisible(false);
 		}
 		
-		if( deviceType == PAOGroups.MCT410_KWH_ONLY )
+		if( deviceType == PAOGroups.MCT410_KWH_ONLY)
 		{
 			//The 410 LE doesn't support all these options
 			getChannel2CheckBox().setEnabled(false);
@@ -1593,6 +1593,19 @@ public void setValue(Object val)
 			getJComboBoxlVoltRate().addItem("1 hour");
 			
 			is410 = true;
+		}
+		if(deviceType == PAOGroups.MCT410IL)
+		{
+			getChannel1CheckBox().setEnabled(false);
+			getChannel2CheckBox().setEnabled(false);
+			getChannel3CheckBox().setEnabled(false);
+			
+			getJLabelVoltDmdRate().setText("Channel 4: ");
+			getJComboBoxlVoltRate().removeAllItems();
+			getJComboBoxlVoltRate().addItem("5 minute");
+			getJComboBoxlVoltRate().addItem("15 minute");
+			getJComboBoxlVoltRate().addItem("30 minute");
+			getJComboBoxlVoltRate().addItem("1 hour");
 		}
 		
       CtiUtilities.setIntervalComboBoxSelectedItem(

@@ -40,7 +40,7 @@ public void run()
 	//temp code
 	timerStart = new java.util.Date();
 	//temp code
-	String sqlString = "SELECT TOUSCHEDULEID,TOUSCHEDULENAME FROM TOUSCHEDULE WHERE TOUSCHEDULEID >= 0";
+	String sqlString = "SELECT TOUSCHEDULEID,TOUSCHEDULENAME FROM TOUSCHEDULE WHERE TOUSCHEDULEID >= 0 ORDER BY TOUSCHEDULENAME";
 
 	java.sql.Connection conn = null;
 	java.sql.Statement stmt = null;

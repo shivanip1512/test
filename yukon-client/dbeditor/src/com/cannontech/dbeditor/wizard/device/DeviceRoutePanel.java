@@ -13,6 +13,7 @@ import com.cannontech.database.data.device.MCT310;
 import com.cannontech.database.data.device.MCT310ID;
 import com.cannontech.database.data.device.MCT310IDL;
 import com.cannontech.database.data.device.MCT310IL;
+import com.cannontech.database.data.device.MCT410IL;
 import com.cannontech.database.data.device.MCT410_KWH_Only;
 import com.cannontech.database.data.device.RepeaterBase;
 import com.cannontech.database.data.lite.LiteBase;
@@ -160,6 +161,7 @@ public class DeviceRoutePanel
 			 || val instanceof MCT310IL 
 			 || val instanceof MCT310ID
 			 || val instanceof MCT310IDL
+			 || val instanceof MCT410IL
 			 || val instanceof MCT410_KWH_Only ) {
 
 			com.cannontech.database.data.multi.MultiDBPersistent newVal = new com.cannontech.database.data.multi.MultiDBPersistent();
@@ -175,7 +177,7 @@ public class DeviceRoutePanel
 
 			double multiplier = 0.01;
 			//multiplier is 0.1 for 410LE, 0.01 for all older MCTs
-			if(val instanceof MCT410_KWH_Only )
+			if(val instanceof MCT410_KWH_Only || val instanceof MCT410IL )
 				multiplier = 0.1;
 			
 			//always create the PulseAccum point
@@ -188,9 +190,9 @@ public class DeviceRoutePanel
                com.cannontech.database.data.point.PointUnits.UOMID_KWH,
                multiplier) );
 
-			//only certain devices get the DemandAccum point auto created
+			//only certain devices get this DemandAccum point auto created
 			if( val instanceof MCT310IL
-				 || val instanceof MCT310IDL ) {
+				 || val instanceof MCT310IDL || val instanceof MCT410IL) {
 	
 	         newVal.getDBPersistentVector().add( 
 	            PointFactory.createDmdAccumPoint(
@@ -199,10 +201,68 @@ public class DeviceRoutePanel
 	               new Integer(++pointID),
 	               PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND,
 	               com.cannontech.database.data.point.PointUnits.UOMID_KW,
-	               .01) );
-				 }
+	               multiplier) );
+				 }			
+				 
+			//only the 410 gets all these points auto-created
+			if( val instanceof MCT410IL ) 
+			{
+				newVal.getDBPersistentVector().add( 
+					PointFactory.createDmdAccumPoint(
+						"Voltage-LP",
+					   	((DeviceBase) val).getDevice().getDeviceID(),
+					   	new Integer(++pointID),
+					   	PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND,
+					   	com.cannontech.database.data.point.PointUnits.UOMID_VOLTS,
+					   	multiplier) );
+					   	
+				newVal.getDBPersistentVector().add( 
+					PointFactory.createDmdAccumPoint(
+						"Peak kW",
+						((DeviceBase) val).getDevice().getDeviceID(),
+						new Integer(++pointID),
+						PointTypes.PT_OFFSET_PEAK_KW_DEMAND,
+						com.cannontech.database.data.point.PointUnits.UOMID_KW,
+						multiplier) );
+						
+				newVal.getDBPersistentVector().add( 
+					PointFactory.createDmdAccumPoint(
+						"Max Volts",
+						((DeviceBase) val).getDevice().getDeviceID(),
+						new Integer(++pointID),
+						PointTypes.PT_OFFSET_MAX_VOLT_DEMAND,
+						com.cannontech.database.data.point.PointUnits.UOMID_VOLTS,
+						multiplier) );
+						
+				newVal.getDBPersistentVector().add( 
+					PointFactory.createDmdAccumPoint(
+						"Min Volts",
+						((DeviceBase) val).getDevice().getDeviceID(),
+						new Integer(++pointID),
+						PointTypes.PT_OFFSET_MIN_VOLT_DEMAND,
+						com.cannontech.database.data.point.PointUnits.UOMID_VOLTS,
+						multiplier) );
+						
+				newVal.getDBPersistentVector().add( 
+					PointFactory.createDmdAccumPoint(
+						"kW",
+						((DeviceBase) val).getDevice().getDeviceID(),
+						new Integer(++pointID),
+						PointTypes.PT_OFFSET_PEAK_KW_DEMAND,
+						com.cannontech.database.data.point.PointUnits.UOMID_KW,
+						multiplier) );
+						
+				newVal.getDBPersistentVector().add( 
+					PointFactory.createDmdAccumPoint(
+						"Voltage",
+						((DeviceBase) val).getDevice().getDeviceID(),
+						new Integer(++pointID),
+						PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND,
+						com.cannontech.database.data.point.PointUnits.UOMID_VOLTS,
+						multiplier) );
+			}
 
-
+			
 
 			if (val instanceof MCT310ID
 				 || val instanceof MCT310IDL ) 

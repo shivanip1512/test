@@ -40,7 +40,7 @@ public void run()
 	//temp code
 	timerStart = new java.util.Date();
 	//temp code
-	String sqlString = "SELECT CONFIGID, CONFIGNAME, CONFIGTYPE FROM MCTCONFIG WHERE CONFIGID >= 0";
+	String sqlString = "SELECT CONFIGID, CONFIGNAME, CONFIGTYPE FROM MCTCONFIG WHERE CONFIGID >= 0 ORDER BY CONFIGNAME";
 
 	java.sql.Connection conn = null;
 	java.sql.Statement stmt = null;

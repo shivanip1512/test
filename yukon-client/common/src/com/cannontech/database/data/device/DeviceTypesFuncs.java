@@ -370,7 +370,8 @@ public final static boolean isLoadProfileVoltage(int deviceType)
 	{  
 		case MCT410_KWH_ONLY:
 			return true;
-   
+		case MCT410IL:
+			return true;
 		default:
 			return false;
 	}
