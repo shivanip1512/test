@@ -340,7 +340,7 @@ function deleteHardware(form) {
                   <div align="center">
 <table width="305" border="0" cellspacing="0" cellpadding="0">
                       <tr> 
-                        <form name="form3" method="get" action="">
+                        <form name="form3" method="get" action="InventoryHist.jsp">
                           <td valign="top" align = "center" class = "TableCell"> 
                             <span class="MainHeader">Hardware History</span> <br>
                             <table width="250" border="1" cellspacing="0" cellpadding="3" align="center">
@@ -361,7 +361,16 @@ function deleteHardware(form) {
 	}
 %>
                             </table>
-                          </td>
+                              <!--<table width="250" border="0" cellspacing="0" cellpadding="0">
+                                <tr>
+                                  <td> 
+                                    <div align="right">
+                                      <input type="submit" name="More" value="More">
+                                    </div>
+                                  </td>
+                                </tr>
+                              </table>-->
+                            </td>
                         </form>
                       </tr>
                     </table>

@@ -115,14 +115,15 @@ function confirmSubmit(form) { //v1.0
                 </tr>
               </table>
               <br>
-              <p align="center" class="MainHeader"><b>Program History </b> 
-              <table width="300" border="1" cellspacing="0" align="center" cellpadding="3">
-                <tr> 
-                  <td class="HeaderCell">Date</td>
-                  <td class="HeaderCell">Type - Duration</td>
-                  <td class="HeaderCell">Program</td>
-                </tr>
-<%
+              <form name="form2" method="post" action="OptHist.jsp">
+                <p align="center" class="MainHeader"><b>Program History </b> 
+                <table width="300" border="1" cellspacing="0" align="center" cellpadding="3">
+                  <tr> 
+                    <td class="HeaderCell">Date</td>
+                    <td class="HeaderCell">Type - Duration</td>
+                    <td class="HeaderCell">Program</td>
+                  </tr>
+                  <%
 	ServletUtils.ProgramHistory[] progHist = (ServletUtils.ProgramHistory[]) user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_LM_PROGRAM_HISTORY);
 	if (progHist == null) {
 		progHist = ServletUtils.createProgramHistory( programs );
@@ -133,25 +134,37 @@ function confirmSubmit(form) { //v1.0
 %>
                   <tr> 
                     <td class="TableCell" width="100" ><%= datePart.format(progHist[i].getDate()) %></td>
-                    <td class="TableCell" width="100" ><%= progHist[i].getAction() %>
-					<% if (progHist[i].getDuration() != null) { %> - <%= progHist[i].getDuration() %><% } %>
-					</td>
-                    <td class="TableCell" width="100" >
-<%
+                    <td class="TableCell" width="100" ><%= progHist[i].getAction() %> 
+                      <% if (progHist[i].getDuration() != null) { %>
+                      - <%= progHist[i].getDuration() %>
+                      <% } %>
+                    </td>
+                    <td class="TableCell" width="100" > 
+                      <%
 		String[] progNames = progHist[i].getPrograms();
 		for (int j = 0; j < progNames.length; j++) {
 %>
-					<%= progNames[j] %><br>
-<%
+                      <%= progNames[j] %><br>
+                      <%
 		}
 %>
-					</td>
+                    </td>
                   </tr>
-<%
+                  <%
 	}
 %>
-              </table>
-              <br>
+                </table>
+                <!--<table width="300" border="0" cellspacing="0" cellpadding="0">
+                                <tr>
+                                  <td> 
+                                    <div align="right">
+                                      <input type="submit" name="More" value="More">
+                                    </div>
+                                  </td>
+                                </tr>
+                              </table>-->
+              </form>
+              <p align="center" class="MainHeader"><br>
               <table width="150" border="0" cellspacing="0" cellpadding="3" align="center">
                 <tr> 
                   <td align="center">
