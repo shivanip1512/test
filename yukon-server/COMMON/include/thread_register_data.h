@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2004/09/27 17:13:16 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2004/09/29 14:02:17 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -44,10 +44,10 @@ public:
                       string name,
                       Behaviours type,
                       int tickle_freq,
-                      behaviourFuncPtr ptr1,
-                      void *args1,
-                      behaviourFuncPtr ptr2,
-                      void *args2 );
+                      behaviourFuncPtr ptr1 = 0,
+                      void *args1 = 0,
+                      behaviourFuncPtr ptr2 = 0,
+                      void *args2 = 0 );
 
    virtual ~CtiThreadRegData();
 
