@@ -15,7 +15,7 @@ public class Signal extends com.cannontech.message.util.Message
 	// Logging priority - replaces classification
 	// It would appear (from yukon.h header)that 6 is the most important and
 	// 11 being the least important
-	private long alarmStateID = 1;
+	private long alarmStateID = EVENT_SIGNAL;
 
 	// What is this textually
 	private java.lang.String description = "";
@@ -26,9 +26,14 @@ public class Signal extends com.cannontech.message.util.Message
 	//Alarm states - Bit field frome pointdefs.h
 	private long tags = 0;
 
+	// Identifies the condition this signal is responsible for
+	private int condition = 0;  //valid values 0 - 31
+
+
+
 	// Signals (alarms & events)
-	public static final long ALARM_SIGNAL = 255; // 1-255 are alarms
-	public static final long EVENT_SIGNAL = 1;
+	public static final int ALARM_SIGNAL = 255; // 1-255 are alarms
+	public static final int EVENT_SIGNAL = 1;
 	public static final int MAX_DISPLAYABLE_ALARM_SIGNAL = 11;
 
 	// TAGS to be read from Dispatch
@@ -71,6 +76,28 @@ public class Signal extends com.cannontech.message.util.Message
 public Signal() {
 	super();
 } 
+
+public boolean equals( Object o )
+{
+	return
+		o != null
+		&& o instanceof Signal
+		&& 
+		( ((Signal)o).getId() == getId() && ((Signal)o).getCondition() == getCondition() );
+}
+
+/**
+ * 
+ * COOL!!! If we get 2^28 ids, we may have a problem for hash tables.
+ * Since condition is only (0-31), we only need 4 bits.
+ * 
+ * (This will most likely never be used.....) 
+ */
+public int hashCode()
+{
+	return getId() << 4 | getCondition();
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (1/28/00 11:06:49 AM)
@@ -185,7 +212,24 @@ public String toString()
 	retStr += "Action:  " + getAction() + "\n";
 	retStr += "Tags:  " + getTags() + "\n";
 	retStr += "UserName:  " + getUserName() + "\n";
+	retStr += "Condition:  " + getCondition() + "\n";
 
 	return retStr;
 }
+	/**
+	 * @return
+	 */
+	public int getCondition()
+	{
+		return condition;
+	}
+
+	/**
+	 * @param i
+	 */
+	public void setCondition(int i)
+	{
+		condition = i;
+	}
+
 }
