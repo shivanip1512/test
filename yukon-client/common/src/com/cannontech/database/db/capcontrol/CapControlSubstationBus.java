@@ -1,4 +1,6 @@
 package com.cannontech.database.db.capcontrol;
+
+import com.cannontech.database.db.point.calculation.CalcComponentTypes;
 /**
  * This type was created in VisualAge.
  */
@@ -26,7 +28,7 @@ public class CapControlSubstationBus extends com.cannontech.database.db.DBPersis
 	private String daysOfWeek = new String("YYYYYNNN");
 	private Integer mapLocationID = new Integer(0);  //not used as of 11-12-2001
 	private Double lowerBandwidth = new Double(0.0);
-	private String controlUnits = com.cannontech.database.data.capcontrol.CapControlSubBus.UNITS_KVAR;
+	private String controlUnits = CalcComponentTypes.LABEL_KVAR;
 
 	public static final String SETTER_COLUMNS[] = 
 	{ 

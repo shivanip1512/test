@@ -7,6 +7,7 @@ package com.cannontech.dbeditor.wizard.capsubbus;
  */
 import java.awt.Dimension;
 import com.cannontech.database.data.capcontrol.CapControlSubBus;
+import com.cannontech.database.db.point.calculation.CalcComponentTypes;
  
 public class CCSubstationBusPeakSettingsPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener {
 	private javax.swing.JLabel ivjOffPeakSetPointLabel = null;
@@ -272,13 +273,13 @@ private javax.swing.JComboBox getJComboBoxControlUnits() {
 			// user code begin {1}
 
 			ivjJComboBoxControlUnits.addItem( 
-					CapControlSubBus.UNITS_KVAR );
+					CalcComponentTypes.LABEL_KVAR );
 			
 			ivjJComboBoxControlUnits.addItem( 
-					CapControlSubBus.UNITS_PF_KVAR );
+					CalcComponentTypes.PFACTOR_KW_KVAR_FUNCTION );
 
 			ivjJComboBoxControlUnits.addItem( 
-					CapControlSubBus.UNITS_PF_KQ );
+					CalcComponentTypes.PFACTOR_KW_KQ_FUNCTION );
 			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {

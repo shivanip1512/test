@@ -5,10 +5,6 @@ package com.cannontech.database.data.capcontrol;
  */
 public class CapControlSubBus extends CapControlYukonPAOBase implements com.cannontech.common.editor.EditorPanel
 {
-   public static final String UNITS_KVAR = "KVAR";
-   public static final String UNITS_PF_KVAR = "PF BY KVAR";
-   public static final String UNITS_PF_KQ = "PF BY KQ";
-   
 	private com.cannontech.database.db.capcontrol.CapControlSubstationBus capControlSubstationBus = null;
 
 	//contains objects of type com.cannontech.database.db.capcontrol.CCFeederSubAssignment

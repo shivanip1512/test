@@ -28,6 +28,9 @@ public class CalcComponentTypes
 	public static final String PFACTOR_KW_KQ_FUNCTION = "P-Factor KW/KQ";
 	public static final String PFACTOR_KW_KVA_FUNCTION = "P-Factor KW/KVa";
 	
+   
+   public static final String LABEL_KVAR = "KVAR";
+   
 	//our operation function strings
 	public static String[] CALC_FUNCTIONS =
 	{
@@ -37,8 +40,12 @@ public class CalcComponentTypes
 		DEMAND_AVG15_FUNCTION,
 		DEMAND_AVG30_FUNCTION,
 		DEMAND_AVG60_FUNCTION,
-		PFACTOR_KW_KVAR_FUNCTION
+		PFACTOR_KW_KVAR_FUNCTION,
+      PFACTOR_KW_KQ_FUNCTION,
+      PFACTOR_KW_KVA_FUNCTION
 	};
+
+
 	//our operation symbols
 	public static String[] CALC_OPERATIONS =
 	{

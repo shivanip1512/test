@@ -1,6 +1,8 @@
 package com.cannontech.cbc.data;
 
 import com.cannontech.database.data.capcontrol.CapControlSubBus;
+import com.cannontech.database.db.point.calculation.CalcComponentTypes;
+
 /**
  * Insert the type's description here.
  * Creation date: (8/18/00 4:23:32 PM)
@@ -79,8 +81,8 @@ public SubBus( Integer paoId_, String paoCategory_, String paoClass_,
 
 public boolean isPowerFactorControlled()
 {
-   return( CapControlSubBus.UNITS_PF_KQ.equalsIgnoreCase(getControlUnits())
-            || CapControlSubBus.UNITS_PF_KVAR.equalsIgnoreCase(getControlUnits()) );
+   return( CalcComponentTypes.PFACTOR_KW_KVAR_FUNCTION.equalsIgnoreCase(getControlUnits())
+            || CalcComponentTypes.PFACTOR_KW_KQ_FUNCTION.equalsIgnoreCase(getControlUnits()) );
 }
 
 /**
