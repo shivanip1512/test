@@ -200,5 +200,30 @@ public void update() throws java.sql.SQLException
 	for (int i = 0; i < getRateOffsetsVector().size(); i++)
 		((TOURateOffset) getRateOffsetsVector().elementAt(i)).add();	
 }
+
+public final static boolean inUseByDevice(Integer touID) throws java.sql.SQLException 
+{	
+	return inUseByDevice(touID, com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
+}
+/**
+ * This method was created in VisualAge.
+ * @param pointID java.lang.Integer
+ */
+public final static boolean inUseByDevice(Integer schedID, String databaseAlias) throws java.sql.SQLException 
+{
+	com.cannontech.database.SqlStatement stmt =
+		new com.cannontech.database.SqlStatement("SELECT DeviceID FROM TOUDeviceMapping WHERE TOUScheduleID=" + schedID,
+													databaseAlias );
+
+	try
+	{
+		stmt.execute();
+		return (stmt.getRowCount() > 0 );
+	}
+	catch( Exception e )
+	{
+		return false;
+	}
+}
 }
 

@@ -3,6 +3,7 @@ package com.cannontech.dbeditor;
 import Acme.RefInt;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.config.ConfigTwoWay;
+import com.cannontech.database.data.tou.TOUSchedule;
 import com.cannontech.database.data.holiday.HolidaySchedule;
 import com.cannontech.database.data.season.SeasonSchedule;
 import com.cannontech.database.data.user.YukonUser;
@@ -38,6 +39,7 @@ public class DBDeletionFuncs
 	public static final int TAG_TYPE = 14;
 	public static final int LMPROG_CONSTR_TYPE = 15;
 	public static final int SEASON_SCHEDULE = 16;
+	public static final int TOU_TYPE = 17;
 
    //the return types of each possible delete
    public static final byte STATUS_ALLOW = 1;
@@ -198,6 +200,22 @@ public class DBDeletionFuncs
 		{
 			theWarning.delete(0, theWarning.length());
 			theWarning.append(CR_LF + "because it is in use by an MCT.");
+			return STATUS_DISALLOW;
+		}
+	
+		//this object is deleteable
+		return STATUS_ALLOW;
+	}	
+	
+	private static byte createDeleteStringForTOU(int touID) throws java.sql.SQLException
+	{
+		Integer theID = new Integer( touID );
+	
+		if( TOUSchedule.inUseByDevice(
+				theID, CtiUtilities.getDatabaseAlias() ) )
+		{
+			theWarning.delete(0, theWarning.length());
+			theWarning.append(CR_LF + "because it is in use by a device.");
 			return STATUS_DISALLOW;
 		}
 	
@@ -435,6 +453,15 @@ public class DBDeletionFuncs
 			anID = ((ConfigTwoWay) toDelete).getConfigID().intValue();
 			deletionType = DBDeletionFuncs.CONFIG_TYPE;
 		}
+		
+		else if (toDelete instanceof TOUSchedule)
+		{
+			message.append("Are you sure you want to permanently delete '" + nodeName + "'?");
+			unableDel.append("You cannot delete the TOU Schedule '" + nodeName + "'");
+			anID = ((TOUSchedule) toDelete).getScheduleID().intValue();
+			deletionType = DBDeletionFuncs.TOU_TYPE;
+		}
+		
 		else if (toDelete instanceof com.cannontech.database.db.tags.Tag)
 		{
 			message.append("Are you sure you want to permanently delete '" + nodeName + "'?");
@@ -554,6 +581,9 @@ public class DBDeletionFuncs
 	
 			else if(type == CONFIG_TYPE)
 					return createDeleteStringForConfig(anID);
+			
+			else if(type == TOU_TYPE)
+				return createDeleteStringForTOU(anID);
 					
 			else if(type == TAG_TYPE)
 				return createDeleteStringForTag(anID);
