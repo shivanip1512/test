@@ -2,23 +2,20 @@ package com.cannontech.yukon.connections;
 
 import com.cannontech.yukon.IMACSConnection;
 import com.cannontech.yukon.IConnectionBase;
-import com.cannontech.common.util.MessageEventListener;
 import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.message.macs.message.OverrideRequest;
 import com.cannontech.message.macs.message.Schedule;
 import com.cannontech.message.util.ClientConnection;
 import com.cannontech.message.util.Message;
+import com.cannontech.message.util.MessageEvent;
+import com.cannontech.message.util.MessageListener;
 import com.roguewave.vsj.CollectableStreamer;
 import com.roguewave.vsj.DefineCollectable;
 import com.cannontech.message.macs.message.MACSCategoryChange;
 import com.cannontech.roles.yukon.SystemRole;
 
-public class ServerMACSConnection extends ClientConnection implements IMACSConnection
+public class ServerMACSConnection extends ClientConnection implements IMACSConnection, MessageListener
 {
-//	private static int userRightsInt = 0;
-	
-	private java.util.Vector messageEventListeners = new java.util.Vector();
-
 	private java.util.Vector schedules = null;
 
 	// This hastTable should contain String keys and ArrayList values
@@ -82,6 +79,8 @@ public class ServerMACSConnection extends ClientConnection implements IMACSConne
 	   setPort(port);
 	   setAutoReconnect(true);
 	   setTimeToReconnect(5);
+	   
+	   addMessageListener( this );
 	
 	   try
 	   {
@@ -160,58 +159,6 @@ public class ServerMACSConnection extends ClientConnection implements IMACSConne
 	}
 
 
-	public void addMessageEventListener(MessageEventListener listener) {
-	
-		synchronized( messageEventListeners )
-		{
-			for( int i = messageEventListeners.size() - 1; i >= 0; i-- )
-				if( messageEventListeners.elementAt(i) == listener )
-					return;
-	
-			messageEventListeners.addElement(listener);
-		}
-	}
-
-	public synchronized void doHandleMessage(Object obj)
-	{
-		if( obj instanceof Schedule )
-		{
-			handleSchedule( (Schedule)obj );
-		}
-		else if( obj instanceof com.cannontech.message.dispatch.message.Multi )
-		{
-			handleMulti( (com.cannontech.message.dispatch.message.Multi)obj );
-		}
-		else if( obj instanceof com.cannontech.message.macs.message.DeleteSchedule )
-		{
-			handleDeleteSchedule( (com.cannontech.message.macs.message.DeleteSchedule)obj );
-		}
-		else if( obj instanceof com.cannontech.message.macs.message.Info )
-		{
-			handleInfo( (com.cannontech.message.macs.message.Info)obj );
-		}
-		else if( obj instanceof com.cannontech.message.macs.message.ScriptFile )
-		{
-			handleScriptFile( (com.cannontech.message.macs.message.ScriptFile)obj );
-		}
-		else
-			throw new RuntimeException("Recieved a message of type " + obj.getClass() );
-		
-		return;
-	}
-	/**
-	 * This method was created in VisualAge.
-	 * @param event MessageEvent
-	 */
-	public void fireMessageEvent(com.cannontech.common.util.MessageEvent event) {
-		
-		synchronized( messageEventListeners )
-		{
-			for( int i = messageEventListeners.size() - 1; i >= 0; i-- )
-				((com.cannontech.common.util.MessageEventListener) messageEventListeners.elementAt(i)).messageEvent(event);
-		}
-	}
-
 	/**
 	 * This method was created in VisualAge.
 	 * @return com.cannontech.macs.Schedule[]
@@ -243,14 +190,7 @@ public class ServerMACSConnection extends ClientConnection implements IMACSConne
 	
 		return categoryNames;
 	}
-	/**
-	 * Insert the method's description here.
-	 * Creation date: (2/28/2001 3:00:38 PM)
-	 * @return java.util.ArrayList
-	 */
-	private java.util.ArrayList getInQueue() {
-		return inQueue;
-	}
+
 	/**
 	 * Insert the method's description here.
 	 * Creation date: (2/21/2001 6:17:59 PM)
@@ -301,36 +241,7 @@ public class ServerMACSConnection extends ClientConnection implements IMACSConne
 		setChanged();
 		notifyObservers( info );
 	}
-	/**
-	 * handleMessage should be defined by subclasses should they want
-	 * a chance to handle a particular message when it comes in.
-	 * Before a message is put in the inVector handleMessage is
-	 * called.  If handleMEssage returns true then the message
-	 * is considered handled otherwise the message will be put
-	 * in the inVector to await processing.
-	 * Do not actually handle the message here, handle it in doHandleMessage
-	 * @param message CtiMessage
-	 */
-	public boolean handleMessage(Object message) 
-	{
-		return true;
-	}
-	/**
-	 * Insert the method's description here.
-	 * Creation date: (2/23/2001 10:37:45 AM)
-	 * @param multi com.cannontech.message.dispatch.message.Multi
-	 */
-	private void handleMulti(com.cannontech.message.dispatch.message.Multi multi) 
-	{
-	
-		for( int i = 0; i < multi.getVector().size(); i ++ )
-		{
-			Object obj = multi.getVector().elementAt(i);
-	
-			doHandleMessage( obj );
-		}
-		
-	}
+
 	/**
 	 * Insert the method's description here.
 	 * Creation date: (2/21/2001 6:03:46 PM)
@@ -673,6 +584,33 @@ public class ServerMACSConnection extends ClientConnection implements IMACSConne
 	public void writeMsg( Message msg ) throws java.io.IOException
 	{
 		write( msg );
+	}
+
+	public synchronized void messageReceived( MessageEvent e )
+	{
+		Object obj = e.getMessage();
+		
+		if( obj instanceof Schedule )
+		{
+			handleSchedule( (Schedule)obj );
+		}
+		else if( obj instanceof com.cannontech.message.macs.message.DeleteSchedule )
+		{
+			handleDeleteSchedule( (com.cannontech.message.macs.message.DeleteSchedule)obj );
+		}
+		else if( obj instanceof com.cannontech.message.macs.message.Info )
+		{
+			handleInfo( (com.cannontech.message.macs.message.Info)obj );
+		}
+		else if( obj instanceof com.cannontech.message.macs.message.ScriptFile )
+		{
+			handleScriptFile( (com.cannontech.message.macs.message.ScriptFile)obj );
+		}
+		else
+			throw new RuntimeException("Recieved a message of type " + obj.getClass() );
+		
+		return;
+		
 	}
 
 }

@@ -7,19 +7,18 @@ package com.cannontech.loadcontrol;
  */
 import java.util.Vector;
 
-import com.cannontech.common.util.MessageEventListener;
 import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.events.LCChangeEvent;
 import com.cannontech.loadcontrol.messages.LMControlAreaMsg;
+import com.cannontech.message.util.MessageEvent;
+import com.cannontech.message.util.MessageListener;
 import com.roguewave.vsj.CollectableStreamer;
 
-public class LoadControlClientConnection extends com.cannontech.message.util.ClientConnection
+public class LoadControlClientConnection extends com.cannontech.message.util.ClientConnection implements MessageListener
 {
 	private static LoadControlClientConnection staticLoadControlClientConnection = null;
 	
-	private java.util.Vector messageEventListeners = new java.util.Vector();
-
 	private java.util.Vector controlAreas = null;
 /**
  * ClientConnection constructor comment.
@@ -30,21 +29,6 @@ protected LoadControlClientConnection() {
 	super();
 	initialize();
 } 
-/**
- * This method was created in VisualAge.
- * @param listener com.cannontech.common.util.MessageEventListener
- */
-public void addMessageEventListener(MessageEventListener listener) {
-
-	synchronized( messageEventListeners )
-	{
-		for( int i = messageEventListeners.size() - 1; i >= 0; i-- )
-			if( messageEventListeners.elementAt(i) == listener )
-				return;
-
-		messageEventListeners.addElement(listener);
-	}
-}
 /**
  * Insert the method's description here.
  * Creation date: (7/27/2001 3:10:51 PM)
@@ -89,9 +73,6 @@ public void disconnect() throws java.io.IOException
 {
 	super.disconnect();
 
-	if( messageEventListeners != null )
-		messageEventListeners.removeAllElements();
-
 	deleteObservers();
 
 	staticLoadControlClientConnection = null;
@@ -131,62 +112,6 @@ private void handleDeletedAreas( LMControlAreaMsg msg )
 	
 }
 
-
-/**
- * Insert the method's description here.
- * Creation date: (2/23/2001 10:03:31 AM)
- */
-public void doHandleMessage(Object obj)
-{	
-	if( obj instanceof LMControlArea )
-	{
-		handleLMControlArea( (LMControlArea)obj );
-	}
-	else if( obj instanceof LMControlAreaMsg )
-	{
-		LMControlAreaMsg msg = (LMControlAreaMsg)obj;
-		
-		if( msg.isDeletedCntrlArea() ) //we may be deleting an area
-		{
-			//this should not happen much
-			handleDeletedAreas( msg );
-		}
-		
-
-		for( int i = 0; i < msg.getNumberOfLMControlAreas(); i++ )
-			handleLMControlArea( msg.getLMControlArea(i) );
-	}
-	else if( obj instanceof com.cannontech.message.dispatch.message.Multi )
-	{
-		com.cannontech.message.dispatch.message.Multi multi =
-			(com.cannontech.message.dispatch.message.Multi) obj;
-			
-		for( int i = 0; i < multi.getVector().size(); i ++ )
-		{
-			Object msg = multi.getVector().elementAt(i);
-			doHandleMessage( msg );
-		}		
-	}
-	else
-	{
-		com.cannontech.clientutils.CTILogger.info("Received an unknown message of type:  " + obj.getClass() );
-	}
-		//throw new RuntimeException("Recieved a message of type " + obj.getClass() );
-	
-	return;
-}
-/**
- * This method was created in VisualAge.
- * @param event MessageEvent
- */
-public void fireMessageEvent(com.cannontech.common.util.MessageEvent event) {
-	
-	synchronized( messageEventListeners )
-	{
-		for( int i = messageEventListeners.size() - 1; i >= 0; i-- )
-			((com.cannontech.common.util.MessageEventListener) messageEventListeners.elementAt(i)).messageEvent(event);
-	}
-}
 /**
  * This method was created in VisualAge.
  * @return LMControlArea[]
@@ -228,14 +153,6 @@ private java.util.Vector getControlAreas()
 		controlAreas = new java.util.Vector(10);
 		
 	return controlAreas;
-}
-/**
- * Insert the method's description here.
- * Creation date: (2/28/2001 3:00:38 PM)
- * @return java.util.ArrayList
- */
-private java.util.ArrayList getInQueue() {
-	return inQueue;
 }
 /**
  * Insert the method's description here.
@@ -312,27 +229,16 @@ private synchronized void handleLMControlArea(LMControlArea controlArea)
 	}
 
 }
-/**
- * handleMessage should be defined by subclasses should they want
- * a chance to handle a particular message when it comes in.
- * Before a message is put in the inVector handleMessage is
- * called.  If handleMEssage returns true then the message
- * is considered handled otherwise the message will be put
- * in the inVector to await processing.
- * Do not actually handle the message here, handle it in doHandleMessage
- * @param message CtiMessage
- */
-public boolean handleMessage(Object message) 
-{
-	return true;
-}
+
 /**
  * Insert the method's description here.
  * Creation date: (2/21/2001 5:56:32 PM)
  */
 private void initialize() 
 {
+	addMessageListener( this );
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (7/30/2001 4:05:08 PM)
@@ -363,9 +269,6 @@ public void registerMappings(CollectableStreamer streamer ) {
 public synchronized void removeClient(Object client) 
 {
 
-	if( messageEventListeners != null )
-		messageEventListeners.remove( client );
-
 	if( client instanceof java.util.Observer )
 		deleteObserver( (java.util.Observer)client );
 
@@ -383,4 +286,33 @@ public synchronized void removeClient(Object client)
 	}
 
 }
+
+public synchronized void messageReceived( MessageEvent e )
+{
+	Object obj = e.getMessage();
+	if( obj instanceof LMControlArea )
+	{
+		handleLMControlArea( (LMControlArea)obj );
+	}
+	else if( obj instanceof LMControlAreaMsg )
+	{
+		LMControlAreaMsg msg = (LMControlAreaMsg)obj;
+		
+		if( msg.isDeletedCntrlArea() ) //we may be deleting an area
+		{
+			//this should not happen much
+			handleDeletedAreas( msg );
+		}
+		
+
+		for( int i = 0; i < msg.getNumberOfLMControlAreas(); i++ )
+			handleLMControlArea( msg.getLMControlArea(i) );
+	}
+	else
+	{
+		com.cannontech.clientutils.CTILogger.info("Received an unknown message of type:  " + obj.getClass() );
+	}
+
+}
+
 }

@@ -1,6 +1,5 @@
 package com.cannontech.yukon;
 
-import com.cannontech.common.util.MessageEventListener;
 import com.cannontech.message.macs.message.Schedule;
 import com.cannontech.message.util.Message;
 
@@ -10,14 +9,8 @@ import com.cannontech.message.util.Message;
  */
 public interface IMACSConnection extends IServerConnection 
 {
-	public void addMessageEventListener(MessageEventListener listener);
-
 	public IConnectionBase getMACSConnBase();
 	
-	public void doHandleMessage(Object obj);
-
-	public void fireMessageEvent(com.cannontech.common.util.MessageEvent event);
-
 	public Schedule[] getCategories( String category );
 
 	public java.util.Hashtable getCategoryNames(); 

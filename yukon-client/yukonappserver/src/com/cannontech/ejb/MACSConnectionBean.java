@@ -1,7 +1,6 @@
 package com.cannontech.ejb;
 
 import java.rmi.RemoteException;
-import java.util.Observer;
 
 import javax.ejb.EJBException;
 import javax.ejb.SessionBean;
@@ -9,15 +8,9 @@ import javax.ejb.SessionContext;
 
 import com.cannontech.yukon.IMACSConnection;
 import com.cannontech.yukon.IConnectionBase;
-import com.cannontech.message.macs.message.MACSCategoryChange;
 import com.cannontech.message.util.Message;
 import com.cannontech.yukon.connections.ServerMACSConnection;
-import com.cannontech.common.util.MessageEventListener;
-import com.cannontech.message.macs.message.OverrideRequest;
 import com.cannontech.message.macs.message.Schedule;
-//import com.cannontech.message.util.ClientConnection;
-import com.roguewave.vsj.CollectableStreamer;
-import com.roguewave.vsj.DefineCollectable;
 /* Add this to SQLStatementHome class */
 //public com.cannontech.ejb.SqlStatement create() throws javax.ejb.CreateException, java.rmi.RemoteException;
 
@@ -50,25 +43,6 @@ public class MACSConnectionBean /*extends ClientConnection*/ implements SessionB
     * @ejb:interface-method
     * tview-type="remote" 
    **/
-	public void addMessageEventListener(MessageEventListener listener) 
-	{
-		getMACSConnection().addMessageEventListener( listener );
-	}
-
-   /**
-    * @ejb:interface-method
-    * tview-type="remote" 
-   **/
-	public void doHandleMessage(Object obj)
-	{
-		getMACSConnection().doHandleMessage( obj );
-
-	}
-
-   /**
-    * @ejb:interface-method
-    * tview-type="remote" 
-   **/
 	public void writeMsg( Message msg ) throws java.io.IOException
 	{
 		getMACSConnection().writeMsg( msg );
@@ -81,17 +55,6 @@ public class MACSConnectionBean /*extends ClientConnection*/ implements SessionB
 	public IConnectionBase getMACSConnBase()
 	{
 		return getMACSConnection();
-	}
-
-	
-   /**
-    * @ejb:interface-method
-    * tview-type="remote" 
-   **/
-	public void fireMessageEvent(com.cannontech.common.util.MessageEvent event) 
-	{
-		//lets try this method!!! MAY NOT WORK FOR JBOSS CLIENT!!!!!!
-		getMACSConnection().fireMessageEvent( event );
 	}
 
    /**
@@ -111,15 +74,6 @@ public class MACSConnectionBean /*extends ClientConnection*/ implements SessionB
 	{
 		return getMACSConnection().getCategoryNames();
 	}	
-
-   /**
-    * @ejb:interface-method
-    * tview-type="remote" 
-   **/
-	public boolean handleMessage(Object message) 
-	{
-		return getMACSConnection().handleMessage( message );
-	}
 
    /**
     * @ejb:interface-method
