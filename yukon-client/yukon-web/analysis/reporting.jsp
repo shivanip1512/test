@@ -46,7 +46,7 @@ function loadTarget(form)
     <td> 
       <table width="760" border="0" cellspacing="0" cellpadding="0" align="center">
         <tr> 
-          <td width="102" height="102" background="../WebConfig/yukon/AdminImage.jpg">&nbsp;</td>
+          <td width="102" height="102" background="../WebConfig/yukon/AnalysisImage.jpg">&nbsp;</td>
           <td valign="top" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
