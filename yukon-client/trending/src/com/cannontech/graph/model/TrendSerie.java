@@ -1,7 +1,6 @@
 package com.cannontech.graph.model;
 
 import java.awt.Color;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
@@ -26,8 +25,6 @@ public class TrendSerie
 	//Contains values of org.jfree.data.time.TimeSeriesDataItem values.
 	//TimeSeriesDataItem has a value and timestamp item.
 	private TreeMap dataItemsMap = null;
-//	private TimeSeriesDataItem[] dataItemArray = null;
-//	private AbstractDataset dataset = null;
 	private Object dataSeries = null;	//THIS SHOULD BE SERIES or DEFAULTCATEGORYDATASET
 	
 	private Integer pointId;
@@ -136,35 +133,14 @@ public class TrendSerie
 	}
 
 	/**
-	 * Returns the dataItemArray value.
-	 * @return org.jfree.data.time.TimeSeriesDataItem[]
+	 * Returns the dataItemMap value.
+	 * @return TreeMap
 	 */
-	/*public TimeSeriesDataItem[] getDataItemArray()
-	{
-		return dataItemArray;
-	}*/
-	
 	public TreeMap getDataItemsMap()
 	{
 		return dataItemsMap;
 	}
 
-	/**
-	 * Returns the dataItemArray[item] value.
-	 * @return org.jfree.data.time.TimeSeriesDataItem
-	 */
-	/*public TimeSeriesDataItem getDataItemArray(int item)
-	{
-		if( getUseMultiplier())
-		{
-			RegularTimePeriod tp = dataItemArray[item].getPeriod();
-			Number val = new Double(dataItemArray[item].getValue().doubleValue() * getMultiplier().doubleValue());
-			TimeSeriesDataItem multDP = new TimeSeriesDataItem(tp, val);
-			return (multDP);
-		}
-		return dataItemArray[item];
-	}*/
-	
 	/**
 	 * Returns the decimalPlaces value.
 	 * @return int
@@ -197,7 +173,6 @@ public class TrendSerie
 	 */
 	public double getLoadFactor()
 	{
-//		if(getDataItemArray() != null)
 		if( getDataItemsMap() != null)
 		{
 			if (getMaxArea() != 0.0 )
@@ -373,7 +348,6 @@ public class TrendSerie
 	 */	
 	public long[] getPeriodsArray()
 	{
-//		long resolution = this.resolution;
 		if( periodsArray == null)
 		{
 			if (getDataItemsMap() == null )
@@ -415,8 +389,8 @@ public class TrendSerie
 		color = newColor;
 	}
 	/**
-	 * Sets the dataItemArray value.
-	 * @param newDataItemArray org.jfree.data.time.TimeSeriesDataItem []
+	 * Sets the dataItemsMap value.
+	 * @param newDataItemMap TreeMap
 	 */
 	protected void setDataItemsMap(TreeMap newDataItemsMap)
 	{
@@ -461,7 +435,10 @@ public class TrendSerie
 	public void setUseMultiplier(boolean selected)
 	{
 		useMultiplier = selected;
-		//Reset the max/min dataItems when multiplier selection changes.
+//		Reset the values/periods arrays and gather the data with multiplier affected.
+		valuesArray = null;
+		periodsArray = null;
+//		Reset the max/min dataItems when multiplier selection changes.
 		maximumTSDataItem = null;
 		minimumTSDataItem = null;
 	}	
