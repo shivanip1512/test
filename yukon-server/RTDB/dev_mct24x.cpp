@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct2XX.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/09/27 19:11:47 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/10/11 19:57:58 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -607,7 +607,7 @@ INT CtiDeviceMCT24X::decodeScanStatus(INMESS *InMessage, RWTime &TimeNow, RWTPtr
                 {
                     rwtemp = getName() + " / " + pPoint->getName() + ":" + disc;
 
-                    pData = new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, PulseAccumulatorPointType, rwtemp);
+                    pData = new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, StatusPointType, rwtemp);
                     if(pData != NULL)
                     {
                         ReturnMsg->PointData().insert(pData);
@@ -659,7 +659,8 @@ INT CtiDeviceMCT24X::decodeScanStatus(INMESS *InMessage, RWTime &TimeNow, RWTPtr
             {
                 rwtemp = getName() + " / " + pPoint->getName() + ":" + rwtemp;
 
-                pData = new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, PulseAccumulatorPointType, rwtemp);
+                pData = new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, StatusPointType, rwtemp);
+
                 if(pData != NULL)
                 {
                     ReturnMsg->PointData().insert(pData);
@@ -741,7 +742,7 @@ INT CtiDeviceMCT24X::decodeGetStatusDisconnect(INMESS *InMessage, RWTime &TimeNo
         {
             rwtemp = getName() + " / " + pPoint->getName() + ":" + rwtemp;
 
-            pData = new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, PulseAccumulatorPointType, rwtemp);
+            pData = new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, StatusPointType, rwtemp);
             if(pData != NULL)
             {
                 ReturnMsg->PointData().insert(pData);
