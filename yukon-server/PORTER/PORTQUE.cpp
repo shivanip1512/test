@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTQUE.cpp-arc  $
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2003/11/10 18:22:02 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2003/11/12 22:04:04 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -584,6 +584,21 @@ CCUResponseDecode (INMESS *InMessage, CtiDevice *Dev, OUTMESS *OutMessage)
     pInfo->ReadyN = InMessage->IDLCStat[12];
     pInfo->NCsets = InMessage->IDLCStat[13];
     pInfo->NCOcts = MAKEUSHORT (InMessage->IDLCStat[15],InMessage->IDLCStat[14]);
+
+
+    //  this is more data than we can ever receive in a single packet - the CCU is confused
+    if( pInfo->NCsets == 1 && pInfo->NCOcts > 241 )
+    {
+        //  CCU's queues are messed up and need to be reset
+        IDLCFunction (Dev, 0, DEST_BASE, COLD);
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint - CCU \"" << Dev->getName() << "\"'s internal queue is corrupt, sending cold start ";
+            dout << " (NCsets = " << pInfo->NCsets << ", NCOcts = " << pInfo->NCOcts << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+    }
+
 
     /* Need checks on STATP here <<<<<<<<<---------<<<<<<<<<<< */
 
