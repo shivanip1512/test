@@ -118,6 +118,8 @@
     <servlet-class>
     com.cannontech.servlet.BillingServlet</servlet-class>
   </servlet>
+  
+  <!-- STARS specific configs -->
   <servlet>
     <servlet-name>SOAPServer</servlet-name>
     <display-name>SOAPServer</display-name>
@@ -155,7 +157,16 @@
     <servlet-class>
     com.cannontech.stars.web.servlet.WorkOrderManager</servlet-class>
   </servlet>
-  
+  <servlet>
+    <servlet-name>PWordRequest</servlet-name>
+    <display-name>PWordRequest</display-name>
+    <description>Allows a user to request a password via email.</description>
+    <servlet-class>
+    com.cannontech.servlet.PWordRequest</servlet-class>
+  </servlet>  
+  <!-- STARS specific configs -->
+
+
 
   <!-- CapControl specific configs -->
   <servlet>

@@ -1,5 +1,6 @@
 package com.cannontech.database.cache.functions;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -46,6 +47,37 @@ public static LiteEnergyCompany getEnergyCompany(LiteYukonUser user) {
 		Map m = cache.getAllUserEnergyCompanies();
 		return (LiteEnergyCompany) m.get(user);
 	}	
+}
+
+/**
+ * Returns all the LiteEnergyCompany's that have customerID_ in it.
+ * 
+ * @param customerID_ int
+ * @return LiteEnergyCompany
+ */
+public static LiteEnergyCompany[] getEnergyCompaniesByCustomer( int customerID_ )
+{
+	ArrayList enrgComps = new ArrayList( 16 );
+	DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+	synchronized( cache )
+	{
+		for( int i = 0; i < cache.getAllEnergyCompanies().size(); i++ )
+		{
+			LiteEnergyCompany e = (LiteEnergyCompany)cache.getAllEnergyCompanies().get(i);
+
+			for( int j = 0; j < e.getCiCustumerIDs().size(); i++ )
+			{
+				if( e.getCiCustumerIDs().elementAt(j) == customerID_ )
+				{
+					enrgComps.add( e );
+					break; //move onto the next energycompany
+				}
+			}
+		}	
+	}
+
+	LiteEnergyCompany[] cArr = new LiteEnergyCompany[ enrgComps.size() ];
+	return (LiteEnergyCompany[])enrgComps.toArray( cArr );
 }
 
 /**

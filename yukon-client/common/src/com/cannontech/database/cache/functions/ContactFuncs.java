@@ -52,11 +52,12 @@ public final class ContactFuncs
 	 * @return com.cannontech.database.data.lite.LiteContact
 	 * @param contactID_ int
 	 */
-	public static LiteContact getContactByFName( String firstName_ ) 
+	public static LiteContact[] getContactsByFName( String firstName_ ) 
 	{
 		if( firstName_ == null )
 			return null;
 
+		ArrayList notifs = new ArrayList( 16 );
 		com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 		synchronized( cache )
 		{
@@ -65,11 +66,12 @@ public final class ContactFuncs
 			for( int j = 0; j < cstCnts.size(); j++ )
 			{
 				if( firstName_.equalsIgnoreCase( ((LiteContact)cstCnts.get(j)).getContFirstName() ) )
-					return (LiteContact)cstCnts.get(j);
+					notifs.add( cstCnts.get(j) );
 			}
 		}
 	
-		return null;
+		LiteContact[] cArr = new LiteContact[ notifs.size() ];
+		return (LiteContact[])notifs.toArray( cArr );
 	}
 	
 	/**
@@ -77,11 +79,12 @@ public final class ContactFuncs
 	 * @return com.cannontech.database.data.lite.LiteContact
 	 * @param contactID_ int
 	 */
-	public static LiteContact getContactByLName( String lastName_ ) 
+	public static LiteContact[] getContactsByLName( String lastName_ ) 
 	{
 		if( lastName_ == null )
 			return null;
 
+		ArrayList notifs = new ArrayList( 16 );
 		com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 		synchronized( cache )
 		{
@@ -90,11 +93,12 @@ public final class ContactFuncs
 			for( int j = 0; j < cstCnts.size(); j++ )
 			{
 				if( lastName_.equalsIgnoreCase( ((LiteContact)cstCnts.get(j)).getContFirstName() ) )
-					return (LiteContact)cstCnts.get(j);
+						notifs.add( cstCnts.get(j) );
 			}
 		}
 	
-		return null;
+		LiteContact[] cArr = new LiteContact[ notifs.size() ];
+		return (LiteContact[])notifs.toArray( cArr );
 	}
 
 	/**
@@ -130,7 +134,34 @@ public final class ContactFuncs
 	
 		return null;
 	}
-	
+
+	/**
+	 * Looks the first email notificatoin type in the list passed in. Returns a zero length string
+	 * when no emails are found.
+	 * @param contact
+	 * @return int
+	 */
+	public static String[] getAllEmailAddresses( int contactID_ )
+	{
+		LiteContact contact = getContact( contactID_ );
+		ArrayList strList = new ArrayList(16);
+
+		//find all the email addresses in the list ContactNotifications
+		for( int j = 0; j < contact.getLiteContactNotifications().size(); j++  )
+		{	
+			LiteContactNotification ltCntNotif = 
+					(LiteContactNotification)contact.getLiteContactNotifications().get(j);
+					
+			if( ltCntNotif.getNotificationCategoryID() == YukonListEntryTypes.YUK_ENTRY_ID_EMAIL )
+			{
+				strList.add( ltCntNotif.getNotification() );
+			}
+		}
+
+		String[] emails = new String[ strList.size() ];
+		return (String[])strList.toArray( emails );
+	}
+
 	/**
 	 * Returns all contactNotifications.
 	 * @return List LiteContactNotifications
