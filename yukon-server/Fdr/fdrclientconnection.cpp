@@ -443,7 +443,11 @@ INT CtiFDRClientConnection::writeSocket (CHAR *aBuffer, ULONG length, ULONG &aBy
     try
     {
         // send the data
-        bytesSent = send(getConnection(), aBuffer, length, 0);
+        while((bytesSent = send(getConnection(), aBuffer, length, 0)) == SOCKET_ERROR &&
+	      WSAGetLastError() == WSAEWOULDBLOCK)
+	{
+	    rwRunnable().yield();
+	}
 
         if (bytesSent == SOCKET_ERROR || bytesSent != length)
         {
