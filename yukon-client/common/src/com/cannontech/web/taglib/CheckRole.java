@@ -33,22 +33,18 @@ public class CheckRole extends BodyTagSupport {
 	}
 
 	/**
-	 * @see javax.servlet.jsp.tagext.IterationTag#doAfterBody()
+	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
 	 */
-	public int doAfterBody() throws JspException {
+	public int doStartTag() throws JspException {
 		LiteYukonUser user = 
 			(LiteYukonUser) pageContext.getSession().getAttribute("YUKON_USER");
-		if(	user != null && 
-				name != null &&
-				AuthFuncs.checkRole(user,name) != null) {
-			BodyContent bc = getBodyContent();					
-			try {
-				getPreviousOut().print(bc.getString());
-			} catch (IOException e) {
-			}			
-		}
-		
-		return SKIP_BODY;
+		if(	user == null || 
+				name == null ||
+				AuthFuncs.checkRole(user,name) == null) {
+					return SKIP_BODY;
+				}	
+				
+		return EVAL_BODY_INCLUDE;
 	}
 
 }
