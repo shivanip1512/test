@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/test.cpp-arc  $
-* REVISION     :  $Revision: 1.27 $
-* DATE         :  $Date: 2004/09/30 14:59:13 $
+* REVISION     :  $Revision: 1.28 $
+* DATE         :  $Date: 2004/10/06 16:33:01 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -91,6 +91,7 @@ public:
 
    EThread( string n, CtiThreadRegData::Behaviours type, int t = 10 );
    ~EThread();
+   void logOut( void );
 
 protected:
 
@@ -101,10 +102,14 @@ private:
    CtiThreadRegData::Behaviours  _type;
    string                        _name;
    int                           _heart_beat;
+   bool                          _log_out;
+   bool                          _comm;
 };
 
 EThread::EThread( string n, CtiThreadRegData::Behaviours type, int t ) :
    _type( type ),
+   _log_out( false ),
+   _comm( true ),
    _name( n )
 {
    _heart_beat = t;     //how often we'll tickle the monitor
@@ -114,11 +119,14 @@ EThread::~EThread()
 {
 }
 
+void EThread::logOut( void )
+{
+   _log_out = true;
+}
+
 void EThread::run( void )
 {
    int cnt = 0;
-   CtiThreadRegData  *data = new CtiThreadRegData( getID(), _name, _type, _heart_beat, ha, 0 , booya, 0 );
-   ThreadMonitor.tickle( data );
    
    while( !isSet( SHUTDOWN ) )
    {
@@ -126,9 +134,27 @@ void EThread::run( void )
 
       if( cnt++ == _heart_beat - 4 )
       {
-         CtiThreadRegData  *data = new CtiThreadRegData( getID(), _name, _type, _heart_beat, ha, 0 , booya, 0 );
-         ThreadMonitor.tickle( data );
-         cnt = 0;
+         if( _comm )
+         {
+            if( _log_out )
+            {
+               {
+                  CtiLockGuard<CtiLogger> doubt_guard( dout );
+                  dout << "*************************** " << _name << " logging out" << endl;
+               }
+
+               CtiThreadRegData *data = new CtiThreadRegData( getID(), _name, CtiThreadRegData::LogOut, _heart_beat, ha, 0 , booya, 0 );
+               _comm = false;
+               ThreadMonitor.tickle( data );
+            }
+            else
+            {
+               CtiThreadRegData *data = new CtiThreadRegData( getID(), _name, _type, _heart_beat, ha, 0 , booya, 0 );
+               ThreadMonitor.tickle( data );
+            }
+            
+            cnt = 0;
+         }
       }
 
       {
@@ -149,29 +175,38 @@ void testThreads( int argc, char **argv )
    EThread  *sam = 0;
    EThread  *joe = 0;
    EThread  *rat = 0;
+   EThread  *sal = 0;
    int      index = 0;
 
    ThreadMonitor.start();
 
    Sleep( 3000 );
 
-   if( bob != NULL )
+   if( sal != NULL )
    {
-      if( !( bob->isRunning() ) )
+      if( !( sal->isRunning() ) )
       {
-         bob->start();
+         sal->start();
       }
    }
    else
    {
-      bob = new EThread( "bob", CtiThreadRegData::KillApp ); 
-      bob->start();
+      sal = new EThread( "sal", CtiThreadRegData::KillApp ); 
+      sal->start();
    }
 
    for( ;; )
    {
       Sleep( 1000 );
       index++;
+
+      if( !( index % 33 )) 
+      {
+         if( sal && sal->isRunning() )
+         {
+            sal->logOut();
+         }
+      }
 
       if( !( index % 25 )) 
       {
@@ -261,7 +296,10 @@ void testThreads( int argc, char **argv )
          }
       }
 
-
+      if( !( index % 10 ))
+      {
+         ThreadMonitor.dump();
+      }
    }
 }
 
