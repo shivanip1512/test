@@ -423,7 +423,7 @@ void CtiLMProgramEnergyExchange::notifyCustomers(CtiLMEnergyExchangeOffer* offer
 
                 CtiLMEnergyExchangeCustomerReply* newCustomerReply = new CtiLMEnergyExchangeCustomerReply();
 
-                newCustomerReply->setCustomerId(currentCustomer->getPAOId());
+                newCustomerReply->setCustomerId(currentCustomer->getCustomerId());
                 newCustomerReply->setOfferId(offer->getOfferId());
                 newCustomerReply->setAcceptStatus(CtiLMEnergyExchangeCustomerReply::NoResponseAcceptStatus);
                 newCustomerReply->setAcceptDateTime(RWDBDateTime(1990,1,1,0,0,0,0));
@@ -435,23 +435,23 @@ void CtiLMProgramEnergyExchange::notifyCustomers(CtiLMEnergyExchangeOffer* offer
                 newCustomerReply->addLMEnergyExchangeCustomerReplyTable();
                 customerReplies.insert(newCustomerReply);
 
-                CtiEmailMsg* emailMsg = new CtiEmailMsg(currentCustomer->getPAOId(),CtiEmailMsg::CICustomerEmailType);
+                CtiEmailMsg* emailMsg = new CtiEmailMsg(currentCustomer->getCustomerId(),CtiEmailMsg::CICustomerEmailType);
                 emailMsg->setSubject(getHeading());
 
                 RWCString emailBody = getMessageHeader();
                 emailBody += "\r\n\r\n";// 2 return lines
                 emailBody += "Facility:  ";
-                emailBody += currentCustomer->getPAOName();
+                emailBody += currentCustomer->getCompanyName();
                 emailBody += "\r\n\r\n";// 2 return lines
                 emailBody += "Offer Date:  ";
                 emailBody += offer->getOfferDate().rwdate().asString();
                 emailBody += "\r\n\r\n";// 2 return lines
                 char tempchar[64];
                 emailBody += "Offer ID:  ";
-                _ultoa(currentOfferRevision->getOfferId(),tempchar,10);
+                _ltoa(currentOfferRevision->getOfferId(),tempchar,10);
                 emailBody += tempchar;
                 emailBody += "-";
-                _ultoa(currentOfferRevision->getRevisionNumber(),tempchar,10);
+                _ltoa(currentOfferRevision->getRevisionNumber(),tempchar,10);
                 emailBody += tempchar;
                 emailBody += "\r\n\r\n";// 2 return lines
                 emailBody += "Offer Expires:  ";
@@ -488,7 +488,7 @@ void CtiLMProgramEnergyExchange::notifyCustomersOfCancel(CtiLMEnergyExchangeOffe
             CtiLMEnergyExchangeCustomer* currentCustomer = (CtiLMEnergyExchangeCustomer*)_lmenergyexchangecustomers[i];
             if( currentCustomer->hasAcceptedOffer(offer->getOfferId()) )
             {
-                CtiEmailMsg* emailMsg = new CtiEmailMsg(currentCustomer->getPAOId(),CtiEmailMsg::CICustomerEmailType);
+                CtiEmailMsg* emailMsg = new CtiEmailMsg(currentCustomer->getCustomerId(),CtiEmailMsg::CICustomerEmailType);
                 emailMsg->setSubject(getHeading());
 
                 RWCString emailBody = getCanceledMsg();
@@ -496,17 +496,17 @@ void CtiLMProgramEnergyExchange::notifyCustomersOfCancel(CtiLMEnergyExchangeOffe
                 emailBody += getMessageHeader();
                 emailBody += "\r\n\r\n";// 2 return lines
                 emailBody += "Facility:  ";
-                emailBody += currentCustomer->getPAOName();
+                emailBody += currentCustomer->getCompanyName();
                 emailBody += "\r\n\r\n";// 2 return lines
                 emailBody += "Offer Date:  ";
                 emailBody += offer->getOfferDate().rwdate().asString();
                 emailBody += "\r\n\r\n";// 2 return lines
                 char tempchar[64];
                 emailBody += "Offer ID:  ";
-                _ultoa(currentOfferRevision->getOfferId(),tempchar,10);
+                _ltoa(currentOfferRevision->getOfferId(),tempchar,10);
                 emailBody += tempchar;
                 emailBody += "-";
-                _ultoa(currentOfferRevision->getRevisionNumber(),tempchar,10);
+                _ltoa(currentOfferRevision->getRevisionNumber(),tempchar,10);
                 emailBody += tempchar;
                 emailBody += "\r\n\r\n";// 2 return lines
                 emailBody += getMessageFooter();
