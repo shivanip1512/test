@@ -16,11 +16,18 @@ import org.jfree.data.time.TimeSeriesCollection;
 import org.w3c.dom.Element;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.PoolManager;
 import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.database.cache.functions.GraphFuncs;
 import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.cache.functions.RoleFuncs;
+import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.graph.GraphDefinition;
+import com.cannontech.database.data.lite.LiteFactory;
+import com.cannontech.database.data.lite.LiteGraphDefinition;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.CTIDbChange;
@@ -28,8 +35,15 @@ import com.cannontech.database.db.DBPersistent;
 import com.cannontech.graph.buffer.html.PeakHtml;
 import com.cannontech.graph.buffer.html.TabularHtml;
 import com.cannontech.graph.buffer.html.UsageHtml;
+import com.cannontech.graph.exportdata.ExportDataFile;
 import com.cannontech.graph.model.TrendModel;
+import com.cannontech.graph.model.TrendProperties;
+import com.cannontech.jfreechart.chart.YukonChartPanel;
+import com.cannontech.message.dispatch.ClientConnection;
+import com.cannontech.message.dispatch.message.Command;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.Multi;
+import com.cannontech.message.dispatch.message.Registration;
 import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.util.ServletUtil;
 
@@ -59,8 +73,8 @@ public class Graph implements GraphDefines
 	private boolean updateTrend = true;
 	private StringBuffer htmlString = null;
 	
-	private com.cannontech.message.dispatch.ClientConnection connToDispatch;
-	private com.cannontech.graph.model.TrendProperties trendProperties;
+	private ClientConnection connToDispatch;
+	private TrendProperties trendProperties;
 
 	//types of generations, GDEF is the original or default, POINT is for ad-hoc or no predefined gdef exists.
 	private static final int GDEF_GENERATION = 0;
@@ -127,10 +141,10 @@ private void connect()
 		CTILogger.error( e.getMessage(), e );
 	}
 
-	connToDispatch = new com.cannontech.message.dispatch.ClientConnection();
+	connToDispatch = new ClientConnection();
 
-	com.cannontech.message.dispatch.message.Registration reg = new com.cannontech.message.dispatch.message.Registration();
-	reg.setAppName("Yukon Trending");
+	Registration reg = new Registration();
+	reg.setAppName(CtiUtilities.getAppRegistration());
 	reg.setAppIsUnique(0);
 	reg.setAppKnownPort(0);
 	reg.setAppExpirationDelay( 1000000 );
@@ -157,8 +171,7 @@ public void encodeCSV(java.io.OutputStream out) throws java.io.IOException
 {
 	synchronized (Graph.class)
 	{
-		com.cannontech.graph.exportdata.ExportDataFile eDataFile = 
-			new com.cannontech.graph.exportdata.ExportDataFile(
+		ExportDataFile eDataFile = new ExportDataFile(
 			getViewType(),
 			getFreeChart(), 
 			getTrendModel().getChartName(), 
@@ -188,8 +201,7 @@ public void encodeGif(java.io.OutputStream out) throws java.io.IOException
 	// An error of " too many colors for a gif" is returned.
 	synchronized(Graph.class)
 	{
-		com.cannontech.jfreechart.chart.YukonChartPanel cp = 
-			new com.cannontech.jfreechart.chart.YukonChartPanel(freeChart);
+		YukonChartPanel cp = new YukonChartPanel(freeChart);
 //		update();
 
 		// FIXFIX
@@ -375,19 +387,19 @@ public void setGraphDefinition(GraphDefinition newGraphDefinition)
  * Creates a GraphDefinition and calls setGraphDefinition(GraphDefinition)
  * @param graphDefinitionID int values of the GraphDefinition
  */
-public void setGraphDefinition(com.cannontech.database.data.lite.LiteGraphDefinition liteGraphDefinition)
+public void setGraphDefinition(LiteGraphDefinition liteGraphDefinition)
 {
 	if( liteGraphDefinition != null)
 	{
-		GraphDefinition gDef = (GraphDefinition)com.cannontech.database.data.lite.LiteFactory.createDBPersistent(liteGraphDefinition);
+		GraphDefinition gDef = (GraphDefinition)LiteFactory.createDBPersistent(liteGraphDefinition);
 		try
 		{
-			com.cannontech.database.Transaction t = com.cannontech.database.Transaction.createTransaction(com.cannontech.database.Transaction.RETRIEVE, gDef);
+			Transaction t = Transaction.createTransaction(Transaction.RETRIEVE, gDef);
 			gDef = (GraphDefinition)t.execute();
 		}
 		catch(Exception e)
 		{
-			com.cannontech.clientutils.CTILogger.error(e.getMessage(), e);
+			CTILogger.error(e.getMessage(), e);
 		}
 		setGraphDefinition(gDef);
 	}
@@ -402,7 +414,7 @@ public void setGraphDefinition(int liteGraphDefinitionID)
 {
 	if( liteGraphDefinitionID > 0)
 	{
-		com.cannontech.database.data.lite.LiteGraphDefinition liteGraphDef = com.cannontech.database.cache.functions.GraphFuncs.getLiteGraphDefinition(liteGraphDefinitionID);
+		LiteGraphDefinition liteGraphDef = GraphFuncs.getLiteGraphDefinition(liteGraphDefinitionID);
 		setGraphDefinition(liteGraphDef);
 	}
 }
@@ -479,9 +491,9 @@ public java.lang.String getTitle() {
 public boolean isUpdateTrend()
 {
 	long now = (new java.util.Date()).getTime();
-	com.cannontech.clientutils.CTILogger.debug( "LAST = " + new java.util.Date(lastUpdateTime) );
-	com.cannontech.clientutils.CTILogger.debug( "NOW  = " + new java.util.Date(now) );
-	com.cannontech.clientutils.CTILogger.debug( "waiting until  = " + new java.util.Date(lastUpdateTime + (getMinIntervalRate() * 1000)) );	
+	CTILogger.debug( "LAST = " + new java.util.Date(lastUpdateTime) );
+	CTILogger.debug( "NOW  = " + new java.util.Date(now) );
+	CTILogger.debug( "waiting until  = " + new java.util.Date(lastUpdateTime + (getMinIntervalRate() * 1000)) );	
 	if( (lastUpdateTime + (getMinIntervalRate() *1000)) <= now)
 	{
 		updateTrend = true;
@@ -550,11 +562,11 @@ private int retrieveIntervalRate()
 
 	try
 	{
-		conn = com.cannontech.database.PoolManager.getInstance().getConnection(com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
+		conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
 
 		if( conn == null )
 		{
-			com.cannontech.clientutils.CTILogger.info(getClass() + ":  Error getting database connection.");
+			CTILogger.info(getClass() + ":  Error getting database connection.");
 			return minIntervalRate;
 		}
 		else
@@ -650,7 +662,7 @@ public void setStartDate(java.util.Date newStartDate)
 {
 	if( startDate.compareTo((Object)newStartDate) != 0 )
 	{
-		com.cannontech.clientutils.CTILogger.info("Changing Date!");
+		CTILogger.info("Changing Date!");
 		startDate = newStartDate;
 		setUpdateTrend(true);
 	}
@@ -658,12 +670,12 @@ public void setStartDate(java.util.Date newStartDate)
 
 public java.util.Date getStartDate()
 {
-	return com.cannontech.util.ServletUtil.getStartingDateOfInterval( startDate, getPeriod());
+	return ServletUtil.getStartingDateOfInterval( startDate, getPeriod());
 }
 
 public java.util.Date getStopDate()
 {
-	return com.cannontech.util.ServletUtil.getEndingDateOfInterval( startDate, getPeriod() );
+	return ServletUtil.getEndingDateOfInterval( startDate, getPeriod() );
 }
 
 /**
@@ -743,7 +755,7 @@ public void update()
  **/
 public void getDataNow(java.util.List paobjects)
 {
-	com.cannontech.message.dispatch.message.Multi multi = new com.cannontech.message.dispatch.message.Multi();
+	Multi multi = new Multi();
 
 	if( paobjects == null)
 	{	
@@ -754,11 +766,11 @@ public void getDataNow(java.util.List paobjects)
 	for (int i = 0; i < paobjects.size(); i++)
 	{
 		LiteYukonPAObject paobject = (LiteYukonPAObject)paobjects.get(i);
-		if(com.cannontech.database.data.device.DeviceTypesFuncs.hasDeviceScanRate(paobject.getType()))
+		if(DeviceTypesFuncs.hasDeviceScanRate(paobject.getType()))
 		{
 			CTILogger.info("Alternate Scan Rate Command Message for DEVICE ID: " + paobject.getLiteID() + " Name: " + paobject.getPaoName());
-			com.cannontech.message.dispatch.message.Command messageCommand = new com.cannontech.message.dispatch.message.Command();
-			messageCommand.setOperation(com.cannontech.message.dispatch.message.Command.ALTERNATE_SCAN_RATE);
+			Command messageCommand = new Command();
+			messageCommand.setOperation(Command.ALTERNATE_SCAN_RATE);
 			messageCommand.setPriority(14);
 			
 			java.util.Vector opArgList = new java.util.Vector(4);
@@ -778,17 +790,17 @@ public void getDataNow(java.util.List paobjects)
 	/**
 	 * @return
 	 */
-	public com.cannontech.graph.model.TrendProperties getTrendProperties()
+	public TrendProperties getTrendProperties()
 	{
 		if( trendProperties == null)
-			trendProperties = new com.cannontech.graph.model.TrendProperties();
+			trendProperties = new TrendProperties();
 		return trendProperties;
 	}
 
 	/**
 	 * @param properties
 	 */
-	public void setTrendProperties(	com.cannontech.graph.model.TrendProperties properties)
+	public void setTrendProperties(	TrendProperties properties)
 	{
 		trendProperties = properties;
 	}
@@ -814,7 +826,7 @@ public void getDataNow(java.util.List paobjects)
 					getClientConnection().write(dbChange[i]);
 				}
 			}
-			catch( com.cannontech.database.TransactionException e )
+			catch( TransactionException e )
 			{
 				CTILogger.error( e.getMessage(), e );
 			}
@@ -852,7 +864,7 @@ public void getDataNow(java.util.List paobjects)
 ////				((XYPlot)getFreeChart().getPlot()).setDataset(1, null);
 //			}
 		}
-		catch( com.cannontech.database.TransactionException e )
+		catch( TransactionException e )
 		{
 			CTILogger.error( e.getMessage(), e );
 		}
@@ -876,9 +888,9 @@ public void getDataNow(java.util.List paobjects)
 				getClientConnection().write(dbChange[i]);
 			}
 		}
-		catch( com.cannontech.database.TransactionException e )
+		catch( TransactionException e )
 		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 		}
 		//force an update on the GDEF update
 		setUpdateTrend(true);

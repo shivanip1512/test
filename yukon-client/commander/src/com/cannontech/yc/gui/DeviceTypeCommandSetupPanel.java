@@ -175,7 +175,7 @@ public DeviceTypeCommandSetupPanel() {
 		connToDispatch = new ClientConnection();
 
 		com.cannontech.message.dispatch.message.Registration reg = new com.cannontech.message.dispatch.message.Registration();
-		reg.setAppName("Yukon Trending");
+		reg.setAppName(CtiUtilities.getAppRegistration());
 		reg.setAppIsUnique(0);
 		reg.setAppKnownPort(0);
 		reg.setAppExpirationDelay( 1000000 );

@@ -640,7 +640,7 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 	
 			connToDispatch = new com.cannontech.message.dispatch.ClientConnection();
 			com.cannontech.message.dispatch.message.Registration reg = new com.cannontech.message.dispatch.message.Registration();
-			reg.setAppName("Commander @" + CtiUtilities.getUserName() );
+			reg.setAppName(CtiUtilities.getAppRegistration());
 			reg.setAppIsUnique(0);
 			reg.setAppKnownPort(0);
 			reg.setAppExpirationDelay( 300 );  // 5 minutes should be OK
