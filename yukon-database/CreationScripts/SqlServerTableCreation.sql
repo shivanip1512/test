@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI SqlServer 2000                           */
-/* Created on:     10/22/2002 3:20:02 PM                        */
+/* Created on:     10/23/2002 12:02:57 PM                       */
 /*==============================================================*/
 
 
@@ -2755,6 +2755,7 @@ Label                varchar(40)          not null,
 Axis                 char(1)              not null,
 Color                numeric              not null,
 Type                 varchar(12)          not null,
+Multiplier           float                not null,
 constraint SYS_GrphDserID primary key  (GRAPHDATASERIESID)
 )
 go
