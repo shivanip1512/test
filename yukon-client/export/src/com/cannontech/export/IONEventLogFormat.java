@@ -313,8 +313,8 @@ public class IONEventLogFormat extends ExportFormatBase
 			if (desc.ion_pri == null || desc.ion_pri.compareTo(new Integer(VALID_PRIORITY)) != 0)
 				return false;
 			else if (desc.ion_effect == null ||
-					(!desc.ion_effect.toLowerCase().startsWith("control")  && 
-						!desc.ion_effect.toLowerCase().startsWith("notify") ))
+					(desc.ion_effect.toLowerCase().indexOf("control") >= 0 ||
+						desc.ion_effect.toLowerCase().indexOf("notify") >= 0))
 				return false;
 
 			return true;
