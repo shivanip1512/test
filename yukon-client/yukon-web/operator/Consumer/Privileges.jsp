@@ -25,7 +25,7 @@
 </script>
               </tr>
               <tr> 
-                  <td width="265" height = "30" class="Header3" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Customer 
+                  <td width="265" height = "30" class="PageHeader" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Customer 
                     Account Information&nbsp;&nbsp;</td>
                   <td width="253" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle"> 

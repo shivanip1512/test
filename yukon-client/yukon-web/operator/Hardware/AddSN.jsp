@@ -18,7 +18,7 @@
                 <td colspan="4" height="74" background="../Header.gif">&nbsp;</td>
               </tr>
               <tr> 
-                <td width="310" height="28" class="Header3">&nbsp;&nbsp;&nbsp;Hardware 
+                <td width="310" height="28" class="PageHeader">&nbsp;&nbsp;&nbsp;Hardware 
                   Inventory </td>
                 <td width="235" height = "30" valign="middle">&nbsp;</td>
                 <form method="post" action="../Operations.jsp">

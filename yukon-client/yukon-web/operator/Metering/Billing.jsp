@@ -46,7 +46,7 @@ function update()
 							<td colspan="4" height="74" background="../Header.gif">&nbsp;</td>
 						</tr>
 						<tr> 
-							<td width="265" height = "28" class="Header3" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Commercial Metering&nbsp;&nbsp;</td>
+							<td width="265" height = "28" class="PageHeader" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Commercial Metering&nbsp;&nbsp;</td>
 							
                 <td width="253" valign="middle">&nbsp;</td>
 							<td width="58" valign="middle"> 

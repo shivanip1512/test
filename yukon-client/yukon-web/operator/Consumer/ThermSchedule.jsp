@@ -163,7 +163,7 @@ MM_reloadPage(true);
               </tr>
               <tr> 
 				  
-                <td width="265" height="28" valign="middle" class="Header3">&nbsp;&nbsp;&nbsp;Customer 
+                <td width="265" height="28" valign="middle" class="PageHeader">&nbsp;&nbsp;&nbsp;Customer 
                   Account Information&nbsp;&nbsp;</td>
                   <td width="253" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle">
@@ -310,7 +310,7 @@ MM_reloadPage(true);
                         <tr> 
                           <td>&nbsp;</td>
                           <td> 
-                            <div id="div1" class="TableCell3" onchange="setScheduleChanged()"><%= schedule.getTemperature1() %>&deg</div>
+                            <div id="div1" class="TableCell2" onchange="setScheduleChanged()"><%= schedule.getTemperature1() %>&deg</div>
                             <img src="../../Images/ThermImages/Thermometer.gif" style = "position:relative; left:-5px" width="16" height="131"  onMouseDown = "setScheduleChanged();beginDrag(event,0,0,parseInt(document.getElementById('MovingLayer2').style.left)-3,200,'showTimeWake()','horizontal', 'MovingLayer1')"> 
                             <img id="arrow1" src="../../Images/ThermImages/Arrow.gif" style = "position:relative; left:-11px; top:-100px" onMouseDown = "setScheduleChanged();beginDrag(event,-135,-35,0,0,'showTemp1()','vertical')"> 
                           </td>
@@ -322,7 +322,7 @@ MM_reloadPage(true);
                         <tr> 
                           <td>&nbsp;</td>
                           <td> 
-                            <div id="div2" class="TableCell3" onchange="setScheduleChanged()"><%= schedule.getTemperature2() %>&deg</div>
+                            <div id="div2" class="TableCell2" onchange="setScheduleChanged()"><%= schedule.getTemperature2() %>&deg</div>
                             <img src="../../Images/ThermImages/Thermometer.gif" style = "position:relative; left:-5px" width="16" height="131"  onMouseDown = "setScheduleChanged();beginDrag(event,0,0,parseInt(document.getElementById('MovingLayer3').style.left)-3,parseInt(document.getElementById('MovingLayer1').style.left)+3,'showTimeLeave()','horizontal', 'MovingLayer2')"> 
                             <img id="arrow2" src="../../Images/ThermImages/Arrow.gif" style = "position:relative; left:-9px; top:-100px"  onMouseDown = "setScheduleChanged();beginDrag(event,-135,-35,0,0,'showTemp2()','vertical')"> 
                           </td>
@@ -334,7 +334,7 @@ MM_reloadPage(true);
                         <tr> 
                           <td>&nbsp;</td>
                           <td> 
-                              <div id="div3" class="TableCell3" onchange="setScheduleChanged()"><%= schedule.getTemperature3() %>&deg</div>
+                              <div id="div3" class="TableCell2" onchange="setScheduleChanged()"><%= schedule.getTemperature3() %>&deg</div>
                             <img src="../../Images/ThermImages/Thermometer.gif" style = "position:relative; left:-5px" width="16" height="131"  onMouseDown = "setScheduleChanged();beginDrag(event,0,0,parseInt(document.getElementById('MovingLayer4').style.left)-3,parseInt(document.getElementById('MovingLayer2').style.left)+3,'showTimeReturn()','horizontal', 'MovingLayer3')"> 
                             <img id="arrow3" src="../../Images/ThermImages/Arrow.gif" style = "position:relative; left:-9px; top:-100px"  onMouseDown = "setScheduleChanged();beginDrag(event,-135,-35,0,0,'showTemp3()','vertical')"> 
                           </td>
@@ -346,7 +346,7 @@ MM_reloadPage(true);
                         <tr> 
                           <td>&nbsp;</td>
                           <td> 
-                            <div id="div4" class="TableCell3" onchange="setScheduleChanged()"><%= schedule.getTemperature4() %>&deg</div>
+                            <div id="div4" class="TableCell2" onchange="setScheduleChanged()"><%= schedule.getTemperature4() %>&deg</div>
                             <img src="../../Images/ThermImages/Thermometer.gif" style = "position:relative; left:-5px" width="16" height="131"  onMouseDown = "setScheduleChanged();beginDrag(event,0,0,629,parseInt(document.getElementById('MovingLayer3').style.left)+3,'showTimeSleep()','horizontal', 'MovingLayer4')"> 
                             <img id="arrow4" src="../../Images/ThermImages/Arrow.gif" style = "position:relative; left:-9px; top:-100px;"  onMouseDown = "setScheduleChanged();beginDrag(event,-135,-35,0,0,'showTemp4()','vertical')"> 
                           </td>

@@ -87,7 +87,7 @@
 <cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_ACCOUNT %>">
   <tr> 
     <td> 
-      <div align="left"><span class="Header2">Account</span><br>
+      <div align="left"><span class="PageHeader">Account</span><br>
 <cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_ACCOUNT_GENERAL %>">
         <%= links.get("Update.jsp") %><br>
         <%= links.get("Contacts.jsp") %><br>
@@ -106,7 +106,7 @@
 <cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_METERING %>">
   <tr> 
     <td> 
-      <div align="left"><span class="Header2">Metering</span><br>
+      <div align="left"><span class="PageHeader">Metering</span><br>
 <cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_METERING_INTERVAL_DATA %>">
         <%= links.get("Metering.jsp") %><br>
 </cti:checkRole>
@@ -120,7 +120,7 @@
 <cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_PROGRAMS %>">
   <tr> 
     <td> 
-      <div align="left"><span class="Header2">Programs</span><br>
+      <div align="left"><span class="PageHeader">Programs</span><br>
 <cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_PROGRAMS_CONTROL_HISTORY %>">
         <%= links.get("ProgramHist.jsp") %><br>
 </cti:checkRole>
@@ -137,7 +137,7 @@
 <cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_APPLIANCES %>">
   <tr> 
     <td> 
-      <div align="left"><span class="Header2">Appliances</span><br>
+      <div align="left"><span class="PageHeader">Appliances</span><br>
 <%
 		for (int i = 0; i < appLinks.length; i++) {
 %>
@@ -155,7 +155,7 @@
 <cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_HARDWARES %>">
   <tr> 
     <td> 
-      <div align="left"><span class="Header2">Hardware</span><br>
+      <div align="left"><span class="PageHeader">Hardware</span><br>
         <%
 		for (int i = 0; i < invLinks.length; i++) {
 %>
@@ -189,7 +189,7 @@
 <cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_WORKORDERS %>">
   <tr> 
     <td> 
-      <div align="left"><span class="Header2">Work Orders</span><br>
+      <div align="left"><span class="PageHeader">Work Orders</span><br>
         <%= links.get("Service.jsp") %><br>
         <%= links.get("ServiceSummary.jsp") %><br>
 	  </div>
@@ -199,7 +199,7 @@
 <cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_ADMIN %>">
   <tr> 
     <td> 
-      <div align="left"><span class="Header2">Administration</span><br>
+      <div align="left"><span class="PageHeader">Administration</span><br>
 <cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_ADMIN_CHANGE_LOGIN %>">
         <%= links.get("Password.jsp") %><br>
 </cti:checkRole>
