@@ -40,6 +40,12 @@
        	    <fileset dir="conf"/>
        </copy>
        
+       <copy todir="${yukon.lib}">
+       		<fileset dir="resource">
+       			<include name="*.bat"/>
+       		</fileset>
+       	</copy>
+       	
    </target>
 
 	<target name="install" depends="build">
