@@ -1218,6 +1218,7 @@ public synchronized LiteBase handleDBChangeMessage(com.cannontech.message.dispat
 		allGraphTaggedPoints = null;
 		allPointsUnits = null;
 		allPointidMultiplierHashMap = null;
+		allPointLimits = null;
 		retLBase = handlePointChange( dbType, id );
 	}
 	else if( database == com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_PAO_DB )
