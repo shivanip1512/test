@@ -701,7 +701,8 @@ BOOL CtiLMProgramBase::isAvailableToday()
     now.extract(&start_tm);
 
     if( _availableweekdays(start_tm.tm_wday) == 'Y' &&
-        !CtiHolidayManager::getInstance().isHoliday() )
+        ( _availableweekdays(7) == 'Y' ||
+          !CtiHolidayManager::getInstance().isHoliday() ) )
         return TRUE;
     else
         return FALSE;
