@@ -6,10 +6,6 @@
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <%
 	LiteInventoryBase liteInv = (LiteInventoryBase) session.getAttribute(InventoryManager.INVENTORY_TO_DELETE);
-	
-	Integer navBackStep = (Integer) session.getAttribute(InventoryManager.NAV_BACK_STEP);
-	session.removeAttribute(InventoryManager.NAV_BACK_STEP);
-	int stepBack = (navBackStep != null)? navBackStep.intValue() : -1;
 %>
 <html>
 <head>
@@ -105,7 +101,7 @@
                       <input type="submit" name="DeleteHardware" value="OK">
                     </td>
                     <td width="100"> 
-                      <input type="button" name="Cancel" value="Cancel" onclick="history.go(<%= stepBack %>)">
+                      <input type="button" name="Cancel" value="Cancel" onclick="history.back()">
                     </td>
                   </tr>
                 </table>
