@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTERSU.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2002/11/15 14:08:00 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2002/12/19 20:26:09 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -121,22 +121,8 @@ SendError (OUTMESS *&OutMessage, USHORT ErrorCode, INMESS *PassedInMessage)
     {
         OutEchoToIN( OutMessage, &InMessage );
 
-        InMessage.DeviceID      = OutMessage->DeviceID;
-        InMessage.TargetID      = OutMessage->TargetID;
-
-        // 082002 CGP // InMessage.RouteID = OutMessage->RouteID;
-
-        InMessage.Port          = OutMessage->Port;
-        InMessage.Remote        = OutMessage->Remote;
-
-        InMessage.Sequence      = OutMessage->Sequence;
         InMessage.InLength      = 0;
-        InMessage.ReturnNexus   = OutMessage->ReturnNexus;
-        InMessage.SaveNexus     = OutMessage->SaveNexus;
         InMessage.EventCode     = ErrorCode;
-
-        /* get the time into the return message */
-        // UCTFTime (&TimeB);
 
         RWTime now;
 
