@@ -165,15 +165,14 @@ public class LMControlScenarioProgram extends com.cannontech.database.db.NestedD
 	}
 	
 	public static final java.util.Vector getAllProgramsForAScenario( Integer scenarioID, java.sql.Connection conn)
-			throws java.sql.SQLException
-		{
+	{
 			java.util.Vector progList = new java.util.Vector();
 			java.sql.PreparedStatement pstmt = null;
 			java.sql.ResultSet rset = null;
 
 			//get all the programs that are associated with the passed ScenarioID
-			String sql = "select " + CONSTRAINT_COLUMNS[0] + ", " + CONSTRAINT_COLUMNS[1]
-						+ ", STARTDELAY, DURATION, STARTGEAR" 
+			String sql = "select scenarioID, programID,"
+						+ " STARTDELAY, DURATION, STARTGEAR" 
 						+ " from " + TABLE_NAME +
 					" where scenarioid=? order by programID";
 			try
@@ -188,15 +187,13 @@ public class LMControlScenarioProgram extends com.cannontech.database.db.NestedD
 
 				while (rset.next())
 				{
+					LMControlScenarioProgram prog = new LMControlScenarioProgram();	
+					prog.setScenarioID( scenarioID );
+					prog.setProgramID( new Integer(rset.getInt(2)) );
+					prog.setStartDelay( new Integer(rset.getInt(3)) );
+					prog.setDuration( new Integer(rset.getInt(4)) );
+					prog.setStartGear( new Integer(rset.getInt(5)) );
 
-					Integer pID = new Integer(rset.getInt(2)); //"ProgramID"));;
-
-					LMControlScenarioProgram prog = new LMControlScenarioProgram();
-	
-					prog.setScenarioID(scenarioID);
-					prog.setProgramID(pID);
-					prog.setDbConnection(conn);
-					prog.retrieve();
 					progList.add(prog);
 				}
 
@@ -220,4 +217,5 @@ public class LMControlScenarioProgram extends com.cannontech.database.db.NestedD
 
 			return progList;
 		}
+
 }
