@@ -68,9 +68,9 @@ public void retrieve(String databaseAlias)
 {
    com.cannontech.database.SqlStatement s = 
 	  new com.cannontech.database.SqlStatement(
-		 "SELECT SeasonID,SeasonName "  + 
+		 "SELECT ScheduleID, ScheduleName "  + 
 			"FROM " + com.cannontech.database.db.season.SeasonSchedule.TABLE_NAME +
-			" where SeasonID = " + getSeasonID(),
+			" where ScheduleID = " + getSeasonID(),
 		 com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
 
    try 

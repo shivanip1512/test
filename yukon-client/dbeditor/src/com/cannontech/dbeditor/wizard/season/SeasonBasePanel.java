@@ -2,6 +2,7 @@ package com.cannontech.dbeditor.wizard.season;
 
 import java.text.DateFormatSymbols;
 import com.cannontech.database.data.season.Season;
+import java.util.StringTokenizer;
 /**
  * Insert the type's description here.
  * Creation date: (5/5/2004 11:23:43 AM)
@@ -148,37 +149,37 @@ private javax.swing.JComboBox getJComboBoxDays() {
 			ivjJComboBoxDays.setName("JComboBoxDays");
 			ivjJComboBoxDays.setMinimumSize(new java.awt.Dimension(130, 23));
 			// user code begin {1}
-			ivjJComboBoxDays.addItem("1st");
-			ivjJComboBoxDays.addItem("2nd");
-			ivjJComboBoxDays.addItem("3rd");
-			ivjJComboBoxDays.addItem("4th");
-			ivjJComboBoxDays.addItem("5th");
-			ivjJComboBoxDays.addItem("6th");
-			ivjJComboBoxDays.addItem("7th");
-			ivjJComboBoxDays.addItem("8th");
-			ivjJComboBoxDays.addItem("9th");
-			ivjJComboBoxDays.addItem("10th");
-			ivjJComboBoxDays.addItem("11th");
-			ivjJComboBoxDays.addItem("12th");
-			ivjJComboBoxDays.addItem("13th");
-			ivjJComboBoxDays.addItem("14th");
-			ivjJComboBoxDays.addItem("15th");
-			ivjJComboBoxDays.addItem("16th");
-			ivjJComboBoxDays.addItem("17th");
-			ivjJComboBoxDays.addItem("18th");
-			ivjJComboBoxDays.addItem("19th");
-			ivjJComboBoxDays.addItem("20th");
-			ivjJComboBoxDays.addItem("21st");
-			ivjJComboBoxDays.addItem("22nd");
-			ivjJComboBoxDays.addItem("23rd");
-			ivjJComboBoxDays.addItem("24th");
-			ivjJComboBoxDays.addItem("25th");
-			ivjJComboBoxDays.addItem("26th");
-			ivjJComboBoxDays.addItem("27th");
-			ivjJComboBoxDays.addItem("28th");
-			ivjJComboBoxDays.addItem("29th");
-			ivjJComboBoxDays.addItem("30th");
-			ivjJComboBoxDays.addItem("31st");
+			ivjJComboBoxDays.addItem("1");
+			ivjJComboBoxDays.addItem("2");
+			ivjJComboBoxDays.addItem("3");
+			ivjJComboBoxDays.addItem("4");
+			ivjJComboBoxDays.addItem("5");
+			ivjJComboBoxDays.addItem("6");
+			ivjJComboBoxDays.addItem("7");
+			ivjJComboBoxDays.addItem("8");
+			ivjJComboBoxDays.addItem("9");
+			ivjJComboBoxDays.addItem("10");
+			ivjJComboBoxDays.addItem("11");
+			ivjJComboBoxDays.addItem("12");
+			ivjJComboBoxDays.addItem("13");
+			ivjJComboBoxDays.addItem("14");
+			ivjJComboBoxDays.addItem("15");
+			ivjJComboBoxDays.addItem("16");
+			ivjJComboBoxDays.addItem("17");
+			ivjJComboBoxDays.addItem("18");
+			ivjJComboBoxDays.addItem("19");
+			ivjJComboBoxDays.addItem("20");
+			ivjJComboBoxDays.addItem("21");
+			ivjJComboBoxDays.addItem("22");
+			ivjJComboBoxDays.addItem("23");
+			ivjJComboBoxDays.addItem("24");
+			ivjJComboBoxDays.addItem("25");
+			ivjJComboBoxDays.addItem("26");
+			ivjJComboBoxDays.addItem("27");
+			ivjJComboBoxDays.addItem("28");
+			ivjJComboBoxDays.addItem("29");
+			ivjJComboBoxDays.addItem("30");
+			ivjJComboBoxDays.addItem("31");
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -421,7 +422,16 @@ public Object getValue(Object o) {
 	if(legendsOfTheFall == null)
 		legendsOfTheFall = new Season();
 		
+	legendsOfTheFall.setSeasonName(getJTextFieldSeasonName().getText());
 	
+	for( int i = 0; i < DATES.getMonths().length; i++ )
+		if( getJComboBoxMonths().getSelectedItem().toString().compareTo(DATES.getMonths()[i]) == 0 )
+		{
+			legendsOfTheFall.setSeasonMonth(new Integer(i+1));
+			break;
+		}
+
+	legendsOfTheFall.setSeasonDay(new Integer(getJComboBoxDays().getSelectedItem().toString()));
 	
 	return legendsOfTheFall;
 }
@@ -530,7 +540,21 @@ public void setValue(Object o) {
 
 	Season legendsOfTheFall = (Season)o;
 	
-	getJTextFieldSeasonName().setText(legendsOfTheFall.getSeasonName());	
+	if(legendsOfTheFall == null)
+		legendsOfTheFall = new Season();
+	else
+	{
+		getSeasonIDField().setText("#" + legendsOfTheFall.getSeasonID().toString());
 	
+		getJTextFieldSeasonName().setText(legendsOfTheFall.getSeasonName());
+	
+		int month = legendsOfTheFall.getSeasonMonth().intValue();
+	
+		for( int i = 0; i < DATES.getMonths().length; i++ )
+			if( i+1 == month)
+				getJComboBoxMonths().setSelectedItem(DATES.getMonths()[i]);
+			
+		getJComboBoxDays().setSelectedItem(legendsOfTheFall.getSeasonDay().toString());
+	}
 }
 }

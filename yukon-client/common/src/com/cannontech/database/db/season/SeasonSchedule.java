@@ -16,10 +16,20 @@ public class SeasonSchedule extends com.cannontech.database.db.DBPersistent
 {
 	private Integer seasonScheduleID;
 	private String seasonScheduleName;
+	private Integer springMonth;
+	private Integer springDay;
+	private Integer summerMonth = new Integer(0);
+	private Integer summerDay = new Integer(0);
+	private Integer fallMonth = new Integer(0);
+	private Integer fallDay = new Integer(0);
+	private Integer winterMonth = new Integer(0);
+	private Integer winterDay = new Integer(0);
+	
 
 	public static final String SETTER_COLUMNS[] = 
 	{ 
-		"ScheduleName"
+		"ScheduleName", "SpringMonth", "SpringDay", "SummerMonth", 
+		"SummerDay", "FallMonth", "FallDay", "WinterMonth", "WinterDay"
 	};
 
 	public static final String CONSTRAINT_COLUMNS[] = { "ScheduleID" };
@@ -33,17 +43,19 @@ public SeasonSchedule() {
 }
 /**
  * Insert the method's description here.
- * Creation date: (8/23/2001 12:08:19 PM)
  */
 public void add() throws java.sql.SQLException 
 {
-	Object addValues[] = { getSeasonID(), getSeasonName()};
+	Object addValues[] = { getSeasonID(), getSeasonName(),
+							getSeasonMonth(), getSeasonDay(),
+							summerMonth, summerDay,
+							fallMonth, fallDay,
+							winterMonth, winterDay  };
 
 	add( TABLE_NAME, addValues );
 }
 /**
  * Insert the method's description here.
- * Creation date: (8/23/2001 12:08:42 PM)
  */
 public void delete() throws java.sql.SQLException 
 {
@@ -51,7 +63,6 @@ public void delete() throws java.sql.SQLException
 }
 /**
  * Insert the method's description here.
- * Creation date: (8/24/2001 1:31:31 PM)
  */
 public Integer getSeasonID()
 {
@@ -63,6 +74,14 @@ public Integer getSeasonID()
  */
 public String getSeasonName() {
 	return seasonScheduleName;
+}
+
+public Integer getSeasonMonth() {
+	return springMonth;
+}
+
+public Integer getSeasonDay() {
+	return springDay;
 }
 /**
  * This method was created in VisualAge.
@@ -95,7 +114,6 @@ public final static Integer getNextSeasonID()
 }
 /**
  * Insert the method's description here.
- * Creation date: (8/23/2001 12:08:08 PM)
  */
 public void retrieve() throws java.sql.SQLException
 {
@@ -105,34 +123,54 @@ public void retrieve() throws java.sql.SQLException
 
 	if (results.length == SETTER_COLUMNS.length)
 	{
-		setSeasonName((String) results[0]);		
+		setSeasonName((String) results[0]);
+		setSeasonMonth((Integer) results[1]);
+		setSeasonDay((Integer) results[2]);
+		summerMonth = ((Integer) results[3]);
+		summerDay = ((Integer) results[4]);
+		fallMonth = ((Integer) results[5]);
+		fallDay = ((Integer) results[6]);
+		winterMonth = ((Integer) results[7]);
+		winterDay = ((Integer) results[8]);
+			
 	}
 
 }
 /**
  * Insert the method's description here.
- * Creation date: (8/24/2001 1:39:07 PM)
  * @param id java.lang.Integer
  */
-public void setSeasonID(Integer id) {
+public void setSeasonID(Integer id) 
+{
 	seasonScheduleID = id;
 	}
 /**
  * Insert the method's description here.
- * Creation date: (8/24/2001 1:38:37 PM)
  * @param name java.lang.String
  */
-public void setSeasonName(String name) {
+public void setSeasonName(String name) 
+{
 	seasonScheduleName = name;
 	
-	}
+}
+
+public void setSeasonMonth(Integer month)
+{
+	springMonth = month;
+}
+
+public void setSeasonDay(Integer day)
+{
+	springDay = day;
+}
 /**
  * Insert the method's description here.
- * Creation date: (8/23/2001 12:08:59 PM)
  */
 public void update() throws java.sql.SQLException
 {
-	Object setValues[] = { getSeasonName()};
+	Object setValues[] = { getSeasonName(), getSeasonMonth(), getSeasonDay(),
+						 	summerMonth, summerDay, fallMonth, fallDay, 
+						 	winterMonth, winterDay};
 	Object constraintValues[] = { getSeasonID()};
 
 	update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues);

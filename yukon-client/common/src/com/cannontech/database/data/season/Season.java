@@ -104,6 +104,16 @@ public String getSeasonName()
 {
 	return getSeason().getSeasonName();
 }
+
+public Integer getSeasonMonth()
+{
+	return getSeason().getSeasonMonth();
+}
+
+public Integer getSeasonDay()
+{
+	return getSeason().getSeasonDay();
+}
 /**
  * Insert the method's description here.
  */
@@ -138,6 +148,16 @@ public void setSeasonID( Integer newID )
 public void setSeasonName( String newName )
 {
 	getSeason().setSeasonName( newName );	
+}
+
+public void setSeasonMonth( Integer month )
+{
+	getSeason().setSeasonMonth( month );	
+}
+
+public void setSeasonDay( Integer day )
+{
+	getSeason().setSeasonDay( day );	
 }
 /**
  * Insert the method's description here.
