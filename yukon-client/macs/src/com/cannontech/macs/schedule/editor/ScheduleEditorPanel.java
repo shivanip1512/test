@@ -1,13 +1,18 @@
 package com.cannontech.macs.schedule.editor;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.editor.IMultiPanelEditor;
+import com.cannontech.common.editor.PropertyPanel;
 import com.cannontech.common.gui.util.DataInputPanel;
+import com.cannontech.macs.schedule.wizard.ScheduleBasePanel;
+import com.cannontech.macs.schedule.wizard.ScriptScheduleSetupPanel;
+import com.cannontech.macs.schedule.wizard.SimpleSchedulePanel;
 import com.cannontech.message.macs.message.Schedule;
 
 /**
  * This type was created in VisualAge.
  */
-public class ScheduleEditorPanel extends com.cannontech.common.editor.PropertyPanel implements com.cannontech.common.editor.IMultiPanelEditor
+public class ScheduleEditorPanel extends PropertyPanel implements IMultiPanelEditor
 {
 	//an attempt the synchronize this panel better
 	private boolean isNotified = false;
@@ -18,13 +23,12 @@ public class ScheduleEditorPanel extends com.cannontech.common.editor.PropertyPa
 	private String type = Schedule.SIMPLE_TYPE;
 	private String scriptFileName = null;
 
-
 	private static final String[][] EDITOR_TYPES =
 	{
 		{  //0 - ScheduleBasePanel
 			Schedule.SCRIPT_TYPE, Schedule.SIMPLE_TYPE
 		},
-		{	//1	- ScriptSchedulePanel
+		{	//1	- ScriptScheduleSetupPanel
 			Schedule.SCRIPT_TYPE
 		},
 		{ 	//2 - SimpleSchedulePanel
@@ -42,7 +46,7 @@ public ScheduleEditorPanel() {
  * Creation date: (3/15/2002 1:17:24 PM)
  * @return Object[]
  * 
- *  This method should return an object array with 2 elements,
+ *  This method should return an object array with 3 elements,
  *   Object[0] is a DataInputPanel
  *   Object[1] is a String (Tab Name)
  */
@@ -53,17 +57,17 @@ public Object[] createNewPanel(int panelIndex)
 	switch( panelIndex )
 	{
 		case 0: 
-			objs[0] = new com.cannontech.macs.schedule.wizard.ScheduleBasePanel(true);
+			objs[0] = new ScheduleBasePanel(true);
 			objs[1] = "General";
 			break;
 
 		case 1:
-			objs[0] = new com.cannontech.macs.schedule.wizard.ScriptSchedulePanel();
+			objs[0] = new ScriptScheduleSetupPanel();
 			objs[1] = "Script";
 			break;
 
 		case 2:
-			objs[0] = new com.cannontech.macs.schedule.wizard.SimpleSchedulePanel();
+			objs[0] = new SimpleSchedulePanel();
 			objs[1] = "Commands";
 			break;
 
@@ -123,6 +127,7 @@ public String[] getTabNames() {
 		
 	return this.inputPanelTabNames;
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (3/12/2001 2:13:58 PM)
@@ -177,7 +182,7 @@ public void setValue(Object val)
 	//We must assume that val is an instance of Schedule
 	Schedule schedule = (Schedule) val;
 	type = schedule.getType();
-	
+
 	if( getType().equalsIgnoreCase(Schedule.SCRIPT_TYPE) )
 	{
 		scriptFileName = schedule.getScriptFileName();
@@ -238,20 +243,15 @@ public void updateScriptText(final com.cannontech.message.macs.message.ScriptFil
 
 		for( int i = 0; inputPanels != null && i < inputPanels.length; i++ )
 		{
-			if( inputPanels[i] instanceof com.cannontech.macs.schedule.wizard.ScriptSchedulePanel 
-				 && 
+			if( inputPanels[i] instanceof ScriptScheduleSetupPanel && 
 				 (file.getFileName() != null && file.getFileName().equalsIgnoreCase(scriptFileName)) )
 			{
-				CTILogger.info("		** UPDATE SCRIPT TEXT SET");
-				((com.cannontech.macs.schedule.wizard.ScriptSchedulePanel)inputPanels[i]).setScriptValues(file);
-				((com.cannontech.macs.schedule.wizard.ScriptSchedulePanel)inputPanels[i]).repaint();
-				
-				return;
+				CTILogger.info("		** UPDATE SCRIPT SETUP TEXT SET");
+				((ScriptScheduleSetupPanel)inputPanels[i]).setScriptValues(file);
+				((ScriptScheduleSetupPanel)inputPanels[i]).repaint();
 			}
 		}
-
 	}
-
 }
 
 /**

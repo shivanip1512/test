@@ -90,7 +90,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	int repeatInterval  = vstr.extractInt();
 	java.util.Date nextRunTime = (java.util.Date) vstr.restoreObject( SimpleMappings.Time );
 	java.util.Date nextStopTime = (java.util.Date) vstr.restoreObject( SimpleMappings.Time );	
-
+	int template = vstr.extractInt();
 	
 	schedule.setId( scheduleId );
 	schedule.setScheduleName( scheduleName );
@@ -118,6 +118,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	schedule.setStartCommand( startCommand );
 	schedule.setStopCommand( stopCommand );
 	schedule.setRepeatInterval( repeatInterval );
+	schedule.setTemplateType(template);
 }
 /**
  * saveGuts method comment.
@@ -152,6 +153,7 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 	vstr.saveObject( schedule.getStartCommand(), SimpleMappings.CString );
 	vstr.saveObject( schedule.getStopCommand(), SimpleMappings.CString );
 	vstr.insertInt( schedule.getRepeatInterval() );
+	vstr.insertInt( schedule.getTemplateType() );
 	// no need to send the server the next run times
 }
 }

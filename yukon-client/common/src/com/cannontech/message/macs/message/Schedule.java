@@ -1,5 +1,7 @@
 package com.cannontech.message.macs.message;
 
+import com.cannontech.database.data.schedule.script.ScriptTemplateTypes;
+
 /**
  * This type was created in VisualAge.
  */
@@ -53,7 +55,8 @@ public class Schedule extends com.cannontech.message.util.Message implements jav
 	private String startCommand = "";
 	private String stopCommand = "";
 	private int repeatInterval = 0;
-
+	private int templateType = ScriptTemplateTypes.NO_TEMPLATE_SCRIPT;
+	
 	// these do not get restored on the C++ side
 	private java.util.Date nextRunTime = null;
 	private java.util.Date nextStopTime = null;
@@ -186,6 +189,7 @@ public java.util.Date getNextRunTime() {
 public java.util.Date getNextStopTime() {
 	return nextStopTime;
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (3/9/2001 3:34:23 PM)
@@ -299,6 +303,12 @@ public String getStopTime() {
  */
 public java.lang.String getTargetSelect() {
 	return targetSelect;
+}
+/**
+ * @return int
+ */
+public int getTemplateType(){
+    return templateType;
 }
 /**
  * Insert the method's description here.
@@ -515,6 +525,12 @@ public void setStopTime(String newStopTime) {
  */
 public void setTargetSelect(java.lang.String newTargetSelect) {
 	targetSelect = newTargetSelect;
+}
+/**
+ * @param newTemplateType
+ */
+public void setTemplateType(int newTemplateType){
+    templateType = newTemplateType ;
 }
 /**
  * Insert the method's description here.
