@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.31 $
-* DATE         :  $Date: 2003/04/08 05:26:54 $
+* REVISION     :  $Revision: 1.32 $
+* DATE         :  $Date: 2003/04/08 21:26:47 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -472,21 +472,34 @@ int Mccmd_Init(Tcl_Interp* interp)
         if( (*fpGetAsString)(MCCMD_CTL_SCRIPTS_DIR, temp, 64) )
             init_script = temp;
         else
+	  {
             init_script = "c:/yukon/server/macsscripts";
+	    {
+	      CtiLockGuard<CtiLogger> guard(dout);
+	      dout << RWTime() << " Unable to find " << MCCMD_CTL_SCRIPTS_DIR <<
+		" in master.cfg, defaulting to: " << init_script << endl;
+	    }
+	  }
 
         init_script += "/";
 
         if( (*fpGetAsString)(MCCMD_INIT_SCRIPT, temp, 64) )
             init_script += temp;
         else
+	  {
             init_script += "init.tcl";
+	    {
+	      CtiLockGuard<CtiLogger> guard(dout);
+	      dout << RWTime() << " Unable to find " << MCCMD_INIT_SCRIPT <<
+		" in master.cfg, defaulting to: " << init_script << endl;
+	    }
+	  }
 
         if( (*fpGetAsString)(MCCMD_DEBUG_LEVEL, temp, 64) )
         {
             char *eptr;
             gMccmdDebugLevel = strtoul(temp, &eptr, 16);
         }
-            //    gMccmdDebugLevel = atoi(temp);
 
         if( gMccmdDebugLevel > 0 )
         {
@@ -508,8 +521,13 @@ int Mccmd_Init(Tcl_Interp* interp)
         dout << "Using: " << init_script << endl;
     }
 
-
-    Tcl_EvalFile(interp, (char*) init_script.data() );
+    
+    if(Tcl_EvalFile(interp, (char*) init_script.data()) != TCL_OK)
+      {
+	CtiLockGuard<CtiLogger> guard(dout);
+	dout << RWTime() << " WARNING:  Unable to evaluate: " << init_script <<
+	  ", Check that this files exists!" << endl;
+      }
 
     /* declare that we are implementing the MCCmd package so that scripts that have
     "package require McCmd" can load McCmd automatically. */
