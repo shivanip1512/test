@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/mgr_device.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2002/09/06 19:03:42 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2002/09/09 21:45:19 $
 *
  *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
@@ -42,18 +42,18 @@ private:
 
    // Inherit "List" from Parent
 
-   void RefreshDevices(bool &rowFound, RWDBReader& rdr, CtiDeviceBase* (*Factory)(RWDBReader &), BOOL (*testFunc)(CtiDeviceBase*,void*), void *arg);
+   void RefreshDevices(bool &rowFound, RWDBReader& rdr, CtiDeviceBase* (*Factory)(RWDBReader &));
+   // void RefreshDeviceRoute(LONG id = 0);
+   void RefreshScanRates(LONG id = 0);
+   void RefreshDeviceWindows(LONG id = 0);
+
 
 public:
    CtiDeviceManager();
    virtual ~CtiDeviceManager();
 
    void RefreshList(LONG paoID);
-   void RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &) = DeviceFactory, BOOL (*fn)(CtiDeviceBase*,void*) = isADevice, void *d = NULL);
-
-   // void RefreshDeviceRoute(LONG id = 0);
-   // void RefreshScanRates(LONG id = 0);
-   // void RefreshDeviceWindows(LONG id = 0);
+   void RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &) = DeviceFactory, bool (*removeFunc)(CtiDeviceBase*,void*) = isNotADevice, void *d = NULL);
 
    void DumpList(void);
    void DeleteList(void);

@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2002/09/06 19:03:41 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2002/09/09 21:45:12 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -89,38 +89,40 @@ void CtiDeviceManager::RefreshList(LONG paoID)
 
     if(pDev)
     {
-        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-        RWDBConnection conn = getConnection();
-        RWDBDatabase db = getDatabase();
-
-        RWDBTable   keyTable;
-        RWDBSelector selector = db.selector();
-
-        pDev->getSQL( db, keyTable, selector );
-
         if(_includeScanInfo)
         {
-            CtiTableDeviceScanRate::getSQL( db, keyTable, selector );   // we do a join against CtiTableDeviceScanRate.
-            CtiTableDeviceWindow::getSQL( db, keyTable, selector );     // we do a left outer join against CtiTableDeviceWindow!
+            RefreshScanRates( paoID );
+            RefreshDeviceWindows( paoID );
         }
 
-        selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
-        RWDBReader rdr = selector.reader(conn);
-
-        if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
-        }
+            CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+            RWDBConnection conn = getConnection();
+            RWDBDatabase db = getDatabase();
 
-        RefreshDevices(rowFound, rdr, DeviceFactory, isADevice, NULL);
+            RWDBTable   keyTable;
+            RWDBSelector selector = db.selector();
 
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << RWTime() << " Done reloading " << pDev->getName() << endl;
+            pDev->getSQL( db, keyTable, selector );
+
+            selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
+            RWDBReader rdr = selector.reader(conn);
+
+            if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+            }
+
+            RefreshDevices(rowFound, rdr, DeviceFactory);
+
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << RWTime() << " Done reloading " << pDev->getName() << endl;
+            }
         }
     }
 }
 
-void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), BOOL (*testFunc)(CtiDeviceBase*,void*), void *arg)
+void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool (*removeFunc)(CtiDeviceBase*,void*), void *arg)
 {
     CtiDeviceBase *pTempCtiDevice = NULL;
     bool rowFound = false;
@@ -154,11 +156,6 @@ void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), BOOL
                             dout << "Looking for Sixnet IEDs" << endl;
                         }
                         CtiDeviceIED().getSQL( db, keyTable, selector );
-                        if(_includeScanInfo)
-                        {
-                            CtiTableDeviceScanRate::getSQL( db, keyTable, selector );   // we do a join against CtiTableDeviceScanRate.
-                            CtiTableDeviceWindow::getSQL( db, keyTable, selector );     // we do a left outer join against CtiTableDeviceWindow!
-                        }
 
                         selector.where( keyTable["type"] == "SIXNET" && selector.where() );
 
@@ -168,7 +165,7 @@ void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), BOOL
                             CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
                         }
 
-                        RefreshDevices(rowFound, rdr, Factory, testFunc, arg);
+                        RefreshDevices(rowFound, rdr, Factory);
 
                         if(DebugLevel & 0x00020000)
                         {
@@ -195,18 +192,13 @@ void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), BOOL
                             CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Meters & IEDs" << endl;
                         }
                         CtiDeviceMeter().getSQL( db, keyTable, selector );
-                        if(_includeScanInfo)
-                        {
-                            CtiTableDeviceScanRate::getSQL( db, keyTable, selector );   // we do a join against CtiTableDeviceScanRate.
-                            CtiTableDeviceWindow::getSQL( db, keyTable, selector );     // we do a left outer join against CtiTableDeviceWindow!
-                        }
 
                         RWDBReader rdr = selector.reader(conn);
                         if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
                         }
-                        RefreshDevices(rowFound, rdr, Factory, testFunc, arg);
+                        RefreshDevices(rowFound, rdr, Factory);
 
                         if(DebugLevel & 0x00020000)
                         {
@@ -234,18 +226,13 @@ void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), BOOL
                             CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for DNP Devices" << endl;
                         }
                         CtiDeviceDNP().getSQL( db, keyTable, selector );
-                        if(_includeScanInfo)
-                        {
-                            CtiTableDeviceScanRate::getSQL( db, keyTable, selector );   // we do a join against CtiTableDeviceScanRate.
-                            CtiTableDeviceWindow::getSQL( db, keyTable, selector );     // we do a left outer join against CtiTableDeviceWindow!
-                        }
 
                         RWDBReader rdr = selector.reader(conn);
                         if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
                         }
-                        RefreshDevices(rowFound, rdr, Factory, testFunc, arg);
+                        RefreshDevices(rowFound, rdr, Factory);
 
                         if(DebugLevel & 0x00020000)
                         {
@@ -273,18 +260,13 @@ void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), BOOL
                             CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Tap Devices" << endl;
                         }
                         CtiDeviceTapPagingTerminal().getSQL( db, keyTable, selector );
-                        if(_includeScanInfo)
-                        {
-                            CtiTableDeviceScanRate::getSQL( db, keyTable, selector );   // we do a join against CtiTableDeviceScanRate.
-                            CtiTableDeviceWindow::getSQL( db, keyTable, selector );     // we do a left outer join against CtiTableDeviceWindow!
-                        }
 
                         RWDBReader rdr = selector.reader(conn);
                         if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
                         }
-                        RefreshDevices(rowFound, rdr, Factory, testFunc, arg);
+                        RefreshDevices(rowFound, rdr, Factory);
 
                         if(DebugLevel & 0x00020000)
                         {
@@ -312,18 +294,13 @@ void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), BOOL
                             CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for IDLC Target Devices" << endl;
                         }
                         CtiDeviceIDLC().getSQL( db, keyTable, selector );
-                        if(_includeScanInfo)
-                        {
-                            CtiTableDeviceScanRate::getSQL( db, keyTable, selector );   // we do a join against CtiTableDeviceScanRate.
-                            CtiTableDeviceWindow::getSQL( db, keyTable, selector );     // we do a left outer join against CtiTableDeviceWindow!
-                        }
 
                         RWDBReader rdr = selector.reader(conn);
                         if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
                         }
-                        RefreshDevices(rowFound, rdr, Factory, testFunc, arg);
+                        RefreshDevices(rowFound, rdr, Factory);
 
                         if(DebugLevel & 0x00020000)
                         {
@@ -351,11 +328,6 @@ void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), BOOL
                             CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for DLC Devices" << endl;
                         }
                         CtiDeviceCarrier().getSQL( db, keyTable, selector );
-                        if(_includeScanInfo)
-                        {
-                            CtiTableDeviceScanRate::getSQL( db, keyTable, selector );   // we do a join against CtiTableDeviceScanRate.
-                            CtiTableDeviceWindow::getSQL( db, keyTable, selector );     // we do a left outer join against CtiTableDeviceWindow!
-                        }
 
                         RWDBReader rdr = selector.reader(conn);
                         if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
@@ -363,7 +335,7 @@ void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), BOOL
                             CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
                         }
 
-                        RefreshDevices(rowFound, rdr, Factory, testFunc, arg);
+                        RefreshDevices(rowFound, rdr, Factory);
 
                         if(DebugLevel & 0x00020000)
                         {
@@ -391,11 +363,6 @@ void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), BOOL
                             CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for REPEATER Devices" << endl;
                         }
                         CtiDeviceDLCBase().getSQL( db, keyTable, selector );
-                        if(_includeScanInfo)
-                        {
-                            CtiTableDeviceScanRate::getSQL( db, keyTable, selector );   // we do a join against CtiTableDeviceScanRate.
-                            CtiTableDeviceWindow::getSQL( db, keyTable, selector );     // we do a left outer join against CtiTableDeviceWindow!
-                        }
 
                         selector.where( (keyTable["type"]==RWDBExpr("REPEATER 800") ||
                                          keyTable["type"]==RWDBExpr("REPEATER")) && selector.where() );   // Need to attach a few conditions!
@@ -405,7 +372,7 @@ void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), BOOL
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
                         }
-                        RefreshDevices(rowFound, rdr, Factory, testFunc, arg);
+                        RefreshDevices(rowFound, rdr, Factory);
 
                         if(DebugLevel & 0x00020000)
                         {
@@ -433,18 +400,13 @@ void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), BOOL
                             CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for CBC Devices" << endl;
                         }
                         CtiDeviceCBC().getSQL( db, keyTable, selector );
-                        if(_includeScanInfo)
-                        {
-                            CtiTableDeviceScanRate::getSQL( db, keyTable, selector );   // we do a join against CtiTableDeviceScanRate.
-                            CtiTableDeviceWindow::getSQL( db, keyTable, selector );     // we do a left outer join against CtiTableDeviceWindow!
-                        }
 
                         RWDBReader rdr = selector.reader(conn);
                         if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
                         }
-                        RefreshDevices(rowFound, rdr, Factory, testFunc, arg);
+                        RefreshDevices(rowFound, rdr, Factory);
 
                         if(DebugLevel & 0x00020000)
                         {
@@ -459,7 +421,7 @@ void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), BOOL
                     }
 
 
-                    if(!_includeScanInfo)
+                    if(!_includeScanInfo)       // These are not scannable items..
                     {
                         start = start.now();
                         {
@@ -480,7 +442,7 @@ void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), BOOL
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
                             }
-                            RefreshDevices(rowFound, rdr, Factory, testFunc, arg);
+                            RefreshDevices(rowFound, rdr, Factory);
 
                             if(DebugLevel & 0x00020000)
                             {
@@ -514,7 +476,7 @@ void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), BOOL
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
                             }
-                            RefreshDevices(rowFound, rdr, Factory, testFunc, arg);
+                            RefreshDevices(rowFound, rdr, Factory);
 
                             if(DebugLevel & 0x00020000)
                             {
@@ -549,7 +511,7 @@ void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), BOOL
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
                             }
-                            RefreshDevices(rowFound, rdr, Factory, testFunc, arg);
+                            RefreshDevices(rowFound, rdr, Factory);
 
                             if(DebugLevel & 0x00020000)
                             {
@@ -583,7 +545,7 @@ void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), BOOL
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
                             }
-                            RefreshDevices(rowFound, rdr, Factory, testFunc, arg);
+                            RefreshDevices(rowFound, rdr, Factory);
 
                             if(DebugLevel & 0x00020000)
                             {
@@ -659,7 +621,6 @@ void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), BOOL
 
                     }
 
-
                     start = start.now();
                     {
                         RWDBConnection conn = getConnection();
@@ -680,7 +641,7 @@ void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), BOOL
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
                         }
-                        RefreshDevices(rowFound, rdr, Factory, testFunc, arg);
+                        RefreshDevices(rowFound, rdr, Factory);
 
                         if(DebugLevel & 0x00020000)
                         {
@@ -694,9 +655,51 @@ void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), BOOL
                         dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load  System Devices" << endl;
                     }
 
+
+                    start = start.now();
+                    if(_includeScanInfo)
+                    {
+                        if(DebugLevel & 0x00020000)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for scan rates." << endl;
+                        }
+                        RefreshScanRates();
+
+                        if(DebugLevel & 0x00020000)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for scan rates" << endl;
+                        }
+                    }
+                    stop = stop.now();
+                    if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load  scan rates" << endl;
+                    }
+
+                    start = start.now();
+                    if(_includeScanInfo)
+                    {
+                        if(DebugLevel & 0x00020000)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for scan windows." << endl;
+                        }
+                        RefreshDeviceWindows();
+
+                        if(DebugLevel & 0x00020000)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for scan windows" << endl;
+                        }
+                    }
+                    stop = stop.now();
+                    if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load scan windows" << endl;
+                    }
                 }
 
-                if(getErrorCode() != RWDBStatus::ok)
+                if(getErrorCode() != RWDBStatus::ok && getErrorCode() != RWDBStatus::endOfFetch)
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -706,9 +709,34 @@ void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), BOOL
                 }
                 else if(rowFound)
                 {
+                    start = start.now();
+                    #if 1
+
+                    removeAndDestroy(removeFunc, arg);
+
+                    #else
+                    do
+                    {
+                        pTempCtiDevice = remove(removeFunc, arg);
+                        if(pTempCtiDevice != NULL)
+                        {
+                            delete pTempCtiDevice;
+                        }
+
+                    } while(pTempCtiDevice != NULL);
+                    #endif
+
+                    stop = stop.now();
+                    if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to apply removeFunc." << endl;
+                    }
+
                     // Now I need to check for any Device removals based upon the
                     // Updated Flag being NOT set
 
+                    start = start.now();
                     Map.apply(ApplyInvalidateNotUpdated, NULL);
 
                     do
@@ -726,6 +754,12 @@ void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), BOOL
                         }
 
                     } while(pTempCtiDevice != NULL);
+                    stop = stop.now();
+                    if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to apply ApplyInvalidateNotUpdated." << endl;
+                    }
                 }
             }
         }   // Temporary results are destroyed to free the connection
@@ -790,7 +824,7 @@ void CtiDeviceManager::DumpList(void)
 }
 
 
-void CtiDeviceManager::RefreshDevices(bool &rowFound, RWDBReader& rdr, CtiDeviceBase* (*Factory)(RWDBReader &), BOOL (*testFunc)(CtiDeviceBase*,void*), void *arg)
+void CtiDeviceManager::RefreshDevices(bool &rowFound, RWDBReader& rdr, CtiDeviceBase* (*Factory)(RWDBReader &))
 {
     LONG              lTemp = 0;
     CtiDeviceBase*    pTempCtiDevice = NULL;
@@ -810,15 +844,6 @@ void CtiDeviceManager::RefreshDevices(bool &rowFound, RWDBReader& rdr, CtiDevice
              */
 
             pTempCtiDevice->DecodeDatabaseReader(rdr);         // Fills himself in from the reader
-
-            if(_includeScanInfo && pTempCtiDevice->isSingle() )
-            {
-                ((CtiDeviceSingle*)pTempCtiDevice)->invalidateScanRates();                  // Mark all Scan Rate elements as needing refresh..
-                ((CtiDeviceSingle*)pTempCtiDevice)->DecodeScanRateDatabaseReader(rdr);      // Fills himself in from the reader
-                ((CtiDeviceSingle*)pTempCtiDevice)->DecodeDeviceWindowDatabaseReader(rdr);  // Fills himself in from the reader
-                ((CtiDeviceSingle*)pTempCtiDevice)->deleteNonUpdatedScanRates();            // Remove any which were not updated if they exist!
-                ((CtiDeviceSingle*)pTempCtiDevice)->setUseScanFlags();
-            }
             pTempCtiDevice->setUpdatedFlag();       // Mark it updated
         }
         else
@@ -828,22 +853,9 @@ void CtiDeviceManager::RefreshDevices(bool &rowFound, RWDBReader& rdr, CtiDevice
             if(pSp)
             {
                 pSp->DecodeDatabaseReader(rdr);        // Fills himself in from the reader
-                if(_includeScanInfo && pSp->isSingle() )
-                {
-                    ((CtiDeviceSingle*)pSp)->DecodeScanRateDatabaseReader(rdr);        // Fills himself in from the reader
-                    ((CtiDeviceSingle*)pSp)->DecodeDeviceWindowDatabaseReader(rdr);        // Fills himself in from the reader
-                    ((CtiDeviceSingle*)pSp)->setUseScanFlags();
-                }
 
-                if(((*testFunc)(pSp, arg)))            // If I care about this point in the db in question....
-                {
-                    pSp->setUpdatedFlag();               // Mark it updated
-                    Map.insert( new CtiHashKey(pSp->getID()), pSp ); // Stuff it in the list
-                }
-                else
-                {
-                    delete pSp;                         // I don't want it!
-                }
+                pSp->setUpdatedFlag();                              // Mark it updated
+                Map.insert( new CtiHashKey(pSp->getID()), pSp );    // Stuff it in the list
             }
         }
     }
@@ -956,7 +968,6 @@ void CtiDeviceManager::resetIncludeScanInfo()
 
 
 
-#if 0
 void CtiDeviceManager::RefreshScanRates(LONG id)
 {
     LONG        lTemp = 0;
@@ -1125,6 +1136,7 @@ void CtiDeviceManager::RefreshDeviceWindows(LONG id)
     }
 }
 
+#if 0
 void CtiDeviceManager::RefreshDeviceRoute(LONG id)
 {
     LONG        lTemp = 0;
@@ -1177,6 +1189,4 @@ void CtiDeviceManager::RefreshDeviceRoute(LONG id)
         dout << RWTime() << " Done looking for Routes" << endl;
     }
 }
-
-
 #endif

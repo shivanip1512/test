@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/slctdev.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2002/09/06 19:03:42 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2002/09/09 21:45:15 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -364,16 +364,25 @@ DLLEXPORT CtiRouteBase* RouteFactory(RWDBReader &rdr)
     return Route;
 }
 
-DLLEXPORT BOOL isADevice(CtiDeviceBase* pSp, void *arg)
+DLLEXPORT bool isADevice(CtiDeviceBase* pSp, void *arg)
 {
-    BOOL bRet = TRUE;
-
+    bool bRet = true;
     return bRet;
 }
 
-DLLEXPORT BOOL isAScannableDevice(CtiDeviceBase *pDevice, void* d)
+DLLEXPORT bool isNotADevice(CtiDeviceBase* pSp, void *arg)
 {
-    RWBoolean bRet = FALSE;
+    return !isADevice(pSp, arg);
+}
+
+DLLEXPORT bool isNotAScannableDevice(CtiDeviceBase *pDevice, void* d)
+{
+    return !isAScannableDevice(pDevice, d);
+}
+
+DLLEXPORT bool isAScannableDevice(CtiDeviceBase *pDevice, void* d)
+{
+    bool bRet = false;
 
     if(pDevice->isSingle())
     {
@@ -384,7 +393,7 @@ DLLEXPORT BOOL isAScannableDevice(CtiDeviceBase *pDevice, void* d)
         {
             if(pUnique->getScanRate(i) != -1)
             {
-                bRet = TRUE;              // I found a scan rate...
+                bRet = true;              // I found a scan rate...
                 break;
             }
         }
@@ -395,7 +404,7 @@ DLLEXPORT BOOL isAScannableDevice(CtiDeviceBase *pDevice, void* d)
             {
                 if(((CtiDeviceMCT *)pUnique)->getLoadProfile().isChannelValid(i))
                 {
-                    bRet = TRUE;
+                    bRet = true;
                     break;
                 }
             }

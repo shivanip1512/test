@@ -125,6 +125,41 @@ public:
       return temp;
    }
 
+   int removeAndDestroy(RWBoolean (*removeFunc)(T*, void*), void* d)
+   {
+       int count = 0;
+
+       RWTPtrSlist< CtiHashKey >       deleteKeys;
+       RWTPtrSlist< CtiDeviceBase >    deleteObjs;
+
+       CtiRTDBIterator mapitr(Map);
+       CtiDeviceBase   *pdev = 0;
+       CtiHashKey      *pkey = 0;
+
+       for(;mapitr();)
+       {
+           pdev = mapitr.value();
+           pkey = mapitr.key();
+
+           if((*removeFunc)(pdev, d))
+           {
+               count++;
+               deleteKeys.insert(pkey);
+               deleteObjs.insert(pdev);
+           }
+       }
+
+       for(int kpos = 0; kpos < deleteKeys.entries(); kpos++)
+       {
+           Map.remove(deleteKeys[kpos]);
+       }
+
+       deleteKeys.clearAndDestroy();
+       deleteObjs.clearAndDestroy();
+
+       return count;
+   }
+
    size_t entries() const
    {
       LockGuard guard(monitor());
