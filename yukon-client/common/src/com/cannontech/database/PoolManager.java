@@ -145,7 +145,7 @@ public class PoolManager
 		}
 		catch( Exception e )
 		{
-			CTILogger.error( "Invalid format of the database URL string", e );
+			CTILogger.getStandardLog().error( "Invalid format of the database URL string", e );
 			Error err = new Error( "Unrecognized database URL, URL = " + url_ );
 			err.initCause( e );
 			throw err;
@@ -168,7 +168,7 @@ public class PoolManager
 			String url = props.getProperty(poolName + URL);
 			if (url == null)
 			{                 
-	          CTILogger.error( "No URL specified for " + poolName );
+	          CTILogger.getStandardLog().error( "No URL specified for " + poolName );
 			    continue;			
 			}
 			
@@ -189,7 +189,7 @@ public class PoolManager
 			}
 			catch (NumberFormatException e)
 			{
-            	CTILogger.error("Invalid maxconns value " + maxConns + " for " + poolName);
+            	CTILogger.getStandardLog().error("Invalid maxconns value " + maxConns + " for " + poolName);
 			   	max = 0;
 			}
    
@@ -202,7 +202,7 @@ public class PoolManager
 			}
 			catch (NumberFormatException e)
 			{                      
-            	CTILogger.error( "Invalid initconns value " + initConns + " for " + poolName );
+            	CTILogger.getStandardLog().error( "Invalid initconns value " + initConns + " for " + poolName );
 			   	init = 0;
 			}
    
@@ -215,7 +215,7 @@ public class PoolManager
 			}
 			catch (NumberFormatException e)
 			{
-            	CTILogger.info("Invalid logintimeout value " + loginTimeOut + " for " 
+            	CTILogger.getStandardLog().info("Invalid logintimeout value " + loginTimeOut + " for " 
                   				+ poolName + ", defaulting to 5" );                  
 			   	timeOut = 5;
 			}
@@ -266,7 +266,7 @@ public String[] getAllPoolsStrings()
 		 }
 		 catch (SQLException e)
 		 {
-         CTILogger.error("Exception getting connection from " + name, e );
+         CTILogger.getStandardLog().error("Exception getting connection from " + name, e );
 		 }
 	  }
 
@@ -291,7 +291,7 @@ public String[] getAllPoolsStrings()
 		 }
 		 catch (Exception e)
 		 {
-		  CTILogger.error("Can't read the properties file. " +
+		  CTILogger.getStandardLog().error("Can't read the properties file. " +
 		 	"Make sure db.properties is in the CLASSPATH" );
 		 }	
 		 finally 
@@ -333,11 +333,11 @@ public String[] getAllPoolsStrings()
 			Driver driver = (Driver)Class.forName(ALL_DRIVERS[i]).newInstance();
 			DriverManager.registerDriver(driver);
 
-         CTILogger.info("Registered JDBC driver " + ALL_DRIVERS[i] );
+         CTILogger.getStandardLog().info("Registered JDBC driver " + ALL_DRIVERS[i] );
 		 }
 		 catch (Exception e)
 		 {
-         CTILogger.error("Can't register JDBC driver: " +
+         CTILogger.getStandardLog().error("Can't register JDBC driver: " +
                   ALL_DRIVERS[i], e );        
 		 }
 	  }

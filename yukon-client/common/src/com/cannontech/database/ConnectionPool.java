@@ -36,8 +36,8 @@ public class ConnectionPool
 	  this.initConns = initConns;
 	  
 	  String lf = System.getProperty("line.separator");
-	  CTILogger.info("Creating new DB connection pool...");
-	  CTILogger.debug(lf +
+	  CTILogger.getStandardLog().info("Creating new DB connection pool...");
+	  CTILogger.getStandardLog().debug(lf +
 					" url=" + URL + lf +
 					" user=" + user + lf +
 					" initconns=" + initConns + lf +
@@ -48,7 +48,7 @@ public class ConnectionPool
 	  initPool();
 
 
-	  CTILogger.debug( getStats() );
+	  CTILogger.getStandardLog().debug( getStats() );
    }            
    public synchronized void freeConnection(Connection conn)
    {
@@ -56,8 +56,8 @@ public class ConnectionPool
 	  freeConnections.addElement(conn);
 	  checkedOut--;
 	  notifyAll();
-	  CTILogger.debug("Returned/Added connection to pool");
-	  CTILogger.debug( getStats() );
+	  CTILogger.getStandardLog().debug("Returned/Added connection to pool");
+	  CTILogger.getStandardLog().debug( getStats() );
    }   
    public Connection getConnection() throws SQLException 
    {
@@ -67,17 +67,17 @@ public class ConnectionPool
 		 Connection conn = getConnection(timeOut * 1000);
 		 ConnectionWrapper cw = new ConnectionWrapper(conn, this);
 
-		 CTILogger.debug( "Request for a DB connection granted" );
+		 CTILogger.getStandardLog().debug( "Request for a DB connection granted" );
 	  
 		  //The below line lets you find any connections that are not
 		  //   releasing the connection to the DB!!  (Creates a lot of output!!)
-		  //CTILogger.debug("   " + com.cannontech.common.util.CtiUtilities.getSTACK_TRACE() );
+		  //CTILogger.getStandardLog().debug("   " + com.cannontech.common.util.CtiUtilities.getSTACK_TRACE() );
 
 		 return cw;
 	  }
 	  catch (SQLException e)
 	  {
-		 CTILogger.error("Exception getting connection", e );
+		 CTILogger.getStandardLog().error("Exception getting connection", e );
 		 throw e;
 	  }
    }                        
@@ -96,7 +96,7 @@ public class ConnectionPool
 	  {
 		 try
 		 {
-			CTILogger.debug("Waiting for connection. Timeout=" + remaining + " millis");
+			CTILogger.getStandardLog().debug("Waiting for connection. Timeout=" + remaining + " millis");
 
 			wait(remaining);
 		 }
@@ -107,7 +107,7 @@ public class ConnectionPool
 		 if (remaining <= 0)
 		 {
 			// Timeout has expired
-			CTILogger.debug("Time-out while waiting for connection" );
+			CTILogger.getStandardLog().debug("Time-out while waiting for connection" );
 
 			throw new SQLException("getConnection() timed-out");
 		 }
@@ -122,15 +122,15 @@ public class ConnectionPool
 		 freeConnections.addElement( newConnection() );
 	  	
 		 // It was bad. Try again with the remaining timeout
-		 CTILogger.debug("Removed bad connection from pool" );
+		 CTILogger.getStandardLog().debug("Removed bad connection from pool" );
 
 		 return getConnection(remaining);
 	  }
 	  else
 	  {
 		  checkedOut++;
-		  CTILogger.debug( "Delivered connection from pool" );
-		  CTILogger.debug( getStats() );
+		  CTILogger.getStandardLog().debug( "Delivered connection from pool" );
+		  CTILogger.getStandardLog().debug( getStats() );
 		  
 		
 		  // Great we have a good conn, Be sure we have our fair share of DB conns
@@ -151,11 +151,11 @@ public class ConnectionPool
 		try
 		{
 			conn.close();
-			CTILogger.debug( "Closed connection" );
+			CTILogger.getStandardLog().debug( "Closed connection" );
 		}
 		catch (SQLException e)
 		{
-			CTILogger.error( "Couldn't close connection", e );
+			CTILogger.getStandardLog().error( "Couldn't close connection", e );
 		}
 	}
 
@@ -227,8 +227,8 @@ public class ConnectionPool
 	  }
 	  catch (Exception e)
 	  {
-		 CTILogger.info( "Pooled Connection was NOT okay" );
-		 CTILogger.error( "Pooled Connection was NOT okay", e );
+		 CTILogger.getStandardLog().info( "Pooled Connection was NOT okay" );
+		 CTILogger.getStandardLog().error( "Pooled Connection was NOT okay", e );
 
 		 return false;
 	  }
@@ -254,13 +254,13 @@ public class ConnectionPool
 	  	  conn = DriverManager.getConnection(URL, p);
 	  	  
 
-	  	  CTILogger.debug("Opened a new connection" );
+	  	  CTILogger.getStandardLog().debug("Opened a new connection" );
 	  }
 	  catch( Exception e )
 	  {
 	  	  //try to connect the old way!
 		  //conn = DriverManager.getConnection(URL, user, password);
-		  //CTILogger.debug("Opened a new connection using an out dated connection method" );	  	
+		  //CTILogger.getStandardLog().debug("Opened a new connection using an out dated connection method" );	  	
 	  }
 
 	  return conn;
@@ -275,11 +275,11 @@ public class ConnectionPool
 		 try
 		 {
 			con.close();
-			CTILogger.debug( "Closed connection" );
+			CTILogger.getStandardLog().debug( "Closed connection" );
 		 }
 		 catch (SQLException e)
 		 {
-			CTILogger.error( "Couldn't close connection", e );
+			CTILogger.getStandardLog().error( "Couldn't close connection", e );
 		 }
 	  }
 	  freeConnections.removeAllElements();
@@ -305,7 +305,7 @@ public class ConnectionPool
 	  freeConnections.addElement(conn);
 	  checkedOut--;
 	  notifyAll();
-	  CTILogger.debug( "Returned connection to pool" );
-	  CTILogger.debug( getStats() );
+	  CTILogger.getStandardLog().debug( "Returned connection to pool" );
+	  CTILogger.getStandardLog().debug( getStats() );
    }   
 }
