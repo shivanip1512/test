@@ -19,6 +19,7 @@
 <%@ page import="com.cannontech.database.db.graph.GraphRenderers" %>
 <%@ page import="com.cannontech.roles.application.WebClientRole" %>
 <%@ page import="com.cannontech.roles.consumer.ResidentialCustomerRole" %>
+<%@ page import="com.cannontech.roles.operator.AdministratorRole" %>
 <%@ page import="com.cannontech.roles.operator.CommercialMeteringRole"%>
 <%@ page import="com.cannontech.roles.operator.ConsumerInfoRole" %>
 <%@ page import="com.cannontech.roles.operator.InventoryRole" %>
@@ -138,12 +139,12 @@
 				if (lYukonUser.getUserID() == liteEC.getUserID()
 					&& lYukonUser.getStatus().equalsIgnoreCase(com.cannontech.user.UserUtils.STATUS_FIRST_TIME)
 					&& selectionListTable.get(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE) != null
-					&& request.getRequestURI().indexOf("/Message.jsp") < 0)
+					&& request.getRequestURI().indexOf("/operator/Admin/Message.jsp") < 0)
 				{
 					// The default operator login for the first time, edit the device type list first!
 					session.setAttribute(ServletUtils.ATT_REDIRECT2, request.getContextPath() + "/operator/Admin/SelectionList.jsp?List=DeviceType");
 					session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "This is the first time you login as the default operator. Please edit the device types first.");
-					response.sendRedirect(request.getContextPath() + "/operator/Consumer/Message.jsp?delay=0");
+					response.sendRedirect(request.getContextPath() + "/operator/Admin/Message.jsp?delay=0");
 					return;
 				}
 			}
@@ -151,11 +152,17 @@
 		
 		accountInfo = (StarsCustAccountInformation) session.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
 		if (accountInfo != null) {
+			// Try to register the account
 			if (!liteEC.registerActiveAccount(accountInfo)) {
-				accountInfo = liteEC.getStarsCustAccountInformation(accountInfo.getStarsCustomerAccount().getAccountID());
-				session.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, accountInfo);
+				accountInfo = liteEC.getStarsCustAccountInformation(accountInfo.getStarsCustomerAccount().getAccountID(), true);
+				if (accountInfo != null)
+					session.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, accountInfo);
+				else
+					ServletUtils.removeTransientAttributes(session);
 			}
-			
+		}
+		
+		if (accountInfo != null) {
 			account = accountInfo.getStarsCustomerAccount();
 			propAddr = account.getStreetAddress();
 			siteInfo = account.getStarsSiteInformation();
