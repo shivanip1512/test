@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/trx_711.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2003/03/13 19:36:18 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/02/17 22:47:45 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -67,6 +67,8 @@ public:
 
    virtual ~CtiTransmitter711Info()
    {
+        CloseQueue(QueueHandle);
+        CloseQueue(ActinQueueHandle);
    }
 
 
