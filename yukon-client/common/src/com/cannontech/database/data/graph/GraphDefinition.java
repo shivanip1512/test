@@ -1,14 +1,23 @@
 package com.cannontech.database.data.graph;
 
+import java.util.ArrayList;
+
+import com.cannontech.database.db.CTIDbChange;
+import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.db.graph.GraphCustomerList;
+import com.cannontech.database.db.graph.GraphDataSeries;
+import com.cannontech.database.db.web.OperatorLoginGraphList;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+
 /**
  * Insert the type's description here.
  * Creation date: (10/5/00 10:50:03 AM)
  * @author: 
  */
-public class GraphDefinition extends com.cannontech.database.db.DBPersistent implements com.cannontech.database.db.CTIDbChange
+public class GraphDefinition extends DBPersistent implements CTIDbChange
 {
 	private com.cannontech.database.db.graph.GraphDefinition graphDefinition;
-	private java.util.ArrayList graphDataSeries;
+	private ArrayList graphDataSeries;
 /**
  * GraphDefinition constructor comment.
  */
@@ -21,20 +30,20 @@ public GraphDefinition() {
  * Creation date: (12/19/2001 1:45:25 PM)
  * @return com.cannontech.message.dispatch.message.DBChangeMsg[]
  */
-public com.cannontech.message.dispatch.message.DBChangeMsg[] getDBChangeMsgs( int typeOfChange )
+public DBChangeMsg[] getDBChangeMsgs( int typeOfChange )
 {
-	java.util.ArrayList list = new java.util.ArrayList(10);
+	ArrayList list = new ArrayList(10);
 
 	//add the basic change method
-	list.add( new com.cannontech.message.dispatch.message.DBChangeMsg(
+	list.add( new DBChangeMsg(
 					getGraphDefinition().getGraphDefinitionID().intValue(),
-					com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_GRAPH_DB,
-					com.cannontech.message.dispatch.message.DBChangeMsg.CAT_GRAPH,
-					com.cannontech.message.dispatch.message.DBChangeMsg.CAT_GRAPH,
+					DBChangeMsg.CHANGE_GRAPH_DB,
+					DBChangeMsg.CAT_GRAPH,
+					DBChangeMsg.CAT_GRAPH,
 					typeOfChange ) );
 	 
-	com.cannontech.message.dispatch.message.DBChangeMsg[] dbChange = new com.cannontech.message.dispatch.message.DBChangeMsg[list.size()];
-	return (com.cannontech.message.dispatch.message.DBChangeMsg[])list.toArray( dbChange );
+	DBChangeMsg[] dbChange = new com.cannontech.message.dispatch.message.DBChangeMsg[list.size()];
+	return (DBChangeMsg[])list.toArray( dbChange );
 }
 /**
  * This method was created by a SmartGuide.
@@ -50,7 +59,7 @@ public void add() throws java.sql.SQLException
 
 	while( iter.hasNext() )
 	{
-		com.cannontech.database.db.graph.GraphDataSeries gds = (com.cannontech.database.db.graph.GraphDataSeries) iter.next();
+		GraphDataSeries gds = (GraphDataSeries) iter.next();
 		gds.setGraphDefinitionID( getGraphDefinition().getGraphDefinitionID() );
 		gds.setDbConnection( getDbConnection() );
 		gds.add();
@@ -62,9 +71,9 @@ public void add() throws java.sql.SQLException
  */
 public void delete() throws java.sql.SQLException 
 {	
-	delete(com.cannontech.database.db.web.OperatorLoginGraphList.tableName, "GraphDefinitionID", getGraphDefinition().getGraphDefinitionID());
-	delete(com.cannontech.database.db.graph.GraphCustomerList.TABLE_NAME, "GraphDefinitionID", getGraphDefinition().getGraphDefinitionID());
-	com.cannontech.database.db.graph.GraphDataSeries.deleteAllGraphDataSeries(getGraphDefinition().getGraphDefinitionID());
+	delete(OperatorLoginGraphList.tableName, "GraphDefinitionID", getGraphDefinition().getGraphDefinitionID());
+	delete(GraphCustomerList.TABLE_NAME, "GraphDefinitionID", getGraphDefinition().getGraphDefinitionID());
+	GraphDataSeries.deleteAllGraphDataSeries(getGraphDefinition().getGraphDefinitionID());
 
 	getGraphDefinition().setDbConnection(getDbConnection());
 	getGraphDefinition().delete();
@@ -100,7 +109,7 @@ public void retrieve() throws java.sql.SQLException
 	getGraphDefinition().setDbConnection(getDbConnection());
 	getGraphDefinition().retrieve();
 
-	Object[] gds = com.cannontech.database.db.graph.GraphDataSeries.getAllGraphDataSeries( getGraphDefinition().getGraphDefinitionID(), getDbConnection().toString() );
+	Object[] gds = GraphDataSeries.getAllGraphDataSeries( getGraphDefinition().getGraphDefinitionID(), getDbConnection().toString() );
 
 	for( int i = 0; i < gds.length; i++ )
 		getGraphDataSeries().add( gds[i] );
@@ -131,13 +140,13 @@ public void update() throws java.sql.SQLException
 	getGraphDefinition().update();
 	getGraphDefinition().setDbConnection(null);
 	
-	com.cannontech.database.db.graph.GraphDataSeries.deleteAllGraphDataSeries(getGraphDefinition().getGraphDefinitionID());
+	GraphDataSeries.deleteAllGraphDataSeries(getGraphDefinition().getGraphDefinitionID());
 
 	java.util.List gds = getGraphDataSeries();	
 	if( gds != null )
 	for( int i = 0; i < gds.size(); i++ ) 
 	{
-		com.cannontech.database.db.DBPersistent elem = (com.cannontech.database.db.DBPersistent) gds.get(i);
+		DBPersistent elem = (DBPersistent) gds.get(i);
 		elem.setDbConnection(getDbConnection());
 		elem.add();
 		elem.setDbConnection(null);
