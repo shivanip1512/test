@@ -59,6 +59,7 @@ public class ServerUtils {
     public static final String DEFAULT_TIME_ZONE = "default_time_zone";
     public static final String SWITCH_COMMAND_FILE = "switch_command_file";
     public static final String OPTOUT_COMMAND_FILE = "optout_command_file";
+    public static final String CUSTOMER_GROUP_NAME = "customer_group_name";
     
     public static final String[] ALL_SETTINGS_KEYS = {
     	ADMIN_EMAIL_ADDRESS,
@@ -66,6 +67,7 @@ public class ServerUtils {
     	DEFAULT_TIME_ZONE,
     	SWITCH_COMMAND_FILE,
     	OPTOUT_COMMAND_FILE,
+    	CUSTOMER_GROUP_NAME,
     };
     
     public static final String DEFAULT_ADMIN_EMAIL_ADDRESS = "info@cannontech.com";

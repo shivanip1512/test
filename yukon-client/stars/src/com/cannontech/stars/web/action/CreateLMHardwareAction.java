@@ -105,11 +105,13 @@ public class CreateLMHardwareAction implements ActionBase {
 			
 			String[] appIDs = req.getParameterValues( "AppID" );
 			String[] grpIDs = req.getParameterValues( "GroupID" );
-			for (int i = 0; i < appIDs.length; i++) {
-				StarsLMHardwareConfig config = new StarsLMHardwareConfig();
-				config.setApplianceID( Integer.parseInt(appIDs[i]) );
-				config.setGroupID( Integer.parseInt(grpIDs[i]) );
-				createHw.addStarsLMHardwareConfig( config );
+			if (appIDs != null) {
+				for (int i = 0; i < appIDs.length; i++) {
+					StarsLMHardwareConfig config = new StarsLMHardwareConfig();
+					config.setApplianceID( Integer.parseInt(appIDs[i]) );
+					config.setGroupID( Integer.parseInt(grpIDs[i]) );
+					createHw.addStarsLMHardwareConfig( config );
+				}
 			}
 			
 			StarsOperation operation = new StarsOperation();
@@ -241,13 +243,18 @@ public class CreateLMHardwareAction implements ActionBase {
             synchronized (lmHardwareList) { lmHardwareList.add( liteHw ); }
             liteAcctInfo.getInventories().add( new Integer(liteHw.getInventoryID()) );
             
-            // If this is a thermostat, add lite object for thermostat settings
-			int thermTypeID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_THERMOSTAT ).getEntryID();
-        	if (liteHw.getLmHardwareTypeID() == thermTypeID)
-            	liteAcctInfo.setThermostatSettings( SOAPServer.getEnergyCompany( energyCompanyID ).getThermostatSettings(liteHw.getInventoryID()) );
-            
             StarsCreateLMHardwareResponse resp = new StarsCreateLMHardwareResponse();
             resp.setStarsLMHardware( starsHw );
+            
+            // If this is a thermostat, add lite object for thermostat settings
+			int thermTypeID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_THERMOSTAT ).getEntryID();
+        	if (liteHw.getLmHardwareTypeID() == thermTypeID) {
+            	liteAcctInfo.setThermostatSettings( SOAPServer.getEnergyCompany( energyCompanyID ).getThermostatSettings(liteHw.getInventoryID()) );
+            	
+				StarsThermostatSettings starsThermSettings = new StarsThermostatSettings();
+				StarsLiteFactory.setStarsThermostatSettings( starsThermSettings, liteAcctInfo.getThermostatSettings(), energyCompanyID );
+            	resp.setStarsThermostatSettings( starsThermSettings );
+        	}
             
             respOper.setStarsCreateLMHardwareResponse( resp );
             return SOAPUtil.buildSOAPMessage( respOper );
@@ -298,6 +305,9 @@ public class CreateLMHardwareAction implements ActionBase {
 					break;
 			}
 			starsInvs.addStarsLMHardware( idx+1, hw );
+			
+			if (resp.getStarsLMHardware() != null)
+				accountInfo.setStarsThermostatSettings( resp.getStarsThermostatSettings() );
 			
 			StarsCreateLMHardware createHw = SOAPUtil.parseSOAPMsgForOperation( reqMsg ).getStarsCreateLMHardware();
 			for (int i = 0; i < createHw.getStarsLMHardwareConfigCount(); i++) {

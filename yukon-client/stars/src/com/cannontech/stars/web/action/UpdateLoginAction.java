@@ -12,6 +12,7 @@ import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteCustomerAccount;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
+import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
@@ -179,6 +180,8 @@ public class UpdateLoginAction implements ActionBase {
 	
 	public static void createLogin(LiteCustomerAccount liteAccount, int energyCompanyID, String username, String password)
 	throws com.cannontech.database.TransactionException {
+		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
+		
         com.cannontech.database.data.user.YukonUser dataUser = new com.cannontech.database.data.user.YukonUser();
         com.cannontech.database.db.user.YukonUser dbUser = dataUser.getYukonUser();
         
@@ -189,7 +192,7 @@ public class UpdateLoginAction implements ActionBase {
         	Iterator it = cache.getAllYukonGroups().iterator();
         	while (it.hasNext()) {
         		LiteYukonGroup g = (LiteYukonGroup) it.next();
-        		if (g.getGroupName().equalsIgnoreCase("Web Demo Residential Customers")) {
+        		if (g.getGroupName().equalsIgnoreCase( energyCompany.getEnergyCompanySetting(ServerUtils.CUSTOMER_GROUP_NAME) )) {
         			liteGroup = g;
         			break;
         		}

@@ -249,6 +249,7 @@ insert into ECToGenericMapping values (-1, 1045, 'YukonSelectionList');
 insert into ECToGenericMapping values (-1, 1046, 'YukonSelectionList');
 insert into ECToGenericMapping values (-1, 1047, 'YukonSelectionList');
 insert into ECToGenericMapping values (-1, 1048, 'YukonSelectionList');
+insert into ECToGenericMapping values (-1, 1049, 'YukonSelectionList');
 
 /* Thermostat tables */
 /* LMThermostatSeason */

@@ -63,6 +63,8 @@ public class StarsFactory {
 	}
 	
 	public static StarsCustListEntry newStarsCustListEntry(YukonListEntry entry, Class type) {
+		if (entry == null) return newEmptyStarsCustListEntry( type );
+		
 		try {
 			StarsCustListEntry newEntry = (StarsCustListEntry) type.newInstance();
 			newEntry.setEntryID( entry.getEntryID() );

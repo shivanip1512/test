@@ -880,7 +880,7 @@
 			<xs:sequence>
 				<xs:element ref="stars-LMHardware"/>
 				
-			</xs:sequence>
+			<xs:element ref="stars-ThermostatSettings" minOccurs="0"/></xs:sequence>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="stars-UpdateLMHardware" type="stars-LMHw"/>
