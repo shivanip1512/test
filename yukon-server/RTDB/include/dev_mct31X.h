@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct31X.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:26 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/04/25 16:48:55 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -27,6 +27,13 @@ class IM_EX_DEVDB CtiDeviceMCT31X : public CtiDeviceMCT310
 protected:
 
     static CTICMDSET _commandStore;
+
+private:
+
+    RWTime _lastLPRequestAttempt[3], _lastLPRequestBlockStart[3], _lastLPTime[3], _nextLPTime[3];
+    CtiTableDeviceMCTIEDPort _iedPort;
+
+public:
 
     enum
     {
@@ -44,9 +51,11 @@ protected:
         MCT360_IEDKvarhAddr       = 0xa7,
         MCT360_IEDDemandAddr      = 0xa1,
         MCT360_IEDReqLen          =   13,
+        MCT360_IEDLinkAddr        = 0xa0,
+        MCT360_IEDLinkLen         =    5,
 
         MCT360_IEDTimeAddr        = 0xaa,
-        MCT360_IEDTimeLen         =    6,
+        MCT360_IEDTimeLen         =    9,
 
         MCT360_IEDScanAddr        = 0x74,
         MCT360_IEDScanLen         =    6,
@@ -54,16 +63,11 @@ protected:
         MCT360_IEDClassAddr       = 0x76,
         MCT360_IEDClassLen        =    4,
 
-        MCT360_IEDResetAddr       = 0xb0,
-        MCT360_IEDResetLen        =    2
+        MCT360_AlphaResetAddr     = 0xb0,
+        MCT360_AlphaResetLen      =    2,
+        MCT360_LGS4ResetAddr      = 0xc0,
+        MCT360_LGS4ResetLen       =    3
     };
-
-private:
-
-    RWTime _lastLPRequestAttempt[3], _lastLPRequestBlockStart[3], _lastLPTime[3], _nextLPTime[3];
-    CtiTableDeviceMCTIEDPort _iedPort;
-
-public:
 
     typedef CtiDeviceMCT310 Inherited;
 
@@ -87,6 +91,7 @@ public:
     virtual INT ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList );
 
     INT decodeGetConfigIED   ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
+    INT decodeGetStatusIED   ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
     INT decodeGetValueIED    ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
     INT decodeGetValueKWH    ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
     INT decodeGetValueDemand ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );

@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct31X.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:05 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/04/25 16:48:54 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -179,10 +179,14 @@ bool CtiDeviceMCT31X::initCommandStore( )
 
     cs._cmd     = CtiProtocolEmetcon::PutValue_IEDReset;
     cs._io      = IO_FCT_WRITE;
-    cs._funcLen = make_pair( (int)MCT360_IEDResetAddr,
-                             (int)MCT360_IEDResetLen );
+    cs._funcLen = make_pair( 0, 0 );
     _commandStore.insert( cs );
 
+    cs._cmd     = CtiProtocolEmetcon::GetStatus_IEDLink;
+    cs._io      = IO_FCT_READ;
+    cs._funcLen = make_pair( (int)MCT360_IEDLinkAddr,
+                             (int)MCT360_IEDLinkLen );
+    _commandStore.insert( cs );
 
     return failed;
 }
@@ -495,6 +499,12 @@ INT CtiDeviceMCT31X::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
             break;
         }
 
+        case CtiProtocolEmetcon::GetStatus_IEDLink:
+        {
+            status = decodeGetStatusIED(InMessage, TimeNow, vgList, retList, outList);
+            break;
+        }
+
         case CtiProtocolEmetcon::Scan_Accum:
         case CtiProtocolEmetcon::GetValue_Default:
         {
@@ -673,6 +683,187 @@ INT CtiDeviceMCT31X::decodeStatus(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
 }
 
 
+INT CtiDeviceMCT31X::decodeGetStatusIED(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+{
+    INT status = NORMAL;
+    INT pid, rateOffset;
+    RWCString resultString, name, ratename;
+
+    ULONG lValue;
+
+    INT ErrReturn = InMessage->EventCode & 0x3fff;
+    DSTRUCT *DSt  = &InMessage->Buffer.DSt;
+
+    CtiCommandParser parse( InMessage->Return.CommandStr );
+
+    DOUBLE demandValue, Value;
+    RWTime timestamp;
+    RWDate datestamp;
+    CtiPointBase    *pPoint       = NULL;
+    CtiPointBase    *pDemandPoint = NULL;
+    CtiReturnMsg    *ReturnMsg    = NULL;    // Message sent to VanGogh, inherits from Multi
+    CtiPointDataMsg *pData        = NULL;
+
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** IED GetStatus Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    if(!decodeCheckErrorReturn(InMessage, retList))
+    {
+        // No error occured, we must do a real decode!
+
+        if((ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+
+            return MEMORY;
+        }
+
+        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
+        switch( InMessage->Sequence )
+        {
+            case CtiProtocolEmetcon::GetStatus_IEDLink:
+            {
+                for( int i = 0; i < 4; i++ )  //  excluding byte 7 - it's a bitfield, not BCD
+                {
+                    //  BCD is not make happiness.  so FIX!  Whee!
+                    DSt->Message[i] = (((DSt->Message[i] & 0xf0) / 16) * 10) + (DSt->Message[i] & 0x0f);
+                }
+
+                switch( getIEDPort().getIEDType() )
+                {
+                    case (CtiTableDeviceMCTIEDPort::AlphaPowerPlus):
+
+                        resultString += getName() + " / IED / Alpha status:\n";
+
+                        if( DSt->Message[0] & 0x01 )    resultString += "  Time Change\n";
+                        if( DSt->Message[0] & 0x02 )    resultString += "  Autoread or Season change Demand Reset\n";
+                        if( DSt->Message[0] & 0x08 )    resultString += "  Write Protected\n";
+                        if( DSt->Message[0] & 0x20 )    resultString += "  Power Fail Flag\n";
+                        if( DSt->Message[0] & 0x40 )    resultString += "  Season Change Flag\n";
+                        if( DSt->Message[0] & 0x80 )    resultString += "  Autoread Flag\n";
+
+                        resultString += getName() + " / IED / Comm status to Alpha:\n";
+
+                        switch( (DSt->Message[1] & 0xf0) >> 4 )
+                        {
+                            case 0:     resultString += "  Normal communications\n";                break;
+                            case 1:     resultString += "  Bad CRC from Alpha\n";                   break;
+                            case 2:     resultString += "  Comm lockout for Function\n";            break;
+                            case 3:     resultString += "  Illegal command, syntax, or length\n";   break;
+                            case 4:     resultString += "  Framing error\n";                        break;
+                            case 5:     resultString += "  Timeout error\n";                        break;
+                            case 6:     resultString += "  Invalid password\n";                     break;
+                            case 7:     resultString += "  NAK received from MCT\n";                break;
+                            case 15:    resultString += "  Normal communications\n";                break;
+                            default:    resultString += "  Error code " + CtiNumStr((DSt->Message[1] & 0xf0) >> 4) + " not implemented\n";
+                        }
+
+                        if( DSt->Message[1] & 0x80 )    resultString += "  Last IED write failed\n";
+
+                        resultString += "MCT to Alpha Data Link: ";
+
+                        if( DSt->Message[3] & 0x01 )
+                        {
+                            switch( DSt->Message[1] & 0x07 )
+                            {
+                                case 0:     resultString += "Communication failed\n";                   break;
+                                case 1:     resultString += "Communication failed (baud rate)\n";       break;
+                                case 2:     resultString += "Communication failed (take ctrl)\n";       break;
+                                case 3:     resultString += "Communication failed (bad password)\n";    break;
+                                case 4:     resultString += "Communication Successful (active now)\n";  break;
+                                case 5:     resultString += "Communication Successful\n";               break;
+                            }
+                        }
+                        else
+                        {
+                            resultString += "MCT's Serial Port to Alpha Disabled";
+                        }
+
+                        break;
+
+                    case (CtiTableDeviceMCTIEDPort::LandisGyrS4):
+
+                        resultString += getName() + " / IED / LGS4 status:\n";
+
+                        if( DSt->Message[0] & 0x01 )    resultString += "  S4 Low battery\n";
+                        if( DSt->Message[0] & 0x02 )    resultString += "  No S4 Programming\n";
+                        if( DSt->Message[0] & 0x04 )    resultString += "  S4 Memory Failure\n";
+                        if( DSt->Message[0] & 0x08 )    resultString += "  S4 Demand Overflow\n";
+                        if( DSt->Message[0] & 0x10 )    resultString += "  S4 Stuck Switch\n";
+                        if( DSt->Message[0] & 0x20 )    resultString += "  S4 Unsafe Power Fail\n";
+
+                        switch( (DSt->Message[1] & 0xf0) >> 4 )
+                        {
+                            case 0:     resultString += "  Normal IED Communications\n";    break;
+                            case 1:     resultString += "  NAK Bad TX to IED\n";            break;
+                            case 2:     resultString += "  Comm lockout/Bad Cmd\n";         break;
+                            case 3:     resultString += "  Unexpected Serial Int\n";        break;
+                            case 4:     resultString += "  Framing Error\n";                break;
+                            case 5:     resultString += "  Timeout Error\n";                break;
+                            case 6:     resultString += "  Invalid security key\n";         break;
+                            case 7:     resultString += "  sci data overrun\n";             break;
+                        }
+
+                        if( DSt->Message[1] & 0x08 )    resultString += "  Last IED write failed\n";
+
+                        if( DSt->Message[3] & 0x01 )
+                        {
+                            if( (DSt->Message[4] & 0xf0) == 0x30 )
+                                resultString += "  L&G S4 RX Firmware Rev: ";
+                            else
+                                resultString += "  L&G S4 Product Code " + CtiNumStr((DSt->Message[4] & 0xf0)) + ", Rev ";
+
+                            resultString += CtiNumStr((int)(DSt->Message[4] & 0x0f)) + "." + CtiNumStr((int)DSt->Message[5]) + "\n";
+
+                            resultString += "  MCT to S4 Data Link:  ";
+
+                            switch( DSt->Message[1] & 0x07 )
+                            {
+                                case 0: resultString += "  MCT to S4 Session failed ($55)\n";               break;
+                                case 1: resultString += "  MCT to S4 Session failed ($AA)\n";               break;
+                                case 2: resultString += "  MCT to S4 Session failed (bad Security key)\n";  break;
+                                case 3: resultString += "  MCT to S4 Session failed (get status)\n";        break;
+                                case 4: resultString += "  MCT to S4 Session in progress\n";                break;
+                                case 5: resultString += "  MCT to S4 communication Successful\n";           break;
+                            }
+                        }
+                        else
+                        {
+                            resultString += "  MCT to S4 Data Link:  MCT IED Meter Port Disabled\n";
+                        }
+
+                        break;
+
+                    default:
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+                }
+
+                ReturnMsg->setResultString( resultString );
+
+                break;
+            }
+
+            default:
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+        }
+    }
+
+    retMsgHandler( InMessage->Return.CommandStr, ReturnMsg, vgList, retList );
+
+    return status;
+}
+
+
 INT CtiDeviceMCT31X::decodeGetConfigIED(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     INT status = NORMAL;
@@ -713,65 +904,101 @@ INT CtiDeviceMCT31X::decodeGetConfigIED(INMESS *InMessage, RWTime &TimeNow, RWTP
 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
-        if( parse.isKeyValid("time") )
+        switch( InMessage->Sequence )
         {
-            for( int i = 0; i < 7; i++ )  //  excluding byte 7 - it's a bitfield, not BCD
+            case CtiProtocolEmetcon::GetConfig_IEDTime:
             {
-                //  BCD is not make happiness.  so FIX!  Whee!
-                DSt->Message[i] = (((DSt->Message[i] & 0xf0) / 16) * 10) + (DSt->Message[i] & 0x0f);
+                for( int i = 0; i < 7; i++ )  //  excluding byte 7 - it's a bitfield, not BCD
+                {
+                    //  BCD is not make happiness.  so FIX!  Whee!
+                    DSt->Message[i] = (((DSt->Message[i] & 0xf0) / 16) * 10) + (DSt->Message[i] & 0x0f);
+                }
+
+                switch( getIEDPort().getIEDType() )
+                {
+                    case (CtiTableDeviceMCTIEDPort::AlphaPowerPlus):
+                        resultString += getName() + " / IED / current time: ";
+                        resultString += CtiNumStr((int)DSt->Message[1]).zpad(2) + "/" +
+                                        CtiNumStr((int)DSt->Message[2]).zpad(2) + "/" +
+                                        CtiNumStr((int)DSt->Message[0]).zpad(2) + " " +
+                                        CtiNumStr((int)DSt->Message[3]).zpad(2) + ":" +
+                                        CtiNumStr((int)DSt->Message[4]).zpad(2) + ":" +
+                                        CtiNumStr((int)DSt->Message[5]).zpad(2) + "\n";
+                        resultString += "Demand Reset Count: " + CtiNumStr((int)DSt->Message[6]) + "\n";
+                        resultString += "Current TOU Rate: " + RWCString((char)('A' + ((DSt->Message[7] & 0x0C) >> 2)));
+                        break;
+
+                    case (CtiTableDeviceMCTIEDPort::LandisGyrS4):
+                        resultString += getName() + " / IED / current time: ";
+                        if( DSt->Message[6] <= 5 )
+                        {
+                            resultString += "(autoread #" + CtiNumStr((int)DSt->Message[6] + 1) + ") ";
+                        }
+
+                        resultString += CtiNumStr((int)DSt->Message[5]).zpad(2) + "/" +
+                                        CtiNumStr((int)DSt->Message[4]).zpad(2) + "/" +
+                                        CtiNumStr((int)DSt->Message[3]).zpad(2) + " " +
+                                        CtiNumStr((int)DSt->Message[2]).zpad(2) + ":" +
+                                        CtiNumStr((int)DSt->Message[1]).zpad(2) + ":" +
+                                        CtiNumStr((int)DSt->Message[0]).zpad(2) + "\n";
+
+                        resultString += "Outage count: " + CtiNumStr((int)DSt->Message[7]) + "\n";
+                        resultString += "Current TOU Rate: " + RWCString((char)('A' + (DSt->Message[8] & 0x07)));
+                        break;
+
+                    default:
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+                }
+
+                ReturnMsg->setResultString( resultString );
+
+                break;
             }
 
-            resultString += getName() + " / IED / current time: ";
-            resultString += CtiNumStr((int)DSt->Message[1]).zpad(2) + "/" +
-                            CtiNumStr((int)DSt->Message[2]).zpad(2) + "/" +
-                            CtiNumStr((int)DSt->Message[0]).zpad(2) + " " +
-                            CtiNumStr((int)DSt->Message[3]).zpad(2) + ":" +
-                            CtiNumStr((int)DSt->Message[4]).zpad(2) + ":" +
-                            CtiNumStr((int)DSt->Message[5]).zpad(2) + "\n";
-            resultString += "Demand Reset Count: " + CtiNumStr((int)DSt->Message[6]) + "\n";
-            resultString += "Current TOU Rate: " + RWCString((char)('A' + ((DSt->Message[7] & 0x0C) >> 2)));
-
-            ReturnMsg->setResultString( resultString );
-        }
-        else if( parse.isKeyValid("scan") )
-        {
-            switch( getIEDPort().getIEDType() )
+            case CtiProtocolEmetcon::GetConfig_IEDScan:
             {
-                case (CtiTableDeviceMCTIEDPort::AlphaPowerPlus):
+                switch( getIEDPort().getIEDType() )
                 {
-                    resultString += getName() + " / Alpha Power Plus scan info:\n";
+                    case (CtiTableDeviceMCTIEDPort::AlphaPowerPlus):
+                    {
+                        resultString += getName() + " / Alpha Power Plus scan info:\n";
 
-                    if( DSt->Message[5] == 11 )
-                        resultString += "  Buffer Contains: Alpha Class 11 Billing (Current)\n";
-                    else if( DSt->Message[5] == 12 )
-                        resultString += "  Buffer Contains: Alpha Class 12 Billing (Previous)\n";
-                    else
-                        resultString += "  Buffer Contains: Alpha Class " + CtiNumStr((int)DSt->Message[5]) + "\n";
+                        if( DSt->Message[5] == 11 )
+                            resultString += "  Buffer Contains: Alpha Class 11 Billing (Current)\n";
+                        else if( DSt->Message[5] == 12 )
+                            resultString += "  Buffer Contains: Alpha Class 12 Billing (Previous)\n";
+                        else
+                            resultString += "  Buffer Contains: Alpha Class " + CtiNumStr((int)DSt->Message[5]) + "\n";
 
-                    break;
+                        break;
+                    }
+                    case (CtiTableDeviceMCTIEDPort::LandisGyrS4):
+                    {
+                        resultString += getName() + " / Landis and Gyr S4 scan info:\n";
+
+                        if( DSt->Message[5] == 0 )
+                            resultString += "  Buffer Contains: CTI Billing Data Table #" + CtiNumStr((int)DSt->Message[4] + 1) + "\n";
+                        else
+                            resultString += "  Buffer Contains: S4 Meter Read Cmd: " + CtiNumStr((int)DSt->Message[4]) + "\n";
+                        break;
+                    }
                 }
-                case (CtiTableDeviceMCTIEDPort::LandisGyrS4):
-                {
-                    resultString += getName() + " / Landis and Gyr S4 scan info:\n";
 
-                    if( DSt->Message[5] == 0 )
-                        resultString += "  Buffer Contains: CTI Billing Data Table #" + CtiNumStr((int)DSt->Message[4] + 1) + "\n";
-                    else
-                        resultString += "  Buffer Contains: S4 Meter Read Cmd: " + CtiNumStr((int)DSt->Message[4]) + "\n";
-                    break;
-                }
+                resultString += "  Scan Rate:            " + CtiNumStr(((int)DSt->Message[0] * 15) + 30).spad(4) + " seconds\n";
+                resultString += "  Buffer refresh delay: " + CtiNumStr((int)DSt->Message[1] * 15).spad(4) + " seconds\n";
+
+                if( DSt->Message[2] == 0 )
+                    DSt->Message[2] = 128;
+
+                resultString += "  Scan Length:     " + CtiNumStr((int)DSt->Message[2]).spad(3) + " bytes\n";
+                resultString += "  Scan Offset:     " + CtiNumStr( ((int)DSt->Message[3] * 256) + (int)DSt->Message[4] ).spad(3);
+
+                ReturnMsg->setResultString( resultString );
+                break;
             }
-
-            resultString += "  Scan Rate:            " + CtiNumStr(((int)DSt->Message[0] * 15) + 30).spad(4) + " seconds\n";
-            resultString += "  Buffer refresh delay: " + CtiNumStr((int)DSt->Message[1] * 15).spad(4) + " seconds\n";
-
-            if( DSt->Message[2] == 0 )
-                DSt->Message[2] = 128;
-
-            resultString += "  Scan Length:     " + CtiNumStr((int)DSt->Message[2]).spad(3) + " bytes\n";
-            resultString += "  Scan Offset:     " + CtiNumStr( ((int)DSt->Message[3] * 256) + (int)DSt->Message[4] ).spad(3);
-
-            ReturnMsg->setResultString( resultString );
         }
     }
 
@@ -887,11 +1114,27 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
 
             if( parse.getFlags() & CMD_FLAG_GV_DEMAND )
             {
+                double demandValue, kvarValue;
+
                 //  get KW
                 pPoint = getDevicePointOffsetTypeEqual( pid, AnalogPointType );
 
-                Value  = BCDtoBase10( DSt->Message, 3 );
-                Value /= 1000.0;
+                switch( getIEDPort().getIEDType() )
+                {
+                    case CtiTableDeviceMCTIEDPort::AlphaPowerPlus:
+                    {
+                        Value  = BCDtoBase10( DSt->Message, 3 );
+                        Value /= 1000.0;
+
+                        break;
+                    }
+                    case CtiTableDeviceMCTIEDPort::LandisGyrS4:
+                    {
+                        Value = MAKEUSHORT(DSt->Message[0], DSt->Message[1]);
+
+                        break;
+                    }
+                }
 
                 if( pPoint != NULL )
                 {
@@ -912,11 +1155,26 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
                     ReturnMsg->setResultString( resultString );
                 }
 
+
                 //  get KVAR
                 pPoint = getDevicePointOffsetTypeEqual( pid + 10, AnalogPointType );
 
-                Value  = BCDtoBase10( DSt->Message + 3, 3 );
-                Value /= 1000.0;
+                switch( getIEDPort().getIEDType() )
+                {
+                    case CtiTableDeviceMCTIEDPort::AlphaPowerPlus:
+                    {
+                        Value  = BCDtoBase10( DSt->Message + 3, 3 );
+                        Value /= 1000.0;
+
+                        break;
+                    }
+                    case CtiTableDeviceMCTIEDPort::LandisGyrS4:
+                    {
+                        Value = MAKEUSHORT(DSt->Message[2], DSt->Message[3]);
+
+                        break;
+                    }
+                }
 
                 if( pPoint != NULL )
                 {
@@ -933,21 +1191,82 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
                 }
                 else
                 {
-                    resultString  = ReturnMsg->ResultString();
-                    resultString += getName() + " / IED KVAR: " + CtiNumStr(Value) + " - point undefined in DB\n";
-                    ReturnMsg->setResultString( resultString );
+                    pPoint = getDevicePointOffsetTypeEqual( pid + 20, AnalogPointType );
+
+                    if( pPoint != NULL )
+                    {
+                        Value = ((CtiPointNumeric *)pPoint)->computeValueForUOM( Value );
+
+                        resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value,
+                                                                                                 ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
+                        pData = new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, resultString);
+                        if(pData != NULL)
+                        {
+                            ReturnMsg->PointData().insert(pData);
+                            pData = NULL;  // We just put it on the list...
+                        }
+                    }
+                    else
+                    {
+                        //  maybe look for KVA?
+                        pPoint = getDevicePointOffsetTypeEqual( pid + 20, AnalogPointType );
+
+                        resultString  = ReturnMsg->ResultString();
+                        resultString += getName() + " / IED KVAR/KVA: " + CtiNumStr(Value) + " - point undefined in DB\n";
+                        ReturnMsg->setResultString( resultString );
+                    }
                 }
 
-                lValue  = BCDtoBase10( DSt->Message + 9, 2 );
+                switch( getIEDPort().getIEDType() )
+                {
+                    case CtiTableDeviceMCTIEDPort::AlphaPowerPlus:
+                    {
+                        lValue  = BCDtoBase10( DSt->Message + 9, 2 );
 
-                resultString  = ReturnMsg->ResultString();
-                resultString += getName() + " / IED Power Outage Count: " + CtiNumStr(lValue) + "\n";
+                        resultString  = ReturnMsg->ResultString();
+                        resultString += getName() + " / IED Power Outage Count: " + CtiNumStr(lValue) + "\n";
 
-                lValue  = BCDtoBase10( DSt->Message + 11, 1 );
+                        lValue  = BCDtoBase10( DSt->Message + 11, 1 );
 
-                if( lValue & 0x08 ) resultString += "Phase A potential is missing\n";
-                if( lValue & 0x04 ) resultString += "Phase B potential is missing\n";
-                if( lValue & 0x02 ) resultString += "Phase C potential is missing\n";
+                        if( lValue & 0x08 ) resultString += "Phase A potential is missing\n";
+                        if( lValue & 0x04 ) resultString += "Phase B potential is missing\n";
+                        if( lValue & 0x02 ) resultString += "Phase C potential is missing\n";
+
+                        break;
+                    }
+                    case CtiTableDeviceMCTIEDPort::LandisGyrS4:
+                    {
+                        lValue = MAKEUSHORT(DSt->Message[4], DSt->Message[5]);
+                        if( lValue == 0xffff )  lValue = 99999;
+                        if( lValue == 0xfffe )  lValue = 88888;
+                        if( lValue == 0xfffd )  lValue = 65534;
+                        Value = lValue * 0.01;
+                        resultString += "Phase A Volts: " + CtiNumStr(Value) + "\n";
+
+                        lValue = MAKEUSHORT(DSt->Message[6], DSt->Message[7]);
+                        if( lValue == 0xffff )  lValue = 99999;
+                        if( lValue == 0xfffe )  lValue = 88888;
+                        if( lValue == 0xfffd )  lValue = 65534;
+                        Value = lValue * 0.01;
+                        resultString += "Phase B Volts: " + CtiNumStr(Value) + "\n";
+
+                        lValue = MAKEUSHORT(DSt->Message[8], DSt->Message[9]);
+                        if( lValue == 0xffff )  lValue = 99999;
+                        if( lValue == 0xfffe )  lValue = 88888;
+                        if( lValue == 0xfffd )  lValue = 65534;
+                        Value = lValue * 0.01;
+                        resultString += "Phase C Volts: " + CtiNumStr(Value) + "\n";
+
+                        lValue = MAKEUSHORT(DSt->Message[10], DSt->Message[11]);
+                        if( lValue == 0xffff )  lValue = 99999;
+                        if( lValue == 0xfffe )  lValue = 88888;
+                        if( lValue == 0xfffd )  lValue = 65534;
+                        Value = lValue * 0.01;
+                        resultString += "Neutral current: " + CtiNumStr(Value) + "\n";
+
+                        break;
+                    }
+                }
 
                 ReturnMsg->setResultString( resultString );
             }
@@ -988,8 +1307,27 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
             {
                 pPoint = getDevicePointOffsetTypeEqual( pid, AnalogPointType );
 
-                Value  = BCDtoBase10( DSt->Message + 8, 5 );
-                Value /= 100.0;
+                if( getIEDPort().getIEDType() == CtiTableDeviceMCTIEDPort::AlphaPowerPlus )
+                {
+                    Value  = BCDtoBase10( DSt->Message + 8, 5 );
+                    Value /= 100.0;
+
+                }
+                else
+                {
+                    Value = 0.0;
+
+                    //  reverse the order so it works with a standard BCD->base10 call
+                    char tmp;
+                    for( int i = 0; i < 3; i++ )
+                    {
+                        tmp = DSt->Message[i];
+                        DSt->Message[i] = DSt->Message[5-i];
+                        DSt->Message[5-i] = tmp;
+                    }
+
+                    Value  = BCDtoBase10( DSt->Message, 6 );
+                }
 
                 if( pPoint != NULL )
                 {
@@ -1012,17 +1350,37 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
 
                 pPoint = getDevicePointOffsetTypeEqual( pid - 1, AnalogPointType );
 
-                Value  = BCDtoBase10( DSt->Message, 3 );
-                Value /= 1000.0;
-
-                for( i = 3; i < 8; i++ )
+                switch( getIEDPort().getIEDType() )
                 {
-                    //  BCD is not make happiness.  so FIX!  Whee!
-                    DSt->Message[i] = (((DSt->Message[i] & 0xf0) / 16) * 10) + (DSt->Message[i] & 0x0f);
-                }
+                    case CtiTableDeviceMCTIEDPort::AlphaPowerPlus:
+                    {
+                        Value  = BCDtoBase10( DSt->Message, 3 );
+                        for( i = 3; i < 8; i++ )
+                        {
+                            //  BCD is not make happiness.  so FIX!  Whee!
+                            DSt->Message[i] = (((DSt->Message[i] & 0xf0) / 16) * 10) + (DSt->Message[i] & 0x0f);
+                        }
+                        datestamp = RWDate((unsigned)DSt->Message[5], (unsigned)DSt->Message[4], (unsigned)DSt->Message[3] + 2000 );
+                        timestamp = RWTime( datestamp, (unsigned)DSt->Message[6], (unsigned)DSt->Message[7] );
+                        Value /= 1000.0;
 
-                datestamp = RWDate((unsigned)DSt->Message[5], (unsigned)DSt->Message[4], (unsigned)DSt->Message[3] + 2000 );
-                timestamp = RWTime( datestamp, (unsigned)DSt->Message[6], (unsigned)DSt->Message[7] );
+                        break;
+                    }
+
+                    case CtiTableDeviceMCTIEDPort::LandisGyrS4:
+                    {
+                        Value  = (DSt->Message[7] << 8) + DSt->Message[6];
+                        for( i = 8; i < 13; i++ )
+                        {
+                            //  BCD is not make happiness.  so FIX!  Whee!
+                            DSt->Message[i] = (((DSt->Message[i] & 0xf0) / 16) * 10) + (DSt->Message[i] & 0x0f);
+                        }
+                        datestamp = RWDate((unsigned)DSt->Message[11], (unsigned)DSt->Message[12], (unsigned)DSt->Message[10] + 2000 );
+                        timestamp = RWTime( datestamp, (unsigned)DSt->Message[9], (unsigned)DSt->Message[8] );
+
+                        break;
+                    }
+                }
 
                 if( pPoint != NULL )
                 {
@@ -1030,32 +1388,51 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
 
                     resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value,
                                                                                              ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
-                    resultString += " @ " + CtiNumStr((int)DSt->Message[4]).zpad(2) + "/" +
-                                            CtiNumStr((int)DSt->Message[5]).zpad(2) + "/" +
-                                            CtiNumStr((int)DSt->Message[3]).zpad(2) + " " +
-                                            CtiNumStr((int)DSt->Message[6]).zpad(2) + ":" +
-                                            CtiNumStr((int)DSt->Message[7]).zpad(2);
-                    pData = new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, resultString);
-                    if(pData != NULL)
+                    if( datestamp.isValid() )
                     {
-                        pData->setTime( timestamp.seconds() );
+                        resultString += " @ " + CtiNumStr(datestamp.month()).zpad(2)      + "/" +
+                                                CtiNumStr(datestamp.dayOfMonth()).zpad(2) + "/" +
+                                                CtiNumStr(datestamp.year()).zpad(2)       + " " +
+                                                CtiNumStr(timestamp.hour()).zpad(2)       + ":" +
+                                                CtiNumStr(timestamp.minute()).zpad(2);
+                        pData = new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, resultString);
+                        if(pData != NULL)
+                        {
+                            pData->setTime( timestamp.seconds() );
 
-                        ReturnMsg->PointData().insert(pData);
-                        pData = NULL;  // We just put it on the list...
+                            ReturnMsg->PointData().insert(pData);
+                            pData = NULL;  // We just put it on the list...
+                        }
+                    }
+                    else
+                    {
+                        //  don't send a pointdata msg, it's uninitialized and doesn't matter
+                        resultString += " @ 00/00/00 00:00";
+
+                        resultString  = ReturnMsg->ResultString() + resultString;
+
+                        ReturnMsg->setResultString(resultString);
                     }
                 }
                 else
                 {
                     resultString  = ReturnMsg->ResultString();
                     resultString += getName() + " / " + name + " " + ratename + ": " + CtiNumStr(Value);
-                    resultString += " @ " + CtiNumStr((int)DSt->Message[4]).zpad(2) + "/" +
-                                            CtiNumStr((int)DSt->Message[5]).zpad(2) + "/" +
-                                            CtiNumStr((int)DSt->Message[3]).zpad(2) + " " +
-                                            CtiNumStr((int)DSt->Message[6]).zpad(2) + ":" +
-                                            CtiNumStr((int)DSt->Message[7]).zpad(2) + " - point undefined in DB\n";
+                    if( datestamp.isValid() )
+                    {
+                        resultString += " @ " + CtiNumStr(datestamp.month()).zpad(2)      + "/" +
+                                                CtiNumStr(datestamp.dayOfMonth()).zpad(2) + "/" +
+                                                CtiNumStr(datestamp.year()).zpad(2)       + " " +
+                                                CtiNumStr(timestamp.hour()).zpad(2)       + ":" +
+                                                CtiNumStr(timestamp.minute()).zpad(2);
+                    }
+                    else
+                    {
+                        resultString += " @ 00/00/00 00:00";
+                    }
+                    resultString += " -- point undefined in DB";
                     ReturnMsg->setResultString( resultString );
                 }
-
             }
         }
     }
