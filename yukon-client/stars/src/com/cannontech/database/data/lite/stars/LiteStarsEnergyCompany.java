@@ -284,8 +284,11 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	public OptOutEventQueue getOptOutEventQueue() {
 		if (optOutEventQueue == null) {
 			try {
-				optOutEventQueue = new OptOutEventQueue( getEnergyCompanySetting(EnergyCompanyRole.OPTOUT_COMMAND_FILE) );
-				optOutEventQueue.syncFromFile();
+				String filename = getEnergyCompanySetting(EnergyCompanyRole.OPTOUT_COMMAND_FILE);
+				if (filename != null) {
+					optOutEventQueue = new OptOutEventQueue( filename );
+					optOutEventQueue.syncFromFile();
+				}
 			}
 			catch (IOException e) {
 				e.printStackTrace();

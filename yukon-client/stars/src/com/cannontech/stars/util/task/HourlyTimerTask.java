@@ -65,8 +65,13 @@ public class HourlyTimerTask extends StarsTimerTask {
     		LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) companies.get(i);
 			if (company.getLiteID() == SOAPServer.DEFAULT_ENERGY_COMPANY_ID) continue;
 			
-			OptOutEventQueue.OptOutEvent[] dueEvents =
-					company.getOptOutEventQueue().getDueEvents(company.getLiteID(), TIME_LIMIT);
+			OptOutEventQueue queue = company.getOptOutEventQueue();
+			if (queue == null) {
+				CTILogger.error("Cannot get the OptOutEventQueue for energy company #" + company.getLiteID());
+				continue; 
+			}
+			
+			OptOutEventQueue.OptOutEvent[] dueEvents = queue.getDueEvents(company.getLiteID(), TIME_LIMIT);
 			
 			for (int j = 0; j < dueEvents.length; j++) {
 				// If the opt out event has already expired, then do nothing
