@@ -8,7 +8,8 @@ package com.cannontech.analysis;
 
 import com.cannontech.analysis.report.DatabaseReport;
 import com.cannontech.analysis.report.DisconnectReport;
-import com.cannontech.analysis.report.EnergyCompanyActivityLogReport;
+import com.cannontech.analysis.report.ECActivityDetailReport;
+import com.cannontech.analysis.report.ECActivityLogReport;
 import com.cannontech.analysis.report.LGAccountingReport;
 import com.cannontech.analysis.report.MissedMeterReport;
 import com.cannontech.analysis.report.PowerFailReport;
@@ -61,8 +62,11 @@ public class ReportFuncs
 				case ReportTypes.DISCONNECT_DATA:
 					return new DisconnectReport();
 					
-				case ReportTypes.ENERGY_COMPANY_ACTIVITY_LOG_DATA:
-					return new EnergyCompanyActivityLogReport();
+				case ReportTypes.EC_ACTIVITY_LOG_DATA:
+					return new ECActivityLogReport();
+
+				case ReportTypes.EC_ACTIVITY_DETAIL_DATA:
+					return new ECActivityDetailReport();
 					
 				case ReportTypes.CARRIER_ROUTE_MACRO_DATA:
 					return new RouteMacroReport("CARRIER");

@@ -1,6 +1,7 @@
 package com.cannontech.analysis.tablemodel;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 
 import com.cannontech.analysis.ColumnProperties;
@@ -12,6 +13,7 @@ import com.cannontech.database.PoolManager;
 import com.cannontech.database.cache.functions.CustomerFuncs;
 import com.cannontech.database.cache.functions.EnergyCompanyFuncs;
 import com.cannontech.database.cache.functions.YukonUserFuncs;
+import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -30,7 +32,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
  * 				statType - DynamicPaoStatistics.statisticType
  * @author snebben
  */
-public class ActivityModel extends ReportModelBase
+public class ActivityDetailModel extends ReportModelBase
 {
 	/** A string for the title of the data */
 	private static String title = "ENERGY COMPANY ACTIVITY LOG";
@@ -40,15 +42,13 @@ public class ActivityModel extends ReportModelBase
 	
 	/** Enum values for column representation */
 	public final static int ENERGY_COMPANY_COLUMN = 0;
-	public final static int CONTACT_COLUMN = 1;
-	public final static int USERNAME_COLUMN = 2;	
-	public final static int ACCOUNT_NUMBER_COLUMN = 3;
-	public final static int ACTION_COLUMN = 4;
-	public final static int ACTION_COUNT_COLUMN = 5;
-	
-//	public final static int DATE_TIME_COLUMN = 6;
-//	public final static int ACTION_COLUMN = 7;
-//	public final static int DESCRIPTION_COLUMN = 8;	
+	public final static int DATE_COLUMN = 1;
+	public final static int TIME_COLUMN = 2;
+	public final static int CONTACT_COLUMN = 3;
+	public final static int USERNAME_COLUMN = 4;	
+	public final static int ACCOUNT_NUMBER_COLUMN = 5;
+	public final static int ACTION_COLUMN = 6;
+	public final static int DESCRIPTION_COLUMN = 7;	
 	
 	/** String values for column representation */
 	public final static String ENERGY_COMPANY_STRING = "Energy Company";
@@ -56,16 +56,15 @@ public class ActivityModel extends ReportModelBase
 	public final static String CONTACT_STRING = "Contact";
 	public final static String ACCOUNT_NUMBER_STRING = "Account Number";
 	public final static String ACTION_STRING = "Action";
-	public final static String ACTION_COUNT_STRING = "Count";
-//	public final static String DATE_TIME_STRING = "Date/Time";
-//	public final static String ACTION_STRING = "Action";
-//	public final static String DESCRIPTION_STRING = "Description";
+	public final static String DATE_TIME_STRING = "Date/Time";
+	public final static String TIME_STRING = "Time";
+	public final static String DESCRIPTION_STRING = "Description";
 
-	public final static String TOTALS_HEADER_STRING = "TOTALS";
 	/** Class fields */
-	private int[] ecIDs = null;	
+	private int[] ecIDs = null;
 
-	private HashMap totals = null;
+	/** Flag for program related activities only */
+	private boolean programInfoOnly = false;	
 
 	public static java.util.Comparator actLogComparator = new java.util.Comparator()
 	{
@@ -76,90 +75,70 @@ public class ActivityModel extends ReportModelBase
 			anotherVal = ((ActivityLog)o2).getECName();
 			if( thisVal.equalsIgnoreCase(anotherVal) )
 			{				
-				//if the Timestamps are equal, we need to sort by accountNumber
-				thisVal = ((ActivityLog)o1).getAcctNumber();
-				anotherVal = ((ActivityLog)o2).getAcctNumber();
-				Object acct1 = null, acct2 = null;
-				try
-				{
-					acct1 = Integer.valueOf(thisVal);
-				}
-				catch (NumberFormatException nfe1)
-				{
-					try
-					{
-						acct2 = Integer.valueOf(anotherVal);		
-					}
-					catch (NumberFormatException nfe2)
-					{
-						if( thisVal.equalsIgnoreCase(anotherVal))
-						{				
-							//if the Timestamps are equal, we need to sort by username
-							thisVal = ((ActivityLog)o1).getUserName();
-							anotherVal = ((ActivityLog)o2).getUserName();
-							if( thisVal.equalsIgnoreCase(anotherVal))
-							{
-								thisVal = ((ActivityLog)o1).getAction();
-								anotherVal = ((ActivityLog)o2).getAction();
-							}
-							return ( thisVal.compareToIgnoreCase(anotherVal) );
-						}				
-						//both are strings
-						return ( thisVal.compareToIgnoreCase(anotherVal) );
-					}
-					//first one is string, second one is number
-					return -1;
-				}
-				try
-				{
-					acct2 = Integer.valueOf(anotherVal);
-				}
-				catch (Exception e)
-				{
-					//first one is number, second one is string
-					return 1;
-				}
-				
-				if( ((Integer)acct1).intValue() == ((Integer)acct2).intValue() )
+				//if the energyCompanies are equal, we need to sort by timestamp
+				thisVal = ((ActivityLog)o1).getDateTime().toString();
+				anotherVal = ((ActivityLog)o2).getDateTime().toString();
+				Date dt1 = ((ActivityLog)o1).getDateTime();
+				Date dt2 = ((ActivityLog)o2).getDateTime();
+				if( dt1.compareTo(dt2) == 0 )
 				{				
-					//if the Timestamps are equal, we need to sort by username
-					thisVal = ((ActivityLog)o1).getUserName();
-					anotherVal = ((ActivityLog)o2).getUserName();
-					if( thisVal.equalsIgnoreCase(anotherVal))
+					//if the Timestamps are equal, we need to sort by accountNumber
+					thisVal = ((ActivityLog)o1).getAcctNumber();
+					anotherVal = ((ActivityLog)o2).getAcctNumber();
+					Object acct1 = null, acct2 = null;
+					try{
+						acct1 = Integer.valueOf(thisVal);
+					}catch (NumberFormatException nfe1)
 					{
-						thisVal = ((ActivityLog)o1).getAction();
-						anotherVal = ((ActivityLog)o2).getAction();
+						try{
+							acct2 = Integer.valueOf(anotherVal);		
+						}catch (NumberFormatException nfe2)
+						{
+							//both are strings
+							return ( thisVal.compareToIgnoreCase(anotherVal) );
+						}
+						//first one is string, second one is number
+						return -1;
 					}
-					return ( thisVal.compareToIgnoreCase(anotherVal) );
-				}				
-				return ( ((Integer)acct1).compareTo((Integer)acct2));
+					try{
+						acct2 = Integer.valueOf(anotherVal);
+					}catch (Exception e)
+					{
+						//first one is number, second one is string
+						return 1;
+					}
+				
+					return ( ((Integer)acct1).compareTo((Integer)acct2));
+				}	
+				return (dt1.compareTo(dt2)); 			
 			}				
 
 			return ( thisVal.compareToIgnoreCase(anotherVal) );
 		}
 	};
+	
 	/**
 	 * Constructor class
 	 * @param statType_ DynamicPaoStatistics.StatisticType
 	 */
-	public ActivityModel(long startTime_, long stopTime_)
+	public ActivityDetailModel(long startTime_, long stopTime_)
 	{
-		super(ReportTypes.EC_ACTIVITY_LOG_DATA, startTime_, stopTime_);//default type
+		super(ReportTypes.EC_ACTIVITY_DETAIL_DATA, startTime_, stopTime_);//default type
 	}
 
 	/**
 	 * Constructor class
 	 * @param statType_ DynamicPaoStatistics.StatisticType
 	 */
-	public ActivityModel()
+	public ActivityDetailModel()
 	{
-		this(ReportTypes.EC_ACTIVITY_LOG_DATA);//default report type		
+		this(ReportTypes.EC_ACTIVITY_DETAIL_DATA);//default report type		
 	}
 	/**
 	 * Constructor class
 	 * @param statType_ DynamicPaoStatistics.StatisticType
 	 */
-	public ActivityModel(int reportType_)
+	public ActivityDetailModel(int reportType_)
 	{
 		super();//default type
 		setReportType(reportType_);		
@@ -168,9 +147,9 @@ public class ActivityModel extends ReportModelBase
 	 * Constructor class
 	 * @param statType_ DynamicPaoStatistics.StatisticType
 	 */
-	public ActivityModel(int [] ecIDs_)
+	public ActivityDetailModel(int [] ecIDs_)
 	{
-		this(ReportTypes.EC_ACTIVITY_LOG_DATA);//default type
+		this(ReportTypes.EC_ACTIVITY_DETAIL_DATA);//default type
 		setECIDs(ecIDs_);
 	}
 	/**
@@ -178,9 +157,9 @@ public class ActivityModel extends ReportModelBase
 	 * Only ONE energycompanyID is used, constructor for convenience 
 	 * @param statType_ DynamicPaoStatistics.StatisticType
 	 */
-	public ActivityModel(Integer ecID_)
+	public ActivityDetailModel(Integer ecID_)
 	{
-		this(ReportTypes.EC_ACTIVITY_LOG_DATA);//default type
+		this(ReportTypes.EC_ACTIVITY_DETAIL_DATA);//default type
 		setECIDs(ecID_);
 	}
 	
@@ -239,6 +218,8 @@ public class ActivityModel extends ReportModelBase
 			{
 				e.printStackTrace();
 			}
+			
+			//Sort the data!
 			Collections.sort(getData(), actLogComparator);
 		}
 		CTILogger.info("Report Records Collected from Database: " + getData().size());
@@ -252,19 +233,25 @@ public class ActivityModel extends ReportModelBase
 	public StringBuffer buildSQLStatement()
 	{
 		StringBuffer sql = new StringBuffer("SELECT AL.ENERGYCOMPANYID, AL.USERID, AL.CUSTOMERID, AL.ACCOUNTID, CA.ACCOUNTNUMBER, ACTION, " + 
-		" COUNT(ACTIVITYLOGID) AS ACTIONCOUNT " + 
+		" TIMESTAMP, DESCRIPTION " + 
 		" FROM ACTIVITYLOG AL LEFT OUTER JOIN CUSTOMERACCOUNT CA " +
-		" ON CA.ACCOUNTID = AL.ACCOUNTID " + 
-		" WHERE AL.TIMESTAMP >= ?");
+		" ON CA.ACCOUNTID = AL.ACCOUNTID " +
+		" WHERE AL.TIMESTAMP >= ? ");
 		if( getECIDs() != null )
 		{
 			sql.append(" AND AL.ENERGYCOMPANYID IN (" + getECIDs()[0]);
 			for (int i = 1; i < getECIDs().length; i++)
 				sql.append(", " + getECIDs()[i]);
 			sql.append(")");
+		}
+		if( isProgramInfoOnly())
+		{
+			sql.append(" AND AL.ACTION IN ('" +ActivityLogActions.PROGRAM_ENROLLMENT_ACTION + "', '"
+											+ActivityLogActions.PROGRAM_OPT_OUT_ACTION + "', '"
+											+ActivityLogActions.PROGRAM_REENABLE_ACTION+ "')");
 		}		
-		sql.append(" GROUP BY AL.ENERGYCOMPANYID, AL.CUSTOMERID, AL.USERID, AL.ACCOUNTID, CA.ACCOUNTNUMBER, ACTION " +
-					" ORDER BY AL.ENERGYCOMPANYID, AL.CUSTOMERID, AL.USERID, CA.ACCOUNTNUMBER, ACTION");
+
+		sql.append(" ORDER BY AL.ENERGYCOMPANYID, TIMESTAMP, CA.ACCOUNTNUMBER, AL.CUSTOMERID, AL.USERID, ACTION, DESCRIPTION");
 		return sql;
 		
 	}
@@ -292,7 +279,7 @@ public class ActivityModel extends ReportModelBase
 			}
 			else
 			{
-				StringBuffer sql = new StringBuffer("SELECT DISTINCT ACCOUNTID, ACCOUNTNUMBER FROM CUSTOMERACCOUNT");
+				StringBuffer sql = new StringBuffer("SELECT DISTINCT ACCOUNTID, ACCOUNTNUMBER FROM CUSTOMERACCOUNT ORDER BY ACCOUNTNUMBER");
 				CTILogger.info(sql.toString());
 				pstmt = conn.prepareStatement(sql.toString());
 				rset = pstmt.executeQuery();
@@ -304,9 +291,9 @@ public class ActivityModel extends ReportModelBase
 					acctNumHash.put(acctID, acctNum);
 				}
 					
-				sql = new StringBuffer("SELECT ENERGYCOMPANYID, USERID, CUSTOMERID, ACCOUNTID, ACTION, " + 
-					" COUNT(ACTIVITYLOGID) AS ACTIONCOUNT " +
-					" FROM ACTIVITYLOG " +
+				sql = new StringBuffer("SELECT AL.ENERGYCOMPANYID, USERID, CUSTOMERID, ACCOUNTID, ACTION, " + 
+					" TIMESTAMP, DESCRIPTION " +
+					" FROM ACTIVITYLOG AL" +
 					" WHERE TIMESTAMP >= ? ");
 
 				if( getECIDs() != null )
@@ -315,10 +302,15 @@ public class ActivityModel extends ReportModelBase
 					for (int i = 1; i < getECIDs().length; i++)
 						sql.append(", " + getECIDs()[i]);
 					sql.append(")");
-				}							
+				}
+				if( isProgramInfoOnly())
+				{
+					sql.append(" AND AL.ACTION IN ('" +ActivityLogActions.PROGRAM_ENROLLMENT_ACTION + "', '"
+													+ActivityLogActions.PROGRAM_OPT_OUT_ACTION + "', '"
+													+ActivityLogActions.PROGRAM_REENABLE_ACTION+ "')");
+				}									
 
-				sql.append(" GROUP BY ENERGYCOMPANYID, CUSTOMERID, USERID, ACCOUNTID, ACTION " +
-							" ORDER BY ENERGYCOMPANYID, CUSTOMERID, USERID, ACCOUNTID, ACTION");
+				sql.append(" ORDER BY AL.ENERGYCOMPANYID, TIMESTAMP, ACCOUNTID, AL.CUSTOMERID, AL.USERID, ACTION, DESCRIPTION ");
 				
 				pstmt = conn.prepareStatement(sql.toString());
 				pstmt.setTimestamp(1, new java.sql.Timestamp( getStartTime() ));
@@ -333,8 +325,8 @@ public class ActivityModel extends ReportModelBase
 						ecName = lec.getName();
 					
 					Integer userID = new Integer(rset.getInt(2));
-					String userName = "";
 					LiteYukonUser user = YukonUserFuncs.getLiteYukonUser(userID.intValue());
+					String userName = "";
 					if (user == null)
 					{
 						if( userID.intValue() == -1)
@@ -344,11 +336,12 @@ public class ActivityModel extends ReportModelBase
 					}
 					else
 						userName = (user.getUsername());
-
+					
 					Integer custID = new Integer(rset.getInt(3));
 					Integer acctID = new Integer(rset.getInt(4));
 					String action = rset.getString(5);
-					Integer count = new Integer(rset.getInt(6));
+					Date dateTime = new Date(rset.getTimestamp(6).getTime());
+					String desc = rset.getString(7);
 					//ENERGYCOMPANYID, CUSTOMERID, ACCOUNTID, ACTION, COUNT(ACTIVITYLOGID) AS ACTIONCOUNT 
 
 					String acctNum = (String)acctNumHash.get(acctID);
@@ -359,8 +352,8 @@ public class ActivityModel extends ReportModelBase
 						else
 							acctNum =  "(deleted)";
 					}
-
-					ActivityLog al = new ActivityLog(ecName, userName, custID, acctNum, acctID, count, action);
+					
+					ActivityLog al = new ActivityLog(ecName, userName, custID, acctID, acctNum, dateTime, action, desc);
 					getData().add(al); 
 				}
 			}
@@ -413,7 +406,7 @@ public class ActivityModel extends ReportModelBase
 			}
 			else
 				userName = (user.getUsername());
-
+			
 			Integer custID = new Integer(rset.getInt(3));
 			Integer acctID = new Integer(rset.getInt(4));
 			String acctNum = rset.getString(5);
@@ -426,10 +419,11 @@ public class ActivityModel extends ReportModelBase
 			}
 			
 			String action = rset.getString(6);
-			Integer count = new Integer(rset.getInt(7));
-			//AL.ENERGYCOMPANYID, AL.USERID, AL.CUSTOMERID, AL.ACCOUNTID, CA.ACCOUNTNUMBER, ACTION, COUNT(ACTIVITYLOGID) AS ACTIONCOUNT
+			Date dateTime = new Date(rset.getTimestamp(7).getTime());
+			String desc = rset.getString(8);
+			//AL.ENERGYCOMPANYID, AL.USERID, AL.CUSTOMERID, AL.ACCOUNTID, CA.ACCOUNTNUMBER, ACTION, TIMESTAMP, DESCRIPTION 
 	
-			ActivityLog al = new ActivityLog(ecName, userName, custID, acctNum, acctID, count, action);
+			ActivityLog al = new ActivityLog(ecName, userName, custID, acctID, acctNum, dateTime, action, desc);
 			getData().add(al);
 		}
 		catch(java.sql.SQLException e)
@@ -482,7 +476,7 @@ public class ActivityModel extends ReportModelBase
 				case ENERGY_COMPANY_COLUMN:
 					return al.getECName();
 				case USERNAME_COLUMN:
-					return al.getUserName();
+					return (al.getUserName());
 				case CONTACT_COLUMN:
 				{
 					LiteContact contact = CustomerFuncs.getPrimaryContact(al.getCustID().intValue());
@@ -492,24 +486,15 @@ public class ActivityModel extends ReportModelBase
 					return (contact.getContLastName() + ", " + contact.getContFirstName());
 				}
 				case ACCOUNT_NUMBER_COLUMN:
-				{
-					if (al.getAcctNumber() == null)
-					{
-						if( al.getAcctID().intValue() == -1)
-							return "(n/a)";
-						else
-							return "(deleted)";
-					}
 					return al.getAcctNumber();
-				}
-				case ACTION_COUNT_COLUMN:
-					return al.getActionCount();
-//					case DATE_TIME_COLUMN:
-//						return dateTime;
+				case DATE_COLUMN:
+					return al.getDateOnly();
+				case TIME_COLUMN:
+					return al.getDateTime();
 				case ACTION_COLUMN:
 					return al.getAction();					
-//					case DESCRIPTION_COLUMN:
-//						return description;
+				case DESCRIPTION_COLUMN:
+					return al.getDescription();
 			}
 		}
 		return null;
@@ -524,14 +509,13 @@ public class ActivityModel extends ReportModelBase
 		{
 			columnNames = new String[]{
 				ENERGY_COMPANY_STRING,
+				DATE_TIME_STRING,
+				TIME_STRING,
 				CONTACT_STRING,
 				USERNAME_STRING,
 				ACCOUNT_NUMBER_STRING,
 				ACTION_STRING,
-				ACTION_COUNT_STRING
-//				DATE_TIME_STRING,
-//				ACTION_STRING,
-//				DESCRIPTION_STRING
+				DESCRIPTION_STRING
 			};
 		}
 		return columnNames;
@@ -546,14 +530,13 @@ public class ActivityModel extends ReportModelBase
 		{
 			columnTypes = new Class[]{
 				String.class,
+				java.util.Date.class,
+				java.util.Date.class,
 				String.class,
 				String.class,
 				String.class,
 				String.class,
-				Integer.class
-//				java.util.Date.class,
-//				String.class,
-//				String.class
+				String.class
 			};
 		}
 			
@@ -567,38 +550,34 @@ public class ActivityModel extends ReportModelBase
 	{
 		if(columnProperties == null)
 		{
+			int offset = 0;
 			columnProperties = new ColumnProperties[]{
 				//posX, posY, width, height, numberFormatString
-				new ColumnProperties(0, 1, 150, 18, null),
-				new ColumnProperties(0, 1, 150, 18, null),
-				new ColumnProperties(150, 1, 100, 18, null),
-				new ColumnProperties(250, 1, 100, 18, null),
-				new ColumnProperties(350, 1, 150, 18, null),
-				new ColumnProperties(500, 1, 25, 18, null)
+				new ColumnProperties(offset, 1, 150, 18, null),
+				new ColumnProperties(offset, 1, 75, 18, "MMMM dd, yyyy"),
+				new ColumnProperties(offset, 1, offset+=75, 18, "HH:mm:ss"),
+				new ColumnProperties(offset, 1, offset+=125, 18, null),
+				new ColumnProperties(offset, 1, offset+=75, 18, null),
+				new ColumnProperties(offset, 1, offset+=90, 18, null),
+				new ColumnProperties(offset, 1, offset+=125, 18, null),
+				new ColumnProperties(offset-125, 12, 600, 18, null)
 			};				
 		}
 		return columnProperties;
 	}
-
-	public HashMap getTotals()
+	/**
+	 * @return
+	 */
+	public boolean isProgramInfoOnly()
 	{
-		if (totals == null)
-		{
-			totals = new HashMap();
-			for(int i = 0; i < getData().size(); i++)
-			{
-				String key = ((ActivityLog)getData().get(i)).getAction();
-				Integer initValue = (Integer)totals.get(key);
-				if( initValue == null)
-					initValue = new Integer(0);
-	
-				Integer newValue = ((ActivityLog)getData().get(i)).getActionCount();
-				newValue = new Integer(newValue.intValue() + initValue.intValue());
-				
-				totals.put(key, newValue);		
-			}
-		}
-		return totals;
+		return programInfoOnly;
 	}
 
+	/**
+	 * @param b
+	 */
+	public void setProgramInfoOnly(boolean programInfo_)
+	{
+		programInfoOnly = programInfo_;
+	}
 }

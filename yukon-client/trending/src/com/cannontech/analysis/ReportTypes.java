@@ -6,6 +6,7 @@
  */
 package com.cannontech.analysis;
 
+import com.cannontech.analysis.tablemodel.ActivityDetailModel;
 import com.cannontech.analysis.tablemodel.ActivityModel;
 import com.cannontech.analysis.tablemodel.DatabaseModel;
 import com.cannontech.analysis.tablemodel.DisconnectModel;
@@ -38,11 +39,12 @@ public class ReportTypes
 	public static final int POWER_FAIL_DATA = 6;
 	public static final int DISCONNECT_DATA = 7;
 	
-	public static final int ENERGY_COMPANY_ACTIVITY_LOG_DATA = 8;
+	public static final int EC_ACTIVITY_LOG_DATA = 8;
 	public static final int CARRIER_ROUTE_MACRO_DATA = 9;
 	
 	public static final int SUCCESS_METER_DATA = 10;
 	public static final int LOAD_PROFILE_DATA = 11;
+	public static final int EC_ACTIVITY_DETAIL_DATA = 12;
 	
 	public static final int ADMIN_LOG_REPORTS_GROUP = 0;
 	public static final int AMR_REPORTS_GROUP = 1;
@@ -56,13 +58,13 @@ public class ReportTypes
 //	[groupID][typeID array]
 // xxx_reports_group may appear in multiple mappings
 	private static int[][] groupToTypeMap = {
-		{ENERGY_COMPANY_ACTIVITY_LOG_DATA, SYSTEM_LOG_DATA},	//admin log reports
+		{EC_ACTIVITY_LOG_DATA, SYSTEM_LOG_DATA},	//admin log reports
 		{MISSED_METER_DATA, SUCCESS_METER_DATA, POWER_FAIL_DATA, DISCONNECT_DATA, LOAD_PROFILE_DATA},	//amr reports
 		{STATISTIC_DATA},	//stat reports
 		{LM_CONTROL_LOG_DATA, LG_ACCOUNTING_DATA},		//lm reports
 		{},		//cap control reports
 		{CARRIER_DATA}, //database reports
-		{ENERGY_COMPANY_ACTIVITY_LOG_DATA },	//stars reports
+		{EC_ACTIVITY_LOG_DATA, EC_ACTIVITY_DETAIL_DATA },	//stars reports
 		{CARRIER_ROUTE_MACRO_DATA}	//other reports
 	};
 
@@ -86,7 +88,7 @@ public class ReportTypes
 				return new PowerFailModel();
 			case ReportTypes.DISCONNECT_DATA:
 				return new DisconnectModel();
-/* 8*/		case ReportTypes.ENERGY_COMPANY_ACTIVITY_LOG_DATA:
+/* 8*/		case ReportTypes.EC_ACTIVITY_LOG_DATA:
 				return new ActivityModel();
 			case ReportTypes.CARRIER_ROUTE_MACRO_DATA:
 				return new RouteMacroModel("CARRIER");
@@ -94,6 +96,9 @@ public class ReportTypes
 				return new MeterReadModel(reportType);
 /* 11*/		case ReportTypes.LOAD_PROFILE_DATA:	//TODO
 				return new MeterReadModel();
+			case ReportTypes.EC_ACTIVITY_DETAIL_DATA:
+				return new ActivityDetailModel();
+				
 			default:
 				return null;
 		}		
