@@ -149,6 +149,14 @@ public class DefaultDatabaseCache implements IDatabaseCache
    {
       return getDBCache().getAllDevices();
    }
+   
+   /**
+	* @ejb:interface-method
+	* tview-type="remote"
+	*/
+   public synchronized java.util.List getAllMCTs() {
+	  return getDBCache().getAllMCTs();
+   }
 
    /**
     * @ejb:interface-method

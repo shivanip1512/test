@@ -26,6 +26,7 @@ public interface IDatabaseCache
 	   
    public java.util.List getAllDeviceMeterGroups();
    public java.util.List getAllDevices();
+   public java.util.List getAllMCTs();
    public java.util.List getAllGraphDefinitions();
 
    // This cache is derive from the point cache
