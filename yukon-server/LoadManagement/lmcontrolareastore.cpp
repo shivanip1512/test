@@ -380,7 +380,8 @@ void CtiLMControlAreaStore::reset()
 		    selector.from(lmGroupTable);
 
 		    selector.where( paObjectTable["paobjectid"] == lmGroupTable["deviceid"] &&
-				    paObjectTable["paobjectid"] == deviceTable["deviceid"] );
+				    paObjectTable["paobjectid"] == deviceTable["deviceid"] &&
+                                    paObjectTable["paobjectid"] > 0 ); // Stars gives meaning to an lmgroup with an id of 0, we don't care about it though
 		
 			
 		    if( _LM_DEBUG & LM_DEBUG_DATABASE )
