@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2003/09/12 02:35:32 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2003/10/23 14:32:20 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -70,6 +70,7 @@ _deviceSN(sn)
     _utilSetpoint._ch_utime = YUKONEOT;
     _deviceBound._utime = YUKONEOT;
     _deviceUnbound._utime = YUKONEOT;
+
 }
 
 CtiDeviceGatewayStat::~CtiDeviceGatewayStat()
@@ -207,8 +208,29 @@ bool CtiDeviceGatewayStat::convertGatewayRXStruct( GATEWAYRXSTRUCT &GatewayRX )
             {
                 _setpoints._utime = now.seconds();
             }
-            _setpoints._coolSetpoint = (ntohs (GatewayRX.U.Setpoints.CoolSetpoint));
-            _setpoints._heatSetpoint = (ntohs (GatewayRX.U.Setpoints.HeatSetpoint));
+
+            SHORT heat = ntohs(GatewayRX.U.Setpoints.HeatSetpoint);
+            SHORT cool = ntohs(GatewayRX.U.Setpoints.CoolSetpoint);
+
+            if(cool >= 0x7f00)
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+            }
+
+            if(heat >= 0x7f00)
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+            }
+
+
+            _setpoints._coolSetpoint = cool;
+            _setpoints._heatSetpoint = heat;
             _setpoints._setpointStatus = GatewayRX.U.Setpoints.SetpointStatus;
             _setpoints._vacationHoldDays = GatewayRX.U.Setpoints.VacationHoldDays;
             _setpoints._vacationHoldPeriod = GatewayRX.U.Setpoints.VacationHoldPeriod;
@@ -343,6 +365,7 @@ bool CtiDeviceGatewayStat::convertGatewayRXStruct( GATEWAYRXSTRUCT &GatewayRX )
             //      2 = Return period
             //      3 = Sleep period
 
+
             day = convertStatDayToCDay(GatewayRX.U.Schedule.Day);
             period = GatewayRX.U.Schedule.Period;
 
@@ -353,22 +376,10 @@ bool CtiDeviceGatewayStat::convertGatewayRXStruct( GATEWAYRXSTRUCT &GatewayRX )
                     if(Type == TYPE_SCHEDULE_CH)
                     {
                         _schedule[day][period]._ch_utime = now.seconds();
-
-                        if(0)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " Schedule Change " << day << " " << period << " at " << (int)_schedule[day][period]._hour << ":" << (int)_schedule[day][period]._minute << endl;
-                        }
                     }
                     else
                     {
                         _schedule[day][period]._utime = now.seconds();
-
-                        if(0)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " Schedule Reply " << day << " " << period << " at " << (int)_schedule[day][period]._hour << ":" << (int)_schedule[day][period]._minute << endl;
-                        }
                     }
                     _schedule[day][period]._fan = GatewayRX.U.Schedule.Fan;
                     _schedule[day][period]._coolSetpoint = ntohs(GatewayRX.U.Schedule.CoolSetpoint);
@@ -1915,13 +1926,6 @@ int CtiDeviceGatewayStat::checkPendingOperations(  )
                         if(!valtype.isResponded() && theend != arrival && arrival >= valtype.getTimeSubmitted() )
                         {
                             astr = RWTime().asString() + " " + CtiNumStr(getDeviceSerialNumber()) + " **** DLC SUBMITTED **** ";
-                            if(1)
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << astr << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                // dout << arrival << " >= " << valtype.getTimeSubmitted() << endl;
-                            }
-
                             valtype.addReplyVector( astr );
                             generateReplyVector(valtype);
                             valtype.setTimeResponded( arrival );
@@ -1930,13 +1934,6 @@ int CtiDeviceGatewayStat::checkPendingOperations(  )
                         if( !valtype.isConfirmed() && theend != confirm && confirm >= valtype.getTimeSubmitted() )
                         {
                             astr = RWTime().asString() + " " + CtiNumStr(getDeviceSerialNumber()) + " **** DLC CONFIRMED **** ";
-                            if(1)
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << astr << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                // dout << confirm << " >= " << valtype.getTimeSubmitted() << endl;
-                            }
-
                             valtype.addReplyVector( astr );
                             generateReplyVector(valtype);
                             valtype.setTimeConfirmed( confirm );
@@ -1962,11 +1959,6 @@ int CtiDeviceGatewayStat::checkPendingOperations(  )
 
                         if(!valtype.isResponded() && theend != arrival && arrival >= valtype.getTimeSubmitted() )
                         {
-                            if(1)
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " **** Pending GETALL complete. **** Stat " << getDeviceSerialNumber() << ".  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
                             valtype.setTimeResponded( arrival );
                             valtype.setTimeConfirmed( arrival );
 
@@ -2025,11 +2017,6 @@ int CtiDeviceGatewayStat::checkPendingOperations(  )
                                 }
                             }
 
-                            if(1)
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " **** Pending SCHEDULE complete. **** Stat " << getDeviceSerialNumber() << ".  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
                             valtype.setTimeResponded( arrival );
                             valtype.setTimeConfirmed( arrival );
 
@@ -2621,17 +2608,7 @@ int CtiDeviceGatewayStat::processParse(SOCKET msgsock, CtiCommandParser &parse, 
                 }
                 else
                 {
-                    switch(RWDate().month())
-                    {
-                    case 6:
-                    case 7:
-                    case 8:
-                        sppriority = EP_SETPOINT_PRIORITY_COOL;
-                        break;
-                    default:
-                        sppriority = EP_SETPOINT_PRIORITY_HEAT;
-                        break;
-                    }
+                    sppriority = estimateSetpointPriority();
                 }
 
                 switch(fan)
@@ -2663,13 +2640,14 @@ int CtiDeviceGatewayStat::processParse(SOCKET msgsock, CtiCommandParser &parse, 
                 {
                     processed = 1;
                     operation = TYPE_SETSETPOINTS;
+
                     sendSetSetpoints(msgsock,
-                                     0,                             // Heat setpoint.  Not used on a run program
-                                     0,                             // Cool setpoint.  Not used on a run program
-                                     EP_SETPOINT_PRIORITY_COOL,     // Setpoint priority (false is cool (not heat))
-                                     EP_SETPOINT_STATUS_RUNPROGRAM, // This is a run program operation
-                                     0,                             // Vacation hold days N/A
-                                     0);                            // Vacation hold period N/A
+                                     getCurrentHeatSchedule(),  // Heat setpoint.  Not used on a run program
+                                     getCurrentCoolSchedule(),  // Cool setpoint.  Not used on a run program
+                                     estimateSetpointPriority(),            // Setpoint priority (false is cool (not heat))
+                                     EP_SETPOINT_STATUS_RUNPROGRAM,         // This is a run program operation
+                                     0,                                     // Vacation hold days N/A
+                                     0);                                    // Vacation hold period N/A
                 }
                 else
                 {
@@ -4351,4 +4329,84 @@ int CtiDeviceGatewayStat::processSchedulePeriod(SOCKET msgsock, CtiCommandParser
     }
 
     return processed;
+}
+
+// Assumes consecutive periods!
+SHORT CtiDeviceGatewayStat::getCurrentHeatSchedule() const
+{
+    SHORT val = 0;
+    RWDate today;
+    RWTime now;
+
+    int day = today.weekDay();
+    int period;
+
+    unsigned sec = now.hour() * 3600 + now.minute() * 60 + now.second();
+    unsigned lastpersec = 0;
+    unsigned persec;
+
+    for(period = 0; period < EP_PERIODS_PER_DAY; period++)
+    {
+        persec = _schedule[day][period]._hour * 3600 + _schedule[day][period]._minute * 60;
+
+        if(lastpersec < sec && sec < persec)        // This is the period we are looking for!
+        {
+            period = (period + 3) % 4;
+            val = _schedule[day][period]._heatSetpoint;
+            break;
+        }
+
+        lastpersec = persec;
+    }
+
+    return val;
+}
+
+SHORT CtiDeviceGatewayStat::getCurrentCoolSchedule() const
+{
+    SHORT val = 0;
+    RWDate today;
+    RWTime now;
+
+    int day = today.weekDay();
+    int period;
+
+    unsigned sec = now.hour() * 3600 + now.minute() * 60 + now.second();
+    unsigned lastpersec = 0;
+    unsigned persec;
+
+    for(period = 0; period < EP_PERIODS_PER_DAY; period++)
+    {
+        persec = _schedule[day][period]._hour * 3600 + _schedule[day][period]._minute * 60;
+
+        if(lastpersec < sec && sec < persec)        // This is the period we are looking for!
+        {
+            period = (period + 3) % 4;
+            val = _schedule[day][period]._coolSetpoint;
+            break;
+        }
+
+        lastpersec = persec;
+    }
+
+    return val;
+}
+
+int CtiDeviceGatewayStat::estimateSetpointPriority()
+{
+    int sppriority;
+
+    switch(RWDate().month())
+    {
+    case 6:
+    case 7:
+    case 8:
+        sppriority = EP_SETPOINT_PRIORITY_COOL;
+        break;
+    default:
+        sppriority = EP_SETPOINT_PRIORITY_HEAT;
+        break;
+    }
+
+    return sppriority;
 }

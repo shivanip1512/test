@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/08/19 20:52:46 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2003/10/23 14:32:20 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -183,6 +183,11 @@ public:
 
     bool getCompletedOperation( CtiPendingStatOperation &op );
 
+    SHORT getCurrentHeatSchedule() const;
+    SHORT getCurrentCoolSchedule() const;
+
+    static int estimateSetpointPriority();
+
 protected:
 
     CtiMutex        _collMux;
@@ -313,6 +318,14 @@ private:
         SHORT _outdoorTemperature;
 
     } _outdoorTemp;
+
+    struct {
+        ULONG _utime;
+        ULONG _ch_utime;
+        UCHAR _day;
+        UCHAR _period;
+
+    } _lastSchedule;         // [day][period]
 
     struct {
         ULONG _utime;
