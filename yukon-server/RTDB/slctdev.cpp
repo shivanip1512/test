@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/slctdev.cpp-arc  $
-* REVISION     :  $Revision: 1.39 $
-* DATE         :  $Date: 2005/02/21 21:43:05 $
+* REVISION     :  $Revision: 1.40 $
+* DATE         :  $Date: 2005/03/10 19:26:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -84,6 +84,10 @@
 #include "dbaccess.h"
 #include "resolvers.h"
 #include "slctdev.h"
+#include "yukon.h"
+
+
+using namespace Cti;  //  in preparation for moving devices to their own namespace
 
 
 DLLEXPORT CtiDeviceBase* DeviceFactory(RWDBReader &rdr)
@@ -120,7 +124,7 @@ DLLEXPORT CtiDeviceBase* DeviceFactory(RWDBReader &rdr)
     case TYPE_DARTRTU:
     case TYPE_DNPRTU:
         {
-            Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceDNP;
+            Device = (CtiDeviceBase*) CTIDBG_new Device::DNP;
             break;
         }
     case TYPE_SERIESVRTU:
