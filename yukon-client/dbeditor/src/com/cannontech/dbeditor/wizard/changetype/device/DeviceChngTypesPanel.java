@@ -3,12 +3,18 @@ import java.awt.Dimension;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.PointFuncs;
+import com.cannontech.database.data.device.CarrierBase;
 import com.cannontech.database.data.device.DeviceBase;
-import com.cannontech.database.data.device.DeviceTypesFuncs;
+import com.cannontech.database.data.device.DeviceFactory;
+import com.cannontech.database.data.device.IDLCBase;
 import com.cannontech.database.data.device.IDeviceMeterGroup;
+import com.cannontech.database.data.device.RemoteBase;
 import com.cannontech.database.data.device.TwoWayDevice;
+import com.cannontech.database.data.device.lm.IGroupRoute;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.pao.DeviceClasses;
@@ -17,8 +23,6 @@ import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.database.db.DBPersistent;
-import com.cannontech.database.db.device.DeviceMeterGroup;
-import com.cannontech.database.db.device.DeviceScanRate;
 
 public class DeviceChngTypesPanel extends com.cannontech.common.gui.util.DataInputPanel implements javax.swing.event.ListSelectionListener {
 	
@@ -73,31 +77,22 @@ public class DeviceChngTypesPanel extends com.cannontech.common.gui.util.DataInp
 			PAOGroups.STRING_VECTRON[0]  
       }, 
       { //RTUs
-         //PAOGroups.STRING_RTU_DNP[0],  //dont allow this for now
 			PAOGroups.STRING_RTU_ILEX[0],
 			PAOGroups.STRING_RTU_WELCO[0] 
       },
       { //LMGroups
-			"LCR 2000", "LCR 3000", "LCR 3000 Emetcon Mode", "LCR 4000", 
-         "LCR 5000", "LMT 100 Series" 
+            PAOGroups.STRING_EMETCON_GROUP[0],
+            PAOGroups.STRING_EXPRESSCOMM_GROUP[0],
+            PAOGroups.STRING_VERSACOM_GROUP[0]          
       }
    };
-
 
 	private static final String[] REPEATERS_LIST = 
 	{ 
 		PAOGroups.STRING_REPEATER[1], PAOGroups.STRING_REPEATER_800[0] 
 	};	
 
-	private static final String[] VALUE_LIST =
-	{
-			PAOGroups.STRING_VERSACOM_GROUP[0],
-			PAOGroups.STRING_VERSACOM_GROUP[0],
-			PAOGroups.STRING_EMETCON_GROUP[0],
-			PAOGroups.STRING_VERSACOM_GROUP[0],
-			PAOGroups.STRING_VERSACOM_GROUP[0],
-			PAOGroups.STRING_EMETCON_GROUP[0] 
-	};
+
 	private javax.swing.JLabel ivjJLabelDevice = null;
 	private javax.swing.JList ivjJListDevices = null;
 	private javax.swing.JPanel ivjJPanelNotes = null;
@@ -328,7 +323,7 @@ public Dimension getPreferredSize()
  */
 public int getSelectedDeviceType()
 {
-	int type = com.cannontech.database.data.pao.PAOGroups.getDeviceType( (String)getJListDevices().getSelectedValue() );
+	int type = PAOGroups.getDeviceType( (String)getJListDevices().getSelectedValue() );
 	return type;
 
 }
@@ -341,26 +336,12 @@ public int getSelectedDeviceType()
 */
 public Object getValue(Object val)
 {
-	String type = null;
-
-	if( getCurrentDevice().getPAOClass().equalsIgnoreCase(DeviceClasses.STRING_CLASS_GROUP) )
-	{
-		for (int i = 0; i < DEVICE_TYPES[5].length; i++)
-		{
-			if (getJListDevices().getSelectedValue() == DEVICE_TYPES[5][i])
-			{
-				type = VALUE_LIST[i];
-				break;
-			}
-		}
-	}
-	else
-		type = (String) getJListDevices().getSelectedValue();
+	String type = (String) getJListDevices().getSelectedValue();
 
 
 	if (val == null)
 	{
-		return new Integer( com.cannontech.database.data.pao.PAOGroups.getDeviceType(type) );
+		return new Integer( PAOGroups.getDeviceType(type) );
 	}
 	else
 	{
@@ -372,9 +353,9 @@ public Object getValue(Object val)
 			oldDevice =
 					(DBPersistent)CtiUtilities.copyObject( val );
 
-			com.cannontech.database.Transaction t =
-				com.cannontech.database.Transaction.createTransaction(
-					com.cannontech.database.Transaction.DELETE_PARTIAL,
+			Transaction t =
+				Transaction.createTransaction(
+					Transaction.DELETE_PARTIAL,
 					((DBPersistent) val));
 
 			val = t.execute();
@@ -392,67 +373,56 @@ public Object getValue(Object val)
 
 
 		//create a brand new DeviceBase object
-		val = com.cannontech.database.data.device.DeviceFactory.createDevice( com.cannontech.database.data.pao.PAOGroups.getDeviceType(type) );
+		val = DeviceFactory.createDevice( PAOGroups.getDeviceType(type) );
 		
 		//set all the device specific stuff here
-		((com.cannontech.database.data.device.DeviceBase) val).setDevice(
-			((com.cannontech.database.data.device.DeviceBase) oldDevice).getDevice() );
+		((DeviceBase) val).setDevice(
+			((DeviceBase) oldDevice).getDevice() );
 			
-		((com.cannontech.database.data.device.DeviceBase) val).setPAOName(
-			((com.cannontech.database.data.device.DeviceBase) oldDevice).getPAOName() );
+		((DeviceBase) val).setPAOName(
+			((DeviceBase) oldDevice).getPAOName() );
 
-		((com.cannontech.database.data.device.DeviceBase) val).setDisableFlag(
-			((com.cannontech.database.data.device.DeviceBase) oldDevice).getPAODisableFlag() );
+		((DeviceBase) val).setDisableFlag(
+			((DeviceBase) oldDevice).getPAODisableFlag() );
 
-		((com.cannontech.database.data.device.DeviceBase) val).setPAOStatistics(
-			((com.cannontech.database.data.device.DeviceBase) oldDevice).getPAOStatistics() );
+		((DeviceBase) val).setPAOStatistics(
+			((DeviceBase) oldDevice).getPAOStatistics() );
 
 		//remove then add the new elements for PAOExclusion
-		((com.cannontech.database.data.device.DeviceBase) val).getPAOExclusionVector().removeAllElements();
-		((com.cannontech.database.data.device.DeviceBase) val).getPAOExclusionVector().addAll(
-			((com.cannontech.database.data.device.DeviceBase) oldDevice).getPAOExclusionVector() );
+		((DeviceBase) val).getPAOExclusionVector().removeAllElements();
+		((DeviceBase) val).getPAOExclusionVector().addAll(
+			((DeviceBase) oldDevice).getPAOExclusionVector() );
 
 
 
-		if( val instanceof com.cannontech.database.data.device.CarrierBase
-			 && oldDevice instanceof com.cannontech.database.data.device.CarrierBase )
+		if( val instanceof CarrierBase
+			 && oldDevice instanceof CarrierBase )
 		{
-			((com.cannontech.database.data.device.CarrierBase) val).getDeviceCarrierSettings().setAddress(
-				((com.cannontech.database.data.device.CarrierBase) oldDevice).getDeviceCarrierSettings().getAddress() );
+			((CarrierBase) val).getDeviceCarrierSettings().setAddress(
+				((CarrierBase) oldDevice).getDeviceCarrierSettings().getAddress() );
 
-			((com.cannontech.database.data.device.CarrierBase) val).getDeviceRoutes().setRouteID(
-				((com.cannontech.database.data.device.CarrierBase) oldDevice).getDeviceRoutes().getRouteID() );
+			((CarrierBase) val).getDeviceRoutes().setRouteID(
+				((CarrierBase) oldDevice).getDeviceRoutes().getRouteID() );
 
 		}
-		else if( val instanceof com.cannontech.database.data.device.lm.LMGroup
-			 		 && oldDevice instanceof com.cannontech.database.data.device.lm.LMGroup )
+		else if( val instanceof IGroupRoute
+		          && oldDevice instanceof IGroupRoute )
 		{
-			if( val instanceof com.cannontech.database.data.device.lm.LMGroupEmetcon
-			 	 && oldDevice instanceof com.cannontech.database.data.device.lm.LMGroupEmetcon)
-			{
-				 ((com.cannontech.database.data.device.lm.LMGroupEmetcon) val).getLmGroupEmetcon().setRouteID(
-						((com.cannontech.database.data.device.lm.LMGroupEmetcon) val).getLmGroupEmetcon().getRouteID() );
-			}
-			else
-			{
-				 ((com.cannontech.database.data.device.lm.LMGroupVersacom) val).getLmGroupVersacom().setRouteID(
-						((com.cannontech.database.data.device.lm.LMGroupVersacom) oldDevice).getLmGroupVersacom().getRouteID() );				 
-			}
-			
+			 ((IGroupRoute) val).setRouteID(
+					((IGroupRoute) oldDevice).getRouteID() );
 		}
-		else if( val instanceof com.cannontech.database.data.device.IDLCBase
-			 	    && oldDevice instanceof com.cannontech.database.data.device.IDLCBase)
-		
+		else if( val instanceof IDLCBase
+			 	  && oldDevice instanceof IDLCBase)
 		{
-			 ((com.cannontech.database.data.device.IDLCBase) val).getDeviceIDLCRemote().setAddress(
-					((com.cannontech.database.data.device.IDLCBase) oldDevice).getDeviceIDLCRemote().getAddress() );
+			 ((IDLCBase) val).getDeviceIDLCRemote().setAddress(
+					((IDLCBase) oldDevice).getDeviceIDLCRemote().getAddress() );
 		}
 			 
-		if( val instanceof com.cannontech.database.data.device.RemoteBase
-	 	    && oldDevice instanceof com.cannontech.database.data.device.RemoteBase)
+		if( val instanceof RemoteBase
+	 	    && oldDevice instanceof RemoteBase )
 		{
-			 ((com.cannontech.database.data.device.RemoteBase) val).getDeviceDirectCommSettings().setPortID(
-					((com.cannontech.database.data.device.RemoteBase) oldDevice).getDeviceDirectCommSettings().getPortID() );			 
+			 ((RemoteBase) val).getDeviceDirectCommSettings().setPortID(
+					((RemoteBase) oldDevice).getDeviceDirectCommSettings().getPortID() );			 
 		}
 
 		if( val instanceof IDeviceMeterGroup
@@ -471,20 +441,18 @@ public Object getValue(Object val)
 		}
 		
 		
-		
-		
 		//execute the actual command in the database 
 		try
 		{
-			com.cannontech.database.Transaction t2 =
-				com.cannontech.database.Transaction.createTransaction(
-					com.cannontech.database.Transaction.ADD_PARTIAL,
+			Transaction t2 =
+				Transaction.createTransaction(
+					Transaction.ADD_PARTIAL,
 					((DBPersistent) val));
 
 			val = t2.execute();
 
 		}
-		catch (com.cannontech.database.TransactionException e)
+		catch (TransactionException e)
 		{
 			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 
@@ -495,8 +463,8 @@ public Object getValue(Object val)
 		try
 		{
 			if( extraObj != null )  {
-				com.cannontech.database.Transaction.createTransaction(
-					com.cannontech.database.Transaction.INSERT,
+				Transaction.createTransaction(
+					Transaction.INSERT,
 					((DBPersistent) extraObj)).execute();
 			
 				SmartMultiDBPersistent multi = new SmartMultiDBPersistent();
@@ -508,7 +476,7 @@ public Object getValue(Object val)
 			}
 
 		}
-		catch (com.cannontech.database.TransactionException e)
+		catch (TransactionException e)
 		{
 			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 
@@ -586,7 +554,7 @@ private void initialize() {
 public static boolean isDeviceTypeChangeable( String devType )
 {
    if( PAOGroups.isStringDevice(devType, PAOGroups.STRING_REPEATER_800) 
-       || PAOGroups.isStringDevice(devType, PAOGroups.STRING_REPEATER)  )
+       || PAOGroups.isStringDevice(devType, PAOGroups.STRING_REPEATER) )
    {
       return true;
    }
@@ -603,6 +571,7 @@ public static boolean isDeviceTypeChangeable( String devType )
       }
 
    }
+
 
    return false;   
 }
@@ -775,14 +744,13 @@ private void setList(int deviceClass, String type)
             {
                if( type.equalsIgnoreCase(DEVICE_TYPES[i][j]) )
                {
-      				getJListDevices().setListData(DEVICE_TYPES[i]);
-      				getJListDevices().setSelectedIndex(0);
-                  break;
+                   getJListDevices().setListData(DEVICE_TYPES[i]);
+                   getJListDevices().setSelectedIndex(0);
+                   break;
                }
             }
 
 			}
-
 		}
 
 	}
