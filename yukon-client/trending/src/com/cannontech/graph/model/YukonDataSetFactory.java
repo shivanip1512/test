@@ -276,20 +276,21 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDefines
 			int allIndex = 0;
 			for (int i = 0; i < tSeries.length; i++)
 			{
-				if(GraphDataSeries.isGraphType(tSeries[i].getTypeMask()))
+				TrendSerie serie = tSeries[i];
+				if(GraphDataSeries.isGraphType(serie.getTypeMask()))
 				{
-					if( tSeries[i].getAxis().equals(axisChars[datasetIndex]))
+					if( serie.getAxis().equals(axisChars[datasetIndex]))
 					{
-						XYSeries xySeries = new XYSeries(tSeries[i].getLabel());
+						XYSeries xySeries = new XYSeries(serie.getLabel());
 
 						Double value = null;
 						Double prevValue = null;				
-						if( tSeries[i].getDataItemArray() != null)
+						if( serie.getDataItemArray() != null)
 						{
 							for (int j = 0; j < keyArray.length; j++)
 							{
 								Double[] values = (Double[])tree.get(keyArray[j]);
-								if( GraphDataSeries.isUsageType(tSeries[i].getTypeMask()))
+								if( GraphDataSeries.isUsageType(serie.getTypeMask()))
 								{
 									if( prevValue == null)
 									{
@@ -317,7 +318,7 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDefines
 						}
 						else
 						{
-							if( GraphDataSeries.isPrimaryType(tSeries[i].getTypeMask()))
+							if( GraphDataSeries.isPrimaryType(serie.getTypeMask()))
 							{
 								// We take away the fact there is a primary gds so that when we sort
 								//  the values, we are able to still show load duration.
@@ -332,6 +333,7 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDefines
 							}
 							allIndex++;
 						}
+						xySeries.setName(xySeries.getName() + updateSeriesNames(serie));
 						dataset[datasetIndex].addSeries(xySeries);
 					}
 				}
