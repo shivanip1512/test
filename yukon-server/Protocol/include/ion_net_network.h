@@ -89,7 +89,7 @@ private:
 
     int _ioState;
 
-    unsigned int   _valid, _srcID, _dstID;
+    unsigned int   _valid, _masterAddress, _slaveAddress;
     unsigned short _msgCount;
 
     enum
@@ -109,7 +109,7 @@ public:
     CtiIONNetworkLayer( );
     ~CtiIONNetworkLayer( );
 
-    void setAddresses( unsigned short srcID, unsigned short dstID );
+    void setAddresses( unsigned short masterAddress, unsigned short slaveAddress );
 
     void setToOutput( CtiIONSerializable &payload, bool timeSync=false );
     void setToInput( void );

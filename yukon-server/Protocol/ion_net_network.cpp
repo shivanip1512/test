@@ -34,12 +34,12 @@ CtiIONNetworkLayer::~CtiIONNetworkLayer( )
 }
 
 
-void CtiIONNetworkLayer::setAddresses( unsigned short srcID, unsigned short dstID )
+void CtiIONNetworkLayer::setAddresses( unsigned short masterAddress, unsigned short slaveAddress )
 {
-    _srcID = srcID;
-    _dstID = dstID;
+    _masterAddress = masterAddress;
+    _slaveAddress  = slaveAddress;
 
-    _datalinkLayer.setAddresses(_srcID, _dstID);
+    _datalinkLayer.setAddresses(_masterAddress, _slaveAddress);
 }
 
 
@@ -100,11 +100,11 @@ void CtiIONNetworkLayer::setToOutput( CtiIONSerializable &payload, bool timeSync
         _netOut.header.desc.timesetmsg = 0;
     }
 
-    _netOut.header.src.byte1 = (_srcID & 0xFF00) >> 8;
-    _netOut.header.src.byte0 = (_srcID & 0x00FF);
+    _netOut.header.src.byte1 = (_masterAddress & 0xFF00) >> 8;
+    _netOut.header.src.byte0 = (_masterAddress & 0x00FF);
 
-    _netOut.header.dst.byte1 = (_dstID & 0xFF00) >> 8;
-    _netOut.header.dst.byte0 = (_dstID & 0x00FF);
+    _netOut.header.dst.byte1 = (_slaveAddress  & 0xFF00) >> 8;
+    _netOut.header.dst.byte0 = (_slaveAddress  & 0x00FF);
 
     _netOut.header.service = 1;  //  only supported value
 
@@ -194,6 +194,7 @@ int CtiIONNetworkLayer::decode( CtiXfer &xfer, int status )
 
     if( _datalinkLayer.errorCondition() )
     {
+        if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " **** Checkpoint -- _datalinkLayer.errorCondition() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
