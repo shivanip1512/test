@@ -4,6 +4,7 @@ include ..\common\rwglobal.inc
 INCLPATHS+= \
 -I$(COMMON)\include \
 -I$(MSG)\include \
+-I$(BOOST) \
 -I$(RW) \
 
 
@@ -23,6 +24,7 @@ INCLPATHS+= \
 ;$(PROCLOG)\include \
 ;$(DISPATCH)\include \
 ;$(MSG)\include \
+;$(BOOST) \
 ;$(RW)
 
 
@@ -65,7 +67,7 @@ ctimsg.dll:    $(OBJS) Makefile
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
-                $(RWCPPINVOKE) $(INCLPATHS) $(RWLINKFLAGS) $(DLLFLAGS) -Fe..\$@ $(OBJS) id_ctimsg.obj -link $(RWLIBS) $(COMPILEBASE)\lib\ctibase.lib
+                $(RWCPPINVOKE) $(INCLPATHS) $(RWLINKFLAGS) $(DLLFLAGS) -Fe..\$@ $(OBJS) id_ctimsg.obj -link $(RWLIBS) $(BOOSTLIBS) $(COMPILEBASE)\lib\ctibase.lib
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
