@@ -549,7 +549,7 @@ private void initialize() {
 
 		java.awt.GridBagConstraints constraintsAddressPanel = new java.awt.GridBagConstraints();
 		constraintsAddressPanel.gridx = 1; constraintsAddressPanel.gridy = 1;
-		constraintsAddressPanel.fill = java.awt.GridBagConstraints.BOTH;
+		constraintsAddressPanel.fill = java.awt.GridBagConstraints.NONE;
 		constraintsAddressPanel.weightx = 1.0;
 		constraintsAddressPanel.weighty = 1.0;
 		constraintsAddressPanel.insets = new java.awt.Insets(1, 2, 1, 2);
@@ -557,7 +557,7 @@ private void initialize() {
 
 		java.awt.GridBagConstraints constraintsTimeoutPanel = new java.awt.GridBagConstraints();
 		constraintsTimeoutPanel.gridx = 1; constraintsTimeoutPanel.gridy = 2;
-		constraintsTimeoutPanel.fill = java.awt.GridBagConstraints.BOTH;
+		constraintsTimeoutPanel.fill = java.awt.GridBagConstraints.NONE;
 		constraintsTimeoutPanel.weightx = 1.0;
 		constraintsTimeoutPanel.weighty = 1.0;
 		constraintsTimeoutPanel.ipadx = -1;
