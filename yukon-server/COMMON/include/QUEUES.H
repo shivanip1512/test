@@ -121,5 +121,8 @@ IM_EX_CTIBASE INT CleanQueue( HCTIQUEUE QueueHandle,
                               bool (*myFindFunc)(void*, void*),
                               void (*myCleanFunc)(void*, void*));
 
+IM_EX_CTIBASE INT ApplyQueue( HCTIQUEUE QueueHandle, void *ptr, void (*myFunc)(void*, void*));
+
+
 
 #endif /* QUEUE_H */

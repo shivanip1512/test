@@ -702,3 +702,35 @@ void RemoveQueueEntry(HCTIQUEUE QueueHandle, PQUEUEENT Entry, PQUEUEENT Previous
 
     return;
 }
+
+IM_EX_CTIBASE INT ApplyQueue( HCTIQUEUE QueueHandle, void *ptr, void (*myFunc)(void*, void*))
+{
+    INT count = 0;
+    PQUEUEENT Entry;
+
+    if(QueueHandle != (HCTIQUEUE) NULL && (QueueHandle->Elements) > 0)
+    {
+        /* get the exclusion semaphore */
+        if( !CTIRequestMutexSem (QueueHandle->BlockSem, 2500) )
+        {
+            /* We the man so unless there has been a fubar...*/
+            if(QueueHandle->First != NULL)
+            {
+                Entry = QueueHandle->First;
+
+                while(Entry != NULL)
+                {
+                    count++;
+                    (*myFunc)(ptr, Entry->Data);
+                    Entry = Entry->Next;
+                }
+
+                CTIReleaseMutexSem (QueueHandle->BlockSem);
+            }
+        }
+    }
+
+    return count;
+}
+
+
