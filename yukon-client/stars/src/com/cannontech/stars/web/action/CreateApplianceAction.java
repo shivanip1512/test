@@ -9,14 +9,6 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.database.Transaction;
-import com.cannontech.database.data.lite.stars.LiteStarsAppAirConditioner;
-import com.cannontech.database.data.lite.stars.LiteStarsAppDualFuel;
-import com.cannontech.database.data.lite.stars.LiteStarsAppGenerator;
-import com.cannontech.database.data.lite.stars.LiteStarsAppGrainDryer;
-import com.cannontech.database.data.lite.stars.LiteStarsAppHeatPump;
-import com.cannontech.database.data.lite.stars.LiteStarsAppIrrigation;
-import com.cannontech.database.data.lite.stars.LiteStarsAppStorageHeat;
-import com.cannontech.database.data.lite.stars.LiteStarsAppWaterHeater;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -477,8 +469,8 @@ public class CreateApplianceAction implements ActionBase {
 			appAC.setTypeID( new Integer(newApp.getAirConditioner().getACType().getEntryID()) );
 			appAC = (ApplianceAirConditioner) Transaction.createTransaction(Transaction.INSERT, appAC).execute();
             
-			liteApp = new LiteStarsAppAirConditioner();
-			StarsLiteFactory.setLiteAppAirConditioner( (LiteStarsAppAirConditioner) liteApp, appAC );
+			liteApp.setAirConditioner( new LiteStarsAppliance.AirConditioner() );
+			StarsLiteFactory.setLiteAppAirConditioner( liteApp.getAirConditioner(), appAC );
 		}
 		else if (newApp.getWaterHeater() != null) {
 			ApplianceWaterHeater appWH = new ApplianceWaterHeater();
@@ -491,8 +483,8 @@ public class CreateApplianceAction implements ActionBase {
 				appWH.setNumberOfElements( new Integer(-1) );
 			appWH = (ApplianceWaterHeater) Transaction.createTransaction(Transaction.INSERT, appWH).execute();
             
-			liteApp = new LiteStarsAppWaterHeater();
-			StarsLiteFactory.setLiteAppWaterHeater( (LiteStarsAppWaterHeater) liteApp, appWH );
+			liteApp.setWaterHeater( new LiteStarsAppliance.WaterHeater() );
+			StarsLiteFactory.setLiteAppWaterHeater( liteApp.getWaterHeater(), appWH );
 		}
 		else if (newApp.getDualFuel() != null) {
 			ApplianceDualFuel appDF = new ApplianceDualFuel();
@@ -505,8 +497,8 @@ public class CreateApplianceAction implements ActionBase {
 				appDF.setSecondaryKWCapacity( new Integer(-1) );
 			appDF = (ApplianceDualFuel) Transaction.createTransaction(Transaction.INSERT, appDF).execute();
             
-			liteApp = new LiteStarsAppDualFuel();
-			StarsLiteFactory.setLiteAppDualFuel( (LiteStarsAppDualFuel) liteApp, appDF );
+			liteApp.setDualFuel( new LiteStarsAppliance.DualFuel() );
+			StarsLiteFactory.setLiteAppDualFuel( liteApp.getDualFuel(), appDF );
 		}
 		else if (newApp.getGenerator() != null) {
 			ApplianceGenerator appGen = new ApplianceGenerator();
@@ -527,8 +519,8 @@ public class CreateApplianceAction implements ActionBase {
 				appGen.setStartDelaySeconds( new Integer(-1) );
 			appGen = (ApplianceGenerator) Transaction.createTransaction(Transaction.INSERT, appGen).execute();
             
-			liteApp = new LiteStarsAppGenerator();
-			StarsLiteFactory.setLiteAppGenerator( (LiteStarsAppGenerator) liteApp, appGen );
+			liteApp.setGenerator( new LiteStarsAppliance.Generator() );
+			StarsLiteFactory.setLiteAppGenerator( liteApp.getGenerator(), appGen );
 		}
 		else if (newApp.getGrainDryer() != null) {
 			ApplianceGrainDryer appGD = new ApplianceGrainDryer();
@@ -540,8 +532,8 @@ public class CreateApplianceAction implements ActionBase {
 			appGD.setBlowerHeatSourceID( new Integer(newApp.getGrainDryer().getBlowerHeatSource().getEntryID()) );
 			appGD = (ApplianceGrainDryer) Transaction.createTransaction(Transaction.INSERT, appGD).execute();
             
-			liteApp = new LiteStarsAppGrainDryer();
-			StarsLiteFactory.setLiteAppGrainDryer( (LiteStarsAppGrainDryer) liteApp, appGD );
+			liteApp.setGrainDryer( new LiteStarsAppliance.GrainDryer() );
+			StarsLiteFactory.setLiteAppGrainDryer( liteApp.getGrainDryer(), appGD );
 		}
 		else if (newApp.getStorageHeat() != null) {
 			ApplianceStorageHeat appSH = new ApplianceStorageHeat();
@@ -557,8 +549,8 @@ public class CreateApplianceAction implements ActionBase {
 				appSH.setHoursToRecharge( new Integer(-1) );
 			appSH = (ApplianceStorageHeat) Transaction.createTransaction(Transaction.INSERT, appSH).execute();
             
-			liteApp = new LiteStarsAppStorageHeat();
-			StarsLiteFactory.setLiteAppStorageHeat( (LiteStarsAppStorageHeat) liteApp, appSH );
+			liteApp.setStorageHeat( new LiteStarsAppliance.StorageHeat() );
+			StarsLiteFactory.setLiteAppStorageHeat( liteApp.getStorageHeat(), appSH );
 		}
 		else if (newApp.getHeatPump() != null) {
 			ApplianceHeatPump appHP = new ApplianceHeatPump();
@@ -572,8 +564,8 @@ public class CreateApplianceAction implements ActionBase {
 				appHP.setSecondsDelayToRestart( new Integer(-1) );
 			appHP = (ApplianceHeatPump) Transaction.createTransaction(Transaction.INSERT, appHP).execute();
             	
-			liteApp = new LiteStarsAppHeatPump();
-			StarsLiteFactory.setLiteAppHeatPump( (LiteStarsAppHeatPump) liteApp, appHP );
+			liteApp.setHeatPump( new LiteStarsAppliance.HeatPump() );
+			StarsLiteFactory.setLiteAppHeatPump( liteApp.getHeatPump(), appHP );
 		}
 		else if (newApp.getIrrigation() != null) {
 			ApplianceIrrigation appIrr = new ApplianceIrrigation();
@@ -586,8 +578,8 @@ public class CreateApplianceAction implements ActionBase {
 			appIrr.setMeterVoltageID( new Integer(newApp.getIrrigation().getMeterVoltage().getEntryID()) );
 			appIrr = (ApplianceIrrigation) Transaction.createTransaction(Transaction.INSERT, appIrr).execute();
             
-			liteApp = new LiteStarsAppIrrigation();
-			StarsLiteFactory.setLiteAppIrrigation( (LiteStarsAppIrrigation) liteApp, appIrr );
+			liteApp.setIrrigation( new LiteStarsAppliance.Irrigation() );
+			StarsLiteFactory.setLiteAppIrrigation( liteApp.getIrrigation(), appIrr );
 		}
 		else
 			liteApp = new LiteStarsAppliance();
