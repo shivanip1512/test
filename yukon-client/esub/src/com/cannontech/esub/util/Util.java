@@ -139,29 +139,4 @@ public static Image findImage(String imageName)
   return(Toolkit.getDefaultToolkit().getImage(imageURL));
  }
  
-/**
- * Loads an image from the filesystem relative to the drawing.
- * @param d
- * @param image
- * @return Image
- */
- /*public static Image loadImage(Drawing d, String image) {
- 	String drawingPath = (new File( d.getFileName() )).getParent();
- 	String imagePath = drawingPath + "/" + image;
- 	
-	return Toolkit.getDefaultToolkit().getImage(imagePath);
- 	
- }*/
- 
- /**
- * Loads an image from the filesystem.
- * @param image
- * @return Image
- */
- public static Image loadImage(String imageFile) { 	
-	return Toolkit.getDefaultToolkit().getImage(imageFile);
- 	
- }
-
-
 }

@@ -42,21 +42,30 @@ import com.loox.jloox.LxMouseListener;
 import com.loox.jloox.LxView;
 
 /**
+ * Main editor class.
  * Creation date: (12/11/2001 3:53:52 PM)
  * @author: 
  */
 public class Editor extends JPanel {
-	JPopupMenu editPopup = new JPopupMenu();
-	JMenuItem deletePopupItem = new JMenuItem("Delete");
+	
+//	JPopupMenu editPopup = new JPopupMenu();
+//	JMenuItem deletePopupItem = new JMenuItem("Delete");
 
 	private static final Dimension defaultSize = new Dimension(800, 600);
 
+	// the drawing to edit
+	// Synchronize on the drawing to stop any updates
+	// from happening 
 	private Drawing drawing;
+	
+	// timer to update the drawing
 	private Timer drawingUpdateTimer;
 	private DrawingUpdater drawingUpdater;
 	
+	// JDialog to re-use
 	private JDialog propertyDialog;
 
+	// Place to keep track of a new element being created
 	ElementPlacer elementPlacer;
 
 	// Handles clicks on the LxView	
@@ -74,36 +83,22 @@ public class Editor extends JPanel {
 	// Handles double clicks on an LxElement in the LxView
 	final LxMouseListener editElementMouseListener = new LxMouseAdapter() {
 		public void mouseDoubleClicked(LxMouseEvent evt) {
-			System.out.println("double click");
 			synchronized(getDrawing()) {				
 				editElement(evt.getLxComponent());
 			}
 		}
 	};
 
-	/*   final Lx.ActionProcessor actionProcessor = new Lx.ActionProcessor() {
-		    public boolean preprocessing( final LxAbstractAction action,
-	       								  final Object host,final ActionEvent e) {
-				//elementPlacer.setIsPlacing(true);	        								  
-	
-	//			lxView.setCursor(new java.awt.Cursor(java.awt.Cursor.CROSSHAIR_CURSOR)); 
-		    	System.out.println("preprocess");
-	           return true;
-			    }
-	
-	  		    public void postprocessing (final LxAbstractAction action,
-	   									final Object host, final ActionEvent e){
-				System.out.println("postprocess");
-				}
-	   };*/
 	/**
-	 * Editor constructor comment.
+	 * Creates a new editor
 	 */
 	public Editor() {
 		super();
 		initEditor(this);
 	}
 	/**
+	 * When an element is ready to be placed this
+	 * method will actually put it onto the drawing
 	 * Creation date: (12/13/2001 12:07:21 PM)
 	 * @param placer ElementPlacer
 	 */
@@ -210,7 +205,7 @@ public class Editor extends JPanel {
 	 * Creation date: (12/11/2001 3:59:21 PM)
 	 */
 	private void initEditor(JPanel p) {
-		editPopup.add(deletePopupItem);
+		//editPopup.add(deletePopupItem);
 		//	Lx.setActionProcessor(actionProcessor);
 
 		drawing = new Drawing();
@@ -238,9 +233,9 @@ public class Editor extends JPanel {
 			KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0, true),
 			JComponent.WHEN_IN_FOCUSED_WINDOW);
 
-		deletePopupItem.addActionListener(
+		/*deletePopupItem.addActionListener(
 			editorActions.getAction(EditorActions.SET_DYNAMIC_TEXT_COLOR));		
-		
+		*/
 		drawingUpdater = new DrawingUpdater();	
 		drawingUpdater.setDrawing( getDrawing() );
 		drawingUpdateTimer = new Timer();
@@ -468,6 +463,7 @@ public class Editor extends JPanel {
 	} // saveOption()
 
 	/**
+	 * Addes gui related interaction to an element
 	 * Creation date: (12/19/2001 3:13:22 PM)
 	 * @param elem com.loox.jloox.LxElement
 	 */
@@ -488,6 +484,12 @@ public class Editor extends JPanel {
 		return drawing;
 	}
 
+	/**
+	 * Set the title of the parent frame
+	 * Could be standard Frame or InternalFrame
+	 * Does nothing if not in a frame
+	 * @param title
+	 */
 	public void setFrameTitle(String title) {
 		Frame pFrame = CtiUtilities.getParentFrame(this);
 		if (pFrame != null) {

@@ -19,10 +19,11 @@ import com.loox.jloox.LxView;
 /**
  * @author alauinger
  *
- * To change this generated comment edit the template variable "typecomment":
- * Window>Preferences>Java>Templates.
- * To enable and disable the creation of type comments go to
- * Window>Preferences>Java>Code Generation.
+ * Wraps a LxGraph and LxView and provides a little behavior
+ * A LxView isn't always necessary so it could be null
+ * in some contexts.  (you can load a drawing and run it
+ * through an svggenerator without creating an LxView for example)
+ * 
  */
 public class Drawing {
 

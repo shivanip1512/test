@@ -26,6 +26,7 @@ private ImageCache() {
 	super();
 }
 /**
+ * Returns an image, will return the cached version if available.
  * Creation date: (1/8/2002 2:45:28 PM)
  * @return java.awt.Image
  * @param imageName java.lang.String
@@ -36,16 +37,12 @@ public Image getImage(String imageName) {
 	Image i = (Image) imageMap.get(imageName);
 	
 	if( i == null ) {
-		System.out.println("loading image: " + imageName);
 		synchronized(this) {
 			i = loadImage(imageName);
 			if( i != null ) {
 				imageMap.put(imageName, i);
 			}
 		}
-	}
-	else {
-		System.out.println("cached image: " + imageName);
 	}
 
 	return i;	
