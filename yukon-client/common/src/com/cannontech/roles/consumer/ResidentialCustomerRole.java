@@ -47,6 +47,10 @@ public interface ResidentialCustomerRole {
 	public static final int WEB_LABEL_OPT_OUT = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 132;
 	public static final int WEB_LABEL_THERM_SCHED = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 133;
 	public static final int WEB_LABEL_THERM_MANUAL = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 134;
+	public static final int WEB_LABEL_GENERAL = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 135;
+	public static final int WEB_LABEL_CONTACT_US = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 136;
+	public static final int WEB_LABEL_FAQ = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 137;
+	public static final int WEB_LABEL_CHANGE_LOGIN = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 138;
 	public static final int WEB_TITLE_GENERAL = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 150;
 	public static final int WEB_TITLE_CONTROL_HISTORY = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 151;
 	public static final int WEB_TITLE_PROGRAM_CTRL_HIST = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 152;
@@ -62,5 +66,12 @@ public interface ResidentialCustomerRole {
 	public static final int WEB_DESC_UTILITY = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 173;
 	public static final int WEB_IMG_CORNER = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 180;
 	public static final int WEB_IMG_GENERAL = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 181;
+	public static final int WEB_HEADING_ACCOUNT = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 190;
+	public static final int WEB_HEADING_THERMOSTAT = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 191;
+	public static final int WEB_HEADING_METERING = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 192;
+	public static final int WEB_HEADING_PROGRAMS = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 193;
+	public static final int WEB_HEADING_TRENDING = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 194;
+	public static final int WEB_HEADING_QUESTIONS = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 195;
+	public static final int WEB_HEADING_ADMINISTRATION = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 196;
 
 }

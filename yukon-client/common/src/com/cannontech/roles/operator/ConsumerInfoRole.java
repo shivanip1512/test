@@ -51,6 +51,16 @@ public interface ConsumerInfoRole {
 	public static final int WEB_LABEL_OPT_OUT = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 32;
 	public static final int WEB_LABEL_THERM_SCHED = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 33;
 	public static final int WEB_LABEL_THERM_MANUAL = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 34;
+	public static final int WEB_LABEL_GENERAL = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 35;
+	public static final int WEB_LABEL_CONTACTS = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 36;
+	public static final int WEB_LABEL_RESIDENCE = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 37;
+	public static final int WEB_LABEL_CALL_TRACKING = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 38;
+	public static final int WEB_LABEL_CREATE_CALL = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 39;
+	public static final int WEB_LABEL_SERVICE_REQUEST = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 40;
+	public static final int WEB_LABEL_SERVICE_HISTORY = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 41;
+	public static final int WEB_LABEL_CHANGE_LOGIN = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 42;
+	public static final int WEB_LABEL_FAQ = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 43;
+	public static final int WEB_LABEL_INTERVAL_DATA = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 44;
 	public static final int WEB_TITLE_CONTROL_HISTORY = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 50;
 	public static final int WEB_TITLE_PROGRAM_CTRL_HIST = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 51;
 	public static final int WEB_TITLE_PROGRAM_CTRL_SUM = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 52;
@@ -58,6 +68,22 @@ public interface ConsumerInfoRole {
 	public static final int WEB_TITLE_OPT_OUT = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 54;
 	public static final int WEB_TITLE_THERM_SCHED = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 55;
 	public static final int WEB_TITLE_THERM_MANUAL = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 56;
+	public static final int WEB_TITLE_CALL_TRACKING = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 57;
+	public static final int WEB_TITLE_CREATE_CALL = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 58;
+	public static final int WEB_TITLE_SERVICE_REQUEST = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 59;
+	public static final int WEB_TITLE_SERVICE_HISTORY = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 60;
+	public static final int WEB_TITLE_CHANGE_LOGIN = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 61;
+	public static final int WEB_TITLE_CREATE_TREND = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 62;
  	public static final int WEB_DESC_OPT_OUT = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 70;
+ 	public static final int WEB_HEADING_ACCOUNT = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 80;
+	public static final int WEB_HEADING_METERING = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 81;
+	public static final int WEB_HEADING_PROGRAMS = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 82;
+	public static final int WEB_HEADING_APPLIANCES = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 83;
+	public static final int WEB_HEADING_HARDWARES = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 84;
+	public static final int WEB_HEADING_WORK_ORDERS = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 85;
+	public static final int WEB_HEADING_ADMINISTRATION = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 86;
+	public static final int WEB_SUB_HEADING_SWITCHES = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 87;
+	public static final int WEB_SUB_HEADING_THERMOSTATS = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 88;
+	public static final int WEB_SUB_HEADING_METERS = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 89;
 	
 }

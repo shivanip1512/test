@@ -232,6 +232,84 @@ alter table DeviceSeries5RTU
       references DEVICE2WAYFLAGS (DEVICEID);
 
 
+/* More role properties to customize text in the nav */
+insert into YukonRoleProperty values(-20835,-201,'Label Account General','General','Text of the account general link');
+insert into YukonRoleProperty values(-20836,-201,'Label Account Contacts','Contacts','Text of the account contacts link');
+insert into YukonRoleProperty values(-20837,-201,'Label Account Residence','Residence','Text of the account residence link');
+insert into YukonRoleProperty values(-20838,-201,'Label Call Tracking','Call Tracking','Text of the call tracking link');
+insert into YukonRoleProperty values(-20839,-201,'Label Create Call','Create Call','Text of the create call link');
+insert into YukonRoleProperty values(-20840,-201,'Label Service Request','Service Request','Text of the service request link');
+insert into YukonRoleProperty values(-20841,-201,'Label Service History','Service History','Text of the service history link');
+insert into YukonRoleProperty values(-20842,-201,'Label Change Login','Change Login','Text of the change login link');
+insert into YukonRoleProperty values(-20843,-201,'Label FAQ','FAQ','Text of the FAQ link');
+insert into YukonRoleProperty values(-20844,-201,'Label Interval Data','Interval Data','Text of the interval data link');
+insert into YukonRoleProperty values(-20857,-201,'Title Call Tracking','ACCOUNT - CALL TRACKING','Title of the call tracking page');
+insert into YukonRoleProperty values(-20858,-201,'Title Create Call','ACCOUNT - CREATE NEW CALL','Title of the create call page');
+insert into YukonRoleProperty values(-20859,-201,'Title Service Request','WORK ORDERS - SERVICE REQUEST','Title of the service request page');
+insert into YukonRoleProperty values(-20860,-201,'Title Service History','WORK ORDERS - SERVICE HISTORY','Title of the service history page');
+insert into YukonRoleProperty values(-20861,-201,'Title Change Login','ADMINISTRATION - CHANGE LOGIN','Title of the change login page');
+insert into YukonRoleProperty values(-20862,-201,'Title Create Trend','METERING - CREATE NEW TREND','Title of the create trend page');
+insert into YukonRoleProperty values(-20880,-201,'Heading Account','Account','Heading of the account links');
+insert into YukonRoleProperty values(-20881,-201,'Heading Metering','Metering','Heading of the metering links');
+insert into YukonRoleProperty values(-20882,-201,'Heading Programs','Programs','Heading of the program links');
+insert into YukonRoleProperty values(-20883,-201,'Heading Appliances','Appliances','Heading of the appliance links');
+insert into YukonRoleProperty values(-20884,-201,'Heading Hardwares','Hardwares','Heading of the hardware links');
+insert into YukonRoleProperty values(-20885,-201,'Heading Work Orders','Work Orders','Heading of the work order links');
+insert into YukonRoleProperty values(-20886,-201,'Heading Administration','Administration','Heading of the administration links');
+insert into YukonRoleProperty values(-20887,-201,'Sub-Heading Switches','Switches','Sub-heading of the switch links');
+insert into YukonRoleProperty values(-20888,-201,'Sub-Heading Thermostats','Thermostats','Sub-heading of the thermostat links');
+insert into YukonRoleProperty values(-20889,-201,'Sub-Heading Meters','Meters','Sub-heading of the meter links');
+
+insert into YukonRoleProperty values(-40135,-400,'Label Account General','General','Text of the account general link');
+insert into YukonRoleProperty values(-40136,-400,'Label Contact Us','Contact Us','Text of the contact us link');
+insert into YukonRoleProperty values(-40137,-400,'Label FAQ','FAQ','Text of the FAQ link');
+insert into YukonRoleProperty values(-40138,-400,'Label Change Login','Change Login','Text of the change login link');
+insert into YukonRoleProperty values(-40190,-400,'Heading Account','Account','Heading of the account links');
+insert into YukonRoleProperty values(-40191,-400,'Heading Thermostat','Thermostat','Heading of the thermostat links');
+insert into YukonRoleProperty values(-40192,-400,'Heading Metering','Metering','Heading of the metering links');
+insert into YukonRoleProperty values(-40193,-400,'Heading Programs','Programs','Heading of the program links');
+insert into YukonRoleProperty values(-40194,-400,'Heading Trending','Trending','Heading of the trending links');
+insert into YukonRoleProperty values(-40195,-400,'Heading Questions','Questions','Heading of the questions links');
+insert into YukonRoleProperty values(-40196,-400,'Heading Administration','Administration','Heading of the administration links');
+
+insert into yukongrouprole values (-635,-300,-400,-40135,'(none)');
+insert into yukongrouprole values (-636,-300,-400,-40136,'(none)');
+insert into yukongrouprole values (-637,-300,-400,-40137,'(none)');
+insert into yukongrouprole values (-638,-300,-400,-40138,'(none)');
+insert into yukongrouprole values (-690,-300,-400,-40190,'(none)');
+insert into yukongrouprole values (-691,-300,-400,-40191,'(none)');
+insert into yukongrouprole values (-692,-300,-400,-40192,'(none)');
+insert into yukongrouprole values (-693,-300,-400,-40193,'(none)');
+insert into yukongrouprole values (-694,-300,-400,-40194,'(none)');
+insert into yukongrouprole values (-695,-300,-400,-40195,'(none)');
+insert into yukongrouprole values (-696,-300,-400,-40196,'(none)');
+
+insert into yukongrouprole values (-835,-301,-201,-20835,'(none)');
+insert into yukongrouprole values (-836,-301,-201,-20836,'(none)');
+insert into yukongrouprole values (-837,-301,-201,-20837,'(none)');
+insert into yukongrouprole values (-838,-301,-201,-20838,'(none)');
+insert into yukongrouprole values (-839,-301,-201,-20839,'(none)');
+insert into yukongrouprole values (-840,-301,-201,-20840,'(none)');
+insert into yukongrouprole values (-841,-301,-201,-20841,'(none)');
+insert into yukongrouprole values (-842,-301,-201,-20842,'(none)');
+insert into yukongrouprole values (-843,-301,-201,-20843,'(none)');
+insert into yukongrouprole values (-844,-301,-201,-20844,'(none)');
+insert into yukongrouprole values (-857,-301,-201,-20857,'(none)');
+insert into yukongrouprole values (-858,-301,-201,-20858,'(none)');
+insert into yukongrouprole values (-859,-301,-201,-20859,'(none)');
+insert into yukongrouprole values (-860,-301,-201,-20860,'(none)');
+insert into yukongrouprole values (-861,-301,-201,-20861,'(none)');
+insert into yukongrouprole values (-862,-301,-201,-20862,'(none)');
+insert into yukongrouprole values (-880,-301,-201,-20880,'(none)');
+insert into yukongrouprole values (-881,-301,-201,-20881,'(none)');
+insert into yukongrouprole values (-882,-301,-201,-20882,'(none)');
+insert into yukongrouprole values (-883,-301,-201,-20883,'(none)');
+insert into yukongrouprole values (-884,-301,-201,-20884,'(none)');
+insert into yukongrouprole values (-885,-301,-201,-20885,'(none)');
+insert into yukongrouprole values (-886,-301,-201,-20886,'(none)');
+insert into yukongrouprole values (-887,-301,-201,-20887,'(none)');
+insert into yukongrouprole values (-888,-301,-201,-20888,'(none)');
+insert into yukongrouprole values (-889,-301,-201,-20889,'(none)');
 
 
 
