@@ -1,13 +1,12 @@
 package com.cannontech.database.data.user;
 
 import java.sql.SQLException;
-import java.util.Date;
 import java.util.Vector;
 
 import com.cannontech.common.editor.EditorPanel;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.contact.Contact;
+import com.cannontech.database.db.user.YukonGroup;
 import com.cannontech.database.db.user.YukonUserRole;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 
@@ -17,9 +16,10 @@ import com.cannontech.message.dispatch.message.DBChangeMsg;
 public class YukonUser extends DBPersistent implements com.cannontech.database.db.CTIDbChange, EditorPanel
 {	
 	private com.cannontech.database.db.user.YukonUser yukonUser;
-	
 	private Vector yukonGroups; //type = com.cannontech.database.db.user.YukonGroup
 	private Vector yukonUserRoles;  //type = com.cannontech.database.db.user.YukonUserRole
+
+	
 	
 	public YukonUser() 
 	{
@@ -83,7 +83,7 @@ public class YukonUser extends DBPersistent implements com.cannontech.database.d
 				((com.cannontech.database.db.user.YukonGroup) getYukonGroups().get(i)).getGroupID()
 			};
 
-			add( "YukonUserGroup", addValues );
+			add( YukonGroup.TBL_YUKON_USER_GROUP, addValues );
 		}
 
 		
@@ -97,9 +97,10 @@ public class YukonUser extends DBPersistent implements com.cannontech.database.d
 	/**
 	 * @see com.cannontech.database.db.DBPersistent#delete()
 	 */
-	public void delete() throws SQLException {
+	public void delete() throws SQLException 
+	{
 		delete( YukonUserRole.TABLE_NAME, "UserID", getYukonUser().getUserID() );
-		delete( "YukonUserGroup", "UserID", getYukonUser().getUserID() );
+		delete( YukonGroup.TBL_YUKON_USER_GROUP, "UserID", getYukonUser().getUserID() );
 		getYukonUser().delete();
 	}
 
@@ -110,6 +111,15 @@ public class YukonUser extends DBPersistent implements com.cannontech.database.d
 	{
 		getYukonUser().retrieve();
 		
+
+		//add the role groups this user belongs to
+		YukonGroup[] groups = YukonGroup.getYukonGroups( 
+						getUserID().intValue(), getDbConnection() );
+ 
+		for( int i = 0; i < groups.length; i++ )
+			getYukonGroups().add( groups[i] );
+
+
 		
 		//add the roles this user has
 		YukonUserRole[] roles = YukonUserRole.getYukonUserRoles( 
@@ -127,6 +137,20 @@ public class YukonUser extends DBPersistent implements com.cannontech.database.d
 		setUserID( getYukonUser().getUserID() );
 
 		getYukonUser().update();
+		
+		//remove then add all the groups this user belongs to
+		delete( YukonGroup.TBL_YUKON_USER_GROUP, "UserID", getYukonUser().getUserID() );
+		for (int i = 0; i < getYukonGroups().size(); i++) 
+		{
+			Object[] addValues = 
+			{
+				getYukonUser().getUserID(), 
+				((com.cannontech.database.db.user.YukonGroup) getYukonGroups().get(i)).getGroupID()
+			};
+			add( YukonGroup.TBL_YUKON_USER_GROUP, addValues );
+		}
+				
+
 		
 		//first delete the current userRoles
 		delete( YukonUserRole.TABLE_NAME, "UserID", getYukonUser().getUserID() );		
