@@ -248,21 +248,41 @@ public class StaticImageEditorPanel extends DataInputPanel {
 				yPanel.addDataInputPanelListener( new DataInputPanelListener() {
 					public void inputUpdate(PropertyPanelEvent event) {
 						try {
-							Transaction t = Transaction.createTransaction(Transaction.INSERT, (DBPersistent) event.getDataChanged());
-							DBPersistent img = t.execute();
-							if(img instanceof CTIDbChange) {
-								com.cannontech.message.dispatch.message.DBChangeMsg[] dbChange = 
-									com.cannontech.database.cache.DefaultDatabaseCache.getInstance().createDBChangeMessages(
-											(com.cannontech.database.db.CTIDbChange)img, DBChangeMsg.CHANGE_TYPE_ADD);
-											
-  
-								for( int i = 0; i < dbChange.length; i++ )
-								{
-									//handle the DBChangeMsg locally
-									com.cannontech.database.data.lite.LiteBase lBase = 
-										com.cannontech.database.cache.DefaultDatabaseCache.getInstance().handleDBChangeMessage(dbChange[i]);
-									Util.getConnToDispatch().write(dbChange[i]);
-								}
+							if(event.getID() == PropertyPanelEvent.EVENT_DB_INSERT) {							
+								Transaction t = Transaction.createTransaction(Transaction.INSERT, (DBPersistent) event.getDataChanged());
+								DBPersistent img = t.execute();
+								if(img instanceof CTIDbChange) {
+									com.cannontech.message.dispatch.message.DBChangeMsg[] dbChange = 
+										com.cannontech.database.cache.DefaultDatabaseCache.getInstance().createDBChangeMessages(
+												(com.cannontech.database.db.CTIDbChange)img, DBChangeMsg.CHANGE_TYPE_ADD);
+											  
+									for( int i = 0; i < dbChange.length; i++ )
+									{
+										//handle the DBChangeMsg locally
+										com.cannontech.database.data.lite.LiteBase lBase = 
+											com.cannontech.database.cache.DefaultDatabaseCache.getInstance().handleDBChangeMessage(dbChange[i]);
+										Util.getConnToDispatch().write(dbChange[i]);
+									}
+								}	
+							}
+							else 
+							if(event.getID() == PropertyPanelEvent.EVENT_DB_DELETE) {
+								Transaction t = Transaction.createTransaction(Transaction.DELETE, (DBPersistent) event.getDataChanged());
+								DBPersistent img = t.execute();
+
+								if(img instanceof CTIDbChange) {
+									com.cannontech.message.dispatch.message.DBChangeMsg[] dbChange = 
+										com.cannontech.database.cache.DefaultDatabaseCache.getInstance().createDBChangeMessages(
+												(com.cannontech.database.db.CTIDbChange)img, DBChangeMsg.CHANGE_TYPE_DELETE);
+								 			  
+									for( int i = 0; i < dbChange.length; i++ )
+									{
+										//handle the DBChangeMsg locally
+										com.cannontech.database.data.lite.LiteBase lBase = 
+											com.cannontech.database.cache.DefaultDatabaseCache.getInstance().handleDBChangeMessage(dbChange[i]);
+										Util.getConnToDispatch().write(dbChange[i]);
+									}
+								}	
 							}
 						}
 						catch(com.cannontech.database.TransactionException te) {
