@@ -202,7 +202,7 @@ private Color[] getDBColors()
 	if( priorityColors == null )
 	{
 		SqlStatement statement = new SqlStatement("select foregroundcolor " +
-			"from state where stategroupid=" + com.cannontech.database.db.state.StateGroup.STATEGROUP_ALARM +
+			"from state where stategroupid=" + com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_ALARM +
 			" order by rawstate",
 			LoggerClient.DBALIAS );
 

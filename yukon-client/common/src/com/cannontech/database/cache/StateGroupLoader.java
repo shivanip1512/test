@@ -28,7 +28,7 @@ java.util.Date timerStop = null;
 //temp code
 timerStart = new java.util.Date();
 //temp code
-	String sqlString = "SELECT STATEGROUPID,NAME FROM STATEGROUP WHERE STATEGROUPID > 0 ORDER BY STATEGROUPID";
+	String sqlString = "SELECT STATEGROUPID,NAME,GroupType FROM STATEGROUP WHERE STATEGROUPID > 0 ORDER BY STATEGROUPID";
 
 	java.sql.Connection conn = null;
 	java.sql.Statement stmt = null;
@@ -43,26 +43,31 @@ timerStart = new java.util.Date();
 		{
 			int stateGroupID = rset.getInt(1);
 			String stateGroupName = rset.getString(2).trim();
+         String groupType = rset.getString(3).trim();
 
 			com.cannontech.database.data.lite.LiteStateGroup lsg =
-				new com.cannontech.database.data.lite.LiteStateGroup(stateGroupID, stateGroupName);
+				new com.cannontech.database.data.lite.LiteStateGroup(
+               stateGroupID, stateGroupName, groupType );
 
 			allStateGroups.add(lsg);
 		}
 
-		sqlString = "SELECT STATEGROUPID,RAWSTATE,TEXT FROM STATE WHERE STATEGROUPID > 0 AND RAWSTATE >= 0 ORDER BY STATEGROUPID,RAWSTATE";
+		sqlString = "SELECT STATEGROUPID,RAWSTATE,TEXT,ImageID FROM STATE WHERE STATEGROUPID > 0 AND RAWSTATE >= 0 ORDER BY STATEGROUPID,RAWSTATE";
 		rset = stmt.executeQuery(sqlString);
 		while (rset.next())
 		{
 			int stateGroupID = rset.getInt(1);
 			int rawState = rset.getInt(2);
 			String text = rset.getString(3);
+         int imgID = rset.getInt(4);
 
 			for(int i=0;i<allStateGroups.size();i++)
 			{
 				if( ((com.cannontech.database.data.lite.LiteStateGroup)allStateGroups.get(i)).getStateGroupID() == stateGroupID )
 				{
-					((com.cannontech.database.data.lite.LiteStateGroup)allStateGroups.get(i)).getStatesList().add(new com.cannontech.database.data.lite.LiteState(rawState, text));
+					((com.cannontech.database.data.lite.LiteStateGroup)allStateGroups.get(i)).getStatesList().add(
+                     new com.cannontech.database.data.lite.LiteState(
+                        rawState, text, imgID));
 					break;
 				}
 			}

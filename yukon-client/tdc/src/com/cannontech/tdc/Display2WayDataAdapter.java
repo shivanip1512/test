@@ -1472,7 +1472,7 @@ private void initAlarmColors()
 				   " order by rawstate";
 
 	Object[] objs = new Object[1];
-	objs[0] = new Integer( com.cannontech.database.db.state.StateGroup.STATEGROUP_ALARM );
+	objs[0] = new Integer( com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_ALARM );
 	Object[][] alarmStates = DataBaseInteraction.queryResults( query, objs );
 
 	alarmColors = new int[ alarmStates.length + 1 ];

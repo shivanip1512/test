@@ -1,68 +1,63 @@
 package com.cannontech.database.db.state;
 
+import com.cannontech.database.db.state.StateGroupUtils;
 /**
  * This type was created in VisualAge.
  */
 public class StateGroup extends com.cannontech.database.db.DBPersistent 
-{
-	private static final String TABLENAME = "StateGroup";
-	
+{	
 	private Integer stateGroupID = null;
 	private String name = null;
+   private String groupType = StateGroupUtils.GROUP_TYPE_STATUS;
+   
 
+   public static final String SETTER_COLUMNS[] = 
+   { 
+      "Name", "GroupType"
+   };
 
-	// ALWAYS UPDATE THIS VALUE TO THE MAX GROUPID WE USE IN HERE!!
-	public static final int PREDEFINED_MAX_STATE_GROUPID = 3;
-	
-	// predefined uneditable stateGroups
-	public static final int STATEGROUPID_CAPBANK = PREDEFINED_MAX_STATE_GROUPID;
-	public static final int STATEGROUP_THREE_STATE_STATUS = 2;
-	public static final int STATEGROUP_TWO_STATE_STATUS = 1;
+   public static final String CONSTRAINT_COLUMNS[] = { "StateGroupID" };
 
-	public static final int SYSTEM_STATEGROUPID = 0;
-	
-	public static final int STATEGROUP_ALARM = -5;
-	public static final int STATEGROUP_CALCULATED = -3;
-	public static final int STATEGROUP_ACCUMULATOR = -2;
-	public static final int STATEGROUP_ANALOG = -1;
+   private static final String TABLE_NAME = "StateGroup";
 /**
  * StateGroup constructor comment.
  */
-public StateGroup() {
+public StateGroup() 
+{
 	super();
-	initialize( null, null );
 }
 /**
  * StateGroup constructor comment.
  */
 public StateGroup(Integer stateGroupID) {
 	super();
-	initialize( stateGroupID, null );
+	initialize( stateGroupID, null, null );
 }
 /**
  * StateGroup constructor comment.
  */
-public StateGroup(Integer stateGroupID, String name ) {
+public StateGroup(Integer stateGroupID, String name, String groupType_ ) 
+{
 	super();
-	initialize( stateGroupID, name );
+	initialize( stateGroupID, name, groupType_ );
 }
 /**
  * add method comment.
  */
-public void add() throws java.sql.SQLException {
-	Object setValues[] = { getStateGroupID(), getName() };
+public void add() throws java.sql.SQLException 
+{
+	Object setValues[] = { getStateGroupID(), getName(), getGroupType() };
 
-	add( TABLENAME, setValues );
+	add( TABLE_NAME, setValues );
 }
 /**
  * delete method comment.
  */
-public void delete() throws java.sql.SQLException {
-	String constraintColumns[] = { "STATEGROUPID" };
-	String selectColumns[] = { "NAME", "STATEGROUPID" };
+public void delete() throws java.sql.SQLException 
+{
 	Object constraintValues[] = { getStateGroupID() };
 
-	delete( TABLENAME, constraintColumns, constraintValues );
+	delete( TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
 }
 /**
  * This method was created in VisualAge.
@@ -75,8 +70,8 @@ public String getName() {
  * This method was created in VisualAge.
  * @return java.lang.Integer
  */
-public final static Integer getNextStateGroupID() {
-
+public final static Integer getNextStateGroupID() 
+{
 	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 
 	synchronized(cache)
@@ -126,7 +121,7 @@ public static final StateGroup[] getStateGroups(String databaseAlias) throws jav
 	java.sql.PreparedStatement pstmt = null;
 	java.sql.ResultSet rset = null;
 
-	String sql = "SELECT STATEGROUPID,NAME FROM " + TABLENAME;
+	String sql = "SELECT STATEGROUPID,NAME,GroupType FROM " + TABLE_NAME;
 
 	try
 	{		
@@ -146,7 +141,8 @@ public static final StateGroup[] getStateGroups(String databaseAlias) throws jav
 			{
 				tmpList.add( new StateGroup( 
 						new Integer(rset.getInt("StateGroupID")), 
-						rset.getString("Name") ) );
+						rset.getString("Name"),
+                  rset.getString("GroupType") ) );
 			}
 					
 		}		
@@ -179,25 +175,25 @@ public static final StateGroup[] getStateGroups(String databaseAlias) throws jav
  * @param stateGroupID java.lang.Integer
  * @param name java.lang.String
  */
-protected void initialize( Integer stateGroupID, String name) {
-
+private void initialize( Integer stateGroupID, String name, String groupType_) 
+{
 	setStateGroupID( stateGroupID );
 	setName( name );
+   setGroupType( groupType_ );
 }
 /**
  * retrieve method comment.
  */
-public void retrieve() throws java.sql.SQLException {
-
-	String constraintColumns[] = { "STATEGROUPID" };
-	String selectColumns[] = { "NAME", "STATEGROUPID" };
+public void retrieve() throws java.sql.SQLException 
+{
 	Object constraintValues[] = { getStateGroupID() };
 
-	Object results[] = retrieve( selectColumns, TABLENAME, constraintColumns, constraintValues );
+	Object results[] = retrieve( SETTER_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
 
-	if( results.length == selectColumns.length )
+	if( results.length == SETTER_COLUMNS.length )
 	{
-		setName( (String) results[0] ); 		
+		setName( (String) results[0] );
+      setGroupType( (String) results[1] );
 	}
 	else
 		throw new Error( getClass() + "::retrieve - Incorrect number of results returned" );
@@ -228,13 +224,32 @@ public String toString() {
 /**
  * update method comment.
  */
-public void update() throws java.sql.SQLException {
-	String setColumns[] = { "NAME" };
-	String constraintColumns[] = { "STATEGROUPID" };
-	String selectColumns[] = { "NAME", "STATEGROUPID" };
+public void update() throws java.sql.SQLException 
+{
 	Object constraintValues[] = { getStateGroupID() };
-	Object setValues[] = { getName() };
+	Object setValues[] = 
+   { 
+      getName(), getGroupType()
+   };
 
-	update( TABLENAME, setColumns, setValues, constraintColumns, constraintValues );
+	update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
 }
+	/**
+	 * Returns the groupType.
+	 * @return String
+	 */
+	public String getGroupType()
+	{
+		return groupType;
+	}
+
+	/**
+	 * Sets the groupType.
+	 * @param groupType The groupType to set
+	 */
+	public void setGroupType(String groupType)
+	{
+		this.groupType = groupType;
+	}
+
 }

@@ -308,7 +308,7 @@ private void createExtraObjects( com.cannontech.database.data.multi.SmartMultiDB
 				new Integer(0) );
 
 		historyPoint.getPoint().setStateGroupID( 
-				new Integer(com.cannontech.database.db.state.StateGroup.STATEGROUP_TWO_STATE_STATUS) );
+				new Integer(com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_TWO_STATE_STATUS) );
 		
 		((com.cannontech.database.data.point.StatusPoint) historyPoint).setPointStatus(
 				new com.cannontech.database.db.point.PointStatus( new Integer(ids[0]) ));
@@ -337,7 +337,7 @@ private void createExtraObjects( com.cannontech.database.data.multi.SmartMultiDB
 					new Integer(PointTypes.PT_OFFSET_ANNUAL_HISTORY) );
 
 			annualPoint.getPoint().setStateGroupID( 
-				new Integer(com.cannontech.database.db.state.StateGroup.STATEGROUP_ANALOG) );
+				new Integer(com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_ANALOG) );
 
 			//defaults - pointUnit
 			((com.cannontech.database.data.point.ScalarPoint)annualPoint).setPointUnit(
@@ -374,7 +374,7 @@ private void createExtraObjects( com.cannontech.database.data.multi.SmartMultiDB
                new Integer(PointTypes.PT_OFFSET_DAILY_HISTORY) );
 
 			dailyPoint.getPoint().setStateGroupID( 
-				new Integer(com.cannontech.database.db.state.StateGroup.STATEGROUP_ANALOG) );
+				new Integer(com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_ANALOG) );
 
 			//defaults - pointUnit
 			((com.cannontech.database.data.point.ScalarPoint)dailyPoint).setPointUnit(
@@ -411,7 +411,7 @@ private void createExtraObjects( com.cannontech.database.data.multi.SmartMultiDB
                new Integer(PointTypes.PT_OFFSET_SEASONAL_HISTORY) );
 
 			seasonPoint.getPoint().setStateGroupID( 
-				new Integer(com.cannontech.database.db.state.StateGroup.STATEGROUP_ANALOG) );
+				new Integer(com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_ANALOG) );
 
 			//defaults - pointUnit
 			((com.cannontech.database.data.point.ScalarPoint)seasonPoint).setPointUnit(
@@ -448,7 +448,7 @@ private void createExtraObjects( com.cannontech.database.data.multi.SmartMultiDB
                new Integer(PointTypes.PT_OFFSET_MONTHLY_HISTORY) );
 
 			monthPoint.getPoint().setStateGroupID( 
-				new Integer(com.cannontech.database.db.state.StateGroup.STATEGROUP_ANALOG) );
+				new Integer(com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_ANALOG) );
 
 			//defaults - pointUnit
 			((com.cannontech.database.data.point.ScalarPoint)monthPoint).setPointUnit(

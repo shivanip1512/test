@@ -10,51 +10,76 @@ public class State extends com.cannontech.database.db.DBPersistent
 	private String text = null;
 	private Integer foregroundColor = null;
 	private Integer backgroundColor = null;
+   private Integer imageID = new Integer(0); //default to no image
 	
 
 	// ANY is primarily used for the Initial State and Normal State values in PointStatus
 	public static final String ANY = "Any";
 	public static final int ANY_ID = -1;
 	
-	private static final String tableName = "State";
-	
+   public static final String SETTER_COLUMNS[] = 
+   { 
+      "STATEGROUPID", "RAWSTATE", "TEXT", "FOREGROUNDCOLOR",
+      "BACKGROUNDCOLOR", "IMAGEID"
+   };
+
+   public static final String CONSTRAINT_COLUMNS[] = { "StateGroupID", "RawState" };
+   
+   public static final String TABLE_NAME = "State";
+   
+   
 /**
  * State constructor comment.
  */
-public State() {
+public State() 
+{
 	super();
-	initialize(null, null, null, null, null );
 }
 /**
  * State constructor comment.
  */
 public State(Integer stateGroupID, Integer rawState) {
 	super();
-	initialize( stateGroupID, rawState, null, null, null );
+	initialize( stateGroupID, rawState, null, null, null, null );
 }
 /**
  * State constructor comment.
  */
-public State(Integer stateGroupID, Integer rawState, String text, Integer foregroundColor, Integer backgroundColor) {
+public State(Integer stateGroupID, Integer rawState, 
+   String text, Integer foregroundColor, Integer backgroundColor, Integer imageID_) 
+{
 	super();
-	initialize( stateGroupID, rawState, text, foregroundColor, backgroundColor );
+	initialize( stateGroupID, rawState, text, foregroundColor, backgroundColor, imageID_ );
 }
+
+public State(Integer stateGroupID, Integer rawState, 
+   String text, Integer foregroundColor, Integer backgroundColor ) 
+{
+   super();
+   initialize( stateGroupID, rawState, text, foregroundColor, backgroundColor, new Integer(0) );
+}
+
 /**
  * add method comment.
  */
-public void add() throws java.sql.SQLException {
-	Object setValues[] = { getStateGroupID(), getRawState(), getText(), getForegroundColor(), getBackgroundColor() };
+public void add() throws java.sql.SQLException 
+{
+	Object setValues[] = 
+   { 
+      getStateGroupID(), getRawState(), getText(), 
+      getForegroundColor(), getBackgroundColor(), getImageID()
+   };
 
-	add( tableName, setValues );
+	add( TABLE_NAME, setValues );
 }
 /**
  * delete method comment.
  */
-public void delete() throws java.sql.SQLException {
-	String constraintColumns[] = { "STATEGROUPID" };
+public void delete() throws java.sql.SQLException 
+{
 	Object constraintValues[] = { getStateGroupID() };
 
-	delete( tableName, constraintColumns, constraintValues );
+	delete( TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
 }
 /**
  * This method was created by Cannon Technologies Inc.
@@ -65,7 +90,7 @@ public static void deleteAllStates(Integer stateGroupID, java.sql.Connection con
 {
 	java.sql.PreparedStatement pstmt = null;
 
-	String sql = "DELETE FROM " + State.tableName +
+	String sql = "DELETE FROM " + State.TABLE_NAME +
 				 	 " WHERE STATEGROUPID= ?";
 
 	try
@@ -80,7 +105,7 @@ public static void deleteAllStates(Integer stateGroupID, java.sql.Connection con
 			pstmt = conn.prepareStatement( sql.toString() );
 			pstmt.setInt( 1, stateGroupID.intValue() );
 			
-			pstmt.executeQuery();								
+			pstmt.executeUpdate();
 		}
 
 	}
@@ -151,7 +176,7 @@ public static final State[] getStates(Integer stateGroup, String databaseAlias) 
 	java.sql.PreparedStatement pstmt = null;
 	java.sql.ResultSet rset = null;
 
-	String sql = "SELECT RAWSTATE,TEXT,FOREGROUNDCOLOR,BACKGROUNDCOLOR " + 
+	String sql = "SELECT RAWSTATE,TEXT,FOREGROUNDCOLOR,BACKGROUNDCOLOR, IMAGEID " + 
 				 "FROM STATE WHERE STATE.STATEGROUPID= ? " +
 				 "AND STATE.RAWSTATE > ? ORDER BY RAWSTATE";
 
@@ -178,7 +203,8 @@ public static final State[] getStates(Integer stateGroup, String databaseAlias) 
 						new Integer(rset.getInt("RawState")), 
 						rset.getString("Text"), 
 						new Integer(rset.getInt("ForegroundColor")), 
-						new Integer(rset.getInt("BackgroundColor")) ) );
+						new Integer(rset.getInt("BackgroundColor")),
+                  new Integer(rset.getInt("ImageID")) ) );
 			}
 					
 		}		
@@ -221,31 +247,35 @@ public String getText() {
  * @param foregroundColor java.lang.Integer
  * @param backgoundColor java.lang.Integer
  */
-public void initialize(Integer stateGroupID, Integer rawState, String text, Integer foregroundColor, Integer backgroundColor) {
+public void initialize(
+      Integer stateGroupID, Integer rawState, String text, 
+      Integer foregroundColor, Integer backgroundColor, Integer imageID_ ) 
+{
 
 	setStateGroupID(stateGroupID);
 	setRawState(rawState);
 	setText(text);
 	setForegroundColor(foregroundColor);
 	setBackgroundColor(backgroundColor);
+   setImageID( imageID_ );
 }
 /**
  * retrieve method comment.
  */
-public void retrieve() throws java.sql.SQLException {
-	String constraintColumns[] = { "STATEGROUPID", "RAWSTATE" };
-	String selectColumns[] = { "STATEGROUPID", "RAWSTATE", "TEXT", "FOREGROUNDCOLOR", "BACKGROUNDCOLOR" };
+public void retrieve() throws java.sql.SQLException 
+{
 	Object constraintValues[] = { getStateGroupID(), getRawState() };
 
-	Object results[] = retrieve( selectColumns, tableName, constraintColumns, constraintValues );
+	Object results[] = retrieve( SETTER_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
 
-	if( results.length == selectColumns.length )
+	if( results.length == SETTER_COLUMNS.length )
 	{
 		setStateGroupID( (Integer) results[0] );
 		setRawState( (Integer) results[1] );
 		setText( (String) results[2] );
 		setForegroundColor( (Integer) results[3] );
 		setBackgroundColor( (Integer) results[4] );
+      setImageID( (Integer) results[5] );
 	}
 	else
 		throw new Error( getClass() + "::retrieve - Incorrect number of results" );
@@ -295,13 +325,33 @@ public String toString() {
 /**
  * update method comment.
  */
-public void update() throws java.sql.SQLException {
-	String constraintColumns[] = { "STATEGROUPID", "RAWSTATE" };
-	String selectColumns[] = { "STATEGROUPID", "RAWSTATE", "TEXT", "FOREGROUNDCOLOR", "BACKGROUNDCOLOR" };
+public void update() throws java.sql.SQLException 
+{
 	Object constraintValues[] = { getStateGroupID(), getRawState() };
-	String setColumns[] = { "TEXT", "FOREGROUNDCOLOR", "BACKGROUNDCOLOR" };
-	Object setValues[] = { getText(), getForegroundColor(), getBackgroundColor() };
+	Object setValues[] = 
+   { 
+      getText(), getForegroundColor(), getBackgroundColor(),
+      getImageID()
+   };
 
-	update( tableName, setColumns, setValues, constraintColumns, constraintValues );
+	update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
 }
+	/**
+	 * Returns the imageID.
+	 * @return Integer
+	 */
+	public Integer getImageID()
+	{
+		return imageID;
+	}
+
+	/**
+	 * Sets the imageID.
+	 * @param imageID The imageID to set
+	 */
+	public void setImageID(Integer imageID)
+	{
+		this.imageID = imageID;
+	}
+
 }

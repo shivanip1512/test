@@ -287,16 +287,31 @@ public java.lang.Double getUpperBandwidth() {
  *  the pointID for its VAR point, if returns null if the
  *  pointID is not yet used.
  */
-public static com.cannontech.common.util.NativeIntVector getUsedVARPointIDs( int excludedPAOId )
+public static com.cannontech.common.util.NativeIntVector getUsedVARPointIDs( Integer excludedSubBusId, Integer excludedFeederID )
 {
 	java.sql.Connection conn = null;
 	java.sql.PreparedStatement pstmt = null;
 	java.sql.ResultSet rset = null;
 	com.cannontech.common.util.NativeIntVector vect = new com.cannontech.common.util.NativeIntVector(10);
 
+   if( excludedFeederID == null )
+      excludedFeederID = new Integer(0);
+      
+   if( excludedSubBusId == null )
+      excludedSubBusId = new Integer(0);
+      
+//	String sql = "SELECT CurrentVarLoadPointID FROM " + TABLE_NAME +
+//					 " where SubstationBusID <> " + excludedPAOId;
 
-	String sql = "SELECT CurrentVarLoadPointID FROM " + TABLE_NAME +
-					 " where SubstationBusID <> " + excludedPAOId;
+   //Get all the used Var PointIDs in the CapControlSubBus table and the Feeder table                
+   String sql = "select p.pointid from " + com.cannontech.database.db.point.Point.TABLE_NAME + 
+      " p where p.pointid in " +
+      "(select currentvarloadpointid from " + TABLE_NAME + 
+         " where substationbusid <> " + excludedSubBusId + ")" +
+      "or p.pointid in " +
+      "(select currentvarloadpointid from " + CapControlFeeder.TABLE_NAME + 
+         " where feederid <> " + excludedFeederID + ")";
+                
 
 	try
 	{		

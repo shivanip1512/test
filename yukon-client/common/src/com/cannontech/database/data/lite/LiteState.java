@@ -4,7 +4,9 @@ package com.cannontech.database.data.lite;
  */
 public class LiteState extends LiteBase
 {
-	String stateText = null;
+	private String stateText = null;
+   private int imageID = 0;
+
 /**
  * LiteDevice
  */
@@ -17,12 +19,13 @@ public LiteState( int rawSt )
 /**
  * LiteDevice
  */
-public LiteState( int rawSt, String stText ) 
+public LiteState( int rawSt, String stText, int imgID ) 
 {
 	super();
 	setLiteID(rawSt);
 	stateText = stText;
 	setLiteType(LiteTypes.STATE);
+   setImageID( imgID );
 }
 /**
  * This method was created by Cannon Technologies Inc.
@@ -56,4 +59,22 @@ public void setStateText(String newValue) {
 public String toString() {
 	return stateText;
 }
+	/**
+	 * Returns the imageID.
+	 * @return int
+	 */
+	public int getImageID()
+	{
+		return imageID;
+	}
+
+	/**
+	 * Sets the imageID.
+	 * @param imageID The imageID to set
+	 */
+	public void setImageID(int imageID)
+	{
+		this.imageID = imageID;
+	}
+
 }

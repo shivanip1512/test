@@ -73,7 +73,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	state.setBackgroundColor(bgColor);
 
 	// set the stateGroupId to that of all CapBank states
-	state.setStateGroupID( new Integer(com.cannontech.database.db.state.StateGroup.STATEGROUPID_CAPBANK) );
+	state.setStateGroupID( new Integer(com.cannontech.database.db.state.StateGroupUtils.STATEGROUPID_CAPBANK) );
 }
 /**
  * saveGuts method comment.

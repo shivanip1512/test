@@ -379,13 +379,13 @@ public Object getValue(Object val)
 			 ((com.cannontech.database.data.point.PointBase) val).getPoint().setStateGroupID(new Integer(1));
 		else if (val instanceof com.cannontech.database.data.point.AccumulatorPoint)
 			((com.cannontech.database.data.point.PointBase) val).getPoint().setStateGroupID(
-				new Integer(com.cannontech.database.db.state.StateGroup.STATEGROUP_ACCUMULATOR));
+				new Integer(com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_ACCUMULATOR));
 		else if (val instanceof com.cannontech.database.data.point.CalculatedPoint)
 			((com.cannontech.database.data.point.PointBase) val).getPoint().setStateGroupID(
-				new Integer(com.cannontech.database.db.state.StateGroup.STATEGROUP_CALCULATED));
+				new Integer(com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_CALCULATED));
 		else if (val instanceof com.cannontech.database.data.point.AnalogPoint)
 			((com.cannontech.database.data.point.PointBase) val).getPoint().setStateGroupID(
-				new Integer(com.cannontech.database.db.state.StateGroup.STATEGROUP_ANALOG));
+				new Integer(com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_ANALOG));
 
 		//resets the pointOffset to next available pointOffset for the new type
 		java.util.Vector usedPointOffsetsVector = new java.util.Vector();
