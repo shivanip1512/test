@@ -25,7 +25,7 @@ import com.cannontech.common.util.MessageEventListener;
 import com.cannontech.common.util.FileMessageLog;
 import com.cannontech.common.gui.util.MessagePanel;
 import com.cannontech.dbeditor.defines.CommonDefines;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DBChangeMsg; 
 
 public class DatabaseEditor
 	implements
@@ -1655,6 +1655,7 @@ private JMenuBar getMenuBar(int whichDatabase) {
 	}
 
 	this.menuBar.add( item );
+	//this.menuBar.add( toolsMenu );
 	this.menuBar.add( helpMenu );
 	
 	return menuBar;
