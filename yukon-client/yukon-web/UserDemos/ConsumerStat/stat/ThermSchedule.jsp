@@ -218,7 +218,7 @@ MM_reloadPage(true);
               <br>
 			  
 			<form name="form1" method="POST" action="/servlet/SOAPClient">
-			  <input type="hidden" name="action" value="ConfigThermostat">
+			  <input type="hidden" name="action" value="UpdateThermostatSchedule">
 			  <input type="hidden" name="day" value="<%= dayStr %>">
 			  <input type="hidden" name="mode" value="<%= modeStr %>">
 			  <input type="hidden" name="REDIRECT" value="/UserDemos/ConsumerStat/stat/ThermSchedule.jsp?day=<%= dayStr %>&mode=<%= modeStr %>">
