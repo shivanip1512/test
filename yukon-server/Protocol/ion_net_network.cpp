@@ -249,6 +249,8 @@ int CtiIONNetworkLayer::decode( CtiXfer &xfer, int status )
 
                             //  try to read/catch up until we get the one we expected
                             _ioState = Input;
+
+                            _datalinkLayer.setToInput();
                         }
                         else
                         {
