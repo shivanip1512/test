@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2003/04/21 22:12:43 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2003/05/23 22:09:02 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1933,7 +1933,7 @@ bool CtiProtocolVersacom::isConfigFullAddressValid(LONG sn) const
     bool bstatus = false;
 
 
-    if(sn > gConfigParms.getValueAsULong("VERSACOM_FULL_ADDRESS_SERIAL_BASE", 0))
+    if(sn > gConfigParms.getValueAsULong("VERSACOM_FULL_ADDRESS_SERIAL_BASE", 600000000))
     {
         bstatus = true;
     }
