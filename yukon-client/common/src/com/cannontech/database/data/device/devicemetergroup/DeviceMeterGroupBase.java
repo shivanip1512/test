@@ -61,6 +61,13 @@ public void setDeviceMeterGroup( DeviceMeterGroup dvMtrGrp_ )
 
 /**
  * This method was created in VisualAge.
+ * @param newValue java.lang.Integer
+ */
+public void setDeviceID(Integer newValue) {
+	getDeviceMeterGroup().setDeviceID(newValue);
+}
+/**
+ * This method was created in VisualAge.
  * @exception java.sql.SQLException The exception description.
  */
 public void retrieve() throws java.sql.SQLException 
@@ -82,5 +89,15 @@ public String toString()
 public void update() throws java.sql.SQLException 
 {	
 	getDeviceMeterGroup().update();	
+}
+/**
+ * Insert the method's description here.
+ * Creation date: (1/4/00 3:32:03 PM)
+ * @param conn java.sql.Connection
+ */
+public void setDbConnection(java.sql.Connection conn) 
+{
+	super.setDbConnection(conn);
+	getDeviceMeterGroup().setDbConnection(conn);
 }
 }
