@@ -73,6 +73,7 @@ public final class ModelFactory
 	public static final int SYSTEMLOG_TYPES_CHECKBOX=53;
 	
 	public static final int LMGROUPMACRO = 54;
+	public static final int TOUSCHEDULE = 55;
 	
 	//The above is an enumeration of indices into
 	//the following array
@@ -132,7 +133,8 @@ public final class ModelFactory
 		LMGroupGolayModel.class,
 		EnergyCompanyCheckBoxTreeModel.class,
 /* 53*/	SystemLogTypeCheckBoxTreeModel.class,
-		LMGroupMacroModel.class
+		LMGroupMacroModel.class,
+		TOUScheduleModel.class
 	};
 
 /**

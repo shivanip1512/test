@@ -76,6 +76,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
 	private ArrayList allTags = null;
 	private ArrayList allSeasonSchedules = null;
 	private ArrayList allGears = null;
+	private ArrayList allTOUSchedules = null;
 	
 	private ArrayList allYukonUsers = null;
 	private ArrayList allYukonRoles = null;
@@ -499,6 +500,20 @@ public synchronized java.util.List getAllSeasonSchedules()
 		SeasonScheduleLoader seasonLoader = new SeasonScheduleLoader(allSeasonSchedules, databaseAlias);
 		seasonLoader.run();
 		return allSeasonSchedules;
+	}
+}
+
+public synchronized java.util.List getAllTOUSchedules()
+{
+
+	if (allTOUSchedules != null)
+		return allTOUSchedules;
+	else
+	{
+		allTOUSchedules = new ArrayList();
+		TOUScheduleLoader touLoader = new TOUScheduleLoader(allTOUSchedules, databaseAlias);
+		touLoader.run();
+		return allTOUSchedules;
 	}
 }
 
@@ -1648,6 +1663,10 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg)
 	{
 		retLBase = handleSeasonScheduleChange( dbType, id );
 	}
+	else if( database == DBChangeMsg.CHANGE_TOU_SCHEDULE_DB )
+	{
+		retLBase = handleTOUScheduleChange( dbType, id );
+	}
 	else if( database == DBChangeMsg.CHANGE_CONFIG_DB )
 	{
 		retLBase = handleConfigChange( dbType, id );
@@ -2001,6 +2020,64 @@ private synchronized LiteBase handleSeasonScheduleChange( int changeType, int id
 				break;
 		default:
 				releaseAllSeasonSchedules();
+				break;
+	}
+
+	return lBase;
+}
+
+private synchronized LiteBase handleTOUScheduleChange( int changeType, int id )
+{
+	boolean alreadyAdded = false;
+	LiteBase lBase = null;
+
+	// if the storage is not already loaded, we must not care about it
+	if( allTOUSchedules == null )
+		return lBase;
+
+	switch(changeType)
+	{
+		case DBChangeMsg.CHANGE_TYPE_ADD:
+				for(int i=0;i<allTOUSchedules.size();i++)
+				{
+					if( ((com.cannontech.database.data.lite.LiteTOUSchedule)allTOUSchedules.get(i)).getScheduleID() == id )
+					{
+						alreadyAdded = true;
+						lBase = (LiteBase)allTOUSchedules.get(i);
+						break;
+					}
+				}
+				if( !alreadyAdded )
+				{
+					com.cannontech.database.data.lite.LiteTOUSchedule lh = new com.cannontech.database.data.lite.LiteTOUSchedule(id);
+					lh.retrieve(databaseAlias);
+					allTOUSchedules.add(lh);
+					lBase = lh;
+				}
+				break;
+		case DBChangeMsg.CHANGE_TYPE_UPDATE:
+				for(int i=0;i<allTOUSchedules.size();i++)
+				{
+					if( ((com.cannontech.database.data.lite.LiteTOUSchedule)allTOUSchedules.get(i)).getScheduleID() == id )
+					{
+						((com.cannontech.database.data.lite.LiteTOUSchedule)allTOUSchedules.get(i)).retrieve(databaseAlias);
+						lBase = (LiteBase)allTOUSchedules.get(i);
+						break;
+					}
+				}
+				break;
+		case DBChangeMsg.CHANGE_TYPE_DELETE:
+				for(int i=0;i<allTOUSchedules.size();i++)
+				{
+					if( ((com.cannontech.database.data.lite.LiteTOUSchedule)allTOUSchedules.get(i)).getScheduleID() == id )
+					{
+						lBase = (LiteBase)allTOUSchedules.remove(i);
+						break;
+					}
+				}
+				break;
+		default:
+				releaseAllTOUSchedules();
 				break;
 	}
 
@@ -2709,6 +2786,7 @@ public synchronized void releaseAllCache()
     allTags = null;
     allSeasonSchedules = null;
     allGears = null;
+    allTOUSchedules = null;
     
     allYukonUsers = null;
     allYukonRoles = null;
@@ -2800,6 +2878,11 @@ public synchronized void releaseAllBaselines()
 public synchronized void releaseAllSeasonSchedules()
 {
 	allSeasonSchedules = null;
+}
+
+public synchronized void releaseAllTOUSchedules()
+{
+	allTOUSchedules = null;
 }
 
 public synchronized void releaseAllConfigs()

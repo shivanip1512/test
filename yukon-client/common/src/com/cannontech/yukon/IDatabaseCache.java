@@ -47,7 +47,7 @@ public interface IDatabaseCache
    public java.util.List getAllLMScenarioProgs();
    public java.util.List getAllLMPAOExclusions();
    public java.util.List getAllSeasonSchedules();
-
+   public java.util.List getAllTOUSchedules();
 
    public java.util.List getAllPoints();
 	//	Map<Integer(ptID), LitePoint>
@@ -137,6 +137,7 @@ public interface IDatabaseCache
    public void releaseAllLMPAOExclusions();
    public void releaseAllTags();
    public void releaseAllSeasonSchedules();
+   public void releaseAllTOUSchedules();
    public void releaseAllNotificationGroups();
    public void releaseAllContactNotifications();
    public void releaseAllPoints();

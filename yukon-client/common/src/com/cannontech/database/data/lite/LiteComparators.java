@@ -230,6 +230,11 @@ public final class LiteComparators
 				thisVal = ((LiteConfig)o1).getConfigName();
 				anotherVal = ((LiteConfig)o2).getConfigName();
 			}
+			else if(o1 instanceof LiteTOUSchedule && o2 instanceof LiteTOUSchedule)
+			{
+				thisVal = ((LiteTOUSchedule)o1).getScheduleName();
+				anotherVal = ((LiteTOUSchedule)o2).getScheduleName();
+			}
 			else if(o1 instanceof LiteTag && o2 instanceof LiteTag)
 			{
 				thisVal = ((LiteTag)o1).getTagName();
