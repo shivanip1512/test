@@ -8,8 +8,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrlodestarimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.6 $
-*    DATE         :  $Date: 2004/04/08 20:03:16 $
+*    REVISION     :  $Revision: 1.7 $
+*    DATE         :  $Date: 2004/05/10 19:00:15 $
 *
 *
 *    AUTHOR: Josh Wolberg
@@ -21,6 +21,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrlodestarimport.cpp,v $
+      Revision 1.7  2004/05/10 19:00:15  jrichter
+      Removed unnecessary debug.
+
       Revision 1.6  2004/04/08 20:03:16  jrichter
       jrichter1 Lodestar changes to handle standard format and files are read in based on point parameters.
 
@@ -553,14 +556,14 @@ void CtiFDR_LodeStarImportBase::threadFunctionReadFromFile( void )
              {
                  for (int fileIndex = 0; fileIndex < getFileInfoList().size(); fileIndex++) 
                  {
-                     if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
-                     {
-                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                         dout << "JULIE:  ***** " << getFileInfoList()[fileIndex].getLodeStarFileName() << " ***** "  << endl;
-                     }
                      _snprintf(fileName, 200, "%s\\%s",getFileInfoList()[fileIndex].getLodeStarDrivePath(),getFileInfoList()[fileIndex].getLodeStarFileName());
                      FindFirstFile(fileName, fileData);
                      _snprintf(fileNameAndPath, 250, "%s\\%s",getFileInfoList()[fileIndex].getLodeStarDrivePath(),fileData->cFileName);
+                     if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
+                     {
+                         CtiLockGuard<CtiLogger> doubt_guard(dout);
+                         dout << "  ***** FILE_"<<fileIndex+1<<"   " << fileNameAndPath << " ***** "  << endl;
+                     }
                      fptr = fopen(fileNameAndPath, "r");
                      while ((fptr == NULL) && (attemptCounter < 10))
                      {
