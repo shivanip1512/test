@@ -40,63 +40,193 @@
 #include "logger.h"
 #include "guard.h"
 
+#include "utility.h"
 
-INT CtiDeviceION::ExecuteRequest( CtiRequestMsg              *pReq,
-                                  CtiCommandParser           &parse,
-                                  OUTMESS                   *&OutMessage,
-                                  RWTPtrSlist< CtiMessage >  &vgList,
-                                  RWTPtrSlist< CtiMessage >  &retList,
-                                  RWTPtrSlist< OUTMESS >     &outList)
+
+
+CtiDeviceION::CtiDeviceION() {}
+
+CtiDeviceION::CtiDeviceION(const CtiDeviceION &aRef)
+{
+   *this = aRef;
+}
+
+CtiDeviceION::~CtiDeviceION() {}
+
+CtiDeviceION &CtiDeviceION::operator=(const CtiDeviceION &aRef)
+{
+   if(this != &aRef)
+   {
+      Inherited::operator=(aRef);
+   }
+   return *this;
+}
+
+
+/*****************************************************************************
+ * This method determines what should be displayed in the "Description" column
+ * of the systemlog table when something happens to this device
+ *****************************************************************************/
+RWCString CtiDeviceION::getDescription(const CtiCommandParser &parse) const
+{
+   return getName();
+}
+
+
+INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     INT   nRet = NoError;
     RWCString resultString;
-//    CtiRoute *Route = NULL;
 
     bool found = false;
 
     switch( parse.getCommand() )
     {
-    case ScanRequest:
+        case ScanRequest:
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << "Picked ScanRequest" << endl;
             }
-            nRet = executeScan(pReq, parse, OutMessage, vgList, retList, outList);
+
+            switch(parse.getiValue("scantype"))
+            {
+            case ScanRateStatus:
+            case ScanRateGeneral:
+               {
+                   _ion.setCommand(CtiProtocolION::ION_ExceptionScan);
+                   found = true;
+                   break;
+               }
+            case ScanRateAccum:
+            case ScanRateIntegrity:
+            default:
+               {
+                   _ion.setCommand(CtiProtocolION::ION_IntegrityScan);
+                   found = true;
+                   break;
+               }
+            }
+
             break;
         }
-/*    case GetValueRequest:
-       {
-          nRet = executeGetValue(pReq, parse, OutMessage, vgList, retList, outList);
-          break;
-       }
-    case PutValueRequest:
-       {
-          nRet = executePutValue(pReq, parse, OutMessage, vgList, retList, outList);
-          break;
-       }
-    case ControlRequest:
-       {
-          nRet = executeControl(pReq, parse, OutMessage, vgList, retList, outList);
-          break;
-       }
-    case GetStatusRequest:
-       {
-          nRet = executeGetStatus(pReq, parse, OutMessage, vgList, retList, outList);
-          break;
-       }
-    case GetConfigRequest:
-       {
-          nRet = executeGetConfig(pReq, parse, OutMessage, vgList, retList, outList);
-          break;
-       }
-    case PutConfigRequest:
-       {
-          nRet = executePutConfig(pReq, parse, OutMessage, vgList, retList, outList);
-          break;
-       }
-    case PutStatusRequest:
-*/      default:
+
+        /*
+        case ControlRequest:
+        {
+            int offset;
+            CtiIONBinaryOutputControl::ControlCode controltype;
+
+            if( parse.getFlags() & CMD_FLAG_OFFSET )
+            {
+                offset = parse.getiValue("offset");
+
+                if( parse.getFlags() & CMD_FLAG_CTL_OPEN )
+                {
+                    controltype = CtiIONBinaryOutputControl::PulseOff;
+                }
+                else
+                {
+                    controltype = CtiIONBinaryOutputControl::PulseOn;
+                }
+
+                CtiProtocolION::ion_output_point controlout;
+
+                controlout.type   = CtiProtocolION::DigitalOutput;
+                controlout.offset = offset;
+
+                controlout.dout.control    = controltype;
+                controlout.dout.trip_close = CtiIONBinaryOutputControl::NUL;
+                controlout.dout.on_time    = 0;
+                controlout.dout.off_time   = 0;
+                controlout.dout.count      = 1;
+                controlout.dout.queue      = false;
+                controlout.dout.clear      = false;
+
+                _ion.setCommand(CtiProtocolION::ION_SetDigitalOut, &controlout, 1);
+
+                nRet = NoError;
+            }
+
+            break;
+        }
+
+        case ScanRequest:
+        {
+            switch( parse.getiValue("scantype") )
+            {
+                case ScanRateStatus:
+                {
+                    nRet = NoMethod;
+                    break;
+                }
+
+                case ScanRateGeneral:
+                {
+                    _ion.setCommand(CtiProtocolION::ION_Class123Read);
+                    nRet = NoError;
+                    break;
+                }
+
+                case ScanRateAccum:
+                {
+                    nRet = NoMethod;
+                    break;
+                }
+
+                case ScanRateIntegrity:
+                {
+                    _ion.setCommand(CtiProtocolION::ION_Class0Read);
+                    nRet = NoError;
+                    break;
+                }
+            }
+
+
+            break;
+        }
+
+        case PutValueRequest:
+        {
+            int offset;
+
+            if( parse.getFlags() & CMD_FLAG_PV_ANALOG )
+            {
+                CtiProtocolION::ion_output_point controlout;
+
+                controlout.type = CtiProtocolION::AnalogOutput;
+
+                controlout.aout.value = parse.getiValue("analogvalue");
+                controlout.offset     = parse.getiValue("analogoffset");
+
+                _ion.setCommand(CtiProtocolION::ION_SetAnalogOut, &controlout, 1);
+
+                nRet = NoError;
+            }
+
+            break;
+        }
+
+        case GetValueRequest:
+        case GetStatusRequest:
+        {
+
+        }
+        case PutStatusRequest:
+        case GetConfigRequest:
+        case PutConfigRequest:
+        case LoopbackRequest:
+        default:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+        }
+
+    */
+
+        default:
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -109,26 +239,37 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg              *pReq,
         }
     }
 
-    if(nRet != NoError)
-    {
-       {
-          CtiLockGuard<CtiLogger> doubt_guard(dout);
-          dout << RWTime() << " Couldn't come up with an operation for device " << getName() << endl;
-          dout << RWTime() << "   Command: " << pReq->CommandString() << endl;
-       }
 
-       resultString = "NoMethod or invalid command.";
-       retList.insert(new CtiReturnMsg(getID(),
-                                       RWCString(OutMessage->Request.CommandStr),
-                                       resultString,
-                                       nRet,
-                                       OutMessage->Request.RouteID,
-                                       OutMessage->Request.MacroOffset,
-                                       OutMessage->Request.Attempt,
-                                       OutMessage->Request.TrxID,
-                                       OutMessage->Request.UserID,
-                                       OutMessage->Request.SOE,
-                                       RWOrdered()));
+    if( nRet == NoError )
+    {
+        OutMessage->Port = getPortID();
+        OutMessage->DeviceID = getID();
+        OutMessage->TargetID = getID();
+        _ion.sendCommRequest( OutMessage, outList );
+    }
+    else
+    {
+        delete OutMessage;
+        OutMessage = NULL;
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Couldn't come up with an operation for device " << getName() << endl;
+            dout << RWTime() << "   Command: " << pReq->CommandString() << endl;
+        }
+
+        resultString = "NoMethod or invalid command.";
+        retList.insert(new CtiReturnMsg(getID(),
+                                        RWCString(OutMessage->Request.CommandStr),
+                                        resultString,
+                                        nRet,
+                                        OutMessage->Request.RouteID,
+                                        OutMessage->Request.MacroOffset,
+                                        OutMessage->Request.Attempt,
+                                        OutMessage->Request.TrxID,
+                                        OutMessage->Request.UserID,
+                                        OutMessage->Request.SOE,
+                                        RWOrdered()));
     }
 
     return nRet;
@@ -136,518 +277,165 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg              *pReq,
 
 
 
-INT CtiDeviceION::executeScan( CtiRequestMsg              *pReq,
-                               CtiCommandParser           &parse,
-                               OUTMESS                   *&OutMessage,
-                               RWTPtrSlist< CtiMessage >  &vgList,
-                               RWTPtrSlist< CtiMessage >  &retList,
-                               RWTPtrSlist< OUTMESS >     &outList )
-{
-   INT   nRet = NoError;
-   CHAR Temp[80];
-
-   INT function;
-
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " in executeScan " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-
-   switch(parse.getiValue("scantype"))
-   {
-   case ScanRateStatus:
-   case ScanRateGeneral:
-      {
-          nRet = GeneralScan( pReq, parse, OutMessage, vgList, retList, outList );
-          break;
-      }
-/*   case ScanRateAccum:
-      {
-         function = CtiProtocolEmetcon::Scan_Accum;
-         found = getOperation(CtiProtocolEmetcon::Scan_Accum, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
-         break;
-      }
-   case ScanRateIntegrity:
-      {
-         function = CtiProtocolEmetcon::Scan_Integrity;
-         found = getOperation(CtiProtocolEmetcon::Scan_Integrity, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
-         break;
-      }
-*/   default:
-      {
-          nRet = NoMethod;
-          break;
-      }
-   }
-
-/*
-   if(!found)
-   {
-      nRet = NoMethod;
-   }
-   else
-   {
-      // Load all the other stuff that is needed
-      OutMessage->DeviceID  = getID();
-      OutMessage->TargetID  = getID();
-      OutMessage->Port      = getPortID();
-      OutMessage->Remote    = getAddress();
-      OutMessage->RouteID   = getRouteID();
-      OutMessage->Priority  = MAXPRIORITY - 4;
-      OutMessage->TimeOut   = 2;
-      OutMessage->Sequence  = function;     // Helps us figure it out later!
-      OutMessage->Retry     = 3;
-
-      // Tell the porter side to complete the assembly of the message.
-      strcpy(OutMessage->Request.CommandStr, pReq->CommandString());
-   }
-*/
-   return nRet;
-}
-
-
-
-INT CtiDeviceION::GeneralScan( CtiRequestMsg              *pReq,
-                               CtiCommandParser           &parse,
-                               OUTMESS                   *&OutMessage,
-                               RWTPtrSlist< CtiMessage >  &vgList,
-                               RWTPtrSlist< CtiMessage >  &retList,
-                               RWTPtrSlist< OUTMESS >     &outList,
-                               INT                         ScanPriority )
+INT CtiDeviceION::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority )
 {
     INT status = NORMAL;
+    CtiCommandParser newParse("scan general");
 
+    if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << "in GeneralScan " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << RWTime() << " **** GeneralScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    if( OutMessage != NULL )
+    pReq->setCommandString("scan general");
+
+    status = ExecuteRequest(pReq,newParse,OutMessage,vgList,retList,outList);
+
+    if(OutMessage)
     {
-        //  maybe someday we can just set the command instead of passing it via the OutMessage...
-        setCurrentCommand( CmdScanData );
-
-        OutMessage->Buffer.DUPReq.Command[0] = CmdScanData;
-        OutMessage->Buffer.DUPReq.LP_Time    = getLastLPTime( ).seconds( );
-
-        //  load all appropriate data
-        OutMessage->DeviceID  = getID( );
-        OutMessage->Port      = getPortID( );
-        OutMessage->Remote    = getAddress( );
-
-        EstablishOutMessagePriority( OutMessage, ScanPriority );
-
-        //  if this is a slave, drop the priority
-//      if( !(getIED( ).isMaster( )) )
-        if( !isMaster( ) )
-            OutMessage->Priority--;
-
-        OutMessage->TimeOut   = 2;
-        OutMessage->EventCode = RESULT | ENCODED;
-        OutMessage->Sequence  = 0;
-        OutMessage->Retry     = 3;
-
-        outList.insert(OutMessage);
-
-        OutMessage = NULL;
-    }
-    else
-    {
-        status = MEMORY;
+        delete OutMessage;
+        OutMessage = 0;
     }
 
     return status;
 }
 
 
-INT CtiDeviceION::generateCommand( CtiXfer &Transfer )
+
+INT CtiDeviceION::IntegrityScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority )
 {
-    INT  retCode = NORMAL;
+    INT status = NORMAL;
+    CtiCommandParser newParse("scan integrity");
 
-    switch( getCurrentCommand( ) )
+    if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
     {
-        case CmdSelectMeter:
-        case CmdScanData:
-        case CmdLoadProfileData:
-            {
-                resolveNextState( );
-
-                _dllLayer->outFrame( Transfer.getOutBuffer( ), &Transfer.getOutCount( ) );
-                Transfer.setCRCFlag( 0 );
-                Transfer.setInCountExpected( 250 );
-                Transfer.setNonBlockingReads( true );  //  porter does the reading, and he doesn't know
-                                                       //    to look at the first bytes for the length
-                                                       //    of the packet - so we blindly take what we're given.
-                break;
-            }
-
-        default:
-            {
-                Transfer.setOutCount( 0 );
-                Transfer.setInCountExpected( 0 );
-                setCurrentState( StateScanAbort );
-                {
-                    CtiLockGuard<CtiLogger> dout_guard( dout );
-                    dout << RWTime( ) << " (" << __LINE__ << ") Invalid command " << getCurrentCommand( ) << " scanning " << getName( ) << endl;
-                }
-                retCode = StateScanAbort;
-                break;
-            }
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** IntegrityScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    return retCode;
+    pReq->setCommandString("scan integrity");
+
+    status = ExecuteRequest(pReq,newParse,OutMessage,vgList,retList,outList);
+
+    if(OutMessage)
+    {
+        delete OutMessage;
+        OutMessage = 0;
+    }
+
+    return status;
 }
 
 
-INT CtiDeviceION::decodeResponse( CtiXfer &Transfer, INT commReturnValue )
+int CtiDeviceION::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList )
 {
-    INT  retCode = NORMAL;
+    INT ErrReturn = InMessage->EventCode & 0x3fff;
+    RWTPtrSlist<CtiPointDataMsg> ionPoints;
 
-    switch( getCurrentCommand( ) )
+    _ion.recvCommResult(InMessage, outList);
+
+    resetScanPending();
+
+    if( _ion.hasInboundPoints() )
     {
-        case CmdSelectMeter:
-        case CmdScanData:
-        case CmdLoadProfileData:
-            {
-                _dllLayer->inFrame( Transfer.getInBuffer( ), *(Transfer.getInCountActual( )) );
+        _ion.getInboundPoints(ionPoints);
 
-                resolveNextState( );
-
-                break;
-            }
-
-        default:
-            {
-                Transfer.setOutCount( 0 );
-                Transfer.setInCountExpected( 0 );
-                setCurrentState( StateScanAbort );
-                {
-                    CtiLockGuard<CtiLogger> dout_guard( dout );
-                    dout << RWTime( ) << " (" << __LINE__ << ") Invalid command " << getCurrentCommand( ) << " scanning " << getName( ) << endl;
-                }
-                retCode = StateScanAbort;
-                break;
-            }
+        processInboundPoints(ionPoints, TimeNow, vgList, retList, outList);
     }
 
-    return retCode;
+    return ErrReturn;
 }
 
 
-void CtiDeviceION::resolveNextState( void )
+void CtiDeviceION::processInboundPoints(RWTPtrSlist<CtiPointDataMsg> &points, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList )
 {
-    CtiIONDataLinkLayer::DLLExternalStatus dllStatus;
-
-    dllStatus = _dllLayer->getStatus( );
-
-    //  if we're coming in here after the handshake, or we're doing another command
-    if( getIONState( ) == IONStateUninitialized ||
-        getIONState( ) == IONStateComplete )
+    while( !points.isEmpty() )
     {
-        //  this is only used for the external appearance of the device...
-        setCurrentState( StateScanValueSet1 );
-        //  ...  all real state info is kept inside the IONState types.
-        setIONState( IONStateInit );
-    }
+        CtiPointDataMsg *tmpMsg = points.removeFirst();
+        CtiPointBase *point;
 
-    //  we only compute new states when we're uninitialized or
-    //    done sending or receiving a whole message
-    if( dllStatus == CtiIONDataLinkLayer::InDataComplete  ||
-        dllStatus == CtiIONDataLinkLayer::OutDataComplete ||
-        dllStatus == CtiIONDataLinkLayer::Uninitialized )
-    {
-        switch( getCurrentCommand( ) )
+        //  !!! tmpMsg->getId() is actually returning the offset !!!  because only the offset and type are known in the protocol object
+        if( (point = getDevicePointOffsetTypeEqual(tmpMsg->getId(), tmpMsg->getType())) != NULL )
         {
-            case CmdSelectMeter:
-            {
-                resolveNextStateSelectMeter( );
-                break;
-            }
-            case CmdScanData:
-            {
-                resolveNextStateScanData( );
-                break;
-            }
-            case CmdLoadProfileData:
-            {
-                resolveNextStateLoadProfile( );
-                break;
-            }
+            tmpMsg->setId(point->getID());
+
+            retList.append(tmpMsg);
+        }
+        else
+        {
+            delete tmpMsg;
         }
     }
-
-    if( getIONState( ) == IONStateComplete )
-    {
-        setCurrentState( StateScanComplete );
-    }
-    else if( getIONState( ) == IONStateAbort )
-    {
-        setCurrentState( StateScanAbort );
-    }
 }
 
 
-
-void CtiDeviceION::resolveNextStateSelectMeter( void )
+INT CtiDeviceION::ErrorDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList)
 {
-    switch( getIONState( ) )
+    INT retCode = NORMAL;
+
+    CtiCommandParser  parse(InMessage->Return.CommandStr);
+    CtiReturnMsg     *pPIL = new CtiReturnMsg(getID(),
+                                              RWCString(InMessage->Return.CommandStr),
+                                              RWCString(),
+                                              InMessage->EventCode & 0x7fff,
+                                              InMessage->Return.RouteID,
+                                              InMessage->Return.MacroOffset,
+                                              InMessage->Return.Attempt,
+                                              InMessage->Return.TrxID,
+                                              InMessage->Return.UserID);
+    CtiPointDataMsg  *commFailed;
+    CtiPointBase     *commPoint;
+
     {
-//        case IONStateInit:
-//            {
-//                break;
-//            }
-        default:
-            setIONState( IONStateComplete );
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " Error decode for device " << getName() << " in progress " << endl;
     }
-}
 
-
-void CtiDeviceION::resolveNextStateScanData( void )
-{
-    CtiIONStatement *tmpStatement;
-    CtiIONProgram   *tmpProgram;
-    CtiIONMethod    *tmpMethod;
-    unsigned char   *tmpBuf;
-
-    switch( getIONState( ) )
+    if( pPIL != NULL )
     {
-        case IONStateInit:
-        case IONStateRequestFeatureManagerInfo:
-            {
-                tmpMethod = new CtiIONMethod( CtiIONMethod::ReadModuleSetupHandles );  //  ReadManagedClass
-                tmpStatement = new CtiIONStatement( IONFeatureManagerHandle, tmpMethod );  // ustabeed 132
-                tmpProgram = new CtiIONProgram( tmpStatement );
-                _dsBuf = new CtiIONDataStream( );
-                _dsBuf->appendItem( tmpProgram );
-                _appLayer->init( *_dsBuf );
-                _netLayer->init( *_appLayer, 0, 20000, 102 );
-                _dllLayer->setToOutput( *_netLayer, _netLayer->getSrcID( ), _netLayer->getDstID( ) );
+        //  insert "Sky is falling" messages into pPIL here
 
-                //  also deletes the contained tmpProgram and tmpMethod
-                delete _dsBuf;
-
-                setIONState( IONStateReceiveFeatureManagerInfo );
-
-                break;
-            }
-
-        case IONStateReceiveFeatureManagerInfo:
-            {
-                _dllLayer->setToInput( );
-
-                setIONState( IONStateRequestManagerInfo );
-
-                break;
-            }
-
-        case IONStateRequestManagerInfo:
-            {
-                _netLayer->init( *_dllLayer );
-                _appLayer->init( *_netLayer );
-
-                if( (tmpBuf = new unsigned char( _appLayer->getPayloadLength( ) )) != NULL )
-                {
-                    _appLayer->putPayload( tmpBuf );
-                    _dsBuf = new CtiIONDataStream( tmpBuf, _appLayer->getPayloadLength( ) );
-                    delete tmpBuf;
-
-                    for( int i = 0; i < _dsBuf->getItemCount( ); i++ )
-                    {
-                        cout << _dsBuf->getItem(i)->getType( ) << endl;
-                    }
-                }
-
-                setIONState( IONStateComplete );
-
-                break;
-            }
-
-        case IONStateReceiveManagerInfo:
-            {
-                _dllLayer->setToInput( );
-                break;
-            }
-
-        case IONStateRequestModuleInfo:
-            {
-                break;
-            }
-
-        case IONStateReceiveModuleInfo:
-            {
-                break;
-            }
-
-        case IONStateRequestData:
-            {
-                break;
-            }
-
-        case IONStateReceiveData:
-            {
-                break;
-            }
-    }
-}
-
-
-void CtiDeviceION::resolveNextStateLoadProfile( void )
-{
-    switch( getIONState( ) )
-    {
-        default:
-            setIONState( IONStateComplete );
-            break;
-
-/*        case IONStateInit:
-            {
-                break;
-            }
- */
-    }
-}
-
-
-int CtiDeviceION::copyLoadProfileData( BYTE *aInMessBuffer, ULONG &aTotalBytes )
-{
-    return NoError;
-}
-
-
-int CtiDeviceION::allocateDataBins( OUTMESS *outMess )
-{
-    YukonError_t retCode;
-
-    //  setTotalByteCount( 0 );
-
-    _dllLayer = new CtiIONDataLinkLayer;
-    _netLayer = new CtiIONNetworkLayer;
-    _appLayer = new CtiIONApplicationLayer;
-
-    if( _dllLayer != NULL &&
-        _netLayer != NULL &&
-        _appLayer != NULL )
-    {
-        //  set the command from the outMess command
-        setCurrentCommand( (CtiDeviceIED::CtiMeterCmdStates_t)outMess->Buffer.DUPReq.Command[0] );
-
-        //  grab the lastLPTime
-        _lastLPTime = outMess->Buffer.DUPReq.LP_Time;
-
-        //  this guy simply responds to requests - currently, passwords aren't required for data retrieval
-        //    setting this now makes it bypass the handshake routine later in porter
-        setCurrentState( StateHandshakeComplete );
-
-        retCode = NoError;
+        // send the whole mess to dispatch
+        if (pPIL->PointData().entries() > 0)
+        {
+            retList.insert( pPIL );
+        }
+        else
+        {
+            delete pPIL;
+        }
+        pPIL = NULL;
     }
     else
     {
-        //  abort - we can't allocate the needed network layers.
-        setCurrentState( StateHandshakeAbort );
-
-        //  CommunicateDevice doesn't currently have error checking around allocateDataBins;
-        //    if/when it does, we can return this instead of aborting the handshake
-//        retCode = MemoryError;
-
-        retCode = NoError;
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return retCode;
 }
 
 
-int CtiDeviceION::freeDataBins( void )
+void CtiDeviceION::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
-    if( _dllLayer != NULL )
-        delete _dllLayer;
-    _dllLayer = NULL;
-
-    if( _netLayer != NULL )
-        delete _netLayer;
-    _netLayer = NULL;
-
-    if( _appLayer != NULL )
-        delete _appLayer;
-    _appLayer = NULL;
-
-    return NORMAL;
+   Inherited::getSQL(db, keyTable, selector);
+   CtiTableDeviceDNP::getSQL(db, keyTable, selector);
 }
 
 
-int CtiDeviceION::ResultDecode( INMESS *InMessage,
-                                RWTime &TimeNow,
-                                RWTPtrSlist< CtiMessage >   &vgList,
-                                RWTPtrSlist< CtiMessage > &retList,
-                                RWTPtrSlist< OUTMESS > &outList )
+void CtiDeviceION::DecodeDatabaseReader(RWDBReader &rdr)
 {
-    // intialize the command based on the in message
-    setCurrentCommand( (CtiMeterCmdStates_t)InMessage->Buffer.DUPSt.DUPRep.ReqSt.Command[0] );
-    setCurrentState  ( (CtiMeterMachineStates_t)InMessage->Buffer.DUPSt.DUPRep.ReqSt.Command[1] );
+   Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
+   _address.DecodeDatabaseReader(rdr);
 
-    switch( getCurrentCommand( ) )
-    {
-        case CmdScanData:
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime( ) << " Scan decode for device " << getName( ) << " in progress " << endl;
-                }
+   if( getDebugLevel() & 0x0800 )
+   {
+       CtiLockGuard<CtiLogger> doubt_guard(dout);
+       dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+   }
 
-                decodeResultScan( InMessage, TimeNow, vgList, retList, outList );
-                break;
-            }
-        case CmdLoadProfileData:
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime( ) << " LP decode for device " << getName( ) << " in progress " << endl;
-                }
-
-                // just in case we're getting an empty message
-                if( getCurrentState( ) == StateScanReturnLoadProfile )
-                {
-                    decodeResultLoadProfile( InMessage, TimeNow, vgList, retList, outList );
-                }
-                else
-                {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime( ) << " LP decode failed device " << getName( ) << " invalid state " << endl;
-                    }
-                }
-                break;
-            }
-        default:
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime( ) << " (" << __LINE__ << ") *** ERROR *** Invalid decode for " << getName( ) << endl;
-                }
-            }
-    }
-
-    return NORMAL;
+   _ion.setSlaveAddress(_address.getSlaveAddress());
+   _ion.setMasterAddress(_address.getMasterAddress());
 }
-
-
-INT CtiDeviceION::decodeResultScan( INMESS *InMessage,
-                                    RWTime &TimeNow,
-                                    RWTPtrSlist< CtiMessage > &vgList,
-                                    RWTPtrSlist< CtiMessage > &retList,
-                                    RWTPtrSlist< OUTMESS >    &outList )
-{
-return NoError;
-}
-
-
-INT CtiDeviceION::decodeResultLoadProfile( INMESS *InMessage,
-                                           RWTime &TimeNow,
-                                           RWTPtrSlist< CtiMessage > &vgList,
-                                           RWTPtrSlist< CtiMessage > &retList,
-                                           RWTPtrSlist< OUTMESS >    &outList )
-{
-return NoError;
-}
-
-
 
