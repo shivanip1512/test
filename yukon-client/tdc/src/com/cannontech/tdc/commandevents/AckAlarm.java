@@ -20,6 +20,33 @@ public AckAlarm()
 {
 	super();
 }
+
+/**
+ * Insert the method's description here.
+ * Creation date: (4/10/00 5:32:43 PM)
+ * Version: <version>
+ */
+public static void sendAckAll( int pointid ) 
+{
+	java.util.Vector data = new java.util.Vector( 2 );  // we are only sending 1 ack event and the token
+	data.addElement( new Integer(-1) );  // this is the ClientRegistrationToken
+	
+	//add the pointID
+	data.addElement( new Integer(pointid) );
+	//add the ACK_ALL reserved value instead of the AlarmCondition
+	data.addElement( new Integer(Command.ACK_ALL_TOKEN) );
+
+		
+	// Sends a vangogh command message to capcontrol, which then forwards the exact
+	//   message onto dispatch(vangogh)
+	Command cmd = new Command();
+	cmd.setOperation( Command.ACKNOWLEGDE_ALARM );
+	cmd.setOpArgList( data );
+	cmd.setTimeStamp( new java.util.Date() );
+	
+	SendData.getInstance().sendCommandMsg( cmd );
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (4/10/00 5:32:43 PM)

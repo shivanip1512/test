@@ -6,10 +6,13 @@ package com.cannontech.tdc.addpoints;
  * @author: 
  */
 import java.awt.Cursor;
-import java.awt.Rectangle;
 
 import javax.swing.ListSelectionModel;
 
+import com.cannontech.database.cache.functions.PAOFuncs;
+import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.model.DBTreeNode;
 import com.cannontech.tdc.TDCMainFrame;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
 
@@ -494,8 +497,6 @@ public void jButtonAdd_ActionPerformed(java.awt.event.ActionEvent actionEvent)
 		return;
 	}
 
-
-	
 	javax.swing.tree.TreePath[] path = getLeftTree().getSelectionPaths();
 
 	if( path != null && path[0].getPath().length != 1 )
@@ -506,34 +507,26 @@ public void jButtonAdd_ActionPerformed(java.awt.event.ActionEvent actionEvent)
 		try
 		{
 			f.setCursor( new Cursor( Cursor.WAIT_CURSOR ) );
-			String pointID = null;
-			String deviceName = null;
-			
+
 			for( int i = 0; i < path.length; i++ )
 			{
-				for( int j = 0; j < path[i].getPath().length; j++ )
-				{	// make sure we have a defined node
-					if( path[i].getPath()[j] instanceof com.cannontech.database.model.DBTreeNode )
+				if( path[i].getLastPathComponent() instanceof DBTreeNode )
+				{
+					Object userObject = 
+							((DBTreeNode)path[i].getLastPathComponent()).getUserObject();
+
+					// handle the selected device
+					if( userObject instanceof LiteYukonPAObject )
 					{
-						Object userObject = ((com.cannontech.database.model.DBTreeNode)path[i].getPath()[j]).getUserObject();
-
-						// handle the selected device
-						if( path[i].getPath().length == 2 && 
-							userObject instanceof com.cannontech.database.data.lite.LiteYukonPAObject )
-						{
-							deviceName = ((com.cannontech.database.data.lite.LiteYukonPAObject)userObject).getPaoName();
-
-							getRightTable().addDevice( deviceName,
-										getLeftTree().getDevicesChildren( deviceName ) );
-							break;
-						}  // handle the selecedted point 
-						else if( path[i].getPath().length == 3 && 
-								 userObject instanceof com.cannontech.database.data.lite.LitePoint )
-						{
-							pointID = String.valueOf( ((com.cannontech.database.data.lite.LitePoint)userObject).getPointID() );
-							
-							getRightTable().addPoint( pointID );
-						}
+						getRightTable().addDevice(
+							PAOFuncs.getLitePointsForPAObject( 
+									((LiteYukonPAObject)userObject).getYukonID()) );
+					} 
+					else if( userObject instanceof LitePoint )
+					{
+						LitePoint litePt = (LitePoint)userObject;
+						
+						getRightTable().addPoint( litePt );
 					}
 				}
 			}

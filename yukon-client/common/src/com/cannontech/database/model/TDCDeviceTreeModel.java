@@ -14,7 +14,7 @@ public class TDCDeviceTreeModel extends DeviceTreeModel
  */
 public TDCDeviceTreeModel() 
 {
-	super(new DBTreeNode("Point Attachable Objects"));
+	super( true, new DBTreeNode("Point Attachable Objects") );
 }
 /**
  * Insert the method's description here.
@@ -28,7 +28,7 @@ public boolean isDeviceValid( int cateogry_, int class_, int type_ )
 /**
  * update method comment.
  */
-public void update() {
+/*public void update() {
 	com.cannontech.database.cache.DefaultDatabaseCache cache =
 					com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 
@@ -84,4 +84,5 @@ public void update() {
 
 	reload();	
 }
+*/
 }

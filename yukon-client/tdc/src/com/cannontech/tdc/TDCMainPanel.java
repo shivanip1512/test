@@ -29,12 +29,10 @@ import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.gui.util.SortTableModelWrapper;
 import com.cannontech.common.util.CtiProperties;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.common.util.NativeIntVector;
 import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.data.lite.LiteAlarmCategory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.graph.Graph;
 import com.cannontech.graph.model.TrendModel;
 import com.cannontech.message.dispatch.message.Command;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -2517,24 +2515,11 @@ public void jMenuItemPopUpAckAlarm_ActionPerformed(java.awt.event.ActionEvent ae
 		if( obj instanceof PointValues )
 		{
 			PointValues ptValues = (PointValues)obj;
-
-			Signal[] sigs = ptValues.getAllSignals();
-			NativeIntVector ptIDs = new NativeIntVector( sigs.length );
-			NativeIntVector ptConds = new NativeIntVector( sigs.length );
-			for( int j = 0; j < sigs.length; j++ )
-			{
-				ptIDs.addElement( sigs[j].getPointID() );
-				ptConds.addElement( sigs[j].getCondition() );
-			}
 			
-			if( ptIDs.size() > 0 )
-			{
-				TDCMainFrame.messageLog.addMessage(
-						"An ACK ALARM message was sent for ALL ALARMS on pointid " + ptValues.getPointID(), MessageBoxFrame.INFORMATION_MSG );
-
-				AckAlarm.send( ptIDs.toArray(), ptConds.toArray() );
-			}
+			AckAlarm.sendAckAll( ptValues.getPointID() );
 			
+			TDCMainFrame.messageLog.addMessage(
+					"An ACK ALARM message was sent for ALL ALARMS on pointid " + ptValues.getPointID(), MessageBoxFrame.INFORMATION_MSG );
 		}
 		else if( obj instanceof Signal )
 		{

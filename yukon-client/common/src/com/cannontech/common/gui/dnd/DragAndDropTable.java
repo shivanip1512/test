@@ -5,15 +5,10 @@ package com.cannontech.common.gui.dnd;
  * Creation date: (3/7/00 2:09:37 PM)
  * @author: 
  */
-import java.awt.datatransfer.DataFlavor;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DragSource;
 import java.awt.dnd.DragSourceListener;
 import java.awt.dnd.DropTarget;
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
@@ -84,28 +79,21 @@ private void addDevice(com.cannontech.database.data.lite.LiteYukonPAObject devic
 	
 	for (int i=0; i<devicePoints.size(); i++)
 	{
-		if( device.getYukonID() == ((com.cannontech.database.data.lite.LitePoint)devicePoints.get(i)).getPaobjectID() )
-			addPoint( String.valueOf( ((com.cannontech.database.data.lite.LitePoint)devicePoints.get(i)).getPointID()) );
+		if( device.getYukonID() == ((LitePoint)devicePoints.get(i)).getPaobjectID() )
+			addPoint( (LitePoint)devicePoints.get(i) );
 	}
 }
 /**
  * Insert the method's description here.
  * Creation date: (1/31/00 2:08:42 PM)
  */
-public void addDevice(final String deviceName, Object[] points )
+public void addDevice( LitePoint[] points )
 {
 	if( points.length > 0 ) // only add devices that have points
 	{	
 		for( int i = 0; i < points.length; i++ )
 		{		
-
-			if( points[i] instanceof com.cannontech.database.model.DBTreeNode )
-			{
-				Object userObject = ((com.cannontech.database.model.DBTreeNode)points[i]).getUserObject();
-				String pointid = String.valueOf( ((com.cannontech.database.data.lite.LitePoint)userObject).getPointID() );
-				
-				addPoint(pointid);
-			}
+			addPoint( points[i] );
 		}
 	}
 	
@@ -117,15 +105,15 @@ public void addDevice(final String deviceName, Object[] points )
  * @param pointid java.lang.String
  * @param pointName java.lang.String
  */
-public void addPoint( final String pointid )
+public void addPoint( final LitePoint litePoint_ )
 {
 	IDroppableTableModel tableModel = (IDroppableTableModel)this.getModel();
 
 	// just return if the point is already in the right tree
-	if( tableModel.pointExists( pointid ) )
+	if( tableModel.pointExists( litePoint_ ) )
 		return;
 
-	tableModel.insertNewRow( pointid ); 
+	tableModel.insertNewRow( litePoint_ ); 
 }
 
 /**
@@ -243,8 +231,7 @@ public synchronized void drop(java.awt.dnd.DropTargetDropEvent dtde)
 			}
 			else if(userObject instanceof LitePoint)  //insert point
 			{
-				addPoint( String.valueOf(
-						((LitePoint)userObject).getPointID() ) );
+				addPoint( (LitePoint)userObject );
 			}
 
 			dtde.getDropTargetContext().dropComplete( true );			

@@ -2,6 +2,8 @@ package com.cannontech.common.gui.dnd;
 
 import javax.swing.table.TableModel;
 
+import com.cannontech.database.data.lite.LitePoint;
+
 /**
  * Insert the type's description here.
  * Creation date: (6/17/2002 3:16:17 PM)
@@ -14,14 +16,14 @@ public interface IDroppableTableModel extends TableModel
 	 * Creation date: (6/17/2002 3:16:41 PM)
 	 * @param ptId java.lang.String
 	 */
-	void insertNewRow(String ptId);
+	void insertNewRow( LitePoint litePoint_ );
 	/**
 	 * Insert the method's description here.
 	 * Creation date: (6/17/2002 3:17:59 PM)
 	 * @return boolean
-	 * @param ptID java.lang.String
+	 * @param LitePoint litePoint_
 	 */
-	boolean pointExists(String ptID);
+	boolean pointExists( LitePoint litePoint_ );
 
 
 	Object getRowAt( int row );

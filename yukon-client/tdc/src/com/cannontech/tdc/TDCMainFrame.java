@@ -6,10 +6,8 @@ package com.cannontech.tdc;
  */
 import com.cannontech.common.gui.util.CTIKeyEventDispatcher;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.common.util.NativeIntVector;
 import com.cannontech.clientutils.AlarmFileWatchDog;
 import com.cannontech.clientutils.commandlineparameters.CommandLineParser;
-import com.cannontech.message.dispatch.message.Signal;
 import com.cannontech.tdc.removedisplay.RemoveDisplayDialog;
 import com.cannontech.tdc.removedisplay.RemoveDisplayPanel;
 import com.cannontech.tdc.spawn.SpawnTDCMainFrameEvent;
@@ -309,25 +307,22 @@ public void alarmToolBar_JToolBarButtonAckViewableAction_actionPerformed(java.ut
 
 	if( rowNumbers.size() > 0 )
 	{
-		NativeIntVector ptIDs = new NativeIntVector(rowNumbers.size());
-		NativeIntVector ptConds = new NativeIntVector(rowNumbers.size());
-		
 		for( int i = 0; i < rowNumbers.size(); i++ )
 		{
-			PointValues pv = getMainPanel().getTableDataModel().getPointValue(
-						Integer.parseInt(rowNumbers.get(i).toString()) );
+			int rowNum = Integer.parseInt( rowNumbers.get(i).toString() );
 
-			Signal[] sigs = pv.getAllSignals();
-			for( int j = 0; j < sigs.length; j++ )
+			PointValues pv = getMainPanel().getTableDataModel().getPointValue( rowNum );
+
+			if( getMainPanel().getTableDataModel().isRowInAlarmVector(rowNum) )
 			{
-				ptIDs.addElement( pv.getPointID() );
-				ptConds.addElement( sigs[j].getCondition() );
-			}
+				AckAlarm.sendAckAll( pv.getPointID() );
 			
+				TDCMainFrame.messageLog.addMessage(
+						"An ACK ALARM message was sent for ALL ALARMS on pointid " + pv.getPointID(), MessageBoxFrame.INFORMATION_MSG );
+			}
+
 		}
 
-		if( ptIDs != null && ptIDs.size() > 0 )
-			AckAlarm.send( ptIDs.toArray(), ptConds.toArray() );
 	}
 		
 	return;
@@ -4069,7 +4064,8 @@ public void mainPanel_JComboCurrentDisplayAction_actionPerformed(java.util.Event
 			Display.isHistoryDisplay(source.getCurrentDisplay().getDisplayNumber()) );
 			
 		getAlarmToolBar().setJComponentEnabled( getAlarmToolBar().COMP_INDX_ACKALL,
-			Display.isAlarmDisplay(source.getCurrentDisplay().getDisplayNumber()) );
+			Display.isAlarmDisplay(source.getCurrentDisplay().getDisplayNumber())
+			|| Display.isUserDefinedType(source.getCurrentDisplay().getType()) );
 		
 		getAlarmToolBar().setJComponentEnabled( getAlarmToolBar().COMP_INDX_ACTIVCEALARMS,
 			Display.isAlarmDisplay(source.getCurrentDisplay().getDisplayNumber()) );

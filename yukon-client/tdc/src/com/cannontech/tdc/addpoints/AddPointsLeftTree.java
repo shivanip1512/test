@@ -9,6 +9,7 @@ import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DragSource;
 import java.awt.dnd.DragSourceListener;
 
+import javax.swing.event.TreeExpansionEvent;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
@@ -17,7 +18,7 @@ import com.cannontech.common.gui.dnd.TransferableTreeNode;
 import com.cannontech.tdc.TDCMainFrame;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
 
-public class AddPointsLeftTree extends javax.swing.JTree implements java.awt.dnd.DragGestureListener
+public class AddPointsLeftTree extends javax.swing.JTree implements java.awt.dnd.DragGestureListener, javax.swing.event.TreeWillExpandListener
 {
 	private com.cannontech.database.model.DBTreeModel dbTreeModel = null;
 
@@ -56,34 +57,7 @@ public void dragGestureRecognized(java.awt.dnd.DragGestureEvent dge)
 		dragSource.startDrag( dge, DragSource.DefaultMoveDrop, node, dragSourceListener );
 	}
 }
-/**
- * Insert the method's description here.
- * Creation date: (2/1/00 11:55:16 AM)
- * @param deviceName java.lang.String
- */
-public Object[] getDevicesChildren(String deviceName) 
-{
 
-	DefaultMutableTreeNode rootNode = 
-		((DefaultMutableTreeNode)getModel().getRoot());
-
-	for( int i = 0; i < rootNode.getChildCount(); i++ )
-	{
-		if( deviceName.equals( rootNode.getChildAt(i).toString() ) )
-		{
-			Object[] childNames = new Object[ rootNode.getChildAt( i ).getChildCount() ];
-			
-			for( int j = 0; j < childNames.length; j++ )
-			{
-				childNames[j] = rootNode.getChildAt( i ).getChildAt( j );
-			}
-			return childNames;
-		}
-		
-	}
-	
-	return null;
-}
 /**
  * Called whenever the part throws an exception.
  * @param exception java.lang.Throwable
@@ -105,6 +79,9 @@ private void initialize() {
 		// user code begin {1}
 		
 		dbTreeModel = new com.cannontech.database.model.TDCDeviceTreeModel();
+		
+		addTreeWillExpandListener(this);
+		
 		//setRootVisible( false );
 		
 
@@ -122,10 +99,32 @@ private void initialize() {
 
 	// for now, we do not need to use the cache, so release it and
 	// the dbTreeModel.update() call will get a fresh database
-	com.cannontech.database.cache.DefaultDatabaseCache.getInstance().releaseAllCache();
+	//com.cannontech.database.cache.DefaultDatabaseCache.getInstance().releaseAllCache();
 	dbTreeModel.update();
 
 	// user code end
+}
+
+/**
+ * Insert the method's description here.
+ * Creation date: (4/25/2002 12:19:42 PM)
+ * @param event javax.swing.event.TreeExpansionEvent
+ */
+public void treeWillCollapse(TreeExpansionEvent event) {}
+/**
+ * Insert the method's description here.
+ * Creation date: (4/25/2002 12:19:42 PM)
+ * @param event javax.swing.event.TreeExpansionEvent
+ */
+public void treeWillExpand(TreeExpansionEvent event) 
+{
+	TreePath rootPath = new TreePath( dbTreeModel.getRoot() );
+
+	if( !event.getPath().equals(rootPath) )
+	{
+		dbTreeModel.treePathWillExpand( event.getPath() );
+	}
+
 }
 /**
  * 

@@ -7,12 +7,8 @@ package com.cannontech.tdc.addpoints;
 import java.io.Serializable;
 import java.util.Vector;
 
-import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.PAOFuncs;
-import com.cannontech.database.cache.functions.PointFuncs;
-import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.tdc.TDCMainFrame;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
 import com.cannontech.tdc.utils.DataBaseInteraction;
@@ -257,20 +253,15 @@ private void handleException(java.lang.Throwable exception) {
  * This method creates the table
  */
  
-public void insertNewRow ( String ptId )
+public void insertNewRow ( LitePoint litePoint_ )
 {
 	if( exceededMaxRows() )
 		return;
 
-	long pointid = Long.parseLong( ptId );
-
-	
-	LitePoint point = PointFuncs.getLitePoint( (int)pointid );
-	
 	getRows().addElement( 
-			new Line( pointid, 
-					PAOFuncs.getYukonPAOName(point.getPaobjectID()), 
-					point.getPointName() ) );
+			new Line( litePoint_.getPointID(), 
+					PAOFuncs.getYukonPAOName(litePoint_.getPaobjectID()), 
+					litePoint_.getPointName() ) );
 
 
 	fireTableDataChanged(); // Tell the listeners a new table has arrived.
@@ -339,12 +330,12 @@ public void makeTable ( )
  * @return boolean
  * @param ptID java.lang.String
  */
-public boolean pointExists(String ptID) 
+public boolean pointExists( LitePoint litePoint_ ) 
 {
 
 	for( int i = 0; i < getRowCount(); i++ )
 	{
-		if( getPointID(i) == Long.parseLong(ptID) )
+		if( getPointID(i) == litePoint_.getPointID() )
 			return true;
 	}
 			
