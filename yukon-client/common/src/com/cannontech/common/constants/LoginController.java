@@ -42,10 +42,4 @@ public interface LoginController {
 	public static final String SAVED_YUKON_USERS = "SAVED_YUKON_USERS";
 	
 	public static final String LOGIN_URL_COOKIE = "LOGIN_URL";
-	
-	/* Actions Strings to log */
-	public static final String LOGIN_WEB_ACTIVITY_ACTION = "LOG IN (WEB)";
-	public static final String LOGIN_CLIENT_ACTIVITY_ACTION = "LOG IN (CLIENT)";
-	public static final String LOGOUT_ACTIVITY_LOG = "LOG OUT";
-	public static final String LOGIN_FAILED_ACTIVITY_LOG = "LOGIN FAILED";
 }
