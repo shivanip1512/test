@@ -247,6 +247,22 @@ public class ClientCache implements IDatabaseCache
          return new java.util.ArrayList();
       }
    }
+   
+   /**
+    * @ejb:interface-method
+    * tview-type="remote"
+    */
+   public synchronized java.util.List getAllMCTs() {
+      try
+      {
+         return getCache().getAllMCTs();
+      }
+      catch( java.rmi.RemoteException e )
+      {
+         com.cannontech.clientutils.CTILogger.info( e );
+         return new java.util.ArrayList();
+      }
+   }
 
    /**
     * @ejb:interface-method

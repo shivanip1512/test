@@ -170,6 +170,14 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
    {
       return getCache().getAllDevices();
    }
+   
+   /**
+	* @ejb:interface-method
+	* tview-type:"remote"
+	*/
+   public synchronized java.util.List getAllMCTs() {
+	  return getCache().getAllMCTs();
+   }
 
    /**
     * @ejb:interface-method
@@ -178,7 +186,7 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
    public synchronized java.util.List getAllGraphDefinitions()
    {
       return getCache().getAllGraphDefinitions();
-   }   
+   }
    
    /**
     * @ejb:interface-method

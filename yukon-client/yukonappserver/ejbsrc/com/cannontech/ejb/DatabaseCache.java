@@ -32,6 +32,8 @@ public interface DatabaseCache
    public java.util.List getAllDeviceMeterGroups(  ) throws java.rmi.RemoteException;
 
    public java.util.List getAllDevices(  ) throws java.rmi.RemoteException;
+   
+   public java.util.List getAllMCTs() throws java.rmi.RemoteException;
 
    public java.util.List getAllGraphDefinitions(  ) throws java.rmi.RemoteException;
 

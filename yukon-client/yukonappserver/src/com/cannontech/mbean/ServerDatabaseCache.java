@@ -10,7 +10,6 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.Pair;
 import com.cannontech.database.cache.CacheDBChangeListener;
 import com.cannontech.database.cache.DBChangeListener;
-import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteCICustomer;
@@ -18,7 +17,6 @@ import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonGroup;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -54,6 +52,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
 	private ArrayList allAlarmCategories = null;
 	private ArrayList allContacts = null;
 	private ArrayList allGraphDefinitions = null;
+	private ArrayList allMCTs = null;
 	private ArrayList allHolidaySchedules = null;
 	private ArrayList allBaselines = null;
 	private ArrayList allDeviceMeterGroups = null;
@@ -300,6 +299,26 @@ public synchronized java.util.List getAllDevices()
 
 	return allDevices;
 }
+
+/**
+ * Get all MCTs
+ */
+public synchronized java.util.List getAllMCTs() {
+	if (allMCTs == null) {
+		allMCTs = new java.util.ArrayList( getAllDevices().size() / 2 );
+		
+		for (int i = 0; i < getAllDevices().size(); i++) {
+			if (com.cannontech.database.data.device.DeviceTypesFuncs.isMCT(
+					((com.cannontech.database.data.lite.LiteYukonPAObject) getAllDevices().get(i)).getType() ))
+				allMCTs.add( getAllDevices().get(i) );
+		}
+		
+		allMCTs.trimToSize();
+	}
+	
+	return allMCTs;
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (3/14/00 3:19:19 PM)
@@ -410,7 +429,6 @@ public synchronized java.util.List getAllGraphTaggedPoints()
 	 }
 
 }
-
 
 /**
  * Insert the method's description here.
@@ -1354,6 +1372,7 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg)
 		if( dbCategory.equalsIgnoreCase(com.cannontech.database.data.pao.PAOGroups.STRING_CAT_DEVICE) )
 		{
 			allDevices = null;
+			allMCTs = null;
 			allUnusedCCDevices = null;
 			allLoadManagement = null; //PAOGroups are here, oops!
 			
@@ -2247,6 +2266,7 @@ public synchronized void releaseAllCache()
 	allCapControlFeeders = null; //PAO
 	allCapControlSubBuses = null; //PAO	
 	allDevices = null; //PAO
+	allMCTs = null; //PAO
 	allLMPrograms = null; //PAO
 	allLoadManagement = null; //PAO
 	allPorts = null; //PAO
