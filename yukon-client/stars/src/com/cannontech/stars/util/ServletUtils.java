@@ -83,8 +83,6 @@ public class ServletUtils {
 	public static final String UTIL_PHONE_NUMBER = "<<PHONE_NUMBER>>";
 	public static final String UTIL_FAX_NUMBER = "<<FAX_NUMBER>>";
 	public static final String UTIL_EMAIL = "<<EMAIL>>";
-	
-	public static final int NUMBER_UNSET = -1;
 
 	private static java.text.DecimalFormat decFormat = new java.text.DecimalFormat("0.#");
 	
@@ -606,23 +604,13 @@ public class ServletUtils {
 		return fullText.substring( 0, len ) + " ...";
 	}
 	
-	public static String hideUnsetNumber(int num) {
-		return (num == NUMBER_UNSET)? "" : String.valueOf(num);
+	public static String hideUnsetNumber(int num, int num_unset) {
+		return (num == num_unset)? "" : String.valueOf(num);
 	}
 	
 	public static int parseNumber(String str, int lowerLimit, int upperLimit, String fieldName) throws WebClientException {
-		return parseNumber(str, lowerLimit, upperLimit, fieldName, false);
-	}
-	
-	public static int parseNumber(String str, int lowerLimit, int upperLimit, String fieldName, boolean notEmpty)
-		throws WebClientException
-	{
-		if (str == null || str.trim().equals("")) {
-			if (notEmpty)
-				throw new WebClientException( "The '" + fieldName + "' field cannot be empty" );
-			else
-				return NUMBER_UNSET;
-		}
+		if (str == null || str.trim().equals(""))
+			throw new WebClientException( "The '" + fieldName + "' field cannot be empty" );
 		
 		try {
 			int value = Integer.parseInt( str );
@@ -633,6 +621,14 @@ public class ServletUtils {
 		catch (NumberFormatException e) {
 			throw new WebClientException( "Invalid numeric value \"" + str + "\"" );
 		}
+	}
+	
+	public static int parseNumber(String str, int lowerLimit, int upperLimit, int num_unset, String fieldName)
+		throws WebClientException
+	{
+		if (str == null || str.trim().equals(""))
+			return num_unset;
+		return parseNumber( str, lowerLimit, upperLimit, fieldName );
 	}
 
 }

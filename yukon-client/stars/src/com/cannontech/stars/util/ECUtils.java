@@ -410,16 +410,16 @@ public class ECUtils {
 					}
 					else {
 						if (addressUsage.indexOf("P") >= 0) {
-							int program = ServletUtils.NUMBER_UNSET;
+							int program = 0;
 							String[] programs = liteCfg.getExpressCom().getProgram().split(",");
-							if (programs.length >= relayNo)
+							if (programs.length >= relayNo && programs[relayNo-1].length() > 0)
 								program = Integer.parseInt( programs[relayNo-1] );
 							if (program != programAddress) continue;
 						}
 						if (addressUsage.indexOf("R") >= 0) {
-							int splinter = ServletUtils.NUMBER_UNSET;
+							int splinter = 0;
 							String[] splinters = liteCfg.getExpressCom().getSplinter().split(",");
-							if (splinters.length >= relayNo)
+							if (splinters.length >= relayNo && splinters[relayNo-1].length() > 0)
 								splinter = Integer.parseInt( splinters[relayNo-1] );
 							if (splinter != splinterAddress) continue;
 						}
