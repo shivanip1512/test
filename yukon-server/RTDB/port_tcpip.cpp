@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/port_tcpip.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:17 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/06/05 16:38:24 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -229,6 +229,43 @@ INT CtiPortTCPIPDirect::inMess(CtiXfer& Xfer, CtiDevice* Dev, RWTPtrSlist< CtiMe
    BYTE     *Message    = Xfer.getInBuffer();      // Local alias for ease of use!
 
    Xfer.setInCountActual( (ULONG)0 );     // Mark it as zero to prevent any "lies"
+
+   if(Xfer.getNonBlockingReads())         // We need to get all that are out there.
+   {
+	   ULONG bytesavail = 0;
+	   INT   lpcnt = 0;
+	   ULONG expected = Xfer.getInCountExpected();
+
+	   while( Xfer.getInTimeout() * 4 >= lpcnt++ )  // Must do this at least once.
+	   {
+		   Sleep(250);
+
+		   bytesavail = 0;
+		   if(_socket != INVALID_SOCKET)
+		   {
+			   ioctlsocket (_socket, FIONREAD, &bytesavail);
+		   }
+
+		   if(0)
+		   {
+			   CtiLockGuard<CtiLogger> doubt_guard(dout);
+			   dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+			   dout << "   There are " << bytesavail << " on the port..  I wanted " << expected << "  I waited " << lpcnt << " 1/4 seconds " << endl;
+		   }
+
+		   if( (expected > 0 && bytesavail >= expected) ||  (expected == 0 && bytesavail > 0) )
+		   {
+			   /*
+				*   If we specified a byte count, we will wait one timeout amount of time before returning (and
+				*   return whatever is available). If not we will wait for any bytes to become available and
+				*   return them.
+				*/
+			   break; // the while loop
+		   }
+	   }
+
+	   Xfer.setInCountExpected( bytesavail );
+   }
 
    /* If getInCountExpected() is 0 just return */
    if(Xfer.getInCountExpected() == 0)  // Don't ask me for it then!

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/slctdev.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/05/28 18:00:53 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/06/05 16:38:25 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -33,6 +33,7 @@
 #include "dev_vectron.h"
 #include "dev_carrier.h"
 #include "dev_tap.h"
+#include "dev_wctp.h"
 #include "dev_grp_emetcon.h"
 #include "dev_grp_ripple.h"
 #include "dev_grp_versacom.h"
@@ -224,14 +225,7 @@ DLLEXPORT CtiDeviceBase* DeviceFactory(RWDBReader &rdr)
         }
     case TYPE_WCTP:
         {
-            // Device = (CtiDeviceBase*) new CtiDeviceTapPagingTerminal;
-
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "  Yao, you need to add code here" << endl;
-            }
-
+            Device = (CtiDeviceBase*) new CtiDeviceWctpTerminal;
             break;
         }
     case TYPE_LMGROUP_EMETCON:

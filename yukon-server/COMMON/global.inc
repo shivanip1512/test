@@ -2,8 +2,8 @@
 #                                                         #
 #       Makefile Template for CTI Apps                    #
 #                                                         #
-#       $Revision: 1.3 $                               #
-#       $Date: 2002/04/16 15:57:14 $                  #
+#       $Revision: 1.4 $                               #
+#       $Date: 2002/06/05 16:38:22 $                  #
 #                                                         #
 # Definitions                                             #
 ###########################################################
@@ -104,16 +104,21 @@ SERVICE         = $(COMPILEBASE)\service
 SIGNAL          = $(COMPILEBASE)\dbsignal
 RTDB            = $(COMPILEBASE)\rtdb
 TCLINC          = $(COMPILEBASE)\tcl\include
+XERCESINC		= $(COMPILEBASE)\xerces\include
 
 
 !IFDEF DEBUG
 CFLAGS  = /nologo /EHsc- /Zi /Yd /Od /MDd /Zm200
 DLLFLAGS= /nologo /EHsc- /Zi /Yd /Od /GD /LD /MDd /Zm200
 TCL_LIB = tcl81d
+XERCES_LIB = xerces-c_1D
+XERCES_DLL = xerces-c_1_7_0D
 !ELSE
 CFLAGS  = /nologo /EHsc- /O2 /MD /Zm200
 DLLFLAGS= /nologo /EHsc- /O2 /GD /LD /MD /Zm200
 TCL_LIB = tcl81
+XERCES_LIB = xerces-c_1
+XERCES_DLL = xerces-c_1_7_0
 !ENDIF
 
 !IFDEF YUKONPROFILE

@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2002/06/03 22:55:02 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2002/06/05 16:38:23 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1142,14 +1142,20 @@ INT CommunicateDevice(CtiPort *Port, INMESS *InMessage, OUTMESS *OutMessage, Cti
 
                     break;
                 }
-            case TYPE_WCTP:
-                {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
-                    break;
-                }
+			case TYPE_WCTP:
+				{
+					CtiDeviceIED		*IED = (CtiDeviceIED*)Device;
+
+					IED->setLogOnNeeded(FALSE);
+					IED->setInitialState(0);
+					IED->allocateDataBins(OutMessage);
+
+					status = PerformRequestedCmd(Port, IED, InMessage, OutMessage, traceList);
+
+					IED->freeDataBins();
+
+					break;
+				}
             case TYPE_TAPTERM:
                 {
                     CtiDeviceIED         *IED= (CtiDeviceIED*)Device;

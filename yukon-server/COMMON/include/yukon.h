@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/yukon.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/05/28 18:15:40 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/06/05 16:38:23 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -248,7 +248,13 @@ typedef enum
 
     CtiInvalidRequest,
     UnknownError,
-    FinalError
+    FinalError,
+
+	// WCTP errors
+	ErrorHttpResponse,			// Invalid or unsuccessful HTTP response
+	ErrorXMLParser,				// XML parser initialization failed
+	ErrorWctpResponse,			// Invalid WCTP response format
+	ErrorWctpTimeout			// Time out when receiving WCTP response
 
 } YukonError_t;
 
