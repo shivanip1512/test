@@ -580,9 +580,9 @@ public class LiteStarsEnergyCompany extends LiteBase {
 					|| loadInvTask.getStatus() == LoadInventoryTask.STATUS_CANCELED
 					|| loadInvTask.getStatus() == LoadInventoryTask.STATUS_ERROR)
 				&& (loadOrdersTask == null
-					|| loadAccountsTask.getStatus() == LoadWorkOrdersTask.STATUS_FINISHED
-					|| loadAccountsTask.getStatus() == LoadWorkOrdersTask.STATUS_CANCELED
-					|| loadAccountsTask.getStatus() == LoadWorkOrdersTask.STATUS_ERROR))
+					|| loadOrdersTask.getStatus() == LoadWorkOrdersTask.STATUS_FINISHED
+					|| loadOrdersTask.getStatus() == LoadWorkOrdersTask.STATUS_CANCELED
+					|| loadOrdersTask.getStatus() == LoadWorkOrdersTask.STATUS_ERROR))
 				break;
 			
 			try {
