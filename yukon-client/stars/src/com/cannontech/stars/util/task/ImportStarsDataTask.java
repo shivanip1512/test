@@ -617,16 +617,17 @@ public class ImportStarsDataTask extends TimeConsumingTask {
 				msg += numAcctAdded + " customer accounts imported successfully";
 			else
 				msg += numAcctAdded + " of " + acctFieldsCnt + " customer accounts imported";
-			msg += NEW_LINE;
 		}
 		if (invFieldsCnt > 0) {
+			if (msg.length() > 0) msg += NEW_LINE;
 			if (numInvAdded + numNoDeviceName + numDeviceNameNotFound  == invFieldsCnt)
 				msg += numInvAdded + " hardwares imported successfully";
 			else
 				msg += numInvAdded + " of " + invFieldsCnt + " hardwares imported";
-			msg += " (" + numRecvrAdded + " receivers, " + numMeterAdded + " meters)" + NEW_LINE;
+			msg += " (" + numRecvrAdded + " receivers, " + numMeterAdded + " meters)";
 		}
 		if (appFieldsCnt > 0) {
+			if (msg.length() > 0) msg += NEW_LINE;
 			if (numAppImported == appFieldsCnt)
 				msg += numAppImported + " appliances imported successfully";
 			else
@@ -639,17 +640,17 @@ public class ImportStarsDataTask extends TimeConsumingTask {
 					numHPImported + " hp," +
 					numSHImported + " sh," +
 					numDFImported + " df," +
-					numGenlImported + " genl)" +
-					NEW_LINE;
+					numGenlImported + " genl)";
 		}
 		if (orderFieldsCnt > 0) {
+			if (msg.length() > 0) msg += NEW_LINE;
 			if (numOrderAdded == orderFieldsCnt)
 				msg += numOrderAdded + " work orders imported successfully";
 			else
 				msg += numOrderAdded + " of " + orderFieldsCnt + " work orders imported";
-			msg += NEW_LINE;
 		}
 		if (resFieldsCnt > 0) {
+			if (msg.length() > 0) msg += NEW_LINE;
 			if (numResAdded == resFieldsCnt)
 				msg += numResAdded + " residence info imported successfully";
 			else
