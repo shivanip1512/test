@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.39 $
-* DATE         :  $Date: 2003/10/30 17:39:33 $
+* REVISION     :  $Revision: 1.40 $
+* DATE         :  $Date: 2003/11/06 22:53:31 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1013,10 +1013,10 @@ INT CtiDeviceMCT::ErrorDecode(INMESS *InMessage, RWTime& Now, RWTPtrSlist< CtiMe
                 {
                     switch( getType() )
                     {
-                        case TYPEMCT318:
-                        case TYPEMCT318L:
                         case TYPEMCT360:
                         case TYPEMCT370:
+                        case TYPEMCT318:
+                        case TYPEMCT318L:
                             insertPointFail( InMessage, retMsg, ScanRateAccum, 3, PulseAccumulatorPointType );
                             insertPointFail( InMessage, retMsg, ScanRateAccum, 2, PulseAccumulatorPointType );
                         default:
@@ -1032,10 +1032,21 @@ INT CtiDeviceMCT::ErrorDecode(INMESS *InMessage, RWTime& Now, RWTPtrSlist< CtiMe
                 {
                     switch( getType() )
                     {
-                        case TYPEMCT318:
-                        case TYPEMCT318L:
                         case TYPEMCT360:
                         case TYPEMCT370:
+                            //  insert the pointfails for the demand/KVAR/KVA points
+                            insertPointFail( InMessage, retMsg, ScanRateIntegrity, 10, AnalogPointType );
+                            insertPointFail( InMessage, retMsg, ScanRateIntegrity, 20, AnalogPointType );
+                            insertPointFail( InMessage, retMsg, ScanRateIntegrity, 30, AnalogPointType );
+
+                            //  insert the pointfails for the voltage points
+                            insertPointFail( InMessage, retMsg, ScanRateIntegrity, CtiDeviceMCT31X::MCT360_IED_VoltsPhaseA_PointOffset, AnalogPointType );
+                            insertPointFail( InMessage, retMsg, ScanRateIntegrity, CtiDeviceMCT31X::MCT360_IED_VoltsPhaseB_PointOffset, AnalogPointType );
+                            insertPointFail( InMessage, retMsg, ScanRateIntegrity, CtiDeviceMCT31X::MCT360_IED_VoltsPhaseC_PointOffset, AnalogPointType );
+                            insertPointFail( InMessage, retMsg, ScanRateIntegrity, CtiDeviceMCT31X::MCT360_IED_VoltsNeutralCurrent_PointOffset, AnalogPointType );
+
+                        case TYPEMCT318:
+                        case TYPEMCT318L:
                             insertPointFail( InMessage, retMsg, ScanRateIntegrity, 3, DemandAccumulatorPointType );
                             insertPointFail( InMessage, retMsg, ScanRateIntegrity, 2, DemandAccumulatorPointType );
                         default:
