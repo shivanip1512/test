@@ -158,6 +158,12 @@
 		<servlet-class>com.cannontech.stars.web.servlet.TimerTaskServlet</servlet-class>
 		<load-on-startup>6</load-on-startup>
 	</servlet>
+	<servlet>
+		<servlet-name>ImportManager</servlet-name>
+		<display-name>ImportManager</display-name>
+		<description>Customer accounts importing management.</description>
+		<servlet-class>com.cannontech.stars.web.servlet.ImportManager</servlet-class>
+	</servlet>
 	<!-- STARS specific configs -->
 	<!-- CapControl specific configs -->
 	<servlet>
