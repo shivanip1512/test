@@ -204,6 +204,68 @@ LONG CommErrorHistoryIdGen(bool force)
     return tempid;
 }
 
+LONG VerificationSequenceGen(bool force)
+{
+    LONG tempid = -1;
+
+    static RWMutexLock   mux;
+
+    static BOOL init_id = FALSE;
+    static LONG id = 0;
+    static const CHAR sql[] = "SELECT MAX(CODESEQUENCE) FROM DYNAMICVERIFICATION";
+
+    {
+        RWMutexLock::TryLockGuard guard(mux);
+
+        int trycnt = 0;
+        while(!guard.isAcquired() && trycnt++ < 20)
+        {
+            Sleep(500);
+            guard.tryAcquire();
+        }
+
+        if(guard.isAcquired())
+        {
+            if(!init_id || force)
+            {   // Make sure all objects that that store results
+                CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+                RWDBConnection conn = getConnection();
+                // are out of scope when the release is called
+                RWDBReader  rdr = ExecuteQuery( conn, sql );
+
+                if(rdr() && rdr.isValid())
+                {
+                    rdr >> tempid;
+                }
+                else
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << "**** Checkpoint: Invalid Reader **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+
+                if(tempid >= id)
+                {
+                    id = tempid;
+                }
+
+                init_id = TRUE;
+            }   // Temporary results are destroyed to free the connection
+
+            tempid =  ++id;
+        }
+        else
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << "Unable to acquire mutex for VerificationSequenceGen" << endl;
+            }
+        }
+    }
+
+    return tempid;
+}
+
 INT ChangeIdGen(bool force)
 {
     static RWMutexLock   mux;
