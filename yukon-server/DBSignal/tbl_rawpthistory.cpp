@@ -20,7 +20,8 @@ void CtiTableRawPointHistory::Insert(RWDBConnection &conn)
     getPointID() <<
     RWDBDateTime(getTime()) <<
     getQuality() <<
-    getValue();
+    getValue() <<
+    getMillis();
 
     RWDBStatus stat = inserter.execute( conn ).status();
 
@@ -61,6 +62,7 @@ CtiTableRawPointHistory& CtiTableRawPointHistory::operator=(const CtiTableRawPoi
         setTime(aRef.getTime());
         setQuality(aRef.getQuality());
         setValue(aRef.getValue());
+        setMillis(aRef.getMillis());
     }
     return *this;
 }
