@@ -105,9 +105,9 @@ function submitIt(filterBy) {
                             of the hardware you want to select, then click Select.</td>
                           <td class="MainText" align="right" width="20%"> 
                             <% if (selectInvBean.getFilterBy() != 0) { %>
-                            <a href="#" onclick="submitIt(0); return false;">Show All</a> 
+                            <a href="" class="Link1" onclick="submitIt(0); return false;">Show All</a> 
                             <%	} else { %>
-                            <a href="#" onclick="submitIt(<%= YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_LOCATION %>)"; return false;>Show 
+                            <a href="" class="Link1" onclick="submitIt(<%= YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_LOCATION %>)"; return false;>Show 
                             Warehouse</a> 
                             <%	} %>
                           </td>
@@ -140,7 +140,7 @@ function submitIt(filterBy) {
                           <td class='TableCell' width='17%'><a href='InventoryDetail.jsp?InvId=7'>500000000</a></td>
                           <td class='TableCell' width='17%'>LCR-5000</td>
                           <td class='TableCell' width='17%'>08/24/2003</td>
-                          <td class='TableCell' width='49%'><a href='' onclick='selectAccount(7); return false;'>Acct 
+                          <td class='TableCell' width='49%'><a href='' class='Link1' onclick='selectAccount(7); return false;'>Acct 
 						    # 12345</a> Robert Livingston, 8301 Golden Valley Rd, Suite 300...</td>
                         </tr>
                       </table>

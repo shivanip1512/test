@@ -104,7 +104,7 @@ function selectAccount(accountID) {
 %>
               <tr valign="top"> 
                 <td width="187" class="TableCell">
-				  <a href="#" onclick="selectAccount(<%= acctBrief.getAccountID() %>); return false;"><%= acctBrief.getContactName() %></a>
+				  <a href="" class="Link1" onclick="selectAccount(<%= acctBrief.getAccountID() %>); return false;"><%= acctBrief.getContactName() %></a>
 				</td>
                 <td width="290" class="TableCell"><%= acctBrief.getStreetAddress() %></td>
                 <td width="112" class="TableCell"><%= acctBrief.getContPhoneNumber() %></td>
