@@ -297,10 +297,11 @@ private javax.swing.JCheckBox getInhibitCheckBox() {
 			ivjInhibitCheckBox = new javax.swing.JCheckBox();
 			ivjInhibitCheckBox.setName("InhibitCheckBox");
 			ivjInhibitCheckBox.setFont(new java.awt.Font("dialog", 0, 14));
-			ivjInhibitCheckBox.setText("Inhibit   ");
+			ivjInhibitCheckBox.setText("Inhibit Control");
 			ivjInhibitCheckBox.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
 			ivjInhibitCheckBox.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
 			// user code begin {1}
+			getInhibitCheckBox().setSelected(true);
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -699,9 +700,9 @@ public void setValue(Object o)
 	
 	if( elChar != null )
 	{
-		if(elChar.compareTo(new Character('Y')) == 0)
-		getInhibitCheckBox().setSelected(true);
-		temp = null;
+		if(elChar.compareTo(new Character('N')) == 0)
+			getInhibitCheckBox().setSelected(false);
+		elChar = null;
 	}
 	
 	temp = youAreIt.getColorID();
