@@ -144,6 +144,7 @@ private javax.swing.JTable getJTableConstraints() {
 private void initJTableCellComponents() 
 {
 	// Do any column specific initialization here
+    getJTableConstraints().getColumnModel().getColumn(ConstraintTableModel.COL_OVERRIDE).setMinWidth(50);
     getJTableConstraints().getColumnModel().getColumn(ConstraintTableModel.COL_OVERRIDE).setMaxWidth(50);
     getJTableConstraints().getColumnModel().getColumn(ConstraintTableModel.COL_PROGRAM_NAME).setPreferredWidth(150);
     getJTableConstraints().getColumnModel().getColumn(ConstraintTableModel.COL_VIOLATION).setPreferredWidth(600);

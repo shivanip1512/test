@@ -7,6 +7,7 @@ package com.cannontech.loadcontrol.gui.manualentry;
  */
 
 import java.awt.Color;
+import java.util.Hashtable;
 import java.util.List;
 
 import javax.swing.JLabel;
@@ -16,10 +17,12 @@ import com.cannontech.loadcontrol.datamodels.ISelectableLMTableModel;
 
 public class MultiLineConstraintRenderer extends javax.swing.JPanel implements javax.swing.table.TableCellRenderer 
 {
-	private int rowHeight = 32; //used to remember the last RowHeight
 	private java.awt.Font boldFont = null;
 	private java.awt.Font plainFont = null;
 	private javax.swing.JLabel ivjJLabelText = null;
+    
+    private Hashtable rowHeights = new Hashtable();
+
 	
 /**
  * MultiLineConstraintRenderer constructor comment.
@@ -61,7 +64,6 @@ public java.awt.Component getTableCellRendererComponent(final javax.swing.JTable
 	// do anything that only needs to be assigned once per repainting here
 	if( row == 0 )
 	{
-		rowHeight = table.getFont().getSize() + 3;
 		boldFont = new java.awt.Font( table.getFont().getName(), java.awt.Font.BOLD | java.awt.Font.ITALIC, table.getFont().getSize() );
 		plainFont = new java.awt.Font( table.getFont().getName(), java.awt.Font.PLAIN, table.getFont().getSize() );
 	}
@@ -101,7 +103,19 @@ public java.awt.Component getTableCellRendererComponent(final javax.swing.JTable
 		((javax.swing.JComponent)this).setToolTipText( "" );
 	}
 
-	
+    //set the table's row height if we have a multi lined row
+    if( column == ConstraintTableModel.COL_VIOLATION )
+    {
+        Integer oldHeight = (Integer)rowHeights.get(new Integer(row));
+        Integer newHeight = new Integer( getPreferredSize().height + 10 ); //give ourself a little space between each row
+
+        if( oldHeight == null || !oldHeight.equals(newHeight) )
+        {
+            rowHeights.put(new Integer(row), newHeight);
+            table.setRowHeight( row, newHeight.intValue() );        
+        }
+    }
+
 	return this;
 }
 /**
@@ -143,16 +157,14 @@ private void initialize() {
  */
 private void processList( List values, javax.swing.JTable table, Color fgColor ) 
 {
-	if( table.getRowHeight() != rowHeight )
-		table.setRowHeight( rowHeight );
 
-	for( int i = 0; i < values.size(); i++ )
+    for( int i = 0; i < values.size(); i++ )
 	{		
 		JLabel newLabel = new JLabel( values.get(i).toString() );
 		newLabel.setForeground( fgColor );	
 		add( newLabel );
 		newLabel.setToolTipText( values.get(i).toString() );
-		table.setRowHeight( table.getRowHeight() + table.getFont().getSize() );
+		//table.setRowHeight( table.getRowHeight() + table.getFont().getSize() );
 	}
 
 }
