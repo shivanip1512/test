@@ -24,21 +24,21 @@ public class FeederTableModel extends javax.swing.table.AbstractTableModel imple
 	/* END --- ROW SPECIFIC DATA */
 
 	//The columns and their column index	
-	public static final int AREA_NAME_COLUMN  = 0;
-	public static final int NAME_COLUMN = 1;
-	public static final int CURRENT_STATE_COLUMN  = 2;
-  	public static final int TARGET_COLUMN  = 3;
-  	public static final int CURRENT_VAR_LOAD_COLUMN  = 4;
-  	public static final int TIME_STAMP_COLUMN  = 5;
-  	public static final int WATTS_COLUMN  = 6;
-   public static final int POWER_FACTOR_COLUMN = 7;
-  	public static final int ESTIMATED_VARS_COLUMN  = 8;
-  	public static final int DAILY_OPERATIONS_COLUMN  = 9;
+//	public static final int AREA_NAME_COLUMN  = 0;
+	public static final int NAME_COLUMN					= 0;
+	public static final int CURRENT_STATE_COLUMN		= 1;
+  	public static final int TARGET_COLUMN				= 2;
+  	public static final int CURRENT_VAR_LOAD_COLUMN	= 3;
+  	public static final int TIME_STAMP_COLUMN			= 4;
+  	public static final int WATTS_COLUMN				= 5;
+   public static final int POWER_FACTOR_COLUMN		= 6;
+  	public static final int ESTIMATED_VARS_COLUMN	= 7;
+  	public static final int DAILY_OPERATIONS_COLUMN	= 8;
 
 	//The column names based on their column index
 	private static final String[] COLUMN_NAMES =
 	{
-		"Area Name",
+		//"Area Name",
 		"Feeder Name",		
 		"State",
 		"Target",
@@ -240,8 +240,8 @@ public Object getValueAt(int row, int col)
 
 		switch( col )
 		{
-		 	case AREA_NAME_COLUMN:
-				return feeder.getCcArea();
+//		 	case AREA_NAME_COLUMN:
+//				return feeder.getCcArea();
 
 		 	case NAME_COLUMN:
 				return feeder.getCcName();
