@@ -34,6 +34,8 @@ var dftEntryYukDefIDs = new Array();
 	dftEntryTexts[<%= i %>] = "<%= entry.getEntryText() %>";
 	dftEntryYukDefIDs[<%= i %>] = <%= entry.getYukonDefID() %>;
 <%	} %>
+	dftEntryTexts[<%= dftList.getYukonListEntries().size() %>] = "";
+	dftEntryYukDefIDs[<%= dftList.getYukonListEntries().size() %>] = 0;
 
 var entryIDs = new Array();
 var entryTexts = new Array();
@@ -75,36 +77,33 @@ function showEntry(form) {
 	if (entries.selectedIndex < 0 || entries.value == -1) {
 		curIdx = entryTexts.length;
 		form.EntryID.value = 0;
+		form.YukonDefID.value = 0;
 		form.EntryText.value = "";
-		form.YukonDefID.value = "";
 		form.DefaultListEntries.selectedIndex = -1;
 		form.Save.value = "Add";
 	}
 	else {
 		curIdx = entries.selectedIndex;
 		form.EntryID.value = entryIDs[curIdx];
-		form.EntryText.value = entryTexts[curIdx];
 		form.YukonDefID.value = entryYukDefIDs[curIdx];
+		form.EntryText.value = entryTexts[curIdx];
 		form.DefaultListEntries.selectedIndex = dftListIndices[curIdx];
-		form.Save.value = "Save";
+		form.Save.value = "Update";
 	}
 }
 
 function showDefaultEntry(form) {
 	var dftEntries = form.DefaultListEntries;
-	var idx = dftEntries.selectedIndex;
-	if (idx >= 0) {
-		form.EntryText.value = dftEntryTexts[idx];
-		form.YukonDefID.value = dftEntryYukDefIDs[idx];
+	if (dftEntries.selectedIndex >= 0) {
+		form.YukonDefID.value = dftEntryYukDefIDs[dftEntries.selectedIndex];
+		form.EntryText.value = dftEntryTexts[dftEntries.selectedIndex];
 	}
 }
 
 function saveEntry(form) {
 	entryIDs[curIdx] = form.EntryID.value;
 	entryTexts[curIdx] = form.EntryText.value;
-	var yukonDefID = parseInt(form.YukonDefID.value, 10);
-	if (isNaN(yukonDefID)) yukonDefID = 0;
-	entryYukDefIDs[curIdx] = yukonDefID;
+	entryYukDefIDs[curIdx] = form.YukonDefID.value;
 	dftListIndices[curIdx] = getDefaultListIndex(entryTexts[curIdx], entryYukDefIDs[curIdx]);
 	
 	var entries = form.ListEntries;
@@ -193,7 +192,7 @@ function deleteAllEntries(form) {
 	}
 }
 
-function setAsDefault(form) {
+function restoreDefault(form) {
 	if (!confirm("Are you sure you want to replace the current list with the default list?")) return;
 	
 	var entries = form.ListEntries;
@@ -241,16 +240,24 @@ function setSameAsOp(form, checked) {
 	form.Delete.disabled = checked;
 	form.Default.disabled = checked;
 	form.EntryText.disabled = checked;
-	form.YukonDefID.disabled = checked;
 	form.Save.disabled = checked;
 	form.DefaultListEntries.disabled = checked;
 	if (!checked) showEntry(form);
 }
 <%	} %>
 
+function changeOrdering(form) {
+	var disabled = (form.Ordering.value == "A");
+	form.MoveUp.disabled = disabled;
+	form.MoveDown.disabled = disabled;
+}
+
 function init() {
 <%	if (isOptOutPeriodCus) { %>
 	setSameAsOp(document.form1, <%= sameAsOp %>);
+<%	} %>
+<%	if (list.getListID() != LiteStarsEnergyCompany.FAKE_LIST_ID) { %>
+	changeOrdering(document.form1);
 <%	} %>
 }
 </script>
@@ -295,10 +302,10 @@ function init() {
                       <tr> 
                         <td width="15%" align="right" class="TableCell">List Name:</td>
                         <td width="85%" class="TableCell"> 
-                          <table width="100%" border="0" cellspacing="0" cellpadding="0" class="TableCell">
+                          <table width="100%" border="0" cellspacing="0" cellpadding="0">
                             <tr>
-                              <td width="30%"><%= listName %></td>
-                              <td width="70%"> 
+                              <td width="30%" class="MainText"><%= listName %></td>
+                              <td width="70%" class="TableCell"> 
                                 <% if (isOptOutPeriodCus) { %>
                                 <input type="checkbox" name="SameAsOp" value="true" onClick="setSameAsOp(this.form, this.checked)">
                                 Same As Operator Side List 
@@ -333,7 +340,7 @@ function init() {
                       <tr> 
                         <td width="15%" align="right" class="TableCell" height="7">Ordering:</td>
                         <td width="85%" class="TableCell" valign="middle" height="7"> 
-                          <select name="Ordering">
+                          <select name="Ordering" onchange="changeOrdering(this.form)">
                             <option value="A" <%= list.getOrdering().equalsIgnoreCase("A")? "selected" : "" %>>Alphabetical</option>
                             <option value="O" <%= list.getOrdering().equalsIgnoreCase("O")? "selected" : "" %>>List 
                             Order</option>
@@ -352,14 +359,16 @@ function init() {
                         <td width="85%" class="TableCell"> 
                           <table width="100%" border="0" cellspacing="0" cellpadding="0" class="TableCell">
                             <tr> 
-                              <td width="50%">Current List:<br>
-                                <select name="ListEntries" size="5" style="width:150" onClick="showEntry(this.form)">
-                                  <%
+                              <td width="50%">
+							    <select name="ListEntries" size="7" style="width:200" onClick="showEntry(this.form)">
+<%
 	for (int i = 0; i < list.getYukonListEntries().size(); i++) {
 		YukonListEntry entry = (YukonListEntry) list.getYukonListEntries().get(i);
 %>
                                   <option value="<%= i %>"><%= entry.getEntryText() %></option>
-                                  <%	} %>
+<%
+	}
+%>
                                   <option value="-1">&lt;New List Entry&gt;</option>
                                 </select>
                                 <br>
@@ -367,19 +376,14 @@ function init() {
                                 view or edit it.</span></td>
                               <td width="50%"> 
 <%	if (list.getListID() != LiteStarsEnergyCompany.FAKE_LIST_ID) { %>
-                                <input type="button" name="MoveUp" value="Move Up" onclick="moveUp(this.form)">
+                                <input type="button" name="MoveUp" value="Move Up" style="width:80" onclick="moveUp(this.form)">
+                                <br>
+                                <input type="button" name="MoveDown" value="Move Down" style="width:80" onclick="moveDown(this.form)">
                                 <br>
 <%	} %>
-<%	if (list.getListID() != LiteStarsEnergyCompany.FAKE_LIST_ID) { %>
-                                <input type="button" name="MoveDown" value="Move Down" onclick="moveDown(this.form)">
+                                <input type="button" name="Delete" value="Delete" style="width:80" onclick="deleteEntry(this.form)">
                                 <br>
-<%	} %>
-                                <input type="button" name="Delete" value="Delete" onclick="deleteEntry(this.form)">
-                                <input type="button" name="DeleteAll" value="Delete All" onclick="deleteAllEntries(this.form)">
-                                <br>
-<%	if (list.getListID() != LiteStarsEnergyCompany.FAKE_LIST_ID) { %>
-                                <input type="button" name="Default" value="Set As Default" onclick="setAsDefault(this.form)">
-<%	} %>
+                                <input type="button" name="DeleteAll" value="Delete All" style="width:80" onclick="deleteAllEntries(this.form)">
                               </td>
                             </tr>
                           </table>
@@ -392,47 +396,52 @@ function init() {
                       </tr>
                       <tr> 
                         <td width="15%" align="right" class="TableCell">Entry 
-                          Def: </td>
-                        <td width="85%" class="TableCell"> 
-                          <p>Enter entry definition, or select an entry from the 
-                            default list: </p>
+                          Definition: </td>
+                        <td width="85%" class="MainText"> 
                           <table width="100%" border="0" cellspacing="0" cellpadding="0">
                             <tr class="TableCell"> 
-                              <td width="40%"> Default List:<br>
-                                <select name="DefaultListEntries" size="5" style="width:150" onClick="showDefaultEntry(this.form)">
+                              <td width="50%" height="20">1. Select an entry from 
+                                the default list: </td>
+                              <td width="50%" height="20">2. Then enter/update 
+                                the entry text:</td>
+                            </tr>
+                            <tr class="TableCell" valign="top"> 
+                              <td width="50%"> 
+                                <select name="DefaultListEntries" size="7" style="width:200" onClick="showDefaultEntry(this.form)">
                                   <%
 	for (int i = 0; i < dftList.getYukonListEntries().size(); i++) {
 		YukonListEntry entry = (YukonListEntry) dftList.getYukonListEntries().get(i);
 %>
                                   <option><%= entry.getEntryText() %></option>
-                                  <%	} %>
+                                  <%
+	}
+%>
+                                  <option>&lt;New Entry&gt;</option>
                                 </select>
+                                <br>
+                                <%	if (list.getListID() != LiteStarsEnergyCompany.FAKE_LIST_ID) { %>
+                                <input type="button" name="Default" value="Restore Default List" onclick="restoreDefault(this.form)">
+                                <%	} %>
                               </td>
-                              <td width="60%"> 
+                              <td width="50%"> 
                                 <table width="100%" border="0" cellspacing="0" cellpadding="0">
                                   <tr> 
                                     <td width="75%"> 
                                       <table width="100%" border="0" cellspacing="0" cellpadding="3" class="TableCell">
                                         <input type="hidden" name="EntryID" value="0">
+										<input type="hidden" name="YukonDefID" value="0">
                                         <tr> 
-                                          <td width="25%" align="right">Text: 
+                                          <td width="20%" align="right">Text: 
                                           </td>
-                                          <td width="75%"> 
-                                            <input type="text" name="EntryText" size="25">
-                                          </td>
-                                        </tr>
-                                        <tr> 
-                                          <td width="25%" align="right">YukonDefID: 
-                                          </td>
-                                          <td width="75%"> 
-                                            <input type="text" name="YukonDefID" size="25">
+                                          <td width="80%"> 
+                                            <input type="text" name="EntryText" size="30">
                                           </td>
                                         </tr>
                                       </table>
                                     </td>
                                   </tr>
                                 </table>
-                                <div align="center">
+                                <div align="center"> 
                                   <input type="button" name="Save" value="Add" onClick="saveEntry(this.form)">
                                 </div>
                               </td>
