@@ -18,13 +18,13 @@ public class LMGroupSASimple extends com.cannontech.database.db.DBPersistent
 	private Integer routeID;
 	private String operationalAddress = "000000";
 	private Integer nominalTimeout = new Integer(450); //7.5 minutes
-	private Integer virtualTimeout = new Integer(450); //7.5 minutes
+	private Integer markIndex = new Integer(0);
+	private Integer spaceIndex = new Integer(0); 
 	
-
 	public static final String SETTER_COLUMNS[] = 
 	{ 
 		"GROUPID", "ROUTEID", "OPERATIONALADDRESS", 
-		"NOMINALTIMEOUT", "VIRTUALTIMEOUT"
+		"NOMINALTIMEOUT", "MARKINDEX", "SPACEINDEX"
 	};
 
 	public static final String CONSTRAINT_COLUMNS[] = { "groupID" };
@@ -56,7 +56,8 @@ public void add() throws java.sql.SQLException
 		getGroupID(), getRouteID(),
 		getOperationalAddress(),
 		getNominalTimeout(),
-		getVirtualTimeout()
+		getMarkIndex(),
+		getSpaceIndex()
 		
 	};
 
@@ -125,10 +126,13 @@ public Integer getNominalTimeout() {
 	return nominalTimeout;
 }
 
-public Integer getVirtualTimeout() {
-	return virtualTimeout;
+public Integer getMarkIndex() {
+	return markIndex;
 }
 
+public Integer getSpaceIndex() {
+	return spaceIndex;
+}
 
 public void retrieve() 
 {
@@ -143,7 +147,8 @@ public void retrieve()
 			setRouteID( (Integer) results[1] );
 			setOperationalAddress( (String) results[2]);
 			setNominalTimeout( (Integer) results[3]);
-			setVirtualTimeout( (Integer) results[4]);
+			setMarkIndex( (Integer) results[4]);
+			setSpaceIndex( (Integer) results[5]);
 			
 		}
 	else
@@ -172,8 +177,12 @@ public void setNominalTimeout(Integer newTimeout) {
 	nominalTimeout = newTimeout;
 }
 
-public void setVirtualTimeout(Integer newTimeout) {
-	virtualTimeout = newTimeout;
+public void setMarkIndex(Integer newIndex) {
+	markIndex = newIndex;
+}
+
+public void setSpaceIndex(Integer newIndex) {
+	spaceIndex = newIndex;
 }
 
 
@@ -185,7 +194,8 @@ public void update()
 		getRouteID(),
 		getOperationalAddress(),
 		getNominalTimeout(), 
-		getVirtualTimeout()
+		getMarkIndex(),
+		getSpaceIndex()
 	
 	};
 	
