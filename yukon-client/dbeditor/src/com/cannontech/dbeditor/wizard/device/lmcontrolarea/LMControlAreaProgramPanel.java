@@ -768,7 +768,7 @@ public void setValue(Object o)
 		
 		if( liteDevice == null )
 			throw new RuntimeException("Unable to find the LMProgram with deviceID " 
-				+ programList.getDeviceID().intValue() + 
+				+ programList.getLmProgramDeviceID().intValue() + 
 				" for the LMControlAreaList in LMControlArea '" 
 				+ controlArea.getPAOName() + "'" );
 			
