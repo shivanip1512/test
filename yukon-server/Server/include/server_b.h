@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SERVER/INCLUDE/server_b.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2004/10/19 20:23:38 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2004/10/26 15:33:22 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -57,7 +57,7 @@ private:
 protected:
    BOOL                       _listenerAvailable;
 
-   CtiMutex                   server_mux;       // Mutual exclusion object.
+   CtiMutex                   _server_mux;       // Mutual exclusion object.
 
    RWThreadFunction           MainThread_;      // Thread which does work on the MainQueue_
    RWThreadFunction           ConnThread_;      // Thread which accepts connections.

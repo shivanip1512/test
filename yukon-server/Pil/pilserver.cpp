@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.53 $
-* DATE         :  $Date: 2004/10/08 20:47:34 $
+* REVISION     :  $Revision: 1.54 $
+* DATE         :  $Date: 2004/10/26 15:33:22 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -151,7 +151,7 @@ void CtiPILServer::mainThread()
 
     try
     {
-        CtiLockGuard<CtiMutex> guard(server_mux);
+        CtiLockGuard<CtiMutex> guard(_server_mux);
 
         NetPort  = RWInetPort(PORTERINTERFACENEXUS);
         NetAddr  = RWInetAddr(NetPort);           // This one for this server!
