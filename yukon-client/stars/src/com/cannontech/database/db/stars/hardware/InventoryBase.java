@@ -1,11 +1,11 @@
 package com.cannontech.database.db.stars.hardware;
 
-import java.util.ArrayList;
 import java.util.Date;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.SqlStatement;
 import com.cannontech.database.db.DBPersistent;
 
 
@@ -153,36 +153,19 @@ public class InventoryBase extends DBPersistent {
     
 	public static int[] searchByAccountID(int accountID) {
 		String sql = "SELECT InventoryID FROM " + TABLE_NAME + " WHERE AccountID = " + accountID;
-		
-		java.sql.Connection conn = null;
-		java.sql.Statement stmt = null;
-		java.sql.ResultSet rset = null;
+		SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
     	
 		try {
-			conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-			stmt = conn.createStatement();
-			rset = stmt.executeQuery( sql );
-    		
-			ArrayList invIDList = new ArrayList();
-			while (rset.next())
-				invIDList.add( new Integer(rset.getInt(1)) );
-    		
-			int[] invIDs = new int[ invIDList.size() ];
-			for (int i = 0; i < invIDList.size(); i++)
-				invIDs[i] = ((Integer) invIDList.get(i)).intValue();
+			stmt.execute();
+			
+    		int[] invIDs = new int[ stmt.getRowCount() ];
+    		for (int i = 0; i < stmt.getRowCount(); i++)
+    			invIDs[i] = ((java.math.BigDecimal)stmt.getRow(i)[0]).intValue();
 			
 			return invIDs;
 		}
-		catch (java.sql.SQLException e) {
+		catch (Exception e) {
 			CTILogger.error( e.getMessage(), e );
-		}
-		finally {
-			try {
-				if (rset != null) rset.close();
-				if (stmt != null) stmt.close();
-				if (conn != null) conn.close();
-			}
-			catch (java.sql.SQLException e) {}
 		}
     	
 		return null;
@@ -239,37 +222,22 @@ public class InventoryBase extends DBPersistent {
 	public static int[] searchByDeviceID(int deviceID) {
 		String sql = "SELECT inv.InventoryID, map.EnergyCompanyID " +
 				"FROM " + TABLE_NAME + " inv, ECToInventoryMapping map " +
-				"WHERE inv.DeviceID = ? AND inv.InventoryID = map.InventoryID";
-		
-		java.sql.Connection conn = null;
-		java.sql.PreparedStatement stmt = null;
-		java.sql.ResultSet rset = null;
+				"WHERE inv.DeviceID = " + deviceID + " AND inv.InventoryID = map.InventoryID";
+		SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
 		
 		try {
-			conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
+			stmt.execute();
 			
-			stmt = conn.prepareStatement( sql );
-			stmt.setInt( 1, deviceID );
-			rset = stmt.executeQuery();
-			
-			if (rset.next()) {
+			if (stmt.getRowCount() > 0) {
 				int[] retVal = new int[2];
-				retVal[0] = rset.getInt(1);
-				retVal[1] = rset.getInt(2);
+				retVal[0] = ((java.math.BigDecimal)stmt.getRow(0)[0]).intValue();
+				retVal[1] = ((java.math.BigDecimal)stmt.getRow(0)[1]).intValue();
 				
 				return retVal; 
 			}
 		}
-		catch (java.sql.SQLException e) {
+		catch (Exception e) {
 			CTILogger.error( e.getMessage(), e );
-		}
-		finally {
-			try {
-				if (rset != null) rset.close();
-				if (stmt != null) stmt.close();
-				if (conn != null) conn.close();
-			}
-			catch (java.sql.SQLException e) {}
 		}
 		
 		return null;

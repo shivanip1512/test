@@ -1,7 +1,7 @@
 package com.cannontech.database.data.stars.event;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.Transaction;
-import com.cannontech.database.TransactionException;
 
 /**
  * <p>Title: </p>
@@ -53,99 +53,87 @@ public class LMProgramEvent extends LMCustomerEventBase {
     }
     
     public static void deleteAllLMProgramEvents(int accountID) {
-    	try {
+		try {
 	    	Integer[] eventIDs = com.cannontech.database.db.stars.event.LMProgramEvent.getAllLMProgramEventIDs( accountID );
 	    	
-	    	com.cannontech.database.data.stars.event.LMProgramEvent event =
-	    			new com.cannontech.database.data.stars.event.LMProgramEvent();
-	    	
+	    	LMProgramEvent event = new LMProgramEvent();
 	    	for (int i = 0; i < eventIDs.length; i++) {
 	    		event.setEventID( eventIDs[i] );
 	    		Transaction.createTransaction( Transaction.DELETE, event ).execute();
 	    	}
     	}
-    	catch (TransactionException e) {
-    		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-    	}
+		catch (Exception e) {
+			CTILogger.error( e.getMessage(), e );
+		}
     }
     
     public static void deleteLMProgramEvents(int accountID, int programID) {
-    	try {
-    		Integer[] eventIDs = com.cannontech.database.db.stars.event.LMProgramEvent.getLMProgramEventIDs( accountID, programID );
-    		
-    		com.cannontech.database.data.stars.event.LMProgramEvent event =
-    				new com.cannontech.database.data.stars.event.LMProgramEvent();
-    		
+		try {
+			Integer[] eventIDs = com.cannontech.database.db.stars.event.LMProgramEvent.getLMProgramEventIDs( accountID, programID );
+			
+    		LMProgramEvent event = new LMProgramEvent();
 	    	for (int i = 0; i < eventIDs.length; i++) {
 	    		event.setEventID( eventIDs[i] );
 	    		Transaction.createTransaction( Transaction.DELETE, event ).execute();
 	    	}
     	}
-    	catch (TransactionException e) {
-    		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-    	}
+		catch (Exception e) {
+			CTILogger.error( e.getMessage(), e );
+		}
     }
     
 	public static void deleteAllLMProgramEvents(int energyCompanyID, int programID) {
 		try {
 			Integer[] eventIDs = com.cannontech.database.db.stars.event.LMProgramEvent.getAllLMProgramEventIDs(
 					energyCompanyID, programID );
-	    	
-			com.cannontech.database.data.stars.event.LMProgramEvent event =
-					new com.cannontech.database.data.stars.event.LMProgramEvent();
 			
+			LMProgramEvent event = new LMProgramEvent();
 			for (int i = 0; i < eventIDs.length; i++) {
 				event.setEventID( eventIDs[i] );
 				Transaction.createTransaction( Transaction.DELETE, event ).execute();
 			}
 		}
-		catch (TransactionException e) {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+		catch (Exception e) {
+			CTILogger.error( e.getMessage(), e );
 		}
 	}
     
 	public static LMProgramEvent[] getAllLMProgramEvents(int accountID) {
 		try {
 			Integer[] eventIDs = com.cannontech.database.db.stars.event.LMProgramEvent.getAllLMProgramEventIDs( accountID );
-			com.cannontech.database.data.stars.event.LMProgramEvent[] events =
-					new com.cannontech.database.data.stars.event.LMProgramEvent[ eventIDs.length ];
-	        
+			
+			LMProgramEvent[] events = new LMProgramEvent[ eventIDs.length ];
 			for (int i = 0; i < events.length; i++) {
-				events[i] = new com.cannontech.database.data.stars.event.LMProgramEvent();
+				events[i] = new LMProgramEvent();
 				events[i].setEventID( eventIDs[i] );
-				
-				events[i] = (com.cannontech.database.data.stars.event.LMProgramEvent)
-						Transaction.createTransaction( Transaction.RETRIEVE, events[i] ).execute();
+				events[i] = (LMProgramEvent) Transaction.createTransaction( Transaction.RETRIEVE, events[i] ).execute();
 			}
 	        
 			return events;
 		}
-		catch (TransactionException e) {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+		catch (Exception e) {
+			CTILogger.error( e.getMessage(), e );
 		}
     	
 		return null;
 	}
     
     public static LMProgramEvent[] getLMProgramEvents(int accountID, int programID) {
-    	try {
+		try {
 	        Integer[] eventIDs = com.cannontech.database.db.stars.event.LMProgramEvent.getLMProgramEventIDs( accountID, programID );
-	        com.cannontech.database.data.stars.event.LMProgramEvent[] events =
-	        		new com.cannontech.database.data.stars.event.LMProgramEvent[ eventIDs.length ];
 	        
+	        LMProgramEvent[] events = new LMProgramEvent[ eventIDs.length ];
 	        for (int i = 0; i < events.length; i++) {
-		    	events[i] = new com.cannontech.database.data.stars.event.LMProgramEvent();
+		    	events[i] = new LMProgramEvent();
 		    	events[i].setEventID( eventIDs[i] );
-		    	
-		    	events[i] = (com.cannontech.database.data.stars.event.LMProgramEvent)
-		    			Transaction.createTransaction( Transaction.RETRIEVE, events[i] ).execute();
+				events[i] = (LMProgramEvent) Transaction.createTransaction( Transaction.RETRIEVE, events[i] ).execute();
 	        }
 	        
 	        return events;
     	}
-    	catch (TransactionException e) {
-    		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-    	}
+		catch (Exception e) {
+			CTILogger.error( e.getMessage(), e );
+		}
     	
     	return null;
     }

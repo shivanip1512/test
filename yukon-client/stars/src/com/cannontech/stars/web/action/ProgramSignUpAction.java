@@ -445,6 +445,9 @@ public class ProgramSignUpAction implements ActionBase {
 						newProgList.add( liteStarsProg );
 				}
 			}
+			
+			String trackHwAddr = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING );
+			boolean useHardwareAddressing = (trackHwAddr != null) && Boolean.valueOf(trackHwAddr).booleanValue();
         	
 			for (int i = 0; i < processedPrograms.getSULMProgramCount(); i++) {
 				SULMProgram program = processedPrograms.getSULMProgram(i);
@@ -461,7 +464,7 @@ public class ProgramSignUpAction implements ActionBase {
 					newProgList.add( liteStarsProg );
 			    
 				int groupID = program.getAddressingGroupID();
-				if (!program.hasAddressingGroupID() && starsProg.getAddressingGroupCount() > 1)
+				if (!program.hasAddressingGroupID() && !useHardwareAddressing && starsProg.getAddressingGroupCount() > 1)
 					groupID = starsProg.getAddressingGroup(1).getEntryID();
 				liteStarsProg.setGroupID( groupID );
         		
@@ -727,7 +730,7 @@ public class ProgramSignUpAction implements ActionBase {
 			for (int j = 0; j < invIDs.length; j++) {
 				int invID = Integer.parseInt( invIDs[j] );
 				int loadNo = Integer.parseInt( loadNos[j] );
-				if (loadNo > 0) {
+				if (invID > 0 && loadNo > 0) {
 					for (int k = 0; k < programs.getSULMProgramCount(); k++) {
 						if (programs.getSULMProgram(k).getInventoryID() == invID
 							&& programs.getSULMProgram(k).getLoadNumber() == loadNo)
@@ -744,7 +747,7 @@ public class ProgramSignUpAction implements ActionBase {
 				program.setProgramID( progID );
 				program.setApplianceCategoryID( appCatID );
 				program.setAddressingGroupID( groupID );
-				program.setInventoryID( invID );
+				if (invID > 0) program.setInventoryID( invID );
 				program.setLoadNumber( loadNo );
 				programs.addSULMProgram( program );
 			}

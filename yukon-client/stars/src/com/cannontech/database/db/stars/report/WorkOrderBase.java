@@ -3,6 +3,7 @@ package com.cannontech.database.db.stars.report;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.SqlStatement;
 import com.cannontech.database.db.DBPersistent;
 
 
@@ -172,36 +173,19 @@ public class WorkOrderBase extends DBPersistent {
     
     public static int[] searchByAccountID(int accountID) {
     	String sql = "SELECT OrderID FROM " + TABLE_NAME + " WHERE AccountID=" + accountID + " ORDER BY DateReported DESC";
-    	
-    	java.sql.Connection conn = null;
-    	java.sql.Statement stmt = null;
-    	java.sql.ResultSet rset = null;
+    	SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
     	
     	try {
-    		conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-			stmt = conn.createStatement();
-			rset = stmt.executeQuery( sql );
+    		stmt.execute();
 	    	
-			java.util.ArrayList orderIDList = new java.util.ArrayList();
-			while (rset.next())
-				orderIDList.add( new Integer(rset.getInt(1)) );
-	    	
-			int[] orderIDs = new int[orderIDList.size()];
-			for (int i = 0; i < orderIDList.size(); i++)
-				orderIDs[i] = ((Integer) orderIDList.get(i)).intValue();
+			int[] orderIDs = new int[ stmt.getRowCount() ];
+			for (int i = 0; i < stmt.getRowCount(); i++)
+				orderIDs[i] = ((java.math.BigDecimal)stmt.getRow(i)[0]).intValue();
 	    	
 			return orderIDs;
     	}
-    	catch (java.sql.SQLException e) {
+    	catch (Exception e) {
     		CTILogger.error( e.getMessage(), e );
-    	}
-    	finally {
-    		try {
-    			if (rset != null) rset.close();
-				if (stmt != null) stmt.close();
-				if (conn != null) conn.close();
-    		}
-    		catch (java.sql.SQLException e) {}
     	}
     	
     	return null;

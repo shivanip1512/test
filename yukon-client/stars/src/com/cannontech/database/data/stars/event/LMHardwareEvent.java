@@ -1,5 +1,6 @@
 package com.cannontech.database.data.stars.event;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 
@@ -53,40 +54,36 @@ public class LMHardwareEvent extends LMCustomerEventBase {
     }
     
     public static void deleteAllLMHardwareEvents(Integer invID) {
-    	try {
+		try {
     		Integer[] eventIDs = com.cannontech.database.db.stars.event.LMHardwareEvent.getAllLMHardwareEventIDs( invID );
-    		com.cannontech.database.db.stars.event.LMHardwareEvent.deleteAllLMHardwareEvents( invID );
     		
-    		LMCustomerEventBase event = new LMCustomerEventBase();
+    		LMHardwareEvent event = new LMHardwareEvent();
     		for (int i = 0; i < eventIDs.length; i++) {
     			event.setEventID( eventIDs[i] );
     			Transaction.createTransaction( Transaction.DELETE, event ).execute();
     		}
     	}
-    	catch (TransactionException e) {
-    		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-    	}
+		catch (TransactionException e) {
+			CTILogger.error( e.getMessage(), e );
+		}
     }
     
     public static LMHardwareEvent[] getAllLMHardwareEvents(Integer invID) {
-    	try {
+		try {
 	        Integer[] eventIDs = com.cannontech.database.db.stars.event.LMHardwareEvent.getAllLMHardwareEventIDs( invID );
-	        com.cannontech.database.data.stars.event.LMHardwareEvent[] events =
-	        		new com.cannontech.database.data.stars.event.LMHardwareEvent[ eventIDs.length ];
 	        
+	        LMHardwareEvent[] events = new LMHardwareEvent[ eventIDs.length ];
 	        for (int i = 0; i < events.length; i++) {
-	        	events[i] = new com.cannontech.database.data.stars.event.LMHardwareEvent();
+	        	events[i] = new LMHardwareEvent();
 				events[i].setEventID( eventIDs[i] );
-				
-				events[i] = (com.cannontech.database.data.stars.event.LMHardwareEvent)
-						Transaction.createTransaction( Transaction.RETRIEVE, events[i] ).execute();
+				events[i] = (LMHardwareEvent) Transaction.createTransaction( Transaction.RETRIEVE, events[i] ).execute();
 	        }
 	        
 	        return events;
     	}
-    	catch (TransactionException e) {
-    		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-    	}
+		catch (TransactionException e) {
+			CTILogger.error( e.getMessage(), e );
+		}
     	
     	return null;
     }
@@ -105,8 +102,8 @@ public class LMHardwareEvent extends LMCustomerEventBase {
 	        
 	        return event;
     	}
-    	catch (Exception e) {
-    		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+    	catch (TransactionException e) {
+    		CTILogger.error( e.getMessage(), e );
     	}
     	
     	return null;

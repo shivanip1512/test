@@ -4,6 +4,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.SqlStatement;
 import com.cannontech.database.db.pao.LMControlHistory;
 import com.cannontech.stars.xml.serialize.types.StarsCtrlHistPeriod;
 
@@ -58,8 +61,7 @@ public class LMControlHistoryUtil {
         java.util.ArrayList ctrlHistList = new java.util.ArrayList();
 
         try {
-            conn = com.cannontech.database.PoolManager.getInstance().getConnection(
-                        com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+            conn = com.cannontech.database.PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
             if (conn == null) return null;
 
             Date dateFrom = getPeriodStartTime(period, TimeZone.getDefault());
@@ -101,7 +103,7 @@ public class LMControlHistoryUtil {
             }
         }
         catch (Exception e) {
-            com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+            CTILogger.error( e.getMessage(), e );
         }
         finally {
             try {
@@ -110,7 +112,7 @@ public class LMControlHistoryUtil {
                 if (conn != null) conn.close();
             }
             catch (Exception e) {
-                com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+                CTILogger.error( e.getMessage(), e );
             }
         }
 
@@ -129,9 +131,8 @@ public class LMControlHistoryUtil {
 		   .append(" AND LMCtrlHistID > ").append(startLMCtrlHistID)
 		   .append(" ORDER BY LMCtrlHistID");
 
-		com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
-				sql.toString(), com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
-				
+		SqlStatement stmt = new SqlStatement( sql.toString(), CtiUtilities.getDatabaseAlias() );
+		
 		try {
 			stmt.execute();
 			com.cannontech.database.db.pao.LMControlHistory[] ctrlHists =
@@ -143,7 +144,7 @@ public class LMControlHistoryUtil {
 				
 				ctrlHists[i].setLmCtrlHistID( new Integer(((java.math.BigDecimal) row[0]).intValue()) );
 				ctrlHists[i].setPaObjectID( new Integer(((java.math.BigDecimal) row[1]).intValue()) );
-				ctrlHists[i].setStartDateTime( (Date) row[2] );
+				ctrlHists[i].setStartDateTime( new Date(((java.sql.Timestamp) row[2]).getTime()) );
 				ctrlHists[i].setSoeTag( new Integer(((java.math.BigDecimal) row[3]).intValue()) );
 				ctrlHists[i].setControlDuration( new Integer(((java.math.BigDecimal) row[4]).intValue()) );
 				ctrlHists[i].setControlType( (String) row[5] );
@@ -153,71 +154,55 @@ public class LMControlHistoryUtil {
 				ctrlHists[i].setCurrentAnnualTime( new Integer(((java.math.BigDecimal) row[9]).intValue()) );
 				ctrlHists[i].setActiveRestore( (String) row[10] );
 				ctrlHists[i].setReductionValue( (Double) row[11] );
-				ctrlHists[i].setStopDateTime( (Date) row[12] );
+				ctrlHists[i].setStopDateTime( new Date(((java.sql.Timestamp) row[12]).getTime()) );
 			}
 			
 			return ctrlHists;
 		}
 		catch (Exception e) {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 		}
 		
 		return null;
     }
 
     public static com.cannontech.database.db.pao.LMControlHistory getLastLMControlHistory(Integer groupID) {
-        java.sql.Connection conn = null;
-        java.sql.Statement stmt = null;
-        java.sql.ResultSet rset = null;
-
-        try {
-            conn = com.cannontech.database.PoolManager.getInstance().getConnection(
-                        com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
-            if (conn == null) return null;
-
 		StringBuffer sql = new StringBuffer("SELECT LMCTRLHISTID");
 		for (int i = 0; i < LMControlHistory.SETTER_COLUMNS.length; i++)
 			sql.append(", ").append(LMControlHistory.SETTER_COLUMNS[i]);
-        sql.append(" FROM ").append(LMControlHistory.TABLE_NAME)
-           .append(" WHERE LMCTRLHISTID = ")
-           .append("(SELECT MAX(LMCTRLHISTID) FROM ").append(LMControlHistory.TABLE_NAME)
-           .append(" WHERE PAOBJECTID = ").append(groupID).append(")");
+		sql.append(" FROM ").append(LMControlHistory.TABLE_NAME)
+		   .append(" WHERE LMCTRLHISTID = ")
+		   .append("(SELECT MAX(LMCTRLHISTID) FROM ").append(LMControlHistory.TABLE_NAME)
+		   .append(" WHERE PAOBJECTID = ").append(groupID).append(")");
+		
+		SqlStatement stmt = new SqlStatement( sql.toString(), CtiUtilities.getDatabaseAlias() );
 
-            stmt = conn.createStatement();
-            rset = stmt.executeQuery( sql.toString() );
+        try {
+        	stmt.execute();
 
-            if (rset.next()) {
+            if (stmt.getRowCount() > 0) {
+            	Object[] row = stmt.getRow(0);
                 com.cannontech.database.db.pao.LMControlHistory ctrlHist = new com.cannontech.database.db.pao.LMControlHistory();
 
-                ctrlHist.setLmCtrlHistID( new Integer(rset.getInt(1)) );
-                ctrlHist.setPaObjectID( new Integer(rset.getInt(2)) );
-                ctrlHist.setStartDateTime( new java.util.Date(rset.getTimestamp(3).getTime()) );
-                ctrlHist.setSoeTag( new Integer(rset.getInt(4)) );
-                ctrlHist.setControlDuration( new Integer(rset.getInt(5)) );
-                ctrlHist.setControlType( rset.getString(6) );
-                ctrlHist.setCurrentDailyTime( new Integer(rset.getInt(7)) );
-                ctrlHist.setCurrentMonthlyTime( new Integer(rset.getInt(8)) );
-                ctrlHist.setCurrentSeasonalTime( new Integer(rset.getInt(9)) );
-                ctrlHist.setCurrentAnnualTime( new Integer(rset.getInt(10)) );
-                ctrlHist.setActiveRestore( rset.getString(11) );
-                ctrlHist.setReductionValue( new Double(rset.getDouble(12)) );
-                ctrlHist.setStopDateTime( new java.util.Date(rset.getTimestamp(13).getTime()) );
+                ctrlHist.setLmCtrlHistID( new Integer(((java.math.BigDecimal) row[0]).intValue()) );
+                ctrlHist.setPaObjectID( new Integer(((java.math.BigDecimal) row[1]).intValue()) );
+                ctrlHist.setStartDateTime( new Date(((java.sql.Timestamp) row[2]).getTime()) );
+                ctrlHist.setSoeTag( new Integer(((java.math.BigDecimal) row[3]).intValue()) );
+                ctrlHist.setControlDuration( new Integer(((java.math.BigDecimal) row[4]).intValue()) );
+                ctrlHist.setControlType( (String) row[5] );
+                ctrlHist.setCurrentDailyTime( new Integer(((java.math.BigDecimal) row[6]).intValue()) );
+                ctrlHist.setCurrentMonthlyTime( new Integer(((java.math.BigDecimal) row[7]).intValue()) );
+                ctrlHist.setCurrentSeasonalTime( new Integer(((java.math.BigDecimal) row[8]).intValue()) );
+                ctrlHist.setCurrentAnnualTime( new Integer(((java.math.BigDecimal) row[9]).intValue()) );
+                ctrlHist.setActiveRestore( (String) row[10] );
+                ctrlHist.setReductionValue( (Double) row[11] );
+                ctrlHist.setStopDateTime( new Date(((java.sql.Timestamp) row[12]).getTime()) );
 
                 return ctrlHist;
             }
         }
         catch (Exception e) {
-            com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-        }
-        finally {
-            try {
-                if (rset != null) rset.close();
-                if( stmt != null ) stmt.close();
-                if (conn != null) conn.close();
-            }
-            catch (Exception e) {
-                com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-            }
+            CTILogger.error( e.getMessage(), e );
         }
 
         return null;

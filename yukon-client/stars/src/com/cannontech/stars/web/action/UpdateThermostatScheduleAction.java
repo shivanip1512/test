@@ -617,11 +617,16 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 		LiteLMThermostatSchedule liteDftSchedule = energyCompany.getDefaultThermostatSchedule(hwTypeDefID);
 		
 		java.sql.Connection conn = null;
+		boolean autoCommit = true;
+		
 		try {
 			conn = com.cannontech.database.PoolManager.getInstance().getConnection(
 					com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
 			if (conn == null)
 				throw new java.sql.SQLException("Cannot get database connection");
+			
+			autoCommit = conn.getAutoCommit();
+			conn.setAutoCommit( false );
 			
 			for (int i = 0; i < updateSched.getStarsThermostatSeasonCount(); i++) {
 				StarsThermostatSeason starsSeason = updateSched.getStarsThermostatSeason(i);
@@ -867,9 +872,20 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 				}
 			}
 		}
+		catch (java.sql.SQLException e) {
+			try {
+				if (conn != null) conn.rollback();
+			}
+			catch (java.sql.SQLException e2) {}
+    		
+			throw e;
+		}
 		finally {
 			try {
-				if (conn != null) conn.close();
+				if (conn != null) {
+					conn.setAutoCommit( autoCommit );
+					conn.close();
+				} 
 			}
 			catch (java.sql.SQLException e) {}
 		}

@@ -2,8 +2,9 @@ package com.cannontech.database.db.stars.event;
 
 import java.sql.SQLException;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.PoolManager;
+import com.cannontech.database.SqlStatement;
 import com.cannontech.database.db.DBPersistent;
 
 /**
@@ -90,98 +91,49 @@ public class LMThermostatManualEvent extends DBPersistent {
 
     public static Integer[] getAllLMThermostatManualEventIDs(int inventoryID) {
         String sql = "SELECT EventID FROM " + TABLE_NAME + " WHERE InventoryID=" + inventoryID + " ORDER BY EventID";
-        
-        java.sql.Connection conn = null;
-        java.sql.Statement stmt = null;
-        java.sql.ResultSet rset = null;
+        SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
 
         try {
-        	conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-        	stmt = conn.createStatement();
-            rset = stmt.executeQuery( sql );
+        	stmt.execute();
             
-			java.util.ArrayList eventList = new java.util.ArrayList();
-            while (rset.next())
-                eventList.add( new Integer(rset.getInt("EventID")) );
+			Integer[] eventIDs = new Integer[ stmt.getRowCount() ];
+			for (int i = 0; i < stmt.getRowCount(); i++)
+				eventIDs[i] = new Integer( ((java.math.BigDecimal)stmt.getRow(i)[0]).intValue() );
 			
-			Integer[] eventIDs = new Integer[ eventList.size() ];
-			eventList.toArray( eventIDs );
 			return eventIDs;
         }
-        catch( java.sql.SQLException e ) {
-            com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-        }
-        finally {
-            try {
-                if (rset != null) rset.close();
-                if (stmt != null) stmt.close();
-                if (conn != null) conn.close();
-            }
-            catch( java.sql.SQLException e2 ) {}
+        catch( Exception e ) {
+            CTILogger.error( e.getMessage(), e );
         }
         
         return null;
-    }
-
-    public static void deleteAllLMThermostatManualEvents(int inventoryID) {
-        String sql = "DELETE FROM " + TABLE_NAME + " WHERE InventoryID=" + inventoryID;
-        
-        java.sql.Connection conn = null;
-        java.sql.Statement stmt = null;
-        
-        try {
-        	conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-        	stmt = conn.createStatement();
-        	stmt.execute( sql );
-        }
-        catch( java.sql.SQLException e ) {
-            com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-        }
-        finally {
-            try {
-                if (stmt != null) stmt.close();
-                if (conn != null) conn.close();
-            }
-            catch( java.sql.SQLException e2 ) {}
-        }
     }
     
     public static LMThermostatManualEvent getLastLMThermostatManualEvent(Integer inventoryID) {
         String sql = "SELECT EventID, InventoryID, PreviousTemperature, HoldTemperature, OperationStateID, FanOperationID "
         		   + "FROM " + TABLE_NAME + " WHERE EventID = ("
         		   + "SELECT MAX(EventID) FROM " + TABLE_NAME + " WHERE InventoryID=" + inventoryID + ")";
-        
-        java.sql.Connection conn = null;
-        java.sql.Statement stmt = null;
-        java.sql.ResultSet rset = null;
+		SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
 
         try {
-        	conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-        	stmt = conn.createStatement();
-        	rset = stmt.executeQuery( sql );
+        	stmt.execute();
         	
-            if (rset.next()) {
+            if (stmt.getRowCount() > 0) {
+            	Object[] row = stmt.getRow(0);
+            	
                 LMThermostatManualEvent event = new LMThermostatManualEvent();
-                event.setEventID( new Integer(rset.getInt(0)) );
-                event.setInventoryID( new Integer(rset.getInt(1)) );
-                event.setPreviousTemperature( new Integer(rset.getInt(2)) );
-                event.setHoldTemperature( (String) rset.getString(3) );
-                event.setOperationStateID( new Integer(rset.getInt(4)) );
-                event.setFanOperationID( new Integer(rset.getInt(5)) );
+                event.setEventID( new Integer(((java.math.BigDecimal)row[0]).intValue()) );
+                event.setInventoryID( new Integer(((java.math.BigDecimal)row[1]).intValue()) );
+                event.setPreviousTemperature( new Integer(((java.math.BigDecimal)row[2]).intValue()) );
+                event.setHoldTemperature( (String) row[3] );
+                event.setOperationStateID( new Integer(((java.math.BigDecimal)row[4]).intValue()) );
+                event.setFanOperationID( new Integer(((java.math.BigDecimal)row[5]).intValue()) );
                 
                 return event;
             }
         }
-        catch( java.sql.SQLException e ) {
-            com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-        }
-        finally {
-            try {
-                if (rset != null) rset.close();
-                if (stmt != null) stmt.close();
-                if (conn != null) conn.close();
-            }
-            catch( java.sql.SQLException e2 ) {}
+        catch( Exception e ) {
+            CTILogger.error( e.getMessage(), e );
         }
         
         return null;

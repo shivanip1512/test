@@ -1,5 +1,6 @@
 package com.cannontech.database.db.stars.hardware;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.PoolManager;
@@ -105,7 +106,7 @@ public class LMHardwareBase extends DBPersistent {
 			return invIDs;
     	}
     	catch (java.sql.SQLException e) {
-    		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+    		CTILogger.error( e.getMessage(), e );
     	}
     	finally {
     		try {
@@ -156,7 +157,7 @@ public class LMHardwareBase extends DBPersistent {
 			return hardwares;
     	}
     	catch (java.sql.SQLException e) {
-    		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+    		CTILogger.error( e.getMessage(), e );
     	}
     	finally {
     		try {

@@ -1,5 +1,6 @@
 package com.cannontech.database.data.stars.event;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 
@@ -54,38 +55,34 @@ public class LMThermostatManualEvent extends LMCustomerEventBase {
     public static void deleteAllLMThermostatManualEvents(int invID) {
     	try {
     		Integer[] eventIDs = com.cannontech.database.db.stars.event.LMThermostatManualEvent.getAllLMThermostatManualEventIDs( invID );
-    		com.cannontech.database.db.stars.event.LMThermostatManualEvent.deleteAllLMThermostatManualEvents( invID );
     		
-    		LMCustomerEventBase event = new LMCustomerEventBase();
+    		LMThermostatManualEvent event = new LMThermostatManualEvent();
     		for (int i = 0; i < eventIDs.length; i++) {
     			event.setEventID( eventIDs[i] );
     			Transaction.createTransaction( Transaction.DELETE, event ).execute();
     		}
     	}
-    	catch (TransactionException e) {
-    		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+    	catch (Exception e) {
+    		CTILogger.error( e.getMessage(), e );
     	}
     }
     
     public static LMThermostatManualEvent[] getAllLMThermostatManualEvents(int invID) {
-    	try {
+		try {
 	        Integer[] eventIDs = com.cannontech.database.db.stars.event.LMThermostatManualEvent.getAllLMThermostatManualEventIDs( invID );
-	        com.cannontech.database.data.stars.event.LMThermostatManualEvent[] events =
-	        		new com.cannontech.database.data.stars.event.LMThermostatManualEvent[ eventIDs.length ];
 	        
+	        LMThermostatManualEvent[] events = new LMThermostatManualEvent[ eventIDs.length ];
 	        for (int i = 0; i < events.length; i++) {
-	        	events[i] = new com.cannontech.database.data.stars.event.LMThermostatManualEvent();
+	        	events[i] = new LMThermostatManualEvent();
 				events[i].setEventID( eventIDs[i] );
-				
-				events[i] = (com.cannontech.database.data.stars.event.LMThermostatManualEvent)
-						Transaction.createTransaction( Transaction.RETRIEVE, events[i] ).execute();
+				events[i] = (LMThermostatManualEvent) Transaction.createTransaction( Transaction.RETRIEVE, events[i] ).execute();
 	        }
 	        
 	        return events;
     	}
-    	catch (TransactionException e) {
-    		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-    	}
+		catch (Exception e) {
+			CTILogger.error( e.getMessage(), e );
+		}
     	
     	return null;
     }
@@ -106,7 +103,7 @@ public class LMThermostatManualEvent extends LMCustomerEventBase {
 	        return event;
     	}
     	catch (TransactionException e) {
-    		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+    		CTILogger.error( e.getMessage(), e );
     	}
     	
     	return null;

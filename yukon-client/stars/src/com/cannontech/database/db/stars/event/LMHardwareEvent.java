@@ -1,7 +1,8 @@
 package com.cannontech.database.db.stars.event;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.PoolManager;
+import com.cannontech.database.SqlStatement;
 import com.cannontech.database.db.DBPersistent;
 
 
@@ -68,92 +69,43 @@ public class LMHardwareEvent extends DBPersistent {
 
     public static Integer[] getAllLMHardwareEventIDs(Integer inventoryID) {
         String sql = "SELECT EventID FROM " + TABLE_NAME + " WHERE InventoryID =" + inventoryID + " ORDER BY EventID";
-        
-        java.sql.Connection conn = null;
-        java.sql.Statement stmt = null;
-        java.sql.ResultSet rset = null;
+        SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
         
         try {
-        	conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-        	stmt = conn.createStatement();
-        	rset = stmt.executeQuery( sql );
+        	stmt.execute();
         	
-			java.util.ArrayList eventList = new java.util.ArrayList();
-            while (rset.next())
-                eventList.add( new Integer(rset.getInt("EventID")) );
-			
-			Integer[] eventIDs = new Integer[ eventList.size() ];
-			eventList.toArray( eventIDs );
+        	Integer[] eventIDs = new Integer[ stmt.getRowCount() ];
+        	for (int i = 0; i < stmt.getRowCount(); i++)
+        		eventIDs[i] = new Integer( ((java.math.BigDecimal)stmt.getRow(i)[0]).intValue() );
+        	
 			return eventIDs;
         }
-        catch( java.sql.SQLException e ) {
-            com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-        }
-        finally {
-            try {
-                if (rset != null) rset.close();
-                if (stmt != null) stmt.close();
-                if (conn != null) conn.close();
-            }
-            catch( java.sql.SQLException e2 ) {}
+        catch( Exception e ) {
+            CTILogger.error( e.getMessage(), e );
         }
         
         return null;
     }
-
-    public static void deleteAllLMHardwareEvents(Integer inventoryID) {
-        String sql = "DELETE FROM " + TABLE_NAME + " WHERE InventoryID=" + inventoryID;
-        
-        java.sql.Connection conn = null;
-        java.sql.Statement stmt = null;
-        
-        try {
-        	conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-        	stmt = conn.createStatement();
-        	stmt.execute( sql );
-        }
-        catch( java.sql.SQLException e ) {
-            com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-        }
-        finally {
-            try {
-                if (stmt != null) stmt.close();
-                if (conn != null) conn.close();
-            }
-            catch( java.sql.SQLException e2 ) {}
-        }
-    }
     
     public static LMHardwareEvent getLastLMHardwareEvent(Integer inventoryID) {
-        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE EventID = (" +
+        String sql = "SELECT EventID, InventoryID FROM " + TABLE_NAME + " WHERE EventID = (" +
         		"SELECT MAX(EventID) FROM " + TABLE_NAME + " WHERE InventoryID=" + inventoryID + ")";
-        
-        java.sql.Connection conn = null;
-        java.sql.Statement stmt = null;
-        java.sql.ResultSet rset = null;
+		SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
         
         try {
-        	conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-        	stmt = conn.createStatement();
-            rset = stmt.executeQuery( sql );
+        	stmt.execute();
             
-            if (rset.next()) {
+            if (stmt.getRowCount() > 0) {
+            	Object[] row = stmt.getRow(0);
+            	
                 LMHardwareEvent event = new LMHardwareEvent();
-                event.setEventID( new Integer(rset.getInt("EventID")) );
-                event.setInventoryID( new Integer(rset.getInt("InventoryID")) );
+                event.setEventID( new Integer(((java.math.BigDecimal)row[0]).intValue()) );
+                event.setInventoryID( new Integer(((java.math.BigDecimal)row[1]).intValue()) );
                 return event;
             }
         }
-        catch( java.sql.SQLException e ) {
-            com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-        }
-        finally {
-            try {
-                if (rset != null) rset.close();
-                if (stmt != null) stmt.close();
-                if (conn != null) conn.close();
-            }
-            catch( java.sql.SQLException e2 ) {}
+        catch( Exception e ) {
+            CTILogger.error( e.getMessage(), e );
         }
         
         return null;
