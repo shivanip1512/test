@@ -127,9 +127,9 @@ public class LiteCICustomer extends LiteCustomer
 			com.cannontech.database.SqlStatement stat = 
 				new com.cannontech.database.SqlStatement(
 					"SELECT MainAddressID, CompanyName, " +
-					"CustomerDemandLevel, CurtailAmount " +
-					"FROM " + CICustomerBase.TABLE_NAME +
-					"WHERE CustomerID = " + getLiteID(),
+					" CustomerDemandLevel, CurtailAmount " +
+					" FROM " + CICustomerBase.TABLE_NAME +
+					" WHERE CustomerID = " + getLiteID(),
 					dbalias );
 			
 			stat.execute();
