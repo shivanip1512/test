@@ -95,18 +95,6 @@ all:
         @echo Building in $(COMPILEBASE)\scanner
         @echo:
         @$(MAKE) -nologo
-        @%cd $(COMPILEBASE)\fdr
-        @echo:
-        @title Building in $(COMPILEBASE)\fdr
-        @echo Building in $(COMPILEBASE)\fdr
-        @echo:
-        @$(MAKE) -nologo
-        @%cd $(COMPILEBASE)\calc
-        @echo:
-        @title Building in $(COMPILEBASE)\calc
-        @echo Building in $(COMPILEBASE)\calc
-        @echo:
-        @$(MAKE) -nologo
         @%cd $(COMPILEBASE)\mccmd
         @echo:
         @title Building in $(COMPILEBASE)\mccmd
@@ -117,6 +105,18 @@ all:
         @echo:
         @title Building in $(COMPILEBASE)\macs
         @echo Building in $(COMPILEBASE)\macs
+        @echo:
+        @$(MAKE) -nologo
+        @%cd $(COMPILEBASE)\fdr
+        @echo:
+        @title Building in $(COMPILEBASE)\fdr
+        @echo Building in $(COMPILEBASE)\fdr
+        @echo:
+        @$(MAKE) -nologo
+        @%cd $(COMPILEBASE)\calc
+        @echo:
+        @title Building in $(COMPILEBASE)\calc
+        @echo Building in $(COMPILEBASE)\calc
         @echo:
         @$(MAKE) -nologo
         @%cd $(COMPILEBASE)\capcontrol
