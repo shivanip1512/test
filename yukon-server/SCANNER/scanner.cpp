@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.33 $
-* DATE         :  $Date: 2003/03/13 19:36:19 $
+* REVISION     :  $Revision: 1.34 $
+* DATE         :  $Date: 2003/05/15 22:36:12 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1309,6 +1309,11 @@ void LoadScannableDevices(void *ptr)
                         dout << RWTime() << " DBChange forced a reload of points for " << pBase->getName() << endl;
                     }
                     pBase->RefreshDevicePoints();
+                    break;
+                }
+                else if(pChg->getTypeOfChange() == ChangeTypeDelete && DeviceRecord->getDevicePointEqual(pChg->getId()))
+                {
+                    pBase->orphanDevicePoint(pChg->getId());
                     break;
                 }
             }

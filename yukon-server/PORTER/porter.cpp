@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.40 $
-* DATE         :  $Date: 2003/05/09 16:09:55 $
+* REVISION     :  $Revision: 1.41 $
+* DATE         :  $Date: 2003/05/15 22:36:03 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1311,6 +1311,11 @@ INT RefreshPorterRTDB(void *ptr)
                 CtiDevice *pDevToReset = DeviceManager.getEqual( paoid );
                 if(pDevToReset)
                 {
+                    if(pChg->getTypeOfChange() == ChangeTypeDelete)
+                    {
+                        pDevToReset->orphanDevicePoint(pChg->getId());
+                    }
+
                     pDevToReset->ResetDevicePoints();
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1624,36 +1629,46 @@ void LoadPorterGlobals(void)
 
 void DisplayTraceList( CtiPortSPtr Port, RWTPtrSlist< CtiMessage > &traceList, bool consume)
 {
-    Port->fileTraces(traceList);
-
+    try
     {
-        int attempts = 5;
-        RWMutexLock::TryLockGuard coutTryGuard(coutMux);
+        Port->fileTraces(traceList);
 
-        while(!coutTryGuard.isAcquired() && attempts-- > 0 )
         {
-            Sleep(1000);
-            coutTryGuard.tryAcquire();
-        }
+            int attempts = 5;
+            RWMutexLock::TryLockGuard coutTryGuard(coutMux);
 
-        for(size_t i = 0; i < traceList.entries(); i++)
-        {
-            CtiTraceMsg *&pTrace = ((CtiTraceMsg*&)traceList.at(i));
-            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), (WORD)pTrace->getAttributes());
-            cout << pTrace->getTrace();
-
-            if(pTrace->isEnd())
+            while(!coutTryGuard.isAcquired() && attempts-- > 0 )
             {
-                cout << endl;
+                Sleep(100);
+                coutTryGuard.tryAcquire();
             }
+
+            for(size_t i = 0; i < traceList.entries(); i++)
+            {
+                CtiTraceMsg *&pTrace = ((CtiTraceMsg*&)traceList.at(i));
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), (WORD)pTrace->getAttributes());
+                cout << pTrace->getTrace();
+
+                if(pTrace->isEnd())
+                {
+                    cout << endl;
+                }
+            }
+
+            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE) , FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED);
         }
 
-        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE) , FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED);
+        if(consume)
+        {
+            traceList.clearAndDestroy();
+        }
     }
-
-    if(consume)
+    catch(...)
     {
-        traceList.clearAndDestroy();
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
     }
 }
 
