@@ -4,16 +4,26 @@ package com.cannontech.tools.email;
  * Creation date: (11/8/2001 11:03:50 PM)
  * @author: 
  */
+import java.util.Vector;
+
 import javax.mail.*;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.InternetAddress;
+
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.commandlineparameters.CommandLineParser;
+import com.cannontech.database.data.pao.DeviceTypes;
+import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.message.dispatch.message.Command;
+import com.cannontech.message.porter.ClientConnection;
+import com.cannontech.message.porter.message.Request;
 
 class Rat
 {
 	private String type = "javamail";
 	public final static String[] COMMAND_LINE_PARAM_NAMES = 
 	{
+		"yukonhost",
 		"mailhost",
 		"toaddress",
 		"fromaddress",
@@ -24,16 +34,19 @@ class Rat
 	};
 
 	private boolean emailSent = false;
-	public final int CHECK_INTERVAL = 600; //seconds to check
-	private String DISPATCH_HOST = "localhost";
+	public final int CHECK_INTERVAL = 60; //seconds to check
+
 	private int DISPATCH_PORT = 1510;
+	private int PORTER_PORT = 1540;
+	
 	private final String PROGRAM_NAME = "dispatch.exe";
 	
 	private java.util.ArrayList processNames = new java.util.ArrayList(100);
 	
+	private String yukonHost = "127.0.0.1";
 	private Address fromAddress = null;
 	private String userName = null;
-	private String password = null;
+	private String password = null;	
 	private String host = "65.165.200.66"; //CTI notesserver address
 
    //for several email addresses we want to send emails
@@ -125,9 +138,9 @@ public void executeCheck()
 		try
 		{
 			//first check our connection to dispatch
-			if( !executeCheckConnection() )
+			if( !executeCheckDispatchConnection())
 			{
-				com.cannontech.clientutils.CTILogger.info("No connection to " + PROGRAM_NAME );
+				com.cannontech.clientutils.CTILogger.getStandardLog().info("No connection to " + PROGRAM_NAME );
 				if( !isEmailSent() )
 				{
 					sendMailMessage( PROGRAM_NAME + " is NOT responding!!", 
@@ -135,6 +148,18 @@ public void executeCheck()
 					
 					setEmailSent( true );
 				}
+			}
+			else
+			if(!executeCheckPorterConnection()) {
+
+				com.cannontech.clientutils.CTILogger.getStandardLog().info("No connection to porter");
+				if( !isEmailSent() )
+				{
+					sendMailMessage( "porter is NOT responding!!","porter is NOT responding to a loopback!!  You better check it out." );
+					
+					setEmailSent( true );
+				}
+				
 			}
 /*			else if(  !executeCheckProcess() )
 			{
@@ -153,15 +178,15 @@ public void executeCheck()
 				if( isEmailSent() )
 				{
 					setEmailSent( false );
-					sendMailMessage( PROGRAM_NAME + " is running.", 
-							PROGRAM_NAME + " is running now!" );
+					sendMailMessage( "Yukon seems fine", 
+							"Seems fine now!" );
 				}
             
-            com.cannontech.clientutils.CTILogger.info(
+            com.cannontech.clientutils.CTILogger.getStandardLog().info(
                "***************************************************************");
-				com.cannontech.clientutils.CTILogger.info(
+				com.cannontech.clientutils.CTILogger.getStandardLog().info(
                   "\t" + PROGRAM_NAME + " was found!" );
-            com.cannontech.clientutils.CTILogger.info(
+            com.cannontech.clientutils.CTILogger.getStandardLog().info(
                "***************************************************************");
 			}
 			
@@ -183,12 +208,11 @@ public void executeCheck()
  * Creation date: (11/9/2001 1:11:03 AM)
  * @return boolean
  */
-private boolean executeCheckConnection() 
+private boolean executeCheckDispatchConnection() 
 {
 	
 	try
 	{
-		getExternalResources();
 		com.cannontech.message.dispatch.message.Registration reg = 
 					new com.cannontech.message.dispatch.message.Registration();
 					
@@ -197,11 +221,11 @@ private boolean executeCheckConnection()
 		reg.setAppKnownPort(0);
 		reg.setAppExpirationDelay( 60 );  // 1 minutes
 		
-		com.cannontech.clientutils.CTILogger.info("Trying to connect to:  " + DISPATCH_HOST + " " + DISPATCH_PORT );
+		com.cannontech.clientutils.CTILogger.getStandardLog().info("Trying to connect to:  " + getYukonHost() + " " + DISPATCH_PORT );
 		com.cannontech.message.dispatch.ClientConnection connection = 
 					new com.cannontech.message.dispatch.ClientConnection();
 
-		connection.setHost(DISPATCH_HOST);
+		connection.setHost(getYukonHost());
 		connection.setPort(DISPATCH_PORT);
 		
 		connection.setAutoReconnect( false );
@@ -216,7 +240,7 @@ private boolean executeCheckConnection()
 
 			try
 			{
-				Thread.currentThread().sleep(1000);
+				Thread.sleep(1000);
 			}
 			catch( InterruptedException e ) {}
 		}
@@ -224,23 +248,23 @@ private boolean executeCheckConnection()
 		Object ret = null;	
 		if( connection.isValid() )
 		{	
-			com.cannontech.clientutils.CTILogger.info("Connection & Registration to Server Established.");
+			com.cannontech.clientutils.CTILogger.getStandardLog().info("Connection & Registration to Server Established.");
 			com.cannontech.message.dispatch.message.Command cmd = 
 					new com.cannontech.message.dispatch.message.Command();
 
-			cmd.setOperation( cmd.LOOP_CLIENT );
+			cmd.setOperation( com.cannontech.message.dispatch.message.Command.LOOP_CLIENT );
 			cmd.setPriority(15);
 			connection.write( cmd );
 
 			//wait 60 seconds at most for a response then stop
 			ret = connection.read( 60000 );
-			com.cannontech.clientutils.CTILogger.info("Loopback returned = " + ret.toString() );
+			com.cannontech.clientutils.CTILogger.getStandardLog().info("Loopback returned = " + ret.toString() );
 
 
 			com.cannontech.message.dispatch.message.Command cmd1 = 
 					new com.cannontech.message.dispatch.message.Command();
 
-			cmd1.setOperation( cmd1.CLIENT_APP_SHUTDOWN );
+			cmd1.setOperation( Command.CLIENT_APP_SHUTDOWN );
 			connection.write( cmd1 );
 
 			connection.disconnect();
@@ -261,6 +285,68 @@ private boolean executeCheckConnection()
 	return false;
 }
 
+
+private boolean executeCheckPorterConnection() 
+{
+	
+	try
+	{
+		com.cannontech.clientutils.CTILogger.getStandardLog().info("Trying to connect to:  " + getYukonHost() + " " + DISPATCH_PORT );
+		ClientConnection connection = new ClientConnection();
+
+		connection.setHost(getYukonHost());
+		connection.setPort(PORTER_PORT);
+		
+		connection.setAutoReconnect( false );
+		connection.connectWithoutWait();
+
+		//wait for our connection to connnect
+		for( int i = 0; i < 5; i++ )
+		{
+			if( connection.isValid() )
+				break;
+
+			try
+			{
+				Thread.sleep(1000);
+			}
+			catch( InterruptedException e ) {}
+		}
+					
+
+		Object ret = null;	
+		
+		if( connection.isValid() )
+		{	
+			com.cannontech.clientutils.CTILogger.getStandardLog().info("Connection & Registration to Server Established.");
+			Request req = new Request();
+			req.setDeviceID(DeviceTypes.SYSTEM);
+			req.setCommandString("control open select pointid -4");
+
+			connection.write(req);
+			
+			//wait 60 seconds at most for a response then stop
+			ret = connection.read( 60000 );
+			com.cannontech.clientutils.CTILogger.getStandardLog().info("Control returned = " + ret.toString() );
+
+			connection.disconnect();
+		}
+
+		connection = null;
+		
+		if( ret == null )
+			return false;
+		else
+			return true;
+			
+	}	
+	catch( Exception e )
+	{
+		handleException( e );
+	}
+	
+	return false;
+}
 
 /**
  * Insert the method's description here.
@@ -316,31 +402,6 @@ private boolean executeCheckProcess()
 	
 	return false;
 }
-
-
-/**
- * Insert the method's description here.
- * Creation date: (3/21/00 2:26:52 PM)
- */
-private void getExternalResources() 
-{
-	try
-	{
-		java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("config");
-		DISPATCH_HOST = bundle.getString("dispatch_machine");
-		DISPATCH_PORT = Integer.parseInt( bundle.getString("dispatch_port") );
-	}
-	catch( java.util.MissingResourceException mre)
-	{
-		handleException( mre );
-	}
-	catch( NumberFormatException ex )
-	{
-		handleException( ex );
-	}
-
-}
-
 
 /**
  * Insert the method's description here.
@@ -430,14 +491,15 @@ public boolean isEmailSent() {
  */
 public static void main(String[] args) 
 {
-
+	CTILogger.setAlwaysUseStandardLogger(true);
 	try
 	{
 		String[] values = null;
 		
 		if( args.length < 3 )  // the user tried to enter some params
 		{
-			com.cannontech.clientutils.CTILogger.info("Command Syntax : " + Rat.class.getName() +
+			com.cannontech.clientutils.CTILogger.getStandardLog().info("Command Syntax : " + Rat.class.getName() +
+				" yukonhost=?\r\n" +
 				" mailhost=? toaddress=?;?;? fromaddress=? [Optional MailUserName=?] [Optional MailPassword=?] [ Optional type=[javamail|qmail] ] [Optional test=y]\r\n" +
 				" Parameters:\r\n" +
 				" -----------------\r\n" +
@@ -450,7 +512,7 @@ public static void main(String[] args)
 				"   test = [Optional] Y if you want to send a test message.\r\n" +
             " \r\n" +
             " \r\n" +
-            "Example: " + Rat.class.getName() + " mailhost=10.100.10.2 toaddress=ryan@cannontech.com;ry@cannontech.com;test@cannontech.com " +
+            "Example: " + Rat.class.getName() + " yukonhost=10.100.10.8 mailhost=10.100.10.2 toaddress=ryan@cannontech.com;ry@cannontech.com;test@cannontech.com " +
             "fromaddress=rat@ratter.com type=qmail test=y");
 
 			return;
@@ -462,9 +524,10 @@ public static void main(String[] args)
 		}
 		
 		Rat ratter = new Rat();
-		ratter.setHost( values[0] );
+		ratter.setYukonHost(values[0]);
+		ratter.setHost( values[1] );
       
-      java.util.StringTokenizer token = new java.util.StringTokenizer(values[1], ";");
+      java.util.StringTokenizer token = new java.util.StringTokenizer(values[2], ";");
       InternetAddress[] iAddy = new InternetAddress[ token.countTokens() ];
       int i = 0;
       while( token.hasMoreElements() )
@@ -472,18 +535,18 @@ public static void main(String[] args)
          
 		ratter.setToAddresses( iAddy );
       
-		ratter.setFromAddress( new InternetAddress(values[2]) );
+		ratter.setFromAddress( new InternetAddress(values[3]) );
 
-		if( values[3] != null )
-			ratter.setUserName( values[3] );
-			
 		if( values[4] != null )
-			ratter.setPassword( values[4] );
-
+			ratter.setUserName( values[4] );
+			
 		if( values[5] != null )
-			ratter.setType( values[5] );
+			ratter.setPassword( values[5] );
 
 		if( values[6] != null )
+			ratter.setType( values[6] );
+
+		if( values[7] != null )
 		{
 			if( !ratter.getType().equalsIgnoreCase("javamail") )
          {
@@ -499,7 +562,7 @@ public static void main(String[] args)
 				ratter.sendMailMessage( "E-mail test SUCCESS!!!", "Testing e-mail service" );
 
 			//give the e-mail some time to be sent
-			Thread.currentThread().sleep(1000);
+			Thread.sleep(1000);
 			return;
 		}
 
@@ -677,7 +740,7 @@ public void tryQSMTP( String host, String fromAddress, String toAddress, String 
 {
 	try
 	{
-		com.cannontech.clientutils.CTILogger.info("Started QSMTP..");
+		com.cannontech.clientutils.CTILogger.getStandardLog().info("Started QSMTP..");
 
 		//"65.165.200.66") );  //CTI address
 		//Qsmtp q = new Qsmtp( java.net.InetAddress.getByName("10.100.10.1") );
@@ -690,7 +753,7 @@ public void tryQSMTP( String host, String fromAddress, String toAddress, String 
 			message );
 		
 		q.close();
-		com.cannontech.clientutils.CTILogger.info("Closed QSMTP");
+		com.cannontech.clientutils.CTILogger.getStandardLog().info("Closed QSMTP");
 	}
 	catch( java.io.IOException ie )
 	{
@@ -698,4 +761,18 @@ public void tryQSMTP( String host, String fromAddress, String toAddress, String 
 	}
 	
 }
+	/**
+	 * @return
+	 */
+	public String getYukonHost() {
+		return yukonHost;
+	}
+
+	/**
+	 * @param string
+	 */
+	public void setYukonHost(String string) {
+		yukonHost = string;
+	}
+
 }
