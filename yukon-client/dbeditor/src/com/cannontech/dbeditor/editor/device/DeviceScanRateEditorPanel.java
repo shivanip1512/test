@@ -1,6 +1,5 @@
 package com.cannontech.dbeditor.editor.device;
 
-import java.util.Vector;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -1950,9 +1949,6 @@ public void setDeviceType(int type)
 
       setIntegrityObjectsVisible(
          !(type == PAOGroups.RTUILEX
-          || type == PAOGroups.ION_7700
-		    || type == PAOGroups.ION_7330
-		    || type == PAOGroups.ION_8300               
           || type == PAOGroups.LCU415) );
 		
       setHealthObjectsVisible( 
