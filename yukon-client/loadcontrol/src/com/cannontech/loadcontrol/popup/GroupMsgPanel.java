@@ -382,7 +382,11 @@ private javax.swing.JLabel getPercentLabel() {
  */
 public Object getValue(Object val) 
 {
+	LMCommand cmd = (LMCommand)val;
+	if( cmd == null )
+		cmd = new LMCommand();
 	
+
 	Integer cnt = (Integer)getJComboBoxPeriodCnt().getSelectedItem();
 	Integer length = CtiUtilities.getIntervalComboBoxSecondsValue( getJComboBoxPeriodLength() );	
 	Integer percent = Integer.valueOf( getJTextFieldCyclePercent().getText() );
@@ -393,13 +397,16 @@ public Object getValue(Object val)
 		liteRoute = (LiteYukonPAObject)getJComboBoxAltRoute().getSelectedItem();
 	
 	
-	LMCommand cmd =
-		new LMCommand( LMCommand.SMART_CYCLE_GROUP,
-			 				0,
-			 				percent.intValue(),     //cycle percent
-			 				length.doubleValue(),   //period length in seconds
-			 				cnt.intValue(),     //number of cycle periods
-			 				(liteRoute == null ? 0 : liteRoute.getYukonID()) );  //this auxid will be used for the alt routeID soon
+	if( getJComboBoxPeriodCnt().isVisible() )	
+		cmd.setNumber( percent.intValue() );  //cycle percent
+	
+	if( getJComboBoxPeriodLength().isVisible() )	
+		cmd.setValue( length.doubleValue() ); //period length in seconds
+
+	if( getJTextFieldCyclePercent().isVisible() )	
+		cmd.setCount( cnt.intValue() );  //number of cycle periods
+
+	cmd.setAuxid( (liteRoute == null ? 0 : liteRoute.getYukonID()) );//this auxid will be used for the alt routeID soon
 	
 	return cmd;
 }
@@ -551,26 +558,6 @@ public static void main(java.lang.String[] args) {
  */
 public void setValue(Object val) 
 {
-/*
-	DeviceTwoWayFlags d = ((TwoWayDevice) val).getDeviceTwoWayFlags();
-
-	Character failureAlarm = d.getFailureAlarm();
-	Character performanceAlarm = d.getPerformAlarm();
-	Character performanceTwentyFourAlarm = d.getPerformTwentyFourAlarm();
-	Integer performanceThreshold = d.getPerformThreshold();
-
-	if( failureAlarm != null )
-		com.cannontech.common.util.CtiUtilities.setCheckBoxState( getFailureAlarmCheckBox(), failureAlarm );
-
-	if( performanceAlarm != null )
-		com.cannontech.common.util.CtiUtilities.setCheckBoxState( getPerformanceAlarmCheckBox(), performanceAlarm );
-
-	if( performanceTwentyFourAlarm != null )
-		com.cannontech.common.util.CtiUtilities.setCheckBoxState( getPerformanceTwentyFourAlarmCheckBox(), performanceTwentyFourAlarm);
-
-	if( performanceThreshold != null )
-		getPerformanceThresholdTextField().setText( performanceThreshold.toString() );
-*/
-
 }
+
 }
