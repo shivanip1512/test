@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/connection.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:24 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/04/18 15:25:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -88,6 +88,8 @@ protected:
    };
 
 private:
+    void cleanConnection();
+
 
 public:
 
@@ -151,6 +153,8 @@ public:
    CtiConnection& setName(const RWCString &str);
 
    int outQueueCount() const;
+   void restartConnection();
+
 };
 
 #endif // #ifndef __CONNECTION_H__

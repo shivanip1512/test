@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/connection.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:18 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/04/18 15:25:36 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -43,21 +43,29 @@ CtiConnection::~CtiConnection()
     }
 #endif
 
+    cleanConnection();
+}
+
+void CtiConnection::cleanConnection()
+{
     ShutdownConnection();
 
     if( _connectCalled && _localQueueAlloc && inQueue != NULL )
     {
         delete inQueue;
+        inQueue = 0;
     }
 
     if(_regMsg != NULL)
     {
         delete _regMsg;
+        _regMsg = 0;
     }
 
     if(_ptRegMsg != NULL)
     {
         delete _ptRegMsg;
+        _ptRegMsg = 0;
     }
 }
 
@@ -593,7 +601,6 @@ INT CtiConnection::ConnectPortal()
                     }
 
                     Ex = new CtiExchange(psck);
-                    // dout << __FILE__ << " (" << __LINE__ << ")" << endl;
 
                     if(!Ex->In().bad() && !Ex->Out().bad())
                     {
@@ -605,6 +612,7 @@ INT CtiConnection::ConnectPortal()
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                                 dout << RWTime() << " InThread  : " << who() << " re-registering connection " << endl;
                             }
+
                             WriteConnQue( _regMsg->replicateMessage() );
 
                             if( _ptRegMsg != NULL ) // I know who I am....
@@ -1085,6 +1093,27 @@ void CtiConnection::doConnect( const INT &Port, const RWCString &Host, InQ_t *in
 
         ThreadInitiate();
         _connectCalled = TRUE;
+    }
+
+    return;
+}
+
+void CtiConnection::restartConnection( )
+{
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << "  UNTESTED CODE HERE " << endl;
+    }
+
+    if(_connectCalled)
+    {
+        cleanConnection();
+
+        // Reset the stuff..
+        _flag = 0;
+
+        doConnect(_port, _host);
     }
 
     return;
