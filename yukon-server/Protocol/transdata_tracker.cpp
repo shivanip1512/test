@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2004/02/16 19:09:52 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2004/02/16 20:53:07 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -225,8 +225,6 @@ bool CtiTransdataTracker::decodeYModem( CtiXfer &xfer, int status )
 
       if( _goodCRC )
       {
-//         _ymodem.retreiveData( _meterData, &bytes );
-//         processData( _meterData, bytes );
          _ymodem.retreiveData( data, &bytes );
 
          if( bytes < 2000 )
@@ -373,7 +371,6 @@ bool CtiTransdataTracker::processData( BYTE *data, int bytes )
             //copy over any previous data
             memset( _meterData, '\0', Meter_size );      //02.10.04
             memcpy( _meterData, _lp, sizeof( *_lp ) );   
-            _ASSERTE( _CrtCheckMemory( ) );
 
             _meterBytes = sizeof( *_lp );
             _haveData = true;
@@ -585,7 +582,6 @@ bool CtiTransdataTracker::grabChannels( BYTE *data, int bytes )
    if( bytes < 400 )
    {
       memcpy( fluff, data, bytes );
-      _ASSERTE( _CrtCheckMemory( ) );
       char *ptr = fluff;
 
       while( !foundCorrectCommand )
@@ -639,7 +635,6 @@ bool CtiTransdataTracker::grabFormat( BYTE *data, int bytes )
    if( bytes < 400 )
    {
       memcpy( fluff, data, bytes );
-      _ASSERTE( _CrtCheckMemory( ) );
       char *ptr = fluff;
 
       for( ;; )
@@ -694,7 +689,6 @@ bool CtiTransdataTracker::grabTime( BYTE *data, int bytes )
    if( bytes < 400 )
    {
       memcpy( fluff, data, bytes );
-      _ASSERTE( _CrtCheckMemory( ) );
       char *ptr = fluff;
 
       for( int i = 0; i < 6; i++ )
@@ -775,7 +769,6 @@ bool CtiTransdataTracker::grabReturnedChannels( BYTE *data, int bytes )
    if( bytes < 400 )
    {
       memcpy( fluff, data, bytes );
-      _ASSERTE( _CrtCheckMemory( ) );
       ptr = fluff;
 
       for( int index = 0; index < 6; index++ )
@@ -880,7 +873,6 @@ int CtiTransdataTracker::retreiveData( BYTE *data )
    if( data != NULL )
    {
       memcpy( ( void *)data, ( void *)(_meterData ), _meterBytes );
-      _ASSERTE( _CrtCheckMemory( ) );
    }
    
    _meterBytes = 0;
@@ -954,7 +946,6 @@ void CtiTransdataTracker::setXfer( CtiXfer &xfer, RWCString dataOut, int bytesIn
    reset();
    
    memcpy( xfer.getOutBuffer(), dataOut, strlen( dataOut ) );
-   _ASSERTE( _CrtCheckMemory( ) );
 
    _bytesReceived = 0;
 

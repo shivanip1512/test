@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2004/02/16 19:09:52 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2004/02/16 20:53:07 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -212,7 +212,6 @@ int CtiTransdataApplication::retreiveData( BYTE *data )
    if( data != NULL )
    {
       memcpy( data, _storage, _numBytes );
-      _ASSERTE( _CrtCheckMemory( ) );
    }
    return( temp );
 }
