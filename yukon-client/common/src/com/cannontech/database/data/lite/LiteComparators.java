@@ -19,6 +19,20 @@ public final class LiteComparators
 		}
 	};
 
+	public static java.util.Comparator litePaoPortIDComparator = new java.util.Comparator()
+	{
+		public int compare(Object o1, Object o2)
+		{
+			int thisVal = ((LiteYukonPAObject)o1).getPortID();
+			int anotherVal = ((LiteYukonPAObject)o2).getPortID();
+			return (thisVal<anotherVal ? -1 : (thisVal==anotherVal ? 0 : 1));
+		}
+		public boolean equals(Object obj)
+		{
+			return false;
+		}
+	};
+
 	public static java.util.Comparator litePointPointOffsetComparator = new java.util.Comparator()
 	{
 		public int compare(Object o1, Object o2)
