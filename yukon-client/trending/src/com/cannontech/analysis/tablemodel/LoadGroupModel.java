@@ -2,8 +2,12 @@ package com.cannontech.analysis.tablemodel;
 
 import java.sql.ResultSet;
 
+import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.ReportTypes;
 import com.cannontech.analysis.data.lm.LGAccounting;
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.PoolManager;
 
 /**
  * Created on Dec 15, 2003
@@ -22,13 +26,38 @@ import com.cannontech.analysis.data.lm.LGAccounting;
  */
 public class LoadGroupModel extends ReportModelBase
 {
-		
-	/** Array of IDs (of loadGroup paobjectIDs)*/
-	private int loadGroups[] = null;
-
 	/** Number of columns */
 	protected final int NUMBER_COLUMNS = 10;
 	
+	/** Enum values for column representation */
+	public final static int PAO_NAME_COLUMN = 0;
+	public final static int CONTROL_DATE_COLUMN = 1;
+	public final static int CONTROL_START_TIME_COLUMN = 2;
+	public final static int CONTROL_STOP_TIME_COLUMN = 3;
+	public final static int CONTROL_DURATION_COLUMN = 4;
+	public final static int CONTROL_TYPE_COLUMN = 5;
+	public final static int DAILY_CONTROL_COLUMN = 6;
+	public final static int MONTHLY_CONTROL_COLUMN = 7;
+	public final static int SEASONAL_CONTROL_COLUMN = 8;
+	public final static int ANNUAL_CONTROL_COLUMN = 9;
+
+	/** String values for column representation */
+	public final static String PAO_NAME_STRING = "Load Group";
+	public final static String CONTROL_DATE_STRING = "Date";
+	public final static String CONTROL_START_STRING = "Control Start";
+	public final static String CONTROL_STOP_STRING = "Control Stop";
+	public final static String CONTROL_DURATION_STRING = "Control Duration";
+	public final static String CONTROL_TYPE_STRING= "Control Type";
+	public final static String DAILY_CONTROL_STRING= "Daily Control";
+	public final static String MONTHLY_CONTROL_STRING= "Monthly Control";
+	public final static String SEASONAL_CONTROL_STRING= "Seasonal Control";
+	public final static String ANNUAL_CONTROL_STRING= "Annual Control";
+
+	/** A string for the title of the data */
+	private static String title = "LOAD GROUP ACCOUNTING";
+		
+	/** Array of IDs (of loadGroup paobjectIDs)*/
+	private int loadGroups[] = null;
 	
 	public LoadGroupModel()
 	{
@@ -36,7 +65,6 @@ public class LoadGroupModel extends ReportModelBase
 		setReportType(ReportTypes.LG_ACCOUNTING_DATA);
 	}	
 
-	
 	/**
 	 * Constructor class
 	 * @param startTime_ LMControlHistory.startDateTime
@@ -67,10 +95,7 @@ public class LoadGroupModel extends ReportModelBase
 	 */
 	public LoadGroupModel( int[] paoIDs_,long startTime_, long stopTime_, int reportType_)
 	{
-		super();
-		setStartTime(startTime_);
-		setStopTime(stopTime_);
-		setReportType(reportType_);
+		super(reportType_, startTime_, stopTime_);
 		setPaoIDs(paoIDs_);
 	}	
 		
@@ -142,6 +167,7 @@ public class LoadGroupModel extends ReportModelBase
 		int rowCount = 0;
 			
 		StringBuffer sql = buildSQLStatement();
+		CTILogger.info(sql.toString());
 		
 		java.sql.Connection conn = null;
 		java.sql.PreparedStatement pstmt = null;
@@ -149,11 +175,11 @@ public class LoadGroupModel extends ReportModelBase
 	
 		try
 		{
-			conn = com.cannontech.database.PoolManager.getInstance().getConnection(com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
+			conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
 	
 			if( conn == null )
 			{
-				com.cannontech.clientutils.CTILogger.error(getClass() + ":  Error getting database connection.");
+				CTILogger.error(getClass() + ":  Error getting database connection.");
 				return;
 			}
 			else
@@ -161,14 +187,8 @@ public class LoadGroupModel extends ReportModelBase
 				pstmt = conn.prepareStatement(sql.toString());
 				pstmt.setTimestamp(1, new java.sql.Timestamp( getStartTime()));
 				pstmt.setTimestamp(2, new java.sql.Timestamp( getStopTime()));
-				com.cannontech.clientutils.CTILogger.info("START DATE > " + new java.sql.Timestamp(getStartTime()) + "  -  STOP DATE <= " + new java.sql.Timestamp(getStopTime()));
+				CTILogger.info("START DATE > " + new java.sql.Timestamp(getStartTime()) + "  -  STOP DATE <= " + new java.sql.Timestamp(getStopTime()));
 				
-				com.cannontech.clientutils.CTILogger.info(sql.toString());
-				
-				/*java.util.GregorianCalendar tempCal = new java.util.GregorianCalendar();
-				tempCal.add(java.util.Calendar.DATE, -90);
-				stmt.setTimestamp(1, new java.sql.Timestamp(tempCal.getTime().getTime()));
-				System.out.println( "DATE > "+ tempCal.getTime());*/
 				rset = pstmt.executeQuery();
 				while( rset.next())
 				{
@@ -195,8 +215,126 @@ public class LoadGroupModel extends ReportModelBase
 				e.printStackTrace();
 			}
 		}
-		com.cannontech.clientutils.CTILogger.info("Report Records Collected from Database: " + getData().size());
+		CTILogger.info("Report Records Collected from Database: " + getData().size());
 		return;
+	}
+
+
+	/* (non-Javadoc)
+	 * @see com.cannontech.analysis.Reportable#getAttribute(int, java.lang.Object)
+	 */
+	public Object getAttribute(int columnIndex, Object o)
+	{
+		if( o instanceof LGAccounting)
+		{
+			LGAccounting lga = ((LGAccounting)o);
+			switch( columnIndex)
+			{
+				case PAO_NAME_COLUMN:
+					return lga.getPaoName();
+				case CONTROL_DATE_COLUMN:
+					return lga.getStartDate();
+				case CONTROL_START_TIME_COLUMN:
+					return lga.getStartDate();
+				case CONTROL_STOP_TIME_COLUMN:
+					return lga.getStopDate();
+				case CONTROL_DURATION_COLUMN:
+					return lga.getDuration();
+				case CONTROL_TYPE_COLUMN:
+					return lga.getControlType();
+				case DAILY_CONTROL_COLUMN:
+					return lga.getDailyControl();
+				case MONTHLY_CONTROL_COLUMN:
+					return lga.getMonthlyControl();
+				case SEASONAL_CONTROL_COLUMN:
+					return lga.getSeasonalControl();
+				case ANNUAL_CONTROL_COLUMN:
+					return lga.getAnnualControl();
+			}
+		}
+		return null;
+	}
+
+
+	/* (non-Javadoc)
+	 * @see com.cannontech.analysis.Reportable#getColumnNames()
+	 */
+	public String[] getColumnNames()
+	{
+		if( columnNames == null)
+		{
+			columnNames = new String[]{
+				PAO_NAME_STRING,
+				CONTROL_DATE_STRING,
+				CONTROL_START_STRING,
+				CONTROL_STOP_STRING,
+				CONTROL_DURATION_STRING,
+				CONTROL_TYPE_STRING,
+				DAILY_CONTROL_STRING,
+				MONTHLY_CONTROL_STRING,
+				SEASONAL_CONTROL_STRING,
+				ANNUAL_CONTROL_STRING
+			};
+		}
+		return columnNames;
+	}
+
+
+	/* (non-Javadoc)
+	 * @see com.cannontech.analysis.Reportable#getColumnTypes()
+	 */
+	public Class[] getColumnTypes()
+	{
+		if( columnTypes == null)
+		{
+			columnTypes = new Class[]{
+				String.class,
+				java.util.Date.class,
+				java.util.Date.class,
+				java.util.Date.class,
+				String.class,
+				String.class,
+				String.class,
+				String.class,
+				String.class,
+				String.class
+			};
+		}
+		return columnTypes;
+	}
+
+
+	/* (non-Javadoc)
+	 * @see com.cannontech.analysis.Reportable#getColumnProperties()
+	 */
+	public ColumnProperties[] getColumnProperties()
+	{
+		if(columnProperties == null)
+		{
+			columnProperties = new ColumnProperties[]{
+				//posX, posY, width, height, numberFormatString
+				new ColumnProperties(0, 1, 55, 18, null),
+				new ColumnProperties(0, 1, 65, 18, "MM/dd/yyyy"),
+				new ColumnProperties(65, 1, 55, 18, "hh:mm:ss"),
+				new ColumnProperties(120, 1, 55, 18, "hh:mm:ss"),
+				new ColumnProperties(175, 1, 55, 18, null),
+				new ColumnProperties(230, 1, 80, 18, null),
+				new ColumnProperties(310, 1, 55, 18, null),
+				new ColumnProperties(365, 1, 55, 18, null),
+				new ColumnProperties(420, 1, 55, 18, null),
+				new ColumnProperties(475, 1, 55, 18, null)
+			};
+		}
+		return columnProperties;
+	}
+
+
+	/* (non-Javadoc)
+	 * @see com.cannontech.analysis.Reportable#getTitleString()
+	 */
+	public String getTitleString()
+	{
+		return title;
 	}
 }
 	

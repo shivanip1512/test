@@ -3,7 +3,6 @@ package com.cannontech.analysis.tablemodel;
 import java.util.Vector;
 
 import com.cannontech.analysis.ColumnProperties;
-import com.cannontech.analysis.ReportTypes;
 import com.cannontech.analysis.Reportable;
 
 
@@ -24,7 +23,7 @@ import com.cannontech.analysis.Reportable;
  * 
  * @author snebben
  */
-public abstract class ReportModelBase extends javax.swing.table.AbstractTableModel
+public abstract class ReportModelBase extends javax.swing.table.AbstractTableModel implements Reportable
 {
 	/** Array of String values representing the column names. */
 	protected String[] columnNames;
@@ -63,12 +62,14 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 	{
 		super();
 	}	
+
 	/**
 	 * Default Constructor
 	 */
-	public ReportModelBase(long startTime_, long stopTime_)
+	public ReportModelBase(int reportType_, long startTime_, long stopTime_)
 	{
 		this();
+		setReportType(reportType_);
 		setStartTime(startTime_);
 		setStopTime(stopTime_);
 	}	
@@ -97,18 +98,6 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 		return null;
 	}
 
-
-	/**
-	 * Implement this method to return the correct field of the o.
-	 * @param columnIndex
-	 * @param o object (inner class of most extenders)
-	 * @return object value for the columnIndex and o class.
-	 */
-	public Object getAttribute(int columnIndex, Object o)
-	{
-		return ((Reportable)o).getAttribute(columnIndex, o);
-	}
-
 	/**
 	 * Return the Vector of data objects
 	 * @return Vector data
@@ -130,19 +119,7 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 	{
 		return getData().size();
 	}
-	/**
-	 * Return the title string for the report data.
-	 * @return String 
-	 */
-	public String getTitleString()
-	{
-		if( title == null)
-		{
-			title = ReportTypes.getTitleString(getReportType());
-		}
-		return title;
-	}	
-	
+
 	/**
 	 * Return the date information for the data.
 	 * OVERRIDE FOR ALL EXTENDERS USING START/STOP DATE INTERVALS.
@@ -151,23 +128,9 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 	public String getDateRangeString()
 	{
 		java.text.SimpleDateFormat format = new java.text.SimpleDateFormat("MMM dd, yyyy");		
-		return format.format(new java.util.Date());
-	}
-
-	/**
-	 * Return the columnNames array
-	 * @return String[] columnNames
-	 */
-	public String[] getColumnNames()
-	{
-		if( columnNames == null)
-		{
-			columnNames = ReportTypes.getColumnNames(getReportType());
-		}
-		return columnNames;
-	}
-
-	
+		return (format.format(new java.util.Date(getStartTime())) + " through " +
+				   (format.format(new java.util.Date(getStopTime()))));
+	}	
 	/* (non-Javadoc)
 	 * @see javax.swing.table.TableModel#getColumnName(int)
 	 */
@@ -181,30 +144,6 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 	public Class getColumnClass(int column)
 	{
 		return getColumnTypes()[column];
-	}
-	/**
-	 * Return the columnTypes array
-	 * @return Class[] columnTypes
-	 */
-	public Class[] getColumnTypes()
-	{
-		if( columnTypes == null)
-		{
-			columnTypes = ReportTypes.getColumnTypes(getReportType());
-		}
-		return columnTypes;
-	}
-	/**
-	 * Return the columnProperties array
-	 * @return ColumnProperties[] columnProperties
-	 */
-	public ColumnProperties[] getColumnProperties()
-	{
-		if( columnProperties == null)
-		{
-			columnProperties = ReportTypes.getColumnProperties(getReportType());
-		}
-		return columnProperties;
 	}
 
 	/**

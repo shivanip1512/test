@@ -2,8 +2,14 @@ package com.cannontech.analysis.tablemodel;
 
 import java.sql.ResultSet;
 
+import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.ReportTypes;
-import com.cannontech.analysis.data.route.CarrierRouteMacro;;
+import com.cannontech.analysis.data.device.CarrierRouteMacro;
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.PoolManager;
+import com.cannontech.database.data.pao.DeviceClasses;
+;
 
 /**
  * Created on Dec 15, 2003
@@ -19,23 +25,50 @@ import com.cannontech.analysis.data.route.CarrierRouteMacro;;
  */
 public class RouteMacroModel extends ReportModelBase
 {
+	/** Number of columns */
+	protected final int NUMBER_COLUMNS = 8;
+	
+	/** Enum values for column representation */
+	public final static int MACRO_ROUTE_NAME_COLUMN = 0;
+	public final static int ROUTE_NAME_COLUMN = 1;
+	public final static int TRANSMITTER_NAME_COLUMN = 2;
+	public final static int CCU_BUS_NUMBER_COLUMN = 3;
+	public final static int AMP_USE_COLUMN = 4;
+	public final static int FIXED_BITS_COLUMN = 5;
+	public final static int VARIABLE_BITS_COLUMN = 6;
+	public final static int DEFAULT_ROUTE_COLUMN = 7;
+	
+	/** String values for column representation */
+	public final static String MACRO_ROUTE_NAME_STRING = "Route Macro Name";
+	public final static String ROUTE_NAME_STRING = "Route Name";
+	public final static String TRANSMITTER_NAME_STRING  = "Transmitter Name";
+	public final static String CCU_BUS_NUMBER_STRING = "CCU Bus Number";
+	public final static String AMP_USE_STRING = "AMP Use";
+	public final static String FIXED_BITS_STRING = "Fixed Bits";
+	public final static String VARIABLE_BITS_STRING = "Variable Bits";
+	public final static String DEFAULT_ROUTE_STRING = "Default Route";
+
+	/** A string for the title of the data */
+	private static String title = "Database Report - Route Macro";
+
 	/** Class fields */
 	private String paoClass = null;
 	
+	private Integer macroRouteID = null; 
 	/**
 	 * Default Constructor
 	 */
 	public RouteMacroModel()
 	{
-		this("CARRIER", ReportTypes.ROUTE_MACRO_DATA);
-	}	
+		this(DeviceClasses.STRING_CLASS_CARRIER, ReportTypes.CARRIER_ROUTE_MACRO_DATA);
+	}
 	/**
 	 * Constructor.
 	 * @param paoClass_ = YukonPaobject.paoClass
 	 */
 	public RouteMacroModel(String paoClass_)
 	{
-		this(paoClass_, ReportTypes.ROUTE_MACRO_DATA);
+		this(paoClass_, ReportTypes.CARRIER_ROUTE_MACRO_DATA);
 	}	
 
 	/**
@@ -81,12 +114,20 @@ public class RouteMacroModel extends ReportModelBase
 	 */
 	public StringBuffer buildSQLStatement()
 	{
-		StringBuffer sql = new StringBuffer	("select pao1.paoname as macro, pao3.paoname as transmitter,pao2.paoname as route, " + 
-		" carrier.busnumber, DIDLCR.ccuampusetype, carrier.ccufixbits,carrier.ccuvariablebits,route.defaultroute " + 
-		" from yukonpaobject pao1, macroroute macro,yukonpaobject pao2,carrierroute carrier,route,yukonpaobject pao3,deviceidlcremote DIDLCR " +
-		" where pao1.paobjectid=macro.routeid and macro.routeid=32 and pao2.paobjectid=macro.singlerouteid " +
-		" and carrier.routeid=macro.singlerouteid and macro.singlerouteid=route.routeid and pao3.paobjectid=route.deviceid and " +
-		" pao3.paobjectid=didlcr.deviceid");
+		StringBuffer sql = new StringBuffer	("SELECT MPAO.PAONAME MACRO, TPAO.PAONAME TRANS, RPAO.PAONAME ROUTE, " + 
+			" CR.BUSNUMBER, DIDLCR.CCUAMPUSETYPE, CR.CCUFIXBITS, CR.CCUVARIABLEBITS, R.DEFAULTROUTE " + 
+			" FROM YUKONPAOBJECT MPAO, MACROROUTE MR, YUKONPAOBJECT RPAO, CARRIERROUTE CR , "+
+			" ROUTE R, YUKONPAOBJECT TPAO, DEVICEIDLCREMOTE DIDLCR " +
+			" WHERE MPAO.PAOBJECTID = MR.ROUTEID ");
+		
+		if( getMacroRouteID() != null)
+			sql.append(" AND MR.ROUTEID = " + getMacroRouteID());
+		
+		sql.append(	" AND RPAO.PAOBJECTID = MR.SINGLEROUTEID " +
+			" AND CR.ROUTEID = MR.SINGLEROUTEID " +
+			" AND MR.SINGLEROUTEID = R.ROUTEID " + 
+			" AND TPAO.PAOBJECTID = R.DEVICEID " +
+			" AND TPAO.PAOBJECTID = DIDLCR.DEVICEID");
 			
 		return sql;
 	}
@@ -99,6 +140,7 @@ public class RouteMacroModel extends ReportModelBase
 		int rowCount = 0;
 		
 		StringBuffer sql = buildSQLStatement();
+		CTILogger.info(sql.toString());
 	
 		java.sql.Connection conn = null;
 		java.sql.PreparedStatement pstmt = null;
@@ -106,11 +148,11 @@ public class RouteMacroModel extends ReportModelBase
 
 		try
 		{
-			conn = com.cannontech.database.PoolManager.getInstance().getConnection(com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
+			conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
 
 			if( conn == null )
 			{
-				com.cannontech.clientutils.CTILogger.error(getClass() + ":  Error getting database connection.");
+				CTILogger.error(getClass() + ":  Error getting database connection.");
 				return;
 			}
 			else
@@ -142,7 +184,7 @@ public class RouteMacroModel extends ReportModelBase
 				e.printStackTrace();
 			}
 		}
-		com.cannontech.clientutils.CTILogger.info("Report Records Collected from Database: " + getData().size());
+		CTILogger.info("Report Records Collected from Database: " + getData().size());
 		return;
 	}
 		
@@ -162,7 +204,7 @@ public class RouteMacroModel extends ReportModelBase
 	public String getDateRangeString()
 	{
 		java.text.SimpleDateFormat format = new java.text.SimpleDateFormat("MMM dd, yyyy");		
-		return format.format(new java.util.Date());
+		return "Run Date: " + format.format(new java.util.Date());
 	}
 	/**
 	 * Set the paoClass (YukonPaobject.paoClass)
@@ -171,6 +213,129 @@ public class RouteMacroModel extends ReportModelBase
 	public void setPaoClass(String paoClass_)
 	{
 		paoClass = paoClass_;
+	}
+
+	/**
+	 * @return
+	 */
+	public Integer getMacroRouteID()
+	{
+		return macroRouteID;
+	}
+
+	/**
+	 * @param integer
+	 */
+	public void setMacroRouteID(Integer integer)
+	{
+		macroRouteID = integer;
+	}
+	/* (non-Javadoc)
+	 * @see com.cannontech.analysis.Reportable#getAttribute(int, java.lang.Object)
+	 */
+	public Object getAttribute(int columnIndex, Object o)
+	{
+		if ( o instanceof CarrierRouteMacro)
+		{
+			CarrierRouteMacro carrierRouteMacro = ((CarrierRouteMacro)o); 
+			switch( columnIndex)
+			{
+				case MACRO_ROUTE_NAME_COLUMN:
+					return carrierRouteMacro.getRouteMacroName();
+		
+				case ROUTE_NAME_COLUMN:
+					return carrierRouteMacro.getRouteName();
+	
+				case TRANSMITTER_NAME_COLUMN:
+					return carrierRouteMacro.getTransmitterName();
+	
+				case CCU_BUS_NUMBER_COLUMN:
+					return carrierRouteMacro.getCcuBusNumber();
+				
+				case AMP_USE_COLUMN:
+					return carrierRouteMacro.getAmpUse();
+				
+				case FIXED_BITS_COLUMN:
+					return carrierRouteMacro.getFixedBits();
+					
+				case VARIABLE_BITS_COLUMN:
+					return carrierRouteMacro.getVariableBits();
+					
+				case DEFAULT_ROUTE_COLUMN:
+					return carrierRouteMacro.getDefaultRoute();
+			}
+		}
+		return null;
+	
+	}
+	/* (non-Javadoc)
+	 * @see com.cannontech.analysis.Reportable#getColumnNames()
+	 */
+	public String[] getColumnNames()
+	{
+		if( columnNames == null)
+		{
+			columnNames = new String[]{
+				MACRO_ROUTE_NAME_STRING,
+				ROUTE_NAME_STRING,
+				TRANSMITTER_NAME_STRING,
+				CCU_BUS_NUMBER_STRING,
+				AMP_USE_STRING,
+				FIXED_BITS_STRING,
+				VARIABLE_BITS_STRING,
+				DEFAULT_ROUTE_STRING,
+			};
+		}
+		return columnNames;
+	}
+	/* (non-Javadoc)
+	 * @see com.cannontech.analysis.Reportable#getColumnTypes()
+	 */
+	public Class[] getColumnTypes()
+	{
+		if( columnTypes == null)
+		{
+			columnTypes = new Class[]{
+				String.class,
+				String.class,
+				String.class,
+				String.class,
+				String.class,
+				String.class,
+				String.class,
+				String.class
+			};
+		}
+		return columnTypes;
+	}
+	/* (non-Javadoc)
+	 * @see com.cannontech.analysis.Reportable#getColumnProperties()
+	 */
+	public ColumnProperties[] getColumnProperties()
+	{
+		if(columnProperties == null)
+		{
+			columnProperties = new ColumnProperties[]
+			{
+				//posX, posY, width, height, numberFormatString
+				new ColumnProperties(0, 1, 20, 20, null),
+				new ColumnProperties(20, 1, 85, 20, "#,##0"),
+				new ColumnProperties(110, 1, 85, 20, "#,##0"),
+				new ColumnProperties(205, 1, 35, 20, "##0.00%"),
+				new ColumnProperties(250, 1, 50, 20, "##0.00%"),
+				new ColumnProperties(310, 1, 50, 20, "##0.00%"),
+				new ColumnProperties(365, 1, 50, 20, "##0.00%"),
+				new ColumnProperties(430, 1, 50, 20, "##0.00%")
+			};
+		}
+		return columnProperties;
+	}
+	/* (non-Javadoc)
+	 * @see com.cannontech.analysis.Reportable#getTitleString()
+	 */
+	public String getTitleString()
+	{
+		return title;
 	}
 
 }
