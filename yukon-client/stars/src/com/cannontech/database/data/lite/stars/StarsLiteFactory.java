@@ -571,7 +571,7 @@ public class StarsLiteFactory {
 				db = new com.cannontech.database.db.stars.customer.CustomerAccount();
 				setCustomerAccount( (com.cannontech.database.db.stars.customer.CustomerAccount) db, (LiteCustomerAccount) lite );
 				break;
-			case LiteTypes.STARS_CUSTOMER:
+			case LiteTypes.CUSTOMER:
 				db = new com.cannontech.database.db.customer.Customer();
 				setCustomer( (com.cannontech.database.db.customer.Customer) db, (LiteCustomer) lite );
 				break;

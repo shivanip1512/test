@@ -22,13 +22,13 @@ public class LiteCustomer extends LiteBase {
 
 	public LiteCustomer() {
 		super();
-		setLiteType( LiteTypes.STARS_CUSTOMER );
+		setLiteType( LiteTypes.CUSTOMER );
 	}
 	
 	public LiteCustomer(int customerID) {
 		super();
 		setCustomerID( customerID );
-		setLiteType( LiteTypes.STARS_CUSTOMER );
+		setLiteType( LiteTypes.CUSTOMER );
 	}
 	
 	public int getCustomerID() {
