@@ -256,6 +256,14 @@ public class DatabaseCacheBean implements IDatabaseCache
       return getCache().getAllLMPrograms();
    }
 
+   /**
+	* @ejb:interface-method
+	* tview-type="remote" 
+   **/
+   public synchronized java.util.List getAllLMControlAreas()
+   {
+	  return getCache().getAllLMControlAreas();
+   }
    public synchronized java.util.List getAllGears()
    {
 	  return getCache().getAllGears();
@@ -732,5 +740,29 @@ public class DatabaseCacheBean implements IDatabaseCache
 	 */
 	public synchronized Map getYukonUserRolePropertyIDLookupMap() {
 		return getCache().getYukonUserRolePropertyIDLookupMap();
+	}
+
+	/* (non-Javadoc)
+	 * @see com.cannontech.yukon.IDatabaseCache#getAllDMG_CollectionGroups()
+	 */
+	public List getAllDMG_CollectionGroups()
+	{
+		return getCache().getAllDMG_CollectionGroups();
+	}
+
+	/* (non-Javadoc)
+	 * @see com.cannontech.yukon.IDatabaseCache#getAllDMG_AlternateGroups()
+	 */
+	public List getAllDMG_AlternateGroups()
+	{
+		return getCache().getAllDMG_AlternateGroups();
+	}
+
+	/* (non-Javadoc)
+	 * @see com.cannontech.yukon.IDatabaseCache#getAllDMG_BillingGroups()
+	 */
+	public List getAllDMG_BillingGroups()
+	{
+		return getCache().getAllDMG_BillingGroups();
 	}
 }

@@ -19,6 +19,7 @@ import com.cannontech.database.data.lite.LiteCommand;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteCustomer;
+import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteStateGroup;
@@ -64,6 +65,9 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
 	private ArrayList allBaselines = null;
 	private ArrayList allConfigs = null;
 	private ArrayList allDeviceMeterGroups = null;
+	private ArrayList allDMG_CollectionGroups = null;	//distinct DeviceMeterGroup.collectionGroup
+	private ArrayList allDMG_AlternateGroups = null;	//distinct DeviceMeterGroup.alternateGroup
+	private ArrayList allDMG_BillingGroups = null;	//distinct DeviceMeterGroup.billingGroup
 	private ArrayList allPointsUnits = null;
 	private ArrayList allPointLimits = null;
 	private ArrayList allYukonImages = null;
@@ -99,6 +103,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
 	private ArrayList allCapControlSubBuses = null; //PAO	
 	private ArrayList allDevices = null; //PAO
 	private ArrayList allLMPrograms = null; //PAO
+	private ArrayList allLMControlAreas = null;	//PAO
 	private ArrayList allLoadManagement = null; //PAO
 	private ArrayList allPorts = null; //PAO
 	private ArrayList allRoutes = null; //PAO
@@ -310,6 +315,60 @@ public synchronized java.util.List getAllDeviceMeterGroups()
 	}
 
 }
+
+public synchronized List getAllDMG_CollectionGroups()
+{
+	if (allDMG_CollectionGroups != null)
+		return allDMG_CollectionGroups;
+	else
+	{
+		allDMG_CollectionGroups = new ArrayList();
+		List groups = getAllDeviceMeterGroups();
+		for (int i = 0; i < groups.size(); i++)
+		{
+			LiteDeviceMeterNumber ldmn = (LiteDeviceMeterNumber)groups.get(i);
+			if( !allDMG_CollectionGroups.contains(ldmn.getCollGroup()))
+				allDMG_CollectionGroups.add(ldmn.getCollGroup());
+		}
+		return allDMG_CollectionGroups;
+	}
+}
+public synchronized List getAllDMG_AlternateGroups()
+{
+	if (allDMG_AlternateGroups != null)
+		return allDMG_AlternateGroups;
+	else
+	{
+		allDMG_AlternateGroups = new ArrayList();
+		List groups = getAllDeviceMeterGroups();
+		for (int i = 0; i < groups.size(); i++)
+		{
+			LiteDeviceMeterNumber ldmn = (LiteDeviceMeterNumber)groups.get(i);
+			if( !allDMG_AlternateGroups.contains(ldmn.getTestCollGroup()))
+				allDMG_AlternateGroups.add(ldmn.getTestCollGroup());
+		}
+		return allDMG_AlternateGroups;
+	}
+}
+
+public synchronized List getAllDMG_BillingGroups()
+{
+	if (allDMG_BillingGroups != null)
+		return allDMG_BillingGroups;
+	else
+	{
+		allDMG_BillingGroups = new ArrayList();
+		List groups = getAllDeviceMeterGroups();
+		for (int i = 0; i < groups.size(); i++)
+		{
+			LiteDeviceMeterNumber ldmn = (LiteDeviceMeterNumber)groups.get(i);
+			if( !allDMG_BillingGroups.contains(ldmn.getBillGroup()))
+				allDMG_BillingGroups.add(ldmn.getBillGroup());
+		}
+		return allDMG_BillingGroups;
+	}
+}
+
 /**
  * getAllDevices method comment.
  *
@@ -670,11 +729,29 @@ public synchronized java.util.List getAllLMPrograms()
 
 		allLMPrograms.trimToSize();
 	}
-
-	
-	
 	return allLMPrograms;
 }
+
+/* (non-Javadoc)
+ * @see com.cannontech.yukon.IDatabaseCache#getAllLMControlAreas()
+ */
+public List getAllLMControlAreas()
+{
+	if( allLMControlAreas == null )
+	{
+		allLMControlAreas = new ArrayList( getAllLoadManagement().size() / 2 );
+
+		for( int i = 0; i < getAllLoadManagement().size(); i++ )
+		{
+			if( ((LiteYukonPAObject)getAllLoadManagement().get(i)).getType() == PAOGroups.LM_CONTROL_AREA )
+				allLMControlAreas.add( getAllLoadManagement().get(i) );				
+		}
+
+		allLMControlAreas.trimToSize();
+	}
+	return allLMControlAreas;
+}
+
 /**
  * getAllLoadManagement method comment.
  *
@@ -1656,6 +1733,10 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg)
 			int type = PAOGroups.getDeviceType(objectType);
 			if(com.cannontech.database.data.device.DeviceTypesFuncs.usesDeviceMeterGroup(type))
 			{
+				allDMG_CollectionGroups = null;
+				allDMG_AlternateGroups = null;
+				allDMG_BillingGroups = null;
+									
 				handleDeviceMeterGroupChange( dbType, id);
 			}
 		}
@@ -1663,6 +1744,7 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg)
 		{
 			allLoadManagement = null;
 			allLMPrograms = null;
+			allLMControlAreas = null;
 			allLMScenarios = null;
 			allLMScenarioProgs = null;
 			allLMPAOExclusions = null;
@@ -1816,7 +1898,7 @@ private synchronized LiteBase handleDeviceMeterGroupChange( int changeType, int 
 		case DBChangeMsg.CHANGE_TYPE_ADD:
 				for(int i=0;i<allDeviceMeterGroups.size();i++)
 				{
-					if( ((com.cannontech.database.data.lite.LiteDeviceMeterNumber )allDeviceMeterGroups.get(i)).getDeviceID() == id )
+					if( ((LiteDeviceMeterNumber )allDeviceMeterGroups.get(i)).getDeviceID() == id )
 					{
 						alreadyAdded = true;
 						lBase = (LiteBase)allDeviceMeterGroups.get(i);
@@ -1825,7 +1907,7 @@ private synchronized LiteBase handleDeviceMeterGroupChange( int changeType, int 
 				}
 				if( !alreadyAdded )
 				{
-					com.cannontech.database.data.lite.LiteDeviceMeterNumber liteDMG = new com.cannontech.database.data.lite.LiteDeviceMeterNumber(id);
+					LiteDeviceMeterNumber liteDMG = new LiteDeviceMeterNumber(id);
 					liteDMG.retrieve(databaseAlias);
 					allDeviceMeterGroups.add(liteDMG);
 					lBase = liteDMG;
@@ -1834,10 +1916,11 @@ private synchronized LiteBase handleDeviceMeterGroupChange( int changeType, int 
 		case DBChangeMsg.CHANGE_TYPE_UPDATE:
 				for(int i=0;i<allDeviceMeterGroups.size();i++)
 				{
-					if( ((com.cannontech.database.data.lite.LiteDeviceMeterNumber )allDeviceMeterGroups.get(i)).getDeviceID() == id )
+					if( ((LiteDeviceMeterNumber )allDeviceMeterGroups.get(i)).getDeviceID() == id )
 					{
-						((com.cannontech.database.data.lite.LiteDeviceMeterNumber )allDeviceMeterGroups.get(i)).retrieve(databaseAlias);
+						((LiteDeviceMeterNumber )allDeviceMeterGroups.get(i)).retrieve(databaseAlias);
 						lBase = (LiteBase)allDeviceMeterGroups.get(i);
+						
 						break;
 					}
 				}
@@ -3004,6 +3087,9 @@ public synchronized void releaseAllCache()
     allBaselines = null;
     allConfigs = null;
     allDeviceMeterGroups = null;
+	allDMG_CollectionGroups = null;
+	allDMG_AlternateGroups = null;
+	allDMG_BillingGroups = null;    
     allPointsUnits = null;
     allPointLimits = null;
     allYukonImages = null;
@@ -3039,6 +3125,7 @@ public synchronized void releaseAllCache()
     allCapControlSubBuses = null; //PAO   
     allDevices = null; //PAO
     allLMPrograms = null; //PAO
+    allLMControlAreas = null; //PAO
     allLoadManagement = null; //PAO
     allPorts = null; //PAO
     allRoutes = null; //PAO

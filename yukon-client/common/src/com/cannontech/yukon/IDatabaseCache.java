@@ -29,6 +29,9 @@ public interface IDatabaseCache
 	public java.util.Map getAllCustomersMap();
 
 	public java.util.List getAllDeviceMeterGroups();
+	public java.util.List getAllDMG_CollectionGroups();	//distinct DeviceMeterGroup.CollectionGroups
+	public java.util.List getAllDMG_AlternateGroups();	//distinct DeviceMeterGroup.AlternateGroups
+	public java.util.List getAllDMG_BillingGroups();	//distinct DeviceMeterGroup.BillingGroups
 	public java.util.List getAllDevices();
 	public java.util.List getAllMCTs();
 	public java.util.List getAllGraphDefinitions();
@@ -42,6 +45,7 @@ public interface IDatabaseCache
 	public java.util.List getAllLMProgramConstraints();
 	public java.util.List getAllLMScenarios();
 	public java.util.List getAllLMPrograms();
+	public java.util.List getAllLMControlAreas();
 	public java.util.List getAllGears();
 	public java.util.List getAllLoadManagement();
 	public java.util.List getAllLMScenarioProgs();

@@ -238,6 +238,30 @@ public class DefaultDatabaseCache implements IDatabaseCache
    {
       return getDBCache().getAllDeviceMeterGroups();
    }
+   /**
+	* @ejb:interface-method
+	* tview-type="remote" 
+   **/
+   public synchronized java.util.List getAllDMG_CollectionGroups()
+   {
+	  return getDBCache().getAllDMG_CollectionGroups();
+   }
+   /**
+	* @ejb:interface-method
+	* tview-type="remote" 
+   **/
+   public synchronized java.util.List getAllDMG_AlternateGroups()
+   {
+	  return getDBCache().getAllDMG_AlternateGroups();
+   }
+   /**
+	* @ejb:interface-method
+	* tview-type="remote" 
+   **/
+   public synchronized java.util.List getAllDMG_BillingGroups()
+   {
+	  return getDBCache().getAllDMG_BillingGroups();
+   }
 
    /**
     * @ejb:interface-method
@@ -294,6 +318,14 @@ public class DefaultDatabaseCache implements IDatabaseCache
       return getDBCache().getAllLMPrograms();
    }
 
+   /* (non-Javadoc)
+	* @see com.cannontech.yukon.IDatabaseCache#getAllLMControlAreas()
+	*/
+   public List getAllLMControlAreas()
+   {
+	   return getDBCache().getAllLMControlAreas();
+   }
+   
    public synchronized java.util.List getAllGears()
    {
 	  return getDBCache().getAllGears();
