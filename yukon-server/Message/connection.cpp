@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/connection.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2002/10/03 16:13:29 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2002/10/15 17:40:58 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -83,6 +83,9 @@ int CtiConnection::WriteConnQue(CtiMessage *QEnt, unsigned timeout, bool cleanif
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " Connection error (" << status << "), message was NOT able to be queued to " << who() << "." << endl;
         }
+
+        autopsy( __FILE__, __LINE__ );
+
         delete QEnt;
     }
     else
