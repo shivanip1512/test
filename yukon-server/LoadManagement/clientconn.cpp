@@ -157,12 +157,18 @@ void CtiLMConnection::_sendthr()
             }
         }
         while ( isValid() && oStream->good() );
-    } catch ( RWxmsg& msg )
+    }
+    catch ( RWxmsg& msg )
     {
         /*{    
             RWMutexLock::LockGuard guard(coutMux);
             cout << "CtiLMConnection::_sendthr - " << msg.why() << endl;
         }*/
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 
     _valid = FALSE;
@@ -211,24 +217,39 @@ void CtiLMConnection::_recvthr()
                         delete saved;
                         saved = NULL;
                     }
-                } catch ( RWxmsg& msg )
+                }
+                catch ( RWxmsg& msg )
                 {
                     /*{    
                         RWMutexLock::LockGuard guard(coutMux);
                         cout << "CtiLMConnection::_recvthr - " << msg.why() << endl;
                     }*/
                 }
+                catch(...)
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                }
 
-                CtiLMExecutor* executor = factory.createExecutor( (CtiMessage*) current );
-
-                RWThreadFunction thr_func  = rwMakeThreadFunction( *executor, &CtiLMExecutor::Execute, _queue );
-
-                runnable = thr_func;
-
-                thr_func.start();
-
-                saved = executor;
-            } else
+                try
+                {
+                    CtiLMExecutor* executor = factory.createExecutor( (CtiMessage*) current );
+    
+                    RWThreadFunction thr_func  = rwMakeThreadFunction( *executor, &CtiLMExecutor::Execute, _queue );
+    
+                    runnable = thr_func;
+    
+                    thr_func.start();
+    
+                    saved = executor;
+                }
+                catch(...)
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                }
+            }
+            else
             {
                 /*{    
                     RWMutexLock::LockGuard guard(coutMux);
@@ -249,12 +270,18 @@ void CtiLMConnection::_recvthr()
 
         }
         while ( isValid()  && iStream->good() );
-    } catch ( RWxmsg& msg )
+    }
+    catch ( RWxmsg& msg )
     {
         /*{    
             RWMutexLock::LockGuard guard(coutMux);
             cout << "CtiLMClientConnection::_recvthr - " << msg.why() << endl;
         }*/
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 
     _valid = FALSE;

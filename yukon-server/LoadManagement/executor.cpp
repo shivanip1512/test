@@ -1919,30 +1919,54 @@ void CtiLMForwardMsgToDispatchExecutor::Execute(RWCountedPointer< CtiCountedPCPt
 ---------------------------------------------------------------------------*/
 void CtiLMShutdownExecutor::Execute(RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > results )
 {
-    /*if( _LM_DEBUG )
+    try
+    {
+        /*if( _LM_DEBUG )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << RWTime() << " - Shutting down client connection thread..." << endl;
+        }*/
+    
+        CtiLMServer::getInstance()->stop();
+    }
+    catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Shutting down client connection thread..." << endl;
-    }*/
+        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
 
-    CtiLMServer::getInstance()->stop();
-
-    /*if( _LM_DEBUG )
+    try
+    {
+        /*if( _LM_DEBUG )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << RWTime() << " - Shutting down the controller thread..." << endl;
+        }*/
+    
+        CtiLoadManager::getInstance()->stop();
+    }
+    catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Shutting down the controller thread..." << endl;
-    }*/
+        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
 
-    CtiLoadManager::getInstance()->stop();
-   
-    /*if( _LM_DEBUG )
+    try
+    {
+        /*if( _LM_DEBUG )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << RWTime() << " - Shutting down the strategystore..." << endl;
+        }*/
+    
+        CtiLMControlAreaStore::deleteInstance();
+    }
+    catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Shutting down the strategystore..." << endl;
-    }*/
-
-    CtiLMControlAreaStore::deleteInstance();
-
+        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
+    
     /*if( _LM_DEBUG )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);

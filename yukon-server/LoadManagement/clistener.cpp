@@ -64,16 +64,17 @@ void CtiLMClientListener::stop()
     {
         _doquit = TRUE;
 
-        if ( _listener != 0 )
+        if ( _listener != NULL )
         {
             delete _listener;
-            _listener = 0;
+            _listener = NULL;
 
             _listenerthr.join();
             _checkthr.join();
         }
 
-    } catch ( RWxmsg& msg)
+    }
+    catch ( RWxmsg& msg)
     {
         cerr << msg.why() << endl;
     }
@@ -102,148 +103,162 @@ void CtiLMClientListener::update(CtiObservable& observable)
 void CtiLMClientListener::_listen()
 {  
 
-    _listener = new RWSocketListener( RWInetAddr( (int) _port )  );
-
-    do
+    try
     {
-        try
+        _listener = new RWSocketListener( RWInetAddr( (int) _port )  );
+        /*{    
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << RWTime()  << " - Listening for clients..." << endl;
+        }*/
+    
+        do
         {
-            /*{    
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime()  << " - Listening for clients..." << endl;
-            }*/
-
+            try
             {
-                RWRecursiveLock<RWMutexLock>::LockGuard guard( _connmutex );
-
-                RWPortal portal = (*_listener)();
-
-                CtiLMConnection* conn = new CtiLMConnection(portal);
-
-                //Register the connection with us
-                //so that it is notified of updates
-                CtiLMServer::getInstance()->addObserver( *conn );
-
                 {
                     RWRecursiveLock<RWMutexLock>::LockGuard guard( _connmutex );
-
-                    _connections.insert(conn);
+    
+                    RWPortal portal = (*_listener)();
+    
+                    CtiLMConnection* conn = new CtiLMConnection(portal);
+    
+                    //Register the connection with us
+                    //so that it is notified of updates
+                    CtiLMServer::getInstance()->addObserver( *conn );
+    
+                    {
+                        RWRecursiveLock<RWMutexLock>::LockGuard guard( _connmutex );
+    
+                        _connections.insert(conn);
+                    }
+                    CtiLMExecutorFactory f;
+                    RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > queue = new CtiCountedPCPtrQueue<RWCollectable>();
+                    CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
+                    CtiLMExecutor* executor = f.createExecutor(new CtiLMControlAreaMsg(*(store->getControlAreas())));
+                    try
+                    {
+                        executor->Execute(queue);
+                    }
+                    catch(...)
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                    }
+                    delete executor;
                 }
-                CtiLMExecutorFactory f;
-                RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > queue = new CtiCountedPCPtrQueue<RWCollectable>();
-                CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
-                CtiLMExecutor* executor = f.createExecutor(new CtiLMControlAreaMsg(*(store->getControlAreas())));
-                try
-                {
-                    executor->Execute(queue);
-                }
-                catch(...)
-                {
+            }
+            catch(RWSockErr& msg)
+            {
+                if( msg.errorNumber() == 10004 )
+                {    
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                    dout << "CtiLMClientListener thread interupted" << endl;
+                    break;
                 }
-                delete executor;
+                else
+                {
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << "CtiLMClientListener hickup: " << msg.errorNumber() << endl;
+                    }
+                    delete _listener;
+                    _listener = new RWSocketListener( RWInetAddr( (int) _port )  );
+                }
             }
-        }
-        catch(RWSockErr& msg)
-        {
-            if( msg.errorNumber() == 10004 )
-            {    
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << "CtiLMClientListener thread interupted" << endl;
-                break;
-            }
-            else
+            catch(RWxmsg& msg)
             {
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << "CtiLMClientListener hickup: " << msg.errorNumber() << endl;
+                    dout << "CtiLMClientListener hickup (RWxmsg&): " << msg.why() << endl;
                 }
-                delete _listener;
-                _listener = new RWSocketListener( RWInetAddr( (int) _port )  );
             }
-        }
-        catch(RWxmsg& msg)
-        {
+            catch(...)
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << "CtiLMClientListener hickup (RWxmsg&): " << msg.why() << endl;
+                dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
             }
-        }
-        catch(...)
-        {
+            rwSleep(500);
+        } while ( !_doquit );
+    
+        /*{    
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-        }
-        rwSleep(500);
-    } while ( !_doquit );
-
-    /*{    
+            dout << RWTime()  << " - CtiLMClientListener::_listen() - exiting" << endl;
+        }*/
+    }
+    catch(...)
+    {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime()  << " - CtiLMClientListener::_listen() - exiting" << endl;
-    }*/
+        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
 }
 
 void CtiLMClientListener::_check()
 {
-    do        
+    try
     {
-        
-        try
+        do        
         {
+            try
             {
-                RWRecursiveLock<RWMutexLock>::LockGuard guard( _connmutex );
-    
-                for ( int i = 0; i < _connections.entries(); i++ )
                 {
-                    if ( !_connections[i]->isValid() )
+                    RWRecursiveLock<RWMutexLock>::LockGuard guard( _connmutex );
+        
+                    for ( int i = 0; i < _connections.entries(); i++ )
                     {
-                        /*{    
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << RWTime()  << " - CtiLMClientListener::check - deleting connection addr:  " << _connections[i] << endl;
-                        }*/
-    
-                        //Remove the connection from the server observer list
-                        CtiLMServer::getInstance()->deleteObserver( *(_connections[i]) );
-    
-                        delete _connections[i];
-                        _connections.removeAt(i);
-                        break;
+                        if ( !_connections[i]->isValid() )
+                        {
+                            /*{    
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << RWTime()  << " - CtiLMClientListener::check - deleting connection addr:  " << _connections[i] << endl;
+                            }*/
+        
+                            //Remove the connection from the server observer list
+                            CtiLMServer::getInstance()->deleteObserver( *(_connections[i]) );
+        
+                            delete _connections[i];
+                            _connections.removeAt(i);
+                            break;
+                        }
                     }
-                }
-            }   //Release mutex
+                }   //Release mutex
+            }
+            catch(...)
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+            }
+            rwSleep(500);
+        } while ( !_doquit );
+    
+        {   
+            RWRecursiveLock<RWMutexLock>::LockGuard guard( _connmutex );
+    
+            /*{    
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << RWTime()  << " - CtiLMClientListener::_listen() - closing " << _connections.entries() << " connections..." << endl;
+            }*/
+    
+            //Before we exit try to close all the connections
+            for ( int j = 0; j < _connections.entries(); j++ )
+            {
+                //Remove the connection from the server observer list
+                 CtiLMServer::getInstance()->deleteObserver( *(_connections[j]) );
+    
+                _connections[j]->close();
+                delete _connections[j];
+            }
         }
-        catch(...)
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-        }
-        rwSleep(500);
-    } while ( !_doquit );
-
-    {   
-        RWRecursiveLock<RWMutexLock>::LockGuard guard( _connmutex );
-
+    
+    
         /*{    
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime()  << " - CtiLMClientListener::_listen() - closing " << _connections.entries() << " connections..." << endl;
+            dout << RWTime()  << " - CtiLMClientListener::_check - exiting" << endl;
         }*/
-
-        //Before we exit try to close all the connections
-        for ( int j = 0; j < _connections.entries(); j++ )
-        {
-            //Remove the connection from the server observer list
-             CtiLMServer::getInstance()->deleteObserver( *(_connections[j]) );
-
-            _connections[j]->close();
-            delete _connections[j];
-        }
     }
-
-
-    /*{    
+    catch(...)
+    {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime()  << " - CtiLMClientListener::_check - exiting" << endl;
-    }*/
+        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
 }
 

@@ -182,81 +182,87 @@ void CtiLMService::OnStop()
 
 void CtiLMService::Run()
 {
-
-    SetStatus(SERVICE_START_PENDING, 1, 5000 );
-
-    //Make sure the database gets hit so we'll know if the database
-    //connection is legit now rather than later
-    bool trouble = false;
-
-    do
+    try
     {
-        if ( trouble )
-            Sleep(1000);
+        SetStatus(SERVICE_START_PENDING, 1, 5000 );
+        //Make sure the database gets hit so we'll know if the database
+        //connection is legit now rather than later
+        bool trouble = false;
 
-        CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
-        RWOrdered* controlAreas = store->getControlAreas();
+        do
+        {
+            if ( trouble )
+                Sleep(1000);
 
-        if ( !store->isValid() )
-        {
-            trouble = true;
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime().asString() << " - Unable to obtain connection to database...will keep trying." << endl;
-        }
-        else
-        {
-            /*if( _LM_DEBUG )
+            CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
+            RWOrdered* controlAreas = store->getControlAreas();
+
+            if ( !store->isValid() )
             {
+                trouble = true;
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime().asString() << " - Figuring initial actual var values." << endl;
+                dout << RWTime().asString() << " - Unable to obtain connection to database...will keep trying." << endl;
             }
-
-            for(ULONG i=0;i<strategies.entries();i++)
+            else
             {
-                CtiLMStrategy *current = (CtiCCStrategy*)strategies[i];
-                if( current->ActualVarPointId() > 0 )
-                    current->figureActualVarPointValue();
-            }*/
-            trouble = false;
+                /*if( _LM_DEBUG )
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << RWTime().asString() << " - Figuring initial actual var values." << endl;
+                }
+    
+                for(ULONG i=0;i<strategies.entries();i++)
+                {
+                    CtiLMStrategy *current = (CtiCCStrategy*)strategies[i];
+                    if( current->ActualVarPointId() > 0 )
+                        current->figureActualVarPointValue();
+                }*/
+                trouble = false;
+            }
         }
+        while ( trouble );
+
+        SetStatus(SERVICE_START_PENDING, 33, 5000 );
+
+        if( _LM_DEBUG )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << RWTime().asString() << " - Starting up the manager thread..." << endl;
+        }
+        CtiLoadManager* manager = CtiLoadManager::getInstance();
+        manager->start();
+
+        SetStatus(SERVICE_START_PENDING, 66, 5000 );
+
+        if( _LM_DEBUG )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << RWTime().asString() << " - Starting up the client connection thread..." << endl;
+        }
+        CtiLMServer* server = CtiLMServer::getInstance();
+        server->start();
+
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << RWTime().asString() << " - Load Management started and initialized." << endl;
+        }
+
+        SetStatus(SERVICE_RUNNING, 0, 0,
+                  SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_SHUTDOWN );
+
+        while ( !_quit && !load_management_do_quit)
+        {
+            Sleep(500);
+        }
+
+
+        SetStatus( SERVICE_STOPPED );
     }
-    while ( trouble );
-
-    SetStatus(SERVICE_START_PENDING, 33, 5000 );
-
-    if( _LM_DEBUG )
+    catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime().asString() << " - Starting up the manager thread..." << endl;
+        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
-    CtiLoadManager* manager = CtiLoadManager::getInstance();
-    manager->start();
-
-    SetStatus(SERVICE_START_PENDING, 66, 5000 );
-
-    if( _LM_DEBUG )
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime().asString() << " - Starting up the client connection thread..." << endl;
-    }
-    CtiLMServer* server = CtiLMServer::getInstance();
-    server->start();
-
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime().asString() << " - Load Management started and initialized." << endl;
-    }
-
-    SetStatus(SERVICE_RUNNING, 0, 0,
-              SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_SHUTDOWN );
-
-    while ( !_quit && !load_management_do_quit)
-    {
-        Sleep(500);
-    }
-
-
-    SetStatus( SERVICE_STOPPED );
 }
 
 void CtiLMService::ParseArgs(DWORD argc, LPTSTR* argv)

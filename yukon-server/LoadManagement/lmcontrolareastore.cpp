@@ -178,9 +178,6 @@ void CtiLMControlAreaStore::reset()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
 
-    if( _controlAreas->entries() > 0 )
-        _controlAreas->clearAndDestroy();
-
     if( _LM_DEBUG )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -195,6 +192,11 @@ void CtiLMControlAreaStore::reset()
 
             if( conn.isValid() )
             {
+                if( _controlAreas->entries() > 0 )
+                {
+                    _controlAreas->clearAndDestroy();
+                }
+
                 RWDBDateTime currentDateTime;
                 RWDBDatabase db = getDatabase();
                 RWDBTable yukonPAObjectTable = db.table("yukonpaobject");
@@ -1091,80 +1093,88 @@ void CtiLMControlAreaStore::shutdown()
 ---------------------------------------------------------------------------*/
 void CtiLMControlAreaStore::doResetThr()
 {
-    char temp[80];
-    int refreshrate = 3600;
-
-    HINSTANCE hLib = LoadLibrary("cparms.dll");
-
-    if(hLib)
+    try
     {
-        CPARM_GETCONFIGSTRING   fpGetAsString = (CPARM_GETCONFIGSTRING)GetProcAddress( hLib, "getConfigValueAsString" );
-
-        bool trouble = FALSE;
-
-        if( (*fpGetAsString)("LOAD_MANAGEMENT_REFRESH", temp, 80) )
+        char temp[80];
+        int refreshrate = 3600;
+    
+        HINSTANCE hLib = LoadLibrary("cparms.dll");
+    
+        if(hLib)
         {
-            if( _LM_DEBUG )
+            CPARM_GETCONFIGSTRING   fpGetAsString = (CPARM_GETCONFIGSTRING)GetProcAddress( hLib, "getConfigValueAsString" );
+    
+            bool trouble = FALSE;
+    
+            if( (*fpGetAsString)("LOAD_MANAGEMENT_REFRESH", temp, 80) )
+            {
+                if( _LM_DEBUG )
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << RWTime() << " - LOAD_MANAGEMENT_REFRESH:  " << temp << endl;
+                }
+    
+                refreshrate = atoi(temp);
+            }
+            else
+                trouble = TRUE;
+    
+            if( trouble == TRUE )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - LOAD_MANAGEMENT_REFRESH:  " << temp << endl;
+                dout << RWTime() << " - Unable to obtain 'LOAD_MANAGEMENT_REFRESH' value from cparms." << endl;
             }
-
-            refreshrate = atoi(temp);
+    
+            FreeLibrary(hLib);
         }
         else
-            trouble = TRUE;
-
-        if( trouble == TRUE )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Unable to obtain 'LOAD_MANAGEMENT_REFRESH' value from cparms." << endl;
+            dout << RWTime() << " - Unable to load cparms.dll" << endl;
         }
-
-        FreeLibrary(hLib);
+    
+        time_t start = time(NULL);
+    
+        RWDBDateTime currenttime = RWDBDateTime();
+        ULONG tempsum = (currenttime.seconds()-(currenttime.seconds()%refreshrate))+refreshrate;
+        RWDBDateTime nextDatabaseRefresh = RWDBDateTime(RWTime(tempsum));
+    
+        while(TRUE)
+        {
+            rwRunnable().serviceCancellation();
+    
+            if( RWDBDateTime() >= nextDatabaseRefresh )
+            {
+                RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+                if( _LM_DEBUG )
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << RWTime() << " - Restoring control area list from the database" << endl;
+                }
+    
+                if( currenttime.rwdate() != RWDBDateTime().rwdate() )
+                {//check to see if it is midnight
+                    checkMidnightDefaultsForReset();
+                }
+                currenttime = RWDBDateTime();
+    
+                dumpAllDynamicData();
+                setValid(false);
+                setReregisterForPoints(TRUE);
+    
+                tempsum = (currenttime.seconds()-(currenttime.seconds()%refreshrate))+refreshrate;
+                nextDatabaseRefresh = RWDBDateTime(RWTime(tempsum));
+            }
+            else
+            {
+                rwRunnable().sleep(500);
+            }
+        }
     }
-    else
+    catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Unable to load cparms.dll" << endl;
-    }
-
-    time_t start = time(NULL);
-
-    RWDBDateTime currenttime = RWDBDateTime();
-    ULONG tempsum = (currenttime.seconds()-(currenttime.seconds()%refreshrate))+refreshrate;
-    RWDBDateTime nextDatabaseRefresh = RWDBDateTime(RWTime(tempsum));
-
-    while(TRUE)
-    {
-        rwRunnable().serviceCancellation();
-
-        if( RWDBDateTime() >= nextDatabaseRefresh )
-        {
-            RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-            if( _LM_DEBUG )
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Restoring control area list from the database" << endl;
-            }
-
-            if( currenttime.rwdate() != RWDBDateTime().rwdate() )
-            {//check to see if it is midnight
-                checkMidnightDefaultsForReset();
-            }
-            currenttime = RWDBDateTime();
-
-            dumpAllDynamicData();
-            setValid(false);
-            setReregisterForPoints(TRUE);
-
-            tempsum = (currenttime.seconds()-(currenttime.seconds()%refreshrate))+refreshrate;
-            nextDatabaseRefresh = RWDBDateTime(RWTime(tempsum));
-        }
-        else
-        {
-            rwRunnable().sleep(500);
-        }
+        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 }
 
