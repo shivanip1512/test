@@ -464,11 +464,11 @@ public Object getValue(Object val)
    }
    else if( val instanceof Ion7700 )
    {
-      ((Ion7700)val).getDeviceDNP().setSlaveAddress( address );
+      ((Ion7700)val).getDeviceAddress().setSlaveAddress( address );
    }
    else if( val instanceof DNPBase )
    {
-      ((DNPBase)val).getDeviceDNP().setMasterAddress( address );
+      ((DNPBase)val).getDeviceAddress().setMasterAddress( address );
    }
    else if( val instanceof RTCBase )
    {

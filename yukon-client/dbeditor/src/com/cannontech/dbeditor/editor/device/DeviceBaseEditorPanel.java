@@ -1554,29 +1554,29 @@ public Object getValue(Object val)
          DNPBase dnp = (DNPBase)val;
          try
          {
-            dnp.getDeviceDNP().setMasterAddress( new Integer(getPhysicalAddressTextField().getText()) );
+            dnp.getDeviceAddress().setMasterAddress( new Integer(getPhysicalAddressTextField().getText()) );
          }
          catch( NumberFormatException e )
          {
-            dnp.getDeviceDNP().setMasterAddress( new Integer(0) );
+            dnp.getDeviceAddress().setMasterAddress( new Integer(0) );
          }
             
          try
          {         
-            dnp.getDeviceDNP().setSlaveAddress( new Integer(getSlaveAddressComboBox().getSelectedItem().toString() ) );
+            dnp.getDeviceAddress().setSlaveAddress( new Integer(getSlaveAddressComboBox().getSelectedItem().toString() ) );
          }
          catch( NumberFormatException e )
          {
-            dnp.getDeviceDNP().setSlaveAddress( new Integer(0) );
+            dnp.getDeviceAddress().setSlaveAddress( new Integer(0) );
          }
    
          try
          {
-            dnp.getDeviceDNP().setPostCommWait( new Integer(getPostCommWaitSpinner().getValue().toString()) );
+            dnp.getDeviceAddress().setPostCommWait( new Integer(getPostCommWaitSpinner().getValue().toString()) );
          }
          catch( NumberFormatException e )
          {
-            dnp.getDeviceDNP().setPostCommWait( new Integer(0) );
+            dnp.getDeviceAddress().setPostCommWait( new Integer(0) );
          }
    	
       }
@@ -2164,7 +2164,7 @@ private void setRemoteBaseValue( RemoteBase rBase, int intType )
       getPhysicalAddressLabel().setVisible(true);
       getPhysicalAddressLabel().setText("Master Address:");
       getPhysicalAddressTextField().setVisible(true);
-      getPhysicalAddressTextField().setText( ((DNPBase)rBase).getDeviceDNP().getMasterAddress().toString() );
+      getPhysicalAddressTextField().setText( ((DNPBase)rBase).getDeviceAddress().getMasterAddress().toString() );
       
       getSlaveAddressLabel().setVisible(true);
       getSlaveAddressComboBox().setVisible(true);
@@ -2177,10 +2177,10 @@ private void setRemoteBaseValue( RemoteBase rBase, int intType )
       editor.addCaretListener(this);  //be sure to fireInputUpdate() messages!
 
       getSlaveAddressComboBox().setEditor( editor );
-      getSlaveAddressComboBox().addItem( ((DNPBase)rBase).getDeviceDNP().getSlaveAddress() );
+      getSlaveAddressComboBox().addItem( ((DNPBase)rBase).getDeviceAddress().getSlaveAddress() );
 
       
-      getPostCommWaitSpinner().setValue( ((DNPBase)rBase).getDeviceDNP().getPostCommWait() );
+      getPostCommWaitSpinner().setValue( ((DNPBase)rBase).getDeviceAddress().getPostCommWait() );
       
       getPasswordLabel().setVisible(false);
       getPasswordTextField().setVisible(false);

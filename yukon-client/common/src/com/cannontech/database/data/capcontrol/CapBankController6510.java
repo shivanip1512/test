@@ -1,5 +1,7 @@
 package com.cannontech.database.data.capcontrol;
 
+import com.cannontech.database.db.device.DeviceAddress;
+
 /**
  * @author rneuharth
  * Aug 6, 2002 at 4:59:31 PM
@@ -8,7 +10,7 @@ package com.cannontech.database.data.capcontrol;
  */
 public class CapBankController6510 extends com.cannontech.database.data.device.RemoteBase implements com.cannontech.database.db.DBCopiable, ICapBankController
 {
-   private com.cannontech.database.db.device.DeviceDNP deviceDNP = null;
+   private DeviceAddress deviceAddress = null;
 
 	/**
 	 * Constructor for CapBankController6510.
@@ -21,12 +23,12 @@ public class CapBankController6510 extends com.cannontech.database.data.device.R
 
    public Integer copiableAddress() 
    {
-      return getDeviceDNP().getMasterAddress();
+      return getDeviceAddress().getMasterAddress();
    }
 
    public void assignAddress( Integer newAddress )
    {
-      getDeviceDNP().setMasterAddress( newAddress );
+      getDeviceAddress().setMasterAddress( newAddress );
    }
 
 
@@ -46,7 +48,7 @@ public class CapBankController6510 extends com.cannontech.database.data.device.R
    public void add() throws java.sql.SQLException 
    {
       super.add();
-      getDeviceDNP().add();
+      getDeviceAddress().add();
    }
 
    /**
@@ -54,7 +56,7 @@ public class CapBankController6510 extends com.cannontech.database.data.device.R
     */
    public void delete() throws java.sql.SQLException
    {
-      getDeviceDNP().delete();
+      getDeviceAddress().delete();
       super.delete();
    }
 
@@ -64,7 +66,7 @@ public class CapBankController6510 extends com.cannontech.database.data.device.R
    public void retrieve() throws java.sql.SQLException
    {
       super.retrieve();
-      getDeviceDNP().retrieve();
+      getDeviceAddress().retrieve();
    }
    /**
     * Insert the method's description here.
@@ -74,7 +76,7 @@ public class CapBankController6510 extends com.cannontech.database.data.device.R
    public void setDbConnection(java.sql.Connection conn) 
    {
       super.setDbConnection(conn);
-      getDeviceDNP().setDbConnection(conn);
+      getDeviceAddress().setDbConnection(conn);
    }
    
    /**
@@ -84,7 +86,7 @@ public class CapBankController6510 extends com.cannontech.database.data.device.R
    public void setDeviceID(Integer deviceID)
    {
       super.setDeviceID(deviceID);
-      getDeviceDNP().setDeviceID(deviceID);
+      getDeviceAddress().setDeviceID(deviceID);
    }
    /**
     * This method was created in VisualAge.
@@ -92,28 +94,28 @@ public class CapBankController6510 extends com.cannontech.database.data.device.R
    public void update() throws java.sql.SQLException
    {
       super.update();
-      getDeviceDNP().update();
+      getDeviceAddress().update();
    }
 
 	/**
 	 * Returns the deviceDNP.
-	 * @return com.cannontech.database.db.device.DeviceDNP
+	 * @return com.cannontech.database.db.device.DeviceAddress
 	 */
-	public com.cannontech.database.db.device.DeviceDNP getDeviceDNP()
+	public DeviceAddress getDeviceAddress()
 	{
-      if( deviceDNP == null )
-         deviceDNP = new com.cannontech.database.db.device.DeviceDNP();
+      if( deviceAddress == null )
+			deviceAddress = new DeviceAddress();
 
-		return deviceDNP;
+		return deviceAddress;
 	}
 
 	/**
 	 * Sets the deviceDNP.
 	 * @param deviceDNP The deviceDNP to set
 	 */
-	public void setDeviceDNP(com.cannontech.database.db.device.DeviceDNP deviceDNP)
+	public void setDeviceAddress(DeviceAddress deviceAddr)
 	{
-		this.deviceDNP = deviceDNP;
+		this.deviceAddress = deviceAddr;
 	}
 
 }

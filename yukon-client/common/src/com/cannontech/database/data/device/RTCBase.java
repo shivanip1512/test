@@ -95,7 +95,7 @@ public class RTCBase extends RemoteBase
 
    /**
 	* Returns the deviceDNP.
-	* @return com.cannontech.database.db.device.DeviceDNP
+	* @return com.cannontech.database.db.device.DeviceAddress
 	*/
    public com.cannontech.database.db.device.DeviceRTC getDeviceRTC()
    {

@@ -568,7 +568,7 @@ private javax.swing.JTextField getJTextFieldPhoneNumber() {
 			if (val instanceof IDLCBase)
 				((IDLCBase) val).getDeviceIDLCRemote().setAddress(new Integer(getAddressTextField().getText()));
 			else if (val instanceof DNPBase)
-				((DNPBase) val).getDeviceDNP().setMasterAddress(new Integer(getAddressTextField().getText()));
+				((DNPBase) val).getDeviceAddress().setMasterAddress(new Integer(getAddressTextField().getText()));
 			else if (val instanceof CarrierBase)
 				 {
 				 	 Integer addressHolder = new Integer(getAddressTextField().getText());
@@ -584,7 +584,7 @@ private javax.swing.JTextField getJTextFieldPhoneNumber() {
 			else if (val instanceof ICapBankController )
 				 ((ICapBankController) val).assignAddress( new Integer(getAddressTextField().getText()) );
 			else if (val instanceof Ion7700)
-				 ((Ion7700) val).getDeviceDNP().setSlaveAddress( new Integer(getAddressTextField().getText()) );
+				 ((Ion7700) val).getDeviceAddress().setSlaveAddress( new Integer(getAddressTextField().getText()) );
 			else if (val instanceof Series5Base)
 				 ((Series5Base) val).getSeries5().setSlaveAddress( new Integer(getAddressTextField().getText()) );			
 			else if (val instanceof RTCBase)
@@ -950,7 +950,7 @@ private javax.swing.JTextField getJTextFieldPhoneNumber() {
          getAddressTextField().setText( ((IDLCBase)val).getDeviceIDLCRemote().getAddress().toString() );
    
    	  if( val instanceof DNPBase )
-   	  	 getAddressTextField().setText( ((DNPBase)val).getDeviceDNP().getMasterAddress().toString() );
+   	  	 getAddressTextField().setText( ((DNPBase)val).getDeviceAddress().getMasterAddress().toString() );
    
       if( val instanceof MCTBase )
          getJTextFieldMeterNumber().setText( ((MCTBase)val).getDeviceMeterGroup().getMeterNumber().toString() );
@@ -963,7 +963,7 @@ private javax.swing.JTextField getJTextFieldPhoneNumber() {
          getPhysicalAddressLabel().setText("Slave Address:");
          
          getAddressTextField().setText( 
-            ((Ion7700)val).getDeviceDNP().getSlaveAddress().toString() );            
+            ((Ion7700)val).getDeviceAddress().getSlaveAddress().toString() );            
       }
       
       if( val instanceof Series5Base )

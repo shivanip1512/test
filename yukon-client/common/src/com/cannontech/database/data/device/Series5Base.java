@@ -1,13 +1,10 @@
-/*
- * Created on Mar 15, 2004
- *
- * To change the template for this generated file go to
- * Window>Preferences>Java>Code Generation>Code and Comments
- */
+
 package com.cannontech.database.data.device;
 
 
 import com.cannontech.database.data.pao.DeviceClasses;
+import com.cannontech.database.db.device.DeviceAddress;
+import com.cannontech.database.db.device.DeviceSeries5RTU;
 /**
  * @author jdayton
  *
@@ -16,9 +13,11 @@ import com.cannontech.database.data.pao.DeviceClasses;
  */
 public class Series5Base extends RemoteBase {
 	
-	//although this is not a DNP device, we use the DeviceDNP table
+	//although this is not a DNP device, we use the DeviceAddress table
 	//to store the address
-	com.cannontech.database.db.device.DeviceDNP deviceDNP = null;
+	private DeviceAddress deviceAddress = null;
+	private DeviceSeries5RTU series5RTU = null;
+	
 	
 	public Series5Base() 
 	{
@@ -31,6 +30,7 @@ public class Series5Base extends RemoteBase {
 	{
 	   super.add();
 	   getSeries5().add();
+		getSeries5RTU().add();
 	}
 
 	/**
@@ -38,6 +38,7 @@ public class Series5Base extends RemoteBase {
 	 */
 	public void delete() throws java.sql.SQLException
 	{
+		getSeries5RTU().delete();
 	   getSeries5().delete();
 	   super.delete();
 	}
@@ -49,6 +50,7 @@ public class Series5Base extends RemoteBase {
 	{
 	   super.retrieve();
 	   getSeries5().retrieve();
+		getSeries5RTU().retrieve();
 	}
 	/**
 	 * Insert the method's description here.
@@ -59,6 +61,7 @@ public class Series5Base extends RemoteBase {
 	{
 	   super.setDbConnection(conn);
 	   getSeries5().setDbConnection(conn);
+		getSeries5RTU().setDbConnection(conn);
 	}
    
 	/**
@@ -69,6 +72,7 @@ public class Series5Base extends RemoteBase {
 	{
 	   super.setDeviceID(deviceID);
 	   getSeries5().setDeviceID(deviceID);
+		getSeries5RTU().setDeviceID(deviceID);
 	}
 	/**
 	 * This method was created in VisualAge.
@@ -77,29 +81,47 @@ public class Series5Base extends RemoteBase {
 	{
 	   super.update();
 	   getSeries5().update();
+		getSeries5RTU().update();
 	}
 
 	/**
 	 * Returns the deviceDNP.
-	 * @return com.cannontech.database.db.device.DeviceDNP
+	 * @return com.cannontech.database.db.device.DeviceAddress
 	 */
-	public com.cannontech.database.db.device.DeviceDNP getSeries5()
+	public DeviceAddress getSeries5()
 	{
-	   if( deviceDNP == null )
-		  deviceDNP = new com.cannontech.database.db.device.DeviceDNP();
+	   if( deviceAddress == null )
+			deviceAddress = new DeviceAddress();
 
-	   return deviceDNP;
+	   return deviceAddress;
 	}
 
 	/**
 	 * Sets the deviceDNP.
 	 * @param deviceDNP The deviceDNP to set
 	 */
-	public void setSeries5(com.cannontech.database.db.device.DeviceDNP series5)
+	public void setSeries5(DeviceAddress series5)
 	{
-	   this.deviceDNP = series5;
+	   this.deviceAddress = series5;
 	}
-	
 
+	/**
+	 * @return
+	 */
+	public DeviceSeries5RTU getSeries5RTU()
+	{
+		if( series5RTU == null )
+			series5RTU = new DeviceSeries5RTU();
+
+		return series5RTU;
+	}
+
+	/**
+	 * @param series5RTU
+	 */
+	public void setSeries5RTU(DeviceSeries5RTU series5RTU)
+	{
+		this.series5RTU = series5RTU;
+	}
 
 }

@@ -10,7 +10,7 @@ import com.cannontech.database.db.DBPersistent;
  * 
  * A undefined generated comment
  */
-public class DeviceDNP extends DBPersistent
+public class DeviceAddress extends DBPersistent
 {
    private Integer deviceID = null;
    private Integer masterAddress = new Integer(1);
@@ -24,19 +24,19 @@ public class DeviceDNP extends DBPersistent
 
    public static final String CONSTRAINT_COLUMNS[] = { "DeviceID" };
    
-   public static final String TABLE_NAME = "DeviceDNP";
+   public static final String TABLE_NAME = "DeviceAddress";
    
 
 	/**
-	 * Constructor for DeviceDNP.
+	 * Constructor for DeviceAddress.
 	 */
-	public DeviceDNP()
+	public DeviceAddress()
 	{
 		super();
 	}
 
 
-   public DeviceDNP( Integer deviceID_, Integer masterAddress_, 
+   public DeviceAddress( Integer deviceID_, Integer masterAddress_, 
                       Integer slaveAddress_, Integer postCommWait_ )
    {
       super();

@@ -999,8 +999,8 @@ public Object getValue(Object val)
 	      com.cannontech.database.data.capcontrol.CapBankController6510 tempController 
 	            = (com.cannontech.database.data.capcontrol.CapBankController6510)capBankController;
 	
-	      tempController.getDeviceDNP().setSlaveAddress( slave );
-	      tempController.getDeviceDNP().setPostCommWait( postWait );
+	      tempController.getDeviceAddress().setSlaveAddress( slave );
+	      tempController.getDeviceAddress().setPostCommWait( postWait );
 	   }
    }   
    else
@@ -1183,9 +1183,9 @@ public void setValue(Object val)
 	      com.cannontech.database.data.capcontrol.CapBankController6510 tempController 
 	            = (com.cannontech.database.data.capcontrol.CapBankController6510)capBankController;
 	
-	      getSerialNumberTextField().setText( tempController.getDeviceDNP().getMasterAddress().toString() );
-	      getJTextFieldSlaveAddress().setText( tempController.getDeviceDNP().getSlaveAddress().toString() );
-	      getJTextFieldPostCommWait().setText( tempController.getDeviceDNP().getPostCommWait().toString() );	      
+	      getSerialNumberTextField().setText( tempController.getDeviceAddress().getMasterAddress().toString() );
+	      getJTextFieldSlaveAddress().setText( tempController.getDeviceAddress().getSlaveAddress().toString() );
+	      getJTextFieldPostCommWait().setText( tempController.getDeviceAddress().getPostCommWait().toString() );	      
 	   }
    }
    else
