@@ -227,6 +227,7 @@ dev_cbc6510.obj:	dsm2.h mutex.h dlldefs.h guard.h porter.h dsm2err.h \
 		resolvers.h pointtypes.h yukon.h ctidbgmem.h dllbase.h \
 		os2_2w32.h cticalls.h db_entry_defines.h pointdefs.h \
 		pt_dyn_base.h tbl_pt_base.h dbaccess.h sema.h desolvers.h \
+		pt_numeric.h tbl_pt_unit.h tbl_unitmeasure.h tbl_pt_limit.h \
 		master.h mgr_route.h repeaterrole.h rte_base.h cmdparse.h \
 		parsevalue.h ctibase.h ctinexus.h message.h collectable.h \
 		tbl_pao.h tbl_rtcomm.h logger.h thread.h rtdb.h hashkey.h \
@@ -237,8 +238,9 @@ dev_cbc6510.obj:	dsm2.h mutex.h dlldefs.h guard.h porter.h dsm2err.h \
 		tbl_dv_scandata.h tbl_dv_wnd.h tbl_dialup.h tbl_direct.h \
 		dev_dnp.h prot_dnp.h prot_base.h xfer.h dialup.h \
 		dnp_application.h dnp_objects.h dnp_transport.h \
-		dnp_datalink.h dnp_object_binaryoutput.h tbl_dv_dnp.h \
-		tbl_dv_idlcremote.h device.h numstr.h cparms.h
+		dnp_datalink.h dnp_datalink_packet.h \
+		dnp_object_binaryoutput.h tbl_dv_dnp.h tbl_dv_idlcremote.h \
+		device.h numstr.h cparms.h
 dev_ccu.obj:	cmdparse.h dlldefs.h parsevalue.h dsm2.h mutex.h guard.h \
 		porter.h dsm2err.h devicetypes.h queues.h types.h pt_base.h \
 		dbmemobject.h resolvers.h pointtypes.h yukon.h ctidbgmem.h \
@@ -307,6 +309,7 @@ dev_dnp.obj:	dsm2.h mutex.h dlldefs.h guard.h porter.h dsm2err.h \
 		resolvers.h pointtypes.h yukon.h ctidbgmem.h dllbase.h \
 		os2_2w32.h cticalls.h db_entry_defines.h pointdefs.h \
 		pt_dyn_base.h tbl_pt_base.h dbaccess.h sema.h desolvers.h \
+		pt_numeric.h tbl_pt_unit.h tbl_unitmeasure.h tbl_pt_limit.h \
 		master.h mgr_route.h repeaterrole.h rte_base.h cmdparse.h \
 		parsevalue.h ctibase.h ctinexus.h message.h collectable.h \
 		tbl_pao.h tbl_rtcomm.h logger.h thread.h rtdb.h hashkey.h \
@@ -317,8 +320,8 @@ dev_dnp.obj:	dsm2.h mutex.h dlldefs.h guard.h porter.h dsm2err.h \
 		tbl_dv_scandata.h tbl_dv_wnd.h tbl_dialup.h tbl_direct.h \
 		prot_dnp.h prot_base.h xfer.h dialup.h dnp_application.h \
 		dnp_objects.h dnp_transport.h dnp_datalink.h \
-		dnp_object_binaryoutput.h tbl_dv_dnp.h device.h numstr.h \
-		cparms.h
+		dnp_datalink_packet.h dnp_object_binaryoutput.h tbl_dv_dnp.h \
+		device.h numstr.h cparms.h
 dev_dr87.obj:	yukon.h ctidbgmem.h dlldefs.h dllbase.h os2_2w32.h \
 		types.h cticalls.h dsm2.h mutex.h guard.h porter.h dsm2err.h \
 		devicetypes.h queues.h dev_ied.h ctitypes.h dev_remote.h \
@@ -447,12 +450,14 @@ dev_ion.obj:	yukon.h ctidbgmem.h dlldefs.h dllbase.h os2_2w32.h \
 		tbl_dialup.h tbl_direct.h tbl_dv_ied.h xfer.h dialup.h \
 		mgr_point.h rtdb.h hashkey.h pt_base.h pt_dyn_base.h \
 		tbl_pt_base.h slctpnt.h tbl_dv_dnp.h prot_ion.h prot_base.h \
-		ion_rootclasses.h ion_value_datastream.h \
-		ion_value_basic_array.h ion_valuestructtypes.h \
-		ion_valuearraytypes.h ion_value_basic_char.h \
-		ion_value_basic_boolean.h ion_value_basic_numeric.h \
-		ion_value_basic_float.h ion_value_basic_intsigned.h \
-		ion_value_basic_intunsigned.h ion_value_basic_time.h \
+		ion_datastream.h ion_value.h ion_serializable.h \
+		ion_value_fixed.h ion_value_variable.h \
+		ion_value_variable_fixedarray.h \
+		ion_value_variable_fixedarray_element.h \
+		ion_value_fixed_char.h ion_value_variable_boolean.h \
+		ion_value_numeric.h ion_value_fixed_float.h \
+		ion_value_fixed_intsigned.h ion_value_fixed_intunsigned.h \
+		ion_value_struct.h ion_value_structarray.h \
 		ion_net_application.h ion_net_network.h ion_net_datalink.h \
 		pt_status.h tbl_pt_status.h pt_analog.h pt_numeric.h \
 		tbl_pt_unit.h tbl_unitmeasure.h tbl_pt_limit.h \
@@ -879,7 +884,7 @@ dev_welco.obj:	dsm2.h mutex.h dlldefs.h guard.h porter.h dsm2err.h \
 		queue.h pt_analog.h pt_numeric.h tbl_pt_unit.h \
 		tbl_unitmeasure.h tbl_pt_limit.h tbl_pt_analog.h pt_accum.h \
 		tbl_pt_accum.h tbl_pt_accumhistory.h msg_cmd.h \
-		msg_lmcontrolhistory.h
+		msg_lmcontrolhistory.h numstr.h
 dlldev.obj:	mgr_device.h dlldefs.h rtdb.h hashkey.h dllbase.h \
 		os2_2w32.h types.h cticalls.h dsm2.h mutex.h guard.h \
 		dev_base.h cmdparse.h parsevalue.h rte_base.h dbmemobject.h \
@@ -923,15 +928,17 @@ mgr_device.obj:	rtdb.h dlldefs.h hashkey.h dllbase.h os2_2w32.h \
 		msg_pcrequest.h msg_pcreturn.h msg_multi.h tbl_dv_scandata.h \
 		tbl_dv_wnd.h tbl_dialup.h tbl_direct.h prot_dnp.h prot_base.h \
 		xfer.h dialup.h dnp_application.h dnp_objects.h \
-		dnp_transport.h dnp_datalink.h dnp_object_binaryoutput.h \
-		tbl_dv_dnp.h dev_ion.h ctitypes.h dev_meter.h tbl_metergrp.h \
-		vcomdefs.h dev_ied.h tbl_dv_ied.h mgr_point.h slctpnt.h \
-		prot_ion.h ion_rootclasses.h ion_value_datastream.h \
-		ion_value_basic_array.h ion_valuestructtypes.h \
-		ion_valuearraytypes.h ion_value_basic_char.h \
-		ion_value_basic_boolean.h ion_value_basic_numeric.h \
-		ion_value_basic_float.h ion_value_basic_intsigned.h \
-		ion_value_basic_intunsigned.h ion_value_basic_time.h \
+		dnp_transport.h dnp_datalink.h dnp_datalink_packet.h \
+		dnp_object_binaryoutput.h tbl_dv_dnp.h dev_ion.h ctitypes.h \
+		dev_meter.h tbl_metergrp.h vcomdefs.h dev_ied.h tbl_dv_ied.h \
+		mgr_point.h slctpnt.h prot_ion.h ion_datastream.h ion_value.h \
+		ion_serializable.h ion_value_fixed.h ion_value_variable.h \
+		ion_value_variable_fixedarray.h \
+		ion_value_variable_fixedarray_element.h \
+		ion_value_fixed_char.h ion_value_variable_boolean.h \
+		ion_value_numeric.h ion_value_fixed_float.h \
+		ion_value_fixed_intsigned.h ion_value_fixed_intunsigned.h \
+		ion_value_struct.h ion_value_structarray.h \
 		ion_net_application.h ion_net_network.h ion_net_datalink.h \
 		dev_idlc.h tbl_dv_idlcremote.h trx_info.h porter.h dsm2err.h \
 		devicetypes.h trx_711.h dev_carrier.h dev_dlcbase.h \
@@ -1174,17 +1181,19 @@ slctdev.obj:	dev_710.h dev_idlc.h ctitypes.h types.h os2_2w32.h \
 		tbl_pt_unit.h tbl_unitmeasure.h tbl_pt_limit.h \
 		tbl_pt_analog.h dev_cbc6510.h dev_dnp.h prot_dnp.h \
 		prot_base.h xfer.h dialup.h dnp_application.h dnp_objects.h \
-		dnp_transport.h dnp_datalink.h dnp_object_binaryoutput.h \
-		tbl_dv_dnp.h dev_cbc.h tbl_dv_cbc.h dev_ccu.h mgr_point.h \
-		rtdb.h hashkey.h slctpnt.h dev_welco.h prot_welco.h \
-		dev_ilex.h dev_tcu.h dev_meter.h tbl_metergrp.h vcomdefs.h \
-		dev_ied.h tbl_dv_ied.h dev_schlum.h dev_fulcrum.h dev_ion.h \
-		prot_ion.h ion_rootclasses.h ion_value_datastream.h \
-		ion_value_basic_array.h ion_valuestructtypes.h \
-		ion_valuearraytypes.h ion_value_basic_char.h \
-		ion_value_basic_boolean.h ion_value_basic_numeric.h \
-		ion_value_basic_float.h ion_value_basic_intsigned.h \
-		ion_value_basic_intunsigned.h ion_value_basic_time.h \
+		dnp_transport.h dnp_datalink.h dnp_datalink_packet.h \
+		dnp_object_binaryoutput.h tbl_dv_dnp.h dev_cbc.h tbl_dv_cbc.h \
+		dev_ccu.h mgr_point.h rtdb.h hashkey.h slctpnt.h dev_welco.h \
+		prot_welco.h dev_ilex.h dev_tcu.h dev_meter.h tbl_metergrp.h \
+		vcomdefs.h dev_ied.h tbl_dv_ied.h dev_schlum.h dev_fulcrum.h \
+		dev_ion.h prot_ion.h ion_datastream.h ion_value.h \
+		ion_serializable.h ion_value_fixed.h ion_value_variable.h \
+		ion_value_variable_fixedarray.h \
+		ion_value_variable_fixedarray_element.h \
+		ion_value_fixed_char.h ion_value_variable_boolean.h \
+		ion_value_numeric.h ion_value_fixed_float.h \
+		ion_value_fixed_intsigned.h ion_value_fixed_intunsigned.h \
+		ion_value_struct.h ion_value_structarray.h \
 		ion_net_application.h ion_net_network.h ion_net_datalink.h \
 		dev_lcu.h dev_quantum.h dev_vectron.h dev_carrier.h \
 		dev_dlcbase.h tbl_route.h tbl_carrier.h mgr_route.h \
