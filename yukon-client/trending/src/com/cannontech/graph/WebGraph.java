@@ -139,7 +139,7 @@ public class WebGraph implements Runnable
 			
 			getStartDate();
 		}
-		com.cannontech.clientutils.CTILogger.info("Next RunTime Interval: " + nextRunTime.getTime());
+		CTILogger.info("Next RunTime Interval: " + nextRunTime.getTime());
 	}
 	/**
 	 * The model[][] where the first [] holds 0:LeftModels and 1:RightModels and
@@ -185,21 +185,14 @@ public class WebGraph implements Runnable
 	{
 		if( homeDirectory == null )
 		{
-			try
-			{
-				java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("config");
-				homeDirectory = bundle.getString("webgraph_home_directory");
-				com.cannontech.clientutils.CTILogger.info("Home Directory from config.properties: " + homeDirectory);
-			}
-			catch( Exception e)
-			{
-				homeDirectory = "C:/Temp/";
-				com.cannontech.clientutils.CTILogger.info("Home Directory NOT found in config.properties, default to: " + homeDirectory);
-				com.cannontech.clientutils.CTILogger.info("Add row 'webgraph_home_directory' to config.properties.");
-			}
-			java.io.File file = new java.io.File( homeDirectory);
+			homeDirectory = ClientSession.getInstance().getRolePropertyValue(
+						WebGraphRole.HOME_DIRECTORY, "c:/temp/" );
+
+			java.io.File file = new java.io.File( homeDirectory );
 			file.mkdirs();
+			CTILogger.info("WebGraph Home Directory: " + homeDirectory);
 		}
+
 		return homeDirectory;
 	}
 	/**
@@ -238,7 +231,7 @@ public class WebGraph implements Runnable
 		synchronized(cache)
 		{
 			allPredefinedGraphsList = cache.getAllGraphDefinitions();
-			com.cannontech.clientutils.CTILogger.info(allPredefinedGraphsList);
+			CTILogger.info(allPredefinedGraphsList);
 		}
 	}
 	/**
@@ -272,14 +265,14 @@ public class WebGraph implements Runnable
 			{
 				java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("config");
 				createTimeInterval = new Integer(bundle.getString("webgraph_run_interval"));
-				com.cannontech.clientutils.CTILogger.info("RunTime Interval from config.properties: " + createTimeInterval + " seconds.");
+				CTILogger.info("RunTime Interval from config.properties: " + createTimeInterval + " seconds.");
 			}
 			catch (Exception e)
 			{
 				e.printStackTrace();
 				createTimeInterval = new Integer(900);
-				com.cannontech.clientutils.CTILogger.info("RunTime Interval NOT found in config.properties, default to: " + createTimeInterval + " seconds.");
-				com.cannontech.clientutils.CTILogger.info("Add row 'webgraph_run_interval' to config.properties.");
+				CTILogger.info("RunTime Interval NOT found in config.properties, default to: " + createTimeInterval + " seconds.");
+				CTILogger.info("Add row 'webgraph_run_interval' to config.properties.");
 			}
 		}
 		return createTimeInterval;
@@ -305,7 +298,7 @@ public class WebGraph implements Runnable
 		  CTILogger.info("User: '" + session.getUser().getUsername() + "' is not authorized to use this application, exiting.");
 		  System.exit(-1);				
 		}		*/
-		com.cannontech.clientutils.CTILogger.info("WebGraph - Yukon Version: " + com.cannontech.common.version.VersionTools.getYUKON_VERSION() + " - Yukon Database Version: " +com.cannontech.common.version.VersionTools.getDatabaseVersion());
+		CTILogger.info("WebGraph - Yukon Version: " + com.cannontech.common.version.VersionTools.getYUKON_VERSION() + " - Yukon Database Version: " +com.cannontech.common.version.VersionTools.getDatabaseVersion());
 	
 		System.setProperty("cti.app.name", "WebGraph");
 		WebGraph webGraph = new WebGraph();
@@ -367,7 +360,7 @@ public class WebGraph implements Runnable
 			}
 		}
 		else
-			com.cannontech.clientutils.CTILogger.error("Text variable is null -> writeHTML");
+			CTILogger.error("Text variable is null -> writeHTML");
 		
 	
 	}
@@ -385,7 +378,7 @@ public class WebGraph implements Runnable
 				{
 					if( msg.getDatabase() == DBChangeMsg.CHANGE_GRAPH_DB)
 					{
-						com.cannontech.clientutils.CTILogger.info("DBChangeMSG received, updating graphDefinitionCache.");
+						CTILogger.info("DBChangeMSG received, updating graphDefinitionCache.");
 						getPredefinedGraphs();
 					}
 				}
@@ -434,28 +427,28 @@ public class WebGraph implements Runnable
 				
 				if( getNextRunTime().getTime().compareTo(now) <= 0)
 				{
-					com.cannontech.clientutils.CTILogger.info("Started Web Graphs, Tabular and Summary Reports Generation.");
+					CTILogger.info("Started Web Graphs, Tabular and Summary Reports Generation.");
 					
 					for (int i = 0; i < allPredefinedGraphsList.size(); i++)
 					{
-						com.cannontech.clientutils.CTILogger.info( allPredefinedGraphsList.get(i).toString());
+						CTILogger.info( allPredefinedGraphsList.get(i).toString());
 						createGDefReports(((com.cannontech.database.data.lite.LiteGraphDefinition) allPredefinedGraphsList.get(i)));
 					}
 			
-					com.cannontech.clientutils.CTILogger.info("Finished Reports Generation.");
+					CTILogger.info("Finished Reports Generation.");
 					figureNextRunTime();
 				}
 		
 					Thread.sleep(5000);
 					System.gc();
-		//			com.cannontech.clientutils.CTILogger.info(" $Free/ " +Runtime.getRuntime().freeMemory());
-		//			com.cannontech.clientutils.CTILogger.info(" $Total/ "+ Runtime.getRuntime().totalMemory());
-					//com.cannontech.clientutils.CTILogger.info("Sleeping!!!");
+		//			CTILogger.info(" $Free/ " +Runtime.getRuntime().freeMemory());
+		//			CTILogger.info(" $Total/ "+ Runtime.getRuntime().totalMemory());
+					//CTILogger.info("Sleeping!!!");
 			}		
 		}
 		catch (InterruptedException ie)
 		{
-			com.cannontech.clientutils.CTILogger.info("Interrupted Exception!!!");
+			CTILogger.info("Interrupted Exception!!!");
 		}
 
 	}
