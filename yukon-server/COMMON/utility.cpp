@@ -332,10 +332,26 @@ BOOL OutEchoToIN(const OUTMESS *Out, INMESS *In)
 {
     BOOL bRet = FALSE;
 
+    // Clear it...
+    memset(In, 0, sizeof(INMESS));
+
     /* Lotsa stuff requires the InMessage to be loaded so load it */
     memcpy(&(In->Return), &(Out->Request), sizeof(PIL_ECHO));
     //  save this for the macro routes
     In->Priority = Out->Priority;
+
+    In->DeviceID            = Out->DeviceID;
+    In->TargetID            = Out->TargetID;
+
+    In->Remote              = Out->Remote;
+    In->Port                = Out->Port;
+    In->Sequence            = Out->Sequence;
+    In->ReturnNexus         = Out->ReturnNexus;
+    In->SaveNexus           = Out->SaveNexus;
+    In->Priority            = Out->Priority;
+
+    In->DeviceIDofLMGroup   = Out->DeviceIDofLMGroup;
+    In->TrxID               = Out->TrxID;
 
     return bRet;
 }
@@ -713,20 +729,6 @@ void LogMessage( LPCTSTR lpszMsg )
 
 void identifyProject(const CTICOMPILEINFO &Info)
 {
-/*
-   static struct {
-      char *proj;
-      int major;
-      int minor;
-      int build;
-   } CompileInfo = {
-      PROJECT,
-      MAJORREVISION,
-      MINORREVISION,
-      BUILDNUMBER
-   };
-*/
-
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         if(Info.date)
@@ -753,15 +755,6 @@ void identifyProject(const CTICOMPILEINFO &Info)
 
 void identifyProjectComponents(const CTICOMPONENTINFO *pInfo)
 {
-/*
-   static struct {
-      char *fname;
-      double rev;
-      char *date;
-   } VersionInfo[];
-
-*/
-
     for(int i = 0 ; pInfo[i].fname != NULL ; i++)
     {
         {
