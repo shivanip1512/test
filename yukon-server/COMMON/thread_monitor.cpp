@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2004/09/21 14:34:16 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2004/09/22 16:03:54 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002, 2003, 2004 Cannon Technologies Inc. All rights reserved.
 *---------------------------------------------------------------------------------------------*/
@@ -24,7 +24,7 @@
 //===========================================================================================================
 
 CtiThreadMonitor::CtiThreadMonitor() :
-_quit( false )
+   _quit( false )
 {
 }
 
@@ -36,15 +36,13 @@ CtiThreadMonitor::~CtiThreadMonitor()
 }
 
 //===========================================================================================================
-// NOTE: it must be verified that pids are ints and not dwords or something...
 //===========================================================================================================
 
 void CtiThreadMonitor::run( void )
 {
-
    {
       CtiLockGuard<CtiLogger> doubt_guard( dout );
-      dout << "Monitor starting up" << endl;
+      dout << now() << " Monitor Startup" << endl;
    }
 
    while( !_quit )
@@ -62,9 +60,8 @@ void CtiThreadMonitor::run( void )
 
    {
       CtiLockGuard<CtiLogger> doubt_guard( dout );
-      dout << "Monitor dying!" << endl;
+      dout << now() << " Monitor Shutdown" << endl;
    }
-
 }
 
 //===========================================================================================================
@@ -82,15 +79,10 @@ void CtiThreadMonitor::checkForExpriration( void )
       {
          CtiThreadRegData temp = i->second;
 
-         ptime check = temp.getTickledTime() + seconds( temp.getTickleFreq() );
+         ptime check = temp.getTickledTime() + seconds( temp.getTickleFreq() );  //needs validation
 
          if( check < now  )
          {
-            {
-               CtiLockGuard<CtiLogger> doubt_guard( dout );
-               dout << "Setting thread with id " << i->first << " to not reported " << endl;
-            }
-
             i->second.setReported( false );
          }
       } 
@@ -111,8 +103,12 @@ void CtiThreadMonitor::processQueue( void )
 
       pair< ThreadData::iterator, bool > insertpair;
 
+      //we try to put the element from the queue into the map
       insertpair = _threadData.insert( ThreadData::value_type( tempId, *temp ) );
 
+      //if we succeed, that element did not exist in the map before
+      //if we fail, we've heard from a thread we already knew about, 
+      //so update the time and reported
       if( !insertpair.second )
       {
          //note that we heard from a particular thread
@@ -125,7 +121,7 @@ void CtiThreadMonitor::processQueue( void )
 }
 
 //===========================================================================================================
-// run through map yet again, doing whatever appropriate with the remaining expired
+// run through map yet again, doing whatever appropriate with the remaining expired threads
 //===========================================================================================================
 
 void CtiThreadMonitor::processExpired( void )
@@ -134,47 +130,86 @@ void CtiThreadMonitor::processExpired( void )
    {
       if( !i->second.getReported() )
       {
+         //get any functions we should use
          CtiThreadRegData::fooptr hammer = i->second.getShutdownFunc();
-         CtiThreadRegData::fooptr alt = i->second.getAlternate();
+         CtiThreadRegData::fooptr alt = i->second.getAlternateFunc();
+
+         //get any args we should use
+         void* hammerArgs = i->second.getShutdownArgs();
+         void* altArgs = i->second.getAlternateArgs();
 
          {
             CtiLockGuard<CtiLogger> doubt_guard( dout );
-            dout << "Thread w/ID " << i->first << " is AWOL" << endl;
+            dout << now() << " Thread w/ID " << i->first << " is UNREPORTED" << endl;
          }
 
          int reaction_type = i->second.getBehaviour();
 
          switch( reaction_type )
          {
-         case 0:  //FIXME must use defined types
+         case CtiThreadRegData::None:  
             {
             }
             break;
 
-         case 1:
+         case CtiThreadRegData::Restart:
             {
                if( alt != NULL )
-                  alt( 0 );
+               {
+                  if( altArgs != NULL )
+                  {
+                     char **args = ( char **)altArgs;
+                     alt( args );
+                  }
+                  else
+                  {
+                     alt( 0 );
+                  }
+               }
             }
             break;
 
-         case 2:
+         case CtiThreadRegData::KillApp:
             {
                if( alt != NULL )
-                  alt( 0 );
+               {
+                  if( altArgs != NULL )
+                  {
+                     char **args = (char**)altArgs;
+                     alt( args );
+                  }
+                  else
+                  {
+                     alt( 0 );
+                  }
+               }
 
                if( hammer != NULL )
-                  hammer( 0 );
+               {
+                  if( hammerArgs != NULL )
+                  {
+                     char **args = (char**)hammerArgs;
+                     hammer( args );
+                  }
+                  else
+                  {
+                     hammer( 0 );
+                  }
+               }
             }
             break;
 
          default:
             {
+               CtiLockGuard<CtiLogger> doubt_guard( dout );
+               dout << "Illegal behaviour type for id " << i->first << endl;
             }
             break;
          }
 
+
          i = _threadData.erase( i );
+//         i = removeThread( i->first ); //like to use this, but then the return type has to be known elsewhere
 
          if( i == _threadData.end() )
             break;
@@ -198,7 +233,7 @@ void CtiThreadMonitor::dump( void )
       dout << "Thread name             : " << temp.getName() << endl;
       dout << "Thread id               : " << temp.getId() << endl;
       dout << "Thread behaviour type   : " << temp.getBehaviour() << endl;
-      dout << "Thread frequency        : " << temp.getTickleFreq() << endl; 
+      dout << "Thread tickle frequency : " << temp.getTickleFreq() << endl; 
       dout << endl;
    }  
 }
@@ -216,38 +251,36 @@ void CtiThreadMonitor::insertThread( CtiThreadRegData *in )
       _queue.putQueue( in );
 
       {
+         ptime now( second_clock::local_time() );
+
          CtiLockGuard<CtiLogger> doubt_guard( dout );
-         dout << "Thread " << in->getId() << " inserted" << endl;
+         dout << boost::posix_time::to_simple_string( now ) << " Thread " << in->getId() << " inserted" << endl;
       }
    }
    else
    {
       CtiLockGuard<CtiLogger> doubt_guard( dout );
-      dout << "Thread id INVALID" << endl;
+      dout << now() <<" Thread id INVALID" << endl;
    }
 }
 
 //===========================================================================================================
-// we need to check to see if the thread's last reported tickle is recent enough to let it keep going
+// this guy will allow a thread that has registered and is done working to un-register with us politely
 //===========================================================================================================
 
-bool CtiThreadMonitor::noReport( CtiThreadRegData candidate )
+//CtiThreadMonitor::ThreadData::iterator CtiThreadMonitor::removeThread( int id )
+void CtiThreadMonitor::removeThread( int id )
 {
-   return false;//temp 
-}
+   ThreadData::iterator i = _threadData.find( id );
 
-//===========================================================================================================
-//===========================================================================================================
+   i = _threadData.erase( i );
 
-void CtiThreadMonitor::removeThread( int index )
-{
-}
+   {
+      CtiLockGuard<CtiLogger> doubt_guard( dout );
+      dout << now() << " Thread with id " << id << " has unregistered" << endl;
+   }
 
-//===========================================================================================================
-//===========================================================================================================
-
-void CtiThreadMonitor::report( int index )
-{
+//   return( i );
 }
 
 //===========================================================================================================
@@ -261,7 +294,15 @@ void CtiThreadMonitor::setQuit( bool in )
 //===========================================================================================================
 //===========================================================================================================
 
-void CtiThreadMonitor::stop( void )
+void CtiThreadMonitor::terminate( void )
 {
    _quit = true;
+}
+
+//===========================================================================================================
+//===========================================================================================================
+
+string CtiThreadMonitor::now( void )
+{
+   return( boost::posix_time::to_simple_string( second_clock::local_time() ) );
 }

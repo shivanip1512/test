@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2004/09/21 14:34:17 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2004/09/22 16:03:54 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002, 2003, 2004 Cannon Technologies Inc. All rights reserved.
 *---------------------------------------------------------------------------------------------*/
@@ -79,15 +79,17 @@ void CtiThreadRegData::setId( const int in )
 //===========================================================================================================
 //===========================================================================================================
 
-int CtiThreadRegData::getBehaviour( void ) 
+CtiThreadRegData::Behaviours CtiThreadRegData::getBehaviour( void ) 
 {
    return( _behaviourType );
 }
 
 //===========================================================================================================
+// this setting tells the monitor what type of action the registered thread would like us to take if there 
+// is a 'out-to-lunch' episode
 //===========================================================================================================
 
-void CtiThreadRegData::setBehaviour( int in )
+void CtiThreadRegData::setBehaviour( CtiThreadRegData::Behaviours in )
 {
    _behaviourType = in;
 }
@@ -117,6 +119,7 @@ CtiThreadRegData::fooptr CtiThreadRegData::getShutdownFunc( void )
 }
 
 //===========================================================================================================
+// this should be a function that causes the death of whatever thread has gone awry
 //===========================================================================================================
 
 void CtiThreadRegData::setShutdownFunc( fooptr in )
@@ -127,17 +130,50 @@ void CtiThreadRegData::setShutdownFunc( fooptr in )
 //===========================================================================================================
 //===========================================================================================================
 
-CtiThreadRegData::fooptr CtiThreadRegData::getAlternate( void )
+void* CtiThreadRegData::getShutdownArgs( void )
 {
-   return( _alternate );
+   return( _shutdown_args );
 }
 
 //===========================================================================================================
 //===========================================================================================================
 
-void CtiThreadRegData::setAlternate( fooptr in )
+void CtiThreadRegData::setShutdownArgs( void* args )
+{
+   _shutdown_args = args;
+}
+
+//===========================================================================================================
+//===========================================================================================================
+
+CtiThreadRegData::fooptr CtiThreadRegData::getAlternateFunc( void )
+{
+   return( _alternate );
+}
+
+//===========================================================================================================
+// this could be a restart function or whatever else seems like a good idea
+//===========================================================================================================
+
+void CtiThreadRegData::setAlternateFunc( fooptr in )
 {
    _alternate = in;
+}
+
+//===========================================================================================================
+//===========================================================================================================
+
+void* CtiThreadRegData::getAlternateArgs( void )
+{
+   return( _alt_args );
+}
+
+//===========================================================================================================
+//===========================================================================================================
+
+void CtiThreadRegData::setAlternateArgs( void* args )
+{
+   _alt_args = args;
 }
 
 //===========================================================================================================
