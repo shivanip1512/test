@@ -117,7 +117,7 @@ dispatch.exe:   $(VGOBJS) makeexe.mak
                 @echo Compiling ..\$@
                 @%cd $(OBJ)
                 $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) -o ..\$@ \
-$(VGOBJS) id_vg.obj -link $(RWLIBS) $(VGLIBS)
+$(VGOBJS) id_vg.obj -link $(RWLIBS) $(BOOSTLIBS) $(VGLIBS)
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -copy ..\$@ $(YUKONOUTPUT)
                 @%cd $(CWD)
@@ -128,7 +128,7 @@ pcmtest.exe:    $(PCMOBJS) makeexe.mak
                 @echo Compiling ..\$@
                 @%cd $(OBJ)
                 $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) -o ..\$@ \
-$(PCMOBJS) -link $(RWLIBS) $(TESTLIBS)
+$(PCMOBJS) -link $(RWLIBS) $(BOOSTLIBS) $(TESTLIBS)
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -copy ..\$@ $(YUKONOUTPUT)
                 @%cd $(CWD)
@@ -148,7 +148,7 @@ vgsinktest.exe: $(TEST2OBJS) makeexe.mak
                 @echo Compiling ..\$@
                 @%cd $(OBJ)
                 $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) -o ..\$@ \
-$(TEST2OBJS) -link $(RWLIBS) $(TESTLIBS)
+$(TEST2OBJS) -link $(RWLIBS) $(BOOSTLIBS) $(TESTLIBS)
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -copy ..\$@ $(YUKONOUTPUT)
                 @%cd $(CWD)
@@ -159,7 +159,7 @@ sigsinktest.exe: $(SIGTESTOBJS) makeexe.mak
                 @echo Compiling ..\$@
                 @%cd $(OBJ)
                 $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) -o ..\$@ \
-$(SIGTESTOBJS) -link $(RWLIBS) $(TESTLIBS)
+$(SIGTESTOBJS) -link $(RWLIBS) $(BOOSTLIBS) $(TESTLIBS)
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -copy ..\$@ $(YUKONOUTPUT)
                 @%cd $(CWD)
@@ -169,7 +169,7 @@ poker.exe: $(PORTERPOKE) makeexe.mak
                 @echo Compiling ..\$@
                 @%cd $(OBJ)
                 $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) -o ..\$@ \
-$(PORTERPOKE) -link $(RWLIBS) $(TESTLIBS)
+$(PORTERPOKE) -link $(RWLIBS) $(BOOSTLIBS) $(TESTLIBS)
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -copy ..\$@ $(YUKONOUTPUT)
                 @%cd $(CWD)
@@ -179,7 +179,7 @@ cbctest.exe: $(CBCOBJS) makeexe.mak
                 @echo Compiling ..\$@
                 @%cd $(OBJ)
                 $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) -o ..\$@ \
-$(CBCOBJS) -link $(RWLIBS) $(TESTLIBS)
+$(CBCOBJS) -link $(RWLIBS) $(BOOSTLIBS) $(TESTLIBS)
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -copy ..\$@ $(YUKONOUTPUT)
                 @%cd $(CWD)
@@ -190,7 +190,7 @@ sigsrctest.exe: $(SIGSRCTESTOBJS) makeexe.mak
                 @echo Compiling ..\$@
                 @%cd $(OBJ)
                 $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) -o ..\$@ \
-$(SIGSRCTESTOBJS) -link $(RWLIBS) $(TESTLIBS)
+$(SIGSRCTESTOBJS) -link $(RWLIBS) $(BOOSTLIBS) $(TESTLIBS)
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -copy ..\$@ $(YUKONOUTPUT)
                 @%cd $(CWD)
@@ -200,7 +200,7 @@ cmdtest.exe: $(CMDTESTOBJS) makeexe.mak
                 @echo Compiling ..\$@
                 @%cd $(OBJ)
                 $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) -o ..\$@ \
-$(CMDTESTOBJS) -link $(RWLIBS) $(TESTLIBS)
+$(CMDTESTOBJS) -link $(RWLIBS) $(BOOSTLIBS) $(TESTLIBS)
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -copy ..\$@ $(YUKONOUTPUT)
                 @%cd $(CWD)
