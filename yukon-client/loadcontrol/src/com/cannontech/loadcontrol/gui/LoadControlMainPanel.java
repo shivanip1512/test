@@ -56,7 +56,8 @@ public class LoadControlMainPanel extends javax.swing.JPanel implements ButtonBa
 
 	public final static String LOAD_MANAGEMENT_NAME = "Load Management";
 	public final static String LOADCONTROL_VERSION = 
-			com.cannontech.common.version.VersionTools.getYUKON_VERSION() + ".2.13";
+			com.cannontech.common.version.VersionTools.getYUKON_VERSION();
+
 	private javax.swing.JScrollPane ivjJScrollPaneBottomTable = null;
 	private javax.swing.JScrollPane ivjJScrollPaneControlArea = null;
 /**
