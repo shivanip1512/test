@@ -352,7 +352,8 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDataFormat
 		int validSeriesLength = 0;
 		for( int i = 0; i < tSeries.length; i++)
 		{
-			if( tSeries[i].getType().equalsIgnoreCase("graph"))
+			if( tSeries[i].getType().equalsIgnoreCase(com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES)
+				|| tSeries[i].getType().equalsIgnoreCase(com.cannontech.database.db.graph.GraphDataSeries.YESTERDAY_SERIES))
 			{
 				tNamesVector.add(tSeries[i].getLabel().toString());
 				validSeriesLength++;
