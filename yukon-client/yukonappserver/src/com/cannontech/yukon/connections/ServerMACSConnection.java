@@ -1,11 +1,5 @@
 package com.cannontech.yukon.connections;
 
-import java.rmi.RemoteException;
-
-import javax.ejb.EJBException;
-import javax.ejb.SessionBean;
-import javax.ejb.SessionContext;
-
 import com.cannontech.yukon.IMACSConnection;
 import com.cannontech.yukon.IConnectionBase;
 import com.cannontech.common.util.MessageEventListener;
@@ -152,14 +146,16 @@ public class ServerMACSConnection extends ClientConnection implements IMACSConne
 	
 			// store the list
 			getCategoryNames().put( sched.getCategoryName(), list );
-	
-			 // tell our listeners we have added a new category
-			setChanged();
-			notifyObservers( new MACSCategoryChange( 
-										this, 
-										MACSCategoryChange.INSERT, 
-										sched.getCategoryName()) );
 		}
+		
+		
+	  
+	  // always tell our listeners we may have added a new category
+	  setChanged();
+	  notifyObservers( new MACSCategoryChange( 
+								  this, 
+								  MACSCategoryChange.INSERT, 
+								  sched.getCategoryName()) );		
 	
 	}
 
@@ -176,7 +172,7 @@ public class ServerMACSConnection extends ClientConnection implements IMACSConne
 		}
 	}
 
-	public void doHandleMessage(Object obj)
+	public synchronized void doHandleMessage(Object obj)
 	{
 		if( obj instanceof Schedule )
 		{
@@ -272,7 +268,7 @@ public class ServerMACSConnection extends ClientConnection implements IMACSConne
 	 * Creation date: (2/23/2001 10:37:45 AM)
 	 * @param multi com.cannontech.message.dispatch.message.Multi
 	 */
-	private synchronized void handleDeleteSchedule(com.cannontech.message.macs.message.DeleteSchedule deleted) 
+	private void handleDeleteSchedule(com.cannontech.message.macs.message.DeleteSchedule deleted) 
 	{
 		synchronized ( getSchedules() ) 
 		{
@@ -297,7 +293,7 @@ public class ServerMACSConnection extends ClientConnection implements IMACSConne
 	 * Creation date: (2/21/2001 6:03:46 PM)
 	 * @param sched com.cannontech.macs.Info
 	 */
-	private synchronized void handleInfo(com.cannontech.message.macs.message.Info info) 
+	private void handleInfo(com.cannontech.message.macs.message.Info info) 
 	{
 		com.cannontech.clientutils.CTILogger.info("Received an Info msg : " + info.getInfo()  );
 		
@@ -340,7 +336,7 @@ public class ServerMACSConnection extends ClientConnection implements IMACSConne
 	 * Creation date: (2/21/2001 6:03:46 PM)
 	 * @param sched com.cannontech.macs.Schedule
 	 */
-	private synchronized void handleSchedule(Schedule sched) 
+	private void handleSchedule(Schedule sched) 
 	{
 		com.cannontech.clientutils.CTILogger.info("Received a schedule named " + sched.getScheduleName() + "/" + sched.getCategoryName() );
 	
@@ -379,7 +375,7 @@ public class ServerMACSConnection extends ClientConnection implements IMACSConne
 	 * Creation date: (2/21/2001 6:03:46 PM)
 	 * @param sched com.cannontech.macs.Info
 	 */
-	private synchronized void handleScriptFile(com.cannontech.message.macs.message.ScriptFile file) 
+	private void handleScriptFile(com.cannontech.message.macs.message.ScriptFile file) 
 	{
 		com.cannontech.clientutils.CTILogger.info("Received a ScriptFile " + file.getFileName()  );
 	

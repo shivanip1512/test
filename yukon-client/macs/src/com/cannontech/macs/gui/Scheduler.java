@@ -35,7 +35,11 @@ public Scheduler()
 	initialize();
 }
 
-public void initChild() {}
+public void initChild() 
+{
+	//always ask for all the schedules
+	//executeRefreshButton();
+}
 
 /**
  * This method was created in VisualAge.
@@ -51,7 +55,7 @@ public void actionPerformed(ActionEvent event) {
  * Creation date: (8/7/00 3:41:18 PM)
  */
 // Takes a JComponent and adds an ActionListener to it
-public void addActionListenerToJComponent( javax.swing.JComponent component )
+public synchronized void addActionListenerToJComponent( javax.swing.JComponent component )
 {
 	if( component instanceof javax.swing.JComboBox )
 	{
@@ -502,52 +506,36 @@ public void silenceAlarms() {}
  * @param source Observable
  * @param obj java.lang.Object
  */
-public void update(java.util.Observable source, Object obj )
+public synchronized void update(java.util.Observable source, Object obj )
 {
 	if( source instanceof IMACSConnection
 		 && obj instanceof MACSCategoryChange )
 	{
 		final MACSCategoryChange msg = (MACSCategoryChange)obj;
-			
+
 		if( getComboBox() != null )
 		{				
 			if( msg.id == MACSCategoryChange.INSERT )
 			{
-				javax.swing.SwingUtilities.invokeLater( new Runnable()
-				{
-					public void run()
+				boolean fnd = false;
+				for( int i = 0; i < getComboBox().getItemCount(); i++ )
+					if( getComboBox().getItemAt(i).equals(msg.arg) )
 					{
-						getComboBox().addItem( msg.arg.toString() );
+						fnd = true;
+						break;
 					}
-				});
-
+				
+				if( !fnd )
+					getComboBox().addItem( msg.arg.toString() );
 			}
 			else if( msg.id == MACSCategoryChange.DELETE )
 			{
-				javax.swing.SwingUtilities.invokeLater( new Runnable()
-				{
-					public void run()
-					{
-						getComboBox().removeItem( msg.arg.toString() );
-					}
-				});
-
+				getComboBox().removeItem( msg.arg.toString() );
 			}
 			else if( msg.id == MACSCategoryChange.DELETE_ALL ) // remove all items
 			{
-				javax.swing.SwingUtilities.invokeLater( new Runnable()
-				{
-					public void run()
-					{
-						getComboBox().setSelectedIndex(0);
-						
-						for( int i = 1; i < getComboBox().getItemCount(); i++ )
-						{
-							getComboBox().removeItemAt(1);
-						}
-					}
-				});
-
+				getComboBox().setSelectedIndex(-1);
+				getComboBox().removeAllItems();
 			}	
 		}
 	}
