@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct31X.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2002/11/15 14:08:16 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2002/11/20 20:20:14 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -744,137 +744,154 @@ INT CtiDeviceMCT31X::decodeGetStatusIED(INMESS *InMessage, RWTime &TimeNow, RWTP
 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
-        switch( InMessage->Sequence )
+        for( int i = 0; i < 12; i++ )
         {
-            case CtiProtocolEmetcon::GetStatus_IEDLink:
-            {
-                for( int i = 0; i < 4; i++ )  //  excluding byte 7 - it's a bitfield, not BCD
-                {
-                    //  BCD is not make happiness.  so FIX!  Whee!
-                    DSt->Message[i] = (((DSt->Message[i] & 0xf0) / 16) * 10) + (DSt->Message[i] & 0x0f);
-                }
-
-                switch( getIEDPort().getIEDType() )
-                {
-                    case (CtiTableDeviceMCTIEDPort::AlphaPowerPlus):
-
-                        resultString += getName() + " / IED / Alpha status:\n";
-
-                        if( DSt->Message[0] & 0x01 )    resultString += "  Time Change\n";
-                        if( DSt->Message[0] & 0x02 )    resultString += "  Autoread or Season change Demand Reset\n";
-                        if( DSt->Message[0] & 0x08 )    resultString += "  Write Protected\n";
-                        if( DSt->Message[0] & 0x20 )    resultString += "  Power Fail Flag\n";
-                        if( DSt->Message[0] & 0x40 )    resultString += "  Season Change Flag\n";
-                        if( DSt->Message[0] & 0x80 )    resultString += "  Autoread Flag\n";
-
-                        resultString += getName() + " / IED / Comm status to Alpha:\n";
-
-                        switch( (DSt->Message[1] & 0xf0) >> 4 )
-                        {
-                            case 0:     resultString += "  Normal communications\n";                break;
-                            case 1:     resultString += "  Bad CRC from Alpha\n";                   break;
-                            case 2:     resultString += "  Comm lockout for Function\n";            break;
-                            case 3:     resultString += "  Illegal command, syntax, or length\n";   break;
-                            case 4:     resultString += "  Framing error\n";                        break;
-                            case 5:     resultString += "  Timeout error\n";                        break;
-                            case 6:     resultString += "  Invalid password\n";                     break;
-                            case 7:     resultString += "  NAK received from MCT\n";                break;
-                            case 15:    resultString += "  Normal communications\n";                break;
-                            default:    resultString += "  Error code " + CtiNumStr((DSt->Message[1] & 0xf0) >> 4) + " not implemented\n";
-                        }
-
-                        if( DSt->Message[1] & 0x80 )    resultString += "  Last IED write failed\n";
-
-                        resultString += "MCT to Alpha Data Link: ";
-
-                        if( DSt->Message[3] & 0x01 )
-                        {
-                            switch( DSt->Message[1] & 0x07 )
-                            {
-                                case 0:     resultString += "Communication failed\n";                   break;
-                                case 1:     resultString += "Communication failed (baud rate)\n";       break;
-                                case 2:     resultString += "Communication failed (take ctrl)\n";       break;
-                                case 3:     resultString += "Communication failed (bad password)\n";    break;
-                                case 4:     resultString += "Communication Successful (active now)\n";  break;
-                                case 5:     resultString += "Communication Successful\n";               break;
-                            }
-                        }
-                        else
-                        {
-                            resultString += "MCT's Serial Port to Alpha Disabled";
-                        }
-
-                        break;
-
-                    case (CtiTableDeviceMCTIEDPort::LandisGyrS4):
-
-                        resultString += getName() + " / IED / LGS4 status:\n";
-
-                        if( DSt->Message[0] & 0x01 )    resultString += "  S4 Low battery\n";
-                        if( DSt->Message[0] & 0x02 )    resultString += "  No S4 Programming\n";
-                        if( DSt->Message[0] & 0x04 )    resultString += "  S4 Memory Failure\n";
-                        if( DSt->Message[0] & 0x08 )    resultString += "  S4 Demand Overflow\n";
-                        if( DSt->Message[0] & 0x10 )    resultString += "  S4 Stuck Switch\n";
-                        if( DSt->Message[0] & 0x20 )    resultString += "  S4 Unsafe Power Fail\n";
-
-                        switch( (DSt->Message[1] & 0xf0) >> 4 )
-                        {
-                            case 0:     resultString += "  Normal IED Communications\n";    break;
-                            case 1:     resultString += "  NAK Bad TX to IED\n";            break;
-                            case 2:     resultString += "  Comm lockout/Bad Cmd\n";         break;
-                            case 3:     resultString += "  Unexpected Serial Int\n";        break;
-                            case 4:     resultString += "  Framing Error\n";                break;
-                            case 5:     resultString += "  Timeout Error\n";                break;
-                            case 6:     resultString += "  Invalid security key\n";         break;
-                            case 7:     resultString += "  sci data overrun\n";             break;
-                        }
-
-                        if( DSt->Message[1] & 0x08 )    resultString += "  Last IED write failed\n";
-
-                        if( DSt->Message[3] & 0x01 )
-                        {
-                            if( (DSt->Message[4] & 0xf0) == 0x30 )
-                                resultString += "  L&G S4 RX Firmware Rev: ";
-                            else
-                                resultString += "  L&G S4 Product Code " + CtiNumStr((DSt->Message[4] & 0xf0)) + ", Rev ";
-
-                            resultString += CtiNumStr((int)(DSt->Message[4] & 0x0f)) + "." + CtiNumStr((int)DSt->Message[5]) + "\n";
-
-                            resultString += "  MCT to S4 Data Link:  ";
-
-                            switch( DSt->Message[1] & 0x07 )
-                            {
-                                case 0: resultString += "  MCT to S4 Session failed ($55)\n";               break;
-                                case 1: resultString += "  MCT to S4 Session failed ($AA)\n";               break;
-                                case 2: resultString += "  MCT to S4 Session failed (bad Security key)\n";  break;
-                                case 3: resultString += "  MCT to S4 Session failed (get status)\n";        break;
-                                case 4: resultString += "  MCT to S4 Session in progress\n";                break;
-                                case 5: resultString += "  MCT to S4 communication Successful\n";           break;
-                            }
-                        }
-                        else
-                        {
-                            resultString += "  MCT to S4 Data Link:  MCT IED Meter Port Disabled\n";
-                        }
-
-                        break;
-
-                    default:
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
-                }
-
-                ReturnMsg->setResultString( resultString );
-
+            //  break if any bytes are unequal or all zero (therefore, any
+            //    zero is a break condition in addition to inequality)
+            if( (DSt->Message[i] != DSt->Message[i+1]) ||
+                (DSt->Message[i] == 0) )
                 break;
-            }
-
-            default:
+        }
+        if( i == 12 )
+        {
+            //  we never broke out of the loop - all bytes are equal, the buffer is busted
+            ReturnMsg->setResultString( "Device: " + getName() + "\nData buffer is bad, retry command" );
+            status = ALPHABUFFERERROR;
+        }
+        else
+        {
+            switch( InMessage->Sequence )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                case CtiProtocolEmetcon::GetStatus_IEDLink:
+                {
+                    for( int i = 0; i < 4; i++ )  //  excluding byte 7 - it's a bitfield, not BCD
+                    {
+                        //  BCD is not make happiness.  so FIX!  Whee!
+                        DSt->Message[i] = (((DSt->Message[i] & 0xf0) / 16) * 10) + (DSt->Message[i] & 0x0f);
+                    }
+
+                    switch( getIEDPort().getIEDType() )
+                    {
+                        case (CtiTableDeviceMCTIEDPort::AlphaPowerPlus):
+
+                            resultString += getName() + " / IED / Alpha status:\n";
+
+                            if( DSt->Message[0] & 0x01 )    resultString += "  Time Change\n";
+                            if( DSt->Message[0] & 0x02 )    resultString += "  Autoread or Season change Demand Reset\n";
+                            if( DSt->Message[0] & 0x08 )    resultString += "  Write Protected\n";
+                            if( DSt->Message[0] & 0x20 )    resultString += "  Power Fail Flag\n";
+                            if( DSt->Message[0] & 0x40 )    resultString += "  Season Change Flag\n";
+                            if( DSt->Message[0] & 0x80 )    resultString += "  Autoread Flag\n";
+
+                            resultString += getName() + " / IED / Comm status to Alpha:\n";
+
+                            switch( (DSt->Message[1] & 0xf0) >> 4 )
+                            {
+                                case 0:     resultString += "  Normal communications\n";                break;
+                                case 1:     resultString += "  Bad CRC from Alpha\n";                   break;
+                                case 2:     resultString += "  Comm lockout for Function\n";            break;
+                                case 3:     resultString += "  Illegal command, syntax, or length\n";   break;
+                                case 4:     resultString += "  Framing error\n";                        break;
+                                case 5:     resultString += "  Timeout error\n";                        break;
+                                case 6:     resultString += "  Invalid password\n";                     break;
+                                case 7:     resultString += "  NAK received from MCT\n";                break;
+                                case 15:    resultString += "  Normal communications\n";                break;
+                                default:    resultString += "  Error code " + CtiNumStr((DSt->Message[1] & 0xf0) >> 4) + " not implemented\n";
+                            }
+
+                            if( DSt->Message[1] & 0x80 )    resultString += "  Last IED write failed\n";
+
+                            resultString += "MCT to Alpha Data Link: ";
+
+                            if( DSt->Message[3] & 0x01 )
+                            {
+                                switch( DSt->Message[1] & 0x07 )
+                                {
+                                    case 0:     resultString += "Communication failed\n";                   break;
+                                    case 1:     resultString += "Communication failed (baud rate)\n";       break;
+                                    case 2:     resultString += "Communication failed (take ctrl)\n";       break;
+                                    case 3:     resultString += "Communication failed (bad password)\n";    break;
+                                    case 4:     resultString += "Communication Successful (active now)\n";  break;
+                                    case 5:     resultString += "Communication Successful\n";               break;
+                                }
+                            }
+                            else
+                            {
+                                resultString += "MCT's Serial Port to Alpha Disabled";
+                            }
+
+                            break;
+
+                        case (CtiTableDeviceMCTIEDPort::LandisGyrS4):
+
+                            resultString += getName() + " / IED / LGS4 status:\n";
+
+                            if( DSt->Message[0] & 0x01 )    resultString += "  S4 Low battery\n";
+                            if( DSt->Message[0] & 0x02 )    resultString += "  No S4 Programming\n";
+                            if( DSt->Message[0] & 0x04 )    resultString += "  S4 Memory Failure\n";
+                            if( DSt->Message[0] & 0x08 )    resultString += "  S4 Demand Overflow\n";
+                            if( DSt->Message[0] & 0x10 )    resultString += "  S4 Stuck Switch\n";
+                            if( DSt->Message[0] & 0x20 )    resultString += "  S4 Unsafe Power Fail\n";
+
+                            switch( (DSt->Message[1] & 0xf0) >> 4 )
+                            {
+                                case 0:     resultString += "  Normal IED Communications\n";    break;
+                                case 1:     resultString += "  NAK Bad TX to IED\n";            break;
+                                case 2:     resultString += "  Comm lockout/Bad Cmd\n";         break;
+                                case 3:     resultString += "  Unexpected Serial Int\n";        break;
+                                case 4:     resultString += "  Framing Error\n";                break;
+                                case 5:     resultString += "  Timeout Error\n";                break;
+                                case 6:     resultString += "  Invalid security key\n";         break;
+                                case 7:     resultString += "  sci data overrun\n";             break;
+                            }
+
+                            if( DSt->Message[1] & 0x08 )    resultString += "  Last IED write failed\n";
+
+                            if( DSt->Message[3] & 0x01 )
+                            {
+                                if( (DSt->Message[4] & 0xf0) == 0x30 )
+                                    resultString += "  L&G S4 RX Firmware Rev: ";
+                                else
+                                    resultString += "  L&G S4 Product Code " + CtiNumStr((DSt->Message[4] & 0xf0)) + ", Rev ";
+
+                                resultString += CtiNumStr((int)(DSt->Message[4] & 0x0f)) + "." + CtiNumStr((int)DSt->Message[5]) + "\n";
+
+                                resultString += "  MCT to S4 Data Link:  ";
+
+                                switch( DSt->Message[1] & 0x07 )
+                                {
+                                    case 0: resultString += "  MCT to S4 Session failed ($55)\n";               break;
+                                    case 1: resultString += "  MCT to S4 Session failed ($AA)\n";               break;
+                                    case 2: resultString += "  MCT to S4 Session failed (bad Security key)\n";  break;
+                                    case 3: resultString += "  MCT to S4 Session failed (get status)\n";        break;
+                                    case 4: resultString += "  MCT to S4 Session in progress\n";                break;
+                                    case 5: resultString += "  MCT to S4 communication Successful\n";           break;
+                                }
+                            }
+                            else
+                            {
+                                resultString += "  MCT to S4 Data Link:  MCT IED Meter Port Disabled\n";
+                            }
+
+                            break;
+
+                        default:
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+                    }
+
+                    ReturnMsg->setResultString( resultString );
+
+                    break;
+                }
+
+                default:
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
             }
         }
     }
@@ -925,100 +942,117 @@ INT CtiDeviceMCT31X::decodeGetConfigIED(INMESS *InMessage, RWTime &TimeNow, RWTP
 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
-        switch( InMessage->Sequence )
+        for( int i = 0; i < 12; i++ )
         {
-            case CtiProtocolEmetcon::GetConfig_IEDTime:
+            //  break if any bytes are unequal or all zero (therefore, any
+            //    zero is a break condition in addition to inequality)
+            if( (DSt->Message[i] != DSt->Message[i+1]) ||
+                (DSt->Message[i] == 0) )
+                break;
+        }
+        if( i == 12 )
+        {
+            //  we never broke out of the loop - all bytes are equal, the buffer is busted
+            ReturnMsg->setResultString( "Device: " + getName() + "\nData buffer is bad, retry command" );
+            status = ALPHABUFFERERROR;
+        }
+        else
+        {
+            switch( InMessage->Sequence )
             {
-                for( int i = 0; i < 7; i++ )  //  excluding byte 7 - it's a bitfield, not BCD
+                case CtiProtocolEmetcon::GetConfig_IEDTime:
                 {
-                    //  BCD is not make happiness.  so FIX!  Whee!
-                    DSt->Message[i] = (((DSt->Message[i] & 0xf0) / 16) * 10) + (DSt->Message[i] & 0x0f);
-                }
+                    for( int i = 0; i < 7; i++ )  //  excluding byte 7 - it's a bitfield, not BCD
+                    {
+                        //  BCD is not make happiness.  so FIX!  Whee!
+                        DSt->Message[i] = (((DSt->Message[i] & 0xf0) / 16) * 10) + (DSt->Message[i] & 0x0f);
+                    }
 
-                switch( getIEDPort().getIEDType() )
-                {
-                    case (CtiTableDeviceMCTIEDPort::AlphaPowerPlus):
-                        resultString += getName() + " / IED / current time: ";
-                        resultString += CtiNumStr((int)DSt->Message[1]).zpad(2) + "/" +
-                                        CtiNumStr((int)DSt->Message[2]).zpad(2) + "/" +
-                                        CtiNumStr((int)DSt->Message[0]).zpad(2) + " " +
-                                        CtiNumStr((int)DSt->Message[3]).zpad(2) + ":" +
-                                        CtiNumStr((int)DSt->Message[4]).zpad(2) + ":" +
-                                        CtiNumStr((int)DSt->Message[5]).zpad(2) + "\n";
-                        resultString += "Demand Reset Count: " + CtiNumStr((int)DSt->Message[6]) + "\n";
-                        resultString += "Current TOU Rate: " + RWCString((char)('A' + ((DSt->Message[7] & 0x0C) >> 2)));
-                        break;
+                    switch( getIEDPort().getIEDType() )
+                    {
+                        case (CtiTableDeviceMCTIEDPort::AlphaPowerPlus):
+                            resultString += getName() + " / IED / current time: ";
+                            resultString += CtiNumStr((int)DSt->Message[1]).zpad(2) + "/" +
+                                            CtiNumStr((int)DSt->Message[2]).zpad(2) + "/" +
+                                            CtiNumStr((int)DSt->Message[0]).zpad(2) + " " +
+                                            CtiNumStr((int)DSt->Message[3]).zpad(2) + ":" +
+                                            CtiNumStr((int)DSt->Message[4]).zpad(2) + ":" +
+                                            CtiNumStr((int)DSt->Message[5]).zpad(2) + "\n";
+                            resultString += "Demand Reset Count: " + CtiNumStr((int)DSt->Message[6]) + "\n";
+                            resultString += "Current TOU Rate: " + RWCString((char)('A' + ((DSt->Message[7] & 0x0C) >> 2)));
+                            break;
 
-                    case (CtiTableDeviceMCTIEDPort::LandisGyrS4):
-                        resultString += getName() + " / IED / current time: ";
-                        if( DSt->Message[6] <= 5 )
+                        case (CtiTableDeviceMCTIEDPort::LandisGyrS4):
+                            resultString += getName() + " / IED / current time: ";
+                            if( DSt->Message[6] <= 5 )
+                            {
+                                resultString += "(autoread #" + CtiNumStr((int)DSt->Message[6] + 1) + ") ";
+                            }
+
+                            resultString += CtiNumStr((int)DSt->Message[5]).zpad(2) + "/" +
+                                            CtiNumStr((int)DSt->Message[4]).zpad(2) + "/" +
+                                            CtiNumStr((int)DSt->Message[3]).zpad(2) + " " +
+                                            CtiNumStr((int)DSt->Message[2]).zpad(2) + ":" +
+                                            CtiNumStr((int)DSt->Message[1]).zpad(2) + ":" +
+                                            CtiNumStr((int)DSt->Message[0]).zpad(2) + "\n";
+
+                            resultString += "Outage count: " + CtiNumStr((int)DSt->Message[7]) + "\n";
+                            resultString += "Current TOU Rate: " + RWCString((char)('A' + (DSt->Message[8] & 0x07)));
+                            break;
+
+                        default:
                         {
-                            resultString += "(autoread #" + CtiNumStr((int)DSt->Message[6] + 1) + ") ";
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
-
-                        resultString += CtiNumStr((int)DSt->Message[5]).zpad(2) + "/" +
-                                        CtiNumStr((int)DSt->Message[4]).zpad(2) + "/" +
-                                        CtiNumStr((int)DSt->Message[3]).zpad(2) + " " +
-                                        CtiNumStr((int)DSt->Message[2]).zpad(2) + ":" +
-                                        CtiNumStr((int)DSt->Message[1]).zpad(2) + ":" +
-                                        CtiNumStr((int)DSt->Message[0]).zpad(2) + "\n";
-
-                        resultString += "Outage count: " + CtiNumStr((int)DSt->Message[7]) + "\n";
-                        resultString += "Current TOU Rate: " + RWCString((char)('A' + (DSt->Message[8] & 0x07)));
-                        break;
-
-                    default:
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
+
+                    ReturnMsg->setResultString( resultString );
+
+                    break;
                 }
 
-                ReturnMsg->setResultString( resultString );
-
-                break;
-            }
-
-            case CtiProtocolEmetcon::GetConfig_IEDScan:
-            {
-                switch( getIEDPort().getIEDType() )
+                case CtiProtocolEmetcon::GetConfig_IEDScan:
                 {
-                    case (CtiTableDeviceMCTIEDPort::AlphaPowerPlus):
+                    switch( getIEDPort().getIEDType() )
                     {
-                        resultString += getName() + " / Alpha Power Plus scan info:\n";
+                        case (CtiTableDeviceMCTIEDPort::AlphaPowerPlus):
+                        {
+                            resultString += getName() + " / Alpha Power Plus scan info:\n";
 
-                        if( DSt->Message[5] == 11 )
-                            resultString += "  Buffer Contains: Alpha Class 11 Billing (Current)\n";
-                        else if( DSt->Message[5] == 12 )
-                            resultString += "  Buffer Contains: Alpha Class 12 Billing (Previous)\n";
-                        else
-                            resultString += "  Buffer Contains: Alpha Class " + CtiNumStr((int)DSt->Message[5]) + "\n";
+                            if( DSt->Message[5] == 11 )
+                                resultString += "  Buffer Contains: Alpha Class 11 Billing (Current)\n";
+                            else if( DSt->Message[5] == 12 )
+                                resultString += "  Buffer Contains: Alpha Class 12 Billing (Previous)\n";
+                            else
+                                resultString += "  Buffer Contains: Alpha Class " + CtiNumStr((int)DSt->Message[5]) + "\n";
 
-                        break;
+                            break;
+                        }
+                        case (CtiTableDeviceMCTIEDPort::LandisGyrS4):
+                        {
+                            resultString += getName() + " / Landis and Gyr S4 scan info:\n";
+
+                            if( DSt->Message[5] == 0 )
+                                resultString += "  Buffer Contains: CTI Billing Data Table #" + CtiNumStr((int)DSt->Message[4] + 1) + "\n";
+                            else
+                                resultString += "  Buffer Contains: S4 Meter Read Cmd: " + CtiNumStr((int)DSt->Message[4]) + "\n";
+                            break;
+                        }
                     }
-                    case (CtiTableDeviceMCTIEDPort::LandisGyrS4):
-                    {
-                        resultString += getName() + " / Landis and Gyr S4 scan info:\n";
 
-                        if( DSt->Message[5] == 0 )
-                            resultString += "  Buffer Contains: CTI Billing Data Table #" + CtiNumStr((int)DSt->Message[4] + 1) + "\n";
-                        else
-                            resultString += "  Buffer Contains: S4 Meter Read Cmd: " + CtiNumStr((int)DSt->Message[4]) + "\n";
-                        break;
-                    }
+                    resultString += "  Scan Rate:            " + CtiNumStr(((int)DSt->Message[0] * 15) + 30).spad(4) + " seconds\n";
+                    resultString += "  Buffer refresh delay: " + CtiNumStr((int)DSt->Message[1] * 15).spad(4) + " seconds\n";
+
+                    if( DSt->Message[2] == 0 )
+                        DSt->Message[2] = 128;
+
+                    resultString += "  Scan Length:     " + CtiNumStr((int)DSt->Message[2]).spad(3) + " bytes\n";
+                    resultString += "  Scan Offset:     " + CtiNumStr( ((int)DSt->Message[3] * 256) + (int)DSt->Message[4] ).spad(3);
+
+                    ReturnMsg->setResultString( resultString );
+                    break;
                 }
-
-                resultString += "  Scan Rate:            " + CtiNumStr(((int)DSt->Message[0] * 15) + 30).spad(4) + " seconds\n";
-                resultString += "  Buffer refresh delay: " + CtiNumStr((int)DSt->Message[1] * 15).spad(4) + " seconds\n";
-
-                if( DSt->Message[2] == 0 )
-                    DSt->Message[2] = 128;
-
-                resultString += "  Scan Length:     " + CtiNumStr((int)DSt->Message[2]).spad(3) + " bytes\n";
-                resultString += "  Scan Offset:     " + CtiNumStr( ((int)DSt->Message[3] * 256) + (int)DSt->Message[4] ).spad(3);
-
-                ReturnMsg->setResultString( resultString );
-                break;
             }
         }
     }
