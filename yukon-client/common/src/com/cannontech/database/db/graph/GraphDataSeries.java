@@ -13,6 +13,15 @@ public class GraphDataSeries extends com.cannontech.database.db.DBPersistent {
 	public static final String USAGE_SERIES = "usage";
 	public static final String YESTERDAY_SERIES = "yesterday";
 	
+	public static final int GRAPH_MASK = 0x0001;
+	public static final int PEAK_MASK = 0x0002;
+	public static final int USAGE_MASK = 0x0004;
+	public static final int YESTERDAY_MASK = 0x0008;
+	
+	public static final int NORMAL_QUERY_MASK = 0x0007;
+	public static final int VALID_INTERVAL_MASK = 0x0009;
+	
+	
 	private java.lang.Integer graphDataSeriesID = null;
 	private java.lang.String type = GRAPH_SERIES;
 	private java.lang.Integer graphDefinitionID = null;
@@ -20,7 +29,10 @@ public class GraphDataSeries extends com.cannontech.database.db.DBPersistent {
 	private java.lang.String label = " ";
 	private java.lang.Character axis = new Character('L');
 	private java.lang.Integer color = null;
-
+	private Double multiplier = new Double(1.0);
+	
+	private int typeMask = GRAPH_MASK;
+	
 	public static final String tableName = "GraphDataSeries";
 	
 	//These come from the device and point unit tables
@@ -54,7 +66,8 @@ public void add() throws java.sql.SQLException
 			getLabel(),
 			getAxis(), 
 			getColor(),
-			getType()
+			getType(),
+			getMultiplier()
 		};
 		
 		add( tableName, addValues );
@@ -117,7 +130,7 @@ public static GraphDataSeries[] getAllGraphDataSeries(Integer graphDefinitionID,
 	
 //	String sqlString = "SELECT gds.GRAPHDATASERIESID, gds.TYPE, gds.POINTID, gds.LABEL, gds.AXIS, gds.COLOR, pao.PAONAME, pu.UOMID FROM GRAPHDATASERIES gds, YUKONPAOBJECT pao, POINT p, POINTUNIT pu WHERE gds.GRAPHDEFINITIONID = " + graphDefinitionID.toString() + " AND p.POINTID = GDS.POINTID AND pao.PAOBJECTID = p.PAOBJECTID AND pu.PointID = p.POINTID ORDER BY p.POINTOFFSET";
 	//Remove PointUnit table in order to get Status points visible.  Status points have no pointunit.
-	String sqlString = "SELECT gds.GRAPHDATASERIESID, gds.TYPE, gds.POINTID, gds.LABEL, gds.AXIS, gds.COLOR, pao.PAONAME FROM GRAPHDATASERIES gds, YUKONPAOBJECT pao, POINT p WHERE gds.GRAPHDEFINITIONID = " + graphDefinitionID.toString() + " AND p.POINTID = GDS.POINTID AND pao.PAOBJECTID = p.PAOBJECTID ORDER BY p.POINTOFFSET";
+	String sqlString = "SELECT gds.GRAPHDATASERIESID, gds.TYPE, gds.POINTID, gds.LABEL, gds.AXIS, gds.COLOR, pao.PAONAME, gds.MULTIPLIER FROM GRAPHDATASERIES gds, YUKONPAOBJECT pao, POINT p WHERE gds.GRAPHDEFINITIONID = " + graphDefinitionID.toString() + " AND p.POINTID = GDS.POINTID AND pao.PAOBJECTID = p.PAOBJECTID ORDER BY p.POINTOFFSET";
 
 	com.cannontech.database.SqlStatement sql = new com.cannontech.database.SqlStatement(sqlString, databaseAlias);
 
@@ -143,6 +156,7 @@ public static GraphDataSeries[] getAllGraphDataSeries(Integer graphDefinitionID,
 		String axis = (String) sql.getRow(i)[4];
 		java.math.BigDecimal color = (java.math.BigDecimal) sql.getRow(i)[5];
 		String deviceName = (String) sql.getRow(i)[6];
+		Double mult = (Double)sql.getRow(i)[7];
 //		java.math.BigDecimal uomid = (java.math.BigDecimal) sql.getRow(i)[7];
 	
 		dataSeries.setGraphDataSeriesID ( new Integer( gdsID.intValue() ) );		
@@ -153,6 +167,10 @@ public static GraphDataSeries[] getAllGraphDataSeries(Integer graphDefinitionID,
 		dataSeries.setAxis( new Character( axis.charAt(0)) );
 		dataSeries.setColor( new Integer( color.intValue() ) );
 		dataSeries.setDeviceName(deviceName);
+		dataSeries.setMultiplier(mult);
+		
+		dataSeries.setTypeMask(type);
+		
 //		dataSeries.setUoMId(new Integer (uomid.intValue()) );
 			
 		temp.addElement( dataSeries );
@@ -216,6 +234,15 @@ public java.lang.String getLabel() {
  * Creation date: (12/14/99 10:31:33 AM)
  * @return java.lang.Long
  */
+public Double getMultiplier() {
+	
+	return multiplier;
+}
+/**
+ * Insert the method's description here.
+ * Creation date: (12/14/99 10:31:33 AM)
+ * @return java.lang.Long
+ */
 public static synchronized Integer getNextID() {
 	
 	return getNextID("yukon");
@@ -268,6 +295,10 @@ public java.lang.Integer getPointID() {
 public java.lang.String getType() {
 	return type;
 }
+public int getTypeMask()
+{
+	return typeMask;
+}
 /**
  * Insert the method's description here.
  * Creation date: (10/6/00 2:49:54 PM)
@@ -288,7 +319,8 @@ public void retrieve() throws java.sql.SQLException
 		"Label", 
 		"Axis", 
 		"Color",
-		"Type" 
+		"Type",
+		"Multiplier"
 	};
 	
 	String[] constraintColumns = {"GraphDataSeriesID"};
@@ -304,6 +336,8 @@ public void retrieve() throws java.sql.SQLException
 		setAxis(  new Character( ((String) results[3]).charAt(0) ));
 		setColor( (Integer) results[4] );
 		setType( (String) results[5] );
+		setMultiplier((Double)results[6]);
+		setTypeMask(getType());
 	}
 }
 /**
@@ -359,6 +393,14 @@ public void setLabel(java.lang.String newLabel) {
  * Creation date: (12/13/99 1:41:37 PM)
  * @param newPointID java.lang.Long
  */
+public void setMultiplier(Double newMultiplier) {
+	multiplier = newMultiplier;
+}
+/**
+ * Insert the method's description here.
+ * Creation date: (12/13/99 1:41:37 PM)
+ * @param newPointID java.lang.Long
+ */
 public void setPointID(java.lang.Integer newPointID) {
 	pointID = newPointID;
 }
@@ -369,6 +411,17 @@ public void setPointID(java.lang.Integer newPointID) {
  */
 public void setType(java.lang.String newType) {
 	type = newType;
+}
+public void setTypeMask(String newType)
+{
+	if( newType.equalsIgnoreCase(GRAPH_SERIES))
+		typeMask = GRAPH_MASK;
+	else if( newType.equalsIgnoreCase(PEAK_SERIES))
+		typeMask = PEAK_MASK;
+	else if( newType.equalsIgnoreCase(USAGE_SERIES))
+		typeMask = USAGE_MASK;
+	else if( newType.equalsIgnoreCase(YESTERDAY_SERIES))
+		typeMask = YESTERDAY_MASK;
 }
 /**
  * Insert the method's description here.
@@ -400,7 +453,8 @@ public void update() throws java.sql.SQLException
 		"Label",
 		"Axis", 
 		"Color",
-		"Type"
+		"Type",
+		"Multiplier"
 	};
 	
 	Object[] setValues = 
@@ -410,7 +464,8 @@ public void update() throws java.sql.SQLException
 		getLabel(),
 		getAxis(), 
 		getColor(),
-		getType() 
+		getType(),
+		getMultiplier()	
 	};
 
 	String[] constraintColumns = { "GraphDataSeriesID" };
