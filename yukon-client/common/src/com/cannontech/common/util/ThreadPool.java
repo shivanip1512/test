@@ -79,7 +79,6 @@ public void enqueueRunnable(Runnable runnable)
 	}
 }
 /**
- * Insert the method's description here.
  * Creation date: (3/24/00 10:21:18 AM)
  */
 private void initPool(int nThreads) 
@@ -99,7 +98,6 @@ private void initPool(int nThreads)
 	mainThread.start();
 }
 /**
- * Insert the method's description here.
  * Creation date: (3/24/00 12:47:25 PM)
  */
 public void join() 
@@ -115,7 +113,6 @@ public void join()
 	}
 }
 /**
- * Insert the method's description here.
  * Creation date: (3/24/00 11:51:34 AM)
  * @param args java.lang.String[]
  */
@@ -167,12 +164,8 @@ public static void main(String[] args)
 	{
 		com.cannontech.clientutils.CTILogger.error( t.getMessage(), t );
 	}
-
-
-	
 }
 /**
- * Insert the method's description here.
  * Creation date: (3/24/00 11:37:46 AM)
  */
 public void run() 
@@ -230,7 +223,6 @@ public void run()
 	
 }
 /**
- * Insert the method's description here.
  * Creation date: (3/24/00 12:08:14 PM)
  */
 public void stop() 
