@@ -230,7 +230,7 @@ public class UpdateCustAccountAction implements ActionBase {
 			int[] result = com.cannontech.database.db.stars.customer.CustomerAccount.searchByAccountNumber(
 					energyCompany.getEnergyCompanyID(), updateAccount.getAccountNumber() );
 			if (result != null && result.length > 0)
-				throw new WebClientException( "The account number already exists, please enter a different one." );
+				throw new WebClientException( "Account number already exists" );
 		}
         
 		LiteAddress liteBillAddr = energyCompany.getAddress( liteAccount.getBillingAddressID() );

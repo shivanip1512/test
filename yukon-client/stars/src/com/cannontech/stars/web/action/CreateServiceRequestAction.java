@@ -198,13 +198,13 @@ public class CreateServiceRequestAction implements ActionBase {
 			if (orderNo.startsWith( ServerUtils.AUTO_GEN_NUM_PREC ))
 				throw new WebClientException( "Order # cannot start with reserved string '" + ServerUtils.AUTO_GEN_NUM_PREC + "'" );
 			if (WorkOrderBase.orderNumberExists( orderNo, energyCompany.getEnergyCompanyID() ))
-				throw new WebClientException( "Order # already exists, please enter a different one" );
+				throw new WebClientException( "Order # already exists" );
 		}
 		else {
 			// Order # not provided, get the next one available
 			orderNo = energyCompany.getNextOrderNumber();
 			if (orderNo == null)
-				throw new WebClientException( "Cannot assign an order #" );
+				throw new WebClientException( "Failed to assign an order # automatically" );
 			createOrder.setOrderNumber( ServerUtils.AUTO_GEN_NUM_PREC + orderNo );
 		}
         

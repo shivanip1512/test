@@ -243,14 +243,14 @@ public class UpdateLoginAction implements ActionBase {
 				throw new WebClientException( "Username and password cannot be empty" );
 		    
 			if (!checkLogin( updateLogin ))
-				throw new WebClientException( "Username already exists, please enter a different one" );
+				throw new WebClientException( "Username already exists" );
 		    
 			LiteYukonUser liteUser = createLogin( updateLogin, liteContact, energyCompany );
 		}
 		else if (username.trim().length() == 0) {
 			// Remove customer login
 			if (password.trim().length() > 0)
-				throw new WebClientException( "Username is empty. To remove the login, clear both username and password" );
+				throw new WebClientException( "Username is empty. To remove the login, clear both username and password." );
 		    
 			deleteLogin( userID, liteContact );
 		}
@@ -258,7 +258,7 @@ public class UpdateLoginAction implements ActionBase {
 			// Update customer login
 			LiteYukonUser liteUser = YukonUserFuncs.getLiteYukonUser( userID );
 			if (!liteUser.getUsername().equalsIgnoreCase(username) && !checkLogin(updateLogin) )
-				throw new WebClientException( "Username already exists, please enter a different one" );
+				throw new WebClientException( "Username already exists" );
 			
 			com.cannontech.database.db.user.YukonUser dbUser = (com.cannontech.database.db.user.YukonUser)
 					StarsLiteFactory.createDBPersistent( liteUser );

@@ -284,7 +284,7 @@ public class NewCustAccountAction implements ActionBase {
 		stmt.execute();
 		
 		if (stmt.getRowCount() > 0)
-			throw new WebClientException( "The account number already exists, please enter a different one." );
+			throw new WebClientException( "The account number already exists" );
         
 		// Check to see if the login is valid
 		if (updateLogin != null) {
@@ -292,7 +292,7 @@ public class NewCustAccountAction implements ActionBase {
 				throw new WebClientException( "Username and password cannot be empty" );
 		    
 			if (!UpdateLoginAction.checkLogin( updateLogin ))
-				throw new WebClientException( "Username already exists, please enter a different one" );
+				throw new WebClientException( "Username already exists" );
 		}
     	
 		/* Create yukon user */
