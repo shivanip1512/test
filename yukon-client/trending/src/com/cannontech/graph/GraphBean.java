@@ -7,7 +7,9 @@ package com.cannontech.graph;
  */
 
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Vector;
 
 import com.cannontech.clientutils.ActivityLogger;
@@ -63,8 +65,13 @@ public class GraphBean extends Graph
 	
 				if ( htmlBuffer instanceof TabularHtml)
 				{
-					((TabularHtml) htmlBuffer).setTabularStartDate(new Date(tModel.getStartDate().getTime() + (86400000 * (new Integer(page -1).longValue()) )) );
-					((TabularHtml) htmlBuffer).setTabularEndDate(new Date(tModel.getStartDate().getTime() + (86400000 * (new Integer(page).longValue()) )) );
+					GregorianCalendar tempCal = new GregorianCalendar();
+					tempCal.setTime((Date)tModel.getStartDate().clone());
+					tempCal.add(Calendar.DATE, (page - 1));
+					((TabularHtml) htmlBuffer).setTabularStartDate(tempCal.getTime());
+
+					tempCal.add(Calendar.DATE, 1);	//incr date by one
+					((TabularHtml) htmlBuffer).setTabularEndDate(tempCal.getTime());
 				}
 	
 				htmlBuffer.getHtml( returnBuffer );
@@ -305,6 +312,7 @@ public class GraphBean extends Graph
 			logDesc += litePAO.getYukonID() + ", ";
 		}
 		ActivityLogger.logEvent(liteYukonUser.getUserID(), ActivityLogActions.SCAN_DATA_NOW_ACTION, logDesc);
+		getDataNow(paObjects);
 		return new SessionAttribute( ServletUtil.ATT_CONFIRM_MESSAGE, "Alternate Scans of Selected Meters Started." );
 	}				
 }
