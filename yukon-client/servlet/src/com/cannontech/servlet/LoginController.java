@@ -55,7 +55,7 @@ public class LoginController extends javax.servlet.http.HttpServlet {
  * @exception java.io.IOException The exception description.
  */
 public void service(HttpServletRequest req, HttpServletResponse resp) throws javax.servlet.ServletException, java.io.IOException 
-{
+{	
 	String action = req.getParameter(ACTION).toString();
 	String redirectURI = req.getParameter(REDIRECT);
 	String referer = req.getHeader("referer");
@@ -77,6 +77,7 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 				String loginUrl = AuthFuncs.getRolePropertyValue(user, WebClientRole.LOG_IN_URL, LOGIN_URI);
 				Cookie c = new Cookie(LOGIN_URL_COOKIE, loginUrl);
 				c.setPath("/");
+				c.setMaxAge(Integer.MAX_VALUE);
 				resp.addCookie(c);
 				
 			} catch(TransactionException e) {
@@ -114,7 +115,9 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 				session = req.getSession( true );
 				session.setAttribute(SAVED_YUKON_USER, savedUser);
 			}
-			logEvent(user.getUsername(),"User Logout", "User " + user.getUsername() + " (userid=" + user.getUserID() + ") has logged out from " + req.getRemoteAddr());
+			if(user != null) {
+				logEvent(user.getUsername(),"User Logout", "User " + user.getUsername() + " (userid=" + user.getUserID() + ") has logged out from " + req.getRemoteAddr());
+			}
 		}
 
 		//Try to send them back to where they logged in from
