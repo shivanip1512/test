@@ -1,5 +1,4 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
-<%@ page import="com.cannontech.stars.web.util.StarsAdminUtil" %>
 <%
 	String referer = request.getParameter("referer");
 	if (referer == null) {

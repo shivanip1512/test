@@ -1,5 +1,4 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
-<%@ page import="com.cannontech.stars.web.util.StarsAdminUtil" %>
 <%
 	StarsServiceCompany company = null;
 	int compIdx = Integer.parseInt( request.getParameter("Company") );

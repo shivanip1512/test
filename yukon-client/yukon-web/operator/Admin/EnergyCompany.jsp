@@ -1,7 +1,6 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.database.cache.functions.PAOFuncs" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonGroup" %>
-<%@ page import="com.cannontech.stars.web.util.StarsAdminUtil" %>
 <%
 	String action = request.getParameter("action");
 	if (action == null) action = "";
