@@ -112,15 +112,14 @@
 	StarsUser userLogin = null;
 	
 	accountInfo = (StarsCustAccountInformation) session.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
-	if (accountInfo != null) {
-		// Try to register the account
-		if (!liteEC.registerActiveAccount(accountInfo)) {
-			accountInfo = liteEC.getStarsCustAccountInformation(accountInfo.getStarsCustomerAccount().getAccountID(), true);
-			if (accountInfo != null)
-				session.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, accountInfo);
-			else
-				ServletUtils.removeTransientAttributes(session);
-		}
+	
+	// Register the account as active
+	while (accountInfo != null && !liteEC.registerActiveAccount(accountInfo)) {
+		accountInfo = liteEC.getStarsCustAccountInformation(accountInfo.getStarsCustomerAccount().getAccountID(), true);
+		if (accountInfo != null)
+			session.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, accountInfo);
+		else
+			ServletUtils.removeTransientAttributes(session);
 	}
 	
 	if (accountInfo != null) {

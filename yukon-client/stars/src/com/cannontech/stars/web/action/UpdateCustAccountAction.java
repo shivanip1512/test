@@ -6,6 +6,7 @@ import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteCustomer;
@@ -262,7 +263,7 @@ public class UpdateCustAccountAction implements ActionBase {
 			com.cannontech.database.db.customer.Customer customerDB = new com.cannontech.database.db.customer.Customer();
 			StarsLiteFactory.setCustomer( customerDB, liteCustomer );
         	
-			LiteContact litePrimContact = energyCompany.getContact( liteCustomer.getPrimaryContactID(), liteAcctInfo );
+			LiteContact litePrimContact = ContactFuncs.getContact( liteCustomer.getPrimaryContactID() );
 			PrimaryContact starsPrimContact = updateAccount.getPrimaryContact();
 			
 			boolean primContChanged = false;

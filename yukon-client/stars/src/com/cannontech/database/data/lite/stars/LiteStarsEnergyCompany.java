@@ -190,8 +190,8 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	private OptOutEventQueue optOutEventQueue = null;
 	private SwitchCommandQueue switchCommandQueue = null;
 	
-	// Map of contact ID to customer account information (Integer, LiteStarsCustAccountInformation)
-	private Hashtable contactCustAccountInfoMap = null;
+	// Map of contact ID to account ID (Integer, Integer)
+	private Hashtable contactAccountIDMap = null;
 	
 	// Cached XML messages
 	private StarsEnergyCompany starsEnergyCompany = null;
@@ -470,7 +470,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		optOutEventQueue = null;
 		switchCommandQueue = null;
 		
-		contactCustAccountInfoMap = null;
+		contactAccountIDMap = null;
 		
 		starsEnergyCompany = null;
 		starsEnrPrograms = null;
@@ -1439,52 +1439,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		return null;
 	}
 	
-	public LiteContact getContact(int contactID, LiteStarsCustAccountInformation liteAcctInfo) {
-		if (liteAcctInfo != null) {
-			Hashtable contactAcctInfoMap = getContactCustAccountInfoMap();
-			synchronized (contactAcctInfoMap) { contactAcctInfoMap.put(new Integer(contactID), liteAcctInfo); }
-		}
-		
-		return ContactFuncs.getContact( contactID );
-	}
-	
-	public void addContact(LiteContact liteContact, LiteStarsCustAccountInformation liteAcctInfo) {
-		if (liteAcctInfo != null) {
-			Hashtable contactAcctInfoMap = getContactCustAccountInfoMap();
-			synchronized (contactAcctInfoMap) { contactAcctInfoMap.put(new Integer(liteContact.getContactID()), liteAcctInfo); }
-		}
-		
-		ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_ADD );
-	}
-
-	public LiteContact deleteContact(int contactID) {
-		LiteContact liteContact = ContactFuncs.getContact( contactID );
-		
-		if (liteContact != null) {
-			Hashtable contactAcctInfoMap = getContactCustAccountInfoMap();
-			synchronized (contactAcctInfoMap) { contactAcctInfoMap.remove(new Integer(contactID)); }
-			
-			ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_DELETE );
-		}
-		
-		return liteContact;
-	}
-	
-	private synchronized Hashtable getContactCustAccountInfoMap() {
-		if (contactCustAccountInfoMap == null)
-			contactCustAccountInfoMap = new Hashtable();
-		
-		return contactCustAccountInfoMap;
-	}
-	
-	public LiteStarsCustAccountInformation getCustAccountInfoByContact(int contactID) {
-		Hashtable contactAcctInfoMap = getContactCustAccountInfoMap();
-		
-		synchronized (contactAcctInfoMap) {
-			return (LiteStarsCustAccountInformation) contactAcctInfoMap.get(new Integer(contactID));
-		}
-	}
-	
 	private LiteAddress getAddress(int addressID, boolean autoLoad) {
 		LiteAddress liteAddr = (LiteAddress) getAddressMap().get( new Integer(addressID) );
 		if (liteAddr != null) return liteAddr;
@@ -2033,15 +1987,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		synchronized (cache) {
 			liteAcctInfo.setCustomer( (LiteCustomer)cache.getAllCustomersMap().get(account.getCustomerAccount().getCustomerID()) );
 		}
-		
-		Hashtable contactAcctInfoMap = getContactCustAccountInfoMap();
-		synchronized (contactAcctInfoMap) {
-			contactAcctInfoMap.put( new Integer(liteAcctInfo.getCustomer().getPrimaryContactID()), liteAcctInfo );
-			
-			Vector contacts = liteAcctInfo.getCustomer().getAdditionalContacts();
-			for (int i = 0; i < contacts.size(); i++)
-				contactAcctInfoMap.put( new Integer(((LiteContact)contacts.get(i)).getContactID()), liteAcctInfo );
-		}
         
 		ArrayList appliances = new ArrayList();
 		for (int i = 0; i < account.getApplianceVector().size(); i++) {
@@ -2229,10 +2174,14 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		ServerUtils.handleDBChange( liteAcctInfo.getCustomer(), DBChangeMsg.CHANGE_TYPE_DELETE );
     	
 		// Remote all contacts from the cache
-		deleteContact( liteAcctInfo.getCustomer().getPrimaryContactID() );
-		Vector contacts = liteAcctInfo.getCustomer().getAdditionalContacts();
-		for (int i = 0; i < contacts.size(); i++)
-			deleteContact( ((LiteContact)contacts.get(i)).getContactID() );
+		Hashtable contAcctIDMap = getContactAccountIDMap();
+		synchronized (contAcctIDMap) {
+			contAcctIDMap.remove( new Integer(liteAcctInfo.getCustomer().getPrimaryContactID()) );
+			
+			Vector contacts = liteAcctInfo.getCustomer().getAdditionalContacts();
+			for (int i = 0; i < contacts.size(); i++)
+				contAcctIDMap.remove(new Integer( ((LiteContact)contacts.get(i)).getContactID() ));
+		}
 		
 		// Remove all addresses from the cache
 		deleteAddress( liteAcctInfo.getCustomerAccount().getBillingAddressID() );
@@ -2833,6 +2782,20 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		return new ArrayList( getStarsCustAcctInfos().values() );
 	}
 	
+	private synchronized Hashtable getContactAccountIDMap() {
+		if (contactAccountIDMap == null)
+			contactAccountIDMap = new Hashtable();
+		
+		return contactAccountIDMap;
+	}
+	
+	public StarsCustAccountInformation getActiveAccountByContact(int contactID) {
+		Integer accountID = (Integer) getContactAccountIDMap().get( new Integer(contactID) );
+		if (accountID == null) return null;
+		
+		return getStarsCustAccountInformation( accountID.intValue() );
+	}
+	
 	/**
 	 * Register the StarsCustAccountInformation object as "active"
 	 * If the return value is false, it means the StarsCustAccountInformation object
@@ -2840,14 +2803,24 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	 * getStarsCustAccountInformation(accountID, true)
 	 */
 	public boolean registerActiveAccount(StarsCustAccountInformation starsAcctInfo) {
-		starsAcctInfo.setLastActiveTime( new Date() );
-		
 		Hashtable starsCustAcctInfos = getStarsCustAcctInfos();
 		synchronized (starsCustAcctInfos) {
 			Integer accountID = new Integer( starsAcctInfo.getStarsCustomerAccount().getAccountID() );
 			StarsCustAccountInformation storedAcctInfo = (StarsCustAccountInformation) starsCustAcctInfos.get( accountID );
 			if (storedAcctInfo == null || !storedAcctInfo.equals( starsAcctInfo ))
 				return false;
+		}
+		
+		starsAcctInfo.setLastActiveTime( new Date() );
+		
+		// Add contact ID to account ID mapping into the table
+		Integer accountID = new Integer( starsAcctInfo.getStarsCustomerAccount().getAccountID() );
+		Hashtable contAcctIDMap = getContactAccountIDMap();
+		synchronized (contAcctIDMap) {
+			contAcctIDMap.put( new Integer(starsAcctInfo.getStarsCustomerAccount().getPrimaryContact().getContactID()), accountID );
+			
+			for (int i = 0; i < starsAcctInfo.getStarsCustomerAccount().getAdditionalContactCount(); i++)
+				contAcctIDMap.put( new Integer(starsAcctInfo.getStarsCustomerAccount().getAdditionalContact(i).getContactID()), accountID );
 		}
 		
 		return true;

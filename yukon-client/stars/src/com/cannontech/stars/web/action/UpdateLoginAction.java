@@ -10,6 +10,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.functions.AuthFuncs;
+import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.database.cache.functions.YukonUserFuncs;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonGroup;
@@ -241,7 +242,7 @@ public class UpdateLoginAction implements ActionBase {
 	public static void updateLogin(StarsUpdateLogin updateLogin, LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany)
 		throws WebClientException, TransactionException
 	{
-		LiteContact liteContact = energyCompany.getContact( liteAcctInfo.getCustomer().getPrimaryContactID(), liteAcctInfo );
+		LiteContact liteContact = ContactFuncs.getContact( liteAcctInfo.getCustomer().getPrimaryContactID() );
 		int userID = liteContact.getLoginID();
 	    
 		String username = updateLogin.getUsername();

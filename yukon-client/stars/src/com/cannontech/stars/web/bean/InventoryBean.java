@@ -11,6 +11,7 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
 import com.cannontech.database.cache.functions.AuthFuncs;
+import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.lite.LiteContact;
@@ -558,7 +559,7 @@ public class InventoryBean {
 			}
 			else {
 				LiteStarsCustAccountInformation liteAcctInfo = member.getBriefCustAccountInfo( liteInv.getAccountID(), true );
-				LiteContact liteCont = member.getContact( liteAcctInfo.getCustomer().getPrimaryContactID(), liteAcctInfo );
+				LiteContact liteCont = ContactFuncs.getContact( liteAcctInfo.getCustomer().getPrimaryContactID() );
 				LiteAddress liteAddr = member.getAddress( liteAcctInfo.getAccountSite().getStreetAddressID() );
             	
 				String name = ECUtils.formatName( liteCont );

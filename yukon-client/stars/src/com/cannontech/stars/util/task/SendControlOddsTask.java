@@ -95,7 +95,7 @@ public class SendControlOddsTask implements Runnable {
 					int accountID = ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue();
 					LiteStarsCustAccountInformation accountInfo = energyCompany.getCustAccountInformation( accountID, true );
 					
-					LiteContact primContact = energyCompany.getContact( accountInfo.getCustomer().getPrimaryContactID(), accountInfo );
+					LiteContact primContact = ContactFuncs.getContact( accountInfo.getCustomer().getPrimaryContactID() );
 					LiteContactNotification email = com.cannontech.database.cache.functions.ContactFuncs.getContactNotification(
 							primContact, com.cannontech.common.constants.YukonListEntryTypes.YUK_ENTRY_ID_EMAIL );
 					if (email == null || email.getDisableFlag().equalsIgnoreCase("Y"))

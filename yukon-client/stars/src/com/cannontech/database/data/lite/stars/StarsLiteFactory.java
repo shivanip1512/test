@@ -1376,7 +1376,7 @@ public class StarsLiteFactory {
 		LiteCustomer liteCustomer = liteAcctInfo.getCustomer();
 		LiteAccountSite liteAcctSite = liteAcctInfo.getAccountSite();
 		LiteSiteInformation liteSiteInfo = liteAcctInfo.getSiteInformation();
-		LiteContact liteContact = energyCompany.getContact( liteAcctInfo.getCustomer().getPrimaryContactID(), liteAcctInfo );
+		LiteContact liteContact = ContactFuncs.getContact( liteAcctInfo.getCustomer().getPrimaryContactID() );
 		
 		StarsCustomerAccount starsAccount = new StarsCustomerAccount();
 		starsAccount.setAccountID( liteAccount.getAccountID() );

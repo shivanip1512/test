@@ -547,7 +547,8 @@ public class StarsAdmin extends HttpServlet {
 						Transaction.createTransaction( Transaction.INSERT, contact ).execute();
 				liteContact = new LiteContact( contact.getContact().getContactID().intValue() );
 				StarsLiteFactory.setLiteContact( liteContact, contact );
-				energyCompany.addContact( liteContact, null );
+				
+				ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_ADD );
 				
 				CompanyAddress starsAddr = new CompanyAddress();
 				StarsLiteFactory.setStarsCustomerAddress(
@@ -1114,7 +1115,8 @@ public class StarsAdmin extends HttpServlet {
 				new com.cannontech.database.data.customer.Contact();
 		contact.setCustomerContact( company.getPrimaryContact() );
 		LiteContact liteContact = (LiteContact) StarsLiteFactory.createLite(contact);
-		energyCompany.addContact( liteContact, null );
+		
+		ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_ADD );
 		
 		LiteServiceCompany liteCompany = (LiteServiceCompany) StarsLiteFactory.createLite( companyDB );
 		energyCompany.addServiceCompany( liteCompany );
@@ -1179,7 +1181,7 @@ public class StarsAdmin extends HttpServlet {
 				energyCompany.addAddress( liteAddr );
 				
 				liteContact = (LiteContact) StarsLiteFactory.createLite( contact );
-				energyCompany.addContact( liteContact, null );
+				ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_ADD );
 				
 				liteCompany = (LiteServiceCompany) StarsLiteFactory.createLite( company.getServiceCompany() );
 				energyCompany.addServiceCompany( liteCompany );
@@ -1288,8 +1290,10 @@ public class StarsAdmin extends HttpServlet {
 		Transaction.createTransaction( Transaction.DELETE, company ).execute();
 		
 		energyCompany.deleteAddress( liteCompany.getAddressID() );
-		energyCompany.deleteContact( liteCompany.getPrimaryContactID() );
 		energyCompany.deleteServiceCompany( companyID );
+		
+		LiteContact liteContact = ContactFuncs.getContact( liteCompany.getPrimaryContactID() );
+		ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_DELETE );
 		
 		StarsServiceCompanies starsCompanies = energyCompany.getStarsServiceCompanies();
 		for (int i = 0; i < starsCompanies.getStarsServiceCompanyCount(); i++) {

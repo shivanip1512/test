@@ -85,7 +85,7 @@ public class UpdateControlNotificationAction implements ActionBase {
             LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
             
         	LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) session.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
-        	LiteContact litePrimContact = energyCompany.getContact( liteAcctInfo.getCustomer().getPrimaryContactID(), liteAcctInfo );
+        	LiteContact litePrimContact = ContactFuncs.getContact( liteAcctInfo.getCustomer().getPrimaryContactID() );
             
             StarsUpdateControlNotification updateNotif = reqOper.getStarsUpdateControlNotification();
             if (updateNotif.getEmail() != null) {

@@ -182,7 +182,7 @@ public class SendOptOutNotificationAction implements ActionBase {
 		StringBuffer text = new StringBuffer();
 		text.append("Account #").append(liteAcctInfo.getCustomerAccount().getAccountNumber()).append(LINE_SEPARATOR);
         
-		LiteContact cont = energyCompany.getContact( liteAcctInfo.getCustomer().getPrimaryContactID(), liteAcctInfo );
+		LiteContact cont = ContactFuncs.getContact( liteAcctInfo.getCustomer().getPrimaryContactID() );
 		String name = ECUtils.formatName( cont );
 		if (name.length() > 0)
 			text.append( name ).append(LINE_SEPARATOR);

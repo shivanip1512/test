@@ -14,6 +14,7 @@ import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.Transaction;
+import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
@@ -139,7 +140,7 @@ public class UpdateContactsAction implements ActionBase {
 			StarsUpdateContactsResponse resp = new StarsUpdateContactsResponse(); 
 			
 			LiteCustomer liteCustomer = liteAcctInfo.getCustomer();
-			LiteContact litePrimContact = energyCompany.getContact( liteCustomer.getPrimaryContactID(), liteAcctInfo );
+			LiteContact litePrimContact = ContactFuncs.getContact( liteCustomer.getPrimaryContactID() );
 			PrimaryContact starsPrimContact = updateContacts.getPrimaryContact();
             
 			if (!StarsLiteFactory.isIdenticalCustomerContact( litePrimContact, starsPrimContact )) {
@@ -199,7 +200,7 @@ public class UpdateContactsAction implements ActionBase {
 							Transaction.createTransaction( Transaction.INSERT, contact ).execute();
 		            
 					liteContact = (LiteContact) StarsLiteFactory.createLite( contact );
-					energyCompany.addContact( liteContact, liteAcctInfo );
+					ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_ADD );
 					
 					StarsLiteFactory.setStarsCustomerContact( starsContact, liteContact );
 					resp.addAdditionalContact( starsContact );
@@ -215,7 +216,7 @@ public class UpdateContactsAction implements ActionBase {
 						(com.cannontech.database.data.customer.Contact) StarsLiteFactory.createDBPersistent( liteContact );
             	
             	Transaction.createTransaction( Transaction.DELETE, contact ).execute();
-				energyCompany.deleteContact( liteContact.getContactID() );
+            	ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_DELETE );
 			}
             
 			liteCustomer.setAdditionalContacts( newContactList );

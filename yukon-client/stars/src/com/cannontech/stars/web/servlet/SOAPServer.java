@@ -422,7 +422,7 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 			
 			for (int i = 0; i < companies.size(); i++) {
 				LiteStarsEnergyCompany energyCompany = (LiteStarsEnergyCompany) companies.get(i);
-				LiteBase contOwner = null;
+				Object contOwner = null;
 				
 				if (energyCompany.getPrimaryContactID() == msg.getId()) {
 					contOwner = energyCompany;
@@ -438,7 +438,7 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 					}
 					
 					if (contOwner == null)
-						contOwner = energyCompany.getCustAccountInfoByContact( msg.getId() );
+						contOwner = energyCompany.getActiveAccountByContact( msg.getId() );
 				}
 				
 				if (contOwner != null) {
@@ -513,9 +513,9 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 				if (liteContact != null) {
 					for (int i = 0; i < companies.size(); i++) {
 						LiteStarsEnergyCompany energyCompany = (LiteStarsEnergyCompany) companies.get(i);
-						LiteStarsCustAccountInformation liteAcctInfo = energyCompany.getCustAccountInfoByContact( liteContact.getContactID() );
-						if (liteAcctInfo != null) {
-							handleYukonUserChange( msg, energyCompany, liteAcctInfo );
+						StarsCustAccountInformation starsAcctInfo = energyCompany.getActiveAccountByContact( liteContact.getContactID() );
+						if (starsAcctInfo != null && starsAcctInfo.getStarsUser() != null) {
+							handleYukonUserChange( msg, energyCompany, starsAcctInfo );
 							return;
 						}
 					}
@@ -536,17 +536,17 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 				energyCompany.getAddress( liteAcctInfo.getCustomerAccount().getBillingAddressID() ).retrieve();
 				liteAcctInfo.getCustomerAccount().retrieve();
 				
-				LiteContact litePrimContact = energyCompany.getContact( liteAcctInfo.getCustomer().getPrimaryContactID(), liteAcctInfo );
+				LiteContact litePrimContact = ContactFuncs.getContact( liteAcctInfo.getCustomer().getPrimaryContactID() );
 				litePrimContact.retrieve( CtiUtilities.getDatabaseAlias() );;
 				
 				Vector contacts = liteAcctInfo.getCustomer().getAdditionalContacts();
 				for (int i = 0; i < contacts.size(); i++)
-					energyCompany.deleteContact( ((LiteContact)contacts.get(i)).getContactID() );
+					ServerUtils.handleDBChange( (LiteContact)contacts.get(i), DBChangeMsg.CHANGE_TYPE_DELETE );
 				
 				liteAcctInfo.getCustomer().retrieve( CtiUtilities.getDatabaseAlias() );
 				contacts = liteAcctInfo.getCustomer().getAdditionalContacts();
 				for (int i = 0; i < contacts.size(); i++)
-					energyCompany.addContact( (LiteContact)contacts.get(i), liteAcctInfo );
+					ServerUtils.handleDBChange( (LiteContact)contacts.get(i), DBChangeMsg.CHANGE_TYPE_ADD );
 				
 				energyCompany.getAddress( liteAcctInfo.getAccountSite().getStreetAddressID() ).retrieve();
 				liteAcctInfo.getAccountSite().retrieve();
@@ -563,7 +563,7 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 		}
 	}
 	
-	private void handleContactChange(DBChangeMsg msg, LiteStarsEnergyCompany energyCompany, LiteBase contOwner) {
+	private void handleContactChange(DBChangeMsg msg, LiteStarsEnergyCompany energyCompany, Object contOwner) {
 		switch (msg.getTypeOfChange()) {
 			case DBChangeMsg.CHANGE_TYPE_ADD :
 				// Don't need to do anything
@@ -585,33 +585,17 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 						}
 					}
 				}
-				else {
-					LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) contOwner;
+				else if (contOwner instanceof StarsCustAccountInformation) {
+					StarsCustAccountInformation starsAcctInfo = (StarsCustAccountInformation) contOwner;
 					
-					if (liteAcctInfo.getCustomer().getPrimaryContactID() == liteContact.getContactID()) {
-						// Do nothing
+					if (starsAcctInfo.getStarsCustomerAccount().getPrimaryContact().getContactID() == liteContact.getContactID()) {
+						StarsLiteFactory.setStarsCustomerContact(starsAcctInfo.getStarsCustomerAccount().getPrimaryContact(), liteContact);
 					}
 					else {
-						Vector contacts = liteAcctInfo.getCustomer().getAdditionalContacts();
-						for (int i = 0; i < contacts.size(); i++) {
-							if (((LiteContact)contacts.get(i)).getContactID() == liteContact.getContactID()) {
-								contacts.set(i, liteContact);
+						for (int i = 0; i < starsAcctInfo.getStarsCustomerAccount().getAdditionalContactCount(); i++) {
+							if (starsAcctInfo.getStarsCustomerAccount().getAdditionalContact(i).getContactID() == liteContact.getContactID()) {
+								StarsLiteFactory.setStarsCustomerContact(starsAcctInfo.getStarsCustomerAccount().getAdditionalContact(i), liteContact);
 								break;
-							}
-						}
-					}
-					
-					StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteAcctInfo.getAccountID() );
-					if (starsAcctInfo != null) {
-						if (starsAcctInfo.getStarsCustomerAccount().getPrimaryContact().getContactID() == liteContact.getContactID()) {
-							StarsLiteFactory.setStarsCustomerContact(starsAcctInfo.getStarsCustomerAccount().getPrimaryContact(), liteContact);
-						}
-						else {
-							for (int i = 0; i < starsAcctInfo.getStarsCustomerAccount().getAdditionalContactCount(); i++) {
-								if (starsAcctInfo.getStarsCustomerAccount().getAdditionalContact(i).getContactID() == liteContact.getContactID()) {
-									StarsLiteFactory.setStarsCustomerContact(starsAcctInfo.getStarsCustomerAccount().getAdditionalContact(i), liteContact);
-									break;
-								}
 							}
 						}
 					}
@@ -620,10 +604,10 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 				break;
 				
 			case DBChangeMsg.CHANGE_TYPE_DELETE :
-				energyCompany.deleteContact( msg.getId() );
-				
-				if (contOwner instanceof LiteStarsCustAccountInformation) {
-					LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) contOwner;
+				if (contOwner instanceof StarsCustAccountInformation) {
+					StarsCustAccountInformation starsAcctInfo = (StarsCustAccountInformation) contOwner;
+					LiteStarsCustAccountInformation liteAcctInfo = energyCompany.getCustAccountInformation(
+							starsAcctInfo.getStarsCustomerAccount().getAccountID(), true );
 					
 					Vector contacts = liteAcctInfo.getCustomer().getAdditionalContacts();
 					for (int i = 0; i < contacts.size(); i++) {
@@ -633,13 +617,10 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 						}
 					}
 					
-					StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteAcctInfo.getAccountID() );
-					if (starsAcctInfo != null) {
-						for (int i = 0; i < starsAcctInfo.getStarsCustomerAccount().getAdditionalContactCount(); i++) {
-							if (starsAcctInfo.getStarsCustomerAccount().getAdditionalContact(i).getContactID() == msg.getId()) {
-								starsAcctInfo.getStarsCustomerAccount().removeAdditionalContact(i);
-								break;
-							}
+					for (int i = 0; i < starsAcctInfo.getStarsCustomerAccount().getAdditionalContactCount(); i++) {
+						if (starsAcctInfo.getStarsCustomerAccount().getAdditionalContact(i).getContactID() == msg.getId()) {
+							starsAcctInfo.getStarsCustomerAccount().removeAdditionalContact(i);
+							break;
 						}
 					}
 				}
@@ -756,21 +737,16 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 		}
 	}
 	
-	private void handleYukonUserChange(DBChangeMsg msg, LiteStarsEnergyCompany energyCompany, LiteStarsCustAccountInformation liteAcctInfo) {
+	private void handleYukonUserChange(DBChangeMsg msg, LiteStarsEnergyCompany energyCompany, StarsCustAccountInformation starsAcctInfo) {
 		switch( msg.getTypeOfChange() ) {
 			case DBChangeMsg.CHANGE_TYPE_ADD:
 				// Don't need to do anything
 				break;
 				
 			case DBChangeMsg.CHANGE_TYPE_UPDATE:
-				LiteYukonUser liteUser = YukonUserFuncs.getLiteYukonUser( msg.getId() );
-				LiteContact primContact = ContactFuncs.getContact( liteAcctInfo.getCustomer().getPrimaryContactID() );
-				
-				if (primContact.getLoginID() == msg.getId()) {
-					// We only care about the login of primary contact now
-					StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteAcctInfo.getAccountID() );
-					if (starsAcctInfo != null)
-						starsAcctInfo.setStarsUser( StarsLiteFactory.createStarsUser(liteUser, energyCompany) );
+				if (starsAcctInfo.getStarsUser().getUserID() == msg.getId()) {
+					LiteYukonUser liteUser = YukonUserFuncs.getLiteYukonUser( msg.getId() );
+					starsAcctInfo.setStarsUser( StarsLiteFactory.createStarsUser(liteUser, energyCompany) );
 				}
 				
 				break;
