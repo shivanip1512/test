@@ -12,7 +12,7 @@
    -->
        <mkdir dir="build"/>
        
-       <javac srcdir="gensrc" destdir="build" target="1.3">                               
+       <javac srcdir="gensrc" destdir="build" target="1.3" debug="true">                               
           <classpath>
               <fileset dir="build"/>
               <fileset dir="${yukon.lib}">
@@ -21,7 +21,7 @@
 	      </classpath> 
      	</javac>
      	
-       <javac srcdir="src" destdir="build" target="1.3">                               
+       <javac srcdir="src" destdir="build" target="1.3" debug="true">                               
           <classpath>
               <fileset dir="${yukon.lib}">
                 <include name="**/*.jar"/>
