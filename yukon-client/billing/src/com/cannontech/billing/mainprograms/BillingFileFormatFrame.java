@@ -7,7 +7,7 @@ package com.cannontech.billing.mainprograms;
  */
 import com.cannontech.billing.*;
 
-public class BillingFileFormatFrame extends javax.swing.JFrame implements com.klg.jclass.util.value.JCValueListener, java.awt.event.ActionListener, java.awt.event.FocusListener, java.util.Observer
+public class BillingFileFormatFrame extends javax.swing.JFrame implements java.awt.event.ActionListener, java.awt.event.FocusListener, java.util.Observer
 {
 	private Thread timerThread = null;
 	private java.text.SimpleDateFormat startDateFormat = new java.text.SimpleDateFormat("MM/dd/yyyy");
@@ -326,11 +326,4 @@ public static void main(java.lang.String[] args)
 	 *                 method.
 	 */
 public void update(java.util.Observable o, java.lang.Object arg) {}
-/**
- * valueChanged method comment.
- */
-public void valueChanged(com.klg.jclass.util.value.JCValueEvent arg1) {}
-public void valueChanging(com.klg.jclass.util.value.JCValueEvent event)
-{
-}
 }
