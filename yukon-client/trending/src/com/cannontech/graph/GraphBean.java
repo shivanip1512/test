@@ -8,22 +8,31 @@ package com.cannontech.graph;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.Vector;
 
+import com.cannontech.clientutils.ActivityLogger;
+import com.cannontech.database.cache.functions.AuthFuncs;
+import com.cannontech.database.cache.functions.EnergyCompanyFuncs;
+import com.cannontech.database.cache.functions.PAOFuncs;
+import com.cannontech.database.data.activity.ActivityLogActions;
+import com.cannontech.database.data.activity.ActivityLogSummary;
+import com.cannontech.database.data.lite.LiteEnergyCompany;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.graph.GraphRenderers;
 import com.cannontech.graph.buffer.html.HTMLBuffer;
 import com.cannontech.graph.buffer.html.PeakHtml;
 import com.cannontech.graph.buffer.html.TabularHtml;
 import com.cannontech.graph.buffer.html.UsageHtml;
 import com.cannontech.graph.model.TrendModel;
+import com.cannontech.roles.cicustomer.CommercialMeteringRole;
 import com.cannontech.util.ServletUtil;
-import org.jfree.chart.JFreeChart;
+import com.cannontech.util.SessionAttribute;
 
-public class GraphBean implements GraphDefines
+public class GraphBean extends Graph
 {
-	private Graph graphClass = null;
 	private String start = "";
 	private String format = "png";
-	
 	private int page = 1;
 
 	/**
@@ -47,7 +56,7 @@ public class GraphBean implements GraphDefines
 		{
 			returnBuffer = new StringBuffer("<HTML><CENTER>");
 	
-			TrendModel tModel = getGraph().getTrendModel();
+			TrendModel tModel = getTrendModel();
 			{
 				htmlBuffer.setModel( tModel);
 	
@@ -69,25 +78,6 @@ public class GraphBean implements GraphDefines
 	}
 	
 	/**
-	 * Method getFreeChart.
-	 * @return JFreeChart
-	 */
-	private JFreeChart getFreeChart()
-	{
-		return getGraph().getFreeChart();
-	}
-	/**
-	 * Method getGraph.
-	 * @return Graph
-	 */
-	public Graph getGraph()
-	{
-		if( graphClass == null)
-			graphClass = new Graph();
-		return graphClass;
-	}
-	
-	/**
 	 * Method getFormat.
 	 * @return String
 	 */
@@ -95,46 +85,14 @@ public class GraphBean implements GraphDefines
 	{
 		return format;
 	}
-	/**
-	 * Method getOption.
-	 * @return int
-	 */
-	public int getOption()
-	{
-		return getGraph().getOptionsMaskSettings();
-	}
+	
 	/**
 	 * Method setOption.
 	 * @param newOption int
 	 */
 	public void setOption(int newOption)
 	{
-		getGraph().getTrendProperties().setOptionsMaskSettings(newOption);
-	}
-	/**
-	 * Method getViewType.
-	 * @return int
-	 */
-	public int getViewType()
-	{
-		return getGraph().getViewType();
-	}
-	/**
-	 * Method setViewType.
-	 * @param newViewType int
-	 */
-	public void setViewType(int newViewType)
-	{
-		getGraph().setViewType(newViewType);
-	}
-	
-	/**
-	 * Method getPeriod.
-	 * @return String
-	 */
-	public String getPeriod()
-	{
-		return getGraph().getPeriod();
+		getTrendProperties().setOptionsMaskSettings(newOption);
 	}
 	/**
 	 * Method setPeriod.
@@ -142,27 +100,13 @@ public class GraphBean implements GraphDefines
 	 */
 	public void setPeriod(String newPeriod)
 	{
-		if( !newPeriod.equalsIgnoreCase(getGraph().getPeriod()))
+		//Actually compares the periods in super and this so we 
+		// know if the page must be set in this.
+		if( !newPeriod.equalsIgnoreCase(getPeriod()))
 		{
-			getGraph().setPeriod(newPeriod);
+			super.setPeriod(newPeriod);
 			setPage(1);
 		}
-	}
-	/**
-	 * Method getWidth.
-	 * @return int
-	 */
-	public int getWidth()
-	{
-		return getGraph().getWidth();
-	}
-	/**
-	 * Method getHeight.
-	 * @return int
-	 */
-	public int getHeight()
-	{
-		return getGraph().getHeight();
 	}
 		
 	/**
@@ -172,7 +116,7 @@ public class GraphBean implements GraphDefines
 	public void setGdefid(int newGdefid)
 	{
 		if( newGdefid != getGdefid())
-			getGraph().setGraphDefinition(newGdefid);			
+			setGraphDefinition(newGdefid);			
 	}
 	/**
 	 * Method getGdefid.
@@ -180,28 +124,13 @@ public class GraphBean implements GraphDefines
 	 */
 	public int getGdefid()
 	{
-		if( getGraph().getGraphDefinition() != null)
-			return getGraph().getGraphDefinition().getGraphDefinition().getGraphDefinitionID().intValue();
+		if( getGraphDefinition() != null)
+			return getGraphDefinition().getGraphDefinition().getGraphDefinitionID().intValue();
 		else
 			return -1;
 	}
 	
-	/**
-	 * Method getStop.
-	 * @return Date
-	 */
-	private Date getStopDate()
-	{
-		return getGraph().getStopDate();
-	}
-	/**
-	 * Method getStart.
-	 * @return Date
-	 */
-	public java.util.Date getStartDate()
-	{
-		return getGraph().getStartDate();
-	}
+
 	/**
 	 * Method setStart.
 	 * @param newStart String
@@ -213,30 +142,12 @@ public class GraphBean implements GraphDefines
 	}
 	
 	/**
-	 * Method setStart.
-	 * @param newStart java.util.Date
-	 */
-	private void setStartDate(Date newStartDate)
-	{
-		getGraph().setStartDate(newStartDate);
-	}
-	
-	/**
-	 * Method setSize.
-	 * @param width int
-	 * @param height int
-	 */
-	public void setSize( int width, int height)
-	{
-		getGraph().setSize(width, height);
-	}  
-	/**
 	 * Method initialize.
 	 */
 	private void initialize()
 	{
-		//Don't attempt to load any preperties from a file.
-		getGraph().setTrendProperties(new com.cannontech.graph.model.TrendProperties(false));
+		//Don't attempt to load any properties from a file.
+		setTrendProperties(new com.cannontech.graph.model.TrendProperties(false));
 	}
 	
 	/**
@@ -275,7 +186,7 @@ public class GraphBean implements GraphDefines
 	{
 		if( page != newPage)
 		{
-			getGraph().setUpdateTrend(true);
+			setUpdateTrend(true);
 			page = newPage;
 		}
 	}
@@ -295,38 +206,31 @@ public class GraphBean implements GraphDefines
 	{
 		if( getViewType() == GraphRenderers.TABULAR)
 		{
-			getGraph().update();
+			update();
 			
 			StringBuffer buf =  new StringBuffer();
 			buf.append(buildHTMLBuffer(new TabularHtml()));
 	
 			buf.append("</CENTER></HTML>");
-			getGraph().setHtmlString(buf);
+			setHtmlString(buf);
 		}
 		else if( getViewType() == GraphRenderers.SUMMARY)
 		{			
 			StringBuffer buf = new StringBuffer();
 	
-			getGraph().update();
+			update();
 			buf.append(buildHTMLBuffer(new PeakHtml()));
 			buf.append(buildHTMLBuffer(new UsageHtml()));
 			buf.append("</CENTER></HTML>");
 			
-			getGraph().setHtmlString(buf);
+			setHtmlString(buf);
 		}
 		else
 		{
-			getGraph().update();
+			update();
 		}
 	}
-	/**
-	 * Method getHtmlString.
-	 * @return StringBuffer
-	 */
-	public StringBuffer getHtmlString()
-	{
-		return getGraph().getHtmlString();
-	}
+	
 	/**
 	 * Method encode.
 	 * This method will encode the graph in the outputStream.
@@ -341,22 +245,66 @@ public class GraphBean implements GraphDefines
 	public void encode(java.io.OutputStream out, String format) throws IOException
 	{
 		if( format.equalsIgnoreCase("gif") )								
-			getGraph().encodeGif(out);
+			encodeGif(out);
 		else if( format.equalsIgnoreCase("png") )
-			getGraph().encodePng(out);
+			encodePng(out);
 		else if( format.equalsIgnoreCase("jpg") )
-			getGraph().encodeJpeg(out);
+			encodeJpeg(out);
 		else if( format.equalsIgnoreCase("svg") )
-			getGraph().encodeSVG(out);
+			encodeSVG(out);
 //		else if( format.equalsIgnoreCase("csv") )
-//			getGraph().encodeCSV(out);
+//			encodeCSV(out);
 		else	//default to png
-			getGraph().encodePng(out);
+			encodePng(out);
 	}
+	
 
-	public void getDataNow()
+	/**
+	 * Performs the error checking for getDataNow functionality based on properties.
+	 * @param liteYukonUser LiteYukonUser
+	 * @param custDevices String[] of ids
+	 * @return SessionAttribute (success/error message)
+	 */
+	public SessionAttribute getDataNow(LiteYukonUser liteYukonUser, String[] custDevices)
 	{
-		com.cannontech.clientutils.CTILogger.info("GET DATA NOW - for all meters!!!");
-		getGraph().getDataNow(null);
-	}
+		LiteEnergyCompany liteEC = EnergyCompanyFuncs.getEnergyCompany(liteYukonUser);
+		int ecId = -1;
+		if (liteEC != null)
+			ecId = liteEC.getEnergyCompanyID();
+			
+		ActivityLogSummary actLogSummary = new ActivityLogSummary(liteYukonUser.getUserID(), ecId);
+		actLogSummary.retrieve();
+		
+		for (int i= 0; i < actLogSummary.getLogSummaryVector().size(); i++)
+		{
+			ActivityLogSummary.LogSummary logSummary = (ActivityLogSummary.LogSummary)actLogSummary.getLogSummaryVector().get(i); 
+			if( logSummary.action.equals(ActivityLogActions.SCAN_DATA_NOW_ACTION))
+			{
+				if( logSummary.count >= Integer.valueOf(AuthFuncs.getRolePropertyValue(liteYukonUser, CommercialMeteringRole.MAXIMUM_DAILY_SCANS, "2")).intValue())
+				{
+					return new SessionAttribute( ServletUtil.ATT_ERROR_MESSAGE, "Maximum Scans allowed for today exceeded" );
+				}
+							
+				Date now = new Date();
+				long sinceLast = now.getTime() - logSummary.maxTimeStamp.getTime();
+				long duration = Long.valueOf(AuthFuncs.getRolePropertyValue(liteYukonUser, CommercialMeteringRole.MINIMUM_SCAN_FREQUENCY, "15")).longValue() * 36000;
+				if (sinceLast <= duration)
+				{
+					long waitTime = duration - sinceLast;
+					return new SessionAttribute( ServletUtil.ATT_ERROR_MESSAGE, "Last Scan Time: "+ logSummary.maxTimeStamp +". Please wait " + waitTime/36000 + " minutes.");
+				}
+			}
+		}
+
+		java.util.List paObjects = new Vector(3);
+		String logDesc = "Forced alternate scan of deviceID(s): ";
+		for (int i = 0; i < custDevices.length; i++)
+		{
+			LiteYukonPAObject litePAO = PAOFuncs.getLiteYukonPAO(Integer.valueOf(custDevices[i]).intValue());
+			paObjects.add(litePAO);
+			logDesc += litePAO.getYukonID() + ", ";
+		}
+		ActivityLogger.logEvent(liteYukonUser.getUserID(), ActivityLogActions.SCAN_DATA_NOW_ACTION, logDesc);
+		return new SessionAttribute( ServletUtil.ATT_CONFIRM_MESSAGE, "Alternate Scans of Selected Meters Started." );
+	}				
 }
