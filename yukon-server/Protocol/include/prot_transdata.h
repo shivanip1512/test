@@ -14,25 +14,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2003/12/09 17:55:26 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2003/12/16 17:23:04 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
 
 #include <windows.h>
 #include <rw\cstring.h>
- /*
-#include "dev_meter.h"
-#include "dev_base.h"
-#include "dlldefs.h"
-#include "dsm2.h"
-#include "ctitypes.h"
-#include "types.h"
-#include "mgr_point.h"
-#include "device.h"
-#include "pt_numeric.h"
-#include "connection.h"*/
+
 #include "transdata_application.h"
 #include "transdata_data.h"
 #include "xfer.h"
@@ -66,13 +56,20 @@ class IM_EX_PROT CtiProtocolTransdata
       bool getAction( void );
       void processLPData( BYTE *data );
       void processBillingData( BYTE *data );
-//      void processDispatchReturnMessage( CtiConnection &conn );
       int retreiveData( BYTE *data );
       vector<CtiTransdataData *> resultDecode( INMESS *InMessage );
 
    protected:
 
    private:
+
+      enum
+      {
+         Billing_size      = 1200,
+         Storage_size      = 4500,
+         Loadprofile_size  = 4500
+
+      };
 
       bool                       _finished;
       bool                       _collectLP;

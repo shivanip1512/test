@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2003/12/02 15:48:10 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2003/12/16 17:23:04 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -28,6 +28,28 @@ class IM_EX_PROT CtiProtocolYmodem
 {
    public:
 
+      CtiProtocolYmodem();
+      ~CtiProtocolYmodem();
+
+      bool generate( CtiXfer &xfer, int bytesWanted, int timeToWait );
+      bool stopAck( CtiXfer &xfer, int bytesWanted, int timeToWait );
+      bool decode( CtiXfer &xfer, int status );
+      void setXfer( CtiXfer &xfer, BYTE dataOut, int bytesIn, bool block, ULONG time );
+
+      bool isTransactionComplete( void );
+
+      unsigned short calcCRC( BYTE *ptr, int count );
+      unsigned short updateCRC( BYTE c, unsigned short crc );
+
+      void retreiveData( BYTE *data, int *bytes );
+      bool isCrcValid( void );
+      void destroy( void );
+      void reinitalize( void );
+
+   protected:
+
+   private:
+      
       enum
       {
          //http://www.bsdg.org/swag/COMM/0084.PAS.html
@@ -52,27 +74,10 @@ class IM_EX_PROT CtiProtocolYmodem
          doAck
       };
 
-      CtiProtocolYmodem();
-      ~CtiProtocolYmodem();
-
-      bool generate( CtiXfer &xfer, int bytesWanted, int timeToWait );
-      bool stopAck( CtiXfer &xfer, int bytesWanted, int timeToWait );
-      bool decode( CtiXfer &xfer, int status );
-      void setXfer( CtiXfer &xfer, BYTE dataOut, int bytesIn, bool block, ULONG time );
-
-      bool isTransactionComplete( void );
-
-      unsigned short calcCRC( BYTE *ptr, int count );
-      unsigned short updateCRC( BYTE c, unsigned short crc );
-
-      void retreiveData( BYTE *data, int *bytes );
-      bool isCrcValid( void );
-      void destroy( void );
-      void reinitalize( void );
-
-   protected:
-
-   private:
+      enum
+      {
+         Storage_size   = 4500
+      };
 
       bool        _finished;
 

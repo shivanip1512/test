@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2003/12/09 17:55:26 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2003/12/16 17:23:04 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -183,11 +183,6 @@ INT CtiDeviceMarkV::ResultDecode( INMESS                    *InMessage,
 
    if( _transdataProtocol.getCommand() == GENERAL )
    {
-      {
-         CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " Decode Billing" << endl;
-      }
-      
       transVector = _transdataProtocol.resultDecode( InMessage );
 
       if( transVector.size() )
@@ -202,10 +197,6 @@ INT CtiDeviceMarkV::ResultDecode( INMESS                    *InMessage,
    }
    else //LOADPROFILE
    {
-      {
-         CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " Decode LoadProfile" << endl;
-      }
    }
 
    return( NORMAL );
@@ -248,6 +239,11 @@ int CtiDeviceMarkV::decodeResultScan( INMESS                    *InMessage,
                                                        InMessage->Return.Attempt,
                                                        InMessage->Return.TrxID,
                                                        InMessage->Return.UserID);
+
+   {
+      CtiLockGuard<CtiLogger> doubt_guard(dout);
+      dout << RWTime() << " ----Process Scanner Message In Progress----" << endl;
+   }
 
    if( isScanPending() )
    {
@@ -990,6 +986,115 @@ void CtiDeviceMarkV::processDispatchReturnMessage( CtiConnection &conn )
 
    RWTime mTime( lp->meterTime );
 
+   for( index = 0; index < lp->numLpRecs; )
+   {
+      if( lp->enabledChannels[0] == true )
+      {
+         pPoint = getDevicePointOffsetTypeEqual( CH1_OFFSET + LOAD_PROFILE, AnalogPointType );
+
+         if( pPoint != NULL )
+         {
+            pData = new CtiPointDataMsg();
+            pData->setId( pPoint->getID() );
+            pData->setValue( lp->lpData[index].value );
+            pData->setQuality( NormalQuality );             //just for now
+            pData->setTags( TAG_POINT_LOAD_PROFILE_DATA );
+            pData->setMessageTime( mTime );
+
+            msgMulti->getData().insert( pData );
+
+            index += 2;
+         }
+      }
+   
+      if( lp->enabledChannels[1] == true )
+      {
+         pPoint = getDevicePointOffsetTypeEqual( CH2_OFFSET + LOAD_PROFILE, AnalogPointType );
+
+         if( pPoint != NULL )
+         {
+            pData = new CtiPointDataMsg();
+            pData->setId( pPoint->getID() );
+            pData->setValue( lp->lpData[index].value );
+            pData->setQuality( NormalQuality );             //just for now
+            pData->setTags( TAG_POINT_LOAD_PROFILE_DATA );
+            pData->setMessageTime( mTime );
+
+            msgMulti->getData().insert( pData );
+
+            index += 2;
+         }
+      }
+
+      if( lp->enabledChannels[2] == true )
+      {
+         pPoint = getDevicePointOffsetTypeEqual( CH3_OFFSET + LOAD_PROFILE, AnalogPointType );
+
+         if( pPoint != NULL )
+         {
+            pData = new CtiPointDataMsg();
+            pData->setId( pPoint->getID() );
+            pData->setValue( lp->lpData[index].value );
+            pData->setQuality( NormalQuality );             //just for now
+            pData->setTags( TAG_POINT_LOAD_PROFILE_DATA );
+            pData->setMessageTime( mTime );
+
+            msgMulti->getData().insert( pData );
+
+            index += 2;
+         }
+      }
+
+      if( lp->enabledChannels[3] == true )
+      {
+         pPoint = getDevicePointOffsetTypeEqual( CH4_OFFSET + LOAD_PROFILE, AnalogPointType );
+
+         if( pPoint != NULL )
+         {
+            pData = new CtiPointDataMsg();
+            pData->setId( pPoint->getID() );
+            pData->setValue( lp->lpData[index].value );
+            pData->setQuality( NormalQuality );             //just for now
+            pData->setTags( TAG_POINT_LOAD_PROFILE_DATA );
+            pData->setMessageTime( mTime );
+
+            msgMulti->getData().insert( pData );
+
+            index += 2;
+         }
+      }
+      
+      //decrement the time to the interval previous to the current one...
+      mTime -= lp->lpFormat[0] * 60; 
+   }
+
+   conn.WriteConnQue( msgMulti );
+}
+/*
+//=====================================================================================================================
+//=====================================================================================================================
+
+void CtiDeviceMarkV::processDispatchReturnMessage( CtiConnection &conn )
+{
+   CtiTransdataTracker::mark_v_lp   *lp = NULL;
+   CtiMultiMsg                      *msgMulti = new CtiMultiMsg;
+   CtiPointDataMsg                  *pData = NULL;
+   CtiPointBase                     *pPoint = NULL;
+   BYTE                             *storage = NULL;
+   int                              index;
+   int                              numEnabledChannels = 0;
+
+   {
+      CtiLockGuard<CtiLogger> doubt_guard(dout);
+      dout << RWTime() << " ----Process Dispatch Message In Progress----" << endl;
+   }
+
+   storage = new BYTE[10000];
+   _transdataProtocol.retreiveData( storage );
+   lp = ( CtiTransdataTracker::mark_v_lp *)storage;
+
+   RWTime mTime( lp->meterTime );
+
    for( index = 0; index < 8; index++ )
    {
       if( lp->enabledChannels[index] == true )
@@ -999,12 +1104,14 @@ void CtiDeviceMarkV::processDispatchReturnMessage( CtiConnection &conn )
    //
    //the meter hands us the lp data in order of youngest to oldest
    //
-   for( index = 0; index < lp->numLpRecs; index += numEnabledChannels )
+//   for( index = 0; index < lp->numLpRecs; index += numEnabledChannels )
+   for( index = 0; index < 5; index += numEnabledChannels )
    {
       for( int x = 7; x >= 0; x-- )
       {
          if( lp->enabledChannels[x] == true )
          {
+            //obviously, we can't just use ch1-offset, but for testing....
             pPoint = getDevicePointOffsetTypeEqual( CH1_OFFSET + LOAD_PROFILE, AnalogPointType );
 
             if( pPoint != NULL )
@@ -1028,10 +1135,13 @@ void CtiDeviceMarkV::processDispatchReturnMessage( CtiConnection &conn )
    }
 
    conn.WriteConnQue( msgMulti );
-}
+   {
+      CtiLockGuard<CtiLogger> doubt_guard(dout);
+      dout << RWTime() << " ----Dispatch Message Has Been Sent----" << endl;
+   }
 
-//=====================================================================================================================
-//=====================================================================================================================
+}
+*/
 /*
 void CtiDeviceMarkV::DecodeDatabaseReader( RWDBReader &rdr )
 {

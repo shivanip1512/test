@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2003/12/09 17:55:26 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2003/12/16 17:23:04 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -135,70 +135,11 @@ void CtiProtocolTransdata::processLPData( BYTE *data )
 }
 
 //=====================================================================================================================
-//this is the guy that builds Dispatch messages out of LoadProfile pre-processed data after the comm loop
-//=====================================================================================================================
-/*
-void CtiProtocolTransdata::processDispatchReturnMessage( CtiConnection &conn )
-{
-   CtiTransdataTracker::mark_v_lp   *lp = NULL;
-   CtiMultiMsg                      *msgMulti = new CtiMultiMsg;
-   CtiPointDataMsg                  *pData = NULL;
-   CtiPointBase                     *pPoint = NULL;
-   int                              index;
-   int                              numEnabledChannels = 0;
-
-   lp = ( CtiTransdataTracker::mark_v_lp *)_storage;
-
-   RWTime mTime( lp->meterTime );
-
-   for( index = 0; index < 8; index++ )
-   {
-      if( lp->enabledChannels[index] )
-         numEnabledChannels++;
-   }
-
-   //
-   //the meter hands us the lp data in order of youngest to oldest
-   //
-   for( index = 0; index < lp->numLpRecs; index += numEnabledChannels )
-   {
-      for( int x = 7; x >= 0; x-- )
-      {
-         if( lp->enabledChannels[x] )
-         {
-            pPoint = getDevicePointOffsetTypeEqual( CH1_OFFSET + LOAD_PROFILE, AnalogPointType );
-
-            if( pPoint != NULL )
-            {
-               pData->setID( pPoint->getID() );
-               pData->setValue( ( DOUBLE)lp->lpData[index] );
-               pData->setQuality( NormalQuality );             //just for now
-               pData->setTags( TAG_POINT_LOAD_PROFILE_DATA );
-               pData->setMessageTime( mTime );
-
-               index += 2; //lp data is 2 bytes per
-            }
-
-            msgMulti->getData().insert( pData );
-         }
-      }
-
-      //decrement the time to the interval previous to the current one...
-      mTime -= lp->lpFormat[0] * 60; 
-   }
-}
-*/
-//=====================================================================================================================
 //=====================================================================================================================
 
 int CtiProtocolTransdata::recvOutbound( OUTMESS *OutMessage )
 {
    mkv *ptr = NULL;
-
-   {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " STAND BACK! DECODING MESSAGE!" << endl;
-   }
 
    _application.setLastLPTime( OutMessage->Buffer.DUPReq.LP_Time );
 
@@ -281,7 +222,6 @@ void CtiProtocolTransdata::reinitalize( void )
    }
 
    _command = 0;
-//   _lastLPTime = 0;
    
    _application.reinitalize();
    
@@ -290,9 +230,9 @@ void CtiProtocolTransdata::reinitalize( void )
    _billingDone = false;
    _lpDone = false;
 
-   _storage = new BYTE[4000];
-   _lpBytes = new BYTE[4000];
-   _billingBytes = new BYTE[1200];
+   _storage = new BYTE[Storage_size];
+   _lpBytes = new BYTE[Loadprofile_size];
+   _billingBytes = new BYTE[Billing_size];
 }
 
 //=====================================================================================================================
@@ -361,7 +301,8 @@ int CtiProtocolTransdata::retreiveData( BYTE *data )
 {
    int temp = _numBytes;
 
-   memcpy( data, _lpBytes, _numBytes );
+   if(( data != NULL ) && ( _lpBytes != NULL ))
+      memcpy( data, _lpBytes, _numBytes );
 
    return( temp );
 }

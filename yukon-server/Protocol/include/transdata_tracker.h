@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2003/12/09 17:55:26 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2003/12/16 17:23:04 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -62,20 +62,12 @@ class IM_EX_PROT CtiTransdataTracker
    };
 
    public:
-      /*
-      struct lpRecord
-      {
-         union
-         {
-            BYTE     rec[2];
-            DOUBLE   value;
-         };
-      };
-        */
+      
       typedef union
       {
          BYTE     rec[2];
-         DOUBLE   value;
+//         DOUBLE   value;
+         UINT     value;
       }lpRecord;
         
       struct mark_v_lp
@@ -85,7 +77,6 @@ class IM_EX_PROT CtiTransdataTracker
          int      numLpRecs;
          ULONG    meterTime;
          lpRecord lpData[1000];
-//         BYTE     lpData[2000];
       };
 
 
@@ -93,7 +84,6 @@ class IM_EX_PROT CtiTransdataTracker
       ~CtiTransdataTracker();
 
       void setXfer( CtiXfer &xfer, RWCString dataOut, int bytesIn, bool block, ULONG time );
-
       bool logOn( CtiXfer &xfer );
       bool billing( CtiXfer &xfer );
       bool loadProfile( CtiXfer &xfer );
@@ -109,6 +99,7 @@ class IM_EX_PROT CtiTransdataTracker
       bool grabChannels( BYTE *data, int bytes );
       bool grabFormat( BYTE *data, int bytes );
       bool grabTime( BYTE *data, int bytes );
+      bool grabReturnedChannels( BYTE *data, int bytes );
       void injectData( RWCString str );
       void setNextState( void );
       void reset( void );
@@ -124,6 +115,14 @@ class IM_EX_PROT CtiTransdataTracker
    protected:
 
    private:
+
+      enum
+      {
+         Command_size   = 30,
+         Storage_size   = 4500,
+         Meter_size     = 4500
+
+      };
 
       //these are the transdata commands that are defined by the doc 22A204E
       const char *const    _identify;
@@ -168,6 +167,8 @@ class IM_EX_PROT CtiTransdataTracker
       const char *const    _prot_message;
       const char *const    _retry;
       const char *const    _dump;
+      const char *const    _fail;
+      const char *const    _enter;
 
       RWCString            _password;
 

@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2003/12/02 15:47:59 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2003/12/16 17:23:04 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *
@@ -69,7 +69,7 @@ void CtiProtocolYmodem::reinitalize( void )
    _lastState     = doStart;
    _bytesReceived = 0;
    _finished      = false;
-   _storage       = new BYTE[4000];
+   _storage       = new BYTE[Storage_size];
 }
 
 //=====================================================================================================================
@@ -173,7 +173,7 @@ void CtiProtocolYmodem::retreiveData( BYTE *data, int *bytes )
       memcpy( data, _storage, _bytesReceived );
       *bytes = _bytesReceived;
 
-      memset( _storage, '\0', sizeof( _storage ));
+      memset( _storage, '\0', Storage_size );
 
       _bytesReceived = 0;
       _finished = false;

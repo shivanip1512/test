@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/10/30 15:02:51 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2003/12/16 17:23:04 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -50,6 +50,11 @@ class IM_EX_PROT CtiTransdataDatalink
    protected:
 
    private:
+
+      enum
+      {
+         Storage_size   = 4500
+      };
 
       int      _failCount;
       int      _error;

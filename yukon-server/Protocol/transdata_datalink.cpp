@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2003/12/02 15:48:11 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2003/12/16 17:23:04 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -60,7 +60,6 @@ void CtiTransdataDatalink::reinitalize( void )
       dout << RWTime() << " link reinit" << endl;
    }
    
-
    _failCount           = 0;
    _error               = 0;
    _bytesExpected       = 0;
@@ -68,7 +67,7 @@ void CtiTransdataDatalink::reinitalize( void )
 
    _finished            = true;
 
-   _storage             = new BYTE[4000];
+   _storage             = new BYTE[Storage_size];
 }
 
 //=====================================================================================================================
@@ -82,6 +81,7 @@ void CtiTransdataDatalink::buildMsg( CtiXfer &xfer )
       dout << RWTime() << " link build" << endl;
    }
 
+   memset( _storage, '\0', Storage_size );
    _finished = false;
    _bytesExpected = xfer.getInCountExpected();
 }
@@ -109,8 +109,8 @@ bool CtiTransdataDatalink::readMsg( CtiXfer &xfer, int status )
 
    if( xfer.getInCountActual() )
    {
-      memcpy( ( _storage + _bytesReceived ), xfer.getInBuffer(), xfer.getInCountActual() );
-
+//      memcpy( ( _storage + _bytesReceived ), xfer.getInBuffer(), xfer.getInCountActual() );
+      memcpy( _storage, xfer.getInBuffer(), xfer.getInCountActual() );
       _bytesReceived += xfer.getInCountActual();
    }
 
@@ -135,7 +135,7 @@ void CtiTransdataDatalink::retreiveData( BYTE *data, int *bytes )
       memcpy( data, _storage, _bytesReceived );
       *bytes = _bytesReceived;
 
-      memset( _storage, '\0', sizeof( _storage ));
+      memset( _storage, '\0', Storage_size );
 
       _bytesExpected = 0;
       _bytesReceived = 0;
