@@ -3967,6 +3967,7 @@ insert into yukongrouprole values(-210,-122,'(none)');
 insert into yukongrouprole values(-210,-123,'(none)');
 insert into yukongrouprole values(-210,-124,'(none)');
 insert into yukongrouprole values(-210,-125,'(none)');
+insert into yukongrouprole values(-210,-150,'(none)');
 insert into yukongrouprole values(-210,-160,'(none)');
 insert into yukongrouprole values(-210,-161,'(none)');
 insert into yukongrouprole values(-210,-162,'(none)');
@@ -4210,6 +4211,7 @@ insert into YukonRole values(-140,'CICUSTOMER_DIRECT_CONTROL','WebClient','(none
 insert into YukonRole values(-141,'CICUSTOMER_CURTAILMENT','WebClient','(none)','(none)');
 insert into YukonRole values(-142,'CICUSTOMER_ENERGY_EXCHANGE','WebClient','(none)','(none)');
 
+insert into YukonRole values(-150,'LOADCONTROL_CONTROL_ODDS','LoadControl','(none)','(none)');
 insert into YukonRole values(-160,'CONSUMERINFO_ACCOUNT','ConsumerInfo','(none)','(none)');
 insert into YukonRole values(-161,'CONSUMERINFO_ACCOUNT_GENERAL','ConsumerInfo','(none)','(none)');
 insert into YukonRole values(-162,'CONSUMERINFO_ACCOUNT_CALL_TRACKING','ConsumerInfo','(none)','(none)');
