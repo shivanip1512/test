@@ -12,12 +12,10 @@ public class LMProgramDirect extends com.cannontech.database.db.DBPersistent
 	private String heading = CtiUtilities.STRING_NONE;
 	private String messageHeader = CtiUtilities.STRING_NONE;
 	private String messageFooter = CtiUtilities.STRING_NONE;
-	private String canceledMsg = CtiUtilities.STRING_NONE;
-	private String stoppedEarlyMsg = CtiUtilities.STRING_NONE;
 
 	public static final String SETTER_COLUMNS[] = 
 	{ 
-		"NOTIFYOFFSET", "HEADING", "MESSAGEHEADER", "MESSAGEFOOTER", "CANCELEDMSG", "STOPPEDEARLYMSG"
+		"NOTIFYOFFSET", "HEADING", "MESSAGEHEADER", "MESSAGEFOOTER"
 	};
 
 	public static final String CONSTRAINT_COLUMNS[] = { "DeviceID" };
@@ -36,8 +34,7 @@ public LMProgramDirect() {
 public void add() throws java.sql.SQLException 
 {
 	Object addValues[] = { getDeviceID(), getNotifyOffset(), getHeading(),
-						   getMessageHeader(), getMessageFooter(), getCanceledMsg(),
-						   getStoppedEarlyMsg() };
+						   getMessageHeader(), getMessageFooter() };
 
 	add( TABLE_NAME, addValues );
 }
@@ -71,14 +68,6 @@ public String getMessageHeader() {
 
 public String getMessageFooter() {
 	return messageFooter;
-}
-
-public String getCanceledMsg() {
-	return canceledMsg;
-}
-
-public String getStoppedEarlyMsg() {
-	return stoppedEarlyMsg;
 }
 
 public static final LMDirectNotificationGroupList[] getAllNotificationGroupsList(Integer programDeviceID, java.sql.Connection conn) throws java.sql.SQLException
@@ -158,8 +147,6 @@ public void retrieve() throws java.sql.SQLException
 		setHeading( (String) results[1] );
 		setMessageHeader( (String) results[2] );
 		setMessageFooter( (String) results[3] );
-		setCanceledMsg( (String) results[4] );
-		setStoppedEarlyMsg( (String) results[5] );
 	}
 	else
 		throw new Error(getClass() + " - Incorrect Number of results retrieved");
@@ -190,20 +177,13 @@ public void setMessageFooter(String newFooter) {
 	messageFooter = newFooter;
 }
 
-public void setCanceledMsg(String newMsg) {
-	canceledMsg = newMsg;
-}
-
-public void setStoppedEarlyMsg(String newMsg) {
-	stoppedEarlyMsg = newMsg;
-}
 /**
  * update method comment.
  */
 public void update() throws java.sql.SQLException 
 {
 	Object setValues[] = { getNotifyOffset(), getHeading(), getMessageHeader(),
-							getMessageFooter(), getCanceledMsg(), getStoppedEarlyMsg() };
+							getMessageFooter() };
 
 	Object constraintValues[] = { getDeviceID() };
 
