@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_main.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:07 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/04/16 18:50:56 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -18,7 +18,7 @@
 /*---------------------------------------------------------------------------
         Filename:  mc_main.cpp
 
-        Programmer:  Aaron Lauinger
+        Programmer:   Aaron Lauinger
 
         Description:  Entry point for Metering and Control Server
 
