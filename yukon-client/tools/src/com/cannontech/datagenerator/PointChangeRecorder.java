@@ -36,7 +36,7 @@ public class PointChangeRecorder {
 		
 		try {
 			conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
-			pstmt = conn.prepareStatement("select pointid,timestamp,quality,value from rawpointhistory where timestamp > ? and timestamp < ? order by changeid");
+			pstmt = conn.prepareStatement("select pointid,timestamp,quality,value from rawpointhistory where timestamp > ? and timestamp < ? order by timestamp,changeid");
 			pstmt.setTimestamp(1, start);
 			pstmt.setTimestamp(2, end);
 			
