@@ -641,6 +641,8 @@ public void setDeviceType(int newDeviceType)
       getPhysicalAddressLabel().setText("Slave Address:");
    else if( deviceType == com.cannontech.database.data.pao.DeviceTypes.MCTBROADCAST )
       getPhysicalAddressLabel().setText("Lead Meter Address:");
+   else if( deviceType == com.cannontech.database.data.pao.DeviceTypes.SERIES_5_LMI )
+	  getPhysicalAddressLabel().setText("Address:");
    else
       getPhysicalAddressLabel().setText("Physical Address:");
 }

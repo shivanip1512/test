@@ -2189,7 +2189,7 @@ private void setRemoteBaseValue( RemoteBase rBase, int intType )
    else if( rBase instanceof Series5Base )
 	{
 		getPhysicalAddressLabel().setVisible(true);
-		getPhysicalAddressLabel().setText("Slave Address:");
+		getPhysicalAddressLabel().setText("Address:");
 		getPhysicalAddressTextField().setVisible(true);
 		getPhysicalAddressTextField().setDocument( new com.cannontech.common.gui.unchanging.DoubleRangeDocument(1, 127) );
 		getPhysicalAddressTextField().setText( ((Series5Base)rBase).getSeries5().getSlaveAddress().toString() );
@@ -2231,7 +2231,7 @@ private void setRemoteBaseValue( RemoteBase rBase, int intType )
 		getPasswordTextField().setVisible(false);
 		
 		getControlInhibitCheckBox().setVisible(true);
-		ivjControlInhibitCheckBox.setText("Disable Verifies");
+		ivjControlInhibitCheckBox.setText("Disable Code Verification");
 		if(((RTCBase)rBase).getDeviceRTC().getDisableVerifies().compareTo("Y") == 0)
 			getControlInhibitCheckBox().setSelected(true);
 		else
