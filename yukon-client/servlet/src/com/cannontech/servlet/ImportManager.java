@@ -505,6 +505,7 @@ public class ImportManager extends HttpServlet {
 	
 	private void importDSMData(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
 		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
+		ServletUtils.saveRequest(req, session, new String[] {"ImportDir"});
 		
 		try {
 			File importDir = new File( req.getParameter("ImportDir") );

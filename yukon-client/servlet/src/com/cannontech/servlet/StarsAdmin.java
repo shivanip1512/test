@@ -2,6 +2,7 @@ package com.cannontech.servlet;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.Iterator;
 
 import javax.servlet.ServletException;
@@ -50,6 +51,7 @@ import com.cannontech.database.db.stars.customer.CustomerAccount;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.application.WebClientRole;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
+import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.util.ECUtils;
@@ -1535,7 +1537,7 @@ public class StarsAdmin extends HttpServlet {
 			LiteYukonGroup operGroup = null;
 			
 			String[] operGroupNames = req.getParameter("OperatorGroup").split(",");
-			ArrayList operGroupList = new ArrayList();
+			String operGroupIDs = "";
 			for (int i = 0; i < operGroupNames.length; i++) {
 				String groupName = operGroupNames[i].trim();
 				if (groupName.equals("")) continue;
@@ -1544,19 +1546,18 @@ public class StarsAdmin extends HttpServlet {
 				if (group == null)
 					throw new WebClientException( "Operator group '" + groupName + "' does not exist");
 				
-				if (operGroup == null) operGroup = group;
-				operGroupList.add( group );
+				if (i == 0)
+					operGroupIDs += String.valueOf( group.getGroupID() );
+				else
+					operGroupIDs += "," + String.valueOf( group.getGroupID() );
+				if (i == 0) operGroup = group;
 			}
 			
 			if (operGroup == null)
 				throw new WebClientException( "You must select at least one operator group" );
 			
-			int[] operGroupIDs = new int[ operGroupList.size() ];
-			for (int i = 0; i < operGroupList.size(); i++) 
-				operGroupIDs[i] = ((LiteYukonGroup)operGroupList.get(i)).getGroupID();
-			
 			String[] custGroupNames = req.getParameter("CustomerGroup").split(",");
-			ArrayList custGroupList = new ArrayList();
+			String custGroupIDs = "";
 			for (int i = 0; i < custGroupNames.length; i++) {
 				String groupName = custGroupNames[i].trim();
 				if (groupName.equals("")) continue;
@@ -1564,12 +1565,12 @@ public class StarsAdmin extends HttpServlet {
 				LiteYukonGroup group = AuthFuncs.getGroup( groupName );
 				if (group == null)
 					throw new WebClientException( "Customer group '" + groupName + "' does not exist");
-				custGroupList.add( group );
+				
+				if (i == 0)
+					custGroupIDs += String.valueOf( group.getGroupID() );
+				else
+					custGroupIDs += "," + String.valueOf( group.getGroupID() );
 			}
-			
-			int[] custGroupIDs = new int[ custGroupList.size() ];
-			for (int i = 0; i < custGroupList.size(); i++)
-				custGroupIDs[i] = ((LiteYukonGroup)custGroupList.get(i)).getGroupID();
 			
 			if (YukonUserFuncs.getLiteYukonUser( req.getParameter("Username") ) != null)
 				throw new WebClientException( "Username of default operator login already exists" );
@@ -1592,7 +1593,11 @@ public class StarsAdmin extends HttpServlet {
 				}
 			}
 			
-			LiteYukonGroup liteAdminGrp = StarsAdminUtil.createOperatorAdminGroup( adminGroupName, operGroupIDs, custGroupIDs );
+			Hashtable rolePropMap = new Hashtable();
+			rolePropMap.put( new Integer(EnergyCompanyRole.OPERATOR_GROUP_IDS), operGroupIDs );
+			rolePropMap.put( new Integer(EnergyCompanyRole.CUSTOMER_GROUP_IDS), custGroupIDs );
+			rolePropMap.put( new Integer(AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY), StarsAdminUtil.FIRST_TIME );
+			LiteYukonGroup liteAdminGrp = StarsAdminUtil.createOperatorAdminGroup( adminGroupName, rolePropMap );
 			
 			// Create the default operator login
 			LiteYukonGroup[] operGroups = (operGroup != null)?
@@ -1646,6 +1651,10 @@ public class StarsAdmin extends HttpServlet {
 			stmt.execute();
 			
 			LiteStarsEnergyCompany newCompany = new LiteStarsEnergyCompany( company );
+			newCompany.setAccountsLoaded( true );
+			newCompany.setInventoryLoaded( true );
+			newCompany.setWorkOrdersLoaded( true );
+			
 			StarsDatabaseCache.getInstance().addEnergyCompany( newCompany );
 			ServerUtils.handleDBChange( newCompany, DBChangeMsg.CHANGE_TYPE_ADD );
 			

@@ -47,6 +47,7 @@ import com.cannontech.database.data.lite.stars.LiteSubstation;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.operator.AdministratorRole;
+import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.StarsUtils;
@@ -201,9 +202,14 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 		if (status == STATUS_FINISHED) {
 			return "DSM database has been converted successfully. Please check the \"_import.log\" for detailed information.";
 		}
+		else if (status == STATUS_ERROR) {
+			String msg = getImportProgress();
+			if (msg.length() == 0) msg = null;
+			return msg;
+		}
 		else {
 			if (progressMsg != null)
-				return progressMsg;
+				return progressMsg + NEW_LINE + NEW_LINE + getImportProgress();
 			else
 				return "Converting DSM database...";
 		}
@@ -271,7 +277,7 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 			importLog.println();
 			importLog.println("Stop time: " + StarsUtils.formatDate( new Date(), energyCompany.getDefaultTimeZone() ));
 			importLog.println();
-			logImportProgress();
+			importLog.print(getImportProgress());
 			importLog.println();
 			importLog.println("@DONE");
 			
@@ -289,10 +295,17 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 					errorMsg += " before processing " + resumeLocation;
 			}
 			else {
-				if (errorLocation != null)
-					errorMsg = "An error occured at " + errorLocation + ": " + e.getMessage();
-				else
-					errorMsg = e.getMessage();
+				if (errorLocation != null) {
+					errorMsg = "An error occured at " + errorLocation;
+					if (e instanceof WebClientException)
+						errorMsg += ": " + e.getMessage();
+				}
+				else {
+					if (e instanceof WebClientException)
+						errorMsg = e.getMessage();
+					else
+						errorMsg = "An error occured in the process of converting the DSM database";
+				}
 			}
 			
 			if (importLog != null) {
@@ -300,7 +313,7 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 				importLog.println("Stop time: " + StarsUtils.formatDate( new Date(), energyCompany.getDefaultTimeZone() ));
 				importLog.println();
 				importLog.println( errorMsg );
-				logImportProgress();
+				importLog.print(getImportProgress());
 				if (resumeLocation != null) {
 					importLog.println();
 					importLog.println("@RESUME " + resumeLocation);
@@ -425,27 +438,43 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 		}
 	}
 	
-	private void logImportProgress() {
+	private String getImportProgress() {
+		String progress = "";
 		if (numCoopImported > 0)
-			importLog.println(numCoopImported + " member coops imported");
+			progress += numCoopImported + " member coops imported" + NEW_LINE;
 		if (numSubstationImported > 0)
-			importLog.println(numSubstationImported + " substations imported");
+			progress += numSubstationImported + " substations imported" + NEW_LINE;
 		if (numCustomerImported > 0)
-			importLog.println(numCustomerImported + " customers imported");
+			progress += numCustomerImported + " customers imported" + NEW_LINE;
 		if (numReceiverImported > 0)
-			importLog.println(numReceiverImported + " receivers imported");
+			progress += numReceiverImported + " receivers imported" + NEW_LINE;
 		if (numCtrlLoadImported > 0)
-			importLog.println(numCtrlLoadImported + " controlled load imported");
+			progress += numCtrlLoadImported + " controlled load imported" + NEW_LINE;
+		return progress;
+	}
+	
+	private long getInitAccountNo() throws Exception {
+		String sql = "SELECT MAX(AccountNumber) FROM CustomerAccount WHERE AccountNumber LIKE '000%'";
+		SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
+		stmt.execute();
+		
+		long accountNo = 0;
+		if (stmt.getRowCount() > 0)
+			accountNo = Long.parseLong((String)stmt.getRow(0)[0]);
+		
+		return ++accountNo;
 	}
 	
 	private Hashtable getCoopMap() throws Exception {
 		if (coopMap == null) {
 			coopMap = new Hashtable();
 			File file = new File(importDir, "_coop.map");
-			String[] lines = StarsUtils.readFile( file, false );
-			for (int i = 0; i < lines.length; i++) {
-				String[] fields = StarsUtils.splitString( lines[i], "," );
-				coopMap.put( Integer.valueOf(fields[0]), Integer.valueOf(fields[1]) );
+			if (file.exists()) {
+				String[] lines = StarsUtils.readFile( file, false );
+				for (int i = 0; i < lines.length; i++) {
+					String[] fields = StarsUtils.splitString( lines[i], "," );
+					coopMap.put( Integer.valueOf(fields[0]), Integer.valueOf(fields[1]) );
+				}
 			}
 		}
 		return coopMap;
@@ -455,10 +484,12 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 		if (substationMap == null) {
 			substationMap = new Hashtable();
 			File file = new File(importDir, "_substation.map");
-			String[] lines = StarsUtils.readFile( file, false );
-			for (int i = 0; i < lines.length; i++) {
-				String[] fields = StarsUtils.splitString( lines[i], "," );
-				substationMap.put( Integer.valueOf(fields[0]), Integer.valueOf(fields[1]) );
+			if (file.exists()) {
+				String[] lines = StarsUtils.readFile( file, false );
+				for (int i = 0; i < lines.length; i++) {
+					String[] fields = StarsUtils.splitString( lines[i], "," );
+					substationMap.put( Integer.valueOf(fields[0]), Integer.valueOf(fields[1]) );
+				}
 			}
 		}
 		return substationMap;
@@ -468,11 +499,13 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 		if (customerMap == null) {
 			customerMap = new Hashtable();
 			File file = new File(importDir, "_customer.map");
-			String[] lines = StarsUtils.readFile( file, false );
-			for (int i = 0; i < lines.length; i++) {
-				String[] fields = StarsUtils.splitString( lines[i], "," );
-				CustomerPK pk = new CustomerPK( fields[0], fields[1], fields[2], Integer.parseInt(fields[3]) );
-				customerMap.put( pk, Integer.valueOf(fields[4]) );
+			if (file.exists()) {
+				String[] lines = StarsUtils.readFile( file, false );
+				for (int i = 0; i < lines.length; i++) {
+					String[] fields = StarsUtils.splitString( lines[i], "," );
+					CustomerPK pk = new CustomerPK( fields[0], fields[1], fields[2], Integer.parseInt(fields[3]) );
+					customerMap.put( pk, Integer.valueOf(fields[4]) );
+				}
 			}
 		}
 		return customerMap;
@@ -482,10 +515,12 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 		if (receiverMap == null) {
 			receiverMap = new Hashtable();
 			File file = new File(importDir, "_receiver.map");
-			String[] lines = StarsUtils.readFile( file, false );
-			for (int i = 0; i < lines.length; i++) {
-				String[] fields = StarsUtils.splitString( lines[i], "," );
-				receiverMap.put( fields[0], Integer.valueOf(fields[1]) );
+			if (file.exists()) {
+				String[] lines = StarsUtils.readFile( file, false );
+				for (int i = 0; i < lines.length; i++) {
+					String[] fields = StarsUtils.splitString( lines[i], "," );
+					receiverMap.put( fields[0], Integer.valueOf(fields[1]) );
+				}
 			}
 		}
 		return receiverMap;
@@ -514,7 +549,8 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 						throw new WebClientException( "Route \"" + fields[2] + "\" was not found in Yukon" );
 				}
 				
-				routeMap.put( Integer.valueOf(fields[0]), routeID );
+				if (routeID != null)
+					routeMap.put( Integer.valueOf(fields[0]), routeID );
 			}
 		}
 		return routeMap;
@@ -539,8 +575,10 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 					devTypeID = new Integer(entryID);
 				}
 				
-				ReceiverType rt = new ReceiverType( fields[0], fields[1], fields[2] );
-				receiverTypeMap.put( rt, devTypeID );
+				if (devTypeID != null) {
+					ReceiverType rt = new ReceiverType( fields[0], fields[1], fields[2] );
+					receiverTypeMap.put( rt, devTypeID );
+				}
 			}
 		}
 		return receiverTypeMap;
@@ -570,16 +608,16 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 			throw new WebClientException( errorMsg );
 		}
 		
+		Hashtable coopMap = getCoopMap();
+		
 		File mapFile = new File(importDir, "_coop.map");
 		PrintWriter fw = null;
 		BufferedReader fr = null;
 		
 		try {
 			fw = new PrintWriter(new FileWriter(mapFile, true), true);
-			coopMap = new Hashtable();
-			
 			fr = new BufferedReader(new FileReader(file));
-			String line = fr.readLine();
+			String line = null;
 			int lineNo = 0;
 			
 			while ((line = fr.readLine()) != null) {
@@ -599,20 +637,27 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 				
 				// Create operator groups
 				LiteYukonGroup[] operGroups = energyCompany.getWebClientOperatorGroups();
-				int[] operGroupIDs = new int[operGroups.length];	// IDs of newly created groups
+				String operGroupIDs = "";	// IDs of newly created groups
 				LiteYukonGroup[] allGroups = new LiteYukonGroup[operGroups.length + 1];	// reserve a space for the amdin group
 				
 				for (int j = 0; j < operGroups.length; j++) {
 					String grpName = operGroups[j].getGroupName() + " - " + coopName;
 					allGroups[j] = StarsAdminUtil.copyYukonGroup( operGroups[j], grpName );
-					operGroupIDs[j] = allGroups[j].getGroupID();
+					if (j == 0)
+						operGroupIDs += String.valueOf( allGroups[j].getGroupID() );
+					else
+						operGroupIDs += "," + String.valueOf( allGroups[j].getGroupID() );
 				}
 				
+				Hashtable rolePropMap = new Hashtable();
+				rolePropMap.put( new Integer(EnergyCompanyRole.OPERATOR_GROUP_IDS), operGroupIDs );
+				rolePropMap.put( new Integer(EnergyCompanyRole.CUSTOMER_GROUP_IDS), "" );
+				
 				String adminGrpName = energyCompany.getOperatorAdminGroup().getGroupName() + " - " + coopName;
-				allGroups[allGroups.length - 1] = StarsAdminUtil.createOperatorAdminGroup(adminGrpName, operGroupIDs, new int[0]);
+				allGroups[allGroups.length - 1] = StarsAdminUtil.createOperatorAdminGroup(adminGrpName, rolePropMap);
 				
 				// For testing, turn on the "delete energy company" property
-//				StarsAdminUtil.updateGroupRoleProperty(allGroups[allGroups.length - 1], AdministratorRole.ROLEID, AdministratorRole.ADMIN_DELETE_ENERGY_COMPANY, CtiUtilities.TRUE_STRING);
+				StarsAdminUtil.updateGroupRoleProperty(allGroups[allGroups.length - 1], AdministratorRole.ROLEID, AdministratorRole.ADMIN_DELETE_ENERGY_COMPANY, CtiUtilities.TRUE_STRING);
 				
 				// Create the default operator login
 				LiteYukonUser liteUser = StarsAdminUtil.createOperatorLogin(
@@ -657,6 +702,8 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 				
 				coopMap.put( coopID, member.getEnergyCompanyID() );
 				fw.println( coopID + "," + member.getEnergyCompanyID() );
+				
+				numCoopImported++;
 			}
 			
 			errorLocation = null;
@@ -683,16 +730,16 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 			throw new WebClientException( errorMsg );
 		}
 		
+		Hashtable substationMap = getSubstationMap();
+		
 		File mapFile = new File(importDir, "_substation.map");
 		PrintWriter fw = null;
 		BufferedReader fr = null;
 		
 		try {
 			fw = new PrintWriter(new FileWriter(mapFile, true), true);
-			substationMap = new Hashtable();
-			
 			fr = new BufferedReader(new FileReader(file));
-			String line = fr.readLine();
+			String line = null;
 			int lineNo = 0;
 			
 			while ((line = fr.readLine()) != null) {
@@ -718,6 +765,8 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 				
 				substationMap.put( subID, new Integer(sub.getSubstationID()) );
 				fw.println( subID + "," + sub.getSubstationID() );
+				
+				numSubstationImported++;
 			}
 			
 			errorLocation = null;
@@ -768,17 +817,17 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 			throw new WebClientException( errorMsg );
 		}
 		
+		Hashtable customerMap = getCustomerMap();
+		
 		File mapFile = new File(importDir, "_customer.map");
 		PrintWriter fw = null;
 		BufferedReader fr = null;
 		
 		DecimalFormat acctNoFormat = new DecimalFormat("00000000");
-		long emptyAcctNo = 1;
+		long initAcctNo = getInitAccountNo();
 		
 		try {
 			fw = new PrintWriter(new FileWriter(mapFile, true), true);
-			customerMap = new Hashtable();
-			
 			fr = new BufferedReader(new FileReader(file));
 			String line = fr.readLine();
 			int lineNo = 0;
@@ -789,8 +838,10 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 					line = fr.readLine();
 					continue;
 				}
-				if (resumeFile == RESUME_FILE_CUSTOMER && lineNo < resumeLine)
+				if (resumeFile == RESUME_FILE_CUSTOMER && lineNo < resumeLine) {
+					line = fr.readLine();
 					continue;
+				}
 				
 				errorLocation = "\"customer.out\" line #" + lineNo;
 				resumeLocation = "customer.out " + lineNo;
@@ -815,11 +866,23 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 					}
 				}
 				
+				Integer coopID = Integer.valueOf( fields[3].trim() );
+				Integer memberID = (Integer) getCoopMap().get( coopID );
+				if (memberID == null) {
+					importLog.println(errorLocation + ": invalid member coop id \"" + coopID + "\", record ignored.");
+					continue;
+				}
+				
+				LiteStarsEnergyCompany member = StarsDatabaseCache.getInstance().getEnergyCompany( memberID.intValue() );
+				
+				String accountNo = (fields[10].trim().length() > 0)? fields[10].trim() : acctNoFormat.format(initAcctNo++);
+				if (member.searchAccountByAccountNo(accountNo) != null) {
+					importLog.println(errorLocation + ": account number \"" + accountNo + "\" already exists, record ignored.");
+					continue;
+				}
+				
 				StarsCustomerAccount account = new StarsCustomerAccount();
-				if (fields[10].trim().length() > 0)
-					account.setAccountNumber( fields[10].trim() );
-				else
-					account.setAccountNumber( acctNoFormat.format(emptyAcctNo++) );
+				account.setAccountNumber( accountNo );
 				account.setIsCommercial( false );
 				account.setCompany( "" );
 				account.setPropertyNumber( fields[0].trim() + "-" + fields[1].trim() + "-" + fields[2].trim() );
@@ -903,15 +966,13 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 				StarsNewCustomerAccount newAccount = new StarsNewCustomerAccount();
 				newAccount.setStarsCustomerAccount( account );
 				
-				Integer coopID = Integer.valueOf( fields[3].trim() );
-				Integer memberID = (Integer) getCoopMap().get( coopID );
-				LiteStarsEnergyCompany member = StarsDatabaseCache.getInstance().getEnergyCompany( memberID.intValue() );
-				
 				LiteStarsCustAccountInformation liteAcctInfo = NewCustAccountAction.newCustomerAccount(newAccount, member);
 				
 				CustomerPK pk = new CustomerPK( fields[0].trim(), fields[1].trim(), fields[2].trim(), coopID.intValue() );
 				customerMap.put( pk, new Integer(liteAcctInfo.getAccountID()) );
 				fw.println( pk.toString() + "," + liteAcctInfo.getAccountID() );
+				
+				numCustomerImported++;
 			}
 			
 			errorLocation = null;
@@ -959,14 +1020,14 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 			throw new WebClientException( errorMsg );
 		}
 		
+		Hashtable receiverMap = getReceiverMap();
+		
 		File mapFile = new File(importDir, "_receiver.map");
 		PrintWriter fw = null;
 		BufferedReader fr = null;
 		
 		try {
 			fw = new PrintWriter(new FileWriter(mapFile, true), true);
-			receiverMap = new Hashtable();
-			
 			fr = new BufferedReader(new FileReader(file));
 			String line = null;;
 			int lineNo = 0;
@@ -991,6 +1052,11 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 				
 				Integer coopID = Integer.valueOf( fields[6].trim() );
 				Integer memberID = (Integer) getCoopMap().get( coopID );
+				if (memberID == null) {
+					importLog.println(errorLocation + ": invalid member coop id \"" + coopID + "\", record ignored.");
+					continue;
+				}
+				
 				LiteStarsEnergyCompany member = StarsDatabaseCache.getInstance().getEnergyCompany( memberID.intValue() );
 				
 				ReceiverType rt = new ReceiverType( fields[18].trim(), fields[7].trim(), fields[23].trim() );
@@ -1002,6 +1068,7 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 				
 				StarsCreateLMHardware inv = (StarsCreateLMHardware) StarsFactory.newStarsInv(StarsCreateLMHardware.class);
 				inv.setAltTrackingNumber( fields[24].trim() );
+				inv.setNotes( rt.toString() );
 				if (fields[8].trim().length() > 0)
 					inv.setInstallDate( dateParser.parse(fields[8].trim()) );
 				
@@ -1012,13 +1079,6 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 				LMHardware hw = new LMHardware();
 				hw.setManufacturerSerialNumber( serialNo );
 				inv.setLMHardware( hw );
-				
-				String notes = "";
-				if (fields[7].trim().length() > 0)
-					notes += "Model: " + fields[7].trim() + NEW_LINE;
-				if (fields[23].trim().length() > 0)
-					notes += "Frequency: " + fields[23].trim();
-				inv.setNotes( notes );
 				
 				CustomerPK pk = new CustomerPK( fields[3].trim(), fields[4].trim(), fields[5].trim(), coopID.intValue() );
 				Integer acctID = (Integer) getCustomerMap().get(pk);
@@ -1056,15 +1116,23 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 				}
 				
 				SA205 sa205 = new SA205();
-				sa205.setSlot1( Integer.parseInt(fields[12].trim()) );
-				sa205.setSlot2( Integer.parseInt(fields[13].trim()) );
-				sa205.setSlot3( Integer.parseInt(fields[14].trim()) );
-				sa205.setSlot4( Integer.parseInt(fields[15].trim()) );
-				sa205.setSlot5( Integer.parseInt(fields[16].trim()) );
-				sa205.setSlot6( Integer.parseInt(fields[17].trim()) );
+				if (fields[12].trim().length() > 0)
+					sa205.setSlot1( Integer.parseInt(fields[12].trim()) );
+				if (fields[13].trim().length() > 0)
+					sa205.setSlot2( Integer.parseInt(fields[13].trim()) );
+				if (fields[14].trim().length() > 0)
+					sa205.setSlot3( Integer.parseInt(fields[14].trim()) );
+				if (fields[15].trim().length() > 0)
+					sa205.setSlot4( Integer.parseInt(fields[15].trim()) );
+				if (fields[16].trim().length() > 0)
+					sa205.setSlot5( Integer.parseInt(fields[16].trim()) );
+				if (fields[17].trim().length() > 0)
+					sa205.setSlot6( Integer.parseInt(fields[17].trim()) );
 				starsCfg.setSA205( sa205 );
 				
 				UpdateLMHardwareConfigAction.updateLMConfiguration( starsCfg, liteHw, member );
+				
+				numReceiverImported++;
 			}
 			
 			errorLocation = null;
@@ -1327,6 +1395,11 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 				
 				Integer coopID = Integer.valueOf( fields[5].trim() );
 				Integer memberID = (Integer) getCoopMap().get( coopID );
+				if (memberID == null) {
+					importLog.println(errorLocation + ": invalid member coop id \"" + coopID + "\", record ignored.");
+					continue;
+				}
+				
 				LiteStarsEnergyCompany member = StarsDatabaseCache.getInstance().getEnergyCompany( memberID.intValue() );
 				
 				CustomerPK pk = new CustomerPK( fields[2].trim(), fields[3].trim(), fields[4].trim(), coopID.intValue() );
@@ -1465,6 +1538,8 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 					
 					ProgramSignUpAction.updateProgramEnrollment( progSignUp, liteAcctInfo, liteHw, member );
 				}
+				
+				numCtrlLoadImported++;
 			}
 			
 			errorLocation = null;

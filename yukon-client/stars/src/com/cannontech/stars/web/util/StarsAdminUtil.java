@@ -9,6 +9,7 @@ package com.cannontech.stars.web.util;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -838,7 +839,7 @@ public class StarsAdminUtil {
 		return AuthFuncs.getGroup( liteGroup.getGroupID() );
 	}
 	
-	public static LiteYukonGroup createOperatorAdminGroup(String grpName, int[] operGrpIDs, int[] custGrpIDs)
+	public static LiteYukonGroup createOperatorAdminGroup(String grpName, Hashtable rolePropMap)
 		throws TransactionException
 	{
 		com.cannontech.database.data.user.YukonGroup adminGrp = new com.cannontech.database.data.user.YukonGroup();
@@ -853,18 +854,9 @@ public class StarsAdminUtil {
 			
 			groupRole.setRoleID( new Integer(EnergyCompanyRole.ROLEID) );
 			groupRole.setRolePropertyID( new Integer(roleProps[i].getRolePropertyID()) );
-			if (roleProps[i].getRolePropertyID() == EnergyCompanyRole.CUSTOMER_GROUP_IDS) {
-				String value = "";
-				for (int j = 0; j < custGrpIDs.length; j++)
-					value += custGrpIDs[j] + ",";
+			String value = (String) rolePropMap.get( groupRole.getRolePropertyID() );
+			if (value != null)
 				groupRole.setValue( value );
-			}
-			else if (roleProps[i].getRolePropertyID() == EnergyCompanyRole.OPERATOR_GROUP_IDS) {
-				String value = "";
-				for (int j = 0; j < operGrpIDs.length; j++)
-					value += operGrpIDs[j] + ",";
-				groupRole.setValue( value );
-			}
 			else
 				groupRole.setValue( CtiUtilities.STRING_NONE );
 			
@@ -877,8 +869,9 @@ public class StarsAdminUtil {
 			
 			groupRole.setRoleID( new Integer(AdministratorRole.ROLEID) );
 			groupRole.setRolePropertyID( new Integer(roleProps[i].getRolePropertyID()) );
-			if (roleProps[i].getRolePropertyID() == AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY)
-				groupRole.setValue( StarsAdminUtil.FIRST_TIME );
+			String value = (String) rolePropMap.get( groupRole.getRolePropertyID() );
+			if (value != null)
+				groupRole.setValue( value );
 			else
 				groupRole.setValue( CtiUtilities.STRING_NONE );
 			
