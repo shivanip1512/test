@@ -13,7 +13,7 @@ import java.awt.geom.Rectangle2D;
 
 import com.jrefinery.chart.ChartRenderingInfo;
 import com.jrefinery.chart.CrosshairInfo;
-import com.jrefinery.chart.XYPlot;
+import com.jrefinery.chart.plot.XYPlot;
 import com.jrefinery.chart.axis.ValueAxis;
 import com.jrefinery.chart.renderer.XYStepRenderer;
 import com.jrefinery.data.XYDataset;
@@ -77,11 +77,11 @@ public class XYStepRenderer_MinMax extends XYStepRenderer
 
         if( this.plotMinMaxValues)
 		{                        
-            if (minMaxValues[datasetIndex][series] != null && (y1.doubleValue() == minMaxValues[datasetIndex][series].getMaximumValue() || 
+            if (minMaxValues != null && (y1.doubleValue() == minMaxValues[datasetIndex][series].getMaximumValue() || 
             	y1.doubleValue() == minMaxValues[datasetIndex][series].getMinimumValue()))
             {
-                double scale = 6.0;
-                java.awt.Shape shape = plot.getShape(series, item, transX1, transY1, scale);
+                java.awt.Shape shape = getItemShape(datasetIndex, series, item);
+                shape = createTransformedShape(shape, transX1, transY1);
             	g2.fill(shape);
             }
 		}

@@ -14,7 +14,7 @@ import java.awt.geom.Rectangle2D;
 
 import com.jrefinery.chart.ChartRenderingInfo;
 import com.jrefinery.chart.CrosshairInfo;
-import com.jrefinery.chart.XYPlot;
+import com.jrefinery.chart.plot.XYPlot;
 import com.jrefinery.chart.axis.ValueAxis;
 import com.jrefinery.chart.renderer.StandardXYItemRenderer;
 import com.jrefinery.chart.tooltips.StandardXYToolTipGenerator;
@@ -102,7 +102,6 @@ public class StandardXYItemRenderer_MinMax extends StandardXYItemRenderer
                          CrosshairInfo crosshairInfo)
 	{
 		super.drawItem(g2, dataArea, info, plot, domainAxis, rangeAxis, data, datasetIndex, series, item, crosshairInfo );
-		
 		// get the data point...
 		Number x1n = data.getXValue(series, item);
 		Number y1n = data.getYValue(series, item);
@@ -114,14 +113,14 @@ public class StandardXYItemRenderer_MinMax extends StandardXYItemRenderer
 		    double transY1 = rangeAxis.translateValueToJava2D(y1, dataArea);
 		
 			if( this.plotMinMaxValues)
-			{                       
-				if (minMaxValues[datasetIndex][series] != null && (y1 == minMaxValues[datasetIndex][series].getMaximumValue() || y1 == minMaxValues[datasetIndex][series].getMinimumValue()))
+			{  
+				if (minMaxValues != null && (y1 == minMaxValues[datasetIndex][series].getMaximumValue() || y1 == minMaxValues[datasetIndex][series].getMinimumValue()))
 				{
-					double scale = getShapeScale(plot, series, item, transX1, transY1);
-					Shape shape = getShape(plot, series, item, transX1, transY1, scale);
+					Shape shape = getItemShape(datasetIndex, series, item);
+					shape = createTransformedShape(shape, transX1, transY1);
 					g2.fill(shape);
 				}
-		    }
+			}
 		}
     }
 }
