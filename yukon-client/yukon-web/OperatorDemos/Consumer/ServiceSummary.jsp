@@ -1,6 +1,6 @@
 <%@ include file="StarsHeader.jsp" %>
 <%
-	StarsGetServiceRequestHistoryResponse getServHistResp = (StarsGetServiceRequestHistoryResponse) operator.getAttribute(CommonUtils.TRANSIENT_ATT_LEADING + "SERVICE_HISTORY");
+	StarsGetServiceRequestHistoryResponse getServHistResp = (StarsGetServiceRequestHistoryResponse) operator.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + "SERVICE_HISTORY");
 	if (getServHistResp == null) {
 		response.sendRedirect("/servlet/SOAPClient?action=GetServiceHistory"); return;
 	}

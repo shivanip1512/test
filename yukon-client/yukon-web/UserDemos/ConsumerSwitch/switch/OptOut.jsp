@@ -162,10 +162,10 @@ function confirmSubmit(form) { //v1.0
                         <td class="HeaderCell">Duration</td>
                       </tr>
 <%
-	CommonUtils.ProgramHistory[] progHist = (CommonUtils.ProgramHistory[]) user.getAttribute( CommonUtils.TRANSIENT_ATT_LEADING + "PROGRAM_HISTORY" );
+	ServletUtils.ProgramHistory[] progHist = (ServletUtils.ProgramHistory[]) user.getAttribute( ServletUtils.TRANSIENT_ATT_LEADING + "PROGRAM_HISTORY" );
 	if (progHist == null) {
-		progHist = CommonUtils.createProgramHistory( programs );
-		user.setAttribute( CommonUtils.TRANSIENT_ATT_LEADING + "PROGRAM_HISTORY", progHist );
+		progHist = ServletUtils.createProgramHistory( programs );
+		user.setAttribute( ServletUtils.TRANSIENT_ATT_LEADING + "PROGRAM_HISTORY", progHist );
 	}
 	
 	for (int i = progHist.length - 1; i >= 0; i--) {

@@ -54,7 +54,9 @@
             <div class = "Main" align="center">
               <% String header = "CREATE NEW HARDWARE"; %>
               <%@ include file="InfoSearchBar.jsp" %>
-              <form name = "MForm" onload >
+              <form name="MForm" method="post" action="/servlet/SOAPClient">
+			    <input type="hidden" name="action" value="CreateLMHardware">
+				<input type="hidden" name="InvNo" value="<%= inventories.getStarsLMHardwareCount() %>">
                 <table width="610" border="0" cellspacing="0" cellpadding="10" align="center">
                   <tr> 
                     <td width="300" valign="top" bgcolor="#FFFFFF"> 
@@ -69,11 +71,16 @@
                                 </td>
                                 <td width="200"> 
                                   <select name="DeviceType">
-                                   <option>LCR1000</option>
-								   <option>LCR2000</option>
-								   <option>LCR3000</option>
-								   <option>LCR4000</option>
-								   <option>LCR5000</option>
+                              <%
+	Hashtable selectionLists = (Hashtable) operator.getAttribute( "CUSTOMER_SELECTION_LIST" );
+	StarsCustSelectionList deviceTypeList = (StarsCustSelectionList) selectionLists.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_DEVICETYPE );
+	for (int i = 0; i < deviceTypeList.getStarsSelectionListEntryCount(); i++) {
+		StarsSelectionListEntry entry = deviceTypeList.getStarsSelectionListEntry(i);
+%>
+                              		<option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
+                              <%
+	}
+%>
                                   </select>
                                 </td>
                               </tr>
@@ -88,7 +95,7 @@
                                   <option>67890</option>
                                 </select>
 -->
-                                  <input type="text" name="SerialNumber" maxlength="30" size="24" value="">
+                                  <input type="text" name="SerialNo" maxlength="30" size="24" value="">
                                 </td>
                               </tr>
                               <tr> 
@@ -96,7 +103,7 @@
                                   <div align="right">Alt Tracking #: </div>
                                 </td>
                                 <td width="200"> 
-                                  <input type="text" name="AltTrackNumber" maxlength="30" size="24" value="">
+                                  <input type="text" name="AltTrackNo" maxlength="30" size="24" value="">
                                 </td>
                               </tr>
                               <tr> 
@@ -120,7 +127,17 @@
                                   <div align="right">Voltage: </div>
                                 </td>
                                 <td width="200"> 
-                                  <input type="text" name="Voltage" maxlength="30" size="24" value="">
+								  <select name="Voltage">
+                              <%
+	StarsCustSelectionList voltageList = (StarsCustSelectionList) selectionLists.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_INVENTORYVOLTAGE );
+	for (int i = 0; i < voltageList.getStarsSelectionListEntryCount(); i++) {
+		StarsSelectionListEntry entry = voltageList.getStarsSelectionListEntry(i);
+%>
+                              		<option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
+                              <%
+	}
+%>
+								  </select>
                                 </td>
                               </tr>
                               <tr> 
@@ -128,10 +145,16 @@
                                   <div align="right">Status: </div>
                                 </td>
                                 <td width="200"> 
-                                  <select name="select6">
-                                    <option>Available</option>
-                                    <option>Temp Unavail</option>
-                                    <option>Unavailable</option>
+                                  <select name="Status">
+                              <%
+	StarsCustSelectionList statusList = (StarsCustSelectionList) selectionLists.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_DEVICESTATUS );
+	for (int i = 0; i < statusList.getStarsSelectionListEntryCount(); i++) {
+		StarsSelectionListEntry entry = statusList.getStarsSelectionListEntry(i);
+%>
+                              		<option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
+                              <%
+	}
+%>
                                   </select>
                                 </td>
                               </tr>
@@ -168,7 +191,15 @@
                                 </td>
                                 <td width="200"> 
                                   <select name="ServiceCompany">
-                                    <option>Johnson Electric</option>
+                              <%
+	StarsCustSelectionList serviceCompanyList = (StarsCustSelectionList) selectionLists.get( com.cannontech.database.db.stars.report.ServiceCompany.LISTNAME_SERVICECOMPANY );
+	for (int i = 0; i < serviceCompanyList.getStarsSelectionListEntryCount(); i++) {
+		StarsSelectionListEntry entry = serviceCompanyList.getStarsSelectionListEntry(i);
+%>
+                              		<option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
+                              <%
+	}
+%>
                                   </select>
                                 </td>
                               </tr>
@@ -177,7 +208,7 @@
                                   <div align="right">Location: </div>
                                 </td>
                                 <td width="200"> 
-                                  <select name="select4">
+                                  <select name="Location">
                                     <option>Outside North</option>
                                   </select>
                                 </td>
@@ -187,7 +218,7 @@
                                   <div align="right">Notes: </div>
                                 </td>
                                 <td width="200"> 
-                                  <textarea name="notes" rows="3" wrap="soft" cols="28" class = "TableCell"></textarea>
+                                  <textarea name="InstallNotes" rows="3" wrap="soft" cols="28" class = "TableCell"></textarea>
                                 </td>
                               </tr>
                             </table>
@@ -208,7 +239,7 @@
                     <input type="submit" name="Submit" value="Save">
                   </td>
                   <td> 
-                    <input type="button" name="Submit2" value="Cancel">
+                    <input type="reset" name="Cancel" value="Cancel">
                   </td>
                 </tr>
               </table><br>

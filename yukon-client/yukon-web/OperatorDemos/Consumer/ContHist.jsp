@@ -32,7 +32,7 @@
 		}
 	}
 	
-	StarsLMControlHistory ctrlHist = (StarsLMControlHistory) operator.getAttribute(CommonUtils.TRANSIENT_ATT_LEADING + "LM_CONTROL_HISTORY");
+	StarsLMControlHistory ctrlHist = (StarsLMControlHistory) operator.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + "LM_CONTROL_HISTORY");
 %>
 <html>
 <head>
@@ -127,7 +127,7 @@
                               <div align="right"><%= histDateFormat.format(hist.getStartDateTime()) %></div>
                             </td>
                             <td class="TableCell" width="120"> 
-                              <div align="left"><%= CommonUtils.getDurationString(durationSec) %></div>
+                              <div align="left"><%= ServletUtils.getDurationString(durationSec) %></div>
                             </td>
                           </tr>
 <%
@@ -138,7 +138,7 @@
                               <div align="right">Total:</div>
                             </td>
                             <td class="TableCell" width="120"> 
-                              <div align="left"><%= CommonUtils.getDurationString(totalSec) %></div>
+                              <div align="left"><%= ServletUtils.getDurationString(totalSec) %></div>
                             </td>
                           </tr>
                         </table>

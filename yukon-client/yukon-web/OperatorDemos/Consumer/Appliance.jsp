@@ -128,7 +128,7 @@
                             <div align="right">Year Manufactured:</div>
                           </td>
                           <td width="200"> 
-                            <input type="text" name="ManuYear" maxlength="14" size="14">
+                            <input type="text" name="ManuYear" maxlength="14" size="14" value="<%= appliance.getManufactureYear() %>">
                           </td>
                         </tr>
                         <tr> 
@@ -146,7 +146,7 @@
                             <div align="right">Service Company:</div>
                           </td>
                           <td width="200">
-                            <input type="text" name="Company" maxlength="40" size="30">
+                            <input type="text" name="Company" maxlength="40" size="30" value="<%= appliance.getServiceCompany().getContent() %>">
                           </td>
                         </tr>
                         <tr> 
@@ -154,7 +154,7 @@
                             <div align="right">Notes:</div>
                           </td>
                           <td width="200"> 
-                            <textarea name="notes" rows="3" wrap="soft" cols="28" class = "TableCell"><%= appliance.getNotes() %></textarea>
+                            <textarea name="Notes" rows="3" wrap="soft" cols="28" class = "TableCell"><%= appliance.getNotes() %></textarea>
                           </td>
                         </tr>
                       </table>

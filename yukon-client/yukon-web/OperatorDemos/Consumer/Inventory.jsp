@@ -16,21 +16,11 @@
 
 	StarsLMHardware hardware = inventories.getStarsLMHardware(invNo);
 	ArrayList appList = new ArrayList();
-	String hwStatus = "Unavailable";
 	
 	for (int i = 0; i < appliances.getStarsApplianceCount(); i++) {
 		StarsAppliance app = appliances.getStarsAppliance(i);
 		if (app.getInventoryID() == hardware.getInventoryID())
 			appList.add(app);
-	}
-
-	StarsLMHardwareHistory hwHist = hardware.getStarsLMHardwareHistory();
-	if (hwHist != null && hwHist.getLMHardwareEventCount() > 0) {
-		LMHardwareEvent event = hwHist.getLMHardwareEvent(0);
-		if (event.getEventAction().equals("Activation Completed"))
-			hwStatus = "Available";
-		else if (event.getEventAction().equals("Temporary Termination"))
-			hwStatus = "Temporary Unavail";
 	}
 	
 	StarsAppliance[] starsApps = new StarsAppliance[ appList.size() ];
@@ -108,7 +98,7 @@
                                 <div align="right">Type: </div>
                               </td>
                               <td width="200"> 
-                                <input type="text" name="textfield" size="24" maxlength="30" value="<%= hardware.getLMDeviceType() %>">
+                                <input type="text" name="DeviceType" size="24" maxlength="30" value="<%= hardware.getLMDeviceType().getContent() %>">
                               </td>
                             </tr>
                             <tr> 
@@ -116,7 +106,7 @@
                                 <div align="right">Serial #: </div>
                               </td>
                               <td width="200"> 
-                                <input type="text" name="SerialNumber" maxlength="30" size="24" value="<%= hardware.getManufactureSerialNumber() %>">
+                                <input type="text" name="SerialNo" maxlength="30" size="24" value="<%= hardware.getManufactureSerialNumber() %>">
                               </td>
                             </tr>
                             <tr> 
@@ -124,7 +114,7 @@
                                 <div align="right">Alt Tracking #: </div>
                               </td>
                               <td width="200"> 
-                                <input type="text" name="AltTrackNumber" maxlength="30" size="24" value="<%= hardware.getAltTrackingNumber() %>">
+                                <input type="text" name="AltTrackNo" maxlength="30" size="24" value="<%= hardware.getAltTrackingNumber() %>">
                               </td>
                             </tr>
                             <tr> 
@@ -132,7 +122,7 @@
                                 <div align="right">Receive Date: </div>
                               </td>
                               <td width="200"> 
-                                <input type="text" name="ReceiveDate" maxlength="30" size="24" value="<%= CommonUtils.getDateFormat(hardware.getReceiveDate(), datePart) %>">
+                                <input type="text" name="ReceiveDate" maxlength="30" size="24" value="<%= ServletUtils.getDateFormat(hardware.getReceiveDate(), datePart) %>">
                               </td>
                             </tr>
                             <tr> 
@@ -140,7 +130,7 @@
                                 <div align="right">Remove Date: </div>
                               </td>
                               <td width="200"> 
-                                <input type="text" name="RemoveDate" maxlength="30" size="24" value="<%= CommonUtils.getDateFormat(hardware.getRemoveDate(), datePart) %>">
+                                <input type="text" name="RemoveDate" maxlength="30" size="24" value="<%= ServletUtils.getDateFormat(hardware.getRemoveDate(), datePart) %>">
                               </td>
                             </tr>
                             <tr> 
@@ -148,7 +138,7 @@
                                 <div align="right">Voltage: </div>
                               </td>
                               <td width="200"> 
-                                <input type="text" name="Voltage" maxlength="30" size="24" value="<%= hardware.getVoltage() %>">
+                                <input type="text" name="Voltage" maxlength="30" size="24" value="<%= hardware.getVoltage().getContent() %>">
                               </td>
                             </tr>
                             <tr> 
@@ -156,10 +146,18 @@
                                 <div align="right">Status: </div>
                               </td>
                               <td width="200"> 
-                                <select name="select6">
-                                  <option <% if (hwStatus.equals("Available")) { %>selected<% } %>>Available</option>
-                                  <option <% if (hwStatus.equals("Temp Unavail")) { %>selected<% } %>>Temp Unavail</option>
-                                  <option <% if (hwStatus.equals("Unavailable")) { %>selected<% } %>>Unavailable</option>
+                                <select name="Status">
+                              <%
+	Hashtable selectionLists = (Hashtable) operator.getAttribute( "CUSTOMER_SELECTION_LIST" );
+	StarsCustSelectionList statusList = (StarsCustSelectionList) selectionLists.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_DEVICESTATUS );
+	for (int i = 0; i < statusList.getStarsSelectionListEntryCount(); i++) {
+		StarsSelectionListEntry entry = statusList.getStarsSelectionListEntry(i);
+		String selectedStr = (entry.getEntryID() == hardware.getDeviceStatus().getEntryID()) ? "selected" : "";
+%>
+                              		<option value="<%= entry.getEntryID() %>" <%= selectedStr %>><%= entry.getContent() %></option>
+                              <%
+	}
+%>
                                 </select>
                               </td>
                             </tr>
@@ -224,7 +222,7 @@
                                   <div align="right">Date Installed: </div>
                                 </td>
                                 <td width="200"> 
-                                  <input type="text" name="InstallDate" maxlength="30" size="24" value="<%= CommonUtils.getDateFormat(hardware.getInstallDate(), datePart) %>">
+                                  <input type="text" name="InstallDate" maxlength="30" size="24" value="<%= ServletUtils.getDateFormat(hardware.getInstallDate(), datePart) %>">
                                 </td>
                               </tr>
                               <tr> 
@@ -233,7 +231,7 @@
                                 </td>
                                 <td width="200"> 
                                   <select name="ServiceCompany">
-                                    <option><%= hardware.getInstallationCompany() %></option>
+                                    <option><%= hardware.getInstallationCompany().getContent() %></option>
                                   </select>
                                 </td>
                               </tr>
@@ -242,7 +240,7 @@
                                   <div align="right">Location: </div>
                                 </td>
                                 <td width="200"> 
-                                  <select name="select4">
+                                  <select name="Location">
                                     <option>Outside North</option>
                                   </select>
                                 </td>
@@ -252,7 +250,7 @@
                                   <div align="right">Notes: </div>
                                 </td>
                                 <td width="200"> 
-                                  <textarea name="notes" rows="3 wrap="soft" cols="28" class = "TableCell"></textarea>
+                                  <textarea name="InstallNotes" rows="3 wrap="soft" cols="28" class = "TableCell"><%= hardware.getInstallationNotes() %></textarea>
                                 </td>
                               </tr>
                             </table>
@@ -287,6 +285,7 @@
                                 <td width="100" class="HeaderCell">Action</td>
                               </tr>
 <%
+	StarsLMHardwareHistory hwHist = hardware.getStarsLMHardwareHistory();
 	for (int i = 0; i < hwHist.getLMHardwareEventCount(); i++) {
 		LMHardwareEvent event = hwHist.getLMHardwareEvent(i);
 %>

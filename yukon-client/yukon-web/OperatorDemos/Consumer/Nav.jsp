@@ -46,7 +46,7 @@
 	for (int i = 0; i < inventories.getStarsLMHardwareCount(); i++) {
 		StarsLMHardware hw = inventories.getStarsLMHardware(i);
 		
-		String linkText = hw.getLMDeviceType();
+		String linkText = hw.getLMDeviceType().getContent();
 		
 		if (pageName.equalsIgnoreCase("Inventory.jsp?InvNo=" + i))
 			invLinks[i] = "<img src=\"Bullet.gif\" width=\"12\" height=\"12\"><span class=\"Nav\">" + linkText + "</span>";

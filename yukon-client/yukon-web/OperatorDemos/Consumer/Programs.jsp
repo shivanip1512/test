@@ -295,10 +295,10 @@ function changeProgram(radioBtn, index) {
                     <td class="HeaderCell" width="100" >Program</td>
                   </tr>
 <%
-	CommonUtils.ProgramHistory[] progHist = (CommonUtils.ProgramHistory[]) operator.getAttribute( CommonUtils.TRANSIENT_ATT_LEADING + "PROGRAM_HISTORY" );
+	ServletUtils.ProgramHistory[] progHist = (ServletUtils.ProgramHistory[]) operator.getAttribute( ServletUtils.TRANSIENT_ATT_LEADING + "PROGRAM_HISTORY" );
 	if (progHist == null) {
-		progHist = CommonUtils.createProgramHistory( programs );
-		operator.setAttribute( CommonUtils.TRANSIENT_ATT_LEADING + "PROGRAM_HISTORY", progHist );
+		progHist = ServletUtils.createProgramHistory( programs );
+		operator.setAttribute( ServletUtils.TRANSIENT_ATT_LEADING + "PROGRAM_HISTORY", progHist );
 	}
 	
 	for (int i = progHist.length - 1; i >= 0; i--) {

@@ -111,7 +111,7 @@
                           <td width="210"> 
                             <select name="ServiceCompany">
                               <%
-	StarsCustSelectionList serviceCompanyList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_SERVICECOMPANY );
+	StarsCustSelectionList serviceCompanyList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.database.db.stars.report.ServiceCompany.LISTNAME_SERVICECOMPANY );
 	for (int i = 0; i < serviceCompanyList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = serviceCompanyList.getStarsSelectionListEntry(i);
 %>
