@@ -44,6 +44,14 @@ function confirmDeleteCompany() {
 function confirmDeleteAllCompanies() {
 	return confirm("Are you sure you want to delete all service companies?");
 }
+
+function confirmDeleteOperatorLogin() {
+	return confirm("Are you sure you want to delete the operator login?");
+}
+
+function confirmDeleteAllOperatorLogins() {
+	return confirm("Are you sure you want to delete all operator logins (except the default login)?");
+}
 </script>
 </head>
 
@@ -202,10 +210,10 @@ function confirmDeleteAllCompanies() {
                                       </table>
                                     </td>
                                     <td width="10%" class="TableCell"> 
-                                      <input type="button" name="Edit" value="Edit" onClick="location.href='ApplianceCategory.jsp?Category=<%= i %>'">
+                                      <input type="button" name="Edit" value="Edit" onclick="location.href='ApplianceCategory.jsp?Category=<%= i %>'">
                                     </td>
                                     <td width="15%" class="TableCell"> 
-                                      <input type="submit" name="Delete" value="Delete" onClick="this.form.AppCatID.value=<%= category.getApplianceCategoryID() %>; return confirmDeleteAppCat();">
+                                      <input type="submit" name="Delete" value="Delete" onclick="this.form.AppCatID.value=<%= category.getApplianceCategoryID() %>; return confirmDeleteAppCat();">
                                     </td>
                                   </tr>
                                   <%	} %>
@@ -216,10 +224,10 @@ function confirmDeleteAllCompanies() {
                           <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
                             <tr> 
                               <td width="20%"> 
-                                <input type="submit" name="DeleteAll" value="Delete All" onClick="this.form.AppCatID.value=-1; return confirmDeleteAllAppCats();">
+                                <input type="submit" name="DeleteAll" value="Delete All" onclick="this.form.AppCatID.value=-1; return confirmDeleteAllAppCats();">
                               </td>
                               <td width="80%"> 
-                                <input type="button" name="New" value="New" onClick="location.href='ApplianceCategory.jsp?Category=<%= categories.getStarsApplianceCategoryCount() %>'">
+                                <input type="button" name="New" value="New" onclick="location.href='ApplianceCategory.jsp?Category=<%= categories.getStarsApplianceCategoryCount() %>'">
                               </td>
                             </tr>
                           </table>
@@ -250,10 +258,10 @@ function confirmDeleteAllCompanies() {
                                     <td class="TableCell" width="5%">&nbsp;</td>
                                     <td class="TableCell" width="70%"><%= company.getCompanyName() %></td>
                                     <td width="10%" class="TableCell"> 
-                                      <input type="button" name="Edit" value="Edit" onClick="editServiceCompany(this.form, <%= i %>)">
+                                      <input type="button" name="Edit" value="Edit" onclick="editServiceCompany(this.form, <%= i %>)">
                                     </td>
                                     <td width="15%" class="TableCell"> 
-                                      <input type="submit" name="Delete" value="Delete" onClick="this.form.CompanyID.value=<%= company.getCompanyID() %>; return confirmDeleteCompany();">
+                                      <input type="submit" name="Delete" value="Delete" onclick="this.form.CompanyID.value=<%= company.getCompanyID() %>; return confirmDeleteCompany();">
                                     </td>
                                   </tr>
 <%		} %>
@@ -264,10 +272,10 @@ function confirmDeleteAllCompanies() {
                           <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
                             <tr> 
                               <td width="20%"> 
-                                <input type="submit" name="DeleteAll" value="Delete All" onClick="this.form.CompanyID.value=-1; return confirmDeleteAllCompanies();">
+                                <input type="submit" name="DeleteAll" value="Delete All" onclick="this.form.CompanyID.value=-1; return confirmDeleteAllCompanies();">
                               </td>
                               <td width="80%"> 
-                                <input type="button" name="New" value="New" onClick="location.href='ServiceCompany.jsp?Company=<%= companies.getStarsServiceCompanyCount() %>'">
+                                <input type="button" name="New" value="New" onclick="location.href='ServiceCompany.jsp?Company=<%= companies.getStarsServiceCompanyCount() %>'">
                               </td>
                             </tr>
                           </table>
@@ -311,7 +319,7 @@ function confirmDeleteAllCompanies() {
 <%		} %>
                                     </td>
                                     <td width="25%" class="TableCell"> 
-                                      <input type="button" name="Edit" value="Edit" onClick="location.href='CustomerFAQ.jsp'">
+                                      <input type="button" name="Edit" value="Edit" onclick="location.href='CustomerFAQ.jsp'">
                                     </td>
                                   </tr>
                                 </table>
@@ -348,7 +356,7 @@ function confirmDeleteAllCompanies() {
                                     </ul>
                                   </td>
                                   <td width="25%" class="TableCell"> 
-                                    <input type="button" name="Edit" value="Edit" onClick="location.href='InterviewQuestion.jsp?Type=Exit'">
+                                    <input type="button" name="Edit" value="Edit" onclick="location.href='InterviewQuestion.jsp?Type=Exit'">
                                   </td>
                                 </tr>
                               </table>
@@ -393,7 +401,7 @@ function confirmDeleteAllCompanies() {
                                   <td width="5%">&nbsp;</td>
                                   <td width="70%"><%= typeName %></td>
                                   <td width="25%"> 
-                                    <input type="button" name="Edit2" value="Edit" onClick="location.href = '<%= url %>'">
+                                    <input type="button" name="Edit2" value="Edit" onclick="location.href = '<%= url %>'">
                                   </td>
                                 </tr>
 <%
@@ -411,7 +419,7 @@ function confirmDeleteAllCompanies() {
 %>
                     <tr> 
                       <td><b><font color="#0000FF">Customer Selection Lists:</font></b> 
-                        <table width="100%" border="1" cellspacing="0" cellpadding="0" align="center">
+                        <table width="100%" border="1" cellspacing="0" cellpadding="1" align="center">
                           <tr> 
                             <td> 
                               <table width="100%" border="0" cellspacing="0" cellpadding="0">
@@ -428,7 +436,7 @@ function confirmDeleteAllCompanies() {
                                   <td class="TableCell" width="5%">&nbsp;</td>
                                   <td class="TableCell" width="70%"><%= list.getListName() %></td>
                                   <td class="TableCell"> 
-                                    <input type="button" name="Edit" value="Edit" onClick="location.href='SelectionList.jsp?List=<%= list.getListName() %>'">
+                                    <input type="button" name="Edit" value="Edit" onclick="location.href='SelectionList.jsp?List=<%= list.getListName() %>'">
                                   </td>
                                 </tr>
                                 <%	} %>
@@ -436,6 +444,98 @@ function confirmDeleteAllCompanies() {
                             </td>
                           </tr>
                         </table>
+                      </td>
+                    </tr>
+                    <tr> 
+                      <td> 
+                        <form name="form6" method="post" action="<%=request.getContextPath()%>/servlet/StarsAdmin">
+                          <b><font color="#0000FF">Operator Logins:</font></b> 
+                          <table width="100%" border="1" cellspacing="0" cellpadding="0" align="center">
+                            <tr> 
+                              <td> 
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                  <input type="hidden" name="action" value="DeleteOperatorLogin">
+                                  <input type="hidden" name="UserID" value="-1">
+                                  <tr> 
+                                    <td class="HeaderCell" width="5%">&nbsp;</td>
+                                    <td class="HeaderCell" width="30%">Login Name</td>
+                                    <td class="HeaderCell" width="40%">Operator 
+                                      Group(s)</td>
+                                    <td width="10%" class="HeaderCell">&nbsp;</td>
+                                    <td width="15%" class="HeaderCell">&nbsp;</td>
+                                  </tr>
+<%
+	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+	Map userGroupMap = cache.getYukonUserGroupMap();
+	
+	List userGroups = (List) userGroupMap.get(lYukonUser);
+	String groupNames = "";
+	for (int i = 0; i < userGroups.size(); i++) {
+		com.cannontech.database.data.lite.LiteYukonGroup liteGroup = (com.cannontech.database.data.lite.LiteYukonGroup) userGroups.get(i);
+		if (liteGroup.getGroupID() == -1) continue;
+		if (groupNames.length() > 0) groupNames += ", ";
+		groupNames += liteGroup.getGroupName();
+	}
+%>
+                                  <tr> 
+                                    <td class="TableCell" width="5%">&nbsp;</td>
+                                    <td class="TableCell" width="30%"><%= lYukonUser.getUsername() %></td>
+                                    <td class="TableCell" width="40%"><%= groupNames %></td>
+                                    <td width="10%" class="TableCell"> 
+                                      <input type="button" name="Edit4" value="Edit" onclick="location.href='OperatorLogin.jsp?UserID=<%= lYukonUser.getUserID() %>'">
+                                    </td>
+                                    <td width="15%" class="TableCell">&nbsp;</td>
+                                  </tr>
+                                  <tr> 
+                                    <td class="TableCell" colspan="5">
+                                      <hr>
+                                    </td>
+                                  </tr>
+                                  <%
+	ArrayList operLoginIDs = liteEnergyCompany.getOperatorLoginIDs();
+	for (int i = 0; i < operLoginIDs.size(); i++) {
+		int userID = ((Integer) operLoginIDs.get(i)).intValue();
+		if (userID == lYukonUser.getUserID()) continue;
+		
+		LiteYukonUser liteUser = com.cannontech.database.cache.functions.YukonUserFuncs.getLiteYukonUser(userID);
+		userGroups = (List) userGroupMap.get(liteUser);
+		groupNames = "";
+		for (int j = 0; j < userGroups.size(); j++) {
+			com.cannontech.database.data.lite.LiteYukonGroup liteGroup = (com.cannontech.database.data.lite.LiteYukonGroup) userGroups.get(j);
+			if (liteGroup.getGroupID() == -1) continue;
+			if (groupNames.length() > 0) groupNames += ", ";
+			groupNames += liteGroup.getGroupName();
+		}
+%>
+                                  <tr> 
+                                    <td class="TableCell" width="5%">&nbsp;</td>
+                                    <td class="TableCell" width="30%"><%= liteUser.getUsername() %></td>
+                                    <td class="TableCell" width="40%"><%= groupNames %></td>
+                                    <td width="10%" class="TableCell"> 
+                                      <input type="button" name="Edit5" value="Edit" onclick="location.href='OperatorLogin.jsp?UserID=<%= liteUser.getUserID() %>'">
+                                    </td>
+                                    <td width="15%" class="TableCell"> 
+                                      <input type="submit" name="Delete" value="Delete" onclick="this.form.UserID.value=<%= liteUser.getUserID() %>; return confirmDeleteOperatorLogin();">
+                                    </td>
+                                  </tr>
+                                  <%
+	}
+%>
+                                </table>
+                              </td>
+                            </tr>
+                          </table>
+                          <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
+                            <tr> 
+                              <td width="20%"> 
+                                <input type="submit" name="DeleteAll" value="Delete All" onclick="this.form.UserID.value=-1; return confirmDeleteAllOperatorLogins();">
+                              </td>
+                              <td width="80%"> 
+                                <input type="button" name="New" value="New" onclick="location.href='OperatorLogin.jsp'">
+                              </td>
+                            </tr>
+                          </table>
+                        </form>
                       </td>
                     </tr>
                   </table>
