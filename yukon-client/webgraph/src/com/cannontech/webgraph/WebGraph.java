@@ -15,7 +15,9 @@ import com.cannontech.graph.buffer.html.UsageHtml;
 import com.cannontech.graph.model.TrendModel;
 import com.cannontech.graph.model.TrendModelType;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
-public class WebGraph implements com.cannontech.database.cache.DBChangeListener
+
+
+public class WebGraph implements Runnable
 {
 	private GregorianCalendar nextRunTime = null;
 	private Graph graph = null;
@@ -25,23 +27,22 @@ public class WebGraph implements com.cannontech.database.cache.DBChangeListener
 
 	private String homeDirectory = null;
 	private Integer createTimeInterval = null;//interval in seconds between calculations
+
 		
-	private com.cannontech.message.dispatch.ClientConnection connToDispatch;
 	/**
 	 * WebGraph constructor comment.
 	 */
 	public WebGraph()
 	{
 		super();
-		graph = new Graph();
-	
-		initConnToDispatch();
+		graph = new Graph();	
 	}
+
 	/**
 	 * Insert the method's description here.
 	 * Creation date: (10/24/2001 2:50:28 PM)
 	 */
-	public void createGDefReports(com.cannontech.database.data.lite.LiteGraphDefinition liteGraphDef)
+	private void createGDefReports(com.cannontech.database.data.lite.LiteGraphDefinition liteGraphDef)
 	{	
 		int gdefid = liteGraphDef.getGraphDefinitionID();
 		
@@ -104,7 +105,7 @@ public class WebGraph implements com.cannontech.database.cache.DBChangeListener
 	 * Insert the method's description here.
 	 * Creation date: (12/4/2000 2:27:20 PM)
 	 */
-	public void figureNextRunTime()
+	private void figureNextRunTime()
 	{
 		if( getNextRunTime() == null )
 		{
@@ -137,7 +138,7 @@ public class WebGraph implements com.cannontech.database.cache.DBChangeListener
 	 * @return GraphModelInterface [][]
 	 */
 	//public GraphModel[][] getCurrentModels()
-	public TrendModel getTrendModel()
+	private TrendModel getTrendModel()
 	{
 	//	return graph.getCurrentModels();
 		return graph.getTrendModel();
@@ -212,7 +213,7 @@ public class WebGraph implements com.cannontech.database.cache.DBChangeListener
 	 * Creation date: (10/24/2001 12:01:31 PM)
 	 * @return java.util.GregorianCalendar
 	 */
-	public GregorianCalendar getNextRunTime()
+	private GregorianCalendar getNextRunTime()
 	{
 		return nextRunTime;
 	}
@@ -220,7 +221,7 @@ public class WebGraph implements com.cannontech.database.cache.DBChangeListener
 	 * Insert the method's description here.
 	 * Creation date: (12/4/2000 2:27:20 PM)
 	 */
-	public void getPredefinedGraphs()
+	private void getPredefinedGraphs()
 	{
 		com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 		synchronized(cache)
@@ -234,7 +235,7 @@ public class WebGraph implements com.cannontech.database.cache.DBChangeListener
 	 * Creation date: (10/24/2001 3:38:05 PM)
 	 * @return java.util.Date
 	 */
-	public java.util.Date getStartDate()
+	private java.util.Date getStartDate()
 	{
 		GregorianCalendar tempCal = new GregorianCalendar();
 		tempCal.set( java.util.Calendar.DAY_OF_YEAR, getNextRunTime().get( java.util.Calendar.DAY_OF_YEAR ) );
@@ -252,7 +253,7 @@ public class WebGraph implements com.cannontech.database.cache.DBChangeListener
 	 * Creation date: (12/7/2000 11:43:39 AM)
 	 * @return java.lang.Integer
 	 */
-	public java.lang.Integer getWebgraphRunInterval()
+	private java.lang.Integer getWebgraphRunInterval()
 	{
 		if (createTimeInterval == null)
 		{
@@ -272,58 +273,7 @@ public class WebGraph implements com.cannontech.database.cache.DBChangeListener
 		}
 		return createTimeInterval;
 	}
-	/**
-	 * Insert the method's description here.
-	 * Creation date: (10/24/2001 2:04:04 PM)
-	 */
-	private void initConnToDispatch()
-	{
-		String host = null;
-		int port;
-		try
-		{
-			java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("config");
-			host = bundle.getString("dispatch_machine");
-			port = (new Integer(bundle.getString("dispatch_port"))).intValue();
-		}
-		catch ( java.util.MissingResourceException mre )
-		{
-			mre.printStackTrace();
-			host = "127.0.0.1";
-			port = 1510;
-		}
-		catch ( NumberFormatException nfe )
-		{
-			nfe.printStackTrace();
-			port = 1510;
-		}
-	
-		connToDispatch = new com.cannontech.message.dispatch.ClientConnection();
-	
-		com.cannontech.message.dispatch.message.Registration reg = new com.cannontech.message.dispatch.message.Registration();
-		reg.setAppName("Web Graph Server");
-		reg.setAppIsUnique(0);
-		reg.setAppKnownPort(0);
-		reg.setAppExpirationDelay( 1000000 );
-		
-		connToDispatch.setHost(host);
-		connToDispatch.setPort(port);
-		connToDispatch.setAutoReconnect(true);
-		connToDispatch.setRegistrationMsg(reg);
-	
-		try
-		{
-			connToDispatch.connectWithoutWait();
-		}
-		catch ( Exception e )
-		{
-			e.printStackTrace();
-		}
-	
-		com.cannontech.database.cache.DefaultDatabaseCache.getInstance().addDBChangeListener(this);
-		//dbChangeListener = new DBChangeMessageListener();
-		//dbChangeListener.start();
-	}
+
 	/**
 	 * Insert the method's description here.
 	 * Creation date: (10/24/2001 11:53:11 AM)
@@ -334,52 +284,20 @@ public class WebGraph implements com.cannontech.database.cache.DBChangeListener
 		com.cannontech.clientutils.CTILogger.info("WebGraph - Yukon Version: " + com.cannontech.common.version.VersionTools.getYUKON_VERSION() + " - Yukon Database Version: " +com.cannontech.common.version.VersionTools.getDatabaseVersion());
 	
 		System.setProperty("cti.app.name", "WebGraph");
-		WebGraph webGraph= new WebGraph();
+		WebGraph webGraph = new WebGraph();
 		
-		java.util.Date now = null;
-		webGraph.figureNextRunTime();
-		webGraph.getPredefinedGraphs();
-		
-		for (;;)
-		{
-			now = new java.util.Date();
-			
-			if (webGraph.getNextRunTime().getTime().compareTo(now) <= 0)
-			{
-				com.cannontech.clientutils.CTILogger.info("Started Web Graphs, Tabular and Summary Reports Generation.");
-				
-				for (int i = 0; i < webGraph.allPredefinedGraphsList.size(); i++)
-				{
-					com.cannontech.clientutils.CTILogger.info( webGraph.allPredefinedGraphsList.get(i).toString());
-					webGraph.createGDefReports(((com.cannontech.database.data.lite.LiteGraphDefinition) webGraph.allPredefinedGraphsList.get(i)));
-				}
-		
-				com.cannontech.clientutils.CTILogger.info("Finished Reports Generation.");
-				webGraph.figureNextRunTime();
-			}
-	
-			try
-			{
-				Thread.sleep(5000);
-				System.gc();
-	//			com.cannontech.clientutils.CTILogger.info(" $Free/ " +Runtime.getRuntime().freeMemory());
-	//			com.cannontech.clientutils.CTILogger.info(" $Total/ "+ Runtime.getRuntime().totalMemory());
-				//com.cannontech.clientutils.CTILogger.info("Sleeping!!!");
-			}
-			catch (InterruptedException ie)
-			{
-				com.cannontech.clientutils.CTILogger.info("Interrupted Exception!!!");
-				return;
-			}
-		}
+		//start the process
+		webGraph.run();
 	}
+
+
 	/**
 	 * Insert the method's description here.
 	 * Creation date: (10/24/2001 4:47:44 PM)
 	 */
 	//private void writeFile(String bufferString, String fileName)
 	//{
-	public void writePNG( String fileName )
+	private void writePNG( String fileName )
 	{
 		try
 		{
@@ -447,12 +365,45 @@ public class WebGraph implements com.cannontech.database.cache.DBChangeListener
 		}
 	}
 	
-	/**
-	 * Insert the method's description here.
-	 * Creation date: (12/20/2001 5:14:03 PM)
-	 * @return com.cannontech.message.util.ClientConnection
-	 */
-	public com.cannontech.message.util.ClientConnection getClientConnection() {
-		return connToDispatch;
+	public void run()
+	{		
+		java.util.Date now = null;
+		figureNextRunTime();
+		getPredefinedGraphs();
+		
+		try
+		{
+			for (;;)
+			{
+				now = new java.util.Date();
+				
+				if( getNextRunTime().getTime().compareTo(now) <= 0)
+				{
+					com.cannontech.clientutils.CTILogger.info("Started Web Graphs, Tabular and Summary Reports Generation.");
+					
+					for (int i = 0; i < allPredefinedGraphsList.size(); i++)
+					{
+						com.cannontech.clientutils.CTILogger.info( allPredefinedGraphsList.get(i).toString());
+						createGDefReports(((com.cannontech.database.data.lite.LiteGraphDefinition) allPredefinedGraphsList.get(i)));
+					}
+			
+					com.cannontech.clientutils.CTILogger.info("Finished Reports Generation.");
+					figureNextRunTime();
+				}
+		
+					Thread.sleep(5000);
+					System.gc();
+		//			com.cannontech.clientutils.CTILogger.info(" $Free/ " +Runtime.getRuntime().freeMemory());
+		//			com.cannontech.clientutils.CTILogger.info(" $Total/ "+ Runtime.getRuntime().totalMemory());
+					//com.cannontech.clientutils.CTILogger.info("Sleeping!!!");
+			}		
+		}
+		catch (InterruptedException ie)
+		{
+			com.cannontech.clientutils.CTILogger.info("Interrupted Exception!!!");
+		}
+
 	}
+
+
 }
