@@ -289,9 +289,9 @@ public class YukonSysTray implements SysTrayMenuListener, ActionListener, ISystr
 
 	public void iconLeftDoubleClicked(SysTrayMenuEvent e)
 	{
-		JOptionPane.showMessageDialog(
-			null,
-			"You may prefer double-clicking the icon.");
+//		JOptionPane.showMessageDialog(
+//			null,
+//			"You may prefer double-clicking the icon.");
 	}
 
 	private void initComponents()
