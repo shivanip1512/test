@@ -109,7 +109,7 @@ private javax.swing.JLabel getStateTableLabel() {
 			ivjStateTableLabel = new javax.swing.JLabel();
 			ivjStateTableLabel.setName("StateTableLabel");
 			ivjStateTableLabel.setFont(new java.awt.Font("dialog", 0, 14));
-			ivjStateTableLabel.setText("State Table:  ");
+			ivjStateTableLabel.setText("State Group:  ");
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
