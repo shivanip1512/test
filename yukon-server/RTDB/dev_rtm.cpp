@@ -8,11 +8,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2004/07/20 16:19:22 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2004/07/21 19:48:57 $
 *
 * HISTORY      :
 * $Log: dev_rtm.cpp,v $
+* Revision 1.2  2004/07/21 19:48:57  cplender
+* Added the rtm.
+*
 * Revision 1.1  2004/07/20 16:19:22  cplender
 * IR
 *
@@ -26,6 +29,7 @@
 
 #include "msg_cmd.h"
 #include "msg_lmcontrolhistory.h"
+#include "porter.h"
 #include "protocol_sa.h"
 #include "prot_sa3rdparty.h"
 #include "pt_base.h"
@@ -104,13 +108,75 @@ INT CtiDeviceRTM::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
 
     switch(parse.getCommand())
     {
-    case ControlRequest:
+    case ScanRequest:
         {
+            switch(parse.getiValue("scantype"))
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                case ScanRateStatus:
+                case ScanRateGeneral:
+                {
+
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << " Address " << getAddress() << endl;
+                    }
+
+                    CtiProtocolSA3rdParty prot;
+
+                    prot.setTransmitterAddress( getAddress() );
+                    prot.parseCommand(parse, *OutMessage);
+
+                    if(prot.messageReady())
+                    {
+                        OutMessage->EventCode = RESULT | ENCODED;
+
+                        OutMessage->Buffer.SASt = prot.getSAData();
+                        OutMessage->OutLength = prot.getSABufferLen();
+
+                        outList.insert( CTIDBG_new OUTMESS( *OutMessage ) );
+
+                        // prot.copyMessage(byteString);
+                        // resultString = " Command successfully sent on route " + getName() + "\n" + byteString;
+                    }
+
+
+                    break;
+                }
+                case ScanRateAccum:
+                case ScanRateIntegrity:
+                default:
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " Invalid scan type \"" << parse.getiValue("scantype") << "\" for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+
+                    nRet = NoExecuteRequestMethod;
+                    retList.insert( CTIDBG_new CtiReturnMsg(getID(),
+                                                            RWCString(OutMessage->Request.CommandStr),
+                                                            RWCString("RTM Devices do not support this command."),
+                                                            nRet,
+                                                            OutMessage->Request.RouteID,
+                                                            OutMessage->Request.MacroOffset,
+                                                            OutMessage->Request.Attempt,
+                                                            OutMessage->Request.TrxID,
+                                                            OutMessage->Request.UserID,
+                                                            OutMessage->Request.SOE,
+                                                            RWOrdered()));
+
+                    if(OutMessage)                // And get rid of our memory....
+                    {
+                        delete OutMessage;
+                        OutMessage = NULL;
+                    }
+
+                    break;
+                }
             }
+            break;
         }
+    case ControlRequest:
     case GetStatusRequest:
     case LoopbackRequest:
     case GetValueRequest:

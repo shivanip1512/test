@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.47 $
-* DATE         :  $Date: 2004/07/08 21:30:25 $
+* REVISION     :  $Revision: 1.48 $
+* DATE         :  $Date: 2004/07/21 19:48:57 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -31,6 +31,7 @@
 #include "dev_mct.h"
 #include "dev_repeater.h"
 #include "dev_rtc.h"
+#include "dev_rtm.h"
 #include "dev_tap.h"
 #include "dev_grp_emetcon.h"
 #include "dev_grp_energypro.h"
@@ -833,6 +834,41 @@ void CtiDeviceManager::refreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load  DNP/ION/LMI Devices" << endl;
+                    }
+
+                    start = start.now();
+                    {
+                        RWDBConnection conn = getConnection();
+                        RWDBDatabase db = getDatabase();
+
+                        RWDBTable   keyTable;
+                        RWDBSelector selector = db.selector();
+
+                        if(DebugLevel & 0x00020000)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for RTM Devices" << endl;
+                        }
+                        CtiDeviceRTM().getSQL( db, keyTable, selector );
+                        selector.where( rwdbUpper(keyTable["type"]) == RWDBExpr( "RTM" ) && selector.where() );
+                        if(paoID != 0) selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
+
+                        RWDBReader rdr = selector.reader(conn);
+                        if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+                        }
+                        refreshDevices(rowFound, rdr, Factory);
+
+                        if(DebugLevel & 0x00020000)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for RTM Devices" << endl;
+                        }
+                    }
+                    stop = stop.now();
+                    if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load RTM Devices" << endl;
                     }
 
                     start = start.now();

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.40 $
-* DATE         :  $Date: 2004/07/20 14:01:17 $
+* REVISION     :  $Revision: 1.41 $
+* DATE         :  $Date: 2004/07/21 19:48:57 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1535,6 +1535,7 @@ INT resolveSlaveAddress(const INT DeviceType, RWCString str)
 
             break;
         }
+    case TYPE_RTM:
     case TYPE_SIXNET:
         {
             slaveAddress = atoi(str.data());
