@@ -4484,11 +4484,11 @@ CtiCommandParser& CtiCommandParser::parseAsString(const RWCString str)
 
     RWCTokenizer   tok(str);
 
-    while( !(key = tok("\= \t\n\0")).isNull() )
+    while( !(key = tok("= \t\n\0")).isNull() )
     {
         asStr = tok(", \t\n\0");
         iValue = atoi( RWCString(tok(", \t\n\0")).data() );
-        dValue = atof( RWCString(tok("\: \t\n\0")).data());
+        dValue = atof( RWCString(tok(": \t\n\0")).data());
 
 
         {
