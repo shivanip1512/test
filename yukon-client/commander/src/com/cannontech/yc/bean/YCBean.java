@@ -6,6 +6,7 @@
  */
 package com.cannontech.yc.bean;
 
+import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -22,10 +23,12 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.cache.functions.CommandFuncs;
+import com.cannontech.database.cache.functions.DeviceFuncs;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteRawPointHistory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointTypes;
@@ -70,6 +73,20 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 	/** A collection of pointIDs registered with.*/
 	private Vector pointIDs = new Vector();
 
+	/** A Parameter for startDate that a "bean" understands" */
+	private String start = "";
+	
+	/** A startDate for LP query */
+	private Date lpStartDate = null;
+	
+	/** A pointID for selecting Data (historical RPH mainly)*/
+	private int pointID = -1;
+	
+	/** Contains Integer(deviceID) to Integer(discAddress, -1 if none) values */
+	private Map deviceIDToDiscAddressMap  = new HashMap();
+	
+	/** A string to hold error messages for the current command(s) sent */
+	private String errorMsg = "";
 	/**
 	 * 
 	 */
@@ -96,7 +113,7 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 			
 			//Remove data from other devices..we don't care about it anymore
 			clearResultText();
-			
+			setErrorMsg("");
 			LitePoint [] litePoints = PAOFuncs.getLitePointsForPAObject(deviceID_);
 
 			for(int i = 0; i < litePoints.length; i++)
@@ -187,6 +204,12 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 			if( !getRequestMessageIDs().contains( new Long(returnMsg.getUserMessageID())))
 				return;
 			
+			if ( returnMsg.getStatus() != 0)	//Error Message!
+			{
+				if( getErrorMsg().indexOf(returnMsg.getCommandString()) < 0)	//command string not displayed yet
+					setErrorMsg(getErrorMsg() + "<br>* Command Failed - " + returnMsg.getCommandString());
+				setErrorMsg( getErrorMsg() + "<BR>" + returnMsg.getResultString());
+			}
 			if(returnMsg.getVector().size() > 0 )
 			{
 				for (int i = 0; i < returnMsg.getVector().size(); i++)
@@ -264,6 +287,25 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 						getReturnNameToRecentReadMap().put(id, fakePtData);
 						CTILogger.info("Put (returnNameToRecentReadMap): " +id + ":"+fakePtData.getId()+"-"+fakePtData.getValue()+"-"+fakePtData.getPointDataTimeStamp());
 					}
+					else if ( tempResult.indexOf("Disconnect") > 0)	//Disconnect status stuff
+					{
+						int colon = tempResult.indexOf(':');
+						int slash = tempResult.indexOf('/')+1;
+	
+						//The String "ID" is the deviceID + the value after the slash and before the equal sign
+						String id = String.valueOf(returnMsg.getDeviceID()) + tempResult.substring(slash, colon).trim();
+	
+						PointData fakePtData = new PointData();
+						fakePtData.setStr(tempResult.substring(colon+1).trim());
+						fakePtData.setValue(-1);	//unknown TODO
+						fakePtData.setTimeStamp(returnMsg.getTimeStamp());
+						fakePtData.setTime(returnMsg.getTimeStamp());
+						fakePtData.setType(PointTypes.STATUS_POINT);
+						//The key is deviceID+STRING parsed from return message
+						getReturnNameToRecentReadMap().put(id, fakePtData);
+						CTILogger.info("Put (returnNameToRecentReadMap): " +id + ":"+fakePtData.getId()+"-"+fakePtData.getValue()+"-"+fakePtData.getPointDataTimeStamp());
+
+					}					
 					else if( tempResult.indexOf(':') > 0)	//outage stuff
 					{					
 						int colon = tempResult.indexOf(':');
@@ -418,8 +460,8 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 	 */
 	public PointData getRPHPointData(int deviceID, int pointOffset, int pointType)
 	{
-		int pointID = PointFuncs.getPointIDByDeviceID_Offset_PointType(deviceID, pointOffset, pointType);		
-		PointData pd = (PointData)getPointIDToRPHMap().get(new Integer(pointID));
+		int pointID_ = PointFuncs.getPointIDByDeviceID_Offset_PointType(deviceID, pointOffset, pointType);
+		PointData pd = (PointData)getPointIDToRPHMap().get(new Integer( pointID_));
 		return pd;		
 	}
 	
@@ -438,9 +480,8 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 	 */
 	public PointData getRecentPointData(int deviceID, int pointOffset, int pointType)
 	{
-		int pointID = PointFuncs.getPointIDByDeviceID_Offset_PointType(deviceID, pointOffset, pointType);
-		
-		PointData pd = (PointData)getPointIDToRecentReadMap().get(new Integer(pointID));
+		int pointID_ = PointFuncs.getPointIDByDeviceID_Offset_PointType(deviceID, pointOffset, pointType); 
+		PointData pd = (PointData)getPointIDToRecentReadMap().get(new Integer( pointID_));
 		if(pd == null)
 		{
 			//Try getting it from somewhere else?
@@ -536,6 +577,24 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 					}
 				}
 			}
+			else if( pointOffset == 1 && pointType == PointTypes.STATUS_POINT)
+			{
+				pd = (PointData)getReturnNameToRecentReadMap().get(String.valueOf(deviceID)+"Disconnect Status");
+				if( pd == null)	//if we still haven't found it... PointUndefinedInDatabase
+				{				
+					String key = "";
+					Iterator iter = getReturnNameToRecentReadMap().keySet().iterator();
+					while(iter.hasNext())
+					{
+						key = (String)iter.next();
+						if( key.matches(String.valueOf(getDeviceID())+"(?i)disc.*"))
+						{
+							pd = (PointData)getReturnNameToRecentReadMap().get(key);
+							break;
+						}
+					}
+				}
+			}			
 			else if( pointOffset == 15 && pointType == PointTypes.DEMAND_ACCUMULATOR_POINT)
 			{				
 				pd = (PointData)getReturnNameToRecentReadMap().get(String.valueOf(deviceID)+"Min Voltage");
@@ -592,21 +651,21 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 	
 	/** Previous month's RPH timestamp to value map for some pointID, determined
 	 * by deviceID, pointOffset, pointType*/
-	public TreeMap getPrevMonthTSToValueMap(int pointID)
+	public TreeMap getPrevMonthTSToValueMap(int pointID_)
 	{
-	    if( energyPtToPrevTSMapToValueMap.get(new Integer(pointID)) == null )
+	    if( energyPtToPrevTSMapToValueMap.get(new Integer(pointID_)) == null )
 	    {
-	        TreeMap tsToValMap = retrieveMonthlyRPHVector(pointID);
+	        TreeMap tsToValMap = retrieveMonthlyRPHVector(pointID_);
 	        if( tsToValMap != null)
-	            energyPtToPrevTSMapToValueMap.put(new Integer(pointID), tsToValMap);
+	            energyPtToPrevTSMapToValueMap.put(new Integer(pointID_), tsToValMap);
 	    }
-	    return (TreeMap)energyPtToPrevTSMapToValueMap.get(new Integer(pointID));
+	    return (TreeMap)energyPtToPrevTSMapToValueMap.get(new Integer(pointID_));
 	}
 	
-	private TreeMap retrieveMonthlyRPHVector(int pointID)
+	private TreeMap retrieveMonthlyRPHVector(int pointID_)
 	{
 	    TreeMap timestampToValueMap = new TreeMap();
-	    String sql = "SELECT POINTID, TIMESTAMP, VALUE FROM RAWPOINTHISTORY WHERE POINTID = " + pointID +
+	    String sql = "SELECT DISTINCT POINTID, TIMESTAMP, VALUE FROM RAWPOINTHISTORY WHERE POINTID = " + pointID_ +
 	    			" AND TIMESTAMP > ? ORDER BY TIMESTAMP ASC";
 	    CTILogger.info(sql.toString());	
 		
@@ -665,31 +724,14 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 	
 	public static int getPointID(int deviceID, int pointOffset, int pointType)
 	{
-	    return PointFuncs.getPointIDByDeviceID_Offset_PointType(deviceID, pointOffset, pointType);
+		return PointFuncs.getPointIDByDeviceID_Offset_PointType(deviceID, pointOffset, pointType);
 	}
 	
-	public void test(int pointid)
+	public Date[] getPrevDateArray(int pointID_) 
 	{
-	    TreeMap tempMap = getPrevMonthTSToValueMap(pointid);
-	    if( tempMap != null)
-	    {
-			java.util.Set keySet = tempMap.keySet();
-			java.util.Date[] keyArray = new java.util.Date[keySet.size()];
-			keySet.toArray(keyArray);
-	        
-	        for (int i = 0; i < keyArray.length; i++)
-	        {
-	            CTILogger.info(keyArray[i] + "  " + tempMap.get(keyArray[i]));
-	        }
-	    }
-	}
-
-	public Date[] getPrevDateArray(int pointID) 
-	{
-		java.util.TreeMap tempMap = getPrevMonthTSToValueMap(pointID);
+		java.util.TreeMap tempMap = getPrevMonthTSToValueMap(pointID_);
 		if( tempMap != null)
 		{
-			test(pointID);
 			java.util.Set keySet = tempMap.keySet();
 			java.util.Date[] keyArray = new java.util.Date[keySet.size()];
 			keySet.toArray(keyArray);
@@ -698,13 +740,234 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 		return null;
 	}
 	
-	public boolean isEnergyPoint(int pointID)
+	public boolean isEnergyPoint(int pointID_)
 	{
-		LitePoint lp = PointFuncs.getLitePoint(pointID);
+		LitePoint lp = PointFuncs.getLitePoint(pointID_);
 	    if( lp.getPointOffset() == PointTypes.PT_OFFSET_TOTAL_KWH &&
 	            lp.getPointType() == PointTypes.PULSE_ACCUMULATOR_POINT)
 	        return true;
 	    return false;
 	}
+	/**
+	 * @return
+	 */
+	public Date getLPStartDate()
+	{
+		if( lpStartDate == null)
+		{
+			lpStartDate = ServletUtil.getToday();
+		}
+		return lpStartDate;
+	}
+
+	/**
+	 * @param date
+	 */
+	public void setLPStartDate(Date date)
+	{
+		lpStartDate = date;
+	}
+
+	/**
+	 * @return
+	 */
+	public String getStart()
+	{
+		return start;
+	}
+
+	/**
+	 * @param string
+	 */
+	public void setStart(String string)
+	{
+		start = string;
+		setLPStartDate(ServletUtil.parseDateStringLiberally(start));		
+	}
+
+	/**
+	 * Returns a vector of LiteRawPointHistory values for pointID, using the bean's StateDate through StartDate +1  
+	 */
+	public Vector getRPHData(int pointID_)
+	{
+		Vector returnVector = null;
+		StringBuffer sql = new StringBuffer("SELECT DISTINCT POINTID, VALUE, TIMESTAMP FROM RAWPOINTHISTORY " +
+						" WHERE TIMESTAMP > ? AND TIMESTAMP <= ? " +
+						" AND POINTID = " + pointID_ + 
+						 
+						" ORDER BY POINTID, TIMESTAMP");
+		CTILogger.info(sql.toString());	
+		
+		java.sql.Connection conn = null;
+		java.sql.PreparedStatement pstmt = null;
+		java.sql.ResultSet rset = null;
+		int rowCount = 0;
+
+		try
+		{
+			conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+
+			if( conn == null )
+			{
+				CTILogger.error(getClass() + ":  Error getting database connection.");
+				return null;
+			}
+			else
+			{
+				returnVector = new Vector();
+				pstmt = conn.prepareStatement(sql.toString());
+				pstmt.setTimestamp(1, new java.sql.Timestamp( getLPStartDate().getTime() ));
+				GregorianCalendar cal = new GregorianCalendar();
+				cal.setTime(getLPStartDate());
+				cal.add(Calendar.DATE, 1);
+				pstmt.setTimestamp(2, new java.sql.Timestamp( cal.getTimeInMillis()));
+				CTILogger.info("START DATE > " + getLPStartDate() + "  -  STOP DATE <= " + cal.getTime());
+				rset = pstmt.executeQuery();
+				while( rset.next())
+				{
+					int ptID = rset.getInt(1);
+					double value = rset.getDouble(2);
+					Timestamp ts = rset.getTimestamp(3);
+					GregorianCalendar tsCal = new GregorianCalendar();
+					tsCal.setTimeInMillis(ts.getTime());
+					LiteRawPointHistory lrph = new LiteRawPointHistory(ptID);
+					lrph.setValue(value);
+					lrph.setTimeStamp(tsCal.getTimeInMillis());
+					returnVector.add(lrph);
+				}
+				returnVector.trimToSize();
+			}
+		}
+			
+		catch( java.sql.SQLException e )
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			try
+			{
+				if( rset != null)
+					rset.close();
+				if( pstmt != null )
+					pstmt.close();
+				if( conn != null )
+					conn.close();
+			}
+			catch( java.sql.SQLException e )
+			{
+				e.printStackTrace();
+			}
+		}
+		return returnVector;
+	}
+	/**
+	 * @return
+	 */
+	public int getPointID()
+	{
+		return pointID;
+	}
+
+	/**
+	 * @param i
+	 */
+	public void setPointID(int i)
+	{
+		pointID = i;
+	}
+
+	/**
+	 * Returns the disconnect address if exists, returns -1 if not exists.
+	 * @param deviceID
+	 * @return
+	 */
+	public int getMCT410DisconnectAddress(int deviceID)
+	{
+		Integer discAddress = (Integer)getDeviceIDToDiscAddressMap().get(new Integer(deviceID));
+		if (discAddress == null)
+		{
+			String sql = "SELECT DEVICEID, DISCONNECTADDRESS FROM DEVICEMCT400SERIES " +
+							" WHERE DEVICEID = " + deviceID; 
+			CTILogger.info(sql);	
+			
+			java.sql.Connection conn = null;
+			java.sql.PreparedStatement pstmt = null;
+			java.sql.ResultSet rset = null;
+			int rowCount = 0;
+	
+			try
+			{
+				conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+				int returnAddress = -1;
+	
+				if( conn == null )
+				{
+					CTILogger.error(getClass() + ":  Error getting database connection.");
+					return -1;
+				}
+				else
+				{
+					pstmt = conn.prepareStatement(sql.toString());
+					rset = pstmt.executeQuery();
+					while( rset.next())
+					{
+						returnAddress = rset.getInt(2);
+						break;
+					}
+				}
+				//If none found, then -1 is entered, else the found result is entered.
+				discAddress = new Integer(returnAddress);
+				getDeviceIDToDiscAddressMap().put(new Integer(deviceID), discAddress);
+			}
+				
+			catch( java.sql.SQLException e )
+			{
+				e.printStackTrace();
+			}
+			finally
+			{
+				try
+				{
+					if( rset != null)
+						rset.close();
+					if( pstmt != null )
+						pstmt.close();
+					if( conn != null )
+						conn.close();
+				}
+				catch( java.sql.SQLException e )
+				{
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		return discAddress.intValue();
+	}
+	/**
+	 * @return
+	 */
+	public Map getDeviceIDToDiscAddressMap()
+	{
+		return deviceIDToDiscAddressMap;
+	}
+
+	/**
+	 * @return
+	 */
+	public String getErrorMsg()
+	{
+		return errorMsg;
+	}
+
+	/**
+	 * @param string
+	 */
+	public void setErrorMsg(String string)
+	{
+		errorMsg = string;
+	}
+
 }
 
