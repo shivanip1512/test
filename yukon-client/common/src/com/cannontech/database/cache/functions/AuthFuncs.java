@@ -68,7 +68,7 @@ public class AuthFuncs {
 	 * @return boolean
 	 */
 	public static boolean checkRoleProperty(LiteYukonUser user, int rolePropertyID) {
-		return CtiUtilities.isTrue(getRolePropertyValue(user, rolePropertyID, null));
+		return !CtiUtilities.isFalse(getRolePropertyValue(user, rolePropertyID, null));
 	}	
 	/**
 	 * Returns the value for a given user and role property.
