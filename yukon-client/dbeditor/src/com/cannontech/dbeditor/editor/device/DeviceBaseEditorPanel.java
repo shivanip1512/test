@@ -1294,29 +1294,12 @@ public Object getValue(Object val)
 
 				if( devType == PAOGroups.REPEATER ) //val instanceof Repeater900
 				{
-					//special case, we must add 4190000 to every address
-					if( address.intValue() >= 464  && address.intValue() <= 4302 )
-					{
-						((CarrierBase) val).getDeviceCarrierSettings().setAddress( new Integer(address.intValue() + 4190000) );
-					}
-					else
-						throw new com.cannontech.common.gui.unchanging.InvalidRangeException("Valid range for Repeater900 addresses are from 464 to 4302");
-				}
-				else if( DeviceTypesFuncs.isMCT(devType) )
-				{
-					//check the range for the MCT's
-					if( address.intValue() >= 0  
-						 && address.intValue() <= 2796201 
-						 && address.intValue() != 1398101 )
-					{
-						((CarrierBase) val).getDeviceCarrierSettings().setAddress( address );
-					}
-					else
-						throw new com.cannontech.common.gui.unchanging.InvalidRangeException("Valid range for MCT addresses are from 0 to 2796201 (excluding 1398101)");
-
+					((CarrierBase) val).getDeviceCarrierSettings().setAddress( new Integer(address.intValue() + 4190000) );
 				}
 				else
-					((com.cannontech.database.data.device.CarrierBase) val).getDeviceCarrierSettings().setAddress(address);
+				{
+					((CarrierBase) val).getDeviceCarrierSettings().setAddress( address );
+				}
 			}
 			else if( val instanceof com.cannontech.database.data.device.IDLCBase )
 				((com.cannontech.database.data.device.IDLCBase) val).getDeviceIDLCRemote().setAddress(address);

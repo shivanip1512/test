@@ -13,7 +13,8 @@ public class DeviceAddressRange
    private static final RangeBase RANGE_DEFAULT = new RangeBase();
    
    private static final RangeBase RANGE_MCT = 
-         new RangeBase( 0, 2796201, "Valid range for MCT addresses is 0 to 2796201 and can not be 1398101" );
+         new RangeBase( 0, 2796201, "Valid range for MCT addresses is 0 to 2796201");
+         // and can not be 1398101" );
 
    private static final RangeBase RANGE_MCT_BROADCAST = 
          new RangeBase( 1, 4096, "Valid range for MCT Broadcast addresses is 1 to 4096" );
@@ -26,6 +27,9 @@ public class DeviceAddressRange
 
    private static final RangeBase RANGE_RTU_WELCO = 
          new RangeBase( 0, 127, "Valid range for " + DeviceTypes.STRING_RTU_WELCO[0] + " addresses is 0 to 127" );
+
+   private static final RangeBase RANGE_VERSACOM = 
+         new RangeBase( 0, 999999999, "Valid range for " + DeviceTypes.STRING_VERSACOM_SERIAL_NUMBER[0] + " is 0 to 999999999" );
 
 
    //build any extra params into the RangeBase appropriate intsances
@@ -67,6 +71,12 @@ public class DeviceAddressRange
       else if( DeviceTypes.RTUWELCO == deviceType_ )
       {
          return RANGE_RTU_WELCO;
+      }
+      else if( DeviceTypes.CAPBANKCONTROLLER == deviceType_
+               || DeviceTypes.CBC_FP_2800 == deviceType_
+               || DeviceTypes.DNP_CBC_6510 == deviceType_ )
+      {
+         return RANGE_VERSACOM;
       }
       else
          return RANGE_DEFAULT;
