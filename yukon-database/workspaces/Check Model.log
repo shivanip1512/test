@@ -15,18 +15,19 @@ Checking table ...
 		-> EnergyCompanyCustomerList
 		-> OperatorLoginGraphList
 		-> LMMACSScheduleOperatorList
+		-> CalcPointBaseline
 		-> GatewayEndDevice
 -	Existence of key
 -	Number of auto-incremented columns
 -	Existence of reference
 	Warning	The following table do not have any reference:
-		-> GatewayEndDevice
-		-> CTIDatabase
 		-> LOGIC
+		-> CTIDatabase
 		-> GenericMacro
+		-> YukonWebConfiguration
 		-> BillingFileFormats
 		-> FDRTelegyrGroup
-		-> YukonWebConfiguration
+		-> GatewayEndDevice
 		-> YukonServices
 		-> ActivityLog
 Checking column of table
@@ -71,5 +72,5 @@ Checking domain ...
 Checking user ...
 Checking procedure ...
 
-0 error(s),  14 warning(s).
+0 error(s),  15 warning(s).
 The Physical Data Model is correct, no errors were found.

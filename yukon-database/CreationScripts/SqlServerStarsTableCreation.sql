@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  STARS                                        */
 /* DBMS name:      CTI SqlServer 2000                           */
-/* Created on:     2/17/2004 10:07:54 AM                        */
+/* Created on:     4/1/2004 11:16:39 AM                         */
 /*==============================================================*/
 
 
@@ -306,6 +306,8 @@ PropertyNotes        varchar(300)         null
 go
 
 
+INSERT INTO AccountSite VALUES (0,0,'(none)',0,'(none)');
+
 alter table AccountSite
    add constraint PK_ACCOUNTSITE primary key  (AccountSiteID)
 go
@@ -556,6 +558,8 @@ AccountNotes         varchar(200)         null
 go
 
 
+INSERT INTO CustomerAccount VALUES (0,0,'(none)',-1,0,'(none)',-1);
+
 alter table CustomerAccount
    add constraint PK_CUSTOMERACCOUNT primary key  (AccountID)
 go
@@ -581,6 +585,14 @@ Answer               varchar(500)         null
 )
 go
 
+
+insert into CustomerFAQ values(1,1231,'How long does it take for my program to become effective after adding or changing a program?','Immediately! You can take advantage of energy savings the moment you decide to. Just make your selection on the "Programs - Add/Change" page, click the submit button, and select Yes at the prompt.');
+insert into CustomerFAQ values(2,1231,'How do I find out more about my program or other programs?','Go to the "Programs - Add/Change" page and click the Program Details button. You will find all of the information you need here regarding the program, amount of control, and savings.');
+insert into CustomerFAQ values(3,1231,'Can I sign up for more than one program?','Certainly! The more programs you enroll in, the more energy savings you will receive.');
+insert into CustomerFAQ values(4,1232,'Can I control my thermostat even if I do not know my current settings?','Yes. You may select the temperature change (up or down) in degrees without knowing the current temperature or simply set a new specific temperature. If pre-cooling, you may also select a new specific temperature or select the number of degress to decrease in temperature.');
+insert into CustomerFAQ values(5,1232,'What does the Fan setting do?','The fan setting controls the operation of the fan. <br>Auto - the fan runs only as necessary to maintain the current temperature settings. <br>On - the fan runs continuously. <br>Off - the fan does not run.');
+insert into CustomerFAQ values(6,1232,'Does the utility company have access to my thermostat?','The utility only has access to your thermostat for control based on the programs you have signed up for. When not being controlled, you have complete control of your thermostat.');
+insert into CustomerFAQ values(7,1233,'How much credit do I receive if I opt out while contolling?','You will receive credit for the protion of time you were controlled.');
 
 alter table CustomerFAQ
    add constraint PK_CUSTOMERFAQ primary key  (QuestionID)
@@ -654,6 +666,71 @@ MappingCategory      varchar(40)          not null
 go
 
 
+insert into ectogenericmapping values (-1, 1001, 'YukonSelectionList');
+insert into ectogenericmapping values (-1, 1002, 'YukonSelectionList');
+insert into ectogenericmapping values (-1, 1003, 'YukonSelectionList');
+insert into ectogenericmapping values (-1, 1004, 'YukonSelectionList');
+insert into ectogenericmapping values (-1, 1005, 'YukonSelectionList');
+insert into ectogenericmapping values (-1, 1006, 'YukonSelectionList');
+insert into ectogenericmapping values (-1, 1007, 'YukonSelectionList');
+insert into ectogenericmapping values (-1, 1008, 'YukonSelectionList');
+insert into ectogenericmapping values (-1, 1009, 'YukonSelectionList');
+insert into ectogenericmapping values (-1, 1010, 'YukonSelectionList');
+insert into ectogenericmapping values (-1, 1011, 'YukonSelectionList');
+insert into ectogenericmapping values (-1, 1012, 'YukonSelectionList');
+insert into ECToGenericMapping values (-1, 1013, 'YukonSelectionList');
+insert into ECToGenericMapping values (-1, 1014, 'YukonSelectionList');
+insert into ECToGenericMapping values (-1, 1015, 'YukonSelectionList');
+insert into ECToGenericMapping values (-1, 1016, 'YukonSelectionList');
+insert into ECToGenericMapping values (-1, 1017, 'YukonSelectionList');
+insert into ECToGenericMapping values (-1, 1018, 'YukonSelectionList');
+insert into ECToGenericMapping values (-1, 1019, 'YukonSelectionList');
+insert into ECToGenericMapping values (-1, 1020, 'YukonSelectionList');
+insert into ECToGenericMapping values (-1, 1021, 'YukonSelectionList');
+insert into ECToGenericMapping values (-1, 1022, 'YukonSelectionList');
+insert into ECToGenericMapping values (-1, 1023, 'YukonSelectionList');
+insert into ECToGenericMapping values (-1, 1024, 'YukonSelectionList');
+insert into ECToGenericMapping values (-1, 1025, 'YukonSelectionList');
+insert into ECToGenericMapping values (-1, 1026, 'YukonSelectionList');
+insert into ECToGenericMapping values (-1, 1027, 'YukonSelectionList');
+insert into ECToGenericMapping values (-1, 1028, 'YukonSelectionList');
+insert into ECToGenericMapping values (-1, 1029, 'YukonSelectionList');
+insert into ECToGenericMapping values (-1, 1030, 'YukonSelectionList');
+insert into ECToGenericMapping values (-1, 1031, 'YukonSelectionList');
+insert into ECToGenericMapping values (-1, 1032, 'YukonSelectionList');
+insert into ECToGenericMapping values (-1, 1033, 'YukonSelectionList');
+insert into ECToGenericMapping values (-1, 1034, 'YukonSelectionList');
+insert into ECToGenericMapping values (-1, 1035, 'YukonSelectionList');
+insert into ECToGenericMapping values (-1, 1036, 'YukonSelectionList');
+insert into ECToGenericMapping values (-1, 1037, 'YukonSelectionList');
+insert into ECToGenericMapping values (-1, 1038, 'YukonSelectionList');
+insert into ECToGenericMapping values (-1, 1039, 'YukonSelectionList');
+insert into ECToGenericMapping values (-1, 1040, 'YukonSelectionList');
+insert into ECToGenericMapping values (-1, 1041, 'YukonSelectionList');
+insert into ECToGenericMapping values (-1, 1042, 'YukonSelectionList');
+insert into ECToGenericMapping values (-1, 1043, 'YukonSelectionList');
+insert into ECToGenericMapping values (-1, 1044, 'YukonSelectionList');
+insert into ECToGenericMapping values (-1, 1045, 'YukonSelectionList');
+insert into ECToGenericMapping values (-1, 1046, 'YukonSelectionList');
+insert into ECToGenericMapping values (-1, 1047, 'YukonSelectionList');
+insert into ECToGenericMapping values (-1, 1048, 'YukonSelectionList');
+insert into ECToGenericMapping values (-1, 1049, 'YukonSelectionList');
+insert into ECToGenericMapping values (-1, 1050, 'YukonSelectionList');
+insert into ECToGenericMapping values (-1, 1051, 'YukonSelectionList');
+insert into ECToGenericMapping values (-1, 1052, 'YukonSelectionList');
+insert into ECToGenericMapping values (-1, 1053, 'YukonSelectionList');
+insert into ECToGenericMapping values (-1, 1054, 'YukonSelectionList');
+insert into ECToGenericMapping values (-1, 1055, 'YukonSelectionList');
+insert into ECToGenericMapping values (-1, 1056, 'YukonSelectionList');
+insert into ECToGenericMapping values (-1, 1057, 'YukonSelectionList');
+insert into ECToGenericMapping values (-1, 1058, 'YukonSelectionList');
+insert into ECToGenericMapping values (-1, 1059, 'YukonSelectionList');
+insert into ECToGenericMapping values (-1, 1060, 'YukonSelectionList');
+insert into ECToGenericMapping values (-1, 1061, 'YukonSelectionList');
+insert into ECToGenericMapping values (-1, 1062, 'YukonSelectionList');
+insert into ECToGenericMapping values (-1, 1063, 'YukonSelectionList');
+insert into ECToGenericMapping values (-1, 1064, 'YukonSelectionList');
+
 alter table ECToGenericMapping
    add constraint PK_ECTOGENERICMAPPING primary key  (EnergyCompanyID, ItemID, MappingCategory)
 go
@@ -669,6 +746,8 @@ InventoryID          numeric              not null
 go
 
 
+INSERT INTO ECToInventoryMapping VALUES (-1,-1);
+
 alter table ECToInventoryMapping
    add constraint PK_ECTOINVENTORYMAPPING primary key  (EnergyCompanyID, InventoryID)
 go
@@ -683,6 +762,8 @@ EventID              numeric              not null
 )
 go
 
+
+INSERT INTO ECToLMCustomerEventMapping VALUES (-1,-1);
 
 alter table ECToLMCustomerEventMapping
    add constraint PK_ECTOLMCUSTOMEREVENTMAPPING primary key  (EnergyCompanyID, EventID)
@@ -744,6 +825,9 @@ DeviceLabel          varchar(60)          null
 go
 
 
+INSERT INTO InventoryBase VALUES (0,0,0,0,'01-JAN-70','01-JAN-70','01-JAN-70','(none)',0,'(none)',0,'(none)');
+INSERT INTO InventoryBase VALUES (-1,0,0,0,'01-JAN-70','01-JAN-70','01-JAN-70','(none)',0,'Default Thermostat',0,'(none)');
+
 alter table InventoryBase
    add constraint PK_INVENTORYBASE primary key  (InventoryID)
 go
@@ -781,6 +865,8 @@ AuthorizedBy         varchar(40)          null
 go
 
 
+INSERT INTO LMCustomerEventBase VALUES (-1,1003,1020,'01-JAN-70','','');
+
 alter table LMCustomerEventBase
    add constraint PK_LMCUSTOMEREVENTBASE primary key  (EventID)
 go
@@ -796,6 +882,8 @@ LMHardwareTypeID     numeric              not null
 )
 go
 
+
+INSERT INTO LMHardwareBase VALUES (-1,'0',0);
 
 alter table LMHardwareBase
    add constraint PK_LMHARDWAREBASE primary key  (InventoryID)
@@ -898,6 +986,8 @@ FanOperationID       numeric              null
 go
 
 
+INSERT INTO LMThermostatManualEvent VALUES (-1,-1,72,'N',1211,1221);
+
 alter table LMThermostatManualEvent
    add constraint PK_LMTHERMOSTATMANUALEVENT primary key  (EventID)
 go
@@ -916,6 +1006,9 @@ DisplayOrder         numeric              null
 go
 
 
+INSERT INTO LMThermostatSeason VALUES (-1,-1,-1,'01-JUN-00',1);
+INSERT INTO LMThermostatSeason VALUES (-2,-1,-2,'15-OCT-00',2);
+
 alter table LMThermostatSeason
    add constraint PK_LMTHERMOSTATSEASON primary key  (SeasonID)
 go
@@ -933,6 +1026,31 @@ Temperature          numeric              null
 )
 go
 
+
+INSERT INTO LMThermostatSeasonEntry VALUES (-24,-1,1171,21600,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-23,-1,1171,30600,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-22,-1,1171,61200,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-21,-1,1171,75600,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-20,-1,1173,21600,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-19,-1,1173,30600,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-18,-1,1173,61200,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-17,-1,1173,75600,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-16,-1,1174,21600,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-15,-1,1174,30600,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-14,-1,1174,61200,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-13,-1,1174,75600,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-12,-2,1171,21600,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-11,-2,1171,30600,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-10,-2,1171,61200,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-9,-2,1171,75600,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-8,-2,1173,21600,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-7,-2,1173,30600,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-6,-2,1173,61200,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-5,-2,1173,75600,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-4,-2,1174,21600,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-3,-2,1174,30600,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-2,-2,1174,61200,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-1,-2,1174,75600,72);
 
 alter table LMThermostatSeasonEntry
    add constraint PK_LMTHERMOSTATSEASONENTRY primary key  (EntryID)
@@ -954,6 +1072,8 @@ HIType               varchar(40)          null
 go
 
 
+INSERT INTO ServiceCompany VALUES (0,'(none)',0,'(none)','(none)',0,'(none)');
+
 alter table ServiceCompany
    add constraint PK_SERVICECOMPANY primary key  (CompanyID)
 go
@@ -973,6 +1093,8 @@ SubstationID         numeric              null
 go
 
 
+INSERT INTO SiteInformation VALUES (0,'(none)','(none)','(none)','(none)',0);
+
 alter table SiteInformation
    add constraint PK_SITEINFORMATION primary key  (SiteID)
 go
@@ -988,6 +1110,8 @@ RouteID              numeric              null
 )
 go
 
+
+INSERT INTO Substation VALUES (0,'(none)',0);
 
 alter table Substation
    add constraint PK_SUBSTATION primary key  (SubstationID)
@@ -1183,7 +1307,7 @@ go
 
 alter table ApplianceBase
    add constraint FK_AppBs_LMPr foreign key (LMProgramID)
-      references LMPROGRAM (DEVICEID)
+      references LMPROGRAM (DeviceID)
 go
 
 
@@ -1253,6 +1377,12 @@ alter table LMProgramWebPublishing
 go
 
 
+alter table LMThermostatSeasonEntry
+   add constraint FK_CsLsE_LThSE foreign key (TimeOfWeekID)
+      references YukonListEntry (EntryID)
+go
+
+
 alter table LMCustomerEventBase
    add constraint FK_CsLsE_LCstE foreign key (EventTypeID)
       references YukonListEntry (EntryID)
@@ -1267,12 +1397,6 @@ go
 
 alter table WorkOrderBase
    add constraint FK_CsLsE_WkB_c foreign key (CurrentStateID)
-      references YukonListEntry (EntryID)
-go
-
-
-alter table LMThermostatSeasonEntry
-   add constraint FK_CsLsE_LThSE foreign key (TimeOfWeekID)
       references YukonListEntry (EntryID)
 go
 
@@ -1361,12 +1485,6 @@ alter table CallReportBase
 go
 
 
-alter table ApplianceCategory
-   add constraint FK_CstLs_ApCt foreign key (CategoryID)
-      references YukonListEntry (EntryID)
-go
-
-
 alter table InventoryBase
    add constraint FK_INV_REF__YUK foreign key (CategoryID)
       references YukonListEntry (EntryID)
@@ -1375,6 +1493,12 @@ go
 
 alter table LMHardwareBase
    add constraint FK_LMH_REF__YUK foreign key (LMHardwareTypeID)
+      references YukonListEntry (EntryID)
+go
+
+
+alter table ApplianceCategory
+   add constraint FK_CstLs_ApCt foreign key (CategoryID)
       references YukonListEntry (EntryID)
 go
 
@@ -1476,14 +1600,14 @@ go
 
 
 alter table ECToInventoryMapping
-   add constraint FK_ECTInv_Enc foreign key (EnergyCompanyID)
-      references EnergyCompany (EnergyCompanyID)
+   add constraint FK_ECTInv_Enc2 foreign key (InventoryID)
+      references InventoryBase (InventoryID)
 go
 
 
 alter table ECToInventoryMapping
-   add constraint FK_ECTInv_Enc2 foreign key (InventoryID)
-      references InventoryBase (InventoryID)
+   add constraint FK_ECTInv_Enc foreign key (EnergyCompanyID)
+      references EnergyCompany (EnergyCompanyID)
 go
 
 
@@ -1561,7 +1685,7 @@ go
 
 alter table LMProgramEvent
    add constraint FK_LMPrg_LMPrEv foreign key (LMProgramID)
-      references LMPROGRAM (DEVICEID)
+      references LMPROGRAM (DeviceID)
 go
 
 
@@ -1573,7 +1697,7 @@ go
 
 alter table LMProgramWebPublishing
    add constraint FK_LMprApp_LMPrg foreign key (LMProgramID)
-      references LMPROGRAM (DEVICEID)
+      references LMPROGRAM (DeviceID)
 go
 
 
