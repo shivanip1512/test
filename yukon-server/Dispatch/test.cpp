@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/test.cpp-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2004/07/02 18:56:32 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2004/07/07 22:12:01 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -60,7 +60,8 @@ void notifEmailExecute( int argc, char **argv );
 void seasonExecute(int argc, char **argv);
 void lmExecute(int argc, char **argv);
 void lmHelp();
-void  dbchangeExecute(int argc, char **argv);
+void dbchangeExecute(int argc, char **argv);
+void socketExecute(int argc, char **argv);
 
 typedef void (*XFUNC)(int argc, char **argv);       // Execution function
 typedef void (*HFUNC)();                           // Help Function
@@ -82,6 +83,7 @@ TESTFUNC_t testfunction[] = {
     {"default", defaultExecute, defaultHelp},
     {"notif", notifEmailExecute, defaultHelp},
     {"lm", lmExecute, lmHelp},
+    {"socket", socketExecute, lmHelp},
     {"", 0, 0}
 };
 
@@ -1109,3 +1111,45 @@ void  dbchangeExecute(int argc, char **argv)
 
     return;
 }
+
+void socketExecute(int argc, char **argv)
+{
+    unsigned int cnt = 0;
+    SOCKET tempSock;
+    typedef vector< SOCKET > SV_t;
+    SV_t sockvector;
+
+    RWWinSockInfo info;
+
+    WSASetLastError(0);
+
+    while((tempSock = socket (AF_INET, SOCK_STREAM, 0)) != INVALID_SOCKET)
+    {
+        cnt++;
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << "  SOCKET " << cnt << " returned = " << tempSock << endl;
+        }
+
+        sockvector.push_back(tempSock);
+    }
+
+
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << endl << RWTime() << " Error getting Socket:  " << WSAGetLastError() << endl;
+    }
+
+
+    while(!sockvector.empty())
+    {
+        tempSock = sockvector.back();
+        closesocket(tempSock);
+        sockvector.pop_back();
+    }
+
+
+
+}
+
