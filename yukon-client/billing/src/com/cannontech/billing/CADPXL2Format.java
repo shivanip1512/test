@@ -96,6 +96,7 @@ public boolean retrieveBillingData(String dbAlias)
 				}
 				sql.append( ") )) ORDER BY DMG.METERNUMBER, DMG.DEVICEID, PT.POINTOFFSET, RPH.TIMESTAMP DESC");
 */
+
 	java.sql.Connection conn = null;
 	java.sql.PreparedStatement pstmt = null;
 	java.sql.ResultSet rset = null;
