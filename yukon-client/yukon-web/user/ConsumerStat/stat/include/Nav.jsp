@@ -8,7 +8,6 @@
 						  {"Enrollment.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_ENROLLMENT, "Enrollment")},
 						  {"OptOut.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_OPT_OUT, "Opt Out")},
 						  {"Password.jsp", "Change Login"},
-						  {"AllTherm.jsp", "All"}
 						 };
 
 	String bulletImg = "<img src='../../../WebConfig/" + AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED, "Bullet.gif") + "' width='9' height='9'>";
@@ -50,19 +49,32 @@
 <!--This checkProperty is meant to be the checkMultiProperty when more options are available-->
 <cti:checkProperty propertyid="<%= ResidentialCustomerRole.CONSUMER_INFO_HARDWARES_THERMOSTAT %>">
 <%
-	if (thermostats.getStarsLMHardwareCount() > 0) {
+	int tstatCnt = thermostats.getStarsLMHardwareCount();
+	if (tstatCnt > 0) {
 %>
   <tr>
     <td>
       <div align="left"><span class="NavHeader">Thermostat</span><br>
         <table width="100%" border="0" cellspacing="0" cellpadding="0">
-		  <cti:checkProperty propertyid="<%= ResidentialCustomerRole.CONSUMER_INFO_THERMOSTATS_ALL %>"> 
-          <tr> 
-            <td width="10"><%= ((String[]) links.get("AllTherm.jsp"))[0] %></td>
-            <td><%= ((String[]) links.get("AllTherm.jsp"))[1] %></td>
+<cti:checkProperty propertyid="<%= ResidentialCustomerRole.CONSUMER_INFO_THERMOSTATS_ALL %>"> 
+<%
+			String linkHtml = null;
+			String linkImgExp = null;
+			if (pageName.equalsIgnoreCase("AllTherm.jsp") || pageName.indexOf("Item=-1") >= 0) {
+				linkHtml = "<span class='Nav' style='cursor:default'>All</span>";
+				linkImgExp = bulletImg;
+			}
+			else {
+				linkHtml = "<span class='NavTextNoLink' style='cursor:default'>All</span>";
+				linkImgExp = bulletImgExp;
+			}
+%>
+          <tr onMouseOver="hardwareMenuAppear(event, this, 'thermostatAllMenu', <%= tstatCnt %>)"> 
             <td width="10">&nbsp;</td>
+            <td><%= linkHtml %></td>
+            <td width="10"><%= linkImgExp %></td>
           </tr>
-          </cti:checkProperty>
+</cti:checkProperty>
 <%
 		int selectedItemNo = -1;	// selected thermostat no.
 		
@@ -162,6 +174,7 @@
             <td style="padding:1"><%= ((String[]) links.get("Util.jsp"))[1] %></td>
           </tr>
 		  </cti:checkProperty>
+		  <cti:checkProperty propertyid="<%= ResidentialCustomerRole.CONSUMER_INFO_QUESTIONS_FAQ %>"> 
 <%
 	String faqLink = AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LINK_FAQ);
 	if (ServerUtils.forceNotNone(faqLink).length() > 0) {
@@ -176,6 +189,7 @@
             <td style="padding:1"><%= ((String[]) links.get("FAQ.jsp"))[1] %></td>
           </tr>
 <%	} %>
+		  </cti:checkProperty>
         </table>
 	  </div>
     </td>
@@ -204,19 +218,25 @@
 pageName = "<%= pageName %>";
 pageLinks = new Array(<%= thermostats.getStarsLMHardwareCount() %>);
 <%
-	for (int i = 0; i < thermostats.getStarsLMHardwareCount(); i++) {
-		StarsThermostatSettings settings = thermostats.getStarsLMHardware(i).getStarsThermostatSettings();
+	int tstatCnt = thermostats.getStarsLMHardwareCount();
+	int[] selectedInvIDs = (int[]) session.getAttribute(ServletUtils.ATT_THERMOSTAT_INVENTORY_IDS);
+	boolean hasTwoWay = false;
+	
+	for (int i = 0; i < tstatCnt; i++) {
+		StarsLMHardware thermostat = thermostats.getStarsLMHardware(i);
 %>
 	pageLinks[<%= i %>] = new Array(3);
 	pageLinks[<%= i %>][0] = "NewLabel.jsp?Item=<%= i %>";
 <%
-		if (settings.getStarsThermostatDynamicData() == null) {
+		if (thermostat.getStarsThermostatSettings().getStarsThermostatDynamicData() == null) {
 %>
 	pageLinks[<%= i %>][1] = "ThermSchedule.jsp?Item=<%= i %>";
 	pageLinks[<%= i %>][2] = "Thermostat.jsp?Item=<%= i %>";
 <%
 		}
 		else {
+			if (selectedInvIDs != null && Arrays.binarySearch(selectedInvIDs, thermostat.getInventoryID()) >= 0)
+				hasTwoWay = true;
 %>
 	pageLinks[<%= i %>][1] = "ThermSchedule2.jsp?Item=<%= i %>";
 	pageLinks[<%= i %>][2] = "Thermostat2.jsp?Item=<%= i %>";
@@ -224,25 +244,63 @@ pageLinks = new Array(<%= thermostats.getStarsLMHardwareCount() %>);
 		}
 	}
 %>
+	// Defines links for the thermostat "All" menu
+	pageLinks[<%= tstatCnt %>] = new Array(3);
+	pageLinks[<%= tstatCnt %>][0] = "AllTherm.jsp";
+<%
+	if (hasTwoWay) {
+%>
+	pageLinks[<%= tstatCnt %>][1] = "ThermSchedule2.jsp?Item=-1";
+	pageLinks[<%= tstatCnt %>][2] = "Thermostat2.jsp?Item=-1";
+<%
+	}
+	else {
+%>
+	pageLinks[<%= tstatCnt %>][1] = "ThermSchedule.jsp?Item=-1";
+	pageLinks[<%= tstatCnt %>][2] = "Thermostat.jsp?Item=-1";
+<%
+	}
+%>
 </script>
 
-<div id="thermostatMenu" class="bgMenu" style="width:85px" align="left">
-  <div id="thermostatMenuItem" name="thermostatMenuItem" style="width:85px" onmouseover="changeNavStyle(this)" class = "navmenu1" onclick = "showPage(0)">
+<div id="thermostatMenu" class="bgMenu" style="width:100px" align="left">
+  <div id="thermostatMenuItem" name="thermostatMenuItem" style="width:100px" onmouseover="changeNavStyle(this)" class = "navmenu1" onclick = "showPage(0)">
   &nbsp;&nbsp;&nbsp;Change Label
   </div>
-  <div id="thermostatMenuItemSelected" name="thermostatMenuItemSelected" style="width:85px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "showPage(0)">
+  <div id="thermostatMenuItemSelected" name="thermostatMenuItemSelected" style="width:100px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "showPage(0)">
   &nbsp;&#149;&nbsp;Change Label
   </div>
-  <div id="thermostatMenuItem" name="thermostatMenuItem" style="width:85px" onmouseover="changeNavStyle(this)" class = "navmenu1" onclick = "showPage(1)">
+  <div id="thermostatMenuItem" name="thermostatMenuItem" style="width:100px" onmouseover="changeNavStyle(this)" class = "navmenu1" onclick = "showPage(1)">
   &nbsp;&nbsp;&nbsp;<%= AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_SCHED, "Schedule") %>
   </div>
-  <div id="thermostatMenuItemSelected" name="thermostatMenuItemSelected" style="width:85px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "showPage(1)">
+  <div id="thermostatMenuItemSelected" name="thermostatMenuItemSelected" style="width:100px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "showPage(1)">
   &nbsp;&#149;&nbsp;<%= AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_SCHED, "Schedule") %>
   </div>
-  <div id="thermostatMenuItem" name="thermostatMenuItem" style="width:85px" onmouseover="changeNavStyle(this)" class = "navmenu1" onclick = "showPage(2)">
+  <div id="thermostatMenuItem" name="thermostatMenuItem" style="width:100px" onmouseover="changeNavStyle(this)" class = "navmenu1" onclick = "showPage(2)">
   &nbsp;&nbsp;&nbsp;<%= AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_MANUAL, "Manual") %>
   </div>
-  <div id="thermostatMenuItemSelected" name="thermostatMenuItemSelected" style="width:85px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "showPage(2)">
+  <div id="thermostatMenuItemSelected" name="thermostatMenuItemSelected" style="width:100px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "showPage(2)">
+  &nbsp;&#149;&nbsp;<%= AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_MANUAL, "Manual") %>
+  </div>
+</div>
+
+<div id="thermostatAllMenu" class="bgMenu" style="width:100px" align="left">
+  <div id="thermostatAllMenuItem" name="thermostatAllMenuItem" style="width:100px" onmouseover="changeNavStyle(this)" class = "navmenu1" onclick = "showPage(0)">
+  &nbsp;&nbsp;&nbsp;Select Thermostats
+  </div>
+  <div id="thermostatAllMenuItemSelected" name="thermostatAllMenuItemSelected" style="width:100px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "showPage(0)">
+  &nbsp;&#149;&nbsp;Select Thermostats
+  </div>
+  <div id="thermostatAllMenuItem" name="thermostatAllMenuItem" style="width:100px" onmouseover="changeNavStyle(this)" class = "navmenu1" onclick = "showPage(1)">
+  &nbsp;&nbsp;&nbsp;<%= AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_SCHED, "Schedule") %>
+  </div>
+  <div id="thermostatAllMenuItemSelected" name="thermostatAllMenuItemSelected" style="width:100px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "showPage(1)">
+  &nbsp;&#149;&nbsp;<%= AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_SCHED, "Schedule") %>
+  </div>
+  <div id="thermostatAllMenuItem" name="thermostatAllMenuItem" style="width:100px" onmouseover="changeNavStyle(this)" class = "navmenu1" onclick = "showPage(2)">
+  &nbsp;&nbsp;&nbsp;<%= AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_MANUAL, "Manual") %>
+  </div>
+  <div id="thermostatAllMenuItemSelected" name="thermostatAllMenuItemSelected" style="width:100px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "showPage(2)">
   &nbsp;&#149;&nbsp;<%= AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_MANUAL, "Manual") %>
   </div>
 </div>
