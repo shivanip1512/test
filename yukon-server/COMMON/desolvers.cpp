@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/desolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/05/28 17:55:54 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/06/18 16:20:10 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -395,6 +395,10 @@ RWCString desolveDeviceType( INT aType )
    else if(aType == TYPE_LMPROGRAM_ENERGYEXCHANGE)
    {
       Ret = "lm energy exchange";
+   }
+   else if(aType == TYPE_DAVIS)
+   {
+      Ret = "davis weather";
    }
    else if(aType == TYPE_SYSTEM)
    {

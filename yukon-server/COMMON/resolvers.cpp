@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/06/11 21:19:02 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2002/06/18 16:20:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -292,6 +292,10 @@ INT resolveDeviceType(RWCString rwsTemp)
     {
         nRet = TYPE_SES92RTU;
     }
+    else if(rwsTemp == "davis weather")
+    {
+        nRet = TYPE_DAVIS;
+    }
     else if(rwsTemp == "lcu-415")
     {
         nRet = TYPE_LCU415;
@@ -320,7 +324,7 @@ INT resolveDeviceType(RWCString rwsTemp)
     {
         nRet = TYPE_TDMARKV;
     }
-    else if(rwsTemp == "davisweather")
+    else if(rwsTemp == "davis weather")
     {
         nRet = TYPE_DAVIS;
     }
@@ -1385,6 +1389,11 @@ INT resolveSlaveAddress(const INT DeviceType, RWCString str)
             break;
         }
     case TYPE_ALPHA_A1:
+        {
+            slaveAddress = 0;
+            break;
+        }
+    case TYPE_DAVIS:
         {
             slaveAddress = 0;
             break;

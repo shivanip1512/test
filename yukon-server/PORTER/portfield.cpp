@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2002/06/11 21:22:45 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2002/06/18 16:20:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2039,9 +2039,7 @@ INT CheckAndRetryMessage(INT CommResult, CtiPort *Port, INMESS *InMessage, OUTME
         }
     }
 
-    if( (CommResult != NORMAL) ||
-        (  (Port->getProtocol() == IDLC) && (OutMessage->Remote == CCUGLOBAL || OutMessage->Remote == RTUGLOBAL) )
-      )
+    if( (CommResult != NORMAL) || (  (Port->getProtocol() == IDLC) && (OutMessage->Remote == CCUGLOBAL || OutMessage->Remote == RTUGLOBAL) ) )
     {
         switch( Device->getType() )
         {
