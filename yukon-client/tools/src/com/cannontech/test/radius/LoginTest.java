@@ -500,7 +500,7 @@ public class LoginTest implements ActionListener
 		if( authorize)
 		{
 			System.out.println("Attempting a RADIUS login");
-			boolean authenticated = RadiusLogin.login( radiusAddr, authPort, acctPort, secret, username, password);
+			boolean authenticated = RadiusLogin.loginTest( radiusAddr, authPort, acctPort, secret, username, password);
 		
 			if (!authenticated)
 				JOptionPane.showMessageDialog( null, "User: '" + username + "' is not authorized to use this application.",	"Access Denied", JOptionPane.WARNING_MESSAGE);
