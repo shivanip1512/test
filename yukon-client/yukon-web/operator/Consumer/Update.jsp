@@ -284,10 +284,12 @@ function copyAddress(form) {
                     <hr>
                     <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
                       <tr> 
-                        <td width="90" class="TableCell">&nbsp;</td>
-                        <td width="210"> 
-                          <input type="button" name="Same" value="Same as Above" onclick="copyAddress(this.form)">
+                        <td width="90" class="TableCell"> 
+                          <div align="right"> </div>
                         </td>
+                        <td width="210" class="TableCell"> 
+                          <input type="checkbox" name="Same" value="Same as Above" onClick="copyAddress(this.form)">
+                          Same as above</td>
                       </tr>
                       <tr> 
                         <td width="90" class="TableCell"> 
