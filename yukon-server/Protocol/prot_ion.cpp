@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.28 $
-* DATE         :  $Date: 2003/12/11 22:21:31 $
+* REVISION     :  $Revision: 1.29 $
+* DATE         :  $Date: 2004/08/03 22:17:01 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -365,6 +365,7 @@ int CtiProtocolION::decode( CtiXfer &xfer, int status )
 
     if( _protocolErrors > Protocol_ErrorMax )
     {
+        if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
