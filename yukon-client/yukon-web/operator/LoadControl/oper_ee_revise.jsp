@@ -51,7 +51,7 @@
 		if (price == 0)
 			priceStrs[i] = "----";
 		else
-			priceStrs[i] = numberFormat.format( price );
+			priceStrs[i] = priceFormat.format( price );
 
 		double amount = ((LMEnergyExchangeHourlyOffer) hrOffers.elementAt(i)).getAmountRequested().doubleValue();
 		if (amount == 0)
@@ -68,7 +68,7 @@
 			if (price == 0)
 				newPriceStrs[i] = "0";
 			else
-				newPriceStrs[i] = numberFormat.format( price );
+				newPriceStrs[i] = priceFormat.format( price );
 
 			double amount = ((LMEnergyExchangeHourlyOffer) hrOffers.elementAt(i)).getAmountRequested().doubleValue();
 			if (amount == 0)
