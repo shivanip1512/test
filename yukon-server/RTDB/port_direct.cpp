@@ -441,108 +441,115 @@ INT CtiPortDirect::readIDLCHeader(CtiXfer& Xfer, unsigned long *byteCount, bool 
 {
     int status = NORMAL;
 
-    int   matchCount = 0;
-    bool  matching   = true;
+    bool  matching;
 
-    BYTE *Message    = Xfer.getInBuffer();      // Local alias for ease of use!
+    BYTE  *in_buf, *out_buf;
+    ULONG  pos, bytes_read, in_count, in_expected, out_count;
 
-    //  only suppress if Mr. Cparm says we can
-    suppressEcho = suppressEcho & gIDLCEchoSuppression;
+    in_buf   = Xfer.getInBuffer();  // Local alias for ease of use!
+    out_buf  = Xfer.getOutBuffer();
+    in_expected = Xfer.getInCountExpected();
+    out_count   = Xfer.getOutCount();
+
+    pos = 0;
 
     //  wait for the framing byte (0x7e) (or its wacky counterpart, 0xfc - eventually remove support for 0xfc...?)
     do
     {
-        if((status = CTIRead(getHandle(), Message,  1, byteCount)) || *byteCount != 1)
+        if((status = CTIRead(getHandle(), in_buf, 1, &bytes_read)) == NORMAL)
         {
-            if(status != NORMAL)
+            if( bytes_read == 1 )
             {
-                status = READERR;
+                if( in_buf[0] == 0xfc)
+                {
+                    in_buf[0] =  0x7e;
+                }
+
+                //  Make sure that any errors on the port are cleared
+                getPortCommError();
             }
-            else if(*byteCount != 1)
+            else
             {
                 status = READTIMEOUT;
             }
-
-            break;
         }
-
-        /* Make sure that any errors on the port are cleared */
-        getPortCommError();
-
-    } while(Message[0] != 0x7e && Message[0] != 0xfc);
+    } while(in_buf[0] != 0x7e && status == NORMAL);
 
     //  if we successfully got the framing byte
     if(status == NORMAL)
     {
-        if( Message[0] == 0xfc)
+        matching  = suppressEcho;
+        matching &= (in_buf[pos] == out_buf[pos]);
+
+        pos++;
+
+        if( suppressEcho || suppressStutter )
         {
-            Message[0] = 0x7e;
-        }
-
-        matchCount++;
-
-        if( Message[matchCount - 1] != (Xfer.getOutBuffer())[matchCount - 1] )
-        {
-            matching = false;
-        }
-
-        if( suppressEcho )
-        {
-            //  FIX/IMPROVE:  maybe read a chunk of 5 instead of just one-by-one... ?
-            //                make sure to check against all IDLC message types before assuming
-
             //  check byte-by-byte against output to make sure it's not an echo
-            while( matching && matchCount < Xfer.getOutCount() && status == NORMAL )
+            do
             {
-                if((status = CTIRead(getHandle(), Message + matchCount, 1, byteCount)) == NORMAL && *byteCount == 1)
+                if((status = CTIRead(getHandle(), in_buf + pos, 1, &bytes_read)) == NORMAL)
                 {
-                    matchCount += *byteCount;
-                }
+                    if( bytes_read == 1 )
+                    {
+                        if( suppressStutter && pos == 1 )
+                        {
+                            if( in_buf[0] == in_buf[1] )
+                            {
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << RWTime() << " **** Checkpoint - IDLC stutter detected and removed **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                }
 
-                if( Message[matchCount - 1] != (Xfer.getOutBuffer())[matchCount - 1] )
-                {
-                    matching = false;
-                }
-            }
+                                pos = 0;
+                            }
+                        }
 
-            if( matchCount == Xfer.getOutCount() && matching )
-            {
-                //  if it's an echo
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << RWTime() << " Discarding IDLC echo message" << endl;
-                }
+                        matching &= (in_buf[pos] == out_buf[pos]);
 
-                //  start all over, but don't check for an echo - it's already been caught
-                status = readIDLCHeader(Xfer, byteCount, false);
-            }
+                        pos++;
+                    }
+                    else
+                    {
+                        status = READTIMEOUT;
+                    }
+                }
+            } while( matching && pos < out_count && status == NORMAL );
         }
 
-
-        //  if the message doesn't match OR we don't care about suppressing echoes, just blithely read on
-        if( !suppressEcho || !matching )
+        if( matching && pos == out_count )
         {
-            if( status == NORMAL )
+            //  if it's an echo
             {
-                if((status = CTIRead(getHandle(), Message + matchCount, Xfer.getInCountExpected() - matchCount, byteCount)) != NORMAL)
-                {
-                    if(status == ERROR_INVALID_HANDLE)
-                    {
-                        close(false);
-                        status = PORTREAD;
-                    }
-                    else if(status != NORMAL)
-                    {
-                        status = READERR;
-                    }
-                }
-                else
-                {
-                    //  add on the bytes we've already read
-                    *byteCount += matchCount;
-                }
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint - discarding IDLC echo message **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
+
+            //  start all over, but don't check for an echo - it's already been caught
+            status = readIDLCHeader(Xfer, byteCount, false);
+        }
+        else if( status == NORMAL )
+        {
+            if((status = CTIRead(getHandle(), in_buf + pos, in_expected - pos, &bytes_read)) == NORMAL)
+            {
+                pos += bytes_read;
+            }
+        }
+    }
+
+
+    *byteCount = pos;
+
+    if( status != NORMAL )
+    {
+        if( status == ERROR_INVALID_HANDLE )
+        {
+            close(false);
+            status = PORTREAD;
+        }
+        else if( status != READTIMEOUT )
+        {
+            status = READERR;
         }
     }
 
