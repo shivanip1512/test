@@ -16,7 +16,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
  */
 public class CheckRole extends BodyTagSupport {
 
-	private int roleid;
+	private String roleid;
 
 	/**
 	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
@@ -24,17 +24,27 @@ public class CheckRole extends BodyTagSupport {
 	public int doStartTag() throws JspException {
 		LiteYukonUser user = 
 			(LiteYukonUser) pageContext.getSession().getAttribute("YUKON_USER");
-			
-		return (user == null || AuthFuncs.checkRole(user,roleid) == null) ?
-					SKIP_BODY :
-					EVAL_BODY_INCLUDE;
+		if (user == null) return SKIP_BODY;
+		
+		java.util.StringTokenizer st = new java.util.StringTokenizer(roleid, ",");
+		while (st.hasMoreTokens()) {
+			try {
+				int rid = Integer.parseInt( st.nextToken() );
+				if (AuthFuncs.checkRole(user, rid) != null) return EVAL_BODY_INCLUDE;
+			}
+			catch (NumberFormatException e) {
+				throw new JspException( e.getMessage() );
+			}
+		}
+		
+		return SKIP_BODY;
 	}
 
 	/**
 	 * Returns the roleid.
 	 * @return int
 	 */
-	public int getRoleid() {
+	public String getRoleid() {
 		return roleid;
 	}
 
@@ -42,7 +52,7 @@ public class CheckRole extends BodyTagSupport {
 	 * Sets the roleid.
 	 * @param roleid The roleid to set
 	 */
-	public void setRoleid(int roleid) {
+	public void setRoleid(String roleid) {
 		this.roleid = roleid;
 	}
 

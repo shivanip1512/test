@@ -16,7 +16,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
  */
 public class CheckProperty extends BodyTagSupport {
 
-	private int propertyid;
+	private String propertyid;
 
 	/**
 	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
@@ -24,17 +24,27 @@ public class CheckProperty extends BodyTagSupport {
 	public int doStartTag() throws JspException {
 		LiteYukonUser user = 
 			(LiteYukonUser) pageContext.getSession().getAttribute("YUKON_USER");
-			
-		return (user == null || !AuthFuncs.checkRoleProperty(user,propertyid)) ?
-					SKIP_BODY :
-					EVAL_BODY_INCLUDE;
+		if (user == null) return SKIP_BODY;
+		
+		java.util.StringTokenizer st = new java.util.StringTokenizer(propertyid, ",");
+		while (st.hasMoreTokens()) {
+			try {
+				int pid = Integer.parseInt( st.nextToken() );
+				if (AuthFuncs.checkRoleProperty(user, pid)) return EVAL_BODY_INCLUDE;
+			}
+			catch (NumberFormatException e) {
+				throw new JspException( e.getMessage() );
+			}
+		}
+		
+		return SKIP_BODY;
 	}
 
 	/**
 	 * Returns the propertyid.
 	 * @return int
 	 */
-	public int getPropertyid() {
+	public String getPropertyid() {
 		return propertyid;
 	}
 
@@ -42,7 +52,7 @@ public class CheckProperty extends BodyTagSupport {
 	 * Sets the propertyid.
 	 * @param propertyid The propertyid to set
 	 */
-	public void setPropertyid(int propertyid) {
+	public void setPropertyid(String propertyid) {
 		this.propertyid = propertyid;
 	}
 
