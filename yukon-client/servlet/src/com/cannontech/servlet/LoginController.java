@@ -89,7 +89,7 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 			
 			LiteYukonUser savedUser = (LiteYukonUser) session.getAttribute(SAVED_YUKON_USER);
 			session.invalidate();
-			if (savedUser != null) {
+			if (savedUser != null && !savedUser.equals(user)) {
 				// Restore saved yukon user into session after logging off
 				session = req.getSession( true );
 				session.setAttribute(SAVED_YUKON_USER, savedUser);
