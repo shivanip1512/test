@@ -4093,11 +4093,11 @@ public void mainPanel_JComboCurrentDisplayAction_actionPerformed(java.util.Event
 
 
 	//we may need to update the filter we have selected
-	if( source.getCurrentDisplay().getColumnData() != null && source.getCurrentDisplay().getColumnData().length > 0 )
+	if( source.getCurrentDisplay().getDisplayData() != null )
 	{
 		//we only need one filterID
 		getAlarmToolBar().setSelectedFilter(
-				source.getCurrentDisplay().getColumnData()[0].getFilterID() );
+				source.getCurrentDisplay().getDisplayData().getFilterID() );
 	}
 	else
 		getAlarmToolBar().setSelectedFilter( CtiUtilities.NONE_ID );

@@ -11,19 +11,23 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.Vector;
 
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.table.TableColumn;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.CommonUtils;
 import com.cannontech.clientutils.parametersfile.ParametersFile;
 import com.cannontech.clientutils.tags.AlarmUtils;
 import com.cannontech.clientutils.tags.TagUtils;
+import com.cannontech.common.gui.panel.CompositeJSplitPane;
 import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.gui.util.SortTableModelWrapper;
+import com.cannontech.common.util.CtiProperties;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.NativeIntVector;
 import com.cannontech.database.cache.functions.PointFuncs;
@@ -39,6 +43,7 @@ import com.cannontech.message.dispatch.message.Signal;
 import com.cannontech.tdc.commandevents.AckAlarm;
 import com.cannontech.tdc.data.ColumnData;
 import com.cannontech.tdc.data.Display;
+import com.cannontech.tdc.data.DisplayData;
 import com.cannontech.tdc.filter.ITDCFilter;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
 import com.cannontech.tdc.roweditor.AnalogPanel;
@@ -56,11 +61,8 @@ public class TDCMainPanel extends javax.swing.JPanel implements com.cannontech.t
 {
 	//an int read in as a CParm used to turn on/off features
    public static final String PROP_BOOKMARK = "con.cannontech.BookMark";
-	
-	//a crutch to know if we alread updated our columnData in each Display()
-	// This is used set in updateDisplayColumnData() and updateDisplayColumnDataFormat()
-	// It must be initialized to true so the initial startup displays are inited correctly!
-	private boolean columnDataAlreadyUpdated = true;
+
+	private boolean needColDataUpdate = true;
 
 	private TDCClient tdcClient = null;  // copy of the tdcClient from the mainFrame
 	// stores the last historical query, needed for when the Arrow buttons are pushed
@@ -69,6 +71,7 @@ public class TDCMainPanel extends javax.swing.JPanel implements com.cannontech.t
 	private SpecialTDCChild currentSpecailChild = null;
 	private AlarmToolBar frameAlarmToolBar = null;
 	private SortTableModelWrapper sorterModelWrapper = null;
+
 	/* START -Display atrributes */
 	private Display[] lastDisplays = new Display[Display.DISPLAY_TYPES.length];  // holds a last display for EVERY display type that exists
 	private Display currentDisplay = null;
@@ -708,7 +711,8 @@ public void fireBookMarkSelected( Object source )
 {
 	//set our display column data for the display we are looking at
 	updateDisplayColumnData();
-	
+	needColDataUpdate = false;
+
 	Cursor original = setCursorToWait();
 	resetMainPanel();
 	
@@ -829,6 +833,7 @@ public void fireBookMarkSelected( Object source )
 	finally
 	{
 		CtiUtilities.getParentFrame(this).setCursor( original );
+		needColDataUpdate = true;
 	}
 	
 }
@@ -838,9 +843,10 @@ public void fireBookMarkSelected( Object source )
  */
 protected void fireJComboCurrentDisplayAction_actionPerformed(java.util.EventObject newEvent)
 {
-	updateDisplayColumnData();
-
-	updateDisplayColumnFormat();
+	//only save the column data IF we have not done so already. Will happen when coming from
+	// fireBookMarkSelected()
+	if( needColDataUpdate )
+		updateDisplayColumnData();
 
 	// only let events go through that are not special client related
 	if( getCurrentSpecailChild() != null )
@@ -887,18 +893,19 @@ protected void fireJComboCurrentDisplayAction_actionPerformed(java.util.EventObj
 						initCoreDisplays();
 				}
 					
-				resetPagingProperties();
-	
-				//set our display with the last format
-				updateDisplayColumnFormat();
+				resetPagingProperties();	
 			}
 		}
 		finally
 		{
 			CtiUtilities.getParentFrame(this).setCursor( original );
+			
 		}
 	}
 	
+
+	//set our display with the last format
+	formatDisplayColumns();
 	
 	// tell the MAIN FRAME we just changed displays
 	if ( fieldTDCMainPanelListenerEventMulticaster != null)
@@ -1895,7 +1902,7 @@ private void initClientDisplays()
 			// add the new ActionListener to our combo box
 			getCurrentSpecailChild().addActionListenerToJComponent( getJComboCurrentDisplay() );
 			
-			this.getJLabelDisplayTitle().setText(getCurrentDisplay().getTitle());
+			getJLabelDisplayTitle().setText(getCurrentDisplay().getTitle());			
 		}
 
 		
@@ -1982,13 +1989,13 @@ public boolean initComboCurrentDisplay()
 				boolean enabled = true;
             
             if( getAllDisplays()[i].getType().equalsIgnoreCase(Display.DISPLAY_TYPES[Display.CAP_CONTROL_CLIENT_TYPE_INDEX]) )
-					enabled = !com.cannontech.common.util.CtiProperties.isHiddenCapControl(TDCDefines.USER_RIGHTS);
+					enabled = !CtiProperties.isHiddenCapControl(TDCDefines.USER_RIGHTS);
 				else if( getAllDisplays()[i].getType().equalsIgnoreCase(Display.DISPLAY_TYPES[Display.LOAD_CONTROL_CLIENT_TYPE_INDEX]) )
-					enabled = !com.cannontech.common.util.CtiProperties.isHiddenLoadControl(TDCDefines.USER_RIGHTS);
+					enabled = !CtiProperties.isHiddenLoadControl(TDCDefines.USER_RIGHTS);
             else if( getAllDisplays()[i].getType().equalsIgnoreCase(Display.DISPLAY_TYPES[Display.SCHEDULER_CLIENT_TYPE_INDEX]) )
-					enabled = !com.cannontech.common.util.CtiProperties.isHiddenMACS(TDCDefines.USER_RIGHTS);
+					enabled = !CtiProperties.isHiddenMACS(TDCDefines.USER_RIGHTS);
             else if( getAllDisplays()[i].getType().equalsIgnoreCase(Display.DISPLAY_TYPES[Display.STATIC_CLIENT_TYPE_INDEX]) )
-					enabled = com.cannontech.common.util.CtiProperties.isClientEnabled(TDCDefines.USER_RIGHTS);
+					enabled = CtiProperties.isClientEnabled(TDCDefines.USER_RIGHTS);
 
 				addClientRadioButtons( getAllDisplays()[i].getTitle(), i, enabled );
 			}
@@ -3155,9 +3162,6 @@ public void executeRefresh_Pressed()
 		}		
 		else
 		{
-			//be sure we capture any changes made to the table by the user
-			updateDisplayColumnData();
-			
 			//setUpMainFrame( getJComboCurrentDisplay().getSelectedItem() );
 			Object previousItem = getJComboCurrentDisplay().getSelectedItem();
 			initComboCurrentDisplay();
@@ -3167,15 +3171,7 @@ public void executeRefresh_Pressed()
 			{
 				getJComboCurrentDisplay().setSelectedItem( previousItem );
 			}
-			
-			
-		   /** 1.4.0 Seems to have Fixed this!! **/
-			// doesnt fire the getMainPanel().jComboCurrentDisplay_ActionPerformed() if
-			// the new previousItem is at index 0, so I do it manually
-//			if( getJComboCurrentDisplay().getSelectedIndex() == 0 )
-//				fireJComboCurrentDisplayAction_actionPerformed( 
-//					new java.util.EventObject(this) );
-			
+
 		}
 		
 			
@@ -3212,8 +3208,10 @@ protected void processDBChangeMsg( DBChangeMsg msg )
  * Before this method is executed, we should have all of our
  *  displays read in.
  */
-public void readAllDisplayColumnData() 
+private HashMap readAllDisplayColumnData() 
 {
+	HashMap map = null;
+
 	try
 	{
 		java.io.File file = new java.io.File( TDCDefines.DISPLAY_OUT_FILE_NAME );
@@ -3229,19 +3227,22 @@ public void readAllDisplayColumnData()
 			{
 				while( (o = in.readObject()) != null )
 				{
-					if( o instanceof ColumnData[] )
+					if( o instanceof HashMap )
 					{
-						ColumnData[] cd = (ColumnData[])o;
+						map = (HashMap)o;
+												
 
-						if( cd.length > 0 ) //be sure we have at least 1 column
+						for( int j = 0; j < getAllDisplays().length; j++ )
 						{
-							for( int j = 0; j < getAllDisplays().length; j++ )
-								if( getAllDisplays()[j].getDisplayNumber() == cd[0].getDisplayNumber() )
-								{
-									getAllDisplays()[j].setColumnData( cd );
-									break;
-								}
+							DisplayData dd = (DisplayData)map.get(
+								new Integer(getAllDisplays()[j].getDisplayNumber()) );
+
+							if( dd != null )
+							{
+								getAllDisplays()[j].setDisplayData( dd );
+							}
 						}
+
 							
 					}
 				}
@@ -3262,7 +3263,9 @@ public void readAllDisplayColumnData()
 		handleException( e );
 	}
 	
+	return map;
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (5/4/00 3:00:51 PM)
@@ -3773,6 +3776,7 @@ private void showRowEditor( Object source )
 	}
 	
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (1/24/2002 11:45:40 AM)
@@ -3784,53 +3788,74 @@ public void updateDisplayColumnData()
 				: getDisplayTable() );
 
 	//we do not want to update the display column data if we
-	//  do not have a display to update OR the column data already
-	//  has been updated.
-	if( getCurrentDisplay() != null 
-		 && !columnDataAlreadyUpdated )
+	//  do not have a display
+	if( getCurrentDisplay() != null )
 	{
 		ColumnData[] cols = new ColumnData[table.getColumnCount()];
 
 		for( int i = 0; i < cols.length; i++ )
 		{	
-			javax.swing.table.TableColumn col = table.getColumnModel().getColumn(i);
+			TableColumn col = table.getColumnModel().getColumn(i);
 				
 			ColumnData cd = new ColumnData(
-					getCurrentDisplay().getDisplayNumber(),
 					col.getHeaderValue().toString(),
 					i,
-					col.getWidth(),
-					getCurrentDisplay().getTdcFilter().getFilterID() );
+					col.getWidth() );
 
 			cols[i] = cd;
 		}
 
-		//update the current display and the display in allDisplays[]
-		getCurrentDisplay().setColumnData(cols);
-		for( int i = 0; i < getAllDisplays().length; i++ )
-			if( getCurrentDisplay().getDisplayNumber() == getAllDisplays()[i].getDisplayNumber() )
+		DisplayData dd = new DisplayData(
+				getCurrentDisplay().getDisplayNumber(),
+				getCurrentDisplay().getTdcFilter().getFilterID(),
+				cols );
+
+
+
+		//set any display properties needed for TDC clients
+		if( getCurrentSpecailChild() != null )
+		{
+			JPanel p = getCurrentSpecailChild().getMainJPanel();
+			for( int i = 0; i < p.getComponentCount(); i++ )
 			{
-				getAllDisplays()[i].setColumnData(cols);
+				if( p.getComponent(i) instanceof CompositeJSplitPane )
+				{
+					dd.setProp0(
+						((CompositeJSplitPane)p.getComponent(i)).getDividerLocation() );
+
+					dd.setProp1(
+						((CompositeJSplitPane)p.getComponent(i)).getJSplitPaneInner().getDividerLocation() );
+				}
+			}
+		}
+
+		//update the current display and the display in allDisplays[]
+		getCurrentDisplay().setDisplayData( dd );
+		for( int i = 0; i < getAllDisplays().length; i++ )
+			if( dd.getDisplayNumber() == getAllDisplays()[i].getDisplayNumber() )
+			{
+				getAllDisplays()[i].setDisplayData( dd );
 				break;
 			}
-
-		columnDataAlreadyUpdated = true;
 	}
+	
 
 }
 /**
  * Insert the method's description here.
  * Creation date: (1/24/2002 11:45:40 AM)
  */
-private void updateDisplayColumnFormat()
+private void formatDisplayColumns()
 {
 	if( getCurrentDisplay() == null
-		 || getCurrentDisplay().getColumnData() == null )
+		 || getCurrentDisplay().getDisplayData() == null )
 		return;
 
-	for( int i = 0; i < getCurrentDisplay().getColumnData().length; i++ )
+
+
+	for( int i = 0; i < getCurrentDisplay().getDisplayData().getColumnData().length; i++ )
 	{	
-		ColumnData cd = getCurrentDisplay().getColumnData()[i];
+		ColumnData cd = getCurrentDisplay().getDisplayData().getColumnData()[i];
 
 		javax.swing.JTable table = ( isClientDisplay() 
 					? getCurrentSpecailChild().getJTables()[0]
@@ -3841,7 +3866,7 @@ private void updateDisplayColumnFormat()
 			if( table.getColumnName(j).equalsIgnoreCase(cd.getColumnName()) )
 			{
 				//found the column, lets reformat its appearance
-				javax.swing.table.TableColumn tc = table.getColumnModel().getColumn(j);
+				TableColumn tc = table.getColumnModel().getColumn(j);
 
 				tc.setWidth( cd.getWidth() );
 				tc.setPreferredWidth( cd.getWidth() );	
@@ -3858,10 +3883,30 @@ private void updateDisplayColumnFormat()
 		}
 			
 	}
+	
+	
+	//set any display properties needed for TDC clients
+	if( getCurrentSpecailChild() != null )
+	{
+		JPanel p = getCurrentSpecailChild().getMainJPanel();
+		for( int i = 0; i < p.getComponentCount(); i++ )
+		{
+			if( p.getComponent(i) instanceof CompositeJSplitPane )
+			{
+				if( getCurrentDisplay().getDisplayData().getProp0() >= 0 )
+					((CompositeJSplitPane)p.getComponent(i)).setDividerLocation(
+							getCurrentDisplay().getDisplayData().getProp0() );
+							
+				if( getCurrentDisplay().getDisplayData().getProp1() >= 0 )
+					((CompositeJSplitPane)p.getComponent(i)).getJSplitPaneInner().setDividerLocation(
+							getCurrentDisplay().getDisplayData().getProp1() );
+			}
+		}
+	}	
 
 
-	columnDataAlreadyUpdated = false;
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (3/6/00 1:51:30 PM)
@@ -3871,6 +3916,8 @@ public void writeAllDisplayColumnData()
 	if( allDisplays == null )
 		return;
 
+	HashMap map = null;
+
 	try
 	{
 		java.io.FileOutputStream fileOut = new java.io.FileOutputStream( 
@@ -3878,12 +3925,18 @@ public void writeAllDisplayColumnData()
 		
 		java.io.ObjectOutputStream o = new java.io.ObjectOutputStream(fileOut);
 
-		for( int i = 0; i < allDisplays.length; i++ )
-			if( allDisplays[i].getColumnData().length > 0 )
-			{
-				o.writeObject( allDisplays[i].getColumnData() );
-			}
+		if( map == null )
+			map = new HashMap( getAllDisplays().length );
 
+		for( int i = 0; i < getAllDisplays().length; i++ )
+		{
+			map.put(
+				new Integer(getAllDisplays()[i].getDisplayNumber()),
+				getAllDisplays()[i].getDisplayData() );
+		}
+		
+		o.writeObject( map );
+		
 		o.flush();
 		o.close();
 	}

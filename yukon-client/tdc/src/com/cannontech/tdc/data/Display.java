@@ -20,7 +20,8 @@ public class Display implements IDisplay
 	private String type = null;
 	private String title = null;
 	private String description = null;
-	private ColumnData[] columnData = null;
+	
+	private DisplayData displayData = null;
 
 
 	//what filter is currently being applied to this display
@@ -120,14 +121,18 @@ public static synchronized boolean isUserDefinedType( String displayType )
 /**
  * Insert the method's description here.
  * Creation date: (1/24/2002 9:38:17 AM)
- * @return ColumnData[]
+ * @return DisplayData[]
  */
-public ColumnData[] getColumnData() 
+public DisplayData getDisplayData() 
 {
-	if( columnData == null )
-		columnData = new ColumnData[0];
+	if( displayData == null )
+	{
+		displayData = new DisplayData();
+		displayData.setDisplayNumber( getDisplayNumber() );
+		displayData.setFilterID( getTdcFilter().getFilterID() );
+	}
 
-	return columnData;
+	return displayData;
 }
 /**
  * Insert the method's description here.
@@ -245,11 +250,11 @@ public java.lang.String getType() {
 /**
  * Insert the method's description here.
  * Creation date: (1/24/2002 9:38:17 AM)
- * @param newColumnData ColumnData[]
+ * @param newDisplData DisplayData
  */
-public void setColumnData(ColumnData[] newColumnData) 
+public void setDisplayData(DisplayData newDisplData) 
 {
-	columnData = newColumnData;
+	displayData = newDisplData;
 }
 /**
  * Insert the method's description here.
