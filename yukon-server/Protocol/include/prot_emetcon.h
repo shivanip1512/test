@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/prot_emetcon.h-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2004/02/10 23:54:29 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2004/04/01 21:48:56 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -134,6 +134,7 @@ public:
         GetValue_Demand,
         GetValue_PeakDemand,
         GetValue_FrozenPeakDemand,
+        GetValue_Voltage,
         GetValue_IEDKwh,
         GetValue_IEDKvarh,
         GetValue_IEDKvah,
