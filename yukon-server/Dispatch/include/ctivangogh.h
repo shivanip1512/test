@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/ctivangogh.h-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2003/09/02 18:50:15 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2003/09/12 02:39:56 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -140,6 +140,8 @@ private:
     void bumpDeviceFromAlternateRate(CtiPointBase *pPoint);
     void bumpDeviceToAlternateRate(CtiPointBase *pPoint);
 
+    void acknowledgeCommandMsg( CtiPointBase *&pPt, const CtiCommandMsg *&Cmd, int alarmcondition );
+    void acknowledgeAlarmCondition( CtiPointBase *&pPt, const CtiCommandMsg *&Cmd, int alarmcondition );
 
 public:
 

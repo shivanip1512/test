@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.53 $
-* DATE         :  $Date: 2003/09/02 18:50:15 $
+* REVISION     :  $Revision: 1.54 $
+* DATE         :  $Date: 2003/09/12 02:39:56 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -106,26 +106,26 @@ static int CntlHistInterval = 3600;
 static int CntlHistPointPostInterval = 60;
 static int CntlStopInterval = 60;
 
-static RWCString AlarmTagsToString(UINT tags)
+RWCString AlarmTagsToString(UINT tags)
 {
     RWCString str;
 
     if(tags & TAG_ACTIVE_ALARM)
     {
-        str = "ABNORMAL / ";
+        str = gConfigParms.getValueAsString("DISPATCH_ACTIVE_ALARM_TEXT", "ABNORMAL") + " / ";
     }
     else
     {
-        str = "NORMAL / ";
+        str = gConfigParms.getValueAsString("DISPATCH_INACTIVE_ALARM_TEXT", "NORMAL") + " / ";
     }
 
     if(tags & TAG_UNACKNOWLEDGED_ALARM)
     {
-        str += "UNACK: ";
+        str += gConfigParms.getValueAsString("DISPATCH_UNACK_ALARM_TEXT", "UNACK") + ": ";
     }
     else
     {
-        str += "ACK: ";
+        str += gConfigParms.getValueAsString("DISPATCH_ACK_ALARM_TEXT", "ACK") + ": ";
     }
 
     return str;
@@ -653,70 +653,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
 
                 if(pPt != NULL)      // I know about the point...
                 {
-                    CtiSignalMsg *pSigNew = 0;
-
-                    {
-                        CtiLockGuard<CtiMutex> pmguard(server_mux);
-                        CtiDynamicPointDispatch *pDyn = (CtiDynamicPointDispatch*)pPt->getDynamic();
-
-                        pSigNew = _signalManager.setAlarmAcknowledged(pid, alarmcondition, true);    // Clear the tag, return the signal!
-
-                        if(pDyn != NULL)
-                        {
-                            if(pSigNew != NULL)
-                            {
-                                pSigNew->setUser( Cmd->getUser() );
-                                pSigNew->setTags( (pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) | TAG_REPORT_MSG_TO_ALARM_CLIENTS);
-                                pSigNew->setText(AlarmTagsToString(pSigNew->getTags()) + pSigNew->getText());
-
-                                if( !pPt->getAlarming().getNotifyOnAcknowledge() )
-                                {
-                                    pSigNew->setMessageTime( Cmd->getMessageTime() );
-                                }
-
-                                pSigNew->setMessagePriority( 15 );   // Max this out we want it to hurry.
-                            }
-
-                            // Mark it if there are other alarms on the point.
-                            UINT premask    = pDyn->getDispatch().getTags( ) & MASK_ANY_ALARM;
-                            UINT amask      = _signalManager.getAlarmMask(pid);
-
-                            if(premask != amask)
-                            {
-                                // Adjust the point tags to reflect the potentially new state of the alarm tags.
-                                pDyn->getDispatch().resetTags( MASK_ANY_ALARM );
-                                pDyn->getDispatch().setTags( amask );
-
-#if 0
-                                // Hey fool you need to send out tags now!
-                                CtiSignalMsg *pTagSig = CTIDBG_new CtiSignalMsg(pPt->getID(), Cmd->getSOE(), "Tag Update");
-                                pTagSig->setMessagePriority(15);
-                                pTagSig->setUser(Cmd->getUser());
-                                pTagSig->setTags( pDyn->getDispatch().getTags() | TAG_REPORT_MSG_TO_ALARM_CLIENTS);
-                                postMessageToClients(pTagSig);
-                                delete pTagSig;
-#endif
-                            }
-
-                            if(DebugLevel & DEBUGLEVEL_LUDICROUS)
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-
-                                dout << " Signal has tags: " << pSigNew->getTags() << " " << explainTags(pSigNew->getTags())  << endl;
-                                dout << " SigMgr has tags: " << amask << " " << explainTags(amask) << endl;
-                                dout << " Point  has tags: " << pDyn->getDispatch().getTags()  << " " << explainTags(pDyn->getDispatch().getTags()) << endl;
-                            }
-                        }
-                    }
-
-                    if(pSigNew != NULL)
-                    {
-                        // Make sure that anyone who cared about the first one gets the CTIDBG_new state of the tag!
-                        postMessageToClients(pSigNew);
-                        _signalMsgQueue.putQueue(pSigNew);
-                        pSigNew = 0;
-                    }
+                    acknowledgeCommandMsg(pPt, Cmd, alarmcondition);
                 }
             }
 
@@ -6476,4 +6413,85 @@ void CtiVanGogh::reactivatePointAlarm(int alarm, CtiMultiWrapper &aWrap, CtiPoin
     }
 }
 
+void CtiVanGogh::acknowledgeCommandMsg( CtiPointBase *&pPt, const CtiCommandMsg *&Cmd, int alarmcondition )
+{
+    CtiSignalMsg *pSigNew = 0;
 
+    if(alarmcondition == -1)
+    {
+        for(alarmcondition = 0; alarmcondition < 32; alarmcondition++)
+        {
+            acknowledgeAlarmCondition( pPt, Cmd, alarmcondition );
+        }
+    }
+    else
+    {
+        acknowledgeAlarmCondition( pPt, Cmd, alarmcondition );
+    }
+
+}
+
+void CtiVanGogh::acknowledgeAlarmCondition( CtiPointBase *&pPt, const CtiCommandMsg *&Cmd, int alarmcondition )
+{
+    CtiSignalMsg *pSigNew = 0;
+
+    {
+        CtiLockGuard<CtiMutex> pmguard(server_mux);
+        pSigNew = _signalManager.setAlarmAcknowledged(pPt->getPointID(), alarmcondition, true);    // Clear the tag, return the signal!
+
+        if(pSigNew)
+        {
+            CtiDynamicPointDispatch *pDyn = (CtiDynamicPointDispatch*)pPt->getDynamic();
+
+            if(pDyn != NULL)
+            {
+                pSigNew->setUser( Cmd->getUser() );
+                pSigNew->setTags( (pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) | TAG_REPORT_MSG_TO_ALARM_CLIENTS);
+                pSigNew->setText(AlarmTagsToString(pSigNew->getTags()) + pSigNew->getText());
+
+                if( !pPt->getAlarming().getNotifyOnAcknowledge() )
+                {
+                    pSigNew->setMessageTime( Cmd->getMessageTime() );
+                }
+
+                pSigNew->setMessagePriority( 15 );   // Max this out we want it to hurry.
+
+                // Mark it if there are other alarms on the point.
+                UINT premask = pDyn->getDispatch().getTags( ) & MASK_ANY_ALARM;
+                UINT amask = _signalManager.getAlarmMask(pPt->getPointID());
+
+                if(premask != amask)
+                {
+                    // Adjust the point tags to reflect the potentially new state of the alarm tags.
+                    pDyn->getDispatch().resetTags( MASK_ANY_ALARM );
+                    pDyn->getDispatch().setTags( amask );
+                }
+
+                if(DebugLevel & DEBUGLEVEL_LUDICROUS)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+
+                    dout << " Signal has tags: " << pSigNew->getTags() << " " << explainTags(pSigNew->getTags())  << endl;
+                    dout << " SigMgr has tags: " << amask << " " << explainTags(amask) << endl;
+                    dout << " Point  has tags: " << pDyn->getDispatch().getTags()  << " " << explainTags(pDyn->getDispatch().getTags()) << endl;
+                }
+            }
+            else
+            {
+                if(pSigNew)
+                    delete pSigNew;
+
+                pSigNew = 0;
+            }
+        }
+    }
+
+    if(pSigNew != NULL)
+    {
+        // Make sure that anyone who cared about the first one gets the CTIDBG_new state of the tag!
+        postMessageToClients(pSigNew);
+        _signalMsgQueue.putQueue(pSigNew);
+        pSigNew = 0;
+    }
+}
