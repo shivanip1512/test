@@ -1,4 +1,4 @@
-<%@ include file="../Consumer/include/StarsHeader.jsp" %>
+<%@ include file="include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.stars.web.bean.InventoryBean" %>
 <%@ page import="com.cannontech.stars.web.servlet.InventoryManager" %>
 
@@ -50,24 +50,22 @@ function submitIt(filterBy) {
     <td>
       <table width="760" border="0" cellspacing="0" cellpadding="0" align="center">
         <tr> 
-          <td width="102" height="102" background="InventoryImage.jpg">&nbsp;</td>
+          <td width="102" height="102" background="ConsumerImage.jpg">&nbsp;</td>
           <td valign="bottom" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
                 <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>"/>">&nbsp;</td>
               </tr>
               <tr> 
-                <td width="310" height="28" class="PageHeader">&nbsp;&nbsp;&nbsp;Hardware 
-                  Inventory </td>
-                <td width="235" height = "30" valign="middle">&nbsp;</td>
-                <form method="post" action="../Operations.jsp">
+                <td width="265" height="28" class="PageHeader">&nbsp;&nbsp;&nbsp;Customer 
+                  Account Information&nbsp;&nbsp;</td>
+                <td width="253" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle"> 
                     <div align="center"><span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
                     <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
                   </td>
-                </form>
               </tr>
             </table>
           </td>
@@ -91,7 +89,7 @@ function submitIt(filterBy) {
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center">
               <% String header = "SELECT INVENTORY"; %>
-              <%@ include file="include/SearchBar.jsp" %>
+              <%@ include file="include/InfoSearchBar.jsp" %>
 			  <form name="MForm" method="post" action="" onsubmit="setFilterValue(this)">
 			    <input type="hidden" name="FilterBy" value="<%= selectInvBean.getFilterBy() %>">
 				<input type="hidden" name="Location" value="<%= InventoryBean.INV_LOCATION_WAREHOUSE %>">

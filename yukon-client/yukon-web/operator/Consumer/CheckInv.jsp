@@ -1,4 +1,4 @@
-<%@ include file="../Consumer/include/StarsHeader.jsp" %>
+<%@ include file="include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteAddress" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteCustomerContact" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteInventoryBase" %>
@@ -26,15 +26,15 @@
     <td>
       <table width="760" border="0" cellspacing="0" cellpadding="0" align="center">
         <tr> 
-          <td width="102" height="102" background="InventoryImage.jpg">&nbsp;</td>
+          <td width="102" height="102" background="ConsumerImage.jpg">&nbsp;</td>
           <td valign="bottom" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
                 <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>"/>">&nbsp;</td>
               </tr>
               <tr> 
-                <td width="265" height = "28" class="PageHeader" valign="middle">&nbsp;&nbsp;&nbsp;Hardware 
-                  Inventory </td>
+                <td width="265" height = "28" class="PageHeader" valign="middle">&nbsp;&nbsp;&nbsp;Customer 
+                  Account Information&nbsp;&nbsp;</td>
                 <td width="253" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle"> 
                     <div align="center"><span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
@@ -66,7 +66,7 @@
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center">
               <% String header = "CHECK INVENTORY"; %>
-			  <%@ include file="include/SearchBar.jsp" %>
+			  <%@ include file="include/InfoSearchBar.jsp" %>
               <form name="form1" method="POST" action="<%= request.getContextPath() %>/servlet/InventoryManager">
 			    <input type="hidden" name="action" value="ConfirmCheck">
 <%
