@@ -43,6 +43,7 @@ import com.cannontech.stars.xml.serialize.StarsSuccess;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
 import com.cannontech.tools.email.EmailMessage;
+import com.cannontech.util.ServletUtil;
 
 /**
  * @author yao
@@ -121,7 +122,7 @@ public class SendOptOutNotificationAction implements ActionBase {
 			sendOptOutNotification( energyCompany, liteAcctInfo, reqOper );
             
 			StarsSuccess success = new StarsSuccess();
-			success.setDescription( ServletUtils.capitalize(energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN)) + " notification has been sent successfully" );
+			success.setDescription( ServletUtil.capitalize(energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN)) + " notification has been sent successfully" );
             
 			respOper.setStarsSuccess( success );
 			return SOAPUtil.buildSOAPMessage( respOper );
@@ -294,9 +295,9 @@ public class SendOptOutNotificationAction implements ActionBase {
 		else
 			hardwares = ProgramOptOutAction.getAffectedHardwares( liteAcctInfo, energyCompany );
         
-		text.append(ServletUtils.capitalize2( energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN) ))
+		text.append(ServletUtil.capitalizeAll( energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN) ))
 			.append(" Time: ").append(ServerUtils.formatDate( optOutDate, energyCompany.getDefaultTimeZone() )).append(LINE_SEPARATOR);
-		text.append(ServletUtils.capitalize( energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_REENABLE) ))
+		text.append(ServletUtil.capitalize( energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_REENABLE) ))
 			.append(" Time: ").append(ServerUtils.formatDate( reenableDate, energyCompany.getDefaultTimeZone() )).append(LINE_SEPARATOR);
 		text.append(LINE_SEPARATOR);
 		text.append( getProgramInformation(energyCompany, liteAcctInfo, hardwares) );
@@ -345,7 +346,7 @@ public class SendOptOutNotificationAction implements ActionBase {
 		if (from == null)
 			from = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.ADMIN_EMAIL_ADDRESS );
         
-		String subject = ServletUtils.capitalize2(energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN)) + " Notification";
+		String subject = ServletUtil.capitalizeAll(energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN)) + " Notification";
 		
 		EmailMessage emailMsg = new EmailMessage( to, subject, text.toString() );
 		emailMsg.setFrom( from );
@@ -386,12 +387,12 @@ public class SendOptOutNotificationAction implements ActionBase {
 		if (events.size() == 1) {
 			// e.g. "Scheduled Opt Out Time: 04/25/03	(Canceled)"
 			OptOutEventQueue.OptOutEvent e = (OptOutEventQueue.OptOutEvent) events.get(0);
-			text.append("Scheduled ").append(ServletUtils.capitalize2( energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN) ))
+			text.append("Scheduled ").append(ServletUtil.capitalizeAll( energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN) ))
 				.append(" Time: ").append(ServerUtils.formatDate( new Date(e.getStartDateTime()), energyCompany.getDefaultTimeZone() ))
 				.append("\t(Canceled)").append(LINE_SEPARATOR);
 		}
 		else if (events.size() > 1){
-			text.append(events.size()).append(" Scheduled ").append(ServletUtils.capitalize2( energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN) ))
+			text.append(events.size()).append(" Scheduled ").append(ServletUtil.capitalizeAll( energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN) ))
 				.append(" Events Canceled").append(LINE_SEPARATOR);
 		}
 		
@@ -400,7 +401,7 @@ public class SendOptOutNotificationAction implements ActionBase {
 			LiteLMHardwareEvent event = findLastOptOutEvent( (LiteStarsLMHardware)hardwares.get(0), energyCompany );
 			
 			if (event != null) {
-				text.append("Last ").append(ServletUtils.capitalize2(energyCompany.getEnergyCompanySetting( ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN) ))
+				text.append("Last ").append(ServletUtil.capitalizeAll(energyCompany.getEnergyCompanySetting( ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN) ))
 					.append(" Time: ").append(ServerUtils.formatDate( new Date(event.getEventDateTime()), energyCompany.getDefaultTimeZone() ))
 					.append(LINE_SEPARATOR);
 				foundLastOptOutEvent = true;
@@ -408,11 +409,11 @@ public class SendOptOutNotificationAction implements ActionBase {
 		}
 		
 		if (!foundLastOptOutEvent) {
-			text.append("Last ").append(ServletUtils.capitalize2( energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN) ))
+			text.append("Last ").append(ServletUtil.capitalizeAll( energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN) ))
 				.append(" Time: (none)").append(LINE_SEPARATOR);
 		}
 		
-		text.append(ServletUtils.capitalize( energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_REENABLE) ))
+		text.append(ServletUtil.capitalize( energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_REENABLE) ))
 			.append(" Time: ").append(ServerUtils.formatDate( new Date(), energyCompany.getDefaultTimeZone() )).append(LINE_SEPARATOR);
 		text.append(LINE_SEPARATOR);
 		text.append( getProgramInformation(energyCompany, liteAcctInfo, hardwares) );
@@ -439,7 +440,7 @@ public class SendOptOutNotificationAction implements ActionBase {
 		if (from == null)
 			from = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.ADMIN_EMAIL_ADDRESS );
         
-		String subject = ServletUtils.capitalize(energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_REENABLE)) + " Notification";
+		String subject = ServletUtil.capitalize(energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_REENABLE)) + " Notification";
 		
 		EmailMessage emailMsg = new EmailMessage( to, subject, text.toString() );
 		emailMsg.setFrom( from );

@@ -16,9 +16,9 @@ import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.util.ECUtils;
-import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.tools.email.EmailMessage;
+import com.cannontech.util.ServletUtil;
 
 /**
  * @author yao
@@ -48,9 +48,9 @@ public class SendControlOddsTask implements Runnable {
 		String blanks = "                                ";
 		String ctrlOddsText = energyCompany.getEnergyCompanySetting( ConsumerInfoRole.WEB_TEXT_ODDS_FOR_CONTROL );
 		
-		String subject = "Today's " + ServletUtils.capitalize2( ctrlOddsText );
+		String subject = "Today's " + ServletUtil.capitalizeAll( ctrlOddsText );
 		
-		String header = "Program Enrollment              " + ServletUtils.capitalize2( ctrlOddsText ) + LINE_SEPARATOR
+		String header = "Program Enrollment              " + ServletUtil.capitalizeAll( ctrlOddsText ) + LINE_SEPARATOR
 					  + "================================================================" + LINE_SEPARATOR;
 		
 		String footer = "To unsubscribe from the notification list, please go to "

@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.StringTokenizer;
 import java.util.TimeZone;
 
 import javax.servlet.http.HttpSession;
@@ -532,24 +531,6 @@ public class ServletUtils {
 		}
 		
 		return null;
-	}
-    
-	public static String capitalize(String word) {
-		return word.substring(0,1).toUpperCase().concat( word.substring(1).toLowerCase() );
-	}
-    
-	public static String capitalize2(String phrase) {
-		StringTokenizer st = new StringTokenizer( phrase, " ", true );
-		StringBuffer sb = new StringBuffer();
-		while (st.hasMoreTokens()) {
-			String word = st.nextToken();
-			if (word.equals(" "))
-				sb.append( word );
-			else
-				sb.append( word.substring(0,1).toUpperCase() ).append( word.substring(1).toLowerCase() );
-		}
-    	
-		return sb.toString();
 	}
 	
 	public static String getEntryText(int entryID, Hashtable selectionLists) {
