@@ -667,7 +667,7 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 	 */
 	private String getCommand()
 	{
-		return getYC().getCommand();
+		return getYC().getCommandString();
 		
 	}
 	
@@ -1674,7 +1674,7 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 	 */
 	private void setCommand(String newCommand)
 	{
-		getYC().setCommand(newCommand);
+		getYC().setCommandString(newCommand);
 	}
 	
 	/**

@@ -7,6 +7,7 @@ package com.cannontech.yc.gui;
  */
 import java.util.Observable;
 import java.util.StringTokenizer;
+import java.util.Vector;
 
 import javax.servlet.http.HttpSessionBindingEvent;
 
@@ -53,7 +54,8 @@ public class YC extends Observable implements com.cannontech.message.util.Messag
 	private String commandFileExt = ".txt";
 	
 	/** Current command string to execute */
-	private String command = "";
+	private String commandString = "";	//the actual string entered from the command line
+	private Vector commandVector = null;	// the parsed vector of commands from the command line.
 	
 	/** deviceID(opt1) or serialNumber(opt2) will be used to send command to.
 	/** Selected deviceID */
@@ -170,7 +172,6 @@ public class YC extends Observable implements com.cannontech.message.util.Messag
         return ConnPool.getInstance().getDefPorterConn();        
     }
 
-    
 	/**
 	 * Execute the command, based on commandMode, selected object type, and YC properties.
 	 */
@@ -183,7 +184,7 @@ public class YC extends Observable implements com.cannontech.message.util.Messag
 			if (getTreeItem() == null)
 				subCommand = null;
 			else 
-				subCommand = (substituteCommand( getCommand() ));
+				subCommand = (substituteCommand( getCommandString() ));
 				
 			if( subCommand == null )
 			{
@@ -192,15 +193,16 @@ public class YC extends Observable implements com.cannontech.message.util.Messag
 				return;
 			}
 			else
-				setCommand( subCommand );
+				setCommandString( subCommand );
 		}
 		//---------------------------------------------------------------------------------------
 		try
 		{
 			if ( getCommandMode() == CGP_MODE )
 			{
-				porterRequest = new Request( 0, getCommand(), currentUserMessageID );
+				porterRequest = new Request( 0, (String)getCommandVector().get(0), currentUserMessageID );
 				porterRequest.setPriority(getCommandPriority());
+				getCommandVector().remove(0);	//remove the sent command from the list!
 				writeNewRequestToPorter( porterRequest );
 			}
 				
@@ -276,9 +278,18 @@ public class YC extends Observable implements com.cannontech.message.util.Messag
 	 * Returns the command.
 	 * @return java.lang.String
 	 */
-	public String getCommand()
+	public String getCommandString()
 	{
-		return command;
+		return commandString;
+	}
+
+	/** Vector of String commands, parsed from commandString */	
+	public Vector getCommandVector
+	()
+	{
+		if( commandVector == null)
+			commandVector = new Vector(2);
+		return commandVector;
 	}
 	/**
 	 * Returns the commandFileName.
@@ -447,16 +458,22 @@ public class YC extends Observable implements com.cannontech.message.util.Messag
 		}
 	
 		setLoopType( parseLoopCommand() );
-		String command = getCommand();
-	
-		if ( DeviceTypesFuncs.isMCT(liteYukonPao.getType()) || DeviceTypesFuncs.isRepeater(liteYukonPao.getType()))
-		{
-			if( command.indexOf("noqueue") < 0)
-				setCommand( command + getQueueCommandString());
+
+		Vector commandVec = getCommandVector();
+		for (int i = 0; i < commandVec.size(); i++)
+		{	
+			String command = (String)getCommandVector().get(i);			
+			if ( DeviceTypesFuncs.isMCT(liteYukonPao.getType()) || DeviceTypesFuncs.isRepeater(liteYukonPao.getType()))
+			{
+				if( command.indexOf("noqueue") < 0)
+					getCommandVector().setElementAt( command + getQueueCommandString(), i);	//replace the old command with this one
+			}
 		}
 	
-		porterRequest = new Request( getDeviceID(), getCommand(), currentUserMessageID );
+		//send the first command from the vector out!
+		porterRequest = new Request( getDeviceID(), (String)getCommandVector().get(0), currentUserMessageID );
 		porterRequest.setPriority(getCommandPriority());
+		getCommandVector().remove(0);	//remove the sent command from the list!
 		
 		if (getLoopType() == LOOPLOCATE)
 	 	{
@@ -490,14 +507,28 @@ public class YC extends Observable implements com.cannontech.message.util.Messag
 	 */
 	public void handleSerialNumber()
 	{
-		int index = getCommand().indexOf("serial");
-		
-		if( index < 0 )	// serial not in command string = -1
-			setCommand( getCommand() + " serial " + serialNumber );
-		else {	// set serial as in command string
-			StringTokenizer st = new StringTokenizer( getCommand().substring(index+6) );
-			if (st.hasMoreTokens())
-				setSerialNumber( st.nextToken() );
+		for (int i = 0; i < getCommandVector().size(); i++)
+		{
+			String command = (String)getCommandVector().get(i);
+			int index = command.indexOf("serial");
+			
+			if( index < 0 )	// serial not in command string = -1
+				getCommandVector().setElementAt( command + " serial " + serialNumber , i);
+			else {	// set serial as in command string
+				StringTokenizer st = new StringTokenizer( command.substring(index+6) );
+				if (st.hasMoreTokens())
+				{
+					/** TODO only one serial number can be entered with multiple commands at this time */
+					String serialNumToken = st.nextToken();
+					if( i > 0)	//more than one command
+					{
+						if( !getSerialNumber().equalsIgnoreCase(serialNumToken) )
+							logCommand(" ** Warning: Different serial numbers are being used in this multiple command, the first serial number will be used for all commands!");
+					}
+					else	//only store/use the serial number of the first command!
+						setSerialNumber( serialNumToken);
+				}
+			}
 		}
 		
 		if ( getSerialNumber() == null)	// NO serial Number Selected
@@ -508,9 +539,10 @@ public class YC extends Observable implements com.cannontech.message.util.Messag
 	
 		setLoopType( parseLoopCommand() );
 		
-		porterRequest = new Request( com.cannontech.database.db.device.Device.SYSTEM_DEVICE_ID, getCommand(), currentUserMessageID );
+		porterRequest = new Request( com.cannontech.database.db.device.Device.SYSTEM_DEVICE_ID, (String)getCommandVector().get(0), currentUserMessageID );
 		porterRequest.setPriority(getCommandPriority());
-	
+		getCommandVector().remove(0);	//remove the sent command from the list!
+
 		// Get routeID / set it in the request
 		if( getRouteID() >= 0)
 		{
@@ -553,63 +585,66 @@ public class YC extends Observable implements com.cannontech.message.util.Messag
 	 */
 	public int parseLoopCommand()
 	{
-		String tempCommand = getCommand().toLowerCase();
-		String valueSubstring = null;
-			
-		int loopIndex = tempCommand.indexOf("loop");
-	
-		if ( loopIndex >= 0)	//a loop exists
-		{	
-			for (int i = tempCommand.indexOf("loop") + 4; i < tempCommand.length(); i++)
-			{
-				if ( tempCommand.charAt(i) != ' ' && tempCommand.charAt(i) != '\t')	//skip whitespaces
+		for (int i = 0; i < getCommandVector().size(); i++)
+		{
+			String tempCommand = ((String)getCommandVector().get(i)).toLowerCase();
+			String valueSubstring = null;
+				
+			int loopIndex = tempCommand.indexOf("loop");
+		
+			if ( loopIndex >= 0)	//a loop exists
+			{	
+				for (int j = tempCommand.indexOf("loop") + 4; j < tempCommand.length(); j++)
 				{
-					valueSubstring = tempCommand.substring( i );
-					break;
+					if ( tempCommand.charAt(j) != ' ' && tempCommand.charAt(j) != '\t')	//skip whitespaces
+					{
+						valueSubstring = tempCommand.substring( j );
+						break;
+					}
 				}
+				
+				if (valueSubstring != null)
+				{
+					if( valueSubstring.startsWith("locater"))	//parse out locateroute
+					{
+						synchronized(YC.class)
+						{
+							getCommandVector().setElementAt("loop", i);
+						}
+						return LOOPLOCATE_ROUTE;
+					}
+					else if( valueSubstring.startsWith("loc"))	//parse out locate
+					{
+						synchronized (YC.class)
+						{
+							getCommandVector().setElementAt("loop", i);
+							//loop through each route
+							sendMore = getAllRoutes().length - 1;
+						}
+						return LOOPLOCATE;
+					}
+					else
+					{
+						Integer value = null;
+						try
+						{
+							value = new Integer(valueSubstring );	//assume it is an integer.
+						}
+						catch(NumberFormatException nfe)
+						{
+							value = new Integer(1);
+						}
+						synchronized (YC.class) 
+						{
+							getCommandVector().setElementAt("loop", i);
+							//Subtract one because 0 is the last occurance, not 1.  (Ex. 0-4 not 1-5)
+							sendMore = value.intValue() - 1;
+						}
+						return LOOPNUM;
+					}
+				}
+				return LOOP;
 			}
-			
-			if (valueSubstring != null)
-			{
-				if( valueSubstring.startsWith("locater"))	//parse out locateroute
-				{
-					synchronized(YC.class)
-					{
-						setCommand("loop");
-					}
-					return LOOPLOCATE_ROUTE;
-				}
-				else if( valueSubstring.startsWith("loc"))	//parse out locate
-				{
-					synchronized (YC.class)
-					{
-						setCommand("loop");
-						//loop through each route
-						sendMore = getAllRoutes().length - 1;
-					}
-					return LOOPLOCATE;
-				}
-				else
-				{
-					Integer value = null;
-					try
-					{
-						value = new Integer(valueSubstring );	//assume it is an integer.
-					}
-					catch(NumberFormatException nfe)
-					{
-						value = new Integer(1);
-					}
-					synchronized (YC.class) 
-					{
-						setCommand("loop");
-						//Subtract one because 0 is the last occurance, not 1.  (Ex. 0-4 not 1-5)
-						sendMore = value.intValue() - 1;
-					}
-					return LOOPNUM;
-				}
-			}
-			return LOOP;
 		}
 		return NOLOOP;
 	}
@@ -630,11 +665,38 @@ public class YC extends Observable implements com.cannontech.message.util.Messag
 	 * Set the commmand string
 	 * @param command_ java.lang.String
 	 */
-	public void setCommand(String command_)
+	public void setCommandString(String command_)
 	{
-		command = command_;
+		commandString = command_;
+		if( getCommandVector().isEmpty())	//if we have no more commands then this must be a new command string?
+			setCommands(commandString);
 	}
 
+	/**
+	 * Takes a command string, then parses the string for multiple commands
+	 *  separated by the '&' character
+	 */
+	public void setCommands(String command_)
+	{
+		final char SEPARATOR = '&';
+		String tempCommand = command_;
+
+		int begIndex = 0;
+		int sepIndex = tempCommand.indexOf(SEPARATOR);
+
+		while(sepIndex > -1)
+		{
+			String begString = tempCommand.substring(0, sepIndex).trim();
+			begIndex = sepIndex+1;
+			System.out.println("COMMAND ADDED " + begString);
+			getCommandVector().add(begString);
+			tempCommand = tempCommand.substring(begIndex).trim();
+			sepIndex = tempCommand.indexOf(SEPARATOR);
+		}
+		//add the final (or only) command.
+		getCommandVector().add(tempCommand);
+		System.out.println("COMMAND ADDED " + tempCommand);
+	}
 	/**
 	 * Set the commandFileName based on the item instance.
 	 * @param item_ Object
@@ -798,7 +860,7 @@ public class YC extends Observable implements com.cannontech.message.util.Messag
 			log = " Serial # \'" + serialNumber + "\'";
 
 		logCommand("[" + format.format(new java.util.Date(timer)) 
-			+ "] - {"+ currentUserMessageID + "} Command Sent to" + log + " -  \'" + getCommand() + "\'");
+			+ "] - {"+ currentUserMessageID + "} Command Sent to" + log + " -  \'" + request_.getCommandString() + "\'");
 		if( getPilConn().isValid() )
 		{
             getPilConn().write( request_ );
@@ -826,7 +888,6 @@ public class YC extends Observable implements com.cannontech.message.util.Messag
 	{
 		return porterRequest;
 	}
-
 	/**
 	 * Returns the keysAndValuesFile.
 	 * @return com.cannontech.common.util.KeysAndValuesFile
@@ -994,7 +1055,11 @@ public class YC extends Observable implements com.cannontech.message.util.Messag
 						doneSendMore:
 						if( sendMore == 0)
 						{
-							// command finished
+							// command finished, see if there are more commands to send
+							if( !getCommandVector().isEmpty())
+							{
+								executeCommand();
+							}							
 						}
 						else if ( sendMore > 0)
 						{

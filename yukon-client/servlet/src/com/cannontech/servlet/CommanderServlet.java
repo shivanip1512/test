@@ -85,7 +85,7 @@ public class CommanderServlet extends javax.servlet.http.HttpServlet
 	
 			//Set our yc bean command string
 			if( command != null)
-				localBean.setCommand(command);
+				localBean.setCommandString(command);
 			if( command == null )
 			{
 				/** If we have no command string, see if there is a function and find it's
