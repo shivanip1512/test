@@ -16,8 +16,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/mgr_point.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:29 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/08/05 20:42:57 $
 *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
  * All Rights Reserved
@@ -39,30 +39,30 @@ class IM_EX_PNTDB CtiPointManager : public CtiRTDB<CtiPoint>
 {
 private:
 
-   // Inherit "List" from Parent
+    // Inherit "List" from Parent
 
-   // RWDBConnection conn;
+    // RWDBConnection conn;
+
+    void RefreshPoints(bool &rowFound, RWDBReader& rdr, BOOL (*testFunc)(CtiPointBase*,void*), void *arg);
+    void RefreshPointLimits(bool &rowFound, RWDBReader& rdr, BOOL (*testFunc)(CtiPointBase*,void*), void *arg);
+    void RefreshCalcElements(bool &rowFound, RWDBReader& rdr, BOOL (*testFunc)(CtiPointBase*,void*), void *arg);
+    void RefreshAlarming(bool &rowFound);
 
 public:
-   CtiPointManager();
-   virtual ~CtiPointManager();
+    CtiPointManager();
+    virtual ~CtiPointManager();
 
 
-   virtual void RefreshList(BOOL (*fn)(CtiPointBase*,void*) = isAPoint, void *d = NULL);
-   virtual void RefreshList( LONG );
+    virtual void RefreshList(BOOL (*fn)(CtiPointBase*,void*) = isAPoint, void *d = NULL);
+    virtual void RefreshList( LONG );
 
-   virtual void RefreshPoints(RWDBReader& rdr, BOOL (*testFunc)(CtiPointBase*,void*), void *arg);
-   void RefreshPointLimits(RWDBReader& rdr, BOOL (*testFunc)(CtiPointBase*,void*), void *arg);
-   void RefreshCalcElements(RWDBReader& rdr, BOOL (*testFunc)(CtiPointBase*,void*), void *arg);
-   void RefreshAlarming();
+    virtual void DumpList(void);
+    virtual void DeleteList(void);
 
-   virtual void DumpList(void);
-   virtual void DeleteList(void);
-
-   CtiPoint* getControlOffsetEqual(LONG pao, INT Offset);
-   CtiPoint* getOffsetTypeEqual(LONG pao, INT Offset, INT Type);
-   CtiPoint* getEqual(LONG Pt);
-   CtiPoint* getEqualByName(LONG pao, RWCString pname);
+    CtiPoint* getControlOffsetEqual(LONG pao, INT Offset);
+    CtiPoint* getOffsetTypeEqual(LONG pao, INT Offset, INT Type);
+    CtiPoint* getEqual(LONG Pt);
+    CtiPoint* getEqualByName(LONG pao, RWCString pname);
 
 };
 

@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_port.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2002/07/18 16:22:52 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2002/08/05 20:42:56 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -115,6 +115,8 @@ void CtiPortManager::RefreshList(CtiPort* (*Factory)(RWDBReader &), BOOL (*testF
 {
     CtiSmartMap< CtiPort >::ptr_type pTempPort;
 
+    bool rowFound = false;
+
     try
     {
         {
@@ -143,7 +145,7 @@ void CtiPortManager::RefreshList(CtiPort* (*Factory)(RWDBReader &), BOOL (*testF
                     CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
                 }
 
-                RefreshEntries(rdr, Factory, testFunc, arg);
+                RefreshEntries(rowFound, rdr, Factory, testFunc, arg);
                 if(DebugLevel & 0x00080000)  cout  << "Done looking for Direct and ModemDirect Ports" << endl;
             }
 
@@ -164,7 +166,7 @@ void CtiPortManager::RefreshList(CtiPort* (*Factory)(RWDBReader &), BOOL (*testF
                     CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
                 }
 
-                RefreshEntries(rdr, Factory, testFunc, arg);
+                RefreshEntries(rowFound, rdr, Factory, testFunc, arg);
                 if(DebugLevel & 0x00080000)  cout  << "Done looking for TCPIP Ports" << endl;
             }
 
@@ -188,24 +190,27 @@ void CtiPortManager::RefreshList(CtiPort* (*Factory)(RWDBReader &), BOOL (*testF
                 }
                 else
                 {
-                    // Now I need to check for any Port removals based upon the
-                    // Updated Flag being NOT set
-                    apply(ApplyInvalidateNotUpdated, NULL);
-                    pTempPort.reset();
-                    do
+                    if(rowFound)
                     {
-                        pTempPort = _smartMap.remove(isNotUpdated, NULL);
-                        if(pTempPort)
+                        // Now I need to check for any Port removals based upon the
+                        // Updated Flag being NOT set
+                        apply(ApplyInvalidateNotUpdated, NULL);
+                        pTempPort.reset();
+                        do
                         {
+                            pTempPort = _smartMap.remove(isNotUpdated, NULL);
+                            if(pTempPort)
                             {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                dout << "  Evicting " << pTempPort->getName() << " from list" << endl;
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                    dout << "  Evicting " << pTempPort->getName() << " from list" << endl;
+                                }
+                                pTempPort.reset();      // Free the thing!
                             }
-                            pTempPort.reset();      // Free the thing!
-                        }
 
-                    } while(pTempPort);
+                        } while(pTempPort);
+                    }
                 }
             }
         }   // Temporary results are destroyed to free the connection
@@ -276,13 +281,14 @@ CtiPortManager::ptr_type CtiPortManager::PortGetEqual(LONG pid)
     return p;
 }
 
-void CtiPortManager::RefreshEntries(RWDBReader& rdr, CtiPort* (*Factory)(RWDBReader &), BOOL (*testFunc)(CtiPort*,void*), void *arg)
+void CtiPortManager::RefreshEntries(bool &rowFound, RWDBReader& rdr, CtiPort* (*Factory)(RWDBReader &), BOOL (*testFunc)(CtiPort*,void*), void *arg)
 {
     LONG     lTemp = 0;
     ptr_type pTempPort;
 
     while( (_smartMap.setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok) && rdr() )
     {
+        rowFound = true;
         rdr["paobjectid"] >> lTemp;            // get the RouteID
 
         if( !_smartMap.empty() && (pTempPort = _smartMap.find(lTemp)) )

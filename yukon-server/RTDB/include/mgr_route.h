@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/mgr_route.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:29 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/08/05 20:42:57 $
 *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
  * All Rights Reserved
@@ -36,46 +36,21 @@ class IM_EX_DEVDB CtiRouteManager : public CtiRTDB<CtiRoute>
 {
 private:
 
+    void RefreshRoutes(bool &rowFound, RWDBReader& rdr, CtiRouteBase* (*Factory)(RWDBReader &), BOOL (*testFunc)(CtiRouteBase*,void*), void *arg);
+    void RefreshRoutes(bool &rowFound, RWDBReader& rdr, BOOL (*testFunc)(CtiRouteBase*,void*), void *arg);
+    void RefreshVersacomRoutes(bool &rowFound, RWDBReader& rdr, BOOL (*testFunc)(CtiRouteBase*,void*), void *arg);
+    void RefreshRepeaterRoutes(bool &rowFound, RWDBReader& rdr, BOOL (*testFunc)(CtiRouteBase*,void*), void *arg);
+    void RefreshMacroRoutes(bool &rowFound, RWDBReader& rdr, BOOL (*testFunc)(CtiRouteBase*,void*), void *arg);
+
 public:
    CtiRouteManager();
    virtual ~CtiRouteManager();
 
-
    void DumpList(void);
    void DeleteList(void);
 
-
-   void RefreshList        (CtiRouteBase* (*Factory)(RWDBReader &) = RouteFactory,
-                            BOOL (*fn)(CtiRouteBase*,void*) = isARoute,
-                            void *d = NULL);
-
-   void RefreshRoutes      (RWDBReader& rdr,
-                            CtiRouteBase* (*Factory)(RWDBReader &),
-                            BOOL (*testFunc)(CtiRouteBase*,void*), void *arg);
-
-   void RefreshStatistics  (RWDBReader& rdr,
-                            BOOL (*testFunc)(CtiRouteBase*,void*),
-                            void *arg);
-
-   void RefreshRoutes      (RWDBReader& rdr,
-                            BOOL (*testFunc)(CtiRouteBase*,void*),
-                            void *arg);
-
-   void RefreshVersacomRoutes(RWDBReader& rdr,
-                              BOOL (*testFunc)(CtiRouteBase*,void*),
-                              void *arg);
-
-   void RefreshRepeaterRoutes(RWDBReader& rdr,
-                              BOOL (*testFunc)(CtiRouteBase*,void*),
-                              void *arg);
-
-   void RefreshMacroRoutes(RWDBReader& rdr,
-                           BOOL (*testFunc)(CtiRouteBase*,void*),
-                           void *arg);
-
-
-   CtiRouteBase *getEqual( LONG RID );
-
+   void RefreshList(CtiRouteBase* (*Factory)(RWDBReader &) = RouteFactory, BOOL (*fn)(CtiRouteBase*,void*) = isARoute, void *d = NULL);
+   CtiRouteBase *getEqual( LONG rid );
    CtiRouteBase *RouteGetEqualByName( RWCString &rname );
 };
 

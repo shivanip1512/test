@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/mgr_device.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/06/04 15:15:55 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/08/05 20:42:57 $
 *
  *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
@@ -42,7 +42,7 @@ private:
 
    // Inherit "List" from Parent
 
-   void RefreshDevices(RWDBReader& rdr, CtiDeviceBase* (*Factory)(RWDBReader &), BOOL (*testFunc)(CtiDeviceBase*,void*), void *arg);
+   void RefreshDevices(bool &rowFound, RWDBReader& rdr, CtiDeviceBase* (*Factory)(RWDBReader &), BOOL (*testFunc)(CtiDeviceBase*,void*), void *arg);
 
 public:
    CtiDeviceManager();

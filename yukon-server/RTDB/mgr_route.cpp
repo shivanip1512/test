@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_route.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/05/02 17:02:24 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2002/08/05 20:42:56 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -93,11 +93,10 @@ void ApplyInvalidateNotUpdated(const CtiHashKey *key, CtiRouteBase *&pPt, void* 
     return;
 }
 
-void CtiRouteManager::RefreshList(CtiRouteBase* (*Factory)(RWDBReader &),
-                                  BOOL (*testFunc)(CtiRouteBase*,void*),
-                                  void *arg)
+void CtiRouteManager::RefreshList(CtiRouteBase* (*Factory)(RWDBReader &), BOOL (*testFunc)(CtiRouteBase*,void*), void *arg)
 {
     CtiRouteBase *pTempCtiRoute = NULL;
+    bool rowFound = false;
 
     try
     {
@@ -139,7 +138,7 @@ void CtiRouteManager::RefreshList(CtiRouteBase* (*Factory)(RWDBReader &),
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
                 }
-                RefreshRoutes(rdr, Factory, testFunc, arg);
+                RefreshRoutes(rowFound, rdr, Factory, testFunc, arg);
                 if(DebugLevel & 0x00040000)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for CCU, LCU, TCU, & CCURPT Routes" << endl;
@@ -166,7 +165,7 @@ void CtiRouteManager::RefreshList(CtiRouteBase* (*Factory)(RWDBReader &),
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
                 }
-                RefreshVersacomRoutes(rdr, testFunc, arg);
+                RefreshVersacomRoutes(rowFound, rdr, testFunc, arg);
                 if(DebugLevel & 0x00040000)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for Versacom Routes" << endl;
@@ -193,7 +192,7 @@ void CtiRouteManager::RefreshList(CtiRouteBase* (*Factory)(RWDBReader &),
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
                 }
-                RefreshRepeaterRoutes(rdr, testFunc, arg);
+                RefreshRepeaterRoutes(rowFound, rdr, testFunc, arg);
                 if(DebugLevel & 0x00040000)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for Repeater Information" << endl;
@@ -219,7 +218,7 @@ void CtiRouteManager::RefreshList(CtiRouteBase* (*Factory)(RWDBReader &),
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
                 }
-                RefreshMacroRoutes(rdr, testFunc, arg);
+                RefreshMacroRoutes(rowFound, rdr, testFunc, arg);
                 if(DebugLevel & 0x00040000)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for Macro Routes" << endl;
@@ -236,10 +235,13 @@ void CtiRouteManager::RefreshList(CtiRouteBase* (*Factory)(RWDBReader &),
             }
             else
             {
-                // Now I need to check for any Route removals based upon the
-                // Updated Flag being NOT set
+                if(rowFound)
+                {
+                    // Now I need to check for any Route removals based upon the
+                    // Updated Flag being NOT set
 
-                Map.apply(ApplyInvalidateNotUpdated, NULL);
+                    Map.apply(ApplyInvalidateNotUpdated, NULL);
+                }
             }
 
         }   // Temporary results are destroyed to free the connection
@@ -256,13 +258,14 @@ void CtiRouteManager::RefreshList(CtiRouteBase* (*Factory)(RWDBReader &),
 }
 
 
-void CtiRouteManager::RefreshRoutes(RWDBReader& rdr, CtiRouteBase* (*Factory)(RWDBReader &), BOOL (*testFunc)(CtiRouteBase*,void*), void *arg)
+void CtiRouteManager::RefreshRoutes(bool &rowFound, RWDBReader& rdr, CtiRouteBase* (*Factory)(RWDBReader &), BOOL (*testFunc)(CtiRouteBase*,void*), void *arg)
 {
     LONG              lTemp = 0;
     CtiRouteBase*    pTempCtiRoute = NULL;
 
     while( (setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok) && rdr() )
     {
+        rowFound = true;
         rdr["paobjectid"] >> lTemp;            // get the RouteID
         CtiHashKey key(lTemp);
 
@@ -299,13 +302,14 @@ void CtiRouteManager::RefreshRoutes(RWDBReader& rdr, CtiRouteBase* (*Factory)(RW
     }
 }
 
-void CtiRouteManager::RefreshRepeaterRoutes(RWDBReader& rdr, BOOL (*testFunc)(CtiRouteBase*,void*), void *arg)
+void CtiRouteManager::RefreshRepeaterRoutes(bool &rowFound, RWDBReader& rdr, BOOL (*testFunc)(CtiRouteBase*,void*), void *arg)
 {
     LONG        lTemp = 0;
     CtiRouteBase*   pTempCtiRoute = NULL;
 
     while( (setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok) && rdr() )
     {
+        rowFound = true;
         CtiRouteBase* pSp = NULL;
 
         rdr["routeid"] >> lTemp;            // get the RouteID
@@ -329,13 +333,14 @@ void CtiRouteManager::RefreshRepeaterRoutes(RWDBReader& rdr, BOOL (*testFunc)(Ct
     Map.apply(ApplyRepeaterSort, NULL);
 }
 
-void CtiRouteManager::RefreshMacroRoutes(RWDBReader& rdr, BOOL (*testFunc)(CtiRouteBase*,void*), void *arg)
+void CtiRouteManager::RefreshMacroRoutes(bool &rowFound, RWDBReader& rdr, BOOL (*testFunc)(CtiRouteBase*,void*), void *arg)
 {
-    LONG        lTemp = 0;
+    LONG            lTemp = 0;
     CtiRouteBase*   pTempCtiRoute = NULL;
 
     while( (setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok) && rdr() )
     {
+        rowFound = true;
         CtiRouteBase* pSp = NULL;
 
         rdr["routeid"] >> lTemp;            // get the RouteID
@@ -358,13 +363,14 @@ void CtiRouteManager::RefreshMacroRoutes(RWDBReader& rdr, BOOL (*testFunc)(CtiRo
     Map.apply(ApplyMacroRouteSort, NULL);
 }
 
-void CtiRouteManager::RefreshVersacomRoutes(RWDBReader& rdr, BOOL (*testFunc)(CtiRouteBase*,void*), void *arg)
+void CtiRouteManager::RefreshVersacomRoutes(bool &rowFound, RWDBReader& rdr, BOOL (*testFunc)(CtiRouteBase*,void*), void *arg)
 {
     LONG        lTemp = 0;
     CtiRouteBase*   pTempCtiRoute = NULL;
 
     while( (setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok) && rdr() )
     {
+        rowFound = true;
         CtiRouteBase* pSp = NULL;
 
         rdr["routeid"] >> lTemp;            // get the RouteID
@@ -389,7 +395,6 @@ CtiRouteBase *CtiRouteManager::getEqual( LONG Rte )
 {
     CtiHashKey key(Rte);
     return Map.findValue(&key);
-
 }
 
 

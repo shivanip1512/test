@@ -14,8 +14,8 @@
  *
  * PVCS KEYWORDS:
  * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/mgr_port.h-arc  $
- * REVISION     :  $Revision: 1.4 $
- * DATE         :  $Date: 2002/07/18 16:22:53 $
+ * REVISION     :  $Revision: 1.5 $
+ * DATE         :  $Date: 2002/08/05 20:42:57 $
  *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
  * All Rights Reserved
@@ -40,6 +40,8 @@ private:
 
     CtiMutex                    _mux;
 
+    void RefreshEntries(bool &rowFound, RWDBReader& rdr, CtiPort* (*Factory)(RWDBReader &), BOOL (*testFunc)(CtiPort*,void*),void *arg);
+
 public:
 
     typedef CtiLockGuard<CtiMutex>              LockGuard;
@@ -55,7 +57,6 @@ public:
     virtual ~CtiPortManager();
 
     void RefreshList(CtiPort* (*Factory)(RWDBReader &) = PortFactory, BOOL (*fn)(CtiPort*,void*) = isAPort, void *d = NULL);
-    void RefreshEntries(RWDBReader& rdr, CtiPort* (*Factory)(RWDBReader &), BOOL (*testFunc)(CtiPort*,void*),void *arg);
     void DumpList(void);
     void DeleteList(void);
 

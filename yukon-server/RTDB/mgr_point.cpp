@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_point.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2002/07/03 20:21:49 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2002/08/05 20:42:56 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -105,6 +105,7 @@ ApplyInvalidateNotUpdated(const CtiHashKey *key, CtiPoint *&pPt, void* d)
 void CtiPointManager::RefreshList(BOOL (*testFunc)(CtiPointBase*,void*), void *arg)
 {
     CtiPoint *pTempCtiPoint = NULL;
+    bool     rowFound = false;
 
     try
     {
@@ -138,7 +139,7 @@ void CtiPointManager::RefreshList(BOOL (*testFunc)(CtiPointBase*,void*), void *a
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
             }
-            RefreshPoints(rdr, testFunc, arg);
+            RefreshPoints(rowFound, rdr, testFunc, arg);
             if(DebugLevel & 0x00010000)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done Looking for System Points" << endl;
@@ -157,7 +158,7 @@ void CtiPointManager::RefreshList(BOOL (*testFunc)(CtiPointBase*,void*), void *a
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
             }
-            RefreshPoints(rdr, testFunc, arg);
+            RefreshPoints(rowFound, rdr, testFunc, arg);
             if(DebugLevel & 0x00010000)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done Looking for Status/Control" << endl;
@@ -176,7 +177,7 @@ void CtiPointManager::RefreshList(BOOL (*testFunc)(CtiPointBase*,void*), void *a
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
             }
-            RefreshPoints(rdr, testFunc, arg);
+            RefreshPoints(rowFound, rdr, testFunc, arg);
             if(DebugLevel & 0x00010000)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "DONE Looking for Analogs" << endl;
@@ -195,7 +196,7 @@ void CtiPointManager::RefreshList(BOOL (*testFunc)(CtiPointBase*,void*), void *a
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
             }
-            RefreshPoints(rdr, testFunc, arg);
+            RefreshPoints(rowFound, rdr, testFunc, arg);
             if(DebugLevel & 0x00010000)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "DONE Looking for Accum" << endl;
@@ -217,7 +218,7 @@ void CtiPointManager::RefreshList(BOOL (*testFunc)(CtiPointBase*,void*), void *a
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
             }
-            RefreshPoints(rdr, testFunc, arg);
+            RefreshPoints(rowFound, rdr, testFunc, arg);
             if(DebugLevel & 0x00010000)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "DONE Looking for CALC" << endl;
@@ -237,34 +238,36 @@ void CtiPointManager::RefreshList(BOOL (*testFunc)(CtiPointBase*,void*), void *a
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
             }
-            RefreshPointLimits(rdr, testFunc, arg);
+            RefreshPointLimits(rowFound, rdr, testFunc, arg);
 
             // Now I need to check for any Point removals based upon the
             // Updated Flag being NOT set
 
-            Map.apply(ApplyInvalidateNotUpdated, NULL);
-
-
-            do
+            if(rowFound)
             {
-                pTempCtiPoint = remove(isPointNotUpdated, NULL);
-                if(pTempCtiPoint != NULL)
-                {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << "  Evicting " << pTempCtiPoint->getName() << " from list" << endl;
-                    }
-                    delete pTempCtiPoint;
-                }
+                Map.apply(ApplyInvalidateNotUpdated, NULL);
 
-            } while(pTempCtiPoint != NULL);
+                do
+                {
+                    pTempCtiPoint = remove(isPointNotUpdated, NULL);
+                    if(pTempCtiPoint != NULL)
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << "  Evicting " << pTempCtiPoint->getName() << " from list" << endl;
+                        }
+                        delete pTempCtiPoint;
+                    }
+
+                } while(pTempCtiPoint != NULL);
+            }
 
         }   // Temporary results are destroyed to free the connection
 
         if(find(findHasAlarming, NULL) != NULL) // If there is at least one point with alarming data available.
         {
-            RefreshAlarming();
+            RefreshAlarming(rowFound);
         }
     }
     catch(RWExternalErr e )
@@ -282,6 +285,7 @@ void CtiPointManager::RefreshList(BOOL (*testFunc)(CtiPointBase*,void*), void *a
 void CtiPointManager::RefreshList(LONG paoID)
 {
     CtiPoint *pTemp = NULL;
+    bool rowFound = false;
 
     try
     {
@@ -318,7 +322,7 @@ void CtiPointManager::RefreshList(LONG paoID)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
                 }
-                RefreshPoints(rdr, isAPoint, NULL);
+                RefreshPoints(rowFound, rdr, isAPoint, NULL);
                 if(DebugLevel & 0x00010000)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done Looking for Status/Control" << endl;
@@ -338,7 +342,7 @@ void CtiPointManager::RefreshList(LONG paoID)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
                 }
-                RefreshPoints(rdr, isAPoint, NULL);
+                RefreshPoints(rowFound, rdr, isAPoint, NULL);
                 if(DebugLevel & 0x00010000)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "DONE Looking for Analogs" << endl;
@@ -358,7 +362,7 @@ void CtiPointManager::RefreshList(LONG paoID)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
                 }
-                RefreshPoints(rdr, isAPoint, NULL);
+                RefreshPoints(rowFound, rdr, isAPoint, NULL);
                 if(DebugLevel & 0x00010000)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "DONE Looking for Accum" << endl;
@@ -376,22 +380,25 @@ void CtiPointManager::RefreshList(LONG paoID)
                 }
                 else
                 {
-                    Map.apply(ApplyInvalidateNotUpdated, NULL);
-
-                    do
+                    if(rowFound)
                     {
-                        pTemp = remove(isPointNotUpdated, NULL);
-                        if(pTemp != NULL)
-                        {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                dout << "  Evicting " << pTemp->getName() << " from list" << endl;
-                            }
-                            delete pTemp;
-                        }
+                        Map.apply(ApplyInvalidateNotUpdated, NULL);
 
-                    } while(pTemp != NULL);
+                        do
+                        {
+                            pTemp = remove(isPointNotUpdated, NULL);
+                            if(pTemp != NULL)
+                            {
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                    dout << "  Evicting " << pTemp->getName() << " from list" << endl;
+                                }
+                                delete pTemp;
+                            }
+
+                        } while(pTemp != NULL);
+                    }
                 }
             }   // Temporary results are destroyed to free the connection
         }
@@ -515,7 +522,7 @@ CtiPointBase* PointFactory(RWDBReader &rdr)
     return Point;
 }
 
-void CtiPointManager::RefreshPoints(RWDBReader& rdr, BOOL (*testFunc)(CtiPointBase*,void*), void *arg)
+void CtiPointManager::RefreshPoints(bool &rowFound, RWDBReader& rdr, BOOL (*testFunc)(CtiPointBase*,void*), void *arg)
 {
     LONG        lTemp = 0;
     CtiPoint*   pTempCtiPoint = NULL;
@@ -524,6 +531,8 @@ void CtiPointManager::RefreshPoints(RWDBReader& rdr, BOOL (*testFunc)(CtiPointBa
 
     while( rdr() )
     {
+        rowFound = true;
+
         rdr["pointid"] >> lTemp;            // get the PointID
         CtiHashKey key(lTemp);
 
@@ -566,7 +575,7 @@ void CtiPointManager::RefreshPoints(RWDBReader& rdr, BOOL (*testFunc)(CtiPointBa
     }
 }
 
-void CtiPointManager::RefreshPointLimits(RWDBReader& rdr, BOOL (*testFunc)(CtiPointBase*,void*), void *arg)
+void CtiPointManager::RefreshPointLimits(bool &rowFound, RWDBReader& rdr, BOOL (*testFunc)(CtiPointBase*,void*), void *arg)
 {
     LONG        lTemp = 0;
     CtiPoint*   pTempCtiPoint = NULL;
@@ -575,6 +584,8 @@ void CtiPointManager::RefreshPointLimits(RWDBReader& rdr, BOOL (*testFunc)(CtiPo
 
     while( rdr() )
     {
+        rowFound = true;
+
         rdr["pointid"] >> lTemp;            // get the PointID
         CtiHashKey key(lTemp);
 
@@ -590,7 +601,7 @@ void CtiPointManager::RefreshPointLimits(RWDBReader& rdr, BOOL (*testFunc)(CtiPo
     }
 }
 
-void CtiPointManager::RefreshCalcElements(RWDBReader& rdr, BOOL (*testFunc)(CtiPointBase*,void*), void *arg)
+void CtiPointManager::RefreshCalcElements(bool &rowFound, RWDBReader& rdr, BOOL (*testFunc)(CtiPointBase*,void*), void *arg)
 {
     LONG        lTemp = 0;
     CtiPoint*   pTempCtiPoint = NULL;
@@ -598,6 +609,8 @@ void CtiPointManager::RefreshCalcElements(RWDBReader& rdr, BOOL (*testFunc)(CtiP
 #if 0
     while( rdr() )
     {
+        rowFound = true;
+
         rdr["pointid"] >> lTemp;            // get the PointID
         CtiHashKey key(lTemp);
 
@@ -827,7 +840,7 @@ CtiPoint* CtiPointManager::getControlOffsetEqual(LONG pao, INT Offset)
     return pRet;
 }
 
-void CtiPointManager::RefreshAlarming()
+void CtiPointManager::RefreshAlarming(bool &rowFound)
 {
     LockGuard  guard(monitor());
 
@@ -855,6 +868,8 @@ void CtiPointManager::RefreshAlarming()
 
     while( rdr() ) // there better be Only one in there!
     {
+        rowFound = true;
+
         rdr["pointid"] >> pID;
 
         // Find it in our list and decode it.
