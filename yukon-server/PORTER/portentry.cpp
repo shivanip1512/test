@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:38 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/04/22 19:55:59 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -138,47 +138,54 @@ VOID PorterConnectionThread (VOID *Arg)
      *             sockets don't care for new listener sockets.
      */
 
-    if(!PorterListenNexus.CTINexusCreate(PORTCONTROLNEXUS))
+    while(!PorterQuit && PorterListenNexus.CTINexusCreate(PORTCONTROLNEXUS))
     {
-        for(; !PorterQuit ;)
         {
-            NewNexus = (CTINEXUS*) malloc(sizeof(CTINEXUS));
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** INFO **** PorterConnectionThread unable to create listener. Will attempt again." << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
 
-            if(NewNexus == NULL)
-            {
-                fprintf(stderr,"Unable to acquire memory for a new connection to port control\n");
+        Sleep(2500);
+    }
 
-                Sleep(1000);
-                continue;
-            }
-            sprintf(NewNexus->Name, "PortControl Nexus %d", iNexus++);
+    for(; !PorterQuit ;)
+    {
+        NewNexus = (CTINEXUS*) malloc(sizeof(CTINEXUS));
 
-            // fprintf(stderr,"PortControl Connection Server: Waiting for Connection\n");
+        if(NewNexus == NULL)
+        {
+            fprintf(stderr,"Unable to acquire memory for a new connection to port control\n");
 
-            /*
-             *  Blocking wait on the listening nexus.
-             */
+            Sleep(1000);
+            continue;
+        }
+        sprintf(NewNexus->Name, "PortControl Nexus %d", iNexus++);
 
-            nRet = PorterListenNexus.CTINexusConnect(NewNexus, &hPorterEvents[P_QUIT_EVENT]);
+        // fprintf(stderr,"PortControl Connection Server: Waiting for Connection\n");
+
+        /*
+         *  Blocking wait on the listening nexus.
+         */
+
+        nRet = PorterListenNexus.CTINexusConnect(NewNexus, &hPorterEvents[P_QUIT_EVENT]);
 
 
-            if( WAIT_OBJECT_0 == WaitForSingleObject(hPorterEvents[P_QUIT_EVENT], 0L) )
-            {
-                free(NewNexus);
-                break;         // FIX FIX FIX...??? Should this stop porter dead?? CGP
-            }
-            else if(!nRet)
-            {
-                /* Someone has connected to us.. */
-                // fprintf(stderr,"PortControl Connection Server: Nexus Connected\n");
-                _beginthread(ConnectionThread, 0, (VOID*)NewNexus);
-            }
-            else
-            {
-                fprintf(stderr,"Error creating listener nexus\n");
-                free(NewNexus);
-                break;         // FIX FIX FIX...??? Should this stop porter dead?? CGP
-            }
+        if( WAIT_OBJECT_0 == WaitForSingleObject(hPorterEvents[P_QUIT_EVENT], 0L) )
+        {
+            free(NewNexus);
+            break;         // FIX FIX FIX...??? Should this stop porter dead?? CGP
+        }
+        else if(!nRet)
+        {
+            /* Someone has connected to us.. */
+            // fprintf(stderr,"PortControl Connection Server: Nexus Connected\n");
+            _beginthread(ConnectionThread, 0, (VOID*)NewNexus);
+        }
+        else
+        {
+            fprintf(stderr,"Error creating listener nexus\n");
+            free(NewNexus);
+            break;         // FIX FIX FIX...??? Should this stop porter dead?? CGP
         }
     }
 
