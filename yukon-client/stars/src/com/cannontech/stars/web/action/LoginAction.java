@@ -5,6 +5,7 @@ import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.stars.web.StarsOperator;
+import com.cannontech.stars.web.StarsUser;
 import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsLogin;
 import com.cannontech.stars.xml.serialize.StarsOperation;
@@ -29,6 +30,9 @@ public class LoginAction implements ActionBase {
 	 */
 	public SOAPMessage build(HttpServletRequest req, HttpSession session) {
 		try {
+			session.removeAttribute("OPERATOR");
+			session.removeAttribute("USER");
+			
 	        StarsLogin login = new StarsLogin();
 	        login.setUsername( req.getParameter("USERNAME") );
 	        login.setPassword( req.getParameter("PASSWORD") );
@@ -54,10 +58,15 @@ public class LoginAction implements ActionBase {
             StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
             StarsOperation respOper = new StarsOperation();
             
+            StarsOperator operator = null;
+            StarsUser user = null;
             StarsLogin login = reqOper.getStarsLogin();
-            StarsOperator operator = authenticateOperator( login.getUsername(), login.getPassword(), login.getDbAlias() );
             
-            if (operator == null) {
+            operator = authenticateOperator( login.getUsername(), login.getPassword(), login.getDbAlias() );
+            if (operator == null)
+            	user = authenticateUser( login.getUsername(), login.getPassword(), login.getDbAlias() );
+            
+            if (operator == null && user == null) {
                 StarsFailure failure = new StarsFailure();
                 failure.setStatusCode( StarsConstants.FAILURE_CODE_OPERATION_FAILED );
                 failure.setDescription("Login failed, please check your username and password");
@@ -65,11 +74,22 @@ public class LoginAction implements ActionBase {
                 return SOAPUtil.buildSOAPMessage( respOper );
             }
             
-            session.setAttribute( "OPERATOR", operator );
+            Integer energyCompanyID = null;
+            if (operator != null)
+            	energyCompanyID = new Integer( (int)operator.getEnergyCompanyID() );
+            else
+            	energyCompanyID = new Integer( user.getEnergyCompanyID() );
+        	if (energyCompanyID.intValue() == 0) {
+                StarsFailure failure = new StarsFailure();
+                failure.setStatusCode( StarsConstants.FAILURE_CODE_OPERATION_FAILED );
+                failure.setDescription("No account information has been found for the current login");
+                respOper.setStarsFailure( failure );
+                return SOAPUtil.buildSOAPMessage( respOper );
+        	}
             
+            // Get all selection lists
             com.cannontech.database.db.stars.CustomerSelectionList[] selectionLists =
-            		com.cannontech.database.data.stars.CustomerSelectionList.getAllSelectionLists(
-            			new Integer((int) operator.getEnergyCompanyID()) );
+            		com.cannontech.database.data.stars.CustomerSelectionList.getAllSelectionLists( energyCompanyID );
             java.util.Hashtable selectionListTable = new java.util.Hashtable();
             
             for (int i = 0; i < selectionLists.length; i++) {
@@ -88,8 +108,29 @@ public class LoginAction implements ActionBase {
             	
             	selectionListTable.put( selectionLists[i].getListName(), starsList );
             }
-            	
-            operator.setAttribute( "CUSTOMER_SELECTION_LIST", selectionListTable );
+            
+            // Get substation list
+            com.cannontech.database.db.stars.Substation[] subs =
+            		com.cannontech.database.data.stars.Substation.getAllSubstations( energyCompanyID );
+            StarsCustSelectionList starsList = new StarsCustSelectionList();
+            
+            for (int i = 0; i < subs.length; i++) {
+            	StarsSelectionListEntry starsEntry = new StarsSelectionListEntry();
+            	starsEntry.setEntryID( subs[i].getSubstationID().intValue() );
+            	starsEntry.setContent( subs[i].getSubstationName() );
+            	starsList.addStarsSelectionListEntry( starsEntry );
+            }
+            selectionListTable.put( com.cannontech.database.db.stars.Substation.LISTNAME_SUBSTATION, starsList );
+            
+            if (operator != null) {
+            	session.setAttribute( "OPERATOR", operator );
+	            operator.setAttribute( "CUSTOMER_SELECTION_LIST", selectionListTable );
+            }
+            else {
+            	session.setAttribute( "USER", user );
+	            user.setAttribute( "CUSTOMER_SELECTION_LIST", selectionListTable );
+	            user.setDatabaseAlias( login.getDbAlias() );
+            }
             
             StarsSuccess success = new StarsSuccess();
             success.setDescription( "Login successful" );
@@ -172,5 +213,48 @@ public class LoginAction implements ActionBase {
 			
 		return retVal;
 	}
+
+	private StarsUser authenticateUser(String username, String password, String dbAlias) {
+		StarsUser retVal = null;
+		
+		java.sql.Connection conn = null;
+		java.sql.Statement stmt = null;
+		java.sql.ResultSet rset = null;
 	
+		try
+		{		
+			conn = com.cannontech.database.PoolManager.getInstance().getConnection(dbAlias);
+			stmt = conn.createStatement();
+			rset = stmt.executeQuery("SELECT LoginID FROM CustomerLogin WHERE Username='" + username + "' AND Password='" + password + "'");
+	
+			if( rset.next() )
+			{			
+				retVal = new StarsUser();
+				retVal.setId(rset.getLong(1));								
+			}
+	
+			stmt.close();
+	
+			if( retVal != null )
+			{	
+				retVal.setDbConnection(conn);
+				retVal.retrieve();
+				retVal.setDbConnection(null);
+			}		
+		}
+		catch( java.sql.SQLException e )
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			try
+			{
+				if( stmt != null ) stmt.close();
+				if( conn != null ) conn.close();
+			} catch( Exception e ) { }
+		}
+			
+		return retVal;
+	}
 }

@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsUpdateLMProgramsDescriptor.java,v 1.6 2002/09/11 15:30:15 zyao Exp $
+ * $Id: StarsUpdateLMProgramsDescriptor.java,v 1.7 2002/09/19 15:26:43 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.6 $ $Date: 2002/09/11 15:30:15 $
+ * @version $Revision: 1.7 $ $Date: 2002/09/19 15:26:43 $
 **/
 public class StarsUpdateLMProgramsDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
@@ -60,35 +60,35 @@ public class StarsUpdateLMProgramsDescriptor extends org.exolab.castor.xml.util.
         
         //-- initialize element descriptors
         
-        //-- _starsLMProgramList
-        desc = new XMLFieldDescriptorImpl(StarsLMProgram.class, "_starsLMProgramList", "stars-LMProgram", NodeType.Element);
+        //-- _LMProgramList
+        desc = new XMLFieldDescriptorImpl(LMProgram.class, "_LMProgramList", "LMProgram", NodeType.Element);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsUpdateLMPrograms target = (StarsUpdateLMPrograms) object;
-                return target.getStarsLMProgram();
+                return target.getLMProgram();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
                     StarsUpdateLMPrograms target = (StarsUpdateLMPrograms) object;
-                    target.addStarsLMProgram( (StarsLMProgram) value);
+                    target.addLMProgram( (LMProgram) value);
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
             }
             public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new StarsLMProgram();
+                return new LMProgram();
             }
         } );
         desc.setHandler(handler);
         desc.setMultivalued(true);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _starsLMProgramList
+        //-- validation code for: _LMProgramList
         fieldValidator = new FieldValidator();
         fieldValidator.setMinOccurs(0);
         desc.setValidator(fieldValidator);

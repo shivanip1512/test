@@ -1,4 +1,4 @@
-package com.cannontech.stars.web.action;
+package com.cannontech.database.db.stars;
 
 import java.util.Arrays;
 import java.util.Calendar;

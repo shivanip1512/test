@@ -27,6 +27,9 @@ public class CustomerListEntry extends DBPersistent {
     public static final String YUKONDEF_INVCAT_ONEWAYREC = "INVCAT_ONEWAYREC";
     public static final String YUKONDEF_APPCAT_AC = "APPCAT_AC";
     public static final String YUKONDEF_APPCAT_WH = "APPCAT_WH";
+    public static final String YUKONDEF_SEARCHBY_ACCTNO = "SEARCHBY_ACCTNO";
+    public static final String YUKONDEF_SEARCHBY_PHONENO = "SEARCHBY_PHONENO";
+    public static final String YUKONDEF_SEARCHBY_NAME = "SEARCHBY_NAME";
 
     private Integer entryID = null;
     private Integer listID = null;

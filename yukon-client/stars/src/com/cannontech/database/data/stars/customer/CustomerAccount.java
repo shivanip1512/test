@@ -18,6 +18,7 @@ public class CustomerAccount extends DBPersistent {
 
     private com.cannontech.database.db.stars.customer.CustomerAccount customerAccount = null;
     private com.cannontech.database.db.customer.CustomerAddress billingAddress = null;
+    private com.cannontech.database.db.customer.CustomerLogin customerLogin = null;		// Put it here temporarily
 
     private com.cannontech.database.data.stars.customer.AccountSite accountSite = null;
     private com.cannontech.database.data.stars.customer.CustomerBase customerBase = null;
@@ -89,6 +90,9 @@ public class CustomerAccount extends DBPersistent {
     public void delete() throws java.sql.SQLException {
         getAccountSite().delete();
         getBillingAddress().delete();
+        
+    	getCustomerBase().delete();
+    	//getCustomerLogin().delete();
 
         com.cannontech.database.db.stars.hardware.InventoryBase[] hws = com.cannontech.database.db.stars.hardware.InventoryBase.getAllInventories(
             getCustomerAccount().getAccountID(), getDbConnection() );
@@ -120,10 +124,25 @@ public class CustomerAccount extends DBPersistent {
     }
 
     public void add() throws java.sql.SQLException {
-        getCustomerAccount().add();
-
-        //getAccountSite().add();
         getBillingAddress().add();
+        getCustomerAccount().setBillingAddressID( getBillingAddress().getAddressID() );
+        int addrID = getBillingAddress().getAddressID().intValue();
+        
+        //getCustomerLogin().add();
+        //getCustomerBase().getPrimaryContact().setLogInID( getCustomerLogin().getLoginID() );
+        
+    	if (getCustomerAccount().getCustomerID().intValue() == com.cannontech.database.db.stars.customer.CustomerBase.NONE_INT) {
+    		getCustomerBase().add();
+    		getCustomerAccount().setCustomerID( getCustomerBase().getCustomerBase().getCustomerID() );
+    	}
+
+		if (getCustomerAccount().getAccountSiteID().intValue() == com.cannontech.database.db.stars.customer.AccountSite.NONE_INT) {
+			getAccountSite().getStreetAddress().setAddressID( new Integer(++addrID) );
+        	getAccountSite().add();
+        	getCustomerAccount().setAccountSiteID( getAccountSite().getAccountSite().getAccountSiteID() );
+		}
+		
+        getCustomerAccount().add();
 
         if (getCustomerBase() != null && getCustomerBase().getEnergyCompanyBase() != null) {
             // add to the mapping table
@@ -140,6 +159,9 @@ public class CustomerAccount extends DBPersistent {
     public void update() throws java.sql.SQLException {
         getCustomerAccount().update();
 
+		if (getCustomerBase() != null)
+			getCustomerBase().update();
+		
         getAccountSite().update();
         getBillingAddress().update();
 
@@ -147,8 +169,6 @@ public class CustomerAccount extends DBPersistent {
     }
 
     public void retrieve() throws java.sql.SQLException {
-        // setEnergyCompanyBase() should be called before this function
-        
         getCustomerAccount().retrieve();
 
         getBillingAddress().setAddressID( getCustomerAccount().getBillingAddressID() );
@@ -158,12 +178,10 @@ public class CustomerAccount extends DBPersistent {
         getAccountSite().retrieve();
 
         if (getCustomerBase() == null) {
-            com.cannontech.database.data.stars.customer.CustomerBase customer = new com.cannontech.database.data.stars.customer.CustomerBase();
-            customer.setCustomerID( getCustomerAccount().getCustomerID() );
-            customer.setEnergyCompanyBase( getEnergyCompanyBase() );
-            customer.setDbConnection( getDbConnection() );
-            customer.retrieve();
-            setCustomerBase( customer );
+            customerBase = new com.cannontech.database.data.stars.customer.CustomerBase();
+            customerBase.setCustomerID( getCustomerAccount().getCustomerID() );
+            customerBase.setDbConnection( getDbConnection() );
+            customerBase.retrieve();
         }
 
         com.cannontech.database.db.stars.appliance.ApplianceBase[] appliances =
@@ -261,4 +279,23 @@ public class CustomerAccount extends DBPersistent {
     public void setInventoryVector(Vector newInventoryVector) {
         inventoryVector = newInventoryVector;
     }
+	/**
+	 * Returns the customerLogin.
+	 * @return com.cannontech.database.db.customer.CustomerLogin
+	 */
+	public com.cannontech.database.db.customer.CustomerLogin getCustomerLogin() {
+		if (customerLogin == null)
+			customerLogin = new com.cannontech.database.db.customer.CustomerLogin();
+		return customerLogin;
+	}
+
+	/**
+	 * Sets the customerLogin.
+	 * @param customerLogin The customerLogin to set
+	 */
+	public void setCustomerLogin(
+		com.cannontech.database.db.customer.CustomerLogin customerLogin) {
+		this.customerLogin = customerLogin;
+	}
+
 }

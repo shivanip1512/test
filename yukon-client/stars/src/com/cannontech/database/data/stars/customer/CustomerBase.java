@@ -77,12 +77,16 @@ public class CustomerBase extends DBPersistent {
     }
 
     public void add() throws java.sql.SQLException {
-        getCustomerBase().add();
         getPrimaryContact().add();
+        getCustomerBase().setPrimaryContactID( getPrimaryContact().getContactID() );
+        int contactID = getPrimaryContact().getContactID().intValue();
+        
+        getCustomerBase().add();
 
         com.cannontech.database.data.customer.CustomerContact contact = new com.cannontech.database.data.customer.CustomerContact();
         for (int i = 0; i < getCustomerContactVector().size(); i++) {
             contact.setCustomerContact( (com.cannontech.database.db.customer.CustomerContact) getCustomerContactVector().elementAt(i) );
+            contact.setContactID( new Integer(++contactID) );
             contact.setLogInID( new Integer(com.cannontech.database.db.customer.CustomerLogin.NONE_LOGIN_ID) );
             contact.add();
 

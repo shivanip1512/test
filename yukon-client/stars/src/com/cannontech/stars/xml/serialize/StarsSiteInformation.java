@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsSiteInformation.java,v 1.6 2002/09/11 15:30:18 zyao Exp $
+ * $Id: StarsSiteInformation.java,v 1.7 2002/09/19 15:26:45 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,7 +23,7 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.6 $ $Date: 2002/09/11 15:30:18 $
+ * @version $Revision: 1.7 $ $Date: 2002/09/19 15:26:45 $
 **/
 public class StarsSiteInformation implements java.io.Serializable {
 
@@ -32,7 +32,7 @@ public class StarsSiteInformation implements java.io.Serializable {
      //- Class/Member Variables -/
     //--------------------------/
 
-    private java.lang.String _substationName;
+    private Substation _substation;
 
     private java.lang.String _feeder;
 
@@ -87,14 +87,14 @@ public class StarsSiteInformation implements java.io.Serializable {
     } //-- java.lang.String getServiceVoltage() 
 
     /**
-     * Returns the value of field 'substationName'.
+     * Returns the value of field 'substation'.
      * 
-     * @return the value of field 'substationName'.
+     * @return the value of field 'substation'.
     **/
-    public java.lang.String getSubstationName()
+    public Substation getSubstation()
     {
-        return this._substationName;
-    } //-- java.lang.String getSubstationName() 
+        return this._substation;
+    } //-- Substation getSubstation() 
 
     /**
      * Returns the value of field 'transformerSize'.
@@ -174,14 +174,14 @@ public class StarsSiteInformation implements java.io.Serializable {
     } //-- void setServiceVoltage(java.lang.String) 
 
     /**
-     * Sets the value of field 'substationName'.
+     * Sets the value of field 'substation'.
      * 
-     * @param substationName the value of field 'substationName'.
+     * @param substation the value of field 'substation'.
     **/
-    public void setSubstationName(java.lang.String substationName)
+    public void setSubstation(Substation substation)
     {
-        this._substationName = substationName;
-    } //-- void setSubstationName(java.lang.String) 
+        this._substation = substation;
+    } //-- void setSubstation(Substation) 
 
     /**
      * Sets the value of field 'transformerSize'.

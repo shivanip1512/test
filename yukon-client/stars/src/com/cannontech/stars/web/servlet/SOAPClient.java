@@ -14,12 +14,14 @@ import com.cannontech.stars.web.action.ActionBase;
 import com.cannontech.stars.web.action.CallTrackingAction;
 import com.cannontech.stars.web.action.CreateCallAction;
 import com.cannontech.stars.web.action.CreateServiceRequestAction;
+import com.cannontech.stars.web.action.GetCustAccountAction;
 import com.cannontech.stars.web.action.GetEnrollmentProgramsAction;
 import com.cannontech.stars.web.action.GetLMCtrlHistAction;
 import com.cannontech.stars.web.action.GetServiceHistoryAction;
 import com.cannontech.stars.web.action.LoginAction;
 import com.cannontech.stars.web.action.MultiAction;
 import com.cannontech.stars.web.action.NewCustAccountAction;
+import com.cannontech.stars.web.action.ProgramSignUpAction;
 import com.cannontech.stars.web.action.SearchCustAccountAction;
 import com.cannontech.stars.web.action.UpdateCustAccountAction;
 import com.cannontech.stars.web.action.YukonSwitchCommandAction;
@@ -81,7 +83,7 @@ public class SOAPClient extends HttpServlet {
         SOAPMessage reqMsg = null;
         SOAPMessage respMsg = null;
 
-        String nextURL = homeURL;       // The next URL we're going to, default value is the default error URL
+        String nextURL = homeURL;       // The next URL we're going to, operation succeed -> destURL, operation failed -> errorURL
         String destURL = null;			// URL we should go to if action succeed
         String errorURL = null;		// URL we should go to if action failed
         ActionBase clientAction = null;
@@ -89,6 +91,11 @@ public class SOAPClient extends HttpServlet {
 		if (action.equalsIgnoreCase("NewCustAccount")) {
 			clientAction = new NewCustAccountAction();
 			destURL = "/OperatorDemos/Consumer/Update.jsp";
+		}
+		else if (action.equalsIgnoreCase("ProgramSignUp")) {
+			clientAction = new ProgramSignUpAction();
+        	destURL = req.getParameter("REDIRECT");
+        	nextURL = errorURL = req.getParameter( "REFERRER" );
 		}
         else if (action.equalsIgnoreCase("SearchCustAccount")) {
             clientAction = new SearchCustAccountAction();
@@ -109,8 +116,8 @@ public class SOAPClient extends HttpServlet {
         }
         else if (action.equalsIgnoreCase("GetLMCtrlHist")) {
             clientAction = new GetLMCtrlHistAction();
-            destURL = "/OperatorDemos/Consumer/ContHist.jsp"
-                    + "?AppNo=" + req.getParameter("AppNo")
+            destURL = req.getParameter("DestURL")
+            		+ "?AppNo=" + req.getParameter("AppNo")
                     + "&BackURL=" + req.getParameter("BackURL");
         }
         else if (action.equalsIgnoreCase("CreateCall")) {
@@ -129,40 +136,34 @@ public class SOAPClient extends HttpServlet {
         	clientAction = new GetServiceHistoryAction();
         	destURL = "/OperatorDemos/Consumer/ServiceSummary.jsp";
         }
-        else if (action.equalsIgnoreCase("ConsumerSwitchGetLMCtrlHist")) {
-            clientAction = new GetLMCtrlHistAction();
-            destURL = "/UserDemos/ConsumerSwitch/switch/ContHist.jsp"
-                    + "?AppNo=" + req.getParameter("AppNo")
-                    + "&BackURL=" + req.getParameter("BackURL");
-        }
-        else if (action.equalsIgnoreCase("ConsumerStatGetLMCtrlHist")) {
-            clientAction = new GetLMCtrlHistAction();
-            destURL = "/UserDemos/ConsumerStat/stat/ContHist.jsp"
-                    + "?AppNo=" + req.getParameter("AppNo")
-                    + "&BackURL=" + req.getParameter("BackURL");
+        else if (action.equalsIgnoreCase("GetEnrollmentPrograms")) {
+        	clientAction = new GetEnrollmentProgramsAction();
+        	destURL = req.getParameter("REDIRECT");
+        	nextURL = errorURL = req.getParameter("REFERRER");
         }
         else if (action.equalsIgnoreCase("OperatorLogin")) {
+        	session.removeAttribute("OPERATOR");
+        	session.removeAttribute("USER");
+        	
         	MultiAction actions = new MultiAction();
         	actions.getActionVector().addElement( new LoginAction() );
         	actions.getActionVector().addElement( new GetEnrollmentProgramsAction() );
         	
         	clientAction = (ActionBase) actions;
-        	destURL = homeURL;
+        	destURL = req.getParameter("REDIRECT");
         	nextURL = errorURL = loginURL;
         }
-        else if (action.equalsIgnoreCase("ConsumerSwitchLogin")) {
-            clientAction = new SearchCustAccountAction();
-            destURL = "/UserDemos/ConsumerSwitch/switch/ProgramHist.jsp";
-            nextURL = errorURL = "/UserDemos/ConsumerSwitch/login.jsp";
-
-            session.setAttribute("ENERGY_COMPANY_ID", new Integer(1));
-        }
-        else if (action.equalsIgnoreCase("ConsumerStatLogin")) {
-            clientAction = new SearchCustAccountAction();
-            destURL = "/UserDemos/ConsumerStat/stat/ProgramHist.jsp";
-            nextURL = errorURL = "/UserDemos/ConsumerStat/login.jsp";
-
-            session.setAttribute("ENERGY_COMPANY_ID", new Integer(1));
+        else if (action.equalsIgnoreCase("UserLogin")) {
+        	session.removeAttribute("OPERATOR");
+        	session.removeAttribute("USER");
+        	
+            MultiAction actions = new MultiAction();
+        	actions.getActionVector().addElement( new LoginAction() );
+        	actions.getActionVector().addElement( new GetCustAccountAction() );
+        	
+        	clientAction = (ActionBase) actions;
+        	destURL = req.getParameter("REDIRECT");
+        	nextURL = errorURL = req.getParameter( "REFERRER" );
         }
         else if (action.equalsIgnoreCase("HoneywellSearchCustAccount")) {
             clientAction = new com.cannontech.stars.honeywell.action.SearchCustAccountAction();

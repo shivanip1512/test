@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsSiteInformationDescriptor.java,v 1.6 2002/09/11 15:30:17 zyao Exp $
+ * $Id: StarsSiteInformationDescriptor.java,v 1.7 2002/09/19 15:26:44 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.6 $ $Date: 2002/09/11 15:30:17 $
+ * @version $Revision: 1.7 $ $Date: 2002/09/19 15:26:44 $
 **/
 public class StarsSiteInformationDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
@@ -60,29 +60,28 @@ public class StarsSiteInformationDescriptor extends org.exolab.castor.xml.util.X
         
         //-- initialize element descriptors
         
-        //-- _substationName
-        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_substationName", "SubstationName", NodeType.Element);
-        desc.setImmutable(true);
+        //-- _substation
+        desc = new XMLFieldDescriptorImpl(Substation.class, "_substation", "Substation", NodeType.Element);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsSiteInformation target = (StarsSiteInformation) object;
-                return target.getSubstationName();
+                return target.getSubstation();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
                     StarsSiteInformation target = (StarsSiteInformation) object;
-                    target.setSubstationName( (java.lang.String) value);
+                    target.setSubstation( (Substation) value);
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
             }
             public java.lang.Object newInstance( java.lang.Object parent ) {
-                return null;
+                return new Substation();
             }
         } );
         desc.setHandler(handler);
@@ -90,14 +89,9 @@ public class StarsSiteInformationDescriptor extends org.exolab.castor.xml.util.X
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _substationName
+        //-- validation code for: _substation
         fieldValidator = new FieldValidator();
         fieldValidator.setMinOccurs(1);
-        { //-- local scope
-            StringValidator sv = new StringValidator();
-            sv.setWhiteSpace("preserve");
-            fieldValidator.setValidator(sv);
-        }
         desc.setValidator(fieldValidator);
         
         //-- _feeder

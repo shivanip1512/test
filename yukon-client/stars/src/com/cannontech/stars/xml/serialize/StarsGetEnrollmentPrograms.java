@@ -32,10 +32,12 @@ public class StarsGetEnrollmentPrograms implements java.io.Serializable {
      //- Class/Member Variables -/
     //--------------------------/
 
+    private int _energyCompanyID;
+
     /**
-     * internal content storage
+     * keeps track of state for field: _energyCompanyID
     **/
-    private java.lang.String _content = "";
+    private boolean _has_energyCompanyID;
 
 
       //----------------/
@@ -44,7 +46,6 @@ public class StarsGetEnrollmentPrograms implements java.io.Serializable {
 
     public StarsGetEnrollmentPrograms() {
         super();
-        setContent("");
     } //-- com.cannontech.stars.xml.serialize.StarsGetEnrollmentPrograms()
 
 
@@ -53,15 +54,28 @@ public class StarsGetEnrollmentPrograms implements java.io.Serializable {
     //-----------/
 
     /**
-     * Returns the value of field 'content'. The field 'content'
-     * has the following description: internal content storage
-     * 
-     * @return the value of field 'content'.
     **/
-    public java.lang.String getContent()
+    public void deleteEnergyCompanyID()
     {
-        return this._content;
-    } //-- java.lang.String getContent() 
+        this._has_energyCompanyID= false;
+    } //-- void deleteEnergyCompanyID() 
+
+    /**
+     * Returns the value of field 'energyCompanyID'.
+     * 
+     * @return the value of field 'energyCompanyID'.
+    **/
+    public int getEnergyCompanyID()
+    {
+        return this._energyCompanyID;
+    } //-- int getEnergyCompanyID() 
+
+    /**
+    **/
+    public boolean hasEnergyCompanyID()
+    {
+        return this._has_energyCompanyID;
+    } //-- boolean hasEnergyCompanyID() 
 
     /**
     **/
@@ -101,15 +115,15 @@ public class StarsGetEnrollmentPrograms implements java.io.Serializable {
     } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
-     * Sets the value of field 'content'. The field 'content' has
-     * the following description: internal content storage
+     * Sets the value of field 'energyCompanyID'.
      * 
-     * @param content the value of field 'content'.
+     * @param energyCompanyID the value of field 'energyCompanyID'.
     **/
-    public void setContent(java.lang.String content)
+    public void setEnergyCompanyID(int energyCompanyID)
     {
-        this._content = content;
-    } //-- void setContent(java.lang.String) 
+        this._energyCompanyID = energyCompanyID;
+        this._has_energyCompanyID = true;
+    } //-- void setEnergyCompanyID(int) 
 
     /**
      * 

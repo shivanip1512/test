@@ -53,22 +53,35 @@ public class StarsGetEnrollmentProgramsDescriptor extends org.exolab.castor.xml.
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
-        //-- _content
-        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_content", "PCDATA", NodeType.Text);
-        desc.setImmutable(true);
+        
+        //-- set grouping compositor
+        setCompositorAsSequence();
+        //-- initialize attribute descriptors
+        
+        //-- initialize element descriptors
+        
+        //-- _energyCompanyID
+        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_energyCompanyID", "EnergyCompanyID", NodeType.Element);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsGetEnrollmentPrograms target = (StarsGetEnrollmentPrograms) object;
-                return target.getContent();
+                if(!target.hasEnergyCompanyID())
+                    return null;
+                return new Integer(target.getEnergyCompanyID());
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
                     StarsGetEnrollmentPrograms target = (StarsGetEnrollmentPrograms) object;
-                    target.setContent( (java.lang.String) value);
+                    // if null, use delete method for optional primitives 
+                    if (value == null) {
+                        target.deleteEnergyCompanyID();
+                        return;
+                    }
+                    target.setEnergyCompanyID( ((Integer)value).intValue());
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
@@ -79,20 +92,16 @@ public class StarsGetEnrollmentProgramsDescriptor extends org.exolab.castor.xml.
             }
         } );
         desc.setHandler(handler);
+        desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _content
+        //-- validation code for: _energyCompanyID
         fieldValidator = new FieldValidator();
         { //-- local scope
-            StringValidator sv = new StringValidator();
-            sv.setWhiteSpace("preserve");
-            fieldValidator.setValidator(sv);
+            IntegerValidator iv = new IntegerValidator();
+            fieldValidator.setValidator(iv);
         }
         desc.setValidator(fieldValidator);
-        
-        //-- initialize attribute descriptors
-        
-        //-- initialize element descriptors
         
     } //-- com.cannontech.stars.xml.serialize.StarsGetEnrollmentProgramsDescriptor()
 

@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsNewCustomerAccount.java,v 1.6 2002/09/11 15:30:15 zyao Exp $
+ * $Id: StarsNewCustomerAccount.java,v 1.7 2002/09/19 15:26:43 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,7 +23,7 @@ import org.xml.sax.ContentHandler;
 /**
  * Create new customer account
  * 
- * @version $Revision: 1.6 $ $Date: 2002/09/11 15:30:15 $
+ * @version $Revision: 1.7 $ $Date: 2002/09/19 15:26:43 $
 **/
 public class StarsNewCustomerAccount implements java.io.Serializable {
 
@@ -34,7 +34,9 @@ public class StarsNewCustomerAccount implements java.io.Serializable {
 
     private StarsCustomerAccount _starsCustomerAccount;
 
-    private StarsLMPrograms _starsLMPrograms;
+    private StarsLMProgramSignUps _starsLMProgramSignUps;
+
+    private StarsLogin _starsLogin;
 
 
       //----------------/
@@ -61,14 +63,24 @@ public class StarsNewCustomerAccount implements java.io.Serializable {
     } //-- StarsCustomerAccount getStarsCustomerAccount() 
 
     /**
-     * Returns the value of field 'starsLMPrograms'.
+     * Returns the value of field 'starsLMProgramSignUps'.
      * 
-     * @return the value of field 'starsLMPrograms'.
+     * @return the value of field 'starsLMProgramSignUps'.
     **/
-    public StarsLMPrograms getStarsLMPrograms()
+    public StarsLMProgramSignUps getStarsLMProgramSignUps()
     {
-        return this._starsLMPrograms;
-    } //-- StarsLMPrograms getStarsLMPrograms() 
+        return this._starsLMProgramSignUps;
+    } //-- StarsLMProgramSignUps getStarsLMProgramSignUps() 
+
+    /**
+     * Returns the value of field 'starsLogin'.
+     * 
+     * @return the value of field 'starsLogin'.
+    **/
+    public StarsLogin getStarsLogin()
+    {
+        return this._starsLogin;
+    } //-- StarsLogin getStarsLogin() 
 
     /**
     **/
@@ -119,14 +131,25 @@ public class StarsNewCustomerAccount implements java.io.Serializable {
     } //-- void setStarsCustomerAccount(StarsCustomerAccount) 
 
     /**
-     * Sets the value of field 'starsLMPrograms'.
+     * Sets the value of field 'starsLMProgramSignUps'.
      * 
-     * @param starsLMPrograms the value of field 'starsLMPrograms'.
+     * @param starsLMProgramSignUps the value of field
+     * 'starsLMProgramSignUps'.
     **/
-    public void setStarsLMPrograms(StarsLMPrograms starsLMPrograms)
+    public void setStarsLMProgramSignUps(StarsLMProgramSignUps starsLMProgramSignUps)
     {
-        this._starsLMPrograms = starsLMPrograms;
-    } //-- void setStarsLMPrograms(StarsLMPrograms) 
+        this._starsLMProgramSignUps = starsLMProgramSignUps;
+    } //-- void setStarsLMProgramSignUps(StarsLMProgramSignUps) 
+
+    /**
+     * Sets the value of field 'starsLogin'.
+     * 
+     * @param starsLogin the value of field 'starsLogin'.
+    **/
+    public void setStarsLogin(StarsLogin starsLogin)
+    {
+        this._starsLogin = starsLogin;
+    } //-- void setStarsLogin(StarsLogin) 
 
     /**
      * 

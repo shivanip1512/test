@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsOperationDescriptor.java,v 1.6 2002/09/11 15:30:16 zyao Exp $
+ * $Id: StarsOperationDescriptor.java,v 1.7 2002/09/19 15:26:44 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.6 $ $Date: 2002/09/11 15:30:16 $
+ * @version $Revision: 1.7 $ $Date: 2002/09/19 15:26:44 $
 **/
 public class StarsOperationDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
@@ -217,6 +217,38 @@ public class StarsOperationDescriptor extends org.exolab.castor.xml.util.XMLClas
         fieldValidator = new FieldValidator();
         desc.setValidator(fieldValidator);
         
+        //-- _starsProgramSignUp
+        desc = new XMLFieldDescriptorImpl(StarsProgramSignUp.class, "_starsProgramSignUp", "stars-ProgramSignUp", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsOperation target = (StarsOperation) object;
+                return target.getStarsProgramSignUp();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsOperation target = (StarsOperation) object;
+                    target.setStarsProgramSignUp( (StarsProgramSignUp) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new StarsProgramSignUp();
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _starsProgramSignUp
+        fieldValidator = new FieldValidator();
+        desc.setValidator(fieldValidator);
+        
         //-- _starsSearchCustomerAccount
         desc = new XMLFieldDescriptorImpl(StarsSearchCustomerAccount.class, "_starsSearchCustomerAccount", "stars-SearchCustomerAccount", NodeType.Element);
         handler = (new XMLFieldHandler() {
@@ -278,6 +310,70 @@ public class StarsOperationDescriptor extends org.exolab.castor.xml.util.XMLClas
         addFieldDescriptor(desc);
         
         //-- validation code for: _starsSearchCustomerAccountResponse
+        fieldValidator = new FieldValidator();
+        desc.setValidator(fieldValidator);
+        
+        //-- _starsGetCustomerAccount
+        desc = new XMLFieldDescriptorImpl(StarsGetCustomerAccount.class, "_starsGetCustomerAccount", "stars-GetCustomerAccount", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsOperation target = (StarsOperation) object;
+                return target.getStarsGetCustomerAccount();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsOperation target = (StarsOperation) object;
+                    target.setStarsGetCustomerAccount( (StarsGetCustomerAccount) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new StarsGetCustomerAccount();
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _starsGetCustomerAccount
+        fieldValidator = new FieldValidator();
+        desc.setValidator(fieldValidator);
+        
+        //-- _starsGetCustomerAccountResponse
+        desc = new XMLFieldDescriptorImpl(StarsGetCustomerAccountResponse.class, "_starsGetCustomerAccountResponse", "stars-GetCustomerAccountResponse", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsOperation target = (StarsOperation) object;
+                return target.getStarsGetCustomerAccountResponse();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsOperation target = (StarsOperation) object;
+                    target.setStarsGetCustomerAccountResponse( (StarsGetCustomerAccountResponse) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new StarsGetCustomerAccountResponse();
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _starsGetCustomerAccountResponse
         fieldValidator = new FieldValidator();
         desc.setValidator(fieldValidator);
         

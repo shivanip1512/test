@@ -17,14 +17,14 @@ public class SiteInformation extends DBPersistent {
     public static final int NONE_INT = 0;
 
     private Integer siteID = null;
-    private Integer substationID = new Integer( com.cannontech.database.db.stars.Substation.NONE_INT );
     private String feeder = "";
     private String pole = "";
     private String transformerSize = "";
     private String serviceVoltage = "";
+    private Integer substationID = new Integer( com.cannontech.database.db.stars.Substation.NONE_INT );
 
     public static final String[] SETTER_COLUMNS = {
-        "SubstationID", "Feeder", "Pole", "TransformerSize", "ServiceVoltage"
+        "Feeder", "Pole", "TransformerSize", "ServiceVoltage", "SubstationID"
     };
 
     public static final String[] CONSTRAINT_COLUMNS = { "SiteID" };
@@ -49,8 +49,8 @@ public class SiteInformation extends DBPersistent {
     		setSiteID( getNextSiteID() );
     		
         Object[] addValues = {
-            getSiteID(), getSubstationID(), getFeeder(), getPole(),
-            getTransformerSize(), getServiceVoltage()
+            getSiteID(), getFeeder(), getPole(), getTransformerSize(),
+            getServiceVoltage(), getSubstationID()
         };
 
         add( TABLE_NAME, addValues );
@@ -58,8 +58,8 @@ public class SiteInformation extends DBPersistent {
 
     public void update() throws java.sql.SQLException {
         Object[] setValues = {
-            getSubstationID(), getFeeder(), getPole(),
-            getTransformerSize(), getServiceVoltage()
+            getFeeder(), getPole(), getTransformerSize(),
+            getServiceVoltage(), getSubstationID()
         };
 
         Object[] constraintValues = { getSiteID() };
@@ -73,11 +73,11 @@ public class SiteInformation extends DBPersistent {
         Object[] results = retrieve( SETTER_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
 
         if (results.length == SETTER_COLUMNS.length) {
-            setSubstationID( (Integer) results[0] );
-            setFeeder( (String) results[1] );
-            setPole( (String) results[2] );
-            setTransformerSize( (String) results[3] );
-            setServiceVoltage( (String) results[4] );
+            setFeeder( (String) results[0] );
+            setPole( (String) results[1] );
+            setTransformerSize( (String) results[2] );
+            setServiceVoltage( (String) results[3] );
+            setSubstationID( (Integer) results[4] );
         }
         else
             throw new Error(getClass() + " - Incorrect number of results retrieved");

@@ -8,6 +8,7 @@ import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.stars.web.StarsOperator;
 import com.cannontech.stars.xml.StarsWebConfigFactory;
+import com.cannontech.stars.xml.StarsGetEnrollmentProgramsResponseFactory;
 import com.cannontech.stars.xml.serialize.StarsApplianceCategory;
 import com.cannontech.stars.xml.serialize.StarsEnrollmentLMProgram;
 import com.cannontech.stars.xml.serialize.StarsFailure;
@@ -34,6 +35,16 @@ public class GetEnrollmentProgramsAction implements ActionBase {
 		try {
 			StarsGetEnrollmentPrograms getEnrProgs = new StarsGetEnrollmentPrograms();
 			
+			int energyCompanyID = 0;
+			String companyIDStr = req.getParameter("CompanyID");
+			if (companyIDStr != null && companyIDStr.length() > 0)
+				try {
+					energyCompanyID = Integer.parseInt( companyIDStr );
+				}
+				catch (NumberFormatException e) {}
+			if (energyCompanyID > 0)
+				getEnrProgs.setEnergyCompanyID( energyCompanyID );
+			
 			StarsOperation operation = new StarsOperation();
 			operation.setStarsGetEnrollmentPrograms( getEnrProgs );
 			
@@ -54,55 +65,24 @@ public class GetEnrollmentProgramsAction implements ActionBase {
             StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
             StarsOperation respOper = new StarsOperation();
             
-			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
-            if (operator == null) {
-            	StarsFailure failure = new StarsFailure();
-            	failure.setStatusCode( StarsConstants.FAILURE_CODE_SESSION_INVALID );
-            	failure.setDescription( "Session invalidated, please login again" );
-            	respOper.setStarsFailure( failure );
-            	return SOAPUtil.buildSOAPMessage( respOper );
-            }
+            StarsGetEnrollmentPrograms getEnrProgs = reqOper.getStarsGetEnrollmentPrograms();
+            int energyCompanyID = getEnrProgs.getEnergyCompanyID();
             
-            /*
-             * Now I'm using "small category" in StarsApplianceCategory, i.e. each StarsApplianceCategory
-             * is a row instance in the ApplianceCategory table. One reason is that the WebConfigurationID
-             * is defined in this table.
-             * If we decide to use "large category" (category defined in the CustomerListEntry table),
-             * the following code need to be changed a little bit.
-             */
-            StarsGetEnrollmentProgramsResponse response = new StarsGetEnrollmentProgramsResponse();
-            Integer[] progIDs = getAllEnrLMProgramIDs( new Integer((int) operator.getEnergyCompanyID()) );
-            
-            for (int i = 0; i < progIDs.length; i++) {
-            	com.cannontech.database.data.stars.LMProgramWebPublishing webPub =
-            			com.cannontech.database.data.stars.LMProgramWebPublishing.getLMProgramWebPublishing( progIDs[i] );
-            	Integer categoryID = webPub.getApplianceCategory().getApplianceCategory().getCategoryID();
-            	
-            	StarsApplianceCategory appCategory = null;
-            	for (int j = 0; j < response.getStarsApplianceCategoryCount(); j++) {
-            		if (response.getStarsApplianceCategory(j).getApplianceCategoryID() == categoryID.intValue()) {
-            			appCategory = response.getStarsApplianceCategory(j);
-            			break;
-            		}
-            	}
-            	
-            	if (appCategory == null) {
-            		appCategory = new StarsApplianceCategory();
-            		response.addStarsApplianceCategory( appCategory );
-            	
-	            	appCategory.setApplianceCategoryID( categoryID.intValue() );
-	            	appCategory.setCategoryName( webPub.getApplianceCategory().getApplianceCategory().getDescription() );
-	            	appCategory.setStarsWebConfig(
-	            			StarsWebConfigFactory.newStarsWebConfig(webPub.getApplianceCategory().getWebConfiguration()) );
-            	}
-            	
-            	StarsEnrollmentLMProgram program = new StarsEnrollmentLMProgram();
-            	program.setProgramID( webPub.getLMProgram().getPAObjectID().intValue() );
-            	program.setProgramName( webPub.getLMProgram().getPAOName() );
-            	program.setStarsWebConfig(
-            			StarsWebConfigFactory.newStarsWebConfig(webPub.getWebConfiguration()) );
-            	appCategory.addStarsEnrollmentLMProgram( program );
+            if (energyCompanyID <= 0) {
+				StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
+	            if (operator == null) {
+	            	StarsFailure failure = new StarsFailure();
+	            	failure.setStatusCode( StarsConstants.FAILURE_CODE_SESSION_INVALID );
+	            	failure.setDescription( "Session invalidated, please login again" );
+	            	respOper.setStarsFailure( failure );
+	            	return SOAPUtil.buildSOAPMessage( respOper );
+	            }
+	            
+            	energyCompanyID = (int) operator.getEnergyCompanyID();
             }
+            	
+            StarsGetEnrollmentProgramsResponse response =
+            		StarsGetEnrollmentProgramsResponseFactory.getStarsGetEnrollmentProgramsResponse( new Integer(energyCompanyID) );
             
             respOper.setStarsGetEnrollmentProgramsResponse( response );
             return SOAPUtil.buildSOAPMessage( respOper );
@@ -140,49 +120,6 @@ public class GetEnrollmentProgramsAction implements ActionBase {
         }
 
         return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
-	}
-	
-	private Integer[] getAllEnrLMProgramIDs(Integer energyCompanyID) {
-		String sql = "SELECT ItemID FROM ECToGenericMapping WHERE "
-				   + "EnergyCompanyID = ? AND MappingCategory = 'LMPrograms'";
-				   
-        java.sql.Connection conn = null;
-        java.sql.PreparedStatement pstmt = null;
-        java.sql.ResultSet rset = null;
-        ArrayList progIDList = new ArrayList();
-
-        try {
-            conn = com.cannontech.database.PoolManager.getInstance().getConnection(
-                        com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
-            if (conn == null) return null;
-            
-            pstmt = conn.prepareStatement( sql );
-            pstmt.setInt( 1, energyCompanyID.intValue() );
-            rset = pstmt.executeQuery();
-            
-            while (rset.next()) {
-            	progIDList.add( new Integer(rset.getInt("ItemID")) );
-            }
-            
-            Integer[] progIDs = new Integer[ progIDList.size() ];
-            progIDList.toArray( progIDs );
-            return progIDs;
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-        finally {
-            try {
-                if (conn != null) conn.close();
-                if( pstmt != null ) pstmt.close();
-                if (rset != null) rset.close();
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        return null;
 	}
 
 }

@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: ControlHistory.java,v 1.6 2002/09/11 15:30:16 zyao Exp $
+ * $Id: ControlHistory.java,v 1.7 2002/09/19 15:26:43 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -24,7 +24,7 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.6 $ $Date: 2002/09/11 15:30:16 $
+ * @version $Revision: 1.7 $ $Date: 2002/09/19 15:26:43 $
 **/
 public class ControlHistory implements java.io.Serializable {
 

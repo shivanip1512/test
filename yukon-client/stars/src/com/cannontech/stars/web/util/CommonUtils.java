@@ -12,6 +12,8 @@ package com.cannontech.stars.web.util;
  */
 
 public class CommonUtils {
+	
+	public static final String TRANSIENT_ATT_LEADING = "$$";
 
     private static java.text.DecimalFormat decFormat = new java.text.DecimalFormat("0.#");
 

@@ -8,6 +8,7 @@ import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.database.Transaction;
 import com.cannontech.stars.web.StarsOperator;
+import com.cannontech.stars.web.util.CommonUtils;
 import com.cannontech.stars.xml.serialize.CallType;
 import com.cannontech.stars.xml.serialize.StarsCreateCallReport;
 import com.cannontech.stars.xml.serialize.StarsFailure;
@@ -125,7 +126,7 @@ public class CreateCallAction implements ActionBase {
             	return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
             	
 			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
-			operator.removeAttribute("$$CALL_TRACKING");
+			operator.removeAttribute(CommonUtils.TRANSIENT_ATT_LEADING + "CALL_TRACKING");
 			
             return 0;
         }

@@ -8,6 +8,7 @@ import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.database.Transaction;
 import com.cannontech.stars.web.StarsOperator;
+import com.cannontech.stars.web.util.CommonUtils;
 import com.cannontech.stars.xml.serialize.ServiceCompany;
 import com.cannontech.stars.xml.serialize.ServiceType;
 import com.cannontech.stars.xml.serialize.StarsCreateServiceRequest;
@@ -125,7 +126,7 @@ public class CreateServiceRequestAction implements ActionBase {
             	return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
             	
 			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
-			operator.removeAttribute("$$SERVICE_HISTORY");
+			operator.removeAttribute(CommonUtils.TRANSIENT_ATT_LEADING + "SERVICE_HISTORY");
 			
             return 0;
         }

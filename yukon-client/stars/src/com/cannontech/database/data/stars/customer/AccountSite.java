@@ -45,9 +45,15 @@ public class AccountSite extends DBPersistent {
     }
 
     public void add() throws java.sql.SQLException {
-        getAccountSite().add();
+    	if (getAccountSite().getSiteInformationID().intValue() == com.cannontech.database.db.stars.customer.SiteInformation.NONE_INT) {
+		    getSiteInformation().add();
+		    getAccountSite().setSiteInformationID( getSiteInformation().getSiteInformation().getSiteID() );
+    	}
+    	
         getStreetAddress().add();
-        //getSiteInformation().add();
+        getAccountSite().setStreetAddressID( getStreetAddress().getAddressID() );
+        
+        getAccountSite().add();
     }
 
     public void update() throws java.sql.SQLException {

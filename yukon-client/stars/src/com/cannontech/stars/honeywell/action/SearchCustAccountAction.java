@@ -12,6 +12,7 @@ import javax.xml.soap.SOAPEnvelope;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.database.Transaction;
+import com.cannontech.database.db.stars.LMControlHistory;
 import com.cannontech.stars.honeywell.serialize.CustomerContact;
 import com.cannontech.stars.honeywell.serialize.CustomerInformation;
 import com.cannontech.stars.honeywell.serialize.DataSetALL;
@@ -19,7 +20,6 @@ import com.cannontech.stars.honeywell.serialize.DataSetALLItem;
 import com.cannontech.stars.honeywell.serialize.LMAppliance;
 import com.cannontech.stars.honeywell.serialize.LMHardware;
 import com.cannontech.stars.web.action.ActionBase;
-import com.cannontech.stars.web.action.LMControlHistory;
 import com.cannontech.stars.xml.serialize.BillingAddress;
 import com.cannontech.stars.xml.serialize.PrimaryContact;
 import com.cannontech.stars.xml.serialize.StarsAppliance;
@@ -208,8 +208,11 @@ public class SearchCustAccountAction implements ActionBase {
 					propAddr.setZip( hnwlCustInfo.getSTREETADDRESSZIPCODE() );
 					account.setStreetAddress( propAddr );
 					
+					com.cannontech.stars.xml.serialize.Substation starsSub = new com.cannontech.stars.xml.serialize.Substation();
+					starsSub.setContent( hnwlCustInfo.getSUBSTATIONNAME() );
+					
 					StarsSiteInformation siteInfo = new StarsSiteInformation();
-					siteInfo.setSubstationName( hnwlCustInfo.getSUBSTATIONNAME() );
+					siteInfo.setSubstation( starsSub );
 					siteInfo.setFeeder( hnwlCustInfo.getFEEDER() );
 					siteInfo.setPole( hnwlCustInfo.getPOLE() );
 					siteInfo.setTransformerSize( hnwlCustInfo.getTRANSFORMERSIZE() );

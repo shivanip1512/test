@@ -87,13 +87,11 @@ public class StarsSelectionListEntryDescriptor extends com.cannontech.stars.xml.
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _yukonDefinition
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         { //-- local scope
             StringValidator sv = new StringValidator();
             sv.setWhiteSpace("preserve");

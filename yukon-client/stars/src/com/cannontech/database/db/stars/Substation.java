@@ -15,6 +15,8 @@ import com.cannontech.database.db.DBPersistent;
 public class Substation extends DBPersistent {
 
     public static final int NONE_INT = 0;
+    
+    public static final String LISTNAME_SUBSTATION = "Substation";
 
     private Integer substationID = null;
     private String substationName = "";
@@ -101,6 +103,60 @@ public class Substation extends DBPersistent {
         }
 
         return new Integer( nextSubstationID );
+    }
+    
+    public static Substation[] getAllSubstations(Integer energyCompanyID, java.sql.Connection conn) {
+    	String sql = "SELECT sub.* FROM " + TABLE_NAME + " sub, ECToGenericMapping map "
+    			   + "WHERE map.MappingCategory = '" + TABLE_NAME + "' AND map.EnergyCompanyID = ? "
+    			   + "AND map.ItemID = sub.SubstationID";
+    			   
+        java.sql.PreparedStatement pstmt = null;
+        java.sql.ResultSet rset = null;
+        java.util.ArrayList subList = new java.util.ArrayList();
+
+        try
+        {
+            if( conn == null )
+            {
+                throw new IllegalStateException("Database connection should not be null.");
+            }
+            else
+            {
+                pstmt = conn.prepareStatement(sql);
+                pstmt.setInt( 1, energyCompanyID.intValue() );
+                rset = pstmt.executeQuery();
+
+                while (rset.next()) {
+                	Substation sub = new Substation();
+                	
+                	sub.setSubstationID( new Integer(rset.getInt("SubstationID")) );
+                	sub.setSubstationName( rset.getString("SubstationName") );
+                	sub.setRouteID( new Integer(rset.getInt("RouteID")) );
+                	
+                	subList.add( sub );
+                }
+            }
+        }
+        catch( java.sql.SQLException e )
+        {
+            e.printStackTrace();
+        }
+        finally
+        {
+            try
+            {
+                if( pstmt != null ) pstmt.close();
+                if (rset != null) rset.close();
+            }
+            catch( java.sql.SQLException e2 )
+            {
+                e2.printStackTrace();
+            }
+        }
+
+        Substation[] subs = new Substation[ subList.size() ];
+        subList.toArray( subs );
+        return subs;
     }
 
     public Integer getSubstationID() {

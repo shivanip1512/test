@@ -6,7 +6,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
+import com.cannontech.database.db.stars.*;
 import com.cannontech.stars.web.StarsOperator;
+import com.cannontech.stars.web.StarsUser;
+import com.cannontech.stars.web.util.CommonUtils;
+import com.cannontech.stars.xml.*;
 import com.cannontech.stars.xml.serialize.ControlHistory;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInfo;
 import com.cannontech.stars.xml.serialize.StarsFailure;
@@ -86,11 +90,13 @@ public class GetLMCtrlHistAction implements ActionBase {
             }
             
 			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
+			StarsUser user = (StarsUser) session.getAttribute("USER");
 			StarsCustAccountInfo accountInfo = null;
+			
 			if (operator != null)
-				accountInfo = (StarsCustAccountInfo) operator.getAttribute("CUSTOMER_ACCOUNT_INFORMATION");
+				accountInfo = (StarsCustAccountInfo) operator.getAttribute(CommonUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION");
 			else
-				accountInfo = (StarsCustAccountInfo) session.getAttribute("CUSTOMER_ACCOUNT_INFORMATION");
+				accountInfo = (StarsCustAccountInfo) user.getAttribute(CommonUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION");
 				
 			StarsLMPrograms programs = accountInfo.getStarsLMPrograms();
 			for (int i = 0; i < programs.getStarsLMProgramCount(); i++) {
@@ -100,9 +106,9 @@ public class GetLMCtrlHistAction implements ActionBase {
 			}
 
 			if (operator != null)
-	            operator.setAttribute( "$$LM_CONTROL_HISTORY", ctrlHist );
+	            operator.setAttribute( CommonUtils.TRANSIENT_ATT_LEADING + "LM_CONTROL_HISTORY", ctrlHist );
 	        else
-	        	session.setAttribute( "$$LM_CONTROL_HISTORY", ctrlHist );
+	        	user.setAttribute( CommonUtils.TRANSIENT_ATT_LEADING + "LM_CONTROL_HISTORY", ctrlHist );
             
             return 0;
         }
@@ -117,6 +123,16 @@ public class GetLMCtrlHistAction implements ActionBase {
         try {
             StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
             StarsOperation respOper = new StarsOperation();
+            
+			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
+			StarsUser user = (StarsUser) session.getAttribute("USER");
+            if (operator == null && user == null) {
+            	StarsFailure failure = new StarsFailure();
+            	failure.setStatusCode( StarsConstants.FAILURE_CODE_SESSION_INVALID );
+            	failure.setDescription( "Session invalidated, please login again" );
+            	respOper.setStarsFailure( failure );
+            	return SOAPUtil.buildSOAPMessage( respOper );
+            }
 
             StarsGetLMControlHistory getHist = reqOper.getStarsGetLMControlHistory();
             StarsLMControlHistory starsCtrlHist = new StarsLMControlHistory();

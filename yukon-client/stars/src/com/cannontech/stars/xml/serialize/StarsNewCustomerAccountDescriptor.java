@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsNewCustomerAccountDescriptor.java,v 1.6 2002/09/11 15:30:17 zyao Exp $
+ * $Id: StarsNewCustomerAccountDescriptor.java,v 1.7 2002/09/19 15:26:44 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.6 $ $Date: 2002/09/11 15:30:17 $
+ * @version $Revision: 1.7 $ $Date: 2002/09/19 15:26:44 $
 **/
 public class StarsNewCustomerAccountDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
@@ -91,38 +91,68 @@ public class StarsNewCustomerAccountDescriptor extends org.exolab.castor.xml.uti
         fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
-        //-- _starsLMPrograms
-        desc = new XMLFieldDescriptorImpl(StarsLMPrograms.class, "_starsLMPrograms", "stars-LMPrograms", NodeType.Element);
+        //-- _starsLMProgramSignUps
+        desc = new XMLFieldDescriptorImpl(StarsLMProgramSignUps.class, "_starsLMProgramSignUps", "stars-LMProgramSignUps", NodeType.Element);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsNewCustomerAccount target = (StarsNewCustomerAccount) object;
-                return target.getStarsLMPrograms();
+                return target.getStarsLMProgramSignUps();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
                     StarsNewCustomerAccount target = (StarsNewCustomerAccount) object;
-                    target.setStarsLMPrograms( (StarsLMPrograms) value);
+                    target.setStarsLMProgramSignUps( (StarsLMProgramSignUps) value);
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
             }
             public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new StarsLMPrograms();
+                return new StarsLMProgramSignUps();
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _starsLMPrograms
+        //-- validation code for: _starsLMProgramSignUps
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
+        desc.setValidator(fieldValidator);
+        
+        //-- _starsLogin
+        desc = new XMLFieldDescriptorImpl(StarsLogin.class, "_starsLogin", "stars-Login", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsNewCustomerAccount target = (StarsNewCustomerAccount) object;
+                return target.getStarsLogin();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsNewCustomerAccount target = (StarsNewCustomerAccount) object;
+                    target.setStarsLogin( (StarsLogin) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new StarsLogin();
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _starsLogin
+        fieldValidator = new FieldValidator();
         desc.setValidator(fieldValidator);
         
     } //-- com.cannontech.stars.xml.serialize.StarsNewCustomerAccountDescriptor()

@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Hashtable;
+import java.util.Enumeration;
 
 import com.cannontech.database.data.web.Operator;
 
@@ -22,6 +23,10 @@ public class StarsOperator extends Operator {
 	
 	public Object getAttribute(Object name) {
 		return attributes.get( name );
+	}
+	
+	public Enumeration getAttributeNames() {
+		return attributes.keys();
 	}
 	
 	public void setAttribute(Object name, Object value) {

@@ -62,6 +62,32 @@ public class Substation extends DBPersistent {
     public void retrieve() throws java.sql.SQLException {
         getSubstation().retrieve();
     }
+    
+    public static com.cannontech.database.db.stars.Substation[] getAllSubstations(Integer energyCompanyID) {
+    	java.sql.Connection conn = null;
+
+    	try {
+            conn = com.cannontech.database.PoolManager.getInstance().getConnection(
+                        com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+            if (conn == null) return null;
+            
+            return com.cannontech.database.db.stars.Substation.getAllSubstations(energyCompanyID, conn);
+    	}
+    	catch (Exception e) {
+    		e.printStackTrace();
+    	}
+    	finally {
+    		try {
+    			if (conn != null) conn.close();
+    		}
+    		catch (Exception e) {
+    			e.printStackTrace();
+    		}
+    	}
+    	
+    	return null;
+    }
+    
 	/**
 	 * Returns the substation.
 	 * @return com.cannontech.database.db.stars.Substation

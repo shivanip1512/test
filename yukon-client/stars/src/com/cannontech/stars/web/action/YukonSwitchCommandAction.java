@@ -13,6 +13,7 @@ import com.cannontech.database.Transaction;
 import com.cannontech.message.porter.ClientConnection;
 import com.cannontech.servlet.PILConnectionServlet;
 import com.cannontech.stars.web.StarsOperator;
+import com.cannontech.stars.web.util.CommonUtils;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInfo;
 import com.cannontech.stars.xml.serialize.StarsDisableService;
 import com.cannontech.stars.xml.serialize.StarsEnableService;
@@ -54,9 +55,9 @@ public class YukonSwitchCommandAction implements ActionBase {
 			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
 			StarsCustAccountInfo accountInfo = null;
 			if (operator != null)
-				accountInfo = (StarsCustAccountInfo) operator.getAttribute("CUSTOMER_ACCOUNT_INFORMATION");
+				accountInfo = (StarsCustAccountInfo) operator.getAttribute(CommonUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION");
 			else
-				accountInfo = (StarsCustAccountInfo) session.getAttribute("CUSTOMER_ACCOUNT_INFORMATION");
+				accountInfo = (StarsCustAccountInfo) session.getAttribute(CommonUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION");
             if (accountInfo == null) return null;
 
             String action = req.getParameter("action");
@@ -130,9 +131,9 @@ public class YukonSwitchCommandAction implements ActionBase {
 			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
 			StarsCustAccountInfo accountInfo = null;
 			if (operator != null)
-				accountInfo = (StarsCustAccountInfo) operator.getAttribute("CUSTOMER_ACCOUNT_INFORMATION");
+				accountInfo = (StarsCustAccountInfo) operator.getAttribute(CommonUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION");
 			else
-				accountInfo = (StarsCustAccountInfo) session.getAttribute("CUSTOMER_ACCOUNT_INFORMATION");
+				accountInfo = (StarsCustAccountInfo) session.getAttribute(CommonUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION");
 				
 			StarsInventories inventories = accountInfo.getStarsInventories();
 			for (int i = 0; i < inventories.getStarsLMHardwareCount(); i++) {

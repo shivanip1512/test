@@ -8,6 +8,7 @@ import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.database.Transaction;
 import com.cannontech.stars.web.StarsOperator;
+import com.cannontech.stars.web.util.CommonUtils;
 import com.cannontech.stars.xml.StarsCustAccountFactory;
 import com.cannontech.stars.xml.StarsCustomerAddressFactory;
 import com.cannontech.stars.xml.StarsCustomerContactFactory;
@@ -44,9 +45,9 @@ public class UpdateCustAccountAction implements ActionBase {
 			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
 			StarsCustAccountInfo accountInfo = null;
 			if (operator != null)
-				accountInfo = (StarsCustAccountInfo) operator.getAttribute("CUSTOMER_ACCOUNT_INFORMATION");
+				accountInfo = (StarsCustAccountInfo) operator.getAttribute(CommonUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION");
 			else
-				accountInfo = (StarsCustAccountInfo) session.getAttribute("CUSTOMER_ACCOUNT_INFORMATION");
+				accountInfo = (StarsCustAccountInfo) session.getAttribute(CommonUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION");
             if (accountInfo == null) return null;
 
             StarsCustomerAccount account = accountInfo.getStarsCustomerAccount();
@@ -67,8 +68,11 @@ public class UpdateCustAccountAction implements ActionBase {
             propAddr.setZip( req.getParameter("SZip") );
             account.setStreetAddress( propAddr );
 
+			com.cannontech.stars.xml.serialize.Substation starsSub = new com.cannontech.stars.xml.serialize.Substation();
+			starsSub.setContent( req.getParameter("Substation") );
+			
             StarsSiteInformation siteInfo = new StarsSiteInformation();
-            siteInfo.setSubstationName( req.getParameter("Substation") );
+            siteInfo.setSubstation( starsSub );
             siteInfo.setFeeder( req.getParameter("Feeder") );
             siteInfo.setPole( req.getParameter("Pole") );
             siteInfo.setTransformerSize( req.getParameter("TranSize") );
@@ -160,10 +164,10 @@ public class UpdateCustAccountAction implements ActionBase {
             siteInfoDB.setPole( starsSiteInfo.getPole() );
             siteInfoDB.setTransformerSize( starsSiteInfo.getTransformerSize() );
             siteInfoDB.setServiceVoltage( starsSiteInfo.getServiceVoltage() );
-            
+/*            
             com.cannontech.database.db.stars.Substation substation = siteInfo.getSubstation();
-            substation.setSubstationName( starsSiteInfo.getSubstationName() );
-            
+            substation.setSubstationName( starsSiteInfo.getSubstation().getContent() );
+*/            
            Transaction.createTransaction( Transaction.UPDATE, account ).execute();
 
 			StarsSuccess success = new StarsSuccess();

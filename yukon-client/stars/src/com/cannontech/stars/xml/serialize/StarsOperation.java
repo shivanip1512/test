@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsOperation.java,v 1.6 2002/09/11 15:30:19 zyao Exp $
+ * $Id: StarsOperation.java,v 1.7 2002/09/19 15:26:45 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,7 +23,7 @@ import org.xml.sax.ContentHandler;
 /**
  * Root element
  * 
- * @version $Revision: 1.6 $ $Date: 2002/09/11 15:30:19 $
+ * @version $Revision: 1.7 $ $Date: 2002/09/19 15:26:45 $
 **/
 public class StarsOperation implements java.io.Serializable {
 
@@ -45,9 +45,15 @@ public class StarsOperation implements java.io.Serializable {
     **/
     private StarsNewCustomerAccount _starsNewCustomerAccount;
 
+    private StarsProgramSignUp _starsProgramSignUp;
+
     private StarsSearchCustomerAccount _starsSearchCustomerAccount;
 
     private StarsSearchCustomerAccountResponse _starsSearchCustomerAccountResponse;
+
+    private StarsGetCustomerAccount _starsGetCustomerAccount;
+
+    private StarsGetCustomerAccountResponse _starsGetCustomerAccountResponse;
 
     /**
      * Update a customer account
@@ -153,6 +159,27 @@ public class StarsOperation implements java.io.Serializable {
     } //-- StarsGetCallReportHistoryResponse getStarsGetCallReportHistoryResponse() 
 
     /**
+     * Returns the value of field 'starsGetCustomerAccount'.
+     * 
+     * @return the value of field 'starsGetCustomerAccount'.
+    **/
+    public StarsGetCustomerAccount getStarsGetCustomerAccount()
+    {
+        return this._starsGetCustomerAccount;
+    } //-- StarsGetCustomerAccount getStarsGetCustomerAccount() 
+
+    /**
+     * Returns the value of field
+     * 'starsGetCustomerAccountResponse'.
+     * 
+     * @return the value of field 'starsGetCustomerAccountResponse'.
+    **/
+    public StarsGetCustomerAccountResponse getStarsGetCustomerAccountResponse()
+    {
+        return this._starsGetCustomerAccountResponse;
+    } //-- StarsGetCustomerAccountResponse getStarsGetCustomerAccountResponse() 
+
+    /**
      * Returns the value of field 'starsGetEnrollmentPrograms'.
      * 
      * @return the value of field 'starsGetEnrollmentPrograms'.
@@ -250,6 +277,16 @@ public class StarsOperation implements java.io.Serializable {
     {
         return this._starsNewCustomerAccount;
     } //-- StarsNewCustomerAccount getStarsNewCustomerAccount() 
+
+    /**
+     * Returns the value of field 'starsProgramSignUp'.
+     * 
+     * @return the value of field 'starsProgramSignUp'.
+    **/
+    public StarsProgramSignUp getStarsProgramSignUp()
+    {
+        return this._starsProgramSignUp;
+    } //-- StarsProgramSignUp getStarsProgramSignUp() 
 
     /**
      * Returns the value of field 'starsSearchCustomerAccount'.
@@ -419,6 +456,28 @@ public class StarsOperation implements java.io.Serializable {
     } //-- void setStarsGetCallReportHistoryResponse(StarsGetCallReportHistoryResponse) 
 
     /**
+     * Sets the value of field 'starsGetCustomerAccount'.
+     * 
+     * @param starsGetCustomerAccount the value of field
+     * 'starsGetCustomerAccount'.
+    **/
+    public void setStarsGetCustomerAccount(StarsGetCustomerAccount starsGetCustomerAccount)
+    {
+        this._starsGetCustomerAccount = starsGetCustomerAccount;
+    } //-- void setStarsGetCustomerAccount(StarsGetCustomerAccount) 
+
+    /**
+     * Sets the value of field 'starsGetCustomerAccountResponse'.
+     * 
+     * @param starsGetCustomerAccountResponse the value of field
+     * 'starsGetCustomerAccountResponse'.
+    **/
+    public void setStarsGetCustomerAccountResponse(StarsGetCustomerAccountResponse starsGetCustomerAccountResponse)
+    {
+        this._starsGetCustomerAccountResponse = starsGetCustomerAccountResponse;
+    } //-- void setStarsGetCustomerAccountResponse(StarsGetCustomerAccountResponse) 
+
+    /**
      * Sets the value of field 'starsGetEnrollmentPrograms'.
      * 
      * @param starsGetEnrollmentPrograms the value of field
@@ -520,6 +579,17 @@ public class StarsOperation implements java.io.Serializable {
     {
         this._starsNewCustomerAccount = starsNewCustomerAccount;
     } //-- void setStarsNewCustomerAccount(StarsNewCustomerAccount) 
+
+    /**
+     * Sets the value of field 'starsProgramSignUp'.
+     * 
+     * @param starsProgramSignUp the value of field
+     * 'starsProgramSignUp'.
+    **/
+    public void setStarsProgramSignUp(StarsProgramSignUp starsProgramSignUp)
+    {
+        this._starsProgramSignUp = starsProgramSignUp;
+    } //-- void setStarsProgramSignUp(StarsProgramSignUp) 
 
     /**
      * Sets the value of field 'starsSearchCustomerAccount'.

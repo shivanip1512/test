@@ -9,6 +9,7 @@ import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.database.Transaction;
+import com.cannontech.database.data.multi.MultiDBPersistent;
 import com.cannontech.stars.xml.StarsCustomerAddressFactory;
 import com.cannontech.stars.xml.StarsCustomerContactFactory;
 import com.cannontech.stars.xml.serialize.AdditionalContact;
@@ -16,7 +17,7 @@ import com.cannontech.stars.xml.serialize.BillingAddress;
 import com.cannontech.stars.xml.serialize.PrimaryContact;
 import com.cannontech.stars.xml.serialize.StarsCustomerAccount;
 import com.cannontech.stars.xml.serialize.StarsFailure;
-import com.cannontech.stars.xml.serialize.StarsLMPrograms;
+import com.cannontech.stars.xml.serialize.StarsLMProgramSignUps;
 import com.cannontech.stars.xml.serialize.StarsNewCustomerAccount;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsSiteInformation;
@@ -24,6 +25,7 @@ import com.cannontech.stars.xml.serialize.StarsSuccess;
 import com.cannontech.stars.xml.serialize.StreetAddress;
 import com.cannontech.stars.xml.serialize.StarsCustSelectionList;
 import com.cannontech.stars.xml.serialize.StarsSelectionListEntry;
+import com.cannontech.stars.xml.serialize.StarsLogin;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
 
@@ -50,7 +52,6 @@ public class NewCustAccountAction implements ActionBase {
             account.setIsCommercial( Boolean.valueOf(req.getParameter("Commercial")).booleanValue() );
             account.setCompany( req.getParameter("Company") );
             account.setAccountNotes( req.getParameter("AcctNotes") );
-
             account.setPropertyNumber( req.getParameter("PropNo") );
             account.setPropertyNotes( req.getParameter("PropNotes") );
 
@@ -62,12 +63,16 @@ public class NewCustAccountAction implements ActionBase {
             propAddr.setZip( req.getParameter("SZip") );
             account.setStreetAddress( propAddr );
 
+			com.cannontech.stars.xml.serialize.Substation starsSub = new com.cannontech.stars.xml.serialize.Substation();
+			starsSub.setEntryID( Integer.parseInt(req.getParameter("Substation")) );
+			
             StarsSiteInformation siteInfo = new StarsSiteInformation();
-            siteInfo.setSubstationName( req.getParameter("Substation") );
+            siteInfo.setSubstation( starsSub );
             siteInfo.setFeeder( req.getParameter("Feeder") );
             siteInfo.setPole( req.getParameter("Pole") );
             siteInfo.setTransformerSize( req.getParameter("TranSize") );
             siteInfo.setServiceVoltage( req.getParameter("ServVolt") );
+            account.setStarsSiteInformation( siteInfo );
 
             BillingAddress billAddr = new BillingAddress();
             billAddr.setStreetAddr1( req.getParameter("BAddr1") );
@@ -100,8 +105,17 @@ public class NewCustAccountAction implements ActionBase {
 	        }
 
 			newAccount.setStarsCustomerAccount( account );
-			newAccount.setStarsLMPrograms( new StarsLMPrograms() );
-
+/*			
+			newAccount.setStarsLMProgramSignUps( new StarsLMProgramSignUps() );
+			
+	        String userName = req.getParameter("UserName");
+	        if (userName != null && userName.length() > 0) {
+		        StarsLogin login = new StarsLogin();
+		        login.setUsername( req.getParameter("UserName") );
+		        login.setPassword( req.getParameter("Password") );
+				newAccount.setStarsLogin( login );
+	        }
+*/
             StarsOperation operation = new StarsOperation();
             operation.setStarsNewCustomerAccount( newAccount );
 
@@ -138,20 +152,26 @@ public class NewCustAccountAction implements ActionBase {
 
                 energyCompanyID = new Integer( (int)operator.getEnergyCompanyID() );
             }
+            
+            com.cannontech.database.data.company.EnergyCompanyBase energyCompany =
+            		new com.cannontech.database.data.company.EnergyCompanyBase();
+            energyCompany.setEnergyCompanyID( energyCompanyID );            
+            Transaction.createTransaction( Transaction.RETRIEVE, energyCompany ).execute();
 
             StarsNewCustomerAccount newAccount = reqOper.getStarsNewCustomerAccount();
             StarsCustomerAccount starsAccount = newAccount.getStarsCustomerAccount();
 
+			/* Begin set CustomerAccount information */
             com.cannontech.database.data.stars.customer.CustomerAccount account =
                     new com.cannontech.database.data.stars.customer.CustomerAccount();
             com.cannontech.database.db.stars.customer.CustomerAccount accountDB = account.getCustomerAccount();
             
+            /** Begin set Customer information **/
             com.cannontech.database.data.stars.customer.CustomerBase customer =
             		new com.cannontech.database.data.stars.customer.CustomerBase();
             com.cannontech.database.db.stars.customer.CustomerBase customerDB = customer.getCustomerBase();
             
             com.cannontech.database.db.customer.CustomerContact primContact = customer.getPrimaryContact();
-            primContact.setContactID( primContact.getNextContactID() );
             StarsCustomerContactFactory.setCustomerContact( primContact, starsAccount.getPrimaryContact() );
             
             Vector contactVct = customer.getCustomerContactVector();
@@ -164,80 +184,69 @@ public class NewCustAccountAction implements ActionBase {
             
             Hashtable selectionList = (Hashtable) operator.getAttribute( "CUSTOMER_SELECTION_LIST" );
             StarsCustSelectionList custTypeList = (StarsCustSelectionList) selectionList.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_CUSTOMERTYPE );
-            
             Integer custTypeResID = null;
             for (int i = 0; i < custTypeList.getStarsSelectionListEntryCount(); i++) {
             	StarsSelectionListEntry entry = custTypeList.getStarsSelectionListEntry(i);
             	if (entry.getYukonDefinition().equalsIgnoreCase( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_CUSTTYPE_RES ))
             		custTypeResID = new Integer( entry.getEntryID() );
             }
-            
-            customer.getEnergyCompanyBase().getEnergyCompany().setEnergyCompanyID( energyCompanyID );
-            customerDB.setCustomerID( customerDB.getNextCustomerID() );
-            customerDB.setPrimaryContactID( primContact.getContactID() );
             customerDB.setCustomerTypeID( custTypeResID );
-            customerDB.setTimeZone( Calendar.getInstance().getTimeZone().getID() );
+            
+            customer.setEnergyCompanyBase( energyCompany );
+            customerDB.setTimeZone( "CST" );	// How to set the proper time zone???
             customerDB.setPaoID( new Integer(0) );
-
-            Transaction transaction = Transaction.createTransaction( Transaction.INSERT, customer );
-            transaction.execute();
+            /** End set Customer information **/
             
             com.cannontech.database.db.customer.CustomerAddress billAddr = account.getBillingAddress();
-            billAddr.setAddressID( billAddr.getNextAddressID() );
             StarsCustomerAddressFactory.setCustomerAddress( billAddr, starsAccount.getBillingAddress() );
             
+            /** Begin set AccountSite information **/
             com.cannontech.database.data.stars.customer.AccountSite acctSite = account.getAccountSite();
             com.cannontech.database.db.stars.customer.AccountSite acctSiteDB = acctSite.getAccountSite();
             
             com.cannontech.database.db.customer.CustomerAddress propAddr = acctSite.getStreetAddress();
-            propAddr.setAddressID( propAddr.getNextAddressID() );
             StarsCustomerAddressFactory.setCustomerAddress( propAddr, starsAccount.getStreetAddress() );
 
-			com.cannontech.database.data.stars.customer.SiteInformation siteInfo = acctSite.getSiteInformation();            
+			/*** Begin set SiteInformation information ***/
+			com.cannontech.database.data.stars.customer.SiteInformation siteInfo = acctSite.getSiteInformation();
             com.cannontech.database.db.stars.customer.SiteInformation siteInfoDB = siteInfo.getSiteInformation();
             StarsSiteInformation starsSiteInfo = starsAccount.getStarsSiteInformation();
             
-            siteInfoDB.setSiteID( siteInfoDB.getNextSiteID() );
-            siteInfoDB.setSubstationID( Integer.valueOf(starsSiteInfo.getSubstationName()) );
+            siteInfoDB.setSubstationID( new Integer(starsSiteInfo.getSubstation().getEntryID()) );
             siteInfoDB.setFeeder( starsSiteInfo.getFeeder() );
             siteInfoDB.setPole( starsSiteInfo.getPole() );
             siteInfoDB.setTransformerSize( starsSiteInfo.getTransformerSize() );
             siteInfoDB.setServiceVoltage( starsSiteInfo.getServiceVoltage() );
+            /*** End set SiteInformation information ***/
             
-            transaction = Transaction.createTransaction( Transaction.INSERT, siteInfo );
-            transaction.execute();
-            
-            acctSiteDB.setAccountSiteID( acctSiteDB.getNextAccountSiteID() );
-            acctSiteDB.setSiteInformationID( siteInfoDB.getSiteID() );
             acctSiteDB.setSiteNumber( starsAccount.getPropertyNumber() );
-            acctSiteDB.setStreetAddressID( propAddr.getAddressID() );
             acctSiteDB.setPropertyNotes( starsAccount.getPropertyNotes() );
+            /** End set AccountSite information **/
+
+/*            
+            com.cannontech.database.db.customer.CustomerLogin login = account.getCustomerLogin();
+            StarsLogin starsLogin = newAccount.getStarsLogin();
+            if (starsLogin != null) {
+	            login.setUserName( starsLogin.getUsername() );
+	            login.setUserPassword( starsLogin.getPassword() );
+	            login.setLoginType( "STARS" );		// Add "STARS" type to CustomerLogin db class later
+            }
+            else {
+            	login.setUserName( starsAccount.getAccountNumber() );
+            	login.setUserPassword( "" );
+	            login.setLoginType( "STARS" );
+            }
             
-            acctSite.setStreetAddress( propAddr );
-            
-            transaction = Transaction.createTransaction( Transaction.INSERT, acctSite );
-            transaction.execute();
-            
-            com.cannontech.database.data.company.EnergyCompanyBase company =
-            		new com.cannontech.database.data.company.EnergyCompanyBase();
-            company.setEnergyCompanyID( energyCompanyID );
-            
-            transaction = Transaction.createTransaction( Transaction.RETRIEVE, company );
-            transaction.execute();
-            
-            accountDB.setAccountID( accountDB.getNextAccountID() );
-            accountDB.setAccountSiteID( acctSiteDB.getAccountSiteID() );
             accountDB.setAccountNumber( starsAccount.getAccountNumber() );
-            accountDB.setCustomerID( customerDB.getCustomerID() );
-            accountDB.setBillingAddressID( billAddr.getAddressID() );
             accountDB.setAccountNotes( starsAccount.getAccountNotes() );
+*/
             
-            account.setBillingAddress( billAddr );
             account.setCustomerBase( customer );
-            account.setEnergyCompanyBase( company );
+            account.setEnergyCompanyBase( energyCompany );
+            //account.setCustomerLogin( login );
+            /* End set CustomerAccount information */
             
-            transaction = Transaction.createTransaction( Transaction.INSERT, account );
-            transaction.execute();
+            Transaction.createTransaction( Transaction.INSERT, account ).execute();
 
             StarsSuccess success = new StarsSuccess();
             respOper.setStarsSuccess( success );

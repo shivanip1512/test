@@ -8,6 +8,7 @@ import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.database.Transaction;
 import com.cannontech.stars.web.StarsOperator;
+import com.cannontech.stars.web.util.CommonUtils;
 import com.cannontech.stars.xml.serialize.ServiceCompany;
 import com.cannontech.stars.xml.serialize.ServiceType;
 import com.cannontech.stars.xml.serialize.StarsFailure;
@@ -87,14 +88,14 @@ public class GetServiceHistoryAction implements ActionBase {
             	
             	com.cannontech.database.db.stars.CustomerListEntry entry = new com.cannontech.database.db.stars.CustomerListEntry();
             	entry.setEntryID( orders[i].getWorkTypeID() );
-            	Transaction.createTransaction( Transaction.RETRIEVE, entry );
+            	Transaction.createTransaction( Transaction.RETRIEVE, entry ).execute();
             	ServiceType servType = new ServiceType();
             	servType.setEntryID( entry.getEntryID().intValue() );
             	servType.setContent( entry.getEntryText() );
             	servHist.setServiceType( servType );
             	
             	entry.setEntryID( orders[i].getCurrentStateID() );
-            	Transaction.createTransaction( Transaction.RETRIEVE, entry );
+            	Transaction.createTransaction( Transaction.RETRIEVE, entry ).execute();
             	servHist.setCurrentState( entry.getEntryText() );
             	
             	Hashtable selectionLists = (Hashtable) operator.getAttribute( "CUSTOMER_SELECTION_LIST" );
@@ -150,7 +151,7 @@ public class GetServiceHistoryAction implements ActionBase {
             if (getServHistResp == null) return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
             
 			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
-            operator.setAttribute("$$SERVICE_HISTORY", getServHistResp);
+            operator.setAttribute(CommonUtils.TRANSIENT_ATT_LEADING + "SERVICE_HISTORY", getServHistResp);
             
 			return 0;
         }
