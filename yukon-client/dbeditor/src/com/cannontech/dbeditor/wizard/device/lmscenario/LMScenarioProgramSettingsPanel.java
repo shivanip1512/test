@@ -63,50 +63,7 @@ public LMScenarioProgramSettingsPanel() {
 	super();
 	initialize();
 }
-public void addNewScenarioProgramToTable(Integer progID)
-{
-	LMProgramDirect heavyProgram = (LMProgramDirect)getProgramHash().get(progID);
-		
-	//do the gears, man
-	Vector theGears = heavyProgram.getLmProgramDirectGearVector();
-	LMProgramDirectGear startingGear = null;
-	JComboBox gearBox = new JComboBox();
-	com.cannontech.common.gui.util.ComboBoxTableRenderer comboBxRender = new com.cannontech.common.gui.util.ComboBoxTableRenderer();
-	javax.swing.table.TableColumn startGearColumn = getProgramsTable().getColumnModel().getColumn(LMControlScenarioProgramTableModel.STARTGEAR_COLUMN);
-		
-	//populate the gearbox
-	startingGear = (LMProgramDirectGear)theGears.elementAt(0);
-	for(int x = 0; x < theGears.size(); x++)
-	{
-		gearBox.addItem((LMProgramDirectGear)theGears.elementAt(x));
-		comboBxRender.addItem((LMProgramDirectGear)theGears.elementAt(x));
-	}
-		
-	//gearBox.setSelectedItem(startingGear);
 
-	// Create and add the gear column renderer	
-	startGearColumn.setCellRenderer(comboBxRender);
-	javax.swing.JComboBox combo = new javax.swing.JComboBox();
-	combo.setBackground(getProgramsTable().getBackground());
-		
-	combo.addActionListener( new java.awt.event.ActionListener()
-	{
-		public void actionPerformed(java.awt.event.ActionEvent e) 
-		{
-			fireInputUpdate();
-		}
-	});
-
-	//create the editor for the gear field
-	startGearColumn.setCellEditor( new javax.swing.DefaultCellEditor(combo) );			
-	startGearColumn.setCellRenderer(comboBxRender);
-	getProgramsTable().setCellEditor( new javax.swing.DefaultCellEditor(gearBox) );
-		
-	//add the new row
-	getTableModel().addRowValue( heavyProgram.getPAOName(), new Integer(0), 
-		new Integer(0), startingGear);
-
-}
 /**
  * connEtoC1:  (ProgramsTable.mouse.mousePressed(java.awt.event.MouseEvent) --> LMScenarioProgramSettingsPanel.programsTable_MousePressed(Ljava.awt.event.MouseEvent;)V)
  * @param arg1 java.awt.event.MouseEvent
@@ -478,25 +435,6 @@ private javax.swing.JTable getProgramsTable()
 			startDelayColumn.setCellRenderer(rend);
 			stopOffsetColumn.setCellRenderer(rend);
 			
-			//start out with just a textfield editor and renderer for gears
-			javax.swing.JTextField gearName = new javax.swing.JTextField();
-			gearName.addCaretListener(new javax.swing.event.CaretListener()
-			{
-				public void caretUpdate(javax.swing.event.CaretEvent e) {
-					userWantsTheirGears();
-					fireInputUpdate();	
-				}
-			});
-			gearName.setHorizontalAlignment( javax.swing.JTextField.CENTER );
-			javax.swing.DefaultCellEditor gearEd = new javax.swing.DefaultCellEditor(gearName);
-			gearEd.setClickCountToStart(1);
-			startGearColumn.setCellEditor( gearEd );
-
-			javax.swing.table.DefaultTableCellRenderer gearRend = new javax.swing.table.DefaultTableCellRenderer();
-			gearRend.setHorizontalAlignment( gearName.getHorizontalAlignment() );
-			startDelayColumn.setCellRenderer(gearRend);
-			stopOffsetColumn.setCellRenderer(gearRend); 
-			
 			//create the editor for the gear field
 			javax.swing.JComboBox combo = new javax.swing.JComboBox();
 			combo.setBackground(getProgramsTable().getBackground());
@@ -505,10 +443,28 @@ private javax.swing.JTable getProgramsTable()
 			{
 				public void actionPerformed(java.awt.event.ActionEvent e) 
 				{
+					//save the edited cell
+					if( getProgramsTable().isEditing() )
+						getProgramsTable().getCellEditor().stopCellEditing();
 					fireInputUpdate();
 				}
 			});
+			combo.addMouseListener( new java.awt.event.MouseListener()
+			{
+				public void mouseClicked(java.awt.event.MouseEvent e) {}
+				public void mouseEntered(java.awt.event.MouseEvent e) 
+				{
+					//need to populate the combo editor to the program's gears
+					userWantsTheirGears();
+				}
+				public void mousePressed(java.awt.event.MouseEvent e) {}
+				public void mouseReleased(java.awt.event.MouseEvent e) {}
+				public void mouseExited(java.awt.event.MouseEvent e) {}
+			});
 			startGearColumn.setCellEditor( new ComboBoxTableEditor(combo) );
+			
+			//for the gears, just use a default renderer
+			startGearColumn.setCellRenderer(rend);
 				
 		}	
 			
@@ -536,6 +492,9 @@ private LMControlScenarioProgramTableModel getTableModel()
  */
 public Object getValue(Object o) 
 {
+	//make sure cells get saved even though they might be currently being edited
+	if( getProgramsTable().isEditing() )
+		getProgramsTable().getCellEditor().stopCellEditing();
 	
 	LMScenario scen = (LMScenario)o;
 	
@@ -673,7 +632,19 @@ public void jButtonAdd_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
 	{
 		Integer programID = new Integer(((LiteYukonPAObject)availablePrograms[h]).getLiteID());
 		//add it to the editable table and make it a scenario program
-		addNewScenarioProgramToTable(programID);
+		LMProgramDirect heavyProgram = (LMProgramDirect)getProgramHash().get(programID);
+		
+		//do the gears, man
+		Vector theGears = heavyProgram.getLmProgramDirectGearVector();
+		LMProgramDirectGear startingGear = null;
+	
+		
+		//populate the gearbox
+		startingGear = (LMProgramDirectGear)theGears.elementAt(0);
+	
+		//add the new row
+		getTableModel().addRowValue( heavyProgram.getPAOName(), new Integer(0), 
+			new Integer(0), startingGear);
 		
 		//update the available programs list
 		for(int y = 0; y < allAvailable.size(); y++)
@@ -836,8 +807,20 @@ public void setValue(Object o)
 		
 }
 
+//This is what tries to fill the StartGearColumn combo boxes with the correct gears
 public void userWantsTheirGears()
 {
+	int currentRow = getProgramsTable().getSelectedRow();
+	javax.swing.table.TableColumn startGearColumn = getProgramsTable().getColumnModel().getColumn(LMControlScenarioProgramTableModel.STARTGEAR_COLUMN);
+
+	LMControlScenarioProgramTableModel scenModel = (LMControlScenarioProgramTableModel) getTableModel();
+
+	String programName = scenModel.getProgramNameAt(currentRow);
+	LMProgramDirect currentProgram = (LMProgramDirect)getProgramHash().get(programName);
 	
+	startGearColumn.getCellEditor().getTableCellEditorComponent(
+				getProgramsTable(), currentProgram.getLmProgramDirectGearVector(), true, 
+				currentRow, LMControlScenarioProgramTableModel.STARTGEAR_COLUMN);
+
 }
 }

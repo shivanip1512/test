@@ -251,11 +251,13 @@ public class LMControlScenarioProgramTableModel extends AbstractTableModel
 					break;
 				
 				case STARTDELAY_COLUMN:
-					((RowValue)getRows().elementAt(row)).setStartDelay(new Integer(value.toString()));
+					if(value.toString().compareTo("") != 0)
+						((RowValue)getRows().elementAt(row)).setStartDelay(new Integer(value.toString()));
 					break;
 				
 				case STOPOFFSET_COLUMN:
-					((RowValue)getRows().elementAt(row)).setStopOffset(new Integer(value.toString()));
+					if(value.toString().compareTo("") != 0)
+						((RowValue)getRows().elementAt(row)).setStopOffset(new Integer(value.toString()));
 					break;
 				
 				case STARTGEAR_COLUMN:
