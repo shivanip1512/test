@@ -62,11 +62,11 @@ import com.cannontech.message.util.ClientConnection;
 import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.util.ServletUtil;
 
-public class ReportClient extends javax.swing.JPanel implements java.awt.event.ActionListener
-{
-    public static final URL REPORT_GIF = ReportClient.class.getResource("/ReportIcon.gif");
+public class ReportClient extends javax.swing.JPanel implements java.awt.event.ActionListener {
+	
+	public static final URL ANALYSIS_GIF = ReportClient.class.getResource("/AnalysisIcon.gif");
 	private String HELP_FILE = CtiUtilities.getHelpDirPath() + "Yukon Reporting Help.chm";
-
+		
 	private javax.swing.JSplitPane ivjLeftRightSplitPane = null;
 	private static javax.swing.JFrame reportClientFrame = null;
 	private javax.swing.JMenuBar menuBar = null;
@@ -902,7 +902,7 @@ private javax.swing.JButton getGenerateButton() {
 			CTILogger.info(" ## DBChangeMsg ##\n" + msg);
 			((DeviceCheckBoxTreeModel)getCheckBoxTreeViewPanel().getTree().getModel()).update();
 
-			// Refreshes the device tree panel in the GraphClient. (Main Frame)	
+			// Refreshes the device tree panel in the ReportClient. (Main Frame)	
 			Object sel = getCheckBoxTreeViewPanel().getSelectedItem();
 			getCheckBoxTreeViewPanel().refresh();
 
@@ -977,7 +977,7 @@ private javax.swing.JButton getGenerateButton() {
 	public void showPopupMessage(String message, int messageType )
 	{
 		javax.swing.JFrame popupFrame = new javax.swing.JFrame();
-		popupFrame.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage("ReportIcon.gif"));
+		popupFrame.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage(ReportClient.ANALYSIS_GIF));
 		javax.swing.JOptionPane.showMessageDialog(popupFrame,
 		message, "Yukon Reporting", messageType);
 		return;
@@ -995,14 +995,10 @@ private javax.swing.JButton getGenerateButton() {
 			javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());
 
 			javax.swing.JFrame mainFrame = new javax.swing.JFrame();
-            mainFrame.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage(REPORT_GIF));
+			mainFrame.setIconImage( java.awt.Toolkit.getDefaultToolkit().getImage(ReportClient.ANALYSIS_GIF));
 			mainFrame.setTitle("Yukon Reporting");
         
-            SplashWindow splash = new SplashWindow(
-                    mainFrame,
-                    CtiUtilities.CTISMALL_GIF,
-                    "Loading " + System.getProperty("cti.app.name") + "...",
-                    new Font("dialog", Font.BOLD, 14 ), Color.black, Color.blue, 2 );
+			SplashWindow splash = new SplashWindow( mainFrame, CtiUtilities.CTISMALL_GIF, "Loading " + System.getProperty("cti.app.name") + "...", new Font("dialog", Font.BOLD, 14 ), Color.black, Color.blue, 2 );
         
 //			ClientSession session = ClientSession.getInstance(); 
 //			if(!session.establishSession(mainFrame))
