@@ -1,0 +1,63 @@
+a.Link1:active {color: #000000}
+a.Link1:visited {color: #000000}
+a.Link1:link {color: #000000}
+a.Link1:hover {color: #000000}
+a.Link2:active {color: #FFFFFF}
+a.Link2:visited {color: #FFFFFF}
+a.Link2:link {color: #FFFFFF}
+a.Link2:hover {color: #FFFFFF}
+a.Link3:active {color: #99FFFF}
+a.Link3:visited {color: #99FFFF}
+a.Link3:link {color: #99FFFF}
+a.Link3:hover {color: #99FFFF}
+a.Link4:active {color: #666699}
+a.Link4:visited {color: #666699}
+a.Link4:link {color: #666699}
+a.Link4:hover {color: #666699}
+
+.MainText {  font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #000000}
+.TitleHeader {  font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #000000; font-weight:bold}
+.esubTitleHeader {  font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #000000; background-color: #CCCC80; font-weight:bold}
+
+.SubText {  font-family: Arial, Helvetica, sans-serif; font-size: 11px; color: #000000}
+.SubtitleHeader {  font-family: Arial, Helvetica, sans-serif; font-size: 11px; color: #000000; font-weight:bold}
+
+.Header {  font-family: Arial, Helvetica, sans-serif; font-size: 16px; font-weight: bold; color: #FFFFFF}
+.PageHeader {  font-family: Arial, Helvetica, sans-serif; font-size: 12px;  color: #99FFFF; font-style: italic}
+.HeaderCell {  font-family: Arial, Helvetica, sans-serif; font-size: 11px; font-weight: bold; color: #000000; background-color: #CCCCCC}
+.esubHeaderCell {  font-family: Arial, Helvetica, sans-serif; font-size: 11px; color: #000000; background-color: #CCCC80}
+
+.TableCell {  font-family: Arial, Helvetica, sans-serif; font-size: 11px; color: #000000; background-color: #FFFFFF}
+.esubTableCell {  font-family: Arial, Helvetica, sans-serif; font-size: 11px; color: #FFFFFF; background-color: #000000}
+
+.TableCell1 {  font-family: Arial, Helvetica, sans-serif; font-size: 11px; color: #FFFFFF}
+.TableCell2 {  font-family: Arial, Helvetica, sans-serif; font-size: 11px; background-color: #CCCCCC}
+
+.NavHeader {  font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #FFCC66; font-style: italic}
+.NavGroup {  font-family: Arial, Helvetica, sans-serif; font-size: 11px; color: #FFFFFF; font-style: italic}
+.NavText {  font-family: Arial, Helvetica, sans-serif; font-size: 9px}
+.Nav {  font-family: Arial, Helvetica, sans-serif; font-size: 9px;  color: #99FFFF}
+.NavTextNoLink {  font-family: Arial, Helvetica, sans-serif; font-size: 9px; color: #FFFFFF}
+
+.cal_day_header {  background-color: #666699; height: 14px; width: 20px; font-size: 9px; font-weight: bold; color: #FFFFFF; text-align: center; cursor: default; border: 1px #FFFFFF outset; padding-top: 0px; padding-right: 0px; padding-bottom: 0px; padding-left: 0px}
+.cal_day_mouseover { font-size: 9px; font-weight: bold; color:#FFCC66; background-color: buttonface; height: 14px; width: 20px; text-align: center; cursor: default; border: 1px #FFFFFF outset; padding-top: 0px; padding-right: 0px; padding-bottom: 0px; padding-left: 0px}
+.cal_day_selected {  font-size: 9px; font-weight: bold; background-color: #99FFFF; height: 12px; width: 18px; text-align: center; cursor: default; border: 1px #CCCCCC inset; padding-top: 0px; padding-right: 0px; padding-bottom: 0px; padding-left: 0px}
+
+.Background {  background-color: #666699}
+.esubBackground {  background-color: #000000}
+.tooltip { position:absolute; font-family: Arial, Helvetica, sans-serif; font-size: 12px; font-style: normal; color: #FFFFFF; background-color: #666699; border: 3px #666699 outset; visibility: hidden; clip:  rect(   ); padding-top: 3px; padding-right: 3px; padding-bottom: 3px; padding-left: 3px}
+.tempText1 {  font-family: Arial, Helvetica, sans-serif; font-size: 36px; color: #003366; height: 50px; width: 65px}
+.tempText2 {  font-family: Arial, Helvetica, sans-serif; font-size: 35px; font-style: normal; color: #FF0000}
+.Clickable { cursor: hand; text-decoration: underline }
+.ErrorMsg { font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #FF0000 }
+.ConfirmMsg { font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #0000FF }
+
+.bgmenu {  font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #FFFFFF; text-decoration: none; background-color: #FFFFFF;  position:absolute; border: 1px #666699 outset; visibility: hidden; cursor:default; width:120 px;}
+.optmenu1 { font-family: Arial, Helvetica, sans-serif; font-size: 12px; text-decoration: none; background-color: #FFFFFF; color: #000000;   border: 1px #666699; cursor:default; width:120 px;}
+.optmenu2 { font-family: Arial, Helvetica, sans-serif; font-size: 12px; text-decoration: none; background-color: #666699; color: #FFFFFF;   border: 1px #666699; cursor:default; width:120 px;}
+.navmenu1 { font-family: Arial, Helvetica, sans-serif; font-size: 10px; text-decoration: none; background-color: #CCCCCC; color: #000000;   border: 1px #99FFFF; cursor:default; width:120 px;}
+.navmenu2 { font-family: Arial, Helvetica, sans-serif; font-size: 10px; text-decoration: none; background-color: #666699; color: #FFFFFF;   border: 1px #99FFFF; cursor:default; width:120 px;}
+.SchedText { font-family: Arial, Helvetica, sans-serif; font-size: 11px; color: #666699 }
+
+.LeftCell { font-family: Arial, Helvetica, sans-serif; font-size: 11px; color: #FFFFFF; background-color: #666699}
+.BGNoRepeat {  background-color: #CCCCCC; background-image: url(colorbar.jpg); background-repeat: no-repeat; background-position: center}
