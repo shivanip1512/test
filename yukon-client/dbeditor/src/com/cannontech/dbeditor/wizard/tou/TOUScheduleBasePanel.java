@@ -398,7 +398,7 @@ private javax.swing.JTable getJTableRateOffsets() {
 			rate.addItem("B");
 			rate.addItem("C");
 			rate.addItem("D");
-			JTextField otherField = new JTextField();
+			JTextFieldTimeEntry timeField = new JTextFieldTimeEntry();
 			rate.addKeyListener(new java.awt.event.KeyAdapter() 
 			{
 				public void keyTyped(java.awt.event.KeyEvent e) 
@@ -406,7 +406,7 @@ private javax.swing.JTable getJTableRateOffsets() {
 					fireInputUpdate();
 				};
 			});
-			otherField.addKeyListener(new java.awt.event.KeyAdapter() 
+			timeField.addKeyListener(new java.awt.event.KeyAdapter() 
 			{
 				public void keyTyped(java.awt.event.KeyEvent e) 
 				{
@@ -414,12 +414,8 @@ private javax.swing.JTable getJTableRateOffsets() {
 				};
 			});
 		
-			otherField.setDocument( new TextFieldDocument(
-				TextFieldDocument.STRING_LENGTH_4,
-				TextFieldDocument.INVALID_CHARS_TOURATEOFFSETS) );
-		
-			otherField.setHorizontalAlignment( javax.swing.JTextField.CENTER );
-			javax.swing.DefaultCellEditor ed = new javax.swing.DefaultCellEditor(otherField);
+			timeField.setHorizontalAlignment( javax.swing.JTextField.CENTER );
+			javax.swing.DefaultCellEditor ed = new javax.swing.DefaultCellEditor(timeField);
 			javax.swing.DefaultCellEditor ed2 = new javax.swing.DefaultCellEditor(rate);
 			ed.setClickCountToStart(2);
 			ed2.setClickCountToStart(1);
@@ -429,7 +425,7 @@ private javax.swing.JTable getJTableRateOffsets() {
 			
 			//create our renderer for the Integer field
 			javax.swing.table.DefaultTableCellRenderer rend = new javax.swing.table.DefaultTableCellRenderer();
-			rend.setHorizontalAlignment( otherField.getHorizontalAlignment() );
+			rend.setHorizontalAlignment( timeField.getHorizontalAlignment() );
 			switchOffsetColumn.setCellRenderer(rend);
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
