@@ -38,12 +38,11 @@
               <table width="500" border="0" cellspacing="0" cellpadding="0">
                 <tr> 
                   <td class="MainText"> 
-                    <div align="center">Click &quot;Assign&quot; to assign the 
-                      current selection list entries to the values appeared in 
-                      the import file, or click &quot;New&quot; to create a new 
-                      selection list.<br>
+                    <div align="center">Click &quot;Assign&quot; to map values 
+                      appeared in the import files to selection list entries in 
+                      STARS.<br>
                       A list name followed by a &quot;<font color="#FF0000">*</font>&quot; 
-                      means the list is not assigned yet.</div>
+                      means that values in the list is not completely mapped yet.</div>
                   </td>
                 </tr>
               </table>

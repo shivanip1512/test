@@ -83,8 +83,8 @@ function setListEntry(form, value, idx) {
               <table width="600" border="0" cellspacing="0" cellpadding="0">
                 <tr> 
                   <td class="MainText"> 
-                    <div align="center">Select or enter a new selection list entry 
-                      for each value appeared in the import file.<br>
+                    <div align="center">Select or create a new selection list 
+                      entry for each value appeared in the import file.<br>
                       Uncheck the box before the import value if you don't want 
                       to assign any entry to it.</div>
                   </td>
