@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2004/06/23 18:38:31 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2004/12/14 22:34:26 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -58,6 +58,12 @@ int main(int argc, char* argv[] )
    slog.setOutputFile("simulate");
    slog.setToStdOut( (bool)(gConfigParms.getValueAsInt("YUKON_SIMULATE_TOSTDOUT",0)) );
    slog.setWriteInterval(1000);
+
+   blog.start();     // fire up the logger thread
+   blog.setOutputPath(gLogDirectory.data());
+   blog.setOutputFile("comstats");
+   blog.setToStdOut( false );
+   blog.setWriteInterval(15000);
 
    {
        CtiLockGuard<CtiLogger> doubt_guard(slog);
