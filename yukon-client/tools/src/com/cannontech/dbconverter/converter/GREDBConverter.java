@@ -75,9 +75,6 @@ public class GREDBConverter extends MessageFrameAdaptor
 	private HashMap deviceIDsMap = new HashMap(32);
 	private HashMap routeIDsMap = new HashMap(32);
 	
-	//example KEY<SW01> VALUES<LMProgram>
-	private HashMap programMap = new HashMap(32);
-
 	//example KEY<SW01> VALUES<SW - Anoka (Grp 1-2),SW - Anoka (Grp 1-3)>
 	private HashMap grpStratMap = new HashMap(32);
 
@@ -154,7 +151,7 @@ public class GREDBConverter extends MessageFrameAdaptor
 
 	private String unxConstrFileName = "constraints.txt";
 	private String unxLGrpFileName = "lgroup.txt";
-	private String unxPrgToGrpFileName = "cglg_assoc.txt";
+	private String unxPrgToGrpFileName = "cg_lg_code.txt"; //"cglg_assoc.txt";
 	private String unxScenFileName = "mgroup.txt";	
 	private String unxGearFileName = "ctrl_method.txt";
 
@@ -515,7 +512,7 @@ public boolean processLoadPrograms()
 		String[] line = lines.get(i).toString().split(",");
 
 		//ignore title line
-		if( i <= 2 || line.length <= 9 || line[6].length() <= 0 )
+		if( i <= 2 || line.length <= 9 )
 			continue;
 		
 		CTILogger.info("LOAD_PROGRAM line: " + lines.get(i).toString());
@@ -524,7 +521,7 @@ public boolean processLoadPrograms()
 		LMProgramDirect lmProgram =
 			(LMProgramDirect)LMFactory.createLoadManagement( DeviceTypes.LM_DIRECT_PROGRAM );
 
-		lmProgram.setName( line[4].trim() );
+		lmProgram.setName( line[4].trim() + " " + line[0].trim() );
 		lmProgram.getProgram().setControlType( LMProgramBase.OPSTATE_AUTOMATIC );
 
 		//set our unique own deviceID
@@ -547,7 +544,7 @@ public boolean processLoadPrograms()
 
 
 		//assign all the Groups to this Program
-		String stratID = lmProgram.getPAOName();
+		String stratID = line[4].trim(); //lmProgram.getPAOName();
 		ArrayList grpList = (ArrayList)grpStratMap.get( stratID );
 		for( int j = 0; grpList != null && j < grpList.size(); j++ )
 		{
@@ -597,7 +594,6 @@ public boolean processLoadPrograms()
 		
 
 		lmProgram.getLmProgramDirectGearVector().add( gear );
-		programMap.put( lmProgram.getPAOName(), lmProgram );
 		multi.getDBPersistentVector().add( lmProgram );
 
 	}
@@ -1856,16 +1852,14 @@ public boolean processUnxPrograms()
 		String[] line = lines.get(i).toString().split(",");
 
 		//ignore title line
-		if( i <= 1 || line.length <= 1 )
+		if( i <= 1 || line.length <= 2 )
 			continue;
 
 		addToListMap(
 			progNmToGrpNmMap,
 			line[0].trim(),   //program name
-			line[1].trim() ); //group name
+			line[1].trim() + " " + line[2].trim() ); //group name
 	}
-
-	programMap.clear();
 
 	/* Start reading through our Program to Group mapping file */		
 	String gearFile = getFullFileName(unxGearFileName);
@@ -1920,7 +1914,7 @@ public boolean processUnxPrograms()
 	lines = readFile(progFile);
 	for( int i = 0; i < lines.size(); i++ )
 	{
-		String[] line = lines .get(i).toString().split(",");
+		String[] line = lines.get(i).toString().split(",");
 
 		//ignore title line
 		if( i <= 1 || line.length <= 6 )
@@ -1967,11 +1961,11 @@ public boolean processUnxPrograms()
 		ArrayList grpNmeList = (ArrayList)progNmToGrpNmMap.get( lgid );
 		for( int j = 0; grpNmeList != null && j < grpNmeList.size(); j++ )
 		{
-			String cgid = (String)grpNmeList.get(j);
-			if( cgid == null )
+			String grpName = (String)grpNmeList.get(j);
+			if( grpName == null )
 				continue;
 			
-			LMGroup grp = (LMGroup)unxGrpNameToGrpMap.get( cgid );
+			LMGroup grp = (LMGroup)unxGrpNameToGrpMap.get( grpName );
 			if( grp == null )
 				continue;
 
@@ -2277,7 +2271,7 @@ public boolean processUnxLoadGroups()
 			//set our unique deviceID
 			newGroup.setDeviceID( new Integer(START_GROUP_ID++) );
 
-			unxGrpNameToGrpMap.put( grpCgid, newGroup );
+			unxGrpNameToGrpMap.put( newGroup.getPAOName(), newGroup );
 			multi.getDBPersistentVector().add( newGroup );
 		}
 		catch( Exception ex )
