@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.79 $
-* DATE         :  $Date: 2004/10/08 20:50:09 $
+* REVISION     :  $Revision: 1.80 $
+* DATE         :  $Date: 2004/10/12 20:15:55 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -185,6 +185,8 @@ bool NonViableConnection(const CtiConnectionManager *CM, void* d)
 CtiVanGogh::~CtiVanGogh()
 {
     PointMgr.storeDirtyRecords();
+
+    _signalMsgQueue.clearAndDestroy();
 }
 
 int CtiVanGogh::execute()
@@ -316,7 +318,7 @@ void CtiVanGogh::VGMainThread()
                         {
                             MessageLog = 0;
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " Dispatch has processed " << MessageCount << " messages." << endl;
+                            dout << RWTime() << " Dispatch has processed " << MessageCount << " inbound messages." << endl;
                         }
 
                         if(gDispatchDebugLevel & DISPATCH_DEBUG_MSGSFRMCLIENT)
@@ -1078,6 +1080,15 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                 }
             }
 
+            break;
+        }
+    case (CtiCommandMsg::Shutdown):
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+            bGCtrlC = TRUE;
             break;
         }
     default:
@@ -5963,7 +5974,7 @@ void CtiVanGogh::updateControlHistory( long pendid, int cause, const RWTime &the
                     else
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") AR : " << ppc.getControl().getActiveRestore(  ) << " " << ppc.getControl().getControlCompleteTime() << " < " << ppc.getControl().getPreviousLogTime() << endl;
                     }
                 }
                 break;
