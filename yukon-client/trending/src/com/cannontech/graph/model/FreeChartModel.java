@@ -9,7 +9,7 @@ public class FreeChartModel
 {
 	private long pointId;
 	private com.jrefinery.data.TimeSeriesDataPair [] dataPairArray = null;
-/** 
+/**
  * FreeChartModel constructor comment.
  */
 public FreeChartModel() {

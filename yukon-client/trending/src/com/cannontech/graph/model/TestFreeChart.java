@@ -16,100 +16,83 @@ import com.jrefinery.chart.ChartFactory;
 import com.jrefinery.chart.ChartPanel;
 import com.jrefinery.chart.TextTitle;
 
-public class TestFreeChart extends com.jrefinery.ui.ApplicationFrame
+public class TestFreeChart //extends com.jrefinery.chart.JFreeChart// com.jrefinery.ui.ApplicationFrame
 {
-
-    protected BasicTimeSeries series;
-    protected FreeChartModel [] chartModelsArray = null;
-
-    /**
-     * A demonstration application showing a quarterly time series containing a null value.
-     */
-    public TestFreeChart(String title) {
-
-        super(title);
-		java.util.Vector data = hitDatabase();
-		
-        series = new BasicTimeSeries("Minute Data", com.jrefinery.data.Second.class);
-
-		com.jrefinery.data.TimeSeriesCollection dataset = new com.jrefinery.data.TimeSeriesCollection();
-		
-        if( chartModelsArray != null)
-        {
-	        for ( int i = 0; i < chartModelsArray.length; i++)
-	        {
-		        for (int j = 0; j < chartModelsArray.length; j++)
-				{
-					series.add((com.jrefinery.data.TimeSeriesDataPair)((FreeChartModel)chartModelsArray[i]).getDataPairArray()[j]);
-				}
-				dataset.addSeries(series);
-				series = new BasicTimeSeries("LALALA data", com.jrefinery.data.Second.class);
-	        }
-        }
-        //this.series.add(new Quarter(1, 2001), 500.2);
-        //this.series.add(new Quarter(2, 2001), 694.1);
-        //this.series.add(new Quarter(3, 2001), 734.4);
-        //this.series.add(new Quarter(4, 2001), 453.2);
-        //this.series.add(new Quarter(1, 2002), 500.2);
-        //this.series.add(new Quarter(2, 2002), null);
-        //this.series.add(new Quarter(3, 2002), 734.4);
-        //this.series.add(new Quarter(4, 2002), 453.2);
-        //TimeSeriesCollection dataset = new TimeSeriesCollection(series);
-        // create a title with Unicode characters (currency symbols in this case) to see if it works
-        String chartTitle = "TEST";
-        JFreeChart chart = ChartFactory.createTimeSeriesChart(chartTitle, "Time", "Value",
-                                                              dataset, true);
-
-        //chart.addTitle(new TextTitle(subtitle));
-        chart.getXYPlot().addHorizontalLine(new Double(550));
-        ChartPanel chartPanel = new ChartPanel(chart);
-        this.setContentPane(chartPanel);
-
-    }
+	private static com.cannontech.data.graph.GraphDefinition gDef;
+    protected static BasicTimeSeries series;
+    protected static FreeChartModel dataModels[] = null;
 /**
  * Retrieves the data for the given point list for the date
  * range indicated in the startDate and endDate.
  * Creation date: (10/3/00 5:53:52 PM)
  */
-public java.util.Vector hitDatabase() 
+public static FreeChartModel[] hitDatabase() 
 {
-	return null;
-	/*
-	java.text.SimpleDateFormat format = new java.text.SimpleDateFormat("dd-MMM-yyyy");
-	StringBuffer sql = new StringBuffer("SELECT distinct pointid, TimeStamp,Value FROM RawPointHistory where pointid = 5" + 
-		" AND TIMESTAMP > '"  + format.format(com.cannontech.util.ServletUtil.getToday()) + 
-		"' order by pointid, timestamp");
-	
-		//+ new java.util.Date() + " and pointid = 44");
+	java.util.ArrayList dataSeries = gDef.getGraphDataSeries();
+	java.util.Iterator iter = dataSeries.iterator();
+
+	if( gDef.getGraphDataSeries().isEmpty())
+		return null;
 		
+	//for ( int i = 0; i < dataSeries.size(); i ++)
+	//{
+		//((com.cannontech.db.graph.GraphDataSeries)dataSeries.get(i)).getPointID();
+	
+	//java.util.Vector dataSeriesVec = new java.util.Vector(gDef.get
+	
+	java.text.SimpleDateFormat format = new java.text.SimpleDateFormat("dd-MMM-yyyy");
+	
+	StringBuffer sql = new StringBuffer("SELECT DISTINCT POINTID, TIMESTAMP, VALUE "
+		+ "FROM RAWPOINTHISTORY WHERE POINTID IN (");
+
+		int pointIdIndex = 0;
+		for (pointIdIndex = 0; pointIdIndex < dataSeries.size();pointIdIndex++ )
+		{
+			if( ((com.cannontech.db.graph.GraphDataSeries)dataSeries.get(pointIdIndex)).getType().equalsIgnoreCase("graph"))
+			{
+				sql.append(((com.cannontech.db.graph.GraphDataSeries)dataSeries.get(pointIdIndex)).getPointID().toString());
+				pointIdIndex++;
+				break;
+			}
+		}
+	
+		for ( int i = pointIdIndex; i < dataSeries.size(); i ++)
+		{
+			if(((com.cannontech.db.graph.GraphDataSeries)dataSeries.get(i)).getType().equalsIgnoreCase("graph"))
+			{
+				sql.append(", " + ((com.cannontech.db.graph.GraphDataSeries)dataSeries.get(i)).getPointID().toString());
+			}
+		}
+		sql.append(") AND TIMESTAMP > '" + format.format(com.cannontech.web.util.ServletUtil.getYesterday()) + "' ");
+		sql.append(" ORDER BY POINTID, TIMESTAMP");
+			
 	java.sql.Connection conn = null;
 	java.sql.Statement stmt = null;
 	java.sql.ResultSet rset = null;
 
-	java.util.Vector dataSeriesVector = new java.util.Vector(0);
-	
+	FreeChartModel[] chartModelsArray = null;
 	try
 	{
-		conn = com.cannontech.database.PoolManager.getInstance().getConnection(com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
+		conn = com.cannontech.database.PoolManager.getInstance().getConnection(com.cannontech.util.CtiUtilities.getDatabaseAlias());
 
 		if( conn == null )
 		{
-			System.out.println(getClass() + ":  Error getting database connection.");
+			System.out.println(":  Error getting database connection.");
 			return null;
 		}
 		else
 		{
 			System.out.println("Executing:  " + sql.toString() );
 
-			FreeChartModel model = new FreeChartModel();
-			
 			com.jrefinery.data.TimeSeriesDataPair dataPair = null;
 			stmt = conn.createStatement();	
 			rset = stmt.executeQuery(sql.toString());
 
-			chartModelsArray = new FreeChartModel[2];	//guessing on the size during testing.
-			
+			java.util.Vector dataPairVector = new java.util.Vector(0);			
+			FreeChartModel model = new FreeChartModel();
+			chartModelsArray = new FreeChartModel[dataSeries.size()];	//guessing on the size during testing.
 			long lastPointId = -1;
+			int pointCount = 0;
 			
 			while( rset.next() )
 			{
@@ -119,15 +102,15 @@ public java.util.Vector hitDatabase()
 				{
 					if( lastPointId != -1)	//not the first one!
 					{
+						//Save the data you've collected into the array of models (chartmodelsArray).
 						com.jrefinery.data.TimeSeriesDataPair[] dataPairArray =
-							new com.jrefinery.data.TimeSeriesDataPair[dataSeriesVector.size()];
-						dataSeriesVector.toArray(dataPairArray);
+							new com.jrefinery.data.TimeSeriesDataPair[dataPairVector.size()];
+						dataPairVector.toArray(dataPairArray);
 						model.setDataPairArray(dataPairArray);
-						dataSeriesVector.clear();
-						chartModelsArray[0] = model;
-				
-						lastPointId = pointID;
+						dataPairVector.clear();
+						chartModelsArray[pointCount++] = model;
 					}
+					lastPointId = pointID;					
 					//(re)-initialize for a new freechartmodel.
 					model = new FreeChartModel();
 					model.setPointId(pointID);
@@ -141,17 +124,15 @@ public java.util.Vector hitDatabase()
 				dataPair = new com.jrefinery.data.TimeSeriesDataPair(tp, val);
 				
 				System.out.println(tp + " and " +val);
-				dataSeriesVector.add(dataPair);
+				dataPairVector.add(dataPair);
 			}
-			model.setPointId(pointID);
-			com.jrefinery.data.TimeSeriesDataPair[] dataPairArray = new com.jrefinery.data.TimeSeriesDataPair[dataSeriesVector.size()];
-			dataSeriesVector.toArray(dataPairArray);		
+
+			com.jrefinery.data.TimeSeriesDataPair[] dataPairArray = 
+				new com.jrefinery.data.TimeSeriesDataPair[dataPairVector.size()];
+			dataPairVector.toArray(dataPairArray);		
 			model.setDataPairArray(dataPairArray);
-			dataSeriesVector.clear();
-			chartModelsArray[0] = model;			
-			lastPointId = pointID;
-		
-			chartModelsArray[0] = model;
+			dataPairVector.clear();
+			chartModelsArray[pointCount++] = model;			
 		}
 	}
 	catch( java.sql.SQLException e )
@@ -171,17 +152,16 @@ public java.util.Vector hitDatabase()
 			return null;
 		}	
 	}
-	return dataSeriesVector;
-	*/
+	return chartModelsArray;
 }
     /**
      * Starting point for the demonstration application.
      */
     public static void main(String[] args) {
 
-        TestFreeChart demo = new TestFreeChart("Time Series Demo 1");
+        //TestFreeChart demo = new TestFreeChart("Time Series Demo 1");
 
-        demo.addWindowListener(new java.awt.event.WindowAdapter()
+  /*      demo.addWindowListener(new java.awt.event.WindowAdapter()
 		{
 			public void windowClosing(java.awt.event.WindowEvent e)
 			{
@@ -191,6 +171,77 @@ public java.util.Vector hitDatabase()
         
         demo.pack();
         demo.setVisible(true);
-
+*/
     }
+/**
+ * Insert the method's description here.
+ * Creation date: (6/20/2002 8:01:46 AM)
+ */
+public static void showFreeChart(com.jrefinery.chart.JFreeChart fChart, com.cannontech.data.graph.GraphDefinition graphDef)
+{
+	gDef = graphDef;
+	FreeChartModel [] dataModels = null;
+	dataModels = hitDatabase();
+
+	series = new BasicTimeSeries("Minute Data", com.jrefinery.data.Second.class);
+	com.jrefinery.data.TimeSeriesCollection dataset = new com.jrefinery.data.TimeSeriesCollection();
+
+	//double average = 0;
+	if( dataModels != null)
+	{
+		for ( int i = 0; i < dataModels.length; i++)
+		{
+			FreeChartModel model = dataModels[i];
+			if( model != null)
+			{
+				Number[] valArray = new Number[model.getDataPairArray().length];
+				for (int j = 0; j < model.getDataPairArray().length; j++)
+				{
+					com.jrefinery.data.TimeSeriesDataPair dp = (com.jrefinery.data.TimeSeriesDataPair)model.getDataPairArray()[j];
+					series.add(dp);
+					//valArray[j] = dp.getValue();
+				}
+				series.setDescription("description" + i);
+				series.setDomainDescription("values" + i);
+				series.setRangeDescription("times" + i);
+				series.setName("HHHHHHHHHHHHHHH" + i);
+				dataset.addSeries(series);
+
+				//series = new BasicTimeSeries("LALALA data", com.jrefinery.data.Second.class);
+				//average = com.jrefinery.data.Statistics.getAverage(valArray);
+
+				series = new BasicTimeSeries("LALALA data", com.jrefinery.data.Second.class);
+			}
+		}
+	}
+	// create a title with Unicode characters (currency symbols in this case) to see if it works
+	String chartTitle = gDef.getGraphDefinition().getName().toString();
+	//com.jrefinery.chart.data.MovingAveragePlotFitAlgorithm mavg = new com.jrefinery.chart.data.MovingAveragePlotFitAlgorithm();
+	//mavg.setPeriod(30);
+	//com.jrefinery.chart.data.PlotFit pf = new com.jrefinery.chart.data.PlotFit(dataset, mavg);
+	//dataset = pf.getFit();
+
+	//fChart = null;
+	//fChart = ChartFactory.createTimeSeriesChart(chartTitle, "Time", "Value",dataset, true);
+
+	//com.jrefinery.chart.Plot plot = chart.getPlot();
+	//plot.setssetShapeFactory())
+	//fChart.addTitle(new TextTitle(chartTitle));
+	fChart.getXYPlot().setDataset(dataset);
+	fChart.getXYPlot().setSeriesPaint(0,java.awt.Color.green);
+	//chart.getXYPlot().addHorizontalLine(new Double(average));
+
+	//this.setLegend()
+	com.jrefinery.chart.StandardLegend legend = new com.jrefinery.chart.StandardLegend(fChart);
+	legend.setAnchor(com.jrefinery.chart.Legend.SOUTH);
+	legend.setItemFont(new java.awt.Font("dialog", java.awt.Font.ITALIC, 10));
+	fChart.setLegend(legend);
+
+	//setFreeChart(chart);
+	//ChartPanel chartPanel = new ChartPanel(chart);
+	//this.setContentPane(chartPanel);
+
+	//this.pack();
+	//this.setVisible(true);
+ }
 }

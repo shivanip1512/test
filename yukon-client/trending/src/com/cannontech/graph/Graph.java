@@ -13,11 +13,11 @@ package com.cannontech.graph;
  * @author:  Aaron Lauinger 
  */
 import com.klg.jclass.chart.JCChart;
-import com.cannontech.message.dispatch.message.*;
+import com.cannontech.vangogh.messages.*;
 import com.cannontech.graph.model.*;
 import com.cannontech.graph.buffer.html.*;
 import com.cannontech.graph.GraphDataCalculations;
-import com.cannontech.util.ServletUtil;
+import com.cannontech.web.util.ServletUtil;
 
 public class Graph implements GraphDataFormats, GraphModelType
 {
@@ -30,7 +30,7 @@ public class Graph implements GraphDataFormats, GraphModelType
 	// This is the type of data series the graph will load
 	// !HACK!HACK! AL- a value of null will cause all types to be loaded!
 	
-	private String currentSeriesType = com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES;
+	private String currentSeriesType = com.cannontech.db.graph.GraphDataSeries.GRAPH_SERIES;
 
 	// Signals that a peak series exists and it peaks will be displayed on summary tab.
 	private boolean hasPeakSeries = false;
@@ -45,8 +45,10 @@ public class Graph implements GraphDataFormats, GraphModelType
 	private final int LF_DECIMAL_PLACES = 3;
 
 	private com.klg.jclass.chart.JCChart chart = null;
+	private com.jrefinery.chart.JFreeChart freeChart = null;
+	//private TestFreeChart freeChart = null;
 
-	private com.cannontech.database.data.graph.GraphDefinition currentGraphDefinition = null;
+	private com.cannontech.data.graph.GraphDefinition currentGraphDefinition = null;
 	private int currentTimePeriod = ServletUtil.getIntValue( ServletUtil.ONEDAY );  //default to first period in drop down periodComboBox
 
 	private GraphColors graphColors = new GraphColors();
@@ -306,8 +308,10 @@ public synchronized com.klg.jclass.chart.JCChart getChart()
  * Creation date: (5/16/2001 11:23:16 AM)
  * @return int
  */
-public com.cannontech.database.data.graph.GraphDefinition getCurrentGraphDefinition()
+public com.cannontech.data.graph.GraphDefinition getCurrentGraphDefinition()
 {
+
+		
 	return currentGraphDefinition;
 }
 /**
@@ -369,6 +373,24 @@ private synchronized javax.swing.JFrame getEncodeFrame() {
 public String[] getExportArray()
 {
 	return exportArray;
+}
+/**
+ * Insert the method's description here.
+ * Creation date: (6/20/2002 9:32:40 AM)
+ * @return com.jrefinery.chart.JFreeChart
+ */
+public synchronized com.jrefinery.chart.JFreeChart getFreeChart() 
+{
+	if( freeChart == null)
+	{
+
+		freeChart = com.jrefinery.chart.ChartFactory.createTimeSeriesChart(
+				"Default Test Chart", "Time", "Value", new com.jrefinery.data.TimeSeriesCollection(), true);
+
+		//if( getCurrentGraphDefinition() != null)
+			//freeChart = new TestFreeChart(getCurrentGraphDefinition()).getFreeChart();
+	}
+	return freeChart;
 }
 /**
  * Insert the method's description here.
@@ -591,10 +613,10 @@ private void initChartDataView(	GraphModel model,com.klg.jclass.chart.JCAxis xAx
  * (Old name = initModels(...), changed 6/21/01 when LD model added - SN)
  * Creation date: (10/5/00 3:37:29 PM)
  * @return GraphModelInterface[]
- * @param gDef com.cannontech.database.data.graph.GraphDefinition
+ * @param gDef com.cannontech.data.graph.GraphDefinition
  * @param type String The type of series we want in the models
  */
-private GraphModel[][] initGraphModels(com.cannontech.database.data.graph.GraphDefinition gDef, String seriesType )
+private GraphModel[][] initGraphModels(com.cannontech.data.graph.GraphDefinition gDef, String seriesType )
 {
 	java.util.List dataSeries = gDef.getGraphDataSeries();
 	java.util.Iterator iter = dataSeries.iterator();
@@ -625,7 +647,7 @@ private GraphModel[][] initGraphModels(com.cannontech.database.data.graph.GraphD
 		
 	while( iter.hasNext() )
 	{
-		com.cannontech.database.db.graph.GraphDataSeries ds = (com.cannontech.database.db.graph.GraphDataSeries) iter.next();
+		com.cannontech.db.graph.GraphDataSeries ds = (com.cannontech.db.graph.GraphDataSeries) iter.next();
 
 		if(  seriesType == null || ds.getType().equalsIgnoreCase(seriesType) )
 		{
@@ -634,7 +656,7 @@ private GraphModel[][] initGraphModels(com.cannontech.database.data.graph.GraphD
 				rightPoints.add( ds.getPointID() );
 				rightSeriesTypes.add( ds.getType() );
 				rightUoMids.add( ds.getUoMId() );				
-				rightColors.add( com.cannontech.common.gui.util.Colors.getColor(ds.getColor().intValue()) );
+				rightColors.add( com.cannontech.gui.util.Colors.getColor(ds.getColor().intValue()) );
 				rightLabels.add( ds.getLabel() );
 				rightDevices.add( ds.getDeviceName() );							
 		
@@ -653,7 +675,7 @@ private GraphModel[][] initGraphModels(com.cannontech.database.data.graph.GraphD
 				leftPoints.add( ds.getPointID() );
 				leftSeriesTypes.add( ds.getType() );
 				leftUoMids.add( ds.getUoMId() );
-				leftColors.add( com.cannontech.common.gui.util.Colors.getColor(ds.getColor().intValue()) );			
+				leftColors.add( com.cannontech.gui.util.Colors.getColor(ds.getColor().intValue()) );			
 				leftLabels.add( ds.getLabel() );
 				leftDevices.add( ds.getDeviceName() );
 						
@@ -804,10 +826,10 @@ private GraphModel[][] initGraphModels(com.cannontech.database.data.graph.GraphD
  * (Old name = initModels(...), changed 6/21/01 when LD model added - SN)
  * Creation date: (10/5/00 3:37:29 PM)
  * @return GraphModelInterface[]
- * @param gDef com.cannontech.database.data.graph.GraphDefinition
+ * @param gDef com.cannontech.data.graph.GraphDefinition
  * @param type String The type of series we want in the models
  */
-private GraphModel[][] initGraphModels(com.cannontech.database.data.graph.GraphDefinition gDef, String seriesType, String anotherSeriesType )
+private GraphModel[][] initGraphModels(com.cannontech.data.graph.GraphDefinition gDef, String seriesType, String anotherSeriesType )
 {
 	java.util.List dataSeries = gDef.getGraphDataSeries();
 	java.util.Iterator iter = dataSeries.iterator();
@@ -838,7 +860,7 @@ private GraphModel[][] initGraphModels(com.cannontech.database.data.graph.GraphD
 		
 	while( iter.hasNext() )
 	{
-		com.cannontech.database.db.graph.GraphDataSeries ds = (com.cannontech.database.db.graph.GraphDataSeries) iter.next();
+		com.cannontech.db.graph.GraphDataSeries ds = (com.cannontech.db.graph.GraphDataSeries) iter.next();
 
 		if(  seriesType == null || ds.getType().equalsIgnoreCase(seriesType) 
 			|| ds.getType().equalsIgnoreCase(anotherSeriesType))
@@ -848,7 +870,7 @@ private GraphModel[][] initGraphModels(com.cannontech.database.data.graph.GraphD
 				rightPoints.add( ds.getPointID() );
 				rightSeriesTypes.add( ds.getType() );
 				rightUoMids.add( ds.getUoMId() );			
-				rightColors.add( com.cannontech.common.gui.util.Colors.getColor(ds.getColor().intValue()) );
+				rightColors.add( com.cannontech.gui.util.Colors.getColor(ds.getColor().intValue()) );
 				rightLabels.add( ds.getLabel() );
 				rightDevices.add( ds.getDeviceName() );							
 		
@@ -867,7 +889,7 @@ private GraphModel[][] initGraphModels(com.cannontech.database.data.graph.GraphD
 				leftPoints.add( ds.getPointID() );
 				leftSeriesTypes.add( ds.getType() );
 				leftUoMids.add( ds.getUoMId() );
-				leftColors.add( com.cannontech.common.gui.util.Colors.getColor(ds.getColor().intValue()) );			
+				leftColors.add( com.cannontech.gui.util.Colors.getColor(ds.getColor().intValue()) );			
 				leftLabels.add( ds.getLabel() );
 				leftDevices.add( ds.getDeviceName() );
 						
@@ -1022,7 +1044,7 @@ private GraphModel[][] initGraphModels(com.cannontech.database.data.graph.GraphD
  */
 public static boolean isPeakSeries(String seriesType)
 {
-	return seriesType.equalsIgnoreCase(com.cannontech.database.db.graph.GraphDataSeries.PEAK_SERIES);
+	return seriesType.equalsIgnoreCase(com.cannontech.db.graph.GraphDataSeries.PEAK_SERIES);
 }
 /**
  * Retrieves the data for the given point list for the date
@@ -1035,11 +1057,11 @@ private int retrieveIntervalRate()
 	java.util.Vector pointsArrayVector = new java.util.Vector();
 	for (int i = 0; i < getCurrentGraphDefinition().getGraphDataSeries().size(); i++)
 	{
-		com.cannontech.database.db.graph.GraphDataSeries gds =
-			(com.cannontech.database.db.graph.GraphDataSeries) getCurrentGraphDefinition().getGraphDataSeries().get(i);
+		com.cannontech.db.graph.GraphDataSeries gds =
+			(com.cannontech.db.graph.GraphDataSeries) getCurrentGraphDefinition().getGraphDataSeries().get(i);
 		pointsArrayVector.add(new Integer(gds.getPointID().intValue()));
 		//for LoadDuration we want to only use the peak point if it exists, default to all pointsArray.
-		if ( gds.getType().equalsIgnoreCase(com.cannontech.database.db.graph.GraphDataSeries.PEAK_SERIES))
+		if ( gds.getType().equalsIgnoreCase(com.cannontech.db.graph.GraphDataSeries.PEAK_SERIES))
 			haveAPeakPoint = true;
 	}
 	*/
@@ -1127,9 +1149,9 @@ private int retrieveIntervalRate()
 /**
  * Insert the method's description here.
  * Creation date: (10/12/00 3:02:39 PM)
- * @param gDef com.cannontech.database.data.graph.GraphDefinition
+ * @param gDef com.cannontech.data.graph.GraphDefinition
  */
-public void setCurrentGraphDefinition(com.cannontech.database.data.graph.GraphDefinition gDef) 
+public void setCurrentGraphDefinition(com.cannontech.data.graph.GraphDefinition gDef) 
 {
 	currentGraphDefinition = gDef;
 } 
@@ -1362,24 +1384,30 @@ public static void setTreeMap(java.util.TreeMap newTreeMap)
 public void update()
 {
 	long timer = System.currentTimeMillis();
-	if( getSeriesType() == com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES )
+	if( getSeriesType() == com.cannontech.db.graph.GraphDataSeries.GRAPH_SERIES )
 		currentModels = initGraphModels( currentGraphDefinition, getSeriesType(), null);
-	else if( getSeriesType() == com.cannontech.database.db.graph.GraphDataSeries.PEAK_SERIES )
-		currentModels = initGraphModels( currentGraphDefinition, getSeriesType(), com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES );
-	else if( getSeriesType() == com.cannontech.database.db.graph.GraphDataSeries.USAGE_SERIES )
+	else if( getSeriesType() == com.cannontech.db.graph.GraphDataSeries.PEAK_SERIES )
+		currentModels = initGraphModels( currentGraphDefinition, getSeriesType(), com.cannontech.db.graph.GraphDataSeries.GRAPH_SERIES );
+	else if( getSeriesType() == com.cannontech.db.graph.GraphDataSeries.USAGE_SERIES )
 		currentModels = initGraphModels( currentGraphDefinition, getSeriesType(), null);
 
 	for (int i = 0; i < currentModels.length; i++)
 		for (int j = 0; currentModels[i] != null && j < currentModels[i].length; j++)
 		{
-			if( getModelType() == DATA_VIEW_MODEL)
+			if( getModelType() ==  DATA_VIEW_MODEL)
 			{
 				DataViewModel model = (DataViewModel) currentModels[i][j];
 				if (model == null)
 					continue;
 
 				model.setDatabaseAlias(getDatabaseAlias());
-				model.hitDatabase();
+				//model.hitDatabase();
+
+				TestFreeChart.showFreeChart(freeChart, currentGraphDefinition);
+				//TestFreeChart fChart = new TestFreeChart(currentGraphDefinition);
+				//fChart.setTitle("NEW");
+				//freeChart.getPlot().setDataset(	fChart.getFreeChart().getPlot().getDataset());
+				//freechart.showFreeChart(freechart);
 			}
 			else if( getModelType() == BAR_GRAPH_MODEL)
 			{
