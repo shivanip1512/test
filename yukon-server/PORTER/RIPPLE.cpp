@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/RIPPLE.cpp-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2005/02/10 23:23:54 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2005/02/18 14:35:55 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -212,7 +212,8 @@ void ApplyPortXLCUSet(const long key, CtiDeviceSPtr Dev, void* vpTXlcu)
 
         if( lcu->getAddress() == LCUGLOBAL )
         {
-            if( pOtherLCU->isLCULockedOut() || pOtherLCU->getControlInhibit() )
+            // 012805 CGP.  For Minnkota.  // if( pOtherLCU->isLCULockedOut() || pOtherLCU->getControlInhibit() )
+            if( pOtherLCU->getControlInhibit() )
             {
                 pOtherLCU->resetFlags( LCUTRANSMITSENT | LCUWASTRANSMITTING );  // This LCU is inhibited, it better not squawk
             }
