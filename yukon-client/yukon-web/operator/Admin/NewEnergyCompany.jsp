@@ -137,11 +137,9 @@ function addCustomerGroup(form) {
                       <tr> 
                         <td width="10%" align="right" class="TableCell" valign="top">Step 
                           2:</td>
-                        <td width="90%" class="TableCell"><span class="ConfirmMsg">Create 
-                          one or more login groups for operators and residential 
-                          customers (optional) in DBEditor. Enter the group names 
-                          below, separated by comma (or select from the list of 
-                          all login groups):</span> 
+                        <td width="90%" class="TableCell"><span class="ConfirmMsg">Select 
+                          one or more operator groups and one or more residential 
+                          customer groups (optional):</span> 
                           <table width="100%" border="0" cellspacing="0" cellpadding="3" class="TableCell">
                             <tr> 
                               <td width="25%" align="right">Operator Groups:</td>
@@ -194,9 +192,9 @@ function addCustomerGroup(form) {
                         <td width="10%" align="right" class="TableCell" valign="top">Step 
                           3:</td>
                         <td width="90%" class="TableCell"><span class="ConfirmMsg">Create 
-                          a default operator login (A default login not only belongs 
-                          to the first operator group you just created, but also 
-                          has the privilege to edit energy company configuration):</span> 
+                          a default operator login (the default login not only 
+                          belongs to the first operator group you just selected, 
+                          but also has the privilege to edit energy company settings):</span> 
                           <table width="100%" border="0" cellspacing="0" cellpadding="3" class="TableCell">
                             <tr> 
                               <td width="25%" align="right">Username:</td>
@@ -224,7 +222,7 @@ function addCustomerGroup(form) {
                           4:</td>
                         <td width="90%" class="ConfirmMsg"><span class="ConfirmMsg">Create 
                           a second operator login (with only the privileges defined 
-                          in the first operator group you just created):</span> 
+                          in the first operator group you just selected):</span> 
                           <table width="100%" border="0" cellspacing="0" cellpadding="3" class="TableCell">
                             <tr> 
                               <td width="25%" align="right">Username:</td>
