@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/exchange.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2003/03/13 19:35:27 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/02/18 14:27:23 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -93,6 +93,7 @@ public:
         {
             if(iStream->bad())
             {
+                iStream->clear();
 
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
