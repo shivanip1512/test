@@ -27,11 +27,17 @@
 	LiteYukonUser lYukonUser = (LiteYukonUser) session.getAttribute(ServletUtils.ATT_YUKON_USER);
 	StarsYukonUser user = (StarsYukonUser) session.getAttribute(ServletUtils.ATT_STARS_YUKON_USER);
 	
-	if (user != null && user != SOAPServer.getStarsYukonUser(lYukonUser))
+	if (user != null)
 	{
-		// User login no longer valid
-		response.sendRedirect(request.getContextPath() + "/servlet/LoginController?ACTION=LOGOUT");
-		return;
+		if (user.getUserID() != lYukonUser.getUserID()) {
+			// Stars user doesn't match the yukon user, clear it
+			user = null;
+		}
+		else if (user != SOAPServer.getStarsYukonUser(lYukonUser)) {
+			// User login no longer valid
+			response.sendRedirect(request.getContextPath() + "/servlet/LoginController?ACTION=LOGOUT");
+			return;
+		}
 	}
 	
 	if (user == null) {
