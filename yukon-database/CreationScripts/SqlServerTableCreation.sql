@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI SqlServer 2000                           */
-/* Created on:     2/25/2003 5:22:23 PM                         */
+/* Created on:     3/7/2003 11:43:49 AM                         */
 /*==============================================================*/
 
 
@@ -298,14 +298,6 @@ if exists (select 1
            where  id = object_id('CustomerLoginSerialGroup')
             and   type = 'U')
    drop table CustomerLoginSerialGroup
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('CustomerWebSettings')
-            and   type = 'U')
-   drop table CustomerWebSettings
 go
 
 
@@ -1277,6 +1269,14 @@ if exists (select 1
 go
 
 
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('YukonWebConfiguration')
+            and   type = 'U')
+   drop table YukonWebConfiguration
+go
+
+
 /*==============================================================*/
 /* Table : Address                                              */
 /*==============================================================*/
@@ -1739,19 +1739,6 @@ create table CustomerLoginSerialGroup (
 LoginID              numeric              not null,
 LMGroupID            numeric              not null,
 constraint PK_CUSTOMERLOGINSERIALGROUP primary key  (LoginID, LMGroupID)
-)
-go
-
-
-/*==============================================================*/
-/* Table : CustomerWebSettings                                  */
-/*==============================================================*/
-create table CustomerWebSettings (
-CustomerID           numeric              not null,
-DatabaseAlias        varchar(40)          not null,
-Logo                 varchar(60)          not null,
-HomeURL              varchar(60)          not null,
-constraint PK_CUSTOMERWEBSETTINGS primary key  (CustomerID)
 )
 go
 
@@ -2386,6 +2373,7 @@ create table EnergyCompany (
 EnergyCompanyID      numeric              not null,
 Name                 varchar(60)          not null,
 RouteID              numeric              not null,
+WebConfigID          numeric              not null,
 constraint PK_ENERGYCOMPANY primary key  (EnergyCompanyID)
 )
 go
@@ -4349,6 +4337,20 @@ go
 
 
 /*==============================================================*/
+/* Table : YukonWebConfiguration                                */
+/*==============================================================*/
+create table YukonWebConfiguration (
+ConfigurationID      NUMBER               not null,
+LogoLocation         VARCHAR2(100)        null,
+Description          VARCHAR2(500)        null,
+AlternateDisplayName VARCHAR2(50)         null,
+URL                  VARCHAR2(100)        null,
+constraint PK_YUKONWEBCONFIGURATION primary key  (ConfigurationID)
+)
+go
+
+
+/*==============================================================*/
 /* View: DISPLAY2WAYDATA_VIEW                                   */
 /*==============================================================*/
 create view DISPLAY2WAYDATA_VIEW (POINTID, POINTNAME , POINTTYPE , POINTSTATE , DEVICENAME, DEVICETYPE, DEVICECURRENTSTATE, DEVICEID, POINTVALUE, POINTQUALITY, POINTTIMESTAMP, UofM, TAGS) as
@@ -4583,12 +4585,6 @@ go
 alter table CustomerAdditionalContact
    add constraint FK_CstCont_CICstCont foreign key (ContactID)
       references Contact (ContactID)
-go
-
-
-alter table CustomerWebSettings
-   add constraint FK_CustWebSet_CICstBse foreign key (CustomerID)
-      references CICustomerBase (CustomerID)
 go
 
 
@@ -5261,6 +5257,12 @@ go
 alter table YukonUserRole
    add constraint FK_YkUsRlr_YkUs foreign key (UserID)
       references YukonUser (UserID)
+go
+
+
+alter table EnergyCompany
+   add constraint FK_YkWbC_EnC foreign key (WebConfigID)
+      references YukonWebConfiguration (ConfigurationID)
 go
 
 
