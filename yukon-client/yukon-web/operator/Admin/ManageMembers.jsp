@@ -5,7 +5,6 @@
 <%
 	if (request.getParameter("failed") != null)
 		errorMsg = "Failed to log into member energy company";
-	LiteStarsEnergyCompany liteEC = SOAPServer.getEnergyCompany(user.getEnergyCompanyID());
 %>
 <html>
 <head>

@@ -4,7 +4,6 @@
 <%@ page import="com.cannontech.database.data.lite.stars.*" %>
 <%
 	int orderID = Integer.parseInt(request.getParameter("OrderId"));
-	LiteStarsEnergyCompany liteEC = SOAPServer.getEnergyCompany(user.getEnergyCompanyID());
 	LiteWorkOrderBase liteOrder = liteEC.getWorkOrderBase(orderID, true);
 	StarsServiceRequest order = StarsLiteFactory.createStarsServiceRequest(liteOrder, liteEC);
 	

@@ -82,8 +82,7 @@ function validate(form) {
                         <td width="75%" class="TableCell"> 
                           <select name="OperatorGroup">
 <%
-		LiteStarsEnergyCompany liteEnergyCompany = SOAPServer.getEnergyCompany(user.getEnergyCompanyID());
-		com.cannontech.database.data.lite.LiteYukonGroup[] operGroups = liteEnergyCompany.getWebClientOperatorGroups();
+		com.cannontech.database.data.lite.LiteYukonGroup[] operGroups = liteEC.getWebClientOperatorGroups();
 		for (int i = 0; i < operGroups.length; i++) {
 %>
                             <option value="<%= operGroups[i].getGroupID() %>"><%= operGroups[i].getGroupName() %></option>

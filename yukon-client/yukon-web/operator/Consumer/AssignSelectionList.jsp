@@ -9,8 +9,7 @@
 	Hashtable preprocessedData = (Hashtable) session.getAttribute(ImportManager.PREPROCESSED_DATA);
 	TreeMap valueIDMap = (TreeMap) preprocessedData.get(listName);
 	
-	LiteStarsEnergyCompany ec = SOAPServer.getEnergyCompany(user.getEnergyCompanyID());
-	YukonSelectionList list = ec.getYukonSelectionList(listName);
+	YukonSelectionList list = liteEC.getYukonSelectionList(listName);
 %>
 <html>
 <head>

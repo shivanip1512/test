@@ -87,6 +87,8 @@
 	String confirmMsg = (String) session.getAttribute(ServletUtils.ATT_CONFIRM_MESSAGE);
 	session.removeAttribute(ServletUtils.ATT_CONFIRM_MESSAGE);
 	
+	LiteStarsEnergyCompany liteEC = null;
+	
 	StarsEnergyCompanySettings ecSettings = null;
 	StarsEnergyCompany energyCompany = null;
 	StarsEnrollmentPrograms categories = null;
@@ -94,7 +96,6 @@
 	StarsCustomerFAQs customerFAQs = null;
 	StarsExitInterviewQuestions exitQuestions = null;
 	StarsDefaultThermostatSchedules dftThermoSchedules = null;
-	
 	Hashtable selectionListTable = null;
 	
 	StarsCustAccountInformation accountInfo = null;
@@ -117,6 +118,8 @@
 	java.util.Vector custGraphs = null;
 
 	if (user != null) {
+		liteEC = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+		
 		ecSettings = (StarsEnergyCompanySettings) session.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
 		if (ecSettings != null) {   
 			energyCompany = ecSettings.getStarsEnergyCompany();
@@ -125,15 +128,15 @@
 			customerFAQs = ecSettings.getStarsCustomerFAQs();
 			exitQuestions = ecSettings.getStarsExitInterviewQuestions();
 			dftThermoSchedules = ecSettings.getStarsDefaultThermostatSchedules();
-		}
-		
-		if (ecSettings.getStarsCustomerSelectionLists() != null) {
-			selectionListTable = new Hashtable();
-			for (int i = 0; i < ecSettings.getStarsCustomerSelectionLists().getStarsCustSelectionListCount(); i++) {
-				StarsCustSelectionList list = ecSettings.getStarsCustomerSelectionLists().getStarsCustSelectionList(i);
-				selectionListTable.put( list.getListName(), list );
+			
+			if (ecSettings.getStarsCustomerSelectionLists() != null) {
+				selectionListTable = new Hashtable();
+				for (int i = 0; i < ecSettings.getStarsCustomerSelectionLists().getStarsCustSelectionListCount(); i++) {
+					StarsCustSelectionList list = ecSettings.getStarsCustomerSelectionLists().getStarsCustSelectionList(i);
+					selectionListTable.put( list.getListName(), list );
+				}
+				session.setAttribute(ServletUtils.ATT_CUSTOMER_SELECTION_LISTS, selectionListTable);
 			}
-			session.setAttribute(ServletUtils.ATT_CUSTOMER_SELECTION_LISTS, selectionListTable);
 		}
 		
 		accountInfo = (StarsCustAccountInformation) session.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
@@ -153,6 +156,8 @@
 			serviceHist = accountInfo.getStarsServiceRequestHistory();
 			thermSchedules = accountInfo.getStarsSavedThermostatSchedules();
 			userLogin = accountInfo.getStarsUser();
+			
+			liteEC.registerActiveAccount( accountInfo );
 		}
 	}
 	

@@ -77,6 +77,8 @@
 	String confirmMsg = (String) session.getAttribute(ServletUtils.ATT_CONFIRM_MESSAGE);
 	session.removeAttribute(ServletUtils.ATT_CONFIRM_MESSAGE);
 	
+	LiteStarsEnergyCompany liteEC = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+	
 	StarsEnergyCompanySettings ecSettings = (StarsEnergyCompanySettings)
 			session.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
 	StarsEnergyCompany energyCompany = ecSettings.getStarsEnergyCompany();
@@ -128,6 +130,8 @@
 		}
 		
 		thermSchedules = accountInfo.getStarsSavedThermostatSchedules();
+		
+		liteEC.registerActiveAccount( accountInfo );
 	}
 	
 	TimeZone tz = TimeZone.getDefault(); 

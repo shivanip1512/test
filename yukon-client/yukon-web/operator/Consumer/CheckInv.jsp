@@ -9,8 +9,6 @@
 <%@ page import="com.cannontech.stars.util.ObjectInOtherEnergyCompanyException" %>
 <%@ page import="com.cannontech.stars.web.servlet.InventoryManager" %>
 <%
-	LiteStarsEnergyCompany liteEC = com.cannontech.stars.web.servlet.SOAPServer.getEnergyCompany(user.getEnergyCompanyID());
-	
 	Object obj = session.getAttribute(InventoryManager.INVENTORY_TO_CHECK);
 	boolean inOther = (obj instanceof ObjectInOtherEnergyCompanyException);
 	LiteInventoryBase liteInv = (LiteInventoryBase) (inOther? ((ObjectInOtherEnergyCompanyException)obj).getObject() : obj);

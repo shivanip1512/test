@@ -515,8 +515,7 @@ function confirmCancel() {
               </table>
 <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN %>">
 <%
-	LiteStarsEnergyCompany liteEnergyCompany = SOAPServer.getEnergyCompany(user.getEnergyCompanyID());
-	com.cannontech.database.data.lite.LiteYukonGroup[] custGroups = liteEnergyCompany.getResidentialCustomerGroups();
+	com.cannontech.database.data.lite.LiteYukonGroup[] custGroups = liteEC.getResidentialCustomerGroups();
 	if (custGroups != null && custGroups.length > 0) {
 %>
               <table width="300" border="0" cellspacing="0" cellpadding="1">

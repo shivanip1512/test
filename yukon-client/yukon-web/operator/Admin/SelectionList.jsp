@@ -3,8 +3,7 @@
 <%@ page import="com.cannontech.common.constants.YukonListEntry" %>
 <%
 	String listName = request.getParameter("List");
-	LiteStarsEnergyCompany ec = SOAPServer.getEnergyCompany(user.getEnergyCompanyID());
-	YukonSelectionList list = ec.getYukonSelectionList(listName);
+	YukonSelectionList list = liteEC.getYukonSelectionList(listName);
 	YukonSelectionList dftList = SOAPServer.getDefaultEnergyCompany().getYukonSelectionList(listName);
 	if (dftList == null) dftList = new YukonSelectionList();
 	
@@ -12,9 +11,9 @@
 	boolean isOptOutPeriodCus = listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD_CUS);
 	boolean sameAsOp = false;
 	if (isOptOutPeriodCus) {
-		dftList = ec.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD);
+		dftList = liteEC.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD);
 		if (list == null) {
-			list = ec.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD);
+			list = dftList;
 			sameAsOp = true;
 		}
 	}

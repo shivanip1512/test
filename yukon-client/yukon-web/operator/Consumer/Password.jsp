@@ -112,8 +112,7 @@ function deleteLogin(form) {
 <%
 	}
 	else {
-		LiteStarsEnergyCompany liteEnergyCompany = SOAPServer.getEnergyCompany(user.getEnergyCompanyID());
-		com.cannontech.database.data.lite.LiteYukonGroup[] custGroups = liteEnergyCompany.getResidentialCustomerGroups();
+		com.cannontech.database.data.lite.LiteYukonGroup[] custGroups = liteEC.getResidentialCustomerGroups();
 		for (int i = 0; i < custGroups.length; i++) {
 %>
                         <option value="<%= custGroups[i].getGroupID() %>"><%= custGroups[i].getGroupName() %></option>

@@ -4,8 +4,6 @@
 <%
 	Hashtable unassignedLists = (Hashtable) session.getAttribute(ImportManager.UNASSIGNED_LISTS);
 	boolean hasUnassigned = false;
-	
-	LiteStarsEnergyCompany ec = SOAPServer.getEnergyCompany(user.getEnergyCompanyID());
 %>
 <html>
 <head>
@@ -66,7 +64,7 @@
 		boolean unAssigned = ((Boolean) unassignedLists.get(listName)).booleanValue();
 		if (unAssigned) hasUnassigned = true;
 		
-		YukonSelectionList list = ec.getYukonSelectionList(listName);
+		YukonSelectionList list = liteEC.getYukonSelectionList(listName);
 %>
                 <tr> 
                   <td width="50%"><%= dispName %>

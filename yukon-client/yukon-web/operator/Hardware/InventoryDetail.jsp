@@ -6,8 +6,6 @@
 <%@ page import="com.cannontech.database.data.lite.stars.StarsLiteFactory" %>
 <%@ page import="com.cannontech.database.data.pao.PAOGroups" %>
 <%
-	LiteStarsEnergyCompany liteEC = SOAPServer.getEnergyCompany(ecSettings.getEnergyCompanyID());
-	
 	int invID = Integer.parseInt(request.getParameter("InvId"));
 	LiteInventoryBase liteInv = liteEC.getInventoryBrief(invID, false);
 	StarsInventory inventory = StarsLiteFactory.createStarsInventory(liteInv, liteEC);

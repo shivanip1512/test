@@ -13,10 +13,9 @@
 	}
 %>
 <%
-	LiteStarsEnergyCompany liteEnergyCompany = SOAPServer.getEnergyCompany(user.getEnergyCompanyID());
-	com.cannontech.database.data.lite.LiteYukonGroup[] custGroups = liteEnergyCompany.getResidentialCustomerGroups();
+	com.cannontech.database.data.lite.LiteYukonGroup[] custGroups = liteEC.getResidentialCustomerGroups();
 	
-	ArrayList members = liteEnergyCompany.getChildren();
+	ArrayList members = liteEC.getChildren();
 	ArrayList memberCandidates = new ArrayList();
 	if (AuthFuncs.checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_MANAGE_MEMBERS)) {
 		ArrayList energyCompanies = SOAPServer.getAllEnergyCompanies();
@@ -24,7 +23,7 @@
 			LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) energyCompanies.get(i);
 			if (ECUtils.isDefaultEnergyCompany(company)) continue;	// exclude default energy company
 			if (members.contains(company)) continue;	// exclude existing members
-			if (ECUtils.getAllDescendants(company).contains(liteEnergyCompany)) continue;	// prevent circular reference
+			if (ECUtils.getAllDescendants(company).contains(liteEC)) continue;	// prevent circular reference
 			memberCandidates.add(company);
 		}
 	}
@@ -563,7 +562,7 @@ function removeAllMembers(form) {
                             <td> 
                               <table width="100%" border="0" cellspacing="0" cellpadding="0">
 <%
-	ArrayList userLists = liteEnergyCompany.getAllSelectionLists(user);
+	ArrayList userLists = liteEC.getAllSelectionLists(user);
 	for (int i = 0; i < userLists.size(); i++) {
 		com.cannontech.common.constants.YukonSelectionList cList = (com.cannontech.common.constants.YukonSelectionList) userLists.get(i);
 		if (cList.getUserUpdateAvailable() == null || !cList.getUserUpdateAvailable().equalsIgnoreCase("Y")) continue;
@@ -637,7 +636,7 @@ function removeAllMembers(form) {
                                     </td>
                                   </tr>
 <%
-	ArrayList operLoginIDs = liteEnergyCompany.getOperatorLoginIDs();
+	ArrayList operLoginIDs = liteEC.getOperatorLoginIDs();
 	for (int i = 0; i < operLoginIDs.size(); i++) {
 		int userID = ((Integer) operLoginIDs.get(i)).intValue();
 		if (userID == lYukonUser.getUserID()) continue;
@@ -707,7 +706,7 @@ function removeAllMembers(form) {
                                     <td width="15%" class="HeaderCell">&nbsp;</td>
                                   </tr>
 <%
-	ArrayList memberLoginIDs = liteEnergyCompany.getMemberLoginIDs();
+	ArrayList memberLoginIDs = liteEC.getMemberLoginIDs();
 	for (int i = 0; i < members.size(); i++) {
 		LiteStarsEnergyCompany member = (LiteStarsEnergyCompany) members.get(i);
 %>
