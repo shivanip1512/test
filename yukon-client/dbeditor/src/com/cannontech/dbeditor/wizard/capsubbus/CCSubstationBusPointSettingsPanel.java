@@ -98,33 +98,37 @@ public void calculatedVarDeviceComboBox_ActionPerformed(java.awt.event.ActionEve
 {
 	this.fireInputUpdate();
 
-	if(  getCalculatedVarDeviceComboBox().getSelectedItem() != null )
+	int deviceID = ((com.cannontech.database.data.lite.LiteYukonPAObject)getCalculatedVarDeviceComboBox().getSelectedItem()).getYukonID();
+	
+	getCalculatedVarPointComboBox().removeAllItems();
+
+   //if the (none) object is selected, just return
+   getCalculatedVarPointComboBox().setEnabled(
+         getCalculatedVarDeviceComboBox().getSelectedItem() != com.cannontech.database.data.lite.LiteYukonPAObject.LITEPAOBJECT_NONE );
+
+   if( getCalculatedVarDeviceComboBox().getSelectedItem() == com.cannontech.database.data.lite.LiteYukonPAObject.LITEPAOBJECT_NONE )
+      return;
+
+
+   //either use all points or just the VAR points
+   com.cannontech.database.data.lite.LitePoint[] altPoints = ALL_POINTS;
+   if( getJCheckBoxDisplayVars().isSelected() )
+      altPoints = VAR_POINTS;
+      
+
+	for( int i = 0; i < altPoints.length; i++)
 	{
-		int deviceID = ((com.cannontech.database.data.lite.LiteYukonPAObject)getCalculatedVarDeviceComboBox().getSelectedItem()).getYukonID();
-		
-		if( getCalculatedVarPointComboBox().getModel().getSize() > 0 )
-			getCalculatedVarPointComboBox().removeAllItems();
+		com.cannontech.database.data.lite.LitePoint point = (com.cannontech.database.data.lite.LitePoint)altPoints[i];
 
-      //either use all points or just the VAR points
-      com.cannontech.database.data.lite.LitePoint[] altPoints = ALL_POINTS;
-      if( getJCheckBoxDisplayVars().isSelected() )
-         altPoints = VAR_POINTS;
-         
-
-		for( int i = 0; i < altPoints.length; i++)
+		if( deviceID == point.getPaobjectID()
+			 && (point.getPointType() == com.cannontech.database.data.point.PointTypes.ANALOG_POINT
+				  || point.getPointType() == com.cannontech.database.data.point.PointTypes.CALCULATED_POINT)				
+			 && !usedVARPtIDs.contains(point.getPointID()) )
 		{
-			com.cannontech.database.data.lite.LitePoint point = (com.cannontech.database.data.lite.LitePoint)altPoints[i];
-
-			if( deviceID == point.getPaobjectID()
-				 && (point.getPointType() == com.cannontech.database.data.point.PointTypes.ANALOG_POINT
-					  || point.getPointType() == com.cannontech.database.data.point.PointTypes.CALCULATED_POINT)				
-				 && !usedVARPtIDs.contains(point.getPointID()) )
-			{
-				getCalculatedVarPointComboBox().addItem( altPoints[i] );
-			}
-			else if( deviceID < point.getPaobjectID() )
-				break;
+			getCalculatedVarPointComboBox().addItem( altPoints[i] );
 		}
+		else if( deviceID < point.getPaobjectID() )
+			break;
 	}
 	
 	return;
@@ -308,6 +312,7 @@ private javax.swing.JComboBox getCalculatedVarDeviceComboBox() {
 			ivjCalculatedVarDeviceComboBox = new javax.swing.JComboBox();
 			ivjCalculatedVarDeviceComboBox.setName("CalculatedVarDeviceComboBox");
 			// user code begin {1}
+
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -448,9 +453,6 @@ private javax.swing.JComboBox getJComboBoxCalcWattsDevice() {
 			ivjJComboBoxCalcWattsDevice = new javax.swing.JComboBox();
 			ivjJComboBoxCalcWattsDevice.setName("JComboBoxCalcWattsDevice");
 			// user code begin {1}
-
-			ivjJComboBoxCalcWattsDevice.addItem( com.cannontech.database.data.lite.LiteYukonPAObject.LITEPAOBJECT_NONE );
-
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -695,9 +697,15 @@ public Object getValue(Object val)
 {
 	com.cannontech.database.data.capcontrol.CapControlSubBus ccBus = (com.cannontech.database.data.capcontrol.CapControlSubBus)val;
 
-	ccBus.getCapControlSubstationBus().setCurrentVarLoadPointID( new Integer(((com.cannontech.database.data.lite.LitePoint)getCalculatedVarPointComboBox().getSelectedItem()).getPointID()) );
+   if( getCalculatedVarPointComboBox().getSelectedItem() != null )
+     	ccBus.getCapControlSubstationBus().setCurrentVarLoadPointID( 
+               new Integer(((com.cannontech.database.data.lite.LitePoint)getCalculatedVarPointComboBox().getSelectedItem()).getPointID()) );
+   else
+      ccBus.getCapControlSubstationBus().setCurrentVarLoadPointID( 
+               new Integer(com.cannontech.database.data.point.PointTypes.SYS_PID_SYSTEM) );
 
-	if( !((com.cannontech.database.data.lite.LiteYukonPAObject)getJComboBoxCalcWattsDevice().getSelectedItem()).equals( com.cannontech.database.data.lite.LiteYukonPAObject.LITEPAOBJECT_NONE ) )
+
+	if( getJComboBoxCalcWattsPoint().getSelectedItem() != null )
 		ccBus.getCapControlSubstationBus().setCurrentWattLoadPointID( 
 					new Integer(((com.cannontech.database.data.lite.LitePoint)getJComboBoxCalcWattsPoint().getSelectedItem()).getPointID()) );
 	else
@@ -792,14 +800,22 @@ public boolean isInputValid()
 			if( ((com.cannontech.database.data.lite.LitePoint)getCalculatedVarPointComboBox().getSelectedItem()).getPointID()
 				 == ((com.cannontech.database.data.lite.LitePoint)getJComboBoxCalcWattsPoint().getSelectedItem()).getPointID() )
 			{
-				setErrorString("The Calc Var Point can not be the same point as the Watt Var Point");
+				setErrorString("The VAR point can not be the same point as the WATT Point");
 				return false;
 			}
 		}
       
-      if( getCalculatedVarPointComboBox().getSelectedItem() == null )
+      if( getCalculatedVarPointComboBox().getSelectedItem() == null
+          && getCalculatedVarPointComboBox().isEnabled() )
       {
-         setErrorString("A Var Point needs to be selected");
+         setErrorString("A VAR point needs to be selected");
+         return false;
+      }
+
+      if( getJComboBoxCalcWattsPoint().getSelectedItem() == null
+          && getJComboBoxCalcWattsPoint().isEnabled() )
+      {
+         setErrorString("A WATT point needs to be selected");
          return false;
       }
       
@@ -820,7 +836,7 @@ public boolean isInputValid()
  */
 public void jCheckBoxDisplayVars_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
-   initializeComboBoxes( getCalculatedVarDeviceComboBox() );
+   initDeviceComboBoxes( getCalculatedVarDeviceComboBox() );
 
    //fire the deviceComboBox event so the points fill into the pointComboBox
    calculatedVarDeviceComboBox_ActionPerformed( actionEvent );
@@ -834,7 +850,7 @@ public void jCheckBoxDisplayVars_ActionPerformed(java.awt.event.ActionEvent acti
  */
 public void jCheckBoxDisplayWatts_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
-   initializeComboBoxes( getJComboBoxCalcWattsDevice() );
+   initDeviceComboBoxes( getJComboBoxCalcWattsDevice() );
 
    //fire the wattComboBox event so the points fill into the pointComboBox
    jComboBoxCalcWattsDevice_ActionPerformed( actionEvent );
@@ -853,6 +869,13 @@ public void jComboBoxCalcWattsDevice_ActionPerformed(java.awt.event.ActionEvent 
 	int deviceID = ((com.cannontech.database.data.lite.LiteYukonPAObject)getJComboBoxCalcWattsDevice().getSelectedItem()).getYukonID();
 	
 	getJComboBoxCalcWattsPoint().removeAllItems();
+
+   //if the (none) object is selected, just return
+   getJComboBoxCalcWattsPoint().setEnabled(
+         getJComboBoxCalcWattsDevice().getSelectedItem() != com.cannontech.database.data.lite.LiteYukonPAObject.LITEPAOBJECT_NONE );
+
+   if( getJComboBoxCalcWattsDevice().getSelectedItem() == com.cannontech.database.data.lite.LiteYukonPAObject.LITEPAOBJECT_NONE )
+      return;
 
    //either use all points or just the WATT points
    com.cannontech.database.data.lite.LitePoint[] altPoints = ALL_POINTS;
@@ -927,15 +950,17 @@ private void setPointComboBoxes(Object val)
 			wattPoint = ALL_POINTS[i];
 		}
 
-		if( varPoint != null
-			 && 
-			 ( ccBus.getCapControlSubstationBus().getCurrentWattLoadPointID().intValue() <=
-				com.cannontech.database.data.point.PointTypes.SYS_PID_SYSTEM
-				|| (wattPoint != null)) )
+		if( varPoint != null && wattPoint != null )
 			break; //help speed up this loop
 
 	}
 
+   if( varPoint == null )
+      getCalculatedVarDeviceComboBox().setSelectedItem( com.cannontech.database.data.lite.LiteYukonPAObject.LITEPAOBJECT_NONE );
+      
+   if( wattPoint == null )
+      getJComboBoxCalcWattsDevice().setSelectedItem( com.cannontech.database.data.lite.LiteYukonPAObject.LITEPAOBJECT_NONE );
+      
 	//set the device combo boxes and point combo boxes to the appropriate selections
 	com.cannontech.database.cache.DefaultDatabaseCache cache =
 					com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
@@ -948,7 +973,7 @@ private void setPointComboBoxes(Object val)
 		{
 			com.cannontech.database.data.lite.LiteYukonPAObject device = (com.cannontech.database.data.lite.LiteYukonPAObject)allDevices.get(i);
 			
-			if( varPoint.getPaobjectID() == device.getYukonID() )
+			if( varPoint != null && varPoint.getPaobjectID() == device.getYukonID() )
 			{
 				getCalculatedVarDeviceComboBox().setSelectedItem(device);
 				getCalculatedVarPointComboBox().setSelectedItem(varPoint);
@@ -960,12 +985,11 @@ private void setPointComboBoxes(Object val)
 				getJComboBoxCalcWattsPoint().setSelectedItem(wattPoint);
 			}
 
-			if( (wattPoint == null || 
-				 (getJComboBoxCalcWattsPoint().getSelectedItem() != null && wattPoint.getPointID() == 
-				    ((com.cannontech.database.data.lite.LitePoint)getJComboBoxCalcWattsPoint().getSelectedItem()).getPointID()) )
-				 && (getCalculatedVarPointComboBox().getSelectedItem() != null 
-					  && varPoint.getPointID() == 
-				  	 ((com.cannontech.database.data.lite.LitePoint)getCalculatedVarPointComboBox().getSelectedItem()).getPointID()) )
+			if( (wattPoint == null 
+                  || getJComboBoxCalcWattsPoint().getSelectedItem() == wattPoint)
+				 && 
+             (varPoint == null 
+                  || getCalculatedVarPointComboBox().getSelectedItem() == varPoint) )
 			{
 				break;
 			}
@@ -976,18 +1000,24 @@ private void setPointComboBoxes(Object val)
 }
 
 
-private void initializeComboBoxes( javax.swing.JComboBox comboBox )
+private void initDeviceComboBoxes( javax.swing.JComboBox comboBox )
 {
    if( comboBox == getCalculatedVarDeviceComboBox() )
    {
       getCalculatedVarDeviceComboBox().removeAllItems();
       getCalculatedVarPointComboBox().removeAllItems();
+      
+      getCalculatedVarDeviceComboBox().addItem( 
+            com.cannontech.database.data.lite.LiteYukonPAObject.LITEPAOBJECT_NONE );
    }
    
    if( comboBox == getJComboBoxCalcWattsDevice() )
    {
       getJComboBoxCalcWattsDevice().removeAllItems();
       getJComboBoxCalcWattsPoint().removeAllItems();
+      
+      getJComboBoxCalcWattsDevice().addItem( 
+            com.cannontech.database.data.lite.LiteYukonPAObject.LITEPAOBJECT_NONE );
    }
    
    
@@ -1027,6 +1057,7 @@ private void initializeComboBoxes( javax.swing.JComboBox comboBox )
 
    
 }
+
 /**
  * This method was created in VisualAge.
  * @param val java.lang.Object
@@ -1040,8 +1071,8 @@ public void setValue(Object val )
       usedVARPtIDs = com.cannontech.database.db.capcontrol.CapControlSubstationBus.getUsedVARPointIDs(
          ((com.cannontech.database.data.capcontrol.CapControlSubBus)val).getCapControlPAOID().intValue() );
    
-   initializeComboBoxes( getCalculatedVarDeviceComboBox() );
-   initializeComboBoxes( getJComboBoxCalcWattsDevice() );
+   initDeviceComboBoxes( getCalculatedVarDeviceComboBox() );
+   initDeviceComboBoxes( getJComboBoxCalcWattsDevice() );
 
 	//val will not be null if we are using this panel for an editor
 	if( val != null )

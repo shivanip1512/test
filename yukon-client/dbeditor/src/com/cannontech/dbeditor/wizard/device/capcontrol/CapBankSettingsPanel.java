@@ -21,6 +21,18 @@ public class CapBankSettingsPanel extends com.cannontech.common.gui.util.DataInp
 	private javax.swing.JComboBox ivjJComboBoxBankSize = null;
 	private javax.swing.JComboBox ivjJComboBoxSwitchManufacture = null;
 	private javax.swing.JComboBox ivjJComboBoxTypeSwitch = null;
+
+
+   private class NewComboBoxEditor extends javax.swing.plaf.basic.BasicComboBoxEditor
+   {
+      public javax.swing.JTextField getJTextField()
+      {
+         //create this method so we don't have to cast the getEditorComponent() call
+         return editor;
+      }
+      
+   };         
+
 /**
  * Constructor
  */
@@ -249,7 +261,15 @@ private javax.swing.JComboBox getJComboBoxBankSize() {
          ivjJComboBoxBankSize.addItem( new Integer(1100) );         
 			ivjJComboBoxBankSize.addItem( new Integer(1200) );
 
-			
+
+         ivjJComboBoxBankSize.setEditable( true );
+
+         NewComboBoxEditor ncb = new NewComboBoxEditor();
+         ncb.getJTextField().setDocument( 
+               new com.cannontech.common.gui.unchanging.LongRangeDocument(0, 10000) );
+   		
+         ivjJComboBoxBankSize.setEditor( ncb );
+
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -304,6 +324,7 @@ private javax.swing.JComboBox getJComboBoxSwitchManufacture() {
 			ivjJComboBoxSwitchManufacture.addItem( CapBank.SWITCHMAN_ABB );
 			ivjJComboBoxSwitchManufacture.addItem( CapBank.SWITCHMAN_COOPER );
 			ivjJComboBoxSwitchManufacture.addItem( CapBank.SWITCHMAN_SIEMENS );
+         ivjJComboBoxSwitchManufacture.addItem( CapBank.SWITCHMAN_TRINETICS );
 			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -329,6 +350,7 @@ private javax.swing.JComboBox getJComboBoxTypeSwitch() {
 
 			ivjJComboBoxTypeSwitch.addItem( com.cannontech.common.util.CtiUtilities.STRING_NONE );
 			ivjJComboBoxTypeSwitch.addItem( CapBank.SWITCHTYPE_OIL );
+         ivjJComboBoxTypeSwitch.addItem( CapBank.SWITCHTYPE_VACUUM );
 
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -450,7 +472,10 @@ public Object getValue(Object val)
 {
 	CapBank capBank = (CapBank) val;
 
-	capBank.getCapBank().setBankSize( (Integer)getJComboBoxBankSize().getSelectedItem() );
+	capBank.getCapBank().setBankSize( 
+      (getJComboBoxBankSize().getSelectedItem().toString().length() <= 0
+      ? new Integer(150)
+      : (Integer)getJComboBoxBankSize().getSelectedItem()) );
 
 	capBank.getCapBank().setSwitchManufacture( getJComboBoxSwitchManufacture().getSelectedItem().toString() );
 

@@ -19,9 +19,11 @@ public class CapBank extends CapControlDeviceBase
 	public final static String SWITCHMAN_ABB = "ABB";
 	public final static String SWITCHMAN_COOPER = "Cooper";
 	public final static String SWITCHMAN_SIEMENS = "Siemens";
+   public final static String SWITCHMAN_TRINETICS = "Trinetics";
 
 	//all types of switches
 	public final static String SWITCHTYPE_OIL = "Oil";
+   public final static String SWITCHTYPE_VACUUM = "Vacuum";
 	
 	private com.cannontech.database.db.capcontrol.CapBank capBank = null;
 /**

@@ -28,6 +28,17 @@ public class DeviceCapBankEditorPanel extends com.cannontech.common.gui.util.Dat
 	private javax.swing.JLabel ivjJLabelBankOperation = null;
 	private javax.swing.JTextField ivjJTextFieldAddress = null;
 	private javax.swing.JTextField ivjJTextFieldName = null;
+   
+   private class NewComboBoxEditor extends javax.swing.plaf.basic.BasicComboBoxEditor
+   {
+      public javax.swing.JTextField getJTextField()
+      {
+         //create this method so we don't have to cast the getEditorComponent() call
+         return editor;
+      }
+      
+   };         
+   
 /**
  * Constructor
  */
@@ -638,6 +649,15 @@ private javax.swing.JComboBox getJComboBankSize() {
          ivjJComboBankSize.addItem( new Integer(1100) );         
          ivjJComboBankSize.addItem( new Integer(1200) );
 			
+         
+         ivjJComboBankSize.setEditable( true );
+         
+         NewComboBoxEditor ncb = new NewComboBoxEditor();
+         ncb.getJTextField().setDocument( 
+               new com.cannontech.common.gui.unchanging.LongRangeDocument(0, 10000) );
+         
+         ivjJComboBankSize.setEditor( ncb );
+         
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -879,16 +899,12 @@ public Object getValue(Object val)
 	else
 		capBank.setDisableFlag( com.cannontech.common.util.CtiUtilities.getFalseCharacter() );
 
-	Integer bankSize = null;	
-	try
-	{
-		bankSize = (Integer)getJComboBankSize().getSelectedItem();
-	}
-	catch(NumberFormatException nfe)
-	{
-		bankSize = new Integer(150);  //default
-	}
-	capBank.getCapBank().setBankSize(bankSize);
+   capBank.getCapBank().setBankSize( 
+      (getJComboBankSize().getSelectedItem().toString().length() <= 0
+      ? new Integer(150)
+      : (Integer)getJComboBankSize().getSelectedItem()) );
+
+
 
 	return val;
 }
