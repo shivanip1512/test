@@ -144,7 +144,7 @@ public class LoginAction implements ActionBase {
 	
 	private void initSession(LiteYukonUser user, HttpSession session) throws TransactionException  {
 	
-		com.cannontech.database.data.user.YukonUser dbUser = 
+/*		com.cannontech.database.data.user.YukonUser dbUser = 
 			(com.cannontech.database.data.user.YukonUser) LiteFactory.createDBPersistent( user );
 		
 		Transaction trans = Transaction.createTransaction(Transaction.RETRIEVE,dbUser);
@@ -155,7 +155,7 @@ public class LoginAction implements ActionBase {
 		dbUser.setLastLogin(new java.util.Date());
 			
 		trans = Transaction.createTransaction(Transaction.UPDATE,dbUser);
-		
+*/		
 		session.setAttribute(ServletUtils.ATT_YUKON_USER, user);
 	}
 }
