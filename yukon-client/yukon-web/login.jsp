@@ -1,83 +1,79 @@
 
-
-<!-- VYUKTCGO01/172.29.128.75-->
-
+<%
+String logo = (String) com.cannontech.common.util.CtiProperties.getInstance().get(com.cannontech.common.util.CtiProperties.KEY_LOGIN_PAGE_LOGO);
+String email = (String) com.cannontech.common.util.CtiProperties.getInstance().get(com.cannontech.common.util.CtiProperties.KEY_LOGIN_PAGE_HELP_EMAIL);
+%>
 <html>
 <head>
+<title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" href="demostyle.css" type="text/css">
 </head>
-<link rel="stylesheet" href="/default/XcelStyle.css" type="text/css">
-<body bgcolor="#FFFFFF" text="#000000" link="#000000" vlink="#000000" alink="#000000">
-<table width="400" border="0" cellspacing="0" cellpadding="10" align="center">
-  <tr>
-    <td>
-      <div align="center"> 
-        <p><br>
-          
-          <img src="/Xcel_Logo.gif"><BR><BR>
-          <!--<img src="YukonSmallBlue.gif"><BR><BR> -->
-	   </p>
-        <p>&nbsp; </p>
-      </div>
-    </td>
-  </tr>
-    
 
-  
-  <tr>
-    <td bgcolor="#CCCCCC">
-   
-      <p>
-        <center>
-          <font size="-1" face="Arial"><b>To log in, please enter your User Name 
-          and Password<br clear="ALL">
-          </b></font> 
-        </center>
-      </p>
-      <p>
-      <center>
-        <table width="400" border="0" cellspacing="0" cellpadding="5"
-    height="89">
-          <tr>
-          <FORM METHOD="POST" ACTION="/servlet/LoginController"> 
-            <td width="40%" height="20"> 
-              <p align=RIGHT>&nbsp;<font size="-1" face="Arial">User Name:</font>
-            </td>
-            <td width="60%" height="20"> <font size="-1" face="Arial">
-              <input name="USERNAME" type="text" 
-        size="20">
-              </font> </td> 
-          </tr>
-          <tr> 
-            <td width="40%" height="20"> 
-              <p align=RIGHT>&nbsp;<font size="-1" face="Arial">Password:</font>
-            </td>
-            <td width="60%" height="20"> <font size="-1" face="Arial">
-              <input name="PASSWORD" type="password" 
-        size="20">
-              </font> </td>
-          </tr>
-          <tr> 
-            <td width="40%" height="20">&nbsp; </td>
-            <td width="60%" height="20"> <input type="image" src="SubmitButton.gif" width="58" height="20" border="0"></td>
-            <INPUT NAME="ACTION" TYPE="hidden" VALUE = "LOGIN">
-            <INPUT NAME="DATABASEALIAS" TYPE="hidden" VALUE="yukon">
-            </form>
-          </tr>
-        </table>
-      </center>
+<body class="Background" text="#000000" leftmargin="0" topmargin="0">
+<br>
+<table width="450" border="1" align="center" cellspacing="0" cellpadding="0" bgcolor="#FFFFFF">
+  <tr> 
+    <td colspan = "2" align = "center" height="51" valign = "bottom"><img src="<%= logo %>"> 
+      <table width="400" border="0" height="43">
+        <tr> 
+          <td width="34%" align = "center"><span class="TableCell"><font face="Verdana, Arial, Helvetica, sans-serif" size="3" color="#999999"><b><font face="Arial, Helvetica, sans-serif" color="#666666" size="4">Welcome 
+            to</font></b></font> </span></td>
+          <td width="66%">&nbsp;</td>
+        </tr>
+        <tr> 
+          <td colspan = "2" align = "center"><span class="TableCell"><b><font size="4">Energy 
+            Services Operations Center</font></b></span> </td>
+        </tr>
+      </table>
+      
     </td>
   </tr>
-  <tr>
-    <td height="14"> 
-      <div align="center">
-        <p>&nbsp;</p>
-        <p><b><font color="#000000" size="-1" face="Arial">Help!</font></b><font color="#666699" size="-1" face="Arial"> 
-          </font><font size="-1" face="Arial"><a href="mailto:jon.a.gill-jr@xcelenergy.com">I 
-          Forgot My User Name or Password.</a></font></p>
-      </div>
-    </td>
+  <tr> 
+    <td width="407" valign = "top" class = "Main"> <br> 
+<%
+	String errorMsg = "";
+	if(request.getParameter("failed") != null) 
+		errorMsg = "* Invalid Username/Password";
+%>
+	  <div align="center"><% if (errorMsg != null) out.write("<span class=\"ErrorMsg\"> " + errorMsg + "</span><br>"); %></div>
+	
+      <table width="367"  height="186" border="0" align="center" cellpadding="0" cellspacing="0" class = "Main">
+        <tr> 
+          <td rowspan = "3" width="555" bgcolor="#FFFFFF" height="102" valign="top" ><br> 
+            <div align="center"><b>SIGN IN</b><br>
+              Please enter your username and password below.</div>
+            <form name="form1" method="post" action="/servlet/LoginController">
+              <input type="hidden" name="ACTION" value="LOGIN">			
+              <table width="250" border="0" cellspacing="0" cellpadding="3" align="center">
+                <tr> 
+                  <td width="83" class = "Main"> <div align="right"> User Name</div></td>
+                  <td width="117" valign="bottom"> <input type="text" name="USERNAME"> 
+                  </td>
+                </tr>
+                <tr> 
+                  <td width="83" class = "Main"> <div align="right">Password:</div></td>
+                  <td width="117"> <input type="password" name="PASSWORD"> 
+                  </td>
+                </tr>
+                <tr> 
+                  <td width="83">&nbsp;</td>
+                  <td width="117"> <div align="left">
+                      <input type="submit" name="Submit2" value="Submit">
+                      </div></td>
+                </tr>
+              </table>
+            </form></td>
+        </tr>
+        </table>
+      <div align="center"> If you need help or have forgotten your password, click 
+        <a href="mailto:<%= email %>">here</a>. <br>
+        <br>
+      </div></td>
   </tr>
 </table>
+<br>
+<div align="center" class="TableCell2"><img src="YukonLogo.gif" width="139" height="29"></div>
 </body>
+
 </html>
