@@ -183,5 +183,10 @@ void CtiCCServer::_checkstatus()
         _running = FALSE;
         _dostop = FALSE;
     }                                                            
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
 }
     
