@@ -5,8 +5,8 @@
 * Date:   10/4/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.38 $
-* DATE         :  $Date: 2005/02/10 23:24:00 $
+* REVISION     :  $Revision: 1.39 $
+* DATE         :  $Date: 2005/03/02 18:47:30 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1322,19 +1322,24 @@ CtiDeviceSingle& CtiDeviceSingle::setNextScan(INT a, const RWTime &b)
 
 RWTime CtiDeviceSingle::nextRemoteScan() const
 {
-    RWTime nt = getScanData()->nextNearestTime(ScanRateLoadProfile);
+    RWTime nt = YUKONEOT;
 
-    if(getDebugLevel() & 0x00100000)
+    if( useScanFlags() )
     {
-        if(nt < RWTime(YUKONEOT))
+        nt = getScanData()->nextNearestTime(ScanRateLoadProfile);
+
+        if(getDebugLevel() & 0x00100000)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " " << left << setw(30) << getName() << right << "'s next scan is to occur at " << nt << endl;
-        }
-        else
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " " << left << setw(30) << getName() << right << " is pending completion. " << endl;
+            if(nt < RWTime(YUKONEOT))
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " " << left << setw(30) << getName() << right << "'s next scan is to occur at " << nt << endl;
+            }
+            else
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " " << left << setw(30) << getName() << right << " is pending completion. " << endl;
+            }
         }
     }
 
