@@ -530,6 +530,10 @@ int CtiFDR_XA21LM::getMessageSize(CHAR *aBuffer)
     case LOADSCRAMSTATUS:
 	msg_size = sizeof (LOADSCRAMSTAT);
 	break;
+
+    case LMSRETRIES:
+	msg_size = sizeof (LOADRETRIES);
+	break;
 	
     default:
     {

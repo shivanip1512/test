@@ -151,6 +151,12 @@ typedef struct _LOADSCRAMSTAT {
     USHORT State;
 } LOADSCRAMSTAT;
 
+typedef struct _LOADRETRIES {
+    ULONG Function;
+    XA21TIME Time;
+    USHORT Retries;
+} LOADRETRIES;
+
 /*
   Note, we only handle MPC messages.
 */
