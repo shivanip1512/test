@@ -1,6 +1,5 @@
 package com.cannontech.billing.record;
 
-import com.cannontech.billing.FileFormatTypes;
 /**
  * Insert the type's description here.
  * Creation date: (8/24/2001 5:32:56 PM)

@@ -1,6 +1,5 @@
 package com.cannontech.billing;
 
-import java.util.Date;
 
 /**
  * Insert the type's description here.
