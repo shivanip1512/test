@@ -613,7 +613,7 @@ public void setValue(Object o) {
 		if(address.length() < 6)
 		{
 			address.reverse();
-			for(int j = address.length(); j > 0; j--)
+			for(int j = 6 - address.length(); j > 0; j--)
 			{
 				address.append("0");
 			}
