@@ -8,6 +8,7 @@ package com.cannontech.graph.buffer.html;
 
 //import com.cannontech.graph.GraphDataFormats;
 
+
 public class PeakHtml extends HTMLBuffer
 {
 	
@@ -37,7 +38,7 @@ public StringBuffer getHtml(StringBuffer buf)
 	{
 		for( int i = 0; i < model.getTrendSeries().length; i++ )
 		{
-			if( model.getTrendSeries()[i].getType().equalsIgnoreCase(com.cannontech.database.db.graph.GraphDataSeries.PEAK_SERIES) )
+			if(( model.getTrendSeries()[i].getTypeMask() & com.cannontech.database.db.graph.GraphDataSeries.PEAK_MASK) == 					model.getTrendSeries()[i].getTypeMask())
 			{
 				peakPointIndex = i;
 				break;
@@ -87,18 +88,25 @@ public StringBuffer getHtml(StringBuffer buf)
 		buf.append("    <TD ALIGN=CENTER WIDTH=\"70\" BGCOLOR=\"#999966\" class=\"HeaderCell\"><CENTER><B><FONT SIZE=\"-1\" FACE=\"Arial\">");
 
 
-		buf.append("PEAK " +  model.getTrendSeries()[(int) peakPointIndex].getLabel());
+		buf.append("PEAK" +  model.getTrendSeries()[(int) peakPointIndex].getLabel());
 		buf.append("</FONT></B></CENTER></TD>\r\n");	 
 	
 		//List all graph points
 		for( int i = 0; i < model.getTrendSeries().length; i++ )
 		{
-			if( model.getTrendSeries()[i].getPointId().intValue() != model.getTrendSeries()[(int)peakPointIndex].getPointId().intValue() && 
-				model.getTrendSeries()[i].getType().equalsIgnoreCase(com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES) )
+			com.cannontech.graph.model.TrendSerie serie = model.getTrendSeries()[i];
+			System.out.println(" SERIE Name = " + serie.getLabel());
+			
+			if((serie.getTypeMask() & com.cannontech.database.db.graph.GraphDataSeries.VALID_INTERVAL_MASK) == serie.getTypeMask())
 			{
-				buf.append("    <TD ALIGN=CENTER WIDTH=\"70\" BGCOLOR=\"#999966\" class=\"HeaderCell\"><CENTER><B><FONT SIZE=\"-1\" FACE=\"Arial\">");
-				buf.append(model.getTrendSeries()[i].getLabel());
-				buf.append("</FONT></B></CENTER></TD>\r\n");
+				if( !(serie.getPointId().intValue() == model.getTrendSeries()[(int)peakPointIndex].getPointId().intValue() &&
+					((serie.getTypeMask() & com.cannontech.database.db.graph.GraphDataSeries.GRAPH_MASK)== com.cannontech.database.db.graph.GraphDataSeries.GRAPH_MASK)))
+				{
+					System.out.println(" Added serie= " + serie.getLabel() + "  " + serie.getType());
+					buf.append("    <TD ALIGN=CENTER WIDTH=\"70\" BGCOLOR=\"#999966\" class=\"HeaderCell\"><CENTER><B><FONT SIZE=\"-1\" FACE=\"Arial\">");
+					buf.append(serie.getLabel());
+					buf.append("</FONT></B></CENTER></TD>\r\n");
+				}
 			}
 		}
 
@@ -127,7 +135,6 @@ public StringBuffer getHtml(StringBuffer buf)
 			}
 		}	
 		java.util.Set keySet = peakMap.keySet();
-//		Long[] keyArray = new Long[keySet.size()];
 		Double[] keyArray = new Double[keySet.size()];
 		keySet.toArray(keyArray);
 	
@@ -144,35 +151,40 @@ public StringBuffer getHtml(StringBuffer buf)
 			
 			for( int j = 0; j < model.getTrendSeries().length; j++ )
 			{
-					
-				if( model.getTrendSeries()[j].getPointId().intValue() != model.getTrendSeries()[(int)peakPointIndex].getPointId().intValue() && 
-					model.getTrendSeries()[j].getType().equalsIgnoreCase(com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES))
+				com.cannontech.graph.model.TrendSerie serie = model.getTrendSeries()[j];					
+
+				if((serie.getTypeMask() & com.cannontech.database.db.graph.GraphDataSeries.VALID_INTERVAL_MASK) == serie.getTypeMask())
 				{
-					// Set the number of decimal places that are displayed for each point (series).
-					decimals = model.getTrendSeries()[j].getDecimalPlaces();
-//					setFractionDigits( decimals );
-					setFractionDigits( 3);
-
-					double[] vals = model.getTrendSeries()[j].getValuesArray();
-					long[] times = model.getTrendSeries()[j].getPeriodsArray();
-
-					Long ts = (Long) peakMap.get(keyArray[i]);
-					int index = -1;
-				
-					if( ts != null  && times != null)
-						index = java.util.Arrays.binarySearch( times, ts.longValue());
-
-					if( index >= 0 )
-					{	
-						buf.append("    <TD ALIGN=CENTER WIDTH=\"70\" BGCOLOR=\"#CCCC99\" class=\"TableCell\">&nbsp;<FONT SIZE=\"-1\" FACE=\"Arial\">");			
-						buf.append( valueFormat.format( vals[index] ));
-						buf.append("</FONT></TD>\r\n");
-					}
-					else
+					if( !(serie.getPointId().intValue() == model.getTrendSeries()[(int)peakPointIndex].getPointId().intValue() &&
+						((serie.getTypeMask() & com.cannontech.database.db.graph.GraphDataSeries.GRAPH_MASK)== com.cannontech.database.db.graph.GraphDataSeries.GRAPH_MASK)))
 					{
-						buf.append("    <TD ALIGN=CENTER WIDTH=\"70\" BGCOLOR=\"#CCCC99\" class=\"TableCell\">&nbsp;<FONT SIZE=\"-1\" FACE=\"Arial\">");			
-						buf.append("</FONT></TD>\r\n");
-					}					
+	
+						// Set the number of decimal places that are displayed for each point (series).
+						decimals = serie.getDecimalPlaces();
+						//setFractionDigits( decimals );
+						setFractionDigits( 3);
+	
+						double[] vals = serie.getValuesArray();
+						long[] times = serie.getPeriodsArray();
+	
+						Long ts = (Long) peakMap.get(keyArray[i]);
+						int index = -1;
+					
+						if( ts != null  && times != null)
+							index = java.util.Arrays.binarySearch( times, ts.longValue());
+	
+						if( index >= 0 )
+						{	
+							buf.append("    <TD ALIGN=CENTER WIDTH=\"70\" BGCOLOR=\"#CCCC99\" class=\"TableCell\">&nbsp;<FONT SIZE=\"-1\" FACE=\"Arial\">");			
+							buf.append( valueFormat.format( vals[index] ));
+							buf.append("</FONT></TD>\r\n");
+						}
+						else
+						{
+							buf.append("    <TD ALIGN=CENTER WIDTH=\"70\" BGCOLOR=\"#CCCC99\" class=\"TableCell\">&nbsp;<FONT SIZE=\"-1\" FACE=\"Arial\">");			
+							buf.append("</FONT></TD>\r\n");
+						}
+					}
 				}
 			}
 	
@@ -189,10 +201,14 @@ public StringBuffer getHtml(StringBuffer buf)
 		buf.append("    <TD ALIGN=CENTER WIDTH=\"70\" BGCOLOR=\"#CCCC99\" class=\"TableCell\"><CENTER><FONT SIZE=\"-1\" FACE=\"Arial\">N/A</FONT></CENTER></TD>\r\n");
 		for( int i = 0; i < model.getTrendSeries().length; i++ )
 		{
-			if( model.getTrendSeries()[i].getPointId().intValue() != model.getTrendSeries()[(int)peakPointIndex].getPointId().intValue() && 
-				model.getTrendSeries()[i].getType().equalsIgnoreCase(com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES) )
+			com.cannontech.graph.model.TrendSerie serie = model.getTrendSeries()[i];
+			if((serie.getTypeMask() & com.cannontech.database.db.graph.GraphDataSeries.VALID_INTERVAL_MASK) == serie.getTypeMask())
 			{
-		buf.append("    <TD ALIGN=CENTER WIDTH=\"70\" BGCOLOR=\"#CCCC99\" class=\"TableCell\"><CENTER><FONT SIZE=\"-1\" FACE=\"Arial\">N/A</FONT></CENTER></TD>\r\n");
+				if( !(serie.getPointId().intValue() == model.getTrendSeries()[(int)peakPointIndex].getPointId().intValue() &&
+					((serie.getTypeMask() & com.cannontech.database.db.graph.GraphDataSeries.GRAPH_MASK)== com.cannontech.database.db.graph.GraphDataSeries.GRAPH_MASK)))
+				{
+					buf.append("    <TD ALIGN=CENTER WIDTH=\"70\" BGCOLOR=\"#CCCC99\" class=\"TableCell\"><CENTER><FONT SIZE=\"-1\" FACE=\"Arial\">N/A</FONT></CENTER></TD>\r\n");
+				}
 			}
 		}
 		buf.append("</TR></CENTER></TABLE>\r\n");		

@@ -37,7 +37,7 @@ public StringBuffer getHtml(StringBuffer buf)
 		tabEndDt = getTabularEndDate().getTime()/1000;
 		headerDateDisplay = getTabularStartDate();
 	}
-//	buf.append("<link rel=\"stylesheet\" href=\"d:/yukon/client/bin/CannonStyle.css\" type=\"text/css\">");
+//	buf.append("<link rel=\"stylesheet\" href=\"c:/yukon/client/bin/CannonStyle.css\" type=\"text/css\">");
 	buf.append("<CENTER><CENTER><TABLE BORDER=\"0\" CELLSPACING=\"0\" CELLPADDING=\"0\"><TR>\n");
 	buf.append("<TD BGCOLOR=\"#ffffff\" class=\"Main\"><CENTER>&nbsp;<B><FONT FACE=\"Arial\">\n");
 	buf.append( model.getChartName());
@@ -63,7 +63,7 @@ public StringBuffer getHtml(StringBuffer buf)
 	for (int i = 0; i < model.getTrendSeries().length; i++)
 	{
 		TrendSerie serie = model.getTrendSeries()[i];
-		if( serie.getType().equalsIgnoreCase("graph"))
+		if( (serie.getTypeMask() & com.cannontech.database.db.graph.GraphDataSeries.VALID_INTERVAL_MASK) == serie.getTypeMask())
 		{
 			buf.append("<TD BGCOLOR=\"#999966\" class=\"HeaderCell\" WIDTH=\"130\">\n");
 			buf.append("<P ALIGN=CENTER><B><FONT SIZE=\"-1\" FACE=\"Arial\">\n");
@@ -88,32 +88,29 @@ public StringBuffer getHtml(StringBuffer buf)
 	int validIndex = 0;
 	for( int i = 0; i < model.getTrendSeries().length; i++ )
 	{
-		if( model.getTrendSeries()[i].getType().equalsIgnoreCase("graph"))		
+		TrendSerie serie = model.getTrendSeries()[i];
+		if(( serie.getTypeMask() & com.cannontech.database.db.graph.GraphDataSeries.VALID_INTERVAL_MASK)== serie.getTypeMask())
 		{
-			com.jrefinery.data.TimeSeriesDataPair[] dp = model.getTrendSeries()[i].getDataPairArray();
-//			if( dp != null)	//If this check is made, null values don't line up with corresponding point
-			{
-		 		long[] timeStamp = model.getTrendSeries()[i].getPeriodsArray();
-				double[] values = model.getTrendSeries()[i].getValuesArray();
+	 		long[] timeStamp = serie.getPeriodsArray();
+			double[] values = serie.getValuesArray();
 
-		 		for( int j = 0; timeStamp != null && values != null &&  j < timeStamp.length; j++ )
-	 			{
- 					Long d = new Long(timeStamp[j]/1000);
-	 				Double[] objectValues = (Double[]) tree.get(new Double(d.doubleValue()));
-			 		if( objectValues == null )
-	 				{
-						if (d.longValue() > tabStDt && d.longValue() <= tabEndDt)
-						{
-							//objectValues is not in the key already
-					 		objectValues = new Double[ validSeriesCount];
-				 			tree.put(new Double(d.doubleValue()),objectValues);
-		 				}
-			 		}
-			if( objectValues != null)	//MAY NEED THIS AGAIN
+	 		for( int j = 0; timeStamp != null && values != null &&  j < timeStamp.length; j++ )
+ 			{
+				Long d = new Long(timeStamp[j]/1000);
+ 				Double[] objectValues = (Double[]) tree.get(new Double(d.doubleValue()));
+		 		if( objectValues == null )
+ 				{
+					if (d.longValue() > tabStDt && d.longValue() <= tabEndDt)
+					{
+						//objectValues is not in the key already
+				 		objectValues = new Double[ validSeriesCount];
+			 			tree.put(new Double(d.doubleValue()),objectValues);
+	 				}
+		 		}
+				if( objectValues != null)	//MAY NEED THIS AGAIN
 					objectValues[validIndex] = new Double(values[j]);
-	 			}
-	 			validIndex++;
-			}
+ 			}
+ 			validIndex++;
 		}
 	}
 	
@@ -124,7 +121,6 @@ public StringBuffer getHtml(StringBuffer buf)
 	String date = dateFormat.format( model.getStartDate());
 
 	int csvRowCount = keySet.size();
-//	int csvColCount = model.getTrendSeries().length + 2;	// +2 cols -> 1 for date, 1 for time
 	int csvColCount = validSeriesCount + 2;	// +2 cols -> 1 for date, 1 for time
 
 	keySet.toArray(keyArray);
@@ -140,7 +136,6 @@ public StringBuffer getHtml(StringBuffer buf)
 	buf.append("</FONT></TD>\n");
 
 	//Go through all the points one by one and output their values as html
-//	for( int z = 0; z < model.getTrendSeries().length; z++ )
 	for( int z = 0; z < validSeriesCount; z++ )
 	{
 		// Set the number decimal places for each point.
@@ -158,12 +153,7 @@ public StringBuffer getHtml(StringBuffer buf)
 			Double val = values[z];
 			
 			if( val != null )
-			{
-				//// Divide the multiplier out of the value if the user chose to removeMultiplier
-				//if ( GraphClient.isRemoveMultiplier() )
-					//val = new Double (val.doubleValue() / model.getMultiplier( z ));
 				buf.append(valueFormat.format(val));
-			}
 							
 			buf.append("<BR>");
 		}
