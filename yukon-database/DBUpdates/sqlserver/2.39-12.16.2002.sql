@@ -98,12 +98,6 @@ insert into YukonUser (UserID,UserName,Password,LoginCount,LastLogin,Status)
 select LoginID,UserName,Password,LoginCount,LastLogin,Status from OperatorLogin
 go
 
-/* Assign all users to the default user group, this may not be what is wanted */
-insert into YukonUserGroup (UserID, GroupID)
-select UserID,-1 from YukonUser
-where UserID >= 0
-go
-
 
 /*==============================================================*/
 /* Index: Indx_YkUsIDNm                                         */
@@ -229,6 +223,13 @@ go
 alter table YukonUserGroup
    add constraint FK_YkUsGr_YkGr foreign key (GroupID)
       references YukonGroup (GroupID)
+go
+
+
+/* Assign all users to the default user group, this may not be what is wanted */
+insert into YukonUserGroup (UserID, GroupID)
+select UserID,-1 from YukonUser
+where UserID >= 0
 go
 
 
