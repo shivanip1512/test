@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/INCLUDE/PORTGLOB.H-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2003/10/28 16:08:11 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2004/10/08 20:40:42 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -55,8 +55,8 @@ using namespace std;
 #define NUMPORTEREVENTS                7
 
 
-typedef set< CtiStatistics > CtiStatisticsSet_t;
-typedef CtiStatisticsSet_t::iterator CtiStatisticsIterator_t;
+typedef map< ULONG, CtiStatistics > CtiStatisticsMap_t;
+typedef CtiStatisticsMap_t::iterator CtiStatisticsIterator_t;
 
 extern IM_EX_PORTGLOB INT           PorterRefreshRate;
 
