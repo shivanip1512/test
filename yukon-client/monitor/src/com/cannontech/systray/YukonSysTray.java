@@ -172,14 +172,15 @@ public class YukonSysTray implements SysTrayMenuListener
 
 		System.setProperty("cti.app.name", "Yukon Systray");
 
-		ClientSession session = ClientSession.establishSession();					
-		if( session != null) 
+
+		ClientSession session = ClientSession.getInstance(); 
+		if( session.establishSession() )
 		{
 			//System.exit(-1);
 			new YukonSysTray();
 		}
-		//exits gracefully if we are not logged in!
 
+		//exits gracefully if we are not logged in!
 	}
 
 	public AlarmHandler getAlarmHandler()
