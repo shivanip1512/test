@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2002/05/02 17:02:28 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2002/05/03 18:31:50 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -57,6 +57,7 @@ char* GoodListVariable = "SuccessList";
 char* BadListVariable  = "MissedList";
 char* ScheduleIDVariable = "ScheduleID";
 char* HolidayScheduleIDVariable = "HolidayScheduleID";
+char* PILRequestPriorityVariable = "MessagePriority";
 
 CtiConnection* PILConnection = 0;
 CtiConnection* VanGoghConnection = 0;
@@ -1114,6 +1115,7 @@ static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool
 
     RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > queue_ptr = new CtiCountedPCPtrQueue<RWCollectable>();
 
+    if( timeout != 0 ) // don't bother if we don't want responses
     {
         RWRecursiveLock<RWMutexLock>::LockGuard guard(_queue_mux);
         InQueueStore.insertKeyAndValue(msgid, queue_ptr);
@@ -1133,7 +1135,10 @@ static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool
         WriteOutput( (char*) req->CommandString().data() );
         PILConnection->WriteConnQue(req);
     }
-
+    
+    if( timeout == 0 )
+        return TCL_OK;
+        
     long start = time(NULL);
 
     set< long, less<long> > device_set;
@@ -1287,6 +1292,7 @@ static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool
         InQueueStore.remove(msgid);
     }
 
+
     if( interrupted )
     {
         return TCL_ERROR;
@@ -1400,13 +1406,26 @@ void BuildRequestSet(Tcl_Interp* interp, RWCString& cmd_line, RWSet& req_set)
 
     }
 
-
     size_t index;
     size_t end_index;
+        
+    int priority = 7;    
+    char* pStr = Tcl_GetVar(interp, PILRequestPriorityVariable, 0);
+    if( pStr != NULL ) 
+    {
+        priority = atoi(pStr);
+        if( priority < 1 || priority > 15 ) 
+        {
+            WriteOutput("MessagePriority is invalid, defaulting to 7");
+        }
+    }
+    else
+    {
+        WriteOutput("MessagePriority not set, defaulting to 7");
+    }
 
     if( cmd_line.index(".*select[ ]+list[ ]+", &end_index) != RW_NPOS )
     {
-
         int list_len;
         Tcl_Obj* sel_str = Tcl_NewStringObj( cmd_line.data() + end_index, -1 );
         Tcl_ListObjLength(interp, sel_str, &list_len );
@@ -1429,8 +1448,11 @@ void BuildRequestSet(Tcl_Interp* interp, RWCString& cmd_line, RWSet& req_set)
                 cmd += Tcl_GetString(elem);
                 cmd += "'";
 
-                req_set.insert( new CtiRequestMsg(0, cmd, (int) rwThreadId()));
-
+                CtiRequestMsg *msg = new CtiRequestMsg();
+                msg->setDeviceId(0);
+                msg->setCommandString(cmd);                
+                msg->setMessagePriority(priority);
+                req_set.insert(msg);
             }
         }
 
@@ -1439,8 +1461,12 @@ void BuildRequestSet(Tcl_Interp* interp, RWCString& cmd_line, RWSet& req_set)
     }
     else //dont add quotes if it is an id
         if( cmd_line.index(".*select[ ]+[^ ]+[ ]+id", &end_index) != RW_NPOS )
-    {
-        req_set.insert(new CtiRequestMsg( 0, cmd_line, (int) rwThreadId() ) );
+    {        
+        CtiRequestMsg *msg = new CtiRequestMsg();
+        msg->setDeviceId(0);
+        msg->setCommandString(cmd_line);                
+        msg->setMessagePriority(priority);
+        req_set.insert(msg);
     }
     else
         if( cmd_line.index(".*select[ ]+[^ ]+[ ]+", &end_index) != RW_NPOS )
@@ -1462,32 +1488,10 @@ void BuildRequestSet(Tcl_Interp* interp, RWCString& cmd_line, RWSet& req_set)
             cmd_line.remove(index,1);
         }
 
-        req_set.insert( new CtiRequestMsg( 0, cmd_line, (int) rwThreadId() ) );
+        CtiRequestMsg *msg = new CtiRequestMsg();
+        msg->setDeviceId(0);
+        msg->setCommandString(cmd_line);                
+        msg->setMessagePriority(priority);
+        req_set.insert(msg);        
     }
-/*
-    if( !(sel_str = cmd_line.match(re_list)).isNull() ) {
-        //Found a select list in the command
-        //Create a pil request for each in the list
-
-        cmd_line.replace(re_select_list,"");
-
-        sel_str = sel_str.match(re_list);
-        sel_str = sel_str.strip(RWCString::both, '\'');
-        sel_str = sel_str.strip(RWCString::both, '\"');
-
-        RWCTokenizer next(sel_str);
-        RWCString name;
-
-        while( !(name=next()).isNull() ) {
-            RWCString cmd;
-            cmd = cmd_line;
-            cmd += " select name '";
-            cmd += name;
-            cmd += "\'";
-            req_set.insert( new CtiRequestMsg(0, cmd, (int) rwThreadId()));
-        }
-     }
-     else {
-        req_set.insert( new CtiRequestMsg( 0, cmd_line, (int) rwThreadId() ) );
-     }    */
 }
