@@ -17,7 +17,7 @@ package com.cannontech.servlet;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.cache.functions.CustomerFuncs;
-import com.cannontech.database.data.lite.LiteCustomerContact;
+import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 public class CurtailmentServlet extends javax.servlet.http.HttpServlet {
@@ -111,19 +111,19 @@ public void doPost(javax.servlet.http.HttpServletRequest req, javax.servlet.http
 		String initials      = req.getParameter("initials");
 		String redirectURI   = req.getParameter("redirect");
 		 
-		LiteCustomerContact contact = CustomerFuncs.getCustomerContact(user.getUserID());
+		LiteContact contact = CustomerFuncs.getCustomerContact(user.getUserID());
 		
 		// Confirm that the customer id passed here and the id stored
 		// in the session are the same	
 		if( contact == null || 
-			contact.getCustomerID() != Integer.parseInt(customerIDStr) ) {
+			CustomerFuncs.getOwnerCICustomer(contact.getContactID()).getCustomerID() != Integer.parseInt(customerIDStr) ) {
 				CTILogger.error("Customer id of the current user doesn't match that of the request");
 				return;				
 			}
 
 		if( 
 		!doAck( 	user.getUsername(), 
-			contact.getCustomerID(), 	
+			CustomerFuncs.getOwnerCICustomer(contact.getContactID()).getCustomerID(),
 			Integer.parseInt(curtailIDStr), 	
 			new java.util.Date( Long.parseLong(ackTimeStr)), 
 			req.getRemoteAddr(),
