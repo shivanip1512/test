@@ -874,7 +874,6 @@ private javax.swing.JTable getJTableBottom() {
 			ivjJTableBottom = new javax.swing.JTable();
 			ivjJTableBottom.setName("JTableBottom");
 			getJScrollPaneBottomTable().setColumnHeaderView(ivjJTableBottom.getTableHeader());
-			getJScrollPaneBottomTable().getViewport().setBackingStoreEnabled(true);
 			ivjJTableBottom.setBounds(0, 0, 200, 200);
 			// user code begin {1}
 
@@ -917,7 +916,6 @@ private javax.swing.JTable getJTableControlArea() {
 			ivjJTableControlArea = new javax.swing.JTable();
 			ivjJTableControlArea.setName("JTableControlArea");
 			getJScrollPaneControlArea().setColumnHeaderView(ivjJTableControlArea.getTableHeader());
-			getJScrollPaneControlArea().getViewport().setBackingStoreEnabled(true);
 			ivjJTableControlArea.setBounds(0, 0, 200, 200);
 			// user code begin {1}
 
@@ -1182,6 +1180,7 @@ private void initConnections() throws java.lang.Exception {
 	// add the GroupPopUp menu listener AND the ProgramPopUp menu listener here
 	//  Note: We have to overide: showIfPopupTrigger(java.awt.event.MouseEvent e)
 	//   because we have a different PopUpBox for each subclass of com.cannontech.loadcontrol.data.LMGroupBase  --Tricky!
+/*	
 	java.awt.event.MouseListener groupListener = new com.cannontech.clientutils.popup.PopUpMenuShower( getGroupPopUpMenu() )
 	{
 		protected void showIfPopupTrigger(java.awt.event.MouseEvent e) 
@@ -1192,10 +1191,6 @@ private void initConnections() throws java.lang.Exception {
 				Object row = getJTableBottomTableModel().getRowAt( getJTableBottom().rowAtPoint(e.getPoint()) );
 
 				//determines what popupBox is shown
-/*				
-				if( row instanceof com.cannontech.loadcontrol.data.LMCurtailCustomer )
-					getCurtailCustomerPopUpMenu().show( e.getComponent(), e.getX(), e.getY() );
-*/
 				if( row instanceof com.cannontech.loadcontrol.data.LMGroupBase )
 					getGroupPopUpMenu().show( e.getComponent(), e.getX(), e.getY() );
 				else if( row instanceof LMProgramBase )
@@ -1209,8 +1204,9 @@ private void initConnections() throws java.lang.Exception {
 		}
 	};
 
-
 	getJTableBottom().addMouseListener( groupListener );
+*/
+
 	getGroupPopUpMenu().addPopupMenuListener( this );
 	//getCurtailCustomerPopUpMenu().addPopupMenuListener( this );
 	getProgramPopUpMenu().addPopupMenuListener( this );
