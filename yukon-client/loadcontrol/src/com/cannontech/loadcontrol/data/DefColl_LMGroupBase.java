@@ -3,6 +3,8 @@ package com.cannontech.loadcontrol.data;
 /**
  * This type was created in VisualAge.
  */
+import java.util.Date;
+
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
@@ -70,26 +72,20 @@ public Class getJavaClass()
 public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException 
 {
 	LMGroupBase lmGroupBase = (LMGroupBase) obj;
-	
-	Integer yukonID = new Integer( (int)vstr.extractUnsignedInt() );
-	String yukonCategory = (String) vstr.restoreObject( SimpleMappings.CString );
-	String yukonClass = (String) vstr.restoreObject( SimpleMappings.CString );
-	String yukonName = (String) vstr.restoreObject( SimpleMappings.CString );
-	Integer yukonType = new Integer( (int)vstr.extractUnsignedInt() );
-	String yukonDescription = (String) vstr.restoreObject( SimpleMappings.CString );
-	int disableFlag = (int)vstr.extractUnsignedInt();
-	Integer groupOrder = new Integer( (int)vstr.extractUnsignedInt() );
-	Double kwCapacity = new Double( vstr.extractDouble() );
 
-	lmGroupBase.setYukonID(yukonID);
-	lmGroupBase.setYukonCategory(yukonCategory);
-	lmGroupBase.setYukonClass(yukonClass);
-	lmGroupBase.setYukonName(yukonName);
-	lmGroupBase.setYukonType(yukonType);
-	lmGroupBase.setYukonDescription(yukonDescription);
-	lmGroupBase.setDisableFlag(new Boolean(disableFlag>0));
-	lmGroupBase.setGroupOrder(groupOrder);	
-	lmGroupBase.setKwCapacity(kwCapacity);
+	lmGroupBase.setYukonID( new Integer((int)vstr.extractUnsignedInt()) );
+	lmGroupBase.setYukonCategory( (String) vstr.restoreObject(SimpleMappings.CString) );
+	lmGroupBase.setYukonClass( (String) vstr.restoreObject(SimpleMappings.CString) );
+	lmGroupBase.setYukonName( (String) vstr.restoreObject(SimpleMappings.CString) );
+	lmGroupBase.setYukonType( new Integer((int)vstr.extractUnsignedInt()) );
+	lmGroupBase.setYukonDescription( (String)vstr.restoreObject(SimpleMappings.CString) );
+	lmGroupBase.setDisableFlag( new Boolean((int)vstr.extractUnsignedInt() > 0) );
+	lmGroupBase.setGroupOrder( new Integer((int)vstr.extractUnsignedInt()) );	
+	lmGroupBase.setKwCapacity( new Double(vstr.extractDouble()) );
+	
+	lmGroupBase.setControlStartTime( (Date)vstr.restoreObject( SimpleMappings.Time ) );
+	lmGroupBase.setControlCompleteTime( (Date)vstr.restoreObject( SimpleMappings.Time ) );
+	
 }
 /**
  * saveGuts method comment.
