@@ -815,6 +815,20 @@ void CtiCapController::parseMessage(RWCollectable *message, ULONG secondsFrom190
     return;
 }
 
+
+DOUBLE convertPowerFactorToSend(DOUBLE powerFactor)
+{
+    DOUBLE returnPowerFactor = powerFactor;
+    if( powerFactor > 1 )
+    {
+        returnPowerFactor = powerFactor - 2;
+    }
+
+    //returnPowerFactor = returnPowerFactor * 100.0;
+
+    return returnPowerFactor;
+}
+
 /*---------------------------------------------------------------------------
     pointDataMsg
 
@@ -877,6 +891,14 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                 }
                 currentSubstationBus->setPowerFactorValue(currentSubstationBus->calculatePowerFactor(currentSubstationBus->getCurrentVarLoadPointValue(),currentSubstationBus->getCurrentWattLoadPointValue()));
                 currentSubstationBus->setEstimatedPowerFactorValue(currentSubstationBus->calculatePowerFactor(currentSubstationBus->getEstimatedVarLoadPointValue(),currentSubstationBus->getCurrentWattLoadPointValue()));
+                if( currentSubstationBus->getPowerFactorPointId() > 0 )
+                {
+                    sendMessageToDispatch(new CtiPointDataMsg(currentSubstationBus->getPowerFactorPointId(),convertPowerFactorToSend(currentSubstationBus->getPowerFactorValue()),NormalQuality,AnalogPointType));
+                }
+                if( currentSubstationBus->getEstimatedPowerFactorPointId() > 0 )
+                {
+                    sendMessageToDispatch(new CtiPointDataMsg(currentSubstationBus->getEstimatedPowerFactorPointId(),convertPowerFactorToSend(currentSubstationBus->getEstimatedPowerFactorValue()),NormalQuality,AnalogPointType));
+                }
             }
             else if( currentSubstationBus->getControlUnits() != CtiCCSubstationBus::KVARControlUnits )
             {
@@ -901,6 +923,14 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
             {
                 currentSubstationBus->setPowerFactorValue(currentSubstationBus->calculatePowerFactor(currentSubstationBus->getCurrentVarLoadPointValue(),currentSubstationBus->getCurrentWattLoadPointValue()));
                 currentSubstationBus->setEstimatedPowerFactorValue(currentSubstationBus->calculatePowerFactor(currentSubstationBus->getEstimatedVarLoadPointValue(),currentSubstationBus->getCurrentWattLoadPointValue()));
+                if( currentSubstationBus->getPowerFactorPointId() > 0 )
+                {
+                    sendMessageToDispatch(new CtiPointDataMsg(currentSubstationBus->getPowerFactorPointId(),convertPowerFactorToSend(currentSubstationBus->getPowerFactorValue()),NormalQuality,AnalogPointType));
+                }
+                if( currentSubstationBus->getEstimatedPowerFactorPointId() > 0 )
+                {
+                    sendMessageToDispatch(new CtiPointDataMsg(currentSubstationBus->getEstimatedPowerFactorPointId(),convertPowerFactorToSend(currentSubstationBus->getEstimatedPowerFactorValue()),NormalQuality,AnalogPointType));
+                }
             }
             else if( currentSubstationBus->getControlUnits() != CtiCCSubstationBus::KVARControlUnits )
             {
@@ -946,6 +976,14 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                         }
                         currentFeeder->setPowerFactorValue(currentSubstationBus->calculatePowerFactor(currentFeeder->getCurrentVarLoadPointValue(),currentFeeder->getCurrentWattLoadPointValue()));
                         currentFeeder->setEstimatedPowerFactorValue(currentSubstationBus->calculatePowerFactor(currentFeeder->getEstimatedVarLoadPointValue(),currentFeeder->getCurrentWattLoadPointValue()));
+                        if( currentFeeder->getPowerFactorPointId() > 0 )
+                        {
+                            sendMessageToDispatch(new CtiPointDataMsg(currentFeeder->getPowerFactorPointId(),convertPowerFactorToSend(currentFeeder->getPowerFactorValue()),NormalQuality,AnalogPointType));
+                        }
+                        if( currentFeeder->getEstimatedPowerFactorPointId() > 0 )
+                        {
+                            sendMessageToDispatch(new CtiPointDataMsg(currentFeeder->getEstimatedPowerFactorPointId(),convertPowerFactorToSend(currentFeeder->getEstimatedPowerFactorValue()),NormalQuality,AnalogPointType));
+                        }
                     }
                     else if( currentSubstationBus->getControlUnits() != CtiCCSubstationBus::KVARControlUnits )
                     {
@@ -970,6 +1008,14 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                     {
                         currentFeeder->setPowerFactorValue(currentSubstationBus->calculatePowerFactor(currentFeeder->getCurrentVarLoadPointValue(),currentFeeder->getCurrentWattLoadPointValue()));
                         currentFeeder->setEstimatedPowerFactorValue(currentSubstationBus->calculatePowerFactor(currentFeeder->getEstimatedVarLoadPointValue(),currentFeeder->getCurrentWattLoadPointValue()));
+                        if( currentFeeder->getPowerFactorPointId() > 0 )
+                        {
+                            sendMessageToDispatch(new CtiPointDataMsg(currentFeeder->getPowerFactorPointId(),convertPowerFactorToSend(currentFeeder->getPowerFactorValue()),NormalQuality,AnalogPointType));
+                        }
+                        if( currentFeeder->getEstimatedPowerFactorPointId() > 0 )
+                        {
+                            sendMessageToDispatch(new CtiPointDataMsg(currentFeeder->getEstimatedPowerFactorPointId(),convertPowerFactorToSend(currentFeeder->getEstimatedPowerFactorValue()),NormalQuality,AnalogPointType));
+                        }
                     }
                     else if( currentSubstationBus->getControlUnits() != CtiCCSubstationBus::KVARControlUnits )
                     {
@@ -1023,10 +1069,18 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                             if( currentSubstationBus->getCurrentWattLoadPointId() > 0 )
                             {
                                 currentSubstationBus->setEstimatedPowerFactorValue(currentSubstationBus->calculatePowerFactor(currentSubstationBus->getEstimatedVarLoadPointValue(),currentSubstationBus->getCurrentWattLoadPointValue()));
+                                if( currentSubstationBus->getEstimatedPowerFactorPointId() > 0 )
+                                {
+                                    sendMessageToDispatch(new CtiPointDataMsg(currentSubstationBus->getEstimatedPowerFactorPointId(),convertPowerFactorToSend(currentSubstationBus->getEstimatedPowerFactorValue()),NormalQuality,AnalogPointType));
+                                }
                             }
                             if( currentFeeder->getCurrentWattLoadPointId() > 0 )
                             {
                                 currentFeeder->setEstimatedPowerFactorValue(currentSubstationBus->calculatePowerFactor(currentFeeder->getEstimatedVarLoadPointValue(),currentFeeder->getCurrentWattLoadPointValue()));
+                                if( currentFeeder->getEstimatedPowerFactorPointId() > 0 )
+                                {
+                                    sendMessageToDispatch(new CtiPointDataMsg(currentFeeder->getEstimatedPowerFactorPointId(),convertPowerFactorToSend(currentFeeder->getEstimatedPowerFactorValue()),NormalQuality,AnalogPointType));
+                                }
                             }
                             found = TRUE;
                             break;
@@ -1214,8 +1268,14 @@ void CtiCapController::signalMsg( long pointID, unsigned tags, RWCString text, R
 void CtiCapController::sendMessageToDispatch( CtiMessage* message )
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     try
     {
+        /*{
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << RWTime() << " - Sending following message to Dispatch:" << endl;
+            message->dump();
+        }*/
         getDispatchConnection()->WriteConnQue(message);
     }
     catch(...)
