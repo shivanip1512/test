@@ -15,6 +15,23 @@ import com.cannontech.yukon.concrete.YukonResourceBase;
  */
 public class YukonServerResource extends YukonResourceBase
 {
+    
+    public YukonServerResource()
+    {
+        super();
+        
+        /* *
+         * 
+         * Initialize resources that are independent of other resources and
+         * do not use other resources during construction
+         * 
+         * */
+        dbCache = new com.cannontech.ejb.DatabaseCacheBean();
+        dbPersistent = new com.cannontech.ejb.DBPersistentBean();
+        timedDBCache = new com.cannontech.ejb.TimedDatabaseCacheBean();
+        sqlStatement = new com.cannontech.ejb.SqlStatementBean();
+    }
+
 
    // ---------------------------------------------------------------------------------
    //  START of the IDBPersistent implementation
@@ -26,9 +43,6 @@ public class YukonServerResource extends YukonResourceBase
    
    public IDBPersistent getDBPersistent()
    {
-      if( dbPersistent == null )
-         dbPersistent = new com.cannontech.ejb.DBPersistentBean();
-      
       return dbPersistent;
    }
 
@@ -39,13 +53,6 @@ public class YukonServerResource extends YukonResourceBase
    // ---------------------------------------------------------------------------------   
    public IDatabaseCache getDBCache()
    {
-      if( dbCache == null )
-      {         
-         //db = new com.cannontech.yukonserver.cache.DefaultDatabaseCache();
-         dbCache = new com.cannontech.ejb.DatabaseCacheBean();
-      }
-      
-     
       return dbCache;
    }
 
@@ -55,12 +62,6 @@ public class YukonServerResource extends YukonResourceBase
    // ---------------------------------------------------------------------------------   
    public ITimedDatabaseCache getTimedDBCache()
    {
-      if( timedDBCache == null )
-      {         
-         timedDBCache = new com.cannontech.ejb.TimedDatabaseCacheBean();
-      }
-      
-      
       return timedDBCache;
    }
 
@@ -70,9 +71,6 @@ public class YukonServerResource extends YukonResourceBase
    // ---------------------------------------------------------------------------------   
    public ISQLStatement getSQLStatement()
    {
-      if( sqlStatement == null )
-         sqlStatement = new com.cannontech.ejb.SqlStatementBean();
-      
       return sqlStatement;
    }
 
@@ -87,9 +85,9 @@ public class YukonServerResource extends YukonResourceBase
    // ---------------------------------------------------------------------------------   
    public IMACSConnection getMACSConnection()
    {
-      if( macsConnection == null )
-         macsConnection = new com.cannontech.yukon.connections.ServerMACSConnection();
-      
+       if( macsConnection == null )
+           macsConnection = new com.cannontech.yukon.connections.ServerMACSConnection();
+
       return macsConnection;
    }
 
