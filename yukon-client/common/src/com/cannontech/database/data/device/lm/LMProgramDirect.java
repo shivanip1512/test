@@ -1,5 +1,6 @@
 package com.cannontech.database.data.device.lm;
 
+import com.cannontech.database.db.device.lm.LMControlAreaProgram;
 import com.cannontech.database.db.device.lm.LMDirectNotificationGroupList;
 /**
  * Insert the type's description here.
@@ -239,5 +240,30 @@ public void update() throws java.sql.SQLException
 		((LMDirectNotificationGroupList)getLmProgramDirectNotifyGroupVector().elementAt(i)).add();
 	 }
 
+}
+
+public final static boolean belongsToControlArea(Integer programID) throws java.sql.SQLException 
+{	
+	return belongsToControlArea(programID, com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
+}
+/**
+ * This method was created in VisualAge.
+ * @param pointID java.lang.Integer
+ */
+public final static boolean belongsToControlArea(Integer programID, String databaseAlias) throws java.sql.SQLException 
+{
+	com.cannontech.database.SqlStatement stmt =
+		new com.cannontech.database.SqlStatement("SELECT DeviceID FROM " + LMControlAreaProgram.TABLE_NAME + " WHERE LMProgramDeviceID=" + programID,
+													databaseAlias );
+
+	try
+	{
+		stmt.execute();
+		return (stmt.getRowCount() > 0 );
+	}
+	catch( Exception e )
+	{
+		return false;
+	}
 }
 }
