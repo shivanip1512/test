@@ -25,6 +25,7 @@
 #include <xercesc/sax/SAXException.hpp>
 #include <xercesc/framework/MemBufInputSource.hpp>
 
+#include "cparms.h"
 #include "dsm2.h"
 #include "logger.h"
 #include "porter.h"
@@ -41,6 +42,8 @@
 #include "msg_trace.h"
 #include "cmdparse.h"
 #include "dev_wctp.h"
+
+static int pagesPerMinute  = gConfigParms.getValueAsInt("PAGES_PER_MINUTE", 0);
 
 
 /*
@@ -63,6 +66,41 @@ CtiDeviceWctpTerminal::~CtiDeviceWctpTerminal()
     {
         delete handler;
     }
+}
+
+bool CtiDeviceWctpTerminal::devicePacingExceeded()
+{
+    bool toofast = false;
+
+    if(pagesPerMinute > 0)
+    {
+        RWTime now;
+        RWTime newbatch = nextScheduledTimeAlignedOnRate( _pacingTimeStamp, 60 );
+
+        if(now >= newbatch)
+        {
+            _pagesPerMinute = 1;
+            _pacingTimeStamp = nextScheduledTimeAlignedOnRate( _pacingTimeStamp, 60 );
+            _pacingReport = false;
+        }
+        else if(_pagesPerMinute >= pagesPerMinute)   // This time is allowed for the paging company to clear buffers.
+        {
+            if(!_pacingReport)
+            {
+                _pacingReport = true;
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " " << getName() << " Configuration PAGES_PER_MINUTE limits paging to " << pagesPerMinute << " pages per minute.  Next page allowed at " << newbatch << endl;
+            }
+
+            toofast = true;
+        }
+        else
+        {
+            _pagesPerMinute++;
+        }
+    }
+
+    return toofast;
 }
 
 CtiDeviceWctpTerminal& CtiDeviceWctpTerminal::setSendFiller(bool yesno)
@@ -1066,6 +1104,7 @@ CHAR CtiDeviceWctpTerminal::incrementPagePrefix()
 }
 
 CtiDeviceWctpTerminal::CtiDeviceWctpTerminal() :
+_pagesPerMinute(0),
 _sendFiller(true),
 _pageCount(0),
 _pagePrefix('a'),
@@ -1501,4 +1540,5 @@ void  SAXWctpHandler::warning (const SAXParseException &exception)
 {
     throw exception;
 }
+
 

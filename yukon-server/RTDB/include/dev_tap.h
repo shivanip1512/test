@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_tap.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2003/03/13 19:36:14 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2003/06/27 19:25:25 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -47,6 +47,10 @@ private:
    UINT                          _idByteCount;  // How many bytes should a guy wait for after the CR (def. to 10)
 
    bool                          _sendFiller;
+
+   RWTime   _pacingTimeStamp;       // This is a timestamp from which we began the pacing process.
+   int      _pagesPerMinute;      // This is a count of pages since the _pacingTimeStamp.         Used with CPARM: PAGING_BATCH_SIZE
+   bool     _pacingReport;
 
 public:
 
@@ -114,6 +118,8 @@ public:
    INT traceIn(PCHAR Message, ULONG Count, RWTPtrSlist< CtiMessage > &traceList, BOOL CompletedMessage = FALSE);
 
    INT printChar( RWCString &Str, CHAR Char );
+   bool devicePacingExceeded();
+   bool blockedByPageRate() const;
 
 };
 

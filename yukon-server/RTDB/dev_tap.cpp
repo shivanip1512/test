@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_tap.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2003/04/30 17:17:27 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2003/06/27 19:25:25 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -37,6 +37,7 @@
 #include "dev_tap.h"
 #include "yukon.h"
 
+static int pagesPerMinute  = gConfigParms.getValueAsInt("PAGES_PER_MINUTE", 0);
 
 CtiDeviceTapPagingTerminal::~CtiDeviceTapPagingTerminal()
 {
@@ -1391,6 +1392,7 @@ bool CtiDeviceTapPagingTerminal::getSendFiller() const
 }
 
 CtiDeviceTapPagingTerminal::CtiDeviceTapPagingTerminal() :
+_pagesPerMinute(0),
 _sendFiller(true),
 _idByteCount(20),
 _pageCount(0),
@@ -1510,3 +1512,44 @@ ULONG CtiDeviceTapPagingTerminal::getUniqueIdentifier() const
 
     return CSum;
 }
+
+bool CtiDeviceTapPagingTerminal::blockedByPageRate() const
+{
+    return (_pagesPerMinute > pagesPerMinute);
+}
+
+bool CtiDeviceTapPagingTerminal::devicePacingExceeded()
+{
+    bool toofast = false;
+
+    if(pagesPerMinute > 0)
+    {
+        RWTime now;
+        RWTime newbatch = nextScheduledTimeAlignedOnRate(_pacingTimeStamp, 60);
+
+        if(now >= newbatch)
+        {
+            _pagesPerMinute = 1;
+            _pacingTimeStamp = nextScheduledTimeAlignedOnRate( _pacingTimeStamp, 60 );
+            _pacingReport = false;
+        }
+        else if(_pagesPerMinute >= pagesPerMinute)   // This time is allowed for the paging company to clear buffers.
+        {
+            if(!_pacingReport)
+            {
+                _pacingReport = true;
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " " << getName() << " Configuration PAGES_PER_MINUTE limits paging to " << pagesPerMinute << " pages per minute.  Next page allowed at " << newbatch << endl;
+            }
+
+            toofast = true;
+        }
+        else
+        {
+            _pagesPerMinute++;
+        }
+    }
+
+    return toofast;
+}
+

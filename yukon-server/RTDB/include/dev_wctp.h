@@ -58,6 +58,11 @@ private:
 
     bool _sendFiller;
 
+    RWTime   _pacingTimeStamp;       // This is a timestamp from which we began the pacing process.  Used with CPARM: PAGING_BATCH_WINDOW
+    int      _pagesPerMinute;        // This is a count of pages since the _pacingTimeStamp.         Used with CPARM: PAGING_BATCH_SIZE
+    bool     _pacingReport;
+
+
 public:
 
    typedef CtiDeviceIED Inherited;
@@ -123,6 +128,7 @@ public:
 
    CtiDeviceWctpTerminal& setSendFiller(bool yesno);
    bool getSendFiller() const;
+   bool devicePacingExceeded();
 
 private:
 
