@@ -1,6 +1,8 @@
 package com.cannontech.database.data.lite;
 
 import com.cannontech.database.cache.functions.PAOFuncs;
+import com.cannontech.database.db.command.Command;
+import com.cannontech.database.data.command.DeviceTypeCommand;
 import com.cannontech.database.data.customer.CICustomerBase;
 import com.cannontech.database.data.customer.Customer;
 import com.cannontech.database.data.notification.GroupNotification;
@@ -183,8 +185,21 @@ public final static com.cannontech.database.db.DBPersistent createDBPersistent(L
 				((com.cannontech.database.data.user.YukonGroup)returnObject).getYukonGroup().setGroupName( ((LiteYukonGroup)liteObject).getGroupName() );
 				((com.cannontech.database.data.user.YukonGroup)returnObject).getYukonGroup().setGroupDescription( ((LiteYukonGroup)liteObject).getGroupDescription() );
 				break;
-
-
+			case LiteTypes.DEVICE_TYPE_COMMAND:
+				returnObject = new DeviceTypeCommand();
+				((DeviceTypeCommand)returnObject).getDeviceTypeCommand().setDeviceCommandID(new Integer(((LiteDeviceTypeCommand)liteObject).getDeviceCommandID()));
+				((DeviceTypeCommand)returnObject).getDeviceTypeCommand().setCommandID(new Integer(((LiteDeviceTypeCommand)liteObject).getCommandID()));				
+				((DeviceTypeCommand)returnObject).getDeviceTypeCommand().setDeviceType(((LiteDeviceTypeCommand)liteObject).getDeviceType());
+				((DeviceTypeCommand)returnObject).getDeviceTypeCommand().setDisplayOrder(new Integer(((LiteDeviceTypeCommand)liteObject).getDisplayOrder()));
+				((DeviceTypeCommand)returnObject).getDeviceTypeCommand().setVisibleFlag(new Character(((LiteDeviceTypeCommand)liteObject).getVisibleFlag()));
+				break;
+			case LiteTypes.COMMAND:
+				returnObject = new Command();
+				((Command)returnObject).setCommandID(new Integer(((LiteCommand)liteObject).getCommandID()));				
+				((Command)returnObject).setCommand(((LiteCommand)liteObject).getCommand());
+				((Command)returnObject).setLabel(((LiteCommand)liteObject).getLabel());
+				((Command)returnObject).setCategory(((LiteCommand)liteObject).getCategory());
+				break;
 	/* TODO add SystemRole,YukonRoleProperty */		 		
 		 	case LiteTypes.ENERGY_COMPANY:
 		 		returnObject = new com.cannontech.database.data.company.EnergyCompanyBase();
@@ -388,7 +403,23 @@ public final static LiteBase createLite(com.cannontech.database.db.DBPersistent 
          ((com.cannontech.database.db.state.YukonImage)val).getImageID().intValue(),
          ((com.cannontech.database.db.state.YukonImage)val).getImageName() );
    }
-
+   else if( val instanceof DeviceTypeCommand)
+   {
+	  returnLite = new LiteDeviceTypeCommand(
+	  		((DeviceTypeCommand)val).getDeviceCommandID().intValue(), 
+			((DeviceTypeCommand)val).getCommandID().intValue(),
+			((DeviceTypeCommand)val).getDeviceType(),
+			((DeviceTypeCommand)val).getDisplayOrder().intValue(),
+			((DeviceTypeCommand)val).getVisibleFlag().charValue());
+   }
+   else if( val instanceof Command)
+   {
+	  returnLite = new LiteCommand(
+	  		((Command)val).getCommandID().intValue(),
+			((Command)val).getLabel(),
+			((Command)val).getCommand(),
+			((Command)val).getCategory());
+   }
 		
 	return returnLite;
 }
