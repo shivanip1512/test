@@ -32,6 +32,9 @@ public class DrawingUpdater extends TimerTask {
 	// The drawing to update
 	private Drawing drawing;
 
+	// Graphs are too expensive to always generate, set to false when only generating svg
+	private boolean updateGraphs = false;
+	
 	/**
 	 * Constructor for DrawingUpdater.
 	 */
@@ -97,7 +100,7 @@ drawing.getLxGraph().startUndoEdit("update");
 
 						}
 						
-						if( comp[i] instanceof DynamicGraphElement ) {
+						if( isUpdateGraphs() && comp[i] instanceof DynamicGraphElement ) {
 							DynamicGraphElement dge = (DynamicGraphElement) comp[i];
 							if( dge.shouldUpdate() ) {
 								dge.updateGraph();
@@ -176,6 +179,20 @@ drawing.getLxGraph().cancelUndoEdit();
 	 */
 	public synchronized void setDrawing(Drawing drawing) {
 		this.drawing = drawing;
+	}
+
+	/**
+	 * @return
+	 */
+	public boolean isUpdateGraphs() {
+		return updateGraphs;
+	}
+
+	/**
+	 * @param b
+	 */
+	public void setUpdateGraphs(boolean b) {
+		updateGraphs = b;
 	}
 
 }
