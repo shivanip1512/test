@@ -821,6 +821,47 @@ delete from YukonUserRole where roleid = -3;
 delete from YukonRoleProperty where roleid = -3;
 delete from YukonRole where roleid = -3;
 
+create table DeviceVerification (
+ReceiverID           numeric              not null,
+TransmitterID        numeric              not null,
+ResendOnFail         char(1)              not null,
+constraint PK_DEVICEVERIFICATION primary key  (ReceiverID, TransmitterID)
+);
+go
+alter table DeviceVerification
+   add constraint FK_DevV_Dev1 foreign key (ReceiverID)
+      references DEVICE (DEVICEID);
+go
+alter table DeviceVerification
+   add constraint FK_DevV_Dev1 foreign key (TransmitterID)
+      references DEVICE (DEVICEID);
+go
+
+create table DynamicVerification (
+LogID                numeric              not null,
+TimeArrival          datetime             not null,
+ReceiverID           numeric              not null,
+TransmitterID        numeric              not null,
+Command              varchar(256)         not null,
+Received             char(1)              not null,
+CodeSequence         numeric              not null,
+CodeStatus           varchar(32)          not null,
+constraint PK_DYNAMICVERIFICATION primary key  (ReceiverID, TransmitterID)
+);
+go
+alter table DynamicVerification
+   add constraint FK_DYNAMICV_REF_DYNV__DEVICE foreign key (ReceiverID)
+      references DEVICE (DEVICEID);
+go
+alter table DynamicVerification
+   add constraint FK_DynV_Dev2 foreign key (TransmitterID)
+      references DEVICE (DEVICEID);
+go
+
+
+
+
+
 
 
 
