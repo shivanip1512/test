@@ -30,6 +30,7 @@ import com.cannontech.common.util.FileMessageLog;
 import com.cannontech.common.gui.util.MessagePanel;
 import com.cannontech.dbeditor.defines.CommonDefines;
 import com.cannontech.message.dispatch.message.DBChangeMsg; 
+import com.cannontech.dbeditor.wizard.changetype.device.DeviceTypesPanel;
 
 public class DatabaseEditor
 	implements
@@ -741,15 +742,13 @@ public void executeChangeTypeButton_ActionPerformed(ActionEvent event)
 		 com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	  }
 
-	  if( (userObject instanceof com.cannontech.database.data.device.DeviceBase)
-		   && !((userObject instanceof com.cannontech.database.data.device.PagingTapTerminal)
-			|| (com.cannontech.database.data.pao.PAOGroups.getDeviceType( ((com.cannontech.database.data.device.DeviceBase)userObject).getPAOType() )
-			    == com.cannontech.database.data.pao.PAOGroups.VIRTUAL_SYSTEM)
-			|| (userObject instanceof com.cannontech.database.data.device.DavisWeather)))
+	  if( userObject instanceof com.cannontech.database.data.device.DeviceBase         
+		   && DeviceTypesPanel.isDeviceTypeChangeable( 
+               ((com.cannontech.database.data.device.DeviceBase)userObject).getPAOType()) )
 	  {
-		 showChangeTypeWizardPanel(
-				new com.cannontech.dbeditor.wizard.changetype.device.DeviceChangeTypeWizardPanel(
-			 	  userObject));
+         showChangeTypeWizardPanel(
+         		new com.cannontech.dbeditor.wizard.changetype.device.DeviceChangeTypeWizardPanel(
+         	 	  userObject));
 	  }
 	  else if (userObject instanceof com.cannontech.database.data.point.PointBase)
 	  {

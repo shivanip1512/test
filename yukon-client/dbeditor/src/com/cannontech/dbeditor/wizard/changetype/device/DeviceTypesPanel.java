@@ -20,58 +20,66 @@ public class DeviceTypesPanel extends com.cannontech.common.gui.util.DataInputPa
 	private javax.swing.JPanel ivjJPanel1 = null;
 
 	private javax.swing.JScrollPane ivjJScrollPane1 = null;
-	int deviceCategory[] =
-		{
-			DeviceClasses.CARRIER,
-			DeviceClasses.TRANSMITTER,
-			DeviceClasses.METER,
-			DeviceClasses.RTU,
-			DeviceClasses.VIRTUAL,
-			DeviceClasses.GROUP };
+   
+	private static final int DEVICE_CATEGORIES[] =
+   {
+      DeviceClasses.CARRIER,
+		DeviceClasses.TRANSMITTER,
+		DeviceClasses.METER,
+		DeviceClasses.RTU,
+		DeviceClasses.GROUP 
+   };
 		
-	String deviceType[][] = { { //MCTs
-				PAOGroups.STRING_MCT_370[0],
-				PAOGroups.STRING_MCT_360[0],
-				PAOGroups.STRING_MCT_318L[0],
-				PAOGroups.STRING_MCT_318[0],
-				PAOGroups.STRING_MCT_310ID[0],
-				PAOGroups.STRING_MCT_310IL[0],
-				PAOGroups.STRING_MCT_310[0],
-				PAOGroups.STRING_MCT_250[0],
-				PAOGroups.STRING_MCT_248[0],
-				PAOGroups.STRING_MCT_240[0],
-				PAOGroups.STRING_MCT_210[0],
-				PAOGroups.STRING_LMT_2[0],
-				PAOGroups.STRING_DCT_501[0] },
-				{ //Signal Transmitters									
-			PAOGroups.STRING_CCU_710[0],
-				PAOGroups.STRING_CCU_711[0],
-				PAOGroups.STRING_LCU_415[0],
-				PAOGroups.STRING_LCU_LG[0],
-				PAOGroups.STRING_TCU_5000[0],
-				PAOGroups.STRING_TCU_5500[0] },
-				{ //Electronic Meters
-			PAOGroups.STRING_ALPHA_POWERPLUS[0],
-				PAOGroups.STRING_ALPHA_A1[0],
-				PAOGroups.STRING_DR_87[0],
-				PAOGroups.STRING_FULCRUM[0],
-				PAOGroups.STRING_LANDISGYR_RS4[0],
-				PAOGroups.STRING_QUANTUM[0], 
-				PAOGroups.STRING_VECTRON[0]  }, { //RTUs
-			
-            //PAOGroups.STRING_RTU_DNP[0],  //dont allow this for now
-				PAOGroups.STRING_RTU_ILEX[0],
-				PAOGroups.STRING_RTU_WELCO[0] },
-				{ // Virtual Devices
-			PAOGroups.STRING_VIRTUAL_SYSTEM[0] }, {
-			//LMGroups
-			"LCR 2000", "LCR 3000", "LCR 3000 Emetcon Mode", "LCR 4000", "LCR 5000", "LMT 100 Series" }};
+	private static final String DEVICE_TYPES[][] = 
+   { { //MCTs
+			PAOGroups.STRING_MCT_370[0],
+			PAOGroups.STRING_MCT_360[0],
+			PAOGroups.STRING_MCT_318L[0],
+			PAOGroups.STRING_MCT_318[0],
+			PAOGroups.STRING_MCT_310ID[0],
+			PAOGroups.STRING_MCT_310IL[0],
+			PAOGroups.STRING_MCT_310[0],
+			PAOGroups.STRING_MCT_250[0],
+			PAOGroups.STRING_MCT_248[0],
+			PAOGroups.STRING_MCT_240[0],
+			PAOGroups.STRING_MCT_210[0],
+			PAOGroups.STRING_LMT_2[0],
+			PAOGroups.STRING_DCT_501[0] 
+      },
+      { //Signal Transmitters									
+		   PAOGroups.STRING_CCU_710[0],
+			PAOGroups.STRING_CCU_711[0],
+			PAOGroups.STRING_LCU_415[0],
+			PAOGroups.STRING_LCU_LG[0],
+			PAOGroups.STRING_TCU_5000[0],
+			PAOGroups.STRING_TCU_5500[0] 
+      },
+      { //Electronic Meters
+		   PAOGroups.STRING_ALPHA_POWERPLUS[0],
+			PAOGroups.STRING_ALPHA_A1[0],
+			PAOGroups.STRING_DR_87[0],
+			PAOGroups.STRING_FULCRUM[0],
+			PAOGroups.STRING_LANDISGYR_RS4[0],
+			PAOGroups.STRING_QUANTUM[0], 
+			PAOGroups.STRING_VECTRON[0]  
+      }, 
+      { //RTUs
+         //PAOGroups.STRING_RTU_DNP[0],  //dont allow this for now
+			PAOGroups.STRING_RTU_ILEX[0],
+			PAOGroups.STRING_RTU_WELCO[0] 
+      },
+      { //LMGroups
+			"LCR 2000", "LCR 3000", "LCR 3000 Emetcon Mode", "LCR 4000", 
+         "LCR 5000", "LMT 100 Series" 
+      }
+   };
 
 	private int devClass;
 	private javax.swing.JList ivjJListDeviceTypes = null;
 	private javax.swing.JLabel ivjSelectDeviceTypeLabel = null;
-	private String[] repeaters = {PAOGroups.STRING_REPEATER[1], PAOGroups.STRING_REPEATER_800[0]};
-	private String[] valueList =
+   
+	private static final String[] REPEATERS_LIST = { PAOGroups.STRING_REPEATER[1], PAOGroups.STRING_REPEATER_800[0] };
+	private static final String[] VALUE_LIST =
 	{
 			PAOGroups.STRING_VERSACOM_GROUP[0],
 			PAOGroups.STRING_VERSACOM_GROUP[0],
@@ -259,11 +267,11 @@ public Object getValue(Object val)
 	String type = null;
 
 	if (getDevClass() == DeviceClasses.GROUP)
-		for (int i = 0; i < deviceType[5].length; i++)
+		for (int i = 0; i < DEVICE_TYPES[5].length; i++)
 		{
-			if (getJListDeviceTypes().getSelectedValue() == deviceType[5][i])
+			if (getJListDeviceTypes().getSelectedValue() == DEVICE_TYPES[5][i])
 			{
-				type = (String) valueList[i];
+				type = VALUE_LIST[i];
 				break;
 			}
 		}
@@ -452,31 +460,64 @@ public void setDevClass(int deviceClass)
 {
 	devClass = deviceClass;
 }
+
+public static boolean isDeviceTypeChangeable( String devType )
+{
+   if( PAOGroups.isStringDevice(devType, PAOGroups.STRING_REPEATER_800) 
+       || PAOGroups.isStringDevice(devType, PAOGroups.STRING_REPEATER)  )
+   {
+      return true;
+   }
+      
+   for (int i = 0; i < DEVICE_CATEGORIES.length; i++)
+   {
+      //only let this device change its type if it is in the DEVICE_TYPES list
+      for( int j = 0; j < DEVICE_TYPES[i].length; j++ )
+      {
+         if( devType.equalsIgnoreCase(DEVICE_TYPES[i][j]) )
+         {
+            return true;
+         }
+      }
+
+   }
+
+   return false;   
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (6/13/2001 12:06:30 PM)
  */
-public void setList(int deviceClass, int type)
+public void setList(int deviceClass, String type)
 {
 	//sets device types according to class --- repeaters are a unique case
 	setDevClass(deviceClass);
 
-	if ((type == PAOGroups.REPEATER_800) || (type == PAOGroups.REPEATER))
+	if( PAOGroups.isStringDevice(type, PAOGroups.STRING_REPEATER_800) 
+       || PAOGroups.isStringDevice(type, PAOGroups.STRING_REPEATER)  )
 	{
 
-		getJListDeviceTypes().setListData(repeaters);
+		getJListDeviceTypes().setListData( REPEATERS_LIST );
 		getJListDeviceTypes().setSelectedIndex(0);
 	}
-
 	else
 	{
 
-		for (int i = 0; i < deviceCategory.length; i++)
+		for (int i = 0; i < DEVICE_CATEGORIES.length; i++)
 		{
-			if (deviceClass == deviceCategory[i])
+			if( deviceClass == DEVICE_CATEGORIES[i] )
 			{
-				getJListDeviceTypes().setListData(deviceType[i]);
-				getJListDeviceTypes().setSelectedIndex(0);
+            //only let this device change its type if it is in the DEVICE_TYPES list
+            for( int j = 0; j < DEVICE_TYPES[i].length; j++ )
+            {
+               if( type.equalsIgnoreCase(DEVICE_TYPES[i][j]) )
+               {
+      				getJListDeviceTypes().setListData(DEVICE_TYPES[i]);
+      				getJListDeviceTypes().setSelectedIndex(0);
+                  break;
+               }
+            }
 
 			}
 
