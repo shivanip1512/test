@@ -5,7 +5,7 @@
 	long id = Long.parseLong(request.getParameter("id"));
 	TimeConsumingTask task = ProgressChecker.getTask(id);
 	
-	if (request.getParameter("remove") != null)
+	if (request.getParameter("Remove") != null)
 		ProgressChecker.removeTask(id);
 	
 	boolean isStopped = false;
