@@ -47,6 +47,8 @@ public class ECUtils {
 	public static final int YUK_WEB_CONFIG_ID_COOL = -1;
 	public static final int YUK_WEB_CONFIG_ID_HEAT = -2;
 	
+	public static final int SA205_UNUSED_ADDR = 3909;
+	
 	public static StarsThermoModeSettings getThermSeasonMode(int configID) {
 		if (configID == YUK_WEB_CONFIG_ID_COOL)
 			return StarsThermoModeSettings.COOL;
