@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2004/09/15 20:49:09 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2005/01/18 19:13:14 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -86,7 +86,8 @@ void GWTimeSyncThread (void *Dummy)
 
             if(guard.isAcquired())
             {
-                querynext = now + (60 * (59 - now.minute())) + (60 - now.second());
+                // Hourly runtime updates.
+                querynext = nextScheduledTimeAlignedOnRate(now, 3600);
 
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -121,7 +122,7 @@ void GWTimeSyncThread (void *Dummy)
 
             if(guard.isAcquired())
             {
-                midnightnext = now + (3600 * (23 - now.hour())) + (60 * (59 - now.minute())) + (60 - now.second());
+                midnightnext = nextScheduledTimeAlignedOnRate(now, 86400);
 
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -311,6 +312,7 @@ void GWConnectionThread(VOID *Arg)
         pGW->start();
         pGW->sendGet( TYPE_GETADDRESSING, 0 );
         pGW->sendGet( TYPE_GETALL, 0 );
+        pGW->sendQueryRuntime(0, FALSE);    // Get the runtimes at connect, reset none = FALSE
 
         address_request = 0;
 
