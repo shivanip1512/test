@@ -10,7 +10,7 @@ direction: specify 'horizontal' or 'vertical' depending on the direction
 */
 
 function beginDrag(event,ct, cb, cr, cl, f, direction,id) {
-  //confirm("hello");
+
   var elementToDrag;
   var x, y;
   var deltaX, deltaY;
