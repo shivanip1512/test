@@ -122,12 +122,14 @@ private  synchronized void internalExecute(int operation, com.cannontech.databas
 		catch( java.sql.SQLException e2 )
 		{
          TransactionException t = new TransactionException( e.getMessage() );
-         t.setStackTrace( e2.getStackTrace() );
+         /* Only in JRE 1.4 or greater */
+         /*t.setStackTrace( e2.getStackTrace() );*/
          throw t;
 		}
 		
       TransactionException t = new TransactionException( e.getMessage() );
-      t.setStackTrace( e.getStackTrace() );
+      /*Only in JRE 1.4 or greater */
+      /*t.setStackTrace( e.getStackTrace() );*/
 		throw t;
 	}
 	finally
