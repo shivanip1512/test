@@ -210,9 +210,6 @@ public Object getValue(Object val) {
 		else
 			((com.cannontech.database.data.point.AnalogPoint) val).getPoint().setPointOffset(null);
 
-		((com.cannontech.database.data.point.AnalogPoint) val).getPointAnalog().setDeadband(new Double(-1));
-		
-
 		if( ((com.cannontech.database.data.point.AnalogPoint) val).getPoint().getPseudoFlag().equals( com.cannontech.database.db.point.Point.PSEUDOFLAG_PSEUDO ) )
 		{
 			//((com.cannontech.database.data.point.AnalogPoint) val).getPoint().setPseudoFlag( new Character('P') );

@@ -16,14 +16,14 @@ public class PointAnalog extends com.cannontech.database.db.DBPersistent {
  */
 public PointAnalog() {
 	super();
-	initialize(null, null, null ,null, null );
+	initialize(null, new Double(-1), null ,null, null );
 }
 /**
  * PointAnalogSetting constructor comment.
  */
 public PointAnalog(Integer pointID) {
 	super();
-	initialize(pointID, null, null ,null, null );
+	initialize(pointID, new Double(-1), null ,null, null );
 }
 /**
  * PointAnalogSetting constructor comment.
