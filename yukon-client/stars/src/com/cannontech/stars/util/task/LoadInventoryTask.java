@@ -118,7 +118,9 @@ public class LoadInventoryTask extends TimeConsumingTask {
 				}
 			}
 			
+			energyCompany.setInventoryLoaded( true );
 			status = STATUS_FINISHED;
+			
 			CTILogger.info( "All inventory loaded for energy company #" + energyCompany.getEnergyCompanyID() );
 		}
 		catch (Exception e) {

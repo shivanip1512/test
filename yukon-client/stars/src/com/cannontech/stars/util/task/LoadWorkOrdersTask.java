@@ -83,7 +83,9 @@ public class LoadWorkOrdersTask extends TimeConsumingTask {
 				}
 			}
 			
+			energyCompany.setWorkOrdersLoaded( true );
 			status = STATUS_FINISHED;
+			
 			CTILogger.info( "All work orders loaded for energy company #" + energyCompany.getEnergyCompanyID() );
 		}
 		catch (Exception e) {
