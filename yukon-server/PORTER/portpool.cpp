@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2003/09/22 15:39:03 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2003/09/26 03:33:15 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -114,7 +114,16 @@ VOID PortPoolDialoutThread(void *pid)
             }
             continue;
         }
-        else if(PorterDebugLevel & PORTER_DEBUG_PORTQUEREAD)
+
+        RWTime starttime;
+
+        if(sgPoolDebugLevel & PORTPOOL_DEBUGLEVL_POOLQUEUE)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << starttime << " " << ParentPort->getName() << " has just read performed a readQueue().  OM Priority " << OutMessage->Priority << endl;
+        }
+
+        if(PorterDebugLevel & PORTER_DEBUG_PORTQUEREAD)
         {
             CtiDeviceBase *tempDev = DeviceManager.getEqual(OutMessage->TargetID ? OutMessage->TargetID : OutMessage->DeviceID);
 
@@ -202,9 +211,15 @@ VOID PortPoolDialoutThread(void *pid)
 
                 continue;
             }
+
+
+            if(sgPoolDebugLevel & PORTPOOL_DEBUGLEVL_POOLQUEUE)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " " << Device->getName() << " has been submitted on the pool port.  Priority " << OutMessage->Priority << endl;
+            }
         }
 
-        RWTime starttime;
         CtiPortManager::ptr_type childport = ((CtiPortPoolDialout*)ParentPort.get())->getAvailableChildPort(Device);
         RWTime stoptime;
 
@@ -213,7 +228,7 @@ VOID PortPoolDialoutThread(void *pid)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << " Way too slow!" << endl;
+                dout << ParentPort->getName() << " Way too slow!" << endl;
             }
         }
 
@@ -239,7 +254,7 @@ VOID PortPoolDialoutThread(void *pid)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << " Way too slow!" << endl;
+                dout << ParentPort->getName() << " Way too slow!" << endl;
             }
         }
 
