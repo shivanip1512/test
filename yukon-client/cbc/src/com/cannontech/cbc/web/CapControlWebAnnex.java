@@ -41,7 +41,7 @@ public class CapControlWebAnnex implements java.util.Observer
 	private CapBankTableModel capBankTableModel = null;
     
     //object to render table data
-    private CBCDisplay cbcDisplay = null;
+    private CBCDisplay cbcDisplay = new CBCDisplay();
 
 
 	//what our current refresh rate is
@@ -71,9 +71,6 @@ public class CapControlWebAnnex implements java.util.Observer
     
     public CBCDisplay getCBCDisplay()
     {
-        if( cbcDisplay == null )
-            cbcDisplay = new CBCDisplay();
-        
         return cbcDisplay;
     }
 
@@ -250,4 +247,11 @@ public class CapControlWebAnnex implements java.util.Observer
     {
         this.yukonUser = yukonUser;
     }
+
+	public void setCBCDisplay( CBCDisplay displayCbc )
+	{
+		if( displayCbc != null )
+			cbcDisplay = displayCbc;
+	}
+
 }

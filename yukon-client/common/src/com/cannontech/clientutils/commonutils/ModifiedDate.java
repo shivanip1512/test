@@ -6,6 +6,11 @@ package com.cannontech.clientutils.commonutils;
  * @author: 
  */
 import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
+
+import com.cannontech.clientutils.CTILogger;
 
 public class ModifiedDate extends java.util.Date 
 {
@@ -13,16 +18,23 @@ public class ModifiedDate extends java.util.Date
 	private static SimpleDateFormat formatter_def = 
 				new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
 
+	//month, day, year, hour, minutes
 	private static SimpleDateFormat formatter_nosecs = 
 				new SimpleDateFormat("MM-dd-yyyy HH:mm");
 
+	//month, day, hours, minutes
 	private static SimpleDateFormat formatter_nosecs_noyr = 
 				new SimpleDateFormat("MM-dd HH:mm");
+
+	//month, day, year, hour, minutes, timezone
+	private static SimpleDateFormat formatter_nosecs_tz = 
+		new SimpleDateFormat("MM-dd-yyyy HH:mm z");
 
 
 	public static final short FRMT_DEFAULT = 0;
 	public static final short FRMT_NOSECS = 1;
 	public static final short FRMT_NOSECS_NOYR = 2;
+	public static final short FRMT_NOSECS_TZ = 3;
 	
 	
 	//private boolean showSecs = true;
@@ -48,6 +60,8 @@ public class ModifiedDate extends java.util.Date
 				return formatter_nosecs;
 			case FRMT_NOSECS_NOYR:
 				return formatter_nosecs_noyr;
+			case FRMT_NOSECS_TZ:
+				return formatter_nosecs_tz;
 				
 			default:
 				return formatter_def;

@@ -39,7 +39,7 @@ public class CapBankTableModel extends javax.swing.table.AbstractTableModel impl
 	private boolean muted = false;
 	
 	private boolean showingAlarms = true;
-    private CBCDisplay cbcDisplay = null;
+    private CBCDisplay cbcDisplay = new CBCDisplay();
 	
 	private String fontName = "dialog";
 	private int fontSize = 12;
@@ -104,7 +104,6 @@ public class CapBankTableModel extends javax.swing.table.AbstractTableModel impl
 public CapBankTableModel()
 {
 	super();
-    cbcDisplay = new CBCDisplay();
 }
 
 /**
@@ -892,5 +891,11 @@ public void setMuted( boolean muted_ )
 {
 	muted = muted_;
 }
+
+	public void setCBCDisplay( CBCDisplay displayCbc )
+	{
+		if( displayCbc != null )
+			cbcDisplay = displayCbc;
+	}
 
 }

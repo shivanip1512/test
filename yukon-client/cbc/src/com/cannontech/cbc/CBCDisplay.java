@@ -22,8 +22,19 @@ public class CBCDisplay
 {
     public static final String STR_NA = "  NA";
     public static final String DASH_LINE = "  ----";
+    
+    public short dateTimeFormat = ModifiedDate.FRMT_DEFAULT;
 
+    public CBCDisplay()
+    {
+    	this( ModifiedDate.FRMT_DEFAULT );
+    }
 
+    public CBCDisplay( short formatInt )
+    {
+    	super();
+    	dateTimeFormat = formatInt;
+    }
     /**
      * getValueAt method for CapBanks.
      * 
@@ -82,7 +93,7 @@ public class CBCDisplay
                     return "  ----";
                 else
                     return new ModifiedDate(
-                            capBank.getLastStatusChangeTime().getTime(), ModifiedDate.FRMT_NOSECS );    
+                            capBank.getLastStatusChangeTime().getTime(), dateTimeFormat );    
             }
 
             default:
@@ -239,7 +250,7 @@ public class CBCDisplay
                     com.cannontech.common.util.CtiUtilities.get1990GregCalendar().getTime().getTime() )
                     return DASH_LINE;
                 else
-                    return new ModifiedDate( subBus.getLastCurrentVarPointUpdateTime().getTime(), ModifiedDate.FRMT_NOSECS );
+                    return new ModifiedDate( subBus.getLastCurrentVarPointUpdateTime().getTime(), dateTimeFormat );
             }
 
             
@@ -436,7 +447,7 @@ public class CBCDisplay
                     return DASH_LINE;
                 else
                     return new ModifiedDate( 
-                            feeder.getLastCurrentVarPointUpdateTime().getTime(), ModifiedDate.FRMT_NOSECS );
+                            feeder.getLastCurrentVarPointUpdateTime().getTime(), dateTimeFormat );
             }
 
             default:

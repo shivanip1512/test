@@ -16,6 +16,9 @@
 <%@ page import="com.cannontech.yukon.cbc.Feeder" %>
 <%@ page import="com.cannontech.yukon.cbc.CapBankDevice" %>
 <%@ page import="com.cannontech.util.ServletUtil" %>
+<%@ page import="com.cannontech.clientutils.commonutils.ModifiedDate" %>
+<%@ page import="com.cannontech.cbc.CBCDisplay" %>
+
 
 <jsp:useBean id="cbcAnnex" scope="session"
 	class="com.cannontech.cbc.web.CapControlWebAnnex"
@@ -58,10 +61,17 @@
 	{
 		//if we are just starting, we must have an area
 		if( subBusMdl.getAreaNames().size() > 0 && cbcSession.getLastArea() == null)
-			cbcSession.setLastArea( subBusMdl.getAreaNames().get(0).toString() );	
+			cbcSession.setLastArea( subBusMdl.getAreaNames().get(0).toString() );
+			
+		//ensure our display formatting is set correctly
+		CBCDisplay disp = new CBCDisplay(ModifiedDate.FRMT_NOSECS_TZ);
+		cbcAnnex.setCBCDisplay( disp );
+		subBusMdl.setCBCDisplay( disp );
+		feederMdl.setCBCDisplay( disp );
+		capBankMdl.setCBCDisplay( disp );
 	}
-		
-	
+
+
 	//set the filter to the one we want
 	subBusMdl.setFilter( cbcSession.getLastArea() );
 	

@@ -124,8 +124,6 @@ public SubBusTableModel( LiteYukonUser yukUser )
 {
     super();
     
-    cbcDisplay = new CBCDisplay();
-    
     if( yukUser == null )
         throw new IllegalArgumentException("Do not use a NULL YukonUser for ownership");
 
@@ -667,4 +665,11 @@ private synchronized void updateSubBuses(SubBus[] newBuses)
 	}
 
 }
+
+	public void setCBCDisplay( CBCDisplay displayCbc )
+	{
+		if( displayCbc != null )
+			cbcDisplay = displayCbc;
+	}
+
 }

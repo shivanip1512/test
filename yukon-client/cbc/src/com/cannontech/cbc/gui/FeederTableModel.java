@@ -68,7 +68,6 @@ public class FeederTableModel extends javax.swing.table.AbstractTableModel imple
 public FeederTableModel()
 {
 	super();
-    cbcDisplay = new CBCDisplay();
 }
 /**
  * Insert the method's description here.
@@ -419,4 +418,11 @@ public void toggleAlarms( boolean toggle )
 {
 	//do nothing since we dont alarm on this table yet
 }
+
+	public void setCBCDisplay( CBCDisplay displayCbc )
+	{
+		if( displayCbc != null )
+			cbcDisplay = displayCbc;
+	}
+
 }

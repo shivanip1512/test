@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.*;
+
 import com.cannontech.database.Transaction;
 import com.cannontech.database.db.NestedDBPersistent;
 
@@ -77,14 +78,14 @@ public final class CtiUtilities
 	private static String temp;
 
 	static
-	{
+	{		
+		/** Init our beginning of time here */
 		gc1990 = new java.util.GregorianCalendar();
 		gc1990.set( Calendar.YEAR, 1990 );
 		gc1990.set( Calendar.DAY_OF_YEAR, 1 );
 		gc1990.set( Calendar.HOUR, 0 );
 		gc1990.set( Calendar.MINUTE, 0 );
 		gc1990.set( Calendar.SECOND, 0 );
-
 
 		try
 		{
@@ -93,9 +94,31 @@ public final class CtiUtilities
 		}
 		catch( java.net.UnknownHostException e )
 		{
-			com.cannontech.clientutils.CTILogger.info("*** UnknownHostException occured, using (null) for the source in the base message class.");
+			CTILogger.info("*** UnknownHostException occured, using (null) for the source in the base message class.");
 		}
-			
+
+
+		/** Init our default timezone object here */
+		String[] s = TimeZone.getAvailableIDs( TimeZone.getDefault().getRawOffset() );
+
+		for( int i = 0; i < s.length; i++  )
+		{
+			//CTILogger.debug( " s["+i+"]= " + s[i] + ", ID=" + java.util.TimeZone.getTimeZone(s[i]).getDisplayName() );
+
+			//try to find the US timezone for ourselves (may need correcting once we go International)
+			if( s[i].startsWith("US/") )
+			{
+				TimeZone.setDefault( TimeZone.getTimeZone(s[i]) );				
+				CTILogger.debug( "Setting Default TimeZone: " + s[i] + ", " +
+					TimeZone.getDefault().getDisplayName(
+						TimeZone.getDefault().inDaylightTime(new Date()),
+						TimeZone.SHORT,
+						Locale.getDefault()) );
+
+				break;
+			}
+		}
+
 	}
 
 	public static final String DEFAULT_MSG_SOURCE = temp;
@@ -471,7 +494,6 @@ private static boolean findPath(java.util.Stack s, Object o) {
 public static java.util.GregorianCalendar get1990GregCalendar() {
 	return gc1990;
 }
-
 
 /**
  * This method will return the java.awt.Frame associated with a component
