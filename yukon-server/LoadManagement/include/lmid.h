@@ -41,6 +41,9 @@
 #define CTILMGROUPEXPRESSCOM_ID                 626
 #define CTILMPROGRAMTHERMOSTATGEAR_ID           627
 #define CTILMGROUPMCT_ID                        628
+#define CTILMGROUPSA305_ID                      629
+#define CTILMGROUPSA205OR105_ID                 630
+#define CTILMGROUPSADIGITALORGOLAY_ID           631
 
 /*
 #define CTILM_ID                        62

@@ -41,10 +41,10 @@ RWDECLARE_COLLECTABLE( CtiLMGroupRipple )
     CtiLMGroupRipple& setShedTime(LONG shed);
 
     virtual CtiLMGroupBase* replicate() const;
-    virtual CtiRequestMsg* createTimeRefreshRequestMsg(LONG refreshRate, LONG shedTime, int priority) const;
-    virtual CtiRequestMsg* createSmartCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, int priority) const;
-    virtual CtiRequestMsg* createRotationRequestMsg(LONG sendRate, LONG shedTime, int priority) const;
-    virtual CtiRequestMsg* createMasterCycleRequestMsg(LONG offTime, LONG period, int priority) const;
+    virtual CtiPILRequestMsg* createTimeRefreshRequestMsg(LONG refreshRate, LONG shedTime, int priority) const;
+    virtual CtiPILRequestMsg* createSmartCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, int priority) const;
+    virtual CtiPILRequestMsg* createRotationRequestMsg(LONG sendRate, LONG shedTime, int priority) const;
+    virtual CtiPILRequestMsg* createMasterCycleRequestMsg(LONG offTime, LONG period, int priority) const;
 
     virtual BOOL doesMasterCycleNeedToBeUpdated(ULONG secondsFrom1901, ULONG groupControlDone, ULONG offTime);
 

@@ -49,6 +49,8 @@ public:
     LONG getStopOrder() const;
     LONG getDefaultPriority() const;
     const RWCString& getControlType() const;
+    LONG getConstraintID() const;
+    const RWCString& getConstraintName() const;
     const RWCString& getAvailableSeasons() const;
     const RWCString& getAvailableWeekDays() const;
     LONG getMaxHoursDaily() const;
@@ -57,6 +59,8 @@ public:
     LONG getMaxHoursAnnually() const;
     LONG getMinActivateTime() const;
     LONG getMinRestartTime() const;
+    LONG getMaxDailyOps() const;
+    LONG getMaxActivateTime() const;
     LONG getHolidayScheduleId() const;
     LONG getSeasonScheduleId() const;
     LONG getProgramStatusPointId() const;
@@ -79,6 +83,8 @@ public:
     CtiLMProgramBase& setStopOrder(LONG stoporder);
     CtiLMProgramBase& setDefaultPriority(LONG defpriority);
     CtiLMProgramBase& setControlType(const RWCString& conttype);
+    CtiLMProgramBase& setConstraintID(LONG constraintid);
+    CtiLMProgramBase& setConstraintName(const RWCString& constraintname);
     CtiLMProgramBase& setAvailableSeasons(const RWCString& availseasons);
     CtiLMProgramBase& setAvailableWeekDays(const RWCString& availweekdays);
     CtiLMProgramBase& setMaxHoursDaily(LONG daily);
@@ -87,6 +93,8 @@ public:
     CtiLMProgramBase& setMaxHoursAnnually(LONG annually);
     CtiLMProgramBase& setMinActivateTime(LONG activate);
     CtiLMProgramBase& setMinRestartTime(LONG restart);
+    CtiLMProgramBase& setMaxDailyOps(LONG max_ops);
+    CtiLMProgramBase& setMaxActivateTime(LONG max_active_time);
     CtiLMProgramBase& setHolidayScheduleId(LONG schdid);
     CtiLMProgramBase& setSeasonScheduleId(LONG schdid);
     CtiLMProgramBase& setProgramStatusPointId(LONG statuspointid);
@@ -153,6 +161,8 @@ private:
     LONG _stoporder;
     LONG _defaultpriority;
     RWCString _controltype;
+    LONG _constraintid;
+    RWCString _constraintname;
     RWCString _availableseasons;
     RWCString _availableweekdays;
     LONG _maxhoursdaily;
@@ -161,6 +171,8 @@ private:
     LONG _maxhoursannually;
     LONG _minactivatetime;
     LONG _minrestarttime;
+    LONG _maxdailyops;
+    LONG _maxactivatetime;
     LONG _holidayscheduleid;
     LONG _seasonscheduleid;
     LONG _programstatuspointid;

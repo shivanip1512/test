@@ -51,10 +51,10 @@ CtiLMGroupExpresscom::~CtiLMGroupExpresscom()
 /*-------------------------------------------------------------------------
     createTimeRefreshRequestMsg
 
-    Creates a new CtiRequestMsg pointer for a program gear with a control
+    Creates a new CtiPILRequestMsg pointer for a program gear with a control
     method of time refresh with the appropriate refresh rate and shed time.
 --------------------------------------------------------------------------*/
-CtiRequestMsg* CtiLMGroupExpresscom::createTimeRefreshRequestMsg(LONG refreshRate, LONG shedTime, int priority) const
+CtiPILRequestMsg* CtiLMGroupExpresscom::createTimeRefreshRequestMsg(LONG refreshRate, LONG shedTime, int priority) const
 {
     RWCString controlString = RWCString("control xcom shed ");
     controlString += convertSecondsToEvenTimeString(shedTime);
@@ -64,17 +64,17 @@ CtiRequestMsg* CtiLMGroupExpresscom::createTimeRefreshRequestMsg(LONG refreshRat
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " - Sending time refresh command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
     }
-    return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
+    return new CtiPILRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
 }
 
 /*-------------------------------------------------------------------------
     createSmartCycleRequestMsg
 
-    Creates a new CtiRequestMsg pointer for a program gear with a control
+    Creates a new CtiPILRequestMsg pointer for a program gear with a control
     method of smart cycle with the appropriate cycle percent, period length
     in minutes, and the default count of periods.
 --------------------------------------------------------------------------*/
-CtiRequestMsg* CtiLMGroupExpresscom::createSmartCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, int priority) const
+CtiPILRequestMsg* CtiLMGroupExpresscom::createSmartCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, int priority) const
 {
     char tempchar[64];
     RWCString controlString = RWCString("control xcom cycle ");
@@ -91,7 +91,7 @@ CtiRequestMsg* CtiLMGroupExpresscom::createSmartCycleRequestMsg(LONG percent, LO
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " - Sending smart cycle command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
     }
-    return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
+    return new CtiPILRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
 }
 
 /*-------------------------------------------------------------------------
@@ -100,7 +100,7 @@ CtiRequestMsg* CtiLMGroupExpresscom::createSmartCycleRequestMsg(LONG percent, LO
     Creates true cycle request msg which is exactly like a smart cycle but
     with the "truecycle" string at the end of the control string.
 --------------------------------------------------------------------------*/
-CtiRequestMsg* CtiLMGroupExpresscom::createTrueCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, int priority) const
+CtiPILRequestMsg* CtiLMGroupExpresscom::createTrueCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, int priority) const
 {
     char tempchar[64];
     RWCString controlString = RWCString("control xcom cycle ");
@@ -118,16 +118,16 @@ CtiRequestMsg* CtiLMGroupExpresscom::createTrueCycleRequestMsg(LONG percent, LON
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " - Sending true cycle command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
     }
-    return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
+    return new CtiPILRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
 }
 
 /*-------------------------------------------------------------------------
     createRotationRequestMsg
 
-    Creates a new CtiRequestMsg pointer for a program gear with a control
+    Creates a new CtiPILRequestMsg pointer for a program gear with a control
     method of rotation with the appropriate send rate and shed time.
 --------------------------------------------------------------------------*/
-CtiRequestMsg* CtiLMGroupExpresscom::createRotationRequestMsg(LONG sendRate, LONG shedTime, int priority) const
+CtiPILRequestMsg* CtiLMGroupExpresscom::createRotationRequestMsg(LONG sendRate, LONG shedTime, int priority) const
 {
     RWCString controlString = RWCString("control xcom shed ");
     controlString += convertSecondsToEvenTimeString(shedTime);
@@ -137,16 +137,16 @@ CtiRequestMsg* CtiLMGroupExpresscom::createRotationRequestMsg(LONG sendRate, LON
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " - Sending rotation command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
     }
-    return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
+    return new CtiPILRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
 }
 
 /*-------------------------------------------------------------------------
     createMasterCycleRequestMsg
 
-    Creates a new CtiRequestMsg pointer for a program gear with a control
+    Creates a new CtiPILRequestMsg pointer for a program gear with a control
     method of master cycle with the appropriate off time, period length.
 --------------------------------------------------------------------------*/
-CtiRequestMsg* CtiLMGroupExpresscom::createMasterCycleRequestMsg(LONG offTime, LONG period, int priority) const
+CtiPILRequestMsg* CtiLMGroupExpresscom::createMasterCycleRequestMsg(LONG offTime, LONG period, int priority) const
 {
     RWCString controlString = RWCString("control xcom shed ");
     controlString += convertSecondsToEvenTimeString(offTime-60);
@@ -156,16 +156,16 @@ CtiRequestMsg* CtiLMGroupExpresscom::createMasterCycleRequestMsg(LONG offTime, L
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " - Sending master cycle command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
     }
-    return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
+    return new CtiPILRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
 }
 
 /*-------------------------------------------------------------------------
     createThermoStatRequestMsg
 
-    Creates a new CtiRequestMsg pointer for a thermostat program gear with
+    Creates a new CtiPILRequestMsg pointer for a thermostat program gear with
     all the appropriate settings.
 --------------------------------------------------------------------------*/
-CtiRequestMsg* CtiLMGroupExpresscom::createSetPointRequestMsg(RWCString settings, LONG minValue, LONG maxValue,
+CtiPILRequestMsg* CtiLMGroupExpresscom::createSetPointRequestMsg(RWCString settings, LONG minValue, LONG maxValue,
                                                               LONG valueB, LONG valueD, LONG valueF, LONG random,
                                                               LONG valueTA, LONG valueTB, LONG valueTC, LONG valueTD,
                                                               LONG valueTE, LONG valueTF, int priority) const
@@ -296,7 +296,7 @@ CtiRequestMsg* CtiLMGroupExpresscom::createSetPointRequestMsg(RWCString settings
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " - Sending set point command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
     }
-    return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
+    return new CtiPILRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
 }
 
 /*-------------------------------------------------------------------------

@@ -38,10 +38,10 @@ RWDECLARE_COLLECTABLE( CtiLMGroupVersacom )
     virtual ~CtiLMGroupVersacom();
 
     virtual CtiLMGroupBase* replicate() const;
-    virtual CtiRequestMsg* createTimeRefreshRequestMsg(LONG refreshRate, LONG shedTime, int priority) const;
-    virtual CtiRequestMsg* createSmartCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, int priority) const;
-    virtual CtiRequestMsg* createRotationRequestMsg(LONG sendRate, LONG shedTime, int priority) const;
-    virtual CtiRequestMsg* createMasterCycleRequestMsg(LONG offTime, LONG period, int priority) const;
+    virtual CtiPILRequestMsg* createTimeRefreshRequestMsg(LONG refreshRate, LONG shedTime, int priority) const;
+    virtual CtiPILRequestMsg* createSmartCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, int priority) const;
+    virtual CtiPILRequestMsg* createRotationRequestMsg(LONG sendRate, LONG shedTime, int priority) const;
+    virtual CtiPILRequestMsg* createMasterCycleRequestMsg(LONG offTime, LONG period, int priority) const;
 
     //Members inherited from RWCollectable
     void restoreGuts(RWvistream& );

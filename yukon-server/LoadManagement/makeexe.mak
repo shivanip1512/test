@@ -63,6 +63,9 @@ lmgroupexpresscom.obj \
 lmgroupmct.obj \
 lmgrouppoint.obj \
 lmgroupripple.obj \
+lmgroupsa305.obj \
+lmgroupsa205or105.obj \
+lmgroupsadigitalorgolay.obj \
 lmgroupversacom.obj \
 lmmessage.obj \
 lmprogrambase.obj \

@@ -97,19 +97,19 @@ public:
 
     //virtuals but not pure because only one type of group can handle each of the messages
     virtual CtiCommandMsg* createLatchingRequestMsg(LONG rawState, int priority) const;// in CtiLMGroupPoint
-    virtual CtiRequestMsg* createTrueCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, int priority) const;// in CtiLMGroupExpresscom
-    virtual CtiRequestMsg* createSetPointRequestMsg(RWCString settings, LONG minValue, LONG maxValue,
+    virtual CtiPILRequestMsg* createTrueCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, int priority) const;// in CtiLMGroupExpresscom
+    virtual CtiPILRequestMsg* createSetPointRequestMsg(RWCString settings, LONG minValue, LONG maxValue,
                                                     LONG valueB, LONG valueD, LONG valueF, LONG random,
                                                     LONG valueTA, LONG valueTB, LONG valueTC, LONG valueTD,
                                                     LONG valueTE, LONG valueTF, int priority) const;// in CtiLMGroupExpresscom
 
     //pure virtuals
     virtual CtiLMGroupBase* replicate() const = 0;
-    virtual CtiRequestMsg* createTimeRefreshRequestMsg(LONG refreshRate, LONG shedTime, int priority) const = 0;
-    virtual CtiRequestMsg* createSmartCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, int priority) const = 0;
-    virtual CtiRequestMsg* createRotationRequestMsg(LONG sendRate, LONG shedTime, int priority) const = 0;
-    virtual CtiRequestMsg* createMasterCycleRequestMsg(LONG offTime, LONG period, int priority) const = 0;
-    //virtual CtiRequestMsg* createRequestMsg() const = 0;
+    virtual CtiPILRequestMsg* createTimeRefreshRequestMsg(LONG refreshRate, LONG shedTime, int priority) const = 0;
+    virtual CtiPILRequestMsg* createSmartCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, int priority) const = 0;
+    virtual CtiPILRequestMsg* createRotationRequestMsg(LONG sendRate, LONG shedTime, int priority) const = 0;
+    virtual CtiPILRequestMsg* createMasterCycleRequestMsg(LONG offTime, LONG period, int priority) const = 0;
+    //virtual CtiPILRequestMsg* createRequestMsg() const = 0;
     //pure virtuals
 
     virtual BOOL doesMasterCycleNeedToBeUpdated(ULONG secondsFrom1901, ULONG groupControlDone, ULONG offTime);

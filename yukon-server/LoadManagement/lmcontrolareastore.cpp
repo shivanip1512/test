@@ -34,6 +34,9 @@
 #include "lmgroupmct.h"
 #include "lmgroupripple.h"
 #include "lmgrouppoint.h"
+#include "lmgroupsa305.h"
+#include "lmgroupsa205or105.h"
+#include "lmgroupsadigitalorgolay.h"
 #include "lmcontrolareatrigger.h"
 #include "lmprogramdirectgear.h"
 #include "lmprogramcontrolwindow.h"
@@ -459,6 +462,18 @@ void CtiLMControlAreaStore::reset()
                                 {
                                     currentLMGroupBase = new CtiLMGroupMCT(rdr);
                                 }
+				else if( tempTypeInt == TYPE_LMGROUP_SA305 )
+				{
+				    currentLMGroupBase = new CtiLMGroupSA305(rdr);
+				}
+				else if( tempTypeInt == TYPE_LMGROUP_SA205OR105 )
+				{
+				    currentLMGroupBase = new CtiLMGroupSA205OR105(rdr);
+				}
+				else if( tempTypeInt == TYPE_LMGROUP_SADIGITALORGOLAY )
+				{
+				    currentLMGroupBase = new CtiLMGroupSADigitalORGolay(rdr);
+				}
                                 else
                                 {
                                     CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -509,7 +524,7 @@ void CtiLMControlAreaStore::reset()
 
                     RWTValHashMap<LONG,CtiLMProgramBase*,id_hash,equal_to<LONG> > directProgramHashMap;
 
-                    RWDBTable lmProgramTable = db.table("lmprogram");
+                    RWDBTable lmProgramTable = db.table("lmprogram_view");
                     RWDBTable dynamicLMProgramTable = db.table("dynamiclmprogram");
 
                     RWTimer dirProgsTimer;
@@ -528,6 +543,8 @@ void CtiLMControlAreaStore::reset()
                                  << yukonPAObjectTable["description"]
                                  << yukonPAObjectTable["disableflag"]
                                  << lmProgramTable["controltype"]
+			         << lmProgramTable["constraintid"]
+			         << lmProgramTable["constraintname"]
                                  << lmProgramTable["availableseasons"]
                                  << lmProgramTable["availableweekdays"]
                                  << lmProgramTable["maxhoursdaily"]
@@ -536,6 +553,8 @@ void CtiLMControlAreaStore::reset()
                                  << lmProgramTable["maxhoursannually"]
                                  << lmProgramTable["minactivatetime"]
                                  << lmProgramTable["minrestarttime"]
+                                 << lmProgramTable["maxdailyops"]
+                                 << lmProgramTable["maxactivatetime"]
                                  << lmProgramTable["holidayscheduleid"]
                                  << lmProgramTable["seasonscheduleid"]
                                  << dynamicLMProgramTable["programstate"]
@@ -724,6 +743,8 @@ void CtiLMControlAreaStore::reset()
                                  << yukonPAObjectTable["description"]
                                  << yukonPAObjectTable["disableflag"]
                                  << lmProgramTable["controltype"]
+			         << lmProgramTable["constraintid"]
+			         << lmProgramTable["constraintname"]
                                  << lmProgramTable["availableseasons"]
                                  << lmProgramTable["availableweekdays"]
                                  << lmProgramTable["maxhoursdaily"]
@@ -732,6 +753,8 @@ void CtiLMControlAreaStore::reset()
                                  << lmProgramTable["maxhoursannually"]
                                  << lmProgramTable["minactivatetime"]
                                  << lmProgramTable["minrestarttime"]
+			         << lmProgramTable["maxdailyops"]
+			         << lmProgramTable["maxactivatetime"]
                                  << lmProgramTable["holidayscheduleid"]
                                  << lmProgramTable["seasonscheduleid"]
                                  << lmProgramCurtailmentTable["minnotifytime"]
@@ -885,6 +908,8 @@ void CtiLMControlAreaStore::reset()
                                  << yukonPAObjectTable["description"]
                                  << yukonPAObjectTable["disableflag"]
                                  << lmProgramTable["controltype"]
+			         << lmProgramTable["constraintid"]
+			         << lmProgramTable["constraintname"]
                                  << lmProgramTable["availableseasons"]
                                  << lmProgramTable["availableweekdays"]
                                  << lmProgramTable["maxhoursdaily"]
@@ -893,6 +918,8 @@ void CtiLMControlAreaStore::reset()
                                  << lmProgramTable["maxhoursannually"]
                                  << lmProgramTable["minactivatetime"]
                                  << lmProgramTable["minrestarttime"]
+			         << lmProgramTable["maxdailyops"]
+			         << lmProgramTable["maxactivatetime"]
                                  << lmProgramTable["holidayscheduleid"]
                                  << lmProgramTable["seasonscheduleid"]
                                  << lmProgramEnergyExchangeTable["minnotifytime"]

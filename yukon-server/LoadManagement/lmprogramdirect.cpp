@@ -281,7 +281,7 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                                 }
                             }
 
-                            CtiRequestMsg* requestMsg = currentLMGroup->createTimeRefreshRequestMsg(refreshRate, shedTime, defaultLMStartPriority);
+                            CtiPILRequestMsg* requestMsg = currentLMGroup->createTimeRefreshRequestMsg(refreshRate, shedTime, defaultLMStartPriority);
                             currentLMGroup->setLastControlString(requestMsg->CommandString());
                             multiPilMsg->insert( requestMsg );
                             setLastControlSent(RWDBDateTime());
@@ -386,7 +386,7 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                             {//can't really do anything for limited count down on start up
                             }//we have to send the default because it is programmed in the switch
 
-                            CtiRequestMsg* requestMsg = NULL;
+                            CtiPILRequestMsg* requestMsg = NULL;
                             if( !currentGearObject->getControlMethod().compareTo(CtiLMProgramDirectGear::TrueCycleMethod,RWCString::ignoreCase) &&
                                 currentLMGroup->getPAOType() == TYPE_LMGROUP_EXPRESSCOM )
                             {
@@ -460,7 +460,7 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                             {
                                 offTime = calculateGroupControlTimeLeft(currentLMGroup,offTime);
                             }
-                            CtiRequestMsg* requestMsg = currentLMGroup->createMasterCycleRequestMsg(offTime, period, defaultLMStartPriority);
+                            CtiPILRequestMsg* requestMsg = currentLMGroup->createMasterCycleRequestMsg(offTime, period, defaultLMStartPriority);
                             currentLMGroup->setLastControlString(requestMsg->CommandString());
                             multiPilMsg->insert( requestMsg );
                             setLastControlSent(RWDBDateTime());
@@ -514,7 +514,7 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                         CtiLMGroupBase* currentLMGroup = findGroupToTake(currentGearObject);
                         if( currentLMGroup != NULL )
                         {
-                            CtiRequestMsg* requestMsg = currentLMGroup->createRotationRequestMsg(sendRate, shedTime, defaultLMStartPriority);
+                            CtiPILRequestMsg* requestMsg = currentLMGroup->createRotationRequestMsg(sendRate, shedTime, defaultLMStartPriority);
                             currentLMGroup->setLastControlString(requestMsg->CommandString());
                             multiPilMsg->insert( requestMsg );
                             setLastControlSent(RWDBDateTime());
@@ -616,7 +616,7 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                         {
                             if( currentLMGroup->getPAOType() == TYPE_LMGROUP_EXPRESSCOM )
                             {
-                                CtiRequestMsg* requestMsg = currentLMGroup->createSetPointRequestMsg(settings, minValue, maxValue, valueB, valueD, valueF, random, valueTA, valueTB, valueTC, valueTD, valueTE, valueTF, defaultLMStartPriority);
+                                CtiPILRequestMsg* requestMsg = currentLMGroup->createSetPointRequestMsg(settings, minValue, maxValue, valueB, valueD, valueF, random, valueTA, valueTB, valueTC, valueTD, valueTE, valueTF, defaultLMStartPriority);
                                 currentLMGroup->setLastControlString(requestMsg->CommandString());
                                 multiPilMsg->insert( requestMsg );
                                 setLastControlSent(RWDBDateTime());
@@ -753,7 +753,7 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(CtiMultiMsg* multiPilMsg, Cti
                                 shedTime = tempShedTime;
                             }
                         }
-                        CtiRequestMsg* requestMsg = currentLMGroup->createTimeRefreshRequestMsg(refreshRate, shedTime, defaultLMStartPriority);
+                        CtiPILRequestMsg* requestMsg = currentLMGroup->createTimeRefreshRequestMsg(refreshRate, shedTime, defaultLMStartPriority);
                         currentLMGroup->setLastControlString(requestMsg->CommandString());
                         multiPilMsg->insert( requestMsg );
                         setLastControlSent(RWDBDateTime());
@@ -865,7 +865,7 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(CtiMultiMsg* multiPilMsg, Cti
                         {//can't really do anything for limited count down on start up
                         }//we have to send the default because it is programmed in the switch
 
-                        CtiRequestMsg* requestMsg = currentLMGroup->createSmartCycleRequestMsg(percent, period, cycleCount, defaultLMStartPriority);
+                        CtiPILRequestMsg* requestMsg = currentLMGroup->createSmartCycleRequestMsg(percent, period, cycleCount, defaultLMStartPriority);
                         currentLMGroup->setLastControlString(requestMsg->CommandString());
                         multiPilMsg->insert( requestMsg );
                         setLastControlSent(RWDBDateTime());
@@ -923,7 +923,7 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(CtiMultiMsg* multiPilMsg, Cti
                         {
                             offTime = calculateGroupControlTimeLeft(currentLMGroup,offTime);
                         }*/
-                        CtiRequestMsg* requestMsg = currentLMGroup->createMasterCycleRequestMsg(offTime, period, defaultLMStartPriority);
+                        CtiPILRequestMsg* requestMsg = currentLMGroup->createMasterCycleRequestMsg(offTime, period, defaultLMStartPriority);
                         currentLMGroup->setLastControlString(requestMsg->CommandString());
                         multiPilMsg->insert( requestMsg );
                         setLastControlSent(RWDBDateTime());
@@ -973,7 +973,7 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(CtiMultiMsg* multiPilMsg, Cti
                     CtiLMGroupBase* currentLMGroup = findGroupToTake(currentGearObject);
                     if( currentLMGroup != NULL )
                     {
-                        CtiRequestMsg* requestMsg = currentLMGroup->createRotationRequestMsg(sendRate, shedTime, defaultLMStartPriority);
+                        CtiPILRequestMsg* requestMsg = currentLMGroup->createRotationRequestMsg(sendRate, shedTime, defaultLMStartPriority);
                         currentLMGroup->setLastControlString(requestMsg->CommandString());
                         multiPilMsg->insert( requestMsg );
                         setLastControlSent(RWDBDateTime());
@@ -1133,7 +1133,7 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(CtiMultiMsg* multiPilMsg, Cti
                         {//can't really do anything for limited count down on start up
                         }//we have to send the default because it is programmed in the switch
 
-                        CtiRequestMsg* requestMsg = NULL;
+                        CtiPILRequestMsg* requestMsg = NULL;
                         if( currentLMGroup->getPAOType() == TYPE_LMGROUP_EXPRESSCOM )
                         {
                             requestMsg = currentLMGroup->createTrueCycleRequestMsg(percent, period, cycleCount, defaultLMStartPriority);
@@ -1195,7 +1195,7 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(CtiMultiMsg* multiPilMsg, Cti
                     {
                         if( currentLMGroup->getPAOType() == TYPE_LMGROUP_EXPRESSCOM )
                         {
-                            CtiRequestMsg* requestMsg = currentLMGroup->createSetPointRequestMsg(settings, minValue, maxValue, valueB, valueD, valueF, random, valueTA, valueTB, valueTC, valueTD, valueTE, valueTF, defaultLMStartPriority);
+                            CtiPILRequestMsg* requestMsg = currentLMGroup->createSetPointRequestMsg(settings, minValue, maxValue, valueB, valueD, valueF, random, valueTA, valueTB, valueTC, valueTD, valueTE, valueTF, defaultLMStartPriority);
                             currentLMGroup->setLastControlString(requestMsg->CommandString());
                             multiPilMsg->insert( requestMsg );
                             setLastControlSent(RWDBDateTime());
@@ -1873,7 +1873,7 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(LONG previousGearNu
                                 shedTime = tempShedTime;
                             }
                         }
-                        CtiRequestMsg* requestMsg = currentLMGroup->createTimeRefreshRequestMsg(refreshRate, shedTime, defaultLMStartPriority);
+                        CtiPILRequestMsg* requestMsg = currentLMGroup->createTimeRefreshRequestMsg(refreshRate, shedTime, defaultLMStartPriority);
                         currentLMGroup->setLastControlString(requestMsg->CommandString());
                         multiPilMsg->insert( requestMsg );
                         setLastControlSent(RWDBDateTime());
@@ -1957,7 +1957,7 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(LONG previousGearNu
                                 shedTime = tempShedTime;
                             }
                         }
-                        CtiRequestMsg* requestMsg = currentLMGroup->createTimeRefreshRequestMsg(refreshRate, shedTime, defaultLMStartPriority);
+                        CtiPILRequestMsg* requestMsg = currentLMGroup->createTimeRefreshRequestMsg(refreshRate, shedTime, defaultLMStartPriority);
                         currentLMGroup->setLastControlString(requestMsg->CommandString());
                         multiPilMsg->insert( requestMsg );
                         setLastControlSent(RWDBDateTime());
@@ -2046,7 +2046,7 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(LONG previousGearNu
                     {//can't really do anything for limited count down on start up
                     }//we have to send the default because it is programmed in the switch
     
-                    CtiRequestMsg* requestMsg = currentLMGroup->createSmartCycleRequestMsg(percent, period, cycleCount, defaultLMStartPriority);
+                    CtiPILRequestMsg* requestMsg = currentLMGroup->createSmartCycleRequestMsg(percent, period, cycleCount, defaultLMStartPriority);
                     currentLMGroup->setLastControlString(requestMsg->CommandString());
                     multiPilMsg->insert( requestMsg );
                     setLastControlSent(RWDBDateTime());
@@ -2105,7 +2105,7 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(LONG previousGearNu
                     {
                         offTime = calculateGroupControlTimeLeft(currentLMGroup,offTime);
                     }
-                    CtiRequestMsg* requestMsg = currentLMGroup->createMasterCycleRequestMsg(offTime, period, defaultLMStartPriority);
+                    CtiPILRequestMsg* requestMsg = currentLMGroup->createMasterCycleRequestMsg(offTime, period, defaultLMStartPriority);
                     currentLMGroup->setLastControlString(requestMsg->CommandString());
                     multiPilMsg->insert( requestMsg );
                     setLastControlSent(RWDBDateTime());
@@ -2157,7 +2157,7 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(LONG previousGearNu
                         !currentLMGroup->getDisableFlag() &&
                         !currentLMGroup->getControlInhibit() )
                     {
-                        CtiRequestMsg* requestMsg = currentLMGroup->createRotationRequestMsg(sendRate, shedTime, defaultLMStartPriority);
+                        CtiPILRequestMsg* requestMsg = currentLMGroup->createRotationRequestMsg(sendRate, shedTime, defaultLMStartPriority);
                         currentLMGroup->setLastControlString(requestMsg->CommandString());
                         multiPilMsg->insert( requestMsg );
                         setLastControlSent(RWDBDateTime());
@@ -2191,7 +2191,7 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(LONG previousGearNu
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << RWTime() << " - Sending terminate command, LM Group: " << currentLMGroup->getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
                     }
-                    multiPilMsg->insert(new CtiRequestMsg(currentLMGroup->getPAOId(), controlString,0,0,0,0,0,0,priority));
+                    multiPilMsg->insert(new CtiPILRequestMsg(currentLMGroup->getPAOId(), controlString,0,0,0,0,0,0,priority));
                     currentLMGroup->setGroupControlState(CtiLMGroupBase::InactiveState);
                 }
 
@@ -2214,7 +2214,7 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(LONG previousGearNu
                     CtiLMGroupBase* currentLMGroup = findGroupToTake(currentGearObject);
                     if( currentLMGroup != NULL )
                     {
-                        CtiRequestMsg* requestMsg = currentLMGroup->createRotationRequestMsg(sendRate, shedTime, defaultLMStartPriority);
+                        CtiPILRequestMsg* requestMsg = currentLMGroup->createRotationRequestMsg(sendRate, shedTime, defaultLMStartPriority);
                         currentLMGroup->setLastControlString(requestMsg->CommandString());
                         multiPilMsg->insert( requestMsg );
                         setLastControlSent(RWDBDateTime());
@@ -2298,7 +2298,7 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(LONG previousGearNu
                     {//can't really do anything for limited count down on start up
                     }//we have to send the default because it is programmed in the switch
     
-                    CtiRequestMsg* requestMsg = NULL;
+                    CtiPILRequestMsg* requestMsg = NULL;
                     if( currentLMGroup->getPAOType() == TYPE_LMGROUP_EXPRESSCOM )
                     {
                         requestMsg = currentLMGroup->createTrueCycleRequestMsg(percent, period, cycleCount, defaultLMStartPriority);
@@ -2362,7 +2362,7 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(LONG previousGearNu
                 {
                     if( currentLMGroup->getPAOType() == TYPE_LMGROUP_EXPRESSCOM )
                     {
-                        CtiRequestMsg* requestMsg = currentLMGroup->createSetPointRequestMsg(settings, minValue, maxValue, valueB, valueD, valueF, random, valueTA, valueTB, valueTC, valueTD, valueTE, valueTF, defaultLMStartPriority);
+                        CtiPILRequestMsg* requestMsg = currentLMGroup->createSetPointRequestMsg(settings, minValue, maxValue, valueB, valueD, valueF, random, valueTA, valueTB, valueTC, valueTD, valueTE, valueTF, defaultLMStartPriority);
                         currentLMGroup->setLastControlString(requestMsg->CommandString());
                         multiPilMsg->insert( requestMsg );
                         setLastControlSent(RWDBDateTime());
@@ -2630,7 +2630,7 @@ BOOL CtiLMProgramDirect::stopOverControlledGroup(CtiLMProgramDirectGear* current
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << RWTime() << " - Sending restore command, LM Group: " << currentLMGroup->getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
         }
-        CtiRequestMsg* requestMsg = new CtiRequestMsg(currentLMGroup->getPAOId(), controlString,0,0,0,0,0,0,priority);
+        CtiPILRequestMsg* requestMsg = new CtiPILRequestMsg(currentLMGroup->getPAOId(), controlString,0,0,0,0,0,0,priority);
         currentLMGroup->setLastControlString(requestMsg->CommandString());
         multiPilMsg->insert( requestMsg );
         setLastControlSent(RWDBDateTime());
@@ -2651,7 +2651,7 @@ BOOL CtiLMProgramDirect::stopOverControlledGroup(CtiLMProgramDirectGear* current
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << RWTime() << " - Sending terminate command, LM Group: " << currentLMGroup->getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
         }
-        CtiRequestMsg* requestMsg = new CtiRequestMsg(currentLMGroup->getPAOId(), controlString,0,0,0,0,0,0,priority);
+        CtiPILRequestMsg* requestMsg = new CtiPILRequestMsg(currentLMGroup->getPAOId(), controlString,0,0,0,0,0,0,priority);
         currentLMGroup->setLastControlString(requestMsg->CommandString());
         multiPilMsg->insert( requestMsg );
         setLastControlSent(RWDBDateTime());
@@ -2761,7 +2761,7 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
                                 shedTime = calculateGroupControlTimeLeft(currentLMGroup,estimatedControlTimeInSeconds);
                             }
                         }
-                        CtiRequestMsg* requestMsg = currentLMGroup->createTimeRefreshRequestMsg(refreshRate, shedTime, defaultLMRefreshPriority);
+                        CtiPILRequestMsg* requestMsg = currentLMGroup->createTimeRefreshRequestMsg(refreshRate, shedTime, defaultLMRefreshPriority);
                         currentLMGroup->setLastControlString(requestMsg->CommandString());
                         multiPilMsg->insert( requestMsg );
                         //This setLastControlSent() is just to be used for new control sent
@@ -2936,7 +2936,7 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
 
                         if( cycleCount > 0 )
                         {
-                            CtiRequestMsg* requestMsg = NULL;
+                            CtiPILRequestMsg* requestMsg = NULL;
                             if( !currentGearObject->getControlMethod().compareTo(CtiLMProgramDirectGear::TrueCycleMethod,RWCString::ignoreCase) &&
                                 currentLMGroup->getPAOType() == TYPE_LMGROUP_EXPRESSCOM )
                             {
@@ -3056,7 +3056,7 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
                                 dout << RWTime() << " - Sending restore command, LM Group: " << currentLMGroup->getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
                             }
-                            multiPilMsg->insert(new CtiRequestMsg(currentLMGroup->getPAOId(), controlString,0,0,0,0,0,0,priority));
+                            multiPilMsg->insert(new CtiPILRequestMsg(currentLMGroup->getPAOId(), controlString,0,0,0,0,0,0,priority));
                         }
                         returnBoolean = TRUE;
                     }
@@ -3096,7 +3096,7 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
                         {
                             offTime = calculateGroupControlTimeLeft(currentLMGroup,offTime);
                         }
-                        CtiRequestMsg* requestMsg = currentLMGroup->createMasterCycleRequestMsg(offTime, period, defaultLMRefreshPriority);
+                        CtiPILRequestMsg* requestMsg = currentLMGroup->createMasterCycleRequestMsg(offTime, period, defaultLMRefreshPriority);
                         currentLMGroup->setLastControlString(requestMsg->CommandString());
                         multiPilMsg->insert( requestMsg );
                         //This setLastControlSent() is just to be used for new control sent
@@ -3164,7 +3164,7 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
                     CtiLMGroupBase* nextLMGroupToTake = findGroupToTake(currentGearObject);
                     if( nextLMGroupToTake != NULL )
                     {
-                        CtiRequestMsg* requestMsg = nextLMGroupToTake->createRotationRequestMsg(sendRate, shedTime, defaultLMRefreshPriority);
+                        CtiPILRequestMsg* requestMsg = nextLMGroupToTake->createRotationRequestMsg(sendRate, shedTime, defaultLMRefreshPriority);
                         nextLMGroupToTake->setLastControlString(requestMsg->CommandString());
                         multiPilMsg->insert( requestMsg );
                         //This setLastControlSent() is just to be used for new control sent
@@ -3254,7 +3254,7 @@ BOOL CtiLMProgramDirect::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMs
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << RWTime() << " - Sending restore command, LM Group: " << currentLMGroup->getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
                         }
-                        CtiRequestMsg* requestMsg = new CtiRequestMsg(currentLMGroup->getPAOId(), controlString,0,0,0,0,0,0,priority);
+                        CtiPILRequestMsg* requestMsg = new CtiPILRequestMsg(currentLMGroup->getPAOId(), controlString,0,0,0,0,0,0,priority);
                         currentLMGroup->setLastControlString(requestMsg->CommandString());
                         multiPilMsg->insert( requestMsg );
                         setLastControlSent(RWDBDateTime());
@@ -3285,7 +3285,7 @@ BOOL CtiLMProgramDirect::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMs
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << RWTime() << " - Sending terminate command, LM Group: " << currentLMGroup->getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
                         }
-                        CtiRequestMsg* requestMsg = new CtiRequestMsg(currentLMGroup->getPAOId(), controlString,0,0,0,0,0,0,priority);
+                        CtiPILRequestMsg* requestMsg = new CtiPILRequestMsg(currentLMGroup->getPAOId(), controlString,0,0,0,0,0,0,priority);
                         currentLMGroup->setLastControlString(requestMsg->CommandString());
                         multiPilMsg->insert( requestMsg );
                         setLastControlSent(RWDBDateTime());
@@ -3314,7 +3314,7 @@ BOOL CtiLMProgramDirect::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMs
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << RWTime() << " - Sending restore command, LM Group: " << currentLMGroup->getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
                         }
-                        CtiRequestMsg* requestMsg = new CtiRequestMsg(currentLMGroup->getPAOId(), controlString,0,0,0,0,0,0,priority);
+                        CtiPILRequestMsg* requestMsg = new CtiPILRequestMsg(currentLMGroup->getPAOId(), controlString,0,0,0,0,0,0,priority);
                         currentLMGroup->setLastControlString(requestMsg->CommandString());
                         multiPilMsg->insert( requestMsg );
                         setLastControlSent(RWDBDateTime());
@@ -3336,7 +3336,7 @@ BOOL CtiLMProgramDirect::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMs
                         //CtiLockGuard<CtiLogger> logger_guard(dout);
                         //dout << RWTime() << " - Stopping control on LM Group: " << currentLMGroup->getPAOName() << " with Stop Type of (Time In) in: " << __FILE__ << " at:" << __LINE__ << endl;
                         //I don't know if I should do anything unique here yet?
-                        //multiPilMsg->insert(new CtiRequestMsg(currentLMGroup->getPAOId(), "control terminate"));
+                        //multiPilMsg->insert(new CtiPILRequestMsg(currentLMGroup->getPAOId(), "control terminate"));
                         //setLastControlSent(RWDBDateTime());
                         //currentLMGroup->setLastControlSent(RWDBDateTime());
                         RWDBDateTime timeToTimeIn = RWDBDateTime(1990,1,1,0,0,0,0);//put in a bogus time stamp

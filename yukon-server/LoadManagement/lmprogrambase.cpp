@@ -196,6 +196,27 @@ const RWCString& CtiLMProgramBase::getControlType() const
     return _controltype;
 }
 
+
+/*---------------------------------------------------------------------------
+    getConstraintID
+
+    Returns the constraint id of the program
+---------------------------------------------------------------------------*/
+LONG CtiLMProgramBase::getConstraintID() const
+{
+    return _constraintid;
+}
+
+/*---------------------------------------------------------------------------
+    getConstraintName
+
+    Returns the constraint name of the program
+---------------------------------------------------------------------------*/
+const RWCString& CtiLMProgramBase::getConstraintName() const
+{
+    return _constraintname;
+}
+
 /*---------------------------------------------------------------------------
     getAvailableSeasons
 
@@ -282,6 +303,26 @@ LONG CtiLMProgramBase::getMinRestartTime() const
 {
 
     return _minrestarttime;
+}
+
+/*---------------------------------------------------------------------------
+  getMaxDailyOps
+
+  Returns the maximum daily operations of the program
+---------------------------------------------------------------------------*/
+LONG CtiLMProgramBase::getMaxDailyOps() const
+{
+    return _maxdailyops;
+}
+
+/*---------------------------------------------------------------------------
+  getMaxActivateTime
+
+  Returns the maximum activate time of the program in minutes
+---------------------------------------------------------------------------*/
+LONG CtiLMProgramBase::getMaxActivateTime() const
+{
+    return _maxactivatetime;
 }
 
 /*---------------------------------------------------------------------------
@@ -532,6 +573,28 @@ CtiLMProgramBase& CtiLMProgramBase::setControlType(const RWCString& conttype)
 }
 
 /*---------------------------------------------------------------------------
+    setConstraintID
+
+    Sets the constraint id of the program
+---------------------------------------------------------------------------*/
+CtiLMProgramBase& CtiLMProgramBase::setConstraintID(LONG constraint_id)
+{
+    _constraintid = constraint_id;
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setConstraintName
+
+    Sets the constraint name of the program
+---------------------------------------------------------------------------*/
+CtiLMProgramBase& CtiLMProgramBase::setConstraintName(const RWCString& constraint_name)
+{
+    _constraintname = constraint_name;
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
     setAvailableSeasons
 
     Sets the available seasons of the program
@@ -632,6 +695,28 @@ CtiLMProgramBase& CtiLMProgramBase::setMinRestartTime(LONG restart)
 
     _minrestarttime = restart;
 
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setMaxDailyOps
+
+    Sets the maximum daily ops for the program
+---------------------------------------------------------------------------*/
+CtiLMProgramBase& CtiLMProgramBase::setMaxDailyOps(LONG max_daily_ops)
+{
+    _maxdailyops = max_daily_ops;
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setMaxActivateTime
+    
+    Set the maximum activate time of the program in minutes
+---------------------------------------------------------------------------*/
+CtiLMProgramBase& CtiLMProgramBase::setMaxActivateTime(LONG max_activate_time)
+{
+    _maxactivatetime = max_activate_time;
     return *this;
 }
 
@@ -1109,6 +1194,8 @@ void CtiLMProgramBase::restore(RWDBReader& rdr)
     _defaultpriority = 0;
 
     rdr["controltype"] >> _controltype;
+    rdr["constraintid"] >> _constraintid;
+    rdr["constraintname"] >> _constraintname;
     rdr["availableseasons"] >> _availableseasons;
     rdr["availableweekdays"] >> _availableweekdays;
     rdr["maxhoursdaily"] >> _maxhoursdaily;
@@ -1117,6 +1204,8 @@ void CtiLMProgramBase::restore(RWDBReader& rdr)
     rdr["maxhoursannually"] >> _maxhoursannually;
     rdr["minactivatetime"] >> _minactivatetime;
     rdr["minrestarttime"] >> _minrestarttime;
+    rdr["maxdailyops"] >> _maxdailyops;
+    rdr["maxactivatetime"] >> _maxactivatetime;
     rdr["holidayscheduleid"] >> _holidayscheduleid;
     rdr["seasonscheduleid"] >> _seasonscheduleid;
 

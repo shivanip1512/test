@@ -605,7 +605,7 @@ void CtiLMCommandExecutor::ShedGroup()
                             }
                         }
 
-                        CtiRequestMsg* requestMsg = currentLMGroup->createTimeRefreshRequestMsg(0,shedTime,CtiLMProgramDirect::defaultLMStartPriority);
+                        CtiPILRequestMsg* requestMsg = currentLMGroup->createTimeRefreshRequestMsg(0,shedTime,CtiLMProgramDirect::defaultLMStartPriority);
 
                         if( routeId > 0 )
                         {
@@ -683,7 +683,7 @@ void CtiLMCommandExecutor::CycleGroup()
                                 dout << RWTime() << " - " << text << ", " << additional << endl;
                             }
                         }
-                        CtiRequestMsg* requestMsg = NULL;
+                        CtiPILRequestMsg* requestMsg = NULL;
 
                         if( command == CtiLMCommand::TRUE_CYCLE_GROUP )
                         {
@@ -768,7 +768,7 @@ void CtiLMCommandExecutor::RestoreGroup()
                         }
                         int priority = 11;
                         RWCString controlString = "control restore";
-                        CtiRequestMsg* requestMsg = new CtiRequestMsg(currentLMGroup->getPAOId(), controlString,0,0,0,0,0,0,priority);
+                        CtiPILRequestMsg* requestMsg = new CtiPILRequestMsg(currentLMGroup->getPAOId(), controlString,0,0,0,0,0,0,priority);
 
                         if( _LM_DEBUG & LM_DEBUG_STANDARD )
                         {
@@ -918,7 +918,7 @@ void CtiLMCommandExecutor::DisableGroup()
 
                             int priority = 11;
                             RWCString controlString = "control restore";
-                            CtiRequestMsg* requestMsg = new CtiRequestMsg(currentLMGroup->getPAOId(), controlString,0,0,0,0,0,0,priority);
+                            CtiPILRequestMsg* requestMsg = new CtiPILRequestMsg(currentLMGroup->getPAOId(), controlString,0,0,0,0,0,0,priority);
 
                             if( _LM_DEBUG & LM_DEBUG_STANDARD )
                             {
@@ -1012,7 +1012,7 @@ void CtiLMCommandExecutor::ConfirmGroup()
                             }
                             int priority = 11;
                             RWCString controlString = currentLMGroup->getLastControlString();
-                            CtiRequestMsg* requestMsg = new CtiRequestMsg(currentLMGroup->getPAOId(), controlString,0,0,0,0,0,0,priority);
+                            CtiPILRequestMsg* requestMsg = new CtiPILRequestMsg(currentLMGroup->getPAOId(), controlString,0,0,0,0,0,0,priority);
 
                             if( _LM_DEBUG & LM_DEBUG_STANDARD )
                             {
