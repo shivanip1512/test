@@ -30,6 +30,10 @@ public class DeviceAddressRange
 
    private static final RangeBase RANGE_VERSACOM = 
          new RangeBase( 0, 999999999, "Valid range for " + DeviceTypes.STRING_VERSACOM_SERIAL_NUMBER[0] + " is 0 to 999999999" );
+         
+   private static final RangeBase RANGE_SERIES_5_LMI = 
+		 new RangeBase( 0, 127, "Valid range for " + DeviceTypes.STRING_SERIES_5_LMI[0] + " addresses is 0 to 127" );
+
 
 
    //build any extra params into the RangeBase appropriate intsances
@@ -72,6 +76,10 @@ public class DeviceAddressRange
       {
          return RANGE_RTU_WELCO;
       }
+      else if( DeviceTypes.SERIES_5_LMI == deviceType_ )
+	  {
+	  	 return RANGE_SERIES_5_LMI;
+	  }
       else if( DeviceTypes.CAPBANKCONTROLLER == deviceType_
                || DeviceTypes.CBC_FP_2800 == deviceType_
                || DeviceTypes.DNP_CBC_6510 == deviceType_ )

@@ -2077,7 +2077,7 @@ private void setRemoteBaseValue( RemoteBase rBase, int intType )
 	}
 	
 
-	//regardless of our type, we shuld set the advanced settings of the port
+	//regardless of our type, we should set the advanced settings of the port
 	getAdvancedPanel().setValue( rBase );
 	
 	if( getDialupSettingsPanel().isVisible() )
@@ -2184,6 +2184,7 @@ private void setRemoteBaseValue( RemoteBase rBase, int intType )
 		getPhysicalAddressLabel().setVisible(true);
 		getPhysicalAddressLabel().setText("Slave Address:");
 		getPhysicalAddressTextField().setVisible(true);
+		getPhysicalAddressTextField().setDocument( new com.cannontech.common.gui.unchanging.DoubleRangeDocument(1, 127) );
 		getPhysicalAddressTextField().setText( ((Series5Base)rBase).getSeries5().getSlaveAddress().toString() );
       
 		getSlaveAddressLabel().setVisible(false);
