@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/01/18 19:12:48 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2005/01/31 17:09:25 $
 *
 * HISTORY      :
 * $Log: dev_rtm.cpp,v $
+* Revision 1.9  2005/01/31 17:09:25  mfisher
+* potential patch for the procTMSmsg() exception
+*
 * Revision 1.8  2005/01/18 19:12:48  cplender
 * resetScanFlags
 *
@@ -535,16 +538,34 @@ int CtiDeviceRTM::decode(CtiXfer &xfer,  int status)
                     SA_CODE sacode;
                     X205CMD x205cmd;
                     CtiVerificationReport *report;
+                    int tms_result;
+                    bool bad_code = false;
 
-                    int tms_result = CtiProtocolSA3rdParty::procTMSmsg(_inbound, _code_len + 8, &sacode, &x205cmd);
-
-                    if( tms_result == TMS_CODE )
+                    try
                     {
-                        _codes_received++;
+                        tms_result = CtiProtocolSA3rdParty::procTMSmsg(_inbound, _code_len + 8, &sacode, &x205cmd);
+                    }
+                    catch(...)
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint - error in CtiProtocolSA3rdParty::procTMSmsg() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
 
-                        report = CTIDBG_new CtiVerificationReport(CtiVerificationBase::Protocol_SA205, getID(), sacode.code, second_clock::universal_time());
+                        bad_code = true;
+                    }
 
-                        _verification_objects.push(report);
+                    //  this way, we acknowledge the code even if it made procTMSmsg() pop
+                    if( bad_code || tms_result == TMS_CODE)
+                    {
+                        if( !bad_code )
+                        {
+                            _codes_received++;
+
+                            report = CTIDBG_new CtiVerificationReport(CtiVerificationBase::Protocol_SA205, getID(), sacode.code, second_clock::universal_time());
+
+                            _verification_objects.push(report);
+                        }
 
                         //  this is a bit of a hack based on watching port traces of successful comms
                         //    the LRC is copied from the last inbound and tagged after an "ACK" message type
