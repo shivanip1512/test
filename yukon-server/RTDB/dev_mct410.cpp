@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2005/03/01 21:42:35 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2005/03/03 23:41:50 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -121,12 +121,12 @@ CtiDeviceMCT410::DLCCommandSet CtiDeviceMCT410::initCommandStore( )
     cs._io      = IO_FCT_READ;
     cs._funcLen = make_pair(0, 0);
     s.insert( cs );
-
+/*
     cs._cmd     = CtiProtocolEmetcon::GetValue_LoadProfilePeakReport;
     cs._io      = IO_FCT_READ;
     cs._funcLen = make_pair(0, 0);
     s.insert( cs );
-
+*/
     cs._cmd     = CtiProtocolEmetcon::GetValue_Demand;
     cs._io      = IO_FCT_READ;
     cs._funcLen = make_pair((int)FuncRead_DemandPos,
@@ -373,14 +373,19 @@ ULONG CtiDeviceMCT410::calcNextLPScanTime( void )
     {
         for( int i = 0; i < MCT4XX_LPChannels; i++ )
         {
-            if( i != MCT410_LPVoltageChannel )
-            {
-                demand_rate = getLoadProfile().getLoadProfileDemandRate();
-            }
-            else
+// ---
+            demand_rate = getLoadProfile().getLoadProfileDemandRate();
+/*
+            if( i == MCT410_LPVoltageChannel )
             {
                 demand_rate = getLoadProfile().getVoltageLoadProfileRate();
             }
+            else
+            {
+                demand_rate = getLoadProfile().getLoadProfileDemandRate();
+            }
+*/
+// ---
 
             block_size  = demand_rate * 6;
 
@@ -540,16 +545,20 @@ INT CtiDeviceMCT410::calcAndInsertLPRequests(OUTMESS *&OutMessage, RWTPtrSlist< 
     {
         for( int i = 0; i < MCT4XX_LPChannels; i++ )
         {
+// ---
+            demand_rate = getLoadProfile().getLoadProfileDemandRate();
+/*
             if( (i + 1) == MCT410_LPVoltageChannel )
             {
                 demand_rate = getLoadProfile().getVoltageLoadProfileRate();
-                block_size  = demand_rate * 6;
             }
             else
             {
                 demand_rate = getLoadProfile().getLoadProfileDemandRate();
-                block_size  = demand_rate * 6;
             }
+*/
+// ---
+            block_size  = demand_rate * 6;
 
             if( useScanFlags() )
             {
@@ -1057,6 +1066,9 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
                 year += 2000;
             }
 
+// ---
+            interval_len = getLoadProfile().getLoadProfileDemandRate();
+/*
             if( request_channel == MCT410_LPVoltageChannel )
             {
                 interval_len = getLoadProfile().getVoltageLoadProfileRate();
@@ -1065,7 +1077,8 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
             {
                 interval_len = getLoadProfile().getLoadProfileDemandRate();
             }
-
+*/
+// ---
             block_len    = 6 * interval_len;
 
             if( !cmd.compare("lp") )
@@ -2133,6 +2146,9 @@ INT CtiDeviceMCT410::decodeGetValueLoadProfile(INMESS *InMessage, RWTime &TimeNo
             channel      = _llpInterest.channel;
             decode_time  = _llpInterest.time + _llpInterest.offset;
 
+// ---
+            interval_len = getLoadProfile().getLoadProfileDemandRate();
+/*
             if( channel == MCT410_LPVoltageChannel )
             {
                 interval_len = getLoadProfile().getVoltageLoadProfileRate();
@@ -2141,6 +2157,8 @@ INT CtiDeviceMCT410::decodeGetValueLoadProfile(INMESS *InMessage, RWTime &TimeNo
             {
                 interval_len = getLoadProfile().getLoadProfileDemandRate();
             }
+*/
+// ---
 
             block_len    = interval_len * 6;
 
@@ -2379,6 +2397,9 @@ INT CtiDeviceMCT410::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
         if( (channel = parse.getiValue("scan_loadprofile_channel", 0)) &&
             (block   = parse.getiValue("scan_loadprofile_block",   0)) )
         {
+// --
+            interval_len = getLoadProfile().getLoadProfileDemandRate();
+/*
             if( channel == MCT410_LPVoltageChannel )
             {
                 interval_len = getLoadProfile().getVoltageLoadProfileRate();
@@ -2387,6 +2408,8 @@ INT CtiDeviceMCT410::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
             {
                 interval_len = getLoadProfile().getLoadProfileDemandRate();
             }
+*/
+// ---
 
             point = (CtiPointNumeric *)getDevicePointOffsetTypeEqual( channel + MCT_PointOffset_LoadProfileOffset, DemandAccumulatorPointType );
 
