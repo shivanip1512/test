@@ -14,10 +14,8 @@ import com.cannontech.common.gui.util.CtiTreeCellRenderer;
 /**
  * @author rneuharth
  *
- * To change this generated comment edit the template variable "typecomment":
- * Window>Preferences>Java>Templates.
- * To enable and disable the creation of type comments go to
- * Window>Preferences>Java>Code Generation.
+ * TreeRenderer that has a jcheckbox and label
+ * 
  */
 public class CheckRenderer extends JPanel implements TreeCellRenderer
 {
@@ -33,8 +31,8 @@ public class CheckRenderer extends JPanel implements TreeCellRenderer
     setLayout(null);
     add(check = new JCheckBox());
     add(label = new TreeLabel());
-    
-    
+
+
     check.setBackground(java.awt.Color.white);
     label.setForeground(java.awt.Color.black);
   }
@@ -58,7 +56,6 @@ public class CheckRenderer extends JPanel implements TreeCellRenderer
 			expanded, leaf, row, hasFocus);
 
     setEnabled(tree.isEnabled());
-    
 	 check.setSelected( ((CheckNode)value).isSelected() );
 
 	 //only allow edits for the non reserved roles
@@ -91,21 +88,29 @@ public class CheckRenderer extends JPanel implements TreeCellRenderer
     Dimension d_label = label.getPreferredSize();
     int y_check = 0;
     int y_label = 0;
+    int height = 0;  //use the smallest componenets height
     
-    if (d_check.height < d_label.height) 
+    
+    if( d_check.height < d_label.height ) 
     {
+      height = d_check.height;
       y_check = (d_label.height - d_check.height)/2;
-    } else {
+    }
+    else
+    {
+      height = d_label.height;
       y_label = (d_check.height - d_label.height)/2;
     }
-    check.setLocation(0,y_check);
-    check.setBounds(0,y_check,d_check.width,d_check.height);
-    label.setLocation(d_check.width,y_label);    
+
+    check.setLocation(0, y_check);
+    check.setBounds(0, y_check, d_check.width, height);
+    
+    label.setLocation(d_check.width, y_label);    
     label.setBounds(
     		d_check.width,
     		y_label,
     		d_label.width,
-    		d_label.height);    
+    		height);
   }
   
    
