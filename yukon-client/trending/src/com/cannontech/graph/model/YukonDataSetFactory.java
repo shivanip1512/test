@@ -175,8 +175,7 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDefines
 								Iterator iter = serie.getDataItemsMap().entrySet().iterator();
 								while( iter.hasNext())
 								{
-									Map.Entry entry = (Map.Entry)iter.next();
-									TimeSeriesDataItem dataItem = (TimeSeriesDataItem)entry.getValue();
+									TimeSeriesDataItem dataItem = serie.getDataItem((Map.Entry)iter.next());
 									try
 									{
 										if( GDSTypesFuncs.isUsageType(serie.getTypeMask()))
@@ -229,6 +228,7 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDefines
 	 * @param cModels FreeChartModel []
 	 */
 	public static XYSeriesCollection [] createLoadDurationDataSet(TrendSerie[] tSeries)
+//	public static XYBarDataset []createLoadDurationDataSet(TrendSerie[] tSeries)
 	{
 		if( tSeries == null)
 			return null;
@@ -349,7 +349,10 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDefines
 
 		//Sort values based on primary gds, if it exists.		
 		sortValuesDescending(dataset, primaryDset, primaryIndex);
-
+//		XYBarDataset barDataset [] = new XYBarDataset[2];
+//		barDataset[0]=new XYBarDataset(dataset[0], 0.9);
+///		barDataset[1]=new XYBarDataset(dataset[1], 0.9);
+//		return barDataset;
 		return dataset;
 	}
 
