@@ -47,7 +47,17 @@
          %>
         <tr>
           <td width="150" class="TableCell" align = "right">
-            <cti:select name="program" selectValues="<%= entryIDs %>" selectNames="<%= entryTexts %>" selectedValue="<%=String.valueOf(liteNot.getNotificationCategoryID())%>"/></td>
+          <select name="program">
+          <%
+			for (int i = 0; i < entryIDs.length; i++)
+			{
+				if( String.valueOf(liteNot.getNotificationCategoryID()).equalsIgnoreCase(entryIDs[i]))
+					out.println("<OPTION VALUE=" + entryIDs[i] + " SELECTED>" + entryTexts[i]);
+				else
+					out.println("<OPTION VALUE=" + entryIDs[i] + ">" + entryTexts[i]);					
+			}%>
+		  </select>          
+		  </td>
           <td width="150" align="left" class="TableCell"> 
             <input type="text" name="textfield3"  value="<%=liteNot.getNotification()%>">
           </td>
@@ -57,7 +67,14 @@
          %>
         <tr>
           <td width="150" class="TableCell" align = "right">
-            <cti:select name="notcat" selectValues="<%= entryIDs %>" selectNames="<%= entryTexts %>" selectedValue="1"/></td>
+          <select name="program">
+          <%
+			for (int i = 0; i < entryIDs.length; i++)
+			{
+				out.println("<OPTION VALUE=" + entryIDs[i] + ">" + entryTexts[i]);					
+			}%>
+		  </select>          
+		  </td>
           <td width="150" align="left" class="TableCell">
             <input type="text" name="textfield3">
           </td>

@@ -139,8 +139,15 @@
                           { %>
                           <tr>
                             <td width="50%" class="TableCell" align = "right">
-                              <cti:select name="program" selectValues="<%= entryIDs %>" selectNames="<%= entryTexts %>" selectedValue="<%="1"%>"/></td>
-	                            <td width="50%" align="left" class="TableCell">
+                              <select name="program">
+                              <%
+                           	  for (int i = 0; i < entryIDs.length; i++)
+   	                       	  {
+								out.println("<OPTION VALUE=" + entryIDs[i] + ">" + entryTexts[i]);
+							  }%>
+							  </select>
+							</td>
+                            <td width="50%" align="left" class="TableCell">
                               <input type="text" name="textfield3">
                             </td>
                           </tr>
