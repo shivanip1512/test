@@ -104,10 +104,14 @@ class TDCDBChangeHandler implements ActionListener
 				"Received a Database Change Message from : " +  msg.getUserName() + 
 				" at " + msg.getSource(), 
 				MessageBoxFrame.INFORMATION_MSG );
-				
-		//be sure the display we are looking at has data that changed 
-		if( !hasChangedItem(msg, tdcPan) )
+		
+		//be sure the display we are looking at has data that changed and
+		// it is not a TDC specific change 
+		if( !hasChangedItem(msg, tdcPan) 
+			&& msg.getDatabase() != DBChangeMsg.CHANGE_TDC_DB )
+		{
 			return;
+		}
 
 		
 		if( !tdcPan.isClientDisplay() 
@@ -115,12 +119,13 @@ class TDCDBChangeHandler implements ActionListener
 		{
 			synchronized( tdcPan.getTableDataModel() )
 			{
-	         if( msg.getDatabase() == DBChangeMsg.CHANGE_ALARM_CATEGORY_DB )
+	         if( msg.getDatabase() == DBChangeMsg.CHANGE_ALARM_CATEGORY_DB
+	         	 || msg.getDatabase() == DBChangeMsg.CHANGE_TDC_DB )
 	         {
 	            //just a try, work in nearly all cases!
-	            int i = tdcPan.getJComboCurrentDisplay().getSelectedIndex();
+	            Object o = tdcPan.getJComboCurrentDisplay().getSelectedItem();
 	            tdcPan.initComboCurrentDisplay();
-	            tdcPan.getJComboCurrentDisplay().setSelectedIndex( i );
+	            tdcPan.getJComboCurrentDisplay().setSelectedItem( o );
 	         }
 	         else
 	         {

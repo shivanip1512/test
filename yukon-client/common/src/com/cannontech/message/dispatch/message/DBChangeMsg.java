@@ -8,37 +8,44 @@ public class DBChangeMsg extends com.cannontech.message.util.Message
 	//Refers to the primary key of the type of DB that was changed.
 	private int id;
 	
-	private int database;
+	//which are of the database is affected
+	private int database = CHANGE_INVALID_ID;
+
+	//add, delete or update
+	private int typeOfChange = CHANGE_INVALID_ID;
 
 	//PAOCategory if PAObject, everythingelse does not matter
 	private String category = null;
 
-	//PAOType if PAOBject, PointType if Point,
+	//PAOType if PAOBject, PointType if Point, (other types if type is present)
 	private String objectType = null; 
-	private int typeOfChange;
-	 
+
+	//invalid change
+	public static final int CHANGE_INVALID_ID = -1;		
+
+
 	//Possible values for the database field
-	public static final int CHANGE_INVALID_ID						= -1;		
-	public static final int CHANGE_PAO_DB							= 0;
-	public static final int CHANGE_POINT_DB						= 1;
-	public static final int CHANGE_STATE_GROUP_DB				= 2;
-	public static final int CHANGE_NOTIFICATION_GROUP_DB		= 3;
-//	public static final int CHANGE_NOTIFICATION_RECIPIENT_DB	= 4;
-	public static final int CHANGE_ALARM_CATEGORY_DB			= 5;
-	public static final int CHANGE_CONTACT_DB						= 6;
-	public static final int CHANGE_GRAPH_DB						= 7;
-	public static final int CHANGE_HOLIDAY_SCHEDULE_DB			= 8;
-	public static final int CHANGE_ENERGY_COMPANY_DB			= 9;
-	public static final int CHANGE_YUKON_USER_DB				= 10;
-	public static final int CHANGE_CUSTOMER_DB					= 11;
-	public static final int CHANGE_CUSTOMER_ACCOUNT_DB			= 12;
-	public static final int CHANGE_YUKON_IMAGE					= 13;
-	public static final int CHANGE_BASELINE_DB					= 14;
-	public static final int CHANGE_CONFIG_DB					= 15;
-	public static final int CHANGE_TAG_DB						= 16;
-	public static final int CHANGE_CI_CUSTOMER_DB				= 17;
-	public static final int CHANGE_LMCONSTRAINT_DB				= 18;
-	public static final int CHANGE_SEASON_SCHEDULE_DB			= 20;
+	public static final int CHANGE_PAO_DB = 0;
+	public static final int CHANGE_POINT_DB = 1;
+	public static final int CHANGE_STATE_GROUP_DB = 2;
+	public static final int CHANGE_NOTIFICATION_GROUP_DB = 3;
+//	public static final int CHANGE_NOTIFICATION_RECIPIENT_DB = 4;
+	public static final int CHANGE_ALARM_CATEGORY_DB = 5;
+	public static final int CHANGE_CONTACT_DB = 6;
+	public static final int CHANGE_GRAPH_DB = 7;
+	public static final int CHANGE_HOLIDAY_SCHEDULE_DB = 8;
+	public static final int CHANGE_ENERGY_COMPANY_DB = 9;
+	public static final int CHANGE_YUKON_USER_DB = 10;
+	public static final int CHANGE_CUSTOMER_DB = 11;
+	public static final int CHANGE_CUSTOMER_ACCOUNT_DB = 12;
+	public static final int CHANGE_YUKON_IMAGE = 13;
+	public static final int CHANGE_BASELINE_DB = 14;
+	public static final int CHANGE_CONFIG_DB = 15;
+	public static final int CHANGE_TAG_DB = 16;
+	public static final int CHANGE_CI_CUSTOMER_DB = 17;
+	public static final int CHANGE_LMCONSTRAINT_DB = 18;
+	public static final int CHANGE_SEASON_SCHEDULE_DB = 20;
+	public static final int CHANGE_TDC_DB = 21;
 
 
 	
@@ -55,12 +62,12 @@ public class DBChangeMsg extends com.cannontech.message.util.Message
 	public static final String CAT_CUSTOMER = "Customer";
 	public static final String CAT_CI_CUSTOMER = "CICustomer";
 	public static final String CAT_YUKON_USER_GROUP = "YukonUserGroup";
-	public static final String CAT_BASELINE			= "BaseLine";
-	public static final String CAT_CONFIG			= "Config";
-	public static final String CAT_TAG			= "Tag";
-	public static final String CAT_LMCONSTRAINT		= "Load Constraint";
-	public static final String CAT_LMSCENARIO		= "Load Scenario";
-	public static final String CAT_SEASON_SCHEDULE	= "Season Schedule";
+	public static final String CAT_BASELINE = "BaseLine";
+	public static final String CAT_CONFIG = "Config";
+	public static final String CAT_TAG = "Tag";
+	public static final String CAT_LMCONSTRAINT = "Load Constraint";
+	public static final String CAT_LMSCENARIO = "Load Scenario";
+	public static final String CAT_SEASON_SCHEDULE = "Season Schedule";
 	
 	// Categories used by stars
 	public static final String CAT_CUSTOMER_ACCOUNT = "CustomerAccount";

@@ -1107,6 +1107,9 @@ private javax.swing.JLabel getJLabelDisplayName() {
 			ivjJLabelDisplayName.setName("JLabelDisplayName");
 			ivjJLabelDisplayName.setText("Display");
 			// user code begin {1}
+			
+			ivjJLabelDisplayName.setText("View");
+			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}

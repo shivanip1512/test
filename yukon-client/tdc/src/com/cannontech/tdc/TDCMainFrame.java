@@ -12,6 +12,7 @@ import com.cannontech.clientutils.AlarmFileWatchDog;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.commandlineparameters.CommandLineParser;
 import com.cannontech.message.dispatch.message.Command;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
@@ -47,6 +48,7 @@ import com.cannontech.tdc.utils.TDCDefines;
 import com.cannontech.clientutils.commonutils.ModifiedDate;
 import com.cannontech.clientutils.parametersfile.ParameterNotFoundException;
 import com.cannontech.clientutils.parametersfile.ParametersFile;
+import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.debug.gui.AboutDialog;
 
 import java.util.ArrayList;
@@ -4507,11 +4509,25 @@ public void resetFilter()
 }
 
 /**
- * Insert the method's description here.
- * Creation date: (2/2/00 11:47:44 AM)
+ * Sets up our frame with new display data. Will fire a DBChange if needed!
+ * 
  */
 private void setUpMainFrame( String previousItem )
 {
+	//fire a DBChange to allow other TDC's to refresh their display data from the DB
+	DBChangeMsg dbChange =
+			new DBChangeMsg(
+				0,
+				DBChangeMsg.CHANGE_TDC_DB,
+				"ALL",
+				"ALL",
+				DBChangeMsg.CHANGE_TYPE_UPDATE );
+
+            
+	//tell our tree we may need to change the display	
+	getTdcClient().write( dbChange );
+	
+	
 	getMainPanel().initComboCurrentDisplay();
 
 	if( previousItem != null )

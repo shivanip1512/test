@@ -15,6 +15,8 @@ import com.cannontech.tdc.data.Display;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
 import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.cache.DefaultDatabaseCache;
 
 
 public class TDCClient extends com.cannontech.clientutils.ClientBase
@@ -123,9 +125,12 @@ public void receivedDBChangMsg( DBChangeMsg msg )
 
 	CTILogger.info("DATABASE CHANGE RECEIVED = " + msg.toString() + " Display = " + display );
 	
-	com.cannontech.database.cache.DefaultDatabaseCache.getInstance().handleDBChangeMessage((com.cannontech.message.dispatch.message.DBChangeMsg)msg);
+	DefaultDatabaseCache.getInstance().handleDBChangeMessage(
+			(com.cannontech.message.dispatch.message.DBChangeMsg)msg);
 
-	caller.processDBChangeMsg( msg );
+	//No need to handle any DBChanges that originated from this process (our self)
+	if( !(msg.getSource().equals(CtiUtilities.DEFAULT_MSG_SOURCE) ) )
+		caller.processDBChangeMsg( msg );
 }
 
 /**
