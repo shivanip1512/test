@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2002/08/20 22:45:56 $
+* REVISION     :  $Revision: 1.30 $
+* DATE         :  $Date: 2002/08/27 19:37:22 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1026,8 +1026,7 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDevice *Devic
 INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDevice *Device)
 {
     INT            status = NORMAL;
-    INT            i = NORMAL;
-    ULONG          j, ReadLength;
+    ULONG          reject_status, ReadLength;
     struct timeb   TimeB;
     CtiRoute       *VTURouteRecord;
 
@@ -1066,7 +1065,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                 {
                     trx.setOutBuffer(OutMessage->Buffer.OutMessage + PREIDLEN);
                     trx.setOutCount(OutMessage->OutLength);
-                    i = Port->outMess(trx, Device, traceList);
+                    status = Port->outMess(trx, Device, traceList);
                     break;
                 }
             case TYPE_LCU415:
@@ -1080,7 +1079,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
                     trx.setOutBuffer(OutMessage->Buffer.OutMessage + PREIDLEN);
                     trx.setOutCount(OutMessage->OutLength + 2);
-                    i = Port->outMess(trx, Device, traceList);
+                    status = Port->outMess(trx, Device, traceList);
                     break;
                 }
             case TYPECBC6510:
@@ -1109,7 +1108,6 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
                     dnp.sendInbound(InMessage);
 
-                    i = status;                 /// CGP... 062402 This is UGLY.
                     break;
                 }
             case TYPE_SIXNET:
@@ -1124,10 +1122,13 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
                     if( (status = InitializeHandshake (Port, IED, traceList)) == NORMAL )
                     {
-                        status = PerformRequestedCmd (Port, IED, InMessage, OutMessage, traceList);
-                        INT dcstat = TerminateHandshake (Port, IED, traceList);
+                        int dcstat;
 
-                        if(status == NORMAL) status = dcstat;
+                        status = PerformRequestedCmd (Port, IED, InMessage, OutMessage, traceList);
+                        dcstat = TerminateHandshake (Port, IED, traceList);
+
+                        if(status == NORMAL)
+                            status = dcstat;
                     }
 
                     IED->freeDataBins();
@@ -1137,7 +1138,6 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                     // OutMessage->EventCode &= ~RESULT;
                     InMessage->Buffer.DUPSt.DUPRep.ReqSt.Command[0] = CtiDeviceIED::CmdScanData;
 
-                    i = status;                 /// CGP... 062402 This is UGLY.
                     break;
                 }
             case TYPE_WCTP:
@@ -1150,7 +1150,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         IED->setInitialState(0);
                         IED->allocateDataBins(OutMessage);
 
-                        i = PerformRequestedCmd(Port, IED, InMessage, OutMessage, traceList);
+                        status = PerformRequestedCmd(Port, IED, InMessage, OutMessage, traceList);
 
                         IED->freeDataBins();
 
@@ -1199,12 +1199,11 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
                         INT dcstat = TerminateHandshake (Port, IED, traceList);
 
-                        if(status == NORMAL) status = dcstat;
+                        if(status == NORMAL)
+                            status = dcstat;
                     }
 
                     IED->freeDataBins();
-
-                    i = status;                 /// CGP... 062402 This is UGLY.
 
                     break;
                 }
@@ -1229,12 +1228,12 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                     */
 
                     IED->allocateDataBins(OutMessage);
-                    i = InitializeHandshake (Port,IED, traceList);
+                    status = InitializeHandshake (Port,IED, traceList);
 
-                    if(!i)
+                    if(!status)
                     {
                         // this will do the initial command requested
-                        if(!(i=PerformRequestedCmd (Port, IED, InMessage, OutMessage, traceList)))
+                        if(!(status=PerformRequestedCmd (Port, IED, InMessage, OutMessage, traceList)))
                         {
                             /*********************************************
                             * Use the byte 2 of the command message to keep the
@@ -1308,12 +1307,12 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                     *************************
                     */
 
-                    i = LogonToDevice (Port,IED,InMessage,OutMessage, traceList);
+                    status = LogonToDevice (Port,IED,InMessage,OutMessage, traceList);
 
-                    if(!i)
+                    if(!status)
                     {
                         // this will do the initial command requested
-                        if(!(i=PerformRequestedCmd (Port, IED, InMessage, OutMessage, traceList)))
+                        if(!(status=PerformRequestedCmd (Port, IED, InMessage, OutMessage, traceList)))
                         {
                             /*********************************************
                             * Use the byte 2 of the command message to keep the
@@ -1366,7 +1365,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         dout << RWTime() << " **** Invalid Port Protocol for Welco device **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
 
-                    i = BADPORT;
+                    status = BADPORT;
                     break;
                 }
             default:
@@ -1374,7 +1373,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                     /* output the message to the remote */
                     trx.setOutBuffer(OutMessage->Buffer.OutMessage + PREIDLEN);
                     trx.setOutCount(OutMessage->OutLength - 3);
-                    i = Port->outMess(trx, Device, traceList);
+                    status = Port->outMess(trx, Device, traceList);
                 }
             }
 
@@ -1385,8 +1384,8 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
             if(TimeB.dstflag) InMessage->MilliTime |= DSTACTIVE;
 
-            /* !i is a successful return... This is a "post" successful send switch */
-            if(!i)
+            /* !status is a successful return... This is a "post" successful send switch */
+            if(!status)
             {
                 switch(Device->getType())
                 {
@@ -1405,12 +1404,12 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         trx.setMessageStart();                          // This is the first "in" of this message
                         trx.setMessageComplete();                       // This is the last "in" of this message
 
-                        i = Port->inMess(trx, Device, traceList);
+                        status = Port->inMess(trx, Device, traceList);
 
                         // Prepare for tracing
-                        if(trx.doTrace(i))
+                        if(trx.doTrace(status))
                         {
-                            Port->traceXfer(trx, traceList, Device, i);
+                            Port->traceXfer(trx, traceList, Device, status);
                         }
 
                         break;
@@ -1439,15 +1438,15 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         trx.setMessageStart();                          // This is the first "in" of this message
                         trx.setMessageComplete(0);                      // This is _NOT_ the last "in" of this message
 
-                        i = Port->inMess(trx, Device, traceList);
+                        status = Port->inMess(trx, Device, traceList);
 
-                        if(!i)
+                        if(!status)
                         {
                             /* check out the message... How much follows */
-                            i = PostMaster (InMessage->Buffer.InMessage, Device->getAddress(), &ReadLength);
+                            status = PostMaster (InMessage->Buffer.InMessage, Device->getAddress(), &ReadLength);
                         }
 
-                        if(!i)
+                        if(!status)
                         {
                             /* get the rest of the message */
                             trx.setInBuffer(InMessage->Buffer.InMessage + 4);
@@ -1457,15 +1456,15 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                             trx.setMessageStart(0);                         // This is _NOT_ the first "in" of this message
                             trx.setMessageComplete();                       // This is the last "in" of this message
 
-                            i = Port->inMess(trx, Device, traceList);
+                            status = Port->inMess(trx, Device, traceList);
                         }
 
                         InMessage->InLength += ReadLength;
 
-                        if(!i)
+                        if(!status)
                         {
                             /* Check crc of message */
-                            i = MasterReply (InMessage->Buffer.InMessage, (USHORT)InMessage->InLength);
+                            status = MasterReply (InMessage->Buffer.InMessage, (USHORT)InMessage->InLength);
                         }
 
                         // Prepare for tracing
@@ -1473,12 +1472,12 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         trx.setInCountActual(&InMessage->InLength);
                         trx.setTraceMask(TraceFlag, TraceErrorsOnly, TracePort == Port->getPortID(), TraceRemote);
 
-                        if(trx.doTrace(i))
+                        if(trx.doTrace(status))
                         {
-                            Port->traceXfer(trx, traceList, Device, i);
+                            Port->traceXfer(trx, traceList, Device, status);
                         }
 
-                        if(!i)
+                        if(!status)
                         {
                             InMessage->InLength = ReadLength - 2;
                         }
@@ -1525,9 +1524,9 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                     break;
                 default:
                     // There was an outbound error, the Xfer was not traced...
-                    if(trx.doTrace(i))
+                    if(trx.doTrace(status))
                     {
-                        Port->traceXfer(trx, traceList, Device, i);
+                        Port->traceXfer(trx, traceList, Device, status);
                     }
                 }
             }
@@ -1624,7 +1623,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                     trx.setOutBuffer(OutMessage->Buffer.OutMessage);
                     trx.setOutCount(OutMessage->OutLength + PREIDL + 3);
 
-                    i = Port->outMess(trx, Device, traceList);
+                    status = Port->outMess(trx, Device, traceList);
 
                     break;
                 }
@@ -1635,7 +1634,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                     trx.setOutBuffer(OutMessage->Buffer.OutMessage);
                     trx.setOutCount(OutMessage->OutLength + PREIDL);
 
-                    i = Port->outMess(trx, Device, traceList);
+                    status = Port->outMess(trx, Device, traceList);
 
                     if(PorterDebugLevel & PORTER_DEBUG_CCUMESSAGES)
                     {
@@ -1657,7 +1656,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                 InMessage->MilliTime |= DSTACTIVE;
             }
 
-            if(!i)
+            if(!status)
             {
                 if(OutMessage->Remote == CCUGLOBAL)
                 {
@@ -1669,11 +1668,11 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         else
                             CTISleep(1000L);
                     }
-                    i = NORMAL;
+                    status = NORMAL;
                 }
                 else if(OutMessage->Remote == RTUGLOBAL)
                 {
-                    i = NORMAL;
+                    status = NORMAL;
                 }
                 else
                 {
@@ -1702,14 +1701,14 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                             trx.setMessageStart();                          // This is the first "in" of this message
                             trx.setMessageComplete(0);                      // This is _NOT_ the last "in" of this message
 
-                            i = Port->inMess(trx, Device, traceList);
+                            status = Port->inMess(trx, Device, traceList);
 
-                            if(!i)
+                            if(!status)
                             {
                                 /* check out the message... How much follows */
-                                i = RTUReplyHeader (Device->getType(), Device->getAddress(), InMessage->IDLCStat + 11, &ReadLength);
+                                status = RTUReplyHeader (Device->getType(), Device->getAddress(), InMessage->IDLCStat + 11, &ReadLength);
 
-                                if(!i && ReadLength)
+                                if(!status && ReadLength)
                                 {
                                     /* get the rest of the message */
                                     trx.setInBuffer( InMessage->Buffer.InMessage );
@@ -1719,23 +1718,23 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                                     trx.setMessageStart(0);                         // This is _NOT_ the first "in" of this message
                                     trx.setMessageComplete();                       // This is the last "in" of this message
 
-                                    i = Port->inMess(trx, Device, traceList);
+                                    status = Port->inMess(trx, Device, traceList);
                                 }
                             }
 
                             InMessage->InLength += ReadLength;
 
-                            if(!i)
+                            if(!status)
                             {
                                 /* Check crc of message */
-                                i = RTUReply (InMessage->IDLCStat + 11, (USHORT)InMessage->InLength);
+                                status = RTUReply (InMessage->IDLCStat + 11, (USHORT)InMessage->InLength);
                             }
 
-                            if(trx.doTrace(i))
+                            if(trx.doTrace(status))
                             {
                                 trx.setInBuffer(InMessage->IDLCStat + 11);
                                 trx.setInCountActual(&InMessage->InLength);
-                                Port->traceXfer(trx, traceList, Device, i);
+                                Port->traceXfer(trx, traceList, Device, status);
                             }
 
                             break;
@@ -1761,14 +1760,14 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                             trx.setMessageStart();                          // This is the first "in" of this message
                             trx.setMessageComplete(0);                      // This is _NOT_ the last "in" of this message
 
-                            i = Port->inMess(trx, Device, traceList);
+                            status = Port->inMess(trx, Device, traceList);
 
-                            if(!i)
+                            if(!status)
                             {
                                 /* check out the message... How much follows */
-                                i = RTUReplyHeader (Device->getType(), Device->getAddress(), InMessage->IDLCStat + 11, &ReadLength);
+                                status = RTUReplyHeader (Device->getType(), Device->getAddress(), InMessage->IDLCStat + 11, &ReadLength);
 
-                                if(!i && ReadLength)
+                                if(!status && ReadLength)
                                 {
                                     /* get the rest of the message */
                                     trx.setInBuffer( InMessage->Buffer.InMessage );
@@ -1778,28 +1777,28 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                                     trx.setMessageStart(0);                          // This is _NOT_ the first "in" of this message
                                     trx.setMessageComplete();                        // This is the last "in" of this message
 
-                                    i = Port->inMess(trx, Device, traceList);
+                                    status = Port->inMess(trx, Device, traceList);
                                 }
                             }
                             InMessage->InLength += ReadLength;
 
-                            if(!i)
+                            if(!status)
                             {
                                 /* Check crc of message */
-                                i = RTUReply (InMessage->IDLCStat + 11, (USHORT)InMessage->InLength);
+                                status = RTUReply (InMessage->IDLCStat + 11, (USHORT)InMessage->InLength);
                             }
 
-                            if(trx.doTrace(i))
+                            if(trx.doTrace(status))
                             {
                                 trx.setInBuffer(InMessage->IDLCStat + 11);
                                 trx.setInCountActual(&InMessage->InLength);
-                                Port->traceXfer(trx, traceList, Device, i);
+                                Port->traceXfer(trx, traceList, Device, status);
                             }
 
 
-                            if(!i)
+                            if(!status)
                             {
-                                i = InMessage->Buffer.InMessage[2];
+                                status = InMessage->Buffer.InMessage[2];
                                 InMessage->InLength = InMessage->Buffer.InMessage[1];
                                 if(InMessage->InLength)
                                 {
@@ -1822,9 +1821,9 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                             trx.setMessageComplete(0);                       // This is NOT the last "in" of this message
                             trx.setCRCFlag(0);
 
-                            i = Port->inMess(trx, Device, traceList);
+                            status = Port->inMess(trx, Device, traceList);
 
-                            if(!i)
+                            if(!status)
                             {
                                 /* Oh wow, I got me five bytes of datum! */
                                 if(InMessage->IDLCStat[2] & 0x01)    // Supervisory frame. Emetcon S-Spec Section 4.5
@@ -1834,9 +1833,9 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                                     {
                                     case REJ:
                                         {
-                                            if((j = IDLCRej(InMessage->IDLCStat, &pInfo->RemoteSequence.Request)) != NORMAL)
+                                            if((reject_status = IDLCRej(InMessage->IDLCStat, &pInfo->RemoteSequence.Request)) != NORMAL)
                                             {
-                                                i = j;
+                                                status = reject_status;
                                             }
                                             break;
                                         }
@@ -1847,11 +1846,11 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                                                 dout << RWTime() << " *** Supervisory (Inbound) Message 0x" << hex << InMessage->IDLCStat[2] << " from CCU: " << Device->getName() << endl;
                                             }
 
-                                            if(trx.doTrace(i))
+                                            if(trx.doTrace(status))
                                             {
                                                 trx.setInBuffer(InMessage->IDLCStat);
                                                 trx.setInCountActual(&InMessage->InLength);
-                                                Port->traceXfer(trx, traceList, Device, i);
+                                                Port->traceXfer(trx, traceList, Device, status);
                                             }
                                         }
                                     }
@@ -1872,40 +1871,40 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                                     trx.setMessageStart(FALSE);                           // This is the first "in" of this message
                                     trx.setMessageComplete(TRUE);                   // This is NOT the last "in" of this message
 
-                                    i = Port->inMess(trx, Device, traceList);
+                                    status = Port->inMess(trx, Device, traceList);
 
                                     InMessage->InLength += ReadLength;
 
-                                    if(!i)
+                                    if(!status)
                                     {
                                         /*
                                          *  This is the guy who does some rudimentary checking on the CCU message
                                          *  He will return REQACK in that case...
                                          */
-                                        i = GenReply (InMessage->IDLCStat, InMessage->InLength, &pInfo->RemoteSequence.Request, &pInfo->RemoteSequence.Reply, Device->getAddress());
+                                        status = GenReply (InMessage->IDLCStat, InMessage->InLength, &pInfo->RemoteSequence.Request, &pInfo->RemoteSequence.Reply, Device->getAddress());
                                     }
                                 }
                             }
 
-                            if(i)
+                            if(status)
                             {
                                 if(InMessage->InLength >= 5)
                                 {
-                                    if((j = IDLCRej (InMessage->IDLCStat, &pInfo->RemoteSequence.Request)) != NORMAL)
+                                    if((reject_status = IDLCRej (InMessage->IDLCStat, &pInfo->RemoteSequence.Request)) != NORMAL)
                                     {
-                                        i = j;
+                                        status = reject_status;
                                     }
                                 }
                             }
 
-                            if(trx.doTrace(i))
+                            if(trx.doTrace(status))
                             {
                                 trx.setInBuffer(InMessage->IDLCStat);
                                 trx.setInCountActual(&InMessage->InLength);
-                                Port->traceXfer(trx, traceList, Device, i);
+                                Port->traceXfer(trx, traceList, Device, status);
                             }
 
-                            if(!i)
+                            if(!status)
                             {
                                 InMessage->InLength -= 20;
                             }
@@ -1925,15 +1924,15 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
             else
             {
                 // There was an outbound error, the Xfer was not traced...
-                if(trx.doTrace(i))
+                if(trx.doTrace(status))
                 {
-                    Port->traceXfer(trx, traceList, Device, i);
+                    Port->traceXfer(trx, traceList, Device, status);
                 }
             }
 
 
             /* Do not do a retry if we REQACK */
-            if((i & ~DECODED) == REQACK)
+            if((status & ~DECODED) == REQACK)
             {
                 OutMessage->Retry = 0;
             }
@@ -1953,7 +1952,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
     DisplayTraceList(Port, traceList, true);
 
-    return i;
+    return status;
 }
 
 INT NonWrapDecode(INMESS *InMessage, CtiDevice *Device)
