@@ -1,5 +1,6 @@
 package com.cannontech.stars.web.action;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
@@ -112,7 +113,17 @@ public class SearchCustAccountAction implements ActionBase {
             }
             else if (searchAccount.getSearchBy().getEntryID() == energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_PHONE_NO).getEntryID()) {
             	/* Search by phone number */
-            	accountIDs = CustomerAccount.searchByPhoneNumber( new Integer(energyCompanyID), ServletUtils.formatPhoneNumber(searchAccount.getSearchValue()) );
+            	String phoneNo = null;
+            	try {
+            		phoneNo = ServletUtils.formatPhoneNumber( searchAccount.getSearchValue() );
+            	}
+            	catch (ServletException se) {
+					respOper.setStarsFailure( StarsFactory.newStarsFailure(
+							StarsConstants.FAILURE_CODE_OPERATION_FAILED, se.getMessage()) );
+					return SOAPUtil.buildSOAPMessage( respOper );
+            	}
+            	
+				accountIDs = CustomerAccount.searchByPhoneNumber( new Integer(energyCompanyID), phoneNo );
             	if (accountIDs != null && accountIDs.length == 1)
             		liteAcctInfo = energyCompany.getCustAccountInformation( accountIDs[0], true );
             }

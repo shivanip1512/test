@@ -469,8 +469,10 @@ public class SOAPClient extends HttpServlet {
 				else
 					setErrorMsg( session, StarsConstants.FAILURE_CODE_RESPONSE_NULL );
 			}
-			else
-				setErrorMsg( session, StarsConstants.FAILURE_CODE_REQUEST_NULL );
+			else {
+				if (session.getAttribute(ServletUtils.ATT_ERROR_MESSAGE) == null)
+					setErrorMsg( session, StarsConstants.FAILURE_CODE_REQUEST_NULL );
+			}
 		}
 
 		resp.sendRedirect( nextURL );

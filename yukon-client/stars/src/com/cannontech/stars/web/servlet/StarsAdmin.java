@@ -1001,6 +1001,10 @@ public class StarsAdmin extends HttpServlet {
         	else
 	        	session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Service company information updated successfully");
         }
+        catch (ServletException se) {
+			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, se.getMessage());
+			redirect = referer;
+        }
         catch (Exception e) {
 			e.printStackTrace();
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to update service company information");

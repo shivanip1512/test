@@ -1843,8 +1843,11 @@ public class ImportManager extends HttpServlet {
 	    PrimaryContact primContact = new PrimaryContact();
 	    primContact.setLastName( fields[IDX_LAST_NAME] );
 	    primContact.setFirstName( fields[IDX_FIRST_NAME] );
-	    primContact.setHomePhone( ServletUtils.formatPhoneNumber(fields[IDX_HOME_PHONE]) );
-	    primContact.setWorkPhone( ServletUtils.formatPhoneNumber(fields[IDX_WORK_PHONE]) + fields[IDX_WORK_PHONE_EXT] );
+	    try {
+			primContact.setHomePhone( ServletUtils.formatPhoneNumber(fields[IDX_HOME_PHONE]) );
+			primContact.setWorkPhone( ServletUtils.formatPhoneNumber(fields[IDX_WORK_PHONE]) + fields[IDX_WORK_PHONE_EXT] );
+	    }
+	    catch (javax.servlet.ServletException se) {}
 	    
 	    Email email = new Email();
 	    email.setNotification( fields[IDX_EMAIL] );

@@ -8,6 +8,7 @@ package com.cannontech.stars.web.action;
 
 import java.util.Vector;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
@@ -95,6 +96,9 @@ public class UpdateContactsAction implements ActionBase {
 			operation.setStarsUpdateContacts( updateContacts );
 
 			return SOAPUtil.buildSOAPMessage( operation );
+		}
+		catch (ServletException se) {
+			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, se.getMessage() );
 		}
 		catch (Exception e) {
 			e.printStackTrace();

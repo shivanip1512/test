@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
+import javax.servlet.ServletException;
 
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.serialize.ControlHistory;
@@ -172,22 +173,23 @@ public class ServletUtils {
     }
     
     /**
-     * Format phone number to format "(...-#-)###-###-####"
-     * In the original string, each segment between adjacent "-" above must be consecutive,
-     * otherwise an empty string is returned
+     * Format phone number to format "[...-#-###-]###-####"
+     * In the original string, each segment between adjacent "-" above must be consecutive
      */
-    public static String formatPhoneNumber(String phoneNo) {
+    public static String formatPhoneNumber(String phoneNo) throws ServletException {
     	StringBuffer formatedPhoneNo = new StringBuffer();
     	int n = phoneNo.length() - 1;	// position of digit counted from the last
     	
     	/* Find the last 4 digits */
     	while (n >= 0 && !Character.isDigit( phoneNo.charAt(n) ))
     		n--;
-    	if (n < 0) return "";
+    	if (n < 0)
+			throw new ServletException("Invalid phone number format '" + phoneNo + "'");
+    	
     	for (int i = 1; i < 4; i++) {
     		n--;
     		if (n < 0 || !Character.isDigit( phoneNo.charAt(n) ))
-    			return "";
+    			throw new ServletException("Invalid phone number format '" + phoneNo + "'");
     	}
     	formatedPhoneNo.insert( 0, phoneNo.substring(n, n+4) );
     	
@@ -195,11 +197,13 @@ public class ServletUtils {
     	n--;
     	while (n >= 0 && !Character.isDigit( phoneNo.charAt(n) ))
     		n--;
-    	if (n < 0) return "";
+    	if (n < 0)
+			throw new ServletException("Invalid phone number format '" + phoneNo + "'");
+    	
     	for (int i = 1; i < 3; i++) {
     		n--;
     		if (n < 0 || !Character.isDigit( phoneNo.charAt(n) ))
-    			return "";
+				throw new ServletException("Invalid phone number format '" + phoneNo + "'");
     	}
     	formatedPhoneNo.insert( 0, '-' );
     	formatedPhoneNo.insert( 0, phoneNo.substring(n, n+3) );
@@ -208,11 +212,12 @@ public class ServletUtils {
     	n--;
     	while (n >= 0 && !Character.isDigit( phoneNo.charAt(n) ))
     		n--;
-    	if (n < 0) return "";
+    	if (n < 0) return formatedPhoneNo.toString();
+    	
     	for (int i = 1; i < 3; i++) {
     		n--;
     		if (n < 0 || !Character.isDigit( phoneNo.charAt(n) ))
-    			return "";
+				throw new ServletException("Invalid phone number format '" + phoneNo + "'");
     	}
     	formatedPhoneNo.insert( 0, '-' );
     	formatedPhoneNo.insert( 0, phoneNo.substring(n, n+3) );
