@@ -28,6 +28,7 @@
 #include "lmprogramenergyexchange.h"
 #include "lmgroupversacom.h"
 #include "lmgroupemetcon.h"
+#include "lmgroupexpresscom.h"
 #include "lmgroupripple.h"
 #include "lmgrouppoint.h"
 #include "lmcontrolareatrigger.h"
@@ -544,6 +545,7 @@ void CtiLMControlAreaStore::reset()
                                     << lmGroupMacroExpanderView["kwcapacity"]
                                     << lmGroupMacroExpanderView["grouporder"]
                                     << lmGroupMacroExpanderView["childorder"]
+                                    << lmGroupMacroExpanderView["deviceid"]
                                     << dynamicLMGroupTable["groupcontrolstate"]
                                     << dynamicLMGroupTable["currenthoursdaily"]
                                     << dynamicLMGroupTable["currenthoursmonthly"]
@@ -551,6 +553,7 @@ void CtiLMControlAreaStore::reset()
                                     << dynamicLMGroupTable["currenthoursannually"]
                                     << dynamicLMGroupTable["lastcontrolsent"]
                                     << dynamicLMGroupTable["timestamp"]
+                                    << dynamicLMGroupTable["lmprogramid"]
                                     << pointTable["pointid"]
                                     << pointTable["pointoffset"]
                                     << pointTable["pointtype"];
@@ -567,6 +570,7 @@ void CtiLMControlAreaStore::reset()
                                                             lmGroupMacroExpanderView["paobjectid"]==lmGroupMacroExpanderView["childid"] ) ) &&
                                                         lmGroupMacroExpanderView["deviceid"]==currentLMProgramDirect->getPAOId() &&
                                                         lmGroupMacroExpanderView["paobjectid"].leftOuterJoin(dynamicLMGroupTable["deviceid"]) &&
+                                                        currentLMProgramBase->getPAOId()==dynamicLMGroupTable["lmprogramid"] &&
                                                         lmGroupMacroExpanderView["paobjectid"].leftOuterJoin(pointTable["paobjectid"]) );
 
                                         /*if( _LM_DEBUG )
@@ -581,6 +585,7 @@ void CtiLMControlAreaStore::reset()
                                                         lmGroupMacroExpanderView["paobjectid"]==lmGroupMacroExpanderView["lmgroupdeviceid"] &&
                                                         lmGroupMacroExpanderView["deviceid"]==currentLMProgramDirect->getPAOId() &&
                                                         lmGroupMacroExpanderView["paobjectid"].leftOuterJoin(dynamicLMGroupTable["deviceid"]) &&
+                                                        currentLMProgramBase->getPAOId()==dynamicLMGroupTable["lmprogramid"] &&
                                                         lmGroupMacroExpanderView["paobjectid"].leftOuterJoin(pointTable["paobjectid"]) );
                                         /*if( _LM_DEBUG )
                                         {
@@ -801,6 +806,40 @@ void CtiLMControlAreaStore::reset()
                                                 if( rdr() )
                                                 {
                                                     ((CtiLMGroupPoint*)currentLMGroupBase)->restorePointSpecificDatabaseEntries(rdr);
+                                                }
+                                            }
+                                            else if( currentLMGroupBase->getPAOType() == TYPE_LMGROUP_EXPRESSCOM )
+                                            {
+                                                RWDBTable expresscomAddressView = db.table("expresscomaddress_view");
+    
+                                                RWDBSelector selector = db.selector();
+                                                selector << expresscomAddressView["routeid"]
+                                                         << expresscomAddressView["serialnumber"]
+                                                         << expresscomAddressView["serviceaddress"]
+                                                         << expresscomAddressView["geoaddress"]
+                                                         << expresscomAddressView["substationaddress"]
+                                                         << expresscomAddressView["feederaddress"]
+                                                         << expresscomAddressView["zipcodeaddress"]
+                                                         << expresscomAddressView["udaddress"]
+                                                         << expresscomAddressView["programaddress"]
+                                                         << expresscomAddressView["splinteraddress"]
+                                                         << expresscomAddressView["addressusage"]
+                                                         << expresscomAddressView["relayusage"];
+    
+                                                selector.from(expresscomAddressView);
+    
+                                                selector.where(expresscomAddressView["lmgroupid"]==currentLMGroupBase->getPAOId() );
+    
+                                                /*if( _LM_DEBUG )
+                                                {
+                                                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                                                    dout << RWTime() << " - " << selector.asString().data() << endl;
+                                                }*/
+    
+                                                RWDBReader rdr = selector.reader(conn);
+                                                if( rdr() )
+                                                {
+                                                    ((CtiLMGroupExpresscom*)currentLMGroupBase)->restoreExpresscomSpecificDatabaseEntries(rdr);
                                                 }
                                             }
                                             else
@@ -1207,6 +1246,10 @@ void CtiLMControlAreaStore::reset()
         }
 
         _isvalid = TRUE;
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << RWTime() << " - Control areas reset" << endl;
+        }
     }
     catch(...)
     {
@@ -1307,7 +1350,7 @@ void CtiLMControlAreaStore::doResetThr()
         {
             rwRunnable().serviceCancellation();
     
-            if( RWDBDateTime() >= nextDatabaseRefresh )
+            if( RWDBDateTime().seconds() >= nextDatabaseRefresh.seconds() )
             {
                 RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
                 if( _LM_DEBUG )
