@@ -2,15 +2,16 @@
 *
 * File:   dnp_object_analoginput
 *
-* Class:  DNP Analog Input object
+* Namespace: CtiDNP
+* Class:     AnalogInput variations
 * Date:   7/5/2002
 *
 * Author: Matt Fisher
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2003/12/26 17:26:24 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/03/10 21:05:42 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -22,7 +23,12 @@
 #include "dnp_objects.h"
 #include "dnp_object_time.h"
 
-class CtiDNPAnalogInput : public CtiDNPObject
+namespace Cti       {
+namespace Protocol  {
+namespace DNP       {
+
+
+class AnalogInput : public Object
 {
 private:
     long _value;
@@ -45,13 +51,13 @@ private:
     } _flags;
 
 protected:
-    CtiDNPAnalogInput(int group, int variation);
+    AnalogInput(int group, int variation);
 
-    int restoreVariation(unsigned char *buf, int len, int variation);
-    int serializeVariation(unsigned char *buf, int variation);
+    int restoreVariation(const unsigned char *buf, int len, int variation);
+    int serializeVariation(unsigned char *buf, int variation) const;
 
 public:
-    CtiDNPAnalogInput(int variation);
+    AnalogInput(int variation);
 
     enum Variation
     {
@@ -66,22 +72,22 @@ public:
         Group = 30
     };
 
-    virtual int restore(unsigned char *buf, int len);
-    virtual int serialize(unsigned char *buf);
-    virtual int getSerializedLen(void);
+    virtual int restore(const unsigned char *buf, int len);
+    virtual int serialize(unsigned char *buf) const;
+    virtual int getSerializedLen(void) const;
 
-    virtual CtiPointDataMsg *getPoint( const CtiDNPTimeCTO *cto );
+    virtual CtiPointDataMsg *getPoint( const TimeCTO *cto ) const;
 };
 
 
 //  just inherits the _value and _flags fields, overrides the restore() method and Group enum
-class CtiDNPAnalogInputFrozen : public CtiDNPAnalogInput
+class AnalogInputFrozen : public AnalogInput
 {
 private:
-    CtiDNPTime _tof;
+    Time _tof;
 
 public:
-    CtiDNPAnalogInputFrozen(int variation);
+    AnalogInputFrozen(int variation);
 
     enum Variation
     {
@@ -98,19 +104,19 @@ public:
         Group = 31
     };
 
-    int restore(unsigned char *buf, int len);
-    int serialize(unsigned char *buf);
-    int getSerializedLen(void);
+    int restore(const unsigned char *buf, int len);
+    int serialize(unsigned char *buf) const;
+    int getSerializedLen(void) const;
 };
 
 
-class CtiDNPAnalogInputChange : public CtiDNPAnalogInput
+class AnalogInputChange : public AnalogInput
 {
 private:
-    CtiDNPTime _toc;
+    Time _toc;
 
 public:
-    CtiDNPAnalogInputChange(int variation);
+    AnalogInputChange(int variation);
 
     enum Variation
     {
@@ -125,21 +131,21 @@ public:
         Group = 32
     };
 
-    int restore(unsigned char *buf, int len);
-    int serialize(unsigned char *buf);
-    int getSerializedLen(void);
+    int restore(const unsigned char *buf, int len);
+    int serialize(unsigned char *buf) const;
+    int getSerializedLen(void) const;
 
-    CtiPointDataMsg *getPoint( const CtiDNPTimeCTO *cto );
+    CtiPointDataMsg *getPoint( const TimeCTO *cto ) const;
 };
 
 
-class CtiDNPAnalogInputFrozenEvent : public CtiDNPAnalogInput
+class AnalogInputFrozenEvent : public AnalogInput
 {
 private:
-    CtiDNPTime _tofe;
+    Time _tofe;
 
 public:
-    CtiDNPAnalogInputFrozenEvent(int variation);
+    AnalogInputFrozenEvent(int variation);
 
     enum Variation
     {
@@ -154,9 +160,15 @@ public:
         Group = 33
     };
 
-    int restore(unsigned char *buf, int len);
-    int serialize(unsigned char *buf);
-    int getSerializedLen(void);
+    int restore(const unsigned char *buf, int len);
+    int serialize(unsigned char *buf) const;
+    int getSerializedLen(void) const;
 };
+
+
+}
+}
+}
+
 
 #endif  //  #ifndef __DNP_OBJECT_ANALOGINPUT_H__

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2003/12/26 17:27:06 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/03/10 21:05:43 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -22,7 +22,11 @@
 #include "dnp_objects.h"
 #include "dnp_object_time.h"
 
-class CtiDNPBinaryInput : public CtiDNPObject
+namespace Cti       {
+namespace Protocol  {
+namespace DNP       {
+
+class BinaryInput : public Object
 {
 private:
     union bifu  //  binary in flag union, named for Slick's parsing pleasure
@@ -43,13 +47,13 @@ private:
     } _bi;
 
 protected:
-    CtiDNPBinaryInput(int group, int variation);
+    BinaryInput(int group, int variation);
 
-    int restoreVariation(unsigned char *buf, int len, int variation);
-    int serializeVariation(unsigned char *buf, int variation);
+    int restoreVariation(const unsigned char *buf, int len, int variation);
+    int serializeVariation(unsigned char *buf, int variation) const;
 
 public:
-    CtiDNPBinaryInput(int variation);
+    BinaryInput(int variation);
 
     enum Variation
     {
@@ -62,22 +66,22 @@ public:
         Group = 1
     };
 
-    virtual int restore(unsigned char *buf, int len);
-    int restoreBits(unsigned char *buf, int bitoffset, int len);
-    virtual int serialize(unsigned char *buf);
-    virtual int getSerializedLen(void);
+    virtual int restore(const unsigned char *buf, int len);
+    int restoreBits(const unsigned char *buf, int bitoffset, int len);
+    virtual int serialize(unsigned char *buf) const;
+    virtual int getSerializedLen(void) const;
 
-    virtual CtiPointDataMsg *getPoint( const CtiDNPTimeCTO *cto );
+    virtual CtiPointDataMsg *getPoint( const TimeCTO *cto ) const;
 };
 
-class CtiDNPBinaryInputChange : public CtiDNPBinaryInput
+class BinaryInputChange : public BinaryInput
 {
 protected:
-    CtiDNPTime      _time;
-    CtiDNPTimeDelay _timeRelative;
+    Time      _time;
+    TimeDelay _timeRelative;
 
 public:
-    CtiDNPBinaryInputChange(int variation);
+    BinaryInputChange(int variation);
 
     enum Variation
     {
@@ -91,11 +95,15 @@ public:
         Group = 2
     };
 
-    int restore(unsigned char *buf, int len);
-    int serialize(unsigned char *buf);
-    int getSerializedLen(void);
+    int restore(const unsigned char *buf, int len);
+    int serialize(unsigned char *buf) const;
+    int getSerializedLen(void) const;
 
-    CtiPointDataMsg *getPoint( const CtiDNPTimeCTO *cto );
+    CtiPointDataMsg *getPoint( const TimeCTO *cto ) const;
 };
+
+}
+}
+}
 
 #endif  //  #ifndef __DNP_OBJECT_BINARYINPUT_H__

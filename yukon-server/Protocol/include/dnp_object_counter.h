@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2004/09/01 19:21:06 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2005/03/10 21:04:50 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -21,19 +21,23 @@
 
 #include "dnp_objects.h"
 
-class CtiDNPCounter : public CtiDNPObject
+namespace Cti       {
+namespace Protocol  {
+namespace DNP       {
+
+class Counter : public Object
 {
     unsigned long _counter;
     unsigned char _flag;  //  this will be a bitfield struct someday
 
 protected:
-    CtiDNPCounter(int group, int variation);
+    Counter(int group, int variation);
 
-    int restoreVariation(unsigned char *buf, int len, int variation);
-    int serializeVariation(unsigned char *buf, int variation);
+    int restoreVariation(const unsigned char *buf, int len, int variation);
+    int serializeVariation(unsigned char *buf, int variation) const;
 
 public:
-    CtiDNPCounter(int variation);
+    Counter(int variation);
 
     enum Variation
     {
@@ -52,20 +56,20 @@ public:
         Group = 20
     };
 
-    virtual int restore(unsigned char *buf, int len);
-    virtual int serialize(unsigned char *buf);
-    virtual int getSerializedLen(void);
+    virtual int restore(const unsigned char *buf, int len);
+    virtual int serialize(unsigned char *buf) const;
+    virtual int getSerializedLen(void) const;
 
-    virtual CtiPointDataMsg *getPoint( const CtiDNPTimeCTO *cto );
+    virtual CtiPointDataMsg *getPoint( const TimeCTO *cto ) const;
 };
 
 
-class CtiDNPCounterFrozen : public CtiDNPCounter
+class CounterFrozen : public Counter
 {
 protected:
 
 public:
-    CtiDNPCounterFrozen(int variation);
+    CounterFrozen(int variation);
 
     enum Variation
     {
@@ -88,20 +92,20 @@ public:
         Group = 21
     };
 
-    virtual int restore(unsigned char *buf, int len);
-    virtual int serialize(unsigned char *buf);
-    virtual int getSerializedLen(void);
+    virtual int restore(const unsigned char *buf, int len);
+    virtual int serialize(unsigned char *buf) const;
+    virtual int getSerializedLen(void) const;
 
-    virtual CtiPointDataMsg *getPoint( const CtiDNPTimeCTO *cto );
+    virtual CtiPointDataMsg *getPoint( const TimeCTO *cto ) const;
 };
 
 
-class CtiDNPCounterChange : public CtiDNPObject
+class CounterChange : public Object
 {
 protected:
 
 public:
-    CtiDNPCounterChange(int variation);
+    CounterChange(int variation);
 
     enum Variation
     {
@@ -122,12 +126,12 @@ public:
 };
 
 
-class CtiDNPCounterFrozenEvent : public CtiDNPObject
+class CounterFrozenEvent : public Object
 {
 protected:
 
 public:
-    CtiDNPCounterFrozenEvent(int variation);
+    CounterFrozenEvent(int variation);
 
     enum Variation
     {
@@ -146,5 +150,9 @@ public:
         Group = 23
     };
 };
+
+}
+}
+}
 
 #endif  //  #ifndef __DNP_OBJECT_COUNTER_H__

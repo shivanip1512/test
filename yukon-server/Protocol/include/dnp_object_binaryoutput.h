@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2003/12/26 17:27:06 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/03/10 21:05:43 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -21,7 +21,11 @@
 
 #include "dnp_objects.h"
 
-class CtiDNPBinaryOutput : public CtiDNPObject
+namespace Cti       {
+namespace Protocol  {
+namespace DNP       {
+
+class BinaryOutput : public Object
 {
 private:
     union bofu  //  binary out flag union, named for Slick's parsing pleasure
@@ -43,7 +47,7 @@ private:
 protected:
 
 public:
-    CtiDNPBinaryOutput(int variation);
+    BinaryOutput(int variation);
 
     enum Variation
     {
@@ -62,18 +66,18 @@ public:
         BinaryOutputStatusOffset = 10000
     };
 
-    int restore(unsigned char *buf, int len);
-    int restoreBits(unsigned char *buf, int bitoffset, int len);
-    int serialize(unsigned char *buf);
-    int getSerializedLen(void);
+    int restore(const unsigned char *buf, int len);
+    int restoreBits(const unsigned char *buf, int bitoffset, int len);
+    int serialize(unsigned char *buf) const;
+    int getSerializedLen(void) const;
 
-    CtiPointDataMsg *getPoint( const CtiDNPTimeCTO *cto );
+    CtiPointDataMsg *getPoint( const TimeCTO *cto ) const;
 };
 
 
 #pragma pack( push, 1 )
 
-class CtiDNPBinaryOutputControl : public CtiDNPObject
+class BinaryOutputControl : public Object
 {
 private:
     union crobu
@@ -103,7 +107,7 @@ protected:
 
 public:
 
-    CtiDNPBinaryOutputControl(int variation);
+    BinaryOutputControl(int variation);
 
     enum Variation
     {
@@ -147,14 +151,18 @@ public:
 
     void setControlBlock(unsigned long onTime, unsigned long offTime, unsigned char count, ControlCode code, bool queue, bool clear, TripClose tripclose);
 
-    int restore(unsigned char *buf, int len);
-    int restoreBits(unsigned char *buf, int bitoffset, int len);
-    int serialize(unsigned char *buf);
-    int getSerializedLen(void);
+    int restore(const unsigned char *buf, int len);
+    int restoreBits(const unsigned char *buf, int bitoffset, int len);
+    int serialize(unsigned char *buf) const;
+    int getSerializedLen(void) const;
 
     int getStatus( void ) const;
 };
 
 #pragma pack( pop )
+
+}
+}
+}
 
 #endif  //  #ifndef __DNP_OBJECT_BINARYOUTPUT_H__

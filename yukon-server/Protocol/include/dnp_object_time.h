@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/12/26 17:26:55 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/03/10 21:03:49 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -21,20 +21,24 @@
 
 #include "dnp_objects.h"
 
-class CtiDNPTime : public CtiDNPObject
+namespace Cti       {
+namespace Protocol  {
+namespace DNP       {
+
+class Time : public Object
 {
 private:
     double _seconds, _milliseconds;
     double _interval;
 
 protected:
-    CtiDNPTime(int group, int variation);
+    Time(int group, int variation);
 
-    int restoreVariation(unsigned char *buf, int len, int variation);
-    int serializeVariation(unsigned char *buf, int variation);
+    int restoreVariation(const unsigned char *buf, int len, int variation);
+    int serializeVariation(unsigned char *buf, int variation) const;
 
 public:
-    CtiDNPTime(int variation);
+    Time(int variation);
 
     enum Variation
     {
@@ -47,9 +51,9 @@ public:
         Group = 50
     };
 
-    int restore(unsigned char *buf, int len);
-    int serialize(unsigned char *buf);
-    int getSerializedLen(void);
+    int restore(const unsigned char *buf, int len);
+    int serialize(unsigned char *buf) const;
+    int getSerializedLen(void) const;
 
     double getSeconds() const;
     double getMilliseconds() const;
@@ -59,12 +63,12 @@ public:
 };
 
 
-class CtiDNPTimeCTO : public CtiDNPTime
+class TimeCTO : public Time
 {
 protected:
 
 public:
-    CtiDNPTimeCTO(int variation);
+    TimeCTO(int variation);
 
     enum Variation
     {
@@ -77,13 +81,13 @@ public:
         Group = 51
     };
 
-    int restore(unsigned char *buf, int len);
-    int serialize(unsigned char *buf);
-    int getSerializedLen(void);
+    int restore(const unsigned char *buf, int len);
+    int serialize(unsigned char *buf) const;
+    int getSerializedLen(void) const;
 };
 
 
-class CtiDNPTimeDelay : public CtiDNPObject
+class TimeDelay : public Object
 {
 private:
     unsigned long _delay;
@@ -91,7 +95,7 @@ private:
 protected:
 
 public:
-    CtiDNPTimeDelay(int variation);
+    TimeDelay(int variation);
 
     enum Variation
     {
@@ -104,13 +108,16 @@ public:
         Group = 52
     };
 
-    int restore(unsigned char *buf, int len);
-    int serialize(unsigned char *buf);
-    int getSerializedLen(void);
+    int restore(const unsigned char *buf, int len);
+    int serialize(unsigned char *buf) const;
+    int getSerializedLen(void) const;
 
     double getSeconds() const;
     double getMilliseconds() const;
 };
 
+}
+}
+}
 
 #endif  //  #ifndef __DNP_OBJECT_TIME_H__

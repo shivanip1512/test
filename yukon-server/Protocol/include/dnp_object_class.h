@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2003/03/13 19:35:45 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2005/03/10 21:05:43 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -21,12 +21,16 @@
 
 #include "dnp_objects.h"
 
-class CtiDNPClass : public CtiDNPObject
+namespace Cti       {
+namespace Protocol  {
+namespace DNP       {
+
+class Class : public Object
 {
 protected:
 
 public:
-    CtiDNPClass(int variation);
+    Class(int variation);
 
     enum Variation
     {
@@ -41,10 +45,14 @@ public:
         Group = 60
     };
 
-    int restore(unsigned char *buf, int len);
-    int serialize(unsigned char *buf);
-    int getSerializedLen(void);
+    int restore(const unsigned char *buf, int len);
+    int serialize(unsigned char *buf) const;
+    int getSerializedLen(void) const;
 };
+
+}
+}
+}
 
 #endif  //  #ifndef __DNP_OBJECT_CLASS_H__
 
