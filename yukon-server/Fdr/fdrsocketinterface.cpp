@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrsocketinterface.cpp-arc  $
-*    REVISION     :  $Revision: 1.3 $
-*    DATE         :  $Date: 2002/04/16 15:58:38 $
+*    REVISION     :  $Revision: 1.4 $
+*    DATE         :  $Date: 2002/08/06 22:04:23 $
 *
 *
 *    AUTHOR: David Sutton
@@ -20,6 +20,11 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrsocketinterface.cpp,v $
+      Revision 1.4  2002/08/06 22:04:23  dsutton
+      Programming around the error that happens if the dataset is empty when it is
+      returned from the database and shouldn't be.  If our point list had more than
+      two entries in it before, we fail the attempt and try again in 60 seconds
+
       Revision 1.3  2002/04/16 15:58:38  softwarebuild
       20020416_1031_2_16
 
@@ -333,8 +338,11 @@ bool CtiFDRSocketInterface::sendMessageToForeignSys ( CtiMessage *aMessage )
 
         if (retVal == false)
         {
-//            CtiLockGuard<CtiLogger> doubt_guard(dout);
-//            dout << RWTime() << " Translation for point " << localMsg->getId() << " to " << getInterfaceName() << " not found " << endl;;
+            if (getDebugLevel () & STARTUP_FDR_DEBUGLEVEL)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Translation for point " << localMsg->getId() << " to " << getInterfaceName() << " not found " << endl;;
+            }
         }
         else
         {

@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrsinglesocket.cpp-arc  $
-*    REVISION     :  $Revision: 1.3 $
-*    DATE         :  $Date: 2002/04/16 15:58:37 $
+*    REVISION     :  $Revision: 1.4 $
+*    DATE         :  $Date: 2002/08/06 22:03:14 $
 *
 *
 *    AUTHOR: David Sutton
@@ -20,6 +20,11 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrsinglesocket.cpp,v $
+      Revision 1.4  2002/08/06 22:03:14  dsutton
+      Programming around the error that happens if the dataset is empty when it is
+      returned from the database and shouldn't be.  If our point list had more than
+      two entries in it before, we fail the attempt and try again in 60 seconds
+
       Revision 1.3  2002/04/16 15:58:37  softwarebuild
       20020416_1031_2_16
 
@@ -111,7 +116,15 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 CtiFDRSingleSocket::CtiFDRSingleSocket(RWCString &name)
 : CtiFDRSocketInterface(name),
     iLayer (NULL)
-{   
+{
+    // init these lists so they have something
+    CtiFDRManager   *recList = new CtiFDRManager(getInterfaceName(),RWCString(FDR_INTERFACE_RECEIVE)); 
+    getReceiveFromList().setPointList (recList);
+    recList = NULL;
+
+    CtiFDRManager   *sendList = new CtiFDRManager(getInterfaceName(), RWCString(FDR_INTERFACE_SEND));
+    getSendToList().setPointList (sendList);
+    sendList = NULL;
 }
 
 
@@ -277,6 +290,7 @@ bool CtiFDRSingleSocket::loadList(RWCString &aDirection,  CtiFDRPointList &aList
     RWCString           translationName;
     bool                foundPoint = false, translatedPoint(false);
     RWCString           controlDirection;
+    static bool firstPassHackFlag=false;  // yuck
 
     try
     {
@@ -286,56 +300,72 @@ bool CtiFDRSingleSocket::loadList(RWCString &aDirection,  CtiFDRPointList &aList
         // if status is ok, we were able to read the database at least
         if (pointList->loadPointList().errorCode() == (RWDBStatus::ok))
         {
-
-            // lock the list I'm inserting into so it doesn't get deleted on me
-            CtiLockGuard<CtiMutex> sendGuard(aList.getMutex());  
-            if (aList.getPointList() != NULL)
+            /**************************************
+            * seeing occasional problems where we get empty data sets back
+            * and there should be info in them,  we're checking this to see if
+            * is reasonable if the list may now be empty
+            * the 2 entry thing is completly arbitrary
+            ***************************************
+            */
+            if (((pointList->entries() == 0) && (aList.getPointList()->entries() <= 2)) ||
+                (pointList->entries() > 0))
             {
-                aList.deletePointList();
-            }
-            aList.setPointList (pointList);
-
-            // get iterator on list
-            CtiFDRManager::CTIFdrPointIterator  myIterator(aList.getPointList()->getMap());
-            int x;
-
-            for ( ; myIterator(); )
-            {
-                foundPoint = true;
-                translationPoint = myIterator.value();
-
-                for (x=0; x < translationPoint->getDestinationList().size(); x++)
+                // lock the list I'm inserting into so it doesn't get deleted on me
+                CtiLockGuard<CtiMutex> sendGuard(aList.getMutex());  
+                if (aList.getPointList() != NULL)
                 {
-                    if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
+                    aList.deletePointList();
+                }
+                aList.setPointList (pointList);
+
+                // get iterator on list
+                CtiFDRManager::CTIFdrPointIterator  myIterator(aList.getPointList()->getMap());
+                int x;
+
+                for ( ; myIterator(); )
+                {
+                    foundPoint = true;
+                    translationPoint = myIterator.value();
+
+                    for (x=0; x < translationPoint->getDestinationList().size(); x++)
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Point ID " << translationPoint->getPointID();
-                        dout << " translate: " << translationPoint->getDestinationList()[0].getTranslation() << endl;
+                        if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " Point ID " << translationPoint->getPointID();
+                            dout << " translate: " << translationPoint->getDestinationList()[0].getTranslation() << endl;
+                        }
+                        // translate and put the point id the list
+                        if (translateAndUpdatePoint (translationPoint, x))
+                        {
+                            translatedPoint = true;
+                            successful = true;
+                        }
                     }
-                    // translate and put the point id the list
-                    if (translateAndUpdatePoint (translationPoint, x))
+                }   // end for interator
+
+                // set this to null, the memory is now assigned to the other point
+                pointList=NULL;
+
+                if (!translatedPoint)
+                {
+                    if (!foundPoint)
                     {
-                        translatedPoint = true;
+                        // means there was nothing in the list, wait until next db change or reload
                         successful = true;
+                        if (getDebugLevel() & MIN_DETAIL_FDR_DEBUGLEVEL)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " No (" << aDirection << ") points defined for use by interface " << getInterfaceName() << endl;
+                        }
                     }
                 }
-            }   // end for interator
-
-            // set this to null, the memory is now assigned to the other point
-            pointList=NULL;
-
-            if (!translatedPoint)
+            }
+            else
             {
-                if (!foundPoint)
-                {
-                    // means there was nothing in the list, wait until next db change or reload
-                    successful = true;
-                    if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " No (" << aDirection << ") points defined for use by interface " << getInterfaceName() << endl;
-                    }
-                }
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Error loading (" << aDirection << ") points for " << getInterfaceName() << " : Empty data set returned " << endl;
+                successful = false;
             }
         }
         else

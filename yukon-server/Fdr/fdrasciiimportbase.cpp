@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrasciiimportbase.cpp-arc  $
-*    REVISION     :  $Revision: 1.3 $
-*    DATE         :  $Date: 2002/04/16 15:58:31 $
+*    REVISION     :  $Revision: 1.4 $
+*    DATE         :  $Date: 2002/08/06 22:00:51 $
 *
 *
 *    AUTHOR: David Sutton
@@ -20,6 +20,11 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrasciiimportbase.cpp,v $
+      Revision 1.4  2002/08/06 22:00:51  dsutton
+      Programming around the error that happens if the dataset is empty when it is
+      returned from the database and shouldn't be.  If our point list had more than
+      two entries in it before, we fail the attempt and try again in 60 seconds
+
       Revision 1.3  2002/04/16 15:58:31  softwarebuild
       20020416_1031_2_16
 
@@ -64,7 +69,12 @@ CtiFDRAsciiImportBase::CtiFDRAsciiImportBase(RWCString &aInterface)
     iImportInterval(900),
     iLinkStatusID(0),
     iDeleteFileAfterImportFlag(true)
-{   
+{ 
+    // init these lists so they have something
+    CtiFDRManager   *recList = new CtiFDRManager(getInterfaceName(),RWCString(FDR_INTERFACE_RECEIVE)); 
+    getReceiveFromList().setPointList (recList);
+    recList = NULL;
+
 }
 
 
@@ -236,74 +246,91 @@ bool CtiFDRAsciiImportBase::loadTranslationLists()
         // if status is ok, we were able to read the database at least
         if (pointList->loadPointList().errorCode() == (RWDBStatus::ok))
         {
-
-            // lock the receive list and remove the old one
-            CtiLockGuard<CtiMutex> receiveGuard(getReceiveFromList().getMutex());  
-            if (getReceiveFromList().getPointList() != NULL)
+            /**************************************
+            * seeing occasional problems where we get empty data sets back
+            * and there should be info in them,  we're checking this to see if
+            * is reasonable if the list may now be empty
+            * the 2 entry thing is completly arbitrary
+            ***************************************
+            */
+            if (((pointList->entries() == 0) && (getReceiveFromList().getPointList()->entries() <= 2)) ||
+                (pointList->entries() > 0))
             {
-                getReceiveFromList().deletePointList();
-            }
-            getReceiveFromList().setPointList (pointList);
 
-            // get iterator on send list
-            CtiFDRManager::CTIFdrPointIterator  myIterator(getReceiveFromList().getPointList()->getMap());
-            int x;
-
-            for ( ; myIterator(); )
-            {
-                foundPoint = true;
-                translationPoint = myIterator.value();
-
-                for (x=0; x < translationPoint->getDestinationList().size(); x++)
+                // lock the receive list and remove the old one
+                CtiLockGuard<CtiMutex> receiveGuard(getReceiveFromList().getMutex());  
+                if (getReceiveFromList().getPointList() != NULL)
                 {
-                    if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
+                    getReceiveFromList().deletePointList();
+                }
+                getReceiveFromList().setPointList (pointList);
+
+                // get iterator on send list
+                CtiFDRManager::CTIFdrPointIterator  myIterator(getReceiveFromList().getPointList()->getMap());
+                int x;
+
+                for ( ; myIterator(); )
+                {
+                    foundPoint = true;
+                    translationPoint = myIterator.value();
+
+                    for (x=0; x < translationPoint->getDestinationList().size(); x++)
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << "Parsing Yukon Point ID " << translationPoint->getPointID();
-                        dout << " translate: " << translationPoint->getDestinationList()[x].getTranslation() << endl;
-                    }
-                    /********************
-                    * for our current FTP interfaces, the points are being retrieved only
-                    * and have specific names already assigned them
-                    *********************
-                    */
-                    RWCTokenizer nextTranslate(translationPoint->getDestinationList()[x].getTranslation());
-
-                    if (!(tempString1 = nextTranslate(";")).isNull())
-                    {
-                        RWCTokenizer nextTempToken(tempString1);
-
-                        // do not care about the first part
-                        nextTempToken(":");
-
-                        tempString2 = nextTempToken(";");
-                        tempString2(0,tempString2.length()) = tempString2 (1,(tempString2.length()-1));
-
-                        // now we have a point id
-                        if ( !tempString2.isNull() )
+                        if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
                         {
-                            translationPoint->getDestinationList()[x].setTranslation (tempString2);
-                            successful = true;
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << "Parsing Yukon Point ID " << translationPoint->getPointID();
+                            dout << " translate: " << translationPoint->getDestinationList()[x].getTranslation() << endl;
                         }
-                    }   // first token invalid
-                }
-            }   // end for interator
+                        /********************
+                        * for our current FTP interfaces, the points are being retrieved only
+                        * and have specific names already assigned them
+                        *********************
+                        */
+                        RWCTokenizer nextTranslate(translationPoint->getDestinationList()[x].getTranslation());
 
-            pointList=NULL;
-            if (!successful)
-            {
-                if (!foundPoint)
+                        if (!(tempString1 = nextTranslate(";")).isNull())
+                        {
+                            RWCTokenizer nextTempToken(tempString1);
+
+                            // do not care about the first part
+                            nextTempToken(":");
+
+                            tempString2 = nextTempToken(";");
+                            tempString2(0,tempString2.length()) = tempString2 (1,(tempString2.length()-1));
+
+                            // now we have a point id
+                            if ( !tempString2.isNull() )
+                            {
+                                translationPoint->getDestinationList()[x].setTranslation (tempString2);
+                                successful = true;
+                            }
+                        }   // first token invalid
+                    }
+                }   // end for interator
+
+                pointList=NULL;
+                if (!successful)
                 {
-                    // means there was nothing in the list, wait until next db change or reload
-                    successful = true;
-                    if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
+                    if (!foundPoint)
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " No points defined for use by interface " << getInterfaceName() << endl;
+                        // means there was nothing in the list, wait until next db change or reload
+                        successful = true;
+                        if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " No points defined for use by interface " << getInterfaceName() << endl;
+                        }
                     }
                 }
+                setLinkStatusID(getClientLinkStatusID (getInterfaceName()));
             }
-            setLinkStatusID(getClientLinkStatusID (getInterfaceName()));
+            else
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Error loading (Receive) points for " << getInterfaceName() << " : Empty data set returned " << endl;
+                successful = false;
+            }
         }
         else
         {

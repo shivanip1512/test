@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrinet.cpp-arc  $
-*    REVISION     :  $Revision: 1.3 $
-*    DATE         :  $Date: 2002/04/16 15:58:33 $
+*    REVISION     :  $Revision: 1.4 $
+*    DATE         :  $Date: 2002/08/06 22:02:21 $
 *
 *
 *    AUTHOR: David Sutton
@@ -23,6 +23,11 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrinet.cpp,v $
+      Revision 1.4  2002/08/06 22:02:21  dsutton
+      Programming around the error that happens if the dataset is empty when it is
+      returned from the database and shouldn't be.  If our point list had more than
+      two entries in it before, we fail the attempt and try again in 60 seconds
+
       Revision 1.3  2002/04/16 15:58:33  softwarebuild
       20020416_1031_2_16
 
@@ -147,7 +152,16 @@ const CHAR * CtiFDR_Inet::KEY_QUEUE_FLUSH_RATE = "FDR_INET_QUEUE_FLUSH_RATE";
 // Constructors, Destructor, and Operators
 CtiFDR_Inet::CtiFDR_Inet(RWCString aName)
 : CtiFDRSocketInterface(aName)
-{   
+{ 
+    // init these lists so they have something
+    CtiFDRManager   *recList = new CtiFDRManager(getInterfaceName(),RWCString(FDR_INTERFACE_RECEIVE)); 
+    getReceiveFromList().setPointList (recList);
+    recList = NULL;
+
+    CtiFDRManager   *sendList = new CtiFDRManager(getInterfaceName(), RWCString(FDR_INTERFACE_SEND));
+    getSendToList().setPointList (sendList);
+    sendList = NULL;
+
 }
 
 
@@ -399,97 +413,115 @@ bool CtiFDR_Inet::loadList(RWCString &aDirection,  CtiFDRPointList &aList)
         // if status is ok, we were able to read the database at least
         if (pointList->loadPointList().errorCode() == (RWDBStatus::ok))
         {
-            // lock the list I'm inserting into so it doesn't get deleted on me
-            CtiLockGuard<CtiMutex> sendGuard(aList.getMutex());  
-            if (aList.getPointList() != NULL)
+            /**************************************
+            * seeing occasional problems where we get empty data sets back
+            * and there should be info in them,  we're checking this to see if
+            * is reasonable if the list may now be empty
+            * the 2 entry thing is completly arbitrary
+            ***************************************
+            */
+            if (((pointList->entries() == 0) && (aList.getPointList()->entries() <= 2)) ||
+                (pointList->entries() > 0))
             {
-                aList.deletePointList();
-            }
-            aList.setPointList (pointList);
-
-            // get iterator on send list
-            CtiFDRManager::CTIFdrPointIterator  myIterator(pointList->getMap());
-
-            for ( ; myIterator(); )
-            {
-                foundPoint = true;
-
-                translationPoint = myIterator.value();
-
-                for (int x=0; x < translationPoint->getDestinationList().size(); x++)
+    
+                // lock the list I'm inserting into so it doesn't get deleted on me
+                CtiLockGuard<CtiMutex> sendGuard(aList.getMutex());  
+                if (aList.getPointList() != NULL)
                 {
-                    RWCTokenizer nextTranslate(translationPoint->getDestinationList()[x].getTranslation());
-
-                    if (!(tempString1 = nextTranslate(";")).isNull())
+                    aList.deletePointList();
+                }
+                aList.setPointList (pointList);
+    
+                // get iterator on send list
+                CtiFDRManager::CTIFdrPointIterator  myIterator(pointList->getMap());
+    
+                for ( ; myIterator(); )
+                {
+                    foundPoint = true;
+    
+                    translationPoint = myIterator.value();
+    
+                    for (int x=0; x < translationPoint->getDestinationList().size(); x++)
                     {
-                        RWCTokenizer nextTempToken(tempString1);
-
-                        // do not care about the first part
-                        nextTempToken(":");
-
-                        tempString2 = nextTempToken(":");
-
-                        // now we have a device name
-                        if ( !tempString2.isNull() )
+                        RWCTokenizer nextTranslate(translationPoint->getDestinationList()[x].getTranslation());
+    
+                        if (!(tempString1 = nextTranslate(";")).isNull())
                         {
-                            // blank pad device
-                            tempString2.resize(20);
-                            translationName = tempString2;
-
-                            // next token is the point name
-                            if (!(tempString1 = nextTranslate(";")).isNull())
+                            RWCTokenizer nextTempToken(tempString1);
+    
+                            // do not care about the first part
+                            nextTempToken(":");
+    
+                            tempString2 = nextTempToken(":");
+    
+                            // now we have a device name
+                            if ( !tempString2.isNull() )
                             {
-                                RWCTokenizer nextTempToken(tempString1);
-
-                                // do not care about the first part
-                                nextTempToken(":");
-
-                                tempString2 = nextTempToken(":");
-
-                                // now we have a point name:
-                                if ( !tempString2.isNull() )
+                                // blank pad device
+                                tempString2.resize(20);
+                                translationName = tempString2;
+    
+                                // next token is the point name
+                                if (!(tempString1 = nextTranslate(";")).isNull())
                                 {
-                                    tempString2.resize(20);
-                                    translationName += tempString2;
-                                    translationName.toUpper();
-
-                                    translationPoint->getDestinationList()[x].setTranslation(translationName);
-                                    translationPoint->getDestinationList()[x].getDestination().toUpper();
-                                    successful = true;
-
-                                    if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
+                                    RWCTokenizer nextTempToken(tempString1);
+    
+                                    // do not care about the first part
+                                    nextTempToken(":");
+    
+                                    tempString2 = nextTempToken(":");
+    
+                                    // now we have a point name:
+                                    if ( !tempString2.isNull() )
                                     {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << RWTime() << " Point ID " << translationPoint->getPointID();
-                                        dout << " translated: " << translationName << " for " << translationPoint->getDestinationList()[x].getDestination() << endl;
-                                    }
-
-                                }   // point id invalid
-
-                            }   // second token invalid
-
-                        }   // category invalid
-
-                    }   // first token invalid
-
-                }   // end of while entries
-            }   // end for interator
-
-            // set this to null, the memory is now assigned to the other point
-            pointList=NULL;
-
-            if (!successful)
-            {
-                if (!foundPoint)
+                                        tempString2.resize(20);
+                                        translationName += tempString2;
+                                        translationName.toUpper();
+    
+                                        translationPoint->getDestinationList()[x].setTranslation(translationName);
+                                        translationPoint->getDestinationList()[x].getDestination().toUpper();
+                                        successful = true;
+    
+                                        if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
+                                        {
+                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                            dout << RWTime() << " Point ID " << translationPoint->getPointID();
+                                            dout << " translated: " << translationName << " for " << translationPoint->getDestinationList()[x].getDestination() << endl;
+                                        }
+    
+                                    }   // point id invalid
+    
+                                }   // second token invalid
+    
+                            }   // category invalid
+    
+                        }   // first token invalid
+    
+                    }   // end of while entries
+                }   // end for interator
+    
+                // set this to null, the memory is now assigned to the other point
+                pointList=NULL;
+    
+                if (!successful)
                 {
-                    // means there was nothing in the list, wait until next db change or reload
-                    successful = true;
-                    if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
+                    if (!foundPoint)
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " No " << aDirection << " points defined for use by interface " << getInterfaceName() << endl;
+                        // means there was nothing in the list, wait until next db change or reload
+                        successful = true;
+                        if (getDebugLevel() & MIN_DETAIL_FDR_DEBUGLEVEL)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " No " << aDirection << " points defined for use by interface " << getInterfaceName() << endl;
+                        }
                     }
                 }
+            }
+            else
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Error loading (" << aDirection << ") points for " << getInterfaceName() << " : Empty data set returned " << endl;
+                successful = false;
             }
         }
         else

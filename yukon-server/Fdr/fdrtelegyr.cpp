@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2002/07/12 18:30:33 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2002/08/06 22:04:33 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -921,113 +921,133 @@ bool CtiFDRTelegyr::loadLists( CtiFDRPointList &aList )
 
       if( pointList->loadPointList().errorCode() == ( RWDBStatus::ok ) )
       {
-         CtiLockGuard<CtiMutex> sendGuard( aList.getMutex() );
-         if( aList.getPointList() != NULL )
-         {
-            aList.deletePointList();
-         }
-         aList.setPointList( pointList );
 
-         // get iterator on list
-         CtiFDRManager::CTIFdrPointIterator myIterator( aList.getPointList()->getMap() );
-         int x;
+          /**************************************
+          * seeing occasional problems where we get empty data sets back
+          * and there should be info in them,  we're checking this to see if
+          * is reasonable if the list may now be empty
+          * the 2 entry thing is completly arbitrary
+          ***************************************
+          */
+          if (((pointList->entries() == 0) && (aList.getPointList()->entries() <= 2)) ||
+              (pointList->entries() > 0))
+          {
 
-         //iterate through all our points in the list
-         for( ; myIterator(); )
-         {
-            foundPoint = true;
-            translationPoint = myIterator.value();
+              CtiLockGuard<CtiMutex> sendGuard( aList.getMutex() );
+              if( aList.getPointList() != NULL )
+              {
+                 aList.deletePointList();
+              }
+              aList.setPointList( pointList );
 
-            //iterate through all our destinations per point (should have 1 for telegyr)
-            for( x = 0; x < translationPoint->getDestinationList().size(); x++ )
-            {
-               //put in debug output from cygnet
+              // get iterator on list
+              CtiFDRManager::CTIFdrPointIterator myIterator( aList.getPointList()->getMap() );
+              int x;
 
-               // there should only be one destination for telegyr points
-               RWCTokenizer nextTranslate( translationPoint->getDestinationList()[x].getTranslation() );
+              //iterate through all our points in the list
+              for( ; myIterator(); )
+              {
+                 foundPoint = true;
+                 translationPoint = myIterator.value();
 
-               //note: we're making a brand new token (string) out of the data before the ';'
-               if( !(tempString1 = nextTranslate( ";" ) ).isNull() )
-               {
-                  // this in the form of POINTID:xxxx
-                  RWCTokenizer nextTempToken( tempString1 );
+                 //iterate through all our destinations per point (should have 1 for telegyr)
+                 for( x = 0; x < translationPoint->getDestinationList().size(); x++ )
+                 {
+                    //put in debug output from cygnet
 
-                  // do not care about the first part so toss it
-                  nextTempToken( ":" );
+                    // there should only be one destination for telegyr points
+                    RWCTokenizer nextTranslate( translationPoint->getDestinationList()[x].getTranslation() );
 
-                  //now we find the end of the string
-                  pointStr = nextTempToken(":");
+                    //note: we're making a brand new token (string) out of the data before the ';'
+                    if( !(tempString1 = nextTranslate( ";" ) ).isNull() )
+                    {
+                       // this in the form of POINTID:xxxx
+                       RWCTokenizer nextTempToken( tempString1 );
 
-                  // now we have a pointid with a :
-                  if( !pointStr.isNull() )
-                  {
-                     successful = true;
+                       // do not care about the first part so toss it
+                       nextTempToken( ":" );
 
-                     if( getDebugLevel() & DETAIL_FDR_DEBUGLEVEL )
-                     {
-                        CtiLockGuard<CtiLogger> doubt_guard( dout );
-                        dout << RWTime::now() << " - Point with Pointid: " << pointStr << " found - " << endl;
-                     }
-                  }
-               }
+                       //now we find the end of the string
+                       pointStr = nextTempToken(":");
 
-               //note: we're making a brand new token (string) out of the data before the ';'
-               if( !(tempString1 = nextTranslate( ";" ) ).isNull() )
-               {
-                  // this in the form of GROUP:xxxx
-                  RWCTokenizer nextTempToken( tempString1 );
+                       // now we have a pointid with a :
+                       if( !pointStr.isNull() )
+                       {
+                          successful = true;
 
-                  // do not care about the first part so toss it
-                  nextTempToken( ":" );
+                          if( getDebugLevel() & DETAIL_FDR_DEBUGLEVEL )
+                          {
+                             CtiLockGuard<CtiLogger> doubt_guard( dout );
+                             dout << RWTime::now() << " - Point with Pointid: " << pointStr << " found - " << endl;
+                          }
+                       }
+                    }
 
-                  //now we find the end of the string
-                  groupStr = nextTempToken(":");
+                    //note: we're making a brand new token (string) out of the data before the ';'
+                    if( !(tempString1 = nextTranslate( ";" ) ).isNull() )
+                    {
+                       // this in the form of GROUP:xxxx
+                       RWCTokenizer nextTempToken( tempString1 );
 
-                  // now we have a groupid with a ':'
-                  if( !groupStr.isNull() )
-                  {
-                     successful = true;
+                       // do not care about the first part so toss it
+                       nextTempToken( ":" );
 
-                     if( getDebugLevel() & DETAIL_FDR_DEBUGLEVEL )
-                     {
-                        CtiLockGuard<CtiLogger> doubt_guard( dout );
-                        dout << RWTime::now() << " - Point with Group: " << groupStr << " found - " << endl;
-                     }
-                  }
-               }
+                       //now we find the end of the string
+                       groupStr = nextTempToken(":");
 
-               translationPoint->getDestinationList()[x].setTranslation( pointStr );
-            }
+                       // now we have a groupid with a ':'
+                       if( !groupStr.isNull() )
+                       {
+                          successful = true;
 
-            int i;
+                          if( getDebugLevel() & DETAIL_FDR_DEBUGLEVEL )
+                          {
+                             CtiLockGuard<CtiLogger> doubt_guard( dout );
+                             dout << RWTime::now() << " - Point with Group: " << groupStr << " found - " << endl;
+                          }
+                       }
+                    }
 
-            bool found = false;
+                    translationPoint->getDestinationList()[x].setTranslation( pointStr );
+                 }
 
-            //we need to spin through the list
-            for( i = 0; i <  _controlCenter.getTelegyrGroupList().size(); i++ )
-            {
-               //and add our FDRPoints to the groups
-               if( _controlCenter.getTelegyrGroupList()[i].getGroupName() == groupStr )
-               {
-                  _controlCenter.getTelegyrGroupList()[i].getPointList().push_back( *translationPoint );
-               }
-            }
+                 int i;
 
-            pointList=NULL;
+                 bool found = false;
 
-            //put in debug output from cygnet
-         }
+                 //we need to spin through the list
+                 for( i = 0; i <  _controlCenter.getTelegyrGroupList().size(); i++ )
+                 {
+                    //and add our FDRPoints to the groups
+                    if( _controlCenter.getTelegyrGroupList()[i].getGroupName() == groupStr )
+                    {
+                       _controlCenter.getTelegyrGroupList()[i].getPointList().push_back( *translationPoint );
+                    }
+                 }
 
-         if( !successful )
-         {
-            if( !foundPoint )
-            {
-               // means there was nothing in the list, wait until next db change or reload
-               successful = true;
+                 pointList=NULL;
 
-               //put in debug output from cygnet
-            }
-         }
+                 //put in debug output from cygnet
+              }
+
+              if( !successful )
+              {
+                 if( !foundPoint )
+                 {
+                    // means there was nothing in the list, wait until next db change or reload
+                    successful = true;
+
+                    //put in debug output from cygnet
+                 }
+              }
+          }
+          else
+          {
+              CtiLockGuard<CtiLogger> doubt_guard(dout);
+              dout << RWTime() << " Error loading (Receive) points for " << getInterfaceName() << " : Empty data set returned " << endl;
+              successful = false;
+          }
+
       }
       else
       {
