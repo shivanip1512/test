@@ -150,7 +150,7 @@ void CtiCapController::controlLoop()
     try
     {
         CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-        registerForPoints(store);
+        registerForPoints(*store->getCCSubstationBuses(RWDBDateTime().seconds()));
         store->setReregisterForPoints(FALSE);
 
         RWDBDateTime currentDateTime;
@@ -159,9 +159,13 @@ void CtiCapController::controlLoop()
         CtiCCSubstationBusMsg* substationBusMsg = new CtiCCSubstationBusMsg();
         while(TRUE)
         {
+            currentDateTime.now();
+            ULONG secondsFromBeginningOfDay = (currentDateTime.hour() * 3600) + (currentDateTime.minute() * 60) + currentDateTime.second();
+            ULONG secondsFrom1901 = currentDateTime.seconds();
+
             if(_CC_DEBUG)
             {
-                if( (RWDBDateTime().seconds()%1800) == 0 )
+                if( (secondsFromBeginningOfDay%1800) == 0 )
                 {//every five minutes tell the user if the control thread is still alive
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << RWTime() << " - Controller thread pulse" << endl;
@@ -169,32 +173,14 @@ void CtiCapController::controlLoop()
             }
 
             rwRunnable().serviceCancellation();
-            try
-            {
-                if( !store->isValid() )
-                {
-                    store->dumpAllDynamicData();
-                    CtiCCExecutorFactory f;
-                    RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > queue = new CtiCountedPCPtrQueue<RWCollectable>();
-                    CtiCCExecutor* executor = f.createExecutor(new CtiCCCapBankStatesMsg(store->getCCCapBankStates()));
-                    executor->Execute(queue);
-                    delete executor;
-                    executor = f.createExecutor(new CtiCCGeoAreasMsg(store->getCCGeoAreas()));
-                    executor->Execute(queue);
-                    delete executor;
-                }
-            }
-            catch(...)
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-            }
+
+            RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(secondsFrom1901);
 
             try
             {
                 if( store->getReregisterForPoints() )
                 {
-                    registerForPoints(store);
+                    registerForPoints(ccSubstationBuses);
                     store->setReregisterForPoints(FALSE);
                 }
             }
@@ -206,8 +192,8 @@ void CtiCapController::controlLoop()
 
             try
             {
-                checkDispatch();
-                checkPIL();
+                checkDispatch(secondsFrom1901);
+                checkPIL(secondsFrom1901);
             }
             catch(...)
             {
@@ -215,12 +201,9 @@ void CtiCapController::controlLoop()
                 dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
             }
 
-            RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses();
-
             RWOrdered& pointChanges = multiDispatchMsg->getData();
             RWOrdered& pilMessages = multiPilMsg->getData();
             RWOrdered& substationBusChanges = substationBusMsg->getCCSubstationBuses();
-            currentDateTime.now();
             for(UINT i=0;i<ccSubstationBuses.entries();i++)
             {
                 CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses[i];
@@ -515,7 +498,7 @@ CtiConnection* CtiCapController::getPILConnection()
 
     Reads off the Dispatch connection and handles messages accordingly.
 ---------------------------------------------------------------------------*/
-void CtiCapController::checkDispatch()
+void CtiCapController::checkDispatch(ULONG secondsFrom1901)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     BOOL done = FALSE;
@@ -525,7 +508,7 @@ void CtiCapController::checkDispatch()
 
         if ( in != NULL )
         {
-            parseMessage(in);
+            parseMessage(in,secondsFrom1901);
             delete in;
         }
         else
@@ -539,7 +522,7 @@ void CtiCapController::checkDispatch()
 
     Reads off the PIL connection and handles messages accordingly.
 ---------------------------------------------------------------------------*/
-void CtiCapController::checkPIL()
+void CtiCapController::checkPIL(ULONG secondsFrom1901)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     BOOL done = FALSE;
@@ -549,7 +532,7 @@ void CtiCapController::checkPIL()
 
         if ( in != NULL )
         {
-            parseMessage(in);
+            parseMessage(in,secondsFrom1901);
             delete in;
         }
         else
@@ -563,7 +546,7 @@ void CtiCapController::checkPIL()
 
     Registers for all points of the substations buses.
 ---------------------------------------------------------------------------*/
-void CtiCapController::registerForPoints(CtiCCSubstationBusStore* store)
+void CtiCapController::registerForPoints(const RWOrdered& subBuses)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     //if( _CC_DEBUG )
@@ -572,11 +555,10 @@ void CtiCapController::registerForPoints(CtiCCSubstationBusStore* store)
         dout << RWTime() << " - Registering for point changes." << endl;
     }
 
-    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses();
     CtiPointRegistrationMsg* regMsg = new CtiPointRegistrationMsg();
-    for(UINT i=0;i<ccSubstationBuses.entries();i++)
+    for(UINT i=0;i<subBuses.entries();i++)
     {
-        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses[i];
+        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)subBuses[i];
 
         if( currentSubstationBus->getCurrentVarLoadPointId() > 0 )
         {
@@ -635,7 +617,7 @@ void CtiCapController::registerForPoints(CtiCCSubstationBusStore* store)
 
     Reads off the Dispatch connection and handles messages accordingly.
 ---------------------------------------------------------------------------*/
-void CtiCapController::parseMessage(RWCollectable *message)
+void CtiCapController::parseMessage(RWCollectable *message, ULONG secondsFrom1901)
 {
     try
     {
@@ -663,61 +645,20 @@ void CtiCapController::parseMessage(RWCollectable *message)
                             dout << RWTime() << " - Relavant database change.  Setting reload flag." << endl;
                         }
     
-                        CtiCCSubstationBusStore::getInstance()->setValid(FALSE);
-                        CtiCCSubstationBusStore::getInstance()->setReregisterForPoints(TRUE);
-                        if( dbChange->getDatabase() == ChangeStateGroupDb )
-                        {
-    
-                            CtiCCExecutorFactory f;
-                            RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > queue = new CtiCountedPCPtrQueue<RWCollectable>();
-                            CtiCCExecutor* executor = f.createExecutor(new CtiCCCapBankStatesMsg(CtiCCSubstationBusStore::getInstance()->getCCCapBankStates()));
-                            try
-                            {
-                                executor->Execute(queue);
-                                delete executor;
-                            }
-                            catch(...)
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                            }
-                        }
-                        else
-                        {
-                            CtiCCExecutorFactory f;
-                            RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > queue = new CtiCountedPCPtrQueue<RWCollectable>();
-                            CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-                            CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationBusMsg(*(store->getCCSubstationBuses())));
-                            try
-                            {
-                                executor->Execute(queue);
-                                delete executor;
-                                executor = f.createExecutor(new CtiCCCapBankStatesMsg(store->getCCCapBankStates()));
-                                executor->Execute(queue);
-                                delete executor;
-                                executor = f.createExecutor(new CtiCCGeoAreasMsg(store->getCCGeoAreas()));
-                                executor->Execute(queue);
-                            }
-                            catch(...)
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                            }
-                            delete executor;
-                        }
+                        CtiCCSubstationBusStore::getInstance()->setValid(false);
                     }
                 }
                 break;
             case MSG_POINTDATA:
                 {
                     pData = (CtiPointDataMsg *)message;
-                    pointDataMsg( pData->getId(), pData->getValue(), pData->getTags(), pData->getTime() );
+                    pointDataMsg( pData->getId(), pData->getValue(), pData->getTags(), pData->getTime(), secondsFrom1901 );
                 }
                 break;
             case MSG_PCRETURN:
                 {
                     pcReturn = (CtiReturnMsg *)message;
-                    porterReturnMsg( pcReturn->DeviceId(), pcReturn->CommandString(), pcReturn->Status(), pcReturn->ResultString() );
+                    porterReturnMsg( pcReturn->DeviceId(), pcReturn->CommandString(), pcReturn->Status(), pcReturn->ResultString(), secondsFrom1901 );
                 }
                 break;
             case MSG_COMMAND:
@@ -755,14 +696,14 @@ void CtiCapController::parseMessage(RWCollectable *message)
                     RWOrdered& temp = msgMulti->getData( );
                     for(i=0;i<temp.entries( );i++)
                     {
-                        parseMessage(temp[i]);
+                        parseMessage(temp[i],secondsFrom1901);
                     }
                 }
                 break;
             case MSG_SIGNAL:
                 {
                     signal = (CtiSignalMsg *)message;
-                    signalMsg( signal->getId(), signal->getTags(), signal->getText(), signal->getAdditionalInfo() );
+                    signalMsg( signal->getId(), signal->getTags(), signal->getText(), signal->getAdditionalInfo(), secondsFrom1901 );
                 }
                 break;
             default:
@@ -788,22 +729,19 @@ void CtiCapController::parseMessage(RWCollectable *message)
 
     Handles point data messages and updates substation bus point values.
 ---------------------------------------------------------------------------*/
-void CtiCapController::pointDataMsg( long pointID, double value, unsigned tags, RWTime& timestamp )
+void CtiCapController::pointDataMsg( long pointID, double value, unsigned tags, RWTime& timestamp, ULONG secondsFrom1901 )
 {
     if( _CC_DEBUG )
     {
         char tempchar[80];
-        RWCString outString = "Point data message received from Dispatch. ID:";
+        RWCString outString = "Point Data, ID:";
         _ltoa(pointID,tempchar,10);
         outString += tempchar;
-        outString += " Value:";
+        outString += " Val:";
         int precision = 3;
         _snprintf(tempchar,80,"%.*f",precision,value);
         outString += tempchar;
-        outString += " Tags:";
-        _ultoa(tags,tempchar,10);
-        outString += tempchar;
-        outString += " Timestamp: ";
+        outString += " Time: ";
         outString += RWDBDateTime(timestamp).asString();
 
         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -813,7 +751,7 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned tags, 
     BOOL found = FALSE;
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
-    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses();
+    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(secondsFrom1901);
 
     for(int i=0;i<ccSubstationBuses.entries();i++)
     {
@@ -838,14 +776,45 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned tags, 
             {
                 sendMessageToDispatch(new CtiPointDataMsg(currentSubstationBus->getEstimatedVarLoadPointId(),currentSubstationBus->getEstimatedVarLoadPointValue(),NormalQuality,AnalogPointType));
             }
+
+            if( currentSubstationBus->getCurrentWattLoadPointId() > 0 )
+            {
+                if( currentSubstationBus->getControlUnits() == CtiCCSubstationBus::PF_BY_KQControlUnits )
+                {
+                    currentSubstationBus->setCurrentVarLoadPointValue(currentSubstationBus->convertKQToKVAR(value,currentSubstationBus->getCurrentWattLoadPointValue()));
+                }
+                currentSubstationBus->setPowerFactorValue(currentSubstationBus->calculatePowerFactor(currentSubstationBus->getCurrentVarLoadPointValue(),currentSubstationBus->getCurrentWattLoadPointValue()));
+            }
+            else if( currentSubstationBus->getControlUnits() != CtiCCSubstationBus::KVARControlUnits )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << RWTime() << " - No Watt Point, cannot calculate power factor, in: " << __FILE__ << " at:" << __LINE__ << endl;
+            }
             found = TRUE;
             break;
         }
         else if( currentSubstationBus->getCurrentWattLoadPointId() == pointID )
         {
+            if( currentSubstationBus->getControlUnits() == CtiCCSubstationBus::PF_BY_KQControlUnits )
+            {
+                DOUBLE tempKQ = currentSubstationBus->convertKVARToKQ(value,currentSubstationBus->getCurrentWattLoadPointValue());
+                currentSubstationBus->setCurrentVarLoadPointValue(currentSubstationBus->convertKQToKVAR(tempKQ,value));
+            }
+
             currentSubstationBus->setCurrentWattLoadPointValue(value);
             currentSubstationBus->setBusUpdatedFlag(TRUE);
-            currentSubstationBus->figureEstimatedVarLoadPointValue();
+
+            if( currentSubstationBus->getCurrentVarLoadPointId() > 0 )
+            {
+                currentSubstationBus->setPowerFactorValue(currentSubstationBus->calculatePowerFactor(currentSubstationBus->getCurrentVarLoadPointValue(),currentSubstationBus->getCurrentWattLoadPointValue()));
+                if( currentSubstationBus->getControlInterval() == 0 )
+                    currentSubstationBus->setNewPointDataReceivedFlag(TRUE);
+            }
+            else if( currentSubstationBus->getControlUnits() != CtiCCSubstationBus::KVARControlUnits )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << RWTime() << " - No Var Point, cannot calculate power factor, in: " << __FILE__ << " at:" << __LINE__ << endl;
+            }
             found = TRUE;
             break;
         }
@@ -870,19 +839,49 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned tags, 
                     }
                     currentFeeder->setCurrentVarLoadPointValue(value);
                     currentSubstationBus->setBusUpdatedFlag(TRUE);
-                    currentFeeder->figureEstimatedVarLoadPointValue();
                     if( currentFeeder->getEstimatedVarLoadPointId() > 0 )
                     {
                         sendMessageToDispatch(new CtiPointDataMsg(currentFeeder->getEstimatedVarLoadPointId(),currentFeeder->getEstimatedVarLoadPointValue(),NormalQuality,AnalogPointType));
+                    }
+
+                    if( currentFeeder->getCurrentWattLoadPointId() > 0 )
+                    {
+                        if( currentSubstationBus->getControlUnits() == CtiCCSubstationBus::PF_BY_KQControlUnits )
+                        {
+                            currentFeeder->setCurrentVarLoadPointValue(currentSubstationBus->convertKQToKVAR(value,currentFeeder->getCurrentWattLoadPointValue()));
+                        }
+                        currentFeeder->setPowerFactorValue(currentSubstationBus->calculatePowerFactor(currentFeeder->getCurrentVarLoadPointValue(),currentFeeder->getCurrentWattLoadPointValue()));
+                    }
+                    else if( currentSubstationBus->getControlUnits() != CtiCCSubstationBus::KVARControlUnits )
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << RWTime() << " - No Watt Point, cannot calculate power factor, in: " << __FILE__ << " at:" << __LINE__ << endl;
                     }
                     found = TRUE;
                     break;
                 }
                 else if( currentFeeder->getCurrentWattLoadPointId() == pointID )
                 {
+                    if( currentSubstationBus->getControlUnits() == CtiCCSubstationBus::PF_BY_KQControlUnits )
+                    {
+                        DOUBLE tempKQ = currentSubstationBus->convertKVARToKQ(value,currentFeeder->getCurrentWattLoadPointValue());
+                        currentFeeder->setCurrentVarLoadPointValue(currentSubstationBus->convertKQToKVAR(tempKQ,value));
+                    }
+
                     currentFeeder->setCurrentWattLoadPointValue(value);
                     currentSubstationBus->setBusUpdatedFlag(TRUE);
-                    currentFeeder->figureEstimatedVarLoadPointValue();
+
+                    if( currentSubstationBus->getCurrentVarLoadPointId() > 0 )
+                    {
+                        currentFeeder->setPowerFactorValue(currentSubstationBus->calculatePowerFactor(currentFeeder->getCurrentVarLoadPointValue(),currentFeeder->getCurrentWattLoadPointValue()));
+                        if( currentSubstationBus->getControlInterval() == 0 )
+                            currentSubstationBus->setNewPointDataReceivedFlag(TRUE);
+                    }
+                    else if( currentSubstationBus->getControlUnits() != CtiCCSubstationBus::KVARControlUnits )
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << RWTime() << " - No Var Point, cannot calculate power factor, in: " << __FILE__ << " at:" << __LINE__ << endl;
+                    }
                     found = TRUE;
                     break;
                 }
@@ -941,7 +940,7 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned tags, 
     Handles porter return messages and updates the status of substation bus
     cap bank controls.
 ---------------------------------------------------------------------------*/
-void CtiCapController::porterReturnMsg( long deviceId, RWCString commandString, int status, RWCString resultString )
+void CtiCapController::porterReturnMsg( long deviceId, RWCString commandString, int status, RWCString resultString, ULONG secondsFrom1901 )
 {
     /*if( _CC_DEBUG )
     {
@@ -951,7 +950,7 @@ void CtiCapController::porterReturnMsg( long deviceId, RWCString commandString, 
 
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
-    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses();
+    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(secondsFrom1901);
 
     BOOL found = FALSE;
     for(int i=0;i<ccSubstationBuses.entries();i++)
@@ -1024,9 +1023,9 @@ void CtiCapController::porterReturnMsg( long deviceId, RWCString commandString, 
 
     Handles signal messages and updates substation bus tags.
 ---------------------------------------------------------------------------*/
-void CtiCapController::signalMsg( long pointID, unsigned tags, RWCString text, RWCString additional )
+void CtiCapController::signalMsg( long pointID, unsigned tags, RWCString text, RWCString additional, ULONG secondsFrom1901 )
 {
-    if( _CC_DEBUG )
+    /*if( _CC_DEBUG )
     {
         char tempchar[64] = "";
         RWCString outString = "Signal Message received. Point ID:";
@@ -1039,12 +1038,12 @@ void CtiCapController::signalMsg( long pointID, unsigned tags, RWCString text, R
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " - " << outString.data() << "  Text: "
                       << text << " Additional Info: " << additional << endl;
-    }
+    }*/
 
     BOOL found = FALSE;
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
-    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses();
+    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(secondsFrom1901);
 
     for(int i=0;i<ccSubstationBuses.entries();i++)
     {

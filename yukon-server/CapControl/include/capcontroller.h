@@ -64,13 +64,13 @@ private:
 
     CtiConnection* getPILConnection();
     CtiConnection* getDispatchConnection();
-    void checkDispatch();
-    void checkPIL();
-    void registerForPoints(CtiCCSubstationBusStore* store);
-    void parseMessage(RWCollectable* message);
-    void pointDataMsg(long pointID, double value, unsigned tags, RWTime& timestamp);
-    void porterReturnMsg(long deviceId, RWCString commandString, int status, RWCString resultString);
-    void signalMsg(long pointID, unsigned tags, RWCString text, RWCString additional);
+    void checkDispatch(ULONG secondsFrom1901);
+    void checkPIL(ULONG secondsFrom1901);
+    void registerForPoints(const RWOrdered& subBuses);
+    void parseMessage(RWCollectable* message, ULONG secondsFrom1901);
+    void pointDataMsg(long pointID, double value, unsigned tags, RWTime& timestamp, ULONG secondsFrom1901);
+    void porterReturnMsg(long deviceId, RWCString commandString, int status, RWCString resultString, ULONG secondsFrom1901);
+    void signalMsg(long pointID, unsigned tags, RWCString text, RWCString additional, ULONG secondsFrom1901);
 
     static CtiCapController* _instance;
     RWThread _substationBusThread;
