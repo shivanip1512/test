@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct2XX.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/09/18 21:29:33 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/09/27 19:11:47 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -595,13 +595,11 @@ INT CtiDeviceMCT24X::decodeScanStatus(INMESS *InMessage, RWTime &TimeNow, RWTPtr
                 {
                     Value = CLOSED;
                     disc = " CLOSED";
-                    break;
                 }
                 else
                 {
                     Value = OPENED;
                     disc = " OPEN";
-                    break;
                 }
 
                 //  Send this value to requestor via retList.
@@ -889,4 +887,5 @@ INT CtiDeviceMCT24X::decodeGetConfigModel(INMESS *InMessage, RWTime &TimeNow, RW
 
    return status;
 }
+
 
