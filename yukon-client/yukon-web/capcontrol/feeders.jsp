@@ -12,7 +12,7 @@
 		subRowID = new Integer(strID);
 		
 		
-		CTILogger.debug(request.getServletPath() + "	SubRowCnt = " + subBusMdl.getRowCount() );
+		CTILogger.debug(request.getServletPath() + "	SubRowCnt = " + subBusMdl.getRowCount() + ", rowID=" + subRowID );
 		
 		if( subRowID.intValue() >= 0 && subRowID.intValue() < subBusMdl.getRowCount() )
 		{
@@ -146,14 +146,14 @@
                               </td>
 
 
-				    		  <form name="SubBusForm" method="POST" > 
+				    		  <form name="SubBusForm" method="POST" action="Feeders.jsp">
                             <td width="300" height="40"> 
                               <div align="right"><span class="HeaderCell">Other Subs in Area:</span>
                                 <select name="subRowID" onchange="this.form.submit()" >
                                   <%
 			                  	for( int i = 0; i < subBusMdl.getRowCount(); i++ )
 			                  	{
-			                  		//String busName = cbcAnnex.getAreaNames().get(i).toString();			                  		
+			                  		//String busName = cbcAnnex.getAreaNames().get(i).toString();
 			                  		String s = ( subRowID.intValue() == i 
 			                  						? " selected" : "" ) ;
 			                  		%>

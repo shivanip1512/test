@@ -124,7 +124,7 @@
 			<table width="740" border="1" align="center" cellspacing="0" cellpadding="0">
 			  <tr> 
                 <td>                   
-                  <table width="736" border="0" cellpadding="0" cellspacing="0">
+                  <table width="740" border="0" cellpadding="0" cellspacing="0">
                     <tr> 
                       <td>
                           <tr class="HeaderCell"> 
@@ -137,7 +137,7 @@
                                 </td>
                                 
 
-							<form name="FeederForm" method="POST" >
+							<form name="FeederForm" method="POST" action="SingleFeeder.jsp">
                         <td width="300" height="40"> 
                           <div align="right">&nbsp;&nbsp;Other Feeders on Sub :
 							    
