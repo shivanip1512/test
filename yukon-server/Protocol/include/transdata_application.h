@@ -14,14 +14,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2003/08/06 19:51:37 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2003/08/28 14:22:57 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
 
 #include "xfer.h"
-#include "transdata_datalink.h"
+#include "transdata_tracker.h"
 
 class IM_EX_PROT CtiTransdataApplication
 {
@@ -37,8 +37,6 @@ class IM_EX_PROT CtiTransdataApplication
       CtiTransdataApplication();
       ~CtiTransdataApplication();
 
-      bool logOn( CtiXfer &xfer );
-      bool logOff( CtiXfer &xfer );
       bool generate( CtiXfer &xfer );
       bool decode( CtiXfer &xfer, int status );
 
@@ -46,16 +44,23 @@ class IM_EX_PROT CtiTransdataApplication
       void injectData( RWCString str );
 
       void setNextState( void );
+      bool processData( BYTE *data );
 
-      CtiTransdataDatalink & getDataLinkLayer( void );
+      int getError( void );
 
    protected:
 
    private:
 
-      CtiTransdataDatalink _datalinkLayer;
+      CtiTransdataTracker  _tracker;
 
-      int _lastState;
+      int                  _lastState;
+
+      bool                 _dataProcessed;
+      bool                 _weHaveData;
+      bool                 _finished;
+
+      BYTE                 *_storage;
 };
 
 #endif // #ifndef __TRANSDATA_APPLICATION_H__

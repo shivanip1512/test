@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2003/08/06 19:50:51 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2003/08/28 14:22:57 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -24,7 +24,11 @@
 
 CtiTransdataApplication::CtiTransdataApplication()
 {
-   _lastState = 0;
+   _lastState     = 0;
+   _storage       = new BYTE[1024];
+   _dataProcessed = false;
+   _finished      = true;
+   _weHaveData    = false;
 }
 
 //=====================================================================================================================
@@ -32,26 +36,7 @@ CtiTransdataApplication::CtiTransdataApplication()
 
 CtiTransdataApplication::~CtiTransdataApplication()
 {
-}
 
-//=====================================================================================================================
-//=====================================================================================================================
-
-bool CtiTransdataApplication::logOn( CtiXfer &xfer )
-{
-   getDataLinkLayer().logOn( xfer );
-
-   return( true );
-}
-
-//=====================================================================================================================
-//=====================================================================================================================
-
-bool CtiTransdataApplication::logOff( CtiXfer &xfer )
-{
-   getDataLinkLayer().logOff( xfer );
-
-   return( true );
 }
 
 //=====================================================================================================================
@@ -59,18 +44,20 @@ bool CtiTransdataApplication::logOff( CtiXfer &xfer )
 
 bool CtiTransdataApplication::generate( CtiXfer &xfer )
 {
+   _finished = false;
+
    switch( _lastState )
    {
    case doLogOn:
-      logOn( xfer );
+      _tracker.logOn( xfer );
       break;
 
    case doTalk:
-      getDataLinkLayer().general( xfer );    //this should have other *things* it can do...
+      _tracker.general( xfer );    //this should have other *things* it can do...
       break;
 
    case doLogOff:
-      logOff( xfer );
+      _tracker.logOff( xfer );
       break;
    }
 
@@ -80,24 +67,9 @@ bool CtiTransdataApplication::generate( CtiXfer &xfer )
 //=====================================================================================================================
 //=====================================================================================================================
 
-CtiTransdataDatalink &CtiTransdataApplication::getDataLinkLayer( void )
-{
-   return _datalinkLayer;
-}
-
-//=====================================================================================================================
-//=====================================================================================================================
-
 bool CtiTransdataApplication::isTransactionComplete( void )
 {
-   if( getDataLinkLayer().isTransactionComplete() )
-   {
-      return( true );
-   }
-   else
-   {
-      return( false );
-   }
+   return( _finished );
 }
 
 //=====================================================================================================================
@@ -105,17 +77,21 @@ bool CtiTransdataApplication::isTransactionComplete( void )
 
 bool CtiTransdataApplication::decode( CtiXfer &xfer, int status )
 {
-   if( getDataLinkLayer().decode( xfer, status ))
-   {
-      getDataLinkLayer().retreiveData();
-      setNextState();
+   bool trackerDone;
 
-      return( true );
-   }
-   else
+   _tracker.decode( xfer, status );
+
+   trackerDone = _tracker.isTransactionComplete();
+
+   if( trackerDone )
    {
-      return( false );
+      if( processData( xfer.getInBuffer() ))  //temp!
+         setNextState();
+
+      _finished = true;
    }
+
+   return( _finished );
 }
 
 //=====================================================================================================================
@@ -123,7 +99,7 @@ bool CtiTransdataApplication::decode( CtiXfer &xfer, int status )
 
 void CtiTransdataApplication::injectData( RWCString str )
 {
-   getDataLinkLayer().injectData( str );
+   _tracker.injectData( str );
 }
 
 //=====================================================================================================================
@@ -137,4 +113,11 @@ void CtiTransdataApplication::setNextState( void )
       _lastState++;
 }
 
+//=====================================================================================================================
+//=====================================================================================================================
+
+bool CtiTransdataApplication::processData( BYTE *data )
+{
+   return( true );
+}
 

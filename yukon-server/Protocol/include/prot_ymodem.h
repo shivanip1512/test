@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2003/08/06 19:51:28 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2003/08/28 14:22:56 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -40,8 +40,13 @@ class IM_EX_PROT CtiProtocolYmodem
 
       bool isTransactionComplete( void );
 
-      unsigned short crc16( unsigned char octet, unsigned short crc );
-      unsigned short crc( int size, unsigned char *packet );
+//      unsigned short crc16( unsigned char octet, unsigned short crc );
+//      unsigned short crc( int size, unsigned char *packet );
+
+      INT checkCRC( BYTE *InBuffer, ULONG InCount );
+      USHORT addCRC(UCHAR* buffer, LONG length, BOOL bAdd);
+
+
 
    protected:
 

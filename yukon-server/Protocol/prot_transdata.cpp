@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2003/08/06 19:50:29 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2003/08/28 14:22:57 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -28,7 +28,8 @@
 
 CtiProtocolTransdata::CtiProtocolTransdata()
 {
-
+   _finished = false;
+   _weHaveData = false;
 }
 
 //=====================================================================================================================
@@ -44,9 +45,9 @@ CtiProtocolTransdata::~CtiProtocolTransdata()
 
 bool CtiProtocolTransdata::generate( CtiXfer &xfer )
 {
-   getApplicationLayer().generate( xfer );
+   _application.generate( xfer );
 
-   return( true );
+   return( false );
 }
 
 //=====================================================================================================================
@@ -54,17 +55,21 @@ bool CtiProtocolTransdata::generate( CtiXfer &xfer )
 
 bool CtiProtocolTransdata::decode( CtiXfer &xfer, int status )
 {
-   getApplicationLayer().decode( xfer, status );
+   bool appDone;
 
-   return( true );
-}
+   _application.decode( xfer, status );
 
-//=====================================================================================================================
-//=====================================================================================================================
+   appDone = _application.isTransactionComplete();
 
-CtiTransdataApplication &CtiProtocolTransdata::getApplicationLayer( void )
-{
-   return _appLayer;
+   if( appDone )
+   {
+      //
+      // stick it in the InMessage or decode or whatever?
+      //
+      _finished = true;
+   }
+
+   return( _finished );
 }
 
 //=====================================================================================================================
@@ -84,7 +89,7 @@ int CtiProtocolTransdata::recvInbound( INMESS *InMessage )
 
 //   decipherInMessage();
 
-   return( 1 );
+   return( false );
 }
 
 //=====================================================================================================================
@@ -92,10 +97,7 @@ int CtiProtocolTransdata::recvInbound( INMESS *InMessage )
 
 bool CtiProtocolTransdata::isTransactionComplete( void )
 {
-   if( getApplicationLayer().isTransactionComplete() )
-      return( true );
-   else
-      return( false );
+   return( _finished );
 }
 
 //=====================================================================================================================
@@ -103,6 +105,6 @@ bool CtiProtocolTransdata::isTransactionComplete( void )
 
 void CtiProtocolTransdata::injectData( RWCString str )
 {
-   getApplicationLayer().injectData( str );
+   _application.injectData( str );
 }
 

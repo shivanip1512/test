@@ -87,6 +87,7 @@ ansi_kv2_mtable_seventy.obj \
 
 TRANSDATAOBJS=\
 transdata_application.obj \
+transdata_tracker.obj \
 transdata_datalink.obj \
 
 OBJS=\
