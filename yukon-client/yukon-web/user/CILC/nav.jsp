@@ -85,7 +85,7 @@
     <td height="20">
       <div align="left"><span class="NavHeader">Administration</span><br>
         <cti:checkRole roleid="<%=AdministratorRole.ROLEID%>">
-		<%= links.get("user_ee.profile.jsp") %><br>
+		<%= links.get("user_ee_profile.jsp") %><br>
 		</cti:checkRole>
 	  </div>
     </td>
