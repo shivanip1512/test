@@ -26,9 +26,10 @@ public class DynamicText extends LxAbstractText implements DrawingElement, Seria
 	static final Font DEFAULT_FONT = new java.awt.Font("arial", java.awt.Font.BOLD, 12);
 	static final Color DEFAULT_COLOR = java.awt.Color.white;
 	static final int INVALID_POINT = -1;	
-
-	private com.cannontech.database.data.lite.LitePoint point;	
 	
+	private com.cannontech.database.data.lite.LitePoint point;	
+	private int displayAttribs = 0x00;
+
 	private transient Drawing drawing = null;
 	private String linkTo = "";
 	
@@ -123,9 +124,10 @@ private void initialize() {
 public void readFromJLX(InputStream in, String version) throws IOException
 {  
 	super.readFromJLX(in, version);
-
-	setPointID(LxSaveUtils.readInt(in));
 	
+	setPointID(LxSaveUtils.readInt(in));
+	setDisplayAttribs(LxSaveUtils.readInt(in));
+		
 	//read link
 	setLinkTo( LxSaveUtils.readString(in));
 	
@@ -140,7 +142,8 @@ public void saveAsJLX(OutputStream out) throws IOException
 	super.saveAsJLX(out);
 	
 	LxSaveUtils.writeInt(out, getPointID());
-
+	LxSaveUtils.writeInt(out, getDisplayAttribs());
+	
 	//save link
 	LxSaveUtils.writeString(out, getLinkTo() );
 	
@@ -202,6 +205,22 @@ public void setPointID(int newPointID) {
 		Object v = super.clone();		 
 		return v;
 // 	return super.clone();
+	}
+
+	/**
+	 * Returns the displayAttribs.
+	 * @return int
+	 */
+	public int getDisplayAttribs() {
+		return displayAttribs;
+	}
+
+	/**
+	 * Sets the displayAttribs.
+	 * @param displayAttribs The displayAttribs to set
+	 */
+	public void setDisplayAttribs(int displayAttribs) {
+		this.displayAttribs = displayAttribs;
 	}
 
 }
