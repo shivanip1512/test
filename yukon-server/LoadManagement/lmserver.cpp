@@ -91,7 +91,7 @@ void CtiLMServer::start()
 
         func.start();
 
-        if ( _listener == 0 )
+        if ( _listener == NULL )
             _listener = new CtiLMClientListener( _defaultport );
 
         _listener->start();
@@ -169,11 +169,11 @@ void CtiLMServer::_checkstatus()
     }
     catch ( RWxmsg& msg )
     {
-        if ( _listener != 0 )
+        if ( _listener != NULL )
         {
             _listener->stop();
             delete _listener;
-            _listener = 0;
+            _listener = NULL;
 
             /*{
                 RWMutexLock::LockGuard guard(coutMux);
