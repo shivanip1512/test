@@ -1585,4 +1585,5 @@ update YukonRoleProperty set DefaultValue='yukon/DefaultHeader.gif' where RolePr
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
 /**************************************************************/
-/* __YUKON_VERSION__ */
+insert into CTIDatabase values('3.1', 'Ryan', '10-DEC-2004', 'Manual version insert done', 0);
+go
