@@ -1,7 +1,9 @@
 package com.cannontech.database.data.lite.stars;
 
+import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteTypes;
+import com.cannontech.database.db.stars.customer.SiteInformation;
 
 /**
  * @author yao
@@ -37,6 +39,19 @@ public class LiteSiteInformation extends LiteBase {
 	public void setSiteID(int siteID) {
 		setLiteID( siteID );
 	}
+	
+	public void retrieve() {
+		SiteInformation site = new SiteInformation();
+		site.setSiteID( new Integer(getSiteID()) );
+		try {
+			site = (SiteInformation) Transaction.createTransaction(Transaction.RETRIEVE, site).execute();
+			StarsLiteFactory.setLiteSiteInformation( this, site );
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	/**
 	 * Returns the feeder.
 	 * @return String

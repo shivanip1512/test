@@ -1,7 +1,9 @@
 package com.cannontech.database.data.lite.stars;
 
+import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteTypes;
+import com.cannontech.database.data.customer.Customer;
 
 /**
  * @author yao
@@ -36,6 +38,19 @@ public class LiteCustomer extends LiteBase {
 	public void setCustomerID(int customerID) {
 		setLiteID( customerID );
 	}
+	
+	public void retrieve() {
+		Customer customer = new Customer();
+		customer.setCustomerID( new Integer(getCustomerID()) );
+		try {
+			customer = (Customer) Transaction.createTransaction(Transaction.RETRIEVE, customer).execute();
+			StarsLiteFactory.setLiteCustomer( this, customer );
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	/**
 	 * Returns the additionalContacts.
 	 * @return java.util.ArrayList

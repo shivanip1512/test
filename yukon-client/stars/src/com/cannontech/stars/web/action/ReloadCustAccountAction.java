@@ -7,6 +7,7 @@ import javax.xml.soap.SOAPMessage;
 import com.cannontech.database.data.lite.stars.*;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
+import com.cannontech.stars.web.servlet.SOAPClient;
 import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsFailureFactory;
 import com.cannontech.stars.xml.serialize.*;
@@ -69,7 +70,14 @@ public class ReloadCustAccountAction implements ActionBase {
         	}
         	
             int energyCompanyID = user.getEnergyCompanyID();
-			StarsCustAccountInformation starsAcctInfo = StarsLiteFactory.createStarsCustAccountInformation( liteAcctInfo, energyCompanyID, true );
+            
+			StarsCustAccountInformation starsAcctInfo = null;
+			if (SOAPServer.isClientLocal()) {
+				starsAcctInfo = SOAPServer.getEnergyCompany( energyCompanyID ).getStarsCustAccountInformation( liteAcctInfo );
+				user.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, starsAcctInfo);
+			}
+			else
+				starsAcctInfo = StarsLiteFactory.createStarsCustAccountInformation( liteAcctInfo, energyCompanyID, true );
 			
 			StarsReloadCustomerAccountResponse resp = new StarsReloadCustomerAccountResponse();
 			resp.setStarsCustAccountInformation( starsAcctInfo );
@@ -109,8 +117,10 @@ public class ReloadCustAccountAction implements ActionBase {
 			StarsReloadCustomerAccountResponse resp = operation.getStarsReloadCustomerAccountResponse();
 			if (resp == null) return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
 			
-			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
-			user.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, resp.getStarsCustAccountInformation());
+			if (!SOAPClient.isServerLocal()) {
+				StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
+				user.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, resp.getStarsCustAccountInformation());
+			}
 			
             return 0;
         }

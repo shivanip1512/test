@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: AdditionalContact.java,v 1.23 2003/02/18 19:37:39 zyao Exp $
+ * $Id: AdditionalContact.java,v 1.24 2003/02/21 21:01:58 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,7 +23,7 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.23 $ $Date: 2003/02/18 19:37:39 $
+ * @version $Revision: 1.24 $ $Date: 2003/02/21 21:01:58 $
 **/
 public class AdditionalContact extends StarsCustomerContact 
 implements java.io.Serializable

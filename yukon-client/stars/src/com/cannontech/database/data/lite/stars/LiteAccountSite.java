@@ -1,7 +1,9 @@
 package com.cannontech.database.data.lite.stars;
 
+import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteTypes;
+import com.cannontech.database.db.stars.customer.AccountSite;
 
 /**
  * @author yao
@@ -36,6 +38,19 @@ public class LiteAccountSite extends LiteBase {
 	public void setAccountSiteID(int accountSiteID) {
 		setLiteID( accountSiteID );
 	}
+	
+	public void retrieve() {
+		AccountSite acctSite = new AccountSite();
+		acctSite.setAccountSiteID( new Integer(getAccountSiteID()) );
+		try {
+			acctSite = (AccountSite) Transaction.createTransaction(Transaction.RETRIEVE, acctSite).execute();
+			StarsLiteFactory.setLiteAccountSite( this, acctSite );
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	/**
 	 * Returns the propertyNotes.
 	 * @return String

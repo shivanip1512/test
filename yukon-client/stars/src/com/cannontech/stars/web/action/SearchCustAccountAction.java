@@ -13,6 +13,7 @@ import com.cannontech.database.db.stars.customer.*;
 import com.cannontech.database.data.lite.stars.*;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
+import com.cannontech.stars.web.servlet.SOAPClient;
 import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsCustAccountInformationFactory;
 import com.cannontech.stars.xml.StarsCustListEntryFactory;
@@ -118,7 +119,14 @@ public class SearchCustAccountAction implements ActionBase {
 			
             if (liteAcctInfo != null) {
 	            user.setAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, liteAcctInfo );
-	            StarsCustAccountInformation starsAcctInfo = StarsLiteFactory.createStarsCustAccountInformation( liteAcctInfo, energyCompanyID, true );
+	            
+	            StarsCustAccountInformation starsAcctInfo = null;
+	            if (SOAPServer.isClientLocal()) {
+	            	starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteAcctInfo );
+	            	user.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, starsAcctInfo);
+	            }
+	            else	
+	            	starsAcctInfo = StarsLiteFactory.createStarsCustAccountInformation( liteAcctInfo, energyCompanyID, true );
 				resp.setStarsCustAccountInformation( starsAcctInfo );
             }
             else if (accounts != null && accounts.length > 0) {
@@ -207,8 +215,10 @@ public class SearchCustAccountAction implements ActionBase {
             if (resp == null) return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
 
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
-			if (resp.getStarsCustAccountInformation() != null)
-            	user.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, resp.getStarsCustAccountInformation());
+			if (resp.getStarsCustAccountInformation() != null) {
+				if (!SOAPClient.isServerLocal())
+            		user.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, resp.getStarsCustAccountInformation());
+			}
             else {
             	/* The return value is a list of results */
             	user.setAttribute( ServletUtils.ATT_ACCOUNT_SEARCH_RESULTS, resp );

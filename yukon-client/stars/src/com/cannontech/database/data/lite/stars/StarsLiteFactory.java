@@ -793,6 +793,7 @@ public class StarsLiteFactory {
 	
 	public static StarsLMControlHistory createStarsLMControlHistory(LiteStarsLMControlHistory liteCtrlHist, StarsCtrlHistPeriod period, boolean getSummary) {
         StarsLMControlHistory starsCtrlHist = new StarsLMControlHistory();
+        starsCtrlHist.setBeingControlled( false );
         
         if (period.getType() != StarsCtrlHistPeriod.NONE_TYPE) {
 	        int startIndex = 0;
@@ -822,12 +823,18 @@ public class StarsLiteFactory {
                 	lastStartTime = lmCtrlHist.getStartDateTime();
                 	
                 	hist = new ControlHistory();
-                	hist.setControlType( lmCtrlHist.getControlType() );
                 	hist.setStartDateTime( new Date(lmCtrlHist.getStartDateTime()) );
 		            hist.setControlDuration( (int) lmCtrlHist.getControlDuration() );
                 	starsCtrlHist.addControlHistory( hist );
                 }
                 else if (lmCtrlHist.getActiveRestore().equals("C")) {
+                	// If this is the last record, and the time stamp is close to now, then we're being controlled right now
+                	if (i == liteCtrlHist.getLmControlHistory().size() - 1) {
+                		long ctrlPeriod = (hist == null) ? lmCtrlHist.getControlDuration() : lmCtrlHist.getControlDuration() - hist.getControlDuration();
+                		if ((new Date().getTime() - lmCtrlHist.getStartDateTime()) * 0.001 - lmCtrlHist.getControlDuration() < 2 * ctrlPeriod)
+                			starsCtrlHist.setBeingControlled( true );
+                	}
+                		
                 	if (Math.abs(lmCtrlHist.getStartDateTime() - lastStartTime) < 1000) {
                 		if (hist != null)
                 			hist.setControlDuration( (int) lmCtrlHist.getControlDuration() );
@@ -837,14 +844,12 @@ public class StarsLiteFactory {
                 		lastStartTime = lmCtrlHist.getStartDateTime();
                 		
 	                	hist = new ControlHistory();
-	                	hist.setControlType( lmCtrlHist.getControlType() );
 	                	hist.setStartDateTime( new Date(lmCtrlHist.getStartDateTime()) );
 			            hist.setControlDuration( (int) lmCtrlHist.getControlDuration() );
 	                	starsCtrlHist.addControlHistory( hist );
                 	}
                 }
-	        	else if (lmCtrlHist.getActiveRestore().equals("M") || lmCtrlHist.getActiveRestore().equals("T")
-	        		|| i == liteCtrlHist.getLmControlHistory().size() - 1) {
+	        	else if (lmCtrlHist.getActiveRestore().equals("M") || lmCtrlHist.getActiveRestore().equals("T")) {
 	        		if (Math.abs(lmCtrlHist.getStartDateTime() - lastStartTime) < 1000) {
 	        			if (hist != null)
 				            hist.setControlDuration( (int) lmCtrlHist.getControlDuration() );
@@ -854,7 +859,6 @@ public class StarsLiteFactory {
 			            lastStartTime = lmCtrlHist.getStartDateTime();
 		        		
 			            hist = new ControlHistory();
-			            hist.setControlType( lmCtrlHist.getControlType() );
 			            hist.setStartDateTime( new Date(lmCtrlHist.getStartDateTime()) );
 			            hist.setControlDuration( (int) lmCtrlHist.getControlDuration() );
 			            starsCtrlHist.addControlHistory( hist );
@@ -924,9 +928,9 @@ public class StarsLiteFactory {
 					energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_FUTURE_ACTIVATION).getEntryID(),
 					energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED).getEntryID()
 				))
-				starsProg.setStatus( "In Service" );
+				starsProg.setStatus( ServletUtils.IN_SERVICE );
 			else
-				starsProg.setStatus( "Out of Service" );
+				starsProg.setStatus( ServletUtils.OUT_OF_SERVICE );
 		}
 		
 		return starsProg;

@@ -95,8 +95,10 @@ public class GetServiceHistoryAction implements ActionBase {
 		        }
 		        
 	        	accountInfo.setServiceRequestHistory( new ArrayList() );
-	        	for (int i = 0; i < orders.length; i++)
-	        		energyCompany.addWorkOrderBase( orders[i] );
+	        	for (int i = 0; i < orders.length; i++) {
+	        		LiteWorkOrderBase liteOrder = (LiteWorkOrderBase) StarsLiteFactory.createLite( orders[i] );
+	        		energyCompany.addWorkOrderBase( liteOrder );
+	        	}
         	}
         	
         	StarsServiceRequestHistory orderHist = new StarsServiceRequestHistory();

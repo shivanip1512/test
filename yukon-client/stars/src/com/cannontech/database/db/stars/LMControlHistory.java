@@ -157,7 +157,7 @@ public class LMControlHistory {
 				ctrlHists[i].setCurrentSeasonalTime( new Integer(((java.math.BigDecimal) row[8]).intValue()) );
 				ctrlHists[i].setCurrentAnnualTime( new Integer(((java.math.BigDecimal) row[9]).intValue()) );
 				ctrlHists[i].setActiveRestore( (String) row[10] );
-				ctrlHists[i].setReductionValue( new Double(((java.math.BigDecimal) row[11]).doubleValue()) );
+				ctrlHists[i].setReductionValue( new Double(((java.math.BigDecimal) row[11]).floatValue()) );
 			}
 			
 			return ctrlHists;
@@ -226,62 +226,4 @@ public class LMControlHistory {
         return null;
     }
 
-    public static StarsLMControlHistory getStarsLMControlHistory(Integer groupID, StarsCtrlHistPeriod period, boolean getSummary) {
-        StarsLMControlHistory starsCtrlHist = new StarsLMControlHistory();
-
-        com.cannontech.database.db.pao.LMControlHistory[] ctrlHist = getLMControlHistory(groupID, period);
-        com.cannontech.database.db.pao.LMControlHistory lastCtrlHist = null;
-
-        for (int j = 0; j < ctrlHist.length; j++) {
-            ControlHistory hist = new ControlHistory();
-            hist.setControlType( ctrlHist[j].getControlType() );
-            hist.setStartDateTime( ctrlHist[j].getStartDateTime() );
-            hist.setControlDuration( ctrlHist[j].getControlDuration().intValue() );
-            starsCtrlHist.addControlHistory( hist );
-
-            if (lastCtrlHist == null || lastCtrlHist.getLmCtrlHistID().intValue() < ctrlHist[j].getLmCtrlHistID().intValue())
-                lastCtrlHist = ctrlHist[j];
-        }
-
-        if (getSummary) {
-            ControlSummary summary = new ControlSummary();
-            summary.setDailyTime(0);
-            summary.setMonthlyTime(0);
-            summary.setSeasonalTime(0);
-            summary.setAnnualTime(0);
-
-            if (lastCtrlHist != null) {
-                summary.setDailyTime( lastCtrlHist.getCurrentDailyTime().intValue() );
-                summary.setMonthlyTime( lastCtrlHist.getCurrentMonthlyTime().intValue() );
-                summary.setSeasonalTime( lastCtrlHist.getCurrentSeasonalTime().intValue() );
-                summary.setAnnualTime( lastCtrlHist.getCurrentAnnualTime().intValue() );
-            }
-            else {
-                lastCtrlHist = getLastLMControlHistory( groupID );
-
-                if (lastCtrlHist != null) {
-                    Calendar nowCal = Calendar.getInstance();
-                    Calendar lastCal = Calendar.getInstance();
-                    lastCal.setTime( lastCtrlHist.getStartDateTime() );
-
-                    if (lastCal.get(Calendar.YEAR) == nowCal.get(Calendar.YEAR)) {
-                        summary.setAnnualTime( lastCtrlHist.getCurrentAnnualTime().intValue() );
-                        // Don't quite know how to deal with season yet, so just let it go with year now
-                        summary.setSeasonalTime( lastCtrlHist.getCurrentSeasonalTime().intValue() );
-
-                        if (lastCal.get(Calendar.MONTH) == nowCal.get(Calendar.MONTH)) {
-                            summary.setMonthlyTime( lastCtrlHist.getCurrentMonthlyTime().intValue() );
-
-                            if (lastCal.get(Calendar.DAY_OF_MONTH) == nowCal.get(Calendar.DAY_OF_MONTH))
-                                summary.setDailyTime( lastCtrlHist.getCurrentDailyTime().intValue() );
-                        }
-                    }
-                }
-            }
-
-            starsCtrlHist.setControlSummary( summary );
-        }
-
-        return starsCtrlHist;
-    }
 }

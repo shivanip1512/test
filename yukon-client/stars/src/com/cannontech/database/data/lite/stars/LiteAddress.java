@@ -1,7 +1,9 @@
 package com.cannontech.database.data.lite.stars;
 
+import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteTypes;
+import com.cannontech.database.db.customer.Address;
 
 /**
  * @author yao
@@ -48,6 +50,18 @@ public class LiteAddress extends LiteBase {
 	
 	public void setAddressID(int addrID) {
 		setLiteID( addrID );
+	}
+	
+	public void retrieve() {
+		Address addr = new Address();
+		addr.setAddressID( new Integer(getAddressID()) );
+		try {
+			addr = (Address) Transaction.createTransaction(Transaction.RETRIEVE, addr).execute();
+			StarsLiteFactory.setLiteAddress( this, addr );
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/**

@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsLMControlHistory.java,v 1.23 2003/02/18 19:37:40 zyao Exp $
+ * $Id: StarsLMControlHistory.java,v 1.24 2003/02/21 21:02:00 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.23 $ $Date: 2003/02/18 19:37:40 $
+ * @version $Revision: 1.24 $ $Date: 2003/02/21 21:02:00 $
 **/
 public class StarsLMControlHistory implements java.io.Serializable {
 
@@ -33,6 +33,13 @@ public class StarsLMControlHistory implements java.io.Serializable {
       //--------------------------/
      //- Class/Member Variables -/
     //--------------------------/
+
+    private boolean _beingControlled;
+
+    /**
+     * keeps track of state for field: _beingControlled
+    **/
+    private boolean _has_beingControlled;
 
     private java.util.Vector _controlHistoryList;
 
@@ -84,6 +91,16 @@ public class StarsLMControlHistory implements java.io.Serializable {
     } //-- java.util.Enumeration enumerateControlHistory() 
 
     /**
+     * Returns the value of field 'beingControlled'.
+     * 
+     * @return the value of field 'beingControlled'.
+    **/
+    public boolean getBeingControlled()
+    {
+        return this._beingControlled;
+    } //-- boolean getBeingControlled() 
+
+    /**
      * 
      * 
      * @param index
@@ -127,6 +144,13 @@ public class StarsLMControlHistory implements java.io.Serializable {
     {
         return this._controlSummary;
     } //-- ControlSummary getControlSummary() 
+
+    /**
+    **/
+    public boolean hasBeingControlled()
+    {
+        return this._has_beingControlled;
+    } //-- boolean hasBeingControlled() 
 
     /**
     **/
@@ -183,6 +207,17 @@ public class StarsLMControlHistory implements java.io.Serializable {
         _controlHistoryList.removeElementAt(index);
         return (ControlHistory) obj;
     } //-- ControlHistory removeControlHistory(int) 
+
+    /**
+     * Sets the value of field 'beingControlled'.
+     * 
+     * @param beingControlled the value of field 'beingControlled'.
+    **/
+    public void setBeingControlled(boolean beingControlled)
+    {
+        this._beingControlled = beingControlled;
+        this._has_beingControlled = true;
+    } //-- void setBeingControlled(boolean) 
 
     /**
      * 

@@ -11,6 +11,7 @@ import com.cannontech.database.data.lite.stars.*;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.stars.util.*;
 import com.cannontech.stars.web.StarsYukonUser;
+import com.cannontech.stars.web.servlet.SOAPClient;
 import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsCustAccountFactory;
 import com.cannontech.stars.xml.StarsCustomerAddressFactory;
@@ -92,6 +93,7 @@ public class UpdateCustAccountAction implements ActionBase {
             billAddr.setCity( req.getParameter("BCity") );
             billAddr.setState( req.getParameter("BState") );
             billAddr.setZip( req.getParameter("BZip") );
+            //billAddr.setCounty( req.getParameter("BCounty") );
             account.setBillingAddress( billAddr );
 
             PrimaryContact primContact = new PrimaryContact();
@@ -99,6 +101,7 @@ public class UpdateCustAccountAction implements ActionBase {
             primContact.setFirstName( req.getParameter("FirstName") );
             primContact.setHomePhone( ServletUtils.formatPhoneNumber(req.getParameter("HomePhone")) );
             primContact.setWorkPhone( ServletUtils.formatPhoneNumber(req.getParameter("WorkPhone")) );
+            primContact.setEmail( req.getParameter("Email") );
             account.setPrimaryContact( primContact );
             
             account.setTimeZone( ServletUtils.getTimeZoneStr(Calendar.getInstance().getTimeZone()) );
@@ -226,8 +229,9 @@ public class UpdateCustAccountAction implements ActionBase {
 		            StarsCustomerContactFactory.setCustomerContact( contact, starsContact );
 		            contact = (com.cannontech.database.data.customer.Contact)
 		            		Transaction.createTransaction( Transaction.INSERT, contact ).execute();
-		            		
-		            liteContact = energyCompany.addCustomerContact( contact );
+		            
+		            liteContact = (LiteCustomerContact) StarsLiteFactory.createLite( contact );
+		            energyCompany.addCustomerContact( liteContact );
             	}
             	
             	newContactList.add( new Integer(liteContact.getContactID()) );
@@ -304,7 +308,14 @@ public class UpdateCustAccountAction implements ActionBase {
             	StarsLiteFactory.setLiteSiteInformation( liteSiteInfo, siteInfo );
             }
 
-			StarsCustAccountInformation starsAcctInfo = StarsLiteFactory.createStarsCustAccountInformation( liteAcctInfo, energyCompanyID, true );
+			StarsCustAccountInformation starsAcctInfo = null;
+			if (SOAPServer.isClientLocal()) {
+				starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteAcctInfo );
+				user.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, starsAcctInfo);
+			}
+			else
+				starsAcctInfo = StarsLiteFactory.createStarsCustAccountInformation( liteAcctInfo, energyCompanyID, true );
+				
 			StarsUpdateCustomerAccountResponse resp = new StarsUpdateCustomerAccountResponse();
 			resp.setStarsCustAccountInformation( starsAcctInfo );
 
@@ -340,8 +351,10 @@ public class UpdateCustAccountAction implements ActionBase {
 			StarsUpdateCustomerAccountResponse resp = operation.getStarsUpdateCustomerAccountResponse();
 			if (resp == null) return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
 			
-			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
-			user.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, resp.getStarsCustAccountInformation());
+			if (!SOAPClient.isServerLocal()) {
+				StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
+				user.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, resp.getStarsCustAccountInformation());
+			}
 			
             return 0;
         }

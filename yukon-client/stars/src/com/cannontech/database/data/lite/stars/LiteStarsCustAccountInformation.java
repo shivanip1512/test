@@ -1,6 +1,9 @@
 package com.cannontech.database.data.lite.stars;
 
 import java.util.ArrayList;
+import com.cannontech.database.Transaction;
+import com.cannontech.database.data.lite.LiteBase;
+import com.cannontech.database.data.lite.LiteTypes;
 
 /**
  * @author yao
@@ -10,7 +13,7 @@ import java.util.ArrayList;
  * To enable and disable the creation of type comments go to
  * Window>Preferences>Java>Code Generation.
  */
-public class LiteStarsCustAccountInformation {
+public class LiteStarsCustAccountInformation extends LiteBase {
 
 	private LiteCustomerAccount customerAccount = null;
 	private LiteCustomer customer = null;
@@ -23,7 +26,24 @@ public class LiteStarsCustAccountInformation {
 	private ArrayList callReportHistory = null;	// List of StarsCallReport
 	private ArrayList serviceRequestHistory = null;	// List of IDs of LiteWorkOrderBase
 	private LiteStarsThermostatSettings thermostatSettings = null;
+	
 	public LiteStarsCustAccountInformation() {
+		super();
+		setLiteType( LiteTypes.STARS_CUST_ACCOUNT_INFO );
+	}
+	
+	public LiteStarsCustAccountInformation(int accountID) {
+		super();
+		setAccountID( accountID );
+		setLiteType( LiteTypes.STARS_CUST_ACCOUNT_INFO );
+	}
+	
+	public int getAccountID() {
+		return getLiteID();
+	}
+	
+	public void setAccountID(int accountID) {
+		setLiteID( accountID );
 	}
 	
 	/**

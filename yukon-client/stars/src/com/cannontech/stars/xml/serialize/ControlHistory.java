@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: ControlHistory.java,v 1.23 2003/02/18 19:37:33 zyao Exp $
+ * $Id: ControlHistory.java,v 1.24 2003/02/21 21:01:52 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -24,7 +24,7 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.23 $ $Date: 2003/02/18 19:37:33 $
+ * @version $Revision: 1.24 $ $Date: 2003/02/21 21:01:52 $
 **/
 public class ControlHistory implements java.io.Serializable {
 
@@ -32,8 +32,6 @@ public class ControlHistory implements java.io.Serializable {
       //--------------------------/
      //- Class/Member Variables -/
     //--------------------------/
-
-    private java.lang.String _controlType;
 
     private java.util.Date _startDateTime;
 
@@ -67,16 +65,6 @@ public class ControlHistory implements java.io.Serializable {
     {
         return this._controlDuration;
     } //-- int getControlDuration() 
-
-    /**
-     * Returns the value of field 'controlType'.
-     * 
-     * @return the value of field 'controlType'.
-    **/
-    public java.lang.String getControlType()
-    {
-        return this._controlType;
-    } //-- java.lang.String getControlType() 
 
     /**
      * Returns the value of field 'startDateTime'.
@@ -142,16 +130,6 @@ public class ControlHistory implements java.io.Serializable {
         this._controlDuration = controlDuration;
         this._has_controlDuration = true;
     } //-- void setControlDuration(int) 
-
-    /**
-     * Sets the value of field 'controlType'.
-     * 
-     * @param controlType the value of field 'controlType'.
-    **/
-    public void setControlType(java.lang.String controlType)
-    {
-        this._controlType = controlType;
-    } //-- void setControlType(java.lang.String) 
 
     /**
      * Sets the value of field 'startDateTime'.

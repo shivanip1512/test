@@ -202,9 +202,12 @@ public class NewCustAccountAction implements ActionBase {
     		Transaction.createTransaction( Transaction.INSERT, multiDB ).execute();
             
             // Add lite contact objects
-            energyCompany.addCustomerContact( primContact );
-            for (int i = 0; i < addContacts.size(); i++)
-            	energyCompany.addCustomerContact( (com.cannontech.database.data.customer.Contact) addContacts.get(i) );
+            LiteCustomerContact liteContact = (LiteCustomerContact) StarsLiteFactory.createLite( primContact );
+            energyCompany.addCustomerContact( liteContact );
+            for (int i = 0; i < addContacts.size(); i++) {
+            	liteContact = (LiteCustomerContact) StarsLiteFactory.createLite( (com.cannontech.database.data.customer.Contact) addContacts.get(i) );
+            	energyCompany.addCustomerContact( liteContact );
+            }
             	
 			LiteStarsCustAccountInformation liteAcctInfo = energyCompany.addCustAccountInformation( account );
             user.setAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, liteAcctInfo );

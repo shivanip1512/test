@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsLoginDescriptor.java,v 1.23 2003/02/18 19:37:34 zyao Exp $
+ * $Id: StarsLoginDescriptor.java,v 1.24 2003/02/21 21:01:54 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.23 $ $Date: 2003/02/18 19:37:34 $
+ * @version $Revision: 1.24 $ $Date: 2003/02/21 21:01:54 $
 **/
 public class StarsLoginDescriptor extends com.cannontech.stars.xml.serialize.StarsUsrDescriptor {
 

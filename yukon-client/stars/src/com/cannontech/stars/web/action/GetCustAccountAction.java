@@ -13,6 +13,7 @@ import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
+import com.cannontech.stars.web.servlet.SOAPClient;
 import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsCustAccountInformationFactory;
 import com.cannontech.stars.xml.StarsFailureFactory;
@@ -104,8 +105,14 @@ public class GetCustAccountAction implements ActionBase {
             }
             
     		user.setAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, liteAcctInfo );
-        	
-			StarsCustAccountInformation starsAcctInfo = StarsLiteFactory.createStarsCustAccountInformation(
+    		
+    		StarsCustAccountInformation starsAcctInfo = null;
+    		if (SOAPServer.isClientLocal()) {
+    			starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteAcctInfo );
+	        	user.setAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, starsAcctInfo );
+    		}
+        	else
+				starsAcctInfo = StarsLiteFactory.createStarsCustAccountInformation(
 					liteAcctInfo, energyCompanyID, ServerUtils.isOperator(user) );
 			
 			StarsGetCustomerAccountResponse resp = new StarsGetCustomerAccountResponse();
@@ -147,8 +154,10 @@ public class GetCustAccountAction implements ActionBase {
             StarsCustAccountInformation accountInfo = resp.getStarsCustAccountInformation();
             if (accountInfo == null) return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
 			
-            StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
-        	user.setAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, accountInfo );
+			if (!SOAPClient.isServerLocal()) {
+	            StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
+	        	user.setAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, accountInfo );
+			}
             
             return 0;
         }

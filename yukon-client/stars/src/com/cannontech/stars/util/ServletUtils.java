@@ -64,6 +64,9 @@ public class ServletUtils {
 	
 	public static final String ATT_CUSTOMER_ACCOUNT_INFO = "CUSTOMER_ACCOUNT_INFORMATION";
 	public static final String ATT_LM_PROGRAM_HISTORY = "LM_PROGRAM_HISTORY";
+	
+	public static final String IN_SERVICE = "In Service";
+	public static final String OUT_OF_SERVICE = "Out of Service";
 
     private static java.text.DecimalFormat decFormat = new java.text.DecimalFormat("0.#");
     
@@ -167,8 +170,9 @@ public class ServletUtils {
     
     public static StarsLMControlHistory getTodaysControlHistory(StarsLMControlHistory ctrlHist) {
         StarsLMControlHistory ctrlHistToday = new StarsLMControlHistory();
-        Date today = com.cannontech.util.ServletUtil.getToday();	
+        ctrlHistToday.setBeingControlled( ctrlHist.getBeingControlled() );
         
+        Date today = com.cannontech.util.ServletUtil.getToday();
         for (int i = ctrlHist.getControlHistoryCount() - 1; i >= 0; i--) {
         	ControlHistory hist = ctrlHist.getControlHistory(i);
         	if ( hist.getStartDateTime().before(today) ) break;

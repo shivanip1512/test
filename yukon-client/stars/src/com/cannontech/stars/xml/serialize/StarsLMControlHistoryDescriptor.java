@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsLMControlHistoryDescriptor.java,v 1.23 2003/02/18 19:37:37 zyao Exp $
+ * $Id: StarsLMControlHistoryDescriptor.java,v 1.24 2003/02/21 21:01:56 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.23 $ $Date: 2003/02/18 19:37:37 $
+ * @version $Revision: 1.24 $ $Date: 2003/02/21 21:01:56 $
 **/
 public class StarsLMControlHistoryDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
@@ -59,6 +59,49 @@ public class StarsLMControlHistoryDescriptor extends org.exolab.castor.xml.util.
         //-- initialize attribute descriptors
         
         //-- initialize element descriptors
+        
+        //-- _beingControlled
+        desc = new XMLFieldDescriptorImpl(java.lang.Boolean.TYPE, "_beingControlled", "BeingControlled", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsLMControlHistory target = (StarsLMControlHistory) object;
+                if(!target.hasBeingControlled())
+                    return null;
+                return new Boolean(target.getBeingControlled());
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsLMControlHistory target = (StarsLMControlHistory) object;
+                    // ignore null values for non optional primitives
+                    if (value == null) return;
+                    
+                    target.setBeingControlled( ((Boolean)value).booleanValue());
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setRequired(true);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _beingControlled
+        fieldValidator = new FieldValidator();
+        fieldValidator.setMinOccurs(1);
+        { //-- local scope
+            BooleanValidator bv = new BooleanValidator();
+            fieldValidator.setValidator(bv);
+        }
+        desc.setValidator(fieldValidator);
         
         //-- _controlHistoryList
         desc = new XMLFieldDescriptorImpl(ControlHistory.class, "_controlHistoryList", "ControlHistory", NodeType.Element);

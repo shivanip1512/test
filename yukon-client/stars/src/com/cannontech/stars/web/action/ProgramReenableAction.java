@@ -257,7 +257,7 @@ public class ProgramReenableAction implements ActionBase {
             		StarsLMProgram program = programs.getStarsLMProgram(j);
             		if (program.getProgramID() == progHist.getProgramID()) {
             			program.setStarsLMProgramHistory( progHist );
-            			program.setStatus( "In Service" );
+            			program.setStatus( ServletUtils.IN_SERVICE );
             		}
             	}
             }

@@ -43,6 +43,6 @@ public class StarsCustomerAddressFactory {
     	addr.setCityName( starsAddr.getCity() );
     	addr.setStateCode( starsAddr.getState() );
     	addr.setZipCode( starsAddr.getZip() );
-    	addr.setCounty( starsAddr.getCounty() );
+    	if (starsAddr.getCounty() != null) addr.setCounty( starsAddr.getCounty() );
     }
 }

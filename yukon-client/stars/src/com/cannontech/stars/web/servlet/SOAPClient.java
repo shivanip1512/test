@@ -36,7 +36,7 @@ public class SOAPClient extends HttpServlet {
 
     private static String SOAP_SERVER_URL = null;
     private static SOAPMessenger soapMsgr = null;
-    private static boolean serverAtRemote = false;
+    private static boolean serverLocal = true;
 
     private static final String loginURL = "/login.jsp";
     private static final String homeURL = "/operator/Operations.jsp";
@@ -44,6 +44,14 @@ public class SOAPClient extends HttpServlet {
     public SOAPClient() {
         super();
     }
+
+	public static boolean isServerLocal() {
+		return serverLocal;
+	}
+
+	public static void setServerLocal(boolean serverLocal) {
+		SOAPClient.serverLocal = serverLocal;
+	}
 
 	/**
 	 * @see javax.servlet.GenericServlet#init()
@@ -55,7 +63,7 @@ public class SOAPClient extends HttpServlet {
 			SOAP_SERVER_URL = bundle.getString( "soap_server" );
 			CTILogger.info( "SOAP Server is remotely at \"" + SOAP_SERVER_URL + "\"" );
 			
-			serverAtRemote = true;
+			setServerLocal( true );
 			ServerUtils.setPILConnectionServlet( (com.cannontech.servlet.PILConnectionServlet)
         			getServletContext().getAttribute(com.cannontech.servlet.PILConnectionServlet.SERVLET_CONTEXT_ID) );
 		}
@@ -91,7 +99,7 @@ public class SOAPClient extends HttpServlet {
         if (action == null) action = "";
         
 		if (action.equalsIgnoreCase("RefreshCache")) {
-			if (!serverAtRemote) SOAPServer.refreshCache();
+			if (isServerLocal()) SOAPServer.refreshCache();
 			resp.sendRedirect( loginURL ); return;
 		}
 
@@ -106,7 +114,6 @@ public class SOAPClient extends HttpServlet {
         String nextURL = homeURL;       // The next URL we're going to, operation succeed -> destURL, operation failed -> errorURL
         String destURL = null;			// URL we should go to if action succeed
         String errorURL = homeURL;		// URL we should go to if action failed
-        
         ActionBase clientAction = null;
 		
         if (action.equalsIgnoreCase("OperatorLogin")) {

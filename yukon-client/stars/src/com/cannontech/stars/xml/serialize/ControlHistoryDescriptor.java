@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: ControlHistoryDescriptor.java,v 1.23 2003/02/18 19:37:34 zyao Exp $
+ * $Id: ControlHistoryDescriptor.java,v 1.24 2003/02/21 21:01:53 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.23 $ $Date: 2003/02/18 19:37:34 $
+ * @version $Revision: 1.24 $ $Date: 2003/02/21 21:01:53 $
 **/
 public class ControlHistoryDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
@@ -59,46 +59,6 @@ public class ControlHistoryDescriptor extends org.exolab.castor.xml.util.XMLClas
         //-- initialize attribute descriptors
         
         //-- initialize element descriptors
-        
-        //-- _controlType
-        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_controlType", "ControlType", NodeType.Element);
-        desc.setImmutable(true);
-        handler = (new XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                ControlHistory target = (ControlHistory) object;
-                return target.getControlType();
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    ControlHistory target = (ControlHistory) object;
-                    target.setControlType( (java.lang.String) value);
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return null;
-            }
-        } );
-        desc.setHandler(handler);
-        desc.setRequired(true);
-        desc.setMultivalued(false);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _controlType
-        fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
-        { //-- local scope
-            StringValidator sv = new StringValidator();
-            sv.setWhiteSpace("preserve");
-            fieldValidator.setValidator(sv);
-        }
-        desc.setValidator(fieldValidator);
         
         //-- _startDateTime
         desc = new XMLFieldDescriptorImpl(java.util.Date.class, "_startDateTime", "StartDateTime", NodeType.Element);

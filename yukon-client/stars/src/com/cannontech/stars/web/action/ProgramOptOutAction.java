@@ -303,7 +303,7 @@ public class ProgramOptOutAction implements ActionBase {
             		StarsLMProgram program = programs.getStarsLMProgram(j);
             		if (program.getProgramID() == progHist.getProgramID()) {
             			program.setStarsLMProgramHistory( progHist );
-            			program.setStatus( "Out of Service" );
+            			program.setStatus( ServletUtils.OUT_OF_SERVICE );
             		}
             	}
             }
