@@ -9,6 +9,7 @@ import com.cannontech.database.db.contact.Contact;
 import com.cannontech.database.db.user.YukonGroup;
 import com.cannontech.database.db.user.YukonUserRole;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.roles.YukonGroupRoleDefs;
 
 /*** 
  * @author alauinger
@@ -21,10 +22,20 @@ public class YukonUser extends DBPersistent implements com.cannontech.database.d
 
 	
 	
+	/**
+	 * adds any default group roles for a new user
+	 *  these group DB objects only needs their GroupIDs set for now
+	 */		
 	public YukonUser() 
 	{
 		super();
+
+
+		YukonGroup group = new YukonGroup( new Integer(YukonGroupRoleDefs.GRP_YUKON) );
+		getYukonGroups().add( group );
 	}
+	
+	
 	
 	public void setDbConnection(java.sql.Connection conn) {
 		super.setDbConnection( conn );
@@ -125,7 +136,8 @@ public class YukonUser extends DBPersistent implements com.cannontech.database.d
 		//add the role groups this user belongs to
 		YukonGroup[] groups = YukonGroup.getYukonGroups( 
 						getUserID().intValue(), getDbConnection() );
- 
+						
+		getYukonGroups().clear(); 
 		for( int i = 0; i < groups.length; i++ )
 			getYukonGroups().add( groups[i] );
 
@@ -135,6 +147,7 @@ public class YukonUser extends DBPersistent implements com.cannontech.database.d
 		YukonUserRole[] roles = YukonUserRole.getYukonUserRoles( 
 						getUserID().intValue(), getDbConnection() );
  
+		getYukonUserRoles().clear();
  		for( int i = 0; i < roles.length; i++ )
  			getYukonUserRoles().add( roles[i] );
 	}
