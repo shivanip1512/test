@@ -13,7 +13,9 @@ public class BillingFileWizardPanel extends com.cannontech.common.wizard.WizardP
  */
 public BillingFileWizardPanel() {
 	super();
-	setFinishedEnabled(false);
+	setNextAndFinishedVisible(false);
+	setBackVisible(false);
+
 }
 /**
  * Insert the method's description here.
