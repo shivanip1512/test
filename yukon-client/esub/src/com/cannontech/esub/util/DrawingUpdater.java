@@ -57,7 +57,7 @@ public class DrawingUpdater extends TimerTask {
 				// keep stuff up to date in the cache
 				DefaultDatabaseCache.getInstance().getAllDevices();
 				DefaultDatabaseCache.getInstance().getAllPoints();
-				DefaultDatabaseCache.getInstance().getAllStateGroups();
+				DefaultDatabaseCache.getInstance().getAllStateGroupMap();
 drawing.getLxGraph().startUndoEdit("update");				
 				// keep track if we changed anything
 				boolean change = false; 

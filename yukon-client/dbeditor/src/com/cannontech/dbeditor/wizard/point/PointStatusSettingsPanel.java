@@ -1,5 +1,6 @@
 package com.cannontech.dbeditor.wizard.point;
 
+import com.cannontech.database.cache.functions.StateFuncs;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.db.state.StateGroupUtils;
 
@@ -272,18 +273,15 @@ public void setValue(Object val) {
 	//Load all the state groups
 	if( getStateTableComboBox().getModel().getSize() > 0 )
 		getStateTableComboBox().removeAllItems();
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-	synchronized(cache)
+
+
+	LiteStateGroup[] allStateGroups = StateFuncs.getAllStateGroups();
+	for(int i=0;i<allStateGroups.length;i++)
 	{
-		allStateGroups = cache.getAllStateGroups();
-		for(int i=0;i<allStateGroups.size();i++)
-		{
-			LiteStateGroup grp = (LiteStateGroup)allStateGroups.get(i);
-			
-			if( grp.getStateGroupID() > StateGroupUtils.SYSTEM_STATEGROUPID )
-				getStateTableComboBox().addItem( grp );
-		}
-		
+		LiteStateGroup grp = (LiteStateGroup)allStateGroups[i];
+
+		if( grp.getStateGroupID() > StateGroupUtils.SYSTEM_STATEGROUPID )
+			getStateTableComboBox().addItem( grp );
 	}
 
 	setInitialComboBoxes();
@@ -293,7 +291,7 @@ public void setValue(Object val) {
  */
 public void stateTableComboBox_ItemStateChanged(java.awt.event.ItemEvent itemEvent) throws java.sql.SQLException{
 
-	if( itemEvent.getStateChange() == itemEvent.SELECTED )
+	if( itemEvent.getStateChange() == java.awt.event.ItemEvent.SELECTED )
 		setInitialComboBoxes();
 }
 /**

@@ -157,21 +157,10 @@ public static LitePoint[] getLitePointsByUOMID(int[] uomIDs)
 	 */
 	public static LiteStateGroup getStateGroup( int stateGroupID ) 
 	{
-		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
-		
-		synchronized(cache) 
-		{
-			Iterator iter = cache.getAllStateGroups().iterator();
-			while( iter.hasNext() ) 
-			{
-				LiteStateGroup lsg = (LiteStateGroup)iter.next();
-				if( lsg.getStateGroupID() == stateGroupID )
-					return lsg;
-			}
-		}
-		
-		return null;
+		return (LiteStateGroup)
+			DefaultDatabaseCache.getInstance().getAllStateGroupMap().get( new Integer(stateGroupID) );
 	}
+
 	/**
 	 * Returns a pointID (int), where deviceID is used to gain a collection of LitePoints.
 	 * PointOffset and PointType is used to select one of the LitePoints.

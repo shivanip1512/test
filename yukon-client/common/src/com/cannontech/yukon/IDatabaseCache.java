@@ -61,7 +61,10 @@ public interface IDatabaseCache
 	public java.util.Map getAllPointIDOffsetMap();
 	public java.util.List getAllPorts();
 	public java.util.List getAllRoutes();
-	public java.util.List getAllStateGroups();
+	
+	//Map<Integer(stateGroupID), LiteStateGroup>
+	public java.util.Map getAllStateGroupMap();
+
 	public java.util.List getAllTags();
 	public java.util.List getAllUnitMeasures();
 

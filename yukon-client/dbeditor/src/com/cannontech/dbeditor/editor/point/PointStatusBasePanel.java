@@ -1,5 +1,7 @@
 package com.cannontech.dbeditor.editor.point;
 
+import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.database.cache.functions.StateFuncs;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.db.state.StateGroupUtils;
 
@@ -13,7 +15,6 @@ public class PointStatusBasePanel extends com.cannontech.common.gui.util.DataInp
 	private javax.swing.JLabel ivjInitialStateLabel = null;
 	private javax.swing.JComboBox ivjStateTableComboBox = null;
 	private javax.swing.JLabel ivjStateTableLabel = null;
-	private java.util.List allStateGroups = null;
 	private javax.swing.JCheckBox ivjArchiveCheckBox = null;
 /**
  * Constructor
@@ -372,18 +373,17 @@ private void loadStateComboBoxes(int stateGroupID)
 	if( getInitialStateComboBox().getItemCount() > 0 )
 		getInitialStateComboBox().removeAllItems();
 
-	for(int i=0;i<allStateGroups.size();i++)
-	{
-		if( ((LiteStateGroup)allStateGroups.get(i)).getStateGroupID() == stateGroupID )
-		{
-			java.util.List statesList = ((LiteStateGroup)allStateGroups.get(i)).getStatesList();
-			for(int j=0;j<statesList.size();j++)
-			{
-				com.cannontech.database.data.lite.LiteState ls = ((com.cannontech.database.data.lite.LiteState)statesList.get(j));
-				getInitialStateComboBox().addItem(ls);
-			}
+	DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+	synchronized(cache)
+	{	
+		LiteStateGroup stateGroup = (LiteStateGroup)
+			cache.getAllStateGroupMap().get( new Integer(stateGroupID) );
 
-			break;
+		java.util.List statesList = stateGroup.getStatesList();
+		for(int j=0;j<statesList.size();j++)
+		{
+			com.cannontech.database.data.lite.LiteState ls = ((com.cannontech.database.data.lite.LiteState)statesList.get(j));
+			getInitialStateComboBox().addItem(ls);
 		}
 	}
 }
@@ -427,13 +427,13 @@ public void setValue(Object val)
 	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized(cache)
 	{
-		allStateGroups = cache.getAllStateGroups();
+		LiteStateGroup[] allStateGroups = StateFuncs.getAllStateGroups();
 
 		//Load the state table combo box
-		for(int i=0;i<allStateGroups.size();i++)
+		for(int i=0;i<allStateGroups.length;i++)
 		{
-			LiteStateGroup grp = (LiteStateGroup)allStateGroups.get(i);
-			
+			LiteStateGroup grp = (LiteStateGroup)allStateGroups[i];
+
 			//only show the editable states
 			if( grp.getStateGroupID() > StateGroupUtils.SYSTEM_STATEGROUPID )
 			{			

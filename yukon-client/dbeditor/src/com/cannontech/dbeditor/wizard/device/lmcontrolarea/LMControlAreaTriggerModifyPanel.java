@@ -8,6 +8,7 @@ import java.awt.Dimension;
 import com.cannontech.common.gui.unchanging.LongRangeDocument;
 import com.cannontech.common.gui.util.OkCancelDialog;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.db.device.lm.IlmDefines;
 import com.cannontech.database.db.device.lm.LMControlAreaTrigger;
 
@@ -1275,28 +1276,16 @@ private javax.swing.JTextField getJTextFieldATKU() {
 			com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 			synchronized( cache )
 			{
-				java.util.List allStateGroups = cache.getAllStateGroups();
-				
 				int stateGroupID = ((com.cannontech.database.data.lite.LitePoint)getJPanelTriggerID().getSelectedPoint()).getStateGroupID();
+
+				LiteStateGroup stateGroup = (LiteStateGroup)
+					cache.getAllStateGroupMap().get( new Integer(stateGroupID) );
 				
-				//Load the state table combo box
-				for(int i=0;i<allStateGroups.size();i++)
+				java.util.Iterator stateIterator = stateGroup.getStatesList().iterator();				
+				while( stateIterator.hasNext() )
 				{
-					com.cannontech.database.data.lite.LiteStateGroup stateGroup = (com.cannontech.database.data.lite.LiteStateGroup)allStateGroups.get(i);
-	
-					if( stateGroup.getStateGroupID() == stateGroupID )
-					{
-						java.util.Iterator stateIterator = stateGroup.getStatesList().iterator();				
-						while( stateIterator.hasNext() )
-						{
-							getJComboBoxNormalState().addItem( (com.cannontech.database.data.lite.LiteState)stateIterator.next() );
-						}
-	
-						break;
-					}
-	
+					getJComboBoxNormalState().addItem( (com.cannontech.database.data.lite.LiteState)stateIterator.next() );
 				}
-	
 			}
 			
 		}

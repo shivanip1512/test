@@ -5,6 +5,8 @@ package com.cannontech.loadcontrol.gui.manualentry;
  * Creation date: (4/19/2001 3:54:21 PM)
  * @author: 
  */
+import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.db.device.lm.IlmDefines;
 import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.data.LMControlAreaTrigger;
@@ -594,7 +596,7 @@ private boolean isInputValid()
  */
 public void jButtonCancel_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
-	setChoice( this.CANCELED_PANEL );
+	setChoice( ControlAreaTriggerJPanel.CANCELED_PANEL );
 	
 	disposePanel();
 	
@@ -685,7 +687,7 @@ public void jButtonUpdate_ActionPerformed(java.awt.event.ActionEvent actionEvent
 
 
 	//dismiss this panel
-	setChoice( this.CONFIRMED_PANEL );
+	setChoice( ControlAreaTriggerJPanel.CONFIRMED_PANEL );
 	disposePanel();
 
 	return;
@@ -722,24 +724,20 @@ public static void main(java.lang.String[] args) {
  */
 private void setComboBoxText(int groupID, javax.swing.JComboBox jCombo ) 
 {
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-	com.cannontech.database.data.lite.LiteStateGroup group = null;
+	DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+	LiteStateGroup stateGroup = null;
 	
 	synchronized( cache )
 	{
-		java.util.List groups = com.cannontech.database.cache.DefaultDatabaseCache.getInstance().getAllStateGroups();
-		for( int i = 0; i < groups.size(); i++ )
-			if( ((com.cannontech.database.data.lite.LiteStateGroup)groups.get(i)).getStateGroupID() == groupID )
-				group = (com.cannontech.database.data.lite.LiteStateGroup)groups.get(i);
-	}
+		stateGroup = (LiteStateGroup)
+			cache.getAllStateGroupMap().get( new Integer(groupID) );
 
-	if( group != null )
-	{
-		for( int i = 0; i < group.getStatesList().size(); i++ )
-			jCombo.addItem( group.getStatesList().get(i) );
+		for( int i = 0; i < stateGroup.getStatesList().size(); i++ )
+			jCombo.addItem( stateGroup.getStatesList().get(i) );
+		
 	}
-
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (1/9/2002 9:34:03 AM)

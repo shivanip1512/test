@@ -1,9 +1,11 @@
 package com.cannontech.database.cache.functions;
 
+import java.util.Arrays;
 import java.util.Iterator;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 
@@ -32,26 +34,11 @@ public final class StateFuncs
 	 */
 	public static LiteState getLiteState(int stateGroupID, int rawState) 
 	{
-		com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-		synchronized( cache )
+		LiteStateGroup stateGroup = getLiteStateGroup( stateGroupID );
+		for( int j = 0; j < stateGroup.getStatesList().size(); j++ )
 		{
-			java.util.List allStateGroups = cache.getAllStateGroups();
-			java.util.Collections.sort( allStateGroups, com.cannontech.database.data.lite.LiteComparators.liteBaseIDComparator);
-			
-			for(int i = 0; i < allStateGroups.size(); i++ )
-			{
-				LiteStateGroup stateGroup = (LiteStateGroup)allStateGroups.get(i);
-	
-				if( stateGroup.getStateGroupID() == stateGroupID )
-				{
-					for( int j = 0; j < stateGroup.getStatesList().size(); j++ )
-					{
-						if( rawState == ((LiteState)stateGroup.getStatesList().get(j)).getStateRawState() )
-							return (LiteState)stateGroup.getStatesList().get(j);
-					}
-				}
-	
-			}
+			if( rawState == ((LiteState)stateGroup.getStatesList().get(j)).getStateRawState() )
+				return (LiteState)stateGroup.getStatesList().get(j);
 		}
 	
 		//this is a internal error
@@ -63,20 +50,8 @@ public final class StateFuncs
 	
 	public static LiteStateGroup getLiteStateGroup(int stateGroupID) 
 	{
-		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
-		synchronized(cache) 
-		{
-			for(Iterator i = cache.getAllStateGroups().iterator(); i.hasNext(); ) 
-			{
-				LiteStateGroup lsg = (LiteStateGroup) i.next();
-				if(lsg.getStateGroupID() == stateGroupID)
-				{
-					return lsg;		
-				}
-			}
-		}
-		
-		return null;
+		return (LiteStateGroup)
+			DefaultDatabaseCache.getInstance().getAllStateGroupMap().get( new Integer(stateGroupID) );
 	}
 	
 	public static LiteState[] getLiteStates(int stateGroupID) {
@@ -91,4 +66,26 @@ public final class StateFuncs
 		lsg.getStatesList().toArray(ls);
 		return ls;
 	}
+
+	/**
+	 * Retrieves all the StateGroups in the system. Allocates a new array for storage.
+	 * @return
+	 */
+	public static LiteStateGroup[] getAllStateGroups()
+	{
+		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+		LiteStateGroup[] stateGroups = null;
+
+		synchronized(cache)
+		{			
+			stateGroups =
+				(LiteStateGroup[])cache.getAllStateGroupMap().values().toArray(
+					new LiteStateGroup[cache.getAllStateGroupMap().values().size()] );
+
+			Arrays.sort( stateGroups, LiteComparators.liteStringComparator );
+		}
+		
+		return stateGroups;
+	}
+
 }

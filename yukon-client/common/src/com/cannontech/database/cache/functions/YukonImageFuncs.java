@@ -2,6 +2,9 @@ package com.cannontech.database.cache.functions;
 
 import java.util.Iterator;
 
+import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.database.data.lite.LiteState;
+import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteYukonImage;
 /**
  * @author rneuharth
@@ -29,8 +32,8 @@ public final class YukonImageFuncs
    {
       java.util.ArrayList imgList = new java.util.ArrayList(10);
 
-      com.cannontech.database.cache.DefaultDatabaseCache cache =
-            com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+      DefaultDatabaseCache cache =
+            DefaultDatabaseCache.getInstance();
 
       synchronized( cache )
       {
@@ -67,8 +70,8 @@ public final class YukonImageFuncs
 	 */
    	public static LiteYukonImage getLiteYukonImage(int id) {
          
-   		 com.cannontech.database.cache.DefaultDatabaseCache cache =
-            com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+   		 DefaultDatabaseCache cache =
+            DefaultDatabaseCache.getInstance();
          synchronized( cache )
          {
             Iterator iter = cache.getAllYukonImages().iterator();
@@ -91,8 +94,8 @@ public final class YukonImageFuncs
 	 * @return LiteYukonImage
 	 */
    public static LiteYukonImage getLiteYukonImage(String name) {
-   		 com.cannontech.database.cache.DefaultDatabaseCache cache =
-            com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+   		 DefaultDatabaseCache cache =
+            DefaultDatabaseCache.getInstance();
          synchronized( cache )
          {
             Iterator iter = cache.getAllYukonImages().iterator();
@@ -117,22 +120,20 @@ public final class YukonImageFuncs
    {
       java.util.ArrayList imgList = new java.util.ArrayList(10);
 
-      com.cannontech.database.cache.DefaultDatabaseCache cache =
-            com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+      DefaultDatabaseCache cache =
+            DefaultDatabaseCache.getInstance();
 
       synchronized( cache )
       {
-         java.util.List stateGroups = cache.getAllStateGroups();
+         Iterator stateGroupsItr = cache.getAllStateGroupMap().values().iterator();         
          
-         for( int i = 0; i < stateGroups.size(); i++ )
+         while( stateGroupsItr.hasNext() )
          {
-            com.cannontech.database.data.lite.LiteStateGroup sGroup = 
-                  (com.cannontech.database.data.lite.LiteStateGroup)stateGroups.get(i);
+            LiteStateGroup sGroup = (LiteStateGroup)stateGroupsItr.next();
             
             for( int j = 0; j < sGroup.getStatesList().size(); j++ )
             {
-               com.cannontech.database.data.lite.LiteState state = 
-                     (com.cannontech.database.data.lite.LiteState)sGroup.getStatesList().get(j);
+               LiteState state = (LiteState)sGroup.getStatesList().get(j);
                
                if( state.getImageID() == yukImgID_ )
                {

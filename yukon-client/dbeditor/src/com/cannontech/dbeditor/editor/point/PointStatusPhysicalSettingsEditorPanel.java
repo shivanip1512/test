@@ -5,6 +5,7 @@ package com.cannontech.dbeditor.editor.point;
  */
 
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.point.PointTypes;
 
 public class PointStatusPhysicalSettingsEditorPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.klg.jclass.util.value.JCValueListener, java.awt.event.ActionListener, java.awt.event.ItemListener, javax.swing.event.CaretListener {
@@ -1323,28 +1324,20 @@ public void setValue(Object val)
 	cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized(cache)
 	{
-		java.util.List allStateGroups = cache.getAllStateGroups();
+		LiteStateGroup stateGroup = (LiteStateGroup)
+			cache.getAllStateGroupMap().get( new Integer(stateGroupID) );
 
-		//Load the state table
-		for(int i=0;i<allStateGroups.size();i++)
+		java.util.List statesList = stateGroup.getStatesList();
+		
+		//Select the appropriate rawstate
+		int currentRawState = 0;
+		for( int y = 0; y < statesList.size(); y++ )
 		{
-			if( ((com.cannontech.database.data.lite.LiteStateGroup)allStateGroups.get(i)).getStateGroupID() == stateGroupID )
-			{
-				java.util.List statesList = ((com.cannontech.database.data.lite.LiteStateGroup)allStateGroups.get(i)).getStatesList();
+			if( ((com.cannontech.database.data.lite.LiteState)statesList.get(y)).getStateRawState() == 0 )
+				getJLabelControlZero().setText( ((com.cannontech.database.data.lite.LiteState)statesList.get(y)).getStateText() );
 				
-				//Select the appropriate rawstate
-				int currentRawState = 0;
-				for( int y = 0; y < statesList.size(); y++ )
-				{
-					if( ((com.cannontech.database.data.lite.LiteState)statesList.get(y)).getStateRawState() == 0 )
-						getJLabelControlZero().setText( ((com.cannontech.database.data.lite.LiteState)statesList.get(y)).getStateText() );
-						
-					if( ((com.cannontech.database.data.lite.LiteState)statesList.get(y)).getStateRawState() == 1 )
-						getJLabelControlOne().setText( ((com.cannontech.database.data.lite.LiteState)statesList.get(y)).getStateText() );
-				}
-				
-				break;
-			}
+			if( ((com.cannontech.database.data.lite.LiteState)statesList.get(y)).getStateRawState() == 1 )
+				getJLabelControlOne().setText( ((com.cannontech.database.data.lite.LiteState)statesList.get(y)).getStateText() );
 		}
 	}
 

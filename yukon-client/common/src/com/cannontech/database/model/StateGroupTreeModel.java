@@ -1,5 +1,10 @@
 package com.cannontech.database.model;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+
+import com.cannontech.database.cache.functions.StateFuncs;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.db.state.StateGroupUtils;
 
@@ -41,16 +46,14 @@ public void update() {
 
 	synchronized(cache)
 	{
-		java.util.List stateGroups = cache.getAllStateGroups();
-
-		java.util.Collections.sort( stateGroups, com.cannontech.database.data.lite.LiteComparators.liteStringComparator );
+		LiteStateGroup[] stateGroups = StateFuncs.getAllStateGroups();
 
 		DBTreeNode rootNode = (DBTreeNode) getRoot();
 		rootNode.removeAllChildren();
 		
-		for( int i = 0; i < stateGroups.size(); i++ )
+		for( int i = 0; i < stateGroups.length; i++ )
 		{
-			LiteStateGroup grp = (LiteStateGroup)stateGroups.get(i);
+			LiteStateGroup grp = (LiteStateGroup)stateGroups[i];
 			
 			//only show the editable states
 			if( grp.getStateGroupID() > StateGroupUtils.SYSTEM_STATEGROUPID )

@@ -355,9 +355,9 @@ public class DatabaseCacheBean implements IDatabaseCache
     * @ejb:interface-method
     * tview-type="remote" 
    **/
-   public synchronized java.util.List getAllStateGroups()
+   public synchronized java.util.Map getAllStateGroupMap()
    {
-      return getCache().getAllStateGroups();
+      return getCache().getAllStateGroupMap();
    }
 
    /**

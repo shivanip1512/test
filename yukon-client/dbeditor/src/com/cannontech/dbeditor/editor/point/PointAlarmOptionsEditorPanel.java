@@ -15,6 +15,7 @@ import com.cannontech.database.data.customer.Contact;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteNotificationGroup;
+import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.dbeditor.wizard.contact.QuickContactPanel;
 import com.cannontech.database.db.point.PointAlarming;
 
@@ -996,7 +997,7 @@ public void setValue(Object val)
 	synchronized( cache )	
 	{
 		java.util.List allAlarmStates = cache.getAllAlarmCategories();
-		java.util.List allStateGroups = cache.getAllStateGroups();
+		//java.util.List allStateGroups = cache.getAllStateGroups();
 		String generate = new String();
 
 		if( allAlarmStates.size() <= 0 )
@@ -1008,22 +1009,13 @@ public void setValue(Object val)
 		{
 			String[] stateNames = null;
 
-			// get all the states the status point may have
-			for( int i = 0; i < allStateGroups.size(); i++ )
-			{			
-            com.cannontech.database.data.lite.LiteStateGroup stateGroup = 
-                  (com.cannontech.database.data.lite.LiteStateGroup)allStateGroups.get(i);
+			LiteStateGroup stateGroup = (LiteStateGroup)
+				cache.getAllStateGroupMap().get( point.getPoint().getStateGroupID() );
 
-				if( point.getPoint().getStateGroupID().intValue() == stateGroup.getStateGroupID() )
-				{
-					stateNames = new String[stateGroup.getStatesList().size()];
+			stateNames = new String[stateGroup.getStatesList().size()];
 
-					for( int j = 0; j < stateGroup.getStatesList().size(); j++ )
-						stateNames[j] = stateGroup.getStatesList().get(j).toString();
-						
-					break; // we have all the states, get out
-				}
-			}
+			for( int j = 0; j < stateGroup.getStatesList().size(); j++ )
+				stateNames[j] = stateGroup.getStatesList().get(j).toString();
 		
 			// insert all the predefined states into the JTable
 			int i = 0;

@@ -1,5 +1,7 @@
 package com.cannontech.dbeditor.wizard.device.lmgroup;
 
+import com.cannontech.database.data.lite.LiteStateGroup;
+
 /**
  * This type was created in VisualAge.
  */
@@ -522,23 +524,15 @@ public void jComboBoxControlPoint_ActionPerformed(java.awt.event.ActionEvent act
 	
 			com.cannontech.database.data.lite.LitePoint point = (com.cannontech.database.data.lite.LitePoint)getJComboBoxControlPoint().getSelectedItem();
 
-			java.util.List allStateGroups = cache.getAllStateGroups();
+			LiteStateGroup stateGroup = (LiteStateGroup)
+				cache.getAllStateGroupMap().get( new Integer(point.getStateGroupID()) );
 
-			for( int i = 0; i < allStateGroups.size(); i++ )
+			for( int j = 0; j < stateGroup.getStatesList().size(); j++ )
 			{
-				if( ((com.cannontech.database.data.lite.LiteStateGroup)allStateGroups.get(i)).getStateGroupID() == point.getStateGroupID() )
-				{
-					com.cannontech.database.data.lite.LiteStateGroup sGroup = (com.cannontech.database.data.lite.LiteStateGroup)allStateGroups.get(i);
-					for( int j = 0; j < sGroup.getStatesList().size(); j++ )
-					{
-						//only add the first 2 states to the ComboBoxes
-						if( j == 0 || j == 1 )
-							getJComboBoxControlStartState().addItem( 
-									(com.cannontech.database.data.lite.LiteState)sGroup.getStatesList().get(j) );
-					}
-
-					break;
-				}
+				//only add the first 2 states to the ComboBoxes
+				if( j == 0 || j == 1 )
+					getJComboBoxControlStartState().addItem( 
+							(com.cannontech.database.data.lite.LiteState)stateGroup.getStatesList().get(j) );
 			}
 		}
 	}

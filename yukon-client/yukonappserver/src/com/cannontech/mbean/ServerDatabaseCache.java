@@ -21,6 +21,7 @@ import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonRole;
@@ -49,7 +50,6 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
 
 	private ArrayList allYukonPAObjects = null;
 	private ArrayList allPoints = null;
-	private ArrayList allStateGroups = null;
 	private ArrayList allUnitMeasures = null;
 	private ArrayList allNotificationGroups = null;
 	
@@ -66,7 +66,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
 	private ArrayList allDeviceMeterGroups = null;
 	private ArrayList allPointsUnits = null;
 	private ArrayList allPointLimits = null;
-   private ArrayList allYukonImages = null;
+	private ArrayList allYukonImages = null;
 	private ArrayList allCICustomers = null;
 	private ArrayList allCustomers = null;
 	private ArrayList allLMProgramConstraints = null;
@@ -121,7 +121,10 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
     
     private ArrayList allDeviceTypeCommands = null;
 	private ArrayList allCommands = null;
-	private Map allCommandsMap = null;		
+	private Map allCommandsMap = null;
+	private Map allStateGroupMap = null;
+
+
 /**
  * ServerDatabaseCache constructor comment.
  */
@@ -981,17 +984,17 @@ public synchronized java.util.List getAllRoutes()
  * Creation date: (3/14/00 3:19:19 PM)
  * @return java.util.Collection
  */
-public synchronized java.util.List getAllStateGroups(){
-
-	if( allStateGroups != null )
-		return allStateGroups;
-	else
+public synchronized Map getAllStateGroupMap()
+{
+	if( allStateGroupMap == null )
 	{
-		allStateGroups = new ArrayList();
-		StateGroupLoader stateGroupLoader = new StateGroupLoader(allStateGroups, databaseAlias);
+		allStateGroupMap = new HashMap();
+		StateGroupLoader stateGroupLoader = new StateGroupLoader(allStateGroupMap);
 		stateGroupLoader.run();
-		return allStateGroups;
+		return allStateGroupMap;
 	}
+
+	return allStateGroupMap;
 }
 
 public synchronized java.util.List getAllTags() {
@@ -2688,57 +2691,39 @@ private synchronized LiteBase handlePointChange( int changeType, int id )
  */
 private synchronized LiteBase handleStateGroupChange( int changeType, int id )
 {
-	boolean alreadyAdded = false;
 	LiteBase lBase = null;
 
 	// if the storage is not already loaded, we must not care about it
-	if( allStateGroups == null )
+	if( allStateGroupMap == null )
 		return lBase;
 
 	switch(changeType)
 	{
 		case DBChangeMsg.CHANGE_TYPE_ADD:
-				for(int i=0;i<allStateGroups.size();i++)
-				{
-					if( ((com.cannontech.database.data.lite.LiteStateGroup)allStateGroups.get(i)).getStateGroupID() == id )
-					{
-						alreadyAdded = true;
-						lBase = (LiteBase)allStateGroups.get(i);
-						break;
-					}
-				}
-				if( !alreadyAdded )
-				{
-					com.cannontech.database.data.lite.LiteStateGroup lsg = new com.cannontech.database.data.lite.LiteStateGroup(id);
-					lsg.retrieve(databaseAlias);
-					allStateGroups.add(lsg);
-					lBase = lsg;
-				}
-				break;
+			lBase = (LiteBase)allStateGroupMap.get( new Integer(id) );				
+			if( lBase == null )
+			{	
+				LiteStateGroup lsg = new LiteStateGroup(id);
+				lsg.retrieve(databaseAlias);
+				allStateGroupMap.put( new Integer(lsg.getStateGroupID()), lsg );
+				lBase = lsg;
+			}
+			break;
+
 		case DBChangeMsg.CHANGE_TYPE_UPDATE:
-				for(int i=0;i<allStateGroups.size();i++)
-				{
-					if( ((com.cannontech.database.data.lite.LiteStateGroup)allStateGroups.get(i)).getStateGroupID() == id )
-					{
-						((com.cannontech.database.data.lite.LiteStateGroup)allStateGroups.get(i)).retrieve(databaseAlias);
-						lBase = (LiteBase)allStateGroups.get(i);
-						break;
-					}
-				}
-				break;
+			LiteStateGroup ly = (LiteStateGroup)allStateGroupMap.get( new Integer(id) );				
+			ly.retrieve( databaseAlias );
+					
+			lBase = ly;
+			break;
+
 		case DBChangeMsg.CHANGE_TYPE_DELETE:
-				for(int i=0;i<allStateGroups.size();i++)
-				{
-					if( ((com.cannontech.database.data.lite.LiteStateGroup)allStateGroups.get(i)).getStateGroupID() == id )
-					{
-						lBase = (LiteBase)allStateGroups.remove(i);
-						break;
-					}
-				}
-				break;
+			lBase = (LiteBase)allStateGroupMap.remove( new Integer(id) );
+			break;
+
 		default:
-				releaseAllStateGroups();
-				break;
+			releaseAllStateGroups();
+			break;
 	}
 
 	return lBase;
@@ -3004,7 +2989,7 @@ public synchronized void releaseAllCache()
 {
     allYukonPAObjects = null;
     allPoints = null;
-    allStateGroups = null;
+    allStateGroupMap = null;
     allUnitMeasures = null;
     allNotificationGroups = null;
     
@@ -3215,9 +3200,9 @@ public synchronized void releaseAllYukonGroups(){
  * Insert the method's description here.
  * Creation date: (3/14/00 3:22:47 PM)
  */
-public synchronized void releaseAllStateGroups(){
-
-	allStateGroups = null;
+public synchronized void releaseAllStateGroups()
+{
+	allStateGroupMap = null;
 }
 /**
  * Insert the method's description here.
