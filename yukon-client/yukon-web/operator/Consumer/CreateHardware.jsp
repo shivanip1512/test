@@ -391,7 +391,7 @@ function changeSerialNo() {
                     <input type="submit" name="Submit" value="Next">
                   </td>
                   <td width="20%" align="center"> 
-                    <input type="submit" name="Submit" value="Done">
+                    <input type="submit" name="Done" value="Done">
                   </td>
 <% } %>
 <% if (!inWizard) { %>

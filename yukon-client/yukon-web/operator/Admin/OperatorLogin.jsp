@@ -100,15 +100,13 @@ function validate(form) {
                           Group: </td>
                         <td width="75%" class="TableCell"> 
                           <select name="OperatorGroup">
-                            <%
+<%
 		com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany liteEnergyCompany = SOAPServer.getEnergyCompany(user.getEnergyCompanyID());
-		String[] operGroupNames = liteEnergyCompany.getEnergyCompanySetting(com.cannontech.roles.yukon.EnergyCompanyRole.OPERATOR_GROUP_NAME).split(",");
-		for (int i = 0; i < operGroupNames.length; i++) {
-			com.cannontech.database.data.lite.LiteYukonGroup liteGroup = AuthFuncs.getGroup(operGroupNames[i]);
-			if (liteGroup == null) continue;
+		com.cannontech.database.data.lite.LiteYukonGroup[] operGroups = liteEnergyCompany.getWebClientOperatorGroups();
+		for (int i = 0; i < operGroups.length; i++) {
 %>
-                            <option value="<%= liteGroup.getGroupID() %>"><%= liteGroup.getGroupName() %></option>
-                            <%
+                            <option value="<%= operGroups[i].getGroupID() %>"><%= operGroups[i].getGroupName() %></option>
+<%
 		}
 %>
                           </select>

@@ -13,9 +13,13 @@ function setPasswordChanged() {
 	passwdChanged = true;
 }
 
-function checkPasswords(form) {
+function validate(form) {
+	if (form.Username.value == "") {
+		alert("Username cannot be empty");
+		return false;
+	}
 	if (passwdChanged && (form.Password.value != form.Password2.value)) {
-		alert("The passwords you entered doesn't match, please reenter them");
+		alert("The passwords you entered don't match, please enter them again");
 		return false;
 	}
 }
@@ -78,7 +82,7 @@ function checkPasswords(form) {
 			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
               <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
 			
-            <form method="POST" action="<%=request.getContextPath()%>/servlet/SOAPClient" onsubmit="return checkPasswords(this)">
+            <form method="POST" action="<%=request.getContextPath()%>/servlet/SOAPClient" onsubmit="return validate(this)">
 			  <input type="hidden" name="action" value="UpdateLogin">
 			  <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/Password.jsp">
 			  <input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/Password.jsp">
