@@ -84,8 +84,7 @@ function decline_form()
                     <br>
                   
                   <center>
-                    <table
-    width="600" border="0" cellspacing="0" cellpadding="5">
+                    <table width="600" border="0" cellspacing="0" cellpadding="5">
           <tr valign="top"> 
             <td class="Main"> 
               <p align=RIGHT><b>Offer ID:</b> 
@@ -136,7 +135,7 @@ function decline_form()
                       <%
 				if (amountStrs[i].equals("----")) {
 			%>
-                      <input type=hidden name="amount" value="0">
+                      <input type=hidden name="amount" value="-999">
                       ---- 
                       <%
 				}
@@ -192,7 +191,7 @@ function decline_form()
                       <%
 				if (amountStrs[i].equals("----")) {
 				%>
-                      <input type=hidden name="amount" value="0">
+                      <input type=hidden name="amount" value="-999">
                       ---- 
                       <%
 				}
@@ -246,7 +245,7 @@ function decline_form()
             <td width="36%" valign="TOP"> 
               <p align=RIGHT><span class="Main">Initials:</span></td>
             <td width="13%" align="right" valign="TOP"> 
-              <struts:text property="initials" size="8" pattern="@not-empty"/>
+              <struts:text property="initials" size="8" />
               <span class="TableCell"><%=checker.getError("initials")%></span>
             </td>
             <td width="16%" valign="TOP"> 
