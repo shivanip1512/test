@@ -30,6 +30,10 @@ a.Link4:hover {color: #666699; font-size: 9px}
 .NavText {  font-family: Arial, Helvetica, sans-serif; font-size: 9px}
 .Nav {  font-family: Arial, Helvetica, sans-serif; font-size: 9px;  color: #99FFFF}
 
+.cal_day_header {  background-color: #666699; height: 14px; width: 20px; font-size: 9px; font-weight: bold; color: #FFFFFF; text-align: center; cursor: default; border: 1px #FFFFFF outset; padding-top: 0px; padding-right: 0px; padding-bottom: 0px; padding-left: 0px}
+.cal_day_mouseover { font-size: 9px; font-weight: bold; color:#FFCC66; background-color: buttonface; height: 14px; width: 20px; text-align: center; cursor: default; border: 1px #FFFFFF outset; padding-top: 0px; padding-right: 0px; padding-bottom: 0px; padding-left: 0px}
+.cal_day_selected {  font-size: 9px; font-weight: bold; background-color: #99FFFF; height: 12px; width: 18px; text-align: center; cursor: default; border: 1px #CCCCCC inset; padding-top: 0px; padding-right: 0px; padding-bottom: 0px; padding-left: 0px}
+
 .Background {  background-color: #666699}
 .tooltip { position:absolute; font-family: Arial, Helvetica, sans-serif; font-size: 12px; font-style: normal; color: #FFFFFF; background-color: #666699; border: 3px #666699 outset; visibility: hidden; clip:  rect(   ); padding-top: 3px; padding-right: 3px; padding-bottom: 3px; padding-left: 3px}
 .tempText1 {  font-family: Arial, Helvetica, sans-serif; font-size: 36px; color: #003366; height: 50px; width: 65px}

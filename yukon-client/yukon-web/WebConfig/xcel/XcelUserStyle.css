@@ -12,3 +12,7 @@ a.Link3:hover {color: #CCCCFF}
 
 .NavHeader {  font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #FFCC66; font-style: italic}
 .Nav {  font-family: Arial, Helvetica, sans-serif; font-size: 9px; color: #CCCCFF}
+
+.cal_day_header {  background-color: #666699; height: 14px; width: 20px; font-size: 9px; font-weight: bold; color: #FFFFFF; text-align: center; cursor: default; border: 1px #FFFFFF outset; padding-top: 0px; padding-right: 0px; padding-bottom: 0px; padding-left: 0px}
+.cal_day_mouseover { font-size: 9px; font-weight: bold; color:#FFCC66; background-color: buttonface; height: 14px; width: 20px; text-align: center; cursor: default; border: 1px #FFFFFF outset; padding-top: 0px; padding-right: 0px; padding-bottom: 0px; padding-left: 0px}
+.cal_day_selected {  font-size: 9px; font-weight: bold; background-color: #CCCCFF; height: 12px; width: 18px; text-align: center; cursor: default; border: 1px #CCCCCC inset; padding-top: 0px; padding-right: 0px; padding-bottom: 0px; padding-left: 0px}
