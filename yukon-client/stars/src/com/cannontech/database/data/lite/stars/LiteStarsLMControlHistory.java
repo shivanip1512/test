@@ -41,7 +41,7 @@ public class LiteStarsLMControlHistory extends LiteBase {
 	public void updateStartIndices() {
 		if (lmControlHistory == null) return;
 		
-		java.util.Date endOfDay = com.cannontech.util.ServletUtil.getTommorow();
+		java.util.Date endOfDay = com.cannontech.util.ServletUtil.getTomorrow();
 		if (Math.abs(timeBase - endOfDay.getTime()) < 1000) return;	// The time stamp is on the same day
 		timeBase = endOfDay.getTime();
 		Calendar limitCal = Calendar.getInstance();

@@ -50,7 +50,7 @@ public class DailyTimerTask extends StarsTimerTask {
 	 * @see com.cannontech.stars.util.timer.StarsTimer#getNextScheduledTime()
 	 */
 	public Date getNextScheduledTime() {
-		return com.cannontech.util.ServletUtil.getTommorow();	// Run at every midnight
+		return com.cannontech.util.ServletUtil.getTomorrow();	// Run at every midnight
 	}
 
 	/**

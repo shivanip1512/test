@@ -75,7 +75,7 @@ public class ProgramOptOutAction implements ActionBase {
             			YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD,
             			YukonListEntryTypes.YUK_DEF_ID_OPTOUT_PERIOD_TOMORROW
             			).getEntryID() )
-            		optOut.setStartDateTime( com.cannontech.util.ServletUtil.getTommorow() );
+            		optOut.setStartDateTime( com.cannontech.util.ServletUtil.getTomorrow() );
             	else if (startDateID == ServletUtils.getStarsCustListEntry(
             			selectionLists,
             			YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD,
@@ -166,13 +166,13 @@ public class ProgramOptOutAction implements ActionBase {
             	resp.setDescription( "Opt out command has been sent out successfully" );
             }
             else if (optOut.getPeriod() == OPTOUT_TODAY) {
-            	int offHours = (int)((com.cannontech.util.ServletUtil.getTommorow().getTime() - new Date().getTime()) * 0.001 / 3600 + 0.5);
+            	int offHours = (int)((com.cannontech.util.ServletUtil.getTomorrow().getTime() - new Date().getTime()) * 0.001 / 3600 + 0.5);
 				String[] commands = getOptOutCommands( liteAcctInfo, energyCompany, offHours );
             	for (int i = 0; i < commands.length; i++)
             		ServerUtils.sendCommand( commands[i] );
             	
             	OptOutEventQueue.OptOutEvent event = new OptOutEventQueue.OptOutEvent();
-            	event.setStartDateTime( com.cannontech.util.ServletUtil.getTommorow().getTime() );
+            	event.setStartDateTime( com.cannontech.util.ServletUtil.getTomorrow().getTime() );
             	event.setPeriod( -1 );	// Reenable event
             	event.setAccountID( liteAcctInfo.getCustomerAccount().getAccountID() );
             	
@@ -403,7 +403,7 @@ public class ProgramOptOutAction implements ActionBase {
 		if (optOutDate == null) optOutDate = new Date();
 		Date reenableDate = null;
 		if (optOut.getPeriod() == OPTOUT_TODAY) {
-			reenableDate = com.cannontech.util.ServletUtil.getTommorow();
+			reenableDate = com.cannontech.util.ServletUtil.getTomorrow();
 		}
 		else {
 	        Calendar cal = Calendar.getInstance();
