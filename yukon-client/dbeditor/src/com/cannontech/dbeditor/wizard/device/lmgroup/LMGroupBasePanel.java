@@ -2,6 +2,7 @@ package com.cannontech.dbeditor.wizard.device.lmgroup;
 
 import com.cannontech.database.data.device.lm.LMGroup;
 import com.cannontech.common.gui.util.DataInputPanel;
+import com.cannontech.database.data.point.PointTypes;
 
 public class LMGroupBasePanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener {
 	private javax.swing.JPanel ivjIdentificationPanel = null;
@@ -302,7 +303,7 @@ private void createExtraObjects( com.cannontech.database.data.multi.SmartMultiDB
 		historyPoint = com.cannontech.database.data.point.PointBase.createNewPoint(
 				new Integer(ids[0]),
 				com.cannontech.database.data.point.PointTypes.STATUS_POINT,
-				"CONTROL HISTORY",
+				"CONTROL STATUS",
 				paoID,
 				new Integer(0) );
 
@@ -333,7 +334,7 @@ private void createExtraObjects( com.cannontech.database.data.multi.SmartMultiDB
 					com.cannontech.database.data.point.PointTypes.ANALOG_POINT,
 					"ANNUAL HISTORY",
 					paoID,
-					new Integer(0) );
+					new Integer(PointTypes.PT_OFFSET_ANNUAL_HISTORY) );
 
 			annualPoint.getPoint().setStateGroupID( 
 				new Integer(com.cannontech.database.db.state.StateGroup.STATEGROUP_ANALOG) );
@@ -370,7 +371,7 @@ private void createExtraObjects( com.cannontech.database.data.multi.SmartMultiDB
 					com.cannontech.database.data.point.PointTypes.ANALOG_POINT,
 					"DAILY HISTORY",
 					paoID,
-					new Integer(0) );
+               new Integer(PointTypes.PT_OFFSET_DAILY_HISTORY) );
 
 			dailyPoint.getPoint().setStateGroupID( 
 				new Integer(com.cannontech.database.db.state.StateGroup.STATEGROUP_ANALOG) );
@@ -407,7 +408,7 @@ private void createExtraObjects( com.cannontech.database.data.multi.SmartMultiDB
 					com.cannontech.database.data.point.PointTypes.ANALOG_POINT,
 					"SEASON HISTORY",
 					paoID,
-					new Integer(0) );
+               new Integer(PointTypes.PT_OFFSET_SEASONAL_HISTORY) );
 
 			seasonPoint.getPoint().setStateGroupID( 
 				new Integer(com.cannontech.database.db.state.StateGroup.STATEGROUP_ANALOG) );
@@ -444,7 +445,7 @@ private void createExtraObjects( com.cannontech.database.data.multi.SmartMultiDB
 					com.cannontech.database.data.point.PointTypes.ANALOG_POINT,
 					"MONTH HISTORY",
 					paoID,
-					new Integer(0) );
+               new Integer(PointTypes.PT_OFFSET_MONTHLY_HISTORY) );
 
 			monthPoint.getPoint().setStateGroupID( 
 				new Integer(com.cannontech.database.db.state.StateGroup.STATEGROUP_ANALOG) );

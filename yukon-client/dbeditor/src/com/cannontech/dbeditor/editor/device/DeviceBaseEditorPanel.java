@@ -1396,6 +1396,9 @@ private javax.swing.JLabel getWaitLabel() {
 			ivjWaitLabel.setFont(new java.awt.Font("dialog", 0, 12));
 			ivjWaitLabel.setMinimumSize(new java.awt.Dimension(65, 16));
 			// user code begin {1}
+         
+         ivjWaitLabel.setText("(millis)");
+         
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
