@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2003/10/22 22:15:27 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2003/12/26 17:26:55 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -51,8 +51,8 @@ public:
     int serialize(unsigned char *buf);
     int getSerializedLen(void);
 
-    double getSeconds();
-    double getMilliseconds();
+    double getSeconds() const;
+    double getMilliseconds() const;
 
     void setSeconds( double seconds );
     void setMilliseconds( double millis );
@@ -107,6 +107,9 @@ public:
     int restore(unsigned char *buf, int len);
     int serialize(unsigned char *buf);
     int getSerializedLen(void);
+
+    double getSeconds() const;
+    double getMilliseconds() const;
 };
 
 

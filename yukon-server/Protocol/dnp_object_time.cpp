@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/10/22 22:15:26 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2003/12/26 17:26:55 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -31,13 +31,13 @@ CtiDNPTime::CtiDNPTime(int group, int variation) : CtiDNPObject(group, variation
 }
 
 
-double CtiDNPTime::getSeconds()
+double CtiDNPTime::getSeconds() const
 {
     return _seconds;
 }
 
 
-double CtiDNPTime::getMilliseconds()
+double CtiDNPTime::getMilliseconds() const
 {
     return _milliseconds;
 }
@@ -286,6 +286,41 @@ CtiDNPTimeDelay::CtiDNPTimeDelay(int variation) : CtiDNPObject(Group, variation)
 {
 
 }
+
+
+double CtiDNPTimeDelay::getSeconds() const
+{
+    double retVal;
+
+    if( _variation == Fine )
+    {
+        retVal = _delay / 1000;
+    }
+    else
+    {
+        retVal = _delay;
+    }
+
+    return retVal;
+}
+
+
+double CtiDNPTimeDelay::getMilliseconds() const
+{
+    double retVal;
+
+    if( _variation == Fine )
+    {
+        retVal = _delay % 1000;
+    }
+    else
+    {
+        retVal = 0;
+    }
+
+    return retVal;
+}
+
 
 int CtiDNPTimeDelay::restore(unsigned char *buf, int len)
 {
