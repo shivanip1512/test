@@ -98,85 +98,60 @@
                   a healthier environment.</td>
               </tr>
             </table>
-            <br> <b><span class="Main"> </span></b> <table width="100%" border="0" cellpadding="20" >
+            <table width="100%" border="0" cellspacing="20" >
+              <%
+	int numProgs = 0;
+	for (int i = 0; i < categories.getStarsApplianceCategoryCount(); i++) {
+		StarsApplianceCategory category = categories.getStarsApplianceCategory(i);
+		for (int j = 0; j < category.getStarsEnrLMProgramCount(); j++) {
+			StarsEnrLMProgram program = category.getStarsEnrLMProgram(j);
+			
+			String[] imgNames = ServletUtils.getImageNames( program.getStarsWebConfig().getLogoLocation() );
+			if (numProgs % 2 == 0) {	// Two programs in a row
+%>
               <tr> 
-                <td valign="top"> <table width="280" border="0">
+                <%
+			}
+			/* Table of program */
+%>
+                <td width="50%" valign="top"> 
+                  <table width="280" border="0">
                     <tr> 
-                      <td class = "TableCell"><b>Cycle AC - Medium</b></td>
+                      <td class = "TableCell"><b><%= category.getStarsWebConfig().getAlternateDisplayName() %> 
+                        - <%= program.getStarsWebConfig().getAlternateDisplayName() %></b></td>
                     </tr>
                     <tr> 
-                      <td class = "TableCell" valign = "top">When controlled, 
-                        your air conditioning compressor will be interrupted for 
-                        15 minutes out of every half hour. Your furnace fan will 
-                        keep running. You may notice a slight increase in your 
-                        indoor air temperature.<br> <table width="210" border="0" cellspacing="0" cellpadding="0">
-                          <tr> 
-                            <td><img src="../../ACSm.gif"></td>
-                            <td><img src="../../$$$Sm.gif" ></td>
-                            <td><img src="../../HalfSm.gif"></td>
-                            <td><img src="../../Tree3Sm.gif"></td>
-                          </tr>
-                        </table></td>
-                    </tr>
-                  </table>
-                  <hr> <table width="280" border="0">
-                    <tr> 
-                      <td class = "TableCell"><b>Cycle AC - Light</b></td>
-                    </tr>
-                    <tr> 
-                      <td class = "TableCell" valign = "top">When controlled, 
-                        your air conditioning compressor will be interrupted for 
-                        ten minutes out of every half hour. Your furnace fan will 
-                        keep running. You may notice a slight increase in your 
-                        indoor air temperature.<br> <table width="210" border="0" cellspacing="0" cellpadding="0">
-                          <tr> 
-                            <td><img src="../../ACSm.gif"></td>
-                            <td><img src="../../$$Sm.gif" ></td>
-                            <td><img src="../../ThirdSm.gif"></td>
-                            <td><img src="../../Tree2Sm.gif"></td>
-                          </tr>
-                        </table></td>
-                    </tr>
-                  </table></td>
-                <td valign="top"> <table width="280" border="0">
-                    <tr> 
-                      <td class = "TableCell"><b>Setback - 4&deg</b></td>
-                    </tr>
-                    <tr> 
-                      <td class = "TableCell" valign = "top">When controlled, 
-                        your air conditioning compressor will be set back four 
-                        degrees. Your furnace fan will keep running. You may notice 
-                        a slight increase in your indoor air temperature.<br> 
+                      <td class = "TableCell" valign = "top"><%= program.getStarsWebConfig().getDescription() %><br>
                         <table width="210" border="0" cellspacing="0" cellpadding="0">
                           <tr> 
-                            <td><img src="../../SetbackSm.gif"></td>
-                            <td><img src="../../$$$Sm.gif" ></td>
-                            <td><img src="../../HalfSm.gif"></td>
-                            <td><img src="../../Tree3Sm.gif"></td>
+                            <td><img src="../../<%= imgNames[1] %>"></td>
+                            <td><img src="../../<%= imgNames[2] %>" ></td>
+                            <td><img src="../../<%= imgNames[3] %>"></td>
+                            <td><img src="../../<%= imgNames[4] %>"></td>
                           </tr>
-                        </table></td>
+                        </table>
+                      </td>
                     </tr>
                   </table>
-                  <hr> <table width="280" border="0">
-                    <tr> 
-                      <td class = "TableCell"><b>Setback - 2&deg</b></td>
-                    </tr>
-                    <tr> 
-                      <td class = "TableCell" valign = "top">When controlled, 
-                        your air conditioning compressor will be set back two 
-                        degrees. Your furnace fan will keep running. You may notice 
-                        a slight increase in your indoor air temperature.<br> 
-                        <table width="210" border="0" cellspacing="0" cellpadding="0">
-                          <tr> 
-                            <td><img src="../../SetbackSm.gif"></td>
-                            <td><img src="../../$Sm.gif" ></td>
-                            <td><img src="../../QuarterSm.gif"></td>
-                            <td><img src="../../Tree1Sm.gif"></td>
-                          </tr>
-                        </table></td>
-                    </tr>
-                  </table></td>
+                </td>
+                <%
+			if (numProgs % 2 == 1) {
+%>
               </tr>
+              <%
+			}
+			numProgs++;
+		}
+	}	// Enf of all programs
+	
+	if (numProgs % 2 == 1) {
+		/* If number of programs is odd, fill in the last table cell */
+%>
+              <td width="50%">&nbsp;</td>
+              </tr>
+              <%
+	}
+%>
             </table>
             <div align="center"> 
               <form method="post" action="Enrollment.jsp">

@@ -154,15 +154,21 @@ function confirmSubmit(form) { //v1.0
 	}
 %>
                 </table>
-                <!--<table width="300" border="0" cellspacing="0" cellpadding="0">
-                                <tr>
-                                  <td> 
-                                    <div align="right">
-                                      <input type="submit" name="More" value="More">
-                                    </div>
-                                  </td>
-                                </tr>
-                              </table>-->
+<%
+	if (progHist.length > 5) {
+%>
+                <table width="300" border="0" cellspacing="0" cellpadding="0">
+                  <tr>
+                    <td> 
+                      <div align="right">
+                        <input type="button" name="More" value="More" onclick="location='OptHist.jsp'">
+                      </div>
+                    </td>
+                  </tr>
+                </table>
+<%
+	}
+%>
               </form>
               <p align="center" class="MainHeader"><br>
               <table width="150" border="0" cellspacing="0" cellpadding="3" align="center">

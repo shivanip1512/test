@@ -6,11 +6,25 @@
 <link rel="stylesheet" href="../demostyle.css" type="text/css">
 <script language="JavaScript">
 function copyAddress(form) {
-	form.BAddr1.value = form.SAddr1.value;
-	form.BAddr2.value = form.SAddr2.value;
-	form.BCity.value = form.SCity.value;
-	form.BState.value = form.SState.value;
-	form.BZip.value = form.SZip.value;
+	if (form.SameAsAbove.checked) {
+		form.BAddr1.value = form.SAddr1.value;
+		form.BAddr2.value = form.SAddr2.value;
+		form.BCity.value = form.SCity.value;
+		form.BState.value = form.SState.value;
+		form.BZip.value = form.SZip.value;
+		form.BAddr1.disabled = true;
+		form.BAddr2.disabled = true;
+		form.BCity.disabled = true;
+		form.BState.disabled = true;
+		form.BZip.disabled = true;
+	}
+	else {
+		form.BAddr1.disabled = false;
+		form.BAddr2.disabled = false;
+		form.BCity.disabled = false;
+		form.BState.disabled = false;
+		form.BZip.disabled = false;
+	}
 }
 </script>
 </head>
@@ -297,7 +311,7 @@ function copyAddress(form) {
                           <div align="right"> </div>
                         </td>
                         <td width="210" class="TableCell"> 
-                          <input type="checkbox" name="Same" value="Same as Above" onClick="copyAddress(this.form)">
+                          <input type="checkbox" name="SameAsAbove" value="Same as Above" onClick="copyAddress(this.form)">
                           Same as above</td>
                       </tr>
                       <tr> 

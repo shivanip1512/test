@@ -28,8 +28,7 @@
 		session.setAttribute(ServletUtils.ATT_STARS_YUKON_USER, user);
 		
 		MultiAction actions = new MultiAction();
-		actions.addAction( new GetEnrollmentProgramsAction(), request, session );
-		actions.addAction( new GetCustomerFAQsAction(), request, session );
+		actions.addAction( new GetEnergyCompanySettingsAction(), request, session );
 		actions.addAction( new GetCustAccountAction(), request, session );
 		
 		SOAPMessage reqMsg = actions.build(request, session);
@@ -38,6 +37,10 @@
 		SOAPUtil.logSOAPMsgForOperation( respMsg, "*** Receive Message *** " );
 		actions.parse(reqMsg, respMsg, session);
 	}
+	
+	StarsWebConfig webSettings = (StarsWebConfig) user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_WEB_CONFIG );
+	StarsEnrollmentPrograms categories = (StarsEnrollmentPrograms) user.getAttribute( ServletUtils.ATT_ENROLLMENT_PROGRAMS );
+	StarsCustomerFAQs customerFAQs = (StarsCustomerFAQs) user.getAttribute( ServletUtils.ATT_CUSTOMER_FAQS );
 	
 	StarsCustAccountInformation accountInfo = null;
 	StarsCustomerAccount account = null;
@@ -77,9 +80,6 @@
 			histDateFormat.setTimeZone(tz);
 		}
 	}
-	
-	StarsGetEnrollmentProgramsResponse categories = (StarsGetEnrollmentProgramsResponse) user.getAttribute( ServletUtils.ATT_ENROLLMENT_PROGRAMS );
-	StarsGetCustomerFAQsResponse customerFAQs = (StarsGetCustomerFAQsResponse) user.getAttribute( ServletUtils.ATT_CUSTOMER_FAQS );
 	
 	String errorMsg = (String) session.getAttribute(ServletUtils.ATT_ERROR_MESSAGE);
 	session.removeAttribute(ServletUtils.ATT_ERROR_MESSAGE);

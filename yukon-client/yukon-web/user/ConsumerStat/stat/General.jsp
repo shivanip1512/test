@@ -68,14 +68,7 @@
                         <td><table width="400" border="0" cellspacing="0" cellpadding="5">
                             <tr> 
                               <td valign="top">
-<p class="Main">Thank you for participating in our Consumer Energy Services programs. 
-                                  By participating, you have helped to optimize 
-                                  our delivery of energy, stabilize rates, and 
-                                  reduce energy costs. Best of all, you are saving 
-                                  energy dollars!</p>
-                                <p class="Main">This site is designed to help 
-                                  manage your programs on-line from anywhere with 
-                                  access to a Web browser.</p></td>
+								<p class="Main"><%= webSettings.getDescription() %></p></td>
                               <td valign="top"> 
                                 <table width="200" border="1" cellspacing="0" cellpadding="3" align="center">
                                   <tr bgcolor="#CCCCCC" class="Main"> 

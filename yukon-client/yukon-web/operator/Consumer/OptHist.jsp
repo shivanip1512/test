@@ -72,28 +72,21 @@ function confirmSubmit(form) { //v1.0
             <div align="center">
               <% String header = "PROGRAMS - OPT OUT HISTORY"; %>
               <%@ include file="InfoSearchBar.jsp" %>
-			  <% if (errorMsg != null) out.write("<br><span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
 			  
-             <div align="center">
-                <p class="TableCell">
-                </p>
-              </div>
-              <form name="form2" method="post" action="OptHist.jsp">
-                <p align="center" class="MainHeader"><b>Program History </b> 
-                <table width="300" border="1" cellspacing="0" align="center" cellpadding="3">
+              <table width="300" border="1" cellspacing="0" align="center" cellpadding="3">
                   <tr> 
                     <td class="HeaderCell">Date</td>
                     <td class="HeaderCell">Type - Duration</td>
                     <td class="HeaderCell">Program</td>
                   </tr>
-                  <%
+<%
 	ServletUtils.ProgramHistory[] progHist = (ServletUtils.ProgramHistory[]) user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_LM_PROGRAM_HISTORY);
 	if (progHist == null) {
 		progHist = ServletUtils.createProgramHistory( programs );
 		user.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_LM_PROGRAM_HISTORY, progHist);
 	}
 	
-	for (int i = progHist.length - 1; i >= 0 && i >= progHist.length - 5; i--) {
+	for (int i = progHist.length - 1; i >= 0; i--) {
 %>
                   <tr> 
                     <td class="TableCell" width="100" ><%= datePart.format(progHist[i].getDate()) %></td>
@@ -103,28 +96,25 @@ function confirmSubmit(form) { //v1.0
                       <% } %>
                     </td>
                     <td class="TableCell" width="100" > 
-                      <%
+<%
 		String[] progNames = progHist[i].getPrograms();
 		for (int j = 0; j < progNames.length; j++) {
 %>
                       <%= progNames[j] %><br>
-                      <%
+<%
 		}
 %>
                     </td>
                   </tr>
-                  <%
+<%
 	}
 %>
                 </table>
-                </form>
               <p align="center" class="MainHeader"><br>
               <table width="150" border="0" cellspacing="0" cellpadding="3" align="center">
                 <tr> 
                   <td align="center">
-				  <form method="POST" action="OptOut.jsp">
-                      <input type="submit" name="Back" value="Back">
-				  </form>
+                    <input type="button" name="Back" value="Back" onclick="location='OptOut.jsp'">
                   </td>
                 </tr>
               </table>

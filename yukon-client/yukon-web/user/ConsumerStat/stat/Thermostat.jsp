@@ -1,10 +1,20 @@
 <%@ include file="StarsHeader.jsp" %>
 <%
-	StarsThermostatManualOption thermOption = thermoSettings.getStarsThermostatManualOption();
-	if (thermOption == null)
-		thermOption = dftThermoSettings.getStarsThermostatManualOption();
-	String modeStr = (thermOption.getMode() == null) ? "" : thermOption.getMode().toString();
-	String fanStr = (thermOption.getFan() == null) ? "" : thermOption.getFan().toString();
+	StarsThermostatManualEvent lastEvent = null;
+	boolean useDefault = false;
+	if (thermoSettings.getStarsThermostatManualEventCount() > 0) {
+		lastEvent = thermoSettings.getStarsThermostatManualEvent(
+				thermoSettings.getStarsThermostatManualEventCount() - 1);
+	}
+	else {
+		lastEvent = dftThermoSettings.getStarsThermostatManualEvent(
+				dftThermoSettings.getStarsThermostatManualEventCount() - 1);
+		useDefault = true;
+	}
+	StarsThermoModeSettings mode = lastEvent.getThermostatManualOption().getMode();
+	String modeStr = (mode != null) ? mode.toString() : "";
+	StarsThermoFanSettings fan = lastEvent.getThermostatManualOption().getFan();
+	String fanStr = (fan != null) ? fan.toString() : "";
 %>
 <html>
 <head>
@@ -229,7 +239,7 @@ if (text.length == 2) {
                               <table width="18%" border="0" cellspacing = "0" cellpadding ="0" height="60" >
                                 <tr> 
                                   <td width="52%" height="53"> 
-                                    <input type="text" name="tempField" maxlength="2" class="tempText1" style.color="#CCCCCC" value="<%= thermOption.getTemperature() %>" onkeypress="validateTemp(event)">
+                                    <input type="text" name="tempField" maxlength="2" class="tempText1" style.color="#CCCCCC" value="<%= lastEvent.getThermostatManualOption().getTemperature() %>" onkeypress="validateTemp(event)">
                                   </td>
                                   <td width="48%" height="53"> 
                                     <table width="41%" border="0" cellspacing = "0" cellpadding = "0">
@@ -251,15 +261,23 @@ if (text.length == 2) {
                                 </tr>
                               </table>
                             </td>
-                            <td width="31%" height="113" valign="middle"><br>
-                              <table width="100" border="0">
+                            <td width="31%" height="113" valign="bottom"><br>
+                              <table width="100" height="80" border="0">
                                 <tr>
-                                  <td class="TableCell" bordercolor="#FFFFFF">Last 
-                                    setting:<br>
-                                    Temperature: <%= thermOption.getTemperature() %>&deg; 
-									<% if (thermOption.getHold()) out.print("(HOLD)"); %><br>
+                                  <td class="TableCell" valign="top" bordercolor="#FFFFFF">Last 
+                                    Settings:<br>
+<%
+	if (useDefault) out.write("(None)");
+	else {
+%>									
+									Temperature: <%= lastEvent.getThermostatManualOption().getTemperature() %>&deg 
+									<% if (lastEvent.getThermostatManualOption().getHold()) out.print("(HOLD)"); %><br>
                                     Mode: <%= modeStr %><br>
-                                    Fan: <%= fanStr %></td>
+                                    Fan: <%= fanStr %>
+<%
+	}
+%>
+								  </td>
                                 </tr>
                               </table>
                               

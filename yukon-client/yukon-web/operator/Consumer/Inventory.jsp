@@ -361,15 +361,21 @@ function deleteHardware(form) {
 	}
 %>
                             </table>
-                              <!--<table width="250" border="0" cellspacing="0" cellpadding="0">
+<%
+	if (hwHist.getStarsLMHardwareEventCount() > 5) {
+%>
+                              <table width="250" border="0" cellspacing="0" cellpadding="0">
                                 <tr>
                                   <td> 
                                     <div align="right">
-                                      <input type="submit" name="More" value="More">
+                                      <input type="button" name="More" value="More" onclick="location='InventoryHist.jsp?InvNo=<%= invNoStr %>'">
                                     </div>
                                   </td>
                                 </tr>
-                              </table>-->
+                              </table>
+<%
+	}
+%>
                             </td>
                         </form>
                       </tr>

@@ -29,8 +29,7 @@
 		session.setAttribute(ServletUtils.ATT_STARS_YUKON_USER, user);
 		
 		MultiAction actions = new MultiAction();
-		actions.addAction( new GetEnrollmentProgramsAction(), request, session );
-		actions.addAction( new GetCustSelListsAction(), request, session );
+		actions.addAction( new GetEnergyCompanySettingsAction(), request, session );
 		
 		SOAPMessage reqMsg = actions.build(request, session);
 		SOAPUtil.logSOAPMsgForOperation( reqMsg, "*** Send Message *** " );
@@ -40,7 +39,7 @@
 	}
 	
 	Hashtable selectionListTable = (Hashtable) user.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
-	StarsGetEnrollmentProgramsResponse categories = (StarsGetEnrollmentProgramsResponse) user.getAttribute( ServletUtils.ATT_ENROLLMENT_PROGRAMS );
+	StarsEnrollmentPrograms categories = (StarsEnrollmentPrograms) user.getAttribute( ServletUtils.ATT_ENROLLMENT_PROGRAMS );
 	
 	StarsCustAccountInformation accountInfo = null;
 	StarsCustomerAccount account = null;
