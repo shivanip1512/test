@@ -1373,39 +1373,6 @@ public class StarsAdmin extends HttpServlet {
 			
 			YukonSelectionList cList = energyCompany.getYukonSelectionList( listName );
 			
-			if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD_CUS)) {
-				// Handle customer opt out period list
-				boolean sameAsOp = Boolean.valueOf( req.getParameter("SameAsOp") ).booleanValue();
-				if (sameAsOp && cList == null) return;
-				
-				if (sameAsOp && cList != null) {
-					// Remove the OptOutPeriodCustomer list
-					com.cannontech.database.data.constants.YukonSelectionList list =
-							new com.cannontech.database.data.constants.YukonSelectionList();
-					list.setListID( new Integer(cList.getListID()) );
-					
-					Transaction.createTransaction( Transaction.DELETE, list ).execute();
-					
-					for (int i = 0; i < cList.getYukonListEntries().size(); i++) {
-						YukonListEntry cEntry = (YukonListEntry) cList.getYukonListEntries().get(i);
-						YukonListFuncs.getYukonListEntries().remove( new Integer(cEntry.getEntryID()) );
-					}
-					
-					YukonListFuncs.getYukonSelectionLists().remove( new Integer(cList.getListID()) );
-					energyCompany.deleteYukonSelectionList( cList.getListID() );
-					energyCompany.updateStarsCustomerSelectionLists();
-					
-					session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Customer selection list updated successfully");
-					return;
-				}
-				
-				if (!sameAsOp && cList == null) {
-					// Add a new list of OptOutPeriodCustomer
-					YukonSelectionList opList = energyCompany.getYukonSelectionList( YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD );
-					cList = energyCompany.addYukonSelectionList( listName, opList, false );
-				}
-			}
-			
 			Object[][] entryData = null;
 			if (entryIDs != null) {
 				entryData = new Object[ entryIDs.length ][];
@@ -1437,10 +1404,10 @@ public class StarsAdmin extends HttpServlet {
 			for (int i = 0; i < descendants.size(); i++) {
 				LiteStarsEnergyCompany ec = (LiteStarsEnergyCompany) descendants.get(i);
 				ec.updateStarsCustomerSelectionLists();
+				
+				if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE))
+					ec.updateStarsDefaultThermostatSchedules();
 			}
-			
-			if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE))
-				energyCompany.updateStarsDefaultThermostatSchedules();
 			
 			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Customer selection list updated successfully");
 		}

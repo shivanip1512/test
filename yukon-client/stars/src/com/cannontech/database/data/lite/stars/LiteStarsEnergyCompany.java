@@ -95,7 +95,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		YukonSelectionListDefs.YUK_LIST_NAME_CHANCE_OF_CONTROL,
 		com.cannontech.database.db.stars.Substation.LISTNAME_SUBSTATION,
 		YukonSelectionListDefs.YUK_LIST_NAME_CALL_TYPE,
-		YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD,
+		//YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD,
 		YukonSelectionListDefs.YUK_LIST_NAME_APPLIANCE_CATEGORY,
 		YukonSelectionListDefs.YUK_LIST_NAME_MANUFACTURER,
 		YukonSelectionListDefs.YUK_LIST_NAME_APP_LOCATION,
@@ -975,10 +975,10 @@ public class LiteStarsEnergyCompany extends LiteBase {
 					userLists.add( it.next() );
 			}
 			else if (ECUtils.isResidentialCustomer( user )) {
-				userLists.add( getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_STATUS) );
+				userLists.add( getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_CHANCE_OF_CONTROL) );
 				
 				if (AuthFuncs.checkRoleProperty(user.getYukonUser(), ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_OPT_OUT)) {
-					YukonSelectionList list = getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD_CUS);
+					YukonSelectionList list = getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD);
 					if (list != null) userLists.add( list );
 				}
 			}
@@ -2819,8 +2819,10 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	private void updateCustSelectionLists() {
 		starsCustSelLists.removeAllStarsCustSelectionList();
 		
-		// Currently the consumer side only need chance of control list
+		// Currently the consumer side only need chance of control and opt out period list
 		StarsCustSelectionList list = getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_CHANCE_OF_CONTROL);
+		if (list != null) starsCustSelLists.addStarsCustSelectionList( list );
+		list = getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD);
 		if (list != null) starsCustSelLists.addStarsCustSelectionList( list );
 	}
 	
