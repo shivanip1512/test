@@ -26,8 +26,10 @@ public final class StateFuncs
 	}
 
 	/**
-	 * Insert the method's description here.
-	 * Creation date: (3/26/2001 9:47:28 AM)
+	 * Returns the state for the given values. We could index the array with the value
+	 * or rawstate for an instant lookup. However, if the ordering ever changes this would
+	 * then not work.
+	 * 
 	 * @return com.cannontech.database.data.lite.LiteState
 	 * @param stateGroupID int
 	 * @param rawState int
@@ -54,13 +56,10 @@ public final class StateFuncs
 			DefaultDatabaseCache.getInstance().getAllStateGroupMap().get( new Integer(stateGroupID) );
 	}
 	
-	public static LiteState[] getLiteStates(int stateGroupID) {
-		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+	public static LiteState[] getLiteStates(int stateGroupID)
+	{
 		LiteStateGroup lsg = null;
-		synchronized(cache) 
-		{
-			lsg = getLiteStateGroup(stateGroupID);
-		}
+		lsg = getLiteStateGroup(stateGroupID);
 		
 		LiteState[] ls = new LiteState[lsg.getStatesList().size()];
 		lsg.getStatesList().toArray(ls);
