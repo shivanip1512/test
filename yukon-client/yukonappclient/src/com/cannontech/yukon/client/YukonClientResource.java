@@ -1,8 +1,11 @@
 package com.cannontech.yukon.client;
 
+import com.cannontech.ejb.MACSConnectionBean;
+import com.cannontech.yukon.IConnectionBase;
 import com.cannontech.yukon.IDBPersistent;
 import com.cannontech.yukon.IDatabaseCache;
 import com.cannontech.yukon.ISQLStatement;
+import com.cannontech.yukon.IMACSConnection;
 import com.cannontech.yukon.concrete.YukonResourceBase;
 
 
@@ -64,4 +67,22 @@ public class YukonClientResource extends YukonResourceBase
    {
       return new ClientSqlStatement();
    }
+   
+   // ---------------------------------------------------------------------------------
+   //  START of the IMACSConnection implementation
+   // ---------------------------------------------------------------------------------   
+   public synchronized IMACSConnection getMACSConnection()
+   {
+      if( macsConnection == null )
+         macsConnection = null;//new MACSConnectionBean();
+      
+      return macsConnection;
+   }
+
+   public IConnectionBase getMACSConnBase()
+   {
+      return getMACSConnection().getMACSConnBase();
+   }
+
+
 }

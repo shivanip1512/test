@@ -1,4 +1,4 @@
-package com.cannontech.ejb;
+package com.cannontech.yukon.server.cache;
 
 import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.data.lite.LiteBase;

@@ -8,11 +8,12 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 
+import com.cannontech.yukon.IConnectionBase;
 import com.roguewave.vsj.CollectableStreamer;
 import com.roguewave.vsj.PortableInputStream;
 import com.roguewave.vsj.PortableOutputStream;
 
-public class ClientConnection extends java.util.Observable implements Runnable 
+public class ClientConnection extends java.util.Observable implements Runnable, IConnectionBase 
 {
 	private InputStream inStrm = null;
 	private OutputStream outStrm = null;

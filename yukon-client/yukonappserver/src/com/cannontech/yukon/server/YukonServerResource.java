@@ -1,5 +1,6 @@
 package com.cannontech.yukon.server;
 
+import com.cannontech.yukon.IConnectionBase;
 import java.util.List;
 import java.util.Map;
 
@@ -7,6 +8,7 @@ import com.cannontech.ejb.SqlStatementBean;
 import com.cannontech.yukon.IDBPersistent;
 import com.cannontech.yukon.IDatabaseCache;
 import com.cannontech.yukon.ISQLStatement;
+import com.cannontech.yukon.IMACSConnection;
 import com.cannontech.yukon.concrete.YukonResourceBase;
 
 /**
@@ -21,7 +23,6 @@ public class YukonServerResource extends YukonResourceBase
    // ---------------------------------------------------------------------------------
    //  START of the IDBPersistent implementation
    // ---------------------------------------------------------------------------------   
-
    public com.cannontech.yukon.IDBPersistent createIDBPersistent()
    {
       return new com.cannontech.ejb.DBPersistentBean();
@@ -66,6 +67,23 @@ public class YukonServerResource extends YukonResourceBase
 
    public ISQLStatement createISQLStatement()
    {
-      return new SqlStatementBean();
+      return new com.cannontech.ejb.SqlStatementBean();
+   }
+
+
+   // ---------------------------------------------------------------------------------
+   //  START of the IMACSConnection implementation
+   // ---------------------------------------------------------------------------------   
+   public synchronized IMACSConnection getMACSConnection()
+   {
+      if( macsConnection == null )
+         macsConnection = new com.cannontech.ejb.MACSConnectionBean();
+      
+      return macsConnection;
+   }
+
+   public IConnectionBase getMACSConnBase()
+   {
+      return getMACSConnection().getMACSConnBase();
    }
 }

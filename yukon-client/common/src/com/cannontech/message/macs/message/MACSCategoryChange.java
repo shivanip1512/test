@@ -1,4 +1,4 @@
-package com.cannontech.macs.events;
+package com.cannontech.message.macs.message;
 
 /**
  * Insert the type's description here.

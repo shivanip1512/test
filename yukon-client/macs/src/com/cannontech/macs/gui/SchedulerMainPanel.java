@@ -25,6 +25,8 @@ import com.cannontech.macs.gui.popup.SchedulerPopUpMenu;
 import com.cannontech.macs.schedule.editor.ScheduleEditorPanel;
 import com.cannontech.message.macs.message.OverrideRequest;
 import com.cannontech.message.macs.message.Schedule;
+import com.cannontech.yukon.IMACSConnection;
+import com.cannontech.yukon.concrete.ResourceFactory;
 
 public class SchedulerMainPanel extends javax.swing.JPanel implements java.awt.event.ActionListener, java.awt.event.MouseListener, javax.swing.event.ListSelectionListener, javax.swing.event.TableModelListener, java.util.Observer, com.cannontech.common.wizard.WizardPanelListener, com.cannontech.common.editor.PropertyPanelListener, javax.swing.event.PopupMenuListener, com.cannontech.clientutils.popup.PopUpEventListener
 {
@@ -34,7 +36,7 @@ public class SchedulerMainPanel extends javax.swing.JPanel implements java.awt.e
 	private java.util.ArrayList frames = null;
 	
 	private javax.swing.JSplitPane jSplitPane = null;
-	private com.cannontech.macs.MACSClientConnection connection = null;
+//	private com.cannontech.macs.MACSClientConnection connection = null;
 	private static final String title = "MACS Scheduler";
 	
 	private JTable scheduleTable;
@@ -60,11 +62,9 @@ public class SchedulerMainPanel extends javax.swing.JPanel implements java.awt.e
 /**
  * SchedulerMainPanel constructor comment.
  */
-public SchedulerMainPanel( boolean initPanelOnly, com.cannontech.macs.MACSClientConnection conn ) 
+public SchedulerMainPanel( boolean initPanelOnly ) 
 {
 	super();
-
-	connection = conn;
 	
 	initialize( initPanelOnly );
 }
@@ -196,7 +196,7 @@ private void executeDeleteButton_ActionPerformed( ActionEvent event )
 
 	try
 	{
-		getConnection().sendDeleteSchedule( selected.getId() );
+		getIMACSConnection().sendDeleteSchedule( selected.getId() );
 	}
 	catch( java.io.IOException e )
 	{
@@ -236,7 +236,7 @@ private void executeEnableDisableButton_ActionPerformed( ActionEvent event )
 
 			
 		// send out the message
-		getConnection().sendEnableDisableSchedule(selected);
+		getIMACSConnection().sendEnableDisableSchedule(selected);
 	}
 	catch( java.io.IOException e )
 	{
@@ -297,13 +297,13 @@ private void executeStartStopButton_ActionPerformed( ActionEvent event )
 		{
 			// send out the message
 			if( panel.getMode() == ManualChangeJPanel.MODE_STOP )
-				getConnection().sendStartStopSchedule( 
+				getIMACSConnection().sendStartStopSchedule( 
 									selected, 
 									null, 
 									panel.getStopTime(), 
 									(panel.isStopStartNowSelected() ? OverrideRequest.OVERRIDE_STOP_NOW : OverrideRequest.OVERRIDE_STOP) );
 			else
-				getConnection().sendStartStopSchedule( 
+				getIMACSConnection().sendStartStopSchedule( 
 									selected, 
 									panel.getStartTime(), 
 									panel.getStopTime(), 
@@ -341,9 +341,11 @@ private javax.swing.JFrame getAvailableFrame()
  * Creation date: (8/8/00 1:54:34 PM)
  * @return com.cannontech.macs.ClientConnection
  */
-private com.cannontech.macs.MACSClientConnection getConnection() {
-	return connection;
+private IMACSConnection getIMACSConnection() 
+{
+	return (IMACSConnection)ResourceFactory.getIYukon();
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (3/2/2001 9:55:18 AM)
@@ -351,18 +353,21 @@ private com.cannontech.macs.MACSClientConnection getConnection() {
 public String getConnectionState() 
 {
 	StringBuffer title = new StringBuffer("MACS Scheduler");
-	boolean validConn = getConnection().isValid();
+	boolean validConn = getIMACSConnection().getMACSConnBase().isValid();
 
 	if( validConn && !lastConnectionStatus )
 	{
 		// connected and change
-		title.append("   [Connected to MacsServer@" + getConnection().getHost() + ":" + getConnection().getPort() + "]");
+		title.append("   [Connected to MacsServer@" + 
+				getIMACSConnection().getMACSConnBase().getHost() + 
+				":" + getIMACSConnection().getMACSConnBase().getPort() + "]");
+
 		getMessagePanel().messageEvent(new com.cannontech.common.util.MessageEvent(this, "Connection to MACS server established", com.cannontech.common.util.MessageEvent.INFORMATION_MESSAGE));
 		
 		try
 		{
 			com.cannontech.clientutils.CTILogger.info("...Retrieving MACS schedules...");
-			getConnection().sendRetrieveAllSchedules();
+			getIMACSConnection().sendRetrieveAllSchedules();
 		}
 		catch( java.io.IOException e )
 		{
@@ -377,7 +382,10 @@ public String getConnectionState()
 		getMessagePanel().messageEvent(new com.cannontech.common.util.MessageEvent(this, "No connection to MACS server", com.cannontech.common.util.MessageEvent.ERROR_MESSAGE));
 	}
 	else if( lastConnectionStatus )  // still connected
-		title.append("   [Connected to MacsServer@" + getConnection().getHost() + ":" + getConnection().getPort() + "]");
+		title.append("   [Connected to MacsServer@" + 
+					getIMACSConnection().getMACSConnBase().getHost() + 
+					":" + getIMACSConnection().getMACSConnBase().getPort() + "]");
+					
 	else // still disconnected
 	{		
 		title.append("   [Not Connected to MacsServer]");
@@ -554,8 +562,10 @@ public ScheduleTableModel getScheduleTableModel()
 	{
 		// Set up the schedule table
 		scheduleTableModel = new ScheduleTableModel();
-		scheduleTableModel.setConnection( getConnection() );
-		getConnection().addObserver(scheduleTableModel);
+		//scheduleTableModel.setConnection( getConnection() );
+		
+		getIMACSConnection().getMACSConnBase().addObserver(scheduleTableModel);
+		
 		
 		//Listen for TableModelEvent
 		getScheduleTableModel().addTableModelListener( this );
@@ -641,7 +651,7 @@ public void handlePopUpEvent(com.cannontech.clientutils.commonutils.GenericEvent
 			break;
 
 			case SchedulerPopUpMenu.UPDATE_SCHEDULE:
-			getConnection().sendRetrieveOneSchedule( getSelectedSchedule().getId() );
+			getIMACSConnection().sendRetrieveOneSchedule( getSelectedSchedule().getId() );
 			break;
 
 			default:
@@ -676,12 +686,12 @@ private void initConnections()
 
 	getSchedulePopupMenu().addPopUpEventListener( this );
 
-	getConnection().addMessageEventListener( getMessagePanel() );
+	getIMACSConnection().addMessageEventListener( getMessagePanel() );
 
 	getScheduleTableModel().addTableModelListener( this );
 
 	//Observer connection state changes
-	getConnection().addObserver(this);
+	getIMACSConnection().getMACSConnBase().addObserver(this);
 	//update( getConnection(), getConnection() );
 }
 /**
@@ -856,7 +866,7 @@ public void selectionPerformed( PropertyPanelEvent event)
 			// use a clone of the desired Schedule since we do not want our client
 			// to change its meaning of the Schedule
 			Schedule object = (Schedule) panel.getValue( com.cannontech.common.util.CtiUtilities.copyObject(getSelectedSchedule()) );
-			getConnection().sendUpdateSchedule( object );
+			getIMACSConnection().sendUpdateSchedule( object );
 		}
 		catch( java.io.IOException e )
 		{
@@ -906,7 +916,7 @@ public void selectionPerformed(WizardPanelEvent event)
 		try
 		{
 			// send the new schedule
-			getConnection().sendCreateSchedule( newItem );				
+			getIMACSConnection().sendCreateSchedule( newItem );				
 			getMessagePanel().messageEvent(new com.cannontech.common.util.MessageEvent(this, "Created new schedule '" + ((Schedule)newItem).getScheduleName() + "' successfully", com.cannontech.common.util.MessageEvent.INFORMATION_MESSAGE));
 		}
 		catch( java.io.IOException e )
@@ -994,12 +1004,12 @@ public void showEditorPanel( final Schedule selectedSchedule )
 
 		// IF ITS A SCRIPT SCHEDULE, WE MUST GET THE SCRIPT TEXT HERE
 		if( Schedule.SCRIPT_TYPE.equalsIgnoreCase(selectedSchedule.getType()) )
-			getConnection().sendRetrieveScriptText( selectedSchedule.getScriptFileName() );
+			getIMACSConnection().sendRetrieveScriptText( selectedSchedule.getScriptFileName() );
 
 		// use a clone of the desired Schedule since we do not want our client
 		// to change its meaning of the Schedule
 		Schedule tempSched = (Schedule)com.cannontech.common.util.CtiUtilities.copyObject(selectedSchedule);
-		tempSched.getNonPersistantData().setCategories( getConnection().getCategoryNames().keys() );
+		tempSched.getNonPersistantData().setCategories( getIMACSConnection().getCategoryNames().keys() );
 		panel.setValue( tempSched );
 		
 		frame.validate();
@@ -1034,7 +1044,7 @@ private void showWizardPanel(WizardPanel wizard)
 
 	// create a new schedule with the current categories available and other data
 	Schedule tempSched = new Schedule();
-	tempSched.getNonPersistantData().setCategories( getConnection().getCategoryNames().keys() );
+	tempSched.getNonPersistantData().setCategories( getIMACSConnection().getCategoryNames().keys() );
 	wizard.setValue( tempSched );
 	
 	frame.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage("tdcIcon.gif"));
@@ -1126,14 +1136,13 @@ public void tableChanged(TableModelEvent event )
  * @param o java.util.Observable
  * @param val java.lang.Object
  */
-public void update(java.util.Observable o, Object val)
+public void update(java.util.Observable obs, Object val)
 {
+
 	//Could be an instance of com.cannontech.macs.MACSClientConnection
 	//notifying us of a change in the connections state
-	if( val != null && val instanceof com.cannontech.macs.MACSClientConnection )
+	if( val != null && val instanceof IMACSConnection )
 	{
-		com.cannontech.macs.MACSClientConnection conn = (com.cannontech.macs.MACSClientConnection)val;
-
 		// set the frames Title to a connected/not connected text
 		final String connectedString = getConnectionState();
 				

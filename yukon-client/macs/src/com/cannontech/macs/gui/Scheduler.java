@@ -8,6 +8,10 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.JRootPane;
 
+import com.cannontech.message.macs.message.MACSCategoryChange;
+import com.cannontech.yukon.IMACSConnection;
+import com.cannontech.yukon.concrete.ResourceFactory;
+
 public class Scheduler implements java.awt.event.ActionListener, com.cannontech.tdc.SpecialTDCChild, java.util.Observer
 {
 	//an int read in as a CParm used to turn on/off features
@@ -20,14 +24,15 @@ public class Scheduler implements java.awt.event.ActionListener, com.cannontech.
 			com.cannontech.common.version.VersionTools.getYUKON_VERSION();
 
 	private SchedulerMainPanel mainPanel = null;
-	private com.cannontech.macs.MACSClientConnection connection = null;
 	private javax.swing.JButton[] buttonsArray = null;
+
 /**
  * Scheduler constructor comment.
  */
 public Scheduler() 
 {
 	super();
+	initialize();
 }
 
 public void initChild() {}
@@ -53,7 +58,7 @@ public void addActionListenerToJComponent( javax.swing.JComponent component )
 		comboBox = (javax.swing.JComboBox)component;
 		getComboBox().addActionListener( getScheduleActionListener() );
 
-		getConnection().addObserver( this );
+		getIMACSConnection().getMACSConnBase().addObserver( this );
 	}
 	
 }
@@ -69,7 +74,7 @@ public boolean needsComboIniting()
  */
 public void destroy() 
 {
-	try
+/*	try
 	{
 		if( connection != null )
 			connection.disconnect();
@@ -78,11 +83,10 @@ public void destroy()
 	{
 		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
-
+*/
 	mainPanel = null;
-	connection = null;
+//	connection = null;
 	buttonsArray = null;
-	connection = null;	
 	
 	System.gc();	
 }
@@ -93,7 +97,8 @@ public void destroy()
  */
 public static void displayScheduler( Scheduler scheduler, final JRootPane owner) 
 {
-	final SchedulerMainPanel mainPanel = new SchedulerMainPanel( false, scheduler.getConnection() );
+	final SchedulerMainPanel mainPanel = 
+			new SchedulerMainPanel( false );
 	
 	javax.swing.JMenuBar menuBar = new javax.swing.JMenuBar();
 
@@ -123,7 +128,7 @@ public void executeRefreshButton()
 {
 	try
 	{
-		getConnection().sendRetrieveAllSchedules();
+		getIMACSConnection().sendRetrieveAllSchedules();
 	}
 	catch( java.io.IOException e )
 	{
@@ -169,20 +174,16 @@ public void exportDataSet()
 private javax.swing.JComboBox getComboBox() {
 	return comboBox;
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (8/7/00 4:11:33 PM)
  */
-private com.cannontech.macs.MACSClientConnection getConnection() 
+private IMACSConnection getIMACSConnection() 
 {
-	if( connection == null )
-	{
-		connection = new com.cannontech.macs.MACSClientConnection();
-		initConnection();
-	}
-	
-	return connection;
+	return (IMACSConnection)ResourceFactory.getIYukon();
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (8/7/00 3:51:13 PM)
@@ -244,7 +245,8 @@ public javax.swing.JPanel getMainJPanel()
 {
 	if( mainPanel == null )
 	{
-		final SchedulerMainPanel mainPanel = new SchedulerMainPanel( true, getConnection() );
+		final SchedulerMainPanel mainPanel = 
+				new SchedulerMainPanel( true );
 		
 		this.mainPanel = mainPanel;
 
@@ -311,29 +313,11 @@ public String getVersion()
  * Insert the method's description here.
  * Creation date: (8/7/00 4:11:33 PM)
  */
-private void initConnection()
+private void initialize()
 {
-	String host = "127.0.0.1";
-	Integer port = new Integer("1900");
-	String portStr = "1900";
-	String readOnly = "0";
-
+	
    try
    {
-		host = com.cannontech.common.util.CtiProperties.getInstance().getProperty(
-					com.cannontech.common.util.CtiProperties.KEY_MACS_MACHINE, "127.0.0.1" );
-
-		try
-		{
-			portStr = com.cannontech.common.util.CtiProperties.getInstance().getProperty(
-					com.cannontech.common.util.CtiProperties.KEY_MACS_PORT, "1900");
-			port = new Integer(portStr);
-		}
-		catch (Exception e)
-		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-		}
-
 		//hex value representing the privelages of the user on this machine
 		userRightsInt = Integer.parseInt( com.cannontech.common.util.CtiProperties.getInstance().getProperty(
 				com.cannontech.common.util.CtiProperties.KEY_MACS_EDIT, "0"), 16 );
@@ -343,21 +327,8 @@ private void initConnection()
 	  com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
    }
 
-   getConnection().setHost(host);
-   getConnection().setPort(port.intValue());
-   getConnection().setAutoReconnect(true);
-   getConnection().setTimeToReconnect(5);
-
-   try
-   {
-  		getConnection().connectWithoutWait();
-	}
-	catch( java.io.IOException e )
-   {
-	   com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-   }
-   
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (3/5/2001 11:32:59 AM)
@@ -417,7 +388,7 @@ public static void main(String args[]) {
 
 
 		Scheduler.displayScheduler( s, appFrame.getRootPane() );
-		appFrame.setVisible(true);
+		appFrame.setVisible(true);		
 	}
 	catch( Exception e)
 	{
@@ -446,7 +417,7 @@ public void removeActionListenerFromJComponent( javax.swing.JComponent component
 		//((javax.swing.JComboBox)component).removeActionListener( getCapBankActionListener() );
 		getComboBox().removeActionListener( getScheduleActionListener() );
 		
-		getConnection().deleteObserver( this );
+		getIMACSConnection().getMACSConnBase().deleteObserver( this );
 		
 		comboBox = null;
 	}
@@ -501,7 +472,7 @@ public void setInitialTitle()
 {
 	// we must have the panel realize its the first time the connection
 	//  is being observed
-	mainPanel.update( getConnection(), null );
+	mainPanel.update( null, getIMACSConnection() );
 
 }
 /**
@@ -538,55 +509,53 @@ public void setSound(boolean soundToggle)
  */
 public void update(java.util.Observable source, Object obj )
 {
-	if( source instanceof com.cannontech.macs.MACSClientConnection )
+	if( source instanceof IMACSConnection
+		 && obj instanceof MACSCategoryChange )
 	{
-		if( obj instanceof com.cannontech.macs.events.MACSCategoryChange )
-		{
-			final com.cannontech.macs.events.MACSCategoryChange msg = (com.cannontech.macs.events.MACSCategoryChange)obj;
-				
-			if( getComboBox() != null )
-			{				
-				if( msg.id == com.cannontech.macs.events.MACSCategoryChange.INSERT )
+		final MACSCategoryChange msg = (MACSCategoryChange)obj;
+			
+		if( getComboBox() != null )
+		{				
+			if( msg.id == MACSCategoryChange.INSERT )
+			{
+				javax.swing.SwingUtilities.invokeLater( new Runnable()
 				{
-					javax.swing.SwingUtilities.invokeLater( new Runnable()
+					public void run()
 					{
-						public void run()
-						{
-							getComboBox().addItem( msg.arg.toString() );
-						}
-					});
+						getComboBox().addItem( msg.arg.toString() );
+					}
+				});
 
-				}
-				else if( msg.id == com.cannontech.macs.events.MACSCategoryChange.DELETE )
-				{
-					javax.swing.SwingUtilities.invokeLater( new Runnable()
-					{
-						public void run()
-						{
-							getComboBox().removeItem( msg.arg.toString() );
-						}
-					});
-
-				}
-				else if( msg.id == com.cannontech.macs.events.MACSCategoryChange.DELETE_ALL ) // remove all items
-				{
-					javax.swing.SwingUtilities.invokeLater( new Runnable()
-					{
-						public void run()
-						{
-							getComboBox().setSelectedIndex(0);
-							
-							for( int i = 1; i < getComboBox().getItemCount(); i++ )
-							{
-								getComboBox().removeItemAt(1);
-							}
-						}
-					});
-
-				}	
 			}
+			else if( msg.id == MACSCategoryChange.DELETE )
+			{
+				javax.swing.SwingUtilities.invokeLater( new Runnable()
+				{
+					public void run()
+					{
+						getComboBox().removeItem( msg.arg.toString() );
+					}
+				});
+
+			}
+			else if( msg.id == MACSCategoryChange.DELETE_ALL ) // remove all items
+			{
+				javax.swing.SwingUtilities.invokeLater( new Runnable()
+				{
+					public void run()
+					{
+						getComboBox().setSelectedIndex(0);
+						
+						for( int i = 1; i < getComboBox().getItemCount(); i++ )
+						{
+							getComboBox().removeItemAt(1);
+						}
+					}
+				});
+
+			}	
 		}
-		
 	}
+		
 }
 }

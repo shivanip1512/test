@@ -5,9 +5,11 @@ package com.cannontech.macs.gui;
  */
 import java.awt.Color;
 import java.awt.Font;
+import java.util.List;
 import java.util.Observable;
+import java.util.Vector;
 
-import com.cannontech.macs.MACSClientConnection;
+import com.cannontech.message.macs.message.DeleteSchedule;
 import com.cannontech.message.macs.message.Schedule;
 
 public class ScheduleTableModel extends javax.swing.table.AbstractTableModel implements java.util.Observer 
@@ -15,7 +17,10 @@ public class ScheduleTableModel extends javax.swing.table.AbstractTableModel imp
 	private java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat("MM-dd-yyyy E HH:mm");
 	private Font modelFont = new Font("dialog", Font.PLAIN, 12);
 	
-	private MACSClientConnection connection = null;
+	/* ROW DATA HERE */
+	private Vector allSchedules = null;
+	private List currentSchedules = null;
+	private java.util.Hashtable filterTable = new java.util.Hashtable(10); 
 
   	// the string for filtering all areas
   	public static final String ALL_FILTER = "All Categories";
@@ -54,12 +59,24 @@ public class ScheduleTableModel extends javax.swing.table.AbstractTableModel imp
 		//Pending schedule
 		Color.yellow
 	};
+
+	public static final java.util.Comparator SCHED_CAT_COMPARATOR = new java.util.Comparator()
+	{
+		public int compare(Object o1, Object o2)
+		{
+			String thisVal = ((Schedule)o1).getCategoryName();
+			String anotherVal = ((Schedule)o2).getCategoryName();
+			return( thisVal.compareToIgnoreCase(anotherVal) );
+		}
+	};
+
 	
 /**
  * ScheduleTableModel constructor comment.
  */
 public ScheduleTableModel() {
 	super();
+	setFilter( ALL_FILTER );
 }
 /**
  * Insert the method's description here.
@@ -67,7 +84,12 @@ public ScheduleTableModel() {
  */
 public void clear() 
 {
-	getConnection().clearSchedules();
+	filterTable.clear();
+
+	getAllSchedules().removeAllElements();
+
+	currentSchedules = getAllSchedules();
+	
 	fireTableDataChanged();
 }
 /**
@@ -170,14 +192,7 @@ public int getColumnCount() {
 public String getColumnName(int index) {
 	return COLUMN_NAMES[index];
 }
-/**
- * Insert the method's description here.
- * Creation date: (8/8/00 1:56:41 PM)
- * @return com.cannontech.macs.ClientConnection
- */
-public com.cannontech.macs.MACSClientConnection getConnection() {
-	return connection;
-}
+
 /**
  * Insert the method's description here.
  * Creation date: (2/23/2001 11:16:00 AM)
@@ -201,10 +216,7 @@ public Font getModelFont()
  */
 public int getRowCount() 
 {
-	if( getSchedules() != null )
-		return getSchedules().length;
-	else
-		return 0;
+	return getCurrentSchedules().size();
 }
 /**
  * This method returns the value of a row in the form of a Schedule object.
@@ -217,101 +229,81 @@ public Schedule getSchedule(int rowIndex)
 	if( rowIndex < 0 || rowIndex >= getRowCount() )
 		return null;
 
-	return getSchedules()[rowIndex];		
+	return (Schedule)getCurrentSchedules().get(rowIndex);		
 }
-/**
- * This method returns the value of a row in the form of a Schedule object.
- * @return com.cannontech.macs.Schedule
- */
-private Schedule[] getSchedules()
+
+private synchronized Vector getAllSchedules()
 {
-	synchronized( getConnection().retrieveSchedules() )
-	{
-		Schedule[] schedules = getConnection().retrieveSchedules();
+	if( allSchedules == null )
+		allSchedules = new Vector(10);
 		
-		if( getFilter().equalsIgnoreCase(ALL_FILTER) )
-		{
-			return getConnection().retrieveSchedules();
-		}
-		else
-		{
-			if( getConnection().getCategoryNames() != null )
-			{
-				if( getConnection().getCategoryNames().get(getFilter()) != null )
-				{
-					java.util.ArrayList list = (java.util.ArrayList)getConnection().getCategoryNames().get(getFilter());
-					Schedule[] scheds = new Schedule[list.size()];
-					list.toArray( scheds );
-					
-					return scheds;
-				}
-			}
-		}
-		
-	}
-	
-	return null;	
+	return allSchedules;
 }
+
+private synchronized List getCurrentSchedules()
+{
+	if( currentSchedules == null )
+		currentSchedules = getAllSchedules();
+
+	return currentSchedules;
+}
+
 /**
  * getValueAt method comment.
  */
-public Object getValueAt(int arg1, int arg2) 
+public Object getValueAt(int row, int col) 
 {
-	Schedule[] schedules = getSchedules();
+	Schedule sched = getSchedule( row );
 
-	if( arg1 < schedules.length )
-	{		
-		switch( arg2 )
+
+	switch( col )
+	{
+	 	case CATEGORY_NAME:
+			return sched.getCategoryName();
+			
+	 	case SCHEDULE_NAME:
+			return sched.getScheduleName();
+			
+		case CURRENT_STATE:
 		{
-		 	case CATEGORY_NAME:
-				return schedules[arg1].getCategoryName();
-				
-		 	case SCHEDULE_NAME:
-				return schedules[arg1].getScheduleName();
-				
-			case CURRENT_STATE:
+			String state = sched.getCurrentState();								
+			return state;
+		}
+			
+		case START_TIME:
+			String dateString;
+			if( sched.getCurrentState().equals( Schedule.STATE_RUNNING ) )
 			{
-				String state = schedules[arg1].getCurrentState();								
-				return state;
-			}
-				
-			case START_TIME:
-				String dateString;
-				if( schedules[arg1].getCurrentState().equals( Schedule.STATE_RUNNING ) )
-				{
-					if( schedules[arg1].getLastRunTime().getTime() <= Schedule.INVALID_DATE )
-						return " ----";
-					else
-						dateString = formatter.format( schedules[arg1].getLastRunTime() );
-				}
-				else
-				{
-					if( schedules[arg1].getNextRunTime().getTime() <= Schedule.INVALID_DATE )
-						return " ----";
-					else
-						dateString = formatter.format( schedules[arg1].getNextRunTime() );
-				}
-					
-				dateString = " " + dateString;					
-				return dateString;
-				
-			case STOP_TIME:
-				if( schedules[arg1].getNextStopTime().getTime() <= Schedule.INVALID_DATE )
+				if( sched.getLastRunTime().getTime() <= Schedule.INVALID_DATE )
 					return " ----";
 				else
-				{
-					dateString = formatter.format( schedules[arg1].getNextStopTime() );
-					dateString = " " + dateString;
-					return dateString;
-				}
+					dateString = formatter.format( sched.getLastRunTime() );
+			}
+			else
+			{
+				if( sched.getNextRunTime().getTime() <= Schedule.INVALID_DATE )
+					return " ----";
+				else
+					dateString = formatter.format( sched.getNextRunTime() );
+			}
 				
-			default:
-				return null;
-		}
-				
+			dateString = " " + dateString;					
+			return dateString;
+			
+		case STOP_TIME:
+			if( sched.getNextStopTime().getTime() <= Schedule.INVALID_DATE )
+				return " ----";
+			else
+			{
+				dateString = formatter.format( sched.getNextStopTime() );
+				dateString = " " + dateString;
+				return dateString;
+			}
+			
+		default:
+			return null;
 	}
-	else
-		return null;
+				
 	
 }
 /**
@@ -342,14 +334,7 @@ public void setCellColors(java.awt.Color[] newCellColors)
 	if( newCellColors.length >= getColumnCount() )
 		cellColors = newCellColors;
 }
-/**
- * Insert the method's description here.
- * Creation date: (8/8/00 1:56:41 PM)
- * @param newConnection com.cannontech.macs.ClientConnection
- */
-public void setConnection(com.cannontech.macs.MACSClientConnection newConnection) {
-	connection = newConnection;
-}
+
 /**
  * Insert the method's description here.
  * Creation date: (2/23/2001 11:16:00 AM)
@@ -359,9 +344,63 @@ public void setFilter(java.lang.String newFilter)
 {
 	filter = newFilter;
 
-   fireTableChanged(new com.cannontech.macs.events.MACSGenericTableModelEvent( this,
+System.out.println("SETFILT = " + getFilter() );
+
+		
+   //need to refresh all of our schedules   
+   if( ALL_FILTER.equalsIgnoreCase(getFilter()) )
+   {
+		currentSchedules = getAllSchedules();
+   }
+	else
+	{
+		java.util.List l = (java.util.List)filterTable.get( getFilter() );
+		if( l != null )
+		{
+			//we already have a sublist for this filter, use it!
+			currentSchedules = l;
+		}
+		else
+		{
+			int start = -1, stop = getAllSchedules().size();
+			for( int i = 0; i < getAllSchedules().size(); i++ )
+			{
+				Schedule realSched = (Schedule)getAllSchedules().get(i);
+				if( start <= -1 && realSched.getCategoryName().equalsIgnoreCase(getFilter()) )
+				{
+					start = i;
+				}
+				else if( start >= 0 
+							 && !realSched.getCategoryName().equalsIgnoreCase(getFilter()) )
+				{
+					stop = i;
+					break;
+				}
+
+			}
+
+			
+			if( start < 0 ) //should not occur
+			{
+				currentSchedules = getAllSchedules();
+				com.cannontech.clientutils.CTILogger.info("*** Could not find Schedule with the cateogyr = " 
+						+ getFilter() );
+			}
+			else  //this locks down AllSubBuses and disallows any structural modification to AllSubBuses
+				currentSchedules = getAllSchedules().subList(
+											start, 
+											(stop < 0 || stop > getAllSchedules().size() ? start+1 : stop) );
+						
+			filterTable.put( getFilter(), currentSchedules );
+		}
+	}
+
+
+   fireTableChanged(
+   	new com.cannontech.macs.events.MACSGenericTableModelEvent( this,
 	   com.cannontech.macs.events.MACSGenericTableModelEvent.FILTER_CHANGE) );
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (8/14/00 2:16:54 PM)
@@ -371,24 +410,113 @@ public void setModelFont(String name, int size)
 {
 	modelFont = new Font( name, Font.PLAIN, size );
 }
+
+private int findScheduleIndx( Schedule s )
+{
+	for( int i = 0; i < getRowCount(); i++ )
+		if( s.getId() == getSchedule(i).getId() )
+			return i;
+	
+	return -1;
+}
+
 /**
  * This method was created in VisualAge.
  * @param source Observable
  * @param obj java.lang.Object
  */
-public void update(Observable source, Object obj ) 
+public synchronized void update(Observable source, Object obj ) 
 {
-	//if( getConnection() != null && getConnection().isValid() )
-		//schedules = getConnection().retrieveSchedules();
 
-	javax.swing.SwingUtilities.invokeLater( new Runnable()
-	{
-		public void run()
-		{
-			// if we fireTableDataChanged(), we loose our selected schedule (JVM 1.3)
-			fireTableDataChanged();
+	if( obj instanceof Schedule
+	    || obj instanceof DeleteSchedule )
+	{		
+		int oldRowCount = getRowCount();		
+		boolean changeSize = false;
+		
+		if( obj instanceof Schedule )
+		{		
+			Schedule sched = (Schedule)obj;
+				
+			boolean found = false;
+	
+			for( int j = 0 ; j < getAllSchedules().size(); j++ )
+			{
+				Schedule row = (Schedule)getAllSchedules().get(j);
+				if( row.equals(sched) )
+				{
+					//we may have to redo our Sublists if the Category changed
+					if( !row.getCategoryName().equalsIgnoreCase( sched.getCategoryName() ) )
+						changeSize = true;
+	
+					getAllSchedules().setElementAt( sched, j );
+					found = true;
+				}
+			}
+	
+			if( !found )
+			{
+				changeSize = true;
+	
+				//always keep our main list in order by the Category
+				// find the first Schedule with the same Category
+				int indx = java.util.Collections.binarySearch( 
+						getAllSchedules(), 
+						sched, 
+						SCHED_CAT_COMPARATOR );
+	
+				if( indx < 0 )
+					getAllSchedules().add( sched );
+				else
+					getAllSchedules().add( indx, sched );
+			}
+	
 		}
-	});
+		else if( obj instanceof DeleteSchedule )
+		{
+			DeleteSchedule dSched = (DeleteSchedule)obj;
+
+			for( int j = 0 ; j < getAllSchedules().size(); j++ )
+			{
+				Schedule row = (Schedule)getAllSchedules().get(j);
+				if( row.getId() == dSched.getScheduleId() )
+				{
+					changeSize = true;
+					
+					getAllSchedules().remove( j );
+					break;
+				}
+			}
+			
+		}
+		
+		
+		if( changeSize )
+		{	
+			//since we increased the size of AllSubBuses, we must release all filter sublist
+		  	filterTable.clear();
+	
+		   setFilter( getFilter() );
+		}
+
+
+		//by using fireTableRowsUpdated(int,int) we do not clear the table selection		
+		if( oldRowCount == getRowCount() )
+			fireTableRowsUpdated( 0, getRowCount()-1 );
+		else
+			fireTableDataChanged();		
+	}
+	else
+	{
+		javax.swing.SwingUtilities.invokeLater( new Runnable()
+		{
+			public void run()
+			{
+				// if we fireTableDataChanged(), we loose our selected schedule (JVM 1.3)
+				fireTableDataChanged();
+			}
+		});
+	}
 	
 }
 }

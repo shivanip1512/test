@@ -4,6 +4,8 @@ import com.cannontech.yukon.IDatabaseCache;
 import com.cannontech.yukon.IDBPersistent;
 import com.cannontech.yukon.ISQLStatement;
 import com.cannontech.yukon.IYukon;
+import com.cannontech.yukon.IMACSConnection;
+//import com.cannontech.yukon.IConnectionBase;
 
 // ---------------------------------------------------------------------------------
 //  Imports for IDatabase implementation
@@ -18,12 +20,22 @@ import com.cannontech.database.data.lite.LiteBase;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import java.util.Observer;
 
 // ---------------------------------------------------------------------------------
 //  Imports for ISQLStatement implementation
 // ---------------------------------------------------------------------------------   
 import com.cannontech.common.util.CommandExecutionException;
 import java.sql.Connection;
+
+
+// ---------------------------------------------------------------------------------
+//  Imports for IMACSConnection implementation
+// ---------------------------------------------------------------------------------   
+import com.cannontech.common.util.MessageEventListener;
+import com.cannontech.message.macs.message.OverrideRequest;
+import com.cannontech.message.macs.message.Schedule;
+
 
 /**
  * @author rneuharth
@@ -38,11 +50,14 @@ public abstract class YukonResourceBase implements IYukon
    protected static IDatabaseCache dbCache = null;
    protected static IDBPersistent dbPersistent = null;
    protected static ISQLStatement sqlStatement = null;
+   protected static IMACSConnection macsConnection = null;
 
 
    public abstract IDatabaseCache getDBCache();
    public abstract ISQLStatement getSQLStatement();
    public abstract IDBPersistent getDBPersistent();
+   public abstract IMACSConnection getMACSConnection();
+
    
    // ---------------------------------------------------------------------------------
    //  START of the IDBPersistent implementation
@@ -100,6 +115,72 @@ public abstract class YukonResourceBase implements IYukon
    };
 
 
+   // ---------------------------------------------------------------------------------
+   //  START of the IMACSConnection implementation
+   // ---------------------------------------------------------------------------------   
+	public void addMessageEventListener(MessageEventListener listener) {
+		getMACSConnection().addMessageEventListener( listener );
+	}
+
+	public void doHandleMessage(Object obj) {
+		getMACSConnection().doHandleMessage( obj );
+	}
+
+	public void fireMessageEvent(com.cannontech.common.util.MessageEvent event) {
+		getMACSConnection().fireMessageEvent( event );
+	}
+
+	public Schedule[] getCategories( String category ) {
+		return getMACSConnection().getCategories( category );
+	}		
+
+	public java.util.Hashtable getCategoryNames() {
+		return getMACSConnection().getCategoryNames();
+	}
+
+	public Schedule[] retrieveSchedules() {
+		return getMACSConnection().retrieveSchedules();
+	}
+
+	public void sendCreateSchedule(Schedule sched) throws java.io.IOException {
+		getMACSConnection().sendCreateSchedule( sched );
+	}
+
+	public void sendDeleteSchedule(int scheduleID) throws java.io.IOException {
+		getMACSConnection().sendDeleteSchedule( scheduleID );
+	}
+
+	public void sendEnableDisableSchedule(Schedule sched) throws java.io.IOException {
+		getMACSConnection().sendEnableDisableSchedule( sched );
+	}
+
+	public void sendRetrieveAllSchedules() throws java.io.IOException { 
+		getMACSConnection().sendRetrieveAllSchedules();
+	}
+
+	public void sendRetrieveOneSchedule( int schedId ) throws java.io.IOException { 
+		getMACSConnection().sendRetrieveOneSchedule( schedId );
+	}
+
+	public void sendRetrieveScriptText(String scriptFileName) throws java.io.IOException  {
+		getMACSConnection().sendRetrieveScriptText( scriptFileName );
+	}
+
+	public void sendScriptFile(com.cannontech.message.macs.message.ScriptFile file) throws java.io.IOException {
+		getMACSConnection().sendScriptFile( file );
+	}
+
+	public void sendStartStopSchedule(Schedule sched, java.util.Date startTime, java.util.Date stopTime, int command ) throws java.io.IOException {
+		getMACSConnection().sendStartStopSchedule( sched, startTime, stopTime, command );
+	}
+
+	public void sendUpdateSchedule(Schedule sched ) throws java.io.IOException { 
+		getMACSConnection().sendUpdateSchedule( sched);
+	}
+
+//	public IConnectionBase getMACSConnBase() {
+//		return getMACSConnection();
+//	}
 
    // ---------------------------------------------------------------------------------
    //  START of the IDatabase implementation
