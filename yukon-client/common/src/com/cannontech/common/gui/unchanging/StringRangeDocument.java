@@ -88,7 +88,7 @@ public void insertString(int offset, String string, javax.swing.text.AttributeSe
 
 		currentValue = checkInputValue( newValue );
 			
-		if( offset < maxCharCount )
+		if( offset < maxCharCount && newValue.length() < maxCharCount )
 			super.insertString( offset, string, attributes );
 	}
 }
