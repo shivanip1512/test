@@ -7,7 +7,7 @@ package com.cannontech.graph.model;
  */
 public class TrendProperties
 {
-	private static long resolutionInMillis = 1000;	//default to millis
+	private static long resolutionInMillis = 1;	//default to millis
 		
 	public static String rangeLabel1 = "Reading";
 	public  static String rangeLabel2 = "Reading";
