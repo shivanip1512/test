@@ -1,5 +1,12 @@
 @include /custom/MCT-410iLE.txt
+Ping Meter = ping
+=
 Read Energy = getvalue kwh
-Read Current Demand = getvalue demand
-Read Options = getconfig model
-Read General Info = getstatus internal
+Read KW Demand, Current Voltage, Blink Count = getvalue demand
+Read Min / Max Voltage = getvalue voltage
+=
+Read Time / Date = getconfig time
+Read Last Timesync = getconfig timesync
+Write Time / Date to Meter = putconfig emetcon timesync
+=
+Read Status & Event Flags = getstatus internal
