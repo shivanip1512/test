@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_port.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/04/23 14:50:21 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/04/23 15:18:27 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -124,6 +124,7 @@ void CtiPortManager::RefreshList(CtiPort* (*Factory)(RWDBReader &),
          {
             Map.apply(ApplyResetUpdated, NULL);
          }
+         resetErrorCode();
 
          {
             RWDBConnection conn = getConnection();

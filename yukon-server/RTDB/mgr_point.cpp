@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_point.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/04/23 14:50:20 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/04/23 15:18:26 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -263,6 +263,7 @@ void CtiPointManager::RefreshList(LONG paoID)
 
                 // Reset everyone's Updated flag.
                 Map.apply(ApplyPointResetUpdated, NULL);
+                resetErrorCode();
 
                 RWDBDatabase   db       = conn.database();
                 RWDBSelector   selector = conn.database().selector();
