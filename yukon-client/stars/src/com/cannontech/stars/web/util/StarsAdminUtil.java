@@ -302,7 +302,7 @@ public class StarsAdminUtil {
 	{
 		ArrayList companies = energyCompany.getServiceCompanies();
 		
-		for (int i = 0; i < companies.size(); i++) {
+		for (int i = companies.size() - 1; i >= 0; i--) {
 			LiteServiceCompany liteCompany = (LiteServiceCompany) companies.get(i);
 			deleteServiceCompany( liteCompany.getCompanyID(), energyCompany );
 		}
