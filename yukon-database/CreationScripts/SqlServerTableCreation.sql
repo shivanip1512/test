@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     2/11/2005 11:37:52 AM                        */
+/* Created on:     3/31/2005 3:24:36 PM                         */
 /*==============================================================*/
 
 
@@ -4158,7 +4158,6 @@ insert into fdrinterface values (18, 'DSM2FILEIN', 'Receive,Receive for control'
 insert into FDRInterface values (19, 'XA21LM','Receive,Send', 't' );
 insert into fdrinterface values (20,'BEPC','Send','f');
 insert into FDRInterface values (21, 'PI','Receive', 't' );
-
 alter table FDRInterface
    add constraint PK_FDRINTERFACE primary key  (InterfaceID)
 go
@@ -4212,7 +4211,7 @@ insert into fdrinterfaceoption values(18, 'Point ID', 2, 'Text', '(none)');
 insert into FDRInterfaceOption values(19, 'Translation', 1, 'Text', '(none)' );
 insert into fdrinterfaceoption values(20, 'Point', 1, 'Combo', 'TOTAL LOAD KW' );
 insert into FDRInterfaceOption values(21, 'Tag Name', 1, 'Text', '(none)' );
-insert into FDRInterfaceOption values(21, 'Period (sec)', 1, 'Text', '(none)' );
+insert into FDRInterfaceOption values(21, 'Period (sec)', 2, 'Text', '(none)' );
 
 alter table FDRInterfaceOption
    add constraint PK_FDRINTERFACEOPTION primary key  (InterfaceID, Ordering)
@@ -6303,7 +6302,7 @@ insert into YukonGroupRole values(-87,-1,-4,-1302,'(none)');
 insert into YukonGroupRole values(-88,-1,-4,-1303,'(none)');
 insert into YukonGroupRole values(-89,-1,-4,-1304,'(none)');
 insert into YukonGroupRole values(-90,-1,-4,-1305,'(none)');
-
+insert into YukonGroupRole values(-91,-1,-4,-1306,'(none)');
 
 /* Assign roles to the default operator group to allow them to use all the main rich Yukon applications */
 /* Database Editor */
@@ -7525,6 +7524,7 @@ insert into YukonRoleProperty values(-1302,-4,'acct_port','1813','Accounting por
 insert into YukonRoleProperty values(-1303,-4,'secret_key','cti','Client machine secret key value, defined by the server.');
 insert into YukonRoleProperty values(-1304,-4,'auth_method','(none)','Authentication method. Possible values are (none) | PAP, [chap, others to follow soon]');
 insert into YukonRoleProperty values(-1305,-4,'authentication_mode','Yukon','Authentication mode to use.  Valid values are:   Yukon | Radius');
+insert into YukonRoleProperty values(-1306,-4,'auth_timeout','30','Number of seconds before the authentication process times out');
 
 insert into YukonRoleProperty values(-1400,-5,'voice_app','login','The voice server application that Yukon should use');
 insert into YukonRoleProperty values(-1401,-5,'call_timeout','30','The time-out in seconds given to each outbound call');
