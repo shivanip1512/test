@@ -312,8 +312,7 @@ insert into YukonRole values(-303,'Esubstation Drawings','CICustomer','Customer 
 insert into YukonRole values(-304,'Commercial Metering','CICustomer','Customer access to commercial metering');
 
 /* Consumer roles */
-insert into YukonRole values(-400,'Consumer Information','Consumer','Description');
-insert into YukonRole values(-401,'Residential Customer','Consumer','Access to residential customer information');
+insert into YukonRole values(-400,'Residential Customer','Consumer','Access to residential customer information');
 go
 
 
@@ -480,39 +479,39 @@ insert into YukonRoleProperty values(-30302,-303,'Control','false','Controls con
 insert into YukonRoleProperty values(-30400,-304,'Trending Disclaimer',' ','The disclaimer that appears with trends');
 
 /* Residential Customer Role Properties */
-insert into YukonRoleProperty values(-40100,-401,'Not Implemented','false','Controls whether to show the features not implemented yet (not recommended)');
-insert into YukonRoleProperty values(-40101,-401,'Account General','true','Controls whether to show the general account information');
-insert into YukonRoleProperty values(-40102,-401,'Metering Usage','false','Controls whether to show the metering time of use');
-insert into YukonRoleProperty values(-40103,-401,'Programs Control History','true','Controls whether to show the program control history');
-insert into YukonRoleProperty values(-40104,-401,'Programs Enrollment','true','Controls whether to enable the program enrollment feature');
-insert into YukonRoleProperty values(-40105,-401,'Programs Opt Out','true','Controls whether to enable the program opt out/reenable feature');
-insert into YukonRoleProperty values(-40106,-401,'Hardwares Thermostat','true','Controls whether to enable the thermostat programming feature');
-insert into YukonRoleProperty values(-40107,-401,'Questions Utility','true','Controls whether to show the contact information of the energy company');
-insert into YukonRoleProperty values(-40108,-401,'Questions FAQ','true','Controls whether to show customer FAQs');
-insert into YukonRoleProperty values(-40109,-401,'Admin Change Login','true','Controls whether to allow customers to change their own login');
-insert into YukonRoleProperty values(-40130,-401,'Notification on General Page','false','Controls whether to show the notification email box on the general page (useful only when the programs enrollment feature is not selected)')
-insert into YukonRoleProperty values(-40131,-401,'Hide Opt Out Box','true','Controls whether to show the opt out box on the programs opt out page');
-insert into YukonRoleProperty values(-40132,-401,'Customized FAQ Link','false','Controls whether the FAQ link links to a customized location provided by the energy company');
-insert into YukonRoleProperty values(-40133,-401,'Customized Utility Email Link','false','Controls whether the utility email links to a customized location provided by the energy company');
-insert into YukonRoleProperty values(-40150,-401,'Web Link FAQ','FAQ.jsp','The customized FAQ link provided by the energy company');
-insert into YukonRoleProperty values(-40151,-401,'Web Link Utility Email','FAQ.jsp','The customized utility email provided by the energy company');
-insert into YukonRoleProperty values(-40152,-401,'Web Text Control','control','The energy company specific term for control');
-insert into YukonRoleProperty values(-40153,-401,'Web Text Controlled','controlled','The energy company specific term for controlled');
-insert into YukonRoleProperty values(-40154,-401,'Web Text Controlling','controlling','The energy company specific term for controlling');
-insert into YukonRoleProperty values(-40155,-401,'Recommended Settings Button','Recommended Settings','The energy company specific term for Recommended Settings button on the thermostat schedule page');
-insert into YukonRoleProperty values(-40156,-401,'General Title','WELCOME TO ENERGY COMPANY SERVICES!','Title of the general page');
-insert into YukonRoleProperty values(-40157,-401,'Programs Control History Title','PROGRAMS - CONTROL SUMMARY','Title of the programs control summary page');
-insert into YukonRoleProperty values(-40158,-401,'Program Control History Title','PROGRAM - CONTROL HISTORY','Title of the control history page of a particular program');
-insert into YukonRoleProperty values(-40159,-401,'Program Control Summary Title','PROGRAM - CONTROL SUMMARY','Title of the control summary page of a particular program');
-insert into YukonRoleProperty values(-40160,-401,'Programs Enrollment Title','PROGRAMS - ENROLLMENT','Title of the programs enrollment page');
-insert into YukonRoleProperty values(-40161,-401,'Programs Opt Out Title','PROGRAMS - OPT OUT','Title of the programs opt out page');
-insert into YukonRoleProperty values(-40162,-401,'Utility Title','QUESTIONS - UTILITY','Title of the utility page');
-insert into YukonRoleProperty values(-40163,-401,'Change Login Title','ADMINISTRATION - CHANGE LOGIN','Title of the change login page');
-insert into YukonRoleProperty values(-40164,-401,'Programs Control History Label','Control History','Text of the programs control history link');
-insert into YukonRoleProperty values(-40165,-401,'Programs Enrollment Label','Enrollment','Text of the programs enrollment link');
-insert into YukonRoleProperty values(-40166,-401,'Programs Opt Out Label','Opt Out','Text of the programs opt out link');
-insert into YukonRoleProperty values(-40167,-401,'General Description','Thank you for participating in our Consumer Energy Services programs. By participating, you have helped to optimize our delivery of energy, stabilize rates, and reduce energy costs. Best of all, you are saving energy dollars!<br><br>This site is designed to help manage your programs on-line from anywhere with access to a Web browser.','Description on the general page');
-insert into YukonRoleProperty values(-40168,-401,'Opt Out Description','If you would like to temporarily opt out of all programs, select the time frame from the drop-down box below, then select Submit.','Description on the programs opt out page');
+insert into YukonRoleProperty values(-40000,-400,'Not Implemented','false','Controls whether to show the features not implemented yet (not recommended)');
+insert into YukonRoleProperty values(-40001,-400,'Account General','true','Controls whether to show the general account information');
+insert into YukonRoleProperty values(-40002,-400,'Metering Usage','false','Controls whether to show the metering time of use');
+insert into YukonRoleProperty values(-40003,-400,'Programs Control History','true','Controls whether to show the program control history');
+insert into YukonRoleProperty values(-40004,-400,'Programs Enrollment','true','Controls whether to enable the program enrollment feature');
+insert into YukonRoleProperty values(-40005,-400,'Programs Opt Out','true','Controls whether to enable the program opt out/reenable feature');
+insert into YukonRoleProperty values(-40006,-400,'Hardwares Thermostat','true','Controls whether to enable the thermostat programming feature');
+insert into YukonRoleProperty values(-40007,-400,'Questions Utility','true','Controls whether to show the contact information of the energy company');
+insert into YukonRoleProperty values(-40008,-400,'Questions FAQ','true','Controls whether to show customer FAQs');
+insert into YukonRoleProperty values(-40009,-400,'Admin Change Login','true','Controls whether to allow customers to change their own login');
+insert into YukonRoleProperty values(-40030,-400,'Notification on General Page','false','Controls whether to show the notification email box on the general page (useful only when the programs enrollment feature is not selected)')
+insert into YukonRoleProperty values(-40031,-400,'Hide Opt Out Box','true','Controls whether to show the opt out box on the programs opt out page');
+insert into YukonRoleProperty values(-40032,-400,'Customized FAQ Link','false','Controls whether the FAQ link links to a customized location provided by the energy company');
+insert into YukonRoleProperty values(-40033,-400,'Customized Utility Email Link','false','Controls whether the utility email links to a customized location provided by the energy company');
+insert into YukonRoleProperty values(-40050,-400,'Web Link FAQ','FAQ.jsp','The customized FAQ link provided by the energy company');
+insert into YukonRoleProperty values(-40051,-400,'Web Link Utility Email','FAQ.jsp','The customized utility email provided by the energy company');
+insert into YukonRoleProperty values(-40052,-400,'Web Text Control','control','The energy company specific term for control');
+insert into YukonRoleProperty values(-40053,-400,'Web Text Controlled','controlled','The energy company specific term for controlled');
+insert into YukonRoleProperty values(-40054,-400,'Web Text Controlling','controlling','The energy company specific term for controlling');
+insert into YukonRoleProperty values(-40055,-400,'Recommended Settings Button','Recommended Settings','The energy company specific term for Recommended Settings button on the thermostat schedule page');
+insert into YukonRoleProperty values(-40056,-400,'General Title','WELCOME TO ENERGY COMPANY SERVICES!','Title of the general page');
+insert into YukonRoleProperty values(-40057,-400,'Programs Control History Title','PROGRAMS - CONTROL SUMMARY','Title of the programs control summary page');
+insert into YukonRoleProperty values(-40058,-400,'Program Control History Title','PROGRAM - CONTROL HISTORY','Title of the control history page of a particular program');
+insert into YukonRoleProperty values(-40059,-400,'Program Control Summary Title','PROGRAM - CONTROL SUMMARY','Title of the control summary page of a particular program');
+insert into YukonRoleProperty values(-40060,-400,'Programs Enrollment Title','PROGRAMS - ENROLLMENT','Title of the programs enrollment page');
+insert into YukonRoleProperty values(-40061,-400,'Programs Opt Out Title','PROGRAMS - OPT OUT','Title of the programs opt out page');
+insert into YukonRoleProperty values(-40062,-400,'Utility Title','QUESTIONS - UTILITY','Title of the utility page');
+insert into YukonRoleProperty values(-40063,-400,'Change Login Title','ADMINISTRATION - CHANGE LOGIN','Title of the change login page');
+insert into YukonRoleProperty values(-40064,-400,'Programs Control History Label','Control History','Text of the programs control history link');
+insert into YukonRoleProperty values(-40065,-400,'Programs Enrollment Label','Enrollment','Text of the programs enrollment link');
+insert into YukonRoleProperty values(-40066,-400,'Programs Opt Out Label','Opt Out','Text of the programs opt out link');
+insert into YukonRoleProperty values(-40067,-400,'General Description','Thank you for participating in our Consumer Energy Services programs. By participating, you have helped to optimize our delivery of energy, stabilize rates, and reduce energy costs. Best of all, you are saving energy dollars!<br><br>This site is designed to help manage your programs on-line from anywhere with access to a Web browser.','Description on the general page');
+insert into YukonRoleProperty values(-40068,-400,'Opt Out Description','If you would like to temporarily opt out of all programs, select the time frame from the drop-down box below, then select Submit.','Description on the programs opt out page');
 go
 
 
