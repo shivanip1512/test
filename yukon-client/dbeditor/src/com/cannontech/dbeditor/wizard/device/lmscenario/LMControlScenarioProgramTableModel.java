@@ -22,12 +22,14 @@ public class LMControlScenarioProgramTableModel extends AbstractTableModel
 {
 	public final static int PROGRAMNAME_COLUMN = 0;
 	public final static int STARTOFFSET_COLUMN = 1;
-	public final static int STARTGEAR_COLUMN = 2;
+	public final static int STOPOFFSET_COLUMN = 2;
+	public final static int STARTGEAR_COLUMN = 3;
 	
 	private String[] COLUMN_NAMES = 
 	{
 		"Program", 
-		"Start Offset", 
+		"Start Offset",
+		"Stop Offset", 
 		"Start Gear"
 	};
 	
@@ -39,13 +41,15 @@ public class LMControlScenarioProgramTableModel extends AbstractTableModel
 	{
 		private String programName = null;
 		private Integer startOffset = null;
+		private Integer stopOffset = null;
 		private LiteGear initialGear = null;
 		
-		public RowValue(String programName, Integer startOffset, LiteGear initialGear )
+		public RowValue(String programName, Integer startOffset, Integer stopOffset, LiteGear initialGear )
 		{
 			super();
 			this.programName = programName;
 			this.startOffset = startOffset;
+			this.stopOffset = stopOffset;
 			this.initialGear = initialGear;
 		}
 
@@ -55,6 +59,9 @@ public class LMControlScenarioProgramTableModel extends AbstractTableModel
 
 		public Integer getStartOffset()
 			{ return startOffset; }
+			
+		public Integer getStopOffset()
+			{ return stopOffset; }
 		
 		public LiteGear getStartGear()
 			{ return initialGear; }
@@ -65,6 +72,9 @@ public class LMControlScenarioProgramTableModel extends AbstractTableModel
 
 		public void setStartOffset(Integer val)
 			{ startOffset = val; }
+			
+		public void setStopOffset(Integer val)
+			{ stopOffset = val; }
 
 		public void setStartGear(LiteGear val)
 			{ initialGear = val; }
@@ -76,9 +86,9 @@ public class LMControlScenarioProgramTableModel extends AbstractTableModel
 		super();
 	}
 	
-	public void addRowValue(String programName, Integer startOffset, LiteGear initialGear) 
+	public void addRowValue(String programName, Integer startOffset, Integer stopOffset, LiteGear initialGear) 
 	{
-		getRows().addElement( new RowValue(programName, startOffset, initialGear) );
+		getRows().addElement( new RowValue(programName, startOffset, stopOffset, initialGear) );
 	}
 	
 	public String getProgramNameAt(int row ) 
@@ -122,6 +132,19 @@ public class LMControlScenarioProgramTableModel extends AbstractTableModel
 		if( row <= getRows().size() )
 		{
 			return ((RowValue)getRows().elementAt(row)).getStartOffset();
+		}
+		else
+			return null;
+	}
+	
+	public Integer getStopOffsetAt(int row ) 
+	{
+		if( getRows() == null )
+			return null;
+
+		if( row <= getRows().size() )
+		{
+			return ((RowValue)getRows().elementAt(row)).getStopOffset();
 		}
 		else
 			return null;
@@ -174,6 +197,9 @@ public class LMControlScenarioProgramTableModel extends AbstractTableModel
 
 				case STARTOFFSET_COLUMN:
 					return rowVal.getStartOffset();
+					
+				case STOPOFFSET_COLUMN:
+					return rowVal.getStopOffset();
 	
 				case STARTGEAR_COLUMN:
 					return rowVal.getStartGear();
@@ -207,7 +233,7 @@ public class LMControlScenarioProgramTableModel extends AbstractTableModel
 	{
 		if( rowNumber >=0 && rowNumber < getRowCount() )
 		{
-			getRows().setElementAt( new RowValue(name, start, gear), rowNumber );
+			getRows().setElementAt( new RowValue(name, start, stop, gear), rowNumber );
 		}
 	}
 	
@@ -225,6 +251,11 @@ public class LMControlScenarioProgramTableModel extends AbstractTableModel
 				case STARTOFFSET_COLUMN:
 					if(value.toString().compareTo("") != 0)
 						((RowValue)getRows().elementAt(row)).setStartOffset(new Integer(value.toString()));
+					break;
+					
+				case STOPOFFSET_COLUMN:
+					if(value.toString().compareTo("") != 0)
+						((RowValue)getRows().elementAt(row)).setStopOffset(new Integer(value.toString()));
 					break;
 				
 				case STARTGEAR_COLUMN:
