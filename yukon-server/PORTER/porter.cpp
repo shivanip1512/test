@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.63 $
-* DATE         :  $Date: 2004/11/18 23:41:38 $
+* REVISION     :  $Revision: 1.64 $
+* DATE         :  $Date: 2004/11/24 17:16:53 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -165,6 +165,7 @@ using namespace std;
 
 #include "pilserver.h"
 #include "msg_pcrequest.h"
+#include "numstr.h"
 
 #define DO_GATEWAYTHREAD               1
 #define DO_PORTERINTERFACETHREAD       1
@@ -501,9 +502,12 @@ void applyDeviceQueueReport(const long unusedid, CtiDeviceSPtr RemoteDevice, voi
 
         if(QueEntCnt > 0)
         {
+            RWTime ent(RemoteDevice->getExclusion().getEvaluateNextAt());
             {
+
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "    Transmitter:  " << setw(25) << RemoteDevice->getName() << " queued commands:  " << setw(4) << QueEntCnt << " Evaluate Next at " << RemoteDevice->getExclusion().getEvaluateNextAt() << endl;
+                // dout << "    Transmitter:  " << setw(50) << RemoteDevice->getName() << " queued commands:  " << setw(4) << QueEntCnt << " Evaluate Next at " << ent << (ent < ent.now() ? ". *** PAST DUE ***" : ".") << endl;
+                dout << "  " << setw(4) << QueEntCnt  << " queued commands. Evaluate next at " << ent << ". Transmitter: " << RemoteDevice->getName() << (ent < ent.now() ? ". *** PAST DUE ***" + CtiNumStr(ent.now().seconds() - ent.seconds()) : ".") << endl;
             }
         }
     }
@@ -933,13 +937,13 @@ INT PorterMainFunction (INT argc, CHAR **argv)
             }
         }
 
-        if( last_print + 60 <= ::time(0) )
+/*        if( last_print + 60 <= ::time(0) )
         {
             last_print = ::time(0);
 
             processInputFunction(0x71);  //  do an alt-q every 30 seconds
         }
-
+  */
         CTISleep(250);
     }
 
