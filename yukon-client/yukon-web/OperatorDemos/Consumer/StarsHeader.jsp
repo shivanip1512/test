@@ -17,18 +17,31 @@
 		response.sendRedirect("/login.jsp"); return;
 	}
 	
-	StarsCustAccountInfo accountInfo = (StarsCustAccountInfo) operator.getAttribute("CUSTOMER_ACCOUNT_INFORMATION");
+    String dbAlias = operator.getDatabaseAlias();	
 	
-	StarsCustomerAccount account = accountInfo.getStarsCustomerAccount();
-    StreetAddress propAddr = account.getStreetAddress();
-    StarsSiteInformation siteInfo = account.getStarsSiteInformation();
-    BillingAddress billAddr = account.getBillingAddress();
-    PrimaryContact primContact = account.getPrimaryContact();
+	StarsCustAccountInfo accountInfo = null;
+	StarsCustomerAccount account = null;
+    StreetAddress propAddr = null;
+    StarsSiteInformation siteInfo = null;
+    BillingAddress billAddr = null;
+    PrimaryContact primContact = null;
 	
-	StarsAppliances appliances = accountInfo.getStarsAppliances();
-	StarsInventories inventories = accountInfo.getStarsInventories();
-	StarsLMPrograms programs = accountInfo.getStarsLMPrograms();
-	StarsGetEnrollmentProgramsResponse categories = (StarsGetEnrollmentProgramsResponse) operator.getAttribute( "ENROLLMENT_PROGRAMS" );
+	StarsAppliances appliances = null;
+	StarsInventories inventories = null;
+	StarsLMPrograms programs = null;
+	StarsGetEnrollmentProgramsResponse categories = null;
 	
-    String dbAlias = operator.getDatabaseAlias();
+	accountInfo = (StarsCustAccountInfo) operator.getAttribute(CommonUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION");
+	if (accountInfo != null) {
+		account = accountInfo.getStarsCustomerAccount();
+		propAddr = account.getStreetAddress();
+		siteInfo = account.getStarsSiteInformation();
+		billAddr = account.getBillingAddress();
+		primContact = account.getPrimaryContact();
+		
+		appliances = accountInfo.getStarsAppliances();
+		inventories = accountInfo.getStarsInventories();
+		programs = accountInfo.getStarsLMPrograms();
+		categories = (StarsGetEnrollmentProgramsResponse) operator.getAttribute( "ENROLLMENT_PROGRAMS" );
+	}
 %>
