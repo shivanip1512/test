@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2004/11/24 17:11:39 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2004/12/01 20:14:37 $
 *
 * HISTORY      :
 * $Log: dev_rtc.cpp,v $
+* Revision 1.18  2004/12/01 20:14:37  cplender
+* Verification Thread now looks for '\0'.
+*
 * Revision 1.17  2004/11/24 17:11:39  cplender
 * SA305 Verification was not complete.
 *
@@ -545,12 +548,11 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
             OutMessage->VerificationSequence = VerificationSequenceGen();
         }
 
-        if( OutMessage->Buffer.SASt._code305 )
+        if( OutMessage->Buffer.SASt._code305[0] != '\0' )
         {
-
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") " << OutMessage->TargetID << endl;
             }
             memcpy((void*)codestr, (void*)(OutMessage->Buffer.SASt._code305), OutMessage->Buffer.SASt._bufferLen);
             codestr[OutMessage->Buffer.SASt._bufferLen + 1] = 0;
