@@ -35,6 +35,10 @@ public abstract class LMProgramDirectGear
 	private String methodOptionType = OPTION_FIXED_COUNT;
 	private Integer methodOptionMax = new Integer(0);
 	private Integer gearID = null;
+	private Integer rampInInterval = new Integer(0);
+	private Integer rampInPercent = new Integer(0);
+	private Integer rampOutInterval = new Integer(0);
+	private Integer rampOutPercent = new Integer(0);
 
 	public static final String SETTER_COLUMNS[] =
    {
@@ -56,6 +60,10 @@ public abstract class LMProgramDirectGear
 		"GroupSelectionMethod",
 		"MethodOptionType",
 		"MethodOptionMax",
+		"RampInInterval",
+		"RampInPercent",
+		"RampOutInterval",
+		"RampOutPercent"
    };
 
 	public static final String CONSTRAINT_COLUMNS[] = { "GearID" };
@@ -84,7 +92,8 @@ public abstract class LMProgramDirectGear
 			getCycleRefreshRate(), getMethodStopType(), getChangeCondition(),
 			getChangeDuration(), getChangePriority(), getChangeTriggerNumber(),
 			getChangeTriggerOffset(), getPercentReduction(), getGroupSelectionMethod(),
-			getMethodOptionType(), getMethodOptionMax(), getGearID()
+			getMethodOptionType(), getMethodOptionMax(), getGearID(), getRampInInterval(),
+			getRampInPercent(), getRampOutInterval(), getRampOutPercent()
 		};
 
 		add(TABLE_NAME, addValues);
@@ -511,6 +520,26 @@ public static final Integer getDefaultGearID(Integer programID, java.sql.Connect
 	{
 		return percentReduction;
 	}
+	
+	public java.lang.Integer getRampInInterval()
+	{
+		return rampInInterval;
+	}
+	
+	public java.lang.Integer getRampInPercent()
+	{
+		return rampInPercent;
+	}
+	
+	public java.lang.Integer getRampOutInterval()
+	{
+		return rampOutInterval;
+	}
+	
+	public java.lang.Integer getRampOutPercent()
+	{
+		return rampOutPercent;
+	}
 	/**
 	 * retrieve method comment.
 	 */
@@ -540,6 +569,10 @@ public static final Integer getDefaultGearID(Integer programID, java.sql.Connect
 			setGroupSelectionMethod((String) results[15]);
 			setMethodOptionType((String) results[16]);
 			setMethodOptionMax((Integer) results[17]);
+			setRampInInterval((Integer) results[18]);
+			setRampInPercent((Integer) results[19]);
+			setRampOutInterval((Integer) results[20]);
+			setRampOutPercent((Integer) results[21]);
 		}
 		else
 			throw new Error(
@@ -708,6 +741,26 @@ public static final Integer getDefaultGearID(Integer programID, java.sql.Connect
 	{
 		percentReduction = newPercentReduction;
 	}
+	
+	public void setRampInInterval(java.lang.Integer newInterval)
+	{
+		rampInInterval = newInterval;
+	}
+	
+	public void setRampInPercent(java.lang.Integer newPercent)
+	{
+		rampInPercent = newPercent;
+	}
+	
+	public void setRampOutInterval(java.lang.Integer newInterval)
+	{
+		rampOutInterval = newInterval;
+	}
+	
+	public void setRampOutPercent(java.lang.Integer newPercent)
+	{
+		rampOutPercent = newPercent;
+	}
 	/**
 	 * Insert the method's description here.
 	 * Creation date: (2/11/2002 3:34:44 PM)
@@ -729,7 +782,8 @@ public static final Integer getDefaultGearID(Integer programID, java.sql.Connect
 			getCycleRefreshRate(), getMethodStopType(), getChangeCondition(),
 			getChangeDuration(), getChangePriority(), getChangeTriggerNumber(),
 			getChangeTriggerOffset(), getPercentReduction(), getGroupSelectionMethod(),
-			getMethodOptionType(), getMethodOptionMax()
+			getMethodOptionType(), getMethodOptionMax(), getRampInInterval(),
+			getRampInPercent(), getRampOutInterval(), getRampOutPercent()
 		};
 
 		Object constraintValues[] = { getGearID() };
