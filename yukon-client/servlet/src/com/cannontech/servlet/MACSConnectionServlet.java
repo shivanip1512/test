@@ -11,7 +11,6 @@ package com.cannontech.servlet;
 import java.io.IOException;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.CtiProperties;
 import com.cannontech.yukon.IMACSConnection;
 import com.cannontech.yukon.concrete.ResourceFactory;
 
