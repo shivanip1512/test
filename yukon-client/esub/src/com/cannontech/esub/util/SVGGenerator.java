@@ -147,7 +147,7 @@ public class SVGGenerator {
 	private Element createElement(SVGDocument doc, LxComponent comp) {
 			
 			Element elem = null;
-
+						
 			if( comp instanceof LxLine ) {
 				elem = createLine(doc, (LxLine) comp);
 			}
@@ -193,6 +193,9 @@ public class SVGGenerator {
 					elem.setAttributeNS(null,"classid",comp.getClass().getName());
 					
 					if(link != null && link.length() > 0) {
+						//remove any onclicks
+						elem.removeAttributeNS(null, "onclick");
+						
 						if(comp instanceof LxAbstractText && genOptions.isScriptingEnabled()) {
 							elem.setAttributeNS(null,"onmouseover", "underLine(evt.getTarget())");
 							elem.setAttributeNS(null,"onmouseout", "noUnderLine(evt.getTarget())");
@@ -205,7 +208,7 @@ public class SVGGenerator {
 						
 						Element linkElem = doc.createElementNS(xlinkNS, "a");
 						linkElem.setAttributeNS(xlinkNS, "xlink:href", link);
-						
+
 						linkElem.appendChild(elem);
 						elem = linkElem;
 					}
