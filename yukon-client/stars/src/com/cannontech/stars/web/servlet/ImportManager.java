@@ -477,22 +477,9 @@ public class ImportManager extends HttpServlet {
 	private static StreamTokenizer prepareStreamTokenzier(String line) {
 		StreamTokenizer st = new StreamTokenizer( new StringReader(line) );
 		st.resetSyntax();
+		st.wordChars( 0, 255 );
 		st.ordinaryChar( ',' );
 		st.quoteChar( '"' );
-		st.wordChars( 'a', 'z' );
-		st.wordChars( 'A', 'Z' );
-		st.wordChars( '0', '9' );
-		st.wordChars( ' ', ' ' );
-		st.wordChars( '-', '-' );
-		st.wordChars( '_', '_' );
-		st.wordChars( '/', '/' );
-		st.wordChars( '.', '.' );
-		st.wordChars( '#', '#' );
-		st.wordChars( '@', '@' );
-		st.wordChars( '(', ')' );
-		st.wordChars( '!', '!' );
-		st.wordChars( '%', '%' );
-		st.wordChars( ':', ':' );
 		
 		return st;
 	}
