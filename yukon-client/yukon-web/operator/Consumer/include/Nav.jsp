@@ -417,7 +417,7 @@
 		  </cti:checkProperty>
           <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_ADMIN_FAQ %>"> 
 <%
-	String faqLink = liteEC.getEnergyCompanySetting(ConsumerInfoRole.WEB_LINK_FAQ);
+	String faqLink = AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LINK_FAQ);
 	if (ServerUtils.forceNotNone(faqLink).length() > 0) {
 %>
           <tr>
