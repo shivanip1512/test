@@ -86,7 +86,7 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 
 private void initSession(LiteYukonUser user, HttpSession session) throws TransactionException  {
 
-	com.cannontech.database.data.user.YukonUser dbUser = 
+/*	com.cannontech.database.data.user.YukonUser dbUser = 
 		(com.cannontech.database.data.user.YukonUser) LiteFactory.createDBPersistent(user);
 	
 	Transaction trans = Transaction.createTransaction(Transaction.RETRIEVE,dbUser);
@@ -97,7 +97,7 @@ private void initSession(LiteYukonUser user, HttpSession session) throws Transac
 	dbUser.setLastLogin(new java.util.Date());
 		
 	trans = Transaction.createTransaction(Transaction.UPDATE,dbUser);
-	
+	*/
 	session.setAttribute("YUKON_USER", user);
 }
 }
