@@ -570,7 +570,7 @@ public void jButtonRemove_ActionPerformed(java.awt.event.ActionEvent actionEvent
 
 
 	if( getRightTableModel().getRowCount() > 0 )
-		getJLabelSelected().setText("Selected (" + getRightTableModel().getRowCount() + " Points)");
+		getJLabelSelected().setText("Selected (" + getRightTableModel().getRowCount() + " Rows)");
 	else
 		getJLabelSelected().setText("Selected");
 		
@@ -683,7 +683,7 @@ public void tableChanged(javax.swing.event.TableModelEvent e)
 
 	//update our text count of points in our list
 	if( getRightTableModel().getRowCount() > 0 )
-		getJLabelSelected().setText("Selected (" + getRightTableModel().getRowCount() + " Points)");
+		getJLabelSelected().setText("Selected (" + getRightTableModel().getRowCount() + " Rows)");
 	else
 		getJLabelSelected().setText("Selected");
 
