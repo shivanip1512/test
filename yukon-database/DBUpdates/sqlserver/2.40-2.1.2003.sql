@@ -1,22 +1,23 @@
-/******************************************************************************/
-/* VERSION INFO                                                               */
-/******************************************************************************/
-insert into CTIDatabase values('2.40', 'Ryan', '20-FEB-2003', 'Merged STARS customer structure with Yukon');
+/******************************************/
+/**** SQLServer 2000 DBupdates         ****/
+/******************************************/
 
-
-
-/* ***** IMPORTANT *****  -  the billingFileFormats update is to disable MV_90 DATA Import */
-/*  DO NOT RUN THE BILLINGFILEFORMATS UPDATE IF THE CUSTOMER HAS PAID FOR THE MV_90 FORMAT */
-update billingFileFormats set formatid = -11 where formatid = 11;
+sp_rename 'CICustomerBase.DeviceID', 'CustomerID', 'COLUMN';
 go
-
-/******************* NEW BILLING FORMATS *******************/
-insert into billingfileformats values(13, 'NISC-Turtle');
+sp_rename 'CICustomerBase.AddressID', 'MainAddressID', 'COLUMN';
 go
-insert into billingfileformats values(14, 'NISC-NCDC');
+sp_rename 'CICustomerBase.CustFPL', 'CustomerDemandLevel', 'COLUMN';
 go
-
-
+sp_rename 'LMProgramCurtailCustomerList.DeviceID', 'ProgramID', 'COLUMN';
+go
+sp_rename 'LMProgramCurtailCustomerList.LMCustomerDeviceID', 'CustomerID', 'COLUMN';
+go
+sp_rename 'LMEnergyExchangeCustomerList.DeviceID', 'ProgramID', 'COLUMN';
+go
+sp_rename 'LMEnergyExchangeCustomerList.LMCustomerDeviceID', 'CustomerID', 'COLUMN';
+go
+sp_rename 'CICustContact.DeviceID', 'CustomerID', 'COLUMN';
+go
 
 /******************* START YUKONLISTENTRY CHANGES *******************/
 create table YukonSelectionList (
@@ -29,9 +30,7 @@ UserUpdateAvailable  varchar(1)           not null,
 constraint PK_YUKONSELECTIONLIST primary key  (ListID)
 );
 go
-insert into YukonSelectionList values( 0, 'N', '(none)', '(none)', '(none)', 'N' );
-insert into YukonSelectionList values( 1, 'A', 'Contact', 'DBEditor contact type list', 'ContactType', 'N' );
-go
+
 create table YukonListEntry (
 EntryID              numeric              not null,
 ListID               numeric              not null,
@@ -41,6 +40,161 @@ YukonDefinitionID    numeric              not null,
 constraint PK_YUKONLISTENTRY primary key  (EntryID)
 );
 go
+create index Indx_YkLstDefID on YukonListEntry (YukonDefinitionID);
+go
+alter table YukonListEntry
+   add constraint FK_LstEnty_SelLst foreign key (ListID)
+      references YukonSelectionList (ListID);
+go
+
+
+create table ContactNotification (
+ContactNotifID       numeric              not null,
+ContactID            numeric              not null,
+NotificationCategoryID numeric              not null,
+DisableFlag          char(1)              not null,
+Notification         varchar(130)         not null,
+constraint PK_CONTACTNOTIFICATION primary key  (ContactNotifID)
+);
+go
+
+create table Customer (
+CustomerID           numeric              not null,
+PrimaryContactID     numeric              not null,
+CustomerTypeID       numeric              not null,
+TimeZone             varchar(40)           not null,
+constraint PK_CUSTOMER primary key  (CustomerID)
+);
+go
+
+
+/* @error ignore */
+alter table CICustomerBase drop constraint FK_YukPA_CICust;
+go
+alter table CICustomerBase add CompanyName Varchar(80);
+go
+update CICustomerBase set CompanyName = '(none)';
+go
+alter table CICustomerBase alter column CompanyName VARCHAR(80) not null;
+go
+
+
+insert into Customer
+select c.customerid, c.primecontactid, 2, c.custtimezone
+from CICustomerBase c;
+go
+
+update CICustomerBase set CompanyName =
+(select PAOName
+from YukonPAObject
+where CustomerID = PAObjectID)
+where CustomerID in
+(select PAObjectID from YukonPAObject
+where CustomerID = PAObjectID);
+go
+
+alter table CICustomerBase drop column MainPhoneNumber;
+go
+alter table CICustomerBase drop column MainFaxNumber;
+go
+alter table CICustomerBase drop column PrimeContactID;
+go
+alter table CICustomerBase drop column CustTimeZone;
+go
+
+alter table CICustomerBase
+   add constraint FK_CstCI_Cst foreign key (CustomerID)
+      references Customer (CustomerID);
+go
+
+
+/* @error ignore */
+alter table GraphCustomerList drop constraint FK_GRA_REFG_CIC;
+go
+alter table GraphCustomerList
+   add constraint FK_GrphCstLst_Cst foreign key (CustomerID)
+      references Customer (CustomerID);
+go
+
+sp_rename 'CustomerAddress', 'Address';
+go
+alter table Address add County varchar(30);
+go
+update Address set County = '(none)';
+go
+alter table Address alter column County VARCHAR(30) not null;
+go
+
+
+sp_rename 'CICustContact', 'CustomerAdditionalContact';
+go
+/* @error ignore */
+alter table CustomerAdditionalContact drop constraint FK_CICSTBASE_CICSTCONT;
+go
+alter table CustomerAdditionalContact
+   add constraint FK_Cust_CustAddCnt foreign key (CustomerID)
+      references Customer (CustomerID);
+go
+
+
+/* @error ignore */
+alter table PointAlarming drop constraint FK_POI_POIN_NOT;
+go
+/* @error ignore */
+alter table NotificationDestination drop constraint FK_DESTID_RECID;
+go
+
+alter table NotificationDestination
+   add constraint FK_CntNt_NtDst foreign key (RecipientID)
+      references ContactNotification (ContactNotifID);
+go
+alter table ContactNotification
+   add constraint FK_CntNot_YkLs foreign key (NotificationCategoryID)
+      references YukonListEntry (EntryID);
+go
+
+alter TABLE YukonRole add RoleDescription VARCHAR(200);
+go
+update YukonRole set RoleDescription = '(none)';
+go
+alter TABLE YukonRole alter column RoleDescription VARCHAR(200) not null;
+go
+
+alter TABLE EnergyCompany add WebConfigID numeric;
+go
+update EnergyCompany set WebConfigID = 0;
+go
+alter TABLE EnergyCompany alter column WebConfigID numeric not null;
+go
+
+
+create table YukonWebConfiguration (
+ConfigurationID      numeric              not null,
+LogoLocation         varchar(100)         null,
+Description          varchar(500)         null,
+AlternateDisplayName varchar(50)          null,
+URL                  varchar(100)         null,
+constraint PK_YUKONWEBCONFIGURATION primary key  (ConfigurationID)
+);
+go
+
+/****** IMPORTANT *****  -  the billingFileFormats update is to disable MV_90 DATA Import */
+/*  DO NOT RUN THE BILLINGFILEFORMATS UPDATE IF THE CUSTOMER HAS PAID FOR THE MV_90 FORMAT */
+update billingFileFormats set formatid = -11 where formatid = 11;
+go
+
+/******************* NEW BILLING FORMATS *******************/
+insert into billingfileformats values(13, 'NISC-Turtle');
+go
+insert into billingfileformats values(14, 'NISC-NCDC');
+go
+
+
+/******************* START YUKONLISTENTRY CHANGES *******************/
+insert into YukonSelectionList values( 0, 'N', '(none)', '(none)', '(none)', 'N' );
+insert into YukonSelectionList values( 1, 'A', 'Contact', 'DBEditor contact type list', 'ContactType', 'N' );
+go
+
 insert into YukonListEntry values( 0, 1, 0, '(none)', 0 );
 go
 insert into YukonListEntry values( 1, 1, 0, 'Email', 1 );
@@ -55,28 +209,10 @@ insert into YukonListEntry values( 5, 1, 0, 'Home Phone', 2 );
 go
 insert into YukonListEntry values( 6, 1, 0, 'Work Phone', 2 );
 go
-create index Indx_YkLstDefID on YukonListEntry (YukonDefinitionID);
-go
-alter table YukonListEntry
-   add constraint FK_LstEnty_SelLst foreign key (ListID)
-      references YukonSelectionList (ListID);
-go
 
 
 
 /******************* START CONTACTNOTIFICATION CHANGES *******************/
-create table ContactNotification (
-ContactNotifID       numeric              not null,
-ContactID            numeric              not null,
-NotificationCategoryID numeric              not null,
-DisableFlag          char(1)              not null,
-Notification         varchar(130)         not null,
-constraint PK_CONTACTNOTIFICATION primary key  (ContactNotifID)
-);
-go
-insert into ContactNotification values( 0, 0, 0, 'N', '(none)' );
-go
-/*****DO NOT ADD ANY REFERENCES TO THIS TABLE UNTIL THE END*****/
 insert into ContactNotification
 select r.recipientid, r.recipientid, 1, r.disableflag, r.emailaddress
 from NotificationRecipient r where r.recipientid > 0;
@@ -84,77 +220,6 @@ go
 insert into ContactNotification
 select r.contactid+1000, r.contactid, 2, 'N', r.contphone1
 from CustomerContact r where r.contactid > 0;
-go
-
-
-/******************* START CUSTOMER CHANGES *******************/
-create table Customer (
-CustomerID           numeric              not null,
-PrimaryContactID     numeric              not null,
-CustomerTypeID       numeric              not null,
-TimeZone             varchar(40)           not null,
-constraint PK_CUSTOMER primary key  (CustomerID)
-);
-go
-insert into Customer
-select c.deviceid, c.primecontactid, 2, c.custtimezone
-from CICustomerBase c;
-go
-alter table CICustomerBase drop constraint FK_YukPA_CICust;
-go
-sp_rename 'CICustomerBase.DeviceID', 'CustomerID', 'COLUMN';
-go
-sp_rename 'CICustomerBase.AddressID', 'MainAddressID', 'COLUMN';
-go
-sp_rename 'CICustomerBase.CustFPL', 'CustomerDemandLevel', 'COLUMN';
-go
-alter table CICustomerBase drop column MainPhoneNumber;
-go
-alter table CICustomerBase drop column MainFaxNumber;
-go
-alter table CICustomerBase drop column PrimeContactID;
-go
-alter table CICustomerBase drop column CustTimeZone;
-go
-alter table CICustomerBase add CompanyName Varchar(80) not null DEFAULT '(none)';
-go
-
-update CICustomerBase set CompanyName =
-(select PAOName
-from YukonPAObject
-where CustomerID = PAObjectID)
-where CustomerID in
-(select PAObjectID from YukonPAObject
-where CustomerID = PAObjectID);
-go
-
-alter table CICustomerBase
-   add constraint FK_CstCI_Cst foreign key (CustomerID)
-      references Customer (CustomerID);
-go
-sp_rename 'LMProgramCurtailCustomerList.DeviceID', 'ProgramID', 'COLUMN';
-go
-sp_rename 'LMProgramCurtailCustomerList.LMCustomerDeviceID', 'CustomerID', 'COLUMN';
-go
-sp_rename 'LMEnergyExchangeCustomerList.DeviceID', 'ProgramID', 'COLUMN';
-go
-sp_rename 'LMEnergyExchangeCustomerList.LMCustomerDeviceID', 'CustomerID', 'COLUMN';
-go
-
-/******************* START GRAPHCUSTOMERLIST CHANGES *******************/
-alter table GraphCustomerList drop constraint FK_GRA_REFG_CIC;
-go
-alter table GraphCustomerList
-   add constraint FK_GrphCstLst_Cst foreign key (CustomerID)
-      references Customer (CustomerID);
-go
-
-
-
-/******************* START CUSTOMERADDRESS CHANGES *******************/
-sp_rename 'CustomerAddress', 'Address';
-go
-alter table Address add County varchar(30) not null DEFAULT '(none)';
 go
 
 
@@ -166,20 +231,43 @@ alter table Contact drop column ContPhone1;
 go
 alter table Contact drop column ContPhone2;
 go
-alter table Contact add AddressID numeric not null DEFAULT 0;
+alter table Contact add AddressID numeric;
 go
+update Contact set AddressID = 0;
+go
+alter table Contact alter column AddressID numeric not null;
+go
+
+
+/* @error ignore */
 alter table Contact drop constraint FK_CSTCONT_GRPRECIP;
 go
 alter table Contact drop column LocationID;
 go
 
-/* No big deal if this fails, just insures a row is there */
+/* @error ignore */
+insert into address values ( 0, '(none)', '(none)', '(none)', 'MN', '(none)', '(none)' );
+
+/* @error ignore */
 insert into contact values ( 0, '(none)', '(none)', -1, 0 );
+
+insert into ContactNotification values( 0, 0, 0, 'N', '(none)' );
+
+alter table Contact
+   add constraint FK_CON_REF__ADD foreign key (AddressID)
+      references Address (AddressID);
 go
 
-/* No big deal if this fails, just insures a row is there */
-insert into address values ( 0, '(none)', '(none)', '(none)', 'MN', '(none)', '(none)' );
+alter table ContactNotification
+   add constraint FK_Cnt_CntNot foreign key (ContactID)
+      references Contact (ContactID);
 go
+
+alter table PointAlarming
+   add constraint FK_CntNt_PtAl foreign key (RecipientID)
+      references ContactNotification (ContactNotifID);
+go
+
 
 /* Create a dummy contact for notifications that do not have a contact */
 insert into address 
@@ -197,77 +285,17 @@ where cn.contactid not in (select c.contactid from contact c);
 go
 
 
-alter table Contact
-   add constraint FK_CON_REF__ADD foreign key (AddressID)
-      references Address (AddressID);
-go
-
-
-
-/******************* START CICUSTCONTACT CHANGES *******************/
-sp_rename 'CICustContact', 'CustomerAdditionalContact';
-go
-sp_rename 'CustomerAdditionalContact.DeviceID', 'CustomerID', 'COLUMN';
-go
-alter table CustomerAdditionalContact drop constraint FK_CICSTBASE_CICSTCONT;
-go
-alter table CustomerAdditionalContact
-   add constraint FK_Cust_CustAddCnt foreign key (CustomerID)
-      references Customer (CustomerID);
-go
-
-
-
-/******************* START NOTIFICATIONRECIPIENT CHANGES *******************/
-alter table PointAlarming drop constraint FK_POI_POIN_NOT;
-go
-alter table NotificationDestination drop constraint FK_DESTID_RECID;
-go
 drop table NotificationRecipient;
-go
-alter table NotificationDestination
-   add constraint FK_CntNt_NtDst foreign key (RecipientID)
-      references ContactNotification (ContactNotifID);
-go
-alter table PointAlarming
-   add constraint FK_CntNt_PtAl foreign key (RecipientID)
-      references ContactNotification (ContactNotifID);
 go
 
 
 /******************* START FINAL MISC CHANGES *******************/
-alter table ContactNotification
-   add constraint FK_Cnt_CntNot foreign key (ContactID)
-      references Contact (ContactID);
-go
-alter table ContactNotification
-   add constraint FK_CntNot_YkLs foreign key (NotificationCategoryID)
-      references YukonListEntry (EntryID);
-go
-alter TABLE YukonRole add RoleDescription VARCHAR(200) not null DEFAULT '(none)';
-go
-
-
 insert into DeviceMeterGroup 
 select paobjectid, 'Default', 'Default', paoname, 'Default' from YukonPAObject
 where type like '%ION%';
 go
 
-create table YukonWebConfiguration (
-ConfigurationID      numeric              not null,
-LogoLocation         varchar(100)         null,
-Description          varchar(500)         null,
-AlternateDisplayName varchar(50)          null,
-URL                  varchar(100)         null,
-constraint PK_YUKONWEBCONFIGURATION primary key  (ConfigurationID)
-);
-go
 insert into YukonWebConfiguration values(0,'(none)','(none)','(none)','(none)');
-create unique  index YukWbCfg_PK on YukonWebConfiguration (
-ConfigurationID
-);
-go
-
 
 update yukonlistentry set listid=0 where entryid=0;
 
@@ -333,7 +361,13 @@ insert into YukonRole values(-1005,'CUSTOMIZED_FAQ_LINK','WebClient','(none)','(
 insert into YukonRole values(-1006,'CUSTOMIZED_EMAIL_LINK','WebClient','(none)','(none)');
 go
 
-
+insert into yukonrole values(-9000,'TRENDING_DISCLAIMER_TEXT','WebClient',' ','(none)');
+insert into yukonrole values(-9001,'ENERGYEXCHANGE_TEXT','WebClient','Energy Exchange','(none)');
+insert into yukonrole values(-9002,'ENERGYEXCHANGE_HEADING_TEXT','WebClient','Energy Exchange','(none)');
+insert into yukonrole values(-9003,'ENERGYEXCHANGE_PHONE_TEXT','WebClient',' ','(none)');
+insert into yukonrole values(-9010,'CURTAILMENT_TEXT','WebClient','Notification','(none)');
+insert into yukonrole values(-9011,'CURTAILMENT_PROVIDER_TEXT','WebClient','Curtailment Provider','(none)');
+go
 
 insert into yukongroup values(-210,'Web Demo Operators');
 insert into yukongroup values(-211,'Web Demo Residential Customers');
@@ -372,6 +406,12 @@ insert into yukongrouprole values(-210,-176,'(none)');
 insert into yukongrouprole values(-210,-177,'(none)');
 insert into yukongrouprole values(-210,-179,'(none)');
 insert into yukongrouprole values(-210,-181,'(none)');
+insert into yukongrouprole values(-210,-9000,' ');
+insert into yukongrouprole values(-210,-9001,'Energy Exchange');
+insert into yukongrouprole values(-210,-9002,'Energy Exchange');
+insert into yukongrouprole values(-210,-9003,' ');
+insert into yukongrouprole values(-210,-9010,'Notification');
+insert into yukongrouprole values(-210,-9011,'Curtailment Provider');
 
 
 insert into yukongrouprole values(-211,-100,'/user/ConsumerStat/stat/General.jsp');
@@ -395,4 +435,10 @@ insert into yukongrouprole values(-212,-103,'(none)');
 insert into yukongrouprole values(-212,-140,'(none)');
 insert into yukongrouprole values(-212,-141,'(none)');
 insert into yukongrouprole values(-212,-142,'(none)');
+go
+
+/******************************************************************************/
+/* VERSION INFO                                                               */
+/******************************************************************************/
+insert into CTIDatabase values('2.40', 'Ryan', '20-FEB-2003', 'Merged STARS customer structure with Yukon');
 go

@@ -1,64 +1,56 @@
-/******************************************************************************/
-/* VERSION INFO                                                               */
-/******************************************************************************/
-insert into CTIDatabase values('2.41', 'Ryan', '20-MAY-2003', 'Major changes to roles,groups. Added SeasonSchedule, modified LMProgram,DynamicLMGroup,EnergyCompany, PAOExclusion, LMGroupMCT');
+/******************************************/
+/**** SQLServer 2000 DBupdates         ****/
+/******************************************/
 
-
-/**** Add some rows to FDR tables ****/
-insert into fdrinterface values (12,'TEXTIMPORT','Receive,Receive for control','f');
-insert into fdrinterface values (13,'TEXTEXPORT','Send','f');
-insert into fdrinterfaceoption values (12,'Point ID',1,'Text','(none)');
-insert into fdrinterfaceoption values (13,'Point ID',1,'Text','(none)');
-go
-
-
-
-/**** CHANGE THE FDRTranslation PK ****/
+/* @error ignore */
 alter table FDRTRANSLATION drop constraint PK_FDRTRANSLATION;
 go
 alter table FDRTRANSLATION add
   constraint PK_FDRTrans primary key  (POINTID, TRANSLATION);
 go
 
-
-/**** CHANGE THE POINT LIMITS PK ****/
+/* @error ignore */
 alter table pointlimits drop constraint PK_POINTLIMITS;
 go
 alter table pointlimits 
 	add constraint PK__POINTID_LIMITNUM primary key (pointid, limitnumber);
 go
 
-
-insert into billingfileformats values( 12, 'SEDC 5.4');
+alter table DynamicLMGroup add ControlStartTime datetime;
+go
+update DynamicLMGroup set ControlStartTime = '01-JAN-1990';
+go
+alter table DynamicLMGroup alter column ControlStartTime datetime not null;
 go
 
 
-/**** ADD COLUMNS TO THE DynamicLMGroup TABLE ****/
-alter table DynamicLMGroup add ControlStartTime datetime not null DEFAULT '01-JAN-1990';
+alter table DynamicLMGroup add ControlCompleteTime datetime;
 go
-alter table DynamicLMGroup add ControlCompleteTime datetime not null DEFAULT '01-JAN-1990';
+update DynamicLMGroup set ControlCompleteTime = '01-JAN-1990';
+go
+alter table DynamicLMGroup alter column ControlCompleteTime datetime not null;
 go
 
 
-
-/**** ADD COLUMN TO THE EnergyCompany TABLE ****/
-alter table EnergyCompany add PrimaryContactID numeric not null DEFAULT 0;
+alter table EnergyCompany add PrimaryContactID numeric;
 go
+update EnergyCompany set PrimaryContactID = 0;
+go
+alter table EnergyCompany alter column PrimaryContactID numeric not null;
+go
+
+
 alter table EnergyCompany
    add constraint FK_EnCm_Cnt foreign key (PrimaryContactID)
       references Contact (ContactID);
 go
 
-
-
-/**** CHANGE THE LMProgramControlWindow PK ****/
+/* @error ignore */
 alter table LMProgramControlWindow drop constraint PK_LMPROGRAMCONTROLWINDOW;
 go
 alter table LMProgramControlWindow 
     add constraint PK_LMPROGRAMCNTRLWINDOW primary key (DeviceID, WindowNumber);
 go
-
-
 
 /**** ADD TABLE SeasonSchedule ****/
 create table SeasonSchedule (
@@ -76,41 +68,46 @@ constraint PK_SEASONSCHEDULE primary key  (ScheduleID)
 );
 go
 
-insert into SeasonSchedule values(0,'Default Season Schedule',3,15,5,1,8,15,11,1);
-
-create unique  index Indx_SeasSchd_PK on SeasonSchedule (
-ScheduleID
-);
-go
-
-
-
-/**** MODIFY THE TABLE EnergyCompany ****/
+/* @error ignore */
 alter table EnergyCompany drop constraint FK_EnCmpRt;
 go
+/* @error ignore */
 alter table EnergyCompany drop constraint FK_YkWbC_EnC;
 go
 alter table EnergyCompany drop column RouteID;
 go
-alter table EnergyCompany ADD UserID numeric not null DEFAULT -1;
+alter table EnergyCompany drop column WebConfigID;
 go
+
+alter table EnergyCompany ADD UserID numeric;
+go
+update EnergyCompany set UserID = -1;
+go
+alter table EnergyCompany alter column UserID numeric not null;
+go
+
+
 alter table EnergyCompany
    add constraint FK_EngCmp_YkUs foreign key (UserID)
       references YukonUser (UserID);
 go
 
-
-
-/**** ADD NEW COLUMNS TO THE TABLE LMProgram ****/
-alter table LMProgram add HolidayScheduleID numeric not null DEFAULT 0;
+alter table LMProgram add HolidayScheduleID numeric;
 go
-alter table LMProgram add SeasonScheduleID numeric not null DEFAULT 0;
+update LMProgram set HolidayScheduleID = 0;
+go
+alter table LMProgram alter column HolidayScheduleID numeric not null;
 go
 
 
+alter table LMProgram add SeasonScheduleID numeric;
+go
+update LMProgram set SeasonScheduleID = 0;
+go
+alter table LMProgram alter column SeasonScheduleID numeric not null;
+go
 
 
-/**** ADD NEW REFERENCES TO THE TABLE LMProgram ****/
 alter table LMPROGRAM
    add constraint FK_SesSch_LmPr foreign key (SeasonScheduleID)
       references SeasonSchedule (ScheduleID);
@@ -120,11 +117,6 @@ alter table LMPROGRAM
       references HolidaySchedule (HolidayScheduleID);
 go
 
-
-
-/*==============================================================*/
-/* Table : PAOExclusion                                         */
-/*==============================================================*/
 create table PAOExclusion (
 ExclusionID          numeric              not null,
 PaoID                numeric              not null,
@@ -155,11 +147,6 @@ alter table PAOExclusion
       references POINT (POINTID);
 go
 
-
-
-/*==============================================================*/
-/* Table : LMGroupMCT                                           */
-/*==============================================================*/
 create table LMGroupMCT (
 DeviceID             numeric              not null,
 MCTAddress           numeric              not null,
@@ -183,24 +170,8 @@ alter table LMGroupMCT
       references YukonPAObject (PAObjectID);
 go
 
-
-
-/**** Role, Groups and YukonUser major changes (All Roles and Groups must be recreated) ****/
-delete from YukonGroupRole;
-go
-delete from YukonUserRole;
-go
-delete from YukonUserGroup;
-go
-delete from YukonRole;
-go
-delete from YukonGroup;
-go
-
-
 alter table YukonRole drop column DefaultValue;
 go
-
 
 create table YukonRoleProperty (
 RolePropertyID       numeric              not null,
@@ -211,16 +182,10 @@ Description          varchar(1000)        not null,
 constraint PK_YUKONROLEPROPERTY primary key  (RolePropertyID)
 );
 go
-create unique  index Indx_YukRolPrp_PK on YukonRoleProperty (
-RolePropertyID
-);
-go
 alter table YukonRoleProperty
    add constraint FK_YkRlPrp_YkRle foreign key (RoleID)
       references YukonRole (RoleID);
 go
-
-
 
 drop table YukonUserRole;
 go
@@ -246,8 +211,6 @@ alter table YukonUserRole
       references YukonRoleProperty (RolePropertyID);
 go
 
-
-
 drop table YukonGroupRole;
 go
 create table YukonGroupRole (
@@ -272,19 +235,45 @@ alter table YukonGroupRole
       references YukonRoleProperty (RolePropertyID);
 go
 
-
-
-/**** ADD A COLUMN TO THE YukonGroup TABLE  ****/
-alter table YukonGroup add GroupDescription varchar(200) not null DEFAULT '(none)';
+alter table YukonGroup add GroupDescription varchar(200);
+go
+update YukonGroup set GroupDescription = '(none)';
+go
+alter table YukonGroup alter column GroupDescription varchar(200) not null;
 go
 
+
+/**** Add some rows to FDR tables ****/
+insert into fdrinterface values (12,'TEXTIMPORT','Receive,Receive for control','f');
+insert into fdrinterface values (13,'TEXTEXPORT','Send','f');
+insert into FDRInterface values (14, 'LODESTAR', 'Receive', 'f' );
+insert into fdrinterfaceoption values (12,'Point ID',1,'Text','(none)');
+insert into fdrinterfaceoption values (13,'Point ID',1,'Text','(none)');
+insert into FDRInterfaceOption values(14, 'Point', 1, 'Text', '(none)' );
+go
+
+insert into billingfileformats values( 12, 'SEDC 5.4');
+go
+
+insert into SeasonSchedule values(0,'Default Season Schedule',3,15,5,1,8,15,11,1);
+
+/**** Role, Groups and YukonUser major changes (All Roles and Groups must be recreated) ****/
+delete from YukonGroupRole;
+go
+delete from YukonUserRole;
+go
+delete from YukonUserGroup;
+go
+delete from YukonRole;
+go
+delete from YukonGroup;
+go
 
 insert into YukonGroup values(-1,'yukon','The default system user group that allows limited user interaction.');
 insert into YukonGroup values(-100,'operators', 'The default group of yukon operators');
 insert into yukongroup values(-200,'Esub Users', 'The default group of esubstation users');
 insert into yukongroup values(-201,'Esub Operators', 'The default group of esubstation operators');
 go
-
 
 /* Default role for all users */
 insert into YukonRole values(-1,'Yukon','Yukon','Default Yukon role');
@@ -596,4 +585,10 @@ insert into YukonGroupRole values(302,-200,-206,-20602,'(none)');
 insert into YukonGroupRole values(350,-201,-206,-20600,'(none)');
 insert into YukonGroupRole values(351,-201,-206,-20601,'true');
 insert into YukonGroupRole values(352,-201,-206,-20602,'false');
+go
+
+/******************************************************************************/
+/* VERSION INFO                                                               */
+/******************************************************************************/
+insert into CTIDatabase values('2.41', 'Ryan', '20-MAY-2003', 'Major changes to roles,groups. Added SeasonSchedule, modified LMProgram,DynamicLMGroup,EnergyCompany, PAOExclusion, LMGroupMCT');
 go
