@@ -889,7 +889,7 @@ CtiLMGroupBase* CtiLMProgramDirect::findGroupToTake(CtiLMProgramDirectGear* curr
                     if( !currentLMGroup->getDisableFlag() &&
                         !currentLMGroup->getControlInhibit() &&
                         ( currentLMGroup->getGroupControlState() == CtiLMGroupBase::InactiveState ||
-                          getCurrentGearObject()->getControlMethod() == CtiLMProgramDirectGear::RotationMethod ) )
+                          currentGearObject->getControlMethod() == CtiLMProgramDirectGear::RotationMethod ) )
                     {
                         found = TRUE;
                         returnGroup = (CtiLMGroupBase*)_lmprogramdirectgroups[i+1];
@@ -902,7 +902,7 @@ CtiLMGroupBase* CtiLMProgramDirect::findGroupToTake(CtiLMProgramDirectGear* curr
                     if( !currentLMGroup->getDisableFlag() &&
                         !currentLMGroup->getControlInhibit() &&
                         ( currentLMGroup->getGroupControlState() == CtiLMGroupBase::InactiveState ||
-                          getCurrentGearObject()->getControlMethod() == CtiLMProgramDirectGear::RotationMethod ) )
+                          currentGearObject->getControlMethod() == CtiLMProgramDirectGear::RotationMethod ) )
                     {
                         found = TRUE;
                         returnGroup = (CtiLMGroupBase*)_lmprogramdirectgroups[0];
@@ -921,7 +921,7 @@ CtiLMGroupBase* CtiLMProgramDirect::findGroupToTake(CtiLMProgramDirectGear* curr
                 if( !currentLMGroup->getDisableFlag() &&
                     !currentLMGroup->getControlInhibit() &&
                     ( currentLMGroup->getGroupControlState() == CtiLMGroupBase::InactiveState ||
-                      getCurrentGearObject()->getControlMethod() == CtiLMProgramDirectGear::RotationMethod ) )
+                      currentGearObject->getControlMethod() == CtiLMProgramDirectGear::RotationMethod ) )
                 {
                     currentLMGroup->setGroupControlState(CtiLMGroupBase::ActivePendingState);
                     returnGroup = currentLMGroup;
@@ -938,7 +938,7 @@ CtiLMGroupBase* CtiLMProgramDirect::findGroupToTake(CtiLMProgramDirectGear* curr
             if( !currentLMGroup->getDisableFlag() &&
                 !currentLMGroup->getControlInhibit() &&
                 ( currentLMGroup->getGroupControlState() == CtiLMGroupBase::InactiveState ||
-                  getCurrentGearObject()->getControlMethod() == CtiLMProgramDirectGear::RotationMethod ) )
+                  currentGearObject->getControlMethod() == CtiLMProgramDirectGear::RotationMethod ) )
             {
                 currentLMGroup->setGroupControlState(CtiLMGroupBase::ActivePendingState);
                 returnGroup = currentLMGroup;
@@ -961,19 +961,55 @@ CtiLMGroupBase* CtiLMProgramDirect::findGroupToTake(CtiLMProgramDirectGear* curr
                 {
                     returnGroup = currentLMGroup;
                 }
-                else if( returnGroup->getCurrentHoursDaily() > currentLMGroup->getCurrentHoursDaily() )
+                else if( currentLMGroup->getHoursSeasonalPointId() > 0 && returnGroup->getHoursSeasonalPointId() > 0 )
                 {
-                    returnGroup = currentLMGroup;
+                    if( currentLMGroup->getCurrentHoursSeasonal() < returnGroup->getCurrentHoursSeasonal() )
+                    {
+                        returnGroup = currentLMGroup;
+                    }
+                    else if( currentLMGroup->getHoursMonthlyPointId() > 0 && returnGroup->getHoursMonthlyPointId() > 0 )
+                    {
+                        if( currentLMGroup->getCurrentHoursSeasonal() == returnGroup->getCurrentHoursSeasonal() &&
+                            currentLMGroup->getCurrentHoursMonthly() < returnGroup->getCurrentHoursMonthly() )
+                        {
+                            returnGroup = currentLMGroup;
+                        }
+                        else if( currentLMGroup->getHoursDailyPointId() > 0 && returnGroup->getHoursDailyPointId() > 0 )
+                        {
+                            if( currentLMGroup->getCurrentHoursSeasonal() == returnGroup->getCurrentHoursSeasonal() &&
+                                currentLMGroup->getCurrentHoursMonthly() == returnGroup->getCurrentHoursMonthly() &&
+                                currentLMGroup->getCurrentHoursDaily() < returnGroup->getCurrentHoursDaily() )
+                            {
+                                returnGroup = currentLMGroup;
+                            }
+                        }
+                    }
                 }
-                else if( returnGroup->getCurrentHoursDaily() == currentLMGroup->getCurrentHoursDaily() &&
-                         returnGroup->getCurrentHoursMonthly() > currentLMGroup->getCurrentHoursMonthly() )
+                else if( currentLMGroup->getHoursMonthlyPointId() > 0 && returnGroup->getHoursMonthlyPointId() > 0 )
                 {
-                    returnGroup = currentLMGroup;
+                    if( currentLMGroup->getCurrentHoursSeasonal() == returnGroup->getCurrentHoursSeasonal() &&
+                        currentLMGroup->getCurrentHoursMonthly() < returnGroup->getCurrentHoursMonthly() )
+                    {
+                        returnGroup = currentLMGroup;
+                    }
+                    else if( currentLMGroup->getHoursDailyPointId() > 0 && returnGroup->getHoursDailyPointId() > 0 )
+                    {
+                        if( currentLMGroup->getCurrentHoursSeasonal() == returnGroup->getCurrentHoursSeasonal() &&
+                            currentLMGroup->getCurrentHoursMonthly() == returnGroup->getCurrentHoursMonthly() &&
+                            currentLMGroup->getCurrentHoursDaily() < returnGroup->getCurrentHoursDaily() )
+                        {
+                            returnGroup = currentLMGroup;
+                        }
+                    }
                 }
-                else if( returnGroup->getCurrentHoursMonthly() == currentLMGroup->getCurrentHoursMonthly() &&
-                         returnGroup->getCurrentHoursSeasonal() > currentLMGroup->getCurrentHoursSeasonal() )
+                else if( currentLMGroup->getHoursDailyPointId() > 0 && returnGroup->getHoursDailyPointId() > 0 )
                 {
-                    returnGroup = currentLMGroup;
+                    if( currentLMGroup->getCurrentHoursSeasonal() == returnGroup->getCurrentHoursSeasonal() &&
+                        currentLMGroup->getCurrentHoursMonthly() == returnGroup->getCurrentHoursMonthly() &&
+                        currentLMGroup->getCurrentHoursDaily() < returnGroup->getCurrentHoursDaily() )
+                    {
+                        returnGroup = currentLMGroup;
+                    }
                 }
             }
         }
