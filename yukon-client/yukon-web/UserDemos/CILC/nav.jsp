@@ -1,0 +1,57 @@
+<%@ page import="java.util.Hashtable" %>
+<%
+	// Map of page name / link text
+	String linkMap[][] = {{"user_trending.jsp?db=" + dbAlias + "&gdefid=" + graphDefinitionId + "&start=" + dateFormat.format(saveStart) + "&period=" + java.net.URLEncoder.encode(period) + "&tab=graph&page=1&model=0", "Line Graph"},
+						  {"user_trending.jsp?db=" + dbAlias + "&gdefid=" + graphDefinitionId + "&start=" + dateFormat.format(saveStart) + "&period=" + java.net.URLEncoder.encode(period) + "&tab=graph&page=1&model=1", "Bar Graph"},
+						  {"user_trending.jsp?db=" + dbAlias + "&gdefid=" + graphDefinitionId + "&start=" + dateFormat.format(saveStart) + "&period=" + java.net.URLEncoder.encode(period) + "&tab=graph&page=1&model=2", "Load Duration"},
+						  {"user_ee.jsp", "VBB Offers"},
+						  {"user_curtail.jsp", "Notification"},
+						  {"user_lm_control.jsp", "Auto Control"},
+						  {"user_lm_time.jsp", "Time Based"},
+						  {"switch_commands.jsp", "Switch Command"}
+						 };
+						   
+	Hashtable links = new Hashtable();
+	for (int i = 0; i < linkMap.length; i++) {
+		if (linkMap[i][0].equalsIgnoreCase(pageName))
+			links.put(linkMap[i][0], "<img src=\"Bullet.gif\" width=\"12\" height=\"12\"><span class=\"NavText2\">" + linkMap[i][1] + "</span>");
+		else
+			links.put(linkMap[i][0], "<img src=\"Bullet2.gif\" width=\"12\" height=\"12\"><a href=\"" + linkMap[i][0] + "\" class=\"Link2\"><span class=\"NavText\">" + linkMap[i][1] + "</span></a>");
+	}
+%>
+
+<table width="101" border="0" cellspacing="0" cellpadding="6" height="200">
+  <tr> 
+    <td bgcolor="#FFFFFF"> 
+      <div align="left"> <span class="NavText">Account #12345<br>
+        First/Last Name<br>
+        800-555-1212<br>
+        800-555-2121</span><br>
+      </div>
+      <div align="left"> </div>
+    </td>
+  </tr>
+  <tr> 
+    <td height="30" valign="bottom"> 
+      <div align="left"><span class="NavHeader">Trending</span><br>
+	    <%= links.get("user_trending.jsp?db=" + dbAlias + "&gdefid=" + graphDefinitionId + "&start=" + dateFormat.format(saveStart) + "&period=" + java.net.URLEncoder.encode(period) + "&tab=graph&page=1&model=0") %><br>
+        <%= links.get("user_trending.jsp?db=" + dbAlias + "&gdefid=" + graphDefinitionId + "&start=" + dateFormat.format(saveStart) + "&period=" + java.net.URLEncoder.encode(period) + "&tab=graph&page=1&model=1") %><br>
+		<%= links.get("user_trending.jsp?db=" + dbAlias + "&gdefid=" + graphDefinitionId + "&start=" + dateFormat.format(saveStart) + "&period=" + java.net.URLEncoder.encode(period) + "&tab=graph&page=1&model=2") %></div>
+    </td>
+  </tr>
+  <tr> 
+    <td height="20"> 
+      <div align="left"><span class="NavHeader">Buyback</span><br>
+        <%= links.get("user_ee.jsp") %><br>
+        <%= links.get("user_curtail.jsp") %></div>
+    </td>
+  </tr>
+  <tr> 
+    <td> 
+      <div align="left"><span class="NavHeader">User-Control</span><br>
+        <%= links.get("user_lm_control.jsp") %><br>
+        <%= links.get("user_lm_time.jsp") %><br>
+		<%= links.get("switch_commands.jsp") %></div>
+    </td>
+  </tr>
+</table>
