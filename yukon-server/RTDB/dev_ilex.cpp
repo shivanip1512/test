@@ -10,9 +10,8 @@
 * Date:   2/15/2001
 *
 * PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_welco.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2002/11/25 16:04:39 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2002/12/19 20:29:34 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -38,6 +37,7 @@
 #include "msg_signal.h"
 #include "msg_pdata.h"
 #include "msg_cmd.h"
+#include "msg_lmcontrolhistory.h"
 #include "cmdparse.h"
 
 #include "dlldefs.h"
@@ -190,10 +190,10 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
 
     /* Variables for decoding ILEX Messages */
     USHORT  Offset;
-    USHORT  NumAnalogs;
-    USHORT  NumAccum;
-    USHORT  NumStatusGroups;
-    USHORT  NumSOE;
+    USHORT  NumAnalogs = 0;
+    USHORT  NumAccum = 0;
+    USHORT  NumStatusGroups = 0;
+    USHORT  NumSOE = 0;
     SHORT   Value;
     USHORT  UValue;
     USHORT  StartAccum;
@@ -616,6 +616,11 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                         EndAccum = StartAccum + NumAccum;
                         Offset += 2;
 
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << "  Deciding accumulators from " << (int)(StartAccum + 1) << " to " << EndAccum << endl;
+                        }
                         for(AIPointOffset = StartAccum + 1; AIPointOffset <= EndAccum; AIPointOffset++)
                         {
                             if((pAccumPoint = (CtiPointAccumulator *)getDevicePointOffsetTypeEqual(AIPointOffset, DemandAccumulatorPointType)) != NULL)
@@ -706,6 +711,11 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
 
                 if(NumAnalogs)
                 {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << " About to decode " << NumAnalogs << " analogs" << endl;
+                    }
                     for(i = 0; i < NumAnalogs; i++)
                     {
                         if(i & 0x01)
@@ -721,8 +731,13 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                         }
 
                         Value = Value << 4;
-
                         Value = Value / 16;
+
+
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " AI offset " << AIPointOffset << " = " << Value << endl;
+                        }
 
                         if((NumericPoint = (CtiPointNumeric*)getDevicePointOffsetTypeEqual(AIPointOffset, AnalogPointType)) != NULL)
                         {
@@ -831,12 +846,226 @@ INT CtiDeviceILEX::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, 
 {
     INT status = NoError;
 
+    /*  This method should only be called by the dev_base method
+     *   ExecuteRequest(CtiReturnMsg*, INT ScanPriority)
+     *   (NOTE THE DIFFERENCE IN ARGS)
+     *   That method prepares an outmessage for submission to the internals..
+     */
+
+
+    switch(parse.getCommand())
+    {
+    case LoopbackRequest:
+        {
+            int cnt = parse.getiValue("count");
+
+            for(int i = 0; i < cnt; i++)
+            {
+                OUTMESS *OutMTemp = CTIDBG_new OUTMESS(*OutMessage);
+
+                if(OutMTemp != NULL)
+                {
+                    OutMTemp->Request = OutMessage->Request;
+                    exceptionScan(OutMTemp, 13, outList);
+                }
+            }
+
+            break;
+        }
+    case ScanRequest:
+        {
+            status = executeScan(pReq, parse, OutMessage, vgList, retList, outList);
+            break;
+        }
+    case ControlRequest:
+        {
+            status = executeControl(pReq, parse, OutMessage, vgList, retList, outList);
+            break;
+        }
+    case GetStatusRequest:
+    case GetValueRequest:
+    case PutValueRequest:
+    case PutStatusRequest:
+    case GetConfigRequest:
+    case PutConfigRequest:
+    default:
+        {
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+            }
+            status = NoExecuteRequestMethod;
+            /* Set the error value in the base class. */
+            // FIX FIX FIX 092999
+            retList.insert( CTIDBG_new CtiReturnMsg(getID(),
+                                                    RWCString(OutMessage->Request.CommandStr),
+                                                    RWCString("Welco Devices do not support this command (yet?)"),
+                                                    status,
+                                                    OutMessage->Request.RouteID,
+                                                    OutMessage->Request.MacroOffset,
+                                                    OutMessage->Request.Attempt,
+                                                    OutMessage->Request.TrxID,
+                                                    OutMessage->Request.UserID,
+                                                    OutMessage->Request.SOE,
+                                                    RWOrdered()));
+
+            break;
+        }
+    }
+
+
     return status;
 }
 
 INT CtiDeviceILEX::executeControl(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     INT status = NORMAL;
+
+    if(!isInhibited())
+    {
+        CtiPointStatus *ctlPoint = 0;
+        INT ctlpt = parse.getiValue("point");
+        INT controlState;
+
+        if(ctlpt < 0)
+        {
+            // Must have provided only a name... Find it the hard way.
+            RWCString pname = parse.getsValue("point");
+            ctlPoint = (CtiPointStatus*)getDevicePointEqualByName(pname);
+        }
+        else
+        {
+            ctlPoint = (CtiPointStatus*)getDevicePointEqual(ctlpt);
+        }
+
+
+        if(ctlPoint)
+        {
+            if(ctlPoint->getPointStatus().getControlType() > NoneControlType &&
+               ctlPoint->getPointStatus().getControlType() < InvalidControlType)
+            {
+                INT ctloffset = ctlPoint->getPointStatus().getControlOffset();
+
+                if( !ctlPoint->getPointStatus().getControlInhibit() )
+                {
+                    if(INT_MIN == ctlpt || !(parse.getFlags() & (CMD_FLAG_CTL_CLOSE | CMD_FLAG_CTL_OPEN)))
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << "  Poorly formed control message.  Specify select pointid and open or close" << endl;
+                    }
+                    else    // We have all our info available.
+                    {
+                        OutMessage->Port        = getPortID();
+                        OutMessage->Remote      = getAddress();
+
+                        EstablishOutMessagePriority( OutMessage, MAXPRIORITY );
+
+                        OutMessage->TimeOut     = 2;
+                        OutMessage->InLength    = -1;
+                        OutMessage->EventCode   |= ENCODED | NOWAIT | NORESULT;          // May contain RESULT based upon the incoming OutMessage
+                        OutMessage->ReturnNexus = NULL;
+                        OutMessage->SaveNexus   = NULL;
+
+                        if(!OutMessage->TargetID) OutMessage->TargetID = getID();
+                        if(!OutMessage->DeviceID) OutMessage->DeviceID = getID();
+
+                        OUTMESS *MyOutMessage = CTIDBG_new OUTMESS(*OutMessage);
+
+                        /* This actually takes two messages... a select and an execute */
+                        MyOutMessage->OutLength = 4;
+
+                        if(parse.getFlags() & CMD_FLAG_CTL_OPEN)
+                        {
+                            controlState = OPENED;
+
+                            header(MyOutMessage->Buffer.OutMessage + PREIDLEN, ILEXSBOSELECT, 0, 0);
+                            /* set the operation time */
+                            MyOutMessage->Buffer.OutMessage[PREIDLEN + ILEXHEADERLEN + 1] = ctlPoint->getPointStatus().getCloseTime1() / 100;
+
+                        }
+                        else if(parse.getFlags() & CMD_FLAG_CTL_CLOSE)
+                        {
+                            controlState = CLOSED;
+                            header(MyOutMessage->Buffer.OutMessage + PREIDLEN, ILEXSBOSELECT, 1, 0);
+                            /* set the operation time */
+                            MyOutMessage->Buffer.OutMessage[PREIDLEN + ILEXHEADERLEN + 1] = ctlPoint->getPointStatus().getCloseTime2() / 100;
+                        }
+                        else
+                        {
+                            delete (MyOutMessage);
+                            return(BADSTATE);
+                        }
+
+                        /* set the point number */
+                        MyOutMessage->Buffer.OutMessage[PREIDLEN + ILEXHEADERLEN] = ctloffset - 1;
+
+                        outList.insert( MyOutMessage );
+                        MyOutMessage = 0;
+
+
+
+                        // EXECUTE!!!
+
+
+                        /* Load all the other stuff that is needed */
+                        OutMessage->Sequence = 0;
+                        OutMessage->Retry = 0;
+                        OutMessage->OutLength = 3;
+                        OutMessage->Priority = MAXPRIORITY;
+
+                        /* set up the execute */
+                        header (OutMessage->Buffer.OutMessage + PREIDLEN, ILEXSBOEXECUTE, 0, 0);
+                        /* set the point number */
+                        OutMessage->Buffer.OutMessage[PREIDLEN + ILEXHEADERLEN] = ctloffset - 1;
+
+                        /* Sent the message on to the remote */
+                        outList.insert( OutMessage );
+                        OutMessage = 0;
+
+                        CtiLMControlHistoryMsg *hist = CTIDBG_new CtiLMControlHistoryMsg ( ctlPoint->getDeviceID(), ctlPoint->getPointID(), controlState, RWTime(), -1, 100 );
+
+                        hist->setMessagePriority( hist->getMessagePriority() + 1 );
+                        vgList.insert( hist );
+
+                        if(ctlPoint->isPseudoPoint())
+                        {
+                            // There is no physical point to observe and respect.  We lie to the control point.
+                            CtiPointDataMsg *pData = CTIDBG_new CtiPointDataMsg(ctlPoint->getID(), (DOUBLE)controlState, NormalQuality, StatusPointType, RWCString("This point has been controlled"));
+                            pData->setUser( pReq->getUser() );
+                            vgList.insert(pData);
+                        }
+
+                        retList.insert( CTIDBG_new CtiReturnMsg(getID(), parse.getCommandStr(), RWCString("Command submitted to port control")) );
+                    }
+                }
+                else
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << "  Control Point " << ctlPoint->getName() << " is disabled" << endl;
+                    }
+                }
+            }
+        }
+        else
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " " << getName() << " Control point " << ctlpt << " does not exist" << endl;
+            }
+        }
+    }
+    else
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " " << getName() << " is disabled" << endl;
+        }
+    }
 
     return status;
 }
@@ -891,3 +1120,4 @@ INT CtiDeviceILEX::exceptionScan(OUTMESS *&OutMessage, INT ScanPriority, RWTPtrS
 
     return status;
 }
+
