@@ -103,11 +103,11 @@ public class Contact extends com.cannontech.database.db.DBPersistent implements 
 		getAddress().setAddressID( 
 				getContact().getAddressID() );
 	
-		getAddress().delete();
-		
 		getContact().delete();
-	
+
+		getAddress().delete();	
 	}
+
 	/**
 	 * Insert the method's description here.
 	 * Creation date: (2/3/2003 11:16:45 AM)
