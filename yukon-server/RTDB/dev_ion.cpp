@@ -548,20 +548,10 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
 
                 if( commandStr.contains("duke_issg_start", RWCString::ignoreCase) )
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
-
                     newReq->setCommandString(newReq->CommandString() + " duke_issg_start");
                 }
                 else if( commandStr.contains("duke_issg_stop", RWCString::ignoreCase) )
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
-
                     newReq->setCommandString(newReq->CommandString() + " duke_issg_stop");
                 }
 
@@ -586,19 +576,9 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
 
                     if( commandStr.contains("duke_issg_start", RWCString::ignoreCase) )
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
-
                         if( _ion.hasPointUpdate(StatusPointType, 1) && _ion.getPointUpdateValue(StatusPointType, 1) == 0 &&
                             _ion.hasPointUpdate(StatusPointType, 2) && _ion.getPointUpdateValue(StatusPointType, 2) == 0 )
                         {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
-
                             CtiRequestMsg *newReq = CTIDBG_new CtiRequestMsg(getID(),
                                                                              "scan general post_control duke_issg_start",
                                                                              InMessage->Return.UserID,
@@ -622,19 +602,9 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                     }
                     else if( commandStr.contains("duke_issg_stop", RWCString::ignoreCase) )
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
-
                         if( _ion.hasPointUpdate(StatusPointType, 1) && _ion.getPointUpdateValue(StatusPointType, 1) != 0 ||
                             _ion.hasPointUpdate(StatusPointType, 2) && _ion.getPointUpdateValue(StatusPointType, 2) != 0 )
                         {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
-
                             CtiRequestMsg *newReq = CTIDBG_new CtiRequestMsg(getID(),
                                                                              "scan general post_control duke_issg_stop",
                                                                              InMessage->Return.UserID,
@@ -753,24 +723,12 @@ void CtiDeviceION::processInboundData( INMESS *InMessage, RWTime &TimeNow, RWTPt
         CtiPointBase    *point;
         double           value;
         RWCString        resultString;
-        bool             mustArchive;
 
         tmpMsg = *pt_iter;
 
         //  !!! tmpMsg->getId() is actually returning the offset !!!  because only the offset and type are known in the protocol object
         if( (point = getDevicePointOffsetTypeEqual(tmpMsg->getId(), tmpMsg->getType())) != NULL )
         {
-            //  ALWAYS archive the event log point
-            if( tmpMsg->getType() == AnalogPointType &&
-                tmpMsg->getId()   == 2600 )
-            {
-                mustArchive = true;
-            }
-            else
-            {
-                mustArchive = false;
-            }
-
             tmpMsg->setId(point->getID());
 
             //  generate the point update string, if applicable
@@ -793,9 +751,9 @@ void CtiDeviceION::processInboundData( INMESS *InMessage, RWTime &TimeNow, RWTPt
 
             tmpMsg->setString(resultString);
 
-            if( parse.isKeyValid("flag") && (parse.getFlags( ) & CMD_FLAG_UPDATE)
-                || (mustArchive && !useScanFlags()) )  //  if we must archive this point and we're not Scanner, make sure it gets to VG
+            if( !useScanFlags() )  //  if we're not Scanner, send it to VG as well (scanner will do this on his own)
             {
+                //  maybe (parse.isKeyValid("flag") && (parse.getFlags( ) & CMD_FLAG_UPDATE)) someday
                 vgMsg->PointData().append(tmpMsg->replicateMessage());
             }
 
