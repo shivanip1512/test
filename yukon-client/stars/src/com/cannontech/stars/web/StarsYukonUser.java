@@ -8,7 +8,6 @@ import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.util.ECUtils;
-import com.cannontech.stars.util.ServerUtils;
 
 /**
  * @author yao
