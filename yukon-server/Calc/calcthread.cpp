@@ -233,26 +233,42 @@ void CtiCalculateThread::onUpdateLoop( void )
     
                     CtiPointDataMsg *pData = NULL;
     
-                    if( calcPoint->getPointCalcWindowEndTime() > RWTime(RWDate(1,1,1991)) )
-                    {
-                        CtiHashKey pointHashKey(calcPoint->getPointId());
+                    if( calcPoint->getPointCalcWindowEndTime().seconds() > RWTime(RWDate(1,1,1991)).seconds() )
+                    {// demand average point madness
                         CtiPointStore* pointStore = CtiPointStore::getInstance();
+
+                        CtiHashKey pointHashKey(calcPoint->getPointId());
                         CtiPointStoreElement* pointPtr = (CtiPointStoreElement*)((*pointStore)[&pointHashKey]);
-    
-                        if( RWTime() >= calcPoint->getPointCalcWindowEndTime() )
+                        CtiHashKey componentPointHashKey(calcPoint->findDemandAvgComponentPointId());
+                        CtiPointStoreElement* componentPointPtr = (CtiPointStoreElement*)((*pointStore)[&componentPointHashKey]);
+
+                        /*{
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " - Calc Point Id: " << recalcPointID
+                                 << " New Demand Avg Value: " << recalcValue
+                                 << " Point Calc Window End Time: " << calcPoint->getPointCalcWindowEndTime() << endl;
+                        }*/
+                        if( RWTime().seconds() >= calcPoint->getPointCalcWindowEndTime().seconds() &&
+                            RWTime().seconds() < calcPoint->getPointCalcWindowEndTime().seconds() + componentPointPtr->getSecondsSincePreviousPointTime() )
                         {
+                            if( _CALC_DEBUG )
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " - New Point Data message for Calc Point Id: " << recalcPointID
+                                     << " New Demand Avg Value: " << recalcValue << endl;
+                            }
                             /*{
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                                 dout << __FILE__ << " (" << __LINE__ << ") RWTime() >= calcPoint->getPointCalcWindowEndTime()" << endl;
                             }*/
-                            pData = new CtiPointDataMsg(recalcPointID, pointPtr->getPointValue(), NormalQuality, CalculatedPointType, pointDescription);
+                            pData = new CtiPointDataMsg(recalcPointID, recalcValue, NormalQuality, CalculatedPointType, pointDescription);
                             pData->setTime(calcPoint->getPointCalcWindowEndTime());
                         }
     
-                        pointPtr->setPointValue( recalcValue, RWTime(), InvalidQuality, 0 );
+                        pointPtr->setPointValue( recalcValue, RWTime(), NormalQuality, 0 );
                     }
                     else
-                    {
+                    {//normal calc point
                         pData = new CtiPointDataMsg(recalcPointID, recalcValue, NormalQuality, CalculatedPointType, pointDescription);
                     }
     
