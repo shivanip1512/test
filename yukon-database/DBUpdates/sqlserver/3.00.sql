@@ -193,6 +193,14 @@ insert into yukongrouprole values (765,-301,-210,-21000,'(none)');
 /* @error ignore */
 insert into yukongrouprole values (766,-301,-210,-21001,'(none)');
 /* @error ignore */
+insert into yukongrouprole values (791,-301,-209,-20900,'(none)');
+/* @error ignore */
+insert into yukongrouprole values (792,-301,-209,-20901,'(none)');
+/* @error ignore */
+insert into yukongrouprole values (793,-301,-209,-20902,'(none)');
+/* @error ignore */
+insert into yukongrouprole values (794,-301,-209,-20903,'(none)');
+/* @error ignore */
 insert into yukongrouprole values (795,-301,-209,-20904,'(none)');
 /* @error ignore */
 insert into yukongrouprole values (801,-301,-201,-20801,'(none)');
@@ -278,23 +286,23 @@ insert into YukonUserRole values (407, -1, -108, -10807, '(none)');
 insert into YukonUserRole values (408, -1, -108, -10808, '(none)');
 
 /* Web Client Customers Direct Load Control role */
-insert into YukonUserRole values (407, -1, -300, -30000, '(none)');
-insert into YukonUserRole values (408, -1, -300, -30001, 'true');
+insert into YukonUserRole values (410, -1, -300, -30000, '(none)');
+insert into YukonUserRole values (411, -1, -300, -30001, 'true');
 
 /* Web Client Customers Curtailment role */
-insert into YukonUserRole values (409, -1, -301, -30100, '(none)');
-insert into YukonUserRole values (410, -1, -301, -30101, '(none)');
+insert into YukonUserRole values (420, -1, -301, -30100, '(none)');
+insert into YukonUserRole values (421, -1, -301, -30101, '(none)');
 
 /* Web Client Customers Energy Buyback role */
-insert into YukonUserRole values (411, -1, -302, -30200, '(none)');
-insert into YukonUserRole values (412, -1, -302, -30200, '(none)');
+insert into YukonUserRole values (430, -1, -302, -30200, '(none)');
+insert into YukonUserRole values (431, -1, -302, -30200, '(none)');
 
 /* Web Client Customers Commercial Metering role */
-insert into YukonUserRole values (413, -1, -304, -30400, '(none)');
-insert into YukonUserRole values (414, -1, -304, -30401, 'true');
+insert into YukonUserRole values (440, -1, -304, -30400, '(none)');
+insert into YukonUserRole values (441, -1, -304, -30401, 'true');
 
 /* Web Client Customers Administrator role */
-insert into YukonUserRole values (415, -1, -305, -30500, 'true');
+insert into YukonUserRole values (450, -1, -305, -30500, 'true');
 
 insert into YukonUserRole values (520,-1,-400,-40000,'(none)');
 insert into YukonUserRole values (521,-1,-400,-40001,'(none)');
