@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.34 $
-* DATE         :  $Date: 2004/04/29 19:59:24 $
+* REVISION     :  $Revision: 1.35 $
+* DATE         :  $Date: 2004/05/11 18:29:00 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -307,6 +307,10 @@ INT resolveDeviceType(RWCString rwsTemp)
     else if(rwsTemp == "rtu-dart")
     {
         nRet = TYPE_DARTRTU;
+    }
+    else if(rwsTemp == "rtu-lmi")
+    {
+        nRet = TYPE_SERIESVLMIRTU;
     }
     else if(rwsTemp == "ion-7330")
     {
@@ -1003,6 +1007,8 @@ bool resolveIsDeviceTypeSingle(INT Type)
     case TYPE_SES92RTU:
     case TYPE_DNPRTU:
     case TYPE_DARTRTU:
+    case TYPE_SERIESVRTU:
+    case TYPE_SERIESVLMIRTU:
     case TYPE_ION7330:
     case TYPE_ION7700:
     case TYPE_ION8300:
@@ -1549,6 +1555,8 @@ INT resolveSlaveAddress(const INT DeviceType, RWCString str)
     case TYPE_TAPTERM:
     case TYPE_WCTP:
     case TYPE_KV2:
+    case TYPE_SERIESVRTU:
+    case TYPE_SERIESVLMIRTU:
     case TYPE_ION7330:
     case TYPE_ION7700:
     case TYPE_ION8300:
