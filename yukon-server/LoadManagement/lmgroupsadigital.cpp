@@ -120,7 +120,7 @@ CtiRequestMsg* CtiLMGroupSADigital::createRotationRequestMsg(LONG sendRate, LONG
 CtiRequestMsg* CtiLMGroupSADigital::createMasterCycleRequestMsg(LONG offTime, LONG period, int priority) const
 {
     RWCString controlString = RWCString("control sadigital shed ");
-    controlString += buildShedString(offTime-60);
+    controlString += buildShedString(offTime);
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
