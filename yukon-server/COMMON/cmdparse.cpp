@@ -4232,9 +4232,9 @@ void CtiCommandParser::doParseControlSA(const RWCString &CmdStr)
 
     if(CmdStr.contains(" priority"))
     {
-        if(!(temp = CmdStr.match(" priority +[0-9]+")).isNull())
+        if(!(temp = CmdStr.match(" priority +[0-3]")).isNull())
         {
-            if(!(valStr = temp.match("[0-9]+")).isNull())
+            if(!(valStr = temp.match("[0-3]")).isNull())
             {
                 iValue = atoi(valStr.data());
                 _cmd["sa_priority"] = CtiParseValue( iValue );
@@ -4276,6 +4276,7 @@ void CtiCommandParser::doParseControlSA(const RWCString &CmdStr)
     if(CmdStr.contains(" dlc"))
     {
         _cmd["sa_dlc_mode"] = CtiParseValue(1);    // DI mode is implied by the abscence of dlc.
+        _cmd["sa_f0bit"] = 0;
     }
 
     if(CmdStr.contains(" restore"))    // This parse must be done following the check for dlc.
