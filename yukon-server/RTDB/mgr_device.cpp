@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2002/12/12 17:36:04 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2002/12/30 16:24:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -673,7 +673,7 @@ void CtiDeviceManager::refreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool
 
                         if(DebugLevel & 0x00020000)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for DNP Devices" << endl;
+                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for DNP/ION Devices" << endl;
                         }
                         CtiDeviceDNP().getSQL( db, keyTable, selector );
                         if(paoID != 0) selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
@@ -687,14 +687,14 @@ void CtiDeviceManager::refreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool
 
                         if(DebugLevel & 0x00020000)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for DNP Devices" << endl;
+                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for DNP/ION Devices" << endl;
                         }
                     }
                     stop = stop.now();
                     if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load  DNP Devices" << endl;
+                        dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load  DNP/ION Devices" << endl;
                     }
 
 

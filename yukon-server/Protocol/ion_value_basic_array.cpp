@@ -57,7 +57,7 @@ int CtiIONArray::isNumericArray( void )
 }
 
 
-int CtiIONArray::getSize( void )
+int CtiIONArray::size( void )
 {
     return _array.size( );
 }

@@ -37,7 +37,8 @@ public:
     IONArrayTypes getArrayType( void ) const;
     int isNumericArray( void );
 
-    virtual int getSize( void );
+    int size( void );
+
     //  i wish, but the template typing was awful.
     //T *operator[]( unsigned int index );
 
@@ -69,7 +70,6 @@ private:
 
     vector< CtiIONValue * > _array;
     IONArrayTypes _arrayType;
-    int numEntries;
 
     void setArrayType( IONArrayTypes arrayType );
 };

@@ -50,9 +50,9 @@ CtiIONValue::IONValueTypes CtiIONValue::getType( void ) const
 }
 
 
-int CtiIONValue::isNumeric( void )
+bool CtiIONValue::isNumeric( void )
 {
-    int retVal;
+    bool retVal;
 
     switch( getType( ) )
     {
@@ -60,17 +60,17 @@ int CtiIONValue::isNumeric( void )
         case IONBoolean:
         case IONUnsignedInt:
         case IONSignedInt:
-            retVal = TRUE;
+            retVal = true;
 
         default:
-            retVal = FALSE;
+            retVal = false;
     }
 
     return retVal;
 }
 
 
-int CtiIONValue::isValid( void )
+bool CtiIONValue::isValid( void )
 {
     return _valid;
 }

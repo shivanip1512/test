@@ -63,7 +63,6 @@ public:
 
     unsigned int getSerializedValueLength( void ) const;
     void putSerializedValue( unsigned char *buf ) const;
-
     enum IONSimpleMethods
     {
         ReadIONClass                  = 0x01,

@@ -75,6 +75,20 @@ CtiIONDataStream &CtiIONDataStream::initialize( unsigned char *buf, unsigned lon
 }
 
 
+bool CtiIONDataStream::isValid( void )
+{
+    bool result = true;
+    DSIterator itr;
+
+    for( itr = _streamValues.begin(); itr != _streamValues.end() && result; itr++ )
+    {
+        result &= (*itr)->isValid();
+    }
+
+    return result;
+}
+
+
 void CtiIONDataStream::clear( void )
 {
     CtiIONValue *tmp;
@@ -114,14 +128,9 @@ CtiIONDataStream &CtiIONDataStream::appendItem( CtiIONValue *toInsert )
 
 CtiIONDataStream &CtiIONDataStream::removeItem( int index )
 {
-    DSVector::difference_type idx;
-
     if( index >= 0 && index < _streamValues.size() )
     {
-        idx = index;
-
-        //  NOTE:  this is O(n), so if this gets hit a lot, DSVector needs to be changed to a linked list or something.
-        _streamValues.erase(_streamValues.begin() + idx, _streamValues.begin() + idx);
+        _streamValues.erase(_streamValues.begin() + index);
     }
     else
     {

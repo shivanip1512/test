@@ -62,6 +62,20 @@ CtiDeviceION &CtiDeviceION::operator=(const CtiDeviceION &aRef)
 }
 
 
+inline bool      CtiDeviceION::isMeter() const                      {   return true;    }
+inline RWCString CtiDeviceION::getMeterGroupName() const            {   return getMeterGroup().getCollectionGroup();    }
+inline RWCString CtiDeviceION::getAlternateMeterGroupName() const   {   return getMeterGroup().getTestCollectionGroup();    }
+
+CtiTableDeviceMeterGroup  CtiDeviceION::getMeterGroup() const       {  return MeterGroup;  }
+CtiTableDeviceMeterGroup& CtiDeviceION::getMeterGroup()             {  return MeterGroup;  }
+
+CtiDeviceION& CtiDeviceION::setMeterGroup( const CtiTableDeviceMeterGroup &aMeterGroup )
+{
+    MeterGroup = aMeterGroup;
+    return *this;
+}
+
+
 CtiProtocolBase *CtiDeviceION::getProtocol( void ) const
 {
     return (CtiProtocolBase *)&_ion;
@@ -99,7 +113,7 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
             case ScanRateStatus:
             case ScanRateGeneral:
                {
-                   _ion.setCommand(CtiProtocolION::ION_ExceptionScan);
+                   _ion.setCommand(CtiProtocolION::Command_ExceptionScan);
                    found = true;
                    break;
                }
@@ -107,7 +121,7 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
             case ScanRateIntegrity:
             default:
                {
-                   _ion.setCommand(CtiProtocolION::ION_IntegrityScan);
+                   _ion.setCommand(CtiProtocolION::Command_IntegrityScan);
                    found = true;
                    break;
                }
@@ -247,7 +261,7 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
 
     if( nRet == NoError )
     {
-        OutMessage->Port = getPortID();
+        OutMessage->Port     = getPortID();
         OutMessage->DeviceID = getID();
         OutMessage->TargetID = getID();
         _ion.sendCommRequest( OutMessage, outList );
@@ -424,8 +438,16 @@ INT CtiDeviceION::ErrorDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< C
 
 void CtiDeviceION::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
-   Inherited::getSQL(db, keyTable, selector);
-   CtiTableDeviceDNP::getSQL(db, keyTable, selector);
+    //RWDBSelector tmpSelector;
+
+    Inherited::getSQL(db, keyTable, selector);
+    CtiTableDeviceDNP::getSQL(db, keyTable, selector);
+
+    //  this will remain commented out until it is needed...
+    //CtiTableDeviceMeterGroup::getSQL(db, keyTable, tmpSelector);
+
+    //selector << tmpSelector;
+    //selector.where( selector.where() && selector.where().leftOuterJoin(tmpSelector.where()) );
 }
 
 
@@ -433,6 +455,7 @@ void CtiDeviceION::DecodeDatabaseReader(RWDBReader &rdr)
 {
    Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
    _address.DecodeDatabaseReader(rdr);
+   //MeterGroup.DecodeDatabaseReader(rdr);
 
    if( getDebugLevel() & 0x0800 )
    {

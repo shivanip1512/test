@@ -154,6 +154,8 @@ int CtiIONDatalinkLayer::generate( CtiXfer &xfer )
 
     _inActual = 0;
 
+    xfer.setInTimeout(0);
+
     switch( _ioState )
     {
         case InputHeader:
@@ -260,6 +262,7 @@ int CtiIONDatalinkLayer::generate( CtiXfer &xfer )
         }
     }
 
+#if 0
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
 
@@ -273,6 +276,7 @@ int CtiIONDatalinkLayer::generate( CtiXfer &xfer )
             dout << endl;
         }
     }
+#endif
 
     return retVal;
 }
@@ -428,6 +432,8 @@ int CtiIONDatalinkLayer::decode( CtiXfer &xfer, int status )
     }
     else
     {
+
+        #if 0
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
 
@@ -445,6 +451,7 @@ int CtiIONDatalinkLayer::decode( CtiXfer &xfer, int status )
                 dout << "No datalink layer input" << endl;
             }
         }
+        #endif
 
         switch( _ioState )
         {

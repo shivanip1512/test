@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/12/21 17:20:45 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/12/30 16:24:43 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -69,6 +69,11 @@ int CtiDNPAnalogInput::restoreVariation(unsigned char *buf, int len, int variati
         }
         case AI32BitNoFlag:
         {
+            if( buf[pos] & 0x80 )
+            {
+                _value = -1;
+            }
+
             _value  = buf[pos++] ;
             _value |= buf[pos++] <<  8;
             _value |= buf[pos++] << 16;
@@ -84,6 +89,11 @@ int CtiDNPAnalogInput::restoreVariation(unsigned char *buf, int len, int variati
         }
         case AI16BitNoFlag:
         {
+            if( buf[pos] & 0x80 )
+            {
+                _value = -1;
+            }
+
             _value  = buf[pos++];
             _value |= buf[pos++] << 8;
 

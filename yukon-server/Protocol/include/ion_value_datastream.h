@@ -56,7 +56,7 @@ public:
     static bool itemIs( CtiIONValue *toCheck, CtiIONArray::IONArrayTypes type );
     static bool itemIs( CtiIONValue *toCheck, CtiIONStruct::IONStructTypes type );
 
-
+    bool isValid( void );
 
     virtual void putSerialized( unsigned char *buf ) const;
     virtual unsigned int getSerializedLength( void ) const;

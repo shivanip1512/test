@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/12/27 02:51:18 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2002/12/30 16:24:45 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -27,6 +27,7 @@
 CtiProtocolION::CtiProtocolION()
 {
     setAddresses(DefaultYukonIONMasterAddress, DefaultSlaveAddress);
+    setConfigRead(false);
 }
 
 
@@ -66,194 +67,107 @@ void CtiProtocolION::setCommand( IONCommand command, ion_output_point *points, i
     unsigned char *tmp;
     int tmplen;
 
-//  this needs to be moved to porter-side
-//    _appLayer.setAddresses(_slaveAddress, _masterAddress);
-
-/*
-    switch( command )
-    {
-        case ION_ExceptionScan:
-            {
-
-                _appLayer.setCommand(CtiIONApplication::RequestRead);
-
-                CtiIONObjectBlock dob(CtiIONObjectBlock::NoIndex_NoRange);
-
-                dob.addObject(CTIDBG_new CtiIONClass(CtiIONClass::Class0));
-
-                _appLayer.addObjectBlock(dob);
-
-                break;
-            }
-        case ION_Class123Read:
-            {
-                _appLayer.setCommand(CtiIONApplication::RequestRead);
-
-                CtiIONObjectBlock dob1(CtiIONObjectBlock::NoIndex_NoRange),
-                                  dob2(CtiIONObjectBlock::NoIndex_NoRange),
-                                  dob3(CtiIONObjectBlock::NoIndex_NoRange);
-
-                dob1.addObject(CTIDBG_new CtiIONClass(CtiIONClass::Class1));
-                dob2.addObject(CTIDBG_new CtiIONClass(CtiIONClass::Class2));
-                dob3.addObject(CTIDBG_new CtiIONClass(CtiIONClass::Class3));
-
-                _appLayer.addObjectBlock(dob1);
-                _appLayer.addObjectBlock(dob2);
-                _appLayer.addObjectBlock(dob3);
-
-                break;
-            }
-        case ION_SetAnalogOut:
-            {
-                if( numPoints == 1 && points[0].type == AnalogOutput )
-                {
-                    _appLayer.setCommand(CtiIONApplication::RequestDirectOp);
-
-                    CtiIONObjectBlock dob(CtiIONObjectBlock::ShortIndex_ShortQty);
-                    CtiIONAnalogOutputBlock *aout = CTIDBG_new CtiIONAnalogOutputBlock(CtiIONAnalogOutputBlock::AOB16Bit);
-
-                    aout->setControl(points[0].aout.value);
-
-                    dob.addObjectIndex(aout, points[0].offset);
-
-                    _appLayer.addObjectBlock(dob);
-                }
-                else
-                {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
-
-                    command = ION_Invalid;
-                }
-
-                break;
-            }
-        case ION_SetDigitalOut:
-            {
-                if( numPoints == 1 && points[0].type == DigitalOutput )
-                {
-                    _appLayer.setCommand(CtiIONApplication::RequestDirectOp);
-
-                    CtiIONObjectBlock dob(CtiIONObjectBlock::ByteIndex_ByteQty);
-                    CtiIONBinaryOutputControl *bout = CTIDBG_new CtiIONBinaryOutputControl(CtiIONBinaryOutputControl::ControlRelayOutputBlock);
-
-                    bout->setControlBlock(points[0].dout.on_time,
-                                          points[0].dout.off_time,
-                                          points[0].dout.count,
-                                          points[0].dout.control,
-                                          points[0].dout.queue,
-                                          points[0].dout.clear,
-                                          points[0].dout.trip_close);
-
-                    dob.addObjectIndex(bout, points[0].offset);
-
-                    _appLayer.addObjectBlock(dob);
-                }
-                else
-                {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
-
-                    command = ION_Invalid;
-                }
-
-                break;
-            }
-        default:
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
-
-                command = ION_Invalid;
-            }
-    }
-*/
-
     _currentCommand.command = command;
+}
+
+
+bool CtiProtocolION::hasConfigBeenRead( void )
+{
+    return _configRead;
+}
+
+
+void CtiProtocolION::setConfigRead( bool read )
+{
+    _configRead = read;
 }
 
 
 int CtiProtocolION::generate( CtiXfer &xfer )
 {
-    CtiIONMethod    *tmpMethod;
-    CtiIONStatement *tmpStatement;
-    CtiIONProgram   *tmpProgram;
-
     if( _appLayer.isTransactionComplete() )
     {
-        switch( _ionState )
+        if( hasConfigBeenRead() )
         {
-            case IONStateInit:
-            case IONStateRequestFeatureManagerInfo:
-            {
-                tmpMethod    = CTIDBG_new CtiIONMethod   (CtiIONMethod::ReadModuleSetupHandles);
-                tmpStatement = CTIDBG_new CtiIONStatement(IONFeatureManagerHandle, tmpMethod);
-                tmpProgram   = CTIDBG_new CtiIONProgram  (tmpStatement);
 
-                _dsOut.clear();
-                _dsOut.appendItem(tmpProgram);
-
-                _appLayer.setToOutput(_dsOut);
-
-                _dsOut.clear();
-
-                break;
-            }
-
-            case IONStateReceiveFeatureManagerInfo:
-            {
-                _appLayer.setToInput();
-
-                break;
-            }
-
-            case IONStateRequestManagerInfo:
-            {
-                int i;
-
-                _dsOut.clear();
-
-                for( i = 0; i < _setup_handles->getSize(); i++ )
-                {
-                    tmpMethod    = CTIDBG_new CtiIONMethod   (CtiIONMethod::ReadManagedClass);
-                    tmpStatement = CTIDBG_new CtiIONStatement(_setup_handles->getElement(i)->getValue(), tmpMethod);
-                    tmpProgram   = CTIDBG_new CtiIONProgram  (tmpStatement);
-
-                    _dsOut.appendItem(tmpProgram);
-                }
-
-                _appLayer.setToOutput(_dsOut);
-
-                break;
-
-            }
-
-            case IONStateReceiveManagerInfo:
-            {
-                _appLayer.setToInput();
-
-                break;
-            }
-
-            default:
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
-
-                break;
-            }
+        }
+        else
+        {
+            generateConfigRead();
         }
     }
 
     return _appLayer.generate(xfer);
+}
+
+
+void CtiProtocolION::generateConfigRead( void )
+{
+    CtiIONMethod    *tmpMethod;
+    CtiIONStatement *tmpStatement;
+    CtiIONProgram   *tmpProgram;
+
+    switch( _ionState )
+    {
+        case State_Init:
+        case State_RequestFeatureManagerInfo:
+        {
+            tmpMethod    = CTIDBG_new CtiIONMethod   (CtiIONMethod::ReadModuleSetupHandles);
+            tmpStatement = CTIDBG_new CtiIONStatement(IONFeatureManagerHandle, tmpMethod);
+            tmpProgram   = CTIDBG_new CtiIONProgram  (tmpStatement);
+
+            _dsOut.clear();
+            _dsOut.appendItem(tmpProgram);
+
+            _appLayer.setToOutput(_dsOut);
+
+            _dsOut.clear();
+
+            break;
+        }
+
+        case State_ReceiveFeatureManagerInfo:
+        {
+            _appLayer.setToInput();
+
+            break;
+        }
+
+        case State_RequestManagerInfo:
+        {
+            int i;
+
+            _dsOut.clear();
+
+            tmpMethod    = CTIDBG_new CtiIONMethod   (CtiIONMethod::ReadManagedClass);
+            tmpStatement = CTIDBG_new CtiIONStatement(_setup_handles->getElement(_currentManagerHandle)->getValue(), tmpMethod);
+            tmpProgram   = CTIDBG_new CtiIONProgram  (tmpStatement);
+
+            _dsOut.appendItem(tmpProgram);
+
+            _appLayer.setToOutput(_dsOut);
+
+            break;
+
+        }
+
+        case State_ReceiveManagerInfo:
+        {
+            _appLayer.setToInput();
+
+            break;
+        }
+
+        default:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            break;
+        }
+    }
 }
 
 
@@ -265,117 +179,16 @@ int CtiProtocolION::decode( CtiXfer &xfer, int status )
 
     if( _appLayer.isTransactionComplete() )
     {
-        switch( _ionState )
+        if( hasConfigBeenRead() )
         {
-            case IONStateInit:
-            case IONStateRequestFeatureManagerInfo:
+/*            switch( _currentCommand.command )
             {
-                //  ACH:  check for errors before i just switch to listening mode
-
-                _ionState = IONStateReceiveFeatureManagerInfo;
-
-                break;
-            }
-
-            case IONStateReceiveFeatureManagerInfo:
-            {
-                unsigned char *buf;
-
-                if( _appLayer.getPayloadLength() > 0 )
-                {
-                    buf = new unsigned char[_appLayer.getPayloadLength()];
-
-                    if( buf != NULL )
-                    {
-                        _appLayer.putPayload(buf);
-
-                        _dsIn.initialize(buf, _appLayer.getPayloadLength());
-
-                        if( CtiIONDataStream::itemIs(_dsIn[0], CtiIONArray::IONUnsignedIntArray) )
-                        {
-                            _setup_handles = (CtiIONUnsignedIntArray *)_dsIn[0];
-
-                            //  remove it so it doesn't get erased when dsIn is wiped
-                            _dsIn.removeItem(0);
-
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-
-                                dout << endl;
-                                dout << "Setup handles: " << endl;
-
-                                for( int i = 0; i < _setup_handles->getSize(); i++ )
-                                {
-                                    dout << _setup_handles->getElement(i)->getValue() << "\t";
-                                }
-
-                                dout << endl << endl;
-                            }
-
-                            _ionState = IONStateRequestManagerInfo;
-                        }
-                        else
-                        {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                dout << "No manager handles returned, aborting" << endl;
-                            }
-
-                            _ionState = IONStateAbort;
-                        }
-
-                        delete buf;
-                    }
-                    else
-                    {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            dout << "Unable to allocate memory for ION datastream decode, aborting" << endl;
-                        }
-
-                        _ionState = IONStateAbort;
-                    }
-                }
-                else
-                {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << "Zero-length application layer return for Feature Manager handle request, aborting" << endl;
-                    }
-
-                    _ionState = IONStateAbort;
-                }
-
-                break;
-            }
-            case IONStateRequestManagerInfo:
-            {
-                //  ACH:  check for errors before i just switch to listening mode
-
-                _ionState = IONStateReceiveManagerInfo;
-
-                break;
-            }
-
-            case IONStateReceiveManagerInfo:
-            {
-                break;
-            }
-
-            default:
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << "Unknown state " << _ionState << " in CtiProtocolION::decode" << endl;
-                }
-
-                break;
-            }
+                case
+            }*/
+        }
+        else
+        {
+            decodeConfigRead();
         }
     }
     else if( _appLayer.errorCondition() )
@@ -385,11 +198,246 @@ int CtiProtocolION::decode( CtiXfer &xfer, int status )
             dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
-        _ionState = IONStateAbort;
+        _ionState = State_Abort;
     }
 
     return alStatus;
 }
+
+
+void CtiProtocolION::decodeConfigRead( void )
+{
+    switch( _ionState )
+    {
+        case State_Init:
+        case State_RequestFeatureManagerInfo:
+        {
+            //  ACH:  check for errors before i just switch to listening mode
+
+            _ionState = State_ReceiveFeatureManagerInfo;
+
+            break;
+        }
+
+        case State_ReceiveFeatureManagerInfo:
+        {
+            if( inputIsValid( _appLayer, _dsIn ) )
+            {
+                if( CtiIONDataStream::itemIs(_dsIn[0], CtiIONArray::IONUnsignedIntArray) )
+                {
+                    _setup_handles = (CtiIONUnsignedIntArray *)_dsIn[0];
+                    //  remove it so it doesn't get erased when dsIn is wiped
+                    _dsIn.removeItem(0);
+
+                    _currentManagerHandle = 0;
+
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+
+                        dout << endl;
+                        dout << "Setup handles: " << endl;
+
+                        for( int i = 0; i < _setup_handles->size(); i++ )
+                        {
+                            dout << _setup_handles->getElement(i)->getValue() << "\t";
+                        }
+
+                        dout << endl << endl;
+                    }
+
+                    _ionState = State_RequestManagerInfo;
+                }
+                else
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << "No manager handles returned, aborting" << endl;
+                    }
+
+                    _ionState = State_Abort;
+                }
+            }
+            else
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+
+                //  ACH:  maybe increment protocol error count and try again...
+                _ionState = State_Abort;
+            }
+
+            break;
+        }
+        case State_RequestManagerInfo:
+        {
+            //  ACH:  check for errors before i just switch to listening mode
+
+            _ionState = State_ReceiveManagerInfo;
+
+            break;
+        }
+
+        case State_ReceiveManagerInfo:
+        {
+            if( inputIsValid( _appLayer, _dsIn ) )
+            {
+                if( CtiIONDataStream::itemIs(_dsIn[0], CtiIONValue::IONUnsignedInt) )
+                {
+                    CtiIONUnsignedInt *managerClass = (CtiIONUnsignedInt *)_dsIn[0];
+
+                    switch( managerClass->getValue() )
+                    {
+                        case Class_DataRec:
+                        {
+                            _handleManagerDataRecorder = _setup_handles->getElement(_currentManagerHandle)->getValue();
+
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << "Found Data Recorder manager handle: " << _handleManagerDataRecorder << endl;
+                            }
+
+                            break;
+                        }
+
+                        case Class_DigitalIn:
+                        {
+                            _handleManagerDigitalIn = _setup_handles->getElement(_currentManagerHandle)->getValue();
+
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << "Found Digital Input manager handle: " << _handleManagerDigitalIn << endl;
+                            }
+
+                            break;
+                        }
+
+                        case Class_PowerMeter:
+                        {
+                            _handleManagerPowerMeter = _setup_handles->getElement(_currentManagerHandle)->getValue();
+
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << "Found Power Meter manager handle: " << _handleManagerPowerMeter << endl;
+                            }
+
+                            break;
+                        }
+                    }
+
+                    _currentManagerHandle++;
+
+                    if( _currentManagerHandle < _setup_handles->size() )
+                    {
+                        _ionState = State_RequestManagerInfo;
+                    }
+                    else
+                    {
+                        delete _setup_handles;
+
+                        _ionState = State_Complete;
+                    }
+                }
+                else
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << "Module class not returned, aborting" << endl;
+                    }
+
+                    _ionState = State_Abort;
+                }
+            }
+            else
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+
+                //  ACH:  maybe increment protocol error count and try again...
+                _ionState = State_Abort;
+            }
+
+            break;
+        }
+
+        default:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << "Unknown state " << _ionState << " in CtiProtocolION::decode" << endl;
+            }
+
+            break;
+        }
+    }
+}
+
+
+bool CtiProtocolION::inputIsValid( CtiIONApplicationLayer &al, CtiIONDataStream &ds )
+{
+    bool result = false;
+    unsigned char *buf;
+
+    if( al.getPayloadLength() > 0 )
+    {
+        buf = new unsigned char[al.getPayloadLength()];
+
+        if( buf != NULL )
+        {
+            al.putPayload(buf);
+
+            ds.initialize(buf, _appLayer.getPayloadLength());
+
+            if( ds.isValid() )
+            {
+                result = true;
+            }
+            else
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << "No manager handles returned, aborting" << endl;
+                }
+            }
+
+            delete buf;
+        }
+        else
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << "Unable to allocate memory for ION datastream decode, aborting" << endl;
+            }
+
+            _ionState = State_Abort;
+        }
+    }
+    else
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << "Zero-length application layer return, aborting" << endl;
+        }
+
+        _ionState = State_Abort;
+    }
+
+    return result;
+}
+
 
 
 int CtiProtocolION::sendCommRequest( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > &outList )
@@ -479,7 +527,7 @@ int CtiProtocolION::recvCommRequest( OUTMESS *OutMessage )
 
     memcpy( &_currentCommand, OutMessage->Buffer.OutMessage, OutMessage->OutLength );
 
-    _ionState = IONStateInit;
+    _ionState = State_Init;
 
     return retVal;
 }
@@ -488,7 +536,7 @@ int CtiProtocolION::recvCommRequest( OUTMESS *OutMessage )
 bool CtiProtocolION::isTransactionComplete( void )
 {
     //  ACH: factor in application layer retries... ?
-    return _ionState == IONStateComplete || _ionState == IONStateAbort;
+    return _ionState == State_Complete || _ionState == State_Abort;
 }
 
 

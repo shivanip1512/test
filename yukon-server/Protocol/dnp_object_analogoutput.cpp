@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/12/21 17:20:45 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/12/30 16:24:44 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -69,6 +69,11 @@ int CtiDNPAnalogOutput::restoreVariation(unsigned char *buf, int len, int variat
         {
             _flags.raw = buf[pos++];
 
+            if( buf[pos] & 0x80 )
+            {
+                _value = -1;
+            }
+
             _value  = buf[pos++];
             _value |= buf[pos++] <<  8;
             _value |= buf[pos++] << 16;
@@ -80,6 +85,11 @@ int CtiDNPAnalogOutput::restoreVariation(unsigned char *buf, int len, int variat
         case AO16Bit:
         {
             _flags.raw = buf[pos++];
+
+            if( buf[pos] & 0x80 )
+            {
+                _value = -1;
+            }
 
             _value  = buf[pos++];
             _value |= buf[pos++] << 8;
@@ -306,6 +316,11 @@ int CtiDNPAnalogOutputBlock::restoreVariation(unsigned char *buf, int len, int v
         {
             _status = buf[pos++];
 
+            if( buf[pos] & 0x80 )
+            {
+                _value = -1;
+            }
+
             _value  = buf[pos++];
             _value |= buf[pos++] <<  8;
             _value |= buf[pos++] << 16;
@@ -317,6 +332,11 @@ int CtiDNPAnalogOutputBlock::restoreVariation(unsigned char *buf, int len, int v
         case AOB16Bit:
         {
             _status = buf[pos++];
+
+            if( buf[pos] & 0x80 )
+            {
+                _value = -1;
+            }
 
             _value  = buf[pos++];
             _value |= buf[pos++] << 8;

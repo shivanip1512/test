@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/12/27 02:51:18 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/12/30 16:24:45 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -25,7 +25,6 @@
 #include "prot_base.h"
 
 #include "ion_rootclasses.h"
-//#include "ion_classtypes.h"
 #include "ion_value_datastream.h"
 #include "ion_net_application.h"
 
@@ -49,6 +48,26 @@ private:
     } _currentCommand;
 
     CtiIONUnsignedIntArray *_setup_handles;
+    unsigned int            _currentManagerHandle;
+
+    unsigned long _handleManagerPowerMeter,
+                  _handleManagerDataRecorder,
+                  _handleManagerDigitalIn;
+
+    vector< unsigned long >           _dataRecorderModules;
+    vector< vector< unsigned long > > _dataRecorderSources;
+
+    vector< unsigned long > _digitalInModules;
+
+    unsigned long _powerMeterModule;
+
+    bool _configRead;
+
+    bool hasConfigBeenRead( void );
+    void setConfigRead( bool read );
+
+    void generateConfigRead( void );
+    void decodeConfigRead( void );
 
 protected:
 
@@ -62,20 +81,37 @@ protected:
 
     enum IONStates
     {
-        IONStateUninitialized,
-        IONStateInit,
-        IONStateRequestFeatureManagerInfo,
-        IONStateReceiveFeatureManagerInfo,
-        IONStateRequestManagerInfo,
-        IONStateReceiveManagerInfo,
-        IONStateRequestModuleInfo,
-        IONStateReceiveModuleInfo,
-        IONStateRequestRegisterInfo,
-        IONStateReceiveRegisterInfo,
-        IONStateRequestData,
-        IONStateReceiveData,
-        IONStateComplete,
-        IONStateAbort
+        State_Uninitialized,
+
+        //  initialization / config read states
+        State_Init,
+        State_RequestFeatureManagerInfo,
+        State_ReceiveFeatureManagerInfo,
+        State_RequestManagerInfo,
+        State_ReceiveManagerInfo,
+        State_RequestPowerMeterModuleHandles,
+        State_ReceivePowerMeterModuleHandles,
+        State_RequestDigitalInputModuleHandles,
+        State_ReceiveDigitalInputModuleHandles,
+        State_RequestDataRecorderModuleHandles,
+        State_ReceiveDataRecorderModuleHandles,
+        State_RequestDataRecorderInputModuleHandles,
+        State_ReceiveDataRecorderInputModuleHandles,
+
+        //  reading statuses
+        State_RequestDigitalInputData,
+        State_ReceiveDigitalInputData,
+
+        //  reading power meter info
+        State_RequestPowerMeterData,
+        State_ReceivePowerMeterData,
+
+        //  reading load profile
+        State_RequestDataRecorderLogs,
+        State_ReceiveDataRecorderLogs,
+
+        State_Complete,
+        State_Abort
     } _ionState;
 
     enum IONClasses
@@ -147,6 +183,8 @@ public:
     int generate( CtiXfer &xfer );
     int decode  ( CtiXfer &xfer, int status );
 
+    bool inputIsValid( CtiIONApplicationLayer &al, CtiIONDataStream &ds );
+
     bool isTransactionComplete( void );
 
     int sendCommRequest( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > &outList );
@@ -194,12 +232,12 @@ public:
 
     enum IONCommand
     {
-        ION_Invalid = 0,
-        ION_ExceptionScan,
-        ION_IntegrityScan,
-        ION_ScanLoadProfile,
-        ION_SetAnalogOut,
-        ION_SetDigitalOut
+        Command_Invalid = 0,
+        Command_ExceptionScan,
+        Command_IntegrityScan,
+        Command_ScanLoadProfile,
+        Command_SetAnalogOut,
+        Command_SetDigitalOut
     };
 
     enum

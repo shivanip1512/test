@@ -26,7 +26,7 @@
 #include "tbl_dv_dnp.h"
 #include "prot_ion.h"
 
-class IM_EX_DEVDB CtiDeviceION : public CtiDeviceMeter
+class IM_EX_DEVDB CtiDeviceION : public CtiDeviceRemote
 {
 private:
 
@@ -35,7 +35,13 @@ private:
     CtiProtocolION    _ion;
     CtiTableDeviceDNP _address;
 
+protected:
+
+    CtiTableDeviceMeterGroup MeterGroup;
+
 public:
+
+    typedef CtiDeviceRemote Inherited;
 
     CtiDeviceION();
     CtiDeviceION(const CtiDeviceION& aRef);
@@ -44,10 +50,21 @@ public:
 
     CtiDeviceION& operator=(const CtiDeviceION& aRef);
 
-    virtual RWCString getDescription(const CtiCommandParser & parse) const;
+    //-------  these functions are copied from dev_meter to prevent nasty inheritance/decode problems.
+    virtual bool isMeter() const;
+    virtual RWCString getMeterGroupName() const;
+    virtual RWCString getAlternateMeterGroupName() const;
+
+    CtiTableDeviceMeterGroup  getMeterGroup() const;
+    CtiTableDeviceMeterGroup& getMeterGroup();
+    CtiDeviceION& setMeterGroup( const CtiTableDeviceMeterGroup & aMeterGroup );
+    //-------
+
+    //  getSQL has been modified to left-outer-join the metergroup table so's ION meters can be selected
     virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
     virtual void DecodeDatabaseReader(RWDBReader &rdr);
 
+    virtual RWCString getDescription(const CtiCommandParser & parse) const;
     CtiProtocolBase *getProtocol( void ) const;
 
     //  virtual in case different ION devices need to form up alternate requests for the same command

@@ -41,8 +41,8 @@ public:
     enum IONValueTypes;
 
     IONValueTypes getType( void ) const;
-    int           isNumeric( void );
-    int           isValid( void );
+    bool          isNumeric( void );
+    bool          isValid( void );
 
     enum IONValueTypes
     {
