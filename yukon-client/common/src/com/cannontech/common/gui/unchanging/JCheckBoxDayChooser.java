@@ -267,7 +267,7 @@ private javax.swing.JCheckBox getJCheckBoxHoliday() {
 			ivjJCheckBoxHoliday.setName("JCheckBoxHoliday");
 			ivjJCheckBoxHoliday.setToolTipText("Holiday");
 			ivjJCheckBoxHoliday.setMnemonic('y');
-			ivjJCheckBoxHoliday.setText("Use Holiday");
+			ivjJCheckBoxHoliday.setText("Holiday");
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
