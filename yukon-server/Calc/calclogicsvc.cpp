@@ -333,22 +333,20 @@ void CtiCalcLogicService::Run( )
             {
                 if( !_conxion->valid( ) || _conxion->verifyConnection() )
                 {
-                    if( attempts % 300 == 0 )
+                    if( ++attempts % 300 == 0 )
                     {//only say we can't get a Dispatch connection every 5 minutes
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " Calc could not establish a connection to Dispatch" << endl;
                     }
-                    attempts++;
 
                     // try it again
                     Sleep(1000);   // sleep for 1 second
-
                     continue;
                 }
                 else
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Dispatch connection established." << endl;
+                    dout << RWTime() << " Dispatch connection established.  Loading calc points." << endl;
                 }
             }
             catch(...)
@@ -371,12 +369,11 @@ void CtiCalcLogicService::Run( )
             CtiCalculateThread *tempCalcThread = new CtiCalculateThread;
             if( !readCalcPoints( tempCalcThread ) )
             {
-                if( attempts % 300 == 0 )
+                if( ++attempts % 120 == 0 )
                 {//only say we can't load any calc points every 5 minutes
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " No Calc Points Loaded" << endl;
                 }
-                attempts++;
 
                 // try it again
                 delete tempCalcThread;
@@ -726,7 +723,7 @@ BOOL CtiCalcLogicService::parseMessage( RWCollectable *message, CtiCalculateThre
                     CtiCommandMsg *pCmd = (CtiCommandMsg*)message;
                     if(pCmd->getUser() != CALCLOGICNAME)
                     {
-                        _conxion->WriteConnQue( new CtiCommandMsg(CtiCommandMsg::AreYouThere, 15) );
+                        _conxion->WriteConnQue( pCmd->replicateMessage() );
 
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
