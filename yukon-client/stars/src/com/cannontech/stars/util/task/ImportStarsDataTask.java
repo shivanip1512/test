@@ -11,8 +11,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.Map;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
@@ -25,8 +23,8 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
+import com.cannontech.stars.web.servlet.ImportManager;
 import com.cannontech.stars.web.servlet.SOAPServer;
-import com.cannontech.stars.web.servlet.StarsAdmin;
 
 /**
  * @author yao
@@ -125,13 +123,13 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 					else
 						msg += numAppImported + " of " + appFieldsList.size() + " appliances imported";
 					msg += " (" + numACImported + " ac, " +
-							numWHImported + " wh, " +
-							numGenImported + " gen, " +
-							numIrrImported + " irr, " +
-							numGDryImported + " gdry, " +
-							numHPImported + " hp, " +
-							numSHImported + " sh, " +
-							numDFImported + " df, " +
+							numWHImported + " wh," +
+							numGenImported + " gen," +
+							numIrrImported + " irr," +
+							numGDryImported + " gdry," +
+							numHPImported + " hp," +
+							numSHImported + " sh," +
+							numDFImported + " df," +
 							numGenlImported + " genl)" +
 							LINE_SEPARATOR;
 				}
@@ -196,21 +194,31 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 			preprocessedData.put( "HwConfigAppMap", appIDMap );
 		}
 		
+		// Directory where the mapping and log files will be written into
+		String path = (String) preprocessedData.get( "CustomerFilePath" );
+		
 		String lineNo = null;
-		java.sql.Connection conn = null;
 		ArrayList logMsg = new ArrayList();
+		
+		java.sql.Connection conn = null;
+		java.io.PrintWriter fw = null;
 		
 		startTime = System.currentTimeMillis();
 		
 		try {
 			conn = com.cannontech.database.PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
 			
+			File custMapFile = new File(path, "customer.map");
+			fw = new java.io.PrintWriter( new java.io.FileWriter(custMapFile, true) );
+			
 			for (int i = 0; i < acctFieldsList.size(); i++) {
 				String[] fields = (String[]) acctFieldsList.get(i);
-				lineNo = fields[StarsAdmin.IDX_LINE_NUM];
+				lineNo = fields[ImportManager.IDX_LINE_NUM];
 				
-				LiteStarsCustAccountInformation liteAcctInfo = StarsAdmin.newCustomerAccount( fields, user, energyCompany );
-				acctIDMap.put( Integer.valueOf(fields[StarsAdmin.IDX_ACCOUNT_ID]), liteAcctInfo );
+				LiteStarsCustAccountInformation liteAcctInfo = ImportManager.newCustomerAccount( fields, user, energyCompany );
+				
+				acctIDMap.put( Integer.valueOf(fields[ImportManager.IDX_ACCOUNT_ID]), liteAcctInfo );
+				fw.println(fields[ImportManager.IDX_ACCOUNT_ID] + "," + liteAcctInfo.getAccountID());
 				
 				numAcctAdded++;
 				
@@ -220,13 +228,18 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 				}
 			}
 			
+			fw.close();
+			fw = null;
 			lineNo = null;
+			
+			File hwConfigMapFile = new File(path, "hwconfig.map");
+			fw = new java.io.PrintWriter( new java.io.FileWriter(hwConfigMapFile) );
 			
 			for (int i = 0; i < invFieldsList.size(); i++) {
 				String[] fields = (String[]) invFieldsList.get(i);
-				lineNo = fields[StarsAdmin.IDX_LINE_NUM];
+				lineNo = fields[ImportManager.IDX_LINE_NUM];
 				
-				Integer acctID = Integer.valueOf( fields[StarsAdmin.IDX_ACCOUNT_ID] );
+				Integer acctID = Integer.valueOf( fields[ImportManager.IDX_ACCOUNT_ID] );
 				LiteStarsCustAccountInformation liteAcctInfo = null;
 				
 				if (acctID.intValue() > 0) {	
@@ -247,18 +260,18 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 						throw new WebClientException("Cannot find customer account with id=" + acctID.intValue());
 				}
 				
-				LiteInventoryBase liteInv = StarsAdmin.insertLMHardware( fields, liteAcctInfo, energyCompany, conn );
+				LiteInventoryBase liteInv = ImportManager.insertLMHardware( fields, liteAcctInfo, energyCompany, conn );
 				
 				if (liteInv.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL)
-					logMsg.add("Receiver (import_inv_id=" + fields[StarsAdmin.IDX_INV_ID] + ",db_inv_id=" + liteInv.getInventoryID() + ") is out of service");
+					logMsg.add("Receiver (import_inv_id=" + fields[ImportManager.IDX_INV_ID] + ",db_inv_id=" + liteInv.getInventoryID() + ") is out of service");
 				else if (liteInv.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_TEMP_UNAVAIL)
-					logMsg.add("Receiver (import_inv_id=" + fields[StarsAdmin.IDX_INV_ID] + ",db_inv_id=" + liteInv.getInventoryID() + ") is temporarily out of service");
+					logMsg.add("Receiver (import_inv_id=" + fields[ImportManager.IDX_INV_ID] + ",db_inv_id=" + liteInv.getInventoryID() + ") is temporarily out of service");
 				
 				for (int j = 0; j < 3; j++) {
-					if (fields[StarsAdmin.IDX_R1_STATUS + j].equals("1"))
-						logMsg.add("Receiver (import_inv_id=" + fields[StarsAdmin.IDX_INV_ID] + ",db_inv_id=" + liteInv.getInventoryID() + ") relay " + (j+1) + " is out of service");
-					else if (fields[StarsAdmin.IDX_R1_STATUS + j].equals("2"))
-						logMsg.add("Receiver (import_inv_id=" + fields[StarsAdmin.IDX_INV_ID] + ",db_inv_id=" + liteInv.getInventoryID() + ") relay " + (j+1) + " was out before switch placed out");
+					if (fields[ImportManager.IDX_R1_STATUS + j].equals("1"))
+						logMsg.add("Receiver (import_inv_id=" + fields[ImportManager.IDX_INV_ID] + ",db_inv_id=" + liteInv.getInventoryID() + ") relay " + (j+1) + " is out of service");
+					else if (fields[ImportManager.IDX_R1_STATUS + j].equals("2"))
+						logMsg.add("Receiver (import_inv_id=" + fields[ImportManager.IDX_INV_ID] + ",db_inv_id=" + liteInv.getInventoryID() + ") relay " + (j+1) + " was out before switch placed out");
 				}
 				
 				if (liteAcctInfo != null) {
@@ -268,10 +281,10 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 					int[] progIDs = new int[3];	// Save the program ID on each relay here so we can map them to appliance id later
 					
 					for (int j = 0; j < 3; j++) {
-						if (fields[StarsAdmin.IDX_R1_GROUP + j].equals("") || fields[StarsAdmin.IDX_R1_GROUP + j].equals("0"))
+						if (fields[ImportManager.IDX_R1_GROUP + j].equals("") || fields[ImportManager.IDX_R1_GROUP + j].equals("0"))
 							continue;
 						
-						int groupID = Integer.parseInt( fields[StarsAdmin.IDX_R1_GROUP + j] );
+						int groupID = Integer.parseInt( fields[ImportManager.IDX_R1_GROUP + j] );
 						int progID = 0;
 						int appCatID = 0;
 						
@@ -299,7 +312,7 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 					}
 					
 					if (programs.size() > 0) {
-						StarsAdmin.programSignUp( programs, liteAcctInfo, new Integer(liteInv.getInventoryID()), energyCompany, conn );
+						ImportManager.programSignUp( programs, liteAcctInfo, new Integer(liteInv.getInventoryID()), energyCompany, conn );
 						
 						int[] appIDs = new int[3];
 						for (int j = 0; j < 3; j++) {
@@ -317,13 +330,15 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 								throw new WebClientException("Cannot find appliance with RelayNum = " + (j+1));
 						}
 						
-						appIDMap.put( new Integer(fields[StarsAdmin.IDX_INV_ID]), appIDs );
+						appIDMap.put( new Integer(fields[ImportManager.IDX_INV_ID]), appIDs );
+						fw.println(fields[ImportManager.IDX_INV_ID] + "," + appIDs[0] + "," + appIDs[1] + "," + appIDs[2]);
+						
 						numAppAdded += programs.size();
 					}
 				}
 				
 				numInvAdded++;
-				if (fields[StarsAdmin.IDX_DEVICE_NAME].equals(""))
+				if (fields[ImportManager.IDX_DEVICE_NAME].equals(""))
 					numRecvrAdded++;
 				else
 					numMeterAdded++;
@@ -334,13 +349,15 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 				}
 			}
 			
+			fw.close();
+			fw = null;
 			lineNo = null;
 			
 			for (int i = 0; i < appFieldsList.size(); i++) {
 				String[] fields = (String[]) appFieldsList.get(i);
-				lineNo = fields[StarsAdmin.IDX_LINE_NUM];
+				lineNo = fields[ImportManager.IDX_LINE_NUM];
 				
-				Integer acctID = Integer.valueOf( fields[StarsAdmin.IDX_ACCOUNT_ID] );
+				Integer acctID = Integer.valueOf( fields[ImportManager.IDX_ACCOUNT_ID] );
 				LiteStarsCustAccountInformation liteAcctInfo = null;
 				
 				Object obj = acctIDMap.get(acctID);
@@ -359,8 +376,8 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 				if (liteAcctInfo == null)
 					throw new WebClientException("Cannot find customer account with id=" + acctID.intValue());
 				
-				Integer invID = Integer.valueOf( fields[StarsAdmin.IDX_INV_ID] );
-				int relayNum = Integer.parseInt( fields[StarsAdmin.IDX_RELAY_NUM] );
+				Integer invID = Integer.valueOf( fields[ImportManager.IDX_INV_ID] );
+				int relayNum = Integer.parseInt( fields[ImportManager.IDX_RELAY_NUM] );
 				
 				if (relayNum > 0) {
 					int appID = 0;
@@ -370,16 +387,16 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 					if (appID == 0)
 						throw new WebClientException("Cannot find appliance with InventoryID = " + invID + " and RelayNum = " + relayNum);
 					
-					StarsAdmin.updateAppliance( fields, appID, liteAcctInfo, energyCompany );
+					ImportManager.updateAppliance( fields, appID, liteAcctInfo, energyCompany );
 				}
 				else {
-					StarsAdmin.newAppliance( fields, liteAcctInfo, energyCompany );
+					ImportManager.newAppliance( fields, liteAcctInfo, energyCompany );
 				}
 				
 				numAppImported++;
 				
-				if (fields[StarsAdmin.IDX_APP_CAT_DEF_ID].equals("")) continue;
-				int catDefID = Integer.parseInt( fields[StarsAdmin.IDX_APP_CAT_DEF_ID] );
+				if (fields[ImportManager.IDX_APP_CAT_DEF_ID].equals("")) continue;
+				int catDefID = Integer.parseInt( fields[ImportManager.IDX_APP_CAT_DEF_ID] );
 				
 				if (catDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_AIR_CONDITIONER)
 					numACImported++;
@@ -410,9 +427,9 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 			
 			for (int i = 0; i < orderFieldsList.size(); i++) {
 				String[] fields = (String[]) orderFieldsList.get(i);
-				lineNo = fields[StarsAdmin.IDX_LINE_NUM];
+				lineNo = fields[ImportManager.IDX_LINE_NUM];
 				
-				Integer acctID = Integer.valueOf( fields[StarsAdmin.IDX_ACCOUNT_ID] );
+				Integer acctID = Integer.valueOf( fields[ImportManager.IDX_ACCOUNT_ID] );
 				LiteStarsCustAccountInformation liteAcctInfo = null;
 				
 				if (acctID.intValue() > 0) {
@@ -431,7 +448,7 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 						throw new WebClientException("Cannot find customer account with id=" + acctID.intValue());
 				}
 				
-				StarsAdmin.newServiceRequest( fields, liteAcctInfo, energyCompany );
+				ImportManager.newServiceRequest( fields, liteAcctInfo, energyCompany );
 				numOrderAdded++;
 				
 				if (isCanceled) {
@@ -444,9 +461,9 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 			
 			for (int i = 0; i < resFieldsList.size(); i++) {
 				String[] fields = (String[]) resFieldsList.get(i);
-				lineNo = fields[StarsAdmin.IDX_LINE_NUM];
+				lineNo = fields[ImportManager.IDX_LINE_NUM];
 				
-				Integer acctID = Integer.valueOf( fields[StarsAdmin.IDX_ACCOUNT_ID] );
+				Integer acctID = Integer.valueOf( fields[ImportManager.IDX_ACCOUNT_ID] );
 				LiteStarsCustAccountInformation liteAcctInfo = null;
 				
 				if (acctID.intValue() > 0) {
@@ -465,7 +482,7 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 						throw new WebClientException("Cannot find customer account with id=" + acctID.intValue());
 				}
 				
-				StarsAdmin.newResidenceInfo( fields, liteAcctInfo );
+				ImportManager.newResidenceInfo( fields, liteAcctInfo );
 				numResAdded++;
 				
 				if (isCanceled) {
@@ -477,10 +494,9 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 			status = STATUS_FINISHED;
 		}
 		catch (OutOfMemoryError me) {
-			// We must catch this error to make sure the mapping and log files are written
+			// We must catch this error to make sure the log file is written
 			status = STATUS_ERROR;
 			errorMsg = "Operation caused out of memory error";
-			System.gc();
 		}
 		catch (Exception e) {
 			if (status == STATUS_CANCELED) {
@@ -513,12 +529,10 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 				if (conn != null) conn.close();
 			}
 			catch (java.sql.SQLException e) {}
+			if (fw != null) fw.close();
 		}
 		
 		stopTime = System.currentTimeMillis();
-		
-		// Directory where the mapping and log files will be written into
-		String path = (String) preprocessedData.get( "CustomerFilePath" );
 		
 		int minutes = (int) ((stopTime - startTime) * 0.001 / 60 + 0.5);
 		int hourTaken = minutes / 60;
@@ -543,33 +557,52 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 			logMsg.add(idx++, "");
 		}
 		
-		if (numAcctAdded > 0)
-			logMsg.add(idx++, numAcctAdded + " customer accounts imported");
-		if (numInvAdded > 0)
-			logMsg.add(idx++, numInvAdded + " hardwares imported (" + numRecvrAdded + " receivers, " + numMeterAdded + " meters)");
-		if (numAppAdded > 0)
-			logMsg.add(idx++, numAppAdded + " appliances automatically added");
-		if (numAppImported > 0)
-			logMsg.add(idx++, numAppImported + " appliances imported (" +
-					numACImported + " ac, " +
-					numWHImported + " wh, " +
-					numGenImported + " gen, " +
-					numIrrImported + " irr, " +
-					numGDryImported + " gdry, " +
-					numHPImported + " hp, " +
-					numSHImported + " sh, " +
-					numDFImported + " df, " +
-					numGenlImported + " genl)"
-					);
-		if (numOrderAdded > 0)
-			logMsg.add(idx++, numOrderAdded + " work orders imported");
-		if (numResAdded > 0)
-			logMsg.add(idx++, numResAdded + " residence info imported");
+		if (acctFieldsList.size() > 0) {
+			if (numAcctAdded == acctFieldsList.size())
+				logMsg.add(idx++, numAcctAdded + " customer accounts imported successfully");
+			else
+				logMsg.add(idx++, numAcctAdded + " of " + acctFieldsList.size() + " customer accounts imported");
+		}
+		if (invFieldsList.size() > 0) {
+			if (numInvAdded  == invFieldsList.size())
+				logMsg.add(idx++, numInvAdded + " hardwares imported successfully");
+			else
+				logMsg.add(idx++, numInvAdded + " of " + invFieldsList.size() + " hardwares imported");
+		}
+		if (appFieldsList.size() > 0) {
+			String msg = null;
+			if (numAppImported == appFieldsList.size())
+				msg = numAppImported + " appliances imported successfully";
+			else
+				msg = numAppImported + " of " + appFieldsList.size() + " appliances imported";
+			msg += " (" + numACImported + " ac, " +
+					numWHImported + " wh," +
+					numGenImported + " gen," +
+					numIrrImported + " irr," +
+					numGDryImported + " gdry," +
+					numHPImported + " hp," +
+					numSHImported + " sh," +
+					numDFImported + " df," +
+					numGenlImported + " genl)";
+			logMsg.add(idx++, msg);
+		}
+		if (orderFieldsList.size() > 0) {
+			if (numOrderAdded == orderFieldsList.size())
+				logMsg.add(idx++, numOrderAdded + " work orders imported successfully");
+			else
+				logMsg.add(idx++, numOrderAdded + " of " + orderFieldsList.size() + " work orders imported");
+		}
+		if (resFieldsList.size() > 0) {
+			if (numResAdded == resFieldsList.size())
+				logMsg.add(idx++, numResAdded + " residence info imported successfully");
+			else
+				logMsg.add(idx++, numResAdded + " of " + resFieldsList.size() + " residence information imported");
+		}
 		logMsg.add(idx++, "");
 		
 		Date logDate = new Date();
-		String logFileName = "import_" + StarsAdmin.starsDateFormat.format(logDate) +
-				"_" + StarsAdmin.starsTimeFormat.format(logDate) + ".log";
+		String logFileName = "import_" + ServerUtils.starsDateFormat.format(logDate) +
+				"_" + ServerUtils.starsTimeFormat.format(logDate) + ".log";
 		logFile = new File(path, logFileName);
 		
 		try {
@@ -583,68 +616,6 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 			else
 				errorMsg = "";
 			errorMsg += "Failed to write log file";
-		}
-		
-		if (numAcctAdded > 0) {
-			// New accounts added, regenerate the 'customer.map' file
-			ArrayList lines = new ArrayList();
-			
-			Iterator it = acctIDMap.entrySet().iterator();
-			while (it.hasNext()) {
-				Map.Entry entry = (Map.Entry) it.next();
-				
-				Integer acctID = (Integer) entry.getKey();
-				int acctID2 = -1;
-				if (entry.getValue() instanceof LiteStarsCustAccountInformation)
-					acctID2 = ((LiteStarsCustAccountInformation) entry.getValue()).getAccountID();
-				else if (entry.getValue() instanceof Integer)
-					acctID2 = ((Integer) entry.getValue()).intValue();
-				
-				String line = acctID.toString() + "," + String.valueOf(acctID2);
-				lines.add( line );
-			}
-			
-			File custMapFile = new File(path, "customer.map");
-			try {
-				ServerUtils.writeFile(custMapFile, lines);
-			}
-			catch (IOException e) {
-				if (errorMsg != null)
-					errorMsg += LINE_SEPARATOR;
-				else
-					errorMsg = "";
-				errorMsg += "Failed to write mapping file 'customer.map'";
-			}
-		}
-		
-		if (numAppAdded > 0) {
-			// New appliances added, regenerate the 'hwconfig.map' file
-			ArrayList lines = new ArrayList();
-			
-			Iterator it = appIDMap.entrySet().iterator();
-			while (it.hasNext()) {
-				Map.Entry entry = (Map.Entry) it.next();
-				Integer invID = (Integer) entry.getKey();
-				int[] appIDs = (int[]) entry.getValue();
-				
-				String line = invID.toString()
-						+ "," + appIDs[0]
-						+ "," + appIDs[1]
-						+ "," + appIDs[2];
-				lines.add( line );
-			}
-			
-			File hwConfigMapFile = new File(path, "hwconfig.map");
-			try {
-				ServerUtils.writeFile(hwConfigMapFile, lines);
-			}
-			catch (IOException e) {
-				if (errorMsg != null)
-					errorMsg += LINE_SEPARATOR;
-				else
-					errorMsg = "";
-				errorMsg += "Failed to write mapping file 'hwconfig.map'";
-			}
 		}
 		
 		if ((status == STATUS_ERROR || status == STATUS_CANCELED) && logFile != null)
