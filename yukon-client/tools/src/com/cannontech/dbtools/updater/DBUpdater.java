@@ -108,7 +108,7 @@ public class DBUpdater extends MessageFrameAdaptor
 
 	public String getParamText()
 	{
-		return "Src-Directory:";
+		return "Update Files Directory:";
 	}
 
 	public String getDefaultValue()

@@ -66,6 +66,70 @@ public class UpdateDB
 
 
 	/**
+	 * Check to see if a common STARS table is in the DB
+	 * @return boolean
+	 */
+	public static boolean starsExists()
+	{
+		return VersionTools.tableExists("CustomerResidence");
+	}
+
+	public static boolean isValidString( String str_ )
+	{
+		if( str_ == null || str_.length() <= 0 )
+			return false;
+
+
+		for( int i = 0; i < DBMSDefines.IGNORE_STRINGS.length; i++ )
+			if( DBMSDefines.IGNORE_STRINGS[i].equalsIgnoreCase(str_) )
+				return false;
+		
+		return true;
+	}
+
+	public static boolean isValidUpdateFile( File file_ )
+	{
+		if( file_ == null )
+			return false;
+
+		if( getFileVersion(file_) > 0.0
+			 && file_.getAbsolutePath().toLowerCase().endsWith(DBMSDefines.SQL_EXT)
+			 && (file_.getAbsolutePath().toLowerCase().indexOf(DBMSDefines.NAME_VALID) > -1) )
+		{
+			return true;
+		}
+		
+		return false;
+	}
+
+
+	public static double getDBVersion()
+	{
+		if( dbVersion <= 0.0 )
+		{
+			CTIDatabase db = VersionTools.getDatabaseVersion();			
+
+			dbVersion = Double.parseDouble( db.getVersion() );
+		}				
+
+		return dbVersion;					
+	}
+
+	public static double getFileVersion( File file_ )
+	{
+		try
+		{
+			return Double.parseDouble( file_.getName().substring(0, 4) );
+		}
+		catch( Exception e )
+		{
+			CTILogger.info("Invalid file name, name = " + file_.getName() );
+			return -1.0;
+		}
+
+	}
+
+	/**
 	* @return File[]
 	*
 	* Gets a list of specific files from a directory.
@@ -281,75 +345,7 @@ public class UpdateDB
 			throw new DBUpdateException( "Unable to find file '" + file +"'" );
 		}
 
-	}
-	
-	
-
-
-	public static boolean isValidString( String str_ )
-	{
-		if( str_ == null || str_.length() <= 0 )
-			return false;
-
-
-		for( int i = 0; i < DBMSDefines.IGNORE_STRINGS.length; i++ )
-			if( DBMSDefines.IGNORE_STRINGS[i].equalsIgnoreCase(str_) )
-				return false;
-		
-		return true;
-	}
-
-	public static boolean isValidUpdateFile( File file_ )
-	{
-		if( file_ == null )
-			return false;
-
-		if( getFileVersion(file_) > 0.0
-			 && file_.getAbsolutePath().toLowerCase().endsWith(DBMSDefines.SQL_EXT)
-			 && (file_.getAbsolutePath().toLowerCase().indexOf(DBMSDefines.NAME_VALID) > -1) )
-		{
-			return true;
-		}
-		
-		return false;
-	}
-
-
-	public static double getDBVersion()
-	{
-		if( dbVersion <= 0.0 )
-		{
-			CTIDatabase db = VersionTools.getDatabaseVersion();			
-
-			dbVersion = Double.parseDouble( db.getVersion() );
-		}				
-
-		return dbVersion;					
-	}
-	
-	/**
-	 * Check to see if a common STARS table is in the DB
-	 * @return boolean
-	 */
-	public static boolean starsExists()
-	{
-		return VersionTools.tableExists("CustomerResidence");
-	}
-
-	public static double getFileVersion( File file_ )
-	{
-		try
-		{
-			return Double.parseDouble( file_.getName().substring(0, 4) );
-		}
-		catch( Exception e )
-		{
-			CTILogger.info("Invalid file name, name = " + file_.getName() );
-			return -1.0;
-		}
-
-	}
-	
+	}	
 
 	/**
 	 * This is where our output goes to
