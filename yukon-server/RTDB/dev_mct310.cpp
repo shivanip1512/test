@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2002/12/12 17:38:59 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2003/02/04 18:11:07 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -521,6 +521,7 @@ INT CtiDeviceMCT310::decodeGetValueKWH(INMESS *InMessage, RWTime &TimeNow, RWTPt
     ULONG RecentValue = 0;
     USHORT TempDevType;
 
+    //  ACH:  are these necessary?  /mskf
     resetScanFreezePending();
     resetScanFreezeFailed();
 
@@ -689,6 +690,7 @@ INT CtiDeviceMCT310::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
         dout << RWTime() << " **** Load Profile Scan Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
+    //  ACH:  are these necessary?  /mskf
     resetScanFreezePending( );
     resetScanFreezeFailed( );
 
@@ -868,6 +870,7 @@ INT CtiDeviceMCT310::decodeGetStatusLoadProfile( INMESS *InMessage, RWTime &Time
     INT ErrReturn  = InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
+    //  ACH:  are these necessary?  /mskf
     resetScanFreezePending();
     resetScanFreezeFailed();
 
@@ -927,6 +930,7 @@ INT CtiDeviceMCT310::decodeGetStatusDisconnect(INMESS *InMessage, RWTime &TimeNo
     double    Value;
     RWCString resultStr;
 
+    //  ACH:  are these necessary?  /mskf
     resetScanFreezePending();
     resetScanFreezeFailed();
 

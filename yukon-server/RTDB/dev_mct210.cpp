@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct210.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2002/12/12 17:40:43 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2003/02/04 18:09:04 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -218,6 +218,7 @@ INT CtiDeviceMCT210::decodeGetStatusDisconnect(INMESS *InMessage, RWTime &TimeNo
     double Value;
     CtiPointBase *pPoint;
 
+    //  ACH:  are these needed?  /mskf
     resetScanFreezePending();
     resetScanFreezeFailed();
 
