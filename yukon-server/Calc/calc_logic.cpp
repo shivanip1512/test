@@ -83,14 +83,30 @@ int main( int argc, char *argv[] )
 
 int install( void )
 {
-    char depend[1000];
-    memset( depend, 0, 1000 );
-
     cout << RWTime( ) << " - Installing as a service..." << endl;
 
+    RWCString depends;
+
+    RWCString str;
+    char var[128];
+
+    strcpy(var, "SERVICE_DEPENDENCIES");
+    if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+    {
+        depends = str;
+        cout << "Service is dependent on the following services:" << endl
+             << str << endl;
+    }
+    else
+    {
+        cout << "Unable to obtain '" << var << "' value from cparms." << endl;
+        cout << "Couldn't locate any services that this service is to be dependent upon" << endl
+             << "installing anyway" << endl;
+    }
+    
+    /*
     // Attempt to determine any services we are going to be dependent on
     HINSTANCE hLib = LoadLibrary( "cparms.dll" );
-
     if( hLib )
     {
         CPARM_GETCONFIGSTRING   fpGetAsString = (CPARM_GETCONFIGSTRING)GetProcAddress( hLib, "getConfigValueAsString" );
@@ -106,27 +122,26 @@ int install( void )
             cout << "Couldn't locate any services that this service is to be dependent upon" << endl
                  << "installing anyway" << endl;
         }
-    }
+    }*/
 
     cout << RWTime( )  << " - Installing Calc and Logic service..." << endl;
 
-    char* tmp = depend;
+    /*char* tmp = str;
 
     //replace whitespace with '\0'
     while( (tmp = strchr( tmp, ' ')) != NULL )
         *tmp = '\0';
-
-    CServiceConfig si(szServiceName, szDisplayName);
-
     //check whether or not we found dependencies
     if( depend[0] == NULL )
         tmp = NULL;
     else
-        tmp = depend;
+        tmp = depend;*/
+
+    CServiceConfig si(szServiceName, szDisplayName);
 
     si.Install( SERVICE_WIN32_OWN_PROCESS,
                 SERVICE_DEMAND_START,
-                tmp,
+                NULL, // Should use depends in future
                 NULL, // Use LocalSystem Account
                 NULL);
 
