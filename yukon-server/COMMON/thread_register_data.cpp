@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2004/09/16 16:17:36 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2004/09/21 14:34:17 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002, 2003, 2004 Cannon Technologies Inc. All rights reserved.
 *---------------------------------------------------------------------------------------------*/
@@ -23,8 +23,10 @@
 //===========================================================================================================
 
 CtiThreadRegData::CtiThreadRegData() :
-_tickledTime( second_clock::local_time() )   
+   _tickledTime( second_clock::local_time() ),
+   _alternate( 0 )
 {
+
 }
 
 //===========================================================================================================
@@ -53,7 +55,7 @@ string CtiThreadRegData::getName( void )
 //===========================================================================================================
 //===========================================================================================================
 
-void CtiThreadRegData::setName( string in )
+void CtiThreadRegData::setName( const string in )
 {
    _name = in;
 }
@@ -61,7 +63,7 @@ void CtiThreadRegData::setName( string in )
 //===========================================================================================================
 //===========================================================================================================
 
-int CtiThreadRegData::getId( void ) 
+int CtiThreadRegData::getId( void )
 {
    return( _id );
 }
@@ -69,7 +71,7 @@ int CtiThreadRegData::getId( void )
 //===========================================================================================================
 //===========================================================================================================
 
-void CtiThreadRegData::setId( int in )
+void CtiThreadRegData::setId( const int in )
 {
    _id = in;
 }
@@ -109,7 +111,7 @@ void CtiThreadRegData::setTickledTime( ptime in )
 //===========================================================================================================
 //===========================================================================================================
 
-fooptr CtiThreadRegData::getShutdownFunc( void )
+CtiThreadRegData::fooptr CtiThreadRegData::getShutdownFunc( void )
 {
    return( _shutdown );
 }
@@ -125,7 +127,7 @@ void CtiThreadRegData::setShutdownFunc( fooptr in )
 //===========================================================================================================
 //===========================================================================================================
 
-fooptr CtiThreadRegData::getAlternate( void )
+CtiThreadRegData::fooptr CtiThreadRegData::getAlternate( void )
 {
    return( _alternate );
 }
@@ -166,7 +168,7 @@ bool CtiThreadRegData::getReported( void )
 //===========================================================================================================
 //===========================================================================================================
 
-void CtiThreadRegData::setReported( bool in )
+void CtiThreadRegData::setReported( const bool in )
 {
    _reported = in;
 }

@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2004/09/16 16:17:36 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2004/09/21 14:34:17 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -26,22 +26,28 @@ using namespace std;
 #include "boost_time.h"
 #include "cticalls.h"
 
-typedef int (*fooptr)();
-
-class CtiThreadRegData
+class IM_EX_CTIBASE CtiThreadRegData
 {
 public:
 
+   enum  //absence detect behaviour type
+   {
+      Restart,    //call fooptr and remove thread from list
+      KillApp,    //call alt fooptr and remove thread from list
+      None        //report missing thread and remove from list
+   };                
+
+   typedef void (*fooptr)( void * );
+
    CtiThreadRegData();
    virtual ~CtiThreadRegData();
-   //I don't think we need a copy constructor
 
    bool operator<( const CtiThreadRegData& y ) const;   //just for the queue, me thinks
 
    string getName( void );
-   void setName( string in );
+   void setName( const string in );
    int getId( void );
-   void setId( int in );
+   void setId( const int in );
    int getBehaviour( void );
    void setBehaviour( int in );
    ULONG getTickleFreq( void );
@@ -53,18 +59,11 @@ public:
    fooptr getAlternate( void );
    void setAlternate( fooptr in );
    bool getReported( void );
-   void setReported( bool in );
+   void setReported( const bool in );
 
 protected:
 
 private:
-
-   enum  //absence detect behaviour type
-   {
-      Restart,    //call fooptr and remove thread from list
-      KillApp,    //call alt fooptr and remove thread from list
-      None        //report missing thread and remove from list
-   };                
 
    bool     _reported;
    string   _name;

@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2004/09/16 16:17:36 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2004/09/21 14:34:16 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002, 2003, 2004 Cannon Technologies Inc. All rights reserved.
 *---------------------------------------------------------------------------------------------*/
@@ -41,6 +41,12 @@ CtiThreadMonitor::~CtiThreadMonitor()
 
 void CtiThreadMonitor::run( void )
 {
+
+   {
+      CtiLockGuard<CtiLogger> doubt_guard( dout );
+      dout << "Monitor starting up" << endl;
+   }
+
    while( !_quit )
    {
       sleep( 1000 );
@@ -53,6 +59,12 @@ void CtiThreadMonitor::run( void )
 
       _queue.clearAndDestroy();
    }
+
+   {
+      CtiLockGuard<CtiLogger> doubt_guard( dout );
+      dout << "Monitor dying!" << endl;
+   }
+
 }
 
 //===========================================================================================================
@@ -73,7 +85,14 @@ void CtiThreadMonitor::checkForExpriration( void )
          ptime check = temp.getTickledTime() + seconds( temp.getTickleFreq() );
 
          if( check < now  )
+         {
+            {
+               CtiLockGuard<CtiLogger> doubt_guard( dout );
+               dout << "Setting thread with id " << i->first << " to not reported " << endl;
+            }
+
             i->second.setReported( false );
+         }
       } 
    }
 }
@@ -96,7 +115,11 @@ void CtiThreadMonitor::processQueue( void )
 
       if( !insertpair.second )
       {
+         //note that we heard from a particular thread
          (*insertpair.first).second.setReported( true );
+
+         //update the time so we know when we heard last
+         (*insertpair.first).second.setTickledTime( second_clock::local_time() );
       }
    }
 }
@@ -111,12 +134,50 @@ void CtiThreadMonitor::processExpired( void )
    {
       if( !i->second.getReported() )
       {
-         fooptr hammer = i->second.getShutdownFunc();
+         CtiThreadRegData::fooptr hammer = i->second.getShutdownFunc();
+         CtiThreadRegData::fooptr alt = i->second.getAlternate();
 
-         if( hammer != NULL )   //this will need to be extended to cover different types
-            hammer();
+         {
+            CtiLockGuard<CtiLogger> doubt_guard( dout );
+            dout << "Thread w/ID " << i->first << " is AWOL" << endl;
+         }
 
-         _threadData.erase( i );
+         int reaction_type = i->second.getBehaviour();
+
+         switch( reaction_type )
+         {
+         case 0:  //FIXME must use defined types
+            {
+            }
+            break;
+
+         case 1:
+            {
+               if( alt != NULL )
+                  alt( 0 );
+            }
+            break;
+
+         case 2:
+            {
+               if( alt != NULL )
+                  alt( 0 );
+
+               if( hammer != NULL )
+                  hammer( 0 );
+            }
+            break;
+
+         default:
+            {
+            }
+            break;
+         }
+
+         i = _threadData.erase( i );
+
+         if( i == _threadData.end() )
+            break;
       }
    }
 }
@@ -129,12 +190,16 @@ void CtiThreadMonitor::dump( void )
 {  
    CtiLockGuard<CtiLogger> doubt_guard( dout );
 
-   for( int index = 0; index < _threadData.size(); index++ )
+   for( map < int, CtiThreadRegData >::iterator i = _threadData.begin(); i != _threadData.end(); i++ )
    {
-      dout << "Thread name             : " << _threadData[index].getName() << endl;
-      dout << "Thread id               : " << _threadData[index].getId() << endl;
-      dout << "Thread behaviour type   : " << _threadData[index].getBehaviour() << endl;
-      dout << "Thread frequency        : " << _threadData[index].getTickleFreq() << endl; 
+      CtiThreadRegData temp = i->second;
+
+      dout << endl;
+      dout << "Thread name             : " << temp.getName() << endl;
+      dout << "Thread id               : " << temp.getId() << endl;
+      dout << "Thread behaviour type   : " << temp.getBehaviour() << endl;
+      dout << "Thread frequency        : " << temp.getTickleFreq() << endl; 
+      dout << endl;
    }  
 }
 
@@ -149,9 +214,15 @@ void CtiThreadMonitor::insertThread( CtiThreadRegData *in )
    if( in->getId() != 0 )
    {
       _queue.putQueue( in );
+
+      {
+         CtiLockGuard<CtiLogger> doubt_guard( dout );
+         dout << "Thread " << in->getId() << " inserted" << endl;
+      }
    }
    else
    {
+      CtiLockGuard<CtiLogger> doubt_guard( dout );
       dout << "Thread id INVALID" << endl;
    }
 }

@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2004/09/16 16:17:36 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2004/09/21 14:34:17 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -27,7 +27,7 @@ using namespace std;
 #include "thread.h"
 #include "thread_register_data.h"
 
-class CtiThreadMonitor : CtiThread
+class IM_EX_CTIBASE CtiThreadMonitor : public CtiThread
 {
 
 public:
