@@ -931,6 +931,8 @@ alter table DeviceTypeCommand
    add constraint FK_DevCmd_Cmd foreign key (CommandID)
       references Command (CommandID);
 
+update YukonRoleProperty set DefaultValue='(none)' where RolePropertyID=-1101;
+
 
 
 

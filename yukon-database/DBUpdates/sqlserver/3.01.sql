@@ -1055,6 +1055,8 @@ alter table DeviceTypeCommand
       references Command (CommandID);
 go
 
+update YukonRoleProperty set DefaultValue='(none)' where RolePropertyID=-1101;
+
 
 
 
