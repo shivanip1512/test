@@ -8,7 +8,7 @@ import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.StateFuncs;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
-import com.cannontech.esub.editor.Drawing;
+import com.cannontech.esub.Drawing;
 import com.cannontech.esub.element.AlarmTextElement;
 import com.cannontech.esub.element.CurrentAlarmsTable;
 import com.cannontech.esub.element.DynamicGraphElement;

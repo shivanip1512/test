@@ -20,8 +20,6 @@
     <classpathentry kind="lib" path="/third-party/jruntags.jar"/>
     <classpathentry kind="lib" path="/third-party/struts.jar"/>
     <classpathentry kind="src" path="/common"/>
-    <classpathentry kind="src" path="/dbeditor"/>
-    <classpathentry kind="src" path="/tdc"/>
     <classpathentry kind="lib" path="/third-party/jfreechart.jar"/>
     <classpathentry kind="lib" path="/third-party/junit.jar"/>
     <classpathentry kind="src" path="/trending"/>

@@ -15,13 +15,11 @@ import java.util.logging.Logger;
 import javax.swing.JComponent;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.FileFilter;
 import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.esub.editor.Drawing;
-import com.cannontech.esub.editor.element.PointSelectionPanel;
+import com.cannontech.esub.Drawing;
 import com.cannontech.esub.element.DynamicGraphElement;
 import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.roles.yukon.SystemRole;
@@ -177,10 +175,6 @@ public class Util {
 				59
 				 	};
 
-	private static PointSelectionPanel pointSelectionPanel = null;
-	private static javax.swing.JColorChooser colorChooser = null;
-	private static javax.swing.JFileChooser drawingFileChooser = null;
-	private static javax.swing.JFileChooser linkFileChooser = null;
 	private static ClientConnection dispatchConnection = null;
 
 	/**
@@ -190,43 +184,6 @@ public class Util {
 		super();
 	}
 
-	public static synchronized javax.swing.JFileChooser getDrawingJFileChooser() {
-		if (drawingFileChooser == null) {
-			drawingFileChooser = new javax.swing.JFileChooser();
-			FileFilter filter = new FileFilter(new String("jlx"), "JLX files");
-			drawingFileChooser.addChoosableFileFilter(filter);
-		}
-
-		return drawingFileChooser;
-	}
-	
-
-	public static synchronized javax.swing.JFileChooser getLinkJFileChooser() {
-		if (linkFileChooser == null) {
-			linkFileChooser = new javax.swing.JFileChooser();
-//			FileFilter filter = new FileFilter(new String("jlx"), "JLX files");
-//			drawingFileChooser.addChoosableFileFilter(filter);
-		}
-
-		return linkFileChooser;
-	}
-	
-	public static synchronized javax.swing.JColorChooser getJColorChooser() {
-		if (colorChooser == null) {
-			colorChooser = new javax.swing.JColorChooser();
-		}
-
-		return colorChooser;
-	}
-
-	public static synchronized PointSelectionPanel getPointSelectionPanel() {
-		if(pointSelectionPanel == null) {
-			pointSelectionPanel = new PointSelectionPanel();
-		}
-		
-		return pointSelectionPanel;
-	}
-	
 	/**
 	 * Generates an absolute path from the drawings location
 	 * and the relative path given.

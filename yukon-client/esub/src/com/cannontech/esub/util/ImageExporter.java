@@ -14,7 +14,7 @@ import java.io.IOException;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.data.lite.LiteYukonImage;
-import com.cannontech.esub.editor.Drawing;
+import com.cannontech.esub.Drawing;
 import com.cannontech.esub.element.DynamicGraphElement;
 import com.cannontech.esub.element.YukonImageElement;
 import com.loox.jloox.LxComponent;

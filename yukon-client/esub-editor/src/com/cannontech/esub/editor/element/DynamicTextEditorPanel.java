@@ -10,8 +10,8 @@ import javax.swing.event.TreeSelectionEvent;
 
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.esub.*;
+import com.cannontech.esub.editor.Util;
 import com.cannontech.esub.element.DynamicText;
-import com.cannontech.esub.util.Util;
 
 /**
  * Creation date: (12/18/2001 2:05:01 PM)
@@ -433,7 +433,7 @@ private PointSelectionPanel getPointSelectionPanel() {
 	if (ivjPointSelectionPanel == null) {
 		try {
 			//ivjPointSelectionPanel = new com.cannontech.esub.editor.element.PointSelectionPanel();
-			ivjPointSelectionPanel = Util.getPointSelectionPanel();
+			ivjPointSelectionPanel = com.cannontech.esub.editor.Util.getPointSelectionPanel();
 			ivjPointSelectionPanel.setName("PointSelectionPanel");
 			ivjPointSelectionPanel.setPreferredSize(new java.awt.Dimension(405, 344));
 			ivjPointSelectionPanel.setMinimumSize(new java.awt.Dimension(120, 344));
@@ -585,7 +585,7 @@ private void initialize() {
 	for( int i = 0; i < availableFontSizes.length; i++ ) {
 		getFontSizeComboBox().addItem( new Integer(availableFontSizes[i] ));
 	}
-	colorChooser = com.cannontech.esub.util.Util.getJColorChooser();
+	colorChooser = Util.getJColorChooser();
 	// user code end
 }
 /**

@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
 
-import com.cannontech.esub.editor.Drawing;
+import com.cannontech.esub.Drawing;
 
 /**
  * Description Here

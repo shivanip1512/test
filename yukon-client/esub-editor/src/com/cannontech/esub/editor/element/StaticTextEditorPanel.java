@@ -6,6 +6,7 @@ import javax.swing.JColorChooser;
 import javax.swing.JDialog;
 
 import com.cannontech.common.gui.util.DataInputPanel;
+import com.cannontech.esub.editor.Util;
 import com.cannontech.esub.element.StaticText;
 
 /**
@@ -460,7 +461,7 @@ private void initialize() {
 	for( int i = 0; i < availableFontSizes.length; i++ ) {
 		getFontSizeComboBox().addItem( new Integer(availableFontSizes[i] ));
 	}
-	colorChooser = com.cannontech.esub.util.Util.getJColorChooser();
+	colorChooser = Util.getJColorChooser();
 	// user code end
 }
 /**

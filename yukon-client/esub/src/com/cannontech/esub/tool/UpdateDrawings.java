@@ -6,7 +6,7 @@ package com.cannontech.esub.tool;
 import java.io.File;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.esub.editor.Drawing;
+import com.cannontech.esub.Drawing;
 
 /**
  * Recursively load and save drawings.

@@ -36,6 +36,7 @@ import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.esub.*;
 import com.cannontech.esub.element.CurrentAlarmsTable;
 import com.cannontech.esub.element.DrawingElement;
 import com.cannontech.esub.element.DynamicGraphElement;
@@ -227,6 +228,7 @@ public class Editor extends JPanel {
 		final EditorPrefs prefs = EditorPrefs.getPreferences();
 		
 		drawing = new Drawing();
+		
 		elementPlacer = new ElementPlacer();
 		undoManager = new UndoManager() {
 			public boolean addEdit(UndoableEdit e) {
@@ -237,6 +239,9 @@ public class Editor extends JPanel {
 				
 		final LxGraph lxGraph = getDrawing().getLxGraph();
 		final LxView lxView = getDrawing().getLxView();
+		
+		drawing.getMetaElement().setDrawingWidth(prefs.getDefaultDrawingWidth());
+		drawing.getMetaElement().setDrawingHeight(prefs.getDefaultDrawingHeight());
 		
 		lxGraph.addUndoableEditListener(undoManager);
 		lxGraph.addItemListener(itemListener);
@@ -275,6 +280,9 @@ public class Editor extends JPanel {
 				}
 			}
 		});
+		
+		updateSize();
+		
 		synchActionsWithSelection();
 		startUpdating();		
 	}
@@ -285,7 +293,7 @@ public class Editor extends JPanel {
 		if (r != JOptionPane.CANCEL_OPTION) {
 
 			JFileChooser fileChooser =
-				com.cannontech.esub.util.Util.getDrawingJFileChooser();
+				Util.getDrawingJFileChooser();
 			fileChooser.setApproveButtonText("Open");
 
 			String currentDir = EditorPrefs.getPreferences().getWorkingDir();
@@ -409,7 +417,7 @@ public class Editor extends JPanel {
 	void saveAsDrawing() {
 
 		JFileChooser fileChooser =
-			com.cannontech.esub.util.Util.getDrawingJFileChooser();
+			Util.getDrawingJFileChooser();
 		fileChooser.setApproveButtonText("Save");
 		fileChooser.setDialogTitle("Save Drawing");
 		String currentDir = EditorPrefs.getPreferences().getWorkingDir();

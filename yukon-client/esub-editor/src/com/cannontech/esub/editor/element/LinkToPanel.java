@@ -232,7 +232,7 @@ private void initialize() {
  * Comment
  */
 public void linkToButton_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
-	JFileChooser fileChooser = com.cannontech.esub.util.Util.getLinkJFileChooser();
+	JFileChooser fileChooser = com.cannontech.esub.editor.Util.getLinkJFileChooser();
 	fileChooser.setApproveButtonText("Select");
 	fileChooser.setCurrentDirectory(new File(EditorPrefs.getPreferences().getWorkingDir()));
 	int returnVal = fileChooser.showOpenDialog(null);

@@ -65,15 +65,15 @@
     <target name="callall">
         <ant dir="${third-party}" target="${dotarget}" />
         <ant dir="${common}" target="${dotarget}" />
-                
         <ant dir="${billing}" target="${dotarget}" /> 
         <ant dir="${calchist}" target="${dotarget}" />
         <ant dir="${export}" target="${dotarget}" />
         <ant dir="${trending}" target="${dotarget}" />
+    	<ant dir="${esub}" target="${dotarget}"/>
         <ant dir="${tdc}" target="${dotarget}" />
         <ant dir="${monitor}" target="${dotarget}" />
         <ant dir="${dbeditor}" target="${dotarget}" />
-		<ant dir="${esub}" target="${dotarget}"/>
+		<ant dir="${esub-editor}" target="${dotarget}"/>
         <ant dir="${cbc}" target="${dotarget}" />
         <ant dir="${loadcontrol}" target="${dotarget}" />
         <ant dir="${macs}" target="${dotarget}" />
@@ -87,7 +87,6 @@
         <ant dir="${stars}" target="${dotarget}"/>
 		<ant dir="${report}" target="${dotarget}"/>
         <ant dir="${notification}" target="${dotarget}"/>
-
         <ant dir="${resource}" target="${dotarget}"/>
         <ant dir="${services}" target="${dotarget}"/>
         <ant dir="${yukonappserver}" target="${dotarget}"/>

@@ -15,7 +15,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.LoginController;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.esub.editor.Drawing;
+import com.cannontech.esub.Drawing;
 import com.cannontech.esub.element.DrawingMetaElement;
 import com.cannontech.esub.util.SVGOptions;
 import com.cannontech.roles.cicustomer.EsubDrawingsRole;

@@ -10,42 +10,33 @@
        <javac srcdir="src" destdir="build">                               
           <classpath>                        
              <fileset dir="${yukon.lib}">
-                <include name="**/*.jar"/>
+                 <include name="**/*.jar"/>
              </fileset>
 	      </classpath> 
      	</javac>
 		
-       <jar jarfile="${yukon.lib}/esub.jar"
-            basedir="build/" />       
-            
-        <copy todir="${yukon.lib}/images">
-       		<fileset dir="images">
-	   			<include name="**/*.gif"/>
-	    		<include name="**/*.png"/>
-	    		<include name="**/*.jpg"/>
-	    	</fileset>
+	   <copy todir="build/">
+           <fileset dir="resource">
+               <include name="**/*.gif"/>
+           </fileset>
        </copy>
        
-       <copy todir="${yukon.lib}">
-       	    <fileset dir="conf"/>
-       </copy>
-       
-       <copy todir="${yukon.lib}">
-       		<fileset dir="resource">
-       			<include name="*.bat"/>
-       		</fileset>
-       	</copy>
-       	
+       <jar jarfile="${yukon.lib}/esub-editor.jar"
+            basedir="build/" 
+            manifest="resource/manifest.mf" />              	
    </target>
 
 	<target name="install" depends="build">
-   		<jar jarfile="${yukon.client.bin}/esub.jar"
-   			basedir="build/" />   			
+   		<jar jarfile="${yukon.client.bin}/esub-editor.jar"
+   			basedir="build/"
+   			manifest="resource/manifest.mf" />   			
    			
    		<copy todir="${yukon.client.bin}">
  	    	<fileset dir="resource">
-				<include name=".bat"/>
+				<include name="**/*.gif"/>
+ 				<include name="**/*.ico"/>
 	    	</fileset>
+
        </copy>             
    </target>
    

@@ -11,7 +11,7 @@ import com.cannontech.database.cache.functions.YukonImageFuncs;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteYukonImage;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.esub.editor.Drawing;
+import com.cannontech.esub.Drawing;
 import com.cannontech.esub.element.persist.PersistStateImage;
 import com.cannontech.esub.util.Util;
 import com.loox.jloox.LxAbstractImage;

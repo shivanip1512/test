@@ -8,8 +8,8 @@ package com.cannontech.esub.test;
 import java.awt.Color;
 import java.awt.Font;
 
+import com.cannontech.esub.Drawing;
 import com.cannontech.esub.PointAttributes;
-import com.cannontech.esub.editor.Drawing;
 import com.cannontech.esub.element.CurrentAlarmsTable;
 import com.cannontech.esub.element.DrawingMetaElement;
 import com.cannontech.esub.element.DynamicGraphElement;

@@ -10,7 +10,7 @@ import java.io.File;
 import java.io.IOException;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.esub.editor.Drawing;
+import com.cannontech.esub.Drawing;
 
 /**
  * @author aaron 

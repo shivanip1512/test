@@ -8,7 +8,7 @@ import java.io.OutputStream;
 import java.io.Serializable;
 
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.esub.editor.Drawing;
+import com.cannontech.esub.Drawing;
 import com.cannontech.esub.element.persist.PersistAlarmText;
 import com.loox.jloox.LxAbstractText;
 

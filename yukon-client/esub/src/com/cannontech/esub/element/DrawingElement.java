@@ -1,6 +1,6 @@
 package com.cannontech.esub.element;
 
-import com.cannontech.esub.editor.Drawing;
+import com.cannontech.esub.Drawing;
 
 /**
  * Provides a common interface for elements that

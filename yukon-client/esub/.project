@@ -4,9 +4,7 @@
 	<comment></comment>
 	<projects>
 		<project>common</project>
-		<project>dbeditor</project>
 		<project>resource</project>
-		<project>tdc</project>
 		<project>trending</project>
 		<project>yukonappserver</project>
 	</projects>

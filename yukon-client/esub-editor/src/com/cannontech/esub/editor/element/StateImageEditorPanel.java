@@ -7,7 +7,6 @@ import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.esub.element.StateImage;
-import com.cannontech.esub.util.Util;
 
 /**
  * Creation date: (1/14/2002 3:37:58 PM)
@@ -112,7 +111,7 @@ private PointSelectionPanel getPointSelectionPanel() {
 	if (ivjPointSelectionPanel == null) {
 		try {
 			//ivjPointSelectionPanel = new com.cannontech.esub.editor.element.PointSelectionPanel();
-			ivjPointSelectionPanel = Util.getPointSelectionPanel();		
+			ivjPointSelectionPanel = com.cannontech.esub.editor.Util.getPointSelectionPanel();		
 			ivjPointSelectionPanel.setName("PointSelectionPanel");
 			// user code begin {1}
 			// user code end

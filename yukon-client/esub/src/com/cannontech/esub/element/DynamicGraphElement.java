@@ -16,7 +16,7 @@ import com.cannontech.database.cache.functions.GraphFuncs;
 import com.cannontech.database.data.graph.GraphDefinition;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteGraphDefinition;
-import com.cannontech.esub.editor.Drawing;
+import com.cannontech.esub.Drawing;
 import com.cannontech.esub.element.persist.PersistDynamicGraphElement;
 import com.cannontech.graph.Graph;
 import com.cannontech.graph.model.TrendModelType;

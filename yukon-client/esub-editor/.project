@@ -1,16 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>esub</name>
+	<name>esub-editor</name>
 	<comment></comment>
 	<projects>
-		<project>common</project>
 		<project>dbeditor</project>
+		<project>esub</project>
 		<project>resource</project>
-		<project>servlet</project>
 		<project>tdc</project>
 		<project>trending</project>
-		<project>yukonappclient</project>
-		<project>yukonappserver</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

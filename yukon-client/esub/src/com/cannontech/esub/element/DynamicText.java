@@ -9,8 +9,8 @@ import java.io.Serializable;
 import java.util.Properties;
 
 import com.cannontech.database.cache.functions.PointFuncs;
+import com.cannontech.esub.Drawing;
 import com.cannontech.esub.PointAttributes;
-import com.cannontech.esub.editor.Drawing;
 import com.cannontech.esub.element.persist.PersistDynamicText;
 import com.loox.jloox.LxAbstractText;
 import com.loox.jloox.LxContainer;

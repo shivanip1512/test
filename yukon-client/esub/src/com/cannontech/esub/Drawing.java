@@ -1,4 +1,4 @@
-package com.cannontech.esub.editor;
+package com.cannontech.esub;
 
 import java.awt.Dimension;
 import java.io.File;

@@ -7,6 +7,7 @@ import java.awt.GraphicsEnvironment;
 import javax.swing.JColorChooser;
 
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.esub.editor.Util;
 import com.cannontech.esub.element.AlarmTextElement;
 
 /**
@@ -645,7 +646,7 @@ private void initialize() {
 	for( int i = 0; i < availableFontSizes.length; i++ ) {
 		getTextSizeComboBox().addItem( new Integer(availableFontSizes[i] ));
 	}
-	colorChooser = com.cannontech.esub.util.Util.getJColorChooser();
+	colorChooser = Util.getJColorChooser();
 	// user code end
 }
 /**

@@ -598,7 +598,7 @@ private javax.swing.JCheckBox getVisibleCheckBox() {
  * Comment
  */
 public void gridColorButton_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
-	final javax.swing.JColorChooser colorChooser = com.cannontech.esub.util.Util.getJColorChooser();
+	final javax.swing.JColorChooser colorChooser = Util.getJColorChooser();
 	JDialog d = javax.swing.JColorChooser.createDialog(this, "Select a color", true, colorChooser, 
 		new java.awt.event.ActionListener() { //ok listener
 			public void actionPerformed(java.awt.event.ActionEvent e) {

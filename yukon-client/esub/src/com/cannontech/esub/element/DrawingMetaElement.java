@@ -5,8 +5,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Properties;
 
-import com.cannontech.esub.editor.Drawing;
-import com.cannontech.esub.editor.EditorPrefs;
+import com.cannontech.esub.Drawing;
 import com.cannontech.esub.element.persist.PersistDrawingMetaElement;
 import com.loox.jloox.LxAbstractText;
 
@@ -37,9 +36,6 @@ public class DrawingMetaElement extends LxAbstractText implements DrawingElement
 	private int version = CURRENT_VERSION;
 	
 	public DrawingMetaElement() {
-		EditorPrefs prefs = EditorPrefs.getPreferences();		
-		setDrawingWidth(prefs.getDefaultDrawingWidth());
-		setDrawingHeight(prefs.getDefaultDrawingHeight());
 	}	
 	
 	/**
