@@ -111,18 +111,25 @@ class IM_EX_FDRBASE CtiFDRInterface
         bool updatePointByIdInList(CtiFDRPointList &aList, CtiPointDataMsg *aMessage);
         long getClientLinkStatusID(RWCString &aClientName);
         virtual void setCurrentClientLinkStates();
+
+        BOOL connectWithDispatch(void);
+        BOOL registerWithDispatch(void);
+
         
     protected:
+        CtiMutex            iDispatchMux;
         CtiConnection       *iDispatchConn;
         CtiFDRManager       *iOutBoundPoints;
 
         RWThreadFunction    iThreadFromDispatch;
         RWThreadFunction    iThreadDbChange;
         RWThreadFunction    iThreadToDispatch;
+        RWThreadFunction    iThreadConnectToDispatch;
 
         void threadFunctionSendToDispatch( void );
         void threadFunctionReceiveFromDispatch( void );
         void threadFunctionReloadDb( void );
+        void threadFunctionConnectToDispatch( void );
         
         static const CHAR * KEY_DISPATCH_NAME;
         static const CHAR * KEY_DEBUG_LEVEL;
@@ -136,6 +143,7 @@ class IM_EX_FDRBASE CtiFDRInterface
         int                 iReloadRate;
 
         BOOL                iDebugMode;
+        BOOL                iDispatchOK;
         int                 iQueueFlushRate;
 
         int                 iOutboundSendRate;
