@@ -8,7 +8,8 @@ package com.cannontech.yc.gui;
 import com.cannontech.database.model.ModelFactory;
 public class YC
 {
-	public final String SERIALNUMBER_FILENAME = "VersacomSerial";	//serial number file name
+	public final String ALT_SERIALNUMBER_FILENAME = "VersacomSerial";	//serial number file name
+	public final String SERIALNUMBER_FILENAME = "LCRSerial";	//serial number file name
 	public final String DEFAULT_FILENAME = "default";	//serial number file name
 	private String commandFile = "commandFile";	//current command file, init only to NOT have null value
 	
@@ -100,7 +101,7 @@ public void executeCommand()
 				handleDevice (ldmn.getDeviceID());
 			}		
 			// Serial Number item in tree selected.
-			else if ( getModelType() == ModelFactory.EDITABLEVERSACOMSERIAL)
+			else if ( getModelType() == ModelFactory.EDITABLELCRSERIAL)
 			{
 				handleSerialNumber();
 			}
@@ -186,7 +187,7 @@ public com.cannontech.message.util.ConfigParmsFile getConfigFile(Object item)
 {
 	String className = null;
 	
-	if (item.toString() == SERIALNUMBER_FILENAME )	//get serial number class name (constant var)
+	if (item.toString() == SERIALNUMBER_FILENAME  ||item.toString() == ALT_SERIALNUMBER_FILENAME)	//get serial number class name (constant var)
 		className = (String) item;
 	else if (item.toString() == DEFAULT_FILENAME )
 		className = (String) item;
@@ -695,9 +696,11 @@ public String substituteCommand(String command)
 		cpf = getConfigFile(dbp);
 	}
 	// Else if serial number, use the serial number file string constant.
-	else if (getModelType() == ModelFactory.EDITABLEVERSACOMSERIAL )
+	else if (getModelType() == ModelFactory.EDITABLELCRSERIAL)
 	{
 		cpf = getConfigFile( SERIALNUMBER_FILENAME );
+		if (cpf.getKeysAndValues() ==null)
+			cpf = getConfigFile(ALT_SERIALNUMBER_FILENAME);
 	}
 	else if (getModelType() == ModelFactory.COLLECTIONGROUP ||
 			getModelType() == ModelFactory.TESTCOLLECTIONGROUP )

@@ -25,7 +25,7 @@ public final class ModelFactory
 	public static final int CONTACT = 16;
 	public static final int ALARM_STATES = 17;
 	public static final int LMPROGRAM = 18;
-	public static final int EDITABLEVERSACOMSERIAL = 19;
+	public static final int EDITABLELCRSERIAL = 19;
 	public static final int LMCONTROLAREA = 20;
 
 	public static final int CICUSTOMER = 21;
@@ -62,7 +62,7 @@ public final class ModelFactory
 		ContactTreeModel.class,
 		AlarmCategoriesTreeModel.class,
 		LMProgramModel.class,
-		EditableVersacomSerialModel.class,
+		EditableLCRSerialModel.class,
 		LMControlAreaModel.class,
 /*21*/CICustomerTableModel.class,
 		DeviceTree_CustomPointsModel.class,

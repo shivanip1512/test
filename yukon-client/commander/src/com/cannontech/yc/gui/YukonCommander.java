@@ -20,13 +20,14 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 	private static final int treeModels[] =
 	{
 		ModelFactory.DEVICE,
-		ModelFactory.LMGROUPS,
+		ModelFactory.DEVICE_METERNUMBER,		
+		ModelFactory.MCTBROADCAST,
+		ModelFactory.LMGROUPS,		
 		ModelFactory.CAPBANKCONTROLLER,
 		ModelFactory.CICUSTOMER,
-		ModelFactory.DEVICE_METERNUMBER,
 		ModelFactory.COLLECTIONGROUP,
 		ModelFactory.TESTCOLLECTIONGROUP,
-		ModelFactory.EDITABLEVERSACOMSERIAL,
+		ModelFactory.EDITABLELCRSERIAL,
 		
 	};
 	//-----------------------------------------
@@ -299,7 +300,7 @@ private int areYouSure(String message, int messageType )
  */
 private void deleteSerialNumber()
 {
-	if(getModelType() == ModelFactory.EDITABLEVERSACOMSERIAL)
+	if(getModelType() == ModelFactory.EDITABLELCRSERIAL)
 	{
 		if (getTreeItem() == null)
 			return;
@@ -310,10 +311,10 @@ private void deleteSerialNumber()
 			if( t.getSelectedNode().getParent() == null)	// we got the parent!
 				return;
 				
-			com.cannontech.database.model.EditableVersacomSerialModel.getSerialNumberVector().remove( getTreeItem() );	// enter serial# into the vector
+			com.cannontech.database.model.EditableLCRSerialModel.getSerialNumberVector().remove( getTreeItem() );	// enter serial# into the vector
 			
 			// refreshing the serial# tree on the treeViewPanel
-			((com.cannontech.database.model.EditableVersacomSerialModel) t.getSelectedTreeModel()).update();
+			((com.cannontech.database.model.EditableLCRSerialModel) t.getSelectedTreeModel()).update();
 			getSerialRoutePanel().getSerialTextField().setText("");
 		}
 	}	
@@ -1162,7 +1163,7 @@ private void initialize() {
 	}
 
 	//serial and route panel visible only when first item in tree is Versacom Serial #
-	if (treeModels[0] != ModelFactory.EDITABLEVERSACOMSERIAL)
+	if (treeModels[0] != ModelFactory.EDITABLELCRSERIAL)
 		enableSerialAndRoute(false);
 
 	//add listeners to treeViewPanel Objects
@@ -1170,7 +1171,7 @@ private void initialize() {
 		
 	setRouteModel(); //fill route combo box
 
-	com.cannontech.database.model.EditableVersacomSerialModel.setSerialNumberVector( new Vector());
+	com.cannontech.database.model.EditableLCRSerialModel.setSerialNumberVector( new Vector());
 	
 	com.cannontech.database.cache.DefaultDatabaseCache.getInstance().addDBChangeListener(this);
 	//DBChangeMessageListener dbChangeMessageListener = new DBChangeMessageListener();
@@ -1643,12 +1644,12 @@ private void serialNumberAction()
 		return;
 	}
 	// Else if not already in serial vector, add it to the serialVector.
-	else if(!com.cannontech.database.model.EditableVersacomSerialModel.getSerialNumberVector().contains(tempSerialNumber) )
+	else if(!com.cannontech.database.model.EditableLCRSerialModel.getSerialNumberVector().contains(tempSerialNumber) )
 	{	
-		com.cannontech.database.model.EditableVersacomSerialModel.getSerialNumberVector().add(tempSerialNumber);
+		com.cannontech.database.model.EditableLCRSerialModel.getSerialNumberVector().add(tempSerialNumber);
 
 		// Refresh the tree selection.
-		((com.cannontech.database.model.EditableVersacomSerialModel) t.getSelectedTreeModel()).update();
+		((com.cannontech.database.model.EditableLCRSerialModel) t.getSelectedTreeModel()).update();
 
 		// Clear serial number text field.
 		if( getSerialRoutePanel().getSerialTextField() instanceof javax.swing.JTextField )
@@ -1767,7 +1768,7 @@ private void sortByComboBoxAction()
 	// Serial Number/Route -- enable/disable (with Versacom Serial tree)
 	setModelType( treeModels[getTreeViewPanel().getSortByComboBox().getSelectedIndex()] );
 	
-	if (getModelType() == ModelFactory.EDITABLEVERSACOMSERIAL)
+	if (getModelType() == ModelFactory.EDITABLELCRSERIAL)
 	{
 		enableSerialAndRoute(true);
 		getSerialRoutePanel().getSerialTextField().requestFocus();
@@ -1840,7 +1841,7 @@ public void valueChanged(TreeSelectionEvent event)
 		return;
 
 	// If serial number, use the serial number file string constant.
-	if ( getModelType() == ModelFactory.EDITABLEVERSACOMSERIAL)
+	if ( getModelType() == ModelFactory.EDITABLELCRSERIAL)
 	{
 		setSerialNumber( (String) getTreeItem());
 		getSerialRoutePanel().setSerialNumberText( getSerialNumber().toString() );
