@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2003/08/28 21:25:20 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2003/09/03 18:11:54 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -34,7 +34,7 @@ CtiTransdataDatalink::CtiTransdataDatalink()
 
    _finished            = true;
 
-   _storage = new BYTE[1500];
+   _storage = new BYTE[5000];
 }
 
 //=====================================================================================================================

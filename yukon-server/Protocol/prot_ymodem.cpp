@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2003/08/28 14:22:57 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2003/09/03 18:11:54 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *
@@ -66,163 +66,48 @@ bool CtiProtocolYmodem::isTransactionComplete( void )
 }
 
 //=====================================================================================================================
+// from the XMODEM/YMODEM Protocol Reference
+// www.techfest.com
 //=====================================================================================================================
 
-INT CtiProtocolYmodem::checkCRC( BYTE *InBuffer, ULONG InCount )
+unsigned short CtiProtocolYmodem::updateCRC( BYTE c, unsigned short crc )
 {
-   BYTEUSHORT  crc;
-   INT         retval = NORMAL;
+   int            count;
+   unsigned short data = c;
 
-   if(InCount > 3)
+   for( count = 8; --count >= 0; )
    {
-      crc.sh = addCRC( InBuffer, InCount - 2, FALSE );
-
-      if( crc.ch[0] == InBuffer[InCount - 1] && crc.ch[1] == InBuffer[InCount - 2] )
+      if( crc & 0x8000 )
       {
-         retval = NORMAL;
+         crc <<= 1;
+         crc += (( ( data <<= 1 ) & 0400 ) != 0 );
+         crc ^= 0x1021;
       }
       else
       {
-         retval = !NORMAL;
+         crc <<= 1;
+         crc += (( ( data <<= 1 ) & 0400 ) != 0 );
       }
    }
-
-   return retval;
-}
-
-//=====================================================================================================================
-//=====================================================================================================================
-
-USHORT CtiProtocolYmodem::addCRC( UCHAR* buffer, LONG length, BOOL bAdd )
-{
-   ULONG       i,j;
-   BYTEUSHORT   CRC;
-
-   BYTE CRCMSB = 0xff;
-   BYTE CRCLSB = 0xff;
-   BYTE Temp;
-   BYTE Acc;
-
-   CRC.sh = 0;
-
-   if( length > 0 )
-   {
-      for( i = 0; i < (ULONG)length; i++ )
-      {
-         CRC.ch[1] ^= buffer[i];
-
-         for( j = 0; j < 8; j++ )
-         {
-            if(CRC.sh & 0x8000)
-            {
-               CRC.sh = CRC.sh << 1;
-               CRC.sh ^= 0x1021;
-            }
-            else
-            {
-               CRC.sh = CRC.sh << 1;
-            }
-         }
-      }
-
-      if( bAdd )
-      {
-         buffer[length]     = CRC.ch[1];
-         buffer[length + 1] = CRC.ch[0];
-      }
-
-   }
-
-   return CRC.sh;
-}
-
-
-
-
-
-
-
-
-
-
-
-/*
-//=========================================================================================================================================
-//stolen from the ansi stuff, not sure yet if the calculation is correct
-//=========================================================================================================================================
-
-unsigned short CtiProtocolYmodem::crc16( unsigned char octet, unsigned short crc )
-{
-   int i;
-
-   for( i = 8; i; i-- )
-   {
-      if( crc & 0x0001 )
-      {
-         crc >>= 1;
-
-         if( octet & 0x01 )
-            crc |= 0x8000;
-
-         crc = crc^0x8408;
-         octet >>= 1;
-      }
-      else
-      {
-         crc >>= 1;
-
-         if( octet & 0x01 )
-            crc |= 0x8000;
-
-         octet >>= 1;
-      }
-   }
-   return crc;
-}
-
-//=========================================================================================================================================
-//=========================================================================================================================================
-
-unsigned short CtiProtocolYmodem::crc( int size, unsigned char *packet )
-{
-   int i;
-   unsigned short crc;
-
-   crc = ( ~packet[1] << 8 ) | ( ~packet[0] & 0xff );
-
-   for( i = 2; i < size; i++ )
-      crc = crc16( packet[i], crc );
-
-   crc = crc16( 0x00, crc );
-   crc = crc16( 0x00, crc );
-
-   crc = ~crc;
-   crc = crc >> 8 | crc << 8;
 
    return crc;
 }
 
 //=====================================================================================================================
+// possible crap
 //=====================================================================================================================
 
-int calcrc(ptr, count)
+unsigned short CtiProtocolYmodem::calcCRC( BYTE *ptr, int count )
 {
-   char  *ptr;
-   int   count;
-   int crc, i;
+   int            index = 0;
+   unsigned short crc   = 0;
 
-   crc = 0;
-
-   while( --count >= 0 )
+   for( index; index < count; index++, ptr++ )
    {
-      crc = crc ^ ( int)*ptr++ << 8;
-      for( i = 0; i < 8; ++i )
-         if( crc & 0x8000 )
-            crc = crc << 1 ^ 0x1021;
-         else
-            crc = crc << 1;
+      crc = updateCRC( *ptr, crc );
    }
-   return(crc & 0xFFFF);
+
+   return( crc );
 }
-*/
+
 

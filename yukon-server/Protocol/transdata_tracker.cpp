@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2003/08/28 21:25:20 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2003/09/03 18:11:55 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -76,7 +76,7 @@ CtiTransdataTracker::CtiTransdataTracker():
    _moveAlong        = false;
    _weHaveData       = false;
 
-   _storage          = new BYTE[1500];    //supposedly, we'd only need 1k, but...
+   _storage          = new BYTE[5000];    //supposedly, we'd only need 1k, but...
    _lastCommandSent  = new BYTE[30];
 
    _password         = "22222222\r\n";       //silly hard-codedness for now
@@ -143,7 +143,7 @@ bool CtiTransdataTracker::decode( CtiXfer &xfer, int status )
 
 bool CtiTransdataTracker::processData( BYTE *_storage )
 {
-   bool  result = false;
+//   bool  result = false;
    int   index;
    char  temp[7];
 
@@ -168,16 +168,16 @@ bool CtiTransdataTracker::processData( BYTE *_storage )
       return( true );
    }
 
-   //this will tell the layer above that we're ready with his data
-   if( isCrcValid() )
-   {
-      setNextState();
-      _finished = true;
-   }
-
    if( strstr( ( char *)_storage, _retry ) != NULL )
    {
       reset();
+   }
+
+   //this will tell the layer above that we're ready with his data
+   if( isCrcValid()  && ( _lastState == doStartProt ))
+   {
+      setNextState();
+      _finished = true;
    }
 
    return( false );
@@ -232,7 +232,7 @@ bool CtiTransdataTracker::logOn( CtiXfer &xfer )
 
       case doIdentify:
          {
-            setXfer( xfer, _identify, 10, false, 0 );
+            setXfer( xfer, _identify, 10, true, 1 );
             _moveAlong = true;
          }
          break;
@@ -266,19 +266,21 @@ bool CtiTransdataTracker::general( CtiXfer &xfer )
       {
       case doScroll:
          {
-            setXfer( xfer, _search_scrolls, strlen( _search_scrolls ) +  strlen( _good_return ), false, 0 );
+//            setXfer( xfer, _search_scrolls, strlen( _search_scrolls ) +  strlen( _good_return ), false, 0 );
+            setXfer( xfer, _search_scrolls, 9, false, 0 );
          }
          break;
 
       case doPullBuffer:
          {
-            setXfer( xfer, _send_comm_buff, strlen( _send_comm_buff ) + strlen( _good_return ), false, 0 );
+//            setXfer( xfer, _send_comm_buff, strlen( _send_comm_buff ) + strlen( _good_return ), false, 0 );
+            setXfer( xfer, _send_comm_buff, 9, false, 0 );
          }
          break;
 
       case doStartProt:
          {
-            setXfer( xfer, _prot_start, 1000, true, 2 );
+            setXfer( xfer, _prot_start, 1029, false, 5 );
             _moveAlong = true;
          }
       }
@@ -376,8 +378,7 @@ bool CtiTransdataTracker::isCrcValid( void )
    BYTEUSHORT  crc;
    BYTEUSHORT  crc2;
    bool        isOk = false;
-   BYTE        temp[1024];
-
+   BYTE        temp[5000];
 
    if( _bytesReceived > 1020 )
    {
@@ -386,15 +387,13 @@ bool CtiTransdataTracker::isCrcValid( void )
       crc.ch[0] = _storage[_bytesReceived - 1];
       crc.ch[1] = _storage[_bytesReceived - 2];
 
-      if( crc.sh == _ymodem.addCRC( temp, _bytesReceived - 2, false ) )
+      if( crc.sh == _ymodem.calcCRC( temp + 3, _bytesReceived - 3 ))    //fixme.. should not use hardcoded stuff if pos.
       {
          isOk = true;
       }
-
-      _didSomeWork = true;
    }
 
-   return false;         //just for now
+   return( isOk );         //just for now
 }
 
 //=====================================================================================================================
@@ -467,123 +466,4 @@ void CtiTransdataTracker::setError( void )
 
 
 
-/*                     8/18
-bool CtiTransdataTracker::processData( BYTE *_storage )
-{
-   bool  result = false;
-   int   bytes = xfer.getInCountActual();
-   int   index;
-   char  temp[7];
 
-   if( bytes )
-   {
-      //copy the data into our main container
-      memcpy( ( _storage + _bytesReceived ), xfer.getInBuffer(), bytes );
-
-      _bytesReceived += bytes;
-
-      if( _bytesReceived >= 5 )
-      {
-         //copy the last little chunk of the data
-         memset( temp, '\0', sizeof( temp ));
-         index = _bytesReceived - 5;
-         memcpy( temp, _storage + index, 5 );
-      }
-
-      _failCount = 0;
-   }
-   else
-   {
-      _failCount++;
-
-      //we've not heard any reply, let's resend
-      if( _failCount >= 4 )
-      {
-         reset();
-      }
-   }
-
-   //search for one of our magic conditions that says 'success'
-   if(( strstr( temp, _good_return ) != NULL ) ||
-      ( strstr( temp, _prot_message ) != NULL ) ||
-//      ( isCrcValid() ) ||
-      ( _ignore ))
-   {
-      setNextState();
-
-      if( _moveAlong )
-      {
-         _moveAlong = false;
-         _didSomeWork = true;
-
-         result = true; //remove?
-      }
-   }
-   else if( strstr( temp, _retry ) != NULL )
-   {
-      reset();
-   }
-
-   return( false );
-}
-*/
-
-
-
-
-/*
-bool CtiTransdataTracker::decode( CtiXfer &xfer, int status )
-{
-   bool  result = false;
-   int   bytes = xfer.getInCountActual();
-   char  *ptr;
-
-   if( bytes )
-   {
-      //look for nulls and replace them with spaces
-      for( int index = 0; index < 5; index++ )
-      {
-         ptr = strchr( (const char *)xfer.getInBuffer(), '\0' );
-
-         if( ptr != NULL )
-            *ptr = ' ';
-         else
-            break;
-      }
-
-      memcpy( ( _storage + _bytesReceived ), xfer.getInBuffer(), bytes );
-
-      _bytesReceived += bytes;
-      _failCount = 0;
-   }
-   else
-   {
-      _failCount++;
-
-      //we've not heard any reply, let's resend
-      if( _failCount >= 4 )
-      {
-         reset();
-      }
-   }
-
-   if(( strstr( ( char *)_storage, _good_return ) != NULL ) ||
-      ( strcmp( ( char *)_storage, _prot_message ) == 0 ) ||
-      ( _ignore ))
-   {
-      setNextState();
-
-      if( _moveAlong )
-      {
-         _moveAlong = false;
-         result = true;
-      }
-   }
-   else if( strstr(( char *)_storage, _retry ) != NULL )
-   {
-      reset();
-   }
-
-   return( result );
-}
-*/
