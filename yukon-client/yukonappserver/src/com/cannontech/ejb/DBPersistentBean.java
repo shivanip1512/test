@@ -49,13 +49,9 @@ public class DBPersistentBean implements SessionBean, IDBPersistent
       boolean autoCommit = false;
       java.sql.Connection conn = null;
 
-System.out.println("A");      
-
       try
       {
-System.out.println( "B" );      
          conn = object.getDbConnection();
-System.out.println( "** conn=" + conn +", obj=" + object );      
          
          if( conn == null )
             setDbConnection( com.cannontech.database.PoolManager.getInstance().getConnection( 
