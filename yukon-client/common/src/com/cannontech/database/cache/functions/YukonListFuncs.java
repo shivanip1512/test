@@ -6,6 +6,7 @@ import java.util.Properties;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionList;
+import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CtiUtilities;
 
 /**
@@ -313,6 +314,60 @@ public final class YukonListFuncs implements YukonListEntryTypes
 	         listEntryID == YukonListEntryTypes.YUK_ENTRY_ID_PHONE
 	         || listEntryID == YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE
 	         || listEntryID == YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE );
+	}
+	
+	/**
+	 * Get the selection list name based on the specified list entry yukon definition ID 
+	 */
+	public static String getYukonListName(int yukonDefID) {
+		if (yukonDefID >= YukonListEntryTypes.YUK_DEF_ID_SO_FILTER_BY_STATUS)
+			return YukonSelectionListDefs.YUK_LIST_NAME_SO_FILTER_BY;
+		else if (yukonDefID >= YukonListEntryTypes.YUK_DEF_ID_SO_SORT_BY_ORDER_NO)
+			return YukonSelectionListDefs.YUK_LIST_NAME_SO_SORT_BY;
+		else if (yukonDefID >= YukonListEntryTypes.YUK_DEF_ID_SO_SEARCH_BY_ORDER_NO)
+			return YukonSelectionListDefs.YUK_LIST_NAME_SO_SEARCH_BY;
+		else if (yukonDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_ENERGYPRO)
+			return YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE;
+		else if (yukonDefID >= YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_DEV_TYPE)
+			return YukonSelectionListDefs.YUK_LIST_NAME_INV_FILTER_BY;
+		else if (yukonDefID >= YukonListEntryTypes.YUK_DEF_ID_INV_SORT_BY_SERIAL_NO)
+			return YukonSelectionListDefs.YUK_LIST_NAME_INV_SORT_BY;
+		else if (yukonDefID >= YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_SERIAL_NO)
+			return YukonSelectionListDefs.YUK_LIST_NAME_INV_SEARCH_BY;
+		else if (yukonDefID >= YukonListEntryTypes.YUK_DEF_ID_OPTOUT_PERIOD_TOMORROW)
+			return YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD;
+		else if (yukonDefID >= YukonListEntryTypes.YUK_DEF_ID_FAN_STAT_DEFAULT)
+			return YukonSelectionListDefs.YUK_LIST_NAME_THERMOSTAT_FAN_STATE;
+		else if (yukonDefID >= YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_DEFAULT)
+			return YukonSelectionListDefs.YUK_LIST_NAME_THERMOSTAT_MODE;
+		else if (yukonDefID >= YukonListEntryTypes.YUK_DEF_ID_ANS_TYPE_SELECTION)
+			return YukonSelectionListDefs.YUK_LIST_NAME_ANSWER_TYPE;
+		else if (yukonDefID >= YukonListEntryTypes.YUK_DEF_ID_QUE_TYPE_SIGNUP)
+			return YukonSelectionListDefs.YUK_LIST_NAME_QUESTION_TYPE;
+		else if (yukonDefID >= YukonListEntryTypes.YUK_DEF_ID_TOW_WEEKDAY)
+			return YukonSelectionListDefs.YUK_LIST_NAME_TIME_OF_WEEK;
+		else if (yukonDefID >= YukonListEntryTypes.YUK_DEF_ID_LOC_UNKNOWN)
+			return YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_LOCATION;
+		else if (yukonDefID >= YukonListEntryTypes.YUK_DEF_ID_MANU_UNKNOWN)
+			return YukonSelectionListDefs.YUK_LIST_NAME_MANUFACTURER;
+		else if (yukonDefID >= YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL)
+			return YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_STATUS;
+		else if (yukonDefID >= YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_ACCT_NO)
+			return YukonSelectionListDefs.YUK_LIST_NAME_SEARCH_TYPE;
+		else if (yukonDefID >= YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_PENDING)
+			return YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_STATUS;
+		else if (yukonDefID >= YukonListEntryTypes.YUK_DEF_ID_APP_CAT_DEFAULT)
+			return YukonSelectionListDefs.YUK_LIST_NAME_APPLIANCE_CATEGORY;
+		else if (yukonDefID >= YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT)
+			return YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE;
+		else if (yukonDefID >= YukonListEntryTypes.YUK_DEF_ID_INV_CAT_ONEWAYREC)
+			return YukonSelectionListDefs.YUK_LIST_NAME_INVENTORY_CATEGORY;
+		else if (yukonDefID >= YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_SIGNUP)
+			return YukonSelectionListDefs.YUK_LIST_NAME_LM_CUSTOMER_ACTION;
+		else if (yukonDefID >= YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMPROGRAM)
+			return YukonSelectionListDefs.YUK_LIST_NAME_LM_CUSTOMER_EVENT;
+		
+		return null;
 	}
 	
 }
