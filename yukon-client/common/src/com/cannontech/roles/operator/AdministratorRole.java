@@ -8,5 +8,6 @@ import com.cannontech.roles.*;
 public interface AdministratorRole {
 	public static final int ROLEID = OperatorRoleDefs.ADMINISTRATOR_ROLEID;
 	
-	// PROPERTIES?
+	public static final int ADMIN_CONFIG_ENERGY_COMPANY = OperatorRoleDefs.ADMINISTRATOR_PROPERTYID_BASE;
+	public static final int ADMIN_CREATE_ENERGY_COMPANY = OperatorRoleDefs.ADMINISTRATOR_PROPERTYID_BASE - 1;
 }
