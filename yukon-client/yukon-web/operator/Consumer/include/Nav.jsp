@@ -228,7 +228,7 @@
 <%
 	int selectedInvNo = -1;	// selected inventory no.
 	
-	if (pageName.indexOf("Inventory.jsp") >= 0) {
+	if (pageName.indexOf("InvNo=") >= 0) {
 		StringTokenizer st = new StringTokenizer(pageName, "?&");
 		while (st.hasMoreTokens()) {
 			String param = st.nextToken();
@@ -475,64 +475,64 @@ pageLinks = new Array(<%= inventories.getStarsLMHardwareCount() %>);
 </script>
 
 <div id="switchMenu" class="bgMenu" style="width:75px" align="left">
-  <div id="MenuItem" style="width:75px" onmouseover="changeNavStyle(this)" class = "navmenu1" onclick = "showPage(0)">
+  <div id="switchMenuItem" name="switchMenuItem" style="width:75px" onmouseover="changeNavStyle(this)" class = "navmenu1" onclick = "showPage(0)">
   &nbsp;&nbsp;&nbsp;Hardware Info
   </div>
-  <div id="MenuItemSelected" style="width:75px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "showPage(0)">
+  <div id="switchMenuItemSelected" name="switchMenuItemSelected" style="width:75px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "showPage(0)">
   &nbsp;&#149;&nbsp;Hardware Info
   </div>
-  <div id="MenuItem" style="width:75px" onmouseover="changeNavStyle(this)" class = "navmenu1" onclick = "showPage(1)">
+  <div id="switchMenuItem" name="switchMenuItem" style="width:75px" onmouseover="changeNavStyle(this)" class = "navmenu1" onclick = "showPage(1)">
   &nbsp;&nbsp;&nbsp;Configuration
   </div>
-  <div id="MenuItemSelected" style="width:75px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "showPage(1)">
+  <div id="switchMenuItemSelected" name="switchMenuItemSelected" style="width:75px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "showPage(1)">
   &nbsp;&#149;&nbsp;Configuration
   </div>
 </div>
 
 <div id="thermostatMenu" class="bgMenu" style="width:75px" align="left">
-  <div id="MenuItem" style="width:75px" onmouseover="changeNavStyle(this)" class = "navmenu1" onclick = "showPage(0)">
+  <div id="thermostatMenuItem" name="thermostatMenuItem" style="width:75px" onmouseover="changeNavStyle(this)" class = "navmenu1" onclick = "showPage(0)">
   &nbsp;&nbsp;&nbsp;Hardware Info
   </div>
-  <div id="MenuItemSelected" style="width:75px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "showPage(0)">
+  <div id="thermostatMenuItemSelected" name="thermostatMenuItemSelected" style="width:75px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "showPage(0)">
   &nbsp;&#149;&nbsp;Hardware Info
   </div>
-  <div id="MenuItem" style="width:75px" onmouseover="changeNavStyle(this)" class = "navmenu1" onclick = "showPage(1)">
+  <div id="thermostatMenuItem" name="thermostatMenuItem" style="width:75px" onmouseover="changeNavStyle(this)" class = "navmenu1" onclick = "showPage(1)">
   &nbsp;&nbsp;&nbsp;Configuration
   </div>
-  <div id="MenuItemSelected" style="width:75px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "showPage(1)">
+  <div id="thermostatMenuItemSelected" name="thermostatMenuItemSelected" style="width:75px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "showPage(1)">
   &nbsp;&#149;&nbsp;Configuratio
   </div>
-  <div id="MenuItem" style="width:75px" onmouseover="changeNavStyle(this)" class = "navmenu1" onclick = "showPage(2)">
+  <div id="thermostatMenuItem" name="thermostatMenuItem" style="width:75px" onmouseover="changeNavStyle(this)" class = "navmenu1" onclick = "showPage(2)">
   &nbsp;&nbsp;&nbsp;<%= AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_THERM_SCHED, "Schedule") %>
   </div>
-  <div id="MenuItemSelected" style="width:75px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "showPage(2)">
+  <div id="thermostatMenuItemSelected" name="thermostatMenuItemSelected" style="width:75px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "showPage(2)">
   &nbsp;&#149;&nbsp;<%= AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_THERM_SCHED, "Schedule") %>
   </div>
-  <div id="MenuItem" style="width:75px" onmouseover="changeNavStyle(this)" class = "navmenu1" onclick = "showPage(3)">
+  <div id="thermostatMenuItem" name="thermostatMenuItem" style="width:75px" onmouseover="changeNavStyle(this)" class = "navmenu1" onclick = "showPage(3)">
   &nbsp;&nbsp;&nbsp;<%= AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_THERM_MANUAL, "Manual") %>
   </div>
-  <div id="MenuItemSelected" style="width:75px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "showPage(3)">
+  <div id="thermostatMenuItemSelected" name="thermostatMenuItemSelected" style="width:75px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "showPage(3)">
   &nbsp;&#149;&nbsp;<%= AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_THERM_MANUAL, "Manual") %>
   </div>
 </div>
 
 <div id="meterMenu" class="bgMenu" style="width:75px" align="left">
-  <div id="MenuItem" style="width:75px" onmouseover="changeNavStyle(this)" class = "navmenu1" onclick = "showPage(0)">
+  <div id="meterMenuItem" name="meterMenuItem" style="width:75px" onmouseover="changeNavStyle(this)" class = "navmenu1" onclick = "showPage(0)">
   &nbsp;&nbsp;&nbsp;Hardware Info
   </div>
-  <div id="MenuItemSelected" style="width:75px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "showPage(0)">
+  <div id="meterMenuItemSelected" name="meterMenuItemSelected" style="width:75px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "showPage(0)">
   &nbsp;&#149;&nbsp;Hardware Info
   </div>
-  <div id="MenuItem" style="width:75px" onmouseover="changeNavStyle(this)" class = "navmenu1" onclick = "showPage(1)">
+  <div id="meterMenuItem" name="meterMenuItem" style="width:75px" onmouseover="changeNavStyle(this)" class = "navmenu1" onclick = "showPage(1)">
   &nbsp;&nbsp;&nbsp;Configuration
   </div>
-  <div id="MenuItemSelected" style="width:75px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "showPage(1)">
+  <div id="meterMenuItemSelected" name="meterMenuItemSelected" style="width:75px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "showPage(1)">
   &nbsp;&#149;&nbsp;Configuration
   </div>
-  <div id="MenuItem" style="width:75px" onmouseover="changeNavStyle(this)" class = "navmenu1" onclick = "showPage(2)">
+  <div id="meterMenuItem" name="meterMenuItem" style="width:75px" onmouseover="changeNavStyle(this)" class = "navmenu1" onclick = "showPage(2)">
   &nbsp;&nbsp;&nbsp;Command
   </div>
-  <div id="MenuItemSelected" style="width:75px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "showPage(2)">
+  <div id="meterMenuItemSelected" name="meterMenuItemSelected" style="width:75px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "showPage(2)">
   &nbsp;&#149;&nbsp;Command
   </div>
 </div>
