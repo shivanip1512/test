@@ -18,7 +18,9 @@ import com.cannontech.common.util.CtiUtilities;
 
 public class PoolManager
 {
-	public static final String DB_PROPERTIES_FILE  = "db.properties";
+	//Tomcat specific for now
+	public static final String DB_PROPERTIES_FILE  = 
+			System.getProperty("catalina.home") + "/db.properties";
 	
 	public static final String DRV_SQLSERVER = "jdbc:microsoft:sqlserver:";
 	public static final String DRV_ORACLE = "jdbc:oracle:thin:";
@@ -295,14 +297,15 @@ public String[] getAllPoolsStrings()
 
    static synchronized public Properties loadDBProperties() 
    {
-   		Properties props = null;
+   	Properties props = null;
    		
 		try
 		{
 			File f = new File(DB_PROPERTIES_FILE);
-			CTILogger.info( "Abs = " + f.getAbsolutePath() );
-			CTILogger.info( "Con = " + f.getCanonicalPath() );
-			CTILogger.info( "ppp = " + f.getPath() );
+			CTILogger.info( " Searching for db.properties in : " + f.getAbsolutePath() );
+			CTILogger.info( "   catalina.home = " + System.getProperty("catalina.home") );
+//			CTILogger.info( " Con = " + f.getCanonicalPath() );
+//			CTILogger.info( " ppp = " + f.getPath() );
 			
 			FileInputStream fi = new FileInputStream( DB_PROPERTIES_FILE );
 			
