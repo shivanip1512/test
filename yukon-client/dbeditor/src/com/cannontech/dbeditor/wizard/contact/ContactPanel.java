@@ -726,7 +726,7 @@ private javax.swing.JTextField getJTextFieldAddress() {
 		try {
 			ivjJTextFieldAddress = new javax.swing.JTextField();
 			ivjJTextFieldAddress.setName("JTextFieldAddress");
-			ivjJTextFieldAddress.setToolTipText("Enter an email address, phone number, etc.");
+			ivjJTextFieldAddress.setToolTipText("Enter an e-mail address, phone number, etc.");
 			// user code begin {1}
 
 			// user code end

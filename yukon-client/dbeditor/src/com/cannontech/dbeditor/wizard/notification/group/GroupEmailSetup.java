@@ -232,7 +232,7 @@ private javax.swing.JPanel getJPanelEmail() {
 			com.cannontech.common.gui.util.TitleBorder ivjLocalBorder;
 			ivjLocalBorder = new com.cannontech.common.gui.util.TitleBorder();
 			ivjLocalBorder.setTitleFont(new java.awt.Font("Arial", 1, 14));
-			ivjLocalBorder.setTitle("Email");
+			ivjLocalBorder.setTitle("E-mail");
 			ivjJPanelEmail = new javax.swing.JPanel();
 			ivjJPanelEmail.setName("JPanelEmail");
 			ivjJPanelEmail.setBorder(ivjLocalBorder);
@@ -481,14 +481,14 @@ public boolean isInputValid()
 {
 	if (getJTextFieldFromAddress().getText().indexOf("@") == -1)
 	{
-		setErrorString("The Email Address you entered is invalid");
+		setErrorString("The e-mail Address you entered is invalid");
 		return false;
 	}
 
 	if( getJTextFieldName().getText() == null
 		 || getJTextFieldName().getText().length() <= 0 )
 	{
-		setErrorString("The NOtification Group Name text field must be filled in");
+		setErrorString("The Notification Group Name text field must be filled in");
 		return false;
 	}
 

@@ -360,7 +360,7 @@ private javax.swing.JComboBox getJComboBoxContact() {
 
 			refillContactComboBox();
 			
-			ivjJComboBoxContact.setToolTipText("Will use the first email for this contact");
+			ivjJComboBoxContact.setToolTipText("Will use the first e-mail for this contact");
 			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -854,7 +854,7 @@ private int findEmailContact( LiteContact contact )
 		}
 	}
 
-	//no email notif found
+	//no e-mail notif found
 	return CtiUtilities.NONE_ID;
 }
 

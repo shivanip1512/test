@@ -442,8 +442,8 @@ public static void main(String[] args)
 				" Parameters:\r\n" +
 				" -----------------\r\n" +
 				"   mailhost = The address of the smtp out server.\r\n" +
-				"   toaddress = Email address(es) to send the email to.\r\n" +
-				"   fromaddress = Email address that will appear in the From.\r\n" +
+				"   toaddress = E-mail address(es) to send the e-mail to.\r\n" +
+				"   fromaddress = E-mail address that will appear in the From.\r\n" +
             "   MailUserName = [Optional] User name if the smtp server requires it.\r\n" +
             "   MailPassword = [Optional] Password if the smtp server requires it.\r\n" +
 				"   type = [Optional] qmail or javamail, defaults to javamail.\r\n" +
@@ -492,13 +492,13 @@ public static void main(String[] args)
    					ratter.getHost(),
    					ratter.getFromAddress().toString(),
    					ratter.getToAddresses()[j].toString(),
-   					"QSmtp Email test SUCCESS!!!", 
-   					"Testing email service" );
+   					"QSmtp e-mail test SUCCESS!!!", 
+   					"Testing e-mail service" );
          }
 			else
-				ratter.sendMailMessage( "Email test SUCCESS!!!", "Testing email service" );
+				ratter.sendMailMessage( "E-mail test SUCCESS!!!", "Testing e-mail service" );
 
-			//give the email some time to be sent
+			//give the e-mail some time to be sent
 			Thread.currentThread().sleep(1000);
 			return;
 		}

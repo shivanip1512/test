@@ -81,7 +81,7 @@ private javax.swing.JLabel getJLabelAddress() {
 			ivjJLabelAddress = new javax.swing.JLabel();
 			ivjJLabelAddress.setName("JLabelAddress");
 			ivjJLabelAddress.setFont(new java.awt.Font("dialog", 0, 14));
-			ivjJLabelAddress.setText("Email Address:");
+			ivjJLabelAddress.setText("E-mail Address:");
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {

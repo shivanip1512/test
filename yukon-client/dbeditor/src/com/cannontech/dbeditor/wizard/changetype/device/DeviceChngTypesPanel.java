@@ -675,7 +675,7 @@ private void handleMCT_310IL()
 
 	extraObj = 
          PointFactory.createDmdAccumPoint(
-            "KW-LP",
+            "kW-LP",
             getCurrentDevice().getPAObjectID(),
             new Integer( PointFuncs.getMaxPointID() + 1 ),
             PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND,

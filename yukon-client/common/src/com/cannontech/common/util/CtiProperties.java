@@ -76,7 +76,7 @@ public class CtiProperties extends java.util.Properties implements ClientRights
    public static final String KEY_MODE = "yukon_mode";   
    
    public static final String KEY_LOGIN_PAGE_LOGO = "login_page_logo";
-   public static final String KEY_LOGIN_PAGE_HELP_EMAIL = "login_page_help_email";
+   public static final String KEY_LOGIN_PAGE_HELP_EMAIL = "login_page_help_e-mail";
    public static final String KEY_PFACTOR_FORMAT = "pfactor_decimal_places";   
    
    public static String KEY_SMTP_HOST = "mail.smtp.host";

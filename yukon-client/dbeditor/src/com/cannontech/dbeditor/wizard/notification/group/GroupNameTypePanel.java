@@ -104,7 +104,7 @@ public Object getValue(Object o)
 	if( stateGroupName != null )
 		gn.getNotificationGroup().setGroupName(stateGroupName);
 
-	//if( getJComboBoxType().getSelectedItem().toString().equals("Email") )	
+	//if( getJComboBoxType().getSelectedItem().toString().equals("E-mail") )	
 //		gn.getNotificationGroup().set
 
 	return gn;
