@@ -12,6 +12,7 @@ import com.cannontech.analysis.data.device.Carrier;
 import com.cannontech.analysis.data.device.MissedMeter;
 import com.cannontech.analysis.data.lm.LGAccounting;
 import com.cannontech.analysis.data.lm.LMControlLog;
+import com.cannontech.analysis.data.route.CarrierRouteMacro;
 import com.cannontech.analysis.data.statistic.CarrierCommData;
 import com.cannontech.analysis.data.statistic.CommChannelData;
 import com.cannontech.analysis.data.statistic.DeviceCommData;
@@ -43,6 +44,29 @@ public class ReportTypes
 	public static final int DISCONNECT_DATA =10;
 	
 	public static final int ENERGY_COMPANY_ACTIVITY_LOG_DATA = 11;
+	public static final int ROUTE_MACRO_DATA = 12;
+	
+	public static final int ADMIN_LOG_REPORTS_GROUP = 0;
+	public static final int AMR_REPORTS_GROUP = 1;
+	public static final int STATISTICAL_REPORTS_GROUP = 2;
+	public static final int LOAD_MANAGEMENT_REPORTS_GROUP = 3;
+	public static final int CAP_CONTROL_REPORTS_GROUP = 4;
+	public static final int DATABASE_REPORTS_GROUP = 5;
+	public static final int STARS_REPORTS_GROUP = 6;
+	public static final int OTHER_REPORTS_GROUP = 7;
+	
+//	[groupID][typeID array]
+// xxx_reports_group may appear in multiple mappings
+	private static int[][] groupToTypeMap = {
+		{ENERGY_COMPANY_ACTIVITY_LOG_DATA, SYSTEM_LOG_DATA, CARRIER_DATA},	//admin log reports
+		{MISSED_METER_DATA, CARRIER_DATA, POWER_FAIL_DATA, DISCONNECT_DATA},	//amr reports
+		{CARRIER_COMM_DATA, COMM_CHANNEL_DATA, DEVICE_COMM_DATA, TRANS_COMM_DATA},	//stat reports
+		{LM_CONTROL_LOG_DATA, LG_ACCOUNTING_DATA},		//lm reports
+		{},		//cap control reports
+		{CARRIER_DATA}, //database reports
+		{ENERGY_COMPANY_ACTIVITY_LOG_DATA },	//stars reports
+		{}	//other reports
+	};
 	
 	private static Class[] typeToClassMap =
 	{	
@@ -60,8 +84,14 @@ public class ReportTypes
 		PowerFail.class,
 		Disconnect.class,
 		
-		ActivityLog.class
+		ActivityLog.class,
+		CarrierRouteMacro.class
 	};
+	
+	public static int[] getReportGroupTypes(int groupType_)
+	{
+		return groupToTypeMap[groupType_];
+	}
 	
 	public static Object create(int type) {
 
