@@ -14,6 +14,7 @@ import com.cannontech.database.data.lite.stars.LiteLMProgram;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
+import com.cannontech.database.data.lite.stars.LiteWebConfiguration;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.web.servlet.SOAPServer;
 
@@ -107,7 +108,12 @@ public class SendControlOddsTask implements Runnable {
 					for (int j = 0; j < activeProgs.size(); j++) {
 						LiteStarsLMProgram program = (LiteStarsLMProgram) activeProgs.get(j);
 						String progName = program.getLmProgram().getProgramName();
+						// Temporarily use the "URL" field in YukonWebConfiguration table for program alias
+						LiteWebConfiguration liteConfig = SOAPServer.getWebConfiguration( program.getLmProgram().getWebSettingsID() );
+						if (liteConfig.getUrl() != null && liteConfig.getUrl().length() > 0)
+							progName = liteConfig.getUrl();
 						String ctrlOdds = YukonListFuncs.getYukonListEntry( program.getLmProgram().getChanceOfControlID() ).getEntryText();
+						
 						text.append( progName );
 						text.append( blanks.substring(progName.length()) );
 						text.append( ctrlOdds );
