@@ -98,14 +98,14 @@ c_port_interface.obj:	dlldefs.h os2_2w32.h types.h dsm2.h mutex.h \
 		guard.h queues.h porter.h dsm2err.h devicetypes.h \
 		c_port_interface.h group.h elogger.h alarmlog.h
 dbaccess.obj:	types.h dlldefs.h dbaccess.h dllbase.h os2_2w32.h \
-		cticalls.h dsm2.h mutex.h guard.h logger.h thread.h
+		cticalls.h dsm2.h mutex.h guard.h sema.h logger.h thread.h
 desolvers.obj:	desolvers.h db_entry_defines.h yukon.h dlldefs.h \
 		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
 		guard.h pointtypes.h resolvers.h devicetypes.h logger.h \
 		thread.h
 dllbase.obj:	dsm2.h mutex.h dlldefs.h guard.h yukon.h dllbase.h \
 		os2_2w32.h types.h cticalls.h configparms.h cparms.h \
-		dbaccess.h ctinexus.h logger.h thread.h utility.h
+		dbaccess.h sema.h ctinexus.h logger.h thread.h utility.h
 drpint.obj:	os2_2w32.h dlldefs.h types.h cticalls.h queues.h dsm2.h \
 		mutex.h guard.h drp.h
 elog_cli.obj:	os2_2w32.h dlldefs.h types.h cticalls.h dsm2.h mutex.h \
@@ -113,7 +113,7 @@ elog_cli.obj:	os2_2w32.h dlldefs.h types.h cticalls.h dsm2.h mutex.h \
 error.obj:	os2_2w32.h dlldefs.h types.h cticalls.h dsm2.h mutex.h \
 		guard.h dsm2err.h dllbase.h logger.h thread.h yukon.h
 exchange.obj:	exchange.h dlldefs.h dllbase.h os2_2w32.h types.h \
-		cticalls.h dsm2.h mutex.h guard.h
+		cticalls.h dsm2.h mutex.h guard.h logger.h thread.h
 fileint.obj:	fileint.h dlldefs.h dllbase.h os2_2w32.h types.h \
 		cticalls.h dsm2.h mutex.h guard.h
 guard.obj:	guard.h dlldefs.h
@@ -159,16 +159,21 @@ rtdb.obj:	dlldefs.h rtdb.h hashkey.h dllbase.h os2_2w32.h types.h \
 		cticalls.h dsm2.h mutex.h guard.h
 scupdate.obj:	os2_2w32.h dlldefs.h types.h cticalls.h dsm2.h mutex.h \
 		guard.h dsm2err.h device.h devicetypes.h lm_auto.h
+sema.obj:	sema.h dlldefs.h
 sparkint.obj:	os2_2w32.h dlldefs.h types.h cticalls.h dsm2.h mutex.h \
 		guard.h
+statistics.obj:	dsm2.h mutex.h dlldefs.h guard.h dsm2err.h logger.h \
+		thread.h statistics.h counter.h yukon.h dllbase.h os2_2w32.h \
+		types.h cticalls.h
 stdexcepthdlr.obj:	stdexcepthdlr.h dlldefs.h
 tfexec.obj:	tfexec.h
 thread.obj:	thread.h mutex.h dlldefs.h guard.h
 ucttime.obj:	dllbase.h os2_2w32.h dlldefs.h types.h cticalls.h dsm2.h \
 		mutex.h guard.h elogger.h logger.h thread.h
 utility.obj:	ctinexus.h dlldefs.h dbaccess.h dllbase.h os2_2w32.h \
-		types.h cticalls.h dsm2.h mutex.h guard.h porter.h dsm2err.h \
-		devicetypes.h queues.h utility.h logger.h thread.h numstr.h
+		types.h cticalls.h dsm2.h mutex.h guard.h sema.h porter.h \
+		dsm2err.h devicetypes.h queues.h utility.h logger.h thread.h \
+		numstr.h
 wordbuilder.obj:	wordbuilder.h
 words.obj:	os2_2w32.h dlldefs.h types.h cticalls.h cti_asmc.h queues.h \
 		dsm2.h mutex.h guard.h dsm2err.h device.h devicetypes.h \
