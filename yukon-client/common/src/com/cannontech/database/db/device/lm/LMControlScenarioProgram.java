@@ -17,9 +17,9 @@ public class LMControlScenarioProgram extends com.cannontech.database.db.NestedD
 	
 	private Integer scenarioID;
 	private Integer programID;     
-	private Integer startDelay;    
-	private Integer stopOffset;    
-	private Integer startGear;     
+	private Integer startDelay = new Integer(0);
+	private Integer stopOffset = new Integer(0);
+	private Integer startGear = new Integer(0);
 	
 	public static final String SETTER_COLUMNS[] = 
 	{ 

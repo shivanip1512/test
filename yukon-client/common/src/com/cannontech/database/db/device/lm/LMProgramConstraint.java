@@ -1,10 +1,6 @@
-/*
- * Created on Feb 16, 2004
- *
- * To change the template for this generated file go to
- * Window>Preferences>Java>Code Generation>Code and Comments
- */
 package com.cannontech.database.db.device.lm;
+
+import com.cannontech.common.util.CtiUtilities;
 
 /**
  * @author jdayton
@@ -16,18 +12,18 @@ public class LMProgramConstraint extends com.cannontech.database.db.DBPersistent
 {
 	private Integer constraintID;
 	private String constraintName;
-	private String availableSeasons;    
-	private String availableWeekdays; 
-	private Integer maxHoursDaily;     
-	private Integer maxHoursMonthly;    
-	private Integer maxHoursSeasonal;    
-	private Integer maxHoursAnnually;     
-	private Integer minActivateTime;     
-	private Integer minRestartTime;     
-	private Integer maxDailyOps;        
-	private Integer maxActivateTime;      
-	private Integer holidayScheduleID;
-	private Integer seasonScheduleID;     
+	private String availableSeasons = "YYYY";
+	private String availableWeekdays = "YYYYYYNN";
+	private Integer maxHoursDaily = new Integer(0);
+	private Integer maxHoursMonthly = new Integer(0);
+	private Integer maxHoursSeasonal = new Integer(0);
+	private Integer maxHoursAnnually = new Integer(0);
+	private Integer minActivateTime = new Integer(0);
+	private Integer minRestartTime = new Integer(0);
+	private Integer maxDailyOps = new Integer(0);
+	private Integer maxActivateTime = new Integer(0);
+	private Integer holidayScheduleID = new Integer(CtiUtilities.NONE_ID);
+	private Integer seasonScheduleID = new Integer(CtiUtilities.NONE_ID);     
 	
 
 	public static final String SETTER_COLUMNS[] = 
