@@ -1946,28 +1946,6 @@ void CtiLMShutdownExecutor::Execute()
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
-
-    try
-    {
-        if( _LM_DEBUG )
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Shutting down control area store..." << endl;
-        }
-    
-        CtiLMControlAreaStore::deleteInstance();
-
-        if( _LM_DEBUG )
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Control area store shutdown." << endl;
-        }
-    }
-    catch(...)
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-    }
     
     try
     {
@@ -1983,6 +1961,28 @@ void CtiLMShutdownExecutor::Execute()
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << RWTime() << " - Load manager thread shutdown." << endl;
+        }
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
+
+    try
+    {
+        if( _LM_DEBUG )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << RWTime() << " - Shutting down control area store..." << endl;
+        }
+    
+        CtiLMControlAreaStore::deleteInstance();
+
+        if( _LM_DEBUG )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << RWTime() << " - Control area store shutdown." << endl;
         }
     }
     catch(...)

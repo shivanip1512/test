@@ -1243,28 +1243,6 @@ void CtiCCShutdownExecutor::Execute()
         if( _CC_DEBUG )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Shutting down substation bus store..." << endl;
-        }
-    
-        CtiCCSubstationBusStore::deleteInstance();
-
-        if( _CC_DEBUG )
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Substation bus store shutdown." << endl;
-        }
-    }
-    catch(...)
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-    }
-    
-    try
-    {
-        if( _CC_DEBUG )
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << RWTime() << " - Shutting down cap controller thread..." << endl;
         }
     
@@ -1274,6 +1252,28 @@ void CtiCCShutdownExecutor::Execute()
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << RWTime() << " - Cap controller thread shutdown." << endl;
+        }
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
+
+    try
+    {
+        if( _CC_DEBUG )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << RWTime() << " - Shutting down substation bus store..." << endl;
+        }
+    
+        CtiCCSubstationBusStore::deleteInstance();
+
+        if( _CC_DEBUG )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << RWTime() << " - Substation bus store shutdown." << endl;
         }
     }
     catch(...)
