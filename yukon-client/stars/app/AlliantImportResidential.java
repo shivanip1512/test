@@ -2,7 +2,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import com.cannontech.stars.util.ServerUtils;
+import com.cannontech.stars.util.StarsUtils;
 
 /*
  * Created on May 24, 2004
@@ -28,7 +28,7 @@ public class AlliantImportResidential {
 		}
 		
 		File inputFile = new File( args[0] );
-		String[] lines = ServerUtils.readFile( inputFile, false );
+		String[] lines = StarsUtils.readFile( inputFile, false );
 		if (lines == null) {
 			System.out.println( "Failed to read input file '" + args[0] + "'" );
 			return;
@@ -41,7 +41,7 @@ public class AlliantImportResidential {
 		
 		try {
 			for (int i = 1; i < lines.length; i++) {
-				String[] columns = ServerUtils.splitString( lines[i], "," );
+				String[] columns = StarsUtils.splitString( lines[i], "," );
 				
 				String groupName = "";
 				if (columns[2].equalsIgnoreCase("Beaver Dam")
@@ -90,7 +90,7 @@ public class AlliantImportResidential {
 			
 			lines = new String[ output.size() ];
 			output.toArray( lines );
-			ServerUtils.writeFile( outputFile, lines );
+			StarsUtils.writeFile( outputFile, lines );
 		}
 		catch (IOException e) {
 			e.printStackTrace();

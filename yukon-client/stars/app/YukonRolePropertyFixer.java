@@ -3,7 +3,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
-import com.cannontech.stars.util.ServerUtils;
+import com.cannontech.stars.util.StarsUtils;
 
 /*
  * Created on May 17, 2004
@@ -29,7 +29,7 @@ public class YukonRolePropertyFixer {
 		}
 		
 		File inputFile = new File( args[0] );
-		String[] lines = ServerUtils.readFile( inputFile, false );
+		String[] lines = StarsUtils.readFile( inputFile, false );
 		if (lines == null) {
 			System.out.println( "Failed to read input file '" + args[0] + "'" );
 			return;
@@ -67,7 +67,7 @@ public class YukonRolePropertyFixer {
 		outputLines.toArray( output );
 		
 		try {
-			ServerUtils.writeFile( outputFile, output );
+			StarsUtils.writeFile( outputFile, output );
 		}
 		catch (IOException e) {
 			e.printStackTrace();

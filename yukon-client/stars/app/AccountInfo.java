@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.SqlStatement;
-import com.cannontech.stars.util.ServerUtils;
+import com.cannontech.stars.util.StarsUtils;
 
 /**
  * @author yao
@@ -78,7 +78,7 @@ public class AccountInfo {
 			
 			String[] lines = new String[ acctInfo.size() ];
 			acctInfo.toArray( lines );
-			ServerUtils.writeFile( outputFile, lines );
+			StarsUtils.writeFile( outputFile, lines );
 		}
 		catch (CommandExecutionException e) {
 			System.err.println("Failed to execute SQL statement:" + sql);

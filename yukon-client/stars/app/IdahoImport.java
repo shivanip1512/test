@@ -1,7 +1,7 @@
 import java.io.File;
 import java.io.IOException;
 
-import com.cannontech.stars.util.ServerUtils;
+import com.cannontech.stars.util.StarsUtils;
 
 /*
  * Created on Jun 1, 2004
@@ -25,14 +25,14 @@ public class IdahoImport {
 		}
 		
 		File custFile = new File( args[0] );
-		String[] custLines = ServerUtils.readFile( custFile, false );
+		String[] custLines = StarsUtils.readFile( custFile, false );
 		if (custLines == null) {
 			System.out.println( "Failed to read customer file '" + args[0] + "'" );
 			return;
 		}
 		
 		File hwFile = new File( args[1] );
-		String[] hwLines = ServerUtils.readFile( hwFile, false );
+		String[] hwLines = StarsUtils.readFile( hwFile, false );
 		if (hwLines == null) {
 			System.out.println( "Failed to read hardware file '" + args[1] + "'" );
 			return;
@@ -44,10 +44,10 @@ public class IdahoImport {
 		try {
 			String[][] hwCols = new String[hwLines.length][];
 			for (int i = 0; i < hwLines.length; i++)
-				hwCols[i] = ServerUtils.splitString( hwLines[i], "," );
+				hwCols[i] = StarsUtils.splitString( hwLines[i], "," );
 			
 			for (int i = 0; i < custLines.length; i++) {
-				String[] custCols = ServerUtils.splitString( custLines[i], "," );
+				String[] custCols = StarsUtils.splitString( custLines[i], "," );
 				
 				output[i] = "";
 				for (int j = 0; j < custCols.length - 2; j++)
@@ -72,7 +72,7 @@ public class IdahoImport {
 				output[i] += password.toLowerCase();
 			}
 			
-			ServerUtils.writeFile( outputFile, output );
+			StarsUtils.writeFile( outputFile, output );
 		}
 		catch (IOException e) {
 			e.printStackTrace();
