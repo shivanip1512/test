@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.38 $
-* DATE         :  $Date: 2003/10/23 13:32:50 $
+* REVISION     :  $Revision: 1.39 $
+* DATE         :  $Date: 2004/05/04 13:41:09 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1593,6 +1593,12 @@ INT MakePorterRequests(RWTPtrSlist< OUTMESS > &outList)
     for( i = outList.entries() ; status == NORMAL && i > 0; i-- )
     {
         OutMessage = outList.get();
+
+        if(OutMessage->ExpirationTime == 0)
+        {
+            // Scanner is about to make some big decisions...
+            OutMessage->ExpirationTime = RWTime().seconds() + gConfigParms.getValueAsInt("SCANNER_REQUEST_EXPIRATION_TIME", 10800);
+        }
 
         while(PorterNexus.NexusState == CTINEXUS_STATE_NULL && !ScannerQuit)
         {
