@@ -187,8 +187,8 @@ public class StarsFactory {
         	callRprts[i].setDescription( ServerUtils.forceNotNull(calls[i].getDescription()) );
         	
         	String callNo = ServerUtils.forceNotNull(calls[i].getCallNumber());
-        	if (callNo.startsWith( ServerUtils.CTI_NUMBER ))
-        		callNo = callNo.substring( ServerUtils.CTI_NUMBER.length() );
+        	if (callNo.startsWith( ServerUtils.AUTO_GEN_NUM_PREC ))
+        		callNo = callNo.substring( ServerUtils.AUTO_GEN_NUM_PREC.length() );
 			callRprts[i].setCallNumber( callNo );
         	
         	CallType callType = new CallType();
@@ -509,7 +509,10 @@ public class StarsFactory {
 	
 	public static void setWorkOrderBase(WorkOrderBase orderDB, StarsSrvReq order) {
 		//orderDB.setOrderID( new Integer(order.getOrderID()) );
-		orderDB.setOrderNumber( order.getOrderNumber() );
+		if (order.hasAccountID())
+			orderDB.setAccountID( new Integer(order.getAccountID()) );
+		if (order.getOrderNumber() != null)
+			orderDB.setOrderNumber( order.getOrderNumber() );
 		orderDB.setWorkTypeID( new Integer(order.getServiceType().getEntryID()) );
 		orderDB.setDateReported( order.getDateReported() );
 		orderDB.setServiceCompanyID( new Integer(order.getServiceCompany().getEntryID()) );

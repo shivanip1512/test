@@ -56,8 +56,8 @@ public class DeleteLMHardwareAction implements ActionBase {
 			}
 			else {
 				// Request redirected from InventoryManager
-				operation = (StarsOperation) session.getAttribute(InventoryManager.STARS_OPERATION_REQUEST);
-				session.removeAttribute( InventoryManager.STARS_OPERATION_REQUEST );
+				operation = (StarsOperation) session.getAttribute(InventoryManager.STARS_LM_HARDWARE_OPER_REQ);
+				session.removeAttribute( InventoryManager.STARS_LM_HARDWARE_OPER_REQ );
 			}
 			
 			return SOAPUtil.buildSOAPMessage( operation );

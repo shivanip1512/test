@@ -2,6 +2,7 @@ package com.cannontech.stars.web.action;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -25,6 +26,7 @@ import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsCreateLMHardware;
 import com.cannontech.stars.xml.serialize.StarsDeleteLMHardware;
+import com.cannontech.stars.xml.serialize.StarsGetEnergyCompanySettingsResponse;
 import com.cannontech.stars.xml.serialize.StarsInventories;
 import com.cannontech.stars.xml.serialize.StarsLMHardware;
 import com.cannontech.stars.xml.serialize.StarsLMHardwareConfig;
@@ -52,16 +54,21 @@ public class UpdateLMHardwareAction implements ActionBase {
 		try {
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 			if (user == null) return null;
+			
+			StarsGetEnergyCompanySettingsResponse ecSettings =
+					(StarsGetEnergyCompanySettingsResponse) user.getAttribute(ServletUtils.ATT_ENERGY_COMPANY_SETTINGS);
+			TimeZone tz = TimeZone.getTimeZone( ecSettings.getStarsEnergyCompany().getTimeZone() );
+			if (tz == null) tz = TimeZone.getDefault();
 
 			StarsOperation operation = null;
 			if (req.getParameter("InvID") != null) {
 				// Request from Inventory.jsp or ChangeLabel.jsp
-				operation = getRequestOperation( req );
+				operation = getRequestOperation( req, tz );
 			}
 			else {
 				// Request redirected from InventoryManager
-				operation = (StarsOperation) session.getAttribute(InventoryManager.STARS_OPERATION_REQUEST);
-				session.removeAttribute( InventoryManager.STARS_OPERATION_REQUEST );
+				operation = (StarsOperation) session.getAttribute(InventoryManager.STARS_LM_HARDWARE_OPER_REQ);
+				session.removeAttribute( InventoryManager.STARS_LM_HARDWARE_OPER_REQ );
 			}
 			
             return SOAPUtil.buildSOAPMessage( operation );
@@ -229,13 +236,13 @@ public class UpdateLMHardwareAction implements ActionBase {
         return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
 	}
 	
-	public static StarsOperation getRequestOperation(HttpServletRequest req) {
+	public static StarsOperation getRequestOperation(HttpServletRequest req, TimeZone tz) {
 		StarsOperation operation = new StarsOperation();
 		StarsUpdateLMHardware updateHw = new StarsUpdateLMHardware();
 		
 		if (req.getParameter("SerialNo") != null) {
 			// This comes from operator side
-			InventoryManager.setStarsLMHardware( updateHw, req );
+			InventoryManager.setStarsLMHardware( updateHw, req, tz );
 			
 			if (req.getParameter("OrigInvID") != null) {
 				int origInvID = Integer.parseInt( req.getParameter("OrigInvID") );

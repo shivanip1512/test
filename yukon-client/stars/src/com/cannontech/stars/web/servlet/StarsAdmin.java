@@ -636,7 +636,7 @@ public class StarsAdmin extends HttpServlet {
 		hardware.setManufactureSerialNumber( fields[IDX_SERIAL_NO] );
 		hardware.setAltTrackingNumber( "" );
 		if (fields[IDX_INSTALL_DATE].length() > 0)
-			hardware.setInstallDate( com.cannontech.util.ServletUtil.parseDateStringLiberally(fields[IDX_INSTALL_DATE]) );
+			hardware.setInstallDate( com.cannontech.util.ServletUtil.parseDateStringLiberally(fields[IDX_INSTALL_DATE], energyCompany.getDefaultTimeZone()) );
 		hardware.setNotes( "" );
 		hardware.setInstallationNotes( "" );
 	}

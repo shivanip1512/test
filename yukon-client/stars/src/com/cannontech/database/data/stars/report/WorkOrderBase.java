@@ -15,8 +15,6 @@ import com.cannontech.database.db.DBPersistent;
 public class WorkOrderBase extends DBPersistent {
 
     private com.cannontech.database.db.stars.report.WorkOrderBase workOrderBase = null;
-    private com.cannontech.database.data.stars.report.ServiceCompany serviceCompany = null;
-    private com.cannontech.database.data.stars.customer.CustomerAccount customerAccount = null;
     private Integer energyCompanyID = null;
 
     public WorkOrderBase() {
@@ -59,31 +57,16 @@ public class WorkOrderBase extends DBPersistent {
 
     public void retrieve() throws java.sql.SQLException {
         getWorkOrderBase().retrieve();
-
-        if (getServiceCompany() == null) {
-        	serviceCompany = new ServiceCompany();
-        	serviceCompany.setCompanyID( getWorkOrderBase().getServiceCompanyID() );
-        	serviceCompany.setDbConnection( getDbConnection() );
-        	serviceCompany.retrieve();
-        }
-
-        if (getCustomerAccount() == null) {
-        	customerAccount = new com.cannontech.database.data.stars.customer.CustomerAccount();
-        	customerAccount.setAccountID( getWorkOrderBase().getAccountID() );
-        	customerAccount.setDbConnection( getDbConnection() );
-        	customerAccount.retrieve();
-        }
     }
     
-    public static void deleteAllWorkOrders(Integer accountID, java.sql.Connection conn) {
+    public static void deleteAllWorkOrders(int accountID, java.sql.Connection conn) {
     	try {
-	    	com.cannontech.database.db.stars.report.WorkOrderBase[] orders =
-	    			com.cannontech.database.db.stars.report.WorkOrderBase.getAllWorkOrders( accountID );
+	    	int[] orderIDs = com.cannontech.database.db.stars.report.WorkOrderBase.searchByAccountID(accountID, conn);
 	    	
-	    	if (orders != null) {
-	    		for (int i = 0; i < orders.length; i++) {
+	    	if (orderIDs != null) {
+	    		for (int i = 0; i < orderIDs.length; i++) {
 	    			WorkOrderBase order = new WorkOrderBase();
-	    			order.setOrderID( orders[i].getOrderID() );
+	    			order.setOrderID( new Integer(orderIDs[i]) );
 	    			order.setDbConnection( conn );
 	    			order.delete();
 	    		}
@@ -103,41 +86,9 @@ public class WorkOrderBase extends DBPersistent {
     public void setWorkOrderBase(com.cannontech.database.db.stars.report.WorkOrderBase newWorkOrderBase) {
         workOrderBase = newWorkOrderBase;
     }
-	/**
-	 * Returns the serviceCompany.
-	 * @return com.cannontech.database.data.stars.report.ServiceCompany
-	 */
-	public com.cannontech.database.data.stars.report.ServiceCompany getServiceCompany() {
-		return serviceCompany;
-	}
-
-	/**
-	 * Sets the serviceCompany.
-	 * @param serviceCompany The serviceCompany to set
-	 */
-	public void setServiceCompany(
-		com.cannontech.database.data.stars.report.ServiceCompany serviceCompany) {
-		this.serviceCompany = serviceCompany;
-	}
 
 	public void setEnergyCompanyID(Integer energyCompanyID) {
 		this.energyCompanyID = energyCompanyID;
-	}
-
-	/**
-	 * Returns the customerAccount.
-	 * @return com.cannontech.database.data.stars.customer.CustomerAccount
-	 */
-	public com.cannontech.database.data.stars.customer.CustomerAccount getCustomerAccount() {
-		return customerAccount;
-	}
-
-	/**
-	 * Sets the customerAccount.
-	 * @param customerAccount The customerAccount to set
-	 */
-	public void setCustomerAccount(com.cannontech.database.data.stars.customer.CustomerAccount customerAccount) {
-		this.customerAccount = customerAccount;
 	}
 
 }

@@ -21,6 +21,7 @@ import com.cannontech.stars.web.action.CreateServiceRequestAction;
 import com.cannontech.stars.web.action.DeleteApplianceAction;
 import com.cannontech.stars.web.action.DeleteCustAccountAction;
 import com.cannontech.stars.web.action.DeleteLMHardwareAction;
+import com.cannontech.stars.web.action.DeleteServiceRequestAction;
 import com.cannontech.stars.web.action.GetCustAccountAction;
 import com.cannontech.stars.web.action.GetEnergyCompanySettingsAction;
 import com.cannontech.stars.web.action.GetLMCtrlHistAction;
@@ -326,15 +327,20 @@ public class SOAPClient extends HttpServlet {
 			destURL = req.getContextPath() + "/operator/Consumer/Service.jsp";
 			errorURL = req.getContextPath() + "/operator/Consumer/Service.jsp?getOrderNo=failed";
 		}
-		else if (action.equalsIgnoreCase("CreateOrder")) {
+		else if (action.equalsIgnoreCase("CreateWorkOrder")) {
 			clientAction = new CreateServiceRequestAction();
-			destURL = req.getContextPath() + "/operator/Consumer/ServiceSummary.jsp";
-			errorURL = req.getContextPath() + "/operator/Consumer/Service.jsp";
+			session.setAttribute(ServletUtils.ATT_REDIRECT, req.getParameter(ServletUtils.ATT_REDIRECT));
+			errorURL = req.getParameter(ServletUtils.ATT_REFERRER);
 		}
-		else if (action.equalsIgnoreCase("UpdateOrders")) {
+		else if (action.equalsIgnoreCase("UpdateWorkOrder")) {
 			clientAction = new UpdateServiceRequestAction();
-			destURL = req.getContextPath() + "/operator/Consumer/ServiceSummary.jsp";
-			errorURL = req.getContextPath() + "/operator/Consumer/ServiceSummary.jsp";
+			destURL = req.getParameter(ServletUtils.ATT_REDIRECT);
+			errorURL = req.getParameter(ServletUtils.ATT_REFERRER);
+		}
+		else if (action.equalsIgnoreCase("DeleteWorkOrder")) {
+			clientAction = new DeleteServiceRequestAction();
+			destURL = req.getParameter(ServletUtils.ATT_REDIRECT);
+			errorURL = req.getParameter(ServletUtils.ATT_REFERRER);
 		}
 		else if (action.equalsIgnoreCase("CreateAppliance")) {
 			clientAction = new CreateApplianceAction();

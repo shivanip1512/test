@@ -1278,7 +1278,7 @@ public class StarsLiteFactory {
 			starsAcctInfo.setStarsServiceRequestHistory( starsOrders );
 			
 			for (int i = 0; i < liteOrders.size(); i++) {
-				LiteWorkOrderBase liteOrder = energyCompany.getWorkOrderBase( ((Integer) liteOrders.get(i)).intValue() );
+				LiteWorkOrderBase liteOrder = energyCompany.getWorkOrderBase( ((Integer) liteOrders.get(i)).intValue(), true );
 				starsOrders.addStarsServiceRequest( createStarsServiceRequest(liteOrder, energyCompany) );
 			}
 		}
@@ -1479,8 +1479,8 @@ public class StarsLiteFactory {
 		starsOrder.setOrderID( liteOrder.getOrderID() );
 		
 		String orderNo = ServerUtils.forceNotNull(liteOrder.getOrderNumber());
-		if (orderNo.startsWith( ServerUtils.CTI_NUMBER ))
-			orderNo = orderNo.substring( ServerUtils.CTI_NUMBER.length() );
+		if (orderNo.startsWith( ServerUtils.AUTO_GEN_NUM_PREC ))
+			orderNo = orderNo.substring( ServerUtils.AUTO_GEN_NUM_PREC.length() );
 		starsOrder.setOrderNumber( orderNo );
 		
 		starsOrder.setServiceType(
@@ -1504,9 +1504,9 @@ public class StarsLiteFactory {
 				CurrentState.class)
 		);
 		
-		starsOrder.setDateReported( new Date(liteOrder.getDateReported()) );
-		starsOrder.setDateScheduled( new Date(liteOrder.getDateScheduled()) );
-		starsOrder.setDateCompleted( new Date(liteOrder.getDateCompleted()) );
+		starsOrder.setDateReported( ServerUtils.translateDate(liteOrder.getDateReported()) );
+		starsOrder.setDateScheduled( ServerUtils.translateDate(liteOrder.getDateScheduled()) );
+		starsOrder.setDateCompleted( ServerUtils.translateDate(liteOrder.getDateCompleted()) );
 		starsOrder.setOrderedBy( ServerUtils.forceNotNull(liteOrder.getOrderedBy()) );
 		starsOrder.setDescription( ServerUtils.forceNotNull(liteOrder.getDescription()) );
 		starsOrder.setActionTaken( ServerUtils.forceNotNull(liteOrder.getActionTaken()) );

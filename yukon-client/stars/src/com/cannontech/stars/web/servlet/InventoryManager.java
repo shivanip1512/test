@@ -2,8 +2,9 @@ package com.cannontech.stars.web.servlet;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.Date;
+import java.util.Hashtable;
+import java.util.TimeZone;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -50,7 +51,7 @@ public class InventoryManager extends HttpServlet {
 	public static final String INVENTORY_CHECKING_TIME_NONE = "NONE";
 	
 	public static final String STARS_LM_HARDWARE_TEMP = "STARS_LM_HARDWARE_TEMP";
-	public static final String STARS_OPERATION_REQUEST = "STARS_OPERATION_REQUEST";
+	public static final String STARS_LM_HARDWARE_OPER_REQ = "STARS_LM_HARDWARE_OPERATION_REQUEST";
 	
 	public static final String LM_HARDWARE_TO_CHECK = "LM_HARDWARE_TO_CHECK";
 	public static final String LM_HARDWARE_TO_DELETE = "LM_HARDWARE_TO_DELETE";
@@ -190,7 +191,7 @@ public class InventoryManager extends HttpServlet {
 		boolean invCheckLate = invCheckTime.equalsIgnoreCase(INVENTORY_CHECKING_TIME_LATE);
 		
 		StarsLMHardware starsHw = (StarsLMHardware) StarsFactory.newStarsLMHw( StarsLMHardware.class );
-		setStarsLMHardware( starsHw, req );
+		setStarsLMHardware( starsHw, req, energyCompany.getDefaultTimeZone() );
 		starsHw.getLMDeviceType().setContent(
 				energyCompany.getYukonListEntry(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE, starsHw.getLMDeviceType().getEntryID()).getEntryText() );
 		if (invCheckEarly)	// Request from SerialNumber.jsp
@@ -203,8 +204,8 @@ public class InventoryManager extends HttpServlet {
 		
 		if (action.equalsIgnoreCase("CreateLMHardware")) {
 			// Request from CreateHardware.jsp, inventory checking time = LATE or NONE 
-			StarsOperation operation = CreateLMHardwareAction.getRequestOperation( req );
-			session.setAttribute( STARS_OPERATION_REQUEST, operation );
+			StarsOperation operation = CreateLMHardwareAction.getRequestOperation(req, energyCompany.getDefaultTimeZone());
+			session.setAttribute( STARS_LM_HARDWARE_OPER_REQ, operation );
 			if (!invCheckLate) {
 				if (liteHw != null) operation.getStarsCreateLMHardware().setInventoryID( liteHw.getInventoryID() );
 				redirect = (String) session.getAttribute(ServletUtils.ATT_REDIRECT);
@@ -213,11 +214,11 @@ public class InventoryManager extends HttpServlet {
 		}
 		else if (action.equalsIgnoreCase("UpdateLMHardware")) {
 			// Request from Inventory.jsp, inventory checking time = LATE or NONE
-			StarsOperation operation = UpdateLMHardwareAction.getRequestOperation( req );
+			StarsOperation operation = UpdateLMHardwareAction.getRequestOperation(req, energyCompany.getDefaultTimeZone());
 			StarsDeleteLMHardware deleteHw = new StarsDeleteLMHardware();
 			deleteHw.setInventoryID( Integer.parseInt(req.getParameter("OrigInvID")) );
 			operation.setStarsDeleteLMHardware( deleteHw );
-			session.setAttribute( STARS_OPERATION_REQUEST, operation );
+			session.setAttribute( STARS_LM_HARDWARE_OPER_REQ, operation );
 			
 			if (!invCheckLate) {
 				if (liteHw != null) operation.getStarsUpdateLMHardware().setInventoryID( liteHw.getInventoryID() );
@@ -258,7 +259,7 @@ public class InventoryManager extends HttpServlet {
 		else {
 			// Inventory checking time = LATE or NONE, update hardware information and submit
 			// In this case, only set the inventory ID, the values entered by user will be used for the rest.
-			StarsOperation operation = (StarsOperation) session.getAttribute(STARS_OPERATION_REQUEST);
+			StarsOperation operation = (StarsOperation) session.getAttribute(STARS_LM_HARDWARE_OPER_REQ);
 			if (operation.getStarsCreateLMHardware() != null) {
 				if (liteHw != null)
 					operation.getStarsCreateLMHardware().setInventoryID( liteHw.getInventoryID() );
@@ -283,7 +284,7 @@ public class InventoryManager extends HttpServlet {
 	 */
 	private void deleteLMHardware(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
 		StarsOperation operation = DeleteLMHardwareAction.getRequestOperation( req );
-		session.setAttribute( STARS_OPERATION_REQUEST, operation );
+		session.setAttribute( STARS_LM_HARDWARE_OPER_REQ, operation );
 		
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
 		LiteStarsLMHardware liteHw = energyCompany.getLMHardware( operation.getStarsDeleteLMHardware().getInventoryID(), true );
@@ -296,7 +297,7 @@ public class InventoryManager extends HttpServlet {
 	 * Confirmation from DeleteInv.jsp 
 	 */
 	private void confirmDelete(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
-		StarsOperation operation = (StarsOperation) session.getAttribute(STARS_OPERATION_REQUEST);
+		StarsOperation operation = (StarsOperation) session.getAttribute(STARS_LM_HARDWARE_OPER_REQ);
 		operation.getStarsDeleteLMHardware().setDeleteFromInventory(
 				Boolean.valueOf(req.getParameter("DeletePerm")).booleanValue() );
 		
@@ -327,12 +328,12 @@ public class InventoryManager extends HttpServlet {
 				}
 			}
 			
-			StarsOperation operation = UpdateLMHardwareAction.getRequestOperation(req);
+			StarsOperation operation = UpdateLMHardwareAction.getRequestOperation(req, energyCompany.getDefaultTimeZone());
 			if (liteHw.getAccountID() ==  0) {
 				UpdateLMHardwareAction.updateLMHardware(operation.getStarsUpdateLMHardware(), liteHw, energyCompany, conn);
 			}
 			else {
-				session.setAttribute( STARS_OPERATION_REQUEST, operation );
+				session.setAttribute( STARS_LM_HARDWARE_OPER_REQ, operation );
 				redirect = (String) session.getAttribute(ServletUtils.ATT_REDIRECT);
 			}
 		}
@@ -382,7 +383,7 @@ public class InventoryManager extends HttpServlet {
 		}
 		else {
 			StarsOperation operation = DeleteLMHardwareAction.getRequestOperation( req );
-			session.setAttribute( STARS_OPERATION_REQUEST, operation );
+			session.setAttribute( STARS_LM_HARDWARE_OPER_REQ, operation );
 			redirect = (String) session.getAttribute(ServletUtils.ATT_REDIRECT);
 		}
 	}
@@ -419,7 +420,7 @@ public class InventoryManager extends HttpServlet {
 			int numSuccess = 0, numFailure = 0;
 			
 			Integer devTypeID = Integer.valueOf( req.getParameter("DeviceType") );
-			Date recvDate = com.cannontech.util.ServletUtil.parseDateStringLiberally( req.getParameter("ReceiveDate") );
+			Date recvDate = com.cannontech.util.ServletUtil.parseDateStringLiberally(req.getParameter("ReceiveDate"), energyCompany.getDefaultTimeZone());
 			Integer voltageID = Integer.valueOf( req.getParameter("Voltage") );
 			Integer companyID = Integer.valueOf( req.getParameter("ServiceCompany") );
 			Integer categoryID = new Integer( CreateLMHardwareAction.getInventoryCategoryID(devTypeID.intValue(), energyCompany) ); 
@@ -514,7 +515,7 @@ public class InventoryManager extends HttpServlet {
 			
 			Integer devTypeID = Integer.valueOf( req.getParameter("DeviceType") );
 			Date recvDate = (req.getParameter("ReceiveDate") != null)?
-					com.cannontech.util.ServletUtil.parseDateStringLiberally( req.getParameter("ReceiveDate") ) : null;
+					com.cannontech.util.ServletUtil.parseDateStringLiberally(req.getParameter("ReceiveDate"), energyCompany.getDefaultTimeZone()) : null;
 			Integer voltageID = (req.getParameter("Voltage") != null)?
 					Integer.valueOf( req.getParameter("Voltage") ) : null;
 			Integer companyID = (req.getParameter("ServiceCompany") != null)?
@@ -849,14 +850,14 @@ public class InventoryManager extends HttpServlet {
 			else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_ACCT_NO) {
 				int[] acctIDs = com.cannontech.database.db.stars.customer.CustomerAccount.searchByAccountNumber(energyCompany.getEnergyCompanyID(), searchValue);
 				if (acctIDs != null && acctIDs.length > 0)
-					inventoryIDs = com.cannontech.database.db.stars.hardware.InventoryBase.searchByAccountID(acctIDs[0], user.getEnergyCompanyID(), conn); 
+					inventoryIDs = com.cannontech.database.db.stars.hardware.InventoryBase.searchByAccountID(acctIDs[0], conn); 
 			}
 			else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_PHONE_NO) {
 				int[] acctIDs = com.cannontech.database.db.stars.customer.CustomerAccount.searchByPhoneNumber(energyCompany.getEnergyCompanyID(), searchValue);
 				if (acctIDs != null && acctIDs.length > 0) {
 					ArrayList invIDList = new ArrayList();
 					for (int i = 0; i < acctIDs.length; i++) {
-						int[] invIDs = com.cannontech.database.db.stars.hardware.InventoryBase.searchByAccountID(acctIDs[i], user.getEnergyCompanyID(), conn);
+						int[] invIDs = com.cannontech.database.db.stars.hardware.InventoryBase.searchByAccountID(acctIDs[i], conn);
 						for (int j = 0; j < invIDs.length; j++)
 							invIDList.add( new Integer(invIDs[j]) );
 					}
@@ -871,7 +872,7 @@ public class InventoryManager extends HttpServlet {
 				if (acctIDs != null && acctIDs.length > 0) {
 					ArrayList invIDList = new ArrayList();
 					for (int i = 0; i < acctIDs.length; i++) {
-						int[] invIDs = com.cannontech.database.db.stars.hardware.InventoryBase.searchByAccountID(acctIDs[i], user.getEnergyCompanyID(), conn);
+						int[] invIDs = com.cannontech.database.db.stars.hardware.InventoryBase.searchByAccountID(acctIDs[i], conn);
 						for (int j = 0; j < invIDs.length; j++)
 							invIDList.add( new Integer(invIDs[j]) );
 					}
@@ -896,7 +897,7 @@ public class InventoryManager extends HttpServlet {
 				for (int i = 0; i < inventoryIDs.length; i++)
 					hwList.add( energyCompany.getBriefLMHardware(inventoryIDs[i], true) );
 				session.setAttribute(LM_HARDWARE_SET, hwList);
-				session.setAttribute(LM_HARDWARE_SET_DESC, "Click on the serial # to view hardware information, or click on the account # (if available) to view the account information.");
+				session.setAttribute(LM_HARDWARE_SET_DESC, "Click on a serial # to view the hardware details, or click on an account # (if available) to view the account information.");
 				session.setAttribute(ServletUtils.ATT_REFERRER, referer);
 			}
 		}
@@ -915,7 +916,7 @@ public class InventoryManager extends HttpServlet {
 	/**
 	 * Store hardware information entered by user into a StarsLMHw object 
 	 */
-	public static void setStarsLMHardware(StarsLMHw starsHw, HttpServletRequest req) {
+	public static void setStarsLMHardware(StarsLMHw starsHw, HttpServletRequest req, TimeZone tz) {
 		if (req.getParameter("DeviceType") != null) {
 			LMDeviceType type = new LMDeviceType();
 			type.setEntryID( Integer.parseInt(req.getParameter("DeviceType")) );
@@ -943,11 +944,11 @@ public class InventoryManager extends HttpServlet {
 		if (req.getParameter("AltTrackNo") != null)
 			starsHw.setAltTrackingNumber( req.getParameter("AltTrackNo") );
 		if (req.getParameter("ReceiveDate") != null && req.getParameter("ReceiveDate").length() > 0)
-			starsHw.setReceiveDate( com.cannontech.util.ServletUtil.parseDateStringLiberally(req.getParameter("ReceiveDate")) );
+			starsHw.setReceiveDate( com.cannontech.util.ServletUtil.parseDateStringLiberally(req.getParameter("ReceiveDate"), tz) );
 		if (req.getParameter("InstallDate") != null && req.getParameter("InstallDate").length() > 0)
-			starsHw.setInstallDate( com.cannontech.util.ServletUtil.parseDateStringLiberally(req.getParameter("InstallDate")) );
+			starsHw.setInstallDate( com.cannontech.util.ServletUtil.parseDateStringLiberally(req.getParameter("InstallDate"), tz) );
 		if (req.getParameter("RemoveDate") != null && req.getParameter("RemoveDate").length() > 0)
-			starsHw.setRemoveDate( com.cannontech.util.ServletUtil.parseDateStringLiberally(req.getParameter("RemoveDate")) );
+			starsHw.setRemoveDate( com.cannontech.util.ServletUtil.parseDateStringLiberally(req.getParameter("RemoveDate"), tz) );
 		if (req.getParameter("Notes") != null)
 			starsHw.setNotes( req.getParameter("Notes") );
 		if (req.getParameter("InstallNotes") != null)

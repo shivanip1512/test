@@ -49,18 +49,32 @@ import com.cannontech.stars.xml.serialize.types.StarsThermoModeSettings;
  * Window>Preferences>Java>Code Generation.
  */
 public class ServerUtils {
+    
+	public static final String AUTO_GEN_NUM_PREC = "##";
 
     // Increment this for every message
     private static long userMessageIDCounter = 1;
     
-    private static java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM-dd-yy HH:mm");
-    
     // If date in database is earlier than this, than the date is actually empty
     private static long VERY_EARLY_TIME = 1000 * 3600 * 24;
-
-	public static final String CTI_NUMBER = "CTI#";
 	
+	// Date/Time pattern strings that will be tried when attempting to interprate starting dates
+	private static final java.text.SimpleDateFormat[] dateFormat =
+	{
+		new java.text.SimpleDateFormat("MM/dd/yy HH:mm"),
+		new java.text.SimpleDateFormat("MM-dd-yy HH:mm"),
+		new java.text.SimpleDateFormat("MM.dd.yy HH:mm"),
+		new java.text.SimpleDateFormat("MM/dd/yyyy HH:mm"),
+		new java.text.SimpleDateFormat("MM-dd-yyyy HH:mm"),
+		new java.text.SimpleDateFormat("MM.dd.yyyy HH:mm"),
+	};
 
+	//this static initializer sets all the simpledateformat to lenient
+	static
+	{
+		for( int i = 0; i < dateFormat.length; i++ )
+			dateFormat[i].setLenient(true);
+	}
     
 	
     public static void sendCommand(String command)
@@ -147,12 +161,34 @@ public class ServerUtils {
 		Transport.send( emailMsg );
 	}
 	
+	/**
+	 * Return date in the format of MM/dd/yy HH:mm in the specified time zone
+	 */
 	public static String formatDate(Date date, TimeZone tz) {
 		if (tz != null)
-			dateFormat.setTimeZone( tz );
+			dateFormat[0].setTimeZone( tz );
 		else
-			dateFormat.setTimeZone( TimeZone.getDefault() );
-		return dateFormat.format( date );
+			dateFormat[0].setTimeZone( TimeZone.getDefault() );
+		return dateFormat[0].format( date );
+	}
+	
+	/**
+	 * Parse date with the format like MM/dd/yy HH:mm,
+	 * MM-dd-yyyy HH:mm, etc., in the specified time zone
+	 */
+	public static Date parseDate(String dateStr, TimeZone tz) {
+		Date retVal = null;
+		
+		for( int i = 0; i < dateFormat.length; i++ ) {
+			try {
+				dateFormat[i].setTimeZone(tz);
+				retVal = dateFormat[i].parse(dateStr);
+				break;
+			}
+			catch( java.text.ParseException pe ) {}
+		}
+
+		return retVal;	
 	}
 	
 	public static StarsThermoModeSettings getThermSeasonMode(int configID) {

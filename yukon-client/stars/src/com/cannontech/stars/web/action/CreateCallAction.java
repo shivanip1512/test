@@ -1,6 +1,7 @@
 package com.cannontech.stars.web.action;
 
 import java.util.Hashtable;
+import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -22,6 +23,7 @@ import com.cannontech.stars.xml.serialize.StarsCreateCallReport;
 import com.cannontech.stars.xml.serialize.StarsCreateCallReportResponse;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsFailure;
+import com.cannontech.stars.xml.serialize.StarsGetEnergyCompanySettingsResponse;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
@@ -43,10 +45,15 @@ public class CreateCallAction implements ActionBase {
 		try {
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 			if (user == null) return null;
+			
+			StarsGetEnergyCompanySettingsResponse ecSettings =
+					(StarsGetEnergyCompanySettingsResponse) user.getAttribute(ServletUtils.ATT_ENERGY_COMPANY_SETTINGS);
 			Hashtable selectionLists = (Hashtable) user.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
 			
 			StarsCreateCallReport createCall = new StarsCreateCallReport();
-			createCall.setCallDate( com.cannontech.util.ServletUtil.parseDateStringLiberally(req.getParameter("CallDate")) );
+			TimeZone tz = TimeZone.getTimeZone( ecSettings.getStarsEnergyCompany().getTimeZone() );
+			if (tz == null) tz = TimeZone.getDefault();
+			createCall.setCallDate( com.cannontech.util.ServletUtil.parseDateStringLiberally(req.getParameter("CallDate"), tz) );
 			createCall.setTakenBy( req.getParameter("TakenBy") );
 			createCall.setDescription( req.getParameter("Description").replaceAll("\r\n", "<br>") );
 			
@@ -123,9 +130,9 @@ public class CreateCallAction implements ActionBase {
 	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Tracking # cannot be empty") );
 	            	return SOAPUtil.buildSOAPMessage( respOper );
 	        	}
-	        	if (callNo.startsWith( ServerUtils.CTI_NUMBER )) {
+	        	if (callNo.startsWith( ServerUtils.AUTO_GEN_NUM_PREC )) {
 	            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Tracking # cannot start with reserved string \"" + ServerUtils.CTI_NUMBER + "\"") );
+	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Tracking # cannot start with reserved string \"" + ServerUtils.AUTO_GEN_NUM_PREC + "\"") );
 	            	return SOAPUtil.buildSOAPMessage( respOper );
 	        	}
 	        	if (CallReportBase.callNumberExists( callNo, energyCompany.getEnergyCompanyID() )) {
@@ -135,7 +142,7 @@ public class CreateCallAction implements ActionBase {
 	        	}
         	}
         	else {
-    			callNo = ServerUtils.CTI_NUMBER + callNo;
+    			callNo = ServerUtils.AUTO_GEN_NUM_PREC + callNo;
     			
 	        	if (CallReportBase.callNumberExists( callNo, energyCompany.getEnergyCompanyID() )) {
 	        		energyCompany.resetNextCallNumber();
@@ -157,8 +164,8 @@ public class CreateCallAction implements ActionBase {
             callReport = (com.cannontech.database.data.stars.report.CallReportBase)transaction.execute();
             
             StarsCallReport call = (StarsCallReport) StarsFactory.newStarsCallReport( createCall, StarsCallReport.class );
-            if (call.getCallNumber().startsWith( ServerUtils.CTI_NUMBER ))
-            	call.setCallNumber( call.getCallNumber().substring(ServerUtils.CTI_NUMBER.length()) );
+            if (call.getCallNumber().startsWith( ServerUtils.AUTO_GEN_NUM_PREC ))
+            	call.setCallNumber( call.getCallNumber().substring(ServerUtils.AUTO_GEN_NUM_PREC.length()) );
             call.setCallID( callReport.getCallReportBase().getCallID().intValue() );
             accountInfo.getCallReportHistory().add( 0, call );
             

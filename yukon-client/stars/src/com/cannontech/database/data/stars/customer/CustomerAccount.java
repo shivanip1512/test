@@ -71,7 +71,7 @@ public class CustomerAccount extends DBPersistent {
     	
     	// Delete work orders
     	com.cannontech.database.data.stars.report.WorkOrderBase.deleteAllWorkOrders(
-    			getCustomerAccount().getAccountID(), getDbConnection() );
+    			getCustomerAccount().getAccountID().intValue(), getDbConnection() );
     	
     	// Delete call reports
     	com.cannontech.database.data.stars.report.CallReportBase.deleteAllCallReports(

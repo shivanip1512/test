@@ -249,8 +249,6 @@ public class SendOptOutNotificationAction implements ActionBase {
 			LiteStarsCustAccountInformation liteAcctInfo,
 			StarsOperation operation) throws Exception
 	{
-		TimeZone tz = TimeZone.getTimeZone( energyCompany.getEnergyCompanySetting(EnergyCompanyRole.DEFAULT_TIME_ZONE) );
-		
         StarsProgramOptOut optout = operation.getStarsProgramOptOut();
         Date optOutDate = optout.getStartDateTime();
         if (optOutDate == null) optOutDate = new Date();
@@ -265,7 +263,7 @@ public class SendOptOutNotificationAction implements ActionBase {
 	        reenableDate = cal.getTime();
         }
         else if (optout.getPeriod() == ProgramOptOutAction.OPTOUT_TODAY)
-        	reenableDate = com.cannontech.util.ServletUtil.getTomorrow( tz );
+        	reenableDate = com.cannontech.util.ServletUtil.getTomorrow( energyCompany.getDefaultTimeZone() );
         
         StringBuffer text = new StringBuffer();
         text.append("======================================================\r\n");
@@ -275,8 +273,10 @@ public class SendOptOutNotificationAction implements ActionBase {
         text.append("======================================================\r\n");
         text.append("\r\n");
         
-        text.append(ServletUtils.capitalize2(energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN)) + " Time: ").append(ServerUtils.formatDate( optOutDate, tz )).append("\r\n");
-        text.append(ServletUtils.capitalize(energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_REENABLE)) + " Time: ").append(ServerUtils.formatDate( reenableDate, tz )).append("\r\n");
+        text.append(ServletUtils.capitalize2( energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN) ))
+        	.append(" Time: ").append(ServerUtils.formatDate( optOutDate, energyCompany.getDefaultTimeZone() )).append("\r\n");
+        text.append(ServletUtils.capitalize( energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_REENABLE) ))
+        	.append(" Time: ").append(ServerUtils.formatDate( reenableDate, energyCompany.getDefaultTimeZone() )).append("\r\n");
         text.append("\r\n");
         text.append( getProgramInformation(energyCompany, liteAcctInfo) );
         text.append("\r\n");
@@ -326,8 +326,6 @@ public class SendOptOutNotificationAction implements ActionBase {
 			LiteStarsCustAccountInformation liteAcctInfo,
 			StarsOperation operation) throws Exception
 	{
-		TimeZone tz = TimeZone.getTimeZone( energyCompany.getEnergyCompanySetting(EnergyCompanyRole.DEFAULT_TIME_ZONE) );
-		
         StringBuffer text = new StringBuffer();
         text.append("======================================================\r\n");
         text.append("\r\n");
@@ -341,25 +339,26 @@ public class SendOptOutNotificationAction implements ActionBase {
 		OptOutEventQueue.OptOutEvent e2 = queue.findReenableEvent( liteAcctInfo.getCustomerAccount().getAccountID() );
 		
 		if (e1 != null)
-			text.append("Scheduled " + ServletUtils.capitalize2(energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN)) + " Time: ")
-				.append(ServerUtils.formatDate( new Date(e1.getStartDateTime()), tz )).append("\t(Canceled)\r\n");
+			text.append("Scheduled ").append(ServletUtils.capitalize2( energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN) ))
+				.append(" Time: ").append(ServerUtils.formatDate( new Date(e1.getStartDateTime()), energyCompany.getDefaultTimeZone() )).append("\t(Canceled)\r\n");
 
 		boolean foundLastOptOutEvent = false;
 		for (int i = 0; i < liteAcctInfo.getLmPrograms().size(); i++) {
 			LiteStarsLMProgram program = (LiteStarsLMProgram) liteAcctInfo.getLmPrograms().get(i);
 			LiteLMCustomerEvent event = findLastOptOutEvent( program.getProgramHistory(), energyCompany );
 			if (event != null) {
-				text.append("Last " + ServletUtils.capitalize2(energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN)) + " Time: ")
-					.append(ServerUtils.formatDate( new Date(event.getEventDateTime()), tz )).append("\r\n");
+				text.append("Last ").append(ServletUtils.capitalize2(energyCompany.getEnergyCompanySetting( ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN) ))
+					.append(" Time: ").append(ServerUtils.formatDate( new Date(event.getEventDateTime()), energyCompany.getDefaultTimeZone() )).append("\r\n");
 				foundLastOptOutEvent = true;
 				break;
 			}
 		}
 		
 		if (!foundLastOptOutEvent)
-			text.append("Last " + ServletUtils.capitalize2(energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN)) + " Time: (none)\r\n");
+			text.append("Last ").append(ServletUtils.capitalize2( energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN) )).append(" Time: (none)\r\n");
 		
-        text.append(ServletUtils.capitalize(energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_REENABLE)) + " Time: ").append(ServerUtils.formatDate( new Date(), tz )).append("\r\n");
+        text.append(ServletUtils.capitalize( energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_REENABLE) ))
+        	.append(" Time: ").append(ServerUtils.formatDate( new Date(), energyCompany.getDefaultTimeZone() )).append("\r\n");
         text.append("\r\n");
         text.append( getProgramInformation(energyCompany, liteAcctInfo) );
         text.append("\r\n");

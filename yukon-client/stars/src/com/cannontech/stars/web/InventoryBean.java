@@ -15,7 +15,6 @@ import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.stars.util.ServerUtils;
-import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.servlet.SOAPServer;
 
 /**
@@ -83,7 +82,6 @@ public class InventoryBean {
 	private int pageSize = DEFAULT_PAGE_SIZE;
 	private int energyCompanyID = 0;
 	private int htmlStyle = HTML_STYLE_LIST_INVENTORY;
-	private String pageName = null;
 	private String referer = null;
 	private ArrayList hardwareSet = null;
 	
@@ -100,7 +98,7 @@ public class InventoryBean {
 	}
 	
 	private ArrayList getHardwareList() {
-		if (hardwareList != null) return hardwareList;
+		//if (hardwareList != null) return hardwareList;
 		
 		ArrayList hardwares = null;
 		if (getHtmlStyle() == HTML_STYLE_HARDWARE_SET)
@@ -199,7 +197,10 @@ public class InventoryBean {
 	public String getHTML(HttpServletRequest req) {
 		ArrayList hwList = getHardwareList();
 		if (hwList == null || hwList.size() == 0)
-			return "<span class='Main'>No hardware found.</span>";
+			return "<p class='MainText'>No hardware found.</p>";
+		
+		String uri = req.getRequestURI();
+		String pageName = uri.substring( uri.lastIndexOf('/') + 1 );
 		
 		if (page < 1) page = 1;
 		int maxPageNo = (int) Math.ceil(hwList.size() * 1.0 / pageSize);
@@ -263,7 +264,7 @@ public class InventoryBean {
         			YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE, liteHw.getLmHardwareTypeID()
         			).getEntryText();
         	java.util.Date installDate = ServerUtils.translateDate( liteHw.getInstallDate() );
-        	String instDate = (installDate != null)? ServletUtils.formatDate(installDate, dateFormat) : "----";
+        	String instDate = (installDate != null)? dateFormat.format(installDate) : "----";
         	
             htmlBuf.append("        <tr>").append("\r\n");
 	        if (getHtmlStyle() == HTML_STYLE_SELECT_INVENTORY) {
@@ -504,13 +505,6 @@ public class InventoryBean {
 	 */
 	public void setHtmlStyle(int htmlStyle) {
 		this.htmlStyle = htmlStyle;
-	}
-
-	/**
-	 * @param string
-	 */
-	public void setPageName(String string) {
-		pageName = string;
 	}
 
 	/**

@@ -126,42 +126,42 @@ public class WorkOrderBase extends DBPersistent {
 
         return new Integer( nextOrderID );
     }
-
-    public static WorkOrderBase[] getAllWorkOrders(Integer accountID) {
-        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE AccountID = " + accountID.toString()
-        		   + " ORDER BY DateReported DESC";
-
-		try {
-			com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement( sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
-			stmt.execute();
-
-	        WorkOrderBase[] orders = new WorkOrderBase[ stmt.getRowCount() ];
-            for (int i = 0; i < stmt.getRowCount(); i++) {
-            	Object[] row = stmt.getRow(i);
-                orders[i] = new WorkOrderBase();
-
-                orders[i].setOrderID( new Integer(((java.math.BigDecimal) row[0]).intValue()) );
-                orders[i].setOrderNumber( (String) row[1] );
-                orders[i].setWorkTypeID( new Integer(((java.math.BigDecimal) row[2]).intValue()) );
-                orders[i].setCurrentStateID( new Integer(((java.math.BigDecimal) row[3]).intValue()) );
-                orders[i].setServiceCompanyID( new Integer(((java.math.BigDecimal) row[4]).intValue()) );
-                orders[i].setDateReported( (java.util.Date) row[5] );
-                orders[i].setOrderedBy( (String) row[6] );
-                orders[i].setDescription( (String) row[7] );
-                orders[i].setDateScheduled( (java.util.Date) row[8] );
-                orders[i].setDateCompleted( (java.util.Date) row[9] );
-                orders[i].setActionTaken( (String) row[10] );
-                orders[i].setAccountID( new Integer(((java.math.BigDecimal) row[11]).intValue()) );
-            }
-            
-            return orders;
-        }
-        catch( Exception e )
-        {
-            e.printStackTrace();
-        }
-
-        return null;
+    
+	public static int[] searchByOrderNumber(String orderNo, int energyCompanyID, java.sql.Connection conn)
+	throws java.sql.SQLException {
+		String sql = "SELECT OrderID FROM " + TABLE_NAME + " wo, ECToWorkOrderMapping map " +
+				"WHERE UPPER(OrderNumber) = UPPER(?) AND wo.OrderID = map.WorkOrderID AND map.EnergyCompanyID = ?";
+		java.sql.PreparedStatement stmt = conn.prepareStatement( sql );
+		stmt.setString(1, orderNo);
+		stmt.setInt(2, energyCompanyID);
+		java.sql.ResultSet rset = stmt.executeQuery();
+    	
+		java.util.ArrayList orderIDList = new java.util.ArrayList();
+		while (rset.next())
+			orderIDList.add( new Integer(rset.getInt(1)) );
+    	
+		int[] orderIDs = new int[orderIDList.size()];
+		for (int i = 0; i < orderIDList.size(); i++)
+			orderIDs[i] = ((Integer) orderIDList.get(i)).intValue();
+    	
+		return orderIDs;
+	}
+    
+    public static int[] searchByAccountID(int accountID, java.sql.Connection conn) throws java.sql.SQLException {
+    	String sql = "SELECT OrderID FROM " + TABLE_NAME + " WHERE AccountID = ? ORDER BY DateReported DESC";
+    	java.sql.PreparedStatement stmt = conn.prepareStatement( sql );
+    	stmt.setInt(1, accountID);
+    	java.sql.ResultSet rset = stmt.executeQuery();
+    	
+    	java.util.ArrayList orderIDList = new java.util.ArrayList();
+    	while (rset.next())
+    		orderIDList.add( new Integer(rset.getInt(1)) );
+    	
+    	int[] orderIDs = new int[orderIDList.size()];
+    	for (int i = 0; i < orderIDList.size(); i++)
+    		orderIDs[i] = ((Integer) orderIDList.get(i)).intValue();
+    	
+    	return orderIDs;
     }
 
 	/**

@@ -140,11 +140,9 @@ public class InventoryBase extends DBPersistent {
         return new Integer( nextInventoryID );
     }
     
-	public static int[] searchByAccountID(int accountID, int energyCompanyID, java.sql.Connection conn)
+	public static int[] searchByAccountID(int accountID, java.sql.Connection conn)
 	throws java.sql.SQLException {
-		String sql = "SELECT inv.InventoryID FROM " + TABLE_NAME + " inv, ECToInventoryMapping map " +
-				"WHERE AccountID = " + accountID + " AND inv.InventoryID >= 0 " +
-				"AND inv.InventoryID = map.InventoryID AND map.EnergyCompanyID = " + energyCompanyID;
+		String sql = "SELECT inv.InventoryID FROM " + TABLE_NAME + " WHERE AccountID = " + accountID;
 		java.sql.Statement stmt = conn.createStatement();
 		java.sql.ResultSet rset = stmt.executeQuery( sql );
     	

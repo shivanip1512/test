@@ -29,6 +29,7 @@ import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.operator.InventoryRole;
 import com.cannontech.roles.operator.OddsForControlRole;
+import com.cannontech.roles.operator.WorkOrderRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.util.LMControlHistoryUtil;
 import com.cannontech.stars.util.OptOutEventQueue;
@@ -92,8 +93,10 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	private int nextCallNo = 0;
 	private int nextOrderNo = 0;
 	private boolean inventoryLoaded = false;
+	private boolean workOrdersLoaded = false;
 	
 	private int dftRouteID = CtiUtilities.NONE_ID;
+	private TimeZone dftTimeZone = null;
 	private OptOutEventQueue optOutEventQueue = null;
 	private SwitchCommandQueue switchCommandQueue = null;
 	private ArrayList accountsWithGatewayEndDevice = null;	// List of LiteStarsCustAccountInformation
@@ -256,6 +259,15 @@ public class LiteStarsEnergyCompany extends LiteBase {
     	
 		return dftRouteID;
 	}
+	
+	public TimeZone getDefaultTimeZone() {
+		if (dftTimeZone == null) {
+			dftTimeZone = TimeZone.getTimeZone( getEnergyCompanySetting(EnergyCompanyRole.DEFAULT_TIME_ZONE) );
+			if (dftTimeZone == null)
+				dftTimeZone = TimeZone.getDefault();
+		}
+		return dftTimeZone;
+	}
 
 	/**
 	 * Returns the optOutEventQueue.
@@ -329,8 +341,10 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		nextCallNo = 0;
 		nextOrderNo = 0;
 		inventoryLoaded = false;
+		workOrdersLoaded = false;
 		
 		dftRouteID = CtiUtilities.NONE_ID;
+		dftTimeZone = null;
 		optOutEventQueue = null;
 		switchCommandQueue = null;
 		accountsWithGatewayEndDevice = null;
@@ -801,7 +815,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		if (nextCallNo == 0) {
 			String sql = "SELECT CallNumber FROM CallReportBase call, ECToCallReportMapping map "
 					   + "WHERE map.EnergyCompanyID = " + getEnergyCompanyID() + " AND call.CallID = map.CallReportID "
-					   + "AND CallNumber like '" + ServerUtils.CTI_NUMBER + "%' ORDER BY CallID DESC";
+					   + "AND CallNumber like '" + ServerUtils.AUTO_GEN_NUM_PREC + "%' ORDER BY CallID DESC";
 			com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
 					sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
 					
@@ -812,7 +826,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 				for (int i = 0; i < stmt.getRowCount(); i++) {
 					try {
 						String callNoStr = (String) stmt.getRow(i)[0];
-						int callNo = Integer.parseInt( callNoStr.substring(ServerUtils.CTI_NUMBER.length()) );
+						int callNo = Integer.parseInt( callNoStr.substring(ServerUtils.AUTO_GEN_NUM_PREC.length()) );
 						if (callNo > maxCallNo) maxCallNo = callNo;
 					}
 					catch (NumberFormatException nfe) {}
@@ -840,7 +854,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		if (nextOrderNo == 0) {
 			String sql = "SELECT OrderNumber FROM WorkOrderBase service, ECToWorkOrderMapping map "
 					   + "WHERE map.EnergyCompanyID = " + getEnergyCompanyID() + " AND service.OrderID = map.WorkOrderID "
-					   + "AND OrderNumber like '" + ServerUtils.CTI_NUMBER + "%' ORDER BY OrderID DESC";
+					   + "AND OrderNumber like '" + ServerUtils.AUTO_GEN_NUM_PREC + "%' ORDER BY OrderID DESC";
 			com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
 					sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
 					
@@ -851,7 +865,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 				for (int i = 0; i < stmt.getRowCount(); i++) {
 					try {
 						String orderNoStr = (String) stmt.getRow(i)[0];
-						int orderNo = Integer.parseInt( orderNoStr.substring(ServerUtils.CTI_NUMBER.length()) );
+						int orderNo = Integer.parseInt( orderNoStr.substring(ServerUtils.AUTO_GEN_NUM_PREC.length()) );
 						if (orderNo > maxOrderNo) maxOrderNo = orderNo;
 					}
 					catch (NumberFormatException nfe) {}
@@ -1311,7 +1325,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	public LiteStarsLMControlHistory getLMControlHistory(int groupID) {
 		if (groupID == CtiUtilities.NONE_ID) return null;
 		
-		TimeZone tz = TimeZone.getTimeZone( getEnergyCompanySetting(EnergyCompanyRole.DEFAULT_TIME_ZONE) );
 		LiteStarsLMControlHistory lmCtrlHist = null;
 		
 		ArrayList lmCtrlHistList = getAllLMControlHistory();
@@ -1340,7 +1353,48 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		return lmCtrlHist;
 	}
 	
-	public LiteWorkOrderBase getWorkOrderBase(int orderID) {
+	public ArrayList loadWorkOrders() {
+		ArrayList workOrders = getAllWorkOrders();
+		if (workOrdersLoaded) return workOrders;
+		
+		java.sql.Connection conn = null;
+		try {
+			conn = com.cannontech.database.PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
+			
+			String sql = "SELECT WorkOrderID FROM ECToWorkOrderMapping WHERE EnergyCompanyID = ?";
+			java.sql.PreparedStatement stmt = conn.prepareStatement( sql );
+			stmt.setInt( 1, getLiteID() );
+			java.sql.ResultSet rset = stmt.executeQuery();
+			
+			while (rset.next()) {
+				int orderID = rset.getInt(1);
+				if (getWorkOrderBase(orderID, false) != null) continue;
+				
+				com.cannontech.database.db.stars.report.WorkOrderBase order =
+						new com.cannontech.database.db.stars.report.WorkOrderBase();
+				order.setOrderID( new Integer(orderID) );
+				order.setDbConnection( conn );
+				order.retrieve();
+				
+				LiteWorkOrderBase liteOrder = (LiteWorkOrderBase) StarsLiteFactory.createLite( order );
+				addWorkOrderBase( liteOrder );
+			}
+		}
+		catch (java.sql.SQLException e) {
+			e.printStackTrace();
+		}
+		finally {
+			try {
+				if (conn != null) conn.close();
+			}
+			catch (java.sql.SQLException e) {}
+		}
+		
+		workOrdersLoaded = true;
+		return workOrders;
+	}
+	
+	public LiteWorkOrderBase getWorkOrderBase(int orderID, boolean autoLoad) {
 		ArrayList workOrders = getAllWorkOrders();
 		LiteWorkOrderBase workOrder = null;
         
@@ -1352,19 +1406,21 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			}
 		}
         
-		try {
-			com.cannontech.database.db.stars.report.WorkOrderBase order = new com.cannontech.database.db.stars.report.WorkOrderBase();
-			order.setOrderID( new Integer(orderID) );
-			order = (com.cannontech.database.db.stars.report.WorkOrderBase)
-					Transaction.createTransaction( Transaction.RETRIEVE, order ).execute();
-			workOrder = (LiteWorkOrderBase) StarsLiteFactory.createLite( order );
+        if (autoLoad) {
+			try {
+				com.cannontech.database.db.stars.report.WorkOrderBase order = new com.cannontech.database.db.stars.report.WorkOrderBase();
+				order.setOrderID( new Integer(orderID) );
+				order = (com.cannontech.database.db.stars.report.WorkOrderBase)
+						Transaction.createTransaction( Transaction.RETRIEVE, order ).execute();
+				workOrder = (LiteWorkOrderBase) StarsLiteFactory.createLite( order );
         	
-			synchronized (workOrders) { workOrders.add( workOrder ); }
-			return workOrder;
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
+				synchronized (workOrders) { workOrders.add( workOrder ); }
+				return workOrder;
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+        }
         
 		return null;
 	}
@@ -1591,14 +1647,12 @@ public class LiteStarsEnergyCompany extends LiteBase {
 					liteAcctInfo.getCallReportHistory().add( calls[i] );
 			}
 				
-			com.cannontech.database.db.stars.report.WorkOrderBase[] orders =
-					com.cannontech.database.db.stars.report.WorkOrderBase.getAllWorkOrders( new Integer(liteAcctInfo.getLiteID()) );
-			if (orders != null) {
+			int[] orderIDs = com.cannontech.database.db.stars.report.WorkOrderBase.searchByAccountID(liteAcctInfo.getLiteID(), conn);
+			if (orderIDs != null) {
 				liteAcctInfo.setServiceRequestHistory( new ArrayList() );
-				for (int i = 0; i < orders.length; i++) {
-					LiteWorkOrderBase liteOrder = (LiteWorkOrderBase) StarsLiteFactory.createLite( orders[i] );
-					addWorkOrderBase( liteOrder );
-					liteAcctInfo.getServiceRequestHistory().add( orders[i].getOrderID() );
+				for (int i = 0; i < orderIDs.length; i++) {
+					getWorkOrderBase(orderIDs[i], true);
+					liteAcctInfo.getServiceRequestHistory().add( new Integer(orderIDs[i]) );
 				}
 			}
 	
@@ -1904,6 +1958,14 @@ public class LiteStarsEnergyCompany extends LiteBase {
 				starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_INV_SORT_BY) );
 				starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_INV_FILTER_BY) );
 			}
+			
+			if (AuthFuncs.checkRole( liteUser, WorkOrderRole.ROLEID ) != null) {
+				starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SO_SEARCH_BY) );
+			}
+			if (AuthFuncs.checkRoleProperty( liteUser, WorkOrderRole.WORK_ORDER_SHOW_ALL )) {
+				starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SO_SORT_BY) );
+				starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SO_FILTER_BY) );
+			}
 		}
 		else if (ServerUtils.isResidentialCustomer( starsUser )) {
 			// Currently the consumer side only need opt out period list and hardware status list
@@ -2070,16 +2132,16 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		return starsLMCtrlHists;
 	}
 	
-	private void setControlSummary(StarsLMControlHistory starsCtrlHist, TimeZone tz) {
+	private void setControlSummary(StarsLMControlHistory starsCtrlHist) {
 		ControlSummary summary = new ControlSummary();
 		int dailyTime = 0;
 		int monthlyTime = 0;
 		int seasonalTime = 0;
 		int annualTime = 0;
 		
-		Date pastDay = LMControlHistoryUtil.getPeriodStartTime( StarsCtrlHistPeriod.PASTDAY, tz );
-		Date pastMonth = LMControlHistoryUtil.getPeriodStartTime( StarsCtrlHistPeriod.PASTMONTH, tz );
-		Date pastYear = LMControlHistoryUtil.getPeriodStartTime( StarsCtrlHistPeriod.PASTYEAR, tz );
+		Date pastDay = LMControlHistoryUtil.getPeriodStartTime( StarsCtrlHistPeriod.PASTDAY, getDefaultTimeZone() );
+		Date pastMonth = LMControlHistoryUtil.getPeriodStartTime( StarsCtrlHistPeriod.PASTMONTH, getDefaultTimeZone() );
+		Date pastYear = LMControlHistoryUtil.getPeriodStartTime( StarsCtrlHistPeriod.PASTYEAR, getDefaultTimeZone() );
 		
 		for (int i = 0; i < starsCtrlHist.getControlHistoryCount(); i++) {
 			ControlHistory ctrlHist = starsCtrlHist.getControlHistory(i);
@@ -2109,7 +2171,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			if (starsCtrlHist == null) {
 				starsCtrlHist = StarsLiteFactory.createStarsLMControlHistory(
 						liteCtrlHist, StarsCtrlHistPeriod.ALL, false );
-				setControlSummary( starsCtrlHist, TimeZone.getTimeZone(getEnergyCompanySetting(EnergyCompanyRole.DEFAULT_TIME_ZONE)) );
+				setControlSummary( starsCtrlHist );
 				starsLMCtrlHists.put( groupID, starsCtrlHist );
 			}
 			
@@ -2124,7 +2186,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			StarsLMControlHistory starsCtrlHist = (StarsLMControlHistory) starsLMCtrlHists.get( groupID );
 			if (starsCtrlHist != null) {
 				StarsLiteFactory.setStarsLMControlHistory( starsCtrlHist, liteCtrlHist, StarsCtrlHistPeriod.ALL, false );
-				setControlSummary( starsCtrlHist, TimeZone.getTimeZone(getEnergyCompanySetting(EnergyCompanyRole.DEFAULT_TIME_ZONE)) );
+				setControlSummary( starsCtrlHist );
 			}
 			
 			return starsCtrlHist;
