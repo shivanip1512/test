@@ -1,6 +1,7 @@
 package com.cannontech.stars.util;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -90,10 +91,15 @@ public class ServletUtils {
 	public static final String ATT_NEW_CUSTOMER_ACCOUNT = "NEW_CUSTOMER_ACCOUNT";
 	public static final String ATT_LAST_SEARCH_OPTION = "LAST_SEARCH_OPTION";
 	
+	public static final String ATT_OMIT_GATEWAY_TIMEOUT = "OMIT_GATEWAY_TIMEOUT";
+	
 	public static final String IN_SERVICE = "In Service";
 	public static final String OUT_OF_SERVICE = "Out of Service";
 	
 	public static final int MAX_NUM_IMAGES = 5;
+	public static final int GATEWAY_TIMEOUT_HOURS = 24;
+	
+	public static final String OMIT_GATEWAY_TIMEOUT = "OMIT_GATEWAY_TIMEOUT";
 	
 	public static final String UTIL_COMPANY_ADDRESS = "<<COMPANY_ADDRESS>>";
 	public static final String UTIL_PHONE_NUMBER = "<<PHONE_NUMBER>>";
@@ -459,6 +465,29 @@ public class ServletUtils {
 				day.getType() == StarsThermoDaySettings.WEDNESDAY_TYPE ||
 				day.getType() == StarsThermoDaySettings.THURSDAY_TYPE ||
 				day.getType() == StarsThermoDaySettings.FRIDAY_TYPE);
+	}
+	
+	public static StarsThermoDaySettings getCurrentDay() {
+		Calendar cal = Calendar.getInstance();
+		if (cal.get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY)
+			return StarsThermoDaySettings.MONDAY;
+		else if (cal.get(Calendar.DAY_OF_WEEK) == Calendar.TUESDAY)
+			return StarsThermoDaySettings.TUESDAY;
+		else if (cal.get(Calendar.DAY_OF_WEEK) == Calendar.WEDNESDAY)
+			return StarsThermoDaySettings.WEDNESDAY;
+		else if (cal.get(Calendar.DAY_OF_WEEK) == Calendar.THURSDAY)
+			return StarsThermoDaySettings.THURSDAY;
+		else if (cal.get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY)
+			return StarsThermoDaySettings.FRIDAY;
+		else if (cal.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY)
+			return StarsThermoDaySettings.SATURDAY;
+		else
+			return StarsThermoDaySettings.SUNDAY;
+	}
+	
+	public static boolean isGatewayTimeout(Date lastUpdatedTime) {
+		if (lastUpdatedTime == null) return true;
+		return (new Date().getTime() - lastUpdatedTime.getTime() > GATEWAY_TIMEOUT_HOURS * 3600 * 1000);
 	}
 
 }
