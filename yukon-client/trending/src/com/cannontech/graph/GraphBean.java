@@ -20,14 +20,7 @@ import com.cannontech.util.ServletUtil;
 public class GraphBean implements GraphDefines
 {
 	private Graph graphClass = null;
-
-	private String period = ServletUtil.historicalPeriods[0];
-	private int gdefid = -1;
 	private String start = "";
-	private Date startDate = null;
-	private Date stopDate = null;
-	private int viewType = TrendModelType.LINE_VIEW;
-	private int options = 0x0000;
 	private String format = "png";
 	
 	private int page = 1;
@@ -140,11 +133,7 @@ public class GraphBean implements GraphDefines
 	 */
 	public String getPeriod()
 	{
-		if(period == null)
-		{
-			setPeriod(ServletUtil.historicalPeriods[0]);
-		}
-		return period;
+		return getGraph().getPeriod();
 	}
 	/**
 	 * Method setPeriod.
@@ -152,11 +141,7 @@ public class GraphBean implements GraphDefines
 	 */
 	public void setPeriod(String newPeriod)
 	{
-		if(!period.equalsIgnoreCase(newPeriod))
-		{
-			period = newPeriod;
-			getGraph().setUpdateTrend(true);
-		}
+		getGraph().setPeriod(newPeriod);
 	}
 	/**
 	 * Method getWidth.
@@ -181,12 +166,7 @@ public class GraphBean implements GraphDefines
 	 */
 	public void setGdefid(int newGdefid)
 	{
-		if( newGdefid != gdefid)
-		{
-			gdefid = newGdefid;
-			getGraph().setGraphDefinition(newGdefid);			
-			getGraph().setUpdateTrend(true);		
-		}
+		getGraph().setGraphDefinition(newGdefid);			
 	}
 	/**
 	 * Method getGdefid.
@@ -194,7 +174,7 @@ public class GraphBean implements GraphDefines
 	 */
 	public int getGdefid()
 	{
-		return gdefid;
+		return getGraph().getGraphDefinition().getGraphDefinition().getGraphDefinitionID().intValue();
 	}
 	
 	/**
@@ -203,8 +183,7 @@ public class GraphBean implements GraphDefines
 	 */
 	private Date getStopDate()
 	{
-		stopDate = com.cannontech.util.ServletUtil.getEndingDateOfInterval( getStartDate(), getPeriod());
-		return stopDate;
+		return getGraph().getStopDate();
 	}
 	/**
 	 * Method getStart.
@@ -212,11 +191,7 @@ public class GraphBean implements GraphDefines
 	 */
 	public java.util.Date getStartDate()
 	{
-		if( startDate == null)
-		{
-			startDate = ServletUtil.getToday();
-		}
-		return startDate;
+		return getGraph().getStartDate();
 	}
 	/**
 	 * Method setStart.
@@ -234,12 +209,7 @@ public class GraphBean implements GraphDefines
 	 */
 	private void setStartDate(Date newStartDate)
 	{
-		if(startDate == null || startDate.compareTo((Object)newStartDate) != 0 )	//date changed
-		{
-			com.cannontech.clientutils.CTILogger.info("Changing Date!");
-			startDate = newStartDate;
-			getGraph().setUpdateTrend(true);
-		}
+		getGraph().setStartDate(newStartDate);
 	}
 	
 	/**
