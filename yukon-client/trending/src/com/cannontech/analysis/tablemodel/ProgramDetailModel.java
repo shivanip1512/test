@@ -58,9 +58,10 @@ public class ProgramDetailModel extends ReportModelBase
 	 * Constructor class
 	 * @param statType_ DynamicPaoStatistics.StatisticType
 	 */
-	public ProgramDetailModel(long startTime_, long stopTime_)
+	public ProgramDetailModel(long stopTime_)
 	{
-		super(ReportTypes.EC_ACTIVITY_LOG_DATA, startTime_, stopTime_);//default type
+		//use the stop (max) time for both date entries.
+		super(ReportTypes.EC_ACTIVITY_LOG_DATA, stopTime_, stopTime_);//default type
 	}
 
 	/**
@@ -125,9 +126,6 @@ public class ProgramDetailModel extends ReportModelBase
 			else
 			{
 				pstmt = conn.prepareStatement(sql.toString());
-				//TODO currently there is no way to query any time period accept the present
-				//pstmt.setTimestamp(1, new java.sql.Timestamp( getStartTime() ));
-				//CTILogger.info("START DATE > " + new java.sql.Timestamp(getStartTime()) + "  -  STOP DATE <= " + new java.sql.Timestamp(getStopTime()));
 				rset = pstmt.executeQuery();
 
 				boolean dataExists = false;
@@ -382,7 +380,6 @@ public class ProgramDetailModel extends ReportModelBase
 			else
 			{
 				pstmt = conn.prepareStatement(sql.toString());
-				//TODO currently there is no way to query any time period accept the present
 				pstmt.setTimestamp(1, new java.sql.Timestamp( getStopTime() ));
 				CTILogger.info("MAX STOP DATE <= " + new java.sql.Timestamp(getStopTime()));
 				rset = pstmt.executeQuery();
