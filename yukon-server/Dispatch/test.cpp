@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/test.cpp-arc  $
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2004/10/07 12:25:55 $
+* REVISION     :  $Revision: 1.30 $
+* DATE         :  $Date: 2004/10/07 16:58:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -191,7 +191,7 @@ void testThreads( int argc, char **argv )
    }
    else
    {
-      sal = new EThread( "sal", CtiThreadRegData::KillApp ); 
+      sal = new EThread( "sal", CtiThreadRegData::Action1 ); 
       sal->start();
    }
 
@@ -221,7 +221,7 @@ void testThreads( int argc, char **argv )
          else
          {
             delete bob;
-            bob = new EThread( "bob", CtiThreadRegData::KillApp ); 
+            bob = new EThread( "bob", CtiThreadRegData::Action2 ); 
             bob->start();
             {
                CtiLockGuard<CtiLogger> doubt_guard( dout );
@@ -265,7 +265,7 @@ void testThreads( int argc, char **argv )
          else
          {
             delete joe;
-            joe = new EThread( "joe", CtiThreadRegData::Restart, 45 ); 
+            joe = new EThread( "joe", CtiThreadRegData::Action1, 45 ); 
             joe->start();
             {
                CtiLockGuard<CtiLogger> doubt_guard( dout );
@@ -287,7 +287,7 @@ void testThreads( int argc, char **argv )
          else
          {
             delete rat;
-            rat = new EThread( "rat", CtiThreadRegData::KillApp, 80 ); 
+            rat = new EThread( "rat", CtiThreadRegData::Action2, 80 ); 
             rat->start();
             {
                CtiLockGuard<CtiLogger> doubt_guard( dout );

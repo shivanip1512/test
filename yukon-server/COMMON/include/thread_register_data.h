@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2004/10/06 16:56:14 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2004/10/07 16:58:32 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -32,10 +32,10 @@ public:
 
    enum Behaviours   //absence detect behaviour type
    {
-      None,          //report missing thread and remove from list
-      Restart,       //call fooptr and remove thread from list
-      LogOut,
-      KillApp        //call all fooptrs and remove thread from list
+      None,          
+      Action1,       
+      Action2,       
+      LogOut
    };                
 
    typedef void (*behaviourFuncPtr)( void *p );
@@ -103,10 +103,10 @@ private:
    //
    //registeration: optionals
    //
-   behaviourFuncPtr     _shutdown;
-   behaviourFuncPtr     _alternate;
-   void*                _shutdown_args;
-   void*                _alt_args;
+   behaviourFuncPtr     _action_one;
+   behaviourFuncPtr     _action_two;
+   void*                _action_one_args;
+   void*                _action_two_args;
 };
 
 #endif // #ifndef __THREAD_REGISTER_DATA_H__

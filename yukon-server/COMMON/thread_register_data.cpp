@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2004/10/06 16:56:14 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2004/10/07 16:58:31 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002, 2003, 2004 Cannon Technologies Inc. All rights reserved.
 *---------------------------------------------------------------------------------------------*/
@@ -37,10 +37,10 @@ CtiThreadRegData::CtiThreadRegData( int id,
    _name = name;
    _behaviourType = type;
    _tickleFreq = tickle_freq;
-   _shutdown = ptr1;
-   _shutdown_args = args1;
-   _alternate = ptr2;
-   _alt_args = args2;
+   _action_one = ptr1;
+   _action_one_args = args1;
+   _action_two = ptr2;
+   _action_two_args = args2;
 
    if(( !_id ) || ( _name == "default" ))
       setReported(  false );
@@ -98,7 +98,7 @@ ptime CtiThreadRegData::getTickledTime( void )
 
 CtiThreadRegData::behaviourFuncPtr CtiThreadRegData::getShutdownFunc( void )
 {
-   return( _shutdown );
+   return( _action_one );
 }
 
 //===========================================================================================================
@@ -106,7 +106,7 @@ CtiThreadRegData::behaviourFuncPtr CtiThreadRegData::getShutdownFunc( void )
 
 void* CtiThreadRegData::getShutdownArgs( void )
 {
-   return( _shutdown_args );
+   return( _action_one_args );
 }
 
 //===========================================================================================================
@@ -114,7 +114,7 @@ void* CtiThreadRegData::getShutdownArgs( void )
 
 CtiThreadRegData::behaviourFuncPtr CtiThreadRegData::getAlternateFunc( void )
 {
-   return( _alternate );
+   return( _action_two );
 }
 
 //===========================================================================================================
@@ -122,7 +122,7 @@ CtiThreadRegData::behaviourFuncPtr CtiThreadRegData::getAlternateFunc( void )
 
 void* CtiThreadRegData::getAlternateArgs( void )
 {
-   return( _alt_args );
+   return( _action_two_args );
 }
 
 //===========================================================================================================
@@ -163,7 +163,7 @@ void CtiThreadRegData::setTickledTime( ptime in )
 
 void CtiThreadRegData::setAlternateArgs( void* args )
 {
-   _alt_args = args;
+   _action_one_args = args;
 }
 
 //===========================================================================================================
@@ -180,7 +180,7 @@ void CtiThreadRegData::setTickleFreq( ULONG seconds )
 
 void CtiThreadRegData::setAlternateFunc( behaviourFuncPtr in )
 {
-   _alternate = in;
+   _action_two = in;
 }
    
 //===========================================================================================================
@@ -188,7 +188,7 @@ void CtiThreadRegData::setAlternateFunc( behaviourFuncPtr in )
 
 void CtiThreadRegData::setShutdownArgs( void* args )
 {
-   _shutdown_args = args;
+   _action_one_args = args;
 }
 
 //===========================================================================================================
@@ -197,7 +197,7 @@ void CtiThreadRegData::setShutdownArgs( void* args )
 
 void CtiThreadRegData::setShutdownFunc( behaviourFuncPtr in )
 {
-   _shutdown = in; 
+   _action_one = in; 
 }
 
 //===========================================================================================================
