@@ -80,7 +80,7 @@ typedef enum
 // Point Value Calculation Types
 typedef enum
 {
-   CalcTypeNormal,                     // Your basic multiplier dataoffset combo.
+   CalcTypeNormal = 0,                     // Your basic multiplier dataoffset combo.
    CalcTypeVoltsFromV2H
 
 } PointCalc_t;
