@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/DSM2.H-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/06/05 17:42:03 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/06/20 21:03:04 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -809,7 +809,7 @@ public:
 
    CTINEXUS           *ReturnNexus;   // Connection back to requestor.
    CTINEXUS           *SaveNexus;
-   union
+   union _outmess_buf
    {
       BYTE            OutMessage[300];
       ASTRUCT         ASt;
@@ -919,7 +919,7 @@ typedef struct _INMESS
    UINT        TrxID;                       // 091300 CGP Helps us track lm command's success
 
    BYTE        IDLCStat[18];          /* do NOT put anything between (IDLCStat & Buffer.Message) these */
-   union
+   union _inmess_buf
    {
       BYTE            InMessage[4096];    /* two variables !!!!!! */
       DSTRUCT         DSt;
