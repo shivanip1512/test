@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2003/07/14 18:28:49 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2003/07/21 22:10:50 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -92,6 +92,7 @@ using namespace std;
 #include "utility.h"
 
 extern HCTIQUEUE*   QueueHandle(LONG pid);
+extern CtiQueue< CtiOutMessage, less<CtiOutMessage> > GatewayOutMessageQueue;
 
 INT PorterEntryPoint(OUTMESS *&OutMessage);
 INT RemoteComm(OUTMESS *&OutMessage);
@@ -239,13 +240,14 @@ VOID ConnectionThread (VOID *Arg)
 
             if(PorterDebugLevel & PORTER_DEBUG_NEXUSREAD)
             {
-                CtiDeviceBase *tempDev = DeviceManager.getEqual(OutMessage->TargetID);
+                CtiDeviceBase *tempDev = DeviceManager.getEqual(OutMessage->TargetID ? OutMessage->TargetID : OutMessage->DeviceID);
 
                 if(tempDev)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " Portentry built an outmessage for " << tempDev->getName();
                     dout << " at priority " << OutMessage->Priority << " retries = " << OutMessage->Retry << endl;
+                    if(strlen(OutMessage->Request.CommandStr) > 0) dout << "  Command: " << OutMessage->Request.CommandStr << endl;
                 }
             }
 
@@ -292,36 +294,34 @@ VOID ConnectionThread (VOID *Arg)
                     break;   // The for and exit this thread
                 }
             }
-
-            if(PorterDebugLevel & PORTER_DEBUG_NEXUSREAD)
-            {
-                CtiDeviceBase *tempDev = DeviceManager.getEqual(OutMessage->TargetID);
-
-                if(tempDev)
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Portentry connection received an outmessage for " << tempDev->getName();
-                    dout << " at priority " << OutMessage->Priority << " retries = " << OutMessage->Retry << endl;
-                }
-            }
         }
 
-        if( OutMessage->DeviceID == 0 || OutMessage->Port == 0 )
+        if(PorterDebugLevel & PORTER_DEBUG_NEXUSREAD)
         {
+            CtiDeviceBase *tempDev = DeviceManager.getEqual(OutMessage->TargetID ? OutMessage->TargetID : OutMessage->DeviceID);
+
+            if(tempDev)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "**** INVALID OUTMESS **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << " OUTMESS destroyed, client may become unstable!" << endl;
+                dout << RWTime() << " Portentry connection received an outmessage for " << tempDev->getName();
+                dout << " at priority " << OutMessage->Priority << " retries = " << OutMessage->Retry << endl;
+                if(strlen(OutMessage->Request.CommandStr) > 0) dout << "  Command: " << OutMessage->Request.CommandStr << endl;
             }
-
-            SendError (OutMessage, MISPARAM);      // Message has been consumed!
-            continue;            // The for loop
         }
 
         /*
          * Set the handle for the return message.
          */
         OutMessage->ReturnNexus = MyNexus;             /* This had better copy the entire structure CP */
+
+        /*
+         *  A bit of a wiggle here. 061903 CGP.  Capture and re-route this OM type to PorterGWThread.
+         */
+        if( OutMessage->MessageFlags & MSGFLG_ROUTE_TO_PORTER_GATEWAY_THREAD )
+        {
+            GatewayOutMessageQueue.putQueue( OutMessage );
+            continue;
+        }
 
         if(OutMessage->Request.BuildIt == TRUE)
         {
@@ -332,6 +332,16 @@ VOID ConnectionThread (VOID *Arg)
                 delete OutMessage;
                 OutMessage = NULL;
             }
+        }
+        else if( OutMessage->DeviceID == 0 || OutMessage->Port == 0 )
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << "**** INVALID OUTMESS **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << " OUTMESS destroyed, client may become unstable!" << endl;
+            }
+
+            SendError (OutMessage, MISPARAM);      // Message has been consumed!
         }
         else
         {
