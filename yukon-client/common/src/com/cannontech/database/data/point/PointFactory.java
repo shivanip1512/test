@@ -1,6 +1,7 @@
 package com.cannontech.database.data.point;
 
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 
 /**
  * This type was created in VisualAge.
@@ -242,6 +243,56 @@ public static PointBase createPulseAccumPoint( String pointName, Integer paoID,
          new Double(0.0)));
    
    return point;  
+}
+
+
+/**
+ * Creates a CapBanks analog op count point automatically
+ * 
+ */
+public static synchronized void createBankOpCntPoint(
+		SmartMultiDBPersistent newVal )
+{	
+	//defaults pointControl
+	//an analog point is created
+
+	newVal.addDBPersistent( 
+		PointFactory.createAnalogPoint(
+			"OPERATION",
+			com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectID(),
+			null,
+			PointTypes.PT_OFFSET_TOTAL_KWH,
+			com.cannontech.database.data.point.PointUnits.UOMID_COUNTS) );
+}
+
+/**
+ * Creates a CapBanks stutus point automatically
+ * 
+ */
+public static synchronized void createBankStatusPt(
+		SmartMultiDBPersistent newVal )
+{
+
+	//a status point is created
+	com.cannontech.database.data.point.PointBase newPoint =
+		com.cannontech.database.data.point.PointFactory.createPoint(com.cannontech.database.data.point.PointTypes.STATUS_POINT);
+	Integer pointID = null;
+
+	//defaults point
+	newPoint = PointFactory.createNewPoint(		
+			pointID,
+			com.cannontech.database.data.point.PointTypes.STATUS_POINT,
+			"BANK STATUS",
+			com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectID(),
+			new Integer(1) );
+
+	newPoint.getPoint().setStateGroupID( new Integer(3) );
+	
+	//defaults pointStatus
+	((com.cannontech.database.data.point.StatusPoint) newPoint).setPointStatus(
+		new com.cannontech.database.db.point.PointStatus(pointID) );
+
+	newVal.addDBPersistent(newPoint);		
 }
 
 }

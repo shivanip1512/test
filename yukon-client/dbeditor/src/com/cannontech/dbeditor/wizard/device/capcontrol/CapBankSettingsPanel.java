@@ -8,8 +8,6 @@ import java.awt.Dimension;
 import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.point.PointFactory;
-import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.database.db.point.Point;
  
 public class CapBankSettingsPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener {
 	private String capBankSelectedType = null;
@@ -133,52 +131,6 @@ private void connEtoC6(java.awt.event.ActionEvent arg1) {
 		// user code end
 		handleException(ivjExc);
 	}
-}
-/**
- * Insert the method's description here.
- * Creation date: (11/18/2001 3:41:52 PM)
- * @return com.cannontech.database.data.multi.SmartMultiDBPersistent
- * @param capBank com.cannontech.database.data.capcontrol.CapBank
- */
-private static void createBankStatusPt(
-		com.cannontech.database.data.multi.SmartMultiDBPersistent newVal )
-{
-
-	//a status point is created
-	com.cannontech.database.data.point.PointBase newPoint =
-		com.cannontech.database.data.point.PointFactory.createPoint(com.cannontech.database.data.point.PointTypes.STATUS_POINT);
-	Integer pointID = null;
-
-	//defaults point
-	newPoint = PointFactory.createNewPoint(		
-			pointID,
-			com.cannontech.database.data.point.PointTypes.STATUS_POINT,
-			"BANK STATUS",
-			com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectID(),
-			new Integer(1) );
-
-	newPoint.getPoint().setStateGroupID( new Integer(3) );
-	
-	//defaults pointStatus
-	((com.cannontech.database.data.point.StatusPoint) newPoint).setPointStatus(
-		new com.cannontech.database.db.point.PointStatus(pointID) );
-
-	newVal.addDBPersistent(newPoint);		
-}
-
-private static void createBankOpCntPoint(
-		com.cannontech.database.data.multi.SmartMultiDBPersistent newVal )
-{	
-	//defaults pointControl
-	//an analog point is created
-
-	newVal.addDBPersistent( 
-		PointFactory.createAnalogPoint(
-			"OPERATION",
-			com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectID(),
-			null,
-			PointTypes.PT_OFFSET_TOTAL_KWH,
-			com.cannontech.database.data.point.PointUnits.UOMID_COUNTS) );
 }
 
 /**
@@ -475,12 +427,12 @@ public Object getValue(Object val)
 	//only create Status point if the capbank is Fixed
 	if( capBank.getCapBank().getOperationalState().equalsIgnoreCase(com.cannontech.database.data.capcontrol.CapBank.FIXED_OPSTATE) )
 	{
-		createBankStatusPt( newVal );
+		PointFactory.createBankStatusPt( newVal );
 	}
 	else
 	{
-		createBankStatusPt( newVal );
-		createBankOpCntPoint( newVal );		
+		PointFactory.createBankStatusPt( newVal );
+		PointFactory.createBankOpCntPoint( newVal );		
 	}
 
 	((DeviceBase) val).setDeviceID( com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectID() );
