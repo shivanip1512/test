@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/08/05 19:15:45 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2002/09/04 14:08:10 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -36,7 +36,6 @@ using namespace std;
 CtiStatistics::CtiStatistics(long id) :
     _restoreworked(false),
     _dirty(false),
-    _updateOnNextCompletion(false),
     _pid(id)
 {
     int i;
@@ -144,16 +143,6 @@ void CtiStatistics::incrementCompletion(const RWTime &stattime, int CompletionSt
     }
 
     verifyThresholds();
-
-#ifdef OLD_WAY
-    if(_updateOnNextCompletion)
-    {
-        if( Update() == RWDBStatus::ok )
-        {
-            _updateOnNextCompletion = false;
-        }
-    }
-#endif
 }
 
 void CtiStatistics::incrementFail(const RWTime &stattime, CtiStatisticsCounters_t failtype)
@@ -220,7 +209,7 @@ int CtiStatistics::newHour(const RWTime &newtime, CtiStatisticsCounters_t counte
         // Reset the new counter to zero in case we've run for an entire 24 hours... hm.
         _counter[HourNo].resetAll( );
         computeHourInterval( HourNo, _startStopTimePairs[ HourNo ] );
-        _updateOnNextCompletion = true;
+        _dirty = true;
     }
 
     if(lastdate.day() != newdate.day())
@@ -232,7 +221,7 @@ int CtiStatistics::newHour(const RWTime &newtime, CtiStatisticsCounters_t counte
         // Completely reset the daily counter.
         _counter[ Daily ].resetAll();
         computeDailyInterval(_startStopTimePairs[Daily]);
-        _updateOnNextCompletion = true;
+        _dirty = true;
     }
 
     if(lastdate.month() != newdate.month())
@@ -244,7 +233,7 @@ int CtiStatistics::newHour(const RWTime &newtime, CtiStatisticsCounters_t counte
         // Completely reset the monthly counter.
         _counter[ Monthly ].resetAll( );
         computeMonthInterval(_startStopTimePairs[Monthly]);
-        _updateOnNextCompletion = true;
+        _dirty = true;
     }
 
     _previoustime = newtime;
@@ -833,13 +822,14 @@ void CtiStatistics::computeLastMonthInterval(pair<RWTime, RWTime> &myinterval)
     myinterval = make_pair(startdt, stopdt);
 }
 
-void CtiStatistics::markForUpdate()
+bool CtiStatistics::isDirty() const
 {
-    _updateOnNextCompletion = true;
+    return _dirty;
 }
 
-bool CtiStatistics::isUpdatable()
+CtiStatistics& CtiStatistics::resetDirty()
 {
-    return _updateOnNextCompletion;
+    _dirty = false;
+    return *this;
 }
 

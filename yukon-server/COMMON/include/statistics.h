@@ -13,8 +13,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/08/05 19:15:45 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/09/04 14:08:10 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -84,8 +84,8 @@ public:
 
     CtiStatistics& operator=(const CtiStatistics& aRef);
 
-    bool isUpdatable();
-    void markForUpdate();
+    bool isDirty() const;
+    CtiStatistics& resetDirty();
     void incrementRequest(const RWTime &stattime);
     void decrementRequest(const RWTime &stattime);
     void incrementAttempts(const RWTime &stattime, int CompletionStatus);        // This is a retry scenario

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTPERF.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2002/09/03 20:55:39 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2002/09/04 14:08:09 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -942,25 +942,55 @@ void statisticsRecord()
     {
         try
         {
-            int cnt = 0;
-            CtiLockGuard<CtiMutex> guard(gDeviceStatSetMux);
+            CtiStatisticsSet_t   dirtyStatSet;
             CtiStatisticsIterator_t dstatitr;
-            CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-            RWDBConnection conn = getConnection();
 
-            if(conn.isValid())
+            int cnt = 0;
             {
-                conn.beginTransaction();
+                pair< CtiStatisticsSet_t::iterator, bool > resultpair;
+                CtiLockGuard<CtiMutex> guard(gDeviceStatSetMux);    // Lock the global list for a minimal amount of time
+
                 for(dstatitr = gDeviceStatSet.begin(); dstatitr != gDeviceStatSet.end(); dstatitr++)
                 {
                     CtiStatistics &dStats = *dstatitr;
-                    if(dStats.isUpdatable())
+                    if(dStats.isDirty())
                     {
                         cnt++;
-                        dStats.Update(conn);
+
+                        // Try to insert. Return indicates success.
+                        resultpair = dirtyStatSet.insert(dStats);        // Copy and insert!
+
+                        if(resultpair.second == false)           // Insert was NOT successful.
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** UNX Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+                        else
+                        {
+                            dStats.resetDirty();                // It has been cleaned up now...
+                        }
                     }
                 }
-                conn.commitTransaction();
+
+                gDeviceStatDirty = false;
+            }
+
+            // Ok, now we stuff the dirtyStatSet out on the DB.  WITHOUT BLOCKING OPERATIONS!
+
+            {
+                CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+                RWDBConnection conn = getConnection();
+
+                if(conn.isValid())
+                {
+                    conn.beginTransaction();
+                    for(dstatitr = dirtyStatSet.begin(); dstatitr != dirtyStatSet.end(); dstatitr++)
+                    {
+                        CtiStatistics &dStats = *dstatitr;
+                        dStats.Update(conn);
+                    }
+                    conn.commitTransaction();
+                }
             }
 
             if(cnt)
@@ -968,8 +998,6 @@ void statisticsRecord()
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " Recorded " << cnt << " device's performance statistics." << endl;
             }
-
-            gDeviceStatDirty = false;
         }
         catch(...)
         {
