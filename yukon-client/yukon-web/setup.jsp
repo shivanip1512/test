@@ -221,7 +221,6 @@ if( isValidConn )
 				  <%= admin.getUsername() %> password:</td>
               <td width="435" valign="bottom" class="MainText">
                 <input type="password" name="admin_password">
-                <span class="defaultText"> yukon</span>
               </td>
             </tr>
 
