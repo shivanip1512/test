@@ -5,6 +5,7 @@ package com.cannontech.tools.msg;
  * Creation date: (6/13/00 10:32:57 AM)
  * @author: 
  */
+import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.message.dispatch.ClientConnection;
 
 public class PointGenerator {
@@ -19,10 +20,11 @@ public static void main(String[] args)
 		com.cannontech.clientutils.CTILogger.info("Usage:  PointChangeSource vangoghmachine port numberofchanges delay pointcount { pointID } { pointType }");
 		com.cannontech.clientutils.CTILogger.info("specify numberofchanges = -1 to keep sending changes forever");
 		com.cannontech.clientutils.CTILogger.info("note that port 1510 has been the default");
-		com.cannontech.clientutils.CTILogger.info("PointTypes : 0=STATUS  1=ANALOG");		
+		com.cannontech.clientutils.CTILogger.info("PointTypes : 0=Status  1=Analog  2=PulsAccum  3=DmdAccum  4=Calculated");		
 		System.exit(0);
 	}
-
+	
+	
 	String vanGogh = args[0];
 	int port = (Integer.decode(args[1])).intValue();
 	int numChanges = (Integer.decode(args[2])).intValue();
