@@ -81,8 +81,9 @@ self.name = "mainWin";
                 If you need help or have forgotten your password, click <a href="<%=request.getContextPath()%>/pwordreq.jsp">here</a>.
                 <br>
                 <br>
-                <a href="javascript:popUp('https://digitalid.verisign.com/as2/68fabe0200effc6cf9cd5459ba6a1736')"> 
-                <!--<img src="http://www.verisign.com/images/seals/Secure-White98x102.gif" width="98" height="102" border="0">--><img src="Verisign.gif" border="0"></a><br>
+<!--                <a href="javascript:popUp('https://digitalid.verisign.com/as2/68fabe0200effc6cf9cd5459ba6a1736')"> -->
+                <!--<img src="http://www.verisign.com/images/seals/Secure-White98x102.gif" width="98" height="102" border="0">-->
+<!--                <img src="Verisign.gif" border="0"></a><br>-->
               </div>
             </form>
 </td>
