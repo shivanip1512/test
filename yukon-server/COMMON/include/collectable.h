@@ -6,6 +6,9 @@
  *  Defines for DEFINE_COLLECTABLES
  */
 
+#define NOTIF_EMAIL_MSG_ID                702
+#define NOTIF_EMAIL_ATTCH_MSG_ID          703
+
 #define MSG_BASE                          1500
 #define MSG_NULL                          (MSG_BASE)
 #define MSG_DEFAULT                       ((MSG_BASE) + 5 )
