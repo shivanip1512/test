@@ -9,6 +9,9 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.HashMap;
 
+// custom hole!
+
+// and another customer hole!
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
