@@ -8,7 +8,6 @@ package com.cannontech.esub.test;
 import java.awt.Color;
 import java.awt.Font;
 
-import com.cannontech.database.cache.functions.YukonImageFuncs;
 import com.cannontech.esub.PointAttributes;
 import com.cannontech.esub.editor.Drawing;
 import com.cannontech.esub.element.CurrentAlarmsTable;
@@ -53,7 +52,7 @@ public class GenJLX {
 		graph.add(staticText);
 		
 		StaticImage staticImage = new StaticImage();
-		staticImage.setYukonImage(YukonImageFuncs.getLiteYukonImage("EsubLogo.gif"));
+		staticImage.setYukonImage("EsubLogo.gif");
 		staticImage.setCenter(400.0,45.0);
 		graph.add(staticImage);
 		
