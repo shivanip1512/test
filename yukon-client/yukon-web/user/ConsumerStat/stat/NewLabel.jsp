@@ -125,12 +125,12 @@ function goToManual() {
             <table width="200" border="0" cellspacing="5" cellpadding="0" align="center">
               <tr> 
                 <td> 
-                  <div align="center" style="border:solid 1px #666999; cursor:hand" onclick="goToSchedule()">
+                  <div align="center" style="border:solid 1px #666999; cursor:pointer" onclick="goToSchedule()">
 				    <span class="MainText"><%= AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_SCHED, "Schedule") %></span>
 				  </div>
                 </td>
                 <td> 
-                  <div align="center" style="border:solid 1px #666999; cursor:hand" onclick="goToManual()">
+                  <div align="center" style="border:solid 1px #666999; cursor:pointer" onclick="goToManual()">
 				    <span class="MainText"><%= AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_MANUAL, "Manual") %></span>
 				  </div>
                 </td>

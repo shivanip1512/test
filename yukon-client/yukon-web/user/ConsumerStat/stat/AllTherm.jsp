@@ -118,12 +118,12 @@ function goToManual(form) {
                 <table width="200" border="0" cellspacing="5" cellpadding="0" align="center">
                   <tr> 
                     <td> 
-                      <div align="center" style="border:solid 1px #666999; cursor:hand" onclick="goToSchedule(this.form)">
+                      <div align="center" style="border:solid 1px #666999; cursor:pointer" onclick="goToSchedule(this.form)">
 					    <span class="MainText"><%= AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_SCHED, "Schedule") %></span>
 					  </div>
                     </td>
                     <td> 
-                      <div align="center" style="border:solid 1px #666999; cursor:hand" onclick="goToManual(this.form)">
+                      <div align="center" style="border:solid 1px #666999; cursor:pointer" onclick="goToManual(this.form)">
 					    <span class="MainText"><%= AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_MANUAL, "Manual") %></span>
 					  </div>
                     </td>
