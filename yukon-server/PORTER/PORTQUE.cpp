@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTQUE.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/06/18 16:23:04 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/06/24 14:59:09 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -130,7 +130,7 @@ VOID QueueThread (VOID *Arg)
          for(; ++itr ;)
          {
             CtiDeviceBase *Dev = itr.value();
-            if(Dev->getType() == TYPE_CCU711)
+            if(!Dev->isInhibited() && Dev->getType() == TYPE_CCU711)
             {
                CtiTransmitter711Info *pInfo = (CtiTransmitter711Info*)Dev->getTrxInfo();
                if(pInfo != NULL)
