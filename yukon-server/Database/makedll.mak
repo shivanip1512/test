@@ -44,8 +44,8 @@ tbl_dialup.obj \
 tbl_direct.obj \
 tbl_dyn_ptalarming.obj \
 tbl_dyn_pttag.obj \
+tbl_dv_address.obj \
 tbl_dv_cbc.obj \
-tbl_dv_dnp.obj \
 tbl_dv_emetcon.obj \
 tbl_dv_expresscom.obj \
 tbl_dv_idlcremote.obj \
@@ -236,10 +236,6 @@ tbl_dv_cbc.obj:	tbl_dv_cbc.h dlldefs.h dllbase.h os2_2w32.h types.h \
 tbl_dv_cicust.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h types.h \
 		cticalls.h dsm2.h mutex.h guard.h sema.h logger.h thread.h \
 		tbl_dv_cicust.h yukon.h ctidbgmem.h
-tbl_dv_dnp.obj:	tbl_dv_address.h types.h logger.h thread.h mutex.h \
-		dlldefs.h guard.h dllbase.h os2_2w32.h cticalls.h dsm2.h \
-		dbmemobject.h dbaccess.h sema.h resolvers.h pointtypes.h \
-		yukon.h ctidbgmem.h db_entry_defines.h desolvers.h
 tbl_dv_emetcon.obj:	tbl_dv_emetcon.h dlldefs.h dllbase.h os2_2w32.h \
 		types.h cticalls.h dsm2.h mutex.h guard.h dbmemobject.h \
 		dbaccess.h sema.h resolvers.h pointtypes.h yukon.h \
