@@ -176,13 +176,25 @@ public abstract class LMProgramDirectGear
 		java.sql.ResultSet rset = null;
 
 		//get all the gears that have the passed in DeviceID
-		String[] tNames = { TABLE_NAME };
-		String sql =
-			com.cannontech.database.SqlUtils.createSqlString(
-				"select ",
-				SETTER_COLUMNS,
-				tNames,
-				" where deviceid=? order by GearNumber");
+		String sql = "select " 	+ SETTER_COLUMNS[1] + ", " 
+								+ SETTER_COLUMNS[2] + ", " 
+								+ SETTER_COLUMNS[3] + ", " 
+								+ SETTER_COLUMNS[4] + ", " 
+								+ SETTER_COLUMNS[5] + ", " 
+								+ SETTER_COLUMNS[6] + ", " 
+				     			+ SETTER_COLUMNS[7] + ", " 
+								+ SETTER_COLUMNS[8] + ", " 
+								+ SETTER_COLUMNS[9] + ", " 
+								+ SETTER_COLUMNS[10] + ", "
+								+ SETTER_COLUMNS[11] + ", "
+								+ SETTER_COLUMNS[12] + ", " 
+								+ SETTER_COLUMNS[13] + ", " 
+								+ SETTER_COLUMNS[14] + ", " 
+								+ SETTER_COLUMNS[15] + ", "
+								+ SETTER_COLUMNS[16] + ", " 
+								+ SETTER_COLUMNS[17] + ", "   
+								+ CONSTRAINT_COLUMNS[0] + " from " + TABLE_NAME +
+				" where deviceid=? order by GearNumber";
 		try
 		{
 			if (conn == null)
