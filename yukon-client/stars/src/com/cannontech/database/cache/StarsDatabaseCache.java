@@ -8,6 +8,7 @@ package com.cannontech.database.cache;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
@@ -168,6 +169,13 @@ public class StarsDatabaseCache implements com.cannontech.database.cache.DBChang
 		for (int i = 0; i < descendants.size(); i++) {
 			LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(i);
 			company.clear();
+			
+			Iterator it = getAllStarsYukonUsers().values().iterator();
+			while (it.hasNext()) {
+				StarsYukonUser user = (StarsYukonUser) it.next();
+				if (user.getEnergyCompanyID() == company.getLiteID())
+					it.remove();
+			}
 		}
 		
 		// Reload data into the cache if necessary
