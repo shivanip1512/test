@@ -153,6 +153,7 @@ int decodeTextCommandFile(const RWCString& fileName,
                 {
                     retVal = TEXT_CMD_FILE_UNABLE_TO_EDIT_ORIGINAL;
                 }
+                
                 logVector.erase(logVector.begin(), logVector.end());
                 commandVector.erase(commandVector.begin(), commandVector.end());
             }
@@ -307,17 +308,28 @@ bool outputCommandFile (const RWCString &aFileName, int aLineCnt, vector<RWCStri
             int     totalLines = aCmdVector.size();
             int     lineCnt=aLineCnt;
             int     retCode=0;
-            char    workString[50];
+            char    workString[500];
 
             while (lineCnt < totalLines)
             {
                 // move to end of file and write
                 retCode=SetFilePointer(tmpFileHandle,0,NULL,FILE_END);
                 retCode=SetEndOfFile (tmpFileHandle);
+                memset (workString, '\0',500);
                 strcpy (workString,aCmdVector[lineCnt].data());
-                workString[aCmdVector[lineCnt].length()-1] = '\r';
-                workString[aCmdVector[lineCnt].length()] = '\n';
-                retCode=WriteFile (tmpFileHandle,workString,aCmdVector[lineCnt].length()+1,&bytesWritten,NULL);
+
+                if (workString[aCmdVector[lineCnt].length()-1] == '\n')
+                {
+                    workString[aCmdVector[lineCnt].length()-1] = '\r';
+                    workString[aCmdVector[lineCnt].length()] = '\n';
+                    retCode=WriteFile (tmpFileHandle,workString,aCmdVector[lineCnt].length()+1,&bytesWritten,NULL);
+                }
+                else
+                {
+                    workString[aCmdVector[lineCnt].length()] = '\r';
+                    workString[aCmdVector[lineCnt].length()+1] = '\n';
+                    retCode=WriteFile (tmpFileHandle,workString,aCmdVector[lineCnt].length()+2,&bytesWritten,NULL);
+                }
                 lineCnt++;
             }
             CloseHandle (tmpFileHandle);
