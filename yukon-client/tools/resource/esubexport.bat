@@ -1,1 +1,1 @@
-java -classpath .;%YUKON_BASE%/server/web;../../lib/tools.jar;../../lib/common.jar;esub-editor.jar;../../lib/log4j-1.2.4.jar;../../lib/classes12.jar;../../lib/jtds.jar;../../lib/SqlServer.jar com.cannontech.tools.esub.ExportDrawings %1 %2 %3
+java -classpath .;%YUKON_BASE%/server/web;tools.jar;common.jar;esub-editor.jar;log4j-1.2.4.jar;classes12.jar;jtds.jar;SqlServer.jar com.cannontech.tools.esub.ExportDrawings %1 %2 %3

@@ -1,7 +1,7 @@
 @echo off
 if "%1" == "" goto usage
 
-java -Djava.class.path=.;%YUKON_BASE%/server/web;../../lib/classes12.jar;../../lib/tools.jar;../../lib/common.jar;../../lib/jtds.jar;../../lib/SqlServer.jar;../../lib/j2ee.jar;../../lib/log4j-1.2.4.jar;../../lib/yukonappserver.jar; com.cannontech.datagenerator.point.PointCreate %1 %2 %3
+java -Djava.class.path=.;%YUKON_BASE%/server/web;classes12.jar;tools.jar;common.jar;jtds.jar;SqlServer.jar;j2ee.jar;log4j-1.2.4.jar;yukonappserver.jar; com.cannontech.datagenerator.point.PointCreate %1 %2 %3
 goto done
 
 :usage

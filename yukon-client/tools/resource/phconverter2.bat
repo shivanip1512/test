@@ -1,1 +1,1 @@
-java -cp %YUKON_BASE%/server/web;../../lib/tools.jar;../../lib/common.jar;../../lib/classes12.jar;../../lib/jtds.jar;../../lib/sqlserver.jar;../../lib/log4j-1.2.4.jar;../../lib/led.jar com.cannontech.dbconverter.pthistory.PHConverter2 c:\yukon\dsm2 force
+java -cp %YUKON_BASE%/server/web;tools.jar;common.jar;classes12.jar;jtds.jar;sqlserver.jar;log4j-1.2.4.jar;led.jar com.cannontech.dbconverter.pthistory.PHConverter2 c:\yukon\dsm2 force

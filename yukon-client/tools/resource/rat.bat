@@ -1,1 +1,1 @@
-java -cp .;%YUKON_BASE%/server/web;../../lib/tools.jar;../../lib/common.jar;../../lib/classes12.jar;../../lib/jtds.jar;../../lib/SqlServer.jar;../../lib/log4j-1.2.4.jar;../../lib/yukonappserver.jar;../../lib/mail.jar;../../lib/rwav.jar;../../lib/j2ee.jar com.cannontech.tools.email.Rat
+java -cp .;%YUKON_BASE%/server/web;tools.jar;common.jar;classes12.jar;jtds.jar;SqlServer.jar;log4j-1.2.4.jar;yukonappserver.jar;mail.jar;rwav.jar;j2ee.jar com.cannontech.tools.email.Rat

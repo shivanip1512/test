@@ -1,1 +1,1 @@
-java -Djava.class.path=.;%YUKON_BASE%/server/web;../../lib/classes12.jar;../../lib/common.jar;../../lib/tools.jar;../../lib/jtds.jar;../../lib/SqlServer.jar;../../lib/yukonappserver.jar;../../lib/log4j-1.2.4.jar;../../lib/j2ee.jar; com.cannontech.tools.gui.DBToolsFrame
+java -Djava.class.path=.;%YUKON_BASE%/server/web;classes12.jar;common.jar;tools.jar;jtds.jar;SqlServer.jar;yukonappserver.jar;log4j-1.2.4.jar;j2ee.jar; com.cannontech.tools.gui.DBToolsFrame
