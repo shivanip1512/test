@@ -80,8 +80,6 @@ int CtiConfigParameters::RefreshConfigParameters()
 
    if((fp = fopen(FileName, "r")) != NULL)
    {
-      LastRefresh = RWTime();
-
       while(fgets(Buffer, MAX_CONFIG_BUFFER, fp))
       {
          // cout << Buffer;
@@ -362,16 +360,18 @@ bool CtiConfigParameters::checkForRefresh()
 {
    bool bRet = false;
 
-   // cout << " Checking " << RWTime() - RefreshRate << " > " << LastRefresh << endl;
    RWTime now;
-
 
    if(now.seconds() - (ULONG)RefreshRate > LastRefresh.seconds())
    {
-      // cout << " Reloading the CPARM data " << endl;
+        RWRecursiveLock<RWMutexLock>::TryLockGuard gaurd(mutex);           // Do it this way to reduce the need for locking to only once in a while, and no deadlocks.
+        if(gaurd.isAcquired() && now.seconds() - (ULONG)RefreshRate > LastRefresh.seconds())
+        {
+            LastRefresh = now;
       RefreshConfigParameters();
       bRet = true;
    }
+    }
 
    return bRet;
 }
