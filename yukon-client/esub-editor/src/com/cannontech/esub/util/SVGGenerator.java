@@ -28,6 +28,7 @@ import com.loox.jloox.LxRectangle;
  * Generates an svg document given an LxGraph
  */
 public class SVGGenerator {
+		
 	private static final String svgHeader = 
 		"<?xml version = \"1.0\" standalone = \"no\"?>\n" + 
 		"<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 20000802//EN\" \"http://www.w3.org/TR/2000/CR-SVG-20000802/DTD/svg-20000802.dtd\" >\n";
@@ -36,7 +37,7 @@ public class SVGGenerator {
 		"</svg>";
 		
 	public SVGGenerator() {
-	}
+	} 
 	
 	public void generate(Writer writer, Drawing d) throws IOException {
 		generate(writer, d.getLxGraph());
@@ -128,7 +129,7 @@ public class SVGGenerator {
 		//could become a problem, pay attention
 		Rectangle2D r = text.getBounds2D();
 		int x = (int) r.getMinX();
-		int y = (int) r.getMinY() + (int) ((r.getMaxY() - r.getMinY()) / 2);
+		int y = (int) r.getMaxY();// + (int) ((r.getMaxY() - r.getMinY()) / 2);
 
 		LxAbstractStyle style = text.getStyle();
 		
@@ -146,7 +147,7 @@ public class SVGGenerator {
 		
 		float opacity = text.getStyle().getTransparency();
 		
-		writer.write("<text id=\"" + text.getName() + "\" style=\"fill:rgb(" + fillColor.getRed() + "," + fillColor.getGreen() + "," + fillColor.getBlue() + ");font-family:'" + text.getFont().getFontName() + "';font-style:" + fontStyleStr + ";font-weight:" + fontWeightStr + ";font-size:" + text.getFont().getSize() + ";opacity:" + opacity + ";\" transform=\"translate(" + x + "," + y + ")\" >" + text.getText() + "</text>\n");		
+		writer.write("<text id=\"" + text.getName() + "\" x=\"" + x + "\" y=\"" + y + "\" style=\"fill:rgb(" + fillColor.getRed() + "," + fillColor.getGreen() + "," + fillColor.getBlue() + ");font-family:'" + text.getFont().getFontName() + "';font-style:" + fontStyleStr + ";font-weight:" + fontWeightStr + ";font-size:" + text.getFont().getSize() + ";opacity:" + opacity + ";\" >" + text.getText() + "</text>\n");		
 	}
 	/**
 	 * Writes out an svg path given an LxLine
@@ -234,8 +235,8 @@ public class SVGGenerator {
 		//Ignore stroke color for now, always use fill color
 		//could become a problem, pay attention
 		Rectangle2D r = text.getBounds2D();
-		int x = (int) r.getMinX();
-		int y = (int) r.getMinY() + (int) ((r.getMaxY() - r.getMinY()) / 2);
+		int x = (int) r.getMinX();		
+		int y = (int) r.getMaxY();// + (int) ((r.getMaxY() - r.getMinY()) / 2);
 
 		LxAbstractStyle style = text.getStyle();
 		
@@ -253,7 +254,8 @@ public class SVGGenerator {
 		
 		float opacity = text.getStyle().getTransparency();
 		
-		writer.write("<text id=\"" + text.getName() + "\" style=\"fill:rgb(" + fillColor.getRed() + "," + fillColor.getGreen() + "," + fillColor.getBlue() + ");font-family:'" + text.getFont().getFontName() + "';font-style:" + fontStyleStr + ";font-weight:" + fontWeightStr + ";font-size:" + text.getFont().getSize() + ";opacity:" + opacity + ";\" transform=\"translate(" + x + "," + y + ")\" >" + text.getText() + "</text>\n");	
+		writer.write("<text id=\"" + text.getName() + "\" x=\"" + x + "\" y=\"" + y + "\" style=\"fill:rgb(" + fillColor.getRed() + "," + fillColor.getGreen() + "," + fillColor.getBlue() + ");font-family:'" + text.getFont().getFontName() + "';font-style:" + fontStyleStr + ";font-weight:" + fontWeightStr + ";font-size:" + text.getFont().getSize() + ";opacity:" + opacity + ";\" >" + text.getText() + "</text>\n");			
+//		writer.write("<text id=\"" + text.getName() + "\" style=\"fill:rgb(" + fillColor.getRed() + "," + fillColor.getGreen() + "," + fillColor.getBlue() + ");font-family:'" + text.getFont().getFontName() + "';font-style:" + fontStyleStr + ";font-weight:" + fontWeightStr + ";font-size:" + text.getFont().getSize() + ";opacity:" + opacity + ";\" transform=\"translate(" + x + "," + y + ")\" >" + text.getText() + "</text>\n");	
 	}
 	
 	/**

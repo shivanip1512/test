@@ -10,6 +10,7 @@ import com.cannontech.esub.util.SVGGenerator;
 
 import com.loox.jloox.LxComponent;
 import com.loox.jloox.LxGraph;
+import com.loox.jloox.LxSVGGenerator;
 import com.loox.jloox.LxView;
 
 /**
@@ -73,6 +74,9 @@ public class Drawing {
 			e.printStackTrace();
 		}
 
+		LxSVGGenerator lxGen = new LxSVGGenerator();
+		lxGen.saveAsSVG(lxGraph, svgFileName + ".svg");
+		
 		setFileName(jlxFileName);
 	}
 
