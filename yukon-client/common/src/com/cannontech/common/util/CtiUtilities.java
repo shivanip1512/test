@@ -98,27 +98,6 @@ public final class CtiUtilities
 		}
 
 
-		/** Init our default timezone object here */
-		String[] s = TimeZone.getAvailableIDs( TimeZone.getDefault().getRawOffset() );
-
-		for( int i = 0; i < s.length; i++  )
-		{
-			//CTILogger.debug( " s["+i+"]= " + s[i] + ", ID=" + java.util.TimeZone.getTimeZone(s[i]).getDisplayName() );
-
-			//try to find the US timezone for ourselves (may need correcting once we go International)
-			if( s[i].startsWith("US/") )
-			{
-				TimeZone.setDefault( TimeZone.getTimeZone(s[i]) );				
-				CTILogger.debug( "Setting Default TimeZone: " + s[i] + ", " +
-					TimeZone.getDefault().getDisplayName(
-						TimeZone.getDefault().inDaylightTime(new Date()),
-						TimeZone.SHORT,
-						Locale.getDefault()) );
-
-				break;
-			}
-		}
-
 	}
 
 	public static final String DEFAULT_MSG_SOURCE = temp;
