@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.137 $
-* DATE         :  $Date: 2005/03/14 21:44:16 $
+* REVISION     :  $Revision: 1.138 $
+* DATE         :  $Date: 2005/03/16 23:04:21 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1203,7 +1203,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                 case TYPE_RTM:
                     {
                         CtiDeviceSingle *ds = static_cast<CtiDeviceSingle *>(Device.get());
-                        int protocolStatus;
+                        int protocolStatus = NoError;
 
                         if( Device->isSingle() )
                         {
@@ -1211,13 +1211,12 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                             {
                                 while( !ds->isTransactionComplete() )
                                 {
-                                    //  ACH - perhaps pass the VanGoghConnection object into the protocol,
-                                    //          so it can send messages to Dispatch directly... ?
-                                    ds->generate(trx);
+                                    if( !(status = ds->generate(trx)) )
+                                    {
+                                        status = Port->outInMess(trx, Device, traceList);
 
-                                    status = Port->outInMess(trx, Device, traceList);
-
-                                    protocolStatus = ds->decode(trx, status);
+                                        protocolStatus = ds->decode(trx, status);
+                                    }
 
                                     //  if we had no comm errors, copy over the protocol's status -
                                     //    it may've had non-comm-related errors (NACK, bad inbound address, etc)
