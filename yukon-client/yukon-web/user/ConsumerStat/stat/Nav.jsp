@@ -12,9 +12,9 @@
 						  {"Password.jsp", "Change Password"}
 						 };
 						   
-	String bulletImg = ServletUtils.getImageNames( ecWebSettings.getLogoLocation() )[1];
+	String bulletImg = ServletUtils.getECProperty( ecWebSettings.getURL(), ServletUtils.WEB_NAV_BULLET );
 	if (bulletImg == null) bulletImg = "Bullet.gif";
-	String bulletImg2 = ServletUtils.getImageNames( ecWebSettings.getLogoLocation() )[2];
+	String bulletImg2 = ServletUtils.getECProperty( ecWebSettings.getURL(), ServletUtils.WEB_NAV_BULLET2 );
 	if (bulletImg2 == null) bulletImg2 = "Bullet2.gif";
 						   
 	Hashtable links = new Hashtable();
