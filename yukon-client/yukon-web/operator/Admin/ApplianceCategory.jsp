@@ -26,8 +26,19 @@
     // list to put available programs in, contains LMProgramDirect objects
     ArrayList availPrograms = new ArrayList();
 	for (int i = 0; i < allPrograms.length; i++) {
-		StarsEnrLMProgram program = ServletUtils.getEnrollmentProgram(categories, allPrograms[i].getYukonID().intValue());
-		if (program == null) availPrograms.add( allPrograms[i] );
+		boolean programFound = false;
+		for (int j = 0; j < categories.getStarsApplianceCategoryCount(); j++) {
+			StarsApplianceCategory cat = categories.getStarsApplianceCategory(j);
+			for (int k = 0; k < cat.getStarsEnrLMProgramCount(); k++) {
+				if (cat.getStarsEnrLMProgram(k).getDeviceID() == allPrograms[i].getYukonID().intValue()) {
+					programFound = true;
+					break;
+				}
+			}
+			if (programFound) break;
+		}
+		
+		if (!programFound) availPrograms.add( allPrograms[i] );
 	}
 %>
 <html>
@@ -115,13 +126,13 @@ var yukonDescription = new Array();
 	yukonProgName[0] = "(none)";
 	yukonDescription[0] = "";
 <%
-	for (int i = 1; i <= availPrograms.size(); i++) {
+	for (int i = 0; i < availPrograms.size(); i++) {
 		LMProgramDirect program = (LMProgramDirect) availPrograms.get(i);
 %>
-	yukonProgID[<%= i %>] = -1;
-	yukonDeviceID[<%= i %>] = <%= program.getYukonID() %>;
-	yukonProgName[<%= i %>] = "<%= program.getYukonName() %>";
-	yukonDescription[<%= i %>] = "<%= ServerUtils.forceNotNone(program.getYukonDescription()).replaceAll("\"", "&quot;") %>".replace(/&quot;/g, '"');
+	yukonProgID[<%= i+1 %>] = -1;
+	yukonDeviceID[<%= i+1 %>] = <%= program.getYukonID() %>;
+	yukonProgName[<%= i+1 %>] = "<%= program.getYukonName() %>";
+	yukonDescription[<%= i+1 %>] = "<%= ServerUtils.forceNotNone(program.getYukonDescription()).replaceAll("\"", "&quot;") %>".replace(/&quot;/g, '"');
 <%	} %>
 
 var nextProgIdx = <%= category.getStarsEnrLMProgramCount() %>;
