@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/DSM2.H-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2002/08/28 14:53:00 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2002/11/20 22:03:59 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -330,7 +330,7 @@ IM_EX_CTIBASE ULONG OutMessageCount();
 #define ADDRESSERROR_TXT        "Address Does Not Match Expected Value"
 #define ADDRESSERROR_TYPE       ERRTYPESYSTEM
 #define ALPHABUFFERERROR        93
-#define ALPHABUFFERERROR_TXT    "Bad Data Buffer for Alpha"
+#define ALPHABUFFERERROR_TXT    "Bad Data Buffer for IED"
 #define ALPHABUFFERERROR_TYPE   ERRTYPESYSTEM
 
 #define BADSOCK                 98
