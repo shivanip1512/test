@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2003/03/31 15:09:24 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2003/04/21 22:12:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1920,7 +1920,7 @@ bool CtiProtocolVersacom::isConfig63Valid(LONG sn) const
     bool bstatus = false;
 
 
-    if(sn > gConfigParms.getValueAsULong("VERSACOM_CONFIG63_BASE", 0))
+    if(sn > gConfigParms.getValueAsULong("VERSACOM_CONFIG63_BASE", 400000000L ))
     {
         bstatus = true;
     }
