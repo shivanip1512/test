@@ -51,52 +51,8 @@
           <td  valign="top" width="101">
             <table width="101" border="0" cellspacing="0" cellpadding="0" height="200">
               <tr> 
-                <td height="20" valign="top" align="center"> 
-                  <table width="100" border="0" cellspacing="0" cellpadding="2" align="center">
-                    <tr> 
-                      <td class="TableCell1"><i><br>
-                        </i>Add SN range:</td>
-                    </tr>
-                    <tr> 
-                      <td><span class="TableCell1"><i>Device Type</i></span><br>
-                        <select name="select">
-                          <option>LCR 5000</option>
-                          <option>LCR 4000</option>
-                          <option>LCR 3000</option>
-                          <option>LCR 2000</option>
-                          <option>LCR 1000</option>
-                        </select>
-                      </td>
-                    </tr>
-                    <tr> 
-                      <td> 
-                        <table width="94" border="0" cellspacing="0" cellpadding="0">
-                          <tr> 
-                            <td class="TableCell1"><i>From</i></td>
-                          </tr>
-                          <tr> 
-                            <td> 
-                              <input type="text" name="textfield" size="10">
-                            </td>
-                          </tr>
-                          <tr> 
-                            <td class="TableCell1"><i>To</i></td>
-                          </tr>
-                          <tr> 
-                            <td> 
-                              <input type="text" name="textfield2" size="10">
-                            </td>
-                          </tr>
-                        </table>
-                      </td>
-                    </tr>
-                    <tr> 
-                      <td> 
-                        <input type="submit" name="Input" value="Submit">
-                      </td>
-                    </tr>
-                  </table>
-                </td>
+                <td height="20" valign="top" align="center" class = "TableCell1"><br><a class = "Link3" href ="AddSN.jsp">Add 
+                  SN Range</a> </td>
               </tr>
             </table>
           </td>

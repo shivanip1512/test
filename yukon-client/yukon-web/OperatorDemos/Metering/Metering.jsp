@@ -46,15 +46,15 @@ var userFriendlyName = new MakeArray("Select Format",
 							//"Microsoft Excel(.xls)");
 
 //var url = new MakeArray("",
-//						"/servlet/Download?",
-//						"/servlet/Download?",
-//                        "/servlet/Download?");
+//						"/scripts/jrun.dll/servlet/Download?",
+//						"/scripts/jrun.dll/servlet/Download?",
+//                        "/scripts/jrun.dll/servlet/Download?");
 
 function jumpPage(form)
 {
         i = form.ext.selectedIndex;
         if (i == 0) return;   
-        form.action="/servlet/Download?";
+        form.action="/scripts/jrun.dll/servlet/Download?";
         form.method="post";
         form.submit();
         form.ext.selectedIndex=siteopt[0];
@@ -179,18 +179,34 @@ function jumpPage(form)
                 <td width="340"> 
                   <table width="338" valign="top" cellpadding="0" cellspacing="0">
                     <tr> 
-                      <td width="89" valign="top"> 
-                        <div align="center"><a href="/OperatorDemos/Metering/Metering.jsp?<%= "db=" + dbAlias + "&gdefid=" + graphDefinitionId + "&start=" + dateFormat.format(saveStart) + "&period=" + java.net.URLEncoder.encode(period) + "&tab=graph&page=1&model=" + modelType%>" target="_self"><img src="GraphButton.gif" border="0"></a></div>
+                      <td width="86" valign="top"> 
+                        <form method="Get" action="/OperatorDemos/Metering/Metering.jsp?<%= "db=" + dbAlias + "&gdefid=" + graphDefinitionId + "&start=" + dateFormat.format(saveStart) + "&period=" + java.net.URLEncoder.encode(period) + "&tab=graph&page=1&model=" + modelType%>" target="_self">
+                          <div align="center"> 
+                            <input type="submit" name="tab" value="Graph">
+                          </div>
+                        </form>
                       </td>
-                      <td width="83" valign="top"> 
-                        <div align="center"><a href="/OperatorDemos/Metering/Metering.jsp?<%= "db=" + dbAlias + "&gdefid=" + graphDefinitionId + "&start=" + dateFormat.format(saveStart) + "&period=" + java.net.URLEncoder.encode(period) + "&tab=tab&page=1&model=" + modelType%>" target="_self"><img src="TabularButton.gif" border="0"></a></div>
+                      <td width="52" valign="top"> 
+                        <form method="Get" action="/OperatorDemos/Metering/Metering.jsp?<%= "db=" + dbAlias + "&gdefid=" + graphDefinitionId + "&start=" + dateFormat.format(saveStart) + "&period=" + java.net.URLEncoder.encode(period) + "&tab=tab&page=1&model=" + modelType%>" target="_self">
+                          <div align="left">
+                            <input type="submit" name="tab" value="Tab">
+                          </div>
+                        </form>
                       </td>
-                      <td width="89" valign="top"> 
-                        <div align="center"><a href="/OperatorDemos/Metering/Metering.jsp?<%= "db=" + dbAlias + "&gdefid=" + graphDefinitionId + "&start=" + dateFormat.format(saveStart) + "&period=" + java.net.URLEncoder.encode(period) + "&tab=summary&page=1&model=" + modelType %>" target="_self"><img src="SummaryButton.gif" border="0"></a></div>
+                      <td width="99" valign="top"> 
+                        <form method="Get" action="/OperatorDemos/Metering/Metering.jsp?<%= "db=" + dbAlias + "&gdefid=" + graphDefinitionId + "&start=" + dateFormat.format(saveStart) + "&period=" + java.net.URLEncoder.encode(period) + "&tab=summary&page=1&model=" + modelType %>" target="_self">
+                          <div align="left">
+                            <input type="submit" name="tab" value="Summary">
+                          </div>
+                        </form>
                       </td>
-                      <td width="75" valign="top"> 
-                        <div align="center"><a href="/OperatorDemos/oper_print_trend.jsp?<%= "db=" + dbAlias + "&gdefid=" + graphDefinitionId + "&start=" + dateFormat.format(saveStart) + "&period=" + java.net.URLEncoder.encode(period) + "&tab=" + tab + "&page=1&model=" + modelType %>" target="_self"><img src="FullButton.gif" border="0"></a></div>
-                      </td>
+                      <td width="99" valign="top"> 
+                        <form method="Get" action="/OperatorDemos/oper_print_trend.jsp?<%= "db=" + dbAlias + "&gdefid=" + graphDefinitionId + "&start=" + dateFormat.format(saveStart) + "&period=" + java.net.URLEncoder.encode(period) + "&tab=" + tab + "&page=1&model=" + modelType %>" target="_self">
+                          <div align="left">
+                            <input type="submit" name="print" value="Print View">
+                          </div>
+                        </form>
+						</td>
                     </tr>
                     <tr width="340"> </tr>
                   </table>
@@ -228,7 +244,7 @@ document.writeln('</FORM>');
              if( graphDefinitionId <= 0 )
              {
             %>
-                    <p class="Main"> No Data Set Selected </p>
+                    <p class="Main"> No Data Set Selected 
             <%
              }
              else             
@@ -249,7 +265,7 @@ document.writeln('</FORM>');
              else // "graph" is default
              {
               %>
-            <img src="/servlet/GraphGenerator?<%="db=" + dbAlias + "&gdefid=" + graphDefinitionId + "&width=556&height=433&format=gif&start=" + dateFormat.format(start) + "&end=" + dateFormat.format(stop)+ "&model=" + modelType%>" width="556" height="433"> 
+            <img src="/scripts/jrun.dll/servlet/GraphGenerator?<%="db=" + dbAlias + "&gdefid=" + graphDefinitionId + "&width=556&height=433&format=gif&start=" + dateFormat.format(start) + "&end=" + dateFormat.format(stop)+ "&model=" + modelType%>" width="556" height="433"> 
             <%
              }
           %>
