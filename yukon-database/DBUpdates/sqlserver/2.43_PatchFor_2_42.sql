@@ -250,5 +250,5 @@ insert into YukonGroupRole values(-231,-1,-106,-10601,'(none)');
 /******************************************************************************/
 /* VERSION INFO                                                               */
 /******************************************************************************/
-insert into CTIDatabase values('2.43', 'Ryan', '22-APR-2004', '---PATCH---', 0 );
+insert into CTIDatabase values('2.43', 'Ryan', '22-APR-2004', '---PATCH---');
 go
