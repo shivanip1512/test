@@ -61,6 +61,38 @@ public class StarsLMHwDescriptor extends com.cannontech.stars.xml.serialize.Star
         
         //-- initialize element descriptors
         
+        //-- _LMDeviceType
+        desc = new XMLFieldDescriptorImpl(LMDeviceType.class, "_LMDeviceType", "LMDeviceType", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsLMHw target = (StarsLMHw) object;
+                return target.getLMDeviceType();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsLMHw target = (StarsLMHw) object;
+                    target.setLMDeviceType( (LMDeviceType) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new LMDeviceType();
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _LMDeviceType
+        fieldValidator = new FieldValidator();
+        desc.setValidator(fieldValidator);
+        
         //-- _manufactureSerialNumber
         desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_manufactureSerialNumber", "ManufactureSerialNumber", NodeType.Element);
         desc.setImmutable(true);
@@ -97,140 +129,6 @@ public class StarsLMHwDescriptor extends com.cannontech.stars.xml.serialize.Star
             sv.setWhiteSpace("preserve");
             fieldValidator.setValidator(sv);
         }
-        desc.setValidator(fieldValidator);
-        
-        //-- _LMDeviceType
-        desc = new XMLFieldDescriptorImpl(LMDeviceType.class, "_LMDeviceType", "LMDeviceType", NodeType.Element);
-        handler = (new XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                StarsLMHw target = (StarsLMHw) object;
-                return target.getLMDeviceType();
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    StarsLMHw target = (StarsLMHw) object;
-                    target.setLMDeviceType( (LMDeviceType) value);
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new LMDeviceType();
-            }
-        } );
-        desc.setHandler(handler);
-        desc.setMultivalued(false);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _LMDeviceType
-        fieldValidator = new FieldValidator();
-        desc.setValidator(fieldValidator);
-        
-        //-- _deviceStatus
-        desc = new XMLFieldDescriptorImpl(DeviceStatus.class, "_deviceStatus", "DeviceStatus", NodeType.Element);
-        handler = (new XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                StarsLMHw target = (StarsLMHw) object;
-                return target.getDeviceStatus();
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    StarsLMHw target = (StarsLMHw) object;
-                    target.setDeviceStatus( (DeviceStatus) value);
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new DeviceStatus();
-            }
-        } );
-        desc.setHandler(handler);
-        desc.setMultivalued(false);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _deviceStatus
-        fieldValidator = new FieldValidator();
-        desc.setValidator(fieldValidator);
-        
-        //-- _installationNotes
-        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_installationNotes", "InstallationNotes", NodeType.Element);
-        desc.setImmutable(true);
-        handler = (new XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                StarsLMHw target = (StarsLMHw) object;
-                return target.getInstallationNotes();
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    StarsLMHw target = (StarsLMHw) object;
-                    target.setInstallationNotes( (java.lang.String) value);
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return null;
-            }
-        } );
-        desc.setHandler(handler);
-        desc.setMultivalued(false);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _installationNotes
-        fieldValidator = new FieldValidator();
-        { //-- local scope
-            StringValidator sv = new StringValidator();
-            sv.setWhiteSpace("preserve");
-            fieldValidator.setValidator(sv);
-        }
-        desc.setValidator(fieldValidator);
-        
-        //-- _starsLMHardwareHistory
-        desc = new XMLFieldDescriptorImpl(StarsLMHardwareHistory.class, "_starsLMHardwareHistory", "stars-LMHardwareHistory", NodeType.Element);
-        handler = (new XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                StarsLMHw target = (StarsLMHw) object;
-                return target.getStarsLMHardwareHistory();
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    StarsLMHw target = (StarsLMHw) object;
-                    target.setStarsLMHardwareHistory( (StarsLMHardwareHistory) value);
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new StarsLMHardwareHistory();
-            }
-        } );
-        desc.setHandler(handler);
-        desc.setMultivalued(false);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _starsLMHardwareHistory
-        fieldValidator = new FieldValidator();
         desc.setValidator(fieldValidator);
         
         //-- _starsLMHardwareConfigList

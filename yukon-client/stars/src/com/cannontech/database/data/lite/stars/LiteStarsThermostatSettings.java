@@ -6,7 +6,7 @@ import java.util.StringTokenizer;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.database.data.lite.LiteBase;
-import com.cannontech.stars.web.servlet.SOAPServer;
+import com.cannontech.stars.util.ECUtils;
 
 /**
  * @author yao
@@ -379,7 +379,7 @@ public class LiteStarsThermostatSettings extends LiteBase {
 		
 		for (int i = 0; i < thermostatSeasons.size(); i++) {
 			LiteLMThermostatSeason season = (LiteLMThermostatSeason) thermostatSeasons.get(i);
-			int dim3 = (season.getWebConfigurationID() == SOAPServer.YUK_WEB_CONFIG_ID_COOL) ? 2 : 3;
+			int dim3 = (season.getWebConfigurationID() == ECUtils.YUK_WEB_CONFIG_ID_COOL) ? 2 : 3;
 			int[] towCnt = { 0, 0, 0, 0, 0, 0, 0 };
 			
 			for (int j = 0; j < season.getSeasonEntries().size(); j++) {

@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsInventory.java,v 1.56 2003/10/31 21:00:11 zyao Exp $
+ * $Id: StarsInventory.java,v 1.57 2003/11/13 21:24:05 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -24,7 +24,7 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.56 $ $Date: 2003/10/31 21:00:11 $
+ * @version $Revision: 1.57 $ $Date: 2003/11/13 21:24:05 $
 **/
 public abstract class StarsInventory implements java.io.Serializable {
 
@@ -39,6 +39,13 @@ public abstract class StarsInventory implements java.io.Serializable {
      * keeps track of state for field: _inventoryID
     **/
     private boolean _has_inventoryID;
+
+    private int _deviceID;
+
+    /**
+     * keeps track of state for field: _deviceID
+    **/
+    private boolean _has_deviceID;
 
     private java.lang.String _category;
 
@@ -58,6 +65,12 @@ public abstract class StarsInventory implements java.io.Serializable {
 
     private java.lang.String _notes;
 
+    private DeviceStatus _deviceStatus;
+
+    private java.lang.String _installationNotes;
+
+    private StarsLMHardwareHistory _starsLMHardwareHistory;
+
 
       //----------------/
      //- Constructors -/
@@ -71,6 +84,13 @@ public abstract class StarsInventory implements java.io.Serializable {
       //-----------/
      //- Methods -/
     //-----------/
+
+    /**
+    **/
+    public void deleteDeviceID()
+    {
+        this._has_deviceID= false;
+    } //-- void deleteDeviceID() 
 
     /**
     **/
@@ -100,6 +120,16 @@ public abstract class StarsInventory implements java.io.Serializable {
     } //-- java.lang.String getCategory() 
 
     /**
+     * Returns the value of field 'deviceID'.
+     * 
+     * @return the value of field 'deviceID'.
+    **/
+    public int getDeviceID()
+    {
+        return this._deviceID;
+    } //-- int getDeviceID() 
+
+    /**
      * Returns the value of field 'deviceLabel'.
      * 
      * @return the value of field 'deviceLabel'.
@@ -108,6 +138,16 @@ public abstract class StarsInventory implements java.io.Serializable {
     {
         return this._deviceLabel;
     } //-- java.lang.String getDeviceLabel() 
+
+    /**
+     * Returns the value of field 'deviceStatus'.
+     * 
+     * @return the value of field 'deviceStatus'.
+    **/
+    public DeviceStatus getDeviceStatus()
+    {
+        return this._deviceStatus;
+    } //-- DeviceStatus getDeviceStatus() 
 
     /**
      * Returns the value of field 'installDate'.
@@ -128,6 +168,16 @@ public abstract class StarsInventory implements java.io.Serializable {
     {
         return this._installationCompany;
     } //-- InstallationCompany getInstallationCompany() 
+
+    /**
+     * Returns the value of field 'installationNotes'.
+     * 
+     * @return the value of field 'installationNotes'.
+    **/
+    public java.lang.String getInstallationNotes()
+    {
+        return this._installationNotes;
+    } //-- java.lang.String getInstallationNotes() 
 
     /**
      * Returns the value of field 'inventoryID'.
@@ -170,6 +220,16 @@ public abstract class StarsInventory implements java.io.Serializable {
     } //-- java.util.Date getRemoveDate() 
 
     /**
+     * Returns the value of field 'starsLMHardwareHistory'.
+     * 
+     * @return the value of field 'starsLMHardwareHistory'.
+    **/
+    public StarsLMHardwareHistory getStarsLMHardwareHistory()
+    {
+        return this._starsLMHardwareHistory;
+    } //-- StarsLMHardwareHistory getStarsLMHardwareHistory() 
+
+    /**
      * Returns the value of field 'voltage'.
      * 
      * @return the value of field 'voltage'.
@@ -178,6 +238,13 @@ public abstract class StarsInventory implements java.io.Serializable {
     {
         return this._voltage;
     } //-- Voltage getVoltage() 
+
+    /**
+    **/
+    public boolean hasDeviceID()
+    {
+        return this._has_deviceID;
+    } //-- boolean hasDeviceID() 
 
     /**
     **/
@@ -237,6 +304,17 @@ public abstract class StarsInventory implements java.io.Serializable {
     } //-- void setCategory(java.lang.String) 
 
     /**
+     * Sets the value of field 'deviceID'.
+     * 
+     * @param deviceID the value of field 'deviceID'.
+    **/
+    public void setDeviceID(int deviceID)
+    {
+        this._deviceID = deviceID;
+        this._has_deviceID = true;
+    } //-- void setDeviceID(int) 
+
+    /**
      * Sets the value of field 'deviceLabel'.
      * 
      * @param deviceLabel the value of field 'deviceLabel'.
@@ -245,6 +323,16 @@ public abstract class StarsInventory implements java.io.Serializable {
     {
         this._deviceLabel = deviceLabel;
     } //-- void setDeviceLabel(java.lang.String) 
+
+    /**
+     * Sets the value of field 'deviceStatus'.
+     * 
+     * @param deviceStatus the value of field 'deviceStatus'.
+    **/
+    public void setDeviceStatus(DeviceStatus deviceStatus)
+    {
+        this._deviceStatus = deviceStatus;
+    } //-- void setDeviceStatus(DeviceStatus) 
 
     /**
      * Sets the value of field 'installDate'.
@@ -266,6 +354,17 @@ public abstract class StarsInventory implements java.io.Serializable {
     {
         this._installationCompany = installationCompany;
     } //-- void setInstallationCompany(InstallationCompany) 
+
+    /**
+     * Sets the value of field 'installationNotes'.
+     * 
+     * @param installationNotes the value of field
+     * 'installationNotes'.
+    **/
+    public void setInstallationNotes(java.lang.String installationNotes)
+    {
+        this._installationNotes = installationNotes;
+    } //-- void setInstallationNotes(java.lang.String) 
 
     /**
      * Sets the value of field 'inventoryID'.
@@ -307,6 +406,17 @@ public abstract class StarsInventory implements java.io.Serializable {
     {
         this._removeDate = removeDate;
     } //-- void setRemoveDate(java.util.Date) 
+
+    /**
+     * Sets the value of field 'starsLMHardwareHistory'.
+     * 
+     * @param starsLMHardwareHistory the value of field
+     * 'starsLMHardwareHistory'.
+    **/
+    public void setStarsLMHardwareHistory(StarsLMHardwareHistory starsLMHardwareHistory)
+    {
+        this._starsLMHardwareHistory = starsLMHardwareHistory;
+    } //-- void setStarsLMHardwareHistory(StarsLMHardwareHistory) 
 
     /**
      * Sets the value of field 'voltage'.

@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id$
+ * $Id: StarsMCTDescriptor.java,v 1.1 2003/11/13 21:24:10 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,9 +25,9 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision$ $Date$
+ * @version $Revision: 1.1 $ $Date: 2003/11/13 21:24:10 $
 **/
-public class StarsGetNextOrderNumberResponseDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
+public class StarsMCTDescriptor extends StarsDeviceDescriptor {
 
 
       //--------------------------/
@@ -47,60 +47,18 @@ public class StarsGetNextOrderNumberResponseDescriptor extends org.exolab.castor
      //- Constructors -/
     //----------------/
 
-    public StarsGetNextOrderNumberResponseDescriptor() {
+    public StarsMCTDescriptor() {
         super();
-        xmlName = "stars-GetNextOrderNumberResponse";
+        setExtendsWithoutFlatten(new StarsDeviceDescriptor());
+        xmlName = "stars-MCT";
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
-        
-        //-- set grouping compositor
-        setCompositorAsSequence();
         //-- initialize attribute descriptors
         
         //-- initialize element descriptors
         
-        //-- _orderNumber
-        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_orderNumber", "OrderNumber", NodeType.Element);
-        desc.setImmutable(true);
-        handler = (new XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                StarsGetNextOrderNumberResponse target = (StarsGetNextOrderNumberResponse) object;
-                return target.getOrderNumber();
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    StarsGetNextOrderNumberResponse target = (StarsGetNextOrderNumberResponse) object;
-                    target.setOrderNumber( (java.lang.String) value);
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return null;
-            }
-        } );
-        desc.setHandler(handler);
-        desc.setRequired(true);
-        desc.setMultivalued(false);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _orderNumber
-        fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
-        { //-- local scope
-            StringValidator sv = new StringValidator();
-            sv.setWhiteSpace("preserve");
-            fieldValidator.setValidator(sv);
-        }
-        desc.setValidator(fieldValidator);
-        
-    } //-- com.cannontech.stars.xml.serialize.StarsGetNextOrderNumberResponseDescriptor()
+    } //-- com.cannontech.stars.xml.serialize.StarsMCTDescriptor()
 
 
       //-----------/
@@ -118,13 +76,15 @@ public class StarsGetNextOrderNumberResponseDescriptor extends org.exolab.castor
     **/
     public org.exolab.castor.mapping.ClassDescriptor getExtends()
     {
-        return null;
+        return super.getExtends();
     } //-- org.exolab.castor.mapping.ClassDescriptor getExtends() 
 
     /**
     **/
     public org.exolab.castor.mapping.FieldDescriptor getIdentity()
     {
+        if (identity == null)
+            return super.getIdentity();
         return identity;
     } //-- org.exolab.castor.mapping.FieldDescriptor getIdentity() 
 
@@ -132,7 +92,7 @@ public class StarsGetNextOrderNumberResponseDescriptor extends org.exolab.castor
     **/
     public java.lang.Class getJavaClass()
     {
-        return com.cannontech.stars.xml.serialize.StarsGetNextOrderNumberResponse.class;
+        return com.cannontech.stars.xml.serialize.StarsMCT.class;
     } //-- java.lang.Class getJavaClass() 
 
     /**

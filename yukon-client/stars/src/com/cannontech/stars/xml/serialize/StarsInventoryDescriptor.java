@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsInventoryDescriptor.java,v 1.56 2003/10/31 21:00:16 zyao Exp $
+ * $Id: StarsInventoryDescriptor.java,v 1.57 2003/11/13 21:24:11 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.56 $ $Date: 2003/10/31 21:00:16 $
+ * @version $Revision: 1.57 $ $Date: 2003/11/13 21:24:11 $
 **/
 public class StarsInventoryDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
@@ -93,6 +93,48 @@ public class StarsInventoryDescriptor extends org.exolab.castor.xml.util.XMLClas
         addFieldDescriptor(desc);
         
         //-- validation code for: _inventoryID
+        fieldValidator = new FieldValidator();
+        { //-- local scope
+            IntegerValidator iv = new IntegerValidator();
+            fieldValidator.setValidator(iv);
+        }
+        desc.setValidator(fieldValidator);
+        
+        //-- _deviceID
+        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_deviceID", "deviceID", NodeType.Attribute);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsInventory target = (StarsInventory) object;
+                if(!target.hasDeviceID())
+                    return null;
+                return new Integer(target.getDeviceID());
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsInventory target = (StarsInventory) object;
+                    // if null, use delete method for optional primitives 
+                    if (value == null) {
+                        target.deleteDeviceID();
+                        return;
+                    }
+                    target.setDeviceID( ((Integer)value).intValue());
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        } );
+        desc.setHandler(handler);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _deviceID
         fieldValidator = new FieldValidator();
         { //-- local scope
             IntegerValidator iv = new IntegerValidator();
@@ -415,6 +457,108 @@ public class StarsInventoryDescriptor extends org.exolab.castor.xml.util.XMLClas
             sv.setWhiteSpace("preserve");
             fieldValidator.setValidator(sv);
         }
+        desc.setValidator(fieldValidator);
+        
+        //-- _deviceStatus
+        desc = new XMLFieldDescriptorImpl(DeviceStatus.class, "_deviceStatus", "DeviceStatus", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsInventory target = (StarsInventory) object;
+                return target.getDeviceStatus();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsInventory target = (StarsInventory) object;
+                    target.setDeviceStatus( (DeviceStatus) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new DeviceStatus();
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _deviceStatus
+        fieldValidator = new FieldValidator();
+        desc.setValidator(fieldValidator);
+        
+        //-- _installationNotes
+        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_installationNotes", "InstallationNotes", NodeType.Element);
+        desc.setImmutable(true);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsInventory target = (StarsInventory) object;
+                return target.getInstallationNotes();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsInventory target = (StarsInventory) object;
+                    target.setInstallationNotes( (java.lang.String) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _installationNotes
+        fieldValidator = new FieldValidator();
+        { //-- local scope
+            StringValidator sv = new StringValidator();
+            sv.setWhiteSpace("preserve");
+            fieldValidator.setValidator(sv);
+        }
+        desc.setValidator(fieldValidator);
+        
+        //-- _starsLMHardwareHistory
+        desc = new XMLFieldDescriptorImpl(StarsLMHardwareHistory.class, "_starsLMHardwareHistory", "stars-LMHardwareHistory", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsInventory target = (StarsInventory) object;
+                return target.getStarsLMHardwareHistory();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsInventory target = (StarsInventory) object;
+                    target.setStarsLMHardwareHistory( (StarsLMHardwareHistory) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new StarsLMHardwareHistory();
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _starsLMHardwareHistory
+        fieldValidator = new FieldValidator();
         desc.setValidator(fieldValidator);
         
     } //-- com.cannontech.stars.xml.serialize.StarsInventoryDescriptor()

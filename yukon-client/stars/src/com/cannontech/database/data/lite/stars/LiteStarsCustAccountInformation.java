@@ -260,5 +260,18 @@ public class LiteStarsCustAccountInformation extends LiteBase {
 	public void setExtended(boolean extended) {
 		this.extended = extended;
 	}
+	
+	public boolean hasTwoWayThermostat(LiteStarsEnergyCompany energyCompany) {
+		for (int i = 0; i < getInventories().size(); i++) {
+			int invID = ((Integer) getInventories().get(i)).intValue();
+			LiteInventoryBase liteInv = energyCompany.getInventory( invID, true );
+			
+			if (liteInv instanceof LiteStarsLMHardware &&
+				((LiteStarsLMHardware) liteInv).isTwoWayThermostat())
+				return true;
+		}
+		
+		return false;
+	}
 
 }

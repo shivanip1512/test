@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsLogin.java,v 1.57 2003/11/13 21:24:13 zyao Exp $
+ * $Id: StarsDevice.java,v 1.1 2003/11/13 21:24:01 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,25 +23,42 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.57 $ $Date: 2003/11/13 21:24:13 $
+ * @version $Revision: 1.1 $ $Date: 2003/11/13 21:24:01 $
 **/
-public class StarsLogin extends StarsUsr 
+public abstract class StarsDevice extends com.cannontech.stars.xml.serialize.StarsInventory 
 implements java.io.Serializable
 {
+
+
+      //--------------------------/
+     //- Class/Member Variables -/
+    //--------------------------/
+
+    private java.lang.String _deviceName;
 
 
       //----------------/
      //- Constructors -/
     //----------------/
 
-    public StarsLogin() {
+    public StarsDevice() {
         super();
-    } //-- com.cannontech.stars.xml.serialize.StarsLogin()
+    } //-- com.cannontech.stars.xml.serialize.StarsDevice()
 
 
       //-----------/
      //- Methods -/
     //-----------/
+
+    /**
+     * Returns the value of field 'deviceName'.
+     * 
+     * @return the value of field 'deviceName'.
+    **/
+    public java.lang.String getDeviceName()
+    {
+        return this._deviceName;
+    } //-- java.lang.String getDeviceName() 
 
     /**
     **/
@@ -61,35 +78,26 @@ implements java.io.Serializable
      * 
      * @param out
     **/
-    public void marshal(java.io.Writer out)
-        throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
-    {
-        
-        Marshaller.marshal(this, out);
-    } //-- void marshal(java.io.Writer) 
+    public abstract void marshal(java.io.Writer out)
+        throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException;
 
     /**
      * 
      * 
      * @param handler
     **/
-    public void marshal(org.xml.sax.ContentHandler handler)
-        throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
-    {
-        
-        Marshaller.marshal(this, handler);
-    } //-- void marshal(org.xml.sax.ContentHandler) 
+    public abstract void marshal(org.xml.sax.ContentHandler handler)
+        throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException;
 
     /**
+     * Sets the value of field 'deviceName'.
      * 
-     * 
-     * @param reader
+     * @param deviceName the value of field 'deviceName'.
     **/
-    public static com.cannontech.stars.xml.serialize.StarsLogin unmarshal(java.io.Reader reader)
-        throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
+    public void setDeviceName(java.lang.String deviceName)
     {
-        return (com.cannontech.stars.xml.serialize.StarsLogin) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.StarsLogin.class, reader);
-    } //-- com.cannontech.stars.xml.serialize.StarsLogin unmarshal(java.io.Reader) 
+        this._deviceName = deviceName;
+    } //-- void setDeviceName(java.lang.String) 
 
     /**
     **/

@@ -36,15 +36,9 @@ implements java.io.Serializable
      //- Class/Member Variables -/
     //--------------------------/
 
-    private java.lang.String _manufactureSerialNumber;
-
     private LMDeviceType _LMDeviceType;
 
-    private DeviceStatus _deviceStatus;
-
-    private java.lang.String _installationNotes;
-
-    private StarsLMHardwareHistory _starsLMHardwareHistory;
+    private java.lang.String _manufactureSerialNumber;
 
     private java.util.Vector _starsLMHardwareConfigList;
 
@@ -94,26 +88,6 @@ implements java.io.Serializable
     {
         return _starsLMHardwareConfigList.elements();
     } //-- java.util.Enumeration enumerateStarsLMHardwareConfig() 
-
-    /**
-     * Returns the value of field 'deviceStatus'.
-     * 
-     * @return the value of field 'deviceStatus'.
-    **/
-    public DeviceStatus getDeviceStatus()
-    {
-        return this._deviceStatus;
-    } //-- DeviceStatus getDeviceStatus() 
-
-    /**
-     * Returns the value of field 'installationNotes'.
-     * 
-     * @return the value of field 'installationNotes'.
-    **/
-    public java.lang.String getInstallationNotes()
-    {
-        return this._installationNotes;
-    } //-- java.lang.String getInstallationNotes() 
 
     /**
      * Returns the value of field 'LMDeviceType'.
@@ -169,16 +143,6 @@ implements java.io.Serializable
     {
         return _starsLMHardwareConfigList.size();
     } //-- int getStarsLMHardwareConfigCount() 
-
-    /**
-     * Returns the value of field 'starsLMHardwareHistory'.
-     * 
-     * @return the value of field 'starsLMHardwareHistory'.
-    **/
-    public StarsLMHardwareHistory getStarsLMHardwareHistory()
-    {
-        return this._starsLMHardwareHistory;
-    } //-- StarsLMHardwareHistory getStarsLMHardwareHistory() 
 
     /**
      * Returns the value of field 'starsThermostatSettings'.
@@ -239,27 +203,6 @@ implements java.io.Serializable
     } //-- StarsLMHardwareConfig removeStarsLMHardwareConfig(int) 
 
     /**
-     * Sets the value of field 'deviceStatus'.
-     * 
-     * @param deviceStatus the value of field 'deviceStatus'.
-    **/
-    public void setDeviceStatus(DeviceStatus deviceStatus)
-    {
-        this._deviceStatus = deviceStatus;
-    } //-- void setDeviceStatus(DeviceStatus) 
-
-    /**
-     * Sets the value of field 'installationNotes'.
-     * 
-     * @param installationNotes the value of field
-     * 'installationNotes'.
-    **/
-    public void setInstallationNotes(java.lang.String installationNotes)
-    {
-        this._installationNotes = installationNotes;
-    } //-- void setInstallationNotes(java.lang.String) 
-
-    /**
      * Sets the value of field 'LMDeviceType'.
      * 
      * @param LMDeviceType the value of field 'LMDeviceType'.
@@ -309,17 +252,6 @@ implements java.io.Serializable
             _starsLMHardwareConfigList.addElement(starsLMHardwareConfigArray[i]);
         }
     } //-- void setStarsLMHardwareConfig(StarsLMHardwareConfig) 
-
-    /**
-     * Sets the value of field 'starsLMHardwareHistory'.
-     * 
-     * @param starsLMHardwareHistory the value of field
-     * 'starsLMHardwareHistory'.
-    **/
-    public void setStarsLMHardwareHistory(StarsLMHardwareHistory starsLMHardwareHistory)
-    {
-        this._starsLMHardwareHistory = starsLMHardwareHistory;
-    } //-- void setStarsLMHardwareHistory(StarsLMHardwareHistory) 
 
     /**
      * Sets the value of field 'starsThermostatSettings'.

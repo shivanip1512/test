@@ -98,7 +98,7 @@ public class UpdateLMHardwareConfigAction implements ActionBase {
         	LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
             
             StarsUpdateLMHardwareConfig updateHwConfig = reqOper.getStarsUpdateLMHardwareConfig();
-            LiteStarsLMHardware liteHw = energyCompany.getLMHardware( updateHwConfig.getInventoryID(), true );
+            LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory( updateHwConfig.getInventoryID(), true );
             
             ArrayList appList = new ArrayList();		// Appliances connected to the hardware before
             for (int i = 0; i < liteAcctInfo.getAppliances().size(); i++) {

@@ -1,7 +1,7 @@
 package com.cannontech.database.db.stars.customer;
 
+import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.database.db.DBPersistent;
-
 
 /**
  * <p>Title: </p>
@@ -94,8 +94,8 @@ public class CustomerAccount extends DBPersistent {
     public static int[] searchByPhoneNumber(Integer energyCompanyID, String phoneNumber) {
 		String sql = "SELECT DISTINCT ContactID FROM " + com.cannontech.database.db.contact.ContactNotification.TABLE_NAME
 				   + " WHERE Notification = '" + phoneNumber + "' AND ("
-				   + "NotificationCategoryID = " + com.cannontech.stars.web.servlet.SOAPServer.YUK_LIST_ENTRY_ID_HOME_PHONE
-				   + " OR NotificationCategoryID = " + com.cannontech.stars.web.servlet.SOAPServer.YUK_LIST_ENTRY_ID_WORK_PHONE + ")";
+				   + "NotificationCategoryID = " + YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE
+				   + " OR NotificationCategoryID = " + YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE + ")";
 		com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
 				sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
 		

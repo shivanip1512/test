@@ -13,6 +13,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
+import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
@@ -106,7 +107,8 @@ public class UpdateThermostatManualOptionAction implements ActionBase {
 			StarsUpdateThermostatManualOptionResponse resp = new StarsUpdateThermostatManualOptionResponse();
 			resp.setInventoryID( starsOption.getInventoryID() );
 			
-			LiteStarsLMHardware liteHw = energyCompany.getLMHardware( starsOption.getInventoryID(), true );
+			LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory( starsOption.getInventoryID(), true );
+			
     		if (liteHw.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL) {
     			if (ServerUtils.isOperator( user ))
 	            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
@@ -116,6 +118,7 @@ public class UpdateThermostatManualOptionAction implements ActionBase {
 	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Your thermostat is currently out of service, settings are not sent.<br>Please go to the \"Contact Us\" page if you want to contact our CSRs for further information.") );
             	return SOAPUtil.buildSOAPMessage( respOper );
     		}
+    		
     		if (liteHw.getManufactureSerialNumber().trim().length() == 0) {
     			if (ServerUtils.isOperator( user ))
 	            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
@@ -161,8 +164,8 @@ public class UpdateThermostatManualOptionAction implements ActionBase {
 			event.getLmThermostatManualEvent().setInventoryID( new Integer(liteHw.getInventoryID()) );
 			event.getLmThermostatManualEvent().setPreviousTemperature( new Integer(starsOption.getTemperature()) );
 			event.getLmThermostatManualEvent().setHoldTemperature( starsOption.getHold() ? "Y" : "N" );
-			event.getLmThermostatManualEvent().setOperationStateID( new Integer(ServerUtils.getThermOptionOpStateID(starsOption.getMode(), energyCompanyID)) );
-			event.getLmThermostatManualEvent().setFanOperationID( ServerUtils.getThermOptionFanOpID(starsOption.getFan(), energyCompanyID) );
+			event.getLmThermostatManualEvent().setOperationStateID( new Integer(ECUtils.getThermOptionOpStateID(starsOption.getMode(), energyCompany)) );
+			event.getLmThermostatManualEvent().setFanOperationID( ECUtils.getThermOptionFanOpID(starsOption.getFan(), energyCompany) );
 			
 			event.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
 			event = (com.cannontech.database.data.stars.event.LMThermostatManualEvent)

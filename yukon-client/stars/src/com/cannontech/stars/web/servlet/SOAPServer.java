@@ -43,15 +43,6 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 	
 	public static final int DEFAULT_ENERGY_COMPANY_ID = -1;
 	
-	public static final int YUK_LIST_ENTRY_ID_EMAIL = 1;
-	public static final int YUK_LIST_ENTRY_ID_PHONE = 2;
-	public static final int YUK_LIST_ENTRY_ID_FAX = 4;
-	public static final int YUK_LIST_ENTRY_ID_HOME_PHONE = 5;
-	public static final int YUK_LIST_ENTRY_ID_WORK_PHONE = 6;
-	
-	public static final int YUK_WEB_CONFIG_ID_COOL = -1;
-	public static final int YUK_WEB_CONFIG_ID_HEAT = -2;
-	
 	private static boolean clientLocal = true;
     
     // Instance of the SOAPServer object

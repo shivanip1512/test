@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id$
+ * $Id: StarsMCT.java,v 1.1 2003/11/13 21:24:10 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,45 +23,25 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision$ $Date$
+ * @version $Revision: 1.1 $ $Date: 2003/11/13 21:24:10 $
 **/
-public class StarsGetCallReportHistory implements java.io.Serializable {
-
-
-      //--------------------------/
-     //- Class/Member Variables -/
-    //--------------------------/
-
-    /**
-     * internal content storage
-    **/
-    private java.lang.String _content = "";
+public class StarsMCT extends StarsDevice 
+implements java.io.Serializable
+{
 
 
       //----------------/
      //- Constructors -/
     //----------------/
 
-    public StarsGetCallReportHistory() {
+    public StarsMCT() {
         super();
-        setContent("");
-    } //-- com.cannontech.stars.xml.serialize.StarsGetCallReportHistory()
+    } //-- com.cannontech.stars.xml.serialize.StarsMCT()
 
 
       //-----------/
      //- Methods -/
     //-----------/
-
-    /**
-     * Returns the value of field 'content'. The field 'content'
-     * has the following description: internal content storage
-     * 
-     * @return the value of field 'content'.
-    **/
-    public java.lang.String getContent()
-    {
-        return this._content;
-    } //-- java.lang.String getContent() 
 
     /**
     **/
@@ -101,26 +81,15 @@ public class StarsGetCallReportHistory implements java.io.Serializable {
     } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
-     * Sets the value of field 'content'. The field 'content' has
-     * the following description: internal content storage
-     * 
-     * @param content the value of field 'content'.
-    **/
-    public void setContent(java.lang.String content)
-    {
-        this._content = content;
-    } //-- void setContent(java.lang.String) 
-
-    /**
      * 
      * 
      * @param reader
     **/
-    public static com.cannontech.stars.xml.serialize.StarsGetCallReportHistory unmarshal(java.io.Reader reader)
+    public static com.cannontech.stars.xml.serialize.StarsMCT unmarshal(java.io.Reader reader)
         throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
     {
-        return (com.cannontech.stars.xml.serialize.StarsGetCallReportHistory) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.StarsGetCallReportHistory.class, reader);
-    } //-- com.cannontech.stars.xml.serialize.StarsGetCallReportHistory unmarshal(java.io.Reader) 
+        return (com.cannontech.stars.xml.serialize.StarsMCT) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.StarsMCT.class, reader);
+    } //-- com.cannontech.stars.xml.serialize.StarsMCT unmarshal(java.io.Reader) 
 
     /**
     **/

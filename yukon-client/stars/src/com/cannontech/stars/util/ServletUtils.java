@@ -71,6 +71,7 @@ public class ServletUtils {
 	public static final String ATT_REDIRECT = "REDIRECT";
 	public static final String ATT_REDIRECT2 = "REDIRECT2";
 	public static final String ATT_REFERRER = "REFERRER";
+	public static final String ATT_REFERRER2 = "REFERRER2";
 	public static final String ATT_OVER_PAGE_ACTION = "OVER_PAGE_ACTION";
 	
 	public static final String ATT_YUKON_USER = "YUKON_USER";

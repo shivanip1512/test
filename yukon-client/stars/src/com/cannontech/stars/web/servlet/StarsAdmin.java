@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.StreamTokenizer;
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
@@ -39,6 +38,7 @@ import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
 import com.cannontech.database.data.lite.stars.LiteCustomerContact;
 import com.cannontech.database.data.lite.stars.LiteCustomerFAQ;
 import com.cannontech.database.data.lite.stars.LiteInterviewQuestion;
+import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteLMProgram;
 import com.cannontech.database.data.lite.stars.LiteServiceCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
@@ -679,7 +679,7 @@ public class StarsAdmin extends HttpServlet {
 		if (liteAcctInfo.getInventories().size() != 1)
 			throw new Exception( "Cannot determine the LM hardware to be updated" );
 		int invID = ((Integer) liteAcctInfo.getInventories().get(0)).intValue();
-		LiteStarsLMHardware liteHw = energyCompany.getLMHardware( invID, true );
+		LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory( invID, true );
 		
 		StarsUpdateLMHardware updateHw = new StarsUpdateLMHardware();
 		setStarsLMHardware( updateHw, fields, energyCompany );
@@ -1502,18 +1502,21 @@ public class StarsAdmin extends HttpServlet {
 				LiteServiceCompany liteCompany = energyCompany.getServiceCompany( compID.intValue() );
 		    	
 		    	// set InstallationCompanyID = 0 for all inventory assigned to this service company
-		    	ArrayList hardwares = energyCompany.getAllLMHardwares();
-		    	for (int j = 0; j < hardwares.size(); j++) {
-		    		LiteStarsLMHardware liteHw = (LiteStarsLMHardware) hardwares.get(j);
-		    		if (liteHw.getInstallationCompanyID() == starsCompany.getCompanyID()) {
-		    			com.cannontech.database.data.stars.hardware.LMHardwareBase hardware =
-		    					(com.cannontech.database.data.stars.hardware.LMHardwareBase) StarsLiteFactory.createDBPersistent( liteHw );
-		    			com.cannontech.database.db.stars.hardware.InventoryBase inventory = hardware.getInventoryBase();
-		    			inventory.setInstallationCompanyID( new Integer(CtiUtilities.NONE_ID) );
-		    			inventory.setDbConnection( conn );
-		    			inventory.update();
+		    	ArrayList inventory = energyCompany.getAllInventory();
+		    	
+		    	for (int j = 0; j < inventory.size(); j++) {
+					LiteInventoryBase liteInv = (LiteInventoryBase) inventory.get(j);
+					
+		    		if (liteInv.getInstallationCompanyID() == starsCompany.getCompanyID()) {
+		    			com.cannontech.database.db.stars.hardware.InventoryBase invDB =
+		    					new com.cannontech.database.db.stars.hardware.InventoryBase();
+		    			StarsLiteFactory.setInventoryBase( invDB, liteInv );
 		    			
-		    			liteHw.setInstallationCompanyID( CtiUtilities.NONE_ID );
+		    			invDB.setInstallationCompanyID( new Integer(CtiUtilities.NONE_ID) );
+		    			invDB.setDbConnection( conn );
+		    			invDB.update();
+		    			
+		    			liteInv.setInstallationCompanyID( CtiUtilities.NONE_ID );
 		    		}
 		    	}
 		    	
@@ -1937,13 +1940,17 @@ public class StarsAdmin extends HttpServlet {
 	
 	private void updateCustomerSelectionList(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
         LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+        
         java.sql.Connection conn = null;
+        boolean autoCommit = true;
         
         try {
 			String listName = req.getParameter("ListName");
 			String ordering = req.getParameter("Ordering");
 			String label = req.getParameter("Label");
 			String whereIsList = req.getParameter("WhereIsList");
+			
+			String[] entryIDs = req.getParameterValues("EntryIDs");
 			String[] entryTexts = req.getParameterValues("EntryTexts");
 			String[] yukonDefIDs = req.getParameterValues("YukonDefIDs");
 			
@@ -1951,46 +1958,87 @@ public class StarsAdmin extends HttpServlet {
 			Hashtable selectionListTable = (Hashtable) user.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
 			
 			conn = com.cannontech.database.PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
+			autoCommit = conn.getAutoCommit();
+			conn.setAutoCommit( false );
 			
+			// Handle substation list
 			if (listName.equalsIgnoreCase(com.cannontech.database.db.stars.Substation.LISTNAME_SUBSTATION)) {
-				Iterator it = cList.getYukonListEntries().iterator();
-				while (it.hasNext()) {
-					YukonListEntry cEntry = (YukonListEntry) it.next();
-					it.remove();
-					
-					com.cannontech.database.data.stars.Substation substation =
-							new com.cannontech.database.data.stars.Substation();
-					substation.setSubstationID( new Integer(cEntry.getEntryID()) );
-					substation.setDbConnection( conn );
-					substation.delete();
-				}
+				// Create a copy of the old entry list, so we won't lose it if something goes wrong
+				ArrayList oldEntries = new ArrayList();
+				oldEntries.addAll( cList.getYukonListEntries() );
 				
-				if (entryTexts != null) {
-					if (ordering.equalsIgnoreCase("A"))
-						Arrays.sort( entryTexts );
-					
-					for (int i = 0; i < entryTexts.length; i++) {
-						com.cannontech.database.data.stars.Substation substation =
-								new com.cannontech.database.data.stars.Substation();
-						substation.getSubstation().setSubstationName( entryTexts[i] );
-						substation.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
-						substation.setDbConnection( conn );
-						substation.add();
+				ArrayList newEntries = new ArrayList();
+				
+				if (entryIDs != null) {
+					for (int i = 0; i < entryIDs.length; i++) {
+						int entryID = Integer.parseInt(entryIDs[i]);
 						
-			        	YukonListEntry cEntry = new YukonListEntry();
-			        	cEntry.setEntryID( substation.getSubstation().getSubstationID().intValue() );
-			        	cEntry.setEntryText( substation.getSubstation().getSubstationName() );
-						cList.getYukonListEntries().add( cEntry );
+						if (entryID == 0) {
+							// This is a new entry, add it to the new entry list
+							com.cannontech.database.data.stars.Substation substation =
+									new com.cannontech.database.data.stars.Substation();
+							substation.getSubstation().setSubstationName( entryTexts[i] );
+							substation.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+							substation.setDbConnection( conn );
+							substation.add();
+							
+							YukonListEntry cEntry = new YukonListEntry();
+							cEntry.setEntryID( substation.getSubstation().getSubstationID().intValue() );
+							cEntry.setEntryText( substation.getSubstation().getSubstationName() );
+							newEntries.add( cEntry );
+						}
+						else {
+							// This is an existing entry, update it
+							com.cannontech.database.db.stars.Substation subDB =
+									new com.cannontech.database.db.stars.Substation();
+							subDB.setSubstationID( new Integer(entryID) );
+							subDB.setSubstationName( entryTexts[i] );
+							subDB.setDbConnection( conn );
+							subDB.update();
+							
+							for (int j = 0; j < oldEntries.size(); j++) {
+								YukonListEntry cEntry = (YukonListEntry) oldEntries.get(j);
+								if (cEntry.getEntryID() == entryID) {
+									cEntry.setEntryText( entryTexts[i] );
+									newEntries.add( oldEntries.remove(j) );
+									break;
+								}
+							}
+						}
 					}
 				}
 				
+				// Delete all the remaining entries
+				for (int i = 0; i < oldEntries.size(); i++) {
+					int entryID = ((YukonListEntry) oldEntries.get(i)).getEntryID();
+					
+					try {
+						com.cannontech.database.data.stars.Substation substation =
+								new com.cannontech.database.data.stars.Substation();
+						substation.setSubstationID( new Integer(entryID) );
+						substation.setDbConnection( conn );
+						substation.delete();
+					}
+					catch (java.sql.SQLException e) {
+						e.printStackTrace();
+						session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Cannot delete substation with id = " + entryID + ", make sure it is not referenced");
+						
+						// Throw a special exception so we can rollback in the outer catch block
+						throw new java.sql.SQLException(null, null, -9999);
+					}
+				}
+				
+				conn.commit();
+				cList.setYukonListEntries( newEntries );
+				
 				StarsCustSelectionList starsList = StarsLiteFactory.createStarsCustSelectionList( cList );
 				selectionListTable.put( starsList.getListName(), starsList );
-	
+				
 	        	session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Substation list updated successfully");
 	        	return;
 			}
 			
+			// Handle customer opt out period list
 			if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD_CUS)) {
 				boolean sameAsOp = Boolean.valueOf( req.getParameter("SameAsOp") ).booleanValue();
 				if (sameAsOp && cList == null) return;
@@ -2002,6 +2050,8 @@ public class StarsAdmin extends HttpServlet {
 					list.setListID( new Integer(cList.getListID()) );
 					list.setDbConnection( conn );
 					list.delete();
+					
+					conn.commit();
 					
 					for (int i = 0; i < cList.getYukonListEntries().size(); i++) {
 						YukonListEntry cEntry = (YukonListEntry) cList.getYukonListEntries().get(i);
@@ -2023,15 +2073,7 @@ public class StarsAdmin extends HttpServlet {
 				}
 			}
 			
-			Iterator it = cList.getYukonListEntries().iterator();
-			while (it.hasNext()) {
-				YukonListEntry cEntry = (YukonListEntry) it.next();
-				it.remove();
-				YukonListFuncs.getYukonListEntries().remove( new Integer(cEntry.getEntryID()) );
-			}
-			com.cannontech.database.db.constants.YukonListEntry
-					.deleteAllListEntries( new Integer(cList.getListID()), conn );
-			
+			// Handle other selection lists
 			com.cannontech.database.db.constants.YukonSelectionList list =
 					StarsLiteFactory.createYukonSelectionList( cList );
 			list.setOrdering( ordering );
@@ -2040,42 +2082,113 @@ public class StarsAdmin extends HttpServlet {
 			list.setDbConnection( conn );
 			list.update();
 			
-			StarsLiteFactory.setConstantYukonSelectionList( cList, list );
+			// Create a copy of the old entry list, so we won't lose it if something goes wrong
+			ArrayList oldEntries = new ArrayList();
+			oldEntries.addAll( cList.getYukonListEntries() );
 			
-			if (entryTexts != null) {
-				for (int i = 0; i < entryTexts.length; i++) {
-					com.cannontech.database.db.constants.YukonListEntry entry =
-							new com.cannontech.database.db.constants.YukonListEntry();
-					entry.setListID( list.getListID() );
-					if (ordering.equalsIgnoreCase("O"))
-						entry.setEntryOrder( new Integer(i+1) );
-					else
-						entry.setEntryOrder( new Integer(0) );
-					entry.setEntryText( entryTexts[i] );
-					entry.setYukonDefID( Integer.valueOf(yukonDefIDs[i]) );
-					entry.setDbConnection( conn );
-					entry.add();
+			ArrayList newEntries = new ArrayList();
+			
+			if (entryIDs != null) {
+				for (int i = 0; i < entryIDs.length; i++) {
+					int entryID = Integer.parseInt( entryIDs[i] );
+					int entryOrder = ordering.equalsIgnoreCase("O")? (i+1) : 0;
 					
-					com.cannontech.common.constants.YukonListEntry cEntry =
-							new com.cannontech.common.constants.YukonListEntry();
-					StarsLiteFactory.setConstantYukonListEntry( cEntry, entry );
-					YukonListFuncs.getYukonListEntries().put( entry.getEntryID(), cEntry );
-					cList.getYukonListEntries().add( cEntry );
+					if (entryID == 0) {
+						// This is a new entry, add it to the new entry list
+						com.cannontech.database.db.constants.YukonListEntry entry =
+								new com.cannontech.database.db.constants.YukonListEntry();
+						entry.setListID( list.getListID() );
+						entry.setEntryOrder( new Integer(entryOrder) );
+						entry.setEntryText( entryTexts[i] );
+						entry.setYukonDefID( Integer.valueOf(yukonDefIDs[i]) );
+						entry.setDbConnection( conn );
+						entry.add();
+						
+						com.cannontech.common.constants.YukonListEntry cEntry =
+								new com.cannontech.common.constants.YukonListEntry();
+						StarsLiteFactory.setConstantYukonListEntry( cEntry, entry );
+						newEntries.add( cEntry );
+					}
+					else {
+						// This is an existing entry, update it
+						for (int j = 0; j < oldEntries.size(); j++) {
+							YukonListEntry cEntry = (YukonListEntry) oldEntries.get(j);
+							
+							if (cEntry.getEntryID() == entryID) {
+								com.cannontech.database.db.constants.YukonListEntry entry = StarsLiteFactory.createYukonListEntry(cEntry);
+								entry.setEntryOrder( new Integer(entryOrder) );
+								entry.setEntryText( entryTexts[i] );
+								entry.setYukonDefID( Integer.valueOf(yukonDefIDs[i]) );
+								entry.setDbConnection( conn );
+								entry.update();
+								
+								StarsLiteFactory.setConstantYukonListEntry(cEntry, entry);
+								newEntries.add( oldEntries.remove(j) );
+								break;
+							}
+						}
+					}
 				}
 			}
 			
+			// Delete all the remaining entries
+			for (int i = 0; i < oldEntries.size(); i++) {
+				int entryID = ((YukonListEntry) oldEntries.get(i)).getEntryID();
+				
+				try {
+					com.cannontech.database.db.constants.YukonListEntry entry =
+							new com.cannontech.database.db.constants.YukonListEntry();
+					entry.setEntryID( new Integer(entryID) );
+					entry.setDbConnection( conn );
+					entry.delete();
+				}
+				catch (java.sql.SQLException e) {
+					e.printStackTrace();
+					session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Cannot delete list entry with id = " + entryID + ", make sure it is not referenced");
+					
+					// Throw a special exception so we can rollback in the outer catch block
+					throw new java.sql.SQLException(null, null, -9999);
+				}
+			}
+			
+			conn.commit();
+			
+			// Update the constant objects (in both stars and core yukon cache)
+			for (int i = 0; i < cList.getYukonListEntries().size(); i++) {
+				YukonListEntry entry = (YukonListEntry) cList.getYukonListEntries().get(i);
+				YukonListFuncs.getYukonListEntries().remove( new Integer(entry.getEntryID()) );
+			}
+			
+			for (int i = 0; i < newEntries.size(); i++) {
+				YukonListEntry entry = (YukonListEntry) newEntries.get(i);
+				YukonListFuncs.getYukonListEntries().put( new Integer(entry.getEntryID()), entry );
+			}
+			
+			StarsLiteFactory.setConstantYukonSelectionList( cList, list );
+			cList.setYukonListEntries( newEntries );
+			
 			StarsCustSelectionList starsList = StarsLiteFactory.createStarsCustSelectionList( cList );
 			selectionListTable.put( starsList.getListName(), starsList );
-
+			
         	session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Customer selection list updated successfully");
         }
-        catch (Exception e) {
-			e.printStackTrace();
-			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to update customer selection list");
+        catch (java.sql.SQLException e) {
+        	if (e.getErrorCode() != -9999) {
+				e.printStackTrace();
+				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to update customer selection list");
+        	}
+			
+			try {
+				if (conn != null) conn.rollback();
+			}
+			catch (java.sql.SQLException e2) {}
         }
         finally {
         	try {
-	        	if (conn != null) conn.close();
+	        	if (conn != null) {
+	        		conn.setAutoCommit( autoCommit );
+	        		conn.close();
+	        	} 
         	}
         	catch (java.sql.SQLException e) {}
         }
@@ -2091,7 +2204,7 @@ public class StarsAdmin extends HttpServlet {
         	SOAPMessage reqMsg = action.build( req, session );
         	StarsUpdateThermostatSchedule updateSched = SOAPUtil.parseSOAPMsgForOperation( reqMsg ).getStarsUpdateThermostatSchedule();
         	
-        	LiteStarsLMHardware liteHw = energyCompany.getLMHardware( dftSettings.getInventoryID(), true );
+        	LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory( dftSettings.getInventoryID(), true );
         	StarsUpdateThermostatScheduleResponse resp = UpdateThermostatScheduleAction.updateThermostatSchedule( updateSched, liteHw, energyCompany );
 			UpdateThermostatScheduleAction.parseResponse( resp, dftSettings );
 			
@@ -2343,7 +2456,7 @@ public class StarsAdmin extends HttpServlet {
 			// Delete customer selection lists
 			for (int i = 0; i < energyCompany.getAllSelectionLists().size(); i++) {
 				YukonSelectionList cList = (YukonSelectionList) energyCompany.getAllSelectionLists().get(i);
-				if (cList.getListID() == energyCompany.FAKE_LIST_ID) continue;
+				if (cList.getListID() == LiteStarsEnergyCompany.FAKE_LIST_ID) continue;
 				
 				Integer listID = new Integer( cList.getListID() );
 				com.cannontech.database.data.constants.YukonSelectionList list =

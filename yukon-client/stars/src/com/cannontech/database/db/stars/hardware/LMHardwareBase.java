@@ -70,7 +70,7 @@ public class LMHardwareBase extends DBPersistent {
     public static int[] searchForLMHardware(int deviceType, String serialNo, int energyCompanyID, java.sql.Connection conn)
     throws java.sql.SQLException {
     	String sql = "SELECT inv.InventoryID FROM " + TABLE_NAME + " inv, ECToInventoryMapping map " +
-    			"WHERE LMHardwareTypeID = " + deviceType + " AND UPPER(ManufacturerSerialNumber) = UPPER('" + serialNo + "')" +
+    			"WHERE LMHardwareTypeID = " + deviceType + " AND UPPER(ManufacturerSerialNumber) LIKE UPPER('" + serialNo + "')" +
     			" AND inv.InventoryID >= 0 AND inv.InventoryID = map.InventoryID AND map.EnergyCompanyID = " + energyCompanyID;
     	java.sql.Statement stmt = conn.createStatement();
     	java.sql.ResultSet rset = stmt.executeQuery( sql );
@@ -89,7 +89,7 @@ public class LMHardwareBase extends DBPersistent {
     /**
      * Return map from serial number (String) to inventory id (Integer)
      */
-    public static java.util.Hashtable searchForSNRange(
+    public static java.util.Hashtable searchBySNRange(
     	int deviceType, String serialNoLB, String serialNoUB, int energyCompanyID, java.sql.Connection conn)
     	throws java.sql.SQLException
     {

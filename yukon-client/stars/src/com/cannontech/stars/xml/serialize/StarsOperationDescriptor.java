@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsOperationDescriptor.java,v 1.56 2003/10/31 21:00:18 zyao Exp $
+ * $Id: StarsOperationDescriptor.java,v 1.57 2003/11/13 21:24:13 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.56 $ $Date: 2003/10/31 21:00:18 $
+ * @version $Revision: 1.57 $ $Date: 2003/11/13 21:24:13 $
 **/
 public class StarsOperationDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
@@ -1049,134 +1049,6 @@ public class StarsOperationDescriptor extends org.exolab.castor.xml.util.XMLClas
         fieldValidator = new FieldValidator();
         desc.setValidator(fieldValidator);
         
-        //-- _starsGetCallReportHistory
-        desc = new XMLFieldDescriptorImpl(StarsGetCallReportHistory.class, "_starsGetCallReportHistory", "stars-GetCallReportHistory", NodeType.Element);
-        handler = (new XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                StarsOperation target = (StarsOperation) object;
-                return target.getStarsGetCallReportHistory();
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    StarsOperation target = (StarsOperation) object;
-                    target.setStarsGetCallReportHistory( (StarsGetCallReportHistory) value);
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new StarsGetCallReportHistory();
-            }
-        } );
-        desc.setHandler(handler);
-        desc.setMultivalued(false);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _starsGetCallReportHistory
-        fieldValidator = new FieldValidator();
-        desc.setValidator(fieldValidator);
-        
-        //-- _starsGetCallReportHistoryResponse
-        desc = new XMLFieldDescriptorImpl(StarsGetCallReportHistoryResponse.class, "_starsGetCallReportHistoryResponse", "stars-GetCallReportHistoryResponse", NodeType.Element);
-        handler = (new XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                StarsOperation target = (StarsOperation) object;
-                return target.getStarsGetCallReportHistoryResponse();
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    StarsOperation target = (StarsOperation) object;
-                    target.setStarsGetCallReportHistoryResponse( (StarsGetCallReportHistoryResponse) value);
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new StarsGetCallReportHistoryResponse();
-            }
-        } );
-        desc.setHandler(handler);
-        desc.setMultivalued(false);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _starsGetCallReportHistoryResponse
-        fieldValidator = new FieldValidator();
-        desc.setValidator(fieldValidator);
-        
-        //-- _starsGetNextOrderNumber
-        desc = new XMLFieldDescriptorImpl(StarsGetNextOrderNumber.class, "_starsGetNextOrderNumber", "stars-GetNextOrderNumber", NodeType.Element);
-        handler = (new XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                StarsOperation target = (StarsOperation) object;
-                return target.getStarsGetNextOrderNumber();
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    StarsOperation target = (StarsOperation) object;
-                    target.setStarsGetNextOrderNumber( (StarsGetNextOrderNumber) value);
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new StarsGetNextOrderNumber();
-            }
-        } );
-        desc.setHandler(handler);
-        desc.setMultivalued(false);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _starsGetNextOrderNumber
-        fieldValidator = new FieldValidator();
-        desc.setValidator(fieldValidator);
-        
-        //-- _starsGetNextOrderNumberResponse
-        desc = new XMLFieldDescriptorImpl(StarsGetNextOrderNumberResponse.class, "_starsGetNextOrderNumberResponse", "stars-GetNextOrderNumberResponse", NodeType.Element);
-        handler = (new XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                StarsOperation target = (StarsOperation) object;
-                return target.getStarsGetNextOrderNumberResponse();
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    StarsOperation target = (StarsOperation) object;
-                    target.setStarsGetNextOrderNumberResponse( (StarsGetNextOrderNumberResponse) value);
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new StarsGetNextOrderNumberResponse();
-            }
-        } );
-        desc.setHandler(handler);
-        desc.setMultivalued(false);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _starsGetNextOrderNumberResponse
-        fieldValidator = new FieldValidator();
-        desc.setValidator(fieldValidator);
-        
         //-- _starsCreateServiceRequest
         desc = new XMLFieldDescriptorImpl(StarsCreateServiceRequest.class, "_starsCreateServiceRequest", "stars-CreateServiceRequest", NodeType.Element);
         handler = (new XMLFieldHandler() {
@@ -1334,70 +1206,6 @@ public class StarsOperationDescriptor extends org.exolab.castor.xml.util.XMLClas
         addFieldDescriptor(desc);
         
         //-- validation code for: _starsDeleteServiceRequest
-        fieldValidator = new FieldValidator();
-        desc.setValidator(fieldValidator);
-        
-        //-- _starsGetServiceRequestHistory
-        desc = new XMLFieldDescriptorImpl(StarsGetServiceRequestHistory.class, "_starsGetServiceRequestHistory", "stars-GetServiceRequestHistory", NodeType.Element);
-        handler = (new XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                StarsOperation target = (StarsOperation) object;
-                return target.getStarsGetServiceRequestHistory();
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    StarsOperation target = (StarsOperation) object;
-                    target.setStarsGetServiceRequestHistory( (StarsGetServiceRequestHistory) value);
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new StarsGetServiceRequestHistory();
-            }
-        } );
-        desc.setHandler(handler);
-        desc.setMultivalued(false);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _starsGetServiceRequestHistory
-        fieldValidator = new FieldValidator();
-        desc.setValidator(fieldValidator);
-        
-        //-- _starsGetServiceRequestHistoryResponse
-        desc = new XMLFieldDescriptorImpl(StarsGetServiceRequestHistoryResponse.class, "_starsGetServiceRequestHistoryResponse", "stars-GetServiceRequestHistoryResponse", NodeType.Element);
-        handler = (new XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                StarsOperation target = (StarsOperation) object;
-                return target.getStarsGetServiceRequestHistoryResponse();
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    StarsOperation target = (StarsOperation) object;
-                    target.setStarsGetServiceRequestHistoryResponse( (StarsGetServiceRequestHistoryResponse) value);
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new StarsGetServiceRequestHistoryResponse();
-            }
-        } );
-        desc.setHandler(handler);
-        desc.setMultivalued(false);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _starsGetServiceRequestHistoryResponse
         fieldValidator = new FieldValidator();
         desc.setValidator(fieldValidator);
         

@@ -22,6 +22,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
+import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.OptOutEventQueue;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
@@ -348,15 +349,19 @@ public class ProgramOptOutAction implements ActionBase {
 	 */
 	private static ArrayList getHardwareIDs(LiteStarsCustAccountInformation liteAcctInfo) {
         ArrayList hwIDList = new ArrayList();
+        
         for (int i = 0; i < liteAcctInfo.getLmPrograms().size(); i++) {
         	LiteStarsLMProgram program = (LiteStarsLMProgram) liteAcctInfo.getLmPrograms().get(i);
+        	
         	for (int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {
         		LiteStarsAppliance appliance = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(j);
+        		
         		if (appliance.getLmProgramID() == program.getLmProgram().getProgramID()) {
         			if (appliance.getInventoryID() > 0) {
 	        			Integer hardwareID = new Integer( appliance.getInventoryID() );
 	        			if (!hwIDList.contains( hardwareID )) hwIDList.add( hardwareID );
         			}
+        			
         			break;
         		}
         	}
@@ -374,11 +379,11 @@ public class ProgramOptOutAction implements ActionBase {
 
         for (int i = 0; i < hwIDList.size(); i++) {
         	Integer invID = (Integer) hwIDList.get(i);
-        	LiteStarsLMHardware liteHw = energyCompany.getLMHardware( invID.intValue(), true );
+        	LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory( invID.intValue(), true );
         	
     		if (liteHw.getManufactureSerialNumber().trim().length() == 0)
     			throw new Exception( "The manufacturer serial # of the hardware cannot be empty" );
-
+            
             commands[i] = "putconfig serial " + liteHw.getManufactureSerialNumber() +
             			" service out temp offhours " + String.valueOf(offHours) + routeStr;
         }
@@ -439,10 +444,10 @@ public class ProgramOptOutAction implements ActionBase {
         ArrayList hwIDList = getHardwareIDs( liteAcctInfo );
         for (int i = 0; i < hwIDList.size(); i++) {
         	Integer invID = (Integer) hwIDList.get(i);
-        	LiteStarsLMHardware liteHw = energyCompany.getLMHardware( invID.intValue(), true );
+        	LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory( invID.intValue(), true );
         
     		// Add "Temp Opt Out" and "Future Activation" to hardware events
-    		ServerUtils.removeFutureActivationEvents( liteHw.getLmHardwareHistory(), energyCompany );
+			ECUtils.removeFutureActivationEvents( liteHw.getInventoryHistory(), energyCompany );
 			com.cannontech.database.data.multi.MultiDBPersistent multiDB = new com.cannontech.database.data.multi.MultiDBPersistent();
     		
     		com.cannontech.database.data.stars.event.LMHardwareEvent event = new com.cannontech.database.data.stars.event.LMHardwareEvent();
@@ -476,14 +481,14 @@ public class ProgramOptOutAction implements ActionBase {
 			for (int j = 0; j < multiDB.getDBPersistentVector().size(); j++) {
 				event = (com.cannontech.database.data.stars.event.LMHardwareEvent) multiDB.getDBPersistentVector().get(j);
 				LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) StarsLiteFactory.createLite( event );
-				liteHw.getLmHardwareHistory().add( liteEvent );
+				liteHw.getInventoryHistory().add( liteEvent );
 			}
 			liteHw.updateDeviceStatus();
 			
 			StarsLMHardwareHistory hwHist = new StarsLMHardwareHistory();
 			hwHist.setInventoryID( liteHw.getInventoryID() );
-			for (int j = 0; j < liteHw.getLmHardwareHistory().size(); j++) {
-				LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) liteHw.getLmHardwareHistory().get(j);
+			for (int j = 0; j < liteHw.getInventoryHistory().size(); j++) {
+				LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) liteHw.getInventoryHistory().get(j);
 				StarsLMHardwareEvent starsEvent = new StarsLMHardwareEvent();
 				StarsLiteFactory.setStarsLMCustomerEvent( starsEvent, liteEvent );
 				hwHist.addStarsLMHardwareEvent( starsEvent );

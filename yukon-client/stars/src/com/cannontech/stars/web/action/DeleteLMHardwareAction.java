@@ -8,13 +8,14 @@ import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
-import com.cannontech.stars.util.ServerUtils;
+import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.InventoryManager;
@@ -40,6 +41,11 @@ import com.cannontech.stars.xml.util.StarsConstants;
  * Window>Preferences>Java>Code Generation.
  */
 public class DeleteLMHardwareAction implements ActionBase {
+	
+	public static final int TARGET_DELETE_FROM_INVENTORY = -1;
+	public static final int TARGET_TO_WAREHOUSE = 0;
+	public static final int TARGET_ACCOUNT_DELETED = 1;
+	public static final int TARGET_TO_ANOTHER_ACCOUNT = 2;
 
 	/**
 	 * @see com.cannontech.stars.web.action.ActionBase#build(HttpServletRequest, HttpSession)
@@ -56,8 +62,8 @@ public class DeleteLMHardwareAction implements ActionBase {
 			}
 			else {
 				// Request redirected from InventoryManager
-				operation = (StarsOperation) session.getAttribute(InventoryManager.STARS_LM_HARDWARE_OPER_REQ);
-				session.removeAttribute( InventoryManager.STARS_LM_HARDWARE_OPER_REQ );
+				operation = (StarsOperation) session.getAttribute(InventoryManager.STARS_INVENTORY_OPERATION);
+				session.removeAttribute( InventoryManager.STARS_INVENTORY_OPERATION );
 			}
 			
 			return SOAPUtil.buildSOAPMessage( operation );
@@ -91,36 +97,25 @@ public class DeleteLMHardwareAction implements ActionBase {
 			conn = com.cannontech.database.PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
         	
 			StarsDeleteLMHardware delHw = reqOper.getStarsDeleteLMHardware();
-			LiteStarsLMHardware liteHw = energyCompany.getLMHardware( delHw.getInventoryID(), true );
-			if (liteHw.getAccountID() == 0) {
+			LiteInventoryBase liteInv = energyCompany.getInventory( delHw.getInventoryID(), true );
+			
+			if (liteInv.getAccountID() == 0) {
 				respOper.setStarsFailure( StarsFactory.newStarsFailure(
 						StarsConstants.FAILURE_CODE_SESSION_INVALID, "The hardware doesn't belong to any customer account") );
 				return SOAPUtil.buildSOAPMessage( respOper );
 			}
             
-			LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) user.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
-			boolean fromInventory = false;
-			if (liteAcctInfo == null || liteAcctInfo.getAccountID() != liteHw.getAccountID()) {
-				// Request from InventoryDetail.jsp
-				liteAcctInfo = energyCompany.getCustAccountInformation( liteHw.getAccountID(), true );
-				fromInventory = true;
-			}
+			LiteStarsCustAccountInformation liteAcctInfo = energyCompany.getCustAccountInformation( liteInv.getAccountID(), true );
 			
-			removeLMHardware( delHw.getInventoryID(), delHw.getDeleteFromInventory(), liteAcctInfo, null, energyCompany, conn );
+			int target = delHw.getDeleteFromInventory()? TARGET_DELETE_FROM_INVENTORY : TARGET_TO_WAREHOUSE;
+			removeInventory( delHw.getInventoryID(), liteAcctInfo, energyCompany, target, conn );
         	
-        	if (fromInventory) {
-				StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteHw.getAccountID() );
-				if (starsAcctInfo != null)
-					parseResponse( delHw.getInventoryID(), starsAcctInfo );
-				
-				respOper.setStarsSuccess( new StarsSuccess() );
-				return SOAPUtil.buildSOAPMessage( respOper );
-        	}
-        	
-			StarsSuccess success = new StarsSuccess();
-			success.setDescription("Hardware deleted successfully");
-            
-			respOper.setStarsSuccess( success );
+        	// Response will be handled here, instead of in parse()
+			StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteInv.getAccountID() );
+			if (starsAcctInfo != null)
+				parseResponse( delHw.getInventoryID(), starsAcctInfo );
+			
+			respOper.setStarsSuccess( new StarsSuccess() );
 			return SOAPUtil.buildSOAPMessage( respOper );
 		}
 		catch (Exception e) {
@@ -158,20 +153,6 @@ public class DeleteLMHardwareAction implements ActionBase {
 				return failure.getStatusCode();
 			}
 			
-			if (operation.getStarsSuccess() == null)
-				return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
-			if (operation.getStarsSuccess().getDescription() == null)
-				return 0;
-			
-			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
-			StarsCustAccountInformation accountInfo = (StarsCustAccountInformation)
-					user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
-			if (accountInfo == null)
-				return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
-			
-			StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
-			parseResponse( reqOper.getStarsDeleteLMHardware().getInventoryID(), accountInfo );
-			
 			return 0;
 		}
 		catch (Exception e) {
@@ -196,92 +177,109 @@ public class DeleteLMHardwareAction implements ActionBase {
 	}
 	
 	/**
-	 * Remove a hardware from a customer account
-	 * @param invID Inventory ID of the hardware.
-	 * @param deletePerm Whether to delete the hardware from inventory permanantly.
-	 * If the value is true, parameter nextAccount will be ignored.
-	 * @param liteAcctInfo Lite object of the account the hardware is to be removed from.
-	 * @param nextAccount Lite object of the account the hardware is to be moved to.
-	 * If the hardware is to be moved to the warehouse, set the parameter value to null. Otherwise,
-	 * the database update will be withheld until the hardware is added to the next account.
-	 * @param energyCompany Lite object of the energy company the hardware belongs to.
-	 * @param conn Database connection.
-	 * @throws java.sql.SQLException
+	 * Remove a hardware from a customer account. According to the "target" parameter
+	 * the removed hardware could be deleted from inventory permanantly, moved to warehouse,
+	 * moved to warehouse because account is deleted, or moved to another customer account.
 	 */
-	public static void removeLMHardware(int invID, boolean deletePerm, LiteStarsCustAccountInformation liteAcctInfo,
-	LiteStarsCustAccountInformation nextAccount, LiteStarsEnergyCompany energyCompany, java.sql.Connection conn)
-	throws java.sql.SQLException
+	public static void removeInventory(int invID, LiteStarsCustAccountInformation liteAcctInfo,
+			LiteStarsEnergyCompany energyCompany, int target, java.sql.Connection conn)
+			throws java.sql.SQLException
 	{
-		LiteStarsLMHardware liteHw = energyCompany.getLMHardware( invID, true );
+		LiteInventoryBase liteInv = energyCompany.getInventory( invID, true );
         
-        if (deletePerm) {
-        	com.cannontech.database.data.stars.hardware.LMHardwareBase hardware =
-        			new com.cannontech.database.data.stars.hardware.LMHardwareBase();
-        	hardware.setInventoryID( new Integer(invID) );
-        	hardware.setDbConnection( conn );
-        	hardware.delete();
+        if (target == TARGET_DELETE_FROM_INVENTORY) {
+        	com.cannontech.database.data.stars.hardware.InventoryBase inventory =
+        			new com.cannontech.database.data.stars.hardware.InventoryBase();
+			inventory.setInventoryID( new Integer(invID) );
+			inventory.setDbConnection( conn );
+			inventory.delete();
         	
-        	energyCompany.deleteLMHardware( invID );
+        	energyCompany.deleteInventory( invID );
         }
         else {
 			// Add "Uninstall" to hardware events
 			com.cannontech.database.data.stars.event.LMHardwareEvent event = new com.cannontech.database.data.stars.event.LMHardwareEvent();
 			com.cannontech.database.db.stars.event.LMHardwareEvent eventDB = event.getLMHardwareEvent();
 			com.cannontech.database.db.stars.event.LMCustomerEventBase eventBaseDB = event.getLMCustomerEventBase();
-        
+        	
 			int hwEventEntryID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE ).getEntryID();
 			int uninstallActID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_UNINSTALL ).getEntryID();
-    	
+    		
 			eventBaseDB.setEventTypeID( new Integer(hwEventEntryID) );
 			eventBaseDB.setActionID( new Integer(uninstallActID) );
 			eventBaseDB.setEventDateTime( new java.util.Date() );
-			String notes = "Move hardware from account #" + liteAcctInfo.getCustomerAccount().getAccountNumber();
-			if (nextAccount == null)
-				notes += " to warehouse";
-			else
-				notes += " to account #" + nextAccount.getCustomerAccount().getAccountNumber();
-			eventBaseDB.setNotes( notes );
+			eventBaseDB.setNotes( "Removed from account #" + liteAcctInfo.getCustomerAccount().getAccountNumber() );
 			eventDB.setInventoryID( new Integer(invID) );
 			event.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
 			event.setDbConnection( conn );
 			event.add();
     	
-			if (nextAccount == null) {
-				com.cannontech.database.data.stars.hardware.LMHardwareBase hw =
-						(com.cannontech.database.data.stars.hardware.LMHardwareBase) StarsLiteFactory.createDBPersistent(liteHw);
-				hw.setDbConnection( conn );
-				hw.deleteLMHardwareBase( false );
-			
-				StarsLiteFactory.setLiteLMHardwareBase( liteHw, hw );
+			if (target == TARGET_TO_WAREHOUSE || target == TARGET_ACCOUNT_DELETED) {
+				LiteInventoryBase liteInvNew = null;
+				
+				if (liteInv instanceof LiteStarsLMHardware) {
+					com.cannontech.database.data.stars.hardware.LMHardwareBase hardware =
+							new com.cannontech.database.data.stars.hardware.LMHardwareBase();
+					StarsLiteFactory.setLMHardwareBase( hardware, (LiteStarsLMHardware)liteInv );
+					hardware.setDbConnection( conn );
+					hardware.deleteLMHardwareBase( false );
+					
+					liteInvNew = new LiteStarsLMHardware();
+					StarsLiteFactory.setLiteStarsLMHardware( (LiteStarsLMHardware)liteInvNew, hardware );
+				}
+				else {
+					com.cannontech.database.data.stars.event.LMHardwareEvent.deleteAllLMHardwareEvents(new Integer(invID), conn);
+					
+					com.cannontech.database.data.stars.hardware.InventoryBase inventory =
+							new com.cannontech.database.data.stars.hardware.InventoryBase();
+					StarsLiteFactory.setInventoryBase( inventory.getInventoryBase(), liteInv );
+					inventory.setDbConnection( conn );
+					inventory.deleteInventoryBase( false );
+					
+					liteInvNew = new LiteInventoryBase();
+					StarsLiteFactory.setLiteInventoryBase( liteInvNew, inventory.getInventoryBase() );
+				}
+				
+				energyCompany.deleteInventory( invID );
+				energyCompany.addInventory( liteInvNew );
 			}
         }
     	
-		ArrayList liteApps = liteAcctInfo.getAppliances();
-		for (int i = 0; i < liteApps.size(); i++) {
-			LiteStarsAppliance liteApp = (LiteStarsAppliance) liteApps.get(i);
-			if (liteApp.getInventoryID() == liteHw.getInventoryID()) {
-				liteApp.setInventoryID( 0 );
-				for (int j = 0; j < liteAcctInfo.getLmPrograms().size(); j++) {
-					LiteStarsLMProgram liteProg = (LiteStarsLMProgram) liteAcctInfo.getLmPrograms().get(j);
-					if (liteProg.getLmProgram().getProgramID() == liteApp.getLmProgramID()) {
-						liteProg.setGroupID( 0 );
-						break;
+    	if (target != TARGET_ACCOUNT_DELETED) {
+    		if (ECUtils.isLMHardware( liteInv.getCategoryID() )) {
+				ArrayList liteApps = liteAcctInfo.getAppliances();
+				
+				for (int i = 0; i < liteApps.size(); i++) {
+					LiteStarsAppliance liteApp = (LiteStarsAppliance) liteApps.get(i);
+					
+					if (liteApp.getInventoryID() == invID) {
+						liteApp.setInventoryID( 0 );
+						
+						for (int j = 0; j < liteAcctInfo.getLmPrograms().size(); j++) {
+							LiteStarsLMProgram liteProg = (LiteStarsLMProgram) liteAcctInfo.getLmPrograms().get(j);
+							
+							if (liteProg.getLmProgram().getProgramID() == liteApp.getLmProgramID()) {
+								liteProg.setGroupID( 0 );
+								break;
+							}
+						}
 					}
 				}
+    		}
+    		
+			liteAcctInfo.getInventories().remove( new Integer(invID) );
+    		
+			// Remove the account from two-way thermostat account list if necessary
+			if (liteInv instanceof LiteStarsLMHardware &&
+				((LiteStarsLMHardware) liteInv).isTwoWayThermostat() &&
+				!liteAcctInfo.hasTwoWayThermostat(energyCompany))
+			{
+				ArrayList accountList = energyCompany.getAccountsWithGatewayEndDevice();
+				synchronized (accountList) {
+					accountList.remove( liteAcctInfo );
+				}
 			}
-		}
-    	
-		liteAcctInfo.getInventories().remove( new Integer(invID) );
-    	
-		// Remove the account from two-way thermostat account list if necessary
-		if (liteHw.isTwoWayThermostat() &&
-			!ServerUtils.hasTwoWayThermostat(liteAcctInfo, energyCompany))
-		{
-			ArrayList accountList = energyCompany.getAccountsWithGatewayEndDevice();
-			synchronized (accountList) {
-				accountList.remove( liteAcctInfo );
-			}
-		}
+    	}
 	}
 	
 	public static void parseResponse(int invID, StarsCustAccountInformation starsAcctInfo) {
@@ -300,10 +298,18 @@ public class DeleteLMHardwareAction implements ActionBase {
 		}
 		
 		StarsInventories inventories = starsAcctInfo.getStarsInventories();
+		
 		for (int i = 0; i < inventories.getStarsLMHardwareCount(); i++) {
 			if (inventories.getStarsLMHardware(i).getInventoryID() == invID) {
 				inventories.removeStarsLMHardware(i);
-				break;
+				return;
+			}
+		}
+		
+		for (int i = 0; i < inventories.getStarsMCTCount(); i++) {
+			if (inventories.getStarsMCT(i).getInventoryID() == invID) {
+				inventories.removeStarsMCT(i);
+				return;
 			}
 		}
 	}

@@ -3,7 +3,9 @@ package com.cannontech.stars.xml;
 import java.util.Vector;
 
 import com.cannontech.common.constants.YukonListEntry;
+import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.customer.Contact;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
@@ -16,7 +18,6 @@ import com.cannontech.database.db.stars.report.CallReportBase;
 import com.cannontech.database.db.stars.report.WorkOrderBase;
 import com.cannontech.database.db.web.YukonWebConfiguration;
 import com.cannontech.stars.util.ServerUtils;
-import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.serialize.BillingAddress;
 import com.cannontech.stars.xml.serialize.CallType;
 import com.cannontech.stars.xml.serialize.DeviceStatus;
@@ -34,7 +35,9 @@ import com.cannontech.stars.xml.serialize.StarsCustResidence;
 import com.cannontech.stars.xml.serialize.StarsCustomerAccount;
 import com.cannontech.stars.xml.serialize.StarsCustomerAddress;
 import com.cannontech.stars.xml.serialize.StarsCustomerContact;
+import com.cannontech.stars.xml.serialize.StarsDevice;
 import com.cannontech.stars.xml.serialize.StarsFailure;
+import com.cannontech.stars.xml.serialize.StarsInventory;
 import com.cannontech.stars.xml.serialize.StarsLMHw;
 import com.cannontech.stars.xml.serialize.StarsSiteInformation;
 import com.cannontech.stars.xml.serialize.StarsSrvReq;
@@ -401,7 +404,7 @@ public class StarsFactory {
         
         if (starsContact.getHomePhone().length() > 0) {
 	        ContactNotification notif = new ContactNotification();
-	        notif.setNotificationCatID( new Integer(SOAPServer.YUK_LIST_ENTRY_ID_HOME_PHONE) );
+	        notif.setNotificationCatID( new Integer(YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE) );
 	        notif.setNotification( starsContact.getHomePhone() );
 	        notif.setDisableFlag( "Y" );
 	        contactNotifVect.add( notif );
@@ -409,7 +412,7 @@ public class StarsFactory {
         
         if (starsContact.getWorkPhone().length() > 0) {
 	        ContactNotification notif = new ContactNotification();
-	        notif.setNotificationCatID( new Integer(SOAPServer.YUK_LIST_ENTRY_ID_WORK_PHONE) );
+	        notif.setNotificationCatID( new Integer(YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE) );
 	        notif.setNotification( starsContact.getWorkPhone() );
 	        notif.setDisableFlag( "Y" );
 	        contactNotifVect.add( notif );
@@ -417,7 +420,7 @@ public class StarsFactory {
         
         if (starsContact.getEmail() != null && starsContact.getEmail().getNotification().length() > 0) {
 	        ContactNotification notif = new ContactNotification();
-	        notif.setNotificationCatID( new Integer(SOAPServer.YUK_LIST_ENTRY_ID_EMAIL) );
+	        notif.setNotificationCatID( new Integer(YukonListEntryTypes.YUK_ENTRY_ID_EMAIL) );
 	        notif.setNotification( starsContact.getEmail().getNotification() );
 	        notif.setDisableFlag( starsContact.getEmail().getEnabled() ? "N" : "Y" );
 	        contactNotifVect.add( notif );
@@ -425,25 +428,32 @@ public class StarsFactory {
     }
     
     
-    /* StarsLMHw factory methods */
+    /* StarsInventory factory methods */
 
-	public static StarsLMHw newStarsLMHw(Class type) {
+	public static StarsInventory newStarsInventory(Class type) {
 		try {
-			StarsLMHw starsHw = (StarsLMHw) type.newInstance();
+			StarsInventory starsInv = (StarsInventory) type.newInstance();
 			
-			starsHw.setInventoryID( -1 );
-			starsHw.setDeviceLabel( "" );
-			starsHw.setInstallationCompany( (InstallationCompany) newEmptyStarsCustListEntry(InstallationCompany.class) );
-			starsHw.setInstallDate( new java.util.Date() );
-			starsHw.setAltTrackingNumber( "" );
-			starsHw.setVoltage( (Voltage) newEmptyStarsCustListEntry(Voltage.class) );
-			starsHw.setNotes( "" );
-			starsHw.setInstallationNotes( "" );
-			starsHw.setManufactureSerialNumber( "" );
-			starsHw.setLMDeviceType( (LMDeviceType) newEmptyStarsCustListEntry(LMDeviceType.class) );
-			starsHw.setDeviceStatus( (DeviceStatus) newEmptyStarsCustListEntry(DeviceStatus.class) );
+			starsInv.setInventoryID( -1 );
+			starsInv.setDeviceID( CtiUtilities.NONE_ID );
+			starsInv.setDeviceLabel( "" );
+			starsInv.setInstallationCompany( (InstallationCompany) newEmptyStarsCustListEntry(InstallationCompany.class) );
+			starsInv.setInstallDate( new java.util.Date() );
+			starsInv.setAltTrackingNumber( "" );
+			starsInv.setVoltage( (Voltage) newEmptyStarsCustListEntry(Voltage.class) );
+			starsInv.setNotes( "" );
+			starsInv.setInstallationNotes( "" );
+			starsInv.setDeviceStatus( (DeviceStatus) newEmptyStarsCustListEntry(DeviceStatus.class) );
 			
-			return starsHw;
+			if (starsInv instanceof StarsLMHw) {
+				((StarsLMHw)starsInv).setManufactureSerialNumber( "" );
+				((StarsLMHw)starsInv).setLMDeviceType( (LMDeviceType) newEmptyStarsCustListEntry(LMDeviceType.class) );
+			}
+			else if (starsInv instanceof StarsDevice) {
+				((StarsDevice)starsInv).setDeviceName( "" );
+			}
+			
+			return starsInv;
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -479,6 +489,28 @@ public class StarsFactory {
 		}
 		
 		return null;
+	}
+	
+	public static void setInventoryBase(com.cannontech.database.db.stars.hardware.InventoryBase invDB, StarsLMHw starsHw) {
+		if (starsHw.getInstallationCompany() != null)
+			invDB.setInstallationCompanyID( new Integer(starsHw.getInstallationCompany().getEntryID()) );
+		if (starsHw.getReceiveDate() != null)
+			invDB.setReceiveDate( starsHw.getReceiveDate() );
+		if (starsHw.getInstallDate() != null)
+			invDB.setInstallDate( starsHw.getInstallDate() );
+		if (starsHw.getRemoveDate() != null)
+			invDB.setRemoveDate( starsHw.getRemoveDate() );
+		invDB.setAlternateTrackingNumber( starsHw.getAltTrackingNumber() );
+		if (starsHw.getVoltage() != null)
+			invDB.setVoltageID( new Integer(starsHw.getVoltage().getEntryID()) );
+		invDB.setNotes( starsHw.getNotes() );
+		invDB.setDeviceID( new Integer(starsHw.getDeviceID()) );
+		if (starsHw.getDeviceLabel().trim().length() > 0)
+			invDB.setDeviceLabel( starsHw.getDeviceLabel() );
+		else if (starsHw.getDeviceID() > 0)
+			invDB.setDeviceLabel( PAOFuncs.getYukonPAOName(starsHw.getDeviceID()) );
+		else
+			invDB.setDeviceLabel( starsHw.getManufactureSerialNumber() );
 	}
 	
 	

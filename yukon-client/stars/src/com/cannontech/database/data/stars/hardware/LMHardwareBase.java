@@ -51,22 +51,16 @@ public class LMHardwareBase extends InventoryBase {
 
 		// deleteHwInfo controls whether to delete the hardware permanantly from the database
 		if (deleteHwInfo) {
-			// delete from LMHardwareEvent
-			com.cannontech.database.data.stars.event.LMHardwareEvent.deleteAllLMHardwareEvents(
-					getInventoryBase().getInventoryID(), getDbConnection() );
-
 			getLMHardwareBase().delete();
 		} 
 		else {
-			getInventoryBase().setAccountID( new Integer(com.cannontech.common.util.CtiUtilities.NONE_ID) );
-			getInventoryBase().setRemoveDate( new java.util.Date() );
-			getInventoryBase().update();
+			deleteInventoryBase( false );
 		}
 	}
 
 	public void delete() throws java.sql.SQLException {
 		deleteLMHardwareBase( true );
-		super.deleteInventoryBase();
+		super.deleteInventoryBase( true );
 	}
 
 	public void add() throws java.sql.SQLException {

@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsInventoriesDescriptor.java,v 1.56 2003/10/31 21:00:14 zyao Exp $
+ * $Id: StarsInventoriesDescriptor.java,v 1.57 2003/11/13 21:24:07 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.56 $ $Date: 2003/10/31 21:00:14 $
+ * @version $Revision: 1.57 $ $Date: 2003/11/13 21:24:07 $
 **/
 public class StarsInventoriesDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
@@ -89,6 +89,39 @@ public class StarsInventoriesDescriptor extends org.exolab.castor.xml.util.XMLCl
         addFieldDescriptor(desc);
         
         //-- validation code for: _starsLMHardwareList
+        fieldValidator = new FieldValidator();
+        fieldValidator.setMinOccurs(0);
+        desc.setValidator(fieldValidator);
+        
+        //-- _starsMCTList
+        desc = new XMLFieldDescriptorImpl(StarsMCT.class, "_starsMCTList", "stars-MCT", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsInventories target = (StarsInventories) object;
+                return target.getStarsMCT();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsInventories target = (StarsInventories) object;
+                    target.addStarsMCT( (StarsMCT) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new StarsMCT();
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setMultivalued(true);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _starsMCTList
         fieldValidator = new FieldValidator();
         fieldValidator.setMinOccurs(0);
         desc.setValidator(fieldValidator);

@@ -26,7 +26,6 @@ import com.cannontech.stars.web.action.GetCustAccountAction;
 import com.cannontech.stars.web.action.GetEnergyCompanySettingsAction;
 import com.cannontech.stars.web.action.GetLMCtrlHistAction;
 import com.cannontech.stars.web.action.GetNextCallNumberAction;
-import com.cannontech.stars.web.action.GetNextOrderNumberAction;
 import com.cannontech.stars.web.action.LoginAction;
 import com.cannontech.stars.web.action.MultiAction;
 import com.cannontech.stars.web.action.NewCustAccountAction;
@@ -145,7 +144,7 @@ public class SOAPClient extends HttpServlet {
 		if (isServerLocal() && SOAPServer.getInstance() == null) {
 			// SOAPServer not initiated yet, let's wake it up!
 			//String reqURL = req.getRequestURL();
-			String reqURL = javax.servlet.http.HttpUtils.getRequestURL( req ).toString();
+			String reqURL = req.getRequestURL().toString();
 			SOAP_SERVER_URL = reqURL.substring( 0, reqURL.lastIndexOf("/servlet") ) + "/servlet/SOAPServer";
 			CTILogger.info( "SOAP Server resides locally at " + SOAP_SERVER_URL );
         	
@@ -293,7 +292,7 @@ public class SOAPClient extends HttpServlet {
 			destURL = req.getParameter(ServletUtils.ATT_REDIRECT);
 			errorURL = req.getParameter(ServletUtils.ATT_REFERRER);
 		}
-		else if (action.equalsIgnoreCase("DisableService") || action.equalsIgnoreCase("EnableService")) {
+		else if (action.equalsIgnoreCase("DisableLMHardware") || action.equalsIgnoreCase("EnableLMHardware")) {
 			clientAction = new YukonSwitchCommandAction();
 			destURL = req.getParameter(ServletUtils.ATT_REDIRECT);
 			errorURL = req.getParameter(ServletUtils.ATT_REFERRER);
@@ -304,6 +303,11 @@ public class SOAPClient extends HttpServlet {
 			actions.addAction( new YukonSwitchCommandAction(), req, session );
         		
 			clientAction = (ActionBase) actions;
+			destURL = req.getParameter(ServletUtils.ATT_REDIRECT);
+			errorURL = req.getParameter(ServletUtils.ATT_REFERRER);
+		}
+		else if (action.equalsIgnoreCase("SaveLMHardwareConfig")) {
+			clientAction = new UpdateLMHardwareConfigAction();
 			destURL = req.getParameter(ServletUtils.ATT_REDIRECT);
 			errorURL = req.getParameter(ServletUtils.ATT_REFERRER);
 		}
@@ -327,11 +331,6 @@ public class SOAPClient extends HttpServlet {
 			clientAction = new UpdateCallReportAction();
 			destURL = req.getContextPath() + "/operator/Consumer/Calls.jsp";
 			errorURL = req.getContextPath() + "/operator/Consumer/Calls.jsp";
-		}
-		else if (action.equalsIgnoreCase("GetNextOrderNo")) {
-			clientAction = new GetNextOrderNumberAction();
-			destURL = req.getContextPath() + "/operator/Consumer/Service.jsp";
-			errorURL = req.getContextPath() + "/operator/Consumer/Service.jsp?getOrderNo=failed";
 		}
 		else if (action.equalsIgnoreCase("CreateWorkOrder")) {
 			clientAction = new CreateServiceRequestAction();

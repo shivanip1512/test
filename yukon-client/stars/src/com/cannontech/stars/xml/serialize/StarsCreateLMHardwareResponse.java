@@ -34,6 +34,8 @@ public class StarsCreateLMHardwareResponse implements java.io.Serializable {
 
     private StarsLMHardware _starsLMHardware;
 
+    private StarsMCT _starsMCT;
+
 
       //----------------/
      //- Constructors -/
@@ -57,6 +59,16 @@ public class StarsCreateLMHardwareResponse implements java.io.Serializable {
     {
         return this._starsLMHardware;
     } //-- StarsLMHardware getStarsLMHardware() 
+
+    /**
+     * Returns the value of field 'starsMCT'.
+     * 
+     * @return the value of field 'starsMCT'.
+    **/
+    public StarsMCT getStarsMCT()
+    {
+        return this._starsMCT;
+    } //-- StarsMCT getStarsMCT() 
 
     /**
     **/
@@ -104,6 +116,16 @@ public class StarsCreateLMHardwareResponse implements java.io.Serializable {
     {
         this._starsLMHardware = starsLMHardware;
     } //-- void setStarsLMHardware(StarsLMHardware) 
+
+    /**
+     * Sets the value of field 'starsMCT'.
+     * 
+     * @param starsMCT the value of field 'starsMCT'.
+    **/
+    public void setStarsMCT(StarsMCT starsMCT)
+    {
+        this._starsMCT = starsMCT;
+    } //-- void setStarsMCT(StarsMCT) 
 
     /**
      * 

@@ -19,6 +19,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.roles.operator.ConsumerInfoRole;
+import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.OptOutEventQueue;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
@@ -245,7 +246,7 @@ public class ProgramReenableAction implements ActionBase {
 
         for (int i = 0; i < hwIDList.size(); i++) {
         	Integer invID = (Integer) hwIDList.get(i);
-        	LiteStarsLMHardware liteHw = energyCompany.getLMHardware( invID.intValue(), true );
+        	LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory( invID.intValue(), true );
         	
     		if (liteHw.getManufactureSerialNumber().trim().length() == 0)
     			throw new Exception( "The manufacturer serial # of the hardware cannot be empty" );
@@ -272,10 +273,10 @@ public class ProgramReenableAction implements ActionBase {
         ArrayList hwIDList = getHardwareIDs( liteAcctInfo );
         for (int i = 0; i < hwIDList.size(); i++) {
         	Integer invID = (Integer) hwIDList.get(i);
-        	LiteStarsLMHardware liteHw = energyCompany.getLMHardware( invID.intValue(), true );
+        	LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory( invID.intValue(), true );
 			
     		// Add "Activation Completed" to hardware events
-			ServerUtils.removeFutureActivationEvents( liteHw.getLmHardwareHistory(), energyCompany );
+			ECUtils.removeFutureActivationEvents( liteHw.getInventoryHistory(), energyCompany );
     		
     		com.cannontech.database.data.stars.event.LMHardwareEvent event = new com.cannontech.database.data.stars.event.LMHardwareEvent();
     		com.cannontech.database.db.stars.event.LMHardwareEvent eventDB = event.getLMHardwareEvent();
@@ -292,13 +293,13 @@ public class ProgramReenableAction implements ActionBase {
     		
 			// Update lite objects and create response
 			LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) StarsLiteFactory.createLite( event );
-			liteHw.getLmHardwareHistory().add( liteEvent );
+			liteHw.getInventoryHistory().add( liteEvent );
 			liteHw.updateDeviceStatus();
 			
 			StarsLMHardwareHistory hwHist = new StarsLMHardwareHistory();
 			hwHist.setInventoryID( liteHw.getInventoryID() );
-			for (int k = 0; k < liteHw.getLmHardwareHistory().size(); k++) {
-				liteEvent = (LiteLMCustomerEvent) liteHw.getLmHardwareHistory().get(k);
+			for (int k = 0; k < liteHw.getInventoryHistory().size(); k++) {
+				liteEvent = (LiteLMCustomerEvent) liteHw.getInventoryHistory().get(k);
 				StarsLMHardwareEvent starsEvent = new StarsLMHardwareEvent();
 				StarsLiteFactory.setStarsLMCustomerEvent( starsEvent, liteEvent );
 				hwHist.addStarsLMHardwareEvent( starsEvent );
@@ -313,7 +314,7 @@ public class ProgramReenableAction implements ActionBase {
     		if (liteProg.isInService()) continue;
     		
 	        // Add "Activation Completed" to program events
-    		ServerUtils.removeFutureActivationEvents( liteProg.getProgramHistory(), energyCompany );
+			ECUtils.removeFutureActivationEvents( liteProg.getProgramHistory(), energyCompany );
             
             com.cannontech.database.data.stars.event.LMProgramEvent event =
             		new com.cannontech.database.data.stars.event.LMProgramEvent();

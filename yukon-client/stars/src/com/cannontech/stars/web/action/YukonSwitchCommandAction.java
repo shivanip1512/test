@@ -62,13 +62,13 @@ public class YukonSwitchCommandAction implements ActionBase {
             	catch (NumberFormatException nfe) {}
             }
 
-            if (action.equalsIgnoreCase("DisableService")) {
+            if (action.equalsIgnoreCase("DisableLMHardware")) {
             	if (invID < 0) return null;
                 StarsDisableService service = new StarsDisableService();
                 service.setInventoryID( invID );
                 command.setStarsDisableService( service );
             }
-            else if (action.equalsIgnoreCase("EnableService")) {
+            else if (action.equalsIgnoreCase("EnableLMHardware")) {
             	if (invID < 0) return null;
                 StarsEnableService service = new StarsEnableService();
                 service.setInventoryID( invID );
@@ -117,21 +117,21 @@ public class YukonSwitchCommandAction implements ActionBase {
             
             if (command.getStarsDisableService() != null) {
             	int invID = command.getStarsDisableService().getInventoryID();
-            	LiteStarsLMHardware liteHw = energyCompany.getBriefLMHardware( invID, true );
+            	LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory( invID, true );
             	sendDisableCommand(energyCompany, liteHw, conn);
 				StarsLMHardware starsHw = StarsLiteFactory.createStarsLMHardware( liteHw, energyCompany );
             	cmdResp.setStarsLMHardware( starsHw );
             }
             else if (command.getStarsEnableService() != null) {
             	int invID = command.getStarsEnableService().getInventoryID();
-				LiteStarsLMHardware liteHw = energyCompany.getBriefLMHardware( invID, true );
+				LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory( invID, true );
             	sendEnableCommand(energyCompany, liteHw, conn);
 				StarsLMHardware starsHw = StarsLiteFactory.createStarsLMHardware( liteHw, energyCompany );
             	cmdResp.setStarsLMHardware( starsHw );
             }
             else if (command.getStarsConfig() != null) {
                 int invID = command.getStarsConfig().getInventoryID();
-				LiteStarsLMHardware liteHw = energyCompany.getBriefLMHardware( invID, true );
+				LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory( invID, true );
                 sendConfigCommand(energyCompany, liteHw, true, conn);
 				StarsLMHardware starsHw = StarsLiteFactory.createStarsLMHardware( liteHw, energyCompany );
 				cmdResp.setStarsLMHardware( starsHw );
@@ -229,7 +229,7 @@ public class YukonSwitchCommandAction implements ActionBase {
 		event.add();
 		
 		LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) StarsLiteFactory.createLite( event );
-		liteHw.getLmHardwareHistory().add( liteEvent );
+		liteHw.getInventoryHistory().add( liteEvent );
 		liteHw.updateDeviceStatus();
 	}
     
@@ -262,7 +262,7 @@ public class YukonSwitchCommandAction implements ActionBase {
 		event.add();
 		
 		LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) StarsLiteFactory.createLite( event );
-		liteHw.getLmHardwareHistory().add( liteEvent );
+		liteHw.getInventoryHistory().add( liteEvent );
 		liteHw.updateDeviceStatus();
 	}
 	
@@ -307,7 +307,7 @@ public class YukonSwitchCommandAction implements ActionBase {
 			event.add();
 			
 			LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) StarsLiteFactory.createLite( event );
-			liteHw.getLmHardwareHistory().add( liteEvent );
+			liteHw.getInventoryHistory().add( liteEvent );
 			liteHw.updateDeviceStatus();
         }
         else {
@@ -337,7 +337,7 @@ public class YukonSwitchCommandAction implements ActionBase {
 			event.add();
 			
 			LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) StarsLiteFactory.createLite( event );
-			liteHw.getLmHardwareHistory().add( liteEvent );
+			liteHw.getInventoryHistory().add( liteEvent );
 		}
 	}
 }

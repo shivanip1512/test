@@ -8,7 +8,6 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.lite.stars.LiteCustomerContact;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
-import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.stars.util.ServerUtils;
@@ -142,13 +141,8 @@ public class DeleteCustAccountAction implements ActionBase {
 			// Remove hardwares from the account
 			for (int i = 0; i < liteAcctInfo.getInventories().size(); i++) {
 				int invID = ((Integer) liteAcctInfo.getInventories().get(i)).intValue();
-				LiteStarsLMHardware liteHw = energyCompany.getLMHardware(invID, true);
-			
-				com.cannontech.database.data.stars.hardware.LMHardwareBase hardware =
-						(com.cannontech.database.data.stars.hardware.LMHardwareBase) StarsLiteFactory.createDBPersistent( liteHw );
-				hardware.setDbConnection( conn );
-				hardware.deleteLMHardwareBase( false );
-				StarsLiteFactory.setLiteLMHardwareBase( liteHw, hardware );
+				DeleteLMHardwareAction.removeInventory(
+						invID, liteAcctInfo, energyCompany, DeleteLMHardwareAction.TARGET_ACCOUNT_DELETED, conn);
 			}
 		
 			com.cannontech.database.data.stars.customer.CustomerAccount account =

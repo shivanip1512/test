@@ -20,6 +20,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsThermostatSettings;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.db.stars.hardware.LMThermostatSeason;
 import com.cannontech.database.db.stars.hardware.LMThermostatSeasonEntry;
+import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
@@ -239,7 +240,8 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 			
 			StarsUpdateThermostatSchedule updateSched = reqOper.getStarsUpdateThermostatSchedule();
     		
-			LiteStarsLMHardware liteHw = energyCompany.getLMHardware( updateSched.getInventoryID(), true );
+			LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory( updateSched.getInventoryID(), true );
+			
     		if (liteHw.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL) {
     			if (ServerUtils.isOperator( user ))
 	            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
@@ -249,6 +251,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Your thermostat is currently out of service, schedule is not sent.<br>Please go to the \"Contact Us\" page if you want to contact our CSRs for further information.") );
             	return SOAPUtil.buildSOAPMessage( respOper );
     		}
+    		
     		if (liteHw.getManufactureSerialNumber().trim().length() == 0) {
     			if (ServerUtils.isOperator( user ))
 	            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
@@ -271,14 +274,14 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 				
 				for (int j = 0; j < starsSeason.getStarsThermostatScheduleCount(); j++) {
 					StarsThermostatSchedule starsSched = starsSeason.getStarsThermostatSchedule(j);
-					int towID = ServerUtils.getThermSeasonEntryTOWID( starsSched.getDay(), energyCompanyID );
+					int towID = ECUtils.getThermSeasonEntryTOWID( starsSched.getDay(), energyCompany );
 					int weekdayID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_TOW_WEEKDAY ).getEntryID();
 					
 					ArrayList oldSched = new ArrayList();
 					for (int k = 0; k < liteSettings.getThermostatSeasons().size(); k++) {
 						LiteLMThermostatSeason liteSeason = (LiteLMThermostatSeason) liteSettings.getThermostatSeasons().get(k);
-						if (liteSeason.getWebConfigurationID() == SOAPServer.YUK_WEB_CONFIG_ID_COOL  && starsSeason.getMode().getType() == StarsThermoModeSettings.COOL_TYPE ||
-							liteSeason.getWebConfigurationID() == SOAPServer.YUK_WEB_CONFIG_ID_HEAT  && starsSeason.getMode().getType() == StarsThermoModeSettings.HEAT_TYPE)
+						if (liteSeason.getWebConfigurationID() == ECUtils.YUK_WEB_CONFIG_ID_COOL  && starsSeason.getMode().getType() == StarsThermoModeSettings.COOL_TYPE ||
+							liteSeason.getWebConfigurationID() == ECUtils.YUK_WEB_CONFIG_ID_HEAT  && starsSeason.getMode().getType() == StarsThermoModeSettings.HEAT_TYPE)
 						{
 							for (int l = 0; l < liteSeason.getSeasonEntries().size(); l++) {
 								LiteLMThermostatSeasonEntry liteEntry = (LiteLMThermostatSeasonEntry) liteSeason.getSeasonEntries().get(l);
@@ -292,8 +295,8 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 					ArrayList dftOtherSched = new ArrayList();
 					for (int k = 0; k < dftSettings.getThermostatSeasons().size(); k++) {
 						LiteLMThermostatSeason liteSeason = (LiteLMThermostatSeason) dftSettings.getThermostatSeasons().get(k);
-						if (liteSeason.getWebConfigurationID() == SOAPServer.YUK_WEB_CONFIG_ID_COOL  && starsSeason.getMode().getType() == StarsThermoModeSettings.HEAT_TYPE ||
-							liteSeason.getWebConfigurationID() == SOAPServer.YUK_WEB_CONFIG_ID_HEAT  && starsSeason.getMode().getType() == StarsThermoModeSettings.COOL_TYPE)
+						if (liteSeason.getWebConfigurationID() == ECUtils.YUK_WEB_CONFIG_ID_COOL  && starsSeason.getMode().getType() == StarsThermoModeSettings.HEAT_TYPE ||
+							liteSeason.getWebConfigurationID() == ECUtils.YUK_WEB_CONFIG_ID_HEAT  && starsSeason.getMode().getType() == StarsThermoModeSettings.COOL_TYPE)
 						{
 							for (int l = 0; l < liteSeason.getSeasonEntries().size(); l++) {
 								LiteLMThermostatSeasonEntry liteEntry = (LiteLMThermostatSeasonEntry) liteSeason.getSeasonEntries().get(l);
@@ -429,7 +432,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
     				Transaction.createTransaction( Transaction.INSERT, event ).execute();
     				
     		LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) StarsLiteFactory.createLite( event );
-    		liteHw.getLmHardwareHistory().add( liteEvent );
+    		liteHw.getInventoryHistory().add( liteEvent );
     		
     		StarsLMHardwareEvent starsEvent = new StarsLMHardwareEvent();
     		StarsLiteFactory.setStarsLMCustomerEvent( starsEvent, liteEvent );
@@ -528,7 +531,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 			for (int i = 0; i < updateSched.getStarsThermostatSeasonCount(); i++) {
 				StarsThermostatSeason starsSeason = updateSched.getStarsThermostatSeason(i);
 				int webConfigID = (starsSeason.getMode().getType() == StarsThermoModeSettings.COOL_TYPE) ?
-						SOAPServer.YUK_WEB_CONFIG_ID_COOL : SOAPServer.YUK_WEB_CONFIG_ID_HEAT;
+				ECUtils.YUK_WEB_CONFIG_ID_COOL : ECUtils.YUK_WEB_CONFIG_ID_HEAT;
 				
 				LiteLMThermostatSeason liteSeason = null;
 				LiteLMThermostatSeason liteSeason2 = null;
@@ -590,7 +593,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 				}
 				if (starsRespSeason2 == null) {
 					starsRespSeason2 = new StarsThermostatSeason();
-					starsRespSeason2.setMode( ServerUtils.getThermSeasonMode(liteSeason2.getWebConfigurationID()) );
+					starsRespSeason2.setMode( ECUtils.getThermSeasonMode(liteSeason2.getWebConfigurationID()) );
 					resp.addStarsThermostatSeason( starsRespSeason2 );
 				}
 					
@@ -639,7 +642,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 					}
 					else {
 						towIDs = new int[] {
-							ServerUtils.getThermSeasonEntryTOWID( starsSched.getDay(), energyCompany.getLiteID() )
+							ECUtils.getThermSeasonEntryTOWID( starsSched.getDay(), energyCompany )
 						};
 					}
 					

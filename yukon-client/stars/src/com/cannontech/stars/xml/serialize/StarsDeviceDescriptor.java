@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id$
+ * $Id: StarsDeviceDescriptor.java,v 1.1 2003/11/13 21:24:04 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,9 +25,9 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision$ $Date$
+ * @version $Revision: 1.1 $ $Date: 2003/11/13 21:24:04 $
 **/
-public class StarsGetServiceRequestHistoryDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
+public class StarsDeviceDescriptor extends com.cannontech.stars.xml.serialize.StarsInventoryDescriptor {
 
 
       //--------------------------/
@@ -47,28 +47,36 @@ public class StarsGetServiceRequestHistoryDescriptor extends org.exolab.castor.x
      //- Constructors -/
     //----------------/
 
-    public StarsGetServiceRequestHistoryDescriptor() {
+    public StarsDeviceDescriptor() {
         super();
-        xmlName = "stars-GetServiceRequestHistory";
+        setExtendsWithoutFlatten(new com.cannontech.stars.xml.serialize.StarsInventoryDescriptor());
+        xmlName = "stars-Device";
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
-        //-- _content
-        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_content", "PCDATA", NodeType.Text);
+        
+        //-- set grouping compositor
+        setCompositorAsSequence();
+        //-- initialize attribute descriptors
+        
+        //-- initialize element descriptors
+        
+        //-- _deviceName
+        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_deviceName", "DeviceName", NodeType.Element);
         desc.setImmutable(true);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
-                StarsGetServiceRequestHistory target = (StarsGetServiceRequestHistory) object;
-                return target.getContent();
+                StarsDevice target = (StarsDevice) object;
+                return target.getDeviceName();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
-                    StarsGetServiceRequestHistory target = (StarsGetServiceRequestHistory) object;
-                    target.setContent( (java.lang.String) value);
+                    StarsDevice target = (StarsDevice) object;
+                    target.setDeviceName( (java.lang.String) value);
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
@@ -79,10 +87,13 @@ public class StarsGetServiceRequestHistoryDescriptor extends org.exolab.castor.x
             }
         } );
         desc.setHandler(handler);
+        desc.setRequired(true);
+        desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _content
+        //-- validation code for: _deviceName
         fieldValidator = new FieldValidator();
+        fieldValidator.setMinOccurs(1);
         { //-- local scope
             StringValidator sv = new StringValidator();
             sv.setWhiteSpace("preserve");
@@ -90,11 +101,7 @@ public class StarsGetServiceRequestHistoryDescriptor extends org.exolab.castor.x
         }
         desc.setValidator(fieldValidator);
         
-        //-- initialize attribute descriptors
-        
-        //-- initialize element descriptors
-        
-    } //-- com.cannontech.stars.xml.serialize.StarsGetServiceRequestHistoryDescriptor()
+    } //-- com.cannontech.stars.xml.serialize.StarsDeviceDescriptor()
 
 
       //-----------/
@@ -112,13 +119,15 @@ public class StarsGetServiceRequestHistoryDescriptor extends org.exolab.castor.x
     **/
     public org.exolab.castor.mapping.ClassDescriptor getExtends()
     {
-        return null;
+        return super.getExtends();
     } //-- org.exolab.castor.mapping.ClassDescriptor getExtends() 
 
     /**
     **/
     public org.exolab.castor.mapping.FieldDescriptor getIdentity()
     {
+        if (identity == null)
+            return super.getIdentity();
         return identity;
     } //-- org.exolab.castor.mapping.FieldDescriptor getIdentity() 
 
@@ -126,7 +135,7 @@ public class StarsGetServiceRequestHistoryDescriptor extends org.exolab.castor.x
     **/
     public java.lang.Class getJavaClass()
     {
-        return com.cannontech.stars.xml.serialize.StarsGetServiceRequestHistory.class;
+        return com.cannontech.stars.xml.serialize.StarsDevice.class;
     } //-- java.lang.Class getJavaClass() 
 
     /**

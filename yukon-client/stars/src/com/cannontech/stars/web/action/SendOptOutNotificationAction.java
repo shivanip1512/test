@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.StringTokenizer;
-import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -208,14 +207,18 @@ public class SendOptOutNotificationAction implements ActionBase {
         	String serialNo = "(none)";
         	for (int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {
         		LiteStarsAppliance app = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(j);
+        		
         		if (app.getLmProgramID() == program.getLmProgram().getProgramID()) {
         			for (int k = 0; k < liteAcctInfo.getInventories().size(); k++) {
-        				LiteStarsLMHardware hw = energyCompany.getLMHardware( ((Integer) liteAcctInfo.getInventories().get(k)).intValue(), true );
-        				if (hw.getInventoryID() == app.getInventoryID()) {
-        					serialNo = hw.getManufactureSerialNumber();
-        					break;
+        				int invID = ((Integer) liteAcctInfo.getInventories().get(k)).intValue();
+        				
+        				if (invID == app.getInventoryID()) {
+							LiteStarsLMHardware hw = (LiteStarsLMHardware) energyCompany.getInventory( invID, true );
+							serialNo = hw.getManufactureSerialNumber();
+							break;
         				}
         			}
+        			
         			break;
         		}
         	}

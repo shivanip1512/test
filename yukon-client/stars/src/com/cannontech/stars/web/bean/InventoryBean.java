@@ -1,4 +1,4 @@
-package com.cannontech.stars.web;
+package com.cannontech.stars.web.bean;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -104,7 +104,7 @@ public class InventoryBean {
 		if (getHtmlStyle() == HTML_STYLE_HARDWARE_SET)
 			hardwares = hardwareSet;
 		else
-			hardwares = getEnergyCompany().loadInventory();
+			hardwares = getEnergyCompany().loadAllInventory();
 		java.util.TreeSet sortedHws = null;
 		
 		if (getSortBy() == YukonListEntryTypes.YUK_DEF_ID_INV_SORT_BY_SERIAL_NO)
@@ -237,7 +237,7 @@ public class InventoryBean {
 		
 		StringBuffer htmlBuf = new StringBuffer();
 		if (getHtmlStyle() == HTML_STYLE_SELECT_INVENTORY) {
-			htmlBuf.append("<form name='form1' method='post' action='").append(req.getContextPath()).append("/servlet/InventoryManager'>").append("\r\n");
+			htmlBuf.append("<form name='InventoryBeanForm' method='post' action='").append(req.getContextPath()).append("/servlet/InventoryManager'>").append("\r\n");
 			htmlBuf.append("<input type='hidden' name='action' value='SelectInventory'>").append("\r\n");
 		}
 		
@@ -273,8 +273,14 @@ public class InventoryBean {
 	        	htmlBuf.append("</td>").append("\r\n");
 	        }
             htmlBuf.append("          <td class='TableCell' width='17%'>");
-            htmlBuf.append("<a href='InventoryDetail.jsp?InvId=").append(liteHw.getInventoryID()).append("'>");
-            htmlBuf.append(liteHw.getManufactureSerialNumber()).append("</a>");
+			htmlBuf.append("<a href='InventoryDetail.jsp?InvId=").append(liteHw.getInventoryID());
+			if (getHtmlStyle() == HTML_STYLE_SELECT_INVENTORY)
+				htmlBuf.append("&src=SelectInv");
+			else if (getHtmlStyle() == HTML_STYLE_LIST_INVENTORY)
+				htmlBuf.append("&src=Inventory");
+			else if (getHtmlStyle() == HTML_STYLE_HARDWARE_SET)
+				htmlBuf.append("&src=ResultSet");
+			htmlBuf.append("'>").append(liteHw.getManufactureSerialNumber()).append("</a>");
             htmlBuf.append("</td>").append("\r\n");
             htmlBuf.append("          <td class='TableCell' width='17%'>").append(deviceType).append("</td>").append("\r\n");
             htmlBuf.append("          <td class='TableCell' width='17%'>").append(instDate).append("</td>").append("\r\n");
@@ -308,7 +314,7 @@ public class InventoryBean {
 			htmlBuf.append("<table width='200' border='0' cellspacing='0' cellpadding='3'>").append("\r\n");
 			htmlBuf.append("  <tr>").append("\r\n");
 			htmlBuf.append("    <td align='right'>").append("\r\n");
-			htmlBuf.append("      <input type='submit' name='Submit' value='Submit'>").append("\r\n");
+			htmlBuf.append("      <input type='submit' name='Submit' value='Select'>").append("\r\n");
 			htmlBuf.append("    </td>").append("\r\n");
 			htmlBuf.append("    <td>").append("\r\n");
 			if (referer != null)

@@ -142,7 +142,7 @@ public class InventoryBase extends DBPersistent {
     
 	public static int[] searchByAccountID(int accountID, java.sql.Connection conn)
 	throws java.sql.SQLException {
-		String sql = "SELECT inv.InventoryID FROM " + TABLE_NAME + " WHERE AccountID = " + accountID;
+		String sql = "SELECT InventoryID FROM " + TABLE_NAME + " WHERE AccountID = " + accountID;
 		java.sql.Statement stmt = conn.createStatement();
 		java.sql.ResultSet rset = stmt.executeQuery( sql );
     	
