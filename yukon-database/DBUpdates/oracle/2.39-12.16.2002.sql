@@ -82,12 +82,13 @@ create unique index Indx_YkUsIDNm on YukonUser (
 
 /* We must change the reference ID from CustomerLogin to match  */
 /*  the new entry into YukonUser (There better not be more than 100 operator logins) */
-udpate CustomerContact set LoginID=LoginID+100 where LoginID >= 0;
-udpate CustomerLoginSerialGroup set LoginID=LoginID+100 where LoginID >= 0;
+update CustomerContact set LoginID=LoginID+100 where LoginID >= 0;
+update CustomerLoginSerialGroup set LoginID=LoginID+100 where LoginID >= 0;
 /
 
 insert into YukonUser (UserID,UserName,Password,LoginCount,LastLogin,Status)
-select LoginID+100,UserName,Password,LoginCount,LastLogin,Status from CustomerLogin;
+select LoginID+100,UserName,Password,LoginCount,LastLogin,Status from CustomerLogin
+where loginid >= 0;
 /
 
 insert into YukonUser (UserID,UserName,Password,LoginCount,LastLogin,Status)

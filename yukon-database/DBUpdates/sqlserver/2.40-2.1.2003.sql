@@ -68,7 +68,7 @@ Notification         varchar(130)         not null,
 constraint PK_CONTACTNOTIFICATION primary key  (ContactNotifID)
 )
 go
-insert into ContactNotification values( 0, 0, 'N', '(none)', 0 )
+insert into ContactNotification values( 0, 0, 0, 'N', '(none)' )
 go
 /*****DO NOT ADD ANY REFERENCES TO THIS TABLE UNTIL THE END*****/
 insert into ContactNotification
@@ -86,7 +86,7 @@ create table Customer (
 CustomerID           numeric              not null,
 PrimaryContactID     numeric              not null,
 CustomerTypeID       numeric              not null,
-TimeZone             varchar(6)           not null,
+TimeZone             varchar(40)           not null,
 constraint PK_CUSTOMER primary key  (CustomerID)
 )
 go
@@ -94,7 +94,7 @@ insert into Customer
 select c.deviceid, c.primecontactid, 2, c.custtimezone
 from CICustomerBase c
 go
-alter table CICustomerBase drop constraint Ref_YukPA_CICust
+alter table CICustomerBase drop constraint FK_YukPA_CICust
 go
 sp_rename 'CICustomerBase.DeviceID', 'CustomerID', 'COLUMN'
 go
@@ -121,8 +121,6 @@ alter table CICustomerBase
    add constraint FK_CstCI_Cst foreign key (CustomerID)
       references Customer (CustomerID)
 go
-alter table Customer alter column TimeZone VARCHAR(40)
-go
 sp_rename 'LMProgramCurtailCustomerList.DeviceID', 'ProgramID', 'COLUMN'
 go
 sp_rename 'LMProgramCurtailCustomerList.LMCustomerDeviceID', 'CustomerID', 'COLUMN'
@@ -133,7 +131,7 @@ sp_rename 'LMEnergyExchangeCustomerList.LMCustomerDeviceID', 'CustomerID', 'COLU
 go
 
 /******************* START GRAPHCUSTOMERLIST CHANGES *******************/
-alter table GraphCustomerList drop constraint RefGrphCstLst_CICstBse
+alter table GraphCustomerList drop constraint FK_GRA_REFG_CIC
 go
 alter table GraphCustomerList
    add constraint FK_GrphCstLst_Cst foreign key (CustomerID)
@@ -147,6 +145,9 @@ sp_rename 'CustomerAddress', 'Address'
 go
 alter table Address add County varchar(30) not null DEFAULT '(none)'
 go
+/* No big deal if this fails, just insure a row is there */
+insert into contact values ( 0, '(none)', '(none)', -1, 0 )
+go
 
 
 
@@ -159,13 +160,16 @@ alter table Contact drop column ContPhone2
 go
 alter table Contact add AddressID numeric not null DEFAULT 0
 go
-alter table Contact drop constraint RefCustContract_GroupRecipient
+alter table Contact drop constraint FK_CSTCONT_GRPRECIP
 go
 alter table Contact drop column LocationID
 go
 alter table Contact
    add constraint FK_CON_REF__ADD foreign key (AddressID)
       references Address (AddressID)
+go
+/* No big deal if this fails, just insure a row is there */
+insert into contact values ( 0, '(none)', '(none)', -1, 0 )
 go
 
 
@@ -175,7 +179,7 @@ sp_rename 'CICustContact', 'CustomerAdditionalContact'
 go
 sp_rename 'CustomerAdditionalContact.DeviceID', 'CustomerID', 'COLUMN'
 go
-alter table CustomerAdditionalContact drop constraint RefCICustBase_CICustContract
+alter table CustomerAdditionalContact drop constraint FK_CICSTBASE_CICSTCONT
 go
 alter table CustomerAdditionalContact
    add constraint FK_Cust_CustAddCnt foreign key (CustomerID)
@@ -185,9 +189,9 @@ go
 
 
 /******************* START NOTIFICATIONRECIPIENT CHANGES *******************/
-alter table PointAlarming drop constraint POINTALARMIN_GROUPRECIPIENT
+alter table PointAlarming drop constraint FK_POI_POIN_NOT
 go
-alter table NotificationDestination drop constraint DESTINATION_RECIPIENT
+alter table NotificationDestination drop constraint FK_DESTID_RECID
 go
 drop table NotificationRecipient
 go
@@ -217,5 +221,5 @@ go
 
 insert into DeviceMeterGroup 
 select paobjectid, 'Default', 'Default', paoname, 'Default' from YukonPAObject
-where type like '%ion%'
+where type like '%ION%'
 go

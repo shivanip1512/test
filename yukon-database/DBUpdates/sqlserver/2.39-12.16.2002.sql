@@ -74,6 +74,7 @@ go
 
 insert into YukonUser (UserID,UserName,Password,LoginCount,LastLogin,Status)
 select LoginID+100,UserName,Password,LoginCount,LastLogin,Status from CustomerLogin
+where loginid >= 0
 go
 
 insert into YukonUser (UserID,UserName,Password,LoginCount,LastLogin,Status)
