@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2004/07/27 15:46:08 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2004/07/28 19:01:33 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -34,8 +34,6 @@ class IM_EX_CTIBASE CtiVerificationBase
 
 private:
 
-    ptime    _birth;
-
     /*  we can change all instances of "_code" to refer to an extendable class that could contain multiple
           types of data, in case a single string isn't enough;  which part to examine could be decided by
           _protocol later.
@@ -51,8 +49,11 @@ private:
 
 protected:
 
+    const ptime _birth;
+
     CtiVerificationBase(Type t, Protocol p, const string &code);
 
+    static const string String_CodeStatus_Sent;
     static const string String_CodeStatus_Success;
     static const string String_CodeStatus_Retry;
     static const string String_CodeStatus_Fail;
@@ -78,6 +79,7 @@ public:
     enum CodeStatus
     {
         CodeStatus_Uninitialized,
+        CodeStatus_Sent,
         CodeStatus_Success,
         CodeStatus_Retry,
         CodeStatus_Fail,
@@ -160,6 +162,7 @@ public:
     long  getTransmitterID()    const   {  return _transmitter_id;  };
     ptime getExpiration()       const   {  return _expiration;      };
     long  getSequence()         const   {  return _sequence;        };
+    ptime getSubmissionTime()   const   {  return _birth;           };
 
     CtiOutMessage *getRetryOM() const;
     string         getCommand() const;

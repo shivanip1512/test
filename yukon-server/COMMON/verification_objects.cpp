@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2004/07/27 15:46:07 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2004/07/28 19:01:33 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,6 +20,7 @@
 
 #include <rw/rwtime.h>  //  ONLY for rwEpoch, use ptime/date for everything else
 
+const string CtiVerificationBase::String_CodeStatus_Sent       = "sent";
 const string CtiVerificationBase::String_CodeStatus_Success    = "success";
 const string CtiVerificationBase::String_CodeStatus_Retry      = "retry";
 const string CtiVerificationBase::String_CodeStatus_Fail       = "fail";
@@ -54,6 +55,7 @@ const string &CtiVerificationBase::getCodeStatusName(CodeStatus cs)
 
     switch( cs )
     {
+        case CodeStatus_Sent:       s = &String_CodeStatus_Sent;        break;
         case CodeStatus_Fail:       s = &String_CodeStatus_Fail;        break;
         case CodeStatus_Retry:      s = &String_CodeStatus_Retry;       break;
         case CodeStatus_Success:    s = &String_CodeStatus_Success;     break;
@@ -64,7 +66,7 @@ const string &CtiVerificationBase::getCodeStatusName(CodeStatus cs)
     return *s;
 }
 
-CtiVerificationWork::CtiVerificationWork(Protocol p, const CtiOutMessage &om, const string &code, ptime::time_duration_type patience) :
+CtiVerificationWork::CtiVerificationWork(Protocol p, const CtiOutMessage &om, const string &code, ptime::time_duration_type patience = seconds(0)) :
     CtiVerificationBase(Type_Work, p, code),
     _retry_om(om),
     _expiration(second_clock::universal_time() + patience),
