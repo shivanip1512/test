@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2002/09/12 21:33:28 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2002/09/16 14:36:19 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1279,10 +1279,29 @@ INT RefreshPorterRTDB(void *ptr)
 
         if(pChg != NULL)
         {
+            CtiDevice *changeddev;
+
             id = pChg->getId();
-            if(NULL == DeviceManager.getEqual(id))
+            if(NULL == (changeddev = DeviceManager.getEqual(id)))
             {
                 id = 0;
+            }
+            else if(changeddev && resolvePAOType(pChg->getCategory(), pChg->getObjectType()) != changeddev->getType())
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " " << changeddev->getName() << " has changed type to " << pChg->getObjectType() << " from " << desolveDeviceType(changeddev->getType()) << endl;
+                }
+
+                if( DeviceManager.orphan(id) )
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+
+                    id = 0; // This should force a reload of all devices!
+                }
             }
         }
 
