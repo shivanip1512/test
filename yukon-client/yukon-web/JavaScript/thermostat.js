@@ -1,13 +1,3 @@
-var browser = new Object();
-
-browser.isNetscape = false;
-browser.isMicrosoft = false;
-if (navigator.appName.indexOf("Netscape") != -1)
-	browser.isNetscape = true;
-else if (navigator.appName.indexOf("Microsoft") != -1)
-	browser.isMicrosoft = true;
-
-
 function showTimeWake(){
   var s = document.getElementById('MovingLayer1');
   var txt = document.getElementById('time1');
