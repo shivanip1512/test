@@ -407,6 +407,7 @@ public class StarsLiteFactory {
 	
 	public static void setLiteAppHeatPump(LiteStarsAppHeatPump liteAppHP, com.cannontech.database.db.stars.appliance.ApplianceHeatPump appHP) {
 		liteAppHP.setPumpTypeID( appHP.getPumpTypeID().intValue() );
+		liteAppHP.setPumpSizeID( appHP.getPumpSizeID().intValue() );
 		liteAppHP.setStandbySourceID( appHP.getStandbySourceID().intValue() );
 		liteAppHP.setSecondsDelayToRestart( appHP.getSecondsDelayToRestart().intValue() );
 		liteAppHP.setExtended( true );
@@ -858,6 +859,7 @@ public class StarsLiteFactory {
 	public static void setApplianceHeatPump(com.cannontech.database.db.stars.appliance.ApplianceHeatPump app, LiteStarsAppHeatPump liteApp) {
 		app.setApplianceID( new Integer(liteApp.getApplianceID()) );
 		app.setPumpTypeID( new Integer(liteApp.getPumpTypeID()) );
+		app.setPumpSizeID( new Integer(liteApp.getPumpSizeID()) );
 		app.setStandbySourceID( new Integer(liteApp.getStandbySourceID()) );
 		app.setSecondsDelayToRestart( new Integer(liteApp.getSecondsDelayToRestart()) );
 	}
@@ -1890,8 +1892,11 @@ public class StarsLiteFactory {
     	starsApp.setLmProgramID( liteApp.getLmProgramID() );
         starsApp.setNotes( ServerUtils.forceNotNull(liteApp.getNotes()) );
         starsApp.setModelNumber( ServerUtils.forceNotNull(liteApp.getModelNumber()) );
-        starsApp.setKWCapacity( liteApp.getKWCapacity() );
-        starsApp.setEfficiencyRating( liteApp.getEfficiencyRating() );
+        
+        if (liteApp.getKWCapacity() >= 0)
+	        starsApp.setKWCapacity( liteApp.getKWCapacity() );
+	    if (liteApp.getEfficiencyRating() >= 0)
+	        starsApp.setEfficiencyRating( liteApp.getEfficiencyRating() );
         
         if (liteApp.getYearManufactured() > 0)
         	starsApp.setYearManufactured( String.valueOf(liteApp.getYearManufactured()) );
@@ -1940,7 +1945,8 @@ public class StarsLiteFactory {
 	    			YukonListFuncs.getYukonListEntry( ((LiteStarsAppWaterHeater) liteApp).getEnergySourceID() ),
 	    			EnergySource.class)
 	    	);
-	    	wh.setNumberOfElements( ((LiteStarsAppWaterHeater) liteApp).getNumberOfElements() );
+	    	if (((LiteStarsAppWaterHeater) liteApp).getNumberOfElements() >= 0)
+		    	wh.setNumberOfElements( ((LiteStarsAppWaterHeater) liteApp).getNumberOfElements() );
 	    	starsApp.setWaterHeater( wh );
 	    }
 	    else if (liteApp instanceof LiteStarsAppDualFuel) {
@@ -1950,7 +1956,8 @@ public class StarsLiteFactory {
 	    			YukonListFuncs.getYukonListEntry( ((LiteStarsAppDualFuel) liteApp).getSwitchOverTypeID() ),
 	    			SwitchOverType.class)
 	    	);
-	    	df.setSecondaryKWCapacity( ((LiteStarsAppDualFuel) liteApp).getSecondaryKWCapacity() );
+	    	if (((LiteStarsAppDualFuel) liteApp).getSecondaryKWCapacity() >= 0)
+		    	df.setSecondaryKWCapacity( ((LiteStarsAppDualFuel) liteApp).getSecondaryKWCapacity() );
 	    	df.setSecondaryEnergySource(
 	    		(SecondaryEnergySource) StarsFactory.newStarsCustListEntry(
 	    			YukonListFuncs.getYukonListEntry( ((LiteStarsAppDualFuel) liteApp).getSecondaryEnergySourceID() ),
@@ -1970,9 +1977,12 @@ public class StarsLiteFactory {
 	    			YukonListFuncs.getYukonListEntry( ((LiteStarsAppGenerator) liteApp).getTransferSwitchMfgID() ),
 	    			TransferSwitchManufacturer.class)
 	    	);
-	    	gen.setPeakKWCapacity( ((LiteStarsAppGenerator) liteApp).getPeakKWCapacity() );
-	    	gen.setFuelCapGallons( ((LiteStarsAppGenerator) liteApp).getFuelCapGallons() );
-	    	gen.setStartDelaySeconds( ((LiteStarsAppGenerator) liteApp).getStartDelaySeconds() );
+	    	if (((LiteStarsAppGenerator) liteApp).getPeakKWCapacity() >= 0)
+	    		gen.setPeakKWCapacity( ((LiteStarsAppGenerator) liteApp).getPeakKWCapacity() );
+	    	if (((LiteStarsAppGenerator) liteApp).getFuelCapGallons() >= 0)
+	    		gen.setFuelCapGallons( ((LiteStarsAppGenerator) liteApp).getFuelCapGallons() );
+	    	if (((LiteStarsAppGenerator) liteApp).getStartDelaySeconds() >= 0)
+	    		gen.setStartDelaySeconds( ((LiteStarsAppGenerator) liteApp).getStartDelaySeconds() );
 	    	starsApp.setGenerator( gen );
 	    }
 	    else if (liteApp instanceof LiteStarsAppGrainDryer) {
@@ -2011,8 +2021,10 @@ public class StarsLiteFactory {
 	    			YukonListFuncs.getYukonListEntry( ((LiteStarsAppStorageHeat) liteApp).getStorageTypeID() ),
 	    			StorageType.class)
 	    	);
-	    	sh.setPeakKWCapacity( ((LiteStarsAppStorageHeat) liteApp).getPeakKWCapacity() );
-	    	sh.setHoursToRecharge( ((LiteStarsAppStorageHeat) liteApp).getHoursToRecharge() );
+	    	if (((LiteStarsAppStorageHeat) liteApp).getPeakKWCapacity() >= 0)
+	    		sh.setPeakKWCapacity( ((LiteStarsAppStorageHeat) liteApp).getPeakKWCapacity() );
+	    	if (((LiteStarsAppStorageHeat) liteApp).getHoursToRecharge() >= 0)
+	    		sh.setHoursToRecharge( ((LiteStarsAppStorageHeat) liteApp).getHoursToRecharge() );
 	    	starsApp.setStorageHeat( sh );
 	    }
 	    else if (liteApp instanceof LiteStarsAppHeatPump) {
@@ -2022,12 +2034,18 @@ public class StarsLiteFactory {
 	    			YukonListFuncs.getYukonListEntry( ((LiteStarsAppHeatPump) liteApp).getPumpTypeID() ),
 	    			PumpType.class)
 	    	);
+	    	hp.setPumpSize(
+	    		(PumpSize) StarsFactory.newStarsCustListEntry(
+	    			YukonListFuncs.getYukonListEntry( ((LiteStarsAppHeatPump) liteApp).getPumpSizeID() ),
+	    			PumpSize.class)
+	    	);
 	    	hp.setStandbySource(
 	    		(StandbySource) StarsFactory.newStarsCustListEntry(
 	    			YukonListFuncs.getYukonListEntry( ((LiteStarsAppHeatPump) liteApp).getStandbySourceID() ),
 	    			StandbySource.class)
 	    	);
-	    	hp.setRestartDelaySeconds( ((LiteStarsAppHeatPump) liteApp).getSecondsDelayToRestart() );
+	    	if (((LiteStarsAppHeatPump) liteApp).getSecondsDelayToRestart() >= 0)
+	    		hp.setRestartDelaySeconds( ((LiteStarsAppHeatPump) liteApp).getSecondsDelayToRestart() );
 	    	starsApp.setHeatPump( hp );
 	    }
 	    else if (liteApp instanceof LiteStarsAppIrrigation) {

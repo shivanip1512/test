@@ -52,6 +52,7 @@ import com.cannontech.stars.xml.serialize.Manufacturer;
 import com.cannontech.stars.xml.serialize.MeterLocation;
 import com.cannontech.stars.xml.serialize.MeterVoltage;
 import com.cannontech.stars.xml.serialize.NumberOfGallons;
+import com.cannontech.stars.xml.serialize.PumpSize;
 import com.cannontech.stars.xml.serialize.PumpType;
 import com.cannontech.stars.xml.serialize.SecondaryEnergySource;
 import com.cannontech.stars.xml.serialize.SoilType;
@@ -95,22 +96,13 @@ public class CreateApplianceAction implements ActionBase {
 			StarsCreateAppliance newApp = new StarsCreateAppliance();
 			newApp.setApplianceCategoryID( Integer.parseInt(req.getParameter("AppCatID")) );
 			newApp.setYearManufactured( req.getParameter("ManuYear") );
-			newApp.setNotes( req.getParameter("Notes") );
+			newApp.setNotes( req.getParameter("Notes").replaceAll(System.getProperty("line.separator"), "<br>") );
 			newApp.setModelNumber( req.getParameter("ModelNo") );
 			
-			try {
+			if (req.getParameter("KWCapacity").length() > 0)
 				newApp.setKWCapacity( Integer.parseInt(req.getParameter("KWCapacity")) );
-			}
-			catch (NumberFormatException nfe) {
-				newApp.setKWCapacity( 0 );
-			}
-			
-			try {
+			if (req.getParameter("EffRating").length() > 0)
 				newApp.setEfficiencyRating( Integer.parseInt(req.getParameter("EffRating")) );
-			}
-			catch (NumberFormatException nfe) {
-				newApp.setEfficiencyRating( 0 );
-			}
 			
 			newApp.setManufacturer( (Manufacturer)StarsFactory.newStarsCustListEntry(
 					ServletUtils.getStarsCustListEntryByID(
@@ -150,7 +142,8 @@ public class CreateApplianceAction implements ActionBase {
 						ServletUtils.getStarsCustListEntryByID(
 							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_WH_ENERGY_SOURCE, Integer.parseInt(req.getParameter("WH_EnergySrc"))),
 						EnergySource.class) );
-				wh.setNumberOfElements( Integer.parseInt(req.getParameter("WH_ElementNum")) );
+				if (req.getParameter("WH_ElementNum").length() > 0)
+					wh.setNumberOfElements( Integer.parseInt(req.getParameter("WH_ElementNum")) );
 				newApp.setWaterHeater( wh );
 			}
 			else if (categoryID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_DUAL_FUEL)
@@ -160,7 +153,8 @@ public class CreateApplianceAction implements ActionBase {
 						ServletUtils.getStarsCustListEntryByID(
 							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_DF_SWITCH_OVER_TYPE, Integer.parseInt(req.getParameter("DF_SwitchOverType"))),
 						SwitchOverType.class) );
-				df.setSecondaryKWCapacity( Integer.parseInt(req.getParameter("DF_KWCapacity2")) );
+				if (req.getParameter("DF_KWCapacity2").length() > 0)
+					df.setSecondaryKWCapacity( Integer.parseInt(req.getParameter("DF_KWCapacity2")) );
 				df.setSecondaryEnergySource( (SecondaryEnergySource)StarsFactory.newStarsCustListEntry(
 						ServletUtils.getStarsCustListEntryByID(
 							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_DF_SECONDARY_SOURCE, Integer.parseInt(req.getParameter("DF_SecondarySrc"))),
@@ -178,9 +172,12 @@ public class CreateApplianceAction implements ActionBase {
 						ServletUtils.getStarsCustListEntryByID(
 							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_GEN_TRANSFER_SWITCH_MFG, Integer.parseInt(req.getParameter("GEN_TranSwitchMfg"))),
 						TransferSwitchManufacturer.class) );
-				gen.setPeakKWCapacity( Integer.parseInt(req.getParameter("GEN_KWCapacity")) );
-				gen.setFuelCapGallons( Integer.parseInt(req.getParameter("GEN_FuelCapGal")) );
-				gen.setStartDelaySeconds( Integer.parseInt(req.getParameter("GEN_StartDelaySec")) );
+				if (req.getParameter("GEN_KWCapacity").length() > 0)
+					gen.setPeakKWCapacity( Integer.parseInt(req.getParameter("GEN_KWCapacity")) );
+				if (req.getParameter("GEN_FuelCapGal").length() > 0)
+					gen.setFuelCapGallons( Integer.parseInt(req.getParameter("GEN_FuelCapGal")) );
+				if (req.getParameter("GEN_StartDelaySec").length() > 0)
+					gen.setStartDelaySeconds( Integer.parseInt(req.getParameter("GEN_StartDelaySec")) );
 				newApp.setGenerator( gen );
 			}
 			else if (categoryID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_GRAIN_DRYER)
@@ -215,8 +212,10 @@ public class CreateApplianceAction implements ActionBase {
 						ServletUtils.getStarsCustListEntryByID(
 							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_STORAGE_HEAT_TYPE, Integer.parseInt(req.getParameter("SH_StorageType"))),
 						StorageType.class) );
-				sh.setPeakKWCapacity( Integer.parseInt(req.getParameter("SH_KWCapacity")) );
-				sh.setHoursToRecharge( Integer.parseInt(req.getParameter("SH_RechargeHour")) );
+				if (req.getParameter("SH_KWCapacity").length() > 0)
+					sh.setPeakKWCapacity( Integer.parseInt(req.getParameter("SH_KWCapacity")) );
+				if (req.getParameter("SH_RechargeHour").length() > 0)
+					sh.setHoursToRecharge( Integer.parseInt(req.getParameter("SH_RechargeHour")) );
 				newApp.setStorageHeat( sh );
 			}
 			else if (categoryID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_HEAT_PUMP)
@@ -226,11 +225,16 @@ public class CreateApplianceAction implements ActionBase {
 						ServletUtils.getStarsCustListEntryByID(
 							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_HEAT_PUMP_TYPE, Integer.parseInt(req.getParameter("HP_PumpType"))),
 						PumpType.class) );
+				hp.setPumpSize( (PumpSize)StarsFactory.newStarsCustListEntry(
+						ServletUtils.getStarsCustListEntryByID(
+							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_HEAT_PUMP_SIZE, Integer.parseInt(req.getParameter("HP_PumpSize"))),
+						PumpSize.class) );
 				hp.setStandbySource( (StandbySource)StarsFactory.newStarsCustListEntry(
 						ServletUtils.getStarsCustListEntryByID(
 							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_HP_STANDBY_SOURCE, Integer.parseInt(req.getParameter("HP_StandbySrc"))),
 						StandbySource.class) );
-				hp.setRestartDelaySeconds( Integer.parseInt(req.getParameter("HP_RestartDelaySec")) );
+				if (req.getParameter("HP_RestartDelaySec").length() > 0)
+					hp.setRestartDelaySeconds( Integer.parseInt(req.getParameter("HP_RestartDelaySec")) );
 				newApp.setHeatPump( hp );
 			}
 			else if (categoryID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_IRRIGATION)
@@ -309,18 +313,27 @@ public class CreateApplianceAction implements ActionBase {
             appDB.setAccountID( new Integer(accountInfo.getCustomerAccount().getAccountID()) );
             appDB.setApplianceCategoryID( new Integer(newApp.getApplianceCategoryID()) );
             appDB.setLMProgramID( new Integer(0) );
-            if (!newApp.getYearManufactured().equals(""))
-            	appDB.setYearManufactured( Integer.valueOf(newApp.getYearManufactured()) );
             appDB.setManufacturerID( new Integer(newApp.getManufacturer().getEntryID()) );
             appDB.setLocationID( new Integer(newApp.getLocation().getEntryID()) );
             appDB.setNotes( newApp.getNotes() );
             appDB.setModelNumber( newApp.getModelNumber() );
-            appDB.setKWCapacity( new Integer(newApp.getKWCapacity()) );
-            appDB.setEfficiencyRating( new Integer(newApp.getEfficiencyRating()) );
+            
+			if (newApp.getYearManufactured().length() > 0)
+				appDB.setYearManufactured( Integer.valueOf(newApp.getYearManufactured()) );
+			else
+				appDB.setYearManufactured( new Integer(-1) );
+            if (newApp.hasKWCapacity())
+	            appDB.setKWCapacity( new Integer(newApp.getKWCapacity()) );
+	        else
+	        	appDB.setKWCapacity( new Integer(-1) );
+	        if (newApp.hasEfficiencyRating())
+	            appDB.setEfficiencyRating( new Integer(newApp.getEfficiencyRating()) );
+	        else
+	        	appDB.setEfficiencyRating( new Integer(-1) );
             
             app = (com.cannontech.database.data.stars.appliance.ApplianceBase) Transaction.createTransaction(Transaction.INSERT, app).execute();
             LiteStarsAppliance liteApp = null;
-
+            
             if (newApp.getAirConditioner() != null) {
             	ApplianceAirConditioner appAC = new ApplianceAirConditioner();
             	appAC.setApplianceID( app.getApplianceBase().getApplianceID() );
@@ -336,7 +349,10 @@ public class CreateApplianceAction implements ActionBase {
             	appWH.setApplianceID( app.getApplianceBase().getApplianceID() );
             	appWH.setNumberOfGallonsID( new Integer(newApp.getWaterHeater().getNumberOfGallons().getEntryID()) );
             	appWH.setEnergySourceID( new Integer(newApp.getWaterHeater().getEnergySource().getEntryID()) );
-            	appWH.setNumberOfElements( new Integer(newApp.getWaterHeater().getNumberOfElements()) );
+            	if (newApp.getWaterHeater().hasNumberOfElements())
+	            	appWH.setNumberOfElements( new Integer(newApp.getWaterHeater().getNumberOfElements()) );
+	            else
+	            	appWH.setNumberOfElements( new Integer(-1) );
             	appWH = (ApplianceWaterHeater) Transaction.createTransaction(Transaction.INSERT, appWH).execute();
             	
             	liteApp = new LiteStarsAppWaterHeater();
@@ -347,7 +363,10 @@ public class CreateApplianceAction implements ActionBase {
             	appDF.setApplianceID( app.getApplianceBase().getApplianceID() );
             	appDF.setSwitchOverTypeID( new Integer(newApp.getDualFuel().getSwitchOverType().getEntryID()) );
             	appDF.setSecondaryEnergySourceID( new Integer(newApp.getDualFuel().getSecondaryEnergySource().getEntryID()) );
-            	appDF.setSecondaryKWCapacity( new Integer(newApp.getDualFuel().getSecondaryKWCapacity()) );
+            	if (newApp.getDualFuel().hasSecondaryKWCapacity())
+	            	appDF.setSecondaryKWCapacity( new Integer(newApp.getDualFuel().getSecondaryKWCapacity()) );
+	            else
+	            	appDF.setSecondaryKWCapacity( new Integer(-1) );
             	appDF = (ApplianceDualFuel) Transaction.createTransaction(Transaction.INSERT, appDF).execute();
             	
             	liteApp = new LiteStarsAppDualFuel();
@@ -358,9 +377,18 @@ public class CreateApplianceAction implements ActionBase {
             	appGen.setApplianceID( app.getApplianceBase().getApplianceID() );
             	appGen.setTransferSwitchTypeID( new Integer(newApp.getGenerator().getTransferSwitchType().getEntryID()) );
             	appGen.setTransferSwitchMfgID( new Integer(newApp.getGenerator().getTransferSwitchManufacturer().getEntryID()) );
-            	appGen.setPeakKWCapacity( new Integer(newApp.getGenerator().getPeakKWCapacity()) );
-            	appGen.setFuelCapGallons( new Integer(newApp.getGenerator().getFuelCapGallons()) );
-            	appGen.setStartDelaySeconds( new Integer(newApp.getGenerator().getStartDelaySeconds()) );
+            	if (newApp.getGenerator().hasPeakKWCapacity())
+	            	appGen.setPeakKWCapacity( new Integer(newApp.getGenerator().getPeakKWCapacity()) );
+	            else
+	            	appGen.setPeakKWCapacity( new Integer(-1) );
+	            if (newApp.getGenerator().hasFuelCapGallons())
+	            	appGen.setFuelCapGallons( new Integer(newApp.getGenerator().getFuelCapGallons()) );
+	            else
+	            	appGen.setFuelCapGallons( new Integer(-1) );
+	            if (newApp.getGenerator().hasStartDelaySeconds())
+	            	appGen.setStartDelaySeconds( new Integer(newApp.getGenerator().getStartDelaySeconds()) );
+	            else
+	            	appGen.setStartDelaySeconds( new Integer(-1) );
             	appGen = (ApplianceGenerator) Transaction.createTransaction(Transaction.INSERT, appGen).execute();
             	
             	liteApp = new LiteStarsAppGenerator();
@@ -383,8 +411,14 @@ public class CreateApplianceAction implements ActionBase {
             	ApplianceStorageHeat appSH = new ApplianceStorageHeat();
             	appSH.setApplianceID( app.getApplianceBase().getApplianceID() );
             	appSH.setStorageTypeID( new Integer(newApp.getStorageHeat().getStorageType().getEntryID()) );
-            	appSH.setPeakKWCapacity( new Integer(newApp.getStorageHeat().getPeakKWCapacity()) );
-            	appSH.setHoursToRecharge( new Integer(newApp.getStorageHeat().getHoursToRecharge()) );
+            	if (newApp.getStorageHeat().hasPeakKWCapacity())
+	            	appSH.setPeakKWCapacity( new Integer(newApp.getStorageHeat().getPeakKWCapacity()) );
+	            else
+	            	appSH.setPeakKWCapacity( new Integer(-1) );
+	            if (newApp.getStorageHeat().hasHoursToRecharge())
+	            	appSH.setHoursToRecharge( new Integer(newApp.getStorageHeat().getHoursToRecharge()) );
+	            else
+	            	appSH.setHoursToRecharge( new Integer(-1) );
             	appSH = (ApplianceStorageHeat) Transaction.createTransaction(Transaction.INSERT, appSH).execute();
             	
             	liteApp = new LiteStarsAppStorageHeat();
@@ -394,8 +428,12 @@ public class CreateApplianceAction implements ActionBase {
             	ApplianceHeatPump appHP = new ApplianceHeatPump();
             	appHP.setApplianceID( app.getApplianceBase().getApplianceID() );
             	appHP.setPumpTypeID( new Integer(newApp.getHeatPump().getPumpType().getEntryID()) );
+            	appHP.setPumpSizeID( new Integer(newApp.getHeatPump().getPumpSize().getEntryID()) );
             	appHP.setStandbySourceID( new Integer(newApp.getHeatPump().getStandbySource().getEntryID()) );
-            	appHP.setSecondsDelayToRestart( new Integer(newApp.getHeatPump().getRestartDelaySeconds()) );
+            	if (newApp.getHeatPump().hasRestartDelaySeconds())
+	            	appHP.setSecondsDelayToRestart( new Integer(newApp.getHeatPump().getRestartDelaySeconds()) );
+	            else
+	            	appHP.setSecondsDelayToRestart( new Integer(-1) );
             	appHP = (ApplianceHeatPump) Transaction.createTransaction(Transaction.INSERT, appHP).execute();
             	
             	liteApp = new LiteStarsAppHeatPump();
