@@ -5,6 +5,7 @@ package com.cannontech.dbeditor.wizard.device.lmcontrolarea;
  */
 import java.awt.Dimension;
 
+import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.database.data.device.lm.LMControlArea;
 
 public class LMControlAreaBasePanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener 
@@ -584,6 +585,12 @@ private javax.swing.JTextField getJTextFieldName() {
 			ivjJTextFieldName.setToolTipText("Name of control area");
 			ivjJTextFieldName.setText("");
 			// user code begin {1}
+			
+			ivjJTextFieldName.setDocument(
+					new TextFieldDocument(
+						TextFieldDocument.MAX_DEVICE_NAME_LENGTH,
+						TextFieldDocument.INVALID_CHARS_PAO) );
+			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}

@@ -1,4 +1,7 @@
 package com.cannontech.dbeditor.editor.device.capcontrol;
+
+import com.cannontech.common.gui.util.TextFieldDocument;
+
 /**
  * This type was created in VisualAge.
  */
@@ -916,6 +919,12 @@ private javax.swing.JTextField getJTextFieldName() {
 			ivjJTextFieldName.setFont(new java.awt.Font("sansserif", 0, 14));
 			ivjJTextFieldName.setMinimumSize(new java.awt.Dimension(132, 20));
 			// user code begin {1}
+			
+			ivjJTextFieldName.setDocument(
+					new TextFieldDocument(
+						TextFieldDocument.MAX_DEVICE_NAME_LENGTH,
+						TextFieldDocument.INVALID_CHARS_PAO) );
+			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}

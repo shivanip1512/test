@@ -4,6 +4,7 @@ package com.cannontech.dbeditor.wizard.device.lmprogram;
  * This type was created in VisualAge.
  */
 
+import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.database.data.device.lm.LMProgramBase;
 
 public class LMProgramBasePanel extends com.cannontech.common.gui.util.DataInputPanel implements com.cannontech.common.gui.unchanging.JCheckBoxSeasonChooserListener, com.klg.jclass.util.value.JCValueListener, java.awt.event.ActionListener, javax.swing.event.CaretListener {
@@ -942,7 +943,10 @@ private javax.swing.JTextField getJTextFieldName() {
 			ivjJTextFieldName.setToolTipText("Name of Program");
 			// user code begin {1}
 
-			ivjJTextFieldName.setDocument(new com.cannontech.common.gui.util.TextFieldDocument(com.cannontech.common.gui.util.TextFieldDocument.MAX_DEVICE_NAME_LENGTH));
+			ivjJTextFieldName.setDocument(
+					new TextFieldDocument(
+						TextFieldDocument.MAX_DEVICE_NAME_LENGTH,
+						TextFieldDocument.INVALID_CHARS_PAO) );
 			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {

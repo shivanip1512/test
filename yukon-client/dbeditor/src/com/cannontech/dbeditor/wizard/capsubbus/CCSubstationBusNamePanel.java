@@ -5,6 +5,7 @@ package com.cannontech.dbeditor.wizard.capsubbus;
  */
 import java.awt.Dimension;
 
+import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.database.data.capcontrol.CapControlSubBus;
  
 public class CCSubstationBusNamePanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener {
@@ -391,7 +392,12 @@ private javax.swing.JTextField getJTextFieldSubName() {
 			ivjJTextFieldSubName.setFont(new java.awt.Font("sansserif", 0, 14));
 			ivjJTextFieldSubName.setColumns(12);
 			// user code begin {1}
-			ivjJTextFieldSubName.setDocument(new com.cannontech.common.gui.util.TextFieldDocument(com.cannontech.common.gui.util.TextFieldDocument.MAX_CAP_SUBBUS_NAME_LENGTH));
+			
+			ivjJTextFieldSubName.setDocument(
+					new TextFieldDocument(
+						TextFieldDocument.MAX_CAP_SUBBUS_NAME_LENGTH,
+						TextFieldDocument.INVALID_CHARS_PAO) );
+
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}

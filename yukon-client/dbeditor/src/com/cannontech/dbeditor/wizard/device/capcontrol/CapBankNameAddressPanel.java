@@ -2,6 +2,7 @@ package com.cannontech.dbeditor.wizard.device.capcontrol;
 
 import java.awt.Dimension;
 
+import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.database.data.device.DeviceFactory;
 
 /**
@@ -279,7 +280,12 @@ private javax.swing.JTextField getNameTextField() {
 			ivjNameTextField.setFont(new java.awt.Font("sansserif", 0, 14));
 			ivjNameTextField.setColumns(12);
 			// user code begin {1}
-			ivjNameTextField.setDocument(new com.cannontech.common.gui.util.TextFieldDocument(com.cannontech.common.gui.util.TextFieldDocument.MAX_DEVICE_NAME_LENGTH));
+			
+			ivjNameTextField.setDocument(
+					new TextFieldDocument(
+						TextFieldDocument.MAX_DEVICE_NAME_LENGTH,
+						TextFieldDocument.INVALID_CHARS_PAO) );
+
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
