@@ -67,7 +67,7 @@ public interface RoleTypes {
 	public static final int CONSUMERINFO_ACCOUNT_GENERAL = -161;
 	public static final int CONSUMERINFO_ACCOUNT_CALL_TRACKING = -162;
 	public static final int CONSUMERINFO_METERING = -163;
-	public static final int CONSUMERINFO_METERING_INTEVAL_DATA = -164;
+	public static final int CONSUMERINFO_METERING_INTERVAL_DATA = -164;
 	public static final int CONSUMERINFO_METERING_USAGE = -165;
 	public static final int CONSUMERINFO_PROGRAMS = -166;
 	public static final int CONSUMERINFO_PROGRAMS_CONTROL_HISTORY = -167;
@@ -75,14 +75,14 @@ public interface RoleTypes {
 	public static final int CONSUMERINFO_PROGRAMS_OPTOUT = -169;
 	public static final int CONSUMERINFO_APPLIANCES = -170;
 	public static final int CONSUMERINFO_APPLIANCES_CREATE = -171;
-	public static final int CONSUMERINFO_HARDWARE = -172;
-	public static final int CONSUMERINFO_HARDWARE_CREATE = -173;
+	public static final int CONSUMERINFO_HARDWARES = -172;
+	public static final int CONSUMERINFO_HARDWARES_CREATE = -173;
 	public static final int CONSUMERINFO_WORKORDERS = -174;
 	public static final int CONSUMERINFO_ADMIN = -175;
 	public static final int CONSUMERINFO_ADMIN_CHANGE_PASSWORD = -176;
 	public static final int CONSUMERINFO_THERMOSTAT = -177;
 	public static final int CONSUMERINFO_QUESTIONS = -178;
-	public static final int CONSUMERINFO_RESIDENCE = -179;
+	public static final int CONSUMERINFO_ACCOUNT_RESIDENCE = -179;
 
 	//Esub category
 	public static final int ESUBVIEW = -200;

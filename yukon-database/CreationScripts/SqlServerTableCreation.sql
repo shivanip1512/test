@@ -4225,14 +4225,14 @@ insert into YukonRole values(-168,'CONSUMERINFO_PROGRAMS_ENROLLMENT','ConsumerIn
 insert into YukonRole values(-169,'CONSUMERINFO_PROGRAMS_OPTOUT','ConsumerInfo','(none)','(none)');
 insert into YukonRole values(-170,'CONSUMERINFO_APPLIANCES','ConsumerInfo','(none)','(none)');
 insert into YukonRole values(-171,'CONSUMERINFO_APPLIANCES_CREATE','ConsumerInfo','(none)','(none)');
-insert into YukonRole values(-172,'CONSUMERINFO_HARDWARE','ConsumerInfo','(none)','(none)');
-insert into YukonRole values(-173,'CONSUMERINFO_HARDWARE_CREATE','ConsumerInfo','(none)','(none)');
+insert into YukonRole values(-172,'CONSUMERINFO_HARDWARES','ConsumerInfo','(none)','(none)');
+insert into YukonRole values(-173,'CONSUMERINFO_HARDWARES_CREATE','ConsumerInfo','(none)','(none)');
 insert into YukonRole values(-174,'CONSUMERINFO_WORKORDERS','ConsumerInfo','(none)','(none)');
 insert into YukonRole values(-175,'CONSUMERINFO_ADMIN','ConsumerInfo','(none)','(none)');
 insert into YukonRole values(-176,'CONSUMERINFO_ADMIN_CHANGE_PASSWORD','ConsumerInfo','(none)','(none)');
 insert into YukonRole values(-177,'CONSUMERINFO_THERMOSTAT','ConsumerInfo','(none)','(none)');
 insert into YukonRole values(-178,'CONSUMERINFO_QUESTIONS','ConsumerInfo','(none)','(none)');
-insert into YukonRole values(-179,'CONSUMERINFO_RESIDENCE','ConsumerInfo','(none)','(none)');
+insert into YukonRole values(-179,'CONSUMERINFO_ACCOUNT_RESIDENCE','ConsumerInfo','(none)','(none)');
 
 insert into yukonrole values(-200,'ESUBVIEW','Esub','true','(none)');
 insert into yukonrole values(-201,'ESUBEDIT','Esub','true','(none)');
