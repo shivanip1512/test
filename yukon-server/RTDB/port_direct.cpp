@@ -286,7 +286,7 @@ INT CtiPortDirect::inMess(CtiXfer& Xfer, CtiDeviceSPtr Dev, RWTPtrSlist< CtiMess
 
     Xfer.setInCountActual( (ULONG)0 );     // Mark it as zero to prevent any "lies"
 
-    if( gSimulatePorts )
+    if( gSimulatePorts && Xfer.getInCountExpected() > 0 )
     {
         status = ErrPortSimulated;
     }
