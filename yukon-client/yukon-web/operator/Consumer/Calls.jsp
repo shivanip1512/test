@@ -91,7 +91,7 @@ function init() {
               <%@ include file="include/InfoSearchBar.jsp" %>
 			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
 			  
-              <form name="form1" method="post" action="<%= request.getContextPath() %>/servlet/SOAPClient">
+              <form name="form1" method="post" action="<%= request.getContextPath() %>/servlet/SOAPClient" onsubmit="return validate(this)">
 			    <input type="hidden" name="action" value="UpdateCall">
 				<input type="hidden" name="CallID">
 				<input type="hidden" name="CallType">
@@ -145,7 +145,7 @@ function init() {
                   <tr> 
                     <td width="43%"> 
                       <div align="right"> 
-                        <input type="submit" name="Submit" value="Submit" onclick="return validate(this.form)">
+                        <input type="submit" name="Submit" value="Submit">
                       </div>
                     </td>
 					<td width="15%">

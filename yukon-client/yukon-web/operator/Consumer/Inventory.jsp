@@ -143,7 +143,7 @@ function changeSerialNo() {
               <% String header = "HARDWARE - INFORMATION"; %><%@ include file="include/InfoSearchBar.jsp" %>
 			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
 			  
-			  <form name="MForm" method="POST" action="<%= request.getContextPath() %>/servlet/SOAPClient">
+			  <form name="MForm" method="POST" action="<%= request.getContextPath() %>/servlet/SOAPClient" onsubmit="return validate(this)">
                 <input type="hidden" name="action" value="UpdateLMHardware">
                 <input type="hidden" name="OrigInvID" value="<%= inventory.getInventoryID() %>">
                 <input type="hidden" name="InvID" value="<%= newInv.getInventoryID() %>">
@@ -348,7 +348,7 @@ function changeSerialNo() {
             <table width="400" border="0" cellspacing="0" cellpadding="3" bgcolor="#FFFFFF">
               <tr> 
                   <td width="42%" align="right"> 
-                    <input type="submit" name="Submit" value="Submit" onclick="return validate(this.form)">
+                    <input type="submit" name="Submit" value="Submit">
                   </td>
                   <td width="15%" align="center"> 
                   <% if (invChanged) { %>

@@ -123,7 +123,7 @@ function confirmSubmit(form) {
                   programs you would like to be enrolled in.<br> <br></span><span class="TitleHeader"></span>
                   <input type="button" value="Program Details" onclick="location='ProgramDetails.jsp'">
                 
-				<form method="post" action="<%=request.getContextPath()%>/servlet/SOAPClient">
+				<form method="post" action="<%=request.getContextPath()%>/servlet/SOAPClient" onsubmit="return confirmSubmit(this)">
 				  <input type="hidden" name="action" value="ProgramSignUp">
 				  <input type="hidden" name="SignUpChanged" value="false">
 				  <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/Enrollment.jsp">
@@ -226,7 +226,7 @@ function confirmSubmit(form) {
                     <table width="50%" border="0">
                       <tr>
                         <td align = "right"> 
-                          <input type="submit" name="Submit" value="Submit" onClick="return confirmSubmit(this.form)">
+                          <input type="submit" name="Submit" value="Submit">
                         </td>
                         <td>
                           <input type="button" name="Cancel" value="Cancel">

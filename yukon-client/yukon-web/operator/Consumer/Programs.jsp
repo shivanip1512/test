@@ -172,8 +172,10 @@ function setNotEnrolled(userAction) {
 }
 
 function confirmSubmit() {
+<% if (request.getParameter("Wizard") == null) { %>
 	if (!signUpChanged) return false;
 	return confirm('Are you sure you would like to modify these program options?');
+<% } %>
 }
 
 function resendNotEnrolled(form) {
@@ -249,7 +251,7 @@ function resendNotEnrolled(form) {
                 like to be enrolled in. </span><br>
                 <br>
               </div>
-              <form name="form1" method="post" action="<%= request.getContextPath() %>/servlet/SOAPClient">
+              <form name="form1" method="post" action="<%= request.getContextPath() %>/servlet/SOAPClient" onsubmit="return confirmSubmit()">
                 <input type="hidden" name="action" value="ProgramSignUp">
                 <input type="hidden" name="SignUpChanged" value="false">
                 <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/operator/Consumer/Programs.jsp">
@@ -372,7 +374,7 @@ function resendNotEnrolled(form) {
                     <td width="186"> 
                       <div align="right"> 
 <% if (request.getParameter("Wizard") == null) { %>
-                        <input type="submit" name="Submit" value="Submit" onClick="return confirmSubmit()">
+                        <input type="submit" name="Submit" value="Submit">
 <% } else { %>
                         <input type="submit" name="Done" value="Done">
 <% } %>

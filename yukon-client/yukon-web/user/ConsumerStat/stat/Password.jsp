@@ -78,7 +78,7 @@ function checkPasswords(form) {
 			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
               <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
 			
-            <form method="POST" action="<%=request.getContextPath()%>/servlet/SOAPClient">
+            <form method="POST" action="<%=request.getContextPath()%>/servlet/SOAPClient" onsubmit="return checkPasswords(this)">
 			  <input type="hidden" name="action" value="UpdateLogin">
 			  <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/Password.jsp">
 			  <input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/Password.jsp">
@@ -113,7 +113,7 @@ function checkPasswords(form) {
                 <tr>
                   <td width="186"> 
                       <div align="right"> 
-                        <input type="submit" name="Submit2" value="Submit" onclick="return checkPasswords(this.form)">
+                        <input type="submit" name="Submit2" value="Submit">
                       </div>
                   </td>
                   <td width="194"> 
