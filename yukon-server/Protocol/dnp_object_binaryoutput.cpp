@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2002/07/16 13:57:43 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2002/07/19 13:41:52 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -24,18 +24,89 @@ CtiDNPBinaryOutput::CtiDNPBinaryOutput(int variation) : CtiDNPObject(Group, vari
 
 int CtiDNPBinaryOutput::restore(unsigned char *buf, int len)
 {
+    int pos = 0;
+
+    switch( getVariation() )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        case WithStatus:
+        {
+            _bo.raw = buf[pos++];
+
+            break;
+        }
+
+        default:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            pos = len;
+        }
     }
 
-    return len;
+    return pos;
+}
+
+
+int CtiDNPBinaryOutput::restoreBits(unsigned char *buf, int bitoffset, int len)
+{
+    int bitpos;
+
+    bitpos = bitoffset;
+
+    switch( getVariation() )
+    {
+        case SingleBit:
+        {
+            _bo.flags.state = (buf[bitpos/8] >> (bitpos++)) & 0x01;
+
+            break;
+        }
+
+        default:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            bitpos = len * 8;
+
+            break;
+        }
+    }
+
+    return bitpos - bitoffset;
 }
 
 
 int CtiDNPBinaryOutput::serialize(unsigned char *buf)
 {
-    return 0;
+    int pos = 0;
+
+    switch(getVariation())
+    {
+        case WithStatus:
+        {
+            buf[pos++] = _bo.raw;
+
+            break;
+        }
+
+        default:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            break;
+        }
+    }
+
+    return pos;
 }
 
 
@@ -45,23 +116,20 @@ int CtiDNPBinaryOutput::getSerializedLen(void)
 
     switch(getVariation())
     {
-        case SingleBit:
+        case WithStatus:
+        {
+            retVal = 1;
+            break;
+        }
+
+        default:
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << RWTime() << " Single-bit packed binary output not supported yet " << endl;
             }
 
             retVal = 0;
-
-            break;
-        }
-
-        case WithStatus:
-        {
-            retVal = 1;
-
             break;
         }
     }
@@ -69,9 +137,223 @@ int CtiDNPBinaryOutput::getSerializedLen(void)
     return retVal;
 }
 
+
+void CtiDNPBinaryOutput::getPoint( RWTPtrSlist< CtiMessage > &objPoints )
+{
+    CtiPointDataMsg *tmpMsg;
+
+    double val;
+    int quality;
+
+    switch(getVariation())
+    {
+        case WithStatus:
+        {
+            //  fall through
+        }
+        case SingleBit:
+        {
+            val = _bo.flags.state;
+            break;
+        }
+
+        default:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            break;
+        }
+    }
+
+/*    UnintializedQuality = 0,
+    InitDefaultQuality,
+    InitLastKnownQuality,
+    NonUpdatedQuality,
+    ManualQuality,
+    NormalQuality,
+    ExceedsLowQuality,
+    ExceedsHighQuality,
+    AbnormalQuality,
+    UnknownQuality,
+    InvalidQuality,
+    PartialIntervalQuality,
+    DeviceFillerQuality,
+    QuestionableQuality,
+    OverflowQuality,
+    PowerfailQuality,
+    UnreasonableQuality
+
+    if( _flags.aiflags.remoteforced )
+    {
+
+    }*/
+
+    tmpMsg = new CtiPointDataMsg(0, val, NormalQuality, StatusOutputPointType);
+
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << "Binary output, value " << val << endl;
+    }
+
+    if( tmpMsg != NULL )
+    {
+        objPoints.append(tmpMsg);
+    }
+}
+
+
+
 CtiDNPBinaryOutputControl::CtiDNPBinaryOutputControl(int variation) : CtiDNPObject(Group, variation)
 {
 
 }
+
+
+void CtiDNPBinaryOutputControl::setControlBlock(unsigned long onTime, unsigned long offTime,
+                                                unsigned char count, ControlCode code, bool queue, bool clear, TripClose tripclose)
+{
+    _crob_or_pcb.block.on_time  = onTime;
+    _crob_or_pcb.block.off_time = offTime;
+    _crob_or_pcb.block.count    = count;
+
+    _crob_or_pcb.block.control_code.code       = code;
+    _crob_or_pcb.block.control_code.clear      = clear;
+    _crob_or_pcb.block.control_code.queue      = queue;
+    _crob_or_pcb.block.control_code.trip_close = tripclose;
+
+    _crob_or_pcb.block.status = 0;
+}
+
+
+int CtiDNPBinaryOutputControl::restore(unsigned char *buf, int len)
+{
+    int pos = 0;
+
+    switch( getVariation() )
+    {
+        case ControlRelayOutputBlock:
+        case PatternControlBlock:
+        {
+            for( int i = 0; i < 11; i++ )
+            {
+                _crob_or_pcb.raw[i] = buf[pos++];
+            }
+
+            break;
+        }
+
+        default:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            pos = len;
+        }
+    }
+
+    return pos;
+}
+
+
+int CtiDNPBinaryOutputControl::restoreBits(unsigned char *buf, int bitoffset, int len)
+{
+    int bitpos;
+
+    bitpos = bitoffset;
+
+    switch( getVariation() )
+    {
+        case PatternMask:
+        {
+            _patternMask = (buf[bitpos/8] >> bitpos) & 0x01;
+
+            bitpos++;
+
+            break;
+        }
+
+        default:
+        {
+            {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            bitpos = len * 8;
+
+            break;
+        }
+    }
+
+    return bitpos - bitoffset;
+}
+
+
+int CtiDNPBinaryOutputControl::serialize(unsigned char *buf)
+{
+    int pos = 0;
+
+    switch(getVariation())
+    {
+        case ControlRelayOutputBlock:
+        case PatternControlBlock:
+        {
+            for( int i = 0; i < 11; i++ )
+            {
+                buf[pos++] = _crob_or_pcb.raw[i];
+            }
+
+            break;
+        }
+
+        default:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            break;
+        }
+    }
+
+    return pos;
+}
+
+
+int CtiDNPBinaryOutputControl::getSerializedLen(void)
+{
+    int retVal;
+
+    switch(getVariation())
+    {
+        case ControlRelayOutputBlock:
+        case PatternControlBlock:
+        {
+            retVal = 11;
+            break;
+        }
+
+        default:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            retVal = 0;
+            break;
+        }
+    }
+
+    return retVal;
+}
+
 
 

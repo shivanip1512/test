@@ -14,13 +14,19 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/07/16 13:58:00 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/07/19 13:41:54 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
 #include <vector>
+
+#include <rw/tpslist.h>
+
+#include "msg_pdata.h"
+#include "pointtypes.h"
+
 using namespace std;
 
 class CtiDNPObject
@@ -38,8 +44,11 @@ public:
     int getVariation(void);
 
     virtual int restore(unsigned char *buf, int len);
+    virtual int restoreBits(unsigned char *buf, int bitpos, int len);
     virtual int serialize(unsigned char *buf);
     virtual int getSerializedLen(void);
+
+    virtual void getPoint( RWTPtrSlist< CtiMessage > &pointList );
 };
 
 
@@ -58,7 +67,8 @@ private:
     vector< CtiDNPObject * > _objectList;
     vector< int > _objectIndices;
 
-    int restoreObject( unsigned char *buf, int len, CtiDNPObject *obj );
+    int restoreObject( unsigned char *buf, int len, CtiDNPObject *&obj );
+    int restoreBitObject( unsigned char *buf, int bitpos, int len, CtiDNPObject *&obj );
 
     void eraseObjectList(void);
 
@@ -91,25 +101,12 @@ public:
 
 //    CtiDNPObject *getObject( int index );
 
-/*    struct dnp_point_descriptor
-    {
-        //  1 byte
-        unsigned char group;
-        //  2 bytes
-        unsigned char variation;
-        //  3 bytes
-        unsigned char qual_code : 4;
-        unsigned char qual_idx  : 3;
-        unsigned char qual_x    : 1;
-        //  varies (_qty_1_oct is one oct)
-        _idx_qty idx_qty;
-    };*/
-
     int  getSerializedLen( void ) const;
-    int serialize( unsigned char *buf ) const;
+    int  serialize( unsigned char *buf ) const;
 
     int  restore( unsigned char *buf, int len );
     bool hasPoints( void );
+    void getPoints( RWTPtrSlist< CtiMessage > &pointList );
 };
 
 #endif // #ifndef __DNP_OBJECTS_H__

@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/06/24 20:00:42 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/07/19 13:41:54 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -63,8 +63,6 @@ private:
                     unsigned char direction     : 1;
                 } s;
             };
-
-
         } control;
 
         unsigned short destination;

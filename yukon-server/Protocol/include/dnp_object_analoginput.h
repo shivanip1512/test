@@ -13,22 +13,23 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2002/07/16 13:57:44 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2002/07/19 13:41:54 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
 #include "dnp_objects.h"
+#include "dnp_object_time.h"
 
 class CtiDNPAnalogInput : public CtiDNPObject
 {
-protected:
-    int _value;
+private:
+    long _value;
 
-    union AnalogFlags
+    union aifu  //  analog in flag union, named for Slick's parsing pleasure
     {
-        struct
+        struct aiflags
         {
             unsigned char online       : 1;
             unsigned char restart      : 1;
@@ -43,8 +44,9 @@ protected:
         unsigned char raw;
     } _flags;
 
-    void setValue(long value);
-    void setFlags(unsigned char flags);
+protected:
+    int restoreVariation(unsigned char *buf, int len, int variation);
+    int serializeVariation(unsigned char *buf, int variation);
 
 public:
     CtiDNPAnalogInput(int variation);
@@ -62,19 +64,19 @@ public:
         Group = 30
     };
 
-    int restore(unsigned char *buf, int len);
-    int restoreVariation(unsigned char *buf, int len, int variation);
-    int serialize(unsigned char *buf);
-    int serializeVariation(unsigned char *buf, int variation);
-    int getSerializedLen(void);
+    virtual int restore(unsigned char *buf, int len);
+    virtual int serialize(unsigned char *buf);
+    virtual int getSerializedLen(void);
+
+    void getPoint( RWTPtrSlist< CtiMessage > &objPoints );
 };
 
 
 //  just inherits the _value and _flags fields, overrides the restore() method and Group enum
 class CtiDNPAnalogInputFrozen : public CtiDNPAnalogInput
 {
-protected:
-
+private:
+    CtiDNPTime _tof;
 
 public:
     CtiDNPAnalogInputFrozen(int variation);
@@ -102,7 +104,8 @@ public:
 
 class CtiDNPAnalogInputChange : public CtiDNPObject
 {
-protected:
+private:
+    CtiDNPTime _toc;
 
 public:
     CtiDNPAnalogInputChange(int variation);
@@ -128,7 +131,8 @@ public:
 
 class CtiDNPAnalogInputFrozenEvent : public CtiDNPObject
 {
-protected:
+private:
+    CtiDNPTime _tofe;
 
 public:
     CtiDNPAnalogInputFrozenEvent(int variation);

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/07/16 14:13:20 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/07/19 13:41:54 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -154,13 +154,16 @@ INT CtiDeviceCBC6510::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pars
 INT CtiDeviceCBC6510::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<CtiMessage>&vgList, RWTPtrSlist<CtiMessage>&retList, RWTPtrSlist<OUTMESS>&outList)
 {
     INT ErrReturn = InMessage->EventCode & 0x3fff;
+    RWTPtrSlist<CtiMessage> dnpPoints;
 
     _dnp.commIn(InMessage, outList);
 
     if( _dnp.hasInboundPoints() )
     {
-        _dnp.sendInboundPoints(vgList, retList);
+        _dnp.getInboundPoints(dnpPoints);
     }
+
+    //  ACH: filter points
 
     return ErrReturn;
 }

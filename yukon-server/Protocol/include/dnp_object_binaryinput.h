@@ -13,17 +13,38 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2002/07/16 13:57:44 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2002/07/19 13:41:54 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
 #include "dnp_objects.h"
+#include "dnp_object_time.h"
 
 class CtiDNPBinaryInput : public CtiDNPObject
 {
+private:
+    union bifu  //  binary in flag union, named for Slick's parsing pleasure
+    {
+        struct biflags
+        {
+            unsigned char online        : 1;
+            unsigned char restart       : 1;
+            unsigned char commlost      : 1;
+            unsigned char remoteforced  : 1;
+            unsigned char localforced   : 1;
+            unsigned char chatterfilter : 1;
+            unsigned char reserved      : 1;
+            unsigned char state         : 1;
+        } flags;
+
+        unsigned char raw;
+    } _bi;
+
 protected:
+    int restoreVariation(unsigned char *buf, int len, int variation);
+    int serializeVariation(unsigned char *buf, int variation);
 
 public:
     CtiDNPBinaryInput(int variation);
@@ -39,14 +60,19 @@ public:
         Group = 1
     };
 
-    int  restore(unsigned char *buf, int len);
-    int serialize(unsigned char *buf);
-    int getSerializedLen(void);
+    virtual int restore(unsigned char *buf, int len);
+    int restoreBits(unsigned char *buf, int bitoffset, int len);
+    virtual int serialize(unsigned char *buf);
+    virtual int getSerializedLen(void);
+
+    void getPoint( RWTPtrSlist< CtiMessage > &objPoints );
 };
 
 class CtiDNPBinaryInputChange : public CtiDNPBinaryInput
 {
 protected:
+    CtiDNPTime      _time;
+    CtiDNPTimeDelay _timeRelative;
 
 public:
     CtiDNPBinaryInputChange(int variation);
@@ -62,6 +88,10 @@ public:
     {
         Group = 2
     };
+
+    int restore(unsigned char *buf, int len);
+    int serialize(unsigned char *buf);
+    int getSerializedLen(void);
 };
 
 #endif  //  #ifndef __DNP_OBJECT_BINARYINPUT_H__

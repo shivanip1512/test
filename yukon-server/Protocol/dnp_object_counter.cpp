@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2002/07/16 13:57:43 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2002/07/19 13:41:53 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -25,11 +25,6 @@ CtiDNPCounter::CtiDNPCounter(int variation) : CtiDNPObject(Group, variation)
 
 int CtiDNPCounter::restore(unsigned char *buf, int len)
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-
     return len;
 }
 
@@ -46,29 +41,90 @@ int CtiDNPCounter::getSerializedLen(void)
 
     switch(getVariation())
     {
-        case Binary32Bit:
+        default:
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << RWTime() << " Single-bit packed binary output not supported yet " << endl;
             }
 
             retVal = 0;
-
-            break;
-        }
-
-        case Binary32BitNoFlag:
-        {
-            retVal = 1;
-
             break;
         }
     }
 
     return retVal;
 }
+
+
+void CtiDNPCounter::getPoint( RWTPtrSlist< CtiMessage > &objPoints )
+{
+    CtiPointDataMsg *tmpMsg;
+
+    double val = 0;
+    int quality;
+
+/*    switch(getVariation())
+    {
+        case WithStatus:
+        {
+            //  fall through
+        }
+        case SingleBitPacked:
+        {
+            val = _bi.flags.state;
+            break;
+        }
+
+        default:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            break;
+        }
+    }*/
+
+/*    UnintializedQuality = 0,
+    InitDefaultQuality,
+    InitLastKnownQuality,
+    NonUpdatedQuality,
+    ManualQuality,
+    NormalQuality,
+    ExceedsLowQuality,
+    ExceedsHighQuality,
+    AbnormalQuality,
+    UnknownQuality,
+    InvalidQuality,
+    PartialIntervalQuality,
+    DeviceFillerQuality,
+    QuestionableQuality,
+    OverflowQuality,
+    PowerfailQuality,
+    UnreasonableQuality
+
+    if( _flags.aiflags.remoteforced )
+    {
+
+    }*/
+
+    tmpMsg = new CtiPointDataMsg(0, val, NormalQuality, PulseAccumulatorPointType);
+
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << "Counter object, value " << val << endl;
+    }
+
+    if( tmpMsg != NULL )
+    {
+        objPoints.append(tmpMsg);
+    }
+}
+
+
 
 CtiDNPCounterChange::CtiDNPCounterChange(int variation) : CtiDNPObject(Group, variation)
 {

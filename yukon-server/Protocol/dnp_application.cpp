@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/07/16 13:57:59 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/07/19 13:41:51 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -23,6 +23,7 @@
 CtiDNPApplication::CtiDNPApplication()
 {
     _ioState = Uninitialized;
+    _seqno = 0;
 }
 
 CtiDNPApplication::CtiDNPApplication(const CtiDNPApplication &aRef)
@@ -78,8 +79,7 @@ void CtiDNPApplication::setCommand( AppFuncCode func )
     _appReq.ctrl.app_confirm = 0;
     _appReq.ctrl.unsolicited = 0;
 
-    _seqno = 0;
-    _appReq.ctrl.seq = _seqno;
+    _appReq.ctrl.seq = ++_seqno;
 
     _appReq.func_code = (unsigned char)func;
 }
@@ -281,13 +281,13 @@ bool CtiDNPApplication::hasInboundPoints( void )
 }
 
 
-void CtiDNPApplication::sendInboundPoints( RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList )
+void CtiDNPApplication::getInboundPoints( RWTPtrSlist< CtiMessage > &pointList )
 {
     for( int i = 0; i < _inObjectBlocks.size(); i++ )
     {
         if( _inObjectBlocks[i]->hasPoints() )
         {
-            //  ACH
+            _inObjectBlocks[i]->getPoints(pointList);
         }
     }
 }

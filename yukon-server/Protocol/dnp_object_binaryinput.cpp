@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2002/07/16 13:57:43 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2002/07/19 13:41:52 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,24 +20,107 @@
 
 CtiDNPBinaryInput::CtiDNPBinaryInput(int variation) : CtiDNPObject(Group, variation)
 {
-
+    _bi.raw = 0;
 }
 
 
 int CtiDNPBinaryInput::restore(unsigned char *buf, int len)
 {
+    return restoreVariation(buf, len, getVariation());
+}
+
+
+int CtiDNPBinaryInput::restoreVariation(unsigned char *buf, int len, int variation)
+{
+    int pos = 0;
+
+    switch( variation )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        case WithStatus:
+        {
+            _bi.raw = buf[pos++];
+
+            break;
+        }
+
+        default:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            pos = len;
+        }
     }
 
-    return len;
+    return pos;
+}
+
+
+int CtiDNPBinaryInput::restoreBits(unsigned char *buf, int bitoffset, int len)
+{
+    int bitpos;
+
+    bitpos = bitoffset;
+
+    switch( getVariation() )
+    {
+        case SingleBitPacked:
+        {
+            _bi.flags.state = (buf[bitpos/8] >> (bitpos++)) & 0x01;
+
+            break;
+        }
+
+        default:
+        {
+            {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            bitpos = len * 8;
+
+            break;
+        }
+    }
+
+    return bitpos - bitoffset;
+}
+
+
+int CtiDNPBinaryInput::serializeVariation(unsigned char *buf, int variation)
+{
+    int pos = 0;
+
+    switch(getVariation())
+    {
+        case WithStatus:
+        {
+            buf[pos++] = _bi.raw;
+
+            break;
+        }
+
+        default:
+        {
+            {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            break;
+        }
+    }
+
+    return pos;
 }
 
 
 int CtiDNPBinaryInput::serialize(unsigned char *buf)
 {
-    return 0;
+    return serializeVariation(buf, getVariation());
 }
 
 
@@ -47,24 +130,21 @@ int CtiDNPBinaryInput::getSerializedLen(void)
 
     switch(getVariation())
     {
-        case SingleBitPacked:
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << RWTime() << " Single-bit packed binary input not supported yet " << endl;
-            }
-
-            retVal = 0;
-
-            break;
-        }
-
         case WithStatus:
         {
             retVal = 1;
 
             break;
+        }
+
+        default:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            retVal = 0;
         }
     }
 
@@ -72,8 +152,207 @@ int CtiDNPBinaryInput::getSerializedLen(void)
 }
 
 
-CtiDNPBinaryInputChange::CtiDNPBinaryInputChange(int variation) : CtiDNPBinaryInput(variation)
+void CtiDNPBinaryInput::getPoint( RWTPtrSlist< CtiMessage > &objPoints )
+{
+    CtiPointDataMsg *tmpMsg;
+
+    double val;
+    int quality;
+
+    switch(getVariation())
+    {
+        case WithStatus:
+        {
+            //  fall through
+        }
+        case SingleBitPacked:
+        {
+            val = _bi.flags.state;
+            break;
+        }
+
+        default:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            break;
+        }
+    }
+
+/*    UnintializedQuality = 0,
+    InitDefaultQuality,
+    InitLastKnownQuality,
+    NonUpdatedQuality,
+    ManualQuality,
+    NormalQuality,
+    ExceedsLowQuality,
+    ExceedsHighQuality,
+    AbnormalQuality,
+    UnknownQuality,
+    InvalidQuality,
+    PartialIntervalQuality,
+    DeviceFillerQuality,
+    QuestionableQuality,
+    OverflowQuality,
+    PowerfailQuality,
+    UnreasonableQuality
+
+    if( _flags.aiflags.remoteforced )
+    {
+
+    }*/
+
+    tmpMsg = new CtiPointDataMsg(0, val, NormalQuality, StatusPointType);
+
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << "Binary input, value " << val << endl;
+    }
+
+    if( tmpMsg != NULL )
+    {
+        objPoints.append(tmpMsg);
+    }
+}
+
+
+
+CtiDNPBinaryInputChange::CtiDNPBinaryInputChange(int variation) : CtiDNPBinaryInput(variation),
+    _time(CtiDNPTime::TimeAndDate),
+    _timeRelative(CtiDNPTimeDelay::Fine)
 {
 
+}
+
+
+int CtiDNPBinaryInputChange::restore(unsigned char *buf, int len)
+{
+    int pos = 0;
+
+    switch( getVariation() )
+    {
+        case WithoutTime:
+        {
+            pos += restoreVariation(buf + pos, len - pos, CtiDNPBinaryInput::WithStatus);
+
+            break;
+        }
+
+        case WithTime:
+        {
+            pos += restoreVariation(buf + pos, len - pos, CtiDNPBinaryInput::WithStatus);
+            pos += _time.restore(buf + pos, len - pos);
+
+            break;
+        }
+
+        case WithRelativeTime:
+        {
+            pos += restoreVariation(buf + pos, len - pos, CtiDNPBinaryInput::WithStatus);
+            pos += _timeRelative.restore(buf + pos, len - pos);
+
+            break;
+        }
+
+        default:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            pos = len;
+        }
+    }
+
+    return pos;
+}
+
+
+int CtiDNPBinaryInputChange::serialize(unsigned char *buf)
+{
+    int pos = 0;
+
+    switch( getVariation() )
+    {
+        case WithoutTime:
+        {
+            pos += serializeVariation(buf + pos, CtiDNPBinaryInput::WithStatus);
+
+            break;
+        }
+
+        case WithTime:
+        {
+            pos += serializeVariation(buf + pos, CtiDNPBinaryInput::WithStatus);
+            pos += _time.serialize(buf + pos);
+
+            break;
+        }
+
+        case WithRelativeTime:
+        {
+            pos += serializeVariation(buf + pos, CtiDNPBinaryInput::WithStatus);
+            pos += _timeRelative.serialize(buf + pos);
+
+            break;
+        }
+
+        default:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+        }
+    }
+
+    return pos;
+}
+
+
+int CtiDNPBinaryInputChange::getSerializedLen(void)
+{
+    int len = 0;
+
+    switch( getVariation() )
+    {
+        case WithoutTime:
+        {
+            len = 1;
+
+            break;
+        }
+
+        case WithTime:
+        {
+            len = 7;
+
+            break;
+        }
+
+        case WithRelativeTime:
+        {
+            len = 3;
+
+            break;
+        }
+
+        default:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            len = 0;
+        }
+    }
+
+    return len;
 }
 

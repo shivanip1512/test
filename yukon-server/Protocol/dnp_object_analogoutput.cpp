@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2002/07/16 13:57:42 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2002/07/19 13:41:52 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,23 +19,121 @@
 
 CtiDNPAnalogOutput::CtiDNPAnalogOutput(int variation) : CtiDNPObject(Group, variation)
 {
-
+    _value = 0;
+    _flags.raw = 0;
 }
 
 int CtiDNPAnalogOutput::restore(unsigned char *buf, int len)
 {
+    int pos = 0;
+
+    if( len < getSerializedLen() )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+
+        pos = len;
+    }
+    else
+    {
+        pos += restoreVariation(buf + pos, len - pos, getVariation());
     }
 
-    return len;
+    return pos;
+}
+
+
+int CtiDNPAnalogOutput::restoreVariation(unsigned char *buf, int len, int variation)
+{
+    int pos = 0;
+
+    switch(variation)
+    {
+        case AO32Bit:
+        {
+            _flags.raw = buf[pos++];
+
+            _value  = buf[pos++];
+            _value |= buf[pos++] <<  8;
+            _value |= buf[pos++] << 16;
+            _value |= buf[pos++] << 24;
+
+            break;
+        }
+
+        case AO16Bit:
+        {
+            _flags.raw = buf[pos++];
+
+            _value  = buf[pos++];
+            _value |= buf[pos++] << 8;
+
+            break;
+        }
+
+        default:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            pos = len;
+        }
+    }
+
+    return pos;
 }
 
 
 int CtiDNPAnalogOutput::serialize(unsigned char *buf)
 {
-    return 0;
+    return serializeVariation(buf, getVariation());
+}
+
+
+int CtiDNPAnalogOutput::serializeVariation(unsigned char *buf, int variation)
+{
+    int pos = 0;
+
+    switch(variation)
+    {
+        case AO32Bit:
+        {
+            _flags.raw = buf[pos++];
+
+            _value  = buf[pos++];
+            _value |= buf[pos++] <<  8;
+            _value |= buf[pos++] << 16;
+            _value |= buf[pos++] << 24;
+
+            break;
+        }
+
+        case AO16Bit:
+        {
+            _flags.raw = buf[pos++];
+
+            _value  = buf[pos++];
+            _value |= buf[pos++] << 8;
+
+            break;
+        }
+
+        default:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            break;
+        }
+    }
+
+    return pos;
 }
 
 
@@ -47,14 +145,23 @@ int CtiDNPAnalogOutput::getSerializedLen(void)
     {
         case AO32Bit:
         {
-            retVal = 0;
-
+            retVal = 5;
             break;
         }
         case AO16Bit:
         {
-            retVal = 0;
+            retVal = 3;
+            break;
+        }
 
+        default:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            retVal = 0;
             break;
         }
     }
@@ -63,8 +170,185 @@ int CtiDNPAnalogOutput::getSerializedLen(void)
 }
 
 
-CtiDNPAnalogOutputBlock::CtiDNPAnalogOutputBlock(int variation) : CtiDNPObject(Group, variation)
+void CtiDNPAnalogOutput::getPoint( RWTPtrSlist< CtiMessage > &objPoints )
+{
+    CtiPointDataMsg *tmpMsg;
+
+    double val;
+    int quality;
+
+    switch(getVariation())
+    {
+        case AO32Bit:
+        {
+            val = _value;
+            break;
+        }
+
+        case AO16Bit:
+        {
+            val = _value;
+            break;
+        }
+
+        default:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            break;
+        }
+    }
+
+/*    UnintializedQuality = 0,
+    InitDefaultQuality,
+    InitLastKnownQuality,
+    NonUpdatedQuality,
+    ManualQuality,
+    NormalQuality,
+    ExceedsLowQuality,
+    ExceedsHighQuality,
+    AbnormalQuality,
+    UnknownQuality,
+    InvalidQuality,
+    PartialIntervalQuality,
+    DeviceFillerQuality,
+    QuestionableQuality,
+    OverflowQuality,
+    PowerfailQuality,
+    UnreasonableQuality
+
+    if( _flags.aiflags.remoteforced )
+    {
+
+    }*/
+
+    tmpMsg = new CtiPointDataMsg(0, val, NormalQuality, AnalogOutputPointType);
+
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << "Analog output, value " << val << endl;
+    }
+
+    if( tmpMsg != NULL )
+    {
+        objPoints.append(tmpMsg);
+    }
+}
+
+
+CtiDNPAnalogOutputBlock::CtiDNPAnalogOutputBlock(int variation) : CtiDNPAnalogOutput(variation)
 {
 
+}
+
+
+int CtiDNPAnalogOutputBlock::restore(unsigned char *buf, int len)
+{
+    int pos = 0;
+
+    switch(getVariation())
+    {
+        case AOB32Bit:
+        {
+            pos += restoreVariation(buf + pos, len - pos, CtiDNPAnalogOutput::AO32Bit);
+            _status = buf[pos++];
+
+            break;
+        }
+
+        case AOB16Bit:
+        {
+            pos += restoreVariation(buf + pos, len - pos, CtiDNPAnalogOutput::AO16Bit);
+            _status = buf[pos++];
+
+            break;
+        }
+
+        default:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            pos = len;
+        }
+    }
+
+    return pos;
+}
+
+
+int CtiDNPAnalogOutputBlock::serialize(unsigned char *buf)
+{
+    int pos = 0;
+
+    switch(getVariation())
+    {
+        case AOB32Bit:
+        {
+            pos += serializeVariation(buf, CtiDNPAnalogOutput::AO32Bit);
+            buf[pos++] = _status;
+
+            break;
+        }
+
+        case AOB16Bit:
+        {
+            pos += serializeVariation(buf, CtiDNPAnalogOutput::AO16Bit);
+            buf[pos++] = _status;
+
+            break;
+        }
+
+        default:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            break;
+        }
+    }
+
+    return pos;
+}
+
+
+int CtiDNPAnalogOutputBlock::getSerializedLen(void)
+{
+    int retVal;
+
+    switch(getVariation())
+    {
+        case AOB32Bit:
+        {
+            retVal = 5;
+            break;
+        }
+        case AOB16Bit:
+        {
+            retVal = 3;
+            break;
+        }
+
+        default:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            retVal = 0;
+            break;
+        }
+    }
+
+    return retVal;
 }
 

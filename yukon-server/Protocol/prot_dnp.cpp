@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/07/16 13:58:00 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/07/19 13:41:53 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -21,6 +21,7 @@
 #include "porter.h"  //  for the RESULT EventCode flag
 #include "prot_dnp.h"
 #include "dnp_object_class.h"
+#include "dnp_object_binaryoutput.h"
 
 CtiProtocolDNP::CtiProtocolDNP()
 {
@@ -135,39 +136,21 @@ void CtiProtocolDNP::setCommand( DNPCommand command, XferPoint *points, int numP
             }
         case DNP_SetDigitalOut:
             {
-                /*
                 if( numPoints > 0 )
                 {
-                    dnp_point_descriptor control;
-                    dnp_control_relay_output_block *crob;
-
                     _appLayer.setCommand(CtiDNPApplication::RequestDirectOp);
 
-                    control.group     = 12;  //  binary output
-                    control.variation =  1;  //  1
-                    control.qual_idx  =  1;  //  1 octet index
-                    control.qual_code =  7;  //  1 octect quantity
-                    control.qual_x    =  0;  //  unused bit
-                    control.idx_qty.qty_1oct.num = 1;
+                    CtiDNPObjectBlock dob(CtiDNPObjectBlock::ByteIndex_ByteQty);
 
-                    control.idx_qty.qty_1oct.data[0] = (unsigned char)points->offset - 1;
+                    CtiDNPBinaryOutputControl *crob = new CtiDNPBinaryOutputControl(CtiDNPBinaryOutputControl::ControlRelayOutputBlock);
 
-                    crob = (dnp_control_relay_output_block *)(control.idx_qty.qty_1oct.data + 1);
+                    crob->setControlBlock(1500, 100, 1, CtiDNPBinaryOutputControl::PulseOn, false, false, CtiDNPBinaryOutputControl::Close);
 
-                    crob->count = 1;
-                    crob->off_time = 0;
-                    crob->on_time  = 0;
-                    crob->off_time = 0;
+                    dob.addObjectIndex(crob, 1 /*points->offset*/);
 
-                    crob->control_code.clear      = 0;
-                    crob->control_code.queue      = 0;
-                    crob->control_code.code       = 1;
-                    crob->control_code.trip_close = 0;
-                    crob->status                  = 0;
-
-                    _appLayer.addData((unsigned char *)&control, 16);
+                    _appLayer.addObjectBlock(dob);
                 }
-                else*/
+                else
                 {
                     command = DNP_Invalid;
                 }
@@ -337,8 +320,8 @@ bool CtiProtocolDNP::hasInboundPoints( void )
 }
 
 
-void CtiProtocolDNP::sendInboundPoints( RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList )
+void CtiProtocolDNP::getInboundPoints( RWTPtrSlist< CtiMessage > &pointList )
 {
-    _appLayer.sendInboundPoints(vgList, retList);
+    _appLayer.getInboundPoints(pointList);
 }
 

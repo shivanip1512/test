@@ -13,41 +13,33 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2002/07/16 13:57:44 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2002/07/19 13:41:54 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
 #include "dnp_objects.h"
-/*
-#pragma pack( push, 1 )
 
-struct dnp_control_relay_output_block
-{
-    //  1 byte
-    struct _control_code
-    {
-        unsigned char code       : 4;
-        unsigned char queue      : 1;
-        unsigned char clear      : 1;
-        unsigned char trip_close : 2;
-    } control_code;
-
-    //  2 bytes
-    unsigned char count;
-    //  6 bytes
-    unsigned long on_time;
-    //  10 bytes
-    unsigned long off_time;
-    //  11 bytes
-    unsigned char status;
-};
-
-#pragma pack( pop )
-*/
 class CtiDNPBinaryOutput : public CtiDNPObject
 {
+private:
+    union bofu  //  binary out flag union, named for Slick's parsing pleasure
+    {
+        struct boflags
+        {
+            unsigned char online       : 1;
+            unsigned char restart      : 1;
+            unsigned char commlost     : 1;
+            unsigned char remoteforced : 1;
+            unsigned char localforced  : 1;
+            unsigned char reserved     : 2;
+            unsigned char state        : 1;
+        } flags;
+
+        unsigned char raw;
+    } _bo;
+
 protected:
 
 public:
@@ -61,17 +53,46 @@ public:
 
     enum
     {
-        Group = 0x10
+        Group = 10
     };
 
-    int  restore(unsigned char *buf, int len);
+    int restore(unsigned char *buf, int len);
+    int restoreBits(unsigned char *buf, int bitoffset, int len);
     int serialize(unsigned char *buf);
-    int  getSerializedLen(void);
+    int getSerializedLen(void);
+
+    void getPoint( RWTPtrSlist< CtiMessage > &objPoints );
 };
 
 
+#pragma pack( push, 1 )
+
 class CtiDNPBinaryOutputControl : public CtiDNPObject
 {
+private:
+    union crobu
+    {
+        struct crob
+        {
+            struct control
+            {
+                unsigned char code       : 4;
+                unsigned char queue      : 1;
+                unsigned char clear      : 1;
+                unsigned char trip_close : 2;
+            } control_code;                     //  byte   1
+
+            unsigned char count;                //  byte   2
+            unsigned long on_time;              //  bytes  3-6
+            unsigned long off_time;             //  bytes  7-10
+            unsigned char status;               //  byte  11
+        } block;
+
+        unsigned char raw[11];
+    } _crob_or_pcb;
+
+    bool _patternMask;
+
 protected:
 
 public:
@@ -86,8 +107,33 @@ public:
 
     enum
     {
-        Group = 0x12
+        Group = 12
     };
+
+    enum ControlCode
+    {
+        Noop     = 0,
+        PulseOn  = 1,
+        PulseOff = 2,
+        LatchOn  = 3,
+        LatchOff = 4
+    };
+
+    enum TripClose
+    {
+        NUL   = 0,
+        Close = 1,
+        Trip  = 2
+    };
+
+    void setControlBlock(unsigned long onTime, unsigned long offTime, unsigned char count, ControlCode code, bool queue, bool clear, TripClose tripclose);
+
+    int restore(unsigned char *buf, int len);
+    int restoreBits(unsigned char *buf, int bitoffset, int len);
+    int serialize(unsigned char *buf);
+    int getSerializedLen(void);
 };
+
+#pragma pack( pop )
 
 #endif  //  #ifndef __DNP_OBJECT_BINARYOUTPUT_H__
