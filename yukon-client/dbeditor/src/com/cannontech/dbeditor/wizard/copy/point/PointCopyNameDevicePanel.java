@@ -147,7 +147,7 @@ private javax.swing.JTextField getNameTextField() {
 			ivjNameTextField.setFont(new java.awt.Font("sansserif", 0, 14));
 			ivjNameTextField.setColumns(12);
 			// user code begin {1}
-			ivjNameTextField.setDocument(new com.cannontech.common.gui.util.TextFieldDocument(com.cannontech.common.gui.util.TextFieldDocument.MAX_DEVICE_NAME_LENGTH));
+			ivjNameTextField.setDocument(new com.cannontech.common.gui.util.TextFieldDocument(com.cannontech.common.gui.util.TextFieldDocument.MAX_POINT_NAME_LENGTH));
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
