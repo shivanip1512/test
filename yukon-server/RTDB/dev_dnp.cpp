@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2004/06/01 18:15:00 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2004/12/07 17:58:43 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -698,6 +698,9 @@ INT CtiDeviceDNP::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< 
                 //  scan the statuses to verify control, but only if we were successful
                 if( _dnp.hasControlResult() && _dnp.getControlResultSuccess() )
                 {
+                    //  we're going to be doing a scan, wait for it
+                    retMsg->setExpectMore();
+
                     if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
