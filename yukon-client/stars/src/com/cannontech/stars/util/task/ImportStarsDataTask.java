@@ -1814,6 +1814,16 @@ public class ImportStarsDataTask extends TimeConsumingTask {
 								}
 							}
 						}
+						else if (ImportManagerUtil.LIST_NAMES[i][0].equals("Substation")) {
+							ArrayList substations = energyCompany.getAllSubstations();
+							for (int j = 0; j < substations.size(); j++) {
+								LiteSubstation liteSub = (LiteSubstation) substations.get(j);
+								if (liteSub.getSubstationID() == id.intValue()) {
+									line += "\"" + liteSub.getSubstationName() + "\"";
+									break;
+								}
+							}
+						}
 						else if (ImportManagerUtil.LIST_NAMES[i][0].equals("LoadType")) {
 							ArrayList appCats = energyCompany.getAllApplianceCategories();
 							for (int j = 0; j < appCats.size(); j++) {
