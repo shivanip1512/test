@@ -1,18 +1,18 @@
 @include /custom/LCRSerial.txt
-Shed (time,relay)= Control Shed 5m r1
-Restore = Control Restore r1
-Cylce = Control Cycle 50 period 30 r1
-Terminate Cycle = Control Cycle terminate r1
+Shed (time,relay)= Control Shed 5m relay 1
+Restore = Control Restore relay 1
+Cylce = Control Cycle 50 period 30 relay 1
+Terminate Cycle = Control Cycle terminate relay 1
  = 
 Service In = Putconfig service in
 Service Out = Putconfig service out
  = 
 Install versacom addressing = putconfig template '?LoadGroup'
-Install cycle count = cycle r1 50
+Install cycle count = putconfig cycle r1 50
 Install Versacom Cold Load (relay,minutes) = putconfig cold_load r1 10
 Emetcon Cold Load(On -ff / OFF-00 = putconfig raw 0x3a ff
  = 
 Set Veracom mode = putconfig raw 36 1
 Set Emetcon mode = putconfig raw 36 0
 Configure LEDs  (report,test,load)  = Putconfig LED yyy
-Reset Counters = rn cl r1 r2 r3
+Reset Counters = putconfig reset rn cl r1 r2 r3
