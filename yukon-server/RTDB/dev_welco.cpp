@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_welco.cpp-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2003/03/13 19:36:01 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2003/03/14 03:08:13 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -259,7 +259,7 @@ INT CtiDeviceWelco::IntegrityScan(CtiRequestMsg *pReq,
             StatusFirst = StatusLast = 0;
         }
 
-        if(isScanFrozen() || isScanFreezeFailed() || !useScanFlags())
+        if(isScanFrozen() || isScanFreezeFailed())
         {
             /*
              *  This is our big hint that the message needs accums to be included!
@@ -1914,7 +1914,7 @@ INT CtiDeviceWelco::executeControl(CtiRequestMsg *pReq, CtiCommandParser &parse,
                         OutMessage->Port        = getPortID();
                         OutMessage->Remote      = getAddress();
 
-                        OverrideOutMessagePriority( OutMessage, MAXPRIORITY );
+                        OverrideOutMessagePriority( OutMessage, MAXPRIORITY - 1);
 
                         OutMessage->TimeOut     = 2;
                         OutMessage->InLength    = -1;
