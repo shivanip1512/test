@@ -22,7 +22,7 @@ class LoginSupport {
 		
 		URL url;
 		try {
-	
+			//TODO Fully qualify the context!
 			url = new URL("http", yukonHost, port, "/servlet/LoginController?" + 
 				LoginController.USERNAME + "=" + username + "&" + LoginController.PASSWORD + "=" +
 				password + "&" + LoginController.ACTION + "=" + LoginController.CLIENT_LOGIN);
