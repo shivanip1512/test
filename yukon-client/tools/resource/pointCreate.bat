@@ -6,9 +6,10 @@ goto done
 
 :usage
 echo:
-echo Usage:	pointcreate.bat [ p[owerfail] d[isconnect] lg[oadgroup] ]
+echo Usage:	pointcreate.bat [ p[owerfail] d[isconnect] lg[oadgroup] analog] [(with analog only) devID count]
 echo:
 echo Ex1:  pointcreate.bat p d     - creates POWERFAIL and DISCONNECT points
+echo Ex1:  pointcreate.bat analog devID count     - creates count ANALOG points for devID
 echo Ex2:  pointcreate.bat disc    - creates only DISCONNECT STATUS points
 echo Ex3:  pointcreate.bat power   - creates only POWER FAIL points
 echo:
