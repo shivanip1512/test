@@ -447,6 +447,11 @@ insert into displaycolumns values(51, 'Additional Info', 10, 5, 180 );
 insert into displaycolumns values(51, 'User Name', 8, 6, 40 );
 insert into displaycolumns values(51, 'Tag', 13, 7, 60 );
 
+
+/* Remove alarm tags from all points (branch add) */
+update dynamicpointdispatch set tags = bitand(tags, 1073741823);
+
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */

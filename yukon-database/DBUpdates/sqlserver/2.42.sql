@@ -496,6 +496,10 @@ insert into displaycolumns values(51, 'Tag', 13, 7, 60 );
 go
 
 
+/* Remove alarm tags from all points (branch add) */
+update dynamicpointdispatch set tags = ( CONVERT(bigint, tags) & 0x3FFFFFFF );
+
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
