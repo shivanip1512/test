@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2004/11/24 17:01:00 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2004/11/24 17:03:53 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -581,7 +581,7 @@ void CtiPorterVerification::writeUnknown(const CtiVerificationReport &report)
              << report.getReceiverID()
              << 0  //  unknown transmitter ID
              << "-"
-             << report.getCode()
+             << code
              << -1
              << "Y"
              << cs;
