@@ -8,11 +8,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2004/12/14 22:25:15 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/01/04 22:16:03 $
 *
 * HISTORY      :
 * $Log: prot_sa305.cpp,v $
+* Revision 1.8  2005/01/04 22:16:03  cplender
+* Completed the asString() method.
+*
 * Revision 1.7  2004/12/14 22:25:15  cplender
 * Various to wring out config commands.  Should be pretty good.
 *
@@ -47,6 +50,74 @@
 #include "numstr.h"
 #include "prot_sa305.h"
 
+
+RWCString CtiProtocolSA305::_strategyStr[64] =
+{
+    RWCString("Strategy 00: n/a"),
+    RWCString("Strategy 01: 7.5 / 7.5"),
+    RWCString("Strategy 02: 7.5 / 15"),
+    RWCString("Strategy 03: n/a"),
+    RWCString("Strategy 04: 5 / 30"),
+    RWCString("Strategy 05: 7.5 / 30"),
+    RWCString("Strategy 06: 10 / 30"),
+    RWCString("Strategy 07: 12 / 30"),
+    RWCString("Strategy 08: 13.5 / 30"),
+    RWCString("Strategy 09: 15 / 30"),
+    RWCString("Strategy 10: 16.5 / 30"),
+    RWCString("Strategy 11: 18 / 30"),
+    RWCString("Strategy 12: 19.5 / 30"),
+    RWCString("Strategy 13: 21 / 30"),
+    RWCString("Strategy 14: 22.5 / 30"),
+    RWCString("Strategy 15: 24 / 30"),
+    RWCString("Strategy 16: 25.5 / 30"),
+    RWCString("Strategy 17: 27 / 30"),
+    RWCString("Strategy 18: 28.5 / 30"),
+    RWCString("Strategy 19: 30 / 30"),
+    RWCString("Strategy 20: n/a"),
+    RWCString("Strategy 21: 5 / 20"),
+    RWCString("Strategy 22: 6.6 / 20"),
+    RWCString("Strategy 23: 8 / 20"),
+    RWCString("Strategy 24: 9 / 20"),
+    RWCString("Strategy 25: 10 / 20"),
+    RWCString("Strategy 26: 11 / 20"),
+    RWCString("Strategy 27: 12 / 20"),
+    RWCString("Strategy 28: 13 / 20"),
+    RWCString("Strategy 29: 14 / 20"),
+    RWCString("Strategy 30: 15 / 20"),
+    RWCString("Strategy 31: 16 / 20"),
+    RWCString("Strategy 32: 17 / 20"),
+    RWCString("Strategy 33: 18 / 20"),
+    RWCString("Strategy 34: 19 / 20"),
+    RWCString("Strategy 35: 20 / 20"),
+    RWCString("Strategy 36: n/a"),
+    RWCString("Strategy 37: 5 / 60"),
+    RWCString("Strategy 38: 10 / 60"),
+    RWCString("Strategy 39: 15 / 60"),
+    RWCString("Strategy 40: 20 / 60"),
+    RWCString("Strategy 41: 24 / 60"),
+    RWCString("Strategy 42: 27 / 60"),
+    RWCString("Strategy 43: 30 / 60"),
+    RWCString("Strategy 44: 33 / 60"),
+    RWCString("Strategy 45: 36 / 60"),
+    RWCString("Strategy 46: 39 / 60"),
+    RWCString("Strategy 47: 42 / 60"),
+    RWCString("Strategy 48: 45 / 60"),
+    RWCString("Strategy 49: 48 / 60"),
+    RWCString("Strategy 50: 51 / 60"),
+    RWCString("Strategy 51: 54 / 60"),
+    RWCString("Strategy 52: 57 / 60"),
+    RWCString("Strategy 53: 60 / 60"),
+    RWCString("Strategy 54: Undefined"),
+    RWCString("Strategy 55: Undefined"),
+    RWCString("Strategy 56: Undefined"),
+    RWCString("Strategy 57: Undefined"),
+    RWCString("Strategy 58: Undefined"),
+    RWCString("Strategy 59: Undefined"),
+    RWCString("Strategy 60: Undefined"),
+    RWCString("Strategy 61: Undefined"),
+    RWCString("Strategy 62: Undefined"),
+    RWCString("Strategy 63: Undefined")
+};
 
 CtiProtocolSA305::CtiProtocolSA305() :
 _padBits(0),
@@ -93,6 +164,33 @@ _rtcResponse(0x00),
 _repetitions(0)
 {
     *this = aRef;
+}
+
+CtiProtocolSA305::CtiProtocolSA305(BYTE *bytestr, UINT bytelen) :
+_padBits(0),
+_startBits(4),
+_transmitterType(0),
+_transmitterAddress(0),
+_messageReady(false),
+_addressUsage(0),
+_serial(-1),
+_group(-1),
+_division(-1),
+_substation(-1),
+_utility(-1),
+_rateFamily(0),
+_rateMember(0),
+_rateHierarchy(0),
+_priority(0),
+_strategy(0),
+_functions(0),
+_rtcResponse(0x00),
+_repetitions(0)
+{
+    for(int i = 0; i < bytelen; i++)
+    {
+        addBits(bytestr[i], 8);
+    }
 }
 
 CtiProtocolSA305::~CtiProtocolSA305()
@@ -158,8 +256,17 @@ int CtiProtocolSA305::solveStrategy(CtiCommandParser &parse)
                     _period = 60.0;
                     period_sec = 3600;
                 }
+                else
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " ALERT: That's a BIG Control!" << endl;
+                    }
+                    _period = 60.0;
+                    period_sec = 3600;
+                }
 
-                _repetitions = shed_seconds / period_sec - ( shed_seconds % period_sec ? 0 : 1);
+                _repetitions = shed_seconds / period_sec - ( shed_seconds % period_sec ? 1 : 0);
                 if(_repetitions < 0) _repetitions = 0;
             }
             else if(cycle_percent > 0)
@@ -195,6 +302,7 @@ int CtiProtocolSA305::solveStrategy(CtiCommandParser &parse)
             }
         }
 
+        if(_repetitions > 13) _repetitions = 13;
 
         if(_period <= 7.5)
         {
@@ -631,26 +739,26 @@ INT CtiProtocolSA305::assemblePutConfig(CtiCommandParser &parse, CtiOutMessage &
 
         addBits(_strategy, 6);
 
-        if( 0 != (val = parse.getiValue("sa_override",0)) )
+        if( 0 <= (val = parse.getiValue("sa_override",-1)) )
         {
             addBits(val, 8);
         }
-        else if( 0 != (val = parse.getiValue("sa_setpriority",0)) )
+        else if( 0 <= (val = parse.getiValue("sa_setpriority",-1)) )
         {
             addBits((val & 0x00000003), 4);
             addBits(0, 4);
         }
-        else if( 0 != (val = parse.getiValue("sa_setled",0)) )
+        else if( 0 <= (val = parse.getiValue("sa_setled",-1)) )
         {
             addBits(0, 4);
             addBits(val, 4);
         }
-        else if( 0 != (val = parse.getiValue("sa_flashled",0)) )
+        else if( 0 <= (val = parse.getiValue("sa_flashled",-1)) )
         {
             addBits(1, 4);
             addBits(val, 4);
         }
-        else if( 0 != (val = parse.getiValue("sa_flashrate",0)) )
+        else if( 0 <= (val = parse.getiValue("sa_flashrate",-1)) )
         {
             addBits(4, 4);
             addBits(0, 4);
@@ -665,7 +773,7 @@ INT CtiProtocolSA305::assemblePutConfig(CtiCommandParser &parse, CtiOutMessage &
         addBits(parse.getiValue("sa_division",0), 6);
         addBits(parse.getiValue("sa_substation",0), 10);
 
-        if(parse.getiValue("sa_package",0))
+        if(0 <= parse.getiValue("sa_package",-1))
         {
             addBits(parse.getiValue("sa_package",0), 7);
         }
@@ -680,72 +788,92 @@ INT CtiProtocolSA305::assemblePutConfig(CtiCommandParser &parse, CtiOutMessage &
         // This is a 13bit config!
         int val;
 
-        if( 0 != (val = parse.getiValue("sa_clpf1",0)) )
+        if( 0 <= (val = parse.getiValue("sa_clpf1",-1)) )
         {
+            val = (int)((float)val / 14.0616);
+            if(val >= 255) val = 255;
             addBits(0, 5);
             addBits(val, 8);
         }
-        else if( 0 != (val = parse.getiValue("sa_clpf2",0)) )
+        else if( 0 <= (val = parse.getiValue("sa_clpf2",-1)) )
         {
+            val = (int)(((float)val + 7.0307) / 14.0616);
+            if(val >= 255) val = 255;
             addBits(1, 5);
             addBits(val, 8);
         }
-        else if( 0 != (val = parse.getiValue("sa_clpf3",0)) )
+        else if( 0 <= (val = parse.getiValue("sa_clpf3",-1)) )
         {
+            val = (int)((float)val / 14.0616);
+            if(val >= 255) val = 255;
             addBits(2, 5);
             addBits(val, 8);
         }
-        else if( 0 != (val = parse.getiValue("sa_clpf4",0)) )
+        else if( 0 <= (val = parse.getiValue("sa_clpf4",-1)) )
         {
+            val = (int)((float)val / 14.0616);
+            if(val >= 255) val = 255;
             addBits(3, 5);
             addBits(val, 8);
         }
-        else if( 0 != (val = parse.getiValue("sa_clpall",0)) )
+        else if( 0 <= (val = parse.getiValue("sa_clpall",-1)) )
         {
+            val = (int)((float)val / 14.0616);
+            if(val >= 255) val = 255;
             addBits(4, 5);
             addBits(val, 8);
         }
-        else if( 0 != (val = parse.getiValue("sa_lorm0",0)) )
+        else if( 0 <= (val = parse.getiValue("sa_lorm0",-1)) )
         {
             addBits(8, 5);
             addBits(val, 8);
         }
-        else if( 0 != (val = parse.getiValue("sa_horm0",0)) )
+        else if( 0 <= (val = parse.getiValue("sa_horm0",-1)) )
         {
             addBits(9, 5);
             addBits(val, 8);
         }
-        else if( 0 != (val = parse.getiValue("sa_lorm1",0)) )
+        else if( 0 <= (val = parse.getiValue("sa_lorm1",-1)) )
         {
             addBits(10, 5);
             addBits(val, 8);
         }
-        else if( 0 != (val = parse.getiValue("sa_horm1",0)) )
+        else if( 0 <= (val = parse.getiValue("sa_horm1",-1)) )
         {
             addBits(11, 5);
             addBits(val, 8);
         }
-        else if( 0 != (val = parse.getiValue("sa_userelaymap0",0)) )
+        else if( 0 <= (val = parse.getiValue("sa_userelaymap0",-1)) )
         {
             addBits(12, 5);
             addBits(0, 8);
         }
-        else if( 0 != (val = parse.getiValue("sa_userelaymap1",0)) )
+        else if( 0 <= (val = parse.getiValue("sa_userelaymap1",-1)) )
         {
             addBits(12, 5);
             addBits(1, 8);
         }
-        else if( 0 != (val = parse.getiValue("sa_clearlc",0)) )
+        else if( 0 <= (val = parse.getiValue("sa_clearlc",-1)) )
         {
             addBits(12, 5);
             addBits(2, 8);
         }
-        else if( 0 != (val = parse.getiValue("sa_clearhc",0)) )
+        else if( 0 <= (val = parse.getiValue("sa_clearhc",-1)) )
         {
             addBits(12, 5);
             addBits(3, 8);
         }
-        else if( 0 != (val = parse.getiValue("sa_datatype",0)) )
+        else if( 0 <= (val = parse.getiValue("sa_clearpcd",-1)) )
+        {
+            addBits(12, 5);
+            addBits(6, 8);
+        }
+        else if( 0 <= (val = parse.getiValue("sa_freezepcd",-1)) )
+        {
+            addBits(12, 5);
+            addBits(5, 8);
+        }
+        else if( 0 <= (val = parse.getiValue("sa_datatype",-1)) )
         {
             addBits(val, 5);
             addBits(parse.getiValue("sa_dataval",0), 8);
@@ -812,6 +940,31 @@ void CtiProtocolSA305::setBit(unsigned int offset, BYTE bit)
     {
         _messageBits[offset] = (bit ? 1 : 0);
     }
+}
+
+UINT CtiProtocolSA305::getBits(unsigned int &offset, int len) const
+{
+    UINT val = 0;
+    if(_messageBits.size() >= offset+len)
+    {
+        for(int i = 0; i < len; i++)
+        {
+            val <<= 1;
+            val |= (_messageBits[offset+i] ? 1 : 0);
+        }
+
+        #if 0
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << " Getting " << len << " bits of data from " << offset << " as " << val << endl;
+        }
+        #endif
+
+        offset += len;
+    }
+
+    return val;
 }
 
 void CtiProtocolSA305::dumpBits() const
@@ -1311,8 +1464,220 @@ RWCString CtiProtocolSA305::getBitString() const
 RWCString  CtiProtocolSA305::asString() const
 {
     RWCString rstr;
+    UINT bit = 0;       // This is just past the Uaddr.
 
     rstr += "SA 305 - code. ";
+
+    if(_transmitterType == TYPE_RTC)  getBits(bit,37);  // RTC crud.
+
+    UINT flag = getBits(bit,6);   // 6 bits of flag.
+
+    bool addresstype = flag & 0x20;
+    bool group = flag & 0x10;
+    bool div = flag & 0x08;
+    bool sub = flag & 0x04;
+    bool f1 = flag & 0x02;
+    bool f0 = flag & 0x01;
+
+    UINT uaddr = getBits(bit,4);
+    UINT serial = 0;
+    UINT gaddr = 0;
+    UINT daddr = 0;
+    UINT saddr = 0;
+    UINT raddr = 0;
+    UINT faddr = 0;
+    UINT maddr = 0;
+    UINT haddr = 0;
+
+    rstr += "Utility " + CtiNumStr(uaddr) + " ";
+
+    if(!addresstype)
+    { // Individual Addressed switch
+        serial = getBits(bit, 22);
+        rstr += ".  Serial Number " + CtiNumStr(serial) + " ";
+    }
+    else
+    {
+        if(group)
+        {
+            gaddr = getBits(bit, 6);
+            rstr += ". Group " + CtiNumStr(gaddr) + " ";
+        }
+        if(div)
+        {
+            daddr = getBits(bit, 6);
+            rstr += ". Division " + CtiNumStr(daddr) + " ";
+        }
+        if(sub)
+        {
+            saddr = getBits(bit, 10);
+            rstr += ". Substation " + CtiNumStr(saddr) + " ";
+        }
+
+        faddr = getBits(bit, 3);
+        maddr = getBits(bit, 4);
+        haddr = getBits(bit, 1);
+
+        raddr = faddr*16 + maddr;
+    }
+
+    if(!f1)
+    {
+        rstr += ".  Operational Command";
+        UINT strategy = getBits(bit, 6);
+        UINT func4 = getBits(bit, 1);
+        UINT func3 = getBits(bit, 1);
+        UINT func2 = getBits(bit, 1);
+        UINT func1 = getBits(bit, 1);
+        UINT reps = getBits(bit, 4);
+        UINT priority = getBits(bit, 2);
+
+        rstr += ". " + _strategyStr[strategy] + " Function";
+
+        if(func1)
+        {
+            rstr += " F1";
+        }
+        if(func2)
+        {
+            rstr += " F2";
+        }
+        if(func3)
+        {
+            rstr += " F3";
+        }
+        if(func4)
+        {
+            rstr += " F4";
+        }
+
+        rstr += ", Repetitions " + CtiNumStr(reps);
+        rstr += ", Priority " + CtiNumStr(priority);
+    }
+    else
+    {
+        rstr += ".  Assignment Command";
+
+        if(f0)  // Full addressing command (29-bit)
+        {
+            gaddr = getBits(bit, 6);
+            daddr = getBits(bit, 6);
+            saddr = getBits(bit, 10);
+            faddr = getBits(bit, 3);
+            maddr = getBits(bit, 4);
+            raddr = faddr*16 + maddr;
+
+            rstr += ". Group " + CtiNumStr(gaddr);
+            rstr += ", Division " + CtiNumStr(daddr);
+            rstr += ", Substation " + CtiNumStr(saddr);
+            rstr += ", Substation " + CtiNumStr(saddr);
+            rstr += ", Family " + CtiNumStr(faddr);
+            rstr += ", Member " + CtiNumStr(maddr) + " (Rate = " + CtiNumStr(raddr) + ")";
+        }
+        else    // 13 byte address command.
+        {
+            UINT datatype = getBits(bit, 5);
+            UINT dataval = getBits(bit, 8);
+
+            switch(datatype)
+            {
+            case 0:
+                {
+                    rstr += ". Cold Load F1 set to " + CtiNumStr(dataval * 14.0616) + " seconds";
+                    break;
+                }
+            case 1:
+                {
+                    rstr += ". Cold Load F2 set to " + CtiNumStr(dataval * 14.0616) + " seconds";
+                    break;
+                }
+            case 2:
+                {
+                    rstr += ". Cold Load F3 set to " + CtiNumStr(dataval * 14.0616) + " seconds";
+                    break;
+                }
+            case 3:
+                {
+                    rstr += ". Cold Load F4 set to " + CtiNumStr(dataval * 14.0616) + " seconds";
+                    break;
+                }
+            case 4:
+                {
+                    rstr += ". Cold Load F1-F4 set to " + CtiNumStr(dataval * 14.0616) + " seconds";
+                    break;
+                }
+            case 5:
+                {
+                    switch(dataval)
+                    {
+                    case 0:
+                        {
+                            rstr += ". Use Relay Map 0";
+                            break;
+                        }
+                    case 1:
+                        {
+                            rstr += ". Use Relay Map 1";
+                            break;
+                        }
+                    case 2:
+                        {
+                            rstr += ". Clear LC Tamper Regs";
+                            break;
+                        }
+                    case 3:
+                        {
+                            rstr += ". Clear HC Tamper Regs";
+                            break;
+                        }
+                    case 4:
+                        {
+                            rstr += ". Transmit Manchester PCD on LED";
+                            break;
+                        }
+                    case 5:
+                        {
+                            rstr += ". Freeze PCD regs";
+                            break;
+                        }
+                    case 6:
+                        {
+                            rstr += ". Clear PCD regs";
+                            break;
+                        }
+                    case 7:
+                        {
+                            rstr += ". Transmit NRZ PCD on LED";
+                            break;
+                        }
+                    case 8:
+                        {
+                            rstr += ". Immed. HW Reset";
+                            break;
+                        }
+                    case 9:
+                        {
+                            rstr += ". Save mem. and HW Reset";
+                            break;
+                        }
+                    default:
+                        {
+                            rstr += ". Unknown Type 5 command.  Data is " + CtiNumStr(dataval);
+                            break;
+                        }
+                    }
+                    break;
+                }
+            default:
+                {
+                    rstr += ". Unknown Command Type " + CtiNumStr(datatype) + "  Data " + CtiNumStr(dataval);
+                    break;
+                }
+            }
+
+        }
+    }
+
 
     return rstr;
 }

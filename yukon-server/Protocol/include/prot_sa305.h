@@ -9,10 +9,13 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2004/12/14 22:25:16 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/01/04 22:16:03 $
 * HISTORY      :
 * $Log: prot_sa305.h,v $
+* Revision 1.6  2005/01/04 22:16:03  cplender
+* Completed the asString() method.
+*
 * Revision 1.5  2004/12/14 22:25:16  cplender
 * Various to wring out config commands.  Should be pretty good.
 *
@@ -122,6 +125,7 @@ private:
 
     void addBits(unsigned int src, int num=32);
     void setBit(unsigned int offset, BYTE bit);
+    UINT getBits(unsigned int &offset, int len) const;
 
     void resetMessage();
     void addressMessage(int command_type = CommandTypeOperationFlag, int command_description = CommandDescription_DIMode);
@@ -144,6 +148,8 @@ private:
 
     RWCString _bitStr;
 
+    static RWCString _strategyStr[64];
+
 public:
 
     enum
@@ -156,6 +162,7 @@ public:
     };
 
     CtiProtocolSA305();
+    CtiProtocolSA305(BYTE *bytestr, UINT bytelen);
     CtiProtocolSA305(const CtiProtocolSA305& aRef);
 
     virtual ~CtiProtocolSA305();

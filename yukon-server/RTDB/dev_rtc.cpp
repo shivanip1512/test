@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2004/12/14 22:27:58 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2005/01/04 22:16:03 $
 *
 * HISTORY      :
 * $Log: dev_rtc.cpp,v $
+* Revision 1.22  2005/01/04 22:16:03  cplender
+* Completed the asString() method.
+*
 * Revision 1.21  2004/12/14 22:27:58  cplender
 * Added 305
 *
@@ -573,9 +576,8 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
         {
         case SA305:
             {
-                CtiProtocolSA305 prot;
-
-                //prot.setSAData( OutMessage->Buffer.SASt );
+                CtiProtocolSA305 prot( OutMessage->Buffer.SASt._buffer, OutMessage->Buffer.SASt._bufferLen );
+                prot.setTransmitterType(getType());
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(slog);
                     slog << RWTime() << " " <<  getName() << ": " << prot.asString() << endl;
@@ -668,9 +670,8 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
             {
             case SA305:
                 {
-                    CtiProtocolSA305 prot;
-
-                    //prot.setSAData( rtcOutMessage->Buffer.SASt );
+                    CtiProtocolSA305 prot( rtcOutMessage->Buffer.SASt._buffer, rtcOutMessage->Buffer.SASt._bufferLen );
+                    prot.setTransmitterType(getType());
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(slog);
                         slog << RWTime() << " " <<  getName() << ": " << prot.asString() << endl;
