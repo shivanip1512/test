@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/prot_emetcon.h-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2004/01/26 21:29:47 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2004/02/10 23:54:29 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -132,6 +132,8 @@ public:
         GetValue_Default,
         GetValue_Frozen,
         GetValue_Demand,
+        GetValue_PeakDemand,
+        GetValue_FrozenPeakDemand,
         GetValue_IEDKwh,
         GetValue_IEDKvarh,
         GetValue_IEDKvah,
@@ -157,9 +159,11 @@ public:
 
         // PutStatus Commands
         PutStatus_Reset,
-        PutStatus_ResetZero,
-        PutStatus_ResetOne,
+        PutStatus_FreezeOne,
+        PutStatus_FreezeTwo,
         PutStatus_ResetOverride,
+        PutStatus_PeakOn,
+        PutStatus_PeakOff,
 
         // GetConfig commands
         GetConfig_Default,
@@ -196,6 +200,8 @@ public:
         PutConfig_Multiplier,
         PutConfig_Multiplier2,
         PutConfig_Multiplier3,
+        PutConfig_MinMax,
+        PutConfig_OnOffPeak,
 
         PutConfig_ARMC,
 
