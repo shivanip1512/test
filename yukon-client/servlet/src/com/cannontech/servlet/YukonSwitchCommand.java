@@ -67,10 +67,7 @@ public void doPost(HttpServletRequest req, HttpServletResponse resp) throws java
 	String serialNumber = req.getParameter("serialNumber");
 	String routeID = req.getParameter("routeid");
 	String function = req.getParameter("function");
-if( routeID != null ) 
-logger.log("found routeid, value is: " + routeID, LogWriter.INFO);
-else
-logger.log("didn't find a routeid sir", LogWriter.INFO);
+
 	// could be invoked by either operator or user...
 	Operator operator = (Operator) session.getValue("OPERATOR");
 	User user = (User) session.getValue("USER");
@@ -142,7 +139,7 @@ logger.log("didn't find a routeid sir", LogWriter.INFO);
 		command.append(serialNumber);
 		
 		if( routeID != null && !routeID.trim().equalsIgnoreCase("0") ) {
-			command.append(" route id ");
+			command.append(" select route id ");
 			command.append(routeID);
 		}
 	}
