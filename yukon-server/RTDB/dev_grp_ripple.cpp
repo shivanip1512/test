@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_grp_ripple.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2005/02/10 23:23:59 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2005/02/17 23:33:26 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -165,12 +165,6 @@ INT CtiDeviceGroupRipple::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &
 
         CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr), Reply, nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
         retList.insert( pRet );
-
-        if(OutMessage)
-        {
-            delete OutMessage;
-            OutMessage = NULL;
-        }
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -373,10 +367,6 @@ bool CtiDeviceGroupRipple::isRestoreProtocolParent(CtiDeviceBase *otherdev)
                 RWTPtrSlist< CtiMessage > vgList;
                 otherGroup->reportControlStart( false, 0, 100, vgList, "control restore" );
 
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") " << vgList.entries() << endl;
-                }
                 if(vgList.entries())
                 {
                     CtiMessage *pMsg = vgList.removeLast();
@@ -403,28 +393,13 @@ CtiMessage* CtiDeviceGroupRipple::rsvpToDispatch( bool clearMessage )
 {
     CtiMessage *tMsg = 0;
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-
     if(_rsvp)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
         if(clearMessage) {
             tMsg = _rsvp;
             _rsvp = 0;
         } else {
             tMsg = _rsvp->replicateMessage();
-        }
-
-        if(tMsg)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint  **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
