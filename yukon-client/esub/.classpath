@@ -31,5 +31,8 @@
     <classpathentry kind="src" path="/resource"/>
     <classpathentry kind="lib" path="/third-party/batik.jar"/>
     <classpathentry kind="lib" path="/third-party/jloox30.jar"/>
+    <classpathentry kind="lib" path="/third-party/jfreereport.jar"/>
+    <classpathentry kind="lib" path="/third-party/itext.jar"/>
+    <classpathentry kind="lib" path="/third-party/poi.jar"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>
