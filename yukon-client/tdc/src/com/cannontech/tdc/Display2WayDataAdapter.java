@@ -42,7 +42,9 @@ public class Display2WayDataAdapter extends AbstractTableModel implements com.ca
 {
 	private boolean muted = false;
 	private Date currentDate = new Date(); //today
-		
+
+	private Display currentDisplay = Display.UNKNOWN_DISPLAY;
+
 	private RowBlinker currentBlinkingAlarms = null;
 
 	private boolean exceededMaxMsg = true;
@@ -79,7 +81,6 @@ public class Display2WayDataAdapter extends AbstractTableModel implements com.ca
 		*/
 	private int[] alarmColors = null;
 
-		
 	private class BlankLine
 	{
 		private int location = 0;
@@ -96,14 +97,6 @@ public class Display2WayDataAdapter extends AbstractTableModel implements com.ca
 
 	};
 
-	private Display currentDisplay = Display.UNKNOWN_DISPLAY;
-	//	private long currentDisplayNumber = Display.UNKNOWN_DISPLAY_NUMBER;
-
-	private final static String[] WHITE_COLOR = {"2"};
-	private final static String[] DUMMY_TEXT = {"DUMMY"};
-	private final static String[] RAW_TEXT = {"1"};
-	private final static String[] DUMMY_BG_COLOR = { String.valueOf( DEFAULT_BACKGROUNDCOLOR )};
-	private final static int[] DUMMY_IMG_IDS = { YukonImage.NONE_IMAGE_ID };
 
 /**
  * This method was created in VisualAge.
@@ -135,7 +128,6 @@ public void addBlankRow( int location )
 
 	createDummyPointValue( TDCDefines.ROW_BREAK_ID,
 					new Date().getTime(),
-					"",
 					"",
 					0,		
 					location );
@@ -218,21 +210,12 @@ private boolean buildRowQuery()
 
 	// Init our Rows in their correct order (Use a SQL-92 compliant query now, aka: 8-6-2003)
 	String query = new String
-		("select d.pointid, d.pointtype, d.pointname, d.devicename, d.pointstate, " +
-		 "d.devicetype, d.deviceid, u.decimalplaces " +
+		("select d.pointid, d.pointtype, d.devicename, d.pointstate, " +
+		 "d.devicetype, u.decimalplaces " +
 		 "from display2waydata_view d left outer join pointunit u on d.pointid = u.pointid, display2waydata y " +
 		 "where y.displaynum = ? " +
 		 "and d.pointid = y.pointid " +
 		 "order by y.ordering");
-	/*		("select d.pointid, d.pointtype, d.pointname, d.devicename, d.pointstate, d.devicetype, " +
-			 " d.deviceid " +
-			 " from display2waydata_view d, display2waydata y " +
-			 " where y.displaynum = ? " +
-			 " and d.pointid = y.pointid " +
-			 " and d.pointid > " + TDCDefines.ROW_BREAK_ID +
-			 " order by y.ordering");
-	*/
-
 		 		
 	Object[] objs = new Object[1];
 	objs[0] = new Integer( getCurrentDisplay().getDisplayNumber() );
@@ -242,7 +225,7 @@ private boolean buildRowQuery()
 
 	if ( pointData != null && pointData.length > 0 ) // is there any points?
 	{		
-		Vector realPoints = new Vector();
+		pointValues = new Vector(128);
 		
 		// insert regular points
 		for( int i = 0; i < pointData.length; i++ )
@@ -263,24 +246,18 @@ private boolean buildRowQuery()
 							    pointData[i][1].toString(),
 							    pointData[i][2].toString(),
 							    pointData[i][3].toString(),
-							    pointData[i][4].toString(),
-							    pointData[i][5].toString(),
-							    Integer.parseInt(pointData[i][6].toString()) );
+							    pointData[i][4].toString() );
 				
 				//assign the decimal places for each point id here if one is present
-				String decPlaces = pointData[i][7].toString();
+				String decPlaces = pointData[i][5].toString();
 				if( decPlaces.length() > 0 )
 					pv.setDecimalPlaces( new Integer(decPlaces) );
 				
-				realPoints.addElement( pv );
+				pointValues.addElement( pv );
 			}
 		}
 
-
-		pointValues = new Vector( realPoints.size() );
-		
-		createPointValues( realPoints );
-
+		checkForLimboPoints( pointValues );
 
 		timerStop = new java.util.Date();
 		CTILogger.debug( 
@@ -389,29 +366,22 @@ public void clearSystemViewerDisplay( boolean forceRepaint )
  * Version: <version>
  * @param id long
  */
-protected void createDummyPointValue( long id, long timeStamp, String deviceName, String pointName, int soe_tag, int location ) 
+protected void createDummyPointValue( long id, long timeStamp, String deviceName, int soe_tag, int location ) 
 {
 	if( location >= getRowCount() )
 		return;  // cant add it off the chart
 
-
 	// create our storage
 	PointValues pointValue = new PointValues( 
 				(int)id,
-				PointTypes.INVALID_POINT,
-				pointName,
-				WHITE_COLOR, DUMMY_TEXT, RAW_TEXT, DUMMY_BG_COLOR, DUMMY_IMG_IDS, 1 );  // not really a point
+				PointTypes.INVALID_POINT );
 
 	
 	if( location >= getRowCount() ) //Add the new value
 		pointValues.addElement( pointValue );
 	else  // insert the new value
 		pointValues.insertElementAt( pointValue, location );
-	
-	pointValue.setStates(	
-			RAW_TEXT[0],  // initital
-			RAW_TEXT[0],  // normal 
-			RAW_TEXT[0] );  // alarm
+
 
 	pointValue.setTime( new Date(timeStamp) );
 	pointValue.setDeviceName( deviceName );
@@ -419,77 +389,6 @@ protected void createDummyPointValue( long id, long timeStamp, String deviceName
 	
 }
 
-/**
- * Insert the method's description here.
- * Creation date: (2/2/00 4:40:07 PM)
- * @return java.lang.Object[]
- */
-private void createPointValues( Vector realPoints )
-{
-/*
-	String query = "select distinct point.pointid, state.foregroundcolor," + 
-			" state.text, state.rawstate,state.backgroundcolor,state.imageid " +
-			" from state, point, display2waydata " +
-			" where state.stategroupid = point.stategroupid and state.rawstate >= 0 " +
-			" and point.pointid in " +
-			" (select pointid from display2waydata where displaynum = ?) " +
-			" order by point.pointid, state.rawstate";
-*/
-
-	String query = 			
-		"select p.pointid, s.foregroundcolor, s.text, s.rawstate, s.backgroundcolor, s.imageid " +
-		"from display2waydata d, state s, point p " +
-		"where d.pointid=p.pointid and p.stategroupid=s.stategroupid " +
-		"and d.displaynum = ? and s.rawstate >= 0 " +
-		"order by p.pointid, s.rawstate";
-			
-	Object[] objs = new Object[1];
-	objs[0] = new Integer( getCurrentDisplay().getDisplayNumber() );
-	Object[][] pointStatment = DataBaseInteraction.queryResults( query, objs );
-
-	
-	// make new buffers to hold the points state data
-	String[] colorBuffer = new String[ pointStatment.length ];
-	String[] messageBuffer = new String[ pointStatment.length ];
-	String[] rawStateBuffer = new String[ pointStatment.length ];
-	String[] bgColorBuffer = new String[ pointStatment.length ];
-	int[] imageIDs = new int[ pointStatment.length ];
-
-	int rowIndex = 0;
-
-	checkForLimboPoints( realPoints );
-	
-	for( int j = 0; j < realPoints.size(); j++ )
-	{		
-		PointValues point = ((PointValues)realPoints.elementAt( j ));
-
-		boolean pointFound = false;
-		int rawStateIndex = 0;
-		
-		for( rowIndex = 0; rowIndex < pointStatment.length; rowIndex++ )
-		{
-			if( String.valueOf(point.getPointID()).equalsIgnoreCase( pointStatment[rowIndex][0].toString() ) )
-			{
-				pointFound = true;
-				
-				colorBuffer[ rawStateIndex ] = pointStatment[rowIndex][1].toString();
-				messageBuffer[ rawStateIndex ] = pointStatment[rowIndex][2].toString();
-				rawStateBuffer[ rawStateIndex ] = pointStatment[rowIndex][3].toString();
-				bgColorBuffer[ rawStateIndex ] = pointStatment[rowIndex][4].toString();
-				imageIDs[ rawStateIndex++ ] = Integer.parseInt(pointStatment[rowIndex][5].toString());
-			}
-			else if( pointFound ) // get out of the loop now if we found the point
-				break;
-		}
-
-		if( pointFound ) // get out of the loop now if we found the point
-		{
-			pointValues.addElement( new PointValues( point, colorBuffer, messageBuffer,
-				rawStateBuffer, bgColorBuffer, imageIDs, rawStateIndex ) );
-		}
-	}
-
-}
 /**
  * Insert the method's description here.
  * Creation date: (4/12/00 2:23:47 PM)
@@ -501,14 +400,8 @@ private void createPsuedoPointValue( Signal signal )
 	int location = 0;
 		
 	pointValues.insertElementAt(
-		new PointValues( signal, PointTypes.INVALID_POINT, 
-			"", WHITE_COLOR, DUMMY_TEXT, RAW_TEXT, 
-			DUMMY_BG_COLOR, DUMMY_IMG_IDS, 1 ), location );  // not really a point
-	
-	((PointValues)pointValues.elementAt( location )).setStates(	
-			RAW_TEXT[0],  // initital
-			RAW_TEXT[0],  // normal 
-			RAW_TEXT[0] );  // alarm	
+		new PointValues( signal, PointTypes.INVALID_POINT ),
+		location );  // not really a point	
 }
 
 /**
@@ -802,7 +695,7 @@ private Object getCellValueObject( PointValues point, int loc )
 		{
 			if( point.getValue() % 1 == 0 )  // make sure we have a whole number
 			{
-				long value = new Long( doubleToLong.format(point.getValue()) ).longValue();
+				int value = new Integer( doubleToLong.format(point.getValue()) ).intValue();
 				buffer = pt.getText( value );
 				pt.setCurrentRowColor( value );
 			}
@@ -852,15 +745,8 @@ public int getColumnCount() {
 	return getColumnNames().size();
 }
 
-//////////////////////////////////////////////////////////////////////////
-//             Implementation of the TableModel Interface
-//////////////////////////////////////////////////////////////////////////
 public String getColumnName(int column) 
 {
-	/*if( modifiedColumnNames.length > column &&
-		modifiedColumnNames[column] != null )
-		return modifiedColumnNames[column];
-	else*/
 	if( getColumnNames().elementAt(column) != null ) 
 	{
 		return getColumnNames().elementAt(column).toString();
@@ -871,8 +757,8 @@ public String getColumnName(int column)
 	}
 	
 }
-/**
 
+/**
  * This method was created in VisualAge.
  * @return java.lang.String
  */
@@ -995,11 +881,11 @@ public int getRowBackgroundColor( int rowNumber )
 	
 	return colorINT;
 }
-// Data methods
 
 public int getRowCount() {
 	return getRows().size();
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (2/3/00 2:36:38 PM)
@@ -1197,8 +1083,8 @@ private void handleDisablity( Signal point )
  * Called whenever the part throws an exception.
  * @param exception java.lang.Throwable
  */
-private void handleException(java.lang.Throwable exception) {
-
+private void handleException(java.lang.Throwable exception)
+{
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
 	CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
 	CTILogger.error( exception.getMessage(), exception );;
@@ -1673,7 +1559,6 @@ private boolean checkFilter( Signal signal )
  * This method was created in VisualAge.
  *    ONLY SIGNALS SHOULD BE ALLOWED IN HERE
  */
-
 public synchronized void processSignalReceived( Signal signal )
 {
 	// make sure we have a point and we are not looking at historical data
@@ -2023,8 +1908,7 @@ private void setCorrectRowValue( PointValues point, int location )
 
 		// More Dyanmic cell changes should follow
 
-		
-		
+	
 	}
 
 }

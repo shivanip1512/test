@@ -9,9 +9,16 @@ import java.util.Date;
 import java.util.HashMap;
 
 import com.cannontech.clientutils.tags.IAlarmDefs;
+import com.cannontech.common.gui.util.Colors;
+import com.cannontech.database.cache.functions.PointFuncs;
+import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteState;
+import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.db.state.YukonImage;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.dispatch.message.Signal;
+import com.cannontech.tdc.utils.TDCDefines;
 
 public class PointValues 
 {
@@ -25,89 +32,43 @@ public class PointValues
 	//device data
 	private String deviceName = null;
 	private String deviceType = null;
-	private int deviceID = 0;
 
 	//point data	
-	private String pointName = null;
 	private String pointState = null;
 	private Integer decimalPlaces = null;
-	private String[] foregroundColors = null;
-	private String[] pointMessages = null;
-	private String[] pointRawStates = null;
-	private String[] backGroundColors = null;
-	private int[] imageIDs = null;
 
-	private String initialState = null;
-	private String normalState = null;
-	private String alarmsState = null;	
-	
 	private String previuosText = null;
 	
-	private int currentForegroundColor = 0;
-	private int currentBackgroundColor = 0;
+	private int currentForegroundColor = Colors.WHITE_ID;
+	private int currentBackgroundColor = Colors.BLACK_ID;
 
-	private int originalBackgroundColor = 0;
+	private int originalBackgroundColor = Colors.BLACK_ID;
+
 
 /**
  * PointValues constructor comment.
  * Used to make dummy pointValues ONLY
  * **/
-public PointValues( int pointid, int ptType, String ptName, String[] colors, 
-		String[] messages, String[] rawstate, String[] bgColor, int[] imgIDs, int colorCount ) 
+public PointValues( int pointid, int ptType ) 
 {
-	this( colors, messages, rawstate, bgColor, imgIDs, colorCount );
-
-	pointName = ptName;
+	super();
 	setPointData( new PointData() );	
 	getPointData().setId( pointid );
 	getPointData().setType( ptType );
 }
 
 /**
- * PointValues constructor comment.
- */
-protected PointValues( String[] colors, String[] messages, 
-			String[] rawstate, String[] bgColor, int[] imgIDs, int colorCount ) 
-{
-	super();
-	
-	foregroundColors = new String[ colorCount ];
-	pointMessages = new String[ colorCount ];
-	pointRawStates = new String[ colorCount ];
-	backGroundColors = new String[ colorCount ];
-	imageIDs = new int[ colorCount ];
-
-	for( int i = 0; i < colorCount; i++ )
-	{
-		foregroundColors[i] = colors[i];
-		pointMessages[i] = messages[i];
-		pointRawStates[i] = rawstate[i];
-		backGroundColors[i] = bgColor[i];
-		imageIDs[i] = imgIDs[i];
-	}
-
-	currentForegroundColor = Integer.parseInt( foregroundColors[0] );
-	currentBackgroundColor = Integer.parseInt( backGroundColors[0] );
-	originalBackgroundColor = Integer.parseInt( backGroundColors[0] );
-
-	previuosText = new String(pointMessages[0]);
-}
-
-
-/**
  * Used to make temporary pointValues ONLY, note: all the color fields and PointData
  * fields are still NULL after creation
  ***/
-public PointValues( int pointid, String ptType, String ptName, String devName, 
-			String ptState, String devType, int devId ) 
+public PointValues( int pointid, String ptType, String devName, 
+			String ptState, String devType ) 
 {
 	super();
 	
-	pointName = ptName.toString();
 	deviceName = devName.toString();
 	pointState = ptState.toString();
 	deviceType = devType.toString();
-	deviceID = devId;
 	
 	setPointData( new PointData() );	
 	getPointData().setTime( new java.util.Date() );
@@ -119,38 +80,11 @@ public PointValues( int pointid, String ptType, String ptName, String devName,
 
 /**
  * PointValues constructor comment.
- * USED TO MAKE A NEW POINTVALUE FROM A PREVIOUS EXISTING POINTVALUE
- */
-public PointValues( PointValues point, String[] colors, String[] messages, 
-			String[] rawstate, String[] bgColor, int[] imgIDs, int colorCount ) 
-{
-	this( colors, messages, rawstate, bgColor, imgIDs, colorCount );
-	
-	setPointData( new PointData() );	
-	getPointData().setTime( new java.util.Date() );
-	getPointData().setId( point.getPointData().getId() );
-	getPointData().setType( point.getPointData().getType() );
-
-	deviceName = point.getDeviceName();
-	pointState = point.getPointState();
-	deviceType = point.getDeviceType();
-	deviceID = point.getDeviceID();
-	pointName = point.getPointName();
-	decimalPlaces = point.getDecimalPlaces();
-	
-	getSignalHash().putAll( point.getSignalHash() );
-}
-
-/**
- * PointValues constructor comment.
  * Used to make PSUEDO pointValues ONLY
  */
-public PointValues( Signal signal_, int ptType, String ptName, String[] colors, 
-			String[] messages, String[] rawstate, String[] bgColor, int[] imgIDs, int colorCount ) 
+public PointValues( Signal signal_, int ptType )
 {
-	this( colors, messages, rawstate, bgColor, imgIDs, colorCount );
-
-	pointName = ptName;
+	super();
 
 	setPointData( new PointData() );
 	getPointData().setTime( new java.util.Date() );		
@@ -169,11 +103,14 @@ public PointValues( Signal signal_, int ptType, String ptName, String[] colors,
  */
 public String[] getAllText() 
 {
-
-	String[] messages = new String[ pointMessages.length ];
+	LiteStateGroup lpgrp = getLiteStateGroup();
+	if( lpgrp == null )
+		return new String[0];
 	
-	for( int i = 0; i < pointMessages.length; i++ )
-		messages[i] =  pointMessages[i];
+	String[] messages = new String[ lpgrp.getStatesList().size() ];
+	
+	for( int i = 0; i < lpgrp.getStatesList().size(); i++ )
+		messages[i] =  lpgrp.getStatesList().get(i).toString();
 
 	return messages;
 }
@@ -184,7 +121,12 @@ public String[] getAllText()
  */
 public String getBackGroundColor(int i) 
 {
-	return backGroundColors[ i ];
+	LiteStateGroup lpgrp = getLiteStateGroup();
+	if( lpgrp == null )
+		return String.valueOf( Colors.BLACK_ID );	
+	
+	return Colors.getColorString(
+					((LiteState)lpgrp.getStatesList().get(i)).getBgColor() );
 }
 /**
  * Insert the method's description here.
@@ -193,7 +135,13 @@ public String getBackGroundColor(int i)
  */
 public String getColor(int i) 
 {
-	return foregroundColors[ i ];
+	LiteStateGroup lpgrp = getLiteStateGroup();
+	if( lpgrp == null )
+		return String.valueOf( Colors.WHITE_ID );	
+
+
+	return Colors.getColorString( 
+					((LiteState)lpgrp.getStatesList().get(i)).getFgColor() );
 }
 
 /**
@@ -203,24 +151,19 @@ public String getColor(int i)
  */
 public int getYukonImageID(int i) 
 {
-	return imageIDs[ i ];
+	LiteStateGroup lpgrp = getLiteStateGroup();
+	if( lpgrp == null )
+		return YukonImage.NONE_IMAGE_ID;	
+	
+	return ((LiteState)lpgrp.getStatesList().get(i)).getImageID();
 }
 
-/**
- * Insert the method's description here.
- * Creation date: (2/2/00 5:12:11 PM)
- * @return int
- */
-public int getColorCount()
-{
-	return foregroundColors.length;
-}
 /**
  * Insert the method's description here.
  * Creation date: (2/2/00 4:59:47 PM)
  * @param i int
  */
-public synchronized int getCurrentBackgroundColor() 
+public int getCurrentBackgroundColor() 
 {
 	return currentBackgroundColor;
 }
@@ -248,7 +191,7 @@ public Integer getDecimalPlaces() {
  * @return java.lang.Object
  */
 public int getDeviceID() {
-	return deviceID;
+	return getLitePoint().getPaobjectID();
 }
 /**
  * Insert the method's description here.
@@ -291,7 +234,7 @@ private PointData getPointData() {
  */
 public String getPointName() 
 {
-	return pointName;
+	return getLitePoint().getPointName();
 }
 /**
  * Insert the method's description here.
@@ -301,38 +244,37 @@ public String getPointName()
 public String getPointState() {
 	return pointState;
 }
-/**
- * Insert the method's description here.
- * Creation date: (2/2/00 4:59:47 PM)
- * @param i int
- */
-public String getRawState(int i) 
-{
-	return pointRawStates[ i ];
-}
-/**
- * Insert the method's description here.
- * Creation date: (2/2/00 4:59:47 PM)
- * @param i int
- */
-public String getText(long rawState ) 
-{
-	
-	for( int i = 0; i < pointMessages.length; i++ )
-	{
-		long state = Long.valueOf( pointRawStates[i] ).longValue();
-		
-		if( state == rawState )
-		{
-			previuosText = new String( pointMessages[i] );
-			return pointMessages[ i ];
-		}
-	}
 
-	// shouldnt reach here, no text available for this state,
-	// just use the previous text
-	return previuosText;
+/**
+ * Insert the method's description here.
+ * Creation date: (2/2/00 4:59:47 PM)
+ * @param i int
+ */
+public String getText(int rawState ) 
+{
+	LiteStateGroup lpgrp = getLiteStateGroup();
+	if( lpgrp == null )
+		return "DUMMY";	
+			
+			
+	String[] messages = new String[ lpgrp.getStatesList().size() ];
+	
+	for( int i = 0; i < lpgrp.getStatesList().size(); i++ )
+	{
+		if( rawState >= 0 && rawState <= lpgrp.getStatesList().size() )		
+		{
+			previuosText = 
+					((LiteState)lpgrp.getStatesList().get(rawState)).getStateText();
+
+			return previuosText;
+		}		
+	}
+	
+	throw new IllegalArgumentException(
+			"Unable to find the state for the RawState=" 
+			+ rawState + " on pointID=" + getPointID() );
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (2/2/00 4:59:47 PM)
@@ -351,38 +293,58 @@ public synchronized void setCurrentForegroundColor( int i )
 {
 	currentForegroundColor = i;
 }
-/**
- * Insert the method's description here.
- * Creation date: (2/2/00 4:59:47 PM)
- * @param i int
 
-	Accepts a rawState as a long value, then set the entires
-	row accordingly 
- */
-public void setCurrentRowColor( long value ) 
+private LitePoint getLitePoint()
 {
-
-	for( int i = 0; i < foregroundColors.length; i++ )
-	{
-		long state = Long.valueOf( pointRawStates[i] ).longValue();
-		
-		if( state == value )
-		{
-			currentForegroundColor = new Integer( foregroundColors[i] ).intValue();
-			currentBackgroundColor = new Integer( backGroundColors[i] ).intValue();	
-				
-			return;
-		}
-	}
-	
+	if( getPointID() == TDCDefines.ROW_BREAK_ID )
+		return LitePoint.NONE_LITE_PT;
+	else
+		return PointFuncs.getLitePoint( getPointID() );
 }
+
+private LiteStateGroup getLiteStateGroup()
+{
+	//if the LitePoint is null OR we have an Invalid type 
+	LitePoint lPoint = PointFuncs.getLitePoint( getPointID() );
+	if( lPoint == null || getPointType() == PointTypes.INVALID_POINT )
+		return null;
+	else
+		return PointFuncs.getStateGroup( lPoint.getStateGroupID() );
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (2/2/00 4:59:47 PM)
  * @param i int
+ *
+ * Accepts a rawState as a long value, then set the colors of the
+ * row accordingly 
+ */
+public void setCurrentRowColor( int value ) 
+{
+	LiteStateGroup lpgrp = getLiteStateGroup();
+	if( lpgrp == null )
+		return;
 
- 	Sets the row color to the colors of fg and bg.  Then assigns
- 	the previousText value to the newest text
+	for( int i = 0; i < lpgrp.getStatesList().size(); i++ )
+	{
+		LiteState lState = (LiteState)lpgrp.getStatesList().get(i);
+		if( lState.getStateRawState() == value )
+		{
+			currentForegroundColor = new Integer( lState.getFgColor() ).intValue();
+			currentBackgroundColor = new Integer( lState.getBgColor() ).intValue();			
+			return;
+		}	
+	}
+}
+
+/**
+ * Insert the method's description here.
+ * Creation date: (2/2/00 4:59:47 PM)
+ * @param i int
+ *
+ *	Sets the row color to the colors of fg and bg.  Then assigns
+ *	the previousText value to the newest text
  */
 public void setCurrentRowColor( String fg, String bg, String text ) 
 {
@@ -402,21 +364,11 @@ public void setDecimalPlaces(Integer newDecimalPlaces) {
 	decimalPlaces = newDecimalPlaces;
 }
 
-
 public void setTags( long tags_ )
 {
 	getPointData().setTags( tags_ );
 }
 
-
-/**
- * Insert the method's description here.
- * Creation date: (8/15/00 5:14:11 PM)
- * @param newDeviceID java.lang.Object
- */
-public void setDeviceID(int newDeviceID) {
-	deviceID = newDeviceID;
-}
 /**
  * Insert the method's description here.
  * Creation date: (8/15/00 5:14:11 PM)
@@ -454,20 +406,7 @@ public void setPointData(PointData newPointData)
 public void setPointState(String newPointState) {
 	pointState = newPointState;
 }
-/**
- * Insert the method's description here.
- * Creation date: (2/2/00 4:59:47 PM)
- * @param i int
- */
-public void setStates( String init, String norm, String alarm ) 
-{
-	initialState = init;
-	normalState = norm;
-	alarmsState = alarm;
 
-	// set the row value accordingly
-	setCurrentRowColor( new Long( initialState ).longValue() );
-}
 /**
  * Insert the method's description here.
  * Creation date: (8/15/00 5:14:11 PM)
@@ -475,7 +414,8 @@ public void setStates( String init, String norm, String alarm )
  */
 public String toString()
 {
-	return getPointData().getId() + " : " + getPointName() + " DevID = " + getDeviceID();
+	return "PointID=" + getPointData().getId() + 
+			" (" + getPointName() + "), DevID=" + getDeviceID();
 }
 
 

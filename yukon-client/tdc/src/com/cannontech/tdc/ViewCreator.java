@@ -226,7 +226,6 @@ public class ViewCreator
 						Integer.parseInt(rowData[i][6].toString()), //pointID
 						((Timestamp)rowData[i][0]).getTime(), //TimeStamp
 						CommonUtils.createString( rowData[i][1] ), //DeviceName
-						CommonUtils.createString( rowData[i][2] ), //PointName
 						0, //SOE_Tag
 						0 );
 
@@ -322,6 +321,7 @@ public class ViewCreator
 //			"select s.tagtime, y.PAOName, p.pointname , s.description, 
 //				s.action, s.username, " +
 //			" s.pointid, s.refstr, s.forstr, t.tagname " +
+
 			// set TimeStamp
 			if( tableModel.getColumnTypeName().contains(CustomDisplay.COLUMN_TYPE_POINTTIMESTAMP) ) // format of ORACLE: "2000-06-09 16:34:34.0"
 				newRow.setElementAt( new ModifiedDate( 
@@ -377,7 +377,6 @@ public class ViewCreator
 						Integer.parseInt(rowData[i][6].toString()), //pointID
 						((Timestamp)rowData[i][0]).getTime(), //TimeStamp
 						CommonUtils.createString( rowData[i][1] ), //DeviceName
-						CommonUtils.createString( rowData[i][2] ), //PointName
 						0, //SOE_Tag
 						0 );
 
@@ -617,7 +616,6 @@ public class ViewCreator
 				tableModel.createDummyPointValue( Long.parseLong(rowData[i][6].toString()),
 								((Timestamp)rowData[i][0]).getTime(), //TimeStamp
 								CommonUtils.createString( rowData[i][1] ), //DeviceName
-								CommonUtils.createString( rowData[i][2] ), //PointName
 								Integer.parseInt(rowData[i][7].toString()), //SOE_Tag
 								0 );
 
@@ -751,7 +749,6 @@ public class ViewCreator
 				tableModel.createDummyPointValue( 
 						Long.parseLong( rowData[i][6].toString() ),
 						new Date().getTime(),
-						"DUMMY",
 						"DUMMY",
 						0,		
 						0 );
