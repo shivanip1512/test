@@ -1,8 +1,8 @@
 /*
  * This class was automatically generated with 
- * <a href="http://castor.exolab.org">Castor 0.9.3</a>, using an
+ * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsCustomerContact.java,v 1.1 2002/07/16 19:50:04 Yao Exp $
+ * $Id: StarsCustomerContact.java,v 1.2 2002/07/30 22:01:50 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -11,17 +11,19 @@ package com.cannontech.stars.xml.serialize;
  //- Imported classes and packages -/
 //---------------------------------/
 
+import java.io.IOException;
 import java.io.Reader;
 import java.io.Serializable;
 import java.io.Writer;
 import org.exolab.castor.xml.*;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.xml.sax.DocumentHandler;
+import org.xml.sax.ContentHandler;
 
 /**
  * 
- * @version $Revision: 1.1 $ $Date: 2002/07/16 19:50:04 $
+ * 
+ * @version $Revision: 1.2 $ $Date: 2002/07/30 22:01:50 $
 **/
 public abstract class StarsCustomerContact implements java.io.Serializable {
 
@@ -53,6 +55,9 @@ public abstract class StarsCustomerContact implements java.io.Serializable {
     //-----------/
 
     /**
+     * Returns the value of field 'firstName'.
+     * 
+     * @return the value of field 'firstName'.
     **/
     public java.lang.String getFirstName()
     {
@@ -60,6 +65,9 @@ public abstract class StarsCustomerContact implements java.io.Serializable {
     } //-- java.lang.String getFirstName() 
 
     /**
+     * Returns the value of field 'homePhone'.
+     * 
+     * @return the value of field 'homePhone'.
     **/
     public java.lang.String getHomePhone()
     {
@@ -67,6 +75,9 @@ public abstract class StarsCustomerContact implements java.io.Serializable {
     } //-- java.lang.String getHomePhone() 
 
     /**
+     * Returns the value of field 'lastName'.
+     * 
+     * @return the value of field 'lastName'.
     **/
     public java.lang.String getLastName()
     {
@@ -74,6 +85,9 @@ public abstract class StarsCustomerContact implements java.io.Serializable {
     } //-- java.lang.String getLastName() 
 
     /**
+     * Returns the value of field 'workPhone'.
+     * 
+     * @return the value of field 'workPhone'.
     **/
     public java.lang.String getWorkPhone()
     {
@@ -95,6 +109,7 @@ public abstract class StarsCustomerContact implements java.io.Serializable {
 
     /**
      * 
+     * 
      * @param out
     **/
     public abstract void marshal(java.io.Writer out)
@@ -102,14 +117,16 @@ public abstract class StarsCustomerContact implements java.io.Serializable {
 
     /**
      * 
+     * 
      * @param handler
     **/
-    public abstract void marshal(org.xml.sax.DocumentHandler handler)
-        throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException;
+    public abstract void marshal(org.xml.sax.ContentHandler handler)
+        throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException;
 
     /**
+     * Sets the value of field 'firstName'.
      * 
-     * @param firstName
+     * @param firstName the value of field 'firstName'.
     **/
     public void setFirstName(java.lang.String firstName)
     {
@@ -117,8 +134,9 @@ public abstract class StarsCustomerContact implements java.io.Serializable {
     } //-- void setFirstName(java.lang.String) 
 
     /**
+     * Sets the value of field 'homePhone'.
      * 
-     * @param homePhone
+     * @param homePhone the value of field 'homePhone'.
     **/
     public void setHomePhone(java.lang.String homePhone)
     {
@@ -126,8 +144,9 @@ public abstract class StarsCustomerContact implements java.io.Serializable {
     } //-- void setHomePhone(java.lang.String) 
 
     /**
+     * Sets the value of field 'lastName'.
      * 
-     * @param lastName
+     * @param lastName the value of field 'lastName'.
     **/
     public void setLastName(java.lang.String lastName)
     {
@@ -135,8 +154,9 @@ public abstract class StarsCustomerContact implements java.io.Serializable {
     } //-- void setLastName(java.lang.String) 
 
     /**
+     * Sets the value of field 'workPhone'.
      * 
-     * @param workPhone
+     * @param workPhone the value of field 'workPhone'.
     **/
     public void setWorkPhone(java.lang.String workPhone)
     {

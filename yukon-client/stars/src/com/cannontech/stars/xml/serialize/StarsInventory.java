@@ -1,8 +1,8 @@
 /*
  * This class was automatically generated with 
- * <a href="http://castor.exolab.org">Castor 0.9.3</a>, using an
+ * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsInventory.java,v 1.1 2002/07/16 19:50:06 Yao Exp $
+ * $Id: StarsInventory.java,v 1.2 2002/07/30 22:01:55 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -11,17 +11,19 @@ package com.cannontech.stars.xml.serialize;
  //- Imported classes and packages -/
 //---------------------------------/
 
+import java.io.IOException;
 import java.io.Reader;
 import java.io.Serializable;
 import java.io.Writer;
 import org.exolab.castor.xml.*;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.xml.sax.DocumentHandler;
+import org.xml.sax.ContentHandler;
 
 /**
  * 
- * @version $Revision: 1.1 $ $Date: 2002/07/16 19:50:06 $
+ * 
+ * @version $Revision: 1.2 $ $Date: 2002/07/30 22:01:55 $
 **/
 public abstract class StarsInventory implements java.io.Serializable {
 
@@ -75,6 +77,9 @@ public abstract class StarsInventory implements java.io.Serializable {
     } //-- void deleteInventoryID() 
 
     /**
+     * Returns the value of field 'altTrackingNumber'.
+     * 
+     * @return the value of field 'altTrackingNumber'.
     **/
     public java.lang.String getAltTrackingNumber()
     {
@@ -82,6 +87,9 @@ public abstract class StarsInventory implements java.io.Serializable {
     } //-- java.lang.String getAltTrackingNumber() 
 
     /**
+     * Returns the value of field 'category'.
+     * 
+     * @return the value of field 'category'.
     **/
     public java.lang.String getCategory()
     {
@@ -89,6 +97,9 @@ public abstract class StarsInventory implements java.io.Serializable {
     } //-- java.lang.String getCategory() 
 
     /**
+     * Returns the value of field 'installDate'.
+     * 
+     * @return the value of field 'installDate'.
     **/
     public org.exolab.castor.types.Date getInstallDate()
     {
@@ -96,6 +107,9 @@ public abstract class StarsInventory implements java.io.Serializable {
     } //-- org.exolab.castor.types.Date getInstallDate() 
 
     /**
+     * Returns the value of field 'installationCompany'.
+     * 
+     * @return the value of field 'installationCompany'.
     **/
     public java.lang.String getInstallationCompany()
     {
@@ -103,6 +117,9 @@ public abstract class StarsInventory implements java.io.Serializable {
     } //-- java.lang.String getInstallationCompany() 
 
     /**
+     * Returns the value of field 'inventoryID'.
+     * 
+     * @return the value of field 'inventoryID'.
     **/
     public int getInventoryID()
     {
@@ -110,6 +127,9 @@ public abstract class StarsInventory implements java.io.Serializable {
     } //-- int getInventoryID() 
 
     /**
+     * Returns the value of field 'notes'.
+     * 
+     * @return the value of field 'notes'.
     **/
     public java.lang.String getNotes()
     {
@@ -117,6 +137,9 @@ public abstract class StarsInventory implements java.io.Serializable {
     } //-- java.lang.String getNotes() 
 
     /**
+     * Returns the value of field 'receiveDate'.
+     * 
+     * @return the value of field 'receiveDate'.
     **/
     public org.exolab.castor.types.Date getReceiveDate()
     {
@@ -124,6 +147,9 @@ public abstract class StarsInventory implements java.io.Serializable {
     } //-- org.exolab.castor.types.Date getReceiveDate() 
 
     /**
+     * Returns the value of field 'removeDate'.
+     * 
+     * @return the value of field 'removeDate'.
     **/
     public org.exolab.castor.types.Date getRemoveDate()
     {
@@ -131,6 +157,9 @@ public abstract class StarsInventory implements java.io.Serializable {
     } //-- org.exolab.castor.types.Date getRemoveDate() 
 
     /**
+     * Returns the value of field 'voltage'.
+     * 
+     * @return the value of field 'voltage'.
     **/
     public java.lang.String getVoltage()
     {
@@ -159,6 +188,7 @@ public abstract class StarsInventory implements java.io.Serializable {
 
     /**
      * 
+     * 
      * @param out
     **/
     public abstract void marshal(java.io.Writer out)
@@ -166,14 +196,17 @@ public abstract class StarsInventory implements java.io.Serializable {
 
     /**
      * 
+     * 
      * @param handler
     **/
-    public abstract void marshal(org.xml.sax.DocumentHandler handler)
-        throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException;
+    public abstract void marshal(org.xml.sax.ContentHandler handler)
+        throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException;
 
     /**
+     * Sets the value of field 'altTrackingNumber'.
      * 
-     * @param altTrackingNumber
+     * @param altTrackingNumber the value of field
+     * 'altTrackingNumber'.
     **/
     public void setAltTrackingNumber(java.lang.String altTrackingNumber)
     {
@@ -181,8 +214,9 @@ public abstract class StarsInventory implements java.io.Serializable {
     } //-- void setAltTrackingNumber(java.lang.String) 
 
     /**
+     * Sets the value of field 'category'.
      * 
-     * @param category
+     * @param category the value of field 'category'.
     **/
     public void setCategory(java.lang.String category)
     {
@@ -190,8 +224,9 @@ public abstract class StarsInventory implements java.io.Serializable {
     } //-- void setCategory(java.lang.String) 
 
     /**
+     * Sets the value of field 'installDate'.
      * 
-     * @param installDate
+     * @param installDate the value of field 'installDate'.
     **/
     public void setInstallDate(org.exolab.castor.types.Date installDate)
     {
@@ -199,8 +234,10 @@ public abstract class StarsInventory implements java.io.Serializable {
     } //-- void setInstallDate(org.exolab.castor.types.Date) 
 
     /**
+     * Sets the value of field 'installationCompany'.
      * 
-     * @param installationCompany
+     * @param installationCompany the value of field
+     * 'installationCompany'.
     **/
     public void setInstallationCompany(java.lang.String installationCompany)
     {
@@ -208,8 +245,9 @@ public abstract class StarsInventory implements java.io.Serializable {
     } //-- void setInstallationCompany(java.lang.String) 
 
     /**
+     * Sets the value of field 'inventoryID'.
      * 
-     * @param inventoryID
+     * @param inventoryID the value of field 'inventoryID'.
     **/
     public void setInventoryID(int inventoryID)
     {
@@ -218,8 +256,9 @@ public abstract class StarsInventory implements java.io.Serializable {
     } //-- void setInventoryID(int) 
 
     /**
+     * Sets the value of field 'notes'.
      * 
-     * @param notes
+     * @param notes the value of field 'notes'.
     **/
     public void setNotes(java.lang.String notes)
     {
@@ -227,8 +266,9 @@ public abstract class StarsInventory implements java.io.Serializable {
     } //-- void setNotes(java.lang.String) 
 
     /**
+     * Sets the value of field 'receiveDate'.
      * 
-     * @param receiveDate
+     * @param receiveDate the value of field 'receiveDate'.
     **/
     public void setReceiveDate(org.exolab.castor.types.Date receiveDate)
     {
@@ -236,8 +276,9 @@ public abstract class StarsInventory implements java.io.Serializable {
     } //-- void setReceiveDate(org.exolab.castor.types.Date) 
 
     /**
+     * Sets the value of field 'removeDate'.
      * 
-     * @param removeDate
+     * @param removeDate the value of field 'removeDate'.
     **/
     public void setRemoveDate(org.exolab.castor.types.Date removeDate)
     {
@@ -245,8 +286,9 @@ public abstract class StarsInventory implements java.io.Serializable {
     } //-- void setRemoveDate(org.exolab.castor.types.Date) 
 
     /**
+     * Sets the value of field 'voltage'.
      * 
-     * @param voltage
+     * @param voltage the value of field 'voltage'.
     **/
     public void setVoltage(java.lang.String voltage)
     {

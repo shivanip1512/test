@@ -44,6 +44,9 @@ public class CustomerBase extends DBPersistent {
     }
 
     public void add() throws java.sql.SQLException {
+    	if (getCustomerID() == null)
+    		setCustomerID( getNextCustomerID() );
+    		
         Object[] addValues = {
             getCustomerID(), getPrimaryContactID(), getCustomerType(),
             getTimeZone(), getPaoID()
@@ -103,6 +106,64 @@ public class CustomerBase extends DBPersistent {
         }
 
         return new Integer( nextCustomerID );
+    }
+    
+    public com.cannontech.database.db.customer.CustomerContact[] getAllCustomerContacts(java.sql.Connection conn) throws java.sql.SQLException {
+        String sql = "SELECT cont.* FROM " + com.cannontech.database.db.customer.CustomerContact.TABLE_NAME
+        		   + " cont, CstBaseCstContactMap map WHERE map.CustomerID = ? AND map.CustomerContactID = cont.ContactID";
+
+        java.sql.PreparedStatement pstmt = null;
+        java.sql.ResultSet rset = null;
+        java.util.ArrayList contactList = new java.util.ArrayList();
+
+        try
+        {
+            if( conn == null )
+            {
+                throw new IllegalStateException("Database connection should not be null.");
+            }
+            else
+            {
+                pstmt = conn.prepareStatement(sql);
+                pstmt.setInt( 1, getCustomerID().intValue() );
+                rset = pstmt.executeQuery();
+
+                while (rset.next()) {
+                	com.cannontech.database.db.customer.CustomerContact contact = new com.cannontech.database.db.customer.CustomerContact();
+                	
+                	contact.setContactID( new Integer(rset.getInt("ContactID")) );
+                	contact.setContFirstName( rset.getString("ContFirstName") );
+                	contact.setContLastName( rset.getString("ContLastName") );
+                	contact.setContPhone1( rset.getString("ContPhone1") );
+                	contact.setContPhone2( rset.getString("ContPhone2") );
+                	contact.setLocationID( new Integer(rset.getInt("LocationID")) );
+                	contact.setLogInID( new Integer(rset.getInt("LogInID")) );
+                	
+                	contactList.add( contact );
+                }
+            }
+        }
+        catch( java.sql.SQLException e )
+        {
+            e.printStackTrace();
+        }
+        finally
+        {
+            try
+            {
+                if( pstmt != null ) pstmt.close();
+                if (rset != null) rset.close();
+            }
+            catch( java.sql.SQLException e2 )
+            {
+                e2.printStackTrace();
+            }
+        }
+
+		com.cannontech.database.db.customer.CustomerContact[] contacts =
+				new com.cannontech.database.db.customer.CustomerContact[ contactList.size() ];
+		contactList.toArray( contacts );
+		return contacts;
     }
 
     public Integer getCustomerID() {

@@ -1,8 +1,8 @@
 /*
  * This class was automatically generated with 
- * <a href="http://castor.exolab.org">Castor 0.9.3</a>, using an
+ * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsCustAccount.java,v 1.1 2002/07/16 19:50:03 Yao Exp $
+ * $Id: StarsCustAccount.java,v 1.2 2002/07/30 22:01:48 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -11,6 +11,7 @@ package com.cannontech.stars.xml.serialize;
  //- Imported classes and packages -/
 //---------------------------------/
 
+import java.io.IOException;
 import java.io.Reader;
 import java.io.Serializable;
 import java.io.Writer;
@@ -19,11 +20,12 @@ import java.util.Vector;
 import org.exolab.castor.xml.*;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.xml.sax.DocumentHandler;
+import org.xml.sax.ContentHandler;
 
 /**
  * 
- * @version $Revision: 1.1 $ $Date: 2002/07/16 19:50:03 $
+ * 
+ * @version $Revision: 1.2 $ $Date: 2002/07/30 22:01:48 $
 **/
 public abstract class StarsCustAccount implements java.io.Serializable {
 
@@ -33,6 +35,15 @@ public abstract class StarsCustAccount implements java.io.Serializable {
     //--------------------------/
 
     private java.lang.String _accountNumber;
+
+    private boolean _isCommercial;
+
+    /**
+     * keeps track of state for field: _isCommercial
+    **/
+    private boolean _has_isCommercial;
+
+    private java.lang.String _company;
 
     private java.lang.String _accountNotes;
 
@@ -49,15 +60,6 @@ public abstract class StarsCustAccount implements java.io.Serializable {
     private PrimaryContact _primaryContact;
 
     private java.util.Vector _additionalContactList;
-
-    private boolean _isCommercial;
-
-    /**
-     * keeps track of state for field: _isCommercial
-    **/
-    private boolean _has_isCommercial;
-
-    private java.lang.String _company;
 
 
       //----------------/
@@ -76,6 +78,7 @@ public abstract class StarsCustAccount implements java.io.Serializable {
 
     /**
      * 
+     * 
      * @param vAdditionalContact
     **/
     public void addAdditionalContact(AdditionalContact vAdditionalContact)
@@ -85,6 +88,7 @@ public abstract class StarsCustAccount implements java.io.Serializable {
     } //-- void addAdditionalContact(AdditionalContact) 
 
     /**
+     * 
      * 
      * @param index
      * @param vAdditionalContact
@@ -103,6 +107,9 @@ public abstract class StarsCustAccount implements java.io.Serializable {
     } //-- java.util.Enumeration enumerateAdditionalContact() 
 
     /**
+     * Returns the value of field 'accountNotes'.
+     * 
+     * @return the value of field 'accountNotes'.
     **/
     public java.lang.String getAccountNotes()
     {
@@ -110,6 +117,9 @@ public abstract class StarsCustAccount implements java.io.Serializable {
     } //-- java.lang.String getAccountNotes() 
 
     /**
+     * Returns the value of field 'accountNumber'.
+     * 
+     * @return the value of field 'accountNumber'.
     **/
     public java.lang.String getAccountNumber()
     {
@@ -117,6 +127,7 @@ public abstract class StarsCustAccount implements java.io.Serializable {
     } //-- java.lang.String getAccountNumber() 
 
     /**
+     * 
      * 
      * @param index
     **/
@@ -151,6 +162,9 @@ public abstract class StarsCustAccount implements java.io.Serializable {
     } //-- int getAdditionalContactCount() 
 
     /**
+     * Returns the value of field 'billingAddress'.
+     * 
+     * @return the value of field 'billingAddress'.
     **/
     public BillingAddress getBillingAddress()
     {
@@ -158,6 +172,9 @@ public abstract class StarsCustAccount implements java.io.Serializable {
     } //-- BillingAddress getBillingAddress() 
 
     /**
+     * Returns the value of field 'company'.
+     * 
+     * @return the value of field 'company'.
     **/
     public java.lang.String getCompany()
     {
@@ -165,6 +182,9 @@ public abstract class StarsCustAccount implements java.io.Serializable {
     } //-- java.lang.String getCompany() 
 
     /**
+     * Returns the value of field 'isCommercial'.
+     * 
+     * @return the value of field 'isCommercial'.
     **/
     public boolean getIsCommercial()
     {
@@ -172,6 +192,9 @@ public abstract class StarsCustAccount implements java.io.Serializable {
     } //-- boolean getIsCommercial() 
 
     /**
+     * Returns the value of field 'primaryContact'.
+     * 
+     * @return the value of field 'primaryContact'.
     **/
     public PrimaryContact getPrimaryContact()
     {
@@ -179,6 +202,9 @@ public abstract class StarsCustAccount implements java.io.Serializable {
     } //-- PrimaryContact getPrimaryContact() 
 
     /**
+     * Returns the value of field 'propertyNotes'.
+     * 
+     * @return the value of field 'propertyNotes'.
     **/
     public java.lang.String getPropertyNotes()
     {
@@ -186,6 +212,9 @@ public abstract class StarsCustAccount implements java.io.Serializable {
     } //-- java.lang.String getPropertyNotes() 
 
     /**
+     * Returns the value of field 'propertyNumber'.
+     * 
+     * @return the value of field 'propertyNumber'.
     **/
     public java.lang.String getPropertyNumber()
     {
@@ -193,6 +222,9 @@ public abstract class StarsCustAccount implements java.io.Serializable {
     } //-- java.lang.String getPropertyNumber() 
 
     /**
+     * Returns the value of field 'starsSiteInformation'.
+     * 
+     * @return the value of field 'starsSiteInformation'.
     **/
     public StarsSiteInformation getStarsSiteInformation()
     {
@@ -200,6 +232,9 @@ public abstract class StarsCustAccount implements java.io.Serializable {
     } //-- StarsSiteInformation getStarsSiteInformation() 
 
     /**
+     * Returns the value of field 'streetAddress'.
+     * 
+     * @return the value of field 'streetAddress'.
     **/
     public StreetAddress getStreetAddress()
     {
@@ -228,6 +263,7 @@ public abstract class StarsCustAccount implements java.io.Serializable {
 
     /**
      * 
+     * 
      * @param out
     **/
     public abstract void marshal(java.io.Writer out)
@@ -235,18 +271,20 @@ public abstract class StarsCustAccount implements java.io.Serializable {
 
     /**
      * 
+     * 
      * @param handler
     **/
-    public abstract void marshal(org.xml.sax.DocumentHandler handler)
-        throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException;
+    public abstract void marshal(org.xml.sax.ContentHandler handler)
+        throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException;
 
     /**
+     * 
      * 
      * @param index
     **/
     public AdditionalContact removeAdditionalContact(int index)
     {
-        Object obj = _additionalContactList.elementAt(index);
+        java.lang.Object obj = _additionalContactList.elementAt(index);
         _additionalContactList.removeElementAt(index);
         return (AdditionalContact) obj;
     } //-- AdditionalContact removeAdditionalContact(int) 
@@ -259,8 +297,9 @@ public abstract class StarsCustAccount implements java.io.Serializable {
     } //-- void removeAllAdditionalContact() 
 
     /**
+     * Sets the value of field 'accountNotes'.
      * 
-     * @param accountNotes
+     * @param accountNotes the value of field 'accountNotes'.
     **/
     public void setAccountNotes(java.lang.String accountNotes)
     {
@@ -268,8 +307,9 @@ public abstract class StarsCustAccount implements java.io.Serializable {
     } //-- void setAccountNotes(java.lang.String) 
 
     /**
+     * Sets the value of field 'accountNumber'.
      * 
-     * @param accountNumber
+     * @param accountNumber the value of field 'accountNumber'.
     **/
     public void setAccountNumber(java.lang.String accountNumber)
     {
@@ -277,6 +317,7 @@ public abstract class StarsCustAccount implements java.io.Serializable {
     } //-- void setAccountNumber(java.lang.String) 
 
     /**
+     * 
      * 
      * @param index
      * @param vAdditionalContact
@@ -293,6 +334,7 @@ public abstract class StarsCustAccount implements java.io.Serializable {
 
     /**
      * 
+     * 
      * @param additionalContactArray
     **/
     public void setAdditionalContact(AdditionalContact[] additionalContactArray)
@@ -305,8 +347,9 @@ public abstract class StarsCustAccount implements java.io.Serializable {
     } //-- void setAdditionalContact(AdditionalContact) 
 
     /**
+     * Sets the value of field 'billingAddress'.
      * 
-     * @param billingAddress
+     * @param billingAddress the value of field 'billingAddress'.
     **/
     public void setBillingAddress(BillingAddress billingAddress)
     {
@@ -314,8 +357,9 @@ public abstract class StarsCustAccount implements java.io.Serializable {
     } //-- void setBillingAddress(BillingAddress) 
 
     /**
+     * Sets the value of field 'company'.
      * 
-     * @param company
+     * @param company the value of field 'company'.
     **/
     public void setCompany(java.lang.String company)
     {
@@ -323,8 +367,9 @@ public abstract class StarsCustAccount implements java.io.Serializable {
     } //-- void setCompany(java.lang.String) 
 
     /**
+     * Sets the value of field 'isCommercial'.
      * 
-     * @param isCommercial
+     * @param isCommercial the value of field 'isCommercial'.
     **/
     public void setIsCommercial(boolean isCommercial)
     {
@@ -333,8 +378,9 @@ public abstract class StarsCustAccount implements java.io.Serializable {
     } //-- void setIsCommercial(boolean) 
 
     /**
+     * Sets the value of field 'primaryContact'.
      * 
-     * @param primaryContact
+     * @param primaryContact the value of field 'primaryContact'.
     **/
     public void setPrimaryContact(PrimaryContact primaryContact)
     {
@@ -342,8 +388,9 @@ public abstract class StarsCustAccount implements java.io.Serializable {
     } //-- void setPrimaryContact(PrimaryContact) 
 
     /**
+     * Sets the value of field 'propertyNotes'.
      * 
-     * @param propertyNotes
+     * @param propertyNotes the value of field 'propertyNotes'.
     **/
     public void setPropertyNotes(java.lang.String propertyNotes)
     {
@@ -351,8 +398,9 @@ public abstract class StarsCustAccount implements java.io.Serializable {
     } //-- void setPropertyNotes(java.lang.String) 
 
     /**
+     * Sets the value of field 'propertyNumber'.
      * 
-     * @param propertyNumber
+     * @param propertyNumber the value of field 'propertyNumber'.
     **/
     public void setPropertyNumber(java.lang.String propertyNumber)
     {
@@ -360,8 +408,10 @@ public abstract class StarsCustAccount implements java.io.Serializable {
     } //-- void setPropertyNumber(java.lang.String) 
 
     /**
+     * Sets the value of field 'starsSiteInformation'.
      * 
-     * @param starsSiteInformation
+     * @param starsSiteInformation the value of field
+     * 'starsSiteInformation'.
     **/
     public void setStarsSiteInformation(StarsSiteInformation starsSiteInformation)
     {
@@ -369,8 +419,9 @@ public abstract class StarsCustAccount implements java.io.Serializable {
     } //-- void setStarsSiteInformation(StarsSiteInformation) 
 
     /**
+     * Sets the value of field 'streetAddress'.
      * 
-     * @param streetAddress
+     * @param streetAddress the value of field 'streetAddress'.
     **/
     public void setStreetAddress(StreetAddress streetAddress)
     {

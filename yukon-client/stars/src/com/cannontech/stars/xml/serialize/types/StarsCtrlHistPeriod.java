@@ -1,8 +1,8 @@
 /*
  * This class was automatically generated with 
- * <a href="http://castor.exolab.org">Castor 0.9.3</a>, using an
+ * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsCtrlHistPeriod.java,v 1.1 2002/07/16 19:50:10 Yao Exp $
+ * $Id: StarsCtrlHistPeriod.java,v 1.2 2002/07/30 22:02:17 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize.types;
@@ -18,7 +18,8 @@ import org.exolab.castor.xml.*;
 
 /**
  * 
- * @version $Revision: 1.1 $ $Date: 2002/07/16 19:50:10 $
+ * 
+ * @version $Revision: 1.2 $ $Date: 2002/07/30 22:02:17 $
 **/
 public class StarsCtrlHistPeriod implements java.io.Serializable {
 
@@ -151,11 +152,12 @@ public class StarsCtrlHistPeriod implements java.io.Serializable {
     /**
      * Returns a new StarsCtrlHistPeriod based on the given String
      * value.
+     * 
      * @param string
     **/
     public static com.cannontech.stars.xml.serialize.types.StarsCtrlHistPeriod valueOf(java.lang.String string)
     {
-        Object obj = null;
+        java.lang.Object obj = null;
         if (string != null) obj = _memberTable.get(string);
         if (obj == null) {
             String err = "'" + string + "' is not a valid StarsCtrlHistPeriod";

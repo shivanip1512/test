@@ -1,8 +1,8 @@
 /*
  * This class was automatically generated with 
- * <a href="http://castor.exolab.org">Castor 0.9.3</a>, using an
+ * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsGetLMControlHistoryDescriptor.java,v 1.1 2002/07/16 19:50:06 Yao Exp $
+ * $Id: StarsGetLMControlHistoryDescriptor.java,v 1.2 2002/07/30 22:02:01 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -24,7 +24,8 @@ import org.exolab.castor.xml.validators.*;
 
 /**
  * 
- * @version $Revision: 1.1 $ $Date: 2002/07/16 19:50:06 $
+ * 
+ * @version $Revision: 1.2 $ $Date: 2002/07/30 22:02:01 $
 **/
 public class StarsGetLMControlHistoryDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
@@ -57,7 +58,7 @@ public class StarsGetLMControlHistoryDescriptor extends org.exolab.castor.xml.ut
         //-- _groupID
         desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_groupID", "groupID", NodeType.Attribute);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsGetLMControlHistory target = (StarsGetLMControlHistory) object;
@@ -65,7 +66,7 @@ public class StarsGetLMControlHistoryDescriptor extends org.exolab.castor.xml.ut
                     return null;
                 return new Integer(target.getGroupID());
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -79,7 +80,7 @@ public class StarsGetLMControlHistoryDescriptor extends org.exolab.castor.xml.ut
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return null;
             }
         } );
@@ -99,13 +100,13 @@ public class StarsGetLMControlHistoryDescriptor extends org.exolab.castor.xml.ut
         //-- _period
         desc = new XMLFieldDescriptorImpl(com.cannontech.stars.xml.serialize.types.StarsCtrlHistPeriod.class, "_period", "period", NodeType.Attribute);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsGetLMControlHistory target = (StarsGetLMControlHistory) object;
                 return target.getPeriod();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -116,7 +117,7 @@ public class StarsGetLMControlHistoryDescriptor extends org.exolab.castor.xml.ut
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return null;
             }
         } );
@@ -131,7 +132,7 @@ public class StarsGetLMControlHistoryDescriptor extends org.exolab.castor.xml.ut
         //-- _getSummary
         desc = new XMLFieldDescriptorImpl(java.lang.Boolean.TYPE, "_getSummary", "getSummary", NodeType.Attribute);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsGetLMControlHistory target = (StarsGetLMControlHistory) object;
@@ -139,7 +140,7 @@ public class StarsGetLMControlHistoryDescriptor extends org.exolab.castor.xml.ut
                     return null;
                 return new Boolean(target.getGetSummary());
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -155,7 +156,7 @@ public class StarsGetLMControlHistoryDescriptor extends org.exolab.castor.xml.ut
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return null;
             }
         } );
@@ -164,6 +165,10 @@ public class StarsGetLMControlHistoryDescriptor extends org.exolab.castor.xml.ut
         
         //-- validation code for: _getSummary
         fieldValidator = new FieldValidator();
+        { //-- local scope
+            BooleanValidator bv = new BooleanValidator();
+            fieldValidator.setValidator(bv);
+        }
         desc.setValidator(fieldValidator);
         
         //-- initialize element descriptors

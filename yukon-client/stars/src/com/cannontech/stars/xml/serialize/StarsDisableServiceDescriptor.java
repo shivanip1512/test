@@ -1,8 +1,8 @@
 /*
  * This class was automatically generated with 
- * <a href="http://castor.exolab.org">Castor 0.9.3</a>, using an
+ * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsDisableServiceDescriptor.java,v 1.1 2002/07/16 19:50:05 Yao Exp $
+ * $Id: StarsDisableServiceDescriptor.java,v 1.2 2002/07/30 22:01:53 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -24,7 +24,8 @@ import org.exolab.castor.xml.validators.*;
 
 /**
  * 
- * @version $Revision: 1.1 $ $Date: 2002/07/16 19:50:05 $
+ * 
+ * @version $Revision: 1.2 $ $Date: 2002/07/30 22:01:53 $
 **/
 public class StarsDisableServiceDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
@@ -60,13 +61,13 @@ public class StarsDisableServiceDescriptor extends org.exolab.castor.xml.util.XM
         //-- _reEnableDateTime
         desc = new XMLFieldDescriptorImpl(java.util.Date.class, "_reEnableDateTime", "re-enableDateTime", NodeType.Attribute);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsDisableService target = (StarsDisableService) object;
                 return target.getReEnableDateTime();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -77,7 +78,7 @@ public class StarsDisableServiceDescriptor extends org.exolab.castor.xml.util.XM
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return new java.util.Date();
             }
         } );
@@ -95,13 +96,13 @@ public class StarsDisableServiceDescriptor extends org.exolab.castor.xml.util.XM
         desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_serialNumberList", "SerialNumber", NodeType.Element);
         desc.setImmutable(true);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsDisableService target = (StarsDisableService) object;
                 return target.getSerialNumber();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -112,7 +113,7 @@ public class StarsDisableServiceDescriptor extends org.exolab.castor.xml.util.XM
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return null;
             }
         } );
@@ -122,6 +123,7 @@ public class StarsDisableServiceDescriptor extends org.exolab.castor.xml.util.XM
         
         //-- validation code for: _serialNumberList
         fieldValidator = new FieldValidator();
+        fieldValidator.setMinOccurs(0);
         { //-- local scope
             StringValidator sv = new StringValidator();
             sv.setWhiteSpace("preserve");

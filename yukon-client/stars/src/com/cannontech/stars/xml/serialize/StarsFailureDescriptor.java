@@ -1,8 +1,8 @@
 /*
  * This class was automatically generated with 
- * <a href="http://castor.exolab.org">Castor 0.9.3</a>, using an
+ * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsFailureDescriptor.java,v 1.1 2002/07/16 19:50:05 Yao Exp $
+ * $Id: StarsFailureDescriptor.java,v 1.2 2002/07/30 22:02:09 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -24,7 +24,8 @@ import org.exolab.castor.xml.validators.*;
 
 /**
  * 
- * @version $Revision: 1.1 $ $Date: 2002/07/16 19:50:05 $
+ * 
+ * @version $Revision: 1.2 $ $Date: 2002/07/30 22:02:09 $
 **/
 public class StarsFailureDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
@@ -52,35 +53,79 @@ public class StarsFailureDescriptor extends org.exolab.castor.xml.util.XMLClassD
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
-        //-- _content
-        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_content", "PCDATA", NodeType.Text);
-        desc.setImmutable(true);
+        //-- initialize attribute descriptors
+        
+        //-- _statusCode
+        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_statusCode", "statusCode", NodeType.Attribute);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsFailure target = (StarsFailure) object;
-                return target.getContent();
+                if(!target.hasStatusCode())
+                    return null;
+                return new Integer(target.getStatusCode());
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
                     StarsFailure target = (StarsFailure) object;
-                    target.setContent( (java.lang.String) value);
+                    // if null, use delete method for optional primitives 
+                    if (value == null) {
+                        target.deleteStatusCode();
+                        return;
+                    }
+                    target.setStatusCode( ((Integer)value).intValue());
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return null;
             }
         } );
         desc.setHandler(handler);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _content
+        //-- validation code for: _statusCode
+        fieldValidator = new FieldValidator();
+        { //-- local scope
+            IntegerValidator iv = new IntegerValidator();
+            fieldValidator.setValidator(iv);
+        }
+        desc.setValidator(fieldValidator);
+        
+        //-- _description
+        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_description", "description", NodeType.Attribute);
+        desc.setImmutable(true);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsFailure target = (StarsFailure) object;
+                return target.getDescription();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsFailure target = (StarsFailure) object;
+                    target.setDescription( (java.lang.String) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        } );
+        desc.setHandler(handler);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _description
         fieldValidator = new FieldValidator();
         { //-- local scope
             StringValidator sv = new StringValidator();
@@ -88,8 +133,6 @@ public class StarsFailureDescriptor extends org.exolab.castor.xml.util.XMLClassD
             fieldValidator.setValidator(sv);
         }
         desc.setValidator(fieldValidator);
-        
-        //-- initialize attribute descriptors
         
         //-- initialize element descriptors
         

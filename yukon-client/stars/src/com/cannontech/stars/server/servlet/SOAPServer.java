@@ -30,18 +30,18 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener {
         StarsOperation respOper = new StarsOperation();
 
         try {
-            String reqStr = SOAPMessenger.parseSOAPBody( message );
+            String reqStr = SOAPUtil.parseSOAPBody( message );
             StringReader sr = new StringReader( reqStr );
             StarsOperation reqOper = StarsOperation.unmarshal( sr );
 
             if (reqOper.getStarsLogin() != null) {
                 StarsSuccess success = new StarsSuccess();
-                success.setContent( "User login successful" );
+                success.setDescription( "User login successful" );
                 respOper.setStarsSuccess( success );
             }
             else {
                 StarsSuccess success = new StarsSuccess();
-                success.setContent( "Operation successful" );
+                success.setDescription( "Operation successful" );
                 respOper.setStarsSuccess( success );
             }
         }
@@ -49,7 +49,8 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener {
             e.printStackTrace();
 
             StarsFailure failure = new StarsFailure();
-            failure.setContent( e.getMessage() );
+            failure.setStatusCode( StarsConstants.FAILURE_CODE_OPERATION_FAILED );
+            failure.setDescription( e.getMessage() );
             respOper.setStarsFailure( failure );
         }
 
@@ -57,7 +58,7 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener {
             StringWriter sw = new StringWriter();
             respOper.marshal( sw );
             String respStr = XMLUtil.removeXMLDecl( sw.toString() );
-            return SOAPMessenger.buildSOAPMessage(respStr, "");
+            return SOAPUtil.buildSOAPMessage(respStr, "");
         }
         catch (Exception e2) {
             e2.printStackTrace();

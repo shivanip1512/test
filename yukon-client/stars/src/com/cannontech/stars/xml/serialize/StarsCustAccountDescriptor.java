@@ -1,8 +1,8 @@
 /*
  * This class was automatically generated with 
- * <a href="http://castor.exolab.org">Castor 0.9.3</a>, using an
+ * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsCustAccountDescriptor.java,v 1.1 2002/07/16 19:50:03 Yao Exp $
+ * $Id: StarsCustAccountDescriptor.java,v 1.2 2002/07/30 22:02:06 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -24,7 +24,8 @@ import org.exolab.castor.xml.validators.*;
 
 /**
  * 
- * @version $Revision: 1.1 $ $Date: 2002/07/16 19:50:03 $
+ * 
+ * @version $Revision: 1.2 $ $Date: 2002/07/30 22:02:06 $
 **/
 public class StarsCustAccountDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
@@ -52,6 +53,9 @@ public class StarsCustAccountDescriptor extends org.exolab.castor.xml.util.XMLCl
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
+        
+        //-- set grouping compositor
+        setCompositorAsSequence();
         //-- initialize attribute descriptors
         
         //-- initialize element descriptors
@@ -60,13 +64,13 @@ public class StarsCustAccountDescriptor extends org.exolab.castor.xml.util.XMLCl
         desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_accountNumber", "AccountNumber", NodeType.Element);
         desc.setImmutable(true);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsCustAccount target = (StarsCustAccount) object;
                 return target.getAccountNumber();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -77,7 +81,7 @@ public class StarsCustAccountDescriptor extends org.exolab.castor.xml.util.XMLCl
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return null;
             }
         } );
@@ -96,17 +100,100 @@ public class StarsCustAccountDescriptor extends org.exolab.castor.xml.util.XMLCl
         }
         desc.setValidator(fieldValidator);
         
+        //-- _isCommercial
+        desc = new XMLFieldDescriptorImpl(java.lang.Boolean.TYPE, "_isCommercial", "IsCommercial", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsCustAccount target = (StarsCustAccount) object;
+                if(!target.hasIsCommercial())
+                    return null;
+                return new Boolean(target.getIsCommercial());
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsCustAccount target = (StarsCustAccount) object;
+                    // ignore null values for non optional primitives
+                    if (value == null) return;
+                    
+                    target.setIsCommercial( ((Boolean)value).booleanValue());
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setRequired(true);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _isCommercial
+        fieldValidator = new FieldValidator();
+        fieldValidator.setMinOccurs(1);
+        { //-- local scope
+            BooleanValidator bv = new BooleanValidator();
+            fieldValidator.setValidator(bv);
+        }
+        desc.setValidator(fieldValidator);
+        
+        //-- _company
+        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_company", "Company", NodeType.Element);
+        desc.setImmutable(true);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsCustAccount target = (StarsCustAccount) object;
+                return target.getCompany();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsCustAccount target = (StarsCustAccount) object;
+                    target.setCompany( (java.lang.String) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setRequired(true);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _company
+        fieldValidator = new FieldValidator();
+        fieldValidator.setMinOccurs(1);
+        { //-- local scope
+            StringValidator sv = new StringValidator();
+            sv.setWhiteSpace("preserve");
+            fieldValidator.setValidator(sv);
+        }
+        desc.setValidator(fieldValidator);
+        
         //-- _accountNotes
         desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_accountNotes", "AccountNotes", NodeType.Element);
         desc.setImmutable(true);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsCustAccount target = (StarsCustAccount) object;
                 return target.getAccountNotes();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -117,7 +204,7 @@ public class StarsCustAccountDescriptor extends org.exolab.castor.xml.util.XMLCl
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return null;
             }
         } );
@@ -140,13 +227,13 @@ public class StarsCustAccountDescriptor extends org.exolab.castor.xml.util.XMLCl
         desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_propertyNumber", "PropertyNumber", NodeType.Element);
         desc.setImmutable(true);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsCustAccount target = (StarsCustAccount) object;
                 return target.getPropertyNumber();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -157,7 +244,7 @@ public class StarsCustAccountDescriptor extends org.exolab.castor.xml.util.XMLCl
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return null;
             }
         } );
@@ -180,13 +267,13 @@ public class StarsCustAccountDescriptor extends org.exolab.castor.xml.util.XMLCl
         desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_propertyNotes", "PropertyNotes", NodeType.Element);
         desc.setImmutable(true);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsCustAccount target = (StarsCustAccount) object;
                 return target.getPropertyNotes();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -197,7 +284,7 @@ public class StarsCustAccountDescriptor extends org.exolab.castor.xml.util.XMLCl
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return null;
             }
         } );
@@ -219,13 +306,13 @@ public class StarsCustAccountDescriptor extends org.exolab.castor.xml.util.XMLCl
         //-- _streetAddress
         desc = new XMLFieldDescriptorImpl(StreetAddress.class, "_streetAddress", "StreetAddress", NodeType.Element);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsCustAccount target = (StarsCustAccount) object;
                 return target.getStreetAddress();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -236,7 +323,7 @@ public class StarsCustAccountDescriptor extends org.exolab.castor.xml.util.XMLCl
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return new StreetAddress();
             }
         } );
@@ -253,13 +340,13 @@ public class StarsCustAccountDescriptor extends org.exolab.castor.xml.util.XMLCl
         //-- _starsSiteInformation
         desc = new XMLFieldDescriptorImpl(StarsSiteInformation.class, "_starsSiteInformation", "stars-SiteInformation", NodeType.Element);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsCustAccount target = (StarsCustAccount) object;
                 return target.getStarsSiteInformation();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -270,7 +357,7 @@ public class StarsCustAccountDescriptor extends org.exolab.castor.xml.util.XMLCl
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return new StarsSiteInformation();
             }
         } );
@@ -287,13 +374,13 @@ public class StarsCustAccountDescriptor extends org.exolab.castor.xml.util.XMLCl
         //-- _billingAddress
         desc = new XMLFieldDescriptorImpl(BillingAddress.class, "_billingAddress", "BillingAddress", NodeType.Element);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsCustAccount target = (StarsCustAccount) object;
                 return target.getBillingAddress();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -304,7 +391,7 @@ public class StarsCustAccountDescriptor extends org.exolab.castor.xml.util.XMLCl
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return new BillingAddress();
             }
         } );
@@ -321,13 +408,13 @@ public class StarsCustAccountDescriptor extends org.exolab.castor.xml.util.XMLCl
         //-- _primaryContact
         desc = new XMLFieldDescriptorImpl(PrimaryContact.class, "_primaryContact", "PrimaryContact", NodeType.Element);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsCustAccount target = (StarsCustAccount) object;
                 return target.getPrimaryContact();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -338,7 +425,7 @@ public class StarsCustAccountDescriptor extends org.exolab.castor.xml.util.XMLCl
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return new PrimaryContact();
             }
         } );
@@ -355,13 +442,13 @@ public class StarsCustAccountDescriptor extends org.exolab.castor.xml.util.XMLCl
         //-- _additionalContactList
         desc = new XMLFieldDescriptorImpl(AdditionalContact.class, "_additionalContactList", "AdditionalContact", NodeType.Element);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsCustAccount target = (StarsCustAccount) object;
                 return target.getAdditionalContact();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -372,7 +459,7 @@ public class StarsCustAccountDescriptor extends org.exolab.castor.xml.util.XMLCl
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return new AdditionalContact();
             }
         } );
@@ -382,85 +469,7 @@ public class StarsCustAccountDescriptor extends org.exolab.castor.xml.util.XMLCl
         
         //-- validation code for: _additionalContactList
         fieldValidator = new FieldValidator();
-        desc.setValidator(fieldValidator);
-        
-        //-- _isCommercial
-        desc = new XMLFieldDescriptorImpl(java.lang.Boolean.TYPE, "_isCommercial", "IsCommercial", NodeType.Element);
-        handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
-                throws IllegalStateException
-            {
-                StarsCustAccount target = (StarsCustAccount) object;
-                if(!target.hasIsCommercial())
-                    return null;
-                return new Boolean(target.getIsCommercial());
-            }
-            public void setValue( Object object, Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    StarsCustAccount target = (StarsCustAccount) object;
-                    // ignore null values for non optional primitives
-                    if (value == null) return;
-                    
-                    target.setIsCommercial( ((Boolean)value).booleanValue());
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public Object newInstance( Object parent ) {
-                return null;
-            }
-        } );
-        desc.setHandler(handler);
-        desc.setRequired(true);
-        desc.setMultivalued(false);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _isCommercial
-        fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
-        desc.setValidator(fieldValidator);
-        
-        //-- _company
-        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_company", "Company", NodeType.Element);
-        desc.setImmutable(true);
-        handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
-                throws IllegalStateException
-            {
-                StarsCustAccount target = (StarsCustAccount) object;
-                return target.getCompany();
-            }
-            public void setValue( Object object, Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    StarsCustAccount target = (StarsCustAccount) object;
-                    target.setCompany( (java.lang.String) value);
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public Object newInstance( Object parent ) {
-                return null;
-            }
-        } );
-        desc.setHandler(handler);
-        desc.setRequired(true);
-        desc.setMultivalued(false);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _company
-        fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
-        { //-- local scope
-            StringValidator sv = new StringValidator();
-            sv.setWhiteSpace("preserve");
-            fieldValidator.setValidator(sv);
-        }
+        fieldValidator.setMinOccurs(0);
         desc.setValidator(fieldValidator);
         
     } //-- com.cannontech.stars.xml.serialize.StarsCustAccountDescriptor()

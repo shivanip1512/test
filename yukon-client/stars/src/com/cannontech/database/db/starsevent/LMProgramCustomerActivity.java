@@ -134,6 +134,9 @@ public class LMProgramCustomerActivity extends DBPersistent {
     }
 
     public void add() throws java.sql.SQLException {
+    	if (getEventID() == null)
+    		setEventID( getNextEventID() );
+    		
         Object[] addValues = {
             getEventID(), getAccountID(), getActionID(), getLMProgramID(),
             getEventDateTime(), getNotes()

@@ -155,6 +155,9 @@ public class CallReportBase extends DBPersistent {
     }
 
     public void add() throws java.sql.SQLException {
+    	if (getCallID() == null)
+    		setCallID( getNextCallID() );
+    		
         Object[] addValues = {
             getCallID(), getCallNumber(), getCallType(), getDateTaken(),
             getDescription(), getActionItems(), getRelatedToAccountNumber(),

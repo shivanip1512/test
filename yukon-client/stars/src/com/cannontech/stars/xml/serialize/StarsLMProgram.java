@@ -1,8 +1,8 @@
 /*
  * This class was automatically generated with 
- * <a href="http://castor.exolab.org">Castor 0.9.3</a>, using an
+ * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsLMProgram.java,v 1.1 2002/07/16 19:50:07 Yao Exp $
+ * $Id: StarsLMProgram.java,v 1.2 2002/07/30 22:02:10 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -11,17 +11,19 @@ package com.cannontech.stars.xml.serialize;
  //- Imported classes and packages -/
 //---------------------------------/
 
+import java.io.IOException;
 import java.io.Reader;
 import java.io.Serializable;
 import java.io.Writer;
 import org.exolab.castor.xml.*;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.xml.sax.DocumentHandler;
+import org.xml.sax.ContentHandler;
 
 /**
  * 
- * @version $Revision: 1.1 $ $Date: 2002/07/16 19:50:07 $
+ * 
+ * @version $Revision: 1.2 $ $Date: 2002/07/30 22:02:10 $
 **/
 public class StarsLMProgram implements java.io.Serializable {
 
@@ -70,6 +72,9 @@ public class StarsLMProgram implements java.io.Serializable {
     } //-- void deleteGroupID() 
 
     /**
+     * Returns the value of field 'groupID'.
+     * 
+     * @return the value of field 'groupID'.
     **/
     public int getGroupID()
     {
@@ -77,6 +82,9 @@ public class StarsLMProgram implements java.io.Serializable {
     } //-- int getGroupID() 
 
     /**
+     * Returns the value of field 'programID'.
+     * 
+     * @return the value of field 'programID'.
     **/
     public int getProgramID()
     {
@@ -84,6 +92,9 @@ public class StarsLMProgram implements java.io.Serializable {
     } //-- int getProgramID() 
 
     /**
+     * Returns the value of field 'programName'.
+     * 
+     * @return the value of field 'programName'.
     **/
     public java.lang.String getProgramName()
     {
@@ -91,6 +102,9 @@ public class StarsLMProgram implements java.io.Serializable {
     } //-- java.lang.String getProgramName() 
 
     /**
+     * Returns the value of field 'starsLMControlHistory'.
+     * 
+     * @return the value of field 'starsLMControlHistory'.
     **/
     public StarsLMControlHistory getStarsLMControlHistory()
     {
@@ -126,6 +140,7 @@ public class StarsLMProgram implements java.io.Serializable {
 
     /**
      * 
+     * 
      * @param out
     **/
     public void marshal(java.io.Writer out)
@@ -137,18 +152,20 @@ public class StarsLMProgram implements java.io.Serializable {
 
     /**
      * 
+     * 
      * @param handler
     **/
-    public void marshal(org.xml.sax.DocumentHandler handler)
-        throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
+    public void marshal(org.xml.sax.ContentHandler handler)
+        throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
     {
         
         Marshaller.marshal(this, handler);
-    } //-- void marshal(org.xml.sax.DocumentHandler) 
+    } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
+     * Sets the value of field 'groupID'.
      * 
-     * @param groupID
+     * @param groupID the value of field 'groupID'.
     **/
     public void setGroupID(int groupID)
     {
@@ -157,8 +174,9 @@ public class StarsLMProgram implements java.io.Serializable {
     } //-- void setGroupID(int) 
 
     /**
+     * Sets the value of field 'programID'.
      * 
-     * @param programID
+     * @param programID the value of field 'programID'.
     **/
     public void setProgramID(int programID)
     {
@@ -167,8 +185,9 @@ public class StarsLMProgram implements java.io.Serializable {
     } //-- void setProgramID(int) 
 
     /**
+     * Sets the value of field 'programName'.
      * 
-     * @param programName
+     * @param programName the value of field 'programName'.
     **/
     public void setProgramName(java.lang.String programName)
     {
@@ -176,8 +195,10 @@ public class StarsLMProgram implements java.io.Serializable {
     } //-- void setProgramName(java.lang.String) 
 
     /**
+     * Sets the value of field 'starsLMControlHistory'.
      * 
-     * @param starsLMControlHistory
+     * @param starsLMControlHistory the value of field
+     * 'starsLMControlHistory'.
     **/
     public void setStarsLMControlHistory(StarsLMControlHistory starsLMControlHistory)
     {
@@ -185,6 +206,7 @@ public class StarsLMProgram implements java.io.Serializable {
     } //-- void setStarsLMControlHistory(StarsLMControlHistory) 
 
     /**
+     * 
      * 
      * @param reader
     **/

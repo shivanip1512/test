@@ -1,8 +1,8 @@
 /*
  * This class was automatically generated with 
- * <a href="http://castor.exolab.org">Castor 0.9.3</a>, using an
+ * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: ControlHistoryDescriptor.java,v 1.1 2002/07/16 19:50:01 Yao Exp $
+ * $Id: ControlHistoryDescriptor.java,v 1.2 2002/07/30 22:01:58 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -24,7 +24,8 @@ import org.exolab.castor.xml.validators.*;
 
 /**
  * 
- * @version $Revision: 1.1 $ $Date: 2002/07/16 19:50:01 $
+ * 
+ * @version $Revision: 1.2 $ $Date: 2002/07/30 22:01:58 $
 **/
 public class ControlHistoryDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
@@ -52,6 +53,9 @@ public class ControlHistoryDescriptor extends org.exolab.castor.xml.util.XMLClas
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
+        
+        //-- set grouping compositor
+        setCompositorAsSequence();
         //-- initialize attribute descriptors
         
         //-- initialize element descriptors
@@ -60,13 +64,13 @@ public class ControlHistoryDescriptor extends org.exolab.castor.xml.util.XMLClas
         desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_controlType", "ControlType", NodeType.Element);
         desc.setImmutable(true);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 ControlHistory target = (ControlHistory) object;
                 return target.getControlType();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -77,7 +81,7 @@ public class ControlHistoryDescriptor extends org.exolab.castor.xml.util.XMLClas
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return null;
             }
         } );
@@ -99,13 +103,13 @@ public class ControlHistoryDescriptor extends org.exolab.castor.xml.util.XMLClas
         //-- _startDateTime
         desc = new XMLFieldDescriptorImpl(java.util.Date.class, "_startDateTime", "StartDateTime", NodeType.Element);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 ControlHistory target = (ControlHistory) object;
                 return target.getStartDateTime();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -116,7 +120,7 @@ public class ControlHistoryDescriptor extends org.exolab.castor.xml.util.XMLClas
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return new java.util.Date();
             }
         } );
@@ -134,7 +138,7 @@ public class ControlHistoryDescriptor extends org.exolab.castor.xml.util.XMLClas
         //-- _controlDuration
         desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_controlDuration", "ControlDuration", NodeType.Element);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 ControlHistory target = (ControlHistory) object;
@@ -142,7 +146,7 @@ public class ControlHistoryDescriptor extends org.exolab.castor.xml.util.XMLClas
                     return null;
                 return new Integer(target.getControlDuration());
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -156,7 +160,7 @@ public class ControlHistoryDescriptor extends org.exolab.castor.xml.util.XMLClas
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return null;
             }
         } );

@@ -1,8 +1,8 @@
 /*
  * This class was automatically generated with 
- * <a href="http://castor.exolab.org">Castor 0.9.3</a>, using an
+ * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsAppliances.java,v 1.1 2002/07/16 19:50:02 Yao Exp $
+ * $Id: StarsAppliances.java,v 1.2 2002/07/30 22:02:08 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -11,6 +11,7 @@ package com.cannontech.stars.xml.serialize;
  //- Imported classes and packages -/
 //---------------------------------/
 
+import java.io.IOException;
 import java.io.Reader;
 import java.io.Serializable;
 import java.io.Writer;
@@ -19,11 +20,12 @@ import java.util.Vector;
 import org.exolab.castor.xml.*;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.xml.sax.DocumentHandler;
+import org.xml.sax.ContentHandler;
 
 /**
  * 
- * @version $Revision: 1.1 $ $Date: 2002/07/16 19:50:02 $
+ * 
+ * @version $Revision: 1.2 $ $Date: 2002/07/30 22:02:08 $
 **/
 public class StarsAppliances implements java.io.Serializable {
 
@@ -51,6 +53,7 @@ public class StarsAppliances implements java.io.Serializable {
 
     /**
      * 
+     * 
      * @param vStarsAppliance
     **/
     public void addStarsAppliance(StarsAppliance vStarsAppliance)
@@ -60,6 +63,7 @@ public class StarsAppliances implements java.io.Serializable {
     } //-- void addStarsAppliance(StarsAppliance) 
 
     /**
+     * 
      * 
      * @param index
      * @param vStarsAppliance
@@ -78,6 +82,7 @@ public class StarsAppliances implements java.io.Serializable {
     } //-- java.util.Enumeration enumerateStarsAppliance() 
 
     /**
+     * 
      * 
      * @param index
     **/
@@ -126,6 +131,7 @@ public class StarsAppliances implements java.io.Serializable {
 
     /**
      * 
+     * 
      * @param out
     **/
     public void marshal(java.io.Writer out)
@@ -137,14 +143,15 @@ public class StarsAppliances implements java.io.Serializable {
 
     /**
      * 
+     * 
      * @param handler
     **/
-    public void marshal(org.xml.sax.DocumentHandler handler)
-        throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
+    public void marshal(org.xml.sax.ContentHandler handler)
+        throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
     {
         
         Marshaller.marshal(this, handler);
-    } //-- void marshal(org.xml.sax.DocumentHandler) 
+    } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
     **/
@@ -155,16 +162,18 @@ public class StarsAppliances implements java.io.Serializable {
 
     /**
      * 
+     * 
      * @param index
     **/
     public StarsAppliance removeStarsAppliance(int index)
     {
-        Object obj = _starsApplianceList.elementAt(index);
+        java.lang.Object obj = _starsApplianceList.elementAt(index);
         _starsApplianceList.removeElementAt(index);
         return (StarsAppliance) obj;
     } //-- StarsAppliance removeStarsAppliance(int) 
 
     /**
+     * 
      * 
      * @param index
      * @param vStarsAppliance
@@ -181,6 +190,7 @@ public class StarsAppliances implements java.io.Serializable {
 
     /**
      * 
+     * 
      * @param starsApplianceArray
     **/
     public void setStarsAppliance(StarsAppliance[] starsApplianceArray)
@@ -193,6 +203,7 @@ public class StarsAppliances implements java.io.Serializable {
     } //-- void setStarsAppliance(StarsAppliance) 
 
     /**
+     * 
      * 
      * @param reader
     **/

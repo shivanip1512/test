@@ -1,8 +1,8 @@
 /*
  * This class was automatically generated with 
- * <a href="http://castor.exolab.org">Castor 0.9.3</a>, using an
+ * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsCustomerAddressDescriptor.java,v 1.1 2002/07/16 19:50:04 Yao Exp $
+ * $Id: StarsCustomerAddressDescriptor.java,v 1.2 2002/07/30 22:01:50 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -24,7 +24,8 @@ import org.exolab.castor.xml.validators.*;
 
 /**
  * 
- * @version $Revision: 1.1 $ $Date: 2002/07/16 19:50:04 $
+ * 
+ * @version $Revision: 1.2 $ $Date: 2002/07/30 22:01:50 $
 **/
 public class StarsCustomerAddressDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
@@ -63,13 +64,13 @@ public class StarsCustomerAddressDescriptor extends org.exolab.castor.xml.util.X
         desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_streetAddr1", "StreetAddr1", NodeType.Element);
         desc.setImmutable(true);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsCustomerAddress target = (StarsCustomerAddress) object;
                 return target.getStreetAddr1();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -80,7 +81,7 @@ public class StarsCustomerAddressDescriptor extends org.exolab.castor.xml.util.X
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return null;
             }
         } );
@@ -103,13 +104,13 @@ public class StarsCustomerAddressDescriptor extends org.exolab.castor.xml.util.X
         desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_streetAddr2", "StreetAddr2", NodeType.Element);
         desc.setImmutable(true);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsCustomerAddress target = (StarsCustomerAddress) object;
                 return target.getStreetAddr2();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -120,7 +121,7 @@ public class StarsCustomerAddressDescriptor extends org.exolab.castor.xml.util.X
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return null;
             }
         } );
@@ -143,13 +144,13 @@ public class StarsCustomerAddressDescriptor extends org.exolab.castor.xml.util.X
         desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_city", "City", NodeType.Element);
         desc.setImmutable(true);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsCustomerAddress target = (StarsCustomerAddress) object;
                 return target.getCity();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -160,7 +161,7 @@ public class StarsCustomerAddressDescriptor extends org.exolab.castor.xml.util.X
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return null;
             }
         } );
@@ -183,13 +184,13 @@ public class StarsCustomerAddressDescriptor extends org.exolab.castor.xml.util.X
         desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_state", "State", NodeType.Element);
         desc.setImmutable(true);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsCustomerAddress target = (StarsCustomerAddress) object;
                 return target.getState();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -200,7 +201,7 @@ public class StarsCustomerAddressDescriptor extends org.exolab.castor.xml.util.X
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return null;
             }
         } );
@@ -224,13 +225,13 @@ public class StarsCustomerAddressDescriptor extends org.exolab.castor.xml.util.X
         desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_zip", "Zip", NodeType.Element);
         desc.setImmutable(true);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsCustomerAddress target = (StarsCustomerAddress) object;
                 return target.getZip();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -241,7 +242,7 @@ public class StarsCustomerAddressDescriptor extends org.exolab.castor.xml.util.X
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return null;
             }
         } );

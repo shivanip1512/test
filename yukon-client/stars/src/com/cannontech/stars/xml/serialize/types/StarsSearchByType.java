@@ -1,8 +1,8 @@
 /*
  * This class was automatically generated with 
- * <a href="http://castor.exolab.org">Castor 0.9.3</a>, using an
+ * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsSearchByType.java,v 1.1 2002/07/16 19:50:11 Yao Exp $
+ * $Id: StarsSearchByType.java,v 1.2 2002/07/30 22:02:17 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize.types;
@@ -18,7 +18,8 @@ import org.exolab.castor.xml.*;
 
 /**
  * 
- * @version $Revision: 1.1 $ $Date: 2002/07/16 19:50:11 $
+ * 
+ * @version $Revision: 1.2 $ $Date: 2002/07/30 22:02:17 $
 **/
 public class StarsSearchByType implements java.io.Serializable {
 
@@ -129,11 +130,12 @@ public class StarsSearchByType implements java.io.Serializable {
     /**
      * Returns a new StarsSearchByType based on the given String
      * value.
+     * 
      * @param string
     **/
     public static com.cannontech.stars.xml.serialize.types.StarsSearchByType valueOf(java.lang.String string)
     {
-        Object obj = null;
+        java.lang.Object obj = null;
         if (string != null) obj = _memberTable.get(string);
         if (obj == null) {
             String err = "'" + string + "' is not a valid StarsSearchByType";

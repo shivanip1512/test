@@ -1,8 +1,8 @@
 /*
  * This class was automatically generated with 
- * <a href="http://castor.exolab.org">Castor 0.9.3</a>, using an
+ * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsLMProgramDescriptor.java,v 1.1 2002/07/16 19:50:07 Yao Exp $
+ * $Id: StarsLMProgramDescriptor.java,v 1.2 2002/07/30 22:01:57 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -24,7 +24,8 @@ import org.exolab.castor.xml.validators.*;
 
 /**
  * 
- * @version $Revision: 1.1 $ $Date: 2002/07/16 19:50:07 $
+ * 
+ * @version $Revision: 1.2 $ $Date: 2002/07/30 22:01:57 $
 **/
 public class StarsLMProgramDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
@@ -60,7 +61,7 @@ public class StarsLMProgramDescriptor extends org.exolab.castor.xml.util.XMLClas
         //-- _programID
         desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_programID", "programID", NodeType.Attribute);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsLMProgram target = (StarsLMProgram) object;
@@ -68,7 +69,7 @@ public class StarsLMProgramDescriptor extends org.exolab.castor.xml.util.XMLClas
                     return null;
                 return new Integer(target.getProgramID());
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -82,7 +83,7 @@ public class StarsLMProgramDescriptor extends org.exolab.castor.xml.util.XMLClas
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return null;
             }
         } );
@@ -103,13 +104,13 @@ public class StarsLMProgramDescriptor extends org.exolab.castor.xml.util.XMLClas
         desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_programName", "programName", NodeType.Attribute);
         desc.setImmutable(true);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsLMProgram target = (StarsLMProgram) object;
                 return target.getProgramName();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -120,7 +121,7 @@ public class StarsLMProgramDescriptor extends org.exolab.castor.xml.util.XMLClas
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return null;
             }
         } );
@@ -139,7 +140,7 @@ public class StarsLMProgramDescriptor extends org.exolab.castor.xml.util.XMLClas
         //-- _groupID
         desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_groupID", "groupID", NodeType.Attribute);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsLMProgram target = (StarsLMProgram) object;
@@ -147,7 +148,7 @@ public class StarsLMProgramDescriptor extends org.exolab.castor.xml.util.XMLClas
                     return null;
                 return new Integer(target.getGroupID());
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -163,7 +164,7 @@ public class StarsLMProgramDescriptor extends org.exolab.castor.xml.util.XMLClas
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return null;
             }
         } );
@@ -183,13 +184,13 @@ public class StarsLMProgramDescriptor extends org.exolab.castor.xml.util.XMLClas
         //-- _starsLMControlHistory
         desc = new XMLFieldDescriptorImpl(StarsLMControlHistory.class, "_starsLMControlHistory", "stars-LMControlHistory", NodeType.Element);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsLMProgram target = (StarsLMProgram) object;
                 return target.getStarsLMControlHistory();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -200,7 +201,7 @@ public class StarsLMProgramDescriptor extends org.exolab.castor.xml.util.XMLClas
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return new StarsLMControlHistory();
             }
         } );

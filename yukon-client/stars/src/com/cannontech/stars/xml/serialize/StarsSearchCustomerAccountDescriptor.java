@@ -1,8 +1,8 @@
 /*
  * This class was automatically generated with 
- * <a href="http://castor.exolab.org">Castor 0.9.3</a>, using an
+ * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsSearchCustomerAccountDescriptor.java,v 1.1 2002/07/16 19:50:09 Yao Exp $
+ * $Id: StarsSearchCustomerAccountDescriptor.java,v 1.2 2002/07/30 22:02:03 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -24,7 +24,8 @@ import org.exolab.castor.xml.validators.*;
 
 /**
  * 
- * @version $Revision: 1.1 $ $Date: 2002/07/16 19:50:09 $
+ * 
+ * @version $Revision: 1.2 $ $Date: 2002/07/30 22:02:03 $
 **/
 public class StarsSearchCustomerAccountDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
@@ -52,18 +53,23 @@ public class StarsSearchCustomerAccountDescriptor extends org.exolab.castor.xml.
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
+        
+        //-- set grouping compositor
+        setCompositorAsSequence();
         //-- initialize attribute descriptors
         
+        //-- initialize element descriptors
+        
         //-- _searchBy
-        desc = new XMLFieldDescriptorImpl(com.cannontech.stars.xml.serialize.types.StarsSearchByType.class, "_searchBy", "searchBy", NodeType.Attribute);
+        desc = new XMLFieldDescriptorImpl(com.cannontech.stars.xml.serialize.types.StarsSearchByType.class, "_searchBy", "SearchBy", NodeType.Element);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsSearchCustomerAccount target = (StarsSearchCustomerAccount) object;
                 return target.getSearchBy();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -74,13 +80,14 @@ public class StarsSearchCustomerAccountDescriptor extends org.exolab.castor.xml.
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return null;
             }
         } );
         desc.setHandler( new EnumFieldHandler(com.cannontech.stars.xml.serialize.types.StarsSearchByType.class, handler));
         desc.setImmutable(true);
         desc.setRequired(true);
+        desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _searchBy
@@ -89,16 +96,16 @@ public class StarsSearchCustomerAccountDescriptor extends org.exolab.castor.xml.
         desc.setValidator(fieldValidator);
         
         //-- _searchValue
-        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_searchValue", "searchValue", NodeType.Attribute);
+        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_searchValue", "SearchValue", NodeType.Element);
         desc.setImmutable(true);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsSearchCustomerAccount target = (StarsSearchCustomerAccount) object;
                 return target.getSearchValue();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -109,23 +116,24 @@ public class StarsSearchCustomerAccountDescriptor extends org.exolab.castor.xml.
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return null;
             }
         } );
         desc.setHandler(handler);
+        desc.setRequired(true);
+        desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _searchValue
         fieldValidator = new FieldValidator();
+        fieldValidator.setMinOccurs(1);
         { //-- local scope
             StringValidator sv = new StringValidator();
             sv.setWhiteSpace("preserve");
             fieldValidator.setValidator(sv);
         }
         desc.setValidator(fieldValidator);
-        
-        //-- initialize element descriptors
         
     } //-- com.cannontech.stars.xml.serialize.StarsSearchCustomerAccountDescriptor()
 

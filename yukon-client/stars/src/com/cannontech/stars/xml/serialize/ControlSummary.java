@@ -1,8 +1,8 @@
 /*
  * This class was automatically generated with 
- * <a href="http://castor.exolab.org">Castor 0.9.3</a>, using an
+ * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: ControlSummary.java,v 1.1 2002/07/16 19:50:01 Yao Exp $
+ * $Id: ControlSummary.java,v 1.2 2002/07/30 22:01:51 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -11,17 +11,19 @@ package com.cannontech.stars.xml.serialize;
  //- Imported classes and packages -/
 //---------------------------------/
 
+import java.io.IOException;
 import java.io.Reader;
 import java.io.Serializable;
 import java.io.Writer;
 import org.exolab.castor.xml.*;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.xml.sax.DocumentHandler;
+import org.xml.sax.ContentHandler;
 
 /**
  * 
- * @version $Revision: 1.1 $ $Date: 2002/07/16 19:50:01 $
+ * 
+ * @version $Revision: 1.2 $ $Date: 2002/07/30 22:01:51 $
 **/
 public class ControlSummary implements java.io.Serializable {
 
@@ -73,6 +75,9 @@ public class ControlSummary implements java.io.Serializable {
     //-----------/
 
     /**
+     * Returns the value of field 'annualTime'.
+     * 
+     * @return the value of field 'annualTime'.
     **/
     public int getAnnualTime()
     {
@@ -80,6 +85,9 @@ public class ControlSummary implements java.io.Serializable {
     } //-- int getAnnualTime() 
 
     /**
+     * Returns the value of field 'dailyTime'.
+     * 
+     * @return the value of field 'dailyTime'.
     **/
     public int getDailyTime()
     {
@@ -87,6 +95,9 @@ public class ControlSummary implements java.io.Serializable {
     } //-- int getDailyTime() 
 
     /**
+     * Returns the value of field 'monthlyTime'.
+     * 
+     * @return the value of field 'monthlyTime'.
     **/
     public int getMonthlyTime()
     {
@@ -94,6 +105,9 @@ public class ControlSummary implements java.io.Serializable {
     } //-- int getMonthlyTime() 
 
     /**
+     * Returns the value of field 'seasonalTime'.
+     * 
+     * @return the value of field 'seasonalTime'.
     **/
     public int getSeasonalTime()
     {
@@ -143,6 +157,7 @@ public class ControlSummary implements java.io.Serializable {
 
     /**
      * 
+     * 
      * @param out
     **/
     public void marshal(java.io.Writer out)
@@ -154,18 +169,20 @@ public class ControlSummary implements java.io.Serializable {
 
     /**
      * 
+     * 
      * @param handler
     **/
-    public void marshal(org.xml.sax.DocumentHandler handler)
-        throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
+    public void marshal(org.xml.sax.ContentHandler handler)
+        throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
     {
         
         Marshaller.marshal(this, handler);
-    } //-- void marshal(org.xml.sax.DocumentHandler) 
+    } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
+     * Sets the value of field 'annualTime'.
      * 
-     * @param annualTime
+     * @param annualTime the value of field 'annualTime'.
     **/
     public void setAnnualTime(int annualTime)
     {
@@ -174,8 +191,9 @@ public class ControlSummary implements java.io.Serializable {
     } //-- void setAnnualTime(int) 
 
     /**
+     * Sets the value of field 'dailyTime'.
      * 
-     * @param dailyTime
+     * @param dailyTime the value of field 'dailyTime'.
     **/
     public void setDailyTime(int dailyTime)
     {
@@ -184,8 +202,9 @@ public class ControlSummary implements java.io.Serializable {
     } //-- void setDailyTime(int) 
 
     /**
+     * Sets the value of field 'monthlyTime'.
      * 
-     * @param monthlyTime
+     * @param monthlyTime the value of field 'monthlyTime'.
     **/
     public void setMonthlyTime(int monthlyTime)
     {
@@ -194,8 +213,9 @@ public class ControlSummary implements java.io.Serializable {
     } //-- void setMonthlyTime(int) 
 
     /**
+     * Sets the value of field 'seasonalTime'.
      * 
-     * @param seasonalTime
+     * @param seasonalTime the value of field 'seasonalTime'.
     **/
     public void setSeasonalTime(int seasonalTime)
     {
@@ -204,6 +224,7 @@ public class ControlSummary implements java.io.Serializable {
     } //-- void setSeasonalTime(int) 
 
     /**
+     * 
      * 
      * @param reader
     **/

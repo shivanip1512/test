@@ -142,6 +142,9 @@ public class WorkOrderBase extends DBPersistent {
     }
 
     public void add() throws java.sql.SQLException {
+    	if (getOrderID() == null)
+    		setOrderID( getNextOrderID() );
+    		
         Object[] addValues = {
             getOrderID(), getOrderNumber(), getWorkType(), getCurrentState(),
             getDateAssigned(), getDescription(), getDateCompleted(),

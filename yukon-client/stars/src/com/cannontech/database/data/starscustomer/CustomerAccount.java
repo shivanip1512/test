@@ -121,7 +121,7 @@ public class CustomerAccount extends DBPersistent {
     public void add() throws java.sql.SQLException {
         getCustomerAccount().add();
 
-        getAccountSite().add();
+        //getAccountSite().add();
         getBillingAddress().add();
 
         if (getCustomerBase() != null && getCustomerBase().getEnergyCompanyBase() != null) {

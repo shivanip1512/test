@@ -1,8 +1,8 @@
 /*
  * This class was automatically generated with 
- * <a href="http://castor.exolab.org">Castor 0.9.3</a>, using an
+ * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsInventoryDescriptor.java,v 1.1 2002/07/16 19:50:06 Yao Exp $
+ * $Id: StarsInventoryDescriptor.java,v 1.2 2002/07/30 22:01:59 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -24,7 +24,8 @@ import org.exolab.castor.xml.validators.*;
 
 /**
  * 
- * @version $Revision: 1.1 $ $Date: 2002/07/16 19:50:06 $
+ * 
+ * @version $Revision: 1.2 $ $Date: 2002/07/30 22:01:59 $
 **/
 public class StarsInventoryDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
@@ -52,12 +53,15 @@ public class StarsInventoryDescriptor extends org.exolab.castor.xml.util.XMLClas
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
+        
+        //-- set grouping compositor
+        setCompositorAsSequence();
         //-- initialize attribute descriptors
         
         //-- _inventoryID
         desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_inventoryID", "inventoryID", NodeType.Attribute);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsInventory target = (StarsInventory) object;
@@ -65,7 +69,7 @@ public class StarsInventoryDescriptor extends org.exolab.castor.xml.util.XMLClas
                     return null;
                 return new Integer(target.getInventoryID());
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -81,7 +85,7 @@ public class StarsInventoryDescriptor extends org.exolab.castor.xml.util.XMLClas
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return null;
             }
         } );
@@ -102,13 +106,13 @@ public class StarsInventoryDescriptor extends org.exolab.castor.xml.util.XMLClas
         desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_category", "Category", NodeType.Element);
         desc.setImmutable(true);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsInventory target = (StarsInventory) object;
                 return target.getCategory();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -119,7 +123,7 @@ public class StarsInventoryDescriptor extends org.exolab.castor.xml.util.XMLClas
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return null;
             }
         } );
@@ -142,13 +146,13 @@ public class StarsInventoryDescriptor extends org.exolab.castor.xml.util.XMLClas
         desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_installationCompany", "InstallationCompany", NodeType.Element);
         desc.setImmutable(true);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsInventory target = (StarsInventory) object;
                 return target.getInstallationCompany();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -159,7 +163,7 @@ public class StarsInventoryDescriptor extends org.exolab.castor.xml.util.XMLClas
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return null;
             }
         } );
@@ -181,13 +185,13 @@ public class StarsInventoryDescriptor extends org.exolab.castor.xml.util.XMLClas
         //-- _receiveDate
         desc = new XMLFieldDescriptorImpl(org.exolab.castor.types.Date.class, "_receiveDate", "ReceiveDate", NodeType.Element);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsInventory target = (StarsInventory) object;
                 return target.getReceiveDate();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -198,7 +202,7 @@ public class StarsInventoryDescriptor extends org.exolab.castor.xml.util.XMLClas
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return new org.exolab.castor.types.Date();
             }
         } );
@@ -219,13 +223,13 @@ public class StarsInventoryDescriptor extends org.exolab.castor.xml.util.XMLClas
         //-- _installDate
         desc = new XMLFieldDescriptorImpl(org.exolab.castor.types.Date.class, "_installDate", "InstallDate", NodeType.Element);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsInventory target = (StarsInventory) object;
                 return target.getInstallDate();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -236,7 +240,7 @@ public class StarsInventoryDescriptor extends org.exolab.castor.xml.util.XMLClas
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return new org.exolab.castor.types.Date();
             }
         } );
@@ -257,13 +261,13 @@ public class StarsInventoryDescriptor extends org.exolab.castor.xml.util.XMLClas
         //-- _removeDate
         desc = new XMLFieldDescriptorImpl(org.exolab.castor.types.Date.class, "_removeDate", "RemoveDate", NodeType.Element);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsInventory target = (StarsInventory) object;
                 return target.getRemoveDate();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -274,7 +278,7 @@ public class StarsInventoryDescriptor extends org.exolab.castor.xml.util.XMLClas
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return new org.exolab.castor.types.Date();
             }
         } );
@@ -296,13 +300,13 @@ public class StarsInventoryDescriptor extends org.exolab.castor.xml.util.XMLClas
         desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_altTrackingNumber", "AltTrackingNumber", NodeType.Element);
         desc.setImmutable(true);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsInventory target = (StarsInventory) object;
                 return target.getAltTrackingNumber();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -313,7 +317,7 @@ public class StarsInventoryDescriptor extends org.exolab.castor.xml.util.XMLClas
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return null;
             }
         } );
@@ -336,13 +340,13 @@ public class StarsInventoryDescriptor extends org.exolab.castor.xml.util.XMLClas
         desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_voltage", "Voltage", NodeType.Element);
         desc.setImmutable(true);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsInventory target = (StarsInventory) object;
                 return target.getVoltage();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -353,7 +357,7 @@ public class StarsInventoryDescriptor extends org.exolab.castor.xml.util.XMLClas
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return null;
             }
         } );
@@ -376,13 +380,13 @@ public class StarsInventoryDescriptor extends org.exolab.castor.xml.util.XMLClas
         desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_notes", "Notes", NodeType.Element);
         desc.setImmutable(true);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsInventory target = (StarsInventory) object;
                 return target.getNotes();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -393,7 +397,7 @@ public class StarsInventoryDescriptor extends org.exolab.castor.xml.util.XMLClas
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return null;
             }
         } );

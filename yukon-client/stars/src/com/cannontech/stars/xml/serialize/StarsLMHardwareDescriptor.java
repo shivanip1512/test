@@ -1,8 +1,8 @@
 /*
  * This class was automatically generated with 
- * <a href="http://castor.exolab.org">Castor 0.9.3</a>, using an
+ * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsLMHardwareDescriptor.java,v 1.1 2002/07/16 19:50:07 Yao Exp $
+ * $Id: StarsLMHardwareDescriptor.java,v 1.2 2002/07/30 22:01:58 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -24,7 +24,8 @@ import org.exolab.castor.xml.validators.*;
 
 /**
  * 
- * @version $Revision: 1.1 $ $Date: 2002/07/16 19:50:07 $
+ * 
+ * @version $Revision: 1.2 $ $Date: 2002/07/30 22:01:58 $
 **/
 public class StarsLMHardwareDescriptor extends com.cannontech.stars.xml.serialize.StarsInventoryDescriptor {
 
@@ -48,10 +49,14 @@ public class StarsLMHardwareDescriptor extends com.cannontech.stars.xml.serializ
 
     public StarsLMHardwareDescriptor() {
         super();
+        setExtendsWithoutFlatten(new com.cannontech.stars.xml.serialize.StarsInventoryDescriptor());
         xmlName = "stars-LMHardware";
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
+        
+        //-- set grouping compositor
+        setCompositorAsSequence();
         //-- initialize attribute descriptors
         
         //-- initialize element descriptors
@@ -60,13 +65,13 @@ public class StarsLMHardwareDescriptor extends com.cannontech.stars.xml.serializ
         desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_manufactureSerialNumber", "ManufactureSerialNumber", NodeType.Element);
         desc.setImmutable(true);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsLMHardware target = (StarsLMHardware) object;
                 return target.getManufactureSerialNumber();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -77,7 +82,7 @@ public class StarsLMHardwareDescriptor extends com.cannontech.stars.xml.serializ
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return null;
             }
         } );
@@ -100,13 +105,13 @@ public class StarsLMHardwareDescriptor extends com.cannontech.stars.xml.serializ
         desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_LMDeviceType", "LMDeviceType", NodeType.Element);
         desc.setImmutable(true);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsLMHardware target = (StarsLMHardware) object;
                 return target.getLMDeviceType();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -117,7 +122,7 @@ public class StarsLMHardwareDescriptor extends com.cannontech.stars.xml.serializ
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return null;
             }
         } );
@@ -154,7 +159,7 @@ public class StarsLMHardwareDescriptor extends com.cannontech.stars.xml.serializ
     **/
     public org.exolab.castor.mapping.ClassDescriptor getExtends()
     {
-        return null;
+        return super.getExtends();
     } //-- org.exolab.castor.mapping.ClassDescriptor getExtends() 
 
     /**

@@ -1,8 +1,8 @@
 /*
  * This class was automatically generated with 
- * <a href="http://castor.exolab.org">Castor 0.9.3</a>, using an
+ * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsApplianceCategoryDescriptor.java,v 1.1 2002/07/16 19:50:02 Yao Exp $
+ * $Id: StarsApplianceCategoryDescriptor.java,v 1.2 2002/07/30 22:01:55 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -24,7 +24,8 @@ import org.exolab.castor.xml.validators.*;
 
 /**
  * 
- * @version $Revision: 1.1 $ $Date: 2002/07/16 19:50:02 $
+ * 
+ * @version $Revision: 1.2 $ $Date: 2002/07/30 22:01:55 $
 **/
 public class StarsApplianceCategoryDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
@@ -58,13 +59,13 @@ public class StarsApplianceCategoryDescriptor extends org.exolab.castor.xml.util
         desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_category", "category", NodeType.Attribute);
         desc.setImmutable(true);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsApplianceCategory target = (StarsApplianceCategory) object;
                 return target.getCategory();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -75,7 +76,7 @@ public class StarsApplianceCategoryDescriptor extends org.exolab.castor.xml.util
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return null;
             }
         } );
@@ -95,13 +96,13 @@ public class StarsApplianceCategoryDescriptor extends org.exolab.castor.xml.util
         desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_description", "description", NodeType.Attribute);
         desc.setImmutable(true);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsApplianceCategory target = (StarsApplianceCategory) object;
                 return target.getDescription();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -112,7 +113,7 @@ public class StarsApplianceCategoryDescriptor extends org.exolab.castor.xml.util
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return null;
             }
         } );

@@ -79,6 +79,9 @@ public class AccountSite extends DBPersistent {
     }
 
     public void add() throws java.sql.SQLException {
+    	if (getAccountSiteID() == null)
+    		setAccountSiteID( getNextAccountSiteID() );
+    		
         Object[] addValues = {
             getAccountSiteID(), getSiteInformationID(), getSiteNumber(),
             getStreetAddressID(), getPropertyNotes()

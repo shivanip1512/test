@@ -1,8 +1,8 @@
 /*
  * This class was automatically generated with 
- * <a href="http://castor.exolab.org">Castor 0.9.3</a>, using an
+ * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsFailure.java,v 1.1 2002/07/16 19:50:05 Yao Exp $
+ * $Id: StarsFailure.java,v 1.2 2002/07/30 22:01:54 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -11,17 +11,19 @@ package com.cannontech.stars.xml.serialize;
  //- Imported classes and packages -/
 //---------------------------------/
 
+import java.io.IOException;
 import java.io.Reader;
 import java.io.Serializable;
 import java.io.Writer;
 import org.exolab.castor.xml.*;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.xml.sax.DocumentHandler;
+import org.xml.sax.ContentHandler;
 
 /**
- * Indicate that the requested operation is failed
- * @version $Revision: 1.1 $ $Date: 2002/07/16 19:50:05 $
+ * 
+ * 
+ * @version $Revision: 1.2 $ $Date: 2002/07/30 22:01:54 $
 **/
 public class StarsFailure implements java.io.Serializable {
 
@@ -30,10 +32,14 @@ public class StarsFailure implements java.io.Serializable {
      //- Class/Member Variables -/
     //--------------------------/
 
+    private int _statusCode;
+
     /**
-     * internal content storage
+     * keeps track of state for field: _statusCode
     **/
-    private java.lang.String _content = "";
+    private boolean _has_statusCode;
+
+    private java.lang.String _description;
 
 
       //----------------/
@@ -51,10 +57,37 @@ public class StarsFailure implements java.io.Serializable {
 
     /**
     **/
-    public java.lang.String getContent()
+    public void deleteStatusCode()
     {
-        return this._content;
-    } //-- java.lang.String getContent() 
+        this._has_statusCode= false;
+    } //-- void deleteStatusCode() 
+
+    /**
+     * Returns the value of field 'description'.
+     * 
+     * @return the value of field 'description'.
+    **/
+    public java.lang.String getDescription()
+    {
+        return this._description;
+    } //-- java.lang.String getDescription() 
+
+    /**
+     * Returns the value of field 'statusCode'.
+     * 
+     * @return the value of field 'statusCode'.
+    **/
+    public int getStatusCode()
+    {
+        return this._statusCode;
+    } //-- int getStatusCode() 
+
+    /**
+    **/
+    public boolean hasStatusCode()
+    {
+        return this._has_statusCode;
+    } //-- boolean hasStatusCode() 
 
     /**
     **/
@@ -71,6 +104,7 @@ public class StarsFailure implements java.io.Serializable {
 
     /**
      * 
+     * 
      * @param out
     **/
     public void marshal(java.io.Writer out)
@@ -82,25 +116,39 @@ public class StarsFailure implements java.io.Serializable {
 
     /**
      * 
+     * 
      * @param handler
     **/
-    public void marshal(org.xml.sax.DocumentHandler handler)
-        throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
+    public void marshal(org.xml.sax.ContentHandler handler)
+        throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
     {
         
         Marshaller.marshal(this, handler);
-    } //-- void marshal(org.xml.sax.DocumentHandler) 
+    } //-- void marshal(org.xml.sax.ContentHandler) 
+
+    /**
+     * Sets the value of field 'description'.
+     * 
+     * @param description the value of field 'description'.
+    **/
+    public void setDescription(java.lang.String description)
+    {
+        this._description = description;
+    } //-- void setDescription(java.lang.String) 
+
+    /**
+     * Sets the value of field 'statusCode'.
+     * 
+     * @param statusCode the value of field 'statusCode'.
+    **/
+    public void setStatusCode(int statusCode)
+    {
+        this._statusCode = statusCode;
+        this._has_statusCode = true;
+    } //-- void setStatusCode(int) 
 
     /**
      * 
-     * @param content
-    **/
-    public void setContent(java.lang.String content)
-    {
-        this._content = content;
-    } //-- void setContent(java.lang.String) 
-
-    /**
      * 
      * @param reader
     **/

@@ -1,5 +1,7 @@
 package com.cannontech.stars.xml.serialize;
 
+import com.cannontech.database.db.customer.CustomerAddress;
+
 /**
  * <p>Title: </p>
  * <p>Description: </p>
@@ -31,5 +33,13 @@ public class StarsCustomerAddressFactory {
         }
 
         return null;
+    }
+    
+    public static void setCustomerAddress(CustomerAddress addr, StarsCustomerAddress starsAddr) {
+    	addr.setLocationAddress1( starsAddr.getStreetAddr1() );
+    	addr.setLocationAddress2( starsAddr.getStreetAddr2() );
+    	addr.setCityName( starsAddr.getCity() );
+    	addr.setStateCode( starsAddr.getState() );
+    	addr.setZipCode( starsAddr.getZip() );
     }
 }

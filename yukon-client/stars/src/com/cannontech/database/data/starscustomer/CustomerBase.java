@@ -118,8 +118,8 @@ public class CustomerBase extends DBPersistent {
          */
         // delete from CustomerBaseCustContact
         com.cannontech.database.db.customer.CustomerContact[] contacts =
-            com.cannontech.database.db.customer.CustomerContact.getAllCustomerContacts( getCustomerBase().getCustomerID(), getDbConnection() );
-        delete( "CustomerBaseCustContact", "CustomerID", getCustomerBase().getCustomerID() );
+            	getCustomerBase().getAllCustomerContacts( getDbConnection() );
+        delete( "CstBaseCstContactMap", "CustomerID", getCustomerBase().getCustomerID() );
         // use "data" class to delete from CustomerContact
         com.cannontech.database.data.customer.CustomerContact contact = new com.cannontech.database.data.customer.CustomerContact();
         for (int i = 0; i < contacts.length; i++) {
@@ -137,7 +137,7 @@ public class CustomerBase extends DBPersistent {
                 getCustomerBase().getCustomerID(),
                 contact.getCustomerContact().getContactID()
             };
-            add( "CustomerBaseCustContact", addValues );
+            add( "CstBaseCstContactMap", addValues );
         }
     }
 
@@ -148,7 +148,7 @@ public class CustomerBase extends DBPersistent {
         getPrimaryContact().retrieve();
 
         com.cannontech.database.db.customer.CustomerContact[] contacts =
-            com.cannontech.database.db.customer.CustomerContact.getAllCustomerContacts( getCustomerBase().getCustomerID(), getDbConnection() );
+            	getCustomerBase().getAllCustomerContacts( getDbConnection() );
         for (int i = 0; i < contacts.length; i++)
             getCustomerContactVector().addElement( contacts[i] );
 /*

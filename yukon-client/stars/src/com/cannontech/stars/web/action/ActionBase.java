@@ -1,7 +1,7 @@
 package com.cannontech.stars.web.action;
 
 import javax.servlet.http.*;
-import com.cannontech.stars.xml.serialize.*;
+import javax.xml.soap.*;
 
 /**
  * <p>Title: </p>
@@ -14,9 +14,9 @@ import com.cannontech.stars.xml.serialize.*;
 
 public abstract class ActionBase {
 
-    public abstract StarsOperation build(HttpServletRequest req, HttpSession session);
+    public abstract SOAPMessage build(HttpServletRequest req, HttpSession session);
 
-    public abstract StarsOperation process(StarsOperation reqOper, HttpSession session);
+    public abstract SOAPMessage process(SOAPMessage reqMsg, HttpSession session);
 
-    public abstract boolean parse(StarsOperation operation, HttpSession session);
+    public abstract int parse(SOAPMessage respMsg, HttpSession session);
 }

@@ -1,8 +1,8 @@
 /*
  * This class was automatically generated with 
- * <a href="http://castor.exolab.org">Castor 0.9.3</a>, using an
+ * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsGetLMControlHistory.java,v 1.1 2002/07/16 19:50:05 Yao Exp $
+ * $Id: StarsGetLMControlHistory.java,v 1.2 2002/07/30 22:02:08 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -12,17 +12,19 @@ package com.cannontech.stars.xml.serialize;
 //---------------------------------/
 
 import com.cannontech.stars.xml.serialize.types.StarsCtrlHistPeriod;
+import java.io.IOException;
 import java.io.Reader;
 import java.io.Serializable;
 import java.io.Writer;
 import org.exolab.castor.xml.*;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.xml.sax.DocumentHandler;
+import org.xml.sax.ContentHandler;
 
 /**
  * Get LM control history of a LM program
- * @version $Revision: 1.1 $ $Date: 2002/07/16 19:50:05 $
+ * 
+ * @version $Revision: 1.2 $ $Date: 2002/07/30 22:02:08 $
 **/
 public class StarsGetLMControlHistory implements java.io.Serializable {
 
@@ -69,6 +71,9 @@ public class StarsGetLMControlHistory implements java.io.Serializable {
     } //-- void deleteGetSummary() 
 
     /**
+     * Returns the value of field 'getSummary'.
+     * 
+     * @return the value of field 'getSummary'.
     **/
     public boolean getGetSummary()
     {
@@ -76,6 +81,9 @@ public class StarsGetLMControlHistory implements java.io.Serializable {
     } //-- boolean getGetSummary() 
 
     /**
+     * Returns the value of field 'groupID'.
+     * 
+     * @return the value of field 'groupID'.
     **/
     public int getGroupID()
     {
@@ -83,6 +91,9 @@ public class StarsGetLMControlHistory implements java.io.Serializable {
     } //-- int getGroupID() 
 
     /**
+     * Returns the value of field 'period'.
+     * 
+     * @return the value of field 'period'.
     **/
     public com.cannontech.stars.xml.serialize.types.StarsCtrlHistPeriod getPeriod()
     {
@@ -118,6 +129,7 @@ public class StarsGetLMControlHistory implements java.io.Serializable {
 
     /**
      * 
+     * 
      * @param out
     **/
     public void marshal(java.io.Writer out)
@@ -129,18 +141,20 @@ public class StarsGetLMControlHistory implements java.io.Serializable {
 
     /**
      * 
+     * 
      * @param handler
     **/
-    public void marshal(org.xml.sax.DocumentHandler handler)
-        throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
+    public void marshal(org.xml.sax.ContentHandler handler)
+        throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
     {
         
         Marshaller.marshal(this, handler);
-    } //-- void marshal(org.xml.sax.DocumentHandler) 
+    } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
+     * Sets the value of field 'getSummary'.
      * 
-     * @param getSummary
+     * @param getSummary the value of field 'getSummary'.
     **/
     public void setGetSummary(boolean getSummary)
     {
@@ -149,8 +163,9 @@ public class StarsGetLMControlHistory implements java.io.Serializable {
     } //-- void setGetSummary(boolean) 
 
     /**
+     * Sets the value of field 'groupID'.
      * 
-     * @param groupID
+     * @param groupID the value of field 'groupID'.
     **/
     public void setGroupID(int groupID)
     {
@@ -159,8 +174,9 @@ public class StarsGetLMControlHistory implements java.io.Serializable {
     } //-- void setGroupID(int) 
 
     /**
+     * Sets the value of field 'period'.
      * 
-     * @param period
+     * @param period the value of field 'period'.
     **/
     public void setPeriod(com.cannontech.stars.xml.serialize.types.StarsCtrlHistPeriod period)
     {
@@ -168,6 +184,7 @@ public class StarsGetLMControlHistory implements java.io.Serializable {
     } //-- void setPeriod(com.cannontech.stars.xml.serialize.types.StarsCtrlHistPeriod) 
 
     /**
+     * 
      * 
      * @param reader
     **/

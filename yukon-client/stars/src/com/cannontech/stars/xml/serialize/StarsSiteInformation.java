@@ -1,8 +1,8 @@
 /*
  * This class was automatically generated with 
- * <a href="http://castor.exolab.org">Castor 0.9.3</a>, using an
+ * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsSiteInformation.java,v 1.1 2002/07/16 19:50:09 Yao Exp $
+ * $Id: StarsSiteInformation.java,v 1.2 2002/07/30 22:02:05 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -11,17 +11,19 @@ package com.cannontech.stars.xml.serialize;
  //- Imported classes and packages -/
 //---------------------------------/
 
+import java.io.IOException;
 import java.io.Reader;
 import java.io.Serializable;
 import java.io.Writer;
 import org.exolab.castor.xml.*;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.xml.sax.DocumentHandler;
+import org.xml.sax.ContentHandler;
 
 /**
  * 
- * @version $Revision: 1.1 $ $Date: 2002/07/16 19:50:09 $
+ * 
+ * @version $Revision: 1.2 $ $Date: 2002/07/30 22:02:05 $
 **/
 public class StarsSiteInformation implements java.io.Serializable {
 
@@ -55,6 +57,9 @@ public class StarsSiteInformation implements java.io.Serializable {
     //-----------/
 
     /**
+     * Returns the value of field 'feeder'.
+     * 
+     * @return the value of field 'feeder'.
     **/
     public java.lang.String getFeeder()
     {
@@ -62,6 +67,9 @@ public class StarsSiteInformation implements java.io.Serializable {
     } //-- java.lang.String getFeeder() 
 
     /**
+     * Returns the value of field 'pole'.
+     * 
+     * @return the value of field 'pole'.
     **/
     public java.lang.String getPole()
     {
@@ -69,6 +77,9 @@ public class StarsSiteInformation implements java.io.Serializable {
     } //-- java.lang.String getPole() 
 
     /**
+     * Returns the value of field 'serviceVoltage'.
+     * 
+     * @return the value of field 'serviceVoltage'.
     **/
     public java.lang.String getServiceVoltage()
     {
@@ -76,6 +87,9 @@ public class StarsSiteInformation implements java.io.Serializable {
     } //-- java.lang.String getServiceVoltage() 
 
     /**
+     * Returns the value of field 'substationName'.
+     * 
+     * @return the value of field 'substationName'.
     **/
     public java.lang.String getSubstationName()
     {
@@ -83,6 +97,9 @@ public class StarsSiteInformation implements java.io.Serializable {
     } //-- java.lang.String getSubstationName() 
 
     /**
+     * Returns the value of field 'transformerSize'.
+     * 
+     * @return the value of field 'transformerSize'.
     **/
     public java.lang.String getTransformerSize()
     {
@@ -104,6 +121,7 @@ public class StarsSiteInformation implements java.io.Serializable {
 
     /**
      * 
+     * 
      * @param out
     **/
     public void marshal(java.io.Writer out)
@@ -115,18 +133,20 @@ public class StarsSiteInformation implements java.io.Serializable {
 
     /**
      * 
+     * 
      * @param handler
     **/
-    public void marshal(org.xml.sax.DocumentHandler handler)
-        throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
+    public void marshal(org.xml.sax.ContentHandler handler)
+        throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
     {
         
         Marshaller.marshal(this, handler);
-    } //-- void marshal(org.xml.sax.DocumentHandler) 
+    } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
+     * Sets the value of field 'feeder'.
      * 
-     * @param feeder
+     * @param feeder the value of field 'feeder'.
     **/
     public void setFeeder(java.lang.String feeder)
     {
@@ -134,8 +154,9 @@ public class StarsSiteInformation implements java.io.Serializable {
     } //-- void setFeeder(java.lang.String) 
 
     /**
+     * Sets the value of field 'pole'.
      * 
-     * @param pole
+     * @param pole the value of field 'pole'.
     **/
     public void setPole(java.lang.String pole)
     {
@@ -143,8 +164,9 @@ public class StarsSiteInformation implements java.io.Serializable {
     } //-- void setPole(java.lang.String) 
 
     /**
+     * Sets the value of field 'serviceVoltage'.
      * 
-     * @param serviceVoltage
+     * @param serviceVoltage the value of field 'serviceVoltage'.
     **/
     public void setServiceVoltage(java.lang.String serviceVoltage)
     {
@@ -152,8 +174,9 @@ public class StarsSiteInformation implements java.io.Serializable {
     } //-- void setServiceVoltage(java.lang.String) 
 
     /**
+     * Sets the value of field 'substationName'.
      * 
-     * @param substationName
+     * @param substationName the value of field 'substationName'.
     **/
     public void setSubstationName(java.lang.String substationName)
     {
@@ -161,8 +184,9 @@ public class StarsSiteInformation implements java.io.Serializable {
     } //-- void setSubstationName(java.lang.String) 
 
     /**
+     * Sets the value of field 'transformerSize'.
      * 
-     * @param transformerSize
+     * @param transformerSize the value of field 'transformerSize'.
     **/
     public void setTransformerSize(java.lang.String transformerSize)
     {
@@ -170,6 +194,7 @@ public class StarsSiteInformation implements java.io.Serializable {
     } //-- void setTransformerSize(java.lang.String) 
 
     /**
+     * 
      * 
      * @param reader
     **/

@@ -98,6 +98,9 @@ public class ApplianceBase extends DBPersistent {
     }
 
     public void add() throws java.sql.SQLException {
+    	if (getApplianceID() == null)
+    		setApplianceID( getNextApplianceID() );
+    		
         Object[] addValues = {
             getApplianceID(), getAccountID(), getApplianceCategoryID(),
             getLMProgramID(), getNotes()

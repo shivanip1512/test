@@ -47,6 +47,9 @@ public class ServiceCompany extends DBPersistent {
     }
 
     public void add() throws java.sql.SQLException {
+    	if (getCompanyID() == null)
+    		setCompanyID( getNextCompanyID() );
+    		
         Object[] addValues = {
             getCompanyID(), getCompanyName(), getAddressID(), getMainPhoneNumber(),
             getMainFaxNumber(), getPrimaryContactID(), getHIType()

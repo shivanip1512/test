@@ -44,6 +44,9 @@ public class ApplianceCategory extends DBPersistent {
     }
 
     public void add() throws java.sql.SQLException {
+    	if (getApplianceCategoryID() == null)
+    		setApplianceCategoryID( getNextCategoryID() );
+    		
         Object[] addValues = {
             getApplianceCategoryID(), getDescription(), getCategory()
         };

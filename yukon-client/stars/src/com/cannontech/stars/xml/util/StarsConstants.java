@@ -10,6 +10,12 @@ package com.cannontech.stars.xml.util;
  */
 
 public class StarsConstants {
+	
+	public static final int FAILURE_CODE_RUNTIME_ERROR = 1;
+	public static final int FAILURE_CODE_RESPONSE_NULL = 2;
+	public static final int FAILURE_CODE_NODE_NOT_FOUND = 3;
+	public static final int FAILURE_CODE_SESSION_INVALID = 101;
+	public static final int FAILURE_CODE_OPERATION_FAILED = 102;
 
     public static final String STARS_OPERATION = "stars-Operation";
 
@@ -19,13 +25,16 @@ public class StarsConstants {
     public static final String STARS_FAILURE = "stars-Failure";
     public static final String STARS_NEWCUSTOMERACCOUNT = "stars-NewCustomerAccount";
     public static final String STARS_SEARCHCUSTOMERACCOUNT = "stars-SearchCustomerAccount";
+    public static final String STARS_SEARCHCUSTOMERACCOUNTRESPONSE = "stars-SearchCustomerAccounteResponse";
     public static final String STARS_UPDATECUSTOMERACCOUNT = "stars-UpdateCustomerAccount";
-    public static final String STARS_CUSTOMERACCOUNTINFORMATION = "stars-CustomerAccountInformation";
     public static final String STARS_UPDATELMPROGRAMS = "stars-UpdateLMPrograms";
 
     public static final String STARS_CUSTOMERACCOUNT = "stars-CustomerAccount";
+    public static final String STARS_SITEINFORMATION = "stars-SiteInformation";
     public static final String STARS_LMPROGRAMS = "stars-LMPrograms";
     public static final String STARS_LMPROGRAM = "stars-LMProgram";
-    public static final String STARS_ACCOUNTSITE = "stars-AccountSite";
-    public static final String STARS_SITEINFORMATION = "stars-SiteInformation";
+    public static final String STARS_APPLIANCES = "stars-Appliances";
+    public static final String STARS_APPLIANCE = "stars-Appliance";
+    public static final String STARS_INVENTORIES = "stars-Inventories";
+    public static final String STARS_LMHARDWARE = "stars-LMHardware";
 }

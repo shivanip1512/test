@@ -1,8 +1,8 @@
 /*
  * This class was automatically generated with 
- * <a href="http://castor.exolab.org">Castor 0.9.3</a>, using an
+ * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsSearchCustomerAccount.java,v 1.1 2002/07/16 19:50:08 Yao Exp $
+ * $Id: StarsSearchCustomerAccount.java,v 1.2 2002/07/30 22:01:53 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -12,17 +12,19 @@ package com.cannontech.stars.xml.serialize;
 //---------------------------------/
 
 import com.cannontech.stars.xml.serialize.types.StarsSearchByType;
+import java.io.IOException;
 import java.io.Reader;
 import java.io.Serializable;
 import java.io.Writer;
 import org.exolab.castor.xml.*;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.xml.sax.DocumentHandler;
+import org.xml.sax.ContentHandler;
 
 /**
  * Search for existing customer account
- * @version $Revision: 1.1 $ $Date: 2002/07/16 19:50:08 $
+ * 
+ * @version $Revision: 1.2 $ $Date: 2002/07/30 22:01:53 $
 **/
 public class StarsSearchCustomerAccount implements java.io.Serializable {
 
@@ -50,6 +52,9 @@ public class StarsSearchCustomerAccount implements java.io.Serializable {
     //-----------/
 
     /**
+     * Returns the value of field 'searchBy'.
+     * 
+     * @return the value of field 'searchBy'.
     **/
     public com.cannontech.stars.xml.serialize.types.StarsSearchByType getSearchBy()
     {
@@ -57,6 +62,9 @@ public class StarsSearchCustomerAccount implements java.io.Serializable {
     } //-- com.cannontech.stars.xml.serialize.types.StarsSearchByType getSearchBy() 
 
     /**
+     * Returns the value of field 'searchValue'.
+     * 
+     * @return the value of field 'searchValue'.
     **/
     public java.lang.String getSearchValue()
     {
@@ -78,6 +86,7 @@ public class StarsSearchCustomerAccount implements java.io.Serializable {
 
     /**
      * 
+     * 
      * @param out
     **/
     public void marshal(java.io.Writer out)
@@ -89,18 +98,20 @@ public class StarsSearchCustomerAccount implements java.io.Serializable {
 
     /**
      * 
+     * 
      * @param handler
     **/
-    public void marshal(org.xml.sax.DocumentHandler handler)
-        throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
+    public void marshal(org.xml.sax.ContentHandler handler)
+        throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
     {
         
         Marshaller.marshal(this, handler);
-    } //-- void marshal(org.xml.sax.DocumentHandler) 
+    } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
+     * Sets the value of field 'searchBy'.
      * 
-     * @param searchBy
+     * @param searchBy the value of field 'searchBy'.
     **/
     public void setSearchBy(com.cannontech.stars.xml.serialize.types.StarsSearchByType searchBy)
     {
@@ -108,8 +119,9 @@ public class StarsSearchCustomerAccount implements java.io.Serializable {
     } //-- void setSearchBy(com.cannontech.stars.xml.serialize.types.StarsSearchByType) 
 
     /**
+     * Sets the value of field 'searchValue'.
      * 
-     * @param searchValue
+     * @param searchValue the value of field 'searchValue'.
     **/
     public void setSearchValue(java.lang.String searchValue)
     {
@@ -117,6 +129,7 @@ public class StarsSearchCustomerAccount implements java.io.Serializable {
     } //-- void setSearchValue(java.lang.String) 
 
     /**
+     * 
      * 
      * @param reader
     **/

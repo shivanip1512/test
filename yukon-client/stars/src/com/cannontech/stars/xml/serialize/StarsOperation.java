@@ -1,8 +1,8 @@
 /*
  * This class was automatically generated with 
- * <a href="http://castor.exolab.org">Castor 0.9.3</a>, using an
+ * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsOperation.java,v 1.1 2002/07/16 19:50:08 Yao Exp $
+ * $Id: StarsOperation.java,v 1.2 2002/07/30 22:02:11 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -11,17 +11,19 @@ package com.cannontech.stars.xml.serialize;
  //- Imported classes and packages -/
 //---------------------------------/
 
+import java.io.IOException;
 import java.io.Reader;
 import java.io.Serializable;
 import java.io.Writer;
 import org.exolab.castor.xml.*;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.xml.sax.DocumentHandler;
+import org.xml.sax.ContentHandler;
 
 /**
  * Root element
- * @version $Revision: 1.1 $ $Date: 2002/07/16 19:50:08 $
+ * 
+ * @version $Revision: 1.2 $ $Date: 2002/07/30 22:02:11 $
 **/
 public class StarsOperation implements java.io.Serializable {
 
@@ -35,20 +37,11 @@ public class StarsOperation implements java.io.Serializable {
     **/
     private StarsLogin _starsLogin;
 
-    /**
-     * Indicate that the requested operation is successful
-    **/
+    private StarsLogoff _starsLogoff;
+
     private StarsSuccess _starsSuccess;
 
-    /**
-     * Indicate that the requested operation is failed
-    **/
     private StarsFailure _starsFailure;
-
-    /**
-     * Logoff from the STARS server
-    **/
-    private java.lang.String _starsLogoff;
 
     /**
      * Create new customer account
@@ -60,10 +53,7 @@ public class StarsOperation implements java.io.Serializable {
     **/
     private StarsSearchCustomerAccount _starsSearchCustomerAccount;
 
-    /**
-     * Return information about a customer account
-    **/
-    private StarsCustomerAccountInformation _starsCustomerAccountInformation;
+    private StarsSearchCustomerAccountResponse _starsSearchCustomerAccountResponse;
 
     /**
      * Update a customer account
@@ -90,7 +80,7 @@ public class StarsOperation implements java.io.Serializable {
     **/
     private StarsGetLMControlHistory _starsGetLMControlHistory;
 
-    private StarsLMControlHistory _starsLMControlHistory;
+    private StarsGetLMControlHistoryResponse _starsGetLMControlHistoryResponse;
 
 
       //----------------/
@@ -107,13 +97,11 @@ public class StarsOperation implements java.io.Serializable {
     //-----------/
 
     /**
-    **/
-    public StarsCustomerAccountInformation getStarsCustomerAccountInformation()
-    {
-        return this._starsCustomerAccountInformation;
-    } //-- StarsCustomerAccountInformation getStarsCustomerAccountInformation() 
-
-    /**
+     * Returns the value of field 'starsDisableService'. The field
+     * 'starsDisableService' has the following description: Disable
+     * programs of a customer account
+     * 
+     * @return the value of field 'starsDisableService'.
     **/
     public StarsDisableService getStarsDisableService()
     {
@@ -121,6 +109,11 @@ public class StarsOperation implements java.io.Serializable {
     } //-- StarsDisableService getStarsDisableService() 
 
     /**
+     * Returns the value of field 'starsEnableService'. The field
+     * 'starsEnableService' has the following description: Enable
+     * programs of a customer account
+     * 
+     * @return the value of field 'starsEnableService'.
     **/
     public StarsEnableService getStarsEnableService()
     {
@@ -128,6 +121,9 @@ public class StarsOperation implements java.io.Serializable {
     } //-- StarsEnableService getStarsEnableService() 
 
     /**
+     * Returns the value of field 'starsFailure'.
+     * 
+     * @return the value of field 'starsFailure'.
     **/
     public StarsFailure getStarsFailure()
     {
@@ -135,6 +131,11 @@ public class StarsOperation implements java.io.Serializable {
     } //-- StarsFailure getStarsFailure() 
 
     /**
+     * Returns the value of field 'starsGetLMControlHistory'. The
+     * field 'starsGetLMControlHistory' has the following
+     * description: Get LM control history of a LM program
+     * 
+     * @return the value of field 'starsGetLMControlHistory'.
     **/
     public StarsGetLMControlHistory getStarsGetLMControlHistory()
     {
@@ -142,13 +143,22 @@ public class StarsOperation implements java.io.Serializable {
     } //-- StarsGetLMControlHistory getStarsGetLMControlHistory() 
 
     /**
+     * Returns the value of field
+     * 'starsGetLMControlHistoryResponse'.
+     * 
+     * @return the value of field 'starsGetLMControlHistoryResponse'
     **/
-    public StarsLMControlHistory getStarsLMControlHistory()
+    public StarsGetLMControlHistoryResponse getStarsGetLMControlHistoryResponse()
     {
-        return this._starsLMControlHistory;
-    } //-- StarsLMControlHistory getStarsLMControlHistory() 
+        return this._starsGetLMControlHistoryResponse;
+    } //-- StarsGetLMControlHistoryResponse getStarsGetLMControlHistoryResponse() 
 
     /**
+     * Returns the value of field 'starsLogin'. The field
+     * 'starsLogin' has the following description: Login to the
+     * STARS server
+     * 
+     * @return the value of field 'starsLogin'.
     **/
     public StarsLogin getStarsLogin()
     {
@@ -156,13 +166,21 @@ public class StarsOperation implements java.io.Serializable {
     } //-- StarsLogin getStarsLogin() 
 
     /**
+     * Returns the value of field 'starsLogoff'.
+     * 
+     * @return the value of field 'starsLogoff'.
     **/
-    public java.lang.String getStarsLogoff()
+    public StarsLogoff getStarsLogoff()
     {
         return this._starsLogoff;
-    } //-- java.lang.String getStarsLogoff() 
+    } //-- StarsLogoff getStarsLogoff() 
 
     /**
+     * Returns the value of field 'starsNewCustomerAccount'. The
+     * field 'starsNewCustomerAccount' has the following
+     * description: Create new customer account
+     * 
+     * @return the value of field 'starsNewCustomerAccount'.
     **/
     public StarsNewCustomerAccount getStarsNewCustomerAccount()
     {
@@ -170,6 +188,11 @@ public class StarsOperation implements java.io.Serializable {
     } //-- StarsNewCustomerAccount getStarsNewCustomerAccount() 
 
     /**
+     * Returns the value of field 'starsSearchCustomerAccount'. The
+     * field 'starsSearchCustomerAccount' has the following
+     * description: Search for existing customer account
+     * 
+     * @return the value of field 'starsSearchCustomerAccount'.
     **/
     public StarsSearchCustomerAccount getStarsSearchCustomerAccount()
     {
@@ -177,6 +200,21 @@ public class StarsOperation implements java.io.Serializable {
     } //-- StarsSearchCustomerAccount getStarsSearchCustomerAccount() 
 
     /**
+     * Returns the value of field
+     * 'starsSearchCustomerAccountResponse'.
+     * 
+     * @return the value of field
+     * 'starsSearchCustomerAccountResponse'.
+    **/
+    public StarsSearchCustomerAccountResponse getStarsSearchCustomerAccountResponse()
+    {
+        return this._starsSearchCustomerAccountResponse;
+    } //-- StarsSearchCustomerAccountResponse getStarsSearchCustomerAccountResponse() 
+
+    /**
+     * Returns the value of field 'starsSuccess'.
+     * 
+     * @return the value of field 'starsSuccess'.
     **/
     public StarsSuccess getStarsSuccess()
     {
@@ -184,6 +222,11 @@ public class StarsOperation implements java.io.Serializable {
     } //-- StarsSuccess getStarsSuccess() 
 
     /**
+     * Returns the value of field 'starsUpdateCustomerAccount'. The
+     * field 'starsUpdateCustomerAccount' has the following
+     * description: Update a customer account
+     * 
+     * @return the value of field 'starsUpdateCustomerAccount'.
     **/
     public StarsUpdateCustomerAccount getStarsUpdateCustomerAccount()
     {
@@ -191,6 +234,11 @@ public class StarsOperation implements java.io.Serializable {
     } //-- StarsUpdateCustomerAccount getStarsUpdateCustomerAccount() 
 
     /**
+     * Returns the value of field 'starsUpdateLMPrograms'. The
+     * field 'starsUpdateLMPrograms' has the following description:
+     * Update the LM programs for a customer account
+     * 
+     * @return the value of field 'starsUpdateLMPrograms'.
     **/
     public StarsUpdateLMPrograms getStarsUpdateLMPrograms()
     {
@@ -212,6 +260,7 @@ public class StarsOperation implements java.io.Serializable {
 
     /**
      * 
+     * 
      * @param out
     **/
     public void marshal(java.io.Writer out)
@@ -223,27 +272,23 @@ public class StarsOperation implements java.io.Serializable {
 
     /**
      * 
+     * 
      * @param handler
     **/
-    public void marshal(org.xml.sax.DocumentHandler handler)
-        throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
+    public void marshal(org.xml.sax.ContentHandler handler)
+        throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
     {
         
         Marshaller.marshal(this, handler);
-    } //-- void marshal(org.xml.sax.DocumentHandler) 
+    } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
+     * Sets the value of field 'starsDisableService'. The field
+     * 'starsDisableService' has the following description: Disable
+     * programs of a customer account
      * 
-     * @param starsCustomerAccountInformation
-    **/
-    public void setStarsCustomerAccountInformation(StarsCustomerAccountInformation starsCustomerAccountInformation)
-    {
-        this._starsCustomerAccountInformation = starsCustomerAccountInformation;
-    } //-- void setStarsCustomerAccountInformation(StarsCustomerAccountInformation) 
-
-    /**
-     * 
-     * @param starsDisableService
+     * @param starsDisableService the value of field
+     * 'starsDisableService'.
     **/
     public void setStarsDisableService(StarsDisableService starsDisableService)
     {
@@ -251,8 +296,12 @@ public class StarsOperation implements java.io.Serializable {
     } //-- void setStarsDisableService(StarsDisableService) 
 
     /**
+     * Sets the value of field 'starsEnableService'. The field
+     * 'starsEnableService' has the following description: Enable
+     * programs of a customer account
      * 
-     * @param starsEnableService
+     * @param starsEnableService the value of field
+     * 'starsEnableService'.
     **/
     public void setStarsEnableService(StarsEnableService starsEnableService)
     {
@@ -260,8 +309,9 @@ public class StarsOperation implements java.io.Serializable {
     } //-- void setStarsEnableService(StarsEnableService) 
 
     /**
+     * Sets the value of field 'starsFailure'.
      * 
-     * @param starsFailure
+     * @param starsFailure the value of field 'starsFailure'.
     **/
     public void setStarsFailure(StarsFailure starsFailure)
     {
@@ -269,8 +319,12 @@ public class StarsOperation implements java.io.Serializable {
     } //-- void setStarsFailure(StarsFailure) 
 
     /**
+     * Sets the value of field 'starsGetLMControlHistory'. The
+     * field 'starsGetLMControlHistory' has the following
+     * description: Get LM control history of a LM program
      * 
-     * @param starsGetLMControlHistory
+     * @param starsGetLMControlHistory the value of field
+     * 'starsGetLMControlHistory'.
     **/
     public void setStarsGetLMControlHistory(StarsGetLMControlHistory starsGetLMControlHistory)
     {
@@ -278,17 +332,21 @@ public class StarsOperation implements java.io.Serializable {
     } //-- void setStarsGetLMControlHistory(StarsGetLMControlHistory) 
 
     /**
+     * Sets the value of field 'starsGetLMControlHistoryResponse'.
      * 
-     * @param starsLMControlHistory
+     * @param starsGetLMControlHistoryResponse the value of field
+     * 'starsGetLMControlHistoryResponse'.
     **/
-    public void setStarsLMControlHistory(StarsLMControlHistory starsLMControlHistory)
+    public void setStarsGetLMControlHistoryResponse(StarsGetLMControlHistoryResponse starsGetLMControlHistoryResponse)
     {
-        this._starsLMControlHistory = starsLMControlHistory;
-    } //-- void setStarsLMControlHistory(StarsLMControlHistory) 
+        this._starsGetLMControlHistoryResponse = starsGetLMControlHistoryResponse;
+    } //-- void setStarsGetLMControlHistoryResponse(StarsGetLMControlHistoryResponse) 
 
     /**
+     * Sets the value of field 'starsLogin'. The field 'starsLogin'
+     * has the following description: Login to the STARS server
      * 
-     * @param starsLogin
+     * @param starsLogin the value of field 'starsLogin'.
     **/
     public void setStarsLogin(StarsLogin starsLogin)
     {
@@ -296,17 +354,22 @@ public class StarsOperation implements java.io.Serializable {
     } //-- void setStarsLogin(StarsLogin) 
 
     /**
+     * Sets the value of field 'starsLogoff'.
      * 
-     * @param starsLogoff
+     * @param starsLogoff the value of field 'starsLogoff'.
     **/
-    public void setStarsLogoff(java.lang.String starsLogoff)
+    public void setStarsLogoff(StarsLogoff starsLogoff)
     {
         this._starsLogoff = starsLogoff;
-    } //-- void setStarsLogoff(java.lang.String) 
+    } //-- void setStarsLogoff(StarsLogoff) 
 
     /**
+     * Sets the value of field 'starsNewCustomerAccount'. The field
+     * 'starsNewCustomerAccount' has the following description:
+     * Create new customer account
      * 
-     * @param starsNewCustomerAccount
+     * @param starsNewCustomerAccount the value of field
+     * 'starsNewCustomerAccount'.
     **/
     public void setStarsNewCustomerAccount(StarsNewCustomerAccount starsNewCustomerAccount)
     {
@@ -314,8 +377,12 @@ public class StarsOperation implements java.io.Serializable {
     } //-- void setStarsNewCustomerAccount(StarsNewCustomerAccount) 
 
     /**
+     * Sets the value of field 'starsSearchCustomerAccount'. The
+     * field 'starsSearchCustomerAccount' has the following
+     * description: Search for existing customer account
      * 
-     * @param starsSearchCustomerAccount
+     * @param starsSearchCustomerAccount the value of field
+     * 'starsSearchCustomerAccount'.
     **/
     public void setStarsSearchCustomerAccount(StarsSearchCustomerAccount starsSearchCustomerAccount)
     {
@@ -323,8 +390,21 @@ public class StarsOperation implements java.io.Serializable {
     } //-- void setStarsSearchCustomerAccount(StarsSearchCustomerAccount) 
 
     /**
+     * Sets the value of field
+     * 'starsSearchCustomerAccountResponse'.
      * 
-     * @param starsSuccess
+     * @param starsSearchCustomerAccountResponse the value of field
+     * 'starsSearchCustomerAccountResponse'.
+    **/
+    public void setStarsSearchCustomerAccountResponse(StarsSearchCustomerAccountResponse starsSearchCustomerAccountResponse)
+    {
+        this._starsSearchCustomerAccountResponse = starsSearchCustomerAccountResponse;
+    } //-- void setStarsSearchCustomerAccountResponse(StarsSearchCustomerAccountResponse) 
+
+    /**
+     * Sets the value of field 'starsSuccess'.
+     * 
+     * @param starsSuccess the value of field 'starsSuccess'.
     **/
     public void setStarsSuccess(StarsSuccess starsSuccess)
     {
@@ -332,8 +412,12 @@ public class StarsOperation implements java.io.Serializable {
     } //-- void setStarsSuccess(StarsSuccess) 
 
     /**
+     * Sets the value of field 'starsUpdateCustomerAccount'. The
+     * field 'starsUpdateCustomerAccount' has the following
+     * description: Update a customer account
      * 
-     * @param starsUpdateCustomerAccount
+     * @param starsUpdateCustomerAccount the value of field
+     * 'starsUpdateCustomerAccount'.
     **/
     public void setStarsUpdateCustomerAccount(StarsUpdateCustomerAccount starsUpdateCustomerAccount)
     {
@@ -341,8 +425,12 @@ public class StarsOperation implements java.io.Serializable {
     } //-- void setStarsUpdateCustomerAccount(StarsUpdateCustomerAccount) 
 
     /**
+     * Sets the value of field 'starsUpdateLMPrograms'. The field
+     * 'starsUpdateLMPrograms' has the following description:
+     * Update the LM programs for a customer account
      * 
-     * @param starsUpdateLMPrograms
+     * @param starsUpdateLMPrograms the value of field
+     * 'starsUpdateLMPrograms'.
     **/
     public void setStarsUpdateLMPrograms(StarsUpdateLMPrograms starsUpdateLMPrograms)
     {
@@ -350,6 +438,7 @@ public class StarsOperation implements java.io.Serializable {
     } //-- void setStarsUpdateLMPrograms(StarsUpdateLMPrograms) 
 
     /**
+     * 
      * 
      * @param reader
     **/

@@ -191,6 +191,9 @@ public class CustomerAccount extends DBPersistent {
     }
 
     public void add() throws java.sql.SQLException {
+    	if (getAccountID() == null)
+    		setAccountID( getNextAccountID() );
+    		
         Object[] addValues = {
             getAccountID(), getAccountSiteID(), getAccountNumber(),
             getCustomerID(), getBillingAddressID(), getAccountNotes()

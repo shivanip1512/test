@@ -42,6 +42,9 @@ public class Substation extends DBPersistent {
     }
 
     public void add() throws java.sql.SQLException {
+    	if (getSubstationID() == null)
+    		setSubstationID( getNextSubstationID() );
+    		
         Object[] addValues = {
             getSubstationID(), getSubstationName(), getRouteID()
         };

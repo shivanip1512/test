@@ -1,6 +1,6 @@
 /*
  * This class was automatically generated with 
- * <a href="http://castor.exolab.org">Castor 0.9.3</a>, using an
+ * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
  * $Id$
  */
@@ -23,6 +23,7 @@ import org.exolab.castor.xml.util.XMLFieldDescriptorImpl;
 import org.exolab.castor.xml.validators.*;
 
 /**
+ * 
  * 
  * @version $Revision$ $Date$
 **/
@@ -57,7 +58,7 @@ public class StarsSubstationDescriptor extends org.exolab.castor.xml.util.XMLCla
         //-- _substationID
         desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_substationID", "substationID", NodeType.Attribute);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsSubstation target = (StarsSubstation) object;
@@ -65,7 +66,7 @@ public class StarsSubstationDescriptor extends org.exolab.castor.xml.util.XMLCla
                     return null;
                 return new Integer(target.getSubstationID());
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -81,7 +82,7 @@ public class StarsSubstationDescriptor extends org.exolab.castor.xml.util.XMLCla
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return null;
             }
         } );
@@ -100,13 +101,13 @@ public class StarsSubstationDescriptor extends org.exolab.castor.xml.util.XMLCla
         desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_substationName", "substationName", NodeType.Attribute);
         desc.setImmutable(true);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsSubstation target = (StarsSubstation) object;
                 return target.getSubstationName();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -117,7 +118,7 @@ public class StarsSubstationDescriptor extends org.exolab.castor.xml.util.XMLCla
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return null;
             }
         } );

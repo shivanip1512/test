@@ -1,8 +1,8 @@
 /*
  * This class was automatically generated with 
- * <a href="http://castor.exolab.org">Castor 0.9.3</a>, using an
+ * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsOperationDescriptor.java,v 1.1 2002/07/16 19:50:08 Yao Exp $
+ * $Id: StarsOperationDescriptor.java,v 1.2 2002/07/30 22:01:57 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -24,7 +24,8 @@ import org.exolab.castor.xml.validators.*;
 
 /**
  * 
- * @version $Revision: 1.1 $ $Date: 2002/07/16 19:50:08 $
+ * 
+ * @version $Revision: 1.2 $ $Date: 2002/07/30 22:01:57 $
 **/
 public class StarsOperationDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
@@ -62,13 +63,13 @@ public class StarsOperationDescriptor extends org.exolab.castor.xml.util.XMLClas
         //-- _starsLogin
         desc = new XMLFieldDescriptorImpl(StarsLogin.class, "_starsLogin", "stars-Login", NodeType.Element);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsOperation target = (StarsOperation) object;
                 return target.getStarsLogin();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -79,7 +80,7 @@ public class StarsOperationDescriptor extends org.exolab.castor.xml.util.XMLClas
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return new StarsLogin();
             }
         } );
@@ -93,16 +94,50 @@ public class StarsOperationDescriptor extends org.exolab.castor.xml.util.XMLClas
         fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
+        //-- _starsLogoff
+        desc = new XMLFieldDescriptorImpl(StarsLogoff.class, "_starsLogoff", "stars-Logoff", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsOperation target = (StarsOperation) object;
+                return target.getStarsLogoff();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsOperation target = (StarsOperation) object;
+                    target.setStarsLogoff( (StarsLogoff) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new StarsLogoff();
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setRequired(true);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _starsLogoff
+        fieldValidator = new FieldValidator();
+        fieldValidator.setMinOccurs(1);
+        desc.setValidator(fieldValidator);
+        
         //-- _starsSuccess
         desc = new XMLFieldDescriptorImpl(StarsSuccess.class, "_starsSuccess", "stars-Success", NodeType.Element);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsOperation target = (StarsOperation) object;
                 return target.getStarsSuccess();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -113,7 +148,7 @@ public class StarsOperationDescriptor extends org.exolab.castor.xml.util.XMLClas
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return new StarsSuccess();
             }
         } );
@@ -130,13 +165,13 @@ public class StarsOperationDescriptor extends org.exolab.castor.xml.util.XMLClas
         //-- _starsFailure
         desc = new XMLFieldDescriptorImpl(StarsFailure.class, "_starsFailure", "stars-Failure", NodeType.Element);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsOperation target = (StarsOperation) object;
                 return target.getStarsFailure();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -147,7 +182,7 @@ public class StarsOperationDescriptor extends org.exolab.castor.xml.util.XMLClas
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return new StarsFailure();
             }
         } );
@@ -161,56 +196,16 @@ public class StarsOperationDescriptor extends org.exolab.castor.xml.util.XMLClas
         fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
-        //-- _starsLogoff
-        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_starsLogoff", "stars-Logoff", NodeType.Element);
-        desc.setImmutable(true);
-        handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
-                throws IllegalStateException
-            {
-                StarsOperation target = (StarsOperation) object;
-                return target.getStarsLogoff();
-            }
-            public void setValue( Object object, Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    StarsOperation target = (StarsOperation) object;
-                    target.setStarsLogoff( (java.lang.String) value);
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public Object newInstance( Object parent ) {
-                return null;
-            }
-        } );
-        desc.setHandler(handler);
-        desc.setRequired(true);
-        desc.setMultivalued(false);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _starsLogoff
-        fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
-        { //-- local scope
-            StringValidator sv = new StringValidator();
-            sv.setWhiteSpace("preserve");
-            fieldValidator.setValidator(sv);
-        }
-        desc.setValidator(fieldValidator);
-        
         //-- _starsNewCustomerAccount
         desc = new XMLFieldDescriptorImpl(StarsNewCustomerAccount.class, "_starsNewCustomerAccount", "stars-NewCustomerAccount", NodeType.Element);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsOperation target = (StarsOperation) object;
                 return target.getStarsNewCustomerAccount();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -221,7 +216,7 @@ public class StarsOperationDescriptor extends org.exolab.castor.xml.util.XMLClas
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return new StarsNewCustomerAccount();
             }
         } );
@@ -238,13 +233,13 @@ public class StarsOperationDescriptor extends org.exolab.castor.xml.util.XMLClas
         //-- _starsSearchCustomerAccount
         desc = new XMLFieldDescriptorImpl(StarsSearchCustomerAccount.class, "_starsSearchCustomerAccount", "stars-SearchCustomerAccount", NodeType.Element);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsOperation target = (StarsOperation) object;
                 return target.getStarsSearchCustomerAccount();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -255,7 +250,7 @@ public class StarsOperationDescriptor extends org.exolab.castor.xml.util.XMLClas
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return new StarsSearchCustomerAccount();
             }
         } );
@@ -269,28 +264,28 @@ public class StarsOperationDescriptor extends org.exolab.castor.xml.util.XMLClas
         fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
-        //-- _starsCustomerAccountInformation
-        desc = new XMLFieldDescriptorImpl(StarsCustomerAccountInformation.class, "_starsCustomerAccountInformation", "stars-CustomerAccountInformation", NodeType.Element);
+        //-- _starsSearchCustomerAccountResponse
+        desc = new XMLFieldDescriptorImpl(StarsSearchCustomerAccountResponse.class, "_starsSearchCustomerAccountResponse", "stars-SearchCustomerAccountResponse", NodeType.Element);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsOperation target = (StarsOperation) object;
-                return target.getStarsCustomerAccountInformation();
+                return target.getStarsSearchCustomerAccountResponse();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
                     StarsOperation target = (StarsOperation) object;
-                    target.setStarsCustomerAccountInformation( (StarsCustomerAccountInformation) value);
+                    target.setStarsSearchCustomerAccountResponse( (StarsSearchCustomerAccountResponse) value);
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
-                return new StarsCustomerAccountInformation();
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new StarsSearchCustomerAccountResponse();
             }
         } );
         desc.setHandler(handler);
@@ -298,7 +293,7 @@ public class StarsOperationDescriptor extends org.exolab.castor.xml.util.XMLClas
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _starsCustomerAccountInformation
+        //-- validation code for: _starsSearchCustomerAccountResponse
         fieldValidator = new FieldValidator();
         fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
@@ -306,13 +301,13 @@ public class StarsOperationDescriptor extends org.exolab.castor.xml.util.XMLClas
         //-- _starsUpdateCustomerAccount
         desc = new XMLFieldDescriptorImpl(StarsUpdateCustomerAccount.class, "_starsUpdateCustomerAccount", "stars-UpdateCustomerAccount", NodeType.Element);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsOperation target = (StarsOperation) object;
                 return target.getStarsUpdateCustomerAccount();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -323,7 +318,7 @@ public class StarsOperationDescriptor extends org.exolab.castor.xml.util.XMLClas
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return new StarsUpdateCustomerAccount();
             }
         } );
@@ -340,13 +335,13 @@ public class StarsOperationDescriptor extends org.exolab.castor.xml.util.XMLClas
         //-- _starsUpdateLMPrograms
         desc = new XMLFieldDescriptorImpl(StarsUpdateLMPrograms.class, "_starsUpdateLMPrograms", "stars-UpdateLMPrograms", NodeType.Element);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsOperation target = (StarsOperation) object;
                 return target.getStarsUpdateLMPrograms();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -357,7 +352,7 @@ public class StarsOperationDescriptor extends org.exolab.castor.xml.util.XMLClas
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return new StarsUpdateLMPrograms();
             }
         } );
@@ -374,13 +369,13 @@ public class StarsOperationDescriptor extends org.exolab.castor.xml.util.XMLClas
         //-- _starsEnableService
         desc = new XMLFieldDescriptorImpl(StarsEnableService.class, "_starsEnableService", "stars-EnableService", NodeType.Element);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsOperation target = (StarsOperation) object;
                 return target.getStarsEnableService();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -391,7 +386,7 @@ public class StarsOperationDescriptor extends org.exolab.castor.xml.util.XMLClas
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return new StarsEnableService();
             }
         } );
@@ -408,13 +403,13 @@ public class StarsOperationDescriptor extends org.exolab.castor.xml.util.XMLClas
         //-- _starsDisableService
         desc = new XMLFieldDescriptorImpl(StarsDisableService.class, "_starsDisableService", "stars-DisableService", NodeType.Element);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsOperation target = (StarsOperation) object;
                 return target.getStarsDisableService();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -425,7 +420,7 @@ public class StarsOperationDescriptor extends org.exolab.castor.xml.util.XMLClas
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return new StarsDisableService();
             }
         } );
@@ -442,13 +437,13 @@ public class StarsOperationDescriptor extends org.exolab.castor.xml.util.XMLClas
         //-- _starsGetLMControlHistory
         desc = new XMLFieldDescriptorImpl(StarsGetLMControlHistory.class, "_starsGetLMControlHistory", "stars-GetLMControlHistory", NodeType.Element);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsOperation target = (StarsOperation) object;
                 return target.getStarsGetLMControlHistory();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
@@ -459,7 +454,7 @@ public class StarsOperationDescriptor extends org.exolab.castor.xml.util.XMLClas
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
+            public java.lang.Object newInstance( java.lang.Object parent ) {
                 return new StarsGetLMControlHistory();
             }
         } );
@@ -473,28 +468,28 @@ public class StarsOperationDescriptor extends org.exolab.castor.xml.util.XMLClas
         fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
-        //-- _starsLMControlHistory
-        desc = new XMLFieldDescriptorImpl(StarsLMControlHistory.class, "_starsLMControlHistory", "stars-LMControlHistory", NodeType.Element);
+        //-- _starsGetLMControlHistoryResponse
+        desc = new XMLFieldDescriptorImpl(StarsGetLMControlHistoryResponse.class, "_starsGetLMControlHistoryResponse", "stars-GetLMControlHistoryResponse", NodeType.Element);
         handler = (new XMLFieldHandler() {
-            public Object getValue( Object object ) 
+            public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsOperation target = (StarsOperation) object;
-                return target.getStarsLMControlHistory();
+                return target.getStarsGetLMControlHistoryResponse();
             }
-            public void setValue( Object object, Object value) 
+            public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
                     StarsOperation target = (StarsOperation) object;
-                    target.setStarsLMControlHistory( (StarsLMControlHistory) value);
+                    target.setStarsGetLMControlHistoryResponse( (StarsGetLMControlHistoryResponse) value);
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public Object newInstance( Object parent ) {
-                return new StarsLMControlHistory();
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new StarsGetLMControlHistoryResponse();
             }
         } );
         desc.setHandler(handler);
@@ -502,7 +497,7 @@ public class StarsOperationDescriptor extends org.exolab.castor.xml.util.XMLClas
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _starsLMControlHistory
+        //-- validation code for: _starsGetLMControlHistoryResponse
         fieldValidator = new FieldValidator();
         fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);

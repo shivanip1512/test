@@ -42,6 +42,9 @@ public class CustomerAction extends DBPersistent {
     }
 
     public void add() throws java.sql.SQLException {
+    	if (getActionID() == null)
+    		setActionID( getNextActionID() );
+    		
         Object[] addValues = {
             getActionID(), getAction(), getValidFor()
         };

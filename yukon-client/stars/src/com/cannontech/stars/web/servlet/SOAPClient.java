@@ -28,25 +28,10 @@ public class SOAPClient extends HttpServlet {
     private static final String loginURL = "/login.jsp";
     private static final String homeURL = "/OperatorDemos/Operations.jsp";
 
-    SOAPMessenger soapMsgr = new SOAPMessenger( SOAP_SERVER_URL );
+    private SOAPMessenger soapMsgr = new SOAPMessenger( SOAP_SERVER_URL );
 
     public SOAPClient() {
         super();
-    }
-
-    private void log(String str, StarsOperation operation) {
-        try {
-            Log logger = XMLUtil.getLogger( SOAPClient.class.getName() );
-
-            StringWriter sw = new StringWriter();
-            operation.marshal( sw );
-            String operStr = XMLUtil.removeXMLDecl( sw.toString() );
-
-            logger.info("SOAPClient: " + str + operStr);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     private StarsOperation sendRecvOperation(StarsOperation operation) {
@@ -76,14 +61,19 @@ public class SOAPClient extends HttpServlet {
         HttpSession session = req.getSession(false);
         if (session == null) resp.sendRedirect( loginURL );
 
-        StarsOperation reqOper = null;
-        StarsOperation respOper = null;
+        SOAPMessage reqMsg = null;
+        SOAPMessage respMsg = null;
 
-        String nextURL = homeURL;       // The next URL we're going to
-        String destURL = null;          // URL we should go to if action succeeded
+        String nextURL = homeURL;       // The next URL we're going to, default value is the default error URL
+        String destURL = null;			// URL we should go to if action succeed
+        String errorURL = null;		// URL we should go to if action failed
         ActionBase clientAction = null;
 
-        if (action.equalsIgnoreCase("SearchCustAccount")) {
+		if (action.equalsIgnoreCase("NewCustAccount")) {
+			clientAction = new NewCustAccountAction();
+			destURL = "/OperatorDemos/Consumer/Update.jsp";
+		}
+        else if (action.equalsIgnoreCase("SearchCustAccount")) {
             clientAction = new SearchCustAccountAction();
             destURL = "/OperatorDemos/Consumer/Update.jsp";
         }
@@ -94,7 +84,7 @@ public class SOAPClient extends HttpServlet {
         else if (action.equalsIgnoreCase("DisableService") || action.equalsIgnoreCase("EnableService")) {
             clientAction = new YukonSwitchCommandAction();
             destURL = "/OperatorDemos/Consumer/Programs.jsp";
-            nextURL = "/OperatorDemos/Consumer/Programs.jsp";
+            errorURL = "/OperatorDemos/Consumer/Programs.jsp";
 
             PILConnectionServlet connContainer = (PILConnectionServlet)
                     getServletContext().getAttribute(PILConnectionServlet.SERVLET_CONTEXT_ID);
@@ -121,39 +111,44 @@ public class SOAPClient extends HttpServlet {
         else if (action.equalsIgnoreCase("ConsumerSwitchLogin")) {
             clientAction = new SearchCustAccountAction();
             destURL = "/UserDemos/ConsumerSwitch/switch/ProgramHist.jsp";
-            nextURL = "/UserDemos/ConsumerSwitch/login.jsp";
+            errorURL = "/UserDemos/ConsumerSwitch/login.jsp";
 
             session.setAttribute("ENERGY_COMPANY_ID", new Integer(1));
         }
         else if (action.equalsIgnoreCase("ConsumerStatLogin")) {
             clientAction = new SearchCustAccountAction();
             destURL = "/UserDemos/ConsumerStat/stat/ProgramHist.jsp";
-            nextURL = "/UserDemos/ConsumerStat/login.jsp";
+            errorURL = "/UserDemos/ConsumerStat/login.jsp";
 
             session.setAttribute("ENERGY_COMPANY_ID", new Integer(1));
         }
+        /*
+        else if (action.equalsIgnoreCase("HoneywellSearchCustAccount")) {
+            clientAction = new com.cannontech.stars.honeywell.action.SearchCustAccountAction();
+            destURL = "/OperatorDemos/Consumer/Update.jsp";
+        }*/
         else {
             XMLUtil.getLogger( SOAPClient.class ).error( "SOAPClient: Invalid action type: " + action );
         }
 
         if (clientAction != null) {
-            reqOper = clientAction.build(req, session);
-            log("### Request Operation ### ", reqOper);
-
-            session.setAttribute("REQUEST_OPERATION", reqOper);
+            reqMsg = clientAction.build(req, session);
             session.removeAttribute("RESPONSE_OPERATION");
 
-            if (reqOper != null) {
-                respOper = clientAction.process(reqOper, session);
-                log("### Response Operation ### ", respOper);
+            if (reqMsg != null) {
+                respMsg = clientAction.process(reqMsg, session);
 
-                if (respOper != null) {
-                    if (clientAction.parse(respOper, session))
+                if (respMsg != null) {
+                	int status = clientAction.parse(respMsg, session);
+                	
+                    if (status == 0)	// Operation succeed
                         nextURL = destURL;
+                    else if (status == StarsConstants.FAILURE_CODE_SESSION_INVALID)
+                    	nextURL = loginURL;
+                    else
+                    	nextURL = errorURL;
                 }
             }
-
-            session.removeAttribute("REQUEST_OPERATION");
         }
 
         resp.sendRedirect( nextURL );

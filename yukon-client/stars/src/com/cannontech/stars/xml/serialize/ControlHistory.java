@@ -1,8 +1,8 @@
 /*
  * This class was automatically generated with 
- * <a href="http://castor.exolab.org">Castor 0.9.3</a>, using an
+ * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: ControlHistory.java,v 1.1 2002/07/16 19:50:01 Yao Exp $
+ * $Id: ControlHistory.java,v 1.2 2002/07/30 22:01:55 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -11,6 +11,7 @@ package com.cannontech.stars.xml.serialize;
  //- Imported classes and packages -/
 //---------------------------------/
 
+import java.io.IOException;
 import java.io.Reader;
 import java.io.Serializable;
 import java.io.Writer;
@@ -18,11 +19,12 @@ import java.util.Date;
 import org.exolab.castor.xml.*;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.xml.sax.DocumentHandler;
+import org.xml.sax.ContentHandler;
 
 /**
  * 
- * @version $Revision: 1.1 $ $Date: 2002/07/16 19:50:01 $
+ * 
+ * @version $Revision: 1.2 $ $Date: 2002/07/30 22:01:55 $
 **/
 public class ControlHistory implements java.io.Serializable {
 
@@ -57,6 +59,9 @@ public class ControlHistory implements java.io.Serializable {
     //-----------/
 
     /**
+     * Returns the value of field 'controlDuration'.
+     * 
+     * @return the value of field 'controlDuration'.
     **/
     public int getControlDuration()
     {
@@ -64,6 +69,9 @@ public class ControlHistory implements java.io.Serializable {
     } //-- int getControlDuration() 
 
     /**
+     * Returns the value of field 'controlType'.
+     * 
+     * @return the value of field 'controlType'.
     **/
     public java.lang.String getControlType()
     {
@@ -71,6 +79,9 @@ public class ControlHistory implements java.io.Serializable {
     } //-- java.lang.String getControlType() 
 
     /**
+     * Returns the value of field 'startDateTime'.
+     * 
+     * @return the value of field 'startDateTime'.
     **/
     public java.util.Date getStartDateTime()
     {
@@ -99,6 +110,7 @@ public class ControlHistory implements java.io.Serializable {
 
     /**
      * 
+     * 
      * @param out
     **/
     public void marshal(java.io.Writer out)
@@ -110,18 +122,20 @@ public class ControlHistory implements java.io.Serializable {
 
     /**
      * 
+     * 
      * @param handler
     **/
-    public void marshal(org.xml.sax.DocumentHandler handler)
-        throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
+    public void marshal(org.xml.sax.ContentHandler handler)
+        throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
     {
         
         Marshaller.marshal(this, handler);
-    } //-- void marshal(org.xml.sax.DocumentHandler) 
+    } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
+     * Sets the value of field 'controlDuration'.
      * 
-     * @param controlDuration
+     * @param controlDuration the value of field 'controlDuration'.
     **/
     public void setControlDuration(int controlDuration)
     {
@@ -130,8 +144,9 @@ public class ControlHistory implements java.io.Serializable {
     } //-- void setControlDuration(int) 
 
     /**
+     * Sets the value of field 'controlType'.
      * 
-     * @param controlType
+     * @param controlType the value of field 'controlType'.
     **/
     public void setControlType(java.lang.String controlType)
     {
@@ -139,8 +154,9 @@ public class ControlHistory implements java.io.Serializable {
     } //-- void setControlType(java.lang.String) 
 
     /**
+     * Sets the value of field 'startDateTime'.
      * 
-     * @param startDateTime
+     * @param startDateTime the value of field 'startDateTime'.
     **/
     public void setStartDateTime(java.util.Date startDateTime)
     {
@@ -148,6 +164,7 @@ public class ControlHistory implements java.io.Serializable {
     } //-- void setStartDateTime(java.util.Date) 
 
     /**
+     * 
      * 
      * @param reader
     **/

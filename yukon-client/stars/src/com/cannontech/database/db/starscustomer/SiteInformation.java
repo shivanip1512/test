@@ -81,6 +81,9 @@ public class SiteInformation extends DBPersistent {
     }
 
     public void add() throws java.sql.SQLException {
+    	if (getSiteID() == null)
+    		setSiteID( getNextSiteID() );
+    		
         Object[] addValues = {
             getSiteID(), getSubstationID(), getFeeder(), getPole(),
             getTransformerSize(), getServiceVoltage()

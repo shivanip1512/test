@@ -43,7 +43,7 @@ public class AccountSite extends DBPersistent {
     public void add() throws java.sql.SQLException {
         getAccountSite().add();
         getStreetAddress().add();
-        getSiteInformation().add();
+        //getSiteInformation().add();
     }
 
     public void update() throws java.sql.SQLException {

@@ -157,6 +157,9 @@ public class InventoryBase extends DBPersistent {
     }
 
     public void add() throws java.sql.SQLException {
+    	if (getInventoryID() == null)
+    		setInventoryID( getNextInventoryID() );
+    		
         Object[] addValues = {
             getInventoryID(), getAccountID(), getInstallationCompanyID(),
             getCategory(), getReceiveDate(), getInstallDate(), getRemoveDate(),

@@ -1,8 +1,8 @@
 /*
  * This class was automatically generated with 
- * <a href="http://castor.exolab.org">Castor 0.9.3</a>, using an
+ * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsCustomerAddress.java,v 1.1 2002/07/16 19:50:04 Yao Exp $
+ * $Id: StarsCustomerAddress.java,v 1.2 2002/07/30 22:01:57 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -11,17 +11,19 @@ package com.cannontech.stars.xml.serialize;
  //- Imported classes and packages -/
 //---------------------------------/
 
+import java.io.IOException;
 import java.io.Reader;
 import java.io.Serializable;
 import java.io.Writer;
 import org.exolab.castor.xml.*;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.xml.sax.DocumentHandler;
+import org.xml.sax.ContentHandler;
 
 /**
  * 
- * @version $Revision: 1.1 $ $Date: 2002/07/16 19:50:04 $
+ * 
+ * @version $Revision: 1.2 $ $Date: 2002/07/30 22:01:57 $
 **/
 public abstract class StarsCustomerAddress implements java.io.Serializable {
 
@@ -55,6 +57,9 @@ public abstract class StarsCustomerAddress implements java.io.Serializable {
     //-----------/
 
     /**
+     * Returns the value of field 'city'.
+     * 
+     * @return the value of field 'city'.
     **/
     public java.lang.String getCity()
     {
@@ -62,6 +67,9 @@ public abstract class StarsCustomerAddress implements java.io.Serializable {
     } //-- java.lang.String getCity() 
 
     /**
+     * Returns the value of field 'state'.
+     * 
+     * @return the value of field 'state'.
     **/
     public java.lang.String getState()
     {
@@ -69,6 +77,9 @@ public abstract class StarsCustomerAddress implements java.io.Serializable {
     } //-- java.lang.String getState() 
 
     /**
+     * Returns the value of field 'streetAddr1'.
+     * 
+     * @return the value of field 'streetAddr1'.
     **/
     public java.lang.String getStreetAddr1()
     {
@@ -76,6 +87,9 @@ public abstract class StarsCustomerAddress implements java.io.Serializable {
     } //-- java.lang.String getStreetAddr1() 
 
     /**
+     * Returns the value of field 'streetAddr2'.
+     * 
+     * @return the value of field 'streetAddr2'.
     **/
     public java.lang.String getStreetAddr2()
     {
@@ -83,6 +97,9 @@ public abstract class StarsCustomerAddress implements java.io.Serializable {
     } //-- java.lang.String getStreetAddr2() 
 
     /**
+     * Returns the value of field 'zip'.
+     * 
+     * @return the value of field 'zip'.
     **/
     public java.lang.String getZip()
     {
@@ -104,6 +121,7 @@ public abstract class StarsCustomerAddress implements java.io.Serializable {
 
     /**
      * 
+     * 
      * @param out
     **/
     public abstract void marshal(java.io.Writer out)
@@ -111,14 +129,16 @@ public abstract class StarsCustomerAddress implements java.io.Serializable {
 
     /**
      * 
+     * 
      * @param handler
     **/
-    public abstract void marshal(org.xml.sax.DocumentHandler handler)
-        throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException;
+    public abstract void marshal(org.xml.sax.ContentHandler handler)
+        throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException;
 
     /**
+     * Sets the value of field 'city'.
      * 
-     * @param city
+     * @param city the value of field 'city'.
     **/
     public void setCity(java.lang.String city)
     {
@@ -126,8 +146,9 @@ public abstract class StarsCustomerAddress implements java.io.Serializable {
     } //-- void setCity(java.lang.String) 
 
     /**
+     * Sets the value of field 'state'.
      * 
-     * @param state
+     * @param state the value of field 'state'.
     **/
     public void setState(java.lang.String state)
     {
@@ -135,8 +156,9 @@ public abstract class StarsCustomerAddress implements java.io.Serializable {
     } //-- void setState(java.lang.String) 
 
     /**
+     * Sets the value of field 'streetAddr1'.
      * 
-     * @param streetAddr1
+     * @param streetAddr1 the value of field 'streetAddr1'.
     **/
     public void setStreetAddr1(java.lang.String streetAddr1)
     {
@@ -144,8 +166,9 @@ public abstract class StarsCustomerAddress implements java.io.Serializable {
     } //-- void setStreetAddr1(java.lang.String) 
 
     /**
+     * Sets the value of field 'streetAddr2'.
      * 
-     * @param streetAddr2
+     * @param streetAddr2 the value of field 'streetAddr2'.
     **/
     public void setStreetAddr2(java.lang.String streetAddr2)
     {
@@ -153,8 +176,9 @@ public abstract class StarsCustomerAddress implements java.io.Serializable {
     } //-- void setStreetAddr2(java.lang.String) 
 
     /**
+     * Sets the value of field 'zip'.
      * 
-     * @param zip
+     * @param zip the value of field 'zip'.
     **/
     public void setZip(java.lang.String zip)
     {

@@ -132,6 +132,9 @@ public class LMHardwareActivity extends DBPersistent {
     }
 
     public void add() throws java.sql.SQLException {
+    	if (getEventID() == null)
+    		setEventID( getNextEventID() );
+    		
         Object[] addValues = {
             getEventID(), getInventoryID(), getActionID(),
             getEventDateTime(), getNotes()

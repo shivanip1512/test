@@ -25,7 +25,7 @@ public class UpdateContacts extends HttpServlet {
         HttpSession session = req.getSession(false);
         if (session == null) resp.sendRedirect(loginURL);
 
-        StarsCustomerAccountInformation accountInfo = (StarsCustomerAccountInformation) session.getAttribute("CUSTOMER_ACCOUNT_INFORMATION");
+        StarsCustAccountInfo accountInfo = (StarsCustAccountInfo) session.getAttribute("CUSTOMER_ACCOUNT_INFORMATION");
         StarsCustomerAccount account = accountInfo.getStarsCustomerAccount();
         if (account == null) resp.sendRedirect(homeURL);
 
