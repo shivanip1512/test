@@ -1,5 +1,9 @@
 package com.cannontech.common.gui.util;
 
+import java.util.Collections;
+
+import com.cannontech.database.data.lite.LiteComparators;
+
 /**
  * Insert the type's description here.
  * Creation date: (5/14/2002 3:35:52 PM)
@@ -390,6 +394,9 @@ public void jComboBoxDevice_ActionPerformed(java.awt.event.ActionEvent actionEve
 				com.cannontech.database.data.lite.LiteComparators.litePointDeviceIDComparator,
 				pointTempList );
 
+			//sort all points by name
+			Collections.sort( pointTempList, LiteComparators.liteStringComparator );
+			
 			for( int i = 0; i < pointTempList.size(); i++ )
 			{
 				com.cannontech.database.data.lite.LitePoint lp = (com.cannontech.database.data.lite.LitePoint)pointTempList.get(i);
