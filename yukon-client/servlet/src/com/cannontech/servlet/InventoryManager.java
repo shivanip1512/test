@@ -575,7 +575,9 @@ public class InventoryManager extends HttpServlet {
 					createHw.setInventoryID( -1 );
 					createHw.setDeviceType( starsInv.getDeviceType() );
 					createHw.setLMHardware( starsInv.getLMHardware() );
-					createHw.setMCT( starsInv.getMCT() );
+					createHw.setRemoveDate( null );
+					createHw.setInstallDate( new Date() );
+					createHw.setInstallationNotes( "" );
 				}
 				
 				try {
@@ -614,7 +616,9 @@ public class InventoryManager extends HttpServlet {
 					updateHw.setInventoryID( -1 );
 					updateHw.setDeviceType( starsInv.getDeviceType() );
 					updateHw.setLMHardware( starsInv.getLMHardware() );
-					updateHw.setMCT( starsInv.getMCT() );
+					updateHw.setRemoveDate( null );
+					updateHw.setInstallDate( new Date() );
+					updateHw.setInstallationNotes( "" );
 				}
 				
 				int origInvID = starsAcctInfo.getStarsInventories().getStarsInventory( invNo.intValue() ).getInventoryID();
