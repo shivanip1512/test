@@ -67,7 +67,7 @@
               <tr>
                 <td><form name="AreaForm" method="POST" >
                       
-                    <div align="left"><span class="Main">Substation Area:</span> 
+                    <div align="left"><span class="MainText">Substation Area:</span> 
                       <select name="area" onchange="this.form.submit()" >
                           <%
 	                  	for( int i = 0; i < connServlet.getAreaNames().size(); i++ )
@@ -87,7 +87,7 @@
             </table>
             <table width="740" border="0" cellspacing="0" cellpadding="0" align="center">
               <tr>
-                <td width="740" valign="top" class="Main"> 
+                <td width="740" valign="top" class="MainText"> 
                   <form name="MForm"> 
                   <table width="740" border="1" align="center" cellpadding="0" cellspacing="0">
                     <tr> 

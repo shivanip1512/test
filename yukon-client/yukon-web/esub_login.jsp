@@ -23,7 +23,7 @@ self.name = "mainWin";
 </div>
 <table width="450" border="1" align="center" cellspacing="0" cellpadding="0" bgcolor="#FFFFFF">
   <tr> 
-    <td valign = "top" class = "Main"> 
+    <td valign = "top" class = "MainText"> 
       <div align="center"><img src="<%= logo %>"><br>
         <%
 	String errorMsg = "";
@@ -34,7 +34,7 @@ self.name = "mainWin";
       <div align="center">
         <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\"> " + errorMsg + "</span><br>"); %>
       </div>
-      <table width="367"  height="186" border="0" align="center" cellpadding="0" cellspacing="0" class = "Main">
+      <table width="367"  height="186" border="0" align="center" cellpadding="0" cellspacing="0" class = "MainText">
         <tr> 
           <td rowspan = "3" width="555" bgcolor="#FFFFFF" height="102" valign="top" ><br>
           
@@ -52,7 +52,7 @@ self.name = "mainWin";
               <input type="hidden" name="ACTION" value="LOGIN">
               <table width="250" border="0" cellspacing="0" cellpadding="3" align="center">
                 <tr> 
-                  <td width="83" class = "Main"> 
+                  <td width="83" class = "MainText"> 
                     <div align="right"> User Name</div>
                   </td>
                   <td width="117" valign="bottom"> 
@@ -60,7 +60,7 @@ self.name = "mainWin";
                   </td>
                 </tr>
                 <tr> 
-                  <td width="83" class = "Main"> 
+                  <td width="83" class = "MainText"> 
                     <div align="right">Password:</div>
                   </td>
                   <td width="117"> 
