@@ -56,15 +56,12 @@ static bool beenInitialized = false;
 
 static RWTValSlistDictionary< USHORT, ERRSTRUCT > CtiErrors;
 
-
-// static CTIERRORHASH *CTIErrorBins[CTIERRORHASHBINS];
-
 ERRSTRUCT CTIErrors[] = {
-    { NORMAL,               NORMAL_TXT,                NORMAL                     ," N/A"}, // 0
-    { BADBCH,               BADBCH_TXT,                ERRTYPEDLC                 ," N/A"},
-    { NODWORD,              NODWORD_TXT,               ERRTYPEDLC                 ," N/A"},
-    { BADTYPE,              BADTYPE_TXT,               ERRTYPEDLC                 ," N/A"},
-    { DLENGTH,              DLENGTH_TXT,               ERRTYPEDLC                 ," N/A"},
+    { NORMAL,               NORMAL_TXT,                NORMAL_TYPE                ," N/A"}, // 0
+    { BADBCH,               BADBCH_TXT,                ERRTYPEPROTOCOL                 ," N/A"},
+    { NODWORD,              NODWORD_TXT,               ERRTYPEPROTOCOL                 ," N/A"},
+    { BADTYPE,              BADTYPE_TXT,               ERRTYPEPROTOCOL                 ," N/A"},
+    { DLENGTH,              DLENGTH_TXT,               ERRTYPEPROTOCOL                 ," N/A"},
     { BADLOAD,              BADLOAD_TXT,               BADLOAD_TYPE               ," N/A"},//  5
     { BADTIME,              BADTIME_TXT,               BADTIME_TYPE               ," N/A"},
     { BADLEVEL,             BADLEVEL_TXT,              BADLEVEL_TYPE              ," N/A"},
@@ -104,7 +101,7 @@ ERRSTRUCT CTIErrors[] = {
     { INVALIDVOU,           INVALIDVOU_TXT,            INVALIDVOU_TYPE            ," N/A"},
     { INVALIDVIN,           INVALIDVIN_TXT,            INVALIDVIN_TYPE            ," N/A"},
     { INVALIDSTG,           INVALIDSTG_TXT,            INVALIDSTG_TYPE            ," N/A"},
-    { 44,                   BLANK_TXT,                 NORMAL                     ," N/A"},
+    { 44,                   BLANK_TXT,                 NORMAL_TYPE                ," N/A"},
     { BADFILE,              BADFILE_TXT,               BADFILE_TYPE               ," N/A"},
     { REQACK,               REQACK_TXT,                REQACK_TYPE                ," N/A"},
     { RTFERR,               RTFERR_TXT,                RTFERR_TYPE                ," N/A"},
@@ -161,47 +158,46 @@ ERRSTRUCT CTIErrors[] = {
     { BADSOCK,              BADSOCK_TXT,               BADSOCK_TYPE               ," N/A"},
     { SOCKWRITE,            SOCKWRITE_TXT,             SOCKWRITE_TYPE             ," N/A"},
 
-    { 200,                  "Yukon Base Error",        NORMAL_TYPE                , " N/A"},
-    { MemoryError,          "Memory Error",            NORMAL_TYPE                , " N/A"},
-    { NoMethod,             "No Method",               NORMAL_TYPE                , " N/A"},
-    { NoRefreshMethod,      "No Refresh Method",       NORMAL_TYPE                , " N/A"},
-    { NoGeneralScanMethod,  "No General Scan Method",  NORMAL_TYPE                , " N/A"},
-    { NoIntegrityScanMethod,"No Integrity Scan Method",NORMAL_TYPE                , " N/A"},
-    { NoAccumulatorScanMethod, "No Accum Scan Method",    NORMAL_TYPE                , " N/A"},
-    { NoProcessResultMethod,   "No Process Result Method",NORMAL_TYPE                , " N/A"},
-    { NoExecuteRequestMethod,  "No Exec. Req. Method",    NORMAL_TYPE                , " N/A"},
-    { NoResultDecodeMethod, "No Result Decode Method", NORMAL_TYPE                , " N/A"},
-    { NoErrorDecodeMethod,  "No ErrorDecode Method",     NORMAL_TYPE                , " N/A"},
-    { NoHandShakeMethod,    "No Handshake Method",     NORMAL_TYPE                , " N/A"},
-    { NoGenerateCmdMethod,  "No Generate Command Method",     NORMAL_TYPE                , " N/A"},
-    { NoDecodeResponseMethod, "No DecodeResponse Method",     NORMAL_TYPE                , " N/A"},
-    { NoDataCopyMethod,     "No Data Copy Method",     NORMAL_TYPE                , " N/A"},
-    { NotNumeric,           "Not Numeric",             NORMAL_TYPE                , " N/A"},
-    { NoConfigData,         "No Config Data Found",    NORMAL_TYPE                , " N/A"},
-    { NoRouteGroupDevice,   "No Route for Group Dev.", NORMAL_TYPE                , " N/A"},
-    { NoRoutesInMacro,      "No Routes for Macro Rte", NORMAL_TYPE                , " N/A"},
-    { RouteOffsetOutOfRange, "Macro Offset does not exist in Macro Rte", NORMAL_TYPE                , " N/A"},
-    { SubRouteIsMacro,      "Macro Offset refers to a macro sub-rte", NORMAL_TYPE                , " N/A"},
-    { ControlInhibitedOnDevice, "Device is control disabled", NORMAL_TYPE                , " N/A"},
-    { ControlInhibitedOnPoint,  "Point is control disabled", NORMAL_TYPE                , " N/A"},
-    { ControlRequestComplete, "Control Completed",       NORMAL_TYPE                , " N/A"},
-    { ErrorNexusRead,       "Error Reading Nexus",     NORMAL_TYPE                , " N/A"},
+    { 200,                  "Yukon Base Error",        ERRTYPESYSTEM                , " N/A"},
+    { MemoryError,          "Memory Error",            ERRTYPESYSTEM                , " N/A"},
+    { NoMethod,             "No Method",               ERRTYPESYSTEM                , " N/A"},
+    { NoRefreshMethod,      "No Refresh Method",       ERRTYPESYSTEM                , " N/A"},
+    { NoGeneralScanMethod,  "No General Scan Method",  ERRTYPESYSTEM                , " N/A"},
+    { NoIntegrityScanMethod,"No Integrity Scan Method",ERRTYPESYSTEM                , " N/A"},
+    { NoAccumulatorScanMethod, "No Accum Scan Method",    ERRTYPESYSTEM                , " N/A"},
+    { NoProcessResultMethod,   "No Process Result Method",ERRTYPESYSTEM                , " N/A"},
+    { NoExecuteRequestMethod,  "No Exec. Req. Method",    ERRTYPESYSTEM                , " N/A"},
+    { NoResultDecodeMethod, "No Result Decode Method", ERRTYPESYSTEM                , " N/A"},
+    { NoErrorDecodeMethod,  "No ErrorDecode Method",     ERRTYPESYSTEM                , " N/A"},
+    { NoHandShakeMethod,    "No Handshake Method",     ERRTYPESYSTEM                , " N/A"},
+    { NoGenerateCmdMethod,  "No Generate Command Method",     ERRTYPESYSTEM                , " N/A"},
+    { NoDecodeResponseMethod, "No DecodeResponse Method",     ERRTYPESYSTEM                , " N/A"},
+    { NoDataCopyMethod,     "No Data Copy Method",     ERRTYPESYSTEM                , " N/A"},
+    { NotNumeric,           "Not Numeric",             ERRTYPESYSTEM                , " N/A"},
+    { NoConfigData,         "No Config Data Found",    ERRTYPESYSTEM                , " N/A"},
+    { NoRouteGroupDevice,   "No Route for Group Dev.", ERRTYPESYSTEM                , " N/A"},
+    { NoRoutesInMacro,      "No Routes for Macro Rte", ERRTYPESYSTEM                , " N/A"},
+    { RouteOffsetOutOfRange, "Macro Offset does not exist in Macro Rte", ERRTYPESYSTEM                , " N/A"},
+    { SubRouteIsMacro,      "Macro Offset refers to a macro sub-rte", ERRTYPESYSTEM                , " N/A"},
+    { ControlInhibitedOnDevice, "Device is control disabled", ERRTYPESYSTEM                , " N/A"},
+    { ControlInhibitedOnPoint,  "Point is control disabled", ERRTYPESYSTEM                , " N/A"},
+    { ControlRequestComplete, "Control Completed",       ERRTYPESYSTEM                , " N/A"},
+    { ErrorNexusRead,       "Error Reading Nexus",     ERRTYPESYSTEM                , " N/A"},
 
-    { InThreadTerminated,   "CtiConnection: InThread Terminated",     NORMAL_TYPE                , " N/A"},
-    { OutThreadTerminated,  "CtiConnection: OutThread Terminated",     NORMAL_TYPE                , " N/A"},
-    { InboundSocketBad,     "CtiConnection: Inbound Socket Bad",     NORMAL_TYPE                , " N/A"},
-    { OutboundSocketBad,    "CtiConnection: Outbound Socket Bad",     NORMAL_TYPE                , " N/A"},
-    { ErrPortInitFailed,    "Port Init Failed",     NORMAL_TYPE                , " N/A"},
-    { RETRY_SUBMITTED,      "Retry Resubmitted",       NORMAL_TYPE                , " N/A"},
-    { MESSAGEREQUEUED,      "Message Requeued",        NORMAL_TYPE                , " N/A"},
-    { SCAN_ERROR_DEVICE_INHIBITED, "Scanned device is inhibited",   NORMAL_TYPE                , " N/A"},
-    { SCAN_ERROR_GLOBAL_ADDRESS,   "Illegal scan of global device", NORMAL_TYPE                , " N/A"},
-    { SCAN_ERROR_DEVICE_WINDOW_CLOSED, "Device window is closed",   NORMAL_TYPE                , " N/A"},
-    { ErrorPageRS,  "Invalid transaction, typ. bad pager id or password", NORMAL_TYPE                , " N/A"},
-    { ErrorPageNAK, "TAP Repeat Requested, but retries exhausted", NORMAL_TYPE                , " N/A"},
-    { ErrorPageNoResponse, "No response from TAP terminal", NORMAL_TYPE                , " N/A"},
-    { CtiInvalidRequest,    "Invalid/Incomplete Request",    NORMAL_TYPE                , " N/A"},
-    { UnknownError,         "Unknown Error",           NORMAL_TYPE                , " N/A"},
+    { InThreadTerminated,   "CtiConnection: InThread Terminated",     ERRTYPESYSTEM                , " N/A"},
+    { OutThreadTerminated,  "CtiConnection: OutThread Terminated",     ERRTYPESYSTEM                , " N/A"},
+    { InboundSocketBad,     "CtiConnection: Inbound Socket Bad",     ERRTYPESYSTEM                , " N/A"},
+    { OutboundSocketBad,    "CtiConnection: Outbound Socket Bad",     ERRTYPESYSTEM                , " N/A"},
+    { ErrPortInitFailed,    "Port Init Failed",     ERRTYPESYSTEM                , " N/A"},
+    { RETRY_SUBMITTED,      "Retry Resubmitted",       ERRTYPESYSTEM                , " N/A"},
+    { SCAN_ERROR_DEVICE_INHIBITED, "Scanned device is inhibited",   ERRTYPESYSTEM                , " N/A"},
+    { SCAN_ERROR_GLOBAL_ADDRESS,   "Illegal scan of global device", ERRTYPESYSTEM                , " N/A"},
+    { SCAN_ERROR_DEVICE_WINDOW_CLOSED, "Device window is closed",   ERRTYPESYSTEM                , " N/A"},
+    { ErrorPageRS,  "Invalid transaction, typ. bad pager id or password", ERRTYPESYSTEM                , " N/A"},
+    { ErrorPageNAK, "TAP Repeat Requested, but retries exhausted", ERRTYPESYSTEM                , " N/A"},
+    { ErrorPageNoResponse, "No response from TAP terminal", ERRTYPESYSTEM                , " N/A"},
+    { CtiInvalidRequest,    "Invalid/Incomplete Request",    ERRTYPESYSTEM                , " N/A"},
+    { UnknownError,         "Unknown Error",           ERRTYPESYSTEM                , " N/A"},
 
 };
 
@@ -322,6 +318,27 @@ IM_EX_CTIBASE CHAR* GetError (INT err)
     }
 
     return NULL;
+}
+
+/* routine to retrieve error messages from error message file */
+IM_EX_CTIBASE INT GetErrorType(INT err)
+{
+    USHORT enumber = (USHORT) err;
+    if(!beenInitialized)
+    {
+        InitError();
+    }
+
+    if( CtiErrors.contains( enumber ) )
+    {
+        return CtiErrors[ enumber ].Type;
+    }
+    else if(CtiErrors.contains( ERRUNKNOWN ))
+    {
+        return CtiErrors[ ERRUNKNOWN ].Type;
+    }
+
+    return 0;
 }
 
 INT SetUnknown( ERRSTRUCT &ESt )

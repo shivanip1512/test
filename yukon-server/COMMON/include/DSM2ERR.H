@@ -12,9 +12,9 @@ class RWCString;
 //// #include "btrieve.h"
 
 typedef struct _ERRSTRUCT {
-    USHORT Error;
+    INT  Error;
     CHAR ErrorMessage[80];
-    USHORT Type;
+    INT  Type;
     CHAR TypeDescription[16];
 } ERRSTRUCT;
 
@@ -23,11 +23,12 @@ typedef struct  {
    VOID           *NextHashEnt;
 } CTIERRORHASH;
 
-#define ERRORFILENAME "DATA\\ERRORMSG.BDB"
-#define BDB_ERRORFILENAME "ERRORMSG.BDB"
+// #define ERRORFILENAME "DATA\\ERRORMSG.BDB"
+// #define BDB_ERRORFILENAME "ERRORMSG.BDB"
 
-    /* windows won't compile, error defined as a constant */
-typedef struct _ERRORNUM {
+/* windows won't compile, error defined as a constant */
+typedef struct _ERRORNUM
+{
       USHORT Error;
 } ERRORNUM;
 
@@ -38,6 +39,7 @@ typedef struct _ERRORNUM {
 INT SetUnknown( ERRSTRUCT &ESt );
 
 IM_EX_CTIBASE CHAR* GetError (INT err);
+IM_EX_CTIBASE INT GetErrorType (INT err);
 IM_EX_CTIBASE INT GetError (ERRSTRUCT &);
 IM_EX_CTIBASE INT InitError (VOID);
 IM_EX_CTIBASE INT CloseError(VOID);

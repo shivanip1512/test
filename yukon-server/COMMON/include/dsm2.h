@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/DSM2.H-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/05/14 15:42:21 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/05/28 18:14:50 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -41,9 +41,8 @@ IM_EX_CTIBASE ULONG OutMessageCount();
 
 /* Error TYPE definitions */
 #define ERRTYPESYSTEM   1
-#define ERRTYPEDLC      2
-#define ERRTYPEPHONE    3
-#define ERRTYPEMISC     4
+#define ERRTYPEPROTOCOL      2
+#define ERRTYPECOMM     3
 
 #define ERRLOGENTS      10
 
@@ -56,16 +55,16 @@ IM_EX_CTIBASE ULONG OutMessageCount();
 #define NORMAL_TYPE     NORMAL
 #define BADBCH          1
 #define BADBCH_TXT      "Bad BCH"
-#define BADBCH_TYPE     ERRTYPEDLC
+#define BADBCH_TYPE     ERRTYPEPROTOCOL
 #define NODWORD         2
 #define NODWORD_TXT     "No D word"
-#define NODWORD_TYPE    ERRTYPEDLC
+#define NODWORD_TYPE    ERRTYPEPROTOCOL
 #define BADTYPE         3
 #define BADTYPE_TXT     "Bad Message Type"
-#define BADTYPE_TYPE    ERRTYPEDLC
+#define BADTYPE_TYPE    ERRTYPEPROTOCOL
 #define DLENGTH         4
 #define DLENGTH_TXT     "D Word Wrong length"
-#define DLENGTH_TYPE    ERRTYPEDLC
+#define DLENGTH_TYPE    ERRTYPEPROTOCOL
 #define BADLOAD         5
 #define BADLOAD_TXT     "Bad Load Specification"
 #define BADLOAD_TYPE    ERRTYPESYSTEM
@@ -98,28 +97,28 @@ IM_EX_CTIBASE ULONG OutMessageCount();
 #define BADSTATE_TYPE   ERRTYPESYSTEM
 #define BADPARITY       15
 #define BADPARITY_TXT   "Parity Error"
-#define BADPARITY_TYPE  ERRTYPEPHONE
+#define BADPARITY_TYPE  ERRTYPECOMM
 #define BADCCU          16
 #define BADCCU_TXT      "Bad CCU Specification"
-#define BADCCU_TYPE     ERRTYPEPHONE
+#define BADCCU_TYPE     ERRTYPECOMM
 #define NACK1           17
 #define NACK1_TXT       "Word 1 NACK"
-#define NACK1_TYPE      ERRTYPEDLC
+#define NACK1_TYPE      ERRTYPEPROTOCOL
 #define NACK2           18
 #define NACK2_TXT       "Word 2 NACK"
-#define NACK2_TYPE      ERRTYPEDLC
+#define NACK2_TYPE      ERRTYPEPROTOCOL
 #define NACK3           19
 #define NACK3_TXT       "Word 3 NACK"
-#define NACK3_TYPE      ERRTYPEDLC
+#define NACK3_TYPE      ERRTYPEPROTOCOL
 #define NACKPAD1        20
 #define NACKPAD1_TXT    "Word 1 NACK Padded"
-#define NACKPAD1_TYPE   ERRTYPEDLC
+#define NACKPAD1_TYPE   ERRTYPEPROTOCOL
 #define NACKPAD2        21
 #define NACKPAD2_TXT    "Word 2 NACK Padded"
-#define NACKPAD2_TYPE   ERRTYPEDLC
+#define NACKPAD2_TYPE   ERRTYPEPROTOCOL
 #define NACKPAD3        22
 #define NACKPAD3_TXT    "Word 3 NACK Padded"
-#define NACKPAD3_TYPE   ERRTYPEDLC
+#define NACKPAD3_TYPE   ERRTYPEPROTOCOL
 #define BADCCUTYPE      23
 #define BADCCUTYPE_TXT  "Bad CCU Type"
 #define BADCCUTYPE_TYPE ERRTYPESYSTEM
@@ -146,22 +145,22 @@ IM_EX_CTIBASE ULONG OutMessageCount();
 #define READERR_TYPE    ERRTYPESYSTEM
 #define READTIMEOUT     31
 #define READTIMEOUT_TXT "Timeout Reading from Port"
-#define READTIMEOUT_TYPE ERRTYPEPHONE
+#define READTIMEOUT_TYPE ERRTYPECOMM
 #define BADSEQUENCE     32
 #define BADSEQUENCE_TXT "Sequence Reject Frame Received... Sequencing Ajusted"
-#define BADSEQUENCE_TYPE ERRTYPEPHONE
+#define BADSEQUENCE_TYPE ERRTYPECOMM
 #define FRAMEERR        33
 #define FRAMEERR_TXT    "Framing Error"
-#define FRAMEERR_TYPE   ERRTYPEPHONE
+#define FRAMEERR_TYPE   ERRTYPECOMM
 #define BADCRC          34
 #define BADCRC_TXT      "Bad CRC on Message"
-#define BADCRC_TYPE     ERRTYPEPHONE
+#define BADCRC_TYPE     ERRTYPECOMM
 #define BADLENGTH       35
 #define BADLENGTH_TXT   "Bad Length Specification"
 #define BADLENGTH_TYPE  ERRTYPESYSTEM
 #define BADUA           36
 #define BADUA_TXT       "Bad HDLC UA Frame"
-#define BADUA_TYPE      ERRTYPEPHONE
+#define BADUA_TYPE      ERRTYPECOMM
 #define ERRUNKNOWN      37
 #define UNKNOWN_TXT     "Unknown Error"
 #define UNKNOWN_TYPE    ERRTYPESYSTEM
@@ -188,7 +187,7 @@ IM_EX_CTIBASE ULONG OutMessageCount();
 #define BADFILE_TYPE    ERRTYPESYSTEM
 #define REQACK          46
 #define REQACK_TXT      "REQACK Flag set-- Frame Unexecutable"
-#define REQACK_TYPE     ERRTYPEPHONE
+#define REQACK_TYPE     ERRTYPECOMM
 #define RTFERR          47
 #define RTFERR_TXT      "Route File Error"
 #define RTFERR_TYPE     ERRTYPESYSTEM
@@ -221,7 +220,7 @@ IM_EX_CTIBASE ULONG OutMessageCount();
 #define TYNF_TYPE       ERRTYPESYSTEM
 #define EWORDRCV        57
 #define EWORDRCV_TXT    "E-Word Received in Returned Message"
-#define EWORDRCV_TYPE   ERRTYPEDLC
+#define EWORDRCV_TYPE   ERRTYPEPROTOCOL
 #define BADFILL         58
 #define BADFILL_TXT     "Error Filling Fill Area of Command"
 #define BADFILL_TYPE    ERRTYPESYSTEM
@@ -245,16 +244,16 @@ IM_EX_CTIBASE ULONG OutMessageCount();
 #define SEMAPHORE_TYPE  ERRTYPESYSTEM
 #define NODCD           65
 #define NODCD_TXT       "No DCD on Return Message"
-#define NODCD_TYPE      ERRTYPEPHONE
+#define NODCD_TYPE      ERRTYPECOMM
 #define WRITETIMEOUT     66
 #define WRITETIMEOUT_TXT "Timeout Writing to Port"
-#define WRITETIMEOUT_TYPE ERRTYPEPHONE
+#define WRITETIMEOUT_TYPE ERRTYPECOMM
 #define PORTREAD        67
 #define PORTREAD_TXT    "Error Reading from Port"
-#define PORTREAD_TYPE   ERRTYPEPHONE
+#define PORTREAD_TYPE   ERRTYPECOMM
 #define PORTWRITE       68
 #define PORTWRITE_TXT   "Error Writing to Port"
-#define PORTWRITE_TYPE  ERRTYPEPHONE
+#define PORTWRITE_TYPE  ERRTYPECOMM
 #define PIPEWRITE       69
 #define PIPEWRITE_TXT   "Error Writing to Named Pipe"
 #define PIPEWRITE_TYPE  ERRTYPESYSTEM
@@ -263,22 +262,22 @@ IM_EX_CTIBASE ULONG OutMessageCount();
 #define PIPEREAD_TYPE   ERRTYPESYSTEM
 #define QUEUEEXEC       71
 #define QUEUEEXEC_TXT   "Error Executing CCU Queue Entry"
-#define QUEUEEXEC_TYPE  ERRTYPEDLC
+#define QUEUEEXEC_TYPE  ERRTYPEPROTOCOL
 #define DLCTIMEOUT      72
 #define DLCTIMEOUT_TXT  "DLC Read Timeout on CCU Queue Entry"
-#define DLCTIMEOUT_TYPE ERRTYPEDLC
+#define DLCTIMEOUT_TYPE ERRTYPEPROTOCOL
 #define NOATTEMPT       73
 #define NOATTEMPT_TXT   "No Attempt Made on CCU Queue Entry"
 #define NOATTEMPT_TYPE  ERRTYPESYSTEM
 #define ROUTEFAILED     74
 #define ROUTEFAILED_TXT "Route Failed on CCU Queue Entry"
-#define ROUTEFAILED_TYPE ERRTYPEDLC
+#define ROUTEFAILED_TYPE ERRTYPEPROTOCOL
 #define TRANSFAILED     75
 #define TRANSFAILED_TXT "Transponder Communication Failed on CCU Queue Entry"
-#define TRANSFAILED_TYPE ERRTYPEDLC
+#define TRANSFAILED_TYPE ERRTYPEPROTOCOL
 #define JWORDRCV        76
 #define JWORDRCV_TXT    "J-Word Received in Returned Message"
-#define JWORDRCV_TYPE   ERRTYPEDLC
+#define JWORDRCV_TYPE   ERRTYPEPROTOCOL
 #define NOREMOTEPORTER  77
 #define NOREMOTEPORTER_TXT  "Remote Porter Can Not be Reached"
 #define NOREMOTEPORTER_TYPE  ERRTYPESYSTEM
@@ -311,19 +310,19 @@ IM_EX_CTIBASE ULONG OutMessageCount();
 #define POINTINHIBITED_TYPE     ERRTYPESYSTEM
 #define DIALUPERROR             87
 #define DIALUPERROR_TXT         "Error Dialing Up Remote"
-#define DIALUPERROR_TYPE        ERRTYPEPHONE
+#define DIALUPERROR_TYPE        ERRTYPECOMM
 #define WRONGADDRESS            88
 #define WRONGADDRESS_TXT  "Wrong Unique Address Received"
-#define WRONGADDRESS_TYPE ERRTYPEPHONE
+#define WRONGADDRESS_TYPE ERRTYPECOMM
 #define TCPCONNECTERROR         89
 #define TCPCONNECTERROR_TXT     "Error Connecting to Terminal Server"
-#define TCPCONNECTERROR_TYPE    ERRTYPEPHONE
+#define TCPCONNECTERROR_TYPE    ERRTYPECOMM
 #define TCPWRITEERROR           90
 #define TCPWRITEERROR_TXT       "Error Writing to Terminal Server"
-#define TCPWRITEERROR_TYPE      ERRTYPEPHONE
+#define TCPWRITEERROR_TYPE      ERRTYPECOMM
 #define TCPREADERROR            91
 #define TCPREADERROR_TXT        "Error Reading from Terminal Server"
-#define TCPREADERROR_TYPE       ERRTYPEPHONE
+#define TCPREADERROR_TYPE       ERRTYPECOMM
 #define ADDRESSERROR            92
 #define ADDRESSERROR_TXT        "Address Does Not Match Expected Value"
 #define ADDRESSERROR_TYPE       ERRTYPESYSTEM
