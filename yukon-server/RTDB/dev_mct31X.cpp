@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct31X.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2002/05/28 18:18:23 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2002/05/28 19:53:19 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -360,10 +360,6 @@ ULONG CtiDeviceMCT31X::calcNextLPScanTime( void )
             //  we're overdue
             else
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
                 //  try again on the next 'loadprofileinterval' minutes boundary
                 channelTime  = Now.seconds() + lpDemandRate;
                 if( channelTime % lpDemandRate )
@@ -379,10 +375,12 @@ ULONG CtiDeviceMCT31X::calcNextLPScanTime( void )
         }
     }
 
+#if 0
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " " << getName() << "'s next Load Profile request at " << RWTime(nextTime) << endl;
     }
+#endif
 
     return (_nextLPScanTime = nextTime);
 }
