@@ -703,11 +703,23 @@ void identifyProject(const CTICOMPILEINFO &Info)
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " (Build " <<
-        Info.major << "." <<
-        Info.minor << "." <<
-        Info.build << ") " <<
-        Info.proj << endl;
+        if(Info.date)
+        {
+            dout << RWTime() << " (Build " <<
+            Info.major << "." <<
+            Info.minor << "." <<
+            Info.build << ", " <<
+            Info.date  << ") " <<
+            Info.proj << endl;
+        }
+        else
+        {
+            dout << RWTime() << " (Build " <<
+            Info.major << "." <<
+            Info.minor << "." <<
+            Info.build << ") " <<
+            Info.proj << endl;
+        }
     }
 
     return;

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/INCLUDE/id_porter.h-arc  $
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2002/07/26 19:53:24 $
+* REVISION     :  $Revision: 1.30 $
+* DATE         :  $Date: 2002/07/30 21:11:58 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -26,6 +26,7 @@ CTICOMPILEINFO CompileInfo = {
    PROJECT,
    MAJORREVISION,
    MINORREVISION,
-   BUILDNUMBER
+   BUILDNUMBER,
+   __TIMESTAMP__
 };
 

@@ -17,8 +17,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/utility.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/07/18 16:10:23 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/07/30 21:11:57 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -67,14 +67,13 @@ typedef struct SENDMAIL
 // SendMail exported functions //////////////////////////////////
 IM_EX_CTIBASE BOOL SendMail( struct SENDMAIL *pMail, int *pResult );
 
-
-
 typedef struct
 {
    char *proj;
    int major;
    int minor;
    int build;
+   char *date;
 } CTICOMPILEINFO;
 
 typedef struct {
