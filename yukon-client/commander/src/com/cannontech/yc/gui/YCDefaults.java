@@ -1,5 +1,7 @@
 package com.cannontech.yc.gui;
 
+import com.cannontech.common.util.KeysAndValues;
+
 /**
  * Insert the type's description here.
  * Creation date: (5/17/2002 11:19:32 AM)
@@ -10,13 +12,19 @@ public class YCDefaults
 	public static final String YC_DEFAULTS_FILENAME = "/YCOptions.DAT";
 	public static final String YC_DEFAULTS_DIRECTORY = com.cannontech.common.util.CtiUtilities.getConfigDirPath();
 
-	private final int NUMBER_OF_PARAMETERS = 5;
-	
+	private final String COMMAND_PRIORITY_KEY = "PRIORITY";
+	private final String QUEUE_COMMAND_KEY = "QUEUE";
+	private final String SHOW_MESSAGE_LOG_KEY = "SHOWLOG";
+	private final String CONFIRM_COMMAND_KEY = "CONFIRM";
+	private final String COMMAND_FILE_DIR_KEY = "FILEDIR";
+	private final String OUTPUT_DIVIDER_LOC_KEY = "DIVIDER";
+		
 	private int commandPriority = 14;
 	private boolean queueExecuteCommand = false;
 	private boolean showMessageLog = true;
 	private boolean confirmCommandExecute = false;
 	private String commandFileDirectory = null;
+	private int outputDividerLoc = 190;
 	
 //	private final String VALID_TEXT = "Valid Text";
 //	private final String INVALID_TEXT = "Invalid Text";
@@ -36,7 +44,7 @@ public class YCDefaults
 	/**
 	 * YCDefaults constructor comment.
 	 */
-	public YCDefaults(int priority, boolean queueCommand, boolean showLog, boolean confirmExecute, String commandFileDir) 
+	public YCDefaults(int priority, boolean queueCommand, boolean showLog, boolean confirmExecute, String commandFileDir, int divLoc) 
 	{
 		super();
 		setCommandPriority(priority);
@@ -44,8 +52,7 @@ public class YCDefaults
 		setShowMessageLog(showLog);
 		setConfirmCommandExecute(confirmExecute);
 		setCommandFileDirectory(commandFileDir);
-		
-		//parseDefaultsFile();
+		setOutputDividerLoc(divLoc);
 	}
 	public String getCommandFileDirectory()
 	{
@@ -73,64 +80,74 @@ public class YCDefaults
 		return showMessageLog;
 	}
 	/**
-	 * Insert the method's description here.
-	 * Creation date: (5/13/2002 9:53:47 AM)
+	 * Parse the properties file (YC_DEFAULTS_DIRECTORY+YC_DEFAULTS_FILENAME, if exists)
+	 *  for properties last saved values.
 	 */
 	private void parseDefaultsFile()
 	{
-		java.io.RandomAccessFile raFile = null;
-		java.io.File inFile = new java.io.File( YC_DEFAULTS_DIRECTORY + YC_DEFAULTS_FILENAME);
-	
-		java.util.Vector fileParameters = new java.util.Vector( 15 );
+
+		com.cannontech.common.util.KeysAndValuesFile kavFile = new com.cannontech.common.util.KeysAndValuesFile(YC_DEFAULTS_DIRECTORY + YC_DEFAULTS_FILENAME);
+		com.cannontech.common.util.KeysAndValues keysAndValues = kavFile.getKeysAndValues();
 		
-		try
+		if( keysAndValues != null )
 		{
-			// open file		
-			if( inFile.exists() )
+			String keys[] = keysAndValues.getKeys();
+			String values[] = keysAndValues.getValues();
+			for (int i = 0; i < keys.length; i++)
 			{
-				raFile = new java.io.RandomAccessFile( inFile, "r" );
-						
-				long readLinePointer = 0;
-				long fileLength = raFile.length();
-	
-				while ( readLinePointer < fileLength )  // loop until the end of the file
+				if( keys[i] == "")
 				{
-						
-					String line = raFile.readLine();  // read a line in
-					fileParameters.addElement( line );
-	
-					// set our pointer to the new position in the file
-					readLinePointer = raFile.getFilePointer();
+					keys[i] = getYCKey(i);	//Temporary fix to get key if it doesn't exist.
+				}
+				
+				if(keys[i].equalsIgnoreCase(COMMAND_PRIORITY_KEY))
+				{
+					setCommandPriority(Integer.parseInt(values[i].toString()));
+				}
+				else if( keys[i].equalsIgnoreCase(QUEUE_COMMAND_KEY))
+				{
+					setQueueExecuteCommand(Boolean.valueOf(values[i].toString()).booleanValue());
+				}
+				else if( keys[i].equalsIgnoreCase(SHOW_MESSAGE_LOG_KEY))
+				{
+					setShowMessageLog(Boolean.valueOf(values[i].toString()).booleanValue());
+				}
+				else if( keys[i].equalsIgnoreCase(CONFIRM_COMMAND_KEY))
+				{
+					setConfirmCommandExecute(Boolean.valueOf(values[i].toString()).booleanValue());
+				}
+				else if( keys[i].equalsIgnoreCase(COMMAND_FILE_DIR_KEY))
+				{
+					setCommandFileDirectory(values[i].toString());
+				}
+				else if( keys[i].equalsIgnoreCase(OUTPUT_DIVIDER_LOC_KEY))
+				{
+					setOutputDividerLoc(Integer.parseInt(values[i].toString()));
 				}
 			}
-			else
-				return;
+		}
+		com.cannontech.clientutils.CTILogger.info( " LOADED commander properties from file.");
+	}
 	
-			// Close file
-			raFile.close();						
-		}
-		catch(java.io.IOException ex)
+	public String getYCKey(int index)
+	{
+		String key = "";
+		switch (index)
 		{
-			System.out.print("IOException in parseDefaultsFile()");
-			ex.printStackTrace();
+			case 0 :
+				key = COMMAND_PRIORITY_KEY;
+			case 1 :
+				key = QUEUE_COMMAND_KEY;
+			case 2 :
+				key = SHOW_MESSAGE_LOG_KEY;
+			case 3 :
+				key = CONFIRM_COMMAND_KEY;
+			case 4 :
+				key = COMMAND_FILE_DIR_KEY;
+			case 5 :
+				key = OUTPUT_DIVIDER_LOC_KEY;
 		}
-		finally
-		{
-			try
-			{
-				//Try to close the file, again.
-				if( inFile.exists() )
-					raFile.close();
-			}
-			catch( java.io.IOException ex )
-			{}		
-		}
-	
-		if( fileParameters.size() == NUMBER_OF_PARAMETERS )
-		{
-			// make sure we received all lines from the parameters file		
-			updateFileDefaults( fileParameters);
-		}
+		return key;
 	}
 	private void setCommandFileDirectory(String newDirectory)
 	{
@@ -161,6 +178,7 @@ public class YCDefaults
 	 * Insert the method's description here.
 	 * Creation date: (5/14/2002 1:54:19 PM)
 	 * @param infileDefaultsVector java.util.Vector
+	 * @deprecated KeysAndValues file now used in parseDefaultsFile().
 	 */
 	private  void updateFileDefaults(java.util.Vector infileDefaultsVector)
 	{
@@ -195,38 +213,77 @@ public class YCDefaults
 		//*******command file dir**************//		
 		setCommandFileDirectory((String)infileDefaultsVector.get(index++));
 	}
+	
 	/**
-	 * Insert the method's description here.
-	 * Creation date: (5/13/2002 9:23:11 AM)
+	 * Write the TrendProperties to a file, TREND_DEFAULTS_DIRECTORY+TREND_DEFAULTS_FILENAME, 
+	 * in a Keys=Values format (com.cannontech.common.util.KeysAndValues)
 	 */
 	public void writeDefaultsFile()
 	{
 		try
 		{
-			java.io.File file = new java.io.File( YC_DEFAULTS_DIRECTORY );
+			java.io.File file = new java.io.File(YC_DEFAULTS_DIRECTORY);
 			file.mkdirs();
-			
+
 			java.io.FileWriter writer = new java.io.FileWriter( file.getPath() + YC_DEFAULTS_FILENAME);
-	
-	 		writer.write( String.valueOf( getCommandPriority() ) + "\r\n");
-	
-			writer.write( String.valueOf( getQueueExecuteCommand() ) + "\r\n" );
-				
-			writer.write( String.valueOf( getShowMessageLog()) + "\r\n" );
-	
-			writer.write( String.valueOf( getConfirmCommandExecute()) + "\r\n" );
-	
-			writer.write( getCommandFileDirectory() + "\r\n" );
-	
+			KeysAndValues keysAndValues = buildKeysAndValues();
+			
+			String keys[] = keysAndValues.getKeys();
+			String values[] = keysAndValues.getValues();
+
+			String endline = "\r\n";
+
+			for (int i = 0; i < keys.length; i++)
+			{
+				writer.write(keys[i] + "=" + values[i] + endline);
+			}
 			writer.close();
 		}
 		catch ( java.io.IOException e )
 		{
-			System.out.print(" IOException in writeBillingDefaultsFile");
+			System.out.print(" IOException in writeDatFile");
 			e.printStackTrace();
 		}
+	}		
+	
+	/**
+	 * Builds a KeysAndValues class with all ycProperties and their current values.
+	 * Keys=Values format (com.cannontech.common.util.KeysAndValues)
+	 * @return KeysAndValues
+	 */
+	private KeysAndValues buildKeysAndValues()
+	{
+		java.util.Vector keys = new java.util.Vector(10);
+		java.util.Vector values = new java.util.Vector(10);
+
+		keys.add(COMMAND_PRIORITY_KEY); 
+		values.add(String.valueOf(getCommandPriority()));
+	
+		keys.add(QUEUE_COMMAND_KEY); 
+		values.add(String.valueOf(getQueueExecuteCommand()));
+
+		keys.add(SHOW_MESSAGE_LOG_KEY); 
+		values.add(String.valueOf(getShowMessageLog()));
+
+		keys.add(CONFIRM_COMMAND_KEY); 
+		values.add(String.valueOf(getConfirmCommandExecute()));
+
+		keys.add(COMMAND_FILE_DIR_KEY); 
+		values.add(getCommandFileDirectory());
+
+		keys.add(OUTPUT_DIVIDER_LOC_KEY);
+		values.add(String.valueOf(getOutputDividerLoc()));
 		
+		String[] keysArray = new String[keys.size()];
+		keys.toArray(keysArray);
+		String[] valuesArray = new String[values.size()];
+		values.toArray(valuesArray);
+	
+		KeysAndValues keysAndValues = new KeysAndValues(keysArray, valuesArray);
+
+		return keysAndValues;
 	}
+
 	/**
 	 * Returns the displayTextColor.
 	 * @return java.awt.Color
@@ -281,4 +338,20 @@ public class YCDefaults
 		this.validTextColor = validTextColor;
 	}
 	
+	/**
+	 * @return
+	 */
+	public int getOutputDividerLoc()
+	{
+		return outputDividerLoc;
+	}
+
+	/**
+	 * @param i
+	 */
+	public void setOutputDividerLoc(int i)
+	{
+		outputDividerLoc = i;
+	}
+
 }
