@@ -288,7 +288,8 @@ public boolean insertTreeObject( LiteBase lb )
 public boolean isDeviceValid( int category_, int class_, int type_ )
 {
 	return com.cannontech.database.data.pao.DeviceClasses.isCoreDeviceClass(class_)
-				&& category_ == com.cannontech.database.data.pao.PAOGroups.CAT_DEVICE;
+				&& category_ == com.cannontech.database.data.pao.PAOGroups.CAT_DEVICE 
+				&& type_ != com.cannontech.database.data.pao.PAOGroups.MCTBROADCAST;
 }
 /**
  * Insert the method's description here.

@@ -1,5 +1,4 @@
 package com.cannontech.database.model;
-
 /**
  * This type was created in VisualAge.
  */
@@ -37,6 +36,8 @@ public final class ModelFactory
 	public static final int TESTCOLLECTIONGROUP = 26;
 	public static final int CAPCONTROLFEEDER = 27;
 
+	public static final int MCTBROADCAST = 28;
+
 	//The above is an enumeration of indices into
 	//the following array
 	private static Class[] typeToClassMap =
@@ -68,7 +69,8 @@ public final class ModelFactory
 		DeviceMeterGroupModel.class,
 		CollectionGroupModel.class,
 		TestCollectionGroupModel.class,
-/*27*/CapControlFeederModel.class
+/*27*/CapControlFeederModel.class,
+	  	MCTBroadcastGroupTreeModel.class
 	};
 
 /**

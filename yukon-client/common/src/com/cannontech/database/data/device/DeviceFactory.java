@@ -183,7 +183,13 @@ public final static DeviceBase createDevice(int deviceType) {
 			returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_CAPCONTROL);
 			break;
 
+		//The new MCT broadcast group (lead meter broadcast)
+		case PAOGroups.MCTBROADCAST:
+			returnDevice = new MCT_Broadcast();
+			returnDevice.setDeviceType( PAOGroups.STRING_MCT_BROADCAST[0] );
+			break;
 
+			
 		// not a real device	
 		case PAOGroups.VIRTUAL_SYSTEM:
 			returnDevice = new VirtualDevice();
@@ -232,7 +238,8 @@ private final static DeviceBase setDeviceDefaults( int type, DeviceBase returnDe
 	else if( DeviceTypesFuncs.isCarrier(type) )
 	{
 		returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_CARRIER);
-		if ( !DeviceTypesFuncs.isRepeater(type) )
+		
+		if ( DeviceTypesFuncs.isMCT(type) )
 		{
 			if( type == PAOGroups.LMT_2 || type == PAOGroups.DCT_501 )
 				((MCTBase) returnDevice).getDeviceLoadProfile().setLastIntervalDemandRate(new Integer(300));

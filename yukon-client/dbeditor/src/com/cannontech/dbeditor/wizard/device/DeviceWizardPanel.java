@@ -1,5 +1,4 @@
 package com.cannontech.dbeditor.wizard.device;
-
 /**
  * This type was created in VisualAge.
  */
@@ -19,13 +18,17 @@ public class DeviceWizardPanel extends com.cannontech.common.wizard.WizardPanel
 	private DeviceVirtualNamePanel deviceVirtualNamePanel;
 	private DeviceMeterNumberPanel deviceMeterNumberPanel;
 	private DeviceSixnetWizardPanel deviceSixnetWizardPanel;
+	private MCTBroadcastListEditorPanel mctBroadcastListEditorPanel;
 	private com.cannontech.dbeditor.editor.device.DeviceScanRateEditorPanel deviceScanRateEditorPanel;
+
 /**
  * DeviceWizardPanel constructor comment.
  */
 public DeviceWizardPanel() {
 	super();
 }
+
+
 /**
  * Insert the method's description here.
  * Creation date: (5/4/2001 11:11:28 AM)
@@ -37,6 +40,8 @@ public java.awt.Dimension getActualSize()
 
 	return getPreferredSize();
 }
+
+
 /**
  * This method was created in VisualAge.
  * @return com.cannontech.dbeditor.wizard.device.DeviceIEDNamePanel
@@ -47,6 +52,8 @@ protected DeviceIEDNamePanel getDeviceIEDNamePanel() {
 		
 	return deviceIEDNamePanel;
 }
+
+
 /**
  * Insert the method's description here.
  * Creation date: (7/13/2001 11:36:51 AM)
@@ -58,6 +65,8 @@ public DeviceMeterNumberPanel getDeviceMeterNumberPanel() {
 		
 	return deviceMeterNumberPanel;
 }
+
+
 /**
  * This method was created in VisualAge.
  * @return com.cannontech.dbeditor.wizard.device.DeviceNameAddressPanel
@@ -68,6 +77,8 @@ protected DeviceNameAddressPanel getDeviceNameAddressPanel() {
 		
 	return deviceNameAddressPanel;
 }
+
+
 /**
  * This method was created in VisualAge.
  * @return com.cannontech.dbeditor.wizard.device.DevicePhoneNumberPanel
@@ -78,6 +89,8 @@ protected DevicePhoneNumberPanel getDevicePhoneNumberPanel() {
 		
 	return devicePhoneNumberPanel;
 }
+
+
 /**
  * This method was created in VisualAge.
  * @return com.cannontech.dbeditor.wizard.device.DeviceRoutePanel
@@ -88,6 +101,8 @@ protected DeviceRoutePanel getDeviceRoutePanel() {
 		
 	return deviceRoutePanel;
 }
+
+
 /**
  * Insert the method's description here.
  * Creation date: (7/30/2001 10:54:57 AM)
@@ -100,6 +115,8 @@ public com.cannontech.dbeditor.editor.device.DeviceScanRateEditorPanel getDevice
 
 	return deviceScanRateEditorPanel;
 }
+
+
 /**
  * Insert the method's description here.
  * Creation date: (7/27/2001 12:00:43 PM)
@@ -113,6 +130,8 @@ public DeviceSixnetWizardPanel getDeviceSixnetWizardPanel()
 	}
 	return deviceSixnetWizardPanel;
 }
+
+
 /**
  * This method was created in VisualAge.
  * @return com.cannontech.dbeditor.wizard.device.DeviceNameAddressPanel
@@ -123,6 +142,8 @@ protected DeviceTapTerminalPanel getDeviceTapTerminalPanel() {
 		
 	return deviceTapTerminalPanel;
 }
+
+
 /**
  * This method was created in VisualAge.
  * @return com.cannontech.dbeditor.wizard.device.DeviceTypePanel
@@ -132,7 +153,9 @@ public DeviceTypePanel getDeviceTypePanel() {
 		this.deviceTypePanel = new DeviceTypePanel();
 		
 	return deviceTypePanel;
-} 
+}
+
+
 /**
  * This method was created in VisualAge.
  * @return com.cannontech.dbeditor.wizard.device.DeviceNameAddressPanel
@@ -144,6 +167,8 @@ protected DeviceVirtualNamePanel getDeviceVirtualNamePanel()
 		
 	return deviceVirtualNamePanel;
 }
+
+
 /**
  * This method was created in VisualAge.
  * @return com.cannontech.dbeditor.wizard.device.DeviceVirtualPortPanel
@@ -154,6 +179,8 @@ protected DeviceVirtualPortPanel getDeviceVirtualPortPanel() {
 		
 	return deviceVirtualPortPanel;
 }
+
+
 /**
  * This method was created in VisualAge.
  * @return java.lang.String
@@ -161,6 +188,20 @@ protected DeviceVirtualPortPanel getDeviceVirtualPortPanel() {
 protected String getHeaderText() {
 	return "Device Setup";
 }
+
+
+/**
+ * This method was created in VisualAge.
+ * @return com.cannontech.dbeditor.wizard.device.DeviceNameAddressPanel
+ */
+protected MCTBroadcastListEditorPanel getMCTBroadcastListEditorPanel() {
+	if( mctBroadcastListEditorPanel == null )
+		mctBroadcastListEditorPanel = new MCTBroadcastListEditorPanel();
+		
+	return mctBroadcastListEditorPanel;
+}
+
+
 /**
  * This method was created in VisualAge.
  * @return java.awt.Dimension
@@ -168,6 +209,8 @@ protected String getHeaderText() {
 public java.awt.Dimension getMinimumSize() {
 	return getPreferredSize();
 }
+
+
 /**
  * getNextInputPanel method comment.
  */
@@ -212,6 +255,12 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 				getDeviceMeterNumberPanel().setDefaultMeterNumber(getDeviceNameAddressPanel().getAddress());
 			}
 			return getDeviceMeterNumberPanel();
+		}
+		else if( com.cannontech.database.data.pao.DeviceTypes.MCTBROADCAST == devType )
+		{
+			MCTBroadcastListEditorPanel temp = getMCTBroadcastListEditorPanel();
+			temp.setValue(null);
+			return temp;
 		}
 		else
 		{
@@ -261,9 +310,17 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 		//If it isn't better go find out why we got here!
 		return getDevicePhoneNumberPanel();
 	}
+	
+	else if (currentInputPanel == getMCTBroadcastListEditorPanel())
+	{
+			getDeviceRoutePanel().setValue(null);
+			return getDeviceRoutePanel();
+	}
 	else
 		throw new Error(getClass() + "::" + "getNextInputPanel() - Could not determine next DataInputPanel");
 }
+
+
 /**
  * isLastInputPanel method comment.
  */
@@ -274,6 +331,8 @@ protected boolean isLastInputPanel(com.cannontech.common.gui.util.DataInputPanel
 			  currentPanel == getDeviceRoutePanel() ||
 			  currentPanel == getDeviceVirtualNamePanel() );
 }
+
+
 /**
  * This method was created in VisualAge.
  * @param args java.lang.String[]

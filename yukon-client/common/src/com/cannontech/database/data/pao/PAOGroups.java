@@ -191,6 +191,8 @@ public final static int getDeviceType(String typeString)
 	  return MCT250;
    else if (isStringDevice(compareString, STRING_MCT_210))
 	  return MCT210;
+   else if (isStringDevice(compareString, STRING_MCT_BROADCAST))
+      return MCTBROADCAST;
    else if (isStringDevice(compareString, STRING_REPEATER))
 	  return REPEATER;
    else if (isStringDevice(compareString, STRING_RTU_ILEX))
@@ -334,6 +336,9 @@ public final static String getDeviceTypeString(int type)
 		  return STRING_MACRO_GROUP[0];
 	  case LM_GROUP_RIPPLE:
 		  return STRING_RIPPLE_GROUP[0];
+
+	  case MCTBROADCAST:
+		  return STRING_MCT_BROADCAST[0];
 		  
 	  case CAPBANK:
 		  return STRING_CAP_BANK[0];

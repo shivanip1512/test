@@ -85,6 +85,7 @@ public final static boolean isCarrier(int deviceType)
 		case MCT310ID:
 		case MCT310IL:
 		case MCT318L:
+		case MCTBROADCAST:
 			return true;
 	
 		default:

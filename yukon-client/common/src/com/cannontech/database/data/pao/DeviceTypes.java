@@ -1,5 +1,4 @@
 package com.cannontech.database.data.pao;
-
 /**
  * Insert the type's description here.
  * Creation date: (10/2/2001 1:45:23 PM)
@@ -70,6 +69,8 @@ public interface DeviceTypes
 	public final static int SYSTEM = 200;
 	public final static int EDITABLEVERSACOMSERIAL = 210;
 
+	public final static int MCTBROADCAST = 220;
+
 	//all the possible text representation of each device type.
 	//If you want the string of any type, just access the zeroth element, example: STRING_CCU_710[0]
 	public static final String[] STRING_CCU_710 = {"CCU-710A", "CCU710A"};	
@@ -100,6 +101,7 @@ public interface DeviceTypes
 	public static final String[] STRING_MCT_250 = {"MCT-250", "MCT250"};
 	public static final String[] STRING_MCT_210 = {"MCT-210", "MCT210"};
 	public static final String[] STRING_MCT_213 = {"MCT-213", "MCT213"};
+	public static final String[] STRING_MCT_BROADCAST = {"MCT Broadcast", "MCT-Broadcast", "MCT_Broadcast", "MCT_Broadcast"};
 	public static final String[] STRING_REPEATER = {"REPEATER", "REPEATER 900"};
 	public static final String[] STRING_RTU_ILEX = {"RTU-ILEX", "RTUILEX"};
 	public static final String[] STRING_RTU_WELCO = {"RTU-WELCO", "RTUWELCO"};
