@@ -987,7 +987,7 @@ private com.klg.jclass.field.JCSpinField getPointOffsetSpinner() {
 			
 			ivjPointOffsetSpinner.setDataProperties(
 				new com.klg.jclass.field.DataProperties(new com.klg.jclass.field.validate.JCIntegerValidator(
-					null, new Integer(0), new Integer(90000), null, true, null, new Integer(1), 
+					null, new Integer(0), new Integer(99999), null, true, null, new Integer(1), 
 					"#####0.###;-#####0.###", false, false, false, null, new Integer(0)), 
 				new com.klg.jclass.util.value.MutableValueModel(java.lang.Integer.class, new Integer(1)), 
 				new com.klg.jclass.field.JCInvalidInfo(true, 2, new java.awt.Color(0, 0, 0, 255),
