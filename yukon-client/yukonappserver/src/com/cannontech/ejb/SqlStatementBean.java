@@ -2,37 +2,23 @@ package com.cannontech.ejb;
 import java.rmi.RemoteException;
 import java.sql.Connection;
 
-import javax.ejb.EJBException;
-import javax.ejb.SessionBean;
-import javax.ejb.SessionContext;
-
 import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.Transaction;
 import com.cannontech.yukon.ISQLStatement;
 
-/* Add this to SQLStatementHome class */
-//public com.cannontech.ejb.SqlStatement create() throws javax.ejb.CreateException, java.rmi.RemoteException;
-
 /**
  * @ejb:bean name="SqlStatement"
  *	jndi-name="jndi/SqlStatementBean"
  *	type="Stateful" 
 **/
-public class SqlStatementBean implements SessionBean, ISQLStatement
+public class SqlStatementBean implements ISQLStatement
 {
 	private String sql = null;
 	private InnerSqlStatement innerSql = null;
    private java.sql.Connection dbConn = null;
 	private String databaseAlias = CtiUtilities.getDatabaseAlias();	
-
- 	public void ejbActivate() throws EJBException, RemoteException {}
-	public void ejbPassivate() throws EJBException, RemoteException{}
-	public void ejbRemove() throws EJBException, RemoteException {}
-	public void setSessionContext(SessionContext sessCntxt) throws EJBException, RemoteException {}
-   public void ejbCreate() throws javax.ejb.CreateException {}
-
 
    /**
     * @ejb:interface-method

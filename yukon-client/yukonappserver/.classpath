@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
     <classpathentry kind="src" path="src"/>
-    <classpathentry kind="src" path="ejbsrc"/>
     <classpathentry kind="var" path="JRE_LIB" sourcepath="JRE_SRC"/>
     <classpathentry kind="var" path="JDK_TOOLS"/>
     <classpathentry kind="lib" path="/third-party/rwav.jar"/>
     <classpathentry kind="src" path="/common"/>
     <classpathentry kind="lib" path="/third-party/mx4j-jmx.jar"/>
-    <classpathentry kind="lib" path="/third-party/j2ee.jar"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>

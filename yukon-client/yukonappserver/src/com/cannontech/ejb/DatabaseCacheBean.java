@@ -3,26 +3,18 @@ package com.cannontech.ejb;
 import java.util.List;
 import java.util.Map;
 
-import javax.ejb.EJBException;
-import javax.ejb.SessionBean;
-import javax.ejb.SessionContext;
-
 import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.yukon.IDatabaseCache;
 
-
-/* Add this to DatabaseCacheHome class */
-//public com.cannontech.ejb.DatabaseCache create() throws javax.ejb.CreateException, java.rmi.RemoteException;
-
 /**
  * @ejb:bean name="DatabaseCache"
  * jndi-name="jndi/DatabaseCacheBean"
  * type="Stateful"
 **/
-public class DatabaseCacheBean implements SessionBean, IDatabaseCache
+public class DatabaseCacheBean implements IDatabaseCache
 {  
 	private IDatabaseCache dbCache = null;
 	
@@ -33,18 +25,6 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
            // new CacheChangeListener() );
    }
    
-   private SessionContext cnt = null;   
-
-   public void setSessionContext(SessionContext cntxt) throws EJBException, java.rmi.RemoteException 
-   {
-      cnt = cntxt;
-   }
-   
-   public void ejbRemove() throws EJBException, java.rmi.RemoteException {}
-   public void ejbActivate() throws EJBException, java.rmi.RemoteException {}
-   public void ejbPassivate() throws EJBException, java.rmi.RemoteException{}
-   public void ejbCreate() throws javax.ejb.CreateException {}
-
    private synchronized com.cannontech.yukon.IDatabaseCache getCache()
    {  
    	if( dbCache == null )

@@ -13,10 +13,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Vector;
 
-import javax.ejb.EJBException;
-import javax.ejb.SessionBean;
-import javax.ejb.SessionContext;
-
 import com.cannontech.clientutils.CTILogManager;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
@@ -29,15 +25,12 @@ import com.cannontech.database.db.DBPersistent;
 import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.yukon.IDBPersistent;
 
-/* Add this to DBPersistentHome class */
-//public com.cannontech.ejb.DBPersistent create() throws javax.ejb.CreateException, java.rmi.RemoteException;
-
 /**
  * @ejb:bean name="DBPersistent"
  * jndi-name="jndi/DBPersistentBean"
  * type="Stateful" 
 **/
-public class DBPersistentBean implements SessionBean, IDBPersistent
+public class DBPersistentBean implements IDBPersistent
 {
 	protected static final int ORACLE_FLOAT_PRECISION = SqlUtils.ORACLE_FLOAT_PRECISION;
 	
@@ -45,12 +38,6 @@ public class DBPersistentBean implements SessionBean, IDBPersistent
    //com.cannontech.common.util.CtiUtilities.getLogDirPath() + "DatabaseSQL.sql";
 
    private java.sql.Connection dbConnection = null;   
-
- 	public void ejbActivate() throws EJBException, RemoteException {}
-	public void ejbPassivate() throws EJBException, RemoteException{}
-	public void ejbRemove() throws EJBException, RemoteException {}
-	public void setSessionContext(SessionContext arg0) throws EJBException, RemoteException {}
-   public void ejbCreate() throws javax.ejb.CreateException {}
 
    /**
     * @ejb:interface-method
