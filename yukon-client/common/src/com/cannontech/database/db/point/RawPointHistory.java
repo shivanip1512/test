@@ -10,6 +10,7 @@ public class RawPointHistory extends com.cannontech.database.db.DBPersistent {
 	private java.util.GregorianCalendar timeStamp = null;
 	private Integer quality = null;
 	private Double value = null;
+	private Short millis = null;
 	
 	public final static String TABLE_NAME = "RawPointHistory";
 /**
@@ -107,7 +108,7 @@ public void initialize( Integer changeID, Integer pointID,
  */
 public void retrieve() throws java.sql.SQLException {
 
-	String selectColumns[] = { "POINTID", "TIMESTAMP", "QUALITY", "VALUE" };
+	String selectColumns[] = { "POINTID", "TIMESTAMP", "QUALITY", "VALUE", "millis" };
 
 	String constraintColumns[] = { "CHANGEID" };
 	Object constraintValues[] = { getChangeID() };
@@ -122,6 +123,8 @@ public void retrieve() throws java.sql.SQLException {
 		setTimeStamp( tempCal );
 		setQuality( (Integer) results[2] );
 		setValue( (Double) results[3] );
+		
+		setMillis( new Short( ((Integer)results[4]).shortValue() ) );
 	}
 	else
 		throw new Error(getClass() + " - Incorrect Number of results retrieved");
@@ -166,11 +169,28 @@ public void setValue(Double newValue) {
  * update method comment.
  */
 public void update() throws java.sql.SQLException {
-	String setColumns[]= { "POINTID", "TIMESTAMP", "QUALITY", "VALUE" };
-	Object setValues[] = { getPointID(), getTimeStamp(), getQuality(), getValue() };
+	String setColumns[]= { "POINTID", "TIMESTAMP", "QUALITY", "VALUE", "millis" };
+	Object setValues[] = { getPointID(), getTimeStamp(), getQuality(), getValue(), getMillis() };
 	String constraintColumns[] = { "CHANGEID" };
 	Object constraintValues[] = { getChangeID() };
 
 	update( this.TABLE_NAME, setColumns, setValues, constraintColumns, constraintValues );
 }
+
+	/**
+	 * @return
+	 */
+	public Short getMillis()
+	{
+		return millis;
+	}
+
+	/**
+	 * @param short1
+	 */
+	public void setMillis(Short short1)
+	{
+		millis = short1;
+	}
+
 }
