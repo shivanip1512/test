@@ -51,7 +51,7 @@ public interface IPointOffsets
 					new String[] {"kWh","Power Fail Count"} ),
 		new PointOffset( PAOGroups.MCT410IL, PointTypes.DEMAND_ACCUMULATOR_POINT, 
 					new int[]{1,4,11,14,15,101,104},
-					new String[] {"kW","Peak kW","Voltage","Max Volts","Min Volts",
+					new String[] {"kW","Voltage","Peak kW","Max Volts","Min Volts",
 								"Load profile kW demand","Load profile voltage"} ),
 
 		new PointOffset( PAOGroups.MCT370, PointTypes.STATUS_POINT, 
