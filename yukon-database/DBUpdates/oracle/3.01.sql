@@ -118,7 +118,9 @@ MaxHoursMonthly, MaxHoursSeasonal, MaxHoursAnnually, MinActivateTime, MinRestart
 
 update LMProgram set constraintid = deviceid;
 
+/* @error ignore */
 alter table LMProgram drop constraint FK_SesSch_LmPr;
+/* @error ignore */
 alter table LMProgram drop constraint FK_HlSc_LmPr;
 
 alter table LMProgram drop column AvailableSeasons;
@@ -135,7 +137,6 @@ alter table LMProgram drop column SeasonScheduleID;
 
 /* @error ignore */
 drop table portstatistics;
-
 
 alter table LMProgramDirect add NotifyInterval number;
 update LMProgramDirect set NotifyInterval = 0;
@@ -160,7 +161,6 @@ alter table LMProgramDirect modify CanceledMsg varchar2(80) not null;
 alter table LMProgramDirect add StoppedEarlyMsg varchar2(80);
 update LMProgramDirect set StoppedEarlyMsg = '(none)';
 alter table LMProgramDirect modify StoppedEarlyMsg varchar2(80) not null;
-
 
 
 create table DeviceRTC  (
@@ -392,6 +392,16 @@ alter table DynamicLMGroup modify InternalState number not null;
 update displaycolumns set typenum = 7 where title = 'Additional Info' and displaynum < 99;
 
 
+
+/* @error ignore */
+alter table dynamiclmgroup drop constraint FK_DyLmGr_LmPrDGr;
+/* @error ignore */
+alter table DynamicLMGroup drop constraint PK_DYNAMICLMGROUP;
+delete from DynamicLMGroup;
+alter table DynamicLMGroup add constraint PK_DYNAMICLMGROUP primary key (DeviceID);
+
+alter table dynamiclmgroup DROP COLUMN lmprogramid;
+
 alter table LMProgramConstraints drop column AvailableSeasons;
 
 /*==============================================================*/
@@ -422,7 +432,14 @@ alter table SeasonSchedule drop column SpringMonth;
 
 delete from SeasonSchedule where scheduleid > 0;
 
-alter table dynamicLMProgram drop column LMProgramID;
+
+
+
+
+
+
+
+
 
 /******************************************************************************/
 /* Run the Stars Update if needed here */
@@ -431,7 +448,7 @@ alter table dynamicLMProgram drop column LMProgramID;
 /******************************************************************************/
 
 
-/******************************************************************************/
-/* VERSION INFO                                                               */
-/******************************************************************************/
-insert into CTIDatabase values('3.00', 'Ryan', '5-MAR-2004', 'Many changes to a major version jump', 0);
+/**************************************************************/
+/* VERSION INFO                                               */
+/*   Automatically gets inserted from build script            */
+/**************************************************************/

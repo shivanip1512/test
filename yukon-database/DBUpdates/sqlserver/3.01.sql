@@ -142,8 +142,10 @@ MaxHoursMonthly, MaxHoursSeasonal, MaxHoursAnnually, MinActivateTime, MinRestart
 update LMProgram set constraintid = deviceid;
 go
 
+/* @error ignore */
 alter table LMProgram drop constraint FK_SesSch_LmPr;
 go
+/* @error ignore */
 alter table LMProgram drop constraint FK_HlSc_LmPr;
 go
 
@@ -160,12 +162,9 @@ alter table LMProgram drop column SeasonScheduleID;
 go
 
 
-
-
 /* @error ignore */
 drop table portstatistics;
 go
-
 
 alter table LMProgramDirect add NotifyInterval numeric;
 go
@@ -475,6 +474,19 @@ go
 
 update displaycolumns set typenum = 7 where title = 'Additional Info' and displaynum < 99;
 
+
+/* @error ignore */
+alter table dynamiclmgroup drop constraint FK_DyLmGr_LmPrDGr;
+go
+/* @error ignore */
+alter table DynamicLMGroup drop constraint PK_DYNAMICLMGROUP;
+go
+delete from DynamicLMGroup;
+go
+alter table DynamicLMGroup add constraint PK_DYNAMICLMGROUP primary key (DeviceID);
+
+alter table dynamiclmgroup DROP COLUMN lmprogramid;
+
 alter table LMProgramConstraints drop column AvailableSeasons;
 
 /*==============================================================*/
@@ -519,8 +531,14 @@ go
 
 delete from SeasonSchedule where scheduleid > 0;
 
-alter table dynamicLMProgram drop column LMProgramID;
-go
+
+
+
+
+
+
+
+
 
 /******************************************************************************/
 /* Run the Stars Update if needed here */
@@ -529,8 +547,7 @@ go
 /******************************************************************************/
 
 
-/******************************************************************************/
-/* VERSION INFO                                                               */
-/******************************************************************************/
-insert into CTIDatabase values('3.01', 'Ryan', '5-MAR-2004', 'Many changes to a major version jump', 0);
-go
+/**************************************************************/
+/* VERSION INFO                                               */
+/*   Automatically gets inserted from build script            */
+/**************************************************************/
