@@ -121,7 +121,17 @@
                           </td>
                           <td width="200"> 
                             <select name="Manufacturer">
-                              <option>Century</option>
+<%
+	Hashtable selectionListTable = (Hashtable) operator.getAttribute( "CUSTOMER_SELECTION_LISTS" );
+	StarsCustSelectionList manuList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_MANUFACTURER );
+	for (int i = 0; i < manuList.getStarsSelectionListEntryCount(); i++) {
+		StarsSelectionListEntry entry = manuList.getStarsSelectionListEntry(i);
+		String selectedStr = (entry.getEntryID() == appliance.getManufacturer().getEntryID()) ? "selected" : "";
+%>
+							  <option value="<%= entry.getEntryID() %>" <%= selectedStr %>><%= entry.getContent() %></option>
+<%
+	}
+%>
                             </select>
                           </td>
                         </tr>
@@ -130,7 +140,7 @@
                             <div align="right">Year Manufactured:</div>
                           </td>
                           <td width="200"> 
-                            <input type="text" name="ManuYear" maxlength="14" size="14" value="<%= appliance.getManufactureYear() %>">
+                            <input type="text" name="ManuYear" maxlength="14" size="14" value="<%= appliance.getYearManufactured() %>">
                           </td>
                         </tr>
                         <tr> 
@@ -139,7 +149,16 @@
                           </td>
                           <td width="200"> 
                             <select name="Location">
-                              <option>Basement</option>
+<%
+	StarsCustSelectionList locationList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_LOCATION );
+	for (int i = 0; i < locationList.getStarsSelectionListEntryCount(); i++) {
+		StarsSelectionListEntry entry = locationList.getStarsSelectionListEntry(i);
+		String selectedStr = (entry.getEntryID() == appliance.getLocation().getEntryID()) ? "selected" : "";
+%>
+							  <option value="<%= entry.getEntryID() %>" <%= selectedStr %>><%= entry.getContent() %></option>
+<%
+	}
+%>
                             </select>
                           </td>
                         </tr>

@@ -89,7 +89,15 @@
                     </td>
                     <td width="200"> 
                       <select name="Manufacturer">
-                        <option>Century</option>
+<%
+	StarsCustSelectionList manuList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_MANUFACTURER );
+	for (int i = 0; i < manuList.getStarsSelectionListEntryCount(); i++) {
+		StarsSelectionListEntry entry = manuList.getStarsSelectionListEntry(i);
+%>
+						<option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
+<%
+	}
+%>
                       </select>
                     </td>
                   </tr>
@@ -107,7 +115,15 @@
                     </td>
                     <td width="200"> 
                       <select name="Location">
-                        <option>Basement</option>
+<%
+	StarsCustSelectionList locationList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_LOCATION );
+	for (int i = 0; i < locationList.getStarsSelectionListEntryCount(); i++) {
+		StarsSelectionListEntry entry = locationList.getStarsSelectionListEntry(i);
+%>
+						<option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
+<%
+	}
+%>
                       </select>
                     </td>
                   </tr>

@@ -26,14 +26,23 @@
 		else
 			links.put(linkMap[i][0], "<img src=\"Bullet2.gif\" width=\"12\" height=\"12\"><a href=\"" + linkMap[i][0] + "\" class=\"Link2\"><span class=\"NavText\">" + linkMap[i][1] + "</span></a>");
 	}
-	
+		
 	String[] appLinks = new String[ appliances.getStarsApplianceCount() ];
+	int lastItemType = 0;
+	int itemNo = 1;
 	
     for (int i = 0; i < appliances.getStarsApplianceCount(); i++) {
         StarsAppliance app = appliances.getStarsAppliance(i);
-		
 		String linkText = app.getCategoryName();
-		if (linkText == null || linkText.length() == 0) linkText = "Appliance";
+		
+		if (app.getApplianceCategoryID() != lastItemType) {
+			lastItemType = app.getApplianceCategoryID();
+			itemNo = 1;
+		}
+		else {
+			itemNo++;
+			linkText = linkText + " (" + String.valueOf(itemNo) + ")";
+		}
 			
 		if (pageName.equalsIgnoreCase("Appliance.jsp?AppNo=" + i))
 			appLinks[i] = "<img src=\"Bullet.gif\" width=\"12\" height=\"12\"><span class=\"Nav\">" + linkText + "</span>";
@@ -42,11 +51,21 @@
     }
 	
 	String[] invLinks = new String[ inventories.getStarsLMHardwareCount() ];
+	lastItemType = 0;
+	itemNo = 1;
 	
 	for (int i = 0; i < inventories.getStarsLMHardwareCount(); i++) {
 		StarsLMHardware hw = inventories.getStarsLMHardware(i);
-		
 		String linkText = hw.getLMDeviceType().getContent();
+		
+		if (hw.getLMDeviceType().getEntryID() != lastItemType) {
+			lastItemType = hw.getLMDeviceType().getEntryID();
+			itemNo = 1;
+		}
+		else {
+			itemNo++;
+			linkText = linkText + " (" + String.valueOf(itemNo) + ")";
+		}
 		
 		if (pageName.equalsIgnoreCase("Inventory.jsp?InvNo=" + i))
 			invLinks[i] = "<img src=\"Bullet.gif\" width=\"12\" height=\"12\"><span class=\"Nav\">" + linkText + "</span>";
