@@ -8,7 +8,6 @@ import java.util.Properties;
 
 import javax.swing.JOptionPane;
 
-import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.cache.functions.YukonUserFuncs;
@@ -18,21 +17,11 @@ import com.cannontech.database.data.lite.LiteYukonUser;
  * Holds session information for client programs.
  * Start with the static establishSession methods.
  * 
- * If a db.properties exists in the classpath it will be used
- * instead of loggin in.  The default yukon user with id -1 will be used.
+ * If a db.properties exists in the classpath a 'local login' will be attempted
+ * instead of a 'remote login'
  * 
- * Current connection process:
- * 1) Look up current session id via preferences api
- * 2) Use session id to make a request to the servlet that returns db properties.
- * 		If we get db properties goto 9
- * 3) Ask the user for a yukon server location, a username, and a password.  
- * 4) Connect to the login servlet and try to get a session id from it.
- * 5) goto 2
- * 
- * 9) All is good, store anything golden via preferences 
- * 		and give out a reference to a property initialized ClientSession.
- *10) have a beer.
- *
+ * In either case if there is a currentuserid,currentsessionid an attempt will be made to
+ * use it, if that fails the user will be asked for their credentials.
  * @author aaron
  */
 public class ClientSession {
