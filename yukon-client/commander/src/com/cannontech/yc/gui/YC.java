@@ -5,8 +5,8 @@ package com.cannontech.yc.gui;
  * Creation date: (2/25/2002 3:24:43 PM)
  * @author: 
  */
-import java.io.IOException;
 import java.util.Observable;
+import java.util.StringTokenizer;
 
 import javax.servlet.http.HttpSessionBindingEvent;
 
@@ -510,8 +510,12 @@ public class YC extends Observable implements com.cannontech.message.util.Messag
 		
 		if( index < 0 )	// serial not in command string = -1
 			setCommand( getCommand() + " serial " + serialNumber );
-		//else	// Do nothing, assume the command is correct
-	
+		else {	// set serial as in command string
+			StringTokenizer st = new StringTokenizer( getCommand().substring(index+6) );
+			if (st.hasMoreTokens())
+				setSerialNumber( st.nextToken() );
+		}
+		
 		setLoopType( parseLoopCommand() );
 		
 		porterRequest = new Request( deviceID, getCommand(), currentUserMessageID );
