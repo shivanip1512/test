@@ -1,3 +1,4 @@
+
 /*-----------------------------------------------------------------------------*
 *
 * File:   dev_wctp
@@ -54,11 +55,11 @@ CtiDeviceWctpTerminal::~CtiDeviceWctpTerminal()
 {
     freeDataBins();
     destroyBuffers();
-    if (parser != NULL)
+    if(parser != NULL)
     {
         delete parser;
     }
-    if (handler != NULL)
+    if(handler != NULL)
     {
         delete handler;
     }
@@ -76,11 +77,11 @@ bool CtiDeviceWctpTerminal::getSendFiller() const
 }
 
 INT CtiDeviceWctpTerminal::ExecuteRequest(CtiRequestMsg                  *pReq,
-                                               CtiCommandParser               &parse,
-                                               OUTMESS                        *&OutMessage,
-                                               RWTPtrSlist< CtiMessage >      &vgList,
-                                               RWTPtrSlist< CtiMessage >      &retList,
-                                               RWTPtrSlist< OUTMESS >         &outList)
+                                          CtiCommandParser               &parse,
+                                          OUTMESS                        *&OutMessage,
+                                          RWTPtrSlist< CtiMessage >      &vgList,
+                                          RWTPtrSlist< CtiMessage >      &retList,
+                                          RWTPtrSlist< OUTMESS >         &outList)
 {
     INT nRet = NORMAL;
     /*
@@ -112,16 +113,16 @@ INT CtiDeviceWctpTerminal::ExecuteRequest(CtiRequestMsg                  *pReq,
             /* Set the error value in the base class. */
             // FIX FIX FIX 092999
             retList.insert( CTIDBG_new CtiReturnMsg(getID(),
-                                             RWCString(OutMessage->Request.CommandStr),
-                                             RWCString("TAP Devices do not support this command (yet?)"),
-                                             nRet,
-                                             OutMessage->Request.RouteID,
-                                             OutMessage->Request.MacroOffset,
-                                             OutMessage->Request.Attempt,
-                                             OutMessage->Request.TrxID,
-                                             OutMessage->Request.UserID,
-                                             OutMessage->Request.SOE,
-                                             RWOrdered()));
+                                                    RWCString(OutMessage->Request.CommandStr),
+                                                    RWCString("TAP Devices do not support this command (yet?)"),
+                                                    nRet,
+                                                    OutMessage->Request.RouteID,
+                                                    OutMessage->Request.MacroOffset,
+                                                    OutMessage->Request.Attempt,
+                                                    OutMessage->Request.TrxID,
+                                                    OutMessage->Request.UserID,
+                                                    OutMessage->Request.SOE,
+                                                    RWOrdered()));
 
             if(OutMessage)                // And get rid of our memory....
             {
@@ -254,7 +255,7 @@ CHAR* CtiDeviceWctpTerminal::getOutBuffer()
 {
     LockGuard gd(monitor());
 
-    if (_outBuffer == NULL)
+    if(_outBuffer == NULL)
     {
         _outBuffer = CTIDBG_new CHAR[1024];
         _outBuffer[0] = 0;
@@ -267,7 +268,7 @@ CHAR* CtiDeviceWctpTerminal::getInBuffer()
 {
     LockGuard gd(monitor());
 
-    if (_inBuffer == NULL)
+    if(_inBuffer == NULL)
     {
         _inBuffer = CTIDBG_new CHAR[1024];
         _inBuffer[0] = 0;
@@ -280,7 +281,7 @@ CHAR* CtiDeviceWctpTerminal::getXMLBuffer()
 {
     LockGuard gd(monitor());
 
-    if (_xmlBuffer == NULL)
+    if(_xmlBuffer == NULL)
     {
         _xmlBuffer = CTIDBG_new CHAR[1024];
         _xmlBuffer[0] = 0;
@@ -295,24 +296,24 @@ void CtiDeviceWctpTerminal::destroyBuffers()
 
     try
     {
-        if (_outBuffer != NULL)
+        if(_outBuffer != NULL)
         {
             delete [] _outBuffer;
             _outBuffer = NULL;
         }
 
-        if (_inBuffer != NULL)
+        if(_inBuffer != NULL)
         {
             delete [] _inBuffer;
             _inBuffer = NULL;
         }
-        if (_xmlBuffer != NULL)
+        if(_xmlBuffer != NULL)
         {
             delete [] _xmlBuffer;
             _xmlBuffer = NULL;
         }
     }
-    catch (...)
+    catch(...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -323,7 +324,7 @@ void CtiDeviceWctpTerminal::destroyBuffers()
 
 SAX2XMLReader* CtiDeviceWctpTerminal::getSAXParser()
 {
-    if (parser == NULL)
+    if(parser == NULL)
     {
         parser = XMLReaderFactory::createXMLReader();
     }
@@ -333,7 +334,7 @@ SAX2XMLReader* CtiDeviceWctpTerminal::getSAXParser()
 
 SAXWctpHandler* CtiDeviceWctpTerminal::getWctpHandler()
 {
-    if (handler == NULL)
+    if(handler == NULL)
     {
         handler = CTIDBG_new SAXWctpHandler;
     }
@@ -345,7 +346,8 @@ SAXWctpHandler* CtiDeviceWctpTerminal::getWctpHandler()
 CHAR* CtiDeviceWctpTerminal::removeDocType(const CHAR *src, CHAR *dst)
 {
     CHAR *p1 = strstr(src, "<!DOCTYPE");
-    if (p1 == NULL) {
+    if(p1 == NULL)
+    {
         strcpy(dst, src);
         return dst;
     }
@@ -354,7 +356,7 @@ CHAR* CtiDeviceWctpTerminal::removeDocType(const CHAR *src, CHAR *dst)
     dst[p1 - src] = 0;
 
     CHAR *p2 = strstr(src, "<wctp-Operation");
-    if (p2 != NULL)
+    if(p2 != NULL)
         strcat(dst, p2);
     return dst;
 }
@@ -370,19 +372,19 @@ CHAR* CtiDeviceWctpTerminal::trimMessage(CHAR *message)
     ptr1 = message;         // Pointer to message
     lastPtr = NULL;         // Pointer to the start of a series of consecutive blank chars
 
-    while (*ptr != 0)
+    while(*ptr != 0)
     {
-        if (*ptr == ' ' || *ptr == '\t' || *ptr == '\r' || *ptr == '\n')
+        if(*ptr == ' ' || *ptr == '\t' || *ptr == '\r' || *ptr == '\n')
         {
             // ptr points to a blank char
-            if (lastPtr == NULL)
+            if(lastPtr == NULL)
             {
                 lastPtr = ptr;
             }
         }
         else
         {
-            if (lastPtr != NULL)
+            if(lastPtr != NULL)
             {
                 // There are a series of blank chars before this, shrink them to one space char
                 *ptr1++ = ' ';
@@ -480,20 +482,20 @@ CHAR* CtiDeviceWctpTerminal::replaceChars(const CHAR *src, CHAR *dst)
     int i;
 
     strcpy(dst, src);
-    for (i = 0; i < numSpecialChars; i++)
+    for(i = 0; i < numSpecialChars; i++)
     {
         buf[0] = 0;
         lastPos = dst;
-        while ((pos = strstr(lastPos, toBeReplaced[i])) != NULL)
+        while((pos = strstr(lastPos, toBeReplaced[i])) != NULL)
         {
             strncat(buf, lastPos, pos - lastPos);
             strcat(buf, replaceWith[i]);
             lastPos = pos + 1;
         }
 
-        if (lastPos != dst)
+        if(lastPos != dst)
         {
-            if (*lastPos != 0)
+            if(*lastPos != 0)
             {
                 strcat(buf, lastPos);
             }
@@ -550,48 +552,62 @@ INT CtiDeviceWctpTerminal::readLine(CHAR *str, CHAR *buf, INT bufLen)
     CHAR *ptr;
     INT len;
 
-    if (str != NULL)
+    try
     {
-        readLinePtr = str;
-    }
-    else if (readLinePtr == NULL || *readLinePtr == 0)
-    {
-        return -1;
-    }
-
-    ptr = readLinePtr;
-    while (*ptr != '\r' && *ptr != '\n' && *ptr != 0)
-    {
-        ptr++;
-    }
-
-    if (*ptr == 0)
-    {
-        return -1;
-    }
-
-    len = ptr - readLinePtr;
-    if (bufLen < len) {
-        len = bufLen;
-        ptr = readLinePtr + len;
-    }
-
-    strncpy(buf, readLinePtr, len);
-    buf[len] = 0;
-
-    if (*ptr == '\r')
-    {
-        readLinePtr = ptr + 1;
-        if (*readLinePtr == '\n')
+        if(str != NULL)
         {
-            // If a line ends with "\r\n", move readLinePtr to the right of the '\n'
-            readLinePtr++;
+            readLinePtr = str;
+        }
+        else if(readLinePtr == NULL || *readLinePtr == 0)
+        {
+            return -1;
+        }
+
+        ptr = readLinePtr;
+        while(*ptr != '\r' && *ptr != '\n' && *ptr != 0)
+        {
+            ptr++;
+        }
+
+        if(*ptr == 0)
+        {
+            return -1;
+        }
+
+        len = ptr - readLinePtr;
+        if(bufLen < len)
+        {
+            len = bufLen;
+            ptr = readLinePtr + len;
+        }
+
+        strncpy(buf, readLinePtr, len);
+        buf[len] = 0;
+
+        if(*ptr == '\r')
+        {
+            readLinePtr = ptr + 1;
+            if(*readLinePtr == '\n')
+            {
+                // If a line ends with "\r\n", move readLinePtr to the right of the '\n'
+                readLinePtr++;
+            }
+        }
+        else
+        {
+            readLinePtr = ptr + 1;
         }
     }
-    else
+    catch(...)
     {
-        readLinePtr = ptr + 1;
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+
+        autopsy( __FILE__, __LINE__ );
     }
+
 
     return len;
 }
@@ -679,9 +695,9 @@ INT CtiDeviceWctpTerminal::generateCommand(CtiXfer  &xfer, RWTPtrSlist< CtiMessa
         }
     case StateScanValueSet2:
         {
-            if (timeEllapsed < WCTP_TIMEOUT)
+            if(timeEllapsed < WCTP_TIMEOUT)
             {
-                xfer.setOutCount(0);                    // Nothing CTIDBG_new here
+                xfer.setOutCount(0);                    // Nothing new here
                 xfer.setNonBlockingReads(true);
                 xfer.setInCountExpected(1024);
                 xfer.setInTimeout(1);
@@ -723,262 +739,284 @@ INT CtiDeviceWctpTerminal::decodeResponse(CtiXfer  &xfer, INT commReturnValue, R
     SAX2XMLReader  *parser;
     SAXWctpHandler *handler;
 
-    if( status == NORMAL )     // Communications must have been successful
+    try
     {
-        switch( getCurrentState() )
+        if( status == NORMAL )     // Communications must have been successful
         {
-        case StateScanDecode1:
+            switch( getCurrentState() )
             {
-                /*
-                 *  We just sent out our page, we are going to parse the HTTP response
-                 */
+            case StateScanDecode1:
+                {
+                    /*
+                     *  We just sent out our page, we are going to parse the HTTP response
+                     */
 
-                // Clear the out buffer, we're going to store the input data in this buffer
-                // in case that it's not received in one time
-                in = (CHAR*)xfer.getInBuffer();
-                out = (CHAR*)xfer.getOutBuffer();
-                out[0] = 0;
+                    // Clear the out buffer, we're going to store the input data in this buffer
+                    // in case that it's not received in one time
+                    in = (CHAR*)xfer.getInBuffer();
+                    out = (CHAR*)xfer.getOutBuffer();
+                    out[0] = 0;
 
-                statusParsed = FALSE;
-                headerParsed = FALSE;
+                    statusParsed = FALSE;
+                    headerParsed = FALSE;
 
-                setCurrentState( StateScanDecode2 );
+                    setCurrentState( StateScanDecode2 );
 
-                /* FALL THROUGH! */
-            }
-        case StateScanDecode2:
-            {
-                if( (inCnt = xfer.getInCountActual()) > 0) {
-                    // Append the out buffer with the input data
-                    strncat(out, in, inCnt);
-
-                    if (!statusParsed)
+                    /* FALL THROUGH! */
+                }
+            case StateScanDecode2:
+                {
+                    if( (inCnt = xfer.getInCountActual()) > 0)
                     {
-                        /*
-                         * Parse the first line (status line) of the HTTP response
-                         */
-                        if (readLine(out, buf, 255) < 12)
+                        // Append the out buffer with the input data
+                        strncat(out, in, inCnt);
+
+                        if(!statusParsed)
                         {
-                            // Not enough message to parse yet
+                            /*
+                             * Parse the first line (status line) of the HTTP response
+                             */
+                            if(readLine(out, buf, 255) < 12)
+                            {
+                                // Not enough message to parse yet
+                                setCurrentState( StateScanValueSet2 );
+                                break;
+                            }
+
+                            /*
+                             * A successful Http response should take the form "HTTP/X.X 200 ..."
+                             */
+                            if(_strnicmp(buf, "HTTP", 4) != 0)
+                            {
+                                setCurrentState( StateScanAbort );
+                                return ErrorHttpResponse;
+                            }
+
+                            INT statusCode = 0;
+                            sscanf(buf+9, "%d", &statusCode);
+
+                            if(statusCode != 200)
+                            {
+                                setCurrentState( StateScanAbort );
+                                return ErrorHttpResponse;
+                            }
+
+                            /* Successful HTTP response */
+                            statusParsed = TRUE;
+                        }
+
+                        if(!headerParsed)
+                        {
+                            /*
+                             * Parse HTTP response headers, looking for "Content-Length"
+                             */
+                            BOOL foundWctpResp = FALSE;
+                            while(readLine(NULL, buf, 255) != -1)
+                            {
+                                if(_strnicmp(buf, "Content-Length:", 15) == 0)
+                                {
+                                    sscanf(buf+15, "%d", &msgLen);
+                                }
+                                if(strlen(buf) == 0)
+                                {
+                                    foundWctpResp = TRUE;
+                                    break;
+                                }
+                            }
+
+                            if(!foundWctpResp)
+                            {
+                                // Not receive all HTTP headers yet, go back and get more bytes
+                                setCurrentState( StateScanValueSet2 );
+                                break;
+                            }
+
+                            /* Found WCTP response */
+                            headerParsed = TRUE;
+
+                            try
+                            {
+                                // Initialize the XML4C2 system
+                                XMLPlatformUtils::Initialize();
+
+                                // Prepare the WTCP message parser and handler
+                                handler = getWctpHandler();
+                                parser = getSAXParser();
+                                parser->setContentHandler(handler);
+                                parser->setErrorHandler(handler);
+                            }
+                            catch(const XMLException& toCatch)
+                            {
+                                setCurrentState( StateScanAbort );
+                                return ErrorXMLParser;
+                            }
+                        }
+
+                        /*
+                         * Parse the WCTP response message
+                         */
+                        CHAR *wctpMsg = getReadLinePtr();           // Point to the start of WCTP response message
+                        if(msgLen == 0)
+                        {
+                            msgLen = strlen(wctpMsg);
+                        }
+
+                        if(strlen(wctpMsg) < msgLen)
+                        {
+                            // Not received all the WCTP response message yet
                             setCurrentState( StateScanValueSet2 );
                             break;
                         }
 
+                        // Remove the "!DOCTYPE" declaration from the WCTP response
+                        // and store the modified message in xml buffer
                         /*
-                         * A successful Http response should take the form "HTTP/X.X 200 ..."
+                         * !!!NOTICE: If we keep the "!DOCTYPE", the parser will throw an exception
+                         * for not being able to access the DTD file via internet
                          */
-                        if (_strnicmp(buf, "HTTP", 4) != 0)
+                        CHAR* xmlMsg = getXMLBuffer();
+                        try
                         {
-                            setCurrentState( StateScanAbort );
-                            return ErrorHttpResponse;
-                        }
+                            removeDocType(wctpMsg, xmlMsg);
 
-                        INT statusCode = 0;
-                        sscanf(buf+9, "%d", &statusCode);
-
-                        if (statusCode != 200)
-                        {
-                            setCurrentState( StateScanAbort );
-                            return ErrorHttpResponse;
-                        }
-
-                        /* Successful HTTP response */
-                        statusParsed = TRUE;
-                    }
-
-                    if (!headerParsed)
-                    {
-                        /*
-                         * Parse HTTP response headers, looking for "Content-Length"
-                         */
-                        BOOL foundWctpResp = FALSE;
-                        while (readLine(NULL, buf, 255) != -1)
-                        {
-                            if (_strnicmp(buf, "Content-Length:", 15) == 0)
+                            if(strlen(xmlMsg) > 0)
                             {
-                                sscanf(buf+15, "%d", &msgLen);
+                                MemBufInputSource is( (XMLByte*)xmlMsg, strlen(xmlMsg), "WCTP response message" );
+                                is.setCopyBufToStream( true );
+                                handler->resetHandler();
+                                parser->parse(is);
                             }
-                            if (strlen(buf) == 0)
+                        }
+                        catch(const SAXParseException& e)
+                        {
+                            /*
+                             * There are two possibilities that we get a SAXParseException:
+                             * the WCTP response message is not well-formatted, or we haven't
+                             * received all the bytes yet.
+                             * In the later case, we need to go back and get more bytes
+                             */
+                            if(handler->hasError())
                             {
-                                foundWctpResp = TRUE;
+                                setCurrentState( StateScanAbort );
+                                return ErrorWctpResponse;
+                            }
+                            else
+                            {
+                                setCurrentState( StateScanValueSet2 );
                                 break;
                             }
                         }
-
-                        if (!foundWctpResp)
+                        catch(...)
                         {
-                            // Not receive all HTTP headers yet, go back and get more bytes
-                            setCurrentState( StateScanValueSet2 );
-                            break;
-                        }
-
-                        /* Found WCTP response */
-                        headerParsed = TRUE;
-
-                        try
-                        {
-                            // Initialize the XML4C2 system
-                            XMLPlatformUtils::Initialize();
-
-                            // Prepare the WTCP message parser and handler
-                            handler = getWctpHandler();
-                            parser = getSAXParser();
-                            parser->setContentHandler(handler);
-                            parser->setErrorHandler(handler);
-                        }
-                        catch (const XMLException& toCatch)
-                        {
-                            setCurrentState( StateScanAbort );
-                            return ErrorXMLParser;
-                        }
-                    }
-
-                    /*
-                     * Parse the WCTP response message
-                     */
-                    CHAR *wctpMsg = getReadLinePtr();           // Point to the start of WCTP response message
-                    if (msgLen == 0)
-                    {
-                        msgLen = strlen(wctpMsg);
-                    }
-
-                    if (strlen(wctpMsg) < msgLen)
-                    {
-                        // Not received all the WCTP response message yet
-                        setCurrentState( StateScanValueSet2 );
-                        break;
-                    }
-
-                    // Remove the "!DOCTYPE" declaration from the WCTP response
-                    // and store the modified message in xml buffer
-                    /*
-                     * !!!NOTICE: If we keep the "!DOCTYPE", the parser will throw an exception
-                     * for not being able to access the DTD file via internet
-                     */
-                    CHAR* xmlMsg = getXMLBuffer();
-                    removeDocType(wctpMsg, xmlMsg);
-
-                    MemBufInputSource is( (XMLByte*)xmlMsg,
-                                          strlen(xmlMsg),
-                                          "WCTP response message" );
-
-                    try{
-                        handler->resetHandler();
-                        parser->parse(is);
-                    }
-                    catch (const SAXParseException& e)
-                    {
-                        /*
-                         * There are two possibilities that we get a SAXParseException:
-                         * the WCTP response message is not well-formatted, or we haven't
-                         * received all the bytes yet.
-                         * In the later case, we need to go back and get more bytes
-                         */
-                        if (handler->hasError())
-                        {
+                            // Unexpected exception during parsing WCTP response message
                             setCurrentState( StateScanAbort );
                             return ErrorWctpResponse;
                         }
-                        else
+
+                        /* The WCTP response message has been received completely, and parsed successfully */
+
+                        if(xfer.doTrace(commReturnValue))
+                        {
+                            if(xfer.doTrace(DEBUGLEVEL_WCTP_PROTOCOL))
+                            {
+                                traceIn(xmlMsg, strlen(xmlMsg), traceList, TRUE);
+                            }
+
+                            _snprintf(buf, 255, "WCTP response: %d %s\n%s",
+                                      handler->getResponseCode(),
+                                      handler->getResponseText(),
+                                      trimMessage( handler ->getResponseMessage() ));
+                            traceIn(buf, strlen(buf), traceList, TRUE);
+
+
+                            if(299 < handler->getResponseCode() && handler->getResponseCode() < 400)
+                            {
+                                status = ErrorWctp300Series;
+                            }
+                            else if(399 < handler->getResponseCode() && handler->getResponseCode() < 500)
+                            {
+                                status = ErrorWctp400Series;
+                            }
+                            else if(499 < handler->getResponseCode() && handler->getResponseCode() < 600)
+                            {
+                                status = ErrorWctp500Series;
+                            }
+                            else if(599 < handler->getResponseCode() && handler->getResponseCode() < 700)
+                            {
+                                status = ErrorWctp600Series;
+                            }
+                        }
+
+                        // And call the termination method
+                        XMLPlatformUtils::Terminate();
+
+                        setCurrentState( StateScanComplete );
+                        break;
+                    }
+                    else
+                    {
+                        if(timeEllapsed < WCTP_TIMEOUT)
                         {
                             setCurrentState( StateScanValueSet2 );
                             break;
                         }
-                    }
-                    catch (...)
-                    {
-                        // Unexpected exception during parsing WCTP response message
+
+                        // WCTP response message timeout
+                        if(!statusParsed)
+                        {
+                            status = ErrorPageNoResponse;
+                        }
+                        else if(!headerParsed)
+                        {
+                            status = ErrorHttpResponse;
+                        }
+                        else
+                        {
+                            status = ErrorWctpTimeout;
+                        }
+
                         setCurrentState( StateScanAbort );
-                        return ErrorWctpResponse;
+                        return status;
+                    }
+                }
+            default:
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << "  Failed at state " << getCurrentState() << endl;
                     }
 
-                    /* The WCTP response message has been received completely, and parsed successfully */
-
+                    setCurrentState(StateScanAbort);
                     if(xfer.doTrace(commReturnValue))
                     {
-                        if (xfer.doTrace(DEBUGLEVEL_WCTP_PROTOCOL)) {
-                            traceIn(xmlMsg, strlen(xmlMsg), traceList, TRUE);
-                        }
-
-                        _snprintf(buf, 255, "WCTP response: %d %s\n%s",
-                                  handler->getResponseCode(),
-                                  handler->getResponseText(),
-                                  trimMessage( handler ->getResponseMessage() ));
-                        traceIn(buf, strlen(buf), traceList, TRUE);
-
-
-                        if(299 < handler->getResponseCode() && handler->getResponseCode() < 400)
-                        {
-                            status = ErrorWctp300Series;
-                        }
-                        else if(399 < handler->getResponseCode() && handler->getResponseCode() < 500)
-                        {
-                            status = ErrorWctp400Series;
-                        }
-                        else if(499 < handler->getResponseCode() && handler->getResponseCode() < 600)
-                        {
-                            status = ErrorWctp500Series;
-                        }
-                        else if(599 < handler->getResponseCode() && handler->getResponseCode() < 700)
-                        {
-                            status = ErrorWctp600Series;
-                        }
+                        traceIn((char*)xfer.getInBuffer(), xfer.getInCountActual(), traceList, TRUE);
                     }
-
-                    // And call the termination method
-                    XMLPlatformUtils::Terminate();
-
-                    setCurrentState( StateScanComplete );
                     break;
                 }
-                else
-                {
-                    if (timeEllapsed < WCTP_TIMEOUT)
-                    {
-                        setCurrentState( StateScanValueSet2 );
-                        break;
-                    }
-
-                    // WCTP response message timeout
-                    if (!statusParsed)
-                    {
-                        status = ErrorPageNoResponse;
-                    }
-                    else if (!headerParsed)
-                    {
-                        status = ErrorHttpResponse;
-                    }
-                    else
-                    {
-                        status = ErrorWctpTimeout;
-                    }
-
-                    setCurrentState( StateScanAbort );
-                    return status;
-                }
-            }
-        default:
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << "  Failed at state " << getCurrentState() << endl;
-                }
-
-                setCurrentState(StateScanAbort);
-                if(xfer.doTrace(commReturnValue))
-                {
-                    traceIn((char*)xfer.getInBuffer(), xfer.getInCountActual(), traceList, TRUE);
-                }
-                break;
             }
         }
+        else
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Yukon Status **** " << status << " " << getName() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
     }
-    else
+    catch(...)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Yukon Status **** " << status << " " << getName() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << " WCTP getCurrentState " << getCurrentState() << endl;
+        }
     }
+
 
     return status;
 }
@@ -1128,29 +1166,30 @@ void CtiDeviceWctpTerminal::DecodeDatabaseReader(RWDBReader &rdr)
 // ---------------------------------------------------------------------------
 SAXWctpHandler::SAXWctpHandler() :
 
-    respCode(0)
-    , succ(false)
-    , err(false)
-    , isRoot(true)
-    , inOperation(false)
-    , inSubmitClientResponse(false)
-    , inClientSuccess(false)
-    , inFailure(false)
-    , inConfirmation(false)
-    , inSuccess(false)
+respCode(0)
+, succ(false)
+, err(false)
+, isRoot(true)
+, inOperation(false)
+, inSubmitClientResponse(false)
+, inClientSuccess(false)
+, inFailure(false)
+, inConfirmation(false)
+, inSuccess(false)
 {
-    respText = CTIDBG_new char[256];;
+    respText = CTIDBG_new char[256];
+    respText[0] = 0;
     respMessage = CTIDBG_new char[256];
     respMessage[0] = 0;
 }
 
 SAXWctpHandler::~SAXWctpHandler()
 {
-    if (respMessage != NULL)
+    if(respMessage != NULL)
     {
         delete [] respMessage;
     }
-    if (respText != NULL)
+    if(respText != NULL)
     {
         delete [] respText;
     }
@@ -1161,13 +1200,13 @@ void SAXWctpHandler::resetHandler()
 {
     respCode = 0;
 
-    if (respText == NULL)
+    if(respText == NULL)
     {
         respText = CTIDBG_new char[256];
     }
     respText[0] = 0;
 
-    if (respMessage == NULL)
+    if(respMessage == NULL)
     {
         respMessage = CTIDBG_new char[256];
     }
@@ -1188,48 +1227,54 @@ void SAXWctpHandler::resetHandler()
 //  SAXWctpHandler: Implementation of the SAX DocumentHandler interface
 // ---------------------------------------------------------------------------
 void SAXWctpHandler::startElement(const XMLCh *const uri,
-                                   const XMLCh *const localname,
-                                   const XMLCh *const qname,
-                                   const Attributes &attrs)
+                                  const XMLCh *const localname,
+                                  const XMLCh *const qname,
+                                  const Attributes &attrs)
 {
     char elemName[256];
 
     XMLString::transcode(qname, elemName, 255);
 
-    if (strcmp(elemName, "wctp-Operation") == 0) {
-        if (!isRoot) {
+    if(strcmp(elemName, "wctp-Operation") == 0)
+    {
+        if(!isRoot)
+        {
             err = true;
             throw CTIDBG_new SAXParseException(
-                XMLString::transcode("wctp-Operation must be the root element"),
-                NULL,
-                XMLString::transcode(elemName),
-                0,
-                0);
+                                              XMLString::transcode("wctp-Operation must be the root element"),
+                                              NULL,
+                                              XMLString::transcode(elemName),
+                                              0,
+                                              0);
         }
         isRoot = false;
         inOperation = true;
     }
-    else if (strcmp(elemName, "wctp-SubmitClientResponse") == 0) {
-        if (!inOperation) {
+    else if(strcmp(elemName, "wctp-SubmitClientResponse") == 0)
+    {
+        if(!inOperation)
+        {
             err = true;
             throw CTIDBG_new SAXParseException(
-                XMLString::transcode("unexpected location of start of element"),
-                NULL,
-                XMLString::transcode(elemName),
-                0,
-                0);
+                                              XMLString::transcode("unexpected location of start of element"),
+                                              NULL,
+                                              XMLString::transcode(elemName),
+                                              0,
+                                              0);
         }
         inSubmitClientResponse = true;
     }
-    else if (strcmp(elemName, "wctp-ClientSuccess") == 0) {
-        if (!inSubmitClientResponse) {
+    else if(strcmp(elemName, "wctp-ClientSuccess") == 0)
+    {
+        if(!inSubmitClientResponse)
+        {
             err = true;
             throw CTIDBG_new SAXParseException(
-                XMLString::transcode("unexpected location of start of element"),
-                NULL,
-                XMLString::transcode(elemName),
-                0,
-                0);
+                                              XMLString::transcode("unexpected location of start of element"),
+                                              NULL,
+                                              XMLString::transcode(elemName),
+                                              0,
+                                              0);
         }
         inClientSuccess = true;
 
@@ -1241,68 +1286,76 @@ void SAXWctpHandler::startElement(const XMLCh *const uri,
 
         respCode = atoi(respCodeStr);
         delete [] respCodeStr;
-        if (respCode == 0) {        // Conversion failed
+        if(respCode == 0)
+        {        // Conversion failed
             err = true;
             throw CTIDBG_new SAXParseException(
-                XMLString::transcode("unable to convert attribute successCode's value to integer"),
-                NULL,
-                XMLString::transcode(elemName),
-                0,
-                0);
+                                              XMLString::transcode("unable to convert attribute successCode's value to integer"),
+                                              NULL,
+                                              XMLString::transcode(elemName),
+                                              0,
+                                              0);
         }
 
         pXMLChTemp = XMLString::transcode("successText");
         XMLString::transcode( attrs.getValue( pXMLChTemp ), respText, 255);
         delete [] pXMLChTemp;
     }
-    else if (strcmp(elemName, "wctp-Failure") == 0) {
-        if (!inSubmitClientResponse && !inConfirmation) {
+    else if(strcmp(elemName, "wctp-Failure") == 0)
+    {
+        if(!inSubmitClientResponse && !inConfirmation)
+        {
             err = true;
             throw CTIDBG_new SAXParseException(
-                XMLString::transcode("unexpected location of start of element"),
-                NULL,
-                XMLString::transcode(elemName),
-                0,
-                0);
+                                              XMLString::transcode("unexpected location of start of element"),
+                                              NULL,
+                                              XMLString::transcode(elemName),
+                                              0,
+                                              0);
         }
         inFailure = true;
 
         char *respCodeStr = XMLString::transcode( attrs.getValue( XMLString::transcode("errorCode") ));
         respCode = atoi(respCodeStr);
         delete [] respCodeStr;
-        if (respCode == 0) {        // Conversion failed
+        if(respCode == 0)
+        {        // Conversion failed
             err = true;
             throw CTIDBG_new SAXParseException(
-                XMLString::transcode("unable to convert attribute errorCode's value to integer"),
-                NULL,
-                XMLString::transcode(elemName),
-                0,
-                0);
+                                              XMLString::transcode("unable to convert attribute errorCode's value to integer"),
+                                              NULL,
+                                              XMLString::transcode(elemName),
+                                              0,
+                                              0);
         }
         XMLString::transcode( attrs.getValue(XMLString::transcode("errorText")), respText, 255);
     }
-    else if (strcmp(elemName, "wctp-Confirmation") == 0) {
+    else if(strcmp(elemName, "wctp-Confirmation") == 0)
+    {
         // If we get a wctp-Confirmation instead of a wctp-submitClientResponse, it means something's gone wrong
-        if (!inOperation) {
+        if(!inOperation)
+        {
             err = true;
             throw CTIDBG_new SAXParseException(
-                XMLString::transcode("unexpected location of start of element"),
-                NULL,
-                XMLString::transcode(elemName),
-                0,
-                0);
+                                              XMLString::transcode("unexpected location of start of element"),
+                                              NULL,
+                                              XMLString::transcode(elemName),
+                                              0,
+                                              0);
         }
         inConfirmation = true;
     }
-    else if (strcmp(elemName, "wctp-Success") == 0) {
-        if (!inConfirmation) {
+    else if(strcmp(elemName, "wctp-Success") == 0)
+    {
+        if(!inConfirmation)
+        {
             err = true;
             throw CTIDBG_new SAXParseException(
-                XMLString::transcode("unexpected location of start of element"),
-                NULL,
-                XMLString::transcode(elemName),
-                0,
-                0);
+                                              XMLString::transcode("unexpected location of start of element"),
+                                              NULL,
+                                              XMLString::transcode(elemName),
+                                              0,
+                                              0);
         }
         inSuccess = true;
 
@@ -1311,14 +1364,15 @@ void SAXWctpHandler::startElement(const XMLCh *const uri,
         delete [] pXMLChTemp;
         respCode = atoi(respCodeStr);
         delete [] respCodeStr;
-        if (respCode == 0) {        // Conversion failed
+        if(respCode == 0)
+        {        // Conversion failed
             err = true;
             throw CTIDBG_new SAXParseException(
-                XMLString::transcode("unable to convert attribute successCode's value to integer"),
-                NULL,
-                XMLString::transcode(elemName),
-                0,
-                0);
+                                              XMLString::transcode("unable to convert attribute successCode's value to integer"),
+                                              NULL,
+                                              XMLString::transcode(elemName),
+                                              0,
+                                              0);
         }
 
         pXMLChTemp = XMLString::transcode("successText");
@@ -1333,75 +1387,87 @@ void SAXWctpHandler::endElement(const XMLCh* const uri, const XMLCh* const local
 
     XMLString::transcode(qname, elemName, 255);
 
-    if (strcmp(elemName, "wctp-Operation") == 0) {
-        if (!inOperation) {
+    if(strcmp(elemName, "wctp-Operation") == 0)
+    {
+        if(!inOperation)
+        {
             err = true;
             throw CTIDBG_new SAXParseException(
-                XMLString::transcode("End of element has no matching start of element"),
-                NULL,
-                XMLString::transcode(elemName),
-                0,
-                0);
+                                              XMLString::transcode("End of element has no matching start of element"),
+                                              NULL,
+                                              XMLString::transcode(elemName),
+                                              0,
+                                              0);
         }
         inOperation = false;
     }
-    else if (strcmp(elemName, "wctp-SubmitClientResponse") == 0) {
-        if (!inSubmitClientResponse) {
+    else if(strcmp(elemName, "wctp-SubmitClientResponse") == 0)
+    {
+        if(!inSubmitClientResponse)
+        {
             err = true;
             throw CTIDBG_new SAXParseException(
-                XMLString::transcode("End of element has no matching start of element"),
-                NULL,
-                XMLString::transcode(elemName),
-                0,
-                0);
+                                              XMLString::transcode("End of element has no matching start of element"),
+                                              NULL,
+                                              XMLString::transcode(elemName),
+                                              0,
+                                              0);
         }
         inSubmitClientResponse = false;
     }
-    else if (strcmp(elemName, "wctp-ClientSuccess") == 0) {
-        if (!inClientSuccess) {
+    else if(strcmp(elemName, "wctp-ClientSuccess") == 0)
+    {
+        if(!inClientSuccess)
+        {
             err = true;
             throw CTIDBG_new SAXParseException(
-                XMLString::transcode("End of element has no matching start of element"),
-                NULL,
-                XMLString::transcode(elemName),
-                0,
-                0);
+                                              XMLString::transcode("End of element has no matching start of element"),
+                                              NULL,
+                                              XMLString::transcode(elemName),
+                                              0,
+                                              0);
         }
         inClientSuccess = false;
     }
-    else if (strcmp(elemName, "wctp-Failure") == 0) {
-        if (!inFailure) {
+    else if(strcmp(elemName, "wctp-Failure") == 0)
+    {
+        if(!inFailure)
+        {
             err = true;
             throw CTIDBG_new SAXParseException(
-                XMLString::transcode("End of element has no matching start of element"),
-                NULL,
-                XMLString::transcode(elemName),
-                0,
-                0);
+                                              XMLString::transcode("End of element has no matching start of element"),
+                                              NULL,
+                                              XMLString::transcode(elemName),
+                                              0,
+                                              0);
         }
         inFailure = false;
     }
-    else if (strcmp(elemName, "wctp-Confirmation") == 0) {
-        if (!inConfirmation) {
+    else if(strcmp(elemName, "wctp-Confirmation") == 0)
+    {
+        if(!inConfirmation)
+        {
             err = true;
             throw CTIDBG_new SAXParseException(
-                XMLString::transcode("End of element has no matching start of element"),
-                NULL,
-                XMLString::transcode(elemName),
-                0,
-                0);
+                                              XMLString::transcode("End of element has no matching start of element"),
+                                              NULL,
+                                              XMLString::transcode(elemName),
+                                              0,
+                                              0);
         }
         inConfirmation = false;
     }
-    else if (strcmp(elemName, "wctp-Success") == 0) {
-        if (!inSuccess) {
+    else if(strcmp(elemName, "wctp-Success") == 0)
+    {
+        if(!inSuccess)
+        {
             err = true;
             throw CTIDBG_new SAXParseException(
-                XMLString::transcode("End of element has no matching start of element"),
-                NULL,
-                XMLString::transcode(elemName),
-                0,
-                0);
+                                              XMLString::transcode("End of element has no matching start of element"),
+                                              NULL,
+                                              XMLString::transcode(elemName),
+                                              0,
+                                              0);
         }
         inSuccess = false;
     }
@@ -1417,7 +1483,7 @@ void SAXWctpHandler::characters(const XMLCh* const chars, const unsigned int len
     strncpy(buf, pChars, length);
     buf[length] = 0;
 
-    if (inClientSuccess || inFailure || inSuccess)
+    if(inClientSuccess || inFailure || inSuccess)
         strcat(respMessage, buf);
 }
 
@@ -1435,5 +1501,4 @@ void  SAXWctpHandler::warning (const SAXParseException &exception)
 {
     throw exception;
 }
-
 
