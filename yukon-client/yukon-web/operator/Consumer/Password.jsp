@@ -92,12 +92,12 @@ function deleteLogin(form) {
 			  <input type="hidden" name="action" value="UpdateLogin">
 			  <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/operator/Consumer/Password.jsp">
 			  <input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/operator/Consumer/Password.jsp">
-                <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
+                <table width="400" border="0" cellspacing="0" cellpadding="1" align="center">
                   <tr> 
-                    <td width="100" class="TableCell"> 
+                    <td width="128" class="TableCell"> 
                       <div align="right">Customer Group: </div>
                     </td>
-                    <td width="200"> 
+                    <td width="268"> 
                       <select name="CustomerGroup">
 <%
 	com.cannontech.database.data.lite.LiteYukonGroup[] custGroups = liteEC.getResidentialCustomerGroups();
@@ -119,41 +119,41 @@ function deleteLogin(form) {
                     </td>
                   </tr>
                   <tr> 
-                    <td width="100" class="TableCell"> 
+                    <td width="128" class="TableCell"> 
                       <div align="right"></div>
                     </td>
-                    <td width="200" class="TableCell"> 
+                    <td width="268" class="TableCell"> 
                       <input type="checkbox" name="Status" value="<%= StarsLoginStatus.ENABLED.toString() %>"
                         <% if (login.getStatus().getType() == StarsLoginStatus.ENABLED_TYPE) { %>checked<% } %>>
                       Login Enabled </td>
                   </tr>
                   <tr> 
-                    <td width="100" class="TableCell"> 
+                    <td width="128" class="TableCell"> 
                       <div align="right">New User Name: </div>
                     </td>
-                    <td width="200"> 
+                    <td width="268"> 
                       <input type="text" name="Username" maxlength="20" size="20" value="<%= login.getUsername() %>">
                     </td>
                   </tr>
                   <tr> 
-                    <td width="100" class="TableCell"> 
+                    <td width="128" class="TableCell"> 
                       <div align="right">New Password:</div>
                     </td>
-                    <td width="200"> 
+                    <td width="268"> 
                       <input type="password" name="Password" maxlength="20" size="20">
                     </td>
                   </tr>
                   <tr> 
-                    <td width="100" class="TableCell"> 
+                    <td width="128" class="TableCell"> 
                       <div align="right">Confirm Password:</div>
                     </td>
-                    <td width="200"> 
+                    <td width="268"> 
                       <input type="password" name="Password2" maxlength="20" size="20">
                     </td>
                   </tr>
                   <tr> 
-                    <td width="100" class="TableCell">&nbsp;</td>
-                    <td width="200"> 
+                    <td width="128" class="TableCell">&nbsp;</td>
+                    <td width="268"> 
                       <input type="button" name="GenPasswd" value="Generate Password" onclick="generatePassword(this.form)">
                     </td>
                   </tr>
