@@ -3,7 +3,7 @@ package com.cannontech.tdc;
 /**
  * Insert the type's description here.
  * Creation date: (1/20/00 2:25:13 PM)
- * @author: 
+ * @author: Ryan
  */
 public class Clock implements Runnable 
 {
