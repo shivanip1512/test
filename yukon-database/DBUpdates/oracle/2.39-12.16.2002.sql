@@ -43,16 +43,6 @@ update display set description = 'com.cannontech.tdc.windows.WinServicePanel' wh
 /
 
 
-create table PortDialBack  (
-   PortID               NUMBER                           not null,
-   ModemType            VARCHAR2(30)                     not null,
-   InitializationString VARCHAR2(50)                     not null,
-   constraint PK_PORTDIALBACK primary key (PortID),
-   constraint FK_CmPrt_PrtDBk foreign key (PortID)
-         references CommPort (PORTID)
-)
-/
-
 /* Try to add/modify any needed items that allows us to migrate to the YukonUser */
 alter table energycompanyoperatorloginlist drop constraint FK_OpLgEnCmpOpLs;
 alter table lmdirectoperatorlist drop constraint FK_OpLg_LMDOpLs;
