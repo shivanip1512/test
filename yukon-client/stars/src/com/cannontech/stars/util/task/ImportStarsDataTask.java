@@ -213,7 +213,7 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 		// Directory where the mapping and log files will be written into
 		String path = (String) preprocessedData.get( "CustomerFilePath" );
 		
-		String lineNo = null;
+		String position = null;
 		ArrayList logMsg = new ArrayList();
 		
 		java.sql.Connection conn = null;
@@ -231,7 +231,7 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 			Iterator it = acctFieldsList.listIterator();
 			while (it.hasNext()) {
 				String[] fields = (String[]) it.next();
-				lineNo = fields[ImportManager.IDX_LINE_NUM];
+				position = "customer file line #" + fields[ImportManager.IDX_LINE_NUM];
 				
 				// To save database lookup time, only check for constraint for
 				// the first import entry, then assume there won't be any problem
@@ -252,7 +252,7 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 			
 			fw.close();
 			fw = null;
-			lineNo = null;
+			position = null;
 			
 			File hwConfigMapFile = new File(path, "hwconfig.map");
 			fw = new java.io.PrintWriter(new java.io.FileWriter(hwConfigMapFile, true), true);
@@ -261,7 +261,7 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 			it = invFieldsList.listIterator();
 			while (it.hasNext()) {
 				String[] fields = (String[]) it.next();
-				lineNo = fields[ImportManager.IDX_LINE_NUM];
+				position = "inventory file line #" + fields[ImportManager.IDX_LINE_NUM];
 				
 				try {
 					Integer acctID = Integer.valueOf( fields[ImportManager.IDX_ACCOUNT_ID] );
@@ -374,7 +374,7 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 				}
 				catch (WebClientException e) {
 					if (e.getMessage().equals("Cannot insert duplicate hardware into the customer account"))
-						logMsg.add("Error at inventory file line #" + lineNo + ": " + e.getMessage());
+						logMsg.add("Error at " + position + ": " + e.getMessage());
 					else
 						throw e;
 				}
@@ -389,12 +389,12 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 			
 			fw.close();
 			fw = null;
-			lineNo = null;
+			position = null;
 			
 			it = appFieldsList.listIterator();
 			while (it.hasNext()) {
 				String[] fields = (String[]) it.next();
-				lineNo = fields[ImportManager.IDX_LINE_NUM];
+				position = "loadinfo file line #" + fields[ImportManager.IDX_LINE_NUM];
 				
 				Integer acctID = Integer.valueOf( fields[ImportManager.IDX_ACCOUNT_ID] );
 				LiteStarsCustAccountInformation liteAcctInfo = null;
@@ -461,13 +461,13 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 				}
 			}
 			
-			lineNo = null;
+			position = null;
 			first = true;
 			
 			it = orderFieldsList.listIterator();
 			while (it.hasNext()) {
 				String[] fields = (String[]) it.next();
-				lineNo = fields[ImportManager.IDX_LINE_NUM];
+				position = "workorder file line #" + fields[ImportManager.IDX_LINE_NUM];
 				
 				Integer acctID = Integer.valueOf( fields[ImportManager.IDX_ACCOUNT_ID] );
 				LiteStarsCustAccountInformation liteAcctInfo = null;
@@ -500,12 +500,12 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 				}
 			}
 			
-			lineNo = null;
+			position = null;
 			
 			it = resFieldsList.listIterator();
 			while (it.hasNext()) {
 				String[] fields = (String[]) it.next();
-				lineNo = fields[ImportManager.IDX_LINE_NUM];
+				position = "resinfo file line #" + fields[ImportManager.IDX_LINE_NUM];
 				
 				Integer acctID = Integer.valueOf( fields[ImportManager.IDX_ACCOUNT_ID] );
 				LiteStarsCustAccountInformation liteAcctInfo = null;
@@ -552,19 +552,9 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 				e.printStackTrace();
 				status = STATUS_ERROR;
 				
-				if (lineNo != null) {
-					if (numAcctAdded < acctFieldsCnt)
-						errorMsg = "Error at customer file line #" + lineNo;
-					else if (numInvAdded < invFieldsCnt)
-						errorMsg = "Error at inventory file line #" + lineNo;
-					else if (numAppImported < appFieldsCnt)
-						errorMsg = "Error at loadinfo file line #" + lineNo;
-					else if (numOrderAdded < orderFieldsCnt)
-						errorMsg = "Error at workorder file line #" + lineNo;
-					else if (numResAdded < resFieldsCnt)
-						errorMsg = "Error at resinfo file line #" + lineNo;
-				}
-				if (errorMsg == null)
+				if (position != null)
+					errorMsg = "Error at " + position;
+				else
 					errorMsg = "Failed to import old STARS data";
 				if (e instanceof WebClientException)
 					errorMsg += ": " + e.getMessage();
@@ -610,10 +600,13 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 				logMsg.add(idx++, numAcctAdded + " of " + acctFieldsCnt + " customer accounts imported");
 		}
 		if (invFieldsCnt > 0) {
+			String msg = null;
 			if (numInvAdded  == invFieldsCnt)
-				logMsg.add(idx++, numInvAdded + " hardwares imported successfully");
+				msg = numInvAdded + " hardwares imported successfully";
 			else
-				logMsg.add(idx++, numInvAdded + " of " + invFieldsCnt + " hardwares imported");
+				msg = numInvAdded + " of " + invFieldsCnt + " hardwares imported";
+			msg += " (" + numRecvrAdded + " receivers, " + numMeterAdded + " meters)";
+			logMsg.add(idx++, msg);
 		}
 		if (appFieldsCnt > 0) {
 			String msg = null;
