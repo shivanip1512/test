@@ -51,15 +51,17 @@ public class RoleFuncs
 	 * @return LiteYukonRoleProperty[]
 	 */
 	public static String getGlobalPropertyValue( int rolePropertyID_ ) 
-	{
+	{		
 		LiteYukonRoleProperty p = 
 			AuthFuncs.getRoleProperty( rolePropertyID_ );
 
-		String val = AuthFuncs.getRolePropValueGroup(
+		String val = null;
+		if( p != null )
+			val = AuthFuncs.getRolePropValueGroup(
 				AuthFuncs.getGroup(YukonGroupRoleDefs.GRP_YUKON),
 				p.getRolePropertyID(),
 				p.getDefaultValue() );
-		
+
 		return val;
 	}
 
