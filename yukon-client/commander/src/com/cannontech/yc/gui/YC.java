@@ -49,6 +49,9 @@ import com.cannontech.yukon.conns.ConnPool;
 
 public class YC extends Observable implements MessageListener
 {
+    /** Flag to write command to database, if applicable */
+    private boolean updateToDB = false;
+    
 	/** HashSet of userMessageIds for this instance */
 	private java.util.Set requestMessageIDs = new java.util.HashSet(10);
 
@@ -113,7 +116,7 @@ public class YC extends Observable implements MessageListener
 	
 	/** Fields used in the MessageReceived(..) method to track last printed data */
 	/** dateTime formating string */
-	private java.text.SimpleDateFormat displayFormat = new java.text.SimpleDateFormat("MMM d HH:mm:ss a z");
+	protected java.text.SimpleDateFormat displayFormat = new java.text.SimpleDateFormat("MMM d HH:mm:ss a z");
 	/** Keep track of the last userMessageID from the MessageEvents */
 	private long prevUserID = -1;
 	/**TODO - fix this!!*/
@@ -260,8 +263,17 @@ public class YC extends Observable implements MessageListener
 					CTILogger.info(getModelType() + " - New type needs to be handled");
 				}
 			}
-			else
+			else	//are we coming from the servlet and have no treeObject? (only deviceID or serial number)
 			{
+				//Send the command out on deviceID/serialNumber
+				if( getDeviceID() > PAOGroups.INVALID )
+				{	
+					handleDevice();
+				}
+				else if( !serialNumber.equalsIgnoreCase(PAOGroups.STRING_INVALID))
+				{
+					handleSerialNumber();
+				}
 			}
 		}
 		catch( java.sql.SQLException e )
@@ -612,7 +624,7 @@ public class YC extends Observable implements MessageListener
 	 * Takes a command string, then parses the string for multiple commands
 	 *  separated by the '&' character
 	 */
-	public void setCommands(String command_)
+	private void setCommands(String command_)
 	{
 		//remove everything from the vector, otherwise we could get in a big loop...
 		getExecuteCmdsVector().removeAllElements();
@@ -627,12 +639,15 @@ public class YC extends Observable implements MessageListener
 		{
 			String begString = tempCommand.substring(0, sepIndex).trim();
 			begIndex = sepIndex+1;
-			getExecuteCmdsVector().add(getCommandFromLabel(begString));
+			String cmd = getCommandFromLabel(begString) + getUpdateToDBString(); 
+			getExecuteCmdsVector().add(cmd);
 			tempCommand = tempCommand.substring(begIndex).trim();
 			sepIndex = tempCommand.indexOf(SEPARATOR);
 		}
 		//add the final (or only) command.
-		getExecuteCmdsVector().add(getCommandFromLabel(tempCommand));
+		getExecuteCmdsVector().add(getCommandFromLabel(tempCommand)+ getUpdateToDBString());
+		// reset the update to database flag.
+		setUpdateToDB(false);
 	}
 	/**
 	 * Set the commandFileName based on the item instance.
@@ -1360,4 +1375,25 @@ public class YC extends Observable implements MessageListener
 	        file.delete();
 	    }
 	}		
+    /**
+     * @return Returns the updateToDB.
+     */
+    public boolean isUpdateToDB()
+    {
+        return updateToDB;
+    }
+    /**
+     * @param updateToDB The updateToDB to set.
+     */
+    public void setUpdateToDB(boolean updateToDB)
+    {
+        this.updateToDB = updateToDB;
+    }
+    
+    public String getUpdateToDBString()
+    {
+        if (updateToDB)
+            return " update";
+        return "";
+    }
 }
