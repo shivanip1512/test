@@ -312,20 +312,17 @@ private void handleCBCSubstationBuses(CBCSubstationBuses msg)
 	//if( getSubBuses() == null || getSubBuses().length == 0 )
 		//setSubBuses( new SubBus[msg.getNumberOfBuses()] );
 
-	SubBus[] buses = new SubBus[ msg.getNumberOfBuses() ];
 	for( int i = 0; i < msg.getNumberOfBuses(); i++ )
 	{
       com.cannontech.clientutils.CTILogger.info(new com.cannontech.clientutils.commonutils.ModifiedDate(new java.util.Date().getTime()).toString()
       		+ " : Received SubBus - " + msg.getSubBusAt(i).getCcName() 
       		+ "/" + msg.getSubBusAt(i).getCcArea() );
-
-		buses[i] = msg.getSubBusAt(i);
 	}
 
-	if( buses.length > 0 )
+	if( msg.getNumberOfBuses() > 0 )
 	{
 		setChanged();
-		notifyObservers( buses ); // tell our listeners we have new data
+		notifyObservers( msg ); // tell our listeners we have new data
 	}
 
 }

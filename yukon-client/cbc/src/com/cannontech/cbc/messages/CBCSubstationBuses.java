@@ -7,14 +7,26 @@ import com.cannontech.cbc.data.SubBus;
 
 public class CBCSubstationBuses extends com.cannontech.cbc.messages.CBCMessage {
 	
-	private java.lang.Integer msgInfoBitMask;
+	private java.lang.Integer msgInfoBitMask = new Integer(0);
 	private java.util.Vector buses;
+	
+	
+	public static final int SUB_ALL = 0x00000001;
+	public static final int SUB_DELETE = 0x00000002;
+	
+	
 /**
- * ScheduleCommand constructor comment.
+ * CBCSubstationBuses constructor comment.
  */
 public CBCSubstationBuses() {
 	super();
 }
+
+public boolean isSubDeleted()
+{
+	return (getMsgInfoBitMask().intValue() & SUB_DELETE) > 0;
+}
+
 /**
  * This method was created in VisualAge.
  * @return int

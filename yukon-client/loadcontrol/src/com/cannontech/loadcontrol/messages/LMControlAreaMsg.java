@@ -9,12 +9,23 @@ public class LMControlAreaMsg extends LMMessage
 {
 	private java.lang.Integer msgInfoBitMask;
 	private java.util.Vector lmControlAreaVector;
+	
+	public static final int AREA_ALL = 0x00000001;
+	public static final int AREA_DELETE = 0x00000002;
+
+
 /**
- * ScheduleCommand constructor comment.
+ * LMControlAreaMsg constructor comment.
  */
 public LMControlAreaMsg() {
 	super();
 }
+
+public boolean isDeletedCntrlArea()
+{
+	return (getMsgInfoBitMask().intValue() & AREA_DELETE) > 0;
+}
+
 /**
  * This method was created in VisualAge.
  */

@@ -22,7 +22,6 @@ public class CapBankDevicePopUp extends javax.swing.JPopupMenu implements java.a
 	private javax.swing.JMenuItem ivjJMenuItemEnableDisable = null;
 	private javax.swing.JMenuItem ivjJMenuItemOpenClose = null;
 	private javax.swing.JMenuItem jMenuItemAckAlarm = null;
-	private javax.swing.JMenuItem jMenuItemClearAlarm = null;
 	private javax.swing.JMenuItem jMenuItemTempMove = null;
 	private javax.swing.JMenuItem jMenuItemMoveBack = null;
 
@@ -70,9 +69,6 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
 
 	if (e.getSource() == getJMenuItemAckAlarm()) 
 		jMenuItemAckAlarm_ActionPerformed(e);
-
-	if (e.getSource() == getJMenuItemClearAlarm()) 
-		jMenuItemClearAlarm_ActionPerformed(e);
 
 	if (e.getSource() == getJMenuItemTempMove()) 
 		jMenuItemTempMove_ActionPerformed(e);
@@ -176,31 +172,6 @@ public javax.swing.JMenuItem getJMenuItemAckAlarm()
 	}
 	
 	return jMenuItemAckAlarm;
-}
-/**
- * Insert the method's description here.
- * Creation date: (1/15/2001 9:20:50 AM)
- * @return javax.swing.JMenuItem
- */
-public javax.swing.JMenuItem getJMenuItemClearAlarm() 
-{
-	if (jMenuItemClearAlarm == null) 
-	{
-		try 
-		{
-			jMenuItemClearAlarm = new javax.swing.JMenuItem();
-			jMenuItemClearAlarm.setName("ClearAlarm");
-			jMenuItemClearAlarm.setMnemonic('l');
-			jMenuItemClearAlarm.setText("Clear Alarm");
-			jMenuItemClearAlarm.setActionCommand("JMenuItemClearAlarm");
-		} 
-		catch (java.lang.Throwable ivjExc) 
-		{
-			handleException(ivjExc);
-		}
-	}
-	
-	return jMenuItemClearAlarm;
 }
 
 /**
@@ -378,7 +349,6 @@ private void initConnections() throws java.lang.Exception
 
 	getJMenuItemConfirm().addActionListener(this);
 	getJMenuItemAckAlarm().addActionListener(this);
-	getJMenuItemClearAlarm().addActionListener(this);
 	
 	getJMenuItemTempMove().addActionListener(this);
 	getJMenuItemMoveBack().addActionListener(this);
@@ -399,7 +369,6 @@ private void initialize()
 		setName("CapBankDevicePopUp");
 		
 		add(getJMenuItemAckAlarm(), getJMenuItemAckAlarm().getName() );
-		add(getJMenuItemClearAlarm(), getJMenuItemClearAlarm().getName() );
 		add(getJMenuItemManualEntry(), getJMenuItemManualEntry().getName() );
 		add(getJMenuItemEnableDisable(), getJMenuItemEnableDisable().getName());
 		add(getJMenuItemConfirm(), getJMenuItemConfirm().getName() );
@@ -440,7 +409,7 @@ public void jMenuItemAckAlarm_ActionPerformed(java.awt.event.ActionEvent actionE
 }
 /**
  * Comment
- */
+ *
 public void jMenuItemClearAlarm_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
 	java.util.Vector data = new java.util.Vector( 2 );  // we are only sending 1 ack event and the token
@@ -458,7 +427,7 @@ public void jMenuItemClearAlarm_ActionPerformed(java.awt.event.ActionEvent actio
 		
 	return;
 }
-
+*/
 /**
  * Comment
  */
@@ -634,17 +603,14 @@ private void setAlarmMenuItems()
 	if( com.cannontech.clientutils.tags.TagUtils.isAlarm(getCapBankDevice().getTagControlStatus().intValue()) )
 	{
 		getJMenuItemAckAlarm().setEnabled( true );
-		getJMenuItemClearAlarm().setEnabled( true );
 	}
 	else if( com.cannontech.clientutils.tags.TagUtils.isAlarmAcked(getCapBankDevice().getTagControlStatus().intValue()) )
 	{
 		getJMenuItemAckAlarm().setEnabled( false );
-		getJMenuItemClearAlarm().setEnabled( true );
 	}
 	else
 	{
 		getJMenuItemAckAlarm().setEnabled( false );
-		getJMenuItemClearAlarm().setEnabled( false );
 	}
 	
 }
@@ -735,14 +701,7 @@ private void setFixedMenuItems(boolean isFixed)
 public void setJMenuItemAckAlarm(javax.swing.JMenuItem newJMenuItemAckAlarm) {
 	jMenuItemAckAlarm = newJMenuItemAckAlarm;
 }
-/**
- * Insert the method's description here.
- * Creation date: (1/15/2001 9:20:50 AM)
- * @param newJMenuItemClearAlarm javax.swing.JMenuItem
- */
-public void setJMenuItemClearAlarm(javax.swing.JMenuItem newJMenuItemClearAlarm) {
-	jMenuItemClearAlarm = newJMenuItemClearAlarm;
-}
+
 /**
  * Insert the method's description here.
  * Creation date: (1/8/2001 4:17:19 PM)

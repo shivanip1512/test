@@ -6,11 +6,13 @@ package com.cannontech.cbc.gui;
 import java.awt.Color;
 import java.awt.Font;
 import java.util.Observable;
+import java.util.Vector;
 
 import com.cannontech.cbc.data.CBCClientConnection;
 import com.cannontech.cbc.data.CapBankDevice;
 import com.cannontech.cbc.data.CapControlConst;
 import com.cannontech.cbc.data.SubBus;
+import com.cannontech.cbc.messages.CBCSubstationBuses;
 import com.cannontech.cbc.tablemodelevents.CBCGenericTableModelEvent;
 import com.cannontech.cbc.tablemodelevents.StateTableModelEvent;
 import com.cannontech.database.data.point.PointTypes;
@@ -596,6 +598,54 @@ public void setFontValues(String name, int size)
                   cellFont.getStyle(), 
                   size );
 }
+
+
+private void handleDeletedSub( CBCSubstationBuses msg )
+{
+	Vector deleteSubs = new Vector( msg.getNumberOfBuses() );
+	
+	for( int i = 0; i < getAllSubBuses().size(); i++ )
+	{
+		boolean fnd = false;
+		SubBus existingSub = (SubBus)getAllSubBuses().get(i);
+
+		for( int j = 0; j  < msg.getNumberOfBuses(); j++ )
+		{
+			if( msg.getSubBusAt(j).equals(existingSub) )
+			{
+				fnd = true;
+				break;
+			}
+		}
+				
+		if( !fnd )
+			deleteSubs.add( existingSub );
+	}
+
+	for( int i = (deleteSubs.size()-1); i >=0; i-- )
+	{
+		removeControlArea( (SubBus)deleteSubs.get(i) );
+	}
+	
+}
+
+/**
+ * Removes the specified subbus
+ * @param SubBus
+ */
+private void removeControlArea( SubBus bus_ )
+{
+	int loc = getAllSubBuses().indexOf( bus_ );
+		
+	//be sure we can find the area specified
+	if( loc >= 0 )
+	{
+		getAllSubBuses().remove( loc );
+		setFilter( getFilter() );  //this will fire the change event
+	}
+	
+}
+
 /**
  * This method was created in VisualAge.
  * @param source Observable
@@ -623,9 +673,21 @@ public synchronized void update(final Observable source, final Object obj )
 
 			fireTableChanged( e );
 		}
-		else if( obj instanceof SubBus[] )
+		else if( obj instanceof CBCSubstationBuses )
 		{
-			updateSubBuses( (SubBus[])obj );
+			CBCSubstationBuses busesMsg = (CBCSubstationBuses)obj;
+			
+			//since this is all the subs, lets just clear what we currently have
+			if( busesMsg.isSubDeleted() )
+				handleDeletedSub( busesMsg );
+				//getAllSubBuses().clear();
+
+
+			SubBus[] allBuses = new SubBus[busesMsg.getNumberOfBuses()];
+			for( int i = 0; i < busesMsg.getNumberOfBuses(); i++ )			
+				allBuses[i] = busesMsg.getSubBusAt(i);
+			
+			updateSubBuses( allBuses );
 		}
 
 		//by using fireTableRowsUpdated(int,int) we do not clear the table selection		

@@ -4,7 +4,6 @@ package com.cannontech.loadcontrol.datamodels;
  * This type was created in VisualAge.
  */
 import java.awt.Color;
-import java.util.List;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.loadcontrol.data.LMControlArea;

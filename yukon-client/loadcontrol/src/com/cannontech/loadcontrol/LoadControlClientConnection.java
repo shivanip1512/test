@@ -5,6 +5,8 @@ package com.cannontech.loadcontrol;
  * LoadControl.  Specifically it registers LoadControl specific 'Collectable' messages, otherwise
  * the base class does all the work.
  */
+import java.util.Vector;
+
 import com.cannontech.common.util.MessageEventListener;
 import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.data.LMProgramBase;
@@ -94,6 +96,42 @@ public void disconnect() throws java.io.IOException
 
 	staticLoadControlClientConnection = null;
 }
+
+private void handleDeletedAreas( LMControlAreaMsg msg )
+{
+	Vector deleteAreas = new Vector( getControlAreas().size() );
+	
+	for( int i = 0; i < getControlAreas().size(); i++ )
+	{
+		boolean fnd = false;
+		LMControlArea existingArea = (LMControlArea)getControlAreas().get(i);
+
+		for( int j = 0; j  < msg.getNumberOfLMControlAreas(); j++ )
+		{
+			if( msg.getLMControlArea(j).equals(existingArea) )
+			{
+				fnd = true;
+				break;
+			}
+		}
+				
+		if( !fnd )
+			deleteAreas.add( existingArea );
+	}
+
+	for( int i = (deleteAreas.size()-1); i >=0; i-- )
+	{
+		getControlAreas().remove( deleteAreas.get(i) );
+		setChanged();
+		notifyObservers( new LCChangeEvent(
+								this, 
+								LCChangeEvent.DELETE,
+								deleteAreas.get(i)) );	
+	}
+	
+}
+
+
 /**
  * Insert the method's description here.
  * Creation date: (2/23/2001 10:03:31 AM)
@@ -106,8 +144,17 @@ public void doHandleMessage(Object obj)
 	}
 	else if( obj instanceof LMControlAreaMsg )
 	{
-		for( int i = 0; i < ((LMControlAreaMsg)obj).getNumberOfLMControlAreas(); i++ )
-			doHandleMessage( ((LMControlAreaMsg)obj).getLMControlArea(i) );
+		LMControlAreaMsg msg = (LMControlAreaMsg)obj;
+		
+		if( msg.isDeletedCntrlArea() ) //we may be deleting an area
+		{
+			//this should not happen much
+			handleDeletedAreas( msg );
+		}
+		
+
+		for( int i = 0; i < msg.getNumberOfLMControlAreas(); i++ )
+			handleLMControlArea( msg.getLMControlArea(i) );
 	}
 	else if( obj instanceof com.cannontech.message.dispatch.message.Multi )
 	{

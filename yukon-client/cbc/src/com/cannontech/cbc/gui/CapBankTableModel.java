@@ -16,6 +16,8 @@ import com.cannontech.database.db.state.State;
 import com.cannontech.tdc.alarms.gui.AlarmingRow;
 import com.cannontech.tdc.alarms.gui.AlarmingRowVector;
 import com.cannontech.tdc.alarms.gui.RowBlinker;
+import com.cannontech.clientutils.tags.TagUtils;
+
 
 public class CapBankTableModel extends javax.swing.table.AbstractTableModel implements javax.swing.event.TableModelListener, com.cannontech.tdc.alarms.gui.AlarmTableModel, CapControlTableModel, com.cannontech.common.gui.util.SortableTableModel
 {
@@ -426,7 +428,7 @@ public Object getValueAt(int row, int col)
  */
 private void handleAlarms(CapBankDevice capBankDevice, int rowNumber ) 
 {
-	if( com.cannontech.clientutils.tags.TagUtils.isAlarm(capBankDevice.getTagControlStatus().intValue()) )
+	if( TagUtils.isAlarm(capBankDevice.getTagControlStatus().intValue()) )
 	{
 		setRowAlarmed( rowNumber );
 	}

@@ -11,12 +11,12 @@ import java.awt.Color;
 import java.util.Vector;
 
 import com.cannontech.cbc.data.CBCClientConnection;
-import com.cannontech.cbc.data.SubBus;
 import com.cannontech.cbc.gui.CapBankTableModel;
 import com.cannontech.cbc.gui.FeederTableModel;
 import com.cannontech.cbc.gui.SubBusTableModel;
 import com.cannontech.cbc.messages.CBCCommand;
 import com.cannontech.cbc.messages.CBCSubAreaNames;
+import com.cannontech.cbc.messages.CBCSubstationBuses;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.commonutils.ModifiedDate;
 import com.cannontech.common.gui.util.Colors;
@@ -234,7 +234,7 @@ public class CapControlWebAnnex implements java.util.Observer
 		CTILogger.debug( getClass() + ": received type: " + arg.getClass());
 
 
-		if( arg instanceof SubBus[] )
+		if( arg instanceof CBCSubstationBuses )
 		{
 			//nothing for now, the models will handle this stuff
 		}
