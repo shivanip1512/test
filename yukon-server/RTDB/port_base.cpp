@@ -8,11 +8,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.42 $
-* DATE         :  $Date: 2004/11/03 19:22:03 $
+* REVISION     :  $Revision: 1.43 $
+* DATE         :  $Date: 2004/11/17 17:51:25 $
 *
 * HISTORY      :
 * $Log: port_base.cpp,v $
+* Revision 1.43  2004/11/17 17:51:25  mfisher
+* changed text to reflect RTM/RTC parity instead of just RTM
+*
 * Revision 1.42  2004/11/03 19:22:03  mfisher
 * added RTM and RTC parity settings next to TAP
 *
@@ -976,7 +979,7 @@ bool CtiPort::setPortForDevice(CtiDeviceSPtr  Device)
             if(DebugLevel & DEBUGLEVEL_LUDICROUS)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Port is about to communicate with RTM \"" << Device->getName() << "\"." << endl;
+                dout << RWTime() << " Port is about to communicate with RTM/RTC \"" << Device->getName() << "\"." << endl;
             }
 
             setLine(1200, 8, ODDPARITY, ONESTOPBIT);
