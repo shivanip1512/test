@@ -987,7 +987,9 @@ public class LMControlAreaTriggerModifyPanel extends com.cannontech.common.gui.u
 				com.cannontech.database.data.point.PointTypes.PULSE_ACCUMULATOR_POINT,
 				com.cannontech.database.data.point.PointTypes.CALCULATED_POINT
 			};
+	
 			
+			getJButtonProjection().setEnabled( true );
 			getJPanelTriggerID().setPointTypeFilter( ptType );
 		}
 		else
@@ -1008,8 +1010,12 @@ public class LMControlAreaTriggerModifyPanel extends com.cannontech.common.gui.u
 				com.cannontech.database.data.point.PointTypes.STATUS_POINT
 			};
 			
+
+			getJButtonProjection().setEnabled( false );
 			getJPanelTriggerID().setPointTypeFilter( ptType );
 		}
+
+
 	
 		updateStates();
 		fireInputUpdate();
@@ -1152,8 +1158,12 @@ public class LMControlAreaTriggerModifyPanel extends com.cannontech.common.gui.u
 		
 		
 		//set the projection panels values
+		getJButtonProjection().setEnabled(
+			trigger.getTriggerType().equalsIgnoreCase(ILMControlAreaTrigger.TYPE_THRESHOLD) );
+
 		getJPanelTriggerProjPanel().setValue( trigger );
 		
+	
 		//set the text of the button to the type of projection used
 		getJButtonProjection().setText( 
 			"Projection..." + trigger.getProjectionType() );
