@@ -30,8 +30,7 @@ function updateNode(node) {
 
 	function fn(obj) {
 		node.getFirstChild().setData(obj.content);
-		if (obj.content == ' ')
-			confirm('error');
+		
 	
 	}
 
