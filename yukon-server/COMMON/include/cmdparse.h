@@ -98,8 +98,9 @@ public:
    const RWCString& getCommandStr() const;
 
    int      getControlled() const;
-   bool     isControlled() const;
-   bool     isTwoWay() const;
+   bool     isControlled()  const;
+   bool     isDisconnect()  const;
+   bool     isTwoWay()      const;
 
 
    UINT     getCommand() const;
