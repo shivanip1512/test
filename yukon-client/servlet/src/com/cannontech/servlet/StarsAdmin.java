@@ -1433,7 +1433,11 @@ public class StarsAdmin extends HttpServlet {
 			
 			StarsAdminUtil.updateYukonListEntries( cList, entryData, energyCompany );
 			
-			energyCompany.updateStarsCustomerSelectionLists();
+			ArrayList descendants = ECUtils.getAllDescendants( energyCompany );
+			for (int i = 0; i < descendants.size(); i++) {
+				LiteStarsEnergyCompany ec = (LiteStarsEnergyCompany) descendants.get(i);
+				ec.updateStarsCustomerSelectionLists();
+			}
 			
 			if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE)) {
 				energyCompany.updateStarsDefaultThermostatSchedules();
