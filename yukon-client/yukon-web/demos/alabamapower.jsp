@@ -1,15 +1,5 @@
 <%@ page import="com.cannontech.common.constants.LoginController" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
-<%
-	LiteYukonUser savedUser = (LiteYukonUser) session.getAttribute(LoginController.SAVED_YUKON_USER);
-	if (savedUser == null) {
-		savedUser = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);
-		if (savedUser == null) {
-			response.sendRedirect(request.getContextPath() + "/login.jsp");
-		}
-		session.setAttribute(LoginController.SAVED_YUKON_USER, savedUser);
-	}
-%>
 <HTML>
 <HEAD>
   <META NAME="GENERATOR" CONTENT="Adobe PageMill 3.0 Win">
@@ -57,6 +47,7 @@
 					<input name="USERNAME" value="alabamaTherm" type="hidden">
           			<input name="PASSWORD" value="$ap_therm" type="hidden">
           			<input name="ACTION" value="LOGIN" type="hidden">
+					<input name="SAVE_CURRENT_USER" value="true" type="hidden">
         		  </form>
                   </td>
                   <td>
