@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/prot_emetcon.h-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2004/05/14 01:06:36 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2004/10/22 16:38:33 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -181,6 +181,7 @@ public:
         GetConfig_IEDTime,
         GetConfig_Role,  //  only for repeaters
         GetConfig_Raw,
+        GetConfig_Intervals,
         GetConfig_LoadProfileInterval,
         GetConfig_DemandInterval,
         GetConfig_Options,
@@ -201,6 +202,7 @@ public:
         PutConfig_TSync,
         PutConfig_LoadProfileInterval,
         PutConfig_DemandInterval,
+        PutConfig_Intervals,
         PutConfig_LoadProfileInterest,
         PutConfig_Multiplier,
         PutConfig_Multiplier2,
