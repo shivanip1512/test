@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2004/06/28 16:40:40 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2005/01/04 22:16:35 $
 *
 * Copyright (c) 1999-2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -169,6 +169,10 @@ INT CtiDeviceMacro::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse
 
         if ((pPoint = (CtiPoint*)getDeviceControlPointOffsetEqual(GRP_CONTROL_STATUS)) != 0)
         {
+            if(parse.getCommand() == ControlRequest)
+                reportControlStart( parse.getControlled(), parse.getiValue("control_interval"), parse.getiValue("control_reduction", 100), vgList, parse.getCommandStr() );
+
+
             if(newvglistsize > vglistsize)
             {
                 /*

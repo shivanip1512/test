@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2004/05/05 15:31:41 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/01/04 22:16:35 $
 *
 * Copyright (c) 1999-2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -28,7 +28,7 @@
 #include <vector>
 using namespace std;
 
-class IM_EX_DEVDB CtiDeviceMacro : public CtiDeviceBase
+class IM_EX_DEVDB CtiDeviceMacro : public CtiDeviceGroupBase // 2004/1/4 CGP // : public CtiDeviceBase
 {
 protected:
 
@@ -47,7 +47,7 @@ private:
 
 public:
 
-    typedef CtiDeviceBase Inherited;
+    typedef CtiDeviceGroupBase Inherited;
 
     CtiDeviceMacro( );
     CtiDeviceMacro( const CtiDeviceMacro &aRef );
@@ -58,6 +58,8 @@ public:
 
     void clearDeviceList( void );
     CtiDeviceMacro &addDevice( CtiDeviceSPtr toAdd );
+
+    virtual LONG getRouteID() { return 0L; }
 
     void DecodeDatabaseReader( RWDBReader &rdr );
     virtual void getSQL( RWDBDatabase &db, RWDBTable &keyTable, RWDBSelector &selector );
