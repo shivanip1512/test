@@ -52,6 +52,8 @@ public class WorkOrder extends YukonReportBase
 	{
 		super();
 		setModel(woModel_);
+		setShowReportFooter(false);
+		setShowReportHeader(false);
 	}
 
 	/**
