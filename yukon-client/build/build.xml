@@ -5,6 +5,8 @@
          just slowing down builds -ACL -->
     <!-- Define new tasks -->
     <!--	 <taskdef name="XSDCompiler" classname="org.exolab.castor.tools.XSDCompiler"/>-->
+	<taskdef resource="net/sf/antcontrib/antcontrib.properties" />
+
     <property environment="env"/> 	 	 
     <property file="build.properties"/>
 	 	      	     	     
@@ -172,7 +174,7 @@
 <!--    	<antcall target="loadcontrol"/>
     	<antcall target="trending"/> -->
     	<antcall target="singlebuild" inheritAll="true">
-    		<param name="dotarget" value="build"/>
+	   		<param name="dotarget" value="build"/>
     		<param name="filename" value="${yukon-web}"/>
     	</antcall>
     </target>
