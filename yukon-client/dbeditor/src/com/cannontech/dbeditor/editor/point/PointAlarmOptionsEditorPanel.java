@@ -24,7 +24,7 @@ public class PointAlarmOptionsEditorPanel extends com.cannontech.common.gui.util
 	private javax.swing.JScrollPane ivjJScrollPaneAlarmStates = null;
 	private javax.swing.JTable ivjJTableAlarmStates = null;
 	public static final LiteContact NONE_LITE_CONTACT =
-			new LiteContact( CtiUtilities.NONE_ID, 
+			new LiteContact( CtiUtilities.NONE_ZERO_ID, 
 					null, CtiUtilities.STRING_NONE );
 	private javax.swing.JCheckBox ivjJCheckBoxNotifyWhenAck = null;
 	private javax.swing.JCheckBox ivjJCheckBoxDisableAllAlarms = null;
@@ -173,7 +173,7 @@ private void connEtoC5(java.awt.event.ActionEvent arg1) {
 	}
 }
 /**
- * Looks the first email notificatoin type in the list passed in.  Returns a NONE_ID if
+ * Looks the first email notificatoin type in the list passed in.  Returns a NONE_ZERO_ID if
  * no email type is found.
  * @param contact
  * @return int
@@ -196,7 +196,7 @@ private int findEmailContact( LiteContact contact )
 	}
 
 	//no e-mail notif found
-	return CtiUtilities.NONE_ID;
+	return CtiUtilities.NONE_ZERO_ID;
 }
 /**
  * 
@@ -960,7 +960,7 @@ private void refillContactComboBox()
 			LiteContact contact = (LiteContact)contacts.get(i);
 			
 			//be sure we have an Email notif for this contact
-			if( findEmailContact(contact) != CtiUtilities.NONE_ID )
+			if( findEmailContact(contact) != CtiUtilities.NONE_ZERO_ID )
 				getJComboBoxContact().addItem( contact );
 		}
 	}

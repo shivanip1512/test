@@ -7,6 +7,9 @@ package com.cannontech.yukon.cbc;
  */
 public abstract class StreamableCapObject 
 {
+	public static final String STR_NA = "  NA";
+	public static final String DASH_LINE = "  ----";
+	
 	private Integer ccId = null;
 	private String ccCategory = null;
 	private String ccClass = null;
@@ -14,6 +17,7 @@ public abstract class StreamableCapObject
 	private String ccType = null;
 	private String ccArea = null;
 	private Boolean ccDisableFlag = null;
+
 /**
  * StreamableCapObject constructor comment.
  */

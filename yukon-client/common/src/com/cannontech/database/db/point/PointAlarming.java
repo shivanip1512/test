@@ -33,7 +33,7 @@ public class PointAlarming extends com.cannontech.database.db.DBPersistent
 	private String excludeNotifyStates = DEFAULT_EXCLUDE_NOTIFY;
 	private String notifyOnAcknowledge = "N";
 	private Integer notificationGroupID = new Integer(PointAlarming.NONE_NOTIFICATIONID);
-	private Integer recipientID = new Integer(CtiUtilities.NONE_ID);
+	private Integer recipientID = new Integer(CtiUtilities.NONE_ZERO_ID);
 
 		
 	public static final String CONSTRAINT_COLUMNS[] = { "POINTID" };

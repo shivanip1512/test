@@ -9,8 +9,8 @@ public class EnergyCompany extends com.cannontech.database.db.DBPersistent
 {
 	private Integer energyCompanyID = null;
 	private String name = null;
-	private Integer primaryContactID = new Integer(CtiUtilities.NONE_ID);
-	private Integer userID = new Integer(CtiUtilities.NONE_ID);
+	private Integer primaryContactID = new Integer(CtiUtilities.NONE_ZERO_ID);
+	private Integer userID = new Integer(CtiUtilities.NONE_ZERO_ID);
 	
 	public static final String[] SETTER_COLUMNS = 
 	{ 

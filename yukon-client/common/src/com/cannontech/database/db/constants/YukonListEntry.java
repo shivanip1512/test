@@ -15,10 +15,10 @@ import com.cannontech.common.util.CtiUtilities;
 public class YukonListEntry extends com.cannontech.database.db.DBPersistent
 {
 	private Integer entryID = null;
-	private Integer listID = new Integer(CtiUtilities.NONE_ID);
+	private Integer listID = new Integer(CtiUtilities.NONE_ZERO_ID);
 	private Integer entryOrder = new Integer(0);
 	private String entryText = "";
-	private Integer yukonDefID = new Integer(CtiUtilities.NONE_ID);
+	private Integer yukonDefID = new Integer(CtiUtilities.NONE_ZERO_ID);
 	
 	public static final String TABLE_NAME = "YukonListEntry";
 	
@@ -121,7 +121,7 @@ public class YukonListEntry extends com.cannontech.database.db.DBPersistent
 		}
 		
 		//strange, should not get here
-		return new Integer(CtiUtilities.NONE_ID);
+		return new Integer(CtiUtilities.NONE_ZERO_ID);
 	}
 	
 	public static void deleteAllListEntries(Integer listID, java.sql.Connection conn) {

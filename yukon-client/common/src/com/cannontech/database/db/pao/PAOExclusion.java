@@ -12,13 +12,13 @@ import com.cannontech.database.db.NestedDBPersistent;
 public class PAOExclusion extends NestedDBPersistent
 {
 	private Integer exclusionID = null;
-	private Integer paoID = null; //new Integer(CtiUtilities.NONE_ID);
-	private Integer excludedPaoID = null; //new Integer(CtiUtilities.NONE_ID);
+	private Integer paoID = null; //new Integer(CtiUtilities.NONE_ZERO_ID);
+	private Integer excludedPaoID = null; //new Integer(CtiUtilities.NONE_ZERO_ID);
 	private Integer pointID = new Integer(PointTypes.SYS_PID_SYSTEM);
-	private Integer value = new Integer(CtiUtilities.NONE_ID);
-	private Integer functionID = new Integer(CtiUtilities.NONE_ID);
+	private Integer value = new Integer(CtiUtilities.NONE_ZERO_ID);
+	private Integer functionID = new Integer(CtiUtilities.NONE_ZERO_ID);
 	private String funcName = CtiUtilities.STRING_NONE;
-	private Integer funcRequeue = new Integer(CtiUtilities.NONE_ID);
+	private Integer funcRequeue = new Integer(CtiUtilities.NONE_ZERO_ID);
 	private String funcParams = CtiUtilities.STRING_NONE;
 
 
@@ -87,8 +87,8 @@ public class PAOExclusion extends NestedDBPersistent
 		this();
 		
 		setPaoID( paoID_ );
-		setExcludedPaoID( new Integer(CtiUtilities.NONE_ID) );
-		setPointID( new Integer(CtiUtilities.NONE_ID) );
+		setExcludedPaoID( new Integer(CtiUtilities.NONE_ZERO_ID) );
+		setPointID( new Integer(CtiUtilities.NONE_ZERO_ID) );
 		setFunctionID( functionID_ );
 		setFuncName( funcName_ );
 		setFuncParams( funcParams_);
@@ -349,7 +349,7 @@ public class PAOExclusion extends NestedDBPersistent
 		}
 			
 		//strange, should not get here
-		return new Integer(CtiUtilities.NONE_ID);
+		return new Integer(CtiUtilities.NONE_ZERO_ID);
 	}
 	
 	

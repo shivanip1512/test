@@ -51,7 +51,7 @@ public class ServerResponseMsg extends Message {
     {
         return 
             new ServerResponseMsg(
-                CtiUtilities.NONE_ID,
+                CtiUtilities.NONE_ZERO_ID,
                 STATUS_ERROR,
                 "Response from the server took too long and timed out (Timeout= " +
                     (ServerRequest.DEFAULT_TIMEOUT / 1000) + " seconds)");        

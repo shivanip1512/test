@@ -6,8 +6,8 @@ import com.cannontech.common.util.CtiUtilities;
  */
 public class LiteLMProgScenario extends LiteBase
 {
-	private int programID = CtiUtilities.NONE_ID;
-	private int scenarioID = CtiUtilities.NONE_ID;
+	private int programID = CtiUtilities.NONE_ZERO_ID;
+	private int scenarioID = CtiUtilities.NONE_ZERO_ID;
 	private int startOffset = 0;
 	private int stopOffset = 0;
 	private int startGear = 0;

@@ -13,7 +13,7 @@ public class Contact extends com.cannontech.database.db.DBPersistent implements 
 	private String contFirstName = CtiUtilities.STRING_NONE;
 	private String contLastName = CtiUtilities.STRING_NONE;
 	private Integer logInID = new Integer(UserUtils.USER_YUKON_ID);
-	private Integer addressID = new Integer(CtiUtilities.NONE_ID);
+	private Integer addressID = new Integer(CtiUtilities.NONE_ZERO_ID);
 
 	
 	public static final String SETTER_COLUMNS[] = 
@@ -295,7 +295,7 @@ public class Contact extends com.cannontech.database.db.DBPersistent implements 
 		}
 		
 		//strange, should not get here
-		return new Integer(CtiUtilities.NONE_ID);
+		return new Integer(CtiUtilities.NONE_ZERO_ID);
 	}
 
 

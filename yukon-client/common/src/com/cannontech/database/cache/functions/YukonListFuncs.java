@@ -104,7 +104,7 @@ public final class YukonListFuncs implements YukonListEntryTypes
 		String sqlString = 
 				"select EntryID, ListID, EntryOrder, EntryText, YukonDefinitionID " + 
 				"from " + YukonListEntry.TABLE_NAME + " " +
-				//"where EntryID > " + CtiUtilities.NONE_ID + " " + 
+				//"where EntryID > " + CtiUtilities.NONE_ZERO_ID + " " + 
 				"order by EntryID, ListID";
 	
 		java.sql.Statement stmt = null;
@@ -151,7 +151,7 @@ public final class YukonListFuncs implements YukonListEntryTypes
 		String sqlString = 
 				"select ListID, Ordering, SelectionLabel, WhereIsList, ListName, UserUpdateAvailable " + 
 				"from " + YukonSelectionList.TABLE_NAME + " " +
-				"where ListID > " + CtiUtilities.NONE_ID;
+				"where ListID > " + CtiUtilities.NONE_ZERO_ID;
 	
 		java.sql.Statement stmt = null;
 		java.sql.ResultSet rset = null;

@@ -179,7 +179,7 @@ public final static Integer getNextNotificationGroupID()
 		}
 		
 		//strange, should not get here
-		return new Integer(CtiUtilities.NONE_ID);
+		return new Integer(CtiUtilities.NONE_ZERO_ID);
 	}
 
 

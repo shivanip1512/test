@@ -13,8 +13,8 @@ public class NotifEmailMsg extends Message
 {
 	private String to = ""; //a comma separated string of email addresses.
 	
-	//if notifGroupID != CtiUtilities.NONE_ID, then all valid values for the group is used in the email
-	private int notifGroupID = CtiUtilities.NONE_ID; //a notification group id
+	//if notifGroupID != CtiUtilities.NONE_ZERO_ID, then all valid values for the group is used in the email
+	private int notifGroupID = CtiUtilities.NONE_ZERO_ID; //a notification group id
 	
 	private String subject = "";	//email subject text
 	private String body = "";	//email body text

@@ -9,7 +9,7 @@ import com.cannontech.message.util.Message;
  */
 public class NotifVoiceMsg extends Message
 {
-	private int notifProgramID = CtiUtilities.NONE_ID;
+	private int notifProgramID = CtiUtilities.NONE_ZERO_ID;
 	
 	/**
 	 * NotifVoiceMsg constructor comment.

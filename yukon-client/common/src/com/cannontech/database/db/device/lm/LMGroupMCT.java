@@ -8,11 +8,11 @@ import com.cannontech.common.util.CtiUtilities;
 public class LMGroupMCT extends com.cannontech.database.db.DBPersistent 
 {
 	private Integer deviceID = null;
-	private Integer address = new Integer(CtiUtilities.NONE_ID);
+	private Integer address = new Integer(CtiUtilities.NONE_ZERO_ID);
 	private String level = "L";
 	private String relayUsage = "1      ";
 	private Integer routeID = null;	
-	private Integer mctDeviceID = new Integer(CtiUtilities.NONE_ID);
+	private Integer mctDeviceID = new Integer(CtiUtilities.NONE_ZERO_ID);
 
 	public static final String SETTER_COLUMNS[] = 
 	{ 

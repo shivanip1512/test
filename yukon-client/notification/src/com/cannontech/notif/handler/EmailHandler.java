@@ -44,7 +44,7 @@ class EmailHandler implements INotifHandler
             EmailMessage outMsg = new EmailMessage( _emailMsg.getTo(), _emailMsg.getSubject(), _emailMsg.getBody() );
             
             //if we hav a NotificationGroupID, use its values instead
-            if( _emailMsg.getNotifGroupID() != CtiUtilities.NONE_ID )
+            if( _emailMsg.getNotifGroupID() != CtiUtilities.NONE_ZERO_ID )
             {
                 LiteNotificationGroup lGrp =
                         NotificationGroupFuncs.getLiteNotificationGroup(_emailMsg.getNotifGroupID());

@@ -359,7 +359,7 @@ public class StarsAdmin extends HttpServlet {
 			com.cannontech.database.data.customer.Contact contact =
 					new com.cannontech.database.data.customer.Contact();
 			
-			boolean newContact = (energyCompany.getPrimaryContactID() == CtiUtilities.NONE_ID);
+			boolean newContact = (energyCompany.getPrimaryContactID() == CtiUtilities.NONE_ZERO_ID);
 			LiteContact liteContact = null;
 			
 			if (newContact) {
@@ -1255,7 +1255,7 @@ public class StarsAdmin extends HttpServlet {
 			StarsExitInterviewQuestions starsExitQuestions = ecSettings.getStarsExitInterviewQuestions();
 			
 			String type = req.getParameter("type");
-			int qType = CtiUtilities.NONE_ID;
+			int qType = CtiUtilities.NONE_ZERO_ID;
 			if (type.equalsIgnoreCase("Exit"))
 				qType = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_QUE_TYPE_EXIT ).getEntryID();
 			
@@ -1291,7 +1291,7 @@ public class StarsAdmin extends HttpServlet {
 					questionDB.setMandatory( "N" );
 					questionDB.setDisplayOrder( new Integer(i+1) );
 					questionDB.setAnswerType( Integer.valueOf(answerTypes[i]) );
-					questionDB.setExpectedAnswer( new Integer(CtiUtilities.NONE_ID) );
+					questionDB.setExpectedAnswer( new Integer(CtiUtilities.NONE_ZERO_ID) );
 					question.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
 					question = (com.cannontech.database.data.stars.InterviewQuestion)
 							Transaction.createTransaction(Transaction.INSERT, question).execute();

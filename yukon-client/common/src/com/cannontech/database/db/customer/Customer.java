@@ -10,8 +10,8 @@ public class Customer extends com.cannontech.database.db.DBPersistent
 {
 	/* Set attributes to null when a user must enter them*/
 	private Integer customerID = null;
-	private Integer primaryContactID = new Integer(CtiUtilities.NONE_ID);
-	private Integer customerTypeID = new Integer(CtiUtilities.NONE_ID);	
+	private Integer primaryContactID = new Integer(CtiUtilities.NONE_ZERO_ID);
+	private Integer customerTypeID = new Integer(CtiUtilities.NONE_ZERO_ID);	
 	private String timeZone = "";
 
 
@@ -95,7 +95,7 @@ public class Customer extends com.cannontech.database.db.DBPersistent
 		}
 		
 		//strange, should not get here
-		return new Integer(CtiUtilities.NONE_ID);
+		return new Integer(CtiUtilities.NONE_ZERO_ID);
 	}
 	
 	/**

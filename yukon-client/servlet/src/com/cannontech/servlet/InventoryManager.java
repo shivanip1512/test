@@ -177,7 +177,7 @@ public class InventoryManager extends HttpServlet {
 		LiteInventoryBase liteInv = energyCompany.getInventoryBrief( invID, true );
 		Integer invNo = (Integer) session.getAttribute( InventoryManagerUtil.STARS_INVENTORY_NO );
 		
-		if (liteInv.getAccountID() == CtiUtilities.NONE_ID) {
+		if (liteInv.getAccountID() == CtiUtilities.NONE_ZERO_ID) {
 			String referer = (String) session.getAttribute( ServletUtils.ATT_REFERRER2 );
 			if (referer.indexOf("Wizard") < 0) {
 				// If we're trying to create/update a hardware and it's not in the wizard,
@@ -282,7 +282,7 @@ public class InventoryManager extends HttpServlet {
 		LiteYukonPAObject litePao = PAOFuncs.getLiteYukonPAO( deviceID );
 		Integer invNo = (Integer) session.getAttribute( InventoryManagerUtil.STARS_INVENTORY_NO );
 		
-		if (liteInv == null || liteInv.getAccountID() == CtiUtilities.NONE_ID) {
+		if (liteInv == null || liteInv.getAccountID() == CtiUtilities.NONE_ZERO_ID) {
 			String referer = (String) session.getAttribute( ServletUtils.ATT_REFERRER2 );
 			if (referer.indexOf("Wizard") < 0) {
 				StarsCustAccountInformation starsAcctInfo = (StarsCustAccountInformation)

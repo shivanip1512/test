@@ -104,7 +104,7 @@ public class Contact extends com.cannontech.database.db.DBPersistent implements 
 	
 		getContact().delete();
 
-		if (getAddress().getAddressID().intValue() != com.cannontech.common.util.CtiUtilities.NONE_ID)
+		if (getAddress().getAddressID().intValue() != com.cannontech.common.util.CtiUtilities.NONE_ZERO_ID)
 			getAddress().delete();	
 	}
 

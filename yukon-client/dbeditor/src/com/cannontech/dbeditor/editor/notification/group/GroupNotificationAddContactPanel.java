@@ -340,7 +340,7 @@ public void setValue(Object val)
 			LiteContactNotification possibleNotif = 
 					(LiteContactNotification)cntctNotifs.get(i);
 
-			if( possibleNotif.getContactNotifID() == CtiUtilities.NONE_ID )
+			if( possibleNotif.getContactNotifID() == CtiUtilities.NONE_ZERO_ID )
 				continue;
 				
 			for(int j = 0; j < assignedLocations.size(); j++)

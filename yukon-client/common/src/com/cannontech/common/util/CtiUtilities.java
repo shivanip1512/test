@@ -25,7 +25,7 @@ public final class CtiUtilities
 {
 	public static final int MAX_UTILITY_ID = 254;
 	public static final int MAX_SECTION_ID = 255;
-	public static final int NONE_ID = 0;
+	public static final int NONE_ZERO_ID = 0;
 
 	public static final double INVALID_MIN_DOUBLE = -1E30;
 	public static final double INVALID_MAX_DOUBLE = 1E30;

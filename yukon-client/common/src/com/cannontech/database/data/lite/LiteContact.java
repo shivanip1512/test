@@ -14,7 +14,7 @@ public class LiteContact extends LiteBase
 	private String contFirstName = null;
 	private String contLastName = null;
 	private int loginID = UserUtils.USER_YUKON_ID;
-	private int addressID = CtiUtilities.NONE_ID;
+	private int addressID = CtiUtilities.NONE_ZERO_ID;
 	
 	//contains instances of com.cannontech.database.data.lite.LiteContactNotification
 	private Vector liteContactNotifications = null;

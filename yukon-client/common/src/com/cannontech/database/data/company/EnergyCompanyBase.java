@@ -79,7 +79,7 @@ public void delete() throws java.sql.SQLException
 	getEnergyCompany().delete();
 	
 	if (getEnergyCompany().getPrimaryContactID() != null
-		&& getEnergyCompany().getPrimaryContactID().intValue() != com.cannontech.common.util.CtiUtilities.NONE_ID)
+		&& getEnergyCompany().getPrimaryContactID().intValue() != com.cannontech.common.util.CtiUtilities.NONE_ZERO_ID)
 	{
 		com.cannontech.database.data.customer.Contact contact =
 				new com.cannontech.database.data.customer.Contact();

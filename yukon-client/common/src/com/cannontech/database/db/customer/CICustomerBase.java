@@ -11,7 +11,7 @@ public class CICustomerBase extends com.cannontech.database.db.DBPersistent
 {
 	/* Set attributes to null when a user must enter them*/
 	private Integer customerID = null;
-	private Integer mainAddressID = new Integer(CtiUtilities.NONE_ID);
+	private Integer mainAddressID = new Integer(CtiUtilities.NONE_ZERO_ID);
 	private Double custDmdLevel = new Double(0.0);
 	private String curtailmentAgreement = com.cannontech.common.util.CtiUtilities.STRING_NONE;
 	private Double curtailAmount = new Double(0.0);

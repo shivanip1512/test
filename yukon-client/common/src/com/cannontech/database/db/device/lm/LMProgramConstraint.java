@@ -28,8 +28,8 @@ public class LMProgramConstraint extends com.cannontech.database.db.DBPersistent
 	private Integer minRestartTime = new Integer(0);
 	private Integer maxDailyOps = new Integer(0);
 	private Integer maxActivateTime = new Integer(0);
-	private Integer holidayScheduleID = new Integer(CtiUtilities.NONE_ID);
-	private Integer seasonScheduleID = new Integer(CtiUtilities.NONE_ID);     
+	private Integer holidayScheduleID = new Integer(CtiUtilities.NONE_ZERO_ID);
+	private Integer seasonScheduleID = new Integer(CtiUtilities.NONE_ZERO_ID);     
 	
 
 	public static final String SETTER_COLUMNS[] = 

@@ -16,8 +16,8 @@ import com.cannontech.common.util.CtiUtilities;
 public class LiteLMPAOExclusion extends LiteBase
 {
 	
-	private int masterPaoID = CtiUtilities.NONE_ID;
-	private int excludedPaoID = CtiUtilities.NONE_ID;
+	private int masterPaoID = CtiUtilities.NONE_ZERO_ID;
+	private int excludedPaoID = CtiUtilities.NONE_ZERO_ID;
 	private int functionID = CtiUtilities.LM_SUBORDINATION_FUNC_ID.intValue();
 	private String functionName = CtiUtilities.LM_SUBORDINATION_INFO;
 

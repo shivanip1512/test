@@ -56,7 +56,7 @@ public class CommandDeviceBean
     
     //Contains LiteYukonPaobjects
     private ArrayList deviceList = null;
-    public int deviceClass = CtiUtilities.NONE_ID;
+    public int deviceClass = CtiUtilities.NONE_ZERO_ID;
     public String collGroup = "";
     private int sortBy = DEVICE_NAME_SORT_BY;
     private int sortOrder = SORT_ORDER_ASCENDING;

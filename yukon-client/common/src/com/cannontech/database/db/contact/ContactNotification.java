@@ -466,7 +466,7 @@ public class ContactNotification extends NestedDBPersistent
 		}
 		
 		//strange, should not get here
-		return new Integer(CtiUtilities.NONE_ID);
+		return new Integer(CtiUtilities.NONE_ZERO_ID);
 	}
 	
 	/**

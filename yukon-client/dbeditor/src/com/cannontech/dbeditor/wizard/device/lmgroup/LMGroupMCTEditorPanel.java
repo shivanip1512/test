@@ -39,7 +39,7 @@ public class LMGroupMCTEditorPanel extends com.cannontech.common.gui.util.DataIn
 	//just fill in some reasonable random values
 	private static final LiteYukonPAObject NONE_PAO =
 		new LiteYukonPAObject( 
-				CtiUtilities.NONE_ID, CtiUtilities.STRING_NONE, 
+				CtiUtilities.NONE_ZERO_ID, CtiUtilities.STRING_NONE, 
 				PAOGroups.CAT_DEVICE, DeviceTypes.MCT370,
 				DeviceClasses.CARRIER, CtiUtilities.STRING_NONE );
 

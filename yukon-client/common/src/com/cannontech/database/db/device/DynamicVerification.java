@@ -101,7 +101,7 @@ public static synchronized Integer getNextLogID( java.sql.Connection conn )
 		}
 		
 		//strange, should not get here
-		return new Integer(com.cannontech.common.util.CtiUtilities.NONE_ID);
+		return new Integer(com.cannontech.common.util.CtiUtilities.NONE_ZERO_ID);
 	}
 
 

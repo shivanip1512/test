@@ -218,7 +218,7 @@ public static synchronized Integer getNextBaselineID( java.sql.Connection conn )
 		}
 		
 		//strange, should not get here
-		return new Integer(com.cannontech.common.util.CtiUtilities.NONE_ID);
+		return new Integer(com.cannontech.common.util.CtiUtilities.NONE_ZERO_ID);
 	}
 
 public java.lang.Integer getDaysUsed() {

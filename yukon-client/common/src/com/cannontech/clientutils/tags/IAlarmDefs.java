@@ -10,7 +10,7 @@ import com.cannontech.common.util.CtiUtilities;
  */
 public interface IAlarmDefs
 {
-	public static final int MIN_CONDITION_ID = CtiUtilities.NONE_ID;
+	public static final int MIN_CONDITION_ID = CtiUtilities.NONE_ZERO_ID;
 
 	public static final String[] STATUS_ALARM_STATES =
 	{

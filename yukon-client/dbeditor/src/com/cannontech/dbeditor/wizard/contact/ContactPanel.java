@@ -828,7 +828,7 @@ public Object getValue(Object val)
 			new Integer( ((LiteYukonUser)selLg).getLiteID()) );
 	}
     else  //must be (none)
-        cnt.getContact().setLogInID( new Integer(CtiUtilities.NONE_ID) );
+        cnt.getContact().setLogInID( new Integer(CtiUtilities.NONE_ZERO_ID) );
 
 
 	Vector holder = new Vector();

@@ -10,7 +10,7 @@ public class LMProgram extends com.cannontech.database.db.DBPersistent
 {
 	private Integer deviceID = null;
 	private String controlType = null;
-	private Integer constraintID = new Integer(CtiUtilities.NONE_ID);
+	private Integer constraintID = new Integer(CtiUtilities.NONE_ZERO_ID);
 
 
 	public static final String SETTER_COLUMNS[] = 

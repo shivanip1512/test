@@ -59,8 +59,8 @@ public void update() {
 				((LiteYukonUser)users.get(i)).getUserID() < 0 );
 			//UserUtils.USER_YUKON_ID
 			//UserUtils.USER_ADMIN_ID
-			//UserUtils.USER_STARS_DEFAULT_ID
-			if(((LiteYukonUser)users.get(i)).getUserID() > UserUtils.USER_STARS_DEFAULT_ID)
+			//UserUtils.USER_DEFAULT_ID
+			if(((LiteYukonUser)users.get(i)).getUserID() > UserUtils.USER_DEFAULT_ID)
 				rootNode.add( userNode );
 		}
 	}

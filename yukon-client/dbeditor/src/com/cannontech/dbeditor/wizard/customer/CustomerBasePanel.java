@@ -525,7 +525,7 @@ public Object getValue(Object o)
 	}
 	else
 		customer.getCustomer().setPrimaryContactID( 
-				new Integer(CtiUtilities.NONE_ID) );
+				new Integer(CtiUtilities.NONE_ZERO_ID) );
 
 
 	//get the selected Time Zone if there is one
@@ -783,7 +783,7 @@ public void setValue(Object o)
 	Customer customer = (Customer)o;
 
 	if( customer.getCustomer().getPrimaryContactID().intValue() 
-		 >= CtiUtilities.NONE_ID )
+		 >= CtiUtilities.NONE_ZERO_ID )
 	{
 		for( int i = 0; i < getJComboBoxPrimaryContact().getItemCount(); i++ )
 		{
