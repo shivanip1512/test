@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2003/03/13 19:35:56 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2004/04/29 20:03:27 $
 *
 * Copyright (c) 1999-2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -130,6 +130,8 @@ INT CtiDeviceMacro::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse
         size_t vglistsize = vgList.entries();
         size_t newvglistsize = 0;
 
+        const CtiCommandParser origparse = parse;
+
         for( ; devIter != _deviceList.end( ); devIter++)
         {
             CtiDeviceBase *&pBase = *devIter;
@@ -157,6 +159,8 @@ INT CtiDeviceMacro::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse
             {
                 nRet = MEMORY;
             }
+
+            parse = origparse;      // Reassign parse in case the last device added some clutter.
         }
 
         newvglistsize = vgList.entries();
