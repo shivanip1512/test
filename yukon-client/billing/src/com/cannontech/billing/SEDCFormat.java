@@ -64,20 +64,44 @@ private void removeDuplicateMeters()
 	}
 	
 }
+
 /**
  * Retrieves values from the database and inserts them in a FileFormatBase object
  * Creation date: (11/30/00)
  */
-public boolean retrieveBillingData(java.util.Vector collectionGroups, String dbAlias)
+public boolean retrieveBillingData(String dbAlias)
 {	
 	long timer = System.currentTimeMillis();
 	
 	if( dbAlias == null)
 		dbAlias = com.cannontech.common.util.CtiUtilities.getDatabaseAlias();
 
-	if( collectionGroups.isEmpty() )
-		return false;
+	String [] SELECT_COLUMNS =
+	{
+		SQLStringBuilder.DMG_METERNUMBER,
+		SQLStringBuilder.PT_POINTID, 
+		SQLStringBuilder.RPH_TIMESTAMP,
+		SQLStringBuilder.RPH_VALUE,
+		SQLStringBuilder.DMG_DEVICEID,
+		SQLStringBuilder.PT_POINTOFFSET
+	};
 
+	String [] FROM_TABLES =
+	{
+		com.cannontech.database.db.point.RawPointHistory.TABLE_NAME,
+		com.cannontech.database.db.point.Point.TABLE_NAME,
+		com.cannontech.database.db.device.DeviceMeterGroup.TABLE_NAME
+	};
+
+	SQLStringBuilder builder = new SQLStringBuilder();
+	String sql = new String((builder.buildSQLStatement(SELECT_COLUMNS, FROM_TABLES, getBillingDefaults(), validAnalogPtOffsets, validAccPtOffsets)).toString());
+		sql += " ORDER BY " 
+			+ SQLStringBuilder.DMG_METERNUMBER + ", " 
+			+ SQLStringBuilder.DMG_DEVICEID + ", " 
+			+ SQLStringBuilder.PT_POINTOFFSET + ", " 
+			+ SQLStringBuilder.RPH_TIMESTAMP + " DESC ";
+		
+/*		
 	StringBuffer sql = new StringBuffer("SELECT DMG.METERNUMBER, PT.POINTID, RPH.TIMESTAMP, RPH.VALUE, DMG.DEVICEID, PT.POINTOFFSET " +
 				" FROM POINT PT, RAWPOINTHISTORY RPH, DEVICEMETERGROUP DMG " +
 				" WHERE PT.PAOBJECTID = DMG.DEVICEID " +
@@ -101,7 +125,7 @@ public boolean retrieveBillingData(java.util.Vector collectionGroups, String dbA
 					sql.append(", " + validAccPtOffsets[i]);
 				}
 				sql.append( ") )) ORDER BY DMG.METERNUMBER, DMG.DEVICEID, PT.POINTOFFSET, RPH.TIMESTAMP DESC");
-
+*/
 
 	java.sql.Connection conn = null;
 	java.sql.PreparedStatement pstmt = null;

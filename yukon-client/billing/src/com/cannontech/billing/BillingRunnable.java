@@ -34,7 +34,7 @@ public void run()
 	{
 		//tell our formatter about needing to append or not
 		//fileFormatBase.setIsAppending( getAppendCheckBox().isSelected() );		
-		boolean success = fileFormatBase.retrieveBillingData( collectionGroupVector, null );
+		boolean success = fileFormatBase.retrieveBillingData( null );
 
 		try
 		{

@@ -250,10 +250,7 @@ public java.util.Hashtable retrieveAccountNumbers(String dbAlias)
  * Creation date: (11/30/00)
  */
 //returns true if the data retrieval was successfull
-abstract public boolean retrieveBillingData(java.util.Vector collectionGroups, String databaseAlias);
-	//private java.util.Date billingStartDate = null;
-	//private java.util.Date billingStopDate = null;
-
+abstract public boolean retrieveBillingData(String dbAlias);
 public void setBillingDefaults(BillingFileDefaults newBillingDefaults)
 {
 	billingDefaults = newBillingDefaults;

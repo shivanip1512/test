@@ -16,6 +16,7 @@ public class CTICSVFormat extends FileFormatBase
 public CTICSVFormat() {
 	super();
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (3/4/2002 1:41:30 PM)
@@ -23,16 +24,42 @@ public CTICSVFormat() {
  * @param collectionGroups java.util.Vector
  * @param dbAlias java.lang.String
  */
-public boolean retrieveBillingData(java.util.Vector collectionGroups, String dbAlias)
+public boolean retrieveBillingData(String dbAlias)
 {
 	long timer = System.currentTimeMillis();
 
 	if( dbAlias == null )
 		dbAlias = com.cannontech.common.util.CtiUtilities.getDatabaseAlias();
 
-	if (collectionGroups.isEmpty())
-		return false;
+	String [] SELECT_COLUMNS =
+	{
+		SQLStringBuilder.PAO_PAONAME,
+		SQLStringBuilder.RPH_VALUE,
+		SQLStringBuilder.RPH_TIMESTAMP,
+		SQLStringBuilder.PT_POINTID,
+		SQLStringBuilder.UM_UOMNAME,
+		SQLStringBuilder.PT_POINTOFFSET
+	};
 
+	String [] FROM_TABLES =
+	{
+		com.cannontech.database.db.pao.YukonPAObject.TABLE_NAME,
+		com.cannontech.database.db.point.RawPointHistory.TABLE_NAME,
+		com.cannontech.database.db.point.Point.TABLE_NAME,
+		com.cannontech.database.db.device.DeviceMeterGroup.TABLE_NAME,
+		com.cannontech.database.db.point.PointUnit.TABLE_NAME,
+		com.cannontech.database.db.point.UnitMeasure.TABLE_NAME
+	};
+
+	SQLStringBuilder builder = new SQLStringBuilder();
+	String sql = new String((builder.buildSQLStatement(SELECT_COLUMNS, FROM_TABLES, getBillingDefaults(), validAnalogPtOffsets, validAccPtOffsets)).toString());
+		sql += " ORDER BY " 
+		+ SQLStringBuilder.PAO_PAONAME + ", "
+		+ SQLStringBuilder.PT_POINTOFFSET + ", "
+		+ SQLStringBuilder.PT_POINTID + ", " 
+		+ SQLStringBuilder.RPH_TIMESTAMP + " DESC ";
+
+/*
 	String sql = "SELECT PAO.PAONAME, RPH.VALUE, RPH.TIMESTAMP, PT.POINTID, UM.UOMNAME, PT.POINTOFFSET " +
 				" FROM YUKONPAOBJECT PAO, RAWPOINTHISTORY RPH, POINT PT, DEVICEMETERGROUP DMG, " +
 				" POINTUNIT PU, UNITMEASURE UM " + 
@@ -61,6 +88,8 @@ public boolean retrieveBillingData(java.util.Vector collectionGroups, String dbA
 				}
 				sql += ") )) ORDER BY PAO.PAONAME, PT.POINTOFFSET, PT.POINTID, RPH.TIMESTAMP DESC";
 
+	System.out.println(" Local SQL: " + sql);
+*/
 	java.sql.Connection conn = null;
 	java.sql.PreparedStatement pstmt = null;
 	java.sql.ResultSet rset = null;

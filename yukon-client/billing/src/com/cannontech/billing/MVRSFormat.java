@@ -407,4 +407,91 @@ public boolean retrieveBillingData(java.util.Vector collectionGroups, String dat
 		e.printStackTrace();
 	}*/
 }
+
+/**
+ * Retrieves values from the database and inserts them in a FileFormatBase object
+ * Creation date: (11/30/00)
+ */
+public boolean retrieveBillingData(String databaseAlias)
+{
+	return false;
+
+	/*String databaseAlias = new String("yukon");
+
+	java.util.List billingDevices = retrieveCurrentBillingMeterList(collectionGroups,databaseAlias);
+	java.util.List points = com.cannontech.database.cache.DefaultDatabaseCache.getInstance().getAllPoints();
+
+	String sqlString = new String("SELECT CHANGEID, POINTID, TIMESTAMP, QUALITY, VALUE FROM RAWPOINTHISTORY WHERE POINTID IN SELECT");
+	for(int i=1;i<collectionGroups.size();i++)
+	{
+		sqlString += " OR COLLECTIONGROUP = '" + collectionGroups.get(i) + "'";
+	}
+	sqlString += ")";
+
+	java.sql.Connection conn = com.cannontech.database.PoolManager.getInstance().getConnection( databaseAlias );
+	preparedStatement = conn.prepareStatement(sqlString);
+
+	Integer accountNumber = null;
+	String importType = new String("HH");
+	String serviceGroup = new String("ELEC");
+	String paymentSign = new String(" ");
+	Double payment = new Double(0.0);
+	java.util.GregorianCalendar batchDate = new java.util.GregorianCalendar();
+	String batchNumber = new String("800");
+	java.util.GregorianCalendar readDate = null;
+	String meterNumber = null;
+	Integer meterPositionNumber = null;
+	java.util.Vector registerNumberVector = null;
+	java.util.Vector kwhReadingVector = null;
+	java.util.Vector kwReadingVector = null;
+	java.util.Vector kvarReadingVector = null;
+
+	try
+	{
+		java.sql.ResultSet rset = preparedStatement.executeQuery();
+
+		int tempDeviceType = 0;
+
+		while(rset.next())
+		{
+			registerNumberVector = new java.util.Vector(4);
+			kwhReadingVector = new java.util.Vector(4);
+			kwReadingVector = new java.util.Vector(4);
+			kvarReadingVector = new java.util.Vector(4);
+		}
+
+		for(int i=0;i<=100%8+1;i++)
+		{
+			for(int j=0;j<8;j++)
+			{
+				int tempRowNumber = (i*8)+j;
+				tempDeviceType = com.cannontech.database.data.device.DeviceTypes.getType( ((String)(stmt.getRow(tempRowNumber)[0])) );
+				if( tempDeviceType == com.cannontech.database.data.device.DeviceTypes.ALPHA ||
+						tempDeviceType == com.cannontech.database.data.device.DeviceTypes.VECTRON ||
+						tempDeviceType == com.cannontech.database.data.device.DeviceTypes.FULCRUM ||
+						tempDeviceType == com.cannontech.database.data.device.DeviceTypes.LANDISGYRS4 ||
+						tempDeviceType == com.cannontech.database.data.device.DeviceTypes.MCT360 ||
+						tempDeviceType == com.cannontech.database.data.device.DeviceTypes.MCT370 )
+				{
+					meterNumbers.add( (String)(stmt.getRow(tempRowNumber)[1]) );
+					kwhReadings.add( (String)(stmt.getRow(tempRowNumber)[2]) );
+					kwReadings.add( (String)(stmt.getRow(tempRowNumber)[3]) );
+					kvReadings.add( (String)(stmt.getRow(tempRowNumber)[4]) );
+				}
+				else//regular mct
+				{
+					meterNumbers.add( (String)(stmt.getRow(tempRowNumber)[1]) );
+					kwhReadings.add( (String)(stmt.getRow(tempRowNumber)[2]) );
+					kwReadings.add( "       " );
+					kvReadings.add( "     " );
+				}
+			}
+			getRecordVector().add(new CADPXL2Record(accountNumber, importType, serviceGroup, paymentSign, payment, batchDate, batchNumber, readDate, meterNumber, meterPositionNumber, registerNumberVector, kwhReadingVector, kwReadingVector, kvarReadingVector));
+		}
+	}
+	catch(Exception e)
+	{
+		e.printStackTrace();
+	}*/
+}
 }

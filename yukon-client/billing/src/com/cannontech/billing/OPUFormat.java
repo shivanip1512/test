@@ -21,20 +21,35 @@ public OPUFormat() {
  * @param collectionGroups java.util.Vector
  * @param dbAlias java.lang.String
  */
-public boolean retrieveBillingData(java.util.Vector collectionGroups, String dbAlias)
+public boolean retrieveBillingData(String dbAlias)
 {
+	String [] SELECT_COLUMNS =
+	{
+		SQLStringBuilder.PAO_PAONAME,
+		SQLStringBuilder.RPH_VALUE,
+		SQLStringBuilder.RPH_TIMESTAMP,
+		SQLStringBuilder.PT_POINTID,
+		SQLStringBuilder.PT_POINTNAME
+	};
+
+	String [] FROM_TABLES =
+	{
+		com.cannontech.database.db.pao.YukonPAObject.TABLE_NAME,
+		com.cannontech.database.db.point.RawPointHistory.TABLE_NAME,
+		com.cannontech.database.db.point.Point.TABLE_NAME,
+		com.cannontech.database.db.device.DeviceMeterGroup.TABLE_NAME
+	};
+	
 	long timer = System.currentTimeMillis();
 
 	if( dbAlias == null )
 		dbAlias = com.cannontech.common.util.CtiUtilities.getDatabaseAlias();
-
-	if (collectionGroups.isEmpty())
-		return false;
-
+/*
 	String sql = "SELECT PAO.PAONAME, RPH.VALUE, RPH.TIMESTAMP, PT.POINTID, PT.POINTNAME " +
 				" FROM YUKONPAOBJECT PAO, RAWPOINTHISTORY RPH, POINT PT, DEVICEMETERGROUP DMG " +
 				" WHERE PAO.PAOBJECTID = DMG.DEVICEID " +
 				" AND PAO.PAOBJECTID = PT.PAOBJECTID " +
+				" AND RPH.TIMESTAMP < ? " + 
 				" AND DMG.COLLECTIONGROUP IN ('" + collectionGroups.get(0) + "'";
 				for (int i = 1; i < collectionGroups.size(); i++)
 				{
@@ -43,20 +58,29 @@ public boolean retrieveBillingData(java.util.Vector collectionGroups, String dbA
 
 				sql += ") AND PT.POINTID = RPH.POINTID " +
 				" AND ( (POINTTYPE = 'Analog' AND POINTOFFSET IN (" + kwhAnalogOffsets[0];
-				for (int i = 0; i < kwhAnalogOffsets.length; i++)
+				for (int i = 1; i < kwhAnalogOffsets.length; i++)
 				{
 					sql += ", " + kwhAnalogOffsets[i];
 				}
 
-				sql += "))  OR  ((POINTTYPE = 'PulseAccumulator' OR POINTTYPE = 'DemandAccumulator') AND POINTOFFSET IN (" + validAccPtOffsets[0];
-				for (int i = 0; i < validAccPtOffsets.length; i++)
+				sql += "))  OR  (POINTTYPE = 'PulseAccumulator' AND POINTOFFSET IN (" + validAccPtOffsets[0];
+				for (int i = 1; i < validAccPtOffsets.length; i++)
 				{
 					sql += ", " + validAccPtOffsets[i];
 				}
 				sql += ") )) ORDER BY PAO.PAONAME, PT.POINTID, RPH.TIMESTAMP DESC";
-
+	System.out.println(" Local SQL: " + sql);
+*/
+	SQLStringBuilder builder = new SQLStringBuilder();
+	String sql = new String((builder.buildSQLStatement(SELECT_COLUMNS, FROM_TABLES, getBillingDefaults(), kwAnalogOffsets, validAccPtOffsets)).toString());
+		sql += " ORDER BY " 
+			+ SQLStringBuilder.PAO_PAONAME + ", " 
+			+ SQLStringBuilder.PT_POINTID + ", " 
+			+ SQLStringBuilder.RPH_TIMESTAMP + " DESC ";
+		
+	
 	java.sql.Connection conn = null;
-	java.sql.Statement stmt = null;
+	java.sql.PreparedStatement pstmt = null;
 	java.sql.ResultSet rset = null;
 
 	try
@@ -70,9 +94,9 @@ public boolean retrieveBillingData(java.util.Vector collectionGroups, String dbA
 		}
 		else
 		{
-			stmt = conn.createStatement();
-			rset = stmt.executeQuery(sql.toString());
-
+			pstmt = conn.prepareStatement(sql.toString());
+			pstmt.setTimestamp(1, new java.sql.Timestamp(getBillingDefaults().getEndDate().getTime()));
+			rset = pstmt.executeQuery();
 			System.out.println(" *Start looping through return resultset");
 
 			int currentPointID = 0;
@@ -87,8 +111,12 @@ public boolean retrieveBillingData(java.util.Vector collectionGroups, String dbA
 					String name = rset.getString(1);
 					double reading = rset.getDouble(2);
 					java.sql.Timestamp ts = rset.getTimestamp(3);
+					java.util.Date tsDate = new java.util.Date(ts.getTime());
 					String ptName = rset.getString(5);
-					
+
+					if( tsDate.compareTo((Object)getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
+						break;
+						
 					com.cannontech.billing.record.OPURecord opuRec=
 						new com.cannontech.billing.record.OPURecord(name, ptName, reading, ts, "N");
 					getRecordVector().addElement(opuRec);
@@ -106,7 +134,7 @@ public boolean retrieveBillingData(java.util.Vector collectionGroups, String dbA
 		try
 		{
 			if( rset != null ) rset.close();
-			if( stmt != null ) stmt.close();
+			if( pstmt != null ) pstmt.close();
 			if( conn != null ) conn.close();
 		} 
 		catch( java.sql.SQLException e2 )
