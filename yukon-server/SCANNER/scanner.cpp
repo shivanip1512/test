@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/04/22 20:03:38 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/04/30 22:16:04 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -136,6 +136,8 @@ extern BOOL ScannerQuit;
 CtiConnection     VanGoghConnection;
 ULONG             ScannerDebugLevel = 0;
 
+int               CCUNoQueueScans = 0;  //  false
+
 HANDLE hLockArray[] = {
     hScannerSyncs[S_QUIT_EVENT],
     hScannerSyncs[S_LOCK_MUTEX]
@@ -208,6 +210,11 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
             if(!(stricmp (argv[i], "/NQ")))
             {
                 CCUNoQueue = TRUE;
+                continue;
+            }
+            if(!(stricmp (argv[i], "/NQS")))
+            {
+                CCUNoQueueScans = TRUE;
                 continue;
             }
             if(!(stricmp (argv[i], "/NLP")))
@@ -1475,7 +1482,10 @@ INT MakePorterRequests(RWTPtrSlist< OUTMESS > &outList)
         if(PorterNexus.NexusState != CTINEXUS_STATE_NULL)
         {
             //  if queueing has been turned off
-            if( CCUNoQueue )
+            if( CCUNoQueue ||
+                (CCUNoQueueScans && ((OutMessage->Sequence == CtiProtocolEmetcon::Scan_Accum)   ||
+                                     (OutMessage->Sequence == CtiProtocolEmetcon::Scan_General) ||
+                                     (OutMessage->Sequence == CtiProtocolEmetcon::Scan_Integrity))) )
             {
                 strncat( OutMessage->Request.CommandStr, " noqueue", 255 );
             }
