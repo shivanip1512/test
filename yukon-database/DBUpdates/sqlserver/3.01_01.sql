@@ -1082,15 +1082,18 @@ TimeArrival
 );
 go
 
-insert into LMGroupExpressComAddress select distinct SplinterAddress + 1000, 'SPLINTER', SplinterAddress,'(none)' from LMGroupExpressCom; update LMGroupExpressCom set SplinterAddress = SplinterAddress + 1000;
-insert into LMGroupExpressComAddress select distinct UdAddress + 2000, 'USER', UdAddress,'(none)' from LMGroupExpressCom; update LMGroupExpressCom set UdAddress = UdAddress + 2000;
-insert into LMGroupExpressComAddress select distinct ZipCodeAddress + 3000, 'ZIP', ZipCodeAddress,'(none)' from LMGroupExpressCom; update LMGroupExpressCom set ZipCodeAddress = ZipCodeAddress + 3000;
+insert into LMGroupExpressComAddress select distinct SplinterAddress + 1000, 'SPLINTER', SplinterAddress,'(none)' from LMGroupExpressCom;
+update LMGroupExpressCom set SplinterAddress = SplinterAddress + 1000;
+insert into LMGroupExpressComAddress select distinct UdAddress + 2000, 'USER', UdAddress,'(none)' from LMGroupExpressCom;
+update LMGroupExpressCom set UdAddress = UdAddress + 2000;
+insert into LMGroupExpressComAddress select distinct ZipCodeAddress + 3000, 'ZIP', ZipCodeAddress,'(none)' from LMGroupExpressCom;
+update LMGroupExpressCom set ZipCodeAddress = ZipCodeAddress + 3000;
 
-sp_rename 'LMGroupExpressCom.SplinterAddress', 'SplinterID'
+sp_rename 'LMGroupExpressCom.SplinterAddress', 'SplinterID', 'COLUMN';
 go
-sp_rename 'LMGroupExpressCom.UdAddress', 'UserID'
+sp_rename 'LMGroupExpressCom.UdAddress', 'UserID', 'COLUMN';
 go
-sp_rename 'LMGroupExpressCom.ZipCodeAddress', 'ZipID'
+sp_rename 'LMGroupExpressCom.ZipCodeAddress', 'ZipID', 'COLUMN';
 go
 
 alter table LMGroupExpressCom
