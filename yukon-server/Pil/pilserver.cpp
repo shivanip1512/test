@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.40 $
-* DATE         :  $Date: 2003/07/21 22:10:07 $
+* REVISION     :  $Revision: 1.41 $
+* DATE         :  $Date: 2003/09/02 18:48:09 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -49,6 +49,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "msg_cmd.h"
 #include "msg_reg.h"
 #include "mgr_device.h"
+#include "mutex.h"
 #include "numstr.h"
 #include "logger.h"
 #include "executor.h"
@@ -67,11 +68,6 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 void ReportMessagePriority( CtiMessage *MsgPtr, CtiDeviceManager *&DeviceManager );
 extern IM_EX_CTIBASE void DumpOutMessage(void *Mess);
 
-
-/* global variable for scanner function */
-HEV PilSem = (HEV) NULL;
-
-
 CtiConnection           VanGoghConnection;
 CtiPILExecutorFactory   ExecFactory;
 
@@ -80,9 +76,15 @@ CtiPILExecutorFactory   ExecFactory;
 DLLIMPORT extern CTINEXUS PorterNexus;
 DLLIMPORT extern VOID PortPipeCleanup (ULONG Reason);
 
+static CtiMutex LockMux;
 
 int CtiPILServer::execute()
 {
+    bServerClosing = FALSE;
+    ListenerAvailable = FALSE;
+
+    _broken = false;
+
     try
     {
         /*----------------------------------------------------------*
@@ -176,150 +178,157 @@ void CtiPILServer::mainThread()
     /* Give us a tiny attitude */
     CTISetPriority(PRTYS_THREAD, PRTYC_TIMECRITICAL, 30, 0);
 
-    /* Create the event semaphore */
-    if(CTICreateEventSem (PILSEM, &PilSem, 0, 0))
-    {
-        if(CTIOpenEventSem (PILSEM, &PilSem, MUTEX_ALL_ACCESS))
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "Error Creating Scan Semaphore" << endl;
-            exit(-1);
-        }
-    }
-
-    /* create the lock semaphore and own it for now */
-    CTICreateMutexSem (NULL, &LockSem, 0, TRUE);
-
     /*
      *  MAIN: The main PIL loop lives here for all time!
      */
 
     for( ; !bQuit ; )
     {
-        /* Release the Lock Semaphore */
-        CTIReleaseMutexSem (LockSem);
-
-        // Blocks for 1000 ms or until a queue entry exists
-        MsgPtr = MainQueue_.getQueue(500);
-
-        if(MsgPtr != NULL)
-        {
-            /* Wait/Block on the return thread if neccessary */
-            CTIRequestMutexSem (LockSem, SEM_INDEFINITE_WAIT);
-
-            if(DebugLevel & DEBUGLEVEL_PIL_MAINTHREAD)
-            {
-                ReportMessagePriority(MsgPtr, DeviceManager);
-            }
-
-            /* Check if we need to reopen the port pipe */
-            if(PorterNexus.NexusState == CTINEXUS_STATE_NULL)
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << TimeNow.now() << " PIL lost connection to Port Control " << endl;
-                }
-
-                if(!(PortPipeInit(NOWAIT)))
-                {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << TimeNow.now() << " PIL connected to Port Control" << endl;
-                    }
-                }
-                else
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << TimeNow.now() << " PIL IS NOT connected to Port Control" << endl;
-                    dout << TimeNow << " This is mostly bad... " << endl;
-                }
-            }
-
-            /* Use the same time base for the full scan check */
-            TimeNow = TimeNow.now();   // update the time...
-
-            if((pExec = ExecFactory.getExecutor(MsgPtr)) != NULL)
-            {
-                status = pExec->ServerExecute(this);
-
-                delete pExec;
-            }
-            else
-            {
-                delete MsgPtr;    // No one attached it to them, so we need to kill it!
-            }
-
-            if(status)
-            {
-                bQuit = TRUE;
-                Inherited::shutdown();
-            }
-        }
-
         try
         {
-            rwServiceCancellation();
+            // Blocks for 1000 ms or until a queue entry exists
+            MsgPtr = MainQueue_.getQueue(500);
+
+            if(MsgPtr != NULL)
+            {
+                CtiLockGuard< CtiMutex > lmguard(LockMux, 60000);
+
+                while(!lmguard.isAcquired())
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " PIL mainThread unable to acquire the PIL lockmux sync object." << endl;
+                    }
+
+                    lmguard.tryAcquire( 300000 );
+                }
+
+                if(lmguard.isAcquired())
+                {
+                    if(DebugLevel & DEBUGLEVEL_PIL_MAINTHREAD)
+                    {
+                        ReportMessagePriority(MsgPtr, DeviceManager);
+                    }
+
+                    /* Check if we need to reopen the port pipe */
+                    if(PorterNexus.NexusState == CTINEXUS_STATE_NULL)
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << TimeNow.now() << " PIL lost connection to Port Control " << endl;
+                        }
+
+                        if(!(PortPipeInit(NOWAIT)))
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << TimeNow.now() << " PIL connected to Port Control" << endl;
+                            }
+                        }
+                        else
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << TimeNow.now() << " PIL IS NOT connected to Port Control" << endl;
+                            dout << TimeNow << " This is mostly bad... " << endl;
+                        }
+                    }
+
+                    /* Use the same time base for the full scan check */
+                    TimeNow = TimeNow.now();   // update the time...
+
+                    if((pExec = ExecFactory.getExecutor(MsgPtr)) != NULL)
+                    {
+                        status = pExec->ServerExecute(this);
+
+                        delete pExec;
+                    }
+                    else
+                    {
+                        delete MsgPtr;    // No one attached it to them, so we need to kill it!
+                    }
+
+                    if(status)
+                    {
+                        bQuit = TRUE;
+                        Inherited::shutdown();
+                    }
+                }
+            }
+
+            try
+            {
+                rwServiceCancellation();
+            }
+            catch(RWCancellation& c)
+            {
+
+                bServerClosing = TRUE;
+                bQuit = TRUE;
+
+                // Force the inherited Listener socket to close!
+                Inherited::shutdown();                   // Should cause the ConnThread_ to be closed!
+                ConnThread_.join();                      // Wait for the Conn thread to die.
+
+                ResultThread_.requestCancellation(750);
+
+                if(ResultThread_.join(10000) == RW_THR_TIMEOUT)                     // Wait for the closure
+                {
+                    if(ResultThread_.requestCancellation(150) == RW_THR_TIMEOUT)   // Mark it for destruction...
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " PIL Server shutting down the ResultThread_: TIMEOUT " << endl;
+                        }
+                        if(ResultThread_.join(500) == RW_THR_TIMEOUT)                     // Wait for the closure
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " PIL Server shutting down the ResultThread_: FAILED " << endl;
+
+                            ResultThread_.terminate();
+                        }
+                    }
+                }
+
+                _nexusThread.requestCancellation(750);
+
+                if(_nexusThread.join(10000) == RW_THR_TIMEOUT)                     // Wait for the closure
+                {
+                    if(_nexusThread.requestCancellation(150) == RW_THR_TIMEOUT)   // Mark it for destruction...
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " PIL Server shutting down the _nexusThread: TIMEOUT " << endl;
+                        }
+                        if(_nexusThread.join(500) == RW_THR_TIMEOUT)                     // Wait for the closure
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " PIL Server shutting down the _nexusThread: FAILED " << endl;
+
+                            _nexusThread.terminate();
+                        }
+                    }
+                }
+
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " PIL Server shut down complete " << endl;
+                }
+            }
         }
-        catch(RWCancellation& c)
+        catch(...)
         {
+            Sleep(5000);
 
-            bServerClosing = TRUE;
-            bQuit = TRUE;
-
-            // Force the inherited Listener socket to close!
-            Inherited::shutdown();                   // Should cause the ConnThread_ to be closed!
-            ConnThread_.join();                      // Wait for the Conn thread to die.
-
-            ResultThread_.requestCancellation(750);
-
-            if(ResultThread_.join(10000) == RW_THR_TIMEOUT)                     // Wait for the closure
-            {
-                if(ResultThread_.requestCancellation(150) == RW_THR_TIMEOUT)   // Mark it for destruction...
-                {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " PIL Server shutting down the ResultThread_: TIMEOUT " << endl;
-                    }
-                    if(ResultThread_.join(500) == RW_THR_TIMEOUT)                     // Wait for the closure
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " PIL Server shutting down the ResultThread_: FAILED " << endl;
-
-                        ResultThread_.terminate();
-                    }
-                }
-            }
-
-            _nexusThread.requestCancellation(750);
-
-            if(_nexusThread.join(10000) == RW_THR_TIMEOUT)                     // Wait for the closure
-            {
-                if(_nexusThread.requestCancellation(150) == RW_THR_TIMEOUT)   // Mark it for destruction...
-                {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " PIL Server shutting down the _nexusThread: TIMEOUT " << endl;
-                    }
-                    if(_nexusThread.join(500) == RW_THR_TIMEOUT)                     // Wait for the closure
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " PIL Server shutting down the _nexusThread: FAILED " << endl;
-
-                        _nexusThread.terminate();
-                    }
-                }
-            }
-
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " PIL Server shut down complete " << endl;
-            }
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " ****  EXCEPTION: PIL mainThread **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << "  - Will attmept to recover" << endl;
         }
     }
 
+    _broken = true;
+
     VanGoghConnection.WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 15));
     VanGoghConnection.ShutdownConnection();
-
 }
 
 void CtiPILServer::connectionThread()
@@ -433,6 +442,7 @@ void CtiPILServer::connectionThread()
         dout << RWTime() << " ConnThread: " << rwThreadId() << " is terminating... " << endl;
     }
 
+    _broken = true;
     return;
 }
 
@@ -471,234 +481,254 @@ void CtiPILServer::resultThread()
     /* Give us a tiny attitude */
     CTISetPriority(PRTYS_THREAD, PRTYC_TIMECRITICAL, 31, 0);
 
-    /* Block here until main program is in loop */
-    CTIRequestMutexSem (LockSem, SEM_INDEFINITE_WAIT);
-
     /* perform the wait loop forever */
     for( ; !bServerClosing ; )
     {
-        /* Release the Lock Semaphore */
-        CTIReleaseMutexSem (LockSem);
-
-        // Let's go look at the inbound sList, if we can!
-        while( _inList.isEmpty() && !bServerClosing)
-        {
-            Sleep( 500 );
-
-            try
-            {
-                rwServiceCancellation();
-            }
-            catch(const RWCancellation& cMsg)
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " ResThread : " << rwThreadId() << " " <<  cMsg.why() << endl;
-                bServerClosing = TRUE;
-                break;  // the while!
-            }
-        }
-
-        if( !bServerClosing && !_inList.isEmpty() )
-        {
-            CtiLockGuard< CtiMutex > ilguard( _inMux, 15000 );
-
-            if(ilguard.isAcquired())
-            {
-                InMessage = _inList.get();
-            }
-            else
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Unable to lock PIL's INMESS list. You should not see this much." << endl;
-            }
-        }
-
-        if(bServerClosing || InMessage == 0)
-        {
-            continue;
-        }
-
-        /* Wait on the request thread if neccessary */
-        CTIRequestMutexSem (LockSem, SEM_INDEFINITE_WAIT);
-
-        LONG id = InMessage->TargetID;
-
-        if(id == 0)
-        {
-            id = InMessage->DeviceID;
-        }
-
-        // Find the device..
-        DeviceRecord = DeviceManager->RemoteGetEqual(id);
-
-        if(DeviceRecord != NULL && !(InMessage->MessageFlags & MSGFLG_ROUTE_TO_PORTER_GATEWAY_THREAD))
-        {
-            if(DebugLevel & DEBUGLEVEL_PIL_RESULTTHREAD)
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Pilserver resultThread received an InMessage for " << DeviceRecord->getName();
-                dout << " at priority " << InMessage->Priority << endl;
-            }
-
-            /* get the time for use in the decodes */
-            TimeNow = RWTime();
-
-            try
-            {
-                // Do some device dependant work on this Inbound message!
-                DeviceRecord->ProcessResult( InMessage, TimeNow, vgList, retList, outList);
-            }
-            catch(...)
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << RWTime() << " Process Result FAILED " << DeviceRecord->getName() << endl;
-                }
-            }
-        }
-        else if( InMessage->MessageFlags & MSGFLG_ROUTE_TO_PORTER_GATEWAY_THREAD )
-        {
-            // We need response strings from someone.  How can we get a list of results back?
-
-            RWCString bufstr((char*)(InMessage->Buffer.GWRSt.MsgData));
-            retList.insert( CTIDBG_new CtiReturnMsg(0,
-                                                    RWCString(InMessage->Return.CommandStr),
-                                                    bufstr,
-                                                    InMessage->EventCode,
-                                                    InMessage->Return.RouteID,
-                                                    InMessage->Return.MacroOffset,
-                                                    InMessage->Return.Attempt,
-                                                    InMessage->Return.TrxID,
-                                                    InMessage->Return.UserID,
-                                                    InMessage->Return.SOE,
-                                                    RWOrdered()));
-
-        }
-        else
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "InMessage received from unknown device.  Device ID: " << InMessage->DeviceID << endl;
-            dout << " Port listed as                                   : " << InMessage->Port     << endl;
-            dout << " Remote listed as                                 : " << InMessage->Remote   << endl;
-        }
-
         try
         {
-            if(outList.entries())
+            // Let's go look at the inbound sList, if we can!
+            while( _inList.isEmpty() && !bServerClosing)
             {
-                for( i = outList.entries() ; i > 0; i-- )
+                Sleep( 500 );
+
+                try
                 {
-                    OutMessage = outList.get();
-
-                    OutMessage->MessageFlags |= MSGFLG_APPLY_EXCLUSION_LOGIC;
-
-                    /* if pipe shut down return the error */
-                    if(PorterNexus.NexusState == CTINEXUS_STATE_NULL)
-                    {
-                        if(PortPipeInit(NOWAIT))
-                        {
-                            status = PIPEWASBROKEN;
-                        }
-                    }
-
-                    if(PorterNexus.NexusState != CTINEXUS_STATE_NULL) /* And send them to porter */
-                    {
-                        if(OutMessage->TargetID != 0 && OutMessage->DeviceID != 0 && OutMessage->Port > 0)
-                        {
-                            if(PorterNexus.CTINexusWrite (OutMessage, sizeof (OUTMESS), &BytesWritten, 30L) || BytesWritten == 0)
-                            {
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " **** ERROR **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                }
-                                DumpOutMessage(OutMessage);
-
-                                if(PorterNexus.NexusState != CTINEXUS_STATE_NULL)
-                                {
-                                    PorterNexus.CTINexusClose();
-                                }
-                            }
-                        }
-                        else
-                        {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << "**** Error **** Improperly formed OUTMESS discarded " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
-                            DumpOutMessage(OutMessage);
-                        }
-                    }
-
-                    // Message is re-built on the other side, so clean it up!
-                    delete OutMessage;
+                    rwServiceCancellation();
+                }
+                catch(const RWCancellation& cMsg)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " ResThread : " << rwThreadId() << " " <<  cMsg.why() << endl;
+                    bServerClosing = TRUE;
+                    break;  // the while!
                 }
             }
 
-            if( retList.entries() > 0 )
+            if( !bServerClosing && !_inList.isEmpty() )
             {
-                if((DebugLevel & DEBUGLEVEL_PIL_RESULTTHREAD) && vgList.entries())
+                CtiLockGuard< CtiMutex > ilguard( _inMux, 15000 );
+
+                if(ilguard.isAcquired())
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Info **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << "   Device " << (DeviceRecord ? DeviceRecord->getName() : "UNKNOWN") << " has generated a dispatch return message.  Data may be duplicated." << endl;
-                    }
-                }
-
-                RWCString cmdstr(InMessage->Return.CommandStr);
-                CtiCommandParser parse( cmdstr );
-                if(parse.getFlags() & CMD_FLAG_UPDATE)
-                {
-                    for(i = 0; i < retList.entries(); i++)
-                    {
-                        CtiMessage *&pMsg = retList.at(i);
-
-                        if(pMsg->isA() == MSG_PCRETURN || pMsg->isA() == MSG_POINTDATA)
-                        {
-                            vgList.append(pMsg->replicateMessage());       // Mash it in ther if we said to do so.
-                        }
-                    }
-                }
-            }
-
-
-            while( (i = retList.entries()) > 0 )
-            {
-                CtiMessage *pRet = retList.get();
-
-                if((Conn = ((CtiConnection*)InMessage->Return.Connection)) != NULL)
-                {
-                    Conn->WriteConnQue(pRet);
+                    InMessage = _inList.get();
                 }
                 else
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
-                    delete pRet;
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " Unable to lock PIL's INMESS list. You should not see this much." << endl;
                 }
             }
 
-            while( (i = vgList.entries()) > 0 )
+            if(bServerClosing || InMessage == 0)
             {
-                pVg = vgList.get();
-                VanGoghConnection.WriteConnQue(pVg);
+                continue;
+            }
+
+            {
+                /* Wait on the request thread if neccessary */
+                CtiLockGuard< CtiMutex > lmguard(LockMux, 60000);
+
+                while(!lmguard.isAcquired())
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " PIL resultThread unable to acquire the PIL lockmux sync object." << endl;
+                    }
+
+                    lmguard.tryAcquire( 300000 );
+                }
+
+                if(lmguard.isAcquired())
+                {
+                    LONG id = InMessage->TargetID;
+
+                    if(id == 0)
+                    {
+                        id = InMessage->DeviceID;
+                    }
+
+                    // Find the device..
+                    DeviceRecord = DeviceManager->RemoteGetEqual(id);
+
+                    if(DeviceRecord != NULL && !(InMessage->MessageFlags & MSGFLG_ROUTE_TO_PORTER_GATEWAY_THREAD))
+                    {
+                        if(DebugLevel & DEBUGLEVEL_PIL_RESULTTHREAD)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " Pilserver resultThread received an InMessage for " << DeviceRecord->getName();
+                            dout << " at priority " << InMessage->Priority << endl;
+                        }
+
+                        /* get the time for use in the decodes */
+                        TimeNow = RWTime();
+
+                        try
+                        {
+                            // Do some device dependant work on this Inbound message!
+                            DeviceRecord->ProcessResult( InMessage, TimeNow, vgList, retList, outList);
+                        }
+                        catch(...)
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << RWTime() << " Process Result FAILED " << DeviceRecord->getName() << endl;
+                            }
+                        }
+                    }
+                    else if( InMessage->MessageFlags & MSGFLG_ROUTE_TO_PORTER_GATEWAY_THREAD )
+                    {
+                        // We need response strings from someone.  How can we get a list of results back?
+
+                        RWCString bufstr((char*)(InMessage->Buffer.GWRSt.MsgData));
+                        retList.insert( CTIDBG_new CtiReturnMsg(0,
+                                                                RWCString(InMessage->Return.CommandStr),
+                                                                bufstr,
+                                                                InMessage->EventCode,
+                                                                InMessage->Return.RouteID,
+                                                                InMessage->Return.MacroOffset,
+                                                                InMessage->Return.Attempt,
+                                                                InMessage->Return.TrxID,
+                                                                InMessage->Return.UserID,
+                                                                InMessage->Return.SOE,
+                                                                RWOrdered()));
+
+                    }
+                    else
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << "InMessage received from unknown device.  Device ID: " << InMessage->DeviceID << endl;
+                        dout << " Port listed as                                   : " << InMessage->Port     << endl;
+                        dout << " Remote listed as                                 : " << InMessage->Remote   << endl;
+                    }
+
+                    try
+                    {
+                        if(outList.entries())
+                        {
+                            for( i = outList.entries() ; i > 0; i-- )
+                            {
+                                OutMessage = outList.get();
+
+                                OutMessage->MessageFlags |= MSGFLG_APPLY_EXCLUSION_LOGIC;
+
+                                /* if pipe shut down return the error */
+                                if(PorterNexus.NexusState == CTINEXUS_STATE_NULL)
+                                {
+                                    if(PortPipeInit(NOWAIT))
+                                    {
+                                        status = PIPEWASBROKEN;
+                                    }
+                                }
+
+                                if(PorterNexus.NexusState != CTINEXUS_STATE_NULL) /* And send them to porter */
+                                {
+                                    if(OutMessage->TargetID != 0 && OutMessage->DeviceID != 0 && OutMessage->Port > 0)
+                                    {
+                                        if(PorterNexus.CTINexusWrite (OutMessage, sizeof (OUTMESS), &BytesWritten, 30L) || BytesWritten == 0)
+                                        {
+                                            {
+                                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                                dout << RWTime() << " **** ERROR **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                            }
+                                            DumpOutMessage(OutMessage);
+
+                                            if(PorterNexus.NexusState != CTINEXUS_STATE_NULL)
+                                            {
+                                                PorterNexus.CTINexusClose();
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        {
+                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                            dout << "**** Error **** Improperly formed OUTMESS discarded " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                        }
+                                        DumpOutMessage(OutMessage);
+                                    }
+                                }
+
+                                // Message is re-built on the other side, so clean it up!
+                                delete OutMessage;
+                            }
+                        }
+
+                        if( retList.entries() > 0 )
+                        {
+                            if((DebugLevel & DEBUGLEVEL_PIL_RESULTTHREAD) && vgList.entries())
+                            {
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << RWTime() << " **** Info **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                    dout << "   Device " << (DeviceRecord ? DeviceRecord->getName() : "UNKNOWN") << " has generated a dispatch return message.  Data may be duplicated." << endl;
+                                }
+                            }
+
+                            RWCString cmdstr(InMessage->Return.CommandStr);
+                            CtiCommandParser parse( cmdstr );
+                            if(parse.getFlags() & CMD_FLAG_UPDATE)
+                            {
+                                for(i = 0; i < retList.entries(); i++)
+                                {
+                                    CtiMessage *&pMsg = retList.at(i);
+
+                                    if(pMsg->isA() == MSG_PCRETURN || pMsg->isA() == MSG_POINTDATA)
+                                    {
+                                        vgList.append(pMsg->replicateMessage());       // Mash it in ther if we said to do so.
+                                    }
+                                }
+                            }
+                        }
+
+
+                        while( (i = retList.entries()) > 0 )
+                        {
+                            CtiMessage *pRet = retList.get();
+
+                            if((Conn = ((CtiConnection*)InMessage->Return.Connection)) != NULL)
+                            {
+                                Conn->WriteConnQue(pRet);
+                            }
+                            else
+                            {
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                }
+                                delete pRet;
+                            }
+                        }
+
+                        while( (i = vgList.entries()) > 0 )
+                        {
+                            pVg = vgList.get();
+                            VanGoghConnection.WriteConnQue(pVg);
+                        }
+                    }
+                    catch(...)
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+                    }
+
+                    if(InMessage)
+                    {
+                        delete InMessage;
+                        InMessage = 0;
+                    }
+                }
             }
         }
         catch(...)
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-        }
+            Sleep(5000);
 
-        if(InMessage)
-        {
-            delete InMessage;
-            InMessage = 0;
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " ****  EXCEPTION: PIL resultThread **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << "  - Will attmept to recover" << endl;
         }
 
     } /* End of for */
@@ -708,6 +738,7 @@ void CtiPILServer::resultThread()
         dout << RWTime() << " ResThread : " << rwThreadId() << " terminating " << endl;
     }
 
+    _broken = true;
 }
 
 void CtiPILServer::nexusThread()
@@ -821,6 +852,7 @@ void CtiPILServer::nexusThread()
         dout << RWTime() << " NexusThread : " << rwThreadId() << " terminating " << endl;
     }
 
+    _broken = true;
 }
 
 
@@ -1436,7 +1468,7 @@ INT CtiPILServer::analyzeAutoRole(CtiRequestMsg& Req, CtiCommandParser &parse, R
     INT status = NORMAL;
     int i;
     RWRecursiveLock<RWMutexLock>::LockGuard dev_guard(DeviceManager->getMux());
-    CtiRouteManager::LockGuard rte_guard(RouteManager->getMux());
+    // CtiRouteManager::LockGuard rte_guard(RouteManager->getMux());
 
     CtiDevice *pRepeaterToRole = DeviceManager->RemoteGetEqual(Req.DeviceId());    // This is our repeater we are curious about!
 

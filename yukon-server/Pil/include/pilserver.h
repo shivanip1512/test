@@ -39,6 +39,8 @@ private:
    CtiMutex                      _inMux;            // Protects the _inList.
    RWTPtrSlist< INMESS    >      _inList;           // Nexus dumps out into this list!
 
+   bool                          _broken;           // When the PILServer knows he's sick.
+
 public:
 
    typedef CtiServer Inherited;
@@ -71,6 +73,8 @@ public:
    INT analyzeAutoRole(CtiRequestMsg& Req, CtiCommandParser &parse, RWTPtrSlist< CtiRequestMsg > & execList, RWTPtrSlist< CtiMessage > & retList);
 
    void putQueue(CtiMessage *Msg);
+
+   bool isBroken() const { return _broken; }
 };
 
 #endif // #ifndef __PILSERVER_H__
