@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/pt_base.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:17 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/06/10 22:29:24 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -317,7 +317,7 @@ CtiPointBase& CtiPointBase::setDynamic(CtiDynamicPointBase *pDyn)
     return *this;
 }
 
-bool CtiPointBase::limitStateCheck( const int limitOrState, double &val, int &direction)
+bool CtiPointBase::limitStateCheck( const int limitOrState, double val, int &direction)
 {
     return false;
 }

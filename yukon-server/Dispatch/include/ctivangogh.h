@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/ctivangogh.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/04/30 16:30:11 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/06/10 22:29:23 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -71,6 +71,8 @@ class CtiVanGoghConnectionManager;
 class CtiPointRegistrationMsg;
 class CtiPointBase;
 class CtiPointStatus;
+class CtiPointNumeric;
+class CtiDynamicPointDispatch;
 
 class IM_EX_CTIVANGOGH CtiVanGogh : public CtiServer
 {
@@ -117,6 +119,15 @@ private:
     UINT writeRawPointHistory(bool justdoit, int maxrowstowrite);
     void verifyControlTimesValid( CtiPendingPointOperations &ppc );
     RWCString resolveEmailMsgDescription( const CtiEmailMsg &aMail );
+
+    void analyzeNumericReasonability(int alarm, CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, CtiPointNumeric &pointNumeric, CtiDynamicPointDispatch *pDyn, CtiSignalMsg *&pSig );
+    void analyzeNumericRateOfChange(int alarm, CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, CtiPointNumeric &pointNumeric, CtiDynamicPointDispatch *pDyn, CtiSignalMsg *&pSig );
+    void analyzeNumericLimits(int alarm, CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, CtiPointNumeric &pointNumeric, CtiDynamicPointDispatch *pDyn, CtiSignalMsg *&pSig );
+    void analyzeLimitViolationReset(CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, CtiPointNumeric &pointNumeric, CtiDynamicPointDispatch *pDyn, CtiSignalMsg *&pSig );
+
+    void analyzeStatusUCOS(int alarm, CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, CtiPointBase &point, CtiDynamicPointDispatch *pDyn, CtiSignalMsg *&pSig );
+    void analyzeStatusCommandFail(int alarm, CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, CtiPointBase &point, CtiDynamicPointDispatch *pDyn, CtiSignalMsg *&pSig );
+    void analyzeStatusState(int alarm, CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, CtiPointBase &point, CtiDynamicPointDispatch *pDyn, CtiSignalMsg *&pSig );
 
 public:
 
@@ -231,7 +242,6 @@ public:
     bool ablementPoint(LONG pid, UINT setmask, UINT tagmask, RWCString user, CtiMultiMsg &sigList);
 
     CtiDeviceLiteSet_t::iterator deviceLiteFind(const LONG paoId);
-    bool removeLimitFromPending( LONG pID, INT statelimit );
     bool removePointDataFromPending( LONG pID, const CtiPointDataMsg &Data);
     void establishListener();
     void reportOnThreads();

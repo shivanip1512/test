@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2002/06/06 19:55:12 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2002/06/10 22:29:24 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -557,13 +557,13 @@ INT PostCommQueuePeek(CtiPort *Port, CtiDevice *Device, OUTMESS *OutMessage)
     INT    status = NORMAL;
     ULONG  QueueCount = 0;
 
-    BOOL    bHangup = FALSE;
+    bool    bDisconnect = false;
 
     CtiPortLocalModem    *modem = NULL;
 
-    if(Port->connected() && Port->shouldDisconnect())
+    if(Port->connected() && (Port->shouldDisconnect() || Device == NULL))
     {
-        Port->disconnect(NULL, TraceFlag);
+        Port->disconnect(Device, TraceFlag);
     }
 
     if(Port->connected() && Device != NULL)
@@ -571,43 +571,54 @@ INT PostCommQueuePeek(CtiPort *Port, CtiDevice *Device, OUTMESS *OutMessage)
         ULONG stayConnectedMin = Device->getMinConnectTime();
         ULONG stayConnectedMax = Device->getMaxConnectTime();
 
-        if(stayConnectedMin)
+        if((gQueSlot = SearchQueue(Port->getPortQueueHandle(), (void*)Port->getConnectedDeviceUID(), areAnyOutMessagesForUniqueID)) != 0 )
         {
-            for(i = 0; i < (ULONG)(4 * stayConnectedMin); i++)
+            if(PorterDebugLevel & PORTER_DEBUG_VERBOSE && Device)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Additional queue entry found for " << Device->getName() << endl;
+            }
+        }
+        else
+        {
+            if(stayConnectedMin)
+            {
+                for(i = 0; i < (ULONG)(4 * stayConnectedMin - 1); i++)
+                {
+                    /* Check the queue 4 times per second for a new entry for this port ... */
+                    if((gQueSlot = SearchQueue(Port->getPortQueueHandle(), (void*)Port->getConnectedDeviceUID(), areAnyOutMessagesForUniqueID)) != 0 )
+                    {
+                        break;
+                    }
+
+                    CTISleep (250L);
+                }
+            }
+
+            /* do not reinit i since times are non cumulative! */
+            for( ; gQueSlot == 0 && i < (ULONG)(4 * stayConnectedMax); i++)
             {
                 /* Check the queue 4 times per second for a new entry for this port ... */
-                if((gQueSlot = SearchQueue(Port->getPortQueueHandle(), (void*)Port->getConnectedDeviceUID(), areAnyOutMessagesForUniqueID)) != 0 )
+                if( !QueryQueue(Port->getPortQueueHandle(), &QueueCount) && QueueCount > 0)
                 {
-                    break;
+                    gQueSlot = SearchQueue(Port->getPortQueueHandle(), (void*)Port->getConnectedDeviceUID(), areAnyOutMessagesForUniqueID);
+
+                    if( gQueSlot == 0 ) // No entry, or the entry is not first on the list
+                    {
+                        bDisconnect = true;
+                        break;
+                    }
+                    else
+                    {
+                        break;
+                    }
                 }
 
                 CTISleep (250L);
             }
         }
 
-        /* do not reinit i since times are non cumulative! */
-        for( ; gQueSlot == 0 && i < (ULONG)(4 * stayConnectedMax); i++)
-        {
-            /* Check the queue 4 times per second for a new entry for this port ... */
-            if( !QueryQueue(Port->getPortQueueHandle(), &QueueCount) && QueueCount > 0)
-            {
-                gQueSlot = SearchQueue(Port->getPortQueueHandle(), (void*)Port->getConnectedDeviceUID(), areAnyOutMessagesForUniqueID);
-
-                if( gQueSlot == 0 ) // No entry, or the entry is not first on the list
-                {
-                    bHangup = TRUE;
-                    break;
-                }
-                else
-                {
-                    break;
-                }
-            }
-
-            CTISleep (250L);
-        }
-
-        if(gQueSlot == 0 || bHangup != FALSE)
+        if(gQueSlot == 0 || bDisconnect)
         {
             /* Hang Up */
             Port->disconnect(Device, TraceFlag);
@@ -867,23 +878,18 @@ INT EstablishConnection(CtiPort *Port, INMESS *InMessage, OUTMESS *OutMessage, C
 {
     INT status = NORMAL;
 
-    if(Port->isDialup())
+    status = Port->connectToDevice(Device, TraceFlag);
+
+    if(status != NORMAL)
     {
-        CtiPortLocalModem *modem = (CtiPortLocalModem*)Port;
-
-        status = modem->connectToDevice(Device, TraceFlag);
-
-        if(status != NORMAL)
-        {
-            /* Must call CheckAndRetry to make the re-queue happen if needed */
-            status = CheckAndRetryMessage(status, modem, InMessage, OutMessage, Device);     // This call may free OutMessages
-        }
-        else if( !modem->connectedTo(Device->getUniqueIdentifier()) ) /* Check if we made the connect OK */
-        {
-            /* Must call CheckAndRetry to make the re-queue happen if needed */
-            // This call may free OutMessages
-            status = CheckAndRetryMessage(status, modem, InMessage, OutMessage, Device);
-        }
+        /* Must call CheckAndRetry to make the re-queue happen if needed */
+        status = CheckAndRetryMessage(status, Port, InMessage, OutMessage, Device);     // This call may free OutMessages
+    }
+    else if( !Port->connectedTo(Device->getUniqueIdentifier()) ) /* Check if we made the connect OK */
+    {
+        /* Must call CheckAndRetry to make the re-queue happen if needed */
+        // This call may free OutMessages
+        status = CheckAndRetryMessage(status, Port, InMessage, OutMessage, Device);
     }
 
     return status;
@@ -1172,7 +1178,7 @@ INT CommunicateDevice(CtiPort *Port, INMESS *InMessage, OUTMESS *OutMessage, Cti
 
                         if( status != NORMAL)
                         {
-                            IED->setLogOnNeeded(TRUE);      // No one is waiting for me out there... so lets kill this connection
+                            IED->setLogOnNeeded(TRUE);      // We did not come through it cleanly, let's kill this connection.
                         }
                         else
                         {
@@ -2634,7 +2640,6 @@ INT PerformRequestedCmd ( CtiPort *aPortRecord, CtiDeviceIED *aIED, INMESS *aInM
     } while( status == NORMAL &&
              !((aIED->getCurrentState() == CtiDeviceIED::StateScanAbort) ||
                (aIED->getCurrentState() == CtiDeviceIED::StateScanComplete)));
-
 
     if( status == NORMAL && aIED->getCurrentState() == CtiDeviceIED::StateScanAbort)
     {

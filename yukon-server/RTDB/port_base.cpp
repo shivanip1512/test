@@ -482,11 +482,29 @@ CtiPort& CtiPort::setTAP(BOOL b)
 
 INT CtiPort::connectToDevice(CtiDevice *Device, INT trace)
 {
+    INT status     = NORMAL;
+    ULONG DeviceCRC = Device->getUniqueIdentifier();
+
+    /*
+     *  This next block Makes sure we hang up if we are connected to a different device's UID
+     */
+
+    if(connected() && !connectedTo(DeviceCRC))      // This port connected to a device, and is not connected to this device.
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        disconnect(Device, trace);
     }
-    return NORMAL;
+
+    /*
+     *  At this point we either connected to the device we need (Device), or are not connected to any device.
+     */
+
+    {
+        /* Make sure the remotes match */
+        setConnectedDevice( Device->getID() );
+        setConnectedDeviceUID( DeviceCRC );
+    }
+
+    return status;
 }
 
 BOOL CtiPort::connected()
@@ -516,7 +534,7 @@ INT CtiPort::disconnect(CtiDevice *Device, INT trace)
         Device->setLogOnNeeded(TRUE);
     }
 
-    setConnectedDevice(0L);
+    setConnectedDevice(-1L);
 
     return NORMAL;
 }
