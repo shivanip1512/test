@@ -16,9 +16,6 @@ public class GDSTableModel extends javax.swing.table.AbstractTableModel
 	public final static int MULT_NAME_COLUMN = 6;
 //	public final static int SETUP_NAME_COLUMN = 7;
 	
-
-//	public static String includeType = com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES;
-	
 	public static String[] columnNames =
 	{
 		"Device",
@@ -191,16 +188,7 @@ public Object getGDSAttribute(int index, com.cannontech.database.db.graph.GraphD
 	}
 	return null;
 }
-/**
- * Insert the method's description here.
- * Creation date: (10/23/2001 4:02:45 PM)
- * @return int
- */
-/*
-public String getIncludeType()
-{
-	return includeType;
-}*/
+
 /**
  * Insert the method's description here.
  * Creation date: (10/25/00 11:21:02 AM)
