@@ -114,7 +114,8 @@ public class SystemLogModel extends ReportModelBase
 		super();
 		setStartTime(startTime_);
 		setStopTime(stopTime_);
-		setLogType(logType_.intValue());
+		if( logType_!= null)
+			setLogType(logType_.intValue());
 		setPointID(pointID_);
 		setReportType(reportType_);
 	}
