@@ -34,6 +34,7 @@ import com.cannontech.database.data.state.GroupState;
 import com.cannontech.database.data.state.State;
 import com.cannontech.database.db.device.lm.LMControlScenarioProgram;
 import com.cannontech.database.db.device.lm.LMProgramConstraint;
+import com.cannontech.database.db.device.lm.LMProgramControlWindow;
 import com.cannontech.database.db.device.lm.LMProgramDirectGear;
 import com.cannontech.database.db.device.lm.LMProgramDirectGroup;
 import com.cannontech.database.db.point.PointAlarming;
@@ -46,15 +47,13 @@ import com.cannontech.tools.gui.*;
  * 
  * 
  * 1) Create a Control Area for all ----
- *      select * from yukonpaobject where type = 'LM CONTROL AREA' 11
+ *      select * from yukonpaobject where type = 'LM CONTROL AREA' (id = 11)
  *      insert into lmcontrolareaprogram select 11, deviceid, 0, 0, 0 from lmprogramdirect
  *
- * 2) Run Group point creation BAT file
+ * 2) Run the following clean up statements:
  *
  *
- *
- *
- * @author: 
+ * @author: ryan
  */
 public class GREDBConverter extends MessageFrameAdaptor 
 {
@@ -62,12 +61,20 @@ public class GREDBConverter extends MessageFrameAdaptor
 	private HashMap deviceIDsMap = new HashMap(32);
 	private HashMap routeIDsMap = new HashMap(32);
 	
-	////example KEY<LMProgram> VALUES<LMProgram>
+	//example KEY<SW01> VALUES<LMProgram>
 	private HashMap programMap = new HashMap(32);
 
 	//example KEY<SW01> VALUES<SW - Anoka (Grp 1-2),SW - Anoka (Grp 1-3)>
 	private HashMap grpStratMap = new HashMap(32);
 
+	//example KEY<SW:0000> VALUES<LMScenario>
+	private HashMap scenarioMap = new HashMap(128);
+
+	//example KEY<SW:0000> VALUES<LMProgramConstraint)>
+	private HashMap constByNameMap = new HashMap(64);
+
+	//example KEY<Integer> VALUES<LMProgramControlWindow)>
+	private HashMap constToWindowMap = new HashMap(64);
 
 
 	private int ROUTE_OFFSET = 500;
@@ -85,6 +92,7 @@ public class GREDBConverter extends MessageFrameAdaptor
 	private int START_PTID = 500;
 	private int START_STATEGRP_ID = 100;
 	private int START_SCENARIO_ID = 100;
+	private int START_CONSTRAINT_ID = 1;
 
 
 	private String analogPointFileName = "cti-analog.txt";
@@ -188,25 +196,26 @@ public String getParamText()
 
 public void run()
 {
-//	boolean s = true;
-	boolean s = processPortFile();
+	boolean s = true;
+//	boolean s = processPortFile();
 
 	if( s ) s = processTransmitterFile();
 
+/*
 	if( s ) s = processStateGroupFile();
 	if( s ) s = processStatusPoints();	
 	if( s ) s = processAnalogPoints();
 	
 	if( s ) s = processRouteMacro();
+*/
 	if( s ) s = processLoadGroups();
 
-	//not done
-	//if( s ) s = processLoadProgramConstraints();
-	
+	if( s ) s = processLoadProgramConstraints();
 
 	if( s ) s = processLoadPrograms();
-	if( s ) s = processLoadScenarios();
-
+	
+	//not used
+	//if( s ) s = processLoadScenarios();
 
 /*	
 	if( s ) s = processTransmitterFile();
@@ -700,12 +709,37 @@ public boolean processLoadPrograms()
 		
 		/* Create a default gear place holder */
 		LMProgramDirectGear gear = LMProgramDirectGear.createGearFactory( LMProgramDirectGear.NO_CONTROL );
-		gear.setGearName("Dummy Gear");
+		gear.setGearName("Gear 1");
 		lmProgram.getLmProgramDirectGearVector().add( gear );
 
 		//set our unique own deviceID
 		lmProgram.setPAObjectID( new Integer(START_PROGRAM_ID++) );
+		
+		String constrName = line[0].trim();
+		LMProgramConstraint constraint = (LMProgramConstraint)constByNameMap.get( constrName );
+		if( constraint != null )
+		{
+			lmProgram.getProgram().setConstraintID( constraint.getConstraintID() );
+			
+			LMProgramControlWindow lmWindow = 
+				(LMProgramControlWindow)constToWindowMap.get(constraint.getConstraintID());
 
+			if( lmWindow != null )
+			{
+				try
+				{
+					//must make a new instance/deep clone of original Window
+					LMProgramControlWindow realWindow = 
+						(LMProgramControlWindow)CtiUtilities.copyObject( lmWindow );
+	
+					realWindow.setDeviceID( lmProgram.getPAObjectID() );
+					
+					lmProgram.getLmProgramControlWindowVector().add( realWindow );
+				}
+				catch( Exception ex ) {}
+			}		
+		}
+		
 		
 		String stratID = lmProgram.getPAOName();
 		ArrayList grpList = (ArrayList)grpStratMap.get( stratID );
@@ -758,9 +792,6 @@ public boolean processLoadScenarios()
 {	
 	CTILogger.info("Starting Load Control Scenarios file process...");
 	getIMessageFrame().addOutput("Starting Load Control Scenarios file process (" + progToGroupsFileName + ")...");
-
-	//example KEY<SW:0000> VALUES<SW01,SW02...>
-	HashMap scenarioMap = new HashMap(128);
 
 	String aFileName = getFullFileName(progToGroupsFileName);
 	java.util.ArrayList lines = readFile(aFileName);
@@ -940,8 +971,8 @@ public boolean processLoadGroups()
 	}
 
 
-	//boolean success = true;
-	boolean success = writeToSQLDatabase(multi);
+	boolean success = true;
+	//boolean success = writeToSQLDatabase(multi);
 
 	if( success )
 	{
@@ -971,9 +1002,6 @@ public boolean processLoadProgramConstraints()
 
 	String aFileName = getFullFileName(progConstTimeFileName);
 	java.util.ArrayList lines = readFile(aFileName);
-
-	//example KEY<String strategyID> VALUES<LMProgramConstraint)>
-	HashMap constMapByName = new HashMap(64);
 	
 	//example KEY<String typeID> VALUES<List(LMProgramConstraint)>
 	HashMap constMapByType = new HashMap(64);
@@ -990,28 +1018,40 @@ public boolean processLoadProgramConstraints()
 		String[] line = lines.get(i).toString().split(",");
 
 		//ignore title line
-		if( i <= 2 || line.length <= 10 || line[0].length() <= 0 )
+		if( i <= 2 || line.length <= 10 || line[0].trim().length() <= 0 )
 			continue;
 		
-		CTILogger.info("LOAD_PROG_TIME_CONSTRAINTS line: " + lines.get(i).toString());
+		if( line[3].trim().charAt(0) == 'Y' || line[3].trim().charAt(0) == 'N' )
+		{
+			CTILogger.info("LOAD_PROG_TIME_CONSTRAINTS line: " + lines.get(i).toString());
+	
+	
+			LMProgramConstraint lmProgConst = new LMProgramConstraint();
+			String constrName = line[0].trim();		
+			lmProgConst.setConstraintName( constrName + " " + line[11].trim() );
+			lmProgConst.setConstraintID( new Integer(START_CONSTRAINT_ID++) );
+	
+			StringBuffer day = new StringBuffer("NNNNNNNN");
+			day.setCharAt( 0, line[3].trim().charAt(0) );
+			day.setCharAt( 1, line[4].trim().charAt(0) );
+			day.setCharAt( 2, line[5].trim().charAt(0) );
+			day.setCharAt( 3, line[6].trim().charAt(0) );
+			day.setCharAt( 4, line[7].trim().charAt(0) );
+			day.setCharAt( 5, line[8].trim().charAt(0) );
+			day.setCharAt( 6, line[9].trim().charAt(0) );
+			day.setCharAt( 7, line[10].trim().charAt(0) );		
+			lmProgConst.setAvailableWeekdays( day.toString() );
 
+			//all constraints have their own time window
+			LMProgramControlWindow lmWindow = new LMProgramControlWindow();
+			lmWindow.setWindowNumber( new Integer(1) );
+			lmWindow.setAvailableStartTime( decodeStringToSeconds(line[1].trim()) );
+			lmWindow.setAvailableStopTime( decodeStringToSeconds(line[2].trim()) );			
+			constToWindowMap.put( lmProgConst.getConstraintID(), lmWindow );
 
-		LMProgramConstraint lmProgConst = new LMProgramConstraint();		
-		lmProgConst.setConstraintName( line[0].trim() );
-
-		StringBuffer day = new StringBuffer("NNNNNNNN");
-		day.setCharAt( 0, line[3].trim().charAt(0) );
-		day.setCharAt( 1, line[4].trim().charAt(0) );
-		day.setCharAt( 2, line[5].trim().charAt(0) );
-		day.setCharAt( 3, line[6].trim().charAt(0) );
-		day.setCharAt( 4, line[7].trim().charAt(0) );
-		day.setCharAt( 5, line[8].trim().charAt(0) );
-		day.setCharAt( 6, line[9].trim().charAt(0) );
-		day.setCharAt( 7, line[10].trim().charAt(0) );		
-		lmProgConst.setAvailableWeekdays( day.toString() );
-		
-		//multi.getDBPersistentVector().add( lmProgConst );
-		constMapByName.put( lmProgConst.getConstraintName(), lmProgConst );
+			multi.getDBPersistentVector().add( lmProgConst );
+			constByNameMap.put( constrName, lmProgConst );
+		}
 	}
 
 
@@ -1030,10 +1070,10 @@ public boolean processLoadProgramConstraints()
 		String key = line[0].trim();
 		String typeID = line[3].trim();
 
-		if( constMapByName.containsKey(key) ) 
+		if( constByNameMap.containsKey(key) ) 
 		{
 			LMProgramConstraint progConst = 
-					(LMProgramConstraint)constMapByName.get( key );
+					(LMProgramConstraint)constByNameMap.get( key );
 
 			if( constMapByType.containsKey(typeID) )
 			{
@@ -1044,7 +1084,7 @@ public boolean processLoadProgramConstraints()
 			{
 				ArrayList typeList = new ArrayList(8);
 				typeList.add( progConst );
-				constMapByType.put( typeID, progConst );
+				constMapByType.put( typeID, typeList );
 			}
 		}
 
@@ -1052,7 +1092,7 @@ public boolean processLoadProgramConstraints()
 	}
 
 
-	/* Start reading through our Group to Route mapping file */		
+	/* Start reading through our ConstraintType to ConstraintValue mapping file */		
 	String constTypeFile = getFullFileName(progConstTypeFileName);
 	java.util.ArrayList typeLines = readFile(constTypeFile);
 	for( int i = 0; i < typeLines.size(); i++ )
@@ -1060,76 +1100,82 @@ public boolean processLoadProgramConstraints()
 		String[] line = typeLines.get(i).toString().split(",");
 
 		//ignore title line
-		if( i <= 2 || line.length <= 3 || line[0].length() <= 0 )
+		if( i <= 2 || line.length < 9 || line[0].length() <= 0 )
 			continue;
 
 		String typeID = line[0].trim();
 
 		ArrayList typeList = (ArrayList)constMapByType.get(typeID);
-		for( int j = 0; j < typeList.size(); j++ )
+		for( int j = 0; typeList != null && j < typeList.size(); j++ )
 		{
 			LMProgramConstraint constr =
 				(LMProgramConstraint)typeList.get(j);
 
 
-			//convert minutes to seconds
-			constr.setMaxActivateTime(
-				new Integer(pInt(line[8].trim()).intValue() * 60) );
+			//convert minutes to hours
+			constr.setMinRestartTime(
+				new Integer(pInt(line[7].trim()).intValue() / 60) );
+
+			//convert minutes to hours
+			constr.setMaxHoursDaily(
+				new Integer(pInt(line[8].trim()).intValue() / 60) );
 			
-			//convert minutes to seconds
-			constr.setMaxDailyOps(
-				new Integer(pInt(line[9].trim()).intValue() * 60) );
+			if( line.length >= 10 )
+				constr.setMaxDailyOps(
+					new Integer(pInt(line[9].trim()).intValue()) );
 
 			/*
-				lmProgConst.setMinRestartTime()
 				lmProgConst.setMinActivateTime()
 	
 				lmProgConst.setMaxHoursSeasonal()
 				lmProgConst.setMaxHoursMonthly()
-				lmProgConst.setMaxHoursDaily()
+				lmProgConst.setMaxActivateTime()
 
 				lmProgConst.setMaxActivateTime()
 	
 				lmProgConst.setAvailableSeasons()
-			*/
-//					line[10].trim().
-			
+			*/			
 		}
-		
+
 
 	}
 
 
-
-
-
-	for( int i = multi.getDBPersistentVector().size()-1; i >= 0; i-- )
-	{
-		if( ((LMGroupGolay)multi.getDBPersistentVector().get(i)).getLMGroupSASimple().getRouteID() == null )
-		{
-			CTILogger.info( "  No route found for Group: " +
-				multi.getDBPersistentVector().get(i) + ", group insertion canceled");
-
-			multi.getDBPersistentVector().remove(i);
-		}
-	}
 
 
 	boolean success = writeToSQLDatabase(multi);
 
 	if( success )
 	{
-		CTILogger.info(" Load Group file was processed and inserted Successfully");
-		getIMessageFrame().addOutput("Load Group file was processed and inserted Successfully");
+		CTILogger.info(" Load Program Constraints file was processed and inserted Successfully");
+		getIMessageFrame().addOutput("Load Program Constraints file was processed and inserted Successfully");
 		
-		CTILogger.info(" " + multi.getDBPersistentVector().size() + " Load Groups were added to the database");
-		getIMessageFrame().addOutput(multi.getDBPersistentVector().size() + " Load Groups were added to the database");
+		CTILogger.info(" " + multi.getDBPersistentVector().size() + " Load Program Constraints were added to the database");
+		getIMessageFrame().addOutput(multi.getDBPersistentVector().size() + " Load Program Constraints were added to the database");
 	}
 	else
-		getIMessageFrame().addOutput(" Load Groups failed adding to the database");
+		getIMessageFrame().addOutput(" Load Program Constraints failed adding to the database");
 
 
 	return success;
+}
+
+public static Integer decodeStringToSeconds( String string ) 
+{
+	if( Integer.parseInt(string) >= 2400 )
+		string = "2359";
+	
+	int hour = Integer.parseInt(
+		(string.length() <= 2 ? "0" :
+		  (string.length() <= 3 ? string.substring(0, 1) :
+		   string.substring(0, 2))) ) * 3600;
+		   
+	int minute = Integer.parseInt(
+		string.substring(
+			(string.length() <= 1 ? 0 : string.length()-2),
+			 string.length()) ) * 60;
+	
+	return new Integer(hour + minute);
 }
 
 /**
@@ -1618,8 +1664,8 @@ public boolean processTransmitterFile()
 	}
 
 
-	//boolean success = true;
-	boolean success = writeToSQLDatabase(multi);
+	boolean success = true;
+	//boolean success = writeToSQLDatabase(multi);
 
 	if( success )
 	{
