@@ -56,7 +56,7 @@ public class CICustomerBase extends Customer implements com.cannontech.common.ed
 						 "from " + 
 						 com.cannontech.database.db.customer.CICustomerBase.TABLE_NAME + 
 						 " where CustomerID not in " +
-						 "(select lmcustomerdeviceid " + 
+						 "(select CustomerID " + 
 						 "from lmprogramcurtailcustomerlist)";
 	
 		try
@@ -77,8 +77,8 @@ public class CICustomerBase extends Customer implements com.cannontech.common.ed
 				{
 					CICustomerBase customer = new CICustomerBase();
 					
-					customer.setCustomerID( new Integer(rset.getInt("deviceid")) );
-					customer.getCiCustomerBase().setCompanyName( rset.getString("paoname") );
+					customer.setCustomerID( new Integer(rset.getInt("CustomerID")) );
+					customer.getCiCustomerBase().setCompanyName( rset.getString("CompanyName") );
 					//customer.set( rset.getString("type") );
 	
 					tmpList.add( customer );
