@@ -60,7 +60,7 @@ public static Transaction createTransaction( int operation, com.cannontech.datab
 private com.cannontech.yukon.IDBPersistent getDB()
 {
    if( db == null )
-      db = (com.cannontech.yukon.IDBPersistent)ResourceFactory.getIYukon().createIDBPersistent();
+      db = ResourceFactory.getIYukon().createIDBPersistent();
       
    return db;
 }

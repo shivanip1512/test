@@ -169,7 +169,7 @@ public String[] getAllPoolsStrings()
 	  {		 
 		 try
 		 {
-			ResourceFactory.getIYukon().setSQLFileName( printSQLfile );
+			ResourceFactory.getIYukon().getDBPersistent().setSQLFileName( printSQLfile );
 		 }
 		 catch (Exception e)
 		 {

@@ -343,7 +343,7 @@ private javax.swing.JFrame getAvailableFrame()
  */
 private IMACSConnection getIMACSConnection() 
 {
-	return (IMACSConnection)ResourceFactory.getIYukon();
+	return ResourceFactory.getIYukon().getMACSConnection();
 }
 
 /**

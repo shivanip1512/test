@@ -30,7 +30,7 @@ public class MACSConnectionServlet extends javax.servlet.http.HttpServlet /*impl
  */
 protected IMACSConnection getIMACSConnection() 
 {
-	return (IMACSConnection)ResourceFactory.getIYukon();
+	return ResourceFactory.getIYukon().getMACSConnection();
 }
 
 	

@@ -181,7 +181,7 @@ private javax.swing.JComboBox getComboBox() {
  */
 private IMACSConnection getIMACSConnection() 
 {
-	return (IMACSConnection)ResourceFactory.getIYukon();
+	return ResourceFactory.getIYukon().getMACSConnection();
 }
 
 /**

@@ -82,8 +82,5 @@ public class YukonServerResource extends YukonResourceBase
       return macsConnection;
    }
 
-   public IConnectionBase getMACSConnBase()
-   {
-      return getMACSConnection().getMACSConnBase();
-   }
+
 }

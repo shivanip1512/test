@@ -39,7 +39,7 @@ public class DefaultDatabaseCache implements IDatabaseCache
 
    private IDatabaseCache getDBCache()
    {
-      return (IDatabaseCache)ResourceFactory.getIYukon();
+      return ResourceFactory.getIYukon().getDBCache();
    }
    
    /**
