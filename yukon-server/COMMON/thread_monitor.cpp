@@ -11,14 +11,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2004/10/07 12:27:52 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2004/10/07 16:57:48 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002, 2003, 2004 Cannon Technologies Inc. All rights reserved.
 *---------------------------------------------------------------------------------------------*/
 
-#include "thread_monitor.h"
+#include "dllbase.h"
 #include "logger.h"
+#include "thread_monitor.h"
 
 //===========================================================================================================
 //===========================================================================================================
@@ -49,11 +50,10 @@ void CtiThreadMonitor::run( void )
    {
       sleep( snooze );
 
-      messageOut( "ts", "Monitor Loop" );  //temp, remove in prod
+      if( getDebugLevel() & DEBUGLEVEL_THREAD_SPEW )
+         messageOut( "ts", "Monitor Loop" );  //temp, remove in prod
 
       snooze = checkForExpriration();
-
-      messageOut( "ti", snooze );
 
       processQueue();
 
@@ -124,7 +124,6 @@ void CtiThreadMonitor::processQueue( void )
 
       if( i != _threadData.end() )
       {
-         messageOut( "s", "Updating Thread Data" );
          //update the reg data
          i->second.setBehaviour( temp->getBehaviour() );
          i->second.setTickleFreq( temp->getTickleFreq() );
@@ -171,28 +170,28 @@ void CtiThreadMonitor::processExpired( void )
                }
                break;
 
-            case CtiThreadRegData::Restart:
+            case CtiThreadRegData::Action1:
                {
-                  CtiThreadRegData::behaviourFuncPtr alt = i->second.getAlternateFunc();
-                  void* altArgs = i->second.getAlternateArgs();
+                  CtiThreadRegData::behaviourFuncPtr action1 = i->second.getAlternateFunc();
+                  void* action1_args = i->second.getAlternateArgs();
 
-                  if( alt )
+                  if( action1 )
                   {  
                      //it doesn't matter if the args are null
-                     alt( altArgs );
+                     action1( action1_args );
                   }
                }
                break;
 
-            case CtiThreadRegData::KillApp:
+            case CtiThreadRegData::Action2:
                {
-                  CtiThreadRegData::behaviourFuncPtr hammer = i->second.getShutdownFunc();
-                  void* hammerArgs = i->second.getShutdownArgs();
+                  CtiThreadRegData::behaviourFuncPtr action2 = i->second.getShutdownFunc();
+                  void* action2_args = i->second.getShutdownArgs();
 
-                  if( hammer )
+                  if( action2 )
                   {
                      //it doesn't matter if the args are null
-                     hammer( hammerArgs );
+                     action2( action2_args );
                   }
                }
                break;
@@ -204,7 +203,8 @@ void CtiThreadMonitor::processExpired( void )
                break;
             }
 
-            messageOut( "tsisv", "Removing Thread ID", i->first, " ", i->second.getName() );
+            if( getDebugLevel() & DEBUGLEVEL_THREAD_SPEW )
+               messageOut( "tsisv", "Removing Thread ID", i->first, " ", i->second.getName() );
 
             i = _threadData.erase( i );
          }
@@ -231,7 +231,8 @@ void CtiThreadMonitor::processExtraCommands( void )
       {
          if( i->second.getBehaviour() == CtiThreadRegData::LogOut )
          {
-            messageOut( "tsis", "Thread ID", i->first, "Logging Out" );
+            if( getDebugLevel() & DEBUGLEVEL_THREAD_SPEW )
+               messageOut( "tsis", "Thread ID", i->first, "Logging Out" );
 
             i = _threadData.erase( i );
          }
@@ -295,13 +296,16 @@ void CtiThreadMonitor::tickle( const CtiThreadRegData *in )
 
             _queue.putQueue( data );
 
-            messageOut( "tsis", "Thread", data->getId(), "Inserted" );
+            if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+               messageOut( "tsis", "Thread", data->getId(), "Inserted" );
 
             //our thread may have shut down, so we don't want the queue to keep growing
             //as we won't be processing it anymore
             if( !isRunning() )
             {
-               messageOut( "ts", "WARNING: Monitor Is NOT Running, Deleting Monitor Queue" );
+               if( getDebugLevel() & DEBUGLEVEL_THREAD_SPEW )
+                  messageOut( "ts", "WARNING: Monitor Is NOT Running, Deleting Monitor Queue" );
+
                _queue.clearAndDestroy();
             }
          }
