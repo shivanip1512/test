@@ -3,7 +3,6 @@
 
 <jsp:useBean id="inventoryBean" class="com.cannontech.stars.web.bean.InventoryBean" scope="session">
 	<%-- this body is executed only if the bean is created --%>
-	<jsp:setProperty name="inventoryBean" property="energyCompanyID" value="<%= user.getEnergyCompanyID() %>"/>
 	<jsp:setProperty name="inventoryBean" property="sortBy" value="<%= YukonListEntryTypes.YUK_DEF_ID_INV_SORT_BY_SERIAL_NO %>"/>
 	<jsp:setProperty name="inventoryBean" property="sortOrder" value="<%= InventoryBean.SORT_ORDER_ASCENDING %>"/>
 	<jsp:setProperty name="inventoryBean" property="filterBy" value="0"/>
@@ -12,6 +11,7 @@
 
 <% if (request.getParameter("page") == null) { %>
 	<%-- intialize bean properties --%>
+	<jsp:setProperty name="inventoryBean" property="energyCompanyID" value="<%= user.getEnergyCompanyID() %>"/>
 	<jsp:setProperty name="inventoryBean" property="page" value="1"/>
 	<% inventoryBean.resetInventoryList(); %>
 <% } %>

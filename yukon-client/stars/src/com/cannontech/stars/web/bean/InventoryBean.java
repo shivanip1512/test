@@ -173,7 +173,7 @@ public class InventoryBean {
 	}
 	
 	private LiteStarsEnergyCompany getEnergyCompany() {
-		if (energyCompany == null)
+		if (energyCompany == null || energyCompany.getLiteID() != energyCompanyID)
 			energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
 		return energyCompany;
 	}
@@ -367,6 +367,8 @@ public class InventoryBean {
 		int maxPageNo = (int) Math.ceil(hwList.size() * 1.0 / pageSize);
 		if (page > maxPageNo) page = maxPageNo;
 		
+		int maxPageDigit = (int)(Math.log(maxPageNo) / Math.log(10)) + 1;
+		
 		int minInvNo = (page - 1) * pageSize + 1;
 		int maxInvNo = Math.min(page * pageSize, hwList.size());
         
@@ -403,7 +405,11 @@ public class InventoryBean {
 		
 		htmlBuf.append("<table width='80%' border='0' cellspacing='0' cellpadding='3' class='TableCell'>").append(LINE_SEPARATOR);
 		htmlBuf.append("  <tr>").append(LINE_SEPARATOR);
-		htmlBuf.append("    <td>").append(navBuf).append("</td>").append(LINE_SEPARATOR);
+		htmlBuf.append("    <td>").append(navBuf);
+//				.append(" | Page:<input type='text' id='Page' size='").append(maxPageDigit).append("' value='").append(page).append("'>")
+//				.append(" <img src='").append(req.getContextPath()).append("/WebConfig/yukon/Buttons/GoButton.gif' class='Clickable'")
+//				.append(" onclick='location.href=\"").append(pageName).append("?page=\" + document.getElementById(\"Page\").value;'>");
+		htmlBuf.append("</td>").append(LINE_SEPARATOR);
 		htmlBuf.append("  </tr>").append(LINE_SEPARATOR);
 		htmlBuf.append("  <tr>").append(LINE_SEPARATOR);
 		htmlBuf.append("    <td>").append(LINE_SEPARATOR);
@@ -562,6 +568,10 @@ public class InventoryBean {
 		}
         
 		htmlBuf.append("<script language='JavaScript'>").append(LINE_SEPARATOR);
+		htmlBuf.append("function goToPage() {").append(LINE_SEPARATOR);
+		htmlBuf.append("  location.href='").append(pageName).append("?page=' + document.getElementById('Page').value;").append(LINE_SEPARATOR);
+		htmlBuf.append("}").append(LINE_SEPARATOR);
+		
 		htmlBuf.append("function validate(form) {").append(LINE_SEPARATOR);
 		htmlBuf.append("  var radioBtns = document.getElementsByName('InvID');").append(LINE_SEPARATOR);
 		htmlBuf.append("  if (radioBtns != null) {").append(LINE_SEPARATOR);
