@@ -294,7 +294,7 @@ private com.cannontech.database.data.multi.SmartMultiDBPersistent createExtraObj
 */
 private void createExtraObjects( com.cannontech.database.data.multi.SmartMultiDBPersistent smartDB )
 {
-	if( getJCheckBoxHistory().isSelected() && smartDB != null )
+	if( smartDB != null )
 	{
 		Integer paoID = com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectID();
 		
@@ -328,49 +328,37 @@ private void createExtraObjects( com.cannontech.database.data.multi.SmartMultiDB
 
 		smartDB.addDBPersistent(historyPoint);
 
-		if( getJCheckBoxAnnual().isSelected() )
-		{
-			smartDB.addDBPersistent( 
-				PointFactory.createAnalogPoint(
-					"ANNUAL HISTORY",
-					paoID,
-					new Integer(ids[1]),
-					PointTypes.PT_OFFSET_ANNUAL_HISTORY,
-					com.cannontech.database.data.point.PointUnits.UOMID_COUNTS) );			
-		}
-
-		if( getJCheckBoxDaily().isSelected() )
-		{
-			smartDB.addDBPersistent( 
+		smartDB.addDBPersistent( 
+			PointFactory.createAnalogPoint(
+				"ANNUAL HISTORY",
+				paoID,
+				new Integer(ids[1]),
+				PointTypes.PT_OFFSET_ANNUAL_HISTORY,
+				com.cannontech.database.data.point.PointUnits.UOMID_COUNTS) );			
+		
+		smartDB.addDBPersistent( 
 				PointFactory.createAnalogPoint(
 					"DAILY HISTORY",
 					paoID,
 					new Integer(ids[2]),
 					PointTypes.PT_OFFSET_DAILY_HISTORY,
 					com.cannontech.database.data.point.PointUnits.UOMID_COUNTS) );			
-		}
 
-		if( getJCheckBoxSeasonal().isSelected() )
-		{
-			smartDB.addDBPersistent( 
-				PointFactory.createAnalogPoint(
-					"SEASON HISTORY",
-					paoID,
-					new Integer(ids[3]),
-					PointTypes.PT_OFFSET_SEASONAL_HISTORY,
-					com.cannontech.database.data.point.PointUnits.UOMID_COUNTS) );			
-		}
-
-		if( getJCheckBoxMonthly().isSelected() )
-		{
-			smartDB.addDBPersistent( 
-				PointFactory.createAnalogPoint(
-					"MONTH HISTORY",
-					paoID,
-					new Integer(ids[4]),
-					PointTypes.PT_OFFSET_MONTHLY_HISTORY,
-					com.cannontech.database.data.point.PointUnits.UOMID_COUNTS) );			
-		}
+		smartDB.addDBPersistent( 
+			PointFactory.createAnalogPoint(
+				"SEASON HISTORY",
+				paoID,
+				new Integer(ids[3]),
+				PointTypes.PT_OFFSET_SEASONAL_HISTORY,
+				com.cannontech.database.data.point.PointUnits.UOMID_COUNTS) );			
+		
+		smartDB.addDBPersistent( 
+			PointFactory.createAnalogPoint(
+				"MONTH HISTORY",
+				paoID,
+				new Integer(ids[4]),
+				PointTypes.PT_OFFSET_MONTHLY_HISTORY,
+				com.cannontech.database.data.point.PointUnits.UOMID_COUNTS) );			
 	
 	}
 
@@ -771,6 +759,8 @@ private javax.swing.JPanel getJPanelAllHistory() {
 			constraintsJCheckBoxHistory.insets = new java.awt.Insets(3, 23, 1, 50);
 			getJPanelAllHistory().add(getJCheckBoxHistory(), constraintsJCheckBoxHistory);
 			// user code begin {1}
+			ivjJPanelAllHistory.setEnabled(false);
+			ivjJPanelAllHistory.setVisible(false);
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -1005,19 +995,14 @@ public Object getValue(Object val)
 		return val;  //Macros will not have record history capability
 	else
 	{
-		if( getJCheckBoxHistory().isVisible() )
-		{
-			//some status points may need to be created for control history
-			com.cannontech.database.data.multi.SmartMultiDBPersistent smartDB = new com.cannontech.database.data.multi.SmartMultiDBPersistent();
-			smartDB.addDBPersistent( lmGroup );
-			smartDB.setOwnerDBPersistent( lmGroup );
+		//some status points are needed for control history
+		com.cannontech.database.data.multi.SmartMultiDBPersistent smartDB = new com.cannontech.database.data.multi.SmartMultiDBPersistent();
+		smartDB.addDBPersistent( lmGroup );
+		smartDB.setOwnerDBPersistent( lmGroup );
 			
-			createExtraObjects( smartDB );
+		createExtraObjects( smartDB );
 
-			return smartDB;
-		}
-		else
-			return lmGroup;
+		return smartDB;
 	}
 }
 /**
