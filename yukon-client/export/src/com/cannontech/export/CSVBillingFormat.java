@@ -190,8 +190,9 @@ public class CSVBillingFormat extends ExportFormatBase
 	 * Method retrieveBaselineData.
 	 * @param baselinePointID
 	 */
-	public void retrieveBaselineData(int baselinePointID)
+	public void retrieveBaselineData(int baselinePointID, GregorianCalendar curtailDate)
 	{
+		GregorianCalendar cal = (GregorianCalendar)curtailDate.clone();
 		long timer = System.currentTimeMillis();
 		int rowCount = 0;
 			
@@ -225,8 +226,9 @@ public class CSVBillingFormat extends ExportFormatBase
 			else
 			{
 				stmt = conn.prepareStatement(sql.toString());
-				stmt.setTimestamp(1, new java.sql.Timestamp(getExportProperties().getMinTimestamp().getTime().getTime()));
-				stmt.setTimestamp(2, new java.sql.Timestamp(getExportProperties().getMaxTimestamp().getTime().getTime()));
+				stmt.setTimestamp(1, new java.sql.Timestamp(cal.getTime().getTime()));
+				cal.add(Calendar.DATE, 1);
+				stmt.setTimestamp(2, new java.sql.Timestamp(cal.getTime().getTime()));
 				
 				rset = stmt.executeQuery();
 				while( rset.next())
@@ -290,7 +292,6 @@ public class CSVBillingFormat extends ExportFormatBase
 		java.sql.PreparedStatement stmt = null;
 		java.sql.ResultSet rset = null;
 	
-		retrieveBaselineData(csvBillingCust.getBaselinePointId().intValue());
 		try
 		{
 			conn = com.cannontech.database.PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
@@ -332,11 +333,6 @@ public class CSVBillingFormat extends ExportFormatBase
 					csvBillingRec.setCurtailDate(curtailDate);
 					csvBillingRec.setCurtailRate(price);
 
-					//Change hour from 0-23 to 1-24 (the new 0 is midnight as in the latest reading, not the earliest)
-					hour++;
-					if (hour == 24)
-						hour = 0;
-					csvBillingRec.setRLP((Double)baselineValues[hour]);
 					csvBillingRec.setCLR(amtCommit);
 					csvBillingRec.setPDL(csvBillingCust.getPDL());
 					csvBillingRec.setDelimiter(getExportProperties().getDelimiter());
@@ -382,15 +378,16 @@ public class CSVBillingFormat extends ExportFormatBase
 		{
 			if( recordVector.get(i) instanceof CSVBillingRecord)
 			{
-//				if( csvBillingCust.getd=)
 				CSVBillingRecord record = (CSVBillingRecord)recordVector.get(i);
 				GregorianCalendar curtailDate = (GregorianCalendar)record.getCurtailDate().clone();
 				curtailDate.set(Calendar.HOUR_OF_DAY, 0);
 				curtailDate.set(Calendar.MINUTE, 0);
 				curtailDate.set(Calendar.SECOND, 0);
-				
+
 				if( curtailDate.getTime().compareTo(prevCurtailDate.getTime()) != 0)
 				{
+					//Only collect baseline data for curtailed dates.
+					retrieveBaselineData(csvBillingCust.getBaselinePointId().intValue(), curtailDate);					
 					prevCurtailDate = (GregorianCalendar)curtailDate.clone();
 					Vector validTimestamps = new Vector(1);
 					validTimestamps.add(curtailDate.getTime());
@@ -402,7 +399,13 @@ public class CSVBillingFormat extends ExportFormatBase
 					Double value = hoursAndValues.getValue(hourOfDay);
 					if( value != null)
 						record.setADL(value);
-				}
+				
+					//Change hour from 0-23 to 1-24 (the new 0 is midnight as in the latest reading, not the earliest)
+					hourOfDay++;
+					if (hourOfDay == 24)
+						hourOfDay = 0;
+					record.setRLP((Double)baselineValues[hourOfDay]);
+				}				
 			}
 		}
 		return;
