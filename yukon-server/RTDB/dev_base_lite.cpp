@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base_lite.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2003/03/13 19:35:52 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2003/06/05 21:12:02 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -214,13 +214,13 @@ bool CtiDeviceBaseLite::isDisabled() const
 {
     RWCString str(getDisableFlag());
     str.toLower();
-    return (str == "Y");
+    return (str == "y");
 }
 
 bool CtiDeviceBaseLite::isControlInhibited() const
 {
     RWCString str(getControlInhibitFlag());
     str.toLower();
-    return (str == "Y");
+    return (str == "y");
 }
 
