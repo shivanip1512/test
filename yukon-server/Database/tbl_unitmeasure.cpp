@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pt_analog.cpp-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2002/04/30 16:32:17 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2002/04/30 22:16:38 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -61,8 +61,6 @@ void CtiTableUnitMeasure::DecodeDatabaseReader(RWDBReader &rdr)
    rdr["calctype"]  >> _calcType;
    rdr["longname"]  >> _longName;
    rdr["formula"]   >> _formula;
-
-   dump();
 }
 
 void CtiTableUnitMeasure::dump() const
