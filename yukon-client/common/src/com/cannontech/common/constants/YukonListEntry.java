@@ -14,7 +14,7 @@ public class YukonListEntry
 {
 	private int entryID = 0;
 	private int listID = 0;
-	private int listOrder = 0;
+	private int entryOrder = 0;
 	private String entryText = null;
 	private int yukonDefID = 0;
 
@@ -60,8 +60,8 @@ public class YukonListEntry
 	 * Returns the listOrder.
 	 * @return int
 	 */
-	public int getListOrder() {
-		return listOrder;
+	public int getEntryOrder() {
+		return entryOrder;
 	}
 
 	/**
@@ -112,8 +112,8 @@ public class YukonListEntry
 	 * Sets the listOrder.
 	 * @param listOrder The listOrder to set
 	 */
-	public void setListOrder(int listOrder) {
-		this.listOrder = listOrder;
+	public void setEntryOrder(int entryOrder) {
+		this.entryOrder = entryOrder;
 	}
 
 	/**
