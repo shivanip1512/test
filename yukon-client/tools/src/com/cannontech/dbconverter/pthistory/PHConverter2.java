@@ -296,7 +296,8 @@ public static void main(String[] args) throws Exception {
 	// Forcing allows us to insert Point History independently of lastTimestamp.	
 	if( args.length == 2)
 	{
-		if( args[1].startsWith("FORCE"))
+		String lowerCaseArg = args[1].toLowerCase();
+		if( lowerCaseArg.startsWith("force"))
 			p.forceInsert = true;
 	}
 	System.out.println(" FORCE = " + p.forceInsert);
