@@ -732,9 +732,10 @@ void CtiLMControlAreaStore::reset()
                         { //not a macro group, assign it to the program
                             group_vec.push_back(lm_group);
                             lm_group->setGroupOrder(group_vec.size());
-                            all_program_group_map.insert(make_pair(program_id, group_vec));
+//                            all_program_group_map.insert(make_pair(program_id, group_vec));
                             all_assigned_group_map.insert(make_pair(lm_group->getPAOId(), lm_group));
                         }
+                        all_program_group_map.insert(make_pair(program_id, group_vec));
                     }
                     else
                     {
