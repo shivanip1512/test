@@ -1,11 +1,12 @@
 <?xml version="1.0" ?>
-<project name="palm?" default="all">
-      
+<project name="report" default="all">
+
    <property file="../build/build.properties"/>
 
    <target name="all" depends="clean,build">
     </target>
    
+
    <target name="build">
        <mkdir dir="build"/>
        
@@ -18,12 +19,14 @@
      	</javac>
 
        <jar jarfile="${yukon.lib}/report.jar"
-            basedir="build/" />       
+            basedir="build/" 
+            manifest="resource/manifest.mf" />       
    </target>
 
 	<target name="install" depends="build">
    		<jar jarfile="${yukon.client.bin}/report.jar"
-   			basedir="build/" />   			
+   			basedir="build/"
+   			manifest="resource/manifest.mf" />   			
    </target>
    
    <target name="clean">
