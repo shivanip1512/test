@@ -69,21 +69,36 @@ public class LMHardwareBase extends DBPersistent {
     
     public static int[] searchForLMHardware(int deviceType, String serialNo, int energyCompanyID, java.sql.Connection conn)
     throws java.sql.SQLException {
-    	String sql = "SELECT inv.InventoryID FROM " + TABLE_NAME + " inv, ECToInventoryMapping map " +
-    			"WHERE LMHardwareTypeID = " + deviceType + " AND UPPER(ManufacturerSerialNumber) LIKE UPPER('" + serialNo + "')" +
-    			" AND inv.InventoryID >= 0 AND inv.InventoryID = map.InventoryID AND map.EnergyCompanyID = " + energyCompanyID;
-    	java.sql.Statement stmt = conn.createStatement();
-    	java.sql.ResultSet rset = stmt.executeQuery( sql );
+    	String sql = "SELECT hw.InventoryID " +
+    			"FROM " + TABLE_NAME + " hw, ECToInventoryMapping map " +
+    			"WHERE hw.LMHardwareTypeID = ? AND UPPER(hw.ManufacturerSerialNumber) LIKE UPPER(?) " +
+    			"AND hw.InventoryID >= 0 AND hw.InventoryID = map.InventoryID AND map.EnergyCompanyID = ?";
     	
-		java.util.ArrayList invIDList = new java.util.ArrayList();
-    	while (rset.next())
-    		invIDList.add( new Integer(rset.getInt(1)) );
+    	java.sql.PreparedStatement stmt = null;
+    	java.sql.ResultSet rset = null;
     	
-    	int[] invIDs = new int[ invIDList.size() ];
-    	for (int i = 0; i < invIDList.size(); i++)
-    		invIDs[i] = ((Integer) invIDList.get(i)).intValue();
-		
-		return invIDs;
+    	try {
+    		stmt = conn.prepareStatement( sql );
+			stmt.setInt( 1, deviceType );
+			stmt.setString( 2, serialNo );
+			stmt.setInt( 3, energyCompanyID );
+    		
+    		rset = stmt.executeQuery();
+    		
+			java.util.ArrayList invIDList = new java.util.ArrayList();
+			while (rset.next())
+				invIDList.add( new Integer(rset.getInt(1)) );
+    		
+			int[] invIDs = new int[ invIDList.size() ];
+			for (int i = 0; i < invIDList.size(); i++)
+				invIDs[i] = ((Integer) invIDList.get(i)).intValue();
+			
+			return invIDs;
+    	}
+    	finally {
+    		if (rset != null) rset.close();
+    		if (stmt != null) stmt.close();
+    	}
     }
     
     /**
@@ -103,39 +118,64 @@ public class LMHardwareBase extends DBPersistent {
 		if (serialNoUB != null)
 			sql += " AND ManufacturerSerialNumber <= " + serialNoUB;
 		
-		java.sql.Statement stmt = conn.createStatement();
-		java.sql.ResultSet rset = stmt.executeQuery( sql );
+		java.sql.Statement stmt = null;
+		java.sql.ResultSet rset = null;
 		
-		java.util.TreeMap snTable = new java.util.TreeMap();
-		while (rset.next()) {
-			int invID = rset.getInt(1);
-			String serialNo = rset.getString(2);
-			snTable.put(serialNo, new Integer(invID));
+		try {
+			stmt = conn.createStatement();
+			rset = stmt.executeQuery( sql );
+			
+			java.util.TreeMap snTable = new java.util.TreeMap();
+			while (rset.next()) {
+				int invID = rset.getInt(1);
+				String serialNo = rset.getString(2);
+				snTable.put(serialNo, new Integer(invID));
+			}
+			
+			return snTable;
 		}
-		
-		return snTable;
+		finally {
+			if (rset != null) rset.close();
+			if (stmt != null) stmt.close();
+		}
     }
     
-    public static int[] searchBySerialNumber(String serialNo, int energyCompanyID, java.sql.Connection conn)
+    public static LMHardwareBase[] searchBySerialNumber(String serialNo, int energyCompanyID, java.sql.Connection conn)
     throws java.sql.SQLException {
-    	String sql = "SELECT inv.InventoryID FROM " + TABLE_NAME + " inv, ECToInventoryMapping map " +
-    			"WHERE UPPER(ManufacturerSerialNumber) = UPPER(?) AND inv.InventoryID >= 0 " +
-    			"AND inv.InventoryID = map.InventoryID AND map.EnergyCompanyID = ?";
+    	String sql = "SELECT hw.InventoryID, hw.ManufacturerSerialNumber, hw.LMHardwareTypeID " +
+    			"FROM " + TABLE_NAME + " hw, ECToInventoryMapping map " +
+    			"WHERE UPPER(hw.ManufacturerSerialNumber) = UPPER(?) AND hw.InventoryID >= 0 " +
+    			"AND hw.InventoryID = map.InventoryID AND map.EnergyCompanyID = ?";
     	
-    	java.sql.PreparedStatement stmt = conn.prepareStatement(sql);
-    	stmt.setString(1, serialNo);
-    	stmt.setInt(2, energyCompanyID);
-    	java.sql.ResultSet rset = stmt.executeQuery();
+    	java.sql.PreparedStatement stmt = null;
+    	java.sql.ResultSet rset = null;
     	
-		java.util.ArrayList invIDList = new java.util.ArrayList();
-		while (rset.next())
-			invIDList.add( new Integer(rset.getInt(1)) );
-    	
-		int[] invIDs = new int[ invIDList.size() ];
-		for (int i = 0; i < invIDList.size(); i++)
-			invIDs[i] = ((Integer) invIDList.get(i)).intValue();
-		
-		return invIDs;
+    	try {
+    		stmt = conn.prepareStatement(sql);
+			stmt.setString(1, serialNo);
+			stmt.setInt(2, energyCompanyID);
+			
+			rset = stmt.executeQuery();
+    		
+			java.util.ArrayList hwList = new java.util.ArrayList();
+			while (rset.next()) {
+				LMHardwareBase hw = new LMHardwareBase();
+				hw.setInventoryID( new Integer(rset.getInt(1)) );
+				hw.setManufacturerSerialNumber( rset.getString(2) );
+				hw.setLMHardwareTypeID( new Integer(rset.getInt(3)) );
+				
+				hwList.add( hw );
+			}
+    		
+			LMHardwareBase[] hardwares = new LMHardwareBase[ hwList.size() ];
+			hwList.toArray( hardwares );
+			
+			return hardwares;
+    	}
+    	finally {
+    		if (rset != null) rset.close();
+    		if (stmt != null) stmt.close();
+    	}
     }
 
     public Integer getInventoryID() {

@@ -1,5 +1,7 @@
 package com.cannontech.database.db.stars.hardware;
 
+import java.util.Date;
+
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.db.DBPersistent;
 
@@ -19,9 +21,9 @@ public class InventoryBase extends DBPersistent {
     private Integer accountID = new Integer( CtiUtilities.NONE_ID );
     private Integer installationCompanyID = new Integer( CtiUtilities.NONE_ID );
     private Integer categoryID = new Integer( CtiUtilities.NONE_ID );
-    private java.util.Date receiveDate = new java.util.Date(0);
-    private java.util.Date installDate = new java.util.Date(0);
-    private java.util.Date removeDate = new java.util.Date(0);
+    private Date receiveDate = new Date(0);
+    private Date installDate = new Date(0);
+    private Date removeDate = new Date(0);
     private String alternateTrackingNumber = "";
     private Integer voltageID = new Integer( CtiUtilities.NONE_ID );
     private String notes = "";
@@ -98,9 +100,9 @@ public class InventoryBase extends DBPersistent {
             setAccountID( (Integer) results[0] );
             setInstallationCompanyID( (Integer) results[1] );
             setCategoryID( (Integer) results[2] );
-            setReceiveDate( new java.util.Date(((java.sql.Timestamp) results[3]).getTime()) );
-            setInstallDate( new java.util.Date(((java.sql.Timestamp) results[4]).getTime()) );
-            setRemoveDate( new java.util.Date(((java.sql.Timestamp) results[5]).getTime()) );
+            setReceiveDate( new Date(((java.sql.Timestamp) results[3]).getTime()) );
+            setInstallDate( new Date(((java.sql.Timestamp) results[4]).getTime()) );
+            setRemoveDate( new Date(((java.sql.Timestamp) results[5]).getTime()) );
             setAlternateTrackingNumber( (String) results[6] );
             setVoltageID( (Integer) results[7] );
             setNotes( (String) results[8] );
@@ -143,18 +145,107 @@ public class InventoryBase extends DBPersistent {
 	public static int[] searchByAccountID(int accountID, java.sql.Connection conn)
 	throws java.sql.SQLException {
 		String sql = "SELECT InventoryID FROM " + TABLE_NAME + " WHERE AccountID = " + accountID;
-		java.sql.Statement stmt = conn.createStatement();
-		java.sql.ResultSet rset = stmt.executeQuery( sql );
+		java.sql.Statement stmt = null;
+		java.sql.ResultSet rset = null;
     	
-		java.util.ArrayList invIDList = new java.util.ArrayList();
-		while (rset.next())
-			invIDList.add( new Integer(rset.getInt(1)) );
-    	
-		int[] invIDs = new int[ invIDList.size() ];
-		for (int i = 0; i < invIDList.size(); i++)
-			invIDs[i] = ((Integer) invIDList.get(i)).intValue();
+    	try {
+    		stmt = conn.createStatement();
+    		rset = stmt.executeQuery( sql );
+    		
+			java.util.ArrayList invIDList = new java.util.ArrayList();
+			while (rset.next())
+				invIDList.add( new Integer(rset.getInt(1)) );
+    		
+			int[] invIDs = new int[ invIDList.size() ];
+			for (int i = 0; i < invIDList.size(); i++)
+				invIDs[i] = ((Integer) invIDList.get(i)).intValue();
+			
+			return invIDs;
+    	}
+    	finally {
+    		if (rset != null) rset.close();
+    		if (stmt != null) stmt.close();
+    	}
+	}
+	
+	public static int[] searchForDevice(int categoryID, String deviceName, int energyCompanyID, java.sql.Connection conn)
+	throws java.sql.SQLException {
+		String sql = "SELECT inv.InventoryID " +
+				"FROM " + TABLE_NAME + " inv, ECToInventoryMapping map, YukonPAObject pao " +
+				"WHERE inv.CategoryID = ? AND inv.DeviceID > 0 " +
+				"AND inv.DeviceID = pao.PAObjectID AND UPPER(pao.PAOName) LIKE UPPER(?) " +
+				"AND inv.InventoryID = map.InventoryID AND map.EnergyCompanyID = ?";
 		
-		return invIDs;
+		java.sql.PreparedStatement stmt = null;
+		java.sql.ResultSet rset = null;
+    	
+    	try {
+    		stmt = conn.prepareStatement( sql );
+			stmt.setInt( 1, categoryID );
+			stmt.setString( 2, deviceName );
+			stmt.setInt( 3, energyCompanyID );
+			
+			rset = stmt.executeQuery();
+			
+			java.util.ArrayList invIDList = new java.util.ArrayList();
+			while (rset.next())
+				invIDList.add( new Integer(rset.getInt(1)) );
+    		
+			int[] invIDs = new int[ invIDList.size() ];
+			for (int i = 0; i < invIDList.size(); i++)
+				invIDs[i] = ((Integer) invIDList.get(i)).intValue();
+			
+			return invIDs;
+    	}
+    	finally {
+    		if (rset != null) rset.close();
+    		if (stmt != null) stmt.close();
+    	}
+	}
+	
+	public static InventoryBase searchByDeviceID(int deviceID, int energyCompanyID, java.sql.Connection conn)
+	throws java.sql.SQLException {
+		String sql = "SELECT inv.InventoryID, AccountID, InstallationCompanyID, CategoryID, " +
+				"ReceiveDate, InstallDate, RemoveDate, AlternateTrackingNumber, " +
+				"VoltageID, Notes, DeviceID, DeviceLabel " +
+				"FROM " + TABLE_NAME + " inv, ECToInventoryMapping map " +
+				"WHERE DeviceID = ? AND inv.InventoryID = map.InventoryID " +
+				"AND map.EnergyCompanyID = ?";
+		
+		java.sql.PreparedStatement stmt = null;
+		java.sql.ResultSet rset = null;
+		
+		try {
+			stmt = conn.prepareStatement( sql );
+			stmt.setInt( 1, deviceID );
+			stmt.setInt( 2, energyCompanyID );
+			
+			rset = stmt.executeQuery();
+			
+			if (rset.next()) {
+				InventoryBase inv = new InventoryBase();
+				inv.setInventoryID( new Integer(rset.getInt(1)) );
+				inv.setAccountID( new Integer(rset.getInt(2)) );
+				inv.setInstallationCompanyID( new Integer(rset.getInt(3)) );
+				inv.setCategoryID( new Integer(rset.getInt(4)) );
+				inv.setReceiveDate( new Date(rset.getTimestamp(5).getTime()) );
+				inv.setInstallDate( new Date(rset.getTimestamp(6).getTime()) );
+				inv.setRemoveDate( new Date(rset.getTimestamp(7).getTime()) );
+				inv.setAlternateTrackingNumber( rset.getString(8) );
+				inv.setVoltageID( new Integer(rset.getInt(9)) );
+				inv.setNotes( rset.getString(10) );
+				inv.setDeviceID( new Integer(rset.getInt(11)) );
+				inv.setDeviceLabel( rset.getString(12) );
+				
+				return inv;
+			}
+			
+			return null;
+		}
+		finally {
+			if (rset != null) rset.close();
+			if (stmt != null) stmt.close();
+		}
 	}
 
     public Integer getInventoryID() {
