@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_welco.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2002/12/23 21:28:13 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2003/02/04 17:25:07 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -40,6 +40,7 @@
 #include "msg_pdata.h"
 #include "msg_cmd.h"
 #include "msg_lmcontrolhistory.h"
+#include "numstr.h"
 #include "cmdparse.h"
 
 #include "dlldefs.h"
@@ -88,36 +89,38 @@ INT CtiDeviceWelco::AccumulatorScan(CtiRequestMsg *pReq,
 
     if(OutMessage != NULL)
     {
-        /* Load the sectn to scan the demand accumulators */
-        OutMessage->Buffer.OutMessage[5] = IDLC_FREEZE | 0x80;
-        OutMessage->Buffer.OutMessage[6] = 0;
-
-        /* Load all the other stuff that is needed */
-        OutMessage->DeviceID              = getID();
-        OutMessage->Buffer.OutMessage[4]  = 0x08;
-        OutMessage->Port                  = getPortID();
-        OutMessage->Remote                = getAddress();
-        EstablishOutMessagePriority( OutMessage, ScanPriority );
-        OutMessage->TimeOut               = 2;
-        OutMessage->OutLength             = 0;
-        OutMessage->InLength              = -1;
-
-        if(OutMessage->Remote == RTUGLOBAL)
         {
-            OutMessage->EventCode = NORESULT | ENCODED;
+            /* Load the sectn to scan the demand accumulators */
+            OutMessage->Buffer.OutMessage[5] = IDLC_FREEZE | 0x80;
+            OutMessage->Buffer.OutMessage[6] = 0;
+
+            /* Load all the other stuff that is needed */
+            OutMessage->DeviceID              = getID();
+            OutMessage->Buffer.OutMessage[4]  = 0x08;
+            OutMessage->Port                  = getPortID();
+            OutMessage->Remote                = getAddress();
+            EstablishOutMessagePriority( OutMessage, ScanPriority );
+            OutMessage->TimeOut               = 2;
+            OutMessage->OutLength             = 0;
+            OutMessage->InLength              = -1;
+
+            if(OutMessage->Remote == RTUGLOBAL)
+            {
+                OutMessage->EventCode = NORESULT | ENCODED;
+            }
+            else
+            {
+                OutMessage->EventCode = RESULT | ENCODED;
+            }
+
+            OutMessage->Sequence              = 0;
+            OutMessage->Retry                 = 2;
+
+            setScanIntegrity(TRUE);                         // We are an integrity scan (equiv. anyway).  Data must be propagated.
+            outList.insert(OutMessage);
+
+            OutMessage = NULL;
         }
-        else
-        {
-            OutMessage->EventCode = RESULT | ENCODED;
-        }
-
-        OutMessage->Sequence              = 0;
-        OutMessage->Retry                 = 2;
-
-        setScanIntegrity(TRUE);                         // We are an integrity scan (equiv. anyway).  Data must be propagated.
-        outList.insert(OutMessage);
-
-        OutMessage = NULL;
     }
 
 
@@ -259,7 +262,7 @@ INT CtiDeviceWelco::IntegrityScan(CtiRequestMsg *pReq,
             StatusFirst = StatusLast = 0;
         }
 
-        if(isScanFrozen() || isScanFreezeFailed())
+        if(isScanFrozen() || isScanFreezeFailed() || !useScanFlags())
         {
             /*
              *  This is our big hint that the message needs accums to be included!
@@ -487,12 +490,15 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
                     setScanFrozen();
 
                     /* update the accumulator criteria for this RTU */
-                    setPrevFreezeTime(getLastFreezeTime());
-                    setLastFreezeTime( RWTime(InMessage->Time) );
-                    resetScanFreezeFailed();
+                    if(useScanFlags())
+                    {
+                        setPrevFreezeTime(getLastFreezeTime());
+                        setLastFreezeTime( RWTime(InMessage->Time) );
+                        resetScanFreezeFailed();
 
-                    setPrevFreezeNumber(getLastFreezeNumber());
-                    setLastFreezeNumber(TRUE);
+                        setPrevFreezeNumber(getLastFreezeNumber());
+                        setLastFreezeNumber(TRUE);
+                    }
 
                     /* then force a scan */
                     OutMessage = CTIDBG_new OUTMESS;
@@ -580,11 +586,18 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
                     resetScanFreezeFailed();
                     resetScanFreezePending();
                 }
-                else if(isScanFrozen())
+                else if(isScanFrozen() || !useScanFlags())
                 {
-                    /* Calculate the part of an hour involved here */
-                    PartHour = (FLOAT)(getLastFreezeTime().seconds() - getPrevFreezeTime().seconds());
-                    PartHour /= (3600.0);
+                    if(useScanFlags())
+                    {
+                        /* Calculate the part of an hour involved here */
+                        PartHour = (FLOAT)(getLastFreezeTime().seconds() - getPrevFreezeTime().seconds());
+                        PartHour /= (3600.0);
+                    }
+                    else
+                    {
+                        PartHour = 1;
+                    }
 
                     for(PointOffset = (USHORT)StartPoint, Pointer = 3;
                        PointOffset <= FinishPoint;
@@ -592,7 +605,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
                     {
                         curPulseValue = MAKEULONG( MAKEUSHORT (MyInMessage[Pointer], MyInMessage[Pointer + 1]), MAKEUSHORT (MyInMessage[Pointer + 2], MyInMessage[Pointer + 3]) );
 
-                        if((PointRecord = getDevicePointOffsetTypeEqual(PointOffset, DemandAccumulatorPointType)) != NULL)
+                        if(useScanFlags() && (PointRecord = getDevicePointOffsetTypeEqual(PointOffset, DemandAccumulatorPointType)) != NULL)
                         {
                             pAccumPoint = (CtiPointAccumulator *)PointRecord;
 
@@ -1348,7 +1361,7 @@ INT CtiDeviceWelco::WelCoTimeSync(OUTMESS *OutMessage, INT Priority)
         OutMessage->Source             = 0;
         OutMessage->Destination        = 0;
         OutMessage->Sequence           = 0;
-        EstablishOutMessagePriority( OutMessage, Priority );
+        OverrideOutMessagePriority( OutMessage, Priority );
         OutMessage->EventCode          = NORESULT | ENCODED | TSYNC;
         OutMessage->ReturnNexus        = NULL;
         OutMessage->SaveNexus          = NULL;
@@ -1761,12 +1774,63 @@ INT CtiDeviceWelco::ExecuteRequest(CtiRequestMsg                  *pReq,
             nRet = executeControl(pReq, parse, OutMessage, vgList, retList, outList);
             break;
         }
+    case PutConfigRequest:
+        {
+            {
+                CtiReturnMsg *ret = CTIDBG_new CtiReturnMsg(getID(), parse.getCommandStr());
+
+                nRet = WelCoTimeSync(OutMessage, MAXPRIORITY - 1);
+
+                OutMessage->EventCode &= ~TSYNC;    // We'll be tricking this one here.
+                BYTE *Message = OutMessage->Buffer.OutMessage + PREIDLEN;
+
+                {
+                    struct timeb TimeB;
+                    struct tm TimeSt;
+
+                    /* get the time from the system */
+                    UCTFTime (&TimeB);
+
+                    /* Add in the extra seconds */
+                    TimeB.time += (TimeB.millitm / 1000);
+
+                    /* Readjust milliseconds */
+                    TimeB.millitm %= 1000;
+
+                    UCTLocoTime (TimeB.time, TimeB.dstflag, &TimeSt);
+
+                    /* Move it into the message */
+                    Message[0] = TimeSt.tm_mon + 1;
+                    Message[1] = TimeSt.tm_mday;
+                    Message[2] = TimeSt.tm_hour;
+                    Message[3] = TimeSt.tm_min;
+                    Message[4] = TimeSt.tm_sec;
+
+                    /* Load the milliseconds */
+                    Message[5] = LOBYTE (TimeB.millitm);
+                    Message[6] = HIBYTE (TimeB.millitm);
+
+                    ret->setResultString("Time set to " +
+                                         CtiNumStr(TimeSt.tm_mon + 1) + "/" +
+                                         CtiNumStr(TimeSt.tm_mday) + " " +
+                                         CtiNumStr(TimeSt.tm_hour).zpad(2) + ":" +
+                                         CtiNumStr(TimeSt.tm_min).zpad(2) + ":" +
+                                         CtiNumStr(TimeSt.tm_sec).zpad(2));
+                }
+
+                retList.insert( ret );
+
+                outList.insert(OutMessage);
+                OutMessage = NULL;
+            }
+
+            break;
+        }
     case GetStatusRequest:
     case GetValueRequest:
     case PutValueRequest:
     case PutStatusRequest:
     case GetConfigRequest:
-    case PutConfigRequest:
     default:
         {
             {
