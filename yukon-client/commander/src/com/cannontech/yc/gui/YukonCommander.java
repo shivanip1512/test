@@ -5,9 +5,10 @@ package com.cannontech.yc.gui;
  */
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import javax.swing.event.TreeSelectionEvent;
-
+import java.awt.event.WindowEvent;
 import java.util.Vector;
+
+import javax.swing.event.TreeSelectionEvent;
 
 import com.cannontech.database.model.ModelFactory;
 import com.cannontech.yc.gui.menu.YCCommandMenu;
@@ -15,7 +16,7 @@ import com.cannontech.yc.gui.menu.YCFileMenu;
 import com.cannontech.yc.gui.menu.YCHelpMenu;
 import com.cannontech.yc.gui.menu.YCViewMenu;
 
-public class YukonCommander extends javax.swing.JFrame implements com.cannontech.database.cache.DBChangeListener, java.awt.event.ActionListener, java.awt.event.FocusListener, java.awt.event.KeyListener, Runnable, javax.swing.event.TreeSelectionListener {
+public class YukonCommander extends javax.swing.JFrame implements com.cannontech.database.cache.DBChangeListener, java.awt.event.ActionListener, java.awt.event.FocusListener, java.awt.event.KeyListener, Runnable, javax.swing.event.TreeSelectionListener{
 	private static  YC ycClass;
 	private static final int treeModels[] =
 	{
@@ -1176,6 +1177,11 @@ private void initialize() {
 	//DBChangeMessageListener dbChangeMessageListener = new DBChangeMessageListener();
 	//dbChangeMessageListener.start();
 
+	addWindowListener(new java.awt.event.WindowAdapter(){
+		public void windowClosing(java.awt.event.WindowEvent e){ 
+				exit();
+		};
+	});
 	// user code end
 }
 /**
@@ -1371,12 +1377,6 @@ public static void main(java.lang.String[] args)
 		ycClient.initDispatchConnection();
 		ycClient.initPorterConnection();
 		ycClass.setConnToPorter(ycClient.connToPorter);
-		
-		ycClient.addWindowListener(new java.awt.event.WindowAdapter(){
-				public void windowClosing(java.awt.event.WindowEvent e){ 
-					System.exit(0);
-				};
-			});
 
 		//set the app to start as close to the center as you can....
 		//  only works with small gui interfaces.
@@ -1908,6 +1908,7 @@ public void valueChanged(TreeSelectionEvent event)
 	}
 	return;
 }
+
 /**
  * 
  */
