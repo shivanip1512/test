@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.78 $
-* DATE         :  $Date: 2003/10/28 16:05:28 $
+* REVISION     :  $Revision: 1.79 $
+* DATE         :  $Date: 2003/10/30 14:45:45 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1403,6 +1403,8 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                      trx.setInBuffer( inBuffer );
                      trx.setOutBuffer( outBuffer );
                      trx.setInCountActual( &bytesReceived );
+                     
+                     transdata.reinitalize();
 
                      while( !transdata.isTransactionComplete() )
                      {
@@ -1419,6 +1421,12 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
                         DisplayTraceList( Port, traceList, true );
                      }
+
+                     status = transdata.sendCommResult( InMessage );
+
+//                     transdata.reinitalize();
+                     transdata.destroy();
+                     break;
                   }
 
                 case TYPE_SIXNET:
