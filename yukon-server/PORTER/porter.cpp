@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.60 $
-* DATE         :  $Date: 2004/10/19 20:28:31 $
+* REVISION     :  $Revision: 1.61 $
+* DATE         :  $Date: 2004/11/09 06:13:53 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -176,7 +176,7 @@ using namespace std;
 #define DO_PERFUPDATETHREAD            1
 #define DO_FILLERTHREAD                1
 #define DO_PORTSHARING                 1
-#define DO_VERIFICATIONTHREAD          1
+#define DO_VERIFICATIONTHREAD          0
 
 #define DOUT_OUT TRUE
 
