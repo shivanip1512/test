@@ -6,18 +6,20 @@
 	<target name="all" depends="clean,build" />
 	
 	<target name="build">
-        <mkdir dir="build"/>
-
+	
+        <mkdir dir="jspbuild"/>
 
 		<!--****************************************************
 		*  Compile the JSP files into java files
 		*   This is to ensure that all the JSPs will "work"
 		*****************************************************-->
 		<jspc srcdir="${yukon-web}"
-			destdir="build"
+			destdir="jspbuild"
 			compiler="jasper41"
 			uriroot="${yukon-web}"
 			verbose="9">
+            <exclude name="build/**" />
+            <exclude name="jspbuild/**" />
 			<include name="**/*.jsp" />
 				
 		    <classpath>
@@ -67,22 +69,26 @@
 		<!--*********************************************************
 		*  The old build target starts here
 		**********************************************************-->
+        <mkdir dir="build"/>
         <copy todir="build">
-            <fileset dir=".">
+            <fileset dir="${yukon-web}">
                 <exclude name="build/**" />
+                <exclude name="jspbuild/**" />
                 <exclude name="work/**" />
                 <exclude name="**/CVS" />
                 <exclude name="WEB-INF/web.xml" />
             </fileset>
         </copy>
-        
+
+		<!-- Put all the Yukon JAR files in here that are needed by the webserver -->
         <copy todir="build/WEB-INF/lib">
            <fileset dir="${yukon.lib}" >
-              <exclude name="*.properties"/>
+              <exclude name="*.properties"/>              
               <exclude name="*.war"/>
               <exclude name="j2ee.jar"/>
            </fileset>
         </copy>
+
 
         <copy todir="build/WEB-INF/classes">
            <fileset dir="${yukon.lib}" >
