@@ -273,7 +273,7 @@ ctivangogh.obj:	collectable.h cparms.h dlldefs.h guard.h netports.h \
 		dev_base.h cmdparse.h parsevalue.h tbl_base.h tbl_2way.h \
 		tbl_stats.h tbl_scanrate.h tbl_pao.h queues.h \
 		tbl_ptdispatch.h tbl_pt_alarm.h mgr_ptclients.h mgr_point.h \
-		slctpnt.h ptconnect.h pt_dyn_dispatch.h device.h \
+		slctpnt.h ptconnect.h pt_dyn_dispatch.h numstr.h device.h \
 		devicetypes.h dllvg.h
 dispmain.obj:	dispsvc.h cservice.h dlldefs.h dllvg.h CServiceConfig.h \
 		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \

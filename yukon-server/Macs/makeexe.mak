@@ -153,7 +153,8 @@ mc_main.obj:	CServiceConfig.h dlldefs.h mc_svc.h cservice.h \
 		msg_pcrequest.h msg_pcreturn.h msg_multi.h msg_pdata.h \
 		pointdefs.h msg_signal.h yukon.h clistener.h clientconn.h \
 		observe.h mc_msg.h mc_script.h mc_interp_pool.h \
-		mc_scheduler.h mc_fileint.h fileint.h ctibase.h ctinexus.h
+		mc_scheduler.h mgr_holiday.h mc_fileint.h fileint.h ctibase.h \
+		ctinexus.h
 mc_msg.obj:	mc_msg.h message.h collectable.h dlldefs.h mc_sched.h mc.h \
 		logger.h thread.h mutex.h guard.h dbmemobject.h tbl_pao.h \
 		tbl_mcsched.h tbl_mcsimpsched.h
@@ -164,7 +165,7 @@ mc_scheduler.obj:	mc_scheduler.h mc.h logger.h thread.h mutex.h \
 		dlldefs.h guard.h mc_sched.h dbmemobject.h tbl_pao.h \
 		tbl_mcsched.h tbl_mcsimpsched.h message.h collectable.h \
 		mgr_mcsched.h rtdb.h hashkey.h dllbase.h os2_2w32.h types.h \
-		cticalls.h dsm2.h
+		cticalls.h dsm2.h mgr_holiday.h
 mc_script.obj:	mc_script.h mc.h logger.h thread.h mutex.h dlldefs.h \
 		guard.h message.h collectable.h
 mc_server.obj:	mc_server.h mc.h logger.h thread.h mutex.h dlldefs.h \
@@ -175,7 +176,7 @@ mc_server.obj:	mc_server.h mc.h logger.h thread.h mutex.h dlldefs.h \
 		msg_pcrequest.h msg_pcreturn.h msg_multi.h msg_pdata.h \
 		pointdefs.h msg_signal.h yukon.h clistener.h clientconn.h \
 		observe.h mc_msg.h mc_script.h mc_interp_pool.h \
-		mc_scheduler.h mc_fileint.h fileint.h
+		mc_scheduler.h mgr_holiday.h mc_fileint.h fileint.h numstr.h
 mc_svc.obj:	mc_svc.h cservice.h dlldefs.h mc_server.h mc.h logger.h \
 		thread.h mutex.h guard.h CParms.h message.h collectable.h \
 		queue.h mc_interp.h ctdpcptrq.h mgr_mcsched.h rtdb.h \
@@ -185,7 +186,7 @@ mc_svc.obj:	mc_svc.h cservice.h dlldefs.h mc_server.h mc.h logger.h \
 		msg_pcreturn.h msg_multi.h msg_pdata.h pointdefs.h \
 		msg_signal.h yukon.h clistener.h clientconn.h observe.h \
 		mc_msg.h mc_script.h mc_interp_pool.h mc_scheduler.h \
-		mc_fileint.h fileint.h
+		mgr_holiday.h mc_fileint.h fileint.h
 mgr_mcsched.obj:	mgr_mcsched.h mc.h logger.h thread.h mutex.h \
 		dlldefs.h guard.h rtdb.h hashkey.h dllbase.h os2_2w32.h \
 		types.h cticalls.h dsm2.h mc_sched.h dbmemobject.h tbl_pao.h \

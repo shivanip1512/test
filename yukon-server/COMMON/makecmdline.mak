@@ -86,7 +86,7 @@ cmdopts.obj:	dlldefs.h argkey.h argval.h cmdopts.h yukon.h dllbase.h \
 		os2_2w32.h types.h cticalls.h dsm2.h mutex.h guard.h
 cmdparse.obj:	yukon.h dlldefs.h dllbase.h os2_2w32.h types.h \
 		cticalls.h dsm2.h mutex.h guard.h cmdparse.h parsevalue.h \
-		devicetypes.h logger.h thread.h utility.h
+		devicetypes.h logger.h thread.h pointdefs.h utility.h
 counter.obj:	counter.h guard.h dlldefs.h mutex.h
 ctdpcptrq.obj:	ctdpcptrq.h dlldefs.h
 cticalls.obj:	os2_2w32.h dlldefs.h types.h cticalls.h dllbase.h dsm2.h \
@@ -123,7 +123,7 @@ ilexprot.obj:	os2_2w32.h dlldefs.h types.h cticalls.h queues.h dsm2.h \
 		mutex.h guard.h dsm2err.h device.h devicetypes.h routes.h \
 		porter.h ilex.h
 logger.obj:	cparms.h dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h \
-		dsm2.h mutex.h guard.h logger.h thread.h
+		dsm2.h mutex.h guard.h logger.h thread.h numstr.h
 master.obj:	os2_2w32.h dlldefs.h types.h cticalls.h cti_asmc.h \
 		queues.h dsm2.h mutex.h guard.h dsm2err.h master.h
 mutex.obj:	mutex.h dlldefs.h
