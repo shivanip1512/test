@@ -171,12 +171,10 @@
 			com.cannontech.clientutils.CTILogger.error(e.getMessage(), e);
 		}
 	}
+	com.cannontech.graph.GraphBean graphBean = (com.cannontech.graph.GraphBean) session.getAttribute(ServletUtil.ATT_GRAPH_BEAN);
+	if(graphBean == null)
+	{
+		session.setAttribute(ServletUtil.ATT_GRAPH_BEAN, new com.cannontech.graph.GraphBean());
+		graphBean = (com.cannontech.graph.GraphBean)session.getAttribute(ServletUtil.ATT_GRAPH_BEAN);
+	}
 %>
-	<jsp:useBean id="graphBean" class="com.cannontech.graph.GraphBean" scope="session">
-		<%-- this body is executed only if the bean is created --%>
-	<jsp:setProperty name="graphBean" property="viewType" value="<%=GraphRenderers.LINE%>"/>
-	<jsp:setProperty name="graphBean" property="start" value="<%=datePart.format(ServletUtil.getToday())%>"/>
-	<jsp:setProperty name="graphBean" property="period" value="<%=ServletUtil.historicalPeriods[0]%>"/>
-	<jsp:setProperty name="graphBean" property="gdefid" value="-1"/>	
-	    <%-- intialize bean properties --%>
-	</jsp:useBean>
