@@ -77,11 +77,11 @@ function confirmSubmit(form) { //v1.0
               <% String header = "PROGRAMS - OPT OUT HISTORY"; %>
               <%@ include file="InfoSearchBar.jsp" %>
 			  
-              <table width="300" border="1" cellspacing="0" align="center" cellpadding="3">
+              <table width="366" border="1" cellspacing="0" align="center" cellpadding="3">
                   <tr> 
-                    <td class="HeaderCell">Date</td>
-                    <td class="HeaderCell">Type - Duration</td>
-                    <td class="HeaderCell">Program</td>
+                    <td class="HeaderCell" width="100">Date</td>
+                    <td class="HeaderCell" width="154">Type - Duration</td>
+                    <td class="HeaderCell" width="100">Program</td>
                   </tr>
 <%
 	ServletUtils.ProgramHistory[] progHist = ServletUtils.getProgramHistory( account.getAccountID(), programs );
@@ -89,7 +89,7 @@ function confirmSubmit(form) { //v1.0
 %>
                   <tr> 
                     <td class="TableCell" width="100" ><%= datePart.format(progHist[i].getDate()) %></td>
-                    <td class="TableCell" width="100" ><%= progHist[i].getAction() %> 
+                    <td class="TableCell" width="154" ><%= progHist[i].getAction() %> 
                       <% if (progHist[i].getDuration() != null) { %>
                       - <%= progHist[i].getDuration() %>
                       <% } %>
