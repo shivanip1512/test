@@ -53,6 +53,7 @@ public class ServletUtils {
 	
 	public static final String ATT_YUKON_USER = "YUKON_USER";
 	public static final String ATT_STARS_YUKON_USER = "STARS_YUKON_USER";
+	public static final String ATT_ENERGY_COMPANY = "ENERGY_COMPANY";
 	public static final String ATT_ENERGY_COMPANY_WEB_CONFIG = "ENERGY_COMPANY_WEB_CONFIG";
 	public static final String ATT_CUSTOMER_SELECTION_LISTS = "CUSTOMER_SELECTION_LISTS";
 	public static final String ATT_ENROLLMENT_PROGRAMS = "ENROLLMENT_PROGRAMS";
@@ -306,5 +307,17 @@ public class ServletUtils {
     	String[] imgNames = new String[ imgNameList.size() ];
     	imgNameList.toArray( imgNames );
     	return imgNames;
+    }
+    
+    public static String getFormattedAddress(StarsCustomerAddress starsAddr) {
+    	StringBuffer sBuf = new StringBuffer( starsAddr.getStreetAddr1() );
+    	if (starsAddr.getStreetAddr2().length() > 0)
+    		sBuf.append( ", " ).append( starsAddr.getStreetAddr2() );
+    	sBuf.append( "<br>" );
+    	sBuf.append( starsAddr.getCity() ).append( ", " )
+    		.append( starsAddr.getState() ).append( " " )
+    		.append( starsAddr.getZip() );
+    	
+    	return sBuf.toString();
     }
 }

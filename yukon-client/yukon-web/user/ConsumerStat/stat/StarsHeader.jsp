@@ -38,7 +38,8 @@
 		actions.parse(reqMsg, respMsg, session);
 	}
 	
-	StarsWebConfig webSettings = (StarsWebConfig) user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_WEB_CONFIG );
+	StarsEnergyCompany energyCompany = (StarsEnergyCompany) user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY );
+	StarsWebConfig ecWebSettings = (StarsWebConfig) user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_WEB_CONFIG );
 	StarsEnrollmentPrograms categories = (StarsEnrollmentPrograms) user.getAttribute( ServletUtils.ATT_ENROLLMENT_PROGRAMS );
 	StarsCustomerFAQs customerFAQs = (StarsCustomerFAQs) user.getAttribute( ServletUtils.ATT_CUSTOMER_FAQS );
 	

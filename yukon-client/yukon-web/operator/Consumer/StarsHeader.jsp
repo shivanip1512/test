@@ -38,6 +38,7 @@
 		actions.parse(reqMsg, respMsg, session);
 	}
 	
+	StarsEnergyCompany energyCompany = (StarsEnergyCompany) user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY );
 	Hashtable selectionListTable = (Hashtable) user.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
 	StarsEnrollmentPrograms categories = (StarsEnrollmentPrograms) user.getAttribute( ServletUtils.ATT_ENROLLMENT_PROGRAMS );
 	

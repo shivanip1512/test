@@ -82,9 +82,10 @@ public class GetEnergyCompanySettingsAction implements ActionBase {
             }
             
         	LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
-            
             StarsGetEnergyCompanySettingsResponse resp = new StarsGetEnergyCompanySettingsResponse();
+            
             if (SOAPServer.isClientLocal()) {
+            	resp.setStarsEnergyCompany( energyCompany.getStarsEnergyCompany() );
 	            if (ServerUtils.isOperator( user )) {
 	            	resp.setStarsEnrollmentPrograms( energyCompany.getStarsEnrollmentPrograms(getSettings.getProgramCategory()) );
 	            	resp.setStarsCustomerSelectionLists( energyCompany.getStarsCustomerSelectionLists() );
@@ -95,6 +96,7 @@ public class GetEnergyCompanySettingsAction implements ActionBase {
 	            	resp.setStarsCustomerFAQs( energyCompany.getStarsCustomerFAQs() );
 	            }
 	        	
+	        	user.setAttribute( ServletUtils.ATT_ENERGY_COMPANY, resp.getStarsEnergyCompany() );
 	        	if (resp.getStarsWebConfig() != null)
 	        		user.setAttribute( ServletUtils.ATT_ENERGY_COMPANY_WEB_CONFIG, resp.getStarsWebConfig() );
 	        	if (resp.getStarsEnrollmentPrograms() != null)
@@ -111,6 +113,7 @@ public class GetEnergyCompanySettingsAction implements ActionBase {
 		        	user.setAttribute( ServletUtils.ATT_CUSTOMER_FAQS, resp.getStarsCustomerFAQs() );
             }
             else {
+            	resp.setStarsEnergyCompany( StarsLiteFactory.createStarsEnergyCompany(energyCompany) );
 	            if (ServerUtils.isOperator( user )) {
 	            	resp.setStarsEnrollmentPrograms( StarsLiteFactory.createStarsEnrollmentPrograms(
 	            			energyCompany.getAllApplianceCategories(), getSettings.getProgramCategory(), energyCompanyID) );
@@ -165,6 +168,7 @@ public class GetEnergyCompanySettingsAction implements ActionBase {
             if (!SOAPClient.isServerLocal()) {
 	        	StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 	        	
+	        	user.setAttribute( ServletUtils.ATT_ENERGY_COMPANY, resp.getStarsEnergyCompany() );
 	        	if (resp.getStarsWebConfig() != null)
 	        		user.setAttribute( ServletUtils.ATT_ENERGY_COMPANY_WEB_CONFIG, resp.getStarsWebConfig() );
 	        	if (resp.getStarsEnrollmentPrograms() != null)

@@ -30,8 +30,9 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	public static final int FAKE_LIST_ID = -9999;	// Magic number for YukonSelectionList ID, used for substation and service company list
 	
 	private String name = null;
-	private int routeID = 0;
+	private int routeID = CtiUtilities.NONE_ID;
 	private int webConfigID = CtiUtilities.NONE_ID;
+	private int primaryContactID = CtiUtilities.NONE_ID;
 	
 	private ArrayList custAccountInfos = null;	// List of LiteStarsCustAccountInformation
 	private ArrayList customerContacts = null;	// List of LiteCustomerContact
@@ -53,6 +54,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	
 	
 	// Cached XML messages
+	private StarsEnergyCompany starsEnergyCompany = null;
 	private StarsCustomerSelectionLists starsCustSelLists = null;
 	private StarsEnrollmentPrograms starsEnrPrograms = null;
 	private StarsCustomerFAQs starsCustFAQs = null;
@@ -78,6 +80,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		setName( energyCompany.getName() );
 		setRouteID( energyCompany.getRouteID().intValue() );
 		setWebConfigID( energyCompany.getWebConfigID().intValue() );
+		setPrimaryContactID( energyCompany.getPrimaryContactID().intValue() );
 	}
 	
 	public Integer getEnergyCompanyID() {
@@ -131,6 +134,22 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	public void setWebConfigID(int webConfigID) {
 		this.webConfigID = webConfigID;
 	}
+
+	/**
+	 * Returns the primaryContactID.
+	 * @return int
+	 */
+	public int getPrimaryContactID() {
+		return primaryContactID;
+	}
+
+	/**
+	 * Sets the primaryContactID.
+	 * @param primaryContactID The primaryContactID to set
+	 */
+	public void setPrimaryContactID(int primaryContactID) {
+		this.primaryContactID = primaryContactID;
+	}
 	
 	public void init() {
 		getAllLMPrograms();
@@ -160,6 +179,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		nextCallNo = 0;
 		nextOrderNo = 0;
 		
+		starsEnergyCompany = null;
 		starsCustSelLists = null;
 		starsEnrPrograms = null;
 		starsCustFAQs = null;
@@ -653,11 +673,11 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			liteContact.setFirstName( lContact.getContFirstName() );
 			for (int i = 0; i < lContact.getLiteContactNotifications().size(); i++) {
 				LiteContactNotification lNotif = (LiteContactNotification) lContact.getLiteContactNotifications().get(i);
-				if (lNotif.getNotificationCategoryID() == com.cannontech.common.constants.YukonListEntryTypes.YUK_DEF_ID_HOME_PHONE)
+				if (lNotif.getNotificationCategoryID() == SOAPServer.YUK_LIST_ENTRY_ID_HOME_PHONE)
 					liteContact.setHomePhone( lNotif.getNotification() );
-				else if (lNotif.getNotificationCategoryID() == com.cannontech.common.constants.YukonListEntryTypes.YUK_DEF_ID_WORK_PHONE)
+				else if (lNotif.getNotificationCategoryID() == SOAPServer.YUK_LIST_ENTRY_ID_WORK_PHONE)
 					liteContact.setWorkPhone( lNotif.getNotification() );
-				else if (lNotif.getNotificationCategoryID() == com.cannontech.common.constants.YukonListEntryTypes.YUK_DEF_ID_EMAIL)
+				else if (lNotif.getNotificationCategoryID() == SOAPServer.YUK_LIST_ENTRY_ID_EMAIL)
 					liteContact.setEmail( LiteCustomerContact.ContactNotification.newInstance(
 							lNotif.getDisableFlag().equals("N"), lNotif.getNotification()) );
 			}
@@ -1166,6 +1186,12 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	
 	
 	/* The following methods are only used when SOAPClient exists locally */
+	
+	public StarsEnergyCompany getStarsEnergyCompany() {
+		if (starsEnergyCompany == null)
+			starsEnergyCompany = StarsLiteFactory.createStarsEnergyCompany( this );
+		return starsEnergyCompany;
+	}
 	
 	public StarsCustomerSelectionLists getStarsCustomerSelectionLists() {
 		if (starsCustSelLists == null)

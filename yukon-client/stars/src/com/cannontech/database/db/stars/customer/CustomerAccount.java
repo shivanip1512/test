@@ -115,19 +115,51 @@ public class CustomerAccount extends DBPersistent {
     }
     
     public static CustomerAccount[] searchByPhoneNumber(Integer energyCompanyID, String phoneNumber) {
-		int[] contactIDs = com.cannontech.database.data.customer.Contact.searchByPhoneNumber( phoneNumber );
-		if (contactIDs == null) return null;
-		if (contactIDs.length == 0) return new CustomerAccount[0];
-    		
-        return searchByPrimaryContactIDs( energyCompanyID, contactIDs );
+		String sql = "SELECT DISTINCT ContactID FROM " + com.cannontech.database.db.contact.ContactNotification.TABLE_NAME
+				   + " WHERE Notification = '" + phoneNumber + "' AND ("
+				   + "NotificationCategoryID = " + com.cannontech.stars.web.servlet.SOAPServer.YUK_LIST_ENTRY_ID_HOME_PHONE
+				   + " OR NotificationCategoryID = " + com.cannontech.stars.web.servlet.SOAPServer.YUK_LIST_ENTRY_ID_WORK_PHONE + ")";
+		com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
+				sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+		
+		try {
+			stmt.execute();
+			if (stmt.getRowCount() == 0) return new CustomerAccount[0];
+			
+			int[] contactIDs = new int[ stmt.getRowCount() ];
+			for (int i = 0; i < contactIDs.length; i++)
+				contactIDs[i] = ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue();
+			
+		    return searchByPrimaryContactIDs( energyCompanyID, contactIDs );
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+        return null;
     }
     
     public static CustomerAccount[] searchByLastName(Integer energyCompanyID, String lastName) {
-		int[] contactIDs = com.cannontech.database.data.customer.Contact.searchByLastName( lastName );
-		if (contactIDs == null) return null;
-		if (contactIDs.length == 0) return new CustomerAccount[0];
+		String sql = "SELECT ContactID FROM " + com.cannontech.database.db.contact.Contact.TABLE_NAME
+				   + " WHERE UPPER(ContLastName) = UPPER('" + lastName + "')";
+		com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
+				sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
 		
-        return searchByPrimaryContactIDs( energyCompanyID, contactIDs );
+		try {
+			stmt.execute();
+			if (stmt.getRowCount() == 0) return new CustomerAccount[0];
+			
+			int[] contactIDs = new int[ stmt.getRowCount() ];
+			for (int i = 0; i < contactIDs.length; i++)
+				contactIDs[i] = ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue();
+			
+	        return searchByPrimaryContactIDs( energyCompanyID, contactIDs );
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return null;
     }
     
     public static CustomerAccount[] searchBySerialNumber(Integer energyCompanyID, String serialNo) {

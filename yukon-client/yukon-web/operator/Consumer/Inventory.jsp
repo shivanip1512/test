@@ -284,9 +284,7 @@ function deleteHardware(form) {
                               <tr> 
                                 <td valign = "top" align = "center" class = "TableCell"> 
                                   <b><%= company.getCompanyName() %><br>
-                                  <%= company.getCompanyAddress().getStreetAddr1() %><br>
-								  <% if (company.getCompanyAddress().getStreetAddr2().length() > 0) out.write(company.getCompanyAddress().getStreetAddr2() + "<br>"); %>
-                                  <%= company.getCompanyAddress().getCity() %>, <%= company.getCompanyAddress().getState() %> <%= company.getCompanyAddress().getZip() %><br>
+                                  <%= ServletUtils.getFormattedAddress( company.getCompanyAddress() ) %><br>
                                   <%= company.getMainPhoneNumber() %></b> </td>
                               </tr>
                             </table>

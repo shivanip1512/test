@@ -68,7 +68,7 @@
                         <td><table width="400" border="0" cellspacing="0" cellpadding="5">
                             <tr> 
                               <td valign="top">
-								<p class="Main"><%= webSettings.getDescription() %></p></td>
+								<p class="Main"><%= ecWebSettings.getDescription() %></p></td>
                               <td valign="top"> 
                                 <table width="200" border="1" cellspacing="0" cellpadding="3" align="center">
                                   <tr bgcolor="#CCCCCC" class="Main"> 

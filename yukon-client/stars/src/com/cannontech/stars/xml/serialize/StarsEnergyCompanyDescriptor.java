@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: ControlSummaryDescriptor.java,v 1.28 2003/03/18 18:00:01 zyao Exp $
+ * $Id$
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,9 +25,9 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.28 $ $Date: 2003/03/18 18:00:01 $
+ * @version $Revision$ $Date$
 **/
-public class ControlSummaryDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
+public class StarsEnergyCompanyDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
 
       //--------------------------/
@@ -47,9 +47,9 @@ public class ControlSummaryDescriptor extends org.exolab.castor.xml.util.XMLClas
      //- Constructors -/
     //----------------/
 
-    public ControlSummaryDescriptor() {
+    public StarsEnergyCompanyDescriptor() {
         super();
-        xmlName = "ControlSummary";
+        xmlName = "stars-EnergyCompany";
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
@@ -58,28 +58,66 @@ public class ControlSummaryDescriptor extends org.exolab.castor.xml.util.XMLClas
         setCompositorAsSequence();
         //-- initialize attribute descriptors
         
+        //-- _energyCompanyID
+        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_energyCompanyID", "energyCompanyID", NodeType.Attribute);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsEnergyCompany target = (StarsEnergyCompany) object;
+                if(!target.hasEnergyCompanyID())
+                    return null;
+                return new Integer(target.getEnergyCompanyID());
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsEnergyCompany target = (StarsEnergyCompany) object;
+                    // if null, use delete method for optional primitives 
+                    if (value == null) {
+                        target.deleteEnergyCompanyID();
+                        return;
+                    }
+                    target.setEnergyCompanyID( ((Integer)value).intValue());
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        } );
+        desc.setHandler(handler);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _energyCompanyID
+        fieldValidator = new FieldValidator();
+        { //-- local scope
+            IntegerValidator iv = new IntegerValidator();
+            fieldValidator.setValidator(iv);
+        }
+        desc.setValidator(fieldValidator);
+        
         //-- initialize element descriptors
         
-        //-- _dailyTime
-        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_dailyTime", "DailyTime", NodeType.Element);
+        //-- _companyName
+        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_companyName", "CompanyName", NodeType.Element);
+        desc.setImmutable(true);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
-                ControlSummary target = (ControlSummary) object;
-                if(!target.hasDailyTime())
-                    return null;
-                return new Integer(target.getDailyTime());
+                StarsEnergyCompany target = (StarsEnergyCompany) object;
+                return target.getCompanyName();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
-                    ControlSummary target = (ControlSummary) object;
-                    // ignore null values for non optional primitives
-                    if (value == null) return;
-                    
-                    target.setDailyTime( ((Integer)value).intValue());
+                    StarsEnergyCompany target = (StarsEnergyCompany) object;
+                    target.setCompanyName( (java.lang.String) value);
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
@@ -94,35 +132,32 @@ public class ControlSummaryDescriptor extends org.exolab.castor.xml.util.XMLClas
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _dailyTime
+        //-- validation code for: _companyName
         fieldValidator = new FieldValidator();
         fieldValidator.setMinOccurs(1);
         { //-- local scope
-            IntegerValidator iv = new IntegerValidator();
-            fieldValidator.setValidator(iv);
+            StringValidator sv = new StringValidator();
+            sv.setWhiteSpace("preserve");
+            fieldValidator.setValidator(sv);
         }
         desc.setValidator(fieldValidator);
         
-        //-- _monthlyTime
-        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_monthlyTime", "MonthlyTime", NodeType.Element);
+        //-- _mainPhoneNumber
+        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_mainPhoneNumber", "MainPhoneNumber", NodeType.Element);
+        desc.setImmutable(true);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
-                ControlSummary target = (ControlSummary) object;
-                if(!target.hasMonthlyTime())
-                    return null;
-                return new Integer(target.getMonthlyTime());
+                StarsEnergyCompany target = (StarsEnergyCompany) object;
+                return target.getMainPhoneNumber();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
-                    ControlSummary target = (ControlSummary) object;
-                    // ignore null values for non optional primitives
-                    if (value == null) return;
-                    
-                    target.setMonthlyTime( ((Integer)value).intValue());
+                    StarsEnergyCompany target = (StarsEnergyCompany) object;
+                    target.setMainPhoneNumber( (java.lang.String) value);
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
@@ -137,35 +172,32 @@ public class ControlSummaryDescriptor extends org.exolab.castor.xml.util.XMLClas
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _monthlyTime
+        //-- validation code for: _mainPhoneNumber
         fieldValidator = new FieldValidator();
         fieldValidator.setMinOccurs(1);
         { //-- local scope
-            IntegerValidator iv = new IntegerValidator();
-            fieldValidator.setValidator(iv);
+            StringValidator sv = new StringValidator();
+            sv.setWhiteSpace("preserve");
+            fieldValidator.setValidator(sv);
         }
         desc.setValidator(fieldValidator);
         
-        //-- _seasonalTime
-        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_seasonalTime", "SeasonalTime", NodeType.Element);
+        //-- _mainFaxNumber
+        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_mainFaxNumber", "MainFaxNumber", NodeType.Element);
+        desc.setImmutable(true);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
-                ControlSummary target = (ControlSummary) object;
-                if(!target.hasSeasonalTime())
-                    return null;
-                return new Integer(target.getSeasonalTime());
+                StarsEnergyCompany target = (StarsEnergyCompany) object;
+                return target.getMainFaxNumber();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
-                    ControlSummary target = (ControlSummary) object;
-                    // ignore null values for non optional primitives
-                    if (value == null) return;
-                    
-                    target.setSeasonalTime( ((Integer)value).intValue());
+                    StarsEnergyCompany target = (StarsEnergyCompany) object;
+                    target.setMainFaxNumber( (java.lang.String) value);
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
@@ -180,35 +212,32 @@ public class ControlSummaryDescriptor extends org.exolab.castor.xml.util.XMLClas
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _seasonalTime
+        //-- validation code for: _mainFaxNumber
         fieldValidator = new FieldValidator();
         fieldValidator.setMinOccurs(1);
         { //-- local scope
-            IntegerValidator iv = new IntegerValidator();
-            fieldValidator.setValidator(iv);
+            StringValidator sv = new StringValidator();
+            sv.setWhiteSpace("preserve");
+            fieldValidator.setValidator(sv);
         }
         desc.setValidator(fieldValidator);
         
-        //-- _annualTime
-        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_annualTime", "AnnualTime", NodeType.Element);
+        //-- _email
+        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_email", "Email", NodeType.Element);
+        desc.setImmutable(true);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
-                ControlSummary target = (ControlSummary) object;
-                if(!target.hasAnnualTime())
-                    return null;
-                return new Integer(target.getAnnualTime());
+                StarsEnergyCompany target = (StarsEnergyCompany) object;
+                return target.getEmail();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
-                    ControlSummary target = (ControlSummary) object;
-                    // ignore null values for non optional primitives
-                    if (value == null) return;
-                    
-                    target.setAnnualTime( ((Integer)value).intValue());
+                    StarsEnergyCompany target = (StarsEnergyCompany) object;
+                    target.setEmail( (java.lang.String) value);
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
@@ -223,16 +252,51 @@ public class ControlSummaryDescriptor extends org.exolab.castor.xml.util.XMLClas
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _annualTime
+        //-- validation code for: _email
         fieldValidator = new FieldValidator();
         fieldValidator.setMinOccurs(1);
         { //-- local scope
-            IntegerValidator iv = new IntegerValidator();
-            fieldValidator.setValidator(iv);
+            StringValidator sv = new StringValidator();
+            sv.setWhiteSpace("preserve");
+            fieldValidator.setValidator(sv);
         }
         desc.setValidator(fieldValidator);
         
-    } //-- com.cannontech.stars.xml.serialize.ControlSummaryDescriptor()
+        //-- _companyAddress
+        desc = new XMLFieldDescriptorImpl(CompanyAddress.class, "_companyAddress", "CompanyAddress", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsEnergyCompany target = (StarsEnergyCompany) object;
+                return target.getCompanyAddress();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsEnergyCompany target = (StarsEnergyCompany) object;
+                    target.setCompanyAddress( (CompanyAddress) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new CompanyAddress();
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setRequired(true);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _companyAddress
+        fieldValidator = new FieldValidator();
+        fieldValidator.setMinOccurs(1);
+        desc.setValidator(fieldValidator);
+        
+    } //-- com.cannontech.stars.xml.serialize.StarsEnergyCompanyDescriptor()
 
 
       //-----------/
@@ -264,7 +328,7 @@ public class ControlSummaryDescriptor extends org.exolab.castor.xml.util.XMLClas
     **/
     public java.lang.Class getJavaClass()
     {
-        return com.cannontech.stars.xml.serialize.ControlSummary.class;
+        return com.cannontech.stars.xml.serialize.StarsEnergyCompany.class;
     } //-- java.lang.Class getJavaClass() 
 
     /**

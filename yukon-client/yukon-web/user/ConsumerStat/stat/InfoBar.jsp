@@ -13,8 +13,7 @@
 			<td><span class="Main"><b>Acct #<%= account.getAccountNumber() %></b></span><br>
 			  <span class="NavText"><%= primContact.getFirstName() %> <%= primContact.getLastName() %><br>
 			  <!--<%= account.getCompany() %><br> -->
-			  <%= propAddr.getStreetAddr1() %>, <%= propAddr.getStreetAddr2() %><br>
-			  <%= propAddr.getCity() %>, <%= propAddr.getState() %> <%= propAddr.getZip() %><br>
+			  <%= ServletUtils.getFormattedAddress(propAddr) %><br>
 			  <%= primContact.getHomePhone() %></span></td>
 		  </tr>
 		</table>

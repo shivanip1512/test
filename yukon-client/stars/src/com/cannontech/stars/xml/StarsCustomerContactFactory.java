@@ -1,10 +1,10 @@
 package com.cannontech.stars.xml;
 
 import java.util.Vector;
-import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.customer.Contact;
 import com.cannontech.database.db.contact.ContactNotification;
+import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.serialize.Email;
 import com.cannontech.stars.xml.serialize.StarsContactNotification;
 import com.cannontech.stars.xml.serialize.StarsCustomerContact;
@@ -68,7 +68,7 @@ public class StarsCustomerContactFactory {
         
         if (starsContact.getHomePhone().length() > 0) {
 	        ContactNotification notif = new ContactNotification();
-	        notif.setNotificationCatID( new Integer(YukonListEntryTypes.YUK_DEF_ID_HOME_PHONE) );
+	        notif.setNotificationCatID( new Integer(SOAPServer.YUK_LIST_ENTRY_ID_HOME_PHONE) );
 	        notif.setNotification( starsContact.getHomePhone() );
 	        notif.setDisableFlag( "Y" );
 	        contactNotifVect.add( notif );
@@ -76,7 +76,7 @@ public class StarsCustomerContactFactory {
         
         if (starsContact.getWorkPhone().length() > 0) {
 	        ContactNotification notif = new ContactNotification();
-	        notif.setNotificationCatID( new Integer(YukonListEntryTypes.YUK_DEF_ID_WORK_PHONE) );
+	        notif.setNotificationCatID( new Integer(SOAPServer.YUK_LIST_ENTRY_ID_WORK_PHONE) );
 	        notif.setNotification( starsContact.getWorkPhone() );
 	        notif.setDisableFlag( "Y" );
 	        contactNotifVect.add( notif );
@@ -84,7 +84,7 @@ public class StarsCustomerContactFactory {
         
         if (starsContact.getEmail().getNotification().length() > 0) {
 	        ContactNotification notif = new ContactNotification();
-	        notif.setNotificationCatID( new Integer(YukonListEntryTypes.YUK_DEF_ID_EMAIL) );
+	        notif.setNotificationCatID( new Integer(SOAPServer.YUK_LIST_ENTRY_ID_EMAIL) );
 	        notif.setNotification( starsContact.getEmail().getNotification() );
 	        notif.setDisableFlag( starsContact.getEmail().getEnabled() ? "N" : "Y" );
 	        contactNotifVect.add( notif );
