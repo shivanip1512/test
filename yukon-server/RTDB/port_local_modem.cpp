@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/port_local_modem.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:16 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/04/23 15:38:33 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -146,6 +146,13 @@ INT CtiPortLocalModem::disconnect(CtiDevice *Device, INT trace)
     setConnectedDevice(0L);
     status = modemHangup( trace );
 
+    if(status)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " " << getName() << " modemHangup reported status " << status << endl;
+    }
+    status = Inherited::close( trace );
+
     return status;
 }
 
@@ -263,6 +270,5 @@ INT CtiPortLocalModem::init()
 
 INT CtiPortLocalModem::close(INT trace)
 {
-    disconnect(NULL, trace);
-    return Inherited::close(trace);
+    return disconnect(NULL, trace);
 }
