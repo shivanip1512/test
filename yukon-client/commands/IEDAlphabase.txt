@@ -1,3 +1,0 @@
-Set Current Period (Alpha) = putconfig emetcon ied class 72 1
-Set Previous Period (Alpha) = putconfig emetcon ied class 72 2
- = 

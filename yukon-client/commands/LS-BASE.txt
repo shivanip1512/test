@@ -1,3 +1,4 @@
+@include /custom/LS-BASE.txt
 Read LS Info = getstatus LP
 Read LS Intervals 1 Thru 6 (Not Available) =
 Read   6 LS Intervals Starting at ? (Not Available)=

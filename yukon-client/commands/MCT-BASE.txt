@@ -1,3 +1,4 @@
+@include /custom/MCT-BASE.txt
 Read Energy = getvalue kwh
 Read Current Demand = getvalue demand
  = 
@@ -10,6 +11,6 @@ Read Options = getconfig model
 Read MPKH () = getconfig mult kyz 1
 Write MPKH ( ) = putconfig multiplier kyz1 x.xx
  = 
-Read Demand Interval (LP or LI) = getconfig interval ?
-Write Demand Interval (LP or LI) = putconfig interval ?
+Read Demand Interval (LP or LI) = getconfig interval ?LP/LI
+Write Demand Interval (LP or LI) = putconfig interval ?LP/LI
  = 
