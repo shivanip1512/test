@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.37 $
-* DATE         :  $Date: 2003/09/23 00:36:17 $
+* REVISION     :  $Revision: 1.38 $
+* DATE         :  $Date: 2003/10/23 13:32:50 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -105,7 +105,8 @@ using namespace std;
 #define NEXT_SCAN       0
 #define REMOTE_SCAN     1
 #define DLC_LP_SCAN     2
-#define MAX_SCAN_TYPE   3
+#define WINDOW_OPENS    3
+#define MAX_SCAN_TYPE   4
 
 static INT     SCANNER_RELOAD_RATE = 900;
 static RWTime  LastPorterOutTime;
@@ -124,6 +125,7 @@ void  DatabaseHandlerThread(VOID *Arg);
 
 RWTime  TimeOfNextRemoteScan(void);
 RWTime  TimeOfNextLPScan(void);
+static RWTime  TimeOfNextWindow( void );
 
 VOID    NexusThread(VOID *Arg);
 INT     RecordDynamicData();
@@ -271,6 +273,7 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
         }
 
         NextScan[REMOTE_SCAN] = TimeOfNextRemoteScan();
+        NextScan[WINDOW_OPENS] = TimeOfNextWindow();
 
         if( !SuspendLoadProfile )
         {
@@ -391,6 +394,7 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
                     ResetEvent(hScannerSyncs[ S_SCAN_EVENT ]);
 
                     NextScan[REMOTE_SCAN] = TimeOfNextRemoteScan();
+                    NextScan[WINDOW_OPENS] = TimeOfNextWindow();
 
                     if( !SuspendLoadProfile )
                     {
@@ -413,6 +417,8 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
                 dout << TimeNow << " At Start of Loop -- Will Scan Immediately" << endl;
             }
             ResetEvent(hScannerSyncs[ S_SCAN_EVENT ]);
+
+            NextScan[NEXT_SCAN] = TimeNow + 1L;      // Try to keep this from being too tight.
         }
 
         /* Wait/Block on the return thread if neccessary */
@@ -538,7 +544,7 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
         TimeNow = TimeNow.now();   // update the time...
 
         /* Check if we do remote scanning */
-        if(TimeNow >= NextScan[REMOTE_SCAN])
+        if(TimeNow >= NextScan[REMOTE_SCAN] || TimeNow >= NextScan[WINDOW_OPENS])
         {
             {
                 RWRecursiveLock<RWMutexLock>::LockGuard guard(ScannerDeviceManager.getMux());
@@ -625,6 +631,7 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
             MakePorterRequests(outList);
 
             NextScan[REMOTE_SCAN] = TimeOfNextRemoteScan();
+            NextScan[WINDOW_OPENS] = TimeOfNextWindow();
         }
 
         //  check if we need to do any DLC load profile scans
@@ -1087,11 +1094,40 @@ RWTime TimeOfNextLPScan( void )
         }
     }
 
-    /* Do not let this get out of hand, check once a minute if nothing else is looking */
-    if(nRet == MAXTime || (nRet.seconds() - TimeNow.seconds()) > 60L)
+    return nRet;
+}
+
+RWTime TimeOfNextWindow( void )
+{
+    RWTime         nRet(YUKONEOT);
+    RWTime         TempTime(YUKONEOT);
+    RWTime         TimeNow;
+    CtiDeviceSingle *DeviceRecord;
+    CtiDevice       *Device;
+
+    RWRecursiveLock<RWMutexLock>::LockGuard dm_guard(ScannerDeviceManager.getMux());       // Protect our iteration!
+    CtiRTDB<CtiDeviceBase>::CtiRTDBIterator itr(ScannerDeviceManager.getMap());
+
+    for( ; ++itr ; )
     {
-        TimeNow = TimeNow.now();
-        nRet = TimeNow.seconds() - (TimeNow.seconds() % 60) + 60;
+        Device = (CtiDeviceBase *)itr.value();
+        RWRecursiveLock<RWMutexLock>::LockGuard dev_guard(Device->getMux());       // Protect our device!
+
+        if(Device->isSingle())
+        {
+            DeviceRecord = (CtiDeviceSingle*)Device;
+
+            if(!(DeviceRecord->isInhibited()) && (DeviceRecord->isScanWindowOpen()))
+            {
+                TempTime = DeviceRecord->getNextWindowOpen();
+
+                if(nRet > TempTime)
+                {
+                    nRet = TempTime;
+                    barkAboutCurrentTime( DeviceRecord, TempTime, __LINE__ );
+                }
+            }
+        }
     }
 
     return nRet;

@@ -5,8 +5,8 @@
 * Date:   10/4/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2003/07/21 21:35:47 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2003/10/23 13:32:50 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -859,7 +859,13 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
                     }
 
                     vgList.append(retMsg);
+                    retMsg = 0;
                 }
+            }
+
+            if(retMsg)
+            {
+                delete retMsg;
             }
         }
     }
@@ -1727,6 +1733,33 @@ BOOL CtiDeviceSingle::isAlternateRateActive( bool &bScanIsScheduled, RWTime &aNo
         }
     }
     return status;
+}
+
+RWTime CtiDeviceSingle::getNextWindowOpen() const
+{
+    RWTime now;
+    RWTime windowOpens = RWTime(YUKONEOT);
+
+    try
+    {
+        // loop the vector
+        for(int x=0; x <_windowVector.size(); x++)
+        {
+            RWTime open ( RWTime(RWDate()).seconds()+_windowVector[x].getOpen());
+
+            if(now <= open && open < windowOpens)
+            {
+                windowOpens = open;
+            }
+        }
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    return windowOpens;
 }
 
 void CtiDeviceSingle::applySignaledRateChange(LONG aOpen, LONG aDuration)

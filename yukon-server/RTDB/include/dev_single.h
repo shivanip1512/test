@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_single.h-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2003/05/23 22:12:09 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2003/10/23 13:32:50 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -223,6 +223,8 @@ public:
     virtual bool hasLongScanRate(const RWCString &cmd) const;
 
     RWTime peekDispatchTime() const;
+
+    RWTime getNextWindowOpen() const;
 };
 
 #endif // #ifndef __DEV_SINGLE_H__
