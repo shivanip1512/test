@@ -1,4 +1,4 @@
-<%@ include file="../Consumer/StarsHeader.jsp" %>
+<%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.stars.web.InventoryBean" %>
 <%@ page import="com.cannontech.stars.web.servlet.InventoryManager" %>
 
@@ -95,7 +95,7 @@ function submitIt(filterBy) {
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center">
               <% String header = "SELECT INVENTORY"; %>
-              <%@ include file="SearchBar.jsp" %>
+              <%@ include file="include/SearchBar.jsp" %>
 			  <form name="MForm" method="post" action="" onsubmit="setFilterValue(this)">
 			    <input type="hidden" name="FilterBy" value="<%= selectInvBean.getFilterBy() %>">
 				<input type="hidden" name="Location" value="<%= InventoryBean.INV_LOCATION_WAREHOUSE %>">

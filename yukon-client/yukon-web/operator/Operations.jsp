@@ -16,7 +16,7 @@
 <%@ page import="com.cannontech.roles.operator.InventoryRole" %>
 
 <%@ taglib uri="/WEB-INF/cti.tld" prefix="cti" %>
-<%@ include file="Consumer/StarsHeader.jsp" %>
+<%@ include file="Consumer/include/StarsHeader.jsp" %>
 
 <html>
 <head>
@@ -258,14 +258,14 @@ function confirmDelete() {
           <td>&nbsp;</td>
         </tr>
         <tr> 
-          <form method="post" action="WorkOrder/SOList.jsp">
+          <form method="post" action="WorkOrder/include/SOList.jsp">
             <td width="110" class = "MainText"> 
-              <div align = "center" style = "border:solid 1px #666999;"><a href = "WorkOrder/SOList.jsp" class = "Link1" style = "text-decoration:none;">Service Order List</a></div>
+              <div align = "center" style = "border:solid 1px #666999;"><a href = "WorkOrder/include/SOList.jsp" class = "Link1" style = "text-decoration:none;">Service Order List</a></div>
             </td>
-            <td width="110" class = "MainText" > <div align = "center" style = "border:solid 1px #666999;"><a href = "WorkOrder/InstallList.jsp" class = "Link1" style = "text-decoration:none;">New Installs List</a></div>
+            <td width="110" class = "MainText" > <div align = "center" style = "border:solid 1px #666999;"><a href = "WorkOrder/include/InstallList.jsp" class = "Link1" style = "text-decoration:none;">New Installs List</a></div>
             </td>
           </form>
-          <form method="post" action="WorkOrder/InstallList.jsp">
+          <form method="post" action="WorkOrder/include/InstallList.jsp">
             <td  >&nbsp; </td>
           </form>
         </tr>

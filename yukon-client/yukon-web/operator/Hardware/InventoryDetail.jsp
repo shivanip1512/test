@@ -61,7 +61,7 @@
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center">
               <% String header = "INVENTORY DETAIL"; %>
-              <%@ include file="../SearchBar.jsp" %>
+              <%@ include file="include/SearchBar.jsp" %>
               <table width="610" border="0" cellspacing="0" cellpadding="10" align="center">
                 <tr>
 				<form name="form6" method="get" action=""> 

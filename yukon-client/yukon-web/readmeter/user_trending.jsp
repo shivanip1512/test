@@ -1,6 +1,6 @@
 <html>
 <% String pageName = "user_trending.jsp"; %> 
-<%@ include file="user_header.jsp" %>
+<%@ include file="include/user_header.jsp" %>
 <%@ include file="../include/trending_functions.jsp" %>
 <%@ page import="com.cannontech.roles.application.WebClientRole"%>
 <head>
@@ -54,7 +54,7 @@
         </tr>
         <tr> 
           <td  valign="top" width="150"> 
-            <%@ include file="nav.jsp" %>
+            <%@ include file="include/nav.jsp" %>
           </td>
           <td width="1" bgcolor="#000000"></td>
           <td width="608" valign="top" bgcolor="#FFFFFF" > 

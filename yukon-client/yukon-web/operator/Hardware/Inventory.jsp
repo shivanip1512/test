@@ -1,4 +1,4 @@
-<%@ include file="../Consumer/StarsHeader.jsp" %>
+<%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.stars.web.InventoryBean" %>
 <jsp:useBean id="inventoryBean" class="com.cannontech.stars.web.InventoryBean" scope="session">
 	<%-- this body is executed only if the bean is created --%>
@@ -88,13 +88,13 @@ function showAll(form) {
         <tr> 
           <td  valign="top" width="101"> 
             <% String pageName = "Inventory.jsp"; %>
-            <%@ include file="Nav.jsp" %>
+            <%@ include file="include/Nav.jsp" %>
           </td>
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center">
               <% String header = "INVENTORY"; %>
-              <%@ include file="SearchBar.jsp" %>
+              <%@ include file="include/SearchBar.jsp" %>
 			  <form name="MForm" method="post" action="<%= pageName %>" onsubmit="setFilterValue(this)">
 			    <input type="hidden" name="page" value="1">
                 <table width="80%" border="0" cellspacing="0" cellpadding="0">

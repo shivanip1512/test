@@ -1,4 +1,4 @@
-<%@ include file="../Consumer/StarsHeader.jsp" %>
+<%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteAddress" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteCustomerContact" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation" %>
@@ -81,7 +81,7 @@
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center">
               <% String header = "CHECK INVENTORY"; %>
-			  <%@ include file="SearchBar.jsp" %>
+			  <%@ include file="include/SearchBar.jsp" %>
               <form name="form1" method="POST" action="<%= request.getContextPath() %>/servlet/InventoryManager">
 			    <input type="hidden" name="action" value="SelectInventory">
 <%
