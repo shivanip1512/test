@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.41 $
-* DATE         :  $Date: 2004/05/20 22:45:17 $
+* REVISION     :  $Revision: 1.42 $
+* DATE         :  $Date: 2004/06/01 21:45:47 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -352,7 +352,7 @@ CtiDeviceManager::ptr_type CtiDeviceManager::getEqual (LONG Dev)
 
 CtiDeviceManager::ptr_type CtiDeviceManager::RemoteGetEqualbyName (const RWCString &RemoteName)
 {
-    CtiDeviceBase     *p = NULL;
+    ptr_type p;
 
     RWCString cmpname = RemoteName;
     RWCString devname;
@@ -371,7 +371,7 @@ CtiDeviceManager::ptr_type CtiDeviceManager::RemoteGetEqualbyName (const RWCStri
 
     for(itr = begin(); itr != end(); itr++)
     {
-        p = (itr->second).get();
+        p = (itr->second);
 
         devname = p->getName();
         devname.toLower();
@@ -382,7 +382,7 @@ CtiDeviceManager::ptr_type CtiDeviceManager::RemoteGetEqualbyName (const RWCStri
         }
         else
         {
-            p = NULL;
+            p.reset();
         }
     }
 
