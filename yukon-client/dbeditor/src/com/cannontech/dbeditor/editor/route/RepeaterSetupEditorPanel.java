@@ -158,6 +158,12 @@ private void connEtoC5(java.util.EventObject arg1) {
       // user code begin {2}
       if( getRepeatersAddRemovePanel().rightListGetModel().getSize() == 0 )
          getAdvancedSetupButton().setEnabled(false);
+      /*
+     	This forces the Advanced Repeater Setup panel to renew  
+     	so it is sure to exclude the newly removed repeaters.
+      */
+      else
+      	setAdvancedRepeaterSetupEditorPanel(null);
       // user code end
    } catch (java.lang.Throwable ivjExc) {
       // user code begin {3}
@@ -326,37 +332,6 @@ public Object getValue(Object val) {
    
    route.setRepeaterVector(repeaterRoute);
 
-
-   //start code to automatically reset the repeater roles if changes are made
-   
-      int var = ((com.cannontech.database.db.route.CarrierRoute)route.getCarrierRoute()).getCcuVariableBits().intValue();
-
-   int startVar = 0;
-   
-      if (var > 0) {
-
-         var = RegenerateRoute.LARGE_VALID_VARIABLE - repeaterRoute.size();
-         startVar = var + 1;
-      }
-      else {
-         
-      startVar++; 
-      }  
-      
-      for (int i=0; i< repeaterRoute.size(); i++){
-         if (i + 1 >= repeaterRoute.size()) {
-            startVar = RegenerateRoute.LARGE_VALID_VARIABLE;
-         } 
-         ((com.cannontech.database.db.route.RepeaterRoute)repeaterRoute.get(i)).setVariableBits(new Integer(startVar));
-         startVar++;
-      }
-
-   
-   ((com.cannontech.database.db.route.CarrierRoute)route.getCarrierRoute()).setCcuVariableBits(new Integer(var));
-   
-   //end regenerate code
-   
-   
    return val;
 }
 /**
