@@ -212,6 +212,8 @@ public void setValue(Object o) {
 	// Set link
 	getLinkToPanel().setLinkTo(stateImage.getLinkTo());
 
+	getPointSelectionPanel().refresh();
+	
 	// Set selected point
 	LitePoint lp = stateImage.getPoint();
 	if( lp != null ) {

@@ -627,6 +627,8 @@ public static void main(java.lang.String[] args) {
 public void setValue(Object o) {
 	dynamicText = (DynamicText) o;
 
+	getPointSelectionPanel().refresh();
+	
 	if( dynamicText.getPointID() != DynamicText.INVALID_POINT ) {
 		LitePoint point = dynamicText.getPoint();
 		getPointSelectionPanel().selectPoint(point);

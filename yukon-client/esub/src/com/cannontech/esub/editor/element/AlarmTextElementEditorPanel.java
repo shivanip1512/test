@@ -699,6 +699,7 @@ public void setValue(Object o) {
 	getAlarmColorButton().setBackground(textColor);
 	colorChooser.setColor(textColor);
 	
+	getPointSelectionPanel().refresh();
 	getPointSelectionPanel().selectPoints(elem.getPoints());
 	
 	alarmTextElement = elem;

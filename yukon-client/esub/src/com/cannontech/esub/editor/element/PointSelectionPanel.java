@@ -1,7 +1,6 @@
 package com.cannontech.esub.editor.element;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -11,13 +10,12 @@ import javax.swing.event.TreeWillExpandListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.ExpandVetoException;
 import javax.swing.tree.TreePath;
-import javax.swing.tree.TreeSelectionModel;
 
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 /**
  * Creation date: (1/11/2002 11:43:34 AM)
- * @author: 
+ * @author: alauinger
  */
 public class PointSelectionPanel extends JPanel implements TreeWillExpandListener {
 	private JTree ivjDevicePointTree = null;
@@ -382,6 +380,16 @@ private TreePath findPAO(TreePath path, int paoID) {
 	public void treeWillExpand(TreeExpansionEvent event)
 		throws ExpandVetoException {
 			getDeviceTreeModel().treePathWillExpand(event.getPath());
+	}
+	
+	/**
+	 * refresh the point tree while maintaining, if possible, any selected points.
+	 */
+	public void refresh() {
+		LitePoint[] lp = getSelectedPoints();
+		getDeviceTreeModel().update();
+		if(lp != null)
+			selectPoints(lp);
 	}
 
 }
