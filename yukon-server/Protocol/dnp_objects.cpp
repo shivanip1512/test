@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2005/03/30 19:42:16 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2005/04/05 16:53:37 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -770,20 +770,22 @@ int ObjectBlock::restoreObject( const unsigned char *buf, int len, Object *&obj 
             break;
     }
 
-    if( obj != NULL )
+    if( obj )
     {
         lenUsed = obj->restore(buf, len);
 
         if( !obj->isValid() )
         {
             delete obj;
+            obj = 0;
         }
     }
-    else
+
+    if( !obj )
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << RWTime() << " **** Checkpoint - unhandled object type (" << _group << "), variation (" << _variation << "), aborting processing **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         lenUsed = len;
@@ -818,7 +820,7 @@ int ObjectBlock::restoreBitObject( const unsigned char *buf, int bitoffset, int 
             break;
     }
 
-    if( obj != NULL )
+    if( obj )
     {
         bitpos += obj->restoreBits(buf, bitpos, len);
     }
@@ -826,7 +828,7 @@ int ObjectBlock::restoreBitObject( const unsigned char *buf, int bitoffset, int 
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << RWTime() << " **** Checkpoint - unhandled object type (" << _group << "), variation (" << _variation << "), aborting processing **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         bitpos = len * 8;
