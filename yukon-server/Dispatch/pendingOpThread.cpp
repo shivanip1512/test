@@ -8,11 +8,15 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2004/12/14 22:24:37 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2005/01/27 17:48:46 $
 *
 * HISTORY      :
 * $Log: pendingOpThread.cpp,v $
+* Revision 1.12  2005/01/27 17:48:46  cplender
+* Make certain the _opId map is copied for pendables.
+* Reduce the frequency of ctlhist AI points.
+*
 * Revision 1.11  2004/12/14 22:24:37  cplender
 * Removed unused _actionCount
 *
@@ -146,7 +150,7 @@ void CtiPendingOpThread::run( void )
                 {
                     lastMulti = nextScheduledTimeAlignedOnRate(now, gConfigParms.getValueAsULong("DISPATCH_MAX_CTLHIST_RATE", 60)) + 5L;
 
-                    if(_multi->getCount() > 0)
+                    if(_multi && _multi->getCount() > 0)
                     {
                         if(_pMainQueue)
                             _pMainQueue->putQueue( _multi );
@@ -916,7 +920,8 @@ void CtiPendingOpThread::postControlStopPoint(CtiPendingPointOperations &ppc, bo
         }
     }
 
-    if(_multi->getCount() >= gConfigParms.getValueAsULong("DISPATCH_MAX_CTLHIST_POINT_BATCH", 100))
+    #if 0
+    if(_multi && _multi->getCount() >= gConfigParms.getValueAsULong("DISPATCH_MAX_CTLHIST_POINT_BATCH", 100))
     {
         if(_pMainQueue)
             _pMainQueue->putQueue( _multi );
@@ -927,6 +932,7 @@ void CtiPendingOpThread::postControlStopPoint(CtiPendingPointOperations &ppc, bo
         _multi->setMessagePriority(5);
         _multi->setSource("Dispatch pendingOpThread");
     }
+    #endif
 
     return;
 }
@@ -973,7 +979,8 @@ void CtiPendingOpThread::postControlHistoryPoints( CtiPendingPointOperations &pp
         }
     }
 
-    if(_multi->getCount() >= gConfigParms.getValueAsULong("DISPATCH_MAX_CTLHIST_POINT_BATCH", 100))
+    #if 0
+    if(_multi && _multi->getCount() >= gConfigParms.getValueAsULong("DISPATCH_MAX_CTLHIST_POINT_BATCH", 100))
     {
         if(_pMainQueue)
             _pMainQueue->putQueue( _multi );
@@ -984,6 +991,7 @@ void CtiPendingOpThread::postControlHistoryPoints( CtiPendingPointOperations &pp
         _multi->setMessagePriority(5);
         _multi->setSource("Dispatch pendingOpThread");
     }
+    #endif
 
     return;
 }
@@ -1563,6 +1571,8 @@ void CtiPendingOpThread::processPendableAdd(CtiPendable *&pendable)
                      *  We only need to "do something" if the earlier control had gone into the controlInProgress state.
                      *  Otherwise it is waiting or completed and left over.
                      */
+                    pendable->_ppo->setOffsetMap(ppo.getOffsetMap());   // Try to reduce the number of pointmap searches.
+
                     if(ppo.getControlState() == CtiPendingPointOperations::controlInProgress)
                     {
                         tempTime = pendable->_time >= ppo.getControl().getPreviousLogTime() ? pendable->_time : ppo.getControl().getPreviousLogTime();
