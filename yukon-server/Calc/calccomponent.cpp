@@ -333,7 +333,7 @@ double CtiCalcComponent::_doFunction( RWCString &functionName )
     {
         retVal = _figureDemandAvg(3600);// seconds in avg
     }
-    else if( functionName == "PFbyKW_KVAR" )
+    else if( functionName == "P-Factor KW/KVar" )
     {
         DOUBLE kw = _parent->pop();
         DOUBLE kvar = _parent->pop();
@@ -353,7 +353,7 @@ double CtiCalcComponent::_doFunction( RWCString &functionName )
         }
         retVal = newPowerFactorValue;
     }
-    else if( functionName == "PFbyKW_KQ" )
+    else if( functionName == "P-Factor KW/KQ" )
     {
 
         DOUBLE kw = _parent->pop();
@@ -375,7 +375,7 @@ double CtiCalcComponent::_doFunction( RWCString &functionName )
         }
         retVal = newPowerFactorValue;
     }
-    else if( functionName == "PFbyKW_KVA" )
+    else if( functionName == "P-Factor KW/KVa" )
     {
         DOUBLE kw = _parent->pop();
         DOUBLE kva = _parent->pop();
