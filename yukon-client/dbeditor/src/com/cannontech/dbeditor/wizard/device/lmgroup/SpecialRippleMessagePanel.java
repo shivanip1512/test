@@ -623,9 +623,9 @@ public Object getValue(Object o)
 	controlBuffer.append(getControlDoubleOrderPanel().getDoubleOrderBitString());
 	restoreBuffer.append(getRestoreDoubleOrderPanel().getDoubleOrderBitString());
 	
-	//Minnkota only uses 48 bits out of the 50 total
-	controlBuffer.append("00");
-	restoreBuffer.append("00");
+	//do we want only 48 bits out of the 50 total for Minnkota?
+	/*controlBuffer.append("00");
+	restoreBuffer.append("00");*/
 	
 	group.getLmGroupRipple().setControl(controlBuffer.toString());
 	group.getLmGroupRipple().setRestore(restoreBuffer.toString());
@@ -787,8 +787,8 @@ public void setValue(Object o)
 		getJComboBoxBitsAreaCode().setSelectedItem(MINNKOTADEFS.get(control.subSequence(10, 16).toString()));
 		
 		//Double Orders
-		getControlDoubleOrderPanel().setDoubleOrderBitString(control.subSequence(16, 49).toString());
-		getRestoreDoubleOrderPanel().setDoubleOrderBitString(restore.subSequence(16, 49).toString());
+		getControlDoubleOrderPanel().setDoubleOrderBitString(control.substring(16).toString());
+		getRestoreDoubleOrderPanel().setDoubleOrderBitString(restore.substring(16).toString());
 	}
 	
 }
