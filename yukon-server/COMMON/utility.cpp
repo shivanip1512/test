@@ -295,6 +295,7 @@ BOOL InEchoToOut(const INMESS *In, OUTMESS *Out)
     Out->TargetID = In->TargetID;
     Out->ReturnNexus = In->ReturnNexus;
     Out->Sequence = In->Sequence;
+    Out->Priority = In->Priority;
 
     /* Lotsa stuff requires the InMessage to be loaded so load it */
     memcpy(&(Out->Request), &(In->Return), sizeof(PIL_ECHO));
@@ -307,6 +308,8 @@ BOOL OutEchoToIN(const OUTMESS *Out, INMESS *In)
 
     /* Lotsa stuff requires the InMessage to be loaded so load it */
     memcpy(&(In->Return), &(Out->Request), sizeof(PIL_ECHO));
+    //  save this for the macro routes
+    In->Priority = Out->Priority;
 
     return bRet;
 }
