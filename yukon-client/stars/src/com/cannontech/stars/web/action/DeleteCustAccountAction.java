@@ -1,7 +1,6 @@
 package com.cannontech.stars.web.action;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -160,20 +159,6 @@ public class DeleteCustAccountAction implements ActionBase {
 	public static void deleteCustomerAccount(LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany)
 		throws TransactionException
 	{
-		// Delete all the MCTs from inventory
-		Iterator it = liteAcctInfo.getInventories().iterator();
-		while (it.hasNext()) {
-			Integer invID = (Integer) it.next();
-			if (!(energyCompany.getInventory(invID.intValue(), true) instanceof LiteStarsLMHardware)) {
-				com.cannontech.database.data.stars.hardware.InventoryBase inv = new com.cannontech.database.data.stars.hardware.InventoryBase();
-				inv.setInventoryID( invID );
-				Transaction.createTransaction( Transaction.DELETE, inv ).execute();
-				
-				energyCompany.deleteInventory( invID.intValue() );
-				it.remove();
-			}
-		}
-		
 		com.cannontech.database.data.stars.customer.CustomerAccount account =
 				StarsLiteFactory.createCustomerAccount(liteAcctInfo, energyCompany);
 		Transaction.createTransaction( Transaction.DELETE, account ).execute();

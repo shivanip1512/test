@@ -30,6 +30,7 @@ import com.cannontech.database.data.lite.stars.LiteWebConfiguration;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServerUtils;
@@ -453,7 +454,8 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 				LiteStarsEnergyCompany energyCompany = (LiteStarsEnergyCompany) companies.get(i);
 				
 				if (litePao.getCategory() == PAOGroups.CAT_ROUTE) {
-					handleRouteChange( msg, energyCompany );
+					if (!Boolean.valueOf(energyCompany.getEnergyCompanySetting( EnergyCompanyRole.SINGLE_ENERGY_COMPANY )).booleanValue())
+						handleRouteChange( msg, energyCompany );
 				}
 				else if (DeviceTypesFuncs.isLMProgramDirect( litePao.getType() )) {
 					ArrayList programs = energyCompany.getAllPrograms();

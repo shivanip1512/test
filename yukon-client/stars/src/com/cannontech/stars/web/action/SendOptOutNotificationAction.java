@@ -218,7 +218,7 @@ public class SendOptOutNotificationAction implements ActionBase {
 		
 		for (int i = 0; i < hardwares.size(); i++) {
 			LiteStarsLMHardware liteHw = (LiteStarsLMHardware) hardwares.get(i);
-			text.append("Serial #: ").append(liteHw.getManufacturerSerialNumber());
+			text.append("Serial #: ").append(liteHw.getManufacturerSerialNumber()).append(LINE_SEPARATOR);
 			
 			boolean hasAssignedProg = false;
 			for (int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {

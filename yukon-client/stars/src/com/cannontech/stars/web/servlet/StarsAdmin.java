@@ -2174,7 +2174,7 @@ public class StarsAdmin extends HttpServlet {
 						ECToGenericMapping map = new ECToGenericMapping();
 						map.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
 						map.setItemID( routeID );
-						map.setMappingCategory( ECToGenericMapping.MAPPING_CATEGORY_ROUTE );;
+						map.setMappingCategory( ECToGenericMapping.MAPPING_CATEGORY_ROUTE );
 						Transaction.createTransaction( Transaction.INSERT, map ).execute();
 						
 						synchronized (routeIDs) { routeIDs.add( routeID ); }

@@ -312,6 +312,15 @@ public class ECUtils {
 		return descendants;
 	}
 	
+	/**
+	 * @return Whether company1 is a descendant of company2
+	 */
+	public static boolean isDescendantOf(LiteStarsEnergyCompany company1, LiteStarsEnergyCompany company2) {
+		if (company1.equals( company2 )) return false;
+		ArrayList descendants = getAllDescendants( company2 );
+		return descendants.contains( company1 );
+	}
+	
 	public static boolean isDefaultEnergyCompany(LiteStarsEnergyCompany company) {
 		return company.getLiteID() == SOAPServer.DEFAULT_ENERGY_COMPANY_ID;
 	}

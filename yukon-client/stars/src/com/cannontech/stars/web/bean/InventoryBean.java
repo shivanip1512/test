@@ -671,9 +671,9 @@ public class InventoryBean {
 	 * @param filterBy The filterBy to set
 	 */
 	public void setFilterBy(int filterBy) {
-		this.filterBy = filterBy;
 		// Update the search result
-		inventoryList = null;
+		if (this.filterBy != filterBy) inventoryList = null;
+		this.filterBy = filterBy;
 	}
 
 	/**

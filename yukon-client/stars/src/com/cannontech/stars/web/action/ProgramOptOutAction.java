@@ -76,39 +76,64 @@ public class ProgramOptOutAction implements ActionBase {
 			LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
 			TimeZone tz = energyCompany.getDefaultTimeZone();
             
-            StarsProgramOptOut optOut = new StarsProgramOptOut();
-            
-            int period = 0;
-            try {
-                period = Integer.parseInt( req.getParameter("OptOutPeriod") );
-            }
-            catch (NumberFormatException e) {}
-            if (period == 0)
-				session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Invalid " + energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN) + " period" );
-            
-            if (period < 0) {	// Negative period is the number of days to be opted out
-            	optOut.setPeriod( Math.abs(period) * 24 );
-            }
-            else {	// This is a special entry, e.g. "Today"
-            	int periodDefID = YukonListFuncs.getYukonListEntry( period ).getYukonDefID();
-            	
-            	if (periodDefID == YukonListEntryTypes.YUK_DEF_ID_OPTOUT_PERIOD_TOMORROW) {
-            		optOut.setStartDateTime( ServletUtil.getTomorrow(energyCompany.getDefaultTimeZone()) );
-            		optOut.setPeriod( 24 );
-            	}
-            	else if (periodDefID == YukonListEntryTypes.YUK_DEF_ID_OPTOUT_PERIOD_TODAY) {
-					int offHours = (int)((ServletUtil.getTomorrow(tz).getTime() - new Date().getTime()) * 0.001 / 3600 + 0.5);
-            		optOut.setPeriod( offHours );
-            	}
-            	else if (periodDefID == YukonListEntryTypes.YUK_DEF_ID_OPTOUT_PERIOD_REPEAT_LAST) {
-            		optOut.setPeriod( REPEAT_LAST );
-            	}
-            }
+			StarsProgramOptOut optOut = new StarsProgramOptOut();
+			
+			if (req.getParameter("OptOutPeriod") != null) {
+				int period = 0;
+				try {
+					period = Integer.parseInt( req.getParameter("OptOutPeriod") );
+				}
+				catch (NumberFormatException e) {}
+				if (period == 0)
+					session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Invalid " + energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN) + " period" );
+	            
+				if (period < 0) {	// Negative period is the number of days to be opted out
+					optOut.setPeriod( Math.abs(period) * 24 );
+				}
+				else {	// This is a special entry, e.g. "Today"
+					int periodDefID = YukonListFuncs.getYukonListEntry( period ).getYukonDefID();
+	            	
+					if (periodDefID == YukonListEntryTypes.YUK_DEF_ID_OPTOUT_PERIOD_TOMORROW) {
+						optOut.setStartDateTime( ServletUtil.getTomorrow(energyCompany.getDefaultTimeZone()) );
+						optOut.setPeriod( 24 );
+					}
+					else if (periodDefID == YukonListEntryTypes.YUK_DEF_ID_OPTOUT_PERIOD_TODAY) {
+						int offHours = (int)((ServletUtil.getTomorrow(tz).getTime() - new Date().getTime()) * 0.001 / 3600 + 0.5);
+						optOut.setPeriod( offHours );
+					}
+					else if (periodDefID == YukonListEntryTypes.YUK_DEF_ID_OPTOUT_PERIOD_REPEAT_LAST) {
+						optOut.setPeriod( REPEAT_LAST );
+					}
+				}
+			}
+			else {
+				Date today = ServletUtil.getToday( tz );
+				Date startDate = ServletUtil.parseDateStringLiberally( req.getParameter("StartDate"), tz );
+				Date endDate = ServletUtil.parseDateStringLiberally( req.getParameter("EndDate"), tz );
+				
+				if (startDate == null)
+					throw new WebClientException( "Invalid start date '" + req.getParameter("StartDate") + "'" );
+				if (endDate == null)
+					throw new WebClientException( "Invalid end date '" + req.getParameter("EndDate") + "'" );
+				if (today.getTime() - startDate.getTime() > 1000)
+					throw new WebClientException( "The start date cannot be earlier than today" );
+				if (startDate.getTime() - endDate.getTime() > 1000)
+					throw new WebClientException( "The end data cannot be earlier than the start date" );
+				
+				if (Math.abs(startDate.getTime() - today.getTime()) < 1000)
+					startDate = new Date();
+				else
+					optOut.setStartDateTime( startDate );
+				optOut.setPeriod( (int)((endDate.getTime() - startDate.getTime()) * 0.001 / 3600 + 24 + 0.5) );
+			}
 
             StarsOperation operation = new StarsOperation();
             operation.setStarsProgramOptOut( optOut );
             
             return SOAPUtil.buildSOAPMessage( operation );
+        }
+        catch (WebClientException e) {
+			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, e.getMessage() );
         }
         catch (Exception e) {
             CTILogger.error( e.getMessage(), e );

@@ -1003,6 +1003,27 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		return operatorLoginIDs;
 	}
 	
+	/**
+	 * Returns all routes assigned to this energy company (or all routes in yukon
+	 * if it is a single energy company system), ordered alphabetically
+	 */
+	public synchronized LiteYukonPAObject[] getAllRoutes() {
+		if (Boolean.valueOf(getEnergyCompanySetting( EnergyCompanyRole.SINGLE_ENERGY_COMPANY )).booleanValue()) {
+			return PAOFuncs.getAllLiteRoutes();
+		}
+		else {
+			ArrayList routeIDs = getRouteIDs();
+			ArrayList rtList = new ArrayList();
+			for (int i = 0; i < routeIDs.size(); i++)
+				rtList.add( PAOFuncs.getLiteYukonPAO(((Integer)routeIDs.get(i)).intValue()) );
+			java.util.Collections.sort( rtList, com.cannontech.database.data.lite.LiteComparators.liteStringComparator );
+			
+			LiteYukonPAObject[] routes = new LiteYukonPAObject[ rtList.size() ];
+			rtList.toArray( routes );
+			return routes;
+		}
+	}
+	
 	public synchronized ArrayList getRouteIDs() {
 		if (routeIDs == null) {
 			routeIDs = new ArrayList();
@@ -1740,9 +1761,10 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	}
 	
 	/**
-	 * @return Pair(LiteInventoryBase, LiteStarsEnergyCompany)
+	 * Search for device with the specified category and device name.
+	 * If the device belongs to another energy company, the ObjectInOtherEnergyCompanyException is thrown. 
 	 */
-	private Pair searchForDevice(int categoryID, String deviceName, LiteStarsEnergyCompany referer)
+	public LiteInventoryBase searchForDevice(int categoryID, String deviceName)
 		throws ObjectInOtherEnergyCompanyException
 	{
 		ArrayList inventory = getAllInventory();
@@ -1755,79 +1777,36 @@ public class LiteStarsEnergyCompany extends LiteBase {
 				
 				if (liteInv.getCategoryID() == categoryID &&
 					PAOFuncs.getYukonPAOName( liteInv.getDeviceID() ).equalsIgnoreCase( deviceName ))
-					return new Pair(liteInv, this);
+					return liteInv;
 			}
 		}
 		
-		if (!inventoryLoaded) {
-			try {
-				int[] invIDs = com.cannontech.database.db.stars.hardware.InventoryBase.searchForDevice(
-						categoryID, deviceName, getLiteID() );
-				
-				if (invIDs != null && invIDs.length > 0) {
-					com.cannontech.database.db.stars.hardware.InventoryBase inv =
-							new com.cannontech.database.db.stars.hardware.InventoryBase();
-					inv.setInventoryID( new Integer(invIDs[0]) );
-					
-					inv = (com.cannontech.database.db.stars.hardware.InventoryBase)
-							Transaction.createTransaction( Transaction.RETRIEVE, inv ).execute();
-					
-					LiteInventoryBase liteInv = new LiteInventoryBase();
-					StarsLiteFactory.setLiteInventoryBase( liteInv, inv );
-					addInventory( liteInv );
-					
-					return new Pair(liteInv, this);
+		if (!inventoryLoaded
+			|| !Boolean.valueOf(getEnergyCompanySetting(EnergyCompanyRole.SINGLE_ENERGY_COMPANY)).booleanValue())
+		{ 
+			int[] val = com.cannontech.database.db.stars.hardware.InventoryBase.searchForDevice( categoryID, deviceName );
+			
+			if (val != null) {
+				if (val[1] == getLiteID()) {
+					return getInventoryBrief( val[0], true );
 				}
-			}
-			catch (TransactionException e) {
-				CTILogger.error( e.getMessage(), e );
-				return null;
-			}
-		}
-		
-		ArrayList children = getChildren();
-		synchronized (children) {
-			for (int i = 0; i < children.size(); i++) {
-				LiteStarsEnergyCompany liteCompany = (LiteStarsEnergyCompany) children.get(i);
-				if (!liteCompany.equals( referer )) {
-					Pair p = liteCompany.searchForDevice( categoryID, deviceName, this );
-					if (p != null)
-						throw new ObjectInOtherEnergyCompanyException( (LiteInventoryBase)p.getFirst(), (LiteStarsEnergyCompany)p.getSecond() );
+				else {
+					LiteStarsEnergyCompany company = SOAPServer.getEnergyCompany( val[1] );
+					LiteInventoryBase liteInv = company.getInventoryBrief( val[0], true );
+					throw new ObjectInOtherEnergyCompanyException( liteInv, company );
 				}
 			}
 		}
-		
-		if (getParent() != null && !getParent().equals( referer )) {
-			Pair p = getParent().searchForDevice( categoryID, deviceName, this );
-			if (p != null)
-				throw new ObjectInOtherEnergyCompanyException( (LiteInventoryBase)p.getFirst(), (LiteStarsEnergyCompany)p.getSecond() );
-		}
-		
-		return null;
-	}
-	
-	/**
-	 * Search for device with the specified category and device name.
-	 * If this energy company is a part of an energy company hierarchy,
-	 * and the device belongs to another company in the hierarchy,
-	 * the ObjectInOtherEnergyCompanyException is thrown. 
-	 */
-	public LiteInventoryBase searchForDevice(int categoryID, String deviceName)
-		throws ObjectInOtherEnergyCompanyException
-	{
-		Pair p = searchForDevice( categoryID, deviceName, this );
-		if (p != null) return (LiteInventoryBase)p.getFirst();
 		
 		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
 		
 		if (ECUtils.isMCT( categoryID )) {
 			synchronized (cache) {
 				java.util.List mctList = cache.getAllMCTs();
-				
 				for (int i = 0; i < mctList.size(); i++) {
 					LiteYukonPAObject litePao = (LiteYukonPAObject) mctList.get(i);
 					
-					if (PAOFuncs.getYukonPAOName( litePao.getYukonID() ).equalsIgnoreCase( deviceName )) {
+					if (litePao.getPaoName().equalsIgnoreCase( deviceName )) {
 						// Create a temporary LiteInventoryBase object
 						LiteInventoryBase liteInv = new LiteInventoryBase();
 						liteInv.setInventoryID( -1 );
@@ -1843,62 +1822,37 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	}
 	
 	/**
-	 * @return Pair(LiteInventoryBase, LiteStarsEnergyCompany)
+	 * Search the inventory for device with the specified device ID.
+	 * If the device belongs to another energy company, the ObjectInOtherEnergyCompanyException is thrown. 
 	 */
-	private Pair getDevice(int deviceID, LiteStarsEnergyCompany referer)
-		throws ObjectInOtherEnergyCompanyException
-	{
+	public LiteInventoryBase getDevice(int deviceID) throws ObjectInOtherEnergyCompanyException {
 		ArrayList inventory = getAllInventory();
 		
 		synchronized (inventory) {
 			for (int i = 0; i < inventory.size(); i++) {
 				LiteInventoryBase liteInv = (LiteInventoryBase) inventory.get(i);
 				if (liteInv.getDeviceID() == deviceID)
-					return new Pair(liteInv, this);
+					return liteInv;
 			}
 		}
 		
-		if (!inventoryLoaded) {
-			com.cannontech.database.db.stars.hardware.InventoryBase inv =
-					com.cannontech.database.db.stars.hardware.InventoryBase.searchByDeviceID( deviceID, getLiteID() );
+		if (!inventoryLoaded
+			|| !Boolean.valueOf(getEnergyCompanySetting(EnergyCompanyRole.SINGLE_ENERGY_COMPANY)).booleanValue()) 
+		{
+			int[] val = com.cannontech.database.db.stars.hardware.InventoryBase.searchByDeviceID( deviceID );
 			
-			if (inv != null) {
-				LiteInventoryBase liteInv = new LiteInventoryBase();
-				StarsLiteFactory.setLiteInventoryBase( liteInv, inv );
-				return new Pair(liteInv, this);
-			}
-		}
-		
-		ArrayList children = getChildren();
-		synchronized (children) {
-			for (int i = 0; i < children.size(); i++) {
-				LiteStarsEnergyCompany liteCompany = (LiteStarsEnergyCompany) children.get(i);
-				if (!liteCompany.equals( referer )) {
-					Pair p = liteCompany.getDevice( deviceID, this );
-					if (p != null)
-						throw new ObjectInOtherEnergyCompanyException( (LiteInventoryBase)p.getFirst(), (LiteStarsEnergyCompany)p.getSecond() );
+			if (val != null) {
+				if (val[1] == getLiteID()) {
+					return getInventoryBrief( val[0], true );
+				}
+				else {
+					LiteStarsEnergyCompany company = SOAPServer.getEnergyCompany( val[1] );
+					LiteInventoryBase liteInv = company.getInventoryBrief( val[0], true );
+					throw new ObjectInOtherEnergyCompanyException( liteInv, company );
 				}
 			}
 		}
 		
-		if (getParent() != null && !getParent().equals( referer )) {
-			Pair p = getParent().getDevice( deviceID, this );
-			if (p != null)
-				throw new ObjectInOtherEnergyCompanyException( (LiteInventoryBase)p.getFirst(), (LiteStarsEnergyCompany)p.getSecond() );
-		}
-		
-		return null;
-	}
-	
-	/**
-	 * Search the inventory for device with the specified device ID.
-	 * If this energy company is a part of an energy company hierarchy,
-	 * and the device belongs to another company in the hierarchy,
-	 * the ObjectInOtherEnergyCompanyException is thrown. 
-	 */
-	public LiteInventoryBase getDevice(int deviceID) throws ObjectInOtherEnergyCompanyException {
-		Pair p = getDevice( deviceID, this );
-		if (p != null) return (LiteInventoryBase)p.getFirst();
 		return null;
 	}
 	

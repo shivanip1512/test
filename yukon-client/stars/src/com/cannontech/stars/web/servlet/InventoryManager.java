@@ -16,16 +16,38 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
 import com.cannontech.database.Transaction;
-import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.PAOFuncs;
+import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.cache.functions.YukonListFuncs;
+import com.cannontech.database.data.device.CarrierBase;
+import com.cannontech.database.data.device.DeviceBase;
+import com.cannontech.database.data.device.IDeviceMeterGroup;
+import com.cannontech.database.data.device.MCT310;
+import com.cannontech.database.data.device.MCT310ID;
+import com.cannontech.database.data.device.MCT310IDL;
+import com.cannontech.database.data.device.MCT310IL;
+import com.cannontech.database.data.device.MCT410_KWH_Only;
+import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
+import com.cannontech.database.data.multi.MultiDBPersistent;
+import com.cannontech.database.data.point.PointBase;
+import com.cannontech.database.data.point.PointFactory;
+import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.data.point.PointUnits;
+import com.cannontech.database.data.point.StatusPoint;
+import com.cannontech.database.db.CTIDbChange;
+import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.db.pao.YukonPAObject;
+import com.cannontech.database.db.point.PointStatus;
+import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.database.cache.functions.AuthFuncs;
+import com.cannontech.dbeditor.DBDeletionFuncs;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
@@ -171,6 +193,8 @@ public class InventoryManager extends HttpServlet {
 			searchInventory( user, req, session );
 		else if (action.equalsIgnoreCase("CreateHardware"))
 			createLMHardware( user, req, session );
+		else if (action.equalsIgnoreCase("CreateMCT"))
+			createMCT( user, req, session );
 		
 		resp.sendRedirect( redirect );
 	}
@@ -488,9 +512,29 @@ public class InventoryManager extends HttpServlet {
 			try {
 				Transaction.createTransaction( Transaction.DELETE, inventory ).execute();
 				energyCompany.deleteInventory( invID );
+				
+				if (liteInv.getDeviceID() > 0 && Boolean.valueOf(req.getParameter("DeleteFromYukon")).booleanValue()) {
+					byte status = DBDeletionFuncs.deletionAttempted( liteInv.getDeviceID(), DBDeletionFuncs.DEVICE_TYPE );
+					if (status == DBDeletionFuncs.STATUS_DISALLOW)
+						throw new WebClientException( DBDeletionFuncs.getTheWarning().toString() );
+					
+					LiteYukonPAObject litePao = PAOFuncs.getLiteYukonPAO( liteInv.getDeviceID() );
+					DBPersistent dbPer = LiteFactory.convertLiteToDBPers( litePao );
+					Transaction.createTransaction( Transaction.DELETE, dbPer ).execute();
+					
+					DBChangeMsg[] dbChange = DefaultDatabaseCache.getInstance().createDBChangeMessages(
+							(CTIDbChange)dbPer, DBChangeMsg.CHANGE_TYPE_DELETE );
+					for (int i = 0; i < dbChange.length; i++)
+						ServerUtils.handleDBChangeMsg( dbChange[i] );
+				}
 			}
-			catch (TransactionException e) {
+			catch (Exception e) {
 				CTILogger.error( e.getMessage(), e );
+				if (e instanceof WebClientException)
+					session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, e.getMessage() );
+				else
+					session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Failed to delete the hardware from inventory" );
+				redirect = referer;
 			}
 		}
 		else {
@@ -971,6 +1015,118 @@ public class InventoryManager extends HttpServlet {
 		catch (WebClientException e) {
 			CTILogger.error( e.getMessage(), e );
 			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, e.getMessage() );
+			redirect = referer;
+		}
+	}
+	
+	private void createMCT(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
+		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+		
+		try {
+			StarsCreateLMHardware createHw = new StarsCreateLMHardware();
+			setStarsInv( createHw, req, energyCompany.getDefaultTimeZone() );
+			
+			if (req.getParameter("DeviceName").length() > 0) {
+				int mctType = Integer.parseInt( req.getParameter("MCTType") );
+				DeviceBase device = com.cannontech.database.data.device.DeviceFactory.createDevice( mctType );
+				
+				device.setDeviceID( YukonPAObject.getNextYukonPAObjectID() );
+				device.setPAOName( req.getParameter("DeviceName") );
+				
+				Integer physicalAddr = Integer.valueOf( req.getParameter("PhysicalAddr") );
+				((CarrierBase)device).getDeviceCarrierSettings().setAddress( physicalAddr );
+//				String[] devices = DeviceCarrierSettings.isAddressUnique( physicalAddr.intValue(), null );
+//				if (devices != null) {}
+				
+				((IDeviceMeterGroup)device).getDeviceMeterGroup().setMeterNumber( req.getParameter("MeterNumber") );
+				
+				Integer routeID = Integer.valueOf( req.getParameter("Route") );
+				((CarrierBase)device).getDeviceRoutes().setRouteID( routeID );
+				
+				DBPersistent val = (DBPersistent) device;
+				
+				// Special cases for some MCTs
+				if (device instanceof MCT310
+					|| device instanceof MCT310IL
+					|| device instanceof MCT310ID
+					|| device instanceof MCT310IDL
+					|| device instanceof MCT410_KWH_Only)
+				{
+					MultiDBPersistent multiDB = new MultiDBPersistent();
+					val = (DBPersistent) multiDB;
+					
+					multiDB.getDBPersistentVector().add( device );
+					
+					int pointID = PointFuncs.getMaxPointID();
+					double multiplier = 0.01;
+					// multiplier is 0.1 for 410LE, 0.01 for all older MCTs
+					if (device instanceof MCT410_KWH_Only)
+						multiplier = 0.1;
+					
+					// Accumulator point is automatically added
+					PointBase newPoint = PointFactory.createPulseAccumPoint(
+						"kWh",
+						device.getDevice().getDeviceID(),
+						new Integer(++pointID),
+						PointTypes.PT_OFFSET_TOTAL_KWH,
+						PointUnits.UOMID_KWH,
+						multiplier
+					);
+					multiDB.getDBPersistentVector().add( newPoint );
+					
+					// only certain devices get the DemandAccum point auto created
+					if (device instanceof MCT310IL
+						|| device instanceof MCT310IDL)
+					{
+						PointBase newPoint2 = PointFactory.createDmdAccumPoint(
+							"kW-LP",
+							device.getDevice().getDeviceID(),
+							new Integer(++pointID),
+							PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND,
+							PointUnits.UOMID_KW,
+							multiplier
+						);
+						multiDB.getDBPersistentVector().add( newPoint2 );
+					}
+					
+					// an automatic status point is created for certain devices
+					// set default for point tables
+					if (device instanceof MCT310ID
+						|| device instanceof MCT310IDL)
+					{
+						PointBase newPoint2 = PointFactory.createNewPoint(
+							new Integer(++pointID),
+							PointTypes.STATUS_POINT,
+							"DISCONNECT STATUS",
+							device.getDevice().getDeviceID(),
+							new Integer(PointTypes.PT_OFFSET_TOTAL_KWH)
+						);
+						newPoint2.getPoint().setStateGroupID(
+								new Integer(StateGroupUtils.STATEGROUP_THREE_STATE_STATUS) );
+						((StatusPoint)newPoint2).setPointStatus(
+								new PointStatus(newPoint2.getPoint().getPointID()) );
+						multiDB.getDBPersistentVector().add( newPoint2 );
+					}
+				}
+				
+				val = (DBPersistent) Transaction.createTransaction( Transaction.INSERT, val ).execute();
+				
+				DBChangeMsg[] dbChange = DefaultDatabaseCache.getInstance().createDBChangeMessages(
+						(CTIDbChange)val, DBChangeMsg.CHANGE_TYPE_ADD );
+				for (int i = 0; i < dbChange.length; i++)
+					ServerUtils.handleDBChangeMsg( dbChange[i] );
+				
+				createHw.setDeviceID( device.getDevice().getDeviceID().intValue() );
+			}
+			
+			LiteInventoryBase liteInv = CreateLMHardwareAction.addInventory( createHw, null, energyCompany );
+			
+			redirect += String.valueOf( liteInv.getInventoryID() );
+		}
+		catch (Exception e) {
+			CTILogger.error( e.getMessage(), e );
+			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Failed to create the new MCT" );
+			redirect = referer;
 		}
 	}
 	
@@ -1063,9 +1219,10 @@ public class InventoryManager extends HttpServlet {
 				devList.addAll( allDevices );
 			}
 			else {
+				deviceName = deviceName.toUpperCase();
 				for (int i = 0; i < allDevices.size(); i++) {
 					LiteYukonPAObject litePao = (LiteYukonPAObject) allDevices.get(i);
-					if (PAOFuncs.getYukonPAOName( litePao.getYukonID() ).startsWith( deviceName ))
+					if (litePao.getPaoName().toUpperCase().startsWith( deviceName ))
 						devList.add( litePao );
 				}
 			}

@@ -1,5 +1,6 @@
 package com.cannontech.database.db.stars.hardware;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 import com.cannontech.clientutils.CTILogger;
@@ -162,7 +163,7 @@ public class InventoryBase extends DBPersistent {
 			stmt = conn.createStatement();
 			rset = stmt.executeQuery( sql );
     		
-			java.util.ArrayList invIDList = new java.util.ArrayList();
+			ArrayList invIDList = new ArrayList();
 			while (rset.next())
 				invIDList.add( new Integer(rset.getInt(1)) );
     		
@@ -187,12 +188,15 @@ public class InventoryBase extends DBPersistent {
 		return null;
 	}
 	
-	public static int[] searchForDevice(int categoryID, String deviceName, int energyCompanyID) {
-		String sql = "SELECT inv.InventoryID " +
+	/**
+	 * @return (InventoryID, EnergyCompanyID)
+	 */
+	public static int[] searchForDevice(int categoryID, String deviceName) {
+		String sql = "SELECT inv.InventoryID, map.EnergyCompanyID " +
 				"FROM " + TABLE_NAME + " inv, ECToInventoryMapping map, YukonPAObject pao " +
 				"WHERE inv.CategoryID = ? AND inv.DeviceID > 0 " +
 				"AND inv.DeviceID = pao.PAObjectID AND UPPER(pao.PAOName) LIKE UPPER(?) " +
-				"AND inv.InventoryID = map.InventoryID AND map.EnergyCompanyID = ?";
+				"AND inv.InventoryID = map.InventoryID";
 		
 		java.sql.Connection conn = null;
 		java.sql.PreparedStatement stmt = null;
@@ -204,19 +208,15 @@ public class InventoryBase extends DBPersistent {
 			stmt = conn.prepareStatement( sql );
 			stmt.setInt( 1, categoryID );
 			stmt.setString( 2, deviceName );
-			stmt.setInt( 3, energyCompanyID );
-			
 			rset = stmt.executeQuery();
 			
-			java.util.ArrayList invIDList = new java.util.ArrayList();
-			while (rset.next())
-				invIDList.add( new Integer(rset.getInt(1)) );
-    		
-			int[] invIDs = new int[ invIDList.size() ];
-			for (int i = 0; i < invIDList.size(); i++)
-				invIDs[i] = ((Integer) invIDList.get(i)).intValue();
-			
-			return invIDs;
+			if (rset.next()) {
+				int[] retVal = new int[2];
+				retVal[0] = rset.getInt(1);
+				retVal[1] = rset.getInt(2);
+				
+				return retVal;
+			}
 		}
 		catch (java.sql.SQLException e) {
 			CTILogger.error( e.getMessage(), e );
@@ -233,13 +233,13 @@ public class InventoryBase extends DBPersistent {
 		return null;
 	}
 	
-	public static InventoryBase searchByDeviceID(int deviceID, int energyCompanyID) {
-		String sql = "SELECT inv.InventoryID, AccountID, InstallationCompanyID, CategoryID, " +
-				"ReceiveDate, InstallDate, RemoveDate, AlternateTrackingNumber, " +
-				"VoltageID, Notes, DeviceID, DeviceLabel " +
+	/**
+	 * @return (InventoryID, EnergyCompanyID)
+	 */
+	public static int[] searchByDeviceID(int deviceID) {
+		String sql = "SELECT inv.InventoryID, map.EnergyCompanyID " +
 				"FROM " + TABLE_NAME + " inv, ECToInventoryMapping map " +
-				"WHERE DeviceID = ? AND inv.InventoryID = map.InventoryID " +
-				"AND map.EnergyCompanyID = ?";
+				"WHERE inv.DeviceID = ? AND inv.InventoryID = map.InventoryID";
 		
 		java.sql.Connection conn = null;
 		java.sql.PreparedStatement stmt = null;
@@ -250,26 +250,14 @@ public class InventoryBase extends DBPersistent {
 			
 			stmt = conn.prepareStatement( sql );
 			stmt.setInt( 1, deviceID );
-			stmt.setInt( 2, energyCompanyID );
-			
 			rset = stmt.executeQuery();
 			
 			if (rset.next()) {
-				InventoryBase inv = new InventoryBase();
-				inv.setInventoryID( new Integer(rset.getInt(1)) );
-				inv.setAccountID( new Integer(rset.getInt(2)) );
-				inv.setInstallationCompanyID( new Integer(rset.getInt(3)) );
-				inv.setCategoryID( new Integer(rset.getInt(4)) );
-				inv.setReceiveDate( new Date(rset.getTimestamp(5).getTime()) );
-				inv.setInstallDate( new Date(rset.getTimestamp(6).getTime()) );
-				inv.setRemoveDate( new Date(rset.getTimestamp(7).getTime()) );
-				inv.setAlternateTrackingNumber( rset.getString(8) );
-				inv.setVoltageID( new Integer(rset.getInt(9)) );
-				inv.setNotes( rset.getString(10) );
-				inv.setDeviceID( new Integer(rset.getInt(11)) );
-				inv.setDeviceLabel( rset.getString(12) );
+				int[] retVal = new int[2];
+				retVal[0] = rset.getInt(1);
+				retVal[1] = rset.getInt(2);
 				
-				return inv;
+				return retVal; 
 			}
 		}
 		catch (java.sql.SQLException e) {

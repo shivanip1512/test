@@ -28,9 +28,9 @@ import com.cannontech.stars.web.servlet.SOAPServer;
  */
 public class DeviceBean {
 	
-	public static final int DEV_FILTER_NOT_ASSIGNED = 0;
-	public static final int DEV_FILTER_ALL = 1;
-	public static final int DEV_FILTER_DEVICE_NAME = 2;
+	public static final int DEV_FILTER_ALL = 0;
+	public static final int DEV_FILTER_NOT_ASSIGNED = 1;
+	public static final int DEV_FILTER_NOT_IN_INVENTORY = 2;
 	
 	private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
@@ -61,16 +61,18 @@ public class DeviceBean {
 		deviceList = new ArrayList();
 		
 		String deviceName = getDeviceName();
-		if (getFilter() != DEV_FILTER_DEVICE_NAME)
-			deviceName = "";	// Get all devices
 		List devices = InventoryManager.searchDevice( getCategoryID(), deviceName );
 		
-		if (getFilter() == DEV_FILTER_NOT_ASSIGNED) {
+		if (getFilter() == DEV_FILTER_NOT_ASSIGNED
+			|| getFilter() == DEV_FILTER_NOT_IN_INVENTORY)
+		{
 			for (int i = 0; i < devices.size(); i++) {
 				LiteYukonPAObject litePao =  (LiteYukonPAObject) devices.get(i);
 				try {
 					LiteInventoryBase liteInv = getEnergyCompany().getDevice( litePao.getYukonID() );
-					if (liteInv == null || liteInv.getAccountID() == 0)
+					if (liteInv == null)
+						deviceList.add( litePao );
+					else if (liteInv.getAccountID() == 0 && getFilter() == DEV_FILTER_NOT_ASSIGNED)
 						deviceList.add( litePao );
 				}
 				catch (ObjectInOtherEnergyCompanyException e) {}
@@ -265,9 +267,9 @@ public class DeviceBean {
 	 * @param i
 	 */
 	public void setFilter(int i) {
-		filter = i;
 		// Update the search result
-		deviceList = null;
+		if (filter != i) deviceList = null;
+		filter = i;
 	}
 
 	/**
