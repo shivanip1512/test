@@ -77,8 +77,8 @@ private com.cannontech.common.gui.util.AddRemovePanel getAddRemovePanel() {
 			ivjAddRemovePanel.setName("AddRemovePanel");
 			// user code begin {1}
 
-			ivjAddRemovePanel.leftListLabelSetText("Available");
-			ivjAddRemovePanel.rightListLabelSetText("Assigned");
+			ivjAddRemovePanel.leftListLabelSetText("Notification Groups");
+			ivjAddRemovePanel.rightListLabelSetText("Assigned Groups");
 			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {

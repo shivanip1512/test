@@ -76,8 +76,8 @@ private com.cannontech.common.gui.util.AddRemovePanel getAddRemovePanel() {
 			// user code begin {1}
 
 			ivjAddRemovePanel.setMode( com.cannontech.common.gui.util.AddRemovePanel.TRANSFER_MODE );
-			ivjAddRemovePanel.leftListLabelSetText("Available Groups");
-			ivjAddRemovePanel.rightListLabelSetText("Assigned Groups");
+			ivjAddRemovePanel.leftListLabelSetText("Available Load Groups");
+			ivjAddRemovePanel.rightListLabelSetText("Assigned Load Groups");
 
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
