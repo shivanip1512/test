@@ -6,11 +6,14 @@ package com.cannontech.cbc.gui;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
-import com.cannontech.cbc.data.CBCClientConnection;
-import com.cannontech.cbc.messages.CBCSubAreaNames;
 import com.cannontech.cbc.tablemodelevents.CBCGenericTableModelEvent;
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.message.util.ConnStateChange;
 import com.cannontech.message.util.MessageEvent;
+import com.cannontech.yukon.cbc.CBCClientConnection;
+import com.cannontech.yukon.cbc.CBCCommand;
+import com.cannontech.yukon.cbc.CBCSubAreaNames;
+import com.cannontech.yukon.conns.ConnPool;
 
 public class StrategyReceiver implements com.cannontech.tdc.SpecialTDCChild, TableModelListener
 {
@@ -53,7 +56,7 @@ public void addActionListenerToJComponent( javax.swing.JComponent component )
 
 		//updateAreaList( lastSubAreaMsg );
 		
-		connect();
+		requestAllData();
 	}
 	
 }
@@ -76,7 +79,7 @@ public void destroy()
 	}
 	catch( Exception e )
 	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+		CTILogger.error( e.getMessage(), e );
 	}
 
 	mainPanel = null;
@@ -111,11 +114,11 @@ public void executeRefreshButton()
 
 	try
 	{
-		getConnectionWrapper().executeCommand( 0, com.cannontech.cbc.messages.CBCCommand.REQUEST_ALL_SUBS );
+		getConnectionWrapper().executeCommand( 0, com.cannontech.yukon.cbc.CBCCommand.REQUEST_ALL_SUBS );
 	}
 	catch( java.io.IOException e )
 	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+		CTILogger.error( e.getMessage(), e );
 	}
 
 }
@@ -167,21 +170,16 @@ private CapBankActionListener getCapBankActionListener()
 	return capBankActionListener;
 }
 
-private void connect()
+private void requestAllData()
 {
 	try
-	{	
-		//start the conn!!!
-		getConnectionWrapper().connectWithoutWait(); //connect( 15000 );		
-
-		if( getConnectionWrapper().isValid() )
-			com.cannontech.clientutils.CTILogger.info("Retrieving CBC strategies...");
+	{
+		getConnectionWrapper().executeCommand(0, CBCCommand.REQUEST_ALL_SUBS );
 	}
 	catch( Exception e)
 	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-	}	
-
+		CTILogger.error( e.getMessage(), e );
+	}		
 }
 
 /**
@@ -190,26 +188,9 @@ private void connect()
  */
 private CBCClientConnection getConnectionWrapper() 
 {
-	if( connectionWrapper == null )
-	{
-		try
-		{	
-			connectionWrapper = new CBCClientConnection();
-
-			//start the conn!!!
-			//connectionWrapper.connectWithoutWait(); //connect( 15000 );		
-
-		 	//if( connectionWrapper.isValid() )
-				//com.cannontech.clientutils.CTILogger.info("Retrieving CBC strategies...");
-		}
-		catch( Exception e)
-		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-		}	
-	}
-	
-	return connectionWrapper;
+	return (CBCClientConnection)ConnPool.getInstance().getDefCapControlConn();
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (8/7/00 3:51:13 PM)
@@ -350,7 +331,7 @@ public static void main(String args[])
 	}
 	catch( Exception e)
 	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+		CTILogger.error( e.getMessage(), e );
 	}
 } 
 */

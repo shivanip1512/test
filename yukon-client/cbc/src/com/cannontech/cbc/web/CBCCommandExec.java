@@ -6,14 +6,14 @@
  */
 package com.cannontech.cbc.web;
 
-import com.cannontech.cbc.data.CapBankDevice;
-import com.cannontech.cbc.data.Feeder;
-import com.cannontech.cbc.data.SubBus;
-import com.cannontech.cbc.messages.CBCCommand;
 import com.cannontech.database.data.point.PointQualities;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.message.dispatch.message.PointData;
+import com.cannontech.yukon.cbc.CBCCommand;
+import com.cannontech.yukon.cbc.CapBankDevice;
+import com.cannontech.yukon.cbc.Feeder;
+import com.cannontech.yukon.cbc.SubBus;
 
 /**
  * @author rneuharth

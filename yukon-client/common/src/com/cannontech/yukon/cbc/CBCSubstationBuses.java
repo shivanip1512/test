@@ -1,11 +1,10 @@
-package com.cannontech.cbc.messages;
+package com.cannontech.yukon.cbc;
 
 /**
  */
 
-import com.cannontech.cbc.data.SubBus;
 
-public class CBCSubstationBuses extends com.cannontech.cbc.messages.CBCMessage {
+public class CBCSubstationBuses extends com.cannontech.yukon.cbc.CBCMessage {
 	
 	private java.lang.Integer msgInfoBitMask = new Integer(0);
 	private java.util.Vector buses;

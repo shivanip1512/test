@@ -115,7 +115,7 @@ public java.beans.PropertyDescriptor capBankDevicePropertyDescriptor() {
 			try {
 				/* Attempt to find the method using getMethod with parameter types. */
 				java.lang.Class aSetMethodParameterTypes[] = {
-					com.cannontech.cbc.data.CapBankDevice.class
+					com.cannontech.yukon.cbc.CapBankDevice.class
 				};
 				aSetMethod = getBeanClass().getMethod("setCapBankDevice", aSetMethodParameterTypes);
 			} catch (Throwable exception) {
@@ -761,7 +761,7 @@ public java.beans.MethodDescriptor setCapBankDevice_comcannontechcbcCapBankDevic
 		try {
 			/* Attempt to find the method using getMethod with parameter types. */
 			java.lang.Class aParameterTypes[] = {
-				com.cannontech.cbc.data.CapBankDevice.class
+				com.cannontech.yukon.cbc.CapBankDevice.class
 			};
 			aMethod = getBeanClass().getMethod("setCapBankDevice", aParameterTypes);
 		} catch (Throwable exception) {

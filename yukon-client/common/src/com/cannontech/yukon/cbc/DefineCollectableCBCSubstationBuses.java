@@ -1,4 +1,4 @@
-package com.cannontech.cbc.messages;
+package com.cannontech.yukon.cbc;
 
 /**
  * This type was created in VisualAge.

@@ -15,8 +15,6 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.TableModelEvent;
 
-import com.cannontech.cbc.data.SubBus;
-import com.cannontech.cbc.messages.CBCCommand;
 import com.cannontech.cbc.popupmenu.CapBankDevicePopUp;
 import com.cannontech.cbc.popupmenu.FeederPopUp;
 import com.cannontech.cbc.popupmenu.SubBusPopUp;
@@ -28,6 +26,8 @@ import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.message.util.ConnStateChange;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
+import com.cannontech.yukon.cbc.CBCCommand;
+import com.cannontech.yukon.cbc.SubBus;
 
 public class ReceiverMainPanel extends javax.swing.JPanel implements java.awt.event.ActionListener, java.awt.event.MouseListener, javax.swing.event.ListSelectionListener, javax.swing.event.TableModelListener, MessageListener, javax.swing.event.PopupMenuListener 
 {
@@ -46,7 +46,7 @@ public class ReceiverMainPanel extends javax.swing.JPanel implements java.awt.ev
 	private SubBusTableModel subBusTableModel = null;
 	private CapBankTableModel cabBankTableModel = null;
 	private FeederTableModel feederTableModel = null;
-	private com.cannontech.cbc.data.CBCClientConnection connectionWrapper = null;
+	private com.cannontech.yukon.cbc.CBCClientConnection connectionWrapper = null;
 	private static final String TITLE = StrategyReceiver.CBC_NAME;
 	
 	private JTable subBusTable = null ;
@@ -81,14 +81,14 @@ public class ReceiverMainPanel extends javax.swing.JPanel implements java.awt.ev
 /**
  * SchedulerMainPanel constructor comment.
  */
-public ReceiverMainPanel( com.cannontech.cbc.data.CBCClientConnection conn ) 
+public ReceiverMainPanel( com.cannontech.yukon.cbc.CBCClientConnection conn ) 
 {
 	this( conn, VIEW_SPLIT_PANE );
 }
 /**
  * SchedulerMainPanel constructor comment.
  */
-public ReceiverMainPanel( com.cannontech.cbc.data.CBCClientConnection conn, int displayMode ) 
+public ReceiverMainPanel( com.cannontech.yukon.cbc.CBCClientConnection conn, int displayMode ) 
 {
 	super();
 
@@ -153,7 +153,7 @@ public void actionPerformed(ActionEvent event)
  */
 private void capBankPopUpMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent e) 
 {
-	com.cannontech.cbc.data.CapBankDevice capBank = getCapBankTableModel().getRowAt(getCapBankTable().getSelectedRow());
+	com.cannontech.yukon.cbc.CapBankDevice capBank = getCapBankTableModel().getRowAt(getCapBankTable().getSelectedRow());
 
 	if( capBank != null )
 	{				
@@ -518,7 +518,7 @@ public void execute_UnwaiveSubs(java.awt.event.ActionEvent actionEvent)
  */
 private void feederPopUpMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent e) 
 {
-	com.cannontech.cbc.data.Feeder feeder = getFeederTableModel().getRowAt( getFeederTable().getSelectedRow() );
+	com.cannontech.yukon.cbc.Feeder feeder = getFeederTableModel().getRowAt( getFeederTable().getSelectedRow() );
 
 	if( feeder != null )
 	{
@@ -720,7 +720,7 @@ public javax.swing.JButton getConfirmAreaButton()
  * Creation date: (8/22/00 2:26:19 PM)
  * @return com.cannontech.cbc.CBCClientConnection
  */
-private com.cannontech.cbc.data.CBCClientConnection getConnectionWrapper() {
+private com.cannontech.yukon.cbc.CBCClientConnection getConnectionWrapper() {
 	return connectionWrapper;
 }
 /**
@@ -1158,7 +1158,7 @@ private void handleFeederTableSelection( ListSelectionEvent event )
 		getCapBankTableModel().setFeederRowSelected( selectedRow );
 
 		getCapBankTableModel().setCapBankDevices( 
-			((com.cannontech.cbc.data.Feeder)selected.getCcFeeders().get(selectedRow)).getCcCapBanks() );
+			((com.cannontech.yukon.cbc.Feeder)selected.getCcFeeders().get(selectedRow)).getCcCapBanks() );
 		
 		getCapBankTable().revalidate();
 		getCapBankTable().repaint();
@@ -1192,7 +1192,7 @@ private void handleSubBusTableSelection(ListSelectionEvent event)
 		//set all the banks in the model to the selected SubBuses banks	
 		java.util.Vector banks = new java.util.Vector(50);
 		for( int i = 0; i < selected.getCcFeeders().size(); i++ )
-			banks.addAll( ((com.cannontech.cbc.data.Feeder)selected.getCcFeeders().get(i)).getCcCapBanks() );
+			banks.addAll( ((com.cannontech.yukon.cbc.Feeder)selected.getCcFeeders().get(i)).getCcCapBanks() );
 
 		getCapBankTableModel().setCapBankDevices( banks );
 		getCapBankTableModel().setSubBusRowSelected(selectedRow);
@@ -1486,7 +1486,7 @@ public void silenceAlarms()
  * Creation date: (8/22/00 2:26:19 PM)
  * @param newConnectionWrapper com.cannontech.cbc.CBCClientConnection
  */
-public void setConnectionWrapper(com.cannontech.cbc.data.CBCClientConnection newConnectionWrapper) 
+public void setConnectionWrapper(com.cannontech.yukon.cbc.CBCClientConnection newConnectionWrapper) 
 {
 	connectionWrapper = newConnectionWrapper;
 }

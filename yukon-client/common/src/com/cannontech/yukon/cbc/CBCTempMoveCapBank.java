@@ -1,8 +1,8 @@
-package com.cannontech.cbc.messages;
+package com.cannontech.yukon.cbc;
 
 /**
  */
-public class CBCTempMoveCapBank extends com.cannontech.cbc.messages.CBCMessage 
+public class CBCTempMoveCapBank extends com.cannontech.yukon.cbc.CBCMessage 
 {	
 	private int oldFeedID = -1;
 	private boolean permanentMove = false;

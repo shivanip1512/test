@@ -9,9 +9,6 @@ import java.awt.Color;
 import java.awt.Font;
 import java.util.Vector;
 
-import com.cannontech.cbc.data.CapBankDevice;
-import com.cannontech.cbc.data.Feeder;
-import com.cannontech.cbc.data.SubBus;
 import com.cannontech.esub.Drawing;
 import com.cannontech.esub.PointAttributes;
 import com.cannontech.esub.element.DrawingMetaElement;
@@ -20,6 +17,9 @@ import com.cannontech.esub.element.StateImage;
 import com.cannontech.esub.element.StaticImage;
 import com.cannontech.esub.element.StaticText;
 import com.cannontech.esub.util.DrawingUpdater;
+import com.cannontech.yukon.cbc.CapBankDevice;
+import com.cannontech.yukon.cbc.Feeder;
+import com.cannontech.yukon.cbc.SubBus;
 
 import com.loox.jloox.LxGraph;
 import com.loox.jloox.LxLine;

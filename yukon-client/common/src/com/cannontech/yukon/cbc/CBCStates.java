@@ -1,8 +1,8 @@
-package com.cannontech.cbc.messages;
+package com.cannontech.yukon.cbc;
 
 /**
  */
-public class CBCStates extends com.cannontech.cbc.messages.CBCMessage {
+public class CBCStates extends com.cannontech.yukon.cbc.CBCMessage {
 	
 	private java.util.Vector states;
 /**

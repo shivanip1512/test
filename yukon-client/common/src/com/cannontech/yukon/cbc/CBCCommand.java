@@ -1,4 +1,4 @@
-package com.cannontech.cbc.messages;
+package com.cannontech.yukon.cbc;
 
 /**
  * CBCCommand objects are sent to the CBC server to request that an operation
@@ -6,7 +6,7 @@ package com.cannontech.cbc.messages;
  * and the server only receives them.
  */
 
-public class CBCCommand extends com.cannontech.cbc.messages.CBCMessage 
+public class CBCCommand extends com.cannontech.yukon.cbc.CBCMessage 
 {
 	//The following are the different commands that
 	//can be applied to strategies and map into the C++ side

@@ -6,10 +6,6 @@ package com.cannontech.cbc.gui;
 import java.awt.Color;
 
 import com.cannontech.cbc.CBCDisplay;
-import com.cannontech.cbc.data.CapBankDevice;
-import com.cannontech.cbc.data.CapControlConst;
-import com.cannontech.cbc.data.Feeder;
-import com.cannontech.cbc.data.SubBus;
 import com.cannontech.cbc.tablemodelevents.CBCGenericTableModelEvent;
 import com.cannontech.cbc.tablemodelevents.StateTableModelEvent;
 import com.cannontech.common.gui.util.Colors;
@@ -19,6 +15,10 @@ import com.cannontech.message.dispatch.message.Signal;
 import com.cannontech.tdc.alarms.gui.AlarmingRow;
 import com.cannontech.tdc.alarms.gui.AlarmingRowVector;
 import com.cannontech.tdc.alarms.gui.RowBlinker;
+import com.cannontech.yukon.cbc.CapBankDevice;
+import com.cannontech.yukon.cbc.CapControlConst;
+import com.cannontech.yukon.cbc.Feeder;
+import com.cannontech.yukon.cbc.SubBus;
 import com.cannontech.clientutils.tags.IAlarmDefs;
 import com.cannontech.clientutils.tags.TagUtils;
 

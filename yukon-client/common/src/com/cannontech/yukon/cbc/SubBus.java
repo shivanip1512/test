@@ -1,4 +1,4 @@
-package com.cannontech.cbc.data;
+package com.cannontech.yukon.cbc;
 
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
 

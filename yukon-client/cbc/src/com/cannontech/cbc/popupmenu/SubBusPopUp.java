@@ -5,11 +5,11 @@ package com.cannontech.cbc.popupmenu;
  * Creation date: (1/5/2001 4:26:25 PM)
  * @author: 
  */
-import com.cannontech.cbc.data.CBCClientConnection;
-import com.cannontech.cbc.data.SubBus;
-import com.cannontech.cbc.messages.CBCCommand;
 import com.cannontech.debug.gui.ObjectInfoDialog;
 import com.cannontech.message.dispatch.message.Multi;
+import com.cannontech.yukon.cbc.CBCClientConnection;
+import com.cannontech.yukon.cbc.CBCCommand;
+import com.cannontech.yukon.cbc.SubBus;
 
 public class SubBusPopUp extends javax.swing.JPopupMenu implements java.awt.event.ActionListener, javax.swing.event.TableModelListener 
 {	
@@ -250,7 +250,7 @@ private javax.swing.JMenuItem getJMenuItemSubBusData() {
  * Creation date: (11/20/2001 9:48:52 AM)
  * @return com.cannontech.cbc.data.SubBus
  */
-public com.cannontech.cbc.data.SubBus getSubBus() {
+public com.cannontech.yukon.cbc.SubBus getSubBus() {
 	return subBus;
 }
 /**
@@ -324,8 +324,8 @@ public void jMenuItemConfirm_ActionPerformed(java.awt.event.ActionEvent actionEv
       
 	for( int i = 0; i < getSubBus().getCcFeeders().size(); i++ )
 	{
-		com.cannontech.cbc.data.Feeder feeder = 
-				(com.cannontech.cbc.data.Feeder)getSubBus().getCcFeeders().get(i);
+		com.cannontech.yukon.cbc.Feeder feeder = 
+				(com.cannontech.yukon.cbc.Feeder)getSubBus().getCcFeeders().get(i);
 	
       //do not confirm disabled feeders
       if( feeder.getCcDisableFlag().booleanValue() )
@@ -334,8 +334,8 @@ public void jMenuItemConfirm_ActionPerformed(java.awt.event.ActionEvent actionEv
    			
 		for( int j = 0; j < feeder.getCcCapBanks().size(); j++ )
 		{
-			com.cannontech.cbc.data.CapBankDevice bank =
-				(com.cannontech.cbc.data.CapBankDevice)feeder.getCcCapBanks().get(j);
+			com.cannontech.yukon.cbc.CapBankDevice bank =
+				(com.cannontech.yukon.cbc.CapBankDevice)feeder.getCcCapBanks().get(j);
 
          //do not confirm disabled banks
          if( bank.getCcDisableFlag().booleanValue() )
@@ -458,7 +458,7 @@ private void setConnectionWrapper(CBCClientConnection newConnectionWrapper) {
  * Creation date: (11/20/2001 9:48:52 AM)
  * @param newSubBus com.cannontech.cbc.data.SubBus
  */
-public void setSubBus(com.cannontech.cbc.data.SubBus newSubBus) 
+public void setSubBus(com.cannontech.yukon.cbc.SubBus newSubBus) 
 {
 	subBus = newSubBus;
 

@@ -1,8 +1,5 @@
 package com.cannontech.cbc.web;
 
-import com.cannontech.cbc.data.CBCClientConnection;
-import com.cannontech.cbc.messages.CBCCommand;
-import com.cannontech.cbc.messages.CBCSubstationBuses;
 import com.cannontech.cbc.web.CCOneLineGenerator;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
@@ -10,6 +7,9 @@ import com.cannontech.esub.Drawing;
 import com.cannontech.esub.util.DrawingUpdater;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
+import com.cannontech.yukon.cbc.CBCClientConnection;
+import com.cannontech.yukon.cbc.CBCCommand;
+import com.cannontech.yukon.cbc.CBCSubstationBuses;
 
 /**
  * @author eWally

@@ -5,10 +5,10 @@ package com.cannontech.cbc.popupmenu;
  * Creation date: (1/5/2001 4:26:25 PM)
  * @author: 
  */
-import com.cannontech.cbc.data.CBCClientConnection;
-import com.cannontech.cbc.data.Feeder;
-import com.cannontech.cbc.messages.CBCCommand;
 import com.cannontech.debug.gui.ObjectInfoDialog;
+import com.cannontech.yukon.cbc.CBCClientConnection;
+import com.cannontech.yukon.cbc.CBCCommand;
+import com.cannontech.yukon.cbc.Feeder;
 
 public class FeederPopUp extends javax.swing.JPopupMenu implements java.awt.event.ActionListener, javax.swing.event.TableModelListener {
 	private Feeder feeder = null;

@@ -10,17 +10,17 @@ package com.cannontech.cbc.web;
 import java.awt.Color;
 
 import com.cannontech.cbc.CBCDisplay;
-import com.cannontech.cbc.data.CBCClientConnection;
 import com.cannontech.cbc.gui.CapBankTableModel;
 import com.cannontech.cbc.gui.FeederTableModel;
 import com.cannontech.cbc.gui.SubBusTableModel;
-import com.cannontech.cbc.messages.CBCCommand;
-import com.cannontech.cbc.messages.CBCSubstationBuses;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.WeakObserver;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.state.State;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.yukon.cbc.CBCClientConnection;
+import com.cannontech.yukon.cbc.CBCCommand;
+import com.cannontech.yukon.cbc.CBCSubstationBuses;
 
 public class CapControlWebAnnex implements java.util.Observer 
 {

@@ -4,13 +4,13 @@ import javax.swing.JSeparator;
 
 import com.cannontech.cbc.capbankeditor.CapControlEntryPanel;
 import com.cannontech.cbc.capbankeditor.CapBankTempMovePanel;
-import com.cannontech.cbc.data.CBCClientConnection;
-import com.cannontech.cbc.data.CapBankDevice;
-import com.cannontech.cbc.data.Feeder;
-import com.cannontech.cbc.messages.CBCCommand;
 import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.debug.gui.ObjectInfoDialog;
 import com.cannontech.message.dispatch.message.Command;
+import com.cannontech.yukon.cbc.CBCClientConnection;
+import com.cannontech.yukon.cbc.CBCCommand;
+import com.cannontech.yukon.cbc.CapBankDevice;
+import com.cannontech.yukon.cbc.Feeder;
 
 /**
  * Insert the type's description here.
@@ -151,7 +151,7 @@ public CapBankDevice getCapBankDevice() {
  * Creation date: (1/8/2001 3:41:20 PM)
  * @return com.cannontech.cbc.CBCClientConnection
  */
-public com.cannontech.cbc.data.CBCClientConnection getConnectionWrapper() {
+public com.cannontech.yukon.cbc.CBCClientConnection getConnectionWrapper() {
 	return connectionWrapper;
 }
 /**
@@ -707,7 +707,7 @@ public void setCapBankDevice(CapBankDevice newCapDevice, Feeder feeder )
  * Creation date: (1/8/2001 3:41:20 PM)
  * @param newConnectionWrapper com.cannontech.cbc.CBCClientConnection
  */
-public void setConnectionWrapper(com.cannontech.cbc.data.CBCClientConnection newConnectionWrapper) {
+public void setConnectionWrapper(com.cannontech.yukon.cbc.CBCClientConnection newConnectionWrapper) {
 	connectionWrapper = newConnectionWrapper;
 }
 /**

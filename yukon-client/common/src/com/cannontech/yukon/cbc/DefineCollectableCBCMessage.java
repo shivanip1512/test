@@ -1,4 +1,4 @@
-package com.cannontech.cbc.messages;
+package com.cannontech.yukon.cbc;
 
 /**
  * This type was created in VisualAge.
@@ -52,7 +52,7 @@ public String getCxxStringId() {
  * getJavaClass method comment.
  */
 public Class getJavaClass() {
-	return com.cannontech.cbc.messages.CBCMessage.class;
+	return com.cannontech.yukon.cbc.CBCMessage.class;
 }
 /**
  * restoreGuts method comment.

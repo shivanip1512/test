@@ -6,10 +6,6 @@ package com.cannontech.cbc.capbankeditor;
  */
 import java.awt.Dimension;
 
-import com.cannontech.cbc.data.CBCClientConnection;
-import com.cannontech.cbc.data.CapBankDevice;
-import com.cannontech.cbc.data.StreamableCapObject;
-import com.cannontech.cbc.data.SubBus;
 import com.cannontech.cbc.gui.CapBankTableModel;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.gui.unchanging.LongRangeDocument;
@@ -18,6 +14,10 @@ import com.cannontech.database.data.point.PointQualities;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.util.Message;
+import com.cannontech.yukon.cbc.CBCClientConnection;
+import com.cannontech.yukon.cbc.CapBankDevice;
+import com.cannontech.yukon.cbc.StreamableCapObject;
+import com.cannontech.yukon.cbc.SubBus;
 
 public class CapControlEntryPanel extends javax.swing.JPanel implements java.awt.event.ActionListener 
 {
@@ -677,7 +677,7 @@ public void setCapObject(StreamableCapObject newCapObj_ )
  * Creation date: (1/8/2001 3:45:56 PM)
  * @param newConnectionWrapper com.cannontech.cbc.CBCClientConnection
  */
-public void setConnectionWrapper(com.cannontech.cbc.data.CBCClientConnection newConnectionWrapper) {
+public void setConnectionWrapper(com.cannontech.yukon.cbc.CBCClientConnection newConnectionWrapper) {
 	connectionWrapper = newConnectionWrapper;
 }
 

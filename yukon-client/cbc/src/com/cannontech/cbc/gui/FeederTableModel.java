@@ -6,10 +6,10 @@ package com.cannontech.cbc.gui;
 import java.awt.Color;
 
 import com.cannontech.cbc.CBCDisplay;
-import com.cannontech.cbc.data.CapBankDevice;
-import com.cannontech.cbc.data.Feeder;
-import com.cannontech.cbc.data.SubBus;
 import com.cannontech.cbc.tablemodelevents.CBCGenericTableModelEvent;
+import com.cannontech.yukon.cbc.CapBankDevice;
+import com.cannontech.yukon.cbc.Feeder;
+import com.cannontech.yukon.cbc.SubBus;
 
 public class FeederTableModel extends javax.swing.table.AbstractTableModel implements com.cannontech.tdc.alarms.gui.AlarmTableModel, javax.swing.event.TableModelListener, CapControlTableModel, com.cannontech.common.gui.util.SortableTableModel
 {
@@ -325,7 +325,7 @@ public boolean setBGRowColor(int rowNumber, int color)
  * Creation date: (8/23/00 11:42:06 AM)
  * @param devices java.util.Vector
  */
-public synchronized void setCurrentSubBus( final com.cannontech.cbc.data.SubBus subBus_ )
+public synchronized void setCurrentSubBus( final com.cannontech.yukon.cbc.SubBus subBus_ )
 {
 	currentSubBus = subBus_;
 	java.util.Vector newRows = null;
@@ -338,7 +338,7 @@ public synchronized void setCurrentSubBus( final com.cannontech.cbc.data.SubBus 
 		for( int i = 0; i < newRows.size(); i++ )
 		{
 			if( !isObjectFeeder(newRows.elementAt(i)) )
-				throw new IllegalStateException("Only " + com.cannontech.cbc.data.Feeder.class.getName() + " should be in a Feeder vector");
+				throw new IllegalStateException("Only " + com.cannontech.yukon.cbc.Feeder.class.getName() + " should be in a Feeder vector");
 		}
 
 		//this block of code will preserve the order of the feeders

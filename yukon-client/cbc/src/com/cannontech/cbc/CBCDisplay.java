@@ -1,9 +1,5 @@
 package com.cannontech.cbc;
 
-import com.cannontech.cbc.data.CapBankDevice;
-import com.cannontech.cbc.data.CapControlConst;
-import com.cannontech.cbc.data.Feeder;
-import com.cannontech.cbc.data.SubBus;
 import com.cannontech.cbc.gui.CapBankTableModel;
 import com.cannontech.cbc.gui.FeederTableModel;
 import com.cannontech.cbc.gui.SubBusTableModel;
@@ -13,6 +9,10 @@ import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.roles.application.TDCRole;
+import com.cannontech.yukon.cbc.CapBankDevice;
+import com.cannontech.yukon.cbc.CapControlConst;
+import com.cannontech.yukon.cbc.Feeder;
+import com.cannontech.yukon.cbc.SubBus;
 
 /**
  * @author rneuharth
@@ -260,8 +260,8 @@ public class CBCDisplay
     {
         for( int i = 0; i < subBus.getCcFeeders().size(); i++ )
         {
-            com.cannontech.cbc.data.Feeder feeder =
-                (com.cannontech.cbc.data.Feeder)subBus.getCcFeeders().get(i);
+            com.cannontech.yukon.cbc.Feeder feeder =
+                (com.cannontech.yukon.cbc.Feeder)subBus.getCcFeeders().get(i);
 
             int size = feeder.getCcCapBanks().size();
             for( int j = 0; j < size; j++ )

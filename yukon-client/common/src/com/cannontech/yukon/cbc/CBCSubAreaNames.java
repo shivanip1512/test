@@ -1,8 +1,8 @@
-package com.cannontech.cbc.messages;
+package com.cannontech.yukon.cbc;
 
 /**
  */
-public class CBCSubAreaNames extends com.cannontech.cbc.messages.CBCMessage
+public class CBCSubAreaNames extends com.cannontech.yukon.cbc.CBCMessage
 {	
     //contains Strings
 	private java.util.Vector areaNames;

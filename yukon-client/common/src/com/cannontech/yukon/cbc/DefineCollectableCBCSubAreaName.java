@@ -1,25 +1,25 @@
-package com.cannontech.cbc.messages;
+package com.cannontech.yukon.cbc;
 
 /**
  * This type was created in VisualAge.
  */
 import com.roguewave.tools.v2_0.Comparator;
 
-public class DefineCollectableCBCStateGroupMessage extends DefineCollectableCBCMessage
+public class DefineCollectableCBCSubAreaName extends DefineCollectableCBCMessage
 {
 	//RogueWave classId
-	public static final int CTISTATEGROUP_MESSAGE_ID = 508;
+	public static final int CTIAREA_MESSAGE_ID = 509;
 /**
  * DefineCollectableMessage constructor comment.
  */
-public DefineCollectableCBCStateGroupMessage() {
+public DefineCollectableCBCSubAreaName() {
 	super();
 }
 /**
  * create method comment.
  */
 public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.IOException {
-	return new CBCStates();
+	return new CBCSubAreaNames();
 }
 /**
  * getComparator method comment.
@@ -37,14 +37,15 @@ public com.roguewave.tools.v2_0.Comparator getComparator() {
 /**
  * getCxxClassId method comment.
  */
-public int getCxxClassId() {
-	return DefineCollectableCBCStateGroupMessage.CTISTATEGROUP_MESSAGE_ID;
+public int getCxxClassId() 
+{
+	return this.CTIAREA_MESSAGE_ID;
 }
 /**
  * getJavaClass method comment.
  */
 public Class getJavaClass() {
-	return com.cannontech.cbc.messages.CBCStates.class;
+	return com.cannontech.yukon.cbc.CBCSubAreaNames.class;
 }
 /**
  * restoreGuts method comment.
@@ -52,9 +53,9 @@ public Class getJavaClass() {
 public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException {
 
 	super.restoreGuts( obj, vstr, polystr );
-	java.util.Vector stateStore = (java.util.Vector)vstr.restoreObject( polystr );
+	java.util.Vector areaNames = (java.util.Vector)vstr.restoreObject( polystr );
 
-	((CBCStates) obj).setStates( stateStore );
+	((CBCSubAreaNames)obj).setAreaNames( areaNames );
 }
 /**
  * saveGuts method comment.
@@ -62,11 +63,11 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException 
 {
 	com.cannontech.clientutils.CTILogger.info("**********************************************************************************");
-	com.cannontech.clientutils.CTILogger.info("com.cannontech.cbc.DefineCollectableCBCStateGroupMessage.saveGuts() should not be called");
+	com.cannontech.clientutils.CTILogger.info("com.cannontech.cbc.DefineCollectableCBCStrategyAreaMessage.saveGuts() should not be called");
 	com.cannontech.clientutils.CTILogger.info("**********************************************************************************");
 	
 	//super.saveGuts( obj, vstr, polystr );
-	//java.util.Vector stateStore = ((CBCAlarmStates) obj).getStates();
-	//vstr.saveObject( stateStore, com.roguewave.vsj.streamer.CollectableMappings.allCollectables );
+	//java.util.Vector areaStore = ((CBCAreaNames) obj).getAreaNames();
+	//vstr.saveObject( areaStore, com.roguewave.vsj.streamer.CollectableMappings.allCollectables );
 }
 }

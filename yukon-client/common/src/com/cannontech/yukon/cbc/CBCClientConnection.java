@@ -1,22 +1,14 @@
-package com.cannontech.cbc.data;
+package com.cannontech.yukon.cbc;
 
 /**
  * ClientConnection adds functionality necessary to handles connections with
  * CBC.  Specifically it registers CBC specific 'Collectable' messages, otherwise
  * the base class does all the work.
  */
-import com.cannontech.cbc.messages.CBCCommand;
-import com.cannontech.cbc.messages.DefineCollectableCBCCommand;
-import com.cannontech.cbc.messages.DefineCollectableCBCMessage;
-import com.cannontech.cbc.messages.DefineCollectableCBCStateGroupMessage;
-import com.cannontech.cbc.messages.DefineCollectableCBCSubAreaName;
-import com.cannontech.cbc.messages.DefineCollectableCBCSubstationBuses;
-import com.cannontech.cbc.messages.DefineCollectableCBCTempMoveCapBank;
 import com.cannontech.common.util.MessageEvent;
 import com.cannontech.common.util.MessageEventListener;
 import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.message.util.ClientConnection;
-import com.cannontech.message.util.Message;
 import com.cannontech.roles.yukon.SystemRole;
 import com.roguewave.vsj.CollectableStreamer;
 import com.roguewave.vsj.DefineCollectable;
@@ -65,35 +57,6 @@ public class CBCClientConnection extends ClientConnection
 		initialize();
 		getExternalResources();
 	}
-	
-	/**
-	 * ClientConnection constructor comment.The caller must start the listening.
-	 * @param host java.lang.String
-	 * @param port int
-	 */
-	public CBCClientConnection( Message registrationMsg_ ) 
-	{
-		super();
-		
-		getExternalResources();
-		initialize();
-		setRegistrationMsg( registrationMsg_ );
-	}
-	
-	/**
-	 * ClientConnection constructor comment.The caller must start the listening.
-	 * @param host java.lang.String
-	 * @param port int
-	 */
-	public CBCClientConnection(String hostStr, int portInt)
-	{
-		super();
-		initialize();
-		
-		host = hostStr;
-		port = portInt;	
-	}
-	
 	
 	/**
 	 * This method was created in VisualAge.

@@ -1,10 +1,10 @@
 package com.cannontech.cbc.capbankeditor;
-import com.cannontech.cbc.data.CBCClientConnection;
-import com.cannontech.cbc.data.CapBankDevice;
-import com.cannontech.cbc.data.Feeder;
-import com.cannontech.cbc.messages.CBCTempMoveCapBank;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.yukon.cbc.CBCClientConnection;
+import com.cannontech.yukon.cbc.CBCTempMoveCapBank;
+import com.cannontech.yukon.cbc.CapBankDevice;
+import com.cannontech.yukon.cbc.Feeder;
 
 /**
  * Insert the type's description here.
@@ -129,7 +129,7 @@ public class CapBankTempMovePanel extends javax.swing.JPanel implements com.cann
 	}
 
 
-	private com.cannontech.cbc.data.CBCClientConnection getConnectionWrapper() 
+	private com.cannontech.yukon.cbc.CBCClientConnection getConnectionWrapper() 
 	{
 		return connectionWrapper;
 	}
