@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_welco.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/05/08 14:28:05 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/06/18 16:13:45 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -369,7 +369,6 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
 
     CtiPointDataMsg      *pData = NULL;
     CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
-    CtiConnection        *Conn = ((CtiConnection*)InMessage->Return.Connection);
 
     OUTMESS              *OutMessage = NULL;
 
