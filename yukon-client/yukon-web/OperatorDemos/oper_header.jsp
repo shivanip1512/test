@@ -2,6 +2,8 @@
 <%@ page import="com.cannontech.database.data.web.Operator" %>
 <%@ page import="com.cannontech.servlet.LCConnectionServlet" %>
 <%@ page import="com.cannontech.web.loadcontrol.LoadcontrolCache" %>
+<%@ page import="com.cannontech.graph.model.TrendModelType" %>
+<%@ page import="com.cannontech.util.ServletUtil" %>
 <%@ taglib uri="/WEB-INF/jruntags.jar" prefix="jrun" %>
 <%@ taglib uri="/WEB-INF/cti.tld" prefix="cti" %>
 
@@ -20,5 +22,16 @@
     java.text.SimpleDateFormat timePart = new java.text.SimpleDateFormat("HH:mm");
     java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM:dd:yyyy:HH:mm:ss");
 
+	java.lang.Integer  viewIDHolder = new java.lang.Integer(0);
     String dbAlias = operator.getDatabaseAlias();
 %>
+	<jsp:useBean id="graphBean" class="com.cannontech.graph.GraphBean" scope="session">
+		<%-- this body is executed only if the bean is created --%>
+	<jsp:setProperty name="graphBean" property="viewType" value="<%=TrendModelType.LINE_VIEW%>"/>
+	<jsp:setProperty name="graphBean" property="startStr" value="<%=datePart.format(ServletUtil.getToday())%>"/>
+	<jsp:setProperty name="graphBean" property="tab" value="graph"/>
+	<jsp:setProperty name="graphBean" property="period" value="<%=ServletUtil.historicalPeriods[0]%>"/>
+	<jsp:setProperty name="graphBean" property="gdefid" value="-1"/>	
+	    <%-- intialize bean properties --%>
+	</jsp:useBean>
+

@@ -1,38 +1,27 @@
-<%@ include file="oper_header.jsp" %>
-<%@ include file="oper_trendingheader.jsp" %>
-<%
-             if( graphDefinitionId <= 0 )
-             {
-            %>
-            <p>
-              <center>
-                No Data Set Selected 
-               </center> 
-           </p>
-            
-<%
-             }
-             else             
-             //Check to see which tab is selected (tab paramater) and show the appropriate content
-             if( tab.equalsIgnoreCase("summary") )
-             {
-              %>
-<%@ include file="/trendingsummary.jsp" %>
-<%
-             }
-             else
-             if( tab.equalsIgnoreCase("tab") )
-             {
-              %>
-<%@ include file="/trendingtabular.jsp" %>
-<%
-             }
-             else // "graph" is default
-             {
-              %>
-<img src="/servlet/GraphGenerator?<%="db=" + dbAlias + "&gdefid=" + graphDefinitionId + "&width=" + width + "&height=" + height + "&format=png&start=" + dateFormat.format(start) + "&end=" + dateFormat.format(stop)+ "&model=" + modelType%>"> 
+<jsp:useBean id="graphBean" class="com.cannontech.graph.GraphBean" scope="session"></jsp:useBean>
+	<%
+	if( graphBean.getGdefid() <= 0 )
+	{
+	%>
+		<p class="Main"> No Data Set Selected 
+	<%
+	}
+	else if( graphBean.getTab().equalsIgnoreCase("summary") )
+	{
+		graphBean.updateCurrentPane();				
+		out.println(graphBean.getHtmlString());
+	}
+	else if( graphBean.getTab().equalsIgnoreCase("tab") )
+	{
+		graphBean.updateCurrentPane();
+		out.println(graphBean.getHtmlString());
+	}
+	else // "graph" is default
+	{
+	%>
+		<img src="/servlet/GraphGenerator?">
+	<%
+	}
+	%>
 
-<%
-             }
-          %>
-<a href="<%= referrer %>"><font color="#000000" face="Arial, Helvetica, sans-serif" size="2">Back</font></a> 
+<a href="javascript:history.back()" class="Link3">Back</a> 
