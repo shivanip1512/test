@@ -9,6 +9,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.Timer;
 
 import javax.swing.JComponent;
 import javax.swing.JDialog;
@@ -29,6 +30,7 @@ import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.editor.PropertyPanelListener;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.esub.editor.element.DrawingElement;
+import com.cannontech.esub.util.DrawingUpdater;
 import com.cannontech.esub.util.Util;
 
 import com.loox.jloox.LxComponent;
@@ -50,7 +52,9 @@ public class Editor extends JPanel {
 	private static final Dimension defaultSize = new Dimension(800, 600);
 
 	private Drawing drawing;
-
+	private Timer drawingUpdateTimer;
+	private DrawingUpdater drawingUpdater;
+	
 	private JDialog propertyDialog;
 
 	ElementPlacer elementPlacer;
@@ -59,9 +63,11 @@ public class Editor extends JPanel {
 	private final MouseListener viewMouseListener = new MouseAdapter() {
 		public void mousePressed(MouseEvent evt) {
 			if (elementPlacer.isPlacing()) {
+							
 				elementPlacer.setXPosition(evt.getX());
 				elementPlacer.setYPosition(evt.getY());
 				configureObject(elementPlacer);
+				
 			}
 		}
 	};
@@ -69,7 +75,9 @@ public class Editor extends JPanel {
 	final LxMouseListener editElementMouseListener = new LxMouseAdapter() {
 		public void mouseDoubleClicked(LxMouseEvent evt) {
 			System.out.println("double click");
-			editElement(evt.getLxComponent());
+			synchronized(getDrawing()) {				
+				editElement(evt.getLxComponent());
+			}
 		}
 	};
 
@@ -104,6 +112,8 @@ public class Editor extends JPanel {
 		SwingUtilities.invokeLater(new Runnable() {
 
 			public void run() {
+				
+				synchronized(getDrawing()) {
 
 				try {
 					LxElement elem = placer.getElement();
@@ -115,6 +125,7 @@ public class Editor extends JPanel {
 						((DrawingElement) elem).setDrawing(getDrawing());
 					}
 					getDrawing().getLxGraph().add(elem);
+	
 					editElement(elem);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -122,6 +133,8 @@ public class Editor extends JPanel {
 					elementPlacer.setIsPlacing(false);
 					getDrawing().getLxView().setCursor(
 						new Cursor(Cursor.DEFAULT_CURSOR));
+				}
+				
 				}
 			}
 		});
@@ -226,7 +239,14 @@ public class Editor extends JPanel {
 			JComponent.WHEN_IN_FOCUSED_WINDOW);
 
 		deletePopupItem.addActionListener(
-			editorActions.getAction(EditorActions.SET_DYNAMIC_TEXT_COLOR));
+			editorActions.getAction(EditorActions.SET_DYNAMIC_TEXT_COLOR));		
+		
+		drawingUpdater = new DrawingUpdater();	
+		drawingUpdater.setDrawing( getDrawing() );
+		drawingUpdateTimer = new Timer();
+		drawingUpdateTimer.schedule(drawingUpdater, 0, 5000);
+		
+		
 	}
 
 	public void openDrawing() {
@@ -319,6 +339,8 @@ public class Editor extends JPanel {
 
 		elementPlacer.setIsPlacing(false);
 		setFrameTitle(drawingFile);
+		
+		//drawingUpdater.setDrawing(getDrawing());
 	}
 
 	/**

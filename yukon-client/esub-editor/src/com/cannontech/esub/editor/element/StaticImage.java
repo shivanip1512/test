@@ -5,6 +5,7 @@ import java.io.OutputStream;
 import java.io.IOException;
 
 import com.cannontech.esub.editor.Drawing;
+import com.cannontech.esub.util.ImageCache;
 import com.cannontech.esub.util.Util;
 import com.loox.jloox.*;
 /**
@@ -86,7 +87,7 @@ public synchronized void saveAsJLX(OutputStream out) throws IOException
  */
 public void setAbsoluteImagePath(java.lang.String newImageName) {
 	absoluteImagePath = newImageName;
-	setImage( Util.loadImage(absoluteImagePath));
+	setImage( ImageCache.getInstance().getImage(absoluteImagePath));
 }
 /**
  * Creation date: (1/22/2002 10:18:53 AM)

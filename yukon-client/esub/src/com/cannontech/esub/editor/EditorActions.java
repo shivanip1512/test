@@ -17,6 +17,7 @@ import javax.swing.JFileChooser;
 
 import com.cannontech.esub.util.Util;
 import com.loox.jloox.LxAbstractAction;
+import com.loox.jloox.LxComponent;
 import com.loox.jloox.LxGraph;
 import com.loox.jloox.LxView;
 
@@ -98,7 +99,10 @@ class EditorActions {
 	private final LxAbstractAction exportDrawingAction = 
 		new LxAbstractAction(EXPORT_DRAWING, "Export...", "Export drawings to svg", null, true ) {
 			public void processAction(ActionEvent evt) {
-				
+			LxComponent[] c= editor.getDrawing().getLxGraph().getComponents();
+			for( int i = 0; i < 	c.length; i++ ) {
+				c[i].rotateCenter(66.0, c[i].getCenter());
+			}
 			}
 		};
 
@@ -280,6 +284,7 @@ class EditorActions {
 //		actionMap.put(CREATE_IMAGE, v.getAction(LxView.CREATE_IMAGE_ACTION));
 
 		actionMap.put(CREATE_TEXT, v.getAction(LxView.CREATE_TEXT_ACTION));
+		actionMap.put("ZOOM", v.getAction(LxView.ZOOM_IN_400_ACTION));
 	}
     LxAbstractAction getAction(String actionName) {
 	    return (LxAbstractAction) actionMap.get(actionName);

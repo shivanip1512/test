@@ -14,6 +14,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JSeparator;
 
 import com.loox.jloox.LxAbstractAction;
+import com.loox.jloox.LxView;
 
 class EditorMenus {
 
@@ -76,7 +77,8 @@ private void initialize(EditorActions actions) {
 	action = actions.getAction(EditorActions.SAVE_AS_DRAWING);
 	JMenuItem saveAsItem = createMenuItem(action.getLabel(), action);
 
-	action = actions.getAction(EditorActions.EXPORT_DRAWING);
+	action = actions.getAction(EditorActions.EXPORT_DRAWING);	
+	//action = actions.getAction("ZOOM"); 
 	JMenuItem exportItem = createMenuItem(action.getLabel(), action);
 	
 	action = actions.getAction(EditorActions.EXIT_EDITOR);

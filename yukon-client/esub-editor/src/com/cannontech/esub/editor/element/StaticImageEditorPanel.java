@@ -1,6 +1,7 @@
 package com.cannontech.esub.editor.element;
 
 import com.cannontech.common.gui.util.*;
+import com.cannontech.esub.util.ImageCache;
 import com.cannontech.esub.util.Util;
 
 import java.awt.Image;
@@ -225,7 +226,8 @@ private void initialize() {
                     java.io.File file = fc.getSelectedFile();                    
                     String img = file.getPath();					
                     getImageNameLabel().setText(file.getPath());
-                    Image i = Util.loadImage(img);                   
+                    //Image i = Util.loadImage(img);                   
+                    Image i = ImageCache.getInstance().getImage(img);                   
 					getImageNameLabel().setIcon(new javax.swing.ImageIcon(i));	
                 }                
 		}

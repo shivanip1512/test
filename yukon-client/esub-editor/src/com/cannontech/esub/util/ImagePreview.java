@@ -19,7 +19,7 @@ public class ImagePreview extends JComponent
             return;
         }
  
-        ImageIcon tmpIcon = new ImageIcon(file.getPath());
+        ImageIcon tmpIcon = new ImageIcon(ImageCache.getInstance().getImage(file.getPath()));
         if (tmpIcon.getIconWidth() > 90) {
             thumbnail = new ImageIcon(tmpIcon.getImage().
                                  getScaledInstance(90, -1,

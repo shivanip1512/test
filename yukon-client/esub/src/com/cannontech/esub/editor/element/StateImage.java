@@ -12,6 +12,7 @@ import com.loox.jloox.*;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.esub.editor.Drawing;
+import com.cannontech.esub.util.ImageCache;
 import com.cannontech.esub.util.Util;
 
 /**
@@ -245,22 +246,32 @@ public void setPointID(int newPointID) {
 	}
 }
 /**
+ * Sets the current state.
  * Creation date: (1/8/2002 1:56:52 PM)
  * @param newState java.lang.String
  */
-public void setState(java.lang.String newState) {
+public void setState(java.lang.String newState) {	
 	state = newState;
 
 	// find the correct image for the new state
 	for( int i = 0; i < states.length; i++ ) {
-		if( states[i].equalsIgnoreCase(newState) ) {	
-			System.out.println("Looking for image: " + absoluteImagePaths[i]);			
-			setImage(Util.loadImage(absoluteImagePaths[i]));	
-
+		if( states[i].equalsIgnoreCase(newState) ) {				
+			setImage(ImageCache.getInstance().getImage(absoluteImagePaths[i]));	
 			break; 
 		}
+	}	
+	
+	// the view needs to be forced to repaint
+	// sometimes there may not be a valid view
+	// so pay attention to null
+/*	Drawing d = getDrawing();
+	if( d != null ) {
+		LxView view = d.getLxView();
+		if( view != null ) {
+			view.repaint();
+		}
 	}
-		
+*/		
 }
 /**
  * Creation date: (1/21/2002 1:04:43 PM)

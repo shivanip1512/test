@@ -130,7 +130,7 @@ public class Drawing {
 			lxView = new LxView();
 			lxView.setGraph(getLxGraph());
 			lxView.setEditMode(LxView.EDITOR_MODE);
-			lxView.setAntialiasingActivated(true);
+			lxView.setAntialiasingActivated(false);
 			lxView.lassoSetDisplayed(false);
 			lxView.setBackground(java.awt.Color.black);
 			lxView.setMagneticGridColor(java.awt.Color.gray);
