@@ -146,7 +146,11 @@ private String buildWhereClause(java.util.Vector groupVector, String groupingCol
 			whereClauses.add(new String(" POINT.POINTID = POINTUNIT.POINTID "));
 			whereClauses.add(new String(" POINTUNIT.UOMID = UNITMEASURE.UOMID"));
 		}
-
+		
+		if( deviceMeterGroup_from)
+		{
+			whereClauses.add(new String(" POINT.PAOBJECTID = DEVICEMETERGROUP.DEVICEID"));
+		}
 		// select valid pointtypes with appropriate pointoffsets.
 		String pointTypeString = new String(" ((POINTTYPE = 'Analog' AND POINTOFFSET IN (" + analogOffsets[0]);
 		for (int i = 1; i < analogOffsets.length; i++)
