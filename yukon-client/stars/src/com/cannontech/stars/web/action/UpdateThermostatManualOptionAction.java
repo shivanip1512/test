@@ -103,8 +103,7 @@ public class UpdateThermostatManualOptionAction implements ActionBase {
 			LiteLMHardwareBase liteHw = energyCompany.getLMHardware( starsOption.getInventoryID(), true );
 			String routeStr = (energyCompany == null) ? "" : " select route id " + String.valueOf(energyCompany.getRouteID()) + " load 1";
 			
-			//StringBuffer cmd = new StringBuffer("putconfig xcom setstate")
-			StringBuffer cmd = new StringBuffer("control xcom setstate")
+			StringBuffer cmd = new StringBuffer("putconfig xcom setstate")
 					.append(" temp ").append(starsOption.getTemperature());
 			if (starsOption.getMode() != null)
 				cmd.append(" system ").append(starsOption.getMode().toString().toLowerCase());
