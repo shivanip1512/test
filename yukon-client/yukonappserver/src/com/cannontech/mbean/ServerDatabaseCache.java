@@ -2196,6 +2196,7 @@ public synchronized void releaseAllCache()
 
 	allYukonUsers = null;
 	allYukonRoles = null;
+	allYukonRoleProperties = null;
 	allYukonGroups = null;
 	
 	allYukonUserRoleProperties = null;
