@@ -14,6 +14,7 @@ import java.awt.print.PageFormat;
 import java.io.OutputStream;
 
 import org.jfree.report.JFreeReport;
+import org.jfree.report.modules.output.csv.CSVQuoter;
 import org.jfree.report.modules.output.pageable.base.PageableReportProcessor;
 import org.jfree.report.modules.output.pageable.pdf.PDFOutputTarget;
 
@@ -34,6 +35,7 @@ import com.cannontech.analysis.report.SystemLogReport;
 import com.cannontech.analysis.report.WorkOrder;
 import com.cannontech.analysis.report.YukonReportBase;
 import com.cannontech.analysis.tablemodel.LMControlLogModel;
+import com.cannontech.clientutils.CTILogger;
 import com.keypoint.PngEncoder;
 import com.klg.jclass.util.swing.encode.EncoderException;
 import com.klg.jclass.util.swing.encode.page.PDFEncoder;
@@ -46,8 +48,9 @@ import com.klg.jclass.util.swing.encode.page.PDFEncoder;
  */
 public class ReportFuncs
 {
-	public static YukonReportBase createYukonReport(final int reportType)
+	public static YukonReportBase createYukonReport(int reportType)
 	{
+		CTILogger.info(" REPRT TYPE: " + reportType);
 		switch (reportType)
 		{
 			case ReportTypes.STATISTIC_DATA:
@@ -82,9 +85,6 @@ public class ReportFuncs
 			case ReportTypes.CARRIER_ROUTE_MACRO_DATA:
 				return new RouteMacroReport();
 
-//				case ReportTypes.LOAD_PROFILE_DATA:
-//					return new LoadProfileReport();
-
 			case ReportTypes.EC_ACTIVITY_DETAIL_DATA:
 				return new ECActivityDetailReport();
 				
@@ -96,11 +96,12 @@ public class ReportFuncs
 			
 			case ReportTypes.POINT_DATA_INTERVAL_DATA:
 				return new PointDataIntervalReport();
+
 			case ReportTypes.POINT_DATA_SUMMARY_DATA:
 				return new PointDataSummaryReport();
 				
 			default:
-				return null;
+				return new CarrierDBReport();	//give us something at least....
 		}
 	}
 	
@@ -133,15 +134,36 @@ public class ReportFuncs
 		{
 			throw new Exception("The 'png' format is not supported by the outputYukonReport() method.");
 		}
-		/*else if (ext.equalsIgnoreCase("csv"))
+		else if (ext.equalsIgnoreCase("csv"))
 		{
-			final AbstractTableReportServletWorker worker = new StaticTableReportServletWorker(report, report.getData());
-			// this throws an exception if the report could not be parsed
-			final ExcelProcessor processor = new ExcelProcessor(worker.getReport());
-			processor.setOutputStream(out);
-			worker.setTableProcessor(processor);
+			CSVQuoter quoter = new CSVQuoter(","); 
+
+			//Write column headers
+			for (int r = 0; r < report.getData().getColumnCount(); r++) 
+			{
+				if( r != 0 )
+					out.write(new String(",").getBytes());
+					
+				out.write(report.getData().getColumnName(r).getBytes());
+			}
+			out.write(new String("\r\n").getBytes());
+			
+			//Write data
+			for (int r = 0; r < report.getData().getRowCount(); r++) 
+			{
+				for (int c = 0; c < report.getData().getColumnCount(); c++) 
+				{ 
+					if (c != 0) 
+					{ 
+						out.write(new String(",").getBytes()); 
+					} 
+					String rawValue = String.valueOf (report.getData().getValueAt(r,c)); 
+					out.write(quoter.doQuoting(rawValue).getBytes()); 
+				} 
+				out.write(new String("\r\n").getBytes());
+			} 
 		}
-		else if (ext.equalsIgnoreCase("jpeg"))
+		/*else if (ext.equalsIgnoreCase("jpeg"))
 		{
 		}*/
 	}

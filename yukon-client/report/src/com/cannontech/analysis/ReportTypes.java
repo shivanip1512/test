@@ -16,6 +16,7 @@ package com.cannontech.analysis;
 public class ReportTypes
 {
 	/** enums for types of objects reported on */
+	public static final int NONE = -1;
 	public static final int STATISTIC_DATA = 0;
 
 	public static final int SYSTEM_LOG_DATA = 1;
@@ -65,8 +66,8 @@ public class ReportTypes
 	
 	public static final String CAPBANK_DATA_STRING = "CapBank Details";
 	
-	public static final String POINT_DATA_INTERVAL_DATA_STRING = "Point Data Interval";
-	public static final String POINT_DATA_SUMMARY_DATA_STRING = "Point Data Summary";
+	public static final String POINT_DATA_INTERVAL_DATA_STRING = "PointData Interval";
+	public static final String POINT_DATA_SUMMARY_DATA_STRING = "PointData Summary";
 
 	/** Report String to enum mapping */
 	public static final String[] reportName = {
@@ -108,14 +109,14 @@ public class ReportTypes
 	public static final int STARS_REPORTS_GROUP = 6;
 	public static final int OTHER_REPORTS_GROUP = 7;
 	
-	public static final String ADMIN_REPORTS_GROUP_STRING = "Administrative Reports";
-	public static final String AMR_REPORTS_GROUP_STRING = "AMR Reports";
-	public static final String STATISTICAL_REPORTS_GROUP_STRING = "Communication Statistics Reports";
-	public static final String LOAD_MANAGEMENT_REPORTS_GROUP_STRING = "Load Management Reports";
-	public static final String CAP_CONTROL_REPORTS_GROUP_STRING = "Cap Control Reports";
-	public static final String DATABASE_REPORTS_GROUP_STRING = "Database Reports";
-	public static final String STARS_REPORTS_GROUP_STRING = "STARS Reports";
-	public static final String OTHER_REPORTS_GROUP_STRING = "Miscellaneous Reports";
+	public static final String ADMIN_REPORTS_GROUP_STRING = "Administrative";
+	public static final String AMR_REPORTS_GROUP_STRING = "AMR";
+	public static final String STATISTICAL_REPORTS_GROUP_STRING = "Communication";
+	public static final String LOAD_MANAGEMENT_REPORTS_GROUP_STRING = "Load Management";
+	public static final String CAP_CONTROL_REPORTS_GROUP_STRING = "Capacitor Control";
+	public static final String DATABASE_REPORTS_GROUP_STRING = "Database";
+	public static final String STARS_REPORTS_GROUP_STRING = "STARS";
+	public static final String OTHER_REPORTS_GROUP_STRING = "Miscellaneous";
 
 	/** Report String to enum mapping */
 	public static final String[] reportGroupName = {
@@ -138,11 +139,25 @@ public class ReportTypes
 		{STATISTIC_DATA},	//stat reports
 		{LM_CONTROL_LOG_DATA, LG_ACCOUNTING_DATA, LM_DAILY_PEAKS_DATA},		//lm reports
 		{CBC_BANK_DATA}, //cap control reports
-		{CARRIER_DB_DATA}, //database reports
+		{CARRIER_DB_DATA, CARRIER_ROUTE_MACRO_DATA}, //database reports
 		{EC_ACTIVITY_LOG_DATA, EC_ACTIVITY_DETAIL_DATA, PROGRAM_DETAIL_DATA, EC_WORK_ORDER_DATA},	//stars reports
-		{CARRIER_ROUTE_MACRO_DATA}	//other reports
+		{NONE}	//other reports
 	};
 
+public static int getReportGroupType(int reportType)
+{
+	for (int i = 0; i < groupToTypeMap.length; i++)
+	{
+		for (int j = 0; j < groupToTypeMap[i].length; j++)
+		{
+			if( groupToTypeMap[i][j] == reportType)
+			{
+				return i;
+			}
+		}
+	}
+	return -1;	//unknown
+}
 /**
  * @return
  */
@@ -150,7 +165,10 @@ public static int[][] getGroupToTypeMap()
 {
 	return groupToTypeMap;
 }
-
+public static int[] getGroupTypes(int groupID)
+{
+	return groupToTypeMap[groupID];
+}
 public static String getReportName(int reportType)
 {
 	return reportName[reportType];
