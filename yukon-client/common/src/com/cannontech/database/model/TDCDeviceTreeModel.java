@@ -25,6 +25,13 @@ public boolean isDeviceValid( int cateogry_, int class_, int type_ )
 {
 	return( class_ != com.cannontech.database.data.pao.DeviceClasses.SYSTEM );
 }
+
+protected synchronized java.util.List getCacheList(
+        com.cannontech.database.cache.DefaultDatabaseCache cache ) 
+{
+    return cache.getAllYukonPAObjects();
+}
+
 /**
  * update method comment.
  */
