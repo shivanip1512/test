@@ -1446,21 +1446,24 @@ public void update(java.util.Observable o, Object val)
 			"Connection to CBC server established", com.cannontech.common.util.MessageEvent.INFORMATION_MESSAGE));
 	}	
 	
-	java.awt.Frame f = com.cannontech.common.util.CtiUtilities.getParentFrame(this);
+	final java.awt.Frame f = com.cannontech.common.util.CtiUtilities.getParentFrame(this);
 	
 	if (f != null)
 	{
 		String title = TITLE;
 		
 		if (validConn)
-		{
 			title += "   [Connected to CBCServer@" + conn.getHost() + ":" + conn.getPort() + "]";
-		}
 		else
-		{
 			title += "   [Not Connected to CBCServer]";
-		}
-		f.setTitle(title);
+		
+		final String t = title;
+		javax.swing.SwingUtilities.invokeLater( new Runnable()
+		{
+		public void run()
+		{		
+			f.setTitle(t);
+		}});
 	}
 
 	lastConnectionStatus = validConn;

@@ -546,8 +546,13 @@ public void setFontValues(String name, int size)
  * @param source Observable
  * @param obj java.lang.Object
  */
-public synchronized void update(Observable source, Object obj ) 
-{
+public synchronized void update(final Observable source, final Object obj ) 
+{	
+	javax.swing.SwingUtilities.invokeLater( new Runnable()
+	{
+	public void run()
+	{
+
 	if( source instanceof CBCClientConnection )
 	{
 		int oldRowCount = getRowCount();
@@ -555,7 +560,7 @@ public synchronized void update(Observable source, Object obj )
 		if( obj instanceof com.cannontech.database.db.state.State[] )
 		{
 			StateTableModelEvent e = 
-				new StateTableModelEvent(this, 0, getRowCount()-1,
+				new StateTableModelEvent(SubBusTableModel.this, 0, getRowCount()-1,
 						javax.swing.event.TableModelEvent.ALL_COLUMNS, 
 						javax.swing.event.TableModelEvent.UPDATE);
 			
@@ -574,6 +579,10 @@ public synchronized void update(Observable source, Object obj )
 		else
 			fireTableDataChanged();
 	}
+
+
+	}
+	});
 
 }
 /**
