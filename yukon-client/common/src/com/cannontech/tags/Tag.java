@@ -12,8 +12,9 @@ public class Tag {
 	private int instanceID;
 	private int pointID;
 	private int tagID;
+	private String username = "";
 	private String descriptionStr = "";
-	private Date tagTime;
+	private Date tagTime = new Date();
 	private String referenceStr = "";
 	private String taggedForStr = "";
 	
@@ -114,4 +115,40 @@ public class Tag {
 	public void setTagTime(Date date) {
 		tagTime = date;
 	}	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	public int hashCode() {		
+		return getInstanceID();
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	public boolean equals(Object obj) {
+		return (obj instanceof Tag &&
+				((Tag)obj).getInstanceID() == getInstanceID());
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	public String toString() {
+		return "Tag instanceID: " + getInstanceID() + " pointID: " + getPointID();
+	}
+
+	/**
+	 * @return
+	 */
+	public String getUsername() {
+		return username;
+	}
+
+	/**
+	 * @param string
+	 */
+	public void setUsername(String string) {
+		username = string;
+	}
+
 }
