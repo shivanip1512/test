@@ -207,11 +207,13 @@ public void setSchedule(Schedule newSchedule)
 		if( getSchedule().getCurrentState().equalsIgnoreCase( Schedule.STATE_RUNNING ) )
 		{
 			getJMenuItemDelete().setEnabled(false);
+			getJMenuItemEdit().setEnabled(false);
 			getJMenuItemStartStop().setText("Stop...");
 		}
 		else
 		{
 			getJMenuItemDelete().setEnabled(true);
+			getJMenuItemEdit().setEnabled(true);
 			getJMenuItemStartStop().setText("Start...");
 		}
 
@@ -221,15 +223,13 @@ public void setSchedule(Schedule newSchedule)
 			getJMenuItemEnableDisable().setText("Enable");
 			getJMenuItemEnableDisable().setEnabled(true);
 			getJMenuItemUpdate().setEnabled(true);
-			getJMenuItemEdit().setEnabled(true);
 		}
-		else// if( !com.cannontech.macs.gui.Scheduler.isReadOnly() )
+		else
 		{
 			getJMenuItemEnableDisable().setText("Disable");
 			getJMenuItemStartStop().setEnabled(true);
 			getJMenuItemEnableDisable().setEnabled(true);
 			getJMenuItemUpdate().setEnabled(true);
-			getJMenuItemEdit().setEnabled(true);			
 		}
 
 
