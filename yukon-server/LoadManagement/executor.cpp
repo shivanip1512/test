@@ -108,7 +108,7 @@ void CtiLMCommandExecutor::ChangeThreshold(RWCountedPointer< CtiCountedPCPtrQueu
     ULONG commandPAOID = _command->getPAOId();
     ULONG triggerNumber = _command->getNumber();
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
-    RWOrdered& controlAreas = *(store->getControlAreas());
+    RWOrdered& controlAreas = *(store->getControlAreas(RWDBDateTime().seconds()));
 
     for(ULONG i=0;i<controlAreas.entries();i++)
     {
@@ -158,7 +158,7 @@ void CtiLMCommandExecutor::ChangeRestoreOffset(RWCountedPointer< CtiCountedPCPtr
     ULONG commandPAOID = _command->getPAOId();
     ULONG triggerNumber = _command->getNumber();
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
-    RWOrdered& controlAreas = *(store->getControlAreas());
+    RWOrdered& controlAreas = *(store->getControlAreas(RWDBDateTime().seconds()));
 
     for(ULONG i=0;i<controlAreas.entries();i++)
     {
@@ -215,7 +215,7 @@ void CtiLMCommandExecutor::EnableControlArea(RWCountedPointer< CtiCountedPCPtrQu
 
     ULONG commandPAOID = _command->getPAOId();
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
-    RWOrdered& controlAreas = *(store->getControlAreas());
+    RWOrdered& controlAreas = *(store->getControlAreas(RWDBDateTime().seconds()));
 
     for(ULONG i=0;i<controlAreas.entries();i++)
     {
@@ -244,7 +244,7 @@ void CtiLMCommandExecutor::DisableControlArea(RWCountedPointer< CtiCountedPCPtrQ
 
     ULONG commandPAOID = _command->getPAOId();
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
-    RWOrdered& controlAreas = *(store->getControlAreas());
+    RWOrdered& controlAreas = *(store->getControlAreas(RWDBDateTime().seconds()));
 
     for(ULONG i=0;i<controlAreas.entries();i++)
     {
@@ -290,7 +290,7 @@ void CtiLMCommandExecutor::EnableProgram(RWCountedPointer< CtiCountedPCPtrQueue<
     ULONG commandPAOID = _command->getPAOId();
     bool found = FALSE;
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
-    RWOrdered& controlAreas = *(store->getControlAreas());
+    RWOrdered& controlAreas = *(store->getControlAreas(RWDBDateTime().seconds()));
 
     for(ULONG i=0;i<controlAreas.entries();i++)
     {
@@ -328,7 +328,7 @@ void CtiLMCommandExecutor::DisableProgram(RWCountedPointer< CtiCountedPCPtrQueue
     ULONG commandPAOID = _command->getPAOId();
     bool found = FALSE;
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
-    RWOrdered& controlAreas = *(store->getControlAreas());
+    RWOrdered& controlAreas = *(store->getControlAreas(RWDBDateTime().seconds()));
 
     for(ULONG i=0;i<controlAreas.entries();i++)
     {
@@ -377,7 +377,7 @@ void CtiLMCommandExecutor::SendAllControlAreas(RWCountedPointer< CtiCountedPCPtr
     CtiLMExecutorFactory f;
     RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > queue = new CtiCountedPCPtrQueue<RWCollectable>();
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
-    CtiLMExecutor* executor = f.createExecutor(new CtiLMControlAreaMsg(*(store->getControlAreas())));
+    CtiLMExecutor* executor = f.createExecutor(new CtiLMControlAreaMsg(*(store->getControlAreas(RWDBDateTime().seconds()))));
     executor->Execute(queue);
     delete executor;
 }
@@ -392,7 +392,7 @@ void CtiLMCommandExecutor::ChangeDailyStartTime(RWCountedPointer< CtiCountedPCPt
     ULONG commandPAOID = _command->getPAOId();
     ULONG newStartTime = (ULONG)_command->getValue();
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
-    RWOrdered& controlAreas = *(store->getControlAreas());
+    RWOrdered& controlAreas = *(store->getControlAreas(RWDBDateTime().seconds()));
 
     for(ULONG i=0;i<controlAreas.entries();i++)
     {
@@ -434,7 +434,7 @@ void CtiLMCommandExecutor::ChangeDailyStopTime(RWCountedPointer< CtiCountedPCPtr
     ULONG commandPAOID = _command->getPAOId();
     ULONG newStopTime = (ULONG)_command->getValue();
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
-    RWOrdered& controlAreas = *(store->getControlAreas());
+    RWOrdered& controlAreas = *(store->getControlAreas(RWDBDateTime().seconds()));
 
     for(ULONG i=0;i<controlAreas.entries();i++)
     {
@@ -514,7 +514,7 @@ void CtiLMManualControlMsgExecutor::ScheduledStart(RWCountedPointer< CtiCountedP
     BOOL found = FALSE;
     ULONG directProgramID = _controlMsg->getPAOId();
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
-    RWOrdered& controlAreas = *store->getControlAreas();
+    RWOrdered& controlAreas = *store->getControlAreas(RWDBDateTime().seconds());
 
     if( controlAreas.entries() > 0 )
     {
@@ -641,7 +641,7 @@ void CtiLMManualControlMsgExecutor::ScheduledStop(RWCountedPointer< CtiCountedPC
     BOOL found = FALSE;
     ULONG directProgramID = _controlMsg->getPAOId();
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
-    RWOrdered& controlAreas = *store->getControlAreas();
+    RWOrdered& controlAreas = *store->getControlAreas(RWDBDateTime().seconds());
 
     if( controlAreas.entries() > 0 )
     {
@@ -760,7 +760,7 @@ void CtiLMManualControlMsgExecutor::StartNow(RWCountedPointer< CtiCountedPCPtrQu
     BOOL found = FALSE;
     ULONG directProgramID = _controlMsg->getPAOId();
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
-    RWOrdered& controlAreas = *store->getControlAreas();
+    RWOrdered& controlAreas = *store->getControlAreas(RWDBDateTime().seconds());
 
     if( controlAreas.entries() > 0 )
     {
@@ -885,7 +885,7 @@ void CtiLMManualControlMsgExecutor::StopNow(RWCountedPointer< CtiCountedPCPtrQue
     BOOL found = FALSE;
     ULONG directProgramID = _controlMsg->getPAOId();
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
-    RWOrdered& controlAreas = *store->getControlAreas();
+    RWOrdered& controlAreas = *store->getControlAreas(RWDBDateTime().seconds());
 
     if( controlAreas.entries() > 0 )
     {
@@ -1058,7 +1058,7 @@ void CtiLMEnergyExchangeControlMsgExecutor::NewOffer(RWCountedPointer< CtiCounte
     BOOL found = FALSE;
     ULONG energyExchangeProgramID = _energyExchangeMsg->getPAOId();
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
-    RWOrdered& controlAreas = *store->getControlAreas();
+    RWOrdered& controlAreas = *store->getControlAreas(RWDBDateTime().seconds());
 
     if( controlAreas.entries() > 0 )
     {
@@ -1165,7 +1165,7 @@ void CtiLMEnergyExchangeControlMsgExecutor::OfferUpdate(RWCountedPointer< CtiCou
     BOOL found = FALSE;
     ULONG energyExchangeProgramID = _energyExchangeMsg->getPAOId();
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
-    RWOrdered& controlAreas = *store->getControlAreas();
+    RWOrdered& controlAreas = *store->getControlAreas(RWDBDateTime().seconds());
 
     if( controlAreas.entries() > 0 )
     {
@@ -1282,7 +1282,7 @@ void CtiLMEnergyExchangeControlMsgExecutor::OfferRevision(RWCountedPointer< CtiC
     BOOL found = FALSE;
     ULONG energyExchangeProgramID = _energyExchangeMsg->getPAOId();
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
-    RWOrdered& controlAreas = *store->getControlAreas();
+    RWOrdered& controlAreas = *store->getControlAreas(RWDBDateTime().seconds());
 
     if( controlAreas.entries() > 0 )
     {
@@ -1410,7 +1410,7 @@ void CtiLMEnergyExchangeControlMsgExecutor::CloseOffer(RWCountedPointer< CtiCoun
     BOOL found = FALSE;
     ULONG energyExchangeProgramID = _energyExchangeMsg->getPAOId();
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
-    RWOrdered& controlAreas = *store->getControlAreas();
+    RWOrdered& controlAreas = *store->getControlAreas(RWDBDateTime().seconds());
 
     if( controlAreas.entries() > 0 )
     {
@@ -1514,7 +1514,7 @@ void CtiLMEnergyExchangeControlMsgExecutor::CancelOffer(RWCountedPointer< CtiCou
     BOOL found = FALSE;
     ULONG energyExchangeProgramID = _energyExchangeMsg->getPAOId();
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
-    RWOrdered& controlAreas = *store->getControlAreas();
+    RWOrdered& controlAreas = *store->getControlAreas(RWDBDateTime().seconds());
 
     if( controlAreas.entries() > 0 )
     {
@@ -1644,7 +1644,7 @@ void CtiLMCurtailmentAcknowledgeMsgExecutor::Execute(RWCountedPointer< CtiCounte
     ULONG curtailmentCustomerID = _curtailAckMsg->getPAOId();
     ULONG curtailReferenceID = _curtailAckMsg->getCurtailReferenceId();
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
-    RWOrdered& controlAreas = *store->getControlAreas();
+    RWOrdered& controlAreas = *store->getControlAreas(RWDBDateTime().seconds());
 
     if( controlAreas.entries() > 0 )
     {
@@ -1751,7 +1751,7 @@ void CtiLMEnergyExchangeAcceptMsgExecutor::Execute(RWCountedPointer< CtiCountedP
     ULONG offerID = _energyExchangeAcceptMsg->getOfferId();
     ULONG revisionNumber = _energyExchangeAcceptMsg->getRevisionNumber();
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
-    RWOrdered& controlAreas = *store->getControlAreas();
+    RWOrdered& controlAreas = *store->getControlAreas(RWDBDateTime().seconds());
 
     if( controlAreas.entries() > 0 )
     {
@@ -1937,6 +1937,28 @@ void CtiLMShutdownExecutor::Execute(RWCountedPointer< CtiCountedPCPtrQueue<RWCol
 
     try
     {
+        if( _LM_DEBUG )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << RWTime() << " - Shutting down the substation bus store..." << endl;
+        }
+    
+        CtiLMControlAreaStore::deleteInstance();
+
+        if( _LM_DEBUG )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << RWTime() << " - Done shutting down the substation bus store!!!" << endl;
+        }
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
+    
+    try
+    {
         /*if( _LM_DEBUG )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -1951,22 +1973,6 @@ void CtiLMShutdownExecutor::Execute(RWCountedPointer< CtiCountedPCPtrQueue<RWCol
         dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 
-    try
-    {
-        /*if( _LM_DEBUG )
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Shutting down the strategystore..." << endl;
-        }*/
-    
-        CtiLMControlAreaStore::deleteInstance();
-    }
-    catch(...)
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-    }
-    
     /*if( _LM_DEBUG )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
