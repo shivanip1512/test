@@ -26,6 +26,7 @@
 
 extern ULONG _CC_DEBUG;
 extern BOOL _IGNORE_NOT_NORMAL_FLAG;
+extern ULONG _SEND_TRIES;
 
 RWDEFINE_COLLECTABLE( CtiCCFeeder, CTICCFEEDER_ID )
 
@@ -1553,9 +1554,91 @@ BOOL CtiCCFeeder::isPastResponseTime(const RWDBDateTime& currentDateTime, LONG m
 {
     BOOL returnBoolean = FALSE;
 
-    if( ((getLastOperationTime().seconds() + minResponseTime) <= currentDateTime.seconds()) )
+    if( ((getLastOperationTime().seconds() + (minResponseTime/_SEND_TRIES)) <= currentDateTime.seconds()) )
     {
         returnBoolean = TRUE;
+    }
+
+    return returnBoolean;
+}
+
+/*---------------------------------------------------------------------------
+    attemptToResendControl
+
+    Returns a .
+---------------------------------------------------------------------------*/
+BOOL CtiCCFeeder::attemptToResendControl(const RWDBDateTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages, LONG minResponseTime)
+{
+    BOOL returnBoolean = FALSE;
+
+    for(LONG i=0;i<_cccapbanks.entries();i++)
+    {
+        CtiCCCapBank* currentCapBank = (CtiCCCapBank*)_cccapbanks[i];
+        if( currentCapBank->getPAOId() == getLastCapBankControlledDeviceId() )
+        {
+            if( currentDateTime.seconds() < currentCapBank->getLastStatusChangeTime().seconds() + minResponseTime )
+            {
+                if( currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending )
+                {
+                    figureEstimatedVarLoadPointValue();
+                    if( currentCapBank->getStatusPointId() > 0 )
+                    {
+                        char tempchar[80] = "";
+                        RWCString text = RWCString("Resending Open");
+                        RWCString additional = RWCString("Feeder: ");
+                        additional += getPAOName();
+                        pointChanges.insert(new CtiSignalMsg(currentCapBank->getStatusPointId(),0,text,additional,GeneralLogType,SignalEvent));
+                        ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(1);
+                    }
+                    else
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << RWTime() << " - Cap Bank: " << currentCapBank->getPAOName()
+                        << " DeviceID: " << currentCapBank->getPAOId() << " doesn't have a status point!" << endl;
+                    }
+
+                    CtiRequestMsg* reqMsg = new CtiRequestMsg(currentCapBank->getControlDeviceId(),"control open");
+                    pilMessages.insert(reqMsg);
+                    setLastOperationTime(currentDateTime);
+                    returnBoolean = TRUE;
+                }
+                else if( currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending )
+                {
+                    figureEstimatedVarLoadPointValue();
+                    if( currentCapBank->getStatusPointId() > 0 )
+                    {
+                        char tempchar[80] = "";
+                        RWCString text = RWCString("Resending Close");
+                        RWCString additional = RWCString("Feeder: ");
+                        additional += getPAOName();
+                        pointChanges.insert(new CtiSignalMsg(currentCapBank->getStatusPointId(),0,text,additional,GeneralLogType,SignalEvent));
+                        ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(1);
+                    }
+                    else
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << RWTime() << " - Cap Bank: " << currentCapBank->getPAOName()
+                        << " DeviceID: " << currentCapBank->getPAOId() << " doesn't have a status point!" << endl;
+                    }
+
+                    CtiRequestMsg* reqMsg = new CtiRequestMsg(currentCapBank->getControlDeviceId(),"control close");
+                    pilMessages.insert(reqMsg);
+                    setLastOperationTime(currentDateTime);
+                    returnBoolean = TRUE;
+                }
+                else if( _CC_DEBUG && CC_DEBUG_EXTENDED )
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << RWTime() << " - Cannot Resend Control, Not Pending in: " << __FILE__ << " at: " << __LINE__ << endl;
+                }
+            }
+            else if( _CC_DEBUG && CC_DEBUG_EXTENDED )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << RWTime() << " - Cannot Resend Control, Past Response Time in: " << __FILE__ << " at: " << __LINE__ << endl;
+            }
+            break;
+        }
     }
 
     return returnBoolean;
