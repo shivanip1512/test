@@ -347,6 +347,13 @@ public class DeleteEnergyCompanyTask implements TimeConsumingTask {
 					ServerUtils.handleDBChange( YukonUserFuncs.getLiteYukonUser(userIDs[i]), DBChangeMsg.CHANGE_TYPE_DELETE );
 				}
 				
+				// Delete all other generic mappings
+				currentAction = "Deleting all other generic mappings";
+				
+				sql = "DELETE FROM ECToGenericMapping WHERE EnergyCompanyID = " + user.getEnergyCompanyID();
+				stmt.setSQLString( sql );
+				stmt.execute();
+				
 				// Delete the energy company!
 				currentAction = "Deleting the energy company";
 				

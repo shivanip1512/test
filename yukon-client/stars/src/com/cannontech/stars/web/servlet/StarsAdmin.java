@@ -48,6 +48,7 @@ import com.cannontech.database.data.lite.stars.LiteServiceCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
 import com.cannontech.database.data.lite.stars.LiteWebConfiguration;
 import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
@@ -55,6 +56,7 @@ import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.macro.GenericMacro;
 import com.cannontech.database.db.macro.MacroTypes;
+import com.cannontech.database.db.stars.ECToGenericMapping;
 import com.cannontech.database.db.stars.customer.CustomerAccount;
 import com.cannontech.database.db.web.LMDirectOperatorList;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -72,6 +74,7 @@ import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.util.task.DeleteCustAccountsTask;
 import com.cannontech.stars.util.task.DeleteEnergyCompanyTask;
 import com.cannontech.stars.web.StarsYukonUser;
+import com.cannontech.stars.web.action.UpdateLMHardwareAction;
 import com.cannontech.stars.web.action.UpdateThermostatScheduleAction;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.AnswerType;
@@ -90,6 +93,7 @@ import com.cannontech.stars.xml.serialize.StarsEnrollmentPrograms;
 import com.cannontech.stars.xml.serialize.StarsExitInterviewQuestion;
 import com.cannontech.stars.xml.serialize.StarsExitInterviewQuestions;
 import com.cannontech.stars.xml.serialize.StarsEnergyCompanySettings;
+import com.cannontech.stars.xml.serialize.StarsInventory;
 import com.cannontech.stars.xml.serialize.StarsLMPrograms;
 import com.cannontech.stars.xml.serialize.StarsServiceCompanies;
 import com.cannontech.stars.xml.serialize.StarsServiceCompany;
@@ -205,6 +209,8 @@ public class StarsAdmin extends HttpServlet {
 			deleteOperatorLogin( user, req, session );
 		else if (action.equalsIgnoreCase("UpdateDirectPrograms"))
 			updateDirectPrograms( user, req, session );
+		else if (action.equalsIgnoreCase("UpdateRoutes"))
+			updateRoutes( user, req, session );
 		else if (action.equalsIgnoreCase("MemberLogin"))
 			memberLogin( user, req, session );
 		else if (action.equalsIgnoreCase("AddMemberEnergyCompany"))
@@ -2150,6 +2156,80 @@ public class StarsAdmin extends HttpServlet {
 		}
 	}
 	
+	private void updateRoutes(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
+		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+		
+		try {
+			ArrayList routeIDs = energyCompany.getRouteIDs();
+			ArrayList oldRouteIDs = new ArrayList( routeIDs );
+			
+			String[] rtIDs = req.getParameterValues( "RouteIDs" );
+			if (routeIDs != null) {
+				for (int i = 0; i < rtIDs.length; i++) {
+					Integer routeID = Integer.valueOf( rtIDs[i] );
+					
+					if (oldRouteIDs.contains( routeID )) {
+						// Route already assigned to this energy company
+						oldRouteIDs.remove( routeID );
+					}
+					else {
+						// New route
+						ECToGenericMapping map = new ECToGenericMapping();
+						map.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+						map.setItemID( routeID );
+						map.setMappingCategory( ECToGenericMapping.MAPPING_CATEGORY_ROUTE );;
+						Transaction.createTransaction( Transaction.INSERT, map ).execute();
+						
+						synchronized (routeIDs) { routeIDs.add( routeID ); }
+					}
+				}
+			}
+			
+			for (int i = 0; i < oldRouteIDs.size(); i++) {
+				// Routes to be removed
+				Integer routeID = (Integer) oldRouteIDs.get(i);
+				
+				ArrayList inventory = energyCompany.loadAllInventory();
+				synchronized (inventory) {
+					for (int j = 0; j < inventory.size(); j++) {
+						if (!(inventory.get(j) instanceof LiteStarsLMHardware)) continue;
+						
+						LiteStarsLMHardware liteHw = (LiteStarsLMHardware) inventory.get(j);
+						if (liteHw.getRouteID() == routeID.intValue()) {
+							com.cannontech.database.data.stars.hardware.LMHardwareBase hw =
+									new com.cannontech.database.data.stars.hardware.LMHardwareBase();
+							StarsLiteFactory.setLMHardwareBase( hw, liteHw );
+							hw.getLMHardwareBase().setRouteID( new Integer(CtiUtilities.NONE_ID) );
+							
+							Transaction.createTransaction( Transaction.UPDATE, hw.getLMHardwareBase() ).execute();
+							liteHw.setRouteID( CtiUtilities.NONE_ID );
+							
+							if (liteHw.getAccountID() > 0) {
+								StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteHw.getAccountID() );
+								if (starsAcctInfo != null) {
+									StarsInventory starsInv = StarsLiteFactory.createStarsInventory( liteHw, energyCompany );
+									UpdateLMHardwareAction.parseResponse( liteHw.getInventoryID(), starsInv, starsAcctInfo, session );
+								}
+							}
+						}
+					}
+				}
+				
+				ECToGenericMapping map = new ECToGenericMapping();
+				map.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+				map.setItemID( routeID );
+				map.setMappingCategory( ECToGenericMapping.MAPPING_CATEGORY_ROUTE );
+				Transaction.createTransaction( Transaction.DELETE, map ).execute();
+				
+				synchronized (routeIDs) { routeIDs.remove( routeID ); }
+			}
+		}
+		catch (Exception e) {
+			CTILogger.error( e.getMessage(), e );
+			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Failed to update the assigned routes" );
+		}
+	}
+	
 	private void memberLogin(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
 		int userID = Integer.parseInt( req.getParameter("UserID") );
 		LiteYukonUser memberLogin = YukonUserFuncs.getLiteYukonUser( userID );
@@ -2208,20 +2288,20 @@ public class StarsAdmin extends HttpServlet {
 		int loginID = Integer.parseInt( req.getParameter("LoginID") );
 		
 		try {
-			String sql = "INSERT INTO ECToGenericMapping VALUES (" +
-					energyCompany.getEnergyCompanyID() + ", " + memberID + ", 'EnergyCompany')";
-			SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
-			stmt.execute();
+			ECToGenericMapping map = new ECToGenericMapping();
+			map.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+			map.setItemID( new Integer(memberID) );
+			map.setMappingCategory( ECToGenericMapping.MAPPING_CATEGORY_MEMBER );
+			Transaction.createTransaction( Transaction.INSERT, map ).execute();
 			
 			LiteStarsEnergyCompany member = SOAPServer.getEnergyCompany( memberID );
 			ArrayList members = energyCompany.getChildren();
 			synchronized (members) { members.add(member); }
 			
 			if (loginID != -1) {
-				sql = "INSERT INTO ECToGenericMapping VALUES (" +
-						energyCompany.getEnergyCompanyID() + ", " + loginID + ", 'MemberLogin')";
-				stmt.setSQLString( sql );
-				stmt.execute();
+				map.setItemID( new Integer(loginID) );
+				map.setMappingCategory( ECToGenericMapping.MAPPING_CATEGORY_MEMBER_LOGIN );
+				Transaction.createTransaction( Transaction.INSERT, map ).execute();
 				
 				ArrayList loginIDs = energyCompany.getMemberLoginIDs();
 				synchronized (loginIDs) { loginIDs.add(new Integer(loginID)); }
@@ -2270,11 +2350,11 @@ public class StarsAdmin extends HttpServlet {
 					}
 				}
 				else {
-					String sql = "DELETE FROM ECToGenericMapping " +
-							"WHERE EnergyCompanyID = " + energyCompany.getEnergyCompanyID() +
-							" AND ItemID = " + prevLoginID + " AND MappingCategory = 'MemberLogin'";
-					SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
-					stmt.execute();
+					ECToGenericMapping map = new ECToGenericMapping();
+					map.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+					map.setItemID( prevLoginID );
+					map.setMappingCategory( ECToGenericMapping.MAPPING_CATEGORY_MEMBER_LOGIN );
+					Transaction.createTransaction( Transaction.DELETE, map ).execute();
 					
 					synchronized (loginIDs) { loginIDs.remove(prevLoginID); }
 				}
@@ -2282,10 +2362,11 @@ public class StarsAdmin extends HttpServlet {
 			else {
 				if (loginID == -1) return;
 				
-				String sql = "INSERT INTO ECToGenericMapping VALUES (" +
-						energyCompany.getEnergyCompanyID() + ", " + loginID + ", 'MemberLogin')";
-				SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
-				stmt.execute();
+				ECToGenericMapping map = new ECToGenericMapping();
+				map.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+				map.setItemID( new Integer(loginID) );
+				map.setMappingCategory( ECToGenericMapping.MAPPING_CATEGORY_MEMBER_LOGIN );
+				Transaction.createTransaction( Transaction.INSERT, map ).execute();
 				
 				synchronized (loginIDs) { loginIDs.add(new Integer(loginID)); }
 			}
@@ -2310,11 +2391,11 @@ public class StarsAdmin extends HttpServlet {
 					LiteStarsEnergyCompany member = (LiteStarsEnergyCompany) it.next();
 					if (memberID != -1 && member.getLiteID() != memberID) continue;
 					
-					String sql = "DELETE FROM ECToGenericMapping " +
-							"WHERE EnergyCompanyID = " + energyCompany.getEnergyCompanyID() +
-							" AND ItemID = " + member.getLiteID() + " AND MappingCategory = 'EnergyCompany'";
-					SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
-					stmt.execute();
+					ECToGenericMapping map = new ECToGenericMapping();
+					map.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+					map.setItemID( member.getEnergyCompanyID() );
+					map.setMappingCategory( ECToGenericMapping.MAPPING_CATEGORY_MEMBER );
+					Transaction.createTransaction( Transaction.DELETE, map ).execute();
 					
 					it.remove();
 					
@@ -2324,11 +2405,9 @@ public class StarsAdmin extends HttpServlet {
 							LiteYukonUser liteUser = YukonUserFuncs.getLiteYukonUser( loginID.intValue() );
 							
 							if (EnergyCompanyFuncs.getEnergyCompany( liteUser ).getEnergyCompanyID() == member.getLiteID()) {
-								sql = "DELETE FROM ECToGenericMapping " +
-										" WHERE EnergyCompanyID = " + energyCompany.getEnergyCompanyID() +
-										" AND ItemID = " + loginID + " AND MappingCategory = 'MemberLogin'";
-								stmt.setSQLString( sql );
-								stmt.execute();
+								map.setItemID( loginID );
+								map.setMappingCategory( ECToGenericMapping.MAPPING_CATEGORY_MEMBER_LOGIN );
+								Transaction.createTransaction( Transaction.DELETE, map ).execute();
 								
 								loginIDs.remove(i);
 								break;

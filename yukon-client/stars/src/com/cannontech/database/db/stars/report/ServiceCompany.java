@@ -117,7 +117,7 @@ public class ServiceCompany extends DBPersistent {
     
     public static ServiceCompany[] getAllServiceCompanies(Integer energyCompanyID) {
     	com.cannontech.database.db.stars.ECToGenericMapping[] items =
-    			com.cannontech.database.db.stars.ECToGenericMapping.getAllMappingItems( energyCompanyID, "ServiceCompany" );
+    			com.cannontech.database.db.stars.ECToGenericMapping.getAllMappingItems( energyCompanyID, TABLE_NAME );
     	if (items == null || items.length == 0)
     		return new ServiceCompany[0];
     			

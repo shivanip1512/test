@@ -1,4 +1,5 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
+<%@ page import="com.cannontech.database.cache.functions.PAOFuncs" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject" %>
 <%@ page import="com.cannontech.stars.web.servlet.StarsAdmin" %>
 <%
@@ -140,14 +141,11 @@ function editAddress(form) {
 						    <option value="-1">(none)</option>
 <%
 	TreeMap routeMap = new TreeMap();
-	DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
-	
-	synchronized (cache) {
-		List allRoutes = cache.getAllRoutes();
-		for (int i = 0; i < allRoutes.size(); i++) {
-			LiteYukonPAObject litePao = (LiteYukonPAObject) allRoutes.get(i);
-			routeMap.put(litePao.getPaoName(), litePao);
-		}
+	ArrayList routeIDs = liteEC.getRouteIDs();
+	for (int i = 0; i < routeIDs.size(); i++) {
+		int routeID = ((Integer) routeIDs.get(i)).intValue();
+		LiteYukonPAObject litePao = PAOFuncs.getLiteYukonPAO(routeID);
+		routeMap.put(litePao.getPaoName(), litePao);
 	}
 	
 	Iterator it = routeMap.values().iterator();

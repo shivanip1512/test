@@ -163,8 +163,8 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	private ArrayList interviewQuestions = null;	// List of LiteInterviewQuestion
 	private ArrayList customerFAQs = null;		// List of LiteCustomerFAQ
 	
-	// List of operator login IDs (Integer)
-	private ArrayList operatorLoginIDs = null;
+	private ArrayList operatorLoginIDs = null;	// List of operator login IDs (Integer)
+	private ArrayList routeIDs = null;			// List of route IDs (Integer)
 	
 	// Map of hardware type yukondefid (Integer) to LiteLMThermostatSchedule
 	private Hashtable dftThermSchedules = null;
@@ -454,7 +454,9 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		selectionLists = null;
 		interviewQuestions = null;
 		customerFAQs = null;
+		
 		operatorLoginIDs = null;
+		routeIDs = null;
 		dftThermSchedules = null;
 		
 		nextCallNo = 0;
@@ -997,6 +999,21 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		}
 		
 		return operatorLoginIDs;
+	}
+	
+	public synchronized ArrayList getRouteIDs() {
+		if (routeIDs == null) {
+			ECToGenericMapping[] items = ECToGenericMapping.getAllMappingItems(
+					getEnergyCompanyID(), ECToGenericMapping.MAPPING_CATEGORY_ROUTE );
+			
+			routeIDs = new ArrayList();
+			if (items != null) {
+				for (int i = 0; i < items.length; i++)
+					routeIDs.add( items[i].getItemID() );
+			}
+		}
+		
+		return routeIDs;
 	}
 	
 	public synchronized LiteLMThermostatSchedule getDefaultThermostatSchedule(int hwTypeDefID) {
@@ -3102,11 +3119,9 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	}
 	
 	private void loadEnergyCompanyHierarchy() {
-		String sql = "SELECT EnergyCompanyID, ItemID " +
-				"FROM ECToGenericMapping " +
-				"WHERE MappingCategory='EnergyCompany' " +
-				"AND (EnergyCompanyID=" + getEnergyCompanyID() +
-				" OR ItemID=" + getEnergyCompanyID() + ")";
+		String sql = "SELECT EnergyCompanyID, ItemID FROM ECToGenericMapping " +
+				"WHERE MappingCategory='" + ECToGenericMapping.MAPPING_CATEGORY_MEMBER + "' " +
+				"AND (EnergyCompanyID=" + getEnergyCompanyID() + " OR ItemID=" + getEnergyCompanyID() + ")";
 		
 		try {
 			SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
@@ -3146,26 +3161,16 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	
 	public synchronized ArrayList getMemberLoginIDs() {
 		if (memberLoginIDs == null) {
-			String sql = "SELECT ItemID FROM ECToGenericMapping " +
-					"WHERE MappingCategory='MemberLogin' " +
-					"AND EnergyCompanyID=" + getEnergyCompanyID();
+			ECToGenericMapping[] items = ECToGenericMapping.getAllMappingItems(
+					getEnergyCompanyID(), ECToGenericMapping.MAPPING_CATEGORY_MEMBER_LOGIN );
 			
-			try {
-				SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
-				stmt.execute();
-				
-				memberLoginIDs = new ArrayList();
-				
-				for (int i = 0; i < stmt.getRowCount(); i++) {
-					memberLoginIDs.add(
-						new Integer(((java.math.BigDecimal)stmt.getRow(i)[0]).intValue()) );
-				}
-				
-				CTILogger.info( "All member logins loaded for energy company #" + getEnergyCompanyID() );
+			memberLoginIDs = new ArrayList();
+			if (items != null) {
+				for (int i = 0; i < items.length; i++)
+					memberLoginIDs.add( items[i].getItemID() );
 			}
-			catch (CommandExecutionException e) {
-				CTILogger.error( e.getMessage(), e );
-			}
+			
+			CTILogger.info( "All member logins loaded for energy company #" + getEnergyCompanyID() );
 		}
 		
 		return memberLoginIDs;

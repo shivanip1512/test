@@ -14,6 +14,10 @@ import com.cannontech.database.db.DBPersistent;
  */
 public class ECToGenericMapping extends DBPersistent {
 	
+	public static final String MAPPING_CATEGORY_ROUTE = "Route";
+	public static final String MAPPING_CATEGORY_MEMBER = "Member";
+	public static final String MAPPING_CATEGORY_MEMBER_LOGIN = "MemberLogin";
+	
 	private Integer energyCompanyID = null;
 	private Integer itemID = null;
 	private String mappingCategory = null;
@@ -52,12 +56,14 @@ public class ECToGenericMapping extends DBPersistent {
 	 * @see com.cannontech.database.db.DBPersistent#retrieve()
 	 */
 	public void retrieve() throws SQLException {
+		throw new RuntimeException( "This method is not supported" );
 	}
 
 	/**
 	 * @see com.cannontech.database.db.DBPersistent#update()
 	 */
 	public void update() throws SQLException {
+		throw new RuntimeException( "This method is not supported" );
 	}
 	
 	public static ECToGenericMapping[] getAllMappingItems(Integer energyCompanyID) {

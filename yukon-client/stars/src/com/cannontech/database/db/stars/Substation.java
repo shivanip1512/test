@@ -107,10 +107,10 @@ public class Substation extends DBPersistent {
     
     public static Substation[] getAllSubstations(Integer energyCompanyID) {
     	com.cannontech.database.db.stars.ECToGenericMapping[] items =
-    			com.cannontech.database.db.stars.ECToGenericMapping.getAllMappingItems( energyCompanyID, "Substation" );
+    			com.cannontech.database.db.stars.ECToGenericMapping.getAllMappingItems( energyCompanyID, TABLE_NAME );
     	if (items == null || items.length == 0)
     		return new Substation[0];
-    			
+    	
     	StringBuffer sql = new StringBuffer( "SELECT * FROM " + TABLE_NAME + " WHERE SubstationID = " + items[0].getItemID().toString() );
     	for (int i = 1; i < items.length; i++)
     		sql.append( " OR SubstationID = " ).append( items[i].getItemID() );
