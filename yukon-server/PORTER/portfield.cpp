@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.27 $
-* DATE         :  $Date: 2002/08/01 22:16:04 $
+* REVISION     :  $Revision: 1.28 $
+* DATE         :  $Date: 2002/08/08 23:23:09 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -139,7 +139,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 INT NonWrapDecode(INMESS *InMessage, CtiDevice *Device);
 INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTMESS *&OutMessage, CtiDevice *Device);
 INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDevice *Device);
-INT ReturnResultMessage(INT CommResult, INMESS *InMessage, OUTMESS *OutMessage);
+INT ReturnResultMessage(INT CommResult, INMESS *InMessage, OUTMESS *&OutMessage);
 INT UpdatePerformanceData(INT CommResult, CtiPortSPtr Port, CtiDevice *Device);
 INT InitializeHandshake (CtiPortSPtr aPortRecord, CtiDeviceIED *aIEDDevice, RWTPtrSlist< CtiMessage > &traceList);
 INT TerminateHandshake (CtiPortSPtr aPortRecord, CtiDeviceIED *aIEDDevice, RWTPtrSlist< CtiMessage > &traceList);
@@ -408,7 +408,6 @@ VOID PortThread(void *pid)
             }
         }
 
-        /* If the OutMessage indicates it this routine responds to the client */
         if((status = ReturnResultMessage(i, &InMessage, OutMessage)) != NORMAL)
         {
             RequeueReportError(status, OutMessage);
@@ -923,7 +922,7 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDevice *Devic
                     /* Yup */
                     delete OutMessage;
                     OutMessage = NULL;
-                    return !NORMAL;
+                    return NOTNORMAL;
                 }
             }
 
@@ -2400,25 +2399,32 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
     return status;
 }
 
-INT ReturnResultMessage(INT CommResult, INMESS *InMessage, OUTMESS *OutMessage)
+INT ReturnResultMessage(INT CommResult, INMESS *InMessage, OUTMESS *&OutMessage)
 {
     INT         status = NORMAL;
     ULONG       BytesWritten;
 
-    if(OutMessage->EventCode & RESULT)
+    if(OutMessage->EventCode & RESULT)         /* If the OutMessage indicates it this routine responds to the client */
     {
         InMessage->EventCode = (USHORT)CommResult;
 
-        /* send message back to originating process */
-        if(OutMessage->ReturnNexus != NULL)
+        if(CommResult != NORMAL)
         {
-            if(OutMessage->ReturnNexus->CTINexusWrite(InMessage, sizeof (INMESS), &BytesWritten, 15L))
+            status = SendError( OutMessage, CommResult, InMessage );
+        }
+        else
+        {
+            /* send message back to originating process */
+            if(OutMessage->ReturnNexus != NULL)
             {
+                if(OutMessage->ReturnNexus->CTINexusWrite(InMessage, sizeof (INMESS), &BytesWritten, 15L))
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Error Writing to Return Nexus " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " Error Writing to Return Nexus " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+                    status = SOCKWRITE;
                 }
-                status = SOCKWRITE;
             }
         }
     }
@@ -2447,7 +2453,7 @@ INT UpdatePerformanceData(INT CommResult, CtiPortSPtr Port, CtiDevice *Device)
 }
 
 /*---------------------------------------------------------------------------*
- * This guy allows the same code to be called wether the OutMessage was
+ * This guy allows the same code to be called whether the OutMessage was
  * requeued, or wehter it sould be cleaned up by a SendError call.
  *
  * It should ALWAYS be used in a case where some errors may actually cause

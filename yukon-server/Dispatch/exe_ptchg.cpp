@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/exe_ptchg.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:58:23 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/08/08 23:22:23 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -24,6 +24,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "ctivangogh.h"
 #include "exe_ptchg.h"
 #include "msg_dbchg.h"
+#include "msg_commerrorhistory.h"
 #include "msg_pcreturn.h"
 
 INT CtiPointChangeExecutor::ServerExecute(CtiServer *Svr)
@@ -98,6 +99,11 @@ INT CtiPointChangeExecutor::ServerExecute(CtiServer *Svr)
             }
             break;
          }
+      case MSG_COMMERRORHISTORY:
+          {
+              nRet = VG->processCommErrorMessage((CtiCommErrorHistoryMsg*)getMessage());
+              break;
+          }
       default:
          {
             {

@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/ctivangogh.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2002/07/10 16:29:16 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2002/08/08 23:22:12 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -251,6 +251,7 @@ public:
     void writeMessageToPIL(CtiMessage *&pReq);
     void writeControlMessageToPIL(LONG deviceid, LONG rawstate, CtiPointStatus *pPoint, const CtiCommandMsg *&Cmd  );
     int processControlMessage(CtiLMControlHistoryMsg *pMsg);
+    int processCommErrorMessage(CtiCommErrorHistoryMsg *pMsg);
     void updateControlHistory(  long pendid, int cause, const RWTime &thetime = RWTime(), RWTime &now = RWTime() );
     void dumpPendingOps();
 
@@ -263,8 +264,7 @@ public:
     INT updatePointStaticTables(LONG pid, UINT setmask, UINT tagmask, RWCString user, CtiMultiMsg &sigList);
     void adjustDeviceDisableTags();
     void loadDeviceLites();
-
-
+    void pruneCommErrorHistory();
 };
 
 #endif // #ifndef __VANGOGH_H__

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTERSU.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2002/08/01 22:16:03 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2002/08/08 23:21:45 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -31,6 +31,7 @@ using namespace std;
 #include <string.h>
 
 #include "color.h"
+#include "connection.h"
 #include "queues.h"
 #include "dsm2.h"
 #include "dsm2err.h"
@@ -53,6 +54,7 @@ using namespace std;
 #include "port_base.h"
 #include "mgr_port.h"
 #include "mgr_device.h"
+#include "msg_commerrorhistory.h"
 #include "logger.h"
 #include "numstr.h"
 #include "utility.h"
@@ -63,8 +65,50 @@ IM_EX_CTIBASE extern RWMutexLock  coutMux;
 
 HCTIQUEUE*   QueueHandle(LONG pid);
 
+void AddCommErrorEntry(OUTMESS *OutMessage, INMESS *InMessage, INT ErrorCode)
+{
+    extern CtiConnection VanGoghConnection;
+
+    if(OutMessage != 0 && ErrorCode != NORMAL)
+    {
+        INT ErrorType = GetErrorType(ErrorCode);
+
+        #if 0
+
+        if( ErrorType == ERRTYPEPROTOCOL )      // DSM/2 eliminated DLCERRTYPE from non-DLC addressed devices (remotes actually)...
+        {
+        }
+
+        RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(DeviceManager.getMux());       // Protect our iteration!
+        CtiDevice *targetDevice =  = DeviceManager.getEqual(OutMessage->TargetID);
+
+        #endif
+
+        RWCString cmd(OutMessage->Request.CommandStr);
+        RWCString omess;
+        RWCString imess;
+
+        traceBuffer(omess, OutMessage->Buffer.OutMessage, OutMessage->OutLength);
+
+        if(InMessage != 0)
+        {
+            traceBuffer(imess, InMessage->Buffer.InMessage, InMessage->InLength);
+        }
+
+        CtiCommErrorHistoryMsg *pCommError = new CtiCommErrorHistoryMsg((OutMessage->TargetID > 0 ? OutMessage->TargetID : OutMessage->DeviceID),
+                                                                        ErrorType,
+                                                                        ErrorCode,
+                                                                        cmd,
+                                                                        omess,
+                                                                        imess);
+        VanGoghConnection.WriteConnQue(pCommError);
+    }
+
+    return;
+}
+
 /* Routine to send error message back to originating process */
-SendError (OUTMESS *&OutMessage, USHORT ErrorCode)
+SendError (OUTMESS *&OutMessage, USHORT ErrorCode, INMESS *PassedInMessage)
 {
     INMESS InMessage;
     ULONG BytesWritten;
@@ -77,7 +121,6 @@ SendError (OUTMESS *&OutMessage, USHORT ErrorCode)
     char  logstr[128];
 
     InMessage.DeviceID = PORTERSU_DEVID;
-
     /* create and send return message if calling process expects it */
     if(OutMessage->EventCode & RESULT)
     {
@@ -137,19 +180,7 @@ SendError (OUTMESS *&OutMessage, USHORT ErrorCode)
         }
     }
 
-    /* Attempt to get the remote record */
-    if(OutMessage->Remote != 0xffff)
-    {
-        if(NULL != (RemoteRecord = DeviceManager.RemoteGetPortRemoteEqual ((LONG)OutMessage->Port, (LONG)OutMessage->Remote)))
-        {
-            RemotePerf.Port   = RemoteRecord->getPortID();
-            RemotePerf.Remote = RemoteRecord->getAddress();
-            RemotePerf.Error  = ErrorCode;
-            RemotePerfUpdate (&RemotePerf, &ErrStruct);
-            // cout << __FILE__ << " " << __LINE__ << " " << ErrorCode << endl;
-            ReportRemoteError (RemoteRecord, &ErrStruct);
-        }
-    }
+    AddCommErrorEntry( OutMessage, PassedInMessage, ErrorCode );
 
     if(PorterDebugLevel & PORTER_DEBUG_SENDERROR)
     {
@@ -162,6 +193,7 @@ SendError (OUTMESS *&OutMessage, USHORT ErrorCode)
 
     /* free up the Memory */
     delete (OutMessage);
+    OutMessage = 0;
 
     return(NORMAL);
 }

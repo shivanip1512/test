@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2002/07/10 16:29:16 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2002/08/08 23:22:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1105,11 +1105,11 @@ int CtiVanGogh::postDBChange(const CtiDBChangeMsg &Msg)
 
             for(;(Mgr = (CtiVanGoghConnectionManager *)iter());)
             {
-                Mgr->WriteConnQue( Msg.replicateMessage() );        // Send a copy of DBCHANGE on to each clients.
+                Mgr->WriteConnQue( Msg.replicateMessage(), 2500 );        // Send a copy of DBCHANGE on to each clients.
 
                 if(((CtiVanGoghConnectionManager*)Mgr)->getEvent()) // If the client cares about events...
                 {
-                    Mgr->WriteConnQue(pSig->replicateMessage());    // Copy pSig out to any event registered client
+                    Mgr->WriteConnQue(pSig->replicateMessage(), 2500);    // Copy pSig out to any event registered client
                 }
             }
         }
@@ -1417,50 +1417,15 @@ INT CtiVanGogh::archiveCommErrorHistoryMessage(const CtiCommErrorHistoryMsg& aCE
         if(aCEHM.getPAOId() > 0)
         {
             // See if I know about this PAO (Device) ID
-            CtiDeviceLiteSet_t::iterator dliteit = deviceLiteFind(aCEHM.getPAOId());
-
-            if( dliteit != _deviceLiteSet.end() )   // We do know this device..
-            {
-                // dliteit should be an iterator which represents the lite device now!
-                CtiDeviceBaseLite &dLite = *dliteit;
-                _commErrorHistoryQueue.putQueue( new CtiTableCommErrorHistory(dLite.getID(),
-                                                                              aCEHM.getDateTime(),
-                                                                              aCEHM.getSOE(),
-                                                                              aCEHM.getErrorType(),
-                                                                              aCEHM.getErrorNumber(),
-                                                                              aCEHM.getCommand(),
-                                                                              aCEHM.getOutMessage(),
-                                                                              aCEHM.getInMessage()/*,
-                                                                              aCEHM.getCommErrorId()*/));
-            }
-            else
-            {
-                CHAR temp[80];
-
-                _snprintf(temp, sizeof(temp), "Comm Error History for unknown PAO ID: %ld", aCEHM.getPAOId());
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "*******************************************************" << endl;
-                    dout << RWTime() << " - " << temp << " in: " <<  __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << RWTime() << " - Writing to DB (CommErrorHistory table) anyway!!!" << endl;
-                    dout << "*******************************************************" << endl;
-                }
-
-                _commErrorHistoryQueue.putQueue( new CtiTableCommErrorHistory(aCEHM.getPAOId(),
-                                                                              aCEHM.getDateTime(),
-                                                                              aCEHM.getSOE(),
-                                                                              aCEHM.getErrorType(),
-                                                                              aCEHM.getErrorNumber(),
-                                                                              aCEHM.getCommand(),
-                                                                              aCEHM.getOutMessage(),
-                                                                              aCEHM.getInMessage()));
-
-                CtiSignalMsg *pSig = new CtiSignalMsg(SYS_PID_DISPATCH, 0, temp, "FAIL: Comm Error History Log");
-                pSig->setUser(aCEHM.getUser());
-                _signalMsgQueue.putQueue(pSig);
-
-                status = IDNF; // Error is ID not found!
-            }
+            _commErrorHistoryQueue.putQueue( new CtiTableCommErrorHistory(aCEHM.getPAOId(),
+                                                                          aCEHM.getDateTime(),
+                                                                          aCEHM.getSOE(),
+                                                                          aCEHM.getErrorType(),
+                                                                          aCEHM.getErrorNumber(),
+                                                                          aCEHM.getCommand(),
+                                                                          aCEHM.getOutMessage(),
+                                                                          aCEHM.getInMessage()/*,
+                                                                          aCEHM.getCommErrorId()*/));
         }
     }
     catch( ... )
@@ -1602,7 +1567,7 @@ INT CtiVanGogh::postMessageToClients(CtiMessage *pMsg)
                         }
                     }
 
-                    if( VGCM.WriteConnQue(pMulti) )
+                    if( VGCM.WriteConnQue(pMulti, 5000) )
                     {
                         MgrToRemove = Mgr;
 
@@ -1968,6 +1933,30 @@ BOOL CtiVanGogh::isConnectionAttachedToMsgPoint(const CtiVanGoghConnectionManage
     return bStatus;
 }
 
+int CtiVanGogh::processCommErrorMessage(CtiCommErrorHistoryMsg *pMsg)
+{
+    int status = NORMAL;
+
+    try
+    {
+        status = archiveCommErrorHistoryMessage(*pMsg);
+    }
+    catch(const RWxmsg& x)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << "Exception: " << __FILE__ << " (" << __LINE__ << ") " << x.why() << endl;
+        }
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+
+    return status;
+}
 
 int CtiVanGogh::processControlMessage(CtiLMControlHistoryMsg *pMsg)
 {
@@ -2235,7 +2224,7 @@ INT CtiVanGogh::postMOAUploadToConnection(CtiVanGoghConnectionManager &VGCM, int
                 }
             }
 
-            if(VGCM.WriteConnQue(pMulti))
+            if(VGCM.WriteConnQue(pMulti, 5000))
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -2670,6 +2659,7 @@ void CtiVanGogh::writeCommErrorHistoryToDB(bool justdoit)
 #define PANIC_CONSTANT 1000
 
     static UINT  dumpCounter = 0;
+    static INT   daynumber = -1;
     UINT         panicCounter = 0;      // Make sure we don't write for too long...
 
     try
@@ -2744,6 +2734,22 @@ void CtiVanGogh::writeCommErrorHistoryToDB(bool justdoit)
                     }
                 }
             }
+
+            RWDate todaysdate;
+
+            if(todaysdate.dayOfMonth() != daynumber)
+            {
+                if(daynumber > 0)
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " Comm Error History log is being cleaned up. " << endl;
+                    }
+                    pruneCommErrorHistory();
+                }
+                daynumber = todaysdate.dayOfMonth();    // Ok.  We know whay DAY today is...
+            }
+
         }
     }
     catch(const RWxmsg& x)
@@ -3786,7 +3792,7 @@ int  CtiVanGogh::clientRegistration(CtiConnectionManager *CM)
                         Mgr->setClientQuestionable(TRUE);      // Mark the old guy as needing confirmation (also causes eventual cleanup if he doesn't respond.)
                         Mgr->setClientRegistered(TRUE);        // Mark the old guy as having been previously registered
 
-                        Mgr->WriteConnQue(new CtiCommandMsg(CtiCommandMsg::AreYouThere, 15));   // Ask the old guy to respond to us..
+                        Mgr->WriteConnQue(new CtiCommandMsg(CtiCommandMsg::AreYouThere, 15), 500);   // Ask the old guy to respond to us..
                         CM->setClientRegistered(FALSE);                                         // New guy is not quite kosher yet...
 
                         questionedEntry = TRUE;
@@ -3828,7 +3834,7 @@ int  CtiVanGogh::clientRegistration(CtiConnectionManager *CM)
             dout << NowTime.now() << " Connection rejected, entry will be deleted." << endl;
         }
 
-        CM->WriteConnQue(new CtiCommandMsg(CtiCommandMsg::Shutdown, 15));  // Ask the new guy to blow off..
+        CM->WriteConnQue(new CtiCommandMsg(CtiCommandMsg::Shutdown, 15), 500);  // Ask the new guy to blow off..
 
         clientShutdown(CM);
     }
@@ -3883,7 +3889,7 @@ int  CtiVanGogh::clientArbitrationWinner(CtiConnectionManager *CM)
                 dout << Now << " Dispatch will shut it down now." << endl;
             }
 
-            Mgr->WriteConnQue(new CtiCommandMsg(CtiCommandMsg::Shutdown, 15));  // Ask the new guy to blow off..
+            Mgr->WriteConnQue(new CtiCommandMsg(CtiCommandMsg::Shutdown, 15), 500);  // Ask the new guy to blow off..
 
             clientShutdown(Mgr);
             break;
@@ -5358,7 +5364,7 @@ void CtiVanGogh::writeMessageToPIL(CtiMessage *&pReq)
         {
             if(PilCM->getClientName() == PIL_REGISTRATION_NAME)
             {
-                PilCM->WriteConnQue( pReq->replicateMessage() );
+                PilCM->WriteConnQue( pReq->replicateMessage(), 5000 );
                 if(bDone)
                 {
                     {
@@ -5417,7 +5423,7 @@ void CtiVanGogh::writeMessageToScanner(const CtiCommandMsg *Cmd)
     if(scannerCM != NULL)
     {
         // pass the message through
-        scannerCM->WriteConnQue(Cmd->replicateMessage());
+        scannerCM->WriteConnQue(Cmd->replicateMessage(), 5000);
     }
 }
 
@@ -6427,3 +6433,16 @@ void CtiVanGogh::tagSignalAsAlarm( CtiPointDataMsg *pData, CtiSignalMsg *&pSig, 
         pSig = NULL;
     }
 }
+
+void CtiVanGogh::pruneCommErrorHistory()
+{
+    RWDate earliestDate = RWDate() - gCommErrorDays;
+
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " Comm Error History log is being pruned back to " << earliestDate << endl;
+    }
+
+    CtiTableCommErrorHistory::Prune(earliestDate);
+}
+
