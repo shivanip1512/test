@@ -2651,6 +2651,26 @@ public class ImportManager extends HttpServlet {
 		ImportCustAccountsTask task = new ImportCustAccountsTask( user, fieldsList, programs );
 		long id = ProgressChecker.addTask( task );
 		
+		// Wait 5 seconds for the task to finish (or error out), if not, then go to the progress page
+		for (int i = 0; i < 5; i++) {
+			try {
+				Thread.sleep(1000);
+			}
+			catch (InterruptedException e) {}
+			
+			if (task.getStatus() == ImportCustAccountsTask.STATUS_FINISHED) {
+				session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, task.getProgressMsg());
+				ProgressChecker.removeTask( id );
+				return;
+			}
+			
+			if (task.getStatus() == ImportCustAccountsTask.STATUS_ERROR) {
+				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, task.getErrorMsg());
+				ProgressChecker.removeTask( id );
+				return;
+			}
+		}
+		
 		session.setAttribute(ServletUtils.ATT_REDIRECT, redirect);
 		redirect = req.getContextPath() + "/operator/Admin/Progress.jsp?id=" + id;
 	}
@@ -3502,6 +3522,26 @@ public class ImportManager extends HttpServlet {
 		
 		ImportStarsDataTask task = new ImportStarsDataTask(user, preprocessedData);
 		long id = ProgressChecker.addTask( task );
+		
+		// Wait 5 seconds for the task to finish (or error out), if not, then go to the progress page
+		for (int i = 0; i < 5; i++) {
+			try {
+				Thread.sleep(1000);
+			}
+			catch (InterruptedException e) {}
+			
+			if (task.getStatus() == ImportStarsDataTask.STATUS_FINISHED) {
+				session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, task.getProgressMsg());
+				ProgressChecker.removeTask( id );
+				return;
+			}
+			
+			if (task.getStatus() == ImportStarsDataTask.STATUS_ERROR) {
+				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, task.getErrorMsg());
+				ProgressChecker.removeTask( id );
+				return;
+			}
+		}
 		
 		session.setAttribute(ServletUtils.ATT_REDIRECT, redirect);
 		redirect = req.getContextPath() + "/operator/Admin/Progress.jsp?id=" + id;

@@ -47,7 +47,6 @@ import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
 import com.cannontech.database.data.lite.stars.LiteWebConfiguration;
 import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
-import com.cannontech.database.db.stars.ECToGenericMapping;
 import com.cannontech.database.db.stars.customer.CustomerAccount;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
@@ -60,8 +59,8 @@ import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.util.task.DeleteCustAccountsTask;
+import com.cannontech.stars.util.task.DeleteEnergyCompanyTask;
 import com.cannontech.stars.web.StarsYukonUser;
-import com.cannontech.stars.web.action.DeleteCustAccountAction;
 import com.cannontech.stars.web.action.UpdateThermostatScheduleAction;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.AnswerType;
@@ -174,24 +173,31 @@ public class StarsAdmin extends HttpServlet {
 					energyCompany.getEnergyCompanyID(), acctNo.replace('*', '%') );
 			
 			if (accountIDs != null) {
-				if (accountIDs.length < 20) {
-					for (int i = 0; i < accountIDs.length; i++) {
-						LiteStarsCustAccountInformation liteAcctInfo = energyCompany.getCustAccountInformation( accountIDs[i], true );
-						DeleteCustAccountAction.deleteCustomerAccount( liteAcctInfo, energyCompany );
+				DeleteCustAccountsTask task = new DeleteCustAccountsTask(user, accountIDs);
+				long id = ProgressChecker.addTask( task );
+				
+				// Wait 5 seconds for the task to finish (or error out), if not, then go to the progress page
+				for (int i = 0; i < 5; i++) {
+					try {
+						Thread.sleep(1000);
+					}
+					catch (InterruptedException e) {}
+					
+					if (task.getStatus() == DeleteCustAccountsTask.STATUS_FINISHED) {
+						session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, task.getProgressMsg());
+						ProgressChecker.removeTask( id );
+						return;
 					}
 					
-					if (accountIDs.length > 1)
-						session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, accountIDs.length + " customer accounts have been deleted");
-					else
-						session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, accountIDs.length + " customer account have been deleted");
+					if (task.getStatus() == DeleteCustAccountsTask.STATUS_ERROR) {
+						session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, task.getErrorMsg());
+						ProgressChecker.removeTask( id );
+						return;
+					}
 				}
-				else {
-					// Too many accounts to be deleted, it may take a while
-					DeleteCustAccountsTask task = new DeleteCustAccountsTask(user, accountIDs);
-					long id = ProgressChecker.addTask( task );
-					session.setAttribute(ServletUtils.ATT_REDIRECT, redirect);
-					redirect = req.getContextPath() + "/operator/Admin/Progress.jsp?id=" + id;
-				}
+				
+				session.setAttribute(ServletUtils.ATT_REDIRECT, redirect);
+				redirect = req.getContextPath() + "/operator/Admin/Progress.jsp?id=" + id;
 			}
 			else
 				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Search for account number failed");
@@ -1847,197 +1853,30 @@ public class StarsAdmin extends HttpServlet {
 	}
 	
 	private void deleteEnergyCompany(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
-		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
-        java.sql.Connection conn = null;
+		DeleteEnergyCompanyTask task = new DeleteEnergyCompanyTask(user);
+		long id = ProgressChecker.addTask( task );
 		
-		try {
-			// Delete all customer accounts
-			int[] accountIDs = CustomerAccount.searchByAccountNumber(
-					energyCompany.getEnergyCompanyID(), "%" );
-			if (accountIDs != null) {
-				for (int i = 0; i < accountIDs.length; i++) {
-					LiteStarsCustAccountInformation liteAcctInfo = energyCompany.getCustAccountInformation( accountIDs[i], true );
-					DeleteCustAccountAction.deleteCustomerAccount( liteAcctInfo, energyCompany );
-				}
-			}
-			
-			conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-			
-			// Delete all inventories
-			String sql = "SELECT InventoryID FROM ECToInventoryMapping WHERE EnergyCompanyID = ?";
-			java.sql.PreparedStatement stmt = conn.prepareStatement( sql );
-			stmt.setInt( 1, user.getEnergyCompanyID() );
-			java.sql.ResultSet rset = stmt.executeQuery();
-			
-			java.sql.Connection conn2 = null;
+		// Wait 5 seconds for the task to finish (or error out), if not, then go to the progress page
+		for (int i = 0; i < 5; i++) {
 			try {
-				conn2 = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-				
-				while (rset.next()) {
-					int inventoryID = rset.getInt(1);
-					com.cannontech.database.data.stars.hardware.InventoryBase inventory =
-							new com.cannontech.database.data.stars.hardware.InventoryBase();
-					inventory.setInventoryID( new Integer(inventoryID) );
-					inventory.setDbConnection( conn2 );
-					inventory.delete();
-				}
+				Thread.sleep(1000);
 			}
-			finally {
-				if (conn2 != null) conn2.close();
+			catch (InterruptedException e) {}
+			
+			if (task.getStatus() == DeleteEnergyCompanyTask.STATUS_FINISHED) {
+				ProgressChecker.removeTask( id );
+				return;
 			}
 			
-			rset.close();
-			stmt.close();
-			
-			// Delete all substations
-			ECToGenericMapping[] substations = ECToGenericMapping.getAllMappingItems(
-					energyCompany.getEnergyCompanyID(), com.cannontech.database.db.stars.Substation.TABLE_NAME );
-			if (substations != null) {
-				for (int i = 0; i < substations.length; i++) {
-					com.cannontech.database.data.stars.Substation substation =
-							new com.cannontech.database.data.stars.Substation();
-					substation.setSubstationID( substations[i].getItemID() );
-					substation.setDbConnection( conn );
-					substation.delete();
-				}
-			}
-			
-			// Delete all service companies
-			for (int i = 0; i < energyCompany.getAllServiceCompanies().size(); i++) {
-				LiteServiceCompany liteCompany = (LiteServiceCompany) energyCompany.getAllServiceCompanies().get(i);
-				com.cannontech.database.data.stars.report.ServiceCompany company =
-						new com.cannontech.database.data.stars.report.ServiceCompany();
-				StarsLiteFactory.setServiceCompany( company.getServiceCompany(), liteCompany );
-				company.setDbConnection( conn );
-				company.delete();
-			}
-			
-			// Delete all appliance categories
-			for (int i = 0; i < energyCompany.getAllApplianceCategories().size(); i++) {
-				LiteApplianceCategory liteAppCat = (LiteApplianceCategory) energyCompany.getAllApplianceCategories().get(i);
-				
-				com.cannontech.database.db.stars.LMProgramWebPublishing.deleteAllLMProgramWebPublishing(
-						new Integer(liteAppCat.getApplianceCategoryID()), conn );
-				for (int j = 0; j < liteAppCat.getPublishedPrograms().length; j++) {
-					int configID = liteAppCat.getPublishedPrograms()[j].getWebSettingsID();
-					com.cannontech.database.db.web.YukonWebConfiguration cfg =
-							new com.cannontech.database.db.web.YukonWebConfiguration();
-					cfg.setConfigurationID( new Integer(configID) );
-					cfg.setDbConnection( conn );
-					cfg.delete();
-				}
-				
-				com.cannontech.database.data.stars.appliance.ApplianceCategory appCat =
-						new com.cannontech.database.data.stars.appliance.ApplianceCategory();
-				StarsLiteFactory.setApplianceCategory( appCat.getApplianceCategory(), liteAppCat );
-				appCat.setDbConnection( conn );
-				appCat.delete();
-			}
-			
-			// Delete all interview questions
-			for (int i = 0; i < energyCompany.getAllInterviewQuestions().size(); i++) {
-				LiteInterviewQuestion liteQuestion = (LiteInterviewQuestion) energyCompany.getAllInterviewQuestions().get(i);
-				com.cannontech.database.data.stars.InterviewQuestion question =
-						new com.cannontech.database.data.stars.InterviewQuestion();
-				question.setQuestionID( new Integer(liteQuestion.getQuestionID()) );
-				question.setDbConnection( conn );
-				question.delete();
-			}
-			
-			// Delete all customer FAQs
-			for (int i = 0; i < energyCompany.getAllCustomerFAQs().size(); i++) {
-				LiteCustomerFAQ liteFAQ = (LiteCustomerFAQ) energyCompany.getAllCustomerFAQs().get(i);
-				com.cannontech.database.db.stars.CustomerFAQ faq =
-						new com.cannontech.database.db.stars.CustomerFAQ();
-				faq.setQuestionID( new Integer(liteFAQ.getQuestionID()) );
-				faq.setDbConnection( conn );
-				faq.delete();
-			}
-			
-			// Delete customer selection lists
-			for (int i = 0; i < energyCompany.getAllSelectionLists().size(); i++) {
-				YukonSelectionList cList = (YukonSelectionList) energyCompany.getAllSelectionLists().get(i);
-				if (cList.getListID() == LiteStarsEnergyCompany.FAKE_LIST_ID) continue;
-				
-				Integer listID = new Integer( cList.getListID() );
-				com.cannontech.database.data.constants.YukonSelectionList list =
-						new com.cannontech.database.data.constants.YukonSelectionList();
-				list.setListID( listID );
-				list.setDbConnection( conn );
-				list.delete();
-				
-				YukonListFuncs.getYukonSelectionLists().remove( listID );
-				for (int j = 0; j < cList.getYukonListEntries().size(); j++) {
-					YukonListEntry cEntry = (YukonListEntry) cList.getYukonListEntries().get(j);
-					YukonListFuncs.getYukonListEntries().remove( new Integer(cEntry.getEntryID()) );
-				}
-			}
-			
-			// Delete operator logins (except the default login)
-			sql = "SELECT OperatorLoginID FROM EnergyCompanyOperatorLoginList WHERE EnergyCompanyID = ?";
-			stmt = conn.prepareStatement( sql );
-			stmt.setInt(1, energyCompany.getLiteID());
-			rset = stmt.executeQuery();
-			
-			try {
-				conn2 = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-				
-				while (rset.next()) {
-					int userID = rset.getInt(1);
-					if (userID == energyCompany.getUserID()) continue;
-					
-					com.cannontech.database.data.user.YukonUser yukonUser =
-							new com.cannontech.database.data.user.YukonUser();
-					yukonUser.setUserID( new Integer(userID) );
-					yukonUser.setDbConnection( conn2 );
-					yukonUser.deleteOperatorLogin();
-					
-					ServerUtils.handleDBChange( YukonUserFuncs.getLiteYukonUser(userID), DBChangeMsg.CHANGE_TYPE_DELETE );
-				}
-			}
-			finally {
-				if (conn2 != null) conn2.close();
-			}
-			
-			rset.close();
-			stmt.close();
-			
-			// Delete the energy company!
-			com.cannontech.database.data.company.EnergyCompanyBase ec =
-					new com.cannontech.database.data.company.EnergyCompanyBase();
-			ec.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
-			ec.getEnergyCompany().setPrimaryContactID( new Integer(energyCompany.getPrimaryContactID()) );
-			ec.setDbConnection( conn );
-			ec.delete();
-			
-			SOAPServer.deleteEnergyCompany( energyCompany.getLiteID() );
-			ServerUtils.handleDBChange( energyCompany, DBChangeMsg.CHANGE_TYPE_DELETE );
-			if (energyCompany.getPrimaryContactID() != CtiUtilities.NONE_ID) {
-				LiteContact liteContact = ContactFuncs.getContact( energyCompany.getPrimaryContactID() );
-				ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_DELETE );
-			}
-			
-			if (energyCompany.getUserID() != com.cannontech.user.UserUtils.USER_YUKON_ID) {
-				com.cannontech.database.data.user.YukonUser yukonUser =
-						new com.cannontech.database.data.user.YukonUser();
-				yukonUser.setUserID( new Integer(energyCompany.getUserID()) );
-				yukonUser.setDbConnection( conn );
-				yukonUser.deleteOperatorLogin();
-				
-				ServerUtils.handleDBChange( YukonUserFuncs.getLiteYukonUser(energyCompany.getUserID()), DBChangeMsg.CHANGE_TYPE_DELETE );
+			if (task.getStatus() == DeleteCustAccountsTask.STATUS_ERROR) {
+				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, task.getErrorMsg());
+				ProgressChecker.removeTask( id );
+				return;
 			}
 		}
-		catch (Exception e) {
-			e.printStackTrace();
-			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to delete the energy company");
-			redirect = referer;
-		}
-        finally {
-        	try {
-	        	if (conn != null) conn.close();
-        	}
-        	catch (java.sql.SQLException e) {}
-        }
+		
+		session.setAttribute(ServletUtils.ATT_REDIRECT, redirect);
+		redirect = req.getContextPath() + "/operator/Admin/Progress.jsp?id=" + id;
 	}
 	
 }
