@@ -2,7 +2,9 @@ package com.cannontech.util;
 
 import java.awt.Color;
 import java.text.DateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
 /**
@@ -797,51 +799,78 @@ public static java.util.Date getStartingDateOfInterval(java.util.Date startingDa
 	return cal.getTime();
 }
 /**
- * Insert the method's description here.
+ * Returns a Date that represents the beginning of today.
  * Creation date: (3/28/00 4:15:54 PM)
  * @return java.util.Date
  */
 public static java.util.Date getToday() {
+	return getToday(TimeZone.getDefault());
+}
 
-	java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
-	cal.setTime(new java.util.Date());
-	
- 	cal.set( java.util.Calendar.HOUR_OF_DAY, 0 );
-	cal.set( java.util.Calendar.MINUTE, 0 );
-	cal.set( java.util.Calendar.SECOND, 0 );
-	
+/**
+ * Returns a Date that represents the beginning of today in the given TimeZone
+ * @param tz
+ * @return
+ */
+public static Date getToday(TimeZone tz) {
+	GregorianCalendar cal = new GregorianCalendar();
+	cal.setTimeZone(tz);
+
+	cal.set(Calendar.HOUR_OF_DAY, 0);
+	cal.set(Calendar.MINUTE, 0);
+	cal.set(Calendar.SECOND, 0);
 	return cal.getTime();
 }
 /**
- * Insert the method's description here.
+ * Returns a Date that represents the beginning of tomorrow.
  * Creation date: (3/28/00 4:15:54 PM)
  * @return java.util.Date
  */
-public static java.util.Date getTommorow() {
-
-	java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
-	cal.setTime(new java.util.Date());
-
-	cal.set( java.util.Calendar.DAY_OF_YEAR, cal.get( java.util.Calendar.DAY_OF_YEAR ) + 1 );
- 	cal.set( java.util.Calendar.HOUR_OF_DAY, 0 );
-	cal.set( java.util.Calendar.MINUTE, 0 );
-	cal.set( java.util.Calendar.SECOND, 0 );
+public static java.util.Date getTomorrow() {
+	return getTomorrow(TimeZone.getDefault());
 	
+}
+
+/**
+ * Returns a Date that represents the beginning of tomorrow in the given TimeZone.
+ * @param tz
+ * @return
+ */
+public static Date getTomorrow(TimeZone tz) {
+	GregorianCalendar cal = new GregorianCalendar();
+	cal.setTimeZone(tz);
+	cal.setTime(new Date());
+	
+	cal.set( Calendar.DAY_OF_YEAR, cal.get( Calendar.DAY_OF_YEAR ) + 1 );
+	cal.set( Calendar.HOUR_OF_DAY, 0 );
+	cal.set( Calendar.MINUTE, 0 );
+	cal.set( Calendar.SECOND, 0 );
 	return cal.getTime();
 }
+
 /**
- * Insert the method's description here.
+ * Returns a Date that represents the beginning of yesterday.
  * Creation date: (3/28/00 4:22:52 PM)
  * @return java.util.Date
  */
 public static java.util.Date getYesterday() {
+	return getYesterday(TimeZone.getDefault());
+}
+
+/**
+ * Returns a Date that represents the beginning of yesterday in the given TimeZone.
+ * @param tz
+ * @return
+ */
+public static Date getYesterday(TimeZone tz) {
 	java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
-	cal.setTime(new java.util.Date());
+	cal.setTimeZone(tz);
+	cal.setTime(new Date());
 	
-	cal.set( java.util.Calendar.DAY_OF_YEAR, cal.get( java.util.Calendar.DAY_OF_YEAR ) - 1 ); 
- 	cal.set( java.util.Calendar.HOUR_OF_DAY, 0 );
-	cal.set( java.util.Calendar.MINUTE, 0 );
-	cal.set( java.util.Calendar.SECOND, 0 );
+	cal.set( Calendar.DAY_OF_YEAR, cal.get( Calendar.DAY_OF_YEAR ) - 1 ); 
+	cal.set( Calendar.HOUR_OF_DAY, 0 );
+	cal.set( Calendar.MINUTE, 0 );
+	cal.set( Calendar.SECOND, 0 );
 
 	return cal.getTime();
 }
