@@ -398,7 +398,7 @@ public class SVGGenerator {
 		}
 
 		Element imgElem = doc.createElementNS(svgNS, "image");
-		imgElem.setAttributeNS(null, "id", imgName);
+		imgElem.setAttributeNS(null, "id", Integer.toString(img.getPoint().getPointID()));
 		imgElem.setAttributeNS(null, "xlink:href", imgName);
 		imgElem.setAttributeNS(null, "x", Integer.toString(x));
 		imgElem.setAttributeNS(null, "y", Integer.toString(y));
