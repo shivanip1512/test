@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.52 $
-* DATE         :  $Date: 2004/04/29 20:10:32 $
+* REVISION     :  $Revision: 1.53 $
+* DATE         :  $Date: 2004/05/05 15:31:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -193,7 +193,7 @@ extern void QueueThread (void *);
 extern void KickerThread (void *);
 extern void DispatchMsgHandlerThread(VOID *Arg);
 extern HCTIQUEUE* QueueHandle(LONG pid);
-extern void commFail(CtiDeviceBase *Device, INT state);
+extern void commFail(CtiDeviceSPtr &Device, INT state);
 
 DLLIMPORT extern BOOL PorterQuit;
 
@@ -222,14 +222,12 @@ RWThreadFunction _kickerCCU711Thread;
 
 static RWWinSockInfo  winsock;
 
-bool containsTAPDevice(CtiDeviceManager::val_pair pair, void *ptr)
+bool findTAPDevice(const long key, CtiDeviceSPtr devsptr, void *ptr)
 {
     bool b = false;
     LONG PortNumber = (LONG) ptr;
 
-    CtiDevice *Device = pair.second;
-
-    if( Device->getPortID() == PortNumber && Device->getType() == TYPE_TAPTERM )
+    if( devsptr->getPortID() == PortNumber && devsptr->getType() == TYPE_TAPTERM )
     {
         b = true;
     }
@@ -242,8 +240,8 @@ bool isTAPTermPort(LONG PortNumber)
     INT            i;
     bool           result = false;
 
-    RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(DeviceManager.getMux());
-    result = DeviceManager.getMap().contains(containsTAPDevice, (void*)PortNumber);
+    CtiDeviceManager::LockGuard  dev_guard(DeviceManager.getMux());
+    result = DeviceManager.find(findTAPDevice, (void*)PortNumber);
 
     return result;
 }
@@ -294,25 +292,76 @@ static void applyPortShares(const long unusedid, CtiPortSPtr ptPort, void *unuse
     }
 }
 
+static void applyDeviceColdStart(const long unusedid, CtiDeviceSPtr RemoteDevice, void *prtid)
+{
+    LONG portid = (LONG)prtid;
+
+    if(portid == RemoteDevice->getPortID() && RemoteDevice->getType() == TYPE_CCU711 && !RemoteDevice->isInhibited())
+    {
+        if(RemoteDevice->getAddress() != CCUGLOBAL)
+        {
+            /* Cold Start */
+            IDLCFunction (RemoteDevice, 0, DEST_BASE, COLD);
+        }
+    }
+}
+
 static void applyColdStart(const long unusedid, CtiPortSPtr ptPort, void *unusedPtr)
 {
     if(!ptPort->isInhibited())
     {
-        RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(DeviceManager.getMux());       // Protect our iteration!
-        CtiRTDB<CtiDeviceBase>::CtiRTDBIterator   itr_dev(DeviceManager.getMap());
+        DeviceManager.apply(applyDeviceColdStart, (void*) ptPort->getPortID());
+    }
+}
 
-        for(; ++itr_dev ;)
+void applyDeviceQueuePurge(const long unusedid, CtiDeviceSPtr RemoteDevice, void *lprtid)
+{
+    extern bool findAllQueueEntries(void *unused, void* d);
+    extern void cleanupOrphanOutMessages(void *unusedptr, void* d);
+
+    LONG PortID = (LONG)lprtid;
+    ULONG QueEntCnt = 0L;
+
+    if(PortID == RemoteDevice->getPortID())
+    {
+        bool commsuccess = false;
+        if(RemoteDevice->adjustCommCounts( commsuccess, false ))
         {
-            CtiDeviceBase *RemoteDevice = itr_dev.value();
+            commFail(RemoteDevice, (commsuccess ? CLOSED : OPENED));
+        }
 
-            if(ptPort->getPortID() == RemoteDevice->getPortID() &&
-               RemoteDevice->getType() == TYPE_CCU711 &&
-               !RemoteDevice->isInhibited())
+        if(RemoteDevice->getType() == TYPE_CCU711)
+        {
+            CtiTransmitter711Info *pInfo = (CtiTransmitter711Info *)RemoteDevice->getTrxInfo();
+
+            if(pInfo != NULL)
             {
-                if(RemoteDevice->getAddress() != CCUGLOBAL)
+                QueryQueue(pInfo->QueueHandle, &QueEntCnt);
+                if(QueEntCnt)
                 {
-                    /* Cold Start */
-                    IDLCFunction (RemoteDevice, 0, DEST_BASE, COLD);
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << "    CCU:  " << RemoteDevice->getName() << "  PURGING " << QueEntCnt << " queue queue entries" << endl;
+                    }
+                    CleanQueue(pInfo->QueueHandle, NULL, findAllQueueEntries, cleanupOrphanOutMessages);
+                    // PurgeQueue(pInfo->QueueHandle);
+                }
+
+                QueryQueue(pInfo->ActinQueueHandle, &QueEntCnt);
+                if(QueEntCnt)
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << "    CCU:  " << RemoteDevice->getName() << "  PURGING " << QueEntCnt << " actin queue entries" << endl;
+                    }
+                    CleanQueue(pInfo->ActinQueueHandle, NULL, findAllQueueEntries, cleanupOrphanOutMessages);
+                    //PurgeQueue(pInfo->ActinQueueHandle);
+                }
+
+                //  make sure we clear out the pending bits - otherwise the device will refuse any new queued requests
+                if(pInfo->GetStatus(INLGRPQ))
+                {
+                    pInfo->ClearStatus(INLGRPQ);
                 }
             }
         }
@@ -346,57 +395,20 @@ void applyPortQueuePurge(const long unusedid, CtiPortSPtr ptPort, void *unusedPt
         CleanQueue(*QueueHandle(ptPort->getPortID()), NULL, findAllQueueEntries, cleanupOrphanOutMessages);
         // PurgeQueue(*QueueHandle(ptPort->getPortID()));
 
-        RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(DeviceManager.getMux());
-        CtiRTDB<CtiDeviceBase>::CtiRTDBIterator itr_dev(DeviceManager.getMap());
-        /* Do the remotes on this port */
-        for(; ++itr_dev ;)
+        DeviceManager.apply(applyDeviceQueuePurge,(void*)ptPort->getPortID());
+    }
+}
+
+void applyDeviceInitFail(const long unusedid, CtiDeviceSPtr RemoteDevice, void *lprtid)
+{
+    LONG PortID = (LONG)lprtid;
+
+    if(PortID == RemoteDevice->getPortID())
+    {
+        bool commsuccess = false;
+        if(RemoteDevice->adjustCommCounts( commsuccess, false ))
         {
-            CtiDeviceBase *RemoteDevice = itr_dev.value();
-
-            if(ptPort->getPortID() == RemoteDevice->getPortID())
-            {
-                bool commsuccess = false;
-                if(RemoteDevice->adjustCommCounts( commsuccess, false ))
-                {
-                    commFail(RemoteDevice, (commsuccess ? CLOSED : OPENED));
-                }
-
-                if(RemoteDevice->getType() == TYPE_CCU711)
-                {
-                    CtiTransmitter711Info *pInfo = (CtiTransmitter711Info *)RemoteDevice->getTrxInfo();
-
-                    if(pInfo != NULL)
-                    {
-                        QueryQueue(pInfo->QueueHandle, &QueEntCnt);
-                        if(QueEntCnt)
-                        {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << "    CCU:  " << RemoteDevice->getName() << "  PURGING " << QueEntCnt << " queue queue entries" << endl;
-                            }
-                            CleanQueue(pInfo->QueueHandle, NULL, findAllQueueEntries, cleanupOrphanOutMessages);
-                            // PurgeQueue(pInfo->QueueHandle);
-                        }
-
-                        QueryQueue(pInfo->ActinQueueHandle, &QueEntCnt);
-                        if(QueEntCnt)
-                        {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << "    CCU:  " << RemoteDevice->getName() << "  PURGING " << QueEntCnt << " actin queue entries" << endl;
-                            }
-                            CleanQueue(pInfo->ActinQueueHandle, NULL, findAllQueueEntries, cleanupOrphanOutMessages);
-                            //PurgeQueue(pInfo->ActinQueueHandle);
-                        }
-
-                        //  make sure we clear out the pending bits - otherwise the device will refuse any new queued requests
-                        if(pInfo->GetStatus(INLGRPQ))
-                        {
-                            pInfo->ClearStatus(INLGRPQ);
-                        }
-                    }
-                }
-            }
+            commFail(RemoteDevice, (commsuccess ? CLOSED : OPENED));
         }
     }
 }
@@ -419,25 +431,7 @@ void applyPortInitFail(const long unusedid, CtiPortSPtr ptPort, void *unusedPtr)
             dout << RWTime() << " Port: " << setw(2) << ptPort->getPortID() << " / " << ptPort->getName() << " comm failing all attached comm status points" << endl;
         }
 
-        RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(DeviceManager.getMux());
-
-        if(dev_guard.isAcquired())
-        {
-            CtiRTDB<CtiDeviceBase>::CtiRTDBIterator itr_dev(DeviceManager.getMap());
-            /* Do the remotes on this port */
-            for(; ++itr_dev ;)
-            {
-                CtiDeviceBase *RemoteDevice = itr_dev.value();
-                if(ptPort->getPortID() == RemoteDevice->getPortID())
-                {
-                    bool commsuccess = false;
-                    if(RemoteDevice->adjustCommCounts( commsuccess, false ))
-                    {
-                        commFail(RemoteDevice, (commsuccess ? CLOSED : OPENED));
-                    }
-                }
-            }
-        }
+        DeviceManager.apply(applyDeviceInitFail, (void*)ptPort->getPortID());
     }
 }
 
@@ -460,6 +454,34 @@ static char* metric_names[] = {
     "   COMMANDCODE "
 };
 
+void applyDeviceQueueReport(const long unusedid, CtiDeviceSPtr RemoteDevice, void *lprtid)
+{
+    LONG PortID = (LONG)lprtid;
+    ULONG QueEntCnt = 0L;
+
+    if(RemoteDevice->getType() == TYPE_CCU711 && PortID == RemoteDevice->getPortID())
+    {
+        CtiTransmitter711Info *pInfo = (CtiTransmitter711Info *)RemoteDevice->getTrxInfo();
+
+        if(pInfo != NULL)
+        {
+            QueryQueue (pInfo->QueueHandle, &QueEntCnt);
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << "    CCU:  " << RemoteDevice->getName() << endl;
+                dout << "                   Queue Queue Entries:  " << QueEntCnt << endl;
+            }
+            QueryQueue (pInfo->ActinQueueHandle, &QueEntCnt);
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                CHAR oldfill = dout.fill('0');
+                dout << "                   Actin Queue Entries:  " << QueEntCnt << endl;
+                dout << "                   Status Byte:          " << hex << setw(4) << (int)pInfo->Status << endl;
+                dout.fill(oldfill);
+            }
+        }
+    }
+}
 void applyPortQueueReport(const long unusedid, CtiPortSPtr ptPort, void *passedPtr)
 {
     /* Report on the state of the queues */
@@ -528,55 +550,15 @@ void applyPortQueueReport(const long unusedid, CtiPortSPtr ptPort, void *passedP
             }
         }
 
-        RWRecursiveLock<RWMutexLock>::TryLockGuard  dev_guard(DeviceManager.getMux());
-
-        if(dev_guard.isAcquired())
-        {
-            CtiRTDB<CtiDeviceBase>::CtiRTDBIterator itr_dev(DeviceManager.getMap());
-            /* Do the remotes on this port */
-            for(; ++itr_dev ;)
-            {
-                CtiDeviceBase *RemoteDevice = itr_dev.value();
-
-                if(RemoteDevice->getType() == TYPE_CCU711 && ptPort->getPortID() == RemoteDevice->getPortID())
-                {
-                    CtiTransmitter711Info *pInfo = (CtiTransmitter711Info *)RemoteDevice->getTrxInfo();
-
-                    if(pInfo != NULL)
-                    {
-                        QueryQueue (pInfo->QueueHandle, &QueEntCnt);
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << "    CCU:  " << RemoteDevice->getName() << endl;
-                            dout << "                   Queue Queue Entries:  " << QueEntCnt << endl;
-                        }
-                        QueryQueue (pInfo->ActinQueueHandle, &QueEntCnt);
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            CHAR oldfill = dout.fill('0');
-                            dout << "                   Actin Queue Entries:  " << QueEntCnt << endl;
-                            dout << "                   Status Byte:          " << hex << setw(4) << (int)pInfo->Status << endl;
-                            dout.fill(oldfill);
-                        }
-                    }
-                }
-            }
-        }
-        else
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Unable to acquire the device mutex." << endl;
-        }
+        DeviceManager.apply(applyDeviceQueueReport,(void*)ptPort->getPortID());
     }
 }
 
-bool containsCCU711(CtiDeviceManager::val_pair a, void* ptr)
+bool findCCU711(const long key, CtiDeviceSPtr devsptr, void *ptr)
 {
     bool bStatus = false;
 
-    CtiDevice *Dev = a.second;
-
-    if( Dev->getType() == TYPE_CCU711 )
+    if( devsptr->getType() == TYPE_CCU711 )
     {
         bStatus = true;
     }
@@ -1202,6 +1184,23 @@ void DebugKeyEvent(KEY_EVENT_RECORD *ke)
 
 }
 
+static void applyRepeaterAutoRole(const long unusedid, CtiDeviceSPtr autoRoleDevice, void *prtid)
+{
+    extern CtiPILServer     PIL;
+
+    if( (autoRoleDevice->getType() == TYPE_REPEATER800 || autoRoleDevice->getType() == TYPE_REPEATER900) &&
+        !autoRoleDevice->isInhibited())
+    {
+        // We should fire off a message to PIL asking for a role configuration!
+        PIL.putQueue( new CtiRequestMsg(autoRoleDevice->getID(), "putconfig emetcon install") );
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " " << autoRoleDevice->getName() << " role table being refreshed" << endl;
+        }
+    }
+}
+
 INT RefreshPorterRTDB(void *ptr)
 {
     extern CtiPILServer     PIL;
@@ -1242,7 +1241,7 @@ INT RefreshPorterRTDB(void *ptr)
 
     if(!PorterQuit && (pChg == NULL || (resolvePAOCategory(pChg->getCategory()) == PAO_CATEGORY_DEVICE) ) )
     {
-        RWRecursiveLock<RWMutexLock>::LockGuard  guard(DeviceManager.getMux());
+        CtiDeviceManager::LockGuard  guard(DeviceManager.getMux());
 
         LONG chgid = 0;
         RWCString catstr;
@@ -1292,24 +1291,17 @@ INT RefreshPorterRTDB(void *ptr)
 
         if(autoRole)
         {
-            lastAutoRole = lastAutoRole.now();      // Update our static variable.
-
-            RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(DeviceManager.getMux());       // Protect our iteration!
-            CtiRTDB<CtiDeviceBase>::CtiRTDBIterator   itr_dev(DeviceManager.getMap());
-
-            for(; ++itr_dev ;)
+            try
             {
-                CtiDeviceBase *autoRoleDevice = itr_dev.value();
+                lastAutoRole = lastAutoRole.now();      // Update our static variable.
 
-                if( (autoRoleDevice->getType() == TYPE_REPEATER800 || autoRoleDevice->getType() == TYPE_REPEATER900) && !autoRoleDevice->isInhibited())
+                DeviceManager.apply(applyRepeaterAutoRole,NULL);
+            }
+            catch(...)
+            {
                 {
-                    // We should fire off a message to PIL asking for a role configuration!
-                    PIL.putQueue( new CtiRequestMsg(autoRoleDevice->getID(), "putconfig emetcon install") );
-
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " " << autoRoleDevice->getName() << " role table being refreshed" << endl;
-                    }
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
             }
         }
@@ -1320,8 +1312,8 @@ INT RefreshPorterRTDB(void *ptr)
 
             if(paoid != 0)
             {
-                RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(DeviceManager.getMux());       // Protect our iteration!
-                CtiDevice *pDevToReset = DeviceManager.getEqual( paoid );
+                CtiDeviceManager::LockGuard  dev_guard(DeviceManager.getMux());       // Protect our iteration!
+                CtiDeviceSPtr pDevToReset = DeviceManager.getEqual( paoid );
                 if(pDevToReset)
                 {
                     if(pChg->getTypeOfChange() == ChangeTypeDelete)
@@ -1345,9 +1337,9 @@ INT RefreshPorterRTDB(void *ptr)
 
     /* see if we need to start process's for queuing */
     {
-        RWRecursiveLock<RWMutexLock>::LockGuard  guard(DeviceManager.getMux());        // Protect our iteration!
+        CtiDeviceManager::LockGuard  guard(DeviceManager.getMux());        // Protect our iteration!
 
-        if(!(_queueCCU711Thread.isValid()) && DeviceManager.getMap().contains(containsCCU711, NULL))
+        if(!(_queueCCU711Thread.isValid()) && DeviceManager.find(findCCU711, NULL))
         {
             _queueCCU711Thread = rwMakeThreadFunction( QueueThread, (void*)NULL );
             _queueCCU711Thread.start();
@@ -1725,7 +1717,7 @@ RWCString GetDeviceName( ULONG id )
 {
     RWCString name;
 
-    CtiDevice  *pDev = DeviceManager.getEqual( id );
+    CtiDeviceSPtr pDev = DeviceManager.getEqual( id );
 
     if(pDev)
     {

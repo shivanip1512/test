@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/devtest.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2003/08/22 21:43:29 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2004/05/05 15:31:42 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -60,7 +60,7 @@ void main(int argc, char** argv)
 
         DebugLevel = origDBL;
 
-        Manager.DumpList();
+        Manager.dumpList();
 
         Sleep(500);
     }
@@ -69,7 +69,7 @@ void main(int argc, char** argv)
         dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    Manager.DeleteList();
+    Manager.deleteList();
 
     dout.interrupt(CtiThread::SHUTDOWN);
     dout.join();

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTQUE.cpp-arc  $
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2004/01/26 21:31:44 $
+* REVISION     :  $Revision: 1.27 $
+* DATE         :  $Date: 2004/05/05 15:31:44 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -95,7 +95,7 @@ void blitzNexusFromQueue(HCTIQUEUE q, CTINEXUS *&Nexus)
     CleanQueue( q, (void*)Nexus, findReturnNexusMatch, cleanupOrphanOutMessages );
 }
 
-void blitzNexusFromCCUQueue(CtiDevice *Device, CTINEXUS *&Nexus)
+void blitzNexusFromCCUQueue(CtiDeviceSPtr Device, CTINEXUS *&Nexus)
 {
     if(Device->getType() == TYPE_CCU711)
     {
@@ -130,6 +130,31 @@ void blitzNexusFromCCUQueue(CtiDevice *Device, CTINEXUS *&Nexus)
                 CleanQueue( pInfo->ActinQueueHandle, (void*)Nexus, findReturnNexusMatch, cleanupOrphanOutMessages );
             }
 
+        }
+    }
+}
+
+static void applyBuildLGrpQ(const long unusedid, CtiDeviceSPtr Dev, void *usprtid)
+{
+    if(!Dev->isInhibited() && Dev->getType() == TYPE_CCU711)
+    {
+        CtiTransmitter711Info *pInfo = (CtiTransmitter711Info*)Dev->getTrxInfo();
+        if(pInfo != NULL)
+        {
+            if(pInfo->ActinQueueHandle != (HCTIQUEUE) NULL)
+            {
+                BuildActinShed(Dev);
+            }
+
+            /* Now check out the queue queue handle */
+            if(pInfo->QueueHandle != (HCTIQUEUE) NULL)
+            {
+                /* See if we have one outstanding */
+                if(!(pInfo->GetStatus(INLGRPQ)))
+                {
+                    BuildLGrpQ(Dev);
+                }
+            }
         }
     }
 }
@@ -179,44 +204,15 @@ VOID QueueThread (VOID *Arg)
             }
         }
 
-        {
-            RWRecursiveLock<RWMutexLock>::LockGuard   guard(DeviceManager.getMux());                  // Protect our iteration!
-            CtiRTDB<CtiDeviceBase>::CtiRTDBIterator   itr(DeviceManager.getMap());
-
-            for(; ++itr ;)
-            {
-                CtiDeviceBase *Dev = itr.value();
-                if(!Dev->isInhibited() && Dev->getType() == TYPE_CCU711)
-                {
-                    CtiTransmitter711Info *pInfo = (CtiTransmitter711Info*)Dev->getTrxInfo();
-                    if(pInfo != NULL)
-                    {
-                        if(pInfo->ActinQueueHandle != (HCTIQUEUE) NULL)
-                        {
-                            BuildActinShed(Dev);
-                        }
-
-                        /* Now check out the queue queue handle */
-                        if(pInfo->QueueHandle != (HCTIQUEUE) NULL)
-                        {
-                            /* See if we have one outstanding */
-                            if(!(pInfo->GetStatus(INLGRPQ)))
-                            {
-                                BuildLGrpQ(Dev);
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        DeviceManager.apply(applyBuildLGrpQ,NULL);
     }
 }
 
 
 /* Routine to process results from CCU's */
-CCUResponseDecode (INMESS *InMessage, CtiDevice *Dev, OUTMESS *OutMessage)
+CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
 {
-    extern LoadRemoteRoutes(CtiDeviceBase *RemoteRecord);
+    extern LoadRemoteRoutes(CtiDeviceSPtr RemoteRecord);
 
     INT status = NORMAL;
     INT SocketError = NORMAL;
@@ -409,7 +405,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDevice *Dev, OUTMESS *OutMessage)
             IDLCFunction (Dev, 0, DEST_BASE, COLD);
 
             /* Now send a message to logger */
-            if(NULL != Dev)
+            if(Dev)
             {
                 _snprintf(Message, 50,  "%0.20sCold Start Sent", Dev->getName());
                 SendTextToLogger ("Inf", Message);
@@ -426,7 +422,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDevice *Dev, OUTMESS *OutMessage)
                 IDLCFunction (Dev, 0, DEST_BASE, CLFLT);
 
                 /* Now send a message to logger */
-                if(NULL != Dev)
+                if(Dev)
                 {
                     _snprintf(Message, 50,  "%0.20sFAULTC Detected", Dev->getName());
                     SendTextToLogger ("Inf", Message);
@@ -449,7 +445,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDevice *Dev, OUTMESS *OutMessage)
                 QueueFlush (Dev);
 
                 /* Now send a message to logger */
-                if(NULL != Dev)
+                if(Dev)
                 {
                     _snprintf(Message, 50,  "%0.20sCold Start Detected", Dev->getName());
                     SendTextToLogger ("Inf", Message);
@@ -470,7 +466,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDevice *Dev, OUTMESS *OutMessage)
                 QueueFlush(Dev);
 
                 /* Now send a message to logger */
-                if(NULL != Dev)
+                if(Dev)
                 {
                     _snprintf(Message, 50,  "%0.20s Deadman Detected", Dev->getName());
                     SendTextToLogger ("Inf", Message);
@@ -520,14 +516,14 @@ CCUResponseDecode (INMESS *InMessage, CtiDevice *Dev, OUTMESS *OutMessage)
         {
             IDLCFunction (Dev, 0, DEST_DLC, START);
 
-            if(NULL != Dev)   /* Now send a message to logger */
+            if(Dev)   /* Now send a message to logger */
             {
                 _snprintf(Message, 50,  "%0.20sDLC Alg Restarted", Dev->getName());
                 SendTextToLogger ("Inf", Message);
             }
         }
 
-        if( ((CtiDeviceCCU *)Dev)->checkForTimeSyncLoop(AlgStatus[DEST_TSYNC]) )
+        if( ((CtiDeviceCCU *)Dev.get())->checkForTimeSyncLoop(AlgStatus[DEST_TSYNC]) )
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -546,7 +542,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDevice *Dev, OUTMESS *OutMessage)
                 {
                     IDLCFunction (Dev, 0, DEST_TSYNC, ENPRO);
                     /* Now send a message to logger */
-                    if(NULL != Dev)
+                    if(Dev)
                     {
                         _snprintf(Message, 50,  "%0.20sTS Alg ENABLED", Dev->getName());
                         SendTextToLogger ("Inf", Message);
@@ -565,7 +561,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDevice *Dev, OUTMESS *OutMessage)
             IDLCFunction (Dev, 0, DEST_LM, ENPRO);
 
             /* Now send a message to logger */
-            if(NULL != Dev)
+            if(Dev)
             {
                 _snprintf(Message, 50,  "%0.20sLM Alg ENPRO", Dev->getName());
                 SendTextToLogger ("Inf", Message);
@@ -950,7 +946,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDevice *Dev, OUTMESS *OutMessage)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " Error writing to nexus. CCUResponseDecode().  "
-                            << "Wrote " << BytesWritten << "/" << sizeof(ResultMessage) << " bytes" << endl;
+                        << "Wrote " << BytesWritten << "/" << sizeof(ResultMessage) << " bytes" << endl;
                     }
 
                     if(CTINEXUS::CTINexusIsFatalSocketError(SocketError))
@@ -1074,12 +1070,73 @@ CCUResponseDecode (INMESS *InMessage, CtiDevice *Dev, OUTMESS *OutMessage)
 }
 
 
+static ULONG sleepTime = 15000L;
+
+
+static void applyKick(const long unusedid, CtiDeviceSPtr Dev, void *usprtid)
+{
+
+    int i;
+
+    switch(Dev->getType())
+    {
+    case TYPE_CCU711:
+        {
+            RWRecursiveLock<RWMutexLock>::LockGuard   devguard(Dev->getMux());                  // Protect our device!
+
+            CtiTransmitter711Info *pInfo = (CtiTransmitter711Info*)Dev->getTrxInfo();
+
+#if 0
+
+            /* see if anything is in the ccu queues */
+            if(pInfo->FreeSlots != MAXQUEENTRIES || pInfo->PortQueueEnts > 1 || pInfo->NCOcts != 0)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " " << Dev->getName() << " (on-device) Queue Report: " << endl;
+                dout << "Port: " << Dev->getPortID() <<
+                "  Remote: " << Dev->getAddress() <<
+                "  FreeSlots: " << pInfo->FreeSlots <<
+                "  PortQueEnts: " << pInfo->PortQueueEnts <<
+                "  NCOcts: " << pInfo->PortQueueConts << endl;
+            }
+#endif
+            if(pInfo->FreeSlots < MAXQUEENTRIES)
+            {
+                /* Check if we have anything done yet */
+                for(i = 0; i < MAXQUEENTRIES; i++)
+                {
+                    if(pInfo->QueTable[i].InUse & INCCU)
+                    {
+                        ULONG nowtime = LongTime();
+
+                        if(pInfo->QueTable[i].TimeSent <= nowtime - 5L)
+                        {
+                            IDLCRColQ(Dev);
+                            break;
+                        }
+                        else
+                        {
+                            sleepTime = 2500L;                             // Wake every 2.5 seconds in this case.
+                        }
+                    }
+                }
+            }
+            else if(pInfo->NCOcts)
+            {
+                /* Opps... something got left behind */
+                IDLCRColQ(Dev);
+            }
+
+            break;
+        }
+    }
+}
+
 /* Thread to kick the CCU-711 if no activity and it might have data */
 VOID KickerThread (VOID *Arg)
 {
     USHORT Port, Remote;
     ULONG i;
-    ULONG sleepTime = 15000L;
 
     /* make it clear who isn't the boss */
     CTISetPriority(PRTYS_THREAD, PRTYC_REGULAR, -15, 0);
@@ -1106,77 +1163,14 @@ VOID KickerThread (VOID *Arg)
 
         /* loop through and check if we need to do any RCOLQ's */
 
-        {
-            RWRecursiveLock<RWMutexLock>::LockGuard   guard(DeviceManager.getMux());                  // Protect our iteration!
-            CtiRTDB<CtiDeviceBase>::CtiRTDBIterator   itr(DeviceManager.getMap());
-
-            for(; ++itr ;)
-            {
-                CtiDeviceBase *Dev = itr.value();
-
-                {
-                    switch(Dev->getType())
-                    {
-                    case TYPE_CCU711:
-                        {
-                            RWRecursiveLock<RWMutexLock>::LockGuard   devguard(Dev->getMux());                  // Protect our device!
-
-                            CtiTransmitter711Info *pInfo = (CtiTransmitter711Info*)Dev->getTrxInfo();
-
-#if 0
-
-                            /* see if anything is in the ccu queues */
-                            if(pInfo->FreeSlots != MAXQUEENTRIES || pInfo->PortQueueEnts > 1 || pInfo->NCOcts != 0)
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " " << Dev->getName() << " (on-device) Queue Report: " << endl;
-                                dout << "Port: " << Dev->getPortID() <<
-                                "  Remote: " << Dev->getAddress() <<
-                                "  FreeSlots: " << pInfo->FreeSlots <<
-                                "  PortQueEnts: " << pInfo->PortQueueEnts <<
-                                "  NCOcts: " << pInfo->PortQueueConts << endl;
-                            }
-#endif
-                            if(pInfo->FreeSlots < MAXQUEENTRIES)
-                            {
-                                /* Check if we have anything done yet */
-                                for(i = 0; i < MAXQUEENTRIES; i++)
-                                {
-                                    if(pInfo->QueTable[i].InUse & INCCU)
-                                    {
-                                        ULONG nowtime = LongTime();
-
-                                        if(pInfo->QueTable[i].TimeSent <= nowtime - 5L)
-                                        {
-                                            IDLCRColQ(Dev);
-                                            break;
-                                        }
-                                        else
-                                        {
-                                            sleepTime = 2500L;                             // Wake every 2.5 seconds in this case.
-                                        }
-                                    }
-                                }
-                            }
-                            else if(pInfo->NCOcts)
-                            {
-                                /* Opps... something got left behind */
-                                IDLCRColQ(Dev);
-                            }
-
-                            break;
-                        }
-                    }
-                }
-            }
-        }
+        DeviceManager.apply( applyKick, NULL );
     }
 }
 
 
 /* Routine to flush outstanding 711 queue's for a given CCU */
 /* Dequeues only those entries marked as having been successfully queued and INCCU */
-CCUQueueFlush (CtiDeviceBase *Dev)
+CCUQueueFlush (CtiDeviceSPtr Dev)
 {
     USHORT QueTabEnt;
     INMESS InMessage;
@@ -1238,7 +1232,7 @@ CCUQueueFlush (CtiDeviceBase *Dev)
 
 /* Routine to flush the 711 queue's for a given CCU */
 /* Dequeues only those entries marked as having been slated for queing (likely on the port queue) and INUSE */
-QueueFlush (CtiDevice *Dev)
+QueueFlush (CtiDeviceSPtr Dev)
 
 {
     USHORT QueTabEnt;
@@ -1301,7 +1295,7 @@ QueueFlush (CtiDevice *Dev)
 }
 
 
-BuildLGrpQ (CtiDevice *Dev)
+BuildLGrpQ (CtiDeviceSPtr Dev)
 {
     ULONG Length;
     ULONG Count;
@@ -1628,7 +1622,7 @@ BuildLGrpQ (CtiDevice *Dev)
     return(NORMAL);
 }
 
-BuildActinShed (CtiDevice *Dev)
+BuildActinShed (CtiDeviceSPtr Dev)
 {
     ULONG Length;
     ULONG Count;
@@ -1780,9 +1774,9 @@ DeQueue (INMESS *InMessage)
         return(!NORMAL);
     }
 
-    CtiDeviceBase *TransmitterDev = DeviceManager.getEqual(InMessage->DeviceID);
+    CtiDeviceSPtr TransmitterDev = DeviceManager.getEqual(InMessage->DeviceID);
 
-    if(TransmitterDev != NULL)
+    if(TransmitterDev)
     {
         CtiTransmitter711Info *pInfo = (CtiTransmitter711Info*)TransmitterDev->getTrxInfo();
 
@@ -1817,7 +1811,7 @@ DeQueue (INMESS *InMessage)
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                                 dout << RWTime() << " Error writing to return nexus.  DeQueue().  "
-                                    << "Wrote " << BytesWritten << "/" << sizeof(ResultMessage) << " bytes.  Error: " << SocketError << endl;
+                                << "Wrote " << BytesWritten << "/" << sizeof(ResultMessage) << " bytes.  Error: " << SocketError << endl;
                             }
 
                             if(CTINEXUS::CTINexusIsFatalSocketError(SocketError))

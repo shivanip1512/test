@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_ccu.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2004/04/29 20:00:56 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2004/05/05 15:31:42 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -53,12 +53,12 @@ INT CtiRouteCCU::ExecuteRequest(CtiRequestMsg                  *pReq,
 
     BASEDLL_IMPORT extern CTINEXUS PorterNexus;
 
-    if(Device != NULL)      // This is the pointer which refers this rte to its transmitter device.
+    if(_transmitterDevice)      // This is the pointer which refers this rte to its transmitter device.
     {
-        if((status = Device->checkForInhibitedDevice(retList, OutMessage)) != DEVICEINHIBITED)
+        if((status = _transmitterDevice->checkForInhibitedDevice(retList, OutMessage)) != DEVICEINHIBITED)
         {
             // ALL Routes MUST do this, since they are the final gasp before the trxmitting device
-            OutMessage->Request.CheckSum = Device->getUniqueIdentifier();
+            OutMessage->Request.CheckSum = _transmitterDevice->getUniqueIdentifier();
             OutMessage->MessageFlags |= MSGFLG_APPLY_EXCLUSION_LOGIC;           // 051903 CGP.  Are all these OMs excludable (ie susceptible to crosstalk)??
 
             if(OutMessage->EventCode & VERSACOM)
@@ -110,9 +110,9 @@ INT CtiRouteCCU::assembleVersacomRequest(CtiRequestMsg                  *pReq,
     /*
      * Addressing variables SHALL have been assigned at an earlier level!
      */
-    OutMessage->DeviceID       = Device->getID();
-    OutMessage->Port           = Device->getPortID();
-    OutMessage->Remote         = Device->getAddress();
+    OutMessage->DeviceID       = _transmitterDevice->getID();
+    OutMessage->Port           = _transmitterDevice->getPortID();
+    OutMessage->Remote         = _transmitterDevice->getAddress();
     if(!OutMessage->Retry)     OutMessage->Retry = 2;
 
     if( parse.getiValue("type") == ProtocolVersacomType && parse.isKeyValid("noqueue") )
@@ -124,7 +124,7 @@ INT CtiRouteCCU::assembleVersacomRequest(CtiRequestMsg                  *pReq,
      * From this point on the OutMessage will be an EMETCON type.
      * Do not use the VSt struct from it
      */
-    CtiProtocolVersacom  Versacom(Device->getType());
+    CtiProtocolVersacom  Versacom(_transmitterDevice->getType());
 
     Versacom.parseRequest(parse, OutMessage->Buffer.VSt);                       // Pick out the CommandType and parameters
 
@@ -134,9 +134,9 @@ INT CtiRouteCCU::assembleVersacomRequest(CtiRequestMsg                  *pReq,
     memset(&BSt, 0, sizeof(BSTRUCT));
 
     /* Load up the hunks of the B structure that we need */
-    BSt.Port                = Device->getPortID();
-    BSt.Remote              = Device->getAddress();
-    BSt.DlcRoute.Amp        = ((CtiDeviceCCU *)Device)->getIDLC().getAmp();
+    BSt.Port                = _transmitterDevice->getPortID();
+    BSt.Remote              = _transmitterDevice->getAddress();
+    BSt.DlcRoute.Amp        = ((CtiDeviceCCU *)(_transmitterDevice.get()))->getIDLC().getAmp();
     BSt.DlcRoute.Feeder     = Carrier.getBus();
     BSt.DlcRoute.RepVar     = Carrier.getCCUVarBits();
     BSt.DlcRoute.RepFixed   = Carrier.getCCUFixBits();
@@ -197,7 +197,7 @@ INT CtiRouteCCU::assembleVersacomRequest(CtiRequestMsg                  *pReq,
             }
 
             /* Things are now ready to go */
-            switch( Device->getType() )
+            switch( _transmitterDevice->getType() )
             {
                 case TYPE_CCU700:
                 case TYPE_CCU710:
@@ -300,20 +300,20 @@ INT CtiRouteCCU::assembleDLCRequest(CtiRequestMsg                  *pReq,
     CtiDeviceCCU  *trxDev;
 
 
-    OutMessage->DeviceID = Device->getID();         // This is the route transmitter device, not the causal device.
-    OutMessage->Port     = Device->getPortID();
-    OutMessage->Remote   = Device->getAddress();    // This is the DLC address if the CCU.
+    OutMessage->DeviceID = _transmitterDevice->getID();         // This is the route transmitter device, not the causal device.
+    OutMessage->Port     = _transmitterDevice->getPortID();
+    OutMessage->Remote   = _transmitterDevice->getAddress();    // This is the DLC address if the CCU.
 
-    CtiProtocolEmetcon Emetcon(OutMessage->Buffer.BSt.DeviceType, Device->getType());
+    CtiProtocolEmetcon Emetcon(OutMessage->Buffer.BSt.DeviceType, _transmitterDevice->getType());
 
     if(OutMessage->EventCode & BWORD)
     {
         Emetcon.setSSpec(OutMessage->Buffer.BSt.SSpec);
 
         /* Load up the hunks of the B structure that we know/need */
-        OutMessage->Buffer.BSt.Port                = Device->getPortID();
-        OutMessage->Buffer.BSt.Remote              = Device->getAddress();
-        OutMessage->Buffer.BSt.DlcRoute.Amp        = ((CtiDeviceIDLC *)Device)->getIDLC().getAmp();
+        OutMessage->Buffer.BSt.Port                = _transmitterDevice->getPortID();
+        OutMessage->Buffer.BSt.Remote              = _transmitterDevice->getAddress();
+        OutMessage->Buffer.BSt.DlcRoute.Amp        = ((CtiDeviceIDLC *)(_transmitterDevice.get()))->getIDLC().getAmp();
         OutMessage->Buffer.BSt.DlcRoute.Feeder     = Carrier.getBus();
         OutMessage->Buffer.BSt.DlcRoute.RepVar     = Carrier.getCCUVarBits();
         OutMessage->Buffer.BSt.DlcRoute.RepFixed   = Carrier.getCCUFixBits();
@@ -325,8 +325,8 @@ INT CtiRouteCCU::assembleDLCRequest(CtiRequestMsg                  *pReq,
     {
         /* Load up the hunks of the A structure that we know/need */
         // 3/17/02 MSKF // OutMessage->EventCode |= DTRAN;                                         // Make sure not queued!
-        OutMessage->Buffer.ASt.Port = Device->getPortID();
-        OutMessage->Buffer.ASt.Remote = Device->getAddress();
+        OutMessage->Buffer.ASt.Port = _transmitterDevice->getPortID();
+        OutMessage->Buffer.ASt.Remote = _transmitterDevice->getAddress();
 
         OutMessage->Buffer.ASt.DlcRoute.Feeder     = Carrier.getBus();
         OutMessage->Buffer.ASt.DlcRoute.RepVar     = Carrier.getCCUVarBits();
@@ -353,7 +353,7 @@ INT CtiRouteCCU::assembleDLCRequest(CtiRequestMsg                  *pReq,
         if(NewOutMessage != NULL)
         {
             /* Things are now ready to go */
-            switch( Device->getType() )
+            switch( _transmitterDevice->getType() )
             {
             case TYPE_CCU700:
             case TYPE_CCU710:

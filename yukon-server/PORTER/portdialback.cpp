@@ -8,11 +8,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2004/02/17 15:08:03 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2004/05/05 15:31:43 $
 *
 * HISTORY      :
 * $Log: portdialback.cpp,v $
+* Revision 1.2  2004/05/05 15:31:43  cplender
+* Implemented shared pointers.  GHMOOS.
+*
 * Revision 1.1  2004/02/17 15:08:03  cplender
 * New files for GRE/SA support
 *
@@ -83,7 +86,7 @@ VOID PortDialbackThread(void *pid)
     {
         try
         {
-            pair< bool, INT > portpair = Port->checkCommStatus(NULL);
+            pair< bool, INT > portpair = Port->checkCommStatus(CtiDeviceSPtr());
 
             if(portpair.first)  // Port was opened on this pass.
             {
@@ -233,7 +236,7 @@ VOID PortDialbackThread(void *pid)
                         }
 
 
-                        CtiDevice *pDevice = DeviceManager.RemoteGetEqualbyName( strdev );
+                        CtiDeviceSPtr pDevice = DeviceManager.RemoteGetEqualbyName( strdev );
                         if(pDevice)
                         {
                             CtiCommandMsg *pAltRate = CTIDBG_new CtiCommandMsg( CtiCommandMsg::AlternateScanRate );
@@ -290,7 +293,7 @@ VOID PortDialbackThread(void *pid)
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " " << Port->getName() << " Hanging up the phone." << endl;
             }
-            Port->disconnect(0, true);
+            Port->disconnect(CtiDeviceSPtr(), true);
         }
         catch(...)
         {

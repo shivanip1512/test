@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2003/09/29 22:20:24 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2004/05/05 15:31:42 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,7 +19,7 @@
 #include "port_dialable.h"
 
 
-INT CtiPortDialable::disconnect(CtiDevice *Device, INT trace)
+INT CtiPortDialable::disconnect(CtiDeviceSPtr Device, INT trace)
 {
     INT status = NORMAL;
 

@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_dv_scandata.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/06/21 15:35:25 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2004/05/05 15:31:46 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -62,7 +62,8 @@ CtiTableDeviceScanData& CtiTableDeviceScanData::setDeviceID(LONG id)
 
 RWTime CtiTableDeviceScanData::getNextScan(INT a) const
 {
-    return _nextScan[a].rwtime();
+    RWTime tm = _nextScan[a].rwtime();
+    return tm;
 }
 
 CtiTableDeviceScanData& CtiTableDeviceScanData::setNextScan(INT a, const RWTime &b)

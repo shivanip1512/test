@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTERSU.cpp-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2003/07/21 22:08:29 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2004/05/05 15:31:44 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -147,7 +147,7 @@ SendError (OUTMESS *&OutMessage, USHORT ErrorCode, INMESS *PassedInMessage)
 
         if(PorterDebugLevel & PORTER_DEBUG_SENDERROR)
         {
-            CtiDeviceBase *tempDev = DeviceManager.getEqual(OutMessage->DeviceID);
+            CtiDeviceSPtr tempDev = DeviceManager.getEqual(OutMessage->DeviceID);
 
             if(tempDev)
             {
@@ -171,8 +171,8 @@ SendError (OUTMESS *&OutMessage, USHORT ErrorCode, INMESS *PassedInMessage)
 
                 if(writeResult == BADSOCK)
                 {
-                    extern void blitzNexusFromCCUQueue(CtiDevice *Device, CTINEXUS *&Nexus);
-                    CtiDeviceBase *tempDev = DeviceManager.getEqual(OutMessage->DeviceID);
+                    extern void blitzNexusFromCCUQueue(CtiDeviceSPtr Device, CTINEXUS *&Nexus);
+                    CtiDeviceSPtr tempDev = DeviceManager.getEqual(OutMessage->DeviceID);
                     blitzNexusFromCCUQueue( tempDev, InMessage.ReturnNexus );
                 }
                 // 111901 CGP.  You better not close this.. It is the OutMessage's! // InMessage.ReturnNexus->CTINexusClose();
@@ -199,7 +199,7 @@ SendError (OUTMESS *&OutMessage, USHORT ErrorCode, INMESS *PassedInMessage)
 
 
 /* Add Remote error to the comm error log */
-ReportRemoteError (CtiDeviceBase *RemoteRecord, ERRSTRUCT *ErrorRecord)
+ReportRemoteError (CtiDeviceSPtr RemoteRecord, ERRSTRUCT *ErrorRecord)
 {
     COMM_ERROR_LOG_STRUCT ComErrorRecord;
     CtiPortSPtr PortRecord;
@@ -247,7 +247,7 @@ ReportRemoteError (CtiDeviceBase *RemoteRecord, ERRSTRUCT *ErrorRecord)
 
 
 /* Add Device error to the comm error log */
-ReportDeviceError (CtiDeviceBase* DeviceRecord, CtiPortSPtr PortRecord, ERRSTRUCT *ErrorRecord)
+ReportDeviceError (CtiDeviceSPtr DeviceRecord, CtiPortSPtr PortRecord, ERRSTRUCT *ErrorRecord)
 {
     COMM_ERROR_LOG_STRUCT ComErrorRecord;
 

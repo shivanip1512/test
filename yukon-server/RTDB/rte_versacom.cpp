@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_versacom.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2003/03/13 19:36:08 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2004/05/05 15:31:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -110,12 +110,12 @@ INT CtiRouteVersacom::ExecuteRequest(CtiRequestMsg                  *pReq,
     /*
      *  Wow, I have versacom data and I know what to do with it....
      */
-    if(Device != NULL)      // This is the pointer which refers this rte to its transmitter device.
+    if(_transmitterDevice)      // This is the pointer which refers this rte to its transmitter device.
     {
-        if((status = Device->checkForInhibitedDevice(retList, OutMessage)) != DEVICEINHIBITED)
+        if((status = _transmitterDevice->checkForInhibitedDevice(retList, OutMessage)) != DEVICEINHIBITED)
         {
             // ALL Routes MUST do this, since they are the final gasp before the trxmitting device
-            OutMessage->Request.CheckSum = Device->getUniqueIdentifier();
+            OutMessage->Request.CheckSum = _transmitterDevice->getUniqueIdentifier();
 
             OutMessage->EventCode |= VERSACOM;
 
@@ -131,9 +131,9 @@ INT CtiRouteVersacom::ExecuteRequest(CtiRequestMsg                  *pReq,
                          *  Get us aligned with the transmitter of choice.
                          */
 
-                        OutMessage->DeviceID             = Device->getID();      // This is the TCU information
-                        OutMessage->Port                 = Device->getPortID();
-                        OutMessage->Remote               = Device->getAddress();
+                        OutMessage->DeviceID             = _transmitterDevice->getID();      // This is the TCU information
+                        OutMessage->Port                 = _transmitterDevice->getPortID();
+                        OutMessage->Remote               = _transmitterDevice->getAddress();
 
 
                         // This is the CCU address, which is fixed at 1 for Duke
@@ -275,7 +275,7 @@ INT CtiRouteVersacom::assembleVersacomRequest(CtiRequestMsg                  *pR
 
     VSTRUCT        VSt;
 
-    CtiProtocolVersacom  Versacom(Device->getType());
+    CtiProtocolVersacom  Versacom(_transmitterDevice->getType());
 
     if(OutMessage->EventCode & ENCODED)
     {

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PHLIDLC.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2004/04/29 20:09:47 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2004/05/05 15:31:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -73,7 +73,7 @@ extern CtiPortManager PortManager;
 
 /* routine to initialize an idlc device and its counters */
 IDLCInit (CtiPortSPtr      PortRecord,        /* Port record */
-          CtiDeviceBase    *RemoteRecord,     /* ccu record */
+          CtiDeviceSPtr &RemoteRecord,     /* ccu record */
           REMOTESEQUENCE   *RemoteSequence)   /* various ccu specific data */
 {
     extern void DisplayTraceList( CtiPortSPtr prt, RWTPtrSlist< CtiMessage > &traceList, bool consume);
@@ -127,7 +127,7 @@ IDLCInit (CtiPortSPtr      PortRecord,        /* Port record */
 
 
 /* routine to build an idlc function */
-IDLCFunction (CtiDevice *Dev,
+IDLCFunction (CtiDeviceSPtr &Dev,
               USHORT Source,    /* id of source process */
               USHORT Dest,      /* id of destination process */
               USHORT Function)  /* function to execute */
@@ -192,7 +192,7 @@ IDLCFunction (CtiDevice *Dev,
 
 
 /* routine to build an idlc RCONT function */
-IDLCRCont (CtiDevice *Dev)
+IDLCRCont (CtiDeviceSPtr &Dev)
 {
     INT status = NORMAL;
     OUTMESS *OutMessage;
@@ -258,7 +258,7 @@ IDLCRCont (CtiDevice *Dev)
 
 
 /* routine to build an idlc RCOLQ function */
-IDLCRColQ (CtiDevice *Dev, INT priority)
+IDLCRColQ (CtiDeviceSPtr &Dev, INT priority)
 {
     INT status = NORMAL;
     OUTMESS *OutMessage;
@@ -361,7 +361,7 @@ IDLCRColQ (CtiDevice *Dev, INT priority)
 
 
 /* Routine to Set CCU time sync values */
-IDLCSetTSStores (CtiDevice *Dev, USHORT Priority, USHORT Trigger, USHORT Period)
+IDLCSetTSStores (CtiDeviceSPtr &Dev, USHORT Priority, USHORT Trigger, USHORT Period)
 {
     INT status = NORMAL;
     USHORT Index;
@@ -443,7 +443,7 @@ IDLCSetTSStores (CtiDevice *Dev, USHORT Priority, USHORT Trigger, USHORT Period)
 
 
 /* Routine to initialize CCU algorithm status list */
-IDLCSetBaseSList (CtiDevice *Dev)
+IDLCSetBaseSList (CtiDeviceSPtr &Dev)
 {
     USHORT Index;
     OUTMESS *OutMessage;
@@ -569,7 +569,7 @@ Which should work well for any CCU hooked to one of these spread sprectum radios
 */
 
 /* Routine to initialize CCU algorithm status list */
-IDLCSetDelaySets (CtiDevice *Dev)
+IDLCSetDelaySets (CtiDeviceSPtr &Dev)
 {
     bool filefound = false;
     bool devfound = false;

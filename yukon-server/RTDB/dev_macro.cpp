@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2004/04/29 20:03:27 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2004/05/05 15:31:42 $
 *
 * Copyright (c) 1999-2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -79,7 +79,7 @@ void CtiDeviceMacro::clearDeviceList( void )
     _deviceList.clear( );
 }
 
-CtiDeviceMacro &CtiDeviceMacro::addDevice( CtiDeviceBase *toAdd )
+CtiDeviceMacro &CtiDeviceMacro::addDevice( CtiDeviceSPtr toAdd )
 {
     CtiLockGuard<CtiMutex> guard(_deviceListMux);
 
@@ -134,7 +134,7 @@ INT CtiDeviceMacro::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse
 
         for( ; devIter != _deviceList.end( ); devIter++)
         {
-            CtiDeviceBase *&pBase = *devIter;
+            CtiDeviceSPtr &pBase = *devIter;
             OUTMESS *pOutMessage = CTIDBG_new OUTMESS(*OutMessage);           // Create a personalized copy for this sub-device.
 
             if(pOutMessage)
@@ -213,7 +213,7 @@ bool CtiDeviceMacro::coalesceRippleGroups( CtiRequestMsg *pReq, CtiCommandParser
 
     for( ; devIter != _deviceList.end( ); devIter++)
     {
-        CtiDeviceBase *&pBase = *devIter;
+        CtiDeviceSPtr &pBase = *devIter;
         if(pBase->getType() != TYPE_LMGROUP_RIPPLE)                 // We need to look for a RIPPLE GROUP
         {
             // There is a NON-RIPPLE group in here! we do nothing!
@@ -228,8 +228,8 @@ bool CtiDeviceMacro::coalesceRippleGroups( CtiRequestMsg *pReq, CtiCommandParser
 
         for( devIter = _deviceList.begin(); devIter != _deviceList.end( ); devIter++)
         {
-            CtiDeviceBase *&pBase = *devIter;
-            CtiDeviceGroupRipple &Grp =  *((CtiDeviceGroupRipple*)pBase);
+            CtiDeviceSPtr &pBase = *devIter;
+            CtiDeviceGroupRipple &Grp =  *((CtiDeviceGroupRipple*)(pBase.get()));
             Grp.contributeToBitPattern(RippleMessage, parse.isControlled());
             Grp.setShed(parse.getControlled());
         }
@@ -261,7 +261,7 @@ bool CtiDeviceMacro::coalesceRippleGroups( CtiRequestMsg *pReq, CtiCommandParser
  *
  * This method may fail is the device route is a macro.
  */
-bool CtiDeviceMacro::executeOnSubGroupRoute( const CtiDeviceBase *&pBase, set< LONG > &executedRouteSet )
+bool CtiDeviceMacro::executeOnSubGroupRoute( const CtiDeviceSPtr &pBase, set< LONG > &executedRouteSet )
 {
     bool bExecute = true;           // The default case is, yes, do the execute.
 
@@ -271,7 +271,7 @@ bool CtiDeviceMacro::executeOnSubGroupRoute( const CtiDeviceBase *&pBase, set< L
         if(pBase->getType() == TYPE_LMGROUP_RIPPLE)                 // We need to look for a RIPPLE GROUP
         {
             // OK, we only execute on a route ONE time.  Use the set to indicate a collision!
-            CtiDeviceGroupRipple &Grp =  *((CtiDeviceGroupRipple*)pBase);
+            CtiDeviceGroupRipple &Grp =  *((CtiDeviceGroupRipple*)(pBase.get()));
 
             LONG rID = Grp.getRouteID();
 
@@ -335,7 +335,7 @@ INT CtiDeviceMacro::processTrxID( int trx,  RWTPtrSlist< CtiMessage >  &vgList)
 
                 for( ; devIter != _deviceList.end( ); )
                 {
-                    CtiDeviceBase *&pBase = *(devIter++);
+                    CtiDeviceSPtr &pBase = *(devIter++);
                     pBase->processTrxID(trx, vgList);
                 }
             }

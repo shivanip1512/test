@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.49 $
-* DATE         :  $Date: 2004/05/04 13:38:47 $
+* REVISION     :  $Revision: 1.50 $
+* DATE         :  $Date: 2004/05/05 15:31:45 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -467,7 +467,7 @@ void CtiPILServer::resultThread()
 
 
     /* Define the various records */
-    CtiDeviceBase   *DeviceRecord;
+    CtiDeviceSPtr DeviceRecord;
 
     /* Time variable for decode */
     RWTime      TimeNow;
@@ -539,9 +539,9 @@ void CtiPILServer::resultThread()
                 }
 
                 // Find the device..
-                DeviceRecord = DeviceManager->RemoteGetEqual(id);
+                DeviceRecord = DeviceManager->getEqual(id);
 
-                if(DeviceRecord != NULL && !(InMessage->MessageFlags & MSGFLG_ROUTE_TO_PORTER_GATEWAY_THREAD))
+                if(DeviceRecord && !(InMessage->MessageFlags & MSGFLG_ROUTE_TO_PORTER_GATEWAY_THREAD))
                 {
                     if(DebugLevel & DEBUGLEVEL_PIL_RESULTTHREAD)
                     {
@@ -946,10 +946,10 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
     for(i = 0; i < execList.entries(); i++)
     {
         CtiRequestMsg *&pExecReq = execList[i];
-        CtiDevice *Dev = DeviceManager->RemoteGetEqual(pExecReq->DeviceId());
+        CtiDeviceSPtr Dev = DeviceManager->getEqual(pExecReq->DeviceId());
 
 
-        if(Dev != NULL)
+        if(Dev)
         {
             if( parse.getCommandStr().compareTo(pExecReq->CommandString(), RWCString::ignoreCase) )
             {
@@ -1243,7 +1243,7 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
     CtiRequestMsg *pReq = (CtiRequestMsg*)Req.replicateMessage();
     pReq->setConnectionHandle( Req.getConnectionHandle() );
 
-    CtiDevice *Dev = DeviceManager->RemoteGetEqual(pReq->DeviceId());
+    CtiDeviceSPtr Dev = DeviceManager->getEqual(pReq->DeviceId());
 
     if(parse.isKeyValid("serial"))
     {
@@ -1258,13 +1258,13 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
         {
             // OK, someone tried to send us an override on the device ID
             pReq->setDeviceId( i ) ;
-            Dev = DeviceManager->RemoteGetEqual(pReq->DeviceId());
+            Dev = DeviceManager->getEqual(pReq->DeviceId());
         }
         else
         {
             RWCString dname = parse.getsValue("device");
             Dev = DeviceManager->RemoteGetEqualbyName( dname );
-            if(Dev != NULL)
+            if(Dev)
             {
                 pReq->setDeviceId( Dev->getID() ) ;
             }
@@ -1308,14 +1308,14 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
         RWCString gname = parse.getsValue("group");
 
         {
-            RWRecursiveLock<RWMutexLock>::LockGuard dev_guard(DeviceManager->getMux());
-            CtiRTDB<CtiDeviceBase>::CtiRTDBIterator itr_dev(DeviceManager->getMap());
+            CtiDeviceManager::LockGuard dev_guard(DeviceManager->getMux());
+            CtiDeviceManager::spiterator itr_dev;
 
             int groupsubmitcnt = 0;
 
-            for(; ++itr_dev ;)
+            for(itr_dev = DeviceManager->begin(); itr_dev != DeviceManager->end(); itr_dev++)
             {
-                CtiDeviceBase &device = *(itr_dev.value());
+                CtiDeviceBase &device = *(itr_dev->second.get());
 
                 if(device.isMeter() || isION(device.getType()))
                 {
@@ -1356,13 +1356,14 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
         RWCString gname = parse.getsValue("altgroup");
 
         {
-            RWRecursiveLock<RWMutexLock>::LockGuard dev_guard(DeviceManager->getMux());
-            CtiRTDB<CtiDeviceBase>::CtiRTDBIterator itr_dev(DeviceManager->getMap());
+            CtiDeviceManager::LockGuard dev_guard(DeviceManager->getMux());
+            CtiDeviceManager::spiterator itr_dev;
+
             int groupsubmitcnt = 0;
 
-            for(; ++itr_dev ;)
+            for(itr_dev = DeviceManager->begin(); itr_dev != DeviceManager->end(); itr_dev++)
             {
-                CtiDeviceBase &device = *(itr_dev.value());
+                CtiDeviceBase &device = *(itr_dev->second.get());
 
                 if(device.isMeter() || isION(device.getType()))
                 {
@@ -1411,9 +1412,9 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
             RWCString service = parse.getsValue("templateinservice");
             char newparse[256];
 
-            Dev = DeviceManager->RemoteGetEqual(SYS_DID_SYSTEM);     // This is the guy who does configs.
-            CtiDevice *GrpDev = DeviceManager->RemoteGetEqualbyName( lmgroup );
-            if(GrpDev != NULL)
+            Dev = DeviceManager->getEqual(SYS_DID_SYSTEM);     // This is the guy who does configs.
+            CtiDeviceSPtr GrpDev = DeviceManager->RemoteGetEqualbyName( lmgroup );
+            if(GrpDev)
             {
                 _snprintf(newparse, 255, "putconfig serial %d %s %s", parse.getiValue("serial"), GrpDev->getPutConfigAssignment(), service.data());
 
@@ -1434,8 +1435,8 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
              */
             char newparse[256];
 
-            CtiDeviceGroupVersacom *GrpDev = (CtiDeviceGroupVersacom *)Dev;
-            // Dev = DeviceManager->RemoteGetEqual(SYS_DID_SYSTEM);     // This is the guy who does ALL configs.
+            CtiDeviceGroupVersacom *GrpDev = (CtiDeviceGroupVersacom *)Dev.get();
+            // Dev = DeviceManager->getEqual(SYS_DID_SYSTEM);     // This is the guy who does ALL configs.
             if(GrpDev != NULL)
             {
                 _snprintf(newparse, 255, "%s %s", pReq->CommandString(), GrpDev->getPutConfigAssignment());
@@ -1470,8 +1471,8 @@ void ReportMessagePriority( CtiMessage *MsgPtr, CtiDeviceManager *&DeviceManager
 {
     if(MsgPtr->isA() == MSG_PCREQUEST)
     {
-        RWRecursiveLock<RWMutexLock>::LockGuard dev_guard(DeviceManager->getMux());
-        CtiDevice *DeviceRecord = DeviceManager->RemoteGetEqual(((CtiRequestMsg*)MsgPtr)->DeviceId());
+        CtiDeviceManager::LockGuard dev_guard(DeviceManager->getMux());
+        CtiDeviceSPtr DeviceRecord = DeviceManager->getEqual(((CtiRequestMsg*)MsgPtr)->DeviceId());
         if(DeviceRecord)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1504,10 +1505,10 @@ INT CtiPILServer::analyzeAutoRole(CtiRequestMsg& Req, CtiCommandParser &parse, R
 {
     INT status = NORMAL;
     int i;
-    RWRecursiveLock<RWMutexLock>::LockGuard dev_guard(DeviceManager->getMux());
+    CtiDeviceManager::LockGuard dev_guard(DeviceManager->getMux());
     // CtiRouteManager::LockGuard rte_guard(RouteManager->getMux());
 
-    CtiDevice *pRepeaterToRole = DeviceManager->RemoteGetEqual(Req.DeviceId());    // This is our repeater we are curious about!
+    CtiDeviceSPtr pRepeaterToRole = DeviceManager->getEqual(Req.DeviceId());    // This is our repeater we are curious about!
 
     if(pRepeaterToRole)
     {

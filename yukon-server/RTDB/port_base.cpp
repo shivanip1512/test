@@ -31,7 +31,7 @@ void CtiPort::Dump() const
 }
 
 
-INT CtiPort::traceIn(CtiXfer& Xfer, RWTPtrSlist< CtiMessage > &traceList, CtiDevice* Dev, INT ErrorCode) const
+INT CtiPort::traceIn(CtiXfer& Xfer, RWTPtrSlist< CtiMessage > &traceList, CtiDeviceSPtr  Dev, INT ErrorCode) const
 {
     INT status = NORMAL;
 
@@ -57,7 +57,7 @@ INT CtiPort::traceIn(CtiXfer& Xfer, RWTPtrSlist< CtiMessage > &traceList, CtiDev
                 trace.setEnd(false);
                 traceList.insert(trace.replicateMessage());
 
-                if(Dev != NULL)
+                if(Dev)
                 {
                     trace.setBrightCyan();
                     msg = "  D: " + CtiNumStr(Dev->getID()).spad(3) + " / " + Dev->getName();
@@ -103,7 +103,7 @@ INT CtiPort::traceIn(CtiXfer& Xfer, RWTPtrSlist< CtiMessage > &traceList, CtiDev
     return status;
 }
 
-INT CtiPort::traceXfer(CtiXfer& Xfer, RWTPtrSlist< CtiMessage > &traceList, CtiDevice* Dev, INT ErrorCode) const
+INT CtiPort::traceXfer(CtiXfer& Xfer, RWTPtrSlist< CtiMessage > &traceList, CtiDeviceSPtr  Dev, INT ErrorCode) const
 {
     INT status = NORMAL;
 
@@ -124,7 +124,7 @@ INT CtiPort::traceXfer(CtiXfer& Xfer, RWTPtrSlist< CtiMessage > &traceList, CtiD
     return status;
 }
 
-INT CtiPort::traceOut(CtiXfer& Xfer, RWTPtrSlist< CtiMessage > &traceList, CtiDevice* Dev, INT ErrorCode) const
+INT CtiPort::traceOut(CtiXfer& Xfer, RWTPtrSlist< CtiMessage > &traceList, CtiDeviceSPtr  Dev, INT ErrorCode) const
 {
     INT status = NORMAL;
     RWCString msg;
@@ -149,7 +149,7 @@ INT CtiPort::traceOut(CtiXfer& Xfer, RWTPtrSlist< CtiMessage > &traceList, CtiDe
                 trace.setEnd(false);
                 traceList.insert(trace.replicateMessage());
 
-                if(Dev != NULL)
+                if(Dev)
                 {
                     trace.setBrightCyan();
                     msg = "  D: " + CtiNumStr(Dev->getID()).spad(3) + " / " + Dev->getName();
@@ -436,7 +436,7 @@ void CtiPort::haltLog()
     }
 }
 
-INT CtiPort::outInMess(CtiXfer& Xfer, CtiDevice *Dev, RWTPtrSlist< CtiMessage > &traceList)
+INT CtiPort::outInMess(CtiXfer& Xfer, CtiDeviceSPtr Dev, RWTPtrSlist< CtiMessage > &traceList)
 {
     INT   status = NORMAL;
 
@@ -532,7 +532,7 @@ CtiPort& CtiPort::setTAP(BOOL b)
     return *this;
 }
 
-INT CtiPort::connectToDevice(CtiDevice *Device, LONG &LastDeviceId, INT trace)
+INT CtiPort::connectToDevice(CtiDeviceSPtr Device, LONG &LastDeviceId, INT trace)
 {
     INT status     = NORMAL;
     ULONG DeviceCRC = Device->getUniqueIdentifier();
@@ -581,9 +581,9 @@ BOOL CtiPort::connectedTo(ULONG crc)
 {
     return(crc == getConnectedDeviceUID());
 }
-INT CtiPort::disconnect(CtiDevice *Device, INT trace)
+INT CtiPort::disconnect(CtiDeviceSPtr Device, INT trace)
 {
-    if(Device != NULL)
+    if(Device)
     {
         Device->setLogOnNeeded(TRUE);
     }
@@ -775,7 +775,7 @@ CtiPort& CtiPort::setConnectedDeviceUID(const ULONG &i)
 }
 
 
-pair< bool, INT > CtiPort::verifyPortStatus(CtiDevice *Device, INT trace)
+pair< bool, INT > CtiPort::verifyPortStatus(CtiDeviceSPtr Device, INT trace)
 {
     pair< bool, INT > rpair = make_pair( false, NORMAL );
 
@@ -787,7 +787,7 @@ pair< bool, INT > CtiPort::verifyPortStatus(CtiDevice *Device, INT trace)
     return rpair;
 }
 
-pair< bool, INT > CtiPort::checkCommStatus(CtiDevice *Device, INT trace)
+pair< bool, INT > CtiPort::checkCommStatus(CtiDeviceSPtr Device, INT trace)
 {
     INT status = NORMAL;
     pair< bool, INT > rpair = make_pair( false, NORMAL );
@@ -870,7 +870,7 @@ bool CtiPort::isViable() const
 }
 
 
-bool CtiPort::setPortForDevice(CtiDevice* Device)
+bool CtiPort::setPortForDevice(CtiDeviceSPtr  Device)
 {
     bool bret = false;
 

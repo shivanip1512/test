@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.39 $
-* DATE         :  $Date: 2004/05/04 13:41:09 $
+* REVISION     :  $Revision: 1.40 $
+* DATE         :  $Date: 2004/05/05 15:31:46 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -132,7 +132,6 @@ INT     RecordDynamicData();
 void    InitScannerGlobals(void);
 void    DumpRevision(void);
 INT     MakePorterRequests(RWTPtrSlist< OUTMESS > &outList);
-INT     ReinitializeRemotes(RWTime NextScan[]);
 
 CtiDeviceManager      ScannerDeviceManager;
 
@@ -149,12 +148,203 @@ HANDLE hLockArray[] = {
     hScannerSyncs[S_LOCK_MUTEX]
 };
 
-void barkAboutCurrentTime(CtiDevice *Device, RWTime &rt, INT line)
+void barkAboutCurrentTime(CtiDeviceSPtr Device, RWTime &rt, INT line)
 {
     if(ScannerDebugLevel & SCANNER_DEBUG_NEXTSCAN)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " Next scan is for " << Device->getName() << " at " << rt << " on " << line << endl;
+    }
+}
+
+static void applyDeviceInit(const long key, CtiDeviceSPtr Device, void *d)
+{
+
+    if( Device->isSingle() )
+    {
+        CtiDeviceSingle *DeviceRecord = (CtiDeviceSingle*)Device.get();
+        DeviceRecord->doDeviceInit();       // Set the next scan times...
+    }
+    else
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << "): Non-scannable in scanner" << endl;
+            dout << " PaoName: " << Device->getName() << endl;
+        }
+    }
+}
+
+static void applyResetScanFlags(const long key, CtiDeviceSPtr Device, void *d)
+{
+    if( Device->isSingle() )
+    {
+        CtiDeviceSingle *DeviceRecord = (CtiDeviceSingle*) Device.get();
+
+        if(DeviceRecord->isScanFreezePending())
+        {
+            DeviceRecord->resetScanFreezePending();;
+            DeviceRecord->setScanFreezeFailed();
+        }
+        else if(DeviceRecord->isScanPending())
+        {
+            DeviceRecord->resetScanPending();
+        }
+        else if(DeviceRecord->isScanResetting())
+        {
+            DeviceRecord->resetScanResetting();
+            DeviceRecord->setScanResetFailed();
+        }
+    }
+}
+
+static void applyGenerateScanRequests(const long key, CtiDeviceSPtr pBase, void *d)
+{
+    INT   nRet = 0;
+    RWTime TimeNow;
+    RWTPtrSlist< OUTMESS > &outList =  *((RWTPtrSlist< OUTMESS > *)d);
+
+    if(ScannerDebugLevel & SCANNER_DEBUG_DEVICEANALYSIS)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " Looking at " << pBase->getName() << endl;
+    }
+
+    if(pBase->isSingle() && !pBase->isInhibited())
+    {
+        CtiDeviceSingle *DeviceRecord = (CtiDeviceSingle*)pBase.get();
+
+        /*
+         *  ACCUMULATOR SCANNING
+         */
+
+        if(DeviceRecord->getNextScan(ScanRateAccum) <= TimeNow)
+        {
+            if(ScannerDebugLevel & SCANNER_DEBUG_ACCUMSCAN)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Accumulator Scan Checkpoint **** " << DeviceRecord->getID() << " / " <<  DeviceRecord->getName() << endl;
+
+            }
+            DeviceRecord->resetScanException();   // Results should be forced though the exception system
+            nRet = DeviceRecord->initiateAccumulatorScan(outList);
+        }
+
+        /*
+         *  INTEGRITY SCANNING
+         */
+
+        if(DeviceRecord->getNextScan(ScanRateIntegrity) <= TimeNow)
+        {
+            if(ScannerDebugLevel & SCANNER_DEBUG_INTEGRITYSCAN)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Integrity Scan Checkpoint **** " << DeviceRecord->getID() << " / " <<  DeviceRecord->getName() << endl;
+
+            }
+            DeviceRecord->resetScanException();   // Results should be forced though the exception system
+            DeviceRecord->initiateIntegrityScan(outList);
+        }
+
+        /*
+         *  EXCEPTION/GENERAL SCANNING
+         */
+
+        if(DeviceRecord->getNextScan(ScanRateGeneral) <= TimeNow)
+        {
+            if((nRet = DeviceRecord->initiateGeneralScan(outList)) > 0)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " General Scan Fail to Device: " << DeviceRecord->getName() << ". Error " << nRet << ": " << GetError(nRet) << endl;
+            }
+            else
+            {
+                if(ScannerDebugLevel & SCANNER_DEBUG_GENERALSCAN)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Exception/General Checkpoint ****   " << DeviceRecord->getID() << " / " <<  DeviceRecord->getName() << endl;
+                }
+                DeviceRecord->setScanException();   // Results need NOT be forced though the exception system
+            }
+        }
+
+        // Make sure times/rates haven't changed on us...
+        DeviceRecord->validateScanTimes();
+
+        // expire any alternate rates we may have before calculating next scan
+        DeviceRecord->checkSignaledAlternateRateForExpiration();
+    }
+}
+
+
+static void applyDLCLPScan(const long key, CtiDeviceSPtr pBase, void *d)
+{
+    INT nRet;
+    RWTime TimeNow;
+    RWTPtrSlist< OUTMESS > &outList =  *((RWTPtrSlist< OUTMESS > *)d);
+
+    if(ScannerDebugLevel & SCANNER_DEBUG_DEVICEANALYSIS)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " Looking at " << pBase->getName() << endl;
+    }
+
+    //  only MCTs do DLC load profile scans
+    if(isCarrierLPDevice(pBase))
+    {
+        CtiDeviceMCT *pMCT = (CtiDeviceMCT *)pBase.get();
+
+        if(pMCT->getNextLPScanTime() <= TimeNow)
+        {
+            if((nRet = pMCT->initiateLoadProfileScan(outList)) > 0)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Load Profile Scan Fail to Device: " << pBase->getName() << endl;
+                dout << "\tError " << nRet << ": " << GetError(nRet) << endl;
+            }
+            else
+            {
+                if(ScannerDebugLevel & SCANNER_DEBUG_LPSCAN)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Load Profile Checkpoint ****   " << pBase->getID() << " / " <<  pBase->getName() << endl;
+                }
+            }
+        }
+    }
+}
+
+static void applyValidateScanTimes(const long key, CtiDeviceSPtr pBase, void *d)
+{
+    bool bforce = (bool)d;
+
+    if(pBase->isSingle())
+    {
+        CtiDeviceSingle* DeviceRecord = (CtiDeviceSingle*)pBase.get();
+        DeviceRecord->validateScanTimes(bforce);
+    }
+}
+
+static void applyGenerateScannerDataRows(const long key, CtiDeviceSPtr Device, void *d)
+{
+    vector< CtiTableDeviceScanData > dirtyData = *((vector< CtiTableDeviceScanData > *)d);
+
+    if( Device->isSingle() )
+    {
+        CtiDeviceSingle *DeviceRecord = (CtiDeviceSingle*)Device.get();
+
+        if(DeviceRecord->getScanData().isDirty())
+        {
+            if(ScannerDebugLevel & SCANNER_DEBUG_DYNAMICDATA)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << "   Updating DynamicDeviceScanData for device " << DeviceRecord->getName() << endl;
+            }
+            // DeviceRecord->getScanData().Update(conn);
+            CtiTableDeviceScanData msd = DeviceRecord->getScanData();
+            dirtyData.push_back( msd );
+            DeviceRecord->getScanData().resetDirty();
+        }
     }
 }
 
@@ -171,8 +361,8 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
     UINT invcnt = 0;
 
     /* Define the various records */
-    CtiDevice         *Device       = NULL;
-    CtiDeviceSingle   *DeviceRecord = NULL;
+    CtiDeviceSPtr Device;
+    CtiDeviceSingle *DeviceRecord = NULL;
 
     RWTime      NextScan[MAX_SCAN_TYPE];
     RWTime      TimeNow;
@@ -242,35 +432,7 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
             NextScan[i] = MAXTime;
         }
 
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " There are " << ScannerDeviceManager.getMap().entries() << " scannables in my list" << endl;
-        }
-
-
-        {
-            RWRecursiveLock<RWMutexLock>::LockGuard guard(ScannerDeviceManager.getMux());
-
-            CtiRTDB<CtiDeviceBase>::CtiRTDBIterator   itr_dev(ScannerDeviceManager.getMap());
-            for(; ++itr_dev ;)
-            {
-                Device = (CtiDevice*)itr_dev.value();
-
-                if( Device->isSingle() )
-                {
-                    DeviceRecord = (CtiDeviceSingle*)Device;
-                    DeviceRecord->doDeviceInit();       // Set the next scan times...
-                }
-                else
-                {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << "): Non-scannable in scanner" << endl;
-                        dout << " " << Device->getName() << endl;
-                    }
-                }
-            }
-        }
+        ScannerDeviceManager.apply(applyDeviceInit,NULL);
 
         NextScan[REMOTE_SCAN] = TimeOfNextRemoteScan();
         NextScan[WINDOW_OPENS] = TimeOfNextWindow();
@@ -468,36 +630,9 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
                     }
 
                     /* now walk through the scannable "Remote" devices */
-                    RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(ScannerDeviceManager.getMux());       // Protect our iteration!
-
-                    if(ScannerDeviceManager.getMap().entries())
+                    if(ScannerDeviceManager.entries())
                     {
-                        CtiRTDB<CtiDeviceBase>::CtiRTDBIterator   itr_dev(ScannerDeviceManager.getMap());
-
-                        for(; ++itr_dev ;)
-                        {
-                            Device = (CtiDevice*) itr_dev.value();
-
-                            if( Device->isSingle() )
-                            {
-                                DeviceRecord = (CtiDeviceSingle*) Device;
-
-                                if(DeviceRecord->isScanFreezePending())
-                                {
-                                    DeviceRecord->resetScanFreezePending();;
-                                    DeviceRecord->setScanFreezeFailed();
-                                }
-                                else if(DeviceRecord->isScanPending())
-                                {
-                                    DeviceRecord->resetScanPending();
-                                }
-                                else if(DeviceRecord->isScanResetting())
-                                {
-                                    DeviceRecord->resetScanResetting();
-                                    DeviceRecord->setScanResetFailed();
-                                }
-                            }
-                        }
+                        ScannerDeviceManager.apply(applyResetScanFlags, NULL);
                     }
                 }
 
@@ -546,86 +681,7 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
         /* Check if we do remote scanning */
         if(TimeNow >= NextScan[REMOTE_SCAN] || TimeNow >= NextScan[WINDOW_OPENS])
         {
-            {
-                RWRecursiveLock<RWMutexLock>::LockGuard guard(ScannerDeviceManager.getMux());
-                CtiRTDB<CtiDeviceBase>::CtiRTDBIterator itr(ScannerDeviceManager.getMap());
-
-                for( ; ++itr ; )
-                {
-                    CtiDeviceBase *pBase = (CtiDeviceBase *)itr.value();
-
-                    if(ScannerDebugLevel & SCANNER_DEBUG_DEVICEANALYSIS)
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Looking at " << pBase->getName() << endl;
-                    }
-
-                    if(pBase->isSingle() && !pBase->isInhibited())
-                    {
-                        DeviceRecord = (CtiDeviceSingle*)pBase;
-
-                        /*
-                         *  ACCUMULATOR SCANNING
-                         */
-
-                        if(DeviceRecord->getNextScan(ScanRateAccum) <= TimeNow)
-                        {
-                            if(ScannerDebugLevel & SCANNER_DEBUG_ACCUMSCAN)
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " **** Accumulator Scan Checkpoint **** " << DeviceRecord->getID() << " / " <<  DeviceRecord->getName() << endl;
-
-                            }
-                            DeviceRecord->resetScanException();   // Results should be forced though the exception system
-                            nRet = DeviceRecord->initiateAccumulatorScan(outList);
-                        }
-
-                        /*
-                         *  INTEGRITY SCANNING
-                         */
-
-                        if(DeviceRecord->getNextScan(ScanRateIntegrity) <= TimeNow)
-                        {
-                            if(ScannerDebugLevel & SCANNER_DEBUG_INTEGRITYSCAN)
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " **** Integrity Scan Checkpoint **** " << DeviceRecord->getID() << " / " <<  DeviceRecord->getName() << endl;
-
-                            }
-                            DeviceRecord->resetScanException();   // Results should be forced though the exception system
-                            DeviceRecord->initiateIntegrityScan(outList);
-                        }
-
-                        /*
-                         *  EXCEPTION/GENERAL SCANNING
-                         */
-
-                        if(DeviceRecord->getNextScan(ScanRateGeneral) <= TimeNow)
-                        {
-                            if((nRet = DeviceRecord->initiateGeneralScan(outList)) > 0)
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " General Scan Fail to Device: " << DeviceRecord->getName() << ". Error " << nRet << ": " << GetError(nRet) << endl;
-                            }
-                            else
-                            {
-                                if(ScannerDebugLevel & SCANNER_DEBUG_GENERALSCAN)
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " **** Exception/General Checkpoint ****   " << DeviceRecord->getID() << " / " <<  DeviceRecord->getName() << endl;
-                                }
-                                DeviceRecord->setScanException();   // Results need NOT be forced though the exception system
-                            }
-                        }
-
-                        // Make sure times/rates haven't changed on us...
-                        DeviceRecord->validateScanTimes();
-
-                        // expire any alternate rates we may have before calculating next scan
-                        DeviceRecord->checkSignaledAlternateRateForExpiration();
-                    }
-                }
-            }
+            ScannerDeviceManager.apply(applyGenerateScanRequests, (void*)(&outList) );
 
             // Send any requests over to porter for processing
             MakePorterRequests(outList);
@@ -638,45 +694,7 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
         if(!SuspendLoadProfile && TimeNow >= NextScan[DLC_LP_SCAN])
         {
             //  DLC load profile scans
-            {
-                RWRecursiveLock<RWMutexLock>::LockGuard guard(ScannerDeviceManager.getMux());
-                CtiRTDB<CtiDeviceBase>::CtiRTDBIterator itr(ScannerDeviceManager.getMap());
-
-                for( ; ++itr ; )
-                {
-                    CtiDeviceBase *pBase = (CtiDeviceBase *)itr.value();
-
-                    if(ScannerDebugLevel & SCANNER_DEBUG_DEVICEANALYSIS)
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Looking at " << pBase->getName() << endl;
-                    }
-
-                    //  only MCTs do DLC load profile scans
-                    if(isCarrierLPDevice(pBase))
-                    {
-                        CtiDeviceMCT *pMCT = (CtiDeviceMCT *)itr.value();
-
-                        if(pMCT->getNextLPScanTime() <= TimeNow)
-                        {
-                            if((nRet = pMCT->initiateLoadProfileScan(outList)) > 0)
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " Load Profile Scan Fail to Device: " << DeviceRecord->getName() << endl;
-                                dout << "\tError " << nRet << ": " << GetError(nRet) << endl;
-                            }
-                            else
-                            {
-                                if(ScannerDebugLevel & SCANNER_DEBUG_LPSCAN)
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " **** Load Profile Checkpoint ****   " << DeviceRecord->getID() << " / " <<  DeviceRecord->getName() << endl;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+            ScannerDeviceManager.apply(applyDLCLPScan,(void*)&outList);
 
             // Send any requests over to porter for processing
             MakePorterRequests(outList);
@@ -723,7 +741,7 @@ VOID ResultThread (VOID *Arg)
 
     CtiMessage  *pResponseMsg = NULL;
     /* Define the various records */
-    CtiDevice         *pBase;
+    CtiDeviceSPtr pBase;
     CtiDeviceSingle   *DeviceRecord;
 
     /* Define the various time variable */
@@ -827,7 +845,7 @@ VOID ResultThread (VOID *Arg)
         {
             LastPorterInTime = LastPorterInTime.now();
 
-            RWRecursiveLock<RWMutexLock>::LockGuard guard(ScannerDeviceManager.getMux());
+            CtiDeviceManager::LockGuard guard(ScannerDeviceManager.getMux());
 
             // Find the device..
             LONG id = InMessage->TargetID;
@@ -837,7 +855,7 @@ VOID ResultThread (VOID *Arg)
                 id = InMessage->DeviceID;
             }
 
-            pBase = (CtiDevice*)ScannerDeviceManager.getEqual(id);
+            pBase = (CtiDeviceSPtr )ScannerDeviceManager.getEqual(id);
 
             if(ScannerDebugLevel & SCANNER_DEBUG_INREPLYS)
             {
@@ -845,9 +863,9 @@ VOID ResultThread (VOID *Arg)
                 dout << RWTime() << " InMessage from " << pBase->getName() << " " << FormatError(InMessage->EventCode & 0x3fff) << endl;
             }
 
-            if(pBase != NULL && pBase->isSingle())
+            if(pBase && pBase->isSingle())
             {
-                DeviceRecord = (CtiDeviceSingle*)pBase;
+                DeviceRecord = (CtiDeviceSingle*)pBase.get();
 
                 /* get the time for use in the decodes */
                 TimeNow = RWTime();
@@ -886,7 +904,7 @@ VOID ResultThread (VOID *Arg)
                     SetEvent(hScannerSyncs[S_SCAN_EVENT]);
                 }
             }
-            else if(pBase != NULL && !pBase->isSingle())
+            else if(pBase && !pBase->isSingle())
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << "Device \"" << pBase->getName() <<"\" is not \"Single\" " << endl;
@@ -992,7 +1010,7 @@ VOID ScannerCleanUp ()
 {
     ScannerQuit = TRUE;
 
-    ScannerDeviceManager.DeleteList();
+    ScannerDeviceManager.deleteList();
     PortPipeCleanup(0);
 
     VanGoghConnection.WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 15));
@@ -1005,132 +1023,126 @@ VOID ScannerCleanUp ()
 }
 
 
-RWTime TimeOfNextRemoteScan()
+static void applyAnalyzeNextRemoteScan(const long key, CtiDeviceSPtr Device, void *d)
 {
-    RWTime            nRet(YUKONEOT);
-    RWTime            TempTime(YUKONEOT);
-    RWTime            TimeNow;
-    CtiDeviceSingle   *DeviceRecord;
-    CtiDevice         *Device;
+    RWTime TimeNow;
+    RWTime TempTime(YUKONEOT);
+    RWTime &nextRemoteScanTime = *((RWTime*)d);
 
-    RWRecursiveLock<RWMutexLock>::LockGuard  dm_guard(ScannerDeviceManager.getMux());       // Protect our iteration!
-    CtiRTDB<CtiDeviceBase>::CtiRTDBIterator itr(ScannerDeviceManager.getMap());
+    CtiDeviceSingle *DeviceRecord = (CtiDeviceSingle*)Device.get();
 
-    for( ; ++itr ; )
+    if(Device->isSingle())
     {
-        Device = (CtiDeviceSingle*)itr.value();
-        RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(Device->getMux());       // Protect our device!
+        CtiDeviceSingle *DeviceRecord = (CtiDeviceSingle*)Device.get();
 
-        if(Device->isSingle())
+        if(!(DeviceRecord->isInhibited()) && (DeviceRecord->isScanWindowOpen()))
         {
-            DeviceRecord = (CtiDeviceSingle*)Device;
-
-            if(!(DeviceRecord->isInhibited()) && (DeviceRecord->isScanWindowOpen()))
+            if( DeviceRecord->getNextScan(ScanRateGeneral)     < TimeNow ||
+                DeviceRecord->getNextScan(ScanRateAccum)       < TimeNow ||
+                DeviceRecord->getNextScan(ScanRateIntegrity)   < TimeNow)
             {
-                if( DeviceRecord->getNextScan(ScanRateGeneral)     < TimeNow ||
-                    DeviceRecord->getNextScan(ScanRateAccum)       < TimeNow ||
-                    DeviceRecord->getNextScan(ScanRateIntegrity)   < TimeNow)
+                if(!(DeviceRecord->isScanPending()) && !(DeviceRecord->isScanFreezePending()) && !(DeviceRecord->isScanResetting()))
                 {
-                    if(!(DeviceRecord->isScanPending()) && !(DeviceRecord->isScanFreezePending()) && !(DeviceRecord->isScanResetting()))
-                    {
-                        nRet = TimeNow;
-                        barkAboutCurrentTime( DeviceRecord, TimeNow, __LINE__ );
-                        break;
-                    }
+                    nextRemoteScanTime = TimeNow;
+                    barkAboutCurrentTime( Device, TimeNow, __LINE__ );
+                    return;
                 }
+            }
 
-                TempTime = DeviceRecord->nextRemoteScan();
+            TempTime = DeviceRecord->nextRemoteScan();
 
-                if(nRet > TempTime)
-                {
-                    nRet = TempTime;
-                    barkAboutCurrentTime( DeviceRecord, TempTime, __LINE__ );
-                }
+            if(nextRemoteScanTime > TempTime)
+            {
+                nextRemoteScanTime = TempTime;
+                barkAboutCurrentTime( Device, TempTime, __LINE__ );
             }
         }
     }
+}
+
+RWTime TimeOfNextRemoteScan()
+{
+    RWTime            nextRemoteScanTime(YUKONEOT);
+    RWTime            TimeNow;
+
+    CtiDeviceManager::LockGuard  dev_guard(ScannerDeviceManager.getMux());       // Protect our iteration!
+    ScannerDeviceManager.apply(applyAnalyzeNextRemoteScan, (void*)&nextRemoteScanTime);
 
     /* Do not let this get out of hand, check once a minute if nothing else is looking */
-    if(nRet == MAXTime || (nRet.seconds() - TimeNow.seconds()) > 60L)
+    if(nextRemoteScanTime == MAXTime || (nextRemoteScanTime.seconds() - TimeNow.seconds()) > 60L)
     {
         TimeNow = TimeNow.now();
-        nRet = TimeNow.seconds() - (TimeNow.seconds() % 60) + 60;
+        nextRemoteScanTime = TimeNow.seconds() - (TimeNow.seconds() % 60) + 60;
     }
 
-    return nRet;
+    return nextRemoteScanTime;
 }
 
 
-RWTime TimeOfNextLPScan( void )
+static void applyAnalyzeNextLPScan(const long key, CtiDeviceSPtr Device, void *d)
 {
-    RWTime         nRet(YUKONEOT);
-    RWTime         TempTime(YUKONEOT);
-    RWTime         TimeNow;
-    CtiDeviceMCT  *DeviceRecord;
-    CtiDevice     *Device;
+    RWTime TimeNow;
+    RWTime TempTime(YUKONEOT);
+    RWTime &nextLPScanTime = *((RWTime*)d);
 
-    RWRecursiveLock<RWMutexLock>::LockGuard dm_guard(ScannerDeviceManager.getMux());       // Protect our iteration!
-    CtiRTDB<CtiDeviceBase>::CtiRTDBIterator itr(ScannerDeviceManager.getMap());
-
-    for( ; ++itr ; )
+    if(isCarrierLPDevice(Device))
     {
-        Device = (CtiDeviceBase *)itr.value();
-        RWRecursiveLock<RWMutexLock>::LockGuard dev_guard(Device->getMux());       // Protect our device!
+            CtiDeviceMCT  *DeviceRecord = (CtiDeviceMCT *)Device.get();
 
-        if(isCarrierLPDevice(Device))
+        if(!(DeviceRecord->isInhibited()) && (DeviceRecord->isScanWindowOpen()))
         {
-            DeviceRecord = (CtiDeviceMCT *)Device;
+            TempTime = DeviceRecord->calcNextLPScanTime();
 
-            if(!(DeviceRecord->isInhibited()) && (DeviceRecord->isScanWindowOpen()))
+            if(nextLPScanTime > TempTime)
             {
-                TempTime = DeviceRecord->calcNextLPScanTime();
-
-                if(nRet > TempTime)
-                {
-                    nRet = TempTime;
-                    barkAboutCurrentTime( DeviceRecord, TempTime, __LINE__ );
-                }
+                nextLPScanTime = TempTime;
+                barkAboutCurrentTime( Device, TempTime, __LINE__ );
             }
         }
     }
+}
 
-    return nRet;
+RWTime TimeOfNextLPScan( void )
+{
+    RWTime         nextLPScanTime(YUKONEOT);
+
+    CtiDeviceManager::LockGuard  dev_guard(ScannerDeviceManager.getMux());       // Protect our iteration!
+    ScannerDeviceManager.apply(applyAnalyzeNextLPScan, (void*)&nextLPScanTime);
+
+    return nextLPScanTime;
+}
+
+static void applyAnalyzeNextWindow(const long key, CtiDeviceSPtr Device, void *d)
+{
+    RWTime TimeNow;
+    RWTime TempTime(YUKONEOT);
+    RWTime &nextWindow = *((RWTime*)d);
+
+    if(Device->isSingle())
+    {
+        CtiDeviceSingle *DeviceRecord = (CtiDeviceSingle*)Device.get();
+
+        if(!(DeviceRecord->isInhibited()) && (DeviceRecord->isScanWindowOpen()))
+        {
+            TempTime = DeviceRecord->getNextWindowOpen();
+
+            if(nextWindow > TempTime)
+            {
+                nextWindow = TempTime;
+                barkAboutCurrentTime( Device, TempTime, __LINE__ );
+            }
+        }
+    }
 }
 
 RWTime TimeOfNextWindow( void )
 {
-    RWTime         nRet(YUKONEOT);
-    RWTime         TempTime(YUKONEOT);
-    RWTime         TimeNow;
-    CtiDeviceSingle *DeviceRecord;
-    CtiDevice       *Device;
+    RWTime nextWindow(YUKONEOT);
 
-    RWRecursiveLock<RWMutexLock>::LockGuard dm_guard(ScannerDeviceManager.getMux());       // Protect our iteration!
-    CtiRTDB<CtiDeviceBase>::CtiRTDBIterator itr(ScannerDeviceManager.getMap());
+    CtiDeviceManager::LockGuard  dev_guard(ScannerDeviceManager.getMux());       // Protect our iteration!
+    ScannerDeviceManager.apply(applyAnalyzeNextWindow, (void*)&nextWindow);
 
-    for( ; ++itr ; )
-    {
-        Device = (CtiDeviceBase *)itr.value();
-        RWRecursiveLock<RWMutexLock>::LockGuard dev_guard(Device->getMux());       // Protect our device!
-
-        if(Device->isSingle())
-        {
-            DeviceRecord = (CtiDeviceSingle*)Device;
-
-            if(!(DeviceRecord->isInhibited()) && (DeviceRecord->isScanWindowOpen()))
-            {
-                TempTime = DeviceRecord->getNextWindowOpen();
-
-                if(nRet > TempTime)
-                {
-                    nRet = TempTime;
-                    barkAboutCurrentTime( DeviceRecord, TempTime, __LINE__ );
-                }
-            }
-        }
-    }
-
-    return nRet;
+    return nextWindow;
 }
 
 
@@ -1227,7 +1239,7 @@ void LoadScannableDevices(void *ptr)
 {
     static bool bLoaded = false;        // Useful for debugging memory leaks.. Set to true inside the if.
     CtiHashKey  *hKey = NULL;
-    CtiDevice   *DeviceRecord = NULL;
+    CtiDeviceSPtr DeviceRecord;
     CtiDBChangeMsg *pChg = (CtiDBChangeMsg *)ptr;
 
     bool bforce = ((pChg == NULL) ? false : true);
@@ -1239,7 +1251,7 @@ void LoadScannableDevices(void *ptr)
     InitScannerGlobals();      // Go fetch from the environmant
     ResetBreakAlloc();          // Make certain the debug library does not break us.
 
-    RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(ScannerDeviceManager.getMux());
+    CtiDeviceManager::LockGuard guard(ScannerDeviceManager.getMux());
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1294,30 +1306,20 @@ void LoadScannableDevices(void *ptr)
     {
         if(pChg)
         {
-            CtiDeviceBase *pBase = ScannerDeviceManager.getEqual(pChg->getId());
+            CtiDeviceSPtr pBase = ScannerDeviceManager.getEqual(pChg->getId());
 
             if(pBase)
             {
                 if(pBase->isSingle())
                 {
-                    CtiDeviceSingle* DeviceRecord = (CtiDeviceSingle*)pBase;
+                    CtiDeviceSingle* DeviceRecord = (CtiDeviceSingle*)pBase.get();
                     DeviceRecord->validateScanTimes(bforce);
                 }
             }
         }
         else
         {
-            CtiRTDB<CtiDeviceBase>::CtiRTDBIterator   itr_dev(ScannerDeviceManager.getMap());
-            for(; ++itr_dev ;)
-            {
-                CtiDeviceBase *pBase = (CtiDeviceBase *)itr_dev.value();
-
-                if(pBase->isSingle())
-                {
-                    CtiDeviceSingle* DeviceRecord = (CtiDeviceSingle*)pBase;
-                    DeviceRecord->validateScanTimes(bforce);
-                }
-            }
+            ScannerDeviceManager.apply(applyValidateScanTimes, (void*)bforce);
         }
     }
 
@@ -1335,16 +1337,14 @@ void LoadScannableDevices(void *ptr)
         LONG paoDeviceID = GetPAOIdOfPoint(pChg->getId());
 
         {
-            CtiRTDB<CtiDeviceBase>::CtiRTDBIterator itr_dev(ScannerDeviceManager.getMap());
-
-            CtiDeviceBase *pBase = (CtiDevice*)ScannerDeviceManager.getEqual(paoDeviceID);
+            CtiDeviceSPtr pBase = ScannerDeviceManager.getEqual(paoDeviceID);
 
             if(pBase)
             {
                 RWRecursiveLock<RWMutexLock>::LockGuard devguard(pBase->getMux());
                 if(pBase->isSingle())
                 {
-                    CtiDeviceSingle *DeviceRecord = (CtiDeviceSingle*)pBase;
+                    CtiDeviceSingle *DeviceRecord = (CtiDeviceSingle*)pBase.get();
 
                     if( (pChg->getTypeOfChange() == ChangeTypeAdd) || (pChg->getTypeOfChange() == ChangeTypeUpdate) )
                     {
@@ -1358,7 +1358,7 @@ void LoadScannableDevices(void *ptr)
                         // Do anything required be particular devices on a reload here.
                         if(pBase->getType() == TYPE_WELCORTU)
                         {
-                            ((CtiDeviceWelco*)pBase)->setDeadbandsSent(false);
+                            ((CtiDeviceWelco*)pBase.get())->setDeadbandsSent(false);
                         }
                     }
                     else if(pChg->getTypeOfChange() == ChangeTypeDelete)
@@ -1449,15 +1449,15 @@ void DispatchMsgHandlerThread(VOID *Arg)
                                 LONG duration   = Cmd->getOpArgList().at(3);
 
                                 {
-                                    CtiDeviceBase     *device = NULL;
+                                    CtiDeviceSPtr device;
                                     CtiDeviceSingle   *deviceSingle = NULL;
-                                    RWRecursiveLock<RWMutexLock>::LockGuard guard(ScannerDeviceManager.getMux());
+                                    CtiDeviceManager::LockGuard guard(ScannerDeviceManager.getMux());
 
-                                    if( ((device = ScannerDeviceManager.getEqual( deviceId )) != NULL) )
+                                    if( (device = ScannerDeviceManager.getEqual( deviceId )) )
                                     {
                                         if( device->isSingle() )
                                         {
-                                            CtiDeviceSingle *DeviceRecord = (CtiDeviceSingle*)device;
+                                            CtiDeviceSingle *DeviceRecord = (CtiDeviceSingle*)device.get();
                                             DeviceRecord->applySignaledRateChange(open,duration);
                                             DeviceRecord->validateScanTimes(true);
                                             // 052203 CGP // DeviceRecord->checkSignaledAlternateRateForExpiration();
@@ -1672,89 +1672,22 @@ INT MakePorterRequests(RWTPtrSlist< OUTMESS > &outList)
     return status;
 }
 
-INT ReinitializeRemotes(RWTime NextScan[])
-{
-    INT status = NORMAL;
-    CtiDevice *Device       = NULL;
-    CtiDeviceSingle *DeviceRecord = NULL;
-
-    /* now walk through the scannable "Remote" devices */
-    RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(ScannerDeviceManager.getMux());       // Protect our iteration!
-
-    if(ScannerDeviceManager.getMap().entries())
-    {
-        CtiRTDB<CtiDeviceBase>::CtiRTDBIterator   itr_dev(ScannerDeviceManager.getMap());
-
-        for(; ++itr_dev ;)
-        {
-            Device = (CtiDevice*) itr_dev.value();
-
-            if( Device->isSingle() )
-            {
-                DeviceRecord = (CtiDeviceSingle*) Device;
-
-                if(DeviceRecord->isScanFreezePending())
-                {
-                    DeviceRecord->resetScanFreezePending();;
-                    DeviceRecord->setScanFreezeFailed();
-                }
-                else if(DeviceRecord->isScanPending())
-                {
-                    DeviceRecord->resetScanPending();
-                }
-                else if(DeviceRecord->isScanResetting())
-                {
-                    DeviceRecord->resetScanResetting();
-                    DeviceRecord->setScanResetFailed();
-                }
-            }
-        }
-    }
-
-    return status;
-}
 
 INT RecordDynamicData()
 {
     INT status = NORMAL;
 
     // Make an attempt to keep the ScanData table current
-    if(ScannerDeviceManager.getMap().entries())
+    if(ScannerDeviceManager.entries())
     {
-        CtiDevice *Device;
+        CtiDeviceSPtr Device;
 
         vector< CtiTableDeviceScanData > dirtyData;
 
         /*
          *  We will be going with the idea that a minimal duration locking of the Manager is KEY KEY KEY here.
          */
-        {
-            RWRecursiveLock<RWMutexLock>::LockGuard guard(ScannerDeviceManager.getMux());
-            CtiRTDB<CtiDeviceBase>::CtiRTDBIterator   itr_dev(ScannerDeviceManager.getMap());
-
-            for(; ++itr_dev ;)
-            {
-                Device = (CtiDevice*) itr_dev.value();
-
-                if( Device->isSingle() )
-                {
-                    CtiDeviceSingle *DeviceRecord = (CtiDeviceSingle*)Device;
-
-                    if(DeviceRecord->getScanData().isDirty())
-                    {
-                        if(ScannerDebugLevel & SCANNER_DEBUG_DYNAMICDATA)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << "   Updating DynamicDeviceScanData for device " << DeviceRecord->getName() << endl;
-                        }
-                        // DeviceRecord->getScanData().Update(conn);
-                        CtiTableDeviceScanData msd = DeviceRecord->getScanData();
-                        dirtyData.push_back( msd );
-                        DeviceRecord->getScanData().resetDirty();
-                    }
-                }
-            }
-        }
+        ScannerDeviceManager.apply(applyGenerateScannerDataRows, (void*)&dirtyData);
 
         CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
         RWDBConnection conn = getConnection();

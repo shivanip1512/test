@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTPERF.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2003/03/13 19:35:32 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2004/05/05 15:31:44 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -85,7 +85,7 @@ VOID PerfThread (VOID *Arg)
     struct timeb SysTimeB;
     struct tm *TStruct;
     CtiPortSPtr PortRecord;
-    CtiDeviceBase  *RemoteRecord;
+    CtiDeviceSPtr RemoteRecord;
     CtiRoute   *RouteRecord;
     DEVICE DeviceRecord;
     ULONG i, j;
@@ -1053,7 +1053,7 @@ Current Month:
 2537 - SystemErrors
 */
 
-void statisticsReport( CtiDeviceBase *pDevice )
+void statisticsReport( CtiDeviceSPtr pDevice )
 {
     CtiPoint *pPoint;
 

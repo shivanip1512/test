@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_base.h-arc  $
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2004/03/18 19:51:58 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2004/05/05 15:31:41 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -66,20 +66,20 @@ public:
     BOOL isTAP() const;
     CtiPort& setTAP(BOOL b = TRUE);
 
-    virtual INT connectToDevice(CtiDevice *Device, LONG &LastDeviceId, INT trace);
+    virtual INT connectToDevice(CtiDeviceSPtr Device, LONG &LastDeviceId, INT trace);
     virtual BOOL connected();
     virtual BOOL connectedTo(LONG devID);
     virtual BOOL connectedTo(ULONG crc);
-    virtual INT disconnect(CtiDevice *Device, INT trace);
+    virtual INT disconnect(CtiDeviceSPtr Device, INT trace);
     virtual BOOL shouldDisconnect() const;
     virtual CtiPort& setShouldDisconnect(BOOL b = TRUE);
 
-    virtual INT inMess(CtiXfer& Xfer, CtiDevice* Dev, RWTPtrSlist< CtiMessage > &traceList) = 0;
-    virtual INT outMess(CtiXfer& Xfer, CtiDevice* Dev, RWTPtrSlist< CtiMessage > &traceList) = 0;
-    virtual INT outInMess(CtiXfer& Xfer, CtiDevice* Dev, RWTPtrSlist< CtiMessage > &traceList);
-    virtual INT traceIn(CtiXfer& Xfer, RWTPtrSlist< CtiMessage > &traceList, CtiDevice* Dev = NULL, INT status = NORMAL) const;
-    virtual INT traceOut(CtiXfer& Xfer, RWTPtrSlist< CtiMessage > &traceList, CtiDevice* Dev = NULL, INT status = NORMAL) const;
-    virtual INT traceXfer(CtiXfer& Xfer, RWTPtrSlist< CtiMessage > &traceList, CtiDevice* Dev = NULL, INT status = NORMAL) const;
+    virtual INT inMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, RWTPtrSlist< CtiMessage > &traceList) = 0;
+    virtual INT outMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, RWTPtrSlist< CtiMessage > &traceList) = 0;
+    virtual INT outInMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, RWTPtrSlist< CtiMessage > &traceList);
+    virtual INT traceIn(CtiXfer& Xfer, RWTPtrSlist< CtiMessage > &traceList, CtiDeviceSPtr Dev, INT status = NORMAL) const;
+    virtual INT traceOut(CtiXfer& Xfer, RWTPtrSlist< CtiMessage > &traceList, CtiDeviceSPtr Dev, INT status = NORMAL) const;
+    virtual INT traceXfer(CtiXfer& Xfer, RWTPtrSlist< CtiMessage > &traceList, CtiDeviceSPtr Dev, INT status = NORMAL) const;
 
     INT traceBytes(BYTE *Message, ULONG Length, CtiTraceMsg &trace, RWTPtrSlist< CtiMessage > &traceList) const;
     INT logBytes(BYTE *Message, ULONG Length) const;
@@ -168,8 +168,8 @@ public:
 
     ULONG getConnectedDeviceUID() const;
     CtiPort& setConnectedDeviceUID(const ULONG &i);
-    pair< bool, INT > verifyPortStatus(CtiDevice *Device, INT trace = 0);
-    pair< bool, INT > checkCommStatus(CtiDevice *Device, INT trace = 0);
+    pair< bool, INT > verifyPortStatus(CtiDeviceSPtr Device, INT trace = 0);
+    pair< bool, INT > checkCommStatus(CtiDeviceSPtr Device, INT trace = 0);
 
     CTI_PORTTHREAD_FUNC_PTR  setPortThreadFunc(CTI_PORTTHREAD_FUNC_PTR aFn);
 
@@ -179,7 +179,7 @@ public:
     virtual int disableRTSCTS();
 
     virtual INT setLine(INT rate = 0, INT bits = 8, INT parity = NOPARITY, INT stopbits = ONESTOPBIT );     // Set/reset the port's linesettings.
-    virtual bool setPortForDevice(CtiDevice* Device);
+    virtual bool setPortForDevice(CtiDeviceSPtr  Device);
 
     virtual ULONG getDelay(int Offset) const { return 0L; }
     virtual CtiPort& setDelay(int Offset, int D) { return *this; }

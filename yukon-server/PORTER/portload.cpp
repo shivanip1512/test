@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/portload.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2003/03/13 19:35:32 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2004/05/05 15:31:44 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -72,32 +72,29 @@
 
 extern CtiRouteManager    RouteManager;
 
-LoadRemoteRoutes(CtiDeviceBase *Dev);
+LoadRemoteRoutes(CtiDeviceSPtr Dev);
 LoadPortRoutes (USHORT Port);
 
+
+static void applyLoadRemoteRoutes(const long unusedid, CtiDeviceSPtr Device, void *usprtid)
+{
+    USHORT Port = (USHORT)usprtid;
+    if( Port == Device->getPortID() && !Device->isInhibited())
+    {
+        LoadRemoteRoutes(Device);
+    }
+
+}
 /* Routine to load routes on all remotes on a port */
 LoadPortRoutes (USHORT Port)
 {
-    CtiDevice *Device;
-
-    CtiRTDB< CtiDevice >::CtiRTDBIterator   itr(DeviceManager.getMap());
-
-    for( ; ++itr ; )
-    {
-        Device = (CtiDevice*)itr.value();
-
-        if( Port == Device->getPortID() && !Device->isInhibited())
-        {
-            LoadRemoteRoutes(Device);
-        }
-    }
-
+    DeviceManager.apply(applyLoadRemoteRoutes, (void*)Port);
     return(NORMAL);
 }
 
 
 /* Routine to load routes into specified CCU */
-LoadRemoteRoutes(CtiDeviceBase *Dev)
+LoadRemoteRoutes(CtiDeviceSPtr Dev)
 {
     USHORT            Index;
     USHORT            RouteCount;
@@ -106,7 +103,7 @@ LoadRemoteRoutes(CtiDeviceBase *Dev)
     CtiRoute          *RouteRecord;
 
     /* get this remote from database */
-    if( NULL != Dev )
+    if( Dev )
     {
         /* Find all non-broadcast 711 transmitters. */
         if((Dev->getType() == TYPE_CCU711) && (Dev->getAddress() != CCUGLOBAL && Dev->getAddress() != RTUGLOBAL) )
@@ -314,7 +311,7 @@ LoadRemoteRoutes(CtiDeviceBase *Dev)
                          << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-1]) << endl;
                 }
 
-                switch( ((CtiDeviceCCU *)Dev)->getIDLC().getCCUAmpUseType() )  //  CCURouteRecord->getCarrier().getAmpUseType())
+                switch( ((CtiDeviceCCU *)Dev.get())->getIDLC().getCCUAmpUseType() )  //  CCURouteRecord->getCarrier().getAmpUseType())
                 {
                     case RouteAmpAltFail:
                         {

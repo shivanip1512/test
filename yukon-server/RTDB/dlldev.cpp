@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dlldev.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2003/08/27 14:54:20 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2004/05/05 15:31:42 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -69,18 +69,15 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserv
 
 void IM_EX_DEVDB attachRouteManagerToDevices(CtiDeviceManager *DM, CtiRouteManager *RteMgr)
 {
-    CtiDeviceBase  *pBase;
+    CtiDeviceManager::ptr_type pBase;
 
-    CtiRTDB<CtiDevice>::CtiRTDBIterator   itr_dv(DM->getMap());
+    CtiDeviceManager::spiterator itr;
 
-    RWRecursiveLock<RWMutexLock>::LockGuard guard(DM->getMux());
-
-    for(; ++itr_dv ;)
+    for(itr = DM->begin(); itr != DM->end(); itr++)
     {
-        pBase = itr_dv.value();
+        pBase = itr->second;
         pBase->setRouteManager(RteMgr);
     }
-
 }
 
 void IM_EX_DEVDB attachTransmitterDeviceToRoutes(CtiDeviceManager *DM, CtiRouteManager *RM)
@@ -88,7 +85,7 @@ void IM_EX_DEVDB attachTransmitterDeviceToRoutes(CtiDeviceManager *DM, CtiRouteM
     int            i;
     LONG           dID;
     CtiRouteSPtr   pRte;
-    CtiDeviceBase  *pDev;
+    CtiDeviceManager::ptr_type pDev;
 
     CtiRouteManager::spiterator itr;
 
@@ -108,6 +105,7 @@ void IM_EX_DEVDB attachTransmitterDeviceToRoutes(CtiDeviceManager *DM, CtiRouteM
             case VersacomRouteType:
             case TapRouteType:
             case WCTPRouteType:
+            case RTCRouteType:
                 {
                     CtiRouteXCU  *pXCU = (CtiRouteXCU*)itr->second.get();         // Wild man, wild!  I guess that holding pRte lets this be ok...
 
@@ -117,7 +115,7 @@ void IM_EX_DEVDB attachTransmitterDeviceToRoutes(CtiDeviceManager *DM, CtiRouteM
                     {
                         pDev = DM->getEqual(dID);
 
-                        if(pDev != NULL)
+                        if(pDev)
                         {
                             //cout << "Attaching device " << pDev->getDeviceName() << " to route " << pXCU->getName() << endl;
                             pXCU->setDevicePointer(pDev);

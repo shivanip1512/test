@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/rte_xcu.h-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2004/04/29 17:42:23 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2004/05/05 15:31:41 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -23,12 +23,14 @@
 #include "dev_base.h"
 #include "rte_base.h"
 #include "msg_pcrequest.h"
+#include "smartmap.h"
+
 
 class IM_EX_DEVDB CtiRouteXCU : public CtiRouteBase
 {
 protected:
 
-   CtiDevice            *Device;    // This object is NOT responsible for this memory..
+   CtiSmartMap< CtiDevice >::ptr_type _transmitterDevice;    // This object is NOT responsible for this memory..
 
 private:
 
@@ -47,7 +49,7 @@ public:
    virtual void DumpData();
 
    void resetDevicePointer();
-   CtiRouteXCU&  setDevicePointer(CtiDevice *p);
+   CtiRouteXCU&  setDevicePointer(CtiSmartMap< CtiDevice >::ptr_type p);
 
    virtual LONG getTrxDeviceID() const;
 

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/port_tcpip.cpp-arc  $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2003/05/09 16:09:55 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2004/05/05 15:31:42 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -283,7 +283,7 @@ INT CtiPortTCPIPDirect::outClear() const
 }
 
 
-INT CtiPortTCPIPDirect::inMess(CtiXfer& Xfer, CtiDevice* Dev, RWTPtrSlist< CtiMessage > &traceList)
+INT CtiPortTCPIPDirect::inMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, RWTPtrSlist< CtiMessage > &traceList)
 {
     INT      status      = NORMAL;
 
@@ -473,7 +473,7 @@ INT CtiPortTCPIPDirect::inMess(CtiXfer& Xfer, CtiDevice* Dev, RWTPtrSlist< CtiMe
     return status;
 }
 
-INT CtiPortTCPIPDirect::outMess(CtiXfer& Xfer, CtiDevice* Dev, RWTPtrSlist< CtiMessage > &traceList)
+INT CtiPortTCPIPDirect::outMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, RWTPtrSlist< CtiMessage > &traceList)
 {
     INT      status = NORMAL;
     INT      i = 0;
@@ -868,7 +868,7 @@ INT CtiPortTCPIPDirect::setup(INT trace)
     return NORMAL;
 }
 
-INT  CtiPortTCPIPDirect::connectToDevice(CtiDevice *Device, LONG &LastDeviceId, INT trace)
+INT  CtiPortTCPIPDirect::connectToDevice(CtiDeviceSPtr Device, LONG &LastDeviceId, INT trace)
 {
     INT status = NORMAL;
 
@@ -895,7 +895,7 @@ INT  CtiPortTCPIPDirect::connectToDevice(CtiDevice *Device, LONG &LastDeviceId, 
     return status;
 }
 
-INT  CtiPortTCPIPDirect::disconnect(CtiDevice *Device, INT trace)
+INT  CtiPortTCPIPDirect::disconnect(CtiDeviceSPtr Device, INT trace)
 {
     INT status = NORMAL;
 
@@ -916,7 +916,7 @@ BOOL CtiPortTCPIPDirect::connected()
     {
         if(!dcdTest())    // No DCD and we think we are connected!  This is BAD.
         {
-            disconnect(NULL, FALSE);
+            disconnect(CtiDeviceSPtr(), FALSE);
         }
     }
 

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2003/03/13 19:36:12 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2004/05/05 15:31:41 $
 *
 * Copyright (c) 1999-2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -32,8 +32,8 @@ class IM_EX_DEVDB CtiDeviceMacro : public CtiDeviceBase
 {
 protected:
 
-    typedef vector< CtiDeviceBase * >           deviceVec_t;
-    typedef vector< CtiDeviceBase * >::iterator deviceIter_t;
+    typedef vector< CtiDeviceSPtr >           deviceVec_t;
+    typedef vector< CtiDeviceSPtr >::iterator deviceIter_t;
 
     deviceVec_t _deviceList;
 
@@ -43,7 +43,7 @@ private:
 
     INT analyzeWhiteRabbits( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
     bool coalesceRippleGroups( CtiRequestMsg *pReq, CtiCommandParser &parse, BYTE *RippleMessage );
-    bool executeOnSubGroupRoute( const CtiDeviceBase *&pBase, set< LONG > &executedRouteSet );
+    bool executeOnSubGroupRoute( const CtiDeviceSPtr &pBase, set< LONG > &executedRouteSet );
 
 public:
 
@@ -57,7 +57,7 @@ public:
     virtual void DumpData( void );
 
     void clearDeviceList( void );
-    CtiDeviceMacro &addDevice( CtiDeviceBase *toAdd );
+    CtiDeviceMacro &addDevice( CtiDeviceSPtr toAdd );
 
     void DecodeDatabaseReader( RWDBReader &rdr );
     virtual void getSQL( RWDBDatabase &db, RWDBTable &keyTable, RWDBSelector &selector );

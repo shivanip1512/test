@@ -30,7 +30,7 @@ CtiRouteManager   RteMgr;
 void CleanupHost()
 {
    RteMgr.DeleteList();
-   DevMgr.DeleteList();
+   DevMgr.deleteList();
 
    bAllDone = TRUE;
 }

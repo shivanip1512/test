@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.100 $
-* DATE         :  $Date: 2004/04/29 20:10:32 $
+* REVISION     :  $Revision: 1.101 $
+* DATE         :  $Date: 2004/05/05 15:31:44 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -125,42 +125,42 @@ extern void DisplayTraceList( CtiPortSPtr Port, RWTPtrSlist< CtiMessage > &trace
 extern HCTIQUEUE* QueueHandle(LONG pid);
 
 bool deviceCanSurviveThisStatus(INT status);
-void commFail(CtiDeviceBase *Device, INT state);
+void commFail(CtiDeviceSPtr &Device, INT state);
 BOOL isTAPTermPort(LONG PortNumber);
 INT RequeueReportError(INT status, OUTMESS *OutMessage);
-INT PostCommQueuePeek(CtiPortSPtr Port, CtiDevice *Device);
+INT PostCommQueuePeek(CtiPortSPtr Port, CtiDeviceSPtr &Device);
 INT VerifyPortStatus(CtiPortSPtr Port);
-INT ResetCommsChannel(CtiPortSPtr Port, CtiDevice *Device);
-INT CheckInhibitedState(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDevice *Device);
-INT ValidateDevice(CtiPortSPtr Port, CtiDevice *Device, OUTMESS *&OutMessage);
-INT VTUPrep(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDevice *Device);
-INT EstablishConnection(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDevice *Device);
-INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDevice *Device);
-INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDevice *Device);
-INT NonWrapDecode(INMESS *InMessage, CtiDevice *Device);
-INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTMESS *&OutMessage, CtiDevice *Device);
-INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDevice *Device);
+INT ResetCommsChannel(CtiPortSPtr Port, CtiDeviceSPtr &Device);
+INT CheckInhibitedState(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDeviceSPtr &Device);
+INT ValidateDevice(CtiPortSPtr Port, CtiDeviceSPtr &Device, OUTMESS *&OutMessage);
+INT VTUPrep(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDeviceSPtr &Device);
+INT EstablishConnection(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDeviceSPtr &Device);
+INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &Device);
+INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDeviceSPtr &Device);
+INT NonWrapDecode(INMESS *InMessage, CtiDeviceSPtr &Device);
+INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTMESS *&OutMessage, CtiDeviceSPtr &Device);
+INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDeviceSPtr &Device);
 INT ReturnResultMessage(INT CommResult, INMESS *InMessage, OUTMESS *&OutMessage);
 INT InitializeHandshake (CtiPortSPtr aPortRecord, CtiDeviceIED *aIEDDevice, RWTPtrSlist< CtiMessage > &traceList);
 INT TerminateHandshake (CtiPortSPtr aPortRecord, CtiDeviceIED *aIEDDevice, RWTPtrSlist< CtiMessage > &traceList);
 INT PerformRequestedCmd ( CtiPortSPtr aPortRecord, CtiDeviceIED *aIED, INMESS *aInMessage, OUTMESS *aOutMessage, RWTPtrSlist< CtiMessage > &traceList);
 INT ReturnLoadProfileData ( CtiPortSPtr aPortRecord, CtiDeviceIED *aIED, INMESS *aInMessage, OUTMESS *aOutMessage, RWTPtrSlist< CtiMessage > &traceList);
 INT LogonToDevice( CtiPortSPtr aPortRecord, CtiDeviceIED *aIED, INMESS *aInMessage, OUTMESS *aOutMessage, RWTPtrSlist< CtiMessage > &traceList);
-INT verifyConnectedDevice(CtiPortSPtr Port, CtiDevice *pDevice, LONG &oldid, LONG &portConnectedUID);
-void ShuffleVTUMessage( CtiPortSPtr &Port, CtiDevice *Device, CtiOutMessage *OutMessage );
-INT GetPreferredProtocolWrap( CtiPortSPtr Port, CtiDevice *Device );
-INT ClearExclusions(CtiDevice *Device);
+INT verifyConnectedDevice(CtiPortSPtr Port, CtiDeviceSPtr &pDevice, LONG &oldid, LONG &portConnectedUID);
+void ShuffleVTUMessage( CtiPortSPtr &Port, CtiDeviceSPtr &Device, CtiOutMessage *OutMessage );
+INT GetPreferredProtocolWrap( CtiPortSPtr Port, CtiDeviceSPtr &Device );
+INT ClearExclusions(CtiDeviceSPtr Device);
 BOOL findExclusionFreeOutMessage(void *data, void* d);
-bool ShuffleQueue( CtiPortSPtr shPort, OUTMESS *&OutMessage, CtiDevice *device );
+bool ShuffleQueue( CtiPortSPtr shPort, OUTMESS *&OutMessage, CtiDeviceSPtr &device );
 static INT CheckIfOutMessageIsExpired(OUTMESS *&OutMessage);
-INT ProcessExclusionLogic(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDevice *Device);
+INT ProcessExclusionLogic(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr Device);
 INT ProcessPortPooling(CtiPortSPtr Port);
-INT ResetChannel(CtiPortSPtr Port, CtiDevice *Device);
-INT IdentifyDeviceFromOutMessage(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDevice *&Device);
-INT ChooseExclusionDevice(CtiDevice *&Device);
+INT ResetChannel(CtiPortSPtr Port, CtiDeviceSPtr &Device);
+INT IdentifyDeviceFromOutMessage(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &Device);
+INT ChooseExclusionDevice(CtiDeviceSPtr &Device);
 INT GetWork(CtiPortSPtr Port, CtiOutMessage *&OutMessage, ULONG &QueEntries);
 
-static void ApplyTapNeedsLogon(const CtiHashKey *key, CtiDeviceBase *&Dev, void* vpPortId);
+static void ApplyTapNeedsLogon(const long key, CtiDeviceSPtr Dev, void* vpPortId);
 
 /* Threads that handle each port for communications */
 VOID PortThread(void *pid)
@@ -176,7 +176,7 @@ VOID PortThread(void *pid)
 
     LONG           portid = (LONG)pid;      // NASTY CAST HERE!!!
 
-    CtiDeviceBase  *Device = NULL;
+    CtiDeviceSPtr  Device;
 
     CtiPortSPtr    Port( PortManager.PortGetEqual( portid ) );      // Bump the reference count on the shared object!
 
@@ -239,7 +239,7 @@ VOID PortThread(void *pid)
         }
         else if(PorterDebugLevel & PORTER_DEBUG_PORTQUEREAD)
         {
-            CtiDeviceBase *tempDev = DeviceManager.getEqual(OutMessage->TargetID ? OutMessage->TargetID : OutMessage->DeviceID);
+            CtiDeviceSPtr tempDev = DeviceManager.getEqual(OutMessage->TargetID ? OutMessage->TargetID : OutMessage->DeviceID);
 
             if(tempDev)
             {
@@ -383,10 +383,10 @@ VOID PortThread(void *pid)
 }
 
 /* Routine to initialize a remote based on it's type */
-bool RemoteReset(CtiDeviceBase *&Device, CtiPortSPtr Port)
+bool RemoteReset(CtiDeviceSPtr &Device, CtiPortSPtr Port)
 {
     bool didareset = false;
-    extern LoadRemoteRoutes(CtiDeviceBase *RemoteRecord);
+    extern LoadRemoteRoutes(CtiDeviceSPtr RemoteRecord);
 
     ULONG j;
     INT   eRet = 0;
@@ -466,7 +466,7 @@ bool RemoteReset(CtiDeviceBase *&Device, CtiPortSPtr Port)
  * It returns the next queue slot which matches the connected device's UID
  * or zero if no such queue entry exists.
  *----------------------------------------------------------------------------*/
-INT PostCommQueuePeek(CtiPortSPtr Port, CtiDevice *Device)
+INT PostCommQueuePeek(CtiPortSPtr Port, CtiDeviceSPtr &Device)
 {
     INT    i = 0;
     INT    slot = 0;
@@ -474,12 +474,12 @@ INT PostCommQueuePeek(CtiPortSPtr Port, CtiDevice *Device)
 
     bool    bDisconnect = false;
 
-    if(Port->connected() && (Port->shouldDisconnect() || Device == NULL))
+    if(Port->connected() && (Port->shouldDisconnect() || !Device))
     {
         Port->disconnect(Device, TraceFlag);
     }
 
-    if(Port->connected() && Device != NULL)
+    if(Port->connected() && Device)
     {
         ULONG stayConnectedMin = Device->getMinConnectTime();
         ULONG stayConnectedMax = Device->getMaxConnectTime();
@@ -557,6 +557,14 @@ INT PostCommQueuePeek(CtiPortSPtr Port, CtiDevice *Device)
     return slot;
 }
 
+void applyPrimeTRXInfo(const long unusedid, CtiDeviceSPtr RemoteDevice, void *punused)
+{
+    if(RemoteDevice->hasTrxInfo())
+    {
+        RemoteDevice->getTrxInfo(); // Prime the TRXInfo Onject
+    }
+}
+
 /*----------------------------------------------------------------------------*
  * This function prepares or resets the communications port for (re)use.
  * it checks it for proper state and setup condition.
@@ -565,7 +573,7 @@ INT PostCommQueuePeek(CtiPortSPtr Port, CtiDevice *Device)
  * variable is used by the portqueue to decide which queue entry to pop from its
  * internal queue
  *----------------------------------------------------------------------------*/
-INT ResetCommsChannel(CtiPortSPtr Port, CtiDevice *Device)
+INT ResetCommsChannel(CtiPortSPtr Port, CtiDeviceSPtr &Device)
 {
     INT status = NORMAL;
 
@@ -594,19 +602,7 @@ INT ResetCommsChannel(CtiPortSPtr Port, CtiDevice *Device)
             if( portpair.first == true && portpair.second == NORMAL)    // Indicates that it was (re)opened successfully on this pass.
             {
                 /* Report which devices are available and set queues for those using IDLC*/
-                {
-                    RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(DeviceManager.getMux());
-                    CtiRTDB<CtiDeviceBase>::CtiRTDBIterator itr_dev(DeviceManager.getMap());
-
-                    for(; ++itr_dev ;)
-                    {
-                        CtiDeviceBase *RemoteDevice = itr_dev.value();
-                        if(RemoteDevice->hasTrxInfo())
-                        {
-                            RemoteDevice->getTrxInfo(); // Prime the TRXInfo Onject
-                        }
-                    }
-                }
+                DeviceManager.apply(applyPrimeTRXInfo,NULL);
 
                 /* If neccessary start the TCPIP Interface */
                 if( (StartTCPIP == TCP_SES92) || (StartTCPIP == TCP_CCU710 &&  Port->isTCPIPPort()) || (StartTCPIP == TCP_WELCO  &&  Port->isTCPIPPort()))
@@ -642,12 +638,12 @@ INT ResetCommsChannel(CtiPortSPtr Port, CtiDevice *Device)
     return status;
 }
 
-INT CheckInhibitedState(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDevice *Device)
+INT CheckInhibitedState(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDeviceSPtr &Device)
 {
     INT      status = NORMAL;
 
 
-    if(Device == NULL) /* Non-existant or inhibited device so do as needed with message */
+    if(!Device) /* Non-existant or inhibited device so do as needed with message */
     {
         status = BADCCU;
     }
@@ -719,7 +715,7 @@ INT CheckInhibitedState(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage
  * connected to the correct phone number/crc and keeps the connection
  * otherwise it makes the correct connection.
  *-------------------------------------------------------------------*/
-INT EstablishConnection(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDevice *Device)
+INT EstablishConnection(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDeviceSPtr &Device)
 {
     INT status = NORMAL;
     LONG LastConnectedDevice = 0L;
@@ -731,8 +727,8 @@ INT EstablishConnection(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage
     if(LastConnectedDevice > 0 && LastConnectedDevice != Device->getID())
     {
         {
-            RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(DeviceManager.getMux());       // Protect our iteration!
-            CtiDevice *pOldConnectedDevice = DeviceManager.getEqual(LastConnectedDevice);
+            CtiDeviceManager::LockGuard  dev_guard(DeviceManager.getMux());       // Protect our iteration!
+            CtiDeviceSPtr pOldConnectedDevice = DeviceManager.getEqual(LastConnectedDevice);
 
             if(pOldConnectedDevice)
             {
@@ -756,7 +752,7 @@ INT EstablishConnection(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage
     return status;
 }
 
-INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDevice *Device)
+INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &Device)
 {
     INT status = NORMAL;
     struct timeb   TimeB;
@@ -764,7 +760,7 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDevice *Devic
 
     if( Device->getType() == TYPE_TAPTERM )
     {
-        CtiDeviceTapPagingTerminal *pTap = (CtiDeviceTapPagingTerminal *)Device;
+        CtiDeviceTapPagingTerminal *pTap = (CtiDeviceTapPagingTerminal *)Device.get();
         if(pTap->devicePacingExceeded())        // Check if the pacing rate has been exceeded.
         {
             // Put it back & slow it down!
@@ -787,7 +783,7 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDevice *Devic
     }
     else if( Device->getType() == TYPE_WCTP )
     {
-        CtiDeviceWctpTerminal *pWctp = (CtiDeviceWctpTerminal *)Device;
+        CtiDeviceWctpTerminal *pWctp = (CtiDeviceWctpTerminal *)Device.get();
         if(pWctp->devicePacingExceeded())        // Check if the pacing rate has been exceeded.
         {
             // Put it back & slow it down!
@@ -830,10 +826,10 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDevice *Devic
     {
     if( Port->isDialup() )
     {
-        if(((CtiDeviceRemote *)Device)->isDialup())     // Make sure the dialup pointer is NOT null!
+        if(((CtiDeviceRemote *)Device.get())->isDialup())     // Make sure the dialup pointer is NOT null!
         {
             //  init the port to the device's baud rate
-            Port->setBaudRate(((CtiDeviceRemote *)Device)->getDialup()->getBaudRate());
+            Port->setBaudRate(((CtiDeviceRemote *)Device.get())->getDialup()->getBaudRate());
         }
         else
         {
@@ -995,7 +991,7 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDevice *Devic
     return status;
 }
 
-INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDevice *Device)
+INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDeviceSPtr &Device)
 {
     INT            status = NORMAL;
     ULONG          reject_status, ReadLength;
@@ -1119,7 +1115,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         BYTE  outBuffer[300];
                         ULONG bytesReceived = 0;
 
-                        CtiDeviceKV2 *kv2dev    = ( CtiDeviceKV2 *)Device;
+                        CtiDeviceKV2 *kv2dev    = ( CtiDeviceKV2 *)Device.get();
                         CtiProtocolANSI &ansi   = kv2dev->getProtocol();
 
                         //allocate some space
@@ -1175,7 +1171,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                        ULONG  bytesReceived = 0;
                        int    error = 1;
 
-                       CtiDeviceMarkV        *markv = ( CtiDeviceMarkV *)Device;
+                       CtiDeviceMarkV        *markv = ( CtiDeviceMarkV *)Device.get();
                        CtiProtocolTransdata  &transdata = markv->getProtocol();
 
                        transdata.recvOutbound( OutMessage );
@@ -1236,7 +1232,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
                 case TYPE_SIXNET:
                     {
-                        CtiDeviceIED         *IED= (CtiDeviceIED*)Device;
+                        CtiDeviceIED         *IED= (CtiDeviceIED*)Device.get();
                         // Copy the request into the InMessage side....
                         memcpy(&InMessage->Buffer.DUPSt.DUPRep.ReqSt, &OutMessage->Buffer.DUPReq, sizeof(DIALUPREQUEST));
 
@@ -1270,7 +1266,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         {
                             Port->setTAP( TRUE );
 
-                            CtiDeviceIED        *IED = (CtiDeviceIED*)Device;
+                            CtiDeviceIED        *IED = (CtiDeviceIED*)Device.get();
 
                             IED->setLogOnNeeded(FALSE);
                             IED->setInitialState(0);
@@ -1296,7 +1292,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                 case TYPE_TAPTERM:
                     {
                         LONG oldid = 0L;
-                        CtiDeviceIED *IED= (CtiDeviceIED*)Device;
+                        CtiDeviceIED *IED= (CtiDeviceIED*)Device.get();
 
                         Port->setTAP( TRUE );
 
@@ -1355,7 +1351,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                             memcpy(&InMessage->Buffer.DUPSt.DUPRep.ReqSt, &OutMessage->Buffer.DUPReq, sizeof(DIALUPREQUEST));
 
                             // initialize the ied
-                            CtiDeviceIED *IED= (CtiDeviceIED*)Device;
+                            CtiDeviceIED *IED= (CtiDeviceIED*)Device.get();
 
                             /***********************
                             *
@@ -1433,7 +1429,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         memcpy(&InMessage->Buffer.DUPSt.DUPRep.ReqSt, &OutMessage->Buffer.DUPReq, sizeof(DIALUPREQUEST));
 
                         // initialize the ied
-                        CtiDeviceIED *IED= (CtiDeviceIED*)Device;
+                        CtiDeviceIED *IED= (CtiDeviceIED*)Device.get();
 
                         /***********************
                         *
@@ -2170,7 +2166,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
     return status;
 }
 
-INT NonWrapDecode(INMESS *InMessage, CtiDevice *Device)
+INT NonWrapDecode(INMESS *InMessage, CtiDeviceSPtr &Device)
 {
     INT status = NORMAL;
 
@@ -2202,7 +2198,7 @@ INT NonWrapDecode(INMESS *InMessage, CtiDevice *Device)
 }
 
 
-INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTMESS *&OutMessage, CtiDevice *Device)
+INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTMESS *&OutMessage, CtiDeviceSPtr &Device)
 {
     INT            status = CommResult;
     ULONG          j;
@@ -2220,7 +2216,7 @@ INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OU
     if(OutMessage->TargetID != OutMessage->DeviceID)
     {
         // In this case, we need to account for the fail on the target device too..
-        CtiDevice *pTarget = DeviceManager.getEqual( OutMessage->TargetID );
+        CtiDeviceSPtr pTarget = DeviceManager.getEqual( OutMessage->TargetID );
 
         if(pTarget)
         {
@@ -2404,10 +2400,10 @@ INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OU
 
 
 
-INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDevice *Device)
+INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDeviceSPtr &Device)
 {
     extern void blitzNexusFromQueue(HCTIQUEUE q, CTINEXUS *&Nexus);
-    extern void blitzNexusFromCCUQueue(CtiDevice *Device, CTINEXUS *&Nexus);
+    extern void blitzNexusFromCCUQueue(CtiDeviceSPtr Device, CTINEXUS *&Nexus);
 
     INT            status = NORMAL;
     ULONG          j, QueueCount;
@@ -2724,7 +2720,7 @@ INT RequeueReportError(INT status, OUTMESS *OutMessage)
 }
 
 
-INT VTUPrep(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDevice *Device)
+INT VTUPrep(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDeviceSPtr &Device)
 {
     INT status = NORMAL;
 
@@ -2773,7 +2769,7 @@ INT VTUPrep(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDevice 
 }
 
 
-INT ValidateDevice(CtiPortSPtr Port, CtiDevice *Device, OUTMESS *&OutMessage)
+INT ValidateDevice(CtiPortSPtr Port, CtiDeviceSPtr &Device, OUTMESS *&OutMessage)
 {
     INT status = NORMAL;
 
@@ -2833,11 +2829,11 @@ INT InitializeHandshake (CtiPortSPtr aPortRecord, CtiDeviceIED *aIEDDevice, RWTP
              (aIEDDevice->getCurrentState() == CtiDeviceIED::StateHandshakeComplete)))
     {
         status = aIEDDevice->generateCommandHandshake (transfer, traceList);
-        status = aPortRecord->outInMess(transfer, aIEDDevice, traceList);
+        status = aPortRecord->outInMess(transfer, CtiDeviceSPtr(aIEDDevice), traceList);
 
         if( transfer.doTrace(status) )
         {
-            aPortRecord->traceXfer(transfer, traceList, aIEDDevice, status);
+            aPortRecord->traceXfer(transfer, traceList, CtiDeviceSPtr(aIEDDevice), status);
         }
 
         if( deviceCanSurviveThisStatus(status) )
@@ -2879,10 +2875,10 @@ INT PerformRequestedCmd ( CtiPortSPtr aPortRecord, CtiDeviceIED *aIED, INMESS *a
         do
         {
             status = aIED->generateCommand ( transfer , traceList);
-            status = aPortRecord->outInMess( transfer, aIED, traceList );
+            status = aPortRecord->outInMess( transfer, CtiDeviceSPtr(aIED), traceList );
             if( transfer.doTrace( status ) )
             {
-                aPortRecord->traceXfer(transfer, traceList, aIED, status);
+                aPortRecord->traceXfer(transfer, traceList, CtiDeviceSPtr(aIED), status);
             }
 
             if( deviceCanSurviveThisStatus(status) )
@@ -3056,11 +3052,11 @@ INT TerminateHandshake (CtiPortSPtr aPortRecord, CtiDeviceIED *aIEDDevice, RWTPt
     do
     {
         status = aIEDDevice->generateCommandDisconnect(transfer, traceList);
-        status = aPortRecord->outInMess(transfer, aIEDDevice, traceList);
+        status = aPortRecord->outInMess(transfer, CtiDeviceSPtr(aIEDDevice), traceList);
 
         if( transfer.doTrace(status) )
         {
-            aPortRecord->traceXfer(transfer, traceList, aIEDDevice, status);
+            aPortRecord->traceXfer(transfer, traceList, CtiDeviceSPtr(aIEDDevice), status);
         }
 
         if( deviceCanSurviveThisStatus(status) )
@@ -3110,7 +3106,7 @@ INT TerminateHandshake (CtiPortSPtr aPortRecord, CtiDeviceIED *aIEDDevice, RWTPt
     return status;
 }
 
-void commFail(CtiDeviceBase *Device, INT state)
+void commFail(CtiDeviceSPtr &Device, INT state)
 {
     extern CtiConnection VanGoghConnection;
 
@@ -3128,7 +3124,7 @@ void commFail(CtiDeviceBase *Device, INT state)
             VanGoghConnection.WriteConnQue(pData);
         }
     }
-    else if(PorterDebugLevel & PORTER_DEBUG_VERBOSE && Device != NULL && state == CLOSED)
+    else if(PorterDebugLevel & PORTER_DEBUG_VERBOSE && Device && state == CLOSED)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " " << Device->getName() << " would be COMM FAILED if it had offset " << COMM_FAIL_OFFSET << " defined" << endl;
@@ -3160,7 +3156,7 @@ bool deviceCanSurviveThisStatus(INT status)
 
 
 
-INT verifyConnectedDevice(CtiPortSPtr Port, CtiDevice *pDevice, LONG &oldid, LONG &portConnectedUID)
+INT verifyConnectedDevice(CtiPortSPtr Port, CtiDeviceSPtr &pDevice, LONG &oldid, LONG &portConnectedUID)
 {
     INT status = NORMAL;
 
@@ -3174,9 +3170,9 @@ INT verifyConnectedDevice(CtiPortSPtr Port, CtiDevice *pDevice, LONG &oldid, LON
     {
         // We need to fix up the old device... because we are stealing some of his thunder here!
         {
-            RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(DeviceManager.getMux());       // Protect our iteration!
+            CtiDeviceManager::LockGuard  dev_guard(DeviceManager.getMux());       // Protect our iteration!
 
-            CtiDevice *pOldConnectedDevice = DeviceManager.getEqual(Port->getConnectedDevice());
+            CtiDeviceSPtr pOldConnectedDevice = DeviceManager.getEqual(Port->getConnectedDevice());
 
             if(pOldConnectedDevice)
             {
@@ -3199,7 +3195,7 @@ INT verifyConnectedDevice(CtiPortSPtr Port, CtiDevice *pDevice, LONG &oldid, LON
 }
 
 
-void ShuffleVTUMessage( CtiPortSPtr &Port, CtiDevice *Device, CtiOutMessage *OutMessage )
+void ShuffleVTUMessage( CtiPortSPtr &Port, CtiDeviceSPtr &Device, CtiOutMessage *OutMessage )
 {
     /* If this was a VTU message we need to slide things back over */
     if(GetPreferredProtocolWrap(Port, Device) == ProtocolWrapIDLC)  // 031003 CGP // Port->getProtocolWrap() == ProtocolWrapIDLC)
@@ -3216,7 +3212,7 @@ void ShuffleVTUMessage( CtiPortSPtr &Port, CtiDevice *Device, CtiOutMessage *Out
     }
 }
 
-INT GetPreferredProtocolWrap( CtiPortSPtr Port, CtiDevice *Device )
+INT GetPreferredProtocolWrap( CtiPortSPtr Port, CtiDeviceSPtr &Device )
 {
     INT protocol = Port->getProtocolWrap();
 
@@ -3228,7 +3224,7 @@ INT GetPreferredProtocolWrap( CtiPortSPtr Port, CtiDevice *Device )
     return protocol;
 }
 
-INT ClearExclusions(CtiDevice *Device)
+INT ClearExclusions(CtiDeviceSPtr Device)
 {
     extern CtiExclusionManager   ExclusionManager;
     INT status = NORMAL;
@@ -3249,7 +3245,7 @@ INT ClearExclusions(CtiDevice *Device)
 }
 
 
-bool ShuffleQueue( CtiPortSPtr shPort, OUTMESS *&OutMessage, CtiDevice *device )
+bool ShuffleQueue( CtiPortSPtr shPort, OUTMESS *&OutMessage, CtiDeviceSPtr &device )
 {
     bool bSubstitutionMade = false;
     ULONG QueueCount, ReadLength;
@@ -3341,8 +3337,8 @@ BOOL findExclusionFreeOutMessage(void *data, void* d)
         {
                 bool deviceMayExecute;
 
-                RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(DeviceManager.getMux());
-                CtiDevice* Device = DeviceManager.getEqual( OutMessage->DeviceID );
+                CtiDeviceManager::LockGuard  dev_guard(DeviceManager.getMux());
+                CtiDeviceSPtr Device = DeviceManager.getEqual( OutMessage->DeviceID );
 
             if(Device)
             {
@@ -3412,7 +3408,7 @@ INT CheckIfOutMessageIsExpired(OUTMESS *&OutMessage)
     return nRet;
 }
 
-INT ProcessExclusionLogic(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDevice *Device)
+INT ProcessExclusionLogic(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr Device)
 {
     INT status = NORMAL;
     bool deviceMayExecute;
@@ -3437,7 +3433,7 @@ INT ProcessExclusionLogic(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDevice *Dev
             CtiTablePaoExclusion exclusion;
 
             {
-                RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(DeviceManager.getMux());
+                CtiDeviceManager::LockGuard  dev_guard(DeviceManager.getMux());
                 deviceMayExecute = DeviceManager.mayDeviceExecuteExclusionFree(Device, exclusion);
             }
 
@@ -3567,7 +3563,7 @@ INT ProcessPortPooling(CtiPortSPtr Port)
  *  It is responsible for opening, or reopening the comm channel or IP channel.
  *  It is responsible for resetting, or verifying any established connection from the last loop.
  */
-INT ResetChannel(CtiPortSPtr Port, CtiDevice *Device)
+INT ResetChannel(CtiPortSPtr Port, CtiDeviceSPtr &Device)
 {
     INT status = NORMAL;
     INT initFails = 0;
@@ -3622,11 +3618,11 @@ INT ResetChannel(CtiPortSPtr Port, CtiDevice *Device)
  *  Successful return is NORMAL if a device is found. In this case, the Device pointer will be a valid device.
  *  Unsuccessful return is CONTINUE_LOOP.  In this case, the Device pointer is set to 0;
  */
-INT IdentifyDeviceFromOutMessage(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDevice *&Device)
+INT IdentifyDeviceFromOutMessage(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &Device)
 {
     INT status = NORMAL;
 
-    Device = 0;
+    Device.reset();
 
     if(OutMessage != 0)
     {
@@ -3640,7 +3636,7 @@ INT IdentifyDeviceFromOutMessage(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDevi
 
             Device = DeviceManager.RemoteGetPortRemoteEqual(OutMessage->Port, OutMessage->Remote);
 
-            if( Device != NULL )
+            if( Device )
             {
                 OutMessage->DeviceID = Device->getID();
 
@@ -3667,7 +3663,7 @@ INT IdentifyDeviceFromOutMessage(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDevi
             /* get the device record for this id */
             Device = DeviceManager.RemoteGetEqual(OutMessage->DeviceID);
 
-            if(Device == NULL)
+            if(!Device)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -3703,7 +3699,7 @@ INT IdentifyDeviceFromOutMessage(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDevi
 }
 
 
-INT ChooseExclusionDevice(CtiDevice *&Device)
+INT ChooseExclusionDevice(CtiDeviceSPtr &Device)
 {
     INT status = NORMAL;
 
@@ -3722,9 +3718,9 @@ INT ChooseExclusionDevice(CtiDevice *&Device)
 
 
     RWTime now;
-    CtiDevice *devS = 0;           // This is the selected "S" device. -> The Winner!
-    CtiDevice *devA = 0;           //
-    CtiDevice *devB = 0;           //
+    CtiDeviceSPtr devS;           // This is the selected "S" device. -> The Winner!
+    CtiDeviceSPtr devA;           //
+    CtiDeviceSPtr devB;           //
 
     for( ;false; ) // (each Device = devA which has exclusions) Use the Exclusion Manager so that we need not walk the entire device list for excluded device.
     {
@@ -3771,7 +3767,7 @@ INT ChooseExclusionDevice(CtiDevice *&Device)
             devB->setEvaluateNextAt(devS->getExecutionGrantExpires());    // mark out all proximity conflicts to when devA will be done.
         }
     }
-    else if(devS == 0)       // We did not find any time excluded transmitters willing to take the ball.
+    else if(!devS)       // We did not find any time excluded transmitters willing to take the ball.
     {
         // Find Best Proximity Excluded Device
         for(;false;) // (each devA which has exclusions)
@@ -3853,7 +3849,7 @@ INT GetWork(CtiPortSPtr Port, CtiOutMessage *&OutMessage, ULONG &QueEntries)
 }
 
 
-void ApplyTapNeedsLogon(const CtiHashKey *key, CtiDeviceBase *&Dev, void* vpPortId)
+void ApplyTapNeedsLogon(const long key, CtiDeviceSPtr Dev, void* vpPortId)
 {
     LONG pid = (LONG)vpPortId;
 

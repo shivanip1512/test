@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_direct.h-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2003/04/29 13:43:47 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2004/05/05 15:31:41 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -75,8 +75,8 @@ public:
    virtual INT reset(INT trace);
    virtual INT setup(INT trace);
    virtual INT close(INT trace);
-   virtual INT  connectToDevice(CtiDevice *Device, LONG &LastDeviceId, INT trace);
-   virtual INT  disconnect(CtiDevice *Device, INT trace);
+   virtual INT  connectToDevice(CtiDeviceSPtr Device, LONG &LastDeviceId, INT trace);
+   virtual INT  disconnect(CtiDeviceSPtr Device, INT trace);
    virtual BOOL connected();
    virtual BOOL shouldDisconnect() const;
    virtual CtiPort& setShouldDisconnect(BOOL b = TRUE);
@@ -100,8 +100,8 @@ public:
    virtual INT inClear();
    virtual INT outClear();
 
-   virtual INT inMess(CtiXfer& Xfer, CtiDevice* Dev, RWTPtrSlist< CtiMessage > &traceList);
-   virtual INT outMess(CtiXfer& Xfer, CtiDevice* Dev, RWTPtrSlist< CtiMessage > &traceList);
+   virtual INT inMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, RWTPtrSlist< CtiMessage > &traceList);
+   virtual INT outMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, RWTPtrSlist< CtiMessage > &traceList);
 
    INT readIDLCHeader(CtiXfer& Xfer, unsigned long *bytesRead, bool suppressEcho);
 

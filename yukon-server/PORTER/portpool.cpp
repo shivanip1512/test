@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2004/03/18 19:51:58 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2004/05/05 15:31:44 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -46,7 +46,7 @@ VOID PortPoolDialoutThread(void *pid)
     ULONG          MSecs, QueEntries, ReadLength;
 
     RWTime         lastQueueReportTime;
-    CtiDeviceBase  *Device = 0;
+    CtiDeviceSPtr  Device;
 
     /* make it clear who is the boss */
     CTISetPriority (PRTYS_THREAD, PRTYC_TIMECRITICAL, 31, 0);
@@ -124,7 +124,7 @@ VOID PortPoolDialoutThread(void *pid)
 
         if(PorterDebugLevel & PORTER_DEBUG_PORTQUEREAD)
         {
-            CtiDeviceBase *tempDev = DeviceManager.getEqual(OutMessage->TargetID ? OutMessage->TargetID : OutMessage->DeviceID);
+            CtiDeviceSPtr tempDev = DeviceManager.getEqual(OutMessage->TargetID ? OutMessage->TargetID : OutMessage->DeviceID);
 
             if(tempDev)
             {
@@ -163,7 +163,7 @@ VOID PortPoolDialoutThread(void *pid)
 
             Device = DeviceManager.RemoteGetPortRemoteEqual(OutMessage->Port, OutMessage->Remote);
 
-            if( Device != NULL )
+            if( Device )
             {
                 OutMessage->DeviceID = Device->getID();
 
@@ -188,9 +188,9 @@ VOID PortPoolDialoutThread(void *pid)
         else
         {
             /* get the device record for this id */
-            Device = DeviceManager.RemoteGetEqual(OutMessage->DeviceID);
+            Device = DeviceManager.getEqual(OutMessage->DeviceID);
 
-            if(Device == NULL)
+            if(!Device)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/slctdev.cpp-arc  $
-* REVISION     :  $Revision: 1.28 $
-* DATE         :  $Date: 2004/04/29 19:59:24 $
+* REVISION     :  $Revision: 1.29 $
+* DATE         :  $Date: 2004/05/05 15:31:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -457,29 +457,29 @@ DLLEXPORT CtiRouteBase* RouteFactory(RWDBReader &rdr)
     return Route;
 }
 
-DLLEXPORT bool isADevice(CtiDeviceBase* pSp, void *arg)
+DLLEXPORT bool isADevice(CtiDeviceSPtr& pSp, void *arg)
 {
     bool bRet = true;
     return bRet;
 }
 
-DLLEXPORT bool isNotADevice(CtiDeviceBase* pSp, void *arg)
+DLLEXPORT bool isNotADevice(CtiDeviceSPtr& pSp, void *arg)
 {
     return !isADevice(pSp, arg);
 }
 
-DLLEXPORT bool isNotAScannableDevice(CtiDeviceBase *pDevice, void* d)
+DLLEXPORT bool isNotAScannableDevice(CtiDeviceSPtr& pDevice, void* d)
 {
     return !isAScannableDevice(pDevice, d);
 }
 
-DLLEXPORT bool isAScannableDevice(CtiDeviceBase *pDevice, void* d)
+DLLEXPORT bool isAScannableDevice(CtiDeviceSPtr& pDevice, void* d)
 {
     bool bRet = false;
 
     if(pDevice->isSingle())
     {
-        CtiDeviceSingle* pUnique = (CtiDeviceSingle*)pDevice;
+        CtiDeviceSingle* pUnique = (CtiDeviceSingle*)pDevice.get();
 
         // Return TRUE if it is NOT SET
         for(INT i = 0; i  < ScanRateInvalid; i++ )
@@ -491,7 +491,7 @@ DLLEXPORT bool isAScannableDevice(CtiDeviceBase *pDevice, void* d)
             }
         }
 
-        if(!bRet && isCarrierLPDevice(pUnique))
+        if(!bRet && isCarrierLPDevice(pDevice))
         {
             for(int i = 0; i < MAX_COLLECTED_CHANNEL; i++)
             {
@@ -515,7 +515,7 @@ DLLEXPORT BOOL isARoute(CtiRouteBase* pSp, void *arg)
 }
 
 
-DLLEXPORT RWBoolean isCarrierLPDevice(CtiDeviceBase *pDevice)
+DLLEXPORT RWBoolean isCarrierLPDevice(CtiDeviceSPtr &pDevice)
 {
     BOOL result;
 
@@ -553,15 +553,13 @@ DLLEXPORT RWBoolean isCarrierLPDevice(CtiDeviceBase *pDevice)
  */
 //  2001-dec-05 addition:  added special case for carrier load profile devices
 
-DLLEXPORT RWBoolean isNotScannable( CtiRTDB< CtiDeviceBase >::val_pair vp, void* d)
+DLLEXPORT RWBoolean isNotScannable( CtiDeviceSPtr& pDevice, void* d)
 {
     RWBoolean bRet = TRUE;
 
-    CtiDevice *pDevice = vp.second;
-
     if(pDevice->isSingle())
     {
-        CtiDeviceSingle* pUnique = (CtiDeviceSingle*)pDevice;
+        CtiDeviceSingle* pUnique = (CtiDeviceSingle*)pDevice.get();
 
         // Return TRUE if it is NOT SET
         for(INT i = 0; i  < ScanRateInvalid; i++ )
@@ -573,7 +571,7 @@ DLLEXPORT RWBoolean isNotScannable( CtiRTDB< CtiDeviceBase >::val_pair vp, void*
             }
         }
 
-        if(bRet && isCarrierLPDevice(pUnique))
+        if(bRet && isCarrierLPDevice(pDevice))
         {
             for(int i = 0; i < MAX_COLLECTED_CHANNEL; i++)
             {

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PLIDLC.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2003/03/13 19:35:30 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2004/05/05 15:31:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -117,7 +117,7 @@ PreUnSequenced (PBYTE  Message,        /* resulting command string */
                 USHORT Length,         /* length of message to follow */
                 USHORT Port,
                 USHORT Remote,         /* ccu address */
-                CtiDevice *Device)           /* device type */
+                CtiDeviceSPtr Device)           /* device type */
 
 {
    INT   Type     = Device->getType();

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_base.h-arc  $
-* REVISION     :  $Revision: 1.27 $
-* DATE         :  $Date: 2004/03/23 20:42:44 $
+* REVISION     :  $Revision: 1.28 $
+* DATE         :  $Date: 2004/05/05 15:31:41 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -22,6 +22,10 @@
 #include <rw\cstring.h>
 #include <rw\thr\mutex.h>
 #include <rw/tpslist.h>
+
+#include "boost/shared_ptr.hpp"
+using boost::shared_ptr;
+using namespace std;
 
 #include "dsm2.h"
 
@@ -46,6 +50,9 @@ class CtiPointBase;
 class CtiPointManager;
 class CtiTransmitterInfo;
 class CtiProtocolBase;
+class CtiDeviceBase;
+
+typedef shared_ptr< CtiDeviceBase > CtiDeviceSPtr;
 
 /*
  *  This is a class used as a base for all others.... currently he branches
@@ -65,6 +72,7 @@ public:
     virtual ~CtiDeviceBase();
 
     CtiDeviceBase& operator=(const CtiDeviceBase& aRef);
+    bool operator<(const CtiDeviceBase& rhs) const;
 
     CtiRouteSPtr         getRoute(LONG RteId) const;
     CtiRouteManager*     getRouteManager() const;
@@ -332,5 +340,7 @@ inline CtiMutex& CtiDeviceBase::getExclusionMux() { return _exclusionMux; }
 inline bool CtiDeviceBase::isExecutionProhibitedByInternalLogic() const { return false;}
 inline INT CtiDeviceBase::queueOutMessageToDevice(OUTMESS *&OutMessage) { return NORMAL; }
 inline bool CtiDeviceBase::hasQueuedWork() const { return false; }
+inline bool CtiDeviceBase::operator<(const CtiDeviceBase& rhs) const { return getID() < rhs.getID(); }
+
 
 #endif // #ifndef __DEV_BASE_H__

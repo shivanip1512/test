@@ -9,7 +9,7 @@
 *
 * CVS KEYWORDS:
 * REVISION     :  $Revision $
-* DATE         :  $Date: 2003/04/29 13:43:46 $
+* DATE         :  $Date: 2004/05/05 15:31:42 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -32,7 +32,7 @@ CtiPortDialin::~CtiPortDialin()
 {
 }
 
-INT CtiPortDialin::connectToDevice(CtiDevice *Device, LONG &LastDeviceId, INT trace)
+INT CtiPortDialin::connectToDevice(CtiDeviceSPtr Device, LONG &LastDeviceId, INT trace)
 {
     INT status     = !NORMAL;
 

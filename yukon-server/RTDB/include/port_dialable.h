@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2003/09/30 22:10:31 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2004/05/05 15:31:41 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -56,14 +56,14 @@ public:
     virtual BOOL shouldDisconnect() const;
     virtual void setShouldDisconnect(BOOL b = TRUE);
 
-    virtual INT connectToDevice(CtiDevice *Device, LONG &LastDeviceId, INT trace) = 0;
+    virtual INT connectToDevice(CtiDeviceSPtr Device, LONG &LastDeviceId, INT trace) = 0;
 
     virtual INT reset(INT trace) = 0;
     virtual INT setup(INT trace) = 0;
     virtual INT close(INT trace) = 0;
 
     virtual INT waitForResponse(PULONG ResponseSize, PCHAR Response, ULONG Timeout, PCHAR ExpectedResponse = NULL);
-    virtual INT disconnect(CtiDevice *Device, INT trace);
+    virtual INT disconnect(CtiDeviceSPtr Device, INT trace);
 
     CtiTablePortDialup getTablePortDialup() const;
     CtiTablePortDialup& getTablePortDialup();

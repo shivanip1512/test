@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2003/10/23 13:52:55 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2004/05/05 15:31:42 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -46,7 +46,7 @@ CtiPortDialout& CtiPortDialout::operator=(const CtiPortDialout& aRef)
     return *this;
 }
 
-INT CtiPortDialout::connectToDevice(CtiDevice *Device, LONG &LastDeviceId, INT trace)
+INT CtiPortDialout::connectToDevice(CtiDeviceSPtr Device, LONG &LastDeviceId, INT trace)
 {
     INT status     = NORMAL;
     ULONG DeviceCRC = Device->getUniqueIdentifier();
@@ -120,7 +120,7 @@ INT CtiPortDialout::connectToDevice(CtiDevice *Device, LONG &LastDeviceId, INT t
     return status;
 }
 
-INT CtiPortDialout::disconnect(CtiDevice *Device, INT trace)
+INT CtiPortDialout::disconnect(CtiDeviceSPtr Device, INT trace)
 {
     INT status = NORMAL;
 

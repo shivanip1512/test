@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2003/09/29 22:21:53 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2004/05/05 15:31:41 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -73,15 +73,15 @@ public:
     virtual void DecodeDatabaseReader(RWDBReader &rdr);
 
     virtual INT openPort(INT rate = 0, INT bits = 8, INT parity = NOPARITY, INT stopbits = ONESTOPBIT);
-    virtual INT inMess(CtiXfer& Xfer, CtiDevice* Dev, RWTPtrSlist< CtiMessage > &traceList);
-    virtual INT outMess(CtiXfer& Xfer, CtiDevice* Dev, RWTPtrSlist< CtiMessage > &traceList);
+    virtual INT inMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, RWTPtrSlist< CtiMessage > &traceList);
+    virtual INT outMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, RWTPtrSlist< CtiMessage > &traceList);
 
     virtual size_t addPort(CtiPortSPtr port);
 
     void DecodePooledPortsDatabaseReader(RWDBReader &rdr);
     static void getPooledPortsSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
 
-    CtiPortSPtr getAvailableChildPort(CtiDevice* Device);
+    CtiPortSPtr getAvailableChildPort(CtiDeviceSPtr  Device);
     INT allocateQueueEntsToChildPort();
 
 };

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.36 $
-* DATE         :  $Date: 2004/03/18 19:55:38 $
+* REVISION     :  $Revision: 1.37 $
+* DATE         :  $Date: 2004/05/05 15:31:42 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -29,12 +29,17 @@
 #include "dev_carrier.h"
 #include "dev_mct.h"
 #include "dev_repeater.h"
+#include "dev_rtc.h"
 #include "dev_tap.h"
 #include "dev_grp_emetcon.h"
 #include "dev_grp_energypro.h"
 #include "dev_grp_expresscom.h"
+#include "dev_grp_golay.h"
 #include "dev_grp_ripple.h"
+#include "dev_grp_sa105.h"
 #include "dev_grp_sa305.h"
+#include "dev_grp_sa205.h"
+#include "dev_grp_sadigital.h"
 #include "dev_grp_versacom.h"
 #include "dev_grp_mct.h"
 #include "dev_mct_broadcast.h"
@@ -46,11 +51,12 @@
 #include "rtdb.h"
 
 
-bool findExecutingAndExcludedDevice(CtiDeviceManager::val_pair vpd, void* d)
+
+bool findExecutingAndExcludedDevice(const long key, CtiDeviceSPtr devsptr, void* d)
 {
     bool bstatus = false;
 
-    CtiDeviceBase* Device = vpd.second;
+    CtiDeviceBase* Device = devsptr.get();
 
     CtiDeviceBase *pAnxiousDevice = (CtiDeviceBase *)d;       // This is the port that wishes to execute!
 
@@ -68,13 +74,13 @@ bool findExecutingAndExcludedDevice(CtiDeviceManager::val_pair vpd, void* d)
     return bstatus;
 }
 
-inline void applyClearExclusions(const CtiHashKey *unusedkey, CtiDeviceBase *&Device, void* d)
+inline void applyClearExclusions(const long unusedkey, CtiDeviceSPtr Device, void* d)
 {
     Device->clearExclusions();
     return;
 }
 
-inline void applyRemoveProhibit(const CtiHashKey *unusedkey, CtiDeviceBase *&Device, void* d)
+inline void applyRemoveProhibit(const long unusedkey, CtiDeviceSPtr Device, void* d)
 {
     try
     {
@@ -103,61 +109,62 @@ inline void applyRemoveProhibit(const CtiHashKey *unusedkey, CtiDeviceBase *&Dev
     return;
 }
 
-inline RWBoolean
-isDeviceIdStaticId(CtiDeviceBase *pDevice, void* d)
+inline RWBoolean isDeviceIdStaticId(CtiDeviceSPtr &pDevice, void* d)
 {
     CtiDeviceBase *pSp = (CtiDeviceBase *)d;
 
     return(pDevice->getID() == pSp->getID());
 }
 
-inline RWBoolean
-isDeviceNotUpdated(CtiDeviceBase *pDevice, void* d)
+inline RWBoolean isDeviceNotUpdated(CtiDeviceSPtr &pDevice, void* d)
 {
     // Return TRUE if it is NOT SET
     return(RWBoolean(!pDevice->getUpdatedFlag()));
 }
 
 
-void
-ApplyDeviceResetUpdated(const CtiHashKey *key, CtiDeviceBase *&pDevice, void* d)
+void ApplyDeviceResetUpdated(const long unusedkey, CtiDeviceSPtr Device, void* d)
 {
-    pDevice->resetUpdatedFlag();
+    Device->resetUpdatedFlag();
     return;
 }
 
-void
-ApplyInvalidateNotUpdated(const CtiHashKey *key, CtiDeviceBase *&pPt, void* d)
+void ApplyInvalidateNotUpdated(const long unusedkey, CtiDeviceSPtr Device, void* d)
 {
-    if(!pPt->getUpdatedFlag())
+    if(!Device->getUpdatedFlag())
     {
-        pPt->setValid(FALSE);   //   NOT NOT NOT Valid
+        Device->setValid(FALSE);   //   NOT NOT NOT Valid
     }
     return;
 }
 
-void
-ApplyClearMacroDeviceList(const CtiHashKey *key, CtiDeviceBase *&pDevice, void *d)
+void ApplyClearMacroDeviceList(const long unusedkey, CtiDeviceSPtr Device, void* d)
 {
-    if( pDevice->getType() == TYPE_MACRO )
-        ((CtiDeviceMacro *)pDevice)->clearDeviceList();
+    if( Device->getType() == TYPE_MACRO )
+        ((CtiDeviceMacro *)(Device.get()))->clearDeviceList();
+}
+
+bool removeDevice(CtiDeviceSPtr & Device, void* d)
+{
+    return true;
 }
 
 
-void CtiDeviceManager::DumpList(void)
+void CtiDeviceManager::dumpList(void)
 {
     CtiDeviceBase *p = NULL;
     try
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() <<" There are " << Map.entries() << " entries" << endl;
+            dout << RWTime() <<" There are " << _smartMap.entries() << " entries" << endl;
         }
-        CtiRTDBIterator itr(Map);
 
-        for(;itr();)
+        spiterator itr;
+
+        for(itr = begin(); itr != end(); itr++)
         {
-            p = itr.value();
+            p = (itr->second).get();
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 p->DumpData();
@@ -172,8 +179,6 @@ void CtiDeviceManager::DumpList(void)
             dout << RWTime() << " Attempting to clear device list..." << endl;
         }
 
-        Map.clearAndDestroy();
-
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " DumpDevices:  " << e.why() << endl;
@@ -187,14 +192,14 @@ void CtiDeviceManager::DumpList(void)
 void CtiDeviceManager::refreshDevices(bool &rowFound, RWDBReader& rdr, CtiDeviceBase* (*Factory)(RWDBReader &))
 {
     LONG              lTemp = 0;
-    CtiDeviceBase*    pTempCtiDevice = NULL;
+    CtiDeviceSPtr     pTempCtiDevice;
 
     while( (setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok) && rdr() )
     {
         rowFound = true;
         rdr["deviceid"] >> lTemp;            // get the DeviceID
 
-        if( Map.entries() > 0 && ((pTempCtiDevice = getEqual(lTemp)) != NULL) )
+        if( _smartMap.entries() > 0 && (pTempCtiDevice = getEqual(lTemp)) )
         {
             /*
              *  The point just returned from the rdr already was in my list.  We need to
@@ -213,7 +218,7 @@ void CtiDeviceManager::refreshDevices(bool &rowFound, RWDBReader& rdr, CtiDevice
                 pSp->DecodeDatabaseReader(rdr);        // Fills himself in from the reader
 
                 pSp->setUpdatedFlag();                              // Mark it updated
-                Map.insert( CTIDBG_new CtiHashKey(pSp->getID()), pSp );    // Stuff it in the list
+                _smartMap.insert( pSp->getID(), pSp );    // Stuff it in the list
             }
         }
     }
@@ -221,16 +226,13 @@ void CtiDeviceManager::refreshDevices(bool &rowFound, RWDBReader& rdr, CtiDevice
 
 
 
-CtiDeviceBase* CtiDeviceManager::RemoteGetPortRemoteEqual (LONG Port, LONG Remote)
+CtiDeviceManager::ptr_type CtiDeviceManager::RemoteGetPortRemoteEqual (LONG Port, LONG Remote)
 {
     CtiDeviceBase     *p = NULL;
 
-    RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(getMux());
+    LockGuard  dev_guard(getMux());
 
-    CtiRTDBIterator   itr(Map);
-
-
-    if(Map.entries() == 0)
+    if(_smartMap.entries() == 0)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -238,9 +240,11 @@ CtiDeviceBase* CtiDeviceManager::RemoteGetPortRemoteEqual (LONG Port, LONG Remot
         }
     }
 
-    for(;itr();)
+    spiterator itr;
+
+    for(itr = begin(); itr != end(); itr++)
     {
-        p = itr.value();
+        p = (itr->second).get();
 
         if( p->getAddress() > 0 &&  p->getPortID() == Port && p->getAddress() == Remote )
         {
@@ -253,42 +257,54 @@ CtiDeviceBase* CtiDeviceManager::RemoteGetPortRemoteEqual (LONG Port, LONG Remot
     return p;
 }
 
-CtiDeviceBase* CtiDeviceManager::RemoteGetEqual (LONG Dev)
+CtiDeviceManager::ptr_type CtiDeviceManager::RemoteGetEqual (LONG Dev)
 {
     return getEqual(Dev);
 }
 
-CtiDeviceBase* CtiDeviceManager::getEqual (LONG Dev)
+CtiDeviceManager::ptr_type CtiDeviceManager::getEqual (LONG Dev)
 {
-    CtiHashKey key(Dev);
-    return Map.findValue(&key);
+    ptr_type p;
+    try
+    {
+        p = _smartMap.find(Dev);
+    }
+    catch(...)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+    }
+    return p;
 }
 
-CtiDeviceBase* CtiDeviceManager::RemoteGetEqualbyName (const RWCString &RemoteName)
+CtiDeviceManager::ptr_type CtiDeviceManager::RemoteGetEqualbyName (const RWCString &RemoteName)
 {
-    // RWMutexLock::LockGuard guard(getMux());
-
     CtiDeviceBase     *p = NULL;
-    CtiRTDBIterator   itr(Map);
 
     RWCString cmpname = RemoteName;
     RWCString devname;
 
     cmpname.toLower();
 
-    if(Map.entries() == 0)
+    if(_smartMap.entries() == 0)
     {
-        cerr << "There are no entries in the remote device list" << endl;
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " There are no entries in the device manager list" << endl;
+        }
     }
 
-    for(;itr();)
+    spiterator itr;
+
+    for(itr = begin(); itr != end(); itr++)
     {
-        p = itr.value();
+        p = (itr->second).get();
 
         devname = p->getName();
         devname.toLower();
 
-        // cout << p->getName() << " == " << RemoteName << endl;
         if( devname == cmpname )
         {
             break;
@@ -312,9 +328,14 @@ CtiDeviceManager::~CtiDeviceManager()
 {
 }
 
-void CtiDeviceManager::DeleteList(void)
+void CtiDeviceManager::deleteList(void)
 {
-    Map.clearAndDestroy();
+    ptr_type ptr;
+
+    while((ptr = _smartMap.remove(removeDevice, 0)))
+    {
+        // ptr is pulled from the list.  Once we let go of the ptr, it should get cleaned up.
+    }
 }
 
 void CtiDeviceManager::setIncludeScanInfo()
@@ -334,9 +355,7 @@ void CtiDeviceManager::refreshScanRates(LONG id)
     LONG        lTemp = 0;
     CtiDeviceBase*   pTempCtiDevice = NULL;
 
-    LockGuard  dev_guard(monitor());       // Protect our iteration!
-
-    CtiRTDBIterator   itr(Map);
+    LockGuard  dev_guard(getMux());       // Protect our iteration!
 
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
@@ -373,14 +392,17 @@ void CtiDeviceManager::refreshScanRates(LONG id)
     {
         if(id > 0)
         {
-            pTempCtiDevice = getEqual(id);
+            CtiDeviceSPtr devsptr = getEqual(id);
+            pTempCtiDevice = devsptr.get();
             if(pTempCtiDevice) pTempCtiDevice->invalidateScanRates();     // Mark all Scan Rate elements as needing refresh..
         }
         else
         {
-            for(;itr();)
+            spiterator itr;
+
+            for(itr = begin(); itr != end(); itr++)
             {
-                pTempCtiDevice = itr.value();
+                pTempCtiDevice = (itr->second).get();
                 if(pTempCtiDevice) pTempCtiDevice->invalidateScanRates();     // Mark all Scan Rate elements as needing refresh..
             }
         }
@@ -388,11 +410,12 @@ void CtiDeviceManager::refreshScanRates(LONG id)
 
     while( (setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok) && rdr() )
     {
-        CtiDeviceBase* pSp = NULL;
-
         rdr["deviceid"] >> lTemp;            // get the DeviceID
 
-        if( Map.entries() > 0 && ((pTempCtiDevice = getEqual(lTemp)) != NULL) )
+        CtiDeviceSPtr devsptr = getEqual(lTemp);
+        pTempCtiDevice = devsptr.get();
+
+        if( pTempCtiDevice )
         {
             if( pTempCtiDevice->isSingle() )
             {
@@ -406,19 +429,19 @@ void CtiDeviceManager::refreshScanRates(LONG id)
             else
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " There are scanrates in the scanrate table for a nonscannable device." << endl;
+                dout << RWTime() << " There are scanrates in the scanrate table for a nonscannable device: " << pTempCtiDevice->getName() << endl;
             }
         }
     }
 
     if(setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok || setErrorCode(rdr.status().errorCode()) == RWDBStatus::endOfFetch)
     {
-        itr.reset(Map);
-
         // Remove any scan rates which were NOT refreshed, but only if we read a few correctly!
-        for(;itr();)
+        spiterator itr;
+
+        for(itr = begin(); itr != end(); itr++)
         {
-            pTempCtiDevice = itr.value();
+            pTempCtiDevice = (itr->second).get();
             pTempCtiDevice->deleteNonUpdatedScanRates();
         }
     }
@@ -429,9 +452,9 @@ void CtiDeviceManager::refreshDeviceWindows(LONG id)
     LONG        lTemp = 0;
     CtiDeviceBase*   pTempCtiDevice = NULL;
 
-    LockGuard  dev_guard(monitor());       // Protect our iteration!
+    LockGuard  dev_guard(getMux());       // Protect our iteration!
 
-    CtiRTDBIterator   itr(Map);
+    spiterator itr;
 
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
@@ -463,11 +486,12 @@ void CtiDeviceManager::refreshDeviceWindows(LONG id)
 
     while( (setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok) && rdr() )
     {
-        CtiDeviceBase* pSp = NULL;
-
         rdr["deviceid"] >> lTemp;            // get the DeviceID
 
-        if( Map.entries() > 0 && ((pTempCtiDevice = getEqual(lTemp)) != NULL) )
+        CtiDeviceSPtr devsptr = getEqual(id);
+        pTempCtiDevice = devsptr.get();
+
+        if( pTempCtiDevice )
         {
             if( pTempCtiDevice->isSingle() )
             {
@@ -532,7 +556,7 @@ void CtiDeviceManager::RefreshDeviceRoute(LONG id)
     {
         rdr["deviceid"] >> lTemp;            // get the DeviceID
 
-        if( Map.entries() > 0 && ((pTempCtiDevice = getEqual(lTemp)) != NULL) )
+        if( _smartMap.entries() > 0 && ((pTempCtiDevice = getEqual(lTemp)) != NULL) )
         {
             if(pTempCtiDevice->getType())       // FIX FIX FIX FIX FIX
             {
@@ -549,12 +573,12 @@ void CtiDeviceManager::RefreshDeviceRoute(LONG id)
 }
 #endif
 
-void CtiDeviceManager::refresh(CtiDeviceBase* (*Factory)(RWDBReader &), bool (*removeFunc)(CtiDeviceBase*,void*), void *d, LONG paoID, RWCString category, RWCString devicetype)
+void CtiDeviceManager::refresh(CtiDeviceBase* (*Factory)(RWDBReader &), bool (*removeFunc)(CtiDeviceSPtr&,void*), void *d, LONG paoID, RWCString category, RWCString devicetype)
 {
     if(paoID != 0)
     {
         bool rowFound = false;
-        CtiDeviceBase *pDev = getEqual(paoID);
+        CtiDeviceSPtr pDev = getEqual(paoID);
 
         if(pDev)        // If we have it, we can take a shortcut and do specific selects on the device type in question.
         {
@@ -568,7 +592,7 @@ void CtiDeviceManager::refresh(CtiDeviceBase* (*Factory)(RWDBReader &), bool (*r
                     dout << RWTime() << " " << pDev->getName() << " has changed type to " << devicetype << " from " << desolveDeviceType(pDev->getType()) << endl;
                 }
 
-                if( orphan(paoID) )
+                if( _smartMap.remove(paoID) )
                 {
                     if(DebugLevel & 0x00020000)
                     {
@@ -599,9 +623,9 @@ void CtiDeviceManager::refresh(CtiDeviceBase* (*Factory)(RWDBReader &), bool (*r
 }
 
 
-void CtiDeviceManager::refreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool (*removeFunc)(CtiDeviceBase*,void*), void *arg, LONG paoID)
+void CtiDeviceManager::refreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool (*removeFunc)(CtiDeviceSPtr&,void*), void *arg, LONG paoID)
 {
-    CtiDeviceBase *pTempCtiDevice = NULL;
+    CtiDeviceSPtr pTempCtiDevice;
     bool rowFound = false;
 
     RWTime start, stop, querytime;
@@ -620,7 +644,7 @@ void CtiDeviceManager::refreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool
 
                 if(paoID == 0)
                 {
-                    Map.apply(ApplyDeviceResetUpdated, NULL); // Reset everyone's Updated flag iff not a directed load.
+                    apply(ApplyDeviceResetUpdated, NULL); // Reset everyone's Updated flag iff not a directed load.
                 }
                 else
                 {
@@ -959,6 +983,40 @@ void CtiDeviceManager::refreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool
                         dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load  CBC Devices" << endl;
                     }
 
+                    start = start.now();
+                    {
+                        RWDBConnection conn = getConnection();
+                        RWDBDatabase db = getDatabase();
+
+                        RWDBTable   keyTable;
+                        RWDBSelector selector = db.selector();
+
+                        if(DebugLevel & 0x00020000)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for RTC Devices" << endl;
+                        }
+                        CtiDeviceRTC().getSQL( db, keyTable, selector );
+                        if(paoID != 0) selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
+
+                        RWDBReader rdr = selector.reader(conn);
+                        if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+                        }
+                        refreshDevices(rowFound, rdr, Factory);
+
+                        if(DebugLevel & 0x00020000)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for RTC Devices" << endl;
+                        }
+                    }
+                    stop = stop.now();
+                    if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load  RTC Devices" << endl;
+                    }
+
 
                     if(!_includeScanInfo)       // These are not scannable items..
                     {
@@ -1208,6 +1266,76 @@ void CtiDeviceManager::refreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool
                             dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load  Macro Devices" << endl;
                         }
 
+
+                        start = start.now();
+                        {
+                            RWDBConnection conn = getConnection();
+                            RWDBDatabase db = getDatabase();
+
+                            RWDBTable   keyTable;
+                            RWDBSelector selector = db.selector();
+
+                            if(DebugLevel & 0x00020000)
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for  105 Group Devices" << endl;
+                            }
+                            CtiDeviceGroupSA105().getSQL( db, keyTable, selector );
+                            if(paoID != 0) selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
+
+                            RWDBReader rdr = selector.reader(conn);
+                            if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+                            }
+                            refreshDevices(rowFound, rdr, Factory);
+
+                            if(DebugLevel & 0x00020000)
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for  105 Group Devices" << endl;
+                            }
+                        }
+                        stop = stop.now();
+                        if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load  105 Group Devices" << endl;
+                        }
+
+
+                        start = start.now();
+                        {
+                            RWDBConnection conn = getConnection();
+                            RWDBDatabase db = getDatabase();
+
+                            RWDBTable   keyTable;
+                            RWDBSelector selector = db.selector();
+
+                            if(DebugLevel & 0x00020000)
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for  205 Group Devices" << endl;
+                            }
+                            CtiDeviceGroupSA205().getSQL( db, keyTable, selector );
+                            if(paoID != 0) selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
+
+                            RWDBReader rdr = selector.reader(conn);
+                            if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+                            }
+                            refreshDevices(rowFound, rdr, Factory);
+
+                            if(DebugLevel & 0x00020000)
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for  205 Group Devices" << endl;
+                            }
+                        }
+                        stop = stop.now();
+                        if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load  205 Group Devices" << endl;
+                        }
+
                         start = start.now();
                         {
                             RWDBConnection conn = getConnection();
@@ -1239,8 +1367,79 @@ void CtiDeviceManager::refreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool
                         if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load  ExpressCom Group Devices" << endl;
+                            dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load 305 Devices" << endl;
                         }
+
+
+                        start = start.now();
+                        {
+                            RWDBConnection conn = getConnection();
+                            RWDBDatabase db = getDatabase();
+
+                            RWDBTable   keyTable;
+                            RWDBSelector selector = db.selector();
+
+                            if(DebugLevel & 0x00020000)
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for  SA Digital Group Devices" << endl;
+                            }
+                            CtiDeviceGroupSADigital().getSQL( db, keyTable, selector );
+                            if(paoID != 0) selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
+
+                            RWDBReader rdr = selector.reader(conn);
+                            if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+                            }
+                            refreshDevices(rowFound, rdr, Factory);
+
+                            if(DebugLevel & 0x00020000)
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for  SA Digital Group Devices" << endl;
+                            }
+                        }
+                        stop = stop.now();
+                        if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load  SA Digital Group Devices" << endl;
+                        }
+
+
+                        start = start.now();
+                        {
+                            RWDBConnection conn = getConnection();
+                            RWDBDatabase db = getDatabase();
+
+                            RWDBTable   keyTable;
+                            RWDBSelector selector = db.selector();
+
+                            if(DebugLevel & 0x00020000)
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for  Golay Group Devices" << endl;
+                            }
+                            CtiDeviceGroupGolay().getSQL( db, keyTable, selector );
+                            if(paoID != 0) selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
+
+                            RWDBReader rdr = selector.reader(conn);
+                            if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+                            }
+                            refreshDevices(rowFound, rdr, Factory);
+
+                            if(DebugLevel & 0x00020000)
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for  Golay Group Devices" << endl;
+                            }
+                        }
+                        stop = stop.now();
+                        if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load  Golay Group Devices" << endl;
+                        }
+
 
                     }
 
@@ -1297,7 +1496,7 @@ void CtiDeviceManager::refreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool
 
                     if(_removeFunc)
                     {
-                        removeAndDestroy(_removeFunc, arg);
+                        _smartMap.remove(_removeFunc, arg);
                     }
 
                     stop = stop.now();
@@ -1332,8 +1531,8 @@ void CtiDeviceManager::refreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool
 
                     do
                     {
-                        pTempCtiDevice = remove(isDeviceNotUpdated, NULL);
-                        if(pTempCtiDevice != NULL)
+                        pTempCtiDevice = _smartMap.remove(isDeviceNotUpdated, NULL);
+                        if(pTempCtiDevice)
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1341,10 +1540,10 @@ void CtiDeviceManager::refreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool
                                 dout << "  Evicting " << pTempCtiDevice->getName() << " from list" << endl;
                             }
 
-                            delete pTempCtiDevice;
+                            // Effectively deletes the memory if there are no other "owners"
                         }
 
-                    } while(pTempCtiDevice != NULL);
+                    } while(pTempCtiDevice);
                     stop = stop.now();
                     if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
                     {
@@ -1360,10 +1559,9 @@ void CtiDeviceManager::refreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool
         //Make sure the list is cleared
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Attempting to clear point list..." << endl;
+            dout << RWTime() << " Attempting to clear device list..." << endl;
         }
-        Map.clearAndDestroy();
-
+        deleteList();
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1375,7 +1573,7 @@ void CtiDeviceManager::refreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool
 }
 
 
-bool CtiDeviceManager::refreshDeviceByPao(CtiDeviceBase *&pDev, LONG paoID)
+bool CtiDeviceManager::refreshDeviceByPao(CtiDeviceSPtr pDev, LONG paoID)
 {
     bool status = false;
 
@@ -1404,7 +1602,7 @@ bool CtiDeviceManager::refreshDeviceByPao(CtiDeviceBase *&pDev, LONG paoID)
         if(!status)     // It was NOT found in the DB!
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout); dout << RWTime() << " " << pDev->getName() << " removed from DB." << endl;
-            orphan(paoID);
+            _smartMap.remove(paoID);
         }
         else
         {
@@ -1423,7 +1621,7 @@ bool CtiDeviceManager::refreshDeviceByPao(CtiDeviceBase *&pDev, LONG paoID)
 /*
  * ptr_type anxiousDevice has asked to execute.  We make certain that no other device which is in his exclusion list is executing.
  */
-bool CtiDeviceManager::mayDeviceExecuteExclusionFree(CtiDeviceBase* anxiousDevice, CtiTablePaoExclusion &deviceexclusion)
+bool CtiDeviceManager::mayDeviceExecuteExclusionFree(CtiDeviceSPtr anxiousDevice, CtiTablePaoExclusion &deviceexclusion)
 {
     bool bstatus = false;
 
@@ -1431,7 +1629,7 @@ bool CtiDeviceManager::mayDeviceExecuteExclusionFree(CtiDeviceBase* anxiousDevic
     {
         if(anxiousDevice)
         {
-            RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(getMux());
+            LockGuard  dev_guard(getMux());
 
             // Make sure no other device out there has begun executing and doesn't want us to until they are done.
             // The device may also have logic which prevents it's executing.
@@ -1444,8 +1642,8 @@ bool CtiDeviceManager::mayDeviceExecuteExclusionFree(CtiDeviceBase* anxiousDevic
                      *  Walk the anxiousDevice's exclusion list checking if any of the devices on it indicate that they are
                      *  currently executing.  If any of them are executing, the anxious device cannot start.
                      */
-                    CtiDeviceBase *device = 0;
-                    vector< CtiDeviceBase* > exlist;
+                    CtiDeviceSPtr device;
+                    vector< CtiDeviceSPtr > exlist;
 
                     CtiDevice::exclusions exvector = anxiousDevice->getExclusions();
                     CtiDevice::exclusions::iterator itr;
@@ -1505,7 +1703,7 @@ bool CtiDeviceManager::mayDeviceExecuteExclusionFree(CtiDeviceBase* anxiousDevic
 
                     if(!exlist.empty())     // This tells me that I have no conflicting devices!
                     {
-                        vector< CtiDeviceBase* >::iterator xitr;
+                        vector< CtiDeviceSPtr >::iterator xitr;
                         for(xitr = exlist.begin(); xitr != exlist.end(); xitr++)
                         {
                             if(getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
@@ -1548,17 +1746,17 @@ bool CtiDeviceManager::mayDeviceExecuteExclusionFree(CtiDeviceBase* anxiousDevic
 /*
  * ptr_type anxiousDevice has completed an execution.  We must cleanup his mess.
  */
-bool CtiDeviceManager::removeDeviceExclusionBlocks(CtiDeviceBase* anxiousDevice)
+bool CtiDeviceManager::removeDeviceExclusionBlocks(CtiDeviceSPtr anxiousDevice)
 {
     bool bstatus = false;
 
-    RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(getMux());
+    LockGuard  dev_guard(getMux());
 
     try
     {
         if(anxiousDevice)
         {
-            apply( applyRemoveProhibit, (void*)anxiousDevice);   // Remove prohibit mark from any device.
+            apply( applyRemoveProhibit, (void*)(anxiousDevice.get()));   // Remove prohibit mark from any device.
             anxiousDevice->setExecuting(false);                               // Mark ourselves as executing!
         }
     }
@@ -1575,14 +1773,14 @@ bool CtiDeviceManager::removeDeviceExclusionBlocks(CtiDeviceBase* anxiousDevice)
 void CtiDeviceManager::refreshExclusions(LONG id)
 {
     LONG        lTemp = 0;
-    CtiDeviceBase*   pTempCtiDevice = NULL;
+    CtiDeviceSPtr   pTempCtiDevice;
 
-    LockGuard  dev_guard(monitor());       // Protect our iteration!
+    LockGuard  dev_guard(getMux());       // Protect our iteration!
 
     // clear the exclusion lists.
     apply( applyClearExclusions, NULL);
 
-    CtiRTDBIterator   itr(Map);
+    spiterator itr;
 
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
@@ -1618,7 +1816,7 @@ void CtiDeviceManager::refreshExclusions(LONG id)
 
         rdr["paoid"] >> lTemp;            // get the DeviceID
 
-        if( Map.entries() > 0 && ((pTempCtiDevice = getEqual(lTemp)) != NULL) )
+        if( _smartMap.entries() > 0 && (pTempCtiDevice = getEqual(lTemp)) )
         {
             CtiTablePaoExclusion paox;
             paox.DecodeDatabaseReader(rdr);
@@ -1637,7 +1835,7 @@ void CtiDeviceManager::refreshExclusions(LONG id)
 
 void CtiDeviceManager::refreshIONMeterGroups(LONG paoID)
 {
-    CtiDeviceBase *pTempCtiDevice = 0;
+    CtiDeviceSPtr pTempCtiDevice;
 
     {
         RWDBConnection conn = getConnection();
@@ -1690,7 +1888,7 @@ void CtiDeviceManager::refreshIONMeterGroups(LONG paoID)
 
                 if(pTempCtiDevice)
                 {
-                    CtiDeviceION *tmpION = (CtiDeviceION *)pTempCtiDevice;
+                    CtiDeviceION *tmpION = (CtiDeviceION *)(pTempCtiDevice.get());
 
                     tmpION->setMeterGroupData(tmpCollectionGroup,
                                               tmpTestCollectionGroup,
@@ -1717,7 +1915,7 @@ void CtiDeviceManager::refreshIONMeterGroups(LONG paoID)
 void CtiDeviceManager::refreshMacroSubdevices(LONG paoID)
 {
     int childcount = 0;
-    CtiDeviceBase *pTempCtiDevice;
+    CtiDeviceSPtr pTempCtiDevice;
 
     RWDBConnection conn = getConnection();
     RWDBDatabase db = getDatabase();
@@ -1766,7 +1964,7 @@ void CtiDeviceManager::refreshMacroSubdevices(LONG paoID)
     if(childcount != 0 && macroResult.status().errorCode() == RWDBStatus::ok)
     {
         rdr = myMacroTable.reader();
-        Map.apply(ApplyClearMacroDeviceList, NULL);
+        apply(ApplyClearMacroDeviceList, NULL);
 
         while( (rdr.status().errorCode() == RWDBStatus::ok) && rdr() )
         {
@@ -1776,8 +1974,8 @@ void CtiDeviceManager::refreshMacroSubdevices(LONG paoID)
             pTempCtiDevice = getEqual(tmpOwnerID);
             if(pTempCtiDevice)
             {
-                CtiDeviceMacro * pOwner = (CtiDeviceMacro *)pTempCtiDevice;
-                if( NULL != (pTempCtiDevice = getEqual(tmpChildID)) )
+                CtiDeviceMacro * pOwner = (CtiDeviceMacro *)(pTempCtiDevice.get());
+                if( (pTempCtiDevice = getEqual(tmpChildID)) )
                 {
                     pOwner->addDevice(pTempCtiDevice);
                 }
@@ -1801,7 +1999,7 @@ void CtiDeviceManager::refreshMacroSubdevices(LONG paoID)
 
 void CtiDeviceManager::refreshMCTConfigs(LONG paoID)
 {
-    CtiDeviceBase *pTempCtiDevice = 0;
+    CtiDeviceSPtr pTempCtiDevice;
 
     LONG      tmpmctid;
     int       tmpwire[3],
@@ -1870,13 +2068,9 @@ void CtiDeviceManager::refreshMCTConfigs(LONG paoID)
 
                 if(pTempCtiDevice)
                 {
-                    CtiDeviceMCT *tmpMCT = (CtiDeviceMCT *)pTempCtiDevice;
+                    CtiDeviceMCT *tmpMCT = (CtiDeviceMCT *)(pTempCtiDevice.get());
 
-                    tmpMCT->setConfigData(tmpconfigname,
-                                          tmpconfigtype,
-                                          tmpconfigmode,
-                                          tmpwire,
-                                          tmpmpkh);
+                    tmpMCT->setConfigData(tmpconfigname, tmpconfigtype, tmpconfigmode, tmpwire, tmpmpkh);
                 }
             }
         }
@@ -1982,3 +2176,123 @@ void CtiDeviceManager::refreshDeviceProperties(LONG paoID)
         }
     }
 }
+
+CtiDeviceManager::spiterator CtiDeviceManager::begin()
+{
+    return _smartMap.getMap().begin();
+}
+CtiDeviceManager::spiterator CtiDeviceManager::end()
+{
+    return _smartMap.getMap().end();
+}
+
+void CtiDeviceManager::apply(void (*applyFun)(const long, ptr_type, void*), void* d)
+{
+    try
+    {
+        int trycount = 0;
+
+        LockGuard gaurd(getMux(), 30000);
+
+        while(!gaurd.isAcquired())
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint: Unable to lock port mutex **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+            gaurd.tryAcquire(30000);
+
+            if(trycount++ > 6)
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint: Unable to lock port mutex **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << "  CtiPortManager::apply " << endl;
+                }
+                return;
+            }
+        }
+
+        _smartMap.apply(applyFun,d);
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+}
+
+CtiDeviceManager::ptr_type CtiDeviceManager::find(bool (*findFun)(const long, ptr_type, void*), void* d)
+{
+    ptr_type p;
+
+    try
+    {
+        LockGuard gaurd(getMux(), 30000);
+
+        while(!gaurd.isAcquired())
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint: Unable to lock device manager mutex **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+            gaurd.tryAcquire(30000);
+        }
+
+        spiterator itr;
+
+        for(itr = begin(); itr != end(); itr++)
+        {
+            if( findFun( itr->first, itr->second, d ) )
+            {
+                p = itr->second;
+                break;
+            }
+        }
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    return p;
+}
+
+bool CtiDeviceManager::contains(bool (*findFun)(const long, ptr_type, void*), void* d)
+{
+    bool found = false;
+
+    try
+    {
+        LockGuard gaurd(getMux(), 30000);
+
+        while(!gaurd.isAcquired())
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint: Unable to lock device manager mutex **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+            gaurd.tryAcquire(30000);
+        }
+
+        spiterator itr;
+
+        for(itr = begin(); itr != end(); itr++)
+        {
+            if( findFun( itr->first, itr->second, d ) )
+            {
+                found = true;
+                break;
+            }
+        }
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    return found;
+}
+

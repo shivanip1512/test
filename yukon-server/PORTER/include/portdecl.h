@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/INCLUDE/portdecl.h-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2003/12/17 15:31:50 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2004/05/05 15:31:45 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -28,7 +28,7 @@ class CtiDeviceBase;
 
 /* Prototypes from PLIDLC.C */
 INT PreIDLC (PBYTE, USHORT, USHORT, USHORT, USHORT, USHORT, USHORT, USHORT, USHORT);
-INT PreUnSequenced (PBYTE, USHORT, USHORT, USHORT, CtiDeviceBase*);
+INT PreUnSequenced (PBYTE, USHORT, USHORT, USHORT, CtiDeviceSPtr );
 INT PreVTU (PBYTE, USHORT, USHORT, USHORT, USHORT, USHORT);
 INT PostIDLC (PBYTE, USHORT);
 INT GenReply (PBYTE, USHORT, PUSHORT, PUSHORT, USHORT);
@@ -45,8 +45,8 @@ VOID APIENTRY PorterCleanUp (ULONG);
 
 /* Prototypes from PORTERSU.C */
 INT SendError(OUTMESS *&, USHORT, INMESS *InMessage = NULL);
-INT ReportRemoteError(CtiDeviceBase *, ERRSTRUCT *);
-INT ReportDeviceError(CtiDeviceBase *, CtiPortSPtr , ERRSTRUCT *);
+INT ReportRemoteError(CtiDeviceSPtr , ERRSTRUCT *);
+INT ReportDeviceError(CtiDeviceSPtr , CtiPortSPtr , ERRSTRUCT *);
 
 /* Prototypes from PORTFILL.C */
 VOID FillerThread (PVOID);
@@ -57,7 +57,7 @@ VOID PerfUpdateThread (PVOID);
 void statisticsNewRequest(long paoportid, long trxpaoid, long targpaoid);
 void statisticsNewAttempt(long paoportid, long trxpaoid, long targpaoid, int result);
 void statisticsNewCompletion(long paoportid, long trxpaoid, long targpaoid, int result);
-void statisticsReport( CtiDeviceBase *pDevice );
+void statisticsReport( CtiDeviceSPtr pDevice );
 void statisticsRecord();
 
 
@@ -71,21 +71,21 @@ VOID PorterGWThread (PVOID);
 /*  */
 VOID PortThread(void *);
 VOID PortDialbackThread(void *);
-bool RemoteReset (CtiDeviceBase *&Device, CtiPortSPtr pPort);
-INT TDMarkVHandShake (OUTMESS *, INMESS *, CtiPortSPtr , CtiDeviceBase *);
-INT APlusHandShake (OUTMESS *, INMESS *, CtiPortSPtr , CtiDeviceBase *);
-INT SchlHandShake (OUTMESS *, INMESS *, CtiPortSPtr , CtiDeviceBase *);
-INT SchlPostScan  ( OUTMESS *OutMessage, INMESS  *InMessage, CtiDeviceBase  *DeviceRecord);
+bool RemoteReset (CtiDeviceSPtr &Device, CtiPortSPtr pPort);
+INT TDMarkVHandShake (OUTMESS *, INMESS *, CtiPortSPtr , CtiDeviceSPtr );
+INT APlusHandShake (OUTMESS *, INMESS *, CtiPortSPtr , CtiDeviceSPtr );
+INT SchlHandShake (OUTMESS *, INMESS *, CtiPortSPtr , CtiDeviceSPtr );
+INT SchlPostScan  ( OUTMESS *OutMessage, INMESS  *InMessage, CtiDeviceSPtr DeviceRecord);
 
 /* Prototypes from PORTQUE.C */
 VOID QueueThread (PVOID);
-INT CCUResponseDecode (INMESS *, CtiDeviceBase*, OUTMESS *OutMessage);
+INT CCUResponseDecode (INMESS *, CtiDeviceSPtr , OUTMESS *OutMessage);
 VOID KickerThread (PVOID);
 INT DeQueue(INMESS *);
-INT CCUQueueFlush    (CtiDeviceBase *Dev);
-INT QueueFlush       (CtiDeviceBase *Dev);
-INT BuildLGrpQ       (CtiDeviceBase *Dev);
-INT BuildActinShed   (CtiDeviceBase *Dev);
+INT CCUQueueFlush    (CtiDeviceSPtr Dev);
+INT QueueFlush       (CtiDeviceSPtr Dev);
+INT BuildLGrpQ       (CtiDeviceSPtr Dev);
+INT BuildActinShed   (CtiDeviceSPtr Dev);
 
 /* Prototypes from PORTTIME.C */
 VOID TimeSyncThread (PVOID);
@@ -110,7 +110,7 @@ INT RemoteControl (OUTMESS *);
 
 /* Prototypes from PLIDLC.C */
 INT PreIDLC (PBYTE, USHORT, USHORT, USHORT, USHORT, USHORT, USHORT, USHORT, USHORT);
-INT PreUnSequenced (PBYTE, USHORT, USHORT, USHORT, CtiDeviceBase*);
+INT PreUnSequenced (PBYTE, USHORT, USHORT, USHORT, CtiDeviceSPtr );
 INT PreVTU (PBYTE, USHORT, USHORT, USHORT, USHORT, USHORT);
 INT PostIDLC (PBYTE, USHORT);
 INT GenReply (PBYTE, USHORT, PUSHORT, PUSHORT, USHORT);
@@ -121,24 +121,24 @@ INT IDLCAlgStat (PBYTE, PUSHORT);
 /* id of source process */
 /* id of destination process */
 /* function to execute */
-IDLCFunction (CtiDeviceBase *pDev, USHORT Source, USHORT Dest, USHORT Function);
+IDLCFunction (CtiDeviceSPtr &pDev, USHORT Source, USHORT Dest, USHORT Function);
 /* Port record */
 /* ccu record */
 /* various ccu specific data */
-IDLCInit (CtiPortSPtr PortRecord, CtiDeviceBase *RemoteRecord, REMOTESEQUENCE *RemoteSequence);
-IDLCSetDelaySets(CtiDeviceBase *pDev);
-IDLCRColQ(CtiDeviceBase *pDev, INT priority = 11);
-IDLCSetBaseSList(CtiDeviceBase *pDev);
-IDLCSetTSStores(CtiDeviceBase *pDev, USHORT Priority, USHORT Trigger, USHORT Period);
-IDLCRCont(CtiDeviceBase *pDev);
+IDLCInit (CtiPortSPtr PortRecord, CtiDeviceSPtr &RemoteRecord, REMOTESEQUENCE *RemoteSequence);
+IDLCSetDelaySets(CtiDeviceSPtr &pDev);
+IDLCRColQ(CtiDeviceSPtr &pDev, INT priority = 11);
+IDLCSetBaseSList(CtiDeviceSPtr &pDev);
+IDLCSetTSStores(CtiDeviceSPtr &pDev, USHORT Priority, USHORT Trigger, USHORT Period);
+IDLCRCont(CtiDeviceSPtr &pDev);
 
 
 /* Prototypes from RIPPLE.C */
 //INT LCUStage (OUTMESS *&);
 //INT LCUShed (OUTMESS *&);
 //INT LCUTime (OUTMESS *&, PULONG);
-INT LCUPreSend (OUTMESS *&, CtiDeviceBase *);
-INT LCUResultDecode (OUTMESS *, INMESS *, CtiDeviceBase *, ULONG, bool mayqueuescans);
+INT LCUPreSend (OUTMESS *&, CtiDeviceSPtr );
+INT LCUResultDecode (OUTMESS *, INMESS *, CtiDeviceSPtr , ULONG, bool mayqueuescans);
 INT MPCPointClear (PCHAR);
 INT MPCPointSet (PCHAR);
 

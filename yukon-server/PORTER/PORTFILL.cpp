@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTFILL.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2004/04/29 17:42:23 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2004/05/05 15:31:44 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -122,7 +122,7 @@ static void applySendFiller(const long unusedid, CtiPortSPtr Port, void *uid)
                     continue;
                 }
 
-                CtiDeviceBase *TransmitterDevice = DeviceManager.getEqual( Route->getTrxDeviceID() );
+                CtiDeviceSPtr TransmitterDevice = DeviceManager.getEqual( Route->getTrxDeviceID() );
 
 
                 if(TransmitterDevice && Port->getPortID() == TransmitterDevice->getPortID() && !TransmitterDevice->isInhibited())
@@ -136,7 +136,7 @@ static void applySendFiller(const long unusedid, CtiPortSPtr Port, void *uid)
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                                 dout << RWTime() << " Filler message on route " << Route->getName() << " for transmitter " << TransmitterDevice->getName() << endl;
                             }
-                            CtiDeviceTCU *xcu = (CtiDeviceTCU *)TransmitterDevice;
+                            CtiDeviceTCU *xcu = (CtiDeviceTCU *)TransmitterDevice.get();
 
                             // In the beginning (6/25/01) NONE will send a filler message.
                             if(xcu->getSendFiller())
@@ -220,7 +220,7 @@ static void applySendFillerPage(const long unusedid, CtiPortSPtr Port, void *uid
                     continue;
                 }
 
-                CtiDeviceBase *TransmitterDevice = DeviceManager.getEqual( Route->getTrxDeviceID() );
+                CtiDeviceSPtr TransmitterDevice = DeviceManager.getEqual( Route->getTrxDeviceID() );
 
                 if(TransmitterDevice && Port->getPortID() == TransmitterDevice->getPortID() && !TransmitterDevice->isInhibited())
                 {
@@ -228,7 +228,7 @@ static void applySendFillerPage(const long unusedid, CtiPortSPtr Port, void *uid
                     {
                     case TYPE_WCTP:
                         {
-                            CtiDeviceWctpTerminal *tapTRX = (CtiDeviceWctpTerminal *)TransmitterDevice;
+                            CtiDeviceWctpTerminal *tapTRX = (CtiDeviceWctpTerminal *)TransmitterDevice.get();
 
                             if(!tapTRX->isInhibited() && tapTRX->getSendFiller())
                             {
@@ -385,7 +385,7 @@ static void applySendFillerPage(const long unusedid, CtiPortSPtr Port, void *uid
                         }
                     case TYPE_TAPTERM:
                         {
-                            CtiDeviceTapPagingTerminal *tapTRX = (CtiDeviceTapPagingTerminal *)TransmitterDevice;
+                            CtiDeviceTapPagingTerminal *tapTRX = (CtiDeviceTapPagingTerminal *)TransmitterDevice.get();
 
                             if(!tapTRX->isInhibited() && tapTRX->getSendFiller())
                             {

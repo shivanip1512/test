@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/RIPPLE.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2003/10/10 15:39:48 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2004/05/05 15:31:45 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -102,16 +102,14 @@ bool AnyLCUCanExecute( OUTMESS *&OutMessage, CtiDeviceLCU *lcu, RWTime &Now );
 bool LCUCanExecute( OUTMESS *&OutMessage, CtiDeviceLCU *lcu, RWTime &Now );
 bool LCUPortHasAnLCUScan( OUTMESS *&OutMessage, CtiDeviceLCU *lcu, RWTime &Now );
 
-bool containsAnyLCUsTransmitting(CtiDeviceManager::val_pair a, void* ptr)
+bool findAnyLCUsTransmitting(const long key, CtiDeviceSPtr Dev, void* ptr)
 {
     bool bStatus = false;
     CtiDeviceLCU *lcu = (CtiDeviceLCU *)ptr;
 
-    CtiDevice *Dev = a.second;
-
     if( isLCU(Dev->getType()) && Dev->getPortID() == lcu->getPortID() )
     {
-        CtiDeviceLCU *pOtherLCU = (CtiDeviceLCU*)Dev;
+        CtiDeviceLCU *pOtherLCU = (CtiDeviceLCU*)Dev.get();
         if(pOtherLCU->getLastControlMessage() != NULL)
         {
             bStatus = true;
@@ -120,16 +118,14 @@ bool containsAnyLCUsTransmitting(CtiDeviceManager::val_pair a, void* ptr)
     return bStatus;
 }
 
-bool containsExclusionBlockage(CtiDeviceManager::val_pair a, void* ptr)
+bool findExclusionBlockage(const long key, CtiDeviceSPtr Dev, void* ptr)
 {
     bool bStatus = false;
     CtiDeviceLCU *lcu = (CtiDeviceLCU *)ptr;
 
-    CtiDevice *Dev = a.second;
-
     if( isLCU(Dev->getType()) )
     {
-        CtiDeviceLCU *pOtherLCU = (CtiDeviceLCU*)Dev;
+        CtiDeviceLCU *pOtherLCU = (CtiDeviceLCU*)Dev.get();
 
         if( CtiDeviceLCU::excludeALL() )        // No LCU may execute simultaneous with another
         {
@@ -165,7 +161,7 @@ bool containsExclusionBlockage(CtiDeviceManager::val_pair a, void* ptr)
 }
 
 
-void ApplyPortXResetOnTimeout(const CtiHashKey *key, CtiDeviceBase *&Dev, void* vpTXlcu)
+void ApplyPortXResetOnTimeout(const long key, CtiDeviceSPtr Dev, void* vpTXlcu)
 {
     CtiDeviceLCU *lcu = (CtiDeviceLCU*)vpTXlcu;     // This is the transmitting lcu...  Might be the broadcast LCU (yeah, LCUGLOBAL.. how lazy is that)
     RWTime         Now;
@@ -173,7 +169,7 @@ void ApplyPortXResetOnTimeout(const CtiHashKey *key, CtiDeviceBase *&Dev, void* 
 
     if( isLCU(Dev->getType()) && Dev->getPortID() == lcu->getPortID() )
     {
-        CtiDeviceLCU *pOtherLCU = (CtiDeviceLCU*)Dev;
+        CtiDeviceLCU *pOtherLCU = (CtiDeviceLCU*)Dev.get();
 
         if(pOtherLCU->getNextCommandTime() > rwEpoch && Now > pOtherLCU->getNextCommandTime() )
         {
@@ -201,13 +197,13 @@ void ApplyPortXResetOnTimeout(const CtiHashKey *key, CtiDeviceBase *&Dev, void* 
  *  lcu's.  This is likely to be only one (itself), but could be as many as the number
  *  of lcu's on the port (minus inhibited ones)
  */
-void ApplyPortXLCUSet(const CtiHashKey *key, CtiDeviceBase *&Dev, void* vpTXlcu)
+void ApplyPortXLCUSet(const long key, CtiDeviceSPtr Dev, void* vpTXlcu)
 {
     CtiDeviceLCU *lcu = (CtiDeviceLCU*)vpTXlcu;     // This is the transmitting lcu...  Might be the broadcast LCU (yeah, LCUGLOBAL.. how lazy is that)
 
     if( isLCU(Dev->getType()) && Dev->getPortID() == lcu->getPortID() )
     {
-        CtiDeviceLCU *pOtherLCU = (CtiDeviceLCU*)Dev;
+        CtiDeviceLCU *pOtherLCU = (CtiDeviceLCU*)Dev.get();
 
         pOtherLCU->setNextCommandTime( lcu->getNextCommandTime() + 1L );  // Mark them all out to this remotes completion time to prevent xtalk
 
@@ -243,13 +239,13 @@ void ApplyPortXLCUSet(const CtiHashKey *key, CtiDeviceBase *&Dev, void* vpTXlcu)
  *  it resets them to their quiescent state and is useful when no-one fired
  *  off based upon this scan request...
  */
-void ApplyPortXLCUReset(const CtiHashKey *key, CtiDeviceBase *&Dev, void* vpTXlcu)
+void ApplyPortXLCUReset(const long key, CtiDeviceSPtr Dev, void* vpTXlcu)
 {
     CtiDeviceLCU *lcu = (CtiDeviceLCU*)vpTXlcu;     // This is the transmitting lcu...  Might be the broadcast LCU (yeah, LCUGLOBAL.. how lazy is that)
 
     if( isLCU(Dev->getType()) && Dev->getPortID() == lcu->getPortID() )
     {
-        CtiDeviceLCU *pOtherLCU = (CtiDeviceLCU*)Dev;
+        CtiDeviceLCU *pOtherLCU = (CtiDeviceLCU*)Dev.get();
         pOtherLCU->lcuResetFlagsAndTags();
     }
 
@@ -257,13 +253,13 @@ void ApplyPortXLCUReset(const CtiHashKey *key, CtiDeviceBase *&Dev, void* vpTXlc
 }
 
 
-void ApplyStageTime(const CtiHashKey *key, CtiDeviceBase *&Dev, void* vpTXlcu)
+void ApplyStageTime(const long key, CtiDeviceSPtr Dev, void* vpTXlcu)
 {
     CtiDeviceLCU *lcu = (CtiDeviceLCU*)vpTXlcu;     // This is the transmitting lcu...  Might be the broadcast LCU (yeah, LCUGLOBAL.. how lazy is that)
 
     if( isLCU(Dev->getType()) && Dev->getPortID() == lcu->getPortID() )
     {
-        CtiDeviceLCU *pOtherLCU = (CtiDeviceLCU*)Dev;
+        CtiDeviceLCU *pOtherLCU = (CtiDeviceLCU*)Dev.get();
 
         pOtherLCU->setStageTime( lcu->getStageTime() );                      // Everyone staged up at this time (ie the command went out)
         pOtherLCU->setNextCommandTime( lcu->getStageTime() + TIMETOSTAGE );  // I can't send until the damn thing is staged up!
@@ -274,12 +270,12 @@ void ApplyStageTime(const CtiHashKey *key, CtiDeviceBase *&Dev, void* vpTXlcu)
 
 /* Routine to check an LCU message and set flags prior to sending */
 /* LCUDevice is the LCU which we are about to transmit through    */
-LCUPreSend(OUTMESS *&OutMessage, CtiDeviceBase *Dev)
+LCUPreSend(OUTMESS *&OutMessage, CtiDeviceSPtr Dev)
 {
     BOOL           lcuWasSending = FALSE;
     BOOL           commandTimeout = FALSE;
     ULONG          QueueCount;
-    CtiDeviceLCU  *lcu = (CtiDeviceLCU*)Dev;
+    CtiDeviceLCU  *lcu = (CtiDeviceLCU*)Dev.get();
 
     INT            status = NORMAL;
 
@@ -329,13 +325,13 @@ BOOL Block;
 BOOL OverRetry;
 
 /* Routine to decode result of LCU handshake */
-LCUResultDecode (OUTMESS *OutMessage, INMESS *InMessage, CtiDeviceBase *Dev, ULONG Result, bool mayqueuescans)
+LCUResultDecode (OUTMESS *OutMessage, INMESS *InMessage, CtiDeviceSPtr Dev, ULONG Result, bool mayqueuescans)
 {
     INT status = Result;
 
-    CtiDeviceLCU  *lcu = (CtiDeviceLCU*)Dev;
-    CtiDeviceBase *MyRemoteRecord;
-    CtiDeviceLCU  *GlobalLCUDev   = (CtiDeviceLCU*)DeviceManager.RemoteGetPortRemoteEqual(lcu->getPortID(), LCUGLOBAL);
+    CtiDeviceLCU  *lcu = (CtiDeviceLCU*)Dev.get();
+    CtiDeviceSPtr MyRemoteRecord;
+    CtiDeviceLCU  *GlobalLCUDev   = (CtiDeviceLCU*)(DeviceManager.RemoteGetPortRemoteEqual(lcu->getPortID(), LCUGLOBAL)).get();
     BOOL NoneStarted = TRUE;
 
     {
@@ -816,39 +812,73 @@ MPCPointSet (PCHAR Name)
 }
 
 
+static bool findWorkingLCU(const long unusedid, CtiDeviceSPtr Dev, void *ptrlcu)
+{
+    bool found = false;
+
+    CtiDeviceLCU *lcu = (CtiDeviceLCU *)ptrlcu;
+
+    if(isLCU(Dev->getType())                    &&
+       Dev->getPortID()     == lcu->getPortID() &&
+       Dev->getID()         != lcu->getID()     &&
+       Dev->getID()         != LCUGLOBAL           )
+    {
+        CtiDeviceLCU *pOtherLCU = (CtiDeviceLCU*)Dev.get();
+
+        /* LCUTRANSMITSENT is set... Someone is still at it! */
+        if(pOtherLCU->isFlagSet(LCUTRANSMITSENT))
+        {
+            found = true;
+        }
+    }
+
+    return found;
+}
+
 /*
  *  Returns TRUE if all LCU's on the same port are NOT marked as LCUTRANSMITSENT
  */
 BOOL LCUsAreDoneTransmitting(CtiDeviceLCU *lcu)
 {
     BOOL LCUsFinished = TRUE;
-    CtiDeviceLCU *pOtherLCU;
 
-    RWRecursiveLock<RWMutexLock>::LockGuard guard(DeviceManager.getMux()); // Protect our iteration!
-    CtiRTDB<CtiDeviceBase>::CtiRTDBIterator itr(DeviceManager.getMap());
-
-    /* Scan through all of them looking for one still transmitting */
-    for(; ++itr ;)
+    if(DeviceManager.find( findWorkingLCU,(void*)lcu) )
     {
-        CtiDeviceBase *Dev = itr.value();
-
-        if(isLCU(Dev->getType())                    &&
-           Dev->getPortID()     == lcu->getPortID() &&
-           Dev->getID()         != lcu->getID()     &&
-           Dev->getID()         != LCUGLOBAL           )
-        {
-            pOtherLCU = (CtiDeviceLCU*)Dev;
-
-            /* LCUTRANSMITSENT is set... Someone is still at it! */
-            if(pOtherLCU->isFlagSet(LCUTRANSMITSENT))
-            {
-                LCUsFinished = FALSE;
-                break;
-            }
-        }
+        LCUsFinished = FALSE;
     }
 
     return LCUsFinished;
+}
+
+static bool findWasTrxLCU(const long unusedid, CtiDeviceSPtr Dev, void *lprtid)
+{
+    bool WasTrx = false;
+    LONG PortID = (LONG)lprtid;
+
+    if(isLCU(Dev->getType()) && Dev->getPortID() == PortID )
+    {
+        CtiDeviceLCU   *lcu = (CtiDeviceLCU*)Dev.get();
+
+        if((lcu->isFlagSet(LCUWASTRANSMITTING)))
+        {
+            WasTrx = true;
+        }
+
+        lcu->lcuResetFlagsAndTags();
+    }
+
+    return WasTrx;
+}
+
+static void applyResetLCUsOnPort(const long unusedid, CtiDeviceSPtr Dev, void *lprtid)
+{
+    LONG PortID = (LONG)lprtid;
+
+    if(isLCU(Dev->getType()) && Dev->getPortID() == PortID )
+    {
+        CtiDeviceLCU   *lcu = (CtiDeviceLCU*)Dev.get();
+        lcu->lcuResetFlagsAndTags();
+    }
 }
 
 /*
@@ -858,28 +888,17 @@ BOOL LCUsAreDoneTransmitting(CtiDeviceLCU *lcu)
 bool ResetLCUsForControl(LONG PortID)
 {
     bool           WasTrx = false;
-    CtiDeviceLCU   *lcu;
 
-    RWRecursiveLock<RWMutexLock>::LockGuard guard(DeviceManager.getMux());        // Protect our iteration!
-    CtiRTDB<CtiDeviceBase>::CtiRTDBIterator   itr(DeviceManager.getMap());
+    CtiDeviceManager::LockGuard  dev_guard(DeviceManager.getMux());       // Protect our iteration!
+    CtiDeviceManager::spiterator itr_dev;
 
     /* Scan through all of them looking for one still transmitting */
-    for(; ++itr ;)
+    if( DeviceManager.find(findWasTrxLCU, (void*)PortID) )
     {
-        CtiDeviceBase *Dev = itr.value();
-
-        if(isLCU(Dev->getType()) && Dev->getPortID() == PortID )
-        {
-            lcu = (CtiDeviceLCU*)Dev;
-
-            if((lcu->isFlagSet(LCUWASTRANSMITTING)))
-            {
-                WasTrx = true;
-            }
-
-            lcu->lcuResetFlagsAndTags();
-        }
+        WasTrx = TRUE;
     }
+
+    DeviceManager.apply(applyResetLCUsOnPort, (void*)PortID);
 
     return WasTrx;
 }
@@ -1327,7 +1346,7 @@ INT ReportCompletionStateToLMGroup(CtiDeviceLCU *lcu)     // f.k.a. ReturnTrxID(
         TrxID           = lcu->getLastControlMessage()->TrxID;
 
         // Find the controlling group.
-        CtiDeviceBase *pDev = DeviceManager.getEqual( LMGIDControl );
+        CtiDeviceSPtr pDev = DeviceManager.getEqual( LMGIDControl );
 
         if(pDev)
         {
@@ -1402,18 +1421,18 @@ BOOL areAnyLCUControlEntriesOkToSend(void *pRWtime, void* d)
 
     if(OutMessage->EventCode & RIPPLE)     // Indicates a command message!
     {
-        CtiDevice* Dev = DeviceManager.getEqual( OutMessage->DeviceID );
+        CtiDeviceSPtr  Dev = DeviceManager.getEqual( OutMessage->DeviceID );
 
-        if(Dev != NULL)
+        if(Dev)
         {
             if(isLCU(Dev->getType()))
             {
-                CtiDeviceLCU *lcu = (CtiDeviceLCU*)Dev;      // This IS an LCU
+                CtiDeviceLCU *lcu = (CtiDeviceLCU*)Dev.get();      // This IS an LCU
 
                 if( Now > lcu->getNextCommandTime() )
                 {
                     RWMutexLock::LockGuard guard( lcu->getExclusionMux() );             // get mux for all LCU's
-                    blockedByExclusion = DeviceManager.getMap().contains( containsExclusionBlockage, (void*)lcu);
+                    blockedByExclusion = DeviceManager.contains( findExclusionBlockage, (void*)lcu);
 
                     if( !blockedByExclusion )
                     {
@@ -1438,9 +1457,9 @@ BOOL areAnyLCUScanEntriesOkToSend(void *pRWtime, void* d)
 
     RWTime   &Now = *((RWTime*)pRWtime);
 
-    CtiDevice* Dev = DeviceManager.getEqual( OutMessage->DeviceID );
+    CtiDeviceSPtr  Dev = DeviceManager.getEqual( OutMessage->DeviceID );
 
-    if(Dev != NULL)
+    if(Dev)
     {
         if(isLCU(Dev->getType()))
         {
@@ -1465,7 +1484,7 @@ bool LCUCanExecute(OUTMESS *&OutMessage, CtiDeviceLCU *lcu, RWTime &Now )
         {
             RWMutexLock::LockGuard guard( lcu->getExclusionMux() );             // get mux for all LCU's
 
-            blockedByExclusion = DeviceManager.getMap().contains( containsExclusionBlockage, (void*)lcu);
+            blockedByExclusion = DeviceManager.contains( findExclusionBlockage, (void*)lcu);
 
             if(!blockedByExclusion)
             {
@@ -1671,23 +1690,43 @@ INT QueueForScan( CtiDeviceLCU *lcu, bool mayqueuescans )
     return status;
 }
 
+
+static void applyQueueForScanTrue(const long unusedid, CtiDeviceSPtr Dev, void *plcu)
+{
+    CtiDeviceLCU *lcu = (CtiDeviceLCU *)plcu;
+
+    if(isLCU(Dev->getType()) &&
+       Dev->getPortID() == lcu->getPortID() &&
+       Dev->getID() != lcu->getID() &&
+       Dev->getID() != LCUGLOBAL )
+    {
+        CtiDeviceLCU *pOtherLCU = (CtiDeviceLCU*)Dev.get();
+        QueueForScan( pOtherLCU, true);
+    }
+}
+static void applyQueueForScanFalse(const long unusedid, CtiDeviceSPtr Dev, void *plcu)
+{
+    CtiDeviceLCU *lcu = (CtiDeviceLCU *)plcu;
+
+    if(isLCU(Dev->getType()) &&
+       Dev->getPortID() == lcu->getPortID() &&
+       Dev->getID() != lcu->getID() &&
+       Dev->getID() != LCUGLOBAL )
+    {
+        CtiDeviceLCU *pOtherLCU = (CtiDeviceLCU*)Dev.get();
+        QueueForScan( pOtherLCU, false);
+    }
+}
+
 INT QueueAllForScan( CtiDeviceLCU *lcu, bool mayqueuescans )
 {
-    CtiDeviceLCU *pOtherLCU;
-
-    RWRecursiveLock<RWMutexLock>::LockGuard guard(DeviceManager.getMux()); // Protect our iteration!
-    CtiRTDB<CtiDeviceBase>::CtiRTDBIterator itr(DeviceManager.getMap());
-
-    /* Scan through all of them looking for one still transmitting */
-    for(; ++itr ;)
+    if(mayqueuescans)
     {
-        CtiDeviceBase *Dev = itr.value();
-
-        if(isLCU(Dev->getType()) && Dev->getPortID() == lcu->getPortID() && Dev->getID() != lcu->getID() && Dev->getID() != LCUGLOBAL )
-        {
-            pOtherLCU = (CtiDeviceLCU*)Dev;
-            QueueForScan( pOtherLCU, mayqueuescans);
-        }
+        DeviceManager.apply(applyQueueForScanTrue, (void*)lcu);
+    }
+    else
+    {
+        DeviceManager.apply(applyQueueForScanFalse, (void*)lcu);
     }
 
     return NORMAL;

@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2004/03/18 19:51:58 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2004/05/05 15:31:42 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -25,14 +25,14 @@ INT CtiPortPoolDialout::openPort(INT rate, INT bits, INT parity, INT stopbits)
 
     return status;
 }
-INT CtiPortPoolDialout::inMess(CtiXfer& Xfer, CtiDevice* Dev, RWTPtrSlist< CtiMessage > &traceList)
+INT CtiPortPoolDialout::inMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, RWTPtrSlist< CtiMessage > &traceList)
 {
     INT status = NORMAL;
 
     return status;
 }
 
-INT CtiPortPoolDialout::outMess(CtiXfer& Xfer, CtiDevice* Dev, RWTPtrSlist< CtiMessage > &traceList)
+INT CtiPortPoolDialout::outMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, RWTPtrSlist< CtiMessage > &traceList)
 {
     INT status = NORMAL;
 
@@ -110,7 +110,7 @@ size_t CtiPortPoolDialout::addPort(CtiPortSPtr port)
  *  Failing that, it returns the first port which has no device attached to it currently and has zero queue entries.
  *
  */
-CtiPortSPtr CtiPortPoolDialout::getAvailableChildPort(CtiDevice* Device)
+CtiPortSPtr CtiPortPoolDialout::getAvailableChildPort(CtiDeviceSPtr  Device)
 {
     CtiPortSPtr resultport;
 

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_xcu.cpp-arc  $
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2004/04/29 17:42:23 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2004/05/05 15:31:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -66,12 +66,12 @@ CtiRouteXCU& CtiRouteXCU::operator=(const CtiRouteXCU& aRef)
 
 void CtiRouteXCU::resetDevicePointer()
 {
-    Device = NULL;
+    _transmitterDevice.reset();
 }
 
-CtiRouteXCU&  CtiRouteXCU::setDevicePointer(CtiDevice *p)
+CtiRouteXCU&  CtiRouteXCU::setDevicePointer(CtiDeviceSPtr p)
 {
-    Device = p;
+    _transmitterDevice = p;
     return *this;
 }
 
@@ -108,12 +108,12 @@ INT CtiRouteXCU::ExecuteRequest(CtiRequestMsg               *pReq,
     INT      status = NORMAL;
     ULONG    BytesWritten;
 
-    if(Device != NULL)      // This is the pointer which refers this rte to its transmitter device.
+    if(_transmitterDevice)      // This is the pointer which refers this rte to its transmitter device.
     {
-        if((status = Device->checkForInhibitedDevice(retList, OutMessage)) != DEVICEINHIBITED)
+        if((status = _transmitterDevice->checkForInhibitedDevice(retList, OutMessage)) != DEVICEINHIBITED)
         {
             // ALL Routes MUST do this, since they are the final gasp before the trxmitting device
-            OutMessage->Request.CheckSum = Device->getUniqueIdentifier();
+            OutMessage->Request.CheckSum = _transmitterDevice->getUniqueIdentifier();
 
             enablePrefix(false);        // Most protocols will not want this on.
 
@@ -199,15 +199,15 @@ INT CtiRouteXCU::assembleVersacomRequest(CtiRequestMsg               *pReq,
      * Addressing variables SHALL have been assigned at an earlier level!
      */
 
-    OutMessage->DeviceID = Device->getID();
-    OutMessage->Port     = Device->getPortID();
-    OutMessage->Remote   = Device->getAddress();
+    OutMessage->DeviceID = _transmitterDevice->getID();
+    OutMessage->Port     = _transmitterDevice->getPortID();
+    OutMessage->Remote   = _transmitterDevice->getAddress();
     OutMessage->TimeOut  = 2;
     OutMessage->InLength = -1;
 
     if(!OutMessage->Retry)  OutMessage->Retry = 2;
 
-    CtiProtocolVersacom  Versacom(Device->getType());
+    CtiProtocolVersacom  Versacom(_transmitterDevice->getType());
     Versacom.parseRequest(parse, OutMessage->Buffer.VSt);                       // Pick out the CommandType and parameters
 
     for(j = 0; j < Versacom.entries(); j++)
@@ -218,12 +218,12 @@ INT CtiRouteXCU::assembleVersacomRequest(CtiRequestMsg               *pReq,
         {
             VSt = Versacom.getVStruct(j);                      // Copy in the structure
 
-            switch(Device->getType())
+            switch(_transmitterDevice->getType())
             {
             case TYPE_WCTP:
             case TYPE_TAPTERM:
                 {
-                    CtiDeviceTapPagingTerminal *TapDev = (CtiDeviceTapPagingTerminal *)Device;
+                    CtiDeviceTapPagingTerminal *TapDev = (CtiDeviceTapPagingTerminal *)(_transmitterDevice.get());
 
                     /* Calculate the length */
                     Length                              = VSt.Nibbles +  2;
@@ -305,7 +305,7 @@ INT CtiRouteXCU::assembleVersacomRequest(CtiRequestMsg               *pReq,
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << "  Cannot send versacom to TYPE:" << /*desolveDeviceType(*/Device->getType()/*)*/ << endl;
+                        dout << RWTime() << "  Cannot send versacom to TYPE:" << /*desolveDeviceType(*/_transmitterDevice->getType()/*)*/ << endl;
                     }
 
                     break;
@@ -361,8 +361,8 @@ INT CtiRouteXCU::assembleRippleRequest(CtiRequestMsg               *pReq,
 
     UINT           bookkeeping = 0;
 
-    /* The Device below is the transmitter device, which is an LCU in this case! */
-    CtiDeviceLCU   *lcu = (CtiDeviceLCU*)Device;
+    /* The _transmitterDevice below is the transmitter device, which is an LCU in this case! */
+    CtiDeviceLCU   *lcu = (CtiDeviceLCU*)(_transmitterDevice.get());
 
     OutMessage->DeviceID    = lcu->getID();
     OutMessage->Port        = lcu->getPortID();
@@ -437,9 +437,9 @@ INT CtiRouteXCU::assembleFisherPierceRequest(CtiRequestMsg               *pReq,
      * Addressing variables SHALL have been assigned at an earlier level!
      */
 
-    OutMessage->DeviceID = Device->getID();
-    OutMessage->Port     = Device->getPortID();
-    OutMessage->Remote   = Device->getAddress();
+    OutMessage->DeviceID = _transmitterDevice->getID();
+    OutMessage->Port     = _transmitterDevice->getPortID();
+    OutMessage->Remote   = _transmitterDevice->getAddress();
     OutMessage->TimeOut  = 2;
     OutMessage->InLength = -1;
 
@@ -448,7 +448,7 @@ INT CtiRouteXCU::assembleFisherPierceRequest(CtiRequestMsg               *pReq,
     PCC->PRE[0] = '*';                        /* Select Paging Terminal header */
     memcpy(PCC->UID  , "001"     , 3);        /* Utility ID.... 001 is CP&L */
     memcpy(PCC->VID  , "001"     , 3);        /* Vendor ID      001 is FP   */
-    memcpy(PCC->D    , "01"      , 2);        /* Device ID      01 is Capacitor Control */
+    memcpy(PCC->D    , "01"      , 2);        /* _transmitterDevice ID      01 is Capacitor Control */
     memcpy(PCC->VALUE, "000000"  , 6);        /* This is set on the calling side */
 
     // memcpy(PCC->GRP  , "0000"    , 4);     /* Group Addressing ... 0000 is Individual. This is set by the grp object. object*/
@@ -468,7 +468,7 @@ INT CtiRouteXCU::assembleFisherPierceRequest(CtiRequestMsg               *pReq,
         {
             FPSt = FisherPierce.getFPStruct(j);                      // Copy in the structure
 
-            switch(Device->getType())
+            switch(_transmitterDevice->getType())
             {
             case TYPE_WCTP:
                 {
@@ -481,7 +481,7 @@ INT CtiRouteXCU::assembleFisherPierceRequest(CtiRequestMsg               *pReq,
                 }
             case TYPE_TAPTERM:
                 {
-                    CtiDeviceTapPagingTerminal *TapDev = (CtiDeviceTapPagingTerminal *)Device;
+                    CtiDeviceTapPagingTerminal *TapDev = (CtiDeviceTapPagingTerminal *)(_transmitterDevice.get());
 
                     /* Calculate the length */
                     Length                              = 29;
@@ -569,9 +569,9 @@ INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser
 
     CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, RWCString(OutMessage->Request.CommandStr), resultString, status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
 
-    OutMessage->DeviceID = Device->getID();
-    OutMessage->Port     = Device->getPortID();
-    OutMessage->Remote   = Device->getAddress();
+    OutMessage->DeviceID = _transmitterDevice->getID();
+    OutMessage->Port     = _transmitterDevice->getPortID();
+    OutMessage->Remote   = _transmitterDevice->getAddress();
     OutMessage->TimeOut  = 2;
     OutMessage->InLength = -1;
 
@@ -585,12 +585,12 @@ INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser
     {
         OutMessage->EventCode |= ENCODED;               // Make the OM be ignored by porter...
 
-        switch(Device->getType())
+        switch(_transmitterDevice->getType())
         {
         case TYPE_WCTP:
         case TYPE_TAPTERM:
             {
-                CtiDeviceTapPagingTerminal *TapDev = (CtiDeviceTapPagingTerminal *)Device;
+                CtiDeviceTapPagingTerminal *TapDev = (CtiDeviceTapPagingTerminal *)(_transmitterDevice.get());
 
                 OutMessage->OutLength            = xcom.messageSize() * 2 +  2;
                 OutMessage->Buffer.TAPSt.Length  = xcom.messageSize() * 2 +  2;
@@ -652,7 +652,7 @@ INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << "  Cannot send expresscom to TYPE:" << /*desolveDeviceType(*/Device->getType()/*)*/ << endl;
+                    dout << RWTime() << "  Cannot send expresscom to TYPE:" << /*desolveDeviceType(*/_transmitterDevice->getType()/*)*/ << endl;
                 }
 
                 break;
@@ -709,9 +709,9 @@ INT CtiRouteXCU::assembleSA305Request(CtiRequestMsg *pReq,
      * Addressing variables SHALL have been assigned at an earlier level!
      */
 
-    OutMessage->DeviceID = Device->getID();
-    OutMessage->Port     = Device->getPortID();
-    OutMessage->Remote   = Device->getAddress();
+    OutMessage->DeviceID = _transmitterDevice->getID();
+    OutMessage->Port     = _transmitterDevice->getPortID();
+    OutMessage->Remote   = _transmitterDevice->getAddress();
     OutMessage->TimeOut  = 2;
     OutMessage->InLength = -1;
 
@@ -727,12 +727,12 @@ INT CtiRouteXCU::assembleSA305Request(CtiRequestMsg *pReq,
 
         if(NewOutMessage != NULL)
         {
-            switch(Device->getType())
+            switch(_transmitterDevice->getType())
             {
             case TYPE_WCTP:
             case TYPE_TAPTERM:
                 {
-                    CtiDeviceTapPagingTerminal *TapDev = (CtiDeviceTapPagingTerminal *)Device;
+                    CtiDeviceTapPagingTerminal *TapDev = (CtiDeviceTapPagingTerminal *)(_transmitterDevice.get());
 
                     /* Calculate the length */
                     Length                              = prot305.getPageLength(CtiProtocolSA305::ModeOctal);
@@ -769,7 +769,7 @@ INT CtiRouteXCU::assembleSA305Request(CtiRequestMsg *pReq,
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << "  Cannot send versacom to TYPE:" << Device->getType() << endl;
+                        dout << RWTime() << "  Cannot send versacom to TYPE:" << _transmitterDevice->getType() << endl;
                     }
 
                     break;
@@ -828,8 +828,8 @@ INT CtiRouteXCU::assembleSA105205Request(CtiRequestMsg *pReq,
     RWCString      byteString;
     ULONG          i, j;
 
-    OutMessage->DeviceID = Device->getID();
-    OutMessage->Port     = Device->getPortID();
+    OutMessage->DeviceID = _transmitterDevice->getID();
+    OutMessage->Port     = _transmitterDevice->getPortID();
     OutMessage->TimeOut  = 2;
     OutMessage->InLength = -1;
 
@@ -837,12 +837,12 @@ INT CtiRouteXCU::assembleSA105205Request(CtiRequestMsg *pReq,
 
     CtiProtocolSA3rdParty prot;
 
-    prot.setTransmitterAddress(Device->getAddress());
+    prot.setTransmitterAddress(_transmitterDevice->getAddress());
     prot.parseCommand(parse, *OutMessage);
 
     if(prot.messageReady())
     {
-        switch(Device->getType())
+        switch(_transmitterDevice->getType())
         {
         case TYPE_RTC:
         case TYPE_SERIESVLMIRTU:
@@ -862,7 +862,7 @@ INT CtiRouteXCU::assembleSA105205Request(CtiRequestMsg *pReq,
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << RWTime() << "  Cannot send SA PROTOCOLS to TYPE:" << Device->getType() << endl;
+                    dout << RWTime() << "  Cannot send SA PROTOCOLS to TYPE:" << _transmitterDevice->getType() << endl;
                 }
 
                 break;
@@ -872,7 +872,7 @@ INT CtiRouteXCU::assembleSA105205Request(CtiRequestMsg *pReq,
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << RWTime() << "  Cannot send v to TYPE:" << Device->getType() << endl;
+                    dout << RWTime() << "  Cannot send v to TYPE:" << _transmitterDevice->getType() << endl;
                 }
 
                 break;
@@ -926,8 +926,8 @@ INT CtiRouteXCU::assembleSASimpleRequest(CtiRequestMsg *pReq,
     RWCString      byteString;
     ULONG          i, j;
 
-    OutMessage->DeviceID = Device->getID();
-    OutMessage->Port     = Device->getPortID();
+    OutMessage->DeviceID = _transmitterDevice->getID();
+    OutMessage->Port     = _transmitterDevice->getPortID();
     OutMessage->TimeOut  = 2;
     OutMessage->InLength = -1;
 
@@ -935,12 +935,12 @@ INT CtiRouteXCU::assembleSASimpleRequest(CtiRequestMsg *pReq,
 
     CtiProtocolSA3rdParty prot;
 
-    prot.setTransmitterAddress(Device->getAddress());
+    prot.setTransmitterAddress(_transmitterDevice->getAddress());
     prot.parseCommand(parse, *OutMessage);
 
     if(prot.messageReady())
     {
-        switch(Device->getType())
+        switch(_transmitterDevice->getType())
         {
         case TYPE_RTC:
         case TYPE_SERIESVLMIRTU:
@@ -961,7 +961,7 @@ INT CtiRouteXCU::assembleSASimpleRequest(CtiRequestMsg *pReq,
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << RWTime() << "  Cannot send SA PROTOCOLS to TYPE:" << Device->getType() << endl;
+                    dout << RWTime() << "  Cannot send SA PROTOCOLS to TYPE:" << _transmitterDevice->getType() << endl;
                 }
 
                 break;
@@ -971,7 +971,7 @@ INT CtiRouteXCU::assembleSASimpleRequest(CtiRequestMsg *pReq,
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << RWTime() << "  Cannot send SA PROTOCOLS to TYPE:" << Device->getType() << endl;
+                    dout << RWTime() << "  Cannot send SA PROTOCOLS to TYPE:" << _transmitterDevice->getType() << endl;
                 }
 
                 break;
@@ -1015,22 +1015,22 @@ INT CtiRouteXCU::assembleSASimpleRequest(CtiRequestMsg *pReq,
 
 void CtiRouteXCU::enablePrefix(bool enable)
 {
-    if(Device != NULL)      // This is the pointer which refers this rte to its transmitter device.
+    if(_transmitterDevice)      // This is the pointer which refers this rte to its transmitter device.
     {
         CtiDeviceWctpTerminal *WctpDev = 0;
         CtiDeviceTapPagingTerminal *TapDev = 0;
 
-        switch(Device->getType())
+        switch(_transmitterDevice->getType())
         {
         case TYPE_WCTP:
             {
-                WctpDev = (CtiDeviceWctpTerminal *)Device;
+                WctpDev = (CtiDeviceWctpTerminal *)(_transmitterDevice.get());
                 WctpDev->setAllowPrefix(enable);
                 break;
             }
         case TYPE_TAPTERM:
             {
-                TapDev = (CtiDeviceTapPagingTerminal *)Device;
+                TapDev = (CtiDeviceTapPagingTerminal *)(_transmitterDevice.get());
                 TapDev->setAllowPrefix(enable);
                 break;
             }
@@ -1043,9 +1043,9 @@ LONG CtiRouteXCU::getTrxDeviceID() const
 {
     LONG id = 0;
 
-    if(Device)
+    if(_transmitterDevice)
     {
-        id = Device->getID();
+        id = _transmitterDevice->getID();
     }
 
     return id;

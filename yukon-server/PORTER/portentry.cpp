@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2004/01/15 21:44:39 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2004/05/05 15:31:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -101,9 +101,9 @@ INT RemotePort(OUTMESS *&OutMessage);
 INT PorterControlCode(OUTMESS *&OutMessage);
 INT ValidateRemote(OUTMESS *&OutMessage);
 INT ValidatePort(OUTMESS *&OutMessage);
-INT CommandCode(OUTMESS *&OutMessage, CtiDevice *Dev);
+INT CommandCode(OUTMESS *&OutMessage, CtiDeviceSPtr Dev);
 INT ValidateEmetconMessage(OUTMESS *&OutMessage);
-INT CCU711Message(OUTMESS *&OutMessage, CtiDevice *Dev);
+INT CCU711Message(OUTMESS *&OutMessage, CtiDeviceSPtr Dev);
 INT VersacomMessage(OUTMESS *&OutMessage);
 INT ValidateEncodedFlags(OUTMESS *&OutMessage, INT devicetype);
 INT BuildMessage( OUTMESS *&OutMessage, OUTMESS *&SendOutMessage );
@@ -241,7 +241,7 @@ VOID ConnectionThread (VOID *Arg)
 
             if(PorterDebugLevel & PORTER_DEBUG_NEXUSREAD)
             {
-                CtiDeviceBase *tempDev = DeviceManager.getEqual(OutMessage->TargetID ? OutMessage->TargetID : OutMessage->DeviceID);
+                CtiDeviceSPtr tempDev = DeviceManager.getEqual(OutMessage->TargetID ? OutMessage->TargetID : OutMessage->DeviceID);
 
                 if(tempDev)
                 {
@@ -299,7 +299,7 @@ VOID ConnectionThread (VOID *Arg)
 
         if(PorterDebugLevel & PORTER_DEBUG_NEXUSREAD && !(OutMessage->MessageFlags & MSGFLG_ROUTE_TO_PORTER_GATEWAY_THREAD))
         {
-            CtiDeviceBase *tempDev = DeviceManager.getEqual(OutMessage->TargetID ? OutMessage->TargetID : OutMessage->DeviceID);
+            CtiDeviceSPtr tempDev = DeviceManager.getEqual(OutMessage->TargetID ? OutMessage->TargetID : OutMessage->DeviceID);
 
             if(tempDev)
             {
@@ -445,7 +445,7 @@ VOID RouterThread (VOID *TPNumber)
 
     /* Definitions to access Btrieve files */
     CtiPortSPtr PortRecord;
-    CtiDeviceBase *RemoteRecord;
+    CtiDeviceSPtr RemoteRecord;
     REMOTEPERF  RemotePerf;
     ERRSTRUCT   ErrStruct;
 
@@ -520,7 +520,7 @@ VOID RouterThread (VOID *TPNumber)
 
         for(; ++itr_dev ;)
         {
-            CtiDeviceBase *RemoteDevice = itr_dev.value();
+            CtiDeviceSPtr RemoteDevice = itr_dev.value();
 
             if( PortRecord->getPortID() == RemoteDevice->getID() && RemoteDevice->getType() == TYPE_CCU711)
             {
@@ -876,9 +876,9 @@ INT PorterControlCode(OUTMESS *&OutMessage)
 INT ValidateRemote(OUTMESS *&OutMessage)
 {
     INT                  status            = NORMAL;
-    CtiDeviceBase        *TransmitterDev   = DeviceManager.getEqual(OutMessage->DeviceID);
+    CtiDeviceSPtr TransmitterDev   = DeviceManager.getEqual(OutMessage->DeviceID);
 
-    if(TransmitterDev == NULL)
+    if(!TransmitterDev)
     {
         /* This is a unknown remote so shun it */
         {
@@ -931,7 +931,7 @@ INT ValidatePort(OUTMESS *&OutMessage)
     return status;
 }
 
-INT CommandCode(OUTMESS *&OutMessage, CtiDevice *Dev)
+INT CommandCode(OUTMESS *&OutMessage, CtiDeviceSPtr Dev)
 {
     INT status = NORMAL;
 
@@ -1080,7 +1080,7 @@ INT ValidateEmetconMessage(OUTMESS *&OutMessage)
     return status;
 }
 
-INT CCU711Message(OUTMESS *&OutMessage, CtiDevice *Dev)
+INT CCU711Message(OUTMESS *&OutMessage, CtiDeviceSPtr Dev)
 {
     INT            i, j;
     INT            status = NORMAL;
@@ -1389,7 +1389,7 @@ INT QueueBookkeeping(OUTMESS *&SendOutMessage)
 {
     INT status = NORMAL;
 
-    CtiDevice *pDev = DeviceManager.getEqual(SendOutMessage->DeviceID);
+    CtiDeviceSPtr pDev = DeviceManager.getEqual(SendOutMessage->DeviceID);
 
     /* Update the number of entries on for this ccu on the port queue */
     switch(pDev->getType())
@@ -1414,7 +1414,7 @@ INT QueueBookkeeping(OUTMESS *&SendOutMessage)
 INT ExecuteGoodRemote(OUTMESS *&OutMessage)
 {
     INT            status            = NORMAL;
-    CtiDevice      *pDev;
+    CtiDeviceSPtr pDev;
 
 
     pDev = DeviceManager.getEqual(OutMessage->DeviceID);
@@ -1502,7 +1502,7 @@ INT GenerateCompleteRequest(RWTPtrSlist< OUTMESS > &outList, OUTMESS *&OutMessag
     {
         CtiCommandParser parse(pReq->CommandString());
 
-        CtiDevice *Dev = DeviceManager.getEqual(pReq->DeviceId());
+        CtiDeviceSPtr Dev = DeviceManager.getEqual(pReq->DeviceId());
 
         // Re-establish the connection on the beastie..
         pReq->setRouteId( OutMessage->Request.RouteID );
@@ -1515,7 +1515,7 @@ INT GenerateCompleteRequest(RWTPtrSlist< OUTMESS > &outList, OUTMESS *&OutMessag
         pReq->setMacroOffset( OutMessage->Request.MacroOffset );
 
 
-        if(Dev != NULL)
+        if(Dev)
         {
             CtiReturnMsg   *pcRet = NULL;
             CtiMessage     *pMsg  = NULL;

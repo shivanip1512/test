@@ -269,7 +269,7 @@ INT CtiPortDirect::outClear()
     return(PurgeComm(_portHandle, PURGE_TXCLEAR) ? NORMAL : SYSTEM );
 }
 
-INT CtiPortDirect::inMess(CtiXfer& Xfer, CtiDeviceBase *Dev, RWTPtrSlist< CtiMessage > &traceList)
+INT CtiPortDirect::inMess(CtiXfer& Xfer, CtiDeviceSPtr Dev, RWTPtrSlist< CtiMessage > &traceList)
 {
     INT      status      = NORMAL;
 
@@ -542,7 +542,7 @@ INT CtiPortDirect::readIDLCHeader(CtiXfer& Xfer, unsigned long *byteCount, bool 
 
 
 
-INT CtiPortDirect::outMess(CtiXfer& Xfer, CtiDevice *Dev, RWTPtrSlist< CtiMessage > &traceList)
+INT CtiPortDirect::outMess(CtiXfer& Xfer, CtiDeviceSPtr Dev, RWTPtrSlist< CtiMessage > &traceList)
 {
     INT      status = NORMAL;
     INT      i = 0;
@@ -706,7 +706,7 @@ INT CtiPortDirect::close(INT trace)
     {
         if(_dialable)
         {
-            _dialable->disconnect(NULL, trace);
+            _dialable->disconnect(CtiDeviceSPtr(), trace);
         }
 
         {
@@ -864,7 +864,7 @@ INT CtiPortDirect::setup(INT trace)
     return NORMAL;
 }
 
-INT  CtiPortDirect::connectToDevice(CtiDevice *Device, LONG &LastDeviceId, INT trace)
+INT  CtiPortDirect::connectToDevice(CtiDeviceSPtr Device, LONG &LastDeviceId, INT trace)
 {
     INT status = NORMAL;
 
@@ -880,7 +880,7 @@ INT  CtiPortDirect::connectToDevice(CtiDevice *Device, LONG &LastDeviceId, INT t
     return status;
 }
 
-INT  CtiPortDirect::disconnect(CtiDevice *Device, INT trace)
+INT  CtiPortDirect::disconnect(CtiDeviceSPtr Device, INT trace)
 {
     int status = NORMAL;
 
@@ -901,7 +901,7 @@ BOOL CtiPortDirect::connected()
         {
             if(!dcdTest())    // No DCD and we think we are connected!  This is BAD.
             {
-                disconnect(NULL, FALSE);
+                disconnect(CtiDeviceSPtr(), FALSE);
             }
         }
     }

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTCONF.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/11/15 14:07:59 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2004/05/05 15:31:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -733,13 +733,12 @@ VSend2 (VSTRUCT *VSt, CtiRouteSPtr RouteRecord)
 {
    ULONG i;
    OUTMESS OutMessage;
-   CtiDeviceBase *RemoteRecord;
+   CtiDeviceSPtr RemoteRecord;
 
    /* get the remote record for this beast */
-   CtiHashKey   TempKey(RouteRecord->getTrxDeviceID());
-   RemoteRecord = DeviceManager.getMap().findValue(&TempKey);
+   RemoteRecord = DeviceManager.getEqual(RouteRecord->getTrxDeviceID());
 
-   if(RemoteRecord != NULL)
+   if(RemoteRecord)
    {
       /* Finsish loading up versacom structure */
 

@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/12/17 15:28:04 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2004/05/05 15:31:44 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -335,7 +335,7 @@ VOID PorterGWThread(void *pid)
     RWTime         lastQueueReportTime;
 
     LONG portid = (LONG)pid;      // NASTY CAST HERE!!!
-    CtiDeviceBase *Device = NULL;
+    CtiDeviceSPtr Device;
     CtiPortSPtr Port( PortManager.PortGetEqual( portid ) );      // Bump the reference count on the shared object!
 
 
