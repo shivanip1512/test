@@ -6,6 +6,8 @@
  */
 package com.cannontech.tools.email;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 
 import javax.activation.DataHandler;
@@ -21,6 +23,7 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiProperties;
 
 /**
@@ -139,9 +142,9 @@ public class EmailMessage
 		}
 		catch (MessagingException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
 		System.exit(0);
 	}
 	
@@ -152,6 +155,7 @@ public class EmailMessage
 	{
 		java.util.Properties systemProps = System.getProperties();
 		systemProps.put(CtiProperties.KEY_SMTP_HOST, getSmtpServer());
+
 		
 		Session session = Session.getInstance(systemProps);
 		
@@ -178,13 +182,19 @@ public class EmailMessage
 				bodyPart = new MimeBodyPart();
 				try
 				{
-					java.io.File tempFile = java.io.File.createTempFile("temp", "txt");
-					java.io.FileWriter fWriter = new java.io.FileWriter(tempFile);
-					fWriter.write((char []) getAttachments().get(i));
+					File tempFile = File.createTempFile("ctiMailTemp", "att");					
+					FileWriter fWriter = new FileWriter(tempFile);
+					fWriter.write( (char [])getAttachments().get(i) );
+					fWriter.flush();
+					fWriter.close();
+					tempFile.deleteOnExit(); 
+
+
 					FileDataSource fileDataSource = new FileDataSource(tempFile);
-					bodyPart.setDataHandler(new DataHandler(fileDataSource));
+					bodyPart.setDataHandler( new DataHandler(fileDataSource) );
+					
 					bodyPart.setFileName((String) getAttachmentNames().get(i));
-					multiPart.addBodyPart(bodyPart);
+					multiPart.addBodyPart(bodyPart);					
 				}
 				catch (IOException e)
 				{
@@ -216,7 +226,16 @@ public class EmailMessage
 	public String getFrom()
 	{
 		if( from == null)
+		{
 			from = CtiProperties.getInstance().getProperty(CtiProperties.KEY_MAIL_FROM_ADDRESS);
+
+			//still dont have a value, nothing will work then!
+			if( from == null )
+				CTILogger.error( 
+					"Unable to find the FROM address key: " 
+					+ CtiProperties.KEY_MAIL_FROM_ADDRESS + ", be sure this is defined correctly" );
+		}
+			
 		return from;
 	}
 
@@ -226,7 +245,16 @@ public class EmailMessage
 	public String getSmtpServer()
 	{
 		if( smtpServer == null)
+		{
 			smtpServer = CtiProperties.getInstance().getProperty(CtiProperties.KEY_SMTP_HOST);
+
+			//still dont have a value, nothing will work then!
+			if( smtpServer == null )
+				CTILogger.error( 
+					"Unable to find the SMTP server defined for the key: " 
+					+ CtiProperties.KEY_SMTP_HOST + ", be sure this is defined correctly" );
+		}
+
 		return smtpServer;
 	}
 
@@ -378,7 +406,7 @@ public class EmailMessage
 	public void setTo_CC(String[] ccEmailAddress)
 	{
 		String cc = "";
-		if( ccEmailAddress != null && ccEmailAddress.length >= 0)
+		if( ccEmailAddress != null && ccEmailAddress.length > 0)
 		{
 			cc = ccEmailAddress[0];
 			for (int i = 1; i < ccEmailAddress.length; i++)
@@ -389,7 +417,7 @@ public class EmailMessage
 	public void setTo_BCC(String[] bccEmailAddress)
 	{
 		String bcc = "";
-		if( bccEmailAddress != null && bccEmailAddress.length >= 0)
+		if( bccEmailAddress != null && bccEmailAddress.length > 0)
 		{
 			bcc = bccEmailAddress[0];
 			for (int i = 1; i < bccEmailAddress.length; i++)
@@ -400,7 +428,7 @@ public class EmailMessage
 	public void setTo(String[] emailAddress)
 	{
 		String to = "";
-		if( emailAddress != null && emailAddress.length >= 0)
+		if( emailAddress != null && emailAddress.length > 0)
 		{
 			to = emailAddress[0];
 			for (int i = 1; i < emailAddress.length; i++)
