@@ -1253,6 +1253,20 @@ void  CtiCommandParser::doParsePutConfig(const RWCString &CmdStr)
             {
                 // This will change over time
                 doParsePutConfigExpresscom(CmdStr);
+
+                if(!(CmdStr.match(" reset")).isNull())
+                {
+                    if(!(token = CmdStr.match(" filter")).isNull())
+                    {
+                        setValue("epresetfilter", TRUE);
+                    }
+
+                    if(!(token = CmdStr.match(" runtime")).isNull())
+                    {
+                        setValue("epresetruntimes", TRUE);
+                    }
+                }
+
                 break;
             }
         case ProtocolExpresscomType:
