@@ -2442,6 +2442,7 @@ public class ImportManager extends HttpServlet {
 	
 	private void preprocessStarsData(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+		int lineNo = 0;
 		
 		try {
 			File custFile = new File( req.getParameter("CustFile") );
@@ -2543,6 +2544,7 @@ public class ImportManager extends HttpServlet {
 					Hashtable acctIDMap = new Hashtable();
 					
 					for (int i = 0; i < custLines.length; i++) {
+						lineNo = i + 1;
 						String[] fields = custLines[i].split(",");
 						if (fields.length != 2)
 							throw new WebClientException("Invalid format of file '" + custFile.getPath() + "'");
@@ -2553,6 +2555,7 @@ public class ImportManager extends HttpServlet {
 				}
 				else {
 					for (int i = 0; i < custLines.length; i++) {
+						lineNo = i + 1;
 						if (custLines[i].trim().equals("") || custLines[i].charAt(0) == '#')
 							continue;
 						
@@ -2571,7 +2574,9 @@ public class ImportManager extends HttpServlet {
 			}
 			
 			if (servInfoLines != null) {
+				lineNo = 0;
 				for (int i = 0; i < servInfoLines.length; i++) {
+					lineNo = i + 1;
 					String[] fields = parseStarsServiceInfo( servInfoLines[i], userLabels );
 					String[] custFields = (String[]) acctIDFields.get( fields[IDX_ACCOUNT_ID] );
 					
@@ -2592,7 +2597,9 @@ public class ImportManager extends HttpServlet {
 			}
 			
 			if (invLines != null) {
+				lineNo = 0;
 				for (int i = 0; i < invLines.length; i++) {
+					lineNo = i + 1;
 					if (invLines[i].trim().equals("") || invLines[i].charAt(0) == '#')
 						continue;
 					
@@ -2617,11 +2624,13 @@ public class ImportManager extends HttpServlet {
 			}
 			
 			if (recvrLines != null) {
+				lineNo = 0;
 				if (recvrFile.getName().equals("hwconfig.map")) {
 					// hwconfig.map file format: import_inv_id,relay1_db_app_id,relay2_db_app_id,relay3_db_app_id
 					Hashtable appIDMap = new Hashtable();
 					
 					for (int i = 0; i < recvrLines.length; i++) {
+						lineNo = i + 1;
 						String[] fields = recvrLines[i].split(",");
 						if (fields.length != 4)
 							throw new WebClientException("Invalid format of file '" + recvrFile.getPath() + "'");
@@ -2638,6 +2647,7 @@ public class ImportManager extends HttpServlet {
 				}
 				else {
 					for (int i = 0; i < recvrLines.length; i++) {
+						lineNo = i + 1;
 						String[] fields = parseStarsReceiver( recvrLines[i] );
 						String[] invFields = (String[]) invIDFields.get( fields[IDX_INV_ID] );
 						
@@ -2665,7 +2675,9 @@ public class ImportManager extends HttpServlet {
 			}
 			
 			if (meterLines != null) {
+				lineNo = 0;
 				for (int i = 0; i < meterLines.length; i++) {
+					lineNo = i + 1;
 					String[] fields = parseStarsMeter( meterLines[i] );
 					String[] invFields = (String[]) invIDFields.get( fields[IDX_INV_ID] );
 					
@@ -2683,10 +2695,12 @@ public class ImportManager extends HttpServlet {
 			}
 			
 			if (loadInfoLines != null) {
+				lineNo = 0;
 				if (recvrLines == null && preprocessedData.get("HwConfigAppMap") == null)
 					throw new WebClientException("No hardware config information found. If you have already imported the receiver file, select the generated 'hwconfig.map' file in the 'Receiver File' field.");
 				
 				for (int i = 0; i < loadInfoLines.length; i++) {
+					lineNo = i + 1;
 					if (loadInfoLines[i].trim().equals("") || loadInfoLines[i].charAt(0) == '#')
 						continue;
 					
@@ -2707,7 +2721,9 @@ public class ImportManager extends HttpServlet {
 			}
 			
 			if (acInfoLines != null) {
+				lineNo = 0;
 				for (int i = 0; i < acInfoLines.length; i++) {
+					lineNo = i + 1;
 					String[] fields = parseStarsACInfo( acInfoLines[i] );
 					String[] appFields = (String[]) appIDFields.get( fields[IDX_APP_ID] );
 					
@@ -2737,7 +2753,9 @@ public class ImportManager extends HttpServlet {
 			}
 			
 			if (whInfoLines != null) {
+				lineNo = 0;
 				for (int i = 0; i < whInfoLines.length; i++) {
+					lineNo = i + 1;
 					String[] fields = parseStarsWHInfo( whInfoLines[i] );
 					String[] appFields = (String[]) appIDFields.get( fields[IDX_APP_ID] );
 					
@@ -2766,7 +2784,9 @@ public class ImportManager extends HttpServlet {
 			}
 			
 			if (genInfoLines != null) {
+				lineNo = 0;
 				for (int i = 0; i < genInfoLines.length; i++) {
+					lineNo = i + 1;
 					String[] fields = parseStarsGeneratorInfo( genInfoLines[i] );
 					String[] appFields = (String[]) appIDFields.get( fields[IDX_APP_ID] );
 					
@@ -2795,7 +2815,9 @@ public class ImportManager extends HttpServlet {
 			}
 			
 			if (irrInfoLines != null) {
+				lineNo = 0;
 				for (int i = 0; i < irrInfoLines.length; i++) {
+					lineNo = i + 1;
 					String[] fields = parseStarsIrrigationInfo( irrInfoLines[i] );
 					String[] appFields = (String[]) appIDFields.get( fields[IDX_APP_ID] );
 					
@@ -2824,7 +2846,9 @@ public class ImportManager extends HttpServlet {
 			}
 			
 			if (gdryInfoLines != null) {
+				lineNo = 0;
 				for (int i = 0; i < gdryInfoLines.length; i++) {
+					lineNo = i + 1;
 					String[] fields = parseStarsGrainDryerInfo( gdryInfoLines[i] );
 					String[] appFields = (String[]) appIDFields.get( fields[IDX_APP_ID] );
 					
@@ -2853,7 +2877,9 @@ public class ImportManager extends HttpServlet {
 			}
 			
 			if (hpInfoLines != null) {
+				lineNo = 0;
 				for (int i = 0; i < hpInfoLines.length; i++) {
+					lineNo = i + 1;
 					String[] fields = parseStarsHeatPumpInfo( hpInfoLines[i] );
 					String[] appFields = (String[]) appIDFields.get( fields[IDX_APP_ID] );
 					
@@ -2882,7 +2908,9 @@ public class ImportManager extends HttpServlet {
 			}
 			
 			if (shInfoLines != null) {
+				lineNo = 0;
 				for (int i = 0; i < shInfoLines.length; i++) {
+					lineNo = i + 1;
 					String[] fields = parseStarsStorageHeatInfo( shInfoLines[i] );
 					String[] appFields = (String[]) appIDFields.get( fields[IDX_APP_ID] );
 					
@@ -2911,7 +2939,9 @@ public class ImportManager extends HttpServlet {
 			}
 			
 			if (dfInfoLines != null) {
+				lineNo = 0;
 				for (int i = 0; i < dfInfoLines.length; i++) {
+					lineNo = i + 1;
 					String[] fields = parseStarsDualFuelInfo( dfInfoLines[i] );
 					String[] appFields = (String[]) appIDFields.get( fields[IDX_APP_ID] );
 					
@@ -2940,7 +2970,9 @@ public class ImportManager extends HttpServlet {
 			}
 			
 			if (genlInfoLines != null) {
+				lineNo = 0;
 				for (int i = 0; i < genlInfoLines.length; i++) {
+					lineNo = i + 1;
 					String[] fields = parseStarsGeneralInfo( genlInfoLines[i] );
 					String[] appFields = (String[]) appIDFields.get( fields[IDX_APP_ID] );
 					
@@ -2960,7 +2992,9 @@ public class ImportManager extends HttpServlet {
 			}
 			
 			if (workOrderLines != null) {
+				lineNo = 0;
 				for (int i = 0; i < workOrderLines.length; i++) {
+					lineNo = i + 1;
 					if (workOrderLines[i].trim().equals("") || workOrderLines[i].charAt(0) == '#')
 						continue;
 					
@@ -2980,7 +3014,9 @@ public class ImportManager extends HttpServlet {
 			}
 			
 			if (resInfoLines != null) {
+				lineNo = 0;
 				for (int i = 0; i < resInfoLines.length; i++) {
+					lineNo = i + 1;
 					if (resInfoLines[i].trim().equals("") || resInfoLines[i].charAt(0) == '#')
 						continue;
 					
@@ -3021,7 +3057,9 @@ public class ImportManager extends HttpServlet {
 		}
 		catch (WebClientException e) {
 			e.printStackTrace();
-			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, e.getMessage());
+			String errorMsg = e.getMessage();
+			if (lineNo > 0) errorMsg += ": line #" + lineNo;
+			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, errorMsg);
 			redirect = referer;
 		}
 		catch (Exception e) {
