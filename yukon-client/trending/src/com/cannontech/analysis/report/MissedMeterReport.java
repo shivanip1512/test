@@ -42,9 +42,20 @@ public class MissedMeterReport extends YukonReportBase
 		Boot.start();
 		javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());
 
-		MissedMeterReport missedMeterReport = new MissedMeterReport();
+		//Get a default start date of 90 days previous.
+		java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
+		cal.set(java.util.Calendar.HOUR_OF_DAY, 0);
+		cal.set(java.util.Calendar.MINUTE, 0);
+		cal.set(java.util.Calendar.SECOND, 0);
+		cal.set(java.util.Calendar.MILLISECOND, 0);
+		cal.add(java.util.Calendar.DATE, 1);
+		long stop = cal.getTimeInMillis();
+		cal.add(java.util.Calendar.DATE, -90);
+		long start = cal.getTimeInMillis();
 		
+		MissedMeterReport missedMeterReport = new MissedMeterReport();
 		missedMeterReport.setModel( new MissedMeterModel());
+		missedMeterReport.getModel().setStartTime(start);
 		missedMeterReport.getModel().collectData();
 		
 		//Define the report Paper properties and format.
