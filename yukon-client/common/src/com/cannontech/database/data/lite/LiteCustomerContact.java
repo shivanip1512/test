@@ -8,7 +8,7 @@ public class LiteCustomerContact extends LiteBase
 {
 	private String contFirstName = null;
 	private String contLastName = null;
-	private int userID = UserUtils.USER_YUKON_ID;	
+	private int userID = UserUtils.USER_YUKON_ID;
 
 	//what customer this contact is related to
 	private int deviceID = 0;
@@ -31,7 +31,7 @@ public LiteCustomerContact( int contID, String contactFirstName, String contactL
 	contLastName = new String(contactLastName);
 	deviceID = devID;
 	setLiteType(LiteTypes.CUSTOMER_CONTACT);
-	this.userID = userID;
+	userID = loginid;
 }
 /**
  * Insert the method's description here.
