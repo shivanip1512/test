@@ -190,6 +190,9 @@ ERRSTRUCT CTIErrors[] = {
     { InboundSocketBad,     "CtiConnection: Inbound Socket Bad",     ERRTYPESYSTEM                , " N/A"},
     { OutboundSocketBad,    "CtiConnection: Outbound Socket Bad",     ERRTYPESYSTEM                , " N/A"},
     { ErrPortInitFailed,    "Port Init Failed",     ERRTYPESYSTEM                , " N/A"},
+    { ErrPortDialupConnect_Port,    "Diailup connection failed. Port in error",     ERRTYPECOMM    , " N/A"},
+    { ErrPortDialupConnect_Device,  "Diailup connection failed. Device in error",   ERRTYPESYSTEM  , " N/A"},
+
     { RETRY_SUBMITTED,      "Retry Resubmitted",       ERRTYPESYSTEM                , " N/A"},
     { SCAN_ERROR_DEVICE_INHIBITED, "Scanned device is inhibited",   ERRTYPESYSTEM                , " N/A"},
     { SCAN_ERROR_GLOBAL_ADDRESS,   "Illegal scan of global device", ERRTYPESYSTEM                , " N/A"},

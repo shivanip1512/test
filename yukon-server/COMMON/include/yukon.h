@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/yukon.h-arc  $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2003/09/02 18:43:47 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2003/10/23 13:51:13 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -243,7 +243,12 @@ typedef enum
     SCAN_ERROR_GLOBAL_ADDRESS,
     SCAN_ERROR_DEVICE_WINDOW_CLOSED,
 
+    // Port and dialup errors
     ErrPortInitFailed,
+    ErrPortDialupConnect_Port,        // Error making connection.. Assumed to be the port's fault
+    ErrPortDialupConnect_Device,      // Error making connection.. Assumed to be the device's fault
+
+
 
     // Paging errors
     ErrorPageRS,                  // Invalid transaction, typ. bad pager id or password
