@@ -433,11 +433,11 @@ public class DisconnectModel extends ReportModelBase
 		html += "<script>" + LINE_SEPARATOR;
 		html += "function enableCheckBox(value){" + LINE_SEPARATOR;
 		html += "  if( value) {" + LINE_SEPARATOR;
-		html += "    document.MForm.connected.checked = !value;" + LINE_SEPARATOR;
-		html += "    document.MForm.disconnected.checked = !value;" + LINE_SEPARATOR;		
+		html += "    document.reportForm.connected.checked = !value;" + LINE_SEPARATOR;
+		html += "    document.reportForm.disconnected.checked = !value;" + LINE_SEPARATOR;		
 		html += "  }" + LINE_SEPARATOR;
-		html += "  document.MForm.connected.disabled = value;" + LINE_SEPARATOR;
-		html += "  document.MForm.disconnected.disabled = value;" + LINE_SEPARATOR;
+		html += "  document.reportForm.connected.disabled = value;" + LINE_SEPARATOR;
+		html += "  document.reportForm.disconnected.disabled = value;" + LINE_SEPARATOR;
 		html += "}" + LINE_SEPARATOR;
 		html += "</script>" + LINE_SEPARATOR;
 		

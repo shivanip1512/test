@@ -646,7 +646,7 @@ public class ActivityDetailModel extends ReportModelBase
 		{
 			html += "        <tr>" + LINE_SEPARATOR;
 			html += "          <td><input type='checkbox' name='" + ATT_ACTION_GROUP_TYPE +"' value='" + i + "' " +  
-			 (i==0? "checked" : "") + (i==0? " onclick='enableGroup(document.MForm);'" : "") +
+			 (i==0? "checked" : "") + (i==0? " onclick='enableGroup(document.reportForm);'" : "") +
 			 (i != 0? "disabled" : "") +  
 			  ">" + ActivityLogActions.ACTION_GROUPS_STRING[i]+ LINE_SEPARATOR;
 			html += "          </td>" + LINE_SEPARATOR;

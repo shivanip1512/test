@@ -477,13 +477,13 @@ public class SystemLogModel extends ReportModelBase
 		for (int i = 0; i < SystemLog.LOG_TYPES.length; i++)
 		{
 			html += "        <tr>" + LINE_SEPARATOR;
-			html += "          <td><input type='checkbox' name='" + ATT_LOG_TYPE +"' value='" + SystemLog.LOG_TYPES[i] + "' onclick='document.MForm."+ATT_All_LOG_TYPE+".checked = false;'" +  
+			html += "          <td><input type='checkbox' name='" + ATT_LOG_TYPE +"' value='" + SystemLog.LOG_TYPES[i] + "' onclick='document.reportForm."+ATT_All_LOG_TYPE+".checked = false;'" +  
 			 				">" + SystemLog.getLogTypeStringFromID(SystemLog.LOG_TYPES[i])+ LINE_SEPARATOR;
 			html += "          </td>" + LINE_SEPARATOR;
 			html += "        </tr>" + LINE_SEPARATOR;
 		}
 		html += "        <tr>" + LINE_SEPARATOR;
-		html += "          <td><input type='checkbox' name='" + ATT_All_LOG_TYPE +"' value='" + ALL_LOG_TYPES + "' onclick='selectAllGroup(document.MForm, this.checked)'>Select All" + LINE_SEPARATOR;
+		html += "          <td><input type='checkbox' name='" + ATT_All_LOG_TYPE +"' value='" + ALL_LOG_TYPES + "' onclick='selectAllGroup(document.reportForm, this.checked)'>Select All" + LINE_SEPARATOR;
 		html += "          </td>" + LINE_SEPARATOR;
 		html += "        </tr>" + LINE_SEPARATOR;
 		
