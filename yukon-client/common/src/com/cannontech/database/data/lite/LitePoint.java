@@ -381,6 +381,7 @@ public String toString()
 	if (showPointOffsets)
 	{
 		if( getPointType() == PointTypes.CALCULATED_POINT
+			 || getPointType() == PointTypes.CALCULATED_STATUS_POINT
 			 || getPointType() == PointTypes.INVALID_POINT )
 		{
 			return getPointName();
