@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2004/11/09 06:14:37 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2004/11/18 23:40:29 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -95,7 +95,8 @@ void CtiPorterVerification::verificationThread( void )
     CtiVerificationWork   *work;
     CtiVerificationReport *report;
 
-    ptime::time_duration_type prune_interval = hours(24) * gConfigParms.getValueAsInt("DYNAMIC_VERIFICATION_PRUNE_DAYS", 30);
+    ptime::time_duration_type prune_interval      = hours(24) * gConfigParms.getValueAsInt("DYNAMIC_VERIFICATION_PRUNE_DAYS", 30);
+    ptime::time_duration_type queue_read_interval = seconds(10);
     ptime last_prune = second_clock::universal_time() - hours(48);  //  two days ago will force it to go right now
 
     int sleep;
@@ -111,121 +112,6 @@ void CtiPorterVerification::verificationThread( void )
                 loadAssociations();
             }
 
-            //  3 seconds, in order to allow reasonable shutdown behavior
-            if( base = _input.getQueue(3000) )
-            {
-                switch( base->getType() )
-                {
-                    case CtiVerificationBase::Type_Work:
-                    {
-                        work = static_cast<CtiVerificationWork *>(base);
-
-                        //  find the range of receivers associated with this transmitter
-                        pair<association_itr, association_itr> range = _associations.equal_range(work->getTransmitterID());
-
-                        //  if there are any entries
-                        if( range.first != range.second )
-                        {
-                            //  walk through the list
-                            for( association_itr itr = range.first; itr != range.second; itr++ )
-                            {
-                                association &a = (*itr).second;
-                                receiver_itr r_itr = _receiver_work.find(a.receiver_id);
-
-                                //  insert it if it doesn't exist (this should only happen once)
-                                if( r_itr == _receiver_work.end() )
-                                {
-                                    r_itr = (_receiver_work.insert(make_pair(a.receiver_id, deque< CtiVerificationWork * >()))).first;
-                                }
-
-                                (r_itr->second).push_back(work);
-                                work->addExpectation(a.receiver_id, a.retransmit);
-                            }
-                        }
-                        else
-                        {
-                            if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " **** Checkpoint - no associations found for for transmitter id \"" << work->getTransmitterID() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
-                        }
-
-                        _work_queue.push(work);
-
-                        break;
-                    }
-
-                    case CtiVerificationBase::Type_Report:
-                    {
-                        report = static_cast<CtiVerificationReport *>(base);
-
-                        //  grab the work vector for this receiver
-                        receiver_itr r_itr = _receiver_work.find(report->getReceiverID());
-
-                        if( r_itr != _receiver_work.end() )
-                        {
-                            pending_queue &p_q = r_itr->second;
-
-                            //  iterate through all entries, looking for a matching code
-                            for( pending_itr itr = p_q.begin(); itr != p_q.end(); itr++ )
-                            {
-                                //  if it's accepted
-                                if( (*itr)->checkReceipt(*report) )
-                                {
-                                    p_q.erase(itr);
-
-                                    delete report;
-                                    report = 0;
-
-                                    break;
-                                }
-                            }
-
-                            if( report )
-                            {
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " **** Checkpoint - record not found for code \"" << report->getCode() << "\"  **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                }
-
-                                writeUnknown(*report);
-
-                                delete report;
-                                report = 0;
-                            }
-                        }
-                        else
-                        {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " **** Checkpoint - entry received for unknown receiver \"" << report->getReceiverID() << "\"  **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
-
-                            writeUnknown(*report);
-
-                            delete report;
-                            report = 0;
-                        }
-
-                        break;
-                    }
-
-                    default:
-                    {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint - unknown type \"" << base->getType() << "\" in verificationThread;  deleting message **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
-
-                        //  base base base
-                        delete base;
-                    }
-                }
-            }
-
-            processWorkQueue();
-
             if( (last_prune + hours(24)) <= second_clock::universal_time() )
             {
                 pruneEntries(prune_interval);
@@ -233,18 +119,125 @@ void CtiPorterVerification::verificationThread( void )
                 last_prune = second_clock::universal_time();
             }
 
-            //  possible optimization sometime
-            /*
-            if( !_work_queue.empty() )
-            {
-                ptime::time_duration_type td = (*_work_queue.begin())->getExpiration() - second_clock::universal_time();
+            ptime next_db_check = second_clock::universal_time() + queue_read_interval;
 
-                if( td < seconds::seconds(15) )
+            while( second_clock::universal_time() < next_db_check )
+            {
+                //  3 seconds, in order to allow reasonable shutdown behavior
+                if( base = _input.getQueue(3000) )
                 {
-                    wait = td.total_milliseconds();
+                    switch( base->getType() )
+                    {
+                        case CtiVerificationBase::Type_Work:
+                        {
+                            work = static_cast<CtiVerificationWork *>(base);
+
+                            //  find the range of receivers associated with this transmitter
+                            pair<association_itr, association_itr> range = _associations.equal_range(work->getTransmitterID());
+
+                            //  if there are any entries
+                            if( range.first != range.second )
+                            {
+                                //  walk through the list
+                                for( association_itr itr = range.first; itr != range.second; itr++ )
+                                {
+                                    association &a = (*itr).second;
+                                    receiver_itr r_itr = _receiver_work.find(a.receiver_id);
+
+                                    //  insert it if it doesn't exist (this should only happen once)
+                                    if( r_itr == _receiver_work.end() )
+                                    {
+                                        r_itr = (_receiver_work.insert(make_pair(a.receiver_id, deque< CtiVerificationWork * >()))).first;
+                                    }
+
+                                    (r_itr->second).push_back(work);
+                                    work->addExpectation(a.receiver_id, a.retransmit);
+                                }
+                            }
+                            else
+                            {
+                                if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << RWTime() << " **** Checkpoint - no associations found for for transmitter id \"" << work->getTransmitterID() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                }
+                            }
+
+                            _work_queue.push(work);
+
+                            break;
+                        }
+
+                        case CtiVerificationBase::Type_Report:
+                        {
+                            report = static_cast<CtiVerificationReport *>(base);
+
+                            //  grab the work vector for this receiver
+                            receiver_itr r_itr = _receiver_work.find(report->getReceiverID());
+
+                            if( r_itr != _receiver_work.end() )
+                            {
+                                pending_queue &p_q = r_itr->second;
+
+                                //  iterate through all entries, looking for a matching code
+                                for( pending_itr itr = p_q.begin(); itr != p_q.end(); itr++ )
+                                {
+                                    //  if it's accepted
+                                    if( (*itr)->checkReceipt(*report) )
+                                    {
+                                        p_q.erase(itr);
+
+                                        delete report;
+                                        report = 0;
+
+                                        break;
+                                    }
+                                }
+
+                                if( report )
+                                {
+                                    {
+                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                        dout << RWTime() << " **** Checkpoint - record not found for code \"" << report->getCode() << "\"  **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                    }
+
+                                    writeUnknown(*report);
+
+                                    delete report;
+                                    report = 0;
+                                }
+                            }
+                            else
+                            {
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << RWTime() << " **** Checkpoint - entry received for unknown receiver \"" << report->getReceiverID() << "\"  **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                }
+
+                                writeUnknown(*report);
+
+                                delete report;
+                                report = 0;
+                            }
+
+                            break;
+                        }
+
+                        default:
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " **** Checkpoint - unknown type \"" << base->getType() << "\" in verificationThread;  deleting message **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            }
+
+                            //  base base base
+                            delete base;
+                        }
+                    }
                 }
             }
-            */
+
+            processWorkQueue();
         }
 
         {
