@@ -1197,7 +1197,9 @@ void CtiLMControlArea::reduceControlAreaControl(ULONG secondsFrom1901, CtiMultiM
     {
         CtiLMProgramBase* lm_program = (CtiLMProgramBase*) _lmprograms[i];
         if(lm_program->getStopPriority() == cur_stop_priority &&
-           lm_program->getProgramState() != CtiLMProgramBase::InactiveState)
+	   ( lm_program->getProgramState() == CtiLMProgramBase::ActiveState ||
+	     lm_program->getProgramState() == CtiLMProgramBase::FullyActiveState ||
+	     lm_program->getProgramState() == CtiLMProgramBase::NonControllingState ) )
         {
             string text = "Reducing control, LM Control Area: ";
             text += getPAOName();
