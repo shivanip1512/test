@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_base.h-arc  $
-* REVISION     :  $Revision: 1.30 $
-* DATE         :  $Date: 2004/12/14 22:27:18 $
+* REVISION     :  $Revision: 1.31 $
+* DATE         :  $Date: 2005/01/18 19:12:10 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -38,6 +38,8 @@ using namespace std;
 #ifdef CTIOLDSTATS
   #include "tbl_port_statistics.h"
 #endif
+
+#define DEFAULT_QUEUE_GRIPE_POINT 50
 
 #if VSLICK_TAG_WORKAROUND
 typedef CtiPort * CtiPortSPtr;
@@ -252,6 +254,7 @@ public:
 
 protected:
 
+    ULONG               _queueGripe;
     CtiCounter          _submittal;
     CtiCounter          _processed;
     CtiCounter          _orphaned;

@@ -8,11 +8,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.46 $
-* DATE         :  $Date: 2004/12/14 22:27:17 $
+* REVISION     :  $Revision: 1.47 $
+* DATE         :  $Date: 2005/01/18 19:12:10 $
 *
 * HISTORY      :
 * $Log: port_base.cpp,v $
+* Revision 1.47  2005/01/18 19:12:10  cplender
+* _queueGripe added to the port.
+*
 * Revision 1.46  2004/12/14 22:27:17  cplender
 * Added counters to observe communications to the ports and queued devices.  May be removed eventually.
 *
@@ -289,10 +292,9 @@ INT CtiPort::logBytes(BYTE *Message, ULONG Length) const
 
 INT CtiPort::writeQueue(ULONG Request, LONG DataSize, PVOID Data, ULONG Priority, HANDLE hQuit)
 {
-#define DEFAULT_QUEUE_GRIPE_POINT 50
     int status = NORMAL;
     ULONG QueEntries;
-    static ULONG QueueGripe = DEFAULT_QUEUE_GRIPE_POINT;
+    //static ULONG _queueGripe = DEFAULT_QUEUE_GRIPE_POINT;
 
 #ifdef DEBUG
     OUTMESS *OutMessage = (OUTMESS*)Data;
@@ -336,10 +338,10 @@ INT CtiPort::writeQueue(ULONG Request, LONG DataSize, PVOID Data, ULONG Priority
 
             status = WriteQueue( _portQueue, Request, DataSize, Data, Priority, &QueEntries);
 
-            if(QueEntries > QueueGripe)
+            if(QueEntries > _queueGripe)
             {
-                ULONG gripemore = QueueGripe * 2;
-                QueueGripe = QueueGripe + ( gripemore < 1000 ? gripemore : 1000);
+                ULONG gripemore = _queueGripe * 2;
+                _queueGripe = _queueGripe + ( gripemore < 1000 ? gripemore : 1000);
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " " << getName() << " has just received a new port queue entry.  There are " << QueEntries << " pending." << endl;
@@ -347,7 +349,7 @@ INT CtiPort::writeQueue(ULONG Request, LONG DataSize, PVOID Data, ULONG Priority
             }
             else if(QueEntries < DEFAULT_QUEUE_GRIPE_POINT)
             {
-                QueueGripe = DEFAULT_QUEUE_GRIPE_POINT;
+                _queueGripe = DEFAULT_QUEUE_GRIPE_POINT;
             }
         }
         else
@@ -542,12 +544,14 @@ _attemptCommFailCount(0),
 _attemptOtherFailCount(0),
 _attemptSuccessCount(0),
 _queueSlot(0),
+_queueGripe(DEFAULT_QUEUE_GRIPE_POINT),
 _simulated(0)
 {
     _postEvent = CreateEvent( NULL, TRUE, FALSE, NULL);
 }
 
 CtiPort::CtiPort(const CtiPort& aRef) :
+_queueGripe(DEFAULT_QUEUE_GRIPE_POINT),
 _portFunc(0),
 _minMaxIdle(false)
 {
