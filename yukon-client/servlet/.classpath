@@ -24,5 +24,6 @@
     <classpathentry kind="lib" path="/third-party/jfreechart.jar"/>
     <classpathentry kind="lib" path="/third-party/junit.jar"/>
     <classpathentry kind="lib" path="/third-party/jcommon.jar"/>
+    <classpathentry kind="src" path="/billing"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>
