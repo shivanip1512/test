@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/DSM2.H-arc  $
-* REVISION     :  $Revision: 1.27 $
-* DATE         :  $Date: 2004/11/24 17:09:21 $
+* REVISION     :  $Revision: 1.28 $
+* DATE         :  $Date: 2004/12/14 22:22:34 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -819,7 +819,7 @@ typedef struct
 
     int _code205;                       // This is the code to transmit iff this is an SA205 DCU type group.
     CHAR _codeSimple[7];                // This is the code to transmit iff this is NOT an SA205 DCU type group.
-    CHAR _serial205[33];                // This is a 205 serial number.
+    CHAR _serial[33];                   // This is a 205/305 serial number.
     CHAR _code305[128];                 // This is a 305 message.
 
     // The parameters below are assigned typically by the parse object
