@@ -79,7 +79,7 @@ public class CallTrackingAction implements ActionBase {
             
             if (accountInfo.getCallReportHistory() == null) {
 				StarsCallReport[] calls = StarsCallReportFactory.getStarsCallReports(
-						new Integer(user.getEnergyCompanyID()), new Integer(accountInfo.getCustomerAccount().getAccountID()) );
+						new Integer(accountInfo.getCustomerAccount().getAccountID()) );
 	            if (calls == null) {
 	            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
 	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot get call report history") );

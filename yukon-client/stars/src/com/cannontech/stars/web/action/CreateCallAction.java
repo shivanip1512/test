@@ -7,12 +7,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
+import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.stars.util.*;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsCallReportFactory;
+import com.cannontech.stars.xml.StarsCustListEntryFactory;
 import com.cannontech.stars.xml.StarsFailureFactory;
 import com.cannontech.stars.xml.serialize.CallType;
 import com.cannontech.stars.xml.serialize.StarsCallReport;
@@ -53,16 +55,10 @@ public class CreateCallAction implements ActionBase {
 				createCall.setCallNumber( req.getParameter("CallNo") );
 			createCall.setCallDate( com.cannontech.util.ServletUtil.parseDateStringLiberally(req.getParameter("CallDate")) );
 			
-			CallType callType = new CallType();
-			callType.setEntryID( Integer.parseInt(req.getParameter("CallType")) );
-			StarsCustSelectionList callTypeList = (StarsCustSelectionList) selectionLists.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_CALLTYPE );
-			for (int i = 0; i < callTypeList.getStarsSelectionListEntryCount(); i++) {
-				StarsSelectionListEntry entry = callTypeList.getStarsSelectionListEntry(i);
-				if (entry.getEntryID() == callType.getEntryID()) {
-					callType.setContent( entry.getContent() );
-					break;
-				}
-			}
+			CallType callType = (CallType) StarsCustListEntryFactory.newStarsCustListEntry(
+					StarsCustListEntryFactory.getStarsCustListEntryByID(
+						selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_CALL_TYPE, Integer.parseInt(req.getParameter("CallType"))),
+					CallType.class );
 			createCall.setCallType( callType );
 			
 			createCall.setTakenBy( req.getParameter("TakenBy") );

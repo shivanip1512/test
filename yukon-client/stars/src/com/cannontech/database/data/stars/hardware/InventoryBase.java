@@ -16,9 +16,6 @@ public class InventoryBase extends DBPersistent {
 
     private com.cannontech.database.db.stars.hardware.InventoryBase inventoryBase = null;
     private com.cannontech.database.db.stars.report.ServiceCompany installationCompany = null;
-    private com.cannontech.database.db.stars.CustomerListEntry category = null;
-    private com.cannontech.database.db.stars.CustomerListEntry voltage = null;
-
     private com.cannontech.database.data.stars.customer.CustomerAccount customerAccount = null;
     private Integer energyCompanyID = null;
 
@@ -34,8 +31,6 @@ public class InventoryBase extends DBPersistent {
         super.setDbConnection(conn);
         getInventoryBase().setDbConnection(conn);
         getInstallationCompany().setDbConnection(conn);
-        getCategory().setDbConnection(conn);
-        getVoltage().setDbConnection(conn);
     }
     
     /**
@@ -90,19 +85,6 @@ public class InventoryBase extends DBPersistent {
 
     public void retrieve() throws java.sql.SQLException {
         getInventoryBase().retrieve();
-
-/*
- * Commented out since cache is used now
- * 
-        getInstallationCompany().setCompanyID( getInventoryBase().getInstallationCompanyID() );
-        getInstallationCompany().retrieve();
-        
-        getCategory().setEntryID( getInventoryBase().getCategoryID() );
-        getCategory().retrieve();
-        
-        getVoltage().setEntryID( getInventoryBase().getVoltageID() );
-        getVoltage().retrieve();
-*/
     }
 
     public com.cannontech.database.db.stars.hardware.InventoryBase getInventoryBase() {
@@ -132,44 +114,6 @@ public class InventoryBase extends DBPersistent {
     public void setInstallationCompany(com.cannontech.database.db.stars.report.ServiceCompany newInstallationCompany) {
         installationCompany = newInstallationCompany;
     }
-	/**
-	 * Returns the category.
-	 * @return com.cannontech.database.db.stars.CustomerListEntry
-	 */
-	public com.cannontech.database.db.stars.CustomerListEntry getCategory() {
-		if (category == null)
-			category = new com.cannontech.database.db.stars.CustomerListEntry();
-		return category;
-	}
-
-	/**
-	 * Returns the voltage.
-	 * @return com.cannontech.database.db.stars.CustomerListEntry
-	 */
-	public com.cannontech.database.db.stars.CustomerListEntry getVoltage() {
-		if (voltage == null)
-			voltage = new com.cannontech.database.db.stars.CustomerListEntry();
-		return voltage;
-	}
-
-	/**
-	 * Sets the category.
-	 * @param category The category to set
-	 */
-	public void setCategory(
-		com.cannontech.database.db.stars.CustomerListEntry category) {
-		this.category = category;
-	}
-
-	/**
-	 * Sets the voltage.
-	 * @param voltage The voltage to set
-	 */
-	public void setVoltage(
-		com.cannontech.database.db.stars.CustomerListEntry voltage) {
-		this.voltage = voltage;
-	}
-
 	/**
 	 * Returns the energyCompanyID.
 	 * @return Integer

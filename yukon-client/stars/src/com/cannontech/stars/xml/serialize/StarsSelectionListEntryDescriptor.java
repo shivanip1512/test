@@ -27,7 +27,7 @@ import org.exolab.castor.xml.validators.*;
  * 
  * @version $Revision$ $Date$
 **/
-public class StarsSelectionListEntryDescriptor extends com.cannontech.stars.xml.serialize.StarsCustListEntryDescriptor {
+public class StarsSelectionListEntryDescriptor extends StarsCustListEntryDescriptor {
 
 
       //--------------------------/
@@ -49,55 +49,14 @@ public class StarsSelectionListEntryDescriptor extends com.cannontech.stars.xml.
 
     public StarsSelectionListEntryDescriptor() {
         super();
-        setExtendsWithoutFlatten(new com.cannontech.stars.xml.serialize.StarsCustListEntryDescriptor());
+        setExtendsWithoutFlatten(new StarsCustListEntryDescriptor());
         xmlName = "stars-SelectionListEntry";
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
-        
-        //-- set grouping compositor
-        setCompositorAsSequence();
         //-- initialize attribute descriptors
         
         //-- initialize element descriptors
-        
-        //-- _yukonDefinition
-        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_yukonDefinition", "YukonDefinition", NodeType.Element);
-        desc.setImmutable(true);
-        handler = (new XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                StarsSelectionListEntry target = (StarsSelectionListEntry) object;
-                return target.getYukonDefinition();
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    StarsSelectionListEntry target = (StarsSelectionListEntry) object;
-                    target.setYukonDefinition( (java.lang.String) value);
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return null;
-            }
-        } );
-        desc.setHandler(handler);
-        desc.setMultivalued(false);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _yukonDefinition
-        fieldValidator = new FieldValidator();
-        { //-- local scope
-            StringValidator sv = new StringValidator();
-            sv.setWhiteSpace("preserve");
-            fieldValidator.setValidator(sv);
-        }
-        desc.setValidator(fieldValidator);
         
     } //-- com.cannontech.stars.xml.serialize.StarsSelectionListEntryDescriptor()
 

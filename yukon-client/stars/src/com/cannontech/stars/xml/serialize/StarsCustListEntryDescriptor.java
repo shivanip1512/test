@@ -134,6 +134,48 @@ public class StarsCustListEntryDescriptor extends org.exolab.castor.xml.util.XML
         }
         desc.setValidator(fieldValidator);
         
+        //-- _yukonDefID
+        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_yukonDefID", "yukonDefID", NodeType.Attribute);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsCustListEntry target = (StarsCustListEntry) object;
+                if(!target.hasYukonDefID())
+                    return null;
+                return new Integer(target.getYukonDefID());
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsCustListEntry target = (StarsCustListEntry) object;
+                    // if null, use delete method for optional primitives 
+                    if (value == null) {
+                        target.deleteYukonDefID();
+                        return;
+                    }
+                    target.setYukonDefID( ((Integer)value).intValue());
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        } );
+        desc.setHandler(handler);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _yukonDefID
+        fieldValidator = new FieldValidator();
+        { //-- local scope
+            IntegerValidator iv = new IntegerValidator();
+            fieldValidator.setValidator(iv);
+        }
+        desc.setValidator(fieldValidator);
+        
         //-- initialize element descriptors
         
     } //-- com.cannontech.stars.xml.serialize.StarsCustListEntryDescriptor()

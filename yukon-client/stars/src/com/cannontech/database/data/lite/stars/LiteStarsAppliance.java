@@ -17,8 +17,8 @@ public class LiteStarsAppliance extends LiteBase {
 	private int applianceCategoryID = com.cannontech.database.db.stars.appliance.ApplianceCategory.NONE_INT;
 	private int lmProgramID = 0;
 	private int yearManufactured = 0;
-	private int manufacturerID = com.cannontech.database.db.stars.CustomerListEntry.NONE_INT;
-	private int locationID = com.cannontech.database.db.stars.CustomerListEntry.NONE_INT;
+	private int manufacturerID = com.cannontech.common.util.CtiUtilities.NONE_ID;
+	private int locationID = com.cannontech.common.util.CtiUtilities.NONE_ID;
 	private String notes = null;
 	
 	private int inventoryID = com.cannontech.database.db.stars.hardware.InventoryBase.NONE_INT;

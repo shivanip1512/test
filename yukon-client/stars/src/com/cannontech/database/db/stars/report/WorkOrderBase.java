@@ -18,8 +18,8 @@ public class WorkOrderBase extends DBPersistent {
 
     private Integer orderID = null;
     private String orderNumber = "";
-    private Integer workTypeID = new Integer( com.cannontech.database.db.stars.CustomerListEntry.NONE_INT );
-    private Integer currentStateID = new Integer( com.cannontech.database.db.stars.CustomerListEntry.NONE_INT );
+    private Integer workTypeID = new Integer( com.cannontech.common.util.CtiUtilities.NONE_ID );
+    private Integer currentStateID = new Integer( com.cannontech.common.util.CtiUtilities.NONE_ID );
     private Integer serviceCompanyID = new Integer( ServiceCompany.NONE_INT );
     private java.util.Date dateReported = new java.util.Date(0);
     private String orderedBy = "";

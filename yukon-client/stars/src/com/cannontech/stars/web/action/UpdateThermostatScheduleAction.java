@@ -6,6 +6,7 @@ import javax.xml.soap.SOAPMessage;
 import java.util.*;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.stars.*;
 import com.cannontech.database.db.stars.hardware.*;
@@ -98,8 +99,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
         	}
                 
 			int energyCompanyID = user.getEnergyCompanyID();
-			LiteStarsEnergyCompany company = SOAPServer.getEnergyCompany( energyCompanyID );
-			Hashtable selectionLists = (Hashtable) company.getAllSelectionLists();
+			LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
 			
 			StarsUpdateThermostatSettings starsSettings = reqOper.getStarsUpdateThermostatSettings();
 			LiteStarsThermostatSettings liteSettings = liteAcctInfo.getThermostatSettings();
@@ -112,7 +112,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 				StarsThermostatSeason starsSeason = starsSettings.getStarsThermostatSeason(i);
 				LiteLMThermostatSeason liteSeason = null;
 				LMThermostatSeason season = null;
-				Integer webConfigID = company.getThermSeasonWebConfigID( starsSeason.getMode() );
+				Integer webConfigID = energyCompany.getThermSeasonWebConfigID( starsSeason.getMode() );
 				
 				for (int j = 0; j < liteSettings.getThermostatSeasons().size(); j++) {
 					LiteLMThermostatSeason lSeason = (LiteLMThermostatSeason) liteSettings.getThermostatSeasons().get(j);
@@ -146,7 +146,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 				for (int j = 0; j < starsSeason.getStarsThermostatScheduleCount(); j++) {
 					StarsThermostatSchedule starsSched = starsSeason.getStarsThermostatSchedule(j);
 					ArrayList liteEntries = new ArrayList();
-					Integer towID = ServerUtils.getThermSeasonEntryTOWID( starsSched.getDay(), selectionLists );
+					Integer towID = ServerUtils.getThermSeasonEntryTOWID( starsSched.getDay(), energyCompanyID );
 					
 					if (liteSeason.getSeasonEntries() != null) {
 						for (int k = 0; k < liteSeason.getSeasonEntries().size(); k++) {
@@ -212,8 +212,8 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 				}
 			}
 			
-			LiteLMHardwareBase liteHw = company.getLMHardware( starsSettings.getInventoryID(), true );
-			String routeStr = (company == null) ? "" : " select route id " + String.valueOf(company.getRouteID());
+			LiteLMHardwareBase liteHw = energyCompany.getLMHardware( starsSettings.getInventoryID(), true );
+			String routeStr = (energyCompany == null) ? "" : " select route id " + String.valueOf(energyCompany.getRouteID());
 			
 			Iterator it = daySettings.entrySet().iterator();
 			while (it.hasNext()) {
@@ -289,14 +289,8 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 			}
 			
 			// Add "config" to the hardware events
-            Integer hwEventEntryID = new Integer( StarsCustListEntryFactory.getStarsCustListEntry(
-            		(LiteCustomerSelectionList) selectionLists.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_LMCUSTOMEREVENT),
-            		com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_LMHARDWAREEVENT)
-            		.getEntryID() );
-            Integer configEntryID = new Integer( StarsCustListEntryFactory.getStarsCustListEntry(
-            		(LiteCustomerSelectionList) selectionLists.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_LMCUSTOMERACTION),
-            		com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_CONFIG)
-            		.getEntryID() );
+            Integer hwEventEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID() );
+            Integer configEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_CONFIG).getEntryID() );
             
     		com.cannontech.database.data.stars.event.LMHardwareEvent event = new com.cannontech.database.data.stars.event.LMHardwareEvent();
     		com.cannontech.database.db.stars.event.LMHardwareEvent eventDB = event.getLMHardwareEvent();

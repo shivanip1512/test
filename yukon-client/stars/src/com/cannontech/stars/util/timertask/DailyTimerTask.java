@@ -3,10 +3,9 @@ package com.cannontech.stars.util.timertask;
 import java.util.*;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.constants.*;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.stars.*;
-import com.cannontech.database.db.stars.CustomerSelectionList;
-import com.cannontech.database.db.stars.CustomerListEntry;
 import com.cannontech.database.db.company.EnergyCompany;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.web.servlet.SOAPServer;
@@ -54,21 +53,10 @@ public class DailyTimerTask extends StarsTimerTask {
 			for (int i = 0; i < companies.length; i++) {
 				if (companies[i].getEnergyCompanyID().intValue() < 0) continue;
 				
-				Hashtable selectionLists = companies[i].getAllSelectionLists();
-				if (selectionLists == null || selectionLists.size() == 0) continue;
-				
-				int reenableActionID = StarsCustListEntryFactory.getStarsCustListEntry(
-						(LiteCustomerSelectionList) selectionLists.get(CustomerSelectionList.LISTNAME_LMCUSTOMERACTION),
-						CustomerListEntry.YUKONDEF_ACT_FUTUREACTIVATION ).getEntryID();
-				int completeActionID = StarsCustListEntryFactory.getStarsCustListEntry(
-						(LiteCustomerSelectionList) selectionLists.get(CustomerSelectionList.LISTNAME_LMCUSTOMERACTION),
-						CustomerListEntry.YUKONDEF_ACT_COMPLETED ).getEntryID();
-				int programEventID = StarsCustListEntryFactory.getStarsCustListEntry(
-						(LiteCustomerSelectionList) selectionLists.get(CustomerSelectionList.LISTNAME_LMCUSTOMEREVENT),
-						CustomerListEntry.YUKONDEF_LMPROGRAMEVENT ).getEntryID();
-				int hardwareEventID = StarsCustListEntryFactory.getStarsCustListEntry(
-						(LiteCustomerSelectionList) selectionLists.get(CustomerSelectionList.LISTNAME_LMCUSTOMEREVENT),
-						CustomerListEntry.YUKONDEF_LMHARDWAREEVENT ).getEntryID();
+				int reenableActionID = companies[i].getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_FUTURE_ACTIVATION ).getEntryID();
+				int completeActionID = companies[i].getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED ).getEntryID();
+				int programEventID = companies[i].getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMPROGRAM ).getEntryID();
+				int hardwareEventID = companies[i].getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE ).getEntryID();
 				
 				com.cannontech.database.db.stars.event.LMCustomerEventBase[] hwEvents =
 						com.cannontech.database.db.stars.event.LMCustomerEventBase.getAllCustomerEvents( hardwareEventID, reenableActionID );

@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
+import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.db.stars.customer.*;
 import com.cannontech.database.data.lite.stars.*;
@@ -85,37 +86,28 @@ public class SearchCustAccountAction implements ActionBase {
             
             int energyCompanyID = user.getEnergyCompanyID();
         	LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
-            Hashtable selectionLists = energyCompany.getAllSelectionLists();
 
             StarsSearchCustomerAccount searchAccount = reqOper.getStarsSearchCustomerAccount();
             LiteStarsCustAccountInformation liteAcctInfo = null;
             CustomerAccount[] accounts = null;
             		
-            if (searchAccount.getSearchBy().getEntryID() == StarsCustListEntryFactory.getStarsCustListEntry(
-            		(LiteCustomerSelectionList) selectionLists.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_SEARCHBY),
-            		com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_SEARCHBY_ACCTNO ).getEntryID()) {
+            if (searchAccount.getSearchBy().getEntryID() == energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_ACCT_NO).getEntryID()) {
             	/* Search by account number */
             	liteAcctInfo = energyCompany.searchByAccountNumber( searchAccount.getSearchValue() );
             }
-            else if (searchAccount.getSearchBy().getEntryID() == StarsCustListEntryFactory.getStarsCustListEntry(
-            		(LiteCustomerSelectionList) selectionLists.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_SEARCHBY),
-            		com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_SEARCHBY_PHONENO ).getEntryID()) {
+            else if (searchAccount.getSearchBy().getEntryID() == energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_PHONE_NO).getEntryID()) {
             	/* Search by phone number */
             	accounts = CustomerAccount.searchByPhoneNumber( new Integer(energyCompanyID), ServletUtils.formatPhoneNumber(searchAccount.getSearchValue()) );
             	if (accounts != null && accounts.length == 1)
             		liteAcctInfo = energyCompany.getCustAccountInformation( accounts[0].getAccountID().intValue(), true );
             }
-            else if (searchAccount.getSearchBy().getEntryID() == StarsCustListEntryFactory.getStarsCustListEntry(
-            		(LiteCustomerSelectionList) selectionLists.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_SEARCHBY),
-            		com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_SEARCHBY_LASTNAME ).getEntryID()) {
+            else if (searchAccount.getSearchBy().getEntryID() == energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_LAST_NAME).getEntryID()) {
             	/* Search by last name */
             	accounts = CustomerAccount.searchByLastName( new Integer(energyCompanyID), searchAccount.getSearchValue() );
             	if (accounts != null && accounts.length == 1)
             		liteAcctInfo = energyCompany.getCustAccountInformation( accounts[0].getAccountID().intValue(), true );
             }
-            else if (searchAccount.getSearchBy().getEntryID() == StarsCustListEntryFactory.getStarsCustListEntry(
-            		(LiteCustomerSelectionList) selectionLists.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_SEARCHBY),
-            		com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_SEARCHBY_SERIALNO ).getEntryID()) {
+            else if (searchAccount.getSearchBy().getEntryID() == energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_SERIAL_NO).getEntryID()) {
             	/* Search by hardware serial number */
             	accounts = CustomerAccount.searchBySerialNumber( new Integer(energyCompanyID), searchAccount.getSearchValue() );
             	if (accounts != null && accounts.length == 1)

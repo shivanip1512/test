@@ -44,6 +44,13 @@ public abstract class StarsCustListEntry implements java.io.Serializable {
     **/
     private boolean _has_entryID;
 
+    private int _yukonDefID;
+
+    /**
+     * keeps track of state for field: _yukonDefID
+    **/
+    private boolean _has_yukonDefID;
+
 
       //----------------/
      //- Constructors -/
@@ -67,6 +74,13 @@ public abstract class StarsCustListEntry implements java.io.Serializable {
     } //-- void deleteEntryID() 
 
     /**
+    **/
+    public void deleteYukonDefID()
+    {
+        this._has_yukonDefID= false;
+    } //-- void deleteYukonDefID() 
+
+    /**
      * Returns the value of field 'content'. The field 'content'
      * has the following description: internal content storage
      * 
@@ -88,11 +102,28 @@ public abstract class StarsCustListEntry implements java.io.Serializable {
     } //-- int getEntryID() 
 
     /**
+     * Returns the value of field 'yukonDefID'.
+     * 
+     * @return the value of field 'yukonDefID'.
+    **/
+    public int getYukonDefID()
+    {
+        return this._yukonDefID;
+    } //-- int getYukonDefID() 
+
+    /**
     **/
     public boolean hasEntryID()
     {
         return this._has_entryID;
     } //-- boolean hasEntryID() 
+
+    /**
+    **/
+    public boolean hasYukonDefID()
+    {
+        return this._has_yukonDefID;
+    } //-- boolean hasYukonDefID() 
 
     /**
     **/
@@ -144,6 +175,17 @@ public abstract class StarsCustListEntry implements java.io.Serializable {
         this._entryID = entryID;
         this._has_entryID = true;
     } //-- void setEntryID(int) 
+
+    /**
+     * Sets the value of field 'yukonDefID'.
+     * 
+     * @param yukonDefID the value of field 'yukonDefID'.
+    **/
+    public void setYukonDefID(int yukonDefID)
+    {
+        this._yukonDefID = yukonDefID;
+        this._has_yukonDefID = true;
+    } //-- void setYukonDefID(int) 
 
     /**
     **/

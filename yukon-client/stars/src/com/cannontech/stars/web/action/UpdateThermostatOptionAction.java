@@ -6,6 +6,7 @@ import javax.xml.soap.SOAPMessage;
 import java.util.*;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.stars.*;
 import com.cannontech.database.db.stars.hardware.*;
@@ -90,14 +91,13 @@ public class UpdateThermostatOptionAction implements ActionBase {
         	}
                 
 			int energyCompanyID = user.getEnergyCompanyID();
-			LiteStarsEnergyCompany company = SOAPServer.getEnergyCompany( energyCompanyID );
-			Hashtable selectionLists = (Hashtable) company.getAllSelectionLists();
+			LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
 			
 			StarsUpdateThermostatSettings starsSettings = reqOper.getStarsUpdateThermostatSettings();
 			StarsThermostatManualOption starsOption = starsSettings.getStarsThermostatManualOption();
 			
-			LiteLMHardwareBase liteHw = company.getLMHardware( starsSettings.getInventoryID(), true );
-			String routeStr = (company == null) ? "" : " select route id " + String.valueOf(company.getRouteID()) + " load 1";
+			LiteLMHardwareBase liteHw = energyCompany.getLMHardware( starsSettings.getInventoryID(), true );
+			String routeStr = (energyCompany == null) ? "" : " select route id " + String.valueOf(energyCompany.getRouteID()) + " load 1";
 			
 			StringBuffer cmd = new StringBuffer("control xcom setstate")
 					.append(" system ").append(starsOption.getMode().toString().toLowerCase())
@@ -115,8 +115,8 @@ public class UpdateThermostatOptionAction implements ActionBase {
 			liteOption.setInventoryID( starsSettings.getInventoryID() );
 			liteOption.setPreviousTemperature( starsOption.getTemperature() );
 			liteOption.setHoldTemperature( starsOption.getHold() );
-			liteOption.setOperationStateID( ServerUtils.getThermOptionOpStateID(starsOption.getMode(), selectionLists).intValue() );
-			liteOption.setFanOperationID( ServerUtils.getThermOptionFanOpID(starsOption.getFan(), selectionLists).intValue() );
+			liteOption.setOperationStateID( ServerUtils.getThermOptionOpStateID(starsOption.getMode(), energyCompanyID).intValue() );
+			liteOption.setFanOperationID( ServerUtils.getThermOptionFanOpID(starsOption.getFan(), energyCompanyID).intValue() );
 			
 			com.cannontech.database.db.stars.hardware.LMThermostatManualOption option =
 					(com.cannontech.database.db.stars.hardware.LMThermostatManualOption) StarsLiteFactory.createDBPersistent( liteOption );
@@ -128,14 +128,8 @@ public class UpdateThermostatOptionAction implements ActionBase {
 				Transaction.createTransaction(Transaction.UPDATE, option).execute();
 			
 			// Add "config" to the hardware events
-            Integer hwEventEntryID = new Integer( StarsCustListEntryFactory.getStarsCustListEntry(
-            		(LiteCustomerSelectionList) selectionLists.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_LMCUSTOMEREVENT),
-            		com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_LMHARDWAREEVENT)
-            		.getEntryID() );
-            Integer configEntryID = new Integer( StarsCustListEntryFactory.getStarsCustListEntry(
-            		(LiteCustomerSelectionList) selectionLists.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_LMCUSTOMERACTION),
-            		com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_CONFIG)
-            		.getEntryID() );
+            Integer hwEventEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID() );
+            Integer configEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_CONFIG).getEntryID() );
             
     		com.cannontech.database.data.stars.event.LMHardwareEvent event = new com.cannontech.database.data.stars.event.LMHardwareEvent();
     		com.cannontech.database.db.stars.event.LMHardwareEvent eventDB = event.getLMHardwareEvent();

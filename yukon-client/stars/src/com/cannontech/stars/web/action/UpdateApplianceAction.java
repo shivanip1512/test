@@ -5,6 +5,7 @@ import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 import java.util.*;
 
+import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.stars.*;
 import com.cannontech.stars.util.*;
@@ -38,29 +39,17 @@ public class UpdateApplianceAction implements ActionBase {
 			updateApp.setYearManufactured( req.getParameter("ManuYear") );
 			updateApp.setNotes( req.getParameter("Notes") );
 			
-			Manufacturer m = new Manufacturer();
-			m.setEntryID( Integer.parseInt(req.getParameter("Manufacturer")) );
-			StarsCustSelectionList manufacturerList = (StarsCustSelectionList) selectionLists.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_MANUFACTURER );
-			for (int i = 0; i < manufacturerList.getStarsSelectionListEntryCount(); i++) {
-				StarsSelectionListEntry entry = manufacturerList.getStarsSelectionListEntry(i);
-				if (entry.getEntryID() == m.getEntryID()) {
-					m.setContent( entry.getContent() );
-					break;
-				}
-			}
-			updateApp.setManufacturer( m );
+			Manufacturer manu = (Manufacturer) StarsCustListEntryFactory.newStarsCustListEntry(
+					StarsCustListEntryFactory.getStarsCustListEntryByID(
+						selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_MANUFACTURER, Integer.parseInt(req.getParameter("Manufacturer"))),
+					Manufacturer.class );
+			updateApp.setManufacturer( manu );
 			
-			Location l = new Location();
-			l.setEntryID( Integer.parseInt(req.getParameter("Location")) );
-			StarsCustSelectionList locationList = (StarsCustSelectionList) selectionLists.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_LOCATION );
-			for (int i = 0; i < locationList.getStarsSelectionListEntryCount(); i++) {
-				StarsSelectionListEntry entry = locationList.getStarsSelectionListEntry(i);
-				if (entry.getEntryID() == l.getEntryID()) {
-					l.setContent( entry.getContent() );
-					break;
-				}
-			}
-			updateApp.setLocation( l );
+			Location loc = (Location) StarsCustListEntryFactory.newStarsCustListEntry(
+					StarsCustListEntryFactory.getStarsCustListEntryByID(
+						selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_LOCATION, Integer.parseInt(req.getParameter("Location"))),
+					Location.class );
+			updateApp.setLocation( loc );
 			
 			StarsOperation operation = new StarsOperation();
 			operation.setStarsUpdateAppliance( updateApp );

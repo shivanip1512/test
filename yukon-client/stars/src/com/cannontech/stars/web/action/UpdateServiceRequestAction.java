@@ -5,12 +5,14 @@ import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 import java.util.*;
 
+import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.stars.*;
 import com.cannontech.stars.util.*;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsCallReportFactory;
+import com.cannontech.stars.xml.StarsCustListEntryFactory;
 import com.cannontech.stars.xml.StarsFailureFactory;
 import com.cannontech.stars.xml.serialize.*;
 import com.cannontech.stars.xml.util.SOAPUtil;
@@ -53,30 +55,18 @@ public class UpdateServiceRequestAction implements ActionBase {
 					if (descriptions != null) order.setDescription( descriptions[i].replaceAll("\r\n", "<br>") );
 					
 					if (servTypes != null) {
-						ServiceType servType = new ServiceType();
-						servType.setEntryID( Integer.parseInt(servTypes[i]) );
-						StarsCustSelectionList servTypeList = (StarsCustSelectionList) selectionLists.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_SERVICETYPE );
-						for (int j = 0; j < servTypeList.getStarsSelectionListEntryCount(); j++) {
-							StarsSelectionListEntry entry = servTypeList.getStarsSelectionListEntry(j);
-							if (entry.getEntryID() == servType.getEntryID()) {
-								servType.setContent( entry.getContent() );
-								break;
-							}
-						}
+						ServiceType servType = (ServiceType) StarsCustListEntryFactory.newStarsCustListEntry(
+								StarsCustListEntryFactory.getStarsCustListEntryByID(
+									selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_TYPE, Integer.parseInt(servTypes[i])),
+								ServiceType.class );
 						order.setServiceType( servType );
 					}
 					
 					if (status != null) {
-						CurrentState state = new CurrentState();
-						state.setEntryID( Integer.parseInt(status[i]) );
-						StarsCustSelectionList statusList = (StarsCustSelectionList) selectionLists.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_SERVICESTATUS );
-						for (int j = 0; j < statusList.getStarsSelectionListEntryCount(); j++) {
-							StarsSelectionListEntry entry = statusList.getStarsSelectionListEntry(j);
-							if (entry.getEntryID() == state.getEntryID()) {
-								state.setContent( entry.getContent() );
-								break;
-							}
-						}
+						CurrentState state = (CurrentState) StarsCustListEntryFactory.newStarsCustListEntry(
+								StarsCustListEntryFactory.getStarsCustListEntryByID(
+									selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_STATUS, Integer.parseInt(status[i])),
+								CurrentState.class );
 						order.setCurrentState( state );
 					}
 					

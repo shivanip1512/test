@@ -1,6 +1,7 @@
 package com.cannontech.stars.util;
 
 import java.util.*;
+import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.serialize.*;
 
@@ -111,19 +112,19 @@ public class ServletUtils {
     			progHist.action = event.getEventAction();
     			progHist.programList.add( program.getProgramName() );
     			
-    			if (event.getYukonDefinition().equalsIgnoreCase( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_TEMPTERMINATION )) {
+    			if (event.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TEMP_TERMINATION) {
     				// Getting opt out duration by looking at the next "Future Activation" event,
     				boolean foundDuration = false;
     				while (j < starsProgHist.getStarsLMProgramEventCount() - 1) {
 	    				StarsLMProgramEvent event2 = starsProgHist.getStarsLMProgramEvent(++j);
-	    				if (event2.getYukonDefinition().equalsIgnoreCase( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_FUTUREACTIVATION )
-	    					|| event2.getYukonDefinition().equalsIgnoreCase( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_COMPLETED ))
+	    				if (event2.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_FUTURE_ACTIVATION
+	    					|| event2.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED)
 	    				{
 	    					progHist.duration = getDurationString( event.getEventDateTime(), event2.getEventDateTime() );
 	    					foundDuration = true;
 	    					break;
 	    				}
-	    				if (!event2.getYukonDefinition().equalsIgnoreCase( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_TEMPTERMINATION ))
+	    				if (event2.getYukonDefID() != YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TEMP_TERMINATION)
 	    					return null;
     				}
     				

@@ -17,9 +17,6 @@ public class ApplianceBase extends DBPersistent {
     private com.cannontech.database.db.stars.appliance.ApplianceBase applianceBase = null;
     private com.cannontech.database.db.stars.appliance.ApplianceCategory applianceCategory = null;
     private com.cannontech.database.db.stars.hardware.LMHardwareConfiguration lmHardwareConfig = null;
-    private com.cannontech.database.db.stars.CustomerListEntry manufacturer = null;
-    private com.cannontech.database.db.stars.CustomerListEntry location = null;
-
     private com.cannontech.database.data.stars.customer.CustomerAccount customerAccount = null;
     private com.cannontech.database.data.device.lm.LMProgramBase lmProgram = null;
 
@@ -37,8 +34,6 @@ public class ApplianceBase extends DBPersistent {
         getApplianceCategory().setDbConnection(conn);
         getLMHardwareConfig().setDbConnection(conn);
         getLMProgram().setDbConnection(conn);
-        getManufacturer().setDbConnection(conn);
-        getLocation().setDbConnection(conn);
     }
 
     public void delete() throws java.sql.SQLException {
@@ -65,22 +60,6 @@ public class ApplianceBase extends DBPersistent {
 
         setLMHardwareConfig( com.cannontech.database.db.stars.hardware.LMHardwareConfiguration.getLMHardwareConfiguration(
                     getApplianceBase().getApplianceID(), getDbConnection()) );
-
-/*
- * Commented out since cache is used now
- * 
-        getApplianceCategory().setApplianceCategoryID( getApplianceBase().getApplianceCategoryID() );
-        getApplianceCategory().retrieve();
-
-        getLMProgram().setPAObjectID( getApplianceBase().getLMProgramID() );
-        getLMProgram().retrieve();
-        
-		getManufacturer().setEntryID( getApplianceBase().getManufacturerID() );
-		getManufacturer().retrieve();
-		
-		getLocation().setEntryID( getApplianceBase().getLocationID() );
-		getLocation().retrieve();
-*/
     }
 
     public com.cannontech.database.db.stars.appliance.ApplianceBase getApplianceBase() {
@@ -146,42 +125,6 @@ public class ApplianceBase extends DBPersistent {
 	public void setLMProgram(
 		com.cannontech.database.data.device.lm.LMProgramBase lmProgram) {
 		this.lmProgram = lmProgram;
-	}
-
-	/**
-	 * Returns the location.
-	 * @return com.cannontech.database.db.stars.CustomerListEntry
-	 */
-	public com.cannontech.database.db.stars.CustomerListEntry getLocation() {
-		if (location == null)
-			location = new com.cannontech.database.db.stars.CustomerListEntry();
-		return location;
-	}
-
-	/**
-	 * Returns the manufacturer.
-	 * @return com.cannontech.database.db.stars.CustomerListEntry
-	 */
-	public com.cannontech.database.db.stars.CustomerListEntry getManufacturer() {
-		if (manufacturer == null)
-			manufacturer = new com.cannontech.database.db.stars.CustomerListEntry();
-		return manufacturer;
-	}
-
-	/**
-	 * Sets the location.
-	 * @param location The location to set
-	 */
-	public void setLocation(com.cannontech.database.db.stars.CustomerListEntry location) {
-		this.location = location;
-	}
-
-	/**
-	 * Sets the manufacturer.
-	 * @param manufacturer The manufacturer to set
-	 */
-	public void setManufacturer(com.cannontech.database.db.stars.CustomerListEntry manufacturer) {
-		this.manufacturer = manufacturer;
 	}
 
 }

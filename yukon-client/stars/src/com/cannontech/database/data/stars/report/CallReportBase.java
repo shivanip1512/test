@@ -15,8 +15,6 @@ import com.cannontech.database.db.DBPersistent;
 public class CallReportBase extends DBPersistent {
 
     private com.cannontech.database.db.stars.report.CallReportBase callReportBase = null;
-    private com.cannontech.database.db.stars.CustomerListEntry callType = null;
-
     private Integer energyCompanyID = null;
 
     public CallReportBase() {
@@ -71,16 +69,6 @@ public class CallReportBase extends DBPersistent {
 	}
 
 	/**
-	 * Returns the callType.
-	 * @return com.cannontech.database.db.stars.CustomerListEntry
-	 */
-	public com.cannontech.database.db.stars.CustomerListEntry getCallType() {
-		if (callType == null)
-			callType = new com.cannontech.database.db.stars.CustomerListEntry();
-		return callType;
-	}
-
-	/**
 	 * Sets the callReportBase.
 	 * @param callReportBase The callReportBase to set
 	 */
@@ -89,15 +77,6 @@ public class CallReportBase extends DBPersistent {
 		this.callReportBase = callReportBase;
 	}
 
-	/**
-	 * Sets the callType.
-	 * @param callType The callType to set
-	 */
-	public void setCallType(
-		com.cannontech.database.db.stars.CustomerListEntry callType) {
-		this.callType = callType;
-	}
-	
 	public void setEnergyCompanyID(Integer energyCompanyID) {
 		this.energyCompanyID = energyCompanyID;
 	}

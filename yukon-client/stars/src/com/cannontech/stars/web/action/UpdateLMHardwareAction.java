@@ -5,6 +5,7 @@ import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 import java.util.*;
 
+import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.stars.*;
 import com.cannontech.stars.util.*;
@@ -116,7 +117,6 @@ public class UpdateLMHardwareAction implements ActionBase {
         	
         	int energyCompanyID = user.getEnergyCompanyID();
         	LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
-            Hashtable selectionLists = energyCompany.getAllSelectionLists();
             
             StarsUpdateLMHardware updateHw = reqOper.getStarsUpdateLMHardware();
             LiteLMHardwareBase liteHw = energyCompany.getLMHardware( updateHw.getInventoryID(), true );
@@ -136,12 +136,8 @@ public class UpdateLMHardwareAction implements ActionBase {
             StarsLiteFactory.setLiteLMHardware( liteHw, hw );
             
             // Update the "install" and "config" event if necessary
-            int installEntryID = StarsCustListEntryFactory.getStarsCustListEntry(
-            		(LiteCustomerSelectionList) selectionLists.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_LMCUSTOMERACTION ),
-            		com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_INSTALL ).getEntryID();
-            int configEntryID = StarsCustListEntryFactory.getStarsCustListEntry(
-            		(LiteCustomerSelectionList) selectionLists.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_LMCUSTOMERACTION ),
-            		com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_CONFIG ).getEntryID();
+            int installEntryID = energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_INSTALL).getEntryID();
+            int configEntryID = energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_CONFIG).getEntryID();
             
             ArrayList hwHist = liteHw.getLmHardwareHistory();
             for (int i = 0; i < hwHist.size(); i++) {
@@ -184,7 +180,7 @@ public class UpdateLMHardwareAction implements ActionBase {
             }
             
             StarsUpdateLMHardwareResponse resp = new StarsUpdateLMHardwareResponse();
-            resp.setStarsLMHardware( StarsLiteFactory.createStarsLMHardware(liteHw, selectionLists) );
+            resp.setStarsLMHardware( StarsLiteFactory.createStarsLMHardware(liteHw, energyCompanyID) );
             
             boolean newServiceCompany = true;
             if (liteAcctInfo.getServiceCompanies() == null)

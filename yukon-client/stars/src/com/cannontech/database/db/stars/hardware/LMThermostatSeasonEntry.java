@@ -18,7 +18,7 @@ public class LMThermostatSeasonEntry extends DBPersistent {
 	
 	private Integer entryID = null;
 	private Integer seasonID = new Integer(LMThermostatSeason.NONE_INT);
-	private Integer timeOfWeekID = new Integer(com.cannontech.database.db.stars.CustomerListEntry.NONE_INT);
+	private Integer timeOfWeekID = new Integer(com.cannontech.common.util.CtiUtilities.NONE_ID);
 	private Integer startTime = new Integer(0);
 	private Integer temperature = new Integer(0);
 	

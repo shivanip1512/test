@@ -25,16 +25,9 @@ import org.xml.sax.ContentHandler;
  * 
  * @version $Revision$ $Date$
 **/
-public class StarsSelectionListEntry extends com.cannontech.stars.xml.serialize.StarsCustListEntry 
+public class StarsSelectionListEntry extends StarsCustListEntry 
 implements java.io.Serializable
 {
-
-
-      //--------------------------/
-     //- Class/Member Variables -/
-    //--------------------------/
-
-    private java.lang.String _yukonDefinition;
 
 
       //----------------/
@@ -49,16 +42,6 @@ implements java.io.Serializable
       //-----------/
      //- Methods -/
     //-----------/
-
-    /**
-     * Returns the value of field 'yukonDefinition'.
-     * 
-     * @return the value of field 'yukonDefinition'.
-    **/
-    public java.lang.String getYukonDefinition()
-    {
-        return this._yukonDefinition;
-    } //-- java.lang.String getYukonDefinition() 
 
     /**
     **/
@@ -96,16 +79,6 @@ implements java.io.Serializable
         
         Marshaller.marshal(this, handler);
     } //-- void marshal(org.xml.sax.ContentHandler) 
-
-    /**
-     * Sets the value of field 'yukonDefinition'.
-     * 
-     * @param yukonDefinition the value of field 'yukonDefinition'.
-    **/
-    public void setYukonDefinition(java.lang.String yukonDefinition)
-    {
-        this._yukonDefinition = yukonDefinition;
-    } //-- void setYukonDefinition(java.lang.String) 
 
     /**
      * 

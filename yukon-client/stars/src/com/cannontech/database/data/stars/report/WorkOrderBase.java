@@ -15,9 +15,6 @@ import com.cannontech.database.db.DBPersistent;
 public class WorkOrderBase extends DBPersistent {
 
     private com.cannontech.database.db.stars.report.WorkOrderBase workOrderBase = null;
-    private com.cannontech.database.db.stars.CustomerListEntry workType = null;
-    private com.cannontech.database.db.stars.CustomerListEntry currentState = null
-    ;
     private com.cannontech.database.data.stars.report.ServiceCompany serviceCompany = null;
     private com.cannontech.database.data.stars.customer.CustomerAccount customerAccount = null;
     private Integer energyCompanyID = null;
@@ -33,8 +30,6 @@ public class WorkOrderBase extends DBPersistent {
     public void setDbConnection(java.sql.Connection conn) {
         super.setDbConnection(conn);
         getWorkOrderBase().setDbConnection(conn);
-        getWorkType().setDbConnection(conn);
-        getCurrentState().setDbConnection(conn);
     }
 
     public void delete() throws java.sql.SQLException {
@@ -65,15 +60,6 @@ public class WorkOrderBase extends DBPersistent {
     public void retrieve() throws java.sql.SQLException {
         getWorkOrderBase().retrieve();
 
-/*
- * Commented out since cache is used now
- *         
-        getWorkType().setEntryID( getWorkOrderBase().getWorkTypeID() );
-        getWorkType().retrieve();
-        
-        getCurrentState().setEntryID( getWorkOrderBase().getCurrentStateID() );
-        getCurrentState().retrieve();
-*/        
         if (getServiceCompany() == null) {
         	serviceCompany = new ServiceCompany();
         	serviceCompany.setCompanyID( getWorkOrderBase().getServiceCompanyID() );
@@ -99,40 +85,11 @@ public class WorkOrderBase extends DBPersistent {
         workOrderBase = newWorkOrderBase;
     }
 	/**
-	 * Returns the currentState.
-	 * @return com.cannontech.database.db.stars.CustomerListEntry
-	 */
-	public com.cannontech.database.db.stars.CustomerListEntry getCurrentState() {
-		if (currentState == null)
-			currentState = new com.cannontech.database.db.stars.CustomerListEntry();
-		return currentState;
-	}
-
-	/**
 	 * Returns the serviceCompany.
 	 * @return com.cannontech.database.data.stars.report.ServiceCompany
 	 */
 	public com.cannontech.database.data.stars.report.ServiceCompany getServiceCompany() {
 		return serviceCompany;
-	}
-
-	/**
-	 * Returns the workType.
-	 * @return com.cannontech.database.db.stars.CustomerListEntry
-	 */
-	public com.cannontech.database.db.stars.CustomerListEntry getWorkType() {
-		if (workType == null)
-			workType = new com.cannontech.database.db.stars.CustomerListEntry();
-		return workType;
-	}
-
-	/**
-	 * Sets the currentState.
-	 * @param currentState The currentState to set
-	 */
-	public void setCurrentState(
-		com.cannontech.database.db.stars.CustomerListEntry currentState) {
-		this.currentState = currentState;
 	}
 
 	/**
@@ -144,15 +101,6 @@ public class WorkOrderBase extends DBPersistent {
 		this.serviceCompany = serviceCompany;
 	}
 
-	/**
-	 * Sets the workType.
-	 * @param workType The workType to set
-	 */
-	public void setWorkType(
-		com.cannontech.database.db.stars.CustomerListEntry workType) {
-		this.workType = workType;
-	}
-	
 	public void setEnergyCompanyID(Integer energyCompanyID) {
 		this.energyCompanyID = energyCompanyID;
 	}

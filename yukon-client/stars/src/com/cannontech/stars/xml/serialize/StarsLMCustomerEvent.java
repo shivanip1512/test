@@ -33,9 +33,14 @@ public abstract class StarsLMCustomerEvent implements java.io.Serializable {
      //- Class/Member Variables -/
     //--------------------------/
 
-    private java.lang.String _eventAction;
+    private int _yukonDefID;
 
-    private java.lang.String _yukonDefinition;
+    /**
+     * keeps track of state for field: _yukonDefID
+    **/
+    private boolean _has_yukonDefID;
+
+    private java.lang.String _eventAction;
 
     private java.util.Date _eventDateTime;
 
@@ -54,6 +59,13 @@ public abstract class StarsLMCustomerEvent implements java.io.Serializable {
       //-----------/
      //- Methods -/
     //-----------/
+
+    /**
+    **/
+    public void deleteYukonDefID()
+    {
+        this._has_yukonDefID= false;
+    } //-- void deleteYukonDefID() 
 
     /**
      * Returns the value of field 'eventAction'.
@@ -86,14 +98,21 @@ public abstract class StarsLMCustomerEvent implements java.io.Serializable {
     } //-- java.lang.String getNotes() 
 
     /**
-     * Returns the value of field 'yukonDefinition'.
+     * Returns the value of field 'yukonDefID'.
      * 
-     * @return the value of field 'yukonDefinition'.
+     * @return the value of field 'yukonDefID'.
     **/
-    public java.lang.String getYukonDefinition()
+    public int getYukonDefID()
     {
-        return this._yukonDefinition;
-    } //-- java.lang.String getYukonDefinition() 
+        return this._yukonDefID;
+    } //-- int getYukonDefID() 
+
+    /**
+    **/
+    public boolean hasYukonDefID()
+    {
+        return this._has_yukonDefID;
+    } //-- boolean hasYukonDefID() 
 
     /**
     **/
@@ -155,14 +174,15 @@ public abstract class StarsLMCustomerEvent implements java.io.Serializable {
     } //-- void setNotes(java.lang.String) 
 
     /**
-     * Sets the value of field 'yukonDefinition'.
+     * Sets the value of field 'yukonDefID'.
      * 
-     * @param yukonDefinition the value of field 'yukonDefinition'.
+     * @param yukonDefID the value of field 'yukonDefID'.
     **/
-    public void setYukonDefinition(java.lang.String yukonDefinition)
+    public void setYukonDefID(int yukonDefID)
     {
-        this._yukonDefinition = yukonDefinition;
-    } //-- void setYukonDefinition(java.lang.String) 
+        this._yukonDefID = yukonDefID;
+        this._has_yukonDefID = true;
+    } //-- void setYukonDefID(int) 
 
     /**
     **/

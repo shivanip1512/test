@@ -21,8 +21,8 @@ public class ApplianceBase extends DBPersistent {
     private Integer applianceCategoryID = new Integer( ApplianceCategory.NONE_INT );
     private Integer lmProgramID = new Integer( NONE_INT );
     private Integer yearManufactured = new Integer(0);
-    private Integer manufacturerID = new Integer( com.cannontech.database.db.stars.CustomerListEntry.NONE_INT );
-    private Integer locationID = new Integer( com.cannontech.database.db.stars.CustomerListEntry.NONE_INT );
+    private Integer manufacturerID = new Integer( com.cannontech.common.util.CtiUtilities.NONE_ID );
+    private Integer locationID = new Integer( com.cannontech.common.util.CtiUtilities.NONE_ID );
     private Integer kwCapacity = new Integer(0);
     private Integer efficiencyRating = new Integer(0);
     private String notes = "";

@@ -245,8 +245,6 @@ public class UpdateCustAccountAction implements ActionBase {
             }
             
             liteCustomer.setAdditionalContacts( newContactList );
-            
-            Hashtable selectionLists = energyCompany.getAllSelectionLists();
 	        
             if (!StarsLiteFactory.isIdenticalCustomer(liteCustomer, updateAccount)) {
 	            int custTypeID = updateAccount.getIsCommercial() ? CustomerTypes.CUSTOMER_CI : CustomerTypes.CUSTOMER_RESIDENTIAL;

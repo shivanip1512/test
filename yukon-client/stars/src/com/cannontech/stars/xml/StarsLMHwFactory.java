@@ -1,6 +1,5 @@
 package com.cannontech.stars.xml;
 
-import com.cannontech.database.db.stars.CustomerListEntry;
 import com.cannontech.database.db.stars.hardware.LMHardwareBase;
 import com.cannontech.database.data.lite.stars.LiteLMHardwareBase;
 import com.cannontech.stars.xml.serialize.*;
@@ -38,21 +37,6 @@ public class StarsLMHwFactory {
 		}
 		catch (Exception e) {
 			e.printStackTrace();
-		}
-		
-		return null;
-	}
-	
-	public static StarsCustListEntry getCategory(StarsCustListEntry deviceType, java.util.Hashtable selectionLists) {
-		StarsCustSelectionList invCatList = (StarsCustSelectionList)
-				selectionLists.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_INVENTORYCATEGORY );
-				
-		if (deviceType.getContent().startsWith("LCR")) {	// LCR-XXXX
-			for (int i = 0; i < invCatList.getStarsSelectionListEntryCount(); i++) {
-				StarsSelectionListEntry entry = invCatList.getStarsSelectionListEntry(i);
-				if (entry.getYukonDefinition().equalsIgnoreCase( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_INVCAT_ONEWAYREC ))
-					return entry;
-			}
 		}
 		
 		return null;

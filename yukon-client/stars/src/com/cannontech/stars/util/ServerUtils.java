@@ -5,15 +5,13 @@ import javax.mail.*;
 import javax.mail.internet.*;
 import javax.activation.*;
 
+import com.cannontech.common.constants.*;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.constants.RoleTypes;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.data.lite.LiteTypes;
 import com.cannontech.database.data.lite.stars.*;
-import com.cannontech.database.db.stars.CustomerSelectionList;
-import com.cannontech.database.db.stars.CustomerListEntry;
 import com.cannontech.servlet.PILConnectionServlet;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
@@ -56,13 +54,13 @@ public class ServerUtils {
         CTILogger.debug( "YukonSwitchCommandAction: Sent command to PIL: " + command );
     }
 	
-	public static void processFutureActivation(ArrayList custEventHist, Integer futureActEntryID, Integer actCompEntryID) {
+	public static void processFutureActivation(ArrayList custEventHist, int futureActEntryID, int actCompEntryID) {
 		try {
 			ArrayList eventToBeRemoved = new ArrayList();
 			
 			for (int i = 0; i < custEventHist.size(); i++) {
 				LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) custEventHist.get(i);
-				if (liteEvent.getActionID() == futureActEntryID.intValue()) {
+				if (liteEvent.getActionID() == futureActEntryID) {
 					com.cannontech.database.data.stars.event.LMCustomerEventBase event = (com.cannontech.database.data.stars.event.LMCustomerEventBase)
 							StarsLiteFactory.createDBPersistent( liteEvent );
 					com.cannontech.database.db.stars.event.LMCustomerEventBase eventDB = event.getLMCustomerEventBase();
@@ -71,11 +69,11 @@ public class ServerUtils {
 						// Future activation time earlier than current time, change the entry to "Activation Completed"
 						eventDB = (com.cannontech.database.db.stars.event.LMCustomerEventBase)
 								Transaction.createTransaction( Transaction.RETRIEVE, eventDB ).execute();
-						eventDB.setActionID( actCompEntryID );
+						eventDB.setActionID( new Integer(actCompEntryID) );
 						eventDB = (com.cannontech.database.db.stars.event.LMCustomerEventBase)
 								Transaction.createTransaction( Transaction.UPDATE, eventDB ).execute();
 								
-						liteEvent.setActionID( actCompEntryID.intValue() );
+						liteEvent.setActionID( actCompEntryID );
 					}
 					else {
 						// Future activation time not reached yet, delete the entry
@@ -93,13 +91,13 @@ public class ServerUtils {
 		}
 	}
 	
-	public static void removeFutureActivation(ArrayList custEventHist, Integer futureActEntryID) {
+	public static void removeFutureActivation(ArrayList custEventHist, int futureActEntryID) {
 		try {
 			ArrayList eventToBeRemoved = new ArrayList();
 			
 			for (int i = 0; i < custEventHist.size(); i++) {
 				LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) custEventHist.get(i);
-				if (liteEvent.getActionID() == futureActEntryID.intValue()) {
+				if (liteEvent.getActionID() == futureActEntryID) {
 					com.cannontech.database.data.stars.event.LMCustomerEventBase event = (com.cannontech.database.data.stars.event.LMCustomerEventBase)
 							StarsLiteFactory.createDBPersistent( liteEvent );
 					Transaction.createTransaction( Transaction.DELETE, event ).execute();
@@ -116,12 +114,12 @@ public class ServerUtils {
 		}
 	}
 	
-	public static boolean isInService(ArrayList progHist, Integer futureActEntryID, Integer actCompEntryID) {
+	public static boolean isInService(ArrayList progHist, int futureActEntryID, int actCompEntryID) {
 		for (int i = progHist.size() - 1; i >= 0 ; i--) {
 			LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) progHist.get(i);
-			if (liteEvent.getActionID() == futureActEntryID.intValue())
+			if (liteEvent.getActionID() == futureActEntryID)
 				return false;
-			if (liteEvent.getActionID() == actCompEntryID.intValue())
+			if (liteEvent.getActionID() == actCompEntryID)
 				return true;
 		}
 		
@@ -172,86 +170,80 @@ public class ServerUtils {
 		return dateFormat.format( date );
 	}
 	
-	public static StarsThermoDaySettings getThermDaySetting(int towID, Hashtable selectionLists) {
-		StarsSelectionListEntry entry = StarsCustListEntryFactory.getStarsCustListEntry(
-				(LiteCustomerSelectionList) selectionLists.get(CustomerSelectionList.LISTNAME_TIMEOFWEEK), towID );
+	public static StarsThermoDaySettings getThermDaySetting(int towID) {
+		YukonListEntry entry = YukonListFuncs.getYukonListEntry( towID );
 		
-		if (entry.getYukonDefinition().equals( CustomerListEntry.YUKONDEF_TOW_WEEKDAY ))
+		if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_TOW_WEEKDAY)
 			return StarsThermoDaySettings.WEEKDAY;
-		else if (entry.getYukonDefinition().equals( CustomerListEntry.YUKONDEF_TOW_WEEKEND ))
+		else if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_TOW_WEEKEND)
 			return StarsThermoDaySettings.WEEKEND;
-		else if (entry.getYukonDefinition().equals( CustomerListEntry.YUKONDEF_TOW_SATURDAY ))
+		else if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_TOW_SATURDAY)
 			return StarsThermoDaySettings.SATURDAY;
-		else if (entry.getYukonDefinition().equals( CustomerListEntry.YUKONDEF_TOW_SUNDAY ))
+		else if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_TOW_SUNDAY)
 			return StarsThermoDaySettings.SUNDAY;
 		else
 			return null;
 	}
 	
-	public static Integer getThermSeasonEntryTOWID(StarsThermoDaySettings setting, Hashtable selectionLists) {
-		LiteCustomerSelectionList towList = (LiteCustomerSelectionList) selectionLists.get(
-				CustomerSelectionList.LISTNAME_TIMEOFWEEK );
+	public static Integer getThermSeasonEntryTOWID(StarsThermoDaySettings setting, int energyCompanyID) {
+		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany(energyCompanyID);
 		
 		if (setting.getType() == StarsThermoDaySettings.WEEKDAY_TYPE)
-			return new Integer( StarsCustListEntryFactory.getStarsCustListEntry(towList, CustomerListEntry.YUKONDEF_TOW_WEEKDAY).getEntryID() );
+			return new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_TOW_WEEKDAY).getEntryID() );
 		else if (setting.getType() == StarsThermoDaySettings.WEEKEND_TYPE)
-			return new Integer( StarsCustListEntryFactory.getStarsCustListEntry(towList, CustomerListEntry.YUKONDEF_TOW_WEEKEND).getEntryID() );
+			return new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_TOW_WEEKEND).getEntryID() );
 		else if (setting.getType() == StarsThermoDaySettings.SATURDAY_TYPE)
-			return new Integer( StarsCustListEntryFactory.getStarsCustListEntry(towList, CustomerListEntry.YUKONDEF_TOW_SATURDAY).getEntryID() );
+			return new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_TOW_SATURDAY).getEntryID() );
 		else if (setting.getType() == StarsThermoDaySettings.SUNDAY_TYPE)
-			return new Integer( StarsCustListEntryFactory.getStarsCustListEntry(towList, CustomerListEntry.YUKONDEF_TOW_SUNDAY).getEntryID() );
+			return new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_TOW_SUNDAY).getEntryID() );
 		else
 			return null;
 	}
 	
-	public static StarsThermoModeSettings getThermModeSetting(int opStateID, Hashtable selectionLists) {
-		StarsSelectionListEntry entry = StarsCustListEntryFactory.getStarsCustListEntry(
-				(LiteCustomerSelectionList) selectionLists.get(CustomerSelectionList.LISTNAME_THERMOSTATMODE), opStateID );
+	public static StarsThermoModeSettings getThermModeSetting(int opStateID) {
+		YukonListEntry entry = YukonListFuncs.getYukonListEntry( opStateID );
 		
-		if (entry.getYukonDefinition().equals( CustomerListEntry.YUKONDEF_THERMMODE_COOL ))
+		if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_COOL)
 			return StarsThermoModeSettings.COOL;
-		else if (entry.getYukonDefinition().equals( CustomerListEntry.YUKONDEF_THERMMODE_HEAT ))
+		else if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_HEAT)
 			return StarsThermoModeSettings.HEAT;
-		else if (entry.getYukonDefinition().equals( CustomerListEntry.YUKONDEF_THERMMODE_OFF ))
+		else if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_OFF)
 			return StarsThermoModeSettings.OFF;
 		else
 			return null;
 	}
 	
-	public static Integer getThermOptionOpStateID(StarsThermoModeSettings setting, Hashtable selectionLists) {
-		LiteCustomerSelectionList modeList = (LiteCustomerSelectionList) selectionLists.get(
-				CustomerSelectionList.LISTNAME_THERMOSTATMODE );
+	public static Integer getThermOptionOpStateID(StarsThermoModeSettings setting, int energyCompanyID) {
+		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany(energyCompanyID);
 		
 		if (setting.getType() == StarsThermoModeSettings.COOL_TYPE)
-			return new Integer( StarsCustListEntryFactory.getStarsCustListEntry(modeList, CustomerListEntry.YUKONDEF_THERMMODE_COOL).getEntryID() );
+			return new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_COOL).getEntryID() );
 		else if (setting.getType() == StarsThermoModeSettings.HEAT_TYPE)
-			return new Integer( StarsCustListEntryFactory.getStarsCustListEntry(modeList, CustomerListEntry.YUKONDEF_THERMMODE_HEAT).getEntryID() );
+			return new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_HEAT).getEntryID() );
 		else if (setting.getType() == StarsThermoModeSettings.OFF_TYPE)
-			return new Integer( StarsCustListEntryFactory.getStarsCustListEntry(modeList, CustomerListEntry.YUKONDEF_THERMMODE_OFF).getEntryID() );
+			return new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_OFF).getEntryID() );
 		else
 			return null;
 	}
 	
-	public static StarsThermoFanSettings getThermFanSetting(int fanOpID, Hashtable selectionLists) {
-		StarsSelectionListEntry entry = StarsCustListEntryFactory.getStarsCustListEntry(
-				(LiteCustomerSelectionList) selectionLists.get(CustomerSelectionList.LISTNAME_THERMFANSTATE), fanOpID );
+	public static StarsThermoFanSettings getThermFanSetting(int fanOpID) {
+		YukonListEntry entry = YukonListFuncs.getYukonListEntry( fanOpID );
 		
-		if (entry.getYukonDefinition().equals( CustomerListEntry.YUKONDEF_FANSTATE_AUTO ))
+		if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_FAN_STAT_AUTO)
 			return StarsThermoFanSettings.AUTO;
-		else if (entry.getYukonDefinition().equals( CustomerListEntry.YUKONDEF_FANSTATE_ON ))
+		else if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_FAN_STAT_ON)
 			return StarsThermoFanSettings.ON;
 		else
 			return null;
 	}
 	
-	public static Integer getThermOptionFanOpID(StarsThermoFanSettings setting, Hashtable selectionLists) {
-		LiteCustomerSelectionList fanList = (LiteCustomerSelectionList) selectionLists.get(
-				CustomerSelectionList.LISTNAME_THERMFANSTATE );
+	public static Integer getThermOptionFanOpID(StarsThermoFanSettings setting, int energyCompanyID) {
+		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany(energyCompanyID);
 		
 		if (setting.getType() == StarsThermoFanSettings.AUTO_TYPE)
-			return new Integer( StarsCustListEntryFactory.getStarsCustListEntry(fanList, CustomerListEntry.YUKONDEF_FANSTATE_AUTO).getEntryID() );
+			return new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_FAN_STAT_AUTO).getEntryID() );
 		else if (setting.getType() == StarsThermoFanSettings.ON_TYPE)
-			return new Integer( StarsCustListEntryFactory.getStarsCustListEntry(fanList, CustomerListEntry.YUKONDEF_FANSTATE_ON).getEntryID() );
+			return new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_FAN_STAT_ON).getEntryID() );
 		else
 			return null;
 	}

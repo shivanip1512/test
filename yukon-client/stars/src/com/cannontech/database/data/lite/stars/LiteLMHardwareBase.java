@@ -15,16 +15,16 @@ import com.cannontech.stars.xml.serialize.StarsLMHardwareHistory;
 public class LiteLMHardwareBase extends LiteBase {
 
 	private int accountID = com.cannontech.database.db.stars.customer.CustomerAccount.NONE_INT;
-	private int categoryID = com.cannontech.database.db.stars.CustomerListEntry.NONE_INT;
+	private int categoryID = com.cannontech.common.util.CtiUtilities.NONE_ID;
 	private int installationCompanyID = com.cannontech.database.db.stars.report.ServiceCompany.NONE_INT;
 	private long receiveDate = 0;
 	private long installDate = 0;
 	private long removeDate = 0;
 	private String alternateTrackingNumber = null;
-	private int voltageID = com.cannontech.database.db.stars.CustomerListEntry.NONE_INT;
+	private int voltageID = com.cannontech.common.util.CtiUtilities.NONE_ID;
 	private String notes = null;
 	private String manufactureSerialNumber = null;
-	private int lmHardwareTypeID = com.cannontech.database.db.stars.CustomerListEntry.NONE_INT;
+	private int lmHardwareTypeID = com.cannontech.common.util.CtiUtilities.NONE_ID;
 	private java.util.ArrayList lmHardwareHistory = null;	// List of LiteLMCustomerEvent
 	
 	public LiteLMHardwareBase() {

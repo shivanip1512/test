@@ -7,6 +7,7 @@ import javax.xml.soap.SOAPMessage;
 import java.util.*;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.constants.*;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.stars.*;
 import com.cannontech.stars.util.*;
@@ -77,24 +78,11 @@ public class ProgramReenableAction implements ActionBase {
             // Get list entry IDs
             int energyCompanyID = user.getEnergyCompanyID();
         	LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
-            Hashtable selectionLists = energyCompany.getAllSelectionLists();
             
-            Integer hwEventEntryID = new Integer( StarsCustListEntryFactory.getStarsCustListEntry(
-            		(LiteCustomerSelectionList) selectionLists.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_LMCUSTOMEREVENT),
-            		com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_LMHARDWAREEVENT)
-            		.getEntryID() );
-            Integer progEventEntryID = new Integer( StarsCustListEntryFactory.getStarsCustListEntry(
-            		(LiteCustomerSelectionList) selectionLists.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_LMCUSTOMEREVENT),
-            		com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_LMPROGRAMEVENT)
-            		.getEntryID() );
-            Integer futureActEntryID = new Integer( StarsCustListEntryFactory.getStarsCustListEntry(
-            		(LiteCustomerSelectionList) selectionLists.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_LMCUSTOMERACTION),
-            		com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_FUTUREACTIVATION)
-            		.getEntryID() );
-            Integer actCompEntryID = new Integer( StarsCustListEntryFactory.getStarsCustListEntry(
-            		(LiteCustomerSelectionList) selectionLists.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_LMCUSTOMERACTION),
-            		com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_COMPLETED)
-            		.getEntryID() );
+            Integer hwEventEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID() );
+            Integer progEventEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMPROGRAM).getEntryID() );
+            Integer futureActEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_FUTURE_ACTIVATION).getEntryID() );
+            Integer actCompEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED).getEntryID() );
 
             Date now = new Date();	// Current date, all customer events will use exactly the same date
             
@@ -122,7 +110,7 @@ public class ProgramReenableAction implements ActionBase {
                 String cmd = "putconfig service in serial " + liteHw.getManufactureSerialNumber() + routeStr;
                 ServerUtils.sendCommand( cmd );
     			
-    			ServerUtils.removeFutureActivation( liteHw.getLmHardwareHistory(), futureActEntryID );
+    			ServerUtils.removeFutureActivation( liteHw.getLmHardwareHistory(), futureActEntryID.intValue() );
         		com.cannontech.database.data.multi.MultiDBPersistent multiDB = new com.cannontech.database.data.multi.MultiDBPersistent();
         		
         		// Add "Activation Completed" to hardware events
@@ -156,10 +144,10 @@ public class ProgramReenableAction implements ActionBase {
                 	}
                 	
                 	// If program is already in service, do nothing
-            		if (liteProg == null || ServerUtils.isInService( liteProg.getProgramHistory(), futureActEntryID, actCompEntryID ))
+            		if (liteProg == null || ServerUtils.isInService(liteProg.getProgramHistory(), futureActEntryID.intValue(), actCompEntryID.intValue()))
             			continue;
             			
-            		ServerUtils.removeFutureActivation( liteProg.getProgramHistory(), futureActEntryID );
+            		ServerUtils.removeFutureActivation( liteProg.getProgramHistory(), futureActEntryID.intValue() );
 		            
 		            com.cannontech.database.data.stars.event.LMProgramEvent event1 =
 		            		new com.cannontech.database.data.stars.event.LMProgramEvent();
@@ -190,7 +178,7 @@ public class ProgramReenableAction implements ActionBase {
 				for (int k = 0; k < liteHw.getLmHardwareHistory().size(); k++) {
 					liteEvent = (LiteLMCustomerEvent) liteHw.getLmHardwareHistory().get(k);
 					StarsLMHardwareEvent starsEvent = new StarsLMHardwareEvent();
-					StarsLiteFactory.setStarsLMCustomerEvent( starsEvent, liteEvent, selectionLists );
+					StarsLiteFactory.setStarsLMCustomerEvent( starsEvent, liteEvent );
 					hwHist.addStarsLMHardwareEvent( starsEvent );
 				}
 				resp.addStarsLMHardwareHistory( hwHist );
@@ -211,7 +199,7 @@ public class ProgramReenableAction implements ActionBase {
 						for (int l = 0; l < liteProg.getProgramHistory().size(); l++) {
 							liteEvent = (LiteLMCustomerEvent) liteProg.getProgramHistory().get(l);
 							StarsLMProgramEvent starsEvent = new StarsLMProgramEvent();
-							StarsLiteFactory.setStarsLMCustomerEvent( starsEvent, liteEvent, selectionLists );
+							StarsLiteFactory.setStarsLMCustomerEvent( starsEvent, liteEvent );
 							progHist.addStarsLMProgramEvent( starsEvent );
 						}
 						resp.addStarsLMProgramHistory( progHist );
@@ -276,13 +264,12 @@ public class ProgramReenableAction implements ActionBase {
             
         	user.removeAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_LM_PROGRAM_HISTORY );
             
+            /* This should be some server side code */
             if (ServerUtils.isOperator( user )) {
 				Hashtable selectionLists = (Hashtable) user.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
-					
 				DeviceStatus hwStatus = (DeviceStatus) StarsCustListEntryFactory.newStarsCustListEntry(
 						StarsCustListEntryFactory.getStarsCustListEntry(
-							(StarsCustSelectionList) selectionLists.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_DEVICESTATUS),
-							com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_DEVSTAT_AVAIL),
+							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_STATUS, YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL),
 						DeviceStatus.class );
             	
 	            // Update hardware history

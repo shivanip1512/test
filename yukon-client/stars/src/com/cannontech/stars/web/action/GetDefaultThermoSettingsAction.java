@@ -72,7 +72,6 @@ public class GetDefaultThermoSettingsAction implements ActionBase {
             }
             
         	LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
-            java.util.Hashtable selectionLists = energyCompany.getAllSelectionLists();
             
             LiteStarsThermostatSettings liteSettings = energyCompany.getDefaultThermostatSettings();
             if (liteSettings == null) {
@@ -82,7 +81,7 @@ public class GetDefaultThermoSettingsAction implements ActionBase {
             }
             
             StarsDefaultThermostatSettings starsSettings = new StarsDefaultThermostatSettings();
-            StarsLiteFactory.setStarsThermostatSettings( starsSettings, liteSettings, selectionLists );
+            StarsLiteFactory.setStarsThermostatSettings( starsSettings, liteSettings );
             
             StarsGetDefaultThermostatSettingsResponse resp = new StarsGetDefaultThermostatSettingsResponse();
             resp.setStarsDefaultThermostatSettings( starsSettings );

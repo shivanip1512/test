@@ -15,9 +15,6 @@ import com.cannontech.database.db.DBPersistent;
 public class LMCustomerEventBase extends DBPersistent {
 	
 	private com.cannontech.database.db.stars.event.LMCustomerEventBase lmCustomerEventBase = null;
-	private com.cannontech.database.db.stars.CustomerListEntry eventType = null;
-	private com.cannontech.database.db.stars.CustomerListEntry action = null;
-	
 	private Integer energyCompanyID = null;
 
 	public void setEventID(Integer eventID) {
@@ -27,8 +24,6 @@ public class LMCustomerEventBase extends DBPersistent {
 	public void setDbConnection(java.sql.Connection conn) {
 		super.setDbConnection(conn);
 		getLMCustomerEventBase().setDbConnection(conn);
-		getEventType().setDbConnection(conn);
-		getAction().setDbConnection(conn);
 	}
 	
 	/**
@@ -63,16 +58,6 @@ public class LMCustomerEventBase extends DBPersistent {
 	 */
 	public void retrieve() throws SQLException {
 		getLMCustomerEventBase().retrieve();
-
-/*
- * Commented out since cache is used now
- * 		
-		getEventType().setEntryID( getLMCustomerEventBase().getEventTypeID() );
-		getEventType().retrieve();
-		
-		getAction().setEntryID( getLMCustomerEventBase().getActionID() );
-		getAction().retrieve();
-*/
 	}
 
 	/**
@@ -83,26 +68,6 @@ public class LMCustomerEventBase extends DBPersistent {
 	}
 
 	/**
-	 * Returns the action.
-	 * @return com.cannontech.database.db.stars.CustomerListEntry
-	 */
-	public com.cannontech.database.db.stars.CustomerListEntry getAction() {
-		if (action == null)
-			action = new com.cannontech.database.db.stars.CustomerListEntry();
-		return action;
-	}
-
-	/**
-	 * Returns the eventType.
-	 * @return com.cannontech.database.db.stars.CustomerListEntry
-	 */
-	public com.cannontech.database.db.stars.CustomerListEntry getEventType() {
-		if (eventType == null)
-			eventType = new com.cannontech.database.db.stars.CustomerListEntry();
-		return eventType;
-	}
-
-	/**
 	 * Returns the lmCustomerEventBase.
 	 * @return com.cannontech.database.db.stars.event.LMCustomerEventBase
 	 */
@@ -110,24 +75,6 @@ public class LMCustomerEventBase extends DBPersistent {
 		if (lmCustomerEventBase == null)
 			lmCustomerEventBase = new com.cannontech.database.db.stars.event.LMCustomerEventBase();
 		return lmCustomerEventBase;
-	}
-
-	/**
-	 * Sets the action.
-	 * @param action The action to set
-	 */
-	public void setAction(
-		com.cannontech.database.db.stars.CustomerListEntry action) {
-		this.action = action;
-	}
-
-	/**
-	 * Sets the eventType.
-	 * @param eventType The eventType to set
-	 */
-	public void setEventType(
-		com.cannontech.database.db.stars.CustomerListEntry eventType) {
-		this.eventType = eventType;
 	}
 
 	/**

@@ -6,7 +6,7 @@ import javax.xml.soap.SOAPMessage;
 
 import java.util.*;
 
-import com.cannontech.database.data.lite.stars.LiteCustomerSelectionList;
+import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.stars.util.ServletUtils;
@@ -80,13 +80,12 @@ public class GetCustSelListsAction implements ActionBase {
             }
             
         	LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
-            Hashtable selectionListTable = energyCompany.getAllSelectionLists();
-            StarsGetCustSelectionListsResponse response = new StarsGetCustSelectionListsResponse();
+            ArrayList selectionLists = energyCompany.getAllSelectionLists();
             
-            Iterator it = selectionListTable.values().iterator();
-            while (it.hasNext()) {
-            	LiteCustomerSelectionList liteList = (LiteCustomerSelectionList) it.next();
-            	response.addStarsCustSelectionList( StarsLiteFactory.createStarsCustSelectionList(liteList) );
+            StarsGetCustSelectionListsResponse response = new StarsGetCustSelectionListsResponse();
+            for (int i = 0; i < selectionLists.size(); i++) {
+            	YukonSelectionList list = (YukonSelectionList) selectionLists.get(i);
+            	response.addStarsCustSelectionList( StarsLiteFactory.createStarsCustSelectionList(list) );
             }
             
             respOper.setStarsGetCustSelectionListsResponse( response );

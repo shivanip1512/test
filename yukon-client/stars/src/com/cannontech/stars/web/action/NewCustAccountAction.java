@@ -130,7 +130,6 @@ public class NewCustAccountAction implements ActionBase {
             }
 
             LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
-        	Hashtable selectionLists = energyCompany.getAllSelectionLists();
 
             StarsNewCustomerAccount newAccount = reqOper.getStarsNewCustomerAccount();
             StarsCustomerAccount starsAccount = newAccount.getStarsCustomerAccount();

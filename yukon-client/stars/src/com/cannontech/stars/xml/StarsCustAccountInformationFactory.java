@@ -4,7 +4,6 @@ import java.util.*;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.util.*;
 import com.cannontech.stars.xml.serialize.*;
-import com.cannontech.database.data.lite.stars.LiteCustomerSelectionList;
 import com.cannontech.database.data.stars.customer.CustomerAccount;
 import com.cannontech.database.db.stars.*;
 

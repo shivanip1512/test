@@ -5,6 +5,7 @@ import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 import java.util.*;
 
+import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.stars.*;
 import com.cannontech.stars.util.*;
@@ -91,7 +92,6 @@ public class DeleteApplianceAction implements ActionBase {
         	if (liteApp.getLmProgramID() > 0) {
 				// Add "termination" event to the enrolled program
 				LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
-				Hashtable selectionLists = energyCompany.getAllSelectionLists();
 				
 				com.cannontech.database.data.stars.event.LMProgramEvent event =
 						new com.cannontech.database.data.stars.event.LMProgramEvent();
@@ -101,14 +101,8 @@ public class DeleteApplianceAction implements ActionBase {
 				event.setEnergyCompanyID( new Integer(user.getEnergyCompanyID()) );
 				eventDB.setAccountID( new Integer(liteAcctInfo.getCustomerAccount().getAccountID()) );
 				eventDB.setLMProgramID( new Integer(liteApp.getLmProgramID()) );
-				eventBase.setEventTypeID( new Integer( StarsCustListEntryFactory.getStarsCustListEntry(
-	        			(LiteCustomerSelectionList) selectionLists.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_LMCUSTOMEREVENT),
-	        			com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_LMPROGRAMEVENT)
-	        			.getEntryID() ) );
-				eventBase.setActionID( new Integer( StarsCustListEntryFactory.getStarsCustListEntry(
-	        			(LiteCustomerSelectionList) selectionLists.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_LMCUSTOMERACTION),
-	        			com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_TERMINATION)
-	        			.getEntryID() ) );
+				eventBase.setEventTypeID( new Integer(energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMPROGRAM).getEntryID()) );
+				eventBase.setActionID( new Integer(energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TERMINATION).getEntryID()) );
 				eventBase.setEventDateTime( new Date() );
 				Transaction.createTransaction(Transaction.INSERT, event).execute();
 	        	

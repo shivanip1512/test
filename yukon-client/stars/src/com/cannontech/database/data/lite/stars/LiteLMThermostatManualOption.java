@@ -15,8 +15,8 @@ public class LiteLMThermostatManualOption extends LiteBase {
 
 	private int previousTemperature = 0;
 	private boolean holdTemperature = false;
-	private int operationStateID = com.cannontech.database.db.stars.CustomerListEntry.NONE_INT;
-	private int fanOperationID = com.cannontech.database.db.stars.CustomerListEntry.NONE_INT;
+	private int operationStateID = com.cannontech.common.util.CtiUtilities.NONE_ID;
+	private int fanOperationID = com.cannontech.common.util.CtiUtilities.NONE_ID;
 	
 	public LiteLMThermostatManualOption() {
 		super();

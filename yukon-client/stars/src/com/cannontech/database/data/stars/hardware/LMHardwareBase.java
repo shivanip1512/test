@@ -12,8 +12,6 @@ package com.cannontech.database.data.stars.hardware;
 public class LMHardwareBase extends InventoryBase {
 
     private com.cannontech.database.db.stars.hardware.LMHardwareBase lmHardwareBase = null;
-    private com.cannontech.database.db.stars.CustomerListEntry lmHardwareType = null;
-
     public LMHardwareBase() {
         super();
     }
@@ -26,7 +24,6 @@ public class LMHardwareBase extends InventoryBase {
     public void setDbConnection(java.sql.Connection conn) {
         super.setDbConnection(conn);
         getLMHardwareBase().setDbConnection(conn);
-        getLMHardwareType().setDbConnection(conn);
     }
     
     /**
@@ -64,13 +61,6 @@ public class LMHardwareBase extends InventoryBase {
     public void retrieve() throws java.sql.SQLException {
         super.retrieve();
         getLMHardwareBase().retrieve();
-
-/*
- * Commented out since cache is used now
- *         
-        getLMHardwareType().setEntryID( getLMHardwareBase().getLMHardwareTypeID() );
-        getLMHardwareType().retrieve();
-*/
     }
 
     public com.cannontech.database.db.stars.hardware.LMHardwareBase getLMHardwareBase() {
@@ -82,23 +72,5 @@ public class LMHardwareBase extends InventoryBase {
     public void setLMHardwareBase(com.cannontech.database.db.stars.hardware.LMHardwareBase lmHardwareBase) {
         this.lmHardwareBase = lmHardwareBase;
     }
-	/**
-	 * Returns the lmHardwareType.
-	 * @return com.cannontech.database.db.stars.CustomerListEntry
-	 */
-	public com.cannontech.database.db.stars.CustomerListEntry getLMHardwareType() {
-		if (lmHardwareType == null)
-			lmHardwareType = new com.cannontech.database.db.stars.CustomerListEntry();
-		return lmHardwareType;
-	}
-
-	/**
-	 * Sets the lmHardwareType.
-	 * @param lmHardwareType The lmHardwareType to set
-	 */
-	public void setLMHardwareType(
-		com.cannontech.database.db.stars.CustomerListEntry lmHardwareType) {
-		this.lmHardwareType = lmHardwareType;
-	}
 
 }

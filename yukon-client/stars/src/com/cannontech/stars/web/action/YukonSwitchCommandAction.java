@@ -6,6 +6,7 @@ import javax.xml.soap.SOAPMessage;
 import java.util.*;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.constants.*;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.stars.*;
 import com.cannontech.message.porter.ClientConnection;
@@ -132,28 +133,11 @@ public class YukonSwitchCommandAction implements ActionBase {
             StarsYukonSwitchCommandResponse cmdResp = new StarsYukonSwitchCommandResponse();
             
             // Get list entry IDs
-            Hashtable selectionLists = energyCompany.getAllSelectionLists();
-            
-            Integer hwEventEntryID = new Integer( StarsCustListEntryFactory.getStarsCustListEntry(
-            		(LiteCustomerSelectionList) selectionLists.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_LMCUSTOMEREVENT),
-            		com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_LMHARDWAREEVENT)
-            		.getEntryID() );
-            Integer tempTermEntryID = new Integer( StarsCustListEntryFactory.getStarsCustListEntry(
-            		(LiteCustomerSelectionList) selectionLists.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_LMCUSTOMERACTION),
-            		com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_TEMPTERMINATION)
-            		.getEntryID() );
-            Integer futureActEntryID = new Integer( StarsCustListEntryFactory.getStarsCustListEntry(
-            		(LiteCustomerSelectionList) selectionLists.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_LMCUSTOMERACTION),
-            		com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_FUTUREACTIVATION)
-            		.getEntryID() );
-            Integer actCompEntryID = new Integer( StarsCustListEntryFactory.getStarsCustListEntry(
-            		(LiteCustomerSelectionList) selectionLists.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_LMCUSTOMERACTION),
-            		com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_COMPLETED)
-            		.getEntryID() );
-            Integer configEntryID = new Integer( StarsCustListEntryFactory.getStarsCustListEntry(
-            		(LiteCustomerSelectionList) selectionLists.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_LMCUSTOMERACTION),
-            		com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_CONFIG)
-            		.getEntryID() );
+            Integer hwEventEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID() );
+            Integer tempTermEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TEMP_TERMINATION).getEntryID() );
+            Integer futureActEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_FUTURE_ACTIVATION).getEntryID() );
+            Integer actCompEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED).getEntryID() );
+            Integer configEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_CONFIG).getEntryID() );
             		
 			String routeStr = (energyCompany == null) ? "" : " select route id " + String.valueOf(energyCompany.getRouteID());
             
@@ -194,7 +178,7 @@ public class YukonSwitchCommandAction implements ActionBase {
 				for (int k = 0; k < liteHw.getLmHardwareHistory().size(); k++) {
 					liteEvent = (LiteLMCustomerEvent) liteHw.getLmHardwareHistory().get(k);
 					StarsLMHardwareEvent starsEvent = new StarsLMHardwareEvent();
-					StarsLiteFactory.setStarsLMCustomerEvent( starsEvent, liteEvent, selectionLists );
+					StarsLiteFactory.setStarsLMCustomerEvent( starsEvent, liteEvent );
 					hwHist.addStarsLMHardwareEvent( starsEvent );
 				}
 				cmdResp.setStarsLMHardwareHistory( hwHist );
@@ -236,7 +220,7 @@ public class YukonSwitchCommandAction implements ActionBase {
 				for (int k = 0; k < liteHw.getLmHardwareHistory().size(); k++) {
 					liteEvent = (LiteLMCustomerEvent) liteHw.getLmHardwareHistory().get(k);
 					StarsLMHardwareEvent starsEvent = new StarsLMHardwareEvent();
-					StarsLiteFactory.setStarsLMCustomerEvent( starsEvent, liteEvent, selectionLists );
+					StarsLiteFactory.setStarsLMCustomerEvent( starsEvent, liteEvent );
 					hwHist.addStarsLMHardwareEvent( starsEvent );
 				}
 				cmdResp.setStarsLMHardwareHistory( hwHist );
@@ -291,7 +275,7 @@ public class YukonSwitchCommandAction implements ActionBase {
 				for (int k = 0; k < liteHw.getLmHardwareHistory().size(); k++) {
 					liteEvent = (LiteLMCustomerEvent) liteHw.getLmHardwareHistory().get(k);
 					StarsLMHardwareEvent starsEvent = new StarsLMHardwareEvent();
-					StarsLiteFactory.setStarsLMCustomerEvent( starsEvent, liteEvent, selectionLists );
+					StarsLiteFactory.setStarsLMCustomerEvent( starsEvent, liteEvent );
 					hwHist.addStarsLMHardwareEvent( starsEvent );
 				}
 				cmdResp.setStarsLMHardwareHistory( hwHist );
@@ -337,13 +321,11 @@ public class YukonSwitchCommandAction implements ActionBase {
 			
 			DeviceStatus availStatus = (DeviceStatus) StarsCustListEntryFactory.newStarsCustListEntry(
 						StarsCustListEntryFactory.getStarsCustListEntry(
-							(StarsCustSelectionList) selectionLists.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_DEVICESTATUS),
-							com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_DEVSTAT_AVAIL),
+							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_STATUS, YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL),
 						DeviceStatus.class );
 			DeviceStatus unavailStatus = (DeviceStatus) StarsCustListEntryFactory.newStarsCustListEntry(
 						StarsCustListEntryFactory.getStarsCustListEntry(
-							(StarsCustSelectionList) selectionLists.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_DEVICESTATUS),
-							com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_DEVSTAT_TEMPUNAVAIL),
+							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_STATUS, YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_TEMP_UNAVAIL),
 						DeviceStatus.class );
 			
             // Update hardware history

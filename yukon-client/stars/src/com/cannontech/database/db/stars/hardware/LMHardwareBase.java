@@ -16,7 +16,7 @@ public class LMHardwareBase extends DBPersistent {
 
     private Integer inventoryID = null;
     private String manufacturerSerialNumber = "";
-    private Integer lmHardwareTypeID = new Integer( com.cannontech.database.db.stars.CustomerListEntry.NONE_INT );
+    private Integer lmHardwareTypeID = new Integer( com.cannontech.common.util.CtiUtilities.NONE_ID );
 
     public static final String[] SETTER_COLUMNS = {
         "ManufacturerSerialNumber", "LMHardwareTypeID"

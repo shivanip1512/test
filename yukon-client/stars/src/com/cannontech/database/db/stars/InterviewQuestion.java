@@ -15,12 +15,12 @@ import com.cannontech.database.db.DBPersistent;
 public class InterviewQuestion extends DBPersistent {
 	
 	private Integer questionID = null;
-	private Integer questionType = new Integer(com.cannontech.database.db.stars.CustomerListEntry.NONE_INT);
+	private Integer questionType = new Integer(com.cannontech.common.util.CtiUtilities.NONE_ID);
 	private String question = "";
 	private String mandatory = "N";
 	private Integer displayOrder = new Integer(0);
-	private Integer answerType = new Integer(com.cannontech.database.db.stars.CustomerListEntry.NONE_INT);
-	private Integer expectedAnswer = new Integer(com.cannontech.database.db.stars.CustomerListEntry.NONE_INT);
+	private Integer answerType = new Integer(com.cannontech.common.util.CtiUtilities.NONE_ID);
+	private Integer expectedAnswer = new Integer(com.cannontech.common.util.CtiUtilities.NONE_ID);
 	
 	public static String[] SETTER_COLUMNS = {
 		"QuestionType", "Question", "Mandatory", "DisplayOrder",

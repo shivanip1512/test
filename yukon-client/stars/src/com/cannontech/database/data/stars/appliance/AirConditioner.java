@@ -12,8 +12,6 @@ package com.cannontech.database.data.stars.appliance;
 public class AirConditioner extends ApplianceBase {
 
     private com.cannontech.database.db.stars.appliance.AirConditioner airConditioner = null;
-    private com.cannontech.database.db.stars.CustomerListEntry tonage = null;
-    private com.cannontech.database.db.stars.CustomerListEntry type = null;
 
     public AirConditioner() {
         super();
@@ -27,8 +25,6 @@ public class AirConditioner extends ApplianceBase {
     public void setDbConnection(java.sql.Connection conn) {
         super.setDbConnection(conn);
         getAirConditioner().setDbConnection(conn);
-        getTonage().setDbConnection(conn);
-        getType().setDbConnection(conn);
     }
 
     public void delete() throws java.sql.SQLException {
@@ -49,12 +45,6 @@ public class AirConditioner extends ApplianceBase {
     public void retrieve() throws java.sql.SQLException {
         super.retrieve();
         getAirConditioner().retrieve();
-        
-        getTonage().setEntryID( getAirConditioner().getTonageID() );
-        getTonage().retrieve();
-        
-        getType().setEntryID( getAirConditioner().getTypeID() );
-        getType().retrieve();
     }
 
     public com.cannontech.database.db.stars.appliance.AirConditioner getAirConditioner() {
@@ -66,42 +56,5 @@ public class AirConditioner extends ApplianceBase {
     public void setAirConditioner(com.cannontech.database.db.stars.appliance.AirConditioner newAirConditioner) {
         airConditioner = newAirConditioner;
     }
-	/**
-	 * Returns the tonage.
-	 * @return com.cannontech.database.db.stars.CustomerListEntry
-	 */
-	public com.cannontech.database.db.stars.CustomerListEntry getTonage() {
-		if (tonage == null)
-			tonage = new com.cannontech.database.db.stars.CustomerListEntry();
-		return tonage;
-	}
-
-	/**
-	 * Returns the type.
-	 * @return com.cannontech.database.db.stars.CustomerListEntry
-	 */
-	public com.cannontech.database.db.stars.CustomerListEntry getType() {
-		if (type == null)
-			type = new com.cannontech.database.db.stars.CustomerListEntry();
-		return type;
-	}
-
-	/**
-	 * Sets the tonage.
-	 * @param tonage The tonage to set
-	 */
-	public void setTonage(
-		com.cannontech.database.db.stars.CustomerListEntry tonage) {
-		this.tonage = tonage;
-	}
-
-	/**
-	 * Sets the type.
-	 * @param type The type to set
-	 */
-	public void setType(
-		com.cannontech.database.db.stars.CustomerListEntry type) {
-		this.type = type;
-	}
 
 }

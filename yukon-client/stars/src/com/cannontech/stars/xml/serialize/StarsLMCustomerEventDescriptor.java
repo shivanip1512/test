@@ -58,6 +58,48 @@ public class StarsLMCustomerEventDescriptor extends org.exolab.castor.xml.util.X
         setCompositorAsSequence();
         //-- initialize attribute descriptors
         
+        //-- _yukonDefID
+        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_yukonDefID", "yukonDefID", NodeType.Attribute);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsLMCustomerEvent target = (StarsLMCustomerEvent) object;
+                if(!target.hasYukonDefID())
+                    return null;
+                return new Integer(target.getYukonDefID());
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsLMCustomerEvent target = (StarsLMCustomerEvent) object;
+                    // if null, use delete method for optional primitives 
+                    if (value == null) {
+                        target.deleteYukonDefID();
+                        return;
+                    }
+                    target.setYukonDefID( ((Integer)value).intValue());
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        } );
+        desc.setHandler(handler);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _yukonDefID
+        fieldValidator = new FieldValidator();
+        { //-- local scope
+            IntegerValidator iv = new IntegerValidator();
+            fieldValidator.setValidator(iv);
+        }
+        desc.setValidator(fieldValidator);
+        
         //-- initialize element descriptors
         
         //-- _eventAction
@@ -91,46 +133,6 @@ public class StarsLMCustomerEventDescriptor extends org.exolab.castor.xml.util.X
         addFieldDescriptor(desc);
         
         //-- validation code for: _eventAction
-        fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
-        { //-- local scope
-            StringValidator sv = new StringValidator();
-            sv.setWhiteSpace("preserve");
-            fieldValidator.setValidator(sv);
-        }
-        desc.setValidator(fieldValidator);
-        
-        //-- _yukonDefinition
-        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_yukonDefinition", "YukonDefinition", NodeType.Element);
-        desc.setImmutable(true);
-        handler = (new XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                StarsLMCustomerEvent target = (StarsLMCustomerEvent) object;
-                return target.getYukonDefinition();
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    StarsLMCustomerEvent target = (StarsLMCustomerEvent) object;
-                    target.setYukonDefinition( (java.lang.String) value);
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return null;
-            }
-        } );
-        desc.setHandler(handler);
-        desc.setRequired(true);
-        desc.setMultivalued(false);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _yukonDefinition
         fieldValidator = new FieldValidator();
         fieldValidator.setMinOccurs(1);
         { //-- local scope

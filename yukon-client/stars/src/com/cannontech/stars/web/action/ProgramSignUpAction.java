@@ -6,6 +6,7 @@ import javax.xml.soap.SOAPMessage;
 
 import java.util.*;
 
+import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.stars.*;
 import com.cannontech.stars.util.*;
@@ -104,27 +105,11 @@ public class ProgramSignUpAction implements ActionBase {
             	liteAcctInfo = energyCompany.searchByAccountNumber( progSignUp.getAccountNumber() );
 	        	
         	// Get action & event type IDs
-        	Hashtable selectionLists = energyCompany.getAllSelectionLists();
-        	Integer progEventEntryID = new Integer( StarsCustListEntryFactory.getStarsCustListEntry(
-        			(LiteCustomerSelectionList) selectionLists.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_LMCUSTOMEREVENT),
-        			com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_LMPROGRAMEVENT)
-        			.getEntryID() );
-        	Integer signUpEntryID = new Integer( StarsCustListEntryFactory.getStarsCustListEntry(
-        			(LiteCustomerSelectionList) selectionLists.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_LMCUSTOMERACTION),
-        			com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_SIGNUP)
-        			.getEntryID() );
-        	Integer termEntryID = new Integer( StarsCustListEntryFactory.getStarsCustListEntry(
-        			(LiteCustomerSelectionList) selectionLists.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_LMCUSTOMERACTION),
-        			com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_TERMINATION)
-        			.getEntryID() );
-        	Integer dftLocationID = new Integer( StarsCustListEntryFactory.getStarsCustListEntry(
-        			(LiteCustomerSelectionList) selectionLists.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_LOCATION),
-        			com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_LOCATION_UNKNOWN)
-        			.getEntryID() );
-        	Integer dftManufacturerID = new Integer( StarsCustListEntryFactory.getStarsCustListEntry(
-        			(LiteCustomerSelectionList) selectionLists.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_MANUFACTURER),
-        			com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_MANUFACTURER_UNKNOWN)
-        			.getEntryID() );
+        	Integer progEventEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMPROGRAM).getEntryID() );
+        	Integer signUpEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_SIGNUP).getEntryID() );
+        	Integer termEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TERMINATION).getEntryID() );
+        	Integer dftLocationID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_LOC_UNKNOW).getEntryID() );
+        	Integer dftManufacturerID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_MANU_UNKNOWN).getEntryID() );
         	
         	ArrayList progList = liteAcctInfo.getLmPrograms();
         	ArrayList appList = liteAcctInfo.getAppliances();

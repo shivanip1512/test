@@ -17,8 +17,8 @@ public class LMThermostatManualOption extends DBPersistent {
 	private Integer inventoryID = null;
 	private Integer previousTemperature = new Integer(0);
 	private String holdTemperature = new String("N");
-	private Integer operationStateID = new Integer(com.cannontech.database.db.stars.CustomerListEntry.NONE_INT);
-	private Integer fanOperationID = new Integer(com.cannontech.database.db.stars.CustomerListEntry.NONE_INT);
+	private Integer operationStateID = new Integer(com.cannontech.common.util.CtiUtilities.NONE_ID);
+	private Integer fanOperationID = new Integer(com.cannontech.common.util.CtiUtilities.NONE_ID);
 	
 	public static final String[] SETTER_COLUMNS = {
 		"PreviousTemperature", "HoldTemperature", "OperationStateID", "FanOperationID"

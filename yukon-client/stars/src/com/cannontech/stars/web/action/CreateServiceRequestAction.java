@@ -5,6 +5,7 @@ import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 import java.util.*;
 
+import com.cannontech.common.constants.*;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.stars.*;
 import com.cannontech.stars.util.*;
@@ -40,42 +41,26 @@ public class CreateServiceRequestAction implements ActionBase {
 				createOrder.setOrderNumber( req.getParameter("OrderNo") );
 			createOrder.setDateReported( com.cannontech.util.ServletUtil.parseDateStringLiberally(req.getParameter("DateReported")) );
 			
-			ServiceType servType = new ServiceType();
-			servType.setEntryID( Integer.parseInt(req.getParameter("ServiceType")) );
-			StarsCustSelectionList servTypeList = (StarsCustSelectionList) selectionLists.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_SERVICETYPE );
-			for (int i = 0; i < servTypeList.getStarsSelectionListEntryCount(); i++) {
-				StarsSelectionListEntry entry = servTypeList.getStarsSelectionListEntry(i);
-				if (entry.getEntryID() == servType.getEntryID()) {
-					servType.setContent( entry.getContent() );
-					break;
-				}
-			}
+			ServiceType servType = (ServiceType) StarsCustListEntryFactory.newStarsCustListEntry(
+					StarsCustListEntryFactory.getStarsCustListEntryByID(
+						selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_TYPE, Integer.parseInt(req.getParameter("ServiceType"))),
+					ServiceType.class );
 			createOrder.setServiceType( servType );
 			
-			ServiceCompany company = new ServiceCompany();
-			company.setEntryID( Integer.parseInt(req.getParameter("ServiceCompany")) );
-			StarsCustSelectionList companyList = (StarsCustSelectionList) selectionLists.get( com.cannontech.database.db.stars.report.ServiceCompany.LISTNAME_SERVICECOMPANY );
-			for (int i = 0; i < companyList.getStarsSelectionListEntryCount(); i++) {
-				StarsSelectionListEntry entry = companyList.getStarsSelectionListEntry(i);
-				if (entry.getEntryID() == company.getEntryID()) {
-					company.setContent( entry.getContent() );
-					break;
-				}
-			}			
+			ServiceCompany company = (ServiceCompany) StarsCustListEntryFactory.newStarsCustListEntry(
+					StarsCustListEntryFactory.getStarsCustListEntryByID(
+						selectionLists, com.cannontech.database.db.stars.report.ServiceCompany.LISTNAME_SERVICECOMPANY, Integer.parseInt(req.getParameter("ServiceCompany"))),
+					ServiceCompany.class );
 			createOrder.setServiceCompany( company );
 			
 			createOrder.setOrderedBy( req.getParameter("OrderedBy") );
 			createOrder.setDescription( req.getParameter("Notes").replaceAll("\r\n", "<br>") );
             
-            StarsCustSelectionList statusList = (StarsCustSelectionList) selectionLists.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_SERVICESTATUS );
-            for (int i = 0; i < statusList.getStarsSelectionListEntryCount(); i++) {
-            	StarsSelectionListEntry entry = statusList.getStarsSelectionListEntry(i);
-            	if (entry.getYukonDefinition().equalsIgnoreCase( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_SERVSTAT_TOBESCHED )) {
-            		CurrentState status = (CurrentState) StarsCustListEntryFactory.newStarsCustListEntry( entry, CurrentState.class );
-            		createOrder.setCurrentState( status );
-            		break;
-            	}
-            }
+            CurrentState status = (CurrentState) StarsCustListEntryFactory.newStarsCustListEntry(
+            		StarsCustListEntryFactory.getStarsCustListEntry(
+            			selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_STATUS, YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_NOT_SCHEDULED),
+            		CurrentState.class );
+            createOrder.setCurrentState( status );
 			
 			StarsOperation operation = new StarsOperation();
 			operation.setStarsCreateServiceRequest( createOrder );
@@ -128,7 +113,6 @@ public class CreateServiceRequestAction implements ActionBase {
             
             int energyCompanyID = user.getEnergyCompanyID();
             LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
-            Hashtable selectionLists = energyCompany.getAllSelectionLists();
             
             com.cannontech.database.data.stars.report.WorkOrderBase workOrder = new com.cannontech.database.data.stars.report.WorkOrderBase();
             com.cannontech.database.db.stars.report.WorkOrderBase workOrderDB = workOrder.getWorkOrderBase();
@@ -145,7 +129,7 @@ public class CreateServiceRequestAction implements ActionBase {
             synchronized (workOrderList) { workOrderList.add( liteOrder ); }
             accountInfo.getServiceRequestHistory().add( 0, new Integer(liteOrder.getOrderID()) );
             
-            StarsServiceRequest starsOrder = StarsLiteFactory.createStarsServiceRequest( liteOrder, selectionLists );
+            StarsServiceRequest starsOrder = StarsLiteFactory.createStarsServiceRequest( liteOrder, energyCompanyID );
             StarsCreateServiceRequestResponse resp = new StarsCreateServiceRequestResponse();
             resp.setStarsServiceRequest( starsOrder );
             

@@ -4,12 +4,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
+import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.stars.*;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsAppFactory;
+import com.cannontech.stars.xml.StarsCustListEntryFactory;
 import com.cannontech.stars.xml.StarsFailureFactory;
 import com.cannontech.stars.xml.util.*;
 import com.cannontech.stars.xml.serialize.*;
@@ -39,40 +41,22 @@ public class CreateApplianceAction implements ActionBase {
 			newApp.setYearManufactured( req.getParameter("ManuYear") );
 			newApp.setNotes( req.getParameter("Notes") );
 			
-			Manufacturer manufacturer = new Manufacturer();
-			manufacturer.setEntryID( Integer.parseInt(req.getParameter("Manufacturer")) );
-			StarsCustSelectionList manufactList = (StarsCustSelectionList) selectionLists.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_MANUFACTURER );
-			for (int i = 0; i < manufactList.getStarsSelectionListEntryCount(); i++) {
-				StarsSelectionListEntry entry = manufactList.getStarsSelectionListEntry(i);
-				if (entry.getEntryID() == manufacturer.getEntryID()) {
-					manufacturer.setContent( entry.getContent() );
-					break;
-				}
-			}
-			newApp.setManufacturer( manufacturer );
+			Manufacturer manu = (Manufacturer) StarsCustListEntryFactory.newStarsCustListEntry(
+					StarsCustListEntryFactory.getStarsCustListEntryByID(
+						selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_MANUFACTURER, Integer.parseInt(req.getParameter("Manufacturer"))),
+					Manufacturer.class );
+			newApp.setManufacturer( manu );
 			
-			Location location = new Location();
-			location.setEntryID( Integer.parseInt(req.getParameter("Location")) );
-			StarsCustSelectionList locationList = (StarsCustSelectionList) selectionLists.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_LOCATION );
-			for (int i = 0; i < locationList.getStarsSelectionListEntryCount(); i++) {
-				StarsSelectionListEntry entry = locationList.getStarsSelectionListEntry(i);
-				if (entry.getEntryID() == location.getEntryID()) {
-					location.setContent( entry.getContent() );
-					break;
-				}
-			}
-			newApp.setLocation( location );
+			Location loc = (Location) StarsCustListEntryFactory.newStarsCustListEntry(
+					StarsCustListEntryFactory.getStarsCustListEntryByID(
+						selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_LOCATION, Integer.parseInt(req.getParameter("Location"))),
+					Location.class );
+			newApp.setLocation( loc );
 			
-			ServiceCompany company = new ServiceCompany();
-			company.setEntryID( Integer.parseInt(req.getParameter("Company")) );
-			StarsCustSelectionList companyList = (StarsCustSelectionList) selectionLists.get( com.cannontech.database.db.stars.report.ServiceCompany.LISTNAME_SERVICECOMPANY );
-			for (int i = 0; i < companyList.getStarsSelectionListEntryCount(); i++) {
-				StarsSelectionListEntry entry = companyList.getStarsSelectionListEntry(i);
-				if (entry.getEntryID() == company.getEntryID()) {
-					company.setContent( entry.getContent() );
-					break;
-				}
-			}			
+			ServiceCompany company = (ServiceCompany) StarsCustListEntryFactory.newStarsCustListEntry(
+					StarsCustListEntryFactory.getStarsCustListEntryByID(
+						selectionLists, com.cannontech.database.db.stars.report.ServiceCompany.LISTNAME_SERVICECOMPANY, Integer.parseInt(req.getParameter("Company"))),
+					ServiceCompany.class );
 			newApp.setServiceCompany( company );
 			
 			StarsOperation operation = new StarsOperation();
