@@ -7,20 +7,14 @@ package com.cannontech.graph.exportdata;
  */
 public class ExportDataFile implements com.cannontech.graph.GraphDefines
 {
-	private int exportPane = 0;		//Trend Pane index.  Specifies which types are valid for each tab.
-	/*  VALID PANES ARE::::
-	 * com.cannontech.graph.GraphDefines.TABULAR_PANE;
-	 * com.cannontech.graph.GraphDefines.GRAPH_PANE
-	 *  com.cannontech.graph.GraphDefines.SUMMARY_PANE;
-	*/
-		
+	private int viewType = com.cannontech.graph.model.TrendModelType.LINE_VIEW;
+	
 	private String fileName = "Chart.csv";
 	private String extension = "csv";
 //	private java.io.File file = new java.io.File("C:/yukon/client/export/Chart.csv");
 	
 	private Object exportObject = null;
-//	private String csvExportType = com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES;
-//	private int csvExportMask = com.cannontech.database.db.graph.GraphDataSeries.VALID_INTERVAL_MASK;
+
 	//Object items that are only valid if csv exportting is selected.
 	private com.cannontech.graph.model.TrendModel trendModel = null;	
 	private int csvColumnLength = 0;
@@ -37,16 +31,16 @@ public class ExportDataFile implements com.cannontech.graph.GraphDefines
 	 * SaveAsJFileChooser constructor comment.
 	 * @param currentDirectory java.io.File
 	 */
-	public ExportDataFile(int selectedPane, Object expObj, String newFileName)
+	public ExportDataFile(int trendViewType, Object expObj, String newFileName)
 	{
-		exportPane = selectedPane;
+		viewType = trendViewType;
 		exportObject = expObj;
 		fileName = newFileName;
 	}
 
-	public ExportDataFile(int selectedPane, Object expObj, String newFileName, com.cannontech.graph.model.TrendModel tModel)
+	public ExportDataFile(int trendViewType, Object expObj, String newFileName, com.cannontech.graph.model.TrendModel tModel)
 	{
-		exportPane = selectedPane;
+		viewType = trendViewType;
 		exportObject = expObj;
 		fileName = newFileName;
 		trendModel = tModel;
@@ -274,9 +268,10 @@ public class ExportDataFile implements com.cannontech.graph.GraphDefines
 			ioe.printStackTrace();
 		}
 	}
-	public int getExportPane()
+
+	public int getViewType()
 	{
-		return exportPane;
+		return viewType;
 	}
 	public String getExtension()
 	{
@@ -291,17 +286,6 @@ public class ExportDataFile implements com.cannontech.graph.GraphDefines
 	{
 		return getFileName() + "." + getExtension();
 	}
-	/*
-	public void setCSVExportMask(int newExportMask)
-	{
-		csvExportMask = newExportMask;
-	}
-	*/
-	/*
-	public void setCSVExportType(String newExportType)
-	{
-		csvExportType = newExportType;
-	}*/
 	public void setExtension(String newExtension)
 	{
 		extension = newExtension;
@@ -365,6 +349,7 @@ public class ExportDataFile implements com.cannontech.graph.GraphDefines
 			for( int z = 0; z < trendModel.getTrendSeries().length; z++ )
 			{
 				com.cannontech.graph.model.TrendSerie serie = trendModel.getTrendSeries()[z];
+				Double prevValue = null;
 				if( com.cannontech.database.db.graph.GraphDataSeries.isGraphType(serie.getTypeMask()))
 				{
 					valueFormat.setMaximumFractionDigits(3);//serie.getDecimalPlaces());
@@ -372,17 +357,36 @@ public class ExportDataFile implements com.cannontech.graph.GraphDefines
 
 					// label the export file columns with their device + model name
 					exportArray[csvRowLength * (validIndex+2)]  = (serie.getLabel());
-//						(trendModel.getTrendSeries()[z].getDeviceName() + " " + serie.getLabel());
-						
 
 					for( int x = 1; x < ts_KeyArray.length + 1;x++ )	//go one extra for the header row?
 					{
 						Double[] values = (Double[])tree.get(ts_KeyArray[x - 1]);
+
 						if(values[validIndex] == null)
 							exportArray[(csvRowLength * (validIndex+2)) + x ] = "";
 						else
-						{
-							exportArray[(csvRowLength * (validIndex+2)) + x ] = valueFormat.format(values[validIndex]);
+						{						
+							if( com.cannontech.database.db.graph.GraphDataSeries.isUsageType(serie.getTypeMask()))
+							{
+								if( prevValue == null)
+								{
+									prevValue = values[validIndex];
+									exportArray[(csvRowLength * (validIndex+2)) + x ] = "";
+								}
+								else
+								{
+									Double currentValue = values[validIndex];
+									if( currentValue != null && prevValue != null)
+									{
+										exportArray[(csvRowLength * (validIndex+2)) + x ] = valueFormat.format(currentValue.doubleValue() - prevValue.doubleValue());
+										prevValue = currentValue;
+									}
+								}
+							}						
+							else
+							{
+								exportArray[(csvRowLength * (validIndex+2)) + x ] = valueFormat.format(values[validIndex]);
+							}
 						}
 					}
 					validIndex++;
