@@ -731,7 +731,7 @@ void identifyProject(const CTICOMPILEINFO &Info)
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        if(Info.date)
+        if((DebugLevel & DEBUGLEVEL_LUDICROUS) && Info.date)      // DEBUGLEVEL added 012903 CGP
         {
             dout << RWTime() << " (Build " <<
             Info.major << "." <<
