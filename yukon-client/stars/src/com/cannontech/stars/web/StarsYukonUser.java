@@ -29,6 +29,13 @@ public class StarsYukonUser {
 		init();
 	}
 	
+	public StarsYukonUser(StarsYukonUser starsUser) {
+		yukonUser = starsUser.getYukonUser();
+		userID = yukonUser.getUserID();
+		energyCompanyID = starsUser.getEnergyCompanyID();
+		accountIDs = starsUser.getCustomerAccountIDs();
+	}
+	
 	public int getUserID() {
 		return userID;
 	}
@@ -78,9 +85,6 @@ public class StarsYukonUser {
 	
 	private void init() {
 		if (ServerUtils.isOperator(this)) {
-			energyCompanyID = EnergyCompanyFuncs.getEnergyCompany( getYukonUser() ).getLiteID();
-		}
-		else if (ServerUtils.isCICustomer(this)) {
 			energyCompanyID = EnergyCompanyFuncs.getEnergyCompany( getYukonUser() ).getLiteID();
 		}
 		else if (ServerUtils.isResidentialCustomer(this)) {

@@ -13,7 +13,6 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.constants.RoleTypes;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonListFuncs;
@@ -28,6 +27,8 @@ import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.roles.consumer.ResidentialCustomerRole;
+import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.serialize.types.StarsThermoDaySettings;
@@ -51,27 +52,6 @@ public class ServerUtils {
     
     // If date in database is earlier than this, than the date is actually empty
     private static long VERY_EARLY_TIME = 1000 * 3600 * 24;
-    
-    public static final String DEFAULT_PROPERTY_FILE = "/default.config.properties";
-    
-    public static final String ADMIN_EMAIL_ADDRESS = "admin_email_address";
-    public static final String OPTOUT_NOTIFICATION_RECIPIENTS = "optout_notification_recipients";
-    public static final String DEFAULT_TIME_ZONE = "default_time_zone";
-    public static final String SWITCH_COMMAND_FILE = "switch_command_file";
-    public static final String OPTOUT_COMMAND_FILE = "optout_command_file";
-    public static final String CUSTOMER_GROUP_NAME = "customer_group_name";
-    
-    public static final String[] ALL_SETTINGS_KEYS = {
-    	ADMIN_EMAIL_ADDRESS,
-    	OPTOUT_NOTIFICATION_RECIPIENTS,
-    	DEFAULT_TIME_ZONE,
-    	SWITCH_COMMAND_FILE,
-    	OPTOUT_COMMAND_FILE,
-    	CUSTOMER_GROUP_NAME,
-    };
-    
-    public static final String DEFAULT_ADMIN_EMAIL_ADDRESS = "info@cannontech.com";
-    public static final String DEFAULT_BATCH_COMMAND_FOLDER = "c:\\yukon\\batch_command";
     
 	
     public static void sendCommand(String command)
@@ -207,8 +187,6 @@ public class ServerUtils {
 		CtiProperties props = CtiProperties.getInstance();
 		Session session = Session.getDefaultInstance( props, null );
 		
-		if (from == null) from = DEFAULT_ADMIN_EMAIL_ADDRESS;
-		
 		Message emailMsg = new MimeMessage( session );
 		emailMsg.setFrom( new InternetAddress(from) );
 		
@@ -322,15 +300,11 @@ public class ServerUtils {
 	}
 	
 	public static boolean isOperator(StarsYukonUser user) {
-		return (AuthFuncs.getRolePropertyValue(user.getYukonUser(), RoleTypes.WEB_OPERATOR) != null);
+		return (AuthFuncs.checkRole(user.getYukonUser(), ConsumerInfoRole.ROLEID) != null);
 	}
 	
 	public static boolean isResidentialCustomer(StarsYukonUser user) {
-		return (AuthFuncs.getRolePropertyValue(user.getYukonUser(), RoleTypes.WEB_RESIDENTIAL_CUSTOMER) != null);
-	}
-	
-	public static boolean isCICustomer(StarsYukonUser user) {
-		return (AuthFuncs.getRolePropertyValue(user.getYukonUser(), RoleTypes.WEB_CICUSTOMER) != null);
+		return (AuthFuncs.checkRole(user.getYukonUser(), ResidentialCustomerRole.ROLEID) != null);
 	}
 	
 	public static void handleDBChange(com.cannontech.database.data.lite.LiteBase lite, int typeOfChange) {

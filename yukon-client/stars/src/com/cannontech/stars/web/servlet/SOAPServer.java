@@ -202,7 +202,7 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
     	if (companies != null) {
 	    	for (int i = 0; i < companies.length; i++) {
 	    		if (companies[i].getLiteID() == DEFAULT_ENERGY_COMPANY_ID
-	    			|| companies[i].getWebConfigID() != CtiUtilities.NONE_ID)
+	    			|| companies[i].getUserID() != com.cannontech.user.UserUtils.USER_YUKON_ID)
 		    		companies[i].init();
 	    	}
     	}
@@ -346,7 +346,7 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 			for (int i = 0; i < userList.size(); i++) {
 				StarsYukonUser user = (StarsYukonUser) userList.get(i);
 				if (user.getUserID() == yukonUser.getUserID())
-					return user;
+					return new StarsYukonUser(user);
 			}
 		}
 		
@@ -384,7 +384,7 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 		if (ctrlHist.size() > 0)
 			lastCtrlHistID = ((LiteLMControlHistory) ctrlHist.get(ctrlHist.size() - 1)).getLmCtrlHistID();
 			
-		com.cannontech.database.db.pao.LMControlHistory[] ctrlHists = com.cannontech.database.db.stars.LMControlHistory.getLMControlHistory(
+		com.cannontech.database.db.pao.LMControlHistory[] ctrlHists = com.cannontech.stars.util.LMControlHistoryUtil.getLMControlHistory(
 				new Integer(liteCtrlHist.getGroupID()), new Integer(lastCtrlHistID) );
 		if (ctrlHists != null) {
 			for (int i= 0; i < ctrlHists.length; i++)

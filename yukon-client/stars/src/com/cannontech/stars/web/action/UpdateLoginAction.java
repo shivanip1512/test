@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
+import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteYukonGroup;
@@ -77,6 +78,7 @@ public class UpdateLoginAction implements ActionBase {
             }
             
             int energyCompanyID = user.getEnergyCompanyID();
+			LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
             
             LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation)
             		user.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
@@ -93,9 +95,27 @@ public class UpdateLoginAction implements ActionBase {
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
             
+            // Check to see if the username has duplicates
+            DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+            synchronized (cache) {
+            	Iterator it = cache.getAllYukonUsers().iterator();
+            	while (it.hasNext()) {
+            		LiteYukonUser liteUser = (LiteYukonUser) it.next();
+            		if (liteUser.getUsername().equalsIgnoreCase( updateLogin.getUsername() )) {
+		            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
+		            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "The username is already existed, please enter a different one.") );
+		            	return SOAPUtil.buildSOAPMessage( respOper );
+            		}
+            	}
+            }
+            
             LiteCustomerAccount liteAccount = liteAcctInfo.getCustomerAccount();
             if (liteAccount.getLoginID() == com.cannontech.user.UserUtils.USER_YUKON_ID) {
-            	createLogin( liteAccount, energyCompanyID, updateLogin.getUsername(), updateLogin.getPassword() );
+            	createLogin( liteAccount,
+	            		updateLogin.getUsername(),
+	            		updateLogin.getPassword(),
+	            		energyCompany.getEnergyCompanySetting(EnergyCompanyRole.CUSTOMER_GROUP_NAME)
+	            		);
             }
             else {
             	LiteYukonUser liteUser = com.cannontech.database.cache.functions.YukonUserFuncs.getLiteYukonUser( liteAccount.getLoginID() );
@@ -177,10 +197,8 @@ public class UpdateLoginAction implements ActionBase {
         return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
 	}
 	
-	public static void createLogin(LiteCustomerAccount liteAccount, int energyCompanyID, String username, String password)
+	public static void createLogin(LiteCustomerAccount liteAccount, String username, String password, String groupName)
 	throws com.cannontech.database.TransactionException {
-		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
-		
         com.cannontech.database.data.user.YukonUser dataUser = new com.cannontech.database.data.user.YukonUser();
         com.cannontech.database.db.user.YukonUser dbUser = dataUser.getYukonUser();
         
@@ -191,7 +209,7 @@ public class UpdateLoginAction implements ActionBase {
         	Iterator it = cache.getAllYukonGroups().iterator();
         	while (it.hasNext()) {
         		LiteYukonGroup g = (LiteYukonGroup) it.next();
-        		if (g.getGroupName().equalsIgnoreCase( energyCompany.getEnergyCompanySetting(ServerUtils.CUSTOMER_GROUP_NAME) )) {
+        		if (g.getGroupName().equalsIgnoreCase( groupName )) {
         			liteGroup = g;
         			break;
         		}
@@ -204,11 +222,16 @@ public class UpdateLoginAction implements ActionBase {
         
     	dbUser.setUsername( username );
     	dbUser.setPassword( password );
-    	dbUser.setStatus( "Enabled" );
+    	dbUser.setStatus( com.cannontech.user.UserUtils.STATUS_ENABLED );
         
     	dataUser = (com.cannontech.database.data.user.YukonUser)
         		Transaction.createTransaction( Transaction.INSERT, dataUser ).execute();
-        LiteYukonUser liteUser = new LiteYukonUser( dbUser.getUserID().intValue(), dbUser.getUsername(), dbUser.getPassword(), null );
+        LiteYukonUser liteUser = new LiteYukonUser(
+        		dbUser.getUserID().intValue(),
+        		dbUser.getUsername(),
+        		dbUser.getPassword(),
+        		dbUser.getStatus()
+        		);
         ServerUtils.handleDBChange( liteUser, com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_ADD );
         
         liteAccount.setLoginID( dbUser.getUserID().intValue() );

@@ -73,13 +73,6 @@ public class ProgramSignUpAction implements ActionBase {
 				}
 			progSignUp.setStarsSULMPrograms( programs );
 			
-			if (req.getParameter("UserName") != null && req.getParameter("Password") != null) {
-				StarsLogin login = new StarsLogin();
-				login.setUsername( req.getParameter("UserName") );
-				login.setPassword( req.getParameter("Password") );
-				progSignUp.setStarsLogin( login );
-			}
-			
 			StarsOperation operation = new StarsOperation();
 			operation.setStarsProgramSignUp( progSignUp );
 			
@@ -268,8 +261,6 @@ public class ProgramSignUpAction implements ActionBase {
 					eventBase.setEventDateTime( now );
 					Transaction.createTransaction(Transaction.INSERT, event).execute();
 					
-					// What's the initial status of the program
-					
 					// Add the program to the program list of the account
 	                LiteLMProgram liteProg = energyCompany.getLMProgram( program.getProgramID() );
 	                LiteStarsLMProgram liteStarsProg = new LiteStarsLMProgram( liteProg );
@@ -330,10 +321,6 @@ public class ProgramSignUpAction implements ActionBase {
     		
     		liteAcctInfo.setAppliances( newAppList );
     		liteAcctInfo.setLmPrograms( newProgList );
-            
-            StarsLogin starsLogin = progSignUp.getStarsLogin();
-            if (starsLogin != null)
-            	UpdateLoginAction.createLogin( liteAcctInfo.getCustomerAccount(), energyCompanyID, starsLogin.getUsername(), starsLogin.getPassword() );
             
             if (user != null) {
 				StarsProgramSignUpResponse resp = new StarsProgramSignUpResponse();
@@ -424,9 +411,9 @@ public class ProgramSignUpAction implements ActionBase {
 			
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 			if (user != null) {
-	            user.removeAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_LM_PROGRAM_HISTORY );
-	            
 				StarsCustAccountInformation accountInfo = (StarsCustAccountInformation) user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
+				ServletUtils.removeProgramHistory( accountInfo.getStarsCustomerAccount().getAccountID() );
+				
 				StarsProgramSignUpResponse resp = operation.getStarsProgramSignUpResponse();
 				accountInfo.setStarsLMPrograms( resp.getStarsLMPrograms() );
 				accountInfo.setStarsAppliances( resp.getStarsAppliances() );

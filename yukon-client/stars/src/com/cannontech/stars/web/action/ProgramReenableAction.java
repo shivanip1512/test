@@ -213,7 +213,7 @@ public class ProgramReenableAction implements ActionBase {
         	}
         }
 		
-		String routeStr = (energyCompany == null) ? "" : " select route id " + String.valueOf(energyCompany.getRouteID());
+		String routeStr = (energyCompany == null) ? "" : " select route id " + String.valueOf(energyCompany.getDefaultRouteID());
 		String[] commands = new String[ hwIDList.size() ];
 
         for (int i = 0; i < hwIDList.size(); i++) {

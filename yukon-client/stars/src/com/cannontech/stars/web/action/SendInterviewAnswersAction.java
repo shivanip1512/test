@@ -20,6 +20,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
+import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
@@ -180,7 +181,7 @@ public class SendInterviewAnswersAction implements ActionBase {
             		throw new Exception("Cannot find exit interview question with id = " + answer.getQuestionID());
             }
 			
-            String toStr = energyCompany.getEnergyCompanySetting( ServerUtils.OPTOUT_NOTIFICATION_RECIPIENTS );
+            String toStr = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.OPTOUT_NOTIFICATION_RECIPIENTS );
             if (toStr != null) {
 				StringTokenizer st = new StringTokenizer( toStr, "," );
 				ArrayList toList = new ArrayList();
@@ -189,7 +190,7 @@ public class SendInterviewAnswersAction implements ActionBase {
 				String[] to = new String[ toList.size() ];
 				toList.toArray( to );
 	            
-	            String from = energyCompany.getEnergyCompanySetting( ServerUtils.ADMIN_EMAIL_ADDRESS );
+	            String from = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.ADMIN_EMAIL_ADDRESS );
 				
 				String subject = "Opt Out Notification";
 				

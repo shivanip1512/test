@@ -1585,7 +1585,8 @@ public class StarsLiteFactory {
 			starsCompany.setCompanyAddress( starsAddr );
 		}
 		
-		starsCompany.setTimeZone( liteCompany.getEnergyCompanySetting(ServerUtils.DEFAULT_TIME_ZONE) );
+		starsCompany.setTimeZone(
+				liteCompany.getEnergyCompanySetting(com.cannontech.roles.yukon.EnergyCompanyRole.DEFAULT_TIME_ZONE) );
 		
 		return starsCompany;
 	}

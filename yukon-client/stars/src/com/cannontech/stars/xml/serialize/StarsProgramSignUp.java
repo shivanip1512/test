@@ -43,8 +43,6 @@ public class StarsProgramSignUp implements java.io.Serializable {
 
     private StarsSULMPrograms _starsSULMPrograms;
 
-    private StarsLogin _starsLogin;
-
 
       //----------------/
      //- Constructors -/
@@ -85,16 +83,6 @@ public class StarsProgramSignUp implements java.io.Serializable {
     {
         return this._energyCompanyID;
     } //-- int getEnergyCompanyID() 
-
-    /**
-     * Returns the value of field 'starsLogin'.
-     * 
-     * @return the value of field 'starsLogin'.
-    **/
-    public StarsLogin getStarsLogin()
-    {
-        return this._starsLogin;
-    } //-- StarsLogin getStarsLogin() 
 
     /**
      * Returns the value of field 'starsSULMPrograms'.
@@ -170,16 +158,6 @@ public class StarsProgramSignUp implements java.io.Serializable {
         this._energyCompanyID = energyCompanyID;
         this._has_energyCompanyID = true;
     } //-- void setEnergyCompanyID(int) 
-
-    /**
-     * Sets the value of field 'starsLogin'.
-     * 
-     * @param starsLogin the value of field 'starsLogin'.
-    **/
-    public void setStarsLogin(StarsLogin starsLogin)
-    {
-        this._starsLogin = starsLogin;
-    } //-- void setStarsLogin(StarsLogin) 
 
     /**
      * Sets the value of field 'starsSULMPrograms'.

@@ -34,8 +34,8 @@ import com.cannontech.stars.xml.serialize.StarsCustomerAccount;
 import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsSiteInformation;
+import com.cannontech.stars.xml.serialize.StarsSuccess;
 import com.cannontech.stars.xml.serialize.StarsUpdateCustomerAccount;
-import com.cannontech.stars.xml.serialize.StarsUpdateCustomerAccountResponse;
 import com.cannontech.stars.xml.serialize.StreetAddress;
 import com.cannontech.stars.xml.serialize.Substation;
 import com.cannontech.stars.xml.util.SOAPUtil;
@@ -329,19 +329,11 @@ public class UpdateCustAccountAction implements ActionBase {
             }
             
             ServerUtils.handleDBChange( liteAcctInfo, DBChangeMsg.CHANGE_TYPE_UPDATE );
-
-			StarsCustAccountInformation starsAcctInfo = null;
-			if (SOAPServer.isClientLocal()) {
-				starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteAcctInfo );
-				user.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, starsAcctInfo);
-			}
-			else
-				starsAcctInfo = StarsLiteFactory.createStarsCustAccountInformation( liteAcctInfo, energyCompanyID, true );
-				
-			StarsUpdateCustomerAccountResponse resp = new StarsUpdateCustomerAccountResponse();
-			resp.setStarsCustAccountInformation( starsAcctInfo );
-
-            respOper.setStarsUpdateCustomerAccountResponse( resp  );
+            
+            StarsSuccess success = new StarsSuccess();
+            success.setDescription( "Customer account updated successfully" );
+            
+            respOper.setStarsSuccess( success );
             return SOAPUtil.buildSOAPMessage( respOper );
         }
         catch (Exception e) {
@@ -370,14 +362,17 @@ public class UpdateCustAccountAction implements ActionBase {
 				return failure.getStatusCode();
 			}
 			
-			StarsUpdateCustomerAccountResponse resp = operation.getStarsUpdateCustomerAccountResponse();
-			if (resp == null) return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
+			if (operation.getStarsSuccess() == null)
+				return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
 			
-			if (!SOAPClient.isServerLocal()) {
-				StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
-				user.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, resp.getStarsCustAccountInformation());
-			}
+			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
+			StarsCustAccountInformation accountInfo = (StarsCustAccountInformation)
+					user.getAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
 			
+			StarsUpdateCustomerAccount updateAccount = SOAPUtil.parseSOAPMsgForOperation(reqMsg).getStarsUpdateCustomerAccount();
+			accountInfo.setStarsCustomerAccount( (StarsCustomerAccount)
+					StarsFactory.newStarsCustAccount(updateAccount, StarsCustomerAccount.class) );
+
             return 0;
         }
         catch (Exception e) {

@@ -50,7 +50,8 @@ public class SendControlOddsTask implements Runnable {
 		CTILogger.info( "*** Start SendControlOdds timer task ***" );
 		
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
-		String from = energyCompany.getEnergyCompanySetting( ServerUtils.ADMIN_EMAIL_ADDRESS );
+		String from = energyCompany.getEnergyCompanySetting(
+				com.cannontech.roles.yukon.EnergyCompanyRole.ADMIN_EMAIL_ADDRESS );
 		
 		ArrayList progList = new ArrayList();	// Programs that are eligible for notification
 		ArrayList categories = energyCompany.getAllApplianceCategories();

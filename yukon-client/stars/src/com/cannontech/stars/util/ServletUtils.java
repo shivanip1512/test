@@ -86,6 +86,7 @@ public class ServletUtils {
 	public static final String ATT_CALL_TRACKING_NUMBER = "CALL_TRACKING_NUMBER";
 	public static final String ATT_ORDER_TRACKING_NUMBER = "ORDER_TRACKING_NUMBER";
 	public static final String ATT_NEW_ACCOUNT_WIZARD = "NEW_ACCOUNT_WIZARD";
+	public static final String ATT_NEW_CUSTOMER_ACCOUNT = "NEW_CUSTOMER_ACCOUNT";
 	
 	public static final String IN_SERVICE = "In Service";
 	public static final String OUT_OF_SERVICE = "Out of Service";
@@ -164,13 +165,10 @@ public class ServletUtils {
     	if (startDate == null || stopDate == null) return "";
     	
     	int duration = (int) ((stopDate.getTime() - startDate.getTime()) * 0.001 / (3600 * 24) + 0.5);
-    	String durStr = String.valueOf(duration);
     	if (duration > 1)
-    		durStr += " Days";
+    		return duration + " Days";
     	else
-    		durStr += " Day";
-    		
-    	return durStr;
+    		return "1 Day";
     }
     
     public static ProgramHistory[] getProgramHistory(int accountID, StarsLMPrograms programs) {
@@ -392,15 +390,16 @@ public class ServletUtils {
     	sBuf.append( "<br>" );
     	if (starsAddr.getStreetAddr2().trim().length() > 0)
     		sBuf.append( starsAddr.getStreetAddr2() ).append( "<br>" );
-    	sBuf.append( starsAddr.getCity() ).append( ", " )
-    		.append( starsAddr.getState() ).append( " " )
+    	if (starsAddr.getCity().trim().length() > 0)
+	    	sBuf.append( starsAddr.getCity() ).append( ", " );
+    	sBuf.append( starsAddr.getState() ).append( " " )
     		.append( starsAddr.getZip() );
     	
     	return sBuf.toString();
     }
     
     public static String capitalize(String word) {
-    	return word.substring(0,1).toUpperCase().concat( word.substring(1) );
+    	return word.substring(0,1).toUpperCase().concat( word.substring(1).toLowerCase() );
     }
 
 	public static StarsCustListEntry getStarsCustListEntry(java.util.Hashtable selectionLists, String listName, int yukonDefID) {

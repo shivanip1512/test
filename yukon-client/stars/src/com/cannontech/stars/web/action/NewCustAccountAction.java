@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
+import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.lite.stars.LiteAddress;
@@ -30,6 +31,7 @@ import com.cannontech.stars.xml.serialize.StarsCallReportHistory;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsCustomerAccount;
 import com.cannontech.stars.xml.serialize.StarsFailure;
+import com.cannontech.stars.xml.serialize.StarsGetEnergyCompanySettingsResponse;
 import com.cannontech.stars.xml.serialize.StarsInventories;
 import com.cannontech.stars.xml.serialize.StarsLMPrograms;
 import com.cannontech.stars.xml.serialize.StarsNewCustomerAccount;
@@ -58,6 +60,9 @@ public class NewCustAccountAction implements ActionBase {
 	 */
 	public SOAPMessage build(HttpServletRequest req, HttpSession session) {
 		try {
+            StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
+            if (user == null) return null;
+            
 			StarsNewCustomerAccount newAccount = new StarsNewCustomerAccount();
 			StarsCustomerAccount account = new StarsCustomerAccount();
 			
@@ -67,7 +72,9 @@ public class NewCustAccountAction implements ActionBase {
             account.setAccountNotes( req.getParameter("AcctNotes") );
             account.setPropertyNumber( req.getParameter("PropNo") );
             account.setPropertyNotes( req.getParameter("PropNotes") );
-            account.setTimeZone( ServletUtils.getTimeZoneStr(Calendar.getInstance().getTimeZone()) );
+			StarsGetEnergyCompanySettingsResponse ecSettings =
+					(StarsGetEnergyCompanySettingsResponse) user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
+            account.setTimeZone( ecSettings.getStarsEnergyCompany().getTimeZone() );
 
             StreetAddress propAddr = new StreetAddress();
             propAddr.setStreetAddr1( req.getParameter("SAddr1") );
@@ -134,6 +141,7 @@ public class NewCustAccountAction implements ActionBase {
 	        }
 
 			newAccount.setStarsCustomerAccount( account );
+			user.setAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_NEW_CUSTOMER_ACCOUNT, newAccount );
 
             StarsOperation operation = new StarsOperation();
             operation.setStarsNewCustomerAccount( newAccount );
@@ -169,6 +177,19 @@ public class NewCustAccountAction implements ActionBase {
             StarsNewCustomerAccount newAccount = reqOper.getStarsNewCustomerAccount();
             StarsCustomerAccount starsAccount = newAccount.getStarsCustomerAccount();
             
+            // Check to see if the account number has duplicates
+            String sql = "SELECT 1 FROM CustomerAccount acct, ECToAccountMapping map "
+            		   + "WHERE acct.AccountID = map.AccountID AND map.EnergyCompanyID = " + user.getEnergyCompanyID()
+            		   + " AND UPPER(acct.AccountNumber) = UPPER('" + starsAccount.getAccountNumber() + "')";
+            com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
+            		sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+            stmt.execute();
+            if (stmt.getRowCount() > 0) {
+            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
+            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "The account number is already existed, please enter a different one.") );
+            	return SOAPUtil.buildSOAPMessage( respOper );
+            }
+            
             /* Create contacts */
             com.cannontech.database.data.customer.Contact primContact = new com.cannontech.database.data.customer.Contact();
             StarsFactory.setCustomerContact( primContact, starsAccount.getPrimaryContact() );
@@ -202,7 +223,7 @@ public class NewCustAccountAction implements ActionBase {
             
             String timeZone = starsAccount.getTimeZone();
             if (timeZone == null)
-            	timeZone = energyCompany.getEnergyCompanySetting( ServerUtils.DEFAULT_TIME_ZONE );
+            	timeZone = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.DEFAULT_TIME_ZONE );
             if (timeZone == null)
             	timeZone = "(none)";
         	customerDB.setTimeZone( timeZone );

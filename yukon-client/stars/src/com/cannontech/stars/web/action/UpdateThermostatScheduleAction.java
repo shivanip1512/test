@@ -57,8 +57,8 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 	
 	private static final java.text.SimpleDateFormat[] timeFormat =
 	{
+		new java.text.SimpleDateFormat("hh:mm a"),
 		new java.text.SimpleDateFormat("HH:mm"),
-		new java.text.SimpleDateFormat("hh:mm a")
 	};
 
 	/**
@@ -190,7 +190,12 @@ public class UpdateThermostatScheduleAction implements ActionBase {
     		StarsUpdateThermostatScheduleResponse resp = new StarsUpdateThermostatScheduleResponse();
     		
 			LiteLMHardwareBase liteHw = energyCompany.getLMHardware( updateSched.getInventoryID(), true );
-			String routeStr = (energyCompany == null) ? "" : " select route id " + String.valueOf(energyCompany.getRouteID());
+    		if (liteHw.getManufactureSerialNumber().trim().length() == 0) {
+            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
+            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "The manufacturer serial # of the hardware cannot be empty") );
+            	return SOAPUtil.buildSOAPMessage( respOper );
+    		}
+			String routeStr = (energyCompany == null) ? "" : " select route id " + String.valueOf(energyCompany.getDefaultRouteID());
 			
 			LiteStarsThermostatSettings liteSettings = liteAcctInfo.getThermostatSettings();
 			LiteStarsThermostatSettings liteDftSettings = energyCompany.getDefaultThermostatSettings();

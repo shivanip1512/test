@@ -1,4 +1,4 @@
-package com.cannontech.database.db.stars;
+package com.cannontech.stars.util;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -14,11 +14,11 @@ import com.cannontech.stars.xml.serialize.types.StarsCtrlHistPeriod;
  * @version 1.0
  */
 
-public class LMControlHistory {
+public class LMControlHistoryUtil {
 	
 	public static final String TABLE_NAME = "LMControlHistory";
 
-    public LMControlHistory() {
+    public LMControlHistoryUtil() {
     }
 
     private static void clearTime(Calendar cal) {

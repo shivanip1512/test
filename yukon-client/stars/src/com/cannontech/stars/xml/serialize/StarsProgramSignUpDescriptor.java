@@ -175,38 +175,6 @@ public class StarsProgramSignUpDescriptor extends org.exolab.castor.xml.util.XML
         fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
-        //-- _starsLogin
-        desc = new XMLFieldDescriptorImpl(StarsLogin.class, "_starsLogin", "stars-Login", NodeType.Element);
-        handler = (new XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                StarsProgramSignUp target = (StarsProgramSignUp) object;
-                return target.getStarsLogin();
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    StarsProgramSignUp target = (StarsProgramSignUp) object;
-                    target.setStarsLogin( (StarsLogin) value);
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new StarsLogin();
-            }
-        } );
-        desc.setHandler(handler);
-        desc.setMultivalued(false);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _starsLogin
-        fieldValidator = new FieldValidator();
-        desc.setValidator(fieldValidator);
-        
     } //-- com.cannontech.stars.xml.serialize.StarsProgramSignUpDescriptor()
 
 

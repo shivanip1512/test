@@ -199,11 +199,14 @@ public class SOAPClient extends HttpServlet {
 				actions.addAction( new UpdateLoginAction(), req, session );
 				
 			clientAction = (ActionBase) actions;
-			if (req.getParameter("Wizard") != null)
+			if (req.getParameter("Wizard") != null) {
 				destURL = "/operator/Consumer/Programs.jsp?Wizard=true";
-			else
+				errorURL = "/operator/Consumer/New.jsp?Wizard=true";
+			}
+			else {
 				destURL = "/operator/Consumer/Update.jsp";
-			errorURL = "/operator/Consumer/New.jsp";
+				errorURL = "/operator/Consumer/New.jsp";
+			}
 		}
 		else if (action.equalsIgnoreCase("ProgramSignUp")) {
             MultiAction actions = new MultiAction();
@@ -385,12 +388,8 @@ public class SOAPClient extends HttpServlet {
         }
         else if (action.equalsIgnoreCase("UpdateThermostatSchedule")) {
         	clientAction = new UpdateThermostatScheduleAction();
-        	
-        	referer = req.getParameter( ServletUtils.ATT_REFERRER );
-        	if (referer == null)	// Request is redirected from servlet UpdateThermostat
-        		referer = (String) session.getAttribute( ServletUtils.ATT_REFERRER );
-        	destURL = referer;
-        	errorURL = referer;
+        	destURL = req.getParameter( ServletUtils.ATT_REDIRECT );
+        	errorURL = req.getParameter( ServletUtils.ATT_REFERRER );
         }
         else if (action.equalsIgnoreCase("UpdateThermostatOption")) {
         	clientAction = new UpdateThermostatManualOptionAction();

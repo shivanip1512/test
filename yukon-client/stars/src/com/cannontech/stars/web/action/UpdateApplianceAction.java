@@ -63,8 +63,10 @@ public class UpdateApplianceAction implements ActionBase {
 			appliance.setYearManufactured( req.getParameter("ManuYear") );
 			appliance.setNotes( req.getParameter("Notes") );
 			appliance.setModelNumber( req.getParameter("ModelNo") );
-			appliance.setKWCapacity( Integer.parseInt(req.getParameter("KWCapacity")) );
-			appliance.setEfficiencyRating( Integer.parseInt(req.getParameter("EffRating")) );
+			if (req.getParameter("KWCapacity").trim().length() > 0)
+				appliance.setKWCapacity( Integer.parseInt(req.getParameter("KWCapacity")) );
+			if (req.getParameter("EffRating").trim().length() > 0)
+				appliance.setEfficiencyRating( Integer.parseInt(req.getParameter("EffRating")) );
 			
 			Manufacturer manu = (Manufacturer) StarsFactory.newStarsCustListEntry(
 					ServletUtils.getStarsCustListEntryByID(
@@ -274,7 +276,8 @@ public class UpdateApplianceAction implements ActionBase {
             }
             
     		liteApp.setManufacturerID( updateApp.getManufacturer().getEntryID() );
-    		liteApp.setYearManufactured( Integer.parseInt(updateApp.getYearManufactured()) );
+    		if (updateApp.getYearManufactured().trim().length() > 0)
+	    		liteApp.setYearManufactured( Integer.parseInt(updateApp.getYearManufactured()) );
     		liteApp.setLocationID( updateApp.getLocation().getEntryID() );
     		liteApp.setNotes( updateApp.getNotes() );
     		liteApp.setModelNumber( updateApp.getModelNumber() );

@@ -4,6 +4,7 @@ import java.util.Vector;
 
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListFuncs;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.customer.Contact;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.db.contact.ContactNotification;
@@ -16,14 +17,17 @@ import com.cannontech.database.db.stars.report.CallReportBase;
 import com.cannontech.database.db.stars.report.WorkOrderBase;
 import com.cannontech.database.db.web.YukonWebConfiguration;
 import com.cannontech.stars.web.servlet.SOAPServer;
+import com.cannontech.stars.xml.serialize.BillingAddress;
 import com.cannontech.stars.xml.serialize.CallType;
 import com.cannontech.stars.xml.serialize.Email;
+import com.cannontech.stars.xml.serialize.PrimaryContact;
 import com.cannontech.stars.xml.serialize.StarsApp;
 import com.cannontech.stars.xml.serialize.StarsCallReport;
 import com.cannontech.stars.xml.serialize.StarsCallRprt;
 import com.cannontech.stars.xml.serialize.StarsContactNotification;
 import com.cannontech.stars.xml.serialize.StarsCustAccount;
 import com.cannontech.stars.xml.serialize.StarsCustListEntry;
+import com.cannontech.stars.xml.serialize.StarsCustomerAccount;
 import com.cannontech.stars.xml.serialize.StarsCustResidence;
 import com.cannontech.stars.xml.serialize.StarsCustomerAddress;
 import com.cannontech.stars.xml.serialize.StarsCustomerContact;
@@ -33,6 +37,8 @@ import com.cannontech.stars.xml.serialize.StarsSiteInformation;
 import com.cannontech.stars.xml.serialize.StarsSrvReq;
 import com.cannontech.stars.xml.serialize.StarsThermostatSchedule;
 import com.cannontech.stars.xml.serialize.StarsWebConfig;
+import com.cannontech.stars.xml.serialize.StreetAddress;
+import com.cannontech.stars.xml.serialize.Substation;
 
 /**
  * @author yao
@@ -232,6 +238,31 @@ public class StarsFactory {
     	siteInfo.setServiceVoltage( starsSiteInfo.getServiceVoltage() );
     }
     
+    public static StarsCustomerAccount newStarsCustomerAccount() {
+    	StarsCustomerAccount newAccount = new StarsCustomerAccount();
+        newAccount.setAccountNumber( "" );
+        newAccount.setIsCommercial( false );
+        newAccount.setCompany( "" );
+        newAccount.setAccountNotes( "" );
+        newAccount.setPropertyNumber( "" );
+        newAccount.setPropertyNotes( "" );
+        newAccount.setStreetAddress( (StreetAddress)newStarsCustomerAddress(StreetAddress.class) );
+        newAccount.setBillingAddress( (BillingAddress)newStarsCustomerAddress(BillingAddress.class) );
+        newAccount.setPrimaryContact( (PrimaryContact)newStarsCustomerContact(PrimaryContact.class) );
+        
+        Substation sub = new Substation();
+        sub.setEntryID( CtiUtilities.NONE_ID );
+        StarsSiteInformation siteInfo = new StarsSiteInformation();
+        siteInfo.setSubstation( sub );
+        siteInfo.setFeeder( "" );
+        siteInfo.setPole( "" );
+        siteInfo.setTransformerSize( "" );
+        siteInfo.setServiceVoltage( "" );
+        newAccount.setStarsSiteInformation( siteInfo );
+    	
+    	return newAccount;
+    }
+    
     
     /* StarsFailure factory methods */
 
@@ -245,6 +276,25 @@ public class StarsFactory {
 	
 	
 	/* StarsCustomerAddress factory methods */
+	
+	public static StarsCustomerAddress newStarsCustomerAddress(Class type) {
+        try {
+            StarsCustomerAddress newAddr = (StarsCustomerAddress) type.newInstance();
+	        newAddr.setStreetAddr1( "" );
+	        newAddr.setStreetAddr2( "" );
+	        newAddr.setCity( "" );
+	        newAddr.setState( "" );
+	        newAddr.setZip( "" );
+	        newAddr.setCounty( "" );
+	        
+	        return newAddr;
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+	}
 
 	public static StarsCustomerAddress newStarsCustomerAddress(StarsCustomerAddress addr, Class type) {
         try {
@@ -285,6 +335,25 @@ public class StarsFactory {
             newNotif.setNotification( notification );
             
             return newNotif;
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+    
+	public static StarsCustomerContact newStarsCustomerContact(Class type) {
+        try {
+            StarsCustomerContact newContact = (StarsCustomerContact) type.newInstance();
+            newContact.setContactID( CtiUtilities.NONE_ID );
+            newContact.setLastName( "" );
+            newContact.setFirstName( "" );
+            newContact.setHomePhone( "" );
+            newContact.setWorkPhone( "" );
+            newContact.setEmail( (Email)newStarsContactNotification(false, "", Email.class) );
+
+            return newContact;
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -337,7 +406,7 @@ public class StarsFactory {
 	        contactNotifVect.add( notif );
         }
         
-        if (starsContact.getEmail().getNotification().length() > 0) {
+        if (starsContact.getEmail() != null && starsContact.getEmail().getNotification().length() > 0) {
 	        ContactNotification notif = new ContactNotification();
 	        notif.setNotificationCatID( new Integer(SOAPServer.YUK_LIST_ENTRY_ID_EMAIL) );
 	        notif.setNotification( starsContact.getEmail().getNotification() );

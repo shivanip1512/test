@@ -53,6 +53,9 @@ import com.cannontech.stars.xml.util.StarsConstants;
  * Window>Preferences>Java>Code Generation.
  */
 public class ProgramOptOutAction implements ActionBase {
+	
+	public static final int REPEAT_LAST = -1;
+	public static final int OPTOUT_TODAY = -2;
 
 	/**
 	 * @see com.cannontech.stars.web.action.ActionBase#build(HttpServletRequest, HttpSession)
@@ -73,15 +76,21 @@ public class ProgramOptOutAction implements ActionBase {
             			YukonListEntryTypes.YUK_DEF_ID_OPTOUT_PERIOD_TOMORROW
             			).getEntryID() )
             		optOut.setStartDateTime( com.cannontech.util.ServletUtil.getTommorow() );
-            	if (startDateID == ServletUtils.getStarsCustListEntry(
+            	else if (startDateID == ServletUtils.getStarsCustListEntry(
+            			selectionLists,
+            			YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD,
+            			YukonListEntryTypes.YUK_DEF_ID_OPTOUT_PERIOD_TODAY
+            			).getEntryID() )
+            		optOut.setPeriod( OPTOUT_TODAY );
+            	else if (startDateID == ServletUtils.getStarsCustListEntry(
             			selectionLists,
             			YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD,
             			YukonListEntryTypes.YUK_DEF_ID_OPTOUT_PERIOD_REPEAT_LAST
             			).getEntryID() )
-            		optOut.setPeriod( -1 );
+            		optOut.setPeriod( REPEAT_LAST );
             }
             
-            if (optOut.getPeriod() != -1) {
+            if (optOut.getPeriod() != OPTOUT_TODAY && optOut.getPeriod() != REPEAT_LAST) {
 	            int period = 1;
 	            if (req.getParameter("OptOutPeriod") != null) {
 		            String periodStr = req.getParameter("OptOutPeriod");
@@ -156,16 +165,57 @@ public class ProgramOptOutAction implements ActionBase {
             	
             	resp.setDescription( "Opt out command has been sent out successfully" );
             }
-            else if (optOut.getPeriod() == -1) {
+            else if (optOut.getPeriod() == OPTOUT_TODAY) {
+            	int offHours = (int)((com.cannontech.util.ServletUtil.getTommorow().getTime() - new Date().getTime()) * 0.001 / 3600 + 0.5);
+				String[] commands = getOptOutCommands( liteAcctInfo, energyCompany, offHours );
+            	for (int i = 0; i < commands.length; i++)
+            		ServerUtils.sendCommand( commands[i] );
+            	
+            	OptOutEventQueue.OptOutEvent event = new OptOutEventQueue.OptOutEvent();
+            	event.setStartDateTime( com.cannontech.util.ServletUtil.getTommorow().getTime() );
+            	event.setPeriod( -1 );	// Reenable event
+            	event.setAccountID( liteAcctInfo.getCustomerAccount().getAccountID() );
+            	
+				commands = ProgramReenableAction.getReenableCommands( liteAcctInfo, energyCompany );
+            	StringBuffer cmd = new StringBuffer();
+            	if (commands.length > 0) {
+            		cmd.append( commands[0] );
+            		for (int i = 1; i < commands.length; i++)
+            			cmd.append( "," ).append( commands[i] );
+            	}
+            	event.setCommand( cmd.toString() );
+            	energyCompany.getOptOutEventQueue().addEvent( event );
+            	
+            	resp = processOptOut( liteAcctInfo, energyCompany, optOut );
+            }
+            else if (optOut.getPeriod() == REPEAT_LAST) {
             	// Repeat the last opt out command
             	repeatLast( liteAcctInfo, energyCompany );
             	resp.setDescription( "The last opt out command has been resent" );
             }
             else {
-            	// The opt out commands should be sent out immediately
+            	// Send opt out commands immediately, and store the reenable command in memory
 				String[] commands = getOptOutCommands( liteAcctInfo, energyCompany, optOut.getPeriod() * 24 );
             	for (int i = 0; i < commands.length; i++)
             		ServerUtils.sendCommand( commands[i] );
+            	
+            	OptOutEventQueue.OptOutEvent event = new OptOutEventQueue.OptOutEvent();
+				Calendar cal = Calendar.getInstance();
+				cal.add( Calendar.DATE, optOut.getPeriod() );
+            	event.setStartDateTime( cal.getTime().getTime() );
+            	event.setPeriod( -1 );	// Reenable event
+            	event.setAccountID( liteAcctInfo.getCustomerAccount().getAccountID() );
+            	
+				commands = ProgramReenableAction.getReenableCommands( liteAcctInfo, energyCompany );
+            	StringBuffer cmd = new StringBuffer();
+            	if (commands.length > 0) {
+            		cmd.append( commands[0] );
+            		for (int i = 1; i < commands.length; i++)
+            			cmd.append( "," ).append( commands[i] );
+            	}
+            	event.setCommand( cmd.toString() );
+            	energyCompany.getOptOutEventQueue().addEvent( event );
+            	
             	resp = processOptOut( liteAcctInfo, energyCompany, optOut );
             }
 
@@ -276,7 +326,7 @@ public class ProgramOptOutAction implements ActionBase {
         	}
         }
 		
-		String routeStr = (energyCompany == null) ? "" : " select route id " + String.valueOf(energyCompany.getRouteID());
+		String routeStr = (energyCompany == null) ? "" : " select route id " + String.valueOf(energyCompany.getDefaultRouteID());
 		String[] commands = new String[ hwIDList.size() ];
 
         for (int i = 0; i < hwIDList.size(); i++) {
@@ -351,10 +401,16 @@ public class ProgramOptOutAction implements ActionBase {
 		
 		Date optOutDate = optOut.getStartDateTime();
 		if (optOutDate == null) optOutDate = new Date();
-        Calendar cal = Calendar.getInstance();
-        cal.setTime( optOutDate );
-        cal.add( Calendar.DATE, optOut.getPeriod() );
-        Date reenableDate = cal.getTime();
+		Date reenableDate = null;
+		if (optOut.getPeriod() == OPTOUT_TODAY) {
+			reenableDate = com.cannontech.util.ServletUtil.getTommorow();
+		}
+		else {
+	        Calendar cal = Calendar.getInstance();
+	        cal.setTime( optOutDate );
+	        cal.add( Calendar.DATE, optOut.getPeriod() );
+	        reenableDate = cal.getTime();
+		}
         
         // List of hardware IDs to be disabled
         ArrayList hwIDList = new ArrayList();

@@ -8,7 +8,6 @@ import java.util.Properties;
 import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.constants.RoleTypes;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonListFuncs;
@@ -17,6 +16,7 @@ import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.functions.AuthFuncs;
+import com.cannontech.database.cache.functions.YukonUserFuncs;
 import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteContact;
@@ -31,6 +31,9 @@ import com.cannontech.database.db.stars.appliance.ApplianceHeatPump;
 import com.cannontech.database.db.stars.appliance.ApplianceIrrigation;
 import com.cannontech.database.db.stars.appliance.ApplianceStorageHeat;
 import com.cannontech.database.db.stars.appliance.ApplianceWaterHeater;
+import com.cannontech.roles.operator.ConsumerInfoRole;
+import com.cannontech.roles.operator.OddsForControlRole;
+import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.util.OptOutEventQueue;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.web.StarsYukonUser;
@@ -62,11 +65,11 @@ import com.cannontech.stars.xml.serialize.types.StarsThermoModeSettings;
 public class LiteStarsEnergyCompany extends LiteBase {
 	
 	public static final int FAKE_LIST_ID = -9999;	// Magic number for YukonSelectionList ID, used for substation and service company list
+	public static final int INVALID_ROUTE_ID = -1;	// Mark that a valid default route id is not found, and prevent futher attempts
 	
 	private String name = null;
-	private int routeID = CtiUtilities.NONE_ID;
-	private int webConfigID = CtiUtilities.NONE_ID;
 	private int primaryContactID = CtiUtilities.NONE_ID;
+	private int userID = com.cannontech.user.UserUtils.USER_YUKON_ID;
 	
 	private ArrayList custAccountInfos = null;	// List of LiteStarsCustAccountInformation
 	private ArrayList customerContacts = null;	// List of LiteCustomerContact
@@ -81,12 +84,12 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	private ArrayList interviewQuestions = null;	// List of LiteInterviewQuestion
 	private ArrayList customerFAQs = null;		// List of LiteCustomerFAQ
 	private LiteStarsThermostatSettings dftThermSettings = null;
-	private Properties energyCompanySettings = null;
 	
 	private Object[][] thermModeSettings = null;	// Map between webConfigurationID(Integer) and StarsThermoModeSettings
 	private int nextCallNo = 0;
 	private int nextOrderNo = 0;
 	
+	private int dftRouteID = CtiUtilities.NONE_ID;
 	private OptOutEventQueue optOutEventQueue = null;
 	
 	
@@ -118,9 +121,8 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		setLiteType( LiteTypes.ENERGY_COMPANY );
 		setLiteID( energyCompany.getEnergyCompanyID().intValue() );
 		setName( energyCompany.getName() );
-		setRouteID( energyCompany.getRouteID().intValue() );
-		setWebConfigID( energyCompany.getWebConfigID().intValue() );
 		setPrimaryContactID( energyCompany.getPrimaryContactID().intValue() );
+		//setUserID( energyCompany.getUserID().intValue() );
 	}
 	
 	public Integer getEnergyCompanyID() {
@@ -136,43 +138,11 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	}
 
 	/**
-	 * Returns the routeID.
-	 * @return int
-	 */
-	public int getRouteID() {
-		return routeID;
-	}
-
-	/**
 	 * Sets the name.
 	 * @param name The name to set
 	 */
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	/**
-	 * Sets the routeID.
-	 * @param routeID The routeID to set
-	 */
-	public void setRouteID(int routeID) {
-		this.routeID = routeID;
-	}
-	
-	/**
-	 * Returns the webConfigID.
-	 * @return int
-	 */
-	public int getWebConfigID() {
-		return webConfigID;
-	}
-
-	/**
-	 * Sets the webConfigID.
-	 * @param webConfigID The webConfigID to set
-	 */
-	public void setWebConfigID(int webConfigID) {
-		this.webConfigID = webConfigID;
 	}
 
 	/**
@@ -192,13 +162,100 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	}
 
 	/**
+	 * Returns the userID.
+	 * @return int
+	 */
+	public int getUserID() {
+		return userID;
+	}
+
+	/**
+	 * Sets the userID.
+	 * @param userID The userID to set
+	 */
+	public void setUserID(int userID) {
+		this.userID = userID;
+	}
+
+	
+	public int getDefaultRouteID() {
+		if (dftRouteID == INVALID_ROUTE_ID) return dftRouteID;
+		
+		if (dftRouteID == CtiUtilities.NONE_ID) {
+			String dbAlias = com.cannontech.common.util.CtiUtilities.getDatabaseAlias();
+			
+		    String sql = "select GENERICMACRO.CHILDID from OPERATORSERIALGROUP,GENERICMACRO "
+		    		   + "WHERE GENERICMACRO.OWNERID=OPERATORSERIALGROUP.LMGROUPID AND OPERATORSERIALGROUP.LOGINID=" + getUserID()
+		    		   + " ORDER BY GENERICMACRO.CHILDORDER";
+		    		   
+		    Object[][] serialGroupIDs = com.cannontech.util.ServletUtil.executeSQL(
+		    		dbAlias, sql, new Class[] { Integer.class } );
+			
+			// get a serial group whose serial number is set to 0, the route id of this group is the default route id
+		    if (serialGroupIDs != null && serialGroupIDs.length > 0) {
+		    	
+				// get versacom serial groups
+			    sql = "SELECT YUKONPAOBJECT.PAONAME,LMGROUPVERSACOM.SERIALADDRESS,LMGROUPVERSACOM.DEVICEID,LMGROUPVERSACOM.ROUTEID "
+			    	+ "FROM YUKONPAOBJECT,LMGROUPVERSACOM WHERE YUKONPAOBJECT.PAOBJECTID=LMGROUPVERSACOM.DEVICEID AND ";
+			    for (int i = 0; i < serialGroupIDs.length; i++) {
+			        if( i == 0 )
+			            sql += "(LMGROUPVERSACOM.DEVICEID=" + serialGroupIDs[i][0];
+			        else
+			            sql += " OR LMGROUPVERSACOM.DEVICEID=" + serialGroupIDs[i][0];
+			    }
+			    sql += ")";
+			
+				Object[][] versacomNameSerial = com.cannontech.util.ServletUtil.executeSQL(
+						dbAlias, sql, new Class[] { String.class, Integer.class, Integer.class, Integer.class } );
+				
+				if (versacomNameSerial != null) {
+					for (int i = 0; i < versacomNameSerial.length; i++) {
+						if (((Integer) versacomNameSerial[i][1]).intValue() == 0) {
+							dftRouteID = ((Integer) versacomNameSerial[i][3]).intValue();
+							return dftRouteID;
+						}
+					}
+				}
+				
+			  	// get expresscom serial groups 
+				sql = "SELECT YUKONPAOBJECT.PAONAME,LMGROUPEXPRESSCOM.SERIALNUMBER,LMGROUPEXPRESSCOM.LMGROUPID,LMGROUPEXPRESSCOM.ROUTEID "
+					+ "FROM YUKONPAOBJECT,LMGROUPEXPRESSCOM WHERE YUKONPAOBJECT.PAOBJECTID=LMGROUPEXPRESSCOM.LMGROUPID AND ";
+			    for (int i = 0; i < serialGroupIDs.length; i++) {
+			        if( i == 0 )
+			            sql += "(LMGROUPEXPRESSCOM.LMGROUPID=" + serialGroupIDs[i][0];
+			        else
+			            sql += " OR LMGROUPEXPRESSCOM.LMGROUPID=" + serialGroupIDs[i][0];
+			    }
+			    sql += ")";
+			   
+			    Object[][] expresscomNameSerial = com.cannontech.util.ServletUtil.executeSQL(
+			    		dbAlias, sql, new Class[] { String.class, Integer.class, Integer.class, Integer.class } );
+				
+				if (expresscomNameSerial != null) {
+					for (int i = 0; i < expresscomNameSerial.length; i++) {
+						if (((Integer) expresscomNameSerial[i][1]).intValue() == 0) {
+							dftRouteID = ((Integer) expresscomNameSerial[i][3]).intValue();
+							return dftRouteID;
+						}
+					}
+				}
+		    }
+			
+	    	CTILogger.info( "WARNING: no default route id found for energy company #" + getLiteID() );
+	    	dftRouteID = INVALID_ROUTE_ID;
+		}
+    	
+		return dftRouteID;
+	}
+
+	/**
 	 * Returns the optOutEventQueue.
 	 * @return OptOutEventQueue
 	 */
 	public OptOutEventQueue getOptOutEventQueue() {
 		if (optOutEventQueue == null)
 			try {
-				optOutEventQueue = new OptOutEventQueue( getEnergyCompanySetting(ServerUtils.OPTOUT_COMMAND_FILE) );
+				optOutEventQueue = new OptOutEventQueue( getEnergyCompanySetting(EnergyCompanyRole.OPTOUT_COMMAND_FILE) );
 				optOutEventQueue.syncFromFile();
 			}
 			catch (IOException e) {
@@ -211,7 +268,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	public void init() {
 		getAllSelectionLists();
 		loadDefaultThermostatSettings();
-		loadEnergyCompanySettings();
 		
 		if (getLiteID() != SOAPServer.DEFAULT_ENERGY_COMPANY_ID) {
 			getAllLMPrograms();
@@ -237,9 +293,10 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		customerFAQs = null;
 		dftThermSettings = null;
 		thermModeSettings = null;
-		energyCompanySettings = null;
 		nextCallNo = 0;
 		nextOrderNo = 0;
+		
+		dftRouteID = CtiUtilities.NONE_ID;
 		optOutEventQueue = null;
 		
 		starsEnergyCompany = null;
@@ -253,59 +310,9 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		starsCustAcctInfos = null;
 	}
 	
-	public synchronized void loadEnergyCompanySettings() {
-		if (energyCompanySettings != null) return;
-		
-		String propFile = null;
-		if (getLiteID() != SOAPServer.DEFAULT_ENERGY_COMPANY_ID) {
-			LiteWebConfiguration liteConfig = SOAPServer.getWebConfiguration( webConfigID );
-			propFile = liteConfig.getUrl();
-			if (propFile == null ||
-				propFile.length() == 0 ||
-				propFile.equalsIgnoreCase("(none)"))
-				return;
-		}
-		else
-			propFile = ServerUtils.DEFAULT_PROPERTY_FILE;
-			
-		InputStream is = getClass().getResourceAsStream( propFile );
-		Properties props = new Properties();
-		try
-		{
-			props.load(is);
-		}
-		catch (Exception e)
-		{
-			com.cannontech.clientutils.CTILogger.info("Can't read the properties file. " +
-				"Make sure " + propFile + " is in the CLASSPATH" );
-			return;
-		}
-		
-		energyCompanySettings = new Properties();
-		for (int i = 0; i < ServerUtils.ALL_SETTINGS_KEYS.length; i++) {
-			String key = ServerUtils.ALL_SETTINGS_KEYS[i];
-			try {
-				energyCompanySettings.put( key, props.get(key) );
-			}
-			catch (Exception e) {
-				CTILogger.debug( "Property " + key + " not found in settings of energy company #" + getEnergyCompanyID() );
-			}
-		}
-		
-		CTILogger.info( "energy company settings loaded for energy company #" + getEnergyCompanyID() );
-	}
-	
-	public String getEnergyCompanySetting(String key) {
-		if (energyCompanySettings == null)
-			loadEnergyCompanySettings();
-			
-		String value = null;
-		if (energyCompanySettings != null)
-			value = (String) energyCompanySettings.getProperty( key );
-		if (value == null && getLiteID() != SOAPServer.DEFAULT_ENERGY_COMPANY_ID)
-			value = SOAPServer.getDefaultEnergyCompany().getEnergyCompanySetting( key );
-			
-		return value;
+	public String getEnergyCompanySetting(int rolePropertyID) {
+		return AuthFuncs.getRolePropertyValue(
+				YukonUserFuncs.getLiteYukonUser(getUserID()), rolePropertyID);
 	}
     
     public synchronized ArrayList getAllLMPrograms() {
@@ -417,25 +424,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		        
 		        selectionLists.add( subList );
 	        }
-	        /*
-	        // Get service company list
-	        YukonSelectionList companyList = new YukonSelectionList();
-	        companyList.setListID( FAKE_LIST_ID );
-	        companyList.setListName( com.cannontech.database.db.stars.report.ServiceCompany.LISTNAME_SERVICECOMPANY );
-	        
-	        com.cannontech.database.db.stars.report.ServiceCompany[] companies =
-	        		com.cannontech.database.db.stars.report.ServiceCompany.getAllServiceCompanies( getEnergyCompanyID() );
-	        if (companies != null) {
-		        ArrayList entries = companyList.getYukonListEntries();
-		        for (int i = 0; i < companies.length; i++) {
-		        	YukonListEntry entry = new YukonListEntry();
-		        	entry.setEntryID( companies[i].getCompanyID().intValue() );
-		        	entry.setEntryText( companies[i].getCompanyName() );
-		        	entries.add( entry );
-		        }
-		        
-		        selectionLists.add( companyList );
-	        }*/
 			
 			CTILogger.info( "All customer selection lists loaded for energy company #" + getEnergyCompanyID() );
 		}
@@ -450,6 +438,10 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			if (list.getListName().equalsIgnoreCase(listName))
 				return list;
 		}
+		
+		// if selection list is not found, search the default energy company
+		if (getLiteID() != SOAPServer.DEFAULT_ENERGY_COMPANY_ID)
+			return SOAPServer.getDefaultEnergyCompany().getYukonSelectionList( listName );
 		
 		return null;
 	}
@@ -1028,7 +1020,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		}
 		
 		ArrayList ctrlHistList = new ArrayList();
-		com.cannontech.database.db.pao.LMControlHistory[] ctrlHist = com.cannontech.database.db.stars.LMControlHistory.getLMControlHistory(
+		com.cannontech.database.db.pao.LMControlHistory[] ctrlHist = com.cannontech.stars.util.LMControlHistoryUtil.getLMControlHistory(
 				new Integer(groupID), com.cannontech.stars.xml.serialize.types.StarsCtrlHistPeriod.ALL );
 		
 		for (int i = 0; i < ctrlHist.length; i++)
@@ -1432,19 +1424,11 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	}
 	
 	private StarsCustSelectionList getStarsCustSelectionList(String listName) {
-		if (starsCustSelLists == null) {
-			starsCustSelLists = new Hashtable();
-			StarsCustomerSelectionLists lists = StarsLiteFactory.createStarsCustomerSelectionLists( getAllSelectionLists() );
-            for (int i = 0; i < lists.getStarsCustSelectionListCount(); i++) {
-            	StarsCustSelectionList list = lists.getStarsCustSelectionList(i);
-            	starsCustSelLists.put( list.getListName(), list );
-            }
-		}
-		
+		if (starsCustSelLists == null) starsCustSelLists = new Hashtable();
 		StarsCustSelectionList starsList = (StarsCustSelectionList) starsCustSelLists.get( listName );
-		if (starsList == null && getLiteID() != SOAPServer.DEFAULT_ENERGY_COMPANY_ID) {
-			// if selection list not found here, search the default energy company
-			YukonSelectionList yukonList = SOAPServer.getDefaultEnergyCompany().getYukonSelectionList( listName );
+		
+		if (starsList == null) {
+			YukonSelectionList yukonList = getYukonSelectionList( listName );
 			if (yukonList != null) {
 				starsList = StarsLiteFactory.createStarsCustSelectionList( yukonList );
 				starsCustSelLists.put( starsList.getListName(), starsList );
@@ -1458,7 +1442,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		LiteYukonUser liteUser = starsUser.getYukonUser();
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( starsUser.getEnergyCompanyID() );
 		
-		//boolean serviceCompanyListAdded = false;
 		boolean energySourceListAdded = false;
 		boolean horsePowerListAdded = false;
 		boolean deviceLocationListAdded = false;
@@ -1467,19 +1450,19 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		StarsCustomerSelectionLists starsLists = new StarsCustomerSelectionLists();
 		starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SEARCH_TYPE) );
 
-		if (AuthFuncs.checkRole( liteUser, RoleTypes.LOADCONTROL_CONTROL_ODDS ) != null) {
+		if (AuthFuncs.checkRole( liteUser, OddsForControlRole.ROLEID ) != null) {
 			starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_CHANCE_OF_CONTROL) );
 		}
-		if (AuthFuncs.checkRole( liteUser, RoleTypes.CONSUMERINFO_ACCOUNT ) != null) {
+		if (AuthFuncs.checkRoleProperty( liteUser, ConsumerInfoRole.CONSUMER_INFO_ACCOUNT_GENERAL )) {
 			starsLists.addStarsCustSelectionList( getStarsCustSelectionList(com.cannontech.database.db.stars.Substation.LISTNAME_SUBSTATION) );
 		}
-		if (AuthFuncs.checkRole( liteUser, RoleTypes.CONSUMERINFO_ACCOUNT_CALL_TRACKING ) != null) {
+		if (AuthFuncs.checkRoleProperty( liteUser, ConsumerInfoRole.CONSUMER_INFO_ACCOUNT_CALL_TRACKING )) {
 			starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_CALL_TYPE) );
 		}
-		if (AuthFuncs.checkRole( liteUser, RoleTypes.CONSUMERINFO_PROGRAMS_OPTOUT ) != null) {
+		if (AuthFuncs.checkRoleProperty( liteUser, ConsumerInfoRole.CONSUMER_INFO_PROGRAMS_OPTOUT )) {
 			starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD) );
 		}
-		if (AuthFuncs.checkRole( liteUser, RoleTypes.CONSUMERINFO_APPLIANCES ) != null) {
+		if (AuthFuncs.checkRoleProperty( liteUser, ConsumerInfoRole.CONSUMER_INFO_APPLIANCES )) {
 			starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_APPLIANCE_CATEGORY) );
 			starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_MANUFACTURER) );
 			starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_APP_LOCATION) );
@@ -1551,7 +1534,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 				}
 			}
 		}
-		if (AuthFuncs.checkRole( liteUser, RoleTypes.CONSUMERINFO_HARDWARES ) != null) {
+		if (AuthFuncs.checkRoleProperty( liteUser, ConsumerInfoRole.CONSUMER_INFO_HARDWARES )) {
 			starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE) );
 			starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_STATUS) );
 			if (!deviceLocationListAdded) {
@@ -1562,20 +1545,12 @@ public class LiteStarsEnergyCompany extends LiteBase {
 				starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_VOLTAGE) );
 				deviceVoltageListAdded = true;
 			}
-/*			if (!serviceCompanyListAdded) {
-				starsLists.addStarsCustSelectionList( getStarsCustSelectionList(com.cannontech.database.db.stars.report.ServiceCompany.LISTNAME_SERVICECOMPANY) );
-				serviceCompanyListAdded = true;
-			}*/
 		}
-		if (AuthFuncs.checkRole( liteUser, RoleTypes.CONSUMERINFO_WORKORDERS ) != null) {
+		if (AuthFuncs.checkRoleProperty( liteUser, ConsumerInfoRole.CONSUMER_INFO_WORK_ORDERS )) {
 			starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_TYPE) );
 			starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_STATUS) );
-/*			if (!serviceCompanyListAdded) {
-				starsLists.addStarsCustSelectionList( getStarsCustSelectionList(com.cannontech.database.db.stars.report.ServiceCompany.LISTNAME_SERVICECOMPANY) );
-				serviceCompanyListAdded = true;
-			}*/
 		}
-		if (AuthFuncs.checkRole( liteUser, RoleTypes.CONSUMERINFO_ACCOUNT_RESIDENCE ) != null) {
+		if (AuthFuncs.checkRoleProperty( liteUser, ConsumerInfoRole.CONSUMER_INFO_ACCOUNT_RESIDENCE )) {
 			starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_RESIDENCE_TYPE) );
 			starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_CONSTRUCTION_MATERIAL) );
 			starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DECADE_BUILT) );

@@ -101,7 +101,12 @@ public class UpdateThermostatManualOptionAction implements ActionBase {
 			StarsUpdateThermostatManualOption starsOption = reqOper.getStarsUpdateThermostatManualOption();
 			
 			LiteLMHardwareBase liteHw = energyCompany.getLMHardware( starsOption.getInventoryID(), true );
-			String routeStr = (energyCompany == null) ? "" : " select route id " + String.valueOf(energyCompany.getRouteID()) + " load 1";
+    		if (liteHw.getManufactureSerialNumber().trim().length() == 0) {
+            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
+            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "The manufacturer serial # of the hardware cannot be empty") );
+            	return SOAPUtil.buildSOAPMessage( respOper );
+    		}
+			String routeStr = (energyCompany == null) ? "" : " select route id " + String.valueOf(energyCompany.getDefaultRouteID()) + " load 1";
 			
 			StringBuffer cmd = new StringBuffer("putconfig xcom setstate")
 					.append(" temp ").append(starsOption.getTemperature());

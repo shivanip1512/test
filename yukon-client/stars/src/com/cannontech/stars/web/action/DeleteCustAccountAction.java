@@ -6,6 +6,7 @@ import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
+import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.stars.util.ServerUtils;
@@ -78,18 +79,20 @@ public class DeleteCustAccountAction implements ActionBase {
         	}
         	
             int energyCompanyID = user.getEnergyCompanyID();
+            LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
+            
         	com.cannontech.database.data.stars.customer.CustomerAccount account =
         			StarsLiteFactory.createCustomerAccount(liteAcctInfo, energyCompanyID);
         	Transaction.createTransaction(Transaction.DELETE, account).execute();
         	
-        	if (ServerUtils.isResidentialCustomer(user)
-        		&& liteAcctInfo.getCustomerAccount().getLoginID() > com.cannontech.user.UserUtils.USER_YUKON_ID) {
+        	if (liteAcctInfo.getCustomerAccount().getLoginID() > com.cannontech.user.UserUtils.USER_YUKON_ID) {
         		com.cannontech.database.data.user.YukonUser yukonUser = new com.cannontech.database.data.user.YukonUser();
         		yukonUser.setUserID( new Integer(liteAcctInfo.getCustomerAccount().getLoginID()) );
         		Transaction.createTransaction(Transaction.DELETE, yukonUser).execute();
         	}
         	
-            SOAPServer.getEnergyCompany( energyCompanyID ).deleteCustAccountInformation( liteAcctInfo );
+            energyCompany.deleteCustAccountInformation( liteAcctInfo );
+            energyCompany.deleteStarsCustAccountInformation( liteAcctInfo.getAccountID() );
             ServerUtils.handleDBChange( liteAcctInfo, DBChangeMsg.CHANGE_TYPE_DELETE );
             
             StarsSuccess success = new StarsSuccess();

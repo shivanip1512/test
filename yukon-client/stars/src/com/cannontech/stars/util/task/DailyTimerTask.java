@@ -65,7 +65,7 @@ public class DailyTimerTask extends StarsTimerTask {
 		
 		Date now = new Date();
 		Calendar timeLimit = Calendar.getInstance();
-		timeLimit.add(Calendar.MINUTE, 30);	// Give the time limit a 30 minutes margin
+		timeLimit.add(Calendar.HOUR_OF_DAY, 1);	// Give the time limit a one hour margin
 		
 		for (int i = 0; i < companies.length; i++) {
 			ArrayList dueEvents = companies[i].getOptOutEventQueue().consumeEvents( timeLimit.getTime().getTime() );

@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
-import com.cannontech.common.constants.RoleTypes;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CtiProperties;
@@ -20,6 +19,7 @@ import com.cannontech.database.data.lite.stars.LiteLMHardwareBase;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
+import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
@@ -138,7 +138,7 @@ public class YukonSwitchCommandAction implements ActionBase {
             Integer actCompEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED).getEntryID() );
             Integer configEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_CONFIG).getEntryID() );
             		
-			String routeStr = (energyCompany == null) ? "" : " select route id " + String.valueOf(energyCompany.getRouteID());
+			String routeStr = (energyCompany == null) ? "" : " select route id " + String.valueOf(energyCompany.getDefaultRouteID());
             
             if (command.getStarsDisableService() != null) {
                 StarsDisableService service = command.getStarsDisableService();
@@ -386,13 +386,13 @@ public class YukonSwitchCommandAction implements ActionBase {
     }
     
     private void sendSwitchCommand(StarsYukonUser user, String[] commands) throws IOException {
-    	if (AuthFuncs.checkRole( user.getYukonUser(), RoleTypes.SWITCH_COMMAND_BATCH ) == null) {
+    	if (true) {
     		for (int i = 0; i < commands.length; i++)
     			ServerUtils.sendCommand( commands[i] );
     	}
     	else {
     		String batchCmdFile = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() )
-    								.getEnergyCompanySetting( ServerUtils.SWITCH_COMMAND_FILE );
+    				.getEnergyCompanySetting( EnergyCompanyRole.SWITCH_COMMAND_FILE );
     		if (batchCmdFile != null) {
 				File f = new File( batchCmdFile );
 				if (!f.exists()) {

@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsOperationDescriptor.java,v 1.42 2003/05/07 18:06:36 zyao Exp $
+ * $Id: StarsOperationDescriptor.java,v 1.43 2003/05/22 20:05:10 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.42 $ $Date: 2003/05/07 18:06:36 $
+ * @version $Revision: 1.43 $ $Date: 2003/05/22 20:05:10 $
 **/
 public class StarsOperationDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
@@ -534,38 +534,6 @@ public class StarsOperationDescriptor extends org.exolab.castor.xml.util.XMLClas
         addFieldDescriptor(desc);
         
         //-- validation code for: _starsUpdateCustomerAccount
-        fieldValidator = new FieldValidator();
-        desc.setValidator(fieldValidator);
-        
-        //-- _starsUpdateCustomerAccountResponse
-        desc = new XMLFieldDescriptorImpl(StarsUpdateCustomerAccountResponse.class, "_starsUpdateCustomerAccountResponse", "stars-UpdateCustomerAccountResponse", NodeType.Element);
-        handler = (new XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                StarsOperation target = (StarsOperation) object;
-                return target.getStarsUpdateCustomerAccountResponse();
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    StarsOperation target = (StarsOperation) object;
-                    target.setStarsUpdateCustomerAccountResponse( (StarsUpdateCustomerAccountResponse) value);
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new StarsUpdateCustomerAccountResponse();
-            }
-        } );
-        desc.setHandler(handler);
-        desc.setMultivalued(false);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _starsUpdateCustomerAccountResponse
         fieldValidator = new FieldValidator();
         desc.setValidator(fieldValidator);
         

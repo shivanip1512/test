@@ -43,7 +43,7 @@ public class CustomerAccount extends DBPersistent {
         String sql = "SELECT acct.AccountID, acct.AccountSiteID, acct.AccountNumber, acct.CustomerID, acct.BillingAddressID, acct.AccountNotes, acct.LoginID "
         		   + "FROM ECToAccountMapping map, " + TABLE_NAME + " acct "
                    + "WHERE map.EnergyCompanyID = " + energyCompanyID.toString()
-                   + " AND acct.AccountNumber = '" + accountNumber + "' AND map.AccountID = acct.AccountID";
+                   + " AND UPPER(acct.AccountNumber) = UPPER('" + accountNumber + "') AND map.AccountID = acct.AccountID";
         com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
         		sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
 

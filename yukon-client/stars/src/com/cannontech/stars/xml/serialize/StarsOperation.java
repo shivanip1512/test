@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsOperation.java,v 1.42 2003/05/07 18:06:33 zyao Exp $
+ * $Id: StarsOperation.java,v 1.43 2003/05/22 20:05:07 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,7 +23,7 @@ import org.xml.sax.ContentHandler;
 /**
  * Root element
  * 
- * @version $Revision: 1.42 $ $Date: 2003/05/07 18:06:33 $
+ * @version $Revision: 1.43 $ $Date: 2003/05/22 20:05:07 $
 **/
 public class StarsOperation implements java.io.Serializable {
 
@@ -67,8 +67,6 @@ public class StarsOperation implements java.io.Serializable {
      * Update a customer account
     **/
     private StarsUpdateCustomerAccount _starsUpdateCustomerAccount;
-
-    private StarsUpdateCustomerAccountResponse _starsUpdateCustomerAccountResponse;
 
     /**
      * Update the LM programs for a customer account
@@ -700,18 +698,6 @@ public class StarsOperation implements java.io.Serializable {
     {
         return this._starsUpdateCustomerAccount;
     } //-- StarsUpdateCustomerAccount getStarsUpdateCustomerAccount() 
-
-    /**
-     * Returns the value of field
-     * 'starsUpdateCustomerAccountResponse'.
-     * 
-     * @return the value of field
-     * 'starsUpdateCustomerAccountResponse'.
-    **/
-    public StarsUpdateCustomerAccountResponse getStarsUpdateCustomerAccountResponse()
-    {
-        return this._starsUpdateCustomerAccountResponse;
-    } //-- StarsUpdateCustomerAccountResponse getStarsUpdateCustomerAccountResponse() 
 
     /**
      * Returns the value of field 'starsUpdateLMHardware'.
@@ -1445,18 +1431,6 @@ public class StarsOperation implements java.io.Serializable {
     {
         this._starsUpdateCustomerAccount = starsUpdateCustomerAccount;
     } //-- void setStarsUpdateCustomerAccount(StarsUpdateCustomerAccount) 
-
-    /**
-     * Sets the value of field
-     * 'starsUpdateCustomerAccountResponse'.
-     * 
-     * @param starsUpdateCustomerAccountResponse the value of field
-     * 'starsUpdateCustomerAccountResponse'.
-    **/
-    public void setStarsUpdateCustomerAccountResponse(StarsUpdateCustomerAccountResponse starsUpdateCustomerAccountResponse)
-    {
-        this._starsUpdateCustomerAccountResponse = starsUpdateCustomerAccountResponse;
-    } //-- void setStarsUpdateCustomerAccountResponse(StarsUpdateCustomerAccountResponse) 
 
     /**
      * Sets the value of field 'starsUpdateLMHardware'.
