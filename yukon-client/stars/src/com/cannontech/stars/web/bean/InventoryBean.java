@@ -252,7 +252,7 @@ public class InventoryBean {
 		
 		ArrayList hwList = getHardwareList();
 		if (hwList == null || hwList.size() == 0) {
-			htmlBuf.append("<p class='MainText'>No hardware found.</p>").append("\r\n");
+			htmlBuf.append("<p class='ErrorMsg'>No hardware found.</p>").append("\r\n");
 			if (getHtmlStyle() != HTML_STYLE_LIST_INVENTORY) {
 				htmlBuf.append("<table width='200' border='0' cellspacing='0' cellpadding='0'>").append("\r\n");
 				htmlBuf.append("  <tr>").append("\r\n");
@@ -336,6 +336,7 @@ public class InventoryBean {
         	}
         	
         	java.util.Date installDate = ServerUtils.translateDate( liteInv.getInstallDate() );
+        	dateFormat.setTimeZone( getEnergyCompany().getDefaultTimeZone() );
         	String instDate = (installDate != null)? dateFormat.format(installDate) : "----";
         	
             htmlBuf.append("        <tr>").append("\r\n");

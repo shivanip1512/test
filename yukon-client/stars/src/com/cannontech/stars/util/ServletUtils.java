@@ -221,8 +221,12 @@ public class ServletUtils {
     }
     
     public static String formatDate(Date date, java.text.SimpleDateFormat format) {
-    	if (date == null) return "";
-    	return format.format( date );
+    	return formatDate( date, format, "" );
+    }
+    
+    public static String formatDate(Date date, java.text.SimpleDateFormat format, String emptyStr) {
+		if (date == null) return emptyStr;
+		return format.format( date );
     }
     
     public static StarsLMControlHistory getControlHistory(StarsLMControlHistory ctrlHist, StarsCtrlHistPeriod period, TimeZone tz) {

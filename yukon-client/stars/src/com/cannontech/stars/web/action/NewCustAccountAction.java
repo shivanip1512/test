@@ -307,7 +307,7 @@ public class NewCustAccountAction implements ActionBase {
             accountDB.setAccountNumber( starsAccount.getAccountNumber() );
             accountDB.setAccountNotes( starsAccount.getAccountNotes() );
             account.setCustomer( customer );
-            account.setEnergyCompanyID( new Integer(user.getEnergyCompanyID()) );
+            account.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
             
             account = (com.cannontech.database.data.stars.customer.CustomerAccount)
 		    		Transaction.createTransaction( Transaction.INSERT, account ).execute();
