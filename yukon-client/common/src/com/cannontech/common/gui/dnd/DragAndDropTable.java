@@ -5,10 +5,13 @@ package com.cannontech.common.gui.dnd;
  * Creation date: (3/7/00 2:09:37 PM)
  * @author: 
  */
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DragSource;
 import java.awt.dnd.DragSourceListener;
 import java.awt.dnd.DropTarget;
+import java.util.ArrayList;
 
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
@@ -164,7 +167,54 @@ public void dragExit(java.awt.dnd.DropTargetEvent dte)
  */
 public void dragOver(java.awt.dnd.DropTargetDragEvent dtde)
 {
-	updateDragBorder( rowAtPoint(dtde.getLocation()) );
+	int row = rowAtPoint(dtde.getLocation());
+	updateDragBorder( row );
+	
+	ArrayList rowNums = getViewableRowNumbers();
+	if( rowNums != null && rowNums.size() > 0 )
+	{
+		Integer min = (Integer)rowNums.get(0);
+		Integer max = (Integer)rowNums.get( rowNums.size()-1 );
+
+//System.out.println("  min=" + min + ", max=" + max + ", row=" + row );
+//System.out.println("  	dtdeY=" + dtde.getLocation().getY() + ", hght=" + getRowHeight() );
+
+		if( row > 0 && row <= (min.intValue()+1) ) //allow for a wider tolerance to scroll
+		{
+			scrollRectToVisible( new Rectangle(
+				new Point(0, (int)dtde.getLocation().getY() - getRowHeight()) ) );
+		}
+		else if( row < getRowCount() && row >= max.intValue() )
+		{						
+			scrollRectToVisible( new Rectangle(
+				new Point(0, (int)dtde.getLocation().getY() + getRowHeight()) ) );
+		}
+	}
+	
+}
+
+
+/**
+ * Returns a set of row numbers that are viewable
+ * @param ArrayList [Integer]
+ */
+public java.util.ArrayList getViewableRowNumbers() 
+{
+	int rowHeight = getRowHeight();
+	double startY = getVisibleRect().getMinY();
+	double distanceY = getVisibleRect().getMaxY() - getVisibleRect().getMinY();
+
+	int rowsPresent = (int)distanceY / rowHeight;
+	java.util.ArrayList rows = new java.util.ArrayList(rowsPresent);
+
+	for( int i = 0; i < rowsPresent; i++, startY += rowHeight )
+	{
+		java.awt.Point loc = new java.awt.Point(0, (int)startY );
+		rows.add( new Integer(rowAtPoint( loc )) );
+	}	
+
+	// returns all the pointids in the ViewPort of the JTable
+	return rows;
 }
 
 
