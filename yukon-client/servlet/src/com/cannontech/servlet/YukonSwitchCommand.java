@@ -12,7 +12,7 @@ PARAMETERS
  groupid			- id of the versacom serial group
  serialNumber 		- serial number of the meter
  routeid			- route to send command on
- function			- what should be done
+ function | func  	- what should be done
  restoreRelayNumber	- what relay
  stopRelayNumber
  shedRelayNumber
@@ -54,6 +54,11 @@ public void doPost(HttpServletRequest req, HttpServletResponse resp) throws java
 	String serialNumber = req.getParameter("serialNumber");
 	String routeID = req.getParameter("routeid");
 	String function = req.getParameter("function");
+    
+    //The string 'function' could be reserved on other systems, allow 'func' to be used
+    if( function == null )
+        function = req.getParameter("func");
+
 
 	// could be invoked by either operator or user...
 	boolean failed = false;
