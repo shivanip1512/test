@@ -33,6 +33,7 @@
 <%@ page import="com.cannontech.stars.web.StarsYukonUser" %>
 <%@ page import="com.cannontech.stars.web.action.*" %>
 <%@ page import="com.cannontech.stars.web.util.InventoryManagerUtil" %>
+<%@ page import="com.cannontech.stars.web.util.StarsAdminUtil" %>
 <%@ page import="com.cannontech.stars.xml.StarsFactory" %>
 <%@ page import="com.cannontech.stars.xml.serialize.*" %>
 <%@ page import="com.cannontech.stars.xml.serialize.types.*" %>
@@ -136,14 +137,21 @@
 				}
 				session.setAttribute(ServletUtils.ATT_CUSTOMER_SELECTION_LISTS, selectionListTable);
 				
-				if (lYukonUser.getUserID() == liteEC.getUserID()
-					&& lYukonUser.getStatus().equalsIgnoreCase(com.cannontech.user.UserUtils.STATUS_FIRST_TIME)
+				String value = AuthFuncs.getRolePropertyValue(lYukonUser, AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY);
+				if (value != null && value.equals(StarsAdminUtil.FIRST_TIME)
 					&& selectionListTable.get(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE) != null)
 				{
 					// The default operator login for the first time, edit the device type list first!
-					ServletUtils.updateUserStatus(lYukonUser, com.cannontech.user.UserUtils.STATUS_ENABLED);
+					com.cannontech.database.data.lite.LiteYukonGroup adminGroup = liteEC.getOperatorAdminGroup();
+					if (StarsAdminUtil.updateGroupRoleProperty(
+						adminGroup, AdministratorRole.ROLEID, AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY, CtiUtilities.TRUE_STRING))
+					{
+						com.cannontech.stars.util.ServerUtils.handleDBChange(
+							adminGroup, com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_UPDATE );
+					}
+					
 					session.setAttribute(ServletUtils.ATT_REDIRECT2, request.getContextPath() + "/operator/Admin/SelectionList.jsp?List=DeviceType");
-					session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "This is the first time you login as the default operator. Please edit the device type list first.");
+					session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "This is the first time that you login as the default operator. Please edit the device type list and other energy company settings.");
 					response.sendRedirect(request.getContextPath() + "/operator/Admin/Message.jsp?delay=0");
 					return;
 				}

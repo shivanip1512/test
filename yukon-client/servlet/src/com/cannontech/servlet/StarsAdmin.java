@@ -1439,20 +1439,8 @@ public class StarsAdmin extends HttpServlet {
 				ec.updateStarsCustomerSelectionLists();
 			}
 			
-			if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE)) {
+			if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE))
 				energyCompany.updateStarsDefaultThermostatSchedules();
-				
-				if (user.getUserID() == energyCompany.getUserID() && user.getYukonUser().getStatus().equalsIgnoreCase(UserUtils.STATUS_FIRST_TIME)) {
-					// Change the status of the default operator login from "FirstTime" to "Enabled"
-					com.cannontech.database.db.user.YukonUser dbUser = (com.cannontech.database.db.user.YukonUser)
-							StarsLiteFactory.createDBPersistent( user.getYukonUser() );
-					dbUser.setStatus( UserUtils.STATUS_ENABLED );
-					
-					dbUser = (com.cannontech.database.db.user.YukonUser)
-							Transaction.createTransaction( Transaction.UPDATE, dbUser ).execute();
-					ServerUtils.handleDBChange( user.getYukonUser(), com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_UPDATE );
-				}
-			}
 			
 			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Customer selection list updated successfully");
 		}
@@ -1618,6 +1606,8 @@ public class StarsAdmin extends HttpServlet {
 	}
 	
 	private void createEnergyCompany(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
+		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
+		
 		ServletUtils.saveRequest( req, session, new String[] {
 				"CompanyName", "AddMember", "Email", "OperatorGroup", "CustomerGroup", "Username", "Username2", "Route"} );
 		
@@ -1715,8 +1705,12 @@ public class StarsAdmin extends HttpServlet {
 				
 				groupRole.setRoleID( new Integer(AdministratorRole.ROLEID) );
 				groupRole.setRolePropertyID( new Integer(roleProps[i].getRolePropertyID()) );
-				if (roleProps[i].getRolePropertyID() == AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY)
-					groupRole.setValue( CtiUtilities.TRUE_STRING );
+				if (roleProps[i].getRolePropertyID() == AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY) {
+					if (!ECUtils.isDefaultEnergyCompany(energyCompany) && req.getParameter("AddMember") != null)
+						groupRole.setValue( CtiUtilities.TRUE_STRING );
+					else
+						groupRole.setValue( StarsAdminUtil.FIRST_TIME );
+				}
 				else
 					groupRole.setValue( CtiUtilities.STRING_NONE );
 				
@@ -1733,7 +1727,7 @@ public class StarsAdmin extends HttpServlet {
 			LiteYukonGroup[] operGroups = (operGroup != null)?
 					new LiteYukonGroup[] { operGroup, liteDftGroup } : new LiteYukonGroup[] { liteDftGroup };
 			LiteYukonUser liteUser = createOperatorLogin(
-					req.getParameter("Username"), req.getParameter("Password"), UserUtils.STATUS_FIRST_TIME, operGroups, null );
+					req.getParameter("Username"), req.getParameter("Password"), UserUtils.STATUS_ENABLED, operGroups, null );
 			
 			// Create primary contact of the energy company
 			com.cannontech.database.data.customer.Contact contact =
@@ -1797,7 +1791,6 @@ public class StarsAdmin extends HttpServlet {
 			
 			// Add the new energy company as a member of the current company
 			if (req.getParameter("AddMember") != null) {
-				LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
 				StarsAdminUtil.addMember( energyCompany, newCompany.getLiteID(), liteUser.getUserID() );
 				
 				// Update the "single_energy_company" role of the current energy company if necessary
@@ -1826,13 +1819,32 @@ public class StarsAdmin extends HttpServlet {
 			return;
 		}
 		
-		StarsDatabaseCache.getInstance().refreshCache( energyCompany );
+		TimeConsumingTask task = new DeleteEnergyCompanyTask( user.getEnergyCompanyID() );
+		long id = ProgressChecker.addTask( task );
 		
-		DeleteEnergyCompanyTask task = new DeleteEnergyCompanyTask( user.getEnergyCompanyID() );
-		new Thread( task ).start();
+		// Wait 5 seconds for the task to finish (or error out), if not, then go to the progress page
+		for (int i = 0; i < 5; i++) {
+			try {
+				Thread.sleep(1000);
+			}
+			catch (InterruptedException e) {}
+			
+			task = ProgressChecker.getTask(id);
+			
+			if (task.getStatus() == TimeConsumingTask.STATUS_FINISHED) {
+				ProgressChecker.removeTask( id );
+				return;
+			}
+			
+			if (task.getStatus() == TimeConsumingTask.STATUS_ERROR) {
+				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, task.getErrorMsg());
+				ProgressChecker.removeTask( id );
+				return;
+			}
+		}
 		
-		session.invalidate();
-		redirect = req.getContextPath() + SOAPClient.LOGIN_URL;
+		session.setAttribute(ServletUtils.ATT_REDIRECT, redirect);
+		redirect = req.getContextPath() + "/operator/Admin/Progress.jsp?id=" + id;
 	}
 	
 	private void updateRouteList(StarsYukonUser user, HttpServletRequest req, HttpSession session) {

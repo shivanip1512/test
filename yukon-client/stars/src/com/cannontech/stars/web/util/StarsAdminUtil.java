@@ -67,6 +67,8 @@ public class StarsAdminUtil {
 	public static final String ENERGY_COMPANY_TEMP = "ENERGY_COMPANY_TEMP";
 	public static final String SERVICE_COMPANY_TEMP = "SERVICE_COMPANY_TEMP";
 	
+	public static final String FIRST_TIME = "FIRST_TIME";
+	
 	public static void updateDefaultRoute(LiteStarsEnergyCompany energyCompany, int routeID) throws Exception {
 		if (energyCompany.getDefaultRouteID() != routeID) {
 			if (energyCompany.getDefaultRouteID() == LiteStarsEnergyCompany.INVALID_ROUTE_ID) {
