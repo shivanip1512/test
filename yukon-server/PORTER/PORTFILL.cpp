@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTFILL.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2003/01/22 19:48:51 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2003/02/04 17:23:45 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -179,6 +179,7 @@ static void applySendFillerPage(const long unusedid, CtiPortSPtr Port, void *uid
         {
             switch(TransmitterDevice->getType())
             {
+            case TYPE_WCTP:
             case TYPE_TAPTERM:
                 {
                     CtiDeviceTapPagingTerminal *tapTRX = (CtiDeviceTapPagingTerminal *)TransmitterDevice;
