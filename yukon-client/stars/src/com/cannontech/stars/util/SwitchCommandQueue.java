@@ -139,6 +139,15 @@ public class SwitchCommandQueue {
 		newCommands.clear();
 		reCreateFile = false;
 		
+		try {
+			if (!diskFile.exists()) diskFile.createNewFile();
+		}
+		catch (IOException e) {
+			CTILogger.error( "Failed to create the switch command file:" );
+			CTILogger.error( e.getMessage(), e );
+			return;
+		}
+		
 		String[] lines = ServerUtils.readFile( diskFile, false );
 		if (lines != null) {
 			for (int i = 0; i < lines.length; i++) {
