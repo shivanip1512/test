@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.31 $
-* DATE         :  $Date: 2002/11/15 14:08:24 $
+* REVISION     :  $Revision: 1.32 $
+* DATE         :  $Date: 2003/02/07 14:59:10 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -547,7 +547,7 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
                 {
                     CtiDeviceBase *pBase = (CtiDeviceBase *)itr.value();
 
-                    if(ScannerDebugLevel & 0x00000020)
+                    if(ScannerDebugLevel & SCANNER_DEBUG_DEVICEANALYSIS)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " Looking at " << pBase->getName() << endl;
@@ -563,7 +563,7 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
 
                         if(DeviceRecord->getNextScan(ScanRateAccum) <= TimeNow)
                         {
-                            if(ScannerDebugLevel & 0x00000002)
+                            if(ScannerDebugLevel & SCANNER_DEBUG_ACCUMSCAN)
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                                 dout << RWTime() << " **** Accumulator Scan Checkpoint **** " << DeviceRecord->getID() << " / " <<  DeviceRecord->getName() << endl;
@@ -579,7 +579,7 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
 
                         if(DeviceRecord->getNextScan(ScanRateIntegrity) <= TimeNow)
                         {
-                            if(ScannerDebugLevel & 0x00000004)
+                            if(ScannerDebugLevel & SCANNER_DEBUG_INTEGRITYSCAN)
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                                 dout << RWTime() << " **** Integrity Scan Checkpoint **** " << DeviceRecord->getID() << " / " <<  DeviceRecord->getName() << endl;
@@ -602,7 +602,7 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
                             }
                             else
                             {
-                                if(ScannerDebugLevel & 0x00000008)
+                                if(ScannerDebugLevel & SCANNER_DEBUG_GENERALSCAN)
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                                     dout << RWTime() << " **** Exception/General Checkpoint ****   " << DeviceRecord->getID() << " / " <<  DeviceRecord->getName() << endl;
@@ -638,7 +638,7 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
                 {
                     CtiDeviceBase *pBase = (CtiDeviceBase *)itr.value();
 
-                    if(ScannerDebugLevel & 0x00000020)
+                    if(ScannerDebugLevel & SCANNER_DEBUG_DEVICEANALYSIS)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " Looking at " << pBase->getName() << endl;
@@ -659,7 +659,7 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
                             }
                             else
                             {
-                                if(ScannerDebugLevel & 0x00000008)
+                                if(ScannerDebugLevel & SCANNER_DEBUG_LPSCAN)
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                                     dout << RWTime() << " **** Load Profile Checkpoint ****   " << DeviceRecord->getID() << " / " <<  DeviceRecord->getName() << endl;
@@ -848,7 +848,7 @@ VOID ResultThread (VOID *Arg)
                 DeviceRecord->ProcessResult(InMessage, TimeNow, vgList, retList, outList);
 
                 // Send any CTIDBG_new porter requests to porter
-                if((ScannerDebugLevel & 0x00000080) && outList.entries() > 0)
+                if((ScannerDebugLevel & SCANNER_DEBUG_OUTLIST) && outList.entries() > 0)
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
