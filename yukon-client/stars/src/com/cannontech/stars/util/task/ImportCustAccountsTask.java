@@ -1054,7 +1054,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 		emailMsg.setTo( email );
 		emailMsg.setSubject( "Import Log" );
 		emailMsg.setBody( "The log file containing information of the import process is attached." + LINE_SEPARATOR + LINE_SEPARATOR );
-		emailMsg.addAttachment( importLog );
+		emailMsg.addAttachment( importLog, null );
 		
 		emailMsg.send();
 	}

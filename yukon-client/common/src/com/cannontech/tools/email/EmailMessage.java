@@ -10,7 +10,6 @@ import java.io.File;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
-import javax.activation.FileDataSource;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
@@ -447,8 +446,8 @@ public class EmailMessage
 		return dsAttachments;
 	}
 	
-	public void addAttachment(File file) {
-		FileDataSource ds = new FileDataSource(file);
+	public void addAttachment(File file, String alternativeName) {
+		EmailFileDataSource ds = new EmailFileDataSource(file, alternativeName, null);
 		getDSAttachments().add( ds );
 	}
 	
