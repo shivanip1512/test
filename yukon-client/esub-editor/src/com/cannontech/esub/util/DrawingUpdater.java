@@ -6,8 +6,10 @@ import java.util.TimerTask;
 import com.cannontech.common.cache.PointChangeCache;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.StateFuncs;
+import com.cannontech.database.cache.functions.UnitMeasureFuncs;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
+import com.cannontech.database.data.lite.LiteUnitMeasure;
 import com.cannontech.esub.editor.Drawing;
 import com.cannontech.esub.editor.element.DynamicText;
 import com.cannontech.esub.editor.element.StateImage;
@@ -18,6 +20,8 @@ import com.loox.jloox.LxView;
 /**
  * A runnable which updates its drawing on each call
  * to run.
+ * 
+ * The run method is getting a little ungainly
  * 
  * Designed to be used from say a timer
  * @author alauinger
@@ -84,7 +88,8 @@ public class DrawingUpdater extends TimerTask {
 							if( (att & DynamicText.UOFM) != 0 ) {
 								if( change ) 
 									text += " ";
-								text += "UOFM";
+								LiteUnitMeasure lum = UnitMeasureFuncs.getLiteUnitMeasureByPointID(dt.getPointID());
+								text += lum.getUnitMeasureName();
 								change = true;
 							}
 							
@@ -111,6 +116,7 @@ public class DrawingUpdater extends TimerTask {
 								change = true;
 							}
 							
+							// only update if there is something to update
 							if( change ) {
 								if( !text.equals(dt.getText()) ) {
 									dt.setText(text);
