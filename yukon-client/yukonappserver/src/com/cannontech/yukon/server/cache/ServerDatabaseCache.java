@@ -1314,6 +1314,23 @@ public synchronized LiteBase handleDBChangeMessage(com.cannontech.message.dispat
 	{
 		retLBase = handleHolidayScheduleChange( dbType, id );
 	}
+	else if( database == com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_YUKON_USER_DB ) 
+	{
+		// This seems heavy handed!
+		allYukonUsers = null;
+		allYukonRoles = null;
+		allYukonGroups = null;
+		allYukonUserRoles = null;
+		allYukonGroupRoles = null;
+		allYukonUserGroups = null;
+		allYukonGroupUsers = null;
+		allUserEnergyCompanies = null;
+	}
+	else if( database == DBChangeMsg.CHANGE_ENERGY_COMPANY_DB )
+	{
+		allEnergyCompanies = null;
+		allUserEnergyCompanies = null;
+	}
 	else  //let it all go!!
 		releaseAllCache();
 
@@ -1502,6 +1519,7 @@ private synchronized LiteBase handleHolidayScheduleChange( int changeType, int i
 
 	return lBase;
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (12/7/00 12:34:05 PM)
