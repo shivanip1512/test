@@ -52,18 +52,18 @@ public final class PointQualities
  * @return java.lang.String
  * @param typeEnum int
  */
-public final static String getQuality(int typeEnum) 
+public final static String getQuality(int typeEnum) throws CTIPointQuailtyException 
 {
 	if( typeEnum < 0 || typeEnum > pointStrings.length - 1 )		
-		throw new RuntimeException("PointQualities::getQuality(int) - received unknown type: " + typeEnum );
+		throw new CTIPointQuailtyException("PointQualities::getQuality(int) - received unknown type: " + typeEnum );
 	else
 		return pointStrings[typeEnum][1];
 }
 
-public final static String getQualityAbreviation(int typeEnum) 
+public final static String getQualityAbreviation(int typeEnum) throws CTIPointQuailtyException
 {
-	if( typeEnum < 0 || typeEnum > pointStrings.length - 1 )		
-		throw new RuntimeException("PointQualities::getQualityAbreviation(int) - received unknown type: " + typeEnum );
+	if( typeEnum < 0 || typeEnum > pointStrings.length - 1 )
+		throw new CTIPointQuailtyException("PointQualities::getQualityAbreviation(int) - received unknown type: " + typeEnum );
 	else
 		return pointStrings[typeEnum][0];
 }
@@ -73,7 +73,7 @@ public final static String getQualityAbreviation(int typeEnum)
  * @return int
  * @param typeStr java.lang.String
  */
-public final static int getQuality(String typeStr) 
+public final static int getQuality(String typeStr) throws CTIPointQuailtyException
 {
 	//Go through the point strings array and return it's index
 	//when we find it
@@ -84,6 +84,6 @@ public final static int getQuality(String typeStr)
 	}
 
 	//Must not have found it
-	throw new RuntimeException("PointQuality::getQuality(String) - Unrecognized type:  " + typeStr);
+	throw new CTIPointQuailtyException("PointQuality::getQuality(String) - Unrecognized type:  " + typeStr);
 }
 }
