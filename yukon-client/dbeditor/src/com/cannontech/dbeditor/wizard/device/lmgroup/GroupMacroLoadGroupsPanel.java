@@ -1,6 +1,7 @@
 package com.cannontech.dbeditor.wizard.device.lmgroup;
 
 import java.awt.Dimension;
+import com.cannontech.database.data.pao.YukonPAObject;
 
 /**
  * This type was created in VisualAge.
@@ -184,23 +185,43 @@ public Dimension getPreferredSize() {
  */
 public Object getValue(Object val) 
 {
-	Integer ownerID = ((com.cannontech.database.data.pao.YukonPAObject) val).getPAObjectID();
 	
-	java.util.Vector macroGroupVector = new java.util.Vector();
-
-	for( int i = 0; i < getLoadGroupsAddRemovePanel().rightListGetModel().getSize(); i++ )
+	YukonPAObject macro = null;
+	
+	if( val instanceof com.cannontech.database.data.multi.MultiDBPersistent )
 	{
-		com.cannontech.database.db.macro.GenericMacro mGroup = new com.cannontech.database.db.macro.GenericMacro();
-		mGroup.setOwnerID(ownerID);
-		mGroup.setChildID( new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject)
-									getLoadGroupsAddRemovePanel().rightListGetModel().getElementAt(i)).getYukonID()) );
-		mGroup.setChildOrder(new Integer(i+1) );
-		mGroup.setMacroType(com.cannontech.database.db.macro.MacroTypes.GROUP);
-		macroGroupVector.addElement( mGroup );	
+		macro = (YukonPAObject)
+				com.cannontech.database.data.multi.MultiDBPersistent.getFirstObjectOfType(
+		YukonPAObject.class,
+				(com.cannontech.database.data.multi.MultiDBPersistent)val );
 	}
-
-	((com.cannontech.database.data.device.lm.MacroGroup) val).setMacroGroupVector( macroGroupVector );
+	else if( val instanceof com.cannontech.database.data.multi.SmartMultiDBPersistent )
+		macro = (YukonPAObject)
+				((com.cannontech.database.data.multi.SmartMultiDBPersistent)val).getOwnerDBPersistent();
 	
+	
+	if( val instanceof YukonPAObject || macro != null )
+	{
+		if( macro == null )
+			macro = (YukonPAObject) val;
+		
+		Integer ownerID = macro.getPAObjectID();
+	
+		java.util.Vector macroGroupVector = new java.util.Vector();
+
+		for( int i = 0; i < getLoadGroupsAddRemovePanel().rightListGetModel().getSize(); i++ )
+		{
+			com.cannontech.database.db.macro.GenericMacro mGroup = new com.cannontech.database.db.macro.GenericMacro();
+			mGroup.setOwnerID(ownerID);
+			mGroup.setChildID( new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject)
+									getLoadGroupsAddRemovePanel().rightListGetModel().getElementAt(i)).getYukonID()) );
+			mGroup.setChildOrder(new Integer(i+1) );
+			mGroup.setMacroType(com.cannontech.database.db.macro.MacroTypes.GROUP);
+			macroGroupVector.addElement( mGroup );	
+		}
+
+		((com.cannontech.database.data.device.lm.MacroGroup) macro).setMacroGroupVector( macroGroupVector );
+	}
 	return val;
 }
 /**
