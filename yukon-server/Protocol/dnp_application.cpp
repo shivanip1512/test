@@ -8,43 +8,42 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2005/02/10 23:23:56 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2005/03/10 21:27:19 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 
+#include "dllbase.h"
 #include "logger.h"
 #include "numstr.h"
 #include "dnp_application.h"
 
-CtiDNPApplication::CtiDNPApplication()
+
+namespace Cti       {
+namespace Protocol  {
+namespace DNP       {
+
+Application::Application() :
+    _ioState(Uninitialized),
+    _seqno(0)
 {
-    _ioState = Uninitialized;
-    _seqno = 0;
 }
 
-CtiDNPApplication::CtiDNPApplication(const CtiDNPApplication &aRef)
+Application::Application(const Application &aRef)
 {
     *this = aRef;
 }
 
-CtiDNPApplication::~CtiDNPApplication()
+Application::~Application()
 {
-/*    if( !_outObjectBlocks.empty() )
-    {
-        eraseOutboundObjectBlocks();
-    }*/
-
-    if( !_inObjectBlocks.empty() )
-    {
-        eraseInboundObjectBlocks();
-    }
+    eraseOutboundObjectBlocks();
+    eraseInboundObjectBlocks();
 }
 
-CtiDNPApplication &CtiDNPApplication::operator=(const CtiDNPApplication &aRef)
+Application &Application::operator=(const Application &aRef)
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -55,7 +54,7 @@ CtiDNPApplication &CtiDNPApplication::operator=(const CtiDNPApplication &aRef)
 }
 
 
-void CtiDNPApplication::setAddresses( unsigned short dstAddr, unsigned short srcAddr )
+void Application::setAddresses( unsigned short dstAddr, unsigned short srcAddr )
 {
     _dstAddr = dstAddr;
     _srcAddr = srcAddr;
@@ -64,139 +63,65 @@ void CtiDNPApplication::setAddresses( unsigned short dstAddr, unsigned short src
 }
 
 
-void CtiDNPApplication::setOptions( int options )
+void Application::setOptions( int options )
 {
     _transport.setOptions(options);
 }
 
 
-/*---  Scanner-side Functions  ---*/
-
-void CtiDNPApplication::setCommand( AppFuncCode func )
+void Application::setCommand( FunctionCode fc )
 {
-    _appReqBytesUsed = 0;
+    eraseInboundObjectBlocks();
+    eraseOutboundObjectBlocks();
 
-    memset( &_appReq, 0, sizeof(_appReq) );
+    _final_frame_received = false;
 
-    //  don't set the state here - only matters on the porter side
+    _request_function = fc;
 
-    //  these values aren't necessarially static...  just likely to be so in our infantile requests
-    //  ACH: eh
-    _appReq.ctrl.first       = 1;
-    _appReq.ctrl.final       = 1;
-    _appReq.ctrl.app_confirm = 0;
-    _appReq.ctrl.unsolicited = 0;
-
-    _appReq.ctrl.seq = ++_seqno;
-
-    _appReq.func_code = (unsigned char)func;
+    _ioState = Output;
 }
 
 
-void CtiDNPApplication::addObjectBlock( const CtiDNPObjectBlock &objBlock )
+void Application::addObjectBlock( const ObjectBlock *objBlock )
 {
-    int objBlockLen;
-    unsigned char *tmpbuf;
-
-    //  ACH:  complain if generated+existing size > sizeof(OUTMESS.Buffer)
-    //          Actually, move all this to Porter-side;  slim down the OutMess requests like the ION.
-    //          Moving all this back and forth is pointless.
-
-    //  Also, I wonder if it would be desirable to add pointers to the outboundObjectBlocks structure,
-    //    and only do the serialization when the transport layer gets initialized.
-    objBlockLen = objBlock.getSerializedLen();
-
-    if( (objBlockLen > 0) &&
-        (objBlockLen < (ApplicationBufferSize - _appReqBytesUsed)) )
-    {
-        objBlock.serialize(_appReq.buf + _appReqBytesUsed);
-
-        _appReqBytesUsed += objBlockLen;
-    }
-    else
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-    }
+    _out_object_blocks.push(objBlock);
 }
 
 
-int CtiDNPApplication::getLengthReq( void )
+void Application::processInput( void )
 {
-    return _appReqBytesUsed + ReqHeaderSize;
-}
-
-
-void CtiDNPApplication::serializeReq( unsigned char *buf )
-{
-    unsigned char *src;
-    int srcLen;
-
-    src    = (unsigned char *)(&_appReq);
-    srcLen = getLengthReq();
-
-    //  copy the packet into the buffer
-    memcpy(buf, src, srcLen);
-}
-
-
-void CtiDNPApplication::restoreRsp( unsigned char *buf, int len )
-{
-    if( len > RspHeaderSize )
-    {
-        //  copy the buffer into the packet
-        memcpy(&_appRsp, buf, len);
-        //  and compute the length
-        _appRspBytesUsed = len - RspHeaderSize;
-
-        processInput();
-    }
-    else
-    {
-        _appRspBytesUsed = 0;
-        eraseInboundObjectBlocks();
-    }
-}
-
-
-void CtiDNPApplication::processInput( void )
-{
-    _inHasPoints = false;
-
     if( gDNPVerbose )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
 
-        dout << "_appRsp.ctrl.func_code = " << (unsigned)_appRsp.func_code << endl;
+        dout << "_response.ctrl.func_code = " << (unsigned)_response.func_code << endl;
         dout << endl;
-        dout << "_appRsp.ctrl.first       = " << (unsigned)_appRsp.ctrl.first       << endl;
-        dout << "_appRsp.ctrl.final       = " << (unsigned)_appRsp.ctrl.final       << endl;
-        dout << "_appRsp.ctrl.app_confirm = " << (unsigned)_appRsp.ctrl.app_confirm << endl;
-        dout << "_appRsp.ctrl.unsolicited = " << (unsigned)_appRsp.ctrl.unsolicited << endl;
-        dout << "_appRsp.ctrl.seq         = " << (unsigned)_appRsp.ctrl.seq         << endl;
+        dout << "_response.ctrl.first       = " << (unsigned)_response.ctrl.first       << endl;
+        dout << "_response.ctrl.final       = " << (unsigned)_response.ctrl.final       << endl;
+        dout << "_response.ctrl.app_confirm = " << (unsigned)_response.ctrl.app_confirm << endl;
+        dout << "_response.ctrl.unsolicited = " << (unsigned)_response.ctrl.unsolicited << endl;
+        dout << "_response.ctrl.seq         = " << (unsigned)_response.ctrl.seq         << endl;
         dout << endl;
-        dout << "_appRsp.ind.all_stations = " << _appRsp.ind.all_stations << endl;
-        dout << "_appRsp.ind.already_exec = " << _appRsp.ind.already_exec << endl;
-        dout << "_appRsp.ind.bad_config   = " << _appRsp.ind.bad_config   << endl;
-        dout << "_appRsp.ind.bad_function = " << _appRsp.ind.bad_function << endl;
-        dout << "_appRsp.ind.buf_overflow = " << _appRsp.ind.buf_overflow << endl;
-        dout << "_appRsp.ind.class_1      = " << _appRsp.ind.class_1      << endl;
-        dout << "_appRsp.ind.class_2      = " << _appRsp.ind.class_2      << endl;
-        dout << "_appRsp.ind.class_3      = " << _appRsp.ind.class_3      << endl;
-        dout << "_appRsp.ind.dev_trouble  = " << _appRsp.ind.dev_trouble  << endl;
-        dout << "_appRsp.ind.need_time    = " << _appRsp.ind.need_time    << endl;
-        dout << "_appRsp.ind.obj_unknown  = " << _appRsp.ind.obj_unknown  << endl;
-        dout << "_appRsp.ind.out_of_range = " << _appRsp.ind.out_of_range << endl;
-        dout << "_appRsp.ind.reserved     = " << _appRsp.ind.reserved     << endl;
-        dout << "_appRsp.ind.restart      = " << _appRsp.ind.restart      << endl;
+        dout << "_response.ind.all_stations = " << _response.ind.all_stations << endl;
+        dout << "_response.ind.already_exec = " << _response.ind.already_exec << endl;
+        dout << "_response.ind.bad_config   = " << _response.ind.bad_config   << endl;
+        dout << "_response.ind.bad_function = " << _response.ind.bad_function << endl;
+        dout << "_response.ind.buf_overflow = " << _response.ind.buf_overflow << endl;
+        dout << "_response.ind.class_1      = " << _response.ind.class_1      << endl;
+        dout << "_response.ind.class_2      = " << _response.ind.class_2      << endl;
+        dout << "_response.ind.class_3      = " << _response.ind.class_3      << endl;
+        dout << "_response.ind.dev_trouble  = " << _response.ind.dev_trouble  << endl;
+        dout << "_response.ind.need_time    = " << _response.ind.need_time    << endl;
+        dout << "_response.ind.obj_unknown  = " << _response.ind.obj_unknown  << endl;
+        dout << "_response.ind.out_of_range = " << _response.ind.out_of_range << endl;
+        dout << "_response.ind.reserved     = " << _response.ind.reserved     << endl;
+        dout << "_response.ind.restart      = " << _response.ind.restart      << endl;
         dout << endl;
         dout << "data: " << endl;
 
-        for( int i = 0; i < _appRspBytesUsed; i++ )
+        for( int i = 0; i < _response_buf_len; i++ )
         {
-            dout << RWCString(CtiNumStr(_appRsp.buf[i]).hex().zpad(2)) << " ";
+            dout << RWCString(CtiNumStr(_response.buf[i]).hex().zpad(2)) << " ";
 
             if( !(i % 20) && i )
                 dout << endl;
@@ -206,205 +131,107 @@ void CtiDNPApplication::processInput( void )
     }
 
     //  ACH:  if class_1 || class_2 || class_3, we need to do something...  pass it up to the protocol layer, eh?
+    //  also, if need_time, do some time syncing, boieeeee
 
     int processed = 0;
 
-    eraseInboundObjectBlocks();
-
-    while( processed < _appRspBytesUsed )
+    if( _response.ctrl.first )
     {
-        CtiDNPObjectBlock *tmpDOB = CTIDBG_new CtiDNPObjectBlock();
+        eraseInboundObjectBlocks();
+    }
 
-        processed += tmpDOB->restore(&(_appRsp.buf[processed]), _appRspBytesUsed - processed);
+    while( processed < _response_buf_len )
+    {
+        ObjectBlock *tmpOB = CTIDBG_new ObjectBlock;
 
-        _inObjectBlocks.push_back(tmpDOB);
+        processed += tmpOB->restore(&(_response.buf[processed]), _response_buf_len - processed);
+
+        _in_object_blocks.push(tmpOB);
     }
 }
 
 
-void CtiDNPApplication::eraseInboundObjectBlocks( void )
+void Application::initForOutput( void )
 {
-    while( !_inObjectBlocks.empty() )
-    {
-        if( _inObjectBlocks.back() != NULL )
-        {
-            delete _inObjectBlocks.back();
-        }
+    int pos = 0;
 
-        _inObjectBlocks.pop_back();
+    memset( &_request, 0, sizeof(_request) );
+
+    //  ACH: if we need to use multiple outbound application layer request packets, this will need to change
+    _request.ctrl.first       = 1;
+    _request.ctrl.final       = 1;
+    _request.ctrl.app_confirm = 0;
+    _request.ctrl.unsolicited = 0;
+
+    _request.ctrl.seq = ++_seqno;
+
+    _request.func_code = (unsigned char)_request_function;
+
+    while( !_out_object_blocks.empty() )
+    {
+        const ObjectBlock *ob = _out_object_blocks.front();
+        _out_object_blocks.pop();
+
+        ob->serialize(_request.buf + pos);
+        pos += ob->getSerializedLen();
+
+        delete ob;
     }
+
+    _request_buf_len = pos;
 }
 
-/*
-void CtiDNPApplication::eraseOutboundObjectBlocks( void )
+
+void Application::eraseInboundObjectBlocks( void )
 {
-    while( !_outObjectBlocks.empty() )
+    while( !_in_object_blocks.empty() )
     {
-        if( _outObjectBlocks.back() != NULL )
-        {
-            delete _outObjectBlocks.back();
-        }
+        delete _in_object_blocks.front();  //  safe to delete null
 
-        _outObjectBlocks.pop_back();
+        _in_object_blocks.pop();
     }
 }
-*/
 
-bool CtiDNPApplication::hasInboundPoints( void )
+
+void Application::eraseOutboundObjectBlocks( void )
 {
-    bool hasPoints = false;
-
-    for( int i = 0; i < _inObjectBlocks.size(); i++ )
+    while( !_out_object_blocks.empty() )
     {
-        hasPoints |= (_inObjectBlocks[i])->hasPoints();
-    }
+        delete _out_object_blocks.front();
 
-    return hasPoints;
+        _out_object_blocks.pop();
+    }
 }
 
 
-void CtiDNPApplication::getInboundPoints( RWTPtrSlist< CtiPointDataMsg > &pointList )
+void Application::getObjects( object_block_queue &ob_queue )
 {
-    const CtiDNPTimeCTO *cto;
-
-    for( int i = 0; i < _inObjectBlocks.size(); i++ )
+    while( !_in_object_blocks.empty() )
     {
-        if( _inObjectBlocks[i]->isCTO() )
-        {
-            cto = _inObjectBlocks[i]->getCTO();
-        }
-        else if( _inObjectBlocks[i]->hasPoints() )
-        {
-            _inObjectBlocks[i]->getPoints(pointList, cto);
-        }
+        ob_queue.push(_in_object_blocks.front());
+
+        _in_object_blocks.pop();
     }
 }
 
 
-//  these set of functions assume that the control output (and corresponding input) is
-//    the ONLY (or first, at least) thing in the application layer.
-
-bool CtiDNPApplication::isControlResult( void ) const
-{
-    bool hasControlResult = false;
-
-    if( _inObjectBlocks.size() && _inObjectBlocks[0]->isBinaryOutputControl() )
-    {
-        hasControlResult = true;
-    }
-
-    return hasControlResult;
-}
-
-
-int CtiDNPApplication::getControlResultStatus( void ) const
-{
-    int retVal = -1;
-
-    if( isControlResult() )
-    {
-        retVal = _inObjectBlocks[0]->getBinaryOutputControlStatus();
-    }
-
-    return retVal;
-}
-
-
-long CtiDNPApplication::getControlResultOffset( void ) const
-{
-    long result = NULL;
-
-    if( isControlResult() )
-    {
-        result = _inObjectBlocks[0]->getBinaryOutputControlOffset();
-    }
-
-    return result;
-}
-
-
-//  These two functions need to be rewritten to get around the whole object block construct...
-//    it's clunky and unnecessary, and just serves to seperate the application layer from the
-//    individual
-
-bool CtiDNPApplication::hasTimeResult( void ) const
-{
-    bool hasTimeResult = false;
-
-    if( _inObjectBlocks.size() && _inObjectBlocks[0]->isTime() )
-    {
-        hasTimeResult = true;
-    }
-
-    return hasTimeResult;
-}
-
-
-unsigned long CtiDNPApplication::getTimeResult( void ) const
-{
-    int retVal = -1;
-
-    if( hasTimeResult() )
-    {
-        retVal = _inObjectBlocks[0]->getTimeSeconds();
-    }
-
-    return retVal;
-}
-
-
-
-/*---  Porter-side functions  ---*/
-
-void CtiDNPApplication::resetLink( void )
+void Application::resetLink( void )
 {
     _transport.resetLink();
 }
 
 
-void CtiDNPApplication::restoreReq( unsigned char *buf, int len )
+bool Application::isTransactionComplete( void ) const
 {
-    //  copy the buffer into the packet
-    memcpy(&_appReq, buf, len);
-
-    _appReqBytesUsed = len - ReqHeaderSize;
-
-    _ioState    = Output;
-    _retryState = _ioState;
-
-    _comm_errors = 0;
+    return _ioState == Complete || _ioState == Uninitialized || _ioState == Failed;
 }
 
 
-int CtiDNPApplication::getLengthRsp( void )
-{
-    return _appRspBytesUsed + RspHeaderSize;
-}
-
-
-void CtiDNPApplication::serializeRsp( unsigned char *buf )
-{
-    //  copy the packet into the buffer
-    memcpy(buf, &_appRsp, getLengthRsp() );
-}
-
-
-bool CtiDNPApplication::isTransactionComplete( void )
-{
-    bool complete;
-
-    //  ACH:  add code to allow fragmented application layer packets to be sent and received
-    //    ...but will be on Scanner side...
-
-    return _ioState == Complete || _ioState == Failed;
-}
-
-
-bool CtiDNPApplication::isReplyExpected( void )
+bool Application::isOneWay( void ) const
 {
     bool retVal;
 
-    switch( _appReq.func_code )
+    switch( _request.func_code )
     {
         case RequestConfirm:
         case RequestDirectOpNoAck:
@@ -412,13 +239,13 @@ bool CtiDNPApplication::isReplyExpected( void )
         case RequestFreezeWTimeNoAck:
         case RequestImmedFreezeNoAck:
         {
-            retVal = false;
+            retVal = true;
             break;
         }
 
         default:
         {
-            retVal = true;
+            retVal = false;
             break;
         }
     }
@@ -427,39 +254,39 @@ bool CtiDNPApplication::isReplyExpected( void )
 }
 
 
-bool CtiDNPApplication::errorCondition( void )
+bool Application::errorCondition( void ) const
 {
+    //  make this return decent error codes, not just a bool
     return _ioState == Failed;
 }
 
 
-int CtiDNPApplication::generate( CtiXfer &xfer )
+int Application::generate( CtiXfer &xfer )
 {
     if( _transport.isTransactionComplete() )
     {
         switch( _ioState )
         {
-            case Input:
+            case Output:
             {
-                _transport.initForInput((unsigned char *)&_appRsp);
+                //  _request was initialized by DNPInterface::generate()
+                _transport.initForOutput((unsigned char *)&_request, _request_buf_len + ReqHeaderSize, _dstAddr, _srcAddr);
 
                 break;
             }
 
-            case Output:
+            case Input:
             {
-                _transport.initForOutput((unsigned char *)&_appReq, _appReqBytesUsed + ReqHeaderSize, _dstAddr, _srcAddr);
+                _transport.initForInput((unsigned char *)&_response);
 
                 break;
             }
 
             case OutputAck:
             {
-                //  This is done here instead of
+                generateAck(&_acknowledge, _response.ctrl.seq);
 
-                generateAck(&_appAck, _appRsp.ctrl.seq);
-
-                _transport.initForOutput((unsigned char *)&_appAck, sizeof(_appAck), _dstAddr, _srcAddr);
+                _transport.initForOutput((unsigned char *)&_acknowledge, sizeof(_acknowledge), _dstAddr, _srcAddr);
 
                 break;
             }
@@ -475,7 +302,7 @@ int CtiDNPApplication::generate( CtiXfer &xfer )
 }
 
 
-int CtiDNPApplication::decode( CtiXfer &xfer, int status )
+int Application::decode( CtiXfer &xfer, int status )
 {
     int retVal = NoError;
     int transportStatus;
@@ -508,16 +335,16 @@ int CtiDNPApplication::decode( CtiXfer &xfer, int status )
         {
             case Output:
             {
-                if( isReplyExpected() )
+                if( isOneWay() )
+                {
+                    _ioState    = Complete;
+                    _retryState = _ioState;
+                }
+                else
                 {
                     _ioState    = Input;
                     //  leave _retryState on Output, so we re-output on error
                     //  _retryState = _ioState;
-                }
-                else
-                {
-                    _ioState    = Complete;
-                    _retryState = _ioState;
                 }
 
                 break;
@@ -525,24 +352,32 @@ int CtiDNPApplication::decode( CtiXfer &xfer, int status )
 
             case Input:
             {
+                //  rudimentary bounds check on our input
                 if( _transport.getInputSize() >= RspHeaderSize )
                 {
-                    _appRspBytesUsed = _transport.getInputSize() - RspHeaderSize;
+                    _response_buf_len = _transport.getInputSize() - RspHeaderSize;
 
-                    if( _appRsp.ctrl.app_confirm )
+                    processInput();
+
+                    if( _response.ctrl.app_confirm )
                     {
                         _ioState    = OutputAck;
                         _retryState = _ioState;
                     }
+                    else if( !_response.ctrl.final )
+                    {
+                        _ioState    = Input;
+                        _retryState = _ioState;
+                    }
                     else
                     {
-                        _ioState    = Complete;
+                        _ioState = Complete;
                         _retryState = _ioState;
                     }
                 }
                 else
                 {
-                    _appRspBytesUsed = 0;
+                    _response_buf_len = 0;
                     _ioState    = Failed;
                     _retryState = _ioState;
                 }
@@ -552,8 +387,17 @@ int CtiDNPApplication::decode( CtiXfer &xfer, int status )
 
             case OutputAck:
             {
-                _ioState    = Complete;
-                _retryState = _ioState;
+                //  _response is untouched between Input and OutputAck, so this is still good data
+                if( !_response.ctrl.final )
+                {
+                    _ioState    = Input;
+                    _retryState = _ioState;
+                }
+                else
+                {
+                    _ioState = Complete;
+                    _retryState = _ioState;
+                }
 
                 break;
             }
@@ -561,7 +405,7 @@ int CtiDNPApplication::decode( CtiXfer &xfer, int status )
             default:
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint - unknown state(" << _ioState << ") in CtiDNPApplication::decode() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << RWTime() << " **** Checkpoint - unknown state(" << _ioState << ") in Application::decode() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
 
                 _ioState    = Failed;
                 _retryState = _ioState;
@@ -573,7 +417,7 @@ int CtiDNPApplication::decode( CtiXfer &xfer, int status )
 }
 
 
-void CtiDNPApplication::generateAck( appAck *ack_packet, unsigned char seq )
+void Application::generateAck( acknowledge_t *ack_packet, unsigned char seq )
 {
     memset( ack_packet, 0, sizeof(*ack_packet) );
 
@@ -586,5 +430,9 @@ void CtiDNPApplication::generateAck( appAck *ack_packet, unsigned char seq )
 
     ack_packet->ctrl.app_confirm = 0;
     ack_packet->ctrl.unsolicited = 0;
+}
+
+}
+}
 }
 
