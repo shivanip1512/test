@@ -14,6 +14,8 @@ import com.cannontech.stars.xml.serialize.types.StarsCtrlHistPeriod;
  */
 
 public class LMControlHistory {
+	
+	public static final String TABLE_NAME = "LMControlHistory";
 
     public LMControlHistory() {
     }
@@ -64,11 +66,15 @@ public class LMControlHistory {
 
             Date dateFrom = getPeriodStartTime(period);
 
-            String sql = "SELECT * FROM LMCONTROLHISTORY WHERE PAOBJECTID = ?";
-            if (dateFrom != null) sql += " AND STARTDATETIME > ?";
-            sql += " ORDER BY STARTDATETIME";
+			StringBuffer sql = new StringBuffer();
+            sql.append("SELECT * FROM ")
+               .append(TABLE_NAME)
+               .append(" WHERE PAOBJECTID = ?");
+            if (dateFrom != null)
+            	sql.append(" AND STARTDATETIME > ?");
+            sql.append(" ORDER BY STARTDATETIME");
 
-            pstmt = conn.prepareStatement(sql);
+            pstmt = conn.prepareStatement( sql.toString() );
             pstmt.setInt( 1, groupID.intValue() );
             if (dateFrom != null)
                 pstmt.setTimestamp( 2, new java.sql.Timestamp(dateFrom.getTime()) );
@@ -225,12 +231,13 @@ public class LMControlHistory {
                         com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
             if (conn == null) return null;
 
-            StringBuffer sql = new StringBuffer(128);
-            sql.append("SELECT * FROM LMCONTROLHISTORY WHERE LMCTRLHISTID IN (")
+            StringBuffer sql = new StringBuffer();
+            sql.append("SELECT * FROM ")
+               .append(TABLE_NAME)
+               .append(" WHERE LMCTRLHISTID IN (")
                .append("SELECT MAX(LMCTRLHISTID) FROM LMCONTROLHISTORY WHERE PAOBJECTID = ")
                .append(groupID)
                .append(")");
-            System.out.println("*** Execute query: " + sql.toString());
 
             stmt = conn.createStatement();
             rset = stmt.executeQuery( sql.toString() );

@@ -122,11 +122,10 @@ public class SOAPClient extends HttpServlet {
 
             session.setAttribute("ENERGY_COMPANY_ID", new Integer(1));
         }
-        /*
         else if (action.equalsIgnoreCase("HoneywellSearchCustAccount")) {
             clientAction = new com.cannontech.stars.honeywell.action.SearchCustAccountAction();
             destURL = "/OperatorDemos/Consumer/Update.jsp";
-        }*/
+        }
         else {
             XMLUtil.getLogger( SOAPClient.class ).error( "SOAPClient: Invalid action type: " + action );
         }
