@@ -4,6 +4,22 @@
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../demostyle.css" type="text/css">
+<script language="JavaScript">
+<!--
+function MM_reloadPage(init) {  //reloads the window if Nav4 resized
+  if (init==true) with (navigator) {if ((appName=="Netscape")&&(parseInt(appVersion)==4)) {
+    document.MM_pgW=innerWidth; document.MM_pgH=innerHeight; onresize=MM_reloadPage; }}
+  else if (innerWidth!=document.MM_pgW || innerHeight!=document.MM_pgH) location.reload();
+}
+MM_reloadPage(true);
+// -->
+
+function selectAccount(accountID) {
+	var form = document.resultForm;
+	form.AccountID.value = accountID;
+	form.submit();
+}
+</script>
 </head>
 
 <body class="Background" leftmargin="0" topmargin="0">
@@ -52,23 +68,37 @@
           <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF">
               
-            <div align="center"><% String header = "SEARCH RESULTS"; %><%@ include file="InfoSearchBar3.jsp" %></div> 
+            <div align="center"><% String header = "SEARCH RESULTS"; %><%-- include file="InfoSearchBar3.jsp" --%></div> 
             <div align="center">
               <span class="Main">The following search results were found:</span> 
             </div>
-            <table width="615" border="1" cellspacing="0" cellpadding="3" align="center">
+			<form name="resultForm" method="POST" action="/servlet/SOAPClient">
+		      <input type="hidden" name="action" value="GetCustAccount">
+              <input type="hidden" name="AccountID" value="">
+			  <input type="hidden" name="REDIRECT" value="/OperatorDemos/Consumer/Update.jsp">
+			  <input type="hidden" name="REFERRER" value="/OperatorDemos/Consumer/SearchResults.jsp">
+			  
+              <table width="615" border="1" cellspacing="0" cellpadding="3" align="center">
               <tr> 
                 <td width="187" class="HeaderCell">Name</td>
                 <td width="290" class="HeaderCell">Address</td>
                 <td width="112" class="HeaderCell">Phone#</td>
               </tr>
-              
-              <tr valign="top"> 
-                <td width="187" class="TableCell">&nbsp;</td>
-                <td width="290" class="TableCell">&nbsp; </td>
-                <td width="112" class="TableCell">&nbsp;</td>
+<%
+	StarsSearchCustomerAccountResponse resp = (StarsSearchCustomerAccountResponse) operator.getAttribute( "ACCOUNT_SEARCH_RESULTS" );
+	for (int i = 0; i < resp.getStarsCustAccountBriefCount(); i++) {
+		StarsCustAccountBrief acctBrief = resp.getStarsCustAccountBrief(i);
+%>
+              <tr valign="top" onclick="selectAccount(<%= acctBrief.getAccountID() %>)"> 
+                <td width="187" class="TableCell"><%= acctBrief.getContactName() %></td>
+                <td width="290" class="TableCell"><%= acctBrief.getStreetAddress() %></td>
+                <td width="112" class="TableCell"><%= acctBrief.getContPhoneNumber() %></td>
               </tr>
+<%
+	}
+%>
               </table>
+			</form>
               <p>&nbsp;</p>
                 </td>
         <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>

@@ -36,10 +36,10 @@
       <table width="525" border="0" cellspacing="0" cellpadding="3" align="center">
         <tr> 
           <td width="97"><font face="Arial, Helvetica, sans-serif" size="2"> </font></td>
-          <td width="114">&nbsp;</td>
-          <td width="233"><font face="Arial, Helvetica, sans-serif" size="1">Search 
+          <td width="109">&nbsp;</td>
+          <td width="250"><font face="Arial, Helvetica, sans-serif" size="1">Search 
             for existing customer:</font></td>
-          <td width="57">&nbsp;</td>
+          <td width="45">&nbsp;</td>
         </tr>
         <tr> 
           <form name = "custSearchForm" method="POST" action="/servlet/SOAPClient">
@@ -48,8 +48,8 @@
               <div align = "center" style = "border:solid 1px #666999;"><a href = "Consumer/New.jsp" class = "Link1" style = "text-decoration:none;">New 
                 Account</a></div>
             </td>
-            <td  class = "Main" width="114" >&nbsp;</td>
-            <td  class = "Main" width="233" align = "right"> 
+            <td  class = "Main" width="109" >&nbsp;</td>
+            <td  class = "Main" width="250" align = "right"> 
               <select name="SearchBy">
 <%
 	StarsCustSelectionList searchByList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_SEARCHBY );
@@ -64,7 +64,7 @@
               &nbsp; 
               <input type="text" name="SearchValue">
               &nbsp; </td>
-            <td class = "Main" width="57" valign = "top"><img src="GoButton.gif" width="23" height="20" onClick = "Javascript:document.custSearchForm.submit();"> 
+            <td class = "Main" width="45" valign = "top"><img src="GoButton.gif" width="23" height="20" onClick = "Javascript:document.custSearchForm.submit();"> 
             </td>
           </form>
           <form method="get" action="Consumer/New.jsp"> 

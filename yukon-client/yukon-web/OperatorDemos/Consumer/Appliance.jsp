@@ -11,10 +11,6 @@
 			appNo = Integer.parseInt(appNoStr);
 		}
 		catch (NumberFormatException e) {}
-	if (appNo == -1)	// Show the latest created/updated appliance
-		Integer latestAppNo = (Integer) operator.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + "LATEST_APP_NO");
-		if (latestAppNo != null) appNo = latestAppNo.intValue();
-	}
 	if (appNo < 0 || appNo >= appliances.getStarsApplianceCount())
 		appNo = 0;
 		

@@ -11,10 +11,6 @@
 			invNo = Integer.parseInt(invNoStr);
 		}
 		catch (NumberFormatException e) {}
-	if (invNo == -1) {	// Show the latest created/updated hardware
-		Integer latestInvNo = (Integer) operator.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + "LATEST_INV_NO");
-		if (latestInvNo != null) invNo = latestInvNo.intValue();
-	}
 	if (invNo < 0 || invNo >= inventories.getStarsLMHardwareCount())
 		invNo = 0;
 
