@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.57 $
-* DATE         :  $Date: 2005/02/17 23:11:19 $
+* REVISION     :  $Revision: 1.58 $
+* DATE         :  $Date: 2005/03/01 14:06:33 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -588,60 +588,6 @@ void CtiDeviceManager::refreshDeviceWindows(LONG id)
         dout << RWTime() << " Done looking for ScanWindows" << endl;
     }
 }
-
-#if 0
-void CtiDeviceManager::RefreshDeviceRoute(LONG id)
-{
-    LONG        lTemp = 0;
-    CtiDeviceBase*   pTempCtiDevice = NULL;
-
-    LockGuard  dev_guard(monitor());       // Protect our iteration!
-
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-    RWDBDatabase db = getDatabase();
-    RWDBTable   keyTable;
-
-    RWDBSelector selector = db.selector();
-
-    if(DebugLevel & 0x00020000)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Looking for Routes" << endl;
-    }
-    CtiTableDeviceRoute::getSQL( db, keyTable, selector );
-
-    if(id > 0)
-    {
-        selector.where(keyTable["deviceid"] == id && selector.where());
-    }
-
-    RWDBReader rdr = selector.reader(conn);
-    if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
-    }
-
-    while( (setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok) && rdr() )
-    {
-        rdr["deviceid"] >> lTemp;            // get the DeviceID
-
-        if( _smartMap.entries() > 0 && ((pTempCtiDevice = getEqual(lTemp)) != NULL) )
-        {
-            if(pTempCtiDevice->getType())       // FIX FIX FIX FIX FIX
-            {
-                ((CtiDeviceDLCBase*)pTempCtiDevice)->DecodeRoutesDatabaseReader(rdr);        // Fills himself in from the reader
-            }
-        }
-    }
-
-    if(DebugLevel & 0x00020000)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Done looking for Routes" << endl;
-    }
-}
-#endif
 
 void CtiDeviceManager::refresh(CtiDeviceBase* (*Factory)(RWDBReader &), bool (*removeFunc)(CtiDeviceSPtr&,void*), void *d, LONG paoID, RWCString category, RWCString devicetype)
 {
@@ -2113,13 +2059,6 @@ void CtiDeviceManager::refreshMacroSubdevices(LONG paoID)
             }
         }
     }
-#if 0
-    else
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " There is a DB error or zero entries in GenericMacro Table. DB return code: " << macroResult.status().errorCode() << endl;
-    }
-#endif
 
     if(DebugLevel & 0x00020000)
     {
@@ -2405,7 +2344,7 @@ void CtiDeviceManager::apply(void (*applyFun)(const long, ptr_type, void*), void
     {
         int trycount = 0;
 
-        #if 0
+        #if 1
         LockGuard gaurd(getMux(), 30000);
 
         while(!gaurd.isAcquired())
