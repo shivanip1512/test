@@ -5,8 +5,7 @@ package com.cannontech.graph.buffer.html;
  * Creation date: (1/31/2001 1:35:28 PM)
  * @author: 
  */
-import com.cannontech.graph.model.DataViewModel;
-import com.cannontech.graph.model.LoadDurationCurveModel;
+import com.cannontech.graph.model.TrendSerie;
 //import com.cannontech.graph.GraphDataFormats;
 
 public class PeakHtml extends HTMLBuffer
@@ -25,16 +24,20 @@ public PeakHtml()
  * Creation date: (1/31/2001 1:38:34 PM)
  * @return java.lang.StringBuffer
  */
-public StringBuffer getHtml(StringBuffer buf) {
+public StringBuffer getHtml(StringBuffer buf)
+{
+	if( model.getTrendSeries() == null)
+		return buf;
 
+//	System.out.println("Usage HTML getHtml()");
+//	long timer = System.currentTimeMillis();
 	long peakPointIndex = -1;
-	
 	// Find the peak point
 	try
 	{
-		for( int i = 0; i < model.getNumSeries(); i++ )
+		for( int i = 0; i < model.getTrendSeries().length; i++ )
 		{
-			if( model.getSeriesTypes(i).equalsIgnoreCase(com.cannontech.database.db.graph.GraphDataSeries.PEAK_SERIES) )
+			if( model.getTrendSeries()[i].getType().equalsIgnoreCase(com.cannontech.database.db.graph.GraphDataSeries.PEAK_SERIES) )
 			{
 				peakPointIndex = i;
 				break;
@@ -49,11 +52,11 @@ public StringBuffer getHtml(StringBuffer buf) {
 	
 		buf.append("<CENTER><TABLE BORDER=\"0\" CELLSPACING=\"0\" CELLPADDING=\"0\">\n");
 		buf.append("<TR><TD BGCOLOR=\"#ffffff\" class=\"Main\"><CENTER>&nbsp;<B><FONT FACE=\"Arial\">");
-		buf.append( model.getName());
+		buf.append( model.getChartName());
 		buf.append("</FONT></B>\n");
 	
 		buf.append("	<BR><B><FONT FACE=\"Arial\">");
-		if( com.cannontech.common.util.TimeUtil.differenceInDays( model.getStartDate(), model.getEndDate() ) == 1 )
+		if( com.cannontech.common.util.TimeUtil.differenceInDays( model.getStartDate(), model.getStopDate() ) == 1 )
 		{
 			buf.append( dateFormat.format( model.getStartDate()) );
 		}
@@ -61,7 +64,7 @@ public StringBuffer getHtml(StringBuffer buf) {
 		{
 			buf.append( dateFormat.format( model.getStartDate()) );
 	 		buf.append( " - " );
- 			buf.append( dateFormat.format( model.getEndDate() ) );
+ 			buf.append( dateFormat.format( model.getStopDate() ) );
 		}
  		buf.append("</FONT></B>\n");
 	 	buf.append("	<BR><BR><B><FONT SIZE=\"-1\" FACE=\"ARIAL\">Current Peaks Table</FONT></B>\n");
@@ -84,17 +87,17 @@ public StringBuffer getHtml(StringBuffer buf) {
 		buf.append("    <TD ALIGN=CENTER WIDTH=\"70\" BGCOLOR=\"#999966\" class=\"HeaderCell\"><CENTER><B><FONT SIZE=\"-1\" FACE=\"Arial\">");
 
 
-		buf.append("PEAK " +  model.getSeriesNames((int) peakPointIndex) );
+		buf.append("PEAK " +  model.getTrendSeries()[(int) peakPointIndex].getLabel());
 		buf.append("</FONT></B></CENTER></TD>\r\n");	 
 	
 		//List all graph points
-		for( int i = 0; i < model.getNumSeries(); i++ )
+		for( int i = 0; i < model.getTrendSeries().length; i++ )
 		{
-			if( model.getPointIDs()[i] != model.getPointIDs()[(int)peakPointIndex] && 
-				model.getSeriesTypes(i).equalsIgnoreCase(com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES) )
+			if( model.getTrendSeries()[i].getPointId() != model.getTrendSeries()[(int)peakPointIndex].getPointId() && 
+				model.getTrendSeries()[i].getType().equalsIgnoreCase(com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES) )
 			{
 				buf.append("    <TD ALIGN=CENTER WIDTH=\"70\" BGCOLOR=\"#999966\" class=\"HeaderCell\"><CENTER><B><FONT SIZE=\"-1\" FACE=\"Arial\">");
-				buf.append(model.getSeriesNames(i));
+				buf.append(model.getTrendSeries()[i].getLabel());
 				buf.append("</FONT></B></CENTER></TD>\r\n");
 			}
 		}
@@ -102,68 +105,61 @@ public StringBuffer getHtml(StringBuffer buf) {
 		buf.append("  </TR>\r\n");
 	
 		// Set the number of decimal places that will display for each point.
-		int decimals = model.getDecimalPlaces( (int) peakPointIndex);
+		int decimals = model.getTrendSeries()[(int) peakPointIndex].getDecimalPlaces();
 		setFractionDigits( decimals );
 		
 		// Find the 6 peaks for the peak point
-		double[] peakData = model.getYSeries( (int) peakPointIndex);
-		double[] peakTimeStamps = null;
-		if ( model instanceof LoadDurationCurveModel )
-			peakTimeStamps = ((LoadDurationCurveModel)model).getXHours((int) peakPointIndex);
-		else if ( model instanceof DataViewModel )
-			peakTimeStamps = model.getXSeries( (int) peakPointIndex);
+		double[] peakData = model.getTrendSeries()[(int) peakPointIndex].getValuesArray();
+		long[] peakTimeStamps = model.getTrendSeries()[(int) peakPointIndex].getPeriodsArray();
+
 
 		// Using a sorted tree map to find the 6 peak values and timestamps
 		java.util.TreeMap peakMap = new java.util.TreeMap();
 	
 		for( int i = 0; i < peakData.length; i++ )
 		{
-			if( peakMap.size() < 6 || peakData[i] > ((Double) peakMap.firstKey()).doubleValue() )
+			if( peakMap.size() < 6 || peakData[i] > ((Long) peakMap.firstKey()).doubleValue() )
 			{
 				if( peakMap.size() == 6 )
 					peakMap.remove( peakMap.firstKey() );
 			
-				peakMap.put( new Double( peakData[i]), new Double( peakTimeStamps[i] ));
+				peakMap.put( new Long( peakTimeStamps[i] ), new Double( peakData[i]));
 			}
 		}	
-
-		Object[] values = peakMap.keySet().toArray();
+		java.util.Set keySet = peakMap.keySet();
+		Long[] keyArray = new Long[keySet.size()];
+		keySet.toArray(keyArray);
 	
-		for( int i = values.length-1; i >= 0; i-- )
+		for( int i = keyArray.length-1; i >= 0; i-- )
 		{
 			buf.append("  <TR>\r\n");
 			buf.append("    <TD ALIGN=CENTER WIDTH=\"120\" BGCOLOR=\"#CCCC99\" class=\"TableCell\">&nbsp;<FONT SIZE=\"-1\" FACE=\"Arial\">");
-			buf.append( dateTimeformat.format(new java.util.Date( ((Double) peakMap.get( values[i])).longValue() * 1000 )) );
+			buf.append( dateTimeformat.format(new java.util.Date(((Long)keyArray[i]).longValue())));
 			buf.append("</FONT></TD>\r\n");
 	
 			buf.append("    <TD ALIGN=CENTER WIDTH=\"70\" BGCOLOR=\"#CCCC99\" class=\"TableCell\">&nbsp;<FONT SIZE=\"-1\" FACE=\"Arial\">");
-			buf.append( valueFormat.format( ((Double) values[i])));
+			buf.append( valueFormat.format(( (Double)peakMap.get(keyArray[i])).doubleValue()));
 			buf.append("</FONT></TD>\r\n");
 			
-			for( int j = 0; j < model.getNumSeries(); j++ )
+			for( int j = 0; j < model.getTrendSeries().length; j++ )
 			{
 					
-				if( model.getPointIDs()[j] != model.getPointIDs()[(int)peakPointIndex] && 
-					model.getSeriesTypes(j).equalsIgnoreCase(com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES))
+				if( model.getTrendSeries()[j].getPointId() != model.getTrendSeries()[(int)peakPointIndex].getPointId() && 
+					model.getTrendSeries()[j].getType().equalsIgnoreCase(com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES))
 				{
 					// Set the number of decimal places that are displayed for each point (series).
-					decimals = model.getDecimalPlaces( j );
-					setFractionDigits( decimals );
+					decimals = model.getTrendSeries()[j].getDecimalPlaces();
+//					setFractionDigits( decimals );
+					setFractionDigits( 3);
 
-					double[] vals = model.getYSeries(j);
-					double[] times = model.getXSeries(j);
+					double[] vals = model.getTrendSeries()[j].getValuesArray();
+					long[] times = model.getTrendSeries()[j].getPeriodsArray();
 					
-					if ( model instanceof LoadDurationCurveModel )
-						times = ((LoadDurationCurveModel)model).getXHours(j);
-					else if ( model instanceof DataViewModel )
-						times = model.getXSeries( j );
-	
-					Double v = (Double) peakMap.get( values[i] );
-	
+					Long ts = (Long) keyArray[i];
 					int index = -1;
 				
-					if( v != null  && times != null)
-						index = java.util.Arrays.binarySearch( times, v.doubleValue());
+					if( ts != null  && times != null)
+						index = java.util.Arrays.binarySearch( times, ts.longValue());
 
 					if( index >= 0 )
 					{	
@@ -190,10 +186,10 @@ public StringBuffer getHtml(StringBuffer buf) {
 		buf.append("    <TR><TD ALIGN=CENTER WIDTH=\"120\" BGCOLOR=\"#CCCC99\" class=\"TableCell\"><CENTER><FONT SIZE=\"-1\" FACE=\"Arial\">");
 		buf.append("No Data Obtained</FONT></TD>\r\n");
 		buf.append("    <TD ALIGN=CENTER WIDTH=\"70\" BGCOLOR=\"#CCCC99\" class=\"TableCell\"><CENTER><FONT SIZE=\"-1\" FACE=\"Arial\">N/A</FONT></CENTER></TD>\r\n");
-		for( int i = 0; i < model.getNumSeries(); i++ )
+		for( int i = 0; i < model.getTrendSeries().length; i++ )
 		{
-			if( model.getPointIDs()[i] != model.getPointIDs()[(int)peakPointIndex] && 
-				model.getSeriesTypes(i).equalsIgnoreCase(com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES) )
+			if( model.getTrendSeries()[i].getPointId() != model.getTrendSeries()[(int)peakPointIndex].getPointId() && 
+				model.getTrendSeries()[i].getType().equalsIgnoreCase(com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES) )
 			{
 		buf.append("    <TD ALIGN=CENTER WIDTH=\"70\" BGCOLOR=\"#CCCC99\" class=\"TableCell\"><CENTER><FONT SIZE=\"-1\" FACE=\"Arial\">N/A</FONT></CENTER></TD>\r\n");
 			}
@@ -201,6 +197,10 @@ public StringBuffer getHtml(StringBuffer buf) {
 		buf.append("</TR></CENTER></TABLE>\r\n");		
 		return buf;
 	}
+//	finally
+//	{
+//		System.out.println(" @PEAK HTML - Took " + (System.currentTimeMillis() - timer) +" millis to build html buffer.");
+//	}
 
 }
 }

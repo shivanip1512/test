@@ -5,7 +5,7 @@ package com.cannontech.graph.buffer.html;
  * Creation date: (1/31/2001 1:35:39 PM)
  * @author: 
  */
-
+import com.cannontech.graph.model.TrendSerie;
 //import com.cannontech.graph.GraphDataFormats;
 public class UsageHtml extends HTMLBuffer
 {
@@ -16,7 +16,10 @@ public class UsageHtml extends HTMLBuffer
  */
 public StringBuffer getHtml(StringBuffer buf)
 {
-	System.out.println("Usage HTML getHtml()");
+	if( model.getTrendSeries() == null)
+		return buf;
+//	System.out.println("Usage HTML getHtml()");
+//	long timer = System.currentTimeMillis();
 	/* The usage will be determined by taking the first available
 	   USAGE_SERIES value and subtracting it from the last.
 	   In the case that there is only one reading available
@@ -24,8 +27,8 @@ public StringBuffer getHtml(StringBuffer buf)
 	   indicate this.
 	 */
 	 
-	double[] xSeries;
-	double[] ySeries;
+	double[] values;
+	long[] times;
 			
 	java.util.ArrayList usageLabels = new java.util.ArrayList(4);
 	java.util.ArrayList startValues = new java.util.ArrayList(4);
@@ -39,26 +42,30 @@ public StringBuffer getHtml(StringBuffer buf)
 	try
 	{
 		
-		for( int i = 0; i < model.getNumSeries(); i++ )
+		for( int i = 0; i < model.getTrendSeries().length; i++ )
 		{
-			if( model.getSeriesTypes(i).equalsIgnoreCase( com.cannontech.database.db.graph.GraphDataSeries.USAGE_SERIES) )
+			TrendSerie serie = model.getTrendSeries()[i];
+			if( serie.getType().equalsIgnoreCase( com.cannontech.database.db.graph.GraphDataSeries.USAGE_SERIES) )
 			{
 				// initialize start,end to min_value which indicates no values found			
-				Double start = null;
-				Double end = null;
+				Double startValue = null;
+				Double endValue = null;
 	
-				Double startTime = null;
-				Double endTime = null;
+				Long startTime = null;
+				Long endTime = null;
 			
-				xSeries = model.getXSeries(i);
-				ySeries = model.getYSeries(i);
 
-				String label = (model.getSeriesNames(i));
+				values = serie.getValuesArray();
+				times = serie.getPeriodsArray();
+//				xSeries = model.getXSeries(i);
+//				ySeries = model.getYSeries(i);
+
+				String label = serie.getLabel();
 				usageLabels.add( label );
 			
-				if( xSeries != null )
+				if( values != null )
 				{
-					if( xSeries.length > 0 && ySeries.length > 0 )
+					if( times.length > 0 && values.length > 0 )
 					{
 						boolean addNote = false;
 				
@@ -66,28 +73,28 @@ public StringBuffer getHtml(StringBuffer buf)
 						//FIRST day of the interval
 						endCompare.setTime(model.getStartDate());
 						endCompare.set( java.util.Calendar.DAY_OF_YEAR, endCompare.get(java.util.Calendar.DAY_OF_YEAR) + 1 );
-						if( endCompare.getTime().getTime() < xSeries[0]*1000 )					
+						if( endCompare.getTime().getTime() < times[0] )	// *1000
 						{					
 							addNote = true;
 						}
 						
-						start = new Double(ySeries[0]);
-						startTime = new Double(xSeries[0]);
+						startValue = new Double(values[0]);
+						startTime = new Long(times[0]);
 						
-						if( xSeries.length > 1 && ySeries.length > 1 )
+						if( times.length > 1 && values.length > 1 )
 						{
 							//Make sure that last xSeries timestamp is
 							//on the LAST day of the interval
-							endCompare.setTime(model.getEndDate());
+							endCompare.setTime(model.getStopDate());
 							endCompare.set( java.util.Calendar.DAY_OF_YEAR, endCompare.get(java.util.Calendar.DAY_OF_YEAR) - 1 );
-							if( endCompare.getTime().getTime() > xSeries[ xSeries.length-1 ]*1000 )													
+							if( endCompare.getTime().getTime() > times[ times.length-1 ])//*1000 )													
 							{
 								addNote = true;
 	
 							}
 							
-							end = new Double(ySeries[ ySeries.length-1 ]);
-							endTime = new Double(xSeries[ xSeries.length-1] );
+							endValue = new Double(values[ values.length-1 ]);
+							endTime = new Long(times[ times.length-1] );
 						}	
 	
 						if( addNote && startTime != null && endTime != null)
@@ -96,30 +103,30 @@ public StringBuffer getHtml(StringBuffer buf)
 							// so note when we did
 							endNotes.add("* Usage for " + label + 
 								" calculated from readings on " +
-								extendedDateTimeformat.format(new java.util.Date( startTime.longValue()*1000 )) + 
+								extendedDateTimeformat.format(new java.util.Date( startTime.longValue())) + 
 								" and " +
-								extendedDateTimeformat.format( new java.util.Date( endTime.longValue()*1000 ) ));
+								extendedDateTimeformat.format( new java.util.Date( endTime.longValue() ) ));
 						}
 					}				
 				}
 
 				// Format the valueFormat for the number of decimals for each point
-				int decimals = model.getDecimalPlaces(i);
+				int decimals = model.getTrendSeries()[i].getDecimalPlaces();
 				setFractionDigits( decimals );
 				
-				if( start != null )			
-					startValues.add( valueFormat.format( start.doubleValue() ) );
+				if( startValue != null )			
+					startValues.add( valueFormat.format( startValue.doubleValue() ) );
 				else
 					startValues.add( "N/A" );
 	
-				if( end != null )
-					endValues.add( valueFormat.format( end.doubleValue() ) );
+				if( endValue != null )
+					endValues.add( valueFormat.format( endValue.doubleValue() ) );
 				else
 					endValues.add( "N/A" );
 			
-				if( start != null && end != null )
+				if( startValue != null && endValue != null )
 				{
-					totalValues.add( valueFormat.format( end.doubleValue() - start.doubleValue() ) );
+					totalValues.add( valueFormat.format( endValue.doubleValue() - startValue.doubleValue() ) );
 				}
 				else
 				{
@@ -222,9 +229,9 @@ public StringBuffer getHtml(StringBuffer buf)
 		e.printStackTrace();
 		return buf;
 	}	
-	finally
-	{
-		System.out.println("END USAGE HTML getHtml()");
-	}
+//	finally
+//	{
+//		System.out.println(" @USAGE HTML - Took " + (System.currentTimeMillis() - timer) +" millis to build html buffer.");
+//	}
 }
 }

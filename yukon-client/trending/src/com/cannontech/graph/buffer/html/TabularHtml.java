@@ -5,8 +5,7 @@ package com.cannontech.graph.buffer.html;
  * Creation date: (1/31/2001 1:35:09 PM)
  * @author: 
  */
-import com.cannontech.graph.model.DataViewModel;
-import com.cannontech.graph.model.LoadDurationCurveModel;
+import com.cannontech.graph.model.TrendSerie;
 //import com.cannontech.graph.GraphDataFormats;
 public class TabularHtml extends HTMLBuffer
 {
@@ -21,24 +20,27 @@ public class TabularHtml extends HTMLBuffer
  */
 public StringBuffer getHtml(StringBuffer buf)
 {
-	long timer = System.currentTimeMillis();
+	if( model.getTrendSeries() == null)
+		return buf;
 
-	double tabStDt = new Long(model.getStartDate().getTime() / 1000).doubleValue();
-	double tabEndDt = new Long(model.getEndDate().getTime() / 1000).doubleValue();
+//	System.out.println("Tabular HTML getHtml()");
+//	long timer = System.currentTimeMillis();
+
+	long tabStDt = model.getStartDate().getTime()/1000;
+	long tabEndDt = model.getStopDate().getTime()/1000;
 	
 	java.util.Date headerDateDisplay = model.getStartDate();
 		
 	if( getTabularStartDate() != null && getTabularEndDate() != null)
 	{
-		tabStDt = (new Long(getTabularStartDate().getTime() / 1000)).doubleValue();
-		tabEndDt = (new Long(getTabularEndDate().getTime() / 1000)).doubleValue();
-		//System.out.println("START = "+ tabStDt + "   END: " + tabEndDt);
+		tabStDt = getTabularStartDate().getTime()/1000;
+		tabEndDt = getTabularEndDate().getTime()/1000;
 		headerDateDisplay = getTabularStartDate();
 	}
 //	buf.append("<link rel=\"stylesheet\" href=\"d:/yukon/client/bin/CannonStyle.css\" type=\"text/css\">");
 	buf.append("<CENTER><CENTER><TABLE BORDER=\"0\" CELLSPACING=\"0\" CELLPADDING=\"0\"><TR>\n");
 	buf.append("<TD BGCOLOR=\"#ffffff\" class=\"Main\"><CENTER>&nbsp;<B><FONT FACE=\"Arial\">\n");
-	buf.append( model.getName());
+	buf.append( model.getChartName());
 	buf.append("</FONT></B><BR><B><FONT FACE=\"Arial\">\n");
 
 	//if( com.cannontech.common.util.TimeUtil.differenceInDays( model.getStartDate(), model.getEndDate() ) == 1 )
@@ -56,55 +58,74 @@ public StringBuffer getHtml(StringBuffer buf)
 	buf.append("<TD BGCOLOR=\"#999966\" class=\"HeaderCell\" WIDTH=\"90\">\n");
 	buf.append("<P ALIGN=CENTER><B><FONT SIZE=\"-1\" FACE=\"Arial\">Time</FONT></B></TD>\n");
 
-	for( int z = 0; z < model.getNumSeries(); z++ )
+	int validSeriesCount = 0;
+	java.util.Vector validDecimalPlaces = new java.util.Vector(model.getTrendSeries().length);
+	for (int i = 0; i < model.getTrendSeries().length; i++)
 	{
-		buf.append("<TD BGCOLOR=\"#999966\" class=\"HeaderCell\" WIDTH=\"130\">\n");
-		buf.append("<P ALIGN=CENTER><B><FONT SIZE=\"-1\" FACE=\"Arial\">\n");
-		//buf.append( model.getSeriesDevices(z)+"<BR>" + model.getSeriesNames(z));
-		buf.append( model.getSeriesNames(z));
-		buf.append("</FONT></B></TD>\n");
-	}
-			
+		TrendSerie serie = model.getTrendSeries()[i];
+		if( serie.getType().equalsIgnoreCase("graph"))
+		{
+			buf.append("<TD BGCOLOR=\"#999966\" class=\"HeaderCell\" WIDTH=\"130\">\n");
+			buf.append("<P ALIGN=CENTER><B><FONT SIZE=\"-1\" FACE=\"Arial\">\n");
+			buf.append( serie.getLabel());
+			buf.append("</FONT></B></TD>\n");
+
+			validDecimalPlaces.add(new Integer(serie.getDecimalPlaces()));
+			validSeriesCount++;
+		}
+	}			
 	buf.append("</TR><TR>\n");
 	buf.append("<TD VALIGN=\"TOP\" BGCOLOR=\"#CCCC99\" class=\"TableCell\" WIDTH=\"90\">\n");
 	buf.append("<P ALIGN=CENTER><FONT SIZE=\"-1\" FACE=\"Arial\">\n");
+
+
+	Integer [] decimals = new Integer[validDecimalPlaces.size()];
+	validDecimalPlaces.toArray(decimals);
  	// Gets ALL possible timestamps for all of the points.
  	// Set up a tree map of the model
 	java.util.TreeMap tree = new java.util.TreeMap();
-	for( int k = 0; k < model.getNumSeries(); k++ )
+	
+	int validIndex = 0;
+	for( int i = 0; i < model.getTrendSeries().length; i++ )
 	{
-		double[] values = model.getYSeries(k);
- 		double[] timeStamp = null;
-		if ( model instanceof DataViewModel )
-			timeStamp = model.getXSeries(k);
-		else if (model instanceof LoadDurationCurveModel)
-			timeStamp = ((LoadDurationCurveModel)model).getXHours(k);
-			
- 		for( int l = 0; timeStamp != null && values != null &&  l < timeStamp.length; l++ )
- 		{
-	 		Double d = new Double(timeStamp[l]);
-	 		Double[] objectValues = (Double[]) tree.get(d);
-	 		if( objectValues == null )
-	 		{
-				if (d.doubleValue() > tabStDt && d.doubleValue() <= tabEndDt)
-				{
-					//System.out.println("match");
-					//objectValues is not in the key already
-			 		objectValues = new Double[ model.getPointIDs().length];
-		 			tree.put(d,objectValues);
-		 		}
-	 		}
-			if( objectValues != null)
-				objectValues[k] = new Double(values[l]);	 		
+		if( model.getTrendSeries()[i].getType().equalsIgnoreCase("graph"))		
+		{
+			com.jrefinery.data.TimeSeriesDataPair[] dp = model.getTrendSeries()[i].getDataPairArray();
+			if( dp != null)
+			{
+		 		long[] timeStamp = model.getTrendSeries()[i].getPeriodsArray();
+				double[] values = model.getTrendSeries()[i].getValuesArray();
+
+		 		for( int j = 0; timeStamp != null && values != null &&  j < timeStamp.length; j++ )
+	 			{
+ 					Long d = new Long(timeStamp[j]/1000);
+	 				Double[] objectValues = (Double[]) tree.get(new Double(d.doubleValue()));
+			 		if( objectValues == null )
+	 				{
+						if (d.longValue() > tabStDt && d.longValue() <= tabEndDt)
+						{
+							//objectValues is not in the key already
+					 		objectValues = new Double[ validSeriesCount];
+				 			tree.put(new Double(d.doubleValue()),objectValues);
+		 				}
+			 		}
+			if( objectValues != null)	//MAY NEED THIS AGAIN
+					objectValues[validIndex] = new Double(values[j]);
+	 			}
+	 			validIndex++;
+			}
 		}
 	}
+	
+	
 	//time values
 	java.util.Set keySet = tree.keySet();
 	Double[] keyArray = new Double[keySet.size()];
 	String date = dateFormat.format( model.getStartDate());
 
 	int csvRowCount = keySet.size();
-	int csvColCount = model.getPointIDs().length + 2;	// +2 cols -> 1 for date, 1 for time
+//	int csvColCount = model.getTrendSeries().length + 2;	// +2 cols -> 1 for date, 1 for time
+	int csvColCount = validSeriesCount + 2;	// +2 cols -> 1 for date, 1 for time
 
 	keySet.toArray(keyArray);
 		
@@ -119,11 +140,15 @@ public StringBuffer getHtml(StringBuffer buf)
 	buf.append("</FONT></TD>\n");
 
 	//Go through all the points one by one and output their values as html
-	for( int z = 0; z < model.getPointIDs().length; z++ )
+//	for( int z = 0; z < model.getTrendSeries().length; z++ )
+	for( int z = 0; z < validSeriesCount; z++ )
 	{
 		// Set the number decimal places for each point.
-		int decimals = model.getDecimalPlaces( z );
-		setFractionDigits( decimals );
+//		int decimals = model.getTrendSeries()[z].getDecimalPlaces();
+//TEMPORARY ___ SET BACK TO THIS!!!
+//		setFractionDigits( decimals );
+//		setFractionDigits( decimals[z]);
+		setFractionDigits(3);
 		
 		buf.append("<TD VALIGN=\"TOP\" BGCOLOR=\"#CCCC99\" class=\"TableCell\" WIDTH=\"130\">\n");
 		buf.append("<P ALIGN=CENTER><FONT SIZE=\"-1\" FACE=\"Arial\">\n");
