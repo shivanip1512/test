@@ -65,10 +65,16 @@ private:
     CtiMutex _running_mux;
 
 #ifdef _WINDOWS
-    static DWORD WINAPI ThreadProc( LPVOID lpData );
 
+    bool _usingCreateThread;
+
+    static DWORD WINAPI ThreadProc( LPVOID lpData );
     HANDLE _thrhandle;
     DWORD  _thrid;
+
+    static unsigned WINAPI ThreadProc2( LPVOID lpData );
+    unsigned long _thrhandle2;
+    unsigned _thrid2;
 
     HANDLE hInterrupt;
 #endif

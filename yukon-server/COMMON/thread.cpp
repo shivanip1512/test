@@ -9,8 +9,8 @@
 
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/thread.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/02/10 23:23:45 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/02/17 22:50:24 $
 *
 
     COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2000
@@ -24,7 +24,9 @@ using namespace std;
 #include "thread.h"
 
 CtiThread::CtiThread() :
-_thrhandle(INVALID_HANDLE_VALUE)
+_usingCreateThread(false),
+_thrhandle(INVALID_HANDLE_VALUE),
+_thrhandle2(0)
 {
    set(STARTING, false);
    set(SHUTDOWN, false);
@@ -35,7 +37,7 @@ _thrhandle(INVALID_HANDLE_VALUE)
 CtiThread::~CtiThread()
 {
    if(hInterrupt != INVALID_HANDLE_VALUE) CloseHandle(hInterrupt);
-   if(_thrhandle != INVALID_HANDLE_VALUE) CloseHandle(_thrhandle);
+   if(_usingCreateThread && _thrhandle != INVALID_HANDLE_VALUE) CloseHandle(_thrhandle);
 }
 
 /*-----------------------------------------------------------------------------
@@ -45,6 +47,7 @@ CtiThread::~CtiThread()
 -----------------------------------------------------------------------------*/
 void CtiThread::start()
 {
+    bool failed = false;
 
    if( !isRunning() )
    {
@@ -59,9 +62,19 @@ void CtiThread::start()
       // ThreadProc is a static member function that will acquire _running_mux
       // and then call the run() memeber function using a pointer to this
       // smuggled across as a void*
-      _thrhandle = CreateThread(NULL, 0, CtiThread::ThreadProc, this, 0, &_thrid);
 
-      if( _thrhandle == NULL )
+      if(_usingCreateThread)
+      {
+      _thrhandle = CreateThread(NULL, 0, CtiThread::ThreadProc, this, 0, &_thrid);
+          if( _thrhandle == NULL ) failed = true;
+      }
+      else
+      {
+          _thrhandle2 = _beginthreadex(NULL, 0, CtiThread::ThreadProc2, this, 0, &_thrid2);
+          if( _thrhandle2 == 0 ) failed = true;
+      }
+
+      if( failed )
       {
          LPVOID lpMsgBuf;
          FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
@@ -175,12 +188,29 @@ bool CtiThread::isRunning()
 int CtiThread::getID() const
 {
 #ifdef _WINDOWS
-   return _thrid;
+   int id;
+
+   if(_usingCreateThread) id = _thrid;
+   else id = _thrid2;
+
+   return id;
 #endif
 }
 #ifdef _WINDOWS
 
 DWORD WINAPI CtiThread::ThreadProc(LPVOID lpData )
+{
+   // We are using lpData to smuggle in a pointer to a CtiThread
+   CtiThread* thr = (CtiThread*) lpData;
+
+   CtiLockGuard<CtiMutex> guard(thr->_running_mux);
+   thr->set(STARTING, false );
+   thr->run();
+
+   return 0;
+}
+
+unsigned WINAPI CtiThread::ThreadProc2(LPVOID lpData )
 {
    // We are using lpData to smuggle in a pointer to a CtiThread
    CtiThread* thr = (CtiThread*) lpData;
