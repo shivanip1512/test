@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/test.cpp-arc  $
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2004/09/29 20:26:37 $
+* REVISION     :  $Revision: 1.27 $
+* DATE         :  $Date: 2004/09/30 14:59:13 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -145,18 +145,26 @@ void EThread::run( void )
 
 void testThreads( int argc, char **argv )
 {
-   EThread  *bob = new EThread( "bob", CtiThreadRegData::KillApp );
-   EThread  *sam = new EThread( "sam", CtiThreadRegData::None, 20 );
-   EThread  *joe = new EThread( "joe", CtiThreadRegData::Restart, 11 );
-   EThread  *rat = new EThread( "rat", CtiThreadRegData::KillApp, 40 );
+   EThread  *bob = 0;
+   EThread  *sam = 0;
+   EThread  *joe = 0;
+   EThread  *rat = 0;
    int      index = 0;
 
    ThreadMonitor.start();
 
    Sleep( 3000 );
 
-   if( !( bob->isRunning() ) )
+   if( bob != NULL )
    {
+      if( !( bob->isRunning() ) )
+      {
+         bob->start();
+      }
+   }
+   else
+   {
+      bob = new EThread( "bob", CtiThreadRegData::KillApp ); 
       bob->start();
    }
 
@@ -167,7 +175,7 @@ void testThreads( int argc, char **argv )
 
       if( !( index % 25 )) 
       {
-         if( bob->isRunning() )
+         if( bob && bob->isRunning() )
          {
             bob->interrupt( CtiThread::SHUTDOWN );
             {
@@ -177,6 +185,8 @@ void testThreads( int argc, char **argv )
          }
          else
          {
+            delete bob;
+            bob = new EThread( "bob", CtiThreadRegData::KillApp ); 
             bob->start();
             {
                CtiLockGuard<CtiLogger> doubt_guard( dout );
@@ -187,7 +197,7 @@ void testThreads( int argc, char **argv )
 
       if( !( index % 35 )) 
       {
-         if( sam->isRunning() )
+         if( sam && sam->isRunning() )
          {
             sam->interrupt( CtiThread::SHUTDOWN );
             {
@@ -197,6 +207,8 @@ void testThreads( int argc, char **argv )
          }
          else
          {
+            delete sam;
+            sam = new EThread( "sam", CtiThreadRegData::None ); 
             sam->start();
             {
                CtiLockGuard<CtiLogger> doubt_guard( dout );
@@ -207,27 +219,7 @@ void testThreads( int argc, char **argv )
 
       if( !( index % 94 )) 
       {
-         if( rat->isRunning() )
-         {
-            rat->interrupt( CtiThread::SHUTDOWN );
-            {
-               CtiLockGuard<CtiLogger> doubt_guard( dout );
-               dout << "rat exiting" << endl;
-            }
-         }
-         else
-         {
-            rat->start();
-            {
-               CtiLockGuard<CtiLogger> doubt_guard( dout );
-               dout << "rat starting" << endl;
-            }
-         }
-      }
-
-      if( !( index % 61 )) 
-      {
-         if( joe->isRunning() )
+         if( joe && joe->isRunning() )
          {
             joe->interrupt( CtiThread::SHUTDOWN );
             {
@@ -237,10 +229,34 @@ void testThreads( int argc, char **argv )
          }
          else
          {
+            delete joe;
+            joe = new EThread( "joe", CtiThreadRegData::Restart ); 
             joe->start();
             {
                CtiLockGuard<CtiLogger> doubt_guard( dout );
                dout << "joe starting" << endl;
+            }
+         }
+      }
+
+      if( !( index % 61 )) 
+      {
+         if( rat && rat->isRunning() )
+         {
+            rat->interrupt( CtiThread::SHUTDOWN );
+            {
+               CtiLockGuard<CtiLogger> doubt_guard( dout );
+               dout << "rat exiting" << endl;
+            }
+         }
+         else
+         {
+            delete rat;
+            rat = new EThread( "rat", CtiThreadRegData::KillApp ); 
+            rat->start();
+            {
+               CtiLockGuard<CtiLogger> doubt_guard( dout );
+               dout << "rat starting" << endl;
             }
          }
       }
