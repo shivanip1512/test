@@ -52,10 +52,14 @@ class ConnectionWrapper implements java.sql.Connection
 	*/
    public void close() throws SQLException
    {
-      //just in case the user changed the AutoCommit flag, commit any open
+      //just in case the user changed the AutoCommit flag, rollback any open
       //transactions since the user will no longer have access to this
-      //connection and reset the flag to TRUE
-      realConn.setAutoCommit( true );
+      //connection and seth the autoCommit flag to TRUE
+      if( realConn.getAutoCommit() == false )
+      {
+          realConn.rollback();
+          realConn.setAutoCommit( true );
+      }
 
 	  isClosed = true;
 	  pool.wrapperClosed(realConn);
