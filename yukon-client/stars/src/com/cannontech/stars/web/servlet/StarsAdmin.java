@@ -375,10 +375,6 @@ public class StarsAdmin extends HttpServlet {
         
         StarsYukonUser user = (StarsYukonUser)
         		session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
-        if (user == null) {
-        	resp.sendRedirect( req.getContextPath() + SOAPClient.LOGIN_URL );
-        	return;
-        }
         
     	String referer = req.getHeader( "referer" );
     	String redirect = req.getParameter( ServletUtils.ATT_REDIRECT );
