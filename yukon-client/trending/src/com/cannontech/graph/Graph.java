@@ -15,7 +15,10 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.w3c.dom.Element;
 
+import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.database.cache.functions.GraphFuncs;
 import com.cannontech.database.data.graph.GraphDefinition;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.graph.buffer.html.PeakHtml;
 import com.cannontech.graph.buffer.html.TabularHtml;
 import com.cannontech.graph.buffer.html.UsageHtml;
@@ -340,7 +343,7 @@ public void encodeUsageHTML(java.io.OutputStream out) throws java.io.IOException
 
 /**
  * Returns graphDefinition, but first retrieves and sets the 
- *  GraphDefinition to the current cache retrieval using DBPersistentFuncs.
+ *  GraphDefinition to the current cache retrieval.
  * @return graphDefinition com.cannontech.database.data.graph.GraphDefinition
  */
 public GraphDefinition getGraphDefinition()
@@ -368,8 +371,17 @@ public void setGraphDefinition(com.cannontech.database.data.lite.LiteGraphDefini
 {
 	if( liteGraphDefinition != null)
 	{
-		GraphDefinition tempGraphDefinition = (GraphDefinition)com.cannontech.database.cache.functions.DBPersistentFuncs.retrieve(liteGraphDefinition);
-		setGraphDefinition(tempGraphDefinition);
+		GraphDefinition gDef = (GraphDefinition)com.cannontech.database.data.lite.LiteFactory.createDBPersistent(liteGraphDefinition);
+		try
+		{
+			com.cannontech.database.Transaction t = com.cannontech.database.Transaction.createTransaction(com.cannontech.database.Transaction.RETRIEVE, gDef);
+			gDef = (GraphDefinition)t.execute();
+		}
+		catch(Exception e)
+		{
+			com.cannontech.clientutils.CTILogger.error(e.getMessage(), e);
+		}
+		setGraphDefinition(gDef);
 	}
 }
 
@@ -378,11 +390,11 @@ public void setGraphDefinition(com.cannontech.database.data.lite.LiteGraphDefini
  * Creates a GraphDefinition and calls setGraphDefinition(GraphDefinition)
  * @param graphDefinitionID int values of the GraphDefinition
  */
-public void setGraphDefinition(int newGraphDefinitionID)
+public void setGraphDefinition(int liteGraphDefinitionID)
 {
-	if( newGraphDefinitionID > 0)
+	if( liteGraphDefinitionID > 0)
 	{
-		com.cannontech.database.data.lite.LiteGraphDefinition liteGraphDef = com.cannontech.database.cache.functions.GraphFuncs.getLiteGraphDefinition(newGraphDefinitionID);
+		com.cannontech.database.data.lite.LiteGraphDefinition liteGraphDef = com.cannontech.database.cache.functions.GraphFuncs.getLiteGraphDefinition(liteGraphDefinitionID);
 		setGraphDefinition(liteGraphDef);
 	}
 }
@@ -778,21 +790,22 @@ public void update()
 	freeChart = getTrendModel().refresh(getViewType());
 }
 
-public void getDataNow()
-{
-	getDataNow(-1);
-}
-
-public void getDataNow(int devID)
+/** Send a command message to dispatch to scan paobjects (or all meters if paobjects is null)
+ * at the alternate scan rate for duration of 0 secs (once).
+ **/
+public void getDataNow(java.util.List paobjects)
 {
 	com.cannontech.message.dispatch.message.Multi multi = new com.cannontech.message.dispatch.message.Multi();
+
+	if( paobjects == null)
+	{	
+		DefaultDatabaseCache cache = new DefaultDatabaseCache();
+		paobjects = cache.getAllDevices();	//populate our list of paobjects with all devices then!
+	}
 	
-	com.cannontech.database.cache.DefaultDatabaseCache cache = new com.cannontech.database.cache.DefaultDatabaseCache();
-	java.util.List devices = cache.getAllDevices();
-	
-	for (int i = 0; i < devices.size(); i++)
+	for (int i = 0; i < paobjects.size(); i++)
 	{
-		com.cannontech.database.data.lite.LiteYukonPAObject paobject = (com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(i);
+		LiteYukonPAObject paobject = (LiteYukonPAObject)paobjects.get(i);
 		if(com.cannontech.database.data.device.DeviceTypesFuncs.hasDeviceScanRate(paobject.getLiteID()))
 		{
 			com.cannontech.message.dispatch.message.Command messageCommand = new com.cannontech.message.dispatch.message.Command();
