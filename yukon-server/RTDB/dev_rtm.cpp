@@ -1,4 +1,3 @@
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   dev_rtm
@@ -8,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2004/07/30 21:35:07 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2004/09/20 16:11:04 $
 *
 * HISTORY      :
 * $Log: dev_rtm.cpp,v $
+* Revision 1.4  2004/09/20 16:11:04  mfisher
+* implemented comms in generate() and decode()
+*
 * Revision 1.3  2004/07/30 21:35:07  cplender
 * RTM stuff
 *
@@ -31,17 +33,14 @@
 #include "dev_rtm.h"
 
 #include "msg_cmd.h"
-#include "msg_lmcontrolhistory.h"
 #include "porter.h"
 #include "protocol_sa.h"
 #include "prot_sa3rdparty.h"
-#include "pt_base.h"
-#include "pt_numeric.h"
-#include "pt_status.h"
-#include "pt_accum.h"
+#include "numstr.h"
 
 
-CtiDeviceRTM::CtiDeviceRTM()
+CtiDeviceRTM::CtiDeviceRTM() :
+    _state(State_Uninit)
 {
 }
 
@@ -61,31 +60,6 @@ INT CtiDeviceRTM::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
     }
 
     pReq->setCommandString("scan general");
-
-    status = ExecuteRequest(pReq,newParse,OutMessage,vgList,retList,outList);
-
-    if(OutMessage)
-    {
-        delete OutMessage;
-        OutMessage = 0;
-    }
-
-    return status;
-}
-
-
-INT CtiDeviceRTM::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  RWTPtrSlist< CtiMessage > &vgList,RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority)
-{
-    INT status = NORMAL;
-    CtiCommandParser newParse("scan integrity");
-
-    if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** IntegrityScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-
-    pReq->setCommandString("scan integrity");
 
     status = ExecuteRequest(pReq,newParse,OutMessage,vgList,retList,outList);
 
@@ -120,46 +94,36 @@ INT CtiDeviceRTM::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
                 case ScanRateStatus:
                 case ScanRateGeneral:
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
-
-                    CtiProtocolSA3rdParty prot;
-                    prot.setGroupType(GRP_SA_RTM);
-
                     // parse.setValue("rtm_command", TMS_INIT);
-                    parse.setValue("rtm_command", TMS_ONE);
-                    // parse.setValue("rtm_command", TMS_ALL);
+                    // parse.setValue("rtm_command", TMS_ONE);
                     // parse.setValue("rtm_command", TMS_ACK);
 
-                    prot.setTransmitterAddress( getAddress() );
+                    parse.setValue("rtm_command", TMS_ALL);
 
+                    int cmd_len, error_code;
+
+                    if( !(error_code = CtiProtocolSA3rdParty::formatTMScmd(OutMessage->Buffer.OutMessage, &cmd_len, TMS_ALL, getAddress())) )
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << endl << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        prot.parseCommand(parse, *OutMessage);
-                    }
-
-
-                    if(prot.messageReady())
-                    {
-                        RWCString      byteString;
+                        OutMessage->OutLength = cmd_len * 2;
 
                         OutMessage->DeviceID = getID();
                         OutMessage->TargetID = getID();
                         OutMessage->Port = getPortID();
                         OutMessage->EventCode = RESULT | ENCODED;
 
-                        OutMessage->Buffer.SASt = prot.getSAData();
-                        OutMessage->OutLength = prot.getSABufferLen();
-
                         outList.insert( CTIDBG_new OUTMESS( *OutMessage ) );
 
-                        prot.copyMessage(byteString);
-                        resultString = " Command successfully sent on route " + getName() + "\n" + byteString;
-                    }
+                        resultString = " Command successfully sent on route " + getName() + "\n";
 
+                        for( int i = 0; i < OutMessage->OutLength; i++ )
+                        {
+                            resultString += CtiNumStr(OutMessage->Buffer.OutMessage[i]).hex().zpad(2) + " ";
+                        }
+                    }
+                    else
+                    {
+                        nRet = !NORMAL;
+                    }
 
                     break;
                 }
@@ -197,7 +161,7 @@ INT CtiDeviceRTM::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
             break;
         }
     case ControlRequest:
-        {
+/*        {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -272,7 +236,7 @@ INT CtiDeviceRTM::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
             }
 
             break;
-        }
+        }*/
     case GetStatusRequest:
     case LoopbackRequest:
     case GetValueRequest:
@@ -305,7 +269,7 @@ INT CtiDeviceRTM::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
         }
     }
 
-    bool xmore;
+    bool xmore = true;
 
     if( resultString.isNull() )
     {
@@ -345,14 +309,17 @@ INT CtiDeviceRTM::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< 
 
     if( !ErrReturn )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CtiReturnMsg *retMsg = CTIDBG_new CtiReturnMsg(getID(),
+                                                       RWCString(InMessage->Return.CommandStr),
+                                                       getName() + " / scan successful, " + CtiNumStr(InMessage->Buffer.InMessage[0]) + " codes returned",
+                                                       InMessage->EventCode & 0x7fff,
+                                                       InMessage->Return.RouteID,
+                                                       InMessage->Return.MacroOffset,
+                                                       InMessage->Return.Attempt,
+                                                       InMessage->Return.TrxID,
+                                                       InMessage->Return.UserID);
 
-        BYTE buff[] = { 0x42, 0x31, 0x32, 0x41, 0x30, 0x30, 0x30, 0x32, 0x30, 0x35, 0x39, 0x43 };
-
-
+        retList.append(retMsg);
     }
     else
     {
@@ -432,40 +399,143 @@ LONG CtiDeviceRTM::getAddress() const
     return getIED().getSlaveAddress();
 }
 
-
-INT CtiDeviceRTM::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
+int CtiDeviceRTM::recvCommRequest(OUTMESS *OutMessage)
 {
-    RWTime now;
-    INT status = NORMAL;
+    _outbound = *OutMessage;
+    _state    = State_Output;
+    _error_count    = 0;
+    _codes_received = 0;
+    _code_len       = 0;
 
-    ULONG msgMillis = 0;
+    return 0;
+}
 
-    try
+int CtiDeviceRTM::sendCommResult(INMESS *InMessage)
+{
+    InMessage->Buffer.InMessage[0] = _codes_received;
+
+    return 0;
+}
+
+
+int CtiDeviceRTM::generate(CtiXfer &xfer)
+{
+    switch( _state )
     {
-        CtiProtocolSA3rdParty prot;
-
-        OutMessage->OutLength = OutMessage->Buffer.SASt._bufferLen;
-
-        prot.setSAData( OutMessage->Buffer.SASt );
-        prot.setGroupType( GRP_SA_RTM );
-
+        case State_Output:
         {
-            CtiLockGuard<CtiLogger> doubt_guard(slog);
-            slog << RWTime() << " " << getName() << ": " << prot.asString() << endl;
-            slog << RWTime() << " " << getName() << " sending " << OutMessage->Buffer.SASt._bufferLen << " bytes" << endl;
-        }
+            // State_Output the message to the remote
+            xfer.setOutBuffer(_outbound.Buffer.OutMessage);
+            xfer.setOutCount(_outbound.OutLength);
 
+            break;
+        }
+        case State_Input:
+        {
+            xfer.setOutCount(0);
+
+            if( _code_len )
+            {
+                xfer.setInBuffer(_inbound + 8);
+                xfer.setInCountExpected(_code_len * 2);
+                xfer.setInCountActual(&_in_actual);
+            }
+            else
+            {
+                xfer.setInBuffer(_inbound);
+                xfer.setInCountExpected(8);
+                xfer.setInCountActual(&_in_actual);
+            }
+
+            break;
+        }
+        default:
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " " << getName() << ": " << prot.asString() << endl;
-            dout << RWTime() << " " << getName() << " sending " << OutMessage->Buffer.SASt._bufferLen << " bytes" << endl;
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
-    catch(...)
+
+    return 0;
+}
+
+
+int CtiDeviceRTM::decode(CtiXfer &xfer,  int status)
+{
+    if( status )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        //  leave the state where it is, we'll retry
+        _error_count++;
+    }
+    else
+    {
+        switch( _state )
+        {
+            case State_Output:
+            {
+                _state = State_Input;
+
+                break;
+            }
+            case State_Input:
+            {
+                if( !_code_len )
+                {
+                    if( _in_actual >= 8 )
+                    {
+                        if( !CtiProtocolSA3rdParty::TMSlen(_inbound, &_code_len) )
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint - TMSlen not normal for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+                    }
+                    else
+                    {
+                        _error_count++;
+                    }
+                }
+                else
+                {
+                    SA_CODE sacode;
+                    X205CMD x205cmd;
+                    CtiVerificationReport *report;
+
+                    if( CtiProtocolSA3rdParty::procTMSmsg(_inbound, _code_len + 4, &sacode, &x205cmd) == TMS_CODE )
+                    {
+                        _codes_received++;
+
+                        report = CTIDBG_new CtiVerificationReport(CtiVerificationBase::Protocol_SA205, getID(), sacode.code, second_clock::universal_time());
+
+                        _verification_objects.push(report);
+
+                        _code_len = 0;
+                    }
+                }
+            }
+            default:
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+        }
     }
 
     return status;
 }
+
+
+bool CtiDeviceRTM::isTransactionComplete()
+{
+    return ((_error_count > MaxErrors) || (_state == State_Complete));
+}
+
+void CtiDeviceRTM::getVerificationObjects(queue<CtiVerificationBase *> &work_queue)
+{
+    while( !_verification_objects.empty() )
+    {
+        work_queue.push(_verification_objects.front());
+
+        _verification_objects.pop();
+    }
+}
+

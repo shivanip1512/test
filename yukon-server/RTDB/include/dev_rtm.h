@@ -9,10 +9,13 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2004/07/30 21:35:07 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2004/09/20 16:11:04 $
 * HISTORY      :
 * $Log: dev_rtm.h,v $
+* Revision 1.3  2004/09/20 16:11:04  mfisher
+* implemented comms in generate() and decode()
+*
 * Revision 1.2  2004/07/30 21:35:07  cplender
 * RTM stuff
 *
@@ -27,17 +30,41 @@
 #ifndef __DEV_RTM_H__
 #define __DEV_RTM_H__
 
-#include <list>
+#include <queue>
+
 using namespace std;
 
 #include "dev_ied.h"
 #include "queue.h"
+#include "verification_objects.h"
 
 class IM_EX_DEVDB CtiDeviceRTM : public CtiDeviceIED
 {
-protected:
-
 private:
+
+    CtiOutMessage _outbound;
+    unsigned char _inbound[32];
+
+    enum States
+    {
+        State_Uninit,
+        State_Output,
+        State_Input,
+        State_Complete
+    } _state;
+
+    unsigned short _error_count;
+    unsigned long  _in_expected, _in_actual;
+    int _code_len, _codes_received;
+
+    enum
+    {
+        MaxErrors = 3
+    };
+
+    queue< CtiVerificationBase * > _verification_objects;
+
+protected:
 
 public:
 
@@ -48,13 +75,19 @@ public:
     virtual LONG getAddress() const;
 
     INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
-    INT IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority = MAXPRIORITY - 4);
     INT GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority = MAXPRIORITY - 4);
 
     INT ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage> &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
     INT ErrorDecode (INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage> &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
 
-    INT prepareOutMessageForComms(CtiOutMessage *&OutMessage);
+    int recvCommRequest(OUTMESS *OutMessage);
+    int sendCommResult(INMESS *InMessage);
 
+    int generate(CtiXfer &xfer);
+    int decode(CtiXfer &xfer, int status);
+
+    void getVerificationObjects(queue<CtiVerificationBase *> &work_queue);
+
+    bool isTransactionComplete();
 };
 #endif // #ifndef __DEV_RTM_H__
