@@ -2,6 +2,7 @@ package com.cannontech.util;
 
 import java.awt.Color;
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -9,6 +10,10 @@ import java.util.StringTokenizer;
 import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.TimeUtil;
 
 /**
  * The junk drawer for servlets.
@@ -107,17 +112,17 @@ public class ServletUtil {
 		
 	// Date/Time pattern strings that will be tried when
 	// attempting to interprate starting dates
-	private static final java.text.SimpleDateFormat[] dateFormat =
+	private static final SimpleDateFormat[] dateFormat =
 	{
-		new java.text.SimpleDateFormat("MM:dd:yyyy:HH:mm:ss"),
-		new java.text.SimpleDateFormat("MM/dd/yy"),
-		new java.text.SimpleDateFormat("MM-dd-yy"),
-		new java.text.SimpleDateFormat("MM.dd.yy"),
-		new java.text.SimpleDateFormat("MM/dd/yyyy"),
-		new java.text.SimpleDateFormat("MM-dd-yyyy"),
-		new java.text.SimpleDateFormat("MM.dd.yyyy"),
-		new java.text.SimpleDateFormat("HH:mm:ss"),
-		new java.text.SimpleDateFormat("HH:mm")		
+		new SimpleDateFormat("MM:dd:yyyy:HH:mm:ss"),
+		new SimpleDateFormat("MM/dd/yy"),
+		new SimpleDateFormat("MM-dd-yy"),
+		new SimpleDateFormat("MM.dd.yy"),
+		new SimpleDateFormat("MM/dd/yyyy"),
+		new SimpleDateFormat("MM-dd-yyyy"),
+		new SimpleDateFormat("MM.dd.yyyy"),
+		new SimpleDateFormat("HH:mm:ss"),
+		new SimpleDateFormat("HH:mm")		
 	};
 
 	//Ever seen this before? hehe
@@ -187,7 +192,7 @@ public static Object[][] executeSQL(String dbAlias, String query) {
 	}
 	catch( java.sql.SQLException e )
 	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+		CTILogger.error( e.getMessage(), e );
 	}
 	finally
 	{
@@ -308,7 +313,7 @@ public static Object[][] executeSQL(String dbAlias, String query, Class[] types)
 	}
 	catch( java.sql.SQLException e )
 	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+		CTILogger.error( e.getMessage(), e );
 	}
 	finally
 	{
@@ -348,7 +353,7 @@ public static Object[][] executeSQL(String dbAlias, String query, Class[] types)
  * @return java.lang.Object[][]
  * @param session javax.servlet.http.HttpSession
  */
-public static Object[][] executeSQL(javax.servlet.http.HttpSession session, String query ) 
+public static Object[][] executeSQL(HttpSession session, String query ) 
 {
 	if( session == null )
 		return null;
@@ -398,7 +403,7 @@ public static Object[][] executeSQL(javax.servlet.http.HttpSession session, Stri
 	}
 	catch( java.sql.SQLException e )
 	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+		CTILogger.error( e.getMessage(), e );
 	}
 	finally
 	{
@@ -438,7 +443,7 @@ public static Object[][] executeSQL(javax.servlet.http.HttpSession session, Stri
  * @return java.lang.Object[][]
  * @param session javax.servlet.http.HttpSession
  */
-public static Object[][] executeSQL(javax.servlet.http.HttpSession session, String query, Class[] types ) 
+public static Object[][] executeSQL(HttpSession session, String query, Class[] types ) 
 {
 	if( session == null )
 		return null;
@@ -524,7 +529,7 @@ public static Object[][] executeSQL(javax.servlet.http.HttpSession session, Stri
 	}
 	catch( java.sql.SQLException e )
 	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+		CTILogger.error( e.getMessage(), e );
 	}
 	finally
 	{
@@ -574,15 +579,15 @@ public static String formatDateString(java.util.Date d) {
  * Creation date: (3/28/00 4:15:54 PM)
  * @return java.util.Date
  */
-public static java.util.Date getDate(int dayOffset) {
+public static Date getDate(int dayOffset) {
 
-	java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
-	cal.setTime(new java.util.Date());
+	GregorianCalendar cal = new GregorianCalendar();
+	cal.setTime(new Date());
 	
-	cal.set( java.util.Calendar.DAY_OF_YEAR, cal.get( java.util.Calendar.DAY_OF_YEAR ) + dayOffset ); 
- 	cal.set( java.util.Calendar.HOUR_OF_DAY, 0 );
-	cal.set( java.util.Calendar.MINUTE, 0 );
-	cal.set( java.util.Calendar.SECOND, 0 );
+	cal.add( Calendar.DAY_OF_YEAR, dayOffset ); 
+ 	cal.set( Calendar.HOUR_OF_DAY, 0 );
+	cal.set( Calendar.MINUTE, 0 );
+	cal.set( Calendar.SECOND, 0 );
 
 	return cal.getTime();
 }
@@ -593,7 +598,7 @@ public static java.util.Date getDate(int dayOffset) {
  * @param startingDate java.util.Date
  * @param period java.lang.String
  */
-public static java.util.Date getEndingDateOfInterval(java.util.Date startingDate, String period) {
+public static Date getEndingDateOfInterval(Date startingDate, String period) {
 	
 	int numDays;
 	period = period.trim();
@@ -641,20 +646,20 @@ public static java.util.Date getEndingDateOfInterval(java.util.Date startingDate
 	else
 	if( period.equalsIgnoreCase(ONEMONTH) )
 	{
-		java.util.GregorianCalendar c = new java.util.GregorianCalendar();
+		GregorianCalendar c = new GregorianCalendar();
 		c.setTime(startingDate);
-		c.set( java.util.Calendar.MONTH, c.get( java.util.Calendar.MONTH) + 1 );
+		c.add( Calendar.MONTH, 1 );
 
-		java.util.Date endOfInterval = c.getTime();
+		Date endOfInterval = c.getTime();
 
-		numDays = com.cannontech.common.util.TimeUtil.differenceInDays(startingDate, endOfInterval);		
+		numDays = TimeUtil.differenceInDays(startingDate, endOfInterval);		
 	}
 	else
 		return null;
 		
-	java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
+	GregorianCalendar cal = new GregorianCalendar();
 	cal.setTime(startingDate);
-	cal.set( java.util.Calendar.DAY_OF_YEAR, cal.get( java.util.Calendar.DAY_OF_YEAR ) + numDays );
+	cal.add( Calendar.DAY_OF_YEAR, numDays );
 
 	return cal.getTime();
 }
@@ -700,11 +705,11 @@ public static int getIntValue(String stringValue)
 	else
 	if( stringValue.equalsIgnoreCase(ONEMONTH) )
 	{
-		java.util.GregorianCalendar c = new java.util.GregorianCalendar();
+		GregorianCalendar c = new GregorianCalendar();
 		c.setTime(getToday());
-		c.set( java.util.Calendar.MONTH, c.get( java.util.Calendar.MONTH) + 1 );
-		java.util.Date endOfInterval = c.getTime();
-		return com.cannontech.common.util.TimeUtil.differenceInDays(getToday(), endOfInterval);		
+		c.add( Calendar.MONTH, 1 );
+		Date endOfInterval = c.getTime();
+		return TimeUtil.differenceInDays(getToday(), endOfInterval);		
 	}
 	else
 	if( stringValue.equalsIgnoreCase(FOURWEEKS) )
@@ -737,11 +742,12 @@ public static int getIntValue(String stringValue)
  * @param start java.util.Date
  * @param end java.util.Date
  */
-public static String getPeriodFromDates(java.util.Date start, java.util.Date end) {
+public static String getPeriodFromDates(Date start, Date end) {
 
 	long startTime = start.getTime();
 	long endTime = end.getTime();
 
+	//TimeUtil.differenceInDays NOT used becuase it returns and abs value
 	int numDays = (int) Math.round(((double) (endTime-startTime)) / (double) 86400000 );
 
 	//figure out the closest/most reasonable period we have to numDays
@@ -784,7 +790,7 @@ public static String getPeriodFromDates(java.util.Date start, java.util.Date end
  * @param startingDate java.util.Date
  * @param period java.lang.String
  */
-public static java.util.Date getStartingDateOfInterval(java.util.Date startingDate, String period) {
+public static java.util.Date getStartingDateOfInterval(Date startingDate, String period) {
 	
 	int numDays;
 	period = period.trim();
@@ -818,9 +824,9 @@ public static java.util.Date getStartingDateOfInterval(java.util.Date startingDa
 	else	//Don't change the starting date
 		return startingDate;
 		
-	java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
+	GregorianCalendar cal = new GregorianCalendar();
 	cal.setTime(startingDate);
-	cal.set( java.util.Calendar.DAY_OF_YEAR, cal.get( java.util.Calendar.DAY_OF_YEAR ) + numDays );
+	cal.add( Calendar.DAY_OF_YEAR, numDays );
 
 	return cal.getTime();
 }
@@ -867,7 +873,7 @@ public static Date getTomorrow(TimeZone tz) {
 	cal.setTimeZone(tz);
 	cal.setTime(new Date());
 	
-	cal.set( Calendar.DAY_OF_YEAR, cal.get( Calendar.DAY_OF_YEAR ) + 1 );
+	cal.add( Calendar.DAY_OF_YEAR, 1 );
 	cal.set( Calendar.HOUR_OF_DAY, 0 );
 	cal.set( Calendar.MINUTE, 0 );
 	cal.set( Calendar.SECOND, 0 );
@@ -889,11 +895,11 @@ public static java.util.Date getYesterday() {
  * @return
  */
 public static Date getYesterday(TimeZone tz) {
-	java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
+	GregorianCalendar cal = new GregorianCalendar();
 	cal.setTimeZone(tz);
 	cal.setTime(new Date());
 	
-	cal.set( Calendar.DAY_OF_YEAR, cal.get( Calendar.DAY_OF_YEAR ) - 1 ); 
+	cal.add( Calendar.DAY_OF_YEAR, -1 ); 
 	cal.set( Calendar.HOUR_OF_DAY, 0 );
 	cal.set( Calendar.MINUTE, 0 );
 	cal.set( Calendar.SECOND, 0 );
@@ -942,17 +948,17 @@ public static synchronized Date parseDateStringLiberally(String dateStr, TimeZon
  * @return java.util.Date
  * @param toRound java.util.Date
  */
-public static java.util.Date roundToMinute(java.util.Date toRound) {
-	java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
+public static Date roundToMinute(Date toRound) {
+	GregorianCalendar cal = new GregorianCalendar();
 	cal.setTime(toRound);
 
-	if( cal.get( java.util.Calendar.SECOND ) < 30 )
+	if( cal.get( Calendar.SECOND ) < 30 )
 	{
-		cal.set( java.util.Calendar.SECOND, 0 );
+		cal.set( Calendar.SECOND, 0 );
 	}
 	else
 	{
-		cal.set( java.util.Calendar.SECOND, 60 );
+		cal.set( Calendar.SECOND, 60 );
 	}
 
 	return cal.getTime();

@@ -1,5 +1,7 @@
 package com.cannontech.common.util;
 
+import java.util.Calendar;
+
 /**
  * This type really needs to be looked at before it is used
  */
@@ -19,9 +21,9 @@ public static boolean compareDate( java.util.Date d1, java.util.Date d2 )
 	c2.setTime( d2 );
 
 	//Compares dates to the date only - i.e. 12/27/98 at 13:41 == 12/27/98 at 10:33
-	return( c1.get(c1.YEAR) == c2.get(c2.YEAR)
-			  && c1.get(c1.MONTH) == c2.get(c2.MONTH)
-			  && c1.get(c1.DATE) == c2.get(c2.DATE) );
+	return( c1.get(Calendar.YEAR) == c2.get(Calendar.YEAR)
+			  && c1.get(Calendar.MONTH) == c2.get(Calendar.MONTH)
+			  && c1.get(Calendar.DATE) == c2.get(Calendar.DATE) );
 	
 /*	return( d1.getYear()	== 	d2.getYear() 	&&
 			d1.getMonth() 	== 	d2.getMonth() 	&&
@@ -39,9 +41,9 @@ public static int differenceInDays(java.util.Date d1, java.util.Date d2 )
 {
 	c1.setTime( d1 );
 	c2.setTime( d2 );
-
-	Long tempCount = new Long((c1.getTime().getTime() - c2.getTime().getTime())/86400000);
-	int count = tempCount.intValue();
+	//NEEDS TO BE DOUBLE SO WE GET THE PRECISION DURING DST CALCS (sn)
+	//ROUND THE DIFFINDAYS TO THE NEAREST WHOLE DAY FOR THE SAKE OF DST
+	int count = (int) Math.round(((double) (c1.getTimeInMillis() - c2.getTimeInMillis())) / (double) 86400000 );
 	/*
 	java.util.GregorianCalendar calTemp = new java.util.GregorianCalendar();
 	calTemp.setTime( new java.util.Date(d1.getTime()) );
@@ -122,8 +124,8 @@ public static java.util.Date roundTime(long mSecs)
 	//java.util.Date coarseDate = new java.util.Date(mSecs);
 	c1.setTime( new java.util.Date(mSecs) );
 
-	if( c1.get(c1.HOUR) >= 12 )
-		c1.set( c1.DATE, c1.get(c1.DATE) + 1 );
+	if( c1.get(Calendar.HOUR) >= 12 )
+		c1.add( Calendar.DATE, 1 );
 		//coarseDate.setDate( coarseDate.getDate() + 1 );  //round the date up
 
 	//java.util.Date smoothDate = new java.util.Date( 
