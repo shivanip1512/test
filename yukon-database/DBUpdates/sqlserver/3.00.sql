@@ -1479,6 +1479,30 @@ alter table TOURateOffset
       references TOUSchedule (TOUScheduleID);
 go
 
+create table DynamicLMControlHistory (
+PAObjectID           numeric              not null,
+LMCtrlHistID         numeric              not null,
+StartDateTime        datetime             not null,
+SOE_Tag              numeric              not null,
+ControlDuration      numeric              not null,
+ControlType          varchar(32)          not null,
+CurrentDailyTime     numeric              not null,
+CurrentMonthlyTime   numeric              not null,
+CurrentSeasonalTime  numeric              not null,
+CurrentAnnualTime    numeric              not null,
+ActiveRestore        char(1)              not null,
+ReductionValue       float                not null,
+StopDateTime         datetime             not null
+);
+go
+alter table DynamicLMControlHistory
+   add constraint PK_DYNLMCONTROLHISTORY primary key  (PAObjectID);
+go
+alter table DynamicLMControlHistory
+   add constraint FK_DYNLMCNT_PAO foreign key (PAObjectID)
+      references YukonPAObject (PAObjectID);
+go
+
 
 
 

@@ -1396,6 +1396,32 @@ alter table TOURateOffset
    add constraint FK_TOUr_TOUSc foreign key (TOUScheduleID)
       references TOUSchedule (TOUScheduleID);
 
+create table DynamicLMControlHistory  (
+   PAObjectID           NUMBER                           not null,
+   LMCtrlHistID         NUMBER                           not null,
+   StartDateTime        DATE                             not null,
+   SOE_Tag              NUMBER                           not null,
+   ControlDuration      NUMBER                           not null,
+   ControlType          VARCHAR2(32)                     not null,
+   CurrentDailyTime     NUMBER                           not null,
+   CurrentMonthlyTime   NUMBER                           not null,
+   CurrentSeasonalTime  NUMBER                           not null,
+   CurrentAnnualTime    NUMBER                           not null,
+   ActiveRestore        CHAR(1)                          not null,
+   ReductionValue       FLOAT                            not null,
+   StopDateTime         DATE                             not null
+);
+alter table DynamicLMControlHistory
+   add constraint PK_DYNLMCONTROLHISTORY primary key (PAObjectID);
+alter table DynamicLMControlHistory
+   add constraint FK_DYNLMCNT_PAO foreign key (PAObjectID)
+      references YukonPAObject (PAObjectID);
+
+
+
+
+
+
 
 /******************************************************************************/
 /* Run the Stars Update if needed here */
