@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/utility.h-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2003/07/14 18:25:31 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2003/07/21 21:40:17 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -45,6 +45,7 @@ IM_EX_CTIBASE void autopsy(char *calleefile, int calleeline);       // Usage is:
 IM_EX_CTIBASE BOOL searchFuncForOutMessageDevID(void *pId, void* d);
 IM_EX_CTIBASE BOOL searchFuncForOutMessageRteID(void *pId, void* d);
 IM_EX_CTIBASE BOOL searchFuncForOutMessageUniqueID(void *pId, void* d);
+IM_EX_CTIBASE void applyPortQueueOutMessageReport(void *ptr, void* d);
 
 
 // SendMail defines /////////////////////////////////////////////
@@ -90,6 +91,33 @@ typedef struct {
    double rev;
    char *date;
 } CTICOMPONENTINFO;
+
+typedef struct {
+
+// #define NOWAIT          0x0000
+// #define NORESULT        0x0000
+// #define WAIT            0x0001
+// #define RESULT          0x0002
+// #define QUEUED          0x0004
+// #define ACTIN           0x0008
+// #define AWORD           0x0010
+// #define BWORD           0x0020
+// #define DTRAN           0x0040
+// #define RCONT           0x0080
+// #define RIPPLE          0x0100
+// #define STAGE           0x0200
+// #define VERSACOM        0x0400
+// #define TSYNC           0x0800
+// #define REMS            0x1000   // This can never be used now.... CGP Corey.
+// #define FISHERPIERCE    0x1000
+// #define ENCODED         0x4000
+// #define DECODED         0x4000
+// #define COMMANDCODE     0x8000
+
+    int priority_count[16];         // Count of elements at the respective priority 1-15.
+    int metrics[256];               // Ok, these are 256 metrics I want to count!
+
+} CtiQueueAnalysis_t;
 
 
 IM_EX_CTIBASE void identifyProject(const CTICOMPILEINFO &Info);
