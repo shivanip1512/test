@@ -23,6 +23,7 @@
 <%@ page import="com.cannontech.roles.operator.ConsumerInfoRole" %>
 <%@ page import="com.cannontech.roles.operator.InventoryRole" %>
 <%@ page import="com.cannontech.roles.operator.WorkOrderRole" %>
+<%@ page import="com.cannontech.roles.yukon.EnergyCompanyRole" %>
 <%@ page import="com.cannontech.stars.util.ServerUtils" %>
 <%@ page import="com.cannontech.stars.util.ServletUtils" %>
 <%@ page import="com.cannontech.stars.web.StarsYukonUser" %>

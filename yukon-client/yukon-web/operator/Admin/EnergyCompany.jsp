@@ -2,7 +2,6 @@
 <%@ page import="com.cannontech.database.cache.functions.PAOFuncs" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonGroup" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject" %>
-<%@ page import="com.cannontech.roles.yukon.EnergyCompanyRole" %>
 <%@ page import="com.cannontech.stars.web.servlet.StarsAdmin" %>
 <%
 	String action = request.getParameter("action");

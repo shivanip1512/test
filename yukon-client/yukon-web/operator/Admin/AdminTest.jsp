@@ -5,7 +5,6 @@
 <%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject" %>
 <%@ page import="com.cannontech.roles.consumer.ResidentialCustomerRole" %>
 <%@ page import="com.cannontech.roles.operator.AdministratorRole" %>
-<%@ page import="com.cannontech.roles.yukon.EnergyCompanyRole" %>
 <%@ page import="com.cannontech.stars.util.ECUtils" %>
 <%	if (!AuthFuncs.checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY)
 		|| ecSettings == null) {

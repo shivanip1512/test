@@ -1,5 +1,4 @@
 <%@ include file="include/StarsHeader.jsp" %>
-<%@ page import="com.cannontech.roles.yukon.EnergyCompanyRole" %>
 <%@ page import="com.cannontech.stars.util.ECUtils" %>
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <%
@@ -310,7 +309,7 @@ function changeProgSelection(chkBox) {
                               <tr> 
                                 <td align="right" class="MainText" width="50%">Member:</td>
                                 <td width="50%"> 
-                                  <input type="text" name="SA305_RateMember" value="<% sa305.getRateMember() %>" size="6" maxlength="15">
+                                  <input type="text" name="SA305_RateMember" value="<%= sa305.getRateMember() %>" size="6" maxlength="15">
                                 </td>
                               </tr>
                               <tr> 
