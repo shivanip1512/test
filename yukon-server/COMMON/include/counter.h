@@ -9,8 +9,8 @@
  *
  * PVCS KEYWORDS:
  * ARCHIVE      :  $Archive:     $
- * REVISION     :  $Revision: 1.6 $
- * DATE         :  $Date: 2003/03/13 19:35:26 $
+ * REVISION     :  $Revision: 1.7 $
+ * DATE         :  $Date: 2004/12/14 22:21:55 $
  *
  * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
  *-----------------------------------------------------------------------------*/
@@ -31,8 +31,8 @@ public:
     CtiCounter( )
         { };
 
-    void inc( int index );
-    void dec( int index );
+    void inc( int index, int bump = 1 );        // Increment by bump.
+    void dec( int index, int bump = 1 );        // Decrement by bump.
     int  get( int index ) const;
     void set( int index, int val );
     void reset( int index );

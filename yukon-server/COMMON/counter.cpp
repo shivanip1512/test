@@ -9,34 +9,34 @@
  *
  * PVCS KEYWORDS:
  * ARCHIVE      :  $Archive:     $
- * REVISION     :  $Revision: 1.6 $
- * DATE         :  $Date: 2002/06/03 20:24:10 $
+ * REVISION     :  $Revision: 1.7 $
+ * DATE         :  $Date: 2004/12/14 22:21:44 $
  *
  * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
  *-----------------------------------------------------------------------------*/
 
 #include "counter.h"
 
-void CtiCounter::inc( int index )
+void CtiCounter::inc( int index, int bump )
 {
     CtiLockGuard<CtiMutex> guard(_counterMapMux);
 
     if( _counterMap.find(index) != _counterMap.end() )
-        _counterMap[index] += 1;
+        _counterMap[index] += bump;
     else
-        _counterMap[index] = 1;
+        _counterMap[index] = bump;
 }
 
 
 
-void CtiCounter::dec( int index )
+void CtiCounter::dec( int index, int bump )
 {
     CtiLockGuard<CtiMutex> guard(_counterMapMux);
 
     if( _counterMap.find(index) != _counterMap.end() )
-        _counterMap[index] -= 1;
+        _counterMap[index] -= bump;
     else
-        _counterMap[index] = -1;
+        _counterMap[index] = -bump;
 }
 
 
