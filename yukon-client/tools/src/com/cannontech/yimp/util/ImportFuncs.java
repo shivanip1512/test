@@ -241,30 +241,7 @@ public class ImportFuncs
 	{
 		if (logger == null)
 		{
-			try
-			{
-				String dataDir = "../log/";
-				java.io.File file = new java.io.File( dataDir );
-				Date now = new Date();
-				GregorianCalendar cal = new GregorianCalendar();
-				cal.setTime(now);
-				file.mkdirs();
-			
-				String opName = "import" + cal.get(GregorianCalendar.DAY_OF_MONTH);
-				//+ GregorianCalendar.getInstance().getTime()
-				String filename = dataDir + opName  + ".log";
-				java.io.FileOutputStream out = new java.io.FileOutputStream(filename, true);
-				java.io.PrintWriter writer = new java.io.PrintWriter(out, true);
-				logger = new LogWriter(opName, LogWriter.DEBUG, writer);
-					
-				logger.log("Initializing " + opName, LogWriter.INFO );
-				logger.log("Version: " + "(TEMPORARY RELEASE)" + ".", LogWriter.INFO );
-
-			}
-			catch( java.io.FileNotFoundException e )
-			{
-				e.printStackTrace();
-			}
+			logger = changeLog(logger);
 		}
 		
 		if(importStatus == 'F')
@@ -295,29 +272,32 @@ public class ImportFuncs
 		cal.setTime(now);
 		int day = cal.get(GregorianCalendar.DAY_OF_MONTH);
 		
-		if (logger != null)
+		try
 		{
-			try
+			String dataDir = "../log/";
+			String opName = "import" + day;
+			String filename = dataDir + opName  + ".log";
+			java.io.File file = new java.io.File( filename );
+				
+			//if this log file hasn't been modified today, assume it is a month old and start over.
+			if(file.exists() && file.lastModified() < (now.getTime() - 86400000))
 			{
-				String dataDir = "../log/";
-				String opName = "import" + day;
-				String filename = dataDir + opName  + ".log";
-				java.io.File file = new java.io.File( filename );
-				if(! file.exists())
-				{
-					java.io.FileOutputStream out = new java.io.FileOutputStream(filename, true);
-					java.io.PrintWriter writer = new java.io.PrintWriter(out, true);
-					logger = new LogWriter(opName, LogWriter.DEBUG, writer);
-					logger.log("NEW DAY OF THE MONTH, NEW LOG", LogWriter.INFO );
-					logger.log("Initializing " + opName, LogWriter.INFO );
-					logger.log("Version: " + "(TEMPORARY RELEASE)" + ".", LogWriter.INFO );
-				}
-
+				file.delete();
 			}
-			catch( java.io.FileNotFoundException e )
+				
+			if(! file.exists() || logger == null)
 			{
-				e.printStackTrace();
+				java.io.FileOutputStream out = new java.io.FileOutputStream(filename, true);
+				java.io.PrintWriter writer = new java.io.PrintWriter(out, true);
+				logger = new LogWriter(opName, LogWriter.DEBUG, writer);
+				logger.log("NEW DAY OF THE MONTH, NEW LOG", LogWriter.INFO );
+				logger.log("Initializing " + opName, LogWriter.INFO );
+				logger.log("Version: " + "(TEMPORARY RELEASE)" + ".", LogWriter.INFO );
 			}
+		}
+		catch( java.io.FileNotFoundException e )
+		{
+			e.printStackTrace();
 		}
 		
 		return logger;

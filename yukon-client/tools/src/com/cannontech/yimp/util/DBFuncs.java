@@ -131,19 +131,15 @@ public class DBFuncs
 		return false;
 	}
 	
-	public static int[] getNextPAObjectID(int numberOfImportEntries)
+	public static int[] getNextPAObjectID(int numberOfImportEntries, Connection conn)
 	{
 		int retVal = 0;
-		java.sql.Connection conn = null;
 		java.sql.PreparedStatement pstmt = null;
 		java.sql.ResultSet rset = null;
 		int[] ids = new int[numberOfImportEntries];
 		
 		try
 		{		
-			conn = com.cannontech.database.PoolManager.getInstance().getConnection(
-				com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
-
 			if( conn == null )
 			{
 				throw new IllegalStateException("Database connection cannot be null.");
@@ -218,10 +214,8 @@ public class DBFuncs
 		return Point.getNextPointID();
 	}
 	
-	public static boolean writeLastImportTime(Date lastImport)
+	public static boolean writeLastImportTime(Date lastImport, Connection conn)
 	{
-		Connection conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-	
 		if( conn == null )
 			throw new IllegalArgumentException("Database connection should not be (null)");
 
@@ -234,7 +228,6 @@ public class DBFuncs
 			if (stat != null)
 				stat.close();
 				
-			conn.close();
 		}
 		catch (Exception e)
 		{
@@ -248,7 +241,23 @@ public class DBFuncs
 	public static boolean writeNextImportTime(Date nextImport, boolean currentlyRunning)
 	{
 		Connection conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
+		boolean truth = writeNextImportTime(nextImport, currentlyRunning, conn);
+		
+		try
+		{
+			if( conn != null )
+				conn.close();
+		}
+		catch( java.sql.SQLException e )
+		{
+			e.printStackTrace();
+		}
+		
+		return truth;		
+	}
 	
+	public static boolean writeNextImportTime(Date nextImport, boolean currentlyRunning, Connection conn)
+	{
 		if( conn == null )
 			throw new IllegalArgumentException("Database connection should not be (null)");
 			
@@ -267,8 +276,6 @@ public class DBFuncs
 		
 			if (stat != null)
 				stat.close();
-				
-			conn.close();
 		}
 		catch (Exception e)
 		{
@@ -279,10 +286,8 @@ public class DBFuncs
 		return true;
 	}
 	
-	public static boolean writeTotalSuccess(int success)
+	public static boolean writeTotalSuccess(int success, Connection conn)
 	{
-		Connection conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-	
 		if( conn == null )
 			throw new IllegalArgumentException("Database connection should not be (null)");
 
@@ -294,8 +299,6 @@ public class DBFuncs
 		
 			if (stat != null)
 				stat.close();
-				
-			conn.close();
 		}
 		catch (Exception e)
 		{
@@ -306,10 +309,8 @@ public class DBFuncs
 		return true;
 	}
 	
-	public static boolean writeTotalAttempted(int attempts)
+	public static boolean writeTotalAttempted(int attempts, Connection conn)
 	{
-		Connection conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-	
 		if( conn == null )
 			throw new IllegalArgumentException("Database connection should not be (null)");
 
@@ -321,8 +322,7 @@ public class DBFuncs
 		
 			if (stat != null)
 				stat.close();
-				
-			conn.close();
+
 		}
 		catch (Exception e)
 		{
@@ -333,10 +333,8 @@ public class DBFuncs
 		return true;
 	}
 	
-	public static synchronized void alreadyForcedImport()
+	public static synchronized void alreadyForcedImport(Connection conn)
 	{
-		Connection conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-	
 		if( conn == null )
 			throw new IllegalArgumentException("Database connection should not be (null)");
 
@@ -348,8 +346,7 @@ public class DBFuncs
 		
 			if (stat != null)
 				stat.close();
-				
-			conn.close();
+
 		}
 		catch (Exception e)
 		{
@@ -384,12 +381,9 @@ public class DBFuncs
 		return true;
 	}
 	
-	public static synchronized boolean isForcedImport()
+	public static synchronized boolean isForcedImport(Connection conn)
 	{
 		boolean isForced = false;
-		
-		
-		Connection conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
 		
 		java.sql.PreparedStatement preparedStatement = null;
 		java.sql.ResultSet rset = null;
@@ -408,9 +402,6 @@ public class DBFuncs
 			{
 				isForced = rset.getString(1).compareTo("Y") == 0;
 			}
-			
-			conn.close();
-			
 		}
 		
 		catch( java.sql.SQLException e )

@@ -45,7 +45,8 @@ public class ImportWebInfoObject
 			
 		try
 		{
-			conn.close();
+			if( conn != null )
+				conn.close();
 		}
 		catch( java.sql.SQLException e )
 		{
@@ -102,7 +103,8 @@ public class ImportWebInfoObject
 				lastImportTime = rset.getString(1);
 			}
 			
-			conn.close();
+			if( conn != null )
+				conn.close();
 			
 		}
 		
@@ -138,7 +140,8 @@ public class ImportWebInfoObject
 				nextImportTime = rset.getString(1);
 			}
 			
-			conn.close();
+			if( conn != null )
+				conn.close();
 			
 		}
 		
@@ -174,7 +177,8 @@ public class ImportWebInfoObject
 				totalSuccesses = rset.getString(1);
 			}
 			
-			conn.close();
+			if( conn != null )
+				conn.close();
 			
 		}
 		
@@ -191,7 +195,7 @@ public class ImportWebInfoObject
 		String totalAttempts = new String("--");
 		
 		Connection conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-		
+				
 		java.sql.PreparedStatement preparedStatement = null;
 		java.sql.ResultSet rset = null;
 		
@@ -210,7 +214,8 @@ public class ImportWebInfoObject
 				totalAttempts = rset.getString(1);
 			}
 			
-			conn.close();
+			if( conn != null )
+				conn.close();
 			
 		}
 		

@@ -45,6 +45,9 @@ public final class BulkImporter410
 {
 	private Thread starter = null;
 	
+	private Thread worker = null;
+	private Vector paoIDsForPorter = new Vector();
+	
 	private com.cannontech.message.dispatch.ClientConnection dispatchConn = null;
 	private static com.cannontech.message.porter.ClientConnection connToPorter = null;
 	public Request porterRequest = null;
@@ -53,7 +56,6 @@ public final class BulkImporter410
 	private static GregorianCalendar lastImportTime = null;
 
 	public static boolean isService = true;
-	public static Thread sleepThread = null;
 	private static LogWriter logger = null;
 	
 	//5 minute interval for import attempts
@@ -64,7 +66,6 @@ public final class BulkImporter410
 	private final int PORTER_PRIORITY = 6;
 	private final String INTERVAL_COMMAND = "putconfig emetcon intervals";
 	private final long PORTER_WAIT = 900000;
-	private Vector porterPaos = new Vector();
 	
 	
 public BulkImporter410() {
@@ -76,6 +77,23 @@ public BulkImporter410() {
  * Creation date: (02/2/2005 7:27:20 PM)
  */
 public void figureNextImportTime()
+{
+	Connection conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
+	figureNextImportTime(conn);	
+	
+	try
+	{
+		if( conn != null )
+			conn.close();
+	}
+	catch( java.sql.SQLException e )
+	{
+		e.printStackTrace();
+	}	
+}
+
+
+public void figureNextImportTime(Connection conn)
 {
 	if( this.nextImportTime == null )
 	{
@@ -103,15 +121,30 @@ public void figureNextImportTime()
 	logger = ImportFuncs.writeToImportLog(logger, 'N', " ... Next Import Data Event to occur at: " + nextImportTime.getTime(), "", "");
 	CTILogger.info(" ... Import Data Event to occur at: " + nextImportTime.getTime());
 	*/
-	DBFuncs.writeNextImportTime(this.nextImportTime.getTime(), false);
+	DBFuncs.writeNextImportTime(this.nextImportTime.getTime(), false, conn);
 }
 
 public boolean isForcedImport()
 {
-	if(DBFuncs.isForcedImport())
+	Connection conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
+	
+	if( conn == null )
+		throw new IllegalArgumentException("Database connection should not be (null)");
+
+	if(DBFuncs.isForcedImport(conn))
 	{
-		DBFuncs.alreadyForcedImport();
+		DBFuncs.alreadyForcedImport(conn);
 		return true;
+	}
+	
+	try
+	{
+		if( conn != null )
+			conn.close();
+	}
+	catch( java.sql.SQLException e )
+	{
+		e.printStackTrace();
 	}
 	
 	return false;
@@ -141,11 +174,6 @@ public void start()
 			{
 				logger = ImportFuncs.changeLog(logger);
 				
-				/*send requests to porter to update the real world intervals for these inserted meters.
-				 * We don't do this right after an import because porter takes so long to process
-				 * DBChanges, the device may not show up yet if we don't give it a chance.
-				 */
-				submitToPorter();	
 				/*
 				CTILogger.info("410 Importer holding until next import.");
 				logger = ImportFuncs.writeToImportLog(logger, 'N', "410 Importer holding until next import.", "", "");
@@ -153,8 +181,6 @@ public void start()
 				
 				//System.out.println("Next import time: " + getNextImportTime().getTime().toString());
 				
-				sleepThread = new Thread();
-		
 				java.util.Date now = null;
 				now = new java.util.Date();
 				
@@ -179,6 +205,8 @@ public void start()
 					{
 						//go go go, import away!
 						runImport(importEntries, conn);
+						//make sure the worker bee is doing his thing
+						porterWorker();
 					}
 					
 					figureNextImportTime();
@@ -190,8 +218,6 @@ public void start()
 					ImportFuncs.flushImportTable(conn);
 					*/
 										
-					// Clear out the lists???
-					
 					try
 					{
 						if( conn != null )
@@ -201,13 +227,11 @@ public void start()
 					{
 						e.printStackTrace();
 					}
-					
 				}
 				
 				try
 				{
-					System.gc();
-					sleepThread.sleep(SLEEP);
+					Thread.sleep(SLEEP);
 
 				}
 				catch (InterruptedException ie)
@@ -217,7 +241,6 @@ public void start()
 						
 					break;
 				}
-				
 			} while (isService);
 
 			CTILogger.info("Import operation complete.");
@@ -248,7 +271,7 @@ public void start()
 	 */
 public void runImport(Vector imps, Connection conn)
 {
-	DBFuncs.writeNextImportTime(this.nextImportTime.getTime(), true);
+	DBFuncs.writeNextImportTime(this.nextImportTime.getTime(), true, conn);
 	
 	ImportData currentEntry = null;
 	ImportFail currentFailure = null;
@@ -259,7 +282,7 @@ public void runImport(Vector imps, Connection conn)
 	boolean badEntry = false;
 	int successCounter = 0;
 	
-	int ids[] = DBFuncs.getNextPAObjectID(imps.size());
+	int ids[] = DBFuncs.getNextPAObjectID(imps.size(), conn);
 	
 	for(int j = 0; j < imps.size(); j++)
 	{
@@ -424,7 +447,10 @@ public void runImport(Vector imps, Connection conn)
 				
 				successVector.addElement(imps.elementAt(j));
 				logger = ImportFuncs.writeToImportLog(logger, 'S', "MCT-410 " + name + " with address " + address + ".", "", "");
-				porterPaos.addElement(current410);
+				synchronized(paoIDsForPorter)
+				{				
+					paoIDsForPorter.addElement(current410.getPAObjectID());
+				}
 				successCounter++;
 			}
 			catch( java.sql.SQLException e )
@@ -469,10 +495,10 @@ public void runImport(Vector imps, Connection conn)
 	DBFuncs.generateBulkDBChangeMsg(DBChangeMsg.CHANGE_PAO_DB, "DEVICE", DeviceTypes.STRING_MCT_410IL[1], getDispatchConnection());
 	DBFuncs.generateBulkDBChangeMsg(DBChangeMsg.CHANGE_POINT_DB, DBChangeMsg.CAT_POINT, PointTypes.getType(PointTypes.SYSTEM_POINT), getDispatchConnection());
 	
-	DBFuncs.writeTotalSuccess(successCounter);
-	DBFuncs.writeTotalAttempted(imps.size());
+	DBFuncs.writeTotalSuccess(successCounter, conn);
+	DBFuncs.writeTotalAttempted(imps.size(), conn);
 	Date now = new Date();
-	DBFuncs.writeLastImportTime(now);
+	DBFuncs.writeLastImportTime(now, conn);
 	
 	try
 	{
@@ -497,6 +523,9 @@ public void stop()
 		Thread t = starter;
 		starter = null;
 		t.interrupt();
+		Thread w = worker;
+		worker = null;
+		w.interrupt();
 	}
 	catch (Exception e)
 	{}
@@ -528,7 +557,6 @@ public void stopApplication()
 {
 	logger = ImportFuncs.writeToImportLog(logger, 'N', "Forced stop on import application.", "", "");
 	isService = false;
-	sleepThread.interrupt();
 
 	//System.exit(0);
 }
@@ -611,78 +639,97 @@ private synchronized com.cannontech.message.porter.ClientConnection getPorterCon
 	return connToPorter;	
 }
 
-private void submitToPorter()
+/*
+ * With big databases, porter needs a lot of time to reload.  Therefore, if we want the submits
+ * to work, we need to give porter its grace period.  This worker thread will grab the ids of 
+ * all successfully imported devices and then wait fifteen minutes before it attempts to submit 
+ * the intervals for them.
+ */
+private void porterWorker()
 {	
-	if(porterPaos.size() > 0)
+	if(worker == null)
 	{
-		final Vector mctIDs = new Vector();
-		mctIDs.addAll(porterPaos);
-		porterPaos.removeAllElements();
-		
-		CTILogger.info("Porter thread spawned.  Will write intervals after " + PORTER_WAIT + " ms.");
-		logger = ImportFuncs.writeToImportLog(logger, 'N', "Porter thread spawned.  Will write intervals after " + PORTER_WAIT + " ms.", "", "");
-	
-		//since reflection could take some time, lets do this in its own Thread
-		new Thread( new Runnable()
+		Runnable runner = new Runnable()
 		{
 			public void run()
 			{
-				Thread threadOfDeath = new Thread();
-	
-				try
+				while(true)
 				{
-					System.gc();
-					//wait XX minutes to make sure porter has reloaded the database
-					threadOfDeath.sleep(PORTER_WAIT);
-				}
-				catch (InterruptedException ie)
-				{
-					CTILogger.info("Exiting the porter wait period without warning...sleep failed!!!");
-					logger = ImportFuncs.writeToImportLog(logger, 'N', "Porter wait period failed...no longer waiting!!!" + ie.toString(), "", "");
-				}
+					Integer[] paoIDs = null;
+					int counter = 0;
 		
-				for(int j = 0; j < mctIDs.size(); j++)
-				{
-					MCT410IL temp410 = (MCT410IL)mctIDs.elementAt(j);
-					String paoName = temp410.getPAOName();
-					porterRequest = new Request( temp410.getPAObjectID().intValue(), INTERVAL_COMMAND, temp410.getPAObjectID().longValue() );
-					porterRequest.setPriority(PORTER_PRIORITY);
-					if( getPorterConnection() != null )
+					synchronized(paoIDsForPorter)
 					{
-						if( getPorterConnection().isValid())
-						{		
-							getPorterConnection().write( porterRequest );
-						}
-						else	
+						if(paoIDsForPorter.size() > 0)
 						{
-							CTILogger.info(paoName + " REQUEST NOT SENT: CONNECTION TO PORTER IS NOT VALID");
-							logger = ImportFuncs.writeToImportLog(logger, 'N', "("+ paoName + ")REQUEST NOT SENT: CONNECTION TO PORTER IS NOT VALID", "", "");
+							paoIDs = new Integer[paoIDsForPorter.size()];
+							paoIDsForPorter.copyInto(paoIDs);
+							paoIDsForPorter.clear();
+							
+							CTILogger.info("Porter worker thread has obtained " + paoIDs.length + " MCT IDs.  Interval write attempt after " + PORTER_WAIT + " ms.");
+							logger = ImportFuncs.writeToImportLog(logger, 'N', "Porter worker thread has obtained" + paoIDs.length + " MCT IDs.  Interval write attempt after " + PORTER_WAIT + " ms.", "", "");
 						}
 					}
-					else
+					
+					try
 					{
-						CTILogger.info(paoName + " REQUEST NOT SENT: CONNECTION TO PORTER IS NULL");
-						logger = ImportFuncs.writeToImportLog(logger, 'N', "("+ paoName + ")REQUEST NOT SENT: CONNECTION TO PORTER IS NULL", "", "");
+						Thread.sleep(PORTER_WAIT);
 					}
-				}
+					catch (InterruptedException ie)
+					{
+						CTILogger.info("Exiting the worker bee unexpectedly...sleep failed!!!");
+						logger = ImportFuncs.writeToImportLog(logger, 'N', "Exiting the worker bee unexpectedly...sleep failed!!!" + ie.toString(), "", "");
+						break;
+					}			
+					
+					if(paoIDs != null)
+					{
+						for(int j = 0; j < paoIDs.length; j++)
+						{
+							porterRequest = new Request( paoIDs[j].intValue(), INTERVAL_COMMAND, paoIDs[j].longValue() );
+							porterRequest.setPriority(PORTER_PRIORITY);
+							if( getPorterConnection() != null )
+							{
+								if( getPorterConnection().isValid())
+								{		
+									getPorterConnection().write( porterRequest );
+									counter++;
+								}
+								else	
+								{
+									CTILogger.info(paoIDs[j].toString() + " REQUEST NOT SENT: CONNECTION TO PORTER IS NOT VALID");
+									logger = ImportFuncs.writeToImportLog(logger, 'N', "("+ paoIDs[j].toString() + ")REQUEST NOT SENT: CONNECTION TO PORTER IS NOT VALID", "", "");
+								}
+							}
+							else
+							{
+								CTILogger.info(paoIDs[j].toString() + " REQUEST NOT SENT: CONNECTION TO PORTER IS NULL");
+								logger = ImportFuncs.writeToImportLog(logger, 'N', "("+ paoIDs[j].toString() + ")REQUEST NOT SENT: CONNECTION TO PORTER IS NULL", "", "");
+							}
+						}
+					
+						CTILogger.info(counter + " intervals written to porter.");
+						logger = ImportFuncs.writeToImportLog(logger, 'N', "Intervals for " + counter + " MCTs written to porter.", "", "");
 				
-				mctIDs.removeAllElements();
-				
-				CTILogger.info("Intervals written to porter.  Submission thread is at an end.");
-				logger = ImportFuncs.writeToImportLog(logger, 'N', "Intervals written to porter.  Submission thread is at an end.", "", "");
-				
-				try
-				{
-					getPorterConnection().disconnect();
-					connToPorter = null;
-				}
-				catch(java.io.IOException ioe)
-				{
-					logger = ImportFuncs.writeToImportLog(logger, 'N', "Error disconnecting from porter: " + ioe.toString(), "", "");
-					CTILogger.info("An exception occured disconnecting from porter");
+						try
+						{
+							getPorterConnection().disconnect();
+							connToPorter = null;
+						}
+						catch(java.io.IOException ioe)
+						{
+							logger = ImportFuncs.writeToImportLog(logger, 'N', "Error disconnecting from porter: " + ioe.toString(), "", "");
+							CTILogger.info("An exception occured disconnecting from porter");
+						}
+					}
 				}
 			}
-		}).start();
+		};
+		
+		worker = new Thread(runner, "WrkrBee");
+		worker.start();
 	}
 }
+						
+
 }
