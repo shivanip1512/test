@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_ptdispatch.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/09/19 15:52:36 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/09/19 18:04:57 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -210,7 +210,8 @@ RWDBStatus CtiTablePointDispatch::Insert(RWDBConnection &conn)
     getValue() <<
     getTags() <<
     getNextArchiveTime() <<
-    getStaleCount();
+    getStaleCount() <<
+    getLastAlarmLogID();
 
     inserter.execute( conn );
 
