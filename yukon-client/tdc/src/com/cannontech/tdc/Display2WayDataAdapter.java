@@ -17,7 +17,7 @@ import com.cannontech.tdc.utils.TDCDefines;
 import com.cannontech.clientutils.commonutils.ModifiedDate;
 import com.cannontech.tdc.utils.DataBaseInteraction;
 import com.cannontech.common.gui.util.Colors;
-import com.cannontech.clientutils.alarms.AlarmUtils;
+import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.tdc.alarms.gui.AlarmingRow;
 import com.cannontech.tdc.alarms.gui.AlarmingRowVector;
 import com.cannontech.tdc.data.Display;
@@ -43,6 +43,7 @@ public class Display2WayDataAdapter extends AbstractTableModel implements com.ca
 	public static final String COLUMN_TYPE_POINTNAME = "PointName";
 	public static final String COLUMN_TYPE_UOFM = "UofM";
 	public static final String COLUMN_TYPE_DEVICEID = "DeviceID";
+	public static final String COLUMN_TYPE_TAGS = "Tags";
 	
 	private ObservableRow dataRow = null;
 		
@@ -1358,10 +1359,10 @@ public Object getValueAt(int aRow, int aColumn)
 private void handleAlarm(Signal signal) 
 {
 	// check if we have an alarm (1100)
-	if( AlarmUtils.isAnyAlarm(signal.getTags()) )
+	if( TagUtils.isAnyAlarm(signal.getTags()) )
 	{
 		//find out what type of alarm signal this is  (1100)
-		if( AlarmUtils.isAlarm(signal.getTags()) )  // we need to flash
+		if( TagUtils.isAlarm(signal.getTags()) )  // we need to flash
 		{
 			if( currentDisplayNumber == Display.EVENT_VIEWER_DISPLAY_NUMBER )
 				addColumnDefinedRow( signal );
@@ -1370,7 +1371,7 @@ private void handleAlarm(Signal signal)
 			else if( currentDisplayNumber != Display.EVENT_VIEWER_DISPLAY_NUMBER )
 				setRowAlarmed( signal );
 		}
-		else if( AlarmUtils.isAlarmAcked(signal.getTags()) )
+		else if( TagUtils.isAlarmAcked(signal.getTags()) )
 		{	// we need to only show the row (0100),
 			// check if we need to stop the flashing of the alarm
 			if( isAlarmDisplay() )
@@ -1402,7 +1403,7 @@ private void handleDisablity( Signal point )
 	if( (point.getTags() & Signal.MASK_ANY_DISABLE) != 0 )  // check if we have an disablement
 	{
 		//check for a point having its service disabled
-		if( CommonUtils.isPointOutOfService(point.getTags()) )
+		if( TagUtils.isPointOutOfService(point.getTags()) )
 		{
 			//getPointValue( getRowNumber(point.getId()) ).
 		}
@@ -1769,7 +1770,7 @@ public boolean isRowAlarmUnCleared( int rowNumber )
 		
 		// see if we have an alarm AND it has been ACKED
 		if( ((tags & Signal.MASK_ANY_ALARM) != 0) &&
-			   com.cannontech.clientutils.alarms.AlarmUtils.isAlarmAcked( (int)tags) )
+			   com.cannontech.clientutils.tags.TagUtils.isAlarmAcked( (int)tags) )
 		{
 				return true;
 		}
@@ -2180,26 +2181,40 @@ private void setCorrectRowValue( PointData point, java.util.Date timeStamp, int 
 			dataRow.setElementAt( message, 
 					columnTypeName.indexOf(COLUMN_TYPE_POINTVALUE), 
 					ObservedPointDataChange.POINT_VALUE_TYPE, point.getId(), 
-					isRowInAalarmVector( location ) );
+					isRowInAalarmVector( location ),
+					(int)point.getTags() );
 		}
 
 		if ( columnTypeName.contains(COLUMN_TYPE_POINTQUALITY) )
 		{
  			dataRow.setElementAt(
-		 			com.cannontech.database.data.point.PointQualities.getQuality( (int)point.getQuality() )
-		 				+ (AlarmUtils.isAnyAlarm((int)point.getTags()) ? "-(ALM)" : ""),
+		 			com.cannontech.database.data.point.PointQualities.getQualityAbreviation( (int)point.getQuality() )
+		 				+ (TagUtils.isAnyAlarm((int)point.getTags()) ? "-(ALM)" : ""),
 		 			columnTypeName.indexOf(COLUMN_TYPE_POINTQUALITY), 
 		 			ObservedPointDataChange.POINT_QUALITY_TYPE, point.getId(), 
-		 			isRowInAalarmVector( location ) );
+		 			isRowInAalarmVector( location ),
+					(int)point.getTags() );
 		}
 	
+		if ( columnTypeName.contains(COLUMN_TYPE_TAGS) )
+		{
+ 			dataRow.setElementAt(
+		 			 TagUtils.getTagString( (int)point.getTags() ),
+//		 				+ (AlarmUtils.isAnyAlarm((int)point.getTags()) ? "-(ALM)" : ""),
+		 			columnTypeName.indexOf(COLUMN_TYPE_TAGS), 
+		 			ObservedPointDataChange.POINT_TAG_TYPE, point.getId(),
+		 			isRowInAalarmVector( location ),
+					(int)point.getTags() );
+		}
+
 		if ( columnTypeName.contains(COLUMN_TYPE_POINTTIMESTAMP) )
 		{					
 			dataRow.setElementAt( 
 					new ModifiedDate( timeStamp.toString() ), 
 					columnTypeName.indexOf(COLUMN_TYPE_POINTTIMESTAMP), 
 					ObservedPointDataChange.POINT_TIMESTAMP_TYPE, point.getId(), 
-					isRowInAalarmVector( location ) );
+					isRowInAalarmVector( location ),
+					(int)point.getTags() );
 		}
 
 		

@@ -119,7 +119,7 @@ public com.cannontech.message.dispatch.message.Signal getSignal() {
  */
 public boolean isBlinking() 
 {
-	return ( com.cannontech.clientutils.alarms.AlarmUtils.isAlarm(signal.getTags()) );
+	return ( com.cannontech.clientutils.tags.TagUtils.isAlarm(signal.getTags()) );
 }
 /**
  * Insert the method's description here.

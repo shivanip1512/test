@@ -11,10 +11,12 @@ public class ObservedPointDataChange
 	private String value = null;
 	private long pointID = -1;
 	private boolean rowAlarmed = false;
+	private int tags = -1;
 
 	public final static int POINT_VALUE_TYPE = 1;
 	public final static int POINT_QUALITY_TYPE = 2;
 	public final static int POINT_TIMESTAMP_TYPE = 3;
+	public final static int POINT_TAG_TYPE = 4;
 /**
  * ObservedChange constructor comment.
  */
@@ -24,7 +26,7 @@ public ObservedPointDataChange() {
 /**
  * ObservedChange constructor comment.
  */
-public ObservedPointDataChange( String msg, int changeType, long ptID, boolean alarming ) 
+public ObservedPointDataChange( String msg, int changeType, long ptID, boolean alarming, int tags_ ) 
 {
 	super();
 
@@ -32,6 +34,7 @@ public ObservedPointDataChange( String msg, int changeType, long ptID, boolean a
 	pointID = ptID;
 	type = changeType;
 	value = msg;	
+	tags = tags_;
 }
 /**
  * Insert the method's description here.
@@ -70,4 +73,14 @@ public boolean isAlarming()
 {
 	return rowAlarmed;
 }
+
+	/**
+	 * Returns the tags.
+	 * @return int
+	 */
+	public int getTags()
+	{
+		return tags;
+	}
+
 }

@@ -75,9 +75,9 @@ public synchronized void setElementAt( Object o, int i )
  * Creation date: (3/10/00 4:57:01 PM)
  * @return java.util.Vector
  */
-public synchronized void setElementAt( Object o, int i, int type, long ptID, boolean isAlarmed )
+public synchronized void setElementAt( Object o, int i, int type, long ptID, boolean isAlarmed, int tags )
 {
-	newObject = new ObservedPointDataChange( o.toString(), type, ptID, isAlarmed );
+	newObject = new ObservedPointDataChange( o.toString(), type, ptID, isAlarmed, tags );
 	
 	row.setElementAt( o, i );
 

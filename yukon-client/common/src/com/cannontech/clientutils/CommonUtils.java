@@ -209,60 +209,6 @@ public final static java.awt.Dialog getParentDialog(java.awt.Component comp)
 }
 /**
  * Insert the method's description here.
- * Creation date: (8/31/00 12:00:37 PM)
- * @param tags long
- */
-public static boolean isControlEnabled(long tags ) 
-{
-	return( (tags & Signal.MASK_ANY_CONTROL_DISABLE) == 0 );
-}
-/**
- * Insert the method's description here.
- * Creation date: (8/31/00 12:00:37 PM)
- * @param tags long
- */
-public static boolean isControllablePoint(long tags ) 
-{
-	return( (tags & Signal.TAG_ATTRIB_CONTROL_AVAILABLE) != 0 );
-}
-/**
- * Insert the method's description here.
- * Creation date: (8/31/00 12:00:37 PM)
- * @param tags long
- */
-public static boolean isDeviceControlInhibited(long tags) 
-{
-	return( (tags & com.cannontech.message.dispatch.message.Signal.TAG_DISABLE_CONTROL_BY_DEVICE) > 0 );	
-}
-/**
- * Insert the method's description here.
- * Creation date: (8/31/00 12:00:37 PM)
- * @param tags long
- */
-public static boolean isDeviceOutOfService(long tags) 
-{
-	return( (tags & com.cannontech.message.dispatch.message.Signal.TAG_DISABLE_DEVICE_BY_DEVICE) > 0 );	
-}
-/**
- * Insert the method's description here.
- * Creation date: (8/31/00 12:00:37 PM)
- * @param tags long
- */
-public static boolean isPointControlInhibited(long tags) 
-{
-	return( (tags & com.cannontech.message.dispatch.message.Signal.TAG_DISABLE_CONTROL_BY_POINT) > 0 );
-}
-/**
- * Insert the method's description here.
- * Creation date: (8/31/00 12:00:37 PM)
- * @param tags long
- */
-public static boolean isPointOutOfService(long tags) 
-{
-	return( (tags & com.cannontech.message.dispatch.message.Signal.TAG_DISABLE_POINT_BY_POINT) > 0 );	
-}
-/**
- * Insert the method's description here.
  * Creation date: (2/11/00 1:19:38 PM)
  * @return java.lang.String[]
  * @param delimitor char

@@ -418,7 +418,7 @@ public Object getValueAt(int row, int col)
  */
 private void handleAlarms(CapBankDevice capBankDevice, int rowNumber ) 
 {
-	if( com.cannontech.clientutils.alarms.AlarmUtils.isAlarm(capBankDevice.getTagControlStatus().intValue()) )
+	if( com.cannontech.clientutils.tags.TagUtils.isAlarm(capBankDevice.getTagControlStatus().intValue()) )
 	{
 		setRowAlarmed( rowNumber );
 	}

@@ -1,4 +1,4 @@
-package com.cannontech.clientutils.alarms;
+package com.cannontech.clientutils.tags;
 
 /**
  * Insert the type's description here.

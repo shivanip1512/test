@@ -504,12 +504,12 @@ public void jMenuItemOpenClose_ActionPerformed(java.awt.event.ActionEvent action
  */
 private void setAlarmMenuItems() 
 {
-	if( com.cannontech.clientutils.alarms.AlarmUtils.isAlarm(getCapBankDevice().getTagControlStatus().intValue()) )
+	if( com.cannontech.clientutils.tags.TagUtils.isAlarm(getCapBankDevice().getTagControlStatus().intValue()) )
 	{
 		getJMenuItemAckAlarm().setEnabled( true );
 		getJMenuItemClearAlarm().setEnabled( true );
 	}
-	else if( com.cannontech.clientutils.alarms.AlarmUtils.isAlarmAcked(getCapBankDevice().getTagControlStatus().intValue()) )
+	else if( com.cannontech.clientutils.tags.TagUtils.isAlarmAcked(getCapBankDevice().getTagControlStatus().intValue()) )
 	{
 		getJMenuItemAckAlarm().setEnabled( false );
 		getJMenuItemClearAlarm().setEnabled( true );

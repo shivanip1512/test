@@ -15,6 +15,7 @@ import java.awt.Cursor;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
 import javax.swing.JPanel;
 import com.cannontech.clientutils.CommonUtils;
+import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.tdc.calendar.CalendarDialog;
 import com.cannontech.tdc.commandevents.AckAlarm;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -565,7 +566,7 @@ private ManualEntryJPanel createManualEditorPanel(int selectedRow, Object source
 
 		}
 		else if( com.cannontech.database.data.point.PointTypes.getType(ptType) == com.cannontech.database.data.point.PointTypes.STATUS_POINT
-					&& ( CommonUtils.isControllablePoint(data.getTags()) && CommonUtils.isControlEnabled(data.getTags()) )
+					&& ( TagUtils.isControllablePoint(data.getTags()) && TagUtils.isControlEnabled(data.getTags()) )
 					&& source != getJMenuItemPopUpManualEntry() )
 		{			
 			tableModel.setObservedRow( tableModel.getRowNumber( new Long( pt.getPointData().getId() ).longValue() ) );
@@ -2523,7 +2524,7 @@ public void jMenuItemPopUpDisable_ActionPerformed(java.awt.event.ActionEvent act
 	String msg = new String();
 
 	// see if we need to disable the points service
-	if( CommonUtils.isPointOutOfService(ptValue.getPointData().getTags()) )
+	if( TagUtils.isPointOutOfService(ptValue.getPointData().getTags()) )
 	{
 		msg = "ENABLE";
 		sig.setTags( ptValue.getPointData().getTags() & ~com.cannontech.message.dispatch.message.Signal.TAG_DISABLE_POINT_BY_POINT );
@@ -2600,14 +2601,15 @@ public void jPopupMenu_PopupMenuWillBecomeVisible(javax.swing.event.PopupMenuEve
 		getJMenuItemPopUpManualEntry().setEnabled( true );
 
 		getJMenuTags().setEnabled( true );
+		getJMenuControl().setEnabled( true );
 		setAblementPopUpItems( selectedRow );
 		
 		// check to see if the point can be controlled AND its control is NOT disabled
 		getJMenuItemPopUpManualControl().setEnabled( 
-				(CommonUtils.isControllablePoint(
+				(TagUtils.isControllablePoint(
 					getTableDataModel().getPointValue(selectedRow).getPointData().getTags())
 				&&
-				CommonUtils.isControlEnabled(
+				TagUtils.isControlEnabled(
 					getTableDataModel().getPointValue(selectedRow).getPointData().getTags())) );
 
 
@@ -3228,24 +3230,24 @@ private void setAblementPopUpItems( int selectedRow )
 	
 	long tags = getTableDataModel().getPointValue( selectedRow ).getPointData().getTags();
 	
-	boolean isPointOutOfService = CommonUtils.isPointOutOfService(tags);
+	boolean isPointOutOfService = TagUtils.isPointOutOfService(tags);
 	getJRadioButtonMenuItemDisablePt().setSelected( isPointOutOfService );
 	getJRadioButtonMenuItemEnbablePt().setSelected( !isPointOutOfService );
 	
-	boolean isDeviceOutOfService = CommonUtils.isDeviceOutOfService(tags);
+	boolean isDeviceOutOfService = TagUtils.isDeviceOutOfService(tags);
 	getJRadioButtonMenuItemDisableDev().setSelected( isDeviceOutOfService );
 	getJRadioButtonMenuItemEnableDev().setSelected( !isDeviceOutOfService );
 
-	boolean isDeviceControlInhibited = CommonUtils.isDeviceControlInhibited(tags);
+	boolean isDeviceControlInhibited = TagUtils.isDeviceControlInhibited(tags);
 	getJRadioButtonMenuItemInhibitDev().setSelected( isDeviceControlInhibited );
 	getJRadioButtonMenuItemAllowDev().setSelected( !isDeviceControlInhibited );
 	
-	boolean isPointControlInhibited = CommonUtils.isPointControlInhibited(tags);
+	boolean isPointControlInhibited = TagUtils.isPointControlInhibited(tags);
 	getJRadioButtonMenuItemInhibitPt().setSelected( isPointControlInhibited );
 	getJRadioButtonMenuItemAllowPt().setSelected( !isPointControlInhibited );
 
 	//if the point is not controllable, then disable the control options for that point
-	boolean isControllablePoint = CommonUtils.isControllablePoint(tags);
+	boolean isControllablePoint = TagUtils.isControllablePoint(tags);
 	getJRadioButtonMenuItemInhibitPt().setEnabled( isControllablePoint );
 	getJRadioButtonMenuItemAllowPt().setEnabled( isControllablePoint );
 
@@ -3608,7 +3610,6 @@ private void showCalendarDialog()
  */
 private void showDebugInfo( ) 
 {
-	
 	com.cannontech.tdc.debug.RowDebugViewer d = new com.cannontech.tdc.debug.RowDebugViewer( 
 		com.cannontech.common.util.CtiUtilities.getParentFrame(this) ); 
 	

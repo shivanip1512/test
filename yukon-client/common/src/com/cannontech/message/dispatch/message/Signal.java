@@ -33,37 +33,38 @@ public class Signal extends com.cannontech.message.util.Message
 
 	// TAGS to be read from Dispatch
 	// taken from pointdefs.h
-	public final static int TAG_DISABLE_POINT_BY_POINT = 0x00000001;
-	public final static int TAG_DISABLE_ALARM_BY_POINT = 0x00000002;
-	public final static int TAG_DISABLE_CONTROL_BY_POINT = 0x00000004;
-	public final static int TAG_DISABLE_DEVICE_BY_DEVICE = 0x00000010;
-	public final static int TAG_DISABLE_ALARM_BY_DEVICE = 0x00000020;
-	public final static int TAG_DISABLE_CONTROL_BY_DEVICE = 0x00000040;
-	public final static int TAG_MANUAL = 0x00010000;
-	public final static int TAG_EXTERNALVALUE = 0x00020000;
-	public final static int TAG_CONTROL_SELECTED = 0x00040000;
-	public final static int TAG_CONTROL_PENDING = 0x00080000;
-	public final static int TAG_POINT_FORCE_UPDATE = 0x00001000;
-	public final static int TAG_POINT_MUST_ARCHIVE = 0x00002000;
-	public final static int TAG_POINT_MAY_BE_EXEMPTED = 0x00004000;
-	public final static int TAG_ATTRIB_CONTROL_AVAILABLE = 0x10000000;
-	public final static int TAG_ATTRIB_PSUEDO = 0x20000000;
+	public final static int TAG_DISABLE_POINT_BY_POINT 		= 0x00000001;
+	public final static int TAG_DISABLE_ALARM_BY_POINT 		= 0x00000002;
+	public final static int TAG_DISABLE_CONTROL_BY_POINT 	= 0x00000004;
+	public final static int TAG_DISABLE_DEVICE_BY_DEVICE 	= 0x00000010;
+	public final static int TAG_DISABLE_ALARM_BY_DEVICE 		= 0x00000020;
+	public final static int TAG_DISABLE_CONTROL_BY_DEVICE 	= 0x00000040;
+	public final static int TAG_MANUAL 						= 0x00010000;
+	public final static int TAG_EXTERNALVALUE 				= 0x00020000;
+	public final static int TAG_CONTROL_SELECTED 			= 0x00040000;
+	public final static int TAG_CONTROL_PENDING 				= 0x00080000;
+	public final static int TAG_POINT_FORCE_UPDATE 			= 0x00001000;
+	public final static int TAG_POINT_MUST_ARCHIVE 			= 0x00002000;
+	public final static int TAG_POINT_MAY_BE_EXEMPTED 		= 0x00004000;
+	public final static int TAG_ATTRIB_CONTROL_AVAILABLE 	= 0x10000000;
+	public final static int TAG_ATTRIB_PSUEDO 				= 0x20000000;
 	
 	// TAGS for alarmed points (alarm states)
-	public final static int TAG_UNACKNOWLEDGED_ALARM = 0x80000000;
-	public final static int TAG_ACKNOWLEDGED_ALARM = 0x40000000;
+	public final static int TAG_UNACKNOWLEDGED_ALARM 		= 0x80000000;
+	public final static int TAG_ACKNOWLEDGED_ALARM 			= 0x40000000;
 
 	// masks to see if any tags are present
-	public final static int MASK_RESETTABLE_TAGS = 0x00030000; 
+	public final static int MASK_RESETTABLE_TAGS 			= 0x00030000; 
 	// tags which are reset upon any setPoint operation
-	public final static int MASK_ANY_ALARM = 0xC0000000; 
+	public final static int MASK_ANY_ALARM 					= 0xC0000000; 
 	// detects UNACK or ACK alarm states
-	public final static int MASK_ANY_CONTROL = 0x000C0000; 
+	public final static int MASK_ANY_CONTROL 				= 0x000C0000; 
 	// detects CONTROL_SELECTED or CONTROL_PENDING
-	public final static int MASK_ANY_DISABLE = 0x00000077;
-	public final static int MASK_ANY_SERVICE_DISABLE = 0x00000011;
-	public final static int MASK_ANY_ALARM_DISABLE = 0x00000022;
-	public final static int MASK_ANY_CONTROL_DISABLE = 0x00000044;
+	public final static int MASK_ANY_DISABLE 				= 0x00000077;
+	public final static int MASK_ANY_SERVICE_DISABLE 		= 0x00000011;
+	public final static int MASK_ANY_ALARM_DISABLE 			= 0x00000022;
+	public final static int MASK_ANY_CONTROL_DISABLE 		= 0x00000044;
+
 /**
  * Signal constructor comment.
  */

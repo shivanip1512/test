@@ -14,6 +14,7 @@ import com.cannontech.tdc.utils.TDCDefines;
 import com.cannontech.clientutils.CommonUtils;
 import com.cannontech.message.dispatch.message.Signal;
 import com.cannontech.tdc.commandevents.ControlCommand;
+import com.cannontech.clientutils.tags.TagUtils;
 
 public class StatusPanelControlEntry extends ManualEntryJPanel implements RowEditorDialogListener, java.awt.event.ActionListener, java.util.Observer 
 {
@@ -372,8 +373,8 @@ private void initData()
 	getJLabelPointDeviceName().setText( getEditorData().getDeviceName().toString() + " / " + getEditorData().getPointName() );
 
 	// check to see if the point can be controlled AND its control is NOT disabled
-	if( CommonUtils.isControllablePoint(getEditorData().getTags())
-		 && CommonUtils.isControlEnabled(getEditorData().getTags()) )
+	if( TagUtils.isControllablePoint(getEditorData().getTags())
+		 && TagUtils.isControlEnabled(getEditorData().getTags()) )
 	{
 		getJPanelControl().setVisible( true );
 	}
