@@ -17,10 +17,13 @@
 *    Copyright (C) 2000 Cannon Technologies, Inc.  All rights reserved.
 
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrinterface.cpp-arc  $
-*    REVISION     :  $Revision: 1.5 $
-*    DATE         :  $Date: 2002/08/06 21:59:56 $
-*    History: 
+*    REVISION     :  $Revision: 1.6 $
+*    DATE         :  $Date: 2002/08/28 16:10:38 $
+*    History:
       $Log: fdrinterface.cpp,v $
+      Revision 1.6  2002/08/28 16:10:38  cplender
+      setBlockingWrites is no more!.
+
       Revision 1.5  2002/08/06 21:59:56  dsutton
       Programming around the error that happens if the dataset is empty when it is
       returned from the database and shouldn't be.  The interfaces fail the call and
@@ -179,7 +182,7 @@ long CtiFDRInterface::getClientLinkStatusID(RWCString &aClientName)
     try
     {
         // make a list with all received points
-        CtiFDRManager   *pointList = new CtiFDRManager(RWCString (FDR_SYSTEM), 
+        CtiFDRManager   *pointList = new CtiFDRManager(RWCString (FDR_SYSTEM),
                                                        RWCString (FDR_INTERFACE_LINK_STATUS));
         // if status is ok, we were able to read the database at least
         if (pointList->loadPointList().errorCode() == (RWDBStatus::ok))
@@ -382,7 +385,7 @@ CtiFDRInterface& CtiFDRInterface::setReloadRate (INT aRate)
 /************************************************************************
 * Function Name: CtiFDRInterface::getOutboundSendRate()
 *
-* Description: 
+* Description:
 *
 *************************************************************************
 */
@@ -393,7 +396,7 @@ int CtiFDRInterface::getOutboundSendRate () const
 /************************************************************************
 * Function Name: CtiFDRInterface::setOutboundSendRate(aRate)
 *
-* Description: 
+* Description:
 *
 *************************************************************************
 */
@@ -405,7 +408,7 @@ CtiFDRInterface& CtiFDRInterface::setOutboundSendRate (INT aRate)
 /************************************************************************
 * Function Name: CtiFDRInterface::getOutboundSendInterval()
 *
-* Description: 
+* Description:
 *
 *************************************************************************
 */
@@ -416,7 +419,7 @@ int CtiFDRInterface::getOutboundSendInterval () const
 /************************************************************************
 * Function Name: CtiFDRInterface::setOutboundSendRate(aRate)
 *
-* Description: 
+* Description:
 *
 *************************************************************************
 */
@@ -493,7 +496,7 @@ BOOL CtiFDRInterface::run( void )
         * we won't lose info this way
         *******************
         */
-        iDispatchConn->setBlockingWrites(TRUE);
+        // 082702 CGP iDispatchConn->setBlockingWrites(TRUE);
     }
 
     // start our dispatch distibution thread
@@ -580,7 +583,7 @@ bool CtiFDRInterface::reloadTranslationLists()
         dout << "Reloading translation list: reloadTranslationList()" << endl;
     }
 
-    // reset status associated with clients on each reload in case the 
+    // reset status associated with clients on each reload in case the
     // point has been added  that watches the link
     setCurrentClientLinkStates();
     return loadTranslationLists();
@@ -695,7 +698,7 @@ bool CtiFDRInterface::sendPointRegistration( void )
     {
 
         if (iOutBoundPoints->entries() > 0)
-        {        
+        {
             buildRegistrationPointList (&ptRegMsg);
 
             if (ptRegMsg != NULL)
@@ -804,7 +807,7 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
 
             switch (incomingMsg->isA())
             {
-                
+
                 case MSG_DBCHANGE:
                     // db change message reload if type if point
                     if ( ((CtiDBChangeMsg*)incomingMsg)->getDatabase() == ChangePointDb)
@@ -1112,7 +1115,7 @@ void CtiFDRInterface::threadFunctionReloadDb( void )
 bool CtiFDRInterface::logEvent( RWCString &aDesc, RWCString &aAction, bool aSendImmediatelyFlag )
 {
     CtiSignalMsg  *     eventLog    = NULL;
-    eventLog = new CtiSignalMsg(0, 
+    eventLog = new CtiSignalMsg(0,
                                 0,
                                 aDesc,
                                 aAction,
@@ -1227,7 +1230,7 @@ INT CtiFDRInterface::reRegisterWithDispatch(  )
 bool CtiFDRInterface::updatePointByIdInList(CtiFDRPointList &aList,
                                             CtiPointDataMsg *aMessage)
 {
-    bool               foundFlag= false;                
+    bool               foundFlag= false;
     CtiFDRPoint        *point=NULL;
 
     // lock the list
