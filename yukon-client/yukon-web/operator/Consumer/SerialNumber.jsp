@@ -12,7 +12,7 @@
 	StarsCustListEntry devTypeMCT = ServletUtils.getStarsCustListEntry(selectionListTable, YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE, YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_METER);
 	
 	int deviceType = 0;
-	String valStr = "";
+	String devName = "";
 	
 	if (action != null) {
 		if (action.equalsIgnoreCase("New")) {
@@ -29,11 +29,11 @@
 			if (inventory != null) {
 				if (inventory instanceof StarsLMHardware) {
 					deviceType = ((StarsLMHardware)inventory).getLMDeviceType().getEntryID();
-					valStr = ((StarsLMHardware)inventory).getManufactureSerialNumber();
+					devName = ((StarsLMHardware)inventory).getManufactureSerialNumber();
 				}
 				else if (inventory instanceof StarsMCT) {
 					deviceType = devTypeMCT.getEntryID();
-					valStr = ((StarsMCT)inventory).getDeviceName();
+					devName = ((StarsMCT)inventory).getDeviceName();
 				}
 			}
 			
@@ -54,11 +54,11 @@
 		if (inventory != null) {
 			if (inventory instanceof StarsLMHardware) {
 				deviceType = ((StarsLMHardware)inventory).getLMDeviceType().getEntryID();
-				valStr = ((StarsLMHardware)inventory).getManufactureSerialNumber();
+				devName = ((StarsLMHardware)inventory).getManufactureSerialNumber();
 			}
 			else if (inventory instanceof StarsMCT) {
 				deviceType = devTypeMCT.getEntryID();
-				valStr = ((StarsMCT)inventory).getDeviceName();
+				devName = ((StarsMCT)inventory).getDeviceName();
 			}
 		}
 	}
@@ -205,7 +205,7 @@ function changeDeviceType() {
                               <tr> 
                                 <td align="right" width="30%"><span id="NameLabel"></span>: </td>
                                 <td width="70%"> 
-                                  <input type="text" name="SerialNo" maxlength="30" size="20" value="<%= valStr %>">
+                                  <input type="text" name="SerialNo" maxlength="30" size="20" value="<%= devName %>">
                                 </td>
                               </tr>
                             </table>

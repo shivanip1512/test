@@ -131,21 +131,21 @@ function changeSerialNo() {
 	if (invCheckEarly) {
 		int devTypeID = 0;
 		String devTypeStr = null;
-		String valStr = null;
+		String devName = null;
 		
 		if (inventory instanceof StarsLMHardware) {
 			devTypeID = ((StarsLMHardware) inventory).getLMDeviceType().getEntryID();
 			devTypeStr = ((StarsLMHardware) inventory).getLMDeviceType().getContent();
-			valStr = ((StarsLMHardware) inventory).getManufactureSerialNumber();
+			devName = ((StarsLMHardware) inventory).getManufactureSerialNumber();
 		}
 		else if (inventory instanceof StarsMCT) {
 			devTypeID = devTypeMCT.getEntryID();
 			devTypeStr = devTypeMCT.getContent();
-			valStr = ((StarsMCT) inventory).getDeviceName();
+			devName = ((StarsMCT) inventory).getDeviceName();
 		}
 %>
 							<input type="hidden" name="DeviceType" value="<%= devTypeID %>">
-							<input type="hidden" name="SerialNo" value="<%= valStr %>">
+							<input type="hidden" name="SerialNo" value="<%= devName %>">
                             <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
                               <tr> 
                                 <td width="100" class="TableCell" align="right">Type: 
@@ -157,7 +157,7 @@ function changeSerialNo() {
                               </tr>
                               <tr> 
                                 <td width="100" class="TableCell" align="right"><span id="NameLabel"></span>: </td>
-                                <td width="120" class="MainText"><%= valStr %></td>
+                                <td width="120" class="MainText"><%= devName %></td>
                               </tr>
                             </table>
 <%	} %>

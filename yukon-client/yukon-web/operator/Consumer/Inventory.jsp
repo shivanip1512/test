@@ -26,17 +26,17 @@
 	
 	int devTypeID = 0;
 	String devTypeStr = null;
-	String valStr = null;
+	String devName = null;
 	
 	if (newInv instanceof StarsLMHardware) {
 		devTypeID = ((StarsLMHardware)newInv).getLMDeviceType().getEntryID();
 		devTypeStr = ((StarsLMHardware)newInv).getLMDeviceType().getContent();
-		valStr = ((StarsLMHardware)newInv).getManufactureSerialNumber();
+		devName = ((StarsLMHardware)newInv).getManufactureSerialNumber();
 	}
 	else if (newInv instanceof StarsMCT) {
 		devTypeID = devTypeMCT.getEntryID();
 		devTypeStr = devTypeMCT.getContent();
-		valStr = ((StarsMCT)newInv).getDeviceName();
+		devName = ((StarsMCT)newInv).getDeviceName();
 	}
 	
 	StarsServiceCompany company = null;
@@ -166,7 +166,7 @@ function changeDeviceType() {
                             <hr>
                             <% if (invCheckEarly) { %>
                             <input type="hidden" name="DeviceType" value="<%= devTypeID %>">
-							<input type="hidden" name="SerialNo" value="<%= valStr %>">
+							<input type="hidden" name="SerialNo" value="<%= devName %>">
                             <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
                               <tr> 
                                 <td width="100" class="TableCell" align="right">Type: 
@@ -178,7 +178,7 @@ function changeDeviceType() {
                               </tr>
                               <tr> 
                                 <td width="100" class="TableCell" align="right"><span id="NameLabel"></span>: </td>
-                                <td width="120" class="MainText"><%= valStr %></td>
+                                <td width="120" class="MainText"><%= devName %></td>
                               </tr>
                             </table>
                             <% } %>
@@ -207,7 +207,7 @@ function changeDeviceType() {
                                 <td width="100" class="TableCell" align="right"><span id="NameLabel">Serial 
                                   #: </span></td>
                                 <td width="200"> 
-                                  <input type="text" name="SerialNo" maxlength="30" size="24" value="<%= valStr %>">
+                                  <input type="text" name="SerialNo" maxlength="30" size="24" value="<%= devName %>">
                                 </td>
                               </tr>
                             <% } %>
