@@ -16,9 +16,6 @@ import java.util.ArrayList;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 
-import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
-
 public class DragAndDropTable extends javax.swing.JTable implements java.awt.dnd.DropTargetListener, java.awt.dnd.DragGestureListener
 {
 	private DropTarget dropTarget;
@@ -40,10 +37,16 @@ public class DragAndDropTable extends javax.swing.JTable implements java.awt.dnd
  */
 public DragAndDropTable() 
 {
+	this(null);
+}
+/**
+ * DragAndDropTree constructor comment.
+ */
+public DragAndDropTable(DAndDJTableRendererWrapper rendererWrapper_) 
+{
 	super();
+	rendererWrapper = rendererWrapper_;
 	initialize();
-
-	//getRightTable().addDragAndDropListener(this);
 }
 
 
@@ -71,36 +74,7 @@ public void addDragAndDropListener(DragAndDropListener newListener)
 	return;
 }
 
-/**
- * Insert the method's description here.
- * Creation date: (1/31/00 2:08:42 PM)
- */
-private void addDevice(com.cannontech.database.data.lite.LiteYukonPAObject device)
-{
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-	java.util.List devicePoints = cache.getAllPoints();
-	
-	for (int i=0; i<devicePoints.size(); i++)
-	{
-		if( device.getYukonID() == ((LitePoint)devicePoints.get(i)).getPaobjectID() )
-			addPoint( (LitePoint)devicePoints.get(i) );
-	}
-}
-/**
- * Insert the method's description here.
- * Creation date: (1/31/00 2:08:42 PM)
- */
-public void addDevice( LitePoint[] points )
-{
-	if( points.length > 0 ) // only add devices that have points
-	{	
-		for( int i = 0; i < points.length; i++ )
-		{		
-			addPoint( points[i] );
-		}
-	}
-	
-}
+
 /**
  * Insert the method's description here.
  * Creation date: (1/31/00 2:08:42 PM)
@@ -108,15 +82,15 @@ public void addDevice( LitePoint[] points )
  * @param pointid java.lang.String
  * @param pointName java.lang.String
  */
-public void addPoint( final LitePoint litePoint_ )
+public void addObject( final Object object_ )
 {
 	IDroppableTableModel tableModel = (IDroppableTableModel)this.getModel();
 
 	// just return if the point is already in the right tree
-	if( tableModel.pointExists( litePoint_ ) )
+	if( tableModel.objectExists( object_ ) )
 		return;
 
-	tableModel.insertNewRow( litePoint_ ); 
+	tableModel.insertNewRow( object_ ); 
 }
 
 /**
@@ -262,7 +236,6 @@ private synchronized void insertObjectAt( final Object obj, int newRow, int orig
 	
 }
 
-
 public synchronized void drop(java.awt.dnd.DropTargetDropEvent dtde) 
 {	
 	try
@@ -274,15 +247,7 @@ public synchronized void drop(java.awt.dnd.DropTargetDropEvent dtde)
 			dtde.acceptDrop( DnDConstants.ACTION_MOVE );
 			Object userObject = tr.getTransferData( TransferableTreeNode.DEFAULT_MUTABLE_TREENODE_FLAVOR );
 
-			if( userObject instanceof LiteYukonPAObject )  // insert device
-			{
-				LiteYukonPAObject device = (LiteYukonPAObject)userObject;
-				addDevice( device );
-			}
-			else if(userObject instanceof LitePoint)  //insert point
-			{
-				addPoint( (LitePoint)userObject );
-			}
+			addObject(userObject);
 
 			dtde.getDropTargetContext().dropComplete( true );			
 		}
@@ -291,14 +256,9 @@ public synchronized void drop(java.awt.dnd.DropTargetDropEvent dtde)
 			dtde.acceptDrop( DnDConstants.ACTION_MOVE );			
 			Object obj = tr.getTransferData(TransferableObjects.OBJECT_FLAVOR);
 
-
 			//insert our object here into the JList
-			insertObjectAt( 
-					obj,
-					rowAtPoint(dtde.getLocation()),
-					lastDragOrigination );
+			insertObjectAt(obj, rowAtPoint(dtde.getLocation()), lastDragOrigination );
 
-			
 			dtde.getDropTargetContext().dropComplete( true );			
 		}
 		else
@@ -370,6 +330,12 @@ public void setDefaultRenderer( Class clazz, TableCellRenderer re )
 	super.setDefaultRenderer( clazz, rendererWrapper );
 }
 
+public void setRendererWrapper(DAndDJTableRendererWrapper wrapper)
+{
+	rendererWrapper = wrapper;
+	//MUST reinit in order for this wrapper renderer to take be picked up!
+	initialize();
+}
 /**
  * Insert the method's description here.
  * Creation date: (3/14/00 3:33:57 PM)
