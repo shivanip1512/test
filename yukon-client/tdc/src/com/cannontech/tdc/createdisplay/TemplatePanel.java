@@ -6,6 +6,7 @@ package com.cannontech.tdc.createdisplay;
  * @author: 
  * @Version: <version>
  */
+import java.awt.Color;
 import java.util.Vector;
 
 import com.cannontech.tdc.TDCMainFrame;
@@ -240,7 +241,7 @@ private javax.swing.JComboBox getJComboBoxTemplate() {
 		try {
 			ivjJComboBoxTemplate = new javax.swing.JComboBox();
 			ivjJComboBoxTemplate.setName("JComboBoxTemplate");
-			ivjJComboBoxTemplate.setBackground(java.awt.Color.white);
+			ivjJComboBoxTemplate.setBackground(Color.white);
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -262,7 +263,7 @@ private javax.swing.JLabel getJLabelCustomized() {
 			ivjJLabelCustomized = new javax.swing.JLabel();
 			ivjJLabelCustomized.setName("JLabelCustomized");
 			ivjJLabelCustomized.setText("( Customized )");
-			ivjJLabelCustomized.setForeground(java.awt.Color.blue);
+			ivjJLabelCustomized.setForeground(Color.blue);
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -332,7 +333,6 @@ private javax.swing.JTable getJTable() {
 			ivjJTable = new javax.swing.JTable();
 			ivjJTable.setName("JTable");
 			getJScrollPaneTable().setColumnHeaderView(ivjJTable.getTableHeader());
-			getJScrollPaneTable().getViewport().setBackingStoreEnabled(true);
 			ivjJTable.setAutoscrolls(false);
 			ivjJTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
 			ivjJTable.setColumnSelectionAllowed(true);
@@ -621,9 +621,10 @@ public void setCurrentDisplayNumber(long value)
  */
 private void setCustomized() 
 {
-	getJLabelCustomized().setForeground( java.awt.Color.blue.darker() );
-	getJComboBoxTemplate().setBackground( java.awt.Color.blue.darker() );
+	getJLabelCustomized().setForeground( Color.BLUE );
+	getJComboBoxTemplate().setBackground( Color.LIGHT_GRAY );
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (4/4/00 11:24:46 AM)
@@ -631,7 +632,7 @@ private void setCustomized()
  */
 private void setUnCustomized() 
 {
-	getJComboBoxTemplate().setBackground( java.awt.Color.white );
+	getJComboBoxTemplate().setBackground( Color.white );
 	getJLabelCustomized().setForeground( getJLabelCustomized().getBackground() );
 }
 /**
