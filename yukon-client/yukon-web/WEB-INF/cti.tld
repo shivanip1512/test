@@ -76,7 +76,8 @@
 	</attribute>
   </tag>
   
-    <tag>
+  <!- Start of user/role/roleproperty tags -->
+  <tag>
   	<name>checklogin</name>
 	<tagclass>com.cannontech.web.taglib.CheckLoginTag</tagclass>		
   </tag>
@@ -122,33 +123,12 @@
   </tag>
   
    <tag>
-  	<name>property</name>
+  	<name>getProperty</name>
 	<tagclass>com.cannontech.web.taglib.RoleProperty</tagclass>	
 	<attribute>
 		<name>propertyid</name>
 		<required>true</required>
 		<rtexprvalue>true</rtexprvalue>
 	</attribute>
-  </tag>
-  
-  <tag>
-  	<name>getProperty</name>
-  	<tagclass>com.cannontech.stars.web.taglib.GetPropertyTag</tagclass>
-  	<attribute>
-  		<name>file</name>
-  		<required>true</required>
-  		<rtexprvalue>true</rtexprvalue>
-  	</attribute>
-  	<attribute>
-  		<name>name</name>
-  		<required>true</required>
-  		<rtexprvalue>true</rtexprvalue>
-  	</attribute>
-  	<attribute>
-  		<name>format</name>
-  		<required>false</required>
-  		<rtexprvalue>false</rtexprvalue>
-  	</attribute>
-  </tag>
-  
+  </tag>  
 </taglib>
