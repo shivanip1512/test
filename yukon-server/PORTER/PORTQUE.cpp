@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTQUE.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2002/08/16 13:02:45 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2002/08/28 16:19:52 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -864,7 +864,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDevice *Dev, OUTMESS *OutMessage)
                 }
                 /* this is a completed result so send it to originating process */
                 ResultMessage.EventCode |= DECODED;
-                if( (SocketError = ResultMessage.ReturnNexus->CTINexusWrite(&ResultMessage, sizeof (ResultMessage), &BytesWritten, 15L)) != NORMAL)
+                if( (SocketError = ResultMessage.ReturnNexus->CTINexusWrite(&ResultMessage, sizeof (ResultMessage), &BytesWritten, 60L)) != NORMAL)
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1133,7 +1133,7 @@ CCUQueueFlush (CtiDeviceBase *Dev)
                     }
 
                     /* send message back to originating process */
-                    if(InMessage.ReturnNexus->CTINexusWrite (&InMessage, sizeof (InMessage), &BytesWritten, 30L) || BytesWritten == 0)
+                    if(InMessage.ReturnNexus->CTINexusWrite (&InMessage, sizeof (InMessage), &BytesWritten, 60L) || BytesWritten == 0)
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1198,7 +1198,7 @@ QueueFlush (CtiDevice *Dev)
                     }
 
                     /* send message back to originating process */
-                    if(InMessage.ReturnNexus->CTINexusWrite(&InMessage, sizeof (InMessage), &BytesWritten, 15L) || BytesWritten == 0)
+                    if(InMessage.ReturnNexus->CTINexusWrite(&InMessage, sizeof (InMessage), &BytesWritten, 60L) || BytesWritten == 0)
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1725,7 +1725,7 @@ DeQueue (INMESS *InMessage)
                         }
 
                         /* Now send it back */
-                        if((SocketError = ResultMessage.ReturnNexus->CTINexusWrite (&ResultMessage, sizeof (ResultMessage), &BytesWritten, 15L)))
+                        if((SocketError = ResultMessage.ReturnNexus->CTINexusWrite (&ResultMessage, sizeof (ResultMessage), &BytesWritten, 60L)))
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
