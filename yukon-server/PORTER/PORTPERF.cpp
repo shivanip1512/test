@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTPERF.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/06/03 20:24:12 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/06/03 22:55:03 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -73,7 +73,7 @@
 static CtiStatisticsSet_t   gDeviceStatSet;
 static CtiMutex             gDeviceStatSetMux;
 
-static CtiStatisticsIterator_t statisticsDeviceFind(const LONG paoId);
+static CtiStatisticsIterator_t statisticsPaoFind(const LONG paoId);
 
 /* Thread to copy statistics hourly and clear at midnight */
 VOID PerfThread (VOID *Arg)
@@ -693,7 +693,7 @@ VOID PerfThread (VOID *Arg)
 /* Routine to Update statistics for Ports and Remotes every 5 minutes */
 VOID PerfUpdateThread (PVOID Arg)
 {
-    #define PERFUPDATERATE  30L
+    #define PERFUPDATERATE  300L
 
     ULONG PostCount;
     USHORT i;
@@ -729,40 +729,22 @@ VOID PerfUpdateThread (PVOID Arg)
         }
     }
 
-    if(CTICreateEventSem ("PERFUPDATE", &PerfUpdateSem, 0, FALSE))
-    {
-        printf ("Error Creating Performance Update Semaphore\n");
-        CTIExit (EXIT_PROCESS, -1);
-    }
-
     try
     {
         /* do this as long as we are running */
         for(;!PorterQuit;)
         {
             /* Update Stats on a five minute basis but not on the hour mark.*/
-
-            CTIResetEventSem (PerfUpdateSem, &PostCount);
-
             now = now.now();
 
-            CTIWaitEventSem (PerfUpdateSem, 1000L * (PERFUPDATERATE - (now.seconds() % PERFUPDATERATE)));
-
-            now = now.now();
-
-            if(!(now.seconds() % 3600))
+            if( WAIT_OBJECT_0 == WaitForSingleObject(hPorterEvents[P_QUIT_EVENT], 1000L * (PERFUPDATERATE - (now.seconds() % PERFUPDATERATE))) )
             {
-                continue;
+               PorterQuit = TRUE;
             }
 
-            /* do the ports */
-            // ?????????
-
-            /* Do the remotes */
+            /* Do the statistics */
             statisticsRecord();
         }
-
-        statisticsRecord();
     }
     catch(...)
     {
@@ -779,7 +761,7 @@ VOID PerfUpdateThread (PVOID Arg)
 }
 
 
-CtiStatisticsIterator_t statisticsDeviceFind(const LONG paoId)
+CtiStatisticsIterator_t statisticsPaoFind(const LONG paoId)
 {
     CtiStatisticsIterator_t dstatitr = gDeviceStatSet.end();
 
@@ -830,25 +812,45 @@ CtiStatisticsIterator_t statisticsDeviceFind(const LONG paoId)
 }
 
 
-void statisticsNewRequest(long did)
+void statisticsNewRequest(long paoportid, long paoid)
 {
-    if(did > 0)
-    {
-        CtiLockGuard<CtiMutex> guard(gDeviceStatSetMux);
-        CtiStatisticsIterator_t dStatItr = statisticsDeviceFind( did );
+    CtiLockGuard<CtiMutex> guard(gDeviceStatSetMux);
 
-        if( dStatItr != gDeviceStatSet.end() )
-        {
-            CtiStatistics &dStats = *dStatItr;
-            dStats.incrementRequest( RWTime() );
-        }
+    CtiStatisticsIterator_t dStatItr = statisticsPaoFind( paoportid );
+
+    if( dStatItr != gDeviceStatSet.end() )
+    {
+        CtiStatistics &dStats = *dStatItr;
+        dStats.incrementRequest( RWTime() );
+    }
+
+    dStatItr = statisticsPaoFind( paoid );
+
+    if( dStatItr != gDeviceStatSet.end() )
+    {
+        CtiStatistics &dStats = *dStatItr;
+        dStats.incrementRequest( RWTime() );
     }
 }
 
-void statisticsNewAttempt(long did, int result)
+void statisticsNewAttempt(long paoportid, long paoid, int result)
 {
     CtiLockGuard<CtiMutex> guard(gDeviceStatSetMux);
-    CtiStatisticsIterator_t dStatItr = statisticsDeviceFind( did );
+
+    CtiStatisticsIterator_t dStatItr = statisticsPaoFind( paoportid );
+
+    if( dStatItr != gDeviceStatSet.end() )
+    {
+        CtiStatistics &dStats = *dStatItr;
+
+        if(dStats.resolveFailType(result) == CtiStatistics::CommErrors)
+        {
+            dStats.incrementAttempts( RWTime(), result );
+            dStats.decrementRequest( RWTime() );       // Because I don't want it counted to try again.
+        }
+    }
+
+    dStatItr = statisticsPaoFind( paoid );
 
     if( dStatItr != gDeviceStatSet.end() )
     {
@@ -858,10 +860,19 @@ void statisticsNewAttempt(long did, int result)
     }
 }
 
-void statisticsNewCompletion(long did, int result)
+void statisticsNewCompletion(long paoportid, long paoid, int result)
 {
     CtiLockGuard<CtiMutex> guard(gDeviceStatSetMux);
-    CtiStatisticsIterator_t dStatItr = statisticsDeviceFind( did );
+
+    CtiStatisticsIterator_t dStatItr = statisticsPaoFind( paoportid );
+
+    if( dStatItr != gDeviceStatSet.end() )
+    {
+        CtiStatistics &dStats = *dStatItr;
+        dStats.incrementCompletion( RWTime(), result );
+    }
+
+    dStatItr = statisticsPaoFind( paoid );
 
     if( dStatItr != gDeviceStatSet.end() )
     {
@@ -946,7 +957,7 @@ void statisticsReport( CtiDeviceBase *pDevice )
     CtiPoint *pPoint;
 
     CtiLockGuard<CtiMutex> guard(gDeviceStatSetMux);
-    CtiStatisticsIterator_t dStatItr = statisticsDeviceFind( pDevice->getID() );
+    CtiStatisticsIterator_t dStatItr = statisticsPaoFind( pDevice->getID() );
 
     if( dStatItr != gDeviceStatSet.end() )
     {

@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/INCLUDE/portdecl.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/06/03 20:24:11 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/06/03 22:55:02 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -66,9 +66,9 @@ INT LoadRemoteRoutes (CtiDeviceBase*);
 /* Prototypes from PORTPERF.C */
 VOID PerfThread (PVOID);
 VOID PerfUpdateThread (PVOID);
-void statisticsNewRequest(long did);
-void statisticsNewAttempt(long did, int result);
-void statisticsNewCompletion(long did, int result);
+void statisticsNewRequest(long paoportid, long paoid);
+void statisticsNewAttempt(long paoportid, long paoid, int result);
+void statisticsNewCompletion(long paoportid, long paoid, int result);
 void statisticsReport( CtiDeviceBase *pDevice );
 void statisticsRecord();
 

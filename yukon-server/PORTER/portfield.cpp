@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2002/06/03 20:24:11 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2002/06/03 22:55:02 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -161,11 +161,6 @@ VOID PortThread (VOID *arg)
 
     CtiDeviceBase  *Device = NULL;
 
-    /* Definitons to update statistics */
-    REMOTEPERF     RemotePerf;
-    DEVICEPERF     DevicePerf;
-    ERRSTRUCT      ErrStruct;
-
     CtiPort        *Port = (CtiPort*)arg;
 
     if(Port == NULL)
@@ -260,7 +255,7 @@ VOID PortThread (VOID *arg)
             }
         }
 
-        statisticsNewRequest(OutMessage->DeviceID);
+        statisticsNewRequest(OutMessage->Port, OutMessage->DeviceID);
 
         if(PorterDebugLevel & PORTER_DEBUG_VERBOSE)
         {
@@ -1416,14 +1411,6 @@ INT CommunicateDevice(CtiPort *Port, INMESS *InMessage, OUTMESS *OutMessage, Cti
 
             if(TimeB.dstflag) InMessage->MilliTime |= DSTACTIVE;
 
-            /* Increment the number of times we have talked to this guy */
-#if 0    // 040201 CGP ACH: This is a statistics function!
-            if(OutMessage->Remote != 0xffff)
-            {
-                pInfo->FiveMinuteCount++;
-            }
-#endif
-
             /* !i is a successful return... This is a "post" successful send switch */
             if(!i)
             {
@@ -1690,15 +1677,6 @@ INT CommunicateDevice(CtiPort *Port, INMESS *InMessage, OUTMESS *OutMessage, Cti
             {
                 InMessage->MilliTime |= DSTACTIVE;
             }
-
-            /* Increment the number of times we have talked to this guy */
-
-#if 0    // 040201 CGP ACH: This is a statistics function!
-            if(OutMessage->Remote != 0xffff)
-            {
-                pInfo->FiveMinuteCount++;
-            }
-#endif
 
             if(!i)
             {
@@ -2198,7 +2176,7 @@ INT CheckAndRetryMessage(INT CommResult, CtiPort *Port, INMESS *InMessage, OUTME
 
     if(status == RETRY_SUBMITTED)
     {
-        statisticsNewAttempt( OutMessage->DeviceID, CommResult );
+        statisticsNewAttempt( OutMessage->Port, OutMessage->DeviceID, CommResult );
     }
 
     return status;
@@ -2425,11 +2403,11 @@ INT DoProcessInMessage(INT CommResult, CtiPort *Port, INMESS *InMessage, OUTMESS
     // Statistics processing.
     if(status == RETRY_SUBMITTED)
     {
-        statisticsNewAttempt( InMessage->DeviceID, CommResult );
+        statisticsNewAttempt( InMessage->Port, InMessage->DeviceID, CommResult );
     }
     else
     {
-        statisticsNewCompletion( InMessage->DeviceID, CommResult );
+        statisticsNewCompletion( InMessage->Port, InMessage->DeviceID, CommResult );
     }
 
     return status;

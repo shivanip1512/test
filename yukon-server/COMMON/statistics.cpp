@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/06/03 20:28:57 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/06/03 22:55:03 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -34,7 +34,6 @@ using namespace std;
 #include "statistics.h"
 
 CtiStatistics::CtiStatistics(long id) :
-    _previoustime(RWTime().seconds() - 35 * 86400),
     _restoreworked(false),
     _updateOnNextCompletion(false),
     _pid(id)

@@ -13,8 +13,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2002/06/03 20:24:11 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2002/06/03 22:55:03 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -113,6 +113,7 @@ public:
     void computeYesterdayInterval(pair<RWTime, RWTime> &myinterval);
     void computeMonthInterval(pair<RWTime, RWTime> &myinterval);
     void computeLastMonthInterval(pair<RWTime, RWTime> &myinterval);
+    CtiStatisticsCounters_t resolveFailType( int CompletionStatus ) const;
 
 
 protected:
@@ -141,7 +142,6 @@ private:
 
     RWTime _previoustime;
 
-    CtiStatisticsCounters_t resolveFailType( int CompletionStatus ) const;
     int newHour(const RWTime &newtime, CtiStatisticsCounters_t countertoclean);
     void incrementFail(const RWTime &stattime, CtiStatisticsCounters_t failtype);
     void incrementSuccess(const RWTime &stattime);
