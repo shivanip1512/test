@@ -269,6 +269,9 @@ create unique index YukWbCfg_PK on YukonWebConfiguration (
 
 
 
+update yukonlistentry set listid=0 where entryid=0;
+
+
 delete from yukongrouprole where roleid=-101 or roleid=-102 or roleid=-104;
 delete from yukonuserrole where roleid=-101 or roleid=-102 or roleid=-104;
 delete from yukonrole where roleid=-101 or roleid=-102 or roleid=-104;
