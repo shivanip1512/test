@@ -2035,12 +2035,11 @@ void CtiLMControlAreaStore::doResetThr()
                 }
 
                 setValid(false);
-
                 lastPeriodicDatabaseRefresh = RWDBDateTime();
             }
             else
             {
-                rwRunnable().sleep(500);
+                rwRunnable().sleep(5000);
             }
         }
     }
