@@ -448,6 +448,18 @@ insert into yukongrouprole values (870,-301,-201,-20870,'(none)');
 go
 
 
+
+insert into YukonRoleProperty values(-40172,-400,'Description Program','(none)','Description on the programs details page. If not provided, the descriptions of the published programs will be used.');
+insert into YukonRoleProperty values(-40173,-400,'Description Utility','<<COMPANY_ADDRESS>><br><<PHONE_NUMBER>><<FAX_NUMBER>><<EMAIL>>','Description on the contact us page. The special fields in the default value will be replaced by real information when showing on the web.');
+go
+
+insert into yukongrouprole values (672,-300,-400,-40172,'(none)');
+insert into yukongrouprole values (673,-300,-400,-40173,'(none)');
+go
+
+insert into columntype values (15, 'QualityCount' );
+go
+
 /* @error ignore */
 update billingfileformats set FormatType = 'CADP' where formatid = 1;
 

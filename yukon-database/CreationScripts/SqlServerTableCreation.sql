@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI SqlServer 2000                           */
-/* Created on:     9/18/2003 2:45:42 PM                         */
+/* Created on:     9/19/2003 3:18:37 PM                         */
 /*==============================================================*/
 
 
@@ -1737,6 +1737,7 @@ insert into columntype values (11, 'PointTimeStamp');
 insert into columntype values (12, 'UofM');
 insert into columntype values (13, 'Tags');
 insert into columntype values (14, 'PointImage' );
+insert into columntype values (15, 'QualityCount' );
 
 /*==============================================================*/
 /* Index: Indx_COLUMNTYPE_PK                                    */
@@ -5561,6 +5562,8 @@ insert into yukongrouprole values (657,-300,-400,-40157,'(none)');
 insert into yukongrouprole values (658,-300,-400,-40158,'(none)');
 insert into yukongrouprole values (670,-300,-400,-40170,'(none)');
 insert into yukongrouprole values (671,-300,-400,-40171,'(none)');
+insert into yukongrouprole values (672,-300,-400,-40172,'(none)');
+insert into yukongrouprole values (673,-300,-400,-40173,'(none)');
 insert into yukongrouprole values (680,-300,-400,-40180,'(none)');
 insert into yukongrouprole values (681,-300,-400,-40181,'(none)');
 
@@ -6041,6 +6044,8 @@ insert into YukonRoleProperty values(-40157,-400,'Title Thermostat Schedule','Sc
 insert into YukonRoleProperty values(-40158,-400,'Title Thermostat Manual','Manual','Title of the thermostat manual page');
 insert into YukonRoleProperty values(-40170,-400,'Description General','Thank you for participating in our Consumer Energy Services programs. By participating, you have helped to optimize our delivery of energy, stabilize rates, and reduce energy costs. Best of all, you are saving energy dollars!<br><br>This site is designed to help manage your programs on-line from anywhere with access to a Web browser.','Description on the general page');
 insert into YukonRoleProperty values(-40171,-400,'Description Opt Out','If you would like to temporarily opt out of all programs, select the time frame from the drop-down box below, then select Submit.','Description on the programs opt out page');
+insert into YukonRoleProperty values(-40172,-400,'Description Program','(none)','Description on the programs details page. If not provided, the descriptions of the published programs will be used.');
+insert into YukonRoleProperty values(-40173,-400,'Description Utility','<<COMPANY_ADDRESS>><br><<PHONE_NUMBER>><<FAX_NUMBER>><<EMAIL>>','Description on the contact us page. The special fields in the default value will be replaced by real information when showing on the web.');
 insert into YukonRoleProperty values(-40180,-400,'Image Corner','Mom.jpg','Image at the upper-left corner');
 insert into YukonRoleProperty values(-40181,-400,'Image General','Family.jpg','Image on the general page');
 
