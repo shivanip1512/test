@@ -1,12 +1,13 @@
 package com.cannontech.database.cache.functions;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
+import com.cannontech.clientutils.ActivityLogger;
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.login.radius.RadiusLogin;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
 import com.cannontech.database.cache.DefaultDatabaseCache;
@@ -14,6 +15,7 @@ import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.roles.yukon.RadiusRole;
 
 /**
  * A collection of methods to handle authenticating, authorization, and the retrieval of role property values.
@@ -30,18 +32,26 @@ public class AuthFuncs {
 	 */
 	public static LiteYukonUser login(String username, String password) {
 		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
-		
-		synchronized(cache) {
-			Iterator i = cache.getAllYukonUsers().iterator();
-			while(i.hasNext()) {
-				LiteYukonUser u = (LiteYukonUser) i.next();
-				if( CtiUtilities.isEnabled(u.getStatus()) &&
-					u.getUsername().equals(username) &&
-				    u.getPassword().equals(password) ) {
-				   	return u;  //success!
-				   }
-			}			
-			return null; //failure
+		String radiusAddr = RoleFuncs.getGlobalPropertyValue(RadiusRole.RADIUS_SERVER_ADDRESS);
+		if( !radiusAddr.equalsIgnoreCase("(none)"))	//value is something other than '(none)'
+		{
+			CTILogger.info("Attempting a RADIUS login");
+			return RadiusLogin.login(username, password);
+		}
+		else
+		{
+			synchronized(cache) {
+				Iterator i = cache.getAllYukonUsers().iterator();
+				while(i.hasNext()) {
+					LiteYukonUser u = (LiteYukonUser) i.next();
+					if( CtiUtilities.isEnabled(u.getStatus()) &&
+						u.getUsername().equals(username) &&
+					    u.getPassword().equals(password) ) {
+					   	return u;  //success!
+					   }
+				}			
+				return null; //failure
+			}
 		}
 	}
 		
