@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2004/07/21 19:47:07 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2004/12/01 20:11:04 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1134,6 +1134,14 @@ INT CtiProtocolExpresscom::assemblePutConfig(CtiCommandParser &parse, CtiOutMess
                             fanstate,
                             sysstate,
                             delay);
+    }
+
+    if(parse.isKeyValid("ovuv"))
+    {
+        BYTE action = 0x01;
+        BYTE subaction = 0x03 + parse.getiValue("ovuv");
+
+        status = capControl( action, subaction );
     }
 
 

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.44 $
-* DATE         :  $Date: 2004/10/22 16:39:03 $
+* REVISION     :  $Revision: 1.45 $
+* DATE         :  $Date: 2004/12/01 20:11:03 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -527,6 +527,10 @@ INT resolveDeviceType(RWCString rwsTemp)
     else if(rwsTemp == "cbc versacom")
     {
         nRet = TYPEVERSACOMCBC;
+    }
+    else if(rwsTemp == "cbc expresscom")
+    {
+        nRet = TYPEEXPRESSCOMCBC;
     }
     else if(rwsTemp == "cbc fp-2800")
     {
@@ -1076,6 +1080,7 @@ bool resolveIsDeviceTypeSingle(INT Type)
         }
     case TYPE_SYSTEM:
     case TYPEVERSACOMCBC:
+    case TYPEEXPRESSCOMCBC:
     case TYPEFISHERPCBC:
     case TYPE_LMGROUP_EMETCON:
     case TYPE_LMGROUP_POINT:

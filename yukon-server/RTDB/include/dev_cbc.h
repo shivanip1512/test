@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_cbc.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/03/13 19:36:10 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2004/12/01 20:11:20 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -26,52 +26,59 @@ class IM_EX_DEVDB CtiDeviceCBC : public CtiDeviceBase
 {
 protected:
 
-   CtiTableDeviceCBC _cbc;
-   static int        _cbcTries;
+    CtiTableDeviceCBC _cbc;
+    static int        _cbcTries;
 
 private:
 
-public:
+    public:
 
-   typedef CtiDeviceBase Inherited;
+    typedef CtiDeviceBase Inherited;
 
-   CtiDeviceCBC();
-   CtiDeviceCBC(const CtiDeviceCBC& aRef);
-   virtual ~CtiDeviceCBC();
+    CtiDeviceCBC();
+    CtiDeviceCBC(const CtiDeviceCBC& aRef);
+    virtual ~CtiDeviceCBC();
 
-   CtiDeviceCBC& operator=(const CtiDeviceCBC& aRef);
-   CtiTableDeviceCBC   getCBC() const;
-   CtiTableDeviceCBC&  getCBC();
-   CtiDeviceCBC&     setCBC(const CtiTableDeviceCBC& aRef);
+    CtiDeviceCBC& operator=(const CtiDeviceCBC& aRef);
+    CtiTableDeviceCBC   getCBC() const;
+    CtiTableDeviceCBC&  getCBC();
+    CtiDeviceCBC&     setCBC(const CtiTableDeviceCBC& aRef);
 
-   int getCBCRetries(void);
+    int getCBCRetries(void);
 
-   virtual LONG getRouteID();
-   virtual RWCString getDescription(const CtiCommandParser & parse) const;
-   virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
-   virtual void DecodeDatabaseReader(RWDBReader &rdr);
+    virtual LONG getRouteID();
+    virtual RWCString getDescription(const CtiCommandParser & parse) const;
+    virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
+    virtual void DecodeDatabaseReader(RWDBReader &rdr);
 
-   virtual INT ExecuteRequest(CtiRequestMsg                  *pReq,
-                              CtiCommandParser               &parse,
-                              OUTMESS                        *&OutMessage,
-                              RWTPtrSlist< CtiMessage >      &vgList,
-                              RWTPtrSlist< CtiMessage >      &retList,
-                              RWTPtrSlist< OUTMESS >         &outList);
+    virtual INT ExecuteRequest(CtiRequestMsg                  *pReq,
+                               CtiCommandParser               &parse,
+                               OUTMESS                        *&OutMessage,
+                               RWTPtrSlist< CtiMessage >      &vgList,
+                               RWTPtrSlist< CtiMessage >      &retList,
+                               RWTPtrSlist< OUTMESS >         &outList);
 
 
-   INT executeFisherPierceCBC(CtiRequestMsg                  *pReq,
-                              CtiCommandParser               &parse,
-                              OUTMESS                        *&OutMessage,
-                              RWTPtrSlist< CtiMessage >      &vgList,
-                              RWTPtrSlist< CtiMessage >      &retList,
-                              RWTPtrSlist< OUTMESS >         &outList);
+    INT executeFisherPierceCBC(CtiRequestMsg                  *pReq,
+                               CtiCommandParser               &parse,
+                               OUTMESS                        *&OutMessage,
+                               RWTPtrSlist< CtiMessage >      &vgList,
+                               RWTPtrSlist< CtiMessage >      &retList,
+                               RWTPtrSlist< OUTMESS >         &outList);
 
-   INT executeVersacomCBC(CtiRequestMsg                  *pReq,
-                          CtiCommandParser               &parse,
-                          OUTMESS                        *&OutMessage,
-                          RWTPtrSlist< CtiMessage >      &vgList,
-                          RWTPtrSlist< CtiMessage >      &retList,
-                          RWTPtrSlist< OUTMESS >         &outList);
+    INT executeVersacomCBC(CtiRequestMsg                  *pReq,
+                           CtiCommandParser               &parse,
+                           OUTMESS                        *&OutMessage,
+                           RWTPtrSlist< CtiMessage >      &vgList,
+                           RWTPtrSlist< CtiMessage >      &retList,
+                           RWTPtrSlist< OUTMESS >         &outList);
+
+    INT executeExpresscomCBC(CtiRequestMsg                  *pReq,
+                             CtiCommandParser               &parse,
+                             OUTMESS                        *&OutMessage,
+                             RWTPtrSlist< CtiMessage >      &vgList,
+                             RWTPtrSlist< CtiMessage >      &retList,
+                             RWTPtrSlist< OUTMESS >         &outList);
 
 
 };

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2003/03/13 19:35:52 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2004/12/01 20:11:04 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -47,7 +47,7 @@ CtiDeviceCBC::CtiDeviceCBC()
 
 LONG CtiDeviceCBC::getRouteID()      // Must be defined!
 {
-   return _cbc.getRouteID();
+    return _cbc.getRouteID();
 }
 
 
@@ -88,26 +88,31 @@ INT CtiDeviceCBC::ExecuteRequest(CtiRequestMsg                  *pReq,
                                  RWTPtrSlist< CtiMessage >      &retList,
                                  RWTPtrSlist< OUTMESS >         &outList)
 {
-   INT nRet = NoMethod;
+    INT nRet = NoMethod;
 
-   //  make sure we keep trying
-   OutMessage->Retry = getCBCRetries();
+    //  make sure we keep trying
+    OutMessage->Retry = getCBCRetries();
 
-   switch(getType())
-   {
-   case TYPEVERSACOMCBC:
-      {
-         nRet = executeVersacomCBC(pReq, parse, OutMessage, vgList, retList, outList);
-         break;
-      }
-   case TYPEFISHERPCBC:
-      {
-         nRet = executeFisherPierceCBC(pReq, parse, OutMessage, vgList, retList, outList);
-         break;
-      }
-   }
+    switch(getType())
+    {
+    case TYPEVERSACOMCBC:
+        {
+            nRet = executeVersacomCBC(pReq, parse, OutMessage, vgList, retList, outList);
+            break;
+        }
+    case TYPEEXPRESSCOMCBC:
+        {
+            nRet = executeExpresscomCBC(pReq, parse, OutMessage, vgList, retList, outList);
+            break;
+        }
+    case TYPEFISHERPCBC:
+        {
+            nRet = executeFisherPierceCBC(pReq, parse, OutMessage, vgList, retList, outList);
+            break;
+        }
+    }
 
-   return nRet;
+    return nRet;
 }
 
 INT CtiDeviceCBC::executeFisherPierceCBC(CtiRequestMsg                  *pReq,
@@ -117,29 +122,29 @@ INT CtiDeviceCBC::executeFisherPierceCBC(CtiRequestMsg                  *pReq,
                                          RWTPtrSlist< CtiMessage >      &retList,
                                          RWTPtrSlist< OUTMESS >         &outList)
 {
-   INT   nRet = NoError;
-   RWCString resultString;
-   int   address;
+    INT   nRet = NoError;
+    RWCString resultString;
+    int   address;
 
-   CtiRouteSPtr Route;
-   CtiPoint *pPoint = NULL;
-   /*
-    *  This method should only be called by the dev_base method
-    *   ExecuteRequest(CtiReturnMsg*) (NOTE THE DIFFERENCE IN ARGS)
-    *   That method prepares an outmessage for submission to the internals..
-    */
+    CtiRouteSPtr Route;
+    CtiPoint *pPoint = NULL;
+    /*
+     *  This method should only be called by the dev_base method
+     *   ExecuteRequest(CtiReturnMsg*) (NOTE THE DIFFERENCE IN ARGS)
+     *   That method prepares an outmessage for submission to the internals..
+     */
 
-   if( (Route = getRoute( getRouteID() )) )    // This is "this's" route
-   {
-      memset(&(OutMessage->Buffer.FPSt), 0, sizeof(FPSTRUCT));
+    if( (Route = getRoute( getRouteID() )) )    // This is "this's" route
+    {
+        memset(&(OutMessage->Buffer.FPSt), 0, sizeof(FPSTRUCT));
 
-      if( (address = getCBC().getSerial()) < 0 )
-      {
-          //  group addressing is specified by a negative serial number
-          address *= -1;
+        if( (address = getCBC().getSerial()) < 0 )
+        {
+            //  group addressing is specified by a negative serial number
+            address *= -1;
 
-          if( address > 9999 )
-          {
+            if( address > 9999 )
+            {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -147,107 +152,107 @@ INT CtiDeviceCBC::executeFisherPierceCBC(CtiRequestMsg                  *pReq,
                 }
 
                 address %= 10000;
-          }
+            }
 
-          sprintf((CHAR*)OutMessage->Buffer.FPSt.u.PCC.ADDRS, "0000000" );
-          sprintf((CHAR*)OutMessage->Buffer.FPSt.u.PCC.GRP, "%04d", address );
-      }
-      else
-      {
-          //  otherwise, just address by serial number
-          sprintf((CHAR*)OutMessage->Buffer.FPSt.u.PCC.ADDRS, "%07d", address );
-          sprintf((CHAR*)OutMessage->Buffer.FPSt.u.PCC.GRP, "0000");
-      }
+            sprintf((CHAR*)OutMessage->Buffer.FPSt.u.PCC.ADDRS, "0000000" );
+            sprintf((CHAR*)OutMessage->Buffer.FPSt.u.PCC.GRP, "%04d", address );
+        }
+        else
+        {
+            //  otherwise, just address by serial number
+            sprintf((CHAR*)OutMessage->Buffer.FPSt.u.PCC.ADDRS, "%07d", address );
+            sprintf((CHAR*)OutMessage->Buffer.FPSt.u.PCC.GRP, "0000");
+        }
 
 
-      /*
-       *  The FISHERPIERCE tag is CRITICAL in that it indicates to the subsequent stages which
-       *  control path to take with this OutMessage!
-       */
-      OutMessage->EventCode = ENCODED | FISHERPIERCE | NORESULT;
+        /*
+         *  The FISHERPIERCE tag is CRITICAL in that it indicates to the subsequent stages which
+         *  control path to take with this OutMessage!
+         */
+        OutMessage->EventCode = ENCODED | FISHERPIERCE | NORESULT;
 
-      /*
-       * OK, these are the items we are about to set out to perform..  Any additional signals will
-       * be added into the list upon completion of the Execute!
-       */
-      if(parse.getActionItems().entries() == 1)
-      {
-         pPoint = getDevicePointOffsetTypeEqual(1, StatusPointType);
+        /*
+         * OK, these are the items we are about to set out to perform..  Any additional signals will
+         * be added into the list upon completion of the Execute!
+         */
+        if(parse.getActionItems().entries() == 1)
+        {
+            pPoint = getDevicePointOffsetTypeEqual(1, StatusPointType);
 
-         if(pPoint != NULL)
-         {
-            double val = (parse.getFlags() & CMD_FLAG_CTL_OPEN) ? (double)OPENED : (double)CLOSED;
+            if(pPoint != NULL)
+            {
+                double val = (parse.getFlags() & CMD_FLAG_CTL_OPEN) ? (double)OPENED : (double)CLOSED;
 
-            resultString = "CBC Control ";
+                resultString = "CBC Control ";
 
-            if( val == ((double)OPENED) )
-                resultString += "OPENED";
+                if( val == ((double)OPENED) )
+                    resultString += "OPENED";
+                else
+                    resultString += "CLOSED";
+
+                vgList.insert(CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), val, NormalQuality, 0, resultString));
+            }
             else
-                resultString += "CLOSED";
+            {
+                RWCString actn = parse.getActionItems()[0];
+                RWCString desc = getDescription(parse);
 
-            vgList.insert(CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), val, NormalQuality, 0, resultString));
-         }
-         else
-         {
-            RWCString actn = parse.getActionItems()[0];
-            RWCString desc = getDescription(parse);
+                vgList.insert(CTIDBG_new CtiSignalMsg(SYS_PID_CAPCONTROL, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
+            }
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
 
-            vgList.insert(CTIDBG_new CtiSignalMsg(SYS_PID_CAPCONTROL, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
-         }
-      }
-      else
-      {
-         CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-      }
+        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr), Route->getName(), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
+        // Start the control request on its route(s)
+        if( (nRet = Route->ExecuteRequest(pReq, parse, OutMessage, vgList, retList, outList)) )
+        {
+            resultString = "ERROR " + CtiNumStr(nRet).spad(3) + " performing command on route " + Route->getName();
+            pRet->setStatus(nRet);
+            pRet->setResultString(resultString);
+            retList.insert( pRet );
+        }
+        else
+        {
+            delete pRet;
+        }
+    }
+    else
+    {
+        nRet = BADROUTE;
 
-      CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr), Route->getName(), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
-      // Start the control request on its route(s)
-      if( (nRet = Route->ExecuteRequest(pReq, parse, OutMessage, vgList, retList, outList)) )
-      {
-          resultString = "ERROR " + CtiNumStr(nRet).spad(3) + " performing command on route " + Route->getName();
-          pRet->setStatus(nRet);
-          pRet->setResultString(resultString);
-          retList.insert( pRet );
-      }
-      else
-      {
-          delete pRet;
-      }
-   }
-   else
-   {
-      nRet = BADROUTE;
+        resultString = " ERROR: Route or Route Transmitter not available for CBC device " + getName();
 
-      resultString = " ERROR: Route or Route Transmitter not available for CBC device " + getName();
+        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(),
+                                                     RWCString(OutMessage->Request.CommandStr),
+                                                     resultString,
+                                                     nRet,
+                                                     OutMessage->Request.RouteID,
+                                                     OutMessage->Request.MacroOffset,
+                                                     OutMessage->Request.Attempt,
+                                                     OutMessage->Request.TrxID,
+                                                     OutMessage->Request.UserID,
+                                                     OutMessage->Request.SOE,
+                                                     RWOrdered());
 
-      CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(),
-                                            RWCString(OutMessage->Request.CommandStr),
-                                            resultString,
-                                            nRet,
-                                            OutMessage->Request.RouteID,
-                                            OutMessage->Request.MacroOffset,
-                                            OutMessage->Request.Attempt,
-                                            OutMessage->Request.TrxID,
-                                            OutMessage->Request.UserID,
-                                            OutMessage->Request.SOE,
-                                            RWOrdered());
+        retList.insert( pRet );
 
-      retList.insert( pRet );
+        if(OutMessage)
+        {
+            delete OutMessage;
+            OutMessage = NULL;
+        }
 
-      if(OutMessage)
-      {
-         delete OutMessage;
-         OutMessage = NULL;
-      }
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << resultString << endl;
+        }
+    }
 
-      {
-         CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << resultString << endl;
-      }
-   }
-
-   return nRet;
+    return nRet;
 }
 
 
@@ -258,116 +263,116 @@ INT CtiDeviceCBC::executeVersacomCBC(CtiRequestMsg                  *pReq,
                                      RWTPtrSlist< CtiMessage >      &retList,
                                      RWTPtrSlist< OUTMESS >         &outList)
 {
-   INT   nRet = NoError;
-   RWCString resultString;
+    INT   nRet = NoError;
+    RWCString resultString;
 
-   CtiRouteSPtr Route;
-   CtiPoint *pPoint = NULL;
-   /*
-    *  This method should only be called by the dev_base method
-    *   ExecuteRequest(CtiReturnMsg*) (NOTE THE DIFFERENCE IN ARGS)
-    *   That method prepares an outmessage for submission to the internals..
-    */
+    CtiRouteSPtr Route;
+    CtiPoint *pPoint = NULL;
+    /*
+     *  This method should only be called by the dev_base method
+     *   ExecuteRequest(CtiReturnMsg*) (NOTE THE DIFFERENCE IN ARGS)
+     *   That method prepares an outmessage for submission to the internals..
+     */
 
-   if( (Route = getRoute( getRouteID() )) )    // This is "this's" route
-   {
-      memset(&(OutMessage->Buffer.VSt), 0, sizeof(VSTRUCT));
+    if( (Route = getRoute( getRouteID() )) )    // This is "this's" route
+    {
+        memset(&(OutMessage->Buffer.VSt), 0, sizeof(VSTRUCT));
 
-      OutMessage->Buffer.VSt.Address       = _cbc.getSerial();
+        OutMessage->Buffer.VSt.Address       = _cbc.getSerial();
 
-      /*
-       *  The VERSACOM tag is CRITICAL in that it indicates to the subsequent stages which
-       *  control path to take with this OutMessage!
-       */
-      OutMessage->EventCode    = VERSACOM | NORESULT;
+        /*
+         *  The VERSACOM tag is CRITICAL in that it indicates to the subsequent stages which
+         *  control path to take with this OutMessage!
+         */
+        OutMessage->EventCode    = VERSACOM | NORESULT;
 
-      /*
-       * OK, these are the items we are about to set out to perform..  Any additional signals will
-       * be added into the list upon completion of the Execute!
-       */
-      if(parse.getActionItems().entries() == 1)
-      {
-         pPoint = getDevicePointOffsetTypeEqual(1, StatusPointType);
+        /*
+         * OK, these are the items we are about to set out to perform..  Any additional signals will
+         * be added into the list upon completion of the Execute!
+         */
+        if(parse.getActionItems().entries() == 1)
+        {
+            pPoint = getDevicePointOffsetTypeEqual(1, StatusPointType);
 
-         if(pPoint != NULL)
-         {
-             RWCString resultString;
-             double val = (parse.getFlags() & CMD_FLAG_CTL_OPEN) ? (double)OPENED : (double)CLOSED;
+            if(pPoint != NULL)
+            {
+                RWCString resultString;
+                double val = (parse.getFlags() & CMD_FLAG_CTL_OPEN) ? (double)OPENED : (double)CLOSED;
 
-            resultString = "CBC Control ";
-            if( val == ((double)OPENED) )
-                resultString += "OPENED";
+                resultString = "CBC Control ";
+                if( val == ((double)OPENED) )
+                    resultString += "OPENED";
+                else
+                    resultString += "CLOSED";
+
+                vgList.insert(CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), val, NormalQuality, 0, resultString));
+            }
             else
-                resultString += "CLOSED";
+            {
+                RWCString actn = parse.getActionItems()[0];
+                RWCString desc = getDescription(parse);
 
-            vgList.insert(CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), val, NormalQuality, 0, resultString));
-         }
-         else
-         {
-            RWCString actn = parse.getActionItems()[0];
-            RWCString desc = getDescription(parse);
+                vgList.insert(CTIDBG_new CtiSignalMsg(SYS_PID_CAPCONTROL, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
+            }
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
 
-            vgList.insert(CTIDBG_new CtiSignalMsg(SYS_PID_CAPCONTROL, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
-         }
-      }
-      else
-      {
-         CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-      }
+        /*
+         *  Form up the reply here since the ExecuteRequest funciton will consume the
+         *  OutMessage.
+         */
+        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr), Route->getName(), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
+        // Start the control request on its route(s)
+        if( (nRet = Route->ExecuteRequest(pReq, parse, OutMessage, vgList, retList, outList)) )
+        {
+            resultString = "ERROR " + CtiNumStr(nRet).spad(3) + " performing command on route " + Route->getName();
 
-      /*
-       *  Form up the reply here since the ExecuteRequest funciton will consume the
-       *  OutMessage.
-       */
-      CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr), Route->getName(), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
-      // Start the control request on its route(s)
-      if( (nRet = Route->ExecuteRequest(pReq, parse, OutMessage, vgList, retList, outList)) )
-      {
-          resultString = "ERROR " + CtiNumStr(nRet).spad(3) + " performing command on route " + Route->getName();
+            pRet->setStatus(nRet);
+            pRet->setResultString(resultString);
+            retList.insert( pRet );
+        }
+        else
+        {
+            delete pRet;
+        }
+    }
+    else
+    {
+        nRet = BADROUTE;
 
-          pRet->setStatus(nRet);
-          pRet->setResultString(resultString);
-          retList.insert( pRet );
-      }
-      else
-      {
-          delete pRet;
-      }
-   }
-   else
-   {
-      nRet = BADROUTE;
+        resultString = " ERROR: Route or Route Transmitter not available for CBC device " + getName();
 
-      resultString = " ERROR: Route or Route Transmitter not available for CBC device " + getName();
+        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(),
+                                                     RWCString(OutMessage->Request.CommandStr),
+                                                     resultString,
+                                                     nRet,
+                                                     OutMessage->Request.RouteID,
+                                                     OutMessage->Request.MacroOffset,
+                                                     OutMessage->Request.Attempt,
+                                                     OutMessage->Request.TrxID,
+                                                     OutMessage->Request.UserID,
+                                                     OutMessage->Request.SOE,
+                                                     RWOrdered());
 
-      CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(),
-                                            RWCString(OutMessage->Request.CommandStr),
-                                            resultString,
-                                            nRet,
-                                            OutMessage->Request.RouteID,
-                                            OutMessage->Request.MacroOffset,
-                                            OutMessage->Request.Attempt,
-                                            OutMessage->Request.TrxID,
-                                            OutMessage->Request.UserID,
-                                            OutMessage->Request.SOE,
-                                            RWOrdered());
+        retList.insert( pRet );
 
-      retList.insert( pRet );
+        if(OutMessage)
+        {
+            delete OutMessage;
+            OutMessage = NULL;
+        }
 
-      if(OutMessage)
-      {
-         delete OutMessage;
-         OutMessage = NULL;
-      }
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << resultString << endl;
+        }
+    }
 
-      {
-         CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << resultString << endl;
-      }
-   }
-
-   return nRet;
+    return nRet;
 }
 
 /*****************************************************************************
@@ -376,50 +381,58 @@ INT CtiDeviceCBC::executeVersacomCBC(CtiRequestMsg                  *pReq,
  *****************************************************************************/
 RWCString CtiDeviceCBC::getDescription(const CtiCommandParser & parse) const
 {
-   RWCString tmp;
+    RWCString tmp;
 
-   tmp = "CBC Device: " + getName() + " SN: " + CtiNumStr(_cbc.getSerial());
+    tmp = "CBC Device: " + getName() + " SN: " + CtiNumStr(_cbc.getSerial());
 
-   return tmp;
+    return tmp;
 }
 
 
 CtiDeviceCBC::CtiDeviceCBC(const CtiDeviceCBC& aRef)
 {
-   *this = aRef;
+    *this = aRef;
 }
 
-CtiDeviceCBC::~CtiDeviceCBC() {}
+CtiDeviceCBC::~CtiDeviceCBC()
+{
+}
 
 CtiDeviceCBC& CtiDeviceCBC::operator=(const CtiDeviceCBC& aRef)
 {
-   if(this != &aRef)
-   {
-      Inherited::operator=(aRef);
+    if(this != &aRef)
+    {
+        Inherited::operator=(aRef);
 
-      _cbc = aRef.getCBC();
-   }
-   return *this;
+        _cbc = aRef.getCBC();
+    }
+    return *this;
 }
 
-CtiTableDeviceCBC   CtiDeviceCBC::getCBC() const      { return _cbc; }
-CtiTableDeviceCBC&  CtiDeviceCBC::getCBC()            { return _cbc; }
+CtiTableDeviceCBC   CtiDeviceCBC::getCBC() const
+{
+    return _cbc;
+}
+CtiTableDeviceCBC&  CtiDeviceCBC::getCBC()
+{
+    return _cbc;
+}
 
 CtiDeviceCBC&     CtiDeviceCBC::setCBC(const CtiTableDeviceCBC& aRef)
 {
-   _cbc = aRef;
-   return *this;
+    _cbc = aRef;
+    return *this;
 }
 
 void CtiDeviceCBC::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
-   Inherited::getSQL(db, keyTable, selector);
-   CtiTableDeviceCBC::getSQL(db, keyTable, selector);
+    Inherited::getSQL(db, keyTable, selector);
+    CtiTableDeviceCBC::getSQL(db, keyTable, selector);
 }
 
 void CtiDeviceCBC::DecodeDatabaseReader(RWDBReader &rdr)
 {
-   Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
+    Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
 
     if( getDebugLevel() & 0x0800 )
     {
@@ -427,10 +440,122 @@ void CtiDeviceCBC::DecodeDatabaseReader(RWDBReader &rdr)
         dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-   _cbc.DecodeDatabaseReader(rdr);
+    _cbc.DecodeDatabaseReader(rdr);
 }
 
 
+INT CtiDeviceCBC::executeExpresscomCBC(CtiRequestMsg                  *pReq,
+                                       CtiCommandParser               &parse,
+                                       OUTMESS                        *&OutMessage,
+                                       RWTPtrSlist< CtiMessage >      &vgList,
+                                       RWTPtrSlist< CtiMessage >      &retList,
+                                       RWTPtrSlist< OUTMESS >         &outList)
+{
+    INT   nRet = NoError;
+    RWCString resultString;
+
+    CtiRouteSPtr Route;
+    CtiPoint *pPoint = NULL;
+    /*
+     *  This method should only be called by the dev_base method
+     *   ExecuteRequest(CtiReturnMsg*) (NOTE THE DIFFERENCE IN ARGS)
+     *   That method prepares an outmessage for submission to the internals..
+     */
+
+    if( (Route = getRoute( getRouteID() )) )    // This is "this's" route
+    {
+        parse.setValue("type", ProtocolExpresscomType);
+        parse.setValue("xc_serial", _cbc.getSerial());
+
+        memset(&(OutMessage->Buffer.VSt), 0, sizeof(VSTRUCT));
+        OutMessage->EventCode = NORESULT;
+
+        /*
+         * OK, these are the items we are about to set out to perform..  Any additional signals will
+         * be added into the list upon completion of the Execute!
+         */
+        if(parse.getActionItems().entries() == 1)
+        {
+            pPoint = getDevicePointOffsetTypeEqual(1, StatusPointType);
+
+            if(pPoint != NULL)
+            {
+                RWCString resultString;
+                double val = (parse.getFlags() & CMD_FLAG_CTL_OPEN) ? (double)OPENED : (double)CLOSED;
+
+                resultString = "CBC Control ";
+                if( val == ((double)OPENED) ) resultString += "OPENED";
+                else resultString += "CLOSED";
+
+                vgList.insert(CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), val, NormalQuality, 0, resultString));
+            }
+            else
+            {
+                RWCString actn = parse.getActionItems()[0];
+                RWCString desc = getDescription(parse);
+
+                vgList.insert(CTIDBG_new CtiSignalMsg(SYS_PID_CAPCONTROL, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
+            }
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+
+        /*
+         *  Form up the reply here since the ExecuteRequest funciton will consume the
+         *  OutMessage.
+         */
+        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr), Route->getName(), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
+        // Start the control request on its route(s)
+        if( (nRet = Route->ExecuteRequest(pReq, parse, OutMessage, vgList, retList, outList)) )
+        {
+            resultString = "ERROR " + CtiNumStr(nRet).spad(3) + " performing command on route " + Route->getName();
+
+            pRet->setStatus(nRet);
+            pRet->setResultString(resultString);
+            retList.insert( pRet );
+        }
+        else
+        {
+            delete pRet;
+        }
+    }
+    else
+    {
+        nRet = BADROUTE;
+
+        resultString = " ERROR: Route or Route Transmitter not available for CBC device " + getName();
+
+        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(),
+                                                     RWCString(OutMessage->Request.CommandStr),
+                                                     resultString,
+                                                     nRet,
+                                                     OutMessage->Request.RouteID,
+                                                     OutMessage->Request.MacroOffset,
+                                                     OutMessage->Request.Attempt,
+                                                     OutMessage->Request.TrxID,
+                                                     OutMessage->Request.UserID,
+                                                     OutMessage->Request.SOE,
+                                                     RWOrdered());
+
+        retList.insert( pRet );
+
+        if(OutMessage)
+        {
+            delete OutMessage;
+            OutMessage = NULL;
+        }
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << resultString << endl;
+        }
+    }
+
+    return nRet;
+}
 
 
 
