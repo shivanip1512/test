@@ -123,34 +123,34 @@ insert into pointalarming values(2600000,'','NNN
 
 
 /* pointid, uofmid, decimalplaces, highreasonabilitylimit, lowreasonabilitylimit */
-insert into pointunit values(100000,3,3,0,0);
-insert into pointunit values(200000,3,3,0,0);
-insert into pointunit values(300000,3,3,0,0);
-insert into pointunit values(400000,3,3,0,0);
-insert into pointunit values(500000,3,3,0,0);
-insert into pointunit values(600000,3,3,0,0);
-insert into pointunit values(700000,3,3,0,0);
-insert into pointunit values(800000,3,3,0,0);
-insert into pointunit values(900000,3,3,0,0);
-insert into pointunit values(1000000,3,3,0,0);
-insert into pointunit values(1100000,3,3,0,0);
-insert into pointunit values(1200000,3,3,0,0);
-insert into pointunit values(1300000,3,3,0,0);
+insert into pointunit values(100000,3,3,1.0E30,-1.0E30);
+insert into pointunit values(200000,3,3,1.0E30,-1.0E30);
+insert into pointunit values(300000,3,3,1.0E30,-1.0E30);
+insert into pointunit values(400000,3,3,1.0E30,-1.0E30);
+insert into pointunit values(500000,3,3,1.0E30,-1.0E30);
+insert into pointunit values(600000,3,3,1.0E30,-1.0E30);
+insert into pointunit values(700000,3,3,1.0E30,-1.0E30);
+insert into pointunit values(800000,3,3,1.0E30,-1.0E30);
+insert into pointunit values(900000,3,3,1.0E30,-1.0E30);
+insert into pointunit values(1000000,3,3,1.0E30,-1.0E30);
+insert into pointunit values(1100000,3,3,1.0E30,-1.0E30);
+insert into pointunit values(1200000,3,3,1.0E30,-1.0E30);
+insert into pointunit values(1300000,3,3,1.0E30,-1.0E30);
 
 
-insert into pointunit values(1400000,0,3,0,0);
-insert into pointunit values(1500000,0,3,0,0);
-insert into pointunit values(1600000,0,3,0,0);
-insert into pointunit values(1700000,0,3,0,0);
-insert into pointunit values(1800000,0,3,0,0);
-insert into pointunit values(1900000,0,3,0,0);
-insert into pointunit values(2000000,0,3,0,0);
-insert into pointunit values(2100000,0,3,0,0);
-insert into pointunit values(2200000,0,3,0,0);
-insert into pointunit values(2300000,0,3,0,0);
-insert into pointunit values(2400000,0,3,0,0);
-insert into pointunit values(2500000,0,3,0,0);
-insert into pointunit values(2600000,0,3,0,0);
+insert into pointunit values(1400000,0,3,1.0E30,-1.0E30);
+insert into pointunit values(1500000,0,3,1.0E30,-1.0E30);
+insert into pointunit values(1600000,0,3,1.0E30,-1.0E30);
+insert into pointunit values(1700000,0,3,1.0E30,-1.0E30);
+insert into pointunit values(1800000,0,3,1.0E30,-1.0E30);
+insert into pointunit values(1900000,0,3,1.0E30,-1.0E30);
+insert into pointunit values(2000000,0,3,1.0E30,-1.0E30);
+insert into pointunit values(2100000,0,3,1.0E30,-1.0E30);
+insert into pointunit values(2200000,0,3,1.0E30,-1.0E30);
+insert into pointunit values(2300000,0,3,1.0E30,-1.0E30);
+insert into pointunit values(2400000,0,3,1.0E30,-1.0E30);
+insert into pointunit values(2500000,0,3,1.0E30,-1.0E30);
+insert into pointunit values(2600000,0,3,1.0E30,-1.0E30);
 
 
 /* pointid, deadband, transducertype, multiplier, dataoffset */
@@ -671,4 +671,276 @@ insert into ccfeedersubassignment values(40300000,30700000,2);
 insert into ccfeedersubassignment values(40300000,30800000,3);
 insert into ccfeedersubassignment values(40400000,30900000,1);
 
+
+INSERT INTO Point VALUES( 200,'Analog','Sub 1 EstKVar',40100000,'Default',-1,'N','N','R',1,'None',0); 
+INSERT INTO PointAlarming VALUES( 200,'','NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN','N',1,0); 
+INSERT INTO PointUnit VALUES( 200,0,3,1.0E30,-1.0E30); 
+INSERT INTO PointAnalog VALUES( 200,-1.0,'None',1.0,0.0); 
+
+INSERT INTO Point VALUES( 201,'Analog','Sub 1 DailyOps',40100000,'Default',-1,'N','N','R',2,'None',0); 
+INSERT INTO PointAlarming VALUES( 201,'','NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN','N',1,0); 
+INSERT INTO PointUnit VALUES( 201,0,3,1.0E30,-1.0E30); 
+INSERT INTO PointAnalog VALUES( 201,-1.0,'None',1.0,0.0); 
+
+INSERT INTO Point VALUES( 202,'Analog','Sub 1 PowerFactor',40100000,'Default',-1,'N','N','R',3,'None',0); 
+INSERT INTO PointAlarming VALUES( 202,'','NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN','N',1,0); 
+INSERT INTO PointUnit VALUES( 202,0,3,1.0E30,-1.0E30); 
+INSERT INTO PointAnalog VALUES( 202,-1.0,'None',1.0,0.0); 
+
+INSERT INTO Point VALUES( 203,'Analog','Sub 1 Est PF',40100000,'Default',-1,'N','N','R',4,'None',0); 
+INSERT INTO PointAlarming VALUES( 203,'','NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN','N',1,0); 
+INSERT INTO PointUnit VALUES( 203,0,3,1.0E30,-1.0E30); 
+INSERT INTO PointAnalog VALUES( 203,-1.0,'None',1.0,0.0); 
+
+
+INSERT INTO Point VALUES( 300,'Analog','Sub 2 EstKVar',40200000,'Default',-1,'N','N','R',1,'None',0); 
+INSERT INTO PointAlarming VALUES( 300,'','NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN','N',1,0); 
+INSERT INTO PointUnit VALUES( 300,0,3,1.0E30,-1.0E30); 
+INSERT INTO PointAnalog VALUES( 300,-1.0,'None',1.0,0.0); 
+
+INSERT INTO Point VALUES( 301,'Analog','Sub 2 DailyOps',40200000,'Default',-1,'N','N','R',2,'None',0); 
+INSERT INTO PointAlarming VALUES( 301,'','NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN','N',1,0); 
+INSERT INTO PointUnit VALUES( 301,0,3,1.0E30,-1.0E30); 
+INSERT INTO PointAnalog VALUES( 301,-1.0,'None',1.0,0.0); 
+
+INSERT INTO Point VALUES( 302,'Analog','Sub 2 PowerFactor',40200000,'Default',-1,'N','N','R',3,'None',0); 
+INSERT INTO PointAlarming VALUES( 302,'','NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN','N',1,0); 
+INSERT INTO PointUnit VALUES( 302,0,3,1.0E30,-1.0E30); 
+INSERT INTO PointAnalog VALUES( 302,-1.0,'None',1.0,0.0); 
+
+INSERT INTO Point VALUES( 303,'Analog','Sub 2 Est PF',40200000,'Default',-1,'N','N','R',4,'None',0); 
+INSERT INTO PointAlarming VALUES( 303,'','NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN','N',1,0); 
+INSERT INTO PointUnit VALUES( 303,0,3,1.0E30,-1.0E30); 
+INSERT INTO PointAnalog VALUES( 303,-1.0,'None',1.0,0.0); 
+
+
+INSERT INTO Point VALUES( 400,'Analog','Sub 3 EstKVar',40300000,'Default',-1,'N','N','R',1,'None',0); 
+INSERT INTO PointAlarming VALUES( 400,'','NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN','N',1,0); 
+INSERT INTO PointUnit VALUES( 400,0,3,1.0E30,-1.0E30); 
+INSERT INTO PointAnalog VALUES( 400,-1.0,'None',1.0,0.0); 
+
+INSERT INTO Point VALUES( 401,'Analog','Sub 3 DailyOps',40300000,'Default',-1,'N','N','R',2,'None',0); 
+INSERT INTO PointAlarming VALUES( 401,'','NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN','N',1,0); 
+INSERT INTO PointUnit VALUES( 401,0,3,1.0E30,-1.0E30); 
+INSERT INTO PointAnalog VALUES( 401,-1.0,'None',1.0,0.0); 
+
+INSERT INTO Point VALUES( 402,'Analog','Sub 3 PowerFactor',40300000,'Default',-1,'N','N','R',3,'None',0); 
+INSERT INTO PointAlarming VALUES( 402,'','NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN','N',1,0); 
+INSERT INTO PointUnit VALUES( 402,0,3,1.0E30,-1.0E30); 
+INSERT INTO PointAnalog VALUES( 402,-1.0,'None',1.0,0.0); 
+
+INSERT INTO Point VALUES( 403,'Analog','Sub 3 Est PF',40300000,'Default',-1,'N','N','R',4,'None',0); 
+INSERT INTO PointAlarming VALUES( 403,'','NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN','N',1,0); 
+INSERT INTO PointUnit VALUES( 403,0,3,1.0E30,-1.0E30); 
+INSERT INTO PointAnalog VALUES( 403,-1.0,'None',1.0,0.0); 
+
+
+INSERT INTO Point VALUES( 500,'Analog','Sub 4 EstKVar',40400000,'Default',-1,'N','N','R',1,'None',0); 
+INSERT INTO PointAlarming VALUES( 500,'','NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN','N',1,0); 
+INSERT INTO PointUnit VALUES( 500,0,3,1.0E30,-1.0E30); 
+INSERT INTO PointAnalog VALUES( 500,-1.0,'None',1.0,0.0); 
+
+INSERT INTO Point VALUES( 501,'Analog','Sub 4 DailyOps',40400000,'Default',-1,'N','N','R',2,'None',0); 
+INSERT INTO PointAlarming VALUES( 501,'','NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN','N',1,0); 
+INSERT INTO PointUnit VALUES( 501,0,3,1.0E30,-1.0E30); 
+INSERT INTO PointAnalog VALUES( 501,-1.0,'None',1.0,0.0); 
+
+INSERT INTO Point VALUES( 502,'Analog','Sub 4 PowerFactor',40400000,'Default',-1,'N','N','R',3,'None',0); 
+INSERT INTO PointAlarming VALUES( 502,'','NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN','N',1,0); 
+INSERT INTO PointUnit VALUES( 502,0,3,1.0E30,-1.0E30); 
+INSERT INTO PointAnalog VALUES( 502,-1.0,'None',1.0,0.0); 
+
+INSERT INTO Point VALUES( 503,'Analog','Sub 4 Est PF',40400000,'Default',-1,'N','N','R',4,'None',0); 
+INSERT INTO PointAlarming VALUES( 503,'','NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN','N',1,0); 
+INSERT INTO PointUnit VALUES( 503,0,3,1.0E30,-1.0E30); 
+INSERT INTO PointAnalog VALUES( 503,-1.0,'None',1.0,0.0); 
+
+
+INSERT INTO Point VALUES( 600,'Analog','Fdr 1-1 EstKVar',30100000,'Default',-1,'N','N','R',1,'None',0); 
+INSERT INTO PointAlarming VALUES( 600,'','NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN','N',1,0); 
+INSERT INTO PointUnit VALUES( 600,0,3,1.0E30,-1.0E30); 
+INSERT INTO PointAnalog VALUES( 600,-1.0,'None',1.0,0.0); 
+
+INSERT INTO Point VALUES( 601,'Analog','Fdr 1-1 DailyOps',30100000,'Default',-1,'N','N','R',2,'None',0); 
+INSERT INTO PointAlarming VALUES( 601,'','NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN','N',1,0); 
+INSERT INTO PointUnit VALUES( 601,0,3,1.0E30,-1.0E30); 
+INSERT INTO PointAnalog VALUES( 601,-1.0,'None',1.0,0.0); 
+
+INSERT INTO Point VALUES( 602,'Analog','Fdr 1-1 PowerFactor',30100000,'Default',-1,'N','N','R',3,'None',0); 
+INSERT INTO PointAlarming VALUES( 602,'','NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN','N',1,0); 
+INSERT INTO PointUnit VALUES( 602,0,3,1.0E30,-1.0E30); 
+INSERT INTO PointAnalog VALUES( 602,-1.0,'None',1.0,0.0); 
+
+INSERT INTO Point VALUES( 603,'Analog','Fdr 1-1 Est PF',30100000,'Default',-1,'N','N','R',4,'None',0); 
+INSERT INTO PointAlarming VALUES( 603,'','NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN','N',1,0); 
+INSERT INTO PointUnit VALUES( 603,0,3,1.0E30,-1.0E30); 
+INSERT INTO PointAnalog VALUES( 603,-1.0,'None',1.0,0.0); 
+
+
+INSERT INTO Point VALUES( 700,'Analog','Fdr 1-2 EstKVar',30200000,'Default',-1,'N','N','R',1,'None',0); 
+INSERT INTO PointAlarming VALUES( 700,'','NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN','N',1,0); 
+INSERT INTO PointUnit VALUES( 700,0,3,1.0E30,-1.0E30); 
+INSERT INTO PointAnalog VALUES( 700,-1.0,'None',1.0,0.0); 
+
+INSERT INTO Point VALUES( 701,'Analog','Fdr 1-2 DailyOps',30200000,'Default',-1,'N','N','R',2,'None',0); 
+INSERT INTO PointAlarming VALUES( 701,'','NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN','N',1,0); 
+INSERT INTO PointUnit VALUES( 701,0,3,1.0E30,-1.0E30); 
+INSERT INTO PointAnalog VALUES( 701,-1.0,'None',1.0,0.0); 
+
+INSERT INTO Point VALUES( 702,'Analog','Fdr 1-2 PowerFactor',30200000,'Default',-1,'N','N','R',3,'None',0); 
+INSERT INTO PointAlarming VALUES( 702,'','NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN','N',1,0); 
+INSERT INTO PointUnit VALUES( 702,0,3,1.0E30,-1.0E30); 
+INSERT INTO PointAnalog VALUES( 702,-1.0,'None',1.0,0.0); 
+
+INSERT INTO Point VALUES( 703,'Analog','Fdr 1-2 Est PF',30200000,'Default',-1,'N','N','R',4,'None',0); 
+INSERT INTO PointAlarming VALUES( 703,'','NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN','N',1,0); 
+INSERT INTO PointUnit VALUES( 703,0,3,1.0E30,-1.0E30); 
+INSERT INTO PointAnalog VALUES( 703,-1.0,'None',1.0,0.0); 
+
+
+INSERT INTO Point VALUES( 800,'Analog','Fdr 2-1 EstKVar',30300000,'Default',-1,'N','N','R',1,'None',0); 
+INSERT INTO PointAlarming VALUES( 800,'','NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN','N',1,0); 
+INSERT INTO PointUnit VALUES( 800,0,3,1.0E30,-1.0E30); 
+INSERT INTO PointAnalog VALUES( 800,-1.0,'None',1.0,0.0); 
+
+INSERT INTO Point VALUES( 801,'Analog','Fdr 2-1 DailyOps',30300000,'Default',-1,'N','N','R',2,'None',0); 
+INSERT INTO PointAlarming VALUES( 801,'','NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN','N',1,0); 
+INSERT INTO PointUnit VALUES( 801,0,3,1.0E30,-1.0E30); 
+INSERT INTO PointAnalog VALUES( 801,-1.0,'None',1.0,0.0); 
+
+INSERT INTO Point VALUES( 802,'Analog','Fdr 2-1 PowerFactor',30300000,'Default',-1,'N','N','R',3,'None',0); 
+INSERT INTO PointAlarming VALUES( 802,'','NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN','N',1,0); 
+INSERT INTO PointUnit VALUES( 802,0,3,1.0E30,-1.0E30); 
+INSERT INTO PointAnalog VALUES( 802,-1.0,'None',1.0,0.0); 
+
+INSERT INTO Point VALUES( 803,'Analog','Fdr 2-1 Est PF',30300000,'Default',-1,'N','N','R',4,'None',0); 
+INSERT INTO PointAlarming VALUES( 803,'','NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN','N',1,0); 
+INSERT INTO PointUnit VALUES( 803,0,3,1.0E30,-1.0E30); 
+INSERT INTO PointAnalog VALUES( 803,-1.0,'None',1.0,0.0); 
+
+
+INSERT INTO Point VALUES( 900,'Analog','Fdr 2-2 EstKVar',30400000,'Default',-1,'N','N','R',1,'None',0); 
+INSERT INTO PointAlarming VALUES( 900,'','NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN','N',1,0); 
+INSERT INTO PointUnit VALUES( 900,0,3,1.0E30,-1.0E30); 
+INSERT INTO PointAnalog VALUES( 900,-1.0,'None',1.0,0.0); 
+
+INSERT INTO Point VALUES( 901,'Analog','Fdr 2-2 DailyOps',30400000,'Default',-1,'N','N','R',2,'None',0); 
+INSERT INTO PointAlarming VALUES( 901,'','NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN','N',1,0); 
+INSERT INTO PointUnit VALUES( 901,0,3,1.0E30,-1.0E30); 
+INSERT INTO PointAnalog VALUES( 901,-1.0,'None',1.0,0.0); 
+
+INSERT INTO Point VALUES( 902,'Analog','Fdr 2-2 PowerFactor',30400000,'Default',-1,'N','N','R',3,'None',0); 
+INSERT INTO PointAlarming VALUES( 902,'','NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN','N',1,0); 
+INSERT INTO PointUnit VALUES( 902,0,3,1.0E30,-1.0E30); 
+INSERT INTO PointAnalog VALUES( 902,-1.0,'None',1.0,0.0); 
+
+INSERT INTO Point VALUES( 903,'Analog','Fdr 2-2 Est PF',30400000,'Default',-1,'N','N','R',4,'None',0); 
+INSERT INTO PointAlarming VALUES( 903,'','NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN','N',1,0); 
+INSERT INTO PointUnit VALUES( 903,0,3,1.0E30,-1.0E30); 
+INSERT INTO PointAnalog VALUES( 903,-1.0,'None',1.0,0.0); 
+
+
+INSERT INTO Point VALUES( 1000,'Analog','Fdr 2-3 EstKVar',30500000,'Default',-1,'N','N','R',1,'None',0); 
+INSERT INTO PointAlarming VALUES( 1000,'','NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN','N',1,0); 
+INSERT INTO PointUnit VALUES( 1000,0,3,1.0E30,-1.0E30); 
+INSERT INTO PointAnalog VALUES( 1000,-1.0,'None',1.0,0.0); 
+
+INSERT INTO Point VALUES( 1001,'Analog','Fdr 2-3 DailyOps',30500000,'Default',-1,'N','N','R',2,'None',0); 
+INSERT INTO PointAlarming VALUES( 1001,'','NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN','N',1,0); 
+INSERT INTO PointUnit VALUES( 1001,0,3,1.0E30,-1.0E30); 
+INSERT INTO PointAnalog VALUES( 1001,-1.0,'None',1.0,0.0); 
+
+INSERT INTO Point VALUES( 1002,'Analog','Fdr 2-3 PowerFactor',30500000,'Default',-1,'N','N','R',3,'None',0); 
+INSERT INTO PointAlarming VALUES( 1002,'','NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN','N',1,0); 
+INSERT INTO PointUnit VALUES( 1002,0,3,1.0E30,-1.0E30); 
+INSERT INTO PointAnalog VALUES( 1002,-1.0,'None',1.0,0.0); 
+
+INSERT INTO Point VALUES( 1003,'Analog','Fdr 2-3 Est PF',30500000,'Default',-1,'N','N','R',4,'None',0); 
+INSERT INTO PointAlarming VALUES( 1003,'','NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN','N',1,0); 
+INSERT INTO PointUnit VALUES( 1003,0,3,1.0E30,-1.0E30); 
+INSERT INTO PointAnalog VALUES( 1003,-1.0,'None',1.0,0.0); 
+
+
+INSERT INTO Point VALUES( 1100,'Analog','Fdr 3-1 EstKVar',30600000,'Default',-1,'N','N','R',1,'None',0); 
+INSERT INTO PointAlarming VALUES( 1100,'','NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN','N',1,0); 
+INSERT INTO PointUnit VALUES( 1100,0,3,1.0E30,-1.0E30); 
+INSERT INTO PointAnalog VALUES( 1100,-1.0,'None',1.0,0.0); 
+
+INSERT INTO Point VALUES( 1101,'Analog','Fdr 3-1 DailyOps',30600000,'Default',-1,'N','N','R',2,'None',0); 
+INSERT INTO PointAlarming VALUES( 1101,'','NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN','N',1,0); 
+INSERT INTO PointUnit VALUES( 1101,0,3,1.0E30,-1.0E30); 
+INSERT INTO PointAnalog VALUES( 1101,-1.0,'None',1.0,0.0); 
+
+INSERT INTO Point VALUES( 1102,'Analog','Fdr 3-1 PowerFactor',30600000,'Default',-1,'N','N','R',3,'None',0); 
+INSERT INTO PointAlarming VALUES( 1102,'','NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN','N',1,0); 
+INSERT INTO PointUnit VALUES( 1102,0,3,1.0E30,-1.0E30); 
+INSERT INTO PointAnalog VALUES( 1102,-1.0,'None',1.0,0.0); 
+
+INSERT INTO Point VALUES( 1103,'Analog','Fdr 3-1 Est PF',30600000,'Default',-1,'N','N','R',4,'None',0); 
+INSERT INTO PointAlarming VALUES( 1103,'','NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN','N',1,0); 
+INSERT INTO PointUnit VALUES( 1103,0,3,1.0E30,-1.0E30); 
+INSERT INTO PointAnalog VALUES( 1103,-1.0,'None',1.0,0.0); 
+
+
+INSERT INTO Point VALUES( 1200,'Analog','Fdr 3-2 EstKVar',30700000,'Default',-1,'N','N','R',1,'None',0); 
+INSERT INTO PointAlarming VALUES( 1200,'','NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN','N',1,0); 
+INSERT INTO PointUnit VALUES( 1200,0,3,1.0E30,-1.0E30); 
+INSERT INTO PointAnalog VALUES( 1200,-1.0,'None',1.0,0.0); 
+
+INSERT INTO Point VALUES( 1201,'Analog','Fdr 3-2 DailyOps',30700000,'Default',-1,'N','N','R',2,'None',0); 
+INSERT INTO PointAlarming VALUES( 1201,'','NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN','N',1,0); 
+INSERT INTO PointUnit VALUES( 1201,0,3,1.0E30,-1.0E30); 
+INSERT INTO PointAnalog VALUES( 1201,-1.0,'None',1.0,0.0); 
+
+INSERT INTO Point VALUES( 1202,'Analog','Fdr 3-2 PowerFactor',30700000,'Default',-1,'N','N','R',3,'None',0); 
+INSERT INTO PointAlarming VALUES( 1202,'','NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN','N',1,0); 
+INSERT INTO PointUnit VALUES( 1202,0,3,1.0E30,-1.0E30); 
+INSERT INTO PointAnalog VALUES( 1202,-1.0,'None',1.0,0.0); 
+
+INSERT INTO Point VALUES( 1203,'Analog','Fdr 3-2 Est PF',30700000,'Default',-1,'N','N','R',4,'None',0); 
+INSERT INTO PointAlarming VALUES( 1203,'','NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN','N',1,0); 
+INSERT INTO PointUnit VALUES( 1203,0,3,1.0E30,-1.0E30); 
+INSERT INTO PointAnalog VALUES( 1203,-1.0,'None',1.0,0.0); 
+
+
+INSERT INTO Point VALUES( 1300,'Analog','Fdr 3-3 EstKVar',30800000,'Default',-1,'N','N','R',1,'None',0); 
+INSERT INTO PointAlarming VALUES( 1300,'','NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN','N',1,0); 
+INSERT INTO PointUnit VALUES( 1300,0,3,1.0E30,-1.0E30); 
+INSERT INTO PointAnalog VALUES( 1300,-1.0,'None',1.0,0.0); 
+
+INSERT INTO Point VALUES( 1301,'Analog','Fdr 3-3 DailyOps',30800000,'Default',-1,'N','N','R',2,'None',0); 
+INSERT INTO PointAlarming VALUES( 1301,'','NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN','N',1,0); 
+INSERT INTO PointUnit VALUES( 1301,0,3,1.0E30,-1.0E30); 
+INSERT INTO PointAnalog VALUES( 1301,-1.0,'None',1.0,0.0); 
+
+INSERT INTO Point VALUES( 1302,'Analog','Fdr 3-3 PowerFactor',30800000,'Default',-1,'N','N','R',3,'None',0); 
+INSERT INTO PointAlarming VALUES( 1302,'','NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN','N',1,0); 
+INSERT INTO PointUnit VALUES( 1302,0,3,1.0E30,-1.0E30); 
+INSERT INTO PointAnalog VALUES( 1302,-1.0,'None',1.0,0.0); 
+
+INSERT INTO Point VALUES( 1303,'Analog','Fdr 3-3 Est PF',30800000,'Default',-1,'N','N','R',4,'None',0); 
+INSERT INTO PointAlarming VALUES( 1303,'','NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN','N',1,0); 
+INSERT INTO PointUnit VALUES( 1303,0,3,1.0E30,-1.0E30); 
+INSERT INTO PointAnalog VALUES( 1303,-1.0,'None',1.0,0.0); 
+
+
+INSERT INTO Point VALUES( 1400,'Analog','Fdr 4-1 EstKVar',30900000,'Default',-1,'N','N','R',1,'None',0); 
+INSERT INTO PointAlarming VALUES( 1400,'','NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN','N',1,0); 
+INSERT INTO PointUnit VALUES( 1400,0,3,1.0E30,-1.0E30); 
+INSERT INTO PointAnalog VALUES( 1400,-1.0,'None',1.0,0.0); 
+
+INSERT INTO Point VALUES( 1401,'Analog','Fdr 4-1 DailyOps',30900000,'Default',-1,'N','N','R',2,'None',0); 
+INSERT INTO PointAlarming VALUES( 1401,'','NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN','N',1,0); 
+INSERT INTO PointUnit VALUES( 1401,0,3,1.0E30,-1.0E30); 
+INSERT INTO PointAnalog VALUES( 1401,-1.0,'None',1.0,0.0); 
+
+INSERT INTO Point VALUES( 1402,'Analog','Fdr 4-1 PowerFactor',30900000,'Default',-1,'N','N','R',3,'None',0); 
+INSERT INTO PointAlarming VALUES( 1402,'','NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN','N',1,0); 
+INSERT INTO PointUnit VALUES( 1402,0,3,1.0E30,-1.0E30); 
+INSERT INTO PointAnalog VALUES( 1402,-1.0,'None',1.0,0.0); 
+
+INSERT INTO Point VALUES( 1403,'Analog','Fdr 4-1 Est PF',30900000,'Default',-1,'N','N','R',4,'None',0); 
+INSERT INTO PointAlarming VALUES( 1403,'','NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN','N',1,0); 
+INSERT INTO PointUnit VALUES( 1403,0,3,1.0E30,-1.0E30); 
+INSERT INTO PointAnalog VALUES( 1403,-1.0,'None',1.0,0.0); 
 
