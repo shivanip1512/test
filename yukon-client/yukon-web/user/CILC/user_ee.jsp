@@ -148,7 +148,7 @@
 									    revisionList.add(revision);
                                                      
 									    if( revision.getOfferExpirationDateTime().compareTo(new java.util.Date()) >= 0 )
-                                        {       //System.out.println("LOLO");                                                     
+                                        {
 										    numNewOffers++;
 										    newOfferList.add(Boolean.TRUE);
                                         }
@@ -170,7 +170,7 @@
 				}
 			}
 		}
-	}   //out.println(revision.getOfferExpirationDateTime());
+	}
   
 	String pending = request.getParameter("pending");
 
@@ -211,7 +211,7 @@
 		{
 			if (request.getParameter("submitted") == null)
 			{   
-			// NEED TO FIGURE OUT HOW TO MAKE SUER SOMEONE LOGGING IN AS A NEW PERSON DOESN'T SEE THE LAST STUFF!!!
+			  // NEED TO FIGURE OUT HOW TO MAKE SURE SOMEONE LOGGING IN AS A NEW PERSON DOESN'T SEE THE LAST STUFF!!!
 			  //Attempt to load amount and prices from checker object, otherwise we will init them below (used with 'Cancel' option)
 			  amountStrs = (String[]) checker.getObject("amount");
   			  priceStrs = (String[]) checker.getObject("prices");
@@ -233,15 +233,15 @@
 
 					double amount = ((LMEnergyExchangeHourlyOffer) revision.getEnergyExchangeHourlyOffers().elementAt(i)).getAmountRequested().doubleValue();
 					amountStrs[i] = numberFormat.format(amount);
-
 					if (!amountStrs[i].equals("0"))
 					{
+						//If offer exists, the value will not be '0', default to default curtail value.
 						amountStrs[i] = curtailAmount;
 					}
 					else
 					{
 						//'0' is a defined curtail amount so we must use something else.
-						amountStrs[i] = "-999";
+						amountStrs[i] = "----";
 					}
 				}
 			  }
@@ -273,15 +273,16 @@
 		for (int i = 0; i < 24; i++)
 		{
 			try {
-				if( newAmountStrs[i].length() == 0)
-				{
+				if( newAmountStrs[i].trim().length() == 0)
+				{	//The editable value field was left empty/blank, give it a legit value.
 					newAmountStrs[i] = "0";
-					}
-				double amountVal = numberFormat.parse(newAmountStrs[i]).doubleValue();
-				if (amountVal == -999)	//'0' is a defined curtail amount so we must check for our default -999 value instead.
-					amountStrs[i] = "----";
-				else
+				}
+				if ( !newAmountStrs[i].equalsIgnoreCase("----"))	//'----' is our non-available offer default value
+				{
+					//format the actual value for display
+					double amountVal = numberFormat.parse(newAmountStrs[i]).doubleValue();
 					amountStrs[i] = numberFormat.format(amountVal);
+				}
 			}
 			catch (NumberFormatException ne){
 			//the "confirm" tab will handle the errors
@@ -303,18 +304,17 @@
 				try {
 					for (int i = 0; i < 24; i++)
 					{
-						double amountVal = numberFormat.parse(newAmountStrs[i]).doubleValue();                       
-						if (amountVal == -999)	//-999 is our init value.
-							amountStrs[i] = "----";
-						else if( amountVal == 0)
-							amountStrs[i] = "0";
-						else {
-							if( amountVal < 500) {
+						double amountVal = 0;
+						if( !newAmountStrs[i].equalsIgnoreCase("----"))
+						{
+							amountVal = numberFormat.parse(newAmountStrs[i]).doubleValue();
+							if( amountVal < 500 && amountVal > 0)
+							{
 								isTooSmall = true;
 								checker.setError("amounterror" + String.valueOf(i), "");
 							}
-                            amountStrs[i] = numberFormat.format(amountVal);
-                        }
+                        	amountStrs[i] = numberFormat.format(amountVal);
+                       	}
    					}
 				}
 				catch (NumberFormatException ne) {
@@ -346,7 +346,7 @@
 				    tab = "";
 				}
 				else {
-System.out.println("&&&&&&&&&&&&&&&& sending decline message");
+					System.out.println("Sending DECLINE message");
 					com.cannontech.loadcontrol.LoadControlClientConnection conn = cs.getConnection();
 
 					com.cannontech.loadcontrol.messages.LMEnergyExchangeAcceptMsg msg =
@@ -370,7 +370,7 @@ System.out.println("&&&&&&&&&&&&&&&& sending decline message");
 			}
 		}
 		else {	// confirmed the offer     
-System.out.println("&&&&&&&&&&&&&&&& sending confirm message");
+			System.out.println("Sending CONFIRM message");
 			com.cannontech.loadcontrol.LoadControlClientConnection conn = cs.getConnection();
 
 			com.cannontech.loadcontrol.messages.LMEnergyExchangeAcceptMsg msg =
@@ -393,6 +393,7 @@ System.out.println("&&&&&&&&&&&&&&&& sending confirm message");
 					amount[i] = new Double( numberFormat.parse(amountStrs[i]).doubleValue());
 				}
 				catch(java.text.ParseException pe){
+					//This is where the '----' non-offered values get changed to '0' for the database!!!
 					amount[i] = new Double(0);
 				}
 			}
