@@ -58,9 +58,6 @@ insert into YukonGroupRole values(-19,-1,-1,-1018,'(none)');
 insert into YukonRoleProperty values(-1306,-4,'auth_timeout','30','Number of seconds before the authentication process times out');
 insert into YukonGroupRole values(-91,-1,-4,-1306,'(none)');
 
-insert into FDRInterface values (21, 'PI','Receive', 't' );
-insert into FDRInterfaceOption values(21, 'Tag Name', 1, 'Text', '(none)' );
-insert into FDRInterfaceOption values(21, 'Period (sec)', 1, 'Text', '(none)' );
 
 
 
