@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2004/02/16 20:53:36 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2004/03/16 17:50:58 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -88,10 +88,14 @@ INT CtiDeviceMarkV::ExecuteRequest( CtiRequestMsg             *pReq,
       {
          RWTime p( getLastLPTime().seconds() );
          CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " ----Stored LPTime----" << p << endl;
+         dout << RWTime() << " ----Stored LPTime For " << getName() << "----" << p << endl;
       }
       
-      OutMessage->Buffer.DUPReq.LP_Time = getLastLPTime().seconds();
+      if( useScanFlags() )
+          OutMessage->Buffer.DUPReq.LP_Time = getLastLPTime().seconds();
+      else
+          OutMessage->Buffer.DUPReq.LP_Time = 0;
+
       OutMessage->TimeOut   = 2;
       OutMessage->EventCode = RESULT | ENCODED;
       OutMessage->Sequence  = 0;
@@ -103,11 +107,12 @@ INT CtiDeviceMarkV::ExecuteRequest( CtiRequestMsg             *pReq,
       ptr->getLP = _transdataProtocol.getAction();
 
       outList.insert( OutMessage );
-      
-      if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+      OutMessage = NULL;                //we used it, don't delete it
+
+      if( getDebugLevel() & DEBUGLEVEL_FACTORY )
       {
          CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " ----Execution In Progress----" << endl;
+         dout << RWTime() << " ----Execution In Progress For " << getName() << "----" << endl;
       }
       //probably can delete this here
       ptr = NULL;
@@ -134,7 +139,6 @@ INT CtiDeviceMarkV::GeneralScan( CtiRequestMsg              *pReq,
    INT status = NORMAL;
    CtiCommandParser newParse( "scan general" );
 
-   ULONG lastLPTime = getLastLPTime().seconds();
    pReq->setCommandString( "scan general" );
    
    status = ExecuteRequest( pReq, newParse, OutMessage, vgList, retList, outList );
@@ -222,10 +226,10 @@ INT CtiDeviceMarkV::ErrorDecode( INMESS                     *InMessage,
    INT retCode       = NORMAL;
    CtiCommandParser  parse( InMessage->Return.CommandStr );
 
-   if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+   if( getDebugLevel() & DEBUGLEVEL_FACTORY )
    {
        CtiLockGuard<CtiLogger> doubt_guard(dout);
-       dout << RWTime() << " ----Error Decode For Device " << getName() << " In Progress----" << endl;
+       dout << RWTime() << " ----Error Decode For " << getName() << " In Progress----" << endl;
    }
 
    CtiCommandMsg *pMsg = CTIDBG_new CtiCommandMsg( CtiCommandMsg::UpdateFailed );
@@ -278,10 +282,10 @@ int CtiDeviceMarkV::decodeResultScan( INMESS                    *InMessage,
                                                        InMessage->Return.TrxID,
                                                        InMessage->Return.UserID);
  
-   if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+   if( getDebugLevel() & DEBUGLEVEL_FACTORY )
    {
       CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " ----Scanner Message Process----" << endl;
+      dout << RWTime() << " ----Scanner Message Process For " << getName() << "----" << endl;
    }
 
    if( isScanPending() )
@@ -297,7 +301,7 @@ int CtiDeviceMarkV::decodeResultScan( INMESS                    *InMessage,
 
                if( pPoint != NULL )
                {
-                  pData = fillPDMsg( transVector, pPoint, index, 0, 0 );
+                  pData = fillPDMsg( transVector, pPoint, index, 0, 0 );   //FIXME no need to pass the whole vector!
                }
             }
             break;
@@ -844,7 +848,7 @@ int CtiDeviceMarkV::decodeResultScan( INMESS                    *InMessage,
       if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
       {
          CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " ----Scanner Message Inserted----" << endl;
+         dout << RWTime() << " ----Scanner Message Inserted For " << getName() << "----" << endl;
       }
    }
 
@@ -943,10 +947,10 @@ void CtiDeviceMarkV::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
    bool                             firstLoop = true;
    bool                             foundSomething = false;
 
-   if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+   if( getDebugLevel() & DEBUGLEVEL_FACTORY )
    {
       CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " ----Process Dispatch Message In Progress----" << endl;
+      dout << RWTime() << " ----Process Dispatch Message In Progress For " << getName() << "----" << endl;
    }
 
    if( _transdataProtocol.getDidProcess() )
@@ -1005,7 +1009,7 @@ void CtiDeviceMarkV::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
                      if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
                      {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " ----Dispatch will get this lastLP time --> " << mTime << endl;
+                        dout << RWTime() << " ----Dispatch will get lastLP time --> " << mTime << " for " << getName() << endl;
                      }
                      
                      pData->setType( pPoint->getType() );
@@ -1049,18 +1053,18 @@ void CtiDeviceMarkV::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
          storage = NULL;
       }
 
-      if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+      if( getDebugLevel() & DEBUGLEVEL_FACTORY )
       {
          CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " ----Dispatch Message Inserted----" << endl;
+         dout << RWTime() << " ----Dispatch Message Inserted For " << getName() << "----" << endl;
       }
    }
    else
    {
-      if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+      if( getDebugLevel() & DEBUGLEVEL_FACTORY )
       {
          CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " ----No Data For Dispatch Message----" << endl;
+         dout << RWTime() << " ----No Data For Dispatch Message For " << getName() << "----" << endl;
       }
    }
 
