@@ -958,6 +958,23 @@ bool pokeDigiPortserver(CHAR *server, INT port)
     return Success;
 }
 
+bool isION(INT type)
+{
+    bool isit = false;
+
+    switch(type)
+    {
+        case TYPE_ION7330:
+        case TYPE_ION7700:
+        case TYPE_ION8300:
+        {
+            isit = true;
+        }
+    }
+
+    return isit;
+}
+
 bool isLCU(INT type)
 {
     bool isit = false;

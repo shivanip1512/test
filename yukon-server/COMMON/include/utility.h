@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/utility.h-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2003/03/13 19:35:28 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2003/03/14 00:51:21 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -102,6 +102,7 @@ IM_EX_CTIBASE void incrementCount();
 IM_EX_CTIBASE void decrementCount();
 IM_EX_CTIBASE ULONG OutMessageCount();
 IM_EX_CTIBASE bool isLCU(INT type);
+IM_EX_CTIBASE bool isION(INT type);
 IM_EX_CTIBASE int generateTransmissionID();
 IM_EX_CTIBASE LONG GetPAOIdOfPoint(long pid);
 IM_EX_CTIBASE INT EstablishOutMessagePriority(CtiOutMessage *Out, INT priority);
