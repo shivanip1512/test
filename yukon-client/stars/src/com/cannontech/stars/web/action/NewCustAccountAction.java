@@ -11,9 +11,9 @@ import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.lite.LiteContact;
+import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
-import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.util.ServerUtils;
@@ -408,20 +408,23 @@ public class NewCustAccountAction implements ActionBase {
 				Transaction.createTransaction( Transaction.INSERT, account ).execute();
         
 		/* Create lite objects */
-		LiteStarsCustAccountInformation liteAcctInfo = energyCompany.addCustAccountInformation( account );
-		user.setAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, liteAcctInfo );
-        
-		LiteContact liteContact = (LiteContact) StarsLiteFactory.createLite( primContact );
-		energyCompany.addContact( liteContact, liteAcctInfo );
+		LiteContact liteContact = new LiteContact( primContact.getContact().getContactID().intValue() );
+		ServerUtils.handleDBChange(liteContact, DBChangeMsg.CHANGE_TYPE_ADD);
 		
 		for (int i = 0; i < addContacts.size(); i++) {
-			liteContact = (LiteContact) StarsLiteFactory.createLite( (com.cannontech.database.data.customer.Contact) addContacts.get(i) );
-			energyCompany.addContact( liteContact, liteAcctInfo );
+			com.cannontech.database.data.customer.Contact contact =
+					(com.cannontech.database.data.customer.Contact) addContacts.get(i);
+			liteContact = new LiteContact( contact.getContact().getContactID().intValue() );
+			ServerUtils.handleDBChange(liteContact, DBChangeMsg.CHANGE_TYPE_ADD);
 		}
         
-		ServerUtils.handleDBChange(liteAcctInfo.getCustomer(), DBChangeMsg.CHANGE_TYPE_ADD);
-        
+		LiteCustomer liteCustomer = new LiteCustomer( customerDB.getCustomerID().intValue() );
+		ServerUtils.handleDBChange(liteCustomer, DBChangeMsg.CHANGE_TYPE_ADD);
+		
+		LiteStarsCustAccountInformation liteAcctInfo = energyCompany.addCustAccountInformation( account );
 		//ServerUtils.handleDBChange( liteAcctInfo, DBChangeMsg.CHANGE_TYPE_ADD );
+		user.setAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, liteAcctInfo );
+		
 		return liteAcctInfo;
 	}
 	
