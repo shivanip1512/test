@@ -8,11 +8,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2004/11/08 14:40:39 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2004/11/17 23:42:38 $
 *
 * HISTORY      :
 * $Log: prot_sa305.cpp,v $
+* Revision 1.5  2004/11/17 23:42:38  cplender
+* Complete 305 for RTC transmitter
+*
 * Revision 1.4  2004/11/08 14:40:39  cplender
 * 305 Protocol should send controls on RTCs now.
 *
@@ -33,12 +36,16 @@
 #pragma warning( disable : 4786)
 
 #include "cparms.h"
+#include "devicetypes.h"
 #include "logger.h"
 #include "numstr.h"
 #include "prot_sa305.h"
 
+
 CtiProtocolSA305::CtiProtocolSA305() :
-_rtcTarget(false),
+_padBits(0),
+_startBits(4),
+_transmitterType(0),
 _transmitterAddress(0),
 _messageReady(false),
 _addressUsage(0),
@@ -47,8 +54,8 @@ _group(-1),
 _division(-1),
 _substation(-1),
 _utility(-1),
-_rateFamily(-1),
-_rateMember(),
+_rateFamily(0),
+_rateMember(0),
 _rateHierarchy(0),
 _priority(0),
 _strategy(0),
@@ -58,7 +65,9 @@ _rtcResponse(0x00)
 }
 
 CtiProtocolSA305::CtiProtocolSA305(const CtiProtocolSA305& aRef) :
-_rtcTarget(false),
+_padBits(0),
+_startBits(4),
+_transmitterType(0),
 _transmitterAddress(0),
 _messageReady(false),
 _addressUsage(0),
@@ -67,8 +76,8 @@ _group(-1),
 _division(-1),
 _substation(-1),
 _utility(-1),
-_rateFamily(-1),
-_rateMember(-1),
+_rateFamily(0),
+_rateMember(0),
 _rateHierarchy(0),
 _priority(0),
 _strategy(0),
@@ -410,8 +419,8 @@ INT CtiProtocolSA305::parseCommand(CtiCommandParser &parse, CtiOutMessage &OutMe
 
     // These elements of addressing must be defined.
     if(_utility <= 0) _utility = parse.getiValue("sa_utility");
-    if(_rateFamily <= 0) _rateFamily = parse.getiValue("sa_ratefamily");
-    if(_rateMember <= 0) _rateMember = parse.getiValue("sa_ratemember");
+    if(_rateFamily <= 0) _rateFamily = parse.getiValue("sa_ratefamily", 0);
+    if(_rateMember <= 0) _rateMember = parse.getiValue("sa_ratemember", 0);
 
     if(_serial <= 0) _serial = parse.getiValue("serial",0);
     if(_group <= 0) _group = parse.getiValue("sa_group",0);
@@ -429,6 +438,10 @@ INT CtiProtocolSA305::parseCommand(CtiCommandParser &parse, CtiOutMessage &OutMe
 
     if(_strategy <= 0) _strategy = parse.getiValue("sa_strategy", 0);
 
+    if( parse.getCommandStr().contains(" adapt", RWCString::ignoreCase) )   // Adaptive algorithm!
+    {
+        setStartBits(5);
+    }
     // Now process the message components.
     resetMessage();
     addressMessage(parse.getiValue("sa_f1bit", CtiProtocolSA305::CommandTypeOperationFlag), parse.getiValue("sa_f0bit", CtiProtocolSA305::CommandDescription_DIMode) );
@@ -461,7 +474,8 @@ INT CtiProtocolSA305::parseCommand(CtiCommandParser &parse, CtiOutMessage &OutMe
         }
     }
 
-    appendCRCToMessage();
+    if(_transmitterType != TYPE_RTC) appendCRCToMessage();
+    _messageReady = true;
     // dumpBits();
 
     return status;
@@ -472,6 +486,7 @@ void CtiProtocolSA305::resetMessage()
 {
     _messageReady = false;
     _messageBits.clear();
+    _bitStr = RWCString();
     return;
 }
 
@@ -501,8 +516,12 @@ void CtiProtocolSA305::addressMessage(int command_type, int command_description)
     }
 
     // And now build out the bits...
+    if(_transmitterType == TYPE_RTC)
+    {
+        addBits(_padBits, 2);            // The RTC seems to want this!
+    }
 
-    addBits(4, 3);          // This appears to be a paging prefix of some sort.
+    addBits(_startBits, 3);          // This appears to be the start bits.
     addBits(_flags, 6);
 
     if(_flags & AddressTypeGroupFlag)
@@ -550,6 +569,7 @@ INT CtiProtocolSA305::assembleControl(CtiCommandParser &parse, CtiOutMessage &Ou
     if(CtlReq == CMD_FLAG_CTL_SHED)
     {
         int shed_seconds = parse.getiValue("shed");
+
         if(shed_seconds >= 0)
         {
             // Add these two items to the list for control accounting!
@@ -768,7 +788,10 @@ void CtiProtocolSA305::addBits(unsigned int src, int num)
     {
         bit = (src & (0x80000000 >> (32 - num + i)) ? 1 : 0);
         _messageBits.push_back(bit);
+        _bitStr += CtiNumStr(bit);
     }
+
+    _bitStr += " ";
 }
 
 void CtiProtocolSA305::setBit(unsigned int offset, BYTE bit)
@@ -1038,8 +1061,6 @@ void CtiProtocolSA305::appendCRCToMessage()
     }
 
     addBits(crc, 8);
-
-    _messageReady = true;
 }
 
 bool CtiProtocolSA305::messageReady() const
@@ -1063,7 +1084,7 @@ int CtiProtocolSA305::getMessageLength(int mode) const      // Returns the lengt
             {
                 int cnt = _messageBits.size();
                 length = cnt/3 + ((cnt%3)?1:0);
-                if(_rtcTarget)
+                if(_transmitterType == TYPE_RTC)
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1077,7 +1098,7 @@ int CtiProtocolSA305::getMessageLength(int mode) const      // Returns the lengt
             {
                 int cnt = _messageBits.size();
                 length = cnt/8 + ((cnt%8)?1:0);
-                if(_rtcTarget)
+                if(_transmitterType == TYPE_RTC)
                 {
                     length += 5;    // RTC overhead
                 }
@@ -1118,7 +1139,7 @@ int CtiProtocolSA305::buildMessage(int mode, CHAR *buffer) const      // Returns
 
                 vector< BYTE >::const_iterator itr;
 
-                if(_rtcTarget)
+                if(_transmitterType == TYPE_RTC)
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1156,28 +1177,32 @@ int CtiProtocolSA305::buildMessage(int mode, CHAR *buffer) const      // Returns
             }
         case ModeHex:
             {
-                unsigned crc = 0;
+                int packagedBits = _messageBits.size();
+                unsigned rtc_crc = 0;
                 unsigned pos = 0;
                 int ich = 0;
                 CHAR ch;
 
-                if(_rtcTarget)
+                if(_transmitterType == TYPE_RTC)
                 {
                     int ltf = _messageBits.size() / 8 + (_messageBits.size() % 8 ? 1 : 0);
 
                     buffer[bufpos++] = (CHAR)(0xa0 | (0x0f & _transmitterAddress));         // byte 1 of the RTC preamble
-                    crc ^= buffer[bufpos-1];                                                // Update the crc.
+                    rtc_crc ^= buffer[bufpos-1];                                                // Update the rtc_crc.
                     buffer[bufpos++] = (CHAR)(0x29 | (0x10 & _rtcResponse));                // byte 2 of the RTC preamble
-                    crc ^= buffer[bufpos-1];                                                // Update the crc.
+                    rtc_crc ^= buffer[bufpos-1];                                                // Update the rtc_crc.
                     buffer[bufpos++] = (CHAR)(3);                                           // 305 protocol is "3" per rtc spec
-                    crc ^= buffer[bufpos-1];                                                // Update the crc.
+                    rtc_crc ^= buffer[bufpos-1];                                                // Update the rtc_crc.
                     buffer[bufpos++] = (CHAR)(ltf);                                         // Length to follow not including the CRC
-                    crc ^= buffer[bufpos-1];                                                // Update the crc.
+                    rtc_crc ^= buffer[bufpos-1];                                                // Update the rtc_crc.
                 }
 
                 vector< BYTE >::const_iterator itr;
 
-                for( itr = _messageBits.begin(); itr != _messageBits.end(); itr++ )
+                int i;
+                for( i = 0, itr = _messageBits.begin();
+                     i < packagedBits && itr != _messageBits.end();
+                     itr++, i++ )
                 {
                     ich<<=1;
                     ich|=(*itr ? 0x01 : 0x00);
@@ -1185,7 +1210,7 @@ int CtiProtocolSA305::buildMessage(int mode, CHAR *buffer) const      // Returns
                     {
                         pos = 0;
                         buffer[bufpos++] = ich;
-                        crc ^= buffer[bufpos-1];                                                // Update the crc.
+                        rtc_crc ^= buffer[bufpos-1];                                                // Update the rtc_crc.
                         ich = 0;
                     }
                 }
@@ -1198,15 +1223,15 @@ int CtiProtocolSA305::buildMessage(int mode, CHAR *buffer) const      // Returns
                     {
                         pos = 0;
                         buffer[bufpos++] = ich;
-                        crc ^= buffer[bufpos-1];                                                // Update the crc.
+                        rtc_crc ^= buffer[bufpos-1];                                                // Update the rtc_crc.
                         ich = 0;
                         break;
                     }
                 }
 
-                if(_rtcTarget)
+                if(_transmitterType == TYPE_RTC)
                 {
-                    buffer[bufpos++] = (CHAR)(crc);                                         // Record the CRC
+                    buffer[bufpos++] = (CHAR)(rtc_crc);                                         // Record the CRC
                 }
 
                 break;
@@ -1226,9 +1251,9 @@ int CtiProtocolSA305::buildMessage(int mode, CHAR *buffer) const      // Returns
     return bufpos;
 }
 
-CtiProtocolSA305& CtiProtocolSA305::setRTCTarget( bool bv )
+CtiProtocolSA305& CtiProtocolSA305::setTransmitterType( int trans )
 {
-    _rtcTarget = bv;
+    _transmitterType = trans;
     return *this;
 }
 CtiProtocolSA305& CtiProtocolSA305::setRTCResponse( bool bv )
@@ -1245,4 +1270,30 @@ CtiProtocolSA305& CtiProtocolSA305::setTransmitterAddress( int val )
     _transmitterAddress = val;
     return *this;
 }
+
+int CtiProtocolSA305::getStartBits() const
+{
+    return _startBits;
+}
+CtiProtocolSA305& CtiProtocolSA305::setStartBits(int val)
+{
+    _startBits = val & 0x00000007;  // Three bits
+    return *this;
+}
+
+int CtiProtocolSA305::getPadBits() const
+{
+    return _startBits;
+}
+CtiProtocolSA305& CtiProtocolSA305::setPadBits(int val)
+{
+    _startBits = val & 0x00000003;  // Two bits.
+    return *this;
+}
+
+RWCString CtiProtocolSA305::getBitString() const
+{
+    return _bitStr;
+}
+
 

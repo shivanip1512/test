@@ -9,10 +9,13 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2004/11/08 14:40:39 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2004/11/17 23:42:38 $
 * HISTORY      :
 * $Log: prot_sa305.h,v $
+* Revision 1.4  2004/11/17 23:42:38  cplender
+* Complete 305 for RTC transmitter
+*
 * Revision 1.3  2004/11/08 14:40:39  cplender
 * 305 Protocol should send controls on RTCs now.
 *
@@ -61,6 +64,8 @@ protected:
 
 private:
 
+    int _padBits;            // For RTC trx this is 00b.
+    int _startBits;         // May be 100 = "4" or 101 = "5" For adaptive algorithm.
     bool _messageReady;
 
     int _serial;            // 22-bit
@@ -104,7 +109,7 @@ private:
     float _percentageOff;   // Percentage of the cycle that the loads are to be shed.
 
 
-    bool _rtcTarget;            // Wrap the protocol in RTC love.
+    int _transmitterType;       // ? Transmitter
     int _transmitterAddress;    // Used for RTC targeted 305 messages
     BYTE _rtcResponse;          // Should the RTC respond to commands?
 
@@ -132,6 +137,10 @@ private:
      */
     int solveStrategy(CtiCommandParser &parse);
 
+    static bool _noCRC;
+
+    RWCString _bitStr;
+
 public:
 
     enum
@@ -151,6 +160,12 @@ public:
 
     int parseCommand(CtiCommandParser &parse, CtiOutMessage &OutMessage);
     void dumpBits() const;
+
+    int getStartBits() const;
+    CtiProtocolSA305& setStartBits(int val);
+
+    int getPadBits() const;                 // Two bit prequel used for rtcTargets.
+    CtiProtocolSA305& setPadBits(int val);
 
     int getSerial() const;
     CtiProtocolSA305& setSerial(int val);
@@ -210,9 +225,11 @@ public:
     int buildMessage(int mode, CHAR *buffer) const;      // Returns the length in characters of this message.
 
     CtiProtocolSA305& setTransmitterAddress( int val );
-    CtiProtocolSA305& setRTCTarget( bool bv = true );
+
+    CtiProtocolSA305& setTransmitterType( int trans );
     CtiProtocolSA305& setRTCResponse( bool bv = true ); // Should the RTC respond to commands.
 
+    RWCString getBitString() const;
 
 };
 #endif // #ifndef __PROT_SA305_H__

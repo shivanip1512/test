@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_xcu.cpp-arc  $
-* REVISION     :  $Revision: 1.34 $
-* DATE         :  $Date: 2004/11/08 14:40:40 $
+* REVISION     :  $Revision: 1.35 $
+* DATE         :  $Date: 2004/11/17 23:42:51 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -727,6 +727,8 @@ INT CtiRouteXCU::assembleSA305Request(CtiRequestMsg *pReq,
 
     CtiProtocolSA305 prot305;
 
+    prot305.setTransmitterType(_transmitterDevice->getType());
+    prot305.setTransmitterAddress(_transmitterDevice->getAddress());
     prot305.parseCommand(parse, *OutMessage);
 
     if(prot305.messageReady())
@@ -764,9 +766,6 @@ INT CtiRouteXCU::assembleSA305Request(CtiRequestMsg *pReq,
                 }
             case TYPE_RTC:
                 {
-                    prot305.setRTCTarget(true);
-                    prot305.setTransmitterAddress(_transmitterDevice->getAddress());
-
                     NewOutMessage->EventCode = RESULT | ENCODED;
                     NewOutMessage->Buffer.SASt._groupType = SA305;
 
@@ -779,7 +778,7 @@ INT CtiRouteXCU::assembleSA305Request(CtiRequestMsg *pReq,
                     {
                         byteString += CtiNumStr(NewOutMessage->Buffer.SASt._buffer[i]).hex().zpad(2) + " ";
                     }
-                    byteString += "\n";
+                    byteString += "\n" + prot305.getBitString() + "\n";
 
                     outList.insert( NewOutMessage );
                     NewOutMessage = 0;
