@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct31X.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2002/10/29 17:21:48 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2002/11/07 22:53:08 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -24,7 +24,7 @@
 #include "pt_numeric.h"
 #include "numstr.h"
 #include "portsup.h"
-
+#include "dllyukon.h"
 
 set< CtiDLCCommandStore > CtiDeviceMCT31X::_commandStore;
 
@@ -661,7 +661,16 @@ INT CtiDeviceMCT31X::decodeStatus(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
                             //  good data must translate it
                             Value = translateStatusValue(pPoint->getPointOffset(), pPoint->getType(), getType(), StatusData);
 
-                            resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value);
+                            resultString = ResolveStateName(pPoint->getStateGroupID(), Value);
+
+                            if( resultString != "" )
+                            {
+                                resultString = getName() + " / " + pPoint->getName() + ":" + resultString;
+                            }
+                            else
+                            {
+                                resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value);
+                            }
 
                             pData = new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, StatusPointType, resultString);
 

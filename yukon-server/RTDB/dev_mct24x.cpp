@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct2XX.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/10/11 19:57:58 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2002/11/07 22:53:08 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -28,6 +28,7 @@
 #include "pt_numeric.h"
 #include "yukon.h"
 #include "numstr.h"
+#include "dllyukon.h"
 
 set< CtiDLCCommandStore > CtiDeviceMCT24X::_commandStore;
 
@@ -605,7 +606,17 @@ INT CtiDeviceMCT24X::decodeScanStatus(INMESS *InMessage, RWTime &TimeNow, RWTPtr
                 //  Send this value to requestor via retList.
                 if(pPoint != NULL)
                 {
-                    rwtemp = getName() + " / " + pPoint->getName() + ":" + disc;
+                    rwtemp = ResolveStateName(pPoint->getStateGroupID(), Value);
+
+                    if( rwtemp != "" )
+                    {
+                        rwtemp = getName() + " / " + pPoint->getName() + ":" + rwtemp;
+                    }
+                    else
+                    {
+                        rwtemp = getName() + " / " + pPoint->getName() + ":" + disc;
+                    }
+
 
                     pData = new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, StatusPointType, rwtemp);
                     if(pData != NULL)
@@ -635,20 +646,20 @@ INT CtiDeviceMCT24X::decodeScanStatus(INMESS *InMessage, RWTime &TimeNow, RWTPtr
             {
                 case 0x42:
                 {
-                    Value = CLOSED;
-                    rwtemp += " SERVICE CONNECT ENABLED";
+                    Value  = CLOSED;
+                    rwtemp = " SERVICE CONNECT ENABLED";
                     break;
                 }
                 case 0x41:
                 {
-                    Value = OPENED;
-                    rwtemp += " SERVICE DISCONNECTED";
+                    Value  = OPENED;
+                    rwtemp = " SERVICE DISCONNECTED";
                     break;
                 }
                 default:
                 {
-                    Value = INVALID;
-                    rwtemp += " UNKNOWN / No Disconnect Status";
+                    Value  = INVALID;
+                    rwtemp = " UNKNOWN / No Disconnect Status";
                     break;
                 }
             }
