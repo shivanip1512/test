@@ -229,7 +229,7 @@ function changeProgSelection(chkBox) {
                   <tr>
                     <td align="center"> 
                       <input type="submit" name="Config" value="Config">
-                      <input type="button" name="SaveToBatch" value="Save To Batch" onclick="saveToBatch(this.form)">
+                      <input type="button" name="SaveBatch" value="Save To Batch" onclick="saveToBatch(this.form)">
 					  <input type="button" name="SaveConfig" value="Save Config Only" onclick="saveConfigOnly(this.form)">
                     </td>
                   </tr>
