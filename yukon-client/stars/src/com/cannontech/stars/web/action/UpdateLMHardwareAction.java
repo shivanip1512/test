@@ -109,6 +109,7 @@ public class UpdateLMHardwareAction implements ActionBase {
             StarsDeleteLMHardware deleteHw = reqOper.getStarsDeleteLMHardware();
             
             LiteInventoryBase liteInv = null;
+            int origInvID = 0;
             
             if (deleteHw != null) {
             	// Build up request message for adding new hardware and preserving old hardware configuration
@@ -131,6 +132,7 @@ public class UpdateLMHardwareAction implements ActionBase {
             	DeleteLMHardwareAction.removeInventory(deleteHw.getInventoryID(), liteAcctInfo, energyCompany, target, conn);
             	
 				liteInv = CreateLMHardwareAction.addInventory( createHw, liteAcctInfo, energyCompany, conn );
+				origInvID = deleteHw.getInventoryID();
             }
             else {
 				liteInv = energyCompany.getInventory( updateHw.getInventoryID(), true );
@@ -165,7 +167,7 @@ public class UpdateLMHardwareAction implements ActionBase {
 			StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteInv.getAccountID() );
 			if (starsAcctInfo != null) {
 				StarsInventory starsInv = StarsLiteFactory.createStarsInventory(liteInv, energyCompany);
-				parseResponse(liteInv.getInventoryID(), starsInv, starsAcctInfo, session);
+				parseResponse(origInvID, starsInv, starsAcctInfo, session);
 			}
             
             respOper.setStarsSuccess( new StarsSuccess() );
@@ -348,7 +350,7 @@ public class UpdateLMHardwareAction implements ActionBase {
 		}
 		
 		String redirect = (String) session.getAttribute(ServletUtils.ATT_REDIRECT);
-		if (redirect.indexOf("InvId=") < 0) {
+		if (redirect != null && redirect.indexOf("InvId=") < 0) {
 			// redirect should ends with "InvNo=X" or "Item=X", replace "X" with the new location
 			int pos = redirect.lastIndexOf( '=' );
 			session.setAttribute(ServletUtils.ATT_REDIRECT, redirect.substring(0, pos+1) + index);
