@@ -65,24 +65,38 @@ public class YC extends Observable implements Runnable
 	private YCDefaults ycDefaults = null;
 	
 	public class OutputMessage{
-		public static final int DISPLAY_MESSAGE = 0;
-		public static final int DEBUG_MESSAGE = 1;
-		public int type = DEBUG_MESSAGE;
-		public String text;
-		public java.awt.Color color = java.awt.Color.black;
-		public boolean isUnderline = false; 
-		public OutputMessage(int type_, String message_, java.awt.Color color_)
+		public static final int DISPLAY_MESSAGE = 0;	//YC defined text
+		public static final int DEBUG_MESSAGE = 1;		//Porter defined text
+		private int type = DEBUG_MESSAGE;
+		private String text;
+		private int status = Integer.MIN_VALUE;
+		private boolean isUnderline = false;
+
+		public OutputMessage(int type_, String message_)
 		{
-			this(type_, message_, color_, false);
+			this(type_, message_, Integer.MIN_VALUE, false);
 		}
-		public OutputMessage(int type_, String message_, java.awt.Color color_, boolean underline_)
+		public OutputMessage(int type_, String message_, boolean underline_)
+		{
+			this(type_, message_, Integer.MIN_VALUE, underline_);
+		}
+		
+		public OutputMessage(int type_, String message_, int status_)
+		{
+			this(type_, message_, status_, false);
+		}
+		public OutputMessage(int type_, String message_, int status_, boolean underline_)
 		{
 			super();
 			type = type_;
 			text = message_;
-			color = color_;
+			status = status_;
 			isUnderline = underline_;
 		}
+		public boolean isUnderline() { return isUnderline; }
+		public int getStatus(){ return status; }
+		public String getText(){ return text; }
+		public int getType(){ return type; }
 	}
 	/**
 	 * YC constructor comment.
@@ -803,7 +817,7 @@ public class YC extends Observable implements Runnable
 							{
 //								textColor = java.awt.Color.black;
 								debugOutput = "\n["+ format.format(ret.getTimeStamp()) + "]-{" + ret.getUserMessageID() +"} Return from \'" + ret.getCommandString() + "\'\n";
-								message = new OutputMessage(OutputMessage.DEBUG_MESSAGE, debugOutput, textColor);
+								message = new OutputMessage(OutputMessage.DEBUG_MESSAGE, debugOutput);
 								setChanged();
 								this.notifyObservers(message);
 								debugOutput = "";
@@ -812,7 +826,7 @@ public class YC extends Observable implements Runnable
 								if( firstTime && getLoopType() != YC.NOLOOP)
 								{
 									displayOutput = "\n\nROUTE\t\t\tVALID\t\tERROR";
-									message = new OutputMessage(OutputMessage.DISPLAY_MESSAGE, displayOutput, textColor, true);
+									message = new OutputMessage(OutputMessage.DISPLAY_MESSAGE, displayOutput, true);
 									setChanged();
 									this.notifyObservers(message);
 									displayOutput = "";
@@ -872,7 +886,7 @@ public class YC extends Observable implements Runnable
 		
 								if( getLoopType() != YC.NOLOOP)
 								{
-									message = new OutputMessage(OutputMessage.DISPLAY_MESSAGE, displayOutput, textColor);
+									message = new OutputMessage(OutputMessage.DISPLAY_MESSAGE, displayOutput, ret.getStatus());
 									setChanged();
 									this.notifyObservers(message);									
 								}
@@ -882,7 +896,7 @@ public class YC extends Observable implements Runnable
 								debugOutput += ret.getResultString() + "\n";
 							}
 							
-							message = new OutputMessage(OutputMessage.DEBUG_MESSAGE, debugOutput, textColor);
+							message = new OutputMessage(OutputMessage.DEBUG_MESSAGE, debugOutput, ret.getStatus());
 							setChanged();
 							this.notifyObservers(message);
 							synchronized ( YukonCommander.class )
@@ -923,7 +937,7 @@ public class YC extends Observable implements Runnable
 									{
 										debugOutput = "Command cancelled\n";
 										textColor = getYCDefaults().getInvalidTextColor();
-										message = new OutputMessage(OutputMessage.DEBUG_MESSAGE, debugOutput, textColor);
+										message = new OutputMessage(OutputMessage.DEBUG_MESSAGE, debugOutput, ret.getStatus());
 										setChanged();
 										this.notifyObservers(message);
 									}
