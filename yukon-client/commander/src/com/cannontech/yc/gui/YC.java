@@ -7,6 +7,8 @@ package com.cannontech.yc.gui;
  */
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileWriter;
 import java.util.Observable;
 import java.util.StringTokenizer;
 import java.util.Vector;
@@ -16,6 +18,7 @@ import javax.swing.Timer;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.functions.CommandFuncs;
+import com.cannontech.database.cache.functions.DeviceFuncs;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
@@ -162,9 +165,44 @@ public class YC extends Observable implements MessageListener
 		super();
 		ycDefaults = new YCDefaults(loadDefaultsFromFile_);
 		getPilConn().addMessageListener(this);
+//		loadCustomCommandsFromDatabase();
 	}
 
-    private IServerConnection getPilConn()
+    /**
+	 * 
+	 */
+	private void loadCustomCommandsFromDatabase()
+	{
+		
+		File f = new File(CtiUtilities.getCommandsDirPath()+"custom/");
+		
+		String []fileNames = f.list();
+		{
+			for (int i = 0; i < fileNames.length; i++)
+			{
+				System.out.println(fileNames[i]);
+				int extIndex= fileNames[i].lastIndexOf('.');
+				if( extIndex > 0 )
+					if( PAOGroups.getDeviceType(fileNames[i].substring(0, extIndex)) != PAOGroups.INVALID)
+						writeProcessedFile(fileNames[i]);
+			}
+		}
+		// TODO Auto-generated method stub
+		
+	}
+	
+	/**
+	 */
+	public void writeProcessedFile(String procFileName)
+	{
+		File  file = new File(CtiUtilities.getCommandsDirPath()+"custom/" + procFileName);
+		File destFile = new File(CtiUtilities.getCommandsDirPath()+"processed/");
+		destFile.mkdirs();
+		destFile = new File(CtiUtilities.getCommandsDirPath()+"processed/" + procFileName);
+		file.renameTo(destFile);
+	}		
+	
+	private IServerConnection getPilConn()
     {
         return ConnPool.getInstance().getDefPorterConn();        
     }
