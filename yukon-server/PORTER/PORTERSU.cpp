@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTERSU.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2002/12/19 20:26:09 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2003/01/07 17:49:12 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -258,11 +258,7 @@ ReportDeviceError (CtiDeviceBase    *DeviceRecord, CtiPortSPtr PortRecord, ERRST
 
     /* Figure out what to use for a port name */
 
-    if(PortRecord->getType() & TCPIPSERVER)
-    {
-        memcpy (ComErrorRecord.RouteName, DeviceRecord->getName(), STANDNAMLEN);
-    }
-    else if(PortRecord->isTCPIPPort())
+    if(PortRecord->isTCPIPPort())
     {
         memcpy (ComErrorRecord.RouteName + 2, PortRecord->getIPAddress(), STANDNAMLEN - 2);
     }
