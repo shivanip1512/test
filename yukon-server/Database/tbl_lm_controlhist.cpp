@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_lm_controlhist.cpp-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2004/06/08 16:42:11 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2004/07/08 19:47:07 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -666,12 +666,6 @@ CtiTableLMControlHistory& CtiTableLMControlHistory::incrementTimes(const RWTime 
             if(partialIncrement <= increment )    // Be cautious since the last log may be many days ago.. We only want continuous controls to be recorded.
             {
                 LONG offtime = ( (double)getReductionRatio() * (double)(partialIncrement) / 100.0 );
-
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << " Partial Increment = " << partialIncrement << endl;
-                }
 
                 CtiTableLMControlHistory closeLog(*this);       // make a copy
                 closeLog.setActiveRestore(LMAR_PERIOD_TRANSITION);
