@@ -22,6 +22,7 @@ public class LoginController extends javax.servlet.http.HttpServlet {
 	// These should be moved into global type properties
 	// so we can change them at runtime FIXFIX 
 	private static final String INVALID_URI = "/login.jsp?failed=true";
+	private static final String INVALID_PARAMS = "failed=true";
 	private static final String LOGIN_URI = "/login.jsp";
 		
 	private static final String ACTION = com.cannontech.common.constants.LoginController.ACTION;
@@ -52,7 +53,7 @@ public class LoginController extends javax.servlet.http.HttpServlet {
 public void service(HttpServletRequest req, HttpServletResponse resp) throws javax.servlet.ServletException, java.io.IOException 
 {
 	String action = req.getParameter(ACTION).toString();
-	String nextURI = req.getParameter(REDIRECT);
+	String redirectURI = req.getParameter(REDIRECT);
 	String referer = req.getHeader("referer");
 	
 	if(LOGIN.equalsIgnoreCase(action)) {
@@ -66,13 +67,13 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 			HttpSession session = req.getSession(true);
 			try {						
 				initSession(user, session);
+
+				//stash a cookie that might tell us later where they log in at								
+				String loginUrl = AuthFuncs.getRolePropertyValue(user, WebClientRole.LOG_IN_URL, LOGIN_URI);
+				Cookie c = new Cookie(LOGIN_URL_COOKIE, loginUrl);
+				c.setPath("/");
+				resp.addCookie(c);
 				
-				// Remember where they came from								
-				if(referer != null && referer.length() > 0) {
-					Cookie c = new Cookie(LOGIN_URL_COOKIE, referer);
-					c.setPath("/");
-					resp.addCookie(c);
-				}
 			} catch(TransactionException e) {
 				session.invalidate();
 				resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -80,11 +81,20 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 
 			resp.sendRedirect(req.getContextPath() + home_url);
 		}
-		else {
-			if (nextURI == null)
-				nextURI = req.getContextPath() + INVALID_URI;
-			resp.sendRedirect(nextURI);
-		}		
+		else {  // Login failed, send them on their way using one of
+				// REDIRECT parameter, referer, INVALID_URI in that order 
+			if (redirectURI == null) {
+				if(referer != null) {
+					redirectURI = referer;
+					if(!redirectURI.endsWith(INVALID_PARAMS)) 
+						redirectURI += "?" + INVALID_PARAMS;	
+				}
+				else {
+					redirectURI = req.getContextPath() + INVALID_URI;
+				}
+			}
+			resp.sendRedirect(redirectURI);
+		}			
 	}
 	else 
 	if(LOGOUT.equalsIgnoreCase(action)) {
@@ -106,15 +116,16 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 			for(int i = 0; i < cookies.length; i++) {
 				Cookie c = cookies[i];
 				if(c.getName().equalsIgnoreCase(LOGIN_URL_COOKIE)) {
-					nextURI = c.getValue();
+					redirectURI = c.getValue();
 				}
 			}
 		}					
 		
-		if (nextURI == null) nextURI = LOGIN_URI;
-		if (nextURI.charAt(0) == '/')
-			nextURI = req.getContextPath() + nextURI;
-		resp.sendRedirect(nextURI);
+		if (redirectURI == null) {
+			redirectURI = req.getContextPath() + LOGIN_URI; 
+		}
+		
+		resp.sendRedirect(redirectURI);
 	} 
 	else 
 	if(CLIENT_LOGIN.equalsIgnoreCase(action)){
