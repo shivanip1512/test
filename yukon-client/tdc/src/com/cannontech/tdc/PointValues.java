@@ -402,6 +402,13 @@ public void setDecimalPlaces(Integer newDecimalPlaces) {
 	decimalPlaces = newDecimalPlaces;
 }
 
+
+public void setTags( long tags_ )
+{
+	getPointData().setTags( tags_ );
+}
+
+
 /**
  * Insert the method's description here.
  * Creation date: (8/15/00 5:14:11 PM)

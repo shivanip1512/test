@@ -1398,6 +1398,17 @@ protected void insertAlarmDisplayAlarmedRow( Signal signal )
 
 					if( rowLoc < 0 )  // if the point does not already exist on the table
 					{
+						//always keep our main list in order by the Date column
+//						int indx = java.util.Collections.binarySearch( 
+//								getRows(),
+//								newBus, 
+//								SUB_AREA_COMPARATOR );
+//
+//						if( indx < 0 )
+//							getAllSubBuses().add( newBus );
+//						else
+//							getAllSubBuses().add( indx, newBus );
+						
 						int addedRows = addColumnDefinedRow(signal);
 						incrementAlarmedRowsPosition( addedRows );
 						fireTableRowsInserted( getRowCount()-addedRows, getRowCount()-1 );												
@@ -1700,6 +1711,26 @@ public synchronized void processSignalReceived( Signal signal )
 					rNum );
 		}
 	}
+	else  //handle EVENTS here (these signals should never be in our table)
+	{
+		// find the row number that has this pointid
+		int rNum = getRowNumber(signal.getPointID());
+		PointValues ptVal = getPointValue(rNum);
+
+		//change the PointDatas tags preserving the alarms bits for the PointData
+		if( ptVal != null )
+		{
+			ptVal.setTags( 
+				(ptVal.getTags() & Signal.MASK_ANY_ALARM)
+				| (signal.getTags() & ~Signal.MASK_ANY_ALARM) );
+		
+			//we must change our tables row value
+			setCorrectRowValue( 
+					ptVal,
+					rNum );
+		}
+		
+	}
 
 
 	if( !checkFilter(signal) )
@@ -1806,6 +1837,11 @@ public void rowDataSwap( int i, int j )
 				tmp = getAlarmingRowVector().getAlarmingRow(i);
 				getAlarmingRowVector().setElementAt( getAlarmingRowVector().elementAt(jRow), iRow );
 				getAlarmingRowVector().setElementAt( (AlarmingRow)tmp, jRow );
+				
+				
+				//keep our alarm vector elements consistent
+				((AlarmingRow)getAlarmingRowVector().elementAt(iRow)).setRowNumber( i );
+				((AlarmingRow)getAlarmingRowVector().elementAt(jRow)).setRowNumber( j );
 			}
 			else if( isRowInAlarmVector(i) )
 			{
@@ -1819,7 +1855,7 @@ public void rowDataSwap( int i, int j )
 			}
 			else if( isRowInAlarmVector(j) )
 			{
-				// set row j unalarmed and set row i to alarmed				
+				// set row j unalarmed and set row i to alarmed
 				tmp = getAlarmingRowVector().getAlarmingRow(j);
 				((AlarmingRow)tmp).setRowNumber( i );
 
@@ -1830,6 +1866,7 @@ public void rowDataSwap( int i, int j )
 		}
 	}
 
+	// swap the actual rows
 	tmp = getRows().elementAt(i);
 	getRows().setElementAt( getRows().elementAt(j), i );
 	getRows().setElementAt( tmp, j );
