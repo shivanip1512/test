@@ -57,6 +57,7 @@ public class GraphBean implements GraphDefines
 			{
 				htmlBuffer.setModel( tModel);
 	
+	
 				if ( htmlBuffer instanceof TabularHtml)
 				{
 					((TabularHtml) htmlBuffer).setTabularStartDate(new Date(tModel.getStartDate().getTime() + (86400000 * (new Integer(page -1).longValue()) )) );
@@ -183,8 +184,7 @@ public class GraphBean implements GraphDefines
 		if( newGdefid != gdefid)
 		{
 			gdefid = newGdefid;
-			getGraph().setCurrentGraphDefinition( retrieveGdef(gdefid));
-			setGraphDefinitionDates ( null, null );	
+			getGraph().setGraphDefinition(newGdefid);			
 			getGraph().setUpdateTrend(true);		
 		}
 	}
@@ -197,39 +197,6 @@ public class GraphBean implements GraphDefines
 		return gdefid;
 	}
 	
-	/**
-	 * Method retrieveGdef.
-	 * @param gdefid int
-	 * @return GraphDefinition
-	 */
-	private com.cannontech.database.data.graph.GraphDefinition retrieveGdef(int gdefid)
-	{
-		com.cannontech.database.data.graph.GraphDefinition gDef = new com.cannontech.database.data.graph.GraphDefinition();
-		gDef.getGraphDefinition().setGraphDefinitionID(new Integer(gdefid));
-		
-		if (gDef != null)
-		{			
-			java.sql.Connection conn = null;
-			try
-			{
-				conn = com.cannontech.database.PoolManager.getInstance().getConnection(com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
-				gDef.setDbConnection(conn);
-				gDef.retrieve();
-		
-				// Lose the reference to the connection
-				gDef.setDbConnection(null);
-			}
-			catch( java.sql.SQLException e )
-			{
-				e.printStackTrace();		 
-			}
-			finally
-			{   //make sure to close the connection
-				try { if( conn != null ) conn.close(); } catch( java.sql.SQLException e2 ) { e2.printStackTrace(); };
-			}
-		}
-		return gDef;
-	}
 	/**
 	 * Method getStop.
 	 * @return Date
@@ -301,38 +268,6 @@ public class GraphBean implements GraphDefines
 		System.setProperty("cti.app.name", "Trending");
 		GraphBean gb = new GraphBean();
 	}
-	
-	/**
-	 * Method setGraphDefinitionDates.
-	 * @param newStart java.util.Date
-	 * @param newStop java.util.Date
-	 */
-	/**
-	 * Set the current GraphDefinition's start Date and end Dates.
-	 *  Check for null allows this function to compute the start and end dates.
-	 *  If they are not null, then we just set the current graphDefinition dates to those
-	 * 	 passed in through the function call.
-	 * Creation date: (6/7/2001 12:27:23 PM)
-	 * @param newStart java.util.Date
-	 * @param newStop java.util.Date
-	 */
-	public void setGraphDefinitionDates(Date newStart, Date newStop)
-	{
-		if (newStart == null )
-		{
-			newStart = getStartDate();
-		}
-	
-		if (newStop == null)
-		{
-			newStop = com.cannontech.util.ServletUtil.getEndingDateOfInterval( newStart, getPeriod().toString() );
-		}
-	
-		newStart = com.cannontech.util.ServletUtil.getStartingDateOfInterval( newStart, getPeriod().toString() );
-	
-		getGraph().getCurrentGraphDefinition().getGraphDefinition().setStartDate(newStart);
-		getGraph().getCurrentGraphDefinition().getGraphDefinition().setStopDate(newStop);
-	}
 	/**
 	 * Method setFormat.
 	 * @param newFormat java.lang.String
@@ -372,7 +307,6 @@ public class GraphBean implements GraphDefines
 	 */
 	public void updateCurrentPane()
 	{
-		setGraphDefinitionDates(null, null);
 		if( getViewType() == TrendModelType.TABULAR_VIEW)
 		{
 			getGraph().update();
