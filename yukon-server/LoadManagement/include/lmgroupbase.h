@@ -40,72 +40,72 @@ public:
 
     virtual ~CtiLMGroupBase();
     
-    LONG getPAOId() const;
-    const RWCString& getPAOCategory() const;
-    const RWCString& getPAOClass() const;
-    const RWCString& getPAOName() const;
-    LONG getPAOType() const;
-    const RWCString& getPAODescription() const;
-    BOOL getDisableFlag() const;
-    LONG getGroupOrder() const;
-    DOUBLE getKWCapacity() const;
-    LONG getChildOrder() const;
-    BOOL getAlarmInhibit() const;
-    BOOL getControlInhibit() const;
-    LONG getGroupControlState() const;
-    LONG getCurrentHoursDaily() const;
-    LONG getCurrentHoursMonthly() const;
-    LONG getCurrentHoursSeasonal() const;
-    LONG getCurrentHoursAnnually() const;
-    const RWDBDateTime& getLastControlSent() const;
-    const RWDBDateTime& getControlStartTime() const;
-    const RWDBDateTime& getControlCompleteTime() const;
-    const RWDBDateTime& getNextControlTime() const; //FIXME
+    virtual LONG getPAOId() const;
+    virtual const RWCString& getPAOCategory() const;
+    virtual const RWCString& getPAOClass() const;
+    virtual const RWCString& getPAOName() const;
+    virtual LONG getPAOType() const;
+    virtual const RWCString& getPAODescription() const;
+    virtual BOOL getDisableFlag() const;
+    virtual LONG getGroupOrder() const;
+    virtual DOUBLE getKWCapacity() const;
+    virtual LONG getChildOrder() const;
+    virtual BOOL getAlarmInhibit() const;
+    virtual BOOL getControlInhibit() const;
+    virtual LONG getGroupControlState() const;
+    virtual LONG getCurrentHoursDaily() const;
+    virtual LONG getCurrentHoursMonthly() const;
+    virtual LONG getCurrentHoursSeasonal() const;
+    virtual LONG getCurrentHoursAnnually() const;
+    virtual const RWDBDateTime& getLastControlSent() const;
+    virtual const RWDBDateTime& getControlStartTime() const;
+    virtual const RWDBDateTime& getControlCompleteTime() const;
+    virtual const RWDBDateTime& getNextControlTime() const; //FIXME
 
-    bool getIsRampingIn() const;
-    bool getIsRampingOut() const;
+    virtual bool getIsRampingIn() const;
+    virtual bool getIsRampingOut() const;
     
-    LONG getHoursDailyPointId() const;
-    LONG getHoursMonthlyPointId() const;
-    LONG getHoursSeasonalPointId() const;
-    LONG getHoursAnnuallyPointId() const;
-    LONG getControlStatusPointId() const;
-    const RWCString& getLastControlString() const;
+    virtual LONG getHoursDailyPointId() const;
+    virtual LONG getHoursMonthlyPointId() const;
+    virtual LONG getHoursSeasonalPointId() const;
+    virtual LONG getHoursAnnuallyPointId() const;
+    virtual LONG getControlStatusPointId() const;
+    virtual const RWCString& getLastControlString() const;
 
-    CtiLMGroupBase& setPAOId(LONG id);
-    CtiLMGroupBase& setPAOCategory(const RWCString& category);
-    CtiLMGroupBase& setPAOClass(const RWCString& pclass);
-    CtiLMGroupBase& setPAOName(const RWCString& name);
-    CtiLMGroupBase& setPAOType(LONG type);
-    CtiLMGroupBase& setPAODescription(const RWCString& description);
-    CtiLMGroupBase& setDisableFlag(BOOL disable);
-    CtiLMGroupBase& setGroupOrder(LONG order);
-    CtiLMGroupBase& setKWCapacity(DOUBLE kwcap);
-    CtiLMGroupBase& setChildOrder(LONG order);
-    CtiLMGroupBase& setAlarmInhibit(BOOL alarm);
-    CtiLMGroupBase& setControlInhibit(BOOL control);
-    CtiLMGroupBase& setGroupControlState(LONG controlstate);
-    CtiLMGroupBase& setCurrentHoursDaily(LONG daily);
-    CtiLMGroupBase& setCurrentHoursMonthly(LONG monthly);
-    CtiLMGroupBase& setCurrentHoursSeasonal(LONG seasonal);
-    CtiLMGroupBase& setCurrentHoursAnnually(LONG annually);
-    CtiLMGroupBase& setLastControlSent(const RWDBDateTime& controlsent);
-    CtiLMGroupBase& setControlStartTime(const RWDBDateTime& start);
-    CtiLMGroupBase& setControlCompleteTime(const RWDBDateTime& complete);
-    CtiLMGroupBase& setNextControlTime(const RWDBDateTime& controltime);
-    void setInternalState(unsigned state);
-    
-    CtiLMGroupBase& setIsRampingIn(bool in);
-    CtiLMGroupBase& setIsRampingOut(bool out);
-    CtiLMGroupBase& resetInternalState();
-    
-    CtiLMGroupBase& setHoursDailyPointId(LONG dailyid);
-    CtiLMGroupBase& setHoursMonthlyPointId(LONG monthlyid);
-    CtiLMGroupBase& setHoursSeasonalPointId(LONG seasonalid);
-    CtiLMGroupBase& setHoursAnnuallyPointId(LONG annuallyid);
-    CtiLMGroupBase& setControlStatusPointId(LONG cntid);
-    CtiLMGroupBase& setLastControlString(const RWCString& controlstr);
-    
+    virtual CtiLMGroupBase& setPAOId(LONG id);
+    virtual CtiLMGroupBase& setPAOCategory(const RWCString& category);
+    virtual CtiLMGroupBase& setPAOClass(const RWCString& pclass);
+    virtual CtiLMGroupBase& setPAOName(const RWCString& name);
+    virtual CtiLMGroupBase& setPAOType(LONG type);
+    virtual CtiLMGroupBase& setPAODescription(const RWCString& description);
+    virtual CtiLMGroupBase& setDisableFlag(BOOL disable);
+    virtual CtiLMGroupBase& setGroupOrder(LONG order);
+    virtual CtiLMGroupBase& setKWCapacity(DOUBLE kwcap);
+    virtual CtiLMGroupBase& setChildOrder(LONG order);
+    virtual CtiLMGroupBase& setAlarmInhibit(BOOL alarm);
+    virtual CtiLMGroupBase& setControlInhibit(BOOL control);
+    virtual CtiLMGroupBase& setGroupControlState(LONG controlstate);
+    virtual CtiLMGroupBase& setCurrentHoursDaily(LONG daily);
+    virtual CtiLMGroupBase& setCurrentHoursMonthly(LONG monthly);
+    virtual CtiLMGroupBase& setCurrentHoursSeasonal(LONG seasonal);
+    virtual CtiLMGroupBase& setCurrentHoursAnnually(LONG annually);
+    virtual CtiLMGroupBase& setLastControlSent(const RWDBDateTime& controlsent);
+    virtual CtiLMGroupBase& setControlStartTime(const RWDBDateTime& start);
+    virtual CtiLMGroupBase& setControlCompleteTime(const RWDBDateTime& complete);
+    virtual CtiLMGroupBase& setNextControlTime(const RWDBDateTime& controltime);
+    virtual void setInternalState(unsigned state);
+
+    virtual CtiLMGroupBase& setIsRampingIn(bool in);
+    virtual CtiLMGroupBase& setIsRampingOut(bool out);
+    virtual CtiLMGroupBase& resetInternalState();
+
+    virtual CtiLMGroupBase& setHoursDailyPointId(LONG dailyid);
+    virtual CtiLMGroupBase& setHoursMonthlyPointId(LONG monthlyid);
+    virtual CtiLMGroupBase& setHoursSeasonalPointId(LONG seasonalid);
+    virtual CtiLMGroupBase& setHoursAnnuallyPointId(LONG annuallyid);
+    virtual CtiLMGroupBase& setControlStatusPointId(LONG cntid);
+    virtual CtiLMGroupBase& setLastControlString(const RWCString& controlstr);
+
     virtual void dumpDynamicData();
     virtual void dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime);
 

@@ -37,6 +37,8 @@ RWDECLARE_COLLECTABLE( CtiLMGroupEmetcon )
 
     virtual ~CtiLMGroupEmetcon();
     
+    virtual CtiLMGroupBase& setGroupControlState(LONG controlstate);
+    
     virtual CtiLMGroupBase* replicate() const;
     virtual CtiRequestMsg* createTimeRefreshRequestMsg(LONG refreshRate, LONG shedTime, int priority) const;
     virtual CtiRequestMsg* createSmartCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, int priority) const;

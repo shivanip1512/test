@@ -47,6 +47,22 @@ CtiLMGroupEmetcon::~CtiLMGroupEmetcon()
 {
 }
 
+
+/*----------------------------------------------------------------------------
+  setGroupControlState
+
+  This is overridden so we can reset some internat state when our control
+  state changes.
+----------------------------------------------------------------------------*/
+CtiLMGroupBase& CtiLMGroupEmetcon::setGroupControlState(LONG controlstate)
+{
+    if(getGroupControlState() == CtiLMGroupBase::ActiveState)
+    {
+        _refreshsent = FALSE;
+    }
+    return CtiLMGroupBase::setGroupControlState(controlstate);
+}
+
 /*-------------------------------------------------------------------------
     createTimeRefreshRequestMsg
 
