@@ -105,7 +105,7 @@
 		<xs:attribute name="accountID" type="xs:int"/>
 		<xs:attribute name="customerID" type="xs:int"/>
 	</xs:complexType>
-	<xs:complexType name="stars-Inventory">
+	<xs:complexType name="stars-Inv">
 		<xs:sequence>
 			<xs:element name="Category" type="xs:string" minOccurs="0"/>
 			<xs:element name="DeviceLabel" type="xs:string" minOccurs="0"/>
@@ -119,6 +119,23 @@
 			<xs:element name="DeviceStatus" type="stars-CustListEntry" minOccurs="0"/>
 			<xs:element name="InstallationNotes" type="xs:string" minOccurs="0"/>
 			<xs:element ref="stars-LMHardwareHistory" minOccurs="0"/>
+			<xs:element name="LMHardware" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="LMHardwareType" type="stars-CustListEntry"/>
+						<xs:element name="ManufacturerSerialNumber" type="xs:string"/>
+						<xs:element ref="stars-LMHardwareConfig" minOccurs="0" maxOccurs="unbounded"/>
+						<xs:element ref="stars-ThermostatSettings" minOccurs="0"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="MCT" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="DeviceName" type="xs:string"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
 		</xs:sequence>
 		<xs:attribute name="inventoryID" type="xs:int"/>
 		<xs:attribute name="deviceID" type="xs:int"/>
@@ -218,27 +235,6 @@
 		<xs:attribute name="inventoryID" type="xs:int"/>
 		<xs:attribute name="lmProgramID" type="xs:int"/>
 	</xs:complexType>
-	<xs:complexType name="stars-LMHw">
-		<xs:complexContent>
-			<xs:extension base="stars-Inventory">
-				<xs:sequence>
-					<xs:element name="LMDeviceType" type="stars-CustListEntry" minOccurs="0"/>
-					<xs:element name="ManufactureSerialNumber" type="xs:string" minOccurs="0"/>
-					<xs:element ref="stars-LMHardwareConfig" minOccurs="0" maxOccurs="unbounded"/>
-					<xs:element ref="stars-ThermostatSettings" minOccurs="0"/>
-				</xs:sequence>
-			</xs:extension>
-		</xs:complexContent>
-	</xs:complexType>
-	<xs:complexType name="stars-Device">
-		<xs:complexContent>
-			<xs:extension base="stars-Inventory">
-				<xs:sequence>
-					<xs:element name="DeviceName" type="xs:string"/>
-				</xs:sequence>
-			</xs:extension>
-		</xs:complexContent>
-	</xs:complexType>
 	<xs:complexType name="stars-CustListEntry">
 		<xs:simpleContent>
 			<xs:extension base="xs:string">
@@ -295,7 +291,6 @@
 			<xs:element ref="stars-ThermostatManualEvent" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element ref="stars-ThermostatDynamicData" minOccurs="0"/>
 		</xs:sequence>
-
 		<xs:attribute name="inventoryID" type="xs:int"/>
 	</xs:complexType>
 	<xs:complexType name="stars-Usr">
@@ -602,13 +597,11 @@
 	<xs:element name="stars-Inventories">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="stars-LMHardware" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="stars-MCT" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="stars-Inventory" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="stars-LMHardware" type="stars-LMHw"/>
-	<xs:element name="stars-MCT" type="stars-Device"/>
+	<xs:element name="stars-Inventory" type="stars-Inv"/>
 	<xs:element name="stars-EnableService">
 		<xs:annotation>
 			<xs:documentation>Enable programs of a customer account</xs:documentation>
@@ -744,7 +737,7 @@
 	<xs:element name="stars-YukonSwitchCommandResponse">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="stars-LMHardware"/>
+				<xs:element ref="stars-Inventory"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -849,22 +842,20 @@
 			<xs:attribute name="applianceID" type="xs:int"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="stars-CreateLMHardware" type="stars-LMHw"/>
+	<xs:element name="stars-CreateLMHardware" type="stars-Inv"/>
 	<xs:element name="stars-CreateLMHardwareResponse">
 		<xs:complexType>
-			<xs:choice>
-				<xs:element ref="stars-LMHardware"/>
-				<xs:element ref="stars-MCT"/>
-			</xs:choice>
+			<xs:sequence>
+				<xs:element ref="stars-Inventory"/>
+			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="stars-UpdateLMHardware" type="stars-LMHw"/>
+	<xs:element name="stars-UpdateLMHardware" type="stars-Inv"/>
 	<xs:element name="stars-UpdateLMHardwareResponse">
 		<xs:complexType>
-			<xs:choice>
-				<xs:element ref="stars-LMHardware"/>
-				<xs:element ref="stars-MCT"/>
-			</xs:choice>
+			<xs:sequence>
+				<xs:element ref="stars-Inventory"/>
+			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="stars-DeleteLMHardware">

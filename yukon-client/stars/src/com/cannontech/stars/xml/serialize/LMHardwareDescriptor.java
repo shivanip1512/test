@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id$
+ * $Id: LMHardwareDescriptor.java,v 1.1 2004/01/21 17:52:17 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,9 +25,9 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision$ $Date$
+ * @version $Revision: 1.1 $ $Date: 2004/01/21 17:52:17 $
 **/
-public class StarsLMHwDescriptor extends com.cannontech.stars.xml.serialize.StarsInventoryDescriptor {
+public class LMHardwareDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
 
       //--------------------------/
@@ -47,10 +47,9 @@ public class StarsLMHwDescriptor extends com.cannontech.stars.xml.serialize.Star
      //- Constructors -/
     //----------------/
 
-    public StarsLMHwDescriptor() {
+    public LMHardwareDescriptor() {
         super();
-        setExtendsWithoutFlatten(new com.cannontech.stars.xml.serialize.StarsInventoryDescriptor());
-        xmlName = "stars-LMHw";
+        xmlName = "LMHardware";
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
@@ -61,54 +60,56 @@ public class StarsLMHwDescriptor extends com.cannontech.stars.xml.serialize.Star
         
         //-- initialize element descriptors
         
-        //-- _LMDeviceType
-        desc = new XMLFieldDescriptorImpl(LMDeviceType.class, "_LMDeviceType", "LMDeviceType", NodeType.Element);
+        //-- _LMHardwareType
+        desc = new XMLFieldDescriptorImpl(LMHardwareType.class, "_LMHardwareType", "LMHardwareType", NodeType.Element);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
-                StarsLMHw target = (StarsLMHw) object;
-                return target.getLMDeviceType();
+                LMHardware target = (LMHardware) object;
+                return target.getLMHardwareType();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
-                    StarsLMHw target = (StarsLMHw) object;
-                    target.setLMDeviceType( (LMDeviceType) value);
+                    LMHardware target = (LMHardware) object;
+                    target.setLMHardwareType( (LMHardwareType) value);
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
             }
             public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new LMDeviceType();
+                return new LMHardwareType();
             }
         } );
         desc.setHandler(handler);
+        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _LMDeviceType
+        //-- validation code for: _LMHardwareType
         fieldValidator = new FieldValidator();
+        fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
-        //-- _manufactureSerialNumber
-        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_manufactureSerialNumber", "ManufactureSerialNumber", NodeType.Element);
+        //-- _manufacturerSerialNumber
+        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_manufacturerSerialNumber", "ManufacturerSerialNumber", NodeType.Element);
         desc.setImmutable(true);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
-                StarsLMHw target = (StarsLMHw) object;
-                return target.getManufactureSerialNumber();
+                LMHardware target = (LMHardware) object;
+                return target.getManufacturerSerialNumber();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
-                    StarsLMHw target = (StarsLMHw) object;
-                    target.setManufactureSerialNumber( (java.lang.String) value);
+                    LMHardware target = (LMHardware) object;
+                    target.setManufacturerSerialNumber( (java.lang.String) value);
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
@@ -119,11 +120,13 @@ public class StarsLMHwDescriptor extends com.cannontech.stars.xml.serialize.Star
             }
         } );
         desc.setHandler(handler);
+        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _manufactureSerialNumber
+        //-- validation code for: _manufacturerSerialNumber
         fieldValidator = new FieldValidator();
+        fieldValidator.setMinOccurs(1);
         { //-- local scope
             StringValidator sv = new StringValidator();
             sv.setWhiteSpace("preserve");
@@ -137,14 +140,14 @@ public class StarsLMHwDescriptor extends com.cannontech.stars.xml.serialize.Star
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
-                StarsLMHw target = (StarsLMHw) object;
+                LMHardware target = (LMHardware) object;
                 return target.getStarsLMHardwareConfig();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
-                    StarsLMHw target = (StarsLMHw) object;
+                    LMHardware target = (LMHardware) object;
                     target.addStarsLMHardwareConfig( (StarsLMHardwareConfig) value);
                 }
                 catch (Exception ex) {
@@ -170,14 +173,14 @@ public class StarsLMHwDescriptor extends com.cannontech.stars.xml.serialize.Star
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
-                StarsLMHw target = (StarsLMHw) object;
+                LMHardware target = (LMHardware) object;
                 return target.getStarsThermostatSettings();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
-                    StarsLMHw target = (StarsLMHw) object;
+                    LMHardware target = (LMHardware) object;
                     target.setStarsThermostatSettings( (StarsThermostatSettings) value);
                 }
                 catch (Exception ex) {
@@ -196,7 +199,7 @@ public class StarsLMHwDescriptor extends com.cannontech.stars.xml.serialize.Star
         fieldValidator = new FieldValidator();
         desc.setValidator(fieldValidator);
         
-    } //-- com.cannontech.stars.xml.serialize.StarsLMHwDescriptor()
+    } //-- com.cannontech.stars.xml.serialize.LMHardwareDescriptor()
 
 
       //-----------/
@@ -214,15 +217,13 @@ public class StarsLMHwDescriptor extends com.cannontech.stars.xml.serialize.Star
     **/
     public org.exolab.castor.mapping.ClassDescriptor getExtends()
     {
-        return super.getExtends();
+        return null;
     } //-- org.exolab.castor.mapping.ClassDescriptor getExtends() 
 
     /**
     **/
     public org.exolab.castor.mapping.FieldDescriptor getIdentity()
     {
-        if (identity == null)
-            return super.getIdentity();
         return identity;
     } //-- org.exolab.castor.mapping.FieldDescriptor getIdentity() 
 
@@ -230,7 +231,7 @@ public class StarsLMHwDescriptor extends com.cannontech.stars.xml.serialize.Star
     **/
     public java.lang.Class getJavaClass()
     {
-        return com.cannontech.stars.xml.serialize.StarsLMHw.class;
+        return com.cannontech.stars.xml.serialize.LMHardware.class;
     } //-- java.lang.Class getJavaClass() 
 
     /**

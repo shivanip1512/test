@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsMCTDescriptor.java,v 1.5 2004/01/15 23:00:42 zyao Exp $
+ * $Id: MCTDescriptor.java,v 1.1 2004/01/21 17:52:18 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,9 +25,9 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.5 $ $Date: 2004/01/15 23:00:42 $
+ * @version $Revision: 1.1 $ $Date: 2004/01/21 17:52:18 $
 **/
-public class StarsMCTDescriptor extends StarsDeviceDescriptor {
+public class MCTDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
 
       //--------------------------/
@@ -47,18 +47,60 @@ public class StarsMCTDescriptor extends StarsDeviceDescriptor {
      //- Constructors -/
     //----------------/
 
-    public StarsMCTDescriptor() {
+    public MCTDescriptor() {
         super();
-        setExtendsWithoutFlatten(new StarsDeviceDescriptor());
-        xmlName = "stars-MCT";
+        xmlName = "MCT";
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
+        
+        //-- set grouping compositor
+        setCompositorAsSequence();
         //-- initialize attribute descriptors
         
         //-- initialize element descriptors
         
-    } //-- com.cannontech.stars.xml.serialize.StarsMCTDescriptor()
+        //-- _deviceName
+        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_deviceName", "DeviceName", NodeType.Element);
+        desc.setImmutable(true);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                MCT target = (MCT) object;
+                return target.getDeviceName();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    MCT target = (MCT) object;
+                    target.setDeviceName( (java.lang.String) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setRequired(true);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _deviceName
+        fieldValidator = new FieldValidator();
+        fieldValidator.setMinOccurs(1);
+        { //-- local scope
+            StringValidator sv = new StringValidator();
+            sv.setWhiteSpace("preserve");
+            fieldValidator.setValidator(sv);
+        }
+        desc.setValidator(fieldValidator);
+        
+    } //-- com.cannontech.stars.xml.serialize.MCTDescriptor()
 
 
       //-----------/
@@ -76,15 +118,13 @@ public class StarsMCTDescriptor extends StarsDeviceDescriptor {
     **/
     public org.exolab.castor.mapping.ClassDescriptor getExtends()
     {
-        return super.getExtends();
+        return null;
     } //-- org.exolab.castor.mapping.ClassDescriptor getExtends() 
 
     /**
     **/
     public org.exolab.castor.mapping.FieldDescriptor getIdentity()
     {
-        if (identity == null)
-            return super.getIdentity();
         return identity;
     } //-- org.exolab.castor.mapping.FieldDescriptor getIdentity() 
 
@@ -92,7 +132,7 @@ public class StarsMCTDescriptor extends StarsDeviceDescriptor {
     **/
     public java.lang.Class getJavaClass()
     {
-        return com.cannontech.stars.xml.serialize.StarsMCT.class;
+        return com.cannontech.stars.xml.serialize.MCT.class;
     } //-- java.lang.Class getJavaClass() 
 
     /**

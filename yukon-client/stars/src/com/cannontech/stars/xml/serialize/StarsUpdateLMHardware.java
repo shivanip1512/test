@@ -25,7 +25,7 @@ import org.xml.sax.ContentHandler;
  * 
  * @version $Revision$ $Date$
 **/
-public class StarsUpdateLMHardware extends StarsLMHw 
+public class StarsUpdateLMHardware extends StarsInv 
 implements java.io.Serializable
 {
 

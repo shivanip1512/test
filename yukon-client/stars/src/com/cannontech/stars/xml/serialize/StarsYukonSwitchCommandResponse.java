@@ -32,7 +32,7 @@ public class StarsYukonSwitchCommandResponse implements java.io.Serializable {
      //- Class/Member Variables -/
     //--------------------------/
 
-    private StarsLMHardware _starsLMHardware;
+    private StarsInventory _starsInventory;
 
 
       //----------------/
@@ -49,14 +49,14 @@ public class StarsYukonSwitchCommandResponse implements java.io.Serializable {
     //-----------/
 
     /**
-     * Returns the value of field 'starsLMHardware'.
+     * Returns the value of field 'starsInventory'.
      * 
-     * @return the value of field 'starsLMHardware'.
+     * @return the value of field 'starsInventory'.
     **/
-    public StarsLMHardware getStarsLMHardware()
+    public StarsInventory getStarsInventory()
     {
-        return this._starsLMHardware;
-    } //-- StarsLMHardware getStarsLMHardware() 
+        return this._starsInventory;
+    } //-- StarsInventory getStarsInventory() 
 
     /**
     **/
@@ -96,14 +96,14 @@ public class StarsYukonSwitchCommandResponse implements java.io.Serializable {
     } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
-     * Sets the value of field 'starsLMHardware'.
+     * Sets the value of field 'starsInventory'.
      * 
-     * @param starsLMHardware the value of field 'starsLMHardware'.
+     * @param starsInventory the value of field 'starsInventory'.
     **/
-    public void setStarsLMHardware(StarsLMHardware starsLMHardware)
+    public void setStarsInventory(StarsInventory starsInventory)
     {
-        this._starsLMHardware = starsLMHardware;
-    } //-- void setStarsLMHardware(StarsLMHardware) 
+        this._starsInventory = starsInventory;
+    } //-- void setStarsInventory(StarsInventory) 
 
     /**
      * 

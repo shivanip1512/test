@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id$
+ * $Id: LMHardwareTypeDescriptor.java,v 1.1 2004/01/21 17:52:17 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,9 +25,9 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision$ $Date$
+ * @version $Revision: 1.1 $ $Date: 2004/01/21 17:52:17 $
 **/
-public class LMDeviceTypeDescriptor extends StarsCustListEntryDescriptor {
+public class LMHardwareTypeDescriptor extends StarsCustListEntryDescriptor {
 
 
       //--------------------------/
@@ -47,10 +47,10 @@ public class LMDeviceTypeDescriptor extends StarsCustListEntryDescriptor {
      //- Constructors -/
     //----------------/
 
-    public LMDeviceTypeDescriptor() {
+    public LMHardwareTypeDescriptor() {
         super();
         setExtendsWithoutFlatten(new StarsCustListEntryDescriptor());
-        xmlName = "LMDeviceType";
+        xmlName = "LMHardwareType";
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
@@ -58,7 +58,7 @@ public class LMDeviceTypeDescriptor extends StarsCustListEntryDescriptor {
         
         //-- initialize element descriptors
         
-    } //-- com.cannontech.stars.xml.serialize.LMDeviceTypeDescriptor()
+    } //-- com.cannontech.stars.xml.serialize.LMHardwareTypeDescriptor()
 
 
       //-----------/
@@ -92,7 +92,7 @@ public class LMDeviceTypeDescriptor extends StarsCustListEntryDescriptor {
     **/
     public java.lang.Class getJavaClass()
     {
-        return com.cannontech.stars.xml.serialize.LMDeviceType.class;
+        return com.cannontech.stars.xml.serialize.LMHardwareType.class;
     } //-- java.lang.Class getJavaClass() 
 
     /**

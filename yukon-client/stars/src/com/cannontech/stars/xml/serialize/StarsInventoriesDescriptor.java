@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsInventoriesDescriptor.java,v 1.61 2004/01/15 23:00:40 zyao Exp $
+ * $Id: StarsInventoriesDescriptor.java,v 1.62 2004/01/21 17:52:17 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.61 $ $Date: 2004/01/15 23:00:40 $
+ * @version $Revision: 1.62 $ $Date: 2004/01/21 17:52:17 $
 **/
 public class StarsInventoriesDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
@@ -60,68 +60,35 @@ public class StarsInventoriesDescriptor extends org.exolab.castor.xml.util.XMLCl
         
         //-- initialize element descriptors
         
-        //-- _starsLMHardwareList
-        desc = new XMLFieldDescriptorImpl(StarsLMHardware.class, "_starsLMHardwareList", "stars-LMHardware", NodeType.Element);
+        //-- _starsInventoryList
+        desc = new XMLFieldDescriptorImpl(StarsInventory.class, "_starsInventoryList", "stars-Inventory", NodeType.Element);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsInventories target = (StarsInventories) object;
-                return target.getStarsLMHardware();
+                return target.getStarsInventory();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
                     StarsInventories target = (StarsInventories) object;
-                    target.addStarsLMHardware( (StarsLMHardware) value);
+                    target.addStarsInventory( (StarsInventory) value);
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
             }
             public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new StarsLMHardware();
+                return new StarsInventory();
             }
         } );
         desc.setHandler(handler);
         desc.setMultivalued(true);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _starsLMHardwareList
-        fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(0);
-        desc.setValidator(fieldValidator);
-        
-        //-- _starsMCTList
-        desc = new XMLFieldDescriptorImpl(StarsMCT.class, "_starsMCTList", "stars-MCT", NodeType.Element);
-        handler = (new XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                StarsInventories target = (StarsInventories) object;
-                return target.getStarsMCT();
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    StarsInventories target = (StarsInventories) object;
-                    target.addStarsMCT( (StarsMCT) value);
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new StarsMCT();
-            }
-        } );
-        desc.setHandler(handler);
-        desc.setMultivalued(true);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _starsMCTList
+        //-- validation code for: _starsInventoryList
         fieldValidator = new FieldValidator();
         fieldValidator.setMinOccurs(0);
         desc.setValidator(fieldValidator);

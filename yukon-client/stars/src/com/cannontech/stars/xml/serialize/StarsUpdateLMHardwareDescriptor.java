@@ -27,7 +27,7 @@ import org.exolab.castor.xml.validators.*;
  * 
  * @version $Revision$ $Date$
 **/
-public class StarsUpdateLMHardwareDescriptor extends StarsLMHwDescriptor {
+public class StarsUpdateLMHardwareDescriptor extends StarsInvDescriptor {
 
 
       //--------------------------/
@@ -49,7 +49,7 @@ public class StarsUpdateLMHardwareDescriptor extends StarsLMHwDescriptor {
 
     public StarsUpdateLMHardwareDescriptor() {
         super();
-        setExtendsWithoutFlatten(new StarsLMHwDescriptor());
+        setExtendsWithoutFlatten(new StarsInvDescriptor());
         xmlName = "stars-UpdateLMHardware";
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;

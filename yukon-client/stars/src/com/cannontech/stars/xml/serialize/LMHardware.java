@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id$
+ * $Id: LMHardware.java,v 1.1 2004/01/21 17:52:16 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,20 +25,18 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision$ $Date$
+ * @version $Revision: 1.1 $ $Date: 2004/01/21 17:52:16 $
 **/
-public abstract class StarsLMHw extends com.cannontech.stars.xml.serialize.StarsInventory 
-implements java.io.Serializable
-{
+public class LMHardware implements java.io.Serializable {
 
 
       //--------------------------/
      //- Class/Member Variables -/
     //--------------------------/
 
-    private LMDeviceType _LMDeviceType;
+    private LMHardwareType _LMHardwareType;
 
-    private java.lang.String _manufactureSerialNumber;
+    private java.lang.String _manufacturerSerialNumber;
 
     private java.util.Vector _starsLMHardwareConfigList;
 
@@ -49,10 +47,10 @@ implements java.io.Serializable
      //- Constructors -/
     //----------------/
 
-    public StarsLMHw() {
+    public LMHardware() {
         super();
         _starsLMHardwareConfigList = new Vector();
-    } //-- com.cannontech.stars.xml.serialize.StarsLMHw()
+    } //-- com.cannontech.stars.xml.serialize.LMHardware()
 
 
       //-----------/
@@ -90,24 +88,24 @@ implements java.io.Serializable
     } //-- java.util.Enumeration enumerateStarsLMHardwareConfig() 
 
     /**
-     * Returns the value of field 'LMDeviceType'.
+     * Returns the value of field 'LMHardwareType'.
      * 
-     * @return the value of field 'LMDeviceType'.
+     * @return the value of field 'LMHardwareType'.
     **/
-    public LMDeviceType getLMDeviceType()
+    public LMHardwareType getLMHardwareType()
     {
-        return this._LMDeviceType;
-    } //-- LMDeviceType getLMDeviceType() 
+        return this._LMHardwareType;
+    } //-- LMHardwareType getLMHardwareType() 
 
     /**
-     * Returns the value of field 'manufactureSerialNumber'.
+     * Returns the value of field 'manufacturerSerialNumber'.
      * 
-     * @return the value of field 'manufactureSerialNumber'.
+     * @return the value of field 'manufacturerSerialNumber'.
     **/
-    public java.lang.String getManufactureSerialNumber()
+    public java.lang.String getManufacturerSerialNumber()
     {
-        return this._manufactureSerialNumber;
-    } //-- java.lang.String getManufactureSerialNumber() 
+        return this._manufacturerSerialNumber;
+    } //-- java.lang.String getManufacturerSerialNumber() 
 
     /**
      * 
@@ -172,16 +170,24 @@ implements java.io.Serializable
      * 
      * @param out
     **/
-    public abstract void marshal(java.io.Writer out)
-        throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException;
+    public void marshal(java.io.Writer out)
+        throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
+    {
+        
+        Marshaller.marshal(this, out);
+    } //-- void marshal(java.io.Writer) 
 
     /**
      * 
      * 
      * @param handler
     **/
-    public abstract void marshal(org.xml.sax.ContentHandler handler)
-        throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException;
+    public void marshal(org.xml.sax.ContentHandler handler)
+        throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
+    {
+        
+        Marshaller.marshal(this, handler);
+    } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
     **/
@@ -203,25 +209,25 @@ implements java.io.Serializable
     } //-- StarsLMHardwareConfig removeStarsLMHardwareConfig(int) 
 
     /**
-     * Sets the value of field 'LMDeviceType'.
+     * Sets the value of field 'LMHardwareType'.
      * 
-     * @param LMDeviceType the value of field 'LMDeviceType'.
+     * @param LMHardwareType the value of field 'LMHardwareType'.
     **/
-    public void setLMDeviceType(LMDeviceType LMDeviceType)
+    public void setLMHardwareType(LMHardwareType LMHardwareType)
     {
-        this._LMDeviceType = LMDeviceType;
-    } //-- void setLMDeviceType(LMDeviceType) 
+        this._LMHardwareType = LMHardwareType;
+    } //-- void setLMHardwareType(LMHardwareType) 
 
     /**
-     * Sets the value of field 'manufactureSerialNumber'.
+     * Sets the value of field 'manufacturerSerialNumber'.
      * 
-     * @param manufactureSerialNumber the value of field
-     * 'manufactureSerialNumber'.
+     * @param manufacturerSerialNumber the value of field
+     * 'manufacturerSerialNumber'.
     **/
-    public void setManufactureSerialNumber(java.lang.String manufactureSerialNumber)
+    public void setManufacturerSerialNumber(java.lang.String manufacturerSerialNumber)
     {
-        this._manufactureSerialNumber = manufactureSerialNumber;
-    } //-- void setManufactureSerialNumber(java.lang.String) 
+        this._manufacturerSerialNumber = manufacturerSerialNumber;
+    } //-- void setManufacturerSerialNumber(java.lang.String) 
 
     /**
      * 
@@ -263,6 +269,17 @@ implements java.io.Serializable
     {
         this._starsThermostatSettings = starsThermostatSettings;
     } //-- void setStarsThermostatSettings(StarsThermostatSettings) 
+
+    /**
+     * 
+     * 
+     * @param reader
+    **/
+    public static com.cannontech.stars.xml.serialize.LMHardware unmarshal(java.io.Reader reader)
+        throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
+    {
+        return (com.cannontech.stars.xml.serialize.LMHardware) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.LMHardware.class, reader);
+    } //-- com.cannontech.stars.xml.serialize.LMHardware unmarshal(java.io.Reader) 
 
     /**
     **/

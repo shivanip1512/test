@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsInventories.java,v 1.61 2004/01/15 23:00:40 zyao Exp $
+ * $Id: StarsInventories.java,v 1.62 2004/01/21 17:52:16 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.61 $ $Date: 2004/01/15 23:00:40 $
+ * @version $Revision: 1.62 $ $Date: 2004/01/21 17:52:16 $
 **/
 public class StarsInventories implements java.io.Serializable {
 
@@ -34,9 +34,7 @@ public class StarsInventories implements java.io.Serializable {
      //- Class/Member Variables -/
     //--------------------------/
 
-    private java.util.Vector _starsLMHardwareList;
-
-    private java.util.Vector _starsMCTList;
+    private java.util.Vector _starsInventoryList;
 
 
       //----------------/
@@ -45,8 +43,7 @@ public class StarsInventories implements java.io.Serializable {
 
     public StarsInventories() {
         super();
-        _starsLMHardwareList = new Vector();
-        _starsMCTList = new Vector();
+        _starsInventoryList = new Vector();
     } //-- com.cannontech.stars.xml.serialize.StarsInventories()
 
 
@@ -57,132 +54,67 @@ public class StarsInventories implements java.io.Serializable {
     /**
      * 
      * 
-     * @param vStarsLMHardware
+     * @param vStarsInventory
     **/
-    public void addStarsLMHardware(StarsLMHardware vStarsLMHardware)
+    public void addStarsInventory(StarsInventory vStarsInventory)
         throws java.lang.IndexOutOfBoundsException
     {
-        _starsLMHardwareList.addElement(vStarsLMHardware);
-    } //-- void addStarsLMHardware(StarsLMHardware) 
+        _starsInventoryList.addElement(vStarsInventory);
+    } //-- void addStarsInventory(StarsInventory) 
 
     /**
      * 
      * 
      * @param index
-     * @param vStarsLMHardware
+     * @param vStarsInventory
     **/
-    public void addStarsLMHardware(int index, StarsLMHardware vStarsLMHardware)
+    public void addStarsInventory(int index, StarsInventory vStarsInventory)
         throws java.lang.IndexOutOfBoundsException
     {
-        _starsLMHardwareList.insertElementAt(vStarsLMHardware, index);
-    } //-- void addStarsLMHardware(int, StarsLMHardware) 
-
-    /**
-     * 
-     * 
-     * @param vStarsMCT
-    **/
-    public void addStarsMCT(StarsMCT vStarsMCT)
-        throws java.lang.IndexOutOfBoundsException
-    {
-        _starsMCTList.addElement(vStarsMCT);
-    } //-- void addStarsMCT(StarsMCT) 
-
-    /**
-     * 
-     * 
-     * @param index
-     * @param vStarsMCT
-    **/
-    public void addStarsMCT(int index, StarsMCT vStarsMCT)
-        throws java.lang.IndexOutOfBoundsException
-    {
-        _starsMCTList.insertElementAt(vStarsMCT, index);
-    } //-- void addStarsMCT(int, StarsMCT) 
+        _starsInventoryList.insertElementAt(vStarsInventory, index);
+    } //-- void addStarsInventory(int, StarsInventory) 
 
     /**
     **/
-    public java.util.Enumeration enumerateStarsLMHardware()
+    public java.util.Enumeration enumerateStarsInventory()
     {
-        return _starsLMHardwareList.elements();
-    } //-- java.util.Enumeration enumerateStarsLMHardware() 
-
-    /**
-    **/
-    public java.util.Enumeration enumerateStarsMCT()
-    {
-        return _starsMCTList.elements();
-    } //-- java.util.Enumeration enumerateStarsMCT() 
+        return _starsInventoryList.elements();
+    } //-- java.util.Enumeration enumerateStarsInventory() 
 
     /**
      * 
      * 
      * @param index
     **/
-    public StarsLMHardware getStarsLMHardware(int index)
+    public StarsInventory getStarsInventory(int index)
         throws java.lang.IndexOutOfBoundsException
     {
         //-- check bounds for index
-        if ((index < 0) || (index > _starsLMHardwareList.size())) {
+        if ((index < 0) || (index > _starsInventoryList.size())) {
             throw new IndexOutOfBoundsException();
         }
         
-        return (StarsLMHardware) _starsLMHardwareList.elementAt(index);
-    } //-- StarsLMHardware getStarsLMHardware(int) 
+        return (StarsInventory) _starsInventoryList.elementAt(index);
+    } //-- StarsInventory getStarsInventory(int) 
 
     /**
     **/
-    public StarsLMHardware[] getStarsLMHardware()
+    public StarsInventory[] getStarsInventory()
     {
-        int size = _starsLMHardwareList.size();
-        StarsLMHardware[] mArray = new StarsLMHardware[size];
+        int size = _starsInventoryList.size();
+        StarsInventory[] mArray = new StarsInventory[size];
         for (int index = 0; index < size; index++) {
-            mArray[index] = (StarsLMHardware) _starsLMHardwareList.elementAt(index);
+            mArray[index] = (StarsInventory) _starsInventoryList.elementAt(index);
         }
         return mArray;
-    } //-- StarsLMHardware[] getStarsLMHardware() 
+    } //-- StarsInventory[] getStarsInventory() 
 
     /**
     **/
-    public int getStarsLMHardwareCount()
+    public int getStarsInventoryCount()
     {
-        return _starsLMHardwareList.size();
-    } //-- int getStarsLMHardwareCount() 
-
-    /**
-     * 
-     * 
-     * @param index
-    **/
-    public StarsMCT getStarsMCT(int index)
-        throws java.lang.IndexOutOfBoundsException
-    {
-        //-- check bounds for index
-        if ((index < 0) || (index > _starsMCTList.size())) {
-            throw new IndexOutOfBoundsException();
-        }
-        
-        return (StarsMCT) _starsMCTList.elementAt(index);
-    } //-- StarsMCT getStarsMCT(int) 
-
-    /**
-    **/
-    public StarsMCT[] getStarsMCT()
-    {
-        int size = _starsMCTList.size();
-        StarsMCT[] mArray = new StarsMCT[size];
-        for (int index = 0; index < size; index++) {
-            mArray[index] = (StarsMCT) _starsMCTList.elementAt(index);
-        }
-        return mArray;
-    } //-- StarsMCT[] getStarsMCT() 
-
-    /**
-    **/
-    public int getStarsMCTCount()
-    {
-        return _starsMCTList.size();
-    } //-- int getStarsMCTCount() 
+        return _starsInventoryList.size();
+    } //-- int getStarsInventoryCount() 
 
     /**
     **/
@@ -223,101 +155,52 @@ public class StarsInventories implements java.io.Serializable {
 
     /**
     **/
-    public void removeAllStarsLMHardware()
+    public void removeAllStarsInventory()
     {
-        _starsLMHardwareList.removeAllElements();
-    } //-- void removeAllStarsLMHardware() 
-
-    /**
-    **/
-    public void removeAllStarsMCT()
-    {
-        _starsMCTList.removeAllElements();
-    } //-- void removeAllStarsMCT() 
+        _starsInventoryList.removeAllElements();
+    } //-- void removeAllStarsInventory() 
 
     /**
      * 
      * 
      * @param index
     **/
-    public StarsLMHardware removeStarsLMHardware(int index)
+    public StarsInventory removeStarsInventory(int index)
     {
-        java.lang.Object obj = _starsLMHardwareList.elementAt(index);
-        _starsLMHardwareList.removeElementAt(index);
-        return (StarsLMHardware) obj;
-    } //-- StarsLMHardware removeStarsLMHardware(int) 
+        java.lang.Object obj = _starsInventoryList.elementAt(index);
+        _starsInventoryList.removeElementAt(index);
+        return (StarsInventory) obj;
+    } //-- StarsInventory removeStarsInventory(int) 
 
     /**
      * 
      * 
      * @param index
+     * @param vStarsInventory
     **/
-    public StarsMCT removeStarsMCT(int index)
-    {
-        java.lang.Object obj = _starsMCTList.elementAt(index);
-        _starsMCTList.removeElementAt(index);
-        return (StarsMCT) obj;
-    } //-- StarsMCT removeStarsMCT(int) 
-
-    /**
-     * 
-     * 
-     * @param index
-     * @param vStarsLMHardware
-    **/
-    public void setStarsLMHardware(int index, StarsLMHardware vStarsLMHardware)
+    public void setStarsInventory(int index, StarsInventory vStarsInventory)
         throws java.lang.IndexOutOfBoundsException
     {
         //-- check bounds for index
-        if ((index < 0) || (index > _starsLMHardwareList.size())) {
+        if ((index < 0) || (index > _starsInventoryList.size())) {
             throw new IndexOutOfBoundsException();
         }
-        _starsLMHardwareList.setElementAt(vStarsLMHardware, index);
-    } //-- void setStarsLMHardware(int, StarsLMHardware) 
+        _starsInventoryList.setElementAt(vStarsInventory, index);
+    } //-- void setStarsInventory(int, StarsInventory) 
 
     /**
      * 
      * 
-     * @param starsLMHardwareArray
+     * @param starsInventoryArray
     **/
-    public void setStarsLMHardware(StarsLMHardware[] starsLMHardwareArray)
+    public void setStarsInventory(StarsInventory[] starsInventoryArray)
     {
         //-- copy array
-        _starsLMHardwareList.removeAllElements();
-        for (int i = 0; i < starsLMHardwareArray.length; i++) {
-            _starsLMHardwareList.addElement(starsLMHardwareArray[i]);
+        _starsInventoryList.removeAllElements();
+        for (int i = 0; i < starsInventoryArray.length; i++) {
+            _starsInventoryList.addElement(starsInventoryArray[i]);
         }
-    } //-- void setStarsLMHardware(StarsLMHardware) 
-
-    /**
-     * 
-     * 
-     * @param index
-     * @param vStarsMCT
-    **/
-    public void setStarsMCT(int index, StarsMCT vStarsMCT)
-        throws java.lang.IndexOutOfBoundsException
-    {
-        //-- check bounds for index
-        if ((index < 0) || (index > _starsMCTList.size())) {
-            throw new IndexOutOfBoundsException();
-        }
-        _starsMCTList.setElementAt(vStarsMCT, index);
-    } //-- void setStarsMCT(int, StarsMCT) 
-
-    /**
-     * 
-     * 
-     * @param starsMCTArray
-    **/
-    public void setStarsMCT(StarsMCT[] starsMCTArray)
-    {
-        //-- copy array
-        _starsMCTList.removeAllElements();
-        for (int i = 0; i < starsMCTArray.length; i++) {
-            _starsMCTList.addElement(starsMCTArray[i]);
-        }
-    } //-- void setStarsMCT(StarsMCT) 
+    } //-- void setStarsInventory(StarsInventory) 
 
     /**
      * 
