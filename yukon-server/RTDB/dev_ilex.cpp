@@ -10,8 +10,8 @@
 * Date:   2/15/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2003/01/09 18:10:09 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2003/01/13 18:23:24 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -101,7 +101,7 @@ INT CtiDeviceILEX::AccumulatorScan(CtiRequestMsg *pReq, CtiCommandParser &parse,
         OutMessage->Retry                 = 3;
 
         OutMessage->Buffer.OutMessage[9]  = setFreezeNumber((BYTE)getLastFreezeNumber()).getFreezeNumber();
-        EstablishOutMessagePriority( OutMessage, (MAXPRIORITY - 3) );
+        OverrideOutMessagePriority( OutMessage, (MAXPRIORITY - 3) );
 
         setScanIntegrity(TRUE);                         // We are an integrity scan (equiv. anyway).  Data must be propagated.
 
@@ -112,14 +112,14 @@ INT CtiDeviceILEX::AccumulatorScan(CtiRequestMsg *pReq, CtiCommandParser &parse,
     return status;
 }
 
-INT CtiDeviceILEX::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority)
+INT CtiDeviceILEX::exceptionScan(OUTMESS *&OutMessage, INT ScanPriority, RWTPtrSlist< OUTMESS > &outList)
 {
     INT status = NORMAL;
 
     if(OutMessage != NULL)
     {
         /* Load the forced scan message */
-        header(OutMessage->Buffer.OutMessage + PREIDLEN, ILEXSCAN, !getIlexSequenceNumber(), FORCED_SCAN);
+        header(OutMessage->Buffer.OutMessage + PREIDLEN, ILEXSCAN, !getIlexSequenceNumber(), EXCEPTION_SCAN);
 
         /* Load all the other stuff that is needed */
         OutMessage->DeviceID              = getID();
@@ -140,6 +140,12 @@ INT CtiDeviceILEX::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
     return status;
 }
 
+INT CtiDeviceILEX::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority)
+{
+    return IntegrityScan(pReq,parse,OutMessage,vgList,retList,outList,ScanPriority);
+    // return exceptionScan(OutMessage,ScanPriority,outList);
+}
+
 INT CtiDeviceILEX::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority)
 {
     INT status = NORMAL;
@@ -147,6 +153,9 @@ INT CtiDeviceILEX::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, O
     if(OutMessage != NULL)
     {
         /* Load the forced scan message */
+        // Always send one so that any subsequent "intermediate" message
+        // goes out as zero!  This keeps message repeats down!
+        setIlexSequenceNumber(1);
         header(OutMessage->Buffer.OutMessage + PREIDLEN, ILEXSCAN, getIlexSequenceNumber(), FORCED_SCAN);
 
         /* Load all the other stuff that is needed */
@@ -287,6 +296,10 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                     break;
                 }
 
+                // !!! FALL THROUGH FALL THROUGH FALL THROUGH !!!
+            }
+        case ILEXSCANPARTIAL:
+            {
                 if(getDebugLevel() & DEBUGLEVEL_ILEX_PROTOCOL)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -299,14 +312,10 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                         if(i && !(i % 10)) dout << endl;
                         dout << hex << setw(2) << (int)InMessage->Buffer.InMessage[i] << dec << " ";
                     }
-                    dout << RWTime() << " Ilex Data Complete" << endl;
+                    dout << endl << RWTime() << " Ilex Data Complete" << endl;
                     dout.fill(oldfill);
                 }
 
-                // !!! FALL THROUGH FALL THROUGH FALL THROUGH !!!
-            }
-        case ILEXSCANPARTIAL:
-            {
                 if((InMessage->Buffer.InMessage[0] & 0x07) == ILEXSCANPARTIAL)
                 {
                     /* do an exception scan */
@@ -316,9 +325,8 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                     {
                         InEchoToOut(InMessage, OutMessage);
 
-                        // CtiCommandParser parse(InMessage->Return.CommandStr);
                         setIlexSequenceNumber( InMessage->Buffer.InMessage[0] & 0x10 );
-                        // if((i = ILEXExceptionScan (RemoteRecord, DeviceRecord, InMessage->Buffer.InMessage[0] & 0x10, MAXPRIORITY - 4)) != NORMAL)            }
+
                         if((i = exceptionScan(OutMessage, MAXPRIORITY - 4, outList)) != NORMAL)
                         {
                             ReportError ((USHORT)i); /* Send Error to logger */
@@ -763,8 +771,6 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                         InEchoToOut(InMessage, OutMessage);
 
                         CtiCommandParser parse(InMessage->Return.CommandStr);
-
-                        setIlexSequenceNumber( 1 );
                         if((i = IntegrityScan(NULL, parse, OutMessage, vgList, retList, outList, MAXPRIORITY - 3)) != NORMAL)
                         {
                             if(getDebugLevel() & DEBUGLEVEL_ILEX_PROTOCOL)
@@ -845,19 +851,7 @@ INT CtiDeviceILEX::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, 
     {
     case LoopbackRequest:
         {
-            int cnt = parse.getiValue("count");
-
-            for(int i = 0; i < cnt; i++)
-            {
-                OUTMESS *OutMTemp = CTIDBG_new OUTMESS(*OutMessage);
-
-                if(OutMTemp != NULL)
-                {
-                    OutMTemp->Request = OutMessage->Request;
-                    exceptionScan(OutMTemp, 13, outList);
-                }
-            }
-
+            status = exceptionScan(OutMessage, 13, outList);
             break;
         }
     case ScanRequest:
@@ -1087,30 +1081,4 @@ CtiDeviceILEX& CtiDeviceILEX::setIlexSequenceNumber(BYTE number)
     return *this;
 }
 
-INT CtiDeviceILEX::exceptionScan(OUTMESS *&OutMessage, INT ScanPriority, RWTPtrSlist< OUTMESS > &outList)
-{
-    INT status = NORMAL;
 
-    if(OutMessage != NULL)
-    {
-        /* Load the forced scan message */
-        header(OutMessage->Buffer.OutMessage + PREIDLEN, ILEXSCAN, !getIlexSequenceNumber(), EXCEPTION_SCAN);
-
-        /* Load all the other stuff that is needed */
-        OutMessage->DeviceID              = getID();
-        OutMessage->Port                  = getPortID();
-        OutMessage->Remote                = getAddress();
-        OutMessage->Priority              = (UCHAR)(ScanPriority);
-        OutMessage->TimeOut               = 2;
-        OutMessage->OutLength             = 2;
-        OutMessage->InLength              = -1;
-        OutMessage->EventCode             = RESULT | ENCODED;
-        OutMessage->Sequence              = 0;
-        OutMessage->Retry                 = 2;
-
-        outList.insert(OutMessage);
-        OutMessage = NULL;
-    }
-
-    return status;
-}
