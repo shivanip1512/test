@@ -1,5 +1,4 @@
 package com.cannontech.dbeditor.wizard.device.lmgroup;
-
 /**
  * This type was created in VisualAge.
  */
@@ -19,13 +18,17 @@ public class LMGroupWizardPanel extends com.cannontech.common.wizard.WizardPanel
 	private LMGroupPointEditorPanel lmGroupPointEditorPanel = null;
 	
 	private LMGroupMCTEditorPanel lmGroupMCTEditorPanel = null;
-			
+
+	private DCUEditorPanel dcuEditorPanel = null;
+
 /**
  * LMDeviceWizardPanel constructor comment.
  */
 public LMGroupWizardPanel() {
 	super();
 }
+
+
 /**
  * Insert the method's description here.
  * Creation date: (5/4/2001 11:11:28 AM)
@@ -37,6 +40,21 @@ public java.awt.Dimension getActualSize()
 
 	return getPreferredSize();
 }
+
+
+/**
+ * This method was created in VisualAge.
+ * @return LMGroupBasePanel
+ */
+public DCUEditorPanel getDCUEditorPanel() 
+{
+	if( dcuEditorPanel == null )
+		dcuEditorPanel = new DCUEditorPanel();
+	
+	return dcuEditorPanel;
+}
+
+
 /**
  * Insert the method's description here.
  * Creation date: (7/23/2001 4:56:10 PM)
@@ -48,6 +66,8 @@ public GroupMacroLoadGroupsPanel getGroupMacroLoadGroupsPanel()
 		groupMacroLoadGroupsPanel = new GroupMacroLoadGroupsPanel();
 	return groupMacroLoadGroupsPanel;
 }
+
+
 /**
  * Insert the method's description here.
  * Creation date: (7/23/2001 4:27:39 PM)
@@ -58,12 +78,54 @@ public GroupTypePanel getGroupTypePanel() {
 	groupTypePanel = new GroupTypePanel();
 	return groupTypePanel;
 }
+
+
 /**
  * getHeaderText method comment.
  */
 protected String getHeaderText() {
 	return "LM Group Setup";
 }
+
+
+/**
+ * This method was created in VisualAge.
+ * @return LMGroupBasePanel
+ */
+public LMGroupBasePanel getLMGroupBasePanel() 
+{
+	if( lmGroupBasePanel == null )
+		lmGroupBasePanel = new LMGroupBasePanel( true );
+	
+	return lmGroupBasePanel;
+}
+
+
+/**
+ * This method was created in VisualAge.
+ * @return 	LMGroupEmetconPanel
+ */
+public LMGroupEmetconPanel getLMGroupEmetconPanel() 
+{
+	if (lmGroupEmetconPanel== null)
+		lmGroupEmetconPanel = new LMGroupEmetconPanel();
+		
+	return lmGroupEmetconPanel;
+}
+
+
+/**
+ * Insert the method's description here.
+ * @return LMGroupExpressComEditorPanel
+ */
+public LMGroupExpressComEditorPanel getLMGroupExpressComEditorPanel()
+{
+	if( lmGroupExpressComEditorPanel == null)
+		lmGroupExpressComEditorPanel= new LMGroupExpressComEditorPanel();
+
+	return lmGroupExpressComEditorPanel;
+}
+
 
 /**
  * This method was created in VisualAge.
@@ -77,39 +139,7 @@ public LMGroupMCTEditorPanel getLMGroupMCTEditorPanel()
 	return lmGroupMCTEditorPanel;
 }
 
-/**
- * This method was created in VisualAge.
- * @return LMGroupBasePanel
- */
-public LMGroupBasePanel getLMGroupBasePanel() 
-{
-	if( lmGroupBasePanel == null )
-		lmGroupBasePanel = new LMGroupBasePanel( true );
-	
-	return lmGroupBasePanel;
-}
-/**
- * This method was created in VisualAge.
- * @return 	LMGroupEmetconPanel
- */
-public LMGroupEmetconPanel getLMGroupEmetconPanel() 
-{
-	if (lmGroupEmetconPanel== null)
-		lmGroupEmetconPanel = new LMGroupEmetconPanel();
-		
-	return lmGroupEmetconPanel;
-}
-/**
- * Insert the method's description here.
- * @return LMGroupExpressComEditorPanel
- */
-public LMGroupExpressComEditorPanel getLMGroupExpressComEditorPanel()
-{
-	if( lmGroupExpressComEditorPanel == null)
-		lmGroupExpressComEditorPanel= new LMGroupExpressComEditorPanel();
 
-	return lmGroupExpressComEditorPanel;
-}
 /**
  * Insert the method's description here.
  * Creation date: (3/11/2002 3:40:50 PM)
@@ -122,6 +152,8 @@ public LMGroupPointEditorPanel getLmGroupPointEditorPanel()
 
 	return lmGroupPointEditorPanel;
 }
+
+
 /**
  * Insert the method's description here.
  * Creation date: (10/11/2001 9:30:58 AM)
@@ -134,6 +166,8 @@ public LMGroupVersacomEditorPanel getLmGroupVersacomEditorPanel()
 
 	return lmGroupVersacomEditorPanel;
 }
+
+
 /**
  * This method was created in VisualAge.
  * @return java.awt.Dimension
@@ -142,6 +176,8 @@ public java.awt.Dimension getMinimumSize()
 {
 	return getPreferredSize();
 }
+
+
 /**
  * getNextInputPanel method comment.
  */
@@ -213,11 +249,19 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 	{
 		return getLMGroupMCTEditorPanel();
 	}
-	
+	//Start LMGroupMCT specific
+	else if ( currentInputPanel == getLMGroupBasePanel()
+				 && getSwitchTypePanel().getTypeOfSwitchSelected() == 999999 )
+	{
+		return getDCUEditorPanel();
+	}
+		
 	System.err.println(getClass() + "::getNextInputPanel() - currentInputPanel was not recognized.");
 	return null;
 	
 }
+
+
 /**
  * This method was created in VisualAge.
  * @return com.cannontech.dbeditor.wizard.device.lm.SwitchTypePanel
@@ -230,6 +274,8 @@ public RippleMessageShedPanel getRippleMessageShedPanel() {
 	
 	return rippleMessageShedPanel;
 }
+
+
 /**
  * This method was created in VisualAge.
  * @return com.cannontech.dbeditor.wizard.device.lm.SwitchTypePanel
@@ -242,6 +288,8 @@ public SwitchTypePanel getSwitchTypePanel() {
 	
 	return switchTypePanel;
 }
+
+
 /**
  * isLastInputPanel method comment.
  */
@@ -254,6 +302,7 @@ protected boolean isLastInputPanel(com.cannontech.common.gui.util.DataInputPanel
 		     || currentPanel == groupMacroLoadGroupsPanel
 		     || currentPanel == lmGroupExpressComEditorPanel
 		     || currentPanel == lmGroupPointEditorPanel
+		     || currentPanel == dcuEditorPanel
 			  || currentPanel == lmGroupMCTEditorPanel );
 }
 }
