@@ -1,0 +1,12 @@
+<?xml version = "1.0" standalone = "no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20000802//EN" "http://www.w3.org/TR/2000/CR-SVG-20000802/DTD/svg-20000802.dtd" >
+<svg width = "670.0px" height="520.0px">
+    <defs>
+    </defs>
+    <text id="LxAbstractText"  style="fill:rgb(0,0,0);font-family:'Arial';font-style:normal;font-weight:normal;font-size:24;" transform="translate(61.578,58.895)"  >Transmission Breaker Details    </text>
+    <text id="LxAbstractText1"  style="fill:rgb(0,153,0);font-family:'Arial';font-style:normal;font-weight:normal;font-size:36;" transform="translate(80,56.139)"  >Transmission Breaker Details    </text>
+    <rect id="LxRectangle" x="50" y="120" width="620" height="400"   style="fill:none;stroke:rgb(102,153,255); stroke-width:1.0;"   >
+    </rect>
+    <image id="LxAbstractImage" x="73" y="75" width="89" height="22"  style="fill:none;stroke:rgb(0,0,0); stroke-width:1.0;"     xlink:href="null" >
+    </image>
+</svg>

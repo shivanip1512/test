@@ -1,0 +1,18 @@
+<?xml version = "1.0" standalone = "no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20000802//EN" "http://www.w3.org/TR/2000/CR-SVG-20000802/DTD/svg-20000802.dtd" >
+<svg width="800.0px" height="600.0px" >
+<rect width="100%" height="100%" color="#000000" />
+<a xlink:href="/login.jsp">
+<image id="LxAbstractImage" xlink:href="images/esublogo.gif" x="210" y="30" width="281" height="88" />
+</a>
+<text id="LxAbstractText" x="170" y="141" style="fill:rgb(204,204,153);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:12;opacity:1.0;" >Click on one of the following substations to display the OneLine</text>
+<rect id="LxRectangle" x="80" y="150" width="560" height="280" style="fill:rgb(204,204,153);stroke:rgb(255,255,255); stroke-width:1.0" />
+<text id="LxAbstractText" x="100" y="187" style="fill:rgb(0,0,0);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:24;opacity:1.0;" >West District</text>
+<text id="LxAbstractText" x="270" y="187" style="fill:rgb(0,0,0);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:24;opacity:1.0;" >Central District</text>
+<text id="LxAbstractText" x="470" y="187" style="fill:rgb(0,0,0);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:24;opacity:1.0;" >East District</text>
+<path id="LxLine" style="fill:none;opacity:1.0;stroke:rgb(255,255,255); stroke-width:3.0;" d="M 260.0 150.0 L 260.0 430.0 " />
+<path id="LxLine" style="fill:none;opacity:1.0;stroke:rgb(255,255,255); stroke-width:3.0;" d="M 450.0 150.0 L 450.0 430.0 " />
+<a xlink:href="morningside.svg">
+<text id="LxAbstractText" x="100" y="222" style="fill:rgb(0,0,0);font-family:'Arial';font-style:normal;font-weight:normal;font-size:14;opacity:1.0;" >Morningside</text>
+</a>
+</svg>

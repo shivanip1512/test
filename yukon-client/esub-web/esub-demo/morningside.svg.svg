@@ -1,0 +1,26 @@
+<?xml version = "1.0" standalone = "no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20000802//EN" "http://www.w3.org/TR/2000/CR-SVG-20000802/DTD/svg-20000802.dtd" >
+<svg width = "487.0px" height="237.0px">
+    <defs>
+    </defs>
+    <text id="LxAbstractText"  style="fill:rgb(102,153,255);font-family:'Arial';font-style:normal;font-weight:normal;font-size:18;" transform="translate(40,33.069)"  >RAUN    </text>
+    <text id="LxAbstractText1"  style="fill:rgb(102,153,255);font-family:'Arial';font-style:normal;font-weight:normal;font-size:18;" transform="translate(240,33.069)"  >PLYMOUTH    </text>
+    <text id="LxAbstractText2"  style="fill:rgb(102,153,255);font-family:'Arial';font-style:normal;font-weight:normal;font-size:14;" transform="translate(80,70.165)"  >8560    </text>
+    <text id="LxAbstractText3"  style="fill:rgb(102,153,255);font-family:'Arial';font-style:normal;font-weight:normal;font-size:14;" transform="translate(300,70.165)"  >8580    </text>
+    <image id="LxAbstractImage" x="370" y="180" width="117" height="22"  style="fill:none;stroke:rgb(0,0,0); stroke-width:1.0;"     xlink:href="null" >
+    </image>
+    <path id="LxLine"  style="fill:none;stroke:rgb(102,153,255); stroke-width:1.0;" d="M60,200,l0,-160,M60,40,l-4,6,l8,0,z" >
+    </path>
+    <path id="LxLine1"  style="fill:none;stroke:rgb(102,153,255); stroke-width:1.0;" d="M60,110,l220,0," >
+    </path>
+    <path id="LxLine2"  style="fill:none;stroke:rgb(102,153,255); stroke-width:1.0;" d="M280,190,l0,-150,M280,40,l-4,6,l8,0,z" >
+    </path>
+    <image id="LxAbstractImage1" x="50" y="70" width="20" height="20"  style="fill:none;stroke:rgb(0,0,0); stroke-width:1.0;"     xlink:href="null" >
+    </image>
+    <image id="LxAbstractImage2" x="270" y="70" width="20" height="20"  style="fill:none;stroke:rgb(0,0,0); stroke-width:1.0;"     xlink:href="null" >
+    </image>
+    <image id="LxAbstractImage3" x="50" y="210" width="48" height="27"  style="fill:none;stroke:rgb(0,0,0); stroke-width:1.0;"     xlink:href="null" >
+    </image>
+    <image id="LxAbstractImage4" x="280" y="200" width="48" height="27"  style="fill:none;stroke:rgb(0,0,0); stroke-width:1.0;"     xlink:href="null" >
+    </image>
+</svg>

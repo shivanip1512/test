@@ -5,7 +5,6 @@
     <classpathentry kind="var" path="TOMCAT_HOME/lib/jasper-runtime.jar"/>
     <classpathentry kind="src" path="WEB-INF/src"/>
     <classpathentry kind="src" path="work"/>
-    <classpathentry kind="src" path="/common"/>
     <classpathentry kind="lib" path="/third-party/SqlServer.jar"/>
     <classpathentry kind="lib" path="/third-party/acme.jar"/>
     <classpathentry kind="lib" path="/third-party/batik111.jar"/>
@@ -24,5 +23,7 @@
     <classpathentry kind="lib" path="/third-party/led.jar"/>
     <classpathentry kind="lib" path="/third-party/rwav.jar"/>
     <classpathentry kind="lib" path="/third-party/xerces.jar"/>
+    <classpathentry kind="src" path="/esub-editor"/>
+    <classpathentry kind="src" path="/common"/>
     <classpathentry kind="output" path="WEB-INF\classes"/>
 </classpath>

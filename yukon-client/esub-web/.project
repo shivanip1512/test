@@ -4,6 +4,7 @@
 	<comment></comment>
 	<projects>
 		<project>common</project>
+		<project>esub-editor</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
@@ -15,5 +16,6 @@
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 		<nature>com.sysdeo.eclipse.tomcat.tomcatnature</nature>
+		<nature>net.monyplaza.eclipse.jrun.jrunnature</nature>
 	</natures>
 </projectDescription>

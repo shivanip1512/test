@@ -1,4 +1,4 @@
-package com.cannontech.esub.util;
+package com.cannontech.esub.util2;
 
 /**
  * @author alauinger

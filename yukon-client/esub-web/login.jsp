@@ -29,10 +29,14 @@
             </a></font><i><font color="#FFFFFF" size="-1" face="Times New Roman"><br clear="ALL">
               </font></i></td>
             <td width="32%" valign="bottom"> 
-              <div align="center"><img src="esubHeader.gif" width="347" height="30"></div>
+              <div align="center"><img src="/images/esubHeader.gif" width="347" height="30"></div>
             </td>
             <td width="34%" valign="top"> 
-              <div align="right"><img src="YukonLogoWhite.gif" width="132" height="28"></div>
+              <div align="right"><img src="/images/YukonLogoWhite.gif" width="132" height="28"></div>
+              <font face="Arial, Helvetica, sans-serif" size="2"><A HREF="esub-demo/SVGView.exe">Click here to install Adobe SVG Plugin 3.0
+            </A></FONT><BR>
+            <BR>
+
             </td>
           </tr>
         </table>
@@ -70,9 +74,7 @@
               of the esubstation.com application are listed <a href="esubSpecificationGuide.pdf" class="BlackLink" target="_blank">here</a>.</font></p>
             <p><font face="Arial, Helvetica, sans-serif" size="2">Sign in below 
               to view our application.</font><br>
-              <font size="1">(<font color="#000000" face="Arial, Helvetica, sans-serif">Best 
-              viewed by Internet Explorer 5.0 or greater, or Netscape Navigator 
-              6.0 or greater)</font></font><br></p>
+              <br></p>
             <p>
       <center>
         <table width="250" border="0" cellspacing="0" cellpadding="5"
@@ -92,7 +94,7 @@
  		  }
 		%>
           <tr>
-          <FORM METHOD="POST" ACTION="test.jsp"> 
+          <FORM METHOD="POST" ACTION="esub-demo/mec.svg"> 
             <td width="40%" height="20"> 
               <p align=RIGHT>&nbsp;<font size="-1" face="Arial">User Name:</font>
             </td>
@@ -112,15 +114,15 @@
           </tr>
           <tr> 
             <td width="40%" height="20">&nbsp; </td>
-            <td width="60%" height="20"> <input type="image" src="SubmitButton.gif" width="58" height="20" border="0"></td>
+            <td width="60%" height="20"> <input type="image" src="/images/SubmitButton.gif" width="58" height="20" border="0"></td>
             <input name="LOGIN" type="hidden" value="true"/>
             </form>
           </tr>
         </table>
 		<div align="center"><br>
-              <font face="Arial, Helvetica, sans-serif" size="2">To obtain a password, 
+                          <font face="Arial, Helvetica, sans-serif" size="2">To obtain a password, 
               or if you have forgotten your password, contact:<br>
-                <a href="mailto:info@cannontech.com"><img src="Contact.gif" width="128" height="20" border="0"></a> 
+                <a href="mailto:info@cannontech.com"><img src="/images/Contact.gif" width="128" height="20" border="0"></a> 
                 </font></div>
       </center>
 			</td>

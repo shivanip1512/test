@@ -1,0 +1,55 @@
+JLoox 2.0.2
+"UTF8"
+A 0 1 0 0 ffffff33 1 B ffffff33 ffff3333 0
+!
+"Default" 0 32
+7 0 001
+1
+"0" 1
+
+6
+
+com.loox.jloox.LxLine
+! 111101100 60;40;270;0 5 0 $ ! ! 0
+A 0 1 0 0 ffffff33 1 B ffffff33 ffff3333 0 0
+2
+0 -135;0
+1 135;0
+0 7
+
+com.loox.jloox.LxRectangle
+! 111101100 80;40;50;100 5 0 $ ! ! 0
+A 0 1 0 0 ffffff33 1 B ffffff33 ffff3333 0 0
+0 0 0
+
+com.cannontech.esub.editor.element.DynamicText
+! 111101100 230;50;19.734375;8.875 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff00cc00 0 0
+0 0
+"Arial Bold" 0 12 "N/A"
+41 ""
+
+com.cannontech.esub.editor.element.StateImage
+! 111101100 44;116;20;20 5 0 $ ! ! 0
+A 0 1 0 0 $ 1 ! 0 0
+0 0 0 0 0
+!
+2 2 "Open" "C:\eclipse\workspace\esub-web-tom\esub-demo\images\GreenBox.gif" "Closed" "C:\eclipse\workspace\esub-web-tom\esub-demo\images\RedBox.gif" "Open" ""
+
+com.cannontech.esub.editor.element.StaticText
+! 111101100 10;10;10.353516;8.59375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffcc33ff 0 0
+0 0
+"Arial Bold" 0 12 "HI"
+"Arial Bold" 12 204 51 255 ""
+
+com.loox.jloox.LxLine
+! 111101100 10;20;0;190 5 0 $ ! ! 0
+A 0 1 0 0 ffffff33 1 B ffffff33 ffff3333 0 0
+2
+0 0;95
+1 0;-95
+0 7
+
+
+0

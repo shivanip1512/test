@@ -1,0 +1,76 @@
+JLoox 2.0.2
+"UTF8"
+A 0 0 0 0 ffffffff 1 B ffffffff ffcccc99 0
+!
+"Default" 0 32
+0 0 001
+1
+"0" 1
+
+9
+
+com.cannontech.esub.editor.element.StaticImage
+! 111101100 210;30;281;88 5 0 $ ! ! 0
+A 0 1 0 0 $ 1 ! 0 0
+0 0 0 0 0
+!
+"C:\eclipse\workspace\esub-web-tom\esub-demo\images\esublogo.gif" "/login.jsp"
+
+com.cannontech.esub.editor.element.StaticText
+! 111101100 170;130;365.015625;11.265625 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffcccc99 0 0
+0 0
+"Arial Bold" 0 12 "Click on one of the following substations to display the OneLine"
+"Arial Bold" 12 204 204 153 ""
+
+com.loox.jloox.LxRectangle
+! 111101100 80;150;560;280 5 0 $ ! ! 0
+A 0 0 0 0 ffffffff 1 B ffffffff ffcccc99 0 0
+0 0 0
+
+com.cannontech.esub.editor.element.StaticText
+! 111101100 100;170;146.328125;17.46875 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C $ 0 0
+0 0
+"Arial Bold" 0 24 "West District"
+"Arial Bold" 24 0 0 0 ""
+
+com.cannontech.esub.editor.element.StaticText
+! 111101100 270;170;170.613281;17.765625 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C $ 0 0
+0 0
+"Arial Bold" 0 24 "Central District"
+"Arial Bold" 24 0 0 0 ""
+
+com.cannontech.esub.editor.element.StaticText
+! 111101100 470;170;138.011719;17.46875 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C $ 0 0
+0 0
+"Arial Bold" 0 24 "East District"
+"Arial Bold" 24 0 0 0 ""
+
+com.loox.jloox.LxLine
+! 111101100 260;150;0;280 5 0 $ ! ! 0
+A 0 3 0 0 ffffffff 1 B ffffffff ffcccc99 0 0
+2
+0 0;-140
+1 0;140
+0 0
+
+com.loox.jloox.LxLine
+! 111101100 450;150;0;280 5 0 $ ! ! 0
+A 0 3 0 0 ffffffff 1 B ffffffff ffcccc99 0 0
+2
+0 0;-140
+1 0;140
+0 0
+
+com.cannontech.esub.editor.element.StaticText
+! 111101100 100;210;74.631836;12.96875 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C $ 0 0
+0 0
+"Arial" 0 14 "Morningside"
+"Arial" 14 0 0 0 "morningside.svg"
+
+
+0

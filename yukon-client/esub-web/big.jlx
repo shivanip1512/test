@@ -1,0 +1,20 @@
+JLoox 2.0.2
+"UTF8"
+A 0 1 0 0 ffffffff 1 ! 0
+!
+"Default" 0 32
+0 0 001
+1
+"0" 1
+
+1
+
+com.cannontech.esub.editor.element.StaticText
+! 111101100 104.578125;95.46875;286.414062;44.46875 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffff3366 0 0
+0 0
+"Arial Bold" 0 48 "The Big Test"
+"Arial Bold" 48 255 51 102 "big2.svg"
+
+
+0

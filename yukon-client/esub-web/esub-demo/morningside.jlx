@@ -1,0 +1,100 @@
+JLoox 2.0.2
+"UTF8"
+A 0 1 0 0 ff6699ff 1 ! 0
+!
+"Default" 0 32
+0 0 001
+1
+"0" 1
+
+12
+
+com.cannontech.esub.editor.element.StaticText
+! 111101100 40;20;49.24707;13.109375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff6699ff 0 0
+0 0
+"Arial Bold" 0 18 "RAUN"
+"Arial Bold" 18 102 153 255 ""
+
+com.cannontech.esub.editor.element.StaticText
+! 111101100 240;20;98.308594;13.328125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff6699ff 0 0
+0 0
+"Arial Bold" 0 18 "PLYMOUTH"
+"Arial Bold" 18 102 153 255 ""
+
+com.cannontech.esub.editor.element.StaticText
+! 111101100 80;60;29.889648;10.234375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff6699ff 0 0
+0 0
+"Arial Bold" 0 14 "8560"
+"Arial Bold" 14 102 153 255 ""
+
+com.cannontech.esub.editor.element.StaticText
+! 111101100 300;60;29.889648;10.234375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff6699ff 0 0
+0 0
+"Arial Bold" 0 14 "8580"
+"Arial Bold" 14 102 153 255 ""
+
+com.cannontech.esub.editor.element.StaticImage
+! 111101100 370;180;117;22 5 0 $ ! ! 0
+A 0 1 0 0 $ 1 ! 0 0
+0 0 0 0 0
+!
+"C:\eclipse\workspace\esub-web-tom\esub-demo\images\SubListButton.gif" "mec.svg"
+
+com.loox.jloox.LxLine
+! 111101100 60;40;0;160 5 0 $ ! ! 0
+A 0 1 0 0 ff6699ff 1 ! 0 0
+2
+0 0;80
+1 0;-80
+0 6
+
+com.loox.jloox.LxLine
+! 111101100 60;110;220;0 5 0 $ ! ! 0
+A 0 1 0 0 ff6699ff 1 ! 0 0
+2
+0 -110;0
+1 110;0
+0 0
+
+com.loox.jloox.LxLine
+! 111101100 280;40;0;150 5 0 $ ! ! 0
+A 0 1 0 0 ff6699ff 1 ! 0 0
+2
+0 0;75
+1 0;-75
+0 6
+
+com.cannontech.esub.editor.element.StaticImage
+! 111101100 50;70;20;20 5 0 $ ! ! 0
+A 0 1 0 0 $ 1 ! 0 0
+0 0 0 0 0
+!
+"C:\eclipse\workspace\esub-web-tom\esub-demo\images\GreenBox.gif" "8560_details.svg"
+
+com.cannontech.esub.editor.element.StaticImage
+! 111101100 270;70;20;20 5 0 $ ! ! 0
+A 0 1 0 0 $ 1 ! 0 0
+0 0 0 0 0
+!
+"C:\eclipse\workspace\esub-web-tom\esub-demo\images\RedBox.gif" ""
+
+com.cannontech.esub.editor.element.StaticImage
+! 111101100 50;210;48;27 5 0 $ ! ! 0
+A 0 1 0 0 $ 1 ! 0 0
+0 0 0 0 0
+!
+"C:\eclipse\workspace\esub-web-tom\esub-demo\images\ClosedMotor.gif" ""
+
+com.cannontech.esub.editor.element.StaticImage
+! 111101100 280;200;48;27 5 0 $ ! ! 0
+A 0 1 0 0 $ 1 ! 0 0
+0 0 0 0 0
+!
+"C:\eclipse\workspace\esub-web-tom\esub-demo\images\OpenMotor.gif" ""
+
+
+0
