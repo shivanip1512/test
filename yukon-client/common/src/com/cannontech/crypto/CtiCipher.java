@@ -25,7 +25,7 @@ public class CtiCipher
 	private static CtiCipher localCipher = null;
 	private static Cipher ENC_CIPHER_1 = null;
 	private static Cipher DEC_CIPHER_1 = null;
-	private static SecretKey key = null;
+	//private static SecretKey key = null;
 
 
 	// 8-byte Salt
@@ -37,7 +37,7 @@ public class CtiCipher
 	
 	private static final int ITER_CNT = 13;
 
-	private static KeySpec keySpec =new PBEKeySpec(
+	private static KeySpec keySpec = new PBEKeySpec(
 			"smoe_kRAZy-Key FOR_+ NOW THIS is kIND of CrZY wrighT-?".toCharArray(),
 			SALT, ITER_CNT );
 
@@ -50,10 +50,11 @@ public class CtiCipher
 		super();
 
 		try
-		{
+		{			
 			SecretKey key = SecretKeyFactory.getInstance(
 					"PBEWithMD5AndDES").generateSecret(keySpec);
 			
+			//PBEWithMD5AndDES
 			if( DEC_CIPHER_1 == null )
 				DEC_CIPHER_1 = Cipher.getInstance( key.getAlgorithm() );
 
@@ -125,4 +126,26 @@ public class CtiCipher
 		return null;
 	}
 
+
+
+
+
+	public static void main(String[] a)
+	{
+		try
+		{
+			String s = "try it";
+			System.out.println( "Start : " + s );
+			String encStr = com.cannontech.crypto.CtiCipher.encrypt( s );	
+			System.out.println( encStr );
+
+			String decStr = com.cannontech.crypto.CtiCipher.decrypt( encStr );	
+			System.out.println( decStr );
+
+		}
+		catch( Throwable t )
+		{
+			t.printStackTrace(System.out);
+		}
+	}
 }
