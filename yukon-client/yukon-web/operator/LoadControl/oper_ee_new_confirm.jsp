@@ -89,7 +89,7 @@
 <table width="657" border="0" cellspacing="0" cellpadding="0" align="left">
     <tr> 
       <td width="650" valign="top"><br>
-        <p align="center" class="Main"><b><cti:text key="energyexchangeheading.text"/> - OFFER CONFIRMATION</b></p>
+        <p align="center" class="Main"><b><cti:text roleid="<%= RoleTypes.ENERGYEXCHANGE_HEADING_TEXT %>"/> - OFFER CONFIRMATION</b></p>
                   <p align="center" class="Main">The total target amount is <%= totAmountStr %> 
                     kW. Please confirm the offer information below.</p>
         <div align="center">

@@ -58,7 +58,7 @@
                 <td colspan="4" height="74" background="../Header.gif">&nbsp;</td>
               </tr>
               <tr> 
-                <td width="253" height="28" class="Header3">&nbsp;&nbsp;&nbsp;<cti:text key="energyexchange.text"/></td>
+                <td width="253" height="28" class="Header3">&nbsp;&nbsp;&nbsp;<cti:text roleid="<%= RoleTypes.ENERGYEXCHANGE_TEXT %>"/></td>
 				<td width="235" valign="middle">&nbsp;</td>
                 <td width="58" valign="middle"> 
                   <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
@@ -119,11 +119,11 @@
 <table width="640" border="0" cellspacing="0" cellpadding="0" align="left">
     <tr>
       <td width="635">
-        <p align="center" class="Main"><br><b><cti:text key="energyexchangeheading.text"/> - CUSTOMER PROFILE</b> 
+        <p align="center" class="Main"><br><b><cti:text roleid="<%= RoleTypes.ENERGYEXCHANGE_HEADING_TEXT %>"/> - CUSTOMER PROFILE</b> 
         </p>
-        <p align="center" class="Main"><%= cust.getCompanyName() %><br clear="ALL">
-          <%= cust.getCustomerAddress().getLocationAddress1() %><br clear="ALL">
-          <%= cust.getCustomerAddress().getLocationAddress2() %><br clear="ALL">
+        <p align="center" class="Main"><%= cust.getCiCustomerBase().getCompanyName() %><br clear="ALL">
+          <%= cust.getAddress().getLocationAddress1() %><br clear="ALL">
+          <%= cust.getAddress().getLocationAddress2() %><br clear="ALL">
           </p>
     </td>
     </tr>

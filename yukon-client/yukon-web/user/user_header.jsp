@@ -1,6 +1,10 @@
 <%@ page language="java" %>
 <%@ page import="java.util.*" %>
+<%@ page import="com.cannontech.common.constants.RoleTypes" %>
+<%@ page import="com.cannontech.database.cache.functions.CustomerFuncs" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
+<%@ page import="com.cannontech.database.data.lite.LiteCICustomer" %>
+<%@ page import="com.cannontech.database.data.lite.LiteContact" %>
 <%@ page import="com.cannontech.graph.model.TrendModelType" %>
 <%@ page import="com.cannontech.util.ServletUtil" %>
 <%@ taglib uri="/WEB-INF/jruntags.jar" prefix="jrun" %>
@@ -15,8 +19,10 @@
     String dbAlias = com.cannontech.common.util.CtiUtilities.getDatabaseAlias();
 
 	LiteYukonUser liteYukonUser = null;
+	LiteContact liteContact = null;
+	LiteCICustomer liteCICustomer = null;
 	int liteYukonUserID = -5;
-	int customerID = -1;
+	int customerID = -1; 
 	try
 	{
 		liteYukonUser = (LiteYukonUser) session.getAttribute("YUKON_USER");
@@ -26,24 +32,13 @@
 	{
 	}
 	if (liteYukonUser == null)
-	{
+	{ 
 		response.sendRedirect("/login.jsp"); return;
 	}
 
-	//Get customerId from YukonUserID
-	com.cannontech.database.cache.DefaultDatabaseCache ddCache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-	java.util.List custContactList = ddCache.getAllCustomerContacts();
-	java.util.Iterator iter = custContactList.iterator();
-
-	while( iter.hasNext() )
-	{
-		com.cannontech.database.data.lite.LiteCustomerContact liteCustCont = (com.cannontech.database.data.lite.LiteCustomerContact)iter.next();
-		if( liteCustCont.getUserID() == liteYukonUserID)
-		{
-			customerID = liteCustCont.getCustomerID();
-			break;
-		}
-	}
+	liteContact = CustomerFuncs.getCustomerContact(liteYukonUserID);
+	liteCICustomer = CustomerFuncs.getOwnerCICustomer(liteContact.getContactID());
+	customerID = liteCICustomer.getCustomerID();
 
     Class[] types = { Integer.class,String.class };    
 	Object[][] gData = com.cannontech.util.ServletUtil.executeSQL( dbAlias, "SELECT GDEF.GRAPHDEFINITIONID, GDEF.NAME FROM GRAPHDEFINITION GDEF, GRAPHCUSTOMERLIST GCL WHERE GDEF.GRAPHDEFINITIONID=GCL.GRAPHDEFINITIONID AND GCL.CUSTOMERID = " + customerID+ " ORDER BY GDEF.NAME", types );

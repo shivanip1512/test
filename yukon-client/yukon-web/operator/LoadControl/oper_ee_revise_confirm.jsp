@@ -89,7 +89,7 @@
     <tr> 
                 <td width="650" valign="top"> 
                   <p align="center" class="Main"><b><br>
-                    <cti:text key="energyexchangeheading.text"/> - REVISE OFFER 
+                    <cti:text roleid="<%= RoleTypes.ENERGYEXCHANGE_HEADING_TEXT %>"/> - REVISE OFFER 
                     <%= offerIdStr %> - <%= revNumStr %> <br>
                     </b></p>
                     

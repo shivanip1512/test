@@ -88,6 +88,7 @@
           </tr>
           <%
 	com.cannontech.web.history.CurtailHistory history = null;
+	 LMProgramCurtailment[] curtailProgs = cache.getEnergyCompanyCurtailmentPrograms(energyCompanyID);
 
 	try {
 		history = new com.cannontech.web.history.CurtailHistory(dbAlias);
@@ -95,9 +96,12 @@
        
 		for (int i = 0; i < activities.length; i++)
 		{
-			com.cannontech.web.history.HCurtailProgram program = activities[i].getCurtailProgram();
-            String link = "oper_mand.jsp?tab=historydetail&prog=" + program.getDeviceId() + "&ref=" + activities[i].getCurtailReferenceId();                        
-	%>
+			for(int j = 0; curtailProgs != null && j < curtailProgs.length; j++ ) 
+			{				
+				com.cannontech.web.history.HCurtailProgram program = activities[i].getCurtailProgram();				
+				if(program.getDeviceId() == curtailProgs[j].getYukonID().longValue()) {
+            	String link = "oper_mand.jsp?tab=historydetail&prog=" + program.getDeviceId() + "&ref=" + activities[i].getCurtailReferenceId();                        
+	%>  
           <tr> 
             <td width="25%" height="23" class="TableCell"><a href="<%= link %>" class="Link1"><%= program.getProgramName() %> </a></td>
             <td width="25%" height="23" class="TableCell"><%= mandTimeFormat.format( activities[i].getNotificationDateTime() ) + " " + mandDateFormat.format( activities[i].getNotificationDateTime() ) %></td>
@@ -105,6 +109,8 @@
             <td width="25%" height="23" class="TableCell"><%= activities[i].getDuration() %></td>
           </tr>
           <%
+				}
+		   }
 		}
 	}
 	catch (Exception e) {

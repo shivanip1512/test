@@ -1,4 +1,5 @@
 <%@ page language="java" %>
+<%@ page import="com.cannontech.common.constants.RoleTypes" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
 <%@ page import="com.cannontech.servlet.LCConnectionServlet" %>
 <%@ page import="com.cannontech.web.loadcontrol.LoadcontrolCache" %>

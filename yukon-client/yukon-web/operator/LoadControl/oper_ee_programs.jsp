@@ -85,7 +85,7 @@
           <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <p align="center" class="Main"><b><br>
-              <cti:text key="energyexchangeheading.text"/> - PROGRAMS</b></p>
+              <cti:text roleid="<%= RoleTypes.ENERGYEXCHANGE_HEADING_TEXT %>"/> - PROGRAMS</b></p>
         <table width="600" border="0" cellspacing="0" cellpadding="0" align="center">
           <%
                for( int i = 0; i < programs.length; i += 2 )
@@ -104,7 +104,7 @@
                     {                    
                 %>
                 <tr> 
-                  <td class="TableCell" width="50%"><a href="oper_ee.jsp?tab=profile&customerid=<%= custs[j].getYukonID() %>" class="Link1"><%= custs[j].getYukonName() %></a></td>
+                  <td class="TableCell" width="50%"><a href="oper_ee.jsp?tab=profile&customerid=<%= custs[j].getCustomerID() %>" class="Link1"><%= custs[j].getCompanyName() %></a></td>
                 </tr>
                 <%
                     }
@@ -129,7 +129,7 @@
                     {                    
                 %>
                 <tr > 
-                  <td class="TableCell" width="50%"><a href="oper_ee.jsp?tab=profile&customerid=<%= custs[j].getYukonID() %>" class="Link1"><%= custs[j].getYukonName() %></a></td>
+                  <td class="TableCell" width="50%"><a href="oper_ee.jsp?tab=profile&customerid=<%= custs[j].getCustomerID() %>" class="Link1"><%= custs[j].getCompanyName() %></a></td>
                 </tr>
                 <%
                      }

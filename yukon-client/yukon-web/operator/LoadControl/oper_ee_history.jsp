@@ -79,7 +79,7 @@
           <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <p align="center" class="Main"><b><br>
-              <cti:text key="energyexchangeheading.text"/> - HISTORY</b></p>
+              <cti:text roleid="<%= RoleTypes.ENERGYEXCHANGE_HEADING_TEXT %>"/> - HISTORY</b></p>
             <p align="center" class="Main">Click on an Offer ID to view 
               the offer summary.</p>
               <table width="600" border="1" cellspacing="0" bgcolor="white" cellpadding="2" align="center">

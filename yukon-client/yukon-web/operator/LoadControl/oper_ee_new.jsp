@@ -95,7 +95,7 @@ function confirm_form(f) {
  
         <input type=hidden name="submitted" value="true">
         <input type=hidden name="programname">
-        <b><cti:text key="energyexchangeheading.text"/> - NEW OFFER</b></p>
+        <b><cti:text roleid="<%= RoleTypes.ENERGYEXCHANGE_HEADING_TEXT %>"/> - NEW OFFER</b></p>
        
         <table
     width="600" border="0" cellspacing="0" cellpadding="5" align="center">

@@ -80,10 +80,10 @@
   <tr> 
                 <td width="650" class="Main"valign="top"> 
                   <p align="center"><b><br>
-                    <cti:text key="energyexchangeheading.text"/> - CURRENT SUMMARY</b> <br>
+                    <cti:text roleid="<%= RoleTypes.ENERGYEXCHANGE_HEADING_TEXT %>"/> - CURRENT SUMMARY</b> <br>
                     <br>
                   <p align="center">Click on an Offer ID to view the offer summary.</p>
-      <p align="center"><span class="MainHeader"><b>Today's <cti:text key="energyexchange.text"/> Summary - <%= datePart.format(com.cannontech.util.ServletUtil.getToday()) %></b></span> 
+      <p align="center"><span class="MainHeader"><b>Today's <cti:text roleid="<%= RoleTypes.ENERGYEXCHANGE_TEXT %>"/> Summary - <%= datePart.format(com.cannontech.util.ServletUtil.getToday()) %></b></span> 
       <center>
         <table width="620" border="1" cellspacing="0" cellpadding="2">
           <tr valign="top"> 
@@ -177,7 +177,7 @@
       </center>
       <p>&nbsp; 
       <p align="center"><span class="MainHeader"><b>Tomorrow's 
-        <cti:text key="energyexchange.text"/> Summary - <%= datePart.format(com.cannontech.util.ServletUtil.getTommorow()) %></b></span>
+        <cti:text roleid="<%= RoleTypes.ENERGYEXCHANGE_TEXT %>"/> Summary - <%= datePart.format(com.cannontech.util.ServletUtil.getTommorow()) %></b></span>
       <table width="620" border="1" cellspacing="0" cellpadding="2" align="center">
         <tr valign="top"> 
           <td width="10%" class="HeaderCell">Offer ID</td>

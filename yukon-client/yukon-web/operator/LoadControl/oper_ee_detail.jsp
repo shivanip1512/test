@@ -130,7 +130,7 @@
                 <tr> 
                   <td width="650" class="Main"> 
                     <br>
-                    <p align="center"><b><cti:text key="energyexchangeheading.text"/> - OFFER <%= offer.getOfferID().toString() %> 
+                    <p align="center"><b><cti:text roleid="<%= RoleTypes.ENERGYEXCHANGE_HEADING_TEXT %>"/> - OFFER <%= offer.getOfferID().toString() %> 
                       - <%= revisionNumber %> DETAILS</b></p>
                     <% 
            java.util.Date notificationDate = ((LMEnergyExchangeOfferRevision) offerRevisions.get(revisionNumber.intValue())).getNotificationDateTime();          
@@ -184,7 +184,7 @@
 
                         %>
                       <tr> 
-                        <td width="300" class="TableCell"><a href="oper_ee.jsp?tab=current&prog=<%= program.getYukonID() %>&offer=<%= offerID %>&rev=<%= revisionNumber %>&cust=<%= customer.getYukonID() %>" class="Link1"><%= customer.getYukonName() %></a></td>
+                        <td width="300" class="TableCell"><a href="oper_ee.jsp?tab=current&prog=<%= program.getYukonID() %>&offer=<%= offerID %>&rev=<%= revisionNumber %>&cust=<%= customer.getCustomerID() %>" class="Link1"><%= customer.getCompanyName() %></a></td>
                         <td width="150" class="TableCell"><%= reply.getAcceptStatus() %></td>
                         <td width="150" class="TableCell"><%= committed %></td>
                       </tr>

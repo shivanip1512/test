@@ -107,7 +107,7 @@ System.out.println("revisionNumber: " + revisionNumber);
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center"> 
               <p class="Main"><b><br>
-                <cti:text key="energyexchangeheading.text"/> - HISTORY DETAIL <BR>
+                <cti:text roleid="<%= RoleTypes.ENERGYEXCHANGE_HEADING_TEXT %>"/> - HISTORY DETAIL <BR>
                 OFFER <%= offerId %> - <%= revisionNumber %> </b></p>
             </div>
             <p align="center" class="Main">Click on a customer name to view the 

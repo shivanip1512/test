@@ -12,13 +12,13 @@
 function fsub() {
 	document.MForm.submit();
 }
-
-function TryCallFunction() {
+ 
+function TryCallFunction() { 
 	var sd = document.MForm.mydate1.value.split("-");
 	document.MForm.iday.value = sd[1];
 	document.MForm.imonth.value = sd[0];
 	document.MForm.iyear.value = sd[2];
-}
+} 
 
 function Today() {
 	var dd = new Date();
@@ -83,11 +83,11 @@ MM_reloadPage(true);
           <td width="101" bgcolor="#000000" height="1"></td>
           <td width="1" bgcolor="#000000" height="1"></td>
           <td width="657" bgcolor="#000000" height="1"></td>
-          <td width="1" bgcolor="#000000" height="1"></td>
+          <td width="1" bgcolor="#000000" height="1"></td> 
         </tr>
         <tr> 
           <td  valign="top" width="101"> 
-            <% String pageName = "user_trending.jsp"; %>
+            <% String pageName = "user_trending.jsp"; %> 
             <%@ include file="nav.jsp" %>
           </td>
           <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
@@ -174,7 +174,7 @@ MM_reloadPage(true);
                         <img id = "theGraph" src="/servlet/GraphGenerator?" > 
                         <%}
 				%>
-                        <!--<font size="-1"><cti:text key="trending.disclaimer"/></font>-->
+                        <font size="-1"><cti:text roleid="<%= RoleTypes.TRENDING_DISCLAIMER_TEXT %>"/></font>
                     </center>
                   </td>
                 </tr>

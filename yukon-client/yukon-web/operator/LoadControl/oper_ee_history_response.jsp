@@ -173,7 +173,7 @@
           <td width="657" valign="top" bgcolor="#FFFFFF">
             <div align="center">
               <p class="Main"><br>
-                <b> <cti:text key="energyexchangeheading.text"/> - CUSTOMER SUMMARY HISTORY<br><%= customer.getCustomerName() %></b>
+                <b> <cti:text roleid="<%= RoleTypes.ENERGYEXCHANGE_HEADING_TEXT %>"/> - CUSTOMER SUMMARY HISTORY<br><%= customer.getCustomerName() %></b>
               </p>
             </div>
             <div align="center"> 

@@ -178,7 +178,7 @@
         <input type=hidden name="offer" value="<%= offerID %>">
         <input type=hidden name="rev" value="<%= revisionNumber %>">
         <input type=hidden name="date" value="<%= eeDateFormat.format(offer.getOfferDate()) %>">
-                    <b> <cti:text key="energyexchangeheading.text"/> - REVISE OFFER </b><br>
+                    <b> <cti:text roleid="<%= RoleTypes.ENERGYEXCHANGE_HEADING_TEXT %>"/> - REVISE OFFER </b><br>
                     <br>
                   </div>
       <table

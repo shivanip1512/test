@@ -23,10 +23,10 @@
 <table width="101" border="0" cellspacing="0" cellpadding="6" height="200">
   <tr> 
     <td bgcolor="#FFFFFF"> 
-      <div align="left"> <span class="NavText">Account #12345<br>
-        First/Last Name<br>
-        800-555-1212<br>
-        800-555-2121</span><br>
+      <div align="left"> <span class="NavText"><%= liteCICustomer.getCompanyName() %><br>
+        <%= liteContact.getContFirstName() + "  " + liteContact.getContLastName() %><br>
+       <br>
+       </span><br>
       </div>
       <div align="left"> </div>
     </td>
@@ -60,10 +60,10 @@
   </tr>
   <tr> 
     <td> 
-      <div align="left"><span class="NavHeader">User-Control</span><br>
+<!--      <div align="left"><span class="NavHeader">User-Control</span><br>
         <%= links.get("user_lm_control.jsp") %><br>
         <%= links.get("user_lm_time.jsp") %><br>
-		<%= links.get("switch_commands.jsp") %></div>
+		<%= links.get("switch_commands.jsp") %></div> -->
     </td>
   </tr>
 </table>

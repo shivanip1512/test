@@ -141,14 +141,14 @@
           </form>
           <form method="post" action="LoadControl/oper_mand.jsp">
             <td width="110" class = "Main"> 
-              <div align = "center" style = "border:solid 1px #666999;"><a href = "LoadControl/oper_mand.jsp" class = "Link1" style = "text-decoration:none;">Notification 
+              <div align = "center" style = "border:solid 1px #666999;"><a href = "LoadControl/oper_mand.jsp" class = "Link1" style = "text-decoration:none;"><cti:text roleid="<%= RoleTypes.CURTAILMENT_TEXT %>"/> 
                 </a></div>
             </td>
           </form>
           <form method="post" action="LoadControl/oper_ee.jsp">
             <td width = "110" class = "Main"> 
-              <div align = "center" style = "border:solid 1px #666999;"><a href = "LoadControl/oper_ee.jsp" class = "Link1" style = "text-decoration:none;">Buy 
-                Back </a></div>
+              <div align = "center" style = "border:solid 1px #666999;"><a href = "LoadControl/oper_ee.jsp" class = "Link1" style = "text-decoration:none;"><cti:text roleid="<%= RoleTypes.ENERGYEXCHANGE_TEXT %>"/>
+                </a></div>
             </td>
             <td class = "Main" width="4">&nbsp;</td>
           </form>

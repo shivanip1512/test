@@ -20,7 +20,7 @@ function decline_form()
 </head>
 <%
   //Look up the customer curtailable amount, use this as the default amount
-  Object[][] gData2 = com.cannontech.util.ServletUtil.executeSQL( session, "select curtailamount from cicustomerbase where deviceid=" +  customerID);  
+  Object[][] gData2 = com.cannontech.util.ServletUtil.executeSQL( session, "select curtailamount from cicustomerbase where customerid=" +  customerID);  
   String curtailAmount = gData2[0][0].toString();
 
   // Grab the 24 customers baseline values
@@ -102,10 +102,10 @@ function decline_form()
         </table>
         <struts:form name="checker" type="com.cannontech.validate.PageBean" scope="session" action="user_ee.jsp?tab=accept"> 
         <input type=hidden name="submitted">
-        <input type=hidden name="offer" value=<%= revision.getOfferID() %>>
-        <input type=hidden name="rev" value=<%= revision.getRevisionNumber() %>>
-        <input type=hidden name="offerdate" value=<%= datePart.format(offer.getOfferDate()) %>>
-        <input type=hidden name="expiredatetime" value=<%= java.net.URLEncoder.encode( timePart.format(revision.getOfferExpirationDateTime()) + " " + datePart.format(revision.getOfferExpirationDateTime()) ) %>>
+        <input type=hidden name="offer" value="<%= revision.getOfferID() %>">
+        <input type=hidden name="rev" value="<%= revision.getRevisionNumber() %>">
+        <input type=hidden name="offerdate" value="<%= datePart.format(offer.getOfferDate()) %>">
+        <input type=hidden name="expiredatetime" value="<%= java.net.URLEncoder.encode( timePart.format(revision.getOfferExpirationDateTime()) + " " + datePart.format(revision.getOfferExpirationDateTime()) ) %>">
         <font size = "1"><%= checker.getError("formaterror") %></font>
         <table width="650" border="0" cellspacing="0" cellpadding="5" valign="top">
           <tr> 
@@ -266,7 +266,7 @@ function decline_form()
                     </div>
                   </form>
                   <p class="Main" align="center"><br>
-                    If you have questions or problems, call 1-800-555-1212.</p>
+                    If you have questions or problems, call <cti:text roleid="<%= RoleTypes.ENERGYEXCHANGE_PHONE_TEXT %>"/></p>
                  <div align = "center"><a href = "user_ee.jsp" class = "Link1">Back</a></div>
           </p>
                

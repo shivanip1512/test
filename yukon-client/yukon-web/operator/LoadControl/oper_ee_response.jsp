@@ -61,7 +61,7 @@
 
     for( int i = 0; i < customers.length; i++ )
     {
-        if( customers[i].getYukonID().intValue() == customerID.intValue() )
+        if( customers[i].getCustomerID().intValue() == customerID.intValue() )
         {
             customer = customers[i];
             break;
@@ -174,8 +174,8 @@
           <td width="657" valign="top" bgcolor="#FFFFFF">
             <div align="center"> 
               <p class="Main"><br>
-                <b> <cti:text key="energyexchangeheading.text"/> - CUSTOMER SUMMARY<br>
-                <%= customer.getYukonName() %></b><br>
+                <b> <cti:text roleid="<%= RoleTypes.ENERGYEXCHANGE_HEADING_TEXT %>"/> - CUSTOMER SUMMARY<br>
+                <%= customer.getCompanyName() %></b><br>
               </p>
             </div>
             <table width="600" border="0" cellspacing="0"

@@ -76,7 +76,7 @@
           <td width="20%"><%= checker.get("offerdate") %></td>
           <td width="15%"> 
             <p align=RIGHT>Expires:
-          </td>
+          </td> <% System.out.println("HERO " + checker.get("expiredatetime")); %>
           <td width="25%"> <%= java.net.URLDecoder.decode( checker.get("expiredatetime") ) %></td>
         </tr>
       </table>

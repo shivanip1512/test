@@ -11,7 +11,7 @@
        // Attempt to retrieve the customer's info
         com.cannontech.database.data.customer.CICustomerBase cust = 
             (com.cannontech.database.data.customer.CICustomerBase) 
-                com.cannontech.database.data.customer.CustomerFactory.createCustomer(com.cannontech.database.data.pao.CustomerTypes.CI_CUSTOMER);
+                com.cannontech.database.data.customer.CustomerFactory.createCustomer(com.cannontech.database.data.customer.CustomerTypes.CUSTOMER_CI);
 
         cust.setCustomerID( new Integer(customerID) );
 
@@ -52,10 +52,9 @@
             &nbsp;<b><font size="-1" face="Arial">Customer Profile</font></b>
           </center>
         </p>
-        <p align="center"><font size="-1" face="Arial"><%= cust.getCustomerName() %><br clear="ALL">
-          <%= cust.getCustomerAddress().getLocationAddress1() %><br clear="ALL">
-          <%= cust.getCustomerAddress().getLocationAddress2() %><br clear="ALL">
-          <%= cust.getCiCustomerBase().getMainPhoneNumber() %><br clear="ALL">
+        <p align="center"><font size="-1" face="Arial"><%= cust.getCompanyName() %><br clear="ALL">
+          <%= cust.getAddress().getLocationAddress1() %><br clear="ALL">
+          <%= cust.getAddress().getLocationAddress2() %><br clear="ALL">
           <br>
           <a href="<%= referrer %>"><font face="Arial, Helvetica, sans-serif">Back</font></a></font> 
       </td>

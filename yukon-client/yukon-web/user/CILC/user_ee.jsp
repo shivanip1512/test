@@ -7,20 +7,20 @@
 <%@ page import="com.cannontech.loadcontrol.data.LMEnergyExchangeOfferRevision" %>
 <%@ page import="com.cannontech.loadcontrol.data.LMEnergyExchangeHourlyOffer" %>
 <%@ page import="com.cannontech.loadcontrol.data.LMEnergyExchangeCustomer" %>
-<%@ page import="com.cannontech.loadcontrol.data.LMEnergyExchangeCustomerReply" %>
+<%@ page import="com.cannontech.loadcontrol.data.LMEnergyExchangeCustomerReply" %> 
 <%@ page import="com.cannontech.loadcontrol.data.LMEnergyExchangeHourlyCustomer" %>
 <%@ page import="com.cannontech.servlet.LCConnectionServlet" %>
 <%@ page import="com.cannontech.web.loadcontrol.LoadcontrolCache" %>
 
-<%@ include file="../user_header.jsp" %>
-
+<%@ include file="../user_header.jsp" %> 
+ 
 <%@ taglib uri="/WEB-INF/struts.tld" prefix="struts" %>
 <jsp:useBean id="checker" scope="session" class="com.cannontech.validate.PageBean"/>
 <%    
     LCConnectionServlet cs = (LCConnectionServlet) application.getAttribute(LCConnectionServlet.SERVLET_CONTEXT_ID);
     LoadcontrolCache cache = cs.getCache();
     
-	String tab = request.getParameter("tab");
+	String tab = request.getParameter("tab"); 
 	if (tab == null)
 		tab = "";
 
@@ -86,7 +86,7 @@
 					{
 						LMEnergyExchangeCustomer customer = (LMEnergyExchangeCustomer) customers.elementAt(k);
 
-						if( customer.getYukonID().longValue() == customerID )
+						if( customer.getCustomerID().longValue() == customerID )
 						{                                
                             java.util.Vector revisions = offer.getEnergyExchangeOfferRevisions();
 							java.util.Vector replies = customer.getEnergyExchangeCustomerReplies();

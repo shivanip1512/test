@@ -145,7 +145,7 @@
           <td>
             <center>
                           <span class="Main"> <br>
-                          Per your contract with <cti:text key="curtailment.provider"/>, 
+                          Per your contract with <cti:text roleid="<%= RoleTypes.CURTAILMENT_PROVIDER_TEXT %>"/>, 
                           a notification event is scheduled<br>
                           from <%= startDateTimeStr %> to <%= stopDateTimeStr %>.</span> 
                           <p> 
