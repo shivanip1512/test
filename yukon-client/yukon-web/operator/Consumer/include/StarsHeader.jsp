@@ -9,6 +9,7 @@
 <%@ page import="com.cannontech.roles.application.WebClientRole" %>
 <%@ page import="com.cannontech.roles.operator.ConsumerInfoRole" %>
 <%@ page import="com.cannontech.roles.operator.InventoryRole" %>
+<%@ page import="com.cannontech.roles.operator.WorkOrderRole" %>
 
 <%@ page import="com.cannontech.stars.xml.StarsFactory" %>
 <%@ page import="com.cannontech.stars.xml.serialize.*" %>
@@ -40,6 +41,8 @@
 	java.text.SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");
 	java.text.SimpleDateFormat timePart = new java.text.SimpleDateFormat("HH:mm z");
 	java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM:dd:yyyy:HH:mm:ss");
+	java.text.SimpleDateFormat timeFormat = new java.text.SimpleDateFormat("HH:mm");
+	java.text.SimpleDateFormat dateTimeFormat = new java.text.SimpleDateFormat("MM/dd/yy HH:mm");
 	java.text.SimpleDateFormat histDateFormat = new java.text.SimpleDateFormat("MM/dd/yy HH:mm z");
 	java.text.SimpleDateFormat ampmTimeFormat = new java.text.SimpleDateFormat("hh:mm a");
 	
@@ -142,13 +145,16 @@
 		}
 	}
 	
-	TimeZone tz = TimeZone.getDefault(); 
+	TimeZone tz = null;
 	if(energyCompany != null)
 		tz = TimeZone.getTimeZone( energyCompany.getTimeZone() );
+	if (tz == null) tz = TimeZone.getDefault(); 
 		
-	timePart.setTimeZone(tz);
 	datePart.setTimeZone(tz);
+	timePart.setTimeZone(tz);
 	dateFormat.setTimeZone(tz);
+	timeFormat.setTimeZone(tz);
+	dateTimeFormat.setTimeZone(tz);
 	histDateFormat.setTimeZone(tz);
 	
 if( primContactYukonUser != null)

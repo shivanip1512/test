@@ -79,8 +79,8 @@ function validate(form) {
         </tr>
         <tr> 
           <td  valign="top" width="101">
-            <% String pageName = "InventoryDetail.jsp"; %>
-            <%@ include file="include/Nav.jsp" %>
+            <div align="center" class="TableCell1"><br>
+              <a href="Inventory.jsp" class="Link2">Back to List</a></div>
           </td>
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
@@ -92,8 +92,8 @@ function validate(form) {
               <form name="invForm" method="post" action="<%= request.getContextPath() %>/servlet/InventoryManager" onsubmit="return validate(this)">
 			    <input type="hidden" name="action" value="UpdateInventory">
                 <input type="hidden" name="InvID" value="<%= hardware.getInventoryID() %>">
-				<input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/operator/Hardware/InventoryDetail.jsp?InvId=<%= invID %>">
-				<input type="hidden" name="REFERRER" value="<%= request.getContextPath() %>/operator/Hardware/InventoryDetail.jsp?InvId=<%= invID %>">
+				<input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>?InvId=<%= invID %>">
+				<input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>?InvId=<%= invID %>">
                 <table width="610" border="0" cellspacing="0" cellpadding="10" align="center">
                   <tr> 
                     <td width="300" valign="top" bgcolor="#FFFFFF"> 
@@ -181,7 +181,7 @@ function validate(form) {
                                   <div align="right">Notes:</div>
                                 </td>
                                 <td width="210"> 
-                                  <textarea name="Notes" rows="3" wrap="soft" cols="28" class = "TableCell"><%= hardware.getNotes() %></textarea>
+                                  <textarea name="Notes" rows="3" wrap="soft" cols="28" class = "TableCell"><%= hardware.getNotes().replaceAll("<br>", "\r\n") %></textarea>
                                 </td>
                               </tr>
                             </table>
@@ -226,7 +226,7 @@ function validate(form) {
                                   <div align="right">Notes:</div>
                                 </td>
                                 <td width="210"> 
-                                  <textarea name="InstallNotes" rows="3 wrap="soft" cols="28" class = "TableCell"><%= hardware.getInstallationNotes() %></textarea>
+                                  <textarea name="InstallNotes" rows="3 wrap="soft" cols="28" class = "TableCell"><%= hardware.getInstallationNotes().replaceAll("<br>", "\r\n") %></textarea>
                                 </td>
                               </tr>
                             </table>
@@ -253,8 +253,9 @@ function validate(form) {
 		LiteStarsCustAccountInformation liteAcctInfo = liteEC.getBriefCustAccountInfo(liteHw.getAccountID(), true);
 		LiteCustomerAccount liteAccount = liteAcctInfo.getCustomerAccount();
 		LiteCustomerContact liteContact = liteEC.getCustomerContact(liteAcctInfo.getCustomer().getPrimaryContactID());
-		LiteAddress liteAddr = liteEC.getAddress(liteAccount.getBillingAddressID());
-		String mapNo = ServerUtils.forceNotNone(liteAcctInfo.getAccountSite().getSiteNumber());
+		LiteAccountSite liteAcctSite = liteAcctInfo.getAccountSite();
+		LiteAddress liteAddr = liteEC.getAddress(liteAcctSite.getStreetAddressID());
+		String mapNo = ServerUtils.forceNotNone(liteAcctSite.getSiteNumber());
 %>
                               <tr>
                                 <td class="TableCell">
@@ -282,13 +283,13 @@ function validate(form) {
                       </div>
                     </td>
                     <td width="15%"> 
-                      <div align="center"> 
-                        <input type="button" name="Delete" value="Delete" onclick="deleteHardware(this.form)">
+                      <div align="center">
+                        <input type="reset" name="Cancel" value="Cancel">
                       </div>
                     </td>
                     <td width="42%"> 
-                      <div align="left"> 
-                        <input type="button" name="Back" value="Back" onclick="history.back()">
+                      <div align="left">
+                        <input type="button" name="Delete" value="Delete" onClick="deleteHardware(this.form)">
                       </div>
                     </td>
                   </tr>
@@ -297,8 +298,8 @@ function validate(form) {
               <form name="cusForm" method="post" action="<%= request.getContextPath() %>/servlet/SOAPClient">
                 <input type="hidden" name="action" value="GetCustAccount">
                 <input type="hidden" name="AccountID" value="<%= liteHw.getAccountID() %>">
-                <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/operator/Consumer/Update.jsp">
-                <input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/operator/Hardware/InventoryDetail.jsp">
+                <input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/operator/Consumer/Update.jsp">
+                <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>?InvId=<%= invID %>">
               </form>
               <br>
               </div>

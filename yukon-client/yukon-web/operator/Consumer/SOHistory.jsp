@@ -1,14 +1,130 @@
 <%@ include file="include/StarsHeader.jsp" %>
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
+<%
+	int orderNo = Integer.parseInt(request.getParameter("OrderNo"));
+	StarsServiceRequest order = serviceHist.getStarsServiceRequest(orderNo);
+	
+	int statusPending = ServletUtils.getStarsCustListEntry(
+			selectionListTable, YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_STATUS, YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_PENDING).getEntryID();
+	int statusScheduled = ServletUtils.getStarsCustListEntry(
+			selectionListTable, YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_STATUS, YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_SCHEDULED).getEntryID();
+	int statusCompleted = ServletUtils.getStarsCustListEntry(
+			selectionListTable, YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_STATUS, YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_COMPLETED).getEntryID();
+	int statusCancelled = ServletUtils.getStarsCustListEntry(
+			selectionListTable, YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_STATUS, YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_CANCELLED).getEntryID();
+	
+	Date dateScheduled = order.getDateScheduled();
+	if (dateScheduled == null) dateScheduled = new Date();
+	Date dateCompleted = order.getDateCompleted();
+	if (dateCompleted == null) dateCompleted = new Date();
+%>
 <html>
 <head>
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../../WebConfig/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
+
+<script language="JavaScript">
+function deleteWorkOrder(form) {
+	if (!confirm('Are you sure you want to delete this service order?'))
+		return;
+	form.action.value = "DeleteWorkOrder";
+	form.REDIRECT.value = "<%= request.getContextPath() %>/operator/Consumer/ServiceSummary.jsp";
+	form.submit();
+}
+
+function validate(form) {
+	if (form.OrderNo.value == "") {
+		alert("Work Order # cannot be empty");
+		return false;
+	}
+	return true;
+}
+
+var currentDivName = null;
+
+function showDateDiv(form, divName) {
+	currentDivName = divName;
+	document.getElementById("Div" + divName).style.display = "";
+	form.elements[divName].disabled= false;
+	form.elements[divName].select();
+}
+
+function resetOrder(form) {
+	if (currentDivName != null) {
+		document.getElementById("Div" + currentDivName).style.display = "none";
+		form.elements[currentDivName].disabled = true;
+		currentDivName = null;
+	}
+}
+
+function scheduleOrder(form) {
+	form.CurrentState.value = "<%= statusScheduled %>";
+	resetOrder(form);
+	showDateDiv(form, "DateScheduled");
+}
+
+function closeOrder(form) {
+	form.CurrentState.value = "<%= statusCompleted %>";
+	resetOrder(form);
+	showDateDiv(form, "DateCompleted");
+}
+
+function cancelOrder(form) {
+	if (!confirm("Are you sure you want to cancel this service order?"))
+		return;
+	form.CurrentState.value = "<%= statusCancelled %>";
+	resetOrder(form);
+	showDateDiv(form, "DateCancelled");
+}
+
+function changeStatus(form) {
+<%
+	if (order.getCurrentState().getEntryID() != statusCompleted && order.getCurrentState().getEntryID() != statusCancelled) {
+%>
+	if (form.CurrentState.value == "<%= statusCompleted %>")
+		closeOrder(form);
+	else if (form.CurrentState.value == "<%= statusCancelled %>")
+		cancelOrder(form);
+	else if (form.CurrentState.value == "<%= statusScheduled %>")
+<%
+		if (order.getCurrentState().getEntryID() != statusScheduled) {
+%>
+		scheduleOrder(form);
+<%
+		}
+		else {
+%>
+		resetOrder(form);
+<%
+		}
+%>
+	else if (form.CurrentState.value == "<%= statusPending %>")
+		resetOrder(form);
+<%
+	}
+%>
+}
+
+function init() {
+<% if (order.getCurrentState().getEntryID() != statusPending) { %>
+	document.getElementById("DivDateScheduled").style.display = "";
+	document.soForm.DateScheduled.disabled = false;
+<% } %>
+<% if (order.getCurrentState().getEntryID() == statusCompleted) { %>
+	document.getElementById("DivDateCompleted").style.display = "";
+	document.soForm.DateCompleted.disabled = false;
+<% } %>
+<% if (order.getCurrentState().getEntryID() == statusCancelled) { %>
+	document.getElementById("DivDateCancelled").style.display = "";
+	document.soForm.DateCancelled.disabled = false;
+<% } %>
+}
+</script>
 </head>
 
-<body class="Background" leftmargin="0" topmargin="0">
+<body class="Background" leftmargin="0" topmargin="0" onload="init()">
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
@@ -49,146 +165,213 @@
         </tr>
         <tr> 
           <td  valign="top" width="101">
-		  <% String pageName = "SOHistory.jsp"; %>
-          <%@ include file="include/Nav.jsp" %>
+            <div align="center" class="TableCell1"><br>
+              <a href="ServiceSummary.jsp" class="Link2">Back to List</a></div>
 		  </td>
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF">
-            <div align="center"><% String header = "WORK ORDERS - SERVICE HISTORY"; %><%@ include file="include/InfoSearchBar.jsp" %></div>
-            <table width="610" border="0" cellspacing="0" cellpadding="10" align="center">
-              <tr> 
-                <td width="300" valign="top" bgcolor="#FFFFFF"> 
-                  <table width="300" border="0" cellspacing="0" cellpadding="0">
-                    <tr> 
-                      <td><span class="SubtitleHeader">CUSTOMER CONTACT</span> 
-                        <hr>
-                        <table width="300" border="0" cellspacing="0" cellpadding="3" align="center">
-                          <tr> 
-                            <td class="TableCell"> Account # 12345 </td>
-                          </tr>
-                          <tr> 
-                            <td class="TableCell"> Acme Company </td>
-                          </tr>
-                          <tr> 
-                            <td class="TableCell"> Last Name, First Name</td>
-                          </tr>
-                          <tr> 
-                            <td class="TableCell"> Home #: 800-555-1212 </td>
-                          </tr>
-                          <tr> 
-                            <td class="TableCell"> Work #: 800 800-555-2121 </td>
-                          </tr>
-                        </table>
-                      </td>
-                    </tr>
-                  </table>
-                  <br>
-                  <table width="300" border="0" cellspacing="0" cellpadding="0">
-                    <tr> 
-                      <td><span class="SubtitleHeader">SERVICE ADDRESS</span> 
-                        <hr>
-                        <table width="300" border="0" cellspacing="0" cellpadding="3" align="center">
-                          <tr> 
-                            <td class="TableCell"> 1234 Main Street, Floor 3</td>
-                          </tr>
-                          <tr> 
-                            <td class="TableCell"> Golden Valley, MN 55427</td>
-                          </tr>
-                          <tr> 
-                            <td class="TableCell"> Map # 3A </td>
-                          </tr>
-                          <tr> 
-                            <form name="form2" method="" action="">
-                              <td class="TableCell"> 
-                                <textarea name="textarea2" rows="3" wrap="soft" cols="28" class = "TableCell"></textarea>
+            <div align="center">
+			  <% String header = "WORK ORDERS - SERVICE HISTORY"; %>
+			  <%@ include file="include/InfoSearchBar.jsp" %>
+			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
+			</div>
+			<form name="soForm" method="post" action="<%= request.getContextPath() %>/servlet/SOAPClient" onsubmit="return validate(this)" onreset="resetOrder(this)">
+			  <input type="hidden" name="action" value="UpdateWorkOrder">
+              <input type="hidden" name="OrderID" value="<%= order.getOrderID() %>">
+			  <input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>?OrderNo=<%= orderNo %>">
+			  <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>?OrderNo=<%= orderNo %>">
+              <table width="640" border="0" cellspacing="0" cellpadding="10" align="center">
+                <tr> 
+                  <td width="300" valign="top" bgcolor="#FFFFFF"> 
+                    <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
+                      <tr> 
+                        <td><span class="SubtitleHeader">SERVICE REQUEST INFORMATION</span> 
+                          <hr>
+                          <table width="100%" border="0" cellspacing="0" cellpadding="1" align="center">
+                            <tr> 
+                              <td width="30%" class="TableCell"> 
+                                <div align="right">Work Order #:</div>
                               </td>
-                            </form>
-                          </tr>
-                        </table>
-                      </td>
-                    </tr>
-                  </table>
-                </td>
-                <td width="300" valign="top" bgcolor="#FFFFFF"> 
-                  <table width="310" border="0" cellspacing="0" cellpadding="0" align="center">
-                    <tr> 
-                      <td><span class="SubtitleHeader">SERVICE REQUEST INFORMATION</span> 
-                        <hr>
-                        <table width="300" border="0" cellspacing="0" cellpadding="3" align="center">
-                          <tr> 
-                            <td class="TableCell"> Service Order # 12345</td>
-                          </tr>
-                          <tr> 
-                            <td class="TableCell"> Reported 07/11/02</td>
-                          </tr>
-                          <tr> 
-                            <td class="TableCell"> Service Call</td>
-                          </tr>
-                        </table>
-                        <br>
-                        <span class="SubtitleHeader">DEVICE</span> 
-                        <hr>
-                        <table width="300" border="0" cellspacing="0" cellpadding="3" align="center">
-                          <tr> 
-                            <td class="TableCell"> Switch</td>
-                          </tr>
-                          <tr> 
-                            <td class="TableCell"> LCR 5000</td>
-                          </tr>
-                          <tr> 
-                            <td class="TableCell"> Serial # 12345</td>
-                          </tr>
-                          <tr> 
-                            <td class="TableCell"> Inventory Tag Group 3: </td>
-                          </tr>
-                          <tr> 
-                            <form name="form2" method="" action="">
-                              <td class="TableCell"> 
-                                <textarea name="textarea3" rows="3" wrap="soft" cols="28" class = "TableCell"></textarea>
+                              <td width="70%" class="MainText"><%= order.getOrderNumber() %></td>
+                            </tr>
+                            <tr> 
+                              <td width="30%" class="TableCell"> 
+                                <div align="right">Date Reported:</div>
                               </td>
-                            </form>
-                          </tr>
-                        </table>
-                        <br>
-                        <span class="SubtitleHeader">STATUS</span> 
-                        <hr>
-                        <table width="300" border="0" cellspacing="0" cellpadding="3" align="center">
-                          <tr> 
-                            <td class="TableCell"> Complete</td>
-                          </tr>
-                          <tr> 
-                            <form name="form2" method="" action="">
-                              <td class="TableCell"> 
-                                <textarea name="textarea" rows="3" wrap="soft" cols="28" class = "TableCell"></textarea>
+                              <td width="70%"> 
+                                <input type="text" name="DateReported" size="14" value="<%= ServletUtils.formatDate(order.getDateReported(), datePart) %>">
+                                - 
+                                <input type="text" name="TimeReported" size="8" value="<%= ServletUtils.formatDate(order.getDateReported(), timeFormat) %>">
                               </td>
-                            </form>
-                          </tr>
-                          <tr> 
-                            <td class="TableCell"> Joe Contractor</td>
-                          </tr>
-                          <tr> 
-                            <td class="TableCell"> Joe Technician</td>
-                          </tr>
-                          <tr> 
-                            <td class="TableCell"> Closed 07/14/02</td>
-                          </tr>
-                          <tr> 
-                            <td class="TableCell"> 2 Hours, No Overtime</td>
-                          </tr>
-                        </table>
-                      </td>
-                    </tr>
-                  </table>
-                </td>
-              </tr>
-            </table>
-            <form name="form1" method="get" action="ServiceSummary.jsp">
-              <div align="center"> 
-                <input type="submit" name="Back" value="Back">
-                <br>
-              </div>
+                            </tr>
+                            <tr> 
+                              <td width="30%" class="TableCell"> 
+                                <div align="right">Service Type:</div>
+                              </td>
+                              <td width="70%"> 
+                                <select name="ServiceType">
+                                  <%
+	StarsCustSelectionList serviceTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_TYPE );
+	for (int i = 0; i < serviceTypeList.getStarsSelectionListEntryCount(); i++) {
+		StarsSelectionListEntry entry = serviceTypeList.getStarsSelectionListEntry(i);
+		String selected = (entry.getEntryID() == order.getServiceType().getEntryID())? "selected" : "";
+%>
+                                  <option value="<%= entry.getEntryID() %>" <%= selected %>><%= entry.getContent() %></option>
+                                  <%	} %>
+                                </select>
+                              </td>
+                            </tr>
+                            <tr> 
+                              <td width="30%" class="TableCell"> 
+                                <div align="right">Ordered By:</div>
+                              </td>
+                              <td width="70%"> 
+                                <input type="text" name="OrderedBy" size="14" value="<%= order.getOrderedBy() %>">
+                              </td>
+                            </tr>
+                            <tr> 
+                              <td width="30%" class="TableCell"> 
+                                <div align="right">Assigned to:</div>
+                              </td>
+                              <td width="70%"> 
+                                <select name="ServiceCompany">
+                                  <%
+	for (int i = 0; i < companies.getStarsServiceCompanyCount(); i++) {
+		StarsServiceCompany company = companies.getStarsServiceCompany(i);
+		String selected = (company.getCompanyID() == order.getServiceCompany().getEntryID())? "selected" : "";
+%>
+                                  <option value="<%= company.getCompanyID() %>" <%= selected %>><%= company.getCompanyName() %></option>
+                                  <%	} %>
+                                  <option>Joe Technician</option>
+                                </select>
+                              </td>
+                            </tr>
+                            <tr> 
+                              <td width="30%" class="TableCell"> 
+                                <div align="right">Description:</div>
+                              </td>
+                              <td width="70%"> 
+                                <textarea name="Description" rows="3" wrap="soft" cols="35" class = "TableCell"><%= order.getDescription().replaceAll("<br>", "\r\n") %></textarea>
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                  <td width="300" valign="top" bgcolor="#FFFFFF"> 
+                    <table width="100%" border="1" cellspacing="0" cellpadding="0">
+                      <tr>
+                        <td>
+                          <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
+                            <tr> 
+                              <td><span class="SubtitleHeader">STATUS</span> 
+                                <hr>
+                                <table width="100%" border="0" cellspacing="0" cellpadding="1" align="center">
+                                  <tr> 
+                                    <td width="30%" class="TableCell"> 
+                                      <div align="right">Status:</div>
+                                    </td>
+                                    <td width="70%"> 
+                                      <select name="CurrentState" onChange="changeStatus(this.form)">
+                                        <%
+	StarsCustSelectionList serviceStatusList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_STATUS );
+	for (int i = 0; i < serviceStatusList.getStarsSelectionListEntryCount(); i++) {
+		StarsSelectionListEntry entry = serviceStatusList.getStarsSelectionListEntry(i);
+		String selected = (entry.getEntryID() == order.getCurrentState().getEntryID())? "selected" : "";
+%>
+                                        <option value="<%= entry.getEntryID() %>" <%= selected %>><%= entry.getContent() %></option>
+                                        <%	} %>
+                                      </select>
+                                    </td>
+                                  </tr>
+                                  <tr> 
+                                    <td width="30%" class="TableCell"> 
+                                      <div align="right">Action Taken:</div>
+                                    </td>
+                                    <td width="70%"> 
+                                      <textarea name="ActionTaken" rows="3" wrap="soft" cols="35" class = "TableCell"><%= order.getActionTaken().replaceAll("<br>", "\r\n") %></textarea>
+                                    </td>
+                                  </tr>
+                                </table>
+                              </td>
+                            </tr>
+                          </table>
+                          <div id="DivDateScheduled" style="display:none"> 
+                            <table width="100%" border="0" cellspacing="0" cellpadding="3">
+                              <tr> 
+                                <td width="30%" align="right" class="TableCell">Date 
+                                  Scheduled:</td>
+                                <td width="70%"> 
+                                  <input type="text" name="DateScheduled" size="14" value="<%= datePart.format(dateScheduled) %>" disabled>
+                                  - 
+                                  <input type="text" name="TimeScheduled" size="8" value="<%= timeFormat.format(dateScheduled) %>">
+                                </td>
+                              </tr>
+                            </table>
+                          </div>
+                          <div id="DivDateCompleted" style="display:none"> 
+                            <table width="100%" border="0" cellspacing="0" cellpadding="3">
+                              <tr> 
+                                <td width="30%" align="right" class="TableCell">Date 
+                                  Completed:</td>
+                                <td width="70%"> 
+                                  <input type="text" name="DateCompleted" size="14" value="<%= datePart.format(dateCompleted) %>" disabled>
+                                  - 
+                                  <input type="text" name="TimeCompleted" size="8" value="<%= timeFormat.format(dateCompleted) %>">
+                                </td>
+                              </tr>
+                            </table>
+                          </div>
+                          <div id="DivDateCancelled" style="display:none"> 
+                            <table width="100%" border="0" cellspacing="0" cellpadding="3">
+                              <tr> 
+                                <td width="30%" align="right" class="TableCell">Date 
+                                  Cancelled:</td>
+                                <td width="70%"> 
+                                  <input type="text" name="DateCancelled" size="14" value="<%= datePart.format(dateCompleted) %>" disabled>
+                                  - 
+                                  <input type="text" name="TimeCancelled" size="8" value="<%= timeFormat.format(dateCompleted) %>">
+                                </td>
+                              </tr>
+                            </table>
+                          </div>
+                          <% if (order.getCurrentState().getEntryID() != statusCompleted && order.getCurrentState().getEntryID() != statusCancelled) { %>
+                          <br>
+                          <table width="100%" border="0" cellspacing="0" cellpadding="1" align="center">
+                            <tr> 
+                              <td align="center"> 
+                                <% if (order.getCurrentState().getEntryID() == statusPending) { %>
+                                <input type="button" name="Schedule" value="Schedule" onClick="scheduleOrder(this.form)">
+                                <% } %>
+                                <input type="button" name="Close" value="Close" onClick="closeOrder(this.form)">
+                                <input type="button" name="Cancel" value="Cancel" onClick="cancelOrder(this.form)">
+                              </td>
+                            </tr>
+                          </table>
+                          <% } %>
+                        </td>
+                      </tr>
+                    </table>
+                    
+                  </td>
+                </tr>
+              </table>
+              <table width="400" border="0" cellspacing="0" cellpadding="5" align="center" bgcolor="#FFFFFF">
+                <tr> 
+                  <td width="42%" align="right"> 
+                    <input type="submit" name="Save" value="Save">
+                  </td>
+                  <td width="15%" align="center"> 
+                    <input type="reset" name="Reset" value="Reset">
+                  </td>
+                  <td width="43%"> 
+                    <input type="button" name="Delete" value="Delete" onClick="deleteWorkOrder(this.form)">
+                  </td>
+                </tr>
+              </table>
             </form>
-            </td>
+          </td>
         <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
     </tr>
       </table>

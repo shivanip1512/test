@@ -81,96 +81,43 @@ function checkOrderNo(form) {
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF">
               
-            <div align="center">
+            <div align="center"> 
               <% String header = "WORK ORDERS - SERVICE HISTORY"; %>
               <%@ include file="include/InfoSearchBar.jsp" %>
-			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
-              <span class="MainText">Click on an Order # to view the complete order history.</span>
-              </div>
-              
-			<form method="post" action="<%= request.getContextPath() %>/servlet/SOAPClient">
-			<input type="hidden" name="action" value="UpdateOrders">
-              <table width="615" border="1" cellspacing="0" cellpadding="1" align="center">
-                <tr> 
-                  <td width="25" class="HeaderCell">Delete</td>
-                  <td width="60" class="HeaderCell" nowrap>Order # </td>
-                  <td width="50" class="HeaderCell">Date</td>
-                  <td width="50" class="HeaderCell">Type</td>
-                  <td width="50" class="HeaderCell">Status</td>
-                  <td width="45" class="HeaderCell" nowrap>By Who</td>
-                  <td width="50" class="HeaderCell">Assigned</td>
-                  <td width="225" class="HeaderCell">Desription</td>
-                </tr>
-                <%
+              <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
+              <span class="MainText">Click on an Order # to view the complete 
+              order history.</span> 
+            </div>
+            <br>
+			<table width="95%" border="1" cellspacing="0" cellpadding="1" align="center">
+              <tr> 
+                <td width="13%" class="HeaderCell" nowrap>Order # </td>
+                <td width="13%" class="HeaderCell">Date/Time</td>
+                <td width="10%" class="HeaderCell">Type</td>
+                <td width="10%" class="HeaderCell">Status</td>
+                <td width="8%" class="HeaderCell" nowrap>By Who</td>
+                <td width="12%" class="HeaderCell">Assigned</td>
+                <td width="34%" class="HeaderCell">Desription</td>
+              </tr>
+              <%
 	for (int i = 0; i < serviceHist.getStarsServiceRequestCount(); i++) {
 		StarsServiceRequest order = serviceHist.getStarsServiceRequest(i);
 %>
-                <input type="hidden" name="OrderID" value="<%= order.getOrderID() %>">
-				<input type="hidden" name="OrderNo" value="<%= order.getOrderNumber() %>">
-                <input type="hidden" name="Changed" value="false">
-				<input type="hidden" name="Deleted" value="false">
-                <tr valign="middle"> 
-                  <td width="25" class="TableCell"> 
-                    <div align="center">
-                      <input type="checkbox" name="DeleteOrder" value="true" onclick="setDeleted(<%= i %>, this.checked)">
-                    </div>
-                  </td>
-                  <td width="60" class="TableCell"><a href="SOHistory.jsp" class="Link1"><%= order.getOrderNumber() %></a></td>
-                  <td width="50" class="TableCell"><%= datePart.format(order.getDateReported()) %></td>
-                  <td width="50" class="TableCell"> 
-                    <select name="ServiceType" class="TableCell" onchange="setChanged(<%= i %>)">
-<%
-	StarsCustSelectionList serviceTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_TYPE );
-	for (int j = 0; j < serviceTypeList.getStarsSelectionListEntryCount(); j++) {
-		StarsSelectionListEntry entry = serviceTypeList.getStarsSelectionListEntry(j);
-		String selectedStr = (order.getServiceType().getEntryID() == entry.getEntryID()) ? "selected" : "";
-%>
-                      <option value="<%= entry.getEntryID() %>" <%= selectedStr %>><%= entry.getContent() %></option>
-<%
+              <tr valign="middle"> 
+                <td width="13%" class="TableCell"><a href="SOHistory.jsp?OrderNo=<%= i %>" class="Link1"><%= order.getOrderNumber() %></a></td>
+                <td width="13%" class="TableCell"><%= ServletUtils.formatDate(order.getDateReported(), dateTimeFormat) %></td>
+                <td width="10%" class="TableCell"><%= order.getServiceType().getContent() %></td>
+                <td width="10%" class="TableCell"><%= order.getCurrentState().getContent() %></td>
+                <td width="8%" class="TableCell"><%= order.getOrderedBy() %></td>
+                <td width="12%" class="TableCell"><%= order.getServiceCompany().getContent() %></td>
+                <td width="34%"> 
+                  <textarea name="Description" rows="3" wrap="soft" cols="35" class="TableCell" readonly><%= order.getDescription().replaceAll("<br>", "\r\n") %></textarea>
+                </td>
+              </tr>
+              <%
 	}
 %>
-                    </select>
-                  </td>
-                  <td width="50" class="TableCell"> 
-                    <select name="Status" class="TableCell" onchange="setChanged(<%= i %>)">
-<%
-	StarsCustSelectionList statusList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_STATUS );
-	for (int j = 0; j < statusList.getStarsSelectionListEntryCount(); j++) {
-		StarsSelectionListEntry entry = statusList.getStarsSelectionListEntry(j);
-		String selectedStr = (order.getCurrentState().getEntryID() == entry.getEntryID()) ? "selected" : "";
-%>
-                      <option value="<%= entry.getEntryID() %>" <%= selectedStr %>><%= entry.getContent() %></option>
-<%
-	}
-%>
-                    </select>
-                  </td>
-                  <td width="40" class="TableCell"><%= order.getOrderedBy() %></td>
-                  <td width="50" class="TableCell"><%= order.getServiceCompany().getContent() %></td>
-                  <td width="225"> 
-                    <textarea name="Description" rows="3" wrap="soft" cols="28" class="TableCell" onchange="setChanged(<%= i %>)"><%= order.getDescription().replaceAll("<br>", "\r\n") %></textarea>
-                  </td>
-                </tr>
-<%
-	}
-%>
-              </table>
-			  <br>
-              <table width="400" border="0" cellspacing="0" cellpadding="5" align="center" bgcolor="#FFFFFF">
-                <tr> 
-                  <td width="186"> 
-                    <div align="right"> 
-                      <input type="submit" name="Submit" value="Submit" onClick="return checkOrderNo(this.form)">
-                    </div>
-                  </td>
-                  <td width="194"> 
-                    <div align="left"> 
-                      <input type="reset" name="Cancel" value="Cancel">
-                    </div>
-                  </td>
-                </tr>
-              </table>
-            </form>
+            </table>
             <p>&nbsp;</p>
           </td>
         <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>

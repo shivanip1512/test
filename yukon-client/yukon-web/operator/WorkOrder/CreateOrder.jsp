@@ -1,5 +1,5 @@
-<%@ include file="include/StarsHeader.jsp" %>
-<% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
+<%@ include file="../Consumer/include/StarsHeader.jsp" %>
+<%@ page import="com.cannontech.database.data.lite.stars.*" %>
 <html>
 <head>
 <title>Energy Services Operations Center</title>
@@ -9,8 +9,8 @@
 
 <script language="JavaScript">
 function validate(form) {
-	if (form.OrderNo.value == '') {
-		alert("Order # cannot be empty");
+	if (form.OrderNo.value == "") {
+		alert("Work Order # cannot be empty");
 		return false;
 	}
 	return true;
@@ -24,23 +24,23 @@ function validate(form) {
     <td>
       <table width="760" border="0" cellspacing="0" cellpadding="0" align="center">
         <tr> 
-          <td width="102" height="102" background="ConsumerImage.jpg">&nbsp;</td>
+          <td width="102" height="102" background="WorkImage.jpg">&nbsp;</td>
           <td valign="bottom" height="102"> 
-            <table width="657" cellspacing="0"  cellpadding="-" border="0">
+            <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
                 <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>"/>">&nbsp;</td>
               </tr>
               <tr> 
-                  <td width="265" height = "28" class="PageHeader" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Customer 
-                    Account Information&nbsp;&nbsp;</td>
-                  
-                <td width="253" valign="middle">&nbsp;</td>
+                <td width="310" class="PageHeader">&nbsp;&nbsp;&nbsp;Work Orders</td>
+                <td width="235" height = "28" valign="middle">&nbsp;</td>
+                <form method="post" action="../Operations.jsp">
                   <td width="58" valign="middle"> 
                     <div align="center"><span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
                     <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
                   </td>
+                </form>
               </tr>
             </table>
           </td>
@@ -60,19 +60,19 @@ function validate(form) {
         </tr>
         <tr> 
           <td  valign="top" width="101">
-		  <% String pageName = "Service.jsp"; %>
-          <%@ include file="include/Nav.jsp" %>
-		  </td>
+            <% String pageName = "CreateOrder.jsp"; %>
+            <%@ include file="include/Nav.jsp" %>
+          </td>
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
-          <td width="657" valign="top" bgcolor="#FFFFFF">
-            <div align="center">
-			  <% String header = "WORK ORDERS - SERVICE REQUEST"; %>
-			  <%@ include file="include/InfoSearchBar.jsp" %>
+          <td width="657" valign="top" bgcolor="#FFFFFF"> 
+            <div align="center"> 
+              <% String header = "CREATE SERVICE ORDER"; %>
+              <%@ include file="include/SearchBar.jsp" %>
 			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
-			  
-			  <form name="soForm" method="POST" action="<%= request.getContextPath() %>/servlet/SOAPClient" onsubmit="return validate(this)">
+              
+			  <form name="soForm" method="post" action="<%= request.getContextPath() %>/servlet/WorkOrderManager" onsubmit="return validate(this)" onreset="resetOrder(this)">
                 <input type="hidden" name="action" value="CreateWorkOrder">
-                <input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/operator/Consumer/SOHistory.jsp?OrderNo=0">
+                <input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/operator/WorkOrder/WorkOrder.jsp?OrderId=">
                 <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>">
                 <table width="610" border="0" cellspacing="0" cellpadding="10" align="center">
                   <tr> 
@@ -88,6 +88,14 @@ function validate(form) {
                           </td>
                         </tr>
                         </cti:checkNoProperty> 
+                        <tr> 
+                          <td width="100" class="TableCell"> 
+                            <div align="right">Account #:</div>
+                          </td>
+                          <td width="248"> 
+                            <input type="text" name="AcctNo" size="14">
+                            (Optional) </td>
+                        </tr>
                         <tr> 
                           <td width="100" class="TableCell"> 
                             <div align="right">Date Reported:</div>
@@ -168,8 +176,8 @@ function validate(form) {
                   </tr>
                 </table>
               </form>
+              <p>&nbsp;</p>
             </div>
-            <p>&nbsp;</p>
           </td>
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
         </tr>

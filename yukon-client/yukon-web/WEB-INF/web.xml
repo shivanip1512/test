@@ -155,6 +155,13 @@
     <servlet-class>
     com.cannontech.stars.web.servlet.InventoryManager</servlet-class>
   </servlet>
+  <servlet>
+    <servlet-name>WorkOrderManager</servlet-name>
+    <display-name>WorkOrderManager</display-name>
+    <description>Work order management</description>
+    <servlet-class>
+    com.cannontech.stars.web.servlet.WorkOrderManager</servlet-class>
+  </servlet>
   
 
   <!-- CapControl specific configs -->

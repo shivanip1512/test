@@ -3,16 +3,11 @@
 <jsp:useBean id="inventoryBean" class="com.cannontech.stars.web.InventoryBean" scope="session">
 	<%-- this body is executed only if the bean is created --%>
 	<jsp:setProperty name="inventoryBean" property="energyCompanyID" value="<%= user.getEnergyCompanyID() %>"/>
-	<jsp:setProperty name="inventoryBean" property="pageName" value="Inventory.jsp"/>
-</jsp:useBean>
-
-<% if (request.getParameter("page") == null) { %>
-	<%-- intialize bean properties --%>
 	<jsp:setProperty name="inventoryBean" property="sortBy" value="<%= YukonListEntryTypes.YUK_DEF_ID_INV_SORT_BY_SERIAL_NO %>"/>
 	<jsp:setProperty name="inventoryBean" property="sortOrder" value="<%= InventoryBean.SORT_ORDER_ASCENDING %>"/>
 	<jsp:setProperty name="inventoryBean" property="filterBy" value="0"/>
 	<jsp:setProperty name="inventoryBean" property="page" value="1"/>
-<% } %>
+</jsp:useBean>
 
 <%-- Grab the search criteria --%>
 <jsp:setProperty name="inventoryBean" property="sortBy" param="SortBy"/>
@@ -101,17 +96,17 @@ function showAll(form) {
             <div align="center">
               <% String header = "INVENTORY"; %>
               <%@ include file="include/SearchBar.jsp" %>
-			  <form name="MForm" method="post" action="<%= pageName %>" onsubmit="setFilterValue(this)">
+			  <form name="MForm" method="post" action="" onsubmit="setFilterValue(this)">
 			    <input type="hidden" name="page" value="1">
                 <table width="80%" border="0" cellspacing="0" cellpadding="0">
                   <tr>
-                    <td width="85%">
+                    <td width="75%"> 
                       <table width="100%" border="0" cellspacing="0" cellpadding="3" class="TableCell">
                         <tr> 
-                          <td width="14%"> 
+                          <td width="15%"> 
                             <div align="right">Sort by:</div>
                           </td>
-                          <td width="18%"> 
+                          <td width="35%"> 
                             <select name="SortBy">
                               <%
 	StarsCustSelectionList sortByList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_INV_SORT_BY );
@@ -125,7 +120,7 @@ function showAll(form) {
 %>
                             </select>
                           </td>
-                          <td width="68%">
+                          <td width="50%"> 
                             <select name="SortOrder">
                               <option value="<%= InventoryBean.SORT_ORDER_ASCENDING %>" <% if (inventoryBean.getSortOrder() == InventoryBean.SORT_ORDER_ASCENDING) out.print("selected"); %>>Ascending</option>
                               <option value="<%= InventoryBean.SORT_ORDER_DESCENDING %>" <% if (inventoryBean.getSortOrder() == InventoryBean.SORT_ORDER_DESCENDING) out.print("selected"); %>>Descending</option>
@@ -133,11 +128,11 @@ function showAll(form) {
                           </td>
                         </tr>
                         <tr valign="top"> 
-                          <td width="14%"> 
+                          <td width="15%"> 
                             <div align="right">Filter by:</div>
                           </td>
-                          <td width="18%"> 
-                            <select name="FilterBy" onchange="changeFilter(this.value)">
+                          <td width="35%"> 
+                            <select name="FilterBy" onChange="changeFilter(this.value)">
                               <option value="0">(none)</option>
                               <%
 	StarsCustSelectionList filterByList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_INV_FILTER_BY );
@@ -151,7 +146,7 @@ function showAll(form) {
 %>
                             </select>
                           </td>
-                          <td width="68%"> 
+                          <td width="50%"> 
                             <div id="DivDeviceType" style="display:none"> 
                               <select name="DeviceType">
                                 <%
@@ -221,20 +216,24 @@ function showAll(form) {
                             </div>
                           </td>
                         </tr>
-                        <tr valign="top"> 
-                          <td width="14%">&nbsp;</td>
-                          <td colspan="2"> 
-                            <input type="submit" name="Submit" value="Show">
-<% if (inventoryBean.getFilterBy() != 0) { %>
-                            <input type="button" name="ShowAll" value="Show All" onclick="showAll(this.form)">
-<%	} %>
-                          </td>
-                        </tr>
                       </table>
                     </td>
-                    </tr>
+                    <td width="25%"> 
+                      <input type="submit" name="Submit" value="Show">
+                      <% if (inventoryBean.getFilterBy() != 0) { %>
+                      <input type="button" name="ShowAll" value="Show All" onClick="showAll(this.form)">
+                      <%	} %>
+                    </td>
+                  </tr>
                 </table>
               </form>
+			  <table width="80%" border="0" cellspacing="0" cellpadding="0" class="MainText">
+                <tr>
+                  <td>Click on a serial # to view the hardware details, or click 
+                    on an account # (if available) to view the account information.</td>
+                </tr>
+              </table>
+			  <br>
               <%= inventoryBean.getHTML(request) %> 
               <!--              <table width='80%' border='0' cellspacing='0' cellpadding='3' class='TableCell'>
                 <tr>

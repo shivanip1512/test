@@ -1,22 +1,23 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
-<%@ page import="com.cannontech.stars.web.InventoryBean" %>
-<%@ page import="com.cannontech.stars.web.servlet.InventoryManager" %>
+<%@ page import="com.cannontech.stars.web.WorkOrderBean" %>
+<%@ page import="com.cannontech.stars.web.servlet.WorkOrderManager" %>
 
-<jsp:useBean id="resultSetBean" class="com.cannontech.stars.web.InventoryBean" scope="session">
+<jsp:useBean id="searchRsltBean" class="com.cannontech.stars.web.WorkOrderBean" scope="session">
 	<%-- this body is executed only if the bean is created --%>
-	<jsp:setProperty name="resultSetBean" property="energyCompanyID" value="<%= user.getEnergyCompanyID() %>"/>
-	<jsp:setProperty name="resultSetBean" property="sortBy" value="<%= YukonListEntryTypes.YUK_DEF_ID_INV_SORT_BY_SERIAL_NO %>"/>
-	<jsp:setProperty name="resultSetBean" property="htmlStyle" value="<%= InventoryBean.HTML_STYLE_HARDWARE_SET %>"/>
+	<jsp:setProperty name="searchRsltBean" property="energyCompanyID" value="<%= user.getEnergyCompanyID() %>"/>
+	<jsp:setProperty name="searchRsltBean" property="sortBy" value="<%= YukonListEntryTypes.YUK_DEF_ID_SO_SORT_BY_ORDER_NO %>"/>
+	<jsp:setProperty name="searchRsltBean" property="sortOrder" value="<%= WorkOrderBean.SORT_ORDER_DESCENDING %>"/>
+	<jsp:setProperty name="searchRsltBean" property="htmlStyle" value="<%= WorkOrderBean.HTML_STYLE_SEARCH_RESULTS %>"/>
 </jsp:useBean>
 	
 <% if (request.getParameter("page") == null) { %>
 	<%-- intialize bean properties --%>
-	<jsp:setProperty name="resultSetBean" property="page" value="1"/>
-	<jsp:setProperty name="resultSetBean" property="referer" value="<%= session.getAttribute(ServletUtils.ATT_REFERRER) %>"/>
+	<jsp:setProperty name="searchRsltBean" property="page" value="1"/>
+	<jsp:setProperty name="searchRsltBean" property="referer" value="<%= session.getAttribute(ServletUtils.ATT_REFERRER) %>"/>
 <% } %>
 
 <%-- Grab the search criteria --%>
-<jsp:setProperty name="resultSetBean" property="page" param="page"/>
+<jsp:setProperty name="searchRsltBean" property="page" param="page"/>
 
 <html>
 <head>
@@ -32,7 +33,7 @@
     <td>
       <table width="760" border="0" cellspacing="0" cellpadding="0" align="center">
         <tr> 
-          <td width="102" height="102" background="InventoryImage.jpg">&nbsp;</td>
+          <td width="102" height="102" background="WorkImage.jpg">&nbsp;</td>
           <td valign="bottom" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
@@ -72,26 +73,22 @@
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center"> 
-              <% String header = "OPERATION RESULT"; %>
+              <% String header = "SEARCH RESULTS"; %>
               <%@ include file="include/SearchBar.jsp" %>
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
 
 <%
 	if (errorMsg == null) {
-		String resultDesc = (String) session.getAttribute(InventoryManager.LM_HARDWARE_SET_DESC);
+		String resultDesc = (String) session.getAttribute(WorkOrderManager.WORK_ORDER_SET_DESC);
 %>
-              <table width="80%" border="0" cellspacing="0" cellpadding="0">
-                <tr> 
-                  <td class="MainText"><%= resultDesc %></td>
-                </tr>
-              </table>
+              <span class="MainText"><%= resultDesc %></span><br>
               <br>
 <%
-		ArrayList hardwareSet = (ArrayList) session.getAttribute(InventoryManager.LM_HARDWARE_SET);
-		if (hardwareSet != null) {
-			resultSetBean.setHardwareSet(hardwareSet);
+		ArrayList searchResults = (ArrayList) session.getAttribute(WorkOrderManager.WORK_ORDER_SET);
+		if (searchResults != null) {
+			searchRsltBean.setSearchResults(searchResults);
 %>
-              <%= resultSetBean.getHTML(request) %> 
+              <%= searchRsltBean.getHTML(request) %> 
 <%
 		}
 		else {

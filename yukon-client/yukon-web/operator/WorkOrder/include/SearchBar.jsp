@@ -5,23 +5,32 @@
 </head>
 
 <body bgcolor="#FFFFFF" text="#000000">
-<form method="POST" action="/servlet/SOAPClient">
-<input type="hidden" name="action" value="SearchCustAccount">
-  <table width="100%" border="0" cellpadding = "5" height="69">
+<form method="POST" action="<%= request.getContextPath() %>/servlet/WorkOrderManager">
+<input type="hidden" name="action" value="SearchWorkOrder">
+<input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/operator/WorkOrder/SearchResults.jsp">
+  <table width="100%" border="0" cellpadding = "5">
     <tr> 
-      <td width="31%" valign = "top" align = "left">&nbsp;</td>
-      <td valign = "bottom" align = "center" width="37%" rowspan = "3" class = "TitleHeader"><%=header%></td>
-      <td align = "right" width="31%"><span class="TitleHeader"> 
+      <td width="50%" valign = "top" align = "left">&nbsp;</td>
+      <td align = "right" width="50%"><span class="TitleHeader"> 
         <select name="SearchBy">
-          <option value="AccountNumber" selected>Acct #</option>
-          <option value="PhoneNumber">Phone #</option>
-          <option value="Name">Name</option>
-		  <option value="SerialNumber">Serial #</option>
-		  <option value="WorkOrderNumber">Order #</option>
+          <%
+	StarsCustSelectionList searchByList = (StarsCustSelectionList) selectionListTable.get(YukonSelectionListDefs.YUK_LIST_NAME_SO_SEARCH_BY);
+	for (int i = 0; i < searchByList.getStarsSelectionListEntryCount(); i++) {
+		StarsSelectionListEntry entry = searchByList.getStarsSelectionListEntry(i);
+%>
+          <option value="<%= entry.getYukonDefID() %>"><%= entry.getContent() %></option>
+          <%
+	}
+%>
         </select>
         <input type="text" name="SearchValue" size = "15">
-        <input type="submit" name="Submit2" value="Search">
+        <input type="submit" name="Submit" value="Search">
         </span></td>
+    </tr>
+  </table>
+  <table width="100%" border="0" cellspacing="0" cellpadding="3">
+    <tr>
+      <td align="center" class="TitleHeader"><%= header %></td>
     </tr>
   </table>
 </form>

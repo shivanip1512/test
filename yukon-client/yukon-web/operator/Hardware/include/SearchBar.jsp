@@ -8,25 +8,29 @@
 <form method="POST" action="<%= request.getContextPath() %>/servlet/InventoryManager">
 <input type="hidden" name="action" value="SearchInventory">
 <input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/operator/Hardware/ResultSet.jsp">
-  <table width="100%" border="0" cellpadding = "5" height="69">
+  <table width="100%" border="0" cellpadding = "5">
     <tr> 
-      <td width="33%" valign = "top" align = "left">&nbsp;</td>
-      <td valign = "bottom" align = "center" width="33%" rowspan = "3" class = "TitleHeader"><%=header%></td>
-      <td align = "right" width="33%"><span class="MainText"><b> 
+      <td width="50%" valign = "top" align = "left">&nbsp;</td>
+      <td align = "right" width="50%"><span class="TitleHeader"> 
         <select name="SearchBy">
-<%
+          <%
 	StarsCustSelectionList searchByList = (StarsCustSelectionList) selectionListTable.get(YukonSelectionListDefs.YUK_LIST_NAME_INV_SEARCH_BY);
 	for (int i = 0; i < searchByList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = searchByList.getStarsSelectionListEntry(i);
 %>
-          <option value="<%= entry.getYukonDefID() %>"><span class="MainText"><b><%= entry.getContent() %></b></span></option>
-<%
+          <option value="<%= entry.getYukonDefID() %>"><%= entry.getContent() %></option>
+          <%
 	}
 %>
         </select>
         <input type="text" name="SearchValue" size = "14">
         <input type="submit" name="Submit" value="Search">
-        </b></span></td>
+        </span></td>
+    </tr>
+  </table>
+  <table width="100%" border="0" cellspacing="0" cellpadding="3">
+    <tr>
+      <td align="center" class="TitleHeader"><%= header %></td>
     </tr>
   </table>
 </form>
