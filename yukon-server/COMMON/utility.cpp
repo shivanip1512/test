@@ -27,6 +27,7 @@ using namespace std;
 #include "dllbase.h"
 #include "guard.h"
 #include "numstr.h"
+#include "yukon.h"
 
 LONG GetMaxLMControl(long pao)
 {
@@ -1040,5 +1041,31 @@ RWCString& traceBuffer(RWCString &str, BYTE *Message, ULONG Length)
     }
 
     return str;
+}
+
+RWTime nextScheduledTimeAlignedOnRate( const RWTime &origin, LONG rate )
+{
+    RWTime first(YUKONEOT);
+
+    if( rate > 3600 )
+    {
+        RWTime hourstart = RWTime(origin.seconds() - (origin.seconds() % 3600));            // align to the current hour.
+        first = RWTime(hourstart.seconds() - ((hourstart.hour() * 3600) % rate) + rate);
+    }
+    else if(rate > 0 )    // Prevent a divide by zero with this check...
+    {
+        first = RWTime(origin.seconds() - (origin.seconds() % rate) + rate);
+    }
+    else if(rate == 0)
+    {
+        first = origin.now();
+    }
+
+    while(first <= origin)
+    {
+        first += rate;
+    }
+
+    return first;
 }
 
