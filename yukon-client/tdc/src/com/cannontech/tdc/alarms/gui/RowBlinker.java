@@ -94,10 +94,14 @@ public RowBlinker( AlarmTableModel dataModel, AlarmingRowVector alarmedRows )
  * Insert the method's description here.
  * Creation date: (2/7/2001 3:16:14 PM)
  */
-public void destory() 
+public void destroy() 
 {
-	runningThread.interrupt();
-	runningThread = null;	
+   if( runningThread != null )
+   {
+   	runningThread.interrupt();
+   	runningThread = null;	
+   }
+   
 }
 /**
  * Insert the method's description here.
@@ -213,6 +217,8 @@ private synchronized void processOriginalColors()
 	);
 
 }
+
+
 /**
  * run method comment.
  */
@@ -243,7 +249,7 @@ public void run()
 				}
 				catch ( InterruptedException e )
 				{
-					com.cannontech.clientutils.CTILogger.info("Thread " + Thread.currentThread().getName() + " was inturrupted during AlarmColor.");
+					com.cannontech.clientutils.CTILogger.debug("Thread " + Thread.currentThread().getName() + " was inturrupted during AlarmColor.");
 				}
 				finally
 				{
@@ -259,7 +265,7 @@ public void run()
 			}
 			catch( InterruptedException e )
 			{
-				com.cannontech.clientutils.CTILogger.info("Thread " + Thread.currentThread().getName() + " was inturrupted during OriginalColor.");
+				com.cannontech.clientutils.CTILogger.debug("Thread " + Thread.currentThread().getName() + " was inturrupted during OriginalColor.");
 			}
 		}
 		

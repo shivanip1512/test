@@ -13,6 +13,7 @@ import com.cannontech.message.dispatch.message.Signal;
 import com.cannontech.message.util.Message;
 import com.cannontech.tdc.data.Display;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
+import com.cannontech.message.dispatch.message.Multi;
 
 public class TDCClient extends com.cannontech.clientutils.ClientBase
 {
@@ -45,14 +46,12 @@ public Message buildRegistrationMessage()
 	reg.setAppKnownPort(0);
 	reg.setAppExpirationDelay( 300 );  // 5 minutes
 
-	//once the connection state changes, we will register for our points
-	//PointRegistration pReg = getPtRegMsg();
-	//Multi multiReg = new Multi();
-	//multiReg.getVector().addElement( reg );
-	//multiReg.getVector().addElement( pReg );
+	//we must do this for all displays now that alarms show on all displays!
+	Multi multiReg = new Multi();
+	multiReg.getVector().addElement( reg );
+	multiReg.getVector().addElement( getPtRegMsg() );
 
-	//return multiReg;
-	return reg;
+	return multiReg;
 }
 /**
  * Insert the method's description here.
@@ -76,16 +75,11 @@ private PointRegistration getPtRegMsg()
 		displayName = caller.getCurrentDisplay().getName();
 		
 	//Register for points
-	if( callerModel.isAlarmDisplay() )
+	if( callerModel.isAlarmDisplay()
+       || callerModel.isHistoricalDisplay() )
 	{
 		TDCMainFrame.messageLog.addMessage("Registering display " + displayName + " for ALARMS", MessageBoxFrame.INFORMATION_MSG);
 		pReg.setRegFlags( PointRegistration.REG_ALARMS );
-	}
-	else if( callerModel.isHistoricalDisplay() )
-	{
-		// register for nothing at all
-		TDCMainFrame.messageLog.addMessage("Registering display " + displayName + " for NOTHING", MessageBoxFrame.INFORMATION_MSG);
-		pReg.setRegFlags( PointRegistration.REG_NOTHING );
 	}
 	else if( callerModel.getCurrentDisplayNumber() == Display.EVENT_VIEWER_DISPLAY_NUMBER )
 	{
@@ -189,6 +183,7 @@ public void receivedSignal( Signal signal )
 
 	lastReceptionValid = true;
 }
+
 /**
  * This method was created in VisualAge.
  */

@@ -29,7 +29,7 @@ import com.cannontech.tdc.utils.TDCDefines;
 public class Display2WayDataAdapter extends AbstractTableModel implements com.cannontech.tdc.alarms.gui.AlarmTableModel, com.cannontech.common.gui.util.SortableTableModel
 {
 	private boolean playSound = true;
-	private com.cannontech.tdc.alarms.gui.RowBlinker currenBlinkingAlarms = null;
+	private com.cannontech.tdc.alarms.gui.RowBlinker currentBlinkingAlarms = null;
 	
 
 	private boolean exceededMaxMsg = true;
@@ -366,7 +366,7 @@ public void clearSystemViewerDisplay( boolean forceRepaint )
 		synchronized ( getAlarmingRowVector() )
 		{
 			getAlarmingRowVector().removeAllElements();
-			currenBlinkingAlarms = null;
+			currentBlinkingAlarms = null;
 		}
 
 		// remove the nonviewable and viewable data 
@@ -1539,7 +1539,7 @@ private void initColumns()
 
 	synchronized( getAlarmingRowVector() )
 	{
-		currenBlinkingAlarms = null;
+		currentBlinkingAlarms = null;
 		getAlarmingRowVector().removeAllElements();
 	}
 	
@@ -2030,8 +2030,6 @@ public synchronized void processSignalReceived( Signal signal )
 	}
 	else
 	{
-
-com.cannontech.clientutils.CTILogger.info("*****   " + new ModifiedDate(signal.getTimeStamp().getTime()) );
 		handleDisablity( signal );
 		handleAlarm( signal );
 		
@@ -2287,7 +2285,13 @@ private void setCorrectRowValue( PointData point, java.util.Date timeStamp, int 
  */
 public void setCurrentDisplayNumber(long val) 
 {
-	currentDisplayNumber = val;	
+   //do this if there was a change in displays
+   if( currentDisplayNumber != val )
+   {
+      killRowBlinker();
+   }
+
+  currentDisplayNumber = val;
 }
 /**
  * Insert the method's description here.
@@ -2359,8 +2363,8 @@ public void setRowAlarmed( Signal signal )
 			
 		}
 		
-		if( currenBlinkingAlarms == null )
-			currenBlinkingAlarms = new com.cannontech.tdc.alarms.gui.RowBlinker( this, getAlarmingRowVector() );
+		if( currentBlinkingAlarms == null )
+			currentBlinkingAlarms = new com.cannontech.tdc.alarms.gui.RowBlinker( this, getAlarmingRowVector() );
 	}		
 }
 /**
@@ -2420,7 +2424,7 @@ public void setRowUnAlarmed( long pointid )
 				return;
 
 			if( getAlarmingRowVector().size() == 0 )
-				currenBlinkingAlarms = null;
+				currentBlinkingAlarms = null;
 		}
 	}
 
@@ -2445,7 +2449,7 @@ public void setRowUnAlarmed( Signal signal )
 				return;
 
 			if( getAlarmingRowVector().size() == 0 )
-				currenBlinkingAlarms = null;
+				currentBlinkingAlarms = null;
 		}
 	}
 
@@ -2468,7 +2472,7 @@ public void setRowUnAlarmed( Integer rowNumber )
 				return;
 
 			if( getAlarmingRowVector().size() == 0 )
-				currenBlinkingAlarms = null;
+				currentBlinkingAlarms = null;
 		}
 	}
 
@@ -2522,10 +2526,23 @@ public void swapColumnTypes(int fromIndx, int toIndx)
 	if( fromIndx < 0 || toIndx < 0 || fromIndx >= columnTypeName.size() || toIndx >= columnTypeName.size() )
 		return;
 
-com.cannontech.clientutils.CTILogger.info("swapping " + columnTypeName.elementAt(fromIndx) + " with " + columnTypeName.elementAt(toIndx) );
+   com.cannontech.clientutils.CTILogger.debug("swapping " + columnTypeName.elementAt(fromIndx) + " with " + columnTypeName.elementAt(toIndx) );
 
 	String tmp = columnTypeName.elementAt(fromIndx).toString();
 	columnTypeName.setElementAt( columnTypeName.elementAt(toIndx), fromIndx );
 	columnTypeName.setElementAt( tmp, toIndx );
 }
+
+private void killRowBlinker()
+{
+   if( currentBlinkingAlarms != null )
+   {
+      synchronized(currentBlinkingAlarms)
+      {
+         currentBlinkingAlarms.destroy();
+      }      
+   }
+
+}
+
 }

@@ -37,6 +37,7 @@ public class TDCMainPanel extends javax.swing.JPanel implements com.cannontech.t
 {
 	//an int read in as a CParm used to turn on/off features
 	private static int userRightsInt = 0;
+   public static final String PROP_BOOKMARK = "con.cannontech.BookMark";
 	
 	//a crutch to know if we alread updated our columnData in each Display()
 	// This is used set in updateDisplayColumnData() and updateDisplayColumnDataFormat()
@@ -793,7 +794,10 @@ public void fireBookMarkSelected( Object source )
 			if( Display.getDisplayTypeIndexByTitle(currentDisplayTitle) 
 				 == Display.ALARMS_AND_EVENTS_TYPE_INDEX )
 			{
-				setCurrentDisplay( getAllDisplays()[ getDisplayIndexOfFirstType(Display.getDisplayType(Display.ALARMS_AND_EVENTS_TYPE_INDEX)) ] );
+				setCurrentDisplay( 
+                  getAllDisplays()
+                     [getDisplayIndexOfFirstType(
+                        Display.getDisplayType(Display.ALARMS_AND_EVENTS_TYPE_INDEX))] );
 			}
 			else if( Display.getDisplayTypeIndexByTitle(currentDisplayTitle) 
 				 		== Display.CUSTOM_DISPLAYS_TYPE_INDEX )
@@ -839,8 +843,12 @@ public void fireBookMarkSelected( Object source )
 		{
 			// see if the source is just a regular user bookmark
 			javax.swing.JMenuItem bookMarkButton = (javax.swing.JMenuItem)source;
-			
-			java.util.StringTokenizer tokenizer = new java.util.StringTokenizer( bookMarkButton.getText(), com.cannontech.tdc.bookmark.BookMarkBase.BOOKMARK_TOKEN );
+			         
+			java.util.StringTokenizer tokenizer = new java.util.StringTokenizer( 
+               //bookMarkButton.getText(), 
+               bookMarkButton.getClientProperty(PROP_BOOKMARK).toString(),
+               com.cannontech.tdc.bookmark.BookMarkBase.BOOKMARK_TOKEN );
+               
 			final String bookMarkType = tokenizer.nextToken();
 			final String bookMark = tokenizer.nextToken();
 
@@ -1968,7 +1976,9 @@ public boolean initComboCurrentDisplay()
 	// clear all the displays from memory
 	allDisplays = null;
 
+   //reinit our display number
 	getTableDataModel().setCurrentDisplayNumber( Display.UNKNOWN_DISPLAY_NUMBER );
+
 	
 	// get the data for the majority of our displays
 	String query = new String
@@ -3033,8 +3043,8 @@ public void processDBChangeMsg( DBChangeMsg msg )
 	{
 
 		//search for specific IDs here
-		if( msg.getDatabase() == DBChangeMsg.CHANGE_PAO_DB ||
-			 msg.getDatabase() == DBChangeMsg.CHANGE_POINT_DB )
+		if( msg.getDatabase() == DBChangeMsg.CHANGE_PAO_DB 
+          || msg.getDatabase() == DBChangeMsg.CHANGE_POINT_DB )
 		{
 			boolean found = false;
 			for( int i = 0; i < getTableDataModel().getRowCount(); i++ )
@@ -3057,23 +3067,42 @@ public void processDBChangeMsg( DBChangeMsg msg )
 	
 	if( !isClientDisplay() && !getTableDataModel().isHistoricalDisplay() )
 	{
-		if( getCurrentDisplayNumber() == Display.EVENT_VIEWER_DISPLAY_NUMBER )
-		{
-			// set refresh to true so it doesnt ask for a date on certain displays
-			refreshPressed( true );
-
-			try
-			{
-				getTableDataModel().removeAllRows();
-				initSystemDisplays();
-			}
-			finally
-			{
-				refreshPressed( false );
-			}
-		}
+      if( isCoreDisplay() )
+      {
+         if( msg.getDatabase() == DBChangeMsg.CHANGE_ALARM_CATEGORY_DB )
+         {
+            synchronized( getTableDataModel() )
+            {
+               //just a try, work in nearly all cases!
+               int i = getJComboCurrentDisplay().getSelectedIndex();
+               initComboCurrentDisplay();
+               getJComboCurrentDisplay().setSelectedIndex( i );
+            }   
+         }
+         else if( getCurrentDisplayNumber() == Display.EVENT_VIEWER_DISPLAY_NUMBER )
+         {
+            // set refresh to true so it doesnt ask for a date on certain displays
+            refreshPressed( true );
+   
+            try
+            {
+               //getTableDataModel().removeAllRows();
+               initSystemDisplays();
+            }
+            finally
+            {
+               refreshPressed( false );
+            }
+            
+         }
+         
+         
+      }		
 		else
 			fireJComboCurrentDisplayAction_actionPerformed( new java.util.EventObject( this ) );
+         
+
+
 	}
 
 }
@@ -3742,8 +3771,14 @@ private void updateDisplayColumnFormat()
 				javax.swing.table.TableColumn tc = table.getColumnModel().getColumn(j);
 
 				tc.setWidth( cd.getWidth() );
-				tc.setPreferredWidth( cd.getWidth() );				
-				table.moveColumn( j, cd.getOrdering() );
+				tc.setPreferredWidth( cd.getWidth() );	
+
+            //make sure the table has the column index!!
+				table.moveColumn( j, 
+               ( cd.getOrdering() >= table.getColumnCount()
+                 ? table.getColumnCount() - 1
+                 : cd.getOrdering() ) );
+                 
 				break;
 			}
 			

@@ -35,20 +35,12 @@ public void actionPerformed(java.awt.event.ActionEvent e)
 
 		// system bookmark views level
 		listener.fireBookMarkSelected( radioMenuItem );
-
-		//callerPanel.getJComboCurrentDisplay().setSelectedItem(
-				//com.cannontech.tdc.utils.TDCDefines.SYSTEM_VIEWS_STRING );			
 	}	
 	else if( e.getSource() instanceof javax.swing.JMenuItem )
 	{
 		javax.swing.JMenuItem menuItem = ((javax.swing.JMenuItem)e.getSource());
 
-		// user bookmark views level
-		//java.util.StringTokenizer tokenizer = new java.util.StringTokenizer(menuItem.getText(), ":");
-
 		listener.fireBookMarkSelected( menuItem );
-		//callerPanel.getJComboCurrentDisplay().setSelectedItem(
-				//com.cannontech.tdc.utils.TDCDefines.SYSTEM_VIEWS_STRING );
 	}
 }
 }
