@@ -190,7 +190,7 @@ INT CtiPortDirect::setLine(INT rate, INT bits, INT parity, INT stopbits)
         _dcb.Parity    = parity;
         _dcb.StopBits  = stopbits;
 
-        retval = SetCommState(_portHandle, &_dcb) ? NORMAL : SYSTEM;
+        if(_portHandle) retval = SetCommState(_portHandle, &_dcb) ? NORMAL : SYSTEM;
     }
 
     return retval;
@@ -208,14 +208,14 @@ INT CtiPortDirect::byteTime(ULONG bytes) const
 INT CtiPortDirect::ctsTest() const
 {
     DWORD   eMask = 0;
-    GetCommModemStatus(getHandle(), &eMask);
+    if(getHandle() > 0) GetCommModemStatus(getHandle(), &eMask);
     return(eMask & MS_CTS_ON);
 }
 
 INT CtiPortDirect::dcdTest() const
 {
     DWORD   eMask = 0;
-    GetCommModemStatus(getHandle(), &eMask);
+    if(getHandle() > 0) GetCommModemStatus(getHandle(), &eMask);
     return(eMask & MS_RLSD_ON);     // Yes, that is DCD or receive-line-signal detect.
 }
 
@@ -223,52 +223,32 @@ INT CtiPortDirect::dcdTest() const
 INT CtiPortDirect::dsrTest() const
 {
     DWORD   eMask = 0;
-    GetCommModemStatus(getHandle(), &eMask);
+    if(getHandle() > 0) GetCommModemStatus(getHandle(), &eMask);
     return(eMask & MS_DSR_ON);
 }
 
 INT CtiPortDirect::lowerRTS()
 {
-#if 1
     _dcb.fRtsControl =  RTS_CONTROL_DISABLE;
     return(EscapeCommFunction(_portHandle, CLRRTS) ? NORMAL : SYSTEM);
-#else
-    _dcb.fRtsControl =  RTS_CONTROL_DISABLE;
-    return(SetCommState( _portHandle, &_dcb ) ? NORMAL : SYSTEM);
-#endif
 }
 
 INT CtiPortDirect::raiseRTS()
 {
-#if 1
     _dcb.fRtsControl =  RTS_CONTROL_ENABLE;
     return(EscapeCommFunction(_portHandle, SETRTS) ? NORMAL : SYSTEM);
-#else
-    _dcb.fRtsControl =  RTS_CONTROL_ENABLE;
-    return(SetCommState( _portHandle, &_dcb ) ? NORMAL : SYSTEM);
-#endif
 }
 
 INT CtiPortDirect::lowerDTR()
 {
-#if 1
     _dcb.fDtrControl =  DTR_CONTROL_DISABLE;
     return(EscapeCommFunction(_portHandle, CLRDTR) ? NORMAL : SYSTEM);
-#else
-    _dcb.fDtrControl =  DTR_CONTROL_DISABLE;
-    return(SetCommState( _portHandle, &_dcb ) ? NORMAL : SYSTEM);
-#endif
 }
 
 INT CtiPortDirect::raiseDTR()
 {
-#if 1
     _dcb.fDtrControl =  DTR_CONTROL_ENABLE;
     return(EscapeCommFunction(_portHandle, SETDTR) ? NORMAL : SYSTEM);
-#else
-    _dcb.fDtrControl =  DTR_CONTROL_ENABLE;
-    return(SetCommState( _portHandle, &_dcb ) ? NORMAL : SYSTEM);
-#endif
 }
 
 INT CtiPortDirect::inClear()
@@ -966,7 +946,7 @@ CtiPort& CtiPortDirect::setShouldDisconnect(BOOL b)
 
 int CtiPortDirect::initPrivateStores()
 {
-    GetCommState( _portHandle, &_dcb );
+    if(_portHandle) GetCommState( _portHandle, &_dcb );
 
     _dcb.fOutxCtsFlow = FALSE;    // CTS is not monitored for flow control
     _dcb.fOutxDsrFlow = FALSE;    // DSR is not monitored for flow control
@@ -976,9 +956,11 @@ int CtiPortDirect::initPrivateStores()
     _dcb.fNull        = FALSE;
     _dcb.fRtsControl  = RTS_CONTROL_DISABLE;
 
+    if(_portHandle)
+    {
     SetCommState( _portHandle, &_dcb );
-
     GetCommTimeouts( _portHandle, &_cto );
+    }
 
     return NORMAL;
 }
@@ -988,14 +970,18 @@ int CtiPortDirect::enableXONXOFF()
     _dcb.fOutX  = TRUE;
     _dcb.fInX   = TRUE;
 
-    return(SetCommState(_portHandle, &_dcb) ? NORMAL : SYSTEM);
+    INT scsret = NORMAL;
+    if(_portHandle) scsret = SetCommState(_portHandle, &_dcb) ? NORMAL : SYSTEM;
+    return scsret;
 }
 int CtiPortDirect::disableXONXOFF()
 {
     _dcb.fOutX  = FALSE;
     _dcb.fInX   = FALSE;
 
-    return(SetCommState(_portHandle, &_dcb) ? NORMAL : SYSTEM);
+    INT scsret = NORMAL;
+    if(_portHandle) scsret = SetCommState(_portHandle, &_dcb) ? NORMAL : SYSTEM;
+    return scsret;
 }
 
 int CtiPortDirect::enableRTSCTS()
@@ -1003,14 +989,18 @@ int CtiPortDirect::enableRTSCTS()
     _dcb.fOutxCtsFlow = 1;
     _dcb.fRtsControl = RTS_CONTROL_HANDSHAKE;
 
-    return(SetCommState(_portHandle, &_dcb) ? NORMAL : SYSTEM);
+    INT scsret = NORMAL;
+    if(_portHandle) scsret = SetCommState(_portHandle, &_dcb) ? NORMAL : SYSTEM;
+    return scsret;
 }
 int CtiPortDirect::disableRTSCTS()
 {
     _dcb.fOutxCtsFlow = 0;
     _dcb.fRtsControl = RTS_CONTROL_DISABLE;
 
-    return(SetCommState(_portHandle, &_dcb) ? NORMAL : SYSTEM);
+    INT scsret = NORMAL;
+    if(_portHandle) scsret = SetCommState(_portHandle, &_dcb) ? NORMAL : SYSTEM;
+    return scsret;
 }
 
 int CtiPortDirect::getPortInQueueCount()
