@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2004/01/16 22:44:29 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2004/01/20 19:06:01 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *
@@ -140,7 +140,6 @@ void CtiProtocolYmodem::retreiveData( BYTE *data, int *bytes )
 {
    if( _storage != NULL )
    {
-
       //do the 'front & end shaving' here instead of in tracker....
       memcpy( data, _storage + 3, _bytesReceived - 5 );
       *bytes = _bytesReceived - 5;

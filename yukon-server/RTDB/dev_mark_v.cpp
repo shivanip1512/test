@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2004/01/16 22:44:29 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2004/01/20 19:06:01 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -35,11 +35,6 @@ CtiDeviceMarkV::CtiDeviceMarkV()
 
 CtiDeviceMarkV::~CtiDeviceMarkV()
 {
-   if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
-   {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " Destruct Mk V " << endl;
-   }
 }
 
 //=====================================================================================================================
@@ -89,6 +84,13 @@ INT CtiDeviceMarkV::ExecuteRequest( CtiRequestMsg             *pReq,
       OutMessage->Port      = getPortID();
       OutMessage->Remote    = getAddress();
       OutMessage->Buffer.DUPReq.LP_Time = getLastLPTime().seconds();
+
+      if( getLastLPTime() > RWTime() )
+      {
+         CtiLockGuard<CtiLogger> doubt_guard(dout);
+         dout << RWTime() << " ----WARNING: LastLPTime is incorrect!----" << endl;
+      }
+
       OutMessage->TimeOut   = 2;
       OutMessage->EventCode = RESULT | ENCODED;
       OutMessage->Sequence  = 0;
@@ -226,50 +228,32 @@ INT CtiDeviceMarkV::ErrorDecode( INMESS                     *InMessage,
    INT retCode       = NORMAL;
    CtiCommandParser  parse( InMessage->Return.CommandStr );
 
-   //possibly to be deleted
-   CtiReturnMsg     *pPIL = CTIDBG_new CtiReturnMsg(getID(),
-                                             RWCString( InMessage->Return.CommandStr ),
-                                             RWCString(),
-                                             InMessage->EventCode & 0x7fff,
-                                             InMessage->Return.RouteID,
-                                             InMessage->Return.MacroOffset,
-                                             InMessage->Return.Attempt,
-                                             InMessage->Return.TrxID,
-                                             InMessage->Return.UserID);
-//   CtiPointDataMsg  *commFailed;
-//   CtiPointBase     *commPoint;
-
+   if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
    {
        CtiLockGuard<CtiLogger> doubt_guard(dout);
        dout << RWTime() << " ----Error Decode For Device " << getName() << " In Progress----" << endl;
    }
 
-   if( pPIL != NULL )
+   CtiCommandMsg *pMsg = CTIDBG_new CtiCommandMsg( CtiCommandMsg::UpdateFailed );
+   
+   if( pMsg != NULL )
    {
-       CtiCommandMsg *pMsg = CTIDBG_new CtiCommandMsg( CtiCommandMsg::UpdateFailed );
-
-       if( pMsg != NULL )
-       {
-           pMsg->insert( -1 );             // This is the dispatch token and is unimplemented at this time
-           pMsg->insert( OP_DEVICEID );      // This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
-           pMsg->insert( getID() );          // The id (device or point which failed)
-           pMsg->insert( ScanRateInvalid );  // One of ScanRateGeneral,ScanRateAccum,ScanRateStatus,ScanRateIntegrity, or if unknown -> ScanRateInvalid defined in yukon.h
-
-           if( InMessage->EventCode != 0 )
-           {
-               pMsg->insert( InMessage->EventCode );
-           }
-           else
-           {
-               pMsg->insert( GeneralScanAborted );
-           }
-
-           retList.insert( pMsg );
-           pMsg = NULL;
-       }
-
-       delete pPIL;
-       pPIL = NULL;
+      pMsg->insert( -1 );             // This is the dispatch token and is unimplemented at this time
+      pMsg->insert( OP_DEVICEID );      // This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
+      pMsg->insert( getID() );          // The id (device or point which failed)
+      pMsg->insert( ScanRateInvalid );  // One of ScanRateGeneral,ScanRateAccum,ScanRateStatus,ScanRateIntegrity, or if unknown -> ScanRateInvalid defined in yukon.h
+      
+      if( InMessage->EventCode != 0 )
+      {
+         pMsg->insert( InMessage->EventCode );
+      }
+      else
+      {
+         pMsg->insert( GeneralScanAborted );
+      }
+      
+      retList.insert( pMsg );
+      pMsg = NULL;
    }
 
    return retCode;
@@ -904,7 +888,6 @@ CtiPointDataMsg* CtiDeviceMarkV::fillPDMsg( vector<CtiTransdataData *> transVect
             pData->setTime( getMsgTime( timeID, dateID, transVector ));
          }
 
-   //      delete pNumericPoint;
          pNumericPoint = NULL;
       }
    }
@@ -1025,7 +1008,7 @@ void CtiDeviceMarkV::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
                      if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
                      {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " ----Dispatch will get this lastLP time ->" << mTime << endl;
+                        dout << RWTime() << " ----Dispatch will get this lastLP time --> " << mTime << endl;
                      }
                      
                      pData->setType( pPoint->getType() );
@@ -1079,7 +1062,6 @@ void CtiDeviceMarkV::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
       }
    }
 
-   //
    if( msgMulti != NULL )
    {
       delete msgMulti;

@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2004/01/16 22:45:44 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2004/01/20 19:06:01 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -400,7 +400,7 @@ bool CtiTransdataTracker::logOn( CtiXfer &xfer )
          {
             setXfer( xfer, _interval, 24, true, 1 );
             _datalink.buildMsg( xfer );
-            _moveAlong = true;   /////01/04
+            _moveAlong = true;   
          }
          break;
       }
@@ -534,13 +534,11 @@ bool CtiTransdataTracker::logOff( CtiXfer &xfer )
  
 bool CtiTransdataTracker::grabChannels( BYTE *data, int bytes )
 {
-   char  *ptr = NULL;
-//   char  *temp = NULL;
    char  fluff[400];
    bool  foundCorrectCommand = false;
 
    memcpy( fluff, data, bytes );
-   ptr = fluff;
+   char *ptr = fluff;
 
    while( !foundCorrectCommand )
    {
@@ -586,17 +584,15 @@ bool CtiTransdataTracker::grabChannels( BYTE *data, int bytes )
  
 bool CtiTransdataTracker::grabFormat( BYTE *data, int bytes )
 {
-   char  *ptr = NULL;
-   char  *temp = NULL;
    char  fluff[400];
    bool  foundCorrectCommand = false;   
 
    memcpy( fluff, data, bytes );
-   ptr = fluff;
+   char *ptr = fluff;
    
    for( ;; )
    {
-      temp = strstr( ( const char*)ptr, "IS" );
+      char *temp = strstr( ( const char*)ptr, "IS" );
 
       if( temp != NULL )
       {
@@ -638,14 +634,12 @@ bool CtiTransdataTracker::grabFormat( BYTE *data, int bytes )
 
 bool CtiTransdataTracker::grabTime( BYTE *data, int bytes )
 {
-   char           *ptr = NULL;
-   char           *temp = NULL;
    char           fluff[400];
    unsigned       timeBits[6];
    bool           foundCorrectCommand = false;
 
    memcpy( fluff, data, bytes );
-   ptr = fluff;
+   char *ptr = fluff;
 
    for( int i = 0; i < 6; i++ )
    {
@@ -656,7 +650,7 @@ bool CtiTransdataTracker::grabTime( BYTE *data, int bytes )
    //make this a general thing and run everybody through it...!
    for( ;; )
    {
-      temp = strstr( ( const char*)ptr, "GT" );
+      char *temp = strstr( ( const char*)ptr, "GT" );
 
       if( temp != NULL )
       {
@@ -732,6 +726,12 @@ bool CtiTransdataTracker::grabReturnedChannels( BYTE *data, int bytes )
 void CtiTransdataTracker::setLastLPTime( ULONG lpTime )
 {
    _lastLPTime = ( ULONG)lpTime;
+
+   if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+   {
+      CtiLockGuard<CtiLogger> doubt_guard(dout);
+      dout << RWTime() << " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ tracker thinks lastlptime is " << RWTime( lpTime ) << endl;
+   }
 }
 
 //=====================================================================================================================
