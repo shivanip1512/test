@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_grp_versacom.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2003/03/26 20:32:03 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2004/04/29 20:05:09 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -60,6 +60,12 @@ INT CtiDeviceGroupVersacom::ExecuteRequest(CtiRequestMsg                  *pReq,
      *   ExecuteRequest(CtiReturnMsg*) (NOTE THE DIFFERENCE IN ARGS)
      *   That method prepares an outmessage for submission to the internals..
      */
+
+    if(parse.getiValue("type") != ProtocolVersacomType)
+    {
+        parse.setValue("type", ProtocolVersacomType);
+        parse.parse();  // reparse for vcom specific data items....  This is required in case we got here from a group macro.
+    }
 
     if( (Route = getRoute( getRouteID() )) )    // This is "this's" route
     {
