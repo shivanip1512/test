@@ -174,7 +174,8 @@ public class WorkOrder extends YukonReportBase
 		header.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, ReportFactory.ITEM_BAND_STYLE_DIMENSION);
 		header.getBandDefaults().setFontDefinitionProperty(ReportFactory.ITEM_BAND_FONT);
 
-		int yLine = ((WorkOrderModel)getModel()).getColHeight() * 6;
+		int colHeight = 14;	//USE 14 because we know that's what will fit?  SN...ick, ick
+		int yLine = colHeight * 6;
 		header.addElement(ReportFactory.createBasicLine("woGroupLine", 0.5f, yLine));
 		
 		//Use reportFactory's regular elements, not the group ones.
@@ -196,7 +197,7 @@ public class WorkOrder extends YukonReportBase
 		//Installed Hardware header label
 		factory = ReportFactory.createLabelElementDefault(getModel(), WorkOrderModel.HEADER_END_INDEX);
 		ColumnProperties headEndProps = getModel().getColumnProperties(WorkOrderModel.HEADER_END_INDEX);
-		factory.setAbsolutePosition(new Point2D.Float(headEndProps.getPositionX(), headEndProps.getPositionY() + headEndProps.getHeight() + ((WorkOrderModel)getModel()).getColHeight()*2));
+		factory.setAbsolutePosition(new Point2D.Float(headEndProps.getPositionX(), headEndProps.getPositionY() + 18 /*group size*/	+ colHeight *2));
 		factory.setText("INSTALLED HARDWARE:");
 		header.addElement(factory.createElement());
 		
@@ -204,7 +205,7 @@ public class WorkOrder extends YukonReportBase
 		{
 			factory = ReportFactory.createLabelElementDefault(getModel(), i);
 			factory.setAbsolutePosition(new Point2D.Float(getModel().getColumnProperties(i).getPositionX(), 
-				headEndProps.getPositionY() + headEndProps.getHeight() + ((WorkOrderModel)getModel()).getColHeight()*3));
+				headEndProps.getPositionY() + 18 + colHeight *3));
 			header.addElement(factory.createElement());
 		}
 		acctGroup.setHeader(header);
@@ -221,21 +222,21 @@ public class WorkOrder extends YukonReportBase
 		
 			tfactory = ReportFactory.createTextFieldElementDefault(getModel(), i);
 			tfactory.setNullString("");
-			tfactory.setAbsolutePosition(new Point2D.Float(getModel().getColumnProperties(i).getPositionX(), getModel().getColumnProperties(i).getPositionY()+((WorkOrderModel)getModel()).getColHeight()));
+			tfactory.setAbsolutePosition(new Point2D.Float(getModel().getColumnProperties(i).getPositionX(), getModel().getColumnProperties(i).getPositionY()+colHeight));
 			footer.addElement(tfactory.createElement());
 		}
 		//move the signature line down the page a bit
-		float posY = getModel().getColumnProperties(WorkOrderModel.FOOTER_END_INDEX).getPositionY()+((WorkOrderModel)getModel()).getColHeight()*4;
+		float posY = getModel().getColumnProperties(WorkOrderModel.FOOTER_END_INDEX).getPositionY()+colHeight*4;
 		
 		//Signature label
-		factory = ReportFactory.createLabelElementDefault("Signature", 0, posY + ((WorkOrderModel)getModel()).getColHeight(), 50);
+		factory = ReportFactory.createLabelElementDefault("Signature", 0, posY + colHeight, 50);
 		footer.addElement(factory.createElement());
-		footer.addElement(StaticShapeElementFactory.createLineShapeElement("sigLine", null, new BasicStroke(0.5f), new Line2D.Float(50, posY + ((WorkOrderModel)getModel()).getColHeight()*2, 300, posY+ ((WorkOrderModel)getModel()).getColHeight()*2)));
+		footer.addElement(StaticShapeElementFactory.createLineShapeElement("sigLine", null, new BasicStroke(0.5f), new Line2D.Float(50, posY + colHeight*2, 300, posY+ colHeight*2)));
 		
 		//Date label
-		factory = ReportFactory.createLabelElementDefault("Date", 330, posY + ((WorkOrderModel)getModel()).getColHeight(), 30);
+		factory = ReportFactory.createLabelElementDefault("Date", 330, posY + colHeight, 30);
 		footer.addElement(factory.createElement());
-		footer.addElement(StaticShapeElementFactory.createLineShapeElement("dateLine", null, new BasicStroke(0.5f), new Line2D.Float(360, posY + ((WorkOrderModel)getModel()).getColHeight()*2, 500, posY+ ((WorkOrderModel)getModel()).getColHeight()*2)));
+		footer.addElement(StaticShapeElementFactory.createLineShapeElement("dateLine", null, new BasicStroke(0.5f), new Line2D.Float(360, posY + colHeight *2, 500, posY+ colHeight*2)));
 
 		footer.setPagebreakAfterPrint(true);
 		acctGroup.setFooter(footer);
