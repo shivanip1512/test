@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/01/17 16:29:31 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/01/18 19:12:48 $
 *
 * HISTORY      :
 * $Log: dev_rtm.cpp,v $
+* Revision 1.8  2005/01/18 19:12:48  cplender
+* resetScanFlags
+*
 * Revision 1.7  2005/01/17 16:29:31  mfisher
 * added the resetScanFlags clobber to resultDecode
 *
@@ -318,6 +321,8 @@ INT CtiDeviceRTM::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< 
     RWCString resultString;
     CtiReturnMsg *retMsg;
 
+    resetScanFlags();
+
     if( !ErrReturn )
     {
         resetScanFlags();
@@ -380,6 +385,8 @@ INT CtiDeviceRTM::ErrorDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< C
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " Error decode for device " << getName() << " in progress " << endl;
     }
+
+    resetScanFlags();
 
     if( pPIL != NULL )
     {
