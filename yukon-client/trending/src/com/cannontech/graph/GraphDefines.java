@@ -5,11 +5,43 @@ package com.cannontech.graph;
  * Creation date: (6/7/2002 2:40:14 PM)
  * @author: 
  */
+import java.util.Date;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 
+import org.jfree.data.time.TimePeriodValue;
+import org.jfree.data.time.TimeSeriesDataItem;
+
 public interface GraphDefines 
-{
+{	
+	public static java.util.Comparator timeSeriesDataItemValueComparator = new java.util.Comparator()
+	{
+		public int compare(Object o1, Object o2)
+		{
+			Double thisVal = (Double)((TimeSeriesDataItem)o1).getValue();
+			Double anotherVal = (Double)((TimeSeriesDataItem)o2).getValue();
+			return (thisVal.doubleValue()>anotherVal.doubleValue() ? -1 : (thisVal.doubleValue()==anotherVal.doubleValue() ? 0 : 1));
+		}
+		public boolean equals(Object obj)
+		{
+			return false;
+		}
+	};
+	
+	public static java.util.Comparator timeSeriesDataItemPeriodComparator = new java.util.Comparator()
+	{
+		public int compare(Object o1, Object o2)
+		{
+			Date thisVal = ((TimePeriodValue)o1).getPeriod().getStart();
+			Date anotherVal = ((TimePeriodValue)o2).getPeriod().getStart();
+			return (thisVal.getTime()>anotherVal.getTime() ? -1 : (thisVal.getTime()==anotherVal.getTime() ? 0 : 1));
+		}
+		public boolean equals(Object obj)
+		{
+			return false;
+		}
+	};
+
 	public String TITLE_HEADER_BGCOLOR = "#FFFFFF";
 	public String HEADER_CELL_BGCOLOR = "#999966";
 	public String TABLE_CELL_BGCOLOR = "#CCCC99";
