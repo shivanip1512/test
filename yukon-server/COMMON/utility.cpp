@@ -30,7 +30,6 @@ using namespace std;
 
 LONG GetMaxLMControl(long pao)
 {
-    static RWMutexLock mux;
     RWCString sql("SELECT MAX(LMCTRLHISTID) FROM LMCONTROLHISTORY WHERE PAOBJECTID = ");
     INT id = 0;
 
@@ -919,3 +918,29 @@ int generateTransmissionID()
     RWMutexLock::LockGuard guard(mux);
     return ++id;
 }
+
+LONG GetPAOIdOfPoint(long pid)
+{
+    RWCString sql("SELECT PAOBJECTID FROM POINT WHERE POINTID = ");
+    INT id = 0;
+
+    sql += CtiNumStr(pid);
+
+    RWDBConnection conn = getConnection();
+    RWLockGuard<RWDBConnection> conn_guard(conn);
+
+    RWDBReader  rdr = ExecuteQuery( conn, sql );
+
+    if(rdr() && rdr.isValid())
+    {
+        rdr >> id;
+    }
+    else
+    {
+        cout << "**** Checkpoint: Invalid Reader **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    return id;
+}
+
+
