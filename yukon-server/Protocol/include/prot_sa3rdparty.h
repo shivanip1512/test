@@ -9,11 +9,15 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2004/06/03 21:46:17 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2004/06/24 13:16:12 $
 * HISTORY      :
 *
 * $Log: prot_sa3rdparty.h,v $
+* Revision 1.4  2004/06/24 13:16:12  cplender
+* Some cleanup on the simulator to make RTC and LMIRTU trx sessions look the same.
+* Added PORTER_SA_RTC_MAXCODES the maimum number of codes that can be sent in one block
+*
 * Revision 1.3  2004/06/03 21:46:17  cplender
 * Simulator mods.
 *
@@ -74,12 +78,12 @@ private:
 
     void computeShedTimes(int shed_time);
     void processResult(INT retCode);
+    void computeSnCTime();
 
 public:
 
     CtiProtocolSA3rdParty();
     CtiProtocolSA3rdParty(const CtiSAData sa);
-    CtiProtocolSA3rdParty(const CtiProtocolSA3rdParty& aRef);
 
     virtual ~CtiProtocolSA3rdParty();
 

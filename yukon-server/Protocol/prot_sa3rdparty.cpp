@@ -8,11 +8,15 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2004/06/23 18:37:27 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2004/06/24 13:16:12 $
 *
 * HISTORY      :
 * $Log: prot_sa3rdparty.cpp,v $
+* Revision 1.7  2004/06/24 13:16:12  cplender
+* Some cleanup on the simulator to make RTC and LMIRTU trx sessions look the same.
+* Added PORTER_SA_RTC_MAXCODES the maimum number of codes that can be sent in one block
+*
 * Revision 1.6  2004/06/23 18:37:27  cplender
 * Altered the default constructor to memset the SAStruct.
 *
@@ -55,11 +59,8 @@ CtiProtocolSA3rdParty::CtiProtocolSA3rdParty(const CtiSAData sa)
 {
     _sa = sa;
     _messageReady = true;
-}
 
-CtiProtocolSA3rdParty::CtiProtocolSA3rdParty(const CtiProtocolSA3rdParty& aRef)
-{
-    *this = aRef;
+    computeSnCTime();
 }
 
 CtiProtocolSA3rdParty::~CtiProtocolSA3rdParty()
@@ -751,6 +752,8 @@ void CtiProtocolSA3rdParty::computeShedTimes(int shed_time)
     int ctimes[] = { 450, 900, 1350, 1800, 2250, 2700, 3150, 3600 };        // These are the available cycle times in seconds
 #else
     int ctimes[] = { 450, 900, 1800, 3600 };        // These are the available cycle times in seconds
+    int oactime[] = { 3, 0, 1, 2 };        // These are the available cycle times in seconds
+    int oastime[] = { 5, 5, 5, 5 };        // These are the available cycle times in seconds
 #endif
 
     int bestoffset = 0;                             // Pick a 450 scond shed by default?
@@ -764,6 +767,8 @@ void CtiProtocolSA3rdParty::computeShedTimes(int shed_time)
             _sa._cycleTime = ctimes[i];
             _sa._swTimeout = ctimes[i];
             _sa._repeats = shed_time / ctimes[i];
+            _cTime = oactime[i];
+            _sTime = oastime[i];
             break;
         }
         else
@@ -777,6 +782,9 @@ void CtiProtocolSA3rdParty::computeShedTimes(int shed_time)
                 _sa._cycleTime = ctimes[i];
                 _sa._swTimeout = ctimes[i];
                 _sa._repeats = rep;
+
+                _cTime = oactime[i];
+                _sTime = oastime[i];
             }
         }
     }
@@ -901,6 +909,7 @@ CtiSAData CtiProtocolSA3rdParty::getSAData() const
 CtiProtocolSA3rdParty& CtiProtocolSA3rdParty::setSAData(const CtiSAData &sa)
 {
     _sa = sa;
+    computeSnCTime();
     return *this;
 }
 
@@ -954,7 +963,7 @@ RWCString CtiProtocolSA3rdParty::asString() const
 
 RWCString CtiProtocolSA3rdParty::strategyAsString() const
 {
-    RWCString rstr(functionAsString() + " " + CtiNumStr(_sa._swTimeout) + " of " + CtiNumStr(_sa._cycleTime) + " seconds. (" + CtiNumStr(_sTime) + " / " + CtiNumStr(_cTime) + ") " + CtiNumStr(_sa._repeats) + " period repeats.");
+    RWCString rstr(functionAsString() + " " + CtiNumStr(_sa._swTimeout) + " of " + CtiNumStr(_sa._cycleTime) + " seconds (" + CtiNumStr(_sTime) + "/" + CtiNumStr(_cTime) + "). " + CtiNumStr(_sa._repeats) + " period repeats.");
     return rstr;
 }
 
@@ -1047,5 +1056,240 @@ RWCString CtiProtocolSA3rdParty::functionAsString() const
     }
 
     return rstr;
+}
+
+void CtiProtocolSA3rdParty::computeSnCTime()
+{
+    _cTime = -1;
+    _sTime = -1;
+
+    switch(_sa._swTimeout)
+    {
+    case 450:
+        {
+            switch(_sa._cycleTime)
+            {
+            case 450:
+                {
+                    _cTime = 3;
+                    _sTime = 5;
+                    break;
+                }
+            case 900:
+                {
+                    _cTime = 2;
+                    _sTime = 6;
+                    break;
+                }
+            case 1800:
+                {
+                    _cTime = 0;
+                    _sTime = 6;
+                    break;
+                }
+            case 3600:
+                {
+                    _cTime = 0;
+                    _sTime = 7;
+                    break;
+                }
+            }
+            break;
+        }
+    case 600:
+        {
+            switch(_sa._cycleTime)
+            {
+            case 1800:
+                {
+                    _cTime = 1;
+                    _sTime = 6;
+                    break;
+                }
+            }
+            break;
+        }
+    case 660:
+        {
+            switch(_sa._cycleTime)
+            {
+            case 900:
+                {
+                    _cTime = 4;
+                    _sTime = 6;
+                    break;
+                }
+            }
+            break;
+        }
+    case 720:
+        {
+            switch(_sa._cycleTime)
+            {
+            case 900:
+                {
+                    _cTime = 5;
+                    _sTime = 6;
+                    break;
+                }
+            }
+            break;
+        }
+    case 750:
+        {
+            switch(_sa._cycleTime)
+            {
+            case 1800:
+                {
+                    _cTime = 4;
+                    _sTime = 5;
+                    break;
+                }
+            }
+            break;
+        }
+    case 900:
+        {
+            switch(_sa._cycleTime)
+            {
+            case 900:
+                {
+                    _cTime = 0;
+                    _sTime = 5;
+                    break;
+                }
+            case 1800:
+                {
+                    _cTime = 0;
+                    _sTime = 4;
+                    break;
+                }
+            case 3600:
+                {
+                    _cTime = 1;
+                    _sTime = 7;
+                    break;
+                }
+            }
+            break;
+        }
+    case 1200:
+        {
+            switch(_sa._cycleTime)
+            {
+            case 3600:
+                {
+                    _cTime = 2;
+                    _sTime = 4;
+                    break;
+                }
+            }
+            break;
+        }
+    case 1350:
+        {
+            switch(_sa._cycleTime)
+            {
+            case 1800:
+                {
+                    _cTime = 1;
+                    _sTime = 4;
+                    break;
+                }
+            case 3600:
+                {
+                    _cTime = 2;
+                    _sTime = 7;
+                    break;
+                }
+            }
+            break;
+        }
+    case 1800:
+        {
+            switch(_sa._cycleTime)
+            {
+            case 1800:
+                {
+                    _cTime = 1;
+                    _sTime = 5;
+                    break;
+                }
+            case 3600:
+                {
+                    _cTime = 3;
+                    _sTime = 7;
+                    break;
+                }
+            }
+            break;
+        }
+    case 2250:
+        {
+            switch(_sa._cycleTime)
+            {
+            case 3600:
+                {
+                    _cTime = 4;
+                    _sTime = 7;
+                    break;
+                }
+            }
+            break;
+        }
+    case 2400:
+        {
+            switch(_sa._cycleTime)
+            {
+            case 3600:
+                {
+                    _cTime = 3;
+                    _sTime = 4;
+                    break;
+                }
+            }
+            break;
+        }
+    case 2700:
+        {
+            switch(_sa._cycleTime)
+            {
+            case 3600:
+                {
+                    _cTime = 5;
+                    _sTime = 7;
+                    break;
+                }
+            }
+            break;
+        }
+    case 3150:
+        {
+            switch(_sa._cycleTime)
+            {
+            case 3600:
+                {
+                    _cTime = 6;
+                    _sTime = 7;
+                    break;
+                }
+            }
+            break;
+        }
+    case 3600:
+        {
+            switch(_sa._cycleTime)
+            {
+            case 3600:
+                {
+                    _cTime = 2;
+                    _sTime = 5;
+                    break;
+                }
+            }
+            break;
+        }
+    }
+
 }
 

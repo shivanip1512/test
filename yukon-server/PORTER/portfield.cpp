@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.109 $
-* DATE         :  $Date: 2004/06/03 21:46:38 $
+* REVISION     :  $Revision: 1.110 $
+* DATE         :  $Date: 2004/06/24 13:16:12 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -838,6 +838,7 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &D
     {
         Port->setDeviceQueued( Device->getID() );
 
+        if(gConfigParms.getValueAsULong("YUKON_SIMULATOR_DEBUGLEVEL", 0) & 0x00000001)
         {
             CtiLockGuard<CtiLogger> doubt_guard(slog);
             slog << RWTime() << " " << Device->getName() << " queuing work.  There are " << dqcnt << " entries on the queue.  Last grant at " << Device->getExclusion().getExecutionGrant() << endl;

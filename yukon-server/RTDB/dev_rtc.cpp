@@ -7,11 +7,15 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2004/06/23 18:38:05 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2004/06/24 13:16:11 $
 *
 * HISTORY      :
 * $Log: dev_rtc.cpp,v $
+* Revision 1.12  2004/06/24 13:16:11  cplender
+* Some cleanup on the simulator to make RTC and LMIRTU trx sessions look the same.
+* Added PORTER_SA_RTC_MAXCODES the maimum number of codes that can be sent in one block
+*
 * Revision 1.11  2004/06/23 18:38:05  cplender
 * Memory leak removal and slog addition.
 *
@@ -344,7 +348,7 @@ INT CtiDeviceRTC::queueRepeatToDevice(OUTMESS *&OutMessage, UINT *dqcnt)
 
         {
             CtiLockGuard<CtiLogger> slog_guard(slog);
-            slog << RWTime() << " "  << getName() << ": Requeued for repeat transmit: " << CtiProtocolSA3rdParty(OutMessage->Buffer.SASt).asString() << " for transmission at " << _repeatTime << endl;
+            slog << RWTime() << " "  << getName() << ": Requeued for " << _repeatTime << " repeat transmit: " << CtiProtocolSA3rdParty(OutMessage->Buffer.SASt).asString() << endl;
         }
 
         OutMessage= 0;
@@ -503,7 +507,7 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
         msgMillis += messageDuration(OutMessage->Buffer.SASt._groupType);
 
 
-        while( codecount <= 35 && ((now + (msgMillis / 1000) + 1) < getExclusion().getExecutingUntil()) && getOutMessage(rtcOutMessage) )
+        while( codecount <= gConfigParms.getValueAsULong("PORTER_SA_RTC_MAXCODES",35) && ((now + (msgMillis / 1000) + 1) < getExclusion().getExecutingUntil()) && getOutMessage(rtcOutMessage) )
         {
             now = now.now();
             codecount++;
@@ -547,7 +551,7 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
         getExclusion().setEvaluateNextAt((now + (msgMillis / 1000) + 1));
         {
             CtiLockGuard<CtiLogger> doubt_guard(slog);
-            slog << RWTime() << " " <<  getName() << " transmitting " << msgMillis << " \"RF\" milliseconds of codes.  Completes at " << (now + (msgMillis / 1000) + 1) << " < " << getExclusion().getExecutingUntil() << endl;
+            slog << RWTime() << " " << getName() << " transmitting " << msgMillis << " \"RF\" milliseconds of codes.  Completes at " << (now + (msgMillis / 1000) + 1) << " < " << getExclusion().getExecutingUntil() << endl;
         }
     }
     catch(...)
