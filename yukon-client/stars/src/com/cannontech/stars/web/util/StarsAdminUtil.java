@@ -220,11 +220,7 @@ public class StarsAdminUtil {
 		company = (com.cannontech.database.data.stars.report.ServiceCompany)
 				Transaction.createTransaction( Transaction.INSERT, company ).execute();
 		
-		com.cannontech.database.data.customer.Contact contact =
-				new com.cannontech.database.data.customer.Contact();
-		contact.setCustomerContact( company.getPrimaryContact() );
-		LiteContact liteContact = (LiteContact) StarsLiteFactory.createLite(contact);
-		
+		LiteContact liteContact = (LiteContact) StarsLiteFactory.createLite(company.getPrimaryContact());
 		ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_ADD );
 		
 		LiteServiceCompany liteCompany = (LiteServiceCompany) StarsLiteFactory.createLite( companyDB );

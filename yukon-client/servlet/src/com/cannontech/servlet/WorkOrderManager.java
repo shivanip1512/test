@@ -6,8 +6,11 @@
  */
 package com.cannontech.servlet;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -15,20 +18,34 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.jfree.report.JFreeReport;
+
+import com.cannontech.analysis.ReportFuncs;
+import com.cannontech.analysis.ReportTypes;
+import com.cannontech.analysis.report.YukonReportBase;
+import com.cannontech.analysis.tablemodel.WorkOrderModel;
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.StarsDatabaseCache;
+import com.cannontech.database.cache.functions.ContactFuncs;
+import com.cannontech.database.data.lite.LiteContact;
+import com.cannontech.database.data.lite.LiteContactNotification;
+import com.cannontech.database.data.lite.stars.LiteServiceCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
 import com.cannontech.database.db.stars.report.WorkOrderBase;
+import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.action.CreateServiceRequestAction;
 import com.cannontech.stars.web.action.UpdateServiceRequestAction;
 import com.cannontech.stars.web.util.WorkOrderManagerUtil;
 import com.cannontech.stars.xml.serialize.StarsOperation;
+import com.cannontech.tools.email.EmailMessage;
 
 /**
  * @author yao
@@ -37,6 +54,9 @@ import com.cannontech.stars.xml.serialize.StarsOperation;
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
 public class WorkOrderManager extends HttpServlet {
+	
+	private String lastFileID1 = "";
+	private int lastFileID2 = 0;
 	
 	private String referer = null;
 	private String redirect = null;
@@ -58,9 +78,17 @@ public class WorkOrderManager extends HttpServlet {
 			return;
 		}
     	
-		referer = req.getHeader( "referer" );
+		referer = req.getParameter( ServletUtils.ATT_REFERRER );
+		if (referer == null) referer = req.getHeader( "referer" );
 		redirect = req.getParameter( ServletUtils.ATT_REDIRECT );
 		if (redirect == null) redirect = referer;
+		
+		// If parameter "ConfirmOnMessagePage" specified, the confirm/error message will be displayed on Message.jsp
+		if (req.getParameter(ServletUtils.CONFIRM_ON_MESSAGE_PAGE) != null) {
+			session.setAttribute( ServletUtils.ATT_REDIRECT2, redirect );
+			session.setAttribute( ServletUtils.ATT_REFERRER2, referer );
+			redirect = referer = req.getContextPath() + "/operator/Admin/Message.jsp";
+		}
 		
 		String action = req.getParameter( "action" );
 		if (action == null) action = "";
@@ -79,6 +107,8 @@ public class WorkOrderManager extends HttpServlet {
 					"&REFERRER=" + req.getParameter(ServletUtils.ATT_REFERRER);
 			searchCustAccount( user, req, session );
 		}
+		else if (action.equalsIgnoreCase("SendWorkOrder"))
+			sendWorkOrder( user, req, session );
 		
 		resp.sendRedirect( redirect );
 	}
@@ -203,6 +233,77 @@ public class WorkOrderManager extends HttpServlet {
 		session.setAttribute(WorkOrderManagerUtil.STARS_WORK_ORDER_OPER_REQ, operation);
 	}
 	
+	private void sendWorkOrder(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
+		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
+		
+		int orderID = Integer.parseInt( req.getParameter("OrderID") );
+		LiteWorkOrderBase liteOrder = energyCompany.getWorkOrderBase( orderID, true );
+		
+		if (liteOrder.getServiceCompanyID() == 0) {
+			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "You have not assigned this work order to a service company yet." );
+			return;
+		}
+		
+		LiteServiceCompany sc = energyCompany.getServiceCompany( liteOrder.getServiceCompanyID() );
+		String email = null;
+		if (sc.getPrimaryContactID() > 0) {
+			LiteContact contact = ContactFuncs.getContact( sc.getPrimaryContactID() );
+			LiteContactNotification emailNotif = ContactFuncs.getContactNotification( contact, YukonListEntryTypes.YUK_ENTRY_ID_EMAIL );
+			if (emailNotif != null) email = emailNotif.getNotification();
+		}
+		
+		if (email == null) {
+			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "There is no email address assigned to service company \"" + sc.getCompanyName() + "\"." );
+			return;
+		}
+		
+		try {
+			YukonReportBase rpt = ReportFuncs.createYukonReport( ReportTypes.EC_WORK_ORDER_DATA );
+			rpt.getModel().setECIDs( energyCompany.getEnergyCompanyID() );
+			((WorkOrderModel)rpt.getModel()).setOrderID( new Integer(orderID) );
+			
+			rpt.getModel().collectData();
+					
+			JFreeReport report = rpt.createReport();
+			report.setData(rpt.getModel());
+			
+			File tempFile = File.createTempFile("WorkOrder", ".pdf", new File(ServerUtils.getStarsTempDir(), "/WorkOrder"));
+			tempFile.deleteOnExit();
+			
+			FileOutputStream fos = null;
+			try {
+				fos = new FileOutputStream( tempFile );
+				ReportFuncs.outputYukonReport( report, "pdf", fos );
+			}
+			catch (Exception e) {
+				// There will always be an exception because the PDF encoder will try to write two versions
+				// of data into the file, while the output stream will stop accepting data after the first
+				// EOF is met. The exception is simply ignored here, could miss some other exceptions.
+			}
+			finally {
+				if (fos != null) fos.close();
+			}
+			
+			Date now = new Date();
+			String fileName = "WorkOrder_" + StarsUtils.starsDateFormat.format(now) + "_" + StarsUtils.starsTimeFormat.format(now) + ".pdf";
+			
+			EmailMessage emailMsg = new EmailMessage();
+			emailMsg.setFrom( energyCompany.getAdminEmailAddress() );
+			emailMsg.setTo( email );
+			emailMsg.setSubject( "Work Order" );
+			emailMsg.setBody( "" );
+			emailMsg.addAttachment( tempFile, fileName );
+			
+			emailMsg.send();
+			
+			session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, "Sent work order to the service company successfully." );
+		}
+		catch (Exception e) {
+			CTILogger.error( e.getMessage(), e );
+			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Failed to send the work order." );
+		}
+	}
+	
 	private int[] getOrderIDsByAccounts(ArrayList accounts) {
 		if (accounts != null && accounts.size() > 0) {
 			ArrayList orderIDList = new ArrayList();
@@ -226,6 +327,20 @@ public class WorkOrderManager extends HttpServlet {
 		}
 		
 		return null;
+	}
+	
+	private File createTempFile() throws IOException {
+		Date now = new Date();
+		String fileID = StarsUtils.starsDateFormat.format(now) + "_" + StarsUtils.starsTimeFormat.format(now);
+		if (fileID.equals( lastFileID1 ))
+			fileID += "_" + (++lastFileID2);
+		else
+			lastFileID1 = fileID;
+		
+		File tempDir = new File(ServerUtils.getStarsTempDir() + "/WorkOrder");
+		if (!tempDir.exists()) tempDir.mkdirs();
+		
+		return new File(tempDir, "WorkOrder_" + fileID + ".pdf");
 	}
 	
 }

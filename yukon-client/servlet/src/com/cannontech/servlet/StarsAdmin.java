@@ -45,6 +45,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
 import com.cannontech.database.data.lite.stars.LiteWebConfiguration;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
+import com.cannontech.database.db.contact.ContactNotification;
 import com.cannontech.database.db.stars.ECToGenericMapping;
 import com.cannontech.database.db.stars.customer.CustomerAccount;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -929,6 +930,31 @@ public class StarsAdmin extends HttpServlet {
 			contactDB.setContLastName( req.getParameter("ContactLastName") );
 			contactDB.setContFirstName( req.getParameter("ContactFirstName") );
 			
+			ContactNotification emailNotif = null;
+			for (int i = 0; i < contact.getContactNotifVect().size(); i++) {
+				ContactNotification notif = (ContactNotification) contact.getContactNotifVect().get(i);
+				if (notif.getNotificationCatID().intValue() == YukonListEntryTypes.YUK_ENTRY_ID_EMAIL) {
+					emailNotif = notif;
+					emailNotif.setOpCode( Transaction.DELETE );
+					break;
+				}
+			}
+			
+			if (req.getParameter("Email").length() > 0) {
+				if (emailNotif != null) {
+					emailNotif.setNotification( req.getParameter("Email") );
+					emailNotif.setOpCode( Transaction.UPDATE );
+				}
+				else {
+					emailNotif = new com.cannontech.database.db.contact.ContactNotification();
+					emailNotif.setNotificationCatID( new Integer(YukonListEntryTypes.YUK_ENTRY_ID_EMAIL) );
+					emailNotif.setDisableFlag( "N" );
+					emailNotif.setNotification( req.getParameter("Email") );
+					emailNotif.setOpCode( Transaction.INSERT );
+					contact.getContactNotifVect().add( emailNotif );
+				}
+			}
+			
 			if (newCompany) {
 				com.cannontech.database.db.customer.Address address = new com.cannontech.database.db.customer.Address();
 				StarsServiceCompany scTemp = (StarsServiceCompany) session.getAttribute( StarsAdminUtil.SERVICE_COMPANY_TEMP );
@@ -938,7 +964,7 @@ public class StarsAdmin extends HttpServlet {
 					address.setStateCode( "" );
 				
 				company.setAddress( address );
-				company.setPrimaryContact( contactDB );
+				company.setPrimaryContact( contact );
 				company.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
 				company = (com.cannontech.database.data.stars.report.ServiceCompany)
 						Transaction.createTransaction( Transaction.INSERT, company ).execute();
@@ -954,16 +980,17 @@ public class StarsAdmin extends HttpServlet {
 				
 				PrimaryContact starsContact = new PrimaryContact();
 				StarsLiteFactory.setStarsCustomerContact(
-						starsContact, ContactFuncs.getContact(company.getPrimaryContact().getContactID().intValue()) );
+						starsContact, ContactFuncs.getContact(company.getServiceCompany().getPrimaryContactID().intValue()) );
 				
 				CompanyAddress starsAddr = new CompanyAddress();
 				StarsLiteFactory.setStarsCustomerAddress(
 						starsAddr, energyCompany.getAddress(company.getAddress().getAddressID().intValue()) );
 			}
 			else {
-				contactDB = (com.cannontech.database.db.contact.Contact)
-						Transaction.createTransaction( Transaction.UPDATE, contactDB ).execute();
+				contact = (com.cannontech.database.data.customer.Contact)
+						Transaction.createTransaction( Transaction.UPDATE, contact ).execute();
 				StarsLiteFactory.setLiteContact( liteContact, contact );
+				ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_UPDATE );
 				
 				companyDB = (com.cannontech.database.db.stars.report.ServiceCompany)
 						Transaction.createTransaction( Transaction.UPDATE, companyDB ).execute();

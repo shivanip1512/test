@@ -16,7 +16,7 @@ public class ServiceCompany extends DBPersistent {
 
     private com.cannontech.database.db.stars.report.ServiceCompany serviceCompany = null;
     private com.cannontech.database.db.customer.Address address = null;
-    private com.cannontech.database.db.contact.Contact primaryContact = null;
+    private com.cannontech.database.data.customer.Contact primaryContact = null;
     
     private Integer energyCompanyID = null;
 
@@ -58,7 +58,7 @@ public class ServiceCompany extends DBPersistent {
         getPrimaryContact().add();
         
         getServiceCompany().setAddressID( getAddress().getAddressID() );
-        getServiceCompany().setPrimaryContactID( getPrimaryContact().getContactID() );
+        getServiceCompany().setPrimaryContactID( getPrimaryContact().getContact().getContactID() );
         getServiceCompany().add();
         
     	// Add to mapping table
@@ -122,9 +122,9 @@ public class ServiceCompany extends DBPersistent {
 	 * Returns the primaryContact.
 	 * @return com.cannontech.database.db.customer.CustomerContact
 	 */
-	public com.cannontech.database.db.contact.Contact getPrimaryContact() {
+	public com.cannontech.database.data.customer.Contact getPrimaryContact() {
 		if (primaryContact == null)
-			primaryContact = new com.cannontech.database.db.contact.Contact();
+			primaryContact = new com.cannontech.database.data.customer.Contact();
 		return primaryContact;
 	}
 
@@ -142,7 +142,7 @@ public class ServiceCompany extends DBPersistent {
 	 * @param primaryContact The primaryContact to set
 	 */
 	public void setPrimaryContact(
-		com.cannontech.database.db.contact.Contact primaryContact) {
+		com.cannontech.database.data.customer.Contact primaryContact) {
 		this.primaryContact = primaryContact;
 	}
 

@@ -24,9 +24,7 @@ package com.cannontech.servlet;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.image.BufferedImage;
-import java.awt.print.PageFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
@@ -40,7 +38,6 @@ import org.jfree.report.JFreeReport;
 import org.jfree.report.modules.output.pageable.base.PageableReportProcessor;
 import org.jfree.report.modules.output.pageable.base.ReportStateList;
 import org.jfree.report.modules.output.pageable.graphics.G2OutputTarget;
-import org.jfree.report.modules.output.pageable.pdf.PDFOutputTarget;
 
 import com.cannontech.analysis.ReportFuncs;
 import com.cannontech.analysis.ReportTypes;
@@ -52,9 +49,6 @@ import com.cannontech.database.cache.functions.EnergyCompanyFuncs;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.util.ServletUtil;
-import com.keypoint.PngEncoder;
-import com.klg.jclass.util.swing.encode.EncoderException;
-import com.klg.jclass.util.swing.encode.page.PDFEncoder;
 
 public class ReportGenerator extends javax.servlet.http.HttpServlet
 {
@@ -247,66 +241,30 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet
 				if( !noCache )
 					session.setAttribute(reportKey + "Report", report);
 			}
-
-			java.awt.print.PageFormat pageFormat = report.getDefaultPageFormat();
 			
-			//create buffered image
-			BufferedImage image = createImage(pageFormat);
-			final Graphics2D g2 = image.createGraphics();
-			g2.setPaint(Color.white);
-			g2.fillRect(0,0, (int) pageFormat.getWidth(), (int) pageFormat.getHeight());
-
 			final ServletOutputStream out = resp.getOutputStream();
 			
-			/*if (ext.equalsIgnoreCase("csv"))
-			{
-				try
-				{
-					final AbstractTableReportServletWorker worker = new StaticTableReportServletWorker(report, report.getData());
-					// this throws an exception if the report could not be parsed
-					final ExcelProcessor processor = new ExcelProcessor(worker.getReport());
-					processor.setOutputStream(out);
-				  	worker.setTableProcessor(processor);
-				}
-				catch (Exception e)
-				{
-				  CTILogger.debug("Failed to parse the report");
-				  resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-				  return;
-				}				
-			}
-			else */if (ext.equalsIgnoreCase("pdf"))
-			{
-				try{
+			if (!ext.equalsIgnoreCase("png")) {
+				if (ext.equalsIgnoreCase("pdf")) {
 					resp.setContentType("application/pdf");
 					resp.addHeader("Content-Type", "application/pdf");
-					final PDFOutputTarget target = new PDFOutputTarget(out,pageFormat,true);
-					
-					target.setProperty(PDFOutputTarget.TITLE, "Title");
-					target.setProperty(PDFOutputTarget.AUTHOR, "Author");
-					
-					final PageableReportProcessor processor = new PageableReportProcessor(report);
-					processor.setOutputTarget(target);
-					target.open();
-					processor.processReport();
-					target.close();
-					encodePDF(out, image);
-					out.flush();
 				}
-				catch (Exception e)
-				{
-				  CTILogger.debug("Failed to parse the report");
-				  resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-				  return;
-				}							
+				/*else if (ext.equalsIgnoreCase("jpg")) {
+					resp.setContentType("image/jpeg");
+				}*/
 				
+				ReportFuncs.outputYukonReport( report, ext, out );
+				out.flush();
 			}
-			/*else if (ext.equalsIgnoreCase("jpeg"))
-			{
-				resp.setContentType("image/jpeg");
-			}*/
-			else if (ext.equalsIgnoreCase("png"))
-			{
+			else {
+				java.awt.print.PageFormat pageFormat = report.getDefaultPageFormat();
+				
+				//create buffered image
+				BufferedImage image = ReportFuncs.createImage(pageFormat);
+				final Graphics2D g2 = image.createGraphics();
+				g2.setPaint(Color.white);
+				g2.fillRect(0,0, (int) pageFormat.getWidth(), (int) pageFormat.getHeight());
+				
 				resp.setHeader("Content-Type", "image/png");
 
 				final G2OutputTarget target = new G2OutputTarget(g2, pageFormat);
@@ -331,7 +289,7 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet
 
 						target.open();
 						processor.processPage(((ReportStateList)statelist).get(page), target);
-						encodePNG(out, image);
+						ReportFuncs.encodePNG(out, image);
 						target.close();
 					}
 				}
@@ -353,44 +311,4 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet
 	//		}
 		}		
 	}
-	
-	/**
-	  * Create the empty image for the given page size.
-	  *
-	  * @param pf the page format that defines the image bounds.
-	  * @return the generated image.
-	  */
-	 private BufferedImage createImage(final PageFormat pf)
-	 {
-	   final double width = pf.getWidth();
-	   final double height = pf.getHeight();
-	   //write the report to the temp file
-	   final BufferedImage bi = new BufferedImage((int) width, (int) height, BufferedImage.TYPE_BYTE_INDEXED);
-	   return bi;
-	 }
-	
-	
-	public void encodePDF(java.io.OutputStream out, Image image) throws java.io.IOException
-	{
-		try
-		{
-			PDFEncoder encoder = new PDFEncoder();
-			encoder.encode(image, out);
-		}		
-		catch( java.io.IOException io )
-		{
-			io.printStackTrace();
-		}
-		catch( EncoderException ee )
-		{
-			ee.printStackTrace();
-		}
-	}	
-
-	public void encodePNG(java.io.OutputStream out, Image image) throws java.io.IOException
-	{
-		final PngEncoder encoder = new PngEncoder(image, true, 0, 9);
-		final byte[] data = encoder.pngEncode();
-		out.write(data);
-	}	
 }
