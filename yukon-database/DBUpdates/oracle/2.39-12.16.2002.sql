@@ -281,3 +281,38 @@ INSERT INTO UnitMeasure VALUES( 52,'m/s',0,'Meters Per Second','(none)');
 INSERT INTO UnitMeasure VALUES( 53,'KV', 0,'KVolts','(none)' );
 INSERT INTO UnitMeasure VALUES( 54,'UNDEF', 0,'Undefined','(none)' );
 /
+
+
+/* NEW DATABASE UPDATES FROM BRANCH BUILD - sn */
+/* Update all gds from their string representation to a bit representation.
+   The numeric values are defined in GraphDataSeries.java */
+update graphdataseries set type = replace(type, 'graph', '9');
+update graphdataseries set type = replace(type, 'peakinterval', '17');
+update graphdataseries set type = replace(type, 'peakvalue', '17');
+update graphdataseries set type = replace(type, 'peak', '2');
+update graphdataseries set type = replace(type, 'usage', '4');
+update graphdataseries set type = replace(type, 'yesterday', '33');
+/
+
+/* Alter the graphdataseries column type from a varchar to a numeric */
+alter table graphdataseries alter column type numeric;
+/
+
+/* Update graphdataseries type.
+   Here we are combining all previous peak point gds into their corresponding 
+   based off of pointids.  Since we are converting to a bit mask type field,
+   we no longer need separate entries for all gds*/
+update graphdataseries set type = (type + 2) where graphdataseriesid in (
+select gds1.graphdataseriesid  from graphdataseries gds1, graphdataseries gds2
+where gds1.graphdefinitionid = gds2.graphdefinitionid 
+and gds1.pointid = gds2.pointid
+and gds1.color = gds2.color
+and gds1.axis = gds2.axis
+and gds1.label = gds2.label
+and gds2.type = 2
+and gds1.type != 2);
+/
+
+/* Remove the duplicate gds entries (all old peak types) */
+delete graphdataseries where type = 2;
+/
