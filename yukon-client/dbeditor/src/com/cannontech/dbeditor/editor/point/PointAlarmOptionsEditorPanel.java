@@ -983,7 +983,7 @@ public void setValue(Object val)
 		for( int i = 0; i < contacts.size(); i++ )
 		{
 			LiteContact ltCnt = (LiteContact)contacts.get(i);
-			for( int j = 0; j < ltCnt.getLiteContactNotifications().size(); i++ )
+			for( int j = 0; j < ltCnt.getLiteContactNotifications().size(); j++ )
 			{
 				LiteContactNotification ltCntNotif= 
 						(LiteContactNotification)ltCnt.getLiteContactNotifications().get(j);
