@@ -2,7 +2,7 @@ package com.cannontech.servlet;
 
 /**
  * See com.cannontech.common.constants.LoginController for a list of parameters and usage info
- * 
+ * TODO:  Move common login code to an external class, not everyone always uses an http interface
  * Creation date: (12/7/99 9:46:12 AM)
  * @author:	Aaron Lauinger 
  */
