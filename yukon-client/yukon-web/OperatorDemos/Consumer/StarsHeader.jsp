@@ -1,9 +1,7 @@
 <%@ page import="java.util.*" %>
 <%@ page import="com.cannontech.stars.xml.serialize.*" %>
 <%@ page import="com.cannontech.stars.web.StarsOperator" %>
-<%@ page import="com.cannontech.stars.web.util.Mappings" %>
 <%@ page import="com.cannontech.stars.web.util.CommonUtils" %>
-<%@ page import="com.cannontech.database.db.stars.hardware.LMHardwareBase" %>
 
 <%
 	java.text.SimpleDateFormat histDateFormat = new java.text.SimpleDateFormat("MM/dd/yy HH:mm");

@@ -1,3 +1,4 @@
+<%@ include file="StarsHeader.jsp" %>
 <html>
 <head>
 <title>Energy Services Operations Center</title>
@@ -129,14 +130,6 @@ function copyAddress(form) {
                           <input type="text" name="WorkPhone" maxlength="14" size="14" value="<%= primContact.getWorkPhone() %>">
                         </td>
                       </tr>
-					   <tr> 
-                        <td width="90" class="TableCell"> 
-                          <div align="right">e-mail Address:</div>
-                        </td>
-                        <td width="210"> 
-                          <input type="text" name="WorkPhone" maxlength="14" size="14" value="">
-                        </td>
-                      </tr>
                       <tr> 
                         <td width="90" class="TableCell"> 
                           <div align="right">Notes:</div>
@@ -223,14 +216,6 @@ function copyAddress(form) {
                         </td>
                         <td width="210"> 
                           <input type="text" name="SCity" maxlength="30" size="24" value="<%= propAddr.getCity() %>">
-                        </td>
-                      </tr>
-					  <tr> 
-                        <td width="90" class="TableCell"> 
-                          <div align="right">County:</div>
-                        </td>
-                        <td width="210"> 
-                          <input type="text" name="textfield6" maxlength="30" size="24">
                         </td>
                       </tr>
                       <tr> 
@@ -330,7 +315,7 @@ function copyAddress(form) {
                   </td>
                   <td width="194"> 
                     <div align="left"> 
-                      <input type="button" name="Cancel2" value="Cancel" onclick="document.URL='/OperatorDemos/Operations.jsp'">
+                      <input type="reset" name="Cancel2" value="Cancel">
                     </div>
                   </td>
               </tr>
