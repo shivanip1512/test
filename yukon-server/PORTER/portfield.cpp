@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.90 $
-* DATE         :  $Date: 2003/12/29 21:00:40 $
+* REVISION     :  $Revision: 1.91 $
+* DATE         :  $Date: 2004/01/07 16:42:48 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1465,9 +1465,12 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                        }
                        else
                        {
+                          InMessage->Buffer.DUPSt.DUPRep.ReqSt.Command[1] = error;
+
+                          if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
                           {
                               CtiLockGuard<CtiLogger> doubt_guard(dout);
-                              dout << RWTime() << " We have errored out " << error << endl;
+                              dout << RWTime() << " ----Unexpected Communication; Error----" << endl;
                           }
                        }
 
