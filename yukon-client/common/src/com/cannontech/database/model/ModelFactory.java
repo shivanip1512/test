@@ -47,6 +47,8 @@ public final class ModelFactory
 	public static final int LMGROUPREPORT = 33;
 	
 	public static final int TWOWAYCONFIG = 34;
+	
+	public static final int TAG = 35;
 
 	//The above is an enumeration of indices into
 	//the following array
@@ -86,7 +88,8 @@ public final class ModelFactory
 		BaselineModel.class,
 		LMGroupExpresscomModel.class,
 		LMGroupsCheckBoxModel.class,
-		ConfigModel.class
+		ConfigModel.class,
+		TagModel.class
 	};
 
 /**
